@@ -77,9 +77,6 @@
       <Command>"$(SolutionDir)\InjGen.exe" "$(MSBuildProjectDirectory)" -nologo "$(TargetPath).inj"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="src\Phobos.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
