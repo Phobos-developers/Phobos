@@ -8,7 +8,7 @@ Building
 
 Windows:
 
-0. Install Visual Studio with "Desktop development with C++" workload and clone this repo recursively.
+0. Install Visual Studio with "Desktop development with C++" workload, "C++ Windows XP Support for VS 2017 (v141) tools" individual component and clone this repo recursively.
 1. Open the project file in VS and compile the project.
 
 Upon build completion place the resulting `.dll` and `.inj` files in your YR directory and launch Syringe targeting your YR executable (usually `gamemd.exe`)
