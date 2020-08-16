@@ -1,0 +1,11 @@
+Release
+yrpp/*
+*.vcxproj.user
+*.sdf
+*.suo
+*.sln
+.vs
+.cproject
+.project
+
+
