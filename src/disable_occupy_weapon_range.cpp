@@ -16,28 +16,36 @@ DEFINE_HOOK(0x6F9187, OccupyWeaponRange_SearchTarget, 5)
 
 DEFINE_HOOK(0x6FF065, OccupyWeaponRange_NextIndex, 5)
 {
-	GET_BASE(AbstractClass*, tgt, 0x08);
-	GET(BuildingClass*, bld, ECX);
+	GET_BASE(AbstractClass*, target, 0x08);
+	GET(BuildingClass*, building, ECX);
 
-	const int cnt = bld->GetOccupantCount();
-	const int prev = bld->FiringOccupantIndex % cnt;
-	int next = (prev + 1) % cnt;
+	const int count = building->GetOccupantCount();
+	const int oldIndex = building->FiringOccupantIndex % count;
+	int newIndex = (oldIndex + 1) % count;
 
-	while (next != prev) {
-		InfantryClass* inf = bld->Occupants[next];
-		int range;
+	while (newIndex != oldIndex) {
+		InfantryClass* infantry = building->Occupants[newIndex];
+		int range, minRange;
+		int distance = building->DistanceFrom(target);
 
-		if (inf->Veterancy.IsElite())
-			range = inf->Type->EliteOccupyWeapon.WeaponType->Range;
+		if (infantry->Veterancy.IsElite())
+		{
+			range = infantry->Type->EliteOccupyWeapon.WeaponType->Range;
+			minRange = infantry->Type->EliteOccupyWeapon.WeaponType->MinimumRange;
+		}
 		else
-			range = inf->Type->OccupyWeapon.WeaponType->Range;
+		{
+			range = infantry->Type->OccupyWeapon.WeaponType->Range;
+			minRange = infantry->Type->OccupyWeapon.WeaponType->MinimumRange;
+		}
 
-		if (range >= bld->DistanceFrom(tgt)) break;
+		if (distance <= range && distance >= minRange)
+			break;
 
-		next = (next + 1) % cnt;
+		newIndex = (newIndex + 1) % count;
 	}
 
-	bld->FiringOccupantIndex = next;
+	building->FiringOccupantIndex = newIndex;
 
 	return 0x6FF08B;
 }
