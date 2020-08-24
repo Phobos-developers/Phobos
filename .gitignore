@@ -1,6 +1,7 @@
 Release
 yrpp/*
 *.vcxproj.user
+*.vcxproj.filters
 *.sdf
 *.suo
 *.sln
