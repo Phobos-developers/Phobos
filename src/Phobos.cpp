@@ -1,23 +1,31 @@
 #include "Phobos.h"
 #include <StaticInits.cpp>
 
-void Phobos::CmdLineParse(char **ppArgs, int nNumArgs)
-{
+const char* Phobos::AppIconPath = nullptr;
 
-    // > 1 because the exe path itself counts as an argument, too!
-    for (int i = 1; i < nNumArgs; i++)
-    {
-        const char *pArg = ppArgs[i];
-    }
+void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
+{
+	bool isIconArg = false;
+
+	// > 1 because the exe path itself counts as an argument, too!
+	for (int i = 1; i < nNumArgs; i++) {
+		const char* pArg = ppArgs[i];
+
+		if (_stricmp(pArg, "-Icon") == 0) {
+			isIconArg = true;
+		}else if (isIconArg) {
+			Phobos::AppIconPath = pArg;
+		}
+	}
 }
 
 DEFINE_HOOK(52F639, _YR_CmdLineParse, 5)
 {
-    GET(char **, ppArgs, ESI);
-    GET(int, nNumArgs, EDI);
+	GET(char**, ppArgs, ESI);
+	GET(int, nNumArgs, EDI);
 
-    Phobos::CmdLineParse(ppArgs, nNumArgs);
-    return 0;
+	Phobos::CmdLineParse(ppArgs, nNumArgs);
+	return 0;
 }
 
 //DllMain

@@ -6,5 +6,7 @@
 class Phobos
 {
 public:
-	static void CmdLineParse(char**, int);
+    static const char* AppIconPath;
+
+    static void CmdLineParse(char**, int);
 };
