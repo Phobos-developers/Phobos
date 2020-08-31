@@ -7,7 +7,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="YRpp\StaticInits.cpp" />
     <ClCompile Include="src\*.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
