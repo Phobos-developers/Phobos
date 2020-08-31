@@ -11,3 +11,13 @@ DEFINE_HOOK(777C41, UI_ApplyAppIcon, 9)
 
 	return 0;
 }
+
+DEFINE_HOOK(640B8D, UI_DisableBlackPoints, 6)
+{
+	return 0x640CE2;
+}
+
+//DEFINE_HOOK(640E78, UI_DisableColorPoints, 6)
+//{
+//	return 0x641071;
+//}
