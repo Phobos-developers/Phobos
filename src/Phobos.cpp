@@ -5,16 +5,14 @@ const char* Phobos::AppIconPath = nullptr;
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
-	bool isIconArg = false;
-
 	// > 1 because the exe path itself counts as an argument, too!
-	for (int i = 1; i < nNumArgs; i++) {
+	for (int i = 1; i < nNumArgs; i++)
+	{
 		const char* pArg = ppArgs[i];
 
-		if (_stricmp(pArg, "-Icon") == 0) {
-			isIconArg = true;
-		}else if (isIconArg) {
-			Phobos::AppIconPath = pArg;
+		if (_stricmp(pArg, "-Icon") == 0)
+		{
+			Phobos::AppIconPath = ppArgs[++i];
 		}
 	}
 }
