@@ -52,7 +52,7 @@ DEFINE_HOOK(4F4583, GScreenClass_DrawText, 6)
 		wanted.Height + 10
 	};
 
-	DSurface::Composite->FillRect(&rect, COLOR_BLACK);
+	DSurface::Composite->vt_entry_1C(&rect, {0,0,0}, 50);
 	DSurface::Composite->DrawTextA(string, rect.X + 5, 5, COLOR_RED);
 
 	return 0;
