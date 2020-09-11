@@ -8,6 +8,7 @@ Current features
 - **Full-color RGB PCX graphics support**
 - Ability to specify custom `gamemd.exe` icon via `-icon` command line argument followed by absolute or relative path to an `*.ico` file (f. ex. `gamemd.exe -icon Resources/clienticon.ico`)
 - Disable black dot spawn position markers on map preview
+- SHP debris now has their hardcoded shadows controlled by `Shadow` flag (defaults to `no`)
 
 Building
 --------
