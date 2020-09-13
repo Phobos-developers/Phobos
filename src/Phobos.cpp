@@ -52,9 +52,33 @@ DEFINE_HOOK(4F4583, GScreenClass_DrawText, 6)
 		wanted.Height + 10
 	};
 
-	DSurface::Composite->vt_entry_1C(&rect, {0,0,0}, 50);
+	DSurface::Composite->vt_entry_1C(&rect, { 0,0,0 }, 50);
 	DSurface::Composite->DrawTextA(string, rect.X + 5, 5, COLOR_RED);
 
 	return 0;
 }
 #endif
+
+CCINIClass* Phobos::OpenConfig(const char* file) {
+	CCINIClass* pINI = GameCreate<CCINIClass>();
+
+	if (pINI) {
+		CCFileClass* cfg = GameCreate<CCFileClass>(file);
+
+		if (cfg) {
+			if (cfg->Exists()) {
+				pINI->ReadCCFile(cfg);
+			}
+			GameDelete(cfg);
+		}
+	}
+
+	return pINI;
+}
+
+void Phobos::CloseConfig(CCINIClass*& pINI) {
+	if (pINI) {
+		GameDelete(pINI);
+		pINI = nullptr;
+	}
+}
