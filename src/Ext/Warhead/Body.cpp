@@ -7,15 +7,9 @@ WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
 // =============================
 // load / save
 
-template <typename T>
-void WarheadTypeExt::ExtData::Serialize(T& Stm) {
-	Stm
-		.Process(this->SpySat);
-}
-
 void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	auto pThis = this->OwnerObject();
-	const char * pSection = pThis->ID;
+	const char* pSection = pThis->ID;
 
 	if (!pINI->GetSection(pSection)) {
 		return;
@@ -25,17 +19,17 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->BigGap = pINI->ReadBool(pSection, "BigGap", this->BigGap);
 	this->TransactMoney = pINI->ReadInteger(pSection, "TransactMoney", this->SpySat);
 }
-
 void WarheadTypeExt::ExtData::LoadFromStream(IStream* Stm) {
-	Stm->Read(&this->SpySat, 4, 0);
-	Stm->Read(&this->BigGap, 4, 0);
-	Stm->Read(&this->TransactMoney, 4, 0);
+	#define STM_Process(A) Stm->Read(&A, sizeof(A), 0);
+	#include "Serialize.hpp"
+	#undef STM_Process
 }
 
 void WarheadTypeExt::ExtData::SaveToStream(IStream* Stm) {
-	Stm->Write(&this->SpySat, 4, 0);
-	Stm->Write(&this->BigGap, 4, 0);
-	Stm->Write(&this->TransactMoney, 4, 0);
+
+	#define STM_Process(A) Stm->Write(&A, sizeof(A), 0);
+	#include "Serialize.hpp"
+	#undef STM_Process
 }
 
 // =============================

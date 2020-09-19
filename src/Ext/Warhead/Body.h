@@ -30,16 +30,11 @@ public:
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void *ptr, bool bRemoved) override {
-		}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
 
-		virtual void LoadFromStream(IStream *Stm);
+		virtual void LoadFromStream(IStream* Stm);
 
-		virtual void SaveToStream(IStream *Stm);
-
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
+		virtual void SaveToStream(IStream* Stm);
 	};
 
 	class ExtContainer final : public Container<WarheadTypeExt> {
