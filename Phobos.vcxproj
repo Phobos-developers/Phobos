@@ -7,7 +7,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\*.cpp" />
+    <ClCompile Include="src\Debug.cpp" />
+    <ClCompile Include="src\Ext\Warhead\Body.cpp" />
+    <ClCompile Include="src\Ext\Warhead\Hooks.cpp" />
+    <ClCompile Include="src\Ext\_Container.cpp" />
+    <ClCompile Include="src\Phobos.cpp" />
+    <ClCompile Include="src\replace_shp_shadow_check.cpp" />
+    <ClCompile Include="src\rgb_pcx_loader.cpp" />
+    <ClCompile Include="src\UI.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Debug.h" />
+    <ClInclude Include="src\Ext\Warhead\Body.h" />
+    <ClInclude Include="src\Ext\_Container.hpp" />
+    <ClInclude Include="src\Phobos.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
