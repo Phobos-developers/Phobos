@@ -17,7 +17,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 
 	this->SpySat = pINI->ReadBool(pSection, "SpySat", this->SpySat);
 	this->BigGap = pINI->ReadBool(pSection, "BigGap", this->BigGap);
-	this->TransactMoney = pINI->ReadInteger(pSection, "TransactMoney", this->SpySat);
+	this->TransactMoney = pINI->ReadInteger(pSection, "TransactMoney", this->TransactMoney);
 }
 void WarheadTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	#define STM_Process(A) Stm->Read(&A, sizeof(A), 0);
