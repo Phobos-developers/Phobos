@@ -1,16 +1,20 @@
 #pragma once
-
-#include "Debug.h"
 #include <Helpers/Macro.h>
 #include <CCINIClass.h>
+
+#include "Debug.h"
 
 class Phobos
 {
 public:
-	static const char* AppIconPath;
-
 	static void CmdLineParse(char**, int);
 
 	static CCINIClass* OpenConfig(const char*);
 	static void CloseConfig(CCINIClass*&);
+
+	//variables
+	static const size_t readLength = 2048;
+	static char readBuffer[readLength];
+
+	static const char* AppIconPath;
 };
