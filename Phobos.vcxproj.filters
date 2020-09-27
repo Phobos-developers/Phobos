@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\Ext\_Container.cpp">
+      <Filter>Ext</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Ext\Warhead\Body.cpp">
+      <Filter>Ext\WarheadType</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Debug.cpp" />
+    <ClCompile Include="src\Phobos.cpp" />
+    <ClCompile Include="src\replace_shp_shadow_check.cpp" />
+    <ClCompile Include="src\rgb_pcx_loader.cpp" />
+    <ClCompile Include="src\UI.cpp" />
+    <ClCompile Include="src\Ext\Warhead\Hooks.cpp">
+      <Filter>Ext\WarheadType</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utilities\trim.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Ext">
+      <UniqueIdentifier>{bee3a53f-aec8-4ee6-99ec-1a5a846ddf54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ext\WarheadType">
+      <UniqueIdentifier>{3cffc33d-6ec5-42bd-9b11-0f672ddca827}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{65fbd33a-0fc1-4f40-8fab-26b405dbe01f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Ext\_Container.hpp">
+      <Filter>Ext</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Ext\Warhead\Body.h">
+      <Filter>Ext\WarheadType</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Ext\Warhead\Serialize.hpp">
+      <Filter>Ext\WarheadType</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utilities\trim.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Debug.h" />
+    <ClInclude Include="src\Phobos.h" />
+  </ItemGroup>
+</Project>
