@@ -33,6 +33,6 @@ Upon build completion place the resulting `Phobos.dll` in your YR directory and 
 Credits
 -------
 
-- @Belonit aka Gluk-v48, @Metadorius aka Kerbiter, @misha135n2 - collaborators
-- @TheAssemblyArmada (and @tomsons26 especially) - all-around help, assistance and guidance in reverse-engineering
-- @Ares-Developers - creating YRpp, Syringe and Ares without which the project wouldn't exist
+- Belonit aka Gluk-v48, Metadorius aka Kerbiter, misha135n2 - collaborators
+- TheAssemblyArmada (and tomsons26 especially) - all-around help, assistance and guidance in reverse-engineering
+- Ares developers - creating YRpp, Syringe and Ares without which the project wouldn't exist; also save/load code.
