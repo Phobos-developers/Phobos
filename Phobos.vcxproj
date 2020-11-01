@@ -12,6 +12,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Debug.cpp" />
+    <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
+    <ClCompile Include="src\Ext\Building\Body.cpp" />
     <ClCompile Include="src\Ext\Warhead\Body.cpp" />
     <ClCompile Include="src\Ext\Warhead\Hooks.cpp" />
     <ClCompile Include="src\Ext\_Container.cpp" />
@@ -23,6 +25,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Debug.h" />
+    <ClInclude Include="src\Ext\BuildingType\Body.h" />
+    <ClInclude Include="src\Ext\BuildingType\Serialize.hpp" />
+    <ClInclude Include="src\Ext\Building\Body.h" />
+    <ClInclude Include="src\Ext\Building\Serialize.hpp" />
     <ClInclude Include="src\Ext\Warhead\Body.h" />
     <ClInclude Include="src\Ext\Warhead\Serialize.hpp" />
     <ClInclude Include="src\Ext\_Container.hpp" />

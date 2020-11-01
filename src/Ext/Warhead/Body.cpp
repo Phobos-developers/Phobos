@@ -19,6 +19,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->BigGap = pINI->ReadBool(pSection, "BigGap", this->BigGap);
 	this->TransactMoney = pINI->ReadInteger(pSection, "TransactMoney", this->TransactMoney);
 }
+
 void WarheadTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	#define STM_Process(A) Stm->Read(&A, sizeof(A), 0);
 	#include "Serialize.hpp"
@@ -26,7 +27,6 @@ void WarheadTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 }
 
 void WarheadTypeExt::ExtData::SaveToStream(IStream* Stm) {
-
 	#define STM_Process(A) Stm->Write(&A, sizeof(A), 0);
 	#include "Serialize.hpp"
 	#undef STM_Process

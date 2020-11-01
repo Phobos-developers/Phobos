@@ -18,6 +18,8 @@
     <ClCompile Include="src\Utilities\trim.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
+    <ClCompile Include="src\Ext\Building\Body.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Ext">
@@ -28,6 +30,12 @@
     </Filter>
     <Filter Include="Utilities">
       <UniqueIdentifier>{65fbd33a-0fc1-4f40-8fab-26b405dbe01f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ext\Building">
+      <UniqueIdentifier>{a604bc8a-0993-495d-b8a0-8aabe158ecb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ext\BuildingType">
+      <UniqueIdentifier>{d70b20ef-9eba-4670-9603-56e254325632}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -45,5 +53,9 @@
     </ClInclude>
     <ClInclude Include="src\Debug.h" />
     <ClInclude Include="src\Phobos.h" />
+    <ClInclude Include="src\Ext\BuildingType\Body.h" />
+    <ClInclude Include="src\Ext\BuildingType\Serialize.hpp" />
+    <ClInclude Include="src\Ext\Building\Serialize.hpp" />
+    <ClInclude Include="src\Ext\Building\Body.h" />
   </ItemGroup>
 </Project>
