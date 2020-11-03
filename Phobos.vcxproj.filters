@@ -20,6 +20,7 @@
     </ClCompile>
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Body.cpp" />
+    <ClCompile Include="src\UpgradeAlliedBuildings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Ext">
