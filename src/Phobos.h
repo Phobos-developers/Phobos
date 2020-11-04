@@ -3,6 +3,7 @@
 #include <CCINIClass.h>
 
 #include "Utilities/Debug.h"
+#include "Phobos.version.h"
 
 class Phobos
 {
