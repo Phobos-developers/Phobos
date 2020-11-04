@@ -15,7 +15,7 @@ DEFINE_HOOK(452678, CanUpgrade_UpgradeAlliedBuildings, 8)
 	return 0x452680; // continue checking
 }
 
-DEFINE_HOOK(4408EB, Unlimbo_UpgradeAlliedBuildings, 10)
+DEFINE_HOOK(4408EB, Unlimbo_UpgradeAlliedBuildings, A)
 {
 	GET(BuildingClass*, pThis, ESI);
 	GET(BuildingClass*, buildingUnderMouse, EDI);
