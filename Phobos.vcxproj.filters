@@ -57,5 +57,9 @@
     <ClInclude Include="src\Ext\Building\Serialize.hpp" />
     <ClInclude Include="src\Ext\Building\Body.h" />
     <ClInclude Include="src\Utilities\Debug.h" />
+    <ClInclude Include="src\Phobos.version.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\version.rc" />
   </ItemGroup>
 </Project>
