@@ -15,9 +15,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		return;
 	}
 
-	//this->SpySat = pINI->ReadBool(pSection, "SpySat", this->SpySat);
-	//this->BigGap = pINI->ReadBool(pSection, "BigGap", this->BigGap);
-	//this->TransactMoney = pINI->ReadInteger(pSection, "TransactMoney", this->TransactMoney);
+	pINI->ReadString(pSection, "CanTargetFlags", "Own", Phobos::readBuffer);
+	this->canTargetFlags = ParseCanTargetFlags(Phobos::readBuffer);
 }
 
 void BuildingTypeExt::ExtData::LoadFromStream(IStream* Stm) {

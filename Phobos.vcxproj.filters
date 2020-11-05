@@ -18,9 +18,16 @@
     <ClCompile Include="src\Utilities\trim.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
-    <ClCompile Include="src\Ext\Building\Body.cpp" />
     <ClCompile Include="src\UpgradeAlliedBuildings.cpp" />
+    <ClCompile Include="src\Ext\BuildingType\Body.cpp">
+      <Filter>Ext\BuildingType</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Ext\Building\Body.cpp">
+      <Filter>Ext\Building</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utilities\CanTargetFlags.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Ext">
@@ -54,9 +61,20 @@
     </ClInclude>
     <ClInclude Include="src\Debug.h" />
     <ClInclude Include="src\Phobos.h" />
-    <ClInclude Include="src\Ext\BuildingType\Body.h" />
-    <ClInclude Include="src\Ext\BuildingType\Serialize.hpp" />
-    <ClInclude Include="src\Ext\Building\Serialize.hpp" />
-    <ClInclude Include="src\Ext\Building\Body.h" />
+    <ClInclude Include="src\Ext\BuildingType\Body.h">
+      <Filter>Ext\BuildingType</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Ext\Building\Body.h">
+      <Filter>Ext\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Ext\Building\Serialize.hpp">
+      <Filter>Ext\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Ext\BuildingType\Serialize.hpp">
+      <Filter>Ext\BuildingType</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utilities\CanTargetFlags.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
