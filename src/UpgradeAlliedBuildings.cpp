@@ -8,7 +8,7 @@
 DEFINE_HOOK(452678, CanUpgrade_UpgradeAlliedBuildings, 8)
 {
 	GET(BuildingClass*, pThis, ECX);
-	GET(BuildingTypeClass*, upgrade, EDI);
+	GET_STACK(BuildingTypeClass*, upgrade, 0x0C);
 	GET(HouseClass*, upgradeOwner, EAX);
 
 	CanTargetFlags flags = BuildingTypeExt::ExtMap.Find(upgrade)->canTargetFlags;
