@@ -1,11 +1,10 @@
 Release
 Debug
 *.vcxproj.user
+*.vcxproj.filters
 *.sdf
 *.suo
 .vs
 .cproject
 .project
-
-
-src/version.aps
+*.aps
