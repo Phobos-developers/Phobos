@@ -27,10 +27,10 @@ DEFINE_HOOK(4408EB, Unlimbo_UpgradeAlliedBuildings, A)
 	CanTargetFlags flags = BuildingTypeExt::ExtMap.Find(pThis->Type)->canTargetFlags;
 
 	R->EBX(pThis->Type);
-	//pThis->Owner = buildingUnderMouse->Owner;
 
 	if (!CanTargetHouse(flags, pThis->Owner, buildingUnderMouse->Owner))
 		return 0x440926; // fail
 	
+	pThis->Owner = buildingUnderMouse->Owner;
 	return 0x4408F5; //continue
 }
