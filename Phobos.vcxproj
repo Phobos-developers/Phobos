@@ -21,6 +21,8 @@
     <ClCompile Include="src\Misc\replace_shp_shadow_check.cpp" />
     <ClCompile Include="src\Misc\pcx.cpp" />
     <ClCompile Include="src\Misc\ui.cpp" />
+    <ClCompile Include="src\UpgradeAlliedBuildings.cpp" />
+    <ClCompile Include="src\Utilities\CanTargetFlags.cpp" />
     <ClCompile Include="src\Utilities\trim.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -34,6 +36,7 @@
     <ClInclude Include="src\Ext\Warhead\Serialize.hpp" />
     <ClInclude Include="src\Ext\_Container.hpp" />
     <ClInclude Include="src\Phobos.h" />
+    <ClInclude Include="src\Utilities\CanTargetFlags.h" />
     <ClInclude Include="src\Utilities\trim.h" />
   </ItemGroup>
   <ItemGroup>

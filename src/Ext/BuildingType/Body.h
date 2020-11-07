@@ -8,6 +8,8 @@
 
 #include "../../Utilities/Debug.h"
 
+#include "../../Utilities/CanTargetFlags.h"
+
 class BuildingTypeExt
 {
 public:
@@ -17,11 +19,13 @@ public:
 	{
 	public:
 
+		CanTargetFlags canTargetFlags;
 		//bool SpySat;
 		//bool BigGap;
 		//int TransactMoney;
 
-		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)//,
+		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject),
+			canTargetFlags(CanTargetFlags::Own)
 			//SpySat(false),
 			//BigGap(false),
 			//TransactMoney(0)
