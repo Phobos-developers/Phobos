@@ -5,7 +5,7 @@
 enum class CanTargetFlags : unsigned int
 {
 	None  = 0,
-	Own   = 1 << 0,
+	Self  = 1 << 0,
 	Ally  = 1 << 1,
 	Enemy = 1 << 2
 };
@@ -14,4 +14,4 @@ MAKE_ENUM_FLAGS(CanTargetFlags);
 
 bool CanTargetHouse(CanTargetFlags flags, HouseClass* ownerHouse, HouseClass* targetHouse);
 
-CanTargetFlags ParseCanTargetFlags(char* value);
+CanTargetFlags ParseCanTargetFlags(char* value, CanTargetFlags defValue);

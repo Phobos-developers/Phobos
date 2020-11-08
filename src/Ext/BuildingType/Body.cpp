@@ -15,8 +15,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		return;
 	}
 
-	pINI->ReadString(pSection, "PowersUp.Owner", "Own", Phobos::readBuffer);
-	this->PowersUp_Owner = ParseCanTargetFlags(Phobos::readBuffer);
+	pINI->ReadString(pSection, "PowersUp.Owner", "", Phobos::readBuffer);
+	this->PowersUp_Owner = ParseCanTargetFlags(Phobos::readBuffer, this->PowersUp_Owner);
 }
 
 void BuildingTypeExt::ExtData::LoadFromStream(IStream* Stm) {

@@ -22,7 +22,7 @@ public:
 		CanTargetFlags PowersUp_Owner;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject),
-			PowersUp_Owner(CanTargetFlags::Own)
+			PowersUp_Owner(CanTargetFlags::Self)
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
