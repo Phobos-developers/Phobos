@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Ext\TechnoType\Body.cpp" />
+    <ClCompile Include="src\Ext\TechnoType\BuildingDeployerTargeting.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Body.cpp" />
@@ -24,8 +26,11 @@
     <ClCompile Include="src\Ext\BuildingType\UpgradeAlliedBuildings.cpp" />
     <ClCompile Include="src\Utilities\CanTargetFlags.cpp" />
     <ClCompile Include="src\Utilities\trim.cpp" />
+    <ClCompile Include="src\Misc\vehicle_to_building_mind_control_fix.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Ext\TechnoType\Body.h" />
+    <ClInclude Include="src\Ext\TechnoType\Serialize.hpp" />
     <ClInclude Include="src\Phobos.version.h" />
     <ClInclude Include="src\Utilities\Debug.h" />
     <ClInclude Include="src\Ext\BuildingType\Body.h" />
