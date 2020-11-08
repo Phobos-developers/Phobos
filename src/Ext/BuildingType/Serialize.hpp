@@ -1,2 +1,2 @@
-STM_Process(this->canTargetFlags)
+STM_Process(this->PowersUp_Owner)
 

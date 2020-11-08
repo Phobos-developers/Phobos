@@ -21,7 +21,7 @@
     <ClCompile Include="src\Misc\replace_shp_shadow_check.cpp" />
     <ClCompile Include="src\Misc\pcx.cpp" />
     <ClCompile Include="src\Misc\ui.cpp" />
-    <ClCompile Include="src\UpgradeAlliedBuildings.cpp" />
+    <ClCompile Include="src\Ext\BuildingType\UpgradeAlliedBuildings.cpp" />
     <ClCompile Include="src\Utilities\CanTargetFlags.cpp" />
     <ClCompile Include="src\Utilities\trim.cpp" />
   </ItemGroup>

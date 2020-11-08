@@ -19,16 +19,10 @@ public:
 	{
 	public:
 
-		CanTargetFlags canTargetFlags;
-		//bool SpySat;
-		//bool BigGap;
-		//int TransactMoney;
+		CanTargetFlags PowersUp_Owner;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject),
-			canTargetFlags(CanTargetFlags::Own)
-			//SpySat(false),
-			//BigGap(false),
-			//TransactMoney(0)
+			PowersUp_Owner(CanTargetFlags::Own)
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
