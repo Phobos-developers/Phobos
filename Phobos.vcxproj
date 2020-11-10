@@ -13,6 +13,8 @@
   <ItemGroup>
     <ClCompile Include="src\Ext\TechnoType\Body.cpp" />
     <ClCompile Include="src\Ext\TechnoType\BuildingDeployerTargeting.cpp" />
+    <ClCompile Include="src\Ext\WeaponType\Body.cpp" />
+    <ClCompile Include="src\Ext\WeaponType\DiskLaserRadius.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Body.cpp" />
@@ -31,6 +33,8 @@
   <ItemGroup>
     <ClInclude Include="src\Ext\TechnoType\Body.h" />
     <ClInclude Include="src\Ext\TechnoType\Serialize.hpp" />
+    <ClInclude Include="src\Ext\WeaponType\Body.h" />
+    <ClInclude Include="src\Ext\WeaponType\Serialize.hpp" />
     <ClInclude Include="src\Phobos.version.h" />
     <ClInclude Include="src\Utilities\Debug.h" />
     <ClInclude Include="src\Ext\BuildingType\Body.h" />

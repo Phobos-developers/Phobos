@@ -22,7 +22,7 @@
 - `Deployed.RememberTarget= (boolean)` - makes vehicle-to-building deployer not lose the target on deploy. Defaults to `no`
 - Fixed the bug when the mind control link was broken on vehicle-to-building deployment and it permanently changed owner
 - Ability to hide the unstable warning by specifying the build number after `-b=` as a command line arg. (for example, `-b=1` would hide the warning for build 1). **Please, test the features (especially online and edge cases) before disabling it, we can't test everything :)**
-
+- Customizable laser disk radius via `[WeaponType]->DiskLaser.Radius= (double)` (in voxels). Defaults to `38.2`, which is roughly the default radius used for vanilla saucer.
 
 
 Building
