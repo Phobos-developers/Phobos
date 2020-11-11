@@ -21,3 +21,11 @@ Credits
 - @TheAssemblyArmada (and @tomsons26 especially) - all-around help, assistance and guidance in reverse-engineering
 - @Ares-Developers - creating YRpp, Syringe and Ares without which the project wouldn't exist
 - CCHyper - current project logo
+
+
+Legal
+-----
+
+The Phobos project is an unofficial open-source community collaboration project to extend the Red Alert 2 Yuri's Revenge engine for modding and compatibility purposes.
+
+This project has no direct affiliation with Electronic Arts Inc. Command & Conquer, Command & Conquer Red Alert 2, Command & Conquer Yuri's Revenge are registered trademarks of Electronic Arts Inc. All Rights Reserved.
