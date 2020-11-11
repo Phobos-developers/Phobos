@@ -45,3 +45,11 @@ Credits
   - DCoder - unused deployer fixes that are now included in Phobos
   - AlexB - save/load code
 - CCHyper - current project logo
+
+
+Legal
+-----
+
+The Phobos project is an unofficial open-source community collaboration project to extend the Red Alert 2 Yuri's Revenge engine for modding and compatibility purposes.
+
+This project has no direct affiliation with Electronic Arts Inc. Command & Conquer, Command & Conquer Red Alert 2, Command & Conquer Yuri's Revenge are registered trademarks of Electronic Arts Inc. All Rights Reserved.
