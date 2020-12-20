@@ -141,15 +141,22 @@ eros justo, mattis)";
 	return 0x6A93B2;
 }
 
-DEFINE_HOOK(478EE1, ToolTip_ExtendedBuffer, 6)
+DEFINE_HOOK(478EE1, ToolTip_ExtendedBuffer_Draw, 6)
 {
 	if(ToolTips_DrawExBuffer) {
 		R->EDI(ToolTips_Buffer);
-		ToolTips_DrawExBuffer = false;
 	}
 	
 	return 0;
 }
+
+DEFINE_HOOK(6AC210, ToolTip_ExtendedBuffer_Shutdown, 6)
+{
+	ToolTips_DrawExBuffer = false;
+	return 0;
+}
+
+
 
 
 /*DEFINE_HOOK(6A977E, TechnoType_AppendUIDescription, 6)
