@@ -37,6 +37,10 @@
 	return 0x6A9784;
 }*/
 
+#define ToolTips_Buffer_Length 1024
+wchar_t ToolTips_Buffer[ToolTips_Buffer_Length];
+bool ToolTips_DrawExBuffer = false;
+
 // taken from Ares bugfixes partially
 DEFINE_HOOK(6A9343, Cameo_ExtendedToolTip, 9)
 {
@@ -50,7 +54,26 @@ DEFINE_HOOK(6A9343, Cameo_ExtendedToolTip, 9)
 
 	if (true || Phobos::UI::ExtendedToolTips)
 	{
-		const wchar_t* UIDescription = L"Lorem ipsum dolor sit amet"; //TechnoTypeExt::ExtMap.Find(Object)->UIDescription;
+		//const wchar_t* UIDescription = L"Lorem ipsum dolor sit amet"; //TechnoTypeExt::ExtMap.Find(Object)->UIDescription;
+		const wchar_t* UIDescription = LR"(Lorem ipsum dolor
+sit amet,
+consectetur adipiscing
+elit. Maecenas sed
+eleifend odio.
+Suspendisse ut
+ex aliquet,
+sollicitudin
+tortor et,
+placerat massa.
+Etiam mattis nisl
+a nulla aliquet,
+id finibus risus
+consequat. Maecenas
+eros justo, mattis
+sed metus ac,
+aliquet eleifend
+ipsum. esent vel
+nisl volutpat,)";
 
 		int Power = 0;
 		if (Object->WhatAmI() == AbstractType::BuildingType) {
@@ -62,25 +85,25 @@ DEFINE_HOOK(6A9343, Cameo_ExtendedToolTip, 9)
 
 		// String building
 
-		SidebarClass::TooltipBuffer[0] = NULL;
+		ToolTips_Buffer[0] = NULL;
 
 		if (!HideObjectName && UIName != NULL && wcslen(UIName) != 0)
 		{
-			wcscat(SidebarClass::TooltipBuffer, UIName);
-			wcscat(SidebarClass::TooltipBuffer, L"\n");
+			wcscat(ToolTips_Buffer, UIName);
+			wcscat(ToolTips_Buffer, L"\n");
 		}
 
 		Phobos::wideBuffer[0] = NULL;
 		_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
 			L"%s%d", Phobos::UI::CostLabel, Cost);
-		wcscat(SidebarClass::TooltipBuffer, Phobos::wideBuffer);
+		wcscat(ToolTips_Buffer, Phobos::wideBuffer);
 		
 		if (Power)
 		{
 			Phobos::wideBuffer[0] = NULL;
 			_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
 				L" %s%d", Phobos::UI::PowerLabel, Power);
-			wcscat(SidebarClass::TooltipBuffer, Phobos::wideBuffer);
+			wcscat(ToolTips_Buffer, Phobos::wideBuffer);
 		}
 		
 		if (Time)
@@ -88,33 +111,44 @@ DEFINE_HOOK(6A9343, Cameo_ExtendedToolTip, 9)
 			Phobos::wideBuffer[0] = NULL;
 			_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
 				L" %s%d", Phobos::UI::TimeLabel, Time);
-			wcscat(SidebarClass::TooltipBuffer, Phobos::wideBuffer);
+			wcscat(ToolTips_Buffer, Phobos::wideBuffer);
 		}
 
 		if (UIDescription != NULL && wcslen(UIDescription) != 0)
 		{
-			wcscat(SidebarClass::TooltipBuffer, L"\n");
-			wcscat(SidebarClass::TooltipBuffer, UIDescription);
+			wcscat(ToolTips_Buffer, L"\n");
+			wcscat(ToolTips_Buffer, UIDescription);
 		}
+
+		ToolTips_Buffer[ToolTips_Buffer_Length - 1] = 0;
+		ToolTips_DrawExBuffer = true;
+		R->EAX(ToolTips_Buffer);
+		return 0x6A93DE;
+	}
+
+	if (HideObjectName)
+	{
+		Format = StringTable::LoadString("TXT_MONEY_FORMAT_1");
+		_snwprintf_s(SidebarClass::TooltipBuffer, SidebarClass::TooltipLength, SidebarClass::TooltipLength - 1, Format, Cost);
 	}
 	else
 	{
-		if (HideObjectName)
-		{
-			Format = StringTable::LoadString("TXT_MONEY_FORMAT_1");
-			_snwprintf_s(SidebarClass::TooltipBuffer, SidebarClass::TooltipLength, SidebarClass::TooltipLength - 1, Format, Cost);
-		}
-		else
-		{
-			Format = StringTable::LoadString("TXT_MONEY_FORMAT_2");
-			_snwprintf_s(SidebarClass::TooltipBuffer, SidebarClass::TooltipLength, SidebarClass::TooltipLength - 1, Format, UIName, Cost);
-		}
+		Format = StringTable::LoadString("TXT_MONEY_FORMAT_2");
+		_snwprintf_s(SidebarClass::TooltipBuffer, SidebarClass::TooltipLength, SidebarClass::TooltipLength - 1, Format, UIName, Cost);
 	}
 	SidebarClass::TooltipBuffer[SidebarClass::TooltipLength - 1] = 0;
-
-	return 0x6A93D9;
+	return 0x6A93B2;
 }
 
+DEFINE_HOOK(478EE1, ToolTip_ExtendedBuffer, 6)
+{
+	if(ToolTips_DrawExBuffer) {
+		R->EDI(ToolTips_Buffer);
+		ToolTips_DrawExBuffer = false;
+	}
+	
+	return 0;
+}
 
 
 /*DEFINE_HOOK(6A977E, TechnoType_AppendUIDescription, 6)
