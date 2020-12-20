@@ -14,9 +14,9 @@
     <ClCompile Include="src\Ext\SuperWeaponType\Body.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Body.cpp" />
     <ClCompile Include="src\Ext\TechnoType\BuildingDeployerTargeting.cpp" />
-    <ClCompile Include="src\Ext\TechnoType\UIDescription.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Body.cpp" />
     <ClCompile Include="src\Ext\WeaponType\DiskLaserRadius.cpp" />
+    <ClCompile Include="src\Misc\ExtendedToolTips.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Body.cpp" />

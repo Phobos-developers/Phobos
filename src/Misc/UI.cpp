@@ -12,7 +12,7 @@ const wchar_t* LoadStringOrDefault(char* key, const wchar_t* defaultValue)
 DEFINE_HOOK(777C41, UI_ApplyAppIcon, 9)
 {
 	if (Phobos::AppIconPath != nullptr) {
-		Debug::Log("Apply AppIcon from \"%s\"\n", Phobos::AppIconPath);
+		Debug::Log("Applying AppIcon from \"%s\"\n", Phobos::AppIconPath);
 
 		R->EAX(LoadImage(NULL, Phobos::AppIconPath, IMAGE_ICON, 0, 0, LR_LOADFROMFILE));
 		return 0x777C4A;
@@ -21,7 +21,7 @@ DEFINE_HOOK(777C41, UI_ApplyAppIcon, 9)
 	return 0;
 }
 
-DEFINE_HOOK(640B8D, LoadingScreen_DisableEmptySpawnPosition, 6)
+DEFINE_HOOK(640B8D, LoadingScreen_DisableEmptySpawnPositions, 6)
 {
 	GET(bool, esi, ESI);
 	if (Phobos::UI::DisableEmptySpawnPositions || !esi) {
@@ -58,7 +58,7 @@ DEFINE_HOOK(5FACDF, UIMD_LoadFromINI, 5)
 	Phobos::UI::PowerLabel = LoadStringOrDefault(Phobos::readBuffer, L"⚡");
 
 	pINI->ReadString(TOOLTIPS_SECTION, "TimeLabel", "", Phobos::readBuffer);
-	Phobos::UI::TimeLabel = LoadStringOrDefault(Phobos::readBuffer, L"🕒");
+	Phobos::UI::TimeLabel = LoadStringOrDefault(Phobos::readBuffer, L"⌚");
 
 	#pragma endregion
 
