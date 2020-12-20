@@ -1,4 +1,13 @@
-#include "../Phobos.h"
+﻿#include "../Phobos.h"
+#include <StringTable.h>
+
+const wchar_t* LoadStringOrDefault(char* key, const wchar_t* defaultValue)
+{
+	if (strlen(key) != 0)
+		return StringTable::LoadStringA(key);
+	else
+		return defaultValue;
+}
 
 DEFINE_HOOK(777C41, UI_ApplyAppIcon, 9)
 {
@@ -11,11 +20,11 @@ DEFINE_HOOK(777C41, UI_ApplyAppIcon, 9)
 
 	return 0;
 }
-bool LS_DisableEmptySpawnPosition = false;
+
 DEFINE_HOOK(640B8D, LoadingScreen_DisableEmptySpawnPosition, 6)
 {
 	GET(bool, esi, ESI);
-	if (LS_DisableEmptySpawnPosition || !esi) {
+	if (Phobos::UI::DisableEmptySpawnPositions || !esi) {
 		return 0x640CE2;
 	}
 	return 0x640B93;
@@ -30,9 +39,30 @@ DEFINE_HOOK(5FACDF, UIMD_LoadFromINI, 5)
 {
 	CCINIClass* pINI = Phobos::OpenConfig("uimd.ini");
 
-	LS_DisableEmptySpawnPosition =
-		pINI->ReadBool("LoadingScreen", "DisableEmptySpawnPosition", false);
+	#pragma region LoadingScreen
+
+	Phobos::UI::DisableEmptySpawnPositions =
+		pINI->ReadBool("LoadingScreen", "DisableEmptySpawnPositions", false);
+
+	#pragma endregion
+
+	#pragma region ToolTips
+	
+	Phobos::UI::ExtendedToolTips =
+		pINI->ReadBool(TOOLTIPS_SECTION, "ExtendedToolTips", false);
+
+	pINI->ReadString(TOOLTIPS_SECTION, "CostLabel", "", Phobos::readBuffer);
+	Phobos::UI::CostLabel = LoadStringOrDefault(Phobos::readBuffer, L"$");
+
+	pINI->ReadString(TOOLTIPS_SECTION, "PowerLabel", "", Phobos::readBuffer);
+	Phobos::UI::PowerLabel = LoadStringOrDefault(Phobos::readBuffer, L"⚡");
+
+	pINI->ReadString(TOOLTIPS_SECTION, "TimeLabel", "", Phobos::readBuffer);
+	Phobos::UI::TimeLabel = LoadStringOrDefault(Phobos::readBuffer, L"🕒");
+
+	#pragma endregion
 
 	Phobos::CloseConfig(pINI);
 	return 0;
 }
+

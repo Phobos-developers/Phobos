@@ -7,8 +7,15 @@
 #endif
 
 char Phobos::readBuffer[Phobos::readLength];
+wchar_t Phobos::wideBuffer[Phobos::readLength];
 
 const char* Phobos::AppIconPath = nullptr;
+
+bool Phobos::UI::DisableEmptySpawnPositions = false;
+bool Phobos::UI::ExtendedToolTips = false;
+const wchar_t* Phobos::UI::CostLabel = L"";
+const wchar_t* Phobos::UI::PowerLabel = L"";
+const wchar_t* Phobos::UI::TimeLabel = L"";
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {

@@ -11,8 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Ext\SuperWeaponType\Body.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Body.cpp" />
     <ClCompile Include="src\Ext\TechnoType\BuildingDeployerTargeting.cpp" />
+    <ClCompile Include="src\Ext\TechnoType\UIDescription.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Body.cpp" />
     <ClCompile Include="src\Ext\WeaponType\DiskLaserRadius.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
@@ -31,6 +33,8 @@
     <ClCompile Include="src\Misc\vehicle_to_building_mind_control_fix.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Ext\SuperWeaponType\Body.h" />
+    <ClInclude Include="src\Ext\SuperWeaponType\Serialize.hpp" />
     <ClInclude Include="src\Ext\TechnoType\Body.h" />
     <ClInclude Include="src\Ext\TechnoType\Serialize.hpp" />
     <ClInclude Include="src\Ext\WeaponType\Body.h" />
@@ -47,6 +51,7 @@
     <ClInclude Include="src\Phobos.h" />
     <ClInclude Include="src\Utilities\CanTargetFlags.h" />
     <ClInclude Include="src\Utilities\trim.h" />
+    <ClInclude Include="YRpp\GameTextManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src\version.rc" />
@@ -96,7 +101,7 @@
     <GenerateManifest>false</GenerateManifest>
     <IncludePath>$(SolutionDir)yrpp;$(VC_IncludePath);$(WindowsSdk_71A_IncludePath);</IncludePath>
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SystemDrive)\RA2\PhobosDebug\</OutDir>
+    <OutDir>..\..\..\..\Games\Rice on the Yeast</OutDir>
     <IntDir>$(Configuration)\IntDir\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

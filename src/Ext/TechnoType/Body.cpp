@@ -1,5 +1,6 @@
 #include "Body.h"
 #include <TechnoTypeClass.h>
+#include <StringTable.h>
 
 template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
@@ -16,12 +17,23 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	}
 
 	this->Deployed_RememberTarget = pINI->ReadBool(pSection, "Deployed.RememberTarget", this->Deployed_RememberTarget);
+	pINI->ReadString(pSection, "UIDescription", "", this->UIDescriptionLabel);
+	
+	if (strlen(this->UIDescriptionLabel) != 0)
+		this->UIDescription = StringTable::LoadStringA(this->UIDescriptionLabel);
+	else
+		this->UIDescription = L"";
 }
 
 void TechnoTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	#define STM_Process(A) Stm->Read(&A, sizeof(A), 0);
 	#include "Serialize.hpp"
 	#undef STM_Process
+
+	if (strlen(this->UIDescriptionLabel) != 0)
+		this->UIDescription = StringTable::LoadStringA(this->UIDescriptionLabel);
+	else
+		this->UIDescription = L"";
 }
 
 void TechnoTypeExt::ExtData::SaveToStream(IStream* Stm) {
