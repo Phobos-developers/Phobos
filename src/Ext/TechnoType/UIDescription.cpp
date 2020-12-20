@@ -52,7 +52,7 @@ DEFINE_HOOK(6A9343, Cameo_ExtendedToolTip, 9)
 	const wchar_t* UIName = Object->UIName;
 	int Cost = Object->GetActualCost(HouseClass::Player);
 
-	if (true || Phobos::UI::ExtendedToolTips)
+	//if (Phobos::UI::ExtendedToolTips)
 	{
 		//const wchar_t* UIDescription = L"Lorem ipsum dolor sit amet"; //TechnoTypeExt::ExtMap.Find(Object)->UIDescription;
 		const wchar_t* UIDescription = LR"(Lorem ipsum dolor
@@ -73,51 +73,52 @@ eros justo, mattis
 sed metus ac,
 aliquet eleifend
 ipsum. esent vel
-nisl volutpat,)";
-
-		int Power = 0;
-		if (Object->WhatAmI() == AbstractType::BuildingType) {
-			BuildingTypeClass* ObjectAsBuildingType = static_cast<BuildingTypeClass*>(Object);
-			Power = ObjectAsBuildingType->PowerBonus - ObjectAsBuildingType->PowerDrain;
-		}
+tortor et,
+placerat massa.
+Etiam mattis nisl
+a nulla aliquet,
+id finibus risus
+consequat. Maecenas
+eros justo, mattis)";
 
 		int Time = 0;
-
-		// String building
 
 		ToolTips_Buffer[0] = NULL;
 
 		if (!HideObjectName && UIName != NULL && wcslen(UIName) != 0)
 		{
-			wcscat(ToolTips_Buffer, UIName);
-			wcscat(ToolTips_Buffer, L"\n");
+			wcscat_s(ToolTips_Buffer, UIName);
+			wcscat_s(ToolTips_Buffer, L"\n");
 		}
 
-		Phobos::wideBuffer[0] = NULL;
 		_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
-			L"%s%d", Phobos::UI::CostLabel, Cost);
-		wcscat(ToolTips_Buffer, Phobos::wideBuffer);
+			L"%ls%d", Phobos::UI::CostLabel, Cost);
+		wcscat_s(ToolTips_Buffer, Phobos::wideBuffer);
 		
-		if (Power)
-		{
-			Phobos::wideBuffer[0] = NULL;
-			_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
-				L" %s%d", Phobos::UI::PowerLabel, Power);
-			wcscat(ToolTips_Buffer, Phobos::wideBuffer);
+		
+		if (Object->WhatAmI() == AbstractType::BuildingType) {
+			BuildingTypeClass* ObjectAsBuildingType = static_cast<BuildingTypeClass*>(Object);
+			int Power = ObjectAsBuildingType->PowerBonus - ObjectAsBuildingType->PowerDrain;
+
+			if (Power)
+			{
+				_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
+					L" %ls%+d", Phobos::UI::PowerLabel, Power);
+				wcscat_s(ToolTips_Buffer, Phobos::wideBuffer);
+			}
 		}
 		
 		if (Time)
 		{
-			Phobos::wideBuffer[0] = NULL;
 			_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
-				L" %s%d", Phobos::UI::TimeLabel, Time);
-			wcscat(ToolTips_Buffer, Phobos::wideBuffer);
+				L" %ls%d", Phobos::UI::TimeLabel, Time);
+			wcscat_s(ToolTips_Buffer, Phobos::wideBuffer);
 		}
 
 		if (UIDescription != NULL && wcslen(UIDescription) != 0)
 		{
-			wcscat(ToolTips_Buffer, L"\n");
-			wcscat(ToolTips_Buffer, UIDescription);
+			wcscat_s(ToolTips_Buffer, L"\n");
+			wcscat_s(ToolTips_Buffer, UIDescription);
 		}
 
 		ToolTips_Buffer[ToolTips_Buffer_Length - 1] = 0;
