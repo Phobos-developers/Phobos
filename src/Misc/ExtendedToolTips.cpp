@@ -104,3 +104,9 @@ DEFINE_HOOK(6AC210, ToolTip_ExtendedBuffer_Shutdown, 6)
 	ToolTip_DrawExBuffer = false;
 	return 0;
 }
+
+DEFINE_HOOK(724B85, ToolTip_Fix_QWER_bug, 0)
+{
+	R->ESI(R->ECX());	//mov esi, ecx
+	return 0x724B8B;
+}
