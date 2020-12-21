@@ -110,3 +110,9 @@ DEFINE_HOOK(724B85, ToolTip_Fix_QWER_bug, 0)
 	R->ESI(R->ECX());	//mov esi, ecx
 	return 0x724B8B;
 }
+
+DEFINE_HOOK(478F52, ToolTip_Fix_SidebarWidth, 8)
+{
+	R->EBX(R->EBX() - 8);
+	return 0;
+}
