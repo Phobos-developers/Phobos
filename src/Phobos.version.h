@@ -8,6 +8,8 @@
 #define VERSION_MINOR 0
 #define VERSION_REVISION 0
 
+#define SAVEGAME_ID ((VERSION_MAJOR << 24) | (VERSION_MINOR << 12) | (VERSION_REVISION))
+
 #define wstr(x) wstr_(x)
 #define wstr_(x) L ## #x
 #define str(x) str_(x)
