@@ -30,16 +30,18 @@ DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 
 	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
 
-	if (pWHExt->BigGap) {
-		ReshroudMapForOpponents(pThisHouse);
-	}
+	if (pThisHouse) {
+		if (pWHExt->BigGap) {
+			ReshroudMapForOpponents(pThisHouse);
+		}
 
-	if (pWHExt->SpySat) {
-		MapClass::Instance->Reveal(pThisHouse);
-	}
+		if (pWHExt->SpySat) {
+			MapClass::Instance->Reveal(pThisHouse);
+		}
 
-	if (pWHExt->TransactMoney != 0) {
-		pThisHouse->TransactMoney(pWHExt->TransactMoney);
+		if (pWHExt->TransactMoney != 0) {
+			pThisHouse->TransactMoney(pWHExt->TransactMoney);
+		}
 	}
 
 	return 0;
