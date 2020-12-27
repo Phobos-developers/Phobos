@@ -7,7 +7,7 @@
 
 - Full-color RGB PCX graphics support
 - PCX loading screens of any resolution that are centered (and cropped if bigger than the actual resolution); depends on Ares tag `File.LoadScreen=`
-- 3 new warheads
+- 3 new warheads:
   - `[Warhead]->TransactMoney= (integer - credits)`
     This many credits are added to warhead owner's credits when the warhead detonates. Use a negative number to subtract credits. Defaults to `0`
   - `[Warhead]->SpySat= (boolean)`
@@ -18,7 +18,11 @@
 - Ability to specify custom `gamemd.exe` icon via `-icon` command line argument followed by absolute or relative path to an `*.ico` file (f. ex. `gamemd.exe -icon Resources/clienticon.ico`); currently doesn't work with `CnC-DDraw` as it overrides the icon too
 - Disable black dot spawn position markers on map preview (`[LoadingScreen]->DisableEmptySpawnPosition= (boolean)` in `uimd.ini`)
 - SHP debris now has their hardcoded shadows controlled by `Shadow` flag (defaults to `no`)
-- Building upgrades placeable on ally or enemy buildings, controlled by `PowersUp.Owner=Self,Ally,Enemy` (mix and match the values separated with commas, for example you can make powerplant upgrade be applicable to allies and yourself by specifying `PowersUp.Owner=Self,Ally` in the INI). Defaults to `Self`
+- Building upgrades improve:
+  - `[BuildingType]->PowersUp.Owner (list of owner)`
+    Building upgrades placeable on ally or enemy buildings, controlled by `PowersUp.Owner=Self,Ally,Enemy` (mix and match the values separated with commas, for example you can   make powerplant upgrade be applicable to allies and yourself by specifying `PowersUp.Owner=Self,Ally` in the INI). Defaults to `Self`
+  - `[BuildingType]->PowersUp.Buildings (list of BuildingType)`
+    Specifies a list of structures that this update may improve.
 - `Deployed.RememberTarget= (boolean)` - makes vehicle-to-building deployer not lose the target on deploy. Defaults to `no`
 - Fixed the bug when the mind control link was broken on vehicle-to-building deployment and it permanently changed owner
 - Ability to hide the unstable warning by specifying the build number after `-b=` as a command line arg. (for example, `-b=1` would hide the warning for build 1). **Please, test the features (especially online and edge cases) before disabling it, we can't test everything :)**
