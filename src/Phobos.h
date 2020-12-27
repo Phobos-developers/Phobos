@@ -16,6 +16,7 @@ public:
 	//variables
 	static const size_t readLength = 2048;
 	static char readBuffer[readLength];
+	static const char readDelims[4];
 
 	static const char* AppIconPath;
 };
