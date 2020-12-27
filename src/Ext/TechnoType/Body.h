@@ -17,9 +17,11 @@ public:
 	{
 	public:
 		bool Deployed_RememberTarget;
+		bool HealthBar_Hide;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
-			Deployed_RememberTarget(false)
+			Deployed_RememberTarget(false),
+			HealthBar_Hide(false)
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
