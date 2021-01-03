@@ -21,8 +21,8 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		{
 			Phobos::AppIconPath = ppArgs[++i];
 		}
-		#ifndef IS_RELEASE_VER
-		if (_stricmp(pArg, "-b=" VERSION_STR) == 0)
+		#ifndef IS_RELEASE_VER 
+		if (_stricmp(pArg, "-b=" str(BUILD_NUMBER)) == 0)
 		{
 			HideWarning = true;
 		}
@@ -84,8 +84,16 @@ DEFINE_HOOK(52F639, _YR_CmdLineParse, 5)
 #ifndef IS_RELEASE_VER
 DEFINE_HOOK(4F4583, GScreenClass_DrawText, 6)
 {
-	if (!HideWarning) {
-		auto string = L"This version of Phobos (Build #" VERSION_STR L") is unstable";
+#ifndef STR_GIT_COMMIT
+	if (!HideWarning)
+#endif // !STR_GIT_COMMIT
+	{
+		#ifdef STR_GIT_COMMIT
+		auto string = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
+		#else
+		auto string = L"Phobos development build #" str(BUILD_NUMBER) L". Please test the build before shipping.";
+		#endif // STR_GIT_COMMIT
+
 		auto wanted = Drawing::GetTextDimensions(string);
 
 		RectangleStruct rect = {

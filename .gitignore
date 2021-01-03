@@ -8,3 +8,7 @@ Debug
 .cproject
 .project
 *.aps
+
+Nightly/
+
+DevBuild/
