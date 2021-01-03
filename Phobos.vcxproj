@@ -190,11 +190,17 @@
     <ClCompile>
       <AdditionalOptions>/DGIT_COMMIT="$(GitCommit)" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ResourceCompile>
+      <AdditionalOptions>/DGIT_COMMIT="$(GitCommit)" %(AdditionalOptions)</AdditionalOptions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(GitBranch)' != ''">
     <ClCompile>
       <AdditionalOptions>/DGIT_BRANCH="$(GitBranch)" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ResourceCompile>
+      <AdditionalOptions>/DGIT_BRANCH="$(GitBranch)" %(AdditionalOptions)</AdditionalOptions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
