@@ -17,11 +17,13 @@ public:
 	{
 	public:
 		bool Deployed_RememberTarget;
+		bool HealthBar_Hide;
 		char UIDescriptionLabel[32];
 		const wchar_t* UIDescription;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
+			HealthBar_Hide(false),
 			UIDescriptionLabel(""),
 			UIDescription(L"")
 		{ }

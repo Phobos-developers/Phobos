@@ -1,44 +1,42 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-// define this to switch to release version
-//#define IS_RELEASE_VER
-
-#define VERSION_MAJOR 1
-#define VERSION_MINOR 0
-#define VERSION_REVISION 0
-
 #define wstr(x) wstr_(x)
 #define wstr_(x) L ## #x
 #define str(x) str_(x)
 #define str_(x) #x
 
-// Alternative version display name for release versions
-#ifdef IS_RELEASE_VER
-	#define File_Description "Ares-compatible YR engine extension"
-	#define VERSION_STR str(VERSION_MAJOR) "." str(VERSION_MINOR) "." str(VERSION_REVISION)
-	#define VERSION_WSTR wstr(VERSION_MAJOR) L"." wstr(VERSION_MINOR) L"." wstr(VERSION_REVISION)
+// Latest release build
+#define VERSION_MAJOR 0
+#define VERSION_MINOR 0
+#define VERSION_REVISION 0
+
+// Latest devbuild
+#define BUILD_NUMBER 1
+
+// Nightly defines GIT_COMMIT and GIT_BRANCH in GH Actions
+
+#ifdef IS_RELEASE_VER // Release build metadata
+	#define SAVEGAME_ID ((VERSION_MAJOR << 24) | (VERSION_MINOR << 12) | (VERSION_REVISION))
+	#define FILE_DESCRIPTION "Phobos, Ares-compatible YR engine extension"
+	#define FILE_VERSION_STR str(VERSION_MAJOR) "." str(VERSION_MINOR) "." str(VERSION_REVISION)
 	#define FILE_VERSION VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION
-	
-    #define PRODUCT_MAJOR VERSION_MAJOR
-    #define PRODUCT_MINOR VERSION_MINOR
-    #define PRODUCT_REVISION VERSION_REVISION
-    #define PRODUCT_STR VERSION_STR
-    #define DISPLAY_STR PRODUCT_STR
-#else
-	#define File_Description "Unstable build"
-	#define FILE_VERSION 0,0,VERSION_MAJOR
-	#define VERSION_MINOR 0
-	#define VERSION_REVISION 0
-	#define VERSION_STR str(VERSION_MAJOR)
-	#define VERSION_WSTR wstr(VERSION_MAJOR)
+	#define PRODUCT_VERSION "Release build"
+#elif defined(GIT_COMMIT) // Nightly devbuild metadata
+	#define STR_GIT_COMMIT str(GIT_COMMIT)
+	#define STR_GIT_BRANCH str(GIT_BRANCH)
 
-    #define PRODUCT_MAJOR VERSION_MAJOR
-    #define PRODUCT_MINOR 0
-    #define PRODUCT_REVISION 0
-    #define PRODUCT_STR VERSION_STR
-    #define DISPLAY_STR VERSION_STR
-#endif // IS_RELEASE_VER
-
-
+	#define SAVEGAME_ID ((BUILD_NUMBER << 24) | (BUILD_NUMBER << 12) | (BUILD_NUMBER))
+	#define FILE_DESCRIPTION "Unstable nightly devbuild of Phobos engine extension"
+	#define FILE_VERSION_STR "Commit " STR_GIT_COMMIT
+	#define FILE_VERSION 0
+	#define PRODUCT_VERSION STR_GIT_COMMIT " @ " STR_GIT_BRANCH
+#else // Regular devbuild metadata
+	#define SAVEGAME_ID ((BUILD_NUMBER << 24) | (BUILD_NUMBER << 12) | (BUILD_NUMBER))
+	#define FILE_DESCRIPTION "Development build of Phobos engine extension"
+	#define FILE_VERSION_STR "Build #" str(BUILD_NUMBER)
+	#define FILE_VERSION 0,0,0,BUILD_NUMBER
+	#define PRODUCT_VERSION "Development Build #" str(BUILD_NUMBER)
 #endif
+
+#endif // VERSION_H
