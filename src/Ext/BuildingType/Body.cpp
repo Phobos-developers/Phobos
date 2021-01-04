@@ -20,19 +20,20 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		this->PowersUp_Owner = ParseCanTargetFlags(Phobos::readBuffer, this->PowersUp_Owner);
 	}
 
-	//Parse PowersUp.Buildings
+	// Parse PowersUp.Buildings
 	if (pINI->ReadString(pSection, "PowersUp.Buildings", "", this->PowersUp_Buildings_buff)) {
-		char* token = strtok(this->PowersUp_Buildings_buff, Phobos::readDelims);
-		while (token != 0) {
-			token = Trim::FullTrim(token);
-			this->PowersUp_Buildings.AddItem(token);
-			token = strtok(0, Phobos::readDelims);
+
+		char* context = nullptr;
+		for (char* cur = strtok_s(this->PowersUp_Buildings_buff, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context)) {
+			this->PowersUp_Buildings.AddItem(Trim::FullTrim(cur));
 		}
+
+		// to appoint a vanilla tag if it wasn't assigned
 		if (!strlen(this->OwnerObject()->PowersUpBuilding)) {
 			if (this->PowersUp_Buildings.Count) {
-				strcpy(this->OwnerObject()->PowersUpBuilding, PowersUp_Buildings.GetItem(0));
+				strcpy_s(this->OwnerObject()->PowersUpBuilding, PowersUp_Buildings.GetItem(0));
 			}
-		}
+		} // otherwise add it to the array
 		else {
 			PowersUp_Buildings.AddItem(this->OwnerObject()->PowersUpBuilding);
 		}
@@ -51,7 +52,7 @@ void BuildingTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 		for (int i = 0; i < count; i++) {
 			char tempBuf[sizeof(BuildingTypeClass::ID)];
 			Stm->Read(tempBuf, sizeof(tempBuf), 0);
-			strcpy(buf, tempBuf);
+			strcpy_s(buf, (sizeof(this->PowersUp_Buildings_buff) - (buf - this->PowersUp_Buildings_buff)), tempBuf);
 			this->PowersUp_Buildings.AddItem(buf);
 
 			buf += strlen(buf) + 1;
