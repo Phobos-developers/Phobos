@@ -5,32 +5,46 @@
 #include "../../Utilities/CanTargetFlags.h"
 #include "Body.h"
 
+bool CanUpgrade(BuildingClass* building, BuildingTypeClass* upgrade, HouseClass* upgradeOwner) {
+	auto extUpgrade = BuildingTypeExt::ExtMap.Find(upgrade);
+
+	if (CanTargetHouse(extUpgrade->PowersUp_Owner, upgradeOwner, building->Owner)) {
+	for (int i = 0; i < extUpgrade->PowersUp_Buildings.Count; i++) {
+			if (strcmp(building->Type->ID, extUpgrade->PowersUp_Buildings.GetItem(i)) == 0) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 DEFINE_HOOK(452678, CanUpgrade_UpgradeAlliedBuildings, 8)
 {
-	GET(BuildingClass*, pThis, ECX);
-	GET_STACK(BuildingTypeClass*, upgrade, 0x0C);
+	GET(BuildingClass*, pBuilding, ECX);
+	GET_STACK(BuildingTypeClass*, pUpgrade, 0x0C);
 	GET(HouseClass*, upgradeOwner, EAX);
 
-	CanTargetFlags flags = BuildingTypeExt::ExtMap.Find(upgrade)->PowersUp_Owner;
+	if (CanUpgrade(pBuilding, pUpgrade, upgradeOwner)) {
+		R->EAX(pBuilding->Type->PowersUpToLevel);
+		return 0x4526A7;  // continue
+	}
 
-	if (!CanTargetHouse(flags, upgradeOwner, pThis->Owner))
-		return 0x4526B5; // fail
-
-	return 0x452680; // continue
+	return 0x4526B5;  // fail
 }
 
 DEFINE_HOOK(4408EB, Unlimbo_UpgradeAlliedBuildings, A)
 {
-	GET(BuildingClass*, pThis, ESI);
 	GET(BuildingClass*, buildingUnderMouse, EDI);
+	GET(BuildingClass*, pUpgrade, ESI);
+	HouseClass* upgradeOwner = pUpgrade->Owner;
 
-	CanTargetFlags flags = BuildingTypeExt::ExtMap.Find(pThis->Type)->PowersUp_Owner;
+	CanTargetFlags flags = BuildingTypeExt::ExtMap.Find(pUpgrade->Type)->PowersUp_Owner;
 
-	if (CanTargetHouse(flags, pThis->Owner, buildingUnderMouse->Owner)) {
-		R->EBX(pThis->Type);
-		pThis->Owner = buildingUnderMouse->Owner;
-		return 0x4408F5; //continue
+	if (CanUpgrade(buildingUnderMouse, pUpgrade->Type, pUpgrade->Owner)) {
+		R->EBX(pUpgrade->Type);
+		pUpgrade->Owner = buildingUnderMouse->Owner;
+		return 0x440912; // continue
 	}
 
-	return 0x440926; // fail	
+	return 0x440926; // fail
 }
