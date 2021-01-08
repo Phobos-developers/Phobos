@@ -19,4 +19,5 @@ public:
 	static const char readDelims[4];
 
 	static const char* AppIconPath;
+	static const wchar_t* VersionString;
 };
