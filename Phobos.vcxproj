@@ -89,14 +89,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)yrpp;$(VC_IncludePath);$(WindowsSdk_71A_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)src\ExtraHeaders;$(SolutionDir)yrpp;$(VC_IncludePath);$(WindowsSdk_71A_IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\IntDir\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevBuild|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)yrpp;$(VC_IncludePath);$(WindowsSdk_71A_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)src\ExtraHeaders;$(SolutionDir)yrpp;$(VC_IncludePath);$(WindowsSdk_71A_IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\IntDir\</IntDir>
