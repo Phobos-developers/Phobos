@@ -29,13 +29,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		}
 
 		// to appoint a vanilla tag if it wasn't assigned
-		if (!strlen(this->OwnerObject()->PowersUpBuilding)) {
-			if (this->PowersUp_Buildings.Count) {
-				strcpy_s(this->OwnerObject()->PowersUpBuilding, PowersUp_Buildings.GetItem(0));
-			}
-		} // otherwise add it to the array
-		else {
-			PowersUp_Buildings.AddItem(this->OwnerObject()->PowersUpBuilding);
+		if (this->PowersUp_Buildings.Count && this->OwnerObject()->PowersUpBuilding[0] == 0) {
+			strcpy_s(this->OwnerObject()->PowersUpBuilding, PowersUp_Buildings.GetItem(0));
 		}
 	}
 }
