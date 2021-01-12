@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <Themes.h>
 
 //Static init
 template<> const DWORD Extension<SideClass>::Canary = 0x05B10501;
@@ -30,20 +31,49 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	}
 
 	this->Sidebar_GDIPositions = pINI->ReadBool(pSection, "Sidebar.GDIPositions", this->Sidebar_GDIPositions);
+
+	this->IngameScore_WinTheme = pINI->ReadTheme(pSection, "IngameScore.WinTheme", this->IngameScore_WinTheme);
+	this->IngameScore_LoseTheme = pINI->ReadTheme(pSection, "IngameScore.LoseTheme", this->IngameScore_LoseTheme);
 }
 
 // =============================
 // load / save
 
+int LoadTheme(IStream* Stm) {
+	size_t pID_len;
+
+	Stm->Read(&pID_len, sizeof(pID_len), 0);
+	Stm->Read(&Phobos::readBuffer, pID_len, 0);
+	Phobos::readBuffer[pID_len] = 0;
+
+	return ThemePlayer::Instance->FindIndex(Phobos::readBuffer);
+}
+
+void SaveTheme(IStream* Stm, int themeID) {
+	auto pID = ThemePlayer::Instance->GetID(themeID);
+	auto pID_len = strlen(pID);
+
+	Stm->Write(&pID_len, sizeof(pID_len), 0);
+	Stm->Write(pID, pID_len, 0);
+}
+
 void SideExt::ExtData::LoadFromStream(IStream* Stm) {
 	#define STM_Process(A) Stm->Read(&A, sizeof(A), 0);
 	#include "Serialize.hpp"
+
+	this->IngameScore_WinTheme = LoadTheme(Stm);
+	this->IngameScore_LoseTheme = LoadTheme(Stm);
+
 	#undef STM_Process
 }
 
 void SideExt::ExtData::SaveToStream(IStream* Stm) {
 	#define STM_Process(A) Stm->Write(&A, sizeof(A), 0);
 	#include "Serialize.hpp"
+
+	SaveTheme(Stm, this->IngameScore_WinTheme);
+	SaveTheme(Stm, this->IngameScore_LoseTheme);
+
 	#undef STM_Process
 }
 

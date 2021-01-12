@@ -17,8 +17,13 @@ public:
 		int ArrayIndex;
 		bool Sidebar_GDIPositions;
 
+		int IngameScore_WinTheme;
+		int IngameScore_LoseTheme;
+
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject),
-			ArrayIndex(-1)//,
+			ArrayIndex(-1),
+			IngameScore_WinTheme(-2),
+			IngameScore_LoseTheme(-2)
 		{ }
 
 		virtual ~ExtData() = default;
