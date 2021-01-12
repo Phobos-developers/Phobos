@@ -31,6 +31,8 @@
 - Fixed the bug when the mind control link was broken on vehicle-to-building deployment and it permanently changed owner
 - Ability to hide the unstable warning by specifying the build number after `-b=` as a command line arg. (for example, `-b=1` would hide the warning for build 1). **Please, test the features (especially online and edge cases) before disabling it, we can't test everything :)**
 - Customizable laser disk radius via `[WeaponType]->DiskLaser.Radius= (double)` (in voxels). Defaults to `38.2`, which is roughly the default radius used for vanilla saucer.
+- Win/lose themes (`[Side]->IngameScore.WinTheme= (theme id)` and `[Side]->IngameScore.LoseTheme= (theme id)`)
+- Switch hardcoded sidebar button coords to GDI sidebar (`[Side]->Sidebar.GDIPositions= (boolean)`)
 
 
 Building
@@ -47,12 +49,14 @@ Upon build completion place the resulting `Phobos.dll` in your YR directory and 
 Credits
 -------
 
-- Belonit aka Gluk-v48, Metadorius aka Kerbiter, misha135n2 - collaborators
-- TheAssemblyArmada (tomsons26 especially) - all-around help, assistance and guidance in reverse-engineering
+- Belonit aka Gluk-v48, Metadorius aka Kerbiter - project authors
+- misha135n2 - YRpp edits
+- tomsons26, CCHyper - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - Ares developers - creating YRpp, Syringe and Ares without which the project wouldn't exist
   - DCoder - unused deployer fixes that are now included in Phobos
   - AlexB - save/load code
 - CCHyper - current project logo
+- ZΞPHYɌUS - win/lose themes code
 
 
 Legal and License
