@@ -5,15 +5,79 @@
 #include <StringTable.h>
 #include <wchar.h>
 #include "../Ext/TechnoType/Body.h"
+#include "../Ext/SWType/Body.h"
 
 #define TOOLTIP_BUFFER_LENGTH 1024
 wchar_t ToolTip_ExtendedBuffer[TOOLTIP_BUFFER_LENGTH];
 bool ToolTip_DrawExBuffer = false;
 
+DEFINE_HOOK(6A9321, SWType_ExtendedToolTip, 6) {
+	if (!Phobos::UI::ExtendedToolTips) {
+		return 0;
+	}
+
+	bool hideName = *reinterpret_cast<byte*>(0x884B8C);
+	ToolTip_ExtendedBuffer[0] = NULL;
+
+	GET(int, itemIndex, ECX);
+	auto pSW = SuperWeaponTypeClass::Array->GetItem(itemIndex);
+	auto pData = SWTypeExt::ExtMap.Find(pSW);
+	
+	// append UIName label
+	const wchar_t* uiName = pSW->UIName;
+	if (!hideName && uiName && wcslen(uiName) != 0) {
+		wcscat_s(ToolTip_ExtendedBuffer, uiName);
+		wcscat_s(ToolTip_ExtendedBuffer, L"\n");
+	}
+
+	bool addSpace = false;
+	// append Cost label
+	if (pData) {
+		const int cost = pData->Money_Amount;
+		if (cost < 0) {
+			_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
+				L"%ls%d", Phobos::UI::CostLabel, -cost);
+			wcscat_s(ToolTip_ExtendedBuffer, Phobos::wideBuffer);
+			addSpace = true;
+		}
+	}
+
+	// append Time label
+	if (long buildTime = pSW->RechargeTime) {
+
+		int sec = (buildTime / 15) % 60;
+		int min = (buildTime / 15) / 60;
+
+		_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
+			L"%ls%02d:%02d", Phobos::UI::TimeLabel, min, sec);
+		if (addSpace) {
+			wcscat_s(ToolTip_ExtendedBuffer, L" ");
+		}
+		wcscat_s(ToolTip_ExtendedBuffer, Phobos::wideBuffer);
+		addSpace = true;
+	}
+
+	// append UIDescription label
+	if (pData) {
+		const wchar_t* uiDesc = pData->UIDescription;
+		if (uiDesc && wcslen(uiDesc) != 0) {
+			if (addSpace) {
+				wcscat_s(ToolTip_ExtendedBuffer, L"\n");
+			}
+			wcscat_s(ToolTip_ExtendedBuffer, uiDesc);
+		}
+	}
+	
+	ToolTip_ExtendedBuffer[TOOLTIP_BUFFER_LENGTH - 1] = 0;
+	ToolTip_DrawExBuffer = true;
+	R->EAX(ToolTip_ExtendedBuffer);
+
+	return 0x6A93DE;
+}
+
 // taken from Ares bugfixes partially
 DEFINE_HOOK(6A9343, TechnoType_ExtendedToolTip, 9)
 {
-	// TODO implement buildtime calculation
 	GET(TechnoTypeClass*, pThis, ESI);
 	bool hideName = *reinterpret_cast<byte*>(0x884B8C);
 	

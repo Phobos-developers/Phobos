@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Ext\SuperWeaponType\Body.cpp" />
+    <ClCompile Include="src\Ext\SWType\Body.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Body.cpp" />
     <ClCompile Include="src\Ext\TechnoType\BuildingDeployerTargeting.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hook.cpp" />
@@ -35,8 +35,8 @@
     <ClCompile Include="src\Misc\vehicle_to_building_mind_control_fix.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Ext\SuperWeaponType\Body.h" />
-    <ClInclude Include="src\Ext\SuperWeaponType\Serialize.hpp" />
+    <ClInclude Include="src\Ext\SWType\Body.h" />
+    <ClInclude Include="src\Ext\SWType\Serialize.hpp" />
     <ClInclude Include="src\Ext\TechnoType\Body.h" />
     <ClInclude Include="src\Ext\TechnoType\Serialize.hpp" />
     <ClInclude Include="src\Ext\WeaponType\Body.h" />

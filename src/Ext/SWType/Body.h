@@ -6,11 +6,7 @@
 #include "../_Container.hpp"
 #include "../../Phobos.h"
 
-#include "../../Utilities/Debug.h"
-
-#include "../../Utilities/CanTargetFlags.h"
-
-class SuperWeaponTypeExt
+class SWTypeExt
 {
 public:
 	using base_type = SuperWeaponTypeClass;
@@ -19,10 +15,12 @@ public:
 	{
 	public:
 
+		int Money_Amount;
 		char UIDescriptionLabel[32];
 		const wchar_t* UIDescription;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject),
+			Money_Amount(0),
 			UIDescriptionLabel(""),
 			UIDescription(L"")
 		{ }
@@ -37,7 +35,7 @@ public:
 		virtual void SaveToStream(IStream* Stm);
 	};
 
-	class ExtContainer final : public Container<SuperWeaponTypeExt> {
+	class ExtContainer final : public Container<SWTypeExt> {
 	public:
 		ExtContainer();
 		~ExtContainer();
