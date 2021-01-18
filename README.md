@@ -22,22 +22,22 @@
 - Ability to specify custom `gamemd.exe` icon via `-icon` command line argument followed by absolute or relative path to an `*.ico` file (f. ex. `gamemd.exe -icon Resources/clienticon.ico`); currently doesn't work with `CnC-DDraw` as it overrides the icon too
 - Disable black dot spawn position markers on map preview (`[LoadingScreen]->DisableEmptySpawnPositions=no (boolean)` in `uimd.ini`)
 - SHP debris now has their hardcoded shadows controlled by `Shadow=no` flag
-- Building upgrades improve:
-  - `[BuildingType]->PowersUp.Owner (list of owner)`
-    Building upgrades placeable on ally or enemy buildings, controlled by `PowersUp.Owner=Self,Ally,Enemy` (mix and match the values separated with commas, for example you can   make powerplant upgrade be applicable to allies and yourself by specifying `PowersUp.Owner=Self,Ally` in the INI). Defaults to `Self`
-  - `[BuildingType]->PowersUp.Buildings (list of BuildingType)`
-    Specifies a list of structures that this update may improve.
+- Improved building upgrades:
+  - `[BuildingType]->PowersUp.Owner=Self (list of owner - Self, Ally and/or Enemy)`
+    Specifies a list of building owners that this upgrade can be placed on (mix and match the values separated with commas, for example you can make powerplant upgrade be applicable to allies and yourself by specifying `PowersUp.Owner=Self,Ally` in the INI)
+  - `[BuildingType]->PowersUp.Buildings= (list of BuildingType)`
+    Specifies a list of structures that this update may upgrade.
 - `[TechnoType]->Deployed.RememberTarget=no (boolean)` - makes vehicle-to-building deployer not lose the target on deploy.
 - Fixed the bug when the mind control link was broken on vehicle-to-building deployment and it permanently changed owner
 - Ability to hide the unstable warning by specifying the build number after `-b=` as a command line arg. (for example, `-b=1` would hide the warning for build 1). **Please, test the features (especially online and edge cases) before disabling it, we can't test everything :)**
 - Customizable laser disk radius via `[WeaponType]->DiskLaser.Radius=38.2 (double)` (in voxels). Default value is roughly the default radius used for vanilla saucer.
-- Extended sidebar tooltips (only for TechnoTypes for now, WIP)
+- Extended sidebar tooltips
   - `uimd.ini` flags to control the new tooltips:
     - `[ToolTips]->ExtendedToolTips=no (boolean)` controls whether the extended tooltip or the vanilla tooltip would be drawn at sidebar. Extended tooltips **don't** use `TXT_MONEY_FORMAT_1` and `TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time (WIP) labels with the next tags
     - `[ToolTips]->CostLabel= (CSF key)` specifies the character or label to display to denote cost in an extended tooltip instead of default `$` sign
     - `[ToolTips]->PowerLabel= (CSF key)` ditto for power generation/consumption instead of default `⚡ U+26A1` sign
-    - `[ToolTips]->TimeLabel= (CSF key)` tritto for build time instead of default `⌚ U+231A` sign (WIP)
-  - `[TechnoType]->UIDescription= (CSF key)` - description text which is shown in sidebar on hover over a unit, won't show up if not specified
+    - `[ToolTips]->TimeLabel= (CSF key)` tritto for SW recharge time instead of default `⌚ U+231A` sign
+  - `[TechnoType/SWType]->UIDescription= (CSF key)` - description text which is shown in sidebar on hover over a unit or SW, won't show up if not specified
 - Win/lose themes (`[Side]->IngameScore.WinTheme= (theme id)` and `[Side]->IngameScore.LoseTheme= (theme id)`)
 - Switch hardcoded sidebar button coords to GDI sidebar (`[Side]->Sidebar.GDIPositions= (boolean)`)
 

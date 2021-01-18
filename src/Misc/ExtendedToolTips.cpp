@@ -20,11 +20,11 @@ DEFINE_HOOK(6A9321, SWType_ExtendedToolTip, 6) {
 	ToolTip_ExtendedBuffer[0] = NULL;
 
 	GET(int, itemIndex, ECX);
-	auto pSW = SuperWeaponTypeClass::Array->GetItem(itemIndex);
-	auto pData = SWTypeExt::ExtMap.Find(pSW);
+	auto swType = SuperWeaponTypeClass::Array->GetItem(itemIndex);
+	auto swTypeExt = SWTypeExt::ExtMap.Find(swType);
 	
 	// append UIName label
-	const wchar_t* uiName = pSW->UIName;
+	const wchar_t* uiName = swType->UIName;
 	if (!hideName && uiName && wcslen(uiName) != 0) {
 		wcscat_s(ToolTip_ExtendedBuffer, uiName);
 		wcscat_s(ToolTip_ExtendedBuffer, L"\n");
@@ -32,8 +32,8 @@ DEFINE_HOOK(6A9321, SWType_ExtendedToolTip, 6) {
 
 	bool addSpace = false;
 	// append Cost label
-	if (pData) {
-		const int cost = pData->Money_Amount;
+	if (swTypeExt) {
+		const int cost = swTypeExt->Money_Amount;
 		if (cost < 0) {
 			_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
 				L"%ls%d", Phobos::UI::CostLabel, -cost);
@@ -43,27 +43,28 @@ DEFINE_HOOK(6A9321, SWType_ExtendedToolTip, 6) {
 	}
 
 	// append Time label
-	if (long buildTime = pSW->RechargeTime) {
+	if (long rechargeTime = swType->RechargeTime) {
 
-		int sec = (buildTime / 15) % 60;
-		int min = (buildTime / 15) / 60;
+		int sec = (rechargeTime / 15) % 60;
+		int min = (rechargeTime / 15) / 60;
 
 		_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
 			L"%ls%02d:%02d", Phobos::UI::TimeLabel, min, sec);
-		if (addSpace) {
+		
+		if (addSpace)
 			wcscat_s(ToolTip_ExtendedBuffer, L" ");
-		}
+
 		wcscat_s(ToolTip_ExtendedBuffer, Phobos::wideBuffer);
 		addSpace = true;
 	}
 
 	// append UIDescription label
-	if (pData) {
-		const wchar_t* uiDesc = pData->UIDescription;
+	if (swTypeExt) {
+		const wchar_t* uiDesc = swTypeExt->UIDescription;
 		if (uiDesc && wcslen(uiDesc) != 0) {
-			if (addSpace) {
+			if (addSpace)
 				wcscat_s(ToolTip_ExtendedBuffer, L"\n");
-			}
+			
 			wcscat_s(ToolTip_ExtendedBuffer, uiDesc);
 		}
 	}
