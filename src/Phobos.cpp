@@ -8,6 +8,7 @@
 #endif
 
 char Phobos::readBuffer[Phobos::readLength];
+wchar_t Phobos::wideBuffer[Phobos::readLength];
 const char Phobos::readDelims[4] = ",";
 
 const char* Phobos::AppIconPath = nullptr;
@@ -19,6 +20,12 @@ const wchar_t* Phobos::VersionDescription = L"Phobos development build #" str(BU
 #else
 //const wchar_t* Phobos::VersionDescription = L"Phobos release build v" FILE_VERSION_STR L".";
 #endif
+
+bool Phobos::UI::DisableEmptySpawnPositions = false;
+bool Phobos::UI::ExtendedToolTips = false;
+const wchar_t* Phobos::UI::CostLabel = L"";
+const wchar_t* Phobos::UI::PowerLabel = L"";
+const wchar_t* Phobos::UI::TimeLabel = L"";
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {

@@ -1,29 +1,26 @@
 #pragma once
 
 #include <CCINIClass.h>
-#include <TechnoTypeClass.h>
+#include <SuperWeaponTypeClass.h>
 
 #include "../_Container.hpp"
 #include "../../Phobos.h"
 
-#include "../../Utilities/Debug.h"
-
-class TechnoTypeExt
+class SWTypeExt
 {
 public:
-	using base_type = TechnoTypeClass;
+	using base_type = SuperWeaponTypeClass;
 
-	class ExtData final : public Extension<TechnoTypeClass>
+	class ExtData final : public Extension<SuperWeaponTypeClass>
 	{
 	public:
-		bool Deployed_RememberTarget;
-		bool HealthBar_Hide;
+
+		int Money_Amount;
 		char UIDescriptionLabel[32];
 		const wchar_t* UIDescription;
 
-		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
-			Deployed_RememberTarget(false),
-			HealthBar_Hide(false),
+		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject),
+			Money_Amount(0),
 			UIDescriptionLabel(""),
 			UIDescription(L"")
 		{ }
@@ -38,7 +35,7 @@ public:
 		virtual void SaveToStream(IStream* Stm);
 	};
 
-	class ExtContainer final : public Container<TechnoTypeExt> {
+	class ExtContainer final : public Container<SWTypeExt> {
 	public:
 		ExtContainer();
 		~ExtContainer();
