@@ -21,8 +21,12 @@ public:
 
 		CanTargetFlags PowersUp_Owner;
 
+		char PowersUp_Buildings_buff[1024];
+		DynamicVectorClass<char*> PowersUp_Buildings;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject),
-			PowersUp_Owner(CanTargetFlags::Self)
+			PowersUp_Owner(CanTargetFlags::Self),
+			PowersUp_Buildings()
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;

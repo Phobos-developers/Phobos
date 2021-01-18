@@ -1,4 +1,5 @@
 #include <StaticInits.cpp>
+#include <ExtraInstances.cpp>
 
 #include "Phobos.h"
 
@@ -8,8 +9,17 @@
 
 char Phobos::readBuffer[Phobos::readLength];
 wchar_t Phobos::wideBuffer[Phobos::readLength];
+const char Phobos::readDelims[4] = ",";
 
 const char* Phobos::AppIconPath = nullptr;
+
+#ifdef STR_GIT_COMMIT
+const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
+#elif !defined(IS_RELEASE_VER)
+const wchar_t* Phobos::VersionDescription = L"Phobos development build #" str(BUILD_NUMBER) L". Please test the build before shipping.";
+#else
+//const wchar_t* Phobos::VersionDescription = L"Phobos release build v" FILE_VERSION_STR L".";
+#endif
 
 bool Phobos::UI::DisableEmptySpawnPositions = false;
 bool Phobos::UI::ExtendedToolTips = false;
@@ -95,13 +105,7 @@ DEFINE_HOOK(4F4583, GScreenClass_DrawText, 6)
 	if (!HideWarning)
 #endif // !STR_GIT_COMMIT
 	{
-		#ifdef STR_GIT_COMMIT
-		auto string = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
-		#else
-		auto string = L"Phobos development build #" str(BUILD_NUMBER) L". Please test the build before shipping.";
-		#endif // STR_GIT_COMMIT
-
-		auto wanted = Drawing::GetTextDimensions(string);
+		auto wanted = Drawing::GetTextDimensions(Phobos::VersionDescription);
 
 		RectangleStruct rect = {
 			DSurface::Composite->GetWidth() - wanted.Width - 10,
@@ -111,7 +115,7 @@ DEFINE_HOOK(4F4583, GScreenClass_DrawText, 6)
 		};
 
 		DSurface::Composite->FillRect(&rect, COLOR_BLACK);
-		DSurface::Composite->DrawTextA(string, rect.X + 5, 5, COLOR_RED);
+		DSurface::Composite->DrawTextA(Phobos::VersionDescription, rect.X + 5, 5, COLOR_RED);
 	}
 	return 0;
 }

@@ -12,6 +12,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Ext\SWType\Body.cpp" />
+    <ClCompile Include="src\Ext\Side\Body.cpp" />
+    <ClCompile Include="src\Ext\Side\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Side\Hooks.SidebarGDIPositions.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Body.cpp" />
     <ClCompile Include="src\Ext\TechnoType\BuildingDeployerTargeting.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hook.cpp" />
@@ -22,14 +25,14 @@
     <ClCompile Include="src\Utilities\Debug.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Body.cpp" />
-    <ClCompile Include="src\Ext\Warhead\Body.cpp" />
-    <ClCompile Include="src\Ext\Warhead\Hooks.cpp" />
+    <ClCompile Include="src\Ext\WarheadType\Body.cpp" />
+    <ClCompile Include="src\Ext\WarheadType\Hooks.cpp" />
     <ClCompile Include="src\Ext\_Container.cpp" />
     <ClCompile Include="src\Phobos.cpp" />
     <ClCompile Include="src\Misc\replace_shp_shadow_check.cpp" />
     <ClCompile Include="src\Misc\pcx.cpp" />
     <ClCompile Include="src\Misc\ui.cpp" />
-    <ClCompile Include="src\Ext\BuildingType\UpgradeAlliedBuildings.cpp" />
+    <ClCompile Include="src\Ext\BuildingType\Upgrade.cpp" />
     <ClCompile Include="src\Utilities\CanTargetFlags.cpp" />
     <ClCompile Include="src\Utilities\trim.cpp" />
     <ClCompile Include="src\Misc\vehicle_to_building_mind_control_fix.cpp" />
@@ -37,6 +40,8 @@
   <ItemGroup>
     <ClInclude Include="src\Ext\SWType\Body.h" />
     <ClInclude Include="src\Ext\SWType\Serialize.hpp" />
+    <ClInclude Include="src\Ext\Side\Body.h" />
+    <ClInclude Include="src\Ext\Side\Serialize.hpp" />
     <ClInclude Include="src\Ext\TechnoType\Body.h" />
     <ClInclude Include="src\Ext\TechnoType\Serialize.hpp" />
     <ClInclude Include="src\Ext\WeaponType\Body.h" />
@@ -47,8 +52,8 @@
     <ClInclude Include="src\Ext\BuildingType\Serialize.hpp" />
     <ClInclude Include="src\Ext\Building\Body.h" />
     <ClInclude Include="src\Ext\Building\Serialize.hpp" />
-    <ClInclude Include="src\Ext\Warhead\Body.h" />
-    <ClInclude Include="src\Ext\Warhead\Serialize.hpp" />
+    <ClInclude Include="src\Ext\WarheadType\Body.h" />
+    <ClInclude Include="src\Ext\WarheadType\Serialize.hpp" />
     <ClInclude Include="src\Ext\_Container.hpp" />
     <ClInclude Include="src\Phobos.h" />
     <ClInclude Include="src\Utilities\CanTargetFlags.h" />
@@ -94,14 +99,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)yrpp;$(VC_IncludePath);$(WindowsSdk_71A_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)src\ExtraHeaders;$(SolutionDir)yrpp;$(VC_IncludePath);$(WindowsSdk_71A_IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\IntDir\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevBuild|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)yrpp;$(VC_IncludePath);$(WindowsSdk_71A_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)src\ExtraHeaders;$(SolutionDir)yrpp;$(VC_IncludePath);$(WindowsSdk_71A_IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\IntDir\</IntDir>
@@ -195,11 +200,17 @@
     <ClCompile>
       <AdditionalOptions>/DGIT_COMMIT="$(GitCommit)" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ResourceCompile>
+      <AdditionalOptions>/DGIT_COMMIT="$(GitCommit)" %(AdditionalOptions)</AdditionalOptions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(GitBranch)' != ''">
     <ClCompile>
       <AdditionalOptions>/DGIT_BRANCH="$(GitBranch)" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ResourceCompile>
+      <AdditionalOptions>/DGIT_BRANCH="$(GitBranch)" %(AdditionalOptions)</AdditionalOptions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

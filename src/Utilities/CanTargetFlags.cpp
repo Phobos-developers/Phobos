@@ -1,4 +1,6 @@
 #include "CanTargetFlags.h"
+#include "../Phobos.h"
+#include "trim.h"
 
 bool CanTargetHouse(CanTargetFlags flags, HouseClass* ownerHouse, HouseClass* targetHouse)
 {
@@ -13,10 +15,11 @@ CanTargetFlags ParseCanTargetFlags(char* value, CanTargetFlags defValue)
 	
 	// TODO rewrite with generics and RTTI
 
-	char* token = strtok(value, ",");
+	char* token = strtok(value, Phobos::readDelims);
 
 	while (token != 0)
 	{
+		token = Trim::FullTrim(token);
 		if (!_stricmp(token, "Self"))
 			retval |= CanTargetFlags::Self;
 		if (!_stricmp(token, "Ally"))
@@ -24,7 +27,7 @@ CanTargetFlags ParseCanTargetFlags(char* value, CanTargetFlags defValue)
 		if (!_stricmp(token, "Enemy"))
 			retval |= CanTargetFlags::Enemy;
 
-		token = strtok(0, ",");
+		token = strtok(0, Phobos::readDelims);
 	}
 
 	if (retval == CanTargetFlags::None) {

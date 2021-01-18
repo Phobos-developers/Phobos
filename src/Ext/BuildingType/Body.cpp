@@ -1,5 +1,6 @@
 #include "Body.h"
 #include <BuildingTypeClass.h>
+#include "../../Utilities/trim.h"
 
 template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
@@ -15,20 +16,63 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		return;
 	}
 
-	pINI->ReadString(pSection, "PowersUp.Owner", "", Phobos::readBuffer);
-	this->PowersUp_Owner = ParseCanTargetFlags(Phobos::readBuffer, this->PowersUp_Owner);
+	if (pINI->ReadString(pSection, "PowersUp.Owner", "", Phobos::readBuffer)) {
+		this->PowersUp_Owner = ParseCanTargetFlags(Phobos::readBuffer, this->PowersUp_Owner);
+	}
+
+	// Parse PowersUp.Buildings
+	if (pINI->ReadString(pSection, "PowersUp.Buildings", "", this->PowersUp_Buildings_buff)) {
+
+		char* context = nullptr;
+		for (char* cur = strtok_s(this->PowersUp_Buildings_buff, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context)) {
+			this->PowersUp_Buildings.AddItem(Trim::FullTrim(cur));
+		}
+
+		// to appoint a vanilla tag if it wasn't assigned
+		if (this->PowersUp_Buildings.Count && this->OwnerObject()->PowersUpBuilding[0] == 0) {
+			strcpy_s(this->OwnerObject()->PowersUpBuilding, PowersUp_Buildings.GetItem(0));
+		}
+	}
 }
 
 void BuildingTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	#define STM_Process(A) Stm->Read(&A, sizeof(A), 0);
 	#include "Serialize.hpp"
+
+	{// Load PowersUp_Buildings array
+		int count = this->PowersUp_Buildings.Count;
+		char* buf = this->PowersUp_Buildings_buff;
+
+		STM_Process(count);
+		for (int i = 0; i < count; i++) {
+			char tempBuf[sizeof(BuildingTypeClass::ID)];
+			Stm->Read(tempBuf, sizeof(tempBuf), 0);
+			strcpy_s(buf, (sizeof(this->PowersUp_Buildings_buff) - (buf - this->PowersUp_Buildings_buff)), tempBuf);
+			this->PowersUp_Buildings.AddItem(buf);
+
+			buf += strlen(buf) + 1;
+		}
+	}
+
 	#undef STM_Process
+
+	//Stm->Read(&PowersUp_Buildings_buff, sizeof(PowersUp_Buildings_buff), 0)
 }
 
 void BuildingTypeExt::ExtData::SaveToStream(IStream* Stm) {
 	#define STM_Process(A) Stm->Write(&A, sizeof(A), 0);
 	#include "Serialize.hpp"
 	#undef STM_Process
+
+	{// Save PowersUp_Buildings array
+		int count = this->PowersUp_Buildings.Count;
+		Stm->Write(&count, sizeof(count), 0);
+
+		for (int i = 0; i < count; i++) {
+			char* item = this->PowersUp_Buildings.GetItem(i);
+			Stm->Write(item, sizeof(BuildingTypeClass::ID), 0);
+		}
+	}
 }
 
 // =============================

@@ -18,8 +18,10 @@ public:
 	static const size_t readLength = 2048;
 	static char readBuffer[readLength];
 	static wchar_t wideBuffer[readLength];
+	static const char readDelims[4];
 
 	static const char* AppIconPath;
+	static const wchar_t* VersionDescription;
 
 	class UI
 	{
