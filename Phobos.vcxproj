@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\ExtraHeaders\AresInterface\AresInterface.cpp" />
     <ClCompile Include="src\Ext\SWType\Body.cpp" />
     <ClCompile Include="src\Ext\Side\Body.cpp" />
     <ClCompile Include="src\Ext\Side\Hooks.cpp" />
@@ -38,6 +39,7 @@
     <ClCompile Include="src\Misc\vehicle_to_building_mind_control_fix.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ExtraHeaders\AresInterface\AresInterface.h" />
     <ClInclude Include="src\Ext\SWType\Body.h" />
     <ClInclude Include="src\Ext\SWType\Serialize.hpp" />
     <ClInclude Include="src\Ext\Side\Body.h" />

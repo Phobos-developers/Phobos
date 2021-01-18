@@ -9,6 +9,7 @@
 class Phobos
 {
 public:
+	static void Initialize();
 	static void CmdLineParse(char**, int);
 
 	static CCINIClass* OpenConfig(const char*);

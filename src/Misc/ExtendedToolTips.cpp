@@ -1,4 +1,4 @@
-﻿#include <Helpers/Macro.h>
+#include <Helpers/Macro.h>
 #include <BuildingTypeClass.h>
 #include <HouseClass.h>
 #include <SidebarClass.h>
@@ -6,6 +6,7 @@
 #include <wchar.h>
 #include "../Ext/TechnoType/Body.h"
 #include "../Ext/SWType/Body.h"
+#include <AresInterface/AresInterface.h>
 
 #define TOOLTIP_BUFFER_LENGTH 1024
 wchar_t ToolTip_ExtendedBuffer[TOOLTIP_BUFFER_LENGTH];
@@ -112,16 +113,17 @@ DEFINE_HOOK(6A9343, TechnoType_ExtendedToolTip, 9)
 				wcscat_s(ToolTip_ExtendedBuffer, Phobos::wideBuffer);
 			}
 		}
-
+		
 		// append Time label
-		/*
-		int Time = 0;
-		if (Time) {
+		if (long buildTime = AresInterface::GetBuildTime(0, 0, HouseClass::Player)) {
+
+			int sec = (buildTime / 15) % 60;
+			int min = (buildTime / 15) / 60;
+
 			_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
-				L" %ls%d", Phobos::UI::TimeLabel, Time);
+				L" %ls%02d:%02d", Phobos::UI::TimeLabel, min, sec);
 			wcscat_s(ToolTip_ExtendedBuffer, Phobos::wideBuffer);
 		}
-		*/
 
 		// append UIDescription label
 		const wchar_t* uiDesc = TechnoTypeExt::ExtMap.Find(pThis)->UIDescription;

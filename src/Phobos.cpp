@@ -1,6 +1,7 @@
 #include <StaticInits.cpp>
 #include <ExtraInstances.cpp>
 
+#include <AresInterface/AresInterface.h>
 #include "Phobos.h"
 
 #ifndef IS_RELEASE_VER
@@ -26,6 +27,12 @@ bool Phobos::UI::ExtendedToolTips = false;
 const wchar_t* Phobos::UI::CostLabel = L"";
 const wchar_t* Phobos::UI::PowerLabel = L"";
 const wchar_t* Phobos::UI::TimeLabel = L"";
+
+void Phobos::Initialize()
+{
+	Debug::Log("Initializing Phobos...");
+	AresInterface::Initialize();
+}
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
@@ -95,6 +102,8 @@ DEFINE_HOOK(52F639, _YR_CmdLineParse, 5)
 	GET(int, nNumArgs, EDI);
 
 	Phobos::CmdLineParse(ppArgs, nNumArgs);
+
+	Phobos::Initialize();
 	return 0;
 }
 
