@@ -1,7 +1,6 @@
 #pragma once
 #include <Helpers/Macro.h>
 #include <CCINIClass.h>
-
 #include "Utilities/Debug.h"
 #include "Phobos.version.h"
 
@@ -22,7 +21,7 @@ public:
 
 	static const char* AppIconPath;
 
-	static class UI
+	class UI
 	{
 	public:
 		static bool DisableEmptySpawnPositions;
@@ -33,5 +32,3 @@ public:
 		static const wchar_t* TimeLabel;
 	};
 };
-
-
