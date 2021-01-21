@@ -17,7 +17,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	}
 
 	this->Money_Amount = pINI->ReadInteger(pSection, "Money.Amount", this->Money_Amount);
-	pINI->ReadString(pSection, "UIDescription", "", this->UIDescriptionLabel);
+	pINI->ReadString(pSection, "UIDescription", this->UIDescriptionLabel, this->UIDescriptionLabel);
 
 	if (strlen(this->UIDescriptionLabel) != 0)
 		this->UIDescription = StringTable::LoadStringA(this->UIDescriptionLabel);
