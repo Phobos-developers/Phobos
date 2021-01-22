@@ -21,7 +21,7 @@ public:
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject),
 			Money_Amount(0),
-			UIDescriptionLabel(""),
+			UIDescriptionLabel(CSF_NONE),
 			UIDescription(L"")
 		{ }
 

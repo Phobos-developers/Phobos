@@ -24,7 +24,7 @@ public:
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
 			HealthBar_Hide(false),
-			UIDescriptionLabel(""),
+			UIDescriptionLabel(CSF_NONE),
 			UIDescription(L"")
 		{ }
 

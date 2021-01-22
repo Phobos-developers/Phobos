@@ -5,6 +5,7 @@
 #include "Phobos.version.h"
 
 #define TOOLTIPS_SECTION "ToolTips"
+#define CSF_NONE "<none>"
 
 class Phobos
 {
