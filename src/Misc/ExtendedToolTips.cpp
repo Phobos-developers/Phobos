@@ -9,7 +9,7 @@
 
 #define TOOLTIP_BUFFER_LENGTH 1024
 wchar_t ToolTip_ExtendedBuffer[TOOLTIP_BUFFER_LENGTH];
-bool ToolTip_DrawExBuffer = false;
+bool ToolTip_OnSidebar_DrawEx = false;
 
 DEFINE_HOOK(6A9321, SWType_ExtendedToolTip, 6) {
 	if (!Phobos::UI::ExtendedToolTips) {
@@ -70,7 +70,7 @@ DEFINE_HOOK(6A9321, SWType_ExtendedToolTip, 6) {
 	}
 	
 	ToolTip_ExtendedBuffer[TOOLTIP_BUFFER_LENGTH - 1] = 0;
-	ToolTip_DrawExBuffer = true;
+	ToolTip_OnSidebar_DrawEx = true;
 	R->EAX(ToolTip_ExtendedBuffer);
 
 	return 0x6A93DE;
@@ -131,7 +131,7 @@ DEFINE_HOOK(6A9343, TechnoType_ExtendedToolTip, 9)
 		}
 
 		ToolTip_ExtendedBuffer[TOOLTIP_BUFFER_LENGTH - 1] = 0;
-		ToolTip_DrawExBuffer = true;
+		ToolTip_OnSidebar_DrawEx = true;
 		R->EAX(ToolTip_ExtendedBuffer);
 
 		return 0x6A93DE;
@@ -158,7 +158,7 @@ DEFINE_HOOK(6A9343, TechnoType_ExtendedToolTip, 9)
 
 DEFINE_HOOK(478EE1, ToolTip_ExtendedBuffer_Draw, 6)
 {
-	if (ToolTip_DrawExBuffer) {
+	if (ToolTip_OnSidebar_DrawEx) {
 		R->EDI(ToolTip_ExtendedBuffer);
 	}
 	return 0;
@@ -166,14 +166,14 @@ DEFINE_HOOK(478EE1, ToolTip_ExtendedBuffer_Draw, 6)
 
 DEFINE_HOOK(6AC210, ToolTip_ExtendedBuffer_Shutdown, 6)
 {
-	ToolTip_DrawExBuffer = false;
+	ToolTip_OnSidebar_DrawEx = false;
 	return 0;
 }
 
 DEFINE_HOOK(724B85, ToolTip_Fix_QWER_bug, 0)
 {
 	R->ESI(R->ECX());	//mov esi, ecx
-	return 0x724B8B;
+	return ToolTip_OnSidebar_DrawEx ? 0x724B8B : 0x724B90;
 }
 
 //DEFINE_HOOK(478F52, ToolTip_Fix_SidebarWidth, 8)
