@@ -32,7 +32,10 @@ Credits
 - DCoder - unused deployer fixes that are now included in Phobos
 - CCHyper - current project logo
 - ZΞPHYɌUS - win/lose themes code
+- ayylmao, SMxReaver - help with docs
+- wiktorderelf, Metadorius aka Kerbiter - overhauled Unicode font
 
+Also thanks to everyone who uses Phobos, tests changes and reports bugs!
 
 Legal and License
 -----
