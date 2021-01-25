@@ -8,18 +8,15 @@
 bool CanUpgrade(BuildingClass* building, BuildingTypeClass* upgrade, HouseClass* upgradeOwner) {
 	auto extUpgrade = BuildingTypeExt::ExtMap.Find(upgrade);
 	if (CanTargetHouse(extUpgrade->PowersUp_Owner, upgradeOwner, building->Owner)) {
-
 		// PowersUpBuilding
-		if (strcmp(building->Type->ID, upgrade->PowersUpBuilding) == 0) {
+		if (_stricmp(building->Type->ID, upgrade->PowersUpBuilding) == 0)
 			return true;
-		};
 
 		// PowersUp.Buildings
 		for (int i = 0; i < extUpgrade->PowersUp_Buildings.Count; i++) {
-			if (strcmp(building->Type->ID, extUpgrade->PowersUp_Buildings.GetItem(i)) == 0) {
+			if (_stricmp(building->Type->ID, extUpgrade->PowersUp_Buildings.GetItem(i)) == 0)
 				return true;
-			};
-		};
+		}
 	}
 	return false;
 }
