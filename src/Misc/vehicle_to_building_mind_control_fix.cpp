@@ -7,22 +7,8 @@
 void TransferMindControl(TechnoClass* From, TechnoClass* To) {
 	if (auto Controller = From->MindControlledBy) {
 		if (auto Manager = Controller->CaptureManager) { // shouldn't be necessary, but WW uses it...
-			bool FoundNode(false);
-			for (int i = 0; i < Manager->ControlNodes.Count; ++i) {
-				auto Node = Manager->ControlNodes[i];
-				if (Node->Unit == From) {
-					Node->Unit = To;
-					To->Owner = From->GetOwningHouse();
-					//To->SetOwningHouse(From->GetOwningHouse(), 0);
-					To->MindControlledBy = Controller;
-					From->MindControlledBy = NULL;
-					FoundNode = true;
-					break;
-				}
-			}
-			if (!FoundNode) { // say the link was broken beforehand, by inconsistently ordered code...
-				Manager->CaptureUnit(To);
-			}
+			Manager->FreeUnit(From);
+			Manager->CaptureUnit(To);
 		}
 	}
 	else if (auto MCHouse = From->MindControlledByHouse) {
