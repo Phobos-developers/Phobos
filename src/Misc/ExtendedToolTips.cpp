@@ -77,7 +77,7 @@ void CreateHelpText(AbstractType itemType, int itemIndex)
 		ExtToolTip::Append(Phobos::wideBuffer);
 	}
 
-	// append UIDescription 
+	// append UIDescription
 	const wchar_t* uiDesc = pSWExt ? pSWExt->UIDescription : TechnoTypeExt::ExtMap.Find(pTechno)->UIDescription;
 	if (uiDesc && uiDesc[0] != 0) {
 		if (uiDesc && wcslen(uiDesc) != 0) {
@@ -141,6 +141,21 @@ DEFINE_HOOK(478E4A, CCToolTip__Draw2_SetSurface, 6)
 	return 0;
 }
 
+DEFINE_HOOK(478EE1, CCToolTip__Draw2_SetBuffer, 6)
+{
+	ExtToolTip::SetBuffer(R);
+	return 0;
+}
+
+DEFINE_HOOK(478EF8, CCToolTip__Draw2_SetMaxWidth, 5)
+{
+	if (ExtToolTip::isCameo) {
+		auto ViewBounds = reinterpret_cast<RectangleStruct*>(0x886FB0);
+		R->EAX(ViewBounds->Width);
+	}
+	return 0;
+}
+
 DEFINE_HOOK(478F52, CCToolTip__Draw2_SetX, 8)
 {
 	if (ExtToolTip::slaveDraw) {
@@ -149,17 +164,19 @@ DEFINE_HOOK(478F52, CCToolTip__Draw2_SetX, 8)
 	return 0;
 }
 
-DEFINE_HOOK(478EE1, CCToolTip__Draw2_SetBuffer, 6)
-{
-	ExtToolTip::SetBuffer(R);
-	return 0;
-}
-
-DEFINE_HOOK(478EF8, CCToolTip__Draw2_SetWidth, 5)
+DEFINE_HOOK(478F77, CCToolTip__Draw2_SetY, 6)
 {
 	if (ExtToolTip::isCameo) {
 		auto ViewBounds = reinterpret_cast<RectangleStruct*>(0x886FB0);
-		R->EAX(ViewBounds->Width);
+		LEA_STACK(RectangleStruct*, Rect, STACK_OFFS(0x3C, 0x20));
+
+		int maxHeight = ViewBounds->Height - 32;
+
+		if (Rect->Height > maxHeight)
+			Rect->Y += maxHeight - Rect->Height;
+
+		if (Rect->Y < 0)
+			Rect->Y = 0;
 	}
 	return 0;
 }
