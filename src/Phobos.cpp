@@ -1,5 +1,5 @@
 #include <StaticInits.cpp>
-#include <ExtraInstances.cpp>
+#include <ExtraInstances.hpp>
 
 #include "Phobos.h"
 

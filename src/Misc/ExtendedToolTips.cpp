@@ -1,183 +1,165 @@
-﻿#include <Helpers/Macro.h>
-#include <BuildingTypeClass.h>
-#include <HouseClass.h>
-#include <SidebarClass.h>
-#include <StringTable.h>
-#include <wchar.h>
-#include "../Ext/TechnoType/Body.h"
-#include "../Ext/SWType/Body.h"
+﻿#include "ExtendedToolTips.h"
 
-#define TOOLTIP_BUFFER_LENGTH 1024
-wchar_t ToolTip_ExtendedBuffer[TOOLTIP_BUFFER_LENGTH];
-bool ToolTip_OnSidebar_DrawEx = false;
+bool ExtToolTip::isCameo = false;
+bool ExtToolTip::slaveDraw = false;
+bool ExtToolTip::_UseExtBuffer = false;
+wchar_t ExtToolTip::_ExtBuffer[TOOLTIP_BUFFER_LENGTH] = L"";
+bool ExtToolTip::addSpace = false;
+bool ExtToolTip::addNewLine = false;
 
-DEFINE_HOOK(6A9321, SWType_ExtendedToolTip, 6) {
-	if (!Phobos::UI::ExtendedToolTips) {
-		return 0;
+void CreateHelpText(AbstractType itemType, int itemIndex)
+{
+	AbstractTypeClass* pAbstract = nullptr;
+	SuperWeaponTypeClass* pSW = nullptr;
+	SWTypeExt::ExtData* pSWExt = nullptr;
+	TechnoTypeClass* pTechno = nullptr;
+	BuildingTypeClass* pBuilding = nullptr;
+
+	if (itemType == AbstractType::Special) {
+		pSW = SuperWeaponTypeClass::Array->GetItem(itemIndex);
+		pAbstract = pSW;
+		pSWExt = SWTypeExt::ExtMap.Find(pSW);
+	}
+	else {
+		pTechno = ObjectTypeClass::GetTechnoType(itemType, itemIndex);
+		if (pTechno->WhatAmI() == AbstractType::BuildingType) {
+			pBuilding = static_cast<BuildingTypeClass*>(pTechno);
+		}
+		pAbstract = pTechno;
 	}
 
-	bool hideName = *reinterpret_cast<byte*>(0x884B8C);
-	ToolTip_ExtendedBuffer[0] = NULL;
+	ExtToolTip::Clear_Separator();
 
-	GET(int, itemIndex, ECX);
-	auto swType = SuperWeaponTypeClass::Array->GetItem(itemIndex);
-	auto swTypeExt = SWTypeExt::ExtMap.Find(swType);
-	
 	// append UIName label
-	const wchar_t* uiName = swType->UIName;
-	if (!hideName && uiName && wcslen(uiName) != 0) {
-		wcscat_s(ToolTip_ExtendedBuffer, uiName);
-		wcscat_s(ToolTip_ExtendedBuffer, L"\n");
+	const wchar_t* uiName = pAbstract->UIName;
+	if (!CCToolTip::HideName && uiName && uiName[0] != 0) {
+		ExtToolTip::Append_NewLineLater();
+		ExtToolTip::Append(uiName);
 	}
 
-	bool addSpace = false;
 	// append Cost label
-	if (swTypeExt) {
-		const int cost = swTypeExt->Money_Amount;
-		if (cost < 0) {
+	const int cost = pSWExt ? -pSWExt->Money_Amount : pTechno->GetActualCost(HouseClass::Player);
+	if (pTechno || cost > 0) {
+		_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
+			L"%ls%d", Phobos::UI::CostLabel, cost);
+
+		ExtToolTip::Apply_Separator();
+		ExtToolTip::Append(Phobos::wideBuffer);
+		ExtToolTip::Append_SpaceLater();
+	}
+
+	// append PowerBonus label
+	if (pBuilding) {
+		const int Power = pBuilding->PowerBonus - pBuilding->PowerDrain;
+
+		if (Power) {
 			_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
-				L"%ls%d", Phobos::UI::CostLabel, -cost);
-			wcscat_s(ToolTip_ExtendedBuffer, Phobos::wideBuffer);
-			addSpace = true;
+				L" %ls%+d", Phobos::UI::PowerLabel, Power);
+
+			ExtToolTip::Apply_Separator();
+			ExtToolTip::Append_SpaceLater();
+			ExtToolTip::Append(Phobos::wideBuffer);
 		}
 	}
 
 	// append Time label
-	if (long rechargeTime = swType->RechargeTime) {
-
-		int sec = (rechargeTime / 15) % 60;
-		int min = (rechargeTime / 15) / 60;
+	const long rechargeTime = pSW ? pSW->RechargeTime : 0;
+	if (rechargeTime) {
+		const int sec = (rechargeTime / 15) % 60;
+		const int min = (rechargeTime / 15) / 60;
 
 		_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
 			L"%ls%02d:%02d", Phobos::UI::TimeLabel, min, sec);
-		
-		if (addSpace)
-			wcscat_s(ToolTip_ExtendedBuffer, L" ");
 
-		wcscat_s(ToolTip_ExtendedBuffer, Phobos::wideBuffer);
-		addSpace = true;
+		ExtToolTip::Apply_Separator();
+		ExtToolTip::Append_NewLineLater();
+
+		ExtToolTip::Append(Phobos::wideBuffer);
 	}
 
-	// append UIDescription label
-	if (swTypeExt) {
-		const wchar_t* uiDesc = swTypeExt->UIDescription;
+	// append UIDescription 
+	const wchar_t* uiDesc = pSWExt ? pSWExt->UIDescription : TechnoTypeExt::ExtMap.Find(pTechno)->UIDescription;
+	if (uiDesc && uiDesc[0] != 0) {
 		if (uiDesc && wcslen(uiDesc) != 0) {
-			if (addSpace)
-				wcscat_s(ToolTip_ExtendedBuffer, L"\n");
-			
-			wcscat_s(ToolTip_ExtendedBuffer, uiDesc);
+			ExtToolTip::Apply_SeparatorAsNewLine();
+			ExtToolTip::Append(uiDesc);
 		}
 	}
-	
-	ToolTip_ExtendedBuffer[TOOLTIP_BUFFER_LENGTH - 1] = 0;
-	ToolTip_OnSidebar_DrawEx = true;
-	R->EAX(ToolTip_ExtendedBuffer);
+}
 
+// =============================
+// hooks
+
+DEFINE_HOOK(6A9319, ExtendedToolTip_HelpText, 5) {
+	if (!Phobos::UI::ExtendedToolTips) {
+		return 0;
+	}
+
+	GET(const int*, ptr, EAX);
+	auto itemIndex = ptr[22];
+	auto itemType = (AbstractType)ptr[23];
+
+	ExtToolTip::ClearBuffer();
+	ExtToolTip::isCameo = true;
+
+	CreateHelpText(itemType, itemIndex);
+
+	ExtToolTip::UseExtBuffer();
+	R->EAX(Phobos::wideBuffer); // Here you need to pass any non-empty string
 	return 0x6A93DE;
 }
 
-// taken from Ares bugfixes partially
-DEFINE_HOOK(6A9343, TechnoType_ExtendedToolTip, 9)
+DEFINE_HOOK(478E10, CCToolTip__Draw1, 0)
 {
-	GET(TechnoTypeClass*, pThis, ESI);
-	bool hideName = *reinterpret_cast<byte*>(0x884B8C);
-	
-	const wchar_t* uiName = pThis->UIName;
-	int cost = pThis->GetActualCost(HouseClass::Player);
+	GET(CCToolTip*, pThis, ECX);
+	GET_STACK(bool, drawOnSidebar, 4);
 
-	if (Phobos::UI::ExtendedToolTips) {
-		ToolTip_ExtendedBuffer[0] = NULL;
+	if (!drawOnSidebar || ExtToolTip::isCameo) { // !onSidebar or (onSidebar && ExtToolTip::onCameo)
+		ExtToolTip::isCameo = false;
+		ExtToolTip::slaveDraw = false;
+		ExtToolTip::ClearBuffer();
 
-		// append UIName label
-		if (!hideName && uiName && wcslen(uiName) != 0) {
-			wcscat_s(ToolTip_ExtendedBuffer, uiName);
-			wcscat_s(ToolTip_ExtendedBuffer, L"\n");
-		}
-
-		// append Cost label
-		{
-			_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
-				L"%ls%d", Phobos::UI::CostLabel, cost);
-			wcscat_s(ToolTip_ExtendedBuffer, Phobos::wideBuffer);
-		}
-
-		// append PowerBonus label
-		if (pThis->WhatAmI() == AbstractType::BuildingType) {
-			BuildingTypeClass* ObjectAsBuildingType = static_cast<BuildingTypeClass*>(pThis);
-			int Power = ObjectAsBuildingType->PowerBonus - ObjectAsBuildingType->PowerDrain;
-
-			if (Power) {
-				_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
-					L" %ls%+d", Phobos::UI::PowerLabel, Power);
-				wcscat_s(ToolTip_ExtendedBuffer, Phobos::wideBuffer);
-			}
-		}
-
-		// append Time label
-		/*
-		int Time = 0;
-		if (Time) {
-			_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
-				L" %ls%d", Phobos::UI::TimeLabel, Time);
-			wcscat_s(ToolTip_ExtendedBuffer, Phobos::wideBuffer);
-		}
-		*/
-
-		// append UIDescription label
-		const wchar_t* uiDesc = TechnoTypeExt::ExtMap.Find(pThis)->UIDescription;
-		if (uiDesc && wcslen(uiDesc) != 0) {
-			wcscat_s(ToolTip_ExtendedBuffer, L"\n");
-			wcscat_s(ToolTip_ExtendedBuffer, uiDesc);
-		}
-
-		ToolTip_ExtendedBuffer[TOOLTIP_BUFFER_LENGTH - 1] = 0;
-		ToolTip_OnSidebar_DrawEx = true;
-		R->EAX(ToolTip_ExtendedBuffer);
-
-		return 0x6A93DE;
-
-	} else {
-		// "Vanilla" Ares code
-		const wchar_t* formatStr;
-		if (hideName) {
-			formatStr = StringTable::LoadString("TXT_MONEY_FORMAT_1");
-			_snwprintf_s(SidebarClass::TooltipBuffer, SidebarClass::TooltipLength, SidebarClass::TooltipLength - 1,
-				formatStr, cost);
-		}
-		else {
-			formatStr = StringTable::LoadString("TXT_MONEY_FORMAT_2");
-			_snwprintf_s(SidebarClass::TooltipBuffer, SidebarClass::TooltipLength, SidebarClass::TooltipLength - 1,
-				formatStr, uiName, cost);
-		}
-
-		SidebarClass::TooltipBuffer[SidebarClass::TooltipLength - 1] = 0;
-
-		return 0x6A93B2;
+		pThis->Adjust();	//this function re-create CCToolTip
 	}
+
+	if (pThis->manager.ActiveTooltip) {
+		if (!drawOnSidebar) {
+			ExtToolTip::slaveDraw = ExtToolTip::isCameo;
+		}
+		pThis->drawOnSidebar = drawOnSidebar;
+		pThis->Draw2();
+	}
+	return 0x478E25;
 }
 
-DEFINE_HOOK(478EE1, ToolTip_ExtendedBuffer_Draw, 6)
+DEFINE_HOOK(478E4A, CCToolTip__Draw2_SetSurface, 6)
 {
-	if (ToolTip_OnSidebar_DrawEx) {
-		R->EDI(ToolTip_ExtendedBuffer);
+	if (ExtToolTip::slaveDraw) {
+		R->ESI(DSurface::Composite);
+		return 0x478ED3;
 	}
 	return 0;
 }
 
-DEFINE_HOOK(6AC210, ToolTip_ExtendedBuffer_Shutdown, 6)
+DEFINE_HOOK(478F52, CCToolTip__Draw2_SetX, 8)
 {
-	ToolTip_OnSidebar_DrawEx = false;
+	if (ExtToolTip::slaveDraw) {
+		R->EAX(R->EAX() + DSurface::Sidebar->GetWidth());
+	}
 	return 0;
 }
 
-DEFINE_HOOK(724B85, ToolTip_Fix_QWER_bug, 0)
+DEFINE_HOOK(478EE1, CCToolTip__Draw2_SetBuffer, 6)
 {
-	R->ESI(R->ECX());	//mov esi, ecx
-	return ToolTip_OnSidebar_DrawEx ? 0x724B8B : 0x724B90;
+	ExtToolTip::SetBuffer(R);
+	return 0;
 }
 
-//DEFINE_HOOK(478F52, ToolTip_Fix_SidebarWidth, 8)
-//{
-//	R->EBX(R->EBX() - 8);
-//	return 0;
-//}
+DEFINE_HOOK(478EF8, CCToolTip__Draw2_SetWidth, 5)
+{
+	if (ExtToolTip::isCameo) {
+		auto ViewBounds = reinterpret_cast<RectangleStruct*>(0x886FB0);
+		R->EAX(ViewBounds->Width);
+	}
+	return 0;
+}
