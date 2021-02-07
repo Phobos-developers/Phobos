@@ -42,7 +42,7 @@ bool Tactical_IsHighPrioritySelected(TacticalClass* pThis, RECT* rect)
 }
 
 // Reversed from Tactical::Select
-void Tactical_SelectFiltered(TacticalClass* pThis, RECT* rect, bool(__fastcall* check_callback)(ObjectClass*))
+void Tactical_SelectFiltered(TacticalClass* pThis, RECT* rect, bool(__fastcall* check_callback)(ObjectClass*), bool priorityFiltering)
 {
 	Unsorted::MoveFeedback = true;
 
@@ -53,6 +53,13 @@ void Tactical_SelectFiltered(TacticalClass* pThis, RECT* rect, bool(__fastcall* 
 	for (int i = 0; i < pThis->SelectableCount; i++, selected++) {
 		if (Tactical_IsInSelectionRect(pThis, rect, selected)) {
 			TechnoClass* techno = selected->Techno;
+
+			if (priorityFiltering) {
+				auto technoTypeExt = TechnoTypeExt::ExtMap.Find(techno->GetTechnoType());
+
+				if (technoTypeExt->LowSelectionPriority)
+					continue;
+			}
 
 			if (Game::IsTypeSelecting()) {
 				TechnoTypeClass* technoType = techno->GetTechnoType();
@@ -111,7 +118,8 @@ void Tactical_MakeFilteredSelection(TacticalClass* pThis, bool(__fastcall* check
 		rect.left = left;
 		rect.top = top;
 
-		Tactical_SelectFiltered(pThis, &rect, check_callback);
+		bool priorityFiltering = Tactical_IsHighPrioritySelected(pThis, &rect);
+		Tactical_SelectFiltered(pThis, &rect, check_callback, priorityFiltering);
 
 		pThis->Band.left = 0;
 		pThis->Band.top = 0;
