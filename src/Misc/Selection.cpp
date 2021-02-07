@@ -9,6 +9,16 @@
 #include "../Ext/TechnoType/Body.h"
 #include <Unsorted.h>
 
+// Reversed from Is_Selectable, w/o Select call
+bool ObjectClass_IsSelectable(ObjectClass* pThis)
+{
+	HouseClass* owner = pThis->GetOwningHouse();
+
+	return owner && owner->ControlledByPlayer()
+		&& pThis->CanBeSelected() && pThis->CanBeSelectedNow()
+		&& !pThis->InLimbo;
+}
+
 // Reversed from Tactical::Select
 bool Tactical_IsInSelectionRect(TacticalClass* pThis, RECT* rect, TacticalSelectableStruct* selectable)
 {
@@ -30,7 +40,7 @@ bool Tactical_IsHighPrioritySelected(TacticalClass* pThis, RECT* rect)
 	TacticalSelectableStruct* selected = Unsorted::TacticalSelectables;
 
 	for (int i = 0; i < pThis->SelectableCount; i++, selected++) {
-		if (Tactical_IsInSelectionRect(pThis, rect, selected)) {
+		if (Tactical_IsInSelectionRect(pThis, rect, selected) && ObjectClass_IsSelectable(selected->Techno)) {
 			auto technoTypeExt = TechnoTypeExt::ExtMap.Find(selected->Techno->GetTechnoType());
 
 			if (!technoTypeExt->LowSelectionPriority)
@@ -78,7 +88,7 @@ void Tactical_SelectFiltered(TacticalClass* pThis, RECT* rect, bool(__fastcall* 
 					}
 				}
 
-				HouseClass* owner = techno->Owner;
+				HouseClass* owner = techno->GetOwningHouse();
 				if (owner && owner->ControlledByPlayer() && techno->CanBeSelected()
 					&& (techno->WhatAmI() != AbstractType::Building || isDeployedBuilding)) {
 					Unsorted::MoveFeedback = !techno->Select();
