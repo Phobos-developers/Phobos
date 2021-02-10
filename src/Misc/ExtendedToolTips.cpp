@@ -1,12 +1,5 @@
 ﻿#include "ExtendedToolTips.h"
 
-bool ExtToolTip::isCameo = false;
-bool ExtToolTip::slaveDraw = false;
-bool ExtToolTip::_UseExtBuffer = false;
-wchar_t ExtToolTip::_ExtBuffer[TOOLTIP_BUFFER_LENGTH] = L"";
-bool ExtToolTip::addSpace = false;
-bool ExtToolTip::addNewLine = false;
-
 void CreateHelpText(AbstractType itemType, int itemIndex)
 {
 	AbstractTypeClass* pAbstract = nullptr;
@@ -44,8 +37,9 @@ void CreateHelpText(AbstractType itemType, int itemIndex)
 			L"%ls%d", Phobos::UI::CostLabel, cost);
 
 		ExtToolTip::Apply_Separator();
-		ExtToolTip::Append(Phobos::wideBuffer);
 		ExtToolTip::Append_SpaceLater();
+
+		ExtToolTip::Append(Phobos::wideBuffer);
 	}
 
 	// append PowerBonus label
@@ -58,6 +52,7 @@ void CreateHelpText(AbstractType itemType, int itemIndex)
 
 			ExtToolTip::Apply_Separator();
 			ExtToolTip::Append_SpaceLater();
+
 			ExtToolTip::Append(Phobos::wideBuffer);
 		}
 	}
@@ -82,6 +77,7 @@ void CreateHelpText(AbstractType itemType, int itemIndex)
 	if (uiDesc && uiDesc[0] != 0) {
 		if (uiDesc && wcslen(uiDesc) != 0) {
 			ExtToolTip::Apply_SeparatorAsNewLine();
+
 			ExtToolTip::Append(uiDesc);
 		}
 	}
@@ -96,8 +92,8 @@ DEFINE_HOOK(6A9319, ExtendedToolTip_HelpText, 5) {
 	}
 
 	GET(const int*, ptr, EAX);
-	auto itemIndex = ptr[22];
-	auto itemType = (AbstractType)ptr[23];
+	auto const itemIndex = ptr[22];
+	auto const itemType = (AbstractType)ptr[23];
 
 	ExtToolTip::ClearBuffer();
 	ExtToolTip::isCameo = true;
@@ -105,7 +101,7 @@ DEFINE_HOOK(6A9319, ExtendedToolTip_HelpText, 5) {
 	CreateHelpText(itemType, itemIndex);
 
 	ExtToolTip::UseExtBuffer();
-	R->EAX(Phobos::wideBuffer); // Here you need to pass any non-empty string
+	R->EAX(ExtToolTip::pseudoBuff); // Here you need to pass any non-empty string
 	return 0x6A93DE;
 }
 
@@ -150,7 +146,7 @@ DEFINE_HOOK(478EE1, CCToolTip__Draw2_SetBuffer, 6)
 DEFINE_HOOK(478EF8, CCToolTip__Draw2_SetMaxWidth, 5)
 {
 	if (ExtToolTip::isCameo) {
-		auto ViewBounds = reinterpret_cast<RectangleStruct*>(0x886FB0);
+		auto const ViewBounds = reinterpret_cast<RectangleStruct*>(0x886FB0);
 		R->EAX(ViewBounds->Width);
 	}
 	return 0;
@@ -167,10 +163,10 @@ DEFINE_HOOK(478F52, CCToolTip__Draw2_SetX, 8)
 DEFINE_HOOK(478F77, CCToolTip__Draw2_SetY, 6)
 {
 	if (ExtToolTip::isCameo) {
-		auto ViewBounds = reinterpret_cast<RectangleStruct*>(0x886FB0);
+		auto const ViewBounds = reinterpret_cast<RectangleStruct*>(0x886FB0);
 		LEA_STACK(RectangleStruct*, Rect, STACK_OFFS(0x3C, 0x20));
 
-		int maxHeight = ViewBounds->Height - 32;
+		int const maxHeight = ViewBounds->Height - 32;
 
 		if (Rect->Height > maxHeight)
 			Rect->Y += maxHeight - Rect->Height;

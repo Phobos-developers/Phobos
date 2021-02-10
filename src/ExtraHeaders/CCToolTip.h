@@ -38,21 +38,20 @@ struct ToolTipManager
 class CCToolTip
 {
 public:
-	static CCToolTip* Instance;
 	static bool HideName;
-	
-	const void Draw2() const
+
+	const inline void Draw2() const
 	{
 		auto t = &this->manager.ToolTipDraw;
 		PUSH_VAR32(t);
 		THISCALL(0x478E30)
 	}
 
-	const bool Adjust() const
+	const inline bool Adjust() const
 	{
 		THISCALL(0x724AD0)
 	}
-	
+
 	ToolTipManager manager;
 	bool drawOnSidebar;
 	char field_261;

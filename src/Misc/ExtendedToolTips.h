@@ -8,69 +8,69 @@
 #include "../Ext/TechnoType/Body.h"
 #include "../Ext/SWType/Body.h"
 
-#define TOOLTIP_BUFFER_LENGTH 1024
 class ExtToolTip
 {
 public:
-	static inline wchar_t* GetBuffer() {
-		return _UseExtBuffer ? _ExtBuffer : CCToolTip::Instance->manager.ToolTipDraw.HelpText;
-	}
-
 	static inline void ClearBuffer() {
-		_UseExtBuffer = false;
+		_uesExtBuffer = false;
 		_ExtBuffer[0] = NULL;
 	}
 
 	static inline void UseExtBuffer() {
-		_UseExtBuffer = true;
+		_uesExtBuffer = true;
 		_ExtBuffer[TOOLTIP_BUFFER_LENGTH - 1] = NULL;
 	}
 
 	static inline void SetBuffer(REGISTERS* R) {
-		if (ExtToolTip::_UseExtBuffer)
-			R->EDI(ExtToolTip::_ExtBuffer);
+		if (_uesExtBuffer)
+			R->EDI(_ExtBuffer);
 	}
 
 	static inline void Append(const wchar_t* str) {
-		wcscat_s(ExtToolTip::_ExtBuffer, str);
+		wcscat_s(_ExtBuffer, str);
 	}
 
 	static inline void Append_NewLineLater() {
-		addNewLine = true;
+		_addNewLine = true;
 	}
 
 	static inline void Append_SpaceLater() {
-		addSpace = true;
+		_addSpace = true;
 	}
 
 	static void Apply_SeparatorAsNewLine() {
-		if (addNewLine || addSpace) {
-			wcscat_s(ExtToolTip::_ExtBuffer, L"\n");
+		if (_addNewLine || _addSpace) {
+			wcscat_s(_ExtBuffer, L"\n");
 		}
 		Clear_Separator();
 	}
 
 	static void Apply_Separator() {
-		if (addNewLine) {
-			wcscat_s(ExtToolTip::_ExtBuffer, L"\n");
+		if (_addNewLine) {
+			wcscat_s(_ExtBuffer, L"\n");
 		}
-		else if (addSpace) {
-			wcscat_s(ExtToolTip::_ExtBuffer, L" ");
+		else if (_addSpace) {
+			wcscat_s(_ExtBuffer, L" ");
 		}
 		Clear_Separator();
 	}
 
 	static inline void Clear_Separator() {
-		addNewLine = false;
-		addSpace = false;
+		_addNewLine = false;
+		_addSpace = false;
 	}
 
-	static bool isCameo;
-	static bool slaveDraw;
 private:
-	static bool _UseExtBuffer;
-	static wchar_t _ExtBuffer[TOOLTIP_BUFFER_LENGTH];
+	static const int inline TOOLTIP_BUFFER_LENGTH = 1024;
+	static bool inline _uesExtBuffer = false;
+	static wchar_t inline _ExtBuffer[TOOLTIP_BUFFER_LENGTH] = L"";
 
-	static bool addSpace;
-	static bool addNewLine;
+	static bool inline _addSpace = false;
+	static bool inline _addNewLine = false;
+
+public:
+	static const inline wchar_t* pseudoBuff = L"ToolTip";
+
+	static bool inline isCameo = false;
+	static bool inline slaveDraw = false;
 };
