@@ -20,12 +20,14 @@ public:
 		bool HealthBar_Hide;
 		char UIDescriptionLabel[32];
 		const wchar_t* UIDescription;
+		bool LowSelectionPriority;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
 			HealthBar_Hide(false),
 			UIDescriptionLabel(CSF_NONE),
-			UIDescription(L"")
+			UIDescription(L""),
+			LowSelectionPriority(false)
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;

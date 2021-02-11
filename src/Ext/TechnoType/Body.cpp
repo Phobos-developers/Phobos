@@ -24,6 +24,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		this->UIDescription = StringTable::LoadStringA(this->UIDescriptionLabel);
 	else
 		this->UIDescription = L"";
+
+	this->LowSelectionPriority = pINI->ReadBool(pSection, "LowSelectionPriority", this->LowSelectionPriority);
 }
 
 void TechnoTypeExt::ExtData::LoadFromStream(IStream* Stm) {

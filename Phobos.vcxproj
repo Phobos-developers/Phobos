@@ -22,6 +22,7 @@
     <ClCompile Include="src\Ext\WeaponType\DiskLaserRadius.cpp" />
     <ClCompile Include="src\Misc\Savegame.cpp" />
     <ClCompile Include="src\Misc\ExtendedToolTips.cpp" />
+    <ClCompile Include="src\Misc\Selection.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Body.cpp" />
