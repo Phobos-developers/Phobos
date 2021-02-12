@@ -22,13 +22,15 @@ public:
 		char UIDescriptionLabel[32];
 		const wchar_t* UIDescription;
 		bool LowSelectionPriority;
+		char GroupAs[32];
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
 			HealthBar_Hide(false),
 			UIDescriptionLabel(NONE_STR),
 			UIDescription(L""),
-			LowSelectionPriority(false)
+			LowSelectionPriority(false),
+			GroupAs(NONE_STR)
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
@@ -39,6 +41,8 @@ public:
 		virtual void LoadFromStream(IStream* Stm);
 
 		virtual void SaveToStream(IStream* Stm);
+
+		const char* GetSelectionGroupID() const;
 	};
 
 	class ExtContainer final : public Container<TechnoTypeExt> {
@@ -46,6 +50,9 @@ public:
 		ExtContainer();
 		~ExtContainer();
 	};
+
+	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
+	static bool HasSelectionGroupID(ObjectTypeClass* pType, const char* pID);
 
 	static ExtContainer ExtMap;
 };

@@ -26,6 +26,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		this->UIDescription = L"";
 
 	this->LowSelectionPriority = pINI->ReadBool(pSection, "LowSelectionPriority", this->LowSelectionPriority);
+
+	// Ares 0.A
+	pINI->ReadString(pSection, "GroupAs", this->GroupAs, this->GroupAs);
 }
 
 void TechnoTypeExt::ExtData::LoadFromStream(IStream* Stm) {
@@ -110,3 +113,27 @@ DEFINE_HOOK(716123, TechnoTypeClass_LoadFromINI, 5)
 	TechnoTypeExt::ExtMap.LoadFromINI(pItem, pINI);
 	return 0;
 }
+
+
+// Ares 0.A source
+
+const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
+{
+	return IsValidString(this->GroupAs) ? this->GroupAs : this->OwnerObject()->ID;
+}
+
+const char* TechnoTypeExt::GetSelectionGroupID(ObjectTypeClass* pType)
+{
+	if (auto pExt = TechnoTypeExt::ExtMap.Find(static_cast<TechnoTypeClass*>(pType))) {
+		return pExt->GetSelectionGroupID();
+	}
+
+	return pType->ID;
+}
+
+bool TechnoTypeExt::HasSelectionGroupID(ObjectTypeClass* pType, const char* pID)
+{
+	auto id = TechnoTypeExt::GetSelectionGroupID(pType);
+	return (_strcmpi(id, pID) == 0);
+}
+
