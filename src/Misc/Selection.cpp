@@ -125,7 +125,7 @@ void Tactical_MakeFilteredSelection(TacticalClass* pThis, bool(__fastcall* check
 		rect.left = left;
 		rect.top = top;
 
-		bool priorityFiltering = Tactical_IsHighPriorityInRect(pThis, &rect);
+		bool priorityFiltering = Phobos::Config::PrioritySelectionFiltering && Tactical_IsHighPriorityInRect(pThis, &rect);
 		Tactical_SelectFiltered(pThis, &rect, check_callback, priorityFiltering);
 
 		pThis->Band.left = 0;

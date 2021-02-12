@@ -1,13 +1,4 @@
 ﻿#include "../Phobos.h"
-#include <StringTable.h>
-
-const wchar_t* LoadStringOrDefault(char* key, const wchar_t* defaultValue)
-{
-	if (strlen(key) != 0)
-		return StringTable::LoadStringA(key);
-	else
-		return defaultValue;
-}
 
 DEFINE_HOOK(777C41, UI_ApplyAppIcon, 9)
 {
@@ -34,32 +25,3 @@ DEFINE_HOOK(640B8D, LoadingScreen_DisableEmptySpawnPositions, 6)
 //{
 //	return 0x641071;
 //}
-
-DEFINE_HOOK(5FACDF, UIMD_LoadFromINI, 5)
-{
-	CCINIClass* pINI = Phobos::OpenConfig("uimd.ini");
-
-	// LoadingScreen
-	{
-		Phobos::UI::DisableEmptySpawnPositions =
-			pINI->ReadBool("LoadingScreen", "DisableEmptySpawnPositions", false);
-	}
-
-	// ToolTips
-	{ 
-		Phobos::UI::ExtendedToolTips =
-			pINI->ReadBool(TOOLTIPS_SECTION, "ExtendedToolTips", false);
-
-		pINI->ReadString(TOOLTIPS_SECTION, "CostLabel", "", Phobos::readBuffer);
-		Phobos::UI::CostLabel = LoadStringOrDefault(Phobos::readBuffer, L"$");
-
-		pINI->ReadString(TOOLTIPS_SECTION, "PowerLabel", "", Phobos::readBuffer);
-		Phobos::UI::PowerLabel = LoadStringOrDefault(Phobos::readBuffer, L"⚡");
-
-		pINI->ReadString(TOOLTIPS_SECTION, "TimeLabel", "", Phobos::readBuffer);
-		Phobos::UI::TimeLabel = LoadStringOrDefault(Phobos::readBuffer, L"⌚");
-	}
-
-	Phobos::CloseConfig(pINI);
-	return 0;
-}

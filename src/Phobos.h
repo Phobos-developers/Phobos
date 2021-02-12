@@ -2,6 +2,7 @@
 #include <Helpers/Macro.h>
 #include <CCINIClass.h>
 #include "Utilities/Debug.h"
+#include "Utilities/GeneralUtils.h"
 #include "Phobos.version.h"
 
 #define TOOLTIPS_SECTION "ToolTips"
@@ -32,5 +33,12 @@ public:
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;
 		static const wchar_t* TimeLabel;
+	};
+
+	class Config
+	{
+	public:
+		static bool ToolTipDescriptions;
+		static bool PrioritySelectionFiltering;
 	};
 };

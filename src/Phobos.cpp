@@ -1,5 +1,7 @@
-#include <StaticInits.cpp>
+﻿#include <StaticInits.cpp>
 #include <ExtraInstances.hpp>
+#include <CCINIClass.h>
+#include <Unsorted.h>
 
 #include "Phobos.h"
 
@@ -26,6 +28,9 @@ bool Phobos::UI::ExtendedToolTips = false;
 const wchar_t* Phobos::UI::CostLabel = L"";
 const wchar_t* Phobos::UI::PowerLabel = L"";
 const wchar_t* Phobos::UI::TimeLabel = L"";
+
+bool Phobos::Config::ToolTipDescriptions = true;
+bool Phobos::Config::PrioritySelectionFiltering = true;
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
@@ -95,6 +100,39 @@ DEFINE_HOOK(52F639, _YR_CmdLineParse, 5)
 	GET(int, nNumArgs, EDI);
 
 	Phobos::CmdLineParse(ppArgs, nNumArgs);
+	return 0;
+}
+
+DEFINE_HOOK(5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 5)
+{
+	Phobos::Config::ToolTipDescriptions = Unsorted::RA2MDINI->ReadBool("Phobos", "ToolTipDescriptions", true);
+	Phobos::Config::PrioritySelectionFiltering = Unsorted::RA2MDINI->ReadBool("Phobos", "PrioritySelectionFiltering", true);
+
+	CCINIClass* pINI = Phobos::OpenConfig("uimd.ini");
+
+	// LoadingScreen
+	{
+		Phobos::UI::DisableEmptySpawnPositions =
+			pINI->ReadBool("LoadingScreen", "DisableEmptySpawnPositions", false);
+	}
+
+	// ToolTips
+	{
+		Phobos::UI::ExtendedToolTips =
+			pINI->ReadBool(TOOLTIPS_SECTION, "ExtendedToolTips", false);
+
+		pINI->ReadString(TOOLTIPS_SECTION, "CostLabel", NONE_STR, Phobos::readBuffer);
+		Phobos::UI::CostLabel = LoadStringOrDefault(Phobos::readBuffer, L"$");
+
+		pINI->ReadString(TOOLTIPS_SECTION, "PowerLabel", NONE_STR, Phobos::readBuffer);
+		Phobos::UI::PowerLabel = LoadStringOrDefault(Phobos::readBuffer, L"⚡");
+
+		pINI->ReadString(TOOLTIPS_SECTION, "TimeLabel", NONE_STR, Phobos::readBuffer);
+		Phobos::UI::TimeLabel = LoadStringOrDefault(Phobos::readBuffer, L"⌚");
+	}
+
+	Phobos::CloseConfig(pINI);
+
 	return 0;
 }
 

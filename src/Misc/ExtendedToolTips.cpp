@@ -73,12 +73,14 @@ void CreateHelpText(AbstractType itemType, int itemIndex)
 	}
 
 	// append UIDescription
-	const wchar_t* uiDesc = pSWExt ? pSWExt->UIDescription : TechnoTypeExt::ExtMap.Find(pTechno)->UIDescription;
-	if (uiDesc && uiDesc[0] != 0) {
-		if (uiDesc && wcslen(uiDesc) != 0) {
-			ExtToolTip::Apply_SeparatorAsNewLine();
+	if (Phobos::Config::ToolTipDescriptions) {
+		const wchar_t* uiDesc = pSWExt ? pSWExt->UIDescription : TechnoTypeExt::ExtMap.Find(pTechno)->UIDescription;
+		if (uiDesc && uiDesc[0] != 0) {
+			if (uiDesc && wcslen(uiDesc) != 0) {
+				ExtToolTip::Apply_SeparatorAsNewLine();
 
-			ExtToolTip::Append(uiDesc);
+				ExtToolTip::Append(uiDesc);
+			}
 		}
 	}
 }
