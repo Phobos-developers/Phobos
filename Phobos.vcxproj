@@ -35,6 +35,7 @@
     <ClCompile Include="src\Misc\ui.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Upgrade.cpp" />
     <ClCompile Include="src\Utilities\CanTargetFlags.cpp" />
+    <ClCompile Include="src\Utilities\GeneralUtils.cpp" />
     <ClCompile Include="src\Utilities\trim.cpp" />
     <ClCompile Include="src\Misc\vehicle_to_building_mind_control_fix.cpp" />
   </ItemGroup>
@@ -62,6 +63,7 @@
     <ClInclude Include="src\Ext\_Container.hpp" />
     <ClInclude Include="src\Phobos.h" />
     <ClInclude Include="src\Utilities\CanTargetFlags.h" />
+    <ClInclude Include="src\Utilities\GeneralUtils.h" />
     <ClInclude Include="src\Utilities\trim.h" />
     <ClInclude Include="YRpp\GameTextManager.h" />
   </ItemGroup>

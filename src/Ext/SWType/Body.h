@@ -5,6 +5,7 @@
 
 #include "../_Container.hpp"
 #include "../../Phobos.h"
+#include "../../Utilities/GeneralUtils.h"
 
 class SWTypeExt
 {
@@ -21,7 +22,7 @@ public:
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject),
 			Money_Amount(0),
-			UIDescriptionLabel(CSF_NONE),
+			UIDescriptionLabel(NONE_STR),
 			UIDescription(L"")
 		{ }
 

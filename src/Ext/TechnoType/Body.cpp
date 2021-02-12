@@ -20,7 +20,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->HealthBar_Hide = pINI->ReadBool(pSection, "HealthBar.Hide", this->HealthBar_Hide);
 	pINI->ReadString(pSection, "UIDescription", this->UIDescriptionLabel, this->UIDescriptionLabel);
 	
-	if (strlen(this->UIDescriptionLabel) != 0 && _stricmp(this->UIDescriptionLabel, CSF_NONE) != 0)
+	if (IsValidString(this->UIDescriptionLabel))
 		this->UIDescription = StringTable::LoadStringA(this->UIDescriptionLabel);
 	else
 		this->UIDescription = L"";
@@ -33,7 +33,7 @@ void TechnoTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	#include "Serialize.hpp"
 	#undef STM_Process
 
-	if (strlen(this->UIDescriptionLabel) != 0 && _stricmp(this->UIDescriptionLabel, CSF_NONE) != 0)
+	if (IsValidString(this->UIDescriptionLabel))
 		this->UIDescription = StringTable::LoadStringA(this->UIDescriptionLabel);
 	else
 		this->UIDescription = L"";

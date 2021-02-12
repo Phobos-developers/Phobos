@@ -5,6 +5,7 @@
 
 #include "../_Container.hpp"
 #include "../../Phobos.h"
+#include "../../Utilities/GeneralUtils.h"
 
 #include "../../Utilities/Debug.h"
 
@@ -25,7 +26,7 @@ public:
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
 			HealthBar_Hide(false),
-			UIDescriptionLabel(CSF_NONE),
+			UIDescriptionLabel(NONE_STR),
 			UIDescription(L""),
 			LowSelectionPriority(false)
 		{ }
