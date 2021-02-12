@@ -76,11 +76,9 @@ void CreateHelpText(AbstractType itemType, int itemIndex)
 	if (Phobos::Config::ToolTipDescriptions) {
 		const wchar_t* uiDesc = pSWExt ? pSWExt->UIDescription : TechnoTypeExt::ExtMap.Find(pTechno)->UIDescription;
 		if (uiDesc && uiDesc[0] != 0) {
-			if (uiDesc && wcslen(uiDesc) != 0) {
-				ExtToolTip::Apply_SeparatorAsNewLine();
+			ExtToolTip::Apply_SeparatorAsNewLine();
 
-				ExtToolTip::Append(uiDesc);
-			}
+			ExtToolTip::Append(uiDesc);
 		}
 	}
 }
@@ -88,7 +86,10 @@ void CreateHelpText(AbstractType itemType, int itemIndex)
 // =============================
 // hooks
 
-DEFINE_HOOK(6A9319, ExtendedToolTip_HelpText, 5) {
+DEFINE_HOOK(6A9316, ExtendedToolTip_HelpText, 6)
+{
+	ExtToolTip::isCameo = true;
+
 	if (!Phobos::UI::ExtendedToolTips) {
 		return 0;
 	}
@@ -98,7 +99,6 @@ DEFINE_HOOK(6A9319, ExtendedToolTip_HelpText, 5) {
 	auto const itemType = (AbstractType)ptr[23];
 
 	ExtToolTip::ClearBuffer();
-	ExtToolTip::isCameo = true;
 
 	CreateHelpText(itemType, itemIndex);
 
@@ -112,7 +112,7 @@ DEFINE_HOOK(478E10, CCToolTip__Draw1, 0)
 	GET(CCToolTip*, pThis, ECX);
 	GET_STACK(bool, drawOnSidebar, 4);
 
-	if (!drawOnSidebar || ExtToolTip::isCameo) { // !onSidebar or (onSidebar && ExtToolTip::onCameo)
+	if (!drawOnSidebar || ExtToolTip::isCameo) { // !onSidebar or (onSidebar && ExtToolTip::isCameo)
 		ExtToolTip::isCameo = false;
 		ExtToolTip::slaveDraw = false;
 		ExtToolTip::ClearBuffer();
