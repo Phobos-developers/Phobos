@@ -1,12 +1,14 @@
 Release
-yrpp/*
+Debug
 *.vcxproj.user
 *.vcxproj.filters
 *.sdf
 *.suo
-*.sln
 .vs
 .cproject
 .project
+*.aps
 
+Nightly/
 
+DevBuild/
