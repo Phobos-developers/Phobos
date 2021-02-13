@@ -148,8 +148,14 @@ DEFINE_HOOK(478EE1, CCToolTip__Draw2_SetBuffer, 6)
 DEFINE_HOOK(478EF8, CCToolTip__Draw2_SetMaxWidth, 5)
 {
 	if (ExtToolTip::isCameo) {
-		auto const ViewBounds = reinterpret_cast<RectangleStruct*>(0x886FB0);
-		R->EAX(ViewBounds->Width);
+		
+		if (Phobos::UI::MaxToolTipWidth > 0) {
+			R->EAX(Phobos::UI::MaxToolTipWidth);
+		}
+		else {
+			auto const ViewBounds = reinterpret_cast<RectangleStruct*>(0x886FB0);
+			R->EAX(ViewBounds->Width);
+		}
 	}
 	return 0;
 }

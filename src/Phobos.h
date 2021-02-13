@@ -29,6 +29,7 @@ public:
 	public:
 		static bool DisableEmptySpawnPositions;
 		static bool ExtendedToolTips;
+		static int MaxToolTipWidth;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;

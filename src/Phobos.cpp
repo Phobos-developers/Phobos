@@ -25,6 +25,7 @@ const wchar_t* Phobos::VersionDescription = L"Phobos development build #" str(BU
 
 bool Phobos::UI::DisableEmptySpawnPositions = false;
 bool Phobos::UI::ExtendedToolTips = false;
+int Phobos::UI::MaxToolTipWidth = 0;
 const wchar_t* Phobos::UI::CostLabel = L"";
 const wchar_t* Phobos::UI::PowerLabel = L"";
 const wchar_t* Phobos::UI::TimeLabel = L"";
@@ -120,6 +121,9 @@ DEFINE_HOOK(5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 5)
 	{
 		Phobos::UI::ExtendedToolTips =
 			pINI->ReadBool(TOOLTIPS_SECTION, "ExtendedToolTips", false);
+
+		Phobos::UI::MaxToolTipWidth =
+			pINI->ReadInteger(TOOLTIPS_SECTION, "MaxWidth", 0);
 
 		pINI->ReadString(TOOLTIPS_SECTION, "CostLabel", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::CostLabel = LoadStringOrDefault(Phobos::readBuffer, L"$");
