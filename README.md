@@ -25,7 +25,7 @@ You can also get test a nightly version for a specific commit which is built aut
 Credits
 -------
 
-- Belonit aka Gluk-v48, Metadorius aka Kerbiter - project authors
+- Belonit (Gluk-v48), Metadorius (Kerbiter) - project authors
 - misha135n2 - YRpp edits
 - tomsons26, CCHyper - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - Ares developers - YRpp and Syringe which are used, save/load code from Ares; 
@@ -33,7 +33,8 @@ Credits
 - CCHyper - current project logo
 - ZΞPHYɌUS - win/lose themes code
 - ayylmao, SMxReaver, 4SG, FS-21 - help with docs
-- wiktorderelf, Metadorius aka Kerbiter - overhauled Unicode font
+- wiktorderelf, Metadorius (Kerbiter) - overhauled Unicode font
+- Thrifinesma (Uranusian) - mind control range limit implementation
 
 Also thanks to everyone who uses Phobos, tests changes and reports bugs!
 
