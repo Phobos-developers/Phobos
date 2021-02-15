@@ -23,6 +23,7 @@ public:
 		const wchar_t* UIDescription;
 		bool LowSelectionPriority;
 		char GroupAs[32];
+		double MindControlRangeLimit;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
@@ -30,7 +31,8 @@ public:
 			UIDescriptionLabel(NONE_STR),
 			UIDescription(L""),
 			LowSelectionPriority(false),
-			GroupAs(NONE_STR)
+			GroupAs(NONE_STR),
+			MindControlRangeLimit(-1.0)
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
