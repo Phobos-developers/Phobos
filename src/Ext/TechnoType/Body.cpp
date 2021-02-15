@@ -26,6 +26,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		this->UIDescription = L"";
 
 	this->LowSelectionPriority = pINI->ReadBool(pSection, "LowSelectionPriority", this->LowSelectionPriority);
+	this->MindControlRangeLimit = pINI->ReadDouble(pSection, "MindControlRangeLimit", this->MindControlRangeLimit);
 
 	// Ares 0.A
 	pINI->ReadString(pSection, "GroupAs", this->GroupAs, this->GroupAs);
