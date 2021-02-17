@@ -56,8 +56,13 @@ DEFINE_HOOK(48A512, WarheadTypeClass_SplashList, 6)
 	if (!pThis->Conventional) return 0;
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-	if (pWHExt->SplashList.Count) { //WarheadType cannot get Damage(?), so currently random. 
-		R->EAX(pWHExt->SplashList.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->SplashList.Count - 1)));
+	if (pWHExt->SplashList.Count) {
+		GET(int, Damage, ECX);
+		R->EAX(pWHExt->SplashList.GetItem(
+			pThis->EMEffect ?
+			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->SplashList.Count - 1) :
+			std::min(pWHExt->SplashList.Count * 35 - 1, Damage) / 35
+		));
 		return 0x48A5AD;
 	}
 
