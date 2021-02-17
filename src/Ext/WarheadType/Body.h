@@ -20,11 +20,14 @@ public:
 		bool SpySat;
 		bool BigGap;
 		int TransactMoney;
+		char SplashList_Buffer[0x400];
+		DynamicVectorClass<AnimTypeClass*> SplashList;
 
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject),
 			SpySat(false),
 			BigGap(false),
-			TransactMoney(0)
+			TransactMoney(0),
+			SplashList()
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
