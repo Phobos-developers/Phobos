@@ -24,7 +24,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	if (pINI->ReadString(pSection, "SplashList", "", this->SplashList_Buffer)) {
 		char* context = nullptr;
 		for (char* cur = strtok_s(this->SplashList_Buffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context)) {
-			this->SplashList.AddItem(AnimTypeClass::Find(Trim::FullTrim(cur)));
+			if (auto splash = AnimTypeClass::Find(Trim::FullTrim(cur))) this->SplashList.AddItem(splash);
 		}
 	}
 }
