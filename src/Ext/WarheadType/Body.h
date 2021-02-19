@@ -22,12 +22,15 @@ public:
 		int TransactMoney;
 		char SplashList_Buffer[0x400];
 		DynamicVectorClass<AnimTypeClass*> SplashList;
+		bool SplashList_PickRandom;
 
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject),
 			SpySat(false),
 			BigGap(false),
 			TransactMoney(0),
-			SplashList()
+			SplashList_Buffer(""),
+			SplashList(),
+			SplashList_PickRandom(false)
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;

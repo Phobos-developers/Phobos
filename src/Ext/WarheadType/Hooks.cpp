@@ -59,7 +59,7 @@ DEFINE_HOOK(48A512, WarheadTypeClass_SplashList, 6)
 	if (pWHExt->SplashList.Count) {
 		GET(int, Damage, ECX);
 		R->EAX(pWHExt->SplashList.GetItem(
-			pThis->EMEffect ?
+			pWHExt->SplashList_PickRandom ?
 			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->SplashList.Count - 1) :
 			std::min(pWHExt->SplashList.Count * 35 - 1, Damage) / 35
 		));

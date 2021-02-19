@@ -21,11 +21,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->BigGap = pINI->ReadBool(pSection, "BigGap", this->BigGap);
 	this->TransactMoney = pINI->ReadInteger(pSection, "TransactMoney", this->TransactMoney);
 
-	if (pINI->ReadString(pSection, "SplashList", "", this->SplashList_Buffer)) {
+	if (pINI->ReadString(pSection, "SplashList", this->SplashList_Buffer, this->SplashList_Buffer)) {
 		char* context = nullptr;
+		SplashList.Clear();
 		for (char* cur = strtok_s(this->SplashList_Buffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context)) {
 			if (auto splash = AnimTypeClass::Find(Trim::FullTrim(cur))) this->SplashList.AddItem(splash);
 		}
+		this->SplashList_PickRandom = pINI->ReadBool(pSection, "SplashList.PickRandom", this->SplashList_PickRandom);
 	}
 }
 
