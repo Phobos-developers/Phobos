@@ -36,7 +36,7 @@ Credits
 - wiktorderelf, Metadorius (Kerbiter) - overhauled Unicode font
 - Thrifinesma (Uranusian) - mind control range limit and custom warhead splash list implementation
 
-Also thanks to everyone who uses Phobos, tests changes and reports bugs!
+Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](logo-mono.png)) in your client/launcher, [contributing](https://github.com/Phobos-developers/Phobos/wiki/Contributing) or donating to us via links on the right and the `Sponsor` button on top of the repo.
 
 Legal and License
 -----
