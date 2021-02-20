@@ -34,7 +34,7 @@ Credits
 - ZΞPHYɌUS - win/lose themes code
 - ayylmao, SMxReaver, 4SG, FS-21 - help with docs
 - wiktorderelf, Metadorius (Kerbiter) - overhauled Unicode font
-- Thrifinesma (Uranusian) - mind control range limit implementation
+- Thrifinesma (Uranusian) - mind control range limit and custom warhead splash list implementation
 
 Also thanks to everyone who uses Phobos, tests changes and reports bugs!
 
