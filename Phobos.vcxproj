@@ -188,6 +188,7 @@
       <CallingConvention>StdCall</CallingConvention>
       <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4100;4530;4731;4740;</DisableSpecificWarnings>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
