@@ -23,7 +23,6 @@
     <ClCompile Include="src\Misc\Savegame.cpp" />
     <ClCompile Include="src\Misc\ExtendedToolTips.cpp" />
     <ClCompile Include="src\Misc\Selection.cpp" />
-    <ClCompile Include="src\Misc\Stream.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Body.cpp" />
@@ -67,6 +66,11 @@
     <ClInclude Include="src\Utilities\CanTargetFlags.h" />
     <ClInclude Include="src\Utilities\GeneralUtils.h" />
     <ClInclude Include="src\Utilities\Helpers.Alex.h" />
+    <ClInclude Include="src\Utilities\INIParser.h" />
+    <ClInclude Include="src\Utilities\Iterator.h" />
+    <ClInclude Include="src\Utilities\Parser.h" />
+    <ClInclude Include="src\Utilities\Template.h" />
+    <ClInclude Include="src\Utilities\TemplateDef.h" />
     <ClInclude Include="src\Utilities\trim.h" />
     <ClInclude Include="YRpp\GameTextManager.h" />
   </ItemGroup>
