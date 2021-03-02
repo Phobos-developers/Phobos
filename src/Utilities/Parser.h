@@ -170,6 +170,7 @@ public:
 	*/
 	static bool TryParse(const char* pValue, OutType* outValue) {
 		// non-specialized: read AbstractTypes
+		static_assert(!std::is_base_of<AbstractTypeClass, OutType>::value, "OutType should be based on AbstractTypeClass!");
 		if (auto pType = BaseType::Find(pValue)) {
 			if (outValue) {
 				*outValue = pType;

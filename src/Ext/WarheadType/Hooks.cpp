@@ -54,12 +54,12 @@ DEFINE_HOOK(48A512, WarheadTypeClass_SplashList, 6)
 	if (!pThis->Conventional) return 0;
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-	if (pWHExt->SplashList.size()) {
+	if (pWHExt->SplashAnims.size()) {
 		GET(int, Damage, ECX);
-		int idx = pWHExt->SplashList_PickRandom ?
-			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->SplashList.size() - 1) :
-			std::min(pWHExt->SplashList.size() * 35 - 1, (size_t)Damage) / 35;
-		R->EAX<AnimTypeClass*>(pWHExt->SplashList[idx]);
+		int idx = pWHExt->SplashAnims_PickRandom ?
+			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->SplashAnims.size() - 1) :
+			std::min(pWHExt->SplashAnims.size() * 35 - 1, (size_t)Damage) / 35;
+		R->EAX<AnimTypeClass*>(AnimTypeClass::Array->GetItem(pWHExt->SplashAnims[idx]));
 		return 0x48A5AD;
 	}
 	return 0;

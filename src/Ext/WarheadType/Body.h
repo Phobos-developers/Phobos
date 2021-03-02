@@ -21,15 +21,15 @@ public:
 		Valueable<bool> SpySat;
 		Valueable<bool> BigGap;
 		Valueable<int> TransactMoney;
-		ValueableVector<AnimTypeClass*> SplashList;
-		Valueable<bool> SplashList_PickRandom;
+		ValueableIdxVector<AnimTypeClass> SplashAnims;
+		Valueable<bool> SplashAnims_PickRandom;
 
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject),
 			SpySat(false),
 			BigGap(false),
 			TransactMoney(0),
-			SplashList(),
-			SplashList_PickRandom(false)
+			SplashAnims(),
+			SplashAnims_PickRandom(false)
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
