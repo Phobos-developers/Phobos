@@ -1,5 +1,8 @@
 #pragma once
 
+// I don't know who needs it anymore.
+// As templates from Ares has been introduced.
+
 class Trim
 {
 public:
