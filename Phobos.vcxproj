@@ -23,6 +23,7 @@
     <ClCompile Include="src\Misc\Savegame.cpp" />
     <ClCompile Include="src\Misc\ExtendedToolTips.cpp" />
     <ClCompile Include="src\Misc\Selection.cpp" />
+    <ClCompile Include="src\Misc\Stream.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Body.cpp" />
@@ -52,6 +53,7 @@
     <ClInclude Include="src\Ext\WeaponType\Body.h" />
     <ClInclude Include="src\Ext\WeaponType\Serialize.hpp" />
     <ClInclude Include="src\Misc\ExtendedToolTips.h" />
+    <ClInclude Include="src\Misc\Stream.h" />
     <ClInclude Include="src\Phobos.version.h" />
     <ClInclude Include="src\Utilities\Debug.h" />
     <ClInclude Include="src\Ext\BuildingType\Body.h" />
@@ -139,7 +141,7 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <AssemblerListingLocation>$(IntDir)\%(RelativeDir)</AssemblerListingLocation>
       <ObjectFileName>$(IntDir)\%(RelativeDir)</ObjectFileName>
       <CallingConvention>StdCall</CallingConvention>

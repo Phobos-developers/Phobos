@@ -23,6 +23,9 @@ public:
 		char SplashList_Buffer[0x400];
 		DynamicVectorClass<AnimTypeClass*> SplashList;
 		bool SplashList_PickRandom;
+		bool RemoveDisguise;
+		bool RemoveDisguise_AffectAllies;
+		bool RemoveDisguise_CellSpread;
 
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject),
 			SpySat(false),
@@ -30,7 +33,10 @@ public:
 			TransactMoney(0),
 			SplashList_Buffer(""),
 			SplashList(),
-			SplashList_PickRandom(false)
+			SplashList_PickRandom(false),
+			RemoveDisguise(false),
+			RemoveDisguise_AffectAllies(false),
+			RemoveDisguise_CellSpread(false)
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
