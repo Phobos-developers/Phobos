@@ -64,6 +64,7 @@
     <ClInclude Include="src\Ext\_Container.hpp" />
     <ClInclude Include="src\Phobos.h" />
     <ClInclude Include="src\Utilities\CanTargetFlags.h" />
+    <ClInclude Include="src\Utilities\Enum.h" />
     <ClInclude Include="src\Utilities\GeneralUtils.h" />
     <ClInclude Include="src\Utilities\Helpers.Alex.h" />
     <ClInclude Include="src\Utilities\INIParser.h" />

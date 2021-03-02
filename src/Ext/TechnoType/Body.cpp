@@ -28,7 +28,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->LowSelectionPriority = pINI->ReadBool(pSection, "LowSelectionPriority", this->LowSelectionPriority);
 	this->MindControlRangeLimit = pINI->ReadDouble(pSection, "MindControlRangeLimit", this->MindControlRangeLimit);
 
-	// Ares 0.A
+	// Phobos 0.A
 	pINI->ReadString(pSection, "GroupAs", this->GroupAs, this->GroupAs);
 }
 
@@ -116,7 +116,7 @@ DEFINE_HOOK(716123, TechnoTypeClass_LoadFromINI, 5)
 }
 
 
-// Ares 0.A source
+// Phobos 0.A source
 
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
 {

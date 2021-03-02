@@ -18,7 +18,7 @@
 
 #ifdef IS_RELEASE_VER // Release build metadata
 	#define SAVEGAME_ID ((VERSION_MAJOR << 24) | (VERSION_MINOR << 12) | (VERSION_REVISION))
-	#define FILE_DESCRIPTION "Phobos, Ares-compatible YR engine extension"
+	#define FILE_DESCRIPTION "Phobos, Phobos-compatible YR engine extension"
 	#define FILE_VERSION_STR str(VERSION_MAJOR) "." str(VERSION_MINOR) "." str(VERSION_REVISION)
 	#define FILE_VERSION VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION
 	#define PRODUCT_VERSION "Release build"
