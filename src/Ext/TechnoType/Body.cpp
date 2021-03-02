@@ -16,37 +16,33 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		return;
 	}
 
-	this->Deployed_RememberTarget = pINI->ReadBool(pSection, "Deployed.RememberTarget", this->Deployed_RememberTarget);
-	this->HealthBar_Hide = pINI->ReadBool(pSection, "HealthBar.Hide", this->HealthBar_Hide);
-	pINI->ReadString(pSection, "UIDescription", this->UIDescriptionLabel, this->UIDescriptionLabel);
-	
-	if (IsValidString(this->UIDescriptionLabel))
-		this->UIDescription = StringTable::LoadStringA(this->UIDescriptionLabel);
-	else
-		this->UIDescription = L"";
+	INI_EX exINI(pINI);
 
-	this->LowSelectionPriority = pINI->ReadBool(pSection, "LowSelectionPriority", this->LowSelectionPriority);
-	this->MindControlRangeLimit = pINI->ReadDouble(pSection, "MindControlRangeLimit", this->MindControlRangeLimit);
-
+	this->Deployed_RememberTarget.Read(exINI, pSection, "Deployed.RememberTarget");
+	this->HealthBar_Hide.Read(exINI, pSection, "HealthBar.Hide");
+	this->UIDescription.Read(exINI, pSection, "UIDescription");
+	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
+	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
 	// Phobos 0.A
-	pINI->ReadString(pSection, "GroupAs", this->GroupAs, this->GroupAs);
+	this->GroupAs.Read(pINI, "GroupAs", this->GroupAs, this->GroupAs);
 }
 
 void TechnoTypeExt::ExtData::LoadFromStream(IStream* Stm) {
-	#define STM_Process(A) Stm->Read(&A, sizeof(A), 0);
-	#include "Serialize.hpp"
-	#undef STM_Process
-
-	if (IsValidString(this->UIDescriptionLabel))
-		this->UIDescription = StringTable::LoadStringA(this->UIDescriptionLabel);
-	else
-		this->UIDescription = L"";
+	this->Deployed_RememberTarget.Load(Stm);
+	this->HealthBar_Hide.Load(Stm);
+	this->UIDescription.Load(Stm);
+	this->LowSelectionPriority.Load(Stm);
+	this->MindControlRangeLimit.Load(Stm);
+	PhobosStreamReader::Process(Stm, this->GroupAs);
 }
 
 void TechnoTypeExt::ExtData::SaveToStream(IStream* Stm) {
-	#define STM_Process(A) Stm->Write(&A, sizeof(A), 0);
-	#include "Serialize.hpp"
-	#undef STM_Process
+	this->Deployed_RememberTarget.Save(Stm);
+	this->HealthBar_Hide.Save(Stm);
+	this->UIDescription.Save(Stm);
+	this->LowSelectionPriority.Save(Stm);
+	this->MindControlRangeLimit.Save(Stm);
+	PhobosStreamWriter::Process(Stm, this->GroupAs);
 }
 
 // =============================

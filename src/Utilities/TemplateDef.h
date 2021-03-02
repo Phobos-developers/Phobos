@@ -37,6 +37,7 @@
 #include "Template.h"
 #include "Enum.h"
 #include "INIParser.h"
+#include "Constructs.h"
 
 #include <StringTable.h>
 #include <InfantryTypeClass.h>
@@ -145,6 +146,15 @@ namespace detail {
 		}
 		else if (!parser.empty()) {
 			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid R,G,B color");
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<CSFText>(CSFText& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
+		if (parser.ReadString(pSection, pKey)) {
+			value = parser.value();
+			return true;
 		}
 		return false;
 	}

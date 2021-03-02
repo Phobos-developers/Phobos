@@ -24,8 +24,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->TransactMoney.Read(exINI, pSection, "TransactMoney");
 	this->SplashList.Read(exINI, pSection, "SplashList");
 	this->SplashList_PickRandom.Read(exINI, pSection, "SplashList.PickRandom");
-
-	Debug::Log("[Phobos] %s %d\n", pSection, this->SpySat);
 }
 
 void WarheadTypeExt::ExtData::LoadFromStream(IStream* Stm) {

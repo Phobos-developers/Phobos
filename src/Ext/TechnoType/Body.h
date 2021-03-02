@@ -8,6 +8,7 @@
 #include "../../Utilities/GeneralUtils.h"
 
 #include "../../Utilities/Debug.h"
+#include "../../Utilities/TemplateDef.h"
 
 class TechnoTypeExt
 {
@@ -17,19 +18,18 @@ public:
 	class ExtData final : public Extension<TechnoTypeClass>
 	{
 	public:
-		bool Deployed_RememberTarget;
-		bool HealthBar_Hide;
-		char UIDescriptionLabel[32];
-		const wchar_t* UIDescription;
-		bool LowSelectionPriority;
-		char GroupAs[32];
-		double MindControlRangeLimit;
+		
+		Valueable<bool> Deployed_RememberTarget;
+		Valueable<bool> HealthBar_Hide;
+		Valueable<CSFText> UIDescription;
+		Valueable<bool> LowSelectionPriority;
+		PhobosFixedString<0x20> GroupAs;
+		Valueable<double> MindControlRangeLimit;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
 			HealthBar_Hide(false),
-			UIDescriptionLabel(NONE_STR),
-			UIDescription(L""),
+			UIDescription(),
 			LowSelectionPriority(false),
 			GroupAs(NONE_STR),
 			MindControlRangeLimit(-1.0)
