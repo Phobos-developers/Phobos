@@ -5,6 +5,9 @@
 #include <MapClass.h>
 #include "Body.h"
 #include <ScenarioClass.h>
+#include <InfantryClass.h>
+
+#include "../../Utilities/Helpers.Alex.h"
 
 void ReshroudMapForOpponents(HouseClass* pThisHouse) {
 	for (auto pOtherHouse : *HouseClass::Array) {
@@ -24,7 +27,7 @@ void ReshroudMapForOpponents(HouseClass* pThisHouse) {
 DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 {
 	GET(BulletClass * const, pThis, ESI);
-	//GET_BASE(const CoordStruct * const, pCoordsDetonation, 0x8);
+	GET_BASE(const CoordStruct * const, pCoordsDetonation, 0x8);
 
 	auto const pWH = pThis->WH;
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
@@ -42,6 +45,32 @@ DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 
 		if (pWHExt->TransactMoney != 0) {
 			pThisHouse->TransactMoney(pWHExt->TransactMoney);
+		}
+
+		if (pWHExt->RemoveDisguise) {
+			auto applyRemoveDisguiseToInf = [&pWHExt, &pThisHouse](AbstractClass* pTechno)
+			{
+				if (pTechno->WhatAmI() == AbstractType::Infantry)
+				{
+					auto pInf = abstract_cast<InfantryClass*>(pTechno);
+					if (pInf->IsDisguised())
+					{
+						bool bIsAlliedWith = pThisHouse->IsAlliedWith(pInf);
+						if (pWHExt->RemoveDisguise_AffectAllies || (!pWHExt->RemoveDisguise_AffectAllies && !bIsAlliedWith))
+							pInf->ClearDisguise();
+					}
+				}
+			};
+			
+			auto coords = *pCoordsDetonation;
+			auto CellSpread = pWH->CellSpread;
+			if (pWHExt->RemoveDisguise_ApplyCellSpread && CellSpread) {
+				const auto items = Helpers::Alex::getCellSpreadItems(coords, CellSpread, true);
+				for (auto member : items)
+					applyRemoveDisguiseToInf(member);
+			}
+			else
+				applyRemoveDisguiseToInf(pThis->Target);
 		}
 	}
 

@@ -23,13 +23,19 @@ public:
 		Valueable<int> TransactMoney;
 		ValueableVector<AnimTypeClass*> SplashList;
 		Valueable<bool> SplashList_PickRandom;
+		Valueable<bool> RemoveDisguise;
+		Valueable<bool> RemoveDisguise_AffectAllies;
+		Valueable<bool> RemoveDisguise_ApplyCellSpread;
 
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject),
 			SpySat(false),
 			BigGap(false),
 			TransactMoney(0),
 			SplashList(),
-			SplashList_PickRandom(false)
+			SplashList_PickRandom(false),
+			RemoveDisguise(false),
+			RemoveDisguise_AffectAllies(false),
+			RemoveDisguise_ApplyCellSpread(false)
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
