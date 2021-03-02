@@ -34,7 +34,7 @@
     <ClCompile Include="src\Misc\pcx.cpp" />
     <ClCompile Include="src\Misc\ui.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Upgrade.cpp" />
-    <ClCompile Include="src\Utilities\CanTargetFlags.cpp" />
+    <ClCompile Include="src\Utilities\EnumFunctions.cpp" />
     <ClCompile Include="src\Utilities\GeneralUtils.cpp" />
     <ClCompile Include="src\Utilities\trim.cpp" />
     <ClCompile Include="src\Misc\vehicle_to_building_mind_control_fix.cpp" />
@@ -56,15 +56,14 @@
     <ClInclude Include="src\Phobos.version.h" />
     <ClInclude Include="src\Utilities\Debug.h" />
     <ClInclude Include="src\Ext\BuildingType\Body.h" />
-    <ClInclude Include="src\Ext\BuildingType\Serialize.hpp" />
     <ClInclude Include="src\Ext\Building\Body.h" />
     <ClInclude Include="src\Ext\Building\Serialize.hpp" />
     <ClInclude Include="src\Ext\WarheadType\Body.h" />
     <ClInclude Include="src\Ext\WarheadType\Serialize.hpp" />
     <ClInclude Include="src\Ext\_Container.hpp" />
     <ClInclude Include="src\Phobos.h" />
-    <ClInclude Include="src\Utilities\CanTargetFlags.h" />
     <ClInclude Include="src\Utilities\Enum.h" />
+    <ClInclude Include="src\Utilities\EnumFunctions.h" />
     <ClInclude Include="src\Utilities\GeneralUtils.h" />
     <ClInclude Include="src\Utilities\Helpers.Alex.h" />
     <ClInclude Include="src\Utilities\INIParser.h" />

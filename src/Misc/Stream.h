@@ -14,6 +14,7 @@ public:
         if (SUCCEEDED(Stm->Read(&value, sizeof T, 0)))
             return true;
         FatalExit(114514);
+        return false;
     }
     
     template<typename T>
@@ -22,6 +23,7 @@ public:
         if (SUCCEEDED(Stm->Read(&value, nSize, 0)))
             return true;
         FatalExit(114514);
+        return false;
     }
 
     template<typename T>
@@ -56,8 +58,6 @@ private:
     static char StreamBuffer[0x400];
 };
 
-char PhobosStreamReader::StreamBuffer[0x400];
-
 class PhobosStreamWriter
 {
 public:
@@ -67,6 +67,7 @@ public:
         if (SUCCEEDED(Stm->Write(&value, sizeof T, 0)))
             return true;
         FatalExit(1919810);
+        return false;
     }
 
     template<typename T>
@@ -75,6 +76,7 @@ public:
         if (SUCCEEDED(Stm->Write(&value, nSize, 0)))
             return true;
         FatalExit(1919810);
+        return false;
     }
 
     template<typename T>

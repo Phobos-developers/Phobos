@@ -2,19 +2,20 @@
 #include <BuildingClass.h>
 #include <BuildingTypeClass.h>
 #include <HouseClass.h>
-#include "../../Utilities/CanTargetFlags.h"
+#include "../../Utilities/EnumFunctions.h"
 #include "Body.h"
 
 bool CanUpgrade(BuildingClass* building, BuildingTypeClass* upgrade, HouseClass* upgradeOwner) {
 	auto extUpgrade = BuildingTypeExt::ExtMap.Find(upgrade);
-	if (CanTargetHouse(extUpgrade->PowersUp_Owner, upgradeOwner, building->Owner)) {
+	if (EnumFunctions::CanTargetHouse(extUpgrade->PowersUp_Owner, upgradeOwner, building->Owner)) {
 		// PowersUpBuilding
 		if (_stricmp(building->Type->ID, upgrade->PowersUpBuilding) == 0)
 			return true;
 
 		// PowersUp.Buildings
-		for (int i = 0; i < extUpgrade->PowersUp_Buildings.Count; i++) {
-			if (_stricmp(building->Type->ID, extUpgrade->PowersUp_Buildings.GetItem(i)) == 0)
+		for (auto& powerup_idx : extUpgrade->PowersUp_Buildings)
+		{
+			if (_stricmp(building->Type->ID, BuildingTypeClass::Array->GetItem(powerup_idx)->ID) == 0)
 				return true;
 		}
 	}

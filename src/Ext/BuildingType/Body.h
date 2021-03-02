@@ -8,7 +8,7 @@
 
 #include "../../Utilities/Debug.h"
 
-#include "../../Utilities/CanTargetFlags.h"
+#include "../../Utilities/TemplateDef.h"
 
 class BuildingTypeExt
 {
@@ -18,11 +18,8 @@ public:
 	class ExtData final : public Extension<BuildingTypeClass>
 	{
 	public:
-
-		CanTargetFlags PowersUp_Owner;
-
-		char PowersUp_Buildings_buff[1024];
-		DynamicVectorClass<char*> PowersUp_Buildings;
+		Valueable<CanTargetFlags> PowersUp_Owner;
+		ValueableIdxVector<BuildingTypeClass> PowersUp_Buildings;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject),
 			PowersUp_Owner(CanTargetFlags::Self),
