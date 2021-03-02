@@ -23,7 +23,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
 	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
-	// Phobos 0.A
+	// Ares 0.A
 	this->GroupAs.Read(pINI, "GroupAs", this->GroupAs, this->GroupAs);
 }
 
@@ -112,7 +112,7 @@ DEFINE_HOOK(716123, TechnoTypeClass_LoadFromINI, 5)
 }
 
 
-// Phobos 0.A source
+// Ares 0.A source
 
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
 {
