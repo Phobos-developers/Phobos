@@ -21,7 +21,7 @@ public:
 		Valueable<bool> SpySat;
 		Valueable<bool> BigGap;
 		Valueable<int> TransactMoney;
-		ValueableIdxVector<AnimTypeClass> SplashList;
+		ValueableVector<AnimTypeClass*> SplashList;
 		Valueable<bool> SplashList_PickRandom;
 
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject),
