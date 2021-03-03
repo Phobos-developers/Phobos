@@ -2,11 +2,28 @@
 
 #include <CCINIClass.h>
 #include <WarheadTypeClass.h>
+#include <CellClass.h>
 
 #include "../_Container.hpp"
 #include "../../Phobos.h"
 
 #include "../../Utilities/Debug.h"
+
+enum class WarheadTarget : unsigned char {
+	None = 0x0,
+	Land = 0x1,
+	Water = 0x2,
+	NoContent = 0x4,
+	Infantry = 0x8,
+	Unit = 0x10,
+	Building = 0x20,
+
+	All = 0xFF,
+	AllCells = Land | Water,
+	AllTechnos = Infantry | Unit | Building,
+	AllContents = NoContent | AllTechnos
+};
+MAKE_ENUM_FLAGS(WarheadTarget);
 
 class WarheadTypeExt
 {
@@ -27,8 +44,9 @@ public:
 		int CritDamage;
 		float CritSpread;
 		float CritChance;
-		char CritAffects[0x100];
 		char CritAnimsBuffer[0x100];
+		char CritAffectsBuffer[0x100];
+		WarheadTarget CritAffects;
 		DynamicVectorClass<AnimTypeClass*> CritAnims;
 
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject),
@@ -42,12 +60,14 @@ public:
 			CritDamage(0),
 			CritSpread(0.0),
 			CritChance(0.0),
-			CritAffects(""),
+			CritAffects(WarheadTarget::None),
 			CritAnimsBuffer(""),
+			CritAffectsBuffer(""),
 			CritAnims()
 		{ }
 
 		void ApplyCrit(const CoordStruct& coords, TechnoClass* const Owner);
+		bool IsCellEligible(CellClass* const pCell, WarheadTarget allowed) noexcept;
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;
@@ -66,5 +86,5 @@ public:
 	};
 
 	static ExtContainer ExtMap;
-	static bool CanAffectTarget(TechnoClass* pTarget, HouseClass* pSourceHouse, WarheadTypeClass* pWarhead);
+	static bool CanAffectTarget(TechnoClass* const pTarget, HouseClass* const pSourceHouse, WarheadTypeClass* const pWarhead);
 };

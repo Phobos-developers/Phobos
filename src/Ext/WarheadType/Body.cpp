@@ -36,6 +36,10 @@ void WarheadTypeExt::ExtData::ApplyCrit(const CoordStruct& coords, TechnoClass* 
 				continue;
 			}
 
+			if (!IsCellEligible(curTechno->GetCell(), this->CritAffects)) {
+				continue;
+			}
+
 			auto damage = this->CritDamage;
 			curTechno->ReceiveDamage(&damage, 0, pWH, Owner, false, false, Owner->Owner);
 
@@ -49,7 +53,23 @@ void WarheadTypeExt::ExtData::ApplyCrit(const CoordStruct& coords, TechnoClass* 
 	}
 }
 
-bool WarheadTypeExt::CanAffectTarget(TechnoClass* const pTarget, HouseClass* const pSourceHouse, WarheadTypeClass* const pWarhead) {
+bool WarheadTypeExt::ExtData::IsCellEligible(CellClass* const pCell, WarheadTarget allowed) noexcept
+{
+	if (allowed & WarheadTarget::AllCells) {
+		if (pCell->LandType == LandType::Water) {
+			// check whether it supports water
+			return (allowed & WarheadTarget::Water) != WarheadTarget::None;
+		}
+		else {
+			// check whether it supports non-water
+			return (allowed & WarheadTarget::Land) != WarheadTarget::None;
+		}
+	}
+	return true;
+}
+
+bool WarheadTypeExt::CanAffectTarget(TechnoClass* const pTarget, HouseClass* const pSourceHouse, WarheadTypeClass* const pWarhead)
+{
 	if (pSourceHouse && pTarget && pWarhead) {
 		// apply AffectsAllies if owner and target house are allied
 		if (pSourceHouse->IsAlliedWith(pTarget->Owner)) {
@@ -82,7 +102,36 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->CritDamage = pINI->ReadInteger(pSection, "CritDamage", this->CritDamage);
 	this->CritSpread = pINI->ReadDouble(pSection, "CritSpread", this->CritSpread);
 	this->CritChance = pINI->ReadDouble(pSection, "CritChance", this->CritChance);
-	pINI->ReadString(pSection, "CritAffects", this->CritAffects, this->CritAffects);
+
+	if (pINI->ReadString(pSection, "CritAffects", "all", this->CritAffectsBuffer)) {
+		auto parsed = WarheadTarget::None;
+
+		char* context = nullptr;
+		for (auto cur = strtok_s(this->CritAffectsBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context)) {
+			if (!_strcmpi(cur, "land")) {
+				parsed |= WarheadTarget::Land;
+			}
+			else if (!_strcmpi(cur, "water")) {
+				parsed |= WarheadTarget::Water;
+			}
+			else if (!_strcmpi(cur, "empty")) {
+				parsed |= WarheadTarget::NoContent;
+			}
+			else if (!_strcmpi(cur, "infantry")) {
+				parsed |= WarheadTarget::Infantry;
+			}
+			else if (!_strcmpi(cur, "units")) {
+				parsed |= WarheadTarget::Unit;
+			}
+			else if (!_strcmpi(cur, "buildings")) {
+				parsed |= WarheadTarget::Building;
+			}
+			else if (!_strcmpi(cur, "all")) {
+				parsed |= WarheadTarget::All;
+			}
+		}
+		this->CritAffects = parsed;
+	}
 
 	if (pINI->ReadString(pSection, "CritAnims", this->CritAnimsBuffer, this->CritAnimsBuffer)) {
 		char* context = nullptr;
@@ -107,6 +156,36 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 void WarheadTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	#define STM_Process(A) Stm->Read(&A, sizeof(A), 0);
 	#include "Serialize.hpp"
+
+	if (this->CritAffectsBuffer[0]) {
+		auto parsed = WarheadTarget::None;
+
+		char* context = nullptr;
+		for (auto cur = strtok_s(this->CritAffectsBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context)) {
+			if (!_strcmpi(cur, "land")) {
+				parsed |= WarheadTarget::Land;
+			}
+			else if (!_strcmpi(cur, "water")) {
+				parsed |= WarheadTarget::Water;
+			}
+			else if (!_strcmpi(cur, "empty")) {
+				parsed |= WarheadTarget::NoContent;
+			}
+			else if (!_strcmpi(cur, "infantry")) {
+				parsed |= WarheadTarget::Infantry;
+			}
+			else if (!_strcmpi(cur, "units")) {
+				parsed |= WarheadTarget::Unit;
+			}
+			else if (!_strcmpi(cur, "buildings")) {
+				parsed |= WarheadTarget::Building;
+			}
+			else if (!_strcmpi(cur, "all")) {
+				parsed |= WarheadTarget::All;
+			}
+		}
+		this->CritAffects = parsed;
+	}
 
 	if (this->CritAnimsBuffer[0])
 	{

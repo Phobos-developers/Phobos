@@ -8,4 +8,5 @@ STM_Process(this->CritSpread)
 STM_Process(this->CritChance)
 STM_Process(this->CritAffects)
 STM_Process(this->CritAnimsBuffer)
+STM_Process(this->CritAffectsBuffer)
 
