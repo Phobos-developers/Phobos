@@ -36,6 +36,7 @@
     <ClCompile Include="src\Ext\BuildingType\Upgrade.cpp" />
     <ClCompile Include="src\Utilities\CanTargetFlags.cpp" />
     <ClCompile Include="src\Utilities\GeneralUtils.cpp" />
+    <ClCompile Include="src\Utilities\Helpers.Alex.h" />
     <ClCompile Include="src\Utilities\trim.cpp" />
     <ClCompile Include="src\Misc\vehicle_to_building_mind_control_fix.cpp" />
   </ItemGroup>

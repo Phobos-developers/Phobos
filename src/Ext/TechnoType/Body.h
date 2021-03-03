@@ -24,6 +24,7 @@ public:
 		bool LowSelectionPriority;
 		char GroupAs[32];
 		double MindControlRangeLimit;
+		bool ImmuneToCrit;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
@@ -32,7 +33,8 @@ public:
 			UIDescription(L""),
 			LowSelectionPriority(false),
 			GroupAs(NONE_STR),
-			MindControlRangeLimit(-1.0)
+			MindControlRangeLimit(-1.0),
+			ImmuneToCrit(false)
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;

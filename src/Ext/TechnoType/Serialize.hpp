@@ -4,4 +4,5 @@ STM_Process(this->UIDescriptionLabel)
 STM_Process(this->LowSelectionPriority)
 STM_Process(this->GroupAs)
 STM_Process(this->MindControlRangeLimit)
+STM_Process(this->ImmuneToCrit)
 

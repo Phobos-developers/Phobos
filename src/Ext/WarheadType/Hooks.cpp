@@ -24,7 +24,7 @@ void ReshroudMapForOpponents(HouseClass* pThisHouse) {
 DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 {
 	GET(BulletClass * const, pThis, ESI);
-	//GET_BASE(const CoordStruct * const, pCoordsDetonation, 0x8);
+	GET_BASE(CoordStruct* const, pCoordsDetonation, 0x8);
 
 	auto const pWH = pThis->WH;
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
@@ -43,6 +43,10 @@ DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 		if (pWHExt->TransactMoney != 0) {
 			pThisHouse->TransactMoney(pWHExt->TransactMoney);
 		}
+	}
+
+	if (pWHExt->CritChance) {
+		pWHExt->ApplyCrit(*pCoordsDetonation, pThis->Owner);
 	}
 
 	return 0;

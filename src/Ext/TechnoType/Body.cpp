@@ -18,6 +18,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 
 	this->Deployed_RememberTarget = pINI->ReadBool(pSection, "Deployed.RememberTarget", this->Deployed_RememberTarget);
 	this->HealthBar_Hide = pINI->ReadBool(pSection, "HealthBar.Hide", this->HealthBar_Hide);
+	this->ImmuneToCrit = pINI->ReadBool(pSection, "ImmuneToCrit", this->ImmuneToCrit);
 	pINI->ReadString(pSection, "UIDescription", this->UIDescriptionLabel, this->UIDescriptionLabel);
 	
 	if (IsValidString(this->UIDescriptionLabel))
