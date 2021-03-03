@@ -35,7 +35,7 @@ public:
 			SplashList_PickRandom(false),
 			RemoveDisguise(false),
 			RemoveDisguise_AffectAllies(false),
-			RemoveDisguise_ApplyCellSpread(false)
+			RemoveDisguise_ApplyCellSpread(true)
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
