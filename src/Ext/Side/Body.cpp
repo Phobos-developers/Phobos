@@ -46,7 +46,7 @@ void SideExt::ExtData::LoadFromStream(IStream* Stm) {
 	this->IngameScore_LoseTheme.Load(Stm);
 }
 
-void SideExt::ExtData::SaveToStream(IStream* Stm) {
+void SideExt::ExtData::SaveToStream(IStream* Stm) const {
 	this->ArrayIndex.Save(Stm);
 	this->Sidebar_GDIPositions.Save(Stm);
 	this->IngameScore_WinTheme.Save(Stm);

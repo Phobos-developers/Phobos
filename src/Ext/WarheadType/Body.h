@@ -45,7 +45,7 @@ public:
 
 		virtual void LoadFromStream(IStream* Stm);
 
-		virtual void SaveToStream(IStream* Stm);
+		virtual void SaveToStream(IStream* Stm) const;
 	};
 
 	static void ReshroudMapForOpponents(HouseClass* pThisHouse);

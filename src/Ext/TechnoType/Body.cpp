@@ -36,7 +36,7 @@ void TechnoTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	PhobosStreamReader::Process(Stm, this->GroupAs);
 }
 
-void TechnoTypeExt::ExtData::SaveToStream(IStream* Stm) {
+void TechnoTypeExt::ExtData::SaveToStream(IStream* Stm) const {
 	this->Deployed_RememberTarget.Save(Stm);
 	this->HealthBar_Hide.Save(Stm);
 	this->UIDescription.Save(Stm);

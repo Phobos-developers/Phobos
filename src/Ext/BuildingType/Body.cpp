@@ -28,7 +28,7 @@ void BuildingTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	this->PowersUp_Buildings.Load(Stm);
 }
 
-void BuildingTypeExt::ExtData::SaveToStream(IStream* Stm) {
+void BuildingTypeExt::ExtData::SaveToStream(IStream* Stm) const {
 	this->PowersUp_Owner.Save(Stm);
 	this->PowersUp_Buildings.Save(Stm);
 }

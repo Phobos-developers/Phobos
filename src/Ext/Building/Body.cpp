@@ -11,7 +11,7 @@ void BuildingExt::ExtData::LoadFromStream(IStream* Stm) {
 
 }
 
-void BuildingExt::ExtData::SaveToStream(IStream* Stm) {
+void BuildingExt::ExtData::SaveToStream(IStream* Stm) const {
 
 }
 

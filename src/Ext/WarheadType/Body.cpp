@@ -39,7 +39,7 @@ void WarheadTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	this->RemoveDisguise_ApplyCellSpread.Load(Stm);
 }
 
-void WarheadTypeExt::ExtData::SaveToStream(IStream* Stm) {
+void WarheadTypeExt::ExtData::SaveToStream(IStream* Stm) const {
 	this->SpySat.Save(Stm);
 	this->BigGap.Save(Stm);
 	this->TransactMoney.Save(Stm);

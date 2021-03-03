@@ -33,7 +33,7 @@ public:
 
 		virtual void LoadFromStream(IStream* Stm);
 
-		virtual void SaveToStream(IStream* Stm);
+		virtual void SaveToStream(IStream* Stm) const;
 	};
 
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);

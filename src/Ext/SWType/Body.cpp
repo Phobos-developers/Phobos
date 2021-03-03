@@ -26,7 +26,7 @@ void SWTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	this->UIDescription.Load(Stm);
 }
 
-void SWTypeExt::ExtData::SaveToStream(IStream* Stm) {
+void SWTypeExt::ExtData::SaveToStream(IStream* Stm) const {
 	this->Money_Amount.Save(Stm);
 	this->UIDescription.Save(Stm);
 }

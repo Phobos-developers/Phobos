@@ -25,7 +25,7 @@ void WeaponTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	this->DiskLaser_Circumference.Load(Stm);
 }
 
-void WeaponTypeExt::ExtData::SaveToStream(IStream* Stm) {
+void WeaponTypeExt::ExtData::SaveToStream(IStream* Stm) const {
 	this->DiskLaser_Radius.Save(Stm);
 	this->DiskLaser_Circumference.Save(Stm);
 }
