@@ -23,6 +23,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->TransactMoney.Read(exINI, pSection, "TransactMoney");
 	this->SplashList.Read(exINI, pSection, "SplashList");
 	this->SplashList_PickRandom.Read(exINI, pSection, "SplashList.PickRandom");
+	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
+	this->RemoveDisguise_AffectAllies.Read(exINI, pSection, "RemoveDisguise.AffectAllies");
+	this->RemoveDisguise_ApplyCellSpread.Read(exINI, pSection, "RemoveDisguise.ApplyCellSpread");
 }
 
 void WarheadTypeExt::ExtData::LoadFromStream(IStream* Stm) {
@@ -31,6 +34,9 @@ void WarheadTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	this->TransactMoney.Load(Stm);
 	this->SplashList.Load(Stm);
 	this->SplashList_PickRandom.Load(Stm);
+	this->RemoveDisguise.Load(Stm);
+	this->RemoveDisguise_AffectAllies.Load(Stm);
+	this->RemoveDisguise_ApplyCellSpread.Load(Stm);
 }
 
 void WarheadTypeExt::ExtData::SaveToStream(IStream* Stm) {
@@ -39,6 +45,9 @@ void WarheadTypeExt::ExtData::SaveToStream(IStream* Stm) {
 	this->TransactMoney.Save(Stm);
 	this->SplashList.Save(Stm);
 	this->SplashList_PickRandom.Save(Stm);
+	this->RemoveDisguise.Save(Stm);
+	this->RemoveDisguise_AffectAllies.Save(Stm);
+	this->RemoveDisguise_ApplyCellSpread.Save(Stm);
 }
 
 // =============================
