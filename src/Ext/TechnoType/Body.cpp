@@ -116,7 +116,7 @@ DEFINE_HOOK(716123, TechnoTypeClass_LoadFromINI, 5)
 
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
 {
-	return IsValidString(this->GroupAs) ? this->GroupAs : this->OwnerObject()->ID;
+	return GeneralUtils::IsValidString(this->GroupAs) ? this->GroupAs : this->OwnerObject()->ID;
 }
 
 const char* TechnoTypeExt::GetSelectionGroupID(ObjectTypeClass* pType)

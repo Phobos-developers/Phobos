@@ -1,10 +1,12 @@
+#include "Body.h"
+
 #include <AnimClass.h>
 #include <UnitClass.h>
 #include <InfantryClass.h>
 #include <BuildingClass.h>
 #include "../Phobos.h"
 
-void TransferMindControl(TechnoClass* From, TechnoClass* To) {
+void TechnoTypeExt::TransferMindControl(TechnoClass* From, TechnoClass* To) {
 	if (auto Controller = From->MindControlledBy) {
 		if (auto Manager = Controller->CaptureManager) { // shouldn't be necessary, but WW uses it...
 			bool FoundNode(false);
@@ -44,7 +46,7 @@ DEFINE_HOOK(739956, UnitClass_Deploy_TransferMindControl, 6)
 	GET(UnitClass*, pUnit, EBP);
 	GET(BuildingClass*, pStructure, EBX);
 
-	TransferMindControl(pUnit, pStructure);
+	TechnoTypeExt::TransferMindControl(pUnit, pStructure);
 
 	return 0;
 }
@@ -54,7 +56,7 @@ DEFINE_HOOK(44A03C, BuildingClass_Mi_Selling_TransferMindControl, 6)
 	GET(BuildingClass*, pStructure, EBP);
 	GET(UnitClass*, pUnit, EBX);
 
-	TransferMindControl(pStructure, pUnit);
+	TechnoTypeExt::TransferMindControl(pStructure, pUnit);
 
 	pUnit->QueueMission(Mission::Hunt, true);
 

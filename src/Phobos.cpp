@@ -1,5 +1,4 @@
 ﻿#include <StaticInits.cpp>
-#include <ExtraInstances.hpp>
 #include <CCINIClass.h>
 #include <Unsorted.h>
 
@@ -126,13 +125,13 @@ DEFINE_HOOK(5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 5)
 			pINI->ReadInteger(TOOLTIPS_SECTION, "MaxWidth", 0);
 
 		pINI->ReadString(TOOLTIPS_SECTION, "CostLabel", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::CostLabel = LoadStringOrDefault(Phobos::readBuffer, L"$");
+		Phobos::UI::CostLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"$");
 
 		pINI->ReadString(TOOLTIPS_SECTION, "PowerLabel", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::PowerLabel = LoadStringOrDefault(Phobos::readBuffer, L"⚡");
+		Phobos::UI::PowerLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"⚡");
 
 		pINI->ReadString(TOOLTIPS_SECTION, "TimeLabel", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::TimeLabel = LoadStringOrDefault(Phobos::readBuffer, L"⌚");
+		Phobos::UI::TimeLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"⌚");
 	}
 
 	Phobos::CloseConfig(pINI);

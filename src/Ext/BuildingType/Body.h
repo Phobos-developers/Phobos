@@ -36,6 +36,8 @@ public:
 		virtual void SaveToStream(IStream* Stm);
 	};
 
+	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
+
 	class ExtContainer final : public Container<BuildingTypeExt> {
 	public:
 		ExtContainer();

@@ -1,7 +1,6 @@
 #include "Body.h"
 #include <WarheadTypeClass.h>
 #include <AnimTypeClass.h>
-#include "../../Utilities/trim.h"
 
 template<> const DWORD Extension<WarheadTypeClass>::Canary = 0x22222222;
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
@@ -22,24 +21,24 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->SpySat.Read(exINI, pSection, "SpySat");
 	this->BigGap.Read(exINI, pSection, "BigGap");
 	this->TransactMoney.Read(exINI, pSection, "TransactMoney");
-	this->SplashAnims.Read(exINI, pSection, "SplashAnims");
-	this->SplashAnims_PickRandom.Read(exINI, pSection, "SplashAnims.PickRandom");
+	this->SplashList.Read(exINI, pSection, "SplashAnims");
+	this->SplashList_PickRandom.Read(exINI, pSection, "SplashAnims.PickRandom");
 }
 
 void WarheadTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	this->SpySat.Load(Stm);
 	this->BigGap.Load(Stm);
 	this->TransactMoney.Load(Stm);
-	this->SplashAnims.Load(Stm);
-	this->SplashAnims_PickRandom.Load(Stm);
+	this->SplashList.Load(Stm);
+	this->SplashList_PickRandom.Load(Stm);
 }
 
 void WarheadTypeExt::ExtData::SaveToStream(IStream* Stm) {
 	this->SpySat.Save(Stm);
 	this->BigGap.Save(Stm);
 	this->TransactMoney.Save(Stm);
-	this->SplashAnims.Save(Stm);
-	this->SplashAnims_PickRandom.Save(Stm);
+	this->SplashList.Save(Stm);
+	this->SplashList_PickRandom.Save(Stm);
 }
 
 // =============================

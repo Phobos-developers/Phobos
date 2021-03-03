@@ -1,3 +1,8 @@
+/*
+ *  Every one loves templates.
+ *  Make Save & Load easier and not too messy.
+ */
+
 #pragma once
 
 #include <type_traits>
@@ -9,16 +14,16 @@ class PhobosStreamReader
 {
 public:
     template<typename T>
-    static bool Process(IStream* Stm, T& value)
+    static bool Process(IStream* Stm, T&& value)
     {
         if (SUCCEEDED(Stm->Read(&value, sizeof T, 0)))
             return true;
         FatalExit(114514);
         return false;
     }
-    
+
     template<typename T>
-    static bool Process(IStream* Stm, T& value, size_t nSize)
+    static bool Process(IStream* Stm, T&& value, size_t nSize)
     {
         if (SUCCEEDED(Stm->Read(&value, nSize, 0)))
             return true;
@@ -62,7 +67,7 @@ class PhobosStreamWriter
 {
 public:
     template<typename T>
-    static bool Process(IStream* Stm, T& value)
+    static bool Process(IStream* Stm, T&& value)
     {
         if (SUCCEEDED(Stm->Write(&value, sizeof T, 0)))
             return true;
@@ -71,7 +76,7 @@ public:
     }
 
     template<typename T>
-    static bool Process(IStream* Stm, T& value, size_t nSize)
+    static bool Process(IStream* Stm, T&& value, size_t nSize)
     {
         if (SUCCEEDED(Stm->Write(&value, nSize, 0)))
             return true;

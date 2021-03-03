@@ -6,7 +6,7 @@
 #include "Body.h"
 #include <ScenarioClass.h>
 
-void ReshroudMapForOpponents(HouseClass* pThisHouse) {
+void WarheadTypeExt::ReshroudMapForOpponents(HouseClass* pThisHouse) {
 	for (auto pOtherHouse : *HouseClass::Array) {
 
 		if (pOtherHouse->ControlledByHuman() &&
@@ -33,7 +33,7 @@ DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 
 	if (pThisHouse) {
 		if (pWHExt->BigGap) {
-			ReshroudMapForOpponents(pThisHouse);
+			WarheadTypeExt::ReshroudMapForOpponents(pThisHouse);
 		}
 
 		if (pWHExt->SpySat) {
@@ -54,12 +54,12 @@ DEFINE_HOOK(48A512, WarheadTypeClass_SplashList, 6)
 	if (!pThis->Conventional) return 0;
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-	if (pWHExt->SplashAnims.size()) {
+	if (pWHExt->SplashList.size()) {
 		GET(int, Damage, ECX);
-		int idx = pWHExt->SplashAnims_PickRandom ?
-			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->SplashAnims.size() - 1) :
-			std::min(pWHExt->SplashAnims.size() * 35 - 1, (size_t)Damage) / 35;
-		R->EAX<AnimTypeClass*>(AnimTypeClass::Array->GetItem(pWHExt->SplashAnims[idx]));
+		int idx = pWHExt->SplashList_PickRandom ?
+			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->SplashList.size() - 1) :
+			std::min(pWHExt->SplashList.size() * 35 - 1, (size_t)Damage) / 35;
+		R->EAX<AnimTypeClass*>(AnimTypeClass::Array->GetItem(pWHExt->SplashList[idx]));
 		return 0x48A5AD;
 	}
 	return 0;

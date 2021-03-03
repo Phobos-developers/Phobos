@@ -55,6 +55,7 @@ public:
 
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
 	static bool HasSelectionGroupID(ObjectTypeClass* pType, const char* pID);
+	static void TransferMindControl(TechnoClass* From, TechnoClass* To);
 
 	static ExtContainer ExtMap;
 };

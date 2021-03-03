@@ -39,6 +39,8 @@ public:
 		virtual void SaveToStream(IStream* Stm);
 	};
 
+	static bool isNODSidebar();
+
 	class ExtContainer final : public Container<SideExt> {
 	public:
 		ExtContainer();

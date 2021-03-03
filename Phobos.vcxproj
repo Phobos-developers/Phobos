@@ -18,10 +18,10 @@
     <ClCompile Include="src\Ext\Side\Hooks.cpp" />
     <ClCompile Include="src\Ext\Side\Hooks.SidebarGDIPositions.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Body.cpp" />
-    <ClCompile Include="src\Ext\TechnoType\BuildingDeployerTargeting.cpp" />
+    <ClCompile Include="src\Ext\TechnoType\Hooks.BuildingDeployerTargeting.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hook.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Body.cpp" />
-    <ClCompile Include="src\Ext\WeaponType\DiskLaserRadius.cpp" />
+    <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
     <ClCompile Include="src\Misc\Savegame.cpp" />
     <ClCompile Include="src\Misc\ExtendedToolTips.cpp" />
     <ClCompile Include="src\Misc\Selection.cpp" />
@@ -32,19 +32,17 @@
     <ClCompile Include="src\Ext\WarheadType\Hooks.cpp" />
     <ClCompile Include="src\Ext\_Container.cpp" />
     <ClCompile Include="src\Phobos.cpp" />
-    <ClCompile Include="src\Misc\replace_shp_shadow_check.cpp" />
-    <ClCompile Include="src\Misc\pcx.cpp" />
-    <ClCompile Include="src\Misc\ui.cpp" />
+    <ClCompile Include="src\Misc\Hooks.BugFixes.cpp" />
+    <ClCompile Include="src\Misc\Hooks.PCX.cpp" />
+    <ClCompile Include="src\Misc\Hooks.UI.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Upgrade.cpp" />
     <ClCompile Include="src\Utilities\EnumFunctions.cpp" />
     <ClCompile Include="src\Utilities\GeneralUtils.cpp" />
-    <ClCompile Include="src\Utilities\trim.cpp" />
-    <ClCompile Include="src\Misc\vehicle_to_building_mind_control_fix.cpp" />
+    <ClCompile Include="src\Ext\TechnoType\Hooks.VehicleToBuildingMCFix.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Commands\Commands.h" />
     <ClInclude Include="src\ExtraHeaders\CCToolTip.h" />
-    <ClInclude Include="src\ExtraHeaders\ExtraInstances.hpp" />
     <ClInclude Include="src\ExtraHeaders\Themes.h" />
     <ClInclude Include="src\Ext\SWType\Body.h" />
     <ClInclude Include="src\Ext\Side\Body.h" />
@@ -53,6 +51,7 @@
     <ClInclude Include="src\Misc\ExtendedToolTips.h" />
     <ClInclude Include="src\Misc\Stream.h" />
     <ClInclude Include="src\Phobos.version.h" />
+    <ClInclude Include="src\Utilities\Concepts.h" />
     <ClInclude Include="src\Utilities\Constructs.h" />
     <ClInclude Include="src\Utilities\Debug.h" />
     <ClInclude Include="src\Ext\BuildingType\Body.h" />
@@ -69,7 +68,6 @@
     <ClInclude Include="src\Utilities\Parser.h" />
     <ClInclude Include="src\Utilities\Template.h" />
     <ClInclude Include="src\Utilities\TemplateDef.h" />
-    <ClInclude Include="src\Utilities\trim.h" />
     <ClInclude Include="YRpp\GameTextManager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -149,6 +147,7 @@
       <CallingConvention>StdCall</CallingConvention>
       <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4100;4530;4731;4740;</DisableSpecificWarnings>
+      <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

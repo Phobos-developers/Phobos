@@ -5,17 +5,17 @@
 #include "../../Utilities/EnumFunctions.h"
 #include "Body.h"
 
-bool CanUpgrade(BuildingClass* building, BuildingTypeClass* upgrade, HouseClass* upgradeOwner) {
-	auto extUpgrade = BuildingTypeExt::ExtMap.Find(upgrade);
-	if (EnumFunctions::CanTargetHouse(extUpgrade->PowersUp_Owner, upgradeOwner, building->Owner)) {
+bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner) {
+	auto extUpgrade = BuildingTypeExt::ExtMap.Find(pUpgradeType);
+	if (EnumFunctions::CanTargetHouse(extUpgrade->PowersUp_Owner, pUpgradeOwner, pBuilding->Owner)) {
 		// PowersUpBuilding
-		if (_stricmp(building->Type->ID, upgrade->PowersUpBuilding) == 0)
+		if (_stricmp(pBuilding->Type->ID, pUpgradeType->PowersUpBuilding) == 0)
 			return true;
 
 		// PowersUp.Buildings
 		for (auto& powerup_idx : extUpgrade->PowersUp_Buildings)
 		{
-			if (_stricmp(building->Type->ID, BuildingTypeClass::Array->GetItem(powerup_idx)->ID) == 0)
+			if (_stricmp(pBuilding->Type->ID, BuildingTypeClass::Array->GetItem(powerup_idx)->ID) == 0)
 				return true;
 		}
 	}
@@ -31,7 +31,7 @@ DEFINE_HOOK(452678, CanUpgrade_UpgradeBuildings, 8)
 	GET_STACK(BuildingTypeClass*, pUpgrade, 0x0C);
 	GET(HouseClass*, upgradeOwner, EAX);
 
-	if (CanUpgrade(pBuilding, pUpgrade, upgradeOwner)) {
+	if (BuildingTypeExt::CanUpgrade(pBuilding, pUpgrade, upgradeOwner)) {
 		R->EAX(pBuilding->Type->PowersUpToLevel);
 		return 0x4526A7;  // continue
 	}
@@ -44,7 +44,7 @@ DEFINE_HOOK(4408EB, Unlimbo_UpgradeBuildings, A)
 	GET(BuildingClass*, buildingUnderMouse, EDI);
 	GET(BuildingClass*, pUpgrade, ESI);
 
-	if (CanUpgrade(buildingUnderMouse, pUpgrade->Type, pUpgrade->Owner)) {
+	if (BuildingTypeExt::CanUpgrade(buildingUnderMouse, pUpgrade->Type, pUpgrade->Owner)) {
 		R->EBX(pUpgrade->Type);
 		pUpgrade->Owner = buildingUnderMouse->Owner;
 		return 0x440912; // continue

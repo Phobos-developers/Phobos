@@ -21,15 +21,15 @@ public:
 		Valueable<bool> SpySat;
 		Valueable<bool> BigGap;
 		Valueable<int> TransactMoney;
-		ValueableIdxVector<AnimTypeClass> SplashAnims;
-		Valueable<bool> SplashAnims_PickRandom;
+		ValueableIdxVector<AnimTypeClass> SplashList;
+		Valueable<bool> SplashList_PickRandom;
 
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject),
 			SpySat(false),
 			BigGap(false),
 			TransactMoney(0),
-			SplashAnims(),
-			SplashAnims_PickRandom(false)
+			SplashList(),
+			SplashList_PickRandom(false)
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
@@ -41,6 +41,8 @@ public:
 
 		virtual void SaveToStream(IStream* Stm);
 	};
+
+	static void ReshroudMapForOpponents(HouseClass* pThisHouse);
 
 	class ExtContainer final : public Container<WarheadTypeExt> {
 	public:
