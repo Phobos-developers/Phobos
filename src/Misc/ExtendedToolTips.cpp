@@ -1,6 +1,6 @@
 ﻿#include "ExtendedToolTips.h"
 
-void CreateHelpText(AbstractType itemType, int itemIndex)
+void ExtToolTip::CreateHelpText(AbstractType itemType, int itemIndex)
 {
 	AbstractTypeClass* pAbstract = nullptr;
 	SuperWeaponTypeClass* pSW = nullptr;
@@ -99,7 +99,7 @@ DEFINE_HOOK(6A9316, ExtendedToolTip_HelpText, 6)
 
 	ExtToolTip::ClearBuffer();
 
-	CreateHelpText(itemType, itemIndex);
+	ExtToolTip::CreateHelpText(itemType, itemIndex);
 
 	ExtToolTip::UseExtBuffer();
 	R->EAX(ExtToolTip::pseudoBuff); // Here you need to pass any non-empty string
