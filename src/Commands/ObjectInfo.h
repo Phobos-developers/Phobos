@@ -9,7 +9,7 @@
 #include <TeamClass.h>
 #include <WWMouseClass.h>
 
-#include <locale>
+#include "../Ext/TechnoType/Body.h"
 
 class ObjectInfoCommandClass : public PhobosCommandClass
 {
@@ -47,10 +47,8 @@ public:
 	}
 
 	virtual void Execute(DWORD dwUnk) const override
-	{	
-		// TODO : Selectable=no
-
-		char buffer[0x800] = {0};
+	{
+		char buffer[0x800] = { 0 };
 
 		auto append = [&buffer](const char* pFormat, ...)
 		{
@@ -143,7 +141,7 @@ public:
 			buffer[0] = 0;
 		};
 
-		auto printFoots = [&append, &display,&getMissionName](FootClass* pFoot) {
+		auto printFoots = [&append, &display, &getMissionName](FootClass* pFoot) {
 			append("[Phobos] Dump ObjectInfo runs.\n");
 			auto pType = pFoot->GetTechnoType();
 			append("ID = %s, ", pType->ID);
@@ -174,11 +172,9 @@ public:
 			display();
 		};
 
-		if (ObjectClass::CurrentObjects->Count > 0)
+		bool dumped = false;
+		auto dumpInfo = [&printFoots, &printBuilding, &append, &display, &dumped](ObjectClass* pObject)
 		{
-			if (ObjectClass::CurrentObjects->Count != 1)
-				MessageListClass::Instance->PrintMessage(L"This command will only dump one of these selected object", 150, 5, true);
-			auto pObject = ObjectClass::CurrentObjects->GetItem(ObjectClass::CurrentObjects->Count - 1);
 			switch (pObject->WhatAmI())
 			{
 			case AbstractType::Infantry:
@@ -194,6 +190,21 @@ public:
 				display();
 				break;
 			}
+			dumped = true;
+		};
+
+		for (auto pTechno : *TechnoClass::Array)
+		{
+			if (dumped) break;
+			if (pTechno->unknown_bool_431) // Hovering on me! We really should rename it.
+				dumpInfo(pTechno);
 		}
+		if (!dumped)
+			if (ObjectClass::CurrentObjects->Count > 0)
+			{
+				if (ObjectClass::CurrentObjects->Count != 1)
+					MessageListClass::Instance->PrintMessage(L"This command will only dump one of these selected object", 150, 5, true);
+				dumpInfo(ObjectClass::CurrentObjects->GetItem(ObjectClass::CurrentObjects->Count - 1));
+			}
 	}
 };
