@@ -364,7 +364,7 @@ public:
 
 	explicit CSFText(const char* label) noexcept {
 		*this = label;
-		this->Text = StringTable::LoadString(this->Label);
+		this->Text = GeneralUtils::LoadStringOrDefault(this->Label, nullptr);
 	}
 
 	CSFText& operator = (CSFText const& rhs) = default;
@@ -372,11 +372,7 @@ public:
 	const CSFText& operator = (const char* label) {
 		if (this->Label != label) {
 			this->Label = label;
-			this->Text = nullptr;
-
-			if (this->Label) {
-				this->Text = StringTable::LoadString(this->Label);
-			}
+			this->Text = GeneralUtils::LoadStringOrDefault(this->Label, nullptr);
 		}
 
 		return *this;
@@ -393,9 +389,7 @@ public:
 	bool load(IStream* Stm) {
 		this->Text = nullptr;
 		if (PhobosStreamReader::Process(Stm, this->Label.data())) {
-			if (this->Label) {
-				this->Text = StringTable::LoadString(this->Label);
-			}
+			this->Text = GeneralUtils::LoadStringOrDefault(this->Label, nullptr);
 			return true;
 		}
 		return false;

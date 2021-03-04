@@ -518,6 +518,17 @@ bool Valueable<T>::Save(IStream* Stm) const {
 	return PhobosStreamWriter::Process(Stm, this->Value);
 }
 
+// CSFText have special (de)serialization logic
+
+template <>
+bool Valueable<CSFText>::Load(IStream* Stm) {
+	return GetEx()->load(Stm);
+}
+
+template <>
+bool Valueable<CSFText>::Save(IStream* Stm) const {
+	return GetEx()->save(Stm);
+}
 
 // ValueableIdx
 
