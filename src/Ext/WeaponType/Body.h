@@ -8,6 +8,8 @@
 
 #include "../../Utilities/Debug.h"
 
+#include "../../Utilities/TemplateDef.h"
+
 class WeaponTypeExt
 {
 public:
@@ -17,8 +19,8 @@ public:
 	{
 	public:
 
-		double DiskLaser_Radius;
-		int DiskLaser_Circumference;
+		Valueable<double> DiskLaser_Radius;
+		Valueable<int> DiskLaser_Circumference;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject),
 			DiskLaser_Radius(38.2),
@@ -32,7 +34,7 @@ public:
 
 		virtual void LoadFromStream(IStream* Stm);
 
-		virtual void SaveToStream(IStream* Stm);
+		virtual void SaveToStream(IStream* Stm) const;
 	};
 
 	class ExtContainer final : public Container<WeaponTypeExt> {
@@ -42,4 +44,6 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static int nOldCircumference;
 };

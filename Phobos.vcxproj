@@ -11,15 +11,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Commands\Commands.cpp" />
+    <ClCompile Include="src\Commands\Dummy.h" />
     <ClCompile Include="src\Ext\SWType\Body.cpp" />
     <ClCompile Include="src\Ext\Side\Body.cpp" />
     <ClCompile Include="src\Ext\Side\Hooks.cpp" />
     <ClCompile Include="src\Ext\Side\Hooks.SidebarGDIPositions.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Body.cpp" />
-    <ClCompile Include="src\Ext\TechnoType\BuildingDeployerTargeting.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hook.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Body.cpp" />
-    <ClCompile Include="src\Ext\WeaponType\DiskLaserRadius.cpp" />
+    <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
     <ClCompile Include="src\Misc\Savegame.cpp" />
     <ClCompile Include="src\Misc\ExtendedToolTips.cpp" />
     <ClCompile Include="src\Misc\Selection.cpp" />
@@ -30,41 +31,43 @@
     <ClCompile Include="src\Ext\WarheadType\Hooks.cpp" />
     <ClCompile Include="src\Ext\_Container.cpp" />
     <ClCompile Include="src\Phobos.cpp" />
-    <ClCompile Include="src\Misc\replace_shp_shadow_check.cpp" />
-    <ClCompile Include="src\Misc\pcx.cpp" />
-    <ClCompile Include="src\Misc\ui.cpp" />
-    <ClCompile Include="src\Ext\BuildingType\Upgrade.cpp" />
-    <ClCompile Include="src\Utilities\CanTargetFlags.cpp" />
+    <ClCompile Include="src\Misc\Hooks.BugFixes.cpp" />
+    <ClCompile Include="src\Misc\Hooks.PCX.cpp" />
+    <ClCompile Include="src\Misc\Hooks.UI.cpp" />
+    <ClCompile Include="src\Ext\BuildingType\Hooks.Upgrade.cpp" />
+    <ClCompile Include="src\Utilities\EnumFunctions.cpp" />
     <ClCompile Include="src\Utilities\GeneralUtils.cpp" />
-    <ClCompile Include="src\Utilities\trim.cpp" />
-    <ClCompile Include="src\Misc\vehicle_to_building_mind_control_fix.cpp" />
+    <ClCompile Include="src\Ext\TechnoType\Hooks.VehicleToBuildingMCFix.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Commands\ObjectInfo.h" />
+    <ClInclude Include="src\Commands\Commands.h" />
     <ClInclude Include="src\ExtraHeaders\CCToolTip.h" />
-    <ClInclude Include="src\ExtraHeaders\ExtraInstances.hpp" />
     <ClInclude Include="src\ExtraHeaders\Themes.h" />
     <ClInclude Include="src\Ext\SWType\Body.h" />
-    <ClInclude Include="src\Ext\SWType\Serialize.hpp" />
     <ClInclude Include="src\Ext\Side\Body.h" />
-    <ClInclude Include="src\Ext\Side\Serialize.hpp" />
     <ClInclude Include="src\Ext\TechnoType\Body.h" />
-    <ClInclude Include="src\Ext\TechnoType\Serialize.hpp" />
     <ClInclude Include="src\Ext\WeaponType\Body.h" />
-    <ClInclude Include="src\Ext\WeaponType\Serialize.hpp" />
     <ClInclude Include="src\Misc\ExtendedToolTips.h" />
+    <ClInclude Include="src\Misc\Stream.h" />
     <ClInclude Include="src\Phobos.version.h" />
+    <ClInclude Include="src\Utilities\Concepts.h" />
+    <ClInclude Include="src\Utilities\Constructs.h" />
     <ClInclude Include="src\Utilities\Debug.h" />
     <ClInclude Include="src\Ext\BuildingType\Body.h" />
-    <ClInclude Include="src\Ext\BuildingType\Serialize.hpp" />
     <ClInclude Include="src\Ext\Building\Body.h" />
-    <ClInclude Include="src\Ext\Building\Serialize.hpp" />
     <ClInclude Include="src\Ext\WarheadType\Body.h" />
-    <ClInclude Include="src\Ext\WarheadType\Serialize.hpp" />
     <ClInclude Include="src\Ext\_Container.hpp" />
     <ClInclude Include="src\Phobos.h" />
-    <ClInclude Include="src\Utilities\CanTargetFlags.h" />
+    <ClInclude Include="src\Utilities\Enum.h" />
+    <ClInclude Include="src\Utilities\EnumFunctions.h" />
     <ClInclude Include="src\Utilities\GeneralUtils.h" />
-    <ClInclude Include="src\Utilities\trim.h" />
+    <ClInclude Include="src\Utilities\Helpers.Alex.h" />
+    <ClInclude Include="src\Utilities\INIParser.h" />
+    <ClInclude Include="src\Utilities\Iterator.h" />
+    <ClInclude Include="src\Utilities\Parser.h" />
+    <ClInclude Include="src\Utilities\Template.h" />
+    <ClInclude Include="src\Utilities\TemplateDef.h" />
     <ClInclude Include="YRpp\GameTextManager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -138,12 +141,13 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <AssemblerListingLocation>$(IntDir)\%(RelativeDir)</AssemblerListingLocation>
       <ObjectFileName>$(IntDir)\%(RelativeDir)</ObjectFileName>
       <CallingConvention>StdCall</CallingConvention>
       <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4100;4530;4731;4740;</DisableSpecificWarnings>
+      <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -172,7 +176,7 @@
       <ConformanceMode>false</ConformanceMode>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <OmitFramePointers>true</OmitFramePointers>
-      <PreprocessorDefinitions>SYR_VER=2; HAS_EXCEPTIONS=0;NOMINMAX;_USING_V110_SDK71_;%(PreprocessorDefinitions);%(AdditionalDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SYR_VER=2;HAS_EXCEPTIONS=0;NOMINMAX;_CRT_SECURE_NO_WARNINGS;_USING_V110_SDK71_;%(PreprocessorDefinitions);%(AdditionalDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>

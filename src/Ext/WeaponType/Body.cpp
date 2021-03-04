@@ -14,20 +14,20 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		return;
 	}
 
-	this->DiskLaser_Radius = pINI->ReadDouble(pSection, "DiskLaser.Radius", this->DiskLaser_Radius);
+	INI_EX exINI(pINI);
+
+	this->DiskLaser_Radius.Read(exINI, pSection, "DiskLaser.Radius");
 	this->DiskLaser_Circumference = (int)(this->DiskLaser_Radius * Math::Pi * 2);
 }
 
 void WeaponTypeExt::ExtData::LoadFromStream(IStream* Stm) {
-#define STM_Process(A) Stm->Read(&A, sizeof(A), 0);
-#include "Serialize.hpp"
-#undef STM_Process
+	this->DiskLaser_Radius.Load(Stm);
+	this->DiskLaser_Circumference.Load(Stm);
 }
 
-void WeaponTypeExt::ExtData::SaveToStream(IStream* Stm) {
-#define STM_Process(A) Stm->Write(&A, sizeof(A), 0);
-#include "Serialize.hpp"
-#undef STM_Process
+void WeaponTypeExt::ExtData::SaveToStream(IStream* Stm) const {
+	this->DiskLaser_Radius.Save(Stm);
+	this->DiskLaser_Circumference.Save(Stm);
 }
 
 // =============================

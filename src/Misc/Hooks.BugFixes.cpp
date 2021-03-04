@@ -4,10 +4,10 @@
 #include <FootClass.h>
 
 //Replace: checking of HasExtras = > checking of (HasExtras && Shadow)
-DEFINE_HOOK(423365, replace_shp_shadow_check, 8)
+DEFINE_HOOK(423365, Phobos_BugFixes_SHPShadowCheck, 8)
 {
-	GET(AnimClass*, anim, ESI);
-	return (anim->Type->Shadow && anim->HasExtras) ?
+	GET(AnimClass*, pAnim, ESI);
+	return (pAnim->Type->Shadow && pAnim->HasExtras) ?
 		0x42336D :
 		0x4233EE;
 }

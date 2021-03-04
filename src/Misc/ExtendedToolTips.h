@@ -60,6 +60,7 @@ public:
 		_addSpace = false;
 	}
 
+	static void CreateHelpText(AbstractType itemType, int itemIndex);
 private:
 	static const int inline TOOLTIP_BUFFER_LENGTH = 1024;
 	static bool inline _uesExtBuffer = false;

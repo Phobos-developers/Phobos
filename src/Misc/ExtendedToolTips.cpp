@@ -1,6 +1,6 @@
 ﻿#include "ExtendedToolTips.h"
 
-void CreateHelpText(AbstractType itemType, int itemIndex)
+void ExtToolTip::CreateHelpText(AbstractType itemType, int itemIndex)
 {
 	AbstractTypeClass* pAbstract = nullptr;
 	SuperWeaponTypeClass* pSW = nullptr;
@@ -74,11 +74,10 @@ void CreateHelpText(AbstractType itemType, int itemIndex)
 
 	// append UIDescription
 	if (Phobos::Config::ToolTipDescriptions) {
-		const wchar_t* uiDesc = pSWExt ? pSWExt->UIDescription : TechnoTypeExt::ExtMap.Find(pTechno)->UIDescription;
-		if (uiDesc && uiDesc[0] != 0) {
+		auto uiDesc = pSWExt ? pSWExt->UIDescription : TechnoTypeExt::ExtMap.Find(pTechno)->UIDescription;
+		if (!uiDesc.Get().empty()) {
 			ExtToolTip::Apply_SeparatorAsNewLine();
-
-			ExtToolTip::Append(uiDesc);
+			ExtToolTip::Append(uiDesc.Get().Text);
 		}
 	}
 }
@@ -100,7 +99,7 @@ DEFINE_HOOK(6A9316, ExtendedToolTip_HelpText, 6)
 
 	ExtToolTip::ClearBuffer();
 
-	CreateHelpText(itemType, itemIndex);
+	ExtToolTip::CreateHelpText(itemType, itemIndex);
 
 	ExtToolTip::UseExtBuffer();
 	R->EAX(ExtToolTip::pseudoBuff); // Here you need to pass any non-empty string

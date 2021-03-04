@@ -1,7 +1,11 @@
 #pragma once
-#define NONE_STR "<none>"
-#define NONE_STR2 "none"
 
-bool IsValidString(const char* str);
+constexpr auto NONE_STR = "<none>";
+constexpr auto NONE_STR2 = "none";
 
-const wchar_t* LoadStringOrDefault(char* key, const wchar_t* defaultValue);
+class GeneralUtils
+{
+public:
+    static bool IsValidString(const char* str);
+    static const wchar_t* LoadStringOrDefault(char* key, const wchar_t* defaultValue);
+};

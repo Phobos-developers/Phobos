@@ -8,15 +8,11 @@ BuildingExt::ExtContainer BuildingExt::ExtMap;
 // load / save
 
 void BuildingExt::ExtData::LoadFromStream(IStream* Stm) {
-	#define STM_Process(A) Stm->Read(&A, sizeof(A), 0);
-	#include "Serialize.hpp"
-	#undef STM_Process
+
 }
 
-void BuildingExt::ExtData::SaveToStream(IStream* Stm) {
-	#define STM_Process(A) Stm->Write(&A, sizeof(A), 0);
-	#include "Serialize.hpp"
-	#undef STM_Process
+void BuildingExt::ExtData::SaveToStream(IStream* Stm) const {
+
 }
 
 // =============================

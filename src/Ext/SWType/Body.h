@@ -7,6 +7,8 @@
 #include "../../Phobos.h"
 #include "../../Utilities/GeneralUtils.h"
 
+#include "../../Utilities/TemplateDef.h"
+
 class SWTypeExt
 {
 public:
@@ -16,14 +18,12 @@ public:
 	{
 	public:
 
-		int Money_Amount;
-		char UIDescriptionLabel[32];
-		const wchar_t* UIDescription;
+		Valueable<int> Money_Amount;
+		Valueable<CSFText> UIDescription;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject),
 			Money_Amount(0),
-			UIDescriptionLabel(NONE_STR),
-			UIDescription(L"")
+			UIDescription()
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
@@ -33,7 +33,7 @@ public:
 
 		virtual void LoadFromStream(IStream* Stm);
 
-		virtual void SaveToStream(IStream* Stm);
+		virtual void SaveToStream(IStream* Stm) const;
 	};
 
 	class ExtContainer final : public Container<SWTypeExt> {

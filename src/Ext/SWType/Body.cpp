@@ -16,30 +16,19 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		return;
 	}
 
-	this->Money_Amount = pINI->ReadInteger(pSection, "Money.Amount", this->Money_Amount);
-	pINI->ReadString(pSection, "UIDescription", this->UIDescriptionLabel, this->UIDescriptionLabel);
-
-	if (IsValidString(this->UIDescriptionLabel))
-		this->UIDescription = StringTable::LoadStringA(this->UIDescriptionLabel);
-	else
-		this->UIDescription = L"";
+	INI_EX exINI(pINI);
+	this->Money_Amount.Read(exINI, pSection, "Money.Amount");
+	this->UIDescription.Read(exINI, pSection, "UIDescription");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(IStream* Stm) {
-	#define STM_Process(A) Stm->Read(&A, sizeof(A), 0);
-	#include "Serialize.hpp"
-	#undef STM_Process
-
-	if (IsValidString(this->UIDescriptionLabel))
-		this->UIDescription = StringTable::LoadStringA(this->UIDescriptionLabel);
-	else
-		this->UIDescription = L"";
+	this->Money_Amount.Load(Stm);
+	this->UIDescription.Load(Stm);
 }
 
-void SWTypeExt::ExtData::SaveToStream(IStream* Stm) {
-	#define STM_Process(A) Stm->Write(&A, sizeof(A), 0);
-	#include "Serialize.hpp"
-	#undef STM_Process
+void SWTypeExt::ExtData::SaveToStream(IStream* Stm) const {
+	this->Money_Amount.Save(Stm);
+	this->UIDescription.Save(Stm);
 }
 
 // =============================

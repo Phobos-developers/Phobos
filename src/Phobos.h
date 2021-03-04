@@ -5,7 +5,7 @@
 #include "Utilities/GeneralUtils.h"
 #include "Phobos.version.h"
 
-#define TOOLTIPS_SECTION "ToolTips"
+constexpr auto TOOLTIPS_SECTION = "ToolTips";
 
 class Phobos
 {

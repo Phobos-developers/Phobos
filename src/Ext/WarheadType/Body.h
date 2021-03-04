@@ -8,6 +8,8 @@
 
 #include "../../Utilities/Debug.h"
 
+#include "../../Utilities/TemplateDef.h"
+
 class WarheadTypeExt
 {
 public:
@@ -16,21 +18,24 @@ public:
 	class ExtData final : public Extension<WarheadTypeClass>
 	{
 	public:
-
-		bool SpySat;
-		bool BigGap;
-		int TransactMoney;
-		char SplashList_Buffer[0x400];
-		DynamicVectorClass<AnimTypeClass*> SplashList;
-		bool SplashList_PickRandom;
+		Valueable<bool> SpySat;
+		Valueable<bool> BigGap;
+		Valueable<int> TransactMoney;
+		ValueableVector<AnimTypeClass*> SplashList;
+		Valueable<bool> SplashList_PickRandom;
+		Valueable<bool> RemoveDisguise;
+		Valueable<bool> RemoveDisguise_AffectAllies;
+		Valueable<bool> RemoveDisguise_ApplyCellSpread;
 
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject),
 			SpySat(false),
 			BigGap(false),
 			TransactMoney(0),
-			SplashList_Buffer(""),
 			SplashList(),
-			SplashList_PickRandom(false)
+			SplashList_PickRandom(false),
+			RemoveDisguise(false),
+			RemoveDisguise_AffectAllies(false),
+			RemoveDisguise_ApplyCellSpread(true)
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
@@ -40,8 +45,10 @@ public:
 
 		virtual void LoadFromStream(IStream* Stm);
 
-		virtual void SaveToStream(IStream* Stm);
+		virtual void SaveToStream(IStream* Stm) const;
 	};
+
+	static void ReshroudMapForOpponents(HouseClass* pThisHouse);
 
 	class ExtContainer final : public Container<WarheadTypeExt> {
 	public:

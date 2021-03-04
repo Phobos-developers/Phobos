@@ -5,8 +5,11 @@
 #include <MapClass.h>
 #include "Body.h"
 #include <ScenarioClass.h>
+#include <InfantryClass.h>
 
-void ReshroudMapForOpponents(HouseClass* pThisHouse) {
+#include "../../Utilities/Helpers.Alex.h"
+
+void WarheadTypeExt::ReshroudMapForOpponents(HouseClass* pThisHouse) {
 	for (auto pOtherHouse : *HouseClass::Array) {
 
 		if (pOtherHouse->ControlledByHuman() &&
@@ -24,7 +27,7 @@ void ReshroudMapForOpponents(HouseClass* pThisHouse) {
 DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 {
 	GET(BulletClass * const, pThis, ESI);
-	//GET_BASE(const CoordStruct * const, pCoordsDetonation, 0x8);
+	GET_BASE(const CoordStruct * const, pCoordsDetonation, 0x8);
 
 	auto const pWH = pThis->WH;
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
@@ -33,7 +36,7 @@ DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 
 	if (pThisHouse) {
 		if (pWHExt->BigGap) {
-			ReshroudMapForOpponents(pThisHouse);
+			WarheadTypeExt::ReshroudMapForOpponents(pThisHouse);
 		}
 
 		if (pWHExt->SpySat) {
@@ -43,6 +46,32 @@ DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 		if (pWHExt->TransactMoney != 0) {
 			pThisHouse->TransactMoney(pWHExt->TransactMoney);
 		}
+
+		if (pWHExt->RemoveDisguise) {
+			auto applyRemoveDisguiseToInf = [&pWHExt, &pThisHouse](AbstractClass* pTechno)
+			{
+				if (pTechno->WhatAmI() == AbstractType::Infantry)
+				{
+					auto pInf = abstract_cast<InfantryClass*>(pTechno);
+					if (pInf->IsDisguised())
+					{
+						bool bIsAlliedWith = pThisHouse->IsAlliedWith(pInf);
+						if (pWHExt->RemoveDisguise_AffectAllies || (!pWHExt->RemoveDisguise_AffectAllies && !bIsAlliedWith))
+							pInf->ClearDisguise();
+					}
+				}
+			};
+			
+			auto coords = *pCoordsDetonation;
+			auto CellSpread = pWH->CellSpread;
+			if (pWHExt->RemoveDisguise_ApplyCellSpread && CellSpread) {
+				const auto items = Helpers::Alex::getCellSpreadItems(coords, CellSpread, true);
+				for (auto member : items)
+					applyRemoveDisguiseToInf(member);
+			}
+			else
+				applyRemoveDisguiseToInf(pThis->Target);
+		}
 	}
 
 	return 0;
@@ -50,21 +79,17 @@ DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 
 DEFINE_HOOK(48A512, WarheadTypeClass_SplashList, 6) 
 {
-
 	GET(WarheadTypeClass* const, pThis, ESI);
-
 	if (!pThis->Conventional) return 0;
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-	if (pWHExt->SplashList.Count) {
-		GET(int, Damage, ECX);
-		R->EAX(pWHExt->SplashList.GetItem(
-			pWHExt->SplashList_PickRandom ?
-			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->SplashList.Count - 1) :
-			std::min(pWHExt->SplashList.Count * 35 - 1, Damage) / 35
-		));
+	if (pWHExt->SplashList.size()) {
+		GET(int, nDamage, ECX);
+		int idx = pWHExt->SplashList_PickRandom ?
+			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->SplashList.size() - 1) :
+			std::min(pWHExt->SplashList.size() * 35 - 1, (size_t)nDamage) / 35;
+		R->EAX<AnimTypeClass*>(pWHExt->SplashList[idx]);
 		return 0x48A5AD;
 	}
-
 	return 0;
 }

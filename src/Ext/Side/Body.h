@@ -6,6 +6,8 @@
 #include "../../Phobos.h"
 #include "../_Container.hpp"
 
+#include "../../Utilities/TemplateDef.h"
+
 class SideExt
 {
 public:
@@ -14,14 +16,14 @@ public:
 	class ExtData final : public Extension<SideClass>
 	{
 	public:
-		int ArrayIndex;
-		bool Sidebar_GDIPositions;
-
-		int IngameScore_WinTheme;
-		int IngameScore_LoseTheme;
+		Valueable<int> ArrayIndex;
+		Valueable<bool> Sidebar_GDIPositions;
+		Valueable<int> IngameScore_WinTheme;
+		Valueable<int> IngameScore_LoseTheme;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject),
 			ArrayIndex(-1),
+			Sidebar_GDIPositions(false),
 			IngameScore_WinTheme(-2),
 			IngameScore_LoseTheme(-2)
 		{ }
@@ -34,8 +36,10 @@ public:
 		}
 
 		virtual void LoadFromStream(IStream* Stm);
-		virtual void SaveToStream(IStream* Stm);
+		virtual void SaveToStream(IStream* Stm) const;
 	};
+
+	static bool isNODSidebar();
 
 	class ExtContainer final : public Container<SideExt> {
 	public:
