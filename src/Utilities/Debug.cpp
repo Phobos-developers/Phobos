@@ -1,6 +1,9 @@
 #include "Debug.h"
 
-void(__cdecl *Debug::Log)(const char *pFormat, ...) = (void(__cdecl *)(const char *pFormat, ...))0x4068E0;
+void Debug::Log(const char* pFormat, ...)
+{
+	JMP_STD(0x4068E0);
+}
 
 void Debug::INIParseFailed(const char* section, const char* flag, const char* value, const char* Message) {
 	const char* LogMessage = (Message == nullptr)
