@@ -41,6 +41,7 @@
     <ClCompile Include="src\Ext\TechnoType\Hooks.VehicleToBuildingMCFix.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Commands\Teams.h" />
     <ClInclude Include="src\Commands\Commands.h" />
     <ClInclude Include="src\ExtraHeaders\CCToolTip.h" />
     <ClInclude Include="src\ExtraHeaders\Themes.h" />
