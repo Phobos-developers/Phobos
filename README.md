@@ -28,13 +28,15 @@ Credits
 - Belonit (Gluk-v48), Metadorius (Kerbiter) - project authors
 - misha135n2 - YRpp edits
 - tomsons26, CCHyper - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
-- Ares developers - YRpp and Syringe which are used, save/load code from Ares; 
+- Ares developers - YRpp and Syringe which are used, save/load, project structure and generally useful code from Ares; 
 - DCoder - unused deployer fixes that are now included in Phobos
 - CCHyper - current project logo
 - ZΞPHYɌUS - win/lose themes code
 - ayylmao, SMxReaver, 4SG, FS-21 - help with docs
 - wiktorderelf, Metadorius (Kerbiter) - overhauled Unicode font
 - Thrifinesma (Uranusian) - mind control range limit and custom warhead splash list implementation
+- SEC-SOME (secsome) - debug info dump hotkey, refactoring, introducing more Ares-derived stuff, disguise removal warhead
+- Otamaa (BoredEXE) - help with CellSpread
 
 Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](logo-mono.png)) in your client/launcher, [contributing](https://github.com/Phobos-developers/Phobos/wiki/Contributing) or donating to us via links on the right and the `Sponsor` button on top of the repo.
 
