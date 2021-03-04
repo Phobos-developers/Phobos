@@ -196,7 +196,7 @@ public:
 		for (auto pTechno : *TechnoClass::Array)
 		{
 			if (dumped) break;
-			if (pTechno->unknown_bool_431) // Hovering on me! We really should rename it.
+			if (pTechno->IsMouseHovering)
 				dumpInfo(pTechno);
 		}
 		if (!dumped)
