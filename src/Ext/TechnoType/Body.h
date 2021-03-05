@@ -15,7 +15,7 @@ public:
 	class ExtData final : public Extension<TechnoTypeClass>
 	{
 	public:
-		
+
 		Valueable<bool> Deployed_RememberTarget;
 		Valueable<bool> HealthBar_Hide;
 		Valueable<CSFText> UIDescription;
@@ -31,6 +31,7 @@ public:
 		Valueable<int> Spawn_LimitedExtraRange;
 		Nullable<bool> Harvester_Counted;
 		Valueable<bool> Promote_IncludeSpawns;
+		Valueable<bool> ImmuneToCrit;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
@@ -47,7 +48,8 @@ public:
 			Spawn_LimitedRange(false),
 			Spawn_LimitedExtraRange(0),
 			Harvester_Counted(),
-			Promote_IncludeSpawns(false)
+			Promote_IncludeSpawns(false),
+			ImmuneToCrit(false)
 		{ }
 
 		virtual ~ExtData() = default;

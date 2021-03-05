@@ -27,6 +27,43 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	return true;
 }
 
+bool WarheadTypeExt::ExtData::IsCellEligible(CellClass* const pCell, SuperWeaponTarget allowed)
+{
+	if (allowed & SuperWeaponTarget::AllCells) {
+		if (pCell->LandType == LandType::Water) {
+			// check whether it supports water
+			return (allowed & SuperWeaponTarget::Water) != SuperWeaponTarget::None;
+		}
+		else {
+			// check whether it supports non-water
+			return (allowed & SuperWeaponTarget::Land) != SuperWeaponTarget::None;
+		}
+	}
+	return true;
+}
+
+bool WarheadTypeExt::ExtData::IsTechnoEligible(TechnoClass* const pTechno, SuperWeaponTarget allowed)
+{
+	if (allowed & SuperWeaponTarget::AllContents) {
+		if (pTechno) {
+			switch (pTechno->WhatAmI()) {
+			case AbstractType::Infantry:
+				return (allowed & SuperWeaponTarget::Infantry) != SuperWeaponTarget::None;
+			case AbstractType::Unit:
+			case AbstractType::Aircraft:
+				return (allowed & SuperWeaponTarget::Unit) != SuperWeaponTarget::None;
+			case AbstractType::Building:
+				return (allowed & SuperWeaponTarget::Building) != SuperWeaponTarget::None;
+			}
+		}
+		else {
+			// is the target cell allowed to be empty?
+			return (allowed & SuperWeaponTarget::NoContent) != SuperWeaponTarget::None;
+		}
+	}
+	return true;
+}
+
 // =============================
 // load / save
 
@@ -48,6 +85,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
 
+	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
+	this->Crit_Damage.Read(exINI, pSection, "Crit.Damage");
+	this->Crit_Affects.Read(exINI, pSection, "Crit.Affects");
+	this->Crit_Anims.Read(exINI, pSection, "Crit.Anims");
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
@@ -60,10 +102,17 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->SpySat)
 		.Process(this->BigGap)
 		.Process(this->TransactMoney)
+
 		.Process(this->SplashList)
 		.Process(this->SplashList_PickRandom)
+
 		.Process(this->RemoveDisguise)
 		.Process(this->RemoveMindControl)
+
+		.Process(this->Crit_Chance)
+		.Process(this->Crit_Damage)
+		.Process(this->Crit_Affects)
+		.Process(this->Crit_Anims)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
