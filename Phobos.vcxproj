@@ -27,7 +27,6 @@
     <ClCompile Include="src\Misc\Tileset255Fix.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
-    <ClCompile Include="src\Ext\Building\Body.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Body.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Hooks.cpp" />
     <ClCompile Include="src\Ext\_Container.cpp" />
@@ -56,7 +55,6 @@
     <ClInclude Include="src\Utilities\Constructs.h" />
     <ClInclude Include="src\Utilities\Debug.h" />
     <ClInclude Include="src\Ext\BuildingType\Body.h" />
-    <ClInclude Include="src\Ext\Building\Body.h" />
     <ClInclude Include="src\Ext\WarheadType\Body.h" />
     <ClInclude Include="src\Ext\_Container.hpp" />
     <ClInclude Include="src\Phobos.h" />
