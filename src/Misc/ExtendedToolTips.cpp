@@ -59,7 +59,7 @@ void ExtToolTip::CreateHelpText(AbstractType itemType, int itemIndex)
 
 	// append Time label
 	const long rechargeTime = pSW ? pSW->RechargeTime : 0;
-	if (rechargeTime) {
+	if (rechargeTime > 0) {
 		const int sec = (rechargeTime / 15) % 60;
 		const int min = (rechargeTime / 15) / 60;
 
