@@ -23,8 +23,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
 	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
+
 	// Ares 0.A
-	this->GroupAs.Read(pINI, "GroupAs", this->GroupAs, this->GroupAs);
+	this->GroupAs.Read(pINI, pSection, "GroupAs");
 }
 
 void TechnoTypeExt::ExtData::LoadFromStream(IStream* Stm) {
