@@ -45,6 +45,7 @@
 #include <vector>
 
 #include "../Utilities/GeneralUtils.h"
+#include "../Utilities/Debug.h"
 
 class ConvertClass;
 
