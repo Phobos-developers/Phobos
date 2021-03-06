@@ -72,6 +72,29 @@ DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 			else
 				applyRemoveDisguiseToInf(pThis->Target);
 		}
+
+		if (pWHExt->RemoveMindControl) {
+			auto applyRemoveMindControl = [&pWHExt, &pThisHouse](TechnoClass* pTechno)
+			{
+				if (pTechno->IsMindControlled())
+				{
+					bool bIsAlliedWith = pThisHouse->IsAlliedWith(pTechno);
+					if (pWHExt->RemoveDisguise_AffectAllies || (!pWHExt->RemoveDisguise_AffectAllies && !bIsAlliedWith))
+						pTechno->MindControlledBy->CaptureManager->FreeUnit(pTechno);
+				}
+			};
+
+			auto coords = *pCoordsDetonation;
+			auto CellSpread = pWH->CellSpread;
+			if (pWHExt->RemoveDisguise_ApplyCellSpread && CellSpread) {
+				const auto items = Helpers::Alex::getCellSpreadItems(coords, CellSpread, true);
+				for (auto member : items)
+					applyRemoveMindControl(member);
+			}
+			else
+				if (auto pTarget = abstract_cast<TechnoClass*>(pThis->Target))
+					applyRemoveMindControl(pTarget);
+		}
 	}
 
 	return 0;
