@@ -21,12 +21,12 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 }
 
 void WeaponTypeExt::ExtData::LoadFromStream(IStream* Stm) {
-	this->DiskLaser_Radius.Load(Stm);
+	// this->DiskLaser_Radius.Load(Stm); // There is no need to this. It is used only for LoadFromINIFile
 	this->DiskLaser_Circumference.Load(Stm);
 }
 
 void WeaponTypeExt::ExtData::SaveToStream(IStream* Stm) const {
-	this->DiskLaser_Radius.Save(Stm);
+	// this->DiskLaser_Radius.Save(Stm); // There is no need to this. It is used only for LoadFromINIFile
 	this->DiskLaser_Circumference.Save(Stm);
 }
 
