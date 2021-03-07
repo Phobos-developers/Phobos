@@ -80,7 +80,11 @@ DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 				{
 					bool bIsAlliedWith = pThisHouse->IsAlliedWith(pTechno);
 					if (pWHExt->RemoveMindControl_AffectAllies || (!pWHExt->RemoveMindControl_AffectAllies && !bIsAlliedWith))
+					{
 						pTechno->MindControlledBy->CaptureManager->FreeUnit(pTechno);
+						if (pTechno->IsHumanControlled)
+							pTechno->QueueMission(Mission::Hunt, false);
+					}
 				}
 			};
 
