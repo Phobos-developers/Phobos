@@ -79,7 +79,7 @@ DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 				if (pTechno->IsMindControlled())
 				{
 					bool bIsAlliedWith = pThisHouse->IsAlliedWith(pTechno);
-					if (pWHExt->RemoveDisguise_AffectAllies || (!pWHExt->RemoveDisguise_AffectAllies && !bIsAlliedWith))
+					if (pWHExt->RemoveMindControl_AffectAllies || (!pWHExt->RemoveMindControl_AffectAllies && !bIsAlliedWith))
 						pTechno->MindControlledBy->CaptureManager->FreeUnit(pTechno);
 				}
 			};
