@@ -16,10 +16,7 @@ public:
     template<typename T>
     static bool Process(IStream* Stm, T&& value)
     {
-        if (SUCCEEDED(Stm->Read(&value, sizeof T, 0)))
-            return true;
-        Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[PhobosStreamReader] Failed to save value!\n");
-        return false;
+        return Process(Stm, value, sizeof T);
     }
 
     template<typename T>
@@ -69,10 +66,7 @@ public:
     template<typename T>
     static bool Process(IStream* Stm, T&& value)
     {
-        if (SUCCEEDED(Stm->Write(&value, sizeof T, 0)))
-            return true;
-        Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[PhobosStreamReader] Failed to save value!\n");
-        return false;
+        return Process(Stm, value, sizeof T);
     }
 
     template<typename T>
