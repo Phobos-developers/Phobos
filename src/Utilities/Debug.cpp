@@ -14,7 +14,7 @@ void Debug::INIParseFailed(const char* section, const char* flag, const char* va
 	Debug::Log(LogMessage, section, flag, value, Message);
 }
 
-void Debug::FatalErrorAndExit(int nExitCode, const char* pFormat, ...)
+void Debug::FatalErrorAndExit(ExitCode nExitCode, const char* pFormat, ...)
 {
 	char buffer[0x400];
 	va_list args;
@@ -22,5 +22,5 @@ void Debug::FatalErrorAndExit(int nExitCode, const char* pFormat, ...)
 	vsprintf_s(buffer, pFormat, args);
 	va_end(args);
 	Debug::Log(buffer);
-	FatalExit(nExitCode);
+	FatalExit(static_cast<int>(nExitCode));
 }

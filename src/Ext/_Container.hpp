@@ -309,7 +309,7 @@ public:
 	void SaveStatic() {
 		if (this->SavingObject && this->SavingStream) {
 			if (!this->Save(this->SavingObject, this->SavingStream)) {
-				Debug::FatalErrorAndExit("[SaveStatic] Saving failed!\n");
+				Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[SaveStatic] Saving failed!\n");
 			}
 		}
 		else {
@@ -325,7 +325,7 @@ public:
 		if (this->SavingObject && this->SavingStream) {
 
 			if (!this->Load(this->SavingObject, this->SavingStream)) {
-				Debug::FatalErrorAndExit("[LoadStatic] Loading failed!\n");
+				Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[LoadStatic] Loading failed!\n");
 			}
 		}
 		else {
@@ -393,16 +393,22 @@ public:
 				return nullptr;
 			}
 
-			int size;
+			size_t size;
 			PhobosStreamReader::Process(pStm, size); // extension_type::Canary
 			if (size == extension_type::Canary)
 			{
 				PhobosStreamReader::Process(pStm, buffer);
 				buffer->LoadFromStream(pStm);
-				PhobosStreamReader::Process(pStm, sizeof(*buffer));
-				PhobosStreamReader::Process(pStm, *buffer);
+				PhobosStreamReader::Process(pStm, size);
+				if (size == sizeof(*buffer))
+					PhobosStreamReader::Process(pStm, *buffer);
+				else
+					Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, 
+						"[LoadKey] Size isn't correct as I excepted.");
 			}
-			
+			else
+				Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, 
+					"[LoadKey] %s's Canary isn't correct as I excepted.", this->Name);
 			return nullptr;
 		}
 };

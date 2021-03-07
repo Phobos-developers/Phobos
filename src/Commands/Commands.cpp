@@ -3,8 +3,6 @@
 #include "Dummy.h"
 #include "ObjectInfo.h"
 
-bool Phobos::Config::DevelopmentCommands = false;
-
 DEFINE_HOOK(533066, CommandClassCallback_Register, 6)
 {
 	// Load it after Ares'

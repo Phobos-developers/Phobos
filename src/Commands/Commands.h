@@ -3,6 +3,8 @@
 #include <YRPP.h>
 #include <CommandClass.h>
 
+#include "../Phobos.h"
+
 class PhobosCommandClass : public CommandClass
 {
 protected:

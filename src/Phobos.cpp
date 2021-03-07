@@ -31,6 +31,7 @@ const wchar_t* Phobos::UI::TimeLabel = L"";
 
 bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::PrioritySelectionFiltering = true;
+bool Phobos::Config::DevelopmentCommands = false;
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
