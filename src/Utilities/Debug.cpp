@@ -13,3 +13,14 @@ void Debug::INIParseFailed(const char* section, const char* flag, const char* va
 
 	Debug::Log(LogMessage, section, flag, value, Message);
 }
+
+void Debug::FatalErrorAndExit(int nExitCode, const char* pFormat, ...)
+{
+	char buffer[0x400];
+	va_list args;
+	va_start(args, pFormat);
+	vsprintf_s(buffer, pFormat, args);
+	va_end(args);
+	Debug::Log(buffer);
+	FatalExit(nExitCode);
+}
