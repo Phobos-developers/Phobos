@@ -136,7 +136,7 @@ public:
 		{
 			memset(Phobos::wideBuffer, 0, sizeof Phobos::wideBuffer);
 			mbstowcs(Phobos::wideBuffer, buffer, strlen(buffer));
-			MessageListClass::Instance->PrintMessage(Phobos::wideBuffer, 150, 5, true);
+			MessageListClass::Instance->PrintMessage(Phobos::wideBuffer, 600, 5, true);
 			Debug::Log("%s\n", buffer);
 			buffer[0] = 0;
 		};
@@ -145,19 +145,23 @@ public:
 			append("[Phobos] Dump ObjectInfo runs.\n");
 			auto pType = pFoot->GetTechnoType();
 			append("ID = %s, ", pType->ID);
-			append("Owner = %ls(%s), ", pFoot->Owner->UIName, pFoot->Owner->PlainName);
+			append("Owner = %s (%s), ", pFoot->Owner->get_ID(), pFoot->Owner->PlainName);
 			append("Location = (%d, %d), ", pFoot->GetMapCoords().X, pFoot->GetMapCoords().Y);
-			append("Current Mission = %d(%s)\n", pFoot->CurrentMission, getMissionName((int)pFoot->CurrentMission));
-			display();
+			append("Current Mission = %d (%s)\n", pFoot->CurrentMission, getMissionName((int)pFoot->CurrentMission));
+			
 			if (pFoot->BelongsToATeam())
 			{
 				auto pTeam = pFoot->Team;
-				append("Team ID = %s, Script ID = %s, Taskforce ID = %s\n",
-					pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->Type->TaskForce->ID);
+				append("Team ID = %s, Script ID = %s, Taskforce ID = %s",
+					pTeam->Type->ID, pTeam->CurrentScript->Type->get_ID(), pTeam->Type->TaskForce->ID);
 				display();
-				append("Current Script Line = %d", pTeam->CurrentScript->idxCurrentLine);
+				if (pTeam->CurrentScript->idxCurrentLine >= 0)
+					append("Current Script [Line = Action, Argument]: %d = %d,%d", pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions->Action, pTeam->CurrentScript->Type->ScriptActions->Argument);
+				else
+					append("Current Script [Line = Action, Argument]: %d", pTeam->CurrentScript->idxCurrentLine);
 				display();
 			}
+
 			append("Current HP = (%d / %d)\n", pFoot->Health, pType->Strength);
 			display();
 		};
@@ -166,7 +170,7 @@ public:
 			append("[Phobos] Dump ObjectInfo runs.\n");
 			auto pType = pBuilding->GetTechnoType();
 			append("ID = %s, ", pType->ID);
-			append("Owner = %ls(%s), ", pBuilding->Owner->UIName, pBuilding->Owner->PlainName);
+			append("Owner = %s (%s), ", pBuilding->Owner->get_ID(), pBuilding->Owner->PlainName);
 			append("Location = (%d, %d)\n", pBuilding->GetMapCoords().X, pBuilding->GetMapCoords().Y);
 			append("Current HP = (%d / %d)\n", pBuilding->Health, pBuilding->Type->Strength);
 			display();
@@ -203,7 +207,7 @@ public:
 			if (ObjectClass::CurrentObjects->Count > 0)
 			{
 				if (ObjectClass::CurrentObjects->Count != 1)
-					MessageListClass::Instance->PrintMessage(L"This command will only dump one of these selected object", 150, 5, true);
+					MessageListClass::Instance->PrintMessage(L"This command will only dump one of these selected object", 600, 5, true);
 				dumpInfo(ObjectClass::CurrentObjects->GetItem(ObjectClass::CurrentObjects->Count - 1));
 			}
 	}
