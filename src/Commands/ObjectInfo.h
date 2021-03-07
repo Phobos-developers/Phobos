@@ -11,10 +11,12 @@
 
 #include "../Ext/TechnoType/Body.h"
 
+
+// #53 New debug feature for AI scripts
 class ObjectInfoCommandClass : public PhobosCommandClass
 {
 public:
-	//CommandClass
+	
 	virtual const char* GetName() const override
 	{
 		return "Dump ObjectInfo";
@@ -48,6 +50,9 @@ public:
 
 	virtual void Execute(DWORD dwUnk) const override
 	{
+		if (this->CheckDebugDeactivated())
+			return;
+
 		char buffer[0x800] = { 0 };
 
 		auto append = [&buffer](const char* pFormat, ...)
@@ -148,7 +153,7 @@ public:
 			append("Owner = %s (%s), ", pFoot->Owner->get_ID(), pFoot->Owner->PlainName);
 			append("Location = (%d, %d), ", pFoot->GetMapCoords().X, pFoot->GetMapCoords().Y);
 			append("Current Mission = %d (%s)\n", pFoot->CurrentMission, getMissionName((int)pFoot->CurrentMission));
-			
+
 			if (pFoot->BelongsToATeam())
 			{
 				auto pTeam = pFoot->Team;

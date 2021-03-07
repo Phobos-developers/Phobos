@@ -6,7 +6,7 @@
 #include <SwizzleManagerClass.h>
 
 #include "../Utilities/Debug.h"
-//#include "Stream.h"
+#include "../Misc/Stream.h"
 
 enum class InitState {
 	Blank = 0x0, // CTOR'd
@@ -305,4 +305,110 @@ public:
 		this->SavingObject = key;
 		this->SavingStream = pStm;
 	}
+
+	void SaveStatic() {
+		if (this->SavingObject && this->SavingStream) {
+			if (!this->Save(this->SavingObject, this->SavingStream)) {
+				Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[SaveStatic] Saving failed!\n");
+			}
+		}
+		else {
+			Debug::Log("[SaveStatic] Object or Stream not set for '%s': %p, %p\n",
+				this->Name, this->SavingObject, this->SavingStream);
+		}
+
+		this->SavingObject = nullptr;
+		this->SavingStream = nullptr;
+	}
+
+	void LoadStatic() {
+		if (this->SavingObject && this->SavingStream) {
+
+			if (!this->Load(this->SavingObject, this->SavingStream)) {
+				Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[LoadStatic] Loading failed!\n");
+			}
+		}
+		else {
+			Debug::Log("[LoadStatic] Object or Stream not set for '%s': %p, %p\n",
+				this->Name, this->SavingObject, this->SavingStream);
+		}
+
+		this->SavingObject = nullptr;
+		this->SavingStream = nullptr;
+	}
+
+	protected:
+		// override this method to do type-specific stuff
+		virtual bool Save(key_type key, IStream* pStm) {
+			return this->SaveKey(key, pStm) != nullptr;
+		}
+
+		// override this method to do type-specific stuff
+		virtual bool Load(key_type key, IStream* pStm) {
+			return this->LoadKey(key, pStm) != nullptr;
+		}
+
+		value_type SaveKey(key_type key, IStream* pStm) {
+			// this really shouldn't happen
+			if (!key) {
+				Debug::Log("[SaveKey] Attempted for a null pointer! WTF!\n");
+				return nullptr;
+			}
+
+			// get the value data
+			auto buffer = this->Find(key);
+			if (!buffer) {
+				Debug::Log("[SaveKey] Could not find value.\n");
+				return nullptr;
+			}
+
+			// write the current pointer, the size of the block, and the canary
+			PhobosStreamWriter::Process(pStm, extension_type::Canary);
+			PhobosStreamWriter::Process(pStm, buffer);
+			// save the data
+			buffer->SaveToStream(pStm);
+
+			// save the block
+			PhobosStreamWriter::Process(pStm, sizeof(*buffer));
+			if (PhobosStreamWriter::Process(pStm,*buffer)) {
+				Debug::Log("[SaveKey] Failed to save data.\n");
+				return nullptr;
+			}
+
+			// done
+			return buffer;
+		}
+
+		value_type LoadKey(key_type key, IStream* pStm) {
+			// this really shouldn't happen
+			if (!key) {
+				Debug::Log("[LoadKey] Attempted for a null pointer! WTF!\n");
+				return nullptr;
+			}
+
+			// get the value data
+			auto buffer = this->FindOrAllocate(key);
+			if (!buffer) {
+				Debug::Log("[LoadKey] Could not find or allocate value.\n");
+				return nullptr;
+			}
+
+			size_t size;
+			PhobosStreamReader::Process(pStm, size); // extension_type::Canary
+			if (size == extension_type::Canary)
+			{
+				PhobosStreamReader::Process(pStm, buffer);
+				buffer->LoadFromStream(pStm);
+				PhobosStreamReader::Process(pStm, size);
+				if (size == sizeof(*buffer))
+					PhobosStreamReader::Process(pStm, *buffer);
+				else
+					Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, 
+						"[LoadKey] Size isn't correct as I excepted.");
+			}
+			else
+				Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, 
+					"[LoadKey] %s's Canary isn't correct as I excepted.", this->Name);
+			return nullptr;
+		}
 };

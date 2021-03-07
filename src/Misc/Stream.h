@@ -18,7 +18,7 @@ public:
     {
         if (SUCCEEDED(Stm->Read(&value, sizeof T, 0)))
             return true;
-        FatalExit(114514);
+        Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[PhobosStreamReader] Failed to save value!\n");
         return false;
     }
 
@@ -27,7 +27,7 @@ public:
     {
         if (SUCCEEDED(Stm->Read(&value, nSize, 0)))
             return true;
-        FatalExit(114514);
+        Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[PhobosStreamReader] Failed to save value!\n");
         return false;
     }
 
@@ -71,7 +71,7 @@ public:
     {
         if (SUCCEEDED(Stm->Write(&value, sizeof T, 0)))
             return true;
-        FatalExit(1919810);
+        Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[PhobosStreamReader] Failed to save value!\n");
         return false;
     }
 
@@ -80,7 +80,7 @@ public:
     {
         if (SUCCEEDED(Stm->Write(&value, nSize, 0)))
             return true;
-        FatalExit(1919810);
+        Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[PhobosStreamReader] Failed to save value!\n");
         return false;
     }
 
