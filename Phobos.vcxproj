@@ -13,13 +13,17 @@
   <ItemGroup>
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\Dummy.h" />
+    <ClCompile Include="src\Ext\BulletType\Body.cpp" />
+    <ClCompile Include="src\Ext\Bullet\Body.cpp" />
     <ClCompile Include="src\Ext\SWType\Body.cpp" />
     <ClCompile Include="src\Ext\Side\Body.cpp" />
     <ClCompile Include="src\Ext\Side\Hooks.cpp" />
     <ClCompile Include="src\Ext\Side\Hooks.SidebarGDIPositions.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Body.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hook.cpp" />
+    <ClCompile Include="src\Ext\Techno\Body.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Body.cpp" />
+    <ClCompile Include="src\Ext\WeaponType\Hooks.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
     <ClCompile Include="src\Misc\Savegame.cpp" />
     <ClCompile Include="src\Misc\ExtendedToolTips.cpp" />
@@ -44,9 +48,12 @@
     <ClInclude Include="src\Commands\Commands.h" />
     <ClInclude Include="src\ExtraHeaders\CCToolTip.h" />
     <ClInclude Include="src\ExtraHeaders\Themes.h" />
+    <ClInclude Include="src\Ext\BulletType\Body.h" />
+    <ClInclude Include="src\Ext\Bullet\Body.h" />
     <ClInclude Include="src\Ext\SWType\Body.h" />
     <ClInclude Include="src\Ext\Side\Body.h" />
     <ClInclude Include="src\Ext\TechnoType\Body.h" />
+    <ClInclude Include="src\Ext\Techno\Body.h" />
     <ClInclude Include="src\Ext\WeaponType\Body.h" />
     <ClInclude Include="src\Misc\ExtendedToolTips.h" />
     <ClInclude Include="src\Misc\Stream.h" />

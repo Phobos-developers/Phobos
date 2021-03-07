@@ -1,7 +1,11 @@
 #include <UnitClass.h>
 #include <BuildingClass.h>
+#include <ScenarioClass.h>
+#include <HouseClass.h>
 
 #include "Body.h"
+#include "../BulletType/Body.h"
+#include "../Techno/Body.h"
 
 DEFINE_HOOK(6F64A9, HealthBar_Hide, 5)
 {
@@ -65,6 +69,37 @@ DEFINE_HOOK(6F9E50, TechnoClass_Update, 5)
 				// Just when the deployment into structure ended the vehicle forgot the target. Just attack the original target.
 				pThis->Target = pThis->LastTarget;
 				pThis->QueueMission(Mission::Attack, 0);
+			}
+		}
+	}
+
+	// Interceptor
+	auto pData = TechnoExt::ExtMap.Find(pThis);
+	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (pTypeData->Interceptor && !pThis->Target)
+	{
+		for (auto const& pBullet : *BulletClass::Array) {
+			if (auto pBulletTypeData = BulletTypeExt::ExtMap.Find(pBullet->Type)) {
+				if (!pBulletTypeData->Interceptable)
+					continue;
+			}
+
+			const double guardRange = pThis->Veterancy.IsElite() ?
+				pTypeData->Interceptor_EliteGuardRange * 256 : pTypeData->Interceptor_GuardRange * 256;
+
+			if (pBullet->Location.DistanceFrom(pThis->Location) > guardRange)
+				continue;
+
+			if (pBullet->Location.DistanceFrom(pBullet->TargetCoords) >
+				double(ScenarioClass::Instance->Random.RandomRanged(128, (int)guardRange / 10)) * 10)
+				continue;
+
+			if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target)) {
+				if (pThis->Owner->IsAlliedWith(pTarget)) {
+					pThis->SetTarget(pBullet);
+					pData->InterceptedBullet = pBullet;
+					break;
+				}
 			}
 		}
 	}
