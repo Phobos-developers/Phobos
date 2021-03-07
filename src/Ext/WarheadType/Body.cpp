@@ -26,6 +26,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
 	this->RemoveDisguise_AffectAllies.Read(exINI, pSection, "RemoveDisguise.AffectAllies");
 	this->RemoveDisguise_ApplyCellSpread.Read(exINI, pSection, "RemoveDisguise.ApplyCellSpread");
+	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
+	this->RemoveMindControl_AffectAllies.Read(exINI, pSection, "RemoveMindControl.AffectAllies");
+	this->RemoveMindControl_ApplyCellSpread.Read(exINI, pSection, "RemoveMindControl.ApplyCellSpread");
 }
 
 void WarheadTypeExt::ExtData::LoadFromStream(IStream* Stm) {
@@ -37,6 +40,9 @@ void WarheadTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	this->RemoveDisguise.Load(Stm);
 	this->RemoveDisguise_AffectAllies.Load(Stm);
 	this->RemoveDisguise_ApplyCellSpread.Load(Stm);
+	this->RemoveMindControl.Load(Stm);
+	this->RemoveMindControl_AffectAllies.Load(Stm);
+	this->RemoveMindControl_ApplyCellSpread.Load(Stm);
 }
 
 void WarheadTypeExt::ExtData::SaveToStream(IStream* Stm) const {
@@ -48,6 +54,9 @@ void WarheadTypeExt::ExtData::SaveToStream(IStream* Stm) const {
 	this->RemoveDisguise.Save(Stm);
 	this->RemoveDisguise_AffectAllies.Save(Stm);
 	this->RemoveDisguise_ApplyCellSpread.Save(Stm);
+	this->RemoveMindControl.Save(Stm);
+	this->RemoveMindControl_AffectAllies.Save(Stm);
+	this->RemoveMindControl_ApplyCellSpread.Save(Stm);
 }
 
 // =============================
