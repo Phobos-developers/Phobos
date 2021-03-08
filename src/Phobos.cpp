@@ -108,9 +108,9 @@ DEFINE_HOOK(5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 5)
 {
 	Phobos::Config::ToolTipDescriptions = Unsorted::RA2MDINI->ReadBool("Phobos", "ToolTipDescriptions", true);
 	Phobos::Config::PrioritySelectionFiltering = Unsorted::RA2MDINI->ReadBool("Phobos", "PrioritySelectionFiltering", true);
-	Phobos::Config::DevelopmentCommands = Unsorted::RA2MDINI->ReadBool("Phobos", "DevelopmentCommands", false);
-
-	CCINIClass* pINI = Phobos::OpenConfig("uimd.ini");
+	CCINIClass* pRulesINI = Phobos::OpenConfig("rulesmd.ini");
+	Phobos::Config::DevelopmentCommands = pRulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", true);
+	CCINIClass *pINI = Phobos::OpenConfig("uimd.ini");
 
 	// LoadingScreen
 	{
