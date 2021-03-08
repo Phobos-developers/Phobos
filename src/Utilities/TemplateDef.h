@@ -415,61 +415,33 @@ namespace detail {
 	}
 
 	template <>
-	inline bool read<SuperWeaponAffectedHouse>(SuperWeaponAffectedHouse& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
+	inline bool read<AffectsHouses>(AffectsHouses& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
 		if (parser.ReadString(pSection, pKey)) {
-			auto parsed = SuperWeaponAffectedHouse::None;
+			auto parsed = AffectsHouses::None;
 
 			auto str = parser.value();
 			char* context = nullptr;
 			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context)) {
-				if (!_strcmpi(cur, "owner")) {
-					parsed |= SuperWeaponAffectedHouse::Owner;
+				if (!_strcmpi(cur, "owner") || !_strcmpi(cur, "self")) {
+					parsed |= AffectsHouses::Owner;
 				}
-				else if (!_strcmpi(cur, "allies")) {
-					parsed |= SuperWeaponAffectedHouse::Allies;
+				else if (!_strcmpi(cur, "allies") || !_strcmpi(cur, "ally")) {
+					parsed |= AffectsHouses::Allies;
 				}
-				else if (!_strcmpi(cur, "enemies")) {
-					parsed |= SuperWeaponAffectedHouse::Enemies;
+				else if (!_strcmpi(cur, "enemies") || !_strcmpi(cur, "enemy")) {
+					parsed |= AffectsHouses::Enemies;
 				}
 				else if (!_strcmpi(cur, "team")) {
-					parsed |= SuperWeaponAffectedHouse::Team;
+					parsed |= AffectsHouses::Team;
 				}
 				else if (!_strcmpi(cur, "others")) {
-					parsed |= SuperWeaponAffectedHouse::NotOwner;
+					parsed |= AffectsHouses::NotOwner;
 				}
 				else if (!_strcmpi(cur, "all")) {
-					parsed |= SuperWeaponAffectedHouse::All;
+					parsed |= AffectsHouses::All;
 				}
 				else if (_strcmpi(cur, "none")) {
-					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a super weapon affected house");
-					return false;
-				}
-			}
-			value = parsed;
-			return true;
-		}
-		return false;
-	}
-
-	template <>
-	inline bool read<CanTargetFlags>(CanTargetFlags& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
-		if (parser.ReadString(pSection, pKey)) {
-			auto parsed = CanTargetFlags::None;
-
-			auto str = parser.value();
-			char* context = nullptr;
-			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context)) {
-				if (!_strcmpi(cur, "self")) {
-					parsed |= CanTargetFlags::Self;
-				}
-				else if (!_strcmpi(cur, "ally")) {
-					parsed |= CanTargetFlags::Ally;
-				}
-				else if (!_strcmpi(cur, "enemy")) {
-					parsed |= CanTargetFlags::Enemy;
-				}
-				else if (_strcmpi(cur, "none")) {
-					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a can target flag");
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an affected house");
 					return false;
 				}
 			}

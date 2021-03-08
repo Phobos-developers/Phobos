@@ -18,11 +18,11 @@ public:
 	class ExtData final : public Extension<BuildingTypeClass>
 	{
 	public:
-		Valueable<CanTargetFlags> PowersUp_Owner;
+		Valueable<AffectsHouses> PowersUp_Owner;
 		ValueableIdxVector<BuildingTypeClass> PowersUp_Buildings;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject),
-			PowersUp_Owner(CanTargetFlags::Self),
+			PowersUp_Owner(AffectsHouses::Owner),
 			PowersUp_Buildings()
 		{ }
 
