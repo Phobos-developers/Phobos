@@ -140,10 +140,9 @@ DEFINE_HOOK(5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 5)
 	return 0;
 }
 
-DEFINE_HOOK(668F6A, RulesClass_Process_Phobos, 5)
+DEFINE_HOOK(66E9DF, RulesClass_Process_Phobos, 8)
 {
-	//GET(RulesClass*, rules, EDI);
-	GET(CCINIClass*, rulesINI, ESI);
+	GET(CCINIClass*, rulesINI, EDI);
 
 	Phobos::Config::DevelopmentCommands = rulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", true);
 
