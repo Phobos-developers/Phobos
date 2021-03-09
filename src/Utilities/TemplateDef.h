@@ -168,6 +168,14 @@ namespace detail {
 	}
 
 	template <>
+	inline bool read<CoordStruct>(CoordStruct& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
+		if (parser.Read3Integers(pSection, pKey, (int*)&value)) {
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<SHPStruct*>(SHPStruct*& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
 		if (parser.ReadString(pSection, pKey)) {
 			char flag[256];

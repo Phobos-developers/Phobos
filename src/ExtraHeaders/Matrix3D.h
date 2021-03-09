@@ -17,6 +17,7 @@ const Vector4D<T> Vector4D<T>::Empty = { T(), T(), T(), T() };
 
 class NOVTABLE Matrix3D
 {
+public:
 	union
 	{
 		Vector4D<float> Row[3];
@@ -25,14 +26,14 @@ class NOVTABLE Matrix3D
 	};
 
 	// plain floats ctor
-	__thiscall Matrix3D::Matrix3D(
+	Matrix3D::Matrix3D(
 		float m00, float m01, float m02, float m03,
 		float m10, float m11, float m12, float m13,
 		float m20, float m21, float m22, float m23)
 		{ JMP_THIS(0x5AE630); }
 
 	// column vector ctor
-	__thiscall Matrix3D::Matrix3D(
+	Matrix3D::Matrix3D(
 		Vector3D<float> const& vec0,
 		Vector3D<float> const& vec1,
 		Vector3D<float> const& vec2,
@@ -40,34 +41,34 @@ class NOVTABLE Matrix3D
 		{ JMP_THIS(0x5AE690); }
 
 	// some other rotation ctor?
-	__thiscall Matrix3D::Matrix3D(float unknown1, float unknown2)
+	Matrix3D::Matrix3D(float unknown1, float unknown2)
 		{ JMP_THIS(0x5AE6F0); }
 
 	// rotation ctor
-	__thiscall Matrix3D::Matrix3D(Vector3D<float>* axis, float angle)
+	Matrix3D::Matrix3D(Vector3D<float>* axis, float angle)
 		{ JMP_THIS(0x5AE750); }
 
 	// copy ctor
-	__thiscall Matrix3D::Matrix3D(Matrix3D* copyOf)
+	Matrix3D::Matrix3D(Matrix3D* copyOf)
 		{ JMP_THIS(0x5AE610); }
 
 	// 1-matrix
-	void __thiscall Matrix3D::MakeIdentity()
+	void Matrix3D::MakeIdentity()
 		{ JMP_THIS(0x5AE860); }
 
-	void __thiscall Matrix3D::Translate(float x, float y, float z)
+	void Matrix3D::Translate(float x, float y, float z)
 		{ JMP_THIS(0x5AE890); }
 
-	void __thiscall Matrix3D::Translate(Vector3D<float> const& vec)
+	void Matrix3D::Translate(Vector3D<float> const& vec)
 		{ JMP_THIS(0x5AE8F0); }
 
-	void __thiscall Matrix3D::TranslateX(float x)
+	void Matrix3D::TranslateX(float x)
 		{ JMP_THIS(0x5AE980); }
 
-	void __thiscall Matrix3D::TranslateY(float y)
+	void Matrix3D::TranslateY(float y)
 		{ JMP_THIS(0x5AE9B0); }
 
-	void __thiscall Matrix3D::TranslateZ(float z)
+	void Matrix3D::TranslateZ(float z)
 		{ JMP_THIS(0x5AE9E0); }
 	/*
 	void __thiscall Matrix3D::Scale(float factor)
