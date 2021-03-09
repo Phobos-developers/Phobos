@@ -9,6 +9,7 @@
 
 #include "../../Utilities/Debug.h"
 #include "../../Utilities/TemplateDef.h"
+#include "../../ExtraHeaders/Matrix3D.h"
 
 class TechnoTypeExt
 {
@@ -28,6 +29,7 @@ public:
 		Valueable<bool> Interceptor;
 		Valueable<double> Interceptor_GuardRange;
 		Valueable<double> Interceptor_EliteGuardRange;
+		Valueable<CoordStruct> TurretOffset;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
@@ -38,7 +40,8 @@ public:
 			MindControlRangeLimit(-1.0),
 			Interceptor(false),
 			Interceptor_GuardRange(0.0),
-			Interceptor_EliteGuardRange(0.0)
+			Interceptor_EliteGuardRange(0.0),
+			TurretOffset({0, 0, 0})
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
@@ -50,6 +53,9 @@ public:
 
 		virtual void SaveToStream(IStream* Stm) const;
 
+		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
+
+		// Ares 0.A
 		const char* GetSelectionGroupID() const;
 	};
 
@@ -59,9 +65,12 @@ public:
 		~ExtContainer();
 	};
 
+	static void TransferMindControl(TechnoClass* From, TechnoClass* To);
+	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
+
+	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
 	static bool HasSelectionGroupID(ObjectTypeClass* pType, const char* pID);
-	static void TransferMindControl(TechnoClass* From, TechnoClass* To);
 
 	static ExtContainer ExtMap;
 };
