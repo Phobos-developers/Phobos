@@ -139,7 +139,7 @@ public:
 
 DEFINE_HOOK(6D9FF0, Tactical_MakeSelection_FilterSelection, 0)
 {
-	auto IsSelectable = R->Base<bool(__fastcall*)(ObjectClass*)>(4);
+	auto IsSelectable = R->Stack<bool(__fastcall*)(ObjectClass*)>(4);
 	GET(TacticalClass*, pThis, ECX);
 	ExtSelection::Tactical_MakeFilteredSelection(pThis, IsSelectable);
 	return 0x6DA075;
