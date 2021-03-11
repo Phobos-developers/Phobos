@@ -177,21 +177,24 @@ DEFINE_HOOK(6F9E56, TechnoClass_Update_PoweredKillSpawns, 5)
 	auto pTechnoData = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
 
 	if (pTechno->WhatAmI() == AbstractType::Building) {
-		auto pBuilding = static_cast<BuildingClass*>(pTechno);
+		auto pBuilding = abstract_cast<BuildingClass*>(pTechno);
+
 		if (pTechnoData->Powered_KillSpawns && pBuilding->Type->Powered && !pBuilding->IsPowerOnline()) {
 			if (auto pManager = pBuilding->SpawnManager) {
 				pManager->ResetTarget();
-				for (auto pItem : pManager->SpawnedNodes)
-				{
-					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
+
+				for (auto pItem : pManager->SpawnedNodes) {
+					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning) {
 						pItem->Unit->ReceiveDamage(
 							&pItem->Unit->Health,
 							0,
 							RulesClass::Global()->C4Warhead,
 							nullptr, false, false, nullptr);
+					}
 				}
 			}
 		}
 	}
+
 	return 0;
 }
