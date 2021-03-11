@@ -171,37 +171,27 @@ DEFINE_HOOK(43E0C4, BuildingClass_Draw_43DA80_TurretMultiOffset, 0)
 }
 
 // Kill all Spawns if the structure has low power & reset target
-DEFINE_HOOK(6F9E56, TechnoClass_Update2, 5)
+DEFINE_HOOK(6F9E56, TechnoClass_Update_PoweredKillSpawns, 5)
 {
 	GET(TechnoClass*, pTechno, ECX);
-	auto const abs = pTechno->WhatAmI();
 	auto pTechnoData = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
 
-	if (abs == AbstractType::Building) {
-		BuildingClass *pBuilding = static_cast<BuildingClass*>(pTechno);
-
-		if (pTechnoData->PoweredKillSpawns == true && pBuilding->Type->Powered == true && !pBuilding->IsPowerOnline()) {
-			if (pTechno->SpawnManager != NULL) {
-				pBuilding->SpawnManager->ResetTarget();
-
-				if (pBuilding->SpawnManager->SpawnedNodes.Count)
-					for (int i = 0; i < pBuilding->SpawnManager->SpawnedNodes.Count; i++) {
-						auto pitem = pBuilding->SpawnManager->SpawnedNodes[i];
-
-						//SpawnedNodes.Status possible values:
-						//Status: 0 -> Ready ?
-						//Status: 2 -> Docked / standby
-						//Status: 3 -> Flying going to the target <---
-						//Status: 4 -> Flying returning to dock   <---
-						//Status: 6 -> Reloading ammo in the dock ?
-						//Status: 7 -> Dead
-						if (static_cast<int>(pitem->Status) == 3 || static_cast<int>(pitem->Status) == 4) {
-							pitem->Unit->ReceiveDamage(&pitem->Unit->Health, 0, RulesClass::Global()->C4Warhead, nullptr, false, false, nullptr);
-						}
-					}
+	if (pTechno->WhatAmI() == AbstractType::Building) {
+		auto pBuilding = static_cast<BuildingClass*>(pTechno);
+		if (pTechnoData->Powered_KillSpawns && pBuilding->Type->Powered && !pBuilding->IsPowerOnline()) {
+			if (auto pManager = pBuilding->SpawnManager) {
+				pManager->ResetTarget();
+				for (auto pItem : pManager->SpawnedNodes)
+				{
+					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
+						pItem->Unit->ReceiveDamage(
+							&pItem->Unit->Health,
+							0,
+							RulesClass::Global()->C4Warhead,
+							nullptr, false, false, nullptr);
+				}
 			}
 		}
 	}
-
 	return 0;
 }
