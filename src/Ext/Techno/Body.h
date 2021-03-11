@@ -3,6 +3,8 @@
 #include <Helpers/Enumerators.h>
 #include <TechnoClass.h>
 #include <BulletClass.h>
+#include <BuildingClass.h>
+#include <SpawnManagerClass.h>
 
 #include "../_Container.hpp"
 #include "../../Phobos.h"
