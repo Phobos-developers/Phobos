@@ -31,6 +31,8 @@ public:
 		Valueable<double> Interceptor_EliteGuardRange;
 		Valueable<CoordStruct> TurretOffset;
 		Valueable<bool> Powered_KillSpawns;
+		Valueable<bool> Spawn_LimitedRange;
+		Valueable<int> Spawn_LimitedExtraRange;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
@@ -43,7 +45,9 @@ public:
 			Interceptor_GuardRange(0.0),
 			Interceptor_EliteGuardRange(0.0),
 			TurretOffset({0, 0, 0}),
-			Powered_KillSpawns(false)
+			Powered_KillSpawns(false),
+			Spawn_LimitedRange(false),
+			Spawn_LimitedExtraRange(0)
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;

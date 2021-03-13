@@ -196,5 +196,60 @@ DEFINE_HOOK(6F9E56, TechnoClass_Update_PoweredKillSpawns, 5)
 		}
 	}
 
+	if (pTechnoData->Spawn_LimitedRange) {
+		if (auto pManager = pTechno->SpawnManager) {
+			auto pTechnoType = pTechno->GetTechnoType();
+			int weaponRange = 0;
+			int weaponRangeExtra = pTechnoData->Spawn_LimitedExtraRange * 256;
+
+			if (pTechnoType->Weapon[0].WeaponType) {
+				auto newRange = pTechnoType->Weapon[0].WeaponType->Range;
+				auto isWeaponSpawner = pTechnoType->Weapon[0].WeaponType->Spawner;
+
+				if (isWeaponSpawner) {
+					if (newRange > weaponRange) {
+						weaponRange = newRange;
+					}
+				}
+			}
+			if (pTechnoType->Weapon[1].WeaponType) {
+				auto newRange = pTechnoType->Weapon[1].WeaponType->Range;
+				auto isWeaponSpawner = pTechnoType->Weapon[1].WeaponType->Spawner;
+
+				if (isWeaponSpawner) {
+					if (newRange > weaponRange) {
+						weaponRange = newRange;
+					}
+				}
+			}
+			if (pTechnoType->EliteWeapon[0].WeaponType) {
+				auto newRange = pTechnoType->EliteWeapon[0].WeaponType->Range;
+				auto isWeaponSpawner = pTechnoType->EliteWeapon[0].WeaponType->Spawner;
+
+				if (isWeaponSpawner) {
+					if (newRange > weaponRange) {
+						weaponRange = newRange;
+					}
+				}
+			}
+			if (pTechnoType->EliteWeapon[1].WeaponType) {
+				auto newRange = pTechnoType->EliteWeapon[1].WeaponType->Range;
+				auto isWeaponSpawner = pTechnoType->EliteWeapon[1].WeaponType->Spawner;
+
+				if (isWeaponSpawner) {
+					if (newRange > weaponRange) {
+						weaponRange = newRange;
+					}
+				}
+			}
+
+			weaponRange += weaponRangeExtra;
+			if (pManager->Target && (pTechno->DistanceFrom(pManager->Target) > weaponRange))
+			{
+				pManager->ResetTarget();
+			}
+		}
+	}
+
 	return 0;
 }
