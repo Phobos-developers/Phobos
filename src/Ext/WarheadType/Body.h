@@ -49,8 +49,6 @@ public:
 		virtual void SaveToStream(IStream* Stm) const;
 	};
 
-	static void ReshroudMapForOpponents(HouseClass* pThisHouse);
-
 	class ExtContainer final : public Container<WarheadTypeExt> {
 	public:
 		ExtContainer();

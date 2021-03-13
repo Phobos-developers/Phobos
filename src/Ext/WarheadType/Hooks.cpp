@@ -6,24 +6,11 @@
 #include "Body.h"
 #include <ScenarioClass.h>
 #include <InfantryClass.h>
+#include <TechnoClass.h>
 
 #include "../../Utilities/Helpers.Alex.h"
 
-void WarheadTypeExt::ReshroudMapForOpponents(HouseClass* pThisHouse) {
-	for (auto pOtherHouse : *HouseClass::Array) {
-
-		if (pOtherHouse->ControlledByHuman() &&
-			!pOtherHouse->IsObserver() &&
-			!pOtherHouse->Defeated &&
-			pOtherHouse != pThisHouse &&
-			!pOtherHouse->IsAlliedWith(pThisHouse)
-			)
-		{
-			pOtherHouse->ReshroudMap();
-		}
-	}
-}
-
+/*
 DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 {
 	GET(BulletClass * const, pThis, ESI);
@@ -34,9 +21,34 @@ DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 
 	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
 
+	return 0;
+}
+*/
+
+DEFINE_HOOK(489286, MapClass_DamageArea, 6)
+{
+	GET(const CoordStruct*, pCoordsDetonation, ECX);
+	// GET(const int, Damage, EDX);
+
+	// GET_BASE(const TechnoClass*, SourceObject, 0x08);
+	GET_BASE(const WarheadTypeClass*, pWH, 0x0C);
+	// GET_BASE(const bool, AffectsTiberium, 0x10);
+	GET_BASE(HouseClass*, pThisHouse, 0x14);
+
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
 	if (pThisHouse) {
 		if (pWHExt->BigGap) {
-			WarheadTypeExt::ReshroudMapForOpponents(pThisHouse);
+			for (auto pOtherHouse : *HouseClass::Array) {
+				if (pOtherHouse->ControlledByHuman() &&	    // Not AI
+					!pOtherHouse->IsObserver() &&           // Not Observer
+					!pOtherHouse->Defeated &&               // Not Defeated
+					pOtherHouse != pThisHouse &&            // Not pThisHouse
+					!pThisHouse->IsAlliedWith(pOtherHouse)) // Not Allied
+				{
+					pOtherHouse->ReshroudMap();
+				}
+			}
 		}
 
 		if (pWHExt->SpySat) {
@@ -69,8 +81,6 @@ DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 				for (auto member : items)
 					applyRemoveDisguiseToInf(member);
 			}
-			else
-				applyRemoveDisguiseToInf(pThis->Target);
 		}
 
 		if (pWHExt->RemoveMindControl) {
@@ -95,9 +105,6 @@ DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 				for (auto member : items)
 					applyRemoveMindControl(member);
 			}
-			else
-				if (auto pTarget = abstract_cast<TechnoClass*>(pThis->Target))
-					applyRemoveMindControl(pTarget);
 		}
 	}
 
