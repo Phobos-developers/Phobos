@@ -1,16 +1,12 @@
 #pragma once
-
-#include "../Phobos.h"
 #include "Commands.h"
-
-#include <TechnoTypeClass.h>
-#include <MessageListClass.h>
-#include <AITriggerTypeClass.h>
-#include <TeamClass.h>
-#include <WWMouseClass.h>
-
 #include "../Ext/TechnoType/Body.h"
 
+#include <BuildingClass.h>
+#include <FootClass.h>
+#include <TeamClass.h>
+#include <HouseClass.h>
+#include <ScriptClass.h>
 
 // #53 New debug feature for AI scripts
 class ObjectInfoCommandClass : public PhobosCommandClass

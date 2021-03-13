@@ -1,9 +1,7 @@
 #pragma once
-#include <Helpers/Macro.h>
-#include <CCINIClass.h>
-#include "Utilities/Debug.h"
-#include "Utilities/GeneralUtils.h"
 #include "Phobos.version.h"
+
+class CCINIClass;
 
 constexpr auto TOOLTIPS_SECTION = "ToolTips";
 

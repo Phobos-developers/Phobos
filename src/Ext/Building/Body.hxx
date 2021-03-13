@@ -1,5 +1,4 @@
 #include "Body.h"
-#include <BuildingClass.h>
 
 template<> const DWORD Extension<BuildingClass>::Canary = 0x87654321;
 BuildingExt::ExtContainer BuildingExt::ExtMap;

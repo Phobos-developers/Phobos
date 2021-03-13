@@ -1,13 +1,8 @@
 #pragma once
-
-#include <CCINIClass.h>
 #include <WeaponTypeClass.h>
 
+#include <Helpers/Macro.h>
 #include "../_Container.hpp"
-#include "../../Phobos.h"
-
-#include "../../Utilities/Debug.h"
-
 #include "../../Utilities/TemplateDef.h"
 
 class WeaponTypeExt

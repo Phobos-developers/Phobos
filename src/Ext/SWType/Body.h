@@ -1,12 +1,8 @@
 #pragma once
-
-#include <CCINIClass.h>
 #include <SuperWeaponTypeClass.h>
 
+#include <Helpers/Macro.h>
 #include "../_Container.hpp"
-#include "../../Phobos.h"
-#include "../../Utilities/GeneralUtils.h"
-
 #include "../../Utilities/TemplateDef.h"
 
 class SWTypeExt

@@ -2,6 +2,8 @@
 #include <BuildingClass.h>
 #include <ScenarioClass.h>
 #include <HouseClass.h>
+#include <SpawnManagerClass.h>
+#include <BulletClass.h>
 
 #include "Body.h"
 #include "../BulletType/Body.h"

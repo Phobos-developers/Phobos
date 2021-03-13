@@ -1,6 +1,8 @@
 #include "Body.h"
+
 #include <TechnoTypeClass.h>
 #include <StringTable.h>
+#include <Matrix3D.h>
 
 template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;

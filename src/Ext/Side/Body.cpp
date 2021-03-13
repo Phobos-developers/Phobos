@@ -1,7 +1,7 @@
 #include "Body.h"
+
 #include <Themes.h>
 
-//Static init
 template<> const DWORD Extension<SideClass>::Canary = 0x05B10501;
 SideExt::ExtContainer SideExt::ExtMap;
 

@@ -1,12 +1,9 @@
 #pragma once
-#include "../BuildingType/Body.h"
-#include <Helpers/Enumerators.h>
 #include <BuildingClass.h>
 
+#include <Helpers/Macro.h>
 #include "../_Container.hpp"
-#include "../../Phobos.h"
-
-#include "../../Utilities/Debug.h"
+#include "../../Utilities/TemplateDef.h"
 
 class BuildingExt
 {
@@ -17,14 +14,7 @@ public:
 	{
 	public:
 
-		//bool SpySat;
-		//bool BigGap;
-		//int TransactMoney;
-
-		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)//,
-			//SpySat(false),
-			//BigGap(false),
-			//TransactMoney(0)
+		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 		{ }
 
 

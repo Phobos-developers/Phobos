@@ -44,8 +44,7 @@
 #include <memory>
 #include <vector>
 
-#include "../Phobos.h"
-#include "../Misc/Stream.h"
+#include "../Utilities/GeneralUtils.h"
 
 class ConvertClass;
 

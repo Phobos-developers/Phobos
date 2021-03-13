@@ -1,7 +1,9 @@
 ﻿#include <StaticInits.cpp>
 #include <CCINIClass.h>
 #include <Unsorted.h>
+#include <Helpers/Macro.h>
 
+#include "Utilities/GeneralUtils.h"
 #include "Phobos.h"
 
 #ifndef IS_RELEASE_VER
