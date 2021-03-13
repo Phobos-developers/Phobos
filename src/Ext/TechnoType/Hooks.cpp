@@ -36,6 +36,9 @@ DEFINE_HOOK(6F9E50, TechnoClass_Update, 5)
 {
 	GET(TechnoClass*, pThis, ECX);
 
+	auto pData = TechnoExt::ExtMap.Find(pThis);
+	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
 	// MindControlRangeLimit
 	if (auto Capturer = pThis->MindControlledBy) {
 		auto pCapturerExt = TechnoTypeExt::ExtMap.Find(Capturer->GetTechnoType());
@@ -49,8 +52,6 @@ DEFINE_HOOK(6F9E50, TechnoClass_Update, 5)
 
 	// BuildingDeployerTargeting
 	if (pThis->WhatAmI() == AbstractType::Building) {
-		auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
 		// Prevent target loss when vehicles are deployed into buildings.
 		if (pTypeData->Deployed_RememberTarget)
 		{
@@ -74,9 +75,8 @@ DEFINE_HOOK(6F9E50, TechnoClass_Update, 5)
 	}
 
 	// Interceptor
-	auto pData = TechnoExt::ExtMap.Find(pThis);
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pTypeData->Interceptor && !pThis->Target)
+	if (pTypeData->Interceptor && !pThis->Target &&
+		!(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
 	{
 		for (auto const& pBullet : *BulletClass::Array) {
 			if (auto pBulletTypeData = BulletTypeExt::ExtMap.Find(pBullet->Type)) {
@@ -99,6 +99,27 @@ DEFINE_HOOK(6F9E50, TechnoClass_Update, 5)
 					pThis->SetTarget(pBullet);
 					pData->InterceptedBullet = pBullet;
 					break;
+				}
+			}
+		}
+	}
+
+	//Powered.KillSpawns
+	if (pThis->WhatAmI() == AbstractType::Building) {
+		auto pBuilding = abstract_cast<BuildingClass*>(pThis);
+
+		if (pTypeData->Powered_KillSpawns && pBuilding->Type->Powered && !pBuilding->IsPowerOnline()) {
+			if (auto pManager = pBuilding->SpawnManager) {
+				pManager->ResetTarget();
+
+				for (auto pItem : pManager->SpawnedNodes) {
+					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning) {
+						pItem->Unit->ReceiveDamage(
+							&pItem->Unit->Health,
+							0,
+							RulesClass::Global()->C4Warhead,
+							nullptr, false, false, nullptr);
+					}
 				}
 			}
 		}
@@ -168,33 +189,4 @@ DEFINE_HOOK(43E0C4, BuildingClass_Draw_43DA80_TurretMultiOffset, 0)
 	TechnoTypeExt::ApplyTurretOffset(technoType, mtx, 1 / 8);
 
 	return 0x43E0E8;
-}
-
-// Kill all Spawns if the structure has low power & reset target
-DEFINE_HOOK(6F9E56, TechnoClass_Update_PoweredKillSpawns, 5)
-{
-	GET(TechnoClass*, pTechno, ECX);
-	auto pTechnoData = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
-
-	if (pTechno->WhatAmI() == AbstractType::Building) {
-		auto pBuilding = abstract_cast<BuildingClass*>(pTechno);
-
-		if (pTechnoData->Powered_KillSpawns && pBuilding->Type->Powered && !pBuilding->IsPowerOnline()) {
-			if (auto pManager = pBuilding->SpawnManager) {
-				pManager->ResetTarget();
-
-				for (auto pItem : pManager->SpawnedNodes) {
-					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning) {
-						pItem->Unit->ReceiveDamage(
-							&pItem->Unit->Health,
-							0,
-							RulesClass::Global()->C4Warhead,
-							nullptr, false, false, nullptr);
-					}
-				}
-			}
-		}
-	}
-
-	return 0;
 }
