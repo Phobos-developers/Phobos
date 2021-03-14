@@ -1,8 +1,7 @@
 #pragma once
-
-#include <YRPP.h>
 #include <CommandClass.h>
-
+#include <StringTable.h>
+#include <MessageListClass.h>
 #include "../Phobos.h"
 
 class PhobosCommandClass : public CommandClass

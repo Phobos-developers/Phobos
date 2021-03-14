@@ -1,13 +1,8 @@
 #pragma once
-
-#include <CCINIClass.h>
 #include <WarheadTypeClass.h>
 
+#include <Helpers/Macro.h>
 #include "../_Container.hpp"
-#include "../../Phobos.h"
-
-#include "../../Utilities/Debug.h"
-
 #include "../../Utilities/TemplateDef.h"
 
 class WarheadTypeExt
@@ -53,8 +48,6 @@ public:
 
 		virtual void SaveToStream(IStream* Stm) const;
 	};
-
-	static void ReshroudMapForOpponents(HouseClass* pThisHouse);
 
 	class ExtContainer final : public Container<WarheadTypeExt> {
 	public:

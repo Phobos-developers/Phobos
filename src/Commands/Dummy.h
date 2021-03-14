@@ -1,16 +1,14 @@
 #pragma once
-
-#include "../Phobos.h"
-#include "Commands.h"
-
 #include <BuildingTypeClass.h>
-#include <HouseClass.h>
 #include <MessageListClass.h>
+
+#include "Commands.h"
+#include "../Utilities/Debug.h"
 
 class DummyCommandClass : public PhobosCommandClass
 {
 public:
-	//CommandClass
+	// CommandClass
 	virtual const char* GetName() const override
 	{
 		return "Phobos Dummy";

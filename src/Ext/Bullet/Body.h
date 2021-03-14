@@ -1,10 +1,8 @@
 #pragma once
-
-#include <Helpers/Enumerators.h>
 #include <BulletClass.h>
 
+#include <Helpers/Macro.h>
 #include "../_Container.hpp"
-#include "../../Phobos.h"
 #include "../../Utilities/TemplateDef.h"
 
 class BulletExt

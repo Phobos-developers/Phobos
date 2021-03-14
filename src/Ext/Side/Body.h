@@ -1,11 +1,8 @@
 #pragma once
-
-#include <CCINIClass.h>
 #include <SideClass.h>
 
-#include "../../Phobos.h"
+#include <Helpers/Macro.h>
 #include "../_Container.hpp"
-
 #include "../../Utilities/TemplateDef.h"
 
 class SideExt

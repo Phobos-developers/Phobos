@@ -2,6 +2,8 @@
 #include <BuildingClass.h>
 #include <ScenarioClass.h>
 #include <HouseClass.h>
+#include <SpawnManagerClass.h>
+#include <BulletClass.h>
 
 #include "Body.h"
 #include "../BulletType/Body.h"
@@ -36,6 +38,9 @@ DEFINE_HOOK(6F9E50, TechnoClass_Update, 5)
 {
 	GET(TechnoClass*, pThis, ECX);
 
+	auto pData = TechnoExt::ExtMap.Find(pThis);
+	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
 	// MindControlRangeLimit
 	if (auto Capturer = pThis->MindControlledBy) {
 		auto pCapturerExt = TechnoTypeExt::ExtMap.Find(Capturer->GetTechnoType());
@@ -49,8 +54,6 @@ DEFINE_HOOK(6F9E50, TechnoClass_Update, 5)
 
 	// BuildingDeployerTargeting
 	if (pThis->WhatAmI() == AbstractType::Building) {
-		auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
 		// Prevent target loss when vehicles are deployed into buildings.
 		if (pTypeData->Deployed_RememberTarget)
 		{
@@ -74,9 +77,8 @@ DEFINE_HOOK(6F9E50, TechnoClass_Update, 5)
 	}
 
 	// Interceptor
-	auto pData = TechnoExt::ExtMap.Find(pThis);
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pTypeData->Interceptor && !pThis->Target)
+	if (pTypeData->Interceptor && !pThis->Target &&
+		!(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
 	{
 		for (auto const& pBullet : *BulletClass::Array) {
 			if (auto pBulletTypeData = BulletTypeExt::ExtMap.Find(pBullet->Type)) {
@@ -99,6 +101,27 @@ DEFINE_HOOK(6F9E50, TechnoClass_Update, 5)
 					pThis->SetTarget(pBullet);
 					pData->InterceptedBullet = pBullet;
 					break;
+				}
+			}
+		}
+	}
+
+	//Powered.KillSpawns
+	if (pThis->WhatAmI() == AbstractType::Building) {
+		auto pBuilding = abstract_cast<BuildingClass*>(pThis);
+
+		if (pTypeData->Powered_KillSpawns && pBuilding->Type->Powered && !pBuilding->IsPowerOnline()) {
+			if (auto pManager = pBuilding->SpawnManager) {
+				pManager->ResetTarget();
+
+				for (auto pItem : pManager->SpawnedNodes) {
+					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning) {
+						pItem->Unit->ReceiveDamage(
+							&pItem->Unit->Health,
+							0,
+							RulesClass::Global()->C4Warhead,
+							nullptr, false, false, nullptr);
+					}
 				}
 			}
 		}

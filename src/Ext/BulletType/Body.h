@@ -1,10 +1,8 @@
 #pragma once
-
-#include <CCINIClass.h>
 #include <BulletTypeClass.h>
 
+#include <Helpers/Macro.h>
 #include "../_Container.hpp"
-#include "../../Phobos.h"
 #include "../../Utilities/TemplateDef.h"
 
 class BulletTypeExt

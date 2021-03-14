@@ -1,15 +1,11 @@
 #pragma once
-
-#include <CCINIClass.h>
 #include <TechnoTypeClass.h>
 
+#include <Helpers/Macro.h>
 #include "../_Container.hpp"
-#include "../../Phobos.h"
-#include "../../Utilities/GeneralUtils.h"
-
-#include "../../Utilities/Debug.h"
 #include "../../Utilities/TemplateDef.h"
-#include "../../ExtraHeaders/Matrix3D.h"
+
+class Matrix3D;
 
 class TechnoTypeExt
 {
