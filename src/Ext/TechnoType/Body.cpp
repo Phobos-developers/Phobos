@@ -29,6 +29,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->Interceptor_GuardRange.Read(exINI, pSection, "Interceptor.GuardRange");
 	this->Interceptor_EliteGuardRange.Read(exINI, pSection, "Interceptor.EliteGuardRange");
 	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
+	this->Spawn_LimitedRange.Read(exINI, pSection, "Spawner.LimitRange");
+	this->Spawn_LimitedExtraRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
@@ -51,6 +53,8 @@ void TechnoTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	PhobosStreamReader::Process(Stm, this->GroupAs);
 	this->TurretOffset.Load(Stm);
 	this->Powered_KillSpawns.Load(Stm);
+	this->Spawn_LimitedRange.Load(Stm);
+	this->Spawn_LimitedExtraRange.Load(Stm);
 }
 
 void TechnoTypeExt::ExtData::SaveToStream(IStream* Stm) const {
@@ -65,6 +69,8 @@ void TechnoTypeExt::ExtData::SaveToStream(IStream* Stm) const {
 	PhobosStreamWriter::Process(Stm, this->GroupAs);
 	this->TurretOffset.Save(Stm);
 	this->Powered_KillSpawns.Save(Stm);
+	this->Spawn_LimitedRange.Save(Stm);
+	this->Spawn_LimitedExtraRange.Save(Stm);
 }
 
 // =============================

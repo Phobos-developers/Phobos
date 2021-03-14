@@ -192,3 +192,57 @@ DEFINE_HOOK(43E0C4, BuildingClass_Draw_43DA80_TurretMultiOffset, 0)
 
 	return 0x43E0E8;
 }
+
+// Kill all Spawns if the structure has low power & reset target
+DEFINE_HOOK(6F9E56, TechnoClass_Update_PoweredKillSpawns, 5)
+{
+	GET(TechnoClass*, pTechno, ECX);
+	auto pTechnoData = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+
+	if (pTechno->WhatAmI() == AbstractType::Building) {
+		auto pBuilding = abstract_cast<BuildingClass*>(pTechno);
+
+		if (pTechnoData->Powered_KillSpawns && pBuilding->Type->Powered && !pBuilding->IsPowerOnline()) {
+			if (auto pManager = pBuilding->SpawnManager) {
+				pManager->ResetTarget();
+
+				for (auto pItem : pManager->SpawnedNodes) {
+					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning) {
+						pItem->Unit->ReceiveDamage(
+							&pItem->Unit->Health,
+							0,
+							RulesClass::Global()->C4Warhead,
+							nullptr, false, false, nullptr);
+					}
+				}
+			}
+		}
+	}
+
+	if (pTechnoData->Spawn_LimitedRange) {
+		if (auto pManager = pTechno->SpawnManager) {
+			auto pTechnoType = pTechno->GetTechnoType();
+			int weaponRange = 0;
+			int weaponRangeExtra = pTechnoData->Spawn_LimitedExtraRange * 256;
+
+			auto setWeaponRange = [&weaponRange](WeaponTypeClass* pWeaponType)
+			{
+				if (pWeaponType)
+					if (pWeaponType->Spawner && pWeaponType->Range > weaponRange)
+						weaponRange = pWeaponType->Range;
+			};
+
+			setWeaponRange(pTechnoType->Weapon[0].WeaponType);
+			setWeaponRange(pTechnoType->Weapon[1].WeaponType);
+			setWeaponRange(pTechnoType->EliteWeapon[0].WeaponType);
+			setWeaponRange(pTechnoType->EliteWeapon[1].WeaponType);
+
+			weaponRange += weaponRangeExtra;
+			if (pManager->Target && (pTechno->DistanceFrom(pManager->Target) > weaponRange))
+				pManager->ResetTarget();
+
+		}
+	}
+
+	return 0;
+}
