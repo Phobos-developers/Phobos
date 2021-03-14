@@ -38,94 +38,16 @@ DEFINE_HOOK(6F9E50, TechnoClass_Update, 5)
 {
 	GET(TechnoClass*, pThis, ECX);
 
-	auto pData = TechnoExt::ExtMap.Find(pThis);
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
 	// MindControlRangeLimit
-	if (auto Capturer = pThis->MindControlledBy) {
-		auto pCapturerExt = TechnoTypeExt::ExtMap.Find(Capturer->GetTechnoType());
-		if (pCapturerExt->MindControlRangeLimit > 0 && pThis->DistanceFrom(Capturer) > pCapturerExt->MindControlRangeLimit * 256.0) {
-			Capturer->CaptureManager->FreeUnit(pThis);
-			if (!pThis->IsHumanControlled) {
-				pThis->QueueMission(Mission::Hunt, 0);
-			};
-		}
-	}
-
+	TechnoTypeExt::ApplyMindControlRangeLimit(pThis);
 	// BuildingDeployerTargeting
-	if (pThis->WhatAmI() == AbstractType::Building) {
-		// Prevent target loss when vehicles are deployed into buildings.
-		if (pTypeData->Deployed_RememberTarget)
-		{
-			auto currentMission = pThis->CurrentMission;
-			// With this the vehicle will not forget who is the target until the deploy process finish
-			if (pThis->Target > 0 &&
-				currentMission != Mission::Construction &&
-				currentMission != Mission::Guard &&
-				currentMission != Mission::Attack &&
-				currentMission != Mission::Selling
-				) {
-				pThis->QueueMission(Mission::Construction, 0);
-				pThis->LastTarget = pThis->Target;
-			}
-			else if (pThis->Target == 0 && currentMission == Mission::Construction) {
-				// Just when the deployment into structure ended the vehicle forgot the target. Just attack the original target.
-				pThis->Target = pThis->LastTarget;
-				pThis->QueueMission(Mission::Attack, 0);
-			}
-		}
-	}
-
+	TechnoTypeExt::ApplyBuildingDeployerTargeting(pThis);
 	// Interceptor
-	if (pTypeData->Interceptor && !pThis->Target &&
-		!(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
-	{
-		for (auto const& pBullet : *BulletClass::Array) {
-			if (auto pBulletTypeData = BulletTypeExt::ExtMap.Find(pBullet->Type)) {
-				if (!pBulletTypeData->Interceptable)
-					continue;
-			}
-
-			const double guardRange = pThis->Veterancy.IsElite() ?
-				pTypeData->Interceptor_EliteGuardRange * 256 : pTypeData->Interceptor_GuardRange * 256;
-
-			if (pBullet->Location.DistanceFrom(pThis->Location) > guardRange)
-				continue;
-
-			if (pBullet->Location.DistanceFrom(pBullet->TargetCoords) >
-				double(ScenarioClass::Instance->Random.RandomRanged(128, (int)guardRange / 10)) * 10)
-				continue;
-
-			if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target)) {
-				if (pThis->Owner->IsAlliedWith(pTarget)) {
-					pThis->SetTarget(pBullet);
-					pData->InterceptedBullet = pBullet;
-					break;
-				}
-			}
-		}
-	}
-
-	//Powered.KillSpawns
-	if (pThis->WhatAmI() == AbstractType::Building) {
-		auto pBuilding = abstract_cast<BuildingClass*>(pThis);
-
-		if (pTypeData->Powered_KillSpawns && pBuilding->Type->Powered && !pBuilding->IsPowerOnline()) {
-			if (auto pManager = pBuilding->SpawnManager) {
-				pManager->ResetTarget();
-
-				for (auto pItem : pManager->SpawnedNodes) {
-					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning) {
-						pItem->Unit->ReceiveDamage(
-							&pItem->Unit->Health,
-							0,
-							RulesClass::Global()->C4Warhead,
-							nullptr, false, false, nullptr);
-					}
-				}
-			}
-		}
-	}
+	TechnoTypeExt::ApplyInterceptor(pThis);
+	// Powered.KillSpawns
+	TechnoTypeExt::ApplyPowered_KillSpawns(pThis);
+	// Spawner.LimitRange & Spawner.ExtraLimitRange
+	TechnoTypeExt::ApplySpawn_LimitRange(pThis);
 
 	return 0;
 }
@@ -191,58 +113,4 @@ DEFINE_HOOK(43E0C4, BuildingClass_Draw_43DA80_TurretMultiOffset, 0)
 	TechnoTypeExt::ApplyTurretOffset(technoType, mtx, 1 / 8);
 
 	return 0x43E0E8;
-}
-
-// Kill all Spawns if the structure has low power & reset target
-DEFINE_HOOK(6F9E56, TechnoClass_Update_PoweredKillSpawns, 5)
-{
-	GET(TechnoClass*, pTechno, ECX);
-	auto pTechnoData = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
-
-	if (pTechno->WhatAmI() == AbstractType::Building) {
-		auto pBuilding = abstract_cast<BuildingClass*>(pTechno);
-
-		if (pTechnoData->Powered_KillSpawns && pBuilding->Type->Powered && !pBuilding->IsPowerOnline()) {
-			if (auto pManager = pBuilding->SpawnManager) {
-				pManager->ResetTarget();
-
-				for (auto pItem : pManager->SpawnedNodes) {
-					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning) {
-						pItem->Unit->ReceiveDamage(
-							&pItem->Unit->Health,
-							0,
-							RulesClass::Global()->C4Warhead,
-							nullptr, false, false, nullptr);
-					}
-				}
-			}
-		}
-	}
-
-	if (pTechnoData->Spawn_LimitedRange) {
-		if (auto pManager = pTechno->SpawnManager) {
-			auto pTechnoType = pTechno->GetTechnoType();
-			int weaponRange = 0;
-			int weaponRangeExtra = pTechnoData->Spawn_LimitedExtraRange * 256;
-
-			auto setWeaponRange = [&weaponRange](WeaponTypeClass* pWeaponType)
-			{
-				if (pWeaponType)
-					if (pWeaponType->Spawner && pWeaponType->Range > weaponRange)
-						weaponRange = pWeaponType->Range;
-			};
-
-			setWeaponRange(pTechnoType->Weapon[0].WeaponType);
-			setWeaponRange(pTechnoType->Weapon[1].WeaponType);
-			setWeaponRange(pTechnoType->EliteWeapon[0].WeaponType);
-			setWeaponRange(pTechnoType->EliteWeapon[1].WeaponType);
-
-			weaponRange += weaponRangeExtra;
-			if (pManager->Target && (pTechno->DistanceFrom(pManager->Target) > weaponRange))
-				pManager->ResetTarget();
-
-		}
-	}
-
-	return 0;
 }

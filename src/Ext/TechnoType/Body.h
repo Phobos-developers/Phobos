@@ -70,6 +70,12 @@ public:
 	static void TransferMindControl(TechnoClass* From, TechnoClass* To);
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
 
+	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
+	static void ApplyBuildingDeployerTargeting(TechnoClass* pThis);
+	static void ApplyInterceptor(TechnoClass* pThis);
+	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
+	static void ApplySpawn_LimitRange(TechnoClass* pThis);
+
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
 	static bool HasSelectionGroupID(ObjectTypeClass* pType, const char* pID);
