@@ -29,8 +29,8 @@ public:
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual void Initialize() override;
-		virtual void InvalidatePointer(void *ptr, bool bRemoved) override {
-		}
+
+		virtual void InvalidatePointer(void *ptr, bool bRemoved) override {}
 
 		virtual void LoadFromStream(IStream* Stm);
 		virtual void SaveToStream(IStream* Stm) const;

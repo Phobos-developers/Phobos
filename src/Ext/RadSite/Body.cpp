@@ -28,7 +28,7 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 	}
 }
 
-// Rewrite because Of crashing crazy
+// Rewrite because of crashing craziness
 void RadSiteExt::RadSiteAdd(RadSiteClass* pRad, int lvmax, int amount) {
 	int value = pRad->RadLevel * pRad->RadTimeLeft / pRad->RadDuration;
 	pRad->Deactivate();
@@ -66,6 +66,7 @@ void RadSiteExt::ExtData::LoadFromStream(IStream* Stm) {
 
 	if (this->Weapon) {
 		auto pWeaponTypeExt = WeaponTypeExt::ExtMap.FindOrAllocate(Weapon);
+
 		if (pWeaponTypeExt) {
 			this->Type = &pWeaponTypeExt->RadType;
 		}
@@ -90,9 +91,11 @@ DEFINE_HOOK(65B28D, RadSiteClass_CTOR, 6)
 {
 	GET(RadSiteClass*, pThis, ESI);
 	auto pRadSiteExt = RadSiteExt::ExtMap.FindOrAllocate(pThis);
+
 	if (RadSiteExt::RadSiteInstance.FindItemIndex(pRadSiteExt) == -1) {
 		RadSiteExt::RadSiteInstance.AddItem(pRadSiteExt);
 	}
+
 	return 0;
 }
 
@@ -102,8 +105,8 @@ DEFINE_HOOK(65B2F4, RadSiteClass_DTOR, 5)
 	auto pRadExt = RadSiteExt::ExtMap.Find(pThis);
 
 	RadSiteExt::ExtMap.Remove(pThis);
-
 	RadSiteExt::RadSiteInstance.Remove(pRadExt);
+
 	return 0;
 }
 

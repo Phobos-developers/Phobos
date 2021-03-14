@@ -3,14 +3,10 @@
 void RadType::Read(CCINIClass* const pINI, const char* pSection, const char* pKey) {
 	INI_EX exINI(pINI);
 
-	if (this->ID.Read(pINI, pSection, "RadType")) {
+	this->ID.Read(pINI, pSection, "RadType");
+	const char* section = this->ID;
 
-		const char* section = this->ID;
-
-		if (!pINI->GetSection(section))	{
-			return;
-		}
-
+	if (pINI->GetSection(section)) {
 		this->DurationMultiple.Read(exINI, section, "RadDurationMultiple");
 		this->ApplicationDelay.Read(exINI, section, "RadApplicationDelay");
 		this->BuildingApplicationDelay.Read(exINI, section, "RadApplicationDelay.Building");
@@ -27,7 +23,8 @@ void RadType::Read(CCINIClass* const pINI, const char* pSection, const char* pKe
 
 void RadType::Load(IStream* Stm) {
 	PhobosStreamReader::Process(Stm, this->ID);
-	if (strlen(ID))
+
+	if (GeneralUtils::IsValidString(this->ID))
 	{
 		this->DurationMultiple.Load(Stm);
 		this->ApplicationDelay.Load(Stm);
@@ -49,7 +46,8 @@ void RadType::Load(IStream* Stm) {
 
 void RadType::Save(IStream* Stm) {
 	PhobosStreamWriter::Process(Stm, this->ID);
-	if (ID)
+
+	if (GeneralUtils::IsValidString(this->ID))
 	{
 		this->DurationMultiple.Save(Stm);
 		this->ApplicationDelay.Save(Stm);

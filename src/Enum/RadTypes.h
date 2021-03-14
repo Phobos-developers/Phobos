@@ -5,10 +5,6 @@
 
 class RadType {
 public:
-	void Read(CCINIClass* const pINI, const char* section, const char* pKey);
-	void RadType::Load(IStream* Stm);
-	void RadType::Save(IStream* Stm);
-	
 	PhobosFixedString<0x20> ID;
 	Valueable<int> DurationMultiple;
 	Valueable<int> ApplicationDelay;
@@ -24,8 +20,8 @@ public:
 
 	// Set default values
 	// RadType::Read method will later read the new values from the section specified in the ID field
-	RadType() : 
-		ID("Radiation"),
+	RadType(const char* id = "Radiation") : 
+		ID(id),
 		DurationMultiple(1),
 		ApplicationDelay(16),
 		LevelMax(500),
@@ -40,4 +36,8 @@ public:
 	{
 		RadWarhead = WarheadTypeClass::FindOrAllocate("RadSite");
 	}
+
+	void Read(CCINIClass* const pINI, const char* section, const char* pKey);
+	void Load(IStream* Stm);
+	void Save(IStream* Stm);
 };

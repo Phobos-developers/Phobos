@@ -27,10 +27,12 @@ public:
 		virtual size_t Size() const { return sizeof(*this); };
 
 		virtual void InvalidatePointer(void *ptr, bool bRemoved) { }
+
 		virtual void LoadFromStream(IStream* Stm);
 		virtual void SaveToStream(IStream* Stm);
 
 	};
+
 	static DynamicVectorClass<RadSiteExt::ExtData*> RadSiteInstance;
 
 	static void CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData *pWeaponExt);
@@ -43,5 +45,6 @@ public:
 		ExtContainer();
 		~ExtContainer();
 	};
+
 	static ExtContainer ExtMap;
 };
