@@ -33,6 +33,7 @@
     <ClCompile Include="src\Ext\TerrainType\Body.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Hooks.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Detonate.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.Shield.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Body.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
@@ -41,6 +42,7 @@
     <ClCompile Include="src\Misc\ExtendedToolTips.cpp" />
     <ClCompile Include="src\Misc\Selection.cpp" />
     <ClCompile Include="src\Misc\Debug.cpp" />
+    <ClCompile Include="src\Misc\Shield.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Body.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Hooks.cpp" />
@@ -85,6 +87,7 @@
     <ClInclude Include="src\Misc\ExtendedToolTips.h" />
     <ClInclude Include="src\Misc\Savegame.h" />
     <ClInclude Include="src\Misc\SavegameDef.h" />
+    <ClInclude Include="src\Misc\Shield.h" />
     <ClInclude Include="src\Misc\Stream.h" />
     <ClInclude Include="src\Misc\Swizzle.h" />
     <ClInclude Include="src\Phobos.CRT.h" />

@@ -222,6 +222,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 
+	this->Shield_Strength.Read(exINI, pSection, "Shield.Strength");
+	//this->Shield_Armor.Read(exINI, pSection, "Shield.Armor");
+	this->Shield_Respawn.Read(exINI, pSection, "Shield.Respawn");
+	if (this->Shield_Respawn != -1)
+		this->Shield_RespawnDelay.Read(exINI, pSection, "Shield.Respawn.Delay");
+	this->Shield_SelfHealing.Read(exINI, pSection, "Shield.SelfHealing");
+	if (this->Shield_SelfHealing != -1)
+		this->Shield_SelfHealingDelay.Read(exINI, pSection, "Shield.SelfHealing.Delay");
+	this->Shield_AbsorbOverDamage.Read(exINI, pSection, "Shield.AbsorbOverDamage");
+
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
 

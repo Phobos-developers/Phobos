@@ -33,6 +33,14 @@ public:
 		Valueable<bool> Promote_IncludeSpawns;
 		Valueable<bool> ImmuneToCrit;
 
+		Valueable<int> Shield_Strength;
+		//Valueable<ArmorType> Shield_Armor;
+		Valueable<int> Shield_Respawn;
+		Valueable<int> Shield_RespawnDelay;
+		Valueable<int> Shield_SelfHealing;
+		Valueable<int> Shield_SelfHealingDelay;
+		Valueable<bool> Shield_AbsorbOverDamage;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
 			HealthBar_Hide(false),
@@ -49,7 +57,15 @@ public:
 			Spawn_LimitedExtraRange(0),
 			Harvester_Counted(),
 			Promote_IncludeSpawns(false),
-			ImmuneToCrit(false)
+			ImmuneToCrit(false),
+
+			Shield_Strength(0),
+			//Shield_Armor("none"),
+			Shield_Respawn(-1),
+			Shield_RespawnDelay(15),
+			Shield_SelfHealing(-1),
+			Shield_SelfHealingDelay(5),
+			Shield_AbsorbOverDamage(false)
 		{ }
 
 		virtual ~ExtData() = default;
