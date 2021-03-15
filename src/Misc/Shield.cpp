@@ -3,6 +3,8 @@
 #include "../Ext/Techno/Body.h"
 #include "../Ext/TechnoType/Body.h"
 
+ShieldTechnoClass::ShieldTechnoClass() :Techno{ nullptr }, HP{ 0 }, Timer_Respawn{}, Timer_SelfHealing{}{};
+
 ShieldTechnoClass::ShieldTechnoClass(TechnoClass* pTechno) : Techno{ pTechno }
 {
     this->HP = this->GetExt()->Shield_Strength;
@@ -17,7 +19,7 @@ inline TechnoTypeExt::ExtData* ShieldTechnoClass::GetExt()
 
 void ShieldTechnoClass::Load(IStream* Stm)
 {
-    PhobosStreamReader::Process(Stm, this->Techno);
+    PhobosStreamReader::ProcessPointer(Stm, this->Techno, true);
     PhobosStreamReader::Process(Stm, this->HP);
     PhobosStreamReader::Process(Stm, this->Timer_Respawn);
     PhobosStreamReader::Process(Stm, this->Timer_SelfHealing);
@@ -63,13 +65,9 @@ void ShieldTechnoClass::Update()
     //this->DrawIt();
 }
 
-int ShieldTechnoClass::GetHP() {
-    return this->HP;
-}
-
 void ShieldTechnoClass::RespawnShield()
 {
-    if (this->HP <= 0 && this->Timer_Respawn.Completed()) // should be -1
+    if (this->HP <= 0 && this->Timer_Respawn.Completed())
     {
         this->Timer_Respawn.Stop();
         this->HP = this->GetExt()->Shield_Strength;

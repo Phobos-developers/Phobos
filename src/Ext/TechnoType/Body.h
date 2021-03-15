@@ -40,6 +40,8 @@ public:
 		Valueable<int> Shield_SelfHealing;
 		Valueable<int> Shield_SelfHealingDelay;
 		Valueable<bool> Shield_AbsorbOverDamage;
+		Nullable<AnimTypeClass*> Shield_Image;
+		Nullable<AnimTypeClass*> Shield_BreakImage;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
@@ -65,7 +67,9 @@ public:
 			Shield_RespawnDelay(15),
 			Shield_SelfHealing(-1),
 			Shield_SelfHealingDelay(5),
-			Shield_AbsorbOverDamage(false)
+			Shield_AbsorbOverDamage(false),
+			Shield_Image(),
+			Shield_BreakImage()
 		{ }
 
 		virtual ~ExtData() = default;

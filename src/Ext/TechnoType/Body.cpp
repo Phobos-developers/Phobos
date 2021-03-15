@@ -231,6 +231,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (this->Shield_SelfHealing != -1)
 		this->Shield_SelfHealingDelay.Read(exINI, pSection, "Shield.SelfHealing.Delay");
 	this->Shield_AbsorbOverDamage.Read(exINI, pSection, "Shield.AbsorbOverDamage");
+	this->Shield_Image.Read(exINI, pSection, "Shield.Image.Normal");
+	this->Shield_BreakImage.Read(exINI, pSection, "Shield.Image.Breaking");
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
@@ -260,6 +262,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->Harvester_Counted)
         .Process(this->Promote_IncludeSpawns)
 		.Process(this->ImmuneToCrit)
+        .Process(this->Shield_Strength)
+        .Process(this->Shield_Respawn)
+        .Process(this->Shield_RespawnDelay)
+        .Process(this->Shield_SelfHealing)
+        .Process(this->Shield_SelfHealingDelay)
+        .Process(this->AbsorbOverDamage)
+        .Process(this->Shield_Image)
+        .Process(this->Shield_BreakImage)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {

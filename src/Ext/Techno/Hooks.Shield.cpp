@@ -3,7 +3,7 @@
 #include "../TechnoType/Body.h"
 
 // #issue 88 : shield logic
-DEFINE_HOOK(701900, TechnoClass_ReceiveDamage, 6)
+DEFINE_HOOK(701900, TechnoClass_ReceiveDamage_Shield, 6)
 {
     GET(TechnoClass*, pThis, ECX);
     GET_STACK(int*, pDamage, 0x4);

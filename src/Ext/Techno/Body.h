@@ -21,7 +21,8 @@ public:
 		std::unique_ptr<ShieldTechnoClass> ShieldData;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),
-			InterceptedBullet(nullptr)
+			InterceptedBullet(nullptr),
+			ShieldData()
 		{ }
 
 		virtual ~ExtData() = default;
