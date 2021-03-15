@@ -25,6 +25,8 @@ public:
 private:
     // static constexpr int ScanInterval = 15;		//!< Minimum delay between scans in frames.
 
+    TechnoTypeExt::ExtData* GetExt();
+
     void RespawnShield();
     void SelfHealing();
     void BreakShield();
@@ -32,7 +34,7 @@ private:
 
 
     /// Properties ///
-    TechnoTypeExt::ExtData* Ext;
+
     TechnoClass* Techno;
     int HP;
     TimerStruct Timer_SelfHealing;
