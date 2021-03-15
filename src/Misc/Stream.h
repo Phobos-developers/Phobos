@@ -24,7 +24,19 @@ public:
     {
         if (SUCCEEDED(Stm->Read(&value, nSize, 0)))
             return true;
-        Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[PhobosStreamReader] Failed to save value!\n");
+        Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[PhobosStreamReader] Failed to read value!\n");
+        return false;
+    }
+
+    // Pointers need to be swizzled.
+    template<typename T>
+    static bool Process(IStream* Stm, T*& value)
+    {
+        if (!Process(Stm, value, sizeof(T*)))
+            return false;
+        if (SUCCEEDED(SwizzleManagerClass::Instance.Swizzle(&value)))
+            return true;
+        Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[PhobosStreamReader] Failed to read pointer!\n");
         return false;
     }
 
