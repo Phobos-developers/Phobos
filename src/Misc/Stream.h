@@ -8,7 +8,7 @@
 #include <type_traits>
 #include <ObjIdl.h>
 #include <ArrayClasses.h>
-#include <TechnoTypeClass.h>
+#include <SwizzleManagerClass.h>
 
 class PhobosStreamReader
 {
@@ -37,11 +37,11 @@ public:
 
     // Pointers need extra process.
     template<typename T>
-    static bool ProcessPointer(IStream* Stm, T*& value, bool bRegisterForChange = false)
+    static bool ProcessPointer(IStream* Stm, T& value, bool bRegisterForChange = false)
     {
         bool bResult = Process(Stm, value, sizeof(T*));
         if( bRegisterForChange )
-            bResult &= SUCCEEDED(SwizzleManagerClass::Swizzle(&value));
+            bResult &= SUCCEEDED(SwizzleManagerClass::Instance.Swizzle((void**)&value));
         
         if(!bResult)
             Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[PhobosStreamReader] Failed to read pointer!\n");

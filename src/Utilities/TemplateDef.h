@@ -497,8 +497,11 @@ void __declspec(noinline) Valueable<T>::Read(INI_EX& parser, const char* pSectio
 }
 
 template <typename T>
-bool Valueable<T>::Load(IStream* Stm) {
-	return PhobosStreamReader::Process(Stm, this->Value);
+bool Valueable<T>::Load(IStream* Stm, bool bRegisterForChange) {
+	if (std::is_pointer<T>::value)
+		return PhobosStreamReader::ProcessPointer(Stm, this->Value, bRegisterForChange);
+	else
+		return PhobosStreamReader::Process(Stm, this->Value);
 }
 
 template <typename T>
@@ -509,7 +512,7 @@ bool Valueable<T>::Save(IStream* Stm) const {
 // CSFText have special (de)serialization logic
 
 template <>
-bool Valueable<CSFText>::Load(IStream* Stm) {
+bool Valueable<CSFText>::Load(IStream* Stm, bool bRegisterForChange) {
 	return GetEx()->load(Stm);
 }
 

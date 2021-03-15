@@ -104,7 +104,7 @@ public:
 
 	inline void Read(INI_EX& parser, const char* pSection, const char* pKey, bool Allocate = false);
 
-	inline bool Load(IStream* Stm);
+	inline bool Load(IStream* Stm, bool bRegisterForChange = false);
 
 	inline bool Save(IStream* Stm) const;
 };
