@@ -45,16 +45,13 @@ int ShieldTechnoClass::ReceiveDamage(int nDamage, WarheadTypeClass* pWH)
     if (residueDamage >= 0)
     {
         this->BreakShield();
-        if (this->GetExt()->Shield_AbsorbOverDamage)
-            return 0;
+        return this->GetExt()->Shield_AbsorbOverDamage ? 0 : residueDamage;
     }
     else
     {
         this->HP = -residueDamage;
         return 0;
     }
-
-    return residueDamage;
 }
 
 void ShieldTechnoClass::Update()
