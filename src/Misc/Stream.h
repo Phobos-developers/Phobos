@@ -38,10 +38,10 @@ public:
 
         bool bResult = Process(Stm, value, sizeof(T*));
         // extra process
-
-
-        Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[PhobosStreamReader] Failed to read pointer!\n");
-        return false;
+        return bResult;
+        
+        // Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[PhobosStreamReader] Failed to read pointer!\n");
+        // return false;
     }
 
     template<typename T>
