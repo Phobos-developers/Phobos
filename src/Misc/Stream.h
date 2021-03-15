@@ -14,13 +14,13 @@ class PhobosStreamReader
 {
 public:
     template<typename T>
-    static bool Process(IStream* Stm, T&& value)
+    static bool Process(IStream* Stm, T& value)
     {
         return Process(Stm, value, sizeof T);
     }
 
     template<typename T>
-    static bool Process(IStream* Stm, T&& value, size_t nSize)
+    static bool Process(IStream* Stm, T& value, size_t nSize)
     {
         if (SUCCEEDED(Stm->Read(&value, nSize, 0)))
             return true;
@@ -28,14 +28,18 @@ public:
         return false;
     }
 
-    // Pointers need to be swizzled.
+    // Pointers need extra process.
     template<typename T>
-    static bool Process(IStream* Stm, T*& value)
+    static bool Process(IStream* Stm, T*& value, bool bAnnounce = false)
     {
-        if (!Process(Stm, value, sizeof(T*)))
-            return false;
-        if (SUCCEEDED(SwizzleManagerClass::Instance.Swizzle(&value)))
-            return true;
+        // To implement
+        // Swizzle means OldPtr is XXXXXX
+        // Here_I_Am means OldPtr is NewPtr now
+
+        bool bResult = Process(Stm, value, sizeof(T*));
+        // extra process
+
+
         Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[PhobosStreamReader] Failed to read pointer!\n");
         return false;
     }
