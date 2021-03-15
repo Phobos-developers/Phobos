@@ -28,52 +28,41 @@ public:
         return false;
     }
 
+    // Swizzle :
+    // pass in the *address* of the pointer you want to have changed
+    // Here_I_Am :
+    // the original game objects all save their `this` pointer to the save stream
+    // that way they know what ptr they used and call this function with that old ptr and `this` as the new ptr
+    // -- from Ares
+
     // Pointers need extra process.
     template<typename T>
-    static bool Process(IStream* Stm, T*& value, bool bAnnounce = false)
+    static bool ProcessPointer(IStream* Stm, T*& value, bool bRegisterForChange = false)
     {
-        // To implement
-        // Swizzle means OldPtr is XXXXXX
-        // Here_I_Am means OldPtr is NewPtr now
-
         bool bResult = Process(Stm, value, sizeof(T*));
-        // extra process
-        return bResult;
+        if( bRegisterForChange )
+            bResult &= SUCCEEDED(SwizzleManagerClass::Swizzle(&value));
         
-        // Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[PhobosStreamReader] Failed to read pointer!\n");
-        // return false;
+        if(!bResult)
+            Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[PhobosStreamReader] Failed to read pointer!\n");
+        return bResult;
     }
 
     template<typename T>
-    static bool ProcessArray(IStream* Stm, const T*& pValues, size_t nCount)
+    static T* ProcessObject(IStream* Stm, bool bRegisterForChange = false)
     {
-        if (!Process(Stm, nCount))
-            return false;
-        for (size_t ix = 0; ix < nCount; ++ix)
-            if (!Process<T>(Stm, pValues[ix]))
-                return false;
-        return true;
-    }
-
-    template<typename T>
-    static bool ProcessTechnoList(IStream* Stm, DynamicVectorClass<T>& array)
-    {
-        static_assert(std::is_base_of<TechnoTypeClass, T>::value,
-            "array must be inherited from TechnoTypeClass!");
-        array.Clear();
-        size_t nCapacity;
-        if (!Process(Stm, nCapacity))
-            return false;
-        array.SetCapacity(nCapacity);
-        for (size_t ix = 0; ix < nCapacity; ++ix)
+        T* ptrOld = nullptr;
+        if (Process(Stm, ptrOld, bRegisterForChange))
         {
-            if (!Process(Stm, StreamBuffer, sizeof(AbstractTypeClass::ID)))
-                return false;
-            array.AddItem(T::Find(StreamBuffer));
+            std::unique_ptr<T> ptrNew = std::make_unique<T>();
+            if (Process(Stm, *ptrNew, bRegisterForChange))
+            {
+                SwizzleManagerClass::Instance.Here_I_Am(ptrOld, ptrNew.get());
+                return ptrNew.release();
+            }
         }
+        return nullptr;
     }
-private:
-    static char StreamBuffer[0x400];
 };
 
 class PhobosStreamWriter
@@ -82,7 +71,7 @@ public:
     template<typename T>
     static bool Process(IStream* Stm, T&& value)
     {
-        return Process(Stm, value, sizeof T);
+        return Process(Stm, value, sizeof (T));
     }
 
     template<typename T>
@@ -93,31 +82,14 @@ public:
         Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[PhobosStreamReader] Failed to save value!\n");
         return false;
     }
-
+    
     template<typename T>
-    static size_t ProcessArray(IStream* Stm, const T*& pValues)
+    static bool ProcessObject(IStream* Stm, const T* pValue)
     {
-        size_t nCount;
-        if (!Process(Stm, nCount))
-            return 0;
-        for (size_t ix = 0; ix < nCount; ++ix)
-            if (!Process<T>(Stm, pValues[ix]))
-                return false;
-        return true;
+        if (!Process(Stm, pValue))
+            return false;
+        if (pValue)
+            return Process(Stm, *pValue);
     }
-
-    template<typename T>
-    static bool ProcessVector(IStream* Stm, DynamicVectorClass<T>& array)
-    {
-        static_assert(std::is_base_of<TechnoTypeClass, T>::value,
-            "array must be inherited from TechnoTypeClass!");
-
-        for (size_t ix = 0; ix < array.Count; ++ix)
-        {
-            if (!Process(Stm, &array.GetItem(ix)->ID, sizeof(AbstractTypeClass::ID)));
-                return false;
-        }
-    }
-private:
     
 };

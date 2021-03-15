@@ -9,15 +9,16 @@
 
 #pragma once
 
-namespace Phobos_CXX20
-{
-    // This is how a concept defines
-    template<typename T>
-    concept Incrementable = requires(T x) { x++; ++x; };
+#include <type_traits>
+class AbstractClass;
+class TechnoClass;
+class AbstractTypeClass;
 
-    // Another example
-    template <typename T>
-    concept HasSize = requires (T x) {
-        {x.size()} -> std::convertible_to<std::size_t>;
-    };
-}
+template<typename T>
+concept CanBeAbstract = std::is_base_of<AbstractClass, T>::value;
+
+template<typename T>
+concept CanBeTechno = std::is_base_of<TechnoClass, T>::value;
+
+template<typename T>
+concept CanBeAbstractType = std::is_base_of<AbstractTypeClass, T>::value;
