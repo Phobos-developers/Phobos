@@ -1,40 +1,18 @@
 #pragma once
 
-#include <functional>
-#include <set>
-
-template<typename T>
-struct funcless
-{
-	using function_type = std::function<void(T*)>;
-	bool operator()(const function_type& a, const function_type& b) const
-	{
-		return a.target<void(T*)>() < b.target<void(T*)>();
-	}
-};
+#include <vector>
 
 template<typename T>
 class EventQueue {
 public:
-    using function_type = std::function<void(T*)>;
-	using container_type = std::set<function_type, funcless<T>>;
-    
-	EventQueue(function_type item) { insert(item); }
-
-	EventQueue(void(*item)(T*)) 
-	{
-		function_type func = item;
-		insert(func); 
-	}
+    using function_type = void(*)(T*);
+	using container_type = std::vector<function_type>;
 
 	template<typename TFunc>
 	EventQueue(std::initializer_list<TFunc> items)
 	{
 		for (auto item : items)
-		{
-			function_type func = item;
-			insert(func);
-		}
+			insert(item);
 	}
 
 	bool operator() (function_type item) {
@@ -43,7 +21,7 @@ public:
 	}
 
 	void insert(function_type value) {
-		_events.insert(value);
+		_events.push_back(value);
 	}
 
 	size_t size() const {
