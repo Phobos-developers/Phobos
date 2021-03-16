@@ -204,7 +204,7 @@
       <ObjectFileName>$(IntDir)\%(RelativeDir)</ObjectFileName>
       <CallingConvention>StdCall</CallingConvention>
       <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
-      <DisableSpecificWarnings>4100;4530;4731;4740;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100;4530;4731;4740;4180;2220</DisableSpecificWarnings>
       <TreatWarningAsError>true</TreatWarningAsError>
       <EnableModules>true</EnableModules>
     </ClCompile>
