@@ -10,6 +10,15 @@
 template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 
+EventQueue<TechnoClass> TechnoTypeExt::EventScripts
+{
+	ApplyMindControlRangeLimit,
+	ApplyBuildingDeployerTargeting,
+	ApplyInterceptor,
+	ApplyPowered_KillSpawns,
+	ApplySpawn_LimitRange
+};
+
 void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 {
 	float x = static_cast<float>(this->TurretOffset.GetEx()->X * factor);

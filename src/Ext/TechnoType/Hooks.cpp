@@ -37,18 +37,7 @@ DEFINE_HOOK(739956, UnitClass_Deploy_Transfer, 6)
 DEFINE_HOOK(6F9E50, TechnoClass_Update, 5)
 {
 	GET(TechnoClass*, pThis, ECX);
-
-	// MindControlRangeLimit
-	TechnoTypeExt::ApplyMindControlRangeLimit(pThis);
-	// BuildingDeployerTargeting
-	TechnoTypeExt::ApplyBuildingDeployerTargeting(pThis);
-	// Interceptor
-	TechnoTypeExt::ApplyInterceptor(pThis);
-	// Powered.KillSpawns
-	TechnoTypeExt::ApplyPowered_KillSpawns(pThis);
-	// Spawner.LimitRange & Spawner.ExtraLimitRange
-	TechnoTypeExt::ApplySpawn_LimitRange(pThis);
-
+	TechnoTypeExt::EventScripts.run_each(pThis);
 	return 0;
 }
 

@@ -61,6 +61,7 @@
     <ClInclude Include="src\Ext\TechnoType\Body.h" />
     <ClInclude Include="src\Ext\Techno\Body.h" />
     <ClInclude Include="src\Ext\WeaponType\Body.h" />
+    <ClInclude Include="src\Ext\_EventHandler.hpp" />
     <ClInclude Include="src\Misc\ExtendedToolTips.h" />
     <ClInclude Include="src\Misc\Stream.h" />
     <ClInclude Include="src\Phobos.version.h" />
