@@ -69,6 +69,7 @@ void ShieldTechnoClass::RespawnShield()
     {
         this->Timer_Respawn.Stop();
         this->HP = this->GetExt()->Shield_Strength;
+        this->DrawShield();
     }
 }
 
