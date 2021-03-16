@@ -3,16 +3,21 @@
 #include "../Ext/Techno/Body.h"
 #include "../Ext/TechnoType/Body.h"
 
+#include <AnimClass.h>
+
 ShieldTechnoClass::ShieldTechnoClass() :Techno{ nullptr }, HP{ 0 }, Timer_Respawn{}, Timer_SelfHealing{}{};
 
-ShieldTechnoClass::ShieldTechnoClass(TechnoClass* pTechno) : Techno{ pTechno }
+ShieldTechnoClass::ShieldTechnoClass(TechnoClass* pTechno) :
+    Techno{ pTechno },
+    HP{ this->GetExt()->Shield_Strength },
+    Timer_Respawn{},
+    Timer_SelfHealing{},
+    Image{ nullptr }
 {
-    this->HP = this->GetExt()->Shield_Strength;
-    this->Timer_Respawn.Stop();
-    this->Timer_SelfHealing.Stop();
+    this->DrawShield();
 }
 
-inline TechnoTypeExt::ExtData* ShieldTechnoClass::GetExt()
+const TechnoTypeExt::ExtData* ShieldTechnoClass::GetExt()
 {
     return TechnoTypeExt::ExtMap.Find(Techno->GetTechnoType());
 }
@@ -20,17 +25,13 @@ inline TechnoTypeExt::ExtData* ShieldTechnoClass::GetExt()
 void ShieldTechnoClass::Load(IStream* Stm)
 {
     PhobosStreamReader::ProcessPointer(Stm, this->Techno, true);
-    PhobosStreamReader::Process(Stm, this->HP);
-    PhobosStreamReader::Process(Stm, this->Timer_Respawn);
-    PhobosStreamReader::Process(Stm, this->Timer_SelfHealing);
+    PhobosStreamReader::ProcessPointer(Stm, this->Image, true);
 }
 
 void ShieldTechnoClass::Save(IStream* Stm)
 {
     PhobosStreamWriter::Process(Stm, this->Techno);
-    PhobosStreamWriter::Process(Stm, this->HP);
-    PhobosStreamWriter::Process(Stm, this->Timer_Respawn);
-    PhobosStreamWriter::Process(Stm, this->Timer_SelfHealing);
+    PhobosStreamWriter::Process(Stm, this->Image);
 }
 
 int ShieldTechnoClass::ReceiveDamage(int nDamage, WarheadTypeClass* pWH)
@@ -60,9 +61,6 @@ void ShieldTechnoClass::Update()
 {
     this->RespawnShield();
     this->SelfHealing();
-
-    // Extra Draws Here
-    //this->DrawIt();
 }
 
 void ShieldTechnoClass::RespawnShield()
@@ -90,4 +88,26 @@ void ShieldTechnoClass::BreakShield()
 {
     this->HP = 0;
     this->Timer_Respawn.Start(this->GetExt()->Shield_RespawnDelay);
+
+    if (this->Image)
+        GameDelete(this->Image);
+    if(this->GetExt()->Shield_BreakImage.isset())
+        if (auto pAnimType = this->GetExt()->Shield_BreakImage)
+        {
+            this->Image = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
+            if (this->Image)
+                this->Image->SetOwnerObject(this->Techno);
+        }
+
+}
+
+void ShieldTechnoClass::DrawShield()
+{
+    if (this->GetExt()->Shield_Image.isset() && this->HP > 0)
+        if (auto pAnimType = this->GetExt()->Shield_Image)
+        {
+            this->Image = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
+            if (this->Image)
+                this->Image->SetOwnerObject(this->Techno);
+        }
 }
