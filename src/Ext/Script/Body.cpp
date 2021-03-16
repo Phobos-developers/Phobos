@@ -28,7 +28,7 @@ void ScriptExt::ProcessAction(TeamClass * pTeam)
 	int action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action;
 
 	switch (action) {
-	case 200:
+	case 71:
 		ExecuteTimedAreaGuardAction(pTeam);
 
 		break;
