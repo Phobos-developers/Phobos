@@ -437,30 +437,30 @@ namespace detail {
 	}
 
 	template <>
-	inline bool read<SuperWeaponAffectedHouse>(SuperWeaponAffectedHouse& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
+	inline bool read<AffectedHouse>(AffectedHouse& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
 		if (parser.ReadString(pSection, pKey)) {
-			auto parsed = SuperWeaponAffectedHouse::None;
+			auto parsed = AffectedHouse::None;
 
 			auto str = parser.value();
 			char* context = nullptr;
 			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context)) {
 				if (!_strcmpi(cur, "owner")) {
-					parsed |= SuperWeaponAffectedHouse::Owner;
+					parsed |= AffectedHouse::Owner;
 				}
 				else if (!_strcmpi(cur, "allies")) {
-					parsed |= SuperWeaponAffectedHouse::Allies;
+					parsed |= AffectedHouse::Allies;
 				}
 				else if (!_strcmpi(cur, "enemies")) {
-					parsed |= SuperWeaponAffectedHouse::Enemies;
+					parsed |= AffectedHouse::Enemies;
 				}
 				else if (!_strcmpi(cur, "team")) {
-					parsed |= SuperWeaponAffectedHouse::Team;
+					parsed |= AffectedHouse::Team;
 				}
 				else if (!_strcmpi(cur, "others")) {
-					parsed |= SuperWeaponAffectedHouse::NotOwner;
+					parsed |= AffectedHouse::NotOwner;
 				}
 				else if (!_strcmpi(cur, "all")) {
-					parsed |= SuperWeaponAffectedHouse::All;
+					parsed |= AffectedHouse::All;
 				}
 				else if (_strcmpi(cur, "none")) {
 					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a super weapon affected house");

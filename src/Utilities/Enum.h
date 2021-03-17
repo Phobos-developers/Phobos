@@ -69,7 +69,7 @@ enum class SuperWeaponTarget : unsigned char {
 
 MAKE_ENUM_FLAGS(SuperWeaponTarget);
 
-enum class SuperWeaponAffectedHouse : unsigned char {
+enum class AffectedHouse : unsigned char {
 	None = 0x0,
 	Owner = 0x1,
 	Allies = 0x2,
@@ -81,7 +81,7 @@ enum class SuperWeaponAffectedHouse : unsigned char {
 	All = Owner | Allies | Enemies
 };
 
-MAKE_ENUM_FLAGS(SuperWeaponAffectedHouse);
+MAKE_ENUM_FLAGS(AffectedHouse);
 
 enum class OwnerHouseKind : int {
 	Default,
