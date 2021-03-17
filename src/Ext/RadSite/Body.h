@@ -30,15 +30,20 @@ public:
 
 		virtual void InvalidatePointer(void *ptr, bool bRemoved) { }
 
-		virtual void LoadFromStream(IStream* Stm);
-		virtual void SaveToStream(IStream* Stm);
+		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 
+		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+        
 		virtual void Add(int amount);
 		virtual void SetRadLevel(int amount);
 		virtual double GetRadLevelAt(CellStruct const& cell);
+        
+	private:
+		template <typename T>
+		void Serialize(T& Stm);
 	};
 
-	static DynamicVectorClass<RadSiteExt::ExtData*> RadSiteInstance;
+	static DynamicVectorClass<RadSiteExt::ExtData*> Instances;
 
 	static void CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData *pWeaponExt, HouseClass* const pOwner);
 

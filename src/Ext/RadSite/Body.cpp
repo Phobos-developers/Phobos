@@ -5,7 +5,7 @@
 template<> const DWORD Extension<RadSiteClass>::Canary = 0x87654321;
 RadSiteExt::ExtContainer RadSiteExt::ExtMap;
 
-DynamicVectorClass<RadSiteExt::ExtData*> RadSiteExt::RadSiteInstance;
+DynamicVectorClass<RadSiteExt::ExtData*> RadSiteExt::Instances;
 
 void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass * const pOwner) {
 	// use real ctor
@@ -28,9 +28,7 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 
 	pRadSite->Activate();
 
-	if (RadSiteInstance.FindItemIndex(pRadExt) == -1) {
-		RadSiteInstance.AddItem(pRadExt);
-	}
+	Instances.AddUnique(pRadExt);
 }
 
 /*  Including them as EXT so it keep tracked at save/load */
@@ -69,24 +67,22 @@ double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell) {
 // =============================
 // load / save
 
-void RadSiteExt::ExtData::LoadFromStream(IStream* Stm) {
-	char weaponID[sizeof(this->Weapon->ID)];
-	PhobosStreamReader::Process(Stm, weaponID);
-	PhobosStreamReader::ProcessPointer(Stm, this->RadHouse, true);
-	this->Weapon = WeaponTypeClass::Find(weaponID);
-
-	if (this->Weapon) {
-		auto pWeaponTypeExt = WeaponTypeExt::ExtMap.FindOrAllocate(Weapon);
-
-		if (pWeaponTypeExt) {
-			this->Type = &pWeaponTypeExt->RadType;
-		}
-	}
+template <typename T>
+void RadSiteExt::ExtData::Serialize(T& Stm) {
+	Stm
+		.Process(this->Weapon)
+		.Process(this->Type)
+		;
 }
 
-void RadSiteExt::ExtData::SaveToStream(IStream* Stm) {
-	PhobosStreamWriter::Process(Stm, this->Weapon->ID);
-	PhobosStreamWriter::Process(Stm, this->RadHouse);
+void RadSiteExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+	Extension<RadSiteClass>::LoadFromStream(Stm);
+	this->Serialize(Stm);
+}
+
+void RadSiteExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+	Extension<RadSiteClass>::SaveToStream(Stm);
+	this->Serialize(Stm);
 }
 
 // =============================
@@ -101,23 +97,21 @@ RadSiteExt::ExtContainer::~ExtContainer() = default;
 
 DEFINE_HOOK(65B28D, RadSiteClass_CTOR, 6)
 {
-	GET(RadSiteClass*, pThis, ESI);
-	auto pRadSiteExt = RadSiteExt::ExtMap.FindOrAllocate(pThis);
+	GET(RadSiteClass*, pItem, ESI);
+	auto pExt = RadSiteExt::ExtMap.FindOrAllocate(pItem);
 
-	if (RadSiteExt::RadSiteInstance.FindItemIndex(pRadSiteExt) == -1) {
-		RadSiteExt::RadSiteInstance.AddItem(pRadSiteExt);
-	}
+	RadSiteExt::Instances.AddUnique(pExt);
 
 	return 0;
 }
 
 DEFINE_HOOK(65B2F4, RadSiteClass_DTOR, 5)
 {
-	GET(RadSiteClass*, pThis, ECX);
-	auto pRadExt = RadSiteExt::ExtMap.Find(pThis);
+	GET(RadSiteClass*, pItem, ECX);
+	auto pExt = RadSiteExt::ExtMap.Find(pItem);
 
-	RadSiteExt::ExtMap.Remove(pThis);
-	RadSiteExt::RadSiteInstance.Remove(pRadExt);
+	RadSiteExt::ExtMap.Remove(pItem);
+	RadSiteExt::Instances.Remove(pExt);
 
 	return 0;
 }
@@ -134,18 +128,12 @@ DEFINE_HOOK(65B450, RadSiteClass_SaveLoad_Prefix, 8)
 
 DEFINE_HOOK(65B43F, RadSiteClass_Load_Suffix, 7)
 {
-	auto pItem = RadSiteExt::ExtMap.Find(RadSiteExt::ExtMap.SavingObject);
-	IStream* pStm = RadSiteExt::ExtMap.SavingStream;
-
-	pItem->LoadFromStream(pStm);
+	RadSiteExt::ExtMap.LoadStatic();
 	return 0;
 }
 
 DEFINE_HOOK(65B464, RadSiteClass_Save_Suffix, 5)
 {
-	auto pItem = RadSiteExt::ExtMap.Find(RadSiteExt::ExtMap.SavingObject);
-	IStream* pStm = RadSiteExt::ExtMap.SavingStream;
-
-	pItem->SaveToStream(pStm);
+	RadSiteExt::ExtMap.SaveStatic();
 	return 0;
 }

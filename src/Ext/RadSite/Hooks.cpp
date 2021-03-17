@@ -48,7 +48,7 @@ DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation, 5)
 	GET_STACK(int, spread, 0x8);
 	GET_STACK(int, amount, 0xC);
 
-	auto const& Instances = RadSiteExt::RadSiteInstance;
+	auto const& Instances = RadSiteExt::Instances;
 	auto const pWeapon = pThis->GetWeaponType();
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.FindOrAllocate(pWeapon);
 	auto const pRadType = &pWeaponExt->RadType;
@@ -99,7 +99,7 @@ DEFINE_HOOK(43FB23, BuildingClass_Update, 5)
 	for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct{ 0x7FFF, 0x7FFF }; ++pFoundation) {
 		CellStruct CurrentCoord = MainCoords + *pFoundation;
 
-		for (auto pRadExt : RadSiteExt::RadSiteInstance) {
+		for (auto pRadExt : RadSiteExt::Instances) {
 			RadSiteClass* pRadSite = pRadExt->OwnerObject();
 
 			// Check the distance, if not in range, just skip this one
@@ -144,7 +144,7 @@ DEFINE_HOOK(4DA554, FootClass_Update_RadSiteClass, 5)
 		CellStruct CurrentCoord = pFoot->GetCell()->MapCoords;
 
 		// Loop for each different radiation stored in the RadSites container
-		for (auto const pRadExt : RadSiteExt::RadSiteInstance) {
+		for (auto const pRadExt : RadSiteExt::Instances) {
 
 			RadSiteClass* pRadSite = pRadExt->OwnerObject();
 
