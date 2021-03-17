@@ -27,20 +27,36 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		this->Rad_NoOwner.Read(exINI, pSection, "Rad.NoOwner");
 }
 
-void WeaponTypeExt::ExtData::LoadFromStream(IStream* Stm) {
-	this->DiskLaser_Circumference.Load(Stm);
+template <typename T>
+void WeaponTypeExt::ExtData::Serialize(T& Stm) {
+	Stm
+		.Process(this->DiskLaser_Radius)
+		.Process(this->DiskLaser_Circumference)
+		.Process(this->RadType)
+        .Process(this->Rad_NoOwner)
+		;
+};
 
-	if (this->OwnerObject()->RadLevel > 0)
-		this->RadType.Load(Stm);
-	this->Rad_NoOwner.Load(Stm);
+void WeaponTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+	Extension<WeaponTypeClass>::LoadFromStream(Stm);
+	this->Serialize(Stm);
 }
 
-void WeaponTypeExt::ExtData::SaveToStream(IStream* Stm)  {
-	this->DiskLaser_Circumference.Save(Stm);
+void WeaponTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+	Extension<WeaponTypeClass>::SaveToStream(Stm);
+	this->Serialize(Stm);
+}
 
-	if (this->OwnerObject()->RadLevel > 0)
-		this->RadType.Save(Stm);
-	this->Rad_NoOwner.Save(Stm);
+bool WeaponTypeExt::LoadGlobals(PhobosStreamReader& Stm) {
+	return Stm
+		.Process(nOldCircumference)
+		.Success();
+}
+
+bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm) {
+	return Stm
+		.Process(nOldCircumference)
+		.Success();
 }
 
 // =============================
@@ -83,19 +99,13 @@ DEFINE_HOOK(772CD0, WeaponTypeClass_SaveLoad_Prefix, 7)
 
 DEFINE_HOOK(772EA6, WeaponTypeClass_Load_Suffix, 6)
 {
-	auto pItem = WeaponTypeExt::ExtMap.Find(WeaponTypeExt::ExtMap.SavingObject);
-	IStream* pStm = WeaponTypeExt::ExtMap.SavingStream;
-
-	pItem->LoadFromStream(pStm);
+	WeaponTypeExt::ExtMap.LoadStatic();
 	return 0;
 }
 
 DEFINE_HOOK(772F8C, WeaponTypeClass_Save, 5)
 {
-	auto pItem = WeaponTypeExt::ExtMap.Find(WeaponTypeExt::ExtMap.SavingObject);
-	IStream* pStm = WeaponTypeExt::ExtMap.SavingStream;
-
-	pItem->SaveToStream(pStm);
+	WeaponTypeExt::ExtMap.SaveStatic();
 	return 0;
 }
 
