@@ -157,7 +157,7 @@ public:
 					pTeam->Type->ID, pTeam->CurrentScript->Type->get_ID(), pTeam->Type->TaskForce->ID);
 				display();
 				if (pTeam->CurrentScript->idxCurrentLine >= 0)
-					append("Current Script [Line = Action, Argument]: %d = %d,%d", pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions->Action, pTeam->CurrentScript->Type->ScriptActions->Argument);
+					append("Current Script [Line = Action, Argument]: %d = %d,%d", pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument);
 				else
 					append("Current Script [Line = Action, Argument]: %d", pTeam->CurrentScript->idxCurrentLine);
 				display();
