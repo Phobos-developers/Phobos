@@ -112,3 +112,53 @@ void ShieldTechnoClass::DrawShield()
                 this->Image->SetOwnerObject(this->Techno);
         }
 }
+
+void ShieldTechnoClass::DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound)
+{
+    if (this->HP != 0) {
+        if (this->Techno->WhatAmI() == AbstractType::Building)
+            this->DrawShieldBarBuilding(iLength, pLocation, pBound);
+        else
+            this->DrawShieldBarOther();
+    }
+}
+
+void ShieldTechnoClass::DrawShieldBarBuilding(int iLength, Point2D* pLocation, RectangleStruct* pBound) {
+    int iCurrent = int((double)this->HP / this->GetExt()->Shield_Strength * iLength);
+    int iTotal = iCurrent;
+    if (iCurrent < 1) {
+        iCurrent = 1;
+        iTotal = 1;
+    }
+    if (iCurrent > iLength) {
+        iCurrent = iLength;
+        iTotal = iLength;
+    }
+    int frame = 5;
+    Point2D vPos = { 0,0 };
+    CoordStruct vCoords = { 0,0,0 };
+    this->Techno->GetTechnoType()->Dimension2(&vCoords);
+    Point2D vPos2 = { 0,0 };
+    CoordStruct vCoords2 = { -vCoords.X / 2, vCoords.Y / 2,vCoords.Z };
+    TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
+    Point2D vLoc = *pLocation;
+    vLoc.X -= 5;
+    vLoc.Y -= 5;
+    if (iCurrent > 0) {
+        int deltaX = 0;
+        int deltaY = 0;
+        int frameIdx = iTotal;
+        for (; frameIdx; frameIdx--) {
+            vPos.X = vPos2.X + vLoc.X + 4 * iLength + 3 - deltaX;
+            vPos.Y = 2 - 2 * iLength + vPos2.Y + vLoc.Y + 2 - deltaY;
+            DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP, frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+            deltaX += 4;
+            deltaY -= 2;
+            //Debug::Log("[Phobos/Shield] %s Drawing Shield Bar: vPos is {%d, %d}.\n", this->Techno->GetTechnoType()->ID, vPos.X, vPos.Y);
+        }
+    }
+}
+
+void ShieldTechnoClass::DrawShieldBarOther() {
+
+}

@@ -17,6 +17,7 @@ public:
 
     int ReceiveDamage(int nDamage, WarheadTypeClass* pWH);
     void Update();
+    void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
 
     void Load(IStream* Stm);
     void Save(IStream* Stm);
@@ -30,7 +31,8 @@ private:
     void SelfHealing();
     void BreakShield();
     void DrawShield();
-
+    void DrawShieldBarBuilding(int iLength, Point2D* pLocation, RectangleStruct* pBound);
+    void DrawShieldBarOther();
 
     /// Properties ///
 
