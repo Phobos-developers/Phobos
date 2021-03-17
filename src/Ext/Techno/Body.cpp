@@ -6,12 +6,30 @@ TechnoExt::ExtContainer TechnoExt::ExtMap;
 // =============================
 // load / save
 
-void TechnoExt::ExtData::LoadFromStream(IStream* Stm) {
-	this->InterceptedBullet.Load(Stm);
+template <typename T>
+void TechnoExt::ExtData::Serialize(T& Stm) {
+	Stm
+		.Process(this->InterceptedBullet);
 }
 
-void TechnoExt::ExtData::SaveToStream(IStream* Stm) {
-	this->InterceptedBullet.Save(Stm);
+void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+	Extension<TechnoClass>::LoadFromStream(Stm);
+	this->Serialize(Stm);
+}
+
+void TechnoExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+	Extension<TechnoClass>::SaveToStream(Stm);
+	this->Serialize(Stm);
+}
+
+bool TechnoExt::LoadGlobals(PhobosStreamReader& Stm) {
+	return Stm
+		.Success();
+}
+
+bool TechnoExt::SaveGlobals(PhobosStreamWriter& Stm) {
+	return Stm
+		.Success();
 }
 
 // =============================
@@ -37,6 +55,7 @@ DEFINE_HOOK(6F4500, TechnoClass_DTOR, 5)
 {
 	GET(TechnoClass*, pItem, ECX);
 
+	//TechnoExt::ExtData *pItemExt = TechnoExt::ExtMap.Find(pItem);
 	TechnoExt::ExtMap.Remove(pItem);
 	return 0;
 }
@@ -54,18 +73,12 @@ DEFINE_HOOK(70BF50, TechnoClass_SaveLoad_Prefix, 5)
 
 DEFINE_HOOK(70C249, TechnoClass_Load_Suffix, 5)
 {
-	auto pItem = TechnoExt::ExtMap.Find(TechnoExt::ExtMap.SavingObject);
-	IStream* pStm = TechnoExt::ExtMap.SavingStream;
-
-	pItem->LoadFromStream(pStm);
+	TechnoExt::ExtMap.LoadStatic();
 	return 0;
 }
 
 DEFINE_HOOK(70C264, TechnoClass_Save_Suffix, 5)
 {
-	auto pItem = TechnoExt::ExtMap.Find(TechnoExt::ExtMap.SavingObject);
-	IStream* pStm = TechnoExt::ExtMap.SavingStream;
-
-	pItem->SaveToStream(pStm);
+	TechnoExt::ExtMap.SaveStatic();
 	return 0;
 }
