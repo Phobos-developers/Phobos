@@ -46,19 +46,24 @@ public:
 			Spawn_LimitedExtraRange(0)
 		{ }
 
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;
+
+		virtual void LoadFromINIFile(CCINIClass* pINI) override;
+		virtual void Initialize() override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
 
-		virtual void LoadFromStream(IStream* Stm);
+		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 
-		virtual void SaveToStream(IStream* Stm) const;
+		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
+	private:
+		template <typename T>
+		void Serialize(T& Stm);
 	};
 
 	class ExtContainer final : public Container<TechnoTypeExt> {
@@ -66,6 +71,8 @@ public:
 		ExtContainer();
 		~ExtContainer();
 	};
+
+	static ExtContainer ExtMap;
 
 	static void TransferMindControl(TechnoClass* From, TechnoClass* To);
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
@@ -79,6 +86,4 @@ public:
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
 	static bool HasSelectionGroupID(ObjectTypeClass* pType, const char* pID);
-
-	static ExtContainer ExtMap;
 };
