@@ -40,6 +40,10 @@ TechnoExt::ExtContainer::ExtContainer() : Container("TechnoClass") {
 
 TechnoExt::ExtContainer::~ExtContainer() = default;
 
+void TechnoExt::ExtContainer::InvalidatePointer(void* ptr, bool bRemoved) {
+
+}
+
 // =============================
 // container hooks
 

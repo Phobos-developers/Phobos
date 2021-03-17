@@ -3,6 +3,11 @@
 template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
 
+void BuildingTypeExt::ExtData::Initialize()
+{
+
+}
+
 // =============================
 // load / save
 
@@ -25,7 +30,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 
 void BuildingTypeExt::ExtData::CompleteInitialization() {
 	auto const pThis = this->OwnerObject();
-
+	UNREFERENCED_PARAMETER(pThis);
 }
 
 template <typename T>

@@ -3,6 +3,11 @@
 template<> const DWORD Extension<WeaponTypeClass>::Canary = 0x22222222;
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
+void WeaponTypeExt::ExtData::Initialize()
+{
+
+};
+
 // =============================
 // load / save
 

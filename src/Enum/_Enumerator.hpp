@@ -2,6 +2,7 @@
 
 #include "../Phobos.CRT.h"
 #include "../Misc/Savegame.h"
+#include "../Utilities/Constructs.h"
 
 #include <algorithm>
 #include <memory>
@@ -102,11 +103,7 @@ public:
 	static const char* GetMainSection();
 
 	Enumerable(const char* Title) {
-		this->Name[0] = 0;
-
-		if (Title) {
-			PhobosCRT::strCopy(this->Name, Title);
-		}
+		this->Name = Title;
 	}
 
 	virtual ~Enumerable() = default;
@@ -117,5 +114,5 @@ public:
 
 	virtual void SaveToStream(PhobosStreamWriter& Stm) = 0;
 
-	char Name[32];
+	PhobosFixedString<32> Name;
 };

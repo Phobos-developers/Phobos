@@ -48,6 +48,13 @@ void RadType::LoadFromINI(CCINIClass * pINI)
 	this->Tint_Factor.Read(exINI, section, "TintFactor");
 }
 
+void RadType::Read(CCINIClass* pINI, const char* pSection, const char* pKey)
+{
+	this->Name.Read(pINI, pSection, pKey, this->Name);
+	
+	this->LoadFromINI(pINI);
+}
+
 template <typename T>
 void RadType::Serialize(T& Stm) {
 	Stm

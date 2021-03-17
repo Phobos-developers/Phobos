@@ -3,6 +3,8 @@
 // Ares has hooked the SwizzleManagerClass, 
 // so what we need to do is just call the original functions.
 
+#include <type_traits>
+
 #include <Objidl.h>
 
 class PhobosSwizzle {

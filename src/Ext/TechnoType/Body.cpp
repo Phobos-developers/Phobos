@@ -13,6 +13,11 @@
 template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 
+void TechnoTypeExt::ExtData::Initialize() {
+	auto pThis = this->OwnerObject();
+	UNREFERENCED_PARAMETER(pThis);
+}
+
 void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 {
 	float x = static_cast<float>(this->TurretOffset.GetEx()->X * factor);

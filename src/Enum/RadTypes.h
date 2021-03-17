@@ -34,6 +34,8 @@ public:
 
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
+	void Read(CCINIClass* pINI, const char* pSection, const char* pKey);
+
 	WarheadTypeClass* GetWarhead() const {
 		return this->WH.Get(RulesClass::Instance->RadSiteWarhead);
 	}

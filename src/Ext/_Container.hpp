@@ -293,7 +293,7 @@ public:
 
 	void Clear() {
 		if (this->Items.size()) {
-			Debug::Log(Debug::Severity::Fatal, "Cleared %u items from %s.\n",
+			Debug::Log("Cleared %u items from %s.\n",
 				this->Items.size(), this->Name);
 			this->Items.clear();
 		}

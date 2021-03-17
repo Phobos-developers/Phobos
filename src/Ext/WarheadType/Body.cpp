@@ -100,6 +100,10 @@ WarheadTypeExt::ExtContainer::ExtContainer() : Container("WarheadTypeClass") {
 
 WarheadTypeExt::ExtContainer::~ExtContainer() = default;
 
+void WarheadTypeExt::ExtContainer::InvalidatePointer(void* ptr, bool bRemoved) {
+	
+}
+
 // =============================
 // container hooks
 
