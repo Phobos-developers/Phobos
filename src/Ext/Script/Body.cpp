@@ -62,20 +62,6 @@ void ScriptExt::ExecuteTimedAreaGuardAction(TeamClass *pTeam)
 
 	if (pTeam->GuardAreaTimer.Completed()) {
 		pTeam->GuardAreaTimer.Stop(); // Needed
-		auto pUnit = pTeam->FirstUnit;
-
-		// Reset mission
-		pTeam->Target = nullptr;
-		pUnit->SetTarget(nullptr);
-		pUnit->QueueMission(Mission::None, true);
-		pUnit->Destination = pUnit;
-		while (pUnit->NextTeamMember) {
-			pUnit = pUnit->NextTeamMember;
-
-			pUnit->SetTarget(nullptr);
-			pUnit->QueueMission(Mission::None, true);
-			pUnit->Destination = pUnit;
-		}
 
 		pTeam->StepCompleted = true;
 	}
