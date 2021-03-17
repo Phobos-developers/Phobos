@@ -139,6 +139,22 @@ namespace detail {
 	}
 
 	template <>
+	inline bool read<Point2D>(Point2D& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
+		if (parser.Read2Integers(pSection, pKey, (int*)&value)) {
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<CoordStruct>(CoordStruct& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
+		if (parser.Read3Integers(pSection, pKey, (int*)&value)) {
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<ColorStruct>(ColorStruct& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
 		ColorStruct buffer;
 		if (parser.Read3Bytes(pSection, pKey, reinterpret_cast<byte*>(&buffer))) {
