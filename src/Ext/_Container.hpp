@@ -7,6 +7,7 @@
 
 #include "../Misc/Debug.h"
 #include "../Misc/Stream.h"
+#include "../Misc/Swizzle.h"
 
 enum class InitState {
 	Blank = 0x0, // CTOR'd
@@ -27,22 +28,22 @@ enum class InitState {
 
  * Extension<T> is the parent class for the data you want to link with this instance of T
    ( for example, [Warhead]MindControl.Permanent= should be stored in WarheadClassExt::ExtData
-     which itself should be a derivate of Extension<WarheadTypeClass> )
+	 which itself should be a derivate of Extension<WarheadTypeClass> )
 
  * ==========================
 
    Container<TX> is the storage for all the Extension<T> which share the same T,
-    where TX is the containing class of the relevant derivate of Extension<T>. // complex, huh?
+	where TX is the containing class of the relevant derivate of Extension<T>. // complex, huh?
    ( for example, there is Container<WarheadTypeExt>
-     which contains all the custom data for all WarheadTypeClass instances,
-     and WarheadTypeExt itself contains just statics like the Container itself
+	 which contains all the custom data for all WarheadTypeClass instances,
+	 and WarheadTypeExt itself contains just statics like the Container itself
 
-      )
+	  )
 
    Requires:
-   	using base_type = T;
-   	const DWORD Extension<T>::Canary = (any dword value easily identifiable in a byte stream)
-   	class TX::ExtData : public Extension<T> { custom_data; }
+	using base_type = T;
+	const DWORD Extension<T>::Canary = (any dword value easily identifiable in a byte stream)
+	class TX::ExtData : public Extension<T> { custom_data; }
 
    Complex? Yes. That's partially why you should be happy these are premade for you.
  *
@@ -61,9 +62,9 @@ public:
 		Initialized(InitState::Blank)
 	{ }
 
-	Extension(const Extension &other) = delete;
+	Extension(const Extension& other) = delete;
 
-	void operator = (const Extension &RHS) = delete;
+	void operator = (const Extension& RHS) = delete;
 
 	virtual ~Extension() = default;
 
@@ -73,18 +74,18 @@ public:
 	}
 
 	void EnsureConstanted() {
-		if(this->Initialized < InitState::Constanted) {
+		if (this->Initialized < InitState::Constanted) {
 			this->InitializeConstants();
 			this->Initialized = InitState::Constanted;
 		}
 	}
 
 	void LoadFromINI(CCINIClass* pINI) {
-		if(!pINI) {
+		if (!pINI) {
 			return;
 		}
 
-		switch(this->Initialized) {
+		switch (this->Initialized) {
 		case InitState::Blank:
 			this->EnsureConstanted();
 		case InitState::Constanted:
@@ -95,7 +96,7 @@ public:
 			this->Initialized = InitState::Inited;
 		case InitState::Inited:
 		case InitState::Completed:
-			if(pINI == CCINIClass::INI_Rules) {
+			if (pINI == CCINIClass::INI_Rules) {
 				this->LoadFromRulesFile(pINI);
 			}
 			this->LoadFromINIFile(pINI);
@@ -104,6 +105,16 @@ public:
 	}
 
 	virtual void InvalidatePointer(void* ptr, bool bRemoved) = 0;
+
+	virtual inline void SaveToStream(PhobosStreamWriter& Stm) {
+		//Stm.Save(this->AttachedToObject);
+		Stm.Save(this->Initialized);
+	}
+
+	virtual inline void LoadFromStream(PhobosStreamReader& Stm) {
+		//Stm.Load(this->AttachedToObject);
+		Stm.Load(this->Initialized);
+	}
 
 protected:
 	// right after construction. only basic initialization tasks possible;
@@ -223,10 +234,9 @@ private:
 	using map_type = ContainerMap<base_type, extension_type>;
 
 	map_type Items;
-public:
+
 	base_type* SavingObject;
 	IStream* SavingStream;
-private:
 	const char* Name;
 
 public:
@@ -238,34 +248,34 @@ public:
 
 	virtual ~Container() = default;
 
-	void PointerGotInvalid(void *ptr, bool bRemoved) {
+	void PointerGotInvalid(void* ptr, bool bRemoved) {
 		this->InvalidatePointer(ptr, bRemoved);
-		if(!this->InvalidateExtDataIgnorable(ptr)) {
+		if (!this->InvalidateExtDataIgnorable(ptr)) {
 			this->InvalidateExtDataPointer(ptr, bRemoved);
 		}
 	}
 
 protected:
-	virtual void InvalidatePointer(void *ptr, bool bRemoved) {
+	virtual void InvalidatePointer(void* ptr, bool bRemoved) {
 	}
 
 	virtual bool InvalidateExtDataIgnorable(void* const ptr) const {
 		return true;
 	}
 
-	void InvalidateExtDataPointer(void *ptr, bool bRemoved) {
-		for(const auto& i : this->Items) {
+	void InvalidateExtDataPointer(void* ptr, bool bRemoved) {
+		for (const auto& i : this->Items) {
 			i.second->InvalidatePointer(ptr, bRemoved);
 		}
 	}
 
 public:
 	value_type FindOrAllocate(key_type key) {
-		if(key == nullptr) {
+		if (key == nullptr) {
 			Debug::Log("CTOR of %s attempted for a NULL pointer! WTF!\n", this->Name);
 			return nullptr;
 		}
-		if(auto const ptr = this->Items.find(key)) {
+		if (auto const ptr = this->Items.find(key)) {
 			return ptr;
 		}
 		auto val = new extension_type(key);
@@ -282,34 +292,38 @@ public:
 	}
 
 	void Clear() {
-		if(this->Items.size()) {
+		if (this->Items.size()) {
 			Debug::Log(Debug::Severity::Fatal, "Cleared %u items from %s.\n",
 				this->Items.size(), this->Name);
 			this->Items.clear();
 		}
 	}
 
-	void LoadAllFromINI(CCINIClass *pINI) {
-		for(const auto& i : this->Items) {
+	void LoadAllFromINI(CCINIClass* pINI) {
+		for (const auto& i : this->Items) {
 			i.second->LoadFromINI(pINI);
 		}
 	}
 
-	void LoadFromINI(const_key_type key, CCINIClass *pINI) {
-		if(auto const ptr = this->Items.find(key)) {
+	void LoadFromINI(const_key_type key, CCINIClass* pINI) {
+		if (auto const ptr = this->Items.find(key)) {
 			ptr->LoadFromINI(pINI);
 		}
 	}
 
-	void PrepareStream(key_type key, IStream *pStm) {
+	void PrepareStream(key_type key, IStream* pStm) {
+		Debug::Log("[PrepareStream] Next is %p of type '%s'\n", key, this->Name);
+
 		this->SavingObject = key;
 		this->SavingStream = pStm;
 	}
 
 	void SaveStatic() {
 		if (this->SavingObject && this->SavingStream) {
+			Debug::Log("[SaveStatic] Saving object %p as '%s'\n", this->SavingObject, this->Name);
+
 			if (!this->Save(this->SavingObject, this->SavingStream)) {
-				Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[SaveStatic] Saving failed!\n");
+				Debug::FatalErrorAndExit("[SaveStatic] Saving failed!\n");
 			}
 		}
 		else {
@@ -323,9 +337,10 @@ public:
 
 	void LoadStatic() {
 		if (this->SavingObject && this->SavingStream) {
+			Debug::Log("[LoadStatic] Loading object %p as '%s'\n", this->SavingObject, this->Name);
 
 			if (!this->Load(this->SavingObject, this->SavingStream)) {
-				Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "[LoadStatic] Loading failed!\n");
+				Debug::FatalErrorAndExit("[LoadStatic] Loading failed!\n");
 			}
 		}
 		else {
@@ -337,78 +352,81 @@ public:
 		this->SavingStream = nullptr;
 	}
 
-	protected:
-		// override this method to do type-specific stuff
-		virtual bool Save(key_type key, IStream* pStm) {
-			return this->SaveKey(key, pStm) != nullptr;
-		}
+protected:
+	// override this method to do type-specific stuff
+	virtual bool Save(key_type key, IStream* pStm) {
+		return this->SaveKey(key, pStm) != nullptr;
+	}
 
-		// override this method to do type-specific stuff
-		virtual bool Load(key_type key, IStream* pStm) {
-			return this->LoadKey(key, pStm) != nullptr;
-		}
+	// override this method to do type-specific stuff
+	virtual bool Load(key_type key, IStream* pStm) {
+		return this->LoadKey(key, pStm) != nullptr;
+	}
 
-		value_type SaveKey(key_type key, IStream* pStm) {
-			// this really shouldn't happen
-			if (!key) {
-				Debug::Log("[SaveKey] Attempted for a null pointer! WTF!\n");
-				return nullptr;
-			}
-
-			// get the value data
-			auto buffer = this->Find(key);
-			if (!buffer) {
-				Debug::Log("[SaveKey] Could not find value.\n");
-				return nullptr;
-			}
-
-			// write the current pointer, the size of the block, and the canary
-			PhobosStreamWriter::Process(pStm, extension_type::Canary);
-			PhobosStreamWriter::Process(pStm, buffer);
-			// save the data
-			buffer->SaveToStream(pStm);
-
-			// save the block
-			PhobosStreamWriter::Process(pStm, sizeof(*buffer));
-			if (PhobosStreamWriter::Process(pStm,*buffer)) {
-				Debug::Log("[SaveKey] Failed to save data.\n");
-				return nullptr;
-			}
-
-			// done
-			return buffer;
-		}
-
-		value_type LoadKey(key_type key, IStream* pStm) {
-			// this really shouldn't happen
-			if (!key) {
-				Debug::Log("[LoadKey] Attempted for a null pointer! WTF!\n");
-				return nullptr;
-			}
-
-			// get the value data
-			auto buffer = this->FindOrAllocate(key);
-			if (!buffer) {
-				Debug::Log("[LoadKey] Could not find or allocate value.\n");
-				return nullptr;
-			}
-
-			size_t size;
-			PhobosStreamReader::Process(pStm, size); // extension_type::Canary
-			if (size == extension_type::Canary)
-			{
-				PhobosStreamReader::Process(pStm, buffer);
-				buffer->LoadFromStream(pStm);
-				PhobosStreamReader::Process(pStm, size);
-				if (size == sizeof(*buffer))
-					PhobosStreamReader::Process(pStm, *buffer);
-				else
-					Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, 
-						"[LoadKey] Size isn't correct as I excepted.");
-			}
-			else
-				Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, 
-					"[LoadKey] %s's Canary isn't correct as I excepted.", this->Name);
+	value_type SaveKey(key_type key, IStream* pStm) {
+		// this really shouldn't happen
+		if (!key) {
+			Debug::Log("[SaveKey] Attempted for a null pointer! WTF!\n");
 			return nullptr;
 		}
+
+		// get the value data
+		auto buffer = this->Find(key);
+		if (!buffer) {
+			Debug::Log("[SaveKey] Could not find value.\n");
+			return nullptr;
+		}
+
+		// write the current pointer, the size of the block, and the canary
+		PhobosByteStream saver(sizeof(*buffer));
+		PhobosStreamWriter writer(saver);
+
+		writer.Save(extension_type::Canary);
+		writer.Save(buffer);
+
+		// save the data
+		buffer->SaveToStream(writer);
+
+		// save the block
+		if (!saver.WriteBlockToStream(pStm)) {
+			Debug::Log("[SaveKey] Failed to save data.\n");
+			return nullptr;
+		}
+
+		Debug::Log("[SaveKey] Save used up 0x%X bytes\n", saver.Size());
+
+		// done
+		return buffer;
+	}
+
+	value_type LoadKey(key_type key, IStream* pStm) {
+		// this really shouldn't happen
+		if (!key) {
+			Debug::Log("[LoadKey] Attempted for a null pointer! WTF!\n");
+			return nullptr;
+		}
+
+		// get the value data
+		auto buffer = this->FindOrAllocate(key);
+		if (!buffer) {
+			Debug::Log("[LoadKey] Could not find or allocate value.\n");
+			return nullptr;
+		}
+
+		PhobosByteStream loader(0);
+		if (!loader.ReadBlockFromStream(pStm)) {
+			Debug::Log("[LoadKey] Failed to read data from save stream?!\n");
+			return nullptr;
+		}
+
+		PhobosStreamReader reader(loader);
+		if (reader.Expect(extension_type::Canary) && reader.RegisterChange(buffer)) {
+			buffer->LoadFromStream(reader);
+			if (reader.ExpectEndOfBlock()) {
+				return buffer;
+			}
+		}
+
+		return nullptr;
+	}
 };

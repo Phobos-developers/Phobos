@@ -21,23 +21,35 @@ public:
 			PowersUp_Buildings()
 		{ }
 
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		virtual void LoadFromINIFile(CCINIClass * pINI) override;
+		virtual void Initialize() override;
+		virtual void CompleteInitialization();
 
-		virtual void LoadFromStream(IStream* Stm);
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {
+		}
 
-		virtual void SaveToStream(IStream* Stm) const;
+		virtual void LoadFromStream(PhobosStreamReader & Stm) override;
+
+		virtual void SaveToStream(PhobosStreamWriter & Stm) override;
+
+	private:
+		template <typename T>
+		void Serialize(T& Stm);
 	};
-
-	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 
 	class ExtContainer final : public Container<BuildingTypeExt> {
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		virtual bool Load(BuildingTypeClass* pThis, IStream* pStm) override;
 	};
 
 	static ExtContainer ExtMap;
+	static bool LoadGlobals(PhobosStreamReader& Stm);
+	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 };

@@ -23,16 +23,44 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		strcpy_s(pThis->PowersUpBuilding, BuildingTypeClass::Array->GetItem(this->PowersUp_Buildings[0])->ID);
 }
 
-void BuildingTypeExt::ExtData::LoadFromStream(IStream* Stm) {
-	this->PowersUp_Owner.Load(Stm);
-	this->PowersUp_Buildings.Load(Stm);
+void BuildingTypeExt::ExtData::CompleteInitialization() {
+	auto const pThis = this->OwnerObject();
+
 }
 
-void BuildingTypeExt::ExtData::SaveToStream(IStream* Stm) const {
-	this->PowersUp_Owner.Save(Stm);
-	this->PowersUp_Buildings.Save(Stm);
+template <typename T>
+void BuildingTypeExt::ExtData::Serialize(T& Stm) {
+	Stm
+		.Process(this->PowersUp_Owner)
+		.Process(this->PowersUp_Buildings)
+		;
+}
+void BuildingTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+	Extension<BuildingTypeClass>::LoadFromStream(Stm);
+	this->Serialize(Stm);
 }
 
+void BuildingTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+	Extension<BuildingTypeClass>::SaveToStream(Stm);
+	this->Serialize(Stm);
+}
+
+bool BuildingTypeExt::ExtContainer::Load(BuildingTypeClass* pThis, IStream* pStm) {
+	BuildingTypeExt::ExtData* pData = this->LoadKey(pThis, pStm);
+
+	return pData != nullptr;
+};
+
+bool BuildingTypeExt::LoadGlobals(PhobosStreamReader& Stm) {
+
+	return Stm.Success();
+}
+
+bool BuildingTypeExt::SaveGlobals(PhobosStreamWriter& Stm) {
+
+
+	return Stm.Success();
+}
 // =============================
 // container
 
@@ -73,19 +101,13 @@ DEFINE_HOOK(465010, BuildingTypeClass_SaveLoad_Prefix, 5)
 
 DEFINE_HOOK(4652ED, BuildingTypeClass_Load_Suffix, 7)
 {
-	auto pItem = BuildingTypeExt::ExtMap.Find(BuildingTypeExt::ExtMap.SavingObject);
-	IStream* pStm = BuildingTypeExt::ExtMap.SavingStream;
-
-	pItem->LoadFromStream(pStm);
+	BuildingTypeExt::ExtMap.LoadStatic();
 	return 0;
 }
 
 DEFINE_HOOK(46536A, BuildingTypeClass_Save_Suffix, 7)
 {
-	auto pItem = BuildingTypeExt::ExtMap.Find(BuildingTypeExt::ExtMap.SavingObject);
-	IStream* pStm = BuildingTypeExt::ExtMap.SavingStream;
-
-	pItem->SaveToStream(pStm);
+	BuildingTypeExt::ExtMap.SaveStatic();
 	return 0;
 }
 
