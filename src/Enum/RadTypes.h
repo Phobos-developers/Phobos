@@ -1,6 +1,9 @@
 #pragma once
 
+#include "../Utilities/Template.h"
 #include "../Utilities/TemplateDef.h"
+#include "../Utilities/GeneralUtils.h"
+
 #include <WarheadTypeClass.h>
 
 class RadType {
@@ -20,7 +23,7 @@ public:
 
 	// Set default values
 	// RadType::Read method will later read the new values from the section specified in the ID field
-	RadType(const char* id = "Radiation") : 
+	RadType(const char* id = "Radiation") :
 		ID(id),
 		DurationMultiple(1),
 		ApplicationDelay(16),
@@ -31,13 +34,16 @@ public:
 		LevelFactor(0.2f),
 		LightFactor(0.1f),
 		TintFactor(1.0f),
-		RadSiteColor(ColorStruct{0,255,0}),
+		RadSiteColor(ColorStruct{ 0,255,0 }),
 		RadWarhead(nullptr)
 	{
 		RadWarhead = WarheadTypeClass::FindOrAllocate("RadSite");
 	}
 
 	void Read(CCINIClass* const pINI, const char* section, const char* pKey);
-	void Load(IStream* Stm);
-	void Save(IStream* Stm);
+	virtual void LoadFromStream(PhobosStreamReader& Stm);
+	virtual void SaveToStream(PhobosStreamWriter& Stm);
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 };

@@ -1,11 +1,11 @@
-﻿#include <Helpers/Macro.h>
+﻿#include <Phobos.h>
+
+#include <Helpers/Macro.h>
 #include <Surface.h>
-#include <HouseClass.h>
-#include <SideClass.h>
-#include "../Phobos.h"
-#include "../Utilities/Debug.h"
-#include "../Ext/House/Body.h"
-#include "../Ext/Side/Body.h"
+
+#include <Ext/House/Body.h>
+#include <Ext/Side/Body.h>
+#include <Misc/Debug.h>
 
 DEFINE_HOOK(777C41, UI_ApplyAppIcon, 9)
 {

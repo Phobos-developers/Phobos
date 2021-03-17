@@ -7,7 +7,7 @@
 #include <Drawing.h>
 
 #include <Utilities/GeneralUtils.h>
-#include <Utilities/Debug.h>
+#include <Misc/Debug.h>
 
 #ifndef IS_RELEASE_VER
 	bool HideWarning = false;

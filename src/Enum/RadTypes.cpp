@@ -21,47 +21,40 @@ void RadType::Read(CCINIClass* const pINI, const char* pSection, const char* pKe
 	}
 }
 
-void RadType::Load(IStream* Stm) {
-	PhobosStreamReader::Process(Stm, this->ID);
+template <typename T>
+void RadType::Serialize(T& Stm) {
+	Stm
+		.Process(this->DurationMultiple)
+		.Process(this->ApplicationDelay)
+		.Process(this->LevelMax)
+		.Process(this->LevelDelay)
+		.Process(this->LightDelay)
+		.Process(this->BuildingApplicationDelay)
+		.Process(this->LevelFactor)
+		.Process(this->LightFactor)
+		.Process(this->TintFactor)
+		.Process(this->RadSiteColor)
+		;
+};
 
+void RadType::LoadFromStream(PhobosStreamReader & Stm)
+{
+	Stm.Process(this->ID);
 	if (GeneralUtils::IsValidString(this->ID))
 	{
-		this->DurationMultiple.Load(Stm);
-		this->ApplicationDelay.Load(Stm);
-		this->LevelFactor.Load(Stm);
-		this->LevelMax.Load(Stm);
-		this->LevelDelay.Load(Stm);
-		this->LightDelay.Load(Stm);
-		this->BuildingApplicationDelay.Load(Stm);
-
-		char warheadID[sizeof(this->RadWarhead->ID)];
-		PhobosStreamReader::Process(Stm, warheadID);
-		RadWarhead = WarheadTypeClass::FindOrAllocate(warheadID);
-
-		this->RadSiteColor.Load(Stm);
-		this->LightFactor.Load(Stm);
-		this->TintFactor.Load(Stm);
+	char warheadID[sizeof(this->RadWarhead->ID)];
+	Stm.Process(warheadID);
+	RadWarhead = WarheadTypeClass::FindOrAllocate(warheadID);
+	this->Serialize(Stm);
 	}
 }
 
-void RadType::Save(IStream* Stm) {
-	PhobosStreamWriter::Process(Stm, this->ID);
-
+void RadType::SaveToStream(PhobosStreamWriter & Stm)
+{
+	Stm.Process(this->ID);
 	if (GeneralUtils::IsValidString(this->ID))
 	{
-		this->DurationMultiple.Save(Stm);
-		this->ApplicationDelay.Save(Stm);
-		this->LevelFactor.Save(Stm);
-		this->LevelMax.Save(Stm);
-		this->LevelDelay.Save(Stm);
-		this->LightDelay.Save(Stm);
-		this->BuildingApplicationDelay.Save(Stm);
-
-		PhobosStreamWriter::Process(Stm, this->RadWarhead->ID);
-
-		this->RadSiteColor.Save(Stm);
-		this->LightFactor.Save(Stm);
-		this->TintFactor.Save(Stm);
+	Stm.Process(this->RadWarhead->ID);
+	this->Serialize(Stm);
 	}
 }
-

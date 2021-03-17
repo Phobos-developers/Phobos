@@ -3,7 +3,7 @@
 #include <MessageListClass.h>
 
 #include "Commands.h"
-#include "../Utilities/Debug.h"
+#include "../Misc/Debug.h"
 
 class DummyCommandClass : public PhobosCommandClass
 {

@@ -6,11 +6,11 @@ ScriptExt::ExtContainer ScriptExt::ExtMap;
 // =============================
 // load / save
 
-void ScriptExt::ExtData::LoadFromStream(IStream* Stm) {
+void ScriptExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
 	// Nothing yet
 }
 
-void ScriptExt::ExtData::SaveToStream(IStream* Stm) {
+void ScriptExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
 	// Nothing yet
 }
 

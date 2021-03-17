@@ -4,11 +4,19 @@
 #include <StringTable.h>
 #include <Matrix3D.h>
 
+#include "../BuildingType/Body.h"
 #include "../BulletType/Body.h"
 #include "../Techno/Body.h"
 
+#include "../../Utilities/GeneralUtils.h"
+
 template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
+
+void TechnoTypeExt::ExtData::Initialize() {
+	auto pThis = this->OwnerObject();
+	UNREFERENCED_PARAMETER(pThis);
+}
 
 void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 {
@@ -37,6 +45,7 @@ void TechnoTypeExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
 		}
 	}
 }
+
 void TechnoTypeExt::ApplyBuildingDeployerTargeting(TechnoClass* pThis)
 {
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
@@ -63,6 +72,7 @@ void TechnoTypeExt::ApplyBuildingDeployerTargeting(TechnoClass* pThis)
 		}
 	}
 }
+
 void TechnoTypeExt::ApplyInterceptor(TechnoClass* pThis)
 {
 	auto pData = TechnoExt::ExtMap.Find(pThis);
@@ -97,6 +107,7 @@ void TechnoTypeExt::ApplyInterceptor(TechnoClass* pThis)
 		}
 	}
 }
+
 void TechnoTypeExt::ApplyPowered_KillSpawns(TechnoClass* pThis)
 {
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
@@ -120,6 +131,7 @@ void TechnoTypeExt::ApplyPowered_KillSpawns(TechnoClass* pThis)
 		}
 	}
 }
+
 void TechnoTypeExt::ApplySpawn_LimitRange(TechnoClass* pThis)
 {
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
@@ -150,7 +162,6 @@ void TechnoTypeExt::ApplySpawn_LimitRange(TechnoClass* pThis)
 }
 
 // Ares 0.A source
-
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
 {
 	return GeneralUtils::IsValidString(this->GroupAs) ? this->GroupAs : this->OwnerObject()->ID;
@@ -171,7 +182,8 @@ bool TechnoTypeExt::HasSelectionGroupID(ObjectTypeClass* pType, const char* pID)
 	return (_strcmpi(id, pID) == 0);
 }
 
-bool TechnoTypeExt::ExtData::IsCountedAsHarvester() {
+bool TechnoTypeExt::ExtData::IsCountedAsHarvester()
+{
 	auto pThis = this->OwnerObject();
 	UnitTypeClass* pUnit = nullptr;
 	if (pThis->WhatAmI() == AbstractType::UnitType)
@@ -184,7 +196,8 @@ bool TechnoTypeExt::ExtData::IsCountedAsHarvester() {
 // =============================
 // load / save
 
-void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
+void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+{
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 
@@ -216,46 +229,39 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->TurretOffset.Read(exArtINI, pThis->ImageFile, "TurretOffset");
 }
 
-void TechnoTypeExt::ExtData::LoadFromStream(IStream* Stm) {
-	this->Deployed_RememberTarget.Load(Stm);
-	this->HealthBar_Hide.Load(Stm);
-	this->UIDescription.Load(Stm);
-	this->LowSelectionPriority.Load(Stm);
-	this->MindControlRangeLimit.Load(Stm);
-	this->Interceptor.Load(Stm);
-	this->Interceptor_GuardRange.Load(Stm);
-	this->Interceptor_EliteGuardRange.Load(Stm);
-	PhobosStreamReader::Process(Stm, this->GroupAs);
-	this->TurretOffset.Load(Stm);
-	this->Powered_KillSpawns.Load(Stm);
-	this->Spawn_LimitedRange.Load(Stm);
-	this->Spawn_LimitedExtraRange.Load(Stm);
-	this->Harvester_Counted.Load(Stm);
+template <typename T>
+void TechnoTypeExt::ExtData::Serialize(T& Stm) {
+	Stm
+		.Process(this->Deployed_RememberTarget)
+		.Process(this->HealthBar_Hide)
+		.Process(this->UIDescription)
+		.Process(this->LowSelectionPriority)
+		.Process(this->MindControlRangeLimit)
+		.Process(this->Interceptor)
+		.Process(this->Interceptor_GuardRange)
+		.Process(this->Interceptor_EliteGuardRange)
+		.Process(this->GroupAs)
+		.Process(this->TurretOffset)
+		.Process(this->Powered_KillSpawns)
+		.Process(this->Spawn_LimitedRange)
+		.Process(this->Spawn_LimitedExtraRange)
+		.Process(this->Harvester_Counted)
+		;
+}
+void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+	Extension<TechnoTypeClass>::LoadFromStream(Stm);
+	this->Serialize(Stm);
 }
 
-void TechnoTypeExt::ExtData::SaveToStream(IStream* Stm) const {
-	this->Deployed_RememberTarget.Save(Stm);
-	this->HealthBar_Hide.Save(Stm);
-	this->UIDescription.Save(Stm);
-	this->LowSelectionPriority.Save(Stm);
-	this->MindControlRangeLimit.Save(Stm);
-	this->Interceptor.Save(Stm);
-	this->Interceptor_GuardRange.Save(Stm);
-	this->Interceptor_EliteGuardRange.Save(Stm);
-	PhobosStreamWriter::Process(Stm, this->GroupAs);
-	this->TurretOffset.Save(Stm);
-	this->Powered_KillSpawns.Save(Stm);
-	this->Spawn_LimitedRange.Save(Stm);
-	this->Spawn_LimitedExtraRange.Save(Stm);
-	this->Harvester_Counted.Save(Stm);
+void TechnoTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+	Extension<TechnoTypeClass>::SaveToStream(Stm);
+	this->Serialize(Stm);
 }
 
 // =============================
 // container
 
-TechnoTypeExt::ExtContainer::ExtContainer() : Container("TechnoTypeClass") {
-}
-
+TechnoTypeExt::ExtContainer::ExtContainer() : Container("TechnoTypeClass") {}
 TechnoTypeExt::ExtContainer::~ExtContainer() = default;
 
 // =============================
@@ -290,19 +296,13 @@ DEFINE_HOOK(7162F0, TechnoTypeClass_SaveLoad_Prefix, 6)
 
 DEFINE_HOOK(716DAC, TechnoTypeClass_Load_Suffix, A)
 {
-	auto pItem = TechnoTypeExt::ExtMap.Find(TechnoTypeExt::ExtMap.SavingObject);
-	IStream* pStm = TechnoTypeExt::ExtMap.SavingStream;
-
-	pItem->LoadFromStream(pStm);
+	TechnoTypeExt::ExtMap.LoadStatic();
 	return 0;
 }
 
 DEFINE_HOOK(717094, TechnoTypeClass_Save_Suffix, 5)
 {
-	auto pItem = TechnoTypeExt::ExtMap.Find(TechnoTypeExt::ExtMap.SavingObject);
-	IStream* pStm = TechnoTypeExt::ExtMap.SavingStream;
-
-	pItem->SaveToStream(pStm);
+	TechnoTypeExt::ExtMap.SaveStatic();
 	return 0;
 }
 
@@ -313,5 +313,17 @@ DEFINE_HOOK(716123, TechnoTypeClass_LoadFromINI, 5)
 	GET_STACK(CCINIClass*, pINI, 0x380);
 
 	TechnoTypeExt::ExtMap.LoadFromINI(pItem, pINI);
+	return 0;
+}
+
+DEFINE_HOOK(679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 5)
+{
+	//GET(CCINIClass*, pINI, ESI);
+
+	for (auto const& pType : *BuildingTypeClass::Array) {
+		auto const pExt = BuildingTypeExt::ExtMap.Find(pType);
+		pExt->CompleteInitialization();
+	}
+
 	return 0;
 }

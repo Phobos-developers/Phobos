@@ -19,13 +19,23 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->Interceptable.Read(exINI, pSection, "Interceptable");
 }
 
-void BulletTypeExt::ExtData::LoadFromStream(IStream* Stm) {
-	this->Interceptable.Load(Stm);
+template <typename T>
+void BulletTypeExt::ExtData::Serialize(T& Stm) {
+	Stm
+		.Process(this->Interceptable)
+		;
 }
 
-void BulletTypeExt::ExtData::SaveToStream(IStream* Stm) {
-	this->Interceptable.Save(Stm);
+void BulletTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+	Extension<BulletTypeClass>::LoadFromStream(Stm);
+	this->Serialize(Stm);
 }
+
+void BulletTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+	Extension<BulletTypeClass>::SaveToStream(Stm);
+	this->Serialize(Stm);
+}
+
 
 // =============================
 // container
@@ -67,19 +77,13 @@ DEFINE_HOOK(46C6A0, BulletTypeClass_SaveLoad_Prefix, 5)
 
 DEFINE_HOOK(46C722, BulletTypeClass_Load_Suffix, 4)
 {
-	auto pItem = BulletTypeExt::ExtMap.Find(BulletTypeExt::ExtMap.SavingObject);
-	IStream* pStm = BulletTypeExt::ExtMap.SavingStream;
-
-	pItem->LoadFromStream(pStm);
+	BulletTypeExt::ExtMap.LoadStatic();
 	return 0;
 }
 
 DEFINE_HOOK(46C74A, BulletTypeClass_Save_Suffix, 3)
 {
-	auto pItem = BulletTypeExt::ExtMap.Find(BulletTypeExt::ExtMap.SavingObject);
-	IStream* pStm = BulletTypeExt::ExtMap.SavingStream;
-
-	pItem->SaveToStream(pStm);
+	BulletTypeExt::ExtMap.SaveStatic();
 	return 0;
 }
 

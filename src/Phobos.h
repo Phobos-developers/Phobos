@@ -1,8 +1,14 @@
 #pragma once
 #include "Phobos.version.h"
 
-class CCINIClass;
+#include <Helpers/Macro.h>
+#include "Misc/Debug.h"
 
+class CCINIClass;
+class AbstractClass;
+
+constexpr auto NONE_STR = "<none>";
+constexpr auto NONE_STR2 = "none";
 constexpr auto TOOLTIPS_SECTION = "ToolTips";
 constexpr auto SIDEBAR_SECTION = "Sidebar";
 
@@ -22,6 +28,11 @@ public:
 
 	static const char* AppIconPath;
 	static const wchar_t* VersionDescription;
+
+	static void Clear();
+	static void PointerGotInvalid(AbstractClass* const pInvalid, bool const removed);
+	static HRESULT SaveGameData(IStream* pStm);
+	static void LoadGameData(IStream* pStm);
 
 	class UI
 	{

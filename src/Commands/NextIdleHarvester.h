@@ -5,9 +5,9 @@
 #include <ObjectClass.h>
 
 #include "Commands.h"
-#include "../Utilities/Debug.h"
-#include "../Ext/Techno/Body.h"
-#include "../Ext/TechnoType/Body.h"
+#include <Misc/Debug.h>
+#include <Ext/Techno/Body.h>
+#include <Ext/TechnoType/Body.h>
 
 class NextIdleHarvesterCommandClass : public PhobosCommandClass
 {

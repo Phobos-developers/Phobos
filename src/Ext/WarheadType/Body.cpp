@@ -54,31 +54,39 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
 }
 
-void WarheadTypeExt::ExtData::LoadFromStream(IStream* Stm) {
-	this->SpySat.Load(Stm);
-	this->BigGap.Load(Stm);
-	this->TransactMoney.Load(Stm);
-	this->SplashList.Load(Stm);
-	this->SplashList_PickRandom.Load(Stm);
-	this->RemoveDisguise.Load(Stm);
-	this->RemoveMindControl.Load(Stm);
-
-	this->AffectsEnemies.Load(Stm);
-	this->AffectsOwner.Load(Stm);
+template <typename T>
+void WarheadTypeExt::ExtData::Serialize(T& Stm) {
+	Stm
+		.Process(this->SpySat)
+		.Process(this->BigGap)
+		.Process(this->TransactMoney)
+		.Process(this->SplashList)
+		.Process(this->SplashList_PickRandom)
+		.Process(this->RemoveDisguise)
+		.Process(this->RemoveMindControl)
+		;
 }
 
-void WarheadTypeExt::ExtData::SaveToStream(IStream* Stm) const {
-	this->SpySat.Save(Stm);
-	this->BigGap.Save(Stm);
-	this->TransactMoney.Save(Stm);
-	this->SplashList.Save(Stm);
-	this->SplashList_PickRandom.Save(Stm);
-	this->RemoveDisguise.Save(Stm);
-	this->RemoveMindControl.Save(Stm);
-
-	this->AffectsEnemies.Save(Stm);
-	this->AffectsOwner.Save(Stm);
+void WarheadTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+	Extension<WarheadTypeClass>::LoadFromStream(Stm);
+	this->Serialize(Stm);
 }
+
+void WarheadTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+	Extension<WarheadTypeClass>::SaveToStream(Stm);
+	this->Serialize(Stm);
+}
+
+bool WarheadTypeExt::LoadGlobals(PhobosStreamReader& Stm) {
+	return Stm
+		.Success();
+}
+
+bool WarheadTypeExt::SaveGlobals(PhobosStreamWriter& Stm) {
+	return Stm
+		.Success();
+}
+
 
 // =============================
 // container
@@ -87,6 +95,10 @@ WarheadTypeExt::ExtContainer::ExtContainer() : Container("WarheadTypeClass") {
 }
 
 WarheadTypeExt::ExtContainer::~ExtContainer() = default;
+
+void WarheadTypeExt::ExtContainer::InvalidatePointer(void* ptr, bool bRemoved) {
+	
+}
 
 // =============================
 // container hooks
@@ -120,19 +132,13 @@ DEFINE_HOOK(75E0C0, WarheadTypeClass_SaveLoad_Prefix, 8)
 
 DEFINE_HOOK(75E2AE, WarheadTypeClass_Load_Suffix, 7)
 {
-	auto pItem = WarheadTypeExt::ExtMap.Find(WarheadTypeExt::ExtMap.SavingObject);
-	IStream* pStm = WarheadTypeExt::ExtMap.SavingStream;
-
-	pItem->LoadFromStream(pStm);
+	WarheadTypeExt::ExtMap.LoadStatic();
 	return 0;
 }
 
 DEFINE_HOOK(75E39C, WarheadTypeClass_Save_Suffix, 5)
 {
-	auto pItem = WarheadTypeExt::ExtMap.Find(WarheadTypeExt::ExtMap.SavingObject);
-	IStream* pStm = WarheadTypeExt::ExtMap.SavingStream;
-
-	pItem->SaveToStream(pStm);
+	WarheadTypeExt::ExtMap.SaveStatic();
 	return 0;
 }
 

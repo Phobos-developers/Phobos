@@ -1,8 +1,5 @@
 #pragma once
 
-constexpr auto NONE_STR = "<none>";
-constexpr auto NONE_STR2 = "none";
-
 class GeneralUtils
 {
 public:

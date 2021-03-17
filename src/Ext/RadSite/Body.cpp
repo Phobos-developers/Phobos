@@ -7,7 +7,7 @@ RadSiteExt::ExtContainer RadSiteExt::ExtMap;
 
 DynamicVectorClass<RadSiteExt::ExtData*> RadSiteExt::RadSiteInstance;
 
-void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass * const pOwner) {
+void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner) {
 	// use real ctor
 	auto const pRadSite = GameCreate<RadSiteClass>();
 
@@ -28,9 +28,7 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 
 	pRadSite->Activate();
 
-	if (RadSiteInstance.FindItemIndex(pRadExt) == -1) {
-		RadSiteInstance.AddItem(pRadExt);
-	}
+	RadSiteInstance.AddUnique(pRadExt);
 }
 
 /*  Including them as EXT so it keep tracked at save/load */
@@ -57,8 +55,8 @@ void RadSiteExt::ExtData::SetRadLevel(int amount) {
 // helper function provided by AlexB
 double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell) {
 	auto pThis = this->OwnerObject();
-	const Vector3D<int> base   = MapClass::Instance->GetCellAt(pThis->BaseCell)->GetCoords();
-	const Vector3D<int> coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
+	const auto base = MapClass::Instance->GetCellAt(pThis->BaseCell)->GetCoords();
+	const auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
 
 	const auto max = static_cast<double>(pThis->SpreadInLeptons);
 	const auto dist = coords.DistanceFrom(base);
@@ -69,10 +67,17 @@ double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell) {
 // =============================
 // load / save
 
-void RadSiteExt::ExtData::LoadFromStream(IStream* Stm) {
+template <typename T>
+void RadSiteExt::ExtData::Serialize(T& Stm) {
+	Stm
+		.Process(this->RadHouse)
+		;
+}
+
+void RadSiteExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+	//initialize weapon then set type
 	char weaponID[sizeof(this->Weapon->ID)];
-	PhobosStreamReader::Process(Stm, weaponID);
-	PhobosStreamReader::ProcessPointer(Stm, this->RadHouse, true);
+	Stm.Process(weaponID);
 	this->Weapon = WeaponTypeClass::Find(weaponID);
 
 	if (this->Weapon) {
@@ -82,11 +87,15 @@ void RadSiteExt::ExtData::LoadFromStream(IStream* Stm) {
 			this->Type = &pWeaponTypeExt->RadType;
 		}
 	}
+	Extension<RadSiteClass>::LoadFromStream(Stm);
+	this->Serialize(Stm);
 }
 
-void RadSiteExt::ExtData::SaveToStream(IStream* Stm) {
-	PhobosStreamWriter::Process(Stm, this->Weapon->ID);
-	PhobosStreamWriter::Process(Stm, this->RadHouse);
+void RadSiteExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+	//Save weapon ID instead
+	Stm.Process(this->Weapon->ID);
+	Extension<RadSiteClass>::SaveToStream(Stm);
+	this->Serialize(Stm);
 }
 
 // =============================
@@ -104,9 +113,7 @@ DEFINE_HOOK(65B28D, RadSiteClass_CTOR, 6)
 	GET(RadSiteClass*, pThis, ESI);
 	auto pRadSiteExt = RadSiteExt::ExtMap.FindOrAllocate(pThis);
 
-	if (RadSiteExt::RadSiteInstance.FindItemIndex(pRadSiteExt) == -1) {
-		RadSiteExt::RadSiteInstance.AddItem(pRadSiteExt);
-	}
+	RadSiteExt::RadSiteInstance.AddUnique(pRadSiteExt);
 
 	return 0;
 }
@@ -134,18 +141,12 @@ DEFINE_HOOK(65B450, RadSiteClass_SaveLoad_Prefix, 8)
 
 DEFINE_HOOK(65B43F, RadSiteClass_Load_Suffix, 7)
 {
-	auto pItem = RadSiteExt::ExtMap.Find(RadSiteExt::ExtMap.SavingObject);
-	IStream* pStm = RadSiteExt::ExtMap.SavingStream;
-
-	pItem->LoadFromStream(pStm);
+	RadSiteExt::ExtMap.LoadStatic();
 	return 0;
 }
 
 DEFINE_HOOK(65B464, RadSiteClass_Save_Suffix, 5)
 {
-	auto pItem = RadSiteExt::ExtMap.Find(RadSiteExt::ExtMap.SavingObject);
-	IStream* pStm = RadSiteExt::ExtMap.SavingStream;
-
-	pItem->SaveToStream(pStm);
+	RadSiteExt::ExtMap.SaveStatic();
 	return 0;
 }

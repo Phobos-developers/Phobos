@@ -32,7 +32,7 @@
 
 #pragma once
 
-#include "Debug.h"
+#include "../Misc/Debug.h"
 
 #include <BuildingClass.h>
 #include <BuildingTypeClass.h>
@@ -356,7 +356,7 @@ namespace Helpers {
 			// remove all types that aren't either infantry or unit types
 			types.erase(std::remove_if(types.begin(), types.end(), [section, key](TechnoTypeClass* pItem) -> bool {
 				if (!is_any_of(pItem->WhatAmI(), AbstractType::InfantryType, AbstractType::UnitType)) {
-					//Debug::INIParseFailed(section, key, pItem->ID, "Only InfantryTypes and UnitTypes are supported.");
+					Debug::INIParseFailed(section, key, pItem->ID, "Only InfantryTypes and UnitTypes are supported.");
 					return true;
 				}
 				return false;
