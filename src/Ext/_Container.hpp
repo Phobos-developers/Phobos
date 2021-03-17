@@ -5,7 +5,7 @@
 #include <CCINIClass.h>
 #include <SwizzleManagerClass.h>
 
-#include "../Utilities/Debug.h"
+#include "../Misc/Debug.h"
 #include "../Misc/Stream.h"
 
 enum class InitState {

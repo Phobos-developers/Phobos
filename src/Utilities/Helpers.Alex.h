@@ -32,7 +32,7 @@
 
 #pragma once
 
-#include "Debug.h"
+#include "../Misc/Debug.h"
 
 #include <BuildingClass.h>
 #include <BuildingTypeClass.h>

@@ -1,6 +1,6 @@
 ﻿#include <Helpers/Macro.h>
 #include "../Phobos.h"
-#include "../Utilities/Debug.h"
+#include "../Misc/Debug.h"
 
 DEFINE_HOOK(777C41, UI_ApplyAppIcon, 9)
 {
