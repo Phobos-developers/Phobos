@@ -35,6 +35,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->PowersUp_Buildings)
 		;
 }
+
 void BuildingTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
 	Extension<BuildingTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);

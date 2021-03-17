@@ -1,6 +1,7 @@
 #include "Body.h"
 #include <BulletClass.h>
 #include <HouseClass.h>
+#include <WarheadTypeClass.h>
 
 #include "../BuildingType/Body.h"
 
@@ -118,12 +119,12 @@ DEFINE_HOOK(43FB23, BuildingClass_Update, 5)
 				continue;
 
 			// will prevent passanger escapes
-			bool absolute = pType->RadWarhead->WallAbsoluteDestroyer;
+			bool absolute = pType->GetWarhead()->WallAbsoluteDestroyer;
 
 			// will ignore verses
 			bool ignore = pBuilding->Type->Wall && absolute;
 
-			int damage = static_cast<int>((RadLevel / 2) * pType->LevelFactor);
+			int damage = static_cast<int>((RadLevel / 2) * pType->GetLevelFactor());
 			int distance = static_cast<int>(orDistance);
 
 			pBuilding->ReceiveDamage(&damage, distance, pType->RadWarhead, nullptr, ignore, absolute, pRadExt->RadHouse);
@@ -182,8 +183,8 @@ DEFINE_HOOK(65B593, RadSiteClass_Activate_Delay, 6)
 	auto const pExt = RadSiteExt::ExtMap.Find(pThis);
 
 	auto const CurrentLevel = pThis->GetRadLevel();
-	auto LevelDelay = pExt->Type->LevelDelay;
-	auto LightDelay = pExt->Type->LightDelay;
+	auto LevelDelay = pExt->Type->GetLevelDelay();
+	auto LightDelay = pExt->Type->GetLightDelay();
 
 	if (CurrentLevel < LevelDelay) {
 		LevelDelay = CurrentLevel;
@@ -201,7 +202,7 @@ DEFINE_HOOK(65B5CE, RadSiteClass_Activate_Color, 6)
 	GET(RadSiteClass * const, pThis, ESI);
 
 	auto pExt = RadSiteExt::ExtMap.Find(pThis);
-	ColorStruct pRadColor = pExt->Type->RadSiteColor;
+	ColorStruct pRadColor = pExt->Type->GetColor();
 
 	R->EAX(0);
 	R->EDX(0);
@@ -224,7 +225,7 @@ DEFINE_HOOK(65B63E, RadSiteClass_Activate_LightFactor, 6)
 	GET(RadSiteClass * const, Rad, ESI);
 
 	auto pRadExt = RadSiteExt::ExtMap.Find(Rad);
-	auto lightFactor = pRadExt->Type->LightFactor;
+	auto lightFactor = pRadExt->Type->GetLightFactor();
 
 	__asm fmul lightFactor;
 
@@ -238,7 +239,7 @@ DEFINE_HOOK(65B6F2, RadSiteClass_Activate_TintFactor, 6)
 	GET(RadSiteClass * const, Rad, ESI);
 
 	auto pRadExt = RadSiteExt::ExtMap.Find(Rad);
-	double tintFactor = pRadExt->Type->TintFactor;
+	double tintFactor = pRadExt->Type->GetTintFactor();
 
 	__asm fmul tintFactor;
 
@@ -250,7 +251,7 @@ DEFINE_HOOK(65B843, RadSiteClass_Update_LevelDelay, 6)
 	GET(RadSiteClass * const, Rad, ESI);
 
 	auto pRadExt = RadSiteExt::ExtMap.Find(Rad);
-	auto delay = pRadExt->Type->LevelDelay;
+	auto delay = pRadExt->Type->GetLevelDelay();
 
 	R->ECX(delay);
 
@@ -262,7 +263,7 @@ DEFINE_HOOK(65B8B9, RadSiteClass_Update_LightDelay, 6)
 	GET(RadSiteClass * const, Rad, ESI);
 
 	auto pRadExt = RadSiteExt::ExtMap.Find(Rad);
-	auto delay = pRadExt->Type->LightDelay;
+	auto delay = pRadExt->Type->GetLightDelay();
 
 	R->ECX(delay);
 
