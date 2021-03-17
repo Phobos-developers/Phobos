@@ -1,8 +1,8 @@
 #include "EnumFunctions.h"
 
-bool EnumFunctions::CanTargetHouse(AffectsHouses flags, HouseClass* ownerHouse, HouseClass* targetHouse)
+bool EnumFunctions::CanTargetHouse(SuperWeaponAffectedHouse flags, HouseClass* ownerHouse, HouseClass* targetHouse)
 {
-	return (flags & AffectsHouses::Owner) && ownerHouse == targetHouse ||
-		(flags & AffectsHouses::Allies) && ownerHouse != targetHouse && ownerHouse->IsAlliedWith(targetHouse) ||
-		(flags & AffectsHouses::Enemies) && ownerHouse != targetHouse && !ownerHouse->IsAlliedWith(targetHouse);
+	return (flags & SuperWeaponAffectedHouse::Owner) && ownerHouse == targetHouse ||
+		(flags & SuperWeaponAffectedHouse::Allies) && ownerHouse != targetHouse && ownerHouse->IsAlliedWith(targetHouse) ||
+		(flags & SuperWeaponAffectedHouse::Enemies) && ownerHouse != targetHouse && !ownerHouse->IsAlliedWith(targetHouse);
 };

@@ -83,13 +83,13 @@ namespace Savegame {
 
 	template <typename T>
 	bool ReadPhobosStream(PhobosStreamReader& Stm, T& Value, bool RegisterForChange) {
-		// not implemented
+		// to be implemented
 		return true;
 	}
 
 	template <typename T>
 	bool WritePhobosStream(PhobosStreamWriter& Stm, const T& Value) {
-		// not implemented
+		// to be implemented
 		return true;
 	}
 

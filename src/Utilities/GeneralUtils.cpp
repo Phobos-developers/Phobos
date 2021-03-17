@@ -13,7 +13,7 @@ bool GeneralUtils::IsValidString(const char* str)
 const wchar_t* GeneralUtils::LoadStringOrDefault(char* key, const wchar_t* defaultValue)
 {
 	if (GeneralUtils::IsValidString(key))
-		return StringTable::LoadStringA(key);
+		return StringTable::LoadString(key);
 	else
 		return defaultValue;
 }

@@ -37,7 +37,7 @@
 #include <MouseClass.h>
 #include <FootClass.h>
 
-#include "../Misc/Stream.h"
+#include "../Misc/Savegame.h"
 
 class INI_EX;
 
@@ -104,9 +104,9 @@ public:
 
 	inline void Read(INI_EX& parser, const char* pSection, const char* pKey, bool Allocate = false);
 
-	inline bool Load(IStream* Stm, bool bRegisterForChange = false);
+	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
-	inline bool Save(IStream* Stm) const;
+	inline bool Save(PhobosStreamWriter& Stm) const;
 };
 
 template <typename T, typename = std::enable_if_t<std::is_enum<T>::value>>
@@ -197,9 +197,9 @@ public:
 
 	inline void Read(INI_EX& parser, const char* pSection, const char* pKey, bool Allocate = false);
 
-	inline bool Load(IStream* Stm);
+	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
-	inline bool Save(IStream* Stm) const;
+	inline bool Save(PhobosStreamWriter& Stm) const;
 };
 
 template<typename Lookuper>
@@ -265,9 +265,9 @@ public:
 		return this->Rookie;
 	}
 
-	inline bool Load(IStream* Stm);
+	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
-	inline bool Save(IStream* Stm) const;
+	inline bool Save(PhobosStreamWriter& Stm) const;
 };
 
 
@@ -297,9 +297,9 @@ public:
 		return Iterator<T>(*this);
 	}
 
-	inline bool Load(IStream* Stm);
+	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
-	inline bool Save(IStream* Stm) const;
+	inline bool Save(PhobosStreamWriter& Stm) const;
 };
 
 template<class T>
@@ -325,9 +325,9 @@ public:
 		return this->GetElements();
 	}
 
-	inline bool Load(IStream* Stm);
+	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
-	inline bool Save(IStream* Stm) const;
+	inline bool Save(PhobosStreamWriter& Stm) const;
 };
 
 template<typename Lookuper>

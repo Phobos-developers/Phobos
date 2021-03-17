@@ -7,5 +7,5 @@
 class EnumFunctions
 {
 public:
-	static bool CanTargetHouse(AffectsHouses flags, HouseClass* ownerHouse, HouseClass* targetHouse);
+	static bool CanTargetHouse(SuperWeaponAffectedHouse flags, HouseClass* ownerHouse, HouseClass* targetHouse);
 };

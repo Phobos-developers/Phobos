@@ -35,11 +35,12 @@
 #include <Windows.h>
 
 #include "Template.h"
-#include "Enum.h"
-#include "INIParser.h"
-#include "Constructs.h"
 
-#include <StringTable.h>
+#include "INIParser.h"
+#include "Enum.h"
+#include "Constructs.h"
+#include "../Misc/SavegameDef.h"
+
 #include <InfantryTypeClass.h>
 #include <AircraftTypeClass.h>
 #include <UnitTypeClass.h>
@@ -160,22 +161,6 @@ namespace detail {
 	}
 
 	template <>
-	inline bool read<Point2D>(Point2D& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
-		if (parser.Read2Integers(pSection, pKey, (int*)&value)) {
-			return true;
-		}
-		return false;
-	}
-
-	template <>
-	inline bool read<CoordStruct>(CoordStruct& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
-		if (parser.Read3Integers(pSection, pKey, (int*)&value)) {
-			return true;
-		}
-		return false;
-	}
-
-	template <>
 	inline bool read<SHPStruct*>(SHPStruct*& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
 		if (parser.ReadString(pSection, pKey)) {
 			char flag[256];
@@ -186,7 +171,7 @@ namespace detail {
 				return true;
 			}
 			else {
-				Debug::Log("[Warning] Failed to find file %s referenced by [%s]%s=%s\n", flag, pSection, pKey, pValue);
+				Debug::Log("Failed to find file %s referenced by [%s]%s=%s\n", flag, pSection, pKey, pValue);
 			}
 		}
 		return false;
@@ -311,6 +296,19 @@ namespace detail {
 	}
 
 	template <>
+	inline bool read<Leptons>(Leptons& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
+		double buffer;
+		if (parser.ReadDouble(pSection, pKey, &buffer)) {
+			value = Leptons(Game::F2I(buffer * 256.0));
+			return true;
+		}
+		else if (!parser.empty()) {
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid floating point number");
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<OwnerHouseKind>(OwnerHouseKind& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
 		if (parser.ReadString(pSection, pKey)) {
 			if (_strcmpi(parser.value(), "default") == 0) {
@@ -423,33 +421,33 @@ namespace detail {
 	}
 
 	template <>
-	inline bool read<AffectsHouses>(AffectsHouses& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
+	inline bool read<SuperWeaponAffectedHouse>(SuperWeaponAffectedHouse& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
 		if (parser.ReadString(pSection, pKey)) {
-			auto parsed = AffectsHouses::None;
+			auto parsed = SuperWeaponAffectedHouse::None;
 
 			auto str = parser.value();
 			char* context = nullptr;
 			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context)) {
-				if (!_strcmpi(cur, "owner") || !_strcmpi(cur, "self")) {
-					parsed |= AffectsHouses::Owner;
+				if (!_strcmpi(cur, "owner")) {
+					parsed |= SuperWeaponAffectedHouse::Owner;
 				}
-				else if (!_strcmpi(cur, "allies") || !_strcmpi(cur, "ally")) {
-					parsed |= AffectsHouses::Allies;
+				else if (!_strcmpi(cur, "allies")) {
+					parsed |= SuperWeaponAffectedHouse::Allies;
 				}
-				else if (!_strcmpi(cur, "enemies") || !_strcmpi(cur, "enemy")) {
-					parsed |= AffectsHouses::Enemies;
+				else if (!_strcmpi(cur, "enemies")) {
+					parsed |= SuperWeaponAffectedHouse::Enemies;
 				}
 				else if (!_strcmpi(cur, "team")) {
-					parsed |= AffectsHouses::Team;
+					parsed |= SuperWeaponAffectedHouse::Team;
 				}
 				else if (!_strcmpi(cur, "others")) {
-					parsed |= AffectsHouses::NotOwner;
+					parsed |= SuperWeaponAffectedHouse::NotOwner;
 				}
 				else if (!_strcmpi(cur, "all")) {
-					parsed |= AffectsHouses::All;
+					parsed |= SuperWeaponAffectedHouse::All;
 				}
 				else if (_strcmpi(cur, "none")) {
-					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an affected house");
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a super weapon affected house");
 					return false;
 				}
 			}
@@ -497,29 +495,15 @@ void __declspec(noinline) Valueable<T>::Read(INI_EX& parser, const char* pSectio
 }
 
 template <typename T>
-bool Valueable<T>::Load(IStream* Stm, bool bRegisterForChange) {
-	if (std::is_pointer<T>::value)
-		return PhobosStreamReader::ProcessPointer(Stm, this->Value, bRegisterForChange);
-	else
-		return PhobosStreamReader::Process(Stm, this->Value);
+bool Valueable<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange) {
+	return Savegame::ReadPhobosStream(Stm, this->Value, RegisterForChange);
 }
 
 template <typename T>
-bool Valueable<T>::Save(IStream* Stm) const {
-	return PhobosStreamWriter::Process(Stm, this->Value);
+bool Valueable<T>::Save(PhobosStreamWriter& Stm) const {
+	return Savegame::WritePhobosStream(Stm, this->Value);
 }
 
-// CSFText have special (de)serialization logic
-
-template <>
-bool Valueable<CSFText>::Load(IStream* Stm, bool bRegisterForChange) {
-	return GetEx()->load(Stm);
-}
-
-template <>
-bool Valueable<CSFText>::Save(IStream* Stm) const {
-	return GetEx()->save(Stm);
-}
 
 // ValueableIdx
 
@@ -548,20 +532,20 @@ void __declspec(noinline) Nullable<T>::Read(INI_EX& parser, const char* pSection
 }
 
 template <typename T>
-bool Nullable<T>::Load(IStream* Stm) {
+bool Nullable<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange) {
 	this->Reset();
-	auto ret = PhobosStreamReader::Process(Stm, this->HasValue);
+	auto ret = Savegame::ReadPhobosStream(Stm, this->HasValue);
 	if (ret && this->HasValue) {
-		ret = PhobosStreamReader::Process(Stm, this->Value);
+		ret = Savegame::ReadPhobosStream(Stm, this->Value, RegisterForChange);
 	}
 	return ret;
 }
 
 template <typename T>
-bool Nullable<T>::Save(IStream* Stm) const {
-	auto ret = PhobosStreamWriter::Process(Stm, this->HasValue);
+bool Nullable<T>::Save(PhobosStreamWriter& Stm) const {
+	auto ret = Savegame::WritePhobosStream(Stm, this->HasValue);
 	if (this->HasValue) {
-		ret = PhobosStreamWriter::Process(Stm, this->Value);
+		ret = Savegame::WritePhobosStream(Stm, this->Value);
 	}
 	return ret;
 }
@@ -615,17 +599,17 @@ void __declspec(noinline) Promotable<T>::Read(INI_EX& parser, const char* const 
 };
 
 template <typename T>
-bool Promotable<T>::Load(IStream* Stm) {
-	return PhobosStreamReader::Process(Stm, this->Rookie, RegisterForChange)
-		&& PhobosStreamReader::Process(Stm, this->Veteran, RegisterForChange)
-		&& PhobosStreamReader::Process(Stm, this->Elite, RegisterForChange);
+bool Promotable<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange) {
+	return Savegame::ReadPhobosStream(Stm, this->Rookie, RegisterForChange)
+		&& Savegame::ReadPhobosStream(Stm, this->Veteran, RegisterForChange)
+		&& Savegame::ReadPhobosStream(Stm, this->Elite, RegisterForChange);
 }
 
 template <typename T>
-bool Promotable<T>::Save(IStream* Stm) const {
-	return PhobosStreamWriter::Process(Stm, this->Rookie)
-		&& PhobosStreamWriter::Process(Stm, this->Veteran)
-		&& PhobosStreamWriter::Process(Stm, this->Elite);
+bool Promotable<T>::Save(PhobosStreamWriter& Stm) const {
+	return Savegame::WritePhobosStream(Stm, this->Rookie)
+		&& Savegame::WritePhobosStream(Stm, this->Veteran)
+		&& Savegame::WritePhobosStream(Stm, this->Elite);
 }
 
 
@@ -640,16 +624,20 @@ void __declspec(noinline) ValueableVector<T>::Read(INI_EX& parser, const char* p
 }
 
 template <typename T>
-bool ValueableVector<T>::Load(IStream* Stm) {
+bool ValueableVector<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange) {
 	size_t size = 0;
-	if (PhobosStreamReader::Process(Stm, size)) {
+	if (Savegame::ReadPhobosStream(Stm, size, RegisterForChange)) {
 		this->clear();
 		this->reserve(size);
 
 		for (size_t i = 0; i < size; ++i) {
 			value_type buffer = value_type();
-			PhobosStreamReader::Process(Stm, buffer);
+			Savegame::ReadPhobosStream(Stm, buffer, false);
 			this->push_back(std::move(buffer));
+
+			if (RegisterForChange) {
+				Swizzle swizzle(this->back());
+			}
 		}
 		return true;
 	}
@@ -657,11 +645,11 @@ bool ValueableVector<T>::Load(IStream* Stm) {
 }
 
 template <typename T>
-bool ValueableVector<T>::Save(IStream* Stm) const {
+bool ValueableVector<T>::Save(PhobosStreamWriter& Stm) const {
 	auto size = this->size();
-	if (PhobosStreamWriter::Process(Stm, size)) {
+	if (Savegame::WritePhobosStream(Stm, size)) {
 		for (auto const& item : *this) {
-			if (!PhobosStreamWriter::Process(Stm, item)) {
+			if (!Savegame::WritePhobosStream(Stm, item)) {
 				return false;
 			}
 		}
@@ -688,7 +676,7 @@ void __declspec(noinline) NullableVector<T>::Read(INI_EX& parser, const char* pS
 }
 
 template <typename T>
-bool NullableVector<T>::Load(IStream* Stm) {
+bool NullableVector<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange) {
 	this->clear();
 	if (Savegame::ReadPhobosStream(Stm, this->hasValue, RegisterForChange)) {
 		return !this->hasValue || ValueableVector<T>::Load(Stm, RegisterForChange);
@@ -697,7 +685,7 @@ bool NullableVector<T>::Load(IStream* Stm) {
 }
 
 template <typename T>
-bool NullableVector<T>::Save(IStream* Stm) const {
+bool NullableVector<T>::Save(PhobosStreamWriter& Stm) const {
 	if (Savegame::WritePhobosStream(Stm, this->hasValue)) {
 		return !this->hasValue || ValueableVector<T>::Save(Stm);
 	}

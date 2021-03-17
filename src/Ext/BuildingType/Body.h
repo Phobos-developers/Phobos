@@ -13,11 +13,11 @@ public:
 	class ExtData final : public Extension<BuildingTypeClass>
 	{
 	public:
-		Valueable<AffectsHouses> PowersUp_Owner;
+		Valueable<SuperWeaponAffectedHouse> PowersUp_Owner;
 		ValueableIdxVector<BuildingTypeClass> PowersUp_Buildings;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject),
-			PowersUp_Owner(AffectsHouses::Owner),
+			PowersUp_Owner(SuperWeaponAffectedHouse::Owner),
 			PowersUp_Buildings()
 		{ }
 

@@ -69,7 +69,7 @@ enum class SuperWeaponTarget : unsigned char {
 
 MAKE_ENUM_FLAGS(SuperWeaponTarget);
 
-enum class AffectsHouses : unsigned char {
+enum class SuperWeaponAffectedHouse : unsigned char {
 	None = 0x0,
 	Owner = 0x1,
 	Allies = 0x2,
@@ -81,7 +81,7 @@ enum class AffectsHouses : unsigned char {
 	All = Owner | Allies | Enemies
 };
 
-MAKE_ENUM_FLAGS(AffectsHouses);
+MAKE_ENUM_FLAGS(SuperWeaponAffectedHouse);
 
 enum class OwnerHouseKind : int {
 	Default,
@@ -108,6 +108,12 @@ enum class SuperWeaponFlags : unsigned short {
 };
 
 MAKE_ENUM_FLAGS(SuperWeaponFlags);
+
+enum class PhobosAction {
+	None = 0,
+	Hijack = 1,
+	Drive = 2
+};
 
 class MouseCursorHotSpotX {
 public:

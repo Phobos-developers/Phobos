@@ -44,8 +44,9 @@
 #include <memory>
 #include <vector>
 
-#include "../Utilities/GeneralUtils.h"
-#include "../Misc/Debug.h"
+#include "../Phobos.h"
+
+#include "../Misc/Savegame.h"
 
 class ConvertClass;
 
@@ -85,8 +86,8 @@ public:
 		CCINIClass* pINI, const char* pSection, const char* pKey,
 		const char* pDefault = "");
 
-	bool Load(IStream* Stm);
-	bool Save(IStream* Stm) const;
+	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
+	bool Save(PhobosStreamWriter& Stm) const;
 
 private:
 	void Clear();
@@ -225,17 +226,17 @@ public:
 		this->values.clear();
 	}
 
-	bool load(IStream* Stm) {
+	bool load(PhobosStreamReader& Stm, bool RegisterForChange) {
 		this->clear();
 
 		size_t size = 0;
-		auto ret = PhobosStreamReader::Process(Stm, size);
+		auto ret = Stm.Load(size);
 
 		if (ret && size) {
 			this->values.resize(size);
 			for (size_t i = 0; i < size; ++i) {
-				if (!PhobosStreamReader::Process(Stm, this->values[i].first)
-					|| !PhobosStreamReader::Process(Stm, this->values[i].second))
+				if (!Savegame::ReadPhobosStream(Stm, this->values[i].first, RegisterForChange)
+					|| !Savegame::ReadPhobosStream(Stm, this->values[i].second, RegisterForChange))
 				{
 					return false;
 				}
@@ -245,12 +246,12 @@ public:
 		return ret;
 	}
 
-	bool save(IStream* Stm) const {
-		PhobosStreamWriter::Process(Stm, this->values.size());
+	bool save(PhobosStreamWriter& Stm) const {
+		Stm.Save(this->values.size());
 
 		for (const auto& item : this->values) {
-			PhobosStreamWriter::Process(Stm, item.first);
-			PhobosStreamWriter::Process(Stm, item.second);
+			Savegame::WritePhobosStream(Stm, item.first);
+			Savegame::WritePhobosStream(Stm, item.second);
 		}
 
 		return true;
@@ -330,13 +331,13 @@ public:
 		return buffer[0] != 0;
 	}
 
-	bool Load(IStream* Stm) {
+	bool Load(PhobosStreamReader& Stm, bool RegisterForChange) {
 		this->filename = nullptr;
-		if (PhobosStreamReader::Process(Stm,*this)) {
+		if (Stm.Load(*this)) {
 			if (this->checked && this->exists) {
 				this->checked = false;
 				if (!this->Exists()) {
-					Debug::Log("[Warning] PCX file '%s' was not found.\n", this->filename.data());
+					Debug::Log("PCX file '%s' was not found.\n", this->filename.data());
 				}
 			}
 			return true;
@@ -344,8 +345,8 @@ public:
 		return false;
 	}
 
-	bool Save(IStream* Stm) const {
-		PhobosStreamWriter::Process(Stm, *this);
+	bool Save(PhobosStreamWriter& Stm) const {
+		Stm.Save(*this);
 		return true;
 	}
 
@@ -364,7 +365,6 @@ public:
 
 	explicit CSFText(const char* label) noexcept {
 		*this = label;
-		this->Text = GeneralUtils::LoadStringOrDefault(this->Label, nullptr);
 	}
 
 	CSFText& operator = (CSFText const& rhs) = default;
@@ -372,7 +372,11 @@ public:
 	const CSFText& operator = (const char* label) {
 		if (this->Label != label) {
 			this->Label = label;
-			this->Text = GeneralUtils::LoadStringOrDefault(this->Label, nullptr);
+			this->Text = nullptr;
+
+			if (this->Label) {
+				this->Text = StringTable::LoadString(this->Label);
+			}
 		}
 
 		return *this;
@@ -386,17 +390,19 @@ public:
 		return !this->Text || !*this->Text;
 	}
 
-	bool load(IStream* Stm) {
+	bool load(PhobosStreamReader& Stm, bool RegisterForChange) {
 		this->Text = nullptr;
-		if (PhobosStreamReader::Process(Stm, this->Label.data())) {
-			this->Text = GeneralUtils::LoadStringOrDefault(this->Label, nullptr);
+		if (Stm.Load(this->Label.data())) {
+			if (this->Label) {
+				this->Text = StringTable::LoadString(this->Label);
+			}
 			return true;
 		}
 		return false;
 	}
 
-	bool save(IStream* Stm) const {
-		PhobosStreamWriter::Process(Stm, this->Label.data());
+	bool save(PhobosStreamWriter& Stm) const {
+		Stm.Save(this->Label.data());
 		return true;
 	}
 
@@ -460,38 +466,39 @@ struct OptionalStruct {
 		return this->Value;
 	}
 
-	bool load(IStream* Stm) {
+	bool load(PhobosStreamReader& Stm, bool RegisterForChange) {
 		this->clear();
-		return PhobosStreamReader::Process(Stm, std::bool_constant<Persistable>());
+
+		return load(Stm, RegisterForChange, std::bool_constant<Persistable>());
 	}
 
-	bool save(IStream* Stm) const {
-		return PhobosStreamWriter::Process(Stm, std::bool_constant<Persistable>());
+	bool save(PhobosStreamWriter& Stm) const {
+		return save(Stm, std::bool_constant<Persistable>());
 	}
 
 private:
-	bool load(IStream* Stm, std::true_type) {
-		if (PhobosStreamReader::Process(Stm,this->HasValue)) {
-			if (!this->HasValue || PhobosStreamReader::Process(Stm, this->Value)) {
+	bool load(PhobosStreamReader& Stm, bool RegisterForChange, std::true_type) {
+		if (Stm.Load(this->HasValue)) {
+			if (!this->HasValue || Savegame::ReadPhobosStream(Stm, this->Value, RegisterForChange)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	bool load(IStream* Stm, std::false_type) {
+	bool load(PhobosStreamReader& Stm, bool RegisterForChangestd, std::false_type) {
 		return true;
 	}
 
-	bool save(IStream* Stm, std::true_type) const {
-		PhobosStreamWriter::Process(this->HasValue);
+	bool save(PhobosStreamWriter& Stm, std::true_type) const {
+		Stm.Save(this->HasValue);
 		if (this->HasValue) {
-			PhobosStreamWriter::Process(Stm, this->HasValue);
+			Savegame::WritePhobosStream(Stm, this->Value);
 		}
 		return true;
 	}
 
-	bool save(IStream* Stm, std::false_type) const {
+	bool save(PhobosStreamWriter& Stm, std::false_type) const {
 		return true;
 	}
 
@@ -552,12 +559,12 @@ struct Handle {
 		Handle(std::move(*this));
 	}
 
-	bool load(IStream* Stm) {
-		return PhobosStreamReader::Process(Stm, this->Value);
+	bool load(PhobosStreamReader& Stm, bool RegisterForChange) {
+		return Savegame::ReadPhobosStream(Stm, this->Value, RegisterForChange);
 	}
 
-	bool save(IStream* Stm) const {
-		return PhobosStreamWriter::Process(Stm, this->Value);
+	bool save(PhobosStreamWriter& Stm) const {
+		return Savegame::WritePhobosStream(Stm, this->Value);
 	}
 
 private:
