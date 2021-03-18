@@ -63,9 +63,9 @@ public:
 
 			Shield_Strength(0),
 			//Shield_Armor("none"),
-			Shield_Respawn(-1),
+			Shield_Respawn(0),
 			Shield_RespawnDelay(15),
-			Shield_SelfHealing(-1),
+			Shield_SelfHealing(0),
 			Shield_SelfHealingDelay(5),
 			Shield_AbsorbOverDamage(false),
 			Shield_Image(),

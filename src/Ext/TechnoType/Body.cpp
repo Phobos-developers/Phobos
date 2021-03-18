@@ -225,10 +225,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_Strength.Read(exINI, pSection, "Shield.Strength");
 	//this->Shield_Armor.Read(exINI, pSection, "Shield.Armor");
 	this->Shield_Respawn.Read(exINI, pSection, "Shield.Respawn");
-	if (this->Shield_Respawn != -1)
+	if (this->Shield_Respawn)
 		this->Shield_RespawnDelay.Read(exINI, pSection, "Shield.Respawn.Delay");
 	this->Shield_SelfHealing.Read(exINI, pSection, "Shield.SelfHealing");
-	if (this->Shield_SelfHealing != -1)
+	if (this->Shield_SelfHealing)
 		this->Shield_SelfHealingDelay.Read(exINI, pSection, "Shield.SelfHealing.Delay");
 	this->Shield_AbsorbOverDamage.Read(exINI, pSection, "Shield.AbsorbOverDamage");
 	this->Shield_Image.Read(exINI, pSection, "Shield.Image.Normal");

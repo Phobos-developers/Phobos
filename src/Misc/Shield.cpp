@@ -14,6 +14,7 @@ ShieldTechnoClass::ShieldTechnoClass(TechnoClass* pTechno) :
     Timer_SelfHealing{},
     Image{ nullptr }
 {
+    this->Timer_SelfHealing.Start(1);
     this->DrawShield();
 }
 
@@ -41,9 +42,6 @@ int ShieldTechnoClass::ReceiveDamage(int nDamage, WarheadTypeClass* pWH)
     if (!this->HP || nDamage == 0)
         return nDamage;
 
-    if (nDamage > 0)
-        this->Timer_SelfHealing.Start(this->GetExt()->Shield_SelfHealingDelay);
-
     auto residueDamage = nDamage - this->HP;
     if (residueDamage >= 0)
     {
@@ -68,7 +66,7 @@ void ShieldTechnoClass::RespawnShield()
     if (this->HP <= 0 && this->Timer_Respawn.Completed())
     {
         this->Timer_Respawn.Stop();
-        this->HP = this->GetExt()->Shield_Strength;
+        this->HP = this->GetExt()->Shield_Respawn;
         this->DrawShield();
     }
 }
@@ -76,19 +74,26 @@ void ShieldTechnoClass::RespawnShield()
 void ShieldTechnoClass::SelfHealing()
 {
     auto nSelfHealingAmount = this->GetExt()->Shield_SelfHealing;
+    if (nSelfHealingAmount > 0 && this->HP < this->GetExt()->Shield_Strength && this->Timer_SelfHealing.Expired())
+        this->Timer_SelfHealing.Start(this->GetExt()->Shield_SelfHealingDelay);
+
     if (nSelfHealingAmount > 0 && this->HP > 0 && this->Timer_SelfHealing.Completed())
     {
         this->Timer_SelfHealing.Start(this->GetExt()->Shield_SelfHealingDelay);
         this->HP += nSelfHealingAmount;
-        if (this->HP > this->GetExt()->Shield_Strength)
+        if (this->HP > this->GetExt()->Shield_Strength) 
+        {
             this->HP = this->GetExt()->Shield_Strength;
+            this->Timer_SelfHealing.Stop();
+        }
     }
 }
 
 void ShieldTechnoClass::BreakShield()
 {
     this->HP = 0;
-    this->Timer_Respawn.Start(this->GetExt()->Shield_RespawnDelay);
+    if (this->GetExt()->Shield_Respawn > 0) this->Timer_Respawn.Start(this->GetExt()->Shield_RespawnDelay);
+    this->Timer_SelfHealing.Stop();
 
     if (this->Image)
         GameDelete(this->Image);
@@ -115,7 +120,7 @@ void ShieldTechnoClass::DrawShield()
 
 void ShieldTechnoClass::DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound)
 {
-    if (this->HP != 0) {
+    if (this->HP > 0 || this->GetExt()->Shield_Respawn) {
         if (this->Techno->WhatAmI() == AbstractType::Building)
             this->DrawShieldBarBuilding(iLength, pLocation, pBound);
         else
@@ -126,9 +131,9 @@ void ShieldTechnoClass::DrawShieldBar(int iLength, Point2D* pLocation, Rectangle
 void ShieldTechnoClass::DrawShieldBarBuilding(int iLength, Point2D* pLocation, RectangleStruct* pBound) {
     int iCurrent = int((double)this->HP / this->GetExt()->Shield_Strength * iLength);
     int iTotal = iCurrent;
-    if (iCurrent < 1) {
-        iCurrent = 1;
-        iTotal = 1;
+    if (iCurrent < 0) {
+        iCurrent = 0;
+        iTotal = 0;
     }
     if (iCurrent > iLength) {
         iCurrent = iLength;
@@ -143,18 +148,31 @@ void ShieldTechnoClass::DrawShieldBarBuilding(int iLength, Point2D* pLocation, R
     TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
     Point2D vLoc = *pLocation;
     vLoc.X -= 5;
-    vLoc.Y -= 5;
+    vLoc.Y -= 3;
     if (iCurrent > 0) {
         int deltaX = 0;
         int deltaY = 0;
         int frameIdx = iTotal;
         for (; frameIdx; frameIdx--) {
             vPos.X = vPos2.X + vLoc.X + 4 * iLength + 3 - deltaX;
-            vPos.Y = 2 - 2 * iLength + vPos2.Y + vLoc.Y + 2 - deltaY;
+            vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
             DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP, frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
             deltaX += 4;
             deltaY -= 2;
             //Debug::Log("[Phobos/Shield] %s Drawing Shield Bar: vPos is {%d, %d}.\n", this->Techno->GetTechnoType()->ID, vPos.X, vPos.Y);
+        }
+        iCurrent = iTotal;
+    }
+    if (iCurrent < iLength) {
+        int deltaX = 4 * iTotal;
+        int deltaY = -2 * iCurrent;
+        int frameIdx = iLength - iTotal;
+        for (; frameIdx; frameIdx--) {
+            vPos.X = vPos2.X + vLoc.X + 4 * iLength + 3 - deltaX;
+            vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
+            DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP, 0, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+            deltaX += 4;
+            deltaY -= 2;
         }
     }
 }
