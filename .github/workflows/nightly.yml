@@ -41,4 +41,6 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: compiled-dll-${{github.sha}}
-        path: ${{env.SOLUTION_FILE_PATH}}/${{env.BUILD_CONFIGURATION}}/Phobos.dll
+        path: |
+          ${{env.SOLUTION_FILE_PATH}}/${{env.BUILD_CONFIGURATION}}/Phobos.dll
+          ${{env.SOLUTION_FILE_PATH}}/${{env.BUILD_CONFIGURATION}}/IntDir/Phobos.pdb
