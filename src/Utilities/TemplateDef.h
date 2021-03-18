@@ -444,13 +444,13 @@ namespace detail {
 			auto str = parser.value();
 			char* context = nullptr;
 			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context)) {
-				if (!_strcmpi(cur, "owner")) {
+				if (!_strcmpi(cur, "owner") || !_strcmpi(cur, "self")) {
 					parsed |= AffectedHouse::Owner;
 				}
-				else if (!_strcmpi(cur, "allies")) {
+				else if (!_strcmpi(cur, "allies") || !_strcmpi(cur, "ally")) {
 					parsed |= AffectedHouse::Allies;
 				}
-				else if (!_strcmpi(cur, "enemies")) {
+				else if (!_strcmpi(cur, "enemies") || !_strcmpi(cur, "enemy")) {
 					parsed |= AffectedHouse::Enemies;
 				}
 				else if (!_strcmpi(cur, "team")) {
