@@ -135,7 +135,7 @@ void Tactical_MakeFilteredSelection(TacticalClass* pThis, bool(__fastcall* check
 
 DEFINE_HOOK(6D9FF0, Tactical_MakeSelection_FilterSelection, 0)
 {
-	bool(__fastcall * IsSelectable)(ObjectClass*) = R->Base<bool(__fastcall*)(ObjectClass*)>(4);
+	auto IsSelectable = R->Stack<bool(__fastcall*)(ObjectClass*)>(4);
 	GET(TacticalClass*, pThis, ECX);
 
 	Tactical_MakeFilteredSelection(pThis, IsSelectable);
