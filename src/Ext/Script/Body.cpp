@@ -30,7 +30,10 @@ void ScriptExt::ProcessAction(TeamClass * pTeam)
 	switch (action) {
 	case 71:
 		ExecuteTimedAreaGuardAction(pTeam);
+		break;
 
+	case 72:
+		LoadIntoTransports(pTeam);
 		break;
 
 	default:
@@ -65,4 +68,67 @@ void ScriptExt::ExecuteTimedAreaGuardAction(TeamClass *pTeam)
 
 		pTeam->StepCompleted = true;
 	}
+}
+
+void ScriptExt::LoadIntoTransports(TeamClass *pTeam)
+{
+	DynamicVectorClass<FootClass *>transports;
+
+	auto pUnit = pTeam->FirstUnit;
+	if (pUnit->GetTechnoType()->Passengers > 0 && pUnit->Passengers.NumPassengers < pUnit->GetTechnoType()->Passengers && pUnit->Passengers.GetTotalSize() < pUnit->GetTechnoType()->Passengers) {
+		transports.AddItem(pUnit);
+	}
+	while (pUnit->NextTeamMember) {
+		pUnit = pUnit->NextTeamMember;
+
+		if (pUnit->GetTechnoType()->Passengers > 0 && pUnit->Passengers.NumPassengers < pUnit->GetTechnoType()->Passengers && pUnit->Passengers.GetTotalSize() < pUnit->GetTechnoType()->Passengers) {
+			transports.AddItem(pUnit);
+		}
+	}
+	// We got all the transports. Let's continue
+	// Now add units into transports
+
+	for (auto pTransport : transports) {
+		pUnit = pTeam->FirstUnit;
+
+		do {
+			if (!(pTransport == pUnit || pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType || pUnit->InLimbo || pUnit->GetTechnoType()->ConsideredAircraft || pUnit->Health <= 0)) {
+
+				if ((pUnit->GetTechnoType()->Size > 0 && pUnit->GetTechnoType()->Size <= pTransport->GetTechnoType()->SizeLimit) && (pUnit->GetTechnoType()->Size <= (pTransport->GetTechnoType()->Passengers - pTransport->Passengers.GetTotalSize()))) {
+					pUnit->IsTeamLeader = true;
+
+					// All fine
+					if (pUnit->GetCurrentMission() != Mission::Enter) {
+						// Transport, stop please...
+						pTransport->SetTarget(nullptr);
+						pTransport->QueueMission(Mission::Guard, false);
+						pTransport->SetDestination(pTransport, true);
+
+						// Unit, your turn...
+						pUnit->QueueMission(Mission::Enter, false);
+						pUnit->SetTarget(pTransport);
+						pUnit->SetDestination(pTransport, true);
+
+						return;
+					}
+				}
+			}
+
+			pUnit = pUnit->NextTeamMember;
+		} while (pUnit);
+	}
+
+	pUnit = pTeam->FirstUnit;
+	do {
+		if (pUnit->GetCurrentMission() == Mission::Enter) {
+			return;
+		}
+		pUnit = pUnit->NextTeamMember;
+	} while (pUnit);
+	
+	// This action finished
+	if (pTeam->CurrentScript->HasNextAction()) {
+		pTeam->CurrentScript->idxCurrentLine += 1;
+	}
+	pTeam->StepCompleted = true;
 }

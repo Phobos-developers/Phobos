@@ -39,6 +39,7 @@ public:
 
 	static void ProcessAction(TeamClass * pTeam);
 	static void ExecuteTimedAreaGuardAction(TeamClass * pTeam);
+	static void LoadIntoTransports(TeamClass * pTeam);
 
 	static ExtContainer ExtMap;
 };
