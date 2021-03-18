@@ -7,6 +7,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug when deploying mindcontrolled vehicle into a building permanently trasferred the control to the house which mindcontrolled it.
   - Currently doesn't work with superweapons attached to the deployed building or similiar logics.
 - SHP debris shadows now respect the `Shadow` tag.
+- Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
 
 ## Vehicles
 

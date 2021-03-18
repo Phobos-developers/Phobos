@@ -17,7 +17,6 @@ IngameScore.LoseTheme= ; soundtrack theme ID
 
 - Enabled ability to load full-color non-paletted PCX graphics of any bitness. This applies to every single PCX file that is loaded, including the Ares-supported PCX files.
 - You can specify custom `gamemd.exe` icon via `-icon` command line argument followed by absolute or relative path to an *.ico file (f. ex. `gamemd.exe -icon Resources/clienticon.ico`).
-  - Currently doesn't work with CnC-DDraw as it overrides the icon too.
 
 ## Battle screen UI/UX
 

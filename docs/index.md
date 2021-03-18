@@ -12,6 +12,7 @@ License<License.md>
 New / Enhanced Logics<New-or-Enhanced-Logics.md>
 Fixed / Improved Logics<Fixed-or-Improved-Logics.md>
 User Interface<User-Interface.md>
+Miscellanous<Miscellanous.md>
 :::
 
 :::{include} ../README.md
