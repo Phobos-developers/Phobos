@@ -85,9 +85,9 @@ void ScriptExt::LoadIntoTransports(TeamClass *pTeam)
 			transports.AddItem(pUnit);
 		}
 	}
-	// We got all the transports. Let's continue
-	// Now add units into transports
+	// We got all the transports.
 
+	// Now add units into transports
 	for (auto pTransport : transports) {
 		pUnit = pTeam->FirstUnit;
 
@@ -99,12 +99,6 @@ void ScriptExt::LoadIntoTransports(TeamClass *pTeam)
 
 					// All fine
 					if (pUnit->GetCurrentMission() != Mission::Enter) {
-						// Transport, stop please...
-						pTransport->SetTarget(nullptr);
-						pTransport->QueueMission(Mission::Guard, false);
-						pTransport->SetDestination(pTransport, true);
-
-						// Unit, your turn...
 						pUnit->QueueMission(Mission::Enter, false);
 						pUnit->SetTarget(pTransport);
 						pUnit->SetDestination(pTransport, true);
