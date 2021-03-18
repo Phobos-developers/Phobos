@@ -1,5 +1,6 @@
 ![Phobos logo](logo.png)
 
+[![Docs status](https://readthedocs.org/projects/phobos/badge/?version=latest)](https://phobos.readthedocs.io/en/latest/?badge=latest)
 [![license](https://img.shields.io/github/license/Phobos-developers/Phobos.svg)](https://www.gnu.org/licenses/lgpl-3.0.en.html)
 [![Workflow](https://img.shields.io/github/workflow/status/Phobos-developers/Phobos/Nightly%20Build.svg)](https://github.com/Phobos-developers/Phobos/actions)
 [![Github All Releases](https://img.shields.io/github/downloads/Phobos-developers/Phobos/total.svg)](https://github.com/Phobos-developers/Phobos/releases)
@@ -8,19 +9,35 @@
 
 For now you can discuss the project at a dedicated [channel on C&C Mod Haven](https://discord.gg/sZeMzz6qVg) (which is my C&C modding server).
 
-Refer to the [wiki](https://github.com/Phobos-developers/Phobos/wiki) to see the full list of features.
 
-Building
---------
+Building and Usage (Windows)
+----------------------------
 
-Windows:
+0. Install Visual Studio with "Desktop development with C++" workload and "C++ Windows XP Support for VS 2017 (v141) tools" individual component and clone this repo recursively (that will also clone YRpp).
+1. Open the solution file in VS and build it (`DevBuild` build config is recommended).
+2. Upon build completion place the resulting `Phobos.dll` from folder named identical to the used build config in your YR directory and launch Syringe targeting your YR executable (usually `gamemd.exe`).
 
-0. Install Visual Studio with "Desktop development with C++" workload, "C++ Windows XP Support for VS 2017 (v141) tools" individual component and clone this repo recursively.
-1. Open the solution file in VS and build it.
+You can also get test a nightly version for a specific commit which is built automatically with a GitHub Actions workflow, just press on a green tick, open the workflow, find and download the build artifact (a ZIP containing the extension's DLL). Those versions have build information (commit and branch/tag) in them which is displayed ingame and can't be turned off. **Those versions are bleeding edge, do not redistribute them outside of testing!**
 
-Upon build completion place the resulting `Phobos.dll` in your YR directory and launch Syringe targeting your YR executable (usually `gamemd.exe`).
+Documentation
+-------------
 
-You can also get test a nightly version for a specific commit which is built automatically with a GitHub Actions workflow, just press on a green tick, open the workflow, find and download the build artifact (a ZIP containing the extension's DLL). Those versions have build information (commit and branch/tag) in them which is displayed ingame and can't be turned off. **Those versions are bleeding edge, do not redistribute them in mods!**
+The documentation can be found at [here @ Read the Docs](https://phobos.readthedocs.io) and is split by a few major categories (similiar to Ares docs), each represented with a page on the sidebar. Each page has it's contents grouped into multiple subcategories, be it buildings, technotypes, infantry, superweapons or something else.
+
+You can switch between versions in the bottom left corner, as well as download a PDF version.
+
+How to read code snippets
+-------------------------
+
+```ini
+; which section the params should be in
+; can be a freeform name - in this case the comment would explain what it is
+; if no comment to be found - then it's a precise name
+[SOMENAME] ; BuildingType
+; KeyName=DefaultValue ; accepted type with optional explanation
+; if there's nothing to the right of equals sign - the default value is empty/absent
+UIDescription=<none> ; CSF entry key
+```
 
 Credits
 -------
@@ -35,7 +52,7 @@ Credits
 - ayylmao, SMxReaver, 4SG, FS-21 - help with docs
 - wiktorderelf, Metadorius aka Kerbiter - overhauled Unicode font
 
-Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](logo-mono.png)) in your client/launcher, [contributing](https://github.com/Phobos-developers/Phobos/wiki/Contributing) or donating to us via links on the right and the `Sponsor` button on top of the repo.
+Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](https://github.com/Phobos-developers/Phobos/logo-mono.png)) in your client/launcher, contributing or donating to us via links on the right and the `Sponsor` button on top of the repo.
 
 Legal and License
 -----
