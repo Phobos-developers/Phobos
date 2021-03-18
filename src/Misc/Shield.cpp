@@ -14,7 +14,6 @@ ShieldTechnoClass::ShieldTechnoClass(TechnoClass* pTechno) :
     Timer_SelfHealing{},
     Image{ nullptr }
 {
-    this->Timer_SelfHealing.Start(1);
     this->DrawShield();
 }
 
@@ -41,6 +40,9 @@ int ShieldTechnoClass::ReceiveDamage(int nDamage, WarheadTypeClass* pWH)
 
     if (!this->HP || nDamage == 0)
         return nDamage;
+
+    if (nDamage > 0) //when attacked, restart the timer
+        this->Timer_SelfHealing.Start(this->GetExt()->Shield_SelfHealingDelay);
 
     auto residueDamage = nDamage - this->HP;
     if (residueDamage >= 0)
@@ -74,7 +76,7 @@ void ShieldTechnoClass::RespawnShield()
 void ShieldTechnoClass::SelfHealing()
 {
     auto nSelfHealingAmount = this->GetExt()->Shield_SelfHealing;
-    if (nSelfHealingAmount > 0 && this->HP < this->GetExt()->Shield_Strength && this->Timer_SelfHealing.Expired())
+    if (nSelfHealingAmount > 0 && this->HP < this->GetExt()->Shield_Strength && this->Timer_SelfHealing.StartTime == -1)
         this->Timer_SelfHealing.Start(this->GetExt()->Shield_SelfHealingDelay);
 
     if (nSelfHealingAmount > 0 && this->HP > 0 && this->Timer_SelfHealing.Completed())
