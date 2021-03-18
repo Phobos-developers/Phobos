@@ -32,7 +32,7 @@ private:
     void BreakShield();
     void DrawShield();
     void DrawShieldBarBuilding(int iLength, Point2D* pLocation, RectangleStruct* pBound);
-    void DrawShieldBarOther();
+    void DrawShieldBarOther(int iLength, Point2D* pLocation, RectangleStruct* pBound);
 
     /// Properties ///
 

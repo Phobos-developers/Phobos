@@ -126,7 +126,7 @@ void ShieldTechnoClass::DrawShieldBar(int iLength, Point2D* pLocation, Rectangle
         if (this->Techno->WhatAmI() == AbstractType::Building)
             this->DrawShieldBarBuilding(iLength, pLocation, pBound);
         else
-            this->DrawShieldBarOther();
+            this->DrawShieldBarOther(iLength, pLocation, pBound);
     }
 }
 
@@ -141,7 +141,7 @@ void ShieldTechnoClass::DrawShieldBarBuilding(int iLength, Point2D* pLocation, R
         iCurrent = iLength;
         iTotal = iLength;
     }
-    int frame = 5;
+    int frame = 5; //NEED CHANGE
     Point2D vPos = { 0,0 };
     CoordStruct vCoords = { 0,0,0 };
     this->Techno->GetTechnoType()->Dimension2(&vCoords);
@@ -161,7 +161,6 @@ void ShieldTechnoClass::DrawShieldBarBuilding(int iLength, Point2D* pLocation, R
             DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP, frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
             deltaX += 4;
             deltaY -= 2;
-            //Debug::Log("[Phobos/Shield] %s Drawing Shield Bar: vPos is {%d, %d}.\n", this->Techno->GetTechnoType()->ID, vPos.X, vPos.Y);
         }
         iCurrent = iTotal;
     }
@@ -179,6 +178,39 @@ void ShieldTechnoClass::DrawShieldBarBuilding(int iLength, Point2D* pLocation, R
     }
 }
 
-void ShieldTechnoClass::DrawShieldBarOther() {
+void ShieldTechnoClass::DrawShieldBarOther(int iLength, Point2D* pLocation, RectangleStruct* pBound) {
+    Point2D vPos = { 0,0 };
+    Point2D vLoc = *pLocation;
+    int frame, XOffset, YOffset;
+    YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta;
+    vLoc.Y -= 5;
+    if (iLength == 8) {
+        vPos.X = vLoc.X + 11;
+        vPos.Y = vLoc.Y - 25 + YOffset;
+        frame = FileSystem::PIPBRD_SHP->Frames > 2 ? 3 : 1;
+        XOffset = -5;
+        YOffset -= 24;
+    }
+    else {
+        vPos.X = vLoc.X + 1;
+        vPos.Y = vLoc.Y - 26 + YOffset;
+        frame = FileSystem::PIPBRD_SHP->Frames > 2 ? 2 : 0;
+        XOffset = -15;
+        YOffset -= 25;
+    }
+    if (this->Techno->IsSelected) DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPBRD_SHP, frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
 
+    int iTotal = int((double)this->HP / this->GetExt()->Shield_Strength * iLength);
+    if (iTotal < 0) {
+        iTotal = 0;
+    }
+    if (iTotal > iLength) {
+        iTotal = iLength;
+    }
+    frame = 16; //NEED CHANGE
+    for (int i = 0; i < iTotal; ++i) {
+        vPos.X = vLoc.X + XOffset + 2 * i;
+        vPos.Y = vLoc.Y + YOffset;
+        DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP, frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+    }
 }
