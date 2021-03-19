@@ -25,7 +25,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->PowersUp_Buildings.Read(exINI, pSection, "PowersUp.Buildings");
 
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
-		strcpy_s(pThis->PowersUpBuilding, BuildingTypeClass::Array->GetItem(this->PowersUp_Buildings[0])->ID);
+		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization() {

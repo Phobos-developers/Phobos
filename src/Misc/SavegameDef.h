@@ -83,7 +83,7 @@ namespace Savegame {
 
 	template <typename T>
 	bool ReadPhobosStream(PhobosStreamReader& Stm, T& Value, bool RegisterForChange) {
-		// to be implemented
+		// *should* have been implemented
 		auto pointer = (unsigned char*)(&Value);
 		Stm.Read(pointer, sizeof Value);
 		if (RegisterForChange && std::is_pointer<T>::value)
@@ -93,7 +93,7 @@ namespace Savegame {
 
 	template <typename T>
 	bool WritePhobosStream(PhobosStreamWriter& Stm, const T& Value) {
-		// to be implemented
+		// *should* have been implemented
 		auto pointer = (unsigned char*)(&Value);
 		Stm.Write(pointer, sizeof Value);
 		return true;

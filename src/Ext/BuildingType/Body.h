@@ -14,7 +14,7 @@ public:
 	{
 	public:
 		Valueable<AffectedHouse> PowersUp_Owner;
-		ValueableIdxVector<BuildingTypeClass> PowersUp_Buildings;
+		ValueableVector<BuildingTypeClass*> PowersUp_Buildings;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject),
 			PowersUp_Owner(AffectedHouse::Owner),

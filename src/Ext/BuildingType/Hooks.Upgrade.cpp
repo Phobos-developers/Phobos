@@ -13,9 +13,9 @@ bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pU
 			return true;
 
 		// PowersUp.Buildings
-		for (auto& powerup_idx : extUpgrade->PowersUp_Buildings)
+		for (auto& pPowerUpBuilding : extUpgrade->PowersUp_Buildings)
 		{
-			if (_stricmp(pBuilding->Type->ID, BuildingTypeClass::Array->GetItem(powerup_idx)->ID) == 0)
+			if (_stricmp(pBuilding->Type->ID, pPowerUpBuilding->ID) == 0)
 				return true;
 		}
 	}
