@@ -1,6 +1,5 @@
 #include "Body.h"
 
-#include <WarheadTypeClass.h>
 #include <AnimTypeClass.h>
 
 template<> const DWORD Extension<WarheadTypeClass>::Canary = 0x22222222;

@@ -39,6 +39,8 @@ public:
 			RemoveMindControl_ApplyCellSpread(true)
 		{ }
 
+		void Detonate(HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
+
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;
 
