@@ -10,21 +10,20 @@
 
 #include "../../Utilities/Helpers.Alex.h"
 
-BulletClass* currentBullet;
-
-DEFINE_HOOK(46920B, BulletClass_Logics_Context_Set, 6)
+/*
+DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 {
-	currentBullet = R->ESI<BulletClass*>();
+	GET(BulletClass * const, pThis, ESI);
+	GET_BASE(const CoordStruct * const, pCoordsDetonation, 0x8);
+
+	auto const pWH = pThis->WH;
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
 
 	return 0;
 }
-
-DEFINE_HOOK(46A301, BulletClass_Logics_Context_Unset, 3)
-{
-	currentBullet = nullptr;
-
-	return 0;
-}
+*/
 
 DEFINE_HOOK(489286, MapClass_DamageArea, 6)
 {
@@ -82,9 +81,6 @@ DEFINE_HOOK(489286, MapClass_DamageArea, 6)
 				for (auto member : items)
 					applyRemoveDisguiseToInf(member);
 			}
-			else if (currentBullet && currentBullet->Target) {
-				applyRemoveDisguiseToInf(currentBullet->Target);
-			}
 		}
 
 		if (pWHExt->RemoveMindControl) {
@@ -104,15 +100,10 @@ DEFINE_HOOK(489286, MapClass_DamageArea, 6)
 
 			auto coords = *pCoordsDetonation;
 			auto CellSpread = pWH->CellSpread;
-
 			if (pWHExt->RemoveDisguise_ApplyCellSpread && CellSpread) {
 				const auto items = Helpers::Alex::getCellSpreadItems(coords, CellSpread, true);
 				for (auto member : items)
 					applyRemoveMindControl(member);
-			}
-			else if (currentBullet && currentBullet->Target) {
-				if (auto pTarget = abstract_cast<TechnoClass*>(currentBullet->Target))
-					applyRemoveMindControl(pTarget);
 			}
 		}
 	}
