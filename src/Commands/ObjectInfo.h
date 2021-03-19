@@ -3,10 +3,12 @@
 #include "../Ext/TechnoType/Body.h"
 
 #include <BuildingClass.h>
+#include <InfantryClass.h>
 #include <FootClass.h>
 #include <TeamClass.h>
 #include <HouseClass.h>
 #include <ScriptClass.h>
+#include <Helpers/Enumerators.h>
 
 // #53 New debug feature for AI scripts
 class ObjectInfoCommandClass : public PhobosCommandClass
@@ -163,6 +165,14 @@ public:
 				display();
 			}
 
+			if (pFoot->Passengers.NumPassengers > 0) {
+				append("Passengers: %s", pFoot->Passengers.FirstPassenger->GetTechnoType()->ID);
+				for (NextObject j(pFoot->Passengers.FirstPassenger->NextObject); j && abstract_cast<FootClass*>(*j); ++j) {
+					auto passenger = static_cast<FootClass*>(*j);
+					append(", %s", passenger->GetTechnoType()->ID);
+				}
+				append("\n");
+			}
 			append("Current HP = (%d / %d)\n", pFoot->Health, pType->Strength);
 			display();
 		};
@@ -173,6 +183,14 @@ public:
 			append("ID = %s, ", pType->ID);
 			append("Owner = %s (%s), ", pBuilding->Owner->get_ID(), pBuilding->Owner->PlainName);
 			append("Location = (%d, %d)\n", pBuilding->GetMapCoords().X, pBuilding->GetMapCoords().Y);
+			
+			if (pBuilding->Occupants.Count > 0) {
+				append("Occupants: %s", pBuilding->Occupants.GetItem(0)->Type->ID);
+				for (int i = 1; i < pBuilding->Occupants.Count; i++) {
+					append(", %s", pBuilding->Occupants.GetItem(i)->Type->ID);
+				}
+				append("\n");
+			}
 			append("Current HP = (%d / %d)\n", pBuilding->Health, pBuilding->Type->Strength);
 			display();
 		};
