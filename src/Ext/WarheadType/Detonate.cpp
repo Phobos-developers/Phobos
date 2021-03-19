@@ -31,52 +31,55 @@ void WarheadTypeExt::ExtData::Detonate(HouseClass* pHouse, BulletClass* pBullet,
 			pHouse->TransactMoney(this->TransactMoney);
 		}
 
+
+		std::vector<TechnoClass*> cellSpreadItems;
+		auto cellSpread = this->OwnerObject()->CellSpread;
+		if (cellSpread && (             // List all Warheads here that respect CellSpread
+			this->RemoveDisguise ||
+			this->RemoveMindControl )
+			) {
+			cellSpreadItems = Helpers::Alex::getCellSpreadItems(coords, cellSpread, true);
+		}
+
 		if (this->RemoveDisguise) {
-			auto applyRemoveDisguiseToInf = [this, &pHouse](AbstractClass* pTechno)
-			{
-				if (pTechno->WhatAmI() == AbstractType::Infantry)
-				{
+			auto applyRemoveDisguiseToInf = [this, &pHouse](AbstractClass* pTechno) {
+				if (pTechno->WhatAmI() == AbstractType::Infantry) {
 					auto pInf = abstract_cast<InfantryClass*>(pTechno);
-					if (pInf->IsDisguised())
-					{
-						bool bIsAlliedWith = pHouse->IsAlliedWith(pInf);
-						if (this->RemoveDisguise_AffectAllies || (!this->RemoveDisguise_AffectAllies && !bIsAlliedWith))
+					if (pInf->IsDisguised()) {
+						if (this->OwnerObject()->AffectsAllies && pHouse->IsAlliedWith(pInf)) {
 							pInf->ClearDisguise();
+						}
 					}
 				}
 			};
 
-			auto cellSpread = this->OwnerObject()->CellSpread;
-			if (this->RemoveDisguise_ApplyCellSpread && cellSpread) {
-				const auto items = Helpers::Alex::getCellSpreadItems(coords, cellSpread, true);
-				for (auto member : items)
+			
+			if (cellSpread) {
+				for (auto member : cellSpreadItems) {
 					applyRemoveDisguiseToInf(member);
+				}
 			}
-			else if (pBullet){
+			else if (pBullet) {
 				applyRemoveDisguiseToInf(pBullet->Target);
 			}
 		}
 
 		if (this->RemoveMindControl) {
-			auto applyRemoveMindControl = [this, &pHouse](TechnoClass* pTechno)
-			{
-				if (auto pController = pTechno->MindControlledBy)
-				{
-					bool bIsAlliedWith = pHouse->IsAlliedWith(pTechno);
-					if (this->RemoveMindControl_AffectAllies || (!this->RemoveMindControl_AffectAllies && !bIsAlliedWith))
-					{
+			auto applyRemoveMindControl = [this, &pHouse](TechnoClass* pTechno) {
+				if (auto pController = pTechno->MindControlledBy) {
+					if (this->OwnerObject()->AffectsAllies && pHouse->IsAlliedWith(pTechno)) {
 						pTechno->MindControlledBy->CaptureManager->FreeUnit(pTechno);
-						if (!pTechno->IsHumanControlled)
+						if (!pTechno->IsHumanControlled) {
 							pTechno->QueueMission(Mission::Hunt, false);
+						}
 					}
 				}
 			};
 
-			auto cellSpread = this->OwnerObject()->CellSpread;
-			if (this->RemoveDisguise_ApplyCellSpread && cellSpread) {
-				const auto items = Helpers::Alex::getCellSpreadItems(coords, cellSpread, true);
-				for (auto member : items)
+			if (cellSpread) {
+				for (auto member : cellSpreadItems) {
 					applyRemoveMindControl(member);
+				}
 			}
 			else if (pBullet) {
 				if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target)) {

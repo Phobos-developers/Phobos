@@ -19,11 +19,7 @@ public:
 		ValueableVector<AnimTypeClass*> SplashList;
 		Valueable<bool> SplashList_PickRandom;
 		Valueable<bool> RemoveDisguise;
-		Valueable<bool> RemoveDisguise_AffectAllies;
-		Valueable<bool> RemoveDisguise_ApplyCellSpread;
 		Valueable<bool> RemoveMindControl;
-		Valueable<bool> RemoveMindControl_AffectAllies;
-		Valueable<bool> RemoveMindControl_ApplyCellSpread;
 
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject),
 			SpySat(false),
@@ -32,11 +28,7 @@ public:
 			SplashList(),
 			SplashList_PickRandom(false),
 			RemoveDisguise(false),
-			RemoveDisguise_AffectAllies(false),
-			RemoveDisguise_ApplyCellSpread(true),
-			RemoveMindControl(false),
-			RemoveMindControl_AffectAllies(false),
-			RemoveMindControl_ApplyCellSpread(true)
+			RemoveMindControl(false)
 		{ }
 
 		void Detonate(HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
