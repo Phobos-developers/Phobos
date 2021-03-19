@@ -100,7 +100,7 @@ void ScriptExt::LoadIntoTransports(TeamClass *pTeam)
 					// All fine
 					if (pUnit->GetCurrentMission() != Mission::Enter) {
 						pUnit->QueueMission(Mission::Enter, false);
-						pUnit->SetTarget(pTransport);
+						pUnit->SetTarget(nullptr);
 						pUnit->SetDestination(pTransport, true);
 
 						return;
