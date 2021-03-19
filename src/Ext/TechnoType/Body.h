@@ -35,10 +35,10 @@ public:
 
 		Valueable<int> Shield_Strength;
 		//Valueable<ArmorType> Shield_Armor;
-		Valueable<int> Shield_Respawn;
-		Valueable<int> Shield_RespawnDelay;
-		Valueable<int> Shield_SelfHealing;
-		Valueable<int> Shield_SelfHealingDelay;
+		Valueable<double> Shield_Respawn;
+		Valueable<double> Shield_RespawnDelay;
+		Valueable<double> Shield_SelfHealing;
+		Valueable<double> Shield_SelfHealingDelay;
 		Valueable<bool> Shield_AbsorbOverDamage;
 		Nullable<AnimTypeClass*> Shield_Image;
 		Nullable<AnimTypeClass*> Shield_BreakImage;
@@ -63,9 +63,9 @@ public:
 
 			Shield_Strength(0),
 			//Shield_Armor("none"),
-			Shield_Respawn(0),
+			Shield_Respawn(0.0),
 			Shield_RespawnDelay(15),
-			Shield_SelfHealing(0),
+			Shield_SelfHealing(0.0),
 			Shield_SelfHealingDelay(5),
 			Shield_AbsorbOverDamage(false),
 			Shield_Image(),

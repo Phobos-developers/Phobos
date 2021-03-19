@@ -29,6 +29,7 @@ private:
 
     void RespawnShield();
     void SelfHealing();
+    int GetPercentageAmount(double iStatus);
     void BreakShield();
     void DrawShield();
     void DrawShieldBarBuilding(int iLength, Point2D* pLocation, RectangleStruct* pBound);

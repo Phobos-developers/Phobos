@@ -42,7 +42,7 @@ int ShieldTechnoClass::ReceiveDamage(int nDamage, WarheadTypeClass* pWH)
         return nDamage;
 
     if (nDamage > 0) //when attacked, restart the timer
-        this->Timer_SelfHealing.Start(this->GetExt()->Shield_SelfHealingDelay);
+        this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealingDelay * 900));
 
     auto residueDamage = nDamage - this->HP;
     if (residueDamage >= 0)
@@ -68,20 +68,20 @@ void ShieldTechnoClass::RespawnShield()
     if (this->HP <= 0 && this->Timer_Respawn.Completed())
     {
         this->Timer_Respawn.Stop();
-        this->HP = this->GetExt()->Shield_Respawn;
+        this->HP = this->GetPercentageAmount(this->GetExt()->Shield_Respawn);
         this->DrawShield();
     }
 }
 
 void ShieldTechnoClass::SelfHealing()
 {
-    auto nSelfHealingAmount = this->GetExt()->Shield_SelfHealing;
+    auto nSelfHealingAmount = this->GetPercentageAmount(this->GetExt()->Shield_SelfHealing);
     if (nSelfHealingAmount > 0 && this->HP < this->GetExt()->Shield_Strength && this->Timer_SelfHealing.StartTime == -1)
-        this->Timer_SelfHealing.Start(this->GetExt()->Shield_SelfHealingDelay);
+        this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealingDelay * 900));
 
     if (nSelfHealingAmount > 0 && this->HP > 0 && this->Timer_SelfHealing.Completed())
     {
-        this->Timer_SelfHealing.Start(this->GetExt()->Shield_SelfHealingDelay);
+        this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealingDelay * 900));
         this->HP += nSelfHealingAmount;
         if (this->HP > this->GetExt()->Shield_Strength) 
         {
@@ -91,10 +91,29 @@ void ShieldTechnoClass::SelfHealing()
     }
 }
 
+int ShieldTechnoClass::GetPercentageAmount(double iStatus)
+{
+    if (iStatus)
+    {
+        if (iStatus >= -1.0 && iStatus <= 1.0)
+            return int(this->GetExt()->Shield_Strength * iStatus);
+
+        if (iStatus < 0)
+        {
+            iStatus *= -1;
+            iStatus = (int)iStatus;
+            iStatus *= -1;
+        }
+        return (int)iStatus;
+
+    }
+    return 0;
+}
+
 void ShieldTechnoClass::BreakShield()
 {
     this->HP = 0;
-    if (this->GetExt()->Shield_Respawn > 0) this->Timer_Respawn.Start(this->GetExt()->Shield_RespawnDelay);
+    if (this->GetExt()->Shield_Respawn > 0) this->Timer_Respawn.Start(int(this->GetExt()->Shield_RespawnDelay * 900));
     this->Timer_SelfHealing.Stop();
 
     if (this->Image)
