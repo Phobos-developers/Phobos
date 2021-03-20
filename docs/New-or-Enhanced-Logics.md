@@ -149,3 +149,25 @@ Interceptor.EliteGuardRange=0.0 ; double
 [SOMEPROJECTILE] ; Projectile
 Interceptable=no ; boolean
 ```
+
+## ScriptType Actions
+
+### `71` Timed Area Guard
+
+- Puts the TaskForce into Area Guard Mode for the given units of time. Unlike the orignal timed Guard script (`5,n`) that just stays in place doing a basic guard operation the "Area Guard" action has a more active role attacking nearby invasors or defending units that needs protection.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=71,n            ; integer, time in ingame seconds
+```
+
+### `72` Load Onto Transports
+
+- If the TaskForce contains unit(s) that can be carried by the transports of the same TaskForce then this action will make the units enter the transports. In Single player missions the next action must be "Wait until fully loaded" (`43,0`) or the script will not continue.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=72,0
+```
