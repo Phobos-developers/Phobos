@@ -12,11 +12,12 @@
 class ExtSelection
 {
 public:
+	using callback_type = bool(__fastcall*)(ObjectClass*);
+
 	// Reversed from Is_Selectable, w/o Select call
 	static bool ObjectClass_IsSelectable(ObjectClass* pThis)
 	{
-		HouseClass* owner = pThis->GetOwningHouse();
-
+		auto owner = pThis->GetOwningHouse();
 		return owner && owner->ControlledByPlayer()
 			&& pThis->CanBeSelected() && pThis->CanBeSelectedNow()
 			&& !pThis->InLimbo;
@@ -40,7 +41,7 @@ public:
 
 	static bool Tactical_IsHighPriorityInRect(TacticalClass* pThis, RECT* rect)
 	{
-		TacticalSelectableStruct* selected = Unsorted::TacticalSelectables;
+		auto selected = Unsorted::TacticalSelectables;
 
 		for (int i = 0; i < pThis->SelectableCount; i++, selected++) {
 			if (Tactical_IsInSelectionRect(pThis, rect, selected) && ObjectClass_IsSelectable(selected->Techno)) {
@@ -55,18 +56,18 @@ public:
 	}
 
 	static // Reversed from Tactical::Select
-		void Tactical_SelectFiltered(TacticalClass* pThis, RECT* rect, bool(__fastcall* check_callback)(ObjectClass*), bool priorityFiltering)
+		void Tactical_SelectFiltered(TacticalClass* pThis, RECT* rect, callback_type check_callback, bool priorityFiltering)
 	{
 		Unsorted::MoveFeedback = true;
 
 		if (rect->right <= 0 || rect->bottom <= 0 || pThis->SelectableCount <= 0)
 			return;
 
-		TacticalSelectableStruct* selected = Unsorted::TacticalSelectables;
+		auto selected = Unsorted::TacticalSelectables;
 		for (int i = 0; i < pThis->SelectableCount; i++, selected++) {
 			if (Tactical_IsInSelectionRect(pThis, rect, selected)) {
-				TechnoClass* techno = selected->Techno;
-				TechnoTypeClass* technoType = techno->GetTechnoType();
+				auto techno = selected->Techno;
+				auto technoType = techno->GetTechnoType();
 				auto technoTypeExt = TechnoTypeExt::ExtMap.Find(technoType);
 
 				if (priorityFiltering && technoTypeExt->LowSelectionPriority)
@@ -81,14 +82,14 @@ public:
 				else {
 					bool isDeployedBuilding = false;
 					if (techno->WhatAmI() == AbstractType::Building) {
-						BuildingTypeClass* buildingType = (BuildingTypeClass*)techno->GetType();
+						auto buildingType = abstract_cast<BuildingTypeClass*>(techno->GetType());
 
 						if (buildingType->UndeploysInto && buildingType->IsUndeployable()) {
 							isDeployedBuilding = true;
 						}
 					}
 
-					HouseClass* owner = techno->GetOwningHouse();
+					auto owner = techno->GetOwningHouse();
 					if (owner && owner->ControlledByPlayer() && techno->CanBeSelected()
 						&& (techno->WhatAmI() != AbstractType::Building || isDeployedBuilding)) {
 						Unsorted::MoveFeedback = !techno->Select();
@@ -101,32 +102,20 @@ public:
 	}
 
 	static // Reversed from Tactical::MakeSelection
-		void Tactical_MakeFilteredSelection(TacticalClass* pThis, bool(__fastcall* check_callback)(ObjectClass*))
+		void Tactical_MakeFilteredSelection(TacticalClass* pThis, callback_type check_callback)
 	{
 		if (pThis->Band.left || pThis->Band.top) {
 			LONG left = pThis->Band.left;
 			LONG right = pThis->Band.right;
-
-			if (left > right) {
-				LONG temp = left;
-				left = right;
-				right = temp;
-			}
-
 			LONG top = pThis->Band.top;
 			LONG bottom = pThis->Band.bottom;
 
-			if (top > bottom) {
-				LONG temp = top;
-				top = bottom;
-				bottom = temp;
-			}
+			if (left > right)
+				std::swap(left, right);
+			if (top > bottom)
+				std::swap(top, bottom);
 
-			RECT rect;
-			rect.right = right - left + 1;
-			rect.bottom = bottom - top + 1;
-			rect.left = left;
-			rect.top = top;
+			RECT rect{ left , top, right - left + 1, bottom - top + 1 };
 
 			bool priorityFiltering = Phobos::Config::PrioritySelectionFiltering && Tactical_IsHighPriorityInRect(pThis, &rect);
 			Tactical_SelectFiltered(pThis, &rect, check_callback, priorityFiltering);
@@ -139,7 +128,7 @@ public:
 
 DEFINE_HOOK(6D9FF0, Tactical_MakeSelection_FilterSelection, 0)
 {
-	auto IsSelectable = R->Stack<bool(__fastcall*)(ObjectClass*)>(4);
+	GET_STACK(ExtSelection::callback_type, IsSelectable, 4);
 	GET(TacticalClass*, pThis, ECX);
 	ExtSelection::Tactical_MakeFilteredSelection(pThis, IsSelectable);
 	return 0x6DA075;
