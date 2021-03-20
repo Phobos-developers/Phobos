@@ -34,12 +34,14 @@ void ShieldTechnoClass::Save(IStream* Stm)
     PhobosStreamWriter::Process(Stm, this->Image);
 }
 
-int ShieldTechnoClass::ReceiveDamage(int nDamage, WarheadTypeClass* pWH)
+int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
 {
-    UNREFERENCED_PARAMETER(pWH);
+    //UNREFERENCED_PARAMETER(pWH);
 
-    if (!this->HP || nDamage == 0)
-        return nDamage;
+    if (!this->HP || *args->Damage == 0)
+        return *args->Damage;
+
+    int nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->GetExt()->Shield_Armor, args->DistanceToEpicenter);
 
     if (nDamage > 0) //when attacked, restart the timer
         this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealingDelay * 900));
@@ -55,6 +57,12 @@ int ShieldTechnoClass::ReceiveDamage(int nDamage, WarheadTypeClass* pWH)
         this->HP = -residueDamage;
         return 0;
     }
+}
+
+bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon)
+{
+    bool result = MapClass::GetTotalDamage(pWeapon->Damage, pWeapon->Warhead, this->GetExt()->Shield_Armor, 0) != 0;
+    return this->HP ? result : true;
 }
 
 void ShieldTechnoClass::Update()

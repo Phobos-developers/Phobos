@@ -3,6 +3,7 @@
 // TODO : Support Armor Logic
 
 #include <GeneralStructures.h>
+#include <SpecificStructures.h>
 #include "../Ext/TechnoType/Body.h"
 
 class TechnoClass;
@@ -15,7 +16,8 @@ public:
     ShieldTechnoClass(TechnoClass* pTechno);
     ~ShieldTechnoClass() = default;
 
-    int ReceiveDamage(int nDamage, WarheadTypeClass* pWH);
+    int ReceiveDamage(args_ReceiveDamage* args);
+    bool CanBeTargeted(WeaponTypeClass* pWeapon);
     void Update();
     void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
 

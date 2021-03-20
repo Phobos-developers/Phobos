@@ -224,6 +224,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Shield_Strength.Read(exINI, pSection, "Shield.Strength");
 	//this->Shield_Armor.Read(exINI, pSection, "Shield.Armor");
+	this->Shield_Armor = pINI->ReadArmorType(pSection, "Shield.Armor", this->Shield_Armor);
 	this->Shield_Respawn.Read(exINI, pSection, "Shield.Respawn");
 	if (this->Shield_Respawn)
 		this->Shield_RespawnDelay.Read(exINI, pSection, "Shield.Respawn.Rate");
@@ -263,6 +264,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm) {
         .Process(this->Promote_IncludeSpawns)
 		.Process(this->ImmuneToCrit)
         .Process(this->Shield_Strength)
+        .Process(this->Shield_Armor)
         .Process(this->Shield_Respawn)
         .Process(this->Shield_RespawnDelay)
         .Process(this->Shield_SelfHealing)

@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <SpecificStructures.h>
 
 #include "../TechnoType/Body.h"
 
@@ -6,21 +7,34 @@
 DEFINE_HOOK(701900, TechnoClass_ReceiveDamage_Shield, 6)
 {
     GET(TechnoClass*, pThis, ECX);
-    GET_STACK(int*, pDamage, 0x4);
-    GET_STACK(WarheadTypeClass*, pWH, 0xC);
+    LEA_STACK(args_ReceiveDamage*, args, 0x4);
+    //GET_STACK(int*, pDamage, 0x4);
+    //GET_STACK(WarheadTypeClass*, pWH, 0xC);
     //GET_STACK(HouseClass*, pSourceHouse, -0x1C);
-
     auto pExt = TechnoExt::ExtMap.Find(pThis);
 
     if (auto pShieldData = pExt->ShieldData.get())
     {
-        auto nDamageLeft = pShieldData->ReceiveDamage(*pDamage, pWH);
+        auto nDamageLeft = pShieldData->ReceiveDamage(args);
         if (nDamageLeft >= 0)
-            *pDamage = nDamageLeft;
+            *args->Damage = nDamageLeft;
     }
 
     return 0;
+}
 
+DEFINE_HOOK(6FC32D, TechnoClass_CanFire_Shield, 6)
+{
+    GET_STACK(TechnoClass*, pTarget, STACK_OFFS(0x20, -0x4));
+    GET(WeaponTypeClass*, pWeapon, EDI);
+    auto pExt = TechnoExt::ExtMap.Find(pTarget);
+    if (auto pShieldData = pExt->ShieldData.get()) 
+    {
+        if(!pShieldData->CanBeTargeted(pWeapon))
+            return 0x6FCB7E;
+    }
+    
+    return 0;
 }
 
 DEFINE_HOOK(6F9E50, TechnoClass_Update_Shield, 5)
@@ -42,7 +56,6 @@ DEFINE_HOOK(6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 6)
 {
     GET(TechnoClass*, pThis, ESI);
     GET(int, iLength, EBX);
-    //GET_STACK(int, iOffset, STACK_OFFS(0x4C, 0x2C));
     GET_STACK(Point2D*, pLocation, STACK_OFFS(0x4C, -0x4));
     GET_STACK(RectangleStruct*, pBound, STACK_OFFS(0x4C, -0x8));
     auto pExt = TechnoExt::ExtMap.Find(pThis);

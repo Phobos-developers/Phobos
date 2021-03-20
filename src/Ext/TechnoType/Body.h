@@ -34,7 +34,7 @@ public:
 		Valueable<bool> ImmuneToCrit;
 
 		Valueable<int> Shield_Strength;
-		//Valueable<ArmorType> Shield_Armor;
+		Valueable<signed int> Shield_Armor;
 		Valueable<double> Shield_Respawn;
 		Valueable<double> Shield_RespawnDelay;
 		Valueable<double> Shield_SelfHealing;
@@ -62,11 +62,11 @@ public:
 			ImmuneToCrit(false),
 
 			Shield_Strength(0),
-			//Shield_Armor("none"),
+			Shield_Armor(0),
 			Shield_Respawn(0.0),
-			Shield_RespawnDelay(15),
+			Shield_RespawnDelay(0.0),
 			Shield_SelfHealing(0.0),
-			Shield_SelfHealingDelay(5),
+			Shield_SelfHealingDelay(0.0),
 			Shield_AbsorbOverDamage(false),
 			Shield_Image(),
 			Shield_BreakImage()
