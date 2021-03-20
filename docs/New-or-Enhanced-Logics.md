@@ -84,8 +84,6 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                      ; Warhead
 RemoveDisguise=no                  ; boolean
-RemoveDisguise.AffectAllies=no     ; boolean
-RemoveDisguise.ApplyCellSpread=no  ; boolean
 ```
 
 ### Break Mind Control on impact
@@ -97,8 +95,6 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                        ; Warhead
 RemoveMindControl=no                 ; boolean
-RemoveMindControl.AffectAllies=no    ; boolean
-RemoveMindControl.ApplyCellSpread=no ; boolean
 ```
 
 ### Custom 'SplashList' on Warheads
