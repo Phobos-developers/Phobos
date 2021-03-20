@@ -22,7 +22,7 @@ IngameScore.LoseTheme= ; soundtrack theme ID
 
 ### Low priority for box selection
 
-![smartvesters](docs/_static/images/lowpriority-01.gif)  
+![smartvesters](_static/images/lowpriority-01.gif)  
 *Harvesters not selected together with battle units in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
 
 - You can now set lower priority for an ingame object (currently has effect on units mostly), which means it will be excluded from box selection if there's at least one normal priority unit in the box. Otherwise it would be selected as normal. Works with box+type selecting (type select hotkey + drag) and regular box selecting. Box shift-selection adds low-priority units to the group if there are no normal priority units among the appended ones.
@@ -43,7 +43,7 @@ PrioritySelectionFiltering=yes ; bool
 
 ### Hide health bars
 
-![image](docs/_static/images/healthbar.hide-01.png)
+![image](_static/images/healthbar.hide-01.png)  
 *Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
 
 - Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
@@ -83,7 +83,7 @@ Sidebar.GDIPositions= ; boolean
 
 ## Tooltips
 
-![image](docs/_static/images/tooltips-01.png)
+![image](_static/images/tooltips-01.png)  
 *Extended tooltips used in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
 
 - Sidebar tooltips can now display extended information about the TechnoType/SWType when hovered over it's cameo. In addition the low character limit is lifted when the feature is enabled via the corresponding tag, allowing for 1024 character long tooltips.
@@ -94,7 +94,7 @@ Sidebar.GDIPositions= ; boolean
 - The tooltips can now go over the sidebar bounds to accomodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
 
 :::{note}
-If you use the vanilla font in your mod, you can use ![the improved font](docs/_static/files/ImprovedFont-v3.zip) (v3 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+If you use the vanilla font in your mod, you can use ![the improved font](_static/files/ImprovedFont-v3.zip) (v3 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 :::
 
 In `uimd.ini`:

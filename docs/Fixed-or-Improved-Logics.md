@@ -13,7 +13,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 ### Customizable disk laser radius
 
-![image](docs/_static/images/disklaser-radius-values-01.gif)
+![image](_static/images/disklaser-radius-values-01.gif)  
 - You can now set disk laser animation radius using a new tag.
 
 In `rulesmd.ini`:
@@ -25,7 +25,7 @@ DiskLaser.Radius=38.2 ; floating point value
 
 ### Remember target when deployed
 
-![image](docs/_static/images/remember-target-after-deploying-01.gif)
+![image](_static/images/remember-target-after-deploying-01.gif)  
 *Vehicle keeping target after deployed to building in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
 
 - Vehicle to building deployers can now keep their target when deploying.

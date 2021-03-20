@@ -21,6 +21,6 @@ Phobos fully supports saving and loading thanks to prototype code from publicly 
 
 ## Compatibility
 
-While Phobos is standalone, it is designed to be used alongside Ares and CnCNet5 spawner. Adding new features or improving existing ones is done with compatibility with those in mind.
+While Phobos is standalone, it is designed to be used alongside [Ares](https://ares.strategy-x.com) and [CnCNet5 spawner](https://github.com/CnCNet/cncnet-for-ares). Adding new features or improving existing ones is done with compatibility with those in mind.
 
 While we would also like to support HAres we can't guarantee compatibility with it due to the separation of it's userbase and developers from international community. We welcome any help on the matter though!
