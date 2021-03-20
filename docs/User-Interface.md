@@ -83,7 +83,7 @@ Sidebar.GDIPositions= ; boolean
 
 ## Tooltips
 
-![image](https://user-images.githubusercontent.com/17500545/104979482-0fbc3780-5a0d-11eb-910f-cee76da7f2ed.png)  
+![image](docs/_static/images/tooltips-01.png)
 *Extended tooltips used in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
 
 - Sidebar tooltips can now display extended information about the TechnoType/SWType when hovered over it's cameo. In addition the low character limit is lifted when the feature is enabled via the corresponding tag, allowing for 1024 character long tooltips.
@@ -94,7 +94,7 @@ Sidebar.GDIPositions= ; boolean
 - The tooltips can now go over the sidebar bounds to accomodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
 
 :::{note}
-If you use the vanilla font in your mod, you can use [the improved font](https://github.com/Phobos-developers/Phobos/releases/download/build-2/ImprovedFont-v3.zip) (v3 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+If you use the vanilla font in your mod, you can use ![the improved font](docs/_static/files/ImprovedFont-v3.zip) (v3 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 :::
 
 In `uimd.ini`:
