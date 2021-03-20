@@ -19,10 +19,13 @@ public:
 		Valueable<double> DiskLaser_Radius;
 		Valueable<int> DiskLaser_Circumference;
 		RadType RadType;
+		Valueable<bool> Rad_NoOwner;
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject),
 			DiskLaser_Radius(38.2),
 			DiskLaser_Circumference(240),
-			RadType()
+			RadType(),
+			Rad_NoOwner(false)
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;

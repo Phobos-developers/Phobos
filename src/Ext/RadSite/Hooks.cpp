@@ -52,6 +52,7 @@ DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation, 5)
 	auto const pWeapon = pThis->GetWeaponType();
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.FindOrAllocate(pWeapon);
 	auto const pRadType = &pWeaponExt->RadType;
+	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
 
 	if (Instances.Count > 0) {
 		auto const it = std::find_if(Instances.begin(), Instances.end(),
@@ -61,23 +62,24 @@ DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation, 5)
 					pSite->OwnerObject()->BaseCell == location &&
 					spread == pSite->OwnerObject()->Spread;
 			});
-		if (it == Instances.end()) {
 
-			RadSiteExt::CreateInstance(location, spread, amount, pWeaponExt);
+		if (it == Instances.end()) {
+			RadSiteExt::CreateInstance(location, spread, amount, pWeaponExt , pThisHouse);
 		}
 		else {
 			auto pRadExt = *it;
 			auto pRadSite = pRadExt->OwnerObject();
+
 			if (pRadSite->GetRadLevel() + amount > pRadType->LevelMax) {
 				amount = pRadType->LevelMax - pRadSite->GetRadLevel();
 			}
-			int lvmax = pRadType->DurationMultiple;
+			
 			// Handle It 
-			RadSiteExt::RadSiteAdd(pRadSite, lvmax, amount);
+			pRadExt->Add(amount);
 		}
 	}
 	else {
-		RadSiteExt::CreateInstance(location, spread, amount, pWeaponExt);
+		RadSiteExt::CreateInstance(location, spread, amount, pWeaponExt , pThisHouse);
 	}
 
 	return 0x46AE5E;
@@ -107,11 +109,11 @@ DEFINE_HOOK(43FB23, BuildingClass_Update, 5)
 
 			RadType* pType = pRadExt->Type;
 			int RadApplicationDelay = pType->BuildingApplicationDelay;
-			if ((RadApplicationDelay != 0) && (Unsorted::CurrentFrame % RadApplicationDelay != 0))
+			if ((RadApplicationDelay == 0) || (Unsorted::CurrentFrame % RadApplicationDelay != 0))
 				continue;
 
 			// for more precise dmg calculation
-			double RadLevel = RadSiteExt::GetRadLevelAt(pRadSite, CurrentCoord);
+			double RadLevel = pRadExt->GetRadLevelAt(CurrentCoord);
 			if (RadLevel <= 0 || !pType->RadWarhead)
 				continue;
 
@@ -124,9 +126,10 @@ DEFINE_HOOK(43FB23, BuildingClass_Update, 5)
 			int damage = static_cast<int>((RadLevel / 2) * pType->LevelFactor);
 			int distance = static_cast<int>(orDistance);
 
-			pBuilding->ReceiveDamage(&damage, distance, pType->RadWarhead, nullptr, ignore, absolute, nullptr);
+			pBuilding->ReceiveDamage(&damage, distance, pType->RadWarhead, nullptr, ignore, absolute, pRadExt->RadHouse);
 		}
 	}
+
 	return 0;
 }
 
@@ -156,14 +159,17 @@ DEFINE_HOOK(4DA554, FootClass_Update_RadSiteClass, 5)
 				continue;
 
 			// for more precise dmg calculation
-			double RadLevel = RadSiteExt::GetRadLevelAt(pRadSite, CurrentCoord);
+			double RadLevel = pRadExt->GetRadLevelAt(CurrentCoord);
 			if (RadLevel <= 0 || !pType->RadWarhead)
 				continue;
+
+			// will prevent passenger escapes
+			bool absolute = pType->RadWarhead->WallAbsoluteDestroyer;
 
 			int Damage = static_cast<int>(RadLevel * pType->LevelFactor);
 			int Distance = static_cast<int>(orDistance);
 
-			pFoot->ReceiveDamage(&Damage, Distance, pType->RadWarhead, nullptr, false, true, nullptr);
+			pFoot->ReceiveDamage(&Damage, Distance, pType->RadWarhead, nullptr, false, absolute, pRadExt->RadHouse);
 		}
 	}
 
@@ -186,6 +192,7 @@ DEFINE_HOOK(65B593, RadSiteClass_Activate_Delay, 6)
 
 	R->ECX(LevelDelay);
 	R->EAX(LightDelay);
+
 	return 0x65B59F;
 }
 
@@ -215,10 +222,12 @@ DEFINE_HOOK(65B5CE, RadSiteClass_Activate_Color, 6)
 DEFINE_HOOK(65B63E, RadSiteClass_Activate_LightFactor, 6)
 {
 	GET(RadSiteClass * const, Rad, ESI);
+
 	auto pRadExt = RadSiteExt::ExtMap.Find(Rad);
 	auto lightFactor = pRadExt->Type->LightFactor;
 
 	__asm fmul lightFactor;
+
 	return 0x65B644;
 }
 
@@ -227,10 +236,12 @@ DEFINE_HOOK_AGAIN(65B6CA, RadSiteClass_Activate_TintFactor, 6)
 DEFINE_HOOK(65B6F2, RadSiteClass_Activate_TintFactor, 6)
 {
 	GET(RadSiteClass * const, Rad, ESI);
+
 	auto pRadExt = RadSiteExt::ExtMap.Find(Rad);
 	double tintFactor = pRadExt->Type->TintFactor;
 
 	__asm fmul tintFactor;
+
 	return R->Origin() + 6;
 }
 
@@ -242,6 +253,7 @@ DEFINE_HOOK(65B843, RadSiteClass_Update_LevelDelay, 6)
 	auto delay = pRadExt->Type->LevelDelay;
 
 	R->ECX(delay);
+
 	return 0x65B849;
 }
 
@@ -253,6 +265,7 @@ DEFINE_HOOK(65B8B9, RadSiteClass_Update_LightDelay, 6)
 	auto delay = pRadExt->Type->LightDelay;
 
 	R->ECX(delay);
+
 	return 0x65B8BF;
 }
 
@@ -262,10 +275,12 @@ DEFINE_HOOK(65BB67, RadSite_Deactivate, 6)
 	GET(const RadSiteClass*, Rad, ECX);
 
 	auto pRadExt = RadSiteExt::ExtMap.Find(Rad);
-
 	auto delay = pRadExt->Type->LevelDelay;
+
 	R->ESI(delay);
+
 	__asm xor edx, edx; // fixing integer overflow crash
 	__asm idiv esi;
+
 	return 0x65BB6D;
 }

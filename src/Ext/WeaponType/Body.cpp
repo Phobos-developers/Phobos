@@ -24,12 +24,15 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	// RadType
 	if (this->OwnerObject()->RadLevel > 0)
 		this->RadType.Read(pINI, pSection, "RadType");
+		this->Rad_NoOwner.Read(exINI, pSection, "Rad.NoOwner");
 }
+
 void WeaponTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	this->DiskLaser_Circumference.Load(Stm);
 
 	if (this->OwnerObject()->RadLevel > 0)
 		this->RadType.Load(Stm);
+	this->Rad_NoOwner.Load(Stm);
 }
 
 void WeaponTypeExt::ExtData::SaveToStream(IStream* Stm)  {
@@ -37,6 +40,7 @@ void WeaponTypeExt::ExtData::SaveToStream(IStream* Stm)  {
 
 	if (this->OwnerObject()->RadLevel > 0)
 		this->RadType.Save(Stm);
+	this->Rad_NoOwner.Save(Stm);
 }
 
 // =============================
