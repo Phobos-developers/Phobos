@@ -21,6 +21,11 @@ public:
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
 
+		// Ares tags
+		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
+		Valueable<bool> AffectsEnemies;
+		Valueable<bool> AffectsOwner;
+
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject),
 			SpySat(false),
 			BigGap(false),
@@ -28,9 +33,12 @@ public:
 			SplashList(),
 			SplashList_PickRandom(false),
 			RemoveDisguise(false),
-			RemoveMindControl(false)
-		{ }
+			RemoveMindControl(false),
 
+			AffectsEnemies(true),
+			AffectsOwner(OwnerObject->AffectsAllies)
+		{ }
+		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
 		void Detonate(HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;

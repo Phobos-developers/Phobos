@@ -25,6 +25,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->SplashList_PickRandom.Read(exINI, pSection, "SplashList.PickRandom");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
+
+	// Ares tags
+	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
+	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
+	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
 }
 
 void WarheadTypeExt::ExtData::LoadFromStream(IStream* Stm) {
@@ -35,6 +40,9 @@ void WarheadTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	this->SplashList_PickRandom.Load(Stm);
 	this->RemoveDisguise.Load(Stm);
 	this->RemoveMindControl.Load(Stm);
+
+	this->AffectsEnemies.Load(Stm);
+	this->AffectsOwner.Load(Stm);
 }
 
 void WarheadTypeExt::ExtData::SaveToStream(IStream* Stm) const {
@@ -45,6 +53,9 @@ void WarheadTypeExt::ExtData::SaveToStream(IStream* Stm) const {
 	this->SplashList_PickRandom.Save(Stm);
 	this->RemoveDisguise.Save(Stm);
 	this->RemoveMindControl.Save(Stm);
+
+	this->AffectsEnemies.Save(Stm);
+	this->AffectsOwner.Save(Stm);
 }
 
 // =============================
