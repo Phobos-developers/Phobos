@@ -7,62 +7,7 @@
 
 #include "../../Utilities/Helpers.Alex.h"
 
-void applyRemoveMindControl(WarheadTypeExt::ExtData* pWHExt, HouseClass* pHouse, TechnoClass* pTechno) {
-	if (auto pController = pTechno->MindControlledBy) {
-		if (pWHExt->CanTargetHouse(pHouse, pTechno)) {
-			pTechno->MindControlledBy->CaptureManager->FreeUnit(pTechno);
-			if (!pTechno->IsHumanControlled) {
-				pTechno->QueueMission(Mission::Hunt, false);
-			}
-		}
-	}
-};
-
-void applyRemoveDisguiseToInf(WarheadTypeExt::ExtData* pWHExt, HouseClass* pHouse, TechnoClass* pTechno) {
-	if (pTechno->WhatAmI() == AbstractType::Infantry) {
-		auto pInf = abstract_cast<InfantryClass*>(pTechno);
-		if (pInf->IsDisguised()) {
-			if (pWHExt->CanTargetHouse(pHouse, pInf)) {
-				pInf->ClearDisguise();
-			}
-		}
-	}
-};
-
-void DetonateOnOneUnit(WarheadTypeExt::ExtData* pWHExt, HouseClass* pHouse, TechnoClass* pTarget) {
-	if (pWHExt->RemoveDisguise) {
-		applyRemoveDisguiseToInf(pWHExt, pHouse, pTarget);
-	}
-
-	if (pWHExt->RemoveMindControl) {
-		applyRemoveMindControl(pWHExt, pHouse, pTarget);
-	}
-	
-}
-
-bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno)
-{
-	if (pHouse && pTechno) {
-		if (this->AffectsOwner && pTechno->Owner == pHouse) {
-			return true;
-		}
-
-		bool isAllies = pHouse->IsAlliedWith(pTechno);
-
-		if (this->OwnerObject()->AffectsAllies && isAllies) {
-			return true;
-		}
-
-		if (this->AffectsEnemies && !isAllies) {
-			return true;
-		}
-
-		return false;
-	}
-	return true;
-}
-
-void WarheadTypeExt::ExtData::Detonate(HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
+void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
 {
 	if (pHouse) {
 		if (this->BigGap) {
@@ -96,12 +41,51 @@ void WarheadTypeExt::ExtData::Detonate(HouseClass* pHouse, BulletClass* pBullet,
 	if (cellSpread && isCellSpreadWarhead) {
 		auto items = Helpers::Alex::getCellSpreadItems(coords, cellSpread, true);
 		for (auto pTarget : items) {
-			DetonateOnOneUnit(this, pHouse, pTarget);
+			this->DetonateOnOneUnit(pHouse, pTarget);
 		}
 	}
-	else if (isCellSpreadWarhead && pBullet) {
-		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target)){
-			DetonateOnOneUnit(this, pHouse, pTarget);
+	else if (pBullet && isCellSpreadWarhead) {
+		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target)) {
+			this->DetonateOnOneUnit(pHouse, pTarget);
+		}
+	}
+}
+
+void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
+{
+	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health) {
+		return;
+	}
+
+	if (!this->CanTargetHouse(pHouse, pTarget)) {
+		return;
+	}
+
+	if (this->RemoveDisguise) {
+		this->ApplyRemoveDisguiseToInf(pHouse, pTarget);
+	}
+
+	if (this->RemoveMindControl) {
+		this->ApplyRemoveMindControl(pHouse, pTarget);
+	}
+}
+
+void WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget)
+{
+	if (auto pController = pTarget->MindControlledBy) {
+		pTarget->MindControlledBy->CaptureManager->FreeUnit(pTarget);
+		if (!pTarget->IsHumanControlled) {
+			pTarget->QueueMission(Mission::Hunt, false);
+		}
+	}
+}
+
+void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget)
+{
+	if (pTarget->WhatAmI() == AbstractType::Infantry) {
+		auto pInf = abstract_cast<InfantryClass*>(pTarget);
+		if (pInf->IsDisguised()) {
+			pInf->ClearDisguise();
 		}
 	}
 }

@@ -1,9 +1,31 @@
 #include "Body.h"
 
-#include <AnimTypeClass.h>
+#include <HouseClass.h>
 
 template<> const DWORD Extension<WarheadTypeClass>::Canary = 0x22222222;
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
+
+bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pTarget)
+{
+	if (pHouse && pTarget) {
+		if (this->AffectsOwner && pTarget->Owner == pHouse) {
+			return true;
+		}
+
+		bool isAllies = pHouse->IsAlliedWith(pTarget);
+
+		if (this->OwnerObject()->AffectsAllies && isAllies) {
+			return true;
+		}
+
+		if (this->AffectsEnemies && !isAllies) {
+			return true;
+		}
+
+		return false;
+	}
+	return true;
+}
 
 // =============================
 // load / save

@@ -11,13 +11,14 @@ bool DetonationInDamageArea = true;
 DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 {
 	GET(BulletClass * const, pThis, ESI);
-	GET_BASE(const CoordStruct * const, pCoords, 0x8);
+	GET_BASE(const CoordStruct*, pCoords, 0x8);
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
-	auto const pHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
+	auto const pOwner = pThis->Owner ? pThis->Owner : nullptr;
+	auto const pHouse = pOwner ? pOwner->Owner : nullptr;
+	
+	pWHExt->Detonate(pOwner, pHouse, pThis, *pCoords);
 
-	pWHExt->Detonate(pHouse, pThis, *pCoords);
 	DetonationInDamageArea = false;
-
 	return 0;
 }
 
@@ -25,15 +26,15 @@ DEFINE_HOOK(489286, MapClass_DamageArea, 6)
 {
 	if (DetonationInDamageArea){
 		// GET(const int, Damage, EDX);
-		// GET_BASE(const TechnoClass*, SourceObject, 0x08);
 		// GET_BASE(const bool, AffectsTiberium, 0x10);
 
 		GET(const CoordStruct*, pCoords, ECX);
-		GET_BASE(HouseClass*, pHouse, 0x14);
+		GET_BASE(TechnoClass*, pOwner, 0x08);
 		GET_BASE(const WarheadTypeClass*, pWH, 0x0C);
+		GET_BASE(HouseClass*, pHouse, 0x14);
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
-		pWHExt->Detonate(pHouse, nullptr, *pCoords);
+		pWHExt->Detonate(pOwner, pHouse, nullptr, *pCoords);
 	}
 	DetonationInDamageArea = true;
 	return 0;
