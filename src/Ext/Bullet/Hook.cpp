@@ -13,16 +13,14 @@ DEFINE_HOOK(4666F7, BulletClass_Update, 6)
 	auto pExt = BulletExt::ExtMap.Find(pThis);
 	if (pExt->ShouldIntercept)
 	{
-		auto& pTechno = pThis->Owner;
-		auto damage = pTechno->Health * 2;
-		bool bShouldKillTechno = pThis->WeaponType->LimboLaunch;
-
-		pThis->SetTarget(nullptr);
 		pThis->Detonate(pThis->GetCoords());
 		pThis->Remove();
 		pThis->UnInit();
 
-		if (bShouldKillTechno) {
+		const auto pTechno = pThis->Owner;
+		if (pTechno && pThis->WeaponType->LimboLaunch) {
+			pThis->SetTarget(nullptr);
+			auto damage = pTechno->Health * 2;
 			pTechno->SetLocation(pThis->GetCoords());
 			pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 		}
