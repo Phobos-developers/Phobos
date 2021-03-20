@@ -21,6 +21,7 @@
     <ClCompile Include="src\Ext\RadSite\Hooks.cpp" />
     <ClCompile Include="src\Ext\Script\Body.cpp" />
     <ClCompile Include="src\Ext\Script\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Rules\Body.cpp" />
     <ClCompile Include="src\Ext\SWType\Body.cpp" />
     <ClCompile Include="src\Ext\Side\Body.cpp" />
     <ClCompile Include="src\Ext\Side\Hooks.cpp" />
@@ -66,6 +67,7 @@
     <ClInclude Include="src\Ext\Bullet\Body.h" />
     <ClInclude Include="src\Ext\RadSite\Body.h" />
     <ClInclude Include="src\Ext\Script\Body.h" />
+    <ClInclude Include="src\Ext\Rules\Body.h" />
     <ClInclude Include="src\Ext\SWType\Body.h" />
     <ClInclude Include="src\Ext\Side\Body.h" />
     <ClInclude Include="src\Ext\TechnoType\Body.h" />
