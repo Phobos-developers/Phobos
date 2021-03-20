@@ -1,6 +1,5 @@
 #include "Body.h"
 
-#include <WarheadTypeClass.h>
 #include <AnimTypeClass.h>
 
 template<> const DWORD Extension<WarheadTypeClass>::Canary = 0x22222222;
@@ -25,11 +24,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->SplashList.Read(exINI, pSection, "SplashList");
 	this->SplashList_PickRandom.Read(exINI, pSection, "SplashList.PickRandom");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
-	this->RemoveDisguise_AffectAllies.Read(exINI, pSection, "RemoveDisguise.AffectAllies");
-	this->RemoveDisguise_ApplyCellSpread.Read(exINI, pSection, "RemoveDisguise.ApplyCellSpread");
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
-	this->RemoveMindControl_AffectAllies.Read(exINI, pSection, "RemoveMindControl.AffectAllies");
-	this->RemoveMindControl_ApplyCellSpread.Read(exINI, pSection, "RemoveMindControl.ApplyCellSpread");
 }
 
 void WarheadTypeExt::ExtData::LoadFromStream(IStream* Stm) {
@@ -39,11 +34,7 @@ void WarheadTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	this->SplashList.Load(Stm);
 	this->SplashList_PickRandom.Load(Stm);
 	this->RemoveDisguise.Load(Stm);
-	this->RemoveDisguise_AffectAllies.Load(Stm);
-	this->RemoveDisguise_ApplyCellSpread.Load(Stm);
 	this->RemoveMindControl.Load(Stm);
-	this->RemoveMindControl_AffectAllies.Load(Stm);
-	this->RemoveMindControl_ApplyCellSpread.Load(Stm);
 }
 
 void WarheadTypeExt::ExtData::SaveToStream(IStream* Stm) const {
@@ -53,11 +44,7 @@ void WarheadTypeExt::ExtData::SaveToStream(IStream* Stm) const {
 	this->SplashList.Save(Stm);
 	this->SplashList_PickRandom.Save(Stm);
 	this->RemoveDisguise.Save(Stm);
-	this->RemoveDisguise_AffectAllies.Save(Stm);
-	this->RemoveDisguise_ApplyCellSpread.Save(Stm);
 	this->RemoveMindControl.Save(Stm);
-	this->RemoveMindControl_AffectAllies.Save(Stm);
-	this->RemoveMindControl_ApplyCellSpread.Save(Stm);
 }
 
 // =============================
