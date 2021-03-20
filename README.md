@@ -51,11 +51,11 @@ Credits
 - ZΞPHYɌUS - win/lose themes code
 - ayylmao, SMxReaver, 4SG, FS-21 - help with docs
 - wiktorderelf, Metadorius (Kerbiter) - overhauled Unicode font
-- Thrifinesma (Uranusian) - mind control range limit and custom warhead splash list implementation
+- Thrifinesma (Uranusian) - Mind Control range limit and custom warhead splash list implementation
 - SEC-SOME (secsome) - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, mind control removal warhead, general help
 - Otamaa (BoredEXE) - help with CellSpread, ported and fixed custom RadType code
 - E1 Elite - TileSet 255 and above bridge repair fix
-- FS-21 - improvements to debug info code, Powered.KillSpawns, spawns range
+- FS-21 - improvements to debug info code, Powered.KillSpawns, Spawner.LimitRange
 - AutoGavy - interceptor logic
 
 Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](https://github.com/Phobos-developers/Phobos/logo-mono.png)) in your client/launcher, contributing or donating to us via links on the right and the `Sponsor` button on top of the repo.
