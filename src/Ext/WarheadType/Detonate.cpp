@@ -31,14 +31,18 @@ void WarheadTypeExt::ExtData::Detonate(HouseClass* pHouse, BulletClass* pBullet,
 			pHouse->TransactMoney(this->TransactMoney);
 		}
 
-
 		std::vector<TechnoClass*> cellSpreadItems;
-		auto cellSpread = this->OwnerObject()->CellSpread;
-		if (cellSpread && (             // List all Warheads here that respect CellSpread
-			this->RemoveDisguise ||
-			this->RemoveMindControl )
-			) {
-			cellSpreadItems = Helpers::Alex::getCellSpreadItems(coords, cellSpread, true);
+		const float cellSpread = this->OwnerObject()->CellSpread;
+		if (cellSpread) {
+
+			// List all Warheads here that respect CellSpread
+			const bool isCellSpreadWarhead =
+				this->RemoveDisguise ||
+				this->RemoveMindControl;
+
+			if (isCellSpreadWarhead) {
+				cellSpreadItems = Helpers::Alex::getCellSpreadItems(coords, cellSpread, true);
+			}
 		}
 
 		if (this->RemoveDisguise) {
@@ -53,7 +57,6 @@ void WarheadTypeExt::ExtData::Detonate(HouseClass* pHouse, BulletClass* pBullet,
 				}
 			};
 
-			
 			if (cellSpread) {
 				for (auto member : cellSpreadItems) {
 					applyRemoveDisguiseToInf(member);

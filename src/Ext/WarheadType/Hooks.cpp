@@ -2,7 +2,8 @@
 
 #include <BulletClass.h>
 #include <ScenarioClass.h>
-#include <MapClass.h>
+
+#pragma region DETONATION
 
 bool DetonationInDamageArea = true;
 
@@ -36,6 +37,7 @@ DEFINE_HOOK(489286, MapClass_DamageArea, 6)
 	DetonationInDamageArea = true;
 	return 0;
 }
+#pragma endregion
 
 DEFINE_HOOK(48A512, WarheadTypeClass_SplashList, 6) 
 {
