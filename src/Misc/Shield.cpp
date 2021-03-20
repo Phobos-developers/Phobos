@@ -43,19 +43,23 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
 
     int nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->GetExt()->Shield_Armor, args->DistanceToEpicenter);
 
-    if (nDamage > 0) //when attacked, restart the timer
-        this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealingDelay * 900));
+    if (nDamage > 0) {
+        this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealingDelay * 900)); //when attacked, restart the timer
 
-    auto residueDamage = nDamage - this->HP;
-    if (residueDamage >= 0)
-    {
-        this->BreakShield();
-        return this->GetExt()->Shield_AbsorbOverDamage ? 0 : residueDamage;
+        auto residueDamage = nDamage - this->HP;
+        if (residueDamage >= 0)
+        {
+            this->BreakShield();
+            return this->GetExt()->Shield_AbsorbOverDamage ? 0 : residueDamage;
+        }
+        else
+        {
+            this->HP = -residueDamage;
+            return 0;
+        }
     }
-    else
-    {
-        this->HP = -residueDamage;
-        return 0;
+    else {
+        return nDamage; //might change in future
     }
 }
 
