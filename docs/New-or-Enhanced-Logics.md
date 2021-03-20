@@ -6,8 +6,7 @@ This page describes all the engine features that are either new and introduced b
 
 ### Extended building upgrades logic
 
-![](https://media.moddb.com/cache/images/mods/1/35/34805/thumb_620x2000/powersup.owner.png)
-
+![image](docs/_static/images/powersup.owner-01.png)
 *Upgrading own and allied Power Plants in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
 
 - Building upgrades now can be placed on own buildings, on allied buildings and/or on enemy buildings. These three owners can be specified via a new tag, comma-separated. When upgrade is placed on building, it automatically changes it's owner to match the building's owner.
@@ -25,6 +24,7 @@ PowersUp.Buildings= ; list of BuildingTypes
 
 ### Mind control maximum range
 
+![image](docs/_static/images/mindcontrol-max-range-01.gif)
 ![mcrangelimittest2](https://user-images.githubusercontent.com/17500545/107950652-b27dbc80-6f9f-11eb-8cf0-f47367130a22.gif)
 
 - Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
@@ -39,7 +39,7 @@ MindControlRangeLimit=-1.0 ; double
 
 ### Generate credits on impact
 
-![image](https://media.moddb.com/cache/images/mods/1/30/29781/thumb_620x2000/hackerfinallyworks.gif)  
+![image](docs/_static/images/hackerfinallyworks-01.gif)  
 *`TransactMoney` used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
 
 - Warheads can now give credits to its owner at impact.
@@ -52,7 +52,7 @@ TransactMoney=0 ; integer - credits added or subtracted
 
 ### Reveal map for owner on impact
 
-![image](https://cdn.discordapp.com/attachments/773636942775582720/803047875944775680/revealwarhead.gif)
+![image](docs/_static/images/revealwarhead-01.gif)  
 *`SpySat=yes` on `[NUKE]` warhead reveals the map when nuclear missile detonates*
 
 - Warheads can now reveal the entire map on impact.
@@ -103,7 +103,7 @@ RemoveMindControl.ApplyCellSpread=no ; boolean
 
 ### Custom 'SplashList' on Warheads
 
-![image](https://www.riseoftheeastmod.com/web/splashlistgif.gif)
+![image](docs/_static/images/splashlist-01.gif)
 - Allows Warheads to play custom water splash animations. See vanilla's [Conventional](https://www.modenc.renegadeprojects.com/Conventional) system here.
 
 In `rulesmd.ini`:
@@ -140,7 +140,7 @@ Spawner.ExtraLimitRange=0 ; integer
 
 ### Projectile Interception Logic
 
-![image](https://user-images.githubusercontent.com/29500471/110206713-57622a00-7eba-11eb-9bdc-850dd312e2cb.gif)  
+![image](docs/_static/images/projectile-interception-01.gif)
 *Interception logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberium-crisis) mod*
 
 - Projectiles can now be made targetable by certain TechnoTypes. Interceptor TechnoType's projectile must be `Inviso=yes` in order for it to work and the projectile must be used in a primary Weapon. 

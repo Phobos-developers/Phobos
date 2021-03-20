@@ -22,7 +22,7 @@ IngameScore.LoseTheme= ; soundtrack theme ID
 
 ### Low priority for box selection
 
-![smartvesters](https://user-images.githubusercontent.com/17500545/107152249-8e065c80-696f-11eb-994d-93cb37a8d125.gif)  
+![smartvesters](docs/_static/images/lowpriority-01.gif)  
 *Harvesters not selected together with battle units in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
 
 - You can now set lower priority for an ingame object (currently has effect on units mostly), which means it will be excluded from box selection if there's at least one normal priority unit in the box. Otherwise it would be selected as normal. Works with box+type selecting (type select hotkey + drag) and regular box selecting. Box shift-selection adds low-priority units to the group if there are no normal priority units among the appended ones.
@@ -43,7 +43,7 @@ PrioritySelectionFiltering=yes ; bool
 
 ### Hide health bars
 
-![](https://cdn.discordapp.com/attachments/773636942775582720/800924566808428564/healthbar.hide.png)  
+![image](docs/_static/images/healthbar.hide-01.png)
 *Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
 
 - Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
