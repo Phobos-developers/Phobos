@@ -2,6 +2,7 @@
 
 #include <BulletClass.h>
 #include <ScenarioClass.h>
+#include <HouseClass.h>
 
 #pragma region DETONATION
 
@@ -53,5 +54,22 @@ DEFINE_HOOK(48A512, WarheadTypeClass_SplashList, 6)
 		R->EAX<AnimTypeClass*>(pWHExt->SplashList[idx]);
 		return 0x48A5AD;
 	}
+	return 0;
+}
+
+DEFINE_HOOK(6FC32D, TechnoClass_CanFire_InsufficientFunds, 6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(WeaponTypeClass*, pWeapon, EDI);
+	auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+	if (auto nMoney = pWHExt->TransactMoney)
+	{
+		if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
+		{
+			//VoxClass::Play("EVA_InsufficientFunds");
+			return 0x6FCB7E;
+		}
+	}
+
 	return 0;
 }
