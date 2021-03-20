@@ -18,8 +18,10 @@ public:
 	public:
 		WeaponTypeClass* Weapon;
 		RadType* Type;
+		HouseClass* RadHouse;
 
-		ExtData(RadSiteClass* OwnerObject) : Extension<RadSiteClass>(OwnerObject)
+		ExtData(RadSiteClass* OwnerObject) : Extension<RadSiteClass>(OwnerObject),
+			RadHouse(nullptr)
 		{ };
 
 		virtual ~ExtData() { }
@@ -31,14 +33,14 @@ public:
 		virtual void LoadFromStream(IStream* Stm);
 		virtual void SaveToStream(IStream* Stm);
 
+		virtual void Add(int amount);
+		virtual void SetRadLevel(int amount);
+		virtual double GetRadLevelAt(CellStruct const& cell);
 	};
 
 	static DynamicVectorClass<RadSiteExt::ExtData*> RadSiteInstance;
 
-	static void CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData *pWeaponExt);
-	static void RadSiteAdd(RadSiteClass* pRad, int lvmax, int amount);
-	static void SetRadLevel(RadSiteClass* pRad, RadType* Type, int amount);
-	static double GetRadLevelAt(RadSiteClass* pThis, CellStruct const& cell);
+	static void CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData *pWeaponExt, HouseClass* const pOwner);
 
 	class ExtContainer final : public Container<RadSiteExt> {
 	public:
