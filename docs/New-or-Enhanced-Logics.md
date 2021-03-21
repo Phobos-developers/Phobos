@@ -27,7 +27,7 @@ PowersUp.Buildings= ; list of BuildingTypes
 ![image](_static/images/mindcontrol-max-range-01.gif)  
 - Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
 
-In rulesmd.ini:
+In `rulesmd.ini`
 ```ini
 [SOMETECHNO]               ; TechnoType
 MindControlRangeLimit=-1.0 ; double
@@ -46,6 +46,38 @@ In `rulesmd.ini`:
 [SOMETECHNO]              ; TechnoType
 Spawner.LimitRange=no     ; boolean
 Spawner.ExtraLimitRange=0 ; integer
+```
+
+## Weapons
+
+### Custom Radiation Types and Radiation Enhancement
+
+![image](_static/images/radtype-01.png)  
+*Three primary color radations are mixing.*
+
+- Allows to design radiation for any weapon now.
+- Radiation now has owner, so any rad-kills will be recorded as score.
+  - Currently the rad maker couldn't gain experience from kills, this may change in future. But `AffectsAllies`, `AffectsOwner` and `AffectsEnemies` can be respected.
+- More details in [here](https://www.modenc.renegadeprojects.com/Radiation).
+
+In `rulesmd.ini`
+```ini
+[SOMEWEAPON]					; WeaponType
+RadLevel=0						; integer, vanilla tag to activate this feature
+RadType=Radiation 				; RadType - see below
+
+[SOMERADTYPE]                 	; RadType
+RadDurationMultiple=1           ; int
+RadApplicationDelay=16          ; int
+RadApplicationDelay.Building=0  ; int
+RadLevelMax=500                 ; int
+RadLevelDelay=90                ; int
+RadLightDelay=90                ; int
+RadLevelFactor=0.2              ; double
+RadLightFactor=0.1              ; double
+RadTintFactor=1.0               ; double
+RadColor=0,255,0                ; RGB
+RadSiteWarhead=RadSite          ; WarheadType
 ```
 
 ## Warheads
