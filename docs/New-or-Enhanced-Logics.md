@@ -92,6 +92,9 @@ Rad.NoOwner=no  ; boolean
 ```
 
 ## Warheads
+:::{hint}
+All new warheads can be used with CellSpread and Ares' GenericWarhead superweapon.
+:::
 
 ### Generate credits on impact
 
@@ -134,7 +137,6 @@ BigGap=no     ; boolean
 ### Remove disguise on impact
 
 - Warheads can now remove disguise of spies.
-- Can be used with `CellSpread` and Ares' `GenericWarhead` superweapon.
 
 In `rulesmd.ini`:
 ```ini
@@ -145,7 +147,6 @@ RemoveDisguise=no                  ; boolean
 ### Break Mind Control on impact
 
 - Warheads can now break mind control (doesn't apply to perma-MC-ed objects).
-- Can be used with `CellSpread` and Ares' `GenericWarhead` superweapon.
 
 In `rulesmd.ini`:
 ```ini
