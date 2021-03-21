@@ -1,74 +1,47 @@
 #include "RadTypes.h"
 
-#include "../Utilities/TemplateDef.h"
-
-#include <WarheadTypeClass.h>
-
 Enumerable<RadType>::container_t Enumerable<RadType>::Array;
 
-// pretty nice, eh
 const char* Enumerable<RadType>::GetMainSection()
 {
 	return "RadiationTypes";
 }
 
-RadType::RadType(const char* const pTitle)
-	: Enumerable<RadType>(pTitle),
-	WH(),
-	Color(),
-	Duration_Multiple(),
-	Application_Delay(),
-	BuildingApplication_Delay(),
-	Level_Max(),
-	Level_Delay(),
-	Light_Delay(),
-	Level_Factor(),
-	Light_Factor(),
-	Tint_Factor()
-{ }
-
-RadType::~RadType() = default;
-
-void RadType::LoadFromINI(CCINIClass * pINI)
-{
-	const char* section = this->Name;
-
+void RadType::Read(CCINIClass* const pINI, const char* pSection, const char* pKey) {
 	INI_EX exINI(pINI);
 
-	this->WH.Read(exINI, section, "Warhead");
-	this->Color.Read(exINI, section, "Color");
-	this->Duration_Multiple.Read(exINI, section, "DurationMultiple");
-	this->Application_Delay.Read(exINI, section, "ApplicationDelay");
-	this->BuildingApplication_Delay.Read(exINI, section, "BuildingApplicationDelay");
-	this->Level_Max.Read(exINI, section, "LevelMax");
-	this->Level_Delay.Read(exINI, section, "LevelDelay");
-	this->Light_Delay.Read(exINI, section, "LightDelay");
-	this->Level_Factor.Read(exINI, section, "LevelFactor");
-	this->Light_Factor.Read(exINI, section, "LightFactor");
-	this->Tint_Factor.Read(exINI, section, "TintFactor");
-}
+	this->ID.Read(pINI, pSection, "RadType");
+	const char* section = this->ID;
 
-void RadType::Read(CCINIClass* pINI, const char* pSection, const char* pKey)
-{
-	this->Name.Read(pINI, pSection, pKey, this->Name);
-	
-	this->LoadFromINI(pINI);
+	if (pINI->GetSection(section)) {
+		this->DurationMultiple.Read(exINI, section, "RadDurationMultiple");
+		this->ApplicationDelay.Read(exINI, section, "RadApplicationDelay");
+		this->BuildingApplicationDelay.Read(exINI, section, "RadApplicationDelay.Building");
+		this->LevelMax.Read(exINI, section, "RadLevelMax");
+		this->LevelDelay.Read(exINI, section, "RadLevelDelay");
+		this->LightDelay.Read(exINI, section, "RadLightDelay");
+		this->LevelFactor.Read(exINI, section, "RadLevelFactor");
+		this->LightFactor.Read(exINI, section, "RadLightFactor");
+		this->TintFactor.Read(exINI, section, "RadTintFactor");
+		this->RadWarhead.Read(exINI, section, "RadSiteWarhead");
+		this->RadSiteColor.Read(exINI, section, "RadColor");
+	}
 }
 
 template <typename T>
 void RadType::Serialize(T& Stm) {
 	Stm
-		.Process(this->WH)
-		.Process(this->Color)
-		.Process(this->Duration_Multiple)
-		.Process(this->Application_Delay)
-		.Process(this->BuildingApplication_Delay)
-		.Process(this->Level_Max)
-		.Process(this->Level_Delay)
-		.Process(this->Light_Delay)
-		.Process(this->Level_Factor)
-		.Process(this->Light_Factor)
-		.Process(this->Tint_Factor)
+		.Process(this->DurationMultiple)
+		.Process(this->ApplicationDelay)
+		.Process(this->LevelMax)
+		.Process(this->LevelDelay)
+		.Process(this->LightDelay)
+		.Process(this->BuildingApplicationDelay)
+		.Process(this->LevelFactor)
+		.Process(this->LightFactor)
+		.Process(this->TintFactor)
+		.Process(this->RadSiteColor)
+		.Process(this->RadWarhead)
 		;
 };
 

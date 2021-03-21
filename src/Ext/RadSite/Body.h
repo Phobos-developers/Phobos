@@ -43,7 +43,7 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	static DynamicVectorClass<RadSiteExt::ExtData*> Instances;
+	static DynamicVectorClass<RadSiteExt::ExtData*> RadSiteInstance;
 
 	static void CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData *pWeaponExt, HouseClass* const pOwner);
 

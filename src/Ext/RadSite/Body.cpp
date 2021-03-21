@@ -5,9 +5,9 @@
 template<> const DWORD Extension<RadSiteClass>::Canary = 0x87654321;
 RadSiteExt::ExtContainer RadSiteExt::ExtMap;
 
-DynamicVectorClass<RadSiteExt::ExtData*> RadSiteExt::Instances;
+DynamicVectorClass<RadSiteExt::ExtData*> RadSiteExt::RadSiteInstance;
 
-void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass * const pOwner) {
+void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner) {
 	// use real ctor
 	auto const pRadSite = GameCreate<RadSiteClass>();
 
@@ -28,7 +28,9 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 
 	pRadSite->Activate();
 
-	Instances.AddUnique(pRadExt);
+	if (RadSiteInstance.FindItemIndex(pRadExt) == -1) {
+		RadSiteInstance.AddItem(pRadExt);
+	}
 }
 
 /*  Including them as EXT so it keep tracked at save/load */
@@ -55,7 +57,7 @@ void RadSiteExt::ExtData::SetRadLevel(int amount) {
 // helper function provided by AlexB
 double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell) {
 	auto pThis = this->OwnerObject();
-	const Vector3D<int> base   = MapClass::Instance->GetCellAt(pThis->BaseCell)->GetCoords();
+	const Vector3D<int> base = MapClass::Instance->GetCellAt(pThis->BaseCell)->GetCoords();
 	const Vector3D<int> coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
 
 	const auto max = static_cast<double>(pThis->SpreadInLeptons);
@@ -71,6 +73,7 @@ template <typename T>
 void RadSiteExt::ExtData::Serialize(T& Stm) {
 	Stm
 		.Process(this->Weapon)
+		.Process(this->RadHouse)
 		.Process(this->Type)
 		;
 }
@@ -97,21 +100,23 @@ RadSiteExt::ExtContainer::~ExtContainer() = default;
 
 DEFINE_HOOK(65B28D, RadSiteClass_CTOR, 6)
 {
-	GET(RadSiteClass*, pItem, ESI);
-	auto pExt = RadSiteExt::ExtMap.FindOrAllocate(pItem);
+	GET(RadSiteClass*, pThis, ESI);
+	auto pRadSiteExt = RadSiteExt::ExtMap.FindOrAllocate(pThis);
 
-	RadSiteExt::Instances.AddUnique(pExt);
+	if (RadSiteExt::RadSiteInstance.FindItemIndex(pRadSiteExt) == -1) {
+		RadSiteExt::RadSiteInstance.AddItem(pRadSiteExt);
+	}
 
 	return 0;
 }
 
 DEFINE_HOOK(65B2F4, RadSiteClass_DTOR, 5)
 {
-	GET(RadSiteClass*, pItem, ECX);
-	auto pExt = RadSiteExt::ExtMap.Find(pItem);
+	GET(RadSiteClass*, pThis, ECX);
+	auto pRadExt = RadSiteExt::ExtMap.Find(pThis);
 
-	RadSiteExt::ExtMap.Remove(pItem);
-	RadSiteExt::Instances.Remove(pExt);
+	RadSiteExt::ExtMap.Remove(pThis);
+	RadSiteExt::RadSiteInstance.Remove(pRadExt);
 
 	return 0;
 }

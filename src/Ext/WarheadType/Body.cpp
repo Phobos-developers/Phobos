@@ -63,11 +63,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->SplashList)
 		.Process(this->SplashList_PickRandom)
 		.Process(this->RemoveDisguise)
-		.Process(this->RemoveDisguise_AffectAllies)
-		.Process(this->RemoveDisguise_ApplyCellSpread)
 		.Process(this->RemoveMindControl)
-		.Process(this->RemoveMindControl_AffectAllies)
-		.Process(this->RemoveMindControl_ApplyCellSpread)
 		;
 }
 
