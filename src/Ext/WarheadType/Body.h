@@ -21,12 +21,16 @@ public:
 		Valueable<bool> SplashList_PickRandom;
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
+		Valueable<int> Experience_GivenFlat;
+		Valueable<double> Experience_GivenPercent;
+		Valueable<bool> Experience_Transfer;
+		Valueable<bool> Experience_FirerGetsExp;
+		Valueable<bool> Experience_CalculatePercentFromFirer;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
-		Valueable<bool> AffectsOwner;
-		
+		Valueable<bool> AffectsOwner;		
 
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject),
 			SpySat(false),
@@ -36,6 +40,11 @@ public:
 			SplashList_PickRandom(false),
 			RemoveDisguise(false),
 			RemoveMindControl(false),
+			Experience_GivenFlat(0),
+			Experience_GivenPercent(0.0),
+			Experience_Transfer(false),
+			Experience_FirerGetsExp(false),
+			Experience_CalculatePercentFromFirer(false),
 
 			AffectsEnemies(true),
 			AffectsOwner(OwnerObject->AffectsAllies)
@@ -45,6 +54,7 @@ public:
 
 		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyModifyExperience(TechnoClass* pTarget, TechnoClass* pOwner);
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
