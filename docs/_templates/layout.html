@@ -1,0 +1,28 @@
+{% extends "!layout.html" %}
+{% block footer %} {{ super() }}
+
+<style>
+    .wy-body-for-nav {
+        background: #1a1a1a;
+        max-width: 1400px;
+        margin: auto;
+    }
+
+    .wy-grid-for-nav {position: unset;}
+
+    .wy-nav-content {max-width: none;}
+
+    .wy-nav-side {left: auto;}
+
+    .rst-versions {left: auto;}
+
+    @media screen and(max-width:768px) {
+        .wy-body-for-nav {background: #1a1a1a;}
+    }
+
+    @media screen and(min-width:1100px) {
+        .wy-nav-content-wrap {background: none;}
+    }
+</style>
+
+{% endblock %}
