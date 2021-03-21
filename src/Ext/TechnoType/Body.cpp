@@ -21,16 +21,15 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 
 void TechnoTypeExt::ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor)
 {
-	auto ext = TechnoTypeExt::ExtMap.Find(pType);
-
-	ext->ApplyTurretOffset(mtx, factor);
+	if (auto ext = TechnoTypeExt::ExtMap.Find(pType))
+		ext->ApplyTurretOffset(mtx, factor);
 }
 
 void TechnoTypeExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
 {
 	if (auto Capturer = pThis->MindControlledBy) {
 		auto pCapturerExt = TechnoTypeExt::ExtMap.Find(Capturer->GetTechnoType());
-		if (pCapturerExt->MindControlRangeLimit > 0 && pThis->DistanceFrom(Capturer) > pCapturerExt->MindControlRangeLimit * 256.0) {
+		if (pCapturerExt && pCapturerExt->MindControlRangeLimit > 0 && pThis->DistanceFrom(Capturer) > pCapturerExt->MindControlRangeLimit * 256.0) {
 			Capturer->CaptureManager->FreeUnit(pThis);
 			if (!pThis->IsHumanControlled) {
 				pThis->QueueMission(Mission::Hunt, 0);
@@ -41,7 +40,7 @@ void TechnoTypeExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
 void TechnoTypeExt::ApplyBuildingDeployerTargeting(TechnoClass* pThis)
 {
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pThis->WhatAmI() == AbstractType::Building) {
+	if (pTypeData && pThis->WhatAmI() == AbstractType::Building) {
 		// Prevent target loss when vehicles are deployed into buildings.
 		if (pTypeData->Deployed_RememberTarget)
 		{
@@ -68,7 +67,7 @@ void TechnoTypeExt::ApplyInterceptor(TechnoClass* pThis)
 {
 	auto pData = TechnoExt::ExtMap.Find(pThis);
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pTypeData->Interceptor && !pThis->Target &&
+	if (pData && pTypeData && pTypeData->Interceptor && !pThis->Target &&
 		!(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
 	{
 		for (auto const& pBullet : *BulletClass::Array) {
@@ -100,7 +99,7 @@ void TechnoTypeExt::ApplyInterceptor(TechnoClass* pThis)
 void TechnoTypeExt::ApplyPowered_KillSpawns(TechnoClass* pThis)
 {
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pThis->WhatAmI() == AbstractType::Building) {
+	if (pTypeData && pThis->WhatAmI() == AbstractType::Building) {
 		auto pBuilding = abstract_cast<BuildingClass*>(pThis);
 
 		if (pTypeData->Powered_KillSpawns && pBuilding->Type->Powered && !pBuilding->IsPowerOnline()) {
@@ -123,7 +122,7 @@ void TechnoTypeExt::ApplyPowered_KillSpawns(TechnoClass* pThis)
 void TechnoTypeExt::ApplySpawn_LimitRange(TechnoClass* pThis)
 {
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pTypeData->Spawn_LimitedRange) {
+	if (pTypeData && pTypeData->Spawn_LimitedRange) {
 		if (auto pManager = pThis->SpawnManager) {
 			auto pTechnoType = pThis->GetTechnoType();
 			int weaponRange = 0;
