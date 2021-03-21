@@ -8,6 +8,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Currently doesn't work with superweapons attached to the deployed building or similiar logics.
 - SHP debris shadows now respect the `Shadow` tag.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
+- `TurretOffset` tag for voxel turreted technos now accepts FLH (forward, lateral, height) values like `TurretOffset=F,L` or `TurretOffset=F,L,H`, which means turret location can be adjusted in all three axes.
 
 ## Vehicles
 
@@ -34,4 +35,15 @@ In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]              ; TechnoType
 Deployed.RememberTarget=no ; boolean
+```
+
+### Kill spawns on low power
+
+- `Powered=yes` structures that spawns aircraft like Aircrafts Carriers will stop targeting the enemy if low power.
+- Spawned aircrafts self-destruct if they are flying.
+
+In `rulesmd.ini`:
+```ini
+[SOMESTRUCTURE]       ; BuildingType
+Powered.KillSpawns=no ; boolean
 ```

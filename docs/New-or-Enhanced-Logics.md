@@ -33,6 +33,21 @@ In rulesmd.ini:
 MindControlRangeLimit=-1.0 ; double
 ```
 
+### Spawn range limit
+
+![image](_static/images/spawnrange-01.gif)  
+*Limited pursue range for spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+
+- The spawned units will abort the infinite pursuit if the enemy is out of range.
+`Spawner.ExtraLimitRange` adds extra pursuit range to the spawned units.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]              ; TechnoType
+Spawner.LimitRange=no     ; boolean
+Spawner.ExtraLimitRange=0 ; integer
+```
+
 ## Warheads
 
 ### Generate credits on impact
@@ -76,7 +91,7 @@ BigGap=no     ; boolean
 ### Remove disguise on impact
 
 - Warheads can now remove disguise of spies.
-- Set Attributes to determine whether this logic affects allies or apply cellspread.
+- Can be used with `CellSpread` and Ares' `GenericWarhead` superweapon.
 
 In `rulesmd.ini`:
 ```ini
@@ -87,7 +102,7 @@ RemoveDisguise=no                  ; boolean
 ### Break Mind Control on impact
 
 - Warheads can now break mind control (doesn't apply to perma-MC-ed objects).
-- Set Attributes to determine whether this logic affects allies or apply cellspread.
+- Can be used with `CellSpread` and Ares' `GenericWarhead` superweapon.
 
 In `rulesmd.ini`:
 ```ini
@@ -107,32 +122,9 @@ SplashList=<none>        ; list of animations to play
 SplashList.PickRandom=no ; play a random animation from the list? boolean, defaults to no
 ```
 
-### Kill spawned aircrafts on Low Power
-
-- `Powered=yes` structures that spawns like Aircrafts Carriers will stop targeting the enemy if low power.
-- Spawned aircrafts self-destructs if they are flying.
-
-In `rulesmd.ini`:
-```ini
-[SOMESTRUCTURE]       ; BuildingType
-Powered.KillSpawns=no ; boolean
-```
-
-### Spawns Limit Range
-
-- The spawned units will abort the infinite pursuit if the enemy is out of range.
-`Spawner.ExtraLimitRange` adds extra pursuit range to the spawned units.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]              ; TechnoType
-Spawner.LimitRange=no     ; boolean
-Spawner.ExtraLimitRange=0 ; integer
-```
-
 ## Projectiles
 
-### Projectile Interception Logic
+### Projectile interception logic
 
 ![image](_static/images/projectile-interception-01.gif)  
 *Interception logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberium-crisis) mod*
@@ -150,7 +142,7 @@ Interceptor.EliteGuardRange=0.0 ; double
 Interceptable=no ; boolean
 ```
 
-## ScriptType Actions
+## ScriptType actions
 
 ### `71` Timed Area Guard
 

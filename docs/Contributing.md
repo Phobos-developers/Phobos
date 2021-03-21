@@ -20,6 +20,10 @@ When you found out how the engine works and where you need to extend the logic y
 
 To contribute a feature or some sort of a change you you would need a Git client (I recommend [GitKraken](https://www.gitkraken.com/) personally). Fork, clone the repo, preferably make a new branch, then edit/add the code or whatever you want to contribute. Commit, push, start a pull request, wait for it to get reviewed, or merged.
 
+:::{hint}
+Every pull request push trigger a nightly build for the latest pushed commit, so you can check the build status at the bottom of PR page, press `Show all checks`, go to details of a build run and get the zip containing built DLL and PDB (for your testers, f. ex.). Mind that unfortunately GitHub doesn't allow to download build artifacts for guests.
+:::
+
 Couple of notes regarding the Git practices:
 - We use git-flow like workflow (`master` for stable releases, `develop` is the main branch from which `feature/feature-name` branches are made), so when you want to improve upon something - please make a feature branch.
 - We try to balance between keeping history correct and keeping the repo structure clean. Try to do less merges and group changes into bigger commits. When merging a branch it's good to squash/amend commits in a branch first. When you're working with your local & remote branche versions - use pulls to get the changes from remote branch to local, **don't merge remote branch into local and vice versa**, this creates junk commits and makes things unsquashable.
@@ -53,8 +57,14 @@ Knowledge on how to mod YR and having an inquisitive mind, being attentive to de
 
 No explanation needed. If you fully understand how some stuff in Phobos works you can help by writing a detailed description in these docs, or you can just improve the pieces of docs you think are not detailed enough. 
 
+The docs are written in Markdown (which is dead simple, [learn MD in 60 seconds](https://commonmark.org/help/); if you need help on extended syntax have a look at [MyST parser reference](https://myst-parser.readthedocs.io/)). We use [Sphinx](https://sphinx-doc.org/) to build docs, [Read the Docs](https://readthedocs.io/) to host.
+
+:::{hint}
+You don't need to install Python, Sphinx and modules to see changes - every pull request you make is being built and served by Read the Docs automatically. Just like the nightly builds, scroll to the bottom, press `Show all checks` and see the built documentation in the details of a build run.
+:::
+
 There are two ways to edit the docs.
-- **Edit from your PC**. 
+- **Edit from your PC**. Pretty much the same like what's described [here](#contributing-changes-to-the-project); the docs are located in the `docs` folder.
 - **Edit via online editor**. Navigate to the doc piece that you want to edit, press the button on the top right - and it will take you to the file at GitHub which you would need to edit (look for the pencil icon to the top right). Press it - the fork will be created and you'll edit the docs in your version of the repo (fork). You can commit those changes (preferably to a new branch) and make them into a pull request to main repo.
 
 :::{note}

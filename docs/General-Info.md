@@ -1,6 +1,6 @@
 # General Info
 
-This page lists general info that should be known about the project
+This page lists general info that should be known about the project.
 
 ## Build types
 
