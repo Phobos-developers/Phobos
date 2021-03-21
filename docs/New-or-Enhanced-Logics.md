@@ -63,11 +63,18 @@ Promote.IncludeSpawns=no  ; boolean
 
 ### Shield for any single Techno
 
+![image](_static/images/technoshield-01.gif)
+*Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+
 - Now you can set Shield for any TechnoType.
 - Shield serves as a second Health with independent Armor and Strength
 - the Shield functions if `Shield.Strength` is set greater than 0.
 - `Shield.SelfHealing` and `Shield.Respawn` respect the following settings: 0.0 disables the feature, 1%-100% recovers/respawns the shield strength in percentage, other number recovers/respawns the shield strength directly. Specially, `Shield.SelfHealing` with a negative number deducts the shield strength.
-- `Shield.SelfHealing.Rate` and `Shield.Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other number determines the frequency of shield respawn in minutes.
+- `Shield.SelfHealing.Rate` and `Shield.Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other number determines the frequency of shield recovers/respawns in minutes.
+- A TechnoType with a Shield will show its Shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable.
+ - Buildings now uses the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame (original `pips.shp` does not have a blue hp pip).
+  - The frame selection of `pips.shp` will be customizable in the future to display the shield strength.
+ - `Pipbrd.shp` will use its 4th frame to display an infantry's shield strength and the 3th frame for other units if `pipbrd.shp` has extra 2 frames.
 
 In `rulesmd.ini`
 ```ini
