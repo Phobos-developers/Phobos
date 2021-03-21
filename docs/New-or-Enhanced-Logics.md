@@ -65,28 +65,27 @@ Promote.IncludeSpawns=no  ; boolean
 
 - Now you can set Shield for any TechnoType.
 - Shield serves as a second Health with independent Armor and Strength
+- the Shield functions if `Shield.Strength` is set greater than 0.
+- `Shield.SelfHealing` and `Shield.Respawn` respect the following settings: 0.0 disables the feature, 1%-100% recovers/respawns the shield strength in percentage, other number recovers/respawns the shield strength directly. Specially, `Shield.SelfHealing` with a negative number deducts the shield strength.
+- `Shield.SelfHealing.Rate` and `Shield.Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other number determines the frequency of shield respawn in minutes.
 
 In `rulesmd.ini`
 ```ini
 [SOMETECHNO]	            ; TechnoTypes
-Shield.Strength=0           ; integer, the Shield functions if this value is set greater than 0.
-Shield.Armor=none           ; armortype, determines which armor the shield is
-Shield.SelfHealing=0.0      ; double, determines self healing rate for the shield. 0.0 disables self healing
-                            ; 1%-100% recovers the shield strength in percentage
-                            ; other number recovers the shield strength directly
-                            ; a negative number deducts the shield strength.
-Shield.SelfHealing.Rate=0.0 ; double - minutes, determines the frequency of self healing in minutes.
-                            ; 0.0 instantly recovers the shield.
-Shield.Respawn=0.0          ; double, determines the shield strength when the shield respawns. 0.0 disables shield respawn
-                            ; 1%-100% respawns the shield at its strength in percentage
-                            ; other number respawns the shield at the given strength directly.
-Shield.Respawn.Rate=0.0     ; double - minutes,  determines the frequency of shield respawn in minutes.
-                            ; 0.0 instantly respawns the shield.
-Shield.Image.Normal=        ; animation, determines shield animation, required LoopCount=-1 for the anim.
-                            ; If you are creating a chain of animations using the Next= tag then last animation must have LoopCount=-1 set
-Shield.Image.Breaking=      ; animation, determines destroy animation of the shield. 
-                            ; This anim should exist shorter than the respawn rate (if set) to create the anim normally.
+Shield.Strength=0           ; integer
+Shield.Armor=none           ; armortype
+Shield.SelfHealing=0.0      ; double
+Shield.SelfHealing.Rate=0.0 ; double - minutes
+Shield.Respawn=0.0          ; double
+Shield.Respawn.Rate=0.0     ; double - minutes
+Shield.Image.Normal=        ; animation, required LoopCount=-1 for the anim
+Shield.Image.Breaking=      ; animation
 ```
+:::{warning}
+For `Shield.Image.Normal`, if you are creating a chain of animations using the Next= tag then last animation must have LoopCount=-1 set.
+For `Shield.Image.Breaking`, the anim should exist shorter than the respawn rate (if set) to create the anim normally.
+Otherwise the game may crash. This might be changed in the future.
+:::
 
 ## Weapons
 
