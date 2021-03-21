@@ -3,6 +3,9 @@
 #include "Ext/BuildingType/Body.h"
 #include "Ext/Bullet/Body.h"
 #include "Ext/BulletType/Body.h"
+#include "Ext/RadSite/Body.h"
+#include "Ext/Rules/Body.h"
+#include "Ext/Script/Body.h"
 #include "Ext/Side/Body.h"
 #include "Ext/SWType/Body.h"
 #include "Ext/Techno/Body.h"
@@ -182,6 +185,9 @@ auto MassActions = MassAction <
 	BuildingTypeExt,
 	BulletExt,
 	BulletTypeExt,
+	RadSiteExt,
+	RulesExt,
+	ScriptExt,
 	SideExt,
 	SWTypeExt,
 	TechnoExt,
