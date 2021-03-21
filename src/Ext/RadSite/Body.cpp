@@ -28,9 +28,7 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 
 	pRadSite->Activate();
 
-	if (RadSiteInstance.FindItemIndex(pRadExt) == -1) {
-		RadSiteInstance.AddItem(pRadExt);
-	}
+	RadSiteInstance.AddUnique(pRadExt);
 }
 
 /*  Including them as EXT so it keep tracked at save/load */
@@ -57,8 +55,8 @@ void RadSiteExt::ExtData::SetRadLevel(int amount) {
 // helper function provided by AlexB
 double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell) {
 	auto pThis = this->OwnerObject();
-	const Vector3D<int> base = MapClass::Instance->GetCellAt(pThis->BaseCell)->GetCoords();
-	const Vector3D<int> coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
+	const auto base = MapClass::Instance->GetCellAt(pThis->BaseCell)->GetCoords();
+	const auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
 
 	const auto max = static_cast<double>(pThis->SpreadInLeptons);
 	const auto dist = coords.DistanceFrom(base);
@@ -103,9 +101,7 @@ DEFINE_HOOK(65B28D, RadSiteClass_CTOR, 6)
 	GET(RadSiteClass*, pThis, ESI);
 	auto pRadSiteExt = RadSiteExt::ExtMap.FindOrAllocate(pThis);
 
-	if (RadSiteExt::RadSiteInstance.FindItemIndex(pRadSiteExt) == -1) {
-		RadSiteExt::RadSiteInstance.AddItem(pRadSiteExt);
-	}
+	RadSiteExt::RadSiteInstance.AddUnique(pRadSiteExt);
 
 	return 0;
 }
