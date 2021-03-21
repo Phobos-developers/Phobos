@@ -312,7 +312,7 @@ public:
 	}
 
 	void PrepareStream(key_type key, IStream* pStm) {
-		Debug::Log("[PrepareStream] Next is %p of type '%s'\n", key, this->Name);
+		//Debug::Log("[PrepareStream] Next is %p of type '%s'\n", key, this->Name);
 
 		this->SavingObject = key;
 		this->SavingStream = pStm;
@@ -320,7 +320,7 @@ public:
 
 	void SaveStatic() {
 		if (this->SavingObject && this->SavingStream) {
-			Debug::Log("[SaveStatic] Saving object %p as '%s'\n", this->SavingObject, this->Name);
+			//Debug::Log("[SaveStatic] Saving object %p as '%s'\n", this->SavingObject, this->Name);
 
 			if (!this->Save(this->SavingObject, this->SavingStream)) {
 				Debug::FatalErrorAndExit("[SaveStatic] Saving failed!\n");
@@ -337,7 +337,7 @@ public:
 
 	void LoadStatic() {
 		if (this->SavingObject && this->SavingStream) {
-			Debug::Log("[LoadStatic] Loading object %p as '%s'\n", this->SavingObject, this->Name);
+			//Debug::Log("[LoadStatic] Loading object %p as '%s'\n", this->SavingObject, this->Name);
 
 			if (!this->Load(this->SavingObject, this->SavingStream)) {
 				Debug::FatalErrorAndExit("[LoadStatic] Loading failed!\n");
@@ -393,7 +393,7 @@ protected:
 			return nullptr;
 		}
 
-		Debug::Log("[SaveKey] Save used up 0x%X bytes\n", saver.Size());
+		//Debug::Log("[SaveKey] Save used up 0x%X bytes\n", saver.Size());
 
 		// done
 		return buffer;

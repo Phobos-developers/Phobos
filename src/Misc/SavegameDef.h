@@ -83,20 +83,12 @@ namespace Savegame {
 
 	template <typename T>
 	bool ReadPhobosStream(PhobosStreamReader& Stm, T& Value, bool RegisterForChange) {
-		// *should* have been implemented
-		auto pointer = (unsigned char*)(&Value);
-		Stm.Read(pointer, sizeof Value);
-		if (RegisterForChange && std::is_pointer<T>::value)
-			PhobosSwizzle::Instance.RegisterForChange((void**)pointer);
-		return true;
+		return detail::Selector::ReadFromStream(Stm, Value, RegisterForChange);
 	}
 
 	template <typename T>
 	bool WritePhobosStream(PhobosStreamWriter& Stm, const T& Value) {
-		// *should* have been implemented
-		auto pointer = (unsigned char*)(&Value);
-		Stm.Write(pointer, sizeof Value);
-		return true;
+		return detail::Selector::WriteToStream(Stm, Value);
 	}
 
 	template <typename T>
