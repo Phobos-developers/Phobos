@@ -94,7 +94,7 @@ Sidebar.GDIPositions= ; boolean
 - The tooltips can now go over the sidebar bounds to accomodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
 
 :::{note}
-If you use the vanilla font in your mod, you can use :download:`the improved font <_static/files/ImprovedFont-v3.zip>` (v3 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+If you use the vanilla font in your mod, you can use [the improved font](_static/files/ImprovedFont-v3.zip) (v3 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 :::
 
 In `uimd.ini`:
