@@ -116,6 +116,12 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
 	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
 
+	this->Experience_GivenFlat.Read(exINI, pSection, "Experience.GivenFlat");
+	this->Experience_GivenPercent.Read(exINI, pSection, "Experience.GivenPercent");
+	this->Experience_Transfer.Read(exINI, pSection, "Experience.Transfer");
+	this->Experience_FirerGetsExp.Read(exINI, pSection, "Experience.FirerGetsExp");
+	this->Experience_CalculatePercentFromFirer.Read(exINI, pSection, "Experience.CalculatePercentFromFirer");
+
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
 	this->Crit_ApplyChancePerTarget.Read(exINI, pSection, "Crit.ApplyChancePerTarget");
@@ -208,6 +214,12 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_AnimOnAffectedTargets)
 		.Process(this->Crit_AffectBelowPercent)
 		.Process(this->Crit_SuppressWhenIntercepted)
+		
+		.Process(this->Experience_GivenFlat)
+		.Process(this->Experience_GivenPercent)
+		.Process(this->Experience_Transfer)
+		.Process(this->Experience_FirerGetsExp)
+		.Process(this->Experience_CalculatePercentFromFirer)
 
 		.Process(this->MindControl_Anim)
 

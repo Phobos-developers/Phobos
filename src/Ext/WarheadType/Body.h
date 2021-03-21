@@ -33,6 +33,12 @@ public:
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
+		Valueable<int> Experience_GivenFlat;
+		Valueable<double> Experience_GivenPercent;
+		Valueable<bool> Experience_Transfer;
+		Valueable<bool> Experience_FirerGetsExp;
+		Valueable<bool> Experience_CalculatePercentFromFirer;
+
 		Valueable<int> Crit_ExtraDamage;
 		Nullable<WarheadTypeClass*> Crit_Warhead;
 		Valueable<AffectedTarget> Crit_Affects;
@@ -126,6 +132,17 @@ public:
 			, Crit_AnimOnAffectedTargets { false }
 			, Crit_AffectBelowPercent { 1.0 }
 			, Crit_SuppressWhenIntercepted { false }
+			, Experience_GivenFlat(0)
+			, Experience_GivenPercent(0.0)
+			, Experience_Transfer(false)
+			, Experience_FirerGetsExp(false)
+			, Experience_CalculatePercentFromFirer(false)
+
+			, Crit_Chance(0.0)
+			, Crit_ExtraDamage(0)
+			, Crit_Affects(AffectedTarget::All)
+			, Crit_AnimList()
+			, RandomBuffer(0.0)
 
 			, MindControl_Anim {}
 
@@ -184,6 +201,7 @@ public:
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
+		void ApplyModifyExperience(TechnoClass* pTarget, TechnoClass* pOwner);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
