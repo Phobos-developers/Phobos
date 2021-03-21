@@ -1,9 +1,9 @@
-![Phobos logo](logo.png)
+# ![Phobos YR Engine Extension](logo.png)
 
-[![Docs status](https://readthedocs.org/projects/phobos/badge/?version=latest)](https://phobos.readthedocs.io/en/latest/?badge=latest)
-[![license](https://img.shields.io/github/license/Phobos-developers/Phobos.svg)](https://www.gnu.org/licenses/lgpl-3.0.en.html)
-[![Workflow](https://img.shields.io/github/workflow/status/Phobos-developers/Phobos/Nightly%20Build.svg)](https://github.com/Phobos-developers/Phobos/actions)
 [![Github All Releases](https://img.shields.io/github/downloads/Phobos-developers/Phobos/total.svg)](https://github.com/Phobos-developers/Phobos/releases)
+[![Docs status](https://readthedocs.org/projects/phobos/badge/?version=latest)](https://phobos.readthedocs.io/en/latest/?badge=latest)
+[![Workflow](https://img.shields.io/github/workflow/status/Phobos-developers/Phobos/Nightly%20Build.svg)](https://github.com/Phobos-developers/Phobos/actions)
+[![license](https://img.shields.io/github/license/Phobos-developers/Phobos.svg)](https://www.gnu.org/licenses/lgpl-3.0.en.html)
 
 **Phobos** is a WIP community project providing a set of new features and fixes for Yuri's Revenge based on [modified YRpp](https://github.com/Metadorius/YRpp) and [Syringe](https://github.com/Ares-Developers/Syringe) to allow injecting code. It's meant to accompany [Ares](https://github.com/Ares-Developers/Ares) rather than replace it, thus it won't introduce incompatibilities.
 
@@ -17,7 +17,7 @@ Building and Usage (Windows)
 1. Open the solution file in VS and build it (`DevBuild` build config is recommended).
 2. Upon build completion place the resulting `Phobos.dll` from folder named identical to the used build config in your YR directory and launch Syringe targeting your YR executable (usually `gamemd.exe`).
 
-You can also get test a nightly version for a specific commit which is built automatically with a GitHub Actions workflow, just press on a green tick, open the workflow, find and download the build artifact (a ZIP containing the extension's DLL). Those versions have build information (commit and branch/tag) in them which is displayed ingame and can't be turned off. **Those versions are bleeding edge, do not redistribute them outside of testing!**
+You can also get test a nightly version for a specific commit which is built automatically with a GitHub Actions workflow, just press on a green tick, open the workflow, find and download the build artifact (a ZIP containing the extension's DLL and PDB for developers to debug). Those versions have build information (commit and branch/tag) in them which is displayed ingame and can't be turned off. **Those versions are bleeding edge, do not redistribute them outside of testing!**
 
 Documentation
 -------------
@@ -43,20 +43,21 @@ Credits
 -------
 
 - Belonit (Gluk-v48), Metadorius (Kerbiter) - project authors
-- misha135n2 - YRpp edits
+- misha135n2, Xkein - YRpp edits
 - tomsons26, CCHyper - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
-- Ares developers - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares; 
+- Ares developers - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code 
 - DCoder - unused deployer fixes that are now included in Phobos
 - CCHyper - current project logo
 - ZΞPHYɌUS - win/lose themes code
-- ayylmao, SMxReaver, 4SG, FS-21 - help with docs
+- ayylmao, SMxReaver, 4SG, FS-21, Thrifinesma (Uranusian), SEC-SOME (secsome) - help with docs
 - wiktorderelf, Metadorius (Kerbiter) - overhauled Unicode font
-- Thrifinesma (Uranusian) - Mind Control range limit and custom warhead splash list implementation
+- Thrifinesma (Uranusian) - Mind Control range limit and custom warhead splash list implementation, general help
 - SEC-SOME (secsome) - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, mind control removal warhead, general help
 - Otamaa (BoredEXE) - help with CellSpread, ported and fixed custom RadType code
 - E1 Elite - TileSet 255 and above bridge repair fix
-- FS-21 - improvements to debug info code, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71 & 72
+- FS-21 - Dump Object Info enhancements, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71 & 72
 - AutoGavy - interceptor logic
+- thomassneddon, Xkein - general assistance
 
 Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](https://github.com/Phobos-developers/Phobos/logo-mono.png)) in your client/launcher, contributing or donating to us via links on the right and the `Sponsor` button on top of the repo.
 

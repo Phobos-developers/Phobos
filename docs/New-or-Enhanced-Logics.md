@@ -50,23 +50,22 @@ Spawner.ExtraLimitRange=0 ; integer
 
 ## Weapons
 
-### Custom Radiation Types and Radiation Enhancement
+### Custom Radiation Types
 
 ![image](_static/images/radtype-01.png)  
-*Three primary color radations are mixing.*
+*Mixing different radiation types*
 
-- Allows to design radiation for any weapon now.
-- Radiation now has owner, so any rad-kills will be recorded as score.
-  - Currently the rad maker couldn't gain experience from kills, this may change in future. But `AffectsAllies`, `AffectsOwner` and `AffectsEnemies` can be respected.
-- More details in [here](https://www.modenc.renegadeprojects.com/Radiation).
+- Allows to have custom radiation type for any weapon now. More details on radiation  [here](https://www.modenc.renegadeprojects.com/Radiation).
 
 In `rulesmd.ini`
 ```ini
 [SOMEWEAPON]					; WeaponType
-RadLevel=0						; integer, vanilla tag to activate this feature
-RadType=Radiation 				; RadType - see below
+RadLevel=0						; integer, vanilla tag; used to activate the feature
+RadType=Radiation 				; RadType
+                                ; name of custom RadType to use
+                                ; of default [Radiation]
 
-[SOMERADTYPE]                 	; RadType
+[SOMERADTYPE]                 	; custom RadType name
 RadDurationMultiple=1           ; int
 RadApplicationDelay=16          ; int
 RadApplicationDelay.Building=0  ; int
@@ -78,6 +77,18 @@ RadLightFactor=0.1              ; double
 RadTintFactor=1.0               ; double
 RadColor=0,255,0                ; RGB
 RadSiteWarhead=RadSite          ; WarheadType
+```
+
+### Radiation enhancements
+
+- Radiation now has owner by default, so any rad-kills will be scored.
+  - `AffectsAllies`, `AffectsOwner` and `AffectsEnemies` on `RadSiteWarhead` are respected.
+  - Currently the rad maker doesn't gain experience from kills, this may change in future.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]    ; WeaponType
+Rad.NoOwner=no  ; boolean
 ```
 
 ## Warheads
