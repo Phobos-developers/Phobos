@@ -59,13 +59,13 @@ Spawner.ExtraLimitRange=0 ; integer
 
 In `rulesmd.ini`
 ```ini
-[SOMEWEAPON]					; WeaponType
-RadLevel=0						; integer, vanilla tag; used to activate the feature
-RadType=Radiation 				; RadType
+[SOMEWEAPON]                    ; WeaponType
+RadLevel=0                      ; integer, vanilla tag; used to activate the feature
+RadType=Radiation               ; RadType
                                 ; name of custom RadType to use
                                 ; of default [Radiation]
 
-[SOMERADTYPE]                 	; custom RadType name
+[SOMERADTYPE]                   ; custom RadType name
 RadDurationMultiple=1           ; int
 RadApplicationDelay=16          ; int
 RadApplicationDelay.Building=0  ; int
