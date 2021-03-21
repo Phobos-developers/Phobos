@@ -11,7 +11,7 @@ DEFINE_HOOK(4666F7, BulletClass_Update, 6)
 	GET(BulletClass*, pThis, EBP);
 
 	auto pExt = BulletExt::ExtMap.Find(pThis);
-	if (pExt->ShouldIntercept)
+	if (pExt && pExt->ShouldIntercept)
 	{
 		pThis->Detonate(pThis->GetCoords());
 		pThis->Remove();

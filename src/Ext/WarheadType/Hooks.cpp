@@ -10,21 +10,24 @@ bool DetonationInDamageArea = true;
 
 DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 {
-	GET(BulletClass * const, pThis, ESI);
+	GET(BulletClass* const, pThis, ESI);
 	GET_BASE(const CoordStruct*, pCoords, 0x8);
-	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
-	auto const pOwner = pThis->Owner ? pThis->Owner : nullptr;
-	auto const pHouse = pOwner ? pOwner->Owner : nullptr;
-	
-	pWHExt->Detonate(pOwner, pHouse, pThis, *pCoords);
+
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH)) {
+		auto const pOwner = pThis->Owner ? pThis->Owner : nullptr;
+		auto const pHouse = pOwner ? pOwner->Owner : nullptr;
+
+		pWHExt->Detonate(pOwner, pHouse, pThis, *pCoords);
+	}
 
 	DetonationInDamageArea = false;
+
 	return 0;
 }
 
 DEFINE_HOOK(489286, MapClass_DamageArea, 6)
 {
-	if (DetonationInDamageArea){
+	if (DetonationInDamageArea) {
 		// GET(const int, Damage, EDX);
 		// GET_BASE(const bool, AffectsTiberium, 0x10);
 
@@ -32,11 +35,14 @@ DEFINE_HOOK(489286, MapClass_DamageArea, 6)
 		GET_BASE(TechnoClass*, pOwner, 0x08);
 		GET_BASE(const WarheadTypeClass*, pWH, 0x0C);
 		GET_BASE(HouseClass*, pHouse, 0x14);
-		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
-		pWHExt->Detonate(pOwner, pHouse, nullptr, *pCoords);
+		if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH)) {
+			pWHExt->Detonate(pOwner, pHouse, nullptr, *pCoords);
+		}
 	}
+
 	DetonationInDamageArea = true;
+
 	return 0;
 }
 #pragma endregion
@@ -44,10 +50,9 @@ DEFINE_HOOK(489286, MapClass_DamageArea, 6)
 DEFINE_HOOK(48A512, WarheadTypeClass_SplashList, 6) 
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
-	if (!pThis->Conventional) return 0;
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-	if (pWHExt->SplashList.size()) {
+	if (pWHExt && pThis->Conventional && pWHExt->SplashList.size()) {
 		GET(int, nDamage, ECX);
 		int idx = pWHExt->SplashList_PickRandom ?
 			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->SplashList.size() - 1) :
@@ -62,15 +67,14 @@ DEFINE_HOOK(6FC32D, TechnoClass_CanFire_InsufficientFunds, 6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
-	auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
-	if (auto nMoney = pWHExt->TransactMoney)
-	{
-		if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
-		{
-			//VoxClass::Play("EVA_InsufficientFunds");
-			return 0x6FCB7E;
+	
+	if (auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead)) {
+		if (auto nMoney = pWHExt->TransactMoney) {
+			if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney) {
+				//VoxClass::Play("EVA_InsufficientFunds");
+				return 0x6FCB7E;
+			}
 		}
 	}
-
 	return 0;
 }

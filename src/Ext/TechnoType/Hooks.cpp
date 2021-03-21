@@ -13,7 +13,7 @@ DEFINE_HOOK(6F64A9, HealthBar_Hide, 5)
 {
 	GET(TechnoClass*, pThis, ECX);
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pTypeData->HealthBar_Hide) {
+	if (pTypeData && pTypeData->HealthBar_Hide) {
 		return 0x6F6AB6;
 	}
 	return 0;
@@ -26,7 +26,7 @@ DEFINE_HOOK(739956, UnitClass_Deploy_Transfer, 6)
 
 	// Vehicle-to-building deployer targeting
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pStructure->GetTechnoType());
-	if (pTypeData->Deployed_RememberTarget)
+	if (pTypeData && pTypeData->Deployed_RememberTarget)
 	{ // && pUnit->Target > 0)
 		pStructure->Target = pUnit->Target;
 	}
@@ -76,7 +76,9 @@ DEFINE_HOOK(73B780, UnitClass_DrawVXL_TurretMultiOffset, 0)
 {
 	GET(TechnoTypeClass*, technoType, EAX);
 
-	if (*TechnoTypeExt::ExtMap.Find(technoType)->TurretOffset.GetEx() == CoordStruct{0, 0, 0}) {
+	auto const pTypeData = TechnoTypeExt::ExtMap.Find(technoType);
+
+	if (pTypeData && *pTypeData->TurretOffset.GetEx() == CoordStruct{ 0, 0, 0 }) {
 		return 0x73B78A;
 	}
 

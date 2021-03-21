@@ -4,9 +4,11 @@ int WeaponTypeExt::nOldCircumference = 240;
 DEFINE_HOOK(4A757B, DiskLaser_Circle, 6)
 {
 	GET(WeaponTypeClass*, pWeapon, EDX);
-	int new_Circumference = WeaponTypeExt::ExtMap.Find(pWeapon)->DiskLaser_Circumference;
-	
-	if (WeaponTypeExt::nOldCircumference != new_Circumference) {
+
+	auto const pTypeData = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (pTypeData && WeaponTypeExt::nOldCircumference != pTypeData->DiskLaser_Circumference) {
+		int new_Circumference = pTypeData->DiskLaser_Circumference;
 		WeaponTypeExt::nOldCircumference = new_Circumference;
 
 		Point2D* DiscLaserCoords = reinterpret_cast<Point2D*>(0x8A0180);

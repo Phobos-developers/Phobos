@@ -12,14 +12,17 @@ DEFINE_HOOK(6FF660, TechnoClass_FireBullet, 6)
 
 	// Interceptor
 	auto const pSourceTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
-	if (pSourceTypeExt->Interceptor) {
-		if (auto const pTargetObject = specific_cast<BulletClass* const>(pTarget))
-			if (auto const pSourceExt = TechnoExt::ExtMap.Find(pSource))
+	if (pSourceTypeExt && pSourceTypeExt->Interceptor) {
+		if (auto const pTargetObject = specific_cast<BulletClass* const>(pTarget)) {
+			if (auto const pSourceExt = TechnoExt::ExtMap.Find(pSource)) {
 				if (pSourceExt->InterceptedBullet && pSourceExt->InterceptedBullet->IsAlive) {
-					auto const pBulletExt = BulletExt::ExtMap.Find(pSourceExt->InterceptedBullet);
-					pBulletExt->Intercepted = true;
-					pSourceExt->InterceptedBullet = nullptr;
+					if (auto const pBulletExt = BulletExt::ExtMap.Find(pSourceExt->InterceptedBullet)) {
+						pBulletExt->Intercepted = true;
+						pSourceExt->InterceptedBullet = nullptr;
+					}
 				}
+			}
+		}
 	}
 
 	return 0;

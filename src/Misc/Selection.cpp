@@ -47,7 +47,7 @@ public:
 			if (Tactical_IsInSelectionRect(pThis, rect, selected) && ObjectClass_IsSelectable(selected->Techno)) {
 				auto technoTypeExt = TechnoTypeExt::ExtMap.Find(selected->Techno->GetTechnoType());
 
-				if (!technoTypeExt->LowSelectionPriority)
+				if (technoTypeExt && !technoTypeExt->LowSelectionPriority)
 					return true;
 			}
 		}
@@ -70,10 +70,10 @@ public:
 				auto technoType = techno->GetTechnoType();
 				auto technoTypeExt = TechnoTypeExt::ExtMap.Find(technoType);
 
-				if (priorityFiltering && technoTypeExt->LowSelectionPriority)
+				if (priorityFiltering && technoTypeExt && technoTypeExt->LowSelectionPriority)
 					continue;
 
-				if (Game::IsTypeSelecting()) {
+				if (technoTypeExt && Game::IsTypeSelecting()) {
 					Game::UICommands_TypeSelect_7327D0(technoTypeExt->GetSelectionGroupID());
 				}
 				else if (check_callback) {
