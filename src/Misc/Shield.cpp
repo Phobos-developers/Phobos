@@ -2,6 +2,7 @@
 
 #include "../Ext/Techno/Body.h"
 #include "../Ext/TechnoType/Body.h"
+#include "../Ext/WarheadType/Body.h"
 
 #include <AnimClass.h>
 
@@ -37,11 +38,15 @@ void ShieldTechnoClass::Save(IStream* Stm)
 int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
 {
     //UNREFERENCED_PARAMETER(pWH);
+    auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
     if (!this->HP || *args->Damage == 0)
         return *args->Damage;
 
-    int nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->GetExt()->Shield_Armor, args->DistanceToEpicenter);
+    int nDamage = 0;
+
+    if (pWHExt && pWHExt->CanTargetHouse(args->SourceHouse, this->Techno))
+        nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->GetExt()->Shield_Armor, args->DistanceToEpicenter);
 
     if (nDamage > 0) {
         this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealingDelay * 900)); //when attacked, restart the timer
