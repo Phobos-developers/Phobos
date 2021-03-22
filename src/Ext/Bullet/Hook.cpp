@@ -1,10 +1,5 @@
 #include "Body.h"
-#include <Helpers/Macro.h>
-#include <BulletClass.h>
-#include <HouseClass.h>
 #include <TechnoClass.h>
-
-#include "../BulletType/Body.h"
 
 DEFINE_HOOK(4666F7, BulletClass_Update, 6)
 {
