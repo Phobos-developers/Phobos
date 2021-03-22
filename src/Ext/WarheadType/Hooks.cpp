@@ -63,17 +63,19 @@ DEFINE_HOOK(48A512, WarheadTypeClass_SplashList, 6)
 	return 0;
 }
 
-DEFINE_HOOK(6FC32D, TechnoClass_CanFire_InsufficientFunds, 6)
+DEFINE_HOOK(6FC339, TechnoClass_CanFire_InsufficientFunds, 6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
+
+	// Checking for nulptr is not required here, since the game has already executed them before calling the hook
+	const auto pWH = pWeapon->Warhead;
 	
-	if (auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead)) {
-		if (auto nMoney = pWHExt->TransactMoney) {
-			if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney) {
-				//VoxClass::Play("EVA_InsufficientFunds");
-				return 0x6FCB7E;
-			}
+	if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH)) {
+		const int nMoney = pWHExt->TransactMoney;
+		if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney) {
+			//VoxClass::Play("EVA_InsufficientFunds");
+			return 0x6FCB7E;
 		}
 	}
 	return 0;
