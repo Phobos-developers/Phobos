@@ -8,26 +8,32 @@
 
 DEFINE_HOOK(4666F7, BulletClass_Update, 6)
 {
-	GET(BulletClass*, pThis, EBP);
+	GET(BulletClass*, pBullet, EBP);
 
-	auto pExt = BulletExt::ExtMap.Find(pThis);
-	if (pExt && pExt->ShouldIntercept)
+	auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	if (pBulletExt && pBulletExt->ShouldIntercept)
 	{
-		pThis->Detonate(pThis->GetCoords());
-		pThis->Remove();
-		pThis->UnInit();
+		pBullet->Detonate(pBullet->GetCoords());
+		pBullet->Remove();
+		pBullet->UnInit();
 
-		const auto pTechno = pThis->Owner;
-		if (pTechno && pThis->WeaponType->LimboLaunch) {
-			pThis->SetTarget(nullptr);
+		const auto pTechno = pBullet->Owner;
+		const bool isLimbo =
+			pTechno &&
+			pTechno->InLimbo &&
+			pBullet->WeaponType &&
+			pBullet->WeaponType->LimboLaunch;
+
+		if (isLimbo) {
+			pBullet->SetTarget(nullptr);
 			auto damage = pTechno->Health * 2;
-			pTechno->SetLocation(pThis->GetCoords());
+			pTechno->SetLocation(pBullet->GetCoords());
 			pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 		}
 	}
 
-	if (pExt->Intercepted)
-		pExt->ShouldIntercept = true;
+	if (pBulletExt && pBulletExt->Intercepted)
+		pBulletExt->ShouldIntercept = true;
 
 	return 0;
 }
