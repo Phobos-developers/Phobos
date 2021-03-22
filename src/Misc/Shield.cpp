@@ -68,9 +68,12 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
     }
 }
 
-bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon)
+bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon, TechnoClass* pSource)
 {
-    bool result = MapClass::GetTotalDamage(pWeapon->Damage, pWeapon->Warhead, this->GetExt()->Shield_Armor, 0) != 0;
+    auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+    bool result =
+        (MapClass::GetTotalDamage(pWeapon->Damage, pWeapon->Warhead, this->GetExt()->Shield_Armor, 0) != 0)
+        && pWHExt && pWHExt->CanTargetHouse(pSource->Owner, this->Techno);
     return this->HP ? result : true;
 }
 
