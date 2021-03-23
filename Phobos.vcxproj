@@ -56,6 +56,7 @@
     <ClCompile Include="src\Utilities\GeneralUtils.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.VehicleToBuildingMCFix.cpp" />
     <ClCompile Include="YRpp\StaticInits.cpp" />
+    <ClCompile Include="src\Utilities\Patch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Commands\NextIdleHarvester.h" />
@@ -97,7 +98,9 @@
     <ClInclude Include="src\Utilities\Helpers.Alex.h" />
     <ClInclude Include="src\Utilities\INIParser.h" />
     <ClInclude Include="src\Utilities\Iterator.h" />
+    <ClInclude Include="src\Utilities\Macro.h" />
     <ClInclude Include="src\Utilities\Parser.h" />
+    <ClInclude Include="src\Utilities\Patch.h" />
     <ClInclude Include="src\Utilities\Template.h" />
     <ClInclude Include="src\Utilities\TemplateDef.h" />
     <ClInclude Include="YRpp\GameTextManager.h" />

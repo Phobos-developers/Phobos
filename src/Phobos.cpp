@@ -2,16 +2,21 @@
 
 #include <Helpers/Macro.h>
 
+#include "Phobos.h"
+
 #include <CCINIClass.h>
 #include <Unsorted.h>
 #include <Drawing.h>
 
 #include <Utilities/GeneralUtils.h>
 #include <Misc/Debug.h>
+#include "Utilities/Patch.h"
 
 #ifndef IS_RELEASE_VER
 	bool HideWarning = false;
 #endif
+
+HANDLE Phobos::hInstance = 0;
 
 char Phobos::readBuffer[Phobos::readLength];
 wchar_t Phobos::wideBuffer[Phobos::readLength];
@@ -89,20 +94,18 @@ void Phobos::CloseConfig(CCINIClass*& pINI) {
 // =============================
 // hooks
 
-/*
-//DllMain
 bool __stdcall DllMain(HANDLE hInstance, DWORD dwReason, LPVOID v)
 {
-	switch (dwReason) {
-	case DLL_PROCESS_ATTACH:
-		break;
-	case DLL_PROCESS_DETACH:
-		break;
+	if (dwReason == DLL_PROCESS_ATTACH) {
+		Phobos::hInstance = hInstance;
 	}
-
 	return true;
 }
-*/
+
+DEFINE_HOOK(7CD810, ExeRun, 9) {
+	Patch::Apply();
+	return 0;
+}
 
 DEFINE_HOOK(52F639, _YR_CmdLineParse, 5)
 {

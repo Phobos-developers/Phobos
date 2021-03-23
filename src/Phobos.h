@@ -1,5 +1,6 @@
 #pragma once
 #include "Phobos.version.h"
+#include <Windows.h>
 
 #include <Helpers/Macro.h>
 #include "Misc/Debug.h"
@@ -21,6 +22,8 @@ public:
 	static void CloseConfig(CCINIClass*&);
 
 	//variables
+	static HANDLE hInstance;
+
 	static const size_t readLength = 2048;
 	static char readBuffer[readLength];
 	static wchar_t wideBuffer[readLength];
