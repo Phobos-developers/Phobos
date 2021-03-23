@@ -37,7 +37,6 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm) {
 	Stm
 		.Process(this->DiskLaser_Radius)
 		.Process(this->DiskLaser_Circumference)
-		.Process(this->RadType)
         .Process(this->Rad_NoOwner)
 		;
 };
@@ -45,11 +44,15 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm) {
 void WeaponTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
 	Extension<WeaponTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+	if (this->OwnerObject()->RadLevel > 0)
+		this->RadType.LoadFromStream(Stm);
 }
 
 void WeaponTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
 	Extension<WeaponTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
+	if (this->OwnerObject()->RadLevel > 0)
+		this->RadType.SaveToStream(Stm);
 }
 
 bool WeaponTypeExt::LoadGlobals(PhobosStreamReader& Stm) {

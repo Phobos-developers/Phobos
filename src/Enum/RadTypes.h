@@ -1,10 +1,12 @@
 #pragma once
-#include "_Enumerator.hpp"
+
 #include "../Utilities/Template.h"
 #include "../Utilities/TemplateDef.h"
+#include "../Utilities/GeneralUtils.h"
+
 #include <WarheadTypeClass.h>
 
-class RadType final : public Enumerable<RadType> {
+class RadType {
 public:
 	PhobosFixedString<0x20> ID;
 	Valueable<int> DurationMultiple;
@@ -22,7 +24,6 @@ public:
 	// Set default values
 	// RadType::Read method will later read the new values from the section specified in the ID field
 	RadType(const char* id = "Radiation") :
-		Enumerable<RadType>(id),
 		ID(id),
 		DurationMultiple(1),
 		ApplicationDelay(16),
@@ -40,8 +41,8 @@ public:
 	}
 
 	void Read(CCINIClass* const pINI, const char* section, const char* pKey);
-	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm);
+	virtual void SaveToStream(PhobosStreamWriter& Stm);
 private:
 	template <typename T>
 	void Serialize(T& Stm);

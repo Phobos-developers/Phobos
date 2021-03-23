@@ -70,18 +70,30 @@ double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell) {
 template <typename T>
 void RadSiteExt::ExtData::Serialize(T& Stm) {
 	Stm
-		.Process(this->Weapon)
 		.Process(this->RadHouse)
-		.Process(this->Type)
 		;
 }
 
 void RadSiteExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+	//initialize weapon then set type
+	char weaponID[sizeof(this->Weapon->ID)];
+	Stm.Process(weaponID);
+	this->Weapon = WeaponTypeClass::Find(weaponID);
+
+	if (this->Weapon) {
+		auto pWeaponTypeExt = WeaponTypeExt::ExtMap.FindOrAllocate(Weapon);
+
+		if (pWeaponTypeExt) {
+			this->Type = &pWeaponTypeExt->RadType;
+		}
+	}
 	Extension<RadSiteClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
 void RadSiteExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+	//Save weapon ID instead
+	Stm.Process(this->Weapon->ID);
 	Extension<RadSiteClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }

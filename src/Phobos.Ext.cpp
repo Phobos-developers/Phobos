@@ -193,9 +193,8 @@ auto MassActions = MassAction <
 	TechnoExt,
 	TechnoTypeExt,
 	WarheadTypeExt,
-	WeaponTypeExt,
+	WeaponTypeExt
 	// enum classes
-	RadType
 
 	// other classes
 > ();

@@ -1,12 +1,5 @@
 #include "RadTypes.h"
 
-Enumerable<RadType>::container_t Enumerable<RadType>::Array;
-
-const char* Enumerable<RadType>::GetMainSection()
-{
-	return "RadiationTypes";
-}
-
 void RadType::Read(CCINIClass* const pINI, const char* pSection, const char* pKey) {
 	INI_EX exINI(pINI);
 
@@ -41,16 +34,27 @@ void RadType::Serialize(T& Stm) {
 		.Process(this->LightFactor)
 		.Process(this->TintFactor)
 		.Process(this->RadSiteColor)
-		.Process(this->RadWarhead)
 		;
 };
 
 void RadType::LoadFromStream(PhobosStreamReader & Stm)
 {
+	Stm.Process(this->ID);
+	if (GeneralUtils::IsValidString(this->ID))
+	{
+	char warheadID[sizeof(this->RadWarhead->ID)];
+	Stm.Process(warheadID);
+	RadWarhead = WarheadTypeClass::FindOrAllocate(warheadID);
 	this->Serialize(Stm);
+	}
 }
 
 void RadType::SaveToStream(PhobosStreamWriter & Stm)
 {
+	Stm.Process(this->ID);
+	if (GeneralUtils::IsValidString(this->ID))
+	{
+	Stm.Process(this->RadWarhead->ID);
 	this->Serialize(Stm);
+	}
 }
