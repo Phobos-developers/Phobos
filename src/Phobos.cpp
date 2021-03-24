@@ -56,6 +56,8 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		}
 		#endif
 	}
+
+	Debug::Log("Initialized Phobos " PRODUCT_VERSION "\n");
 }
 
 CCINIClass* Phobos::OpenConfig(const char* file) {
