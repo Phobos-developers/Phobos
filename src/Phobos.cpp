@@ -1,10 +1,13 @@
-﻿#include <StaticInits.cpp>
-#include <CCINIClass.h>
-#include <Unsorted.h>
+﻿#include "Phobos.h"
+
 #include <Helpers/Macro.h>
 
-#include "Utilities/GeneralUtils.h"
-#include "Phobos.h"
+#include <CCINIClass.h>
+#include <Unsorted.h>
+#include <Drawing.h>
+
+#include <Utilities/GeneralUtils.h>
+#include <Utilities/Debug.h>
 
 #ifndef IS_RELEASE_VER
 	bool HideWarning = false;

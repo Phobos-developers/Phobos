@@ -48,6 +48,7 @@
     <ClCompile Include="src\Utilities\EnumFunctions.cpp" />
     <ClCompile Include="src\Utilities\GeneralUtils.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.VehicleToBuildingMCFix.cpp" />
+    <ClCompile Include="YRpp\StaticInits.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Commands\ObjectInfo.h" />
@@ -125,14 +126,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)src\ExtraHeaders;$(SolutionDir)yrpp;$(VC_IncludePath);$(WindowsSdk_71A_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\ExtraHeaders;$(SolutionDir)yrpp;$(VC_IncludePath);$(WindowsSdk_71A_IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\IntDir\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevBuild|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)src\ExtraHeaders;$(SolutionDir)yrpp;$(VC_IncludePath);$(WindowsSdk_71A_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\ExtraHeaders;$(SolutionDir)yrpp;$(VC_IncludePath);$(WindowsSdk_71A_IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\IntDir\</IntDir>
