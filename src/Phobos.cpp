@@ -27,9 +27,11 @@ const wchar_t* Phobos::VersionDescription = L"Phobos development build #" str(BU
 bool Phobos::UI::DisableEmptySpawnPositions = false;
 bool Phobos::UI::ExtendedToolTips = false;
 int Phobos::UI::MaxToolTipWidth = 0;
+bool Phobos::UI::ShowHarvesterCounter = false;
 const wchar_t* Phobos::UI::CostLabel = L"";
 const wchar_t* Phobos::UI::PowerLabel = L"";
 const wchar_t* Phobos::UI::TimeLabel = L"";
+const wchar_t* Phobos::UI::HarvesterLabel = L"";
 
 bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::PrioritySelectionFiltering = true;
@@ -135,6 +137,15 @@ DEFINE_HOOK(5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 5)
 
 		pINI->ReadString(TOOLTIPS_SECTION, "TimeLabel", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::TimeLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"⌚");
+	}
+
+	// Sidebar
+	{
+		Phobos::UI::ShowHarvesterCounter =
+			pINI->ReadBool(SIDEBAR_SECTION, "HarvesterCounter.Show", false);
+		
+		pINI->ReadString(SIDEBAR_SECTION, "HarvesterCounter.Label", NONE_STR, Phobos::readBuffer);
+		Phobos::UI::HarvesterLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"⛏"); //⛟
 	}
 
 	Phobos::CloseConfig(pINI);

@@ -27,6 +27,7 @@ public:
 
 		virtual void LoadFromStream(IStream* Stm);
 		virtual void SaveToStream(IStream* Stm);
+
 	};
 
 	class ExtContainer final : public Container<TechnoExt> {
@@ -34,6 +35,10 @@ public:
 		ExtContainer();
 		~ExtContainer();
 	};
+
+	static bool IsHarvesting(TechnoClass* pThis);
+
+	static bool HasAvailableDock(TechnoClass* pThis);
 
 	static ExtContainer ExtMap;
 };

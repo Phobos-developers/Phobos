@@ -170,6 +170,16 @@ bool TechnoTypeExt::HasSelectionGroupID(ObjectTypeClass* pType, const char* pID)
 	return (_strcmpi(id, pID) == 0);
 }
 
+bool TechnoTypeExt::ExtData::IsCountedAsHarvester() {
+	auto pThis = this->OwnerObject();
+	UnitTypeClass* pUnit = nullptr;
+	if (pThis->WhatAmI() == AbstractType::UnitType)
+		pUnit = abstract_cast<UnitTypeClass*>(pThis);
+	if (this->Harvester_Counted.Get(pThis->Enslaves || pUnit && (pUnit->Harvester || pUnit->Enslaves)))
+		return true;
+	return false;
+}
+
 // =============================
 // load / save
 
@@ -194,6 +204,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
 	this->Spawn_LimitedRange.Read(exINI, pSection, "Spawner.LimitRange");
 	this->Spawn_LimitedExtraRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
+	this->Harvester_Counted.Read(exINI, pSection, "Harvester.Counted");
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
@@ -218,6 +229,7 @@ void TechnoTypeExt::ExtData::LoadFromStream(IStream* Stm) {
 	this->Powered_KillSpawns.Load(Stm);
 	this->Spawn_LimitedRange.Load(Stm);
 	this->Spawn_LimitedExtraRange.Load(Stm);
+	this->Harvester_Counted.Load(Stm);
 }
 
 void TechnoTypeExt::ExtData::SaveToStream(IStream* Stm) const {
@@ -234,6 +246,7 @@ void TechnoTypeExt::ExtData::SaveToStream(IStream* Stm) const {
 	this->Powered_KillSpawns.Save(Stm);
 	this->Spawn_LimitedRange.Save(Stm);
 	this->Spawn_LimitedExtraRange.Save(Stm);
+	this->Harvester_Counted.Save(Stm);
 }
 
 // =============================

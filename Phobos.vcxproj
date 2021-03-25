@@ -17,6 +17,7 @@
     <ClCompile Include="src\Ext\BulletType\Body.cpp" />
     <ClCompile Include="src\Ext\Bullet\Body.cpp" />
     <ClCompile Include="src\Ext\Bullet\Hook.cpp" />
+    <ClCompile Include="src\Ext\House\Body.cpp" />
     <ClCompile Include="src\Ext\RadSite\Body.cpp" />
     <ClCompile Include="src\Ext\RadSite\Hooks.cpp" />
     <ClCompile Include="src\Ext\Script\Body.cpp" />
@@ -50,6 +51,7 @@
     <ClCompile Include="src\Ext\TechnoType\Hooks.VehicleToBuildingMCFix.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Commands\NextIdleHarvester.h" />
     <ClInclude Include="src\Commands\ObjectInfo.h" />
     <ClInclude Include="src\Commands\Commands.h" />
     <ClInclude Include="src\Enum\RadTypes.h" />
@@ -58,6 +60,7 @@
     <ClInclude Include="src\ExtraHeaders\Themes.h" />
     <ClInclude Include="src\Ext\BulletType\Body.h" />
     <ClInclude Include="src\Ext\Bullet\Body.h" />
+    <ClInclude Include="src\Ext\House\Body.h" />
     <ClInclude Include="src\Ext\RadSite\Body.h" />
     <ClInclude Include="src\Ext\Script\Body.h" />
     <ClInclude Include="src\Ext\SWType\Body.h" />

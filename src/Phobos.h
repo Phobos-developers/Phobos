@@ -4,6 +4,7 @@
 class CCINIClass;
 
 constexpr auto TOOLTIPS_SECTION = "ToolTips";
+constexpr auto SIDEBAR_SECTION = "Sidebar";
 
 class Phobos
 {
@@ -28,10 +29,12 @@ public:
 		static bool DisableEmptySpawnPositions;
 		static bool ExtendedToolTips;
 		static int MaxToolTipWidth;
+		static bool ShowHarvesterCounter;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;
 		static const wchar_t* TimeLabel;
+		static const wchar_t* HarvesterLabel;
 	};
 
 	class Config

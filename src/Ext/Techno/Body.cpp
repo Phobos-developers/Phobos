@@ -1,7 +1,44 @@
 #include "Body.h"
+#include <BuildingClass.h>
+#include <HouseClass.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
+
+bool TechnoExt::IsHarvesting(TechnoClass* pThis) {
+	if (pThis->InLimbo) {
+		return false;
+	}
+
+	if (auto slave = pThis->SlaveManager) {
+		if (slave->State != SlaveManagerStatus::Ready){
+			return true;
+		}
+	}
+
+	if (pThis->WhatAmI() == AbstractType::Building) {
+		if (pThis->IsPowerOnline()) {
+			return true;
+		}
+	}
+
+	auto mission = pThis->GetCurrentMission();
+	if ((mission == Mission::Harvest || mission == Mission::Unload || mission == Mission::Enter)
+		&& TechnoExt::HasAvailableDock(pThis)) {
+		return true;
+	}
+
+	return false;
+}
+
+bool TechnoExt::HasAvailableDock(TechnoClass* pThis) {
+	for (auto pBld : pThis->GetTechnoType()->Dock) {
+		if (pThis->Owner->CountOwnedAndPresent(pBld)) {
+			return true;
+		}
+	}
+	return false;
+}
 
 // =============================
 // load / save

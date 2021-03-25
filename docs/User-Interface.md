@@ -16,7 +16,17 @@ IngameScore.LoseTheme= ; soundtrack theme ID
 ## Bugfixes and miscellanous
 
 - Enabled ability to load full-color non-paletted PCX graphics of any bitness. This applies to every single PCX file that is loaded, including the Ares-supported PCX files.
-- You can specify custom `gamemd.exe` icon via `-icon` command line argument followed by absolute or relative path to an *.ico file (f. ex. `gamemd.exe -icon Resources/clienticon.ico`).
+- You can specify custom `gamemd.exe` icon via `-icon` command line argument followed by absolute or relative path to an `*.ico` file (f. ex. `gamemd.exe -icon Resources/clienticon.ico`).
+
+## Hotkey Commands
+
+### `[ ]` Next Idle Harvester
+
+- Selects and centers the camera on the next TechnoType that is counted via the [harvester counter](#harvester-counter) and is currently idle.
+
+### `[ ]` Dump Object Info
+
+- Writes currently hovered or last selected object info in log and shows a message. See [this](Miscellanous.md#dump-object-info) for details.
 
 ## Battle screen UI/UX
 
@@ -70,6 +80,8 @@ DisableEmptySpawnPositions=no ; boolean
 
 ## Sidebar / Battle UI
 
+### Specify Sidebar style
+
 - It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords.
 
 In `rulesmd.ini`:
@@ -80,6 +92,39 @@ Sidebar.GDIPositions= ; boolean
                       ; yes for the first side
                       ; no for others
 ```
+
+### Harvester counter
+
+![image](_static/images/harvestercounter-01.gif)  
+*Harvester Counter in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+
+- An additional counter for your active/total harvesters can be added near the credits indicator.
+- You can specify which TechnoType shoule be counted as a Harvester. If not set, the techno with `Harvester=yes` or `Enslaves=SOMESLAVE` will be counted.
+- The counter is displayed with the format of `Label(Active Harvesters)/(Total Harvesters)`. The label is `⛏ U+26CF` by default.
+- You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, negative means left/up, positive means right/down.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+HarvesterCounter.Show=no        ; boolean
+HarvesterCounter.Label=<none>   ; CSF entry key
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]        ; TechnoType
+Harvester.Counted=  ; boolean
+                    ; if not set, the techno with Harvester=yes or Enslaves=SOMESLAVE will be counted
+                    ; if set yes to a BuildingType like Oil Derricks
+                    ; when producing cash, it will be counted as active
+
+[SOMESIDE]                            ; Side
+Sidebar.HarvesterCounter.Offset=0,0   ; X,Y, pixels relative to default
+```
+
+:::{note}
+If you use the vanilla font in your mod, you can use {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+:::
 
 ## Tooltips
 
@@ -94,7 +139,7 @@ Sidebar.GDIPositions= ; boolean
 - The tooltips can now go over the sidebar bounds to accomodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
 
 :::{note}
-If you use the vanilla font in your mod, you can use {download}`the improved font <_static/files/ImprovedFont-v3.zip>` (v3 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+Same as with harvester counter, you can download {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v3 and higher) or draw your own icons.
 :::
 
 In `uimd.ini`:
