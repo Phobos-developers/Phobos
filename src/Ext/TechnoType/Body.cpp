@@ -72,26 +72,27 @@ void TechnoTypeExt::ApplyInterceptor(TechnoClass* pThis)
 	{
 		for (auto const& pBullet : *BulletClass::Array) {
 			if (auto pBulletTypeData = BulletTypeExt::ExtMap.Find(pBullet->Type)) {
-				if (!pBulletTypeData->Interceptable)
+				if (!pBulletTypeData->Interceptable) {
 					continue;
+				}
 			}
 
 			const double guardRange = pThis->Veterancy.IsElite() ?
 				pTypeData->Interceptor_EliteGuardRange * 256 : pTypeData->Interceptor_GuardRange * 256;
 
-			if (pBullet->Location.DistanceFrom(pThis->Location) > guardRange)
+			if (pBullet->Location.DistanceFrom(pThis->Location) > guardRange) {
 				continue;
+			}
 
 			if (pBullet->Location.DistanceFrom(pBullet->TargetCoords) >
-				double(ScenarioClass::Instance->Random.RandomRanged(128, (int)guardRange / 10)) * 10)
+				double(ScenarioClass::Instance->Random.RandomRanged(128, (int)guardRange / 10)) * 10) {
 				continue;
+			}
 
-			if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target)) {
-				if (pThis->Owner->IsAlliedWith(pTarget)) {
-					pThis->SetTarget(pBullet);
-					pData->InterceptedBullet = pBullet;
-					break;
-				}
+			if (!pThis->Owner->IsAlliedWith(pBullet->Owner) || pThis->Owner->IsAlliedWith(pBullet->Target)) {
+				pThis->SetTarget(pBullet);
+				pData->InterceptedBullet = pBullet;
+				break;
 			}
 		}
 	}
