@@ -2,6 +2,7 @@
 
 #include "Dummy.h"
 #include "ObjectInfo.h"
+#include "NextIdleHarvester.h"
 
 DEFINE_HOOK(533066, CommandClassCallback_Register, 6)
 {
@@ -10,6 +11,7 @@ DEFINE_HOOK(533066, CommandClassCallback_Register, 6)
 
 	//MakeCommand<DummyCommandClass>();
 	MakeCommand<ObjectInfoCommandClass>();
+	MakeCommand<NextIdleHarvesterCommandClass>();
 
 	return 0;
 }

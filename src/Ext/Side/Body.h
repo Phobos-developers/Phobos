@@ -17,12 +17,14 @@ public:
 		Valueable<bool> Sidebar_GDIPositions;
 		Valueable<int> IngameScore_WinTheme;
 		Valueable<int> IngameScore_LoseTheme;
+		Valueable<Point2D> Sidebar_HarvesterCounter_Offset;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject),
 			ArrayIndex(-1),
 			Sidebar_GDIPositions(false),
 			IngameScore_WinTheme(-2),
-			IngameScore_LoseTheme(-2)
+			IngameScore_LoseTheme(-2),
+			Sidebar_HarvesterCounter_Offset({ 0,0 })
 		{ }
 
 		virtual ~ExtData() = default;

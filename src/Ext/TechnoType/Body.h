@@ -29,6 +29,7 @@ public:
 		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Spawn_LimitedRange;
 		Valueable<int> Spawn_LimitedExtraRange;
+		Nullable<bool> Harvester_Counted;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
@@ -43,11 +44,14 @@ public:
 			TurretOffset({0, 0, 0}),
 			Powered_KillSpawns(false),
 			Spawn_LimitedRange(false),
-			Spawn_LimitedExtraRange(0)
+			Spawn_LimitedExtraRange(0),
+			Harvester_Counted()
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;
+
+		//virtual void Initialize() override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
 
@@ -56,6 +60,8 @@ public:
 		virtual void SaveToStream(IStream* Stm) const;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
+
+		bool IsCountedAsHarvester();
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
