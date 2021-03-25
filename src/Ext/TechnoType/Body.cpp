@@ -89,7 +89,7 @@ void TechnoTypeExt::ApplyInterceptor(TechnoClass* pThis)
 				continue;
 			}
 
-			if (!pThis->Owner->IsAlliedWith(pBullet->Owner) || pThis->Owner->IsAlliedWith(pBullet->Target)) {
+			if (!pThis->Owner->IsAlliedWith(pBullet->Owner)) {
 				pThis->SetTarget(pBullet);
 				pData->InterceptedBullet = pBullet;
 				break;
