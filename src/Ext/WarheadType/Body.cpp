@@ -64,6 +64,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->SplashList_PickRandom)
 		.Process(this->RemoveDisguise)
 		.Process(this->RemoveMindControl)
+
+		// Ares tags
+		.Process(this->AffectsEnemies)
+		.Process(this->AffectsOwner)
 		;
 }
 
@@ -78,15 +82,12 @@ void WarheadTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
 }
 
 bool WarheadTypeExt::LoadGlobals(PhobosStreamReader& Stm) {
-	return Stm
-		.Success();
+	return Stm.Success();
 }
 
 bool WarheadTypeExt::SaveGlobals(PhobosStreamWriter& Stm) {
-	return Stm
-		.Success();
+	return Stm.Success();
 }
-
 
 // =============================
 // container
