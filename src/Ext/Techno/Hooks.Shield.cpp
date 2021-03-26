@@ -28,13 +28,13 @@ DEFINE_HOOK(6FC339, TechnoClass_CanFire_Shield, 6)
     GET_STACK(TechnoClass*, pTarget, STACK_OFFS(0x20, -0x4));
     GET(TechnoClass*, pThis, ESI);
     GET(WeaponTypeClass*, pWeapon, EDI);
-    auto pExt = TechnoExt::ExtMap.Find(pTarget);
-    if (auto pShieldData = pExt->ShieldData.get()) 
-    {
-        if(!pShieldData->CanBeTargeted(pWeapon, pThis))
-            return 0x6FCB7E;
+    if (auto pExt = TechnoExt::ExtMap.Find(pTarget)) {
+        if (auto pShieldData = pExt->ShieldData.get())
+        {
+            if (!pShieldData->CanBeTargeted(pWeapon, pThis))
+                return 0x6FCB7E;
+        }
     }
-    
     return 0;
 }
 

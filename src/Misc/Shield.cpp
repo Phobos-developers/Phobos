@@ -23,16 +23,20 @@ const TechnoTypeExt::ExtData* ShieldTechnoClass::GetExt()
     return TechnoTypeExt::ExtMap.Find(Techno->GetTechnoType());
 }
 
-void ShieldTechnoClass::Load(IStream* Stm)
+bool ShieldTechnoClass::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
-    PhobosStreamReader::ProcessPointer(Stm, this->Techno, true);
-    PhobosStreamReader::ProcessPointer(Stm, this->Image, true);
+    return Stm
+        .Process(this->Techno)
+        .Process(this->Image)
+        .Success();
 }
 
-void ShieldTechnoClass::Save(IStream* Stm)
+bool ShieldTechnoClass::Save(PhobosStreamWriter& Stm)
 {
-    PhobosStreamWriter::Process(Stm, this->Techno);
-    PhobosStreamWriter::Process(Stm, this->Image);
+    return Stm
+        .Process(this->Techno)
+        .Process(this->Image)
+        .Success();
 }
 
 int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
