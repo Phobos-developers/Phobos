@@ -30,6 +30,7 @@ public:
 		Valueable<bool> Spawn_LimitedRange;
 		Valueable<int> Spawn_LimitedExtraRange;
 		Nullable<bool> Harvester_Counted;
+		Valueable<bool> Promote_IncludeSpawns;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
@@ -45,7 +46,8 @@ public:
 			Powered_KillSpawns(false),
 			Spawn_LimitedRange(false),
 			Spawn_LimitedExtraRange(0),
-			Harvester_Counted()
+			Harvester_Counted(),
+			Promote_IncludeSpawns(false)
 		{ }
 
 		virtual ~ExtData() = default;
