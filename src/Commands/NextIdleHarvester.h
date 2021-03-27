@@ -5,6 +5,7 @@
 #include <ObjectClass.h>
 
 #include "Commands.h"
+#include <Utilities/GeneralUtils.h>
 #include <Misc/Debug.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
@@ -20,17 +21,17 @@ public:
 
 	virtual const wchar_t* GetUIName() const override
 	{
-		return L"Next Idle Harvester";
+		return GeneralUtils::LoadStringUnlessMissing("TXT_NEXT_IDLE_HARVESTER", L"Next Idle Harvester");
 	}
 
 	virtual const wchar_t* GetUICategory() const override
 	{
-		return L"Selection";
+		return StringTable::LoadString("TXT_SELECTION");
 	}
 
 	virtual const wchar_t* GetUIDescription() const override
 	{
-		return L"Select the next harvester that is idle (not harvesting).";
+		return GeneralUtils::LoadStringUnlessMissing("TXT_NEXT_IDLE_HARVESTER_DESC", L"Select the next harvester that is idle (not harvesting).");
 	}
 
 	virtual void Execute(DWORD dwUnk) const override
@@ -70,6 +71,10 @@ public:
 			pObjectToSelect->Select();
 			MapClass::Instance->CenterMap();
 			MapClass::Instance->MarkNeedsRedraw(1);
+		}
+		else
+		{
+			MessageListClass::Instance->PrintMessage(StringTable::LoadString("MSG:NothingSelected"), RulesClass::Instance->MessageDelay, HouseClass::Player->ColorSchemeIndex);
 		}
 	}
 };

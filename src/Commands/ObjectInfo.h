@@ -2,6 +2,7 @@
 #include "Commands.h"
 #include "../Ext/TechnoType/Body.h"
 
+#include <Utilities/GeneralUtils.h>
 #include <BuildingClass.h>
 #include <InfantryClass.h>
 #include <FootClass.h>
@@ -22,17 +23,17 @@ public:
 
 	virtual const wchar_t* GetUIName() const override
 	{
-		return L"Dump ObjectInfo";
+		return GeneralUtils::LoadStringUnlessMissing("TXT_DUMP_OBJECT_INFO", L"Dump Object Info");
 	}
 
 	virtual const wchar_t* GetUICategory() const override
 	{
-		return L"Development";
+		return GeneralUtils::LoadStringUnlessMissing("TXT_DEVELOPMENT", L"Development");
 	}
 
 	virtual const wchar_t* GetUIDescription() const override
 	{
-		return L"Dump ObjectInfo to log file and display it.";
+		return GeneralUtils::LoadStringUnlessMissing("TXT_DUMP_OBJECT_INFO_DESC", L"Dump ObjectInfo to log file and display it.");
 	}
 
 	// Just place these two functions here... for now.
