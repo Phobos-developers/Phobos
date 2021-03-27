@@ -269,7 +269,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm) {
         .Process(this->Shield_RespawnDelay)
         .Process(this->Shield_SelfHealing)
         .Process(this->Shield_SelfHealingDelay)
-        .Process(this->AbsorbOverDamage)
+        .Process(this->Shield_AbsorbOverDamage)
         .Process(this->Shield_Image)
         .Process(this->Shield_BreakImage)
 		;
