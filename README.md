@@ -53,7 +53,7 @@ Credits
 - ZΞPHYɌUS - win/lose themes code
 - ayylmao, SMxReaver, 4SG, FS-21, Thrifinesma (Uranusian), SEC-SOME (secsome) - help with docs
 - wiktorderelf, Metadorius (Kerbiter), Thrifinesma (Uranusian) - overhauled Unicode font
-- Thrifinesma (Uranusian) - Mind Control range limit, custom warhead splash list, harvesters counter, general help
+- Thrifinesma (Uranusian) - Mind Control range limit, custom warhead splash list, harvesters counter, promoted spawns, general help
 - SEC-SOME (secsome) - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, mind control removal warhead, general help
 - Otamaa (BoredEXE) - help with CellSpread, ported and fixed custom RadType code
 - E1 Elite - TileSet 255 and above bridge repair fix

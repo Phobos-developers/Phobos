@@ -48,6 +48,19 @@ Spawner.LimitRange=no     ; boolean
 Spawner.ExtraLimitRange=0 ; integer
 ```
 
+### Promoted Spawns
+
+![image](_static/images/promotedspawns-01.gif)  
+*Promoted Spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+
+- The spawned units will promote as their owner's veterancy.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]              ; TechnoType
+Promote.IncludeSpawns=no  ; boolean
+```
+
 ## Weapons
 
 ### Custom Radiation Types
