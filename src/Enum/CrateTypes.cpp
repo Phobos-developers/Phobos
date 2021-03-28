@@ -40,7 +40,7 @@ void CrateType::LoadFromINI(CCINIClass *pINI)
 
 	this->SWs.Read(exINI, section, "Crate.SW");
 	this->SWGrant.Read(exINI, section, "Crate.SWGrant");
-	this->WeaponType.Read(exINI, section, "Crete.WP");
+	this->WeaponType.Read(exINI, section, "Crate.WP");
 	this->Chance.Read(exINI, section, "Crate.Chance");
 	this->Anim.Read(exINI, section, "Crate.Anim");
 	this->Tp.Read(exINI, section, "Crate.Type");
