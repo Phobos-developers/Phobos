@@ -6,7 +6,7 @@
 #include "../_Container.hpp"
 #include "../../Utilities/Constructs.h"
 #include "../../Utilities/Template.h"
-
+#include "../Enum/CrateTypes.h"
 #include "../../Misc/Debug.h"
 
 
@@ -26,10 +26,12 @@ public:
 	public:
 		Valueable<Vector3D<int>> Pips_Shield;
 		Valueable<Vector3D<int>> Pips_Shield_Buildings;
+		CrateType*CrateEnum;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Pips_Shield({ -1,-1,-1 })
 			, Pips_Shield_Buildings({ -1,-1,-1 })
+			, CrateEnum()
 		{ }
 
 		virtual ~ExtData() = default;

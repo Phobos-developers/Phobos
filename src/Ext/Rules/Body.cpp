@@ -21,7 +21,7 @@ void RulesExt::LoadFromINIFile(RulesClass* pThis, CCINIClass* pINI) {
 }
 
 void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI) {
-
+	CrateType::LoadListSection(pINI);
 	Data->LoadBeforeTypeData(pThis, pINI);
 }
 
@@ -94,6 +94,7 @@ void RulesExt::ExtData::Serialize(T& Stm) {
 	Stm
 		.Process(this->Pips_Shield)
 		.Process(this->Pips_Shield_Buildings)
+		.Process(this->CrateEnum)
 		;
 }
 

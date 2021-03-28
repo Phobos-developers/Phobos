@@ -103,7 +103,12 @@ public:
 	static const char* GetMainSection();
 
 	Enumerable(const char* Title) {
-		this->Name = Title;
+		this->Name[0] = 0;
+
+		if (Title) {
+
+			PhobosCRT::strCopy(this->Name, Title);
+		}
 	}
 
 	virtual ~Enumerable() = default;
@@ -114,5 +119,5 @@ public:
 
 	virtual void SaveToStream(PhobosStreamWriter& Stm) = 0;
 
-	PhobosFixedString<32> Name;
+	char Name[32];
 };
