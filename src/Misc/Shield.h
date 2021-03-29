@@ -22,7 +22,7 @@ public:
     void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
 
     bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
-    bool Save(PhobosStreamWriter& Stm);
+    bool Save(PhobosStreamWriter& Stm) const;
     
 private:
     // static constexpr int ScanInterval = 15;		//!< Minimum delay between scans in frames.

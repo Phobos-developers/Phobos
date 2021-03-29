@@ -32,7 +32,7 @@ bool ShieldTechnoClass::Load(PhobosStreamReader& Stm, bool RegisterForChange)
         .Success();
 }
 
-bool ShieldTechnoClass::Save(PhobosStreamWriter& Stm)
+bool ShieldTechnoClass::Save(PhobosStreamWriter& Stm) const
 {
     return Stm
         .Process(this->Techno)
