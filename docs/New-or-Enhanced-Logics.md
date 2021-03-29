@@ -73,13 +73,14 @@ Promote.IncludeSpawns=no  ; boolean
 - `Shield.SelfHealing.Rate` and `Shield.Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other number determines the frequency of shield recovers/respawns in minutes.
 - A TechnoType with a Shield will show its Shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable.
   - Buildings now uses the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame as default.
-  - `Shield.Pip` can be used to specify which frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. 
+  - `Shield.Pips` can be used to specify which frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. `Shield.Pips.Building` is used for BuildingTypes. 
   - `Pipbrd.shp` will use its 4th frame to display an infantry's shield strength and the 3th frame for other units if `pipbrd.shp` has extra 2 frames. And `Shield.BracketDelta` can be used as additonal `PixelSelectionBracketDelta` for shield strength. 
 
 In `rulesmd.ini`
 ```ini
 [AudioVisual]
-Shield.Pip=                 ; Green, Yellow, Red
+Shield.Pips=                ; Green, Yellow, Red - frames of Pips.shp
+Shield.Pips.Building=       ; Green, Yellow, Red - frames of Pips.shp
 
 [SOMETECHNO]	            ; TechnoTypes
 Shield.Strength=0           ; integer

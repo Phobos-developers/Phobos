@@ -24,10 +24,12 @@ public:
 	class ExtData final : public Extension<RulesClass>
 	{
 	public:
-		Valueable<Vector3D<int>> Shield_Pip;
+		Valueable<Vector3D<int>> Shield_PipsForOther;
+		Valueable<Vector3D<int>> Shield_PipsForBuidling;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
-			,Shield_Pip({ -1,-1,-1 })
+			, Shield_PipsForOther({ -1,-1,-1 })
+			, Shield_PipsForBuidling({ -1,-1,-1 })
 		{
 
 		}

@@ -50,7 +50,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI) 
 
 	INI_EX exINI(pINI);
 
-	this->Shield_Pip.Read(exINI, "AudioVisual", "Shield.Pip");
+	this->Shield_PipsForOther.Read(exINI, "AudioVisual", "Shield.Pips");
+	this->Shield_PipsForBuidling.Read(exINI, "AudioVisual", "Shield.Pips.Building");
 }
 
 // this runs between the before and after type data loading methods for rules ini
