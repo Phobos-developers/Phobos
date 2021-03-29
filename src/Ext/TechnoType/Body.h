@@ -40,6 +40,7 @@ public:
 		Valueable<double> Shield_SelfHealing;
 		Valueable<double> Shield_SelfHealingDelay;
 		Valueable<bool> Shield_AbsorbOverDamage;
+		Valueable<int> Shield_BracketDelta;
 		Nullable<AnimTypeClass*> Shield_Image;
 		Nullable<AnimTypeClass*> Shield_BreakImage;
 
@@ -68,6 +69,7 @@ public:
 			Shield_SelfHealing(0.0),
 			Shield_SelfHealingDelay(0.0),
 			Shield_AbsorbOverDamage(false),
+			Shield_BracketDelta(0),
 			Shield_Image(),
 			Shield_BreakImage()
 		{ }

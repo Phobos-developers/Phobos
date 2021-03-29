@@ -24,10 +24,12 @@ public:
 	class ExtData final : public Extension<RulesClass>
 	{
 	public:
+		Valueable<Vector3D<int>> Shield_Pip;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
+			,Shield_Pip({ -1,-1,-1 })
 		{
-			
+
 		}
 
 		virtual ~ExtData() = default;

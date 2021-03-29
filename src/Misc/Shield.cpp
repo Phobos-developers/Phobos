@@ -1,8 +1,9 @@
 #include "Shield.h"
 
-#include "../Ext/Techno/Body.h"
-#include "../Ext/TechnoType/Body.h"
-#include "../Ext/WarheadType/Body.h"
+#include <Ext/Rules/Body.h>
+#include <Ext/Techno/Body.h>
+#include <Ext/TechnoType/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 #include <AnimClass.h>
 
@@ -140,27 +141,33 @@ void ShieldTechnoClass::BreakShield()
     if (this->GetExt()->Shield_Respawn > 0) this->Timer_Respawn.Start(int(this->GetExt()->Shield_RespawnDelay * 900));
     this->Timer_SelfHealing.Stop();
 
-    if (this->Image)
+    if (this->Image) 
+    {
         GameDelete(this->Image);
-    if(this->GetExt()->Shield_BreakImage.isset())
+        this->Image = nullptr;
+    }
+    if (this->GetExt()->Shield_BreakImage.isset())
+    {
         if (auto pAnimType = this->GetExt()->Shield_BreakImage)
         {
             this->Image = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
             if (this->Image)
                 this->Image->SetOwnerObject(this->Techno);
         }
-
+    }
 }
 
 void ShieldTechnoClass::DrawShield()
 {
     if (this->GetExt()->Shield_Image.isset() && this->HP > 0)
+    {
         if (auto pAnimType = this->GetExt()->Shield_Image)
         {
             this->Image = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
             if (this->Image)
                 this->Image->SetOwnerObject(this->Techno);
         }
+    }
 }
 
 void ShieldTechnoClass::DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound)
@@ -184,7 +191,7 @@ void ShieldTechnoClass::DrawShieldBarBuilding(int iLength, Point2D* pLocation, R
         iCurrent = iLength;
         iTotal = iLength;
     }
-    int frame = 5; //NEED CHANGE
+    int frame = this->DrawShieldBar_Pip();
     Point2D vPos = { 0,0 };
     CoordStruct vCoords = { 0,0,0 };
     this->Techno->GetTechnoType()->Dimension2(&vCoords);
@@ -225,7 +232,7 @@ void ShieldTechnoClass::DrawShieldBarOther(int iLength, Point2D* pLocation, Rect
     Point2D vPos = { 0,0 };
     Point2D vLoc = *pLocation;
     int frame, XOffset, YOffset;
-    YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta;
+    YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta, this->GetExt()->Shield_BracketDelta;
     vLoc.Y -= 5;
     if (iLength == 8) {
         vPos.X = vLoc.X + 11;
@@ -250,10 +257,25 @@ void ShieldTechnoClass::DrawShieldBarOther(int iLength, Point2D* pLocation, Rect
     if (iTotal > iLength) {
         iTotal = iLength;
     }
-    frame = 16; //NEED CHANGE
+    frame = this->DrawShieldBar_Pip();
     for (int i = 0; i < iTotal; ++i) {
         vPos.X = vLoc.X + XOffset + 2 * i;
         vPos.Y = vLoc.Y + YOffset;
         DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP, frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
     }
+}
+
+int ShieldTechnoClass::DrawShieldBar_Pip() {
+    auto ShieldPip = RulesExt::Global()->Shield_Pip.Get();
+    if (this->HP > RulesClass::Instance->ConditionYellow && ShieldPip.X != -1)
+        return ShieldPip.X;
+    else if (this->HP > RulesClass::Instance->ConditionRed && (ShieldPip.Y != -1 || ShieldPip.X != -1))
+        return ShieldPip.Y == -1 ? ShieldPip.X : ShieldPip.Y;
+    else if (ShieldPip.Z != -1 || ShieldPip.X != -1)
+        return ShieldPip.Z == -1 ? ShieldPip.X : ShieldPip.Z;
+
+    if (this->Techno->WhatAmI() == AbstractType::Building)
+        return 5;
+    else
+        return 16;
 }

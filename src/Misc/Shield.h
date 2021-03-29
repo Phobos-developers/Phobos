@@ -36,6 +36,7 @@ private:
     void DrawShield();
     void DrawShieldBarBuilding(int iLength, Point2D* pLocation, RectangleStruct* pBound);
     void DrawShieldBarOther(int iLength, Point2D* pLocation, RectangleStruct* pBound);
+    int DrawShieldBar_Pip();
 
     /// Properties ///
 

@@ -50,6 +50,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI) 
 
 	INI_EX exINI(pINI);
 
+	this->Shield_Pip.Read(exINI, "AudioVisual", "Shield.Pip");
 }
 
 // this runs between the before and after type data loading methods for rules ini
@@ -92,7 +93,9 @@ bool RulesExt::DetailsCurrentlyEnabled(int const minDetailLevel)
 
 template <typename T>
 void RulesExt::ExtData::Serialize(T& Stm) {
-	
+	Stm
+		.Process(this->Shield_Pip)
+		;
 }
 
 void RulesExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
