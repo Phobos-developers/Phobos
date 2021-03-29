@@ -72,14 +72,14 @@ Promote.IncludeSpawns=no  ; boolean
 - `Shield.SelfHealing` and `Shield.Respawn` respect the following settings: 0.0 disables the feature, 1%-100% recovers/respawns the shield strength in percentage, other number recovers/respawns the shield strength directly. Specially, `Shield.SelfHealing` with a negative number deducts the shield strength.
 - `Shield.SelfHealing.Rate` and `Shield.Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other number determines the frequency of shield recovers/respawns in minutes.
 - A TechnoType with a Shield will show its Shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable.
- - Buildings now uses the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame as default.
- - `Shield.Pip` can be used to specify which frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. 
- - `Pipbrd.shp` will use its 4th frame to display an infantry's shield strength and the 3th frame for other units if `pipbrd.shp` has extra 2 frames.
+  - Buildings now uses the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame as default.
+  - `Shield.Pip` can be used to specify which frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. 
+  - `Pipbrd.shp` will use its 4th frame to display an infantry's shield strength and the 3th frame for other units if `pipbrd.shp` has extra 2 frames. And `Shield.BracketDelta` can be used as additonal `PixelSelectionBracketDelta` for shield strength. 
 
 In `rulesmd.ini`
 ```ini
 [AudioVisual]
-Shield.Pip=					; Green, Yellow, Red
+Shield.Pip=                 ; Green, Yellow, Red
 
 [SOMETECHNO]	            ; TechnoTypes
 Shield.Strength=0           ; integer
@@ -88,7 +88,7 @@ Shield.SelfHealing=0.0      ; double
 Shield.SelfHealing.Rate=0.0 ; double - minutes
 Shield.Respawn=0.0          ; double
 Shield.Respawn.Rate=0.0     ; double - minutes
-Shield.BracketDelta=0		; integer - pixels
+Shield.BracketDelta=0       ; integer - pixels
 Shield.Image.Normal=        ; animation, required LoopCount=-1 for the anim
 Shield.Image.Breaking=      ; animation
 ```
