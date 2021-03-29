@@ -29,6 +29,9 @@ bool ShieldTechnoClass::Load(PhobosStreamReader& Stm, bool RegisterForChange)
     return Stm
         .Process(this->Techno)
         .Process(this->Image)
+        .Process(this->HP)
+        .Process(this->Timer_SelfHealing)
+        .Process(this->Timer_Respawn)
         .Success();
 }
 
@@ -37,6 +40,9 @@ bool ShieldTechnoClass::Save(PhobosStreamWriter& Stm) const
     return Stm
         .Process(this->Techno)
         .Process(this->Image)
+        .Process(this->HP)
+        .Process(this->Timer_SelfHealing)
+        .Process(this->Timer_Respawn)
         .Success();
 }
 
