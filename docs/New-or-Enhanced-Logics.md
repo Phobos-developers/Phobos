@@ -105,8 +105,9 @@ Rad.NoOwner=no  ; boolean
 ```
 
 ## Warheads
+
 :::{hint}
-All new warheads can be used with CellSpread and Ares' GenericWarhead superweapon.
+All new warheads can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
 :::
 
 ### Generate credits on impact
@@ -165,6 +166,22 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                        ; Warhead
 RemoveMindControl=no                 ; boolean
+```
+
+### Critical damage chance
+
+- Warheads can now apply additional chance-based critical damage with the ability to customize chance, damage, affected targets, and animations of critical strike.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]       ; Warhead
+Crit.Chance=0.0     ; float, chance on [0.0-1.0] scale
+Crit.ExtraDamage=0  ; integer, extra damage
+Crit.Affects=all    ; list of "affects" flags (same as SWType's)
+Crit.AnimList=      ; list of animatioms
+
+[SOMETECHNO]     ; TechnoType
+ImmuneToCrit=no  ; boolean
 ```
 
 ### Custom 'SplashList' on Warheads

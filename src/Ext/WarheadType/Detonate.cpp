@@ -4,8 +4,11 @@
 #include <BulletClass.h>
 #include <HouseClass.h>
 #include <ScenarioClass.h>
+#include <AnimTypeClass.h>
+#include <AnimClass.h>
 
 #include "../../Utilities/Helpers.Alex.h"
+#include "../TechnoType/Body.h"
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
 {
@@ -32,10 +35,19 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		}
 	}
 
+	// Apply Crit Anim
+	if (this->Crit_Chance && this->Crit_AnimList.size()) {
+		auto& random = ScenarioClass::Instance->Random;
+		GameCreate<AnimClass>(this->Crit_AnimList[this->Crit_AnimList.size() > 1 ?
+			random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0],
+			coords);
+	}
+
 	// List all Warheads here that respect CellSpread
 	const bool isCellSpreadWarhead =
 		this->RemoveDisguise ||
-		this->RemoveMindControl;
+		this->RemoveMindControl ||
+		this->Crit_Chance;
 
 	const float cellSpread = this->OwnerObject()->CellSpread;
 	if (cellSpread && isCellSpreadWarhead) {
@@ -68,6 +80,10 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->RemoveMindControl) {
 		this->ApplyRemoveMindControl(pHouse, pTarget);
 	}
+	
+	if (this->Crit_Chance) {
+		this->ApplyCrit(pHouse, pTarget, pOwner);
+	}
 }
 
 void WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget)
@@ -88,4 +104,29 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, Techn
 			pInf->ClearDisguise();
 		}
 	}
+}
+
+void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
+{
+	auto& random = ScenarioClass::Instance->Random;
+	const double dice = double(random.RandomRanged(1, 10)) / 10;
+
+	if (this->Crit_Chance > dice) {
+		return;
+	}
+
+	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType())) {
+		if (pTypeExt->ImmuneToCrit)
+			return;
+	}
+
+	if (!this->IsCellEligible(pTarget->GetCell(), this->Crit_Affects)) {
+		return;
+	}
+
+	if (!this->IsTechnoEligible(pTarget, this->Crit_Affects)) {
+		return;
+	}
+
+	pTarget->ReceiveDamage(&this->Crit_ExtraDamage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
 }

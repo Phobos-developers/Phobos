@@ -220,6 +220,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Spawn_LimitedExtraRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
 	this->Harvester_Counted.Read(exINI, pSection, "Harvester.Counted");
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
+	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
@@ -248,6 +249,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->Spawn_LimitedExtraRange)
 		.Process(this->Harvester_Counted)
         .Process(this->Promote_IncludeSpawns)
+		.Process(this->ImmuneToCrit)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {

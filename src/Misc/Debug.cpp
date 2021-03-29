@@ -1,7 +1,7 @@
+#include "Debug.h"
+
 #include <Utilities\Macro.h>
 #include <YRPPCore.h>
-
-#include "Debug.h"
 
 void Debug::Log(const char* pFormat, ...)
 {

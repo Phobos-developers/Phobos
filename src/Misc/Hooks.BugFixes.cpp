@@ -1,4 +1,4 @@
-#include <Helpers/Macro.h>
+#include <Utilities/Macro.h>
 #include <AnimClass.h>
 #include <TechnoClass.h>
 #include <FootClass.h>
@@ -23,13 +23,6 @@ DEFINE_HOOK(423365, Phobos_BugFixes_SHPShadowCheck, 8)
 
     Author : E1 Elite
 */
+DEFINE_LJMP(0x545CE2, 0x545CE9) //Phobos_BugFixes_Tileset255_RemoveNonMMArrayFill
+DEFINE_LJMP(0x546C23, 0x546C8B) //Phobos_BugFixes_Tileset255_RefNonMMArray
 
-DEFINE_HOOK(545CE2, Phobos_BugFixes_Tileset255_RemoveNonMMArrayFill, 0)
-{
-    return 0x545CE9;
-}
-
-DEFINE_HOOK(546C23, Phobos_BugFixes_Tileset255_RefNonMMArray, 0)
-{
-    return 0x546C8B;
-}
