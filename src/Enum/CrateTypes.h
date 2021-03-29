@@ -21,7 +21,8 @@ public:
 	Valueable<int> Chance{ 0 } ;
 	Valueable<AnimTypeClass*> Anim{ nullptr };
 	Valueable<int> Tp{ 3 };
-
+	Valueable<bool>Water{ false };
+	NullableIdx<VocClass>Sound{};
 
 	CrateType(const char* pTitle);
 

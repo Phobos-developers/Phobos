@@ -60,6 +60,7 @@ DEFINE_HOOK(481F87, CellClass_CrateCollected_Shroud_Override, 6) {
 	auto pY = static_cast<short>(R->ECX());
 
 	bool pass = false;//default behaviour return
+	bool landtypenoteligible = false;
 	Debug::Log("Crate at  [x : %d][y : %d] Collected by [%s]\n", pX, pY,Collector->get_ID());
 	
 	auto pHouse = Collector->Owner;
@@ -86,13 +87,31 @@ DEFINE_HOOK(481F87, CellClass_CrateCollected_Shroud_Override, 6) {
 				Debug::Log("Crate Diceb [%d]\n", diceb);
 
 			if ( diceb > CrateType::Array[dice]->Chance){
-				
-			   auto pType = CrateType::Array[dice]->Anim;
-			   auto ANID = pType ? CrateType::Array[dice]->Anim->ID : "<None>";
-			   
 
-			   int type = CrateType::Array[dice]->Tp;
-			   Debug::Log("Crate type [%d]\n", type);
+				int type = CrateType::Array[dice]->Tp;
+
+				auto pType = CrateType::Array[dice]->Anim;
+				auto ANID = pType ? CrateType::Array[dice]->Anim->ID : "<None>";
+				auto pSound = CrateType::Array[dice]->Sound.Get();
+
+				//crate desnt allow water give money instead
+				//type 3 always pass the check -> fail -> return 0;
+				bool type3 = type == 3 ? true : false;
+				if (pcell->LandType == LandType::Water && !CrateType::Array[dice]->Water && !type3) {
+
+					landtypenoteligible = true;
+					pHouse->GiveMoney(RulesClass::Instance->SoloCrateMoney);
+					//todo : unharcoded this
+					GameCreate<AnimClass>(AnimTypeClass::FindOrAllocate("MONEY"), animCoord);
+					VocClass::PlayAt(RulesClass::Instance->CrateMoneySound, animCoord, nullptr);
+					pass = true;
+
+
+				}
+
+				if (!landtypenoteligible) {
+
+					Debug::Log("Crate type [%d] is allowed [%d]\n", type, landtypenoteligible);
 
 					switch (type)
 					{
@@ -114,12 +133,14 @@ DEFINE_HOOK(481F87, CellClass_CrateCollected_Shroud_Override, 6) {
 						}
 						else
 						{
-							if (!pHouse->Supers.GetItem(SWSS)->IsCharged) { pHouse->Supers.GetItem(SWSS)->IsCharged = true;}
+							//Abused By AI ?
+							if (!pHouse->Supers.GetItem(SWSS)->IsCharged) { pHouse->Supers.GetItem(SWSS)->IsCharged = true; }
 							pHouse->Supers.GetItem(SWSS)->Launch(pcell->MapCoords, true);
-							
+							pHouse->Supers.GetItem(SWSS)->IsCharged = false;
+
 						}
 
-			
+
 						pass = true;
 					}
 					break;
@@ -128,7 +149,7 @@ DEFINE_HOOK(481F87, CellClass_CrateCollected_Shroud_Override, 6) {
 						auto WPID = CrateType::Array[dice]->WeaponType ? CrateType::Array[dice]->WeaponType->ID : "<None>";
 						auto pBullet = CrateType::Array[dice]->WeaponType;
 						Debug::Log("Crate selected [%s] , WP [%s] , Chance [%d] , Anim [%s] \n", CrateType::Array[dice]->Name, WPID, CrateType::Array[dice]->Chance, ANID);
-						Debug::Log("Crate type WP IDX [%d][%s]\n", WeaponTypeClass::FindIndex(WPID),WPID);
+						Debug::Log("Crate type WP IDX [%d][%s]\n", WeaponTypeClass::FindIndex(WPID), WPID);
 						if (pBullet && !pBullet->Warhead->MindControl) {
 							auto pBulletC = pBullet->Projectile->CreateBullet(pcell, Collector, pBullet->Damage, pBullet->Warhead, pBullet->Speed, pBullet->Bright);
 
@@ -155,9 +176,16 @@ DEFINE_HOOK(481F87, CellClass_CrateCollected_Shroud_Override, 6) {
 						break;
 					}
 
-					if(pType && pass)
-					GameCreate<AnimClass>(pType, animCoord);	
-				
+
+					if (pass) {
+
+						if (pType)
+							GameCreate<AnimClass>(pType, animCoord);
+						if (pSound)
+							VocClass::PlayAt(pSound, animCoord, nullptr);
+
+					}
+				}
 			}
 		  }
 		}

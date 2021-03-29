@@ -14,7 +14,11 @@ CrateType::CrateType(const char* const pTitle)
 	SWs(),
 	WeaponType(),
 	Chance(),
-	Anim()
+	Anim(),
+	Tp(),
+	SWGrant(),
+	Water(),
+	Sound()
 { }
 
 void CrateType::LoadListSection(CCINIClass *pINI)
@@ -44,6 +48,8 @@ void CrateType::LoadFromINI(CCINIClass *pINI)
 	this->Chance.Read(exINI, section, "Crate.Chance");
 	this->Anim.Read(exINI, section, "Crate.Anim");
 	this->Tp.Read(exINI, section, "Crate.Type");
+	this->Water.Read(exINI, section, "Crate.AllowWater");
+	this->Sound.Read(exINI, section, "Crate.Sound");
 
 	Debug::Log("CrateType :: LoadFromIni check,Name = %s \n", this->Name);
 
@@ -57,6 +63,8 @@ void CrateType::Serialize(T& Stm) {
 		.Process(this->Anim)
 		.Process(this->Tp)
 		.Process(this->SWGrant)
+		.Process(this->Water)
+		.Process(this->Sound)
 		;
 }
 
