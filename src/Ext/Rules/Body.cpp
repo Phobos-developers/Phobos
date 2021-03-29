@@ -95,7 +95,8 @@ bool RulesExt::DetailsCurrentlyEnabled(int const minDetailLevel)
 template <typename T>
 void RulesExt::ExtData::Serialize(T& Stm) {
 	Stm
-		.Process(this->Shield_Pip)
+		.Process(this->Shield_PipsForOther)
+		.Process(this->Shield_PipsForBuidling)
 		;
 }
 
