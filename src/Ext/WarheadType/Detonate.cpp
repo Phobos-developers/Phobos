@@ -36,10 +36,10 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	}
 
 	// Apply Crit Anim
-	if (this->Crit_Chance && this->Crit_Anims.size()) {
+	if (this->Crit_Chance && this->Crit_AnimList.size()) {
 		auto& random = ScenarioClass::Instance->Random;
-		GameCreate<AnimClass>(this->Crit_Anims[this->Crit_Anims.size() > 1 ?
-			random.RandomRanged(0, this->Crit_Anims.size() - 1) : 0],
+		GameCreate<AnimClass>(this->Crit_AnimList[this->Crit_AnimList.size() > 1 ?
+			random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0],
 			coords);
 	}
 
@@ -128,5 +128,5 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 		return;
 	}
 
-	pTarget->ReceiveDamage(&this->Crit_Damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
+	pTarget->ReceiveDamage(&this->Crit_ExtraDamage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
 }

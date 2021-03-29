@@ -22,10 +22,10 @@ public:
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
 
-		Valueable<int> Crit_Damage;
+		Valueable<int> Crit_ExtraDamage;
 		Valueable<double> Crit_Chance;
 		Valueable<SuperWeaponTarget> Crit_Affects;
-		ValueableVector<AnimTypeClass*> Crit_Anims;
+		ValueableVector<AnimTypeClass*> Crit_AnimList;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -43,9 +43,9 @@ public:
 			RemoveMindControl(false),
 
 			Crit_Chance(0.0),
-			Crit_Damage(0),
+			Crit_ExtraDamage(0),
 			Crit_Affects(SuperWeaponTarget::None),
-			Crit_Anims(),
+			Crit_AnimList(),
 
 			AffectsEnemies(true),
 			AffectsOwner(OwnerObject->AffectsAllies)
