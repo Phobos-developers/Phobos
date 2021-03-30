@@ -83,8 +83,8 @@ bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon, TechnoClass* pSo
 {
     auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
     bool result =
-        (MapClass::GetTotalDamage(pWeapon->Damage, pWeapon->Warhead, this->GetExt()->Shield_Armor, 0) != 0)
-        && pWHExt && pWHExt->CanTargetHouse(pSource->Owner, this->Techno);
+        ((MapClass::GetTotalDamage(pWeapon->Damage, pWeapon->Warhead, this->GetExt()->Shield_Armor, 0) != 0) && pWeapon->Damage) 
+        || !pWeapon->Damage; // we could check how is a warhead vs shield's armor 
     return this->HP ? result : true;
 }
 
@@ -238,7 +238,7 @@ void ShieldTechnoClass::DrawShieldBarOther(int iLength, Point2D* pLocation, Rect
     Point2D vPos = { 0,0 };
     Point2D vLoc = *pLocation;
     int frame, XOffset, YOffset;
-    YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta, this->GetExt()->Shield_BracketDelta;
+    YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->GetExt()->Shield_BracketDelta;
     vLoc.Y -= 5;
     if (iLength == 8) {
         vPos.X = vLoc.X + 11;
@@ -276,9 +276,9 @@ int ShieldTechnoClass::DrawShieldBar_Pip() {
     if (this->Techno->WhatAmI() == AbstractType::Building)
         ShieldPip = RulesExt::Global()->Shield_PipsForBuidling;
 
-    if (this->HP > RulesClass::Instance->ConditionYellow * this->HP && ShieldPip.X != -1)
+    if (this->HP > RulesClass::Instance->ConditionYellow * this->GetExt()->Shield_Strength && ShieldPip.X != -1)
         return ShieldPip.X;
-    else if (this->HP > RulesClass::Instance->ConditionRed * this->HP && (ShieldPip.Y != -1 || ShieldPip.X != -1))
+    else if (this->HP > RulesClass::Instance->ConditionRed * this->GetExt()->Shield_Strength && (ShieldPip.Y != -1 || ShieldPip.X != -1))
         return ShieldPip.Y == -1 ? ShieldPip.X : ShieldPip.Y;
     else if (ShieldPip.Z != -1 || ShieldPip.X != -1)
         return ShieldPip.Z == -1 ? ShieldPip.X : ShieldPip.Z;
