@@ -43,7 +43,7 @@ const wchar_t* Phobos::UI::HarvesterLabel = L"";
 
 bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::PrioritySelectionFiltering = true;
-bool Phobos::Config::DevelopmentCommands = false;
+bool Phobos::Config::DevelopmentCommands = true;
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
@@ -165,7 +165,7 @@ DEFINE_HOOK(66E9DF, RulesClass_Process_Phobos, 8)
 {
 	GET(CCINIClass*, rulesINI, EDI);
 
-	Phobos::Config::DevelopmentCommands = rulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", true);
+	Phobos::Config::DevelopmentCommands = rulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
 
 	return 0;
 }
