@@ -33,6 +33,16 @@ DEFINE_HOOK(640B8D, LoadingScreen_DisableEmptySpawnPositions, 6)
 //	return 0x641071;
 //}
 
+// Allow size = 0 for map previews
+DEFINE_HOOK(641B41, LoadingScreen_SkipPreview, 8)
+{
+	GET(RectangleStruct*, pRect, EAX);
+	if (pRect->Width > 0 && pRect->Height > 0) {
+		return 0;
+	}
+	return 0x641D4E;
+}
+
 DEFINE_HOOK(4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 7)
 {
 	if (Phobos::UI::ShowHarvesterCounter) {
