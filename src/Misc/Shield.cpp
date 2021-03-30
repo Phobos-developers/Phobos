@@ -82,6 +82,7 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
 bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon, TechnoClass* pSource)
 {
     auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+    UNREFERENCED_PARAMETER(pWHExt);
     bool result =
         ((MapClass::GetTotalDamage(pWeapon->Damage, pWeapon->Warhead, this->GetExt()->Shield_Armor, 0) != 0) && pWeapon->Damage) 
         || !pWeapon->Damage; // we could check how is a warhead vs shield's armor 
@@ -156,9 +157,9 @@ void ShieldTechnoClass::BreakShield()
     {
         if (auto pAnimType = this->GetExt()->Shield_BreakImage)
         {
-            this->Image = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
-            if (this->Image)
-                this->Image->SetOwnerObject(this->Techno);
+            auto pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
+            if (pAnim)
+                pAnim->SetOwnerObject(this->Techno);
         }
     }
 }
