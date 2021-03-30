@@ -276,9 +276,9 @@ int ShieldTechnoClass::DrawShieldBar_Pip() {
     if (this->Techno->WhatAmI() == AbstractType::Building)
         ShieldPip = RulesExt::Global()->Shield_PipsForBuidling;
 
-    if (this->HP > RulesClass::Instance->ConditionYellow && ShieldPip.X != -1)
+    if (this->HP > RulesClass::Instance->ConditionYellow * this->HP && ShieldPip.X != -1)
         return ShieldPip.X;
-    else if (this->HP > RulesClass::Instance->ConditionRed && (ShieldPip.Y != -1 || ShieldPip.X != -1))
+    else if (this->HP > RulesClass::Instance->ConditionRed * this->HP && (ShieldPip.Y != -1 || ShieldPip.X != -1))
         return ShieldPip.Y == -1 ? ShieldPip.X : ShieldPip.Y;
     else if (ShieldPip.Z != -1 || ShieldPip.X != -1)
         return ShieldPip.Z == -1 ? ShieldPip.X : ShieldPip.Z;
