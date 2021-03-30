@@ -2,6 +2,12 @@
 
 This page lists all user interface additions, changes, fixes that are implemented in Phobos.
 
+## Bugfixes and miscellanous
+
+- Enabled ability to load full-color non-paletted PCX graphics of any bitness. This applies to every single PCX file that is loaded, including the Ares-supported PCX files.
+- You can specify custom `gamemd.exe` icon via `-icon` command line argument followed by absolute or relative path to an `*.ico` file (f. ex. `gamemd.exe -icon Resources/clienticon.ico`).
+- Fixed `Blowfish.dll`-caused error `***FATAL*** String Manager failed to initilaize properly`, which occurred if `Blowfish.dll` could not be registered in the OS, for example, it happened when the player did not have administrator rights. With Phobos, if the game did not find a registered file in the system, it will no longer try to register this file, but will load it bypassing registration. 
+
 ## Audio
 
 - You can now specify which soundtrack themes would play on win or lose.
@@ -12,11 +18,6 @@ In `rulesmd.ini`:
 IngameScore.WinTheme=  ; soundtrack theme ID
 IngameScore.LoseTheme= ; soundtrack theme ID
 ```
-
-## Bugfixes and miscellanous
-
-- Enabled ability to load full-color non-paletted PCX graphics of any bitness. This applies to every single PCX file that is loaded, including the Ares-supported PCX files.
-- You can specify custom `gamemd.exe` icon via `-icon` command line argument followed by absolute or relative path to an `*.ico` file (f. ex. `gamemd.exe -icon Resources/clienticon.ico`).
 
 ## Hotkey Commands
 
