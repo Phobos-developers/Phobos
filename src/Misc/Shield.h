@@ -9,6 +9,32 @@
 class TechnoClass;
 class WarheadTypeClass;
 
+class ShieldTypeClass {
+public:
+
+    AbstractTypeClass* Owner{ nullptr };
+
+    Valueable<int> Shield_Strength;
+    Valueable<signed int> Shield_Armor;
+    Valueable<double> Shield_Respawn;
+    Valueable<double> Shield_RespawnDelay;
+    Valueable<double> Shield_SelfHealing;
+    Valueable<double> Shield_SelfHealingDelay;
+    Valueable<bool> Shield_AbsorbOverDamage;
+    Valueable<int> Shield_BracketDelta;
+    Nullable<AnimTypeClass*> Shield_Image;
+    Nullable<AnimTypeClass*> Shield_BreakImage;
+
+    bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
+
+    bool Save(PhobosStreamWriter& Stm) const;
+
+    ShieldTypeClass(AbstractTypeClass* pOwner) : Owner(pOwner)
+    { }
+
+    //void Read(INI_EX& exINI);
+};
+
 class ShieldTechnoClass
 {
 public:
@@ -46,6 +72,7 @@ private:
 
     /// Properties ///
 
+    ShieldTypeClass* Type;
     TechnoClass* Techno;
     int HP;
     TimerStruct Timer_SelfHealing;

@@ -6,10 +6,12 @@
 #include <Ext/WarheadType/Body.h>
 
 #include <AnimClass.h>
+#include <HouseClass.h>
 
-ShieldTechnoClass::ShieldTechnoClass() :Techno{ nullptr }, HP{ 0 }, Timer_Respawn{}, Timer_SelfHealing{}{};
+ShieldTechnoClass::ShieldTechnoClass() :Type{ nullptr }, Techno{ nullptr }, HP{ 0 }, Timer_Respawn{}, Timer_SelfHealing{}{};
 
 ShieldTechnoClass::ShieldTechnoClass(TechnoClass* pTechno) :
+    Type{ nullptr },
     Techno{ pTechno },
     HP{ this->GetExt()->Shield_Strength },
     Timer_Respawn{},
@@ -64,7 +66,11 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
 
     if (nDamage > 0) {
         this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealingDelay * 900)); //when attacked, restart the timer
-
+        if (this->Techno->WhatAmI() == AbstractType::Building)
+        {
+            auto pBld = abstract_cast<BuildingClass*>(this->Techno);
+            this->Techno->Owner->BuildingUnderAttack(pBld);
+        }
         auto residueDamage = nDamage - this->HP;
         if (residueDamage >= 0)
         {
@@ -193,16 +199,12 @@ void ShieldTechnoClass::DrawShield()
         }
     }
     */
-    if (this->Techno->CloakState == CloakState::Cloaked
-        || this->Techno->CloakState == CloakState::Cloaking
+    if (this->Techno->CloakState != CloakState::Uncloaked
         || this->HP < 1)
     {
-        if (this->HP < 1&&this->HaveAnim) {
+        if (this->HaveAnim) {
             this->KillAnim();
             //this->HaveAnim = false;
-        }
-        else if (this->HaveAnim) {
-            this->HaveAnim = false;
         }
     }
     else 
@@ -216,7 +218,7 @@ void ShieldTechnoClass::DrawShield()
 
 void ShieldTechnoClass::CreateAnim()
 {
-    if ((this->Techno->CloakState == CloakState::Cloaked || this->Techno->CloakState == CloakState::Cloaking) //cloak
+    if (this->Techno->CloakState != CloakState::Uncloaked //cloak
         || (this->Techno->TemporalTargetingMe) //temporal
         || this->HP < 1) //no shield
     { 
