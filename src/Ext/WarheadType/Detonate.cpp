@@ -105,7 +105,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	//auto& random = ScenarioClass::Instance->Random;
 	const double dice = this->RandomBuffer; //double(random.RandomRanged(1, 10)) / 10;
 
-	if (this->Crit_Chance > dice) {
+	if (this->Crit_Chance < dice) {
 		return;
 	}
 

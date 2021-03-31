@@ -68,7 +68,7 @@ DEFINE_HOOK(48A5B3, WarheadTypeClass_AnimList_CritAnim, 6)
 	GET(WarheadTypeClass* const, pThis, ESI);
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-	if (pWHExt && !(pWHExt->Crit_Chance > pWHExt->RandomBuffer) && pWHExt->Crit_AnimList.size()) {
+	if (pWHExt && !(pWHExt->Crit_Chance < pWHExt->RandomBuffer) && pWHExt->Crit_AnimList.size()) {
 		GET(int, nDamage, ECX);
 		int idx = pThis->EMEffect ?
 			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_AnimList.size() - 1) :
