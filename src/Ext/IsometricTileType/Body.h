@@ -51,5 +51,5 @@ public:
 
 	static ExtContainer ExtMap;
 
-	static std::unordered_map<PhobosFixedString<0x20>, BytePalette*, std::hash<PhobosFixedString<0x20>>, PhobosFixedString<0x20>::CaseInsensitiveCompare> Palettes;
+	static std::unordered_map<std::string, BytePalette*> Palettes;
 };

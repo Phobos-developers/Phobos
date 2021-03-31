@@ -5,11 +5,10 @@
 template<> const DWORD Extension<IsometricTileTypeClass>::Canary = 0x23434657;
 IsometricTileTypeExt::ExtContainer IsometricTileTypeExt::ExtMap;
 
-std::unordered_map<PhobosFixedString<0x20>, BytePalette*, std::hash<PhobosFixedString<0x20>>, PhobosFixedString<0x20>::CaseInsensitiveCompare>
-	IsometricTileTypeExt::Palettes;
+std::unordered_map<std::string, BytePalette*> IsometricTileTypeExt::Palettes;
 
 void IsometricTileTypeExt::ExtData::GetSectionName(char* buffer) {
-	sprintf(buffer, "TileSet%04d", this->TileSetNumber);
+	sprintf(buffer, "TileSet%04d", this->TileSetNumber.Get());
 }
 
 // =============================
@@ -28,12 +27,14 @@ void IsometricTileTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		this->CustomPalette.Read(pINI, pSection, "CustomPalette");
 
 		if (this->CustomPalette) {
-			if (!Palettes[CustomPalette]) {
-				Debug::Log("[Palette] Loading new custom palette %s\n", CustomPalette);
-				Palettes[CustomPalette] = FileSystem::AllocatePalette(CustomPalette);
+			std::string s(this->CustomPalette);
+
+			if (!Palettes[s]) {
+				Debug::Log("[Palette] Loading new custom palette %s\n", s.c_str());
+				Palettes[s] = FileSystem::AllocatePalette(s.c_str());
 			}
 
-			this->Palette = Palettes[CustomPalette];
+			this->Palette = Palettes[s];
 		}
 	}
 }
