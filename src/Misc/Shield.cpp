@@ -14,7 +14,8 @@ ShieldTechnoClass::ShieldTechnoClass(TechnoClass* pTechno) :
     HP{ this->GetExt()->Shield_Strength },
     Timer_Respawn{},
     Timer_SelfHealing{},
-    Image{ nullptr }
+    Image{ nullptr },
+    HaveAnim{ false }
 {
     this->DrawShield();
 }
@@ -32,6 +33,7 @@ bool ShieldTechnoClass::Load(PhobosStreamReader& Stm, bool RegisterForChange)
         .Process(this->HP)
         .Process(this->Timer_SelfHealing)
         .Process(this->Timer_Respawn)
+        .Process(this->HaveAnim)
         .Success();
 }
 
@@ -43,6 +45,7 @@ bool ShieldTechnoClass::Save(PhobosStreamWriter& Stm) const
         .Process(this->HP)
         .Process(this->Timer_SelfHealing)
         .Process(this->Timer_Respawn)
+        .Process(this->HaveAnim)
         .Success();
 }
 
@@ -91,8 +94,12 @@ bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon, TechnoClass* pSo
 
 void ShieldTechnoClass::Update()
 {
+    if (!this->Techno || this->Techno->InLimbo || this->Techno->IsImmobilized || this->Techno->Transporter) {
+        return;
+    }
     this->RespawnShield();
     this->SelfHealing();
+    this->DrawShield();
 }
 
 void ShieldTechnoClass::RespawnShield()
@@ -101,7 +108,6 @@ void ShieldTechnoClass::RespawnShield()
     {
         this->Timer_Respawn.Stop();
         this->HP = this->GetPercentageAmount(this->GetExt()->Shield_Respawn);
-        this->DrawShield();
     }
 }
 
@@ -142,17 +148,27 @@ int ShieldTechnoClass::GetPercentageAmount(double iStatus)
     return 0;
 }
 
+void ShieldTechnoClass::InvalidatePointer(void* ptr) {
+    if (this->Techno == ptr) {
+        this->Techno = nullptr;
+    }
+
+    if (this->Image == ptr) {
+        this->KillAnim();
+    }
+}
+
+void ShieldTechnoClass::UninitAnim::operator() (AnimClass* const pAnim) const {
+    pAnim->SetOwnerObject(nullptr);
+    pAnim->UnInit();
+}
+
 void ShieldTechnoClass::BreakShield()
 {
     this->HP = 0;
     if (this->GetExt()->Shield_Respawn > 0) this->Timer_Respawn.Start(int(this->GetExt()->Shield_RespawnDelay * 900));
     this->Timer_SelfHealing.Stop();
 
-    if (this->Image) 
-    {
-        this->Image->UnInit();
-        this->Image = nullptr;
-    }
     if (this->GetExt()->Shield_BreakImage.isset())
     {
         if (auto pAnimType = this->GetExt()->Shield_BreakImage)
@@ -166,6 +182,7 @@ void ShieldTechnoClass::BreakShield()
 
 void ShieldTechnoClass::DrawShield()
 {
+    /*
     if (this->GetExt()->Shield_Image.isset() && this->HP > 0)
     {
         if (auto pAnimType = this->GetExt()->Shield_Image)
@@ -175,6 +192,54 @@ void ShieldTechnoClass::DrawShield()
                 this->Image->SetOwnerObject(this->Techno);
         }
     }
+    */
+    if (this->Techno->CloakState == CloakState::Cloaked
+        || this->Techno->CloakState == CloakState::Cloaking
+        || this->HP < 1)
+    {
+        if (this->HP < 1&&this->HaveAnim) {
+            this->KillAnim();
+            //this->HaveAnim = false;
+        }
+        else if (this->HaveAnim) {
+            this->HaveAnim = false;
+        }
+    }
+    else 
+    {
+        if (!this->HaveAnim) {
+            this->CreateAnim();
+            //this->HaveAnim = true;
+        }
+    }
+}
+
+void ShieldTechnoClass::CreateAnim()
+{
+    if ((this->Techno->CloakState == CloakState::Cloaked || this->Techno->CloakState == CloakState::Cloaking) //cloak
+        || (this->Techno->TemporalTargetingMe) //temporal
+        || this->HP < 1) //no shield
+    { 
+        return;
+    }
+    if (this->GetExt()->Shield_Image.isset()) {
+        if (AnimTypeClass* const pAnimType = this->GetExt()->Shield_Image) {
+            this->Image.reset(GameCreate<AnimClass>(pAnimType, this->Techno->Location));
+            if (AnimClass* const pAnim = this->Image) {
+                pAnim->SetOwnerObject(this->Techno);
+                pAnim->RemainingIterations = 0xFFu;
+                pAnim->Owner = this->Techno->Owner;
+
+                this->HaveAnim = true;
+            }
+        }
+    }
+}
+
+void ShieldTechnoClass::KillAnim() 
+{
+    this->Image.clear();
+    this->HaveAnim = false;
 }
 
 void ShieldTechnoClass::DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound)

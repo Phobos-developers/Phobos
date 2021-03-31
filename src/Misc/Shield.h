@@ -20,12 +20,16 @@ public:
     bool CanBeTargeted(WeaponTypeClass* pWeapon, TechnoClass* pSource);
     void Update();
     void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
+    void InvalidatePointer(void* ptr);
 
     bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
     bool Save(PhobosStreamWriter& Stm) const;
     
 private:
     // static constexpr int ScanInterval = 15;		//!< Minimum delay between scans in frames.
+    struct UninitAnim {
+        void operator() (AnimClass* const pAnim) const;
+    };
 
     const TechnoTypeExt::ExtData* GetExt();
 
@@ -34,6 +38,8 @@ private:
     int GetPercentageAmount(double iStatus);
     void BreakShield();
     void DrawShield();
+    void CreateAnim();
+    void KillAnim();
     void DrawShieldBarBuilding(int iLength, Point2D* pLocation, RectangleStruct* pBound);
     void DrawShieldBarOther(int iLength, Point2D* pLocation, RectangleStruct* pBound);
     int DrawShieldBar_Pip();
@@ -44,7 +50,8 @@ private:
     int HP;
     TimerStruct Timer_SelfHealing;
     TimerStruct Timer_Respawn;
-    AnimClass* Image;
+    Handle<AnimClass*, UninitAnim> Image;
+    bool HaveAnim;
     //SHPStruct* Image;
     //LightConvertClass* Convert;
 };
