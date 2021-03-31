@@ -150,7 +150,7 @@ void ShieldTechnoClass::BreakShield()
 
     if (this->Image) 
     {
-        GameDelete(this->Image);
+        this->Image->UnInit();
         this->Image = nullptr;
     }
     if (this->GetExt()->Shield_BreakImage.isset())
