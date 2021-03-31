@@ -35,13 +35,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		}
 	}
 
-	// Apply Crit Anim
-	if (this->Crit_Chance && this->Crit_AnimList.size()) {
-		auto& random = ScenarioClass::Instance->Random;
-		GameCreate<AnimClass>(this->Crit_AnimList[this->Crit_AnimList.size() > 1 ?
-			random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0],
-			coords);
-	}
+	this->RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
 
 	// List all Warheads here that respect CellSpread
 	const bool isCellSpreadWarhead =
@@ -108,8 +102,8 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, Techn
 
 void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
 {
-	auto& random = ScenarioClass::Instance->Random;
-	const double dice = double(random.RandomRanged(1, 10)) / 10;
+	//auto& random = ScenarioClass::Instance->Random;
+	const double dice = this->RandomBuffer; //double(random.RandomRanged(1, 10)) / 10;
 
 	if (this->Crit_Chance > dice) {
 		return;

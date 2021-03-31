@@ -32,6 +32,7 @@ public:
 		Valueable<bool> AffectsEnemies;
 		Valueable<bool> AffectsOwner;
 		
+		double RandomBuffer;
 
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject),
 			SpySat(false),
@@ -46,6 +47,7 @@ public:
 			Crit_ExtraDamage(0),
 			Crit_Affects(SuperWeaponTarget::None),
 			Crit_AnimList(),
+			RandomBuffer(0.0),
 
 			AffectsEnemies(true),
 			AffectsOwner(OwnerObject->AffectsAllies)
