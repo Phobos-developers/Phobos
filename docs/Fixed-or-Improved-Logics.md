@@ -47,3 +47,15 @@ In `rulesmd.ini`:
 [SOMESTRUCTURE]       ; BuildingType
 Powered.KillSpawns=no ; boolean
 ```
+
+## Terrain
+
+### Customizable spawned ore types
+
+- Allows to specify which type of tiberium this TerrainType would generate.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]      ; TerrainType
+SpawnsTiberium.Type=0  ; Tiberium type index
+```
