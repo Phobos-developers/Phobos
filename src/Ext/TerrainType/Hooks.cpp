@@ -53,10 +53,9 @@ DEFINE_HOOK(48381D, CellClass_SpreadTiberium_CellSpread, 6)
 			if (tgtCell && tgtCell->CanTiberiumGerminate(pTib))
 			{
 				// return with call to spread tib
-				R->EDX<int>(tibIndex);
-				R->ECX<CellClass*>(tgtCell);
+				R->EAX<bool>(tgtCell->IncreaseTiberium(tibIndex, 3));
 
-				return 0x4838BC;
+				return 0x4838CA;
 			}
 		}
 
@@ -71,22 +70,6 @@ DEFINE_HOOK(71C8D7, TerrainTypeClass_Context_Unset, 5)
 {
 	TerrainTypeTemp::pCurrentType = nullptr;
 	TerrainTypeTemp::pCurrentExt = nullptr;
-
-	return 0;
-}
-
-// TODO investigate why wrong OverlayType is passed
-DEFINE_HOOK(5FDD2E, OverlayClass_GetTiberiumType_TypeOutOfBonds, 5)
-{
-	GET(int, type, ECX);
-
-	if (!OverlayTypeClass::Array->ValidIndex(type))
-	{
-		Debug::Log("[Phobos] Invalid OverlayType index %d passed to GetTiberiumType! OverlayType array size is %d.\n",
-			type, OverlayTypeClass::Array->Count);
-
-		return 0x5FDDD5;
-	}
 
 	return 0;
 }
