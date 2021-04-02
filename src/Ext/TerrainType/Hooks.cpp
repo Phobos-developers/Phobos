@@ -24,7 +24,7 @@ DEFINE_HOOK(483811, CellClass_SpreadTiberium_TiberiumType, 8)
 	return 0;
 }
 
-DEFINE_HOOK(71C8DB, TerrainTypeClass_Context_Unset, 1)
+DEFINE_HOOK(71C8D7, TerrainTypeClass_Context_Unset, 5)
 {
 	TerrainTemp::currentType = nullptr;
 
