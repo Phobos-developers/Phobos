@@ -12,6 +12,7 @@ template <typename T>
 void TerrainTypeExt::ExtData::Serialize(T& Stm) {
 	Stm
 		.Process(this->SpawnsTiberium_Type)
+		.Process(this->SpawnsTiberium_CellSpread)
 		;
 }
 
@@ -25,6 +26,7 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 
 	INI_EX exINI(pINI);
 	this->SpawnsTiberium_Type.Read(exINI, pSection, "SpawnsTiberium.Type");
+	this->SpawnsTiberium_CellSpread.Read(exINI, pSection, "SpawnsTiberium.CellSpread");
 }
 
 void TerrainTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
