@@ -14,11 +14,11 @@ public:
     {
     public:
         Valueable<int> SpawnsTiberium_Type;
-        Valueable<double> SpawnsTiberium_CellSpread;
+        Valueable<int> SpawnsTiberium_Range;
 
         ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject),
             SpawnsTiberium_Type(0),
-            SpawnsTiberium_CellSpread(1.5)
+            SpawnsTiberium_Range(1)
         { }
 
         virtual ~ExtData() = default;

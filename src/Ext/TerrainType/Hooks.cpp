@@ -41,7 +41,7 @@ DEFINE_HOOK(48381D, CellClass_SpreadTiberium_CellSpread, 6)
 
 		TiberiumClass* pTib = TiberiumClass::Array->GetItem(tibIndex);
 
-		std::vector<CellStruct> adjacentCells = GeneralUtils::CellSpreadAffectedCells(TerrainTypeTemp::pCurrentExt->SpawnsTiberium_CellSpread);
+		std::vector<CellStruct> adjacentCells = GeneralUtils::AdjacentCellsInRange(TerrainTypeTemp::pCurrentExt->SpawnsTiberium_Range);
 		size_t size = adjacentCells.size();
 		int rand = ScenarioClass::Instance->Random.RandomRanged(0, size - 1);
 

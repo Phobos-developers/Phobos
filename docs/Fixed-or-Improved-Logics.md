@@ -57,7 +57,7 @@ Powered.KillSpawns=no ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETERRAINTYPE]              ; TerrainType
-SpawnsTiberium.Type=0          ; tiberium type index
-SpawnsTiberium.CellSpread=1.5  ; double
+[SOMETERRAINTYPE]       ; TerrainType
+SpawnsTiberium.Type=0   ; tiberium type index
+SpawnsTiberium.Range=1  ; integer, radius in cells
 ```

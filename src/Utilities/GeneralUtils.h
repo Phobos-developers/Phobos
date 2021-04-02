@@ -16,5 +16,5 @@ public:
     static bool IsValidString(const char* str);
     static const wchar_t* LoadStringOrDefault(char* key, const wchar_t* defaultValue);
     static const wchar_t* LoadStringUnlessMissing(char* key, const wchar_t* defaultValue);
-    static std::vector<CellStruct> CellSpreadAffectedCells(const double spread);
+    static std::vector<CellStruct> AdjacentCellsInRange(unsigned int range);
 };

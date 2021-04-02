@@ -20,10 +20,9 @@ const wchar_t* GeneralUtils::LoadStringUnlessMissing(char* key, const wchar_t* d
 	return wcsstr(LoadStringOrDefault(key, defaultValue), L"MISSING:") ? defaultValue : LoadStringOrDefault(key, defaultValue);
 }
 
-std::vector<CellStruct> GeneralUtils::CellSpreadAffectedCells(const double spread)
+std::vector<CellStruct> GeneralUtils::AdjacentCellsInRange(unsigned int range)
 {
 	std::vector<CellStruct> result;
-	auto const range = static_cast<size_t>(spread + 0.99);
 
 	for (CellSpreadEnumerator it(range); it; ++it) {
 		result.push_back(*it);
