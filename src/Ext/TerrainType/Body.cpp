@@ -101,7 +101,7 @@ DEFINE_HOOK_AGAIN(71E0B4, TerrainTypeClass_LoadFromINI, A)
 DEFINE_HOOK(71E0A7, TerrainTypeClass_LoadFromINI, A)
 {
 	GET(TerrainTypeClass*, pItem, ESI);
-	GET_STACK(CCINIClass*, pINI, STACK_OFFS(0x20C, 0x4));
+	GET_STACK(CCINIClass*, pINI, STACK_OFFS(0x20C, -0x4));
 
 	TerrainTypeExt::ExtMap.LoadFromINI(pItem, pINI);
 	return 0;
