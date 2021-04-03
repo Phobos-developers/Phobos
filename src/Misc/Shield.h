@@ -53,6 +53,7 @@ private:
     TimerStruct Timer_Respawn;
     Handle<AnimClass*, UninitAnim> Image;
     bool HaveAnim;
+    bool Temporal;
     //bool Broken;
     //SHPStruct* Image;
     //LightConvertClass* Convert;

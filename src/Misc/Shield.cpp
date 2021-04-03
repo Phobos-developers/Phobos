@@ -17,7 +17,8 @@ ShieldTechnoClass::ShieldTechnoClass(TechnoClass* pTechno) :
     Timer_Respawn{},
     Timer_SelfHealing{},
     Image{ nullptr },
-    HaveAnim{ true }
+    HaveAnim{ true },
+    Temporal{ false }
     //Broken{ false }
 {
     this->CreateAnim();
@@ -61,7 +62,7 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
 
     int nDamage = 0;
 
-    if (pWHExt && pWHExt->CanTargetHouse(args->SourceHouse, this->Techno))
+    if (pWHExt && pWHExt->CanTargetHouse(args->SourceHouse, this->Techno) && !args->WH->Temporal)
         nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->GetExt()->Shield_Armor, args->DistanceToEpicenter);
 
     if (nDamage > 0) {
@@ -129,6 +130,17 @@ void ShieldTechnoClass::Update()
 {
     if (!this->Techno || this->Techno->InLimbo || this->Techno->IsImmobilized || this->Techno->Transporter) {
         return;
+    }
+
+    if (this->Techno->TemporalTargetingMe && !this->Temporal)
+    {
+        this->Temporal = true;
+        if (this->HP == 0) this->Timer_Respawn.Pause();
+    }
+    else if (!this->Techno->TemporalTargetingMe && this->Temporal)
+    {
+        this->Temporal = false;
+        if (this->HP == 0) this->Timer_Respawn.Resume();
     }
 
     this->DrawShield();
