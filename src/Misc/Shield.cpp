@@ -17,7 +17,8 @@ ShieldTechnoClass::ShieldTechnoClass(TechnoClass* pTechno) :
     Timer_Respawn{},
     Timer_SelfHealing{},
     Image{ nullptr },
-    HaveAnim{ true }
+    HaveAnim{ true },
+    Broken{ false }
 {
     this->CreateAnim();
 }
@@ -129,18 +130,13 @@ void ShieldTechnoClass::Update()
     if (!this->Techno || this->Techno->InLimbo || this->Techno->IsImmobilized || this->Techno->Transporter) {
         return;
     }
-    this->DrawShield();
+    if (this->Broken && this->HP > 0) {
+        if (!this->Image.get()) this->Broken = false;
+    }
+    else
+        this->DrawShield();
     this->RespawnShield();
     this->SelfHealing();
-}
-
-void ShieldTechnoClass::RespawnShield()
-{
-    if (this->HP <= 0 && this->Timer_Respawn.Completed())
-    {
-        this->Timer_Respawn.Stop();
-        this->HP = this->GetPercentageAmount(this->GetExt()->Shield_Respawn);
-    }
 }
 
 void ShieldTechnoClass::SelfHealing()
@@ -191,8 +187,9 @@ void ShieldTechnoClass::InvalidatePointer(void* ptr) {
 }
 
 void ShieldTechnoClass::UninitAnim::operator() (AnimClass* const pAnim) const {
+    auto buffer = abstract_cast<TechnoClass*>(pAnim->OwnerObject);
     pAnim->SetOwnerObject(nullptr);
-    //pAnim->UnInit();
+    if (buffer) pAnim->UnInit();
 }
 
 void ShieldTechnoClass::BreakShield()
@@ -201,6 +198,8 @@ void ShieldTechnoClass::BreakShield()
     if (this->GetExt()->Shield_Respawn > 0) this->Timer_Respawn.Start(int(this->GetExt()->Shield_RespawnDelay * 900));
     this->Timer_SelfHealing.Stop();
 
+    if (this->GetExt()->Shield_RespawnImage.isset()) this->Broken = true;
+
     if (this->GetExt()->Shield_BreakImage.isset())
     {
         if (auto pAnimType = this->GetExt()->Shield_BreakImage)
@@ -208,6 +207,26 @@ void ShieldTechnoClass::BreakShield()
             auto pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
             if (pAnim)
                 pAnim->SetOwnerObject(this->Techno);
+        }
+    }
+}
+
+void ShieldTechnoClass::RespawnShield()
+{
+    if (this->HP <= 0 && this->Timer_Respawn.Completed())
+    {
+        this->Timer_Respawn.Stop();
+        this->HP = this->GetPercentageAmount(this->GetExt()->Shield_Respawn);
+
+        if (this->GetExt()->Shield_RespawnImage.isset() && this->Broken) {
+            if (AnimTypeClass* const pAnimType = this->GetExt()->Shield_RespawnImage) {
+                this->Image.reset(GameCreate<AnimClass>(pAnimType, this->Techno->Location));
+                if (AnimClass* const pAnim = this->Image) {
+                    pAnim->SetOwnerObject(this->Techno);
+                    pAnim->RemainingIterations = 0xFFu;
+                    pAnim->Owner = this->Techno->Owner;
+                }
+            }
         }
     }
 }
@@ -237,7 +256,7 @@ void ShieldTechnoClass::CreateAnim()
     { 
         return;
     }
-    if (this->GetExt()->Shield_Image.isset()) {
+    if (this->GetExt()->Shield_Image.isset() && !this->Broken) {
         if (AnimTypeClass* const pAnimType = this->GetExt()->Shield_Image) {
             this->Image.reset(GameCreate<AnimClass>(pAnimType, this->Techno->Location));
             if (AnimClass* const pAnim = this->Image) {
