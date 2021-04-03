@@ -47,3 +47,17 @@ In `rulesmd.ini`:
 [SOMESTRUCTURE]       ; BuildingType
 Powered.KillSpawns=no ; boolean
 ```
+
+## Terrain
+
+### Customizable ore spawners
+
+- You can now specify which type of tiberium this TerrainType would generate.
+- It's also now possible to specify a CellSpread value for an ore generation area ddifferent compared to standard 3x3 rectangle. Ore will be uniformly distributed across all affected cells in a spread range.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]       ; TerrainType
+SpawnsTiberium.Type=0   ; tiberium type index
+SpawnsTiberium.Range=1  ; integer, radius in cells
+```
