@@ -98,7 +98,7 @@ void ShieldTechnoClass::ResponseAttack()
         if (pUnit->Type->Harvester)
         {
             auto pPos = pUnit->GetDestination(pUnit);
-            if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, CellStruct{ pPos.X / 256,pPos.Y / 256 }))
+            if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, CellStruct{ (short)pPos.X / 256,(short)pPos.Y / 256 }))
             {
                 VoxClass::Play("EVA_OreMinerUnderAttack");
             }
