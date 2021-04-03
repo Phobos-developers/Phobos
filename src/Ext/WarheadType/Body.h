@@ -30,7 +30,7 @@ public:
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
-		Valueable<bool> AffectsOwner;
+		Nullable<bool> AffectsOwner;
 		
 		double RandomBuffer;
 
@@ -50,7 +50,7 @@ public:
 			RandomBuffer(0.0),
 
 			AffectsEnemies(true),
-			AffectsOwner(OwnerObject->AffectsAllies)
+			AffectsOwner()
 		{ }
 	private:
 		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr);

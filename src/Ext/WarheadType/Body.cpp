@@ -8,14 +8,14 @@ WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
 bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pTarget)
 {
 	if (pHouse && pTarget) {
-		if (this->AffectsOwner && pTarget->Owner == pHouse) {
+		if (this->AffectsOwner.Get(this->OwnerObject()->AffectsAllies) && pTarget->Owner == pHouse) {
 			return true;
 		}
 
 		bool isAllies = pHouse->IsAlliedWith(pTarget);
 
 		if (this->OwnerObject()->AffectsAllies && isAllies) {
-			return true;
+			return pTarget->Owner == pHouse ? false : true;
 		}
 
 		if (this->AffectsEnemies && !isAllies) {
