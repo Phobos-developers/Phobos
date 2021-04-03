@@ -1,7 +1,4 @@
 #include "GeneralUtils.h"
-#include <string.h>
-#include <StringTable.h>
-#include <CCINIClass.h>
 
 bool GeneralUtils::IsValidString(const char* str)
 {
@@ -21,4 +18,15 @@ const wchar_t* GeneralUtils::LoadStringOrDefault(char* key, const wchar_t* defau
 const wchar_t* GeneralUtils::LoadStringUnlessMissing(char* key, const wchar_t* defaultValue)
 {
 	return wcsstr(LoadStringOrDefault(key, defaultValue), L"MISSING:") ? defaultValue : LoadStringOrDefault(key, defaultValue);
+}
+
+std::vector<CellStruct> GeneralUtils::AdjacentCellsInRange(unsigned int range)
+{
+	std::vector<CellStruct> result;
+
+	for (CellSpreadEnumerator it(range); it; ++it) {
+		result.push_back(*it);
+	}
+
+	return result;
 }
