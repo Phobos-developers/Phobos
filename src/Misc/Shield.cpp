@@ -17,8 +17,8 @@ ShieldTechnoClass::ShieldTechnoClass(TechnoClass* pTechno) :
     Timer_Respawn{},
     Timer_SelfHealing{},
     Image{ nullptr },
-    HaveAnim{ true },
-    Broken{ false }
+    HaveAnim{ true }
+    //Broken{ false }
 {
     this->CreateAnim();
 }
@@ -130,11 +130,8 @@ void ShieldTechnoClass::Update()
     if (!this->Techno || this->Techno->InLimbo || this->Techno->IsImmobilized || this->Techno->Transporter) {
         return;
     }
-    if (this->Broken && this->HP > 0) {
-        if (!this->Image.get()) this->Broken = false;
-    }
-    else
-        this->DrawShield();
+
+    this->DrawShield();
     this->RespawnShield();
     this->SelfHealing();
 }
@@ -198,7 +195,7 @@ void ShieldTechnoClass::BreakShield()
     if (this->GetExt()->Shield_Respawn > 0) this->Timer_Respawn.Start(int(this->GetExt()->Shield_RespawnDelay * 900));
     this->Timer_SelfHealing.Stop();
 
-    if (this->GetExt()->Shield_RespawnImage.isset()) this->Broken = true;
+    //if (this->GetExt()->Shield_RespawnImage.isset()) this->Broken = true;
 
     if (this->GetExt()->Shield_BreakImage.isset())
     {
@@ -217,17 +214,17 @@ void ShieldTechnoClass::RespawnShield()
     {
         this->Timer_Respawn.Stop();
         this->HP = this->GetPercentageAmount(this->GetExt()->Shield_Respawn);
-
+        /*
         if (this->GetExt()->Shield_RespawnImage.isset() && this->Broken) {
             if (AnimTypeClass* const pAnimType = this->GetExt()->Shield_RespawnImage) {
                 this->Image.reset(GameCreate<AnimClass>(pAnimType, this->Techno->Location));
                 if (AnimClass* const pAnim = this->Image) {
                     pAnim->SetOwnerObject(this->Techno);
-                    pAnim->RemainingIterations = 0xFFu;
                     pAnim->Owner = this->Techno->Owner;
                 }
             }
         }
+        */
     }
 }
 
@@ -256,7 +253,7 @@ void ShieldTechnoClass::CreateAnim()
     { 
         return;
     }
-    if (this->GetExt()->Shield_Image.isset() && !this->Broken) {
+    if (this->GetExt()->Shield_Image.isset()) {
         if (AnimTypeClass* const pAnimType = this->GetExt()->Shield_Image) {
             this->Image.reset(GameCreate<AnimClass>(pAnimType, this->Techno->Location));
             if (AnimClass* const pAnim = this->Image) {

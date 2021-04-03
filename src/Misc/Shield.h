@@ -33,10 +33,10 @@ private:
 
     const TechnoTypeExt::ExtData* GetExt();
 
-    void RespawnShield();
     void SelfHealing();
     int GetPercentageAmount(double iStatus);
     void BreakShield();
+    void RespawnShield();
     void DrawShield();
     void CreateAnim();
     void KillAnim();
@@ -53,7 +53,7 @@ private:
     TimerStruct Timer_Respawn;
     Handle<AnimClass*, UninitAnim> Image;
     bool HaveAnim;
-    bool Broken;
+    //bool Broken;
     //SHPStruct* Image;
     //LightConvertClass* Convert;
 };
