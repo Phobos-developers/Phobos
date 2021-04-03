@@ -17,11 +17,10 @@ ShieldTechnoClass::ShieldTechnoClass(TechnoClass* pTechno) :
     Timer_Respawn{},
     Timer_SelfHealing{},
     Image{ nullptr },
-    HaveAnim{ false }
+    HaveAnim{ true }
 {
-    this->DrawShield();
+    this->CreateAnim();
 }
-
 const TechnoTypeExt::ExtData* ShieldTechnoClass::GetExt()
 {
     return TechnoTypeExt::ExtMap.Find(Techno->GetTechnoType());
@@ -130,9 +129,9 @@ void ShieldTechnoClass::Update()
     if (!this->Techno || this->Techno->InLimbo || this->Techno->IsImmobilized || this->Techno->Transporter) {
         return;
     }
+    this->DrawShield();
     this->RespawnShield();
     this->SelfHealing();
-    this->DrawShield();
 }
 
 void ShieldTechnoClass::RespawnShield()
@@ -193,7 +192,7 @@ void ShieldTechnoClass::InvalidatePointer(void* ptr) {
 
 void ShieldTechnoClass::UninitAnim::operator() (AnimClass* const pAnim) const {
     pAnim->SetOwnerObject(nullptr);
-    pAnim->UnInit();
+    //pAnim->UnInit();
 }
 
 void ShieldTechnoClass::BreakShield()
@@ -215,39 +214,26 @@ void ShieldTechnoClass::BreakShield()
 
 void ShieldTechnoClass::DrawShield()
 {
-    /*
-    if (this->GetExt()->Shield_Image.isset() && this->HP > 0)
-    {
-        if (auto pAnimType = this->GetExt()->Shield_Image)
-        {
-            this->Image = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
-            if (this->Image)
-                this->Image->SetOwnerObject(this->Techno);
-        }
-    }
-    */
     if (this->Techno->CloakState != CloakState::Uncloaked
         || this->HP < 1)
     {
         if (this->HaveAnim) {
             this->KillAnim();
-            //this->HaveAnim = false;
+            this->HaveAnim = false;
         }
     }
     else 
     {
         if (!this->HaveAnim) {
             this->CreateAnim();
-            //this->HaveAnim = true;
+            this->HaveAnim = true;
         }
     }
 }
 
 void ShieldTechnoClass::CreateAnim()
 {
-    if (this->Techno->CloakState != CloakState::Uncloaked //cloak
-        || (this->Techno->TemporalTargetingMe) //temporal
-        || this->HP < 1) //no shield
+    if (this->Techno->CloakState != CloakState::Uncloaked)
     { 
         return;
     }
@@ -258,8 +244,6 @@ void ShieldTechnoClass::CreateAnim()
                 pAnim->SetOwnerObject(this->Techno);
                 pAnim->RemainingIterations = 0xFFu;
                 pAnim->Owner = this->Techno->Owner;
-
-                this->HaveAnim = true;
             }
         }
     }
@@ -268,7 +252,6 @@ void ShieldTechnoClass::CreateAnim()
 void ShieldTechnoClass::KillAnim() 
 {
     this->Image.clear();
-    this->HaveAnim = false;
 }
 
 void ShieldTechnoClass::DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound)
