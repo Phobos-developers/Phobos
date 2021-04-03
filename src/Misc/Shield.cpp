@@ -7,11 +7,11 @@
 
 #include <AnimClass.h>
 #include <HouseClass.h>
+#include <RadarEventClass.h>
 
-ShieldTechnoClass::ShieldTechnoClass() :Type{ nullptr }, Techno{ nullptr }, HP{ 0 }, Timer_Respawn{}, Timer_SelfHealing{}{};
+ShieldTechnoClass::ShieldTechnoClass() :Techno{ nullptr }, HP{ 0 }, Timer_Respawn{}, Timer_SelfHealing{}{};
 
 ShieldTechnoClass::ShieldTechnoClass(TechnoClass* pTechno) :
-    Type{ nullptr },
     Techno{ pTechno },
     HP{ this->GetExt()->Shield_Strength },
     Timer_Respawn{},
@@ -66,11 +66,8 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
 
     if (nDamage > 0) {
         this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealingDelay * 900)); //when attacked, restart the timer
-        if (this->Techno->WhatAmI() == AbstractType::Building)
-        {
-            auto pBld = abstract_cast<BuildingClass*>(this->Techno);
-            this->Techno->Owner->BuildingUnderAttack(pBld);
-        }
+        this->ResponseAttack();
+
         auto residueDamage = nDamage - this->HP;
         if (residueDamage >= 0)
         {
@@ -85,6 +82,27 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
     }
     else {
         return nDamage; //might change in future
+    }
+}
+
+void ShieldTechnoClass::ResponseAttack()
+{
+    if (this->Techno->WhatAmI() == AbstractType::Building)
+    {
+        auto pBld = abstract_cast<BuildingClass*>(this->Techno);
+        this->Techno->Owner->BuildingUnderAttack(pBld);
+    }
+    else if (this->Techno->WhatAmI() == AbstractType::Unit)
+    {
+        auto pUnit = abstract_cast<UnitClass*>(this->Techno);
+        if (pUnit->Type->Harvester)
+        {
+            auto pPos = pUnit->GetDestination(pUnit);
+            if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, CellStruct{ pPos.X / 256,pPos.Y / 256 }))
+            {
+                VoxClass::Play("EVA_OreMinerUnderAttack");
+            }
+        }
     }
 }
 

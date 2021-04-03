@@ -53,6 +53,14 @@ DEFINE_HOOK(6F9E50, TechnoClass_Update_Shield, 5)
     return 0;
 }
 
+DEFINE_HOOK(6F6AC4, TechnoClass_Remove_Shield, 5)
+{
+    GET(TechnoClass*, pThis, ECX);
+    auto pExt = TechnoExt::ExtMap.Find(pThis);
+    if (pExt->ShieldData) pExt->ShieldData = nullptr;
+    return 0;
+}
+
 DEFINE_HOOK(6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 6) 
 {
     GET(TechnoClass*, pThis, ESI);
