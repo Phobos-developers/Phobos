@@ -43,6 +43,7 @@ public:
 		Valueable<int> Shield_BracketDelta;
 		Nullable<AnimTypeClass*> Shield_Image;
 		Nullable<AnimTypeClass*> Shield_BreakImage;
+		Nullable<AnimTypeClass*> Shield_WeaponNullifyAnim;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
@@ -71,7 +72,8 @@ public:
 			Shield_AbsorbOverDamage(false),
 			Shield_BracketDelta(0),
 			Shield_Image(),
-			Shield_BreakImage()
+			Shield_BreakImage(),
+			Shield_WeaponNullifyAnim()
 		{ }
 
 		virtual ~ExtData() = default;

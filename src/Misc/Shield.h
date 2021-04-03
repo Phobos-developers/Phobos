@@ -40,6 +40,7 @@ private:
     void DrawShield();
     void CreateAnim();
     void KillAnim();
+    void WeaponNullifyAnim();
     void ResponseAttack();
     void DrawShieldBarBuilding(int iLength, Point2D* pLocation, RectangleStruct* pBound);
     void DrawShieldBarOther(int iLength, Point2D* pLocation, RectangleStruct* pBound);

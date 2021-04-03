@@ -76,6 +76,7 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
         }
         else
         {
+            this->WeaponNullifyAnim();
             this->HP = -residueDamage;
             return 0;
         }
@@ -98,11 +99,19 @@ void ShieldTechnoClass::ResponseAttack()
         if (pUnit->Type->Harvester)
         {
             auto pPos = pUnit->GetDestination(pUnit);
-            if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, CellStruct{ (short)pPos.X / 256,(short)pPos.Y / 256 }))
+            if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, { (short)pPos.X / 256,(short)pPos.Y / 256 }))
             {
                 VoxClass::Play("EVA_OreMinerUnderAttack");
             }
         }
+    }
+}
+
+void ShieldTechnoClass::WeaponNullifyAnim()
+{
+    if (this->GetExt()->Shield_WeaponNullifyAnim.isset())
+    {
+        GameCreate<AnimClass>(this->GetExt()->Shield_WeaponNullifyAnim, this->Techno->GetCoords());
     }
 }
 

@@ -234,6 +234,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_AbsorbOverDamage.Read(exINI, pSection, "Shield.AbsorbOverDamage");
 	this->Shield_Image.Read(exINI, pSection, "Shield.Image.Normal");
 	this->Shield_BreakImage.Read(exINI, pSection, "Shield.Image.Breaking");
+	this->Shield_WeaponNullifyAnim.Read(exINI, pSection, "Shield.WeaponNullifyAnim");
 	this->Shield_BracketDelta.Read(exINI, pSection, "Shield.BracketDelta");
 
 	// Ares 0.A
@@ -274,6 +275,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->Shield_BracketDelta)
         .Process(this->Shield_Image)
         .Process(this->Shield_BreakImage)
+		.Process(this->Shield_WeaponNullifyAnim)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {

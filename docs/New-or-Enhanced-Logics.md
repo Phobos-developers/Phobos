@@ -71,6 +71,7 @@ Promote.IncludeSpawns=no  ; boolean
 - the Shield functions if `Shield.Strength` is set greater than 0.
 - `Shield.SelfHealing` and `Shield.Respawn` respect the following settings: 0.0 disables the feature, 1%-100% recovers/respawns the shield strength in percentage, other number recovers/respawns the shield strength directly. Specially, `Shield.SelfHealing` with a negative number deducts the shield strength.
 - `Shield.SelfHealing.Rate` and `Shield.Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other number determines the frequency of shield recovers/respawns in minutes.
+- `Shield.WeaponNullifyAnim` will be played if set when Shield is attacked, like what Iron Curtaion does.
 - A TechnoType with a Shield will show its Shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable.
   - Buildings now uses the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame as default.
   - `Shield.Pips` can be used to specify which frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. `Shield.Pips.Building` is used for BuildingTypes. 
@@ -90,14 +91,10 @@ Shield.SelfHealing.Rate=0.0 ; double - minutes
 Shield.Respawn=0.0          ; double
 Shield.Respawn.Rate=0.0     ; double - minutes
 Shield.BracketDelta=0       ; integer - pixels
-Shield.Image.Normal=        ; animation, required LoopCount=-1 for the anim
+Shield.Image.Normal=        ; animation
 Shield.Image.Breaking=      ; animation
+Shield.WeaponNullifyAnim=   ; animation
 ```
-:::{warning}
-For `Shield.Image.Normal`, if you are creating a chain of animations using the Next= tag then last animation must have LoopCount=-1 set.
-For `Shield.Image.Breaking`, the anim should exist shorter than the respawn rate (if set) to create the anim normally.
-Otherwise the game may crash. This might be changed in the future.
-:::
 
 ## Weapons
 
