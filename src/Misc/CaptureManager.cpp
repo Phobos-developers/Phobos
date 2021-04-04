@@ -12,7 +12,9 @@ bool CaptureManager::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTar
 {
     if (pManager->MaxControlNodes == 1)
         return pManager->CanCapture(pTarget);
-
+    if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
+        if (!pTechnoTypeExt->MultipleMCReleaseVictim)
+            return pManager->CanCapture(pTarget);
     pManager->MaxControlNodes += 1;
     bool result = pManager->CanCapture(pTarget);
     pManager->MaxControlNodes -= 1;
@@ -23,26 +25,27 @@ bool CaptureManager::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarge
 {
     if (!bSilent)
         return pManager->FreeUnit(pTarget);
-
     if (pTarget)
     {
         for (int i = 0; i < pManager->ControlNodes.Count; ++i)
         {
-            auto const pControlNode = pManager->ControlNodes[i];
-            if (pControlNode->Unit == pTarget)
-            {
-                if (auto& pRingAnim = pTarget->MindControlRingAnim)
-                {
-                    pRingAnim->UnInit();
-                    pRingAnim = nullptr;
-                }
-                
-                auto const pSettingHouse = pControlNode->OriginalOwner->Defeated ?
-                    HouseClass::FindNeutral() : pControlNode->OriginalOwner;
-                if (!pSettingHouse)
-                    return false;
-                pTarget->SetOwningHouse(pSettingHouse);
+            const auto& pNode = pManager->ControlNodes[i];
 
+            if (pTarget == pNode->Unit)
+            {
+                if (pTarget->MindControlRingAnim)
+                {
+                    pTarget->MindControlRingAnim->UnInit();
+                    pTarget->MindControlRingAnim = nullptr;
+                }
+
+                auto pOriginOwner = pNode->OriginalOwner->Defeated ?
+                    HouseClass::FindNeutral() : pNode->OriginalOwner;
+                pTarget->SetOwningHouse(pOriginOwner);
+                pManager->DecideUnitFate(pTarget);
+                pTarget->MindControlledBy = nullptr;
+                if (pNode)
+                    GameDelete(pNode);
                 pManager->ControlNodes.RemoveItem(i);
                 return true;
             }
@@ -59,22 +62,15 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
         // issue #59
         // An improvement of Multiple MindControl
         if (pManager->MaxControlNodes == 1 && pManager->ControlNodes.Count == 1)
-        {
             CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit, true);
-            GameDelete(pManager->ControlNodes[0]);
-        }
-        if (pManager->MaxControlNodes > 1 && pManager->ControlNodes.Count == pManager->MaxControlNodes)
+        else if (pManager->MaxControlNodes > 1 && pManager->ControlNodes.Count == pManager->MaxControlNodes)
         {
             if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
             {
                 if (!pTechnoTypeExt->MultipleMCReleaseVictim)
                     return false;
 
-                if (pManager->ControlNodes.Count > 0)
-                {
-                    CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit, true);
-                    GameDelete(pManager->ControlNodes[0]);
-                }
+                CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit, true);
             }
         }
 
