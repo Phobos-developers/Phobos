@@ -30,7 +30,7 @@ PowersUp.Buildings= ; list of BuildingTypes
 *Multiple Mind Control auto releases the first victim in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
-- Multiple Mind controllers can now release the first controlled unit when they have reached the control limit and are ordered to control a new target.
+- Mind controllers with multiple controlling slots can now release the first controlled unit when they have reached the control limit and are ordered to control a new target.
 - Allows Warheads to play custom `MindControl.Anim` which defaults to `ControlledAnimationType`.
 
 In `rulesmd.ini`
