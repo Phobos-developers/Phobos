@@ -90,7 +90,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->Crit_Affects.Read(exINI, pSection, "Crit.Affects");
 	this->Crit_AnimList.Read(exINI, pSection, "Crit.AnimList");
 
-	this->ControlledAnimationType.Read(exINI, pSection, "ControlledAnimationType");
+	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
 
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html

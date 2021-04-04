@@ -27,7 +27,7 @@ public:
 		Valueable<SuperWeaponTarget> Crit_Affects;
 		ValueableVector<AnimTypeClass*> Crit_AnimList;
 
-		Valueable<AnimTypeClass*> ControlledAnimationType;
+		Nullable<AnimTypeClass*> MindControl_Anim;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -50,7 +50,8 @@ public:
 			Crit_Affects(SuperWeaponTarget::None),
 			Crit_AnimList(),
 			RandomBuffer(0.0),
-			ControlledAnimationType(RulesClass::Instance->ControlledAnimationType),
+
+			MindControl_Anim(),
 
 			AffectsEnemies(true),
 			AffectsOwner()
