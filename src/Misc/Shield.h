@@ -42,6 +42,7 @@ private:
     void KillAnim();
     void WeaponNullifyAnim();
     void ResponseAttack();
+    void TemporalCheck();
     void DrawShieldBarBuilding(int iLength, Point2D* pLocation, RectangleStruct* pBound);
     void DrawShieldBarOther(int iLength, Point2D* pLocation, RectangleStruct* pBound);
     int DrawShieldBar_Pip();

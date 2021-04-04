@@ -132,20 +132,26 @@ void ShieldTechnoClass::Update()
         return;
     }
 
+    this->TemporalCheck();
+    this->DrawShield();
+    this->RespawnShield();
+    this->SelfHealing();
+}
+
+void ShieldTechnoClass::TemporalCheck()
+{
     if (this->Techno->TemporalTargetingMe && !this->Temporal)
     {
         this->Temporal = true;
         if (this->HP == 0) this->Timer_Respawn.Pause();
+        else this->Timer_SelfHealing.Pause();
     }
     else if (!this->Techno->TemporalTargetingMe && this->Temporal)
     {
         this->Temporal = false;
         if (this->HP == 0) this->Timer_Respawn.Resume();
+        else this->Timer_SelfHealing.Resume();
     }
-
-    this->DrawShield();
-    this->RespawnShield();
-    this->SelfHealing();
 }
 
 void ShieldTechnoClass::SelfHealing()
