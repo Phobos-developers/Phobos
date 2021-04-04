@@ -143,6 +143,6 @@ DEFINE_HOOK(6FCB34, TechnoClass_CanFire_CanCapture, 6)
 {
     GET(TechnoClass*, pThis, ESI);
     GET(TechnoClass*, pTarget, EBP);
-    R->EAX(CaptureManager::CanCapture(pThis->CaptureManager, pTarget));
+    R->AL(CaptureManager::CanCapture(pThis->CaptureManager, pTarget));
     return 0x6FCB40;
 }
