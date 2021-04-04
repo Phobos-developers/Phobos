@@ -116,7 +116,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->Crit_Affects)
 		.Process(this->Crit_AnimList)
 
-		.Process(this->ControlledAnimationType)
+		.Process(this->MindControl_Anim)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
