@@ -25,7 +25,7 @@ PowersUp.Buildings= ; list of BuildingTypes
 ### Mind Control Enhancement
 
 ![image](_static/images/mindcontrol-max-range-01.gif)  
-*Mind Control Range Limit shows in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+*Mind Control Range Limit shows in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*  
 ![image](_static/images/mindcontrol-multiple-01.gif)  
 *Multiple Mind Control auto releases the first victim in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
