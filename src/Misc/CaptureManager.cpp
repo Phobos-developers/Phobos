@@ -11,14 +11,16 @@ bool CaptureManager::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTar
 {
     if (pManager->MaxControlNodes == 1)
         return pManager->CanCapture(pTarget);
-    if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
-        if (!pTechnoTypeExt->MultipleMCReleaseVictim)
-            return pManager->CanCapture(pTarget);
+    
+    auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType());
+    if (pTechnoTypeExt && !pTechnoTypeExt->MultiMindControl_ReleaseVictim)
+        return pManager->CanCapture(pTarget);
 
-    // I hate Ares' completely rewritten things
+    // I hate Ares' completely rewritten things - secsome
     pManager->MaxControlNodes += 1;
     bool result = pManager->CanCapture(pTarget);
     pManager->MaxControlNodes -= 1;
+
     return result;
 }
 
@@ -29,7 +31,6 @@ bool CaptureManager::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarge
         for (int i = 0; i < pManager->ControlNodes.Count; ++i)
         {
             const auto pNode = pManager->ControlNodes[i];
-
             if (pTarget == pNode->Unit)
             {
                 if (pTarget->MindControlRingAnim)
@@ -41,20 +42,26 @@ bool CaptureManager::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarge
                 if (!bSilent)
                 {
                     int nSound = pTarget->GetTechnoType()->MindClearedSound;
+
                     if (nSound == -1)
                         nSound = RulesClass::Instance->MindClearedSound;
                     if (nSound != -1)
                         VocClass::PlayIndexAtPos(nSound, pTarget->GetCoords());
                 }
+
                 // Fix : Player defeated should not get this unit.
                 auto pOriginOwner = pNode->OriginalOwner->Defeated ?
                     HouseClass::FindNeutral() : pNode->OriginalOwner;
+
                 pTarget->SetOwningHouse(pOriginOwner);
                 pManager->DecideUnitFate(pTarget);
                 pTarget->MindControlledBy = nullptr;
+
                 if (pNode)
                     GameDelete(pNode);
+
                 pManager->ControlNodes.RemoveItem(i);
+
                 return true;
             }
         }
@@ -71,23 +78,24 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
         // issue #59
         // An improvement of Multiple MindControl
         if (pManager->MaxControlNodes == 1 && pManager->ControlNodes.Count == 1)
+        {
             CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
+        }
         else if (pManager->MaxControlNodes > 1 && pManager->ControlNodes.Count == pManager->MaxControlNodes)
         {
             if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
             {
-                if (!pTechnoTypeExt->MultipleMCReleaseVictim)
+                if (!pTechnoTypeExt->MultiMindControl_ReleaseVictim)
                     return false;
 
                 CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
             }
         }
 
-        auto const pOriginHouse = pTarget->Owner;
         auto pControlNode = GameCreate<ControlNode>();
         if (pControlNode)
         {
-            pControlNode->OriginalOwner = pOriginHouse;
+            pControlNode->OriginalOwner = pTarget->Owner;
             pControlNode->Unit = pTarget;
 
             pManager->ControlNodes.AddItem(pControlNode);
@@ -99,21 +107,22 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 
                 auto const pBld = abstract_cast<BuildingClass*>(pTarget);
                 auto const pType = pTarget->GetTechnoType();
-
                 CoordStruct location = pTarget->GetCoords();
-                if (pBld) {
+                
+                if (pBld)
                     location.Z += pBld->Type->Height * Unsorted::LevelHeight;
-                }
-                else {
+                else
                     location.Z += pType->MindControlRingOffset;
-                }
-                if (auto const pAnimType = pControlledAnimType) {
-                    if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location)) {
+
+                if (auto const pAnimType = pControlledAnimType)
+                {
+                    if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location))
+                    {
                         pTarget->MindControlRingAnim = pAnim;
                         pAnim->SetOwnerObject(pTarget);
-                        if (pBld) {
+                        
+                        if (pBld)
                             pAnim->ZAdjust = -1024;
-                        }
                     }
                 }
 
@@ -122,6 +131,7 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 
         }
     }
+
     return false;
 }
 
@@ -133,12 +143,12 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTe
 
         bool bRemoveFirst = false;
         if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
-            bRemoveFirst = pTechnoTypeExt->MultipleMCReleaseVictim;
+            bRemoveFirst = pTechnoTypeExt->MultiMindControl_ReleaseVictim;
 
         return CaptureManager::CaptureUnit(pManager, pTarget, bRemoveFirst, pControlledAnimType);
     }
-    else
-        return false;
+    
+    return false;
 }
 
 DEFINE_HOOK(471D40, CaptureManagerClass_CaptureUnit, 7)
@@ -155,7 +165,9 @@ DEFINE_HOOK(471FF0, CaptureManagerClass_FreeUnit, 8)
 {
     GET(CaptureManagerClass*, pThis, ECX);
     GET_STACK(TechnoClass*, pTechno, -0x4);
+
     R->AL(CaptureManager::FreeUnit(pThis, pTechno));
+
     return 0x472006;
 }
 
@@ -163,6 +175,8 @@ DEFINE_HOOK(6FCB34, TechnoClass_CanFire_CanCapture, 6)
 {
     GET(TechnoClass*, pThis, ESI);
     GET(TechnoClass*, pTarget, EBP);
+
     R->AL(CaptureManager::CanCapture(pThis->CaptureManager, pTarget));
+
     return 0x6FCB40;
 }
