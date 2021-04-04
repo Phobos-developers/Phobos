@@ -5,6 +5,8 @@
 #include "../_Container.hpp"
 #include "../../Utilities/TemplateDef.h"
 
+#include "../../Misc/Shield.h"
+
 class BulletClass;
 
 class TechnoExt
@@ -16,9 +18,11 @@ public:
 	{
 	public:
 		Valueable<BulletClass*> InterceptedBullet;
+		std::unique_ptr<ShieldTechnoClass> ShieldData;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),
-			InterceptedBullet(nullptr)
+			InterceptedBullet(nullptr),
+			ShieldData()
 		{ }
 
 		virtual ~ExtData() = default;

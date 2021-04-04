@@ -46,7 +46,9 @@ bool TechnoExt::HasAvailableDock(TechnoClass* pThis) {
 template <typename T>
 void TechnoExt::ExtData::Serialize(T& Stm) {
 	Stm
-		.Process(this->InterceptedBullet);
+		.Process(this->InterceptedBullet)
+        .Process(this->ShieldData)
+        ;
 }
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {

@@ -41,7 +41,6 @@ void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI) {
 }
 
 void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI) {
-
 	RulesExt::ExtData* pData = RulesExt::Global();
 
 	if (!pData) {
@@ -50,6 +49,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI) 
 
 	INI_EX exINI(pINI);
 
+	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
+	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 }
 
 // this runs between the before and after type data loading methods for rules ini
@@ -68,21 +69,19 @@ void RulesExt::ExtData::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI) {
 	}
 
 	INI_EX exINI(pINI);
-
 }
 
-bool RulesExt::DetailsCurrentlyEnabled()
-{
+bool RulesExt::DetailsCurrentlyEnabled() {
 	// not only checks for the min frame rate from the rules, but also whether
 	// the low frame rate is actually desired. in that case, don't reduce.
 	auto const current = FPSCounter::CurrentFrameRate;
 	auto const wanted = static_cast<unsigned int>(
 		60 / Math::clamp(GameOptionsClass::Instance->GameSpeed, 1, 6));
+
 	return current >= wanted || current >= Detail::GetMinFrameRate();
 }
 
-bool RulesExt::DetailsCurrentlyEnabled(int const minDetailLevel)
-{
+bool RulesExt::DetailsCurrentlyEnabled(int const minDetailLevel) {
 	return GameOptionsClass::Instance->DetailLevel >= minDetailLevel
 		&& DetailsCurrentlyEnabled();
 }
@@ -92,7 +91,10 @@ bool RulesExt::DetailsCurrentlyEnabled(int const minDetailLevel)
 
 template <typename T>
 void RulesExt::ExtData::Serialize(T& Stm) {
-	
+	Stm
+		.Process(this->Pips_Shield)
+		.Process(this->Pips_Shield_Buildings)
+		;
 }
 
 void RulesExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
@@ -106,28 +108,26 @@ void RulesExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
 }
 
 bool RulesExt::LoadGlobals(PhobosStreamReader& Stm) {
-
-
 	return Stm.Success();
 }
 
 bool RulesExt::SaveGlobals(PhobosStreamWriter& Stm) {
-
-
 	return Stm.Success();
 }
 
 // =============================
 // container hooks
 
-DEFINE_HOOK(667A1D, RulesClass_CTOR, 5) {
+DEFINE_HOOK(667A1D, RulesClass_CTOR, 5)
+{
 	GET(RulesClass*, pItem, ESI);
 
 	RulesExt::Allocate(pItem);
 	return 0;
 }
 
-DEFINE_HOOK(667A30, RulesClass_DTOR, 5) {
+DEFINE_HOOK(667A30, RulesClass_DTOR, 5)
+{
 	GET(RulesClass*, pItem, ECX);
 
 	RulesExt::Remove(pItem);
@@ -175,5 +175,34 @@ DEFINE_HOOK(675205, RulesClass_Save_Suffix, 8)
 	buffer->SaveToStream(writer);
 	saver.WriteBlockToStream(g_pStm);
 
+	return 0;
+}
+
+DEFINE_HOOK(668BF0, RulesClass_Addition, 5)
+{
+	GET(RulesClass*, pItem, ECX);
+	GET_STACK(CCINIClass*, pINI, 0x4);
+
+	//	RulesClass::Initialized = false;
+	RulesExt::LoadFromINIFile(pItem, pINI);
+	return 0;
+}
+
+DEFINE_HOOK(679A15, RulesData_LoadBeforeTypeData, 6)
+{
+	GET(RulesClass*, pItem, ECX);
+	GET_STACK(CCINIClass*, pINI, 0x4);
+
+	//	RulesClass::Initialized = true;
+	RulesExt::LoadBeforeTypeData(pItem, pINI);
+	return 0;
+}
+
+DEFINE_HOOK(679CAF, RulesData_LoadAfterTypeData, 5)
+{
+	RulesClass* pItem = RulesClass::Global();
+	GET(CCINIClass*, pINI, ESI);
+
+	RulesExt::LoadAfterTypeData(pItem, pINI);
 	return 0;
 }

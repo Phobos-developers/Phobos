@@ -24,11 +24,13 @@ public:
 	class ExtData final : public Extension<RulesClass>
 	{
 	public:
+		Valueable<Vector3D<int>> Pips_Shield;
+		Valueable<Vector3D<int>> Pips_Shield_Buildings;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
-		{
-			
-		}
+			, Pips_Shield({ -1,-1,-1 })
+			, Pips_Shield_Buildings({ -1,-1,-1 })
+		{ }
 
 		virtual ~ExtData() = default;
 
@@ -36,14 +38,11 @@ public:
 		virtual void LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI);
 		virtual void LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI);
 		virtual void InitializeConstants() override;
-
 		void InitializeAfterTypeData(RulesClass* pThis);
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {
-		}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 	private:
@@ -62,8 +61,7 @@ public:
 	static void LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI);
 	static void LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI);
 
-	static ExtData* Global()
-	{
+	static ExtData* Global() {
 		return Data.get();
 	}
 
