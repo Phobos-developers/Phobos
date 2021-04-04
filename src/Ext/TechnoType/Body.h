@@ -32,6 +32,7 @@ public:
 		Nullable<bool> Harvester_Counted;
 		Valueable<bool> Promote_IncludeSpawns;
 		Valueable<bool> ImmuneToCrit;
+		Valueable<bool> MultipleMCReleaseVictim;
 
 		Valueable<int> Shield_Strength;
 		Valueable<signed int> Shield_Armor;
@@ -63,6 +64,7 @@ public:
 			Harvester_Counted(),
 			Promote_IncludeSpawns(false),
 			ImmuneToCrit(false),
+			MultipleMCReleaseVictim(false),
 
 			Shield_Strength(0),
 			Shield_Armor(0),
