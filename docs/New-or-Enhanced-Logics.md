@@ -61,39 +61,37 @@ In `rulesmd.ini`:
 Promote.IncludeSpawns=no  ; boolean
 ```
 
-### Shield for any single Techno
+### Shield logic
 
 ![image](_static/images/technoshield-01.gif)  
 *Buildings, Infantries and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
-- Now you can set Shield for any TechnoType.
-- Shield serves as a second Health with independent Armor and Strength
-- the Shield functions if `Shield.Strength` is set greater than 0.
+- Now you can have a shield for any TechnoType if `Shield.Strength` is set greater than 0. It serves as a second health pool with independent `Armor` and `Strength` values.
 - `Shield.SelfHealing` and `Shield.Respawn` respect the following settings: 0.0 disables the feature, 1%-100% recovers/respawns the shield strength in percentage, other number recovers/respawns the shield strength directly. Specially, `Shield.SelfHealing` with a negative number deducts the shield strength.
-- `Shield.SelfHealing.Rate` and `Shield.Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other number determines the frequency of shield recovers/respawns in minutes.
-- `Shield.WeaponNullifyAnim` will be played if set when Shield is attacked, like what Iron Curtaion does.
+- `Shield.SelfHealing.Rate` and `Shield.Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
+- `Shield.HitAnim` will be played if set when Shield is attacked, similiar to Iron Curtaion.
 - A TechnoType with a Shield will show its Shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable.
-  - Buildings now uses the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame as default.
-  - `Shield.Pips` can be used to specify which frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. `Shield.Pips.Building` is used for BuildingTypes. 
-  - `Pipbrd.shp` will use its 4th frame to display an infantry's shield strength and the 3th frame for other units if `pipbrd.shp` has extra 2 frames. And `Shield.BracketDelta` can be used as additonal `PixelSelectionBracketDelta` for shield strength. 
+  - Buildings now use the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame by default.
+  - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. `Pips.Shield.Building` is used for BuildingTypes. 
+  - `pipbrd.shp` will use its 4th frame to display an infantry's shield strength and the 3th frame for other units if `pipbrd.shp` has extra 2 frames. And `Shield.BracketDelta` can be used as additonal `PixelSelectionBracketDelta` for shield strength. 
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-Shield.Pips=                ; Green, Yellow, Red - frames of Pips.shp
-Shield.Pips.Building=       ; Green, Yellow, Red - frames of Pips.shp
+Pips.Shield=-1,-1,-1           ; int, frames of pips.shp for Green, Yellow, Red
+Pips.Shield.Building=-1,-1,-1  ; int, frames of pips.shp for Green, Yellow, Red
 
 [SOMETECHNO]	            ; TechnoTypes
 Shield.Strength=0           ; integer
-Shield.Armor=none           ; armortype
-Shield.SelfHealing=0.0      ; double
-Shield.SelfHealing.Rate=0.0 ; double - minutes
-Shield.Respawn=0.0          ; double
-Shield.Respawn.Rate=0.0     ; double - minutes
+Shield.Armor=none           ; ArmorType
+Shield.SelfHealing=0.0      ; double, percents or absolute
+Shield.SelfHealing.Rate=0.0 ; double, ingame minutes
+Shield.Respawn=0.0          ; double, percents or absolute
+Shield.Respawn.Rate=0.0     ; double, ingame minutes
 Shield.BracketDelta=0       ; integer - pixels
-Shield.Image.Normal=        ; animation
-Shield.Image.Breaking=      ; animation
-Shield.WeaponNullifyAnim=   ; animation
+Shield.IdleAnim=            ; animation
+Shield.BreakAnim=           ; animation
+Shield.HitAnim=             ; animation
 ```
 
 ## Weapons
@@ -109,8 +107,7 @@ In `rulesmd.ini`
 ```ini
 [SOMEWEAPON]                    ; WeaponType
 RadLevel=0                      ; integer, vanilla tag; used to activate the feature
-RadType=Radiation               ; RadType
-                                ; name of custom RadType to use
+RadType=Radiation               ; RadType to use instead
                                 ; of default [Radiation]
 
 [SOMERADTYPE]                   ; custom RadType name

@@ -1,7 +1,5 @@
 #pragma once
 
-// TODO : Support Armor Logic
-
 #include <GeneralStructures.h>
 #include <SpecificStructures.h>
 #include "../Ext/TechnoType/Body.h"

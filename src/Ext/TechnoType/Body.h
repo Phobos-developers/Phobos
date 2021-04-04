@@ -36,15 +36,15 @@ public:
 		Valueable<int> Shield_Strength;
 		Valueable<signed int> Shield_Armor;
 		Valueable<double> Shield_Respawn;
-		Valueable<double> Shield_RespawnDelay;
+		Valueable<double> Shield_Respawn_Rate;
 		Valueable<double> Shield_SelfHealing;
-		Valueable<double> Shield_SelfHealingDelay;
+		Valueable<double> Shield_SelfHealing_Rate;
 		Valueable<bool> Shield_AbsorbOverDamage;
 		Valueable<int> Shield_BracketDelta;
-		Nullable<AnimTypeClass*> Shield_Image;
-		Nullable<AnimTypeClass*> Shield_BreakImage;
-		Nullable<AnimTypeClass*> Shield_RespawnImage;
-		Nullable<AnimTypeClass*> Shield_WeaponNullifyAnim;
+		Nullable<AnimTypeClass*> Shield_IdleAnim;
+		Nullable<AnimTypeClass*> Shield_BreakAnim;
+		Nullable<AnimTypeClass*> Shield_RespawnAnim;
+		Nullable<AnimTypeClass*> Shield_HitAnim;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
@@ -67,15 +67,15 @@ public:
 			Shield_Strength(0),
 			Shield_Armor(0),
 			Shield_Respawn(0.0),
-			Shield_RespawnDelay(0.0),
+			Shield_Respawn_Rate(0.0),
 			Shield_SelfHealing(0.0),
-			Shield_SelfHealingDelay(0.0),
+			Shield_SelfHealing_Rate(0.0),
 			Shield_AbsorbOverDamage(false),
 			Shield_BracketDelta(0),
-			Shield_Image(),
-			Shield_BreakImage(),
-			Shield_RespawnImage(),
-			Shield_WeaponNullifyAnim()
+			Shield_IdleAnim(),
+			Shield_BreakAnim(),
+			Shield_RespawnAnim(),
+			Shield_HitAnim()
 		{ }
 
 		virtual ~ExtData() = default;

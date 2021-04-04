@@ -13,7 +13,8 @@
 template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 
-void TechnoTypeExt::ExtData::Initialize() {
+void TechnoTypeExt::ExtData::Initialize()
+{
 	auto pThis = this->OwnerObject();
 	UNREFERENCED_PARAMETER(pThis);
 }
@@ -39,6 +40,7 @@ void TechnoTypeExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
 		auto pCapturerExt = TechnoTypeExt::ExtMap.Find(Capturer->GetTechnoType());
 		if (pCapturerExt && pCapturerExt->MindControlRangeLimit > 0 && pThis->DistanceFrom(Capturer) > pCapturerExt->MindControlRangeLimit * 256.0) {
 			Capturer->CaptureManager->FreeUnit(pThis);
+
 			if (!pThis->IsHumanControlled) {
 				pThis->QueueMission(Mission::Hunt, 0);
 			};
@@ -51,8 +53,7 @@ void TechnoTypeExt::ApplyBuildingDeployerTargeting(TechnoClass* pThis)
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	if (pTypeData && pThis->WhatAmI() == AbstractType::Building) {
 		// Prevent target loss when vehicles are deployed into buildings.
-		if (pTypeData->Deployed_RememberTarget)
-		{
+		if (pTypeData->Deployed_RememberTarget) {
 			auto currentMission = pThis->CurrentMission;
 			// With this the vehicle will not forget who is the target until the deploy process finish
 			if (pThis->Target > 0 &&
@@ -78,8 +79,7 @@ void TechnoTypeExt::ApplyInterceptor(TechnoClass* pThis)
 	auto pData = TechnoExt::ExtMap.Find(pThis);
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	if (pData && pTypeData && pTypeData->Interceptor && !pThis->Target &&
-		!(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
-	{
+		!(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0)) {
 		for (auto const& pBullet : *BulletClass::Array) {
 			if (auto pBulletTypeData = BulletTypeExt::ExtMap.Find(pBullet->Type)) {
 				if (!pBulletTypeData->Interceptable) {
@@ -154,9 +154,10 @@ void TechnoTypeExt::ApplySpawn_LimitRange(TechnoClass* pThis)
 			setWeaponRange(pTechnoType->EliteWeapon[1].WeaponType);
 
 			weaponRange += weaponRangeExtra;
-			if (pManager->Target && (pThis->DistanceFrom(pManager->Target) > weaponRange))
-				pManager->ResetTarget();
 
+			if (pManager->Target && (pThis->DistanceFrom(pManager->Target) > weaponRange)) {
+				pManager->ResetTarget();
+			}
 		}
 	}
 }
@@ -179,6 +180,7 @@ const char* TechnoTypeExt::GetSelectionGroupID(ObjectTypeClass* pType)
 bool TechnoTypeExt::HasSelectionGroupID(ObjectTypeClass* pType, const char* pID)
 {
 	auto id = TechnoTypeExt::GetSelectionGroupID(pType);
+
 	return (_strcmpi(id, pID) == 0);
 }
 
@@ -186,10 +188,15 @@ bool TechnoTypeExt::ExtData::IsCountedAsHarvester()
 {
 	auto pThis = this->OwnerObject();
 	UnitTypeClass* pUnit = nullptr;
-	if (pThis->WhatAmI() == AbstractType::UnitType)
+
+	if (pThis->WhatAmI() == AbstractType::UnitType) {
 		pUnit = abstract_cast<UnitTypeClass*>(pThis);
-	if (this->Harvester_Counted.Get(pThis->Enslaves || pUnit && (pUnit->Harvester || pUnit->Enslaves)))
+	}
+
+	if (this->Harvester_Counted.Get(pThis->Enslaves || pUnit && (pUnit->Harvester || pUnit->Enslaves))) {
 		return true;
+	}
+
 	return false;
 }
 
@@ -222,20 +229,25 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 
+	// Shield logic
 	this->Shield_Strength.Read(exINI, pSection, "Shield.Strength");
-	//this->Shield_Armor.Read(exINI, pSection, "Shield.Armor");
 	this->Shield_Armor = pINI->ReadArmorType(pSection, "Shield.Armor", this->Shield_Armor);
+
 	this->Shield_Respawn.Read(exINI, pSection, "Shield.Respawn");
-	if (this->Shield_Respawn)
-		this->Shield_RespawnDelay.Read(exINI, pSection, "Shield.Respawn.Rate");
+	if (this->Shield_Respawn) {
+		this->Shield_Respawn_Rate.Read(exINI, pSection, "Shield.Respawn.Rate");
+	}
+
 	this->Shield_SelfHealing.Read(exINI, pSection, "Shield.SelfHealing");
-	if (this->Shield_SelfHealing)
-		this->Shield_SelfHealingDelay.Read(exINI, pSection, "Shield.SelfHealing.Rate");
+	if (this->Shield_SelfHealing) {
+		this->Shield_SelfHealing_Rate.Read(exINI, pSection, "Shield.SelfHealing.Rate");
+	}
+
 	this->Shield_AbsorbOverDamage.Read(exINI, pSection, "Shield.AbsorbOverDamage");
-	this->Shield_Image.Read(exINI, pSection, "Shield.Image.Normal");
-	this->Shield_BreakImage.Read(exINI, pSection, "Shield.Image.Breaking");
-	this->Shield_RespawnImage.Read(exINI, pSection, "Shield.Image.Respawning");
-	this->Shield_WeaponNullifyAnim.Read(exINI, pSection, "Shield.WeaponNullifyAnim");
+	this->Shield_IdleAnim.Read(exINI, pSection, "Shield.IdleAnim");
+	this->Shield_BreakAnim.Read(exINI, pSection, "Shield.BreakAnim");
+	this->Shield_RespawnAnim.Read(exINI, pSection, "Shield.RespawnAnim");
+	this->Shield_HitAnim.Read(exINI, pSection, "Shield.HitAnim");
 	this->Shield_BracketDelta.Read(exINI, pSection, "Shield.BracketDelta");
 
 	// Ares 0.A
@@ -269,15 +281,15 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm) {
         .Process(this->Shield_Strength)
         .Process(this->Shield_Armor)
         .Process(this->Shield_Respawn)
-        .Process(this->Shield_RespawnDelay)
+        .Process(this->Shield_Respawn_Rate)
         .Process(this->Shield_SelfHealing)
-        .Process(this->Shield_SelfHealingDelay)
+        .Process(this->Shield_SelfHealing_Rate)
         .Process(this->Shield_AbsorbOverDamage)
 		.Process(this->Shield_BracketDelta)
-        .Process(this->Shield_Image)
-        .Process(this->Shield_BreakImage)
-		.Process(this->Shield_RespawnImage)
-		.Process(this->Shield_WeaponNullifyAnim)
+        .Process(this->Shield_IdleAnim)
+        .Process(this->Shield_BreakAnim)
+		.Process(this->Shield_RespawnAnim)
+		.Process(this->Shield_HitAnim)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {

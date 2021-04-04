@@ -59,26 +59,26 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
     //UNREFERENCED_PARAMETER(pWH);
     auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
-    if (!this->HP || *args->Damage == 0)
+    if (!this->HP || *args->Damage == 0) {
         return *args->Damage;
+    }
 
     int nDamage = 0;
 
-    if (pWHExt && pWHExt->CanTargetHouse(args->SourceHouse, this->Techno) && !args->WH->Temporal)
+    if (pWHExt && pWHExt->CanTargetHouse(args->SourceHouse, this->Techno) && !args->WH->Temporal) {
         nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->GetExt()->Shield_Armor, args->DistanceToEpicenter);
+    }
 
     if (nDamage > 0) {
-        this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealingDelay * 900)); //when attacked, restart the timer
+        this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealing_Rate * 900)); //when attacked, restart the timer
         this->ResponseAttack();
 
         auto residueDamage = nDamage - this->HP;
-        if (residueDamage >= 0)
-        {
+        if (residueDamage >= 0) {
             this->BreakShield();
             return this->GetExt()->Shield_AbsorbOverDamage ? 0 : residueDamage;
         }
-        else
-        {
+        else {
             this->WeaponNullifyAnim();
             this->HP = -residueDamage;
             return 0;
@@ -91,19 +91,15 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
 
 void ShieldTechnoClass::ResponseAttack()
 {
-    if (this->Techno->WhatAmI() == AbstractType::Building)
-    {
+    if (this->Techno->WhatAmI() == AbstractType::Building) {
         auto pBld = abstract_cast<BuildingClass*>(this->Techno);
         this->Techno->Owner->BuildingUnderAttack(pBld);
     }
-    else if (this->Techno->WhatAmI() == AbstractType::Unit)
-    {
+    else if (this->Techno->WhatAmI() == AbstractType::Unit) {
         auto pUnit = abstract_cast<UnitClass*>(this->Techno);
-        if (pUnit->Type->Harvester)
-        {
+        if (pUnit->Type->Harvester) {
             auto pPos = pUnit->GetDestination(pUnit);
-            if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, { (short)pPos.X / 256,(short)pPos.Y / 256 }))
-            {
+            if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, { (short)pPos.X / 256,(short)pPos.Y / 256 })) {
                 VoxClass::Play("EVA_OreMinerUnderAttack");
             }
         }
@@ -112,9 +108,8 @@ void ShieldTechnoClass::ResponseAttack()
 
 void ShieldTechnoClass::WeaponNullifyAnim()
 {
-    if (this->GetExt()->Shield_WeaponNullifyAnim.isset())
-    {
-        GameCreate<AnimClass>(this->GetExt()->Shield_WeaponNullifyAnim, this->Techno->GetCoords());
+    if (this->GetExt()->Shield_HitAnim.isset()) {
+        GameCreate<AnimClass>(this->GetExt()->Shield_HitAnim, this->Techno->GetCoords());
     }
 }
 
@@ -122,9 +117,11 @@ bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon, TechnoClass* pSo
 {
     auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
     UNREFERENCED_PARAMETER(pWHExt);
+    
     bool result =
         ((MapClass::GetTotalDamage(pWeapon->Damage, pWeapon->Warhead, this->GetExt()->Shield_Armor, 0) != 0) && pWeapon->Damage) 
         || !pWeapon->Damage; // we could check how is a warhead vs shield's armor 
+    
     return this->HP ? result : true;
 }
 
@@ -142,14 +139,12 @@ void ShieldTechnoClass::Update()
 
 void ShieldTechnoClass::TemporalCheck()
 {
-    if (this->Techno->TemporalTargetingMe && !this->Temporal)
-    {
+    if (this->Techno->TemporalTargetingMe && !this->Temporal) {
         this->Temporal = true;
         if (this->HP == 0) this->Timer_Respawn.Pause();
         else this->Timer_SelfHealing.Pause();
     }
-    else if (!this->Techno->TemporalTargetingMe && this->Temporal)
-    {
+    else if (!this->Techno->TemporalTargetingMe && this->Temporal) {
         this->Temporal = false;
         if (this->HP == 0) this->Timer_Respawn.Resume();
         else this->Timer_SelfHealing.Resume();
@@ -160,11 +155,11 @@ void ShieldTechnoClass::SelfHealing()
 {
     auto nSelfHealingAmount = this->GetPercentageAmount(this->GetExt()->Shield_SelfHealing);
     if (nSelfHealingAmount > 0 && this->HP < this->GetExt()->Shield_Strength && this->Timer_SelfHealing.StartTime == -1)
-        this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealingDelay * 900));
+        this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealing_Rate * 900));
 
     if (nSelfHealingAmount > 0 && this->HP > 0 && this->Timer_SelfHealing.Completed())
     {
-        this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealingDelay * 900));
+        this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealing_Rate * 900));
         this->HP += nSelfHealingAmount;
         if (this->HP > this->GetExt()->Shield_Strength) 
         {
@@ -178,18 +173,21 @@ int ShieldTechnoClass::GetPercentageAmount(double iStatus)
 {
     if (iStatus)
     {
-        if (iStatus >= -1.0 && iStatus <= 1.0)
+        if (iStatus >= -1.0 && iStatus <= 1.0) {
             return int(this->GetExt()->Shield_Strength * iStatus);
+        }
 
         if (iStatus < 0)
         {
+            // ensure correct flooring I guess? - Kerbiter
             iStatus *= -1;
             iStatus = (int)iStatus;
             iStatus *= -1;
         }
-        return (int)iStatus;
 
+        return (int)iStatus;
     }
+
     return 0;
 }
 
@@ -206,24 +204,33 @@ void ShieldTechnoClass::InvalidatePointer(void* ptr) {
 void ShieldTechnoClass::UninitAnim::operator() (AnimClass* const pAnim) const {
     auto buffer = abstract_cast<TechnoClass*>(pAnim->OwnerObject);
     pAnim->SetOwnerObject(nullptr);
-    if (buffer) pAnim->UnInit();
+
+    if (buffer) {
+        pAnim->UnInit();
+    }
 }
 
 void ShieldTechnoClass::BreakShield()
 {
     this->HP = 0;
-    if (this->GetExt()->Shield_Respawn > 0) this->Timer_Respawn.Start(int(this->GetExt()->Shield_RespawnDelay * 900));
+
+    if (this->GetExt()->Shield_Respawn > 0) {
+        this->Timer_Respawn.Start(int(this->GetExt()->Shield_Respawn_Rate * 900));
+    }
+
     this->Timer_SelfHealing.Stop();
 
-    //if (this->GetExt()->Shield_RespawnImage.isset()) this->Broken = true;
+    //if (this->GetExt()->Shield_RespawnAnim.isset()) this->Broken = true;
 
-    if (this->GetExt()->Shield_BreakImage.isset())
+    if (this->GetExt()->Shield_BreakAnim.isset())
     {
-        if (auto pAnimType = this->GetExt()->Shield_BreakImage)
+        if (auto pAnimType = this->GetExt()->Shield_BreakAnim)
         {
             auto pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
-            if (pAnim)
+
+            if (pAnim) {
                 pAnim->SetOwnerObject(this->Techno);
+            }
         }
     }
 }
@@ -235,8 +242,8 @@ void ShieldTechnoClass::RespawnShield()
         this->Timer_Respawn.Stop();
         this->HP = this->GetPercentageAmount(this->GetExt()->Shield_Respawn);
         /*
-        if (this->GetExt()->Shield_RespawnImage.isset() && this->Broken) {
-            if (AnimTypeClass* const pAnimType = this->GetExt()->Shield_RespawnImage) {
+        if (this->GetExt()->Shield_RespawnAnim.isset() && this->Broken) {
+            if (AnimTypeClass* const pAnimType = this->GetExt()->Shield_RespawnAnim) {
                 this->Image.reset(GameCreate<AnimClass>(pAnimType, this->Techno->Location));
                 if (AnimClass* const pAnim = this->Image) {
                     pAnim->SetOwnerObject(this->Techno);
@@ -273,8 +280,8 @@ void ShieldTechnoClass::CreateAnim()
     { 
         return;
     }
-    if (this->GetExt()->Shield_Image.isset()) {
-        if (AnimTypeClass* const pAnimType = this->GetExt()->Shield_Image) {
+    if (this->GetExt()->Shield_IdleAnim.isset()) {
+        if (AnimTypeClass* const pAnimType = this->GetExt()->Shield_IdleAnim) {
             this->Image.reset(GameCreate<AnimClass>(pAnimType, this->Techno->Location));
             if (AnimClass* const pAnim = this->Image) {
                 pAnim->SetOwnerObject(this->Techno);
