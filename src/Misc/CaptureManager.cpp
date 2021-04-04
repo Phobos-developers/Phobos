@@ -7,6 +7,15 @@
 
 #include "../Ext/TechnoType/Body.h"
 
+// I hate Ares' completely rewritten things
+bool CaptureManager::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTarget)
+{
+    pManager->MaxControlNodes += 1;
+    bool result = pManager->CanCapture(pTarget);
+    pManager->MaxControlNodes -= 1;
+    return result;
+}
+
 bool CaptureManager::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarget, bool bSilent)
 {
     if (!bSilent)
@@ -42,10 +51,8 @@ bool CaptureManager::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarge
 
 bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTarget, bool bRemoveFirst)
 {
-    if (pManager->CanCapture(pTarget))
+    if (CaptureManager::CanCapture(pManager, pTarget))
     {
-        if (pTarget->IsMindControlled())
-            CaptureManager::FreeUnit(pManager, pTarget, true);
         // issue #59
         // An improvement of Multiple MindControl
         if (pManager->MaxControlNodes == 1 && pManager->ControlNodes.Count == 1)
