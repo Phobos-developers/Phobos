@@ -10,6 +10,9 @@
 // I hate Ares' completely rewritten things
 bool CaptureManager::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTarget)
 {
+    if (pManager->MaxControlNodes == 1)
+        return pManager->CanCapture(pTarget);
+
     pManager->MaxControlNodes += 1;
     bool result = pManager->CanCapture(pTarget);
     pManager->MaxControlNodes -= 1;
@@ -134,4 +137,12 @@ DEFINE_HOOK(471D40, CaptureManagerClass_CaptureUnit, 7)
         R->EAX<bool>(false);
 
     return 0x471D5A;
+}
+
+DEFINE_HOOK(6FCB34, TechnoClass_CanFire_CanCapture, 6)
+{
+    GET(TechnoClass*, pThis, ESI);
+    GET(TechnoClass*, pTarget, EBP);
+    R->EAX(CaptureManager::CanCapture(pThis->CaptureManager, pTarget));
+    return 0x6FCB40;
 }
