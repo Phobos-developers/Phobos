@@ -58,7 +58,7 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
             if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
             {
                 if (!pTechnoTypeExt->MultipleMCReleaseVictim)
-                    return 0x471D5A;
+                    return false;
 
                 if (pManager->ControlNodes.Count > 0)
                 {
