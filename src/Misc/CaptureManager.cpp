@@ -23,8 +23,6 @@ bool CaptureManager::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTar
 
 bool CaptureManager::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarget, bool bSilent)
 {
-    if (!bSilent)
-        return pManager->FreeUnit(pTarget);
     if (pTarget)
     {
         for (int i = 0; i < pManager->ControlNodes.Count; ++i)
@@ -37,6 +35,15 @@ bool CaptureManager::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarge
                 {
                     pTarget->MindControlRingAnim->UnInit();
                     pTarget->MindControlRingAnim = nullptr;
+                }
+
+                if (!bSilent)
+                {
+                    int nSound = pTarget->GetTechnoType()->MindClearedSound;
+                    if (nSound == -1)
+                        nSound = RulesClass::Instance->MindClearedSound;
+                    if (nSound != -1)
+                        VocClass::PlayIndexAtPos(nSound, pTarget->GetCoords());
                 }
 
                 auto pOriginOwner = pNode->OriginalOwner->Defeated ?
@@ -62,7 +69,7 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
         // issue #59
         // An improvement of Multiple MindControl
         if (pManager->MaxControlNodes == 1 && pManager->ControlNodes.Count == 1)
-            CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit, true);
+            CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
         else if (pManager->MaxControlNodes > 1 && pManager->ControlNodes.Count == pManager->MaxControlNodes)
         {
             if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
@@ -70,7 +77,7 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
                 if (!pTechnoTypeExt->MultipleMCReleaseVictim)
                     return false;
 
-                CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit, true);
+                CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
             }
         }
 
@@ -133,6 +140,14 @@ DEFINE_HOOK(471D40, CaptureManagerClass_CaptureUnit, 7)
         R->EAX<bool>(false);
 
     return 0x471D5A;
+}
+
+DEFINE_HOOK(471FF0, CaptureManagerClass_FreeUnit, 8)
+{
+    GET(CaptureManagerClass*, pThis, ECX);
+    GET_STACK(TechnoClass*, pTechno, -0x4);
+    R->AL(CaptureManager::FreeUnit(pThis, pTechno));
+    return 0x472006;
 }
 
 DEFINE_HOOK(6FCB34, TechnoClass_CanFire_CanCapture, 6)
