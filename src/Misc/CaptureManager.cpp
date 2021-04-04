@@ -45,7 +45,7 @@ bool CaptureManager::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarge
                     if (nSound != -1)
                         VocClass::PlayIndexAtPos(nSound, pTarget->GetCoords());
                 }
-
+                // Fix : Player defeated should not get this unit.
                 auto pOriginOwner = pNode->OriginalOwner->Defeated ?
                     HouseClass::FindNeutral() : pNode->OriginalOwner;
                 pTarget->SetOwningHouse(pOriginOwner);
