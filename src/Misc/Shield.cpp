@@ -393,9 +393,9 @@ void ShieldTechnoClass::DrawShieldBarOther(int iLength, Point2D* pLocation, Rect
 }
 
 int ShieldTechnoClass::DrawShieldBar_Pip() {
-    auto ShieldPip = RulesExt::Global()->Shield_PipsForOther.Get();
+    auto ShieldPip = RulesExt::Global()->Pips_Shield.Get();
     if (this->Techno->WhatAmI() == AbstractType::Building)
-        ShieldPip = RulesExt::Global()->Shield_PipsForBuidling;
+        ShieldPip = RulesExt::Global()->Pips_Shield_Buildings;
 
     if (this->HP > RulesClass::Instance->ConditionYellow * this->GetExt()->Shield_Strength && ShieldPip.X != -1)
         return ShieldPip.X;
