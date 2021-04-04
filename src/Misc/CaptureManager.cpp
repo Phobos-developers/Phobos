@@ -7,7 +7,6 @@
 
 #include "../Ext/TechnoType/Body.h"
 
-// I hate Ares' completely rewritten things
 bool CaptureManager::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTarget)
 {
     if (pManager->MaxControlNodes == 1)
@@ -15,6 +14,8 @@ bool CaptureManager::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTar
     if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
         if (!pTechnoTypeExt->MultipleMCReleaseVictim)
             return pManager->CanCapture(pTarget);
+
+    // I hate Ares' completely rewritten things
     pManager->MaxControlNodes += 1;
     bool result = pManager->CanCapture(pTarget);
     pManager->MaxControlNodes -= 1;
@@ -27,7 +28,7 @@ bool CaptureManager::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarge
     {
         for (int i = 0; i < pManager->ControlNodes.Count; ++i)
         {
-            const auto& pNode = pManager->ControlNodes[i];
+            const auto pNode = pManager->ControlNodes[i];
 
             if (pTarget == pNode->Unit)
             {
@@ -62,7 +63,8 @@ bool CaptureManager::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarge
     return false;
 }
 
-bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTarget, bool bRemoveFirst)
+bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTarget, 
+    bool bRemoveFirst, AnimTypeClass* pControlledAnimType)
 {
     if (CaptureManager::CanCapture(pManager, pTarget))
     {
@@ -94,7 +96,7 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
             if (pTarget->SetOwningHouse(pManager->Owner->Owner))
             {
                 pManager->DecideUnitFate(pTarget);
-                
+
                 auto const pBld = abstract_cast<BuildingClass*>(pTarget);
                 auto const pType = pTarget->GetTechnoType();
 
@@ -105,7 +107,7 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
                 else {
                     location.Z += pType->MindControlRingOffset;
                 }
-                if (auto const pAnimType = RulesClass::Instance->ControlledAnimationType) {
+                if (auto const pAnimType = pControlledAnimType) {
                     if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location)) {
                         pTarget->MindControlRingAnim = pAnim;
                         pAnim->SetOwnerObject(pTarget);
@@ -123,21 +125,28 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
     return false;
 }
 
+bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTechno, AnimTypeClass* pControlledAnimType)
+{
+    if (pTechno)
+    {
+        const auto pTarget = pTechno->AbsDerivateID & AbstractFlags::Techno ? pTechno : nullptr;
+
+        bool bRemoveFirst = false;
+        if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
+            bRemoveFirst = pTechnoTypeExt->MultipleMCReleaseVictim;
+
+        return CaptureManager::CaptureUnit(pManager, pTarget, bRemoveFirst, pControlledAnimType);
+    }
+    else
+        return false;
+}
+
 DEFINE_HOOK(471D40, CaptureManagerClass_CaptureUnit, 7)
 {
     GET(CaptureManagerClass*, pThis, ECX);
     GET_STACK(TechnoClass*, pTechno, -0x4);
 
-    auto const pTarget = pTechno->AbsDerivateID & AbstractFlags::Techno ? pTechno : nullptr;
-
-    bool bRemoveFirst = false;
-    if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType()))
-        bRemoveFirst = pTechnoTypeExt->MultipleMCReleaseVictim;
-
-    if (pTarget)
-        R->EAX(CaptureManager::CaptureUnit(pThis, pTarget, bRemoveFirst));
-    else
-        R->EAX<bool>(false);
+    R->AL(CaptureManager::CaptureUnit(pThis, pTechno));
 
     return 0x471D5A;
 }
