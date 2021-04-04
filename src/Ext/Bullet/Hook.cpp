@@ -1,4 +1,8 @@
 #include "Body.h"
+#include "../WarheadType/Body.h"
+#include "../../Misc/CaptureManager.h"
+
+
 #include <TechnoClass.h>
 
 DEFINE_HOOK(4666F7, BulletClass_Update, 6)
@@ -31,4 +35,14 @@ DEFINE_HOOK(4666F7, BulletClass_Update, 6)
 		pBulletExt->ShouldIntercept = true;
 
 	return 0;
+}
+
+DEFINE_HOOK(4692BD, BulletClass_Fire_ApplyMindControl, 6)
+{
+	GET(BulletClass*, pBullet, ESI);
+	auto pTypeExt = WarheadTypeExt::ExtMap.Find(pBullet->WH);
+	auto pControlledAnimType = pTypeExt->MindControl_Anim.Get(RulesClass::Instance->ControlledAnimationType);
+	auto pTechno = generic_cast<TechnoClass*>(pBullet->Target);
+	R->AL(CaptureManager::CaptureUnit(pBullet->Owner->CaptureManager, pTechno, pControlledAnimType));
+	return 0x4692D5;
 }

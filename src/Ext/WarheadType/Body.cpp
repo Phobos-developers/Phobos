@@ -90,6 +90,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->Crit_Affects.Read(exINI, pSection, "Crit.Affects");
 	this->Crit_AnimList.Read(exINI, pSection, "Crit.AnimList");
 
+	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
@@ -113,6 +115,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->Crit_ExtraDamage)
 		.Process(this->Crit_Affects)
 		.Process(this->Crit_AnimList)
+
+		.Process(this->MindControl_Anim)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

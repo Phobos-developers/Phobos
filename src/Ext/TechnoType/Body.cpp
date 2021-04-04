@@ -228,6 +228,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Harvester_Counted.Read(exINI, pSection, "Harvester.Counted");
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
+	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
 
 	// Shield logic
 	this->Shield_Strength.Read(exINI, pSection, "Shield.Strength");
@@ -278,6 +279,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->Harvester_Counted)
         .Process(this->Promote_IncludeSpawns)
 		.Process(this->ImmuneToCrit)
+		.Process(this->MultiMindControl_ReleaseVictim)
         .Process(this->Shield_Strength)
         .Process(this->Shield_Armor)
         .Process(this->Shield_Respawn)
