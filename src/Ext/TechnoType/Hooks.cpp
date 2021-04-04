@@ -72,6 +72,28 @@ DEFINE_HOOK(6F3E6E, FootClass_firecoord_6F3D60_TurretMultiOffset, 0)
 	return 0x6F3E85;
 }
 
+DEFINE_HOOK(73DE78, UnitClass_Mi_Unload_SimpleDeployer, 6)
+{
+	GET(UnitClass* const, pThis, ESI);
+
+	enum { Allowed = 0, Disallowed = 0x73DE20 };
+
+	const auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (pTypeData->Deployer_Facing != -1) {
+		DirStruct deployDir((pTypeData->Deployer_Facing * 4) << 11);
+
+		if (pThis->Facing.current().value() != deployDir.value()) {
+			auto& pLocomoter = pThis->Locomotor;
+			if (!pLocomoter)
+				Game::RaiseError(E_POINTER);
+			pLocomoter->Do_Turn(deployDir);
+			return Disallowed;
+		}
+	}
+
+	return Allowed;
+}
+
 DEFINE_HOOK(73B780, UnitClass_DrawVXL_TurretMultiOffset, 0)
 {
 	GET(TechnoTypeClass*, technoType, EAX);

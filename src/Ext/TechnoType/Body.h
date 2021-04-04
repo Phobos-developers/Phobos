@@ -32,6 +32,7 @@ public:
 		Nullable<bool> Harvester_Counted;
 		Valueable<bool> Promote_IncludeSpawns;
 		Valueable<bool> ImmuneToCrit;
+		Valueable<int> Deployer_Facing;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			Deployed_RememberTarget(false),
@@ -49,7 +50,8 @@ public:
 			Spawn_LimitedExtraRange(0),
 			Harvester_Counted(),
 			Promote_IncludeSpawns(false),
-			ImmuneToCrit(false)
+			ImmuneToCrit(false),
+			Deployer_Facing(-1)
 		{ }
 
 		virtual ~ExtData() = default;
