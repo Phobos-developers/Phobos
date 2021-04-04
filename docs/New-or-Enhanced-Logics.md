@@ -22,15 +22,21 @@ PowersUp.Buildings= ; list of BuildingTypes
 
 ## TechnoTypes
 
-### Mind control maximum range
+### Mind Control Enhancement
 
 ![image](_static/images/mindcontrol-max-range-01.gif)  
+*Mind Control Range Limit shows in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+![image](_static/images/mindcontrol-multiple-01.gif)  
+*Multiple Mind Control auto releases the first victim in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+
 - Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
+- Multiple Mind controllers can now release the first controlled unit when they have reached the control limit and are ordered to control a new target.
 
 In `rulesmd.ini`
 ```ini
 [SOMETECHNO]               ; TechnoType
 MindControlRangeLimit=-1.0 ; double
+MultipleMCReleaseVictim=no ; boolean
 ```
 
 ### Spawn range limit
