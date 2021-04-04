@@ -12,7 +12,7 @@
 #define VERSION_REVISION 0
 
 // Latest devbuild
-#define BUILD_NUMBER 8
+#define BUILD_NUMBER 9
 
 // Nightly defines GIT_COMMIT and GIT_BRANCH in GH Actions
 

@@ -26,7 +26,7 @@ DEFINE_HOOK(739956, UnitClass_Deploy_Transfer, 6)
 
 	// Vehicle-to-building deployer targeting
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pStructure->GetTechnoType());
-	if (pTypeData && pTypeData->Deployed_RememberTarget)
+	if (pTypeData && pTypeData->DeployToFire_RememberTarget)
 	{ // && pUnit->Target > 0)
 		pStructure->Target = pUnit->Target;
 	}

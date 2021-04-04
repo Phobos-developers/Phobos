@@ -16,7 +16,7 @@ public:
 	{
 	public:
 
-		Valueable<bool> Deployed_RememberTarget;
+		Valueable<bool> DeployToFire_RememberTarget;
 		Valueable<bool> HealthBar_Hide;
 		Valueable<CSFText> UIDescription;
 		Valueable<bool> LowSelectionPriority;
@@ -48,7 +48,7 @@ public:
 		Nullable<AnimTypeClass*> Shield_HitAnim;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
-			Deployed_RememberTarget(false),
+			DeployToFire_RememberTarget(true),
 			HealthBar_Hide(false),
 			UIDescription(),
 			LowSelectionPriority(false),

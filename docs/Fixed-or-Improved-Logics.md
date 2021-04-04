@@ -24,17 +24,17 @@ DiskLaser.Radius=38.2 ; floating point value
                       ; 38.2 is roughly the default saucer disk radius
 ```
 
-### Remember target when deployed
+### Remember target on deploy-to-fire
 
 ![image](_static/images/remember-target-after-deploying-01.gif)  
-*Vehicle keeping target after deployed to building in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
+*Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
 
-- Vehicle to building deployers can now keep their target when deploying.
+- Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]              ; TechnoType
-Deployed.RememberTarget=no ; boolean
+[SOMEVEHICLE]                    ; TechnoType
+DeployToFire.RememberTarget=yes  ; boolean
 ```
 
 ### Kill spawns on low power

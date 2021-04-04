@@ -53,7 +53,7 @@ void TechnoTypeExt::ApplyBuildingDeployerTargeting(TechnoClass* pThis)
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	if (pTypeData && pThis->WhatAmI() == AbstractType::Building) {
 		// Prevent target loss when vehicles are deployed into buildings.
-		if (pTypeData->Deployed_RememberTarget) {
+		if (pTypeData->DeployToFire_RememberTarget) {
 			auto currentMission = pThis->CurrentMission;
 			// With this the vehicle will not forget who is the target until the deploy process finish
 			if (pThis->Target > 0 &&
@@ -214,7 +214,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	INI_EX exINI(pINI);
 
-	this->Deployed_RememberTarget.Read(exINI, pSection, "Deployed.RememberTarget");
+	this->DeployToFire_RememberTarget.Read(exINI, pSection, "DeployToFire.RememberTarget");
 	this->HealthBar_Hide.Read(exINI, pSection, "HealthBar.Hide");
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
@@ -263,7 +263,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 template <typename T>
 void TechnoTypeExt::ExtData::Serialize(T& Stm) {
 	Stm
-		.Process(this->Deployed_RememberTarget)
+		.Process(this->DeployToFire_RememberTarget)
 		.Process(this->HealthBar_Hide)
 		.Process(this->UIDescription)
 		.Process(this->LowSelectionPriority)
