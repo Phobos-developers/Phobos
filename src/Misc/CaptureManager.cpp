@@ -28,7 +28,7 @@ bool CaptureManager::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarge
 {
     if (pTarget)
     {
-        for (int i = 0; i < pManager->ControlNodes.Count; ++i)
+        for (int i = pManager->ControlNodes.Count - 1; i >= 0; --i)
         {
             const auto pNode = pManager->ControlNodes[i];
             if (pTarget == pNode->Unit)
@@ -161,15 +161,15 @@ DEFINE_HOOK(471D40, CaptureManagerClass_CaptureUnit, 7)
     return 0x471D5A;
 }
 
-DEFINE_HOOK(471FF0, CaptureManagerClass_FreeUnit, 8)
-{
-    GET(CaptureManagerClass*, pThis, ECX);
-    GET_STACK(TechnoClass*, pTechno, -0x4);
-
-    R->AL(CaptureManager::FreeUnit(pThis, pTechno));
-
-    return 0x472006;
-}
+//DEFINE_HOOK(471FF0, CaptureManagerClass_FreeUnit, 8)
+//{
+//    GET(CaptureManagerClass*, pThis, ECX);
+//    GET_STACK(TechnoClass*, pTechno, -0x4);
+//
+//    R->AL(CaptureManager::FreeUnit(pThis, pTechno));
+//
+//    return 0x472006;
+//}
 
 DEFINE_HOOK(6FCB34, TechnoClass_CanFire_CanCapture, 6)
 {
