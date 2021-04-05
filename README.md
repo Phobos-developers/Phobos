@@ -49,14 +49,13 @@ Credits
 - Thrifinesma (Uranusian), SEC-SOME (secsome) - co-developers
 
 **Contribution**
-- Belonit (Gluk-v48) - disable empty spawn positions, SHP debris respect Shadow, custom gamemd icon with Command Line, full-color non-paletted PCX, SpySat, BigGap, TransactMoney, PCX Loading Screen, custom DiskLaser radius, extended tooltips, building upgrades enhancement, hide health bar, Sidebar.GDIPosition, help with CellSpread, Blowfish.dll-related errors fix, zero size map previews
-- Metadorius (Kerbiter) - building upgrades enhancement, extended tooltips, selection priority filtering, TurretOffset enhancement, customizable ore spawners, select next idle harvester hotkey, interceptor enhancement, zero size map previews, nightly build workflow, overhauled Unicode font, docs maintainer
+- Belonit (Gluk-v48) - project creator, disable empty spawn positions, custom gamemd icon with Command Line, full-color non-paletted PCX, SpySat, BigGap, TransactMoney, PCX Loading Screen, custom DiskLaser radius, extended tooltips, building upgrades enhancement, hide health bar, Sidebar.GDIPosition, help with CellSpread, Blowfish.dll-related errors fix, zero size map previews
+- Metadorius (Kerbiter) - SHP debris respect Shadow, building upgrades enhancement, extended tooltips, selection priority filtering, TurretOffset enhancement, customizable ore spawners, select next idle harvester hotkey, interceptor enhancement, zero size map previews, nightly build workflow, overhauled Unicode font, docs maintainer, organisational, maintenance and public relations work
 - misha135n2 - YRpp edits
 - tomsons26 - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
-- CCHyper - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
+- CCHyper - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
 - Ares developers - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code 
 - DCoder - unused deployer fixes that are now included in Phobos
-- CCHyper - current project logo
 - ZΞPHYɌUS - win/lose themes code
 - ayylmao - help with docs
 - SMxReaver - help with docs
