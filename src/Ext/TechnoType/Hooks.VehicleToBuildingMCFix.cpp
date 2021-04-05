@@ -4,18 +4,27 @@
 #include <UnitClass.h>
 #include <InfantryClass.h>
 #include <BuildingClass.h>
+#include <HouseClass.h>
 #include "../Phobos.h"
 #include "../../Misc/CaptureManager.h"
 
+namespace MCBuildingClassTemp {
+	bool isStructureMindControlled = false;
+}
+
 void TechnoTypeExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo) {
 	if (auto Controller = pTechnoFrom->MindControlledBy) {
+
 		if (auto Manager = Controller->CaptureManager) {
 			CaptureManager::FreeUnit(Manager, pTechnoFrom, true);
 			CaptureManager::CaptureUnit(Manager, pTechnoTo, true);
 
 			if (pTechnoTo->WhatAmI() == AbstractType::Building) {
+				MCBuildingClassTemp::isStructureMindControlled = true;
 				pTechnoTo->QueueMission(Mission::Construction, 0);
 				pTechnoTo->Mission_Construction();
+				MCBuildingClassTemp::isStructureMindControlled = false;
+
 			}
 		}
 	}
@@ -71,3 +80,8 @@ DEFINE_HOOK(7396AD, UnitClass_Deploy_CreateBuilding, 6)
 	return 0x7396B3;
 }
 
+DEFINE_HOOK(448485, BuildingClass_Deploy_Capture_Sound, 5)
+{
+	return MCBuildingClassTemp::isStructureMindControlled ?
+		0x44848F : 0;
+}
