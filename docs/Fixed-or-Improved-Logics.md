@@ -55,3 +55,19 @@ SpawnsTiberium.Type=0         ; tiberium type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
 SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
 ```
+
+## Weapon
+
+###Manually disable desired ElectricBolt bolts
+
+-You can now specify which ElectricBolt bolts want to disable.
+-Disable 3 of them resulting invisible ElectricBolt.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPONTYPE]       ; WeaponType
+IsElectricBolt=true   ;an ElectricBolt Weapon
+Bolt.Disable1=false ; boolean, Disable bolt Number 1
+Bolt.Disable2=false ; boolean, Disable bolt Number 2
+Bolt.Disable3=false ; boolean, Disable bolt Number 3
+```

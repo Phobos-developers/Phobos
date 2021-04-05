@@ -20,12 +20,18 @@ public:
 		Valueable<int> DiskLaser_Circumference;
 		RadType RadType;
 		Valueable<bool> Rad_NoOwner;
+		Valueable<bool> Bolt_Disable1;
+		Valueable<bool> Bolt_Disable2;
+		Valueable<bool> Bolt_Disable3;
 
-		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject),
-			DiskLaser_Radius(38.2),
-			DiskLaser_Circumference(240),
-			RadType(),
-			Rad_NoOwner(false)
+		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
+			,DiskLaser_Radius(38.2)
+			,DiskLaser_Circumference(240)
+			,RadType()
+			,Rad_NoOwner(false)
+			,Bolt_Disable1(false)
+			,Bolt_Disable2(false)
+			,Bolt_Disable3(false)
 		{ }
 
 		virtual ~ExtData() = default;
