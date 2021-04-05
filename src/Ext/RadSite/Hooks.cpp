@@ -38,7 +38,7 @@ DEFINE_HOOK(469150, B_Detonate_ApplyRad, 5)
 // hack it here so we can use this globally if needed
 DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation, 5)
 {
-	GET(BulletClass* const, pThis, ESI);
+	GET(BulletClass* const, pThis, ECX);
 	GET_STACK(CellStruct, location, 0x4);
 	GET_STACK(int, spread, 0x8);
 	GET_STACK(int, amount, 0xC);

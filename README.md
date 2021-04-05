@@ -44,17 +44,25 @@ UIDescription=<none> ; CSF entry key
 Credits
 -------
 
+**Developers**
 - Belonit (Gluk-v48), Metadorius (Kerbiter) - project authors
-- misha135n2, Xkein - YRpp edits
-- tomsons26, CCHyper - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
+- Thrifinesma (Uranusian), SEC-SOME (secsome) - co-developers
+
+**Contribution**
+- Belonit (Gluk-v48) - project creator, disable empty spawn positions, custom gamemd icon with Command Line, full-color non-paletted PCX, SpySat, BigGap, TransactMoney, PCX Loading Screen, custom DiskLaser radius, extended tooltips, building upgrades enhancement, hide health bar, Sidebar.GDIPosition, help with CellSpread, Blowfish.dll-related errors fix, zero size map previews
+- Metadorius (Kerbiter) - SHP debris respect Shadow, building upgrades enhancement, extended tooltips, selection priority filtering, TurretOffset enhancement, customizable ore spawners, select next idle harvester hotkey, interceptor enhancement, zero size map previews, nightly build workflow, overhauled Unicode font, docs maintainer, organisational, maintenance and public relations work
+- misha135n2 - YRpp edits
+- tomsons26 - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
+- CCHyper - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
 - Ares developers - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code 
 - DCoder - unused deployer fixes that are now included in Phobos
-- CCHyper - current project logo
 - ZΞPHYɌUS - win/lose themes code
-- ayylmao, SMxReaver, 4SG, FS-21, Thrifinesma (Uranusian), SEC-SOME (secsome) - help with docs
-- wiktorderelf, Metadorius (Kerbiter), Thrifinesma (Uranusian) - overhauled Unicode font
-- Thrifinesma (Uranusian) - Mind Control range limit, custom warhead splash list, harvesters counter, promoted spawns, shields, general help
-- SEC-SOME (secsome) - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, mind control removal warhead, shields, general help
+- ayylmao - help with docs
+- SMxReaver - help with docs
+- 4SG - help with docs
+- wiktorderelf - overhauled Unicode font
+- Thrifinesma (Uranusian) - Mind Control enhancement, custom warhead splash list, harvesters counter, promoted spawns, shields, overhauled Unicode font, help with docs
+- SEC-SOME (secsome) - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields
 - Otamaa (BoredEXE) - help with CellSpread, ported and fixed custom RadType code
 - E1 Elite - TileSet 255 and above bridge repair fix
 - FS-21 - Dump Object Info enhancements, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71 & 72, MC deployer fixes, help with docs
