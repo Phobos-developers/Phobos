@@ -91,6 +91,8 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
 
 void ShieldTechnoClass::ResponseAttack()
 {
+    if (this->Techno->Owner != HouseClass::Player)
+        return;
     if (this->Techno->WhatAmI() == AbstractType::Building) {
         auto pBld = abstract_cast<BuildingClass*>(this->Techno);
         this->Techno->Owner->BuildingUnderAttack(pBld);
