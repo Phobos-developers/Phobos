@@ -117,6 +117,17 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_HitAnim.Read(exINI, pSection, "Shield.HitAnim");
 	this->Shield_BracketDelta.Read(exINI, pSection, "Shield.BracketDelta");
 
+	//
+	this->WarpOut.Read(exINI, pSection, "WarpOut");
+	this->WarpIn.Read(exINI, pSection, "WarpIn");
+	this->WarpAway.Read(exINI, pSection, "WarpAway");
+	this->ChronoTrigger.Read(exINI, pSection, "ChronoTrigger");
+	this->ChronoDistanceFactor.Read(exINI, pSection, "ChronoDistanceFactor");
+	this->ChronoMinimumDelay.Read(exINI, pSection, "ChronoMinimumDelay");
+	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
+	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
+
+
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
 
@@ -158,6 +169,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_BreakAnim)
 		.Process(this->Shield_RespawnAnim)
 		.Process(this->Shield_HitAnim)
+		.Process(this->WarpOut)
+		.Process(this->WarpIn)
+		.Process(this->WarpAway)
+		.Process(this->ChronoTrigger)
+		.Process(this->ChronoDistanceFactor)
+		.Process(this->ChronoMinimumDelay)
+		.Process(this->ChronoRangeMinimum)
+		.Process(this->ChronoDelay)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

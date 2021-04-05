@@ -57,6 +57,28 @@ SpawnsTiberium.Range=1        ; integer, radius in cells
 SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
 ```
 
+## Techno
+
+### Customizable Teleport/Chrono Locomotor properties per attached Techno 
+
+-Now fully customizeable per techno type direcly 
+-Unfilled value will still default to Rules
+-This properties able to used by Techno that have Teleport Locomotor/Chrono attached
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]			; TechnoType 
+Locomotor={4A582747-9839-11d1-B709-00A024DDAFD1} ;required 
+WarpOut					;Anim (played when Techno Warping out)			
+WarpIn					;Anim (played when techno warping in)
+WarpAway				;Anim (played when unit dies)
+ChronoTrigger			;bool
+ChronoDistanceFactor	;int
+ChronoMinimumDelay		;int
+ChronoRangeMinimum		;int
+ChronoDelay				;int
+```
+
 ## Weapons
 
 ### Togglable ElectricBolt visuals
