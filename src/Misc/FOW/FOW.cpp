@@ -1,7 +1,53 @@
 #include "FOW.h"
 
+#include <RulesClass.h>
+#include <GameOptionsClass.h>
+#include <ScenarioClass.h>
+
 // issue #28 : Fix vanilla YR Fog of War bugs & issues
 // Reimplement it would be nicer.
+
+// IDA Stuff hoster
+#ifndef IDA_STUFFS
+#define IDA_STUFFS
+typedef unsigned char uint8;
+typedef unsigned short uint16;
+#define _BYTE uint8
+#define _WORD uint16
+#define LOBYTE(w) ((BYTE)(((DWORD_PTR)(w)) & 0xff))
+#define HIBYTE(w) ((BYTE)((((DWORD_PTR)(w)) >> 8) & 0xff))
+#define BYTEn(x, n) (*((_BYTE*)&(x)+n))
+#define WORDn(x, n) (*((_WORD*)&(x)+n))
+#define BYTE0(x) BYTEn(x, 0) // byte 0 (counting from 0)
+#define BYTE1(x) BYTEn(x, 1) // byte 1 (counting from 0)
+#define BYTE2(x) BYTEn(x, 2)
+#define BYTE3(x) BYTEn(x, 3)
+#define BYTE4(x) BYTEn(x, 4)
+typedef unsigned long DWORD_PTR;
+
+DEFINE_HOOK(6B8DA9, ScenarioClass_LoadSpecialFlags, 6)
+{
+	// Original game won't read these SFs unless in debug 
+	// mode if not in a campaign. I read them all.
+	// Affected labels:
+	// TiberiumGrows, TiberiumSpreads, DestroyableBridges,
+	// FixedAlliance, FogOfWar, Inert, HarvesterImmune.
+
+	// GET(ScenarioFlags*, pSFs, ESI);
+	// pSFs->FogOfWar = false;
+	return 0x6B8DC1;
+}
+
+DEFINE_HOOK(686C03, SetScenarioFlags_FogOfWar, 5)
+{
+	// Just make it reads first, will look into it later.
+
+	GET(DWORD, dwSFs, EAX);
+	dwSFs &= 0b11101111;
+	BYTE1(dwSFs) = (RulesClass::Instance->FogOfWar || ScenarioClass::Instance->SpecialFlags.FogOfWar) ? 0b10000 : 0b0;
+	R->EDX(dwSFs);
+	return 0x686C0E;
+}
 
 /* Hook information from Xkein
 ;;loading
@@ -54,3 +100,5 @@
 ;//4D1714 = FoggedObjectClass_DTOR, 6
 5865E2 = IsLocationFogged, 5
 */
+
+#endif // IDA_STUFFS
