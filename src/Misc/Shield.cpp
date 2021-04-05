@@ -129,11 +129,12 @@ bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon, TechnoClass* pSo
 
 void ShieldTechnoClass::Update()
 {
+    this->TemporalCheck();
+
     if (!this->Techno || this->Techno->InLimbo || this->Techno->IsImmobilized || this->Techno->Transporter) {
         return;
     }
 
-    this->TemporalCheck();
     this->DrawShield();
     this->RespawnShield();
     this->SelfHealing();
