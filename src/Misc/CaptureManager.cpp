@@ -103,6 +103,8 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 
             if (pTarget->SetOwningHouse(pManager->Owner->Owner))
             {
+                pTarget->MindControlledBy = pManager->Owner;
+
                 pManager->DecideUnitFate(pTarget);
 
                 auto const pBld = abstract_cast<BuildingClass*>(pTarget);
