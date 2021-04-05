@@ -154,22 +154,22 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTe
 DEFINE_HOOK(471D40, CaptureManagerClass_CaptureUnit, 7)
 {
     GET(CaptureManagerClass*, pThis, ECX);
-    GET_STACK(TechnoClass*, pTechno, -0x4);
+    GET_STACK(TechnoClass*, pTechno, 0x4);
 
     R->AL(CaptureManager::CaptureUnit(pThis, pTechno));
 
     return 0x471D5A;
 }
 
-//DEFINE_HOOK(471FF0, CaptureManagerClass_FreeUnit, 8)
-//{
-//    GET(CaptureManagerClass*, pThis, ECX);
-//    GET_STACK(TechnoClass*, pTechno, -0x4);
-//
-//    R->AL(CaptureManager::FreeUnit(pThis, pTechno));
-//
-//    return 0x472006;
-//}
+DEFINE_HOOK(471FF0, CaptureManagerClass_FreeUnit, 8)
+{
+    GET(CaptureManagerClass*, pThis, ECX);
+    GET_STACK(TechnoClass*, pTechno, 0x4);
+
+    R->AL(CaptureManager::FreeUnit(pThis, pTechno));
+
+    return 0x472006;
+}
 
 DEFINE_HOOK(6FCB34, TechnoClass_CanFire_CanCapture, 6)
 {
