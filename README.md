@@ -58,8 +58,9 @@ Credits
 - Otamaa (BoredEXE) - help with CellSpread, ported and fixed custom RadType code
 - E1 Elite - TileSet 255 and above bridge repair fix
 - FS-21 - Dump Object Info enhancements, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71 & 72, MC deployer fixes, help with docs
-- AutoGavy - interceptor logic
-- thomassneddon, Xkein - general assistance
+- Xkein - general assistance, YRpp edits
+- thomassneddon - general assistance
+- AutoGavy - interceptor logic, warhead critical damage system
 
 Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](https://github.com/Phobos-developers/Phobos/logo-mono.png)) in your client/launcher, contributing or donating to us via links on the right and the `Sponsor` button on top of the repo.
 
