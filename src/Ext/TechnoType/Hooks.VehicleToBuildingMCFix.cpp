@@ -5,26 +5,16 @@
 #include <InfantryClass.h>
 #include <BuildingClass.h>
 #include "../Phobos.h"
+#include "../../Misc/CaptureManager.h"
 
 void TechnoTypeExt::TransferMindControl(TechnoClass* From, TechnoClass* To) {
 	if (auto Controller = From->MindControlledBy) {
 		if (auto Manager = Controller->CaptureManager) { // shouldn't be necessary, but WW uses it...
-			bool FoundNode(false);
-			for (int i = 0; i < Manager->ControlNodes.Count; ++i) {
-				auto Node = Manager->ControlNodes[i];
-				if (Node->Unit == From) {
-					Node->Unit = To;
-					To->Owner = From->GetOwningHouse();
-					//To->SetOwningHouse(From->GetOwningHouse(), 0);
-					To->MindControlledBy = Controller;
-					From->MindControlledBy = NULL;
-					FoundNode = true;
-					break;
-				}
-			}
-			if (!FoundNode) { // say the link was broken beforehand, by inconsistently ordered code...
-				Manager->CaptureUnit(To);
-			}
+			CaptureManager::FreeUnit(Manager, From, true);
+			CaptureManager::CaptureUnit(Manager, To, true);
+
+			To->QueueMission(Mission::Construction, 0);
+			To->Mission_Construction();
 		}
 	}
 	else if (auto MCHouse = From->MindControlledByHouse) {
