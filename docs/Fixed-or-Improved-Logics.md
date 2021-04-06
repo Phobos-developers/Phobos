@@ -5,7 +5,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 ## Bugfixes and miscellanous
 
 - Fixed the bug when deploying mindcontrolled vehicle into a building permanently trasferred the control to the house which mindcontrolled it.
-  - Currently doesn't work with superweapons attached to the deployed building or similiar logics.
 - SHP debris shadows now respect the `Shadow` tag.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
 - `TurretOffset` tag for voxel turreted technos now accepts FLH (forward, lateral, height) values like `TurretOffset=F,L` or `TurretOffset=F,L,H`, which means turret location can be adjusted in all three axes.
