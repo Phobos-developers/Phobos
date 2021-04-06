@@ -105,6 +105,7 @@ Sidebar.GDIPositions= ; boolean
 - You can specify which TechnoType shoule be counted as a Harvester. If not set, the techno with `Harvester=yes` or `Enslaves=SOMESLAVE` will be counted.
 - The counter is displayed with the format of `Label(Active Harvesters)/(Total Harvesters)`. The label is `⛏ U+26CF` by default.
 - You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, negative means left/up, positive means right/down.
+- By setting `HarvesterCounter.WarningAmount`, the game will warn player by changing the color of counter whenever total amount of harvesters > it while active amount ≤ it. 
 
 In `uimd.ini`:
 ```ini
@@ -115,14 +116,18 @@ HarvesterCounter.Label=<none>   ; CSF entry key
 
 In `rulesmd.ini`:
 ```ini
+[AudioVisual]
+HarvesterCounter.WarningAmount=       ; integer, if set then follow the rules
+
 [SOMETECHNO]        ; TechnoType
 Harvester.Counted=  ; boolean
                     ; if not set, the techno with Harvester=yes or Enslaves=SOMESLAVE will be counted
                     ; if set yes to a BuildingType like Oil Derricks
                     ; when producing cash, it will be counted as active
 
-[SOMESIDE]                            ; Side
-Sidebar.HarvesterCounter.Offset=0,0   ; X,Y, pixels relative to default
+[SOMESIDE]                                     ; Side
+Sidebar.HarvesterCounter.Offset=0,0            ; X,Y, pixels relative to default
+Sidebar.HarvesterCounter.WarningColor=255,0,0  ; R,G,B
 ```
 
 :::{note}

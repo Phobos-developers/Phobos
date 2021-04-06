@@ -26,10 +26,12 @@ public:
 	public:
 		Valueable<Vector3D<int>> Pips_Shield;
 		Valueable<Vector3D<int>> Pips_Shield_Buildings;
+		Nullable<int> HarvesterCounter_WarningAmount;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Pips_Shield({ -1,-1,-1 })
 			, Pips_Shield_Buildings({ -1,-1,-1 })
+			, HarvesterCounter_WarningAmount()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -61,17 +63,20 @@ public:
 	static void LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI);
 	static void LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI);
 
-	static ExtData* Global() {
+	static ExtData* Global()
+	{
 		return Data.get();
 	}
 
 	static DynamicVectorClass<CameoDataStruct> TabCameos[4];
 
-	static void Clear() {
+	static void Clear()
+	{
 		Allocate(RulesClass::Instance);
 	}
 
-	static void PointerGotInvalid(void* ptr, bool removed) {
+	static void PointerGotInvalid(void* ptr, bool removed)
+	{
 		Global()->InvalidatePointer(ptr, removed);
 	}
 
