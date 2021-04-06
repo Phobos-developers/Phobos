@@ -26,11 +26,47 @@ DEFINE_HOOK(469150, B_Detonate_ApplyRad, 5)
 	auto const pWeapon = pThis->GetWeaponType();
 	auto const pWH = pThis->WH;
 
+
 	if (pWeapon && pWeapon->RadLevel > 0) {
-		auto const cell = CellClass::Coord2Cell(*pCoords);
+
+		auto const location = CellClass::Coord2Cell(*pCoords);
 		auto const spread = static_cast<int>(pWH->CellSpread);
-		pThis->ApplyRadiationToCell(cell, spread, pWeapon->RadLevel);
+		auto amount = pWeapon->RadLevel;
+
+		auto const& Instances = RadSiteExt::RadSiteInstance;
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.FindOrAllocate(pWeapon);
+		auto const pRadType = &pWeaponExt->RadType;
+		auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
+
+		if (Instances.Count > 0) {
+			auto const it = std::find_if(Instances.begin(), Instances.end(),
+				[=](RadSiteExt::ExtData* const pSite) // Lambda
+			{// find 
+				return pSite->Type == pRadType &&
+					pSite->OwnerObject()->BaseCell == location &&
+					spread == pSite->OwnerObject()->Spread;
+			});
+
+			if (it == Instances.end()) {
+				RadSiteExt::CreateInstance(location, spread, amount, pWeaponExt, pThisHouse);
+			}
+			else {
+				auto pRadExt = *it;
+				auto pRadSite = pRadExt->OwnerObject();
+
+				if (pRadSite->GetRadLevel() + amount > pRadType->LevelMax) {
+					amount = pRadType->LevelMax - pRadSite->GetRadLevel();
+				}
+
+				// Handle It 
+				pRadExt->Add(amount);
+			}
+		}
+		else {
+			RadSiteExt::CreateInstance(location, spread, amount, pWeaponExt, pThisHouse);
+		}
 	}
+
 
 	return 0x46920B;
 }
@@ -38,6 +74,7 @@ DEFINE_HOOK(469150, B_Detonate_ApplyRad, 5)
 // hack it here so we can use this globally if needed
 DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation, 5)
 {
+	/*
 	GET(BulletClass* const, pThis, ECX);
 	GET_STACK(CellStruct, location, 0x4);
 	GET_STACK(int, spread, 0x8);
@@ -76,7 +113,7 @@ DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation, 5)
 	else {
 		RadSiteExt::CreateInstance(location, spread, amount, pWeaponExt, pThisHouse);
 	}
-
+*/
 	return 0x46AE5E;
 }
 
