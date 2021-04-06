@@ -87,11 +87,11 @@ public:
 			WarpOut(),
 			WarpIn(),
 			WarpAway(),
-			ChronoTrigger(false),
-			ChronoDistanceFactor(0),
-			ChronoMinimumDelay(0),
-			ChronoRangeMinimum(0),
-			ChronoDelay(0)
+			ChronoTrigger(),
+			ChronoDistanceFactor(),
+			ChronoMinimumDelay(),
+			ChronoRangeMinimum(),
+			ChronoDelay()
 		{ }
 
 		virtual ~ExtData() = default;

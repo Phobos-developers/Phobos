@@ -58,14 +58,17 @@ DEFINE_HOOK(7194D0, TeleportLocomotionClass_ILocomotion_Process_ChronoTrigger, 6
 DEFINE_HOOK(7194E3, TeleportLocomotionClass_ILocomotion_Process_ChronoDistanceFactor, 6)
 {
 	GET(ILocomotion *, Loco, ESI);
+	GET(int, val, EAX);
+
 	auto pLocomotor = static_cast<TeleportLocomotionClass*>(Loco);
 	auto const pType = pLocomotor->LinkedTo->GetTechnoType();
 	auto pExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	auto factor = pExt->ChronoDistanceFactor.Get(RulesClass::Instance->ChronoDistanceFactor);
+	factor = factor == 0 ? 1 : factor; //fix factor 0 crash by forcve it to 1
 
-	__asm xor edx, edx; // fixing integer overflow crash
-	__asm idiv factor;
+	R->EAX(val / factor);
+	R->EDX(val % factor);
 			
 	return 0x7194E9;
 }
@@ -73,6 +76,7 @@ DEFINE_HOOK(7194E3, TeleportLocomotionClass_ILocomotion_Process_ChronoDistanceFa
 //ChronoMinimumDelay
 DEFINE_HOOK(719519, TeleportLocomotionClass_ILocomotion_Process_ChronoMinimumDelay, 6)
 {
+
 	GET(ILocomotion *, Loco, ESI);
 	auto pLocomotor = static_cast<TeleportLocomotionClass*>(Loco);
 	auto const pType = pLocomotor->LinkedTo->GetTechnoType();
