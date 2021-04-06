@@ -52,12 +52,11 @@ DEFINE_HOOK(4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 7)
 		wchar_t counter[0x20];
 		auto nActive = HouseExt::ActiveHarvesterCount(pPlayer);
 		auto nTotal = HouseExt::TotalHarvesterCount(pPlayer);
+		auto nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
 
-		ColorStruct clrToolTip = (RulesExt::Global()->HarvesterCounter_WarningAmount.isset()
-			&& nTotal > RulesExt::Global()->HarvesterCounter_WarningAmount
-			&& nActive <= RulesExt::Global()->HarvesterCounter_WarningAmount)
-			? pSideExt->Sidebar_HarvesterCounter_WarningColor
-			: *reinterpret_cast<ColorStruct*>(0xB0FA1C);
+		ColorStruct clrToolTip = nPercentage > Phobos::UI::HarvesterCounter_ConditionYellow
+			? *reinterpret_cast<ColorStruct*>(0xB0FA1C) : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
+			? pSideExt->Sidebar_HarvesterCounter_Yellow : pSideExt->Sidebar_HarvesterCounter_Red;
 
 		swprintf_s(counter, L"%ls%d/%d", Phobos::UI::HarvesterLabel, nActive, nTotal);
 		

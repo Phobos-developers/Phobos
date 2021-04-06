@@ -51,7 +51,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI) 
 
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
 	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
-	this->HarvesterCounter_WarningAmount.Read(exINI, "AudioVisual", "HarvesterCounter.WarningAmount");
 }
 
 // this runs between the before and after type data loading methods for rules ini
@@ -95,7 +94,6 @@ void RulesExt::ExtData::Serialize(T& Stm) {
 	Stm
 		.Process(this->Pips_Shield)
 		.Process(this->Pips_Shield_Buildings)
-		.Process(this->HarvesterCounter_WarningAmount)
 		;
 }
 

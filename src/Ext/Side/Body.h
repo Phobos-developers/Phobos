@@ -18,7 +18,8 @@ public:
 		Valueable<int> IngameScore_WinTheme;
 		Valueable<int> IngameScore_LoseTheme;
 		Valueable<Point2D> Sidebar_HarvesterCounter_Offset;
-		Valueable<ColorStruct> Sidebar_HarvesterCounter_WarningColor;
+		Valueable<ColorStruct> Sidebar_HarvesterCounter_Yellow;
+		Valueable<ColorStruct> Sidebar_HarvesterCounter_Red;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject),
 			ArrayIndex(-1),
@@ -26,7 +27,8 @@ public:
 			IngameScore_WinTheme(-2),
 			IngameScore_LoseTheme(-2),
 			Sidebar_HarvesterCounter_Offset({ 0,0 }),
-			Sidebar_HarvesterCounter_WarningColor({ 255,0,0 })
+			Sidebar_HarvesterCounter_Yellow({ 255,255,0 }),
+			Sidebar_HarvesterCounter_Red({ 255,0,0 })
 		{ }
 
 		virtual ~ExtData() = default;
