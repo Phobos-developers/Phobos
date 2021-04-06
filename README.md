@@ -65,7 +65,7 @@ Credits
 - SEC-SOME (secsome) - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields
 - Otamaa (BoredEXE) - help with CellSpread, ported and fixed custom RadType code
 - E1 Elite - TileSet 255 and above bridge repair fix
-- FS-21 - Dump Object Info enhancements, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71 & 72, help with docs
+- FS-21 - Dump Object Info enhancements, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71 & 72, MC deployer fixes, help with docs
 - AutoGavy - interceptor logic, warhead critical damage system
 - Xkein - general assistance, YRpp edits
 - thomassneddon - general assistance

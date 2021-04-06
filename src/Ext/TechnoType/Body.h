@@ -105,7 +105,7 @@ public:
 
 	static ExtContainer ExtMap;
 
-	static void TransferMindControl(TechnoClass* From, TechnoClass* To);
+	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
 
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
