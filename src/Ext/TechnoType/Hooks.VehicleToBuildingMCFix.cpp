@@ -8,35 +8,44 @@
 #include "../Phobos.h"
 #include "../../Misc/CaptureManager.h"
 
-namespace MCBuildingClassTemp {
-	bool isStructureMindControlled = false;
+namespace MindControlFixTemp
+{
+	bool isMindControlBeingTransferred = false;
 }
 
-void TechnoTypeExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo) {
-	if (auto Controller = pTechnoFrom->MindControlledBy) {
+void TechnoTypeExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
+{
+	if (auto Controller = pTechnoFrom->MindControlledBy)
+	{
+		if (auto Manager = Controller->CaptureManager)
+		{
+			MindControlFixTemp::isMindControlBeingTransferred = true;
 
-		if (auto Manager = Controller->CaptureManager) {
 			CaptureManager::FreeUnit(Manager, pTechnoFrom, true);
 			CaptureManager::CaptureUnit(Manager, pTechnoTo, true);
 
-			if (pTechnoTo->WhatAmI() == AbstractType::Building) {
-				MCBuildingClassTemp::isStructureMindControlled = true;
+			if (pTechnoTo->WhatAmI() == AbstractType::Building)
+			{
 				pTechnoTo->QueueMission(Mission::Construction, 0);
 				pTechnoTo->Mission_Construction();
-				MCBuildingClassTemp::isStructureMindControlled = false;
-
 			}
+
+			MindControlFixTemp::isMindControlBeingTransferred = false;
 		}
 	}
-	else if (auto MCHouse = pTechnoFrom->MindControlledByHouse) {
+	else if (auto MCHouse = pTechnoFrom->MindControlledByHouse)
+	{
 		pTechnoTo->MindControlledByHouse = MCHouse;
 		pTechnoFrom->MindControlledByHouse = NULL;
 	}
-	if (auto Anim = pTechnoFrom->MindControlRingAnim) {
+
+	if (auto Anim = pTechnoFrom->MindControlRingAnim)
+	{
 		auto ToAnim = &pTechnoTo->MindControlRingAnim;
-		if (*ToAnim) {
+		
+		if (*ToAnim)
 			(*ToAnim)->TimeToDie = 1;
-		}
+
 		*ToAnim = Anim;
 		Anim->SetOwnerObject(pTechnoTo);
 	}
@@ -80,8 +89,8 @@ DEFINE_HOOK(7396AD, UnitClass_Deploy_CreateBuilding, 6)
 	return 0x7396B3;
 }
 
-DEFINE_HOOK(448485, BuildingClass_Deploy_Capture_Sound, 5)
+DEFINE_HOOK(448460, BuildingClass_Captured_MuteSound, 6)
 {
-	return MCBuildingClassTemp::isStructureMindControlled ?
+	return MindControlFixTemp::isMindControlBeingTransferred ?
 		0x44848F : 0;
 }
