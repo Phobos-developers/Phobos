@@ -37,7 +37,7 @@ DEFINE_HOOK(71986A, TeleportLocomotionClass_ILocomotion_Process_WarpAway, 6)
 	auto const pType = pLocomotor->LinkedTo->GetTechnoType();
 	auto pExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	R->EDX<AnimTypeClass*>(pExt->WarpAway.Get(RulesClass::Instance->WarpAway));
+	R->ECX<AnimTypeClass*>(pExt->WarpAway.Get(RulesClass::Instance->WarpAway));
 	return 0x719870;
 }
 
