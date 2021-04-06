@@ -61,17 +61,20 @@ public:
 	static void LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI);
 	static void LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI);
 
-	static ExtData* Global() {
+	static ExtData* Global()
+	{
 		return Data.get();
 	}
 
 	static DynamicVectorClass<CameoDataStruct> TabCameos[4];
 
-	static void Clear() {
+	static void Clear()
+	{
 		Allocate(RulesClass::Instance);
 	}
 
-	static void PointerGotInvalid(void* ptr, bool removed) {
+	static void PointerGotInvalid(void* ptr, bool removed)
+	{
 		Global()->InvalidatePointer(ptr, removed);
 	}
 

@@ -18,20 +18,24 @@ public:
 		Valueable<int> IngameScore_WinTheme;
 		Valueable<int> IngameScore_LoseTheme;
 		Valueable<Point2D> Sidebar_HarvesterCounter_Offset;
+		Valueable<ColorStruct> Sidebar_HarvesterCounter_Yellow;
+		Valueable<ColorStruct> Sidebar_HarvesterCounter_Red;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject),
 			ArrayIndex(-1),
 			Sidebar_GDIPositions(false),
 			IngameScore_WinTheme(-2),
 			IngameScore_LoseTheme(-2),
-			Sidebar_HarvesterCounter_Offset({ 0,0 })
+			Sidebar_HarvesterCounter_Offset({ 0,0 }),
+			Sidebar_HarvesterCounter_Yellow({ 255,255,0 }),
+			Sidebar_HarvesterCounter_Red({ 255,0,0 })
 		{ }
 
 		virtual ~ExtData() = default;
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual void Initialize() override;
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 
@@ -41,7 +45,8 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	class ExtContainer final : public Container<SideExt> {
+	class ExtContainer final : public Container<SideExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();

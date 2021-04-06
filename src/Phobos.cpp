@@ -13,7 +13,7 @@
 #include "Utilities/Patch.h"
 
 #ifndef IS_RELEASE_VER
-	bool HideWarning = false;
+bool HideWarning = false;
 #endif
 
 HANDLE Phobos::hInstance = 0;
@@ -36,6 +36,8 @@ bool Phobos::UI::DisableEmptySpawnPositions = false;
 bool Phobos::UI::ExtendedToolTips = false;
 int Phobos::UI::MaxToolTipWidth = 0;
 bool Phobos::UI::ShowHarvesterCounter = false;
+double Phobos::UI::HarvesterCounter_ConditionYellow = 0.99;
+double Phobos::UI::HarvesterCounter_ConditionRed = 0.5;
 const wchar_t* Phobos::UI::CostLabel = L"";
 const wchar_t* Phobos::UI::PowerLabel = L"";
 const wchar_t* Phobos::UI::TimeLabel = L"";
@@ -56,25 +58,29 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		{
 			Phobos::AppIconPath = ppArgs[++i];
 		}
-		#ifndef IS_RELEASE_VER 
+#ifndef IS_RELEASE_VER 
 		if (_stricmp(pArg, "-b=" str(BUILD_NUMBER)) == 0)
 		{
 			HideWarning = true;
 		}
-		#endif
+#endif
 	}
 
 	Debug::Log("Initialized Phobos " PRODUCT_VERSION "\n");
 }
 
-CCINIClass* Phobos::OpenConfig(const char* file) {
+CCINIClass* Phobos::OpenConfig(const char* file)
+{
 	CCINIClass* pINI = GameCreate<CCINIClass>();
 
-	if (pINI) {
+	if (pINI)
+	{
 		CCFileClass* cfg = GameCreate<CCFileClass>(file);
 
-		if (cfg) {
-			if (cfg->Exists()) {
+		if (cfg)
+		{
+			if (cfg->Exists())
+			{
 				pINI->ReadCCFile(cfg);
 			}
 			GameDelete(cfg);
@@ -84,8 +90,10 @@ CCINIClass* Phobos::OpenConfig(const char* file) {
 	return pINI;
 }
 
-void Phobos::CloseConfig(CCINIClass*& pINI) {
-	if (pINI) {
+void Phobos::CloseConfig(CCINIClass*& pINI)
+{
+	if (pINI)
+	{
 		GameDelete(pINI);
 		pINI = nullptr;
 	}
@@ -96,13 +104,15 @@ void Phobos::CloseConfig(CCINIClass*& pINI) {
 
 bool __stdcall DllMain(HANDLE hInstance, DWORD dwReason, LPVOID v)
 {
-	if (dwReason == DLL_PROCESS_ATTACH) {
+	if (dwReason == DLL_PROCESS_ATTACH)
+	{
 		Phobos::hInstance = hInstance;
 	}
 	return true;
 }
 
-DEFINE_HOOK(7CD810, ExeRun, 9) {
+DEFINE_HOOK(7CD810, ExeRun, 9)
+{
 	Patch::Apply();
 	return 0;
 }
@@ -121,7 +131,7 @@ DEFINE_HOOK(5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 5)
 	Phobos::Config::ToolTipDescriptions = Unsorted::RA2MDINI->ReadBool("Phobos", "ToolTipDescriptions", true);
 	Phobos::Config::PrioritySelectionFiltering = Unsorted::RA2MDINI->ReadBool("Phobos", "PrioritySelectionFiltering", true);
 
-	CCINIClass *pINI = Phobos::OpenConfig("uimd.ini");
+	CCINIClass* pINI = Phobos::OpenConfig("uimd.ini");
 
 	// LoadingScreen
 	{
@@ -151,9 +161,14 @@ DEFINE_HOOK(5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 5)
 	{
 		Phobos::UI::ShowHarvesterCounter =
 			pINI->ReadBool(SIDEBAR_SECTION, "HarvesterCounter.Show", false);
-		
+
 		pINI->ReadString(SIDEBAR_SECTION, "HarvesterCounter.Label", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::HarvesterLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"⛏"); //⛟
+
+		Phobos::UI::HarvesterCounter_ConditionYellow = 
+			pINI->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionYellow", Phobos::UI::HarvesterCounter_ConditionYellow);
+		Phobos::UI::HarvesterCounter_ConditionRed = 
+			pINI->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionRed", Phobos::UI::HarvesterCounter_ConditionRed);
 	}
 
 	Phobos::CloseConfig(pINI);

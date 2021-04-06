@@ -44,6 +44,8 @@ public:
 		static bool ExtendedToolTips;
 		static int MaxToolTipWidth;
 		static bool ShowHarvesterCounter;
+		static double HarvesterCounter_ConditionYellow;
+		static double HarvesterCounter_ConditionRed;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;

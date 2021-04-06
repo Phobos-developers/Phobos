@@ -1,10 +1,11 @@
-﻿#include <Phobos.h>
+#include <Phobos.h>
 
 #include <Helpers/Macro.h>
 #include <Surface.h>
 
 #include <Ext/House/Body.h>
 #include <Ext/Side/Body.h>
+#include <Ext/Rules/Body.h>
 #include <Misc/Debug.h>
 
 DEFINE_HOOK(777C41, UI_ApplyAppIcon, 9)
@@ -49,10 +50,15 @@ DEFINE_HOOK(4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 7)
 		auto pPlayer = HouseClass::Player;
 		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::Player->SideIndex));
 		wchar_t counter[0x20];
-		ColorStruct& clrToolTip = *reinterpret_cast<ColorStruct*>(0xB0FA1C);
+		auto nActive = HouseExt::ActiveHarvesterCount(pPlayer);
+		auto nTotal = HouseExt::TotalHarvesterCount(pPlayer);
+		auto nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
 
-		swprintf_s(counter, L"%ls%d/%d", Phobos::UI::HarvesterLabel,
-			HouseExt::ActiveHarvesterCount(pPlayer), HouseExt::TotalHarvesterCount(pPlayer));
+		ColorStruct clrToolTip = nPercentage > Phobos::UI::HarvesterCounter_ConditionYellow
+			? *reinterpret_cast<ColorStruct*>(0xB0FA1C) : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
+			? pSideExt->Sidebar_HarvesterCounter_Yellow : pSideExt->Sidebar_HarvesterCounter_Red;
+
+		swprintf_s(counter, L"%ls%d/%d", Phobos::UI::HarvesterLabel, nActive, nTotal);
 		
 		Point2D vPos = {
 			DSurface::Sidebar->GetWidth() / 2 + 50 + pSideExt->Sidebar_HarvesterCounter_Offset.Get().X,
