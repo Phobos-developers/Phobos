@@ -13,4 +13,5 @@ public:
         bool bRemoveFirst, AnimTypeClass* pControlledAnimType = RulesClass::Instance->ControlledAnimationType);
     static bool CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTechno,
         AnimTypeClass* pControlledAnimType = RulesClass::Instance->ControlledAnimationType);
+	static void DecideUnitFate(CaptureManagerClass* pManager, FootClass* pFoot);
 };

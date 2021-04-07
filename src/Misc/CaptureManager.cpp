@@ -149,6 +149,11 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTe
     return false;
 }
 
+void CaptureManager::DecideUnitFate(CaptureManagerClass* pManager, FootClass* pFoot)
+{
+	// to be implemented (if needed). - secsome
+}
+
 DEFINE_HOOK(471D40, CaptureManagerClass_CaptureUnit, 7)
 {
     GET(CaptureManagerClass*, pThis, ECX);
