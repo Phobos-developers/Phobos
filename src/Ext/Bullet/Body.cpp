@@ -1,7 +1,52 @@
 #include "Body.h"
-
+#include "../RadSite/Body.h"
+#include "../WeaponType/Body.h"
 template<> const DWORD Extension<BulletClass>::Canary = 0x2A2A2A2A;
 BulletExt::ExtContainer BulletExt::ExtMap;
+
+void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel)
+{
+	auto pThis = this->OwnerObject();
+	auto const& Instances = RadSiteExt::RadSiteInstance;
+	auto const pWeapon = pThis->GetWeaponType();
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.FindOrAllocate(pWeapon);
+	auto const pRadType = &pWeaponExt->RadType;
+	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
+
+	if (Instances.Count > 0)
+	{
+		auto const it = std::find_if(Instances.begin(), Instances.end(),
+			[=](RadSiteExt::ExtData* const pSite) // Lambda
+			{// find 
+				return pSite->Type == pRadType &&
+					pSite->OwnerObject()->BaseCell == Cell &&
+					Spread == pSite->OwnerObject()->Spread;
+			});
+
+		if (it == Instances.end())
+		{
+			RadSiteExt::CreateInstance(Cell, Spread, RadLevel, pWeaponExt, pThisHouse);
+		}
+		else
+		{
+			auto pRadExt = *it;
+			auto pRadSite = pRadExt->OwnerObject();
+
+			if (pRadSite->GetRadLevel() + RadLevel > pRadType->LevelMax)
+			{
+				RadLevel = pRadType->LevelMax - pRadSite->GetRadLevel();
+			}
+
+			// Handle It 
+			pRadExt->Add(RadLevel);
+		}
+	}
+	else
+	{
+		RadSiteExt::CreateInstance(Cell, Spread, RadLevel, pWeaponExt, pThisHouse);
+	}
+}
+
 
 // =============================
 // load / save

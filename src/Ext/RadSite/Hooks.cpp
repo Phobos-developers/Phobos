@@ -3,6 +3,7 @@
 #include <HouseClass.h>
 
 #include "../BuildingType/Body.h"
+#include "../Bullet/Body.h"
 
 /*
 	Custom Radiations
@@ -23,18 +24,19 @@ DEFINE_HOOK(469150, B_Detonate_ApplyRad, 5)
 	GET(BulletClass* const, pThis, ESI);
 	GET_BASE(CoordStruct const*, pCoords, 0x8);
 
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
 	auto const pWeapon = pThis->GetWeaponType();
 	auto const pWH = pThis->WH;
 
 	if (pWeapon && pWeapon->RadLevel > 0) {
 		auto const cell = CellClass::Coord2Cell(*pCoords);
 		auto const spread = static_cast<int>(pWH->CellSpread);
-		pThis->ApplyRadiationToCell(cell, spread, pWeapon->RadLevel);
+		pExt->ApplyRadiationToCell(cell, spread, pWeapon->RadLevel);
 	}
 
 	return 0x46920B;
 }
-
+/*
 // hack it here so we can use this globally if needed
 DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation, 5)
 {
@@ -79,7 +81,7 @@ DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation, 5)
 
 	return 0x46AE5E;
 }
-
+*/
 // Too OP, be aware
 DEFINE_HOOK(43FB23, BuildingClass_Update, 5)
 {

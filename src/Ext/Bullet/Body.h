@@ -29,6 +29,8 @@ public:
 
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
+		void ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel);
+
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
