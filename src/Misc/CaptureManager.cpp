@@ -13,7 +13,7 @@ bool CaptureManager::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTar
         return pManager->CanCapture(pTarget);
     
     auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType());
-	if (pTechnoTypeExt && !pTechnoTypeExt->MultiMindControl_ReleaseVictim)
+	if (pTechnoTypeExt && pTechnoTypeExt->MultiMindControl_ReleaseVictim)
 	{
 		// I hate Ares' completely rewritten things - secsome
 		pManager->MaxControlNodes += 1;
