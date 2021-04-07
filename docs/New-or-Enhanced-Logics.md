@@ -77,13 +77,19 @@ Promote.IncludeSpawns=no  ; boolean
 *Buildings, Infantries and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - Now you can have a shield for any TechnoType if `Shield.Strength` is set greater than 0. It serves as a second health pool with independent `Armor` and `Strength` values.
+- `Shield.AbsorbOverDamage`controls whether or not the shield absorbs damage dealt beyond shield's current strength when the shield breaks.
 - `Shield.SelfHealing` and `Shield.Respawn` respect the following settings: 0.0 disables the feature, 1%-100% recovers/respawns the shield strength in percentage, other number recovers/respawns the shield strength directly. Specially, `Shield.SelfHealing` with a negative number deducts the shield strength.
 - `Shield.SelfHealing.Rate` and `Shield.Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
-- `Shield.HitAnim` will be played if set when Shield is attacked, similiar to Iron Curtaion.
-- A TechnoType with a Shield will show its Shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable.
+- `Shield.IdleAnim`, if set, will be played while the shield is intact. This animation is automatically set to loop indefinitely.
+- `Shield.BreakAnim`, if set, will be played when the shield has been broken.
+- `Shield.HitAnim`, if set, will be played when the shield is attacked, similar to `WeaponNullifyAnim` for Iron Curtain.
+- A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable.
   - Buildings now use the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame by default.
   - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. `Pips.Shield.Building` is used for BuildingTypes. 
   - `pipbrd.shp` will use its 4th frame to display an infantry's shield strength and the 3th frame for other units if `pipbrd.shp` has extra 2 frames. And `Shield.BracketDelta` can be used as additonal `PixelSelectionBracketDelta` for shield strength. 
+- Warheads have new options that interact with shields.
+  - `PenetratesShield` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType even if weapons using the warhead cannot target or damage the shield.
+  - `BreaksShield` allows the warhead to always break shields of TechnoTypes, regardless of the amount of strength the shield has remaining or the damage dealt, assuming it affects the shield's armor type. Residual damage, if there is any, still respects `Shield.AbsorbOverDamage`.
 
 In `rulesmd.ini`:
 ```ini
@@ -91,17 +97,22 @@ In `rulesmd.ini`:
 Pips.Shield=-1,-1,-1           ; int, frames of pips.shp for Green, Yellow, Red
 Pips.Shield.Building=-1,-1,-1  ; int, frames of pips.shp for Green, Yellow, Red
 
-[SOMETECHNO]	            ; TechnoTypes
-Shield.Strength=0           ; integer
-Shield.Armor=none           ; ArmorType
-Shield.SelfHealing=0.0      ; double, percents or absolute
-Shield.SelfHealing.Rate=0.0 ; double, ingame minutes
-Shield.Respawn=0.0          ; double, percents or absolute
-Shield.Respawn.Rate=0.0     ; double, ingame minutes
-Shield.BracketDelta=0       ; integer - pixels
-Shield.IdleAnim=            ; animation
-Shield.BreakAnim=           ; animation
-Shield.HitAnim=             ; animation
+[SOMETECHNO]	               ; TechnoType
+Shield.Strength=0              ; integer
+Shield.Armor=none              ; ArmorType
+Shield.AbsorbOverDamage=false  ; boolean
+Shield.SelfHealing=0.0         ; double, percents or absolute
+Shield.SelfHealing.Rate=0.0    ; double, ingame minutes
+Shield.Respawn=0.0             ; double, percents or absolute
+Shield.Respawn.Rate=0.0        ; double, ingame minutes
+Shield.BracketDelta=0          ; integer - pixels
+Shield.IdleAnim=               ; animation
+Shield.BreakAnim=              ; animation
+Shield.HitAnim=                ; animation
+
+[SOMEWARHEAD]                  ; WarheadType
+PenetratesShield=false         ; boolean
+BreaksShield=false             ; boolean
 ```
 
 ## Weapons
