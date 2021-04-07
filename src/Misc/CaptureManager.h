@@ -3,6 +3,7 @@
 #include <CaptureManagerClass.h>
 #include <AnimTypeClass.h>
 #include <RulesClass.h>
+#include <FootClass.h>
 
 class CaptureManager
 {
