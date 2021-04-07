@@ -8,6 +8,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - SHP debris shadows now respect the `Shadow` tag.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
 - `TurretOffset` tag for voxel turreted technos now accepts FLH (forward, lateral, height) values like `TurretOffset=F,L` or `TurretOffset=F,L,H`, which means turret location can be adjusted in all three axes.
+- `InfiniteMindControl` with `Damage=1` can now control more than 1 unit.
 
 ## Vehicles
 

@@ -79,11 +79,14 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 		if (pManager->MaxControlNodes <= 0)
 			return false;
 
-		if (pManager->MaxControlNodes == 1 && pManager->ControlNodes.Count == 1)
-			CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
-		else if (pManager->ControlNodes.Count == pManager->MaxControlNodes && !pManager->InfiniteMindControl)
-            if (bRemoveFirst)
-                CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
+		if (!pManager->InfiniteMindControl)
+		{
+			if (pManager->MaxControlNodes == 1 && pManager->ControlNodes.Count == 1)
+				CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
+			else if (pManager->ControlNodes.Count == pManager->MaxControlNodes)
+				if (bRemoveFirst)
+					CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
+		}
 
         auto pControlNode = GameCreate<ControlNode>();
         if (pControlNode)
