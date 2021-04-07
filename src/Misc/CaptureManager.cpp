@@ -13,15 +13,16 @@ bool CaptureManager::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTar
         return pManager->CanCapture(pTarget);
     
     auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType());
-    if (pTechnoTypeExt && !pTechnoTypeExt->MultiMindControl_ReleaseVictim)
-        return pManager->CanCapture(pTarget);
-
-    // I hate Ares' completely rewritten things - secsome
-    pManager->MaxControlNodes += 1;
-    bool result = pManager->CanCapture(pTarget);
-    pManager->MaxControlNodes -= 1;
-
-    return result;
+	if (pTechnoTypeExt && !pTechnoTypeExt->MultiMindControl_ReleaseVictim)
+	{
+		// I hate Ares' completely rewritten things - secsome
+		pManager->MaxControlNodes += 1;
+		bool result = pManager->CanCapture(pTarget);
+		pManager->MaxControlNodes -= 1;
+		return result;
+	}
+    
+	return pManager->CanCapture(pTarget);
 }
 
 bool CaptureManager::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarget, bool bSilent)
@@ -75,22 +76,14 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 {
     if (CaptureManager::CanCapture(pManager, pTarget))
     {
-        // issue #59
-        // An improvement of Multiple MindControl
-        if (pManager->MaxControlNodes == 1 && pManager->ControlNodes.Count == 1)
-        {
-            CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
-        }
-        else if (pManager->MaxControlNodes > 1 && pManager->ControlNodes.Count == pManager->MaxControlNodes)
-        {
-            if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
-            {
-                if (!pTechnoTypeExt->MultiMindControl_ReleaseVictim)
-                    return false;
+		if (pManager->MaxControlNodes <= 0)
+			return false;
 
+		if (pManager->MaxControlNodes == 1 && pManager->ControlNodes.Count == 1)
+			CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
+		else if (pManager->ControlNodes.Count == pManager->MaxControlNodes && !pManager->InfiniteMindControl)
+            if (bRemoveFirst)
                 CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
-            }
-        }
 
         auto pControlNode = GameCreate<ControlNode>();
         if (pControlNode)
