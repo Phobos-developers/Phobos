@@ -22,7 +22,7 @@
 *  ! Kerb should build up this foundation class by himself - secsome
 */
 
-#include <TechnoClass.h>
+#include <FootClass.h>
 
 #include <vector>
 #include <unordered_map>
@@ -42,7 +42,7 @@ public:
 	explicit KerbPool(TechnoClass* _pTechno) : pTechno{ _pTechno } {}
 	virtual ~KerbPool() = 0;
 	
-	virtual PoolIdentifier WhatAmI() = 0;
+	virtual PoolIdentifier WhatPoolAmI() = 0;
 
 	// Statics
 public:

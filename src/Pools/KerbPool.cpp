@@ -2,7 +2,7 @@
 
 std::vector<KerbPool*> KerbPool::Array;
 
-PoolIdentifier KerbPool::WhatAmI()
+PoolIdentifier KerbPool::WhatPoolAmI()
 {
 	return PoolIdentifier::KerbPool;
 }
