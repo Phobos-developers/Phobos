@@ -60,7 +60,7 @@ TerrainTypeExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
-DEFINE_HOOK(71DBC2, TerrainTypeClass_CTOR, 5)
+DEFINE_HOOK(71DBC0, TerrainTypeClass_CTOR, 7)
 {
 	GET(TerrainTypeClass*, pItem, ESI);
 
@@ -68,7 +68,7 @@ DEFINE_HOOK(71DBC2, TerrainTypeClass_CTOR, 5)
 	return 0;
 }
 
-DEFINE_HOOK(71E360, TerrainTypeClass_SDDTOR, A)
+DEFINE_HOOK(71E364, TerrainTypeClass_SDDTOR, 6)
 {
 	GET(TerrainTypeClass*, pItem, ECX);
 
@@ -87,23 +87,22 @@ DEFINE_HOOK(71E240, TerrainTypeClass_SaveLoad_Prefix, 8)
 	return 0;
 }
 
-DEFINE_HOOK(71E235, TerrainTypeClass_Load_Suffix, 4)
+DEFINE_HOOK(71E235, TerrainTypeClass_Load_Suffix, 5)
 {
 	TerrainTypeExt::ExtMap.LoadStatic();
 	return 0;
 }
 
-DEFINE_HOOK(71E25A, TerrainTypeClass_Save_Suffix, 3)
+DEFINE_HOOK(71E25A, TerrainTypeClass_Save_Suffix, 5)
 {
 	TerrainTypeExt::ExtMap.SaveStatic();
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(71E0B4, TerrainTypeClass_LoadFromINI, A)
-DEFINE_HOOK(71E0A7, TerrainTypeClass_LoadFromINI, A)
+DEFINE_HOOK(71E0A6, TerrainTypeClass_LoadFromINI, 5)
 {
 	GET(TerrainTypeClass*, pItem, ESI);
-	GET_STACK(CCINIClass*, pINI, STACK_OFFS(0x20C, -0x4));
+	GET_STACK(CCINIClass*, pINI, STACK_OFFS(0x210, -0x4));
 
 	TerrainTypeExt::ExtMap.LoadFromINI(pItem, pINI);
 	return 0;
