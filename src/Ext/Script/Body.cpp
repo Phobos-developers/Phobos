@@ -145,10 +145,10 @@ void ScriptExt::LoadIntoTransports(TeamClass *pTeam)
 void ScriptExt::WaitUntillFullAmmoAction(TeamClass *pTeam)
 {
 	auto pUnit = pTeam->FirstUnit;
-
+	
 	do
 	{
-		if (pUnit)
+		if (pUnit && !pUnit->InLimbo && pUnit->Health > 0)
 		{
 			if (pUnit->GetTechnoType()->Ammo > 0 && pUnit->Ammo < pUnit->GetTechnoType()->Ammo)
 			{
