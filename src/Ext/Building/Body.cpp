@@ -6,19 +6,42 @@ BuildingExt::ExtContainer BuildingExt::ExtMap;
 // =============================
 // load / save
 
-void BuildingExt::ExtData::LoadFromStream(IStream* Stm) {
-
+template <typename T>
+void BuildingExt::ExtData::Serialize(T& Stm)
+{
+	Stm
+		.Process(this->DeployedTechno)
+		;
 }
 
-void BuildingExt::ExtData::SaveToStream(IStream* Stm) const {
+void BuildingExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+{
+	Extension<BuildingClass>::LoadFromStream(Stm);
+	this->Serialize(Stm);
+}
 
+void BuildingExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+{
+	Extension<BuildingClass>::SaveToStream(Stm);
+	this->Serialize(Stm);
+}
+
+bool BuildingExt::LoadGlobals(PhobosStreamReader& Stm)
+{
+	return Stm
+		.Success();
+}
+
+bool BuildingExt::SaveGlobals(PhobosStreamWriter& Stm)
+{
+	return Stm
+		.Success();
 }
 
 // =============================
 // container
 
-BuildingExt::ExtContainer::ExtContainer() : Container("BuildingClass") {
-}
+BuildingExt::ExtContainer::ExtContainer() : Container("BuildingClass") { }
 
 BuildingExt::ExtContainer::~ExtContainer() = default;
 
@@ -30,6 +53,7 @@ DEFINE_HOOK(43BCBD, BuildingClass_CTOR, 6)
 	GET(BuildingClass*, pItem, ESI);
 
 	BuildingExt::ExtMap.FindOrAllocate(pItem);
+
 	return 0;
 }
 
@@ -38,6 +62,7 @@ DEFINE_HOOK(43C022, BuildingClass_DTOR, 6)
 	GET(BuildingClass*, pItem, ESI);
 
 	BuildingExt::ExtMap.Remove(pItem);
+
 	return 0;
 }
 
@@ -54,18 +79,14 @@ DEFINE_HOOK(453E20, BuildingClass_SaveLoad_Prefix, 5)
 
 DEFINE_HOOK(45417E, BuildingClass_Load_Suffix, 5)
 {
-	auto pItem = BuildingExt::ExtMap.Find(BuildingExt::ExtMap.SavingObject);
-	IStream* pStm = BuildingExt::ExtMap.SavingStream;
+	BuildingExt::ExtMap.LoadStatic();
 
-	pItem->LoadFromStream(pStm);
 	return 0;
 }
 
 DEFINE_HOOK(454244, BuildingClass_Save_Suffix, 7)
 {
-	auto pItem = BuildingExt::ExtMap.Find(BuildingExt::ExtMap.SavingObject);
-	IStream* pStm = BuildingExt::ExtMap.SavingStream;
+	BuildingExt::ExtMap.SaveStatic();
 
-	pItem->SaveToStream(pStm);
 	return 0;
 }

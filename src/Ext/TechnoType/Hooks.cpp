@@ -19,29 +19,12 @@ DEFINE_HOOK(6F64A9, HealthBar_Hide, 5)
 	return 0;
 }
 
-DEFINE_HOOK(739956, UnitClass_Deploy_Transfer, 6)
-{
-	GET(UnitClass*, pUnit, EBP);
-	GET(BuildingClass*, pStructure, EBX);
-
-	// Vehicle-to-building deployer targeting
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pStructure->GetTechnoType());
-	if (pTypeData && pTypeData->DeployToFire_RememberTarget)
-	{ // && pUnit->Target > 0)
-		pStructure->Target = pUnit->Target;
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(6F9E50, TechnoClass_Update, 5)
+DEFINE_HOOK(6F9E50, TechnoClass_AI, 5)
 {
 	GET(TechnoClass*, pThis, ECX);
 
 	// MindControlRangeLimit
 	TechnoTypeExt::ApplyMindControlRangeLimit(pThis);
-	// BuildingDeployerTargeting
-	TechnoTypeExt::ApplyBuildingDeployerTargeting(pThis);
 	// Interceptor
 	TechnoTypeExt::ApplyInterceptor(pThis);
 	// Powered.KillSpawns

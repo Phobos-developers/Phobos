@@ -10,6 +10,11 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `TurretOffset` tag for voxel turreted technos now accepts FLH (forward, lateral, height) values like `TurretOffset=F,L` or `TurretOffset=F,L,H`, which means turret location can be adjusted in all three axes.
 - `InfiniteMindControl` with `Damage=1` can now control more than 1 unit.
 
+![image](_static/images/remember-target-after-deploying-01.gif)  
+*Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
+
+- Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
+
 ## Vehicles
 
 ### Customizable disk laser radius
@@ -22,19 +27,6 @@ In `rulesmd.ini`:
 [SOMEWEAPON]          ; WeaponType
 DiskLaser.Radius=38.2 ; floating point value
                       ; 38.2 is roughly the default saucer disk radius
-```
-
-### Remember target on deploy-to-fire
-
-![image](_static/images/remember-target-after-deploying-01.gif)  
-*Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
-
-- Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEVEHICLE]                    ; TechnoType
-DeployToFire.RememberTarget=yes  ; boolean
 ```
 
 ### Kill spawns on low power

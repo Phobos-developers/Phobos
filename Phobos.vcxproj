@@ -14,6 +14,8 @@
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\Dummy.h" />
     <ClCompile Include="src\Enum\RadTypes.cpp" />
+    <ClCompile Include="src\Ext\Building\Body.cpp" />
+    <ClCompile Include="src\Ext\Building\Hooks.cpp" />
     <ClCompile Include="src\Ext\BulletType\Body.cpp" />
     <ClCompile Include="src\Ext\Bullet\Body.cpp" />
     <ClCompile Include="src\Ext\Bullet\Hook.cpp" />
@@ -74,6 +76,7 @@
     <ClInclude Include="src\ExtraHeaders\CCToolTip.h" />
     <ClInclude Include="src\ExtraHeaders\Matrix3D.h" />
     <ClInclude Include="src\ExtraHeaders\Themes.h" />
+    <ClInclude Include="src\Ext\Building\Body.h" />
     <ClInclude Include="src\Ext\BulletType\Body.h" />
     <ClInclude Include="src\Ext\Bullet\Body.h" />
     <ClInclude Include="src\Ext\House\Body.h" />

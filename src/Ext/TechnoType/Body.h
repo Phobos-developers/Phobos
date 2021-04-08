@@ -15,8 +15,6 @@ public:
 	class ExtData final : public Extension<TechnoTypeClass>
 	{
 	public:
-
-		Valueable<bool> DeployToFire_RememberTarget;
 		Valueable<bool> HealthBar_Hide;
 		Valueable<CSFText> UIDescription;
 		Valueable<bool> LowSelectionPriority;
@@ -48,7 +46,6 @@ public:
 		Nullable<AnimTypeClass*> Shield_HitAnim;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
-			DeployToFire_RememberTarget(true),
 			HealthBar_Hide(false),
 			UIDescription(),
 			LowSelectionPriority(false),
@@ -83,7 +80,9 @@ public:
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual void Initialize() override;
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
@@ -109,7 +108,6 @@ public:
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
 
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
-	static void ApplyBuildingDeployerTargeting(TechnoClass* pThis);
 	static void ApplyInterceptor(TechnoClass* pThis);
 	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
 	static void ApplySpawn_LimitRange(TechnoClass* pThis);
