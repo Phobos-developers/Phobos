@@ -40,6 +40,7 @@ public:
 	static void ProcessAction(TeamClass * pTeam);
 	static void ExecuteTimedAreaGuardAction(TeamClass * pTeam);
 	static void LoadIntoTransports(TeamClass * pTeam);
+	static void WaitUntillFullAmmoAction(TeamClass * pTeam);
 
 	static ExtContainer ExtMap;
 };

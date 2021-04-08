@@ -279,3 +279,13 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=72,0
 ```
+
+### `73` Wait until ammo is full
+
+- If the TaskForce contains unit(s) that use ammo then the the script will not continue until all these units have fully refilled the ammo.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=73,0
+```
