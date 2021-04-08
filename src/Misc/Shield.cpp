@@ -59,7 +59,7 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
     //UNREFERENCED_PARAMETER(pWH);
     auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
-    if (!this->HP || *args->Damage == 0) {
+    if (!this->HP || *args->Damage == 0 || this->Techno->IsIronCurtained()) {
         return *args->Damage;
     }
 
