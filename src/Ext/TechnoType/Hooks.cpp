@@ -9,29 +9,13 @@
 #include "../BulletType/Body.h"
 #include "../Techno/Body.h"
 
-DEFINE_HOOK(6F64A9, HealthBar_Hide, 5)
+DEFINE_HOOK(6F64A9, TechnoClass_DrawHealthBar_Hide, 5)
 {
 	GET(TechnoClass*, pThis, ECX);
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	if (pTypeData && pTypeData->HealthBar_Hide) {
 		return 0x6F6AB6;
 	}
-	return 0;
-}
-
-DEFINE_HOOK(6F9E50, TechnoClass_AI, 5)
-{
-	GET(TechnoClass*, pThis, ECX);
-
-	// MindControlRangeLimit
-	TechnoTypeExt::ApplyMindControlRangeLimit(pThis);
-	// Interceptor
-	TechnoTypeExt::ApplyInterceptor(pThis);
-	// Powered.KillSpawns
-	TechnoTypeExt::ApplyPowered_KillSpawns(pThis);
-	// Spawner.LimitRange & Spawner.ExtraLimitRange
-	TechnoTypeExt::ApplySpawn_LimitRange(pThis);
-
 	return 0;
 }
 
@@ -100,19 +84,19 @@ DEFINE_HOOK(43E0C4, BuildingClass_Draw_43DA80_TurretMultiOffset, 0)
 	return 0x43E0E8;
 }
 
-DEFINE_HOOK(6B7282, SpawnManagerClass_Update_PromoteSpawns, 5) 
+DEFINE_HOOK(6B7282, SpawnManagerClass_AI_PromoteSpawns, 5) 
 {
 	GET(SpawnManagerClass*, pThis, ESI);
+
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
 	if (pTypeExt->Promote_IncludeSpawns) 
 	{
 		for (auto i : pThis->SpawnedNodes)
 		{
 			if (i->Unit && i->Unit->Veterancy.Veterancy < pThis->Owner->Veterancy.Veterancy)
-			{
 				i->Unit->Veterancy.Add(pThis->Owner->Veterancy.Veterancy - i->Unit->Veterancy.Veterancy);
-			}
 		}
 	}
+
 	return 0;
 }

@@ -13,7 +13,7 @@ namespace MindControlFixTemp
 	bool isMindControlBeingTransferred = false;
 }
 
-void TechnoTypeExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
+void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
 {
 	if (auto Controller = pTechnoFrom->MindControlledBy)
 	{
@@ -56,7 +56,7 @@ DEFINE_HOOK(739956, UnitClass_Deploy_TransferMindControl, 6)
 	GET(UnitClass*, pUnit, EBP);
 	GET(BuildingClass*, pStructure, EBX);
 
-	TechnoTypeExt::TransferMindControlOnDeploy(pUnit, pStructure);
+	TechnoExt::TransferMindControlOnDeploy(pUnit, pStructure);
 
 	return 0;
 }
@@ -66,7 +66,7 @@ DEFINE_HOOK(44A03C, BuildingClass_Mi_Selling_TransferMindControl, 6)
 	GET(BuildingClass*, pStructure, EBP);
 	GET(UnitClass*, pUnit, EBX);
 
-	TechnoTypeExt::TransferMindControlOnDeploy(pStructure, pUnit);
+	TechnoExt::TransferMindControlOnDeploy(pStructure, pUnit);
 
 	pUnit->QueueMission(Mission::Hunt, true);
 

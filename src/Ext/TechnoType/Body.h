@@ -91,6 +91,7 @@ public:
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
+
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
@@ -104,13 +105,7 @@ public:
 
 	static ExtContainer ExtMap;
 
-	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
-
-	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
-	static void ApplyInterceptor(TechnoClass* pThis);
-	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
-	static void ApplySpawn_LimitRange(TechnoClass* pThis);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);

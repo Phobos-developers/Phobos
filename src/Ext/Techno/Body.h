@@ -42,11 +42,19 @@ public:
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 	};
 
-	static bool IsHarvesting(TechnoClass* pThis);
-
-	static bool HasAvailableDock(TechnoClass* pThis);
-
 	static ExtContainer ExtMap;
+
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static bool IsHarvesting(TechnoClass* pThis);
+	static bool HasAvailableDock(TechnoClass* pThis);
+
+	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
+
+	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
+	static void ApplyInterceptor(TechnoClass* pThis);
+	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
+	static void ApplySpawn_LimitRange(TechnoClass* pThis);
+
 };
