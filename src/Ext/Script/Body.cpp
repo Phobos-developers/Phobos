@@ -145,16 +145,40 @@ void ScriptExt::LoadIntoTransports(TeamClass *pTeam)
 void ScriptExt::WaitUntillFullAmmoAction(TeamClass *pTeam)
 {
 	auto pUnit = pTeam->FirstUnit;
-	
+
 	do
 	{
 		if (pUnit && !pUnit->InLimbo && pUnit->Health > 0)
 		{
 			if (pUnit->GetTechnoType()->Ammo > 0 && pUnit->Ammo < pUnit->GetTechnoType()->Ammo)
 			{
-				return;
+				// If an aircraft object have AirportBound it must be evaluated
+				if (pUnit->WhatAmI() == AbstractType::Aircraft)
+				{
+					auto pAUnit = static_cast<AircraftTypeClass*>(pUnit->GetTechnoType());
+					if (pAUnit->AirportBound)
+					{
+						// Reset last target, at long term battles this prevented the aircraft to pick a new target (rare vanilla YR bug)
+						pUnit->SetTarget(nullptr);
+						pUnit->LastTarget = nullptr;
+						// Fix YR bug (when returns from the last attack the aircraft switch in loop between Mission::Enter & Mission::Guard, making it impossible to land in the dock)
+						if (pUnit->IsInAir() && pUnit->CurrentMission != Mission::Enter)
+							pUnit->QueueMission(Mission::Enter, true);
+
+						return;
+					}
+				}
+				else
+				{
+					// Don't skip units that can reload themselves
+					if (pUnit->GetTechnoType()->Reload != 0)
+					{
+						return;
+					}
+				}
 			}
 		}
+
 		pUnit = pUnit->NextTeamMember;
 	} while (pUnit);
 
