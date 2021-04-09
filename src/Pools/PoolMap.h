@@ -6,7 +6,7 @@
 
 class PoolMap
 {
-	std::unordered_map<PoolIdentifier, Pool*, PoolIdentifierHashFunc> _dict;
+	std::unordered_map<PoolIdentifier, Pool*> _dict;
 
 public:
 	Pool* get(PoolIdentifier& id);

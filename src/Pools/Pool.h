@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PoolIdentifier.h"
-#include "../Misc/Stream.h"
+#include "../Misc/SavegameDef.h"
 
 class Pool
 {

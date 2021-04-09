@@ -58,6 +58,7 @@
     <ClCompile Include="src\Ext\BuildingType\Hooks.Upgrade.cpp" />
     <ClCompile Include="src\Phobos.CRT.cpp" />
     <ClCompile Include="src\Phobos.Ext.cpp" />
+    <ClCompile Include="src\Pools\PoolHooks\Hooks.TechnoPool.cpp" />
     <ClCompile Include="src\Pools\PoolMap.cpp" />
     <ClCompile Include="src\Utilities\Constructs.cpp" />
     <ClCompile Include="src\Utilities\EnumFunctions.cpp" />
