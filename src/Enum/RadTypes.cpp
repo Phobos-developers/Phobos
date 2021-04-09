@@ -1,4 +1,5 @@
 #include "RadTypes.h"
+#include <Utilities/GeneralUtils.h>
 
 void RadType::Read(CCINIClass* const pINI, const char* pSection, const char* pKey) {
 	INI_EX exINI(pINI);
@@ -12,11 +13,7 @@ void RadType::Read(CCINIClass* const pINI, const char* pSection, const char* pKe
 		this->BuildingApplicationDelay.Read(exINI, section, "RadApplicationDelay.Building");
 		this->LevelMax.Read(exINI, section, "RadLevelMax");
 		this->LevelDelay.Read(exINI, section, "RadLevelDelay");
-		if (!this->LevelDelay)
-		{
-			Debug::Log("[Developer warning]%s has set 0 RadLevelDelay! It has been reset to default.\n", pSection);
-			this->LevelDelay = 90;
-		}
+		GeneralUtils::IntValidCheck(this->LevelDelay.GetEx(), section, "RadLevelDelay", 90, 1);
 		this->LightDelay.Read(exINI, section, "RadLightDelay");
 		this->LevelFactor.Read(exINI, section, "RadLevelFactor");
 		this->LightFactor.Read(exINI, section, "RadLightFactor");
