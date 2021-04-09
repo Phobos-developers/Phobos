@@ -76,6 +76,11 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
 
         auto residueDamage = nDamage - this->HP;
         if (residueDamage >= 0 || pWHExt -> BreaksShield) {
+
+			if (pWHExt->BreaksShield && residueDamage < 0) {
+				residueDamage = 0;
+			}
+
             this->BreakShield();
             return pWHExt->PenetratesShield ? *args->Damage : this->GetExt()->Shield_AbsorbOverDamage ? 0 : residueDamage;
         }
@@ -124,8 +129,9 @@ bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon, TechnoClass* pSo
     auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
     UNREFERENCED_PARAMETER(pWHExt);
     
-	if (pWHExt->PenetratesShield)
+	if (pWHExt->PenetratesShield) {
 		return true;
+	}
 
     bool result =
         ((MapClass::GetTotalDamage(pWeapon->Damage, pWeapon->Warhead, this->GetExt()->Shield_Armor, 0) != 0) && pWeapon->Damage) 
