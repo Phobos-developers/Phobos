@@ -23,7 +23,7 @@ DEFINE_HOOK(719788, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 6)
 	auto const pType = pLocomotor->LinkedTo->GetTechnoType();
 	auto pExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	R->EDX<AnimTypeClass*>(pExt->WarpIn.Get(RulesClass::Instance->WarpIn));
+	R->EDX<AnimTypeClass*>(pExt->WarpIn.Get(RulesClass::Instance->WarpOut));
 			
 	
 	return 0x71978E;
@@ -37,7 +37,7 @@ DEFINE_HOOK(71986A, TeleportLocomotionClass_ILocomotion_Process_WarpAway, 6)
 	auto const pType = pLocomotor->LinkedTo->GetTechnoType();
 	auto pExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	R->ECX<AnimTypeClass*>(pExt->WarpAway.Get(RulesClass::Instance->WarpAway));
+	R->ECX<AnimTypeClass*>(pExt->WarpAway.Get(RulesClass::Instance->WarpOut));
 	return 0x719870;
 }
 
@@ -65,8 +65,9 @@ DEFINE_HOOK(7194E3, TeleportLocomotionClass_ILocomotion_Process_ChronoDistanceFa
 	auto pExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	auto factor = pExt->ChronoDistanceFactor.Get(RulesClass::Instance->ChronoDistanceFactor);
-	factor = factor == 0 ? 1 : factor; //fix factor 0 crash by forcve it to 1
+	factor = factor == 0 ? 1 : factor; //fix factor 0 crash by force it to 1 (Vanilla bug)
 
+	//IDIV
 	R->EAX(val / factor);
 	R->EDX(val % factor);
 			
@@ -95,7 +96,7 @@ DEFINE_HOOK(719562, TeleportLocomotionClass_ILocomotion_Process_ChronoMinimumDel
 	auto pExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	R->ECX(pExt->ChronoMinimumDelay.Get(RulesClass::Instance->ChronoMinimumDelay));
-	return 0x71951F;
+	return 0x719568;
 }
 
 //ChronoRangeMinimum
