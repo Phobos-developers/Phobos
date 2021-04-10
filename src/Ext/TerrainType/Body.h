@@ -15,10 +15,14 @@ public:
     public:
         Valueable<int> SpawnsTiberium_Type;
         Valueable<int> SpawnsTiberium_Range;
+		Valueable<Point2D> SpawnsTiberium_GrowthStage;
+		Valueable<Point2D> SpawnsTiberium_CellsPerAnim;
 
-        ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject),
-            SpawnsTiberium_Type(0),
-            SpawnsTiberium_Range(1)
+        ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
+            , SpawnsTiberium_Type(0)
+            , SpawnsTiberium_Range(1)
+			, SpawnsTiberium_GrowthStage({ 3, 0 })
+			// , SpawnsTiberium_CellsPerAnim({ 3, 5 })
         { }
 
         virtual ~ExtData() = default;
@@ -29,6 +33,9 @@ public:
 
         virtual void LoadFromStream(PhobosStreamReader& Stm) override;
         virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
+		int GetTiberiumGrowthStage();
+		// int GetCellsPerAnim();
     
     private:
         template <typename T>

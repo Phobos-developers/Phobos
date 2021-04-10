@@ -44,12 +44,14 @@ Powered.KillSpawns=no ; boolean
 
 ### Customizable ore spawners
 
-- You can now specify which type of tiberium this TerrainType would generate.
-- It's also now possible to specify a CellSpread value for an ore generation area ddifferent compared to standard 3x3 rectangle. Ore will be uniformly distributed across all affected cells in a spread range.
+- You can now specify which type of tiberium certain TerrainType would generate.
+- It's also now possible to specify a range value for an ore generation area different compared to standard 3x3 rectangle. Ore will be uniformly distributed across all affected cells in a spread range.
+- You can specify which tiberium growth stage will be spawned. Corresponding tag accepts either a single integer value or two comma-separated values to allow randomized growth stages from the range (inclusive).
 
 In `rulesmd.ini`:
 ```ini
-[SOMETERRAINTYPE]       ; TerrainType
-SpawnsTiberium.Type=0   ; tiberium type index
-SpawnsTiberium.Range=1  ; integer, radius in cells
+[SOMETERRAINTYPE]             ; TerrainType
+SpawnsTiberium.Type=0         ; tiberium type index
+SpawnsTiberium.Range=1        ; integer, radius in cells
+SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
 ```

@@ -5,8 +5,10 @@
 #include <OverlayTypeClass.h>
 
 #include "../../Utilities/GeneralUtils.h"
+#include "../../Utilities/Macro.h"
 
-namespace TerrainTypeTemp {
+namespace TerrainTypeTemp
+{
 	TerrainTypeClass* pCurrentType = nullptr;
 	TerrainTypeExt::ExtData* pCurrentExt = nullptr;
 }
@@ -18,12 +20,33 @@ DEFINE_HOOK(71C853, TerrainTypeClass_Context_Set, 6)
 
 	return 0;
 }
+/*
+// I don't want to rewrite timer stuff so I just NOP out argument push
+// which the compiler placed way before the call - Kerbiter
+DEFINE_PATCH(0x71C8A3, 0x90, 0x90)
+
+DEFINE_HOOK(71C8CE, TerrainClass_AI_CellsPerAnim, 0)
+{
+	GET(CellClass*, pCell, EAX);
+
+	int cellCount = 1;
+	if (TerrainTypeTemp::pCurrentExt)
+		cellCount = TerrainTypeTemp::pCurrentExt->GetCellsPerAnim();
+
+	for (int i = 0; i < cellCount; i++)
+		pCell->SpreadTiberium(true);
+
+	// stack depth is fixed by the patch above - Kerbiter
+	return 0x71C8D5;
+}
+*/
 
 DEFINE_HOOK(483811, CellClass_SpreadTiberium_TiberiumType, 8)
 {
-	LEA_STACK(int*, pTibType, STACK_OFFS(0x1C, -0x4));
-
-	if (TerrainTypeTemp::pCurrentExt) {
+	if (TerrainTypeTemp::pCurrentExt)
+	{
+		LEA_STACK(int*, pTibType, STACK_OFFS(0x1C, -0x4));
+		
 		*pTibType = TerrainTypeTemp::pCurrentExt->SpawnsTiberium_Type;
 
 		return 0x483819;
@@ -34,6 +57,8 @@ DEFINE_HOOK(483811, CellClass_SpreadTiberium_TiberiumType, 8)
 
 DEFINE_HOOK(48381D, CellClass_SpreadTiberium_CellSpread, 6)
 {
+	enum { SpreadReturn = 0x4838CA, NoSpreadReturn = 0x4838B0 };
+
 	if (TerrainTypeTemp::pCurrentExt)
 	{
 		GET(CellClass*, pThis, EDI);
@@ -45,24 +70,24 @@ DEFINE_HOOK(48381D, CellClass_SpreadTiberium_CellSpread, 6)
 		size_t size = adjacentCells.size();
 		int rand = ScenarioClass::Instance->Random.RandomRanged(0, size - 1);
 
-		for (unsigned int i = 0; i < size; i++) {
+		for (unsigned int i = 0; i < size; i++)
+		{
 			unsigned int cellIndex = (i + rand) % size;
 			CellStruct tgtPos = pThis->MapCoords + adjacentCells[cellIndex];
 			CellClass* tgtCell = MapClass::Instance->GetCellAt(tgtPos);
 
 			if (tgtCell && tgtCell->CanTiberiumGerminate(pTib))
 			{
-				// return with call to spread tib
-				R->EAX<bool>(tgtCell->IncreaseTiberium(tibIndex, 3));
+				R->EAX<bool>(tgtCell->IncreaseTiberium(tibIndex,
+					TerrainTypeTemp::pCurrentExt->GetTiberiumGrowthStage()));
 
-				return 0x4838CA;
+				return SpreadReturn;
 			}
 		}
 
-		// return without spreading tib
-		return 0x4838B0;
+		return NoSpreadReturn;
 	}
-	
+
 	return 0;
 }
 
