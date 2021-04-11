@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\Dummy.h" />
+    <ClCompile Include="src\Enum\CrateTypes.cpp" />
     <ClCompile Include="src\Enum\RadTypes.cpp" />
     <ClCompile Include="src\Ext\Building\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.cpp" />
@@ -41,6 +42,7 @@
     <ClCompile Include="src\Ext\WeaponType\Hooks.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
     <ClCompile Include="src\Misc\CaptureManager.cpp" />
+    <ClCompile Include="src\Misc\Ext_Crate.cpp" />
     <ClCompile Include="src\Misc\Hooks.Blowfish.cpp" />
     <ClCompile Include="src\Misc\Savegame.cpp" />
     <ClCompile Include="src\Misc\ExtendedToolTips.cpp" />
@@ -71,6 +73,7 @@
     <ClInclude Include="src\Commands\NextIdleHarvester.h" />
     <ClInclude Include="src\Commands\ObjectInfo.h" />
     <ClInclude Include="src\Commands\Commands.h" />
+    <ClInclude Include="src\Enum\CrateTypes.h" />
     <ClInclude Include="src\Enum\RadTypes.h" />
     <ClInclude Include="src\Enum\_Enumerator.hpp" />
     <ClInclude Include="src\ExtraHeaders\CCToolTip.h" />

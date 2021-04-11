@@ -1,14 +1,12 @@
 #pragma once
 
-#include <CCINIClass.h>
 #include <RulesClass.h>
 
+#include <Helpers/Macro.h>
 #include "../_Container.hpp"
-#include "../../Utilities/Constructs.h"
-#include "../../Utilities/Template.h"
-#include "../Enum/CrateTypes.h"
-#include "../../Misc/Debug.h"
+#include "../../Utilities/TemplateDef.h"
 
+#include "../Enum/CrateTypes.h"
 
 class AnimTypeClass;
 class MouseCursor;
