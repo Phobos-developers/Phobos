@@ -243,6 +243,7 @@
       <DisableSpecificWarnings>4100;4530;4731;4740;</DisableSpecificWarnings>
       <TreatWarningAsError>true</TreatWarningAsError>
       <EnableModules>true</EnableModules>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
