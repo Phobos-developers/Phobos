@@ -1,5 +1,9 @@
 #include "FogOfWar.h"
 
+// ;; loading
+// 6B8E7A = ScenarioClass_LoadSpecialFlags, 6
+// 686C03 = SetScenarioFlags_FogOfWar, 5
+
 // ;; other bug fixes
 // ;//457A10 = BuildingClass_IsFogged,5
 // 5F4B3E = ObjectClass_DrawIfVisible, 6
@@ -16,6 +20,37 @@
 // 71CC8C = TerrainClass_DrawIfVisible, 6
 // ;//4D1714 = FoggedObjectClass_DTOR, 6
 // 5865E2 = IsLocationFogged, 5
+
+/* Hook information from Xkein
+;;optimize
+;//4ACD5A = MapClass_TryFogCell_SetFlag, 7
+;//6D871C = TacticalClass_GetOcclusion_Optimize, 8
+;//47BD4A = CellClass_CTOR_InitMore, 6
+
+;;network
+;//4C800C = Networking_RespondToEvent_20, 5
+*/
+
+DEFINE_HOOK(6B8E7A, ScenarioClass_LoadSpecialFlags, 6)
+{
+	GET(ScenarioClass*, pScenario, ESI);
+
+	pScenario->SpecialFlags.FogOfWar = 
+		RulesClass::Instance->FogOfWar || R->EAX() || GameModeOptionsClass::Instance->FogOfWar;
+	
+	R->ECX(pScenario);
+	return 0x6B8E8B;
+}
+
+DEFINE_HOOK(686C03, SetScenarioFlags_FogOfWar, 5)
+{
+	GET(ScenarioFlags, SFlags, EAX);
+
+	SFlags.FogOfWar = RulesClass::Instance->FogOfWar || GameModeOptionsClass::Instance->FogOfWar;
+	R->EDX(SFlags);
+
+	return 0x686C0E;
+}
 
 DEFINE_HOOK(5F4B3E, ObjectClass_DrawIfVisible, 6)
 {

@@ -85,19 +85,3 @@ bool FogOfWar::IsLocationFogged(CoordStruct* pCoord)
 		return false;
 	return ((pCell->GetNeighbourCell(3u)->Flags & 2) == 0);
 }
-
-/* Hook information from Xkein
-;;loading
-6B8E7A = ScenarioClass_LoadSpecialFlags, 6
-686C03 = SetScenarioFlags_FogOfWar, 5
-
-;;optimize
-;//4ACD5A = MapClass_TryFogCell_SetFlag, 7
-;//6D871C = TacticalClass_GetOcclusion_Optimize, 8
-;//47BD4A = CellClass_CTOR_InitMore, 6
-
-;;network
-;//4C800C = Networking_RespondToEvent_20, 5
-*/
-
-

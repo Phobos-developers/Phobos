@@ -10,7 +10,7 @@
 #include <SessionClass.h>
 #include <HouseClass.h>
 #include <RulesClass.h>
-#include <GameOptionsClass.h>
+#include <GameModeOptionsClass.h>
 #include <ScenarioClass.h>
 #include <TacticalClass.h>
 #include <TerrainClass.h>
