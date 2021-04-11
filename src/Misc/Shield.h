@@ -19,6 +19,7 @@ public:
     void Update();
     void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
     void InvalidatePointer(void* ptr);
+	int GetShieldHP();
 
     bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
     bool Save(PhobosStreamWriter& Stm) const;

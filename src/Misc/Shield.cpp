@@ -425,3 +425,8 @@ int ShieldTechnoClass::DrawShieldBar_Pip() {
     else
         return 16;
 }
+
+int ShieldTechnoClass::GetShieldHP()
+{
+	return this->HP;
+}

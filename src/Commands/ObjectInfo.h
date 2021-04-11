@@ -1,6 +1,5 @@
 #pragma once
 #include "Commands.h"
-#include "../Ext/TechnoType/Body.h"
 
 #include <Utilities/GeneralUtils.h>
 #include <BuildingClass.h>
@@ -10,6 +9,9 @@
 #include <HouseClass.h>
 #include <ScriptClass.h>
 #include <Helpers/Enumerators.h>
+
+#include "../Ext/TechnoType/Body.h"
+#include "../Ext/Techno/Body.h"
 
 // #53 New debug feature for AI scripts
 class ObjectInfoCommandClass : public PhobosCommandClass
@@ -63,8 +65,10 @@ public:
 			strcat_s(buffer, Phobos::readBuffer);
 		};
 
-		auto getMissionName = [](int mID) {
-			switch (mID) {
+		auto getMissionName = [](int mID)
+		{
+			switch (mID)
+			{
 			case -1:
 				return "None";
 			case 0:
@@ -145,7 +149,8 @@ public:
 			buffer[0] = 0;
 		};
 
-		auto printFoots = [&append, &display, &getMissionName](FootClass* pFoot) {
+		auto printFoots = [&append, &display, &getMissionName](FootClass* pFoot)
+		{
 			append("[Phobos] Dump ObjectInfo runs.\n");
 			auto pType = pFoot->GetTechnoType();
 			append("ID = %s, ", pType->ID);
@@ -166,33 +171,56 @@ public:
 				display();
 			}
 
-			if (pFoot->Passengers.NumPassengers > 0) {
+			if (pFoot->Passengers.NumPassengers > 0)
+			{
 				append("Passengers: %s", pFoot->Passengers.FirstPassenger->GetTechnoType()->ID);
-				for (NextObject j(pFoot->Passengers.FirstPassenger->NextObject); j && abstract_cast<FootClass*>(*j); ++j) {
+				for (NextObject j(pFoot->Passengers.FirstPassenger->NextObject); j && abstract_cast<FootClass*>(*j); ++j)
+				{
 					auto passenger = static_cast<FootClass*>(*j);
 					append(", %s", passenger->GetTechnoType()->ID);
 				}
 				append("\n");
 			}
+			if(pType->Ammo > 0)
+				append("Ammo = (%d / %d)\n", pFoot->Ammo, pType->Ammo);
 			append("Current HP = (%d / %d)\n", pFoot->Health, pType->Strength);
+			auto pTechnoExt = TechnoExt::ExtMap.Find(pFoot);
+			if (auto pShieldData = pTechnoExt->ShieldData.get())
+			{
+				auto pTypeShieldData = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType());
+
+				append("Current Shield HP = (%d / %d)\n", pShieldData->GetShieldHP(), pTypeShieldData->Shield_Strength);
+			}
 			display();
 		};
 
-		auto printBuilding = [&append, &display](BuildingClass* pBuilding) {
+		auto printBuilding = [&append, &display](BuildingClass* pBuilding)
+		{
 			append("[Phobos] Dump ObjectInfo runs.\n");
 			auto pType = pBuilding->GetTechnoType();
 			append("ID = %s, ", pType->ID);
 			append("Owner = %s (%s), ", pBuilding->Owner->get_ID(), pBuilding->Owner->PlainName);
 			append("Location = (%d, %d)\n", pBuilding->GetMapCoords().X, pBuilding->GetMapCoords().Y);
 			
-			if (pBuilding->Occupants.Count > 0) {
+			if (pBuilding->Occupants.Count > 0)
+			{
 				append("Occupants: %s", pBuilding->Occupants.GetItem(0)->Type->ID);
-				for (int i = 1; i < pBuilding->Occupants.Count; i++) {
+				for (int i = 1; i < pBuilding->Occupants.Count; i++)
+				{
 					append(", %s", pBuilding->Occupants.GetItem(i)->Type->ID);
 				}
 				append("\n");
 			}
+			if (pBuilding->Type->Ammo > 0)
+				append("Ammo = (%d / %d)\n", pBuilding->Ammo, pBuilding->Type->Ammo);
 			append("Current HP = (%d / %d)\n", pBuilding->Health, pBuilding->Type->Strength);
+			auto pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
+			if (auto pShieldData = pTechnoExt->ShieldData.get())
+			{
+				auto pTypeShieldData = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType());
+
+				append("Current Shield HP = (%d / %d)\n", pShieldData->GetShieldHP(), pTypeShieldData->Shield_Strength);
+			}
 			display();
 		};
 
