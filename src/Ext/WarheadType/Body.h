@@ -34,6 +34,9 @@ public:
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
 		
+		Valueable<bool> PenetratesShield;
+		Valueable<bool> BreaksShield;
+
 		double RandomBuffer;
 
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject),
@@ -54,7 +57,10 @@ public:
 			MindControl_Anim(),
 
 			AffectsEnemies(true),
-			AffectsOwner()
+			AffectsOwner(),
+
+			PenetratesShield(false),
+			BreaksShield(false)
 		{ }
 	private:
 		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr);

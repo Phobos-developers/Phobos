@@ -70,14 +70,23 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
     }
 
     if (nDamage > 0) {
+
         this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealing_Rate * 900)); //when attacked, restart the timer
         this->ResponseAttack();
 
         auto residueDamage = nDamage - this->HP;
-        if (residueDamage >= 0) {
+        if (residueDamage >= 0 || pWHExt -> BreaksShield) {
+
+			if (pWHExt->BreaksShield && residueDamage < 0) {
+				residueDamage = 0;
+			}
+
             this->BreakShield();
-            return this->GetExt()->Shield_AbsorbOverDamage ? 0 : residueDamage;
+            return pWHExt->PenetratesShield ? *args->Damage : this->GetExt()->Shield_AbsorbOverDamage ? 0 : residueDamage;
         }
+		else if (pWHExt->PenetratesShield) {
+			return *args->Damage;
+		}
         else {
             this->WeaponNullifyAnim();
             this->HP = -residueDamage;
@@ -85,7 +94,7 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
         }
     }
     else {
-        return nDamage; //might change in future
+        return pWHExt->PenetratesShield ? *args->Damage : nDamage; //might change in future
     }
 }
 
@@ -120,6 +129,10 @@ bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon, TechnoClass* pSo
     auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
     UNREFERENCED_PARAMETER(pWHExt);
     
+	if (pWHExt->PenetratesShield) {
+		return true;
+	}
+
     bool result =
         ((MapClass::GetTotalDamage(pWeapon->Damage, pWeapon->Warhead, this->GetExt()->Shield_Armor, 0) != 0) && pWeapon->Damage) 
         || !pWeapon->Damage; // we could check how is a warhead vs shield's armor 
