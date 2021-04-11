@@ -70,6 +70,7 @@
     <ClCompile Include="src\Misc\FogOfWar\FogOfWar.cpp" />
     <ClCompile Include="src\Misc\CaptureManager.cpp" />
     <ClCompile Include="src\Misc\FogOfWar\Hooks.cpp" />
+    <ClCompile Include="src\Misc\FogOfWar\Hooks.Reveal.cpp" />
     <ClCompile Include="src\Misc\Hooks.Blowfish.cpp" />
     <ClCompile Include="src\Misc\Hooks.INIClass.cpp" />
     <ClCompile Include="src\Misc\Hooks.Savegame.cpp" />

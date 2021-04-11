@@ -1,24 +1,53 @@
 #include "FogOfWar.h"
 
-#include <RulesClass.h>
-#include <GameOptionsClass.h>
-#include <ScenarioClass.h>
-
 // issue #28 : Fix vanilla YR Fog of War bugs & issues
 // Reimplement it would be nicer.
 
+// Make codes easier to read
+#define OR(expr) ||(expr)
+#define AND(expr) &&(expr)
 
+void FogOfWar::Reveal_DisplayClass_All_To_Look_Ground(TechnoClass* pTechno, DWORD dwUnk, DWORD dwUnk2)
+{
+#define _LOOK_ \
+	{ \
+		auto coords = pTechno->GetCoords(); \
+		pTechno->See(0, dwUnk2); \
+		if (pTechno->IsInAir()) \
+			MapClass::Global()->RevealArea3(&coords, \
+				pTechno->LastSightRange - 3, pTechno->LastSightRange + 3, false); \
+		return; \
+	}
+
+	if (!dwUnk || pTechno->WhatAmI() != AbstractType::Building)
+	{
+		if (pTechno->GetTechnoType()->RevealToAll)
+			_LOOK_;
+		if (pTechno->DiscoveredByPlayer)
+		{
+			if (SessionClass::Instance && pTechno->Owner == HouseClass::Player)
+				_LOOK_;
+			if (pTechno->Owner->CurrentPlayer || pTechno->Owner->PlayerControl)
+				_LOOK_;
+		}
+		auto const pHouse = pTechno->Owner;
+		auto const pPlayer = HouseClass::Player;
+		if (pPlayer)
+		{
+			if (pPlayer == pHouse)
+				_LOOK_;
+			if (pPlayer->ArrayIndex == pHouse->ArrayIndex || pPlayer->ArrayIndex != -1 && pHouse->IsAlliedWith(pPlayer))
+				_LOOK_;
+		}
+	}
+
+#undef _LOOK_
+}
 
 /* Hook information from Xkein
 ;;loading
 6B8E7A = ScenarioClass_LoadSpecialFlags, 6
 686C03 = SetScenarioFlags_FogOfWar, 5
-
-;;reveal
-4ADFF0 = MapClass_RevealShroud, 5
-577EBF = MapClass_Reveal, 6
-586683 = CellClass_DiscoverTechno, 5
-4FC1FF = HouseClass_AcceptDefeat_CleanShroudFog, 6
 
 ;process cell
 ;//4ACBC2 = MapClass_UpdateFogOnMap, 7
@@ -60,3 +89,5 @@
 ;//4D1714 = FoggedObjectClass_DTOR, 6
 5865E2 = IsLocationFogged, 5
 */
+
+
