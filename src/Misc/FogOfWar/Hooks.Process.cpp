@@ -5,7 +5,7 @@
 // ;//4A9D74 = MapClass_RevealFogShroud_RegisterCell, A
 // 4ACE3C = MapClass_TryReshroudCell_SetCopyFlag, 6
 // 4A9CA0 = MapClass_RevealFogShroud, 7
-// 486BF0 = CellClass_CleanFog, 9
+// 486BF0 = CleanFog, 9
 // 486A70 = CellClass_FogCell, 5
 // ;//457AA0 = BuildingClass_FreezeInFog, 5
 // 440B8D = BuildingClass_Put_CheckFog, 6
@@ -43,4 +43,25 @@ DEFINE_HOOK(4A9CA0, MapClass_RevealFogShroud, 7)
 	R->EAX(FogOfWar::MapClass_RevealFogShroud(pMap, pCell, dwUnk));
 
 	return 0x4A9DC6;
+}
+
+// NOT COMPLETELY  IMPLEMENTED YET!
+DEFINE_HOOK(486BF0, CleanFog, 9)
+{
+	GET(CellClass*, pCell_, ECX);
+
+	auto pLocation = pCell_->MapCoords;
+	for (int i = 1; i < 15; i += 2)
+	{
+		auto pCell = MapClass::Global()->TryGetCellAt(pLocation);
+		if (pCell->Level >= i - 2 && pCell->Level <= i)
+		{
+			pCell->Flags &= 0xFFBFFFFF;
+			pCell->ClearFoggedObjects(); // call 486C50, which should be rewritten!
+			++pLocation.X;
+			++pLocation.Y;
+		}
+	}
+
+	return 0x486C4C;
 }

@@ -78,7 +78,7 @@ bool FogOfWar::MapClass_RevealFogShroud(MapClass* pMap, CellStruct* pCell_, Hous
 		pMap->reveal_check(pCell, pHouse, bUnk);
 	}
 	if (!bContainsBuilding && ScenarioClass::Instance->SpecialFlags.FogOfWar)
-		pCell->CellClass_CleanFog_CellClass_bitclear_0x400000();
+		pCell->CleanFog();
 	return bReturn;
 }
 

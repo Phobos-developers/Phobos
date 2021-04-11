@@ -28,7 +28,7 @@ DEFINE_HOOK(577EBF, MapClass_Reveal, 6)
 	pCell->GapsCoveringThisCell = 0;
 	pCell->CopyFlags |= 0x18u;
 	pCell->Flags |= 3u;
-	pCell->CellClass_CleanFog_CellClass_bitclear_0x400000();
+	pCell->CleanFog();
 
 	return 0x577EE9;
 }
