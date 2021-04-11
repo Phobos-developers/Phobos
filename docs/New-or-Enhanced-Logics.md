@@ -77,8 +77,11 @@ Promote.IncludeSpawns=no  ; boolean
 *Buildings, Infantries and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - Now you can have a shield for any TechnoType if `Shield.Strength` is set greater than 0. It serves as a second health pool with independent `Armor` and `Strength` values.
+  - If damage against shield equals to 0, except weapon `Damage=0`, will be unable to target shield.
+  - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed for recover, no remain for owner unit.
 - `Shield.AbsorbOverDamage`controls whether or not the shield absorbs damage dealt beyond shield's current strength when the shield breaks.
 - `Shield.SelfHealing` and `Shield.Respawn` respect the following settings: 0.0 disables the feature, 1%-100% recovers/respawns the shield strength in percentage, other number recovers/respawns the shield strength directly. Specially, `Shield.SelfHealing` with a negative number deducts the shield strength.
+  - If you want shield recovers/respawns 1 HP per time, currently you need set tag value to any number greater than 1 lower than 2, like `1.1`.
 - `Shield.SelfHealing.Rate` and `Shield.Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
 - `Shield.IdleAnim`, if set, will be played while the shield is intact. This animation is automatically set to loop indefinitely.
 - `Shield.BreakAnim`, if set, will be played when the shield has been broken.
