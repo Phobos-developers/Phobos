@@ -44,25 +44,48 @@ void FogOfWar::Reveal_DisplayClass_All_To_Look_Ground(TechnoClass* pTechno, DWOR
 #undef _LOOK_
 }
 
+bool FogOfWar::MapClass_RevealFogShroud(MapClass* pMap, CellStruct* pCell_, HouseClass* pHouse)
+{
+	auto pCell = pMap->GetCellAt(*pCell_);
+	bool bContainsBuilding = pCell->Flags & cf2_ContainsBuilding;
+	bool bReturn = !bContainsBuilding || (pCell->CopyFlags & cf2_NoShadow);
+	bool bUnk = bReturn;
+	pCell->Flags = pCell->Flags & 0xFFFFFFBF | cf2_ContainsBuilding;
+	pCell->CopyFlags = pCell->CopyFlags & 0xFFFFFFDF | cf2_NoShadow;
+	char nOcclusion = TacticalClass::Global()->GetOcclusion(*pCell_, false);
+	char nVisibility = pCell->Visibility;
+	if (nOcclusion != nVisibility)
+	{
+		nVisibility = nOcclusion;
+		bReturn = true;
+		pCell->Visibility = nOcclusion;
+	}
+	if (nVisibility == -1)
+		pCell->CopyFlags |= 0x10u;
+	char nFoggedOcclusion = TacticalClass::Global()->GetOcclusion(*pCell_, true);
+	char nFoggedness = pCell->Foggedness;
+	if (nFoggedOcclusion != nFoggedness)
+	{
+		nFoggedness = nFoggedOcclusion;
+		bReturn = true;
+		pCell->Foggedness = nFoggedOcclusion;
+	}
+	if (nFoggedness == -1)
+		pCell->Flags |= 1u;
+	if (bReturn)
+	{
+		TacticalClass::Global()->RegisterCellAsVisible(pCell);
+		pMap->reveal_check(pCell, pHouse, bUnk);
+	}
+	if (!bContainsBuilding && ScenarioClass::Instance->SpecialFlags.FogOfWar)
+		pCell->CellClass_CleanFog_CellClass_bitclear_0x400000();
+	return bReturn;
+}
+
 /* Hook information from Xkein
 ;;loading
 6B8E7A = ScenarioClass_LoadSpecialFlags, 6
 686C03 = SetScenarioFlags_FogOfWar, 5
-
-;process cell
-;//4ACBC2 = MapClass_UpdateFogOnMap, 7
-;//4A9D74 = MapClass_RevealFogShroud_RegisterCell, A
-4ACE3C = MapClass_TryReshroudCell_SetCopyFlag, 6
-4A9CA0 = MapClass_RevealFogShroud, 7
-486BF0 = CellClass_CleanFog, 9
-486A70 = CellClass_FogCell, 5
-;//457AA0 = BuildingClass_FreezeInFog, 5
-440B8D = BuildingClass_Put_CheckFog, 6
-486C50 = CellClass_ClearFoggedObjects, 6
-
-70076E = TechnoClass_GetCursorOverCell_OverFog, 5
-6D3470 = TacticalClass_DrawFoggedObject, 8
-51F97C = InfantryClass_MouseOverCell_OverFog, 5
 
 ;;optimize
 ;//4ACD5A = MapClass_TryFogCell_SetFlag, 7

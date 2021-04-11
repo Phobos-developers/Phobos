@@ -6,8 +6,6 @@
 // 586683 = CellClass_DiscoverTechno, 5
 // 4FC1FF = HouseClass_AcceptDefeat_CleanShroudFog, 6
 
-
-
 // MapClass_RevealShroud as Xkein said
 DEFINE_HOOK(4ADFF0, DisplayClass_All_To_Look_Ground, 5) 
 {
