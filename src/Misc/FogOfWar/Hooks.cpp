@@ -47,7 +47,7 @@ DEFINE_HOOK(686C03, SetScenarioFlags_FogOfWar, 5)
 	GET(ScenarioFlags, SFlags, EAX);
 
 	SFlags.FogOfWar = RulesClass::Instance->FogOfWar || GameModeOptionsClass::Instance->FogOfWar;
-	R->EDX(SFlags);
+	R->EDX<int>(*reinterpret_cast<int*>(&SFlags)); // stupid!
 
 	return 0x686C0E;
 }
