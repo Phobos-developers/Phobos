@@ -397,33 +397,33 @@ namespace detail {
 	}
 
 	template <>
-	inline bool read<SuperWeaponTarget>(SuperWeaponTarget& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
+	inline bool read<AffectedTarget>(AffectedTarget& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
 		if (parser.ReadString(pSection, pKey)) {
-			auto parsed = SuperWeaponTarget::None;
+			auto parsed = AffectedTarget::None;
 
 			auto str = parser.value();
 			char* context = nullptr;
 			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context)) {
 				if (!_strcmpi(cur, "land")) {
-					parsed |= SuperWeaponTarget::Land;
+					parsed |= AffectedTarget::Land;
 				}
 				else if (!_strcmpi(cur, "water")) {
-					parsed |= SuperWeaponTarget::Water;
+					parsed |= AffectedTarget::Water;
 				}
 				else if (!_strcmpi(cur, "empty")) {
-					parsed |= SuperWeaponTarget::NoContent;
+					parsed |= AffectedTarget::NoContent;
 				}
 				else if (!_strcmpi(cur, "infantry")) {
-					parsed |= SuperWeaponTarget::Infantry;
+					parsed |= AffectedTarget::Infantry;
 				}
 				else if (!_strcmpi(cur, "units")) {
-					parsed |= SuperWeaponTarget::Unit;
+					parsed |= AffectedTarget::Unit;
 				}
 				else if (!_strcmpi(cur, "buildings")) {
-					parsed |= SuperWeaponTarget::Building;
+					parsed |= AffectedTarget::Building;
 				}
 				else if (!_strcmpi(cur, "all")) {
-					parsed |= SuperWeaponTarget::All;
+					parsed |= AffectedTarget::All;
 				}
 				else if (_strcmpi(cur, "none")) {
 					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a super weapon target");

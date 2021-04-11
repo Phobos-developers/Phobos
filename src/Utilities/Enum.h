@@ -52,7 +52,7 @@ enum class SuperWeaponAITargetingMode {
 	EnemyBase = 14
 };
 
-enum class SuperWeaponTarget : unsigned char {
+enum class AffectedTarget : unsigned char {
 	None = 0x0,
 	Land = 0x1,
 	Water = 0x2,
@@ -67,7 +67,7 @@ enum class SuperWeaponTarget : unsigned char {
 	AllContents = NoContent | AllTechnos
 };
 
-MAKE_ENUM_FLAGS(SuperWeaponTarget);
+MAKE_ENUM_FLAGS(AffectedTarget);
 
 enum class AffectedHouse : unsigned char {
 	None = 0x0,

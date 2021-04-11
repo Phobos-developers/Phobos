@@ -24,7 +24,7 @@ public:
 
 		Valueable<int> Crit_ExtraDamage;
 		Valueable<double> Crit_Chance;
-		Valueable<SuperWeaponTarget> Crit_Affects;
+		Valueable<AffectedTarget> Crit_Affects;
 		ValueableVector<AnimTypeClass*> Crit_AnimList;
 
 		Nullable<AnimTypeClass*> MindControl_Anim;
@@ -50,7 +50,7 @@ public:
 
 			Crit_Chance(0.0),
 			Crit_ExtraDamage(0),
-			Crit_Affects(SuperWeaponTarget::All),
+			Crit_Affects(AffectedTarget::All),
 			Crit_AnimList(),
 			RandomBuffer(0.0),
 
@@ -72,8 +72,8 @@ public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
 
-		bool IsCellEligible(CellClass* const pCell, SuperWeaponTarget allowed);
-		bool IsTechnoEligible(TechnoClass* const pCell, SuperWeaponTarget allowed);
+		bool IsCellEligible(CellClass* const pCell, AffectedTarget allowed);
+		bool IsTechnoEligible(TechnoClass* const pCell, AffectedTarget allowed);
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
