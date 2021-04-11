@@ -1,12 +1,8 @@
-#include "../Phobos.h"
-#include <TacticalClass.h>
-#include <TechnoClass.h>
-#include <UnitClass.h>
-#include <UnitTypeClass.h>
-#include <BuildingTypeClass.h>
+#include "Phobos.h"
+#include "Utilities/Macro.h"
+#include "Ext/TechnoType/Body.h"
+
 #include <HouseClass.h>
-#include <ObjectClass.h>
-#include "../Ext/TechnoType/Body.h"
 #include <Unsorted.h>
 
 class ExtSelection
@@ -56,7 +52,7 @@ public:
 	}
 
 	static // Reversed from Tactical::Select
-		void Tactical_SelectFiltered(TacticalClass* pThis, RECT* rect, callback_type check_callback, bool priorityFiltering)
+	void Tactical_SelectFiltered(TacticalClass* pThis, RECT* rect, callback_type check_callback, bool priorityFiltering)
 	{
 		Unsorted::MoveFeedback = true;
 
@@ -102,7 +98,7 @@ public:
 	}
 
 	static // Reversed from Tactical::MakeSelection
-		void Tactical_MakeFilteredSelection(TacticalClass* pThis, callback_type check_callback)
+	void __fastcall Tactical_MakeFilteredSelection(TacticalClass* pThis, void*_, callback_type check_callback)
 	{
 		if (pThis->Band.left || pThis->Band.top) {
 			LONG left = pThis->Band.left;
@@ -126,10 +122,8 @@ public:
 	}
 };
 
-DEFINE_HOOK(6D9FF0, Tactical_MakeSelection_FilterSelection, 0)
-{
-	GET_STACK(ExtSelection::callback_type, IsSelectable, 4);
-	GET(TacticalClass*, pThis, ECX);
-	ExtSelection::Tactical_MakeFilteredSelection(pThis, IsSelectable);
-	return 0x6DA075;
-}
+// Replace single call
+DEFINE_POINTER_CALL(0x4ABCEB, ExtSelection::Tactical_MakeFilteredSelection);
+
+// Replace vanilla function. For in case another module tries to call the vanilla function at offset
+DEFINE_POINTER_LJMP(0x6D9FF0, ExtSelection::Tactical_MakeFilteredSelection)

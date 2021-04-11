@@ -48,6 +48,7 @@
 #include <Phobos.CRT.h>
 
 #include <Misc/Savegame.h>
+#include <Misc/Debug.h>
 
 class ConvertClass;
 
