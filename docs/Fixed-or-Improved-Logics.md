@@ -69,9 +69,9 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]			; TechnoType 
 Locomotor={4A582747-9839-11d1-B709-00A024DDAFD1} ;required 
-WarpOut					;Anim (played when Techno Warping out)			
-WarpIn					;Anim (played when techno warping in)
-WarpAway				;Anim (played when unit dies)
+WarpOut					;Anim (played when Techno warping out)			
+WarpIn					;Anim (played when Techno warping in)
+WarpAway				;Anim (played when Techno chronowarped by chronosphere)
 ChronoTrigger			;bool
 ChronoDistanceFactor	;int
 ChronoMinimumDelay		;int
