@@ -68,14 +68,59 @@ DEFINE_HOOK(486BF0, CellClass_CleanFog, 9)
 // NOT IMPLEMENTED YET!
 DEFINE_HOOK(486A70, CellClass_FogCell, 5)
 {
-	GET(CellClass*, pCell, ECX);
+	GET(CellClass*, pCell_, ECX);
+	auto location = pCell_->MapCoords;
+	if (ScenarioClass::Instance->SpecialFlags.FogOfWar)
+	{
+		for (int i = 1; i < 15; i += 2)
+		{
+			auto pCell = MapClass::Global()->GetCellAt(location);
+			auto nLevel = pCell->Level;
+			if (nLevel >= i - 2 && nLevel <= i)
+			{
+				if ((pCell->Flags & cf_Fogged) == 0)
+				{
+					pCell->Flags |= cf_Fogged;
+					for (auto pObject = pCell->FirstObject; pObject; pObject->NextObject)
+					{
+						switch (pObject->WhatAmI())
+						{
+						case AbstractType::Unit:
+						case AbstractType::Infantry:
+						case AbstractType::Aircraft:
+							pObject->Deselect();
+							break;
+						case AbstractType::Building:
+							if(auto pBld = generic_cast<BuildingClass*>(pObject))
+								if (pBld->Is_Fogged())
+								{
+									// process building fog
+									// FogOfWar::UpdateBuildingFog(pCell);
+								}
+							break;
+						case AbstractType::Terrain:
+							// process terrain fog
+							break;
+						default:
+							continue;
+						}
+					}
+					if (pCell->OverlayTypeIndex != -1)
+					{
+						// fogged overlay
+					}
+					if (pCell->SmudgeTypeIndex != -1 && !pCell->SmudgeData)
+					{
+						// fogged smudge
+					}
+				}
+			}
+			++location.X;
+			++location.Y;
+		}
+	}
 
-	// rewritten me pls!
-
-	UNREFERENCED_PARAMETER(pCell);
-
-	return 0;
-	// return 0x486BE6;
+	return 0x486BE6;
 }
 
 DEFINE_HOOK(440B8D, BuildingClass_Put_CheckFog, 6)
@@ -86,7 +131,8 @@ DEFINE_HOOK(440B8D, BuildingClass_Put_CheckFog, 6)
 	{
 		auto pCell = pBuilding->GetCell();
 
-		// Several extra works to be done here
+		// process building fog
+		// FogOfWar::UpdateBuildingFog(pCell);
 		UNREFERENCED_PARAMETER(pCell);
 	}
 
@@ -99,6 +145,8 @@ DEFINE_HOOK(486C50, CellClass_ClearFoggedObjects, 6)
 	GET(CellClass*, pCell, ECX);
 
 	UNREFERENCED_PARAMETER(pCell);
+
+	//FogOfWar::ClearFoggedObjects(pCell);
 
 	return 0;
 	// return 0x486D8A;
