@@ -50,7 +50,7 @@ public:
 
 			Crit_Chance(0.0),
 			Crit_ExtraDamage(0),
-			Crit_Affects(SuperWeaponTarget::None),
+			Crit_Affects(SuperWeaponTarget::All),
 			Crit_AnimList(),
 			RandomBuffer(0.0),
 
