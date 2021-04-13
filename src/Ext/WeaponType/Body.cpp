@@ -31,9 +31,13 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->Bolt_Disable3.Read(exINI, pSection, "Bolt.Disable3");
 
 	// RadType
-	if (this->OwnerObject()->RadLevel > 0)
+	if (this->OwnerObject()->RadLevel > 0) {
 		this->RadType.Read(pINI, pSection, "RadType");
 		this->Rad_NoOwner.Read(exINI, pSection, "Rad.NoOwner");
+	}
+	
+	this->Strafing_Shots.Read(exINI, pSection, "Strafing.Shots");
+	this->Strafing_SimulateBurst.Read(exINI, pSection, "Strafing.SimulateBurst");
 }
 
 template <typename T>
@@ -45,6 +49,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->Bolt_Disable1)
 		.Process(this->Bolt_Disable2)
 		.Process(this->Bolt_Disable3)
+		.Process(this->Strafing_Shots)
+		.Process(this->Strafing_SimulateBurst)
 		;
 };
 
