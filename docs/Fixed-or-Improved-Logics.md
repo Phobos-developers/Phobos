@@ -55,3 +55,18 @@ SpawnsTiberium.Type=0         ; tiberium type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
 SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
 ```
+
+## Weapons
+
+### Togglable ElectricBolt visuals
+
+- You can now specify individual ElectricBolt bolts you want to disable. Note that this is only a visual change.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPONTYPE]       ; WeaponType
+IsElectricBolt=true    ; an ElectricBolt Weapon, vanilla tag
+Bolt.Disable1=false    ; boolean
+Bolt.Disable2=false    ; boolean
+Bolt.Disable3=false    ; boolean
+```
