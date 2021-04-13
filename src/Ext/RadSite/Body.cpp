@@ -10,7 +10,7 @@ DynamicVectorClass<RadSiteExt::ExtData*> RadSiteExt::RadSiteInstance;
 void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner) {
 	// use real ctor
 	auto const pRadSite = GameCreate<RadSiteClass>();
-
+	auto const cell = MapClass::Instance->TryGetCellAt(location);
 	auto pRadExt = RadSiteExt::ExtMap.FindOrAllocate(pRadSite);
 
 	//Adding Owner to RadSite , from bullet
@@ -27,7 +27,7 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 	pRadExt->SetRadLevel(amount);
 
 	pRadSite->Activate();
-
+	cell->SetRadSite(pRadSite);
 	RadSiteInstance.AddUnique(pRadExt);
 }
 
