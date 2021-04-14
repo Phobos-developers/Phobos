@@ -122,8 +122,8 @@ DEFINE_HOOK(71CC8C, TerrainClass_DrawIfVisible, 6)
 
 	auto coord = pTerrain->GetCoords();
 	if (pTerrain->InLimbo || FogOfWar::IsLocationFogged(&coord))
-		return 0x71CC9A;
-	return 0x71CD8D;
+		return 0x71CD8D;
+	return 0x71CC9A;
 }
 
 DEFINE_HOOK(5865E2, IsLocationFogged, 5)

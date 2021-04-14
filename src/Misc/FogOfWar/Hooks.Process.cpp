@@ -81,7 +81,7 @@ DEFINE_HOOK(486A70, CellClass_FogCell, 5)
 				if ((pCell->Flags & cf_Fogged) == 0)
 				{
 					pCell->Flags |= cf_Fogged;
-					for (auto pObject = pCell->FirstObject; pObject; pObject->NextObject)
+					for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 					{
 						switch (pObject->WhatAmI())
 						{
@@ -91,7 +91,7 @@ DEFINE_HOOK(486A70, CellClass_FogCell, 5)
 							pObject->Deselect();
 							break;
 						case AbstractType::Building:
-							if(auto pBld = generic_cast<BuildingClass*>(pObject))
+							if(auto pBld = abstract_cast<BuildingClass*>(pObject))
 								if (pBld->Is_Fogged())
 								{
 									// process building fog
@@ -175,6 +175,7 @@ DEFINE_HOOK(6D3470, TacticalClass_DrawFoggedObject, 8)
 	UNREFERENCED_PARAMETER(bUkn);
 
 	// Draw them
+
 
 	return 0;
 	// return 0x6D3650;
