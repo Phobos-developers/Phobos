@@ -44,7 +44,7 @@ public:
 		Nullable<AnimTypeClass*> Shield_BreakAnim;
 		Nullable<AnimTypeClass*> Shield_RespawnAnim;
 		Nullable<AnimTypeClass*> Shield_HitAnim;
-
+		Valueable<int> CrateType;
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			HealthBar_Hide(false),
 			UIDescription(),
@@ -74,7 +74,8 @@ public:
 			Shield_IdleAnim(),
 			Shield_BreakAnim(),
 			Shield_RespawnAnim(),
-			Shield_HitAnim()
+			Shield_HitAnim(),
+			CrateType(20)//20 mean random on vanilla
 		{ }
 
 		virtual ~ExtData() = default;

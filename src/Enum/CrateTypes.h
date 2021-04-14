@@ -11,22 +11,21 @@
 
 class WeaponTypeClass;
 
-class CrateType final : public Enumerable<CrateType> {
+class CrateType final : public Enumerable<CrateType> 
+{
 public:
 	
-	
-	Valueable<SuperWeaponTypeClass*> SWs{ nullptr };
+	ValueableIdx<SuperWeaponTypeClass> SWs{ -1 };
 	Valueable<WeaponTypeClass*> WeaponType{ nullptr };
 	Valueable<bool>SWGrant{ false };
 	Valueable<int> Chance{ 0 } ;
 	Valueable<AnimTypeClass*> Anim{ nullptr };
 	Valueable<int> Tp{ 3 };
 	Valueable<bool>Water{ false };
-	NullableIdx<VocClass>Sound{};
+	NullableIdx<VocClass>Sound{-1};
 
 	CrateType(const char* pTitle);
 
-	
 	virtual ~CrateType() override;
 
 	virtual void LoadFromINI(CCINIClass *pINI) override;

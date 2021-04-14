@@ -25,14 +25,17 @@ void CrateType::LoadListSection(CCINIClass *pINI)
 {
 	const char *section = GetMainSection();
 	int len = pINI->GetKeyCount(section);
-	for (int i = 0; i < len; ++i) {
+	for (int i = 0; i < len; ++i) 
+	{
 		const char *key = pINI->GetKeyName(section, i);
-		if (pINI->ReadString(section, key, "", Phobos::readBuffer)) {
+		if (pINI->ReadString(section, key, "", Phobos::readBuffer)) 
+		{
 			FindOrAllocate(Phobos::readBuffer);
 		}
 	}
 	Debug::Log("CrateType :: LoadListSection check,list length = %d \n", len);
-	for (size_t i = 0; i < Array.size(); ++i) {
+	for (size_t i = 0; i < Array.size(); ++i) 
+	{
 		Array[i]->LoadFromINI(pINI);
 	}
 }
@@ -55,7 +58,8 @@ void CrateType::LoadFromINI(CCINIClass *pINI)
 
 }
 template <typename T>
-void CrateType::Serialize(T& Stm) {
+void CrateType::Serialize(T& Stm) 
+{
 	Stm
 		.Process(this->SWs)
 		.Process(this->WeaponType)
