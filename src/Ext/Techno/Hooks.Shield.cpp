@@ -40,7 +40,7 @@ DEFINE_HOOK(6FC339, TechnoClass_CanFire_Shield, 6)
     return 0;
 }
 
-DEFINE_HOOK(6F9E50, TechnoClass_Update_Shield, 5)
+DEFINE_HOOK(6F9E50, TechnoClass_AI_Shield, 5)
 {
     GET(TechnoClass*, pThis, ECX);
     auto pExt = TechnoExt::ExtMap.Find(pThis);
@@ -51,7 +51,7 @@ DEFINE_HOOK(6F9E50, TechnoClass_Update_Shield, 5)
             pExt->ShieldData = std::make_unique<ShieldTechnoClass>(pThis);
         }
 
-        pExt->ShieldData->Update();
+        pExt->ShieldData->AI();
     }
     return 0;
 }

@@ -11,12 +11,12 @@
 	and rewriting some in order to make this working perfecly
 	Credit : Ares Team , for unused/uncommented source of Hook.RadSite
 						,RulesData_LoadBeforeTypeData Hook
-			 Alex-B : GetRadSiteAt ,Helper that used at FootClass_Update & BuildingClass_Update
+			 Alex-B : GetRadSiteAt ,Helper that used at FootClass_AI & BuildingClass_AI
 					  Radiate , Uncommented
 			 me(Otamaa) adding some more stuffs and rewriting hook that cause crash
 	TODO : -Testings
 	// Do this Ares Hook will cause a problem ?
-	//4DA584 = FootClass_Update_RadImmune, 7
+	//4DA584 = FootClass_AI_RadImmune, 7
 */
 
 DEFINE_HOOK(469150, B_Detonate_ApplyRad, 5)
@@ -83,7 +83,7 @@ DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation, 5)
 }
 */
 // Too OP, be aware
-DEFINE_HOOK(43FB23, BuildingClass_Update, 5)
+DEFINE_HOOK(43FB23, BuildingClass_AI, 5)
 {
 	GET(BuildingClass* const, pBuilding, ECX);
 
@@ -132,7 +132,7 @@ DEFINE_HOOK(43FB23, BuildingClass_Update, 5)
 
 // be aware that this function is updated every frame 
 // putting debug log here can become mess because it gonna print bunch of debug line
-DEFINE_HOOK(4DA554, FootClass_Update_RadSiteClass, 5)
+DEFINE_HOOK(4DA554, FootClass_AI_RadSiteClass, 5)
 {
 	GET(FootClass* const, pFoot, ESI);
 
@@ -242,7 +242,7 @@ DEFINE_HOOK(65B6F2, RadSiteClass_Activate_TintFactor, 6)
 	return R->Origin() + 6;
 }
 
-DEFINE_HOOK(65B843, RadSiteClass_Update_LevelDelay, 6)
+DEFINE_HOOK(65B843, RadSiteClass_AI_LevelDelay, 6)
 {
 	GET(RadSiteClass* const, Rad, ESI);
 
@@ -254,7 +254,7 @@ DEFINE_HOOK(65B843, RadSiteClass_Update_LevelDelay, 6)
 	return 0x65B849;
 }
 
-DEFINE_HOOK(65B8B9, RadSiteClass_Update_LightDelay, 6)
+DEFINE_HOOK(65B8B9, RadSiteClass_AI_LightDelay, 6)
 {
 	GET(RadSiteClass* const, Rad, ESI);
 
