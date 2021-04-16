@@ -184,7 +184,7 @@ DEFINE_HOOK(481F87, CellClass_CrateCollected_Shroud_Override, 7) {
 			if (pType)
 				if (auto anim = GameCreate<AnimClass>(pType, animCoord))
 				{
-					anim->Owner = pHouse;
+					anim->Owner = pHouse; //for Anim to Unit test
 				}
 
 			if (pSound)
@@ -247,15 +247,13 @@ DEFINE_HOOK(442219, BuildingTypeClass_Destroy_PlaceCrate_override, 7)
 
 DEFINE_LJMP(0x56BFC2, 0x56BFC7);
 
-//are the size okay ?
-DEFINE_HOOK(56C1D3, MapClass_RemoveCrate_Override, 4)
+DEFINE_HOOK(56C1D3, MapClass_RemoveCrate_Override, 9)
 {
 	GET(CellClass*, C, EBX);
 
-	C->OverlayData = static_cast<unsigned char>(0); //?
-	auto cEXT = CellExt::ExtMap.Find(C);
-	cEXT->NewPowerups = -1;
-	return 0x56C1DA;
+	CellExt::ExtMap.Find(C)->NewPowerups = -1;
+
+	return 0;
 }
 
 DEFINE_HOOK(56BFF9, MapClass_PlaceCrate_Override, 6)
@@ -281,8 +279,7 @@ DEFINE_HOOK(56BFF9, MapClass_PlaceCrate_Override, 6)
 	return 0x56BFFF;
 }
 
-//are the size okay ?
-DEFINE_HOOK(481ACE, CellHasPowerUp_Override, 3)
+DEFINE_HOOK(481ACE, CellHasPowerUp_Override, 5)
 {
 	GET(CellClass*, C, ESI);
 
