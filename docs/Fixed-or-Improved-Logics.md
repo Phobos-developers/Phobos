@@ -61,6 +61,9 @@ SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
 
 ### Customizable Teleport/Chrono Locomotor properties per attached Techno 
 
+![image](_static/images/cust-Chrono.gif)  
+*Chrono Legionere and Ronco (hero) from [YR:New War] (https://www.moddb.com/mods/yuris-revenge-new-war)*
+
 -Now fully customizeable per techno type direcly 
 -Unfilled value will still default to Rules
 -This properties able to used by Techno that have Teleport Locomotor/Chrono attached
