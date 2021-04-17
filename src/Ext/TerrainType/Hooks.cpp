@@ -20,26 +20,19 @@ DEFINE_HOOK(71C853, TerrainTypeClass_Context_Set, 6)
 
 	return 0;
 }
-/*
-// I don't want to rewrite timer stuff so I just NOP out argument push
-// which the compiler placed way before the call - Kerbiter
-DEFINE_PATCH(0x71C8A3, 0x90, 0x90)
 
-DEFINE_HOOK(71C8CE, TerrainClass_AI_CellsPerAnim, 0)
+// thiscall is being emulated here, ECX = pThis, EDX is discarded, second arg is passed thru stack - Kerbiter
+void __fastcall TerrainClass_AI_CellsPerAnim(CellClass* pThis, void*, bool forced)
 {
-	GET(CellClass*, pCell, EAX);
-
 	int cellCount = 1;
 	if (TerrainTypeTemp::pCurrentExt)
 		cellCount = TerrainTypeTemp::pCurrentExt->GetCellsPerAnim();
 
 	for (int i = 0; i < cellCount; i++)
-		pCell->SpreadTiberium(true);
-
-	// stack depth is fixed by the patch above - Kerbiter
-	return 0x71C8D5;
+		pThis->SpreadTiberium(forced);
 }
-*/
+
+DEFINE_POINTER_CALL(0x71C8D0, TerrainClass_AI_CellsPerAnim)
 
 DEFINE_HOOK(483811, CellClass_SpreadTiberium_TiberiumType, 8)
 {

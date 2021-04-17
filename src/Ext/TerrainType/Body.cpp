@@ -1,29 +1,21 @@
 #include "Body.h"
 
 #include <TerrainTypeClass.h>
-#include <ScenarioClass.h>
+#include "../../Utilities/GeneralUtils.h"
 
 template<> const DWORD Extension<TerrainTypeClass>::Canary = 0xBEE78007;
 TerrainTypeExt::ExtContainer TerrainTypeExt::ExtMap;
 
 int TerrainTypeExt::ExtData::GetTiberiumGrowthStage()
 {
-	if (this->SpawnsTiberium_GrowthStage.Get().X >= this->SpawnsTiberium_GrowthStage.Get().Y)
-		return this->SpawnsTiberium_GrowthStage.Get().X;
-
-	return ScenarioClass::Instance->Random.RandomRanged(
-		this->SpawnsTiberium_GrowthStage.Get().X, this->SpawnsTiberium_GrowthStage.Get().Y);
+	return GeneralUtils::GetRangedRandomOrSingleValue(this->SpawnsTiberium_GrowthStage.Get());
 }
-/*
+
 int TerrainTypeExt::ExtData::GetCellsPerAnim()
 {
-	if (this->SpawnsTiberium_CellsPerAnim.Get().X >= this->SpawnsTiberium_CellsPerAnim.Get().Y)
-		return this->SpawnsTiberium_CellsPerAnim.Get().X;
-
-	return ScenarioClass::Instance->Random.RandomRanged(
-		this->SpawnsTiberium_CellsPerAnim.Get().X, this->SpawnsTiberium_CellsPerAnim.Get().Y);
+	return GeneralUtils::GetRangedRandomOrSingleValue(this->SpawnsTiberium_CellsPerAnim.Get());
 }
-*/
+
 // =============================
 // load / save
 
@@ -34,7 +26,7 @@ void TerrainTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnsTiberium_Type)
 		.Process(this->SpawnsTiberium_Range)
 		.Process(this->SpawnsTiberium_GrowthStage)
-		// .Process(this->SpawnsTiberium_CellsPerAnim)
+		.Process(this->SpawnsTiberium_CellsPerAnim)
 		;
 }
 
@@ -50,7 +42,7 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnsTiberium_Type.Read(exINI, pSection, "SpawnsTiberium.Type");
 	this->SpawnsTiberium_Range.Read(exINI, pSection, "SpawnsTiberium.Range");
 	this->SpawnsTiberium_GrowthStage.Read(exINI, pSection, "SpawnsTiberium.GrowthStage");
-	// this->SpawnsTiberium_CellsPerAnim.Read(exINI, pSection, "SpawnsTiberium.CellsPerAnim");
+	this->SpawnsTiberium_CellsPerAnim.Read(exINI, pSection, "SpawnsTiberium.CellsPerAnim");
 }
 
 void TerrainTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
