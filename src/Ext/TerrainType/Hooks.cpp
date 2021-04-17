@@ -21,17 +21,17 @@ DEFINE_HOOK(71C853, TerrainTypeClass_Context_Set, 6)
 	return 0;
 }
 
-void __fastcall TerrainClass_AI_CellsPerAnim(CellClass* pCell, void*_, bool forced)
+// thiscall is being emulated here, ECX = pThis, EDX is discarded, second arg is passed thru stack - Kerbiter
+void __fastcall TerrainClass_AI_CellsPerAnim(CellClass* pThis, void*, bool forced)
 {
 	int cellCount = 1;
-	if (TerrainTypeTemp::pCurrentExt) {
+	if (TerrainTypeTemp::pCurrentExt)
 		cellCount = TerrainTypeTemp::pCurrentExt->GetCellsPerAnim();
-	}
 
-	for (int i = 0; i < cellCount; i++){
-		pCell->SpreadTiberium(true);
-	}
+	for (int i = 0; i < cellCount; i++)
+		pThis->SpreadTiberium(forced);
 }
+
 DEFINE_POINTER_CALL(0x71C8D0, TerrainClass_AI_CellsPerAnim)
 
 DEFINE_HOOK(483811, CellClass_SpreadTiberium_TiberiumType, 8)

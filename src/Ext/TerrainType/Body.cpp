@@ -1,27 +1,19 @@
 #include "Body.h"
 
 #include <TerrainTypeClass.h>
-#include <ScenarioClass.h>
+#include "../../Utilities/GeneralUtils.h"
 
 template<> const DWORD Extension<TerrainTypeClass>::Canary = 0xBEE78007;
 TerrainTypeExt::ExtContainer TerrainTypeExt::ExtMap;
 
 int TerrainTypeExt::ExtData::GetTiberiumGrowthStage()
 {
-	Point2D point = this->SpawnsTiberium_CellsPerAnim.Get();
-	if (point.X >= point.Y) {
-		return point.X;
-	}
-	return ScenarioClass::Instance->Random.RandomRanged(point.X, point.Y);
+	return GeneralUtils::GetRangedRandomOrSingleValue(this->SpawnsTiberium_GrowthStage.Get());
 }
 
 int TerrainTypeExt::ExtData::GetCellsPerAnim()
 {
-	Point2D point = this->SpawnsTiberium_CellsPerAnim.Get();
-	if (point.X >= point.Y) {
-		return point.X;
-	}
-	return ScenarioClass::Instance->Random.RandomRanged(point.X, point.Y);
+	return GeneralUtils::GetRangedRandomOrSingleValue(this->SpawnsTiberium_CellsPerAnim.Get());
 }
 
 // =============================
