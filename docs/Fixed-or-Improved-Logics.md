@@ -9,6 +9,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
 - `TurretOffset` tag for voxel turreted technos now accepts FLH (forward, lateral, height) values like `TurretOffset=F,L` or `TurretOffset=F,L,H`, which means turret location can be adjusted in all three axes.
 - `InfiniteMindControl` with `Damage=1` can now control more than 1 unit.
+- Aircraft with `Fighter` set to false or those using strafing pattern (weapon projectile `ROT` is below 2) now take weapon's `Burst` into accord for all shots instead of just the first one.
 
 ![image](_static/images/remember-target-after-deploying-01.gif)  
 *Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)*

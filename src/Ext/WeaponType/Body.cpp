@@ -3,21 +3,18 @@
 template<> const DWORD Extension<WeaponTypeClass>::Canary = 0x22222222;
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
-void WeaponTypeExt::ExtData::Initialize()
-{
-
-};
+void WeaponTypeExt::ExtData::Initialize() { }
 
 // =============================
 // load / save
 
-void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
+void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+{
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 
-	if (!pINI->GetSection(pSection)) {
+	if (!pINI->GetSection(pSection))
 		return;
-	}
 
 	INI_EX exINI(pINI);
 
@@ -32,12 +29,18 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 
 	// RadType
 	if (this->OwnerObject()->RadLevel > 0)
+	{
 		this->RadType.Read(pINI, pSection, "RadType");
 		this->Rad_NoOwner.Read(exINI, pSection, "Rad.NoOwner");
+	}
+
+	this->Strafing_Shots.Read(exINI, pSection, "Strafing.Shots");
+	this->Strafing_SimulateBurst.Read(exINI, pSection, "Strafing.SimulateBurst");
 }
 
 template <typename T>
-void WeaponTypeExt::ExtData::Serialize(T& Stm) {
+void WeaponTypeExt::ExtData::Serialize(T& Stm)
+{
 	Stm
 		.Process(this->DiskLaser_Radius)
 		.Process(this->DiskLaser_Circumference)
@@ -45,30 +48,38 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->Bolt_Disable1)
 		.Process(this->Bolt_Disable2)
 		.Process(this->Bolt_Disable3)
+		.Process(this->Strafing_Shots)
+		.Process(this->Strafing_SimulateBurst)
 		;
 };
 
-void WeaponTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+void WeaponTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+{
 	Extension<WeaponTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
 	if (this->OwnerObject()->RadLevel > 0)
 		this->RadType.LoadFromStream(Stm);
 }
 
-void WeaponTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+void WeaponTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+{
 	Extension<WeaponTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
+
 	if (this->OwnerObject()->RadLevel > 0)
 		this->RadType.SaveToStream(Stm);
 }
 
-bool WeaponTypeExt::LoadGlobals(PhobosStreamReader& Stm) {
+bool WeaponTypeExt::LoadGlobals(PhobosStreamReader& Stm)
+{
 	return Stm
 		.Process(nOldCircumference)
 		.Success();
 }
 
-bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm) {
+bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
+{
 	return Stm
 		.Process(nOldCircumference)
 		.Success();
@@ -77,8 +88,7 @@ bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm) {
 // =============================
 // container
 
-WeaponTypeExt::ExtContainer::ExtContainer() : Container("WeaponTypeClass") {
-}
+WeaponTypeExt::ExtContainer::ExtContainer() : Container("WeaponTypeClass") { }
 
 WeaponTypeExt::ExtContainer::~ExtContainer() = default;
 
@@ -90,6 +100,7 @@ DEFINE_HOOK(771EE9, WeaponTypeClass_CTOR, 5)
 	GET(WeaponTypeClass*, pItem, ESI);
 
 	WeaponTypeExt::ExtMap.FindOrAllocate(pItem);
+
 	return 0;
 }
 
@@ -98,6 +109,7 @@ DEFINE_HOOK(77311D, WeaponTypeClass_SDDTOR, 6)
 	GET(WeaponTypeClass*, pItem, ESI);
 
 	WeaponTypeExt::ExtMap.Remove(pItem);
+
 	return 0;
 }
 
@@ -115,12 +127,14 @@ DEFINE_HOOK(772CD0, WeaponTypeClass_SaveLoad_Prefix, 7)
 DEFINE_HOOK(772EA6, WeaponTypeClass_Load_Suffix, 6)
 {
 	WeaponTypeExt::ExtMap.LoadStatic();
+
 	return 0;
 }
 
 DEFINE_HOOK(772F8C, WeaponTypeClass_Save, 5)
 {
 	WeaponTypeExt::ExtMap.SaveStatic();
+
 	return 0;
 }
 
@@ -132,5 +146,6 @@ DEFINE_HOOK(7729B0, WeaponTypeClass_LoadFromINI, 5)
 	GET_STACK(CCINIClass*, pINI, 0xE4);
 
 	WeaponTypeExt::ExtMap.LoadFromINI(pItem, pINI);
+
 	return 0;
 }

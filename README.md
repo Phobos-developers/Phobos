@@ -69,7 +69,7 @@ Credits
 - AutoGavy - interceptor logic, warhead critical damage system
 - Xkein - general assistance, YRpp edits
 - thomassneddon - general assistance
-- Starkku - Warhead shield penetration & breaking
+- Starkku - Warhead shield penetration & breaking, strafing aircraft weapon customization
 
 Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](https://github.com/Phobos-developers/Phobos/logo-mono.png)) in your client/launcher, contributing or donating to us via links on the right and the `Sponsor` button on top of the repo.
 
