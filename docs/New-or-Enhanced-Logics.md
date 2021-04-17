@@ -119,6 +119,9 @@ BreaksShield=false             ; boolean
 
 ### Strafing aircraft weapon customization
 
+![image](_static/images/strafing-01.gif)  
+*Strafing aircraft weapon customization in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
+
 - Some of the behaviour of strafing aircraft weapons (weapon projectile has `ROT` below 2) can now be customized.
   - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired. Valid values range from 1 to 5, any values smaller or larger are effectively treated same as either 1 or 5, respectively. Defaults to 5.
   - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behaviour of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined. Defaults to false.
