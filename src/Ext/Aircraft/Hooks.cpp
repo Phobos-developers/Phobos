@@ -18,14 +18,12 @@ DEFINE_HOOK(417FF1, AircraftClass_Mission_Attack_StrafeShots, 6)
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(weaponIndex)->WeaponType);
 	int fireCount = pThis->MissionStatus - 4;
 
-	if (fireCount > 1 && pWeaponExt->Strafing_Shots < fireCount) {
-
-		if (!pThis->Ammo) {
+	if (fireCount > 1 && pWeaponExt->Strafing_Shots < fireCount)
+	{
+		if (!pThis->Ammo)
 			pThis->unknown_bool_6D2 = false;
-		}
 
 		pThis->MissionStatus = (int)AirAttackStatus::ReturnToBase;
-		return 0;
 	}
 
 	return 0;

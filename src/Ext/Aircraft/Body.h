@@ -6,6 +6,6 @@
 class AircraftExt
 {
 public:
-	static void FireBurst(TechnoClass* pThis, AbstractClass* pTarget, int shotNumber);
+	static void FireBurst(AircraftClass* pThis, AbstractClass* pTarget, int shotNumber);
 };
 
