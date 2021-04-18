@@ -3,6 +3,7 @@
 #include <HouseClass.h>
 #include <InfantryClass.h>
 #include <WarheadTypeClass.h>
+#include <ScenarioClass.h>
 
 #include "../BuildingType/Body.h"
 #include "../Bullet/Body.h"
@@ -57,7 +58,7 @@ DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation, 5)
 	if (Instances.Count > 0) {
 		auto const it = std::find_if(Instances.begin(), Instances.end(),
 			[=](RadSiteExt::ExtData* const pSite) // Lambda
-			{// find 
+			{// find
 				return pSite->Type == pRadType &&
 					pSite->OwnerObject()->BaseCell == location &&
 					spread == pSite->OwnerObject()->Spread;
@@ -74,7 +75,7 @@ DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation, 5)
 				amount = pRadType->LevelMax - pRadSite->GetRadLevel();
 			}
 
-			// Handle It 
+			// Handle It
 			pRadExt->Add(amount);
 		}
 	}
@@ -127,46 +128,50 @@ DEFINE_HOOK(43FB23, BuildingClass_AI, 5)
 {
 	GET(BuildingClass* const, pBuilding, ECX);
 
-	if (pBuilding->IsIronCurtained() || pBuilding->Type->ImmuneToRadiation || pBuilding->InLimbo || !pBuilding->BeingWarpedOut) {
-		return 0;
-	}
-
-	auto const MainCoords = pBuilding->GetMapCoords();
-
-	for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct{ 0x7FFF, 0x7FFF }; ++pFoundation)
+	if (!pBuilding->IsIronCurtained() || !pBuilding->Type->ImmuneToRadiation || !pBuilding->InLimbo || !pBuilding->BeingWarpedOut)
 	{
-		CellStruct CurrentCoord = MainCoords + *pFoundation;
+		auto const MainCoords = pBuilding->GetMapCoords();
+		DynamicVectorClass<RadSiteClass*> eligible;
 
-		for (auto pRadExt : RadSiteExt::RadSiteInstance)
+		for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct{ 0x7FFF, 0x7FFF }; ++pFoundation)
 		{
-			RadSiteClass* pRadSite = pRadExt->OwnerObject();
+			CellStruct CurrentCoord = MainCoords + *pFoundation;
 
-			// Check the distance, if not in range, just skip this one
-			double orDistance = pRadSite->BaseCell.DistanceFrom(CurrentCoord);
-			if (pRadSite->Spread < orDistance - 0.5)
-				continue;
+			for (auto pRadExt : RadSiteExt::RadSiteInstance)
+			{
+				RadSiteClass* pRadSite = pRadExt->OwnerObject();
 
-			RadType* pType = pRadExt->Type;
-			int RadApplicationDelay = pType->GetBuildingApplicationDelay();
-			if ((RadApplicationDelay == 0) || (Unsorted::CurrentFrame % RadApplicationDelay != 0))
-				continue;
+				// Check the distance, if not in range, just skip this one
+				double orDistance = pRadSite->BaseCell.DistanceFrom(CurrentCoord);
+				if (pRadSite->Spread < orDistance - 0.5)
+					continue;
 
-			// for more precise dmg calculation
-			double RadLevel = pRadExt->GetRadLevelAt(CurrentCoord);
-			auto WH = pType->GetWarhead();
-			if (RadLevel <= 0 || !WH)
-				continue;
+				RadType* pType = pRadExt->Type;
+				int RadApplicationDelay = pType->GetBuildingApplicationDelay();
+				if ((RadApplicationDelay == 0) || (Unsorted::CurrentFrame % RadApplicationDelay != 0))
+					continue;
 
-			// will prevent passanger escapes
-			bool absolute = WH->WallAbsoluteDestroyer;
+				// for more precise dmg calculation
+				double RadLevel = pRadExt->GetRadLevelAt(CurrentCoord);
+				if (RadLevel <= 0.0 || !pType->GetWarhead())
+					continue;
 
-			// will ignore verses
-			bool ignore = pBuilding->Type->Wall && absolute;
+				eligible.AddUnique(pRadSite);
+			}
 
-			int damage = static_cast<int>((RadLevel / 2) * pType->GetLevelFactor());
-			int distance = static_cast<int>(orDistance);
+			if (eligible.Count > 0)
+			{
+				auto eligibleRad = eligible.GetItem(ScenarioClass::Instance->Random.Random() % eligible.Count);
+				auto eligibleext = RadSiteExt::ExtMap.Find(eligibleRad);
+				auto WH = eligibleext->Type->GetWarhead();
+				auto absolute = WH->WallAbsoluteDestroyer;
+				int Damage = static_cast<int>((eligibleext->GetRadLevelAt(CurrentCoord) / 2) * eligibleext->Type->GetLevelFactor());
+				int Distance = static_cast<int>(eligibleRad->BaseCell.DistanceFrom(CurrentCoord));
+				auto Radhouse = eligibleext->RadHouse;
+				bool ignore = pBuilding->Type->Wall && absolute;
 
-			pBuilding->ReceiveDamage(&damage, distance, WH, nullptr, ignore, absolute, pRadExt->RadHouse);
+				pBuilding->ReceiveDamage(&Damage, Distance, WH, nullptr, ignore, absolute, Radhouse);
+			}
 		}
 	}
 
@@ -179,9 +184,9 @@ DEFINE_HOOK(4DA554, FootClass_AI_RadSiteClass, 5)
 {
 	GET(FootClass* const, pFoot, ESI);
 
-	if (!pFoot->IsIronCurtained() && !pFoot->GetTechnoType()->ImmuneToRadiation && !pFoot->InLimbo && !pFoot->IsInAir())
+	if (!pFoot->IsIronCurtained() && !pFoot->GetTechnoType()->ImmuneToRadiation && !pFoot->InLimbo && !pFoot->IsInAir() && pFoot->IsAlive)
 	{
-
+		DynamicVectorClass<RadSiteClass*> eligible;
 		CellStruct CurrentCoord = pFoot->GetCell()->MapCoords;
 
 		// Loop for each different radiation stored in the RadSites container
@@ -202,21 +207,38 @@ DEFINE_HOOK(4DA554, FootClass_AI_RadSiteClass, 5)
 
 			// for more precise dmg calculation
 			double RadLevel = pRadExt->GetRadLevelAt(CurrentCoord);
-			auto WH = pType->GetWarhead();
-			if (RadLevel <= 0 || !WH)
+			if (RadLevel <= 0.0 || !pType->GetWarhead())
 				continue;
 
-			// will prevent passenger escapes
-			bool absolute = WH->WallAbsoluteDestroyer;
+			//put eligible RadSite inside DynamicVector
+			eligible.AddUnique(pRadSite);
+		}
 
-			int Damage = static_cast<int>(RadLevel * pType->GetLevelFactor());
-			int Distance = static_cast<int>(orDistance);
+		//put this outsise the loop
+		//fixing bugs that cause multiple rad site on single area generating multiple animtoinf/death anims
+		if (eligible.Count > 0)
+		{
+			auto eligibleRad = eligible.GetItem(ScenarioClass::Instance->Random.Random() % eligible.Count);
+			auto eligibleext = RadSiteExt::ExtMap.Find(eligibleRad);
+			auto WH = eligibleext->Type->GetWarhead();
+			auto absolute = WH->WallAbsoluteDestroyer;
+			int Damage = static_cast<int>(eligibleext->GetRadLevelAt(CurrentCoord) * eligibleext->Type->GetLevelFactor());
+			int Distance = static_cast<int>(eligibleRad->BaseCell.DistanceFrom(CurrentCoord));
+			auto Radhouse = eligibleext->RadHouse;
 
-			pFoot->ReceiveDamage(&Damage, Distance, WH, nullptr, false, absolute, pRadExt->RadHouse);
+			pFoot->ReceiveDamage(&Damage, Distance, WH, nullptr, false, absolute, Radhouse);
 		}
 	}
 
-	return pFoot->IsAlive ? 0x4DA63Bu : 0x4DAF00;
+	if (pFoot->IsAlive)
+	{
+		return 0x4DA63B;
+	}
+	else
+	{
+		R->EAX<DamageState>(DamageState::NowDead);	
+		return 0x4DAF00;
+	}
 }
 
 DEFINE_HOOK(65B593, RadSiteClass_Activate_Delay, 6)
