@@ -1,46 +1,83 @@
 #pragma once
 
+#include "_Enumerator.hpp"
 #include "../Utilities/Template.h"
-#include "../Utilities/TemplateDef.h"
 #include "../Utilities/GeneralUtils.h"
+#include "../Phobos.h"
 
-#include <WarheadTypeClass.h>
+class CCINIClass;
+class WarheadTypeClass;
 
-class RadType {
+class RadType final : public Enumerable<RadType>
+{
+private:
+	Nullable<int> DurationMultiple;
+	Nullable<int> ApplicationDelay;
+	Nullable<double> LevelFactor;
+	Nullable<int> LevelMax;
+	Nullable<int> LevelDelay;
+	Nullable<int> LightDelay;
+	Nullable<int> BuildingApplicationDelay;
+	Nullable<WarheadTypeClass *> RadWarhead;
+	Nullable<ColorStruct> RadSiteColor;
+	Nullable<double> LightFactor;
+	Nullable<double> TintFactor;
+
 public:
-	PhobosFixedString<0x20> ID;
-	Valueable<int> DurationMultiple;
-	Valueable<int> ApplicationDelay;
-	Valueable<int> LevelMax;
-	Valueable<int> LevelDelay;
-	Valueable<int> LightDelay;
-	Valueable<int> BuildingApplicationDelay;
-	Valueable<double> LevelFactor;
-	Valueable<double> LightFactor;
-	Valueable<double> TintFactor;
-	Valueable<ColorStruct> RadSiteColor;
-	Valueable<WarheadTypeClass*> RadWarhead;
 
-	// Set default values
-	// RadType::Read method will later read the new values from the section specified in the ID field
-	RadType(const char* id = "Radiation") :
-		ID(id),
-		DurationMultiple(1),
-		ApplicationDelay(16),
-		LevelMax(500),
-		LevelDelay(90),
-		LightDelay(90),
-		BuildingApplicationDelay(0),
-		LevelFactor(0.2f),
-		LightFactor(0.1f),
-		TintFactor(1.0f),
-		RadSiteColor(ColorStruct{ 0,255,0 }),
-		RadWarhead(nullptr)
+	RadType(const char* pTitle);
+
+	static void AddDefaults();
+
+	static void LoadListSection(CCINIClass * pINI);
+
+	WarheadTypeClass* GetWarhead() const 
 	{
-		RadWarhead = WarheadTypeClass::FindOrAllocate("RadSite");
+		return this->RadWarhead.Get(RulesClass::Instance->RadSiteWarhead);
+	}
+	
+	const ColorStruct& GetColor() const {
+		return *this->RadSiteColor.GetEx(&RulesClass::Instance->RadColor);
 	}
 
-	void Read(CCINIClass* const pINI, const char* section, const char* pKey);
+	int GetDurationMultiple() const {
+		return this->DurationMultiple.Get(RulesClass::Instance->RadDurationMultiple);
+	}
+
+	int GetApplicationDelay() const {
+		return this->ApplicationDelay.Get(RulesClass::Instance->RadApplicationDelay);
+	}
+
+	int GetBuildingApplicationDelay() const {
+		return this->BuildingApplicationDelay.Get(0);
+	}
+
+	int GetLevelMax() const {
+		return this->LevelMax.Get(RulesClass::Instance->RadLevelMax);
+	}
+
+	int GetLevelDelay() const {
+		return this->LevelDelay.Get(RulesClass::Instance->RadLevelDelay);
+	}
+
+	int GetLightDelay() const {
+		return this->LightDelay.Get(RulesClass::Instance->RadLightDelay);
+	}
+
+	double GetLevelFactor() const {
+		return this->LevelFactor.Get(RulesClass::Instance->RadLevelFactor);
+	}
+
+	double GetLightFactor() const {
+		return this->LightFactor.Get(RulesClass::Instance->RadLightFactor);
+	}
+
+	double GetTintFactor() const {
+		return this->TintFactor.Get(RulesClass::Instance->RadTintFactor);
+	}
+
+	virtual ~RadType() override;
+	virtual void LoadFromINI(CCINIClass *pINI) override;
 	virtual void LoadFromStream(PhobosStreamReader& Stm);
 	virtual void SaveToStream(PhobosStreamWriter& Stm);
 private:

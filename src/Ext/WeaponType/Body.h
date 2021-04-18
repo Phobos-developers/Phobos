@@ -18,7 +18,7 @@ public:
 
 		Valueable<double> DiskLaser_Radius;
 		Valueable<int> DiskLaser_Circumference;
-		RadType RadType;
+		Valueable<RadType*> RadType;
 		Valueable<bool> Rad_NoOwner;
 		Valueable<bool> Bolt_Disable1;
 		Valueable<bool> Bolt_Disable2;

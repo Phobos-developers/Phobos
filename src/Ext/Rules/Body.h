@@ -7,6 +7,7 @@
 #include "../../Utilities/Constructs.h"
 #include "../../Utilities/Template.h"
 
+#include "../../Enum/RadTypes.h"
 #include "../../Misc/Debug.h"
 
 

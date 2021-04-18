@@ -1,26 +1,80 @@
 #include "RadTypes.h"
-#include <Utilities/GeneralUtils.h>
 
-void RadType::Read(CCINIClass* const pINI, const char* pSection, const char* pKey) {
+#include "../Utilities/TemplateDef.h"
+
+#include <WarheadTypeClass.h>
+
+Enumerable<RadType>::container_t Enumerable<RadType>::Array;
+
+// pretty nice, eh
+const char * Enumerable<RadType>::GetMainSection()
+{
+	return "RadiationTypes";
+}
+
+RadType::RadType(const char* const pTitle)
+	: Enumerable<RadType>(pTitle),
+	LevelDelay(),
+	LightDelay(),
+	RadSiteColor(),
+	LevelMax(),
+	LevelFactor(),
+	LightFactor(),
+	TintFactor(),
+	RadWarhead(),
+	DurationMultiple(),
+	ApplicationDelay(),
+	BuildingApplicationDelay()
+{ }
+
+RadType::~RadType() = default;
+
+void RadType::AddDefaults()
+{
+	FindOrAllocate("Radiation");
+}
+
+void RadType::LoadListSection(CCINIClass *pINI)
+{
+	const char *section = GetMainSection();
+	int len = pINI->GetKeyCount(section);
+	for (int i = 0; i < len; ++i) 
+	{
+		const char *key = pINI->GetKeyName(section, i);
+		if (pINI->ReadString(section, key, "", Phobos::readBuffer)) 
+		{
+			FindOrAllocate(Phobos::readBuffer);
+			Debug::Log("RadTypes :: LoadListSection check [%s] \n", Phobos::readBuffer);
+		}
+	}
+
+	for (size_t i = 0; i < Array.size(); ++i) 
+	{
+		Array[i]->LoadFromINI(pINI);
+	}
+}
+
+void RadType::LoadFromINI(CCINIClass *pINI)
+{
+	const char *section = this->Name;
+
 	INI_EX exINI(pINI);
 
-	this->ID.Read(pINI, pSection, "RadType");
-	const char* section = this->ID;
+	this->RadWarhead.Read(exINI, section, "RadSiteWarhead" , true);
+	this->RadSiteColor.Read(exINI, section, "RadColor");
+	this->DurationMultiple.Read(exINI, section, "RadDurationMultiple");
+	this->ApplicationDelay.Read(exINI, section, "RadApplicationDelay");
+	this->BuildingApplicationDelay.Read(exINI, section, "RadApplicationDelay.Building");
+	this->LevelMax.Read(exINI, section, "RadLevelMax");
+	this->LevelDelay.Read(exINI, section, "RadLevelDelay");
+	this->LightDelay.Read(exINI, section, "RadLightDelay");
+	this->LevelFactor.Read(exINI, section, "RadLevelFactor");
+	this->LightFactor.Read(exINI, section, "RadLightFactor");
+	this->TintFactor.Read(exINI, section, "RadTintFactor");
 
-	if (pINI->GetSection(section)) {
-		this->DurationMultiple.Read(exINI, section, "RadDurationMultiple");
-		this->ApplicationDelay.Read(exINI, section, "RadApplicationDelay");
-		this->BuildingApplicationDelay.Read(exINI, section, "RadApplicationDelay.Building");
-		this->LevelMax.Read(exINI, section, "RadLevelMax");
-		this->LevelDelay.Read(exINI, section, "RadLevelDelay");
-		GeneralUtils::IntValidCheck(this->LevelDelay.GetEx(), section, "RadLevelDelay", 90, 1);
-		this->LightDelay.Read(exINI, section, "RadLightDelay");
-		this->LevelFactor.Read(exINI, section, "RadLevelFactor");
-		this->LightFactor.Read(exINI, section, "RadLightFactor");
-		this->TintFactor.Read(exINI, section, "RadTintFactor");
-		this->RadWarhead.Read(exINI, section, "RadSiteWarhead");
-		this->RadSiteColor.Read(exINI, section, "RadColor");
-	}
+	Debug::Log("RadTypes :: LoadFromINI check [%s] \n", section);
+//	Debug::Log("RadTypes :: LoadFromINI check [%s]->Warhead \n", this->GetWarhead()->Name);
+//	Debug::Log("RadTypes :: LoadFromINI check [%d %d %d]->Color \n", this->GetColor().R , this->GetColor().G, this->GetColor().B);
 }
 
 template <typename T>
@@ -36,27 +90,16 @@ void RadType::Serialize(T& Stm) {
 		.Process(this->LightFactor)
 		.Process(this->TintFactor)
 		.Process(this->RadSiteColor)
+		.Process(this->RadWarhead)
 		;
 };
 
 void RadType::LoadFromStream(PhobosStreamReader & Stm)
 {
-	Stm.Process(this->ID);
-	if (GeneralUtils::IsValidString(this->ID))
-	{
-	char warheadID[sizeof(this->RadWarhead->ID)];
-	Stm.Process(warheadID);
-	RadWarhead = WarheadTypeClass::FindOrAllocate(warheadID);
 	this->Serialize(Stm);
-	}
 }
 
 void RadType::SaveToStream(PhobosStreamWriter & Stm)
 {
-	Stm.Process(this->ID);
-	if (GeneralUtils::IsValidString(this->ID))
-	{
-	Stm.Process(this->RadWarhead->ID);
 	this->Serialize(Stm);
-	}
 }

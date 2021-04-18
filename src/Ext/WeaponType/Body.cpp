@@ -3,7 +3,10 @@
 template<> const DWORD Extension<WeaponTypeClass>::Canary = 0x22222222;
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
-void WeaponTypeExt::ExtData::Initialize() { }
+void WeaponTypeExt::ExtData::Initialize() 
+{ 
+	this->RadType = RadType::FindOrAllocate("Radiation");
+}
 
 // =============================
 // load / save
@@ -28,11 +31,12 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Bolt_Disable3.Read(exINI, pSection, "Bolt.Disable3");
 
 	// RadType
-	if (this->OwnerObject()->RadLevel > 0)
-	{
-		this->RadType.Read(pINI, pSection, "RadType");
+//	if (this->OwnerObject()->RadLevel > 0) 
+//	{
+		this->RadType.Read(exINI, pSection, "RadType", true);
+	//	Debug::Log("Weapon[%s] :: Has RadLevel[%d] Rad check [%s]  \n", pSection , this->OwnerObject()->RadLevel , this->RadType->Name.data());
 		this->Rad_NoOwner.Read(exINI, pSection, "Rad.NoOwner");
-	}
+//	}
 
 	this->Strafing_Shots.Read(exINI, pSection, "Strafing.Shots");
 	this->Strafing_SimulateBurst.Read(exINI, pSection, "Strafing.SimulateBurst");
@@ -50,6 +54,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Bolt_Disable3)
 		.Process(this->Strafing_Shots)
 		.Process(this->Strafing_SimulateBurst)
+		.Process(this->RadType)
 		;
 };
 
@@ -58,17 +63,12 @@ void WeaponTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 	Extension<WeaponTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 
-	if (this->OwnerObject()->RadLevel > 0)
-		this->RadType.LoadFromStream(Stm);
 }
 
 void WeaponTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<WeaponTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
-
-	if (this->OwnerObject()->RadLevel > 0)
-		this->RadType.SaveToStream(Stm);
 }
 
 bool WeaponTypeExt::LoadGlobals(PhobosStreamReader& Stm)

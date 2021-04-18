@@ -7,53 +7,54 @@ RadSiteExt::ExtContainer RadSiteExt::ExtMap;
 
 DynamicVectorClass<RadSiteExt::ExtData*> RadSiteExt::RadSiteInstance;
 
-void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner) {
+void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner) 
+{
 	// use real ctor
 	auto const pRadSite = GameCreate<RadSiteClass>();
-	auto const cell = MapClass::Instance->TryGetCellAt(location);
+	//	auto const cell = MapClass::Instance->TryGetCellAt(location);
 	auto pRadExt = RadSiteExt::ExtMap.FindOrAllocate(pRadSite);
 
 	//Adding Owner to RadSite , from bullet
-	if (!pWeaponExt->Rad_NoOwner && pRadExt->RadHouse != pOwner) {
+	if (!pWeaponExt->Rad_NoOwner && pRadExt->RadHouse != pOwner)
+	{
 		pRadExt->RadHouse = pOwner;
 	}
 
 	pRadExt->Weapon = pWeaponExt->OwnerObject();
-	pRadExt->Type = &pWeaponExt->RadType;
-
+	pRadExt->Type = pWeaponExt->RadType;
 	pRadSite->SetBaseCell(&location);
 	pRadSite->SetSpread(spread);
-
 	pRadExt->SetRadLevel(amount);
-
 	pRadSite->Activate();
-	cell->SetRadSite(pRadSite);
 	RadSiteInstance.AddUnique(pRadExt);
 }
 
 /*  Including them as EXT so it keep tracked at save/load */
 
 // Rewrite because of crashing craziness
-void RadSiteExt::ExtData::Add(int amount) {
+void RadSiteExt::ExtData::Add(int amount)
+{
 	auto pRad = this->OwnerObject();
 	int value = pRad->RadLevel * pRad->RadTimeLeft / pRad->RadDuration;
 	pRad->Deactivate();
 	pRad->RadLevel = value + amount;
-	pRad->RadDuration = pRad->RadLevel * this->Type->DurationMultiple;
+	pRad->RadDuration = pRad->RadLevel * this->Type->GetDurationMultiple();
 	pRad->RadTimeLeft = pRad->RadDuration;
 	pRad->Activate();
 }
 
-void RadSiteExt::ExtData::SetRadLevel(int amount) {
+void RadSiteExt::ExtData::SetRadLevel(int amount) 
+{
 	auto pRad = this->OwnerObject();
-	const int mult = this->Type->DurationMultiple;
+	const int mult = this->Type->GetDurationMultiple();
 	pRad->RadLevel = amount;
 	pRad->RadDuration = mult * amount;
 	pRad->RadTimeLeft = mult * amount;
 }
 
 // helper function provided by AlexB
-double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell) {
+double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell)
+{
 	auto pThis = this->OwnerObject();
 	const auto base = MapClass::Instance->GetCellAt(pThis->BaseCell)->GetCoords();
 	const auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
@@ -68,32 +69,25 @@ double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell) {
 // load / save
 
 template <typename T>
-void RadSiteExt::ExtData::Serialize(T& Stm) {
+void RadSiteExt::ExtData::Serialize(T& Stm) 
+{
 	Stm
+		.Process(this->Weapon)
 		.Process(this->RadHouse)
+		.Process(this->Type)
 		;
 }
 
-void RadSiteExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
-	//initialize weapon then set type
-	char weaponID[sizeof(this->Weapon->ID)];
-	Stm.Process(weaponID);
-	this->Weapon = WeaponTypeClass::Find(weaponID);
+void RadSiteExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) 
+{
 
-	if (this->Weapon) {
-		auto pWeaponTypeExt = WeaponTypeExt::ExtMap.FindOrAllocate(Weapon);
-
-		if (pWeaponTypeExt) {
-			this->Type = &pWeaponTypeExt->RadType;
-		}
-	}
 	Extension<RadSiteClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void RadSiteExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
-	//Save weapon ID instead
-	Stm.Process(this->Weapon->ID);
+void RadSiteExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+{
+
 	Extension<RadSiteClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }

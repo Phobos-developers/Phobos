@@ -22,6 +22,7 @@ void RulesExt::LoadFromINIFile(RulesClass* pThis, CCINIClass* pINI) {
 
 void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI) {
 
+	RadType::LoadListSection(pINI);
 	Data->LoadBeforeTypeData(pThis, pINI);
 }
 
