@@ -31,6 +31,7 @@ DEFINE_HOOK(71986A, TeleportLocomotionClass_ILocomotion_Process_WarpAway, 6)
 	GET_LOCO(ESI);
 
 	R->ECX<AnimTypeClass*>(pExt->WarpAway.Get(RulesClass::Instance->WarpOut));
+
 	return 0x719870;
 }
 
