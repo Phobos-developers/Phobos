@@ -140,7 +140,7 @@ bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon, TechnoClass* pSo
     return this->HP ? result : true;
 }
 
-void ShieldTechnoClass::Update()
+void ShieldTechnoClass::AI()
 {
     this->TemporalCheck();
 

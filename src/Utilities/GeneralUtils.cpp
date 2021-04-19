@@ -1,15 +1,17 @@
 #include "GeneralUtils.h"
 #include <Misc/Debug.h>
+#include <ScenarioClass.h>
+
 bool GeneralUtils::IsValidString(const char* str)
 {
-    return str != nullptr
-        && strlen(str) != 0
-        && !INIClass::IsBlank(str);
+	return str != nullptr
+		&& strlen(str) != 0
+		&& !INIClass::IsBlank(str);
 }
 
 void GeneralUtils::IntValidCheck(int* source, const char* section, const char* tag, int defaultValue, int min, int max)
 {
-	if (*source < min||*source>max)
+	if (*source < min || *source>max)
 	{
 		Debug::Log("[Developer warning][%s]%s=%d is invalid! Reset to %d.\n", section, tag, *source, defaultValue);
 		*source = defaultValue;
@@ -42,9 +44,14 @@ std::vector<CellStruct> GeneralUtils::AdjacentCellsInRange(unsigned int range)
 {
 	std::vector<CellStruct> result;
 
-	for (CellSpreadEnumerator it(range); it; ++it) {
+	for (CellSpreadEnumerator it(range); it; ++it)
 		result.push_back(*it);
-	}
 
 	return result;
+}
+
+const int GeneralUtils::GetRangedRandomOrSingleValue(Point2D range)
+{
+	return range.X >= range.Y ?
+		range.X : ScenarioClass::Instance->Random.RandomRanged(range.X, range.Y);
 }
