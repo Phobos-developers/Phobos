@@ -28,9 +28,11 @@ public:
 		Valueable<Vector3D<int>> Pips_Shield;
 		Valueable<Vector3D<int>> Pips_Shield_Buildings;
 
+		Valueable<int> RadApplDelayBuilding;
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Pips_Shield({ -1,-1,-1 })
 			, Pips_Shield_Buildings({ -1,-1,-1 })
+			, RadApplDelayBuilding(0)
 		{ }
 
 		virtual ~ExtData() = default;

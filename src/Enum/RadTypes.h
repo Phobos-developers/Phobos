@@ -17,7 +17,7 @@ private:
 	Nullable<int> LevelMax;
 	Nullable<int> LevelDelay;
 	Nullable<int> LightDelay;
-	Nullable<int> BuildingApplicationDelay;
+	
 	Nullable<WarheadTypeClass *> RadWarhead;
 	Nullable<ColorStruct> RadSiteColor;
 	Nullable<double> LightFactor;
@@ -48,9 +48,7 @@ public:
 		return this->ApplicationDelay.Get(RulesClass::Instance->RadApplicationDelay);
 	}
 
-	int GetBuildingApplicationDelay() const {
-		return this->BuildingApplicationDelay.Get(0);
-	}
+	Nullable<int> BuildingApplicationDelay;
 
 	int GetLevelMax() const {
 		return this->LevelMax.Get(RulesClass::Instance->RadLevelMax);

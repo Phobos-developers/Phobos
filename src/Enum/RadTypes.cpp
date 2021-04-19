@@ -49,9 +49,7 @@ void RadType::LoadListSection(CCINIClass *pINI)
 	}
 
 	for (size_t i = 0; i < Array.size(); ++i) 
-	{
-		Array[i]->LoadFromINI(pINI);
-	}
+	{  Array[i]->LoadFromINI(pINI); }
 }
 
 void RadType::LoadFromINI(CCINIClass *pINI)

@@ -29,6 +29,24 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 	RadSiteInstance.AddUnique(pRadExt);
 }
 
+void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, RadType* pType, HouseClass* const pOwner)
+{
+	// use real ctor
+	auto const pRadSite = GameCreate<RadSiteClass>();
+
+	auto pRadExt = RadSiteExt::ExtMap.FindOrAllocate(pRadSite);
+
+	pRadExt->RadHouse = pOwner;
+
+
+	pRadExt->Type = pType;
+	pRadSite->SetBaseCell(&location);
+	pRadSite->SetSpread(spread);
+	pRadExt->SetRadLevel(amount);
+	pRadSite->Activate();
+	RadSiteInstance.AddUnique(pRadExt);
+}
+
 /*  Including them as EXT so it keep tracked at save/load */
 
 // Rewrite because of crashing craziness

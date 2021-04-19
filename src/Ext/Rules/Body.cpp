@@ -41,7 +41,8 @@ void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI) {
 	// earliest loader - can't really do much because nothing else is initialized yet, so lookups won't work
 }
 
-void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI) {
+void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
+{
 	RulesExt::ExtData* pData = RulesExt::Global();
 
 	if (!pData) {
@@ -50,6 +51,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI) 
 
 	INI_EX exINI(pINI);
 
+	this->RadApplDelayBuilding.Read(exINI, "Radiation", "RadApplicationDelay.Building");
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
 	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 }
@@ -95,6 +97,7 @@ void RulesExt::ExtData::Serialize(T& Stm) {
 	Stm
 		.Process(this->Pips_Shield)
 		.Process(this->Pips_Shield_Buildings)
+		.Process(this->RadApplDelayBuilding)
 		;
 }
 

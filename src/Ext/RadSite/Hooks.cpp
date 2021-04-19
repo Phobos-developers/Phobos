@@ -7,6 +7,7 @@
 
 #include "../BuildingType/Body.h"
 #include "../Bullet/Body.h"
+#include "../Rules/Body.h"
 
 /*
 	Custom Radiations
@@ -22,17 +23,17 @@
 	//4DA584 = FootClass_AI_RadImmune, 7
 */
 
-DEFINE_HOOK(469150, B_Detonate_ApplyRad, 5)
+DEFINE_HOOK(469150, BulletClass_Detonate_ApplyRadiation, 5)
 {
 	GET(BulletClass* const, pThis, ESI);
 	GET_BASE(CoordStruct const*, pCoords, 0x8);
 
-	auto const pExt = BulletExt::ExtMap.Find(pThis);
 	auto const pWeapon = pThis->GetWeaponType();
-	auto const pWH = pThis->WH;
 
 	if (pWeapon && pWeapon->RadLevel > 0)
 	{
+		auto const pExt = BulletExt::ExtMap.Find(pThis);
+		auto const pWH = pThis->WH;
 		auto const cell = CellClass::Coord2Cell(*pCoords);
 		auto const spread = static_cast<int>(pWH->CellSpread);
 		pExt->ApplyRadiationToCell(cell, spread, pWeapon->RadLevel);
@@ -40,11 +41,13 @@ DEFINE_HOOK(469150, B_Detonate_ApplyRad, 5)
 
 	return 0x46920B;
 }
+
 /*
 // hack it here so we can use this globally if needed
+// *Prototype* 
+//able to manually set the RadType instead rely on Weapon RadType
 DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation, 5)
 {
-	GET(BulletClass* const, pThis, ECX);
 	GET_STACK(CellStruct, location, 0x4);
 	GET_STACK(int, spread, 0x8);
 	GET_STACK(int, amount, 0xC);
@@ -86,6 +89,7 @@ DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation, 5)
 	return 0x46AE5E;
 }
 */
+
 DEFINE_HOOK(5213E3, InfantryClass_AIDeployment_CheckRad, 4)
 {
 	GET(InfantryClass*, D, ESI);
@@ -128,52 +132,54 @@ DEFINE_HOOK(43FB23, BuildingClass_AI, 5)
 {
 	GET(BuildingClass* const, pBuilding, ECX);
 
-	if (!pBuilding->IsIronCurtained() || !pBuilding->Type->ImmuneToRadiation || !pBuilding->InLimbo || !pBuilding->BeingWarpedOut)
+	if (pBuilding->IsIronCurtained() || pBuilding->Type->ImmuneToRadiation || pBuilding->InLimbo || pBuilding->BeingWarpedOut)
 	{
-		auto const MainCoords = pBuilding->GetMapCoords();
-		DynamicVectorClass<RadSiteClass*> eligible;
+		return 0;
+	}
 
-		for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct{ 0x7FFF, 0x7FFF }; ++pFoundation)
+	auto const MainCoords = pBuilding->GetMapCoords();
+	DynamicVectorClass<RadSiteClass*> eligible;
+
+	for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct{ 0x7FFF, 0x7FFF }; ++pFoundation)
+	{
+		CellStruct CurrentCoord = MainCoords + *pFoundation;
+
+		for (auto pRadExt : RadSiteExt::RadSiteInstance)
 		{
-			CellStruct CurrentCoord = MainCoords + *pFoundation;
+			RadSiteClass* pRadSite = pRadExt->OwnerObject();
 
-			for (auto pRadExt : RadSiteExt::RadSiteInstance)
-			{
-				RadSiteClass* pRadSite = pRadExt->OwnerObject();
+			// Check the distance, if not in range, just skip this one
+			double orDistance = pRadSite->BaseCell.DistanceFrom(CurrentCoord);
+			if (pRadSite->Spread < orDistance - 0.5)
+				continue;
 
-				// Check the distance, if not in range, just skip this one
-				double orDistance = pRadSite->BaseCell.DistanceFrom(CurrentCoord);
-				if (pRadSite->Spread < orDistance - 0.5)
-					continue;
+			RadType* pType = pRadExt->Type;
+			int RadApplicationDelay = pType->BuildingApplicationDelay.Get(RulesExt::Global()->RadApplDelayBuilding);
+			if ((RadApplicationDelay == 0) || (Unsorted::CurrentFrame % RadApplicationDelay != 0))
+				continue;
 
-				RadType* pType = pRadExt->Type;
-				int RadApplicationDelay = pType->GetBuildingApplicationDelay();
-				if ((RadApplicationDelay == 0) || (Unsorted::CurrentFrame % RadApplicationDelay != 0))
-					continue;
+			if (pRadExt->GetRadLevelAt(CurrentCoord) <= 0.0 || !pType->GetWarhead())
+				continue;
 
-				// for more precise dmg calculation
-				double RadLevel = pRadExt->GetRadLevelAt(CurrentCoord);
-				if (RadLevel <= 0.0 || !pType->GetWarhead())
-					continue;
 
-				eligible.AddUnique(pRadSite);
-			}
+			eligible.AddUnique(pRadSite);
+		}
 
-			if (eligible.Count > 0)
-			{
-				auto eligibleRad = eligible.GetItem(ScenarioClass::Instance->Random.Random() % eligible.Count);
-				auto eligibleext = RadSiteExt::ExtMap.Find(eligibleRad);
-				auto WH = eligibleext->Type->GetWarhead();
-				auto absolute = WH->WallAbsoluteDestroyer;
-				int Damage = static_cast<int>((eligibleext->GetRadLevelAt(CurrentCoord) / 2) * eligibleext->Type->GetLevelFactor());
-				int Distance = static_cast<int>(eligibleRad->BaseCell.DistanceFrom(CurrentCoord));
-				auto Radhouse = eligibleext->RadHouse;
-				bool ignore = pBuilding->Type->Wall && absolute;
+		if (eligible.Count > 0)
+		{
+			auto eligibleRad = eligible.GetItem(ScenarioClass::Instance->Random.Random() % eligible.Count);
+			auto eligibleext = RadSiteExt::ExtMap.Find(eligibleRad);
+			auto WH = eligibleext->Type->GetWarhead();
+			auto absolute = WH->WallAbsoluteDestroyer;
+			int Damage = static_cast<int>((eligibleext->GetRadLevelAt(CurrentCoord) / 2) * eligibleext->Type->GetLevelFactor());
+			int Distance = static_cast<int>(eligibleRad->BaseCell.DistanceFrom(CurrentCoord));
+			auto Radhouse = eligibleext->RadHouse;
+			bool ignore = pBuilding->Type->Wall && absolute;
 
-				pBuilding->ReceiveDamage(&Damage, Distance, WH, nullptr, ignore, absolute, Radhouse);
-			}
+			pBuilding->ReceiveDamage(&Damage, Distance, WH, nullptr, ignore, absolute, Radhouse);
 		}
 	}
+
 
 	return 0;
 }
@@ -184,7 +190,7 @@ DEFINE_HOOK(4DA554, FootClass_AI_RadSiteClass, 5)
 {
 	GET(FootClass* const, pFoot, ESI);
 
-	if (!pFoot->IsIronCurtained() && !pFoot->GetTechnoType()->ImmuneToRadiation && !pFoot->InLimbo && !pFoot->IsInAir() && pFoot->IsAlive)
+	if (!pFoot->IsIronCurtained() && !pFoot->GetTechnoType()->ImmuneToRadiation && !pFoot->InLimbo && !pFoot->IsInAir())
 	{
 		DynamicVectorClass<RadSiteClass*> eligible;
 		CellStruct CurrentCoord = pFoot->GetCell()->MapCoords;
@@ -216,7 +222,7 @@ DEFINE_HOOK(4DA554, FootClass_AI_RadSiteClass, 5)
 
 		//put this outsise the loop
 		//fixing bugs that cause multiple rad site on single area generating multiple animtoinf/death anims
-		if (eligible.Count > 0)
+		if (eligible.Count > 0 && pFoot->IsAlive)
 		{
 			auto eligibleRad = eligible.GetItem(ScenarioClass::Instance->Random.Random() % eligible.Count);
 			auto eligibleext = RadSiteExt::ExtMap.Find(eligibleRad);
@@ -236,7 +242,7 @@ DEFINE_HOOK(4DA554, FootClass_AI_RadSiteClass, 5)
 	}
 	else
 	{
-		R->EAX<DamageState>(DamageState::NowDead);	
+		R->EAX<DamageState>(DamageState::NowDead);
 		return 0x4DAF00;
 	}
 }

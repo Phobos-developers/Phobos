@@ -48,7 +48,7 @@ public:
 	static DynamicVectorClass<RadSiteExt::ExtData*> RadSiteInstance;
 
 	static void CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData *pWeaponExt, HouseClass* const pOwner);
-
+	static void CreateInstance(CellStruct location, int spread, int amount, RadType* pType, HouseClass* const pOwner);
 	class ExtContainer final : public Container<RadSiteExt> {
 	public:
 		ExtContainer();
