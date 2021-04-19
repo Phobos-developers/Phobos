@@ -45,7 +45,10 @@ DEFINE_HOOK(6FC339, TechnoClass_CanFire_Shield, 6)
     return 0;
 }
 
-DEFINE_HOOK(6F36F2, TechnoClass_WhatWeaponShouldIUse1, 6)
+//Abandoned because of Ares!!!! - Uranusian
+/*
+DEFINE_HOOK_AGAIN(6F3725, TechnoClass_WhatWeaponShouldIUse_Shield, 6)
+DEFINE_HOOK(6F36F2, TechnoClass_WhatWeaponShouldIUse_Shield, 6)
 {
     GET(TechnoClass*, pTarget, EBP);
     if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
@@ -55,29 +58,43 @@ DEFINE_HOOK(6F36F2, TechnoClass_WhatWeaponShouldIUse1, 6)
             if (pShieldData->GetShieldHP())
             {
                 auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
-                R->ECX(pTypeExt->Shield_Armor);
+
+                if (R->Origin() == 0x6F36F2)
+                    R->ECX(pTypeExt->Shield_Armor);
+                else
+                    R->EAX(pTypeExt->Shield_Armor);
+
                 return R->Origin() + 6;
             }
         }
     }
     return 0;
 }
-DEFINE_HOOK(6F3725, TechnoClass_WhatWeaponShouldIUse2, 6)
+*/
+
+DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
 {
+    GET(TechnoClass*, pThis, ESI);
     GET(TechnoClass*, pTarget, EBP);
+    if (!pTarget) return 0x6F37AD;
     if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
     {
         if (auto pShieldData = pExt->ShieldData.get())
         {
             if (pShieldData->GetShieldHP())
             {
-                auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
-                R->EAX(pTypeExt->Shield_Armor);
-                return R->Origin() + 6;
+                auto Primary = pThis->GetWeapon(0);
+                if (auto Secondary = pThis->GetWeapon(1))
+                {
+                    if (!pShieldData->CanBeTargeted(Primary->WeaponType, pThis))
+                        return 0x6F3745;
+                    return 0x6F3754;
+                }
+                return 0x6F37AD;
             }
         }
     }
-    return 0;
+    return 0x6F36E3;
 }
 
 DEFINE_HOOK(6F9E50, TechnoClass_AI_Shield, 5)
