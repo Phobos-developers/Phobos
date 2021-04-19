@@ -19,14 +19,15 @@ public:
     void AI();
     void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
     void InvalidatePointer(void* ptr);
-	int GetShieldHP();
+    int GetShieldHP();
 
     bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
     bool Save(PhobosStreamWriter& Stm) const;
-    
+
 private:
     // static constexpr int ScanInterval = 15;		//!< Minimum delay between scans in frames.
-    struct UninitAnim {
+    struct UninitAnim
+    {
         void operator() (AnimClass* const pAnim) const;
     };
 
