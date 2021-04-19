@@ -20,6 +20,9 @@ public:
     void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
     void InvalidatePointer(void* ptr);
     int GetShieldHP();
+    double GetShieldRatio();
+
+    static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
 
     bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
     bool Save(PhobosStreamWriter& Stm) const;

@@ -54,6 +54,18 @@ bool ShieldTechnoClass::Save(PhobosStreamWriter& Stm) const
         .Success();
 }
 
+void ShieldTechnoClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
+{
+    auto pFromExt = TechnoExt::ExtMap.Find(pFrom);
+    auto pToExt = TechnoExt::ExtMap.Find(pTo);
+    auto pToTypeExt = TechnoTypeExt::ExtMap.Find(pTo->GetTechnoType());
+    if (pFromExt->ShieldData && pToTypeExt->Shield_Strength)
+    {
+        pToExt->ShieldData = std::make_unique<ShieldTechnoClass>(pTo);
+        pToExt->ShieldData->HP = int(pFromExt->ShieldData->GetShieldRatio() * pToTypeExt->Shield_Strength);
+    }
+}
+
 int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
 {
     //UNREFERENCED_PARAMETER(pWH);
@@ -485,4 +497,9 @@ int ShieldTechnoClass::DrawShieldBar_Pip()
 int ShieldTechnoClass::GetShieldHP()
 {
     return this->HP;
+}
+
+double ShieldTechnoClass::GetShieldRatio()
+{
+    return double(this->HP) / double(this->GetExt()->Shield_Strength);
 }
