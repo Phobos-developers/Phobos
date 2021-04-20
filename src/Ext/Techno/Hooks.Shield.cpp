@@ -1,7 +1,5 @@
 #include "Body.h"
 #include <SpecificStructures.h>
-#include <UnitClass.h>
-#include <BuildingClass.h>
 
 #include "../TechnoType/Body.h"
 
