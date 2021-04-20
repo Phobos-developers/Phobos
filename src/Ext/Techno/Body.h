@@ -20,10 +20,12 @@ public:
         Valueable<BulletClass*> InterceptedBullet;
         std::unique_ptr<ShieldTechnoClass> ShieldData;
 
-        ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
-            ,InterceptedBullet(nullptr)
-            ,ShieldData()
-        { }
+		Valueable<bool> WasCloaked;
+		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),
+			InterceptedBullet(nullptr),
+			ShieldData(),
+			WasCloaked(false)
+		{ }
 
         virtual ~ExtData() = default;
 

@@ -147,6 +147,10 @@ Strafing.SimulateBurst=false ; bool
 
 In `rulesmd.ini`
 ```ini
+[RadiationTypes]				; List of New Radiation goes here
+0=SOMERADTYPE
+1=etc..
+
 [SOMEWEAPON]                    ; WeaponType
 RadLevel=0                      ; integer, vanilla tag; used to activate the feature
 RadType=Radiation               ; RadType to use instead

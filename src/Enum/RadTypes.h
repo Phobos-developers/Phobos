@@ -5,7 +5,6 @@
 #include "../Utilities/GeneralUtils.h"
 #include "../Phobos.h"
 
-class CCINIClass;
 class WarheadTypeClass;
 
 class RadType final : public Enumerable<RadType>
@@ -17,7 +16,6 @@ private:
 	Nullable<int> LevelMax;
 	Nullable<int> LevelDelay;
 	Nullable<int> LightDelay;
-	
 	Nullable<WarheadTypeClass *> RadWarhead;
 	Nullable<ColorStruct> RadSiteColor;
 	Nullable<double> LightFactor;
@@ -31,46 +29,55 @@ public:
 
 	static void LoadListSection(CCINIClass * pINI);
 
-	WarheadTypeClass* GetWarhead() const 
+	WarheadTypeClass* GetWarhead() const
 	{
 		return this->RadWarhead.Get(RulesClass::Instance->RadSiteWarhead);
 	}
-	
-	const ColorStruct& GetColor() const {
+
+	const ColorStruct& GetColor() const
+	{
 		return *this->RadSiteColor.GetEx(&RulesClass::Instance->RadColor);
 	}
 
-	int GetDurationMultiple() const {
+	int GetDurationMultiple() const
+	{
 		return this->DurationMultiple.Get(RulesClass::Instance->RadDurationMultiple);
 	}
 
-	int GetApplicationDelay() const {
+	int GetApplicationDelay() const
+	{
 		return this->ApplicationDelay.Get(RulesClass::Instance->RadApplicationDelay);
 	}
 
 	Nullable<int> BuildingApplicationDelay;
 
-	int GetLevelMax() const {
+	int GetLevelMax() const
+	{
 		return this->LevelMax.Get(RulesClass::Instance->RadLevelMax);
 	}
 
-	int GetLevelDelay() const {
+	int GetLevelDelay() const
+	{
 		return this->LevelDelay.Get(RulesClass::Instance->RadLevelDelay);
 	}
 
-	int GetLightDelay() const {
+	int GetLightDelay() const
+	{
 		return this->LightDelay.Get(RulesClass::Instance->RadLightDelay);
 	}
 
-	double GetLevelFactor() const {
+	double GetLevelFactor() const
+	{
 		return this->LevelFactor.Get(RulesClass::Instance->RadLevelFactor);
 	}
 
-	double GetLightFactor() const {
+	double GetLightFactor() const
+	{
 		return this->LightFactor.Get(RulesClass::Instance->RadLightFactor);
 	}
 
-	double GetTintFactor() const {
+	double GetTintFactor() const
+	{
 		return this->TintFactor.Get(RulesClass::Instance->RadTintFactor);
 	}
 

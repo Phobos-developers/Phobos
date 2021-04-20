@@ -36,12 +36,9 @@ void RadType::AddDefaults()
 
 void RadType::LoadListSection(CCINIClass *pINI)
 {
-	const char *section = GetMainSection();
-	int len = pINI->GetKeyCount(section);
-	for (int i = 0; i < len; ++i) 
+	for (int i = 0; i < pINI->GetKeyCount(GetMainSection()); ++i)
 	{
-		const char *key = pINI->GetKeyName(section, i);
-		if (pINI->ReadString(section, key, "", Phobos::readBuffer)) 
+		if (pINI->ReadString(GetMainSection(), pINI->GetKeyName(GetMainSection(), i), "", Phobos::readBuffer))
 		{
 			FindOrAllocate(Phobos::readBuffer);
 			Debug::Log("RadTypes :: LoadListSection check [%s] \n", Phobos::readBuffer);
@@ -49,7 +46,7 @@ void RadType::LoadListSection(CCINIClass *pINI)
 	}
 
 	for (size_t i = 0; i < Array.size(); ++i) 
-	{  Array[i]->LoadFromINI(pINI); }
+	 Array[i]->LoadFromINI(pINI);
 }
 
 void RadType::LoadFromINI(CCINIClass *pINI)

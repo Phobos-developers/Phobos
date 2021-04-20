@@ -16,9 +16,7 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 
 	//Adding Owner to RadSite , from bullet
 	if (!pWeaponExt->Rad_NoOwner && pRadExt->RadHouse != pOwner)
-	{
 		pRadExt->RadHouse = pOwner;
-	}
 
 	pRadExt->Weapon = pWeaponExt->OwnerObject();
 	pRadExt->Type = pWeaponExt->RadType;
