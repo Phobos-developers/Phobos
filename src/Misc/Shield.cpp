@@ -112,6 +112,8 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
             return 0;
         }
     }
+    else if (!nDamage)
+        return 0;
     else
     {
         auto LostHP = this->GetExt()->Shield_Strength - this->HP;
