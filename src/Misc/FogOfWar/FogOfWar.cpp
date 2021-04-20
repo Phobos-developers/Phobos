@@ -10,7 +10,7 @@ void FogOfWar::Reveal_DisplayClass_All_To_Look_Ground(TechnoClass* pTechno, DWOR
 		auto coords = pTechno->GetCoords(); \
 		pTechno->See(0, dwUnk2); \
 		if (pTechno->IsInAir()) \
-			MapClass::Global()->RevealArea3(&coords, \
+			MapClass::Instance->RevealArea3(&coords, \
 				pTechno->LastSightRange - 3, pTechno->LastSightRange + 3, false); \
 		return; \
 	}
@@ -48,7 +48,7 @@ bool FogOfWar::MapClass_RevealFogShroud(MapClass* pMap, CellStruct* pCell_, Hous
 	bool bUnk = bReturn;
 	pCell->Flags = pCell->Flags & 0xFFFFFFBF | 2;
 	pCell->CopyFlags = pCell->CopyFlags & 0xFFFFFFDF | 8;
-	char nOcclusion = TacticalClass::Global()->GetOcclusion(*pCell_, false);
+	char nOcclusion = TacticalClass::Instance->GetOcclusion(*pCell_, false);
 	char nVisibility = pCell->Visibility;
 	if (nOcclusion != nVisibility)
 	{
@@ -58,7 +58,7 @@ bool FogOfWar::MapClass_RevealFogShroud(MapClass* pMap, CellStruct* pCell_, Hous
 	}
 	if (nVisibility == -1)
 		pCell->CopyFlags |= 0x10u;
-	char nFoggedOcclusion = TacticalClass::Global()->GetOcclusion(*pCell_, true);
+	char nFoggedOcclusion = TacticalClass::Instance->GetOcclusion(*pCell_, true);
 	char nFoggedness = pCell->Foggedness;
 	if (nFoggedOcclusion != nFoggedness)
 	{
@@ -70,7 +70,7 @@ bool FogOfWar::MapClass_RevealFogShroud(MapClass* pMap, CellStruct* pCell_, Hous
 		pCell->Flags |= 1u;
 	if (bReturn)
 	{
-		TacticalClass::Global()->RegisterCellAsVisible(pCell);
+		TacticalClass::Instance->RegisterCellAsVisible(pCell);
 		pMap->reveal_check(pCell, pHouse, bUnk);
 	}
 	if (!bContainsBuilding && ScenarioClass::Instance->SpecialFlags.FogOfWar)

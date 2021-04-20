@@ -191,7 +191,8 @@ DEFINE_HOOK(6D3470, TacticalClass_DrawFoggedObject, 8)
 	UNREFERENCED_PARAMETER(bUkn);
 
 	// Draw them
-
+	std::vector<int> a;
+	a.data();
 
 	return 0;
 	// return 0x6D3650;
