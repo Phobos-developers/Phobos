@@ -22,7 +22,9 @@ public:
 		Valueable<double> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
 		Valueable<double> Interceptor_GuardRange;
+		Valueable<double> Interceptor_MinimumGuardRange;
 		Valueable<double> Interceptor_EliteGuardRange;
+		Valueable<double> Interceptor_EliteMinimumGuardRange;
 		Valueable<CoordStruct> TurretOffset;
 		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Spawn_LimitedRange;
@@ -53,7 +55,9 @@ public:
 			MindControlRangeLimit(-1.0),
 			Interceptor(false),
 			Interceptor_GuardRange(0.0),
+			Interceptor_MinimumGuardRange(0.0),
 			Interceptor_EliteGuardRange(0.0),
+			Interceptor_EliteMinimumGuardRange(0.0),
 			TurretOffset({0, 0, 0}),
 			Powered_KillSpawns(false),
 			Spawn_LimitedRange(false),
