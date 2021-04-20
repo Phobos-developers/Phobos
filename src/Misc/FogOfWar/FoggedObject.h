@@ -11,6 +11,9 @@ public:
 	RectangleStruct Bound;
 
 public:
+	FoggedObject(CoordStruct& location, RectangleStruct& bound);
+	FoggedObject(ObjectClass* pObject);
+
 	virtual ~FoggedObject();
 	virtual void Draw(RectangleStruct& rect) = 0;
 	virtual int GetType();
@@ -25,10 +28,13 @@ public:
 	int Smudge;
 
 public:
+	FoggedSmudge(CoordStruct& location, RectangleStruct& bound, int smudge);
+	FoggedSmudge(ObjectClass* pObject, int smudge);
+
 	virtual ~FoggedSmudge();
 	virtual void Draw(RectangleStruct& rect) override;
 	virtual int GetType() override;
-	virtual BuildingTypeClass* GetBuildingType();
+	virtual BuildingTypeClass* GetBuildingType() override;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 };
@@ -39,10 +45,13 @@ public:
 	int Terrain;
 
 public:
+	FoggedTerrain(CoordStruct& location, RectangleStruct& bound, int terrain);
+	FoggedTerrain(ObjectClass* pObject, int terrain);
+
 	virtual ~FoggedTerrain();
 	virtual void Draw(RectangleStruct& rect) override;
 	virtual int GetType() override;
-	virtual BuildingTypeClass* GetBuildingType();
+	virtual BuildingTypeClass* GetBuildingType() override;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 };
@@ -54,10 +63,13 @@ public:
 	unsigned char OverlayData;
 
 public:
+	FoggedOverlay(CoordStruct& location, RectangleStruct& bound, int overlay, unsigned char overlayData);
+	FoggedOverlay(ObjectClass* pObject, int overlay, unsigned char overlayData);
+
 	virtual ~FoggedOverlay();
 	virtual void Draw(RectangleStruct& rect) override;
 	virtual int GetType() override;
-	virtual BuildingTypeClass* GetBuildingType();
+	virtual BuildingTypeClass* GetBuildingType() override;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 };
@@ -67,22 +79,15 @@ class FoggedBuilding : public FoggedObject
 public:
 	HouseClass* Owner;
 	BuildingTypeClass* Type;
-	int ShapeNumber;
-	FacingStruct PrimaryFacing;
-	FacingStruct BarrelFacing;
-	RecoilData TurretRecoil;
-	RecoilData BarrelRecoil;
-	BYTE FireStormWall;
-	BYTE gap_A5[3];
-	int unknown_A8;
-	int unknown_AC;
-	int unknown_B0;
-	int TypeArrayIndex;
+	bool FireStormWall;
 
 public:
+	FoggedBuilding(CoordStruct& location, RectangleStruct& bound, BuildingClass* building, bool bTranslucent);
+	FoggedBuilding(BuildingClass* pObject, bool bTranslucent);
+
 	virtual ~FoggedBuilding();
 	virtual void Draw(RectangleStruct& rect) override;
-	virtual int GetType();
+	virtual int GetType() override;
 	virtual BuildingTypeClass* GetBuildingType() override;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;

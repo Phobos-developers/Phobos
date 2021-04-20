@@ -7,6 +7,22 @@
 #include <Drawing.h>
 #include <TiberiumClass.h>
 #include <FootClass.h>
+#include <HouseClass.h>
+
+FoggedObject::FoggedObject(CoordStruct& location, RectangleStruct& bound)
+	: Location{ location }, Bound{ bound }
+{
+	
+}
+
+FoggedObject::FoggedObject(ObjectClass* pObject)
+{
+	auto const pCell = pObject->GetCell();
+	pCell->Get3DCoords(&this->Location);
+	pObject->vt_entry_12C(&this->Bound); // __get_render_dimensions
+	this->Bound.X = TacticalClass::Instance->TacticalPos0.X;
+	this->Bound.Y = TacticalClass::Instance->TacticalPos0.Y;
+}
 
 FoggedObject::~FoggedObject() = default;
 
@@ -34,6 +50,16 @@ bool FoggedObject::Save(PhobosStreamWriter& Stm) const
 		.Process(this->Location)
 		.Process(this->Bound)
 		.Success();
+}
+
+FoggedSmudge::FoggedSmudge(CoordStruct& location, RectangleStruct& bound, int smudge)
+	: FoggedObject(location, bound), Smudge{ smudge }
+{
+}
+
+FoggedSmudge::FoggedSmudge(ObjectClass* pObject, int smudge)
+	: FoggedObject(pObject), Smudge{ smudge }
+{
 }
 
 FoggedSmudge::~FoggedSmudge() = default;
@@ -65,6 +91,11 @@ int FoggedSmudge::GetType()
 	return this->Smudge;
 }
 
+BuildingTypeClass* FoggedSmudge::GetBuildingType()
+{
+	return nullptr;
+}
+
 bool FoggedSmudge::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	return FoggedObject::Load(Stm, RegisterForChange) && Stm
@@ -77,6 +108,16 @@ bool FoggedSmudge::Save(PhobosStreamWriter& Stm) const
 	return FoggedObject::Save(Stm) && Stm
 		.Process(this->Smudge)
 		.Success();
+}
+
+FoggedTerrain::FoggedTerrain(CoordStruct& location, RectangleStruct& bound, int terrain)
+	: FoggedObject(location, bound), Terrain{ terrain }
+{
+}
+
+FoggedTerrain::FoggedTerrain(ObjectClass* pObject, int terrain)
+	: FoggedObject(pObject), Terrain{ terrain }
+{
 }
 
 FoggedTerrain::~FoggedTerrain() = default;
@@ -131,6 +172,11 @@ int FoggedTerrain::GetType()
 	return this->Terrain;
 }
 
+BuildingTypeClass* FoggedTerrain::GetBuildingType()
+{
+	return nullptr;
+}
+
 bool FoggedTerrain::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	return FoggedObject::Load(Stm, RegisterForChange) && Stm
@@ -143,6 +189,16 @@ bool FoggedTerrain::Save(PhobosStreamWriter& Stm) const
 	return FoggedObject::Save(Stm) && Stm
 		.Process(this->Terrain)
 		.Success();
+}
+
+FoggedOverlay::FoggedOverlay(CoordStruct& location, RectangleStruct& bound, int overlay, unsigned char overlayData)
+	: FoggedObject(location, bound), Overlay{ overlay }, OverlayData{ overlayData }
+{
+}
+
+FoggedOverlay::FoggedOverlay(ObjectClass* pObject, int overlay, unsigned char overlayData)
+	: FoggedObject(pObject), Overlay{ overlay }, OverlayData{ overlayData }
+{
 }
 
 FoggedOverlay::~FoggedOverlay() = default;
@@ -172,6 +228,11 @@ int FoggedOverlay::GetType()
 	return this->Overlay;
 }
 
+BuildingTypeClass* FoggedOverlay::GetBuildingType()
+{
+	return nullptr;
+}
+
 bool FoggedOverlay::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	return FoggedObject::Load(Stm, RegisterForChange) && Stm
@@ -188,12 +249,38 @@ bool FoggedOverlay::Save(PhobosStreamWriter& Stm) const
 		.Success();
 }
 
-FoggedBuilding::~FoggedBuilding()
+FoggedBuilding::FoggedBuilding(CoordStruct& location, RectangleStruct& bound, BuildingClass* pBuilding, bool bTranslucent)
+	: FoggedObject(location, bound)
 {
+	this->Owner = pBuilding->Owner;
+	this->Type = pBuilding->Type;
+	this->FireStormWall = pBuilding->Type->LaserFence;
+
+	// MORE!
 }
 
-void FoggedBuilding::Draw(RectangleStruct& rect)
+FoggedBuilding::FoggedBuilding(BuildingClass* pObject, bool bTranslucent)
+	:FoggedObject(pObject)
 {
+	this->Owner = pObject->Owner;
+	this->Type = pObject->Type;
+	this->FireStormWall = pObject->Type->LaserFence;
+}
+
+FoggedBuilding::~FoggedBuilding() = default;
+
+void FoggedBuilding::Draw(RectangleStruct & rect)
+{
+	auto const pType = this->Type;
+	if (!pType->InvisibleInGame)
+	{
+		// TO BE IMPLEMENTED
+	}
+}
+
+int FoggedBuilding::GetType()
+{
+	return -1;
 }
 
 BuildingTypeClass* FoggedBuilding::GetBuildingType()
@@ -203,10 +290,18 @@ BuildingTypeClass* FoggedBuilding::GetBuildingType()
 
 bool FoggedBuilding::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
-	return false;
+	return FoggedObject::Load(Stm, RegisterForChange) && Stm
+		.Process(this->Owner)
+		.Process(this->Type)
+		.Process(this->FireStormWall)
+		.Success();
 }
 
 bool FoggedBuilding::Save(PhobosStreamWriter& Stm) const
 {
-	return false;
+	return FoggedObject::Save(Stm) && Stm
+		.Process(this->Owner)
+		.Process(this->Type)
+		.Process(this->FireStormWall)
+		.Success();
 }
