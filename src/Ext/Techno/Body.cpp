@@ -44,12 +44,15 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 
 			const double guardRange = pThis->Veterancy.IsElite() ?
 				pTypeData->Interceptor_EliteGuardRange * 256 : pTypeData->Interceptor_GuardRange * 256;
+			const double minguardRange = pThis->Veterancy.IsElite() ?
+			    pTypeData->Interceptor_EliteMinimumGuardRange * 256 : pTypeData->Interceptor_MinimumGuardRange * 256;
 
-			if (pBullet->Location.DistanceFrom(pThis->Location) > guardRange)
+			if (pBullet->Location.DistanceFrom(pThis->Location) > guardRange || pBullet->Location.DistanceFrom(pThis->Location < minguardRange))
 				continue;
 
 			if (pBullet->Location.DistanceFrom(pBullet->TargetCoords) >
-				double(ScenarioClass::Instance->Random.RandomRanged(128, (int)guardRange / 10)) * 10)
+				double(ScenarioClass::Instance->Random.RandomRanged(128, (int)guardRange / 10)) * 10 ||
+				pBullet->Location.DistanceFrom(pBullet->TargetCoords) < double(ScenarioClass::Instance->Random.RandomRanged(128, (int)minguardRange / 10)) * 10)
 			{
 				continue;
 			}
