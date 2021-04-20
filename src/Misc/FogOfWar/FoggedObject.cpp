@@ -6,6 +6,19 @@
 #include <TerrainClass.h>
 #include <Drawing.h>
 #include <TiberiumClass.h>
+#include <FootClass.h>
+
+FoggedObject::~FoggedObject() = default;
+
+int FoggedObject::GetType()
+{
+	return -1;
+}
+
+BuildingTypeClass* FoggedObject::GetBuildingType()
+{
+	return nullptr;
+}
 
 bool FoggedObject::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -143,7 +156,7 @@ void FoggedOverlay::Draw(RectangleStruct & rect)
 	position.X -= 30;
 
 	int oldOverlay = this->Overlay;
-	int oldOverlayData = this->OverlayData;
+	unsigned char oldOverlayData = this->OverlayData;
 
 	pCell->OverlayTypeIndex = this->Overlay;
 	pCell->OverlayData = this->OverlayData;
@@ -173,4 +186,27 @@ bool FoggedOverlay::Save(PhobosStreamWriter& Stm) const
 		.Process(this->Overlay)
 		.Process(this->OverlayData)
 		.Success();
+}
+
+FoggedBuilding::~FoggedBuilding()
+{
+}
+
+void FoggedBuilding::Draw(RectangleStruct& rect)
+{
+}
+
+BuildingTypeClass* FoggedBuilding::GetBuildingType()
+{
+	return this->Type;
+}
+
+bool FoggedBuilding::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	return false;
+}
+
+bool FoggedBuilding::Save(PhobosStreamWriter& Stm) const
+{
+	return false;
 }

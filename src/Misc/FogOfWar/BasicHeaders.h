@@ -18,8 +18,3 @@
 // STL
 #include <vector>
 #include <set>
-
-#include "../../ExtraHeaders/IndexClass.h"
-
-// Extra arrays
-static constexpr constant_ptr<IndexClass<FoggedObjectClass*>, 0x8B3CC0> FogIndexes{};
