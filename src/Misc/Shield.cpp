@@ -59,11 +59,9 @@ void ShieldTechnoClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo
     auto pFromExt = TechnoExt::ExtMap.Find(pFrom);
     auto pToExt = TechnoExt::ExtMap.Find(pTo);
     auto pToTypeExt = TechnoTypeExt::ExtMap.Find(pTo->GetTechnoType());
-    if (pFromExt->ShieldData && pToTypeExt->Shield_Strength)
-    {
-        pToExt->ShieldData = std::make_unique<ShieldTechnoClass>(pTo);
-        pToExt->ShieldData->HP = int(pFromExt->ShieldData->GetShieldRatio() * pToTypeExt->Shield_Strength);
-    }
+
+    pToExt->ShieldData = std::make_unique<ShieldTechnoClass>(pTo);
+    pToExt->ShieldData->HP = int(pFromExt->ShieldData->GetShieldRatio() * pToTypeExt->Shield_Strength);
 }
 
 int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)

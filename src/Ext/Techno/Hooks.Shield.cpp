@@ -78,7 +78,7 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
 {
     GET(TechnoClass*, pThis, ESI);
     GET(TechnoClass*, pTarget, EBP);
-    if (!pTarget) return 0x6F37AD;
+    if (!pTarget) return 0x6F37AD; //Target invalid, skip. (test ebp,ebp  jz loc_6F37AD)
     if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
     {
         if (auto pShieldData = pExt->ShieldData.get())
@@ -89,14 +89,14 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
                 if (auto Secondary = pThis->GetWeapon(1))
                 {
                     if (!pShieldData->CanBeTargeted(Primary->WeaponType, pThis))
-                        return 0x6F3745;
-                    return 0x6F3754;
+                        return 0x6F3745; //Priamry cannot attack, always use Secondary
+                    return 0x6F3754; //Further check in vanilla function
                 }
-                return 0x6F37AD;
+                return 0x6F37AD; //Don't have Secondary, always use Primary
             }
         }
     }
-    return 0x6F36E3;
+    return 0x6F36E3; //Target doesn't have a shield, back
 }
 
 DEFINE_HOOK(6F9E50, TechnoClass_AI_Shield, 5)
@@ -122,7 +122,7 @@ DEFINE_HOOK(6F6AC4, TechnoClass_Remove_Shield, 5)
     GET(TechnoClass*, pThis, ECX);
     auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-    if (pExt->ShieldData)
+    if (pExt->ShieldData && (pThis->WhatAmI() != AbstractType::Building || !pThis->GetTechnoType()->UndeploysInto))
     {
         pExt->ShieldData = nullptr;
     }
@@ -137,10 +137,15 @@ DEFINE_HOOK(739956, DeploysInto_UndeploysInto_SyncShieldStatus, 6) //UnitClass_D
     GET(TechnoClass*, pInto, EBX);
     auto pThisExt = TechnoExt::ExtMap.Find(pThis);
     auto pIntoTypeExt = TechnoTypeExt::ExtMap.Find(pInto->GetTechnoType());
+
     if (pThisExt->ShieldData && pIntoTypeExt->Shield_Strength)
     {
         ShieldTechnoClass::SyncShieldToAnother(pThis, pInto);
     }
+
+    if (pThis->WhatAmI() == AbstractType::Building && pThisExt->ShieldData)
+        pThisExt->ShieldData = nullptr;
+
     return 0;
 }
 
