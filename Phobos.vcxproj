@@ -67,6 +67,7 @@
     <ClCompile Include="src\Ext\WeaponType\Hook.EBolt.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
+    <ClCompile Include="src\Misc\FogOfWar\FoggedObject.cpp" />
     <ClCompile Include="src\Misc\FogOfWar\FogOfWar.cpp" />
     <ClCompile Include="src\Misc\CaptureManager.cpp" />
     <ClCompile Include="src\Misc\FogOfWar\Hooks.cpp" />
