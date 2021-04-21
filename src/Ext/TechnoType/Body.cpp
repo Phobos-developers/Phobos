@@ -89,7 +89,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
 	this->Interceptor.Read(exINI, pSection, "Interceptor");
 	this->Interceptor_GuardRange.Read(exINI, pSection, "Interceptor.GuardRange");
+    this->Interceptor_MinimumGuardRange.Read(exINI, pSection, "Interceptor.MinimumGuardRange");
 	this->Interceptor_EliteGuardRange.Read(exINI, pSection, "Interceptor.EliteGuardRange");
+    this->Interceptor_EliteMinimumGuardRange.Read(exINI, pSection, "Interceptor.EliteMinimumGuardRange");
 	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
 	this->Spawn_LimitedRange.Read(exINI, pSection, "Spawner.LimitRange");
 	this->Spawn_LimitedExtraRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
@@ -136,7 +138,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MindControlRangeLimit)
 		.Process(this->Interceptor)
 		.Process(this->Interceptor_GuardRange)
+		.Process(this->Interceptor_MinimumGuardRange)
 		.Process(this->Interceptor_EliteGuardRange)
+		.Process(this->Interceptor_EliteMinimumGuardRange)
 		.Process(this->GroupAs)
 		.Process(this->TurretOffset)
 		.Process(this->Powered_KillSpawns)
