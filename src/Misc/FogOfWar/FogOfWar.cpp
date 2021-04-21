@@ -82,7 +82,7 @@ bool FogOfWar::MapClass_RevealFogShroud(MapClass* pMap, CellStruct* pCell_, Hous
 
 bool FogOfWar::IsLocationFogged(CoordStruct* pCoord)
 {
-	auto pCell = MapClass::Global()->GetCellAt(*pCoord);
+	auto pCell = MapClass::Instance->GetCellAt(*pCoord);
 	if (pCell->Flags & 2)
 		return false;
 	return ((pCell->GetNeighbourCell(3u)->Flags & 2) == 0);

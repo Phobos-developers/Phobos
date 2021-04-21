@@ -53,7 +53,7 @@ DEFINE_HOOK(4FC1FF, HouseClass_AcceptDefeat_CleanShroudFog, 6)
 {
 	GET(HouseClass*, pHouse, ESI);
 
-	MapClass::Global()->Reveal(pHouse);
+	MapClass::Instance->Reveal(pHouse);
 
 	return 0x4FC214;
 }
