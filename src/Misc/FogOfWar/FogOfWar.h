@@ -3,6 +3,7 @@
 #include <Phobos.h>
 
 #include "BasicHeaders.h"
+#include "FoggedObject.h"
 
 class FogOfWar
 {
@@ -12,11 +13,10 @@ public:
 	static bool IsLocationFogged(CoordStruct* pCoord);
 	static void ClearFoggedObjects(CellClass* pCell);
 
-	static void FogCell_Building(BuildingClass* pBld, DynamicVectorClass<FoggedObjectClass*>* pFoggedArray,
-		CellClass* pCell, bool translucent);
-	static void FogCell_Overlay(int index, DynamicVectorClass<FoggedObjectClass*>* pFoggedArray,
-		CellClass* pCell, int powerup);
-	static void FogCell_Smudge(int index, DynamicVectorClass<FoggedObjectClass*>* pFoggedArray,
-		CellClass* pCell, int frameidx);
-	static void FogCell_Terrain(TerrainClass* pTerrain, DynamicVectorClass<FoggedObjectClass*>* pFoggedArray);
+	static void FogCell_Building(BuildingClass* pBld, CellClass* pCell, bool translucent);
+	static void FogCell_Overlay(int index, CellClass* pCell, int powerup);
+	static void FogCell_Smudge(int index, CellClass* pCell, int frameidx);
+	static void FogCell_Terrain(TerrainClass* pTerrain);
+
+	static std::vector<FoggedObject*> FoggedObjects;
 };

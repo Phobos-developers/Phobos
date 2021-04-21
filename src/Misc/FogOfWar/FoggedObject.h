@@ -7,15 +7,17 @@
 class FoggedObject
 {
 public:
+	AbstractType CoveredRTTIType;
 	CoordStruct Location;
 	RectangleStruct Bound;
 
 public:
-	FoggedObject(CoordStruct& location, RectangleStruct& bound);
+	FoggedObject(AbstractType rtti, CoordStruct& location, RectangleStruct& bound);
 	FoggedObject(ObjectClass* pObject);
+	FoggedObject() = default;
 
 	virtual ~FoggedObject();
-	virtual void Draw(RectangleStruct& rect) = 0;
+	virtual void Draw(RectangleStruct& rect) {}
 	virtual int GetType();
 	virtual BuildingTypeClass* GetBuildingType();
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
@@ -26,10 +28,12 @@ class FoggedSmudge : public FoggedObject
 {
 public:
 	int Smudge;
+	unsigned char SmudgeData;
 
 public:
 	FoggedSmudge(CoordStruct& location, RectangleStruct& bound, int smudge);
-	FoggedSmudge(ObjectClass* pObject, int smudge);
+	FoggedSmudge(CellClass* pCell, int smudge, unsigned char smudgeData);
+	// FoggedSmudge(ObjectClass* pObject, int smudge);
 
 	virtual ~FoggedSmudge();
 	virtual void Draw(RectangleStruct& rect) override;
@@ -64,7 +68,8 @@ public:
 
 public:
 	FoggedOverlay(CoordStruct& location, RectangleStruct& bound, int overlay, unsigned char overlayData);
-	FoggedOverlay(ObjectClass* pObject, int overlay, unsigned char overlayData);
+	FoggedOverlay(CellClass* pCell, int overlay, unsigned char overlayData);
+	// FoggedOverlay(ObjectClass* pObject, int overlay, unsigned char overlayData);
 
 	virtual ~FoggedOverlay();
 	virtual void Draw(RectangleStruct& rect) override;

@@ -3,6 +3,8 @@
 // issue #28 : Fix vanilla YR Fog of War bugs & issues
 // Reimplement it would be nicer.
 
+std::vector<FoggedObject*> FogOfWar::FoggedObjects;
+
 void FogOfWar::Reveal_DisplayClass_All_To_Look_Ground(TechnoClass* pTechno, DWORD dwUnk, DWORD dwUnk2)
 {
 #define _LOOK_ \
@@ -112,53 +114,18 @@ void FogOfWar::ClearFoggedObjects(CellClass* pCell)
 			
 }
 
-void FogOfWar::FogCell_Building(BuildingClass* pBld, DynamicVectorClass<FoggedObjectClass*>* pFoggedArray, 
-	CellClass* pCell, bool translucent)
+void FogOfWar::FogCell_Building(BuildingClass* pBld, CellClass* pCell, bool translucent)
 {
-	auto pFoggedBld = GameCreate<FoggedObjectClass>(pBld, translucent);
-	auto pFoundationData = pBld->GetFoundationData();
-	auto coordCell = pBld->GetMapCoords();
-
-	while (pFoundationData->X != 0x7FFF || pFoundationData->Y != 0x7FFF)
-	{
-		coordCell.X += pFoundationData->X;
-		coordCell.Y += pFoundationData->Y;
-		auto pRealCell = MapClass::Instance->GetCellAt(coordCell);
-		if (pCell && pCell == pRealCell)
-			pFoggedArray->AddItem(pFoggedBld);
-		else
-		{
-			if (pRealCell->FoggedObjects)
-				pFoggedArray = pRealCell->FoggedObjects;
-			else
-			{
-				auto pNewFoggedObjects = GameCreate<DynamicVectorClass<FoggedObjectClass*>>();
-				pRealCell->FoggedObjects = pNewFoggedObjects;
-				pNewFoggedObjects->SetCapacity(1);
-				pNewFoggedObjects->CapacityIncrement = 1;
-				pFoggedArray = pNewFoggedObjects;
-			}
-		}
-		++pFoundationData;
-	}
 }
 
-void FogOfWar::FogCell_Overlay(int index, DynamicVectorClass<FoggedObjectClass*>* pFoggedArray, CellClass* pCell, int powerup)
+void FogOfWar::FogCell_Overlay(int index, CellClass* pCell, int powerup)
 {
-	auto coord = pCell->GetCoords();
-	auto pFoggedOvl = GameCreate<FoggedObjectClass>(coord, index, powerup);
-	pFoggedArray->AddItem(pFoggedOvl);
 }
 
-void FogOfWar::FogCell_Smudge(int index, DynamicVectorClass<FoggedObjectClass*>* pFoggedArray, CellClass* pCell, int frameidx)
+void FogOfWar::FogCell_Smudge(int index, CellClass* pCell, int frameidx)
 {
-	auto coord = pCell->GetCoords();
-	auto pFoggedSmu = GameCreate<FoggedObjectClass>(&coord, index, frameidx);
-	pFoggedArray->AddItem(pFoggedSmu);
 }
 
-void FogOfWar::FogCell_Terrain(TerrainClass* pTerrain, DynamicVectorClass<FoggedObjectClass*>* pFoggedArray)
+void FogOfWar::FogCell_Terrain(TerrainClass* pTerrain)
 {
-	auto pFoggedTer = GameCreate<FoggedObjectClass>(pTerrain);
-	pFoggedArray->AddItem(pFoggedTer);
 }

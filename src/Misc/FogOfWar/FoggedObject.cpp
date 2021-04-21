@@ -9,19 +9,25 @@
 #include <FootClass.h>
 #include <HouseClass.h>
 
-FoggedObject::FoggedObject(CoordStruct& location, RectangleStruct& bound)
-	: Location{ location }, Bound{ bound }
+#include "FogOfWar.h"
+
+FoggedObject::FoggedObject(AbstractType rtti, CoordStruct& location, RectangleStruct& bound)
+	: CoveredRTTIType{ rtti }, Location{ location }, Bound{ bound }
 {
-	
+	FogOfWar::FoggedObjects.push_back(this);
 }
 
 FoggedObject::FoggedObject(ObjectClass* pObject)
 {
 	auto const pCell = pObject->GetCell();
-	pCell->Get3DCoords(&this->Location);
+
+	pCell->GetCoords(&this->Location);
 	pObject->vt_entry_12C(&this->Bound); // __get_render_dimensions
-	this->Bound.X = TacticalClass::Instance->TacticalPos0.X;
-	this->Bound.Y = TacticalClass::Instance->TacticalPos0.Y;
+	this->Bound.X += TacticalClass::Instance->TacticalPos0.X;
+	this->Bound.Y += TacticalClass::Instance->TacticalPos0.Y;
+	this->CoveredRTTIType = pObject->WhatAmI();
+
+	FogOfWar::FoggedObjects.push_back(this);
 }
 
 FoggedObject::~FoggedObject() = default;
@@ -39,6 +45,7 @@ BuildingTypeClass* FoggedObject::GetBuildingType()
 bool FoggedObject::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	return Stm
+		.Process(this->CoveredRTTIType)
 		.Process(this->Location)
 		.Process(this->Bound)
 		.Success();
@@ -47,19 +54,37 @@ bool FoggedObject::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 bool FoggedObject::Save(PhobosStreamWriter& Stm) const
 {
 	return Stm
+		.Process(this->CoveredRTTIType)
 		.Process(this->Location)
 		.Process(this->Bound)
 		.Success();
 }
 
 FoggedSmudge::FoggedSmudge(CoordStruct& location, RectangleStruct& bound, int smudge)
-	: FoggedObject(location, bound), Smudge{ smudge }
+	: FoggedObject(AbstractType::Smudge, location, bound), Smudge{ smudge }
 {
 }
 
-FoggedSmudge::FoggedSmudge(ObjectClass* pObject, int smudge)
-	: FoggedObject(pObject), Smudge{ smudge }
+FoggedSmudge::FoggedSmudge(CellClass* pCell, int smudge, unsigned char smudgeData)
 {
+	pCell->GetCoords(&this->Location);
+	
+	Point2D position;
+	TacticalClass::Instance->CoordsToClient(&this->Location, &position);
+	
+	this->Bound.X = position.X - 30;
+	this->Bound.Y = position.Y - 15;
+	this->Bound.Width = 60;
+	this->Bound.Height = 30;
+
+	this->Bound.X += TacticalClass::Instance->TacticalPos0.X;
+	this->Bound.Y += TacticalClass::Instance->TacticalPos0.Y;
+
+	this->Smudge = smudge;
+	this->SmudgeData = smudgeData;
+	this->CoveredRTTIType = AbstractType::Smudge;
+
+	FogOfWar::FoggedObjects.push_back(this);
 }
 
 FoggedSmudge::~FoggedSmudge() = default;
@@ -111,7 +136,7 @@ bool FoggedSmudge::Save(PhobosStreamWriter& Stm) const
 }
 
 FoggedTerrain::FoggedTerrain(CoordStruct& location, RectangleStruct& bound, int terrain)
-	: FoggedObject(location, bound), Terrain{ terrain }
+	: FoggedObject(AbstractType::Terrain, location, bound), Terrain{ terrain }
 {
 }
 
@@ -192,13 +217,55 @@ bool FoggedTerrain::Save(PhobosStreamWriter& Stm) const
 }
 
 FoggedOverlay::FoggedOverlay(CoordStruct& location, RectangleStruct& bound, int overlay, unsigned char overlayData)
-	: FoggedObject(location, bound), Overlay{ overlay }, OverlayData{ overlayData }
+	: FoggedObject(AbstractType::Overlay, location, bound), Overlay{ overlay }, OverlayData{ overlayData }
 {
 }
 
-FoggedOverlay::FoggedOverlay(ObjectClass* pObject, int overlay, unsigned char overlayData)
-	: FoggedObject(pObject), Overlay{ overlay }, OverlayData{ overlayData }
+FoggedOverlay::FoggedOverlay(CellClass* pCell, int overlay, unsigned char overlayData)
 {
+	pCell->GetCoords(&this->Location);
+	RectangleStruct rect1, rect2;
+	pCell->ShapeRect(&rect1);
+	pCell->GetContainingRect(&rect2);
+
+#pragma region Bound_Caculating
+	if (rect2.Width <= 0 || rect2.Height <= 0)
+		this->Bound = rect1;
+	else
+		if (rect1.Width <= 0 || rect1.Height <= 0)
+			this->Bound = rect2;
+		else
+		{
+			int w0 = rect2.Width;
+			if (this->Bound.X > rect1.X)
+			{
+				rect2.Width += this->Bound.X - rect1.X;
+				this->Bound.X = rect1.X;
+				w0 = rect2.X;
+			}
+			if (rect2.Y > rect1.Y)
+			{
+				rect2.Height += rect2.Y - rect1.Y;
+				rect2.Y = rect1.Y;
+			}
+			if (this->Bound.X + rect2.Width >= rect1.X + rect1.Width)
+				this->Bound.Width = w0;
+			else
+				this->Bound.Width = rect1.X - this->Bound.X + rect1.Width + 1;
+			if (rect2.Height + rect2.Y < rect1.Height + rect1.Y)
+				rect2.Height = rect1.Height + rect1.Y - rect2.Y + 1;
+			this->Bound.Y = rect2.Y;
+			this->Bound.Height = rect2.Height;
+		}
+	this->Bound.X += TacticalClass::Instance->TacticalPos0.X - Drawing::SurfaceDimensions_Hidden.X;
+	this->Bound.Y += TacticalClass::Instance->TacticalPos0.Y - Drawing::SurfaceDimensions_Hidden.Y;
+#pragma endregion
+
+	this->CoveredRTTIType = AbstractType::Overlay;
+	this->Overlay = overlay;
+	this->OverlayData = overlayData;
+
+	FogOfWar::FoggedObjects.push_back(this);
 }
 
 FoggedOverlay::~FoggedOverlay() = default;
@@ -250,7 +317,7 @@ bool FoggedOverlay::Save(PhobosStreamWriter& Stm) const
 }
 
 FoggedBuilding::FoggedBuilding(CoordStruct& location, RectangleStruct& bound, BuildingClass* pBuilding, bool bTranslucent)
-	: FoggedObject(location, bound)
+	: FoggedObject(AbstractType::Building, location, bound)
 {
 	this->Owner = pBuilding->Owner;
 	this->Type = pBuilding->Type;
@@ -260,7 +327,7 @@ FoggedBuilding::FoggedBuilding(CoordStruct& location, RectangleStruct& bound, Bu
 }
 
 FoggedBuilding::FoggedBuilding(BuildingClass* pObject, bool bTranslucent)
-	:FoggedObject(pObject)
+	: FoggedObject(pObject)
 {
 	this->Owner = pObject->Owner;
 	this->Type = pObject->Type;

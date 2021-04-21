@@ -56,7 +56,7 @@ DEFINE_HOOK(486BF0, CellClass_CleanFog, 9)
 		if (pCell && pCell->Level >= i - 2 && pCell->Level <= i)
 		{
 			pCell->Flags |= cf_Fogged;
-			pCell->ClearFoggedObjects();
+			FogOfWar::ClearFoggedObjects(pCell);
 			++pLocation.X;
 			++pLocation.Y;
 		}
@@ -77,10 +77,6 @@ DEFINE_HOOK(486A70, CellClass_FogCell, 5)
 			auto nLevel = pCell->Level;
 			if (nLevel >= i - 2 && nLevel <= i)
 			{
-				auto pFoggedArray = GameCreate<DynamicVectorClass<FoggedObjectClass*>>();
-				pFoggedArray->SetCapacity(1);
-				pFoggedArray->CapacityIncrement = 1;
-
 				if ((pCell->Flags & cf_Fogged) == 0)
 				{
 					pCell->Flags |= cf_Fogged;
@@ -94,30 +90,25 @@ DEFINE_HOOK(486A70, CellClass_FogCell, 5)
 							pObject->Deselect();
 							break;
 						case AbstractType::Building:
-							if(auto pBld = abstract_cast<BuildingClass*>(pObject))
+							if (auto pBld = abstract_cast<BuildingClass*>(pObject))
 								if (pBld->Is_Fogged())
-									FogOfWar::FogCell_Building(pBld, pFoggedArray, pCell, pBld->IsStrange() || pBld->Translucency);
+									GameCreate<FoggedBuilding>(pBld, pBld->IsStrange() || pBld->Translucency);
 							break;
 						case AbstractType::Terrain:
 							if (auto pTer = abstract_cast<TerrainClass*>(pObject))
-								FogOfWar::FogCell_Terrain(pTer, pFoggedArray);
+								GameCreate<FoggedTerrain>(pTer, pTer->GetArrayIndex());
 							break;
 						default:
 							continue;
 						}
 					}
 					if (pCell->OverlayTypeIndex != -1)
-						FogOfWar::FogCell_Overlay(pCell->OverlayTypeIndex, pFoggedArray, pCell, pCell->OverlayData);
+						GameCreate<FoggedOverlay>(pCell, pCell->OverlayTypeIndex, pCell->OverlayData);
 					if (pCell->SmudgeTypeIndex != -1 && !pCell->SmudgeData)
-						FogOfWar::FogCell_Smudge(pCell->SmudgeTypeIndex, pFoggedArray, pCell, pCell->SmudgeData);
-
-					if (pFoggedArray && pFoggedArray->Count <= 0)
-						GameDelete(pFoggedArray);
-					else
-						pCell->FoggedObjects = pFoggedArray;
-
+						GameCreate<FoggedSmudge>(pCell, pCell->SmudgeTypeIndex, pCell->SmudgeData);
 				}
 			}
+
 			++location.X;
 			++location.Y;
 		}
@@ -131,11 +122,7 @@ DEFINE_HOOK(440B8D, BuildingClass_Put_CheckFog, 6)
 	GET(BuildingClass*, pBuilding, ESI);
 
 	if (pBuilding->Is_Fogged())
-	{
-		auto pCell = pBuilding->GetCell();
-
-		FogOfWar::FogCell_Building(pBuilding, pCell->FoggedObjects, pCell, pBuilding->IsStrange() || pBuilding->Translucency);
-	}
+		GameCreate<FoggedBuilding>(pBuilding, pBuilding->IsStrange() || pBuilding->Translucency);
 
 	return 0x440C08;
 }
@@ -148,32 +135,32 @@ DEFINE_HOOK(486C50, CellClass_ClearFoggedObjects, 6)
 
 	return 0x486D8A;
 }
-
-DEFINE_HOOK(70076E, TechnoClass_GetCursorOverCell_OverFog, 5)
-{
-	GET(CellClass*, pCell, EBP);
-
-	if (pCell->FoggedObjects && pCell->FoggedObjects->Count > 0)
-	{
-		int nOverlayIndex = -1;
-		for (auto pFoggedObject : *pCell->FoggedObjects)
-		{
-			if (pFoggedObject->Translucent)
-			{
-				if (pFoggedObject->CoveredAbstractType == AbstractType::Overlay)
-					nOverlayIndex = pFoggedObject->OverlayIndex;
-				else if (pFoggedObject->CoveredAbstractType == AbstractType::Building)
-					if (!pFoggedObject->Owner || !pFoggedObject->Owner->IsAlliedWith(HouseClass::Player))
-						if (pFoggedObject->DrawRecords.Count <= 0)
-							R->Stack<bool>(STACK_OFFS(0x2C, 0x19), true);
-			}
-		}
-		if (nOverlayIndex != -1)
-			R->Stack<OverlayTypeClass*>(STACK_OFFS(0x2C, 0x18), OverlayTypeClass::Array->GetItem(nOverlayIndex));
-	}
-	
-	return 0x700800;
-}
+//
+//DEFINE_HOOK(70076E, TechnoClass_GetCursorOverCell_OverFog, 5)
+//{
+//	GET(CellClass*, pCell, EBP);
+//
+//	if (pCell->FoggedObjects && pCell->FoggedObjects->Count > 0)
+//	{
+//		int nOverlayIndex = -1;
+//		for (auto pFoggedObject : *pCell->FoggedObjects)
+//		{
+//			if (pFoggedObject->Translucent)
+//			{
+//				if (pFoggedObject->CoveredAbstractType == AbstractType::Overlay)
+//					nOverlayIndex = pFoggedObject->OverlayIndex;
+//				else if (pFoggedObject->CoveredAbstractType == AbstractType::Building)
+//					if (!pFoggedObject->Owner || !pFoggedObject->Owner->IsAlliedWith(HouseClass::Player))
+//						if (pFoggedObject->DrawRecords.Count <= 0)
+//							R->Stack<bool>(STACK_OFFS(0x2C, 0x19), true);
+//			}
+//		}
+//		if (nOverlayIndex != -1)
+//			R->Stack<OverlayTypeClass*>(STACK_OFFS(0x2C, 0x18), OverlayTypeClass::Array->GetItem(nOverlayIndex));
+//	}
+//	
+//	return 0x700800;
+//}
 
 // TO BE IMPLEMENTED!
 // This function is the key to reduce lag I think
