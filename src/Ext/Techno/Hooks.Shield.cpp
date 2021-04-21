@@ -26,19 +26,23 @@ DEFINE_HOOK(701900, TechnoClass_ReceiveDamage_Shield, 6)
     return 0;
 }
 
-DEFINE_HOOK(6FC339, TechnoClass_CanFire_Shield, 6)
+DEFINE_HOOK(6FCB64, TechnoClass_CanFire_Shield, 6)
 {
     GET_STACK(TechnoClass*, pTarget, STACK_OFFS(0x20, -0x4));
     //GET(TechnoClass*, pThis, ESI);
-    GET(WeaponTypeClass*, pWeapon, EDI);
+    GET(WeaponTypeClass*, pWeapon, EBX);
 
     if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
     {
         if (auto pShieldData = pExt->ShieldData.get())
         {
-            if (!pShieldData->CanBeTargeted(pWeapon/*, pThis*/))
+            if (pShieldData->GetShieldHP())
             {
-                return 0x6FCB7E;
+                if (!pShieldData->CanBeTargeted(pWeapon/*, pThis*/))
+                {
+                    return 0x6FCB7E;
+                }
+                return 0x6FCB8D;
             }
         }
     }
