@@ -5,6 +5,8 @@
 #include "../_Container.hpp"
 #include "../../Utilities/TemplateDef.h"
 
+#include "../../Misc/FogOfWar/FoggedObject.h"
+
 class CellExt
 {
 public:
@@ -13,10 +15,10 @@ public:
 	class ExtData final : public Extension<CellClass>
 	{
 	public:
-		
+		std::vector<FoggedObject*> FoggedObjects;
 
-		ExtData(CellClass* OwnerObject) : Extension<CellClass>(OwnerObject)
-			
+		ExtData(CellClass* OwnerObject) : Extension<CellClass>(OwnerObject),
+			FoggedObjects {}
 		{ }
 
 		virtual ~ExtData() = default;
