@@ -15,7 +15,7 @@ public:
     ~ShieldTechnoClass() = default;
 
     int ReceiveDamage(args_ReceiveDamage* args);
-    bool CanBeTargeted(WeaponTypeClass* pWeapon, TechnoClass* pSource);
+    bool CanBeTargeted(WeaponTypeClass* pWeapon/*, TechnoClass* pSource*/);
     void AI();
     void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
     void InvalidatePointer(void* ptr);

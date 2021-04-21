@@ -55,3 +55,8 @@ const int GeneralUtils::GetRangedRandomOrSingleValue(Point2D range)
 	return range.X >= range.Y ?
 		range.X : ScenarioClass::Instance->Random.RandomRanged(range.X, range.Y);
 }
+
+const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, int ArmorType)
+{
+    return double(MapClass::GetTotalDamage(100, pWH, ArmorType, 0)) / 100.0;
+}

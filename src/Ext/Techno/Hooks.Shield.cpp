@@ -29,14 +29,14 @@ DEFINE_HOOK(701900, TechnoClass_ReceiveDamage_Shield, 6)
 DEFINE_HOOK(6FC339, TechnoClass_CanFire_Shield, 6)
 {
     GET_STACK(TechnoClass*, pTarget, STACK_OFFS(0x20, -0x4));
-    GET(TechnoClass*, pThis, ESI);
+    //GET(TechnoClass*, pThis, ESI);
     GET(WeaponTypeClass*, pWeapon, EDI);
 
     if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
     {
         if (auto pShieldData = pExt->ShieldData.get())
         {
-            if (!pShieldData->CanBeTargeted(pWeapon, pThis))
+            if (!pShieldData->CanBeTargeted(pWeapon/*, pThis*/))
             {
                 return 0x6FCB7E;
             }
@@ -83,10 +83,9 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
         {
             if (pShieldData->GetShieldHP())
             {
-                auto Primary = pThis->GetWeapon(0);
-                if (auto Secondary = pThis->GetWeapon(1))
+                if (pThis->GetWeapon(1))
                 {
-                    if (!pShieldData->CanBeTargeted(Primary->WeaponType, pThis))
+                    if (!pShieldData->CanBeTargeted(pThis->GetWeapon(0)->WeaponType/*, pThis*/))
                         return 0x6F3745; //Priamry cannot attack, always use Secondary
                     return 0x6F3754; //Further check in vanilla function
                 }

@@ -77,7 +77,6 @@ Promote.IncludeSpawns=no  ; boolean
 *Buildings, Infantries and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - Now you can have a shield for any TechnoType if `Shield.Strength` is set greater than 0. It serves as a second health pool with independent `Armor` and `Strength` values.
-  - If damage against shield equals to 0, except weapon `Damage=0`, will be unable to target shield.
   - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed for recover, no remain for owner unit.
   - When executing `DeploysInto` or `UndeploysInto`, if both of them have shield settings, the transformed unit/building would have same percentage remain shield, same as what happened to `Strength`. But currently this don't support for Ares' `Convert.*`, might change in the future.
 - `Shield.AbsorbOverDamage`controls whether or not the shield absorbs damage dealt beyond shield's current strength when the shield breaks.

@@ -5,6 +5,8 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 
+#include <Utilities/GeneralUtils.h>
+
 #include <AnimClass.h>
 #include <HouseClass.h>
 #include <RadarEventClass.h>
@@ -69,15 +71,8 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
     //UNREFERENCED_PARAMETER(pWH);
     auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
-    if (!this->HP || *args->Damage == 0 || this->Techno->IsIronCurtained())
-    {
+    if (!this->HP || *args->Damage == 0 || this->Techno->IsIronCurtained() || pWHExt->PenetratesShield)
         return *args->Damage;
-    }
-
-    if (pWHExt && pWHExt->PenetratesShield)
-    {
-        return *args->Damage;
-    }
 
     int nDamage = 0;
 
@@ -91,7 +86,6 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
 
     if (nDamage > 0)
     {
-
         this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealing_Rate * 900)); //when attacked, restart the timer
         this->ResponseAttack();
 
@@ -159,21 +153,17 @@ void ShieldTechnoClass::WeaponNullifyAnim()
     }
 }
 
-bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon, TechnoClass* pSource)
+bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon/*, TechnoClass* pSource*/)
 {
     auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
-    UNREFERENCED_PARAMETER(pWHExt);
 
     if (pWHExt->PenetratesShield)
     {
         return true;
     }
 
-    bool result =
-        ((MapClass::GetTotalDamage(pWeapon->Damage, pWeapon->Warhead, this->GetExt()->Shield_Armor, 0) != 0) && pWeapon->Damage)
-        || !pWeapon->Damage // we couldn't check how is a warhead vs shield's armor for now - Uranusian
-        || pWeapon->Damage < 0;
-
+    bool result = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->GetExt()->Shield_Armor) != 0.0;
+    
     return this->HP ? result : true;
 }
 
