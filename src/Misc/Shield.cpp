@@ -138,9 +138,7 @@ void ShieldTechnoClass::ResponseAttack()
         {
             auto pPos = pUnit->GetDestination(pUnit);
             if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, { (short)pPos.X / 256,(short)pPos.Y / 256 }))
-            {
                 VoxClass::Play("EVA_OreMinerUnderAttack");
-            }
         }
     }
 }
@@ -148,9 +146,7 @@ void ShieldTechnoClass::ResponseAttack()
 void ShieldTechnoClass::WeaponNullifyAnim()
 {
     if (this->GetExt()->Shield_HitAnim.isset())
-    {
         GameCreate<AnimClass>(this->GetExt()->Shield_HitAnim, this->Techno->GetCoords());
-    }
 }
 
 bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon/*, TechnoClass* pSource*/)
@@ -158,9 +154,7 @@ bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon/*, TechnoClass* p
     auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
 
     if (pWHExt->PenetratesShield)
-    {
         return true;
-    }
 
     bool result = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->GetExt()->Shield_Armor) != 0.0;
     
@@ -172,9 +166,7 @@ void ShieldTechnoClass::AI()
     this->TemporalCheck();
 
     if (!this->Techno || this->Techno->InLimbo || this->Techno->IsImmobilized || this->Techno->Transporter)
-    {
         return;
-    }
 
     this->DrawShield();
     this->RespawnShield();
@@ -220,9 +212,7 @@ int ShieldTechnoClass::GetPercentageAmount(double iStatus)
     if (iStatus)
     {
         if (iStatus >= -1.0 && iStatus <= 1.0)
-        {
             return int(this->GetExt()->Shield_Strength * iStatus);
-        }
 
         if (iStatus < 0)
         {
@@ -241,14 +231,10 @@ int ShieldTechnoClass::GetPercentageAmount(double iStatus)
 void ShieldTechnoClass::InvalidatePointer(void* ptr)
 {
     if (this->Techno == ptr)
-    {
         this->Techno = nullptr;
-    }
 
     if (this->Image == ptr)
-    {
         this->KillAnim();
-    }
 }
 
 void ShieldTechnoClass::UninitAnim::operator() (AnimClass* const pAnim) const
@@ -268,9 +254,7 @@ void ShieldTechnoClass::BreakShield()
     this->HP = 0;
 
     if (this->GetExt()->Shield_Respawn > 0)
-    {
         this->Timer_Respawn.Start(int(this->GetExt()->Shield_Respawn_Rate * 900));
-    }
 
     this->Timer_SelfHealing.Stop();
 
@@ -283,9 +267,7 @@ void ShieldTechnoClass::BreakShield()
             auto pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
 
             if (pAnim)
-            {
                 pAnim->SetOwnerObject(this->Techno);
-            }
         }
     }
 }
@@ -334,9 +316,7 @@ void ShieldTechnoClass::DrawShield()
 void ShieldTechnoClass::CreateAnim()
 {
     if (this->Techno->CloakState != CloakState::Uncloaked)
-    {
         return;
-    }
     if (this->GetExt()->Shield_IdleAnim.isset())
     {
         if (AnimTypeClass* const pAnimType = this->GetExt()->Shield_IdleAnim)
@@ -370,18 +350,13 @@ void ShieldTechnoClass::DrawShieldBar(int iLength, Point2D* pLocation, Rectangle
 
 void ShieldTechnoClass::DrawShieldBarBuilding(int iLength, Point2D* pLocation, RectangleStruct* pBound)
 {
-    int iCurrent = int((double)this->HP / this->GetExt()->Shield_Strength * iLength);
-    int iTotal = iCurrent;
-    if (iCurrent < 0)
-    {
-        iCurrent = 0;
-        iTotal = 0;
-    }
+    int iCurrent = int(this->GetShieldRatio() * iLength);
+    int min = this->HP != 0;
+    if (iCurrent < min)
+        iCurrent = min;
     if (iCurrent > iLength)
-    {
         iCurrent = iLength;
-        iTotal = iLength;
-    }
+    int iTotal = iCurrent;
     int frame = this->DrawShieldBar_Pip();
     Point2D vPos = { 0,0 };
     CoordStruct vCoords = { 0,0,0 };
@@ -448,15 +423,12 @@ void ShieldTechnoClass::DrawShieldBarOther(int iLength, Point2D* pLocation, Rect
     }
     if (this->Techno->IsSelected) DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPBRD_SHP, frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
 
-    int iTotal = int((double)this->HP / this->GetExt()->Shield_Strength * iLength);
-    if (iTotal < 0)
-    {
-        iTotal = 0;
-    }
+    int iTotal = int(this->GetShieldRatio() * iLength);
+    int min = this->HP != 0;
+    if (iTotal < min)
+        iTotal = min;
     if (iTotal > iLength)
-    {
         iTotal = iLength;
-    }
     frame = this->DrawShieldBar_Pip();
     for (int i = 0; i < iTotal; ++i)
     {
