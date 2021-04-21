@@ -253,13 +253,14 @@ void ShieldTechnoClass::InvalidatePointer(void* ptr)
 
 void ShieldTechnoClass::UninitAnim::operator() (AnimClass* const pAnim) const
 {
-    auto buffer = abstract_cast<TechnoClass*>(pAnim->OwnerObject);
-    pAnim->SetOwnerObject(nullptr);
-
-    if (buffer)
+    TechnoClass* buffer = nullptr;
+    if (pAnim)
     {
-        pAnim->UnInit();
+        buffer = abstract_cast<TechnoClass*>(pAnim->OwnerObject);
+        pAnim->SetOwnerObject(nullptr);
     }
+    if (buffer)
+        pAnim->UnInit();
 }
 
 void ShieldTechnoClass::BreakShield()
