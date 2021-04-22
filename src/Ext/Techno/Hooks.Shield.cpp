@@ -2,6 +2,7 @@
 #include <SpecificStructures.h>
 
 #include "../TechnoType/Body.h"
+#include "../WarheadType/Body.h"
 
 // #issue 88 : shield logic
 DEFINE_HOOK(701900, TechnoClass_ReceiveDamage_Shield, 6)
@@ -31,6 +32,18 @@ DEFINE_HOOK_AGAIN(6F7D31, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_
 DEFINE_HOOK_AGAIN(6FCB64, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_CanFire_Shield
 DEFINE_HOOK(708AEB, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_ShouldRetaliate_Shield
 {
+    WeaponTypeClass* pWeapon = nullptr;
+    if (R->Origin() == 0x708AEB)
+        pWeapon = R->ESI<WeaponTypeClass*>();
+    else if (R->Origin() == 0x6F7D31)
+        pWeapon = R->EBP<WeaponTypeClass*>();
+    else
+        pWeapon = R->EBX<WeaponTypeClass*>();
+
+    if (auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead))
+        if (pWHExt->PenetratesShield)
+            return 0;
+    
     TechnoClass* pTarget = nullptr;
     if (R->Origin() == 0x6F7D31 || R->Origin() == 0x70CF39)
         pTarget = R->ESI<TechnoClass*>();
