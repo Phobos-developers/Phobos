@@ -26,11 +26,16 @@ DEFINE_HOOK(701900, TechnoClass_ReceiveDamage_Shield, 6)
     return 0;
 }
 
-DEFINE_HOOK(6FCB64, TechnoClass_CanFire_Shield, 6)
+DEFINE_HOOK_AGAIN(70CF39, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_EvalThreatRating_Shield
+DEFINE_HOOK_AGAIN(6F7D31, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_CanAutoTargetObject_Shield
+DEFINE_HOOK_AGAIN(6FCB64, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_CanFire_Shield
+DEFINE_HOOK(708AEB, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_ShouldRetaliate_Shield
 {
-    GET_STACK(TechnoClass*, pTarget, STACK_OFFS(0x20, -0x4));
-    //GET(TechnoClass*, pThis, ESI);
-    GET(WeaponTypeClass*, pWeapon, EBX);
+    TechnoClass* pTarget = nullptr;
+    if (R->Origin() == 0x6F7D31 || R->Origin() == 0x70CF39)
+        pTarget = R->ESI<TechnoClass*>();
+    else
+        pTarget = R->EBP<TechnoClass*>();
 
     if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
     {
@@ -38,13 +43,12 @@ DEFINE_HOOK(6FCB64, TechnoClass_CanFire_Shield, 6)
         {
             if (pShieldData->Available() && pShieldData->GetShieldHP())
             {
-                if (!pShieldData->CanBeTargeted(pWeapon/*, pThis*/))
-                    return 0x6FCB7E;
-
-                return 0x6FCB8D;
+                R->EAX(TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType())->Shield_Armor);
+                return R->Origin() + 6;
             }
         }
     }
+
     return 0;
 }
 
