@@ -45,6 +45,15 @@ public:
 		Nullable<AnimTypeClass*> Shield_RespawnAnim;
 		Nullable<AnimTypeClass*> Shield_HitAnim;
 
+		Nullable<AnimTypeClass*> WarpOut;
+		Nullable<AnimTypeClass*> WarpIn;
+		Nullable<AnimTypeClass*> WarpAway;
+		Nullable<bool> ChronoTrigger;
+		Nullable<int> ChronoDistanceFactor;
+		Nullable<int> ChronoMinimumDelay;
+		Nullable<int> ChronoRangeMinimum;
+		Nullable<int> ChronoDelay;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			HealthBar_Hide(false),
 			UIDescription(),
@@ -74,7 +83,15 @@ public:
 			Shield_IdleAnim(),
 			Shield_BreakAnim(),
 			Shield_RespawnAnim(),
-			Shield_HitAnim()
+			Shield_HitAnim(),
+			WarpOut(),
+			WarpIn(),
+			WarpAway(),
+			ChronoTrigger(),
+			ChronoDistanceFactor(),
+			ChronoMinimumDelay(),
+			ChronoRangeMinimum(),
+			ChronoDelay()
 		{ }
 
 		virtual ~ExtData() = default;

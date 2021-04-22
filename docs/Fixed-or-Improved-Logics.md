@@ -58,6 +58,30 @@ SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; single int / comma-sep. range
 ```
 
+## TechnoType
+
+### Customizable Teleport/Chrono Locomotor settings per TechnoType 
+
+![image](_static/images/cust-Chrono.gif)  
+*Chrono Legionere and Ronco (hero) from [YR:New War] (https://www.moddb.com/mods/yuris-revenge-new-war)*
+
+- You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`.
+- Only applicable to Techno that have Teleport/Chrono Locomotor attached.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]            ; TechnoType 
+WarpOut=                ; Anim (played when Techno warping out)         
+WarpIn=                 ; Anim (played when Techno warping in)
+WarpAway=               ; Anim (played when Techno chronowarped by chronosphere)
+ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
+ChronoDistanceFactor=   ; integer, amount to divide the distance to destination by to get the warped out delay
+ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance
+ChronoRangeMinimum=     ; integer, can be used to set a small range within which the delay is constant
+ChronoDelay=            ; integer, delay after teleport for chronosphere
+
+```
+
 ## Weapons
 
 ### Togglable ElectricBolt visuals
