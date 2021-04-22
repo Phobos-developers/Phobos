@@ -15,18 +15,23 @@ public:
     ~ShieldTechnoClass() = default;
 
     int ReceiveDamage(args_ReceiveDamage* args);
-    bool CanBeTargeted(WeaponTypeClass* pWeapon, TechnoClass* pSource);
+    bool CanBeTargeted(WeaponTypeClass* pWeapon/*, TechnoClass* pSource*/);
     void AI();
     void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
     void InvalidatePointer(void* ptr);
-	int GetShieldHP();
+    int GetShieldHP();
+    double GetShieldRatio();
+    bool Available();
+
+    static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
 
     bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
     bool Save(PhobosStreamWriter& Stm) const;
-    
+
 private:
     // static constexpr int ScanInterval = 15;		//!< Minimum delay between scans in frames.
-    struct UninitAnim {
+    struct UninitAnim
+    {
         void operator() (AnimClass* const pAnim) const;
     };
 
@@ -42,12 +47,15 @@ private:
     void WeaponNullifyAnim();
     void ResponseAttack();
     void TemporalCheck();
+    void ConvertCheck();
     void DrawShieldBarBuilding(int iLength, Point2D* pLocation, RectangleStruct* pBound);
     void DrawShieldBarOther(int iLength, Point2D* pLocation, RectangleStruct* pBound);
     int DrawShieldBar_Pip();
 
     /// Properties ///
     TechnoClass* Techno;
+    char TechnoID[0x18];
+    bool Update;
     int HP;
     TimerStruct Timer_SelfHealing;
     TimerStruct Timer_Respawn;
