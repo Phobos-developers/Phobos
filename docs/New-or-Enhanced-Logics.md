@@ -273,13 +273,19 @@ SplashList.PickRandom=no ; play a random animation from the list? boolean, defau
 *Interception logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberium-crisis) mod*
 
 - Projectiles can now be made targetable by certain TechnoTypes. Interceptor TechnoType's projectile must be `Inviso=yes` in order for it to work and the projectile must be used in a primary Weapon. 
+  - `Interceptor.GuardRange` is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
+  - `Interceptor.EliteGuardRange` value is used if the unit veterancy is Elite.
+  - `Interceptor.MinimumGuardRange` is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
+  - `Interceptor.EliteMinimumGuardRange` value is used if the unit veterancy is Elite.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                    ; TechnoType
-Interceptor=no                  ; boolean
-Interceptor.GuardRange=0.0      ; double
-Interceptor.EliteGuardRange=0.0 ; double
+[SOMETECHNO]                            ; TechnoType
+Interceptor=no                          ; boolean
+Interceptor.GuardRange=0.0              ; double
+Interceptor.EliteGuardRange=0.0         ; double
+Interceptor.MinimumGuardRange=0.0       ; double
+Interceptor.EliteMinimumGuardRange=0.0  ; double
 
 [SOMEPROJECTILE] ; Projectile
 Interceptable=no ; boolean
