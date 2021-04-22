@@ -106,15 +106,11 @@ DEFINE_HOOK(6F9E50, TechnoClass_AI_Shield, 5)
     auto pExt = TechnoExt::ExtMap.Find(pThis);
     auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-    if (pTypeData->Shield_Strength)
-    {
-        if (!pExt->ShieldData)
-        {
-            pExt->ShieldData = std::make_unique<ShieldTechnoClass>(pThis);
-        }
-
+    if (pTypeData->Shield_Strength && !pExt->ShieldData)
+        pExt->ShieldData = std::make_unique<ShieldTechnoClass>(pThis);
+    if (pExt->ShieldData)
         pExt->ShieldData->AI();
-    }
+
     return 0;
 }
 

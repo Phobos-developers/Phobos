@@ -23,11 +23,12 @@ ShieldTechnoClass::ShieldTechnoClass(TechnoClass* pTechno) :
     Temporal { false }
     //Broken{ false }
 {
+    sprintf_s(this->TechnoID, this->Techno->get_ID());
     this->CreateAnim();
 }
 const TechnoTypeExt::ExtData* ShieldTechnoClass::GetExt()
 {
-    return TechnoTypeExt::ExtMap.Find(Techno->GetTechnoType());
+    return TechnoTypeExt::ExtMap.Find(this->Techno->GetTechnoType());
 }
 
 bool ShieldTechnoClass::Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -164,6 +165,7 @@ bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon/*, TechnoClass* p
 void ShieldTechnoClass::AI()
 {
     this->TemporalCheck();
+    this->ConvertCheck();
 
     if (!this->Techno || this->Techno->InLimbo || this->Techno->IsImmobilized || this->Techno->Transporter)
         return;
@@ -186,6 +188,31 @@ void ShieldTechnoClass::TemporalCheck()
         this->Temporal = false;
         if (this->HP == 0) this->Timer_Respawn.Resume();
         else this->Timer_SelfHealing.Resume();
+    }
+}
+
+void ShieldTechnoClass::ConvertCheck()
+{
+    if (strcmp(this->TechnoID, this->Techno->get_ID()))
+    {
+        if (this->GetExt()->Shield_Strength)
+        {
+            auto pOrigin = TechnoTypeClass::Find(this->TechnoID);
+            sprintf_s(this->TechnoID, this->Techno->get_ID());
+            auto pOriginExt = TechnoTypeExt::ExtMap.Find(pOrigin);
+            this->HP = int((double)this->HP / pOriginExt->Shield_Strength * this->GetExt()->Shield_Strength);
+            if (this->HaveAnim)
+            {
+                this->KillAnim();
+                this->CreateAnim();
+            }
+        }
+        else
+        {
+            auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
+            this->KillAnim();
+            pTechnoExt->ShieldData = nullptr;
+        }
     }
 }
 

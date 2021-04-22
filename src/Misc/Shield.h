@@ -46,12 +46,14 @@ private:
     void WeaponNullifyAnim();
     void ResponseAttack();
     void TemporalCheck();
+    void ConvertCheck();
     void DrawShieldBarBuilding(int iLength, Point2D* pLocation, RectangleStruct* pBound);
     void DrawShieldBarOther(int iLength, Point2D* pLocation, RectangleStruct* pBound);
     int DrawShieldBar_Pip();
 
     /// Properties ///
     TechnoClass* Techno;
+    char TechnoID[0x18];
     int HP;
     TimerStruct Timer_SelfHealing;
     TimerStruct Timer_Respawn;
