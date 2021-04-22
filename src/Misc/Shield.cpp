@@ -216,6 +216,7 @@ void ShieldTechnoClass::ConvertCheck()
         }
         else if (this->Update)
         {
+            sprintf_s(this->TechnoID, this->Techno->get_ID());
             this->Update = false;
             this->KillAnim();
         }
