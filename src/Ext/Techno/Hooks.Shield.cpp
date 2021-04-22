@@ -1,6 +1,7 @@
 #include "Body.h"
 #include <SpecificStructures.h>
 
+#include <Utilities/GeneralUtils.h>
 #include "../TechnoType/Body.h"
 #include "../WarheadType/Body.h"
 
@@ -56,6 +57,13 @@ DEFINE_HOOK(708AEB, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_Should
         {
             if (pShieldData->Available() && pShieldData->GetShieldHP())
             {
+                double versus = GeneralUtils::GetWarheadVersusArmor(
+                    pWeapon->Warhead, static_cast<int>(pTarget->GetTechnoType()->Armor));
+                if (R->Origin() == 0x6FCB64
+                    && pShieldData->GetShieldRatio() == 1.0
+                    && (pWeapon->Damage < 0 || versus < 0)
+                    && pWeapon->Damage * versus > 0)
+                    return 0x6FCB7E;
                 R->EAX(TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType())->Shield_Armor);
                 return R->Origin() + 6;
             }
