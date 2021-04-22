@@ -16,7 +16,7 @@ public:
 	static void ClearFoggedObjects(CellClass* pCell);
 
 	static bool DrawIfVisible(FoggedObject* pFoggedObject, RectangleStruct* pRect);
-	static RectangleStruct* UnionRectangle(RectangleStruct* rect1, RectangleStruct* rect2);
+	static RectangleStruct UnionRectangle(RectangleStruct* rect1, RectangleStruct* rect2);
 
 	static std::vector<FoggedObject*> FoggedObjects;
 };

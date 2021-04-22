@@ -135,8 +135,9 @@ bool FogOfWar::DrawIfVisible(FoggedObject* pFoggedObject, RectangleStruct* pRect
 	return true;
 }
 
-RectangleStruct* FogOfWar::UnionRectangle(RectangleStruct* rect1, RectangleStruct* rect2)
+RectangleStruct FogOfWar::UnionRectangle(RectangleStruct* rect1, RectangleStruct* rect2)
 {
 	RectangleStruct ret;
 	UnionRect((LPRECT)&ret, (LPRECT)rect1, (LPRECT)rect2);
+	return ret;
 }

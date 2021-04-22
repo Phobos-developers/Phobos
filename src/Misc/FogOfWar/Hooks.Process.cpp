@@ -174,17 +174,54 @@ DEFINE_HOOK(6D3470, TacticalClass_DrawFoggedObject, 8)
 
 	// Draw them
 
-	RectangleStruct* pRectToDraw;
+	RectangleStruct rect{ 0,0,0,0 };
 
 	if (bUkn && Drawing::SurfaceDimensions_Hidden.Width > 0 && Drawing::SurfaceDimensions_Hidden.Height > 0)
-		pRectToDraw = &Drawing::SurfaceDimensions_Hidden;
+		rect = FogOfWar::UnionRectangle(&rect, &Drawing::SurfaceDimensions_Hidden);
 	else
 	{
-		int nVisibleCellCount = pTactical->VisibleCellCount;
+		RectangleStruct buffer;
 
+		if (pRect1->Width > 0 && pRect1->Height > 0)
+			rect = FogOfWar::UnionRectangle(&rect, pRect1);
+		if (pRect2->Width > 0 && pRect2->Height > 0)
+			rect = FogOfWar::UnionRectangle(&rect, pRect2);
+
+		if (auto& nVisibleCellCount = pTactical->VisibleCellCount)
+		{
+			buffer.Width = buffer.Height = 60;
+
+			for (unsigned int i = 0; i < nVisibleCellCount; ++i)
+			{
+				auto const pCell = pTactical->VisibleCells[i];
+				auto location = pCell->GetCoords();
+				Point2D point;
+				TacticalClass::Instance->CoordsToClient(&location, &point);
+				buffer.X = Drawing::SurfaceDimensions_Hidden.X + point.X - 30;
+				buffer.Y = Drawing::SurfaceDimensions_Hidden.Y + point.Y;
+				rect = FogOfWar::UnionRectangle(&rect, &buffer);
+			}
+		}
+		
+		for (auto& dirty : Drawing::DirtyAreas())
+		{
+			buffer = dirty.Rect;
+			buffer.Y += Drawing::SurfaceDimensions_Hidden.Y;
+			if (buffer.Width > 0 && buffer.Height > 0)
+				buffer = FogOfWar::UnionRectangle(&rect, &buffer);
+		}
 	}
 
+	if (rect.Width > 0 && rect.Height > 0)
+	{
+		rect.X = std::max(rect.X, 0);
+		rect.Y = std::max(rect.Y, 0);
+		rect.Width = std::min(rect.Width, Drawing::SurfaceDimensions_Hidden.Width - rect.X);
+		rect.Height = std::min(rect.Height, Drawing::SurfaceDimensions_Hidden.Height - rect.Y);
 
+		for (auto pFoggedObj : FogOfWar::FoggedObjects)
+			FogOfWar::DrawIfVisible(pFoggedObj, &rect);
+	}
 
 	return 0x6D3650;
 }

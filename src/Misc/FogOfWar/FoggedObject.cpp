@@ -244,7 +244,7 @@ FoggedOverlay::FoggedOverlay(CellClass* pCell, int overlay, unsigned char overla
 	pCell->ShapeRect(&rect1);
 	pCell->GetContainingRect(&rect2);
 
-	this->Bound = *FogOfWar::UnionRectangle(&rect1, &rect2);
+	this->Bound = FogOfWar::UnionRectangle(&rect1, &rect2);
 	this->Bound.X += TacticalClass::Instance->TacticalPos0.X - Drawing::SurfaceDimensions_Hidden.X;
 	this->Bound.Y += TacticalClass::Instance->TacticalPos0.Y - Drawing::SurfaceDimensions_Hidden.Y;
 
@@ -311,6 +311,7 @@ FoggedBuilding::FoggedBuilding(CoordStruct& location, RectangleStruct& bound, Bu
 {
 	this->Owner = pBuilding->Owner;
 	this->Type = pBuilding->Type;
+	this->FrameIndex = pBuilding->CurrentFrame();
 	this->FireStormWall = pBuilding->Type->LaserFence;
 	this->Translucent = bTranslucent;
 
@@ -322,18 +323,71 @@ FoggedBuilding::FoggedBuilding(BuildingClass* pObject, bool bTranslucent)
 {
 	this->Owner = pObject->Owner;
 	this->Type = pObject->Type;
+	this->FrameIndex = pObject->CurrentFrame();
 	this->FireStormWall = pObject->Type->LaserFence;
 	this->Translucent = bTranslucent;
 }
 
 FoggedBuilding::~FoggedBuilding() = default;
 
+// By AutoGavy
 void FoggedBuilding::Draw(RectangleStruct & rect)
 {
-	auto const pType = this->Type;
-	if (!pType->InvisibleInGame)
-	{
-		// TO BE IMPLEMENTED
+	auto pType = this->Type;
+	auto pSHP = pType->GetImage();
+	if (!pSHP || pType->InvisibleInGame)
+		return;
+
+	Point2D vPos;
+	CoordStruct tempLoc = this->Location - CoordStruct{ 128, 128, 0 };
+	TacticalClass::Instance->CoordsToClient(&tempLoc, &vPos);
+
+	vPos.X += Drawing::SurfaceDimensions_Hidden.X - this->Bound.X;
+	vPos.Y += Drawing::SurfaceDimensions_Hidden.Y - this->Bound.Y;
+
+	Point2D vZShapeMove = {
+		((pType->GetFoundationWidth(), 0) << 8) - 256,
+		((pType->GetFoundationHeight(false), 0) << 8) - 256
+	};
+	Point2D buffer = vZShapeMove;
+	TacticalClass::Instance->AdjustForZShapeMove(&vZShapeMove, &buffer);
+
+	Point2D vOffsetZ = Point2D{
+		pType->ZShapePointMove.X + 144,
+		pType->ZShapePointMove.Y + 172
+	} - vZShapeMove;
+	int nZAdjust = TacticalClass::Instance->AdjustForZ(this->Location.Z);
+
+	Point2D tempPos = Point2D{ this->Location.X, this->Location.Y };
+	CellClass* const pCell = MapClass::Instance->GetTargetCell(&tempPos);
+	if (!pCell->LightConvert)
+		pCell->InitDrawer(0, 0x10000, 0, 1000, 1000, 1000);
+
+	ConvertClass* const pConvert = pType->TerrainPalette ?
+		pCell->LightConvert : (*ColorScheme::Array)[this->Owner->ColorSchemeIndex]->LightConvert;
+
+	RectangleStruct vBounds = this->Bound;
+	if (vBounds.Width > vPos.Y)
+		vBounds.Width = vPos.Y;
+
+	BlitterFlags eFlag = static_cast<BlitterFlags>(0x4E00u);
+	if (vBounds.Width > 0) {
+		if (this->FireStormWall) {
+			// draw shadow
+			DSurface::Temp->DrawSHP(pConvert, pSHP, this->FrameIndex + pSHP->Frames / 2, &vPos, &vBounds,
+				eFlag | BlitterFlags::Darken, 0, -nZAdjust, 0, 1000, 0, nullptr, 0, 0, 0);
+			// draw main
+			DSurface::Temp->DrawSHP(pConvert, pSHP, this->FrameIndex, &vPos, &vBounds,
+				eFlag, 0, -nZAdjust, 0, DWORD(pType->ExtraLight + pCell->Color1_Red), 0, nullptr, 0, 0, 0);
+		}
+		else {
+			// draw shadow
+			DSurface::Temp->DrawSHP(pConvert, pSHP, this->FrameIndex + pSHP->Frames / 2, &vPos, &vBounds,
+				eFlag | BlitterFlags::Darken, 0, -nZAdjust, 0, 1000, 0, nullptr, 0, 0, 0);
+			// draw main
+			DSurface::Temp->DrawSHP(pConvert, pSHP, this->FrameIndex, &vPos, &vBounds,
+				eFlag, 0, nZAdjust + pType->NormalZAdjust - 2, 0, DWORD(pType->ExtraLight + pCell->Color1_Red), 0, nullptr, 0, vOffsetZ.X, vOffsetZ.Y);
+		}
 	}
 }
 
@@ -352,7 +406,9 @@ bool FoggedBuilding::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 	return FoggedObject::Load(Stm, RegisterForChange) && Stm
 		.Process(this->Owner)
 		.Process(this->Type)
+		.Process(this->FrameIndex)
 		.Process(this->FireStormWall)
+		.Process(this->Translucent)
 		.Success();
 }
 
@@ -361,6 +417,8 @@ bool FoggedBuilding::Save(PhobosStreamWriter& Stm) const
 	return FoggedObject::Save(Stm) && Stm
 		.Process(this->Owner)
 		.Process(this->Type)
+		.Process(this->FrameIndex)
 		.Process(this->FireStormWall)
+		.Process(this->Translucent)
 		.Success();
 }

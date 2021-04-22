@@ -85,6 +85,7 @@ class FoggedBuilding : public FoggedObject
 public:
 	HouseClass* Owner;
 	BuildingTypeClass* Type;
+	int FrameIndex;
 	bool FireStormWall;
 
 public:
