@@ -105,7 +105,7 @@ DEFINE_HOOK(6F9E50, TechnoClass_AI_Shield, 5)
 
     if (pTypeData->Shield_Strength && !pExt->ShieldData)
         pExt->ShieldData = std::make_unique<ShieldTechnoClass>(pThis);
-    if (pExt->ShieldData && pExt->ShieldData->Available())
+    if (pExt->ShieldData)
         pExt->ShieldData->AI();
 
     return 0;

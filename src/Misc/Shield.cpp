@@ -165,8 +165,12 @@ bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon/*, TechnoClass* p
 
 void ShieldTechnoClass::AI()
 {
-    this->TemporalCheck();
     this->ConvertCheck();
+
+    if (!this->Update)
+        return;
+
+    this->TemporalCheck();
 
     if (!this->Techno || this->Techno->InLimbo || this->Techno->IsImmobilized || this->Techno->Transporter)
         return;
