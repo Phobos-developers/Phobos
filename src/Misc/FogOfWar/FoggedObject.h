@@ -36,7 +36,7 @@ public:
 	FoggedSmudge(CellClass* pCell, int smudge, unsigned char smudgeData);
 	// FoggedSmudge(ObjectClass* pObject, int smudge);
 
-	virtual ~FoggedSmudge();
+	virtual ~FoggedSmudge() override;
 	virtual void Draw(RectangleStruct& rect) override;
 	virtual int GetType() override;
 	virtual BuildingTypeClass* GetBuildingType() override;
@@ -53,7 +53,7 @@ public:
 	FoggedTerrain(CoordStruct& location, RectangleStruct& bound, int terrain);
 	FoggedTerrain(ObjectClass* pObject, int terrain);
 
-	virtual ~FoggedTerrain();
+	virtual ~FoggedTerrain() override;
 	virtual void Draw(RectangleStruct& rect) override;
 	virtual int GetType() override;
 	virtual BuildingTypeClass* GetBuildingType() override;
@@ -72,7 +72,7 @@ public:
 	FoggedOverlay(CellClass* pCell, int overlay, unsigned char overlayData);
 	// FoggedOverlay(ObjectClass* pObject, int overlay, unsigned char overlayData);
 
-	virtual ~FoggedOverlay();
+	virtual ~FoggedOverlay() override;
 	virtual void Draw(RectangleStruct& rect) override;
 	virtual int GetType() override;
 	virtual BuildingTypeClass* GetBuildingType() override;
@@ -92,7 +92,7 @@ public:
 	FoggedBuilding(CoordStruct& location, RectangleStruct& bound, BuildingClass* building, bool bTranslucent);
 	FoggedBuilding(BuildingClass* pObject, bool bTranslucent);
 
-	virtual ~FoggedBuilding();
+	virtual ~FoggedBuilding() override;
 	virtual void Draw(RectangleStruct& rect) override;
 	virtual int GetType() override;
 	virtual BuildingTypeClass* GetBuildingType() override;

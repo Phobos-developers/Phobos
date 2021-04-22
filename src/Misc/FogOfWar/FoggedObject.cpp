@@ -43,7 +43,11 @@ FoggedObject::FoggedObject(ObjectClass* pObject)
 	}
 }
 
-FoggedObject::~FoggedObject() = default;
+FoggedObject::~FoggedObject()
+{
+	auto itr = std::find(FogOfWar::FoggedObjects.begin(), FogOfWar::FoggedObjects.end(), this);
+	FogOfWar::FoggedObjects.erase(itr);
+}
 
 int FoggedObject::GetType()
 {
@@ -103,7 +107,10 @@ FoggedSmudge::FoggedSmudge(CellClass* pCell, int smudge, unsigned char smudgeDat
 	pExt->FoggedObjects.push_back(this);
 }
 
-FoggedSmudge::~FoggedSmudge() = default;
+FoggedSmudge::~FoggedSmudge()
+{
+	this->FoggedObject::~FoggedObject();
+}
 
 void FoggedSmudge::Draw(RectangleStruct & rect)
 {
@@ -161,7 +168,10 @@ FoggedTerrain::FoggedTerrain(ObjectClass* pObject, int terrain)
 {
 }
 
-FoggedTerrain::~FoggedTerrain() = default;
+FoggedTerrain::~FoggedTerrain()
+{
+	this->FoggedObject::~FoggedObject();
+}
 
 void FoggedTerrain::Draw(RectangleStruct & rect)
 {
@@ -258,7 +268,10 @@ FoggedOverlay::FoggedOverlay(CellClass* pCell, int overlay, unsigned char overla
 	pExt->FoggedObjects.push_back(this);
 }
 
-FoggedOverlay::~FoggedOverlay() = default;
+FoggedOverlay::~FoggedOverlay()
+{
+	this->FoggedObject::~FoggedObject();
+}
 
 void FoggedOverlay::Draw(RectangleStruct & rect)
 {
@@ -328,7 +341,10 @@ FoggedBuilding::FoggedBuilding(BuildingClass* pObject, bool bTranslucent)
 	this->Translucent = bTranslucent;
 }
 
-FoggedBuilding::~FoggedBuilding() = default;
+FoggedBuilding::~FoggedBuilding()
+{
+	this->FoggedObject::~FoggedObject();
+}
 
 // By AutoGavy
 void FoggedBuilding::Draw(RectangleStruct & rect)

@@ -35,10 +35,10 @@ CellExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
-DEFINE_HOOK(47B390, CellClass_CTOR, 6)
+DEFINE_HOOK(47BBF0, CellClass_CTOR, 6)
 {
-	GET(CellClass*, pItem, ESI);
-
+	GET(CellClass*, pItem, ECX);
+	Debug::Log(__FUNCTION__" called. pThis = %p\n", pItem);
 	CellExt::ExtMap.FindOrAllocate(pItem);
 	return 0;
 }
@@ -46,7 +46,7 @@ DEFINE_HOOK(47B390, CellClass_CTOR, 6)
 DEFINE_HOOK(47BB60, CellClass_DTOR, 6)
 {
 	GET(CellClass*, pItem, ECX);
-
+	Debug::Log(__FUNCTION__" called. pThis = %p\n", pItem);
 	CellExt::ExtMap.Remove(pItem);
 	return 0;
 }
@@ -62,13 +62,13 @@ DEFINE_HOOK(4839F0, CellClass_SaveLoad_Prefix, 7)
 	return 0;
 }
 
-DEFINE_HOOK(483C05, CellClass_Load_Suffix, 3)
+DEFINE_HOOK(483C00, CellClass_Load_Suffix, 5)
 {
 	CellExt::ExtMap.LoadStatic();
 	return 0;
 }
 
-DEFINE_HOOK(483C7C, CellClass_Save_Suffix, 3)
+DEFINE_HOOK(483C79, CellClass_Save_Suffix, 6)
 {
 	CellExt::ExtMap.SaveStatic();
 	return 0;
