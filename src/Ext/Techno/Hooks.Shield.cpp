@@ -57,14 +57,17 @@ DEFINE_HOOK(708AEB, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_Should
         {
             if (pShieldData->Available() && pShieldData->GetShieldHP())
             {
-                double versus = GeneralUtils::GetWarheadVersusArmor(
-                    pWeapon->Warhead, static_cast<int>(pTarget->GetTechnoType()->Armor));
+                auto shieldArmor = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType())->Shield_Armor;
+                double versusTarget = GeneralUtils::GetWarheadVersusArmor(
+                        pWeapon->Warhead, static_cast<int>(pTarget->GetTechnoType()->Armor)),
+                    versusShield = GeneralUtils::GetWarheadVersusArmor(
+                        pWeapon->Warhead, shieldArmor);
                 if (R->Origin() == 0x6FCB64
                     && pShieldData->GetShieldRatio() == 1.0
-                    && (pWeapon->Damage < 0 || versus < 0)
-                    && pWeapon->Damage * versus > 0)
+                    && (pWeapon->Damage < 0 || versusShield < 0)
+                    && pWeapon->Damage * versusTarget > 0)
                     return 0x6FCB7E;
-                R->EAX(TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType())->Shield_Armor);
+                R->EAX(shieldArmor);
                 return R->Origin() + 6;
             }
         }
