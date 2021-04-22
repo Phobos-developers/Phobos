@@ -17,6 +17,7 @@ DEFINE_HOOK(701900, TechnoClass_ReceiveDamage_Shield, 6)
     {
         if (!pShieldData->Available())
             return 0;
+
         auto nDamageLeft = pShieldData->ReceiveDamage(args);
         if (nDamageLeft >= 0)
             *args->Damage = nDamageLeft;
@@ -39,6 +40,7 @@ DEFINE_HOOK(6FCB64, TechnoClass_CanFire_Shield, 6)
             {
                 if (!pShieldData->CanBeTargeted(pWeapon/*, pThis*/))
                     return 0x6FCB7E;
+
                 return 0x6FCB8D;
             }
         }
@@ -77,7 +79,10 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
 {
     GET(TechnoClass*, pThis, ESI);
     GET(TechnoClass*, pTarget, EBP);
-    if (!pTarget) return 0x6F37AD; //Target invalid, skip. (test ebp,ebp  jz loc_6F37AD)
+
+    if (!pTarget)
+        return 0x6F37AD; //Target invalid, skip. (test ebp,ebp  jz loc_6F37AD)
+
     if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
     {
         if (auto pShieldData = pExt->ShieldData.get())
@@ -87,9 +92,11 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
                 if (pThis->GetWeapon(1))
                 {
                     if (!pShieldData->CanBeTargeted(pThis->GetWeapon(0)->WeaponType/*, pThis*/))
-                        return 0x6F3745; //Priamry cannot attack, always use Secondary
+                        return 0x6F3745; //Primary cannot attack, always use Secondary
+
                     return 0x6F3754; //Further check in vanilla function
                 }
+
                 return 0x6F37AD; //Don't have Secondary, always use Primary
             }
         }
@@ -105,6 +112,7 @@ DEFINE_HOOK(6F9E50, TechnoClass_AI_Shield, 5)
 
     if (pTypeData->Shield_Strength && !pExt->ShieldData)
         pExt->ShieldData = std::make_unique<ShieldTechnoClass>(pThis);
+
     if (pExt->ShieldData)
         pExt->ShieldData->AI();
 

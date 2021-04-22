@@ -77,11 +77,13 @@ Promote.IncludeSpawns=no  ; boolean
 *Buildings, Infantries and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - Now you can have a shield for any TechnoType if `Shield.Strength` is set greater than 0. It serves as a second health pool with independent `Armor` and `Strength` values.
-  - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed for recover, no remain for owner unit.
-  - When executing `DeploysInto` or `UndeploysInto`, if both of them have shield settings, the transformed unit/building would have same percentage remain shield, same as what happened to `Strength`. But currently this don't support for Ares' `Convert.*`, might change in the future.
+  - The vanilla behavior for special `Verses` values like `1%`, `2%` is not currently supported.
+  - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed by shield/
+- When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoClasses have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
+  - This also works with Ares' `Convert.*`.
 - `Shield.AbsorbOverDamage`controls whether or not the shield absorbs damage dealt beyond shield's current strength when the shield breaks.
 - `Shield.SelfHealing` and `Shield.Respawn` respect the following settings: 0.0 disables the feature, 1%-100% recovers/respawns the shield strength in percentage, other number recovers/respawns the shield strength directly. Specially, `Shield.SelfHealing` with a negative number deducts the shield strength.
-  - If you want shield recovers/respawns 1 HP per time, currently you need set tag value to any number greater than 1 lower than 2, like `1.1`.
+  - If you want shield recovers/respawns 1 HP per time, currently you need to set tag value to any number between 1 and 2, like `1.1`.
 - `Shield.SelfHealing.Rate` and `Shield.Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
 - `Shield.IdleAnim`, if set, will be played while the shield is intact. This animation is automatically set to loop indefinitely.
 - `Shield.BreakAnim`, if set, will be played when the shield has been broken.

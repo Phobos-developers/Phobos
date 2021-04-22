@@ -11,14 +11,19 @@
 #include <HouseClass.h>
 #include <RadarEventClass.h>
 
-ShieldTechnoClass::ShieldTechnoClass() :Techno { nullptr }, HP { 0 }, Timer_Respawn {}, Timer_SelfHealing {}{};
+ShieldTechnoClass::ShieldTechnoClass() :
+    Techno { nullptr },
+    HP { 0 },
+    Timer_Respawn { },
+    Timer_SelfHealing { }
+{ }
 
 ShieldTechnoClass::ShieldTechnoClass(TechnoClass* pTechno) :
     Techno { pTechno },
     Update { true },
     HP { this->GetExt()->Shield_Strength },
-    Timer_Respawn {},
-    Timer_SelfHealing {},
+    Timer_Respawn { },
+    Timer_SelfHealing { },
     Image { nullptr },
     HaveAnim { true },
     Temporal { false }
@@ -27,6 +32,7 @@ ShieldTechnoClass::ShieldTechnoClass(TechnoClass* pTechno) :
     sprintf_s(this->TechnoID, this->Techno->get_ID());
     this->CreateAnim();
 }
+
 const TechnoTypeExt::ExtData* ShieldTechnoClass::GetExt()
 {
     return TechnoTypeExt::ExtMap.Find(this->Techno->GetTechnoType());
@@ -109,17 +115,22 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
         }
     }
     else if (!nDamage)
+    {
         return 0;
+    }
+
     else
     {
         auto LostHP = this->GetExt()->Shield_Strength - this->HP;
-        if (!LostHP) return *args->Damage;
+        if (!LostHP)
+            return *args->Damage;
 
         auto RemainLostHP = LostHP + nDamage;
         if (RemainLostHP < 0)
             this->HP = this->GetExt()->Shield_Strength;
         else
             this->HP -= nDamage;
+
         return 0;
     }
 }
@@ -128,6 +139,7 @@ void ShieldTechnoClass::ResponseAttack()
 {
     if (this->Techno->Owner != HouseClass::Player)
         return;
+
     if (this->Techno->WhatAmI() == AbstractType::Building)
     {
         auto pBld = abstract_cast<BuildingClass*>(this->Techno);
@@ -159,7 +171,7 @@ bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon/*, TechnoClass* p
         return true;
 
     bool result = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->GetExt()->Shield_Armor) != 0.0;
-    
+
     return this->HP ? result : true;
 }
 
@@ -185,14 +197,18 @@ void ShieldTechnoClass::TemporalCheck()
     if (this->Techno->TemporalTargetingMe && !this->Temporal)
     {
         this->Temporal = true;
-        if (this->HP == 0) this->Timer_Respawn.Pause();
-        else this->Timer_SelfHealing.Pause();
+        if (this->HP == 0)
+            this->Timer_Respawn.Pause();
+        else
+            this->Timer_SelfHealing.Pause();
     }
     else if (!this->Techno->TemporalTargetingMe && this->Temporal)
     {
         this->Temporal = false;
-        if (this->HP == 0) this->Timer_Respawn.Resume();
-        else this->Timer_SelfHealing.Resume();
+        if
+            (this->HP == 0) this->Timer_Respawn.Resume();
+        else
+            this->Timer_SelfHealing.Resume();
     }
 }
 
@@ -210,8 +226,11 @@ void ShieldTechnoClass::ConvertCheck()
             }
             else
             {
-                if (this->HP == 0) this->Timer_Respawn.Resume();
-                else this->Timer_SelfHealing.Resume();
+                if (this->HP == 0)
+                    this->Timer_Respawn.Resume();
+                else
+                    this->Timer_SelfHealing.Resume();
+
                 this->Update = true;
             }
 
@@ -226,8 +245,12 @@ void ShieldTechnoClass::ConvertCheck()
         else
         {
             sprintf_s(this->TechnoID, this->Techno->get_ID());
-            if (this->HP == 0) this->Timer_Respawn.Pause();
-            else this->Timer_SelfHealing.Pause();
+
+            if (this->HP == 0)
+                this->Timer_Respawn.Pause();
+            else
+                this->Timer_SelfHealing.Pause();
+
             this->Update = false;
             this->KillAnim();
         }
@@ -285,11 +308,13 @@ void ShieldTechnoClass::InvalidatePointer(void* ptr)
 void ShieldTechnoClass::UninitAnim::operator() (AnimClass* const pAnim) const
 {
     TechnoClass* buffer = nullptr;
+
     if (pAnim)
     {
         buffer = abstract_cast<TechnoClass*>(pAnim->OwnerObject);
         pAnim->SetOwnerObject(nullptr);
     }
+
     if (buffer)
         pAnim->UnInit();
 }
@@ -309,9 +334,7 @@ void ShieldTechnoClass::BreakShield()
     {
         if (auto pAnimType = this->GetExt()->Shield_BreakAnim)
         {
-            auto pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
-
-            if (pAnim)
+            if (auto pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords()))
                 pAnim->SetOwnerObject(this->Techno);
         }
     }
@@ -362,6 +385,7 @@ void ShieldTechnoClass::CreateAnim()
 {
     if (this->Techno->CloakState != CloakState::Uncloaked)
         return;
+
     if (this->GetExt()->Shield_IdleAnim.isset())
     {
         if (AnimTypeClass* const pAnimType = this->GetExt()->Shield_IdleAnim)
@@ -395,50 +419,59 @@ void ShieldTechnoClass::DrawShieldBar(int iLength, Point2D* pLocation, Rectangle
 
 void ShieldTechnoClass::DrawShieldBarBuilding(int iLength, Point2D* pLocation, RectangleStruct* pBound)
 {
+    CoordStruct vCoords = { 0, 0, 0 };
+    this->Techno->GetTechnoType()->Dimension2(&vCoords);
+
+    Point2D vPos2 = { 0, 0 };
+    CoordStruct vCoords2 = { -vCoords.X / 2, vCoords.Y / 2,vCoords.Z };
+    TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
+
+    Point2D vLoc = *pLocation;
+    vLoc.X -= 5;
+    vLoc.Y -= 3;
+
+    Point2D vPos = { 0, 0 };
+
     int iCurrent = int(this->GetShieldRatio() * iLength);
     int min = this->HP != 0;
+
     if (iCurrent < min)
         iCurrent = min;
     if (iCurrent > iLength)
         iCurrent = iLength;
+
     int iTotal = iCurrent;
     int frame = this->DrawShieldBar_Pip();
-    Point2D vPos = { 0,0 };
-    CoordStruct vCoords = { 0,0,0 };
-    this->Techno->GetTechnoType()->Dimension2(&vCoords);
-    Point2D vPos2 = { 0,0 };
-    CoordStruct vCoords2 = { -vCoords.X / 2, vCoords.Y / 2,vCoords.Z };
-    TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
-    Point2D vLoc = *pLocation;
-    vLoc.X -= 5;
-    vLoc.Y -= 3;
+
     if (iCurrent > 0)
     {
-        int deltaX = 0;
-        int deltaY = 0;
-        int frameIdx = iTotal;
-        for (; frameIdx; frameIdx--)
+        int frameIdx, deltaX, deltaY;
+        for (frameIdx = iTotal, deltaX = 0, deltaY = 0;
+            frameIdx;
+            frameIdx--, deltaX += 4, deltaY -= 2)
         {
             vPos.X = vPos2.X + vLoc.X + 4 * iLength + 3 - deltaX;
             vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
-            DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP, frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
-            deltaX += 4;
-            deltaY -= 2;
+
+            DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
+                frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
         }
+
         iCurrent = iTotal;
     }
+
     if (iCurrent < iLength)
     {
-        int deltaX = 4 * iTotal;
-        int deltaY = -2 * iCurrent;
-        int frameIdx = iLength - iTotal;
-        for (; frameIdx; frameIdx--)
+        int frameIdx, deltaX, deltaY;
+        for (frameIdx = iLength - iTotal, deltaX = 4 * iTotal, deltaY = -2 * iCurrent;
+            frameIdx;
+            frameIdx--, deltaX += 4, deltaY -= 2)
         {
             vPos.X = vPos2.X + vLoc.X + 4 * iLength + 3 - deltaX;
             vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
-            DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP, 0, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
-            deltaX += 4;
-            deltaY -= 2;
+
+            DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
+                0, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
         }
     }
 }
@@ -450,6 +483,7 @@ void ShieldTechnoClass::DrawShieldBarOther(int iLength, Point2D* pLocation, Rect
     int frame, XOffset, YOffset;
     YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->GetExt()->Shield_BracketDelta;
     vLoc.Y -= 5;
+
     if (iLength == 8)
     {
         vPos.X = vLoc.X + 11;
@@ -466,26 +500,37 @@ void ShieldTechnoClass::DrawShieldBarOther(int iLength, Point2D* pLocation, Rect
         XOffset = -15;
         YOffset -= 25;
     }
-    if (this->Techno->IsSelected) DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPBRD_SHP, frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+
+    if (this->Techno->IsSelected)
+    {
+        DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPBRD_SHP,
+            frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+    }
 
     int iTotal = int(this->GetShieldRatio() * iLength);
     int min = this->HP != 0;
+
     if (iTotal < min)
         iTotal = min;
     if (iTotal > iLength)
         iTotal = iLength;
+
     frame = this->DrawShieldBar_Pip();
+
     for (int i = 0; i < iTotal; ++i)
     {
         vPos.X = vLoc.X + XOffset + 2 * i;
         vPos.Y = vLoc.Y + YOffset;
-        DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP, frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+
+        DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
+            frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
     }
 }
 
 int ShieldTechnoClass::DrawShieldBar_Pip()
 {
-    auto ShieldPip = RulesExt::Global()->Pips_Shield.Get();
+    CoordStruct ShieldPip = RulesExt::Global()->Pips_Shield.Get();
+
     if (this->Techno->WhatAmI() == AbstractType::Building)
         ShieldPip = RulesExt::Global()->Pips_Shield_Buildings;
 
