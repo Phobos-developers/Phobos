@@ -31,6 +31,7 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 {
     auto pData = TechnoExt::ExtMap.Find(pThis);
     auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
     if (pData && pTypeData && pTypeData->Interceptor && !pThis->Target &&
         !(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
     {
@@ -47,16 +48,18 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
             const double minguardRange = pThis->Veterancy.IsElite() ?
                 pTypeData->Interceptor_EliteMinimumGuardRange * 256 : pTypeData->Interceptor_MinimumGuardRange * 256;
 
-            if (pBullet->Location.DistanceFrom(pThis->Location) > guardRange)
-                continue;
-            if (pBullet->Location.DistanceFrom(pThis->Location) < minguardRange)
+            double distance = pBullet->Location.DistanceFrom(pThis->Location);
+            if (distance > guardRange || distance < minguardRange)
                 continue;
 
-            /*if (pBullet->Location.DistanceFrom(pBullet->TargetCoords) >
+            /*
+            if (pBullet->Location.DistanceFrom(pBullet->TargetCoords) >
                 double(ScenarioClass::Instance->Random.RandomRanged(128, (int)guardRange / 10)) * 10)
             {
                 continue;
-            }*/
+            }
+            */
+
             if (!pThis->Owner->IsAlliedWith(pBullet->Owner))
             {
                 pThis->SetTarget(pBullet);
