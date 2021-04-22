@@ -15,12 +15,11 @@ DEFINE_HOOK(701900, TechnoClass_ReceiveDamage_Shield, 6)
 
     if (auto pShieldData = pExt->ShieldData.get())
     {
+        if (!pShieldData->Available())
+            return 0;
         auto nDamageLeft = pShieldData->ReceiveDamage(args);
-
         if (nDamageLeft >= 0)
-        {
             *args->Damage = nDamageLeft;
-        }
     }
 
     return 0;
@@ -36,12 +35,10 @@ DEFINE_HOOK(6FCB64, TechnoClass_CanFire_Shield, 6)
     {
         if (auto pShieldData = pExt->ShieldData.get())
         {
-            if (pShieldData->GetShieldHP())
+            if (pShieldData->Available() && pShieldData->GetShieldHP())
             {
                 if (!pShieldData->CanBeTargeted(pWeapon/*, pThis*/))
-                {
                     return 0x6FCB7E;
-                }
                 return 0x6FCB8D;
             }
         }
@@ -85,7 +82,7 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
     {
         if (auto pShieldData = pExt->ShieldData.get())
         {
-            if (pShieldData->GetShieldHP())
+            if (pShieldData->Available() && pShieldData->GetShieldHP())
             {
                 if (pThis->GetWeapon(1))
                 {
@@ -108,7 +105,7 @@ DEFINE_HOOK(6F9E50, TechnoClass_AI_Shield, 5)
 
     if (pTypeData->Shield_Strength && !pExt->ShieldData)
         pExt->ShieldData = std::make_unique<ShieldTechnoClass>(pThis);
-    if (pExt->ShieldData)
+    if (pExt->ShieldData && pExt->ShieldData->Available())
         pExt->ShieldData->AI();
 
     return 0;
@@ -156,10 +153,8 @@ DEFINE_HOOK(6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 6)
     GET_STACK(RectangleStruct*, pBound, STACK_OFFS(0x4C, -0x8));
     auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-    if (pExt->ShieldData)
-    {
+    if (pExt->ShieldData && pExt->ShieldData->Available())
         pExt->ShieldData->DrawShieldBar(iLength, pLocation, pBound);
-    }
 
     return 0;
 }
@@ -171,7 +166,7 @@ DEFINE_HOOK(6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 7)
     GET_STACK(RectangleStruct*, pBound, STACK_OFFS(0x4C, -0x8));
     auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-    if (pExt->ShieldData)
+    if (pExt->ShieldData && pExt->ShieldData->Available())
     {
         int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
         pExt->ShieldData->DrawShieldBar(iLength, pLocation, pBound);

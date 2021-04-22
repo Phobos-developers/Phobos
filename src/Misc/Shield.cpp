@@ -15,6 +15,7 @@ ShieldTechnoClass::ShieldTechnoClass() :Techno { nullptr }, HP { 0 }, Timer_Resp
 
 ShieldTechnoClass::ShieldTechnoClass(TechnoClass* pTechno) :
     Techno { pTechno },
+    Update { true },
     HP { this->GetExt()->Shield_Strength },
     Timer_Respawn {},
     Timer_SelfHealing {},
@@ -201,17 +202,18 @@ void ShieldTechnoClass::ConvertCheck()
             sprintf_s(this->TechnoID, this->Techno->get_ID());
             auto pOriginExt = TechnoTypeExt::ExtMap.Find(pOrigin);
             this->HP = int((double)this->HP / pOriginExt->Shield_Strength * this->GetExt()->Shield_Strength);
+            this->Update = true;
+
             if (this->HaveAnim)
             {
                 this->KillAnim();
                 this->CreateAnim();
             }
         }
-        else
+        else if (this->Update)
         {
-            auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
+            this->Update = false;
             this->KillAnim();
-            pTechnoExt->ShieldData = nullptr;
         }
     }
 }
@@ -492,4 +494,9 @@ int ShieldTechnoClass::GetShieldHP()
 double ShieldTechnoClass::GetShieldRatio()
 {
     return double(this->HP) / double(this->GetExt()->Shield_Strength);
+}
+
+bool ShieldTechnoClass::Available()
+{
+    return this->Update;
 }

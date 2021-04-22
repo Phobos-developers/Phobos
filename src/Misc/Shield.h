@@ -21,6 +21,7 @@ public:
     void InvalidatePointer(void* ptr);
     int GetShieldHP();
     double GetShieldRatio();
+    bool Available();
 
     static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
 
@@ -54,6 +55,7 @@ private:
     /// Properties ///
     TechnoClass* Techno;
     char TechnoID[0x18];
+    bool Update;
     int HP;
     TimerStruct Timer_SelfHealing;
     TimerStruct Timer_Respawn;
