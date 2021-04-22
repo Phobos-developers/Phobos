@@ -126,7 +126,13 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
     {
         auto LostHP = this->GetExt()->Shield_Strength - this->HP;
         if (!LostHP)
-            return *args->Damage;
+        {
+            auto result = *args->Damage;
+            if (*args->Damage * GeneralUtils::GetWarheadVersusArmor(args->WH, 
+                static_cast<int>(this->Techno->GetTechnoType()->Armor)) > 0)
+                result = 0;
+            return result;
+        }
 
         auto RemainLostHP = LostHP + nDamage;
         if (RemainLostHP < 0)
