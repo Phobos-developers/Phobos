@@ -119,7 +119,8 @@ DEFINE_HOOK(6F6AC4, TechnoClass_Remove_Shield, 5)
     GET(TechnoClass*, pThis, ECX);
     auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-    if (pExt->ShieldData && (pThis->WhatAmI() != AbstractType::Building || !pThis->GetTechnoType()->UndeploysInto))
+    if (pExt->ShieldData &&
+        !(pThis->WhatAmI() == AbstractType::Building && pThis->GetTechnoType()->UndeploysInto && pThis->CurrentMission == Mission::Selling))
     {
         pExt->ShieldData = nullptr;
     }
