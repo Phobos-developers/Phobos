@@ -5,6 +5,8 @@
 #include "BasicHeaders.h"
 #include "FoggedObject.h"
 
+#include "../../Ext/Cell/Body.h"
+
 class FogOfWar
 {
 public:
@@ -13,10 +15,7 @@ public:
 	static bool IsLocationFogged(CoordStruct* pCoord);
 	static void ClearFoggedObjects(CellClass* pCell);
 
-	static void FogCell_Building(BuildingClass* pBld, CellClass* pCell, bool translucent);
-	static void FogCell_Overlay(int index, CellClass* pCell, int powerup);
-	static void FogCell_Smudge(int index, CellClass* pCell, int frameidx);
-	static void FogCell_Terrain(TerrainClass* pTerrain);
+	static bool DrawIfVisible(FoggedObject* pFoggedObject, RectangleStruct* pRect);
 
 	static std::vector<FoggedObject*> FoggedObjects;
 };

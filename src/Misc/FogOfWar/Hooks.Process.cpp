@@ -172,15 +172,9 @@ DEFINE_HOOK(6D3470, TacticalClass_DrawFoggedObject, 8)
 	GET_STACK(RectangleStruct*, pRect2, 0x8);
 	GET_STACK(bool, bUkn, 0xC);
 
-	UNREFERENCED_PARAMETER(pTactical);
-	UNREFERENCED_PARAMETER(pRect1);
-	UNREFERENCED_PARAMETER(pRect2);
-	UNREFERENCED_PARAMETER(bUkn);
-
 	// Draw them
 
-	return 0;
-	// return 0x6D3650;
+	return 0x6D3650;
 }
 
 // TO BE IMPLEMENTED!

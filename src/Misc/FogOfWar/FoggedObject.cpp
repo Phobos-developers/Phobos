@@ -12,22 +12,35 @@
 #include "FogOfWar.h"
 
 FoggedObject::FoggedObject(AbstractType rtti, CoordStruct& location, RectangleStruct& bound)
-	: CoveredRTTIType{ rtti }, Location{ location }, Bound{ bound }
+	: CoveredRTTIType{ rtti }, Location{ location }, Bound{ bound }, Translucent{ true }
 {
-	FogOfWar::FoggedObjects.push_back(this);
+	auto const pCell = MapClass::Instance->TryGetCellAt(location);
+	if (pCell)
+	{
+		FogOfWar::FoggedObjects.push_back(this);
+
+		auto const pExt = CellExt::ExtMap.Find(pCell);
+		pExt->FoggedObjects.push_back(this);
+	}
 }
 
 FoggedObject::FoggedObject(ObjectClass* pObject)
 {
 	auto const pCell = pObject->GetCell();
+	if (pCell)
+	{
+		pCell->GetCoords(&this->Location);
+		pObject->vt_entry_12C(&this->Bound); // __get_render_dimensions
+		this->Bound.X += TacticalClass::Instance->TacticalPos0.X;
+		this->Bound.Y += TacticalClass::Instance->TacticalPos0.Y;
+		this->CoveredRTTIType = pObject->WhatAmI();
+		this->Translucent = true;
 
-	pCell->GetCoords(&this->Location);
-	pObject->vt_entry_12C(&this->Bound); // __get_render_dimensions
-	this->Bound.X += TacticalClass::Instance->TacticalPos0.X;
-	this->Bound.Y += TacticalClass::Instance->TacticalPos0.Y;
-	this->CoveredRTTIType = pObject->WhatAmI();
+		FogOfWar::FoggedObjects.push_back(this);
 
-	FogOfWar::FoggedObjects.push_back(this);
+		auto const pExt = CellExt::ExtMap.Find(pCell);
+		pExt->FoggedObjects.push_back(this);
+	}
 }
 
 FoggedObject::~FoggedObject() = default;
@@ -85,6 +98,9 @@ FoggedSmudge::FoggedSmudge(CellClass* pCell, int smudge, unsigned char smudgeDat
 	this->CoveredRTTIType = AbstractType::Smudge;
 
 	FogOfWar::FoggedObjects.push_back(this);
+
+	auto const pExt = CellExt::ExtMap.Find(pCell);
+	pExt->FoggedObjects.push_back(this);
 }
 
 FoggedSmudge::~FoggedSmudge() = default;
@@ -266,6 +282,9 @@ FoggedOverlay::FoggedOverlay(CellClass* pCell, int overlay, unsigned char overla
 	this->OverlayData = overlayData;
 
 	FogOfWar::FoggedObjects.push_back(this);
+
+	auto const pExt = CellExt::ExtMap.Find(pCell);
+	pExt->FoggedObjects.push_back(this);
 }
 
 FoggedOverlay::~FoggedOverlay() = default;
@@ -322,6 +341,7 @@ FoggedBuilding::FoggedBuilding(CoordStruct& location, RectangleStruct& bound, Bu
 	this->Owner = pBuilding->Owner;
 	this->Type = pBuilding->Type;
 	this->FireStormWall = pBuilding->Type->LaserFence;
+	this->Translucent = bTranslucent;
 
 	// MORE!
 }
@@ -332,6 +352,7 @@ FoggedBuilding::FoggedBuilding(BuildingClass* pObject, bool bTranslucent)
 	this->Owner = pObject->Owner;
 	this->Type = pObject->Type;
 	this->FireStormWall = pObject->Type->LaserFence;
+	this->Translucent = bTranslucent;
 }
 
 FoggedBuilding::~FoggedBuilding() = default;

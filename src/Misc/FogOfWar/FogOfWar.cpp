@@ -90,42 +90,45 @@ bool FogOfWar::IsLocationFogged(CoordStruct* pCoord)
 
 void FogOfWar::ClearFoggedObjects(CellClass* pCell)
 {
-	if (pCell->FoggedObjects)
+	auto const pExt = CellExt::ExtMap.Find(pCell);
+
+	if (pExt->FoggedObjects.size())
 	{
-		for (auto pFoggedObject : *pCell->FoggedObjects)
+		for (auto pFoggedObject : pExt->FoggedObjects)
 			if (pFoggedObject)
 			{
-				if (pFoggedObject->CoveredAbstractType == AbstractType::Building)
+				if (pFoggedObject->CoveredRTTIType == AbstractType::Building)
 				{
-					auto cell = pFoggedObject->GetMapCoords();
-					auto pRealCell = MapClass::Instance->GetCellAt(cell);
+					auto pRealCell = MapClass::Instance->GetCellAt(pFoggedObject->Location);
 					if (pRealCell != pCell)
-						if (pRealCell->FoggedObjects)
-							pRealCell->FoggedObjects->Remove(pFoggedObject);
+						if (auto const pRealExt = CellExt::ExtMap.Find(pRealCell))
+							if (pRealExt->FoggedObjects.size())
+							{
+								auto itr = std::find(pRealExt->FoggedObjects.begin(), pRealExt->FoggedObjects.end(), pFoggedObject);
+								pRealExt->FoggedObjects.erase(itr);
+							}
 				}
 				GameDelete(pFoggedObject);
 			}
 
-		pCell->FoggedObjects->Clear();
-		GameDelete(pCell->FoggedObjects);
-
-		pCell->FoggedObjects = nullptr;
+		pExt->FoggedObjects.clear();
 	}
-			
 }
 
-void FogOfWar::FogCell_Building(BuildingClass* pBld, CellClass* pCell, bool translucent)
+bool FogOfWar::DrawIfVisible(FoggedObject* pFoggedObject, RectangleStruct* pRect)
 {
-}
+	if (!pFoggedObject->Translucent)
+		return false;
 
-void FogOfWar::FogCell_Overlay(int index, CellClass* pCell, int powerup)
-{
-}
+	auto rect = pFoggedObject->Bound;
+	rect.X += Drawing::SurfaceDimensions_Hidden.X - TacticalClass::Instance->TacticalPos0.X;
+	rect.Y += Drawing::SurfaceDimensions_Hidden.Y - TacticalClass::Instance->TacticalPos0.Y;
 
-void FogOfWar::FogCell_Smudge(int index, CellClass* pCell, int frameidx)
-{
-}
+	RectangleStruct ret = Drawing::Intersect(pRect, &rect, 0, 0);
+	if (ret.Width <= 0 || ret.Height <= 0)
+		return false;
 
-void FogOfWar::FogCell_Terrain(TerrainClass* pTerrain)
-{
+	pFoggedObject->Draw(*pRect);
+
+	return true;
 }

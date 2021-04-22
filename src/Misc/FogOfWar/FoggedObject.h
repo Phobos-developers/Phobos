@@ -10,6 +10,7 @@ public:
 	AbstractType CoveredRTTIType;
 	CoordStruct Location;
 	RectangleStruct Bound;
+	bool Translucent;
 
 public:
 	FoggedObject(AbstractType rtti, CoordStruct& location, RectangleStruct& bound);
