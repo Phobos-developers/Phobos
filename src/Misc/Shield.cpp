@@ -104,7 +104,8 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
             if (pWHExt->BreaksShield && residueDamage < 0)
                 residueDamage = 0;
 
-            residueDamage /= GeneralUtils::GetWarheadVersusArmor(args->WH, this->GetExt()->Shield_Armor); //only absord percentage damage
+            residueDamage = int((double)residueDamage /
+                GeneralUtils::GetWarheadVersusArmor(args->WH, this->GetExt()->Shield_Armor)); //only absord percentage damage
 
             this->BreakShield();
             return this->GetExt()->Shield_AbsorbOverDamage ? 0 : residueDamage;
