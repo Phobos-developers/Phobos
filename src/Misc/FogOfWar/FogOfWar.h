@@ -18,5 +18,5 @@ public:
 	static bool DrawIfVisible(FoggedObject* pFoggedObject, RectangleStruct* pRect);
 	static RectangleStruct UnionRectangle(RectangleStruct* rect1, RectangleStruct* rect2);
 
-	static std::vector<FoggedObject*> FoggedObjects;
+	static std::unordered_set<FoggedObject*> FoggedObjects;
 };

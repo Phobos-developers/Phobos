@@ -17,7 +17,7 @@ FoggedObject::FoggedObject(AbstractType rtti, CoordStruct& location, RectangleSt
 	auto const pCell = MapClass::Instance->TryGetCellAt(location);
 	if (pCell)
 	{
-		FogOfWar::FoggedObjects.push_back(this);
+		FogOfWar::FoggedObjects.insert(this);
 
 		auto const pExt = CellExt::ExtMap.Find(pCell);
 		pExt->FoggedObjects.push_back(this);
@@ -36,7 +36,7 @@ FoggedObject::FoggedObject(ObjectClass* pObject)
 		this->CoveredRTTIType = pObject->WhatAmI();
 		this->Translucent = true;
 
-		FogOfWar::FoggedObjects.push_back(this);
+		FogOfWar::FoggedObjects.insert(this);
 
 		auto const pExt = CellExt::ExtMap.Find(pCell);
 		pExt->FoggedObjects.push_back(this);
@@ -45,8 +45,7 @@ FoggedObject::FoggedObject(ObjectClass* pObject)
 
 FoggedObject::~FoggedObject()
 {
-	auto itr = std::find(FogOfWar::FoggedObjects.begin(), FogOfWar::FoggedObjects.end(), this);
-	FogOfWar::FoggedObjects.erase(itr);
+	FogOfWar::FoggedObjects.erase(this);
 }
 
 int FoggedObject::GetType()
@@ -101,7 +100,7 @@ FoggedSmudge::FoggedSmudge(CellClass* pCell, int smudge, unsigned char smudgeDat
 	this->SmudgeData = smudgeData;
 	this->CoveredRTTIType = AbstractType::Smudge;
 
-	FogOfWar::FoggedObjects.push_back(this);
+	FogOfWar::FoggedObjects.insert(this);
 
 	auto const pExt = CellExt::ExtMap.Find(pCell);
 	pExt->FoggedObjects.push_back(this);
@@ -262,7 +261,7 @@ FoggedOverlay::FoggedOverlay(CellClass* pCell, int overlay, unsigned char overla
 	this->Overlay = overlay;
 	this->OverlayData = overlayData;
 
-	FogOfWar::FoggedObjects.push_back(this);
+	FogOfWar::FoggedObjects.insert(this);
 
 	auto const pExt = CellExt::ExtMap.Find(pCell);
 	pExt->FoggedObjects.push_back(this);

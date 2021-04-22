@@ -56,28 +56,23 @@ DEFINE_HOOK(5F4B3E, ObjectClass_DrawIfVisible, 6)
 {
 	GET(ObjectClass*, pObject, ESI);
 	
-	enum { False = 0x5F4B7F, True = 0x5F4D06, DefaultProcess = 0x5F4B48 };
+	enum { Skip = 0x5F4B7F, SkipWithDrawn = 0x5F4D06, DefaultProcess = 0x5F4B48 };
 
 	if (pObject->InLimbo)
-		return False;
+		return Skip;
+
 	if(!ScenarioClass::Instance->SpecialFlags.FogOfWar)
 		return DefaultProcess;
-
-	// Force types always need redraw
-	switch (pObject->WhatAmI())
-	{
-	case AbstractType::Cell:
+	
+	if(pObject->WhatAmI()== AbstractType::Cell)
 		return DefaultProcess;
-	default:
-		break;
-	}
 
 	auto coord = pObject->GetCoords();
 	if (!FogOfWar::IsLocationFogged(&coord))
 		return DefaultProcess;
 
 	pObject->NeedsRedraw = false;
-	return True;
+	return SkipWithDrawn;
 }
 
 DEFINE_HOOK(6F5190, TechnoClass_DrawExtras_CheckFog, 6)

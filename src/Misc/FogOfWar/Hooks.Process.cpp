@@ -166,8 +166,8 @@ DEFINE_HOOK(486C50, CellClass_ClearFoggedObjects, 6)
 // This function is the key to reduce lag I think
 DEFINE_HOOK(6D3470, TacticalClass_DrawFoggedObject, 8)
 {
-	// GET(TacticalClass*, pTactical, ECX);
-	auto const pTactical = TacticalClass::Instance;
+	GET(TacticalClass*, pTactical, ECX);
+	// auto const pTactical = TacticalClass::Instance;
 	GET_STACK(RectangleStruct*, pRect1, 0x4);
 	GET_STACK(RectangleStruct*, pRect2, 0x8);
 	GET_STACK(bool, bUkn, 0xC);

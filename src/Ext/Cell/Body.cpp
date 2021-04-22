@@ -38,16 +38,18 @@ CellExt::ExtContainer::~ExtContainer() = default;
 DEFINE_HOOK(47BBF0, CellClass_CTOR, 6)
 {
 	GET(CellClass*, pItem, ECX);
-	Debug::Log(__FUNCTION__" called. pThis = %p\n", pItem);
+
 	CellExt::ExtMap.FindOrAllocate(pItem);
+
 	return 0;
 }
 
 DEFINE_HOOK(47BB60, CellClass_DTOR, 6)
 {
 	GET(CellClass*, pItem, ECX);
-	Debug::Log(__FUNCTION__" called. pThis = %p\n", pItem);
+
 	CellExt::ExtMap.Remove(pItem);
+
 	return 0;
 }
 
