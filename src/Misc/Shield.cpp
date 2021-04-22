@@ -202,11 +202,20 @@ void ShieldTechnoClass::ConvertCheck()
     {
         if (this->GetExt()->Shield_Strength)
         {
-            auto pOrigin = TechnoTypeClass::Find(this->TechnoID);
+            if (this->Update)
+            {
+                auto pOrigin = TechnoTypeClass::Find(this->TechnoID);
+                auto pOriginExt = TechnoTypeExt::ExtMap.Find(pOrigin);
+                this->HP = int((double)this->HP / pOriginExt->Shield_Strength * this->GetExt()->Shield_Strength);
+            }
+            else
+            {
+                if (this->HP == 0) this->Timer_Respawn.Resume();
+                else this->Timer_SelfHealing.Resume();
+                this->Update = true;
+            }
+
             sprintf_s(this->TechnoID, this->Techno->get_ID());
-            auto pOriginExt = TechnoTypeExt::ExtMap.Find(pOrigin);
-            this->HP = int((double)this->HP / pOriginExt->Shield_Strength * this->GetExt()->Shield_Strength);
-            this->Update = true;
 
             if (this->HaveAnim)
             {
@@ -214,9 +223,11 @@ void ShieldTechnoClass::ConvertCheck()
                 this->CreateAnim();
             }
         }
-        else if (this->Update)
+        else
         {
             sprintf_s(this->TechnoID, this->Techno->get_ID());
+            if (this->HP == 0) this->Timer_Respawn.Pause();
+            else this->Timer_SelfHealing.Pause();
             this->Update = false;
             this->KillAnim();
         }
