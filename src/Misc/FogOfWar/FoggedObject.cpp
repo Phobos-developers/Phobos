@@ -244,38 +244,9 @@ FoggedOverlay::FoggedOverlay(CellClass* pCell, int overlay, unsigned char overla
 	pCell->ShapeRect(&rect1);
 	pCell->GetContainingRect(&rect2);
 
-#pragma region Bound_Caculating
-	if (rect2.Width <= 0 || rect2.Height <= 0)
-		this->Bound = rect1;
-	else
-		if (rect1.Width <= 0 || rect1.Height <= 0)
-			this->Bound = rect2;
-		else
-		{
-			int w0 = rect2.Width;
-			if (this->Bound.X > rect1.X)
-			{
-				rect2.Width += this->Bound.X - rect1.X;
-				this->Bound.X = rect1.X;
-				w0 = rect2.X;
-			}
-			if (rect2.Y > rect1.Y)
-			{
-				rect2.Height += rect2.Y - rect1.Y;
-				rect2.Y = rect1.Y;
-			}
-			if (this->Bound.X + rect2.Width >= rect1.X + rect1.Width)
-				this->Bound.Width = w0;
-			else
-				this->Bound.Width = rect1.X - this->Bound.X + rect1.Width + 1;
-			if (rect2.Height + rect2.Y < rect1.Height + rect1.Y)
-				rect2.Height = rect1.Height + rect1.Y - rect2.Y + 1;
-			this->Bound.Y = rect2.Y;
-			this->Bound.Height = rect2.Height;
-		}
+	this->Bound = *FogOfWar::UnionRectangle(&rect1, &rect2);
 	this->Bound.X += TacticalClass::Instance->TacticalPos0.X - Drawing::SurfaceDimensions_Hidden.X;
 	this->Bound.Y += TacticalClass::Instance->TacticalPos0.Y - Drawing::SurfaceDimensions_Hidden.Y;
-#pragma endregion
 
 	this->CoveredRTTIType = AbstractType::Overlay;
 	this->Overlay = overlay;

@@ -104,7 +104,9 @@ void FogOfWar::ClearFoggedObjects(CellClass* pCell)
 						if (auto const pRealExt = CellExt::ExtMap.Find(pRealCell))
 							if (pRealExt->FoggedObjects.size())
 							{
-								auto itr = std::find(pRealExt->FoggedObjects.begin(), pRealExt->FoggedObjects.end(), pFoggedObject);
+								auto itr = std::find(pRealExt->FoggedObjects.begin(), 
+									pRealExt->FoggedObjects.end(), pFoggedObject);
+
 								pRealExt->FoggedObjects.erase(itr);
 							}
 				}
@@ -131,4 +133,10 @@ bool FogOfWar::DrawIfVisible(FoggedObject* pFoggedObject, RectangleStruct* pRect
 	pFoggedObject->Draw(*pRect);
 
 	return true;
+}
+
+RectangleStruct* FogOfWar::UnionRectangle(RectangleStruct* rect1, RectangleStruct* rect2)
+{
+	RectangleStruct ret;
+	UnionRect((LPRECT)&ret, (LPRECT)rect1, (LPRECT)rect2);
 }

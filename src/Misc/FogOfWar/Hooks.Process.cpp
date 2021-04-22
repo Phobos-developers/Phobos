@@ -174,6 +174,18 @@ DEFINE_HOOK(6D3470, TacticalClass_DrawFoggedObject, 8)
 
 	// Draw them
 
+	RectangleStruct* pRectToDraw;
+
+	if (bUkn && Drawing::SurfaceDimensions_Hidden.Width > 0 && Drawing::SurfaceDimensions_Hidden.Height > 0)
+		pRectToDraw = &Drawing::SurfaceDimensions_Hidden;
+	else
+	{
+		int nVisibleCellCount = pTactical->VisibleCellCount;
+
+	}
+
+
+
 	return 0x6D3650;
 }
 
