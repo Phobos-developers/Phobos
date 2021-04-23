@@ -153,6 +153,16 @@ DEFINE_HOOK(0x518505, InfantryClass_TakeDamage_NotHuman, 0x4)
 	return 0x518515;
 }
 
+DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
+{
+    GET(TechnoTypeClass*, pType, ECX);
+
+    if (pType->DeployFireWeapon == -1)
+        return 0x52194E;
+
+    return 0;
+}
+
 // Customizable OpenTopped Properties
 // Author: Otamaa
 
