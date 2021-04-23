@@ -26,3 +26,15 @@ DEFINE_HOOK(423365, Phobos_BugFixes_SHPShadowCheck, 8)
 DEFINE_LJMP(0x545CE2, 0x545CE9) //Phobos_BugFixes_Tileset255_RemoveNonMMArrayFill
 DEFINE_LJMP(0x546C23, 0x546C8B) //Phobos_BugFixes_Tileset255_RefNonMMArray
 
+
+// WW's shit code! Wrong check.
+// To avoid units dying when they are already dead.
+DEFINE_HOOK(5F53AA, ObjectClass_ReceiveDamage_DyingFix, 6)
+{
+    GET(int, health, EAX);
+
+    if (health <= 0)
+        return 0x5F583E;
+
+    return 0x5F53B0;
+}
