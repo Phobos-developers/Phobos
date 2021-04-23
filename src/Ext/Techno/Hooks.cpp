@@ -21,3 +21,13 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
+{
+    GET(TechnoTypeClass*, pType, ECX);
+
+    if (pType->DeployFireWeapon == -1)
+        return 0x52194E;
+
+    return 0;
+}
