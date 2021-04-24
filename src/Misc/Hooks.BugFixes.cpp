@@ -2,7 +2,7 @@
 #include <AnimClass.h>
 #include <TechnoClass.h>
 #include <FootClass.h>
-
+#include <UnitClass.h>
 //Replace: checking of HasExtras = > checking of (HasExtras && Shadow)
 DEFINE_HOOK(423365, Phobos_BugFixes_SHPShadowCheck, 8)
 {
@@ -33,8 +33,19 @@ DEFINE_HOOK(5F53AA, ObjectClass_ReceiveDamage_DyingFix, 6)
 {
     GET(int, health, EAX);
     GET(ObjectClass*, pThis, ESI);
+    UnitClass* pThisU = nullptr;
+    FootClass* pThisF = nullptr;
+    auto abs = pThis->WhatAmI();
 
-    if (health <= 0 || !pThis->IsAlive)
+    if (abs == AbstractType::Unit|| abs == AbstractType::Aircraft || abs == AbstractType::Infantry)
+        pThisF = abstract_cast<FootClass*>(pThis);
+    if (abs == AbstractType::Unit)
+        pThisU = abstract_cast<UnitClass*>(pThis);
+
+    if (health <= 0
+        || !pThis->IsAlive
+        || pThisU && pThisU->DeathFrameCounter > 0
+        || pThisF && (pThisF->IsSinking || pThisF->IsCrashing))
         return 0x5F583E;
 
     return 0x5F53B0;
