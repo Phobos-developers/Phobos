@@ -67,9 +67,6 @@ void RadType::LoadFromINI(CCINIClass *pINI)
 	this->LightFactor.Read(exINI, section, "RadLightFactor");
 	this->TintFactor.Read(exINI, section, "RadTintFactor");
 
-	Debug::Log("RadTypes :: LoadFromINI check [%s] \n", section);
-//	Debug::Log("RadTypes :: LoadFromINI check [%s]->Warhead \n", this->GetWarhead()->Name);
-//	Debug::Log("RadTypes :: LoadFromINI check [%d %d %d]->Color \n", this->GetColor().R , this->GetColor().G, this->GetColor().B);
 }
 
 template <typename T>

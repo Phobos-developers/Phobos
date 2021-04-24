@@ -96,8 +96,6 @@ DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation, 5)
 */
 
 //Desolator cannot fire his deploy weapon when cloaked 
-//force de-cloak for now 
-//dunno where to put when it is undeployed
 DEFINE_HOOK(5213E3, InfantryClass_AIDeployment_CheckRad, 4)
 {
 	GET(InfantryClass*, D, ESI);
@@ -131,7 +129,7 @@ DEFINE_HOOK(5213E3, InfantryClass_AIDeployment_CheckRad, 4)
 			RadLevel = pRadSite->GetRadLevel();
 		}
 	}
-	//Pre-Fix ,need to  look for right Un-deploy function to restore cloaked state
+
 	if (D->CloakState == CloakState::Cloaked)
 	{
 		D->Uncloak(false);
@@ -143,58 +141,6 @@ DEFINE_HOOK(5213E3, InfantryClass_AIDeployment_CheckRad, 4)
 
 	return (RadLevel < WeaponRadLevel) ? 0x5213F4 : 0x521484;
 }
-
-//not relevan hooks 
-/*need to find
-DEFINE_HOOK(51F723, InfantryClass_unload_check, 4)
-{
-	GET(InfantryClass*, D, ESI);
-	auto Text = TechnoExt::ExtMap.Find(D);
-	Debug::Log("[%s] Undeploy \n", D->get_ID());
-	if (Text->WasCloaked)
-	{
-		D->Cloakable = true;
-		D->UpdateCloak();
-		D->NeedsRedraw = true;
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(52135D, InfantryClass_AIDeployment_Undeploy, 8)
-{
-	GET(InfantryClass*, D, ESI);
-	Debug::Log("[%s] Undeploy \n", D->get_ID());
-
-	auto Text = TechnoExt::ExtMap.Find(D);
-	if (Text->WasCloaked)
-	{
-		D->Cloakable = true;
-		D->UpdateCloak();
-		D->NeedsRedraw = true;
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(70D724, TechnoClass_FireDeathWeapon_test, 4)
-{
-	GET(TechnoClass*, T, ESI);
-	GET(WeaponTypeClass*, W, EDI);
-
-	if (T->GetTechnoType()->WhatAmI() == AbstractType::Infantry && W)
-	{
-		T->IsAlive = false; //this got ignored
-		if (!T->IsAlive && T->IsRedHP())
-		T->GetTechnoType()->ImmuneToRadiation = true; //put immune radiation so it wont die twice
-		GameDelete(T);//force delete before die again
-	}
-
-	R->EDI(W);
-	R->EBP(R->EAX());
-
-	return  W ? 0x70D735: 0x70D72A;
-}*/
 
 // Too OP, be aware
 DEFINE_HOOK(43FB23, BuildingClass_AI, 5)
@@ -248,6 +194,8 @@ DEFINE_HOOK(4DA554, FootClass_AI_RadSiteClass, 5)
 {
 	GET(FootClass* const, pFoot, ESI);
 
+	auto state = static_cast<DamageState>(R->AL());
+
 	if (!pFoot->IsIronCurtained() && !pFoot->GetTechnoType()->ImmuneToRadiation && !pFoot->InLimbo && !pFoot->IsInAir())
 	{
 		CellStruct CurrentCoord = pFoot->GetCell()->MapCoords;
@@ -278,18 +226,13 @@ DEFINE_HOOK(4DA554, FootClass_AI_RadSiteClass, 5)
 			auto WH = pType->GetWarhead();
 			auto absolute = WH->WallAbsoluteDestroyer;
 
-			if (pFoot->IsAlive)// simple fix for previous issues
-				pFoot->ReceiveDamage(&Damage, Distance, WH, nullptr, false, absolute, pRadExt->RadHouse.Get());
+			if (pFoot->IsAlive || !pFoot->IsSinking)// simple fix for previous issues
+				state = pFoot->ReceiveDamage(&Damage, Distance, WH, nullptr, false, absolute, pRadExt->RadHouse.Get());
 		}
 	}
 
-	if (!pFoot->IsAlive)
-	{
-		R->EAX<DamageState>(DamageState::NowDead);
-		return 0x4DAF00;
-	}
-
-	return 0x4DA63B;
+	R->EAX<DamageState>(state);
+	return pFoot->IsAlive ? 0x4DA63B : 0x4DAF00;
 }
 
 DEFINE_HOOK(65B593, RadSiteClass_Activate_Delay, 6)

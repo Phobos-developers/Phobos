@@ -147,7 +147,7 @@ Strafing.SimulateBurst=false ; bool
 
 In `rulesmd.ini`
 ```ini
-[RadiationTypes]				; List of New Radiation goes here
+[RadiationTypes]                ; List of New Radiation goes here
 0=SOMERADTYPE
 1=etc..
 
@@ -175,6 +175,8 @@ RadSiteWarhead=RadSite          ; WarheadType
 - Radiation now has owner by default, so any rad-kills will be scored.
   - `AffectsAllies`, `AffectsOwner` and `AffectsEnemies` on `RadSiteWarhead` are respected.
   - Currently the rad maker doesn't gain experience from kills, this may change in future.
+- Radiation now able to deal damage to Building .To enable set `RadApplicationDelay.Building` value more than 0.
+  - Dealing damage using `RadSiteWarhead` and respect `Verses` values
 
 In `rulesmd.ini`:
 ```ini
