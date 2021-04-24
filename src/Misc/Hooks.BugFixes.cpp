@@ -43,9 +43,9 @@ DEFINE_HOOK(5F53AA, ObjectClass_ReceiveDamage_DyingFix, 6)
 DEFINE_HOOK(4D7431, FootClass_ReceiveDamage_DyingFix, 5)
 {
     GET(FootClass*, pThis, ESI);
-    GET(DamageState, Result, EAX);
+    GET(DamageState, result, EAX);
 
-    if (Result != DamageState::PostMortem && (pThis->IsSinking || pThis->IsCrashing))
+    if (result != DamageState::PostMortem && (pThis->IsSinking || pThis->IsCrashing))
         R->EAX(DamageState::PostMortem);
 
     return 0;
@@ -54,9 +54,9 @@ DEFINE_HOOK(4D7431, FootClass_ReceiveDamage_DyingFix, 5)
 DEFINE_HOOK(737D57, UnitClass_ReceiveDamage_DyingFix, 7)
 {
     GET(UnitClass*, pThis, ESI);
-    GET(DamageState, Result, EAX);
+    GET(DamageState, result, EAX);
 
-    if (Result != DamageState::PostMortem && pThis->DeathFrameCounter > 0)
+    if (result != DamageState::PostMortem && pThis->DeathFrameCounter > 0)
         R->EAX(DamageState::PostMortem);
 
     return 0;
