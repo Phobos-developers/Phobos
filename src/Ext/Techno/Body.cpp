@@ -6,6 +6,7 @@
 #include <BulletTypeClass.h>
 #include <ScenarioClass.h>
 #include <SpawnManagerClass.h>
+#include <InfantryClass.h>
 
 #include "../BulletType/Body.h"
 
@@ -157,6 +158,21 @@ bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
     return false;
 }
 
+void TechnoExt::ApplyCloak_Undeployed(TechnoClass* pThis)
+{
+    if (auto pinf = static_cast<InfantryClass*>(pThis))
+    {
+        auto Text = TechnoExt::ExtMap.Find(pThis);
+
+        if (Text->WasCloaked && pinf->SequenceAnim == Sequence::Undeploy && pinf->IsDeployed())
+        {
+            pThis->Cloakable = true;
+            pThis->UpdateCloak();
+            pThis->NeedsRedraw = true;
+            Text->WasCloaked = false;
+        }
+    }
+}
 // =============================
 // load / save
 
