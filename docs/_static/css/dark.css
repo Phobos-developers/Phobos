@@ -11,7 +11,18 @@
     background-color: #23242b !important;
 }
 
-.wy-side-nav-search input[type=text], .admonition, .admonition-title, .rst-content img {
+.wy-side-nav-search input[type=text] {
+    border-radius: 6px !important;
+    box-shadow: unset !important;
+    background: #2b2c36 !important;
+    color: #c8d2dc !important;
+}
+
+.wy-side-nav-search input[type=text]::placeholder {
+    color: #c8d2dc80 !important;
+}
+
+admonition, .admonition-title, .rst-content img {
     border-radius: 6px !important;
 }
 
@@ -64,8 +75,7 @@
 }
 
 .wy-side-nav-search {
-    background-color: unset !important;
-    padding-bottom: 0px !important;
+    margin: 0px !important;
 }
 
 .admonition-title {
@@ -106,4 +116,14 @@ li.toctree-l1>a:hover, li.toctree-l2>a:hover, li.toctree-l3>a:hover {
 
 .btn {
     border-radius: 6px !important;
+    box-shadow: unset !important;
+    background-color: #161b22 !important;
+}
+
+a.btn.btn-neutral {
+    color: #c8d2dc !important;
+}
+
+.btn:hover {
+    background-color: #ffffff80 !important;
 }
