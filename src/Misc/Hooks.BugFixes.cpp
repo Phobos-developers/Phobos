@@ -33,20 +33,31 @@ DEFINE_HOOK(5F53AA, ObjectClass_ReceiveDamage_DyingFix, 6)
 {
     GET(int, health, EAX);
     GET(ObjectClass*, pThis, ESI);
-    UnitClass* pThisU = nullptr;
-    FootClass* pThisF = nullptr;
-    auto abs = pThis->WhatAmI();
 
-    if (abs == AbstractType::Unit|| abs == AbstractType::Aircraft || abs == AbstractType::Infantry)
-        pThisF = abstract_cast<FootClass*>(pThis);
-    if (abs == AbstractType::Unit)
-        pThisU = abstract_cast<UnitClass*>(pThis);
+    if (health <= 0 || !pThis->IsAlive)
+        return 0x5F583E; // return DamageState::PostMortem
 
-    if (health <= 0
-        || !pThis->IsAlive
-        || pThisU && pThisU->DeathFrameCounter > 0
-        || pThisF && (pThisF->IsSinking || pThisF->IsCrashing))
-        return 0x5F583E;
+    return 0x5F53B0; //continue vanilla check
+}
 
-    return 0x5F53B0;
+DEFINE_HOOK(4D7431, FootClass_ReceiveDamage_DyingFix, 5)
+{
+    GET(FootClass*, pThis, ESI);
+    GET(DamageState, Result, EAX);
+
+    if (Result != DamageState::PostMortem && (pThis->IsSinking || pThis->IsCrashing))
+        R->EAX(DamageState::PostMortem);
+
+    return 0;
+}
+
+DEFINE_HOOK(737D57, UnitClass_ReceiveDamage_DyingFix, 7)
+{
+    GET(UnitClass*, pThis, ESI);
+    GET(DamageState, Result, EAX);
+
+    if (Result != DamageState::PostMortem && pThis->DeathFrameCounter > 0)
+        R->EAX(DamageState::PostMortem);
+
+    return 0;
 }
