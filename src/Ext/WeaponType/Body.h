@@ -5,7 +5,7 @@
 #include "../_Container.hpp"
 #include "../../Utilities/TemplateDef.h"
 
-#include "../../Enum/RadTypes.h"
+#include "../../Enum/RadTypeClass.h"
 
 class WeaponTypeExt
 {
@@ -18,7 +18,7 @@ public:
 
 		Valueable<double> DiskLaser_Radius;
 		Valueable<int> DiskLaser_Circumference;
-		Valueable<RadType*> RadType;
+		Valueable<RadTypeClass*> RadType;
 		Valueable<bool> Rad_NoOwner;
 		Valueable<bool> Bolt_Disable1;
 		Valueable<bool> Bolt_Disable2;

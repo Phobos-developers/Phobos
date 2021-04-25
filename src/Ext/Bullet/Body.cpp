@@ -7,7 +7,7 @@ BulletExt::ExtContainer BulletExt::ExtMap;
 void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel)
 {
 	auto pThis = this->OwnerObject();
-	auto const& Instances = RadSiteExt::RadSiteInstance;
+	auto const& Instances = RadSiteExt::Array;
 	auto const pWeapon = pThis->GetWeaponType();
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.FindOrAllocate(pWeapon);
 	auto const pRadType = pWeaponExt->RadType;

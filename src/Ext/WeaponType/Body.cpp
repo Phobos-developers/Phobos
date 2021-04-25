@@ -5,7 +5,7 @@ WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
 void WeaponTypeExt::ExtData::Initialize() 
 { 
-	this->RadType = RadType::FindOrAllocate("Radiation");
+	this->RadType = RadTypeClass::FindOrAllocate("Radiation");
 }
 
 // =============================
@@ -30,7 +30,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Bolt_Disable2.Read(exINI, pSection, "Bolt.Disable2");
 	this->Bolt_Disable3.Read(exINI, pSection, "Bolt.Disable3");
 
-	// RadType
+	// RadTypeClass
 //	if (this->OwnerObject()->RadLevel > 0) 
 //	{
 		this->RadType.Read(exINI, pSection, "RadType", true);

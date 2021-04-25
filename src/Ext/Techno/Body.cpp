@@ -125,6 +125,22 @@ void TechnoExt::ApplySpawn_LimitRange(TechnoClass* pThis)
     }
 }
 
+// TODO: move the hook to InfantryExt::AI
+void TechnoExt::ApplyCloak_Undeployed(TechnoClass* pThis)
+{
+    if (auto pInf = static_cast<InfantryClass*>(pThis))
+    {
+        auto pTypeData = TechnoExt::ExtMap.Find(pThis);
+        if (pTypeData->WasCloaked && pInf->SequenceAnim == Sequence::Undeploy && pInf->IsDeployed())
+        {
+            pThis->Cloakable = true;
+            pThis->UpdateCloak();
+            pThis->NeedsRedraw = true;
+            pTypeData->WasCloaked = false;
+        }
+    }
+}
+
 bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 {
     if (!pThis || pThis->InLimbo)
@@ -158,32 +174,17 @@ bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
     return false;
 }
 
-void TechnoExt::ApplyCloak_Undeployed(TechnoClass* pThis)
-{
-    if (auto pinf = static_cast<InfantryClass*>(pThis))
-    {
-        auto Text = TechnoExt::ExtMap.Find(pThis);
-
-        if (Text->WasCloaked && pinf->SequenceAnim == Sequence::Undeploy && pinf->IsDeployed())
-        {
-            pThis->Cloakable = true;
-            pThis->UpdateCloak();
-            pThis->NeedsRedraw = true;
-            Text->WasCloaked = false;
-        }
-    }
-}
 // =============================
 // load / save
 
 template <typename T>
 void TechnoExt::ExtData::Serialize(T& Stm)
 {
-	Stm
-		.Process(this->InterceptedBullet)
-		.Process(this->ShieldData)
-		.Process(this->WasCloaked)
-		;
+    Stm
+        .Process(this->InterceptedBullet)
+        .Process(this->ShieldData)
+        .Process(this->WasCloaked)
+        ;
 }
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
