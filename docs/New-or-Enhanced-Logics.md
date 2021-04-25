@@ -102,7 +102,7 @@ In `rulesmd.ini`:
 Pips.Shield=-1,-1,-1           ; int, frames of pips.shp for Green, Yellow, Red
 Pips.Shield.Building=-1,-1,-1  ; int, frames of pips.shp for Green, Yellow, Red
 
-[SOMETECHNO]	               ; TechnoType
+[SOMETECHNO]                   ; TechnoType
 Shield.Strength=0              ; integer
 Shield.Armor=none              ; ArmorType
 Shield.AbsorbOverDamage=false  ; boolean
@@ -147,8 +147,10 @@ Strafing.SimulateBurst=false ; bool
 
 In `rulesmd.ini`
 ```ini
+[RadiationTypes]
+0=SOMERADTYPE
+
 [SOMEWEAPON]                    ; WeaponType
-RadLevel=0                      ; integer, vanilla tag; used to activate the feature
 RadType=Radiation               ; RadType to use instead
                                 ; of default [Radiation]
 
@@ -168,9 +170,10 @@ RadSiteWarhead=RadSite          ; WarheadType
 
 ### Radiation enhancements
 
-- Radiation now has owner by default, so any rad-kills will be scored.
+- Radiation now has owner by default, so any rad-kills will be scored. This behaviour can be reverted by a corresponding tag.
   - `AffectsAllies`, `AffectsOwner` and `AffectsEnemies` on `RadSiteWarhead` are respected.
   - Currently the rad maker doesn't gain experience from kills, this may change in future.
+- Radiation is now able to deal damage to Buildings. To enable set `RadApplicationDelay.Building` value more than 0.
 
 In `rulesmd.ini`:
 ```ini

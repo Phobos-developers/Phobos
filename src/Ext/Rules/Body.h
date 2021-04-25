@@ -3,11 +3,11 @@
 #include <CCINIClass.h>
 #include <RulesClass.h>
 
-#include "../_Container.hpp"
-#include "../../Utilities/Constructs.h"
-#include "../../Utilities/Template.h"
+#include <Ext/_Container.hpp>
+#include <Utilities/Constructs.h>
+#include <Utilities/Template.h>
 
-#include "../../Misc/Debug.h"
+#include <Misc/Debug.h>
 
 
 class AnimTypeClass;
@@ -26,10 +26,12 @@ public:
 	public:
 		Valueable<Vector3D<int>> Pips_Shield;
 		Valueable<Vector3D<int>> Pips_Shield_Buildings;
+		Valueable<int> RadApplicationDelay_Building;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Pips_Shield({ -1,-1,-1 })
 			, Pips_Shield_Buildings({ -1,-1,-1 })
+			, RadApplicationDelay_Building(0)
 		{ }
 
 		virtual ~ExtData() = default;

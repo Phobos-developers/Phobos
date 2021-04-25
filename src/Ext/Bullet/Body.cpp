@@ -7,10 +7,10 @@ BulletExt::ExtContainer BulletExt::ExtMap;
 void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel)
 {
 	auto pThis = this->OwnerObject();
-	auto const& Instances = RadSiteExt::RadSiteInstance;
+	auto const& Instances = RadSiteExt::Array;
 	auto const pWeapon = pThis->GetWeaponType();
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.FindOrAllocate(pWeapon);
-	auto const pRadType = &pWeaponExt->RadType;
+	auto const pRadType = pWeaponExt->RadType;
 	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
 
 	if (Instances.Count > 0)
@@ -32,9 +32,9 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 			auto pRadExt = *it;
 			auto pRadSite = pRadExt->OwnerObject();
 
-			if (pRadSite->GetRadLevel() + RadLevel > pRadType->LevelMax)
+			if (pRadSite->GetRadLevel() + RadLevel > pRadType->GetLevelMax())
 			{
-				RadLevel = pRadType->LevelMax - pRadSite->GetRadLevel();
+				RadLevel = pRadType->GetLevelMax() - pRadSite->GetRadLevel();
 			}
 
 			// Handle It 

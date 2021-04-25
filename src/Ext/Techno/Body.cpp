@@ -6,6 +6,7 @@
 #include <BulletTypeClass.h>
 #include <ScenarioClass.h>
 #include <SpawnManagerClass.h>
+#include <InfantryClass.h>
 
 #include "../BulletType/Body.h"
 
@@ -124,6 +125,22 @@ void TechnoExt::ApplySpawn_LimitRange(TechnoClass* pThis)
     }
 }
 
+// TODO: move the hook to InfantryExt::AI
+void TechnoExt::ApplyCloak_Undeployed(TechnoClass* pThis)
+{
+    if (auto pInf = static_cast<InfantryClass*>(pThis))
+    {
+        auto pTypeData = TechnoExt::ExtMap.Find(pThis);
+        if (pTypeData->WasCloaked && pInf->SequenceAnim == Sequence::Undeploy && pInf->IsDeployed())
+        {
+            pThis->Cloakable = true;
+            pThis->UpdateCloak();
+            pThis->NeedsRedraw = true;
+            pTypeData->WasCloaked = false;
+        }
+    }
+}
+
 bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 {
     if (!pThis || pThis->InLimbo)
@@ -166,6 +183,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
     Stm
         .Process(this->InterceptedBullet)
         .Process(this->ShieldData)
+        .Process(this->WasCloaked)
         ;
 }
 
