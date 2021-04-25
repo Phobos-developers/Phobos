@@ -84,6 +84,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->SplashList_PickRandom.Read(exINI, pSection, "SplashList.PickRandom");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
+	this->GattlingStage.Read(exINI, pSection, "TargetGattlingStage");
+	this->GattlingRateUp.Read(exINI, pSection, "TargetGattlingRateUp");
+	this->ReloadAmmo.Read(exINI, pSection, "TargetReloadAmmo");
 
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
 	this->Crit_ExtraDamage.Read(exINI, pSection, "Crit.ExtraDamage");
@@ -113,6 +116,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm) {
 
 		.Process(this->RemoveDisguise)
 		.Process(this->RemoveMindControl)
+
+		.Process(this->GattlingStage)
+		.Process(this->GattlingRateUp)
+		.Process(this->ReloadAmmo)
 
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ExtraDamage)

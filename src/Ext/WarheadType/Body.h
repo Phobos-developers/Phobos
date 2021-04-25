@@ -21,6 +21,9 @@ public:
 		Valueable<bool> SplashList_PickRandom;
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
+		Valueable<int> GattlingStage;
+		Valueable<int> GattlingRateUp;
+		Valueable<int> ReloadAmmo;
 
 		Valueable<int> Crit_ExtraDamage;
 		Valueable<double> Crit_Chance;
@@ -47,6 +50,9 @@ public:
 			SplashList_PickRandom(false),
 			RemoveDisguise(false),
 			RemoveMindControl(false),
+			GattlingStage(0),
+			GattlingRateUp(0),
+			ReloadAmmo(0),
 
 			Crit_Chance(0.0),
 			Crit_ExtraDamage(0),
@@ -68,6 +74,9 @@ public:
 		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
+		void ApplyGattlingStage(TechnoClass* pTarget, int Stage);
+		void ApplyGattlingRateUp(TechnoClass* pTarget, int RateUp);
+		void ApplyReloadAmmo(TechnoClass* pTarget, int ReloadAmount);
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
