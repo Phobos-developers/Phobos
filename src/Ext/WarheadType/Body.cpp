@@ -97,7 +97,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
 
-	this->PenetratesShield.Read(exINI, pSection, "PenetratesShield");
+    if (RulesClass::Instance->C4Warhead == pThis)
+        this->PenetratesShield = true;
+    else
+        this->PenetratesShield.Read(exINI, pSection, "PenetratesShield");
 	this->BreaksShield.Read(exINI, pSection, "BreaksShield");
 }
 
