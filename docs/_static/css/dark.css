@@ -116,8 +116,8 @@ li.toctree-l1>a:hover, li.toctree-l2>a:hover, li.toctree-l3>a:hover {
 
 .btn {
     border-radius: 6px !important;
-    box-shadow: unset !important;
-    background-color: #161b22 !important;
+    box-shadow: inset 0 -2px 0 0 rgba(0,0,0,.15); !important;
+    background-color: rgb(255, 255, 255, 0.15) !important;
 }
 
 a.btn.btn-neutral {
@@ -125,5 +125,5 @@ a.btn.btn-neutral {
 }
 
 .btn:hover {
-    background-color: #ffffff80 !important;
+    background-color: #2980B9 !important;
 }
