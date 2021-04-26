@@ -140,7 +140,7 @@ DEFINE_HOOK(5213E3, InfantryClass_AIDeployment_CheckRad, 4)
         pExt->WasCloaked = true;
     }
 
-    return (radLevel < weaponRadLevel) ?
+    return (!radLevel || (radLevel < weaponRadLevel / 3)) ?
         0x5213F4 : 0x521484;
 }
 
