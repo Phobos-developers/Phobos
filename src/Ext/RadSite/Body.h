@@ -26,15 +26,14 @@ public:
             RadHouse(nullptr),
             Type(),
             Weapon(nullptr)
-        {
-        }
+        { }
 
         virtual ~ExtData() = default;
 
         virtual size_t Size() const
         {
             return sizeof(*this);
-        };
+        }
 
         virtual void InvalidatePointer(void* ptr, bool bRemoved) { }
 
