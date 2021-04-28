@@ -22,8 +22,8 @@ void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
         {
             Capturer->CaptureManager->FreeUnit(pThis);
 
-            if (!pThis->IsHumanControlled)
-                pThis->QueueMission(Mission::Hunt, 0);
+            //if (!pThis->IsHumanControlled)
+            //    pThis->QueueMission(Mission::Hunt, 0);
         }
     }
 }
