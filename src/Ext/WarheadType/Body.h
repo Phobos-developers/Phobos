@@ -21,6 +21,11 @@ public:
 		Valueable<bool> SplashList_PickRandom;
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
+		Valueable<int> Experience_GivenFlat;
+		Valueable<double> Experience_GivenPercent;
+		Valueable<bool> Experience_Transfer;
+		Valueable<bool> Experience_FirerGetsExp;
+		Valueable<bool> Experience_CalculatePercentFromFirer;
 
 		Valueable<int> Crit_ExtraDamage;
 		Valueable<double> Crit_Chance;
@@ -47,6 +52,11 @@ public:
 			SplashList_PickRandom(false),
 			RemoveDisguise(false),
 			RemoveMindControl(false),
+			Experience_GivenFlat(0),
+			Experience_GivenPercent(0.0),
+			Experience_Transfer(false),
+			Experience_FirerGetsExp(false),
+			Experience_CalculatePercentFromFirer(false),
 
 			Crit_Chance(0.0),
 			Crit_ExtraDamage(0),
@@ -68,6 +78,7 @@ public:
 		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
+		void ApplyModifyExperience(TechnoClass* pTarget, TechnoClass* pOwner);
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
