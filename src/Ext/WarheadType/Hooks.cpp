@@ -68,9 +68,7 @@ DEFINE_HOOK(48A5BD, WarheadTypeClass_AnimList_PickRandom, 6)
     GET(WarheadTypeClass* const, pThis, ESI);
     auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-    if (pWHExt && pWHExt->AnimList_PickRandom)
-        return 0x48A5C7;
-    return 0;
+    return pWHExt && pWHExt->AnimList_PickRandom ? 0x48A5C7 : 0;
 }
 
 DEFINE_HOOK(48A5B3, WarheadTypeClass_AnimList_CritAnim, 6)
