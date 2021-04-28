@@ -77,6 +77,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 
 	INI_EX exINI(pINI);
 
+    // Miscs
 	this->SpySat.Read(exINI, pSection, "SpySat");
 	this->BigGap.Read(exINI, pSection, "BigGap");
 	this->TransactMoney.Read(exINI, pSection, "TransactMoney");
@@ -84,7 +85,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->SplashList_PickRandom.Read(exINI, pSection, "SplashList.PickRandom");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
+    this->AnimList_PickRandom.Read(exINI, pSection, "AnimList.PickRandom");
 
+    // Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
 	this->Crit_ExtraDamage.Read(exINI, pSection, "Crit.ExtraDamage");
 	this->Crit_Affects.Read(exINI, pSection, "Crit.Affects");
@@ -97,6 +100,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
 
+    // Shields
     if (RulesClass::Instance->C4Warhead == pThis)
         this->PenetratesShield = true;
     else
@@ -116,6 +120,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm) {
 
 		.Process(this->RemoveDisguise)
 		.Process(this->RemoveMindControl)
+
+        .Process(this->AnimList_PickRandom)
 
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ExtraDamage)

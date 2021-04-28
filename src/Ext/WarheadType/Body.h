@@ -21,6 +21,7 @@ public:
 		Valueable<bool> SplashList_PickRandom;
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
+        Valueable<bool> AnimList_PickRandom;
 
 		Valueable<int> Crit_ExtraDamage;
 		Valueable<double> Crit_Chance;
@@ -47,6 +48,7 @@ public:
 			SplashList_PickRandom(false),
 			RemoveDisguise(false),
 			RemoveMindControl(false),
+            AnimList_PickRandom(false),
 
 			Crit_Chance(0.0),
 			Crit_ExtraDamage(0),
