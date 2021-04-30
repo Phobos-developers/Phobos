@@ -18,13 +18,9 @@ void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
     if (auto Capturer = pThis->MindControlledBy)
     {
         auto pCapturerExt = TechnoTypeExt::ExtMap.Find(Capturer->GetTechnoType());
-        if (pCapturerExt && pCapturerExt->MindControlRangeLimit > 0 && pThis->DistanceFrom(Capturer) > pCapturerExt->MindControlRangeLimit * 256.0)
-        {
+        if (pCapturerExt && pCapturerExt->MindControlRangeLimit > 0
+            && pThis->DistanceFrom(Capturer) > pCapturerExt->MindControlRangeLimit * 256.0)
             Capturer->CaptureManager->FreeUnit(pThis);
-
-            if (!pThis->IsHumanControlled)
-                pThis->QueueMission(Mission::Hunt, 0);
-        }
     }
 }
 
