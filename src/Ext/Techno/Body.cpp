@@ -20,7 +20,9 @@ void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
         auto pCapturerExt = TechnoTypeExt::ExtMap.Find(Capturer->GetTechnoType());
         if (pCapturerExt && pCapturerExt->MindControlRangeLimit > 0
             && pThis->DistanceFrom(Capturer) > pCapturerExt->MindControlRangeLimit * 256.0)
+        {
             Capturer->CaptureManager->FreeUnit(pThis);
+        }
     }
 }
 
