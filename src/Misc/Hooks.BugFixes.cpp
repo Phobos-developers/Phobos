@@ -45,7 +45,8 @@ DEFINE_HOOK(4D7431, FootClass_ReceiveDamage_DyingFix, 5)
     GET(FootClass*, pThis, ESI);
     GET(DamageState, result, EAX);
 
-    if (result != DamageState::PostMortem && (pThis->IsSinking /*|| pThis->IsCrashing*/))
+    if (result != DamageState::PostMortem &&
+        (pThis->IsSinking || (!pThis->IsAttackedByLocomotor && pThis->IsCrashing)))
         R->EAX(DamageState::PostMortem);
 
     return 0;
