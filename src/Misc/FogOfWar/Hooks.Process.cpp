@@ -177,15 +177,15 @@ DEFINE_HOOK(6D3470, TacticalClass_DrawFoggedObject, 8)
 	RectangleStruct rect{ 0,0,0,0 };
 
 	if (bUkn && Drawing::SurfaceDimensions_Hidden.Width > 0 && Drawing::SurfaceDimensions_Hidden.Height > 0)
-		rect = FogOfWar::UnionRectangle(&rect, &Drawing::SurfaceDimensions_Hidden);
+		FogOfWar::UnionRectangle(&rect, &Drawing::SurfaceDimensions_Hidden);
 	else
 	{
 		RectangleStruct buffer;
 
 		if (pRect1->Width > 0 && pRect1->Height > 0)
-			rect = FogOfWar::UnionRectangle(&rect, pRect1);
+			FogOfWar::UnionRectangle(&rect, pRect1);
 		if (pRect2->Width > 0 && pRect2->Height > 0)
-			rect = FogOfWar::UnionRectangle(&rect, pRect2);
+			FogOfWar::UnionRectangle(&rect, pRect2);
 
 		if (auto& nVisibleCellCount = pTactical->VisibleCellCount)
 		{
@@ -199,7 +199,7 @@ DEFINE_HOOK(6D3470, TacticalClass_DrawFoggedObject, 8)
 				TacticalClass::Instance->CoordsToClient(&location, &point);
 				buffer.X = Drawing::SurfaceDimensions_Hidden.X + point.X - 30;
 				buffer.Y = Drawing::SurfaceDimensions_Hidden.Y + point.Y;
-				rect = FogOfWar::UnionRectangle(&rect, &buffer);
+				FogOfWar::UnionRectangle(&rect, &buffer);
 			}
 		}
 		
@@ -208,7 +208,7 @@ DEFINE_HOOK(6D3470, TacticalClass_DrawFoggedObject, 8)
 			buffer = dirty.Rect;
 			buffer.Y += Drawing::SurfaceDimensions_Hidden.Y;
 			if (buffer.Width > 0 && buffer.Height > 0)
-				buffer = FogOfWar::UnionRectangle(&rect, &buffer);
+				FogOfWar::UnionRectangle(&rect, &buffer);
 		}
 	}
 

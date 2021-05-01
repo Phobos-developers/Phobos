@@ -249,12 +249,12 @@ FoggedOverlay::FoggedOverlay(CoordStruct& location, RectangleStruct& bound, int 
 FoggedOverlay::FoggedOverlay(CellClass* pCell, int overlay, unsigned char overlayData)
 {
 	pCell->GetCoords(&this->Location);
-	RectangleStruct rect1, rect2;
-	pCell->ShapeRect(&rect1);
-	pCell->GetContainingRect(&rect2);
+	RectangleStruct buffer;
+	pCell->ShapeRect(&this->Bound);
+	pCell->GetContainingRect(&buffer);
 
-	this->Bound = FogOfWar::UnionRectangle(&rect1, &rect2);
-	this->Bound.X += TacticalClass::Instance->TacticalPos0.X - Drawing::SurfaceDimensions_Hidden.X;
+	FogOfWar::UnionRectangle(&this->Bound, &buffer);
+    this->Bound.X += TacticalClass::Instance->TacticalPos0.X - Drawing::SurfaceDimensions_Hidden.X;
 	this->Bound.Y += TacticalClass::Instance->TacticalPos0.Y - Drawing::SurfaceDimensions_Hidden.Y;
 
 	this->CoveredRTTIType = AbstractType::Overlay;

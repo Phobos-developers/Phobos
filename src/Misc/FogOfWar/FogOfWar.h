@@ -16,7 +16,8 @@ public:
 	static void ClearFoggedObjects(CellClass* pCell);
 
 	static bool DrawIfVisible(FoggedObject* pFoggedObject, RectangleStruct* pRect);
-	static RectangleStruct UnionRectangle(RectangleStruct* rect1, RectangleStruct* rect2);
+    // Result will be stored in rect1
+	static void UnionRectangle(RectangleStruct* rect1, RectangleStruct* rect2);
 
 	static std::unordered_set<FoggedObject*> FoggedObjects;
 };

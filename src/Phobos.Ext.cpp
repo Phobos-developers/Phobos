@@ -227,6 +227,7 @@ auto MassActions = MassAction <
 	BuildingTypeExt,
 	BulletExt,
 	BulletTypeExt,
+    CellExt,
 	HouseExt,
 	RadSiteExt,
 	RulesExt,

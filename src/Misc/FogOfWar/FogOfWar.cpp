@@ -135,66 +135,12 @@ bool FogOfWar::DrawIfVisible(FoggedObject* pFoggedObject, RectangleStruct* pRect
 	return true;
 }
 
-RectangleStruct FogOfWar::UnionRectangle(RectangleStruct* rect1, RectangleStruct* rect2)
+void FogOfWar::UnionRectangle(RectangleStruct* rect1, RectangleStruct* rect2)
 {
-	int X1; // ecx
-	int X1_; // edx
-	int X2; // eax
-	bool v7; // cc
-	int Y2; // esi
-	int Y1; // edx
-	int v10; // edi
-	int Y; // ebx
-	int v12; // eax
-	int v13; // edi
-	int W; // edi
-	int Bottom; // ecx
-	RectangleStruct* result; // eax
-	int H1; // [esp+8h] [ebp-14h]
-	int H2; // [esp+Ch] [ebp-10h]
-	int v19; // [esp+14h] [ebp-8h]
-	int X; // [esp+18h] [ebp-4h]
-	RectangleStruct pBound; // [esp+24h] [ebp+8h]
-
-	v19 = rect2->Width;
-	if (v19 <= 0 || (H2 = rect2->Height, H2 <= 0))
-	{
-		result = &pBound;
-		pBound = *rect1;
-	}
-	else if (rect1->Width <= 0 || (H1 = rect1->Height, H1 <= 0))
-	{
-		result = &pBound;
-		pBound = *rect2;
-	}
-	else
-	{
-		X1 = rect1->X;
-		X1_ = rect1->X;
-		X2 = rect2->X;
-		v7 = rect2->X < rect1->X;
-		Y2 = rect2->Y;
-		if (v7)
-			X1_ = X2;
-		X = X1_;
-		Y1 = rect1->Y;
-		v10 = rect1->Width;
-		Y = Y1;
-		if (Y2 < Y1)
-			Y = Y2;
-		v12 = v19 + X2;
-		v13 = X1 + v10;
-		if (v13 < v12)
-			v13 = v12;
-		W = v13 - X;
-		Bottom = Y1 + H1;
-		if (Y1 + H1 < Y2 + H2)
-			Bottom = Y2 + H2;
-		result = &pBound;
-		pBound.X = X;
-		pBound.Y = Y;
-		pBound.Width = W;
-		pBound.Height = Bottom - Y;
-	}
-	return pBound;
+    RectangleStruct rect;
+    rect.X = std::min(rect1->X, rect2->X);
+    rect.Y = std::min(rect1->Y, rect2->Y);
+    rect.Width = std::max(rect1->X + rect1->Width, rect2->X + rect2->Width) - rect.X;
+    rect.Height = std::max(rect1->Y + rect1->Height, rect2->Y + rect2->Height) - rect.Y;
+    *rect1 = rect;
 }
