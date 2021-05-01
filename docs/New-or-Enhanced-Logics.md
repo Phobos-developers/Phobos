@@ -247,8 +247,8 @@ RemoveMindControl=no                 ; boolean
 
 ### Critical damage chance
 
+- Many games, particularily RPGs, have a "Critical Hit!" mechanic, which means more damage was dealt with that one hit than normal. Shooters also have this, except they usually just have "headshots" that do killing damages, and little else. You can now have weapons do the same in RA2YR.
 - Warheads can now apply additional chance-based critical damage with the ability to customize chance, damage, affected targets, and animations of critical strike.
-- Think of this as something like hit/miss from shooter and RPG games or something.
 
 In `rulesmd.ini`:
 ```ini
