@@ -248,6 +248,7 @@ RemoveMindControl=no                 ; boolean
 ### Critical damage chance
 
 - Warheads can now apply additional chance-based critical damage with the ability to customize chance, damage, affected targets, and animations of critical strike.
+- Think of this as something like hit/miss from shooter and RPG games or something.
 
 In `rulesmd.ini`:
 ```ini
@@ -285,6 +286,7 @@ SplashList.PickRandom=no ; play a random animation from the list? boolean, defau
   - `Interceptor.EliteGuardRange` value is used if the unit veterancy is Elite.
   - `Interceptor.MinimumGuardRange` is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
   - `Interceptor.EliteMinimumGuardRange` value is used if the unit veterancy is Elite.
+  - Note: `AA=no` weapons don't intercept projectiles very well, like missiles and other `Arcing=yes` projectiles. The interceptors may start firing too late and fail to destroy the projectile before it reaches the target.
 
 In `rulesmd.ini`:
 ```ini
