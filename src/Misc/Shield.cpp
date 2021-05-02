@@ -311,8 +311,8 @@ int ShieldTechnoClass::GetPercentageAmount(double iStatus)
 
 void ShieldTechnoClass::InvalidatePointer(void* ptr)
 {
-    if (this->Techno == ptr)
-        this->Techno = nullptr;
+    //if (this->Techno == ptr)
+    //    this->Techno = nullptr;
 
     if (this->Image == ptr)
         this->KillAnim();
@@ -343,6 +343,7 @@ void ShieldTechnoClass::BreakShield()
 
     //if (this->GetExt()->Shield_RespawnAnim.isset()) this->Broken = true;
 
+    this->KillAnim();
     if (this->GetExt()->Shield_BreakAnim.isset())
     {
         if (auto pAnimType = this->GetExt()->Shield_BreakAnim)
@@ -359,6 +360,7 @@ void ShieldTechnoClass::RespawnShield()
     {
         this->Timer_Respawn.Stop();
         this->HP = this->GetPercentageAmount(this->GetExt()->Shield_Respawn);
+        this->CreateAnim();
         /*
         if (this->GetExt()->Shield_RespawnAnim.isset() && this->Broken) {
             if (AnimTypeClass* const pAnimType = this->GetExt()->Shield_RespawnAnim) {
@@ -375,8 +377,8 @@ void ShieldTechnoClass::RespawnShield()
 
 void ShieldTechnoClass::DrawShield()
 {
-    if (this->Techno->CloakState != CloakState::Uncloaked
-        || this->HP < 1)
+    if (this->Techno->CloakState == CloakState::Cloaked
+        || this->Techno->CloakState == CloakState::Cloaking)
     {
         if (this->HaveAnim)
         {
@@ -396,7 +398,8 @@ void ShieldTechnoClass::DrawShield()
 
 void ShieldTechnoClass::CreateAnim()
 {
-    if (this->Techno->CloakState != CloakState::Uncloaked)
+    if (this->Techno->CloakState == CloakState::Cloaked 
+        || this->Techno->CloakState == CloakState::Cloaking)
         return;
 
     if (this->GetExt()->Shield_IdleAnim.isset())
