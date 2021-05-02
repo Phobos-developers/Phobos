@@ -388,7 +388,7 @@ void ShieldTechnoClass::DrawShield()
     }
     else
     {
-        if (!this->HaveAnim)
+        if (!this->HaveAnim && this->HP)
         {
             this->CreateAnim();
             this->HaveAnim = true;
