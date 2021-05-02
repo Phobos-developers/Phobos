@@ -31,6 +31,7 @@
     <ClCompile Include="src\Ext\Side\Body.cpp" />
     <ClCompile Include="src\Ext\Side\Hooks.cpp" />
     <ClCompile Include="src\Ext\Side\Hooks.SidebarGDIPositions.cpp" />
+    <ClCompile Include="src\Ext\TAction\Hooks.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Body.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.Teleport.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.cpp" />
