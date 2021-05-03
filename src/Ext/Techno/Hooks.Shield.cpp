@@ -10,9 +10,6 @@ DEFINE_HOOK(701900, TechnoClass_ReceiveDamage_Shield, 6)
 {
     GET(TechnoClass*, pThis, ECX);
     LEA_STACK(args_ReceiveDamage*, args, 0x4);
-    //GET_STACK(int*, pDamage, 0x4);
-    //GET_STACK(WarheadTypeClass*, pWH, 0xC);
-    //GET_STACK(HouseClass*, pSourceHouse, -0x1C);
     auto pExt = TechnoExt::ExtMap.Find(pThis);
 
     if (auto pShieldData = pExt->ShieldData.get())
@@ -26,6 +23,21 @@ DEFINE_HOOK(701900, TechnoClass_ReceiveDamage_Shield, 6)
     }
 
     return 0;
+}
+
+DEFINE_HOOK(7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 5)
+{
+    GET(TechnoClass*, pThis, ESI);
+    GET(int*, Damage, EBX);
+    auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+    if (auto pShieldData = pExt->ShieldData.get())
+    {
+        if (pShieldData->Available() && pShieldData->GetShieldHP())
+            return 0x7019E3;
+    }
+
+    return *Damage >= 0 ? 0x7019E3 : 0x7019DD;
 }
 
 DEFINE_HOOK_AGAIN(70CF39, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_EvalThreatRating_Shield
