@@ -2,11 +2,112 @@
 
 This page describes how to help or contribute to Phobos and lists the contributing guidelines that are used in the project.
 
-## Guidelines for new contributors
+## Guidelines for contributors
 
-### Code style
+### Code styleguide
 
-TODO
+We have estabilished a couple of code style rules to keep things consistent. Some of the rules are enforced in `.editorconfig`, where applicable, so you can autoformat the code by pressing `Ctrl + K, D` hotkey chord in Visual studio. Still, it is advised to manually check the style before submitting the code.
+- We use spaces instead of tabs to indent code.
+- Curly braces are always to be placed on a new line. One of the reasons for this is to clearly separate the end of the code block head and body in case of multiline bodies:
+```cpp
+if (SomeReallyLongCondition() ||
+    ThatSplitsIntoMultipleLines())
+{
+    DoSomethingHere();
+    DoSomethingMore();
+}
+```
+- Braceless code block bodies should be made only when both code block head and body are single line,  statements split into multiple lines and nested braceless blocks are not allowed within braceless blocks:
+```cpp
+// OK
+if (Something())
+    DoSomething();
+
+// OK
+if (SomeReallyLongCondition() ||
+    ThatSplitsIntoMultipleLines())
+{
+    DoSomething();
+}
+
+// OK
+if (SomeCondition())
+{
+    if (SomeOtherCondition())
+        DoSomething();
+}
+
+// OK
+if (SomeCondition())
+{
+    return VeryLongExpression()
+        || ThatSplitsIntoMultipleLines();
+}
+```
+- Only empty curly brace blocks may be left on the same line for both opening and closing braces (if appropriate).
+- If you use if-else you should either have all of the code blocks braced or braceless to keep things consistent.
+- Code should have empty lines to make it easier to read. Use an empty line to split code into logical step parts. It's mandatory to have empty lines to separate:
+  - `return` statements;
+  - local variable assignments that are used in the further code;
+  - code blocks (braceless or not) or anything using code blocks (function or hook definitions, classes, namespaces etc.);
+  - hook register input/output.
+You shouldn't put an empty line after one-line local variable assignments that are used only in the following code block though:
+```cpp
+// OK
+auto localVar = Something();
+if (SomeConditionUsing(localVar))
+    ...
+
+// OK
+auto localVar = Something();
+auto anotherLocalVar = OtherSomething();
+
+if (SomeConditionUsing(localVar, anotherLocalVar))
+    ...
+
+// OK
+auto localVar = Something();
+
+if (SomeConditionUsing(localVar))
+    ...
+
+if (SomeOtherConditionUsing(localVar))
+    ...
+
+localVar = OtherSomething();
+```
+- `auto` may be used to hide an unneccessary type delcaration if it doesn't make the code harder to read. `auto` may not be used on primitive types.
+- A space must be put between braces of empty curly brace blocks.
+- To have less Git merge conflicts initializer lists and other list-like syntax structures used in frequently modified places should be split per-item with item separation characters (commas, for example) placed *after newline character*:
+```cpp
+ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
+    ,SpawnsTiberium_Type(0)
+    ,SpawnsTiberium_Range(1)
+    ,SpawnsTiberium_GrowthStage({ 3, 0 })
+    ,SpawnsTiberium_CellsPerAnim({ 1, 0 })
+{ }
+``` 
+- Local variables are named in the `camelCase` (using a `p` prefix to denote pointer type for every pointer nesting level) and a descriptive name, like `pTecnoType` for a local `TechnoTypeClass*` variable.
+- Classes, namespaces, class fields and members are always written in `PascalCase`.
+- Class fields that can be set via INI tags should be named exactly like ini tags with dots replaced with underscores.
+- Pointer type declarations always have pointer sign `*` attached to the type declaration.
+- Non-static class extension methods faked by declaring a static method with `pThis` as a first argument are only to be placed in the extension class for the class instance of which `pThis` is.
+  - If it's crucial to fake `__thiscall` you may use `__fastcall` and use `void* _` as a second argument to discard value passed through `EDX` register. Such methods are to be used for call replacement.
+- Hooks have to be named using a following scheme: `HookedFunction_HookPurpose`, or `ClassName_HookedMethod_HookPurpose`. Defined-again hooks are exempt from this scheme due to impossibility to define different names for the same hook.
+- Return addresses should use anonymous enums to make it clear what address means what, if applicable:
+```cpp
+DEFINE_HOOK(48381D, CellClass_SpreadTiberium_CellSpread, 6)
+{
+    enum { SpreadReturn = 0x4838CA, NoSpreadReturn = 0x4838B0 };
+
+    ...
+}
+```
+- New ingame "entity" classes are to be named with `Class` postfix (like `RadTypeClass`). Extension classes are to be named with `Ext` postfix instead (like `RadTypeExt`).
+
+:::{note}
+The styleguide is not exhaustive and may be adjusted in the future.
+:::
 
 ### Git branching model
 
