@@ -2,11 +2,12 @@
 
 #include <RulesClass.h>
 
-#include <Helpers/Macro.h>
-#include "../_Container.hpp"
-#include "../../Utilities/TemplateDef.h"
+#include <Ext/_Container.hpp>
+#include <Utilities/Constructs.h>
+#include <Utilities/Template.h>
 
-#include "../Enum/CrateTypes.h"
+#include <Misc/Debug.h>
+#include "../Enum/CrateTypeClass.h"
 
 class AnimTypeClass;
 class MouseCursor;
@@ -24,11 +25,13 @@ public:
 	public:
 		Valueable<Vector3D<int>> Pips_Shield;
 		Valueable<Vector3D<int>> Pips_Shield_Buildings;
-		CrateType*CrateEnum;
+		Valueable<int> RadApplicationDelay_Building;
+		CrateTypeClass*CrateEnum;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Pips_Shield({ -1,-1,-1 })
 			, Pips_Shield_Buildings({ -1,-1,-1 })
+			, RadApplicationDelay_Building(0)
 			, CrateEnum()
 		{ }
 

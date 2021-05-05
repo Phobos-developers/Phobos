@@ -5,7 +5,7 @@
 #include "../_Container.hpp"
 #include "../../Utilities/TemplateDef.h"
 
-#include "../../Enum/RadTypes.h"
+#include "../../Enum/RadTypeClass.h"
 
 class WeaponTypeExt
 {
@@ -18,14 +18,24 @@ public:
 
 		Valueable<double> DiskLaser_Radius;
 		Valueable<int> DiskLaser_Circumference;
-		RadType RadType;
+		Valueable<RadTypeClass*> RadType;
 		Valueable<bool> Rad_NoOwner;
-
-		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject),
-			DiskLaser_Radius(38.2),
-			DiskLaser_Circumference(240),
-			RadType(),
-			Rad_NoOwner(false)
+		Valueable<bool> Bolt_Disable1;
+		Valueable<bool> Bolt_Disable2;
+		Valueable<bool> Bolt_Disable3;
+		Valueable<int> Strafing_Shots;
+		Valueable<bool> Strafing_SimulateBurst;
+		
+		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
+			,DiskLaser_Radius(38.2)
+			,DiskLaser_Circumference(240)
+			,RadType()
+			,Rad_NoOwner(false)
+			,Bolt_Disable1(false)
+			,Bolt_Disable2(false)
+			,Bolt_Disable3(false)
+			,Strafing_Shots(5)
+			,Strafing_SimulateBurst(false)
 		{ }
 
 		virtual ~ExtData() = default;

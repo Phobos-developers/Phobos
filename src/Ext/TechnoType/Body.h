@@ -22,7 +22,9 @@ public:
 		Valueable<double> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
 		Valueable<double> Interceptor_GuardRange;
+		Valueable<double> Interceptor_MinimumGuardRange;
 		Valueable<double> Interceptor_EliteGuardRange;
+		Valueable<double> Interceptor_EliteMinimumGuardRange;
 		Valueable<CoordStruct> TurretOffset;
 		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Spawn_LimitedRange;
@@ -44,6 +46,16 @@ public:
 		Nullable<AnimTypeClass*> Shield_BreakAnim;
 		Nullable<AnimTypeClass*> Shield_RespawnAnim;
 		Nullable<AnimTypeClass*> Shield_HitAnim;
+
+		Nullable<AnimTypeClass*> WarpOut;
+		Nullable<AnimTypeClass*> WarpIn;
+		Nullable<AnimTypeClass*> WarpAway;
+		Nullable<bool> ChronoTrigger;
+		Nullable<int> ChronoDistanceFactor;
+		Nullable<int> ChronoMinimumDelay;
+		Nullable<int> ChronoRangeMinimum;
+		Nullable<int> ChronoDelay;
+
 		Valueable<int> CrateType;
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			HealthBar_Hide(false),
@@ -53,7 +65,9 @@ public:
 			MindControlRangeLimit(-1.0),
 			Interceptor(false),
 			Interceptor_GuardRange(0.0),
+            Interceptor_MinimumGuardRange(0.0),
 			Interceptor_EliteGuardRange(0.0),
+			Interceptor_EliteMinimumGuardRange(0.0),
 			TurretOffset({0, 0, 0}),
 			Powered_KillSpawns(false),
 			Spawn_LimitedRange(false),
@@ -75,6 +89,14 @@ public:
 			Shield_BreakAnim(),
 			Shield_RespawnAnim(),
 			Shield_HitAnim(),
+			WarpOut(),
+			WarpIn(),
+			WarpAway(),
+			ChronoTrigger(),
+			ChronoDistanceFactor(),
+			ChronoMinimumDelay(),
+			ChronoRangeMinimum(),
+			ChronoDelay(),
 			CrateType(20)//20 mean random on vanilla
 		{ }
 
@@ -90,25 +112,26 @@ public:
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 		bool IsCountedAsHarvester();
 
-		// Ares 0.A
-		const char* GetSelectionGroupID() const;
+        // Ares 0.A
+        const char* GetSelectionGroupID() const;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+    private:
+        template <typename T>
+        void Serialize(T& Stm);
+    };
 
-	class ExtContainer final : public Container<TechnoTypeExt> {
-	public:
-		ExtContainer();
-		~ExtContainer();
-	};
+    class ExtContainer final : public Container<TechnoTypeExt>
+    {
+    public:
+        ExtContainer();
+        ~ExtContainer();
+    };
 
-	static ExtContainer ExtMap;
+    static ExtContainer ExtMap;
 
-	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
+    static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
 
-	// Ares 0.A
-	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
-	static bool HasSelectionGroupID(ObjectTypeClass* pType, const char* pID);
+    // Ares 0.A
+    static const char* GetSelectionGroupID(ObjectTypeClass* pType);
+    static bool HasSelectionGroupID(ObjectTypeClass* pType, const char* pID);
 };

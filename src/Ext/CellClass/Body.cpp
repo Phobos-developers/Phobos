@@ -43,20 +43,41 @@ CellExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
+// Otamaa : i do put the hook on end of the CTOR/DTOR list
+/*
 DEFINE_HOOK(47BDA1, CellClass_CTOR, 5)
 {
-	GET(CellClass*, pThis, ESI);
-	CellExt::ExtMap.FindOrAllocate(pThis);
+    GET(CellClass*, pThis, ESI);
+    CellExt::ExtMap.FindOrAllocate(pThis);
 
-	return 0;
+    return 0;
 }
 
 DEFINE_HOOK(47BBE6, CellClass_DTOR, 5)
 {
-	GET(CellClass*, pThis, ESI);
-	CellExt::ExtMap.Remove(pThis);
+    GET(CellClass*, pThis, ESI);
+    CellExt::ExtMap.Remove(pThis);
 
-	return 0;
+    return 0;
+}*/
+
+//Secsome : i do hook them at athe start of the DTOR/CTOR
+DEFINE_HOOK(47BBF0, CellClass_CTOR, 6)
+{
+    GET(CellClass*, pItem, ECX);
+
+    CellExt::ExtMap.FindOrAllocate(pItem);
+
+    return 0;
+}
+
+DEFINE_HOOK(47BB60, CellClass_DTOR, 6)
+{
+    GET(CellClass*, pItem, ECX);
+
+    CellExt::ExtMap.Remove(pItem);
+
+    return 0;
 }
 
 DEFINE_HOOK_AGAIN(483C10, CellClass_SaveLoad_Prefix, 5)

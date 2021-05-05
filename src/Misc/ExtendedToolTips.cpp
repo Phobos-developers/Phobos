@@ -1,4 +1,4 @@
-﻿#include "ExtendedToolTips.h"
+#include "ExtendedToolTips.h"
 
 void ExtToolTip::CreateHelpText(AbstractType itemType, int itemIndex)
 {
@@ -48,7 +48,7 @@ void ExtToolTip::CreateHelpText(AbstractType itemType, int itemIndex)
 
 		if (Power) {
 			_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, Phobos::readLength - 1,
-				L" %ls%+d", Phobos::UI::PowerLabel, Power);
+				L"%ls%+d", Phobos::UI::PowerLabel, Power);
 
 			ExtToolTip::Apply_Separator();
 			ExtToolTip::Append_SpaceLater();

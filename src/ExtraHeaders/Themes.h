@@ -80,7 +80,7 @@ public:
 	void Suspend()
 		{ JMP_THIS(0x720F70) }
 
-	void Update()
+	void AI()
 		{ JMP_THIS(0x7209D0) }
 
 	int CurrentTheme; // the playing theme's index

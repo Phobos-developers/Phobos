@@ -2,59 +2,68 @@
 #include <TechnoClass.h>
 
 #include <Helpers/Macro.h>
-#include "../_Container.hpp"
-#include "../../Utilities/TemplateDef.h"
+#include <Ext/_Container.hpp>
+#include <Utilities/TemplateDef.h>
 
-#include "../../Misc/Shield.h"
+#include <Misc/Shield.h>
 
 class BulletClass;
 
 class TechnoExt
 {
 public:
-	using base_type = TechnoClass;
+    using base_type = TechnoClass;
 
-	class ExtData final : public Extension<TechnoClass>
-	{
-	public:
-		Valueable<BulletClass*> InterceptedBullet;
-		std::unique_ptr<ShieldTechnoClass> ShieldData;
+    class ExtData final : public Extension<TechnoClass>
+    {
+    public:
+        Valueable<BulletClass*> InterceptedBullet;
+        std::unique_ptr<ShieldTechnoClass> ShieldData;
 
+		Valueable<bool> WasCloaked;
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),
 			InterceptedBullet(nullptr),
-			ShieldData()
+			ShieldData(),
+			WasCloaked(false)
 		{ }
 
-		virtual ~ExtData() = default;
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+        virtual ~ExtData() = default;
 
-	class ExtContainer final : public Container<TechnoExt> {
-	public:
-		ExtContainer();
-		~ExtContainer();
+        virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+        {
+            this->ShieldData->InvalidatePointer(ptr);
+        }
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
-	};
+        virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+        virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	static ExtContainer ExtMap;
+    private:
+        template <typename T>
+        void Serialize(T& Stm);
+    };
 
-	static bool LoadGlobals(PhobosStreamReader& Stm);
-	static bool SaveGlobals(PhobosStreamWriter& Stm);
+    class ExtContainer final : public Container<TechnoExt>
+    {
+    public:
+        ExtContainer();
+        ~ExtContainer();
 
-	static bool IsHarvesting(TechnoClass* pThis);
-	static bool HasAvailableDock(TechnoClass* pThis);
+        virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
+    };
 
-	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
+    static ExtContainer ExtMap;
 
-	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
-	static void ApplyInterceptor(TechnoClass* pThis);
-	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
-	static void ApplySpawn_LimitRange(TechnoClass* pThis);
+    static bool LoadGlobals(PhobosStreamReader& Stm);
+    static bool SaveGlobals(PhobosStreamWriter& Stm);
 
+    static bool IsHarvesting(TechnoClass* pThis);
+    static bool HasAvailableDock(TechnoClass* pThis);
+
+    static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
+
+    static void ApplyMindControlRangeLimit(TechnoClass* pThis);
+    static void ApplyInterceptor(TechnoClass* pThis);
+    static void ApplyPowered_KillSpawns(TechnoClass* pThis);
+    static void ApplySpawn_LimitRange(TechnoClass* pThis);
+    static void ApplyCloak_Undeployed(TechnoClass* pThis);
 };

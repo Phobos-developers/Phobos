@@ -77,8 +77,13 @@ Promote.IncludeSpawns=no  ; boolean
 *Buildings, Infantries and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - Now you can have a shield for any TechnoType if `Shield.Strength` is set greater than 0. It serves as a second health pool with independent `Armor` and `Strength` values.
+  - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed by shield.
+  - When the TechnoType with a unbroken shield, `Shield.Armor` will replace `Armor` for game calculation.
+- When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoClasses have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
+  - This also works with Ares' `Convert.*`.
 - `Shield.AbsorbOverDamage`controls whether or not the shield absorbs damage dealt beyond shield's current strength when the shield breaks.
 - `Shield.SelfHealing` and `Shield.Respawn` respect the following settings: 0.0 disables the feature, 1%-100% recovers/respawns the shield strength in percentage, other number recovers/respawns the shield strength directly. Specially, `Shield.SelfHealing` with a negative number deducts the shield strength.
+  - If you want shield recovers/respawns 1 HP per time, currently you need to set tag value to any number between 1 and 2, like `1.1`.
 - `Shield.SelfHealing.Rate` and `Shield.Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
 - `Shield.IdleAnim`, if set, will be played while the shield is intact. This animation is automatically set to loop indefinitely.
 - `Shield.BreakAnim`, if set, will be played when the shield has been broken.
@@ -88,7 +93,7 @@ Promote.IncludeSpawns=no  ; boolean
   - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. `Pips.Shield.Building` is used for BuildingTypes. 
   - `pipbrd.shp` will use its 4th frame to display an infantry's shield strength and the 3th frame for other units if `pipbrd.shp` has extra 2 frames. And `Shield.BracketDelta` can be used as additonal `PixelSelectionBracketDelta` for shield strength. 
 - Warheads have new options that interact with shields.
-  - `PenetratesShield` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType even if weapons using the warhead cannot target or damage the shield.
+  - `PenetratesShield` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield isn't existed. 
   - `BreaksShield` allows the warhead to always break shields of TechnoTypes, regardless of the amount of strength the shield has remaining or the damage dealt, assuming it affects the shield's armor type. Residual damage, if there is any, still respects `Shield.AbsorbOverDamage`.
 
 In `rulesmd.ini`:
@@ -97,7 +102,7 @@ In `rulesmd.ini`:
 Pips.Shield=-1,-1,-1           ; int, frames of pips.shp for Green, Yellow, Red
 Pips.Shield.Building=-1,-1,-1  ; int, frames of pips.shp for Green, Yellow, Red
 
-[SOMETECHNO]	               ; TechnoType
+[SOMETECHNO]                   ; TechnoType
 Shield.Strength=0              ; integer
 Shield.Armor=none              ; ArmorType
 Shield.AbsorbOverDamage=false  ; boolean
@@ -117,6 +122,22 @@ BreaksShield=false             ; boolean
 
 ## Weapons
 
+### Strafing aircraft weapon customization
+
+![image](_static/images/strafing-01.gif)  
+*Strafing aircraft weapon customization in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
+
+- Some of the behaviour of strafing aircraft weapons (weapon projectile has `ROT` below 2) can now be customized.
+  - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired. Valid values range from 1 to 5, any values smaller or larger are effectively treated same as either 1 or 5, respectively. Defaults to 5.
+  - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behaviour of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined. Defaults to false.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]        ; WeaponType
+Strafing.Shots=5             ; integer
+Strafing.SimulateBurst=false ; bool
+```
+
 ### Custom Radiation Types
 
 ![image](_static/images/radtype-01.png)  
@@ -126,8 +147,10 @@ BreaksShield=false             ; boolean
 
 In `rulesmd.ini`
 ```ini
+[RadiationTypes]
+0=SOMERADTYPE
+
 [SOMEWEAPON]                    ; WeaponType
-RadLevel=0                      ; integer, vanilla tag; used to activate the feature
 RadType=Radiation               ; RadType to use instead
                                 ; of default [Radiation]
 
@@ -147,9 +170,10 @@ RadSiteWarhead=RadSite          ; WarheadType
 
 ### Radiation enhancements
 
-- Radiation now has owner by default, so any rad-kills will be scored.
+- Radiation now has owner by default, so any rad-kills will be scored. This behaviour can be reverted by a corresponding tag.
   - `AffectsAllies`, `AffectsOwner` and `AffectsEnemies` on `RadSiteWarhead` are respected.
   - Currently the rad maker doesn't gain experience from kills, this may change in future.
+- Radiation is now able to deal damage to Buildings. To enable set `RadApplicationDelay.Building` value more than 0.
 
 In `rulesmd.ini`:
 ```ini
@@ -257,13 +281,19 @@ SplashList.PickRandom=no ; play a random animation from the list? boolean, defau
 *Interception logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberium-crisis) mod*
 
 - Projectiles can now be made targetable by certain TechnoTypes. Interceptor TechnoType's projectile must be `Inviso=yes` in order for it to work and the projectile must be used in a primary Weapon. 
+  - `Interceptor.GuardRange` is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
+  - `Interceptor.EliteGuardRange` value is used if the unit veterancy is Elite.
+  - `Interceptor.MinimumGuardRange` is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
+  - `Interceptor.EliteMinimumGuardRange` value is used if the unit veterancy is Elite.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                    ; TechnoType
-Interceptor=no                  ; boolean
-Interceptor.GuardRange=0.0      ; double
-Interceptor.EliteGuardRange=0.0 ; double
+[SOMETECHNO]                            ; TechnoType
+Interceptor=no                          ; boolean
+Interceptor.GuardRange=0.0              ; double
+Interceptor.EliteGuardRange=0.0         ; double
+Interceptor.MinimumGuardRange=0.0       ; double
+Interceptor.EliteMinimumGuardRange=0.0  ; double
 
 [SOMEPROJECTILE] ; Projectile
 Interceptable=no ; boolean
