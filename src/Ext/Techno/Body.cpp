@@ -7,11 +7,28 @@
 #include <ScenarioClass.h>
 #include <SpawnManagerClass.h>
 #include <InfantryClass.h>
+#include <CellSpread.h>
 
 #include "../BulletType/Body.h"
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
+
+//Ares
+CoordStruct TechnoExt::GetPutLocation(CoordStruct current, int distance)
+{
+    // this whole thing does not at all account for cells which are completely occupied.
+    auto tmpCoords = CellSpread::GetCell(ScenarioClass::Instance->Random.RandomRanged(0, 7));
+
+    current.X += tmpCoords.X * distance;
+    current.Y += tmpCoords.Y * distance;
+
+    auto tmpCell = MapClass::Instance->GetCellAt(current);
+    auto target = tmpCell->FindInfantrySubposition(current, false, false, false);
+
+    target.Z = current.Z;
+    return target;
+}
 
 void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
 {

@@ -78,7 +78,7 @@ DEFINE_HOOK(481F87, CellClass_CrateCollected_Shroud_Override, 7)
 
     bool pass = false;//return default
 
-    if (auto pHouse = Collector->Owner)
+    if (auto const pHouse = Collector->Owner)
     {
         auto& CrateType = CrateTypeClass::Array;
         //accesing thru Powerups::Anim causing access violation crash
@@ -89,13 +89,17 @@ DEFINE_HOOK(481F87, CellClass_CrateCollected_Shroud_Override, 7)
         BufferCellStruct.Y = static_cast<short>(R->ECX());
 
         auto Cell = MapClass::Instance->TryGetCellAt(BufferCellStruct);
-        auto animCoord = CellClass::Cell2Coord(BufferCellStruct, 200 + MapClass::Instance->GetCellFloorHeight(CellClass::Cell2Coord(BufferCellStruct)));
+        auto height = MapClass::Instance->GetCellFloorHeight(CellClass::Cell2Coord(BufferCellStruct));
+        auto animCoord = CellClass::Cell2Coord(BufferCellStruct, 200 + height);
 
-        auto dice = ScenarioClass::Instance->Random.RandomRanged(0, CrateType.size() - 1); //Pick  random from array
-        auto pickedupDice = ScenarioClass::Instance->Random.RandomRanged(0, RulesClass::Instance->CrateMaximum);
+        auto& Randomizer = ScenarioClass::Instance->Random;
+        auto& Rules = RulesClass::Instance;
+        auto dice = Randomizer.RandomRanged(0, CrateType.size() - 1); //Pick  random from array
+        auto pickedupDice = Randomizer.RandomRanged(0, Rules->CrateMaximum);
+
         //chance 0 cause crash fix
         bool allowspawn = abs(CrateType[dice]->Chance.Get()) < pickedupDice && abs(CrateType[dice]->Chance.Get()) > 0;
-        bool LandTypeEligible = false;
+
         if (CellExt::ExtMap.Find(Cell)->NewPowerups > -1)
         {
             dice = abs(CellExt::ExtMap.Find(Cell)->NewPowerups);
@@ -103,16 +107,16 @@ DEFINE_HOOK(481F87, CellClass_CrateCollected_Shroud_Override, 7)
             Debug::Log("Crate type Check cell which to spawn [%d]\n", dice);
             allowspawn = true; //forced
         }
-
+        bool LandTypeEligible = false;
         auto type = CrateType[dice]->Type.Get();
         auto pType = CrateType[dice]->Anim.Get();
         auto pSound = CrateType[dice]->Sound.Get();
         auto pEva = CrateType[dice]->Eva.Get();
         bool NotObserver = !pHouse->IsObserver() && !pHouse->IsPlayerObserver();
         auto isWater = Cell->LandType == LandType::Water && Cell->Tile_Is_Water() && Cell->Tile_Is_Wet();
-        LandTypeEligible = CrateType[dice]->AllowWater && isWater;
+        LandTypeEligible = (CrateType[dice]->AllowWater && isWater) || !isWater;
 
-        if (allowspawn && !LandTypeEligible)
+        if (allowspawn && LandTypeEligible)
         {
             switch (type)
             {
@@ -174,10 +178,12 @@ DEFINE_HOOK(481F87, CellClass_CrateCollected_Shroud_Override, 7)
             {
                 if (auto Unit = CrateType[dice]->Unit.GetElements())
                 {
-                    auto const pUnit = static_cast<TechnoClass*>(Unit.at(ScenarioClass::Instance->Random.Random() % Unit.size())->CreateObject(pHouse));
+                    auto const pUnit = static_cast<TechnoClass*>(Unit.at(Randomizer.Random() % Unit.size())->CreateObject(pHouse));
 
+                    auto TrygeteligibleArea = TechnoExt::GetPutLocation(CellClass::Cell2Coord(BufferCellStruct), 6); //try to not get stuck
+                    auto facing = static_cast<short>(Randomizer.RandomRanged(0, 255));
                     ++Unsorted::IKnowWhatImDoing;
-                    auto succes = pUnit->Put(CellClass::Cell2Coord(BufferCellStruct), static_cast<short>(ScenarioClass::Instance->Random.RandomRanged(0, 255)));
+                    auto succes = pUnit->Put(TrygeteligibleArea, facing);
                     --Unsorted::IKnowWhatImDoing;
 
                     if (!succes)
@@ -207,13 +213,13 @@ DEFINE_HOOK(481F87, CellClass_CrateCollected_Shroud_Override, 7)
                 if (!pType)
                     pType = AnimTypeClass::Array->GetItem(Powerups_Animarray[0]);
                 if (!pSound)
-                    pSound = RulesClass::Instance->CrateMoneySound;
+                    pSound = Rules->CrateMoneySound;
 
                 auto MoneyMin = abs(CrateType[dice]->MoneyMin.Get());
                 auto MoneyMax = abs(CrateType[dice]->MoneyMax.Get());
                 if (MoneyMax > MoneyMin)
                 {
-                    pHouse->GiveMoney(ScenarioClass::Instance->Random.RandomRanged(MoneyMin, MoneyMax));
+                    pHouse->GiveMoney(Randomizer.RandomRanged(MoneyMin, MoneyMax));
                     pass = true;
                 }
             }
@@ -223,7 +229,7 @@ DEFINE_HOOK(481F87, CellClass_CrateCollected_Shroud_Override, 7)
                 if (!pType)
                     pType = AnimTypeClass::Array->GetItem(Powerups_Animarray[2]);
                 if (!pSound)
-                    pSound = RulesClass::Instance->HealCrateSound;
+                    pSound = Rules->HealCrateSound;
 
                 for (auto const& pTechno : *TechnoClass::Array)
                 {
@@ -233,8 +239,8 @@ DEFINE_HOOK(481F87, CellClass_CrateCollected_Shroud_Override, 7)
                     {
                         auto damage = (pTechno->GetTechnoType()->Strength * pTechno->Health) * -1;
 
-                        pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, Collector, true, true, pHouse);
-                        pTechno->Flash(10);
+                        pTechno->ReceiveDamage(&damage, 0, Rules->C4Warhead, Collector, true, true, pHouse);
+                        pTechno->Flash(100);
                     }
                 }
 
@@ -261,7 +267,10 @@ DEFINE_HOOK(481F87, CellClass_CrateCollected_Shroud_Override, 7)
         else
         {
             return 0x481AD3; //reroll it instead
-        //	pass = true;
+            //reroll may cause game to freeze if only Shroud crate is activated (chance > 0) 
+            //need atlast 2 (Shroud + other)
+
+          //pass = true;
         }
 
     }

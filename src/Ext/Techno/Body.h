@@ -66,4 +66,5 @@ public:
     static void ApplyPowered_KillSpawns(TechnoClass* pThis);
     static void ApplySpawn_LimitRange(TechnoClass* pThis);
     static void ApplyCloak_Undeployed(TechnoClass* pThis);
+    static CoordStruct GetPutLocation(CoordStruct current, int distance);
 };

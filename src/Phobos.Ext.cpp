@@ -4,7 +4,7 @@
 #include "Ext/BuildingType/Body.h"
 #include "Ext/Bullet/Body.h"
 #include "Ext/BulletType/Body.h"
-#include "Ext/CellClass/Body.h"
+#include "Ext/Cell/Body.h"
 #include "Ext/House/Body.h"
 #include "Ext/RadSite/Body.h"
 #include "Ext/Rules/Body.h"
