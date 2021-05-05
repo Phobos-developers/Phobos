@@ -13,8 +13,10 @@
   <ItemGroup>
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\Dummy.h" />
+    <ClCompile Include="src\Enum\RadTypeClass.cpp" />
     <ClCompile Include="src\Enum\CrateTypes.cpp" />
-    <ClCompile Include="src\Enum\RadTypes.cpp" />
+    <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
+    <ClCompile Include="src\Ext\Aircraft\Hooks.cpp" />
     <ClCompile Include="src\Ext\Building\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.cpp" />
     <ClCompile Include="src\Ext\BulletType\Body.cpp" />
@@ -32,6 +34,7 @@
     <ClCompile Include="src\Ext\Side\Hooks.cpp" />
     <ClCompile Include="src\Ext\Side\Hooks.SidebarGDIPositions.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Body.cpp" />
+    <ClCompile Include="src\Ext\TechnoType\Hooks.Teleport.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.cpp" />
     <ClCompile Include="src\Ext\Techno\Body.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.cpp" />
@@ -40,11 +43,13 @@
     <ClCompile Include="src\Ext\WarheadType\Detonate.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Shield.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Body.cpp" />
+    <ClCompile Include="src\Ext\WeaponType\Hook.EBolt.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
     <ClCompile Include="src\Misc\CaptureManager.cpp" />
     <ClCompile Include="src\Misc\Ext_Crate.cpp" />
     <ClCompile Include="src\Misc\Hooks.Blowfish.cpp" />
+    <ClCompile Include="src\Misc\Hooks.INIClass.cpp" />
     <ClCompile Include="src\Misc\Savegame.cpp" />
     <ClCompile Include="src\Misc\ExtendedToolTips.cpp" />
     <ClCompile Include="src\Misc\Selection.cpp" />
@@ -74,12 +79,13 @@
     <ClInclude Include="src\Commands\NextIdleHarvester.h" />
     <ClInclude Include="src\Commands\ObjectInfo.h" />
     <ClInclude Include="src\Commands\Commands.h" />
+    <ClInclude Include="src\Enum\RadTypeClass.h" />
     <ClInclude Include="src\Enum\CrateTypes.h" />
-    <ClInclude Include="src\Enum\RadTypes.h" />
     <ClInclude Include="src\Enum\_Enumerator.hpp" />
     <ClInclude Include="src\ExtraHeaders\CCToolTip.h" />
     <ClInclude Include="src\ExtraHeaders\Matrix3D.h" />
     <ClInclude Include="src\ExtraHeaders\Themes.h" />
+    <ClInclude Include="src\Ext\Aircraft\Body.h" />
     <ClInclude Include="src\Ext\Building\Body.h" />
     <ClInclude Include="src\Ext\BulletType\Body.h" />
     <ClInclude Include="src\Ext\Bullet\Body.h" />
@@ -245,7 +251,6 @@
       <CallingConvention>StdCall</CallingConvention>
       <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4100;4530;4731;4740;</DisableSpecificWarnings>
-      <TreatWarningAsError>true</TreatWarningAsError>
       <EnableModules>true</EnableModules>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>

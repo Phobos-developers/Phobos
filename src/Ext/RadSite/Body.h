@@ -1,57 +1,65 @@
 #pragma once
+
 #include <RadSiteClass.h>
 
 #include <Helpers/Macro.h>
-#include "../_Container.hpp"
-#include "../../Utilities/TemplateDef.h"
+#include <Ext/_Container.hpp>
+#include <Utilities/TemplateDef.h>
 
-#include "../WeaponType/Body.h"
+#include <Ext/WeaponType/Body.h>
 
-class RadType;
+class RadTypeClass;
 
-class RadSiteExt {
+class RadSiteExt
+{
 public:
-	using base_type = RadSiteClass;
+    using base_type = RadSiteClass;
 
-	class ExtData final : public Extension<RadSiteClass> 
-	{
-	public:
-		WeaponTypeClass* Weapon;
-		RadType* Type;
-		HouseClass* RadHouse;
+    class ExtData final : public Extension<RadSiteClass>
+    {
+    public:
+        Valueable<WeaponTypeClass*> Weapon;
+        Valueable<RadTypeClass*> Type;
+        Valueable<HouseClass*> RadHouse;
 
-		ExtData(RadSiteClass* OwnerObject) : Extension<RadSiteClass>(OwnerObject),
-			RadHouse(nullptr)
-		{ };
+        ExtData(RadSiteClass* OwnerObject) : Extension<RadSiteClass>(OwnerObject),
+            RadHouse(nullptr),
+            Type(),
+            Weapon(nullptr)
+        { }
 
-		virtual ~ExtData() { }
+        virtual ~ExtData() = default;
 
-		virtual size_t Size() const { return sizeof(*this); };
+        virtual size_t Size() const
+        {
+            return sizeof(*this);
+        }
 
-		virtual void InvalidatePointer(void *ptr, bool bRemoved) { }
+        virtual void InvalidatePointer(void* ptr, bool bRemoved) { }
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+        virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+        virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
-        
-		virtual void Add(int amount);
-		virtual void SetRadLevel(int amount);
-		virtual double GetRadLevelAt(CellStruct const& cell);
-        
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+        virtual void Add(int amount);
+        virtual void SetRadLevel(int amount);
+        virtual double GetRadLevelAt(CellStruct const& cell);
 
-	static DynamicVectorClass<RadSiteExt::ExtData*> RadSiteInstance;
+    private:
+        template <typename T>
+        void Serialize(T& Stm);
+    };
 
-	static void CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData *pWeaponExt, HouseClass* const pOwner);
+    static DynamicVectorClass<RadSiteExt::ExtData*> Array;
 
-	class ExtContainer final : public Container<RadSiteExt> {
-	public:
-		ExtContainer();
-		~ExtContainer();
-	};
+    static void CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner);
+    static void CreateInstance(CellStruct location, int spread, int amount, RadTypeClass* pType, HouseClass* const pOwner);
+    
+    class ExtContainer final : public Container<RadSiteExt>
+    {
+    public:
+        ExtContainer();
+        ~ExtContainer();
+    };
 
-	static ExtContainer ExtMap;
+    static ExtContainer ExtMap;
 };

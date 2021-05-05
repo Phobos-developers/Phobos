@@ -17,7 +17,7 @@
 #include "Ext/WarheadType/Body.h"
 #include "Ext/WeaponType/Body.h"
 
-#include "Enum/RadTypes.h"
+#include "Enum/RadTypeClass.h"
 #include "Enum/CrateTypes.h"
 
 #include <utility>
@@ -233,6 +233,7 @@ auto MassActions = MassAction <
 	WarheadTypeExt,
 	WeaponTypeExt,
 	// enum classes
+	RadTypeClass
 	CrateType
 	// other classes
 > ();

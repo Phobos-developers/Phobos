@@ -2,6 +2,7 @@
 :hidden:
 :caption: Project Info
 General Info<General-Info.md>
+What's New<Whats-New.md>
 Contributing<Contributing.md>
 License<License.md>
 :::
