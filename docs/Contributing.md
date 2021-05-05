@@ -48,10 +48,9 @@ if (SomeCondition())
 - If you use if-else you should either have all of the code blocks braced or braceless to keep things consistent.
 - Code should have empty lines to make it easier to read. Use an empty line to split code into logical step parts. It's mandatory to have empty lines to separate:
   - `return` statements;
-  - local variable assignments that are used in the further code;
+  - local variable assignments that are used in the further code (you shouldn't put an empty line after one-line local variable assignments that are used only in the following code block though);
   - code blocks (braceless or not) or anything using code blocks (function or hook definitions, classes, namespaces etc.);
   - hook register input/output.
-You shouldn't put an empty line after one-line local variable assignments that are used only in the following code block though:
 ```cpp
 // OK
 auto localVar = Something();
