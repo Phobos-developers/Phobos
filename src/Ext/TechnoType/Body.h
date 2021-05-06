@@ -56,6 +56,10 @@ public:
 		Nullable<int> ChronoRangeMinimum;
 		Nullable<int> ChronoDelay;
 
+        Valueable<bool> NoSecondaryWeaponFallback;
+        Valueable<int> NoAmmoWeapon;
+        Valueable<int> NoAmmoAmount;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			HealthBar_Hide(false),
 			UIDescription(),
@@ -95,7 +99,10 @@ public:
 			ChronoDistanceFactor(),
 			ChronoMinimumDelay(),
 			ChronoRangeMinimum(),
-			ChronoDelay()
+			ChronoDelay(),
+            NoSecondaryWeaponFallback(false),
+            NoAmmoWeapon(-1),
+            NoAmmoAmount(0)
 		{ }
 
 		virtual ~ExtData() = default;

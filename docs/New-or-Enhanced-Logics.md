@@ -120,6 +120,23 @@ PenetratesShield=false         ; boolean
 BreaksShield=false             ; boolean
 ```
 
+### Disabling fallback to (Elite)Secondary weapon
+- It is possible to disable the fallback to `(Elite)Secondary` weapon from `(Elite)Primary` weapon if it cannot fire at the chosen target by setting `NoSecondaryWeaponFallback` to true (defaults to false). This does not apply to special cases where `(Elite)Secondary` weapon is always chosen, including but not necessarily limited to the following:
+  - `OpenTransportWeapon=1` on an unit firing from inside `OpenTopped=true` transport.
+  - `NoAmmoWeapon=1` on an unit with  `Ammo` value higher than 0 and current ammo count lower or  equal to `NoAmmoAmount`.
+  - Deployed `IsSimpleDeployer=true` units with`DeployFireWeapon=1` set or omitted.
+  - `DrainWeapon=true` weapons against enemy `Drainable=yes` buildings.
+  - Units with `IsLocomotor=true` set on `Warhead` of `(Elite)Primary` weapon against buildings.
+  - Weapons with `ElectricAssault=true` set on `Warhead` against `Overpowerable=true` buildings belonging to owner or allies.
+  - `Overpowerable=true` buildings that are currently overpowered.
+  - Any system using `(Elite)WeaponX`, f.ex `Gunner=true` or `IsGattling=true` is also wholly exempt from effects of this.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+NoSecondaryWeaponFallback=false   ; boolean
+```
+
 ## Weapons
 
 ### Strafing aircraft weapon customization
@@ -133,7 +150,7 @@ BreaksShield=false             ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]        ; WeaponType
+[SOMEWEAPON]                 ; WeaponType
 Strafing.Shots=5             ; integer
 Strafing.SimulateBurst=false ; bool
 ```
