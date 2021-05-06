@@ -129,9 +129,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
 	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
 
+    this->NoSecondaryWeaponFallback.Read(exINI, pSection, "NoSecondaryWeaponFallback");
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
+
+    // Ares 0.C
+    this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
+    this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
 
 	//Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
@@ -181,6 +186,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChronoMinimumDelay)
 		.Process(this->ChronoRangeMinimum)
 		.Process(this->ChronoDelay)
+        .Process(this->NoSecondaryWeaponFallback)
+        .Process(this->NoAmmoWeapon)
+        .Process(this->NoAmmoAmount)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

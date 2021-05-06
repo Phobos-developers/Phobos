@@ -105,6 +105,8 @@ DEFINE_HOOK(6F36F2, TechnoClass_WhatWeaponShouldIUse_Shield, 6)
 }
 */
 
+// Moved to Hooks.cpp due to other features requiring hooking at this specific location.
+/*
 DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
 {
     GET(TechnoClass*, pThis, ESI);
@@ -121,7 +123,7 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
             {
                 if (pThis->GetWeapon(1))
                 {
-                    if (!pShieldData->CanBeTargeted(pThis->GetWeapon(0)->WeaponType/*, pThis*/))
+                    if (!pShieldData->CanBeTargeted(pThis->GetWeapon(0)->WeaponType))
                         return 0x6F3745; //Primary cannot attack, always use Secondary
 
                     return 0x6F3754; //Further check in vanilla function
@@ -132,7 +134,7 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
         }
     }
     return 0x6F36E3; //Target doesn't have a shield, back
-}
+}*/
 
 DEFINE_HOOK(6F9E50, TechnoClass_AI_Shield, 5)
 {
