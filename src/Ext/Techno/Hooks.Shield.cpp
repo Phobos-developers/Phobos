@@ -109,6 +109,7 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
 {
     GET(TechnoClass*, pThis, ESI);
     GET(TechnoClass*, pTarget, EBP);
+    enum { Primary = 0x6F37AD, Secondary = 0x6F3745, FurtherCheck = 0x6F3754, OriginalCheck = 0x6F36E3 };
 
     if (!pTarget)
         return 0x6F37AD; //Target invalid, skip. (test ebp,ebp  jz loc_6F37AD)
@@ -122,16 +123,16 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
                 if (pThis->GetWeapon(1))
                 {
                     if (!pShieldData->CanBeTargeted(pThis->GetWeapon(0)->WeaponType/*, pThis*/))
-                        return 0x6F3745; //Primary cannot attack, always use Secondary
+                        return Secondary;
 
-                    return 0x6F3754; //Further check in vanilla function
+                    return FurtherCheck;
                 }
 
-                return 0x6F37AD; //Don't have Secondary, always use Primary
+                return Primary;
             }
         }
     }
-    return 0x6F36E3; //Target doesn't have a shield, back
+    return OriginalCheck;
 }
 
 DEFINE_HOOK(6F9E50, TechnoClass_AI_Shield, 5)
