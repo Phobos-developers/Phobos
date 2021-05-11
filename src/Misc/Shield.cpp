@@ -320,16 +320,8 @@ void ShieldTechnoClass::InvalidatePointer(void* ptr)
 
 void ShieldTechnoClass::UninitAnim::operator() (AnimClass* const pAnim) const
 {
-    bool existed = false;
-    for (auto i : *AnimClass::Array)
-    {
-        if (i == pAnim)
-        {
-            existed = true;
-            break;
-        }
-    }
-    if (existed)
+    auto array = AnimClass::Array;
+    if (std::find(array->begin(), array->end(), pAnim) != array->end())
     {
         pAnim->SetOwnerObject(nullptr);
         pAnim->UnInit();
