@@ -323,7 +323,7 @@ void ShieldTechnoClass::UninitAnim::operator() (AnimClass* const pAnim) const
     auto array = AnimClass::Array;
     if (std::find(array->begin(), array->end(), pAnim) != array->end())
     {
-        pAnim->SetOwnerObject(nullptr);
+        //pAnim->SetOwnerObject(nullptr);
         pAnim->UnInit();
     }
     /*
