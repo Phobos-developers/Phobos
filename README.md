@@ -49,7 +49,7 @@ Credits
 - Thrifinesma (Uranusian), SEC-SOME (secsome) - co-developers
 
 **Contribution**
-- Belonit (Gluk-v48) - project creator, disable empty spawn positions, custom gamemd icon with Command Line, full-color non-paletted PCX, SpySat, BigGap, TransactMoney, PCX Loading Screen, custom DiskLaser radius, extended tooltips, building upgrades enhancement, hide health bar, Sidebar.GDIPosition, help with CellSpread, Blowfish.dll-related errors fix, zero size map previews
+- Belonit (Gluk-v48) - project creator, disable empty spawn positions, custom gamemd icon with Command Line, full-color non-paletted PCX, SpySat, BigGap, TransactMoney, PCX Loading Screen, custom DiskLaser radius, extended tooltips, building upgrades enhancement, hide health bar, Sidebar.GDIPosition, help with CellSpread, Blowfish.dll-related errors fix, zero size map previews, semantic locomotor aliases
 - Metadorius (Kerbiter) - SHP debris respect Shadow, building upgrades enhancement, extended tooltips, selection priority filtering, TurretOffset enhancement, customizable ore spawners, select next idle harvester hotkey, interceptor enhancement, zero size map previews, nightly build workflow, overhauled Unicode font, docs maintainer, organisational, maintenance and public relations work
 - misha135n2 - YRpp edits
 - tomsons26 - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
@@ -62,7 +62,7 @@ Credits
 - 4SG - help with docs
 - wiktorderelf - overhauled Unicode font
 - Thrifinesma (Uranusian) - Mind Control enhancement, custom warhead splash list, harvesters counter, promoted spawns, shields, death after dead fix, overhauled Unicode font, help with docs
-- SEC-SOME (secsome) - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields
+- SEC-SOME (secsome) - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields, AnimList.PickRandom
 - Otamaa (BoredEXE) - help with CellSpread, ported and fixed custom RadType code, togglable ElectricBolt bolts, customizable Chrono Locomotor properties per TechnoClass
 - E1 Elite - TileSet 255 and above bridge repair fix
 - FS-21 - Dump Object Info enhancements, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71, 72 & 73, MC deployer fixes, help with docs

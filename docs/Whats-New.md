@@ -28,6 +28,7 @@ New:
 - Dump Object Info hotkey command (by secsome, FS-21)
 - Remove Disguise and Remove Mind Control warhead effects (by secsome)
 - Custom per-warhead SplashLists (by Uranusian)
+- `AnimList.PickRandom` used for randomize `AnimList` with no side effects (by secsome)
 - Chance-based critical damage system on warheads (by AutoGavy)
 - Optional mind control range limit (by Uranusian)
 - Multiple mind controllers can now release units on overload (by Uranusian, secsome)
@@ -46,6 +47,7 @@ Vanilla fixes:
 - Fix to take Burst into account for aircraft weapon shots beyond the first one (by Starkku)
 - Fixed the bug when units are already dead but still in map (for sinking, crashing, dying animation, etc.), they could die again (by Uranusian)
 - Fixed the bug when cloaked Desolator was unable to fire his deploy weapon (by Otamaa)
+- Fixed the bug when `InfiniteMindControl` with `Damage=1` will auto-release the victim to control new one (by Uranusian)
 
 Phobos fixes:
 - Properly rewritten a fix for mind-controlled vehicles deploying into buildings (by FS-21)
