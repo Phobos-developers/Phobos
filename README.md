@@ -67,6 +67,7 @@ Credits
 - E1 Elite - TileSet 255 and above bridge repair fix
 - FS-21 - Dump Object Info enhancements, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71, 72 & 73, MC deployer fixes, help with docs
 - AutoGavy - interceptor logic, warhead critical damage system
+- ChrisLv_CN - interceptor logic, general assistance
 - Xkein - general assistance, YRpp edits
 - thomassneddon - general assistance
 - Starkku - Warhead shield penetration & breaking, strafing aircraft weapon customization
