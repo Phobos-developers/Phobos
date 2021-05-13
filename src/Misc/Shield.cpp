@@ -311,25 +311,18 @@ int ShieldTechnoClass::GetPercentageAmount(double iStatus)
 
 void ShieldTechnoClass::InvalidatePointer(void* ptr)
 {
-    //if (this->Techno == ptr)
-    //    this->Techno = nullptr;
-
     if (this->Image == ptr)
         this->KillAnim();
 }
 
 void ShieldTechnoClass::UninitAnim::operator() (AnimClass* const pAnim) const
 {
-    TechnoClass* buffer = nullptr;
-
-    if (pAnim)
+    auto array = AnimClass::Array;
+    if (std::find(array->begin(), array->end(), pAnim) != array->end())
     {
-        buffer = abstract_cast<TechnoClass*>(pAnim->OwnerObject);
-        pAnim->SetOwnerObject(nullptr);
-    }
-
-    if (buffer)
+        //pAnim->SetOwnerObject(nullptr);
         pAnim->UnInit();
+    }
 }
 
 void ShieldTechnoClass::BreakShield()
