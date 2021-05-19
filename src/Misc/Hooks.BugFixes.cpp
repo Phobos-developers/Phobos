@@ -61,3 +61,67 @@ DEFINE_HOOK(737D57, UnitClass_ReceiveDamage_DyingFix, 7)
 
 	return 0;
 }
+
+
+#include <ScenarioClass.h>
+#include <VoxelAnimClass.h>
+
+//Possible fixes for issues #109
+//https://github.com/Phobos-developers/Phobos/issues/109
+//A
+DEFINE_HOOK(702299, TechnoClass_ReceiveDamage_DebrisTypes, A)
+{
+	GET(TechnoClass*, pTech, ESI);
+	auto type = pTech->GetTechnoType();
+	auto &DTypes = type->DebrisTypes;
+	auto &DTypesMax = type->DebrisMaximums;
+
+	//fix work for VehicleTypes only , as per ModEnc 
+	//https://www.modenc.renegadeprojects.com/DebrisMaximums
+	if (pTech->WhatAmI() == AbstractType::Unit)
+	{
+		if (DTypes.Count > 0)
+		{
+			int current = 0;
+			auto random = ScenarioClass::Instance->Random.RandomRanged(type->MinDebris, type->MaxDebris);
+			if (DTypesMax.Items[current] > 0)
+			{
+				do
+				{
+					auto maxallow = DTypesMax.Items[current];
+					maxallow = maxallow > type->MaxDebris ? type->MaxDebris : maxallow;
+
+					auto randAgain = ScenarioClass::Instance->Random.RandomRanged(random , maxallow);
+					randAgain = randAgain > maxallow ? maxallow : randAgain;
+					random -= randAgain;
+
+					auto pAtype = DTypes.GetItem(current);
+					for (;randAgain; --randAgain)
+					{
+						auto coords = pTech->GetCoords();
+						GameCreate<VoxelAnimClass>(pAtype, &coords, pTech->Owner);
+					}
+					if (random < 0)
+						break;
+					++current;
+				} while (current < type->DebrisTypes.Count);
+			}
+		}
+		/*
+		auto random = ScenarioClass::Instance->Random.RandomRanged(type->MinDebris, type->MaxDebris);
+		for (int i = 0; i < DTypes.Count; ++i)
+		{
+			if (DTypesMax.Items[i] < random)
+			{
+				auto coords = pTech->GetCoords();
+				auto pAtype = DTypes.GetItem(i);
+				GameCreate<VoxelAnimClass>(pAtype, &coords, pTech->Owner);
+			}
+		}
+	}
+	*/
+		return 0x7023E5;
+	}
+
+	return 0;
+}
