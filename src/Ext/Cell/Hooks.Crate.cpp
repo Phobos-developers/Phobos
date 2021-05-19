@@ -51,12 +51,12 @@ namespace CrateStufs
         return static_cast<ePowerup>(i);
     }
 
-    //dont need to push YRPP with this
+    //causing game to random crash , it is better to put these on YRPP for stability reason
     bool Place_Crate(CellStruct where, int whatcrate)
     {
         auto map = MapClass::Instance;
         EPILOG_THISCALL
-            _asm {mov ecx, map}
+        _asm {mov ecx, map}
         _asm {mov eax, 0x56BEC0}
         _asm {jmp eax}
     }
@@ -269,8 +269,18 @@ DEFINE_HOOK(481F87, CellClass_CrateCollected_Shroud_Override, 7)
             return 0x481AD3; //reroll it instead
             //reroll may cause game to freeze if only Shroud crate is activated (chance > 0) 
             //need atlast 2 (Shroud + other)
+            //Possible doubling Score for multiplayer play which is undesirable side affects
 
-          //pass = true;
+          /*//Send money instead
+            if (!pType)
+                pType = AnimTypeClass::Array->GetItem(Powerups_Animarray[0]);
+            if (!pSound)
+                pSound = Rules->CrateMoneySound;
+
+                pHouse->GiveMoney(Rules->SoloCrateMoney);
+
+            pass = true;
+          */
         }
 
     }
