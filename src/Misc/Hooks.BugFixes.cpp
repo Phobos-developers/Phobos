@@ -79,7 +79,7 @@ DEFINE_HOOK(702299, TechnoClass_ReceiveDamage_DebrisTypes, A)
 	auto &DTypes = type->DebrisTypes;
 	auto &DTypesMax = type->DebrisMaximums;
 
-	auto max = type->MaxDebris;
+	auto max = type->MaxDebris -1;
 	auto random = ScenarioClass::Instance->Random.RandomRanged(type->MinDebris, max);
 
 	if (DTypes.Count > 0)
@@ -94,7 +94,7 @@ DEFINE_HOOK(702299, TechnoClass_ReceiveDamage_DebrisTypes, A)
 					auto maxallow = DTypesMax.GetItem(current);
 					maxallow = maxallow > max ? max : maxallow;
 
-					int randAgain = ScenarioClass::Instance->Random.Random() % maxallow;
+					int randAgain = ScenarioClass::Instance->Random.Random() % (maxallow + 1 );
 
 					randAgain = randAgain > maxallow ? maxallow : randAgain;//dont allow spawn debris out of the Spesifc maximum value 
 					random -= randAgain;
