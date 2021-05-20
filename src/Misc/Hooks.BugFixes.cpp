@@ -12,7 +12,7 @@ DEFINE_HOOK(423365, Phobos_BugFixes_SHPShadowCheck, 8)
 		0x4233EE;
 }
 
-/* 
+/*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
 
 	When TileSet number crosses 255 in theater INI files, the NE-SW broken bridges
@@ -65,63 +65,56 @@ DEFINE_HOOK(737D57, UnitClass_ReceiveDamage_DyingFix, 7)
 
 #include <ScenarioClass.h>
 #include <VoxelAnimClass.h>
+#include <Misc/Debug.h>
 
+/**/
 //Possible fixes for issues #109
 //https://github.com/Phobos-developers/Phobos/issues/109
 //A
 DEFINE_HOOK(702299, TechnoClass_ReceiveDamage_DebrisTypes, A)
 {
 	GET(TechnoClass*, pTech, ESI);
+
 	auto type = pTech->GetTechnoType();
 	auto &DTypes = type->DebrisTypes;
 	auto &DTypesMax = type->DebrisMaximums;
 
-	//fix work for VehicleTypes only , as per ModEnc 
-	//https://www.modenc.renegadeprojects.com/DebrisMaximums
-	if (pTech->WhatAmI() == AbstractType::Unit)
-	{
-		if (DTypes.Count > 0)
-		{
-			int current = 0;
-			auto random = ScenarioClass::Instance->Random.RandomRanged(type->MinDebris, type->MaxDebris);
-			if (DTypesMax.Items[current] > 0)
-			{
-				do
-				{
-					auto maxallow = DTypesMax.Items[current];
-					maxallow = maxallow > type->MaxDebris ? type->MaxDebris : maxallow;
+	auto max = type->MaxDebris;
+	auto random = ScenarioClass::Instance->Random.RandomRanged(type->MinDebris, max);
 
-					auto randAgain = ScenarioClass::Instance->Random.RandomRanged(random , maxallow);
-					randAgain = randAgain > maxallow ? maxallow : randAgain;
+	if (DTypes.Count > 0)
+	{
+		int current = 0;
+		if (DTypesMax.Count > 0)
+		{
+			do
+			{
+				if (DTypesMax.GetItem(current) > 0) //check if the next member is eligible to spawn
+				{
+					auto maxallow = DTypesMax.GetItem(current);
+					maxallow = maxallow > max ? max : maxallow;
+
+					int randAgain = ScenarioClass::Instance->Random.Random() % maxallow;
+
+					randAgain = randAgain > maxallow ? maxallow : randAgain;//dont allow spawn debris out of the Spesifc maximum value 
 					random -= randAgain;
 
 					auto pAtype = DTypes.GetItem(current);
-					for (;randAgain; --randAgain)
+					for (; randAgain; --randAgain)
 					{
 						auto coords = pTech->GetCoords();
 						GameCreate<VoxelAnimClass>(pAtype, &coords, pTech->Owner);
 					}
 					if (random < 0)
 						break;
-					++current;
-				} while (current < type->DebrisTypes.Count);
-			}
+				}
+				++current;
+			} while (current < type->DebrisTypes.Count);
 		}
-		/*
-		auto random = ScenarioClass::Instance->Random.RandomRanged(type->MinDebris, type->MaxDebris);
-		for (int i = 0; i < DTypes.Count; ++i)
-		{
-			if (DTypesMax.Items[i] < random)
-			{
-				auto coords = pTech->GetCoords();
-				auto pAtype = DTypes.GetItem(i);
-				GameCreate<VoxelAnimClass>(pAtype, &coords, pTech->Owner);
-			}
-		}
-	}
-	*/
-		return 0x7023E5;
 	}
 
-	return 0;
+	random = random < 0 ? 0 : random;
+	R->EBX(random); //the rest of the value will be used on next function chain which check EBX in order to spawn more debris 
+
+	return 0x7023E5;
 }
