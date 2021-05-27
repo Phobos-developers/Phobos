@@ -21,7 +21,7 @@ ShieldTechnoClass::ShieldTechnoClass() :
 ShieldTechnoClass::ShieldTechnoClass(TechnoClass* pTechno) :
 	Techno { pTechno },
 	Update { true },
-	HP { this->GetExt()->Shield_Strength },
+	HP { this->GetExt()->Shield->Strength },
 	Timer_Respawn { },
 	Timer_SelfHealing { },
 	Image { nullptr },
@@ -75,7 +75,7 @@ void ShieldTechnoClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo
 	auto pToTypeExt = TechnoTypeExt::ExtMap.Find(pTo->GetTechnoType());
 
 	pToExt->ShieldData = std::make_unique<ShieldTechnoClass>(pTo);
-	pToExt->ShieldData->HP = int(pFromExt->ShieldData->GetShieldRatio() * pToTypeExt->Shield_Strength);
+	pToExt->ShieldData->HP = int(pFromExt->ShieldData->GetShieldRatio() * pToTypeExt->Shield->Strength);
 }
 
 int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
@@ -91,14 +91,14 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
 	if (pWHExt->CanTargetHouse(args->SourceHouse, this->Techno) && !args->WH->Temporal)
 	{
 		if (*args->Damage > 0)
-			nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->GetExt()->Shield_Armor, args->DistanceToEpicenter);
+			nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->GetExt()->Shield->Armor, args->DistanceToEpicenter);
 		else
-			nDamage = -MapClass::GetTotalDamage(-*args->Damage, args->WH, this->GetExt()->Shield_Armor, args->DistanceToEpicenter);
+			nDamage = -MapClass::GetTotalDamage(-*args->Damage, args->WH, this->GetExt()->Shield->Armor, args->DistanceToEpicenter);
 	}
 
 	if (nDamage > 0)
 	{
-		this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealing_Rate * 900)); //when attacked, restart the timer
+		this->Timer_SelfHealing.Start(this->GetExt()->Shield->SelfHealing_Rate); //when attacked, restart the timer
 		this->ResponseAttack();
 
 		auto residueDamage = nDamage - this->HP;
@@ -109,10 +109,10 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
 				residueDamage = 0;
 
 			residueDamage = int((double)residueDamage /
-				GeneralUtils::GetWarheadVersusArmor(args->WH, this->GetExt()->Shield_Armor)); //only absord percentage damage
+				GeneralUtils::GetWarheadVersusArmor(args->WH, this->GetExt()->Shield->Armor)); //only absord percentage damage
 
 			this->BreakShield();
-			return this->GetExt()->Shield_AbsorbOverDamage ? 0 : residueDamage;
+			return this->GetExt()->Shield->AbsorbOverDamage ? 0 : residueDamage;
 		}
 		else
 		{
@@ -128,7 +128,7 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
 
 	else
 	{
-		auto LostHP = this->GetExt()->Shield_Strength - this->HP;
+		auto LostHP = this->GetExt()->Shield->Strength - this->HP;
 		if (!LostHP)
 		{
 			auto result = *args->Damage;
@@ -140,7 +140,7 @@ int ShieldTechnoClass::ReceiveDamage(args_ReceiveDamage* args)
 
 		auto RemainLostHP = LostHP + nDamage;
 		if (RemainLostHP < 0)
-			this->HP = this->GetExt()->Shield_Strength;
+			this->HP = this->GetExt()->Shield->Strength;
 		else
 			this->HP -= nDamage;
 
@@ -172,8 +172,8 @@ void ShieldTechnoClass::ResponseAttack()
 
 void ShieldTechnoClass::WeaponNullifyAnim()
 {
-	if (this->GetExt()->Shield_HitAnim.isset())
-		GameCreate<AnimClass>(this->GetExt()->Shield_HitAnim, this->Techno->GetCoords());
+	if (this->GetExt()->Shield->HitAnim.isset())
+		GameCreate<AnimClass>(this->GetExt()->Shield->HitAnim, this->Techno->GetCoords());
 }
 
 bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon/*, TechnoClass* pSource*/)
@@ -183,7 +183,7 @@ bool ShieldTechnoClass::CanBeTargeted(WeaponTypeClass* pWeapon/*, TechnoClass* p
 	if (pWHExt->PenetratesShield)
 		return true;
 
-	bool result = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->GetExt()->Shield_Armor) != 0.0;
+	bool result = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->GetExt()->Shield->Armor) != 0.0;
 
 	return this->HP ? result : true;
 }
@@ -229,13 +229,13 @@ void ShieldTechnoClass::ConvertCheck()
 {
 	if (strcmp(this->TechnoID, this->Techno->get_ID()))
 	{
-		if (this->GetExt()->Shield_Strength)
+		if (this->GetExt()->Shield->Strength)
 		{
 			if (this->Update)
 			{
 				auto pOrigin = TechnoTypeClass::Find(this->TechnoID);
 				auto pOriginExt = TechnoTypeExt::ExtMap.Find(pOrigin);
-				this->HP = int((double)this->HP / pOriginExt->Shield_Strength * this->GetExt()->Shield_Strength);
+				this->HP = int((double)this->HP / pOriginExt->Shield->Strength * this->GetExt()->Shield->Strength);
 			}
 			else
 			{
@@ -272,17 +272,17 @@ void ShieldTechnoClass::ConvertCheck()
 
 void ShieldTechnoClass::SelfHealing()
 {
-	auto nSelfHealingAmount = this->GetPercentageAmount(this->GetExt()->Shield_SelfHealing);
-	if (nSelfHealingAmount > 0 && this->HP < this->GetExt()->Shield_Strength && this->Timer_SelfHealing.StartTime == -1)
-		this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealing_Rate * 900));
+	auto nSelfHealingAmount = this->GetPercentageAmount(this->GetExt()->Shield->SelfHealing);
+	if (nSelfHealingAmount > 0 && this->HP < this->GetExt()->Shield->Strength && this->Timer_SelfHealing.StartTime == -1)
+		this->Timer_SelfHealing.Start(this->GetExt()->Shield->SelfHealing_Rate);
 
 	if (nSelfHealingAmount > 0 && this->HP > 0 && this->Timer_SelfHealing.Completed())
 	{
-		this->Timer_SelfHealing.Start(int(this->GetExt()->Shield_SelfHealing_Rate * 900));
+		this->Timer_SelfHealing.Start(this->GetExt()->Shield->SelfHealing_Rate);
 		this->HP += nSelfHealingAmount;
-		if (this->HP > this->GetExt()->Shield_Strength)
+		if (this->HP > this->GetExt()->Shield->Strength)
 		{
-			this->HP = this->GetExt()->Shield_Strength;
+			this->HP = this->GetExt()->Shield->Strength;
 			this->Timer_SelfHealing.Stop();
 		}
 	}
@@ -293,7 +293,7 @@ int ShieldTechnoClass::GetPercentageAmount(double iStatus)
 	if (iStatus)
 	{
 		if (iStatus >= -1.0 && iStatus <= 1.0)
-			return int(this->GetExt()->Shield_Strength * iStatus);
+			return int(this->GetExt()->Shield->Strength * iStatus);
 
 		if (iStatus < 0)
 		{
@@ -329,17 +329,17 @@ void ShieldTechnoClass::BreakShield()
 {
 	this->HP = 0;
 
-	if (this->GetExt()->Shield_Respawn > 0)
-		this->Timer_Respawn.Start(int(this->GetExt()->Shield_Respawn_Rate * 900));
+	if (this->GetExt()->Shield->Respawn > 0)
+		this->Timer_Respawn.Start(this->GetExt()->Shield->Respawn_Rate);
 
 	this->Timer_SelfHealing.Stop();
 
 	//if (this->GetExt()->Shield_RespawnAnim.isset()) this->Broken = true;
 
 	this->KillAnim();
-	if (this->GetExt()->Shield_BreakAnim.isset())
+	if (this->GetExt()->Shield->BreakAnim.isset())
 	{
-		if (auto pAnimType = this->GetExt()->Shield_BreakAnim)
+		if (auto pAnimType = this->GetExt()->Shield->BreakAnim)
 		{
 			if (auto pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords()))
 				pAnim->SetOwnerObject(this->Techno);
@@ -352,7 +352,7 @@ void ShieldTechnoClass::RespawnShield()
 	if (this->HP <= 0 && this->Timer_Respawn.Completed())
 	{
 		this->Timer_Respawn.Stop();
-		this->HP = this->GetPercentageAmount(this->GetExt()->Shield_Respawn);
+		this->HP = this->GetPercentageAmount(this->GetExt()->Shield->Respawn);
 		this->CreateAnim();
 		/*
 		if (this->GetExt()->Shield_RespawnAnim.isset() && this->Broken) {
@@ -395,9 +395,9 @@ void ShieldTechnoClass::CreateAnim()
 		|| this->Techno->CloakState == CloakState::Cloaking)
 		return;
 
-	if (this->GetExt()->Shield_IdleAnim.isset())
+	if (this->GetExt()->Shield->IdleAnim.isset())
 	{
-		if (AnimTypeClass* const pAnimType = this->GetExt()->Shield_IdleAnim)
+		if (AnimTypeClass* const pAnimType = this->GetExt()->Shield->IdleAnim)
 		{
 			this->Image.reset(GameCreate<AnimClass>(pAnimType, this->Techno->Location));
 			if (AnimClass* const pAnim = this->Image)
@@ -417,7 +417,7 @@ void ShieldTechnoClass::KillAnim()
 
 void ShieldTechnoClass::DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound)
 {
-	if (this->HP > 0 || this->GetExt()->Shield_Respawn)
+	if (this->HP > 0 || this->GetExt()->Shield->Respawn)
 	{
 		if (this->Techno->WhatAmI() == AbstractType::Building)
 			this->DrawShieldBarBuilding(iLength, pLocation, pBound);
@@ -490,7 +490,7 @@ void ShieldTechnoClass::DrawShieldBarOther(int iLength, Point2D* pLocation, Rect
 	Point2D vPos = { 0,0 };
 	Point2D vLoc = *pLocation;
 	int frame, XOffset, YOffset;
-	YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->GetExt()->Shield_BracketDelta;
+	YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->GetExt()->Shield->BracketDelta;
 	vLoc.Y -= 5;
 
 	if (iLength == 8)
@@ -543,9 +543,9 @@ int ShieldTechnoClass::DrawShieldBar_Pip()
 	if (this->Techno->WhatAmI() == AbstractType::Building)
 		ShieldPip = RulesExt::Global()->Pips_Shield_Buildings;
 
-	if (this->HP > RulesClass::Instance->ConditionYellow * this->GetExt()->Shield_Strength && ShieldPip.X != -1)
+	if (this->HP > RulesClass::Instance->ConditionYellow * this->GetExt()->Shield->Strength && ShieldPip.X != -1)
 		return ShieldPip.X;
-	else if (this->HP > RulesClass::Instance->ConditionRed * this->GetExt()->Shield_Strength && (ShieldPip.Y != -1 || ShieldPip.X != -1))
+	else if (this->HP > RulesClass::Instance->ConditionRed * this->GetExt()->Shield->Strength && (ShieldPip.Y != -1 || ShieldPip.X != -1))
 		return ShieldPip.Y == -1 ? ShieldPip.X : ShieldPip.Y;
 	else if (ShieldPip.Z != -1 || ShieldPip.X != -1)
 		return ShieldPip.Z == -1 ? ShieldPip.X : ShieldPip.Z;
@@ -563,7 +563,7 @@ int ShieldTechnoClass::GetShieldHP()
 
 double ShieldTechnoClass::GetShieldRatio()
 {
-	return double(this->HP) / double(this->GetExt()->Shield_Strength);
+	return double(this->HP) / double(this->GetExt()->Shield->Strength);
 }
 
 bool ShieldTechnoClass::Available()

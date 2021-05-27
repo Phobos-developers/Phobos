@@ -487,6 +487,42 @@ namespace detail {
 		return false;
 	}
 
+	template <>
+	inline bool read<AttachedAnimFlag>(AttachedAnimFlag& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = AttachedAnimFlag::None;
+
+			auto str = parser.value();
+
+			if (_strcmpi(str, "hides") == 0)
+			{
+				parsed = AttachedAnimFlag::Hides;
+			}
+			else if (_strcmpi(str, "temporal") == 0)
+			{
+				parsed = AttachedAnimFlag::Temporal;
+			}
+			else if (_strcmpi(str, "paused") == 0)
+			{
+				parsed = AttachedAnimFlag::Paused;
+			}
+			else if (_strcmpi(str, "pausedtemporal") == 0)
+			{
+				parsed = AttachedAnimFlag::PausedTemporal;
+			}
+			else if (_strcmpi(str, "none"))
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a AttachedAnimFlag");
+				return false;
+			}
+			value = parsed;
+			return true;
+		}
+		return false;
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey) {
 		char* context = nullptr;

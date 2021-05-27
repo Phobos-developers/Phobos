@@ -69,7 +69,7 @@ DEFINE_HOOK(708AEB, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_Should
 		{
 			if (pShieldData->Available() && pShieldData->GetShieldHP())
 			{
-				R->EAX(TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType())->Shield_Armor);
+				R->EAX(TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType())->Shield->Armor);
 				return R->Origin() + 6;
 			}
 		}
@@ -141,7 +141,7 @@ DEFINE_HOOK(6F9E50, TechnoClass_AI_Shield, 5)
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if (pTypeData->Shield_Strength && !pExt->ShieldData)
+	if (pTypeData->Shield->Strength && !pExt->ShieldData)
 		pExt->ShieldData = std::make_unique<ShieldTechnoClass>(pThis);
 
 	if (pExt->ShieldData)
@@ -172,7 +172,7 @@ DEFINE_HOOK(739956, DeploysInto_UndeploysInto_SyncShieldStatus, 6) //UnitClass_D
 	auto pThisExt = TechnoExt::ExtMap.Find(pThis);
 	auto pIntoTypeExt = TechnoTypeExt::ExtMap.Find(pInto->GetTechnoType());
 
-	if (pThisExt->ShieldData && pIntoTypeExt->Shield_Strength)
+	if (pThisExt->ShieldData && pIntoTypeExt->Shield->Strength)
 	{
 		ShieldTechnoClass::SyncShieldToAnother(pThis, pInto);
 	}

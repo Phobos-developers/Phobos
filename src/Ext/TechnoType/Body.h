@@ -5,6 +5,8 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
+#include <New/Type/ShieldType.h>
+
 class Matrix3D;
 
 class TechnoTypeExt
@@ -34,18 +36,7 @@ public:
 		Valueable<bool> ImmuneToCrit;
 		Valueable<bool> MultiMindControl_ReleaseVictim;
 
-		Valueable<int> Shield_Strength;
-		Valueable<signed int> Shield_Armor;
-		Valueable<double> Shield_Respawn;
-		Valueable<double> Shield_Respawn_Rate;
-		Valueable<double> Shield_SelfHealing;
-		Valueable<double> Shield_SelfHealing_Rate;
-		Valueable<bool> Shield_AbsorbOverDamage;
-		Valueable<int> Shield_BracketDelta;
-		Nullable<AnimTypeClass*> Shield_IdleAnim;
-		Nullable<AnimTypeClass*> Shield_BreakAnim;
-		Nullable<AnimTypeClass*> Shield_RespawnAnim;
-		Nullable<AnimTypeClass*> Shield_HitAnim;
+		Valueable<ShieldTypeClass*> Shield;
 
 		Nullable<AnimTypeClass*> WarpOut;
 		Nullable<AnimTypeClass*> WarpIn;
@@ -75,19 +66,7 @@ public:
 			Promote_IncludeSpawns(false),
 			ImmuneToCrit(false),
 			MultiMindControl_ReleaseVictim(false),
-
-			Shield_Strength(0),
-			Shield_Armor(0),
-			Shield_Respawn(0.0),
-			Shield_Respawn_Rate(0.0),
-			Shield_SelfHealing(0.0),
-			Shield_SelfHealing_Rate(0.0),
-			Shield_AbsorbOverDamage(false),
-			Shield_BracketDelta(0),
-			Shield_IdleAnim(),
-			Shield_BreakAnim(),
-			Shield_RespawnAnim(),
-			Shield_HitAnim(),
+			Shield(),
 			WarpOut(),
 			WarpIn(),
 			WarpAway(),

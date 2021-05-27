@@ -189,7 +189,7 @@ public:
 			{
 				auto pTypeShieldData = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType());
 
-				append("Current Shield HP = (%d / %d)\n", pShieldData->GetShieldHP(), pTypeShieldData->Shield_Strength);
+				append("Current Shield HP = (%d / %d)\n", pShieldData->GetShieldHP(), pTypeShieldData->Shield->Strength);
 			}
 			display();
 		};
@@ -219,7 +219,7 @@ public:
 			{
 				auto pTypeShieldData = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType());
 
-				append("Current Shield HP = (%d / %d)\n", pShieldData->GetShieldHP(), pTypeShieldData->Shield_Strength);
+				append("Current Shield HP = (%d / %d)\n", pShieldData->GetShieldHP(), pTypeShieldData->Shield->Strength);
 			}
 			display();
 		};

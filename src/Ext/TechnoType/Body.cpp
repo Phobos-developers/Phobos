@@ -15,8 +15,7 @@ TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 
 void TechnoTypeExt::ExtData::Initialize()
 {
-	auto pThis = this->OwnerObject();
-	UNREFERENCED_PARAMETER(pThis);
+	this->Shield = ShieldTypeClass::FindOrAllocate(NONE_STR);
 }
 
 void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
@@ -33,7 +32,6 @@ void TechnoTypeExt::ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, dou
 	if (auto ext = TechnoTypeExt::ExtMap.Find(pType))
 		ext->ApplyTurretOffset(mtx, factor);
 }
-
 
 // Ares 0.A source
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
@@ -99,27 +97,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
-
-	// Shield logic
-	this->Shield_Strength.Read(exINI, pSection, "Shield.Strength");
-	this->Shield_Armor = pINI->ReadArmorType(pSection, "Shield.Armor", this->Shield_Armor);
-
-	this->Shield_Respawn.Read(exINI, pSection, "Shield.Respawn");
-	if (this->Shield_Respawn)
-		this->Shield_Respawn_Rate.Read(exINI, pSection, "Shield.Respawn.Rate");
-
-	this->Shield_SelfHealing.Read(exINI, pSection, "Shield.SelfHealing");
-	if (this->Shield_SelfHealing)
-		this->Shield_SelfHealing_Rate.Read(exINI, pSection, "Shield.SelfHealing.Rate");
-
-	this->Shield_AbsorbOverDamage.Read(exINI, pSection, "Shield.AbsorbOverDamage");
-	this->Shield_IdleAnim.Read(exINI, pSection, "Shield.IdleAnim");
-	this->Shield_BreakAnim.Read(exINI, pSection, "Shield.BreakAnim");
-	this->Shield_RespawnAnim.Read(exINI, pSection, "Shield.RespawnAnim");
-	this->Shield_HitAnim.Read(exINI, pSection, "Shield.HitAnim");
-	this->Shield_BracketDelta.Read(exINI, pSection, "Shield.BracketDelta");
-
-	//
+	this->Shield.Read(exINI, pSection, "Shield", true);
 	this->WarpOut.Read(exINI, pSection, "WarpOut");
 	this->WarpIn.Read(exINI, pSection, "WarpIn");
 	this->WarpAway.Read(exINI, pSection, "WarpAway");
@@ -128,7 +106,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChronoMinimumDelay.Read(exINI, pSection, "ChronoMinimumDelay");
 	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
 	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
-
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
@@ -161,18 +138,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Promote_IncludeSpawns)
 		.Process(this->ImmuneToCrit)
 		.Process(this->MultiMindControl_ReleaseVictim)
-		.Process(this->Shield_Strength)
-		.Process(this->Shield_Armor)
-		.Process(this->Shield_Respawn)
-		.Process(this->Shield_Respawn_Rate)
-		.Process(this->Shield_SelfHealing)
-		.Process(this->Shield_SelfHealing_Rate)
-		.Process(this->Shield_AbsorbOverDamage)
-		.Process(this->Shield_BracketDelta)
-		.Process(this->Shield_IdleAnim)
-		.Process(this->Shield_BreakAnim)
-		.Process(this->Shield_RespawnAnim)
-		.Process(this->Shield_HitAnim)
+		.Process(this->Shield)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
 		.Process(this->WarpAway)
