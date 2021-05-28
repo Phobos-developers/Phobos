@@ -7,7 +7,7 @@ This page describes how to help or contribute to Phobos and lists the contributi
 ### Code styleguide
 
 We have estabilished a couple of code style rules to keep things consistent. Some of the rules are enforced in `.editorconfig`, where applicable, so you can autoformat the code by pressing `Ctrl + K, D` hotkey chord in Visual studio. Still, it is advised to manually check the style before submitting the code.
-- We use spaces instead of tabs to indent code.
+- We use tabs instead of spaces to indent code.
 - Curly braces are always to be placed on a new line. One of the reasons for this is to clearly separate the end of the code block head and body in case of multiline bodies:
 ```cpp
 if (SomeReallyLongCondition() ||

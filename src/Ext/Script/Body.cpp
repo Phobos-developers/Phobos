@@ -24,17 +24,17 @@ ScriptExt::ExtContainer::~ExtContainer() = default;
 
 void ScriptExt::ProcessAction(TeamClass * pTeam)
 {
-    const int& action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action;
+	const int& action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action;
 
 	switch (action) {
 	case 71:
-        ScriptExt::ExecuteTimedAreaGuardAction(pTeam);
+		ScriptExt::ExecuteTimedAreaGuardAction(pTeam);
 		break;
 	case 72:
-        ScriptExt::LoadIntoTransports(pTeam);
+		ScriptExt::LoadIntoTransports(pTeam);
 		break;
 	case 73:
-        ScriptExt::WaitUntillFullAmmoAction(pTeam);
+		ScriptExt::WaitUntillFullAmmoAction(pTeam);
 		break;
 
 	default:
@@ -75,49 +75,49 @@ void ScriptExt::LoadIntoTransports(TeamClass *pTeam)
 {
 	DynamicVectorClass<FootClass *> transports;
 
-    // We get all the transports.
-    for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
-        if (pUnit->GetTechnoType()->Passengers > 0 &&
-            pUnit->Passengers.NumPassengers < pUnit->GetTechnoType()->Passengers &&
-            pUnit->Passengers.GetTotalSize() < pUnit->GetTechnoType()->Passengers)
-        {
-            transports.AddItem(pUnit);
-        } 
+	// We get all the transports.
+	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+		if (pUnit->GetTechnoType()->Passengers > 0 &&
+			pUnit->Passengers.NumPassengers < pUnit->GetTechnoType()->Passengers &&
+			pUnit->Passengers.GetTotalSize() < pUnit->GetTechnoType()->Passengers)
+		{
+			transports.AddItem(pUnit);
+		} 
 
 	// Now add units into transports
-    for (auto pTransport : transports) {
-        for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
-        {
-            if (!(pTransport == pUnit ||
-                pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType ||
-                pUnit->InLimbo ||
-                pUnit->GetTechnoType()->ConsideredAircraft ||
-                pUnit->Health <= 0))
-            {
-                if ((pUnit->GetTechnoType()->Size > 0 &&
-                    pUnit->GetTechnoType()->Size <= pTransport->GetTechnoType()->SizeLimit) &&
-                    (pUnit->GetTechnoType()->Size <=
-                        (pTransport->GetTechnoType()->Passengers - pTransport->Passengers.GetTotalSize())
-                        ))
-                {
-                    pUnit->IsTeamLeader = true;
+	for (auto pTransport : transports) {
+		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+		{
+			if (!(pTransport == pUnit ||
+				pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType ||
+				pUnit->InLimbo ||
+				pUnit->GetTechnoType()->ConsideredAircraft ||
+				pUnit->Health <= 0))
+			{
+				if ((pUnit->GetTechnoType()->Size > 0 &&
+					pUnit->GetTechnoType()->Size <= pTransport->GetTechnoType()->SizeLimit) &&
+					(pUnit->GetTechnoType()->Size <=
+						(pTransport->GetTechnoType()->Passengers - pTransport->Passengers.GetTotalSize())
+						))
+				{
+					pUnit->IsTeamLeader = true;
 
-                    // All fine
-                    if (pUnit->GetCurrentMission() != Mission::Enter)
-                    {
-                        pUnit->QueueMission(Mission::Enter, false);
-                        pUnit->SetTarget(nullptr);
-                        pUnit->SetDestination(pTransport, true);
-                        return;
-                    }
-                }
-            }
-        }
-    }
+					// All fine
+					if (pUnit->GetCurrentMission() != Mission::Enter)
+					{
+						pUnit->QueueMission(Mission::Enter, false);
+						pUnit->SetTarget(nullptr);
+						pUnit->SetDestination(pTransport, true);
+						return;
+					}
+				}
+			}
+		}
+	}
 
-    for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
-        if (pUnit->GetCurrentMission() == Mission::Enter)
-            return;
+	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+		if (pUnit->GetCurrentMission() == Mission::Enter)
+			return;
 	
 	// This action finished
 	if (pTeam->CurrentScript->HasNextAction())
@@ -127,33 +127,33 @@ void ScriptExt::LoadIntoTransports(TeamClass *pTeam)
 
 void ScriptExt::WaitUntillFullAmmoAction(TeamClass *pTeam)
 {
-    for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
-    {
-        if (pUnit && !pUnit->InLimbo && pUnit->Health > 0)
-        {
-            if (pUnit->GetTechnoType()->Ammo > 0 && pUnit->Ammo < pUnit->GetTechnoType()->Ammo)
-            {
-                auto pAirType = abstract_cast<AircraftTypeClass*>(pUnit->GetTechnoType());
-                if (pAirType && pAirType->AirportBound) // If an aircraft object have AirportBound it must be evaluated
-                {
-                    // Reset last target, at long term battles this prevented the 
-                        // aircraft to pick a new target (rare vanilla YR bug)
-                    pUnit->SetTarget(nullptr);
-                    pUnit->LastTarget = nullptr;
-                    // Fix YR bug (when returns from the last attack the aircraft switch in loop 
-                    // between Mission::Enter & Mission::Guard, making it impossible to land in the dock)
-                    if (pUnit->IsInAir() && pUnit->CurrentMission != Mission::Enter)
-                        pUnit->QueueMission(Mission::Enter, true);
+	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+	{
+		if (pUnit && !pUnit->InLimbo && pUnit->Health > 0)
+		{
+			if (pUnit->GetTechnoType()->Ammo > 0 && pUnit->Ammo < pUnit->GetTechnoType()->Ammo)
+			{
+				auto pAirType = abstract_cast<AircraftTypeClass*>(pUnit->GetTechnoType());
+				if (pAirType && pAirType->AirportBound) // If an aircraft object have AirportBound it must be evaluated
+				{
+					// Reset last target, at long term battles this prevented the 
+						// aircraft to pick a new target (rare vanilla YR bug)
+					pUnit->SetTarget(nullptr);
+					pUnit->LastTarget = nullptr;
+					// Fix YR bug (when returns from the last attack the aircraft switch in loop 
+					// between Mission::Enter & Mission::Guard, making it impossible to land in the dock)
+					if (pUnit->IsInAir() && pUnit->CurrentMission != Mission::Enter)
+						pUnit->QueueMission(Mission::Enter, true);
 
-                    return;
-                }
-                else { // Don't skip units that can reload themselves
-                    if (pUnit->GetTechnoType()->Reload != 0)
-                        return;
-                }
-            }
-        }
-    }
+					return;
+				}
+				else { // Don't skip units that can reload themselves
+					if (pUnit->GetTechnoType()->Reload != 0)
+						return;
+				}
+			}
+		}
+	}
 
 	// This action finished
 	/*if (pTeam->CurrentScript->HasNextAction())
