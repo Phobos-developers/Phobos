@@ -20,7 +20,6 @@ public:
 	void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
 	void InvalidatePointer(void* ptr);
 	int GetHP();
-	double GetShieldRatio();
 	bool IsAvailable();
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
@@ -52,6 +51,7 @@ private:
 	void DrawShieldBar_Building(int iLength, Point2D* pLocation, RectangleStruct* pBound);
 	void DrawShieldBar_Other(int iLength, Point2D* pLocation, RectangleStruct* pBound);
 	int DrawShieldBar_Pip(const bool isBuilding);
+	int DrawShieldBar_PipAmount(int iLength);
 
 	/// Properties ///
 	TechnoClass* Techno;

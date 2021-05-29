@@ -400,18 +400,10 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 
 	Point2D vPos = { 0, 0 };
 
-	int iCurrent = int(this->GetShieldRatio() * iLength);
-	int min = this->HP != 0;
-
-	if (iCurrent < min)
-		iCurrent = min;
-	if (iCurrent > iLength)
-		iCurrent = iLength;
-
-	int iTotal = iCurrent;
+	const int iTotal = DrawShieldBar_PipAmount(iLength);
 	int frame = this->DrawShieldBar_Pip(true);
 
-	if (iCurrent > 0)
+	if (iTotal > 0)
 	{
 		int frameIdx, deltaX, deltaY;
 		for (frameIdx = iTotal, deltaX = 0, deltaY = 0;
@@ -424,14 +416,12 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
 				frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
 		}
-
-		iCurrent = iTotal;
 	}
 
-	if (iCurrent < iLength)
+	if (iTotal < iLength)
 	{
 		int frameIdx, deltaX, deltaY;
-		for (frameIdx = iLength - iTotal, deltaX = 4 * iTotal, deltaY = -2 * iCurrent;
+		for (frameIdx = iLength - iTotal, deltaX = 4 * iTotal, deltaY = -2 * iTotal;
 			frameIdx;
 			frameIdx--, deltaX += 4, deltaY -= 2)
 		{
@@ -475,13 +465,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 			frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
 	}
 
-	int iTotal = int(this->GetShieldRatio() * iLength);
-	int min = this->HP != 0;
-
-	if (iTotal < min)
-		iTotal = min;
-	if (iTotal > iLength)
-		iTotal = iLength;
+	const int iTotal = DrawShieldBar_PipAmount(iLength);
 
 	frame = this->DrawShieldBar_Pip(false);
 
@@ -512,16 +496,21 @@ int ShieldClass::DrawShieldBar_Pip(const bool isBuilding)
 	return isBuilding ? 5 : 16;
 }
 
-int ShieldClass::GetHP()
-{
-	return this->HP;
-}
-
-double ShieldClass::GetShieldRatio()
+int ShieldClass::DrawShieldBar_PipAmount(int iLength)
 {
 	const auto pType = TechnoTypeClass::Find(this->TechnoID);
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	return double(this->HP) / double(pTypeExt->Shield->Strength);
+
+	return Math::clamp(
+		(int)round(double(this->HP) / double(pTypeExt->Shield->Strength) * iLength),
+		0,
+		iLength
+	);
+}
+
+int ShieldClass::GetHP()
+{
+	return this->HP;
 }
 
 bool ShieldClass::IsAvailable()
