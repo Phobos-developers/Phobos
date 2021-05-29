@@ -1,8 +1,28 @@
 # Contributing
 
-This page describes how to help or contribute to Phobos and lists the contributing guidelines that are used in the project.
+This page describes ways to help or contribute to Phobos and lists the contributing guidelines that are used in the project.
 
 ## Guidelines for contributors
+
+### Project structure
+
+Assuming you've successfully cloned and built the project before getting here, you should end up with the following project structure:
+- `src/` - all the project's source code resides here.
+  - `Commands/` - source code for new hotkey commands. Every command is a new class that inherits from `PhobosCommandClass` (defined in `Commands.h`) and is defined in a separate file with a few methods and then registered in `Commands.cpp`.
+  - `Enum/` - source code for new enumerated types (types that are declared with a list section in an INI, for example, radiation types) implemented in the project. Every enumerated type class inherits `Enumerable<T>` (where `T` is an enum. type class) class that is defined in `_Enumerator.hpp`.
+  - `Ext/` - source code for vanilla engine class extensions. Each class extension is kept in a separate folder named after vanilla engine class name and contains the following:
+    - `Body.h` and `Body.cpp` contain class and method definitions/declarations and common extension hooks. Each extension class must contain the following to work correctly:
+      - `ExtData` - extension data class definition which inherits `Extension<T>` from `_Container.cpp`/`_Container.hpp` (where `T` is the class that is being extended), which is the actual class that contains new data for vanilla classes;
+      - `ExtContainer` - a definition of a special map class to store and look up `ExtData` instances for base class instances which inherits `Container<T>` from `_Container.cpp`/`_Container.hpp` (where `T` is the extension data class);
+      - `ExtMap` - a static instance of `ExtContainer` map;
+      - constructor, destructor, serialization, deserialization and (for appropriate classes) INI reading hooks.
+    - `Hooks.cpp` and `Hooks.*.cpp` contain non-common hooks to correctly patch in new custom logics.
+  - `ExtraHeaders/` - extra header files to interact with / describe types included in game binary that are not included in YRpp yet.
+  - `Misc/` - uncategorized source code, including hooks that don't belong to an extension class.
+  - `Utilities/` - common code that is used across the project.
+  - `Phobos.cpp`/`Phobos.h` - extension bootstrapping code.
+  - `Phobos.Ext.cpp` - contains ~~dark C++ magic~~ common processing code new or extended classes. If you define a new or extended class you have to add your new class into `MassActions` global variable type declaration in this file.
+- `YRpp/` - contains the header files to interact with / describe types included in game binary and also macros to write hooks using Syringe. Included as a submodule.
 
 ### Code styleguide
 
@@ -46,8 +66,8 @@ if (SomeCondition())
 ```
 - Only empty curly brace blocks may be left on the same line for both opening and closing braces (if appropriate).
 - If you use if-else you should either have all of the code blocks braced or braceless to keep things consistent.
-- Code should have empty lines to make it easier to read. Use an empty line to split code into logical step parts. It's mandatory to have empty lines to separate:
-  - `return` statements;
+- Code should have empty lines to make it easier to read. Use an empty line to split code into logical parts. It's mandatory to have empty lines to separate:
+  - `return` statements (except when there is only one line of code except that statement);
   - local variable assignments that are used in the further code (you shouldn't put an empty line after one-line local variable assignments that are used only in the following code block though);
   - code blocks (braceless or not) or anything using code blocks (function or hook definitions, classes, namespaces etc.);
   - hook register input/output.
@@ -74,10 +94,27 @@ if (SomeOtherConditionUsing(localVar))
     ...
 
 localVar = OtherSomething();
+
+// OK
+if (SomeCondition())
+{
+    Code();
+    OtherCode();
+
+    return;
+}
+
+// OK
+if (SomeCondition())
+{
+    SmallCode();
+    return;
+}
+
 ```
 - `auto` may be used to hide an unneccessary type delcaration if it doesn't make the code harder to read. `auto` may not be used on primitive types.
 - A space must be put between braces of empty curly brace blocks.
-- To have less Git merge conflicts initializer lists and other list-like syntax structures used in frequently modified places should be split per-item with item separation characters (commas, for example) placed *after newline character*:
+- To have less Git merge conflicts member initializer lists and other list-like syntax structures used in frequently modified places should be split per-item with item separation characters (commas, for example) placed *after newline character*:
 ```cpp
 ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
     ,SpawnsTiberium_Type(0)
@@ -86,7 +123,7 @@ ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject
     ,SpawnsTiberium_CellsPerAnim({ 1, 0 })
 { }
 ``` 
-- Local variables are named in the `camelCase` (using a `p` prefix to denote pointer type for every pointer nesting level) and a descriptive name, like `pTecnoType` for a local `TechnoTypeClass*` variable.
+- Local variables and function/method args are named in the `camelCase` (using a `p` prefix to denote pointer type for every pointer nesting level) and a descriptive name, like `pTecnoType` for a local `TechnoTypeClass*` variable.
 - Classes, namespaces, class fields and members are always written in `PascalCase`.
 - Class fields that can be set via INI tags should be named exactly like ini tags with dots replaced with underscores.
 - Pointer type declarations always have pointer sign `*` attached to the type declaration.
