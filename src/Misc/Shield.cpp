@@ -262,18 +262,23 @@ void ShieldClass::ConvertCheck()
 
 void ShieldClass::SelfHealing()
 {
-	const int nSelfHealingAmount = this->GetPercentageAmount(this->GetType()->SelfHealing);
-	if (nSelfHealingAmount > 0 && this->HP < this->GetType()->Strength && this->Timers.SelfHealing.StartTime == -1)
-		this->Timers.SelfHealing.Start(this->GetType()->SelfHealing_Rate);
-
-	if (nSelfHealingAmount > 0 && this->HP > 0 && this->Timers.SelfHealing.Completed())
+	const auto pType = this->GetType();
+	const auto timer = &this->Timers.SelfHealing;
+	const auto percentageAmount = this->GetPercentageAmount(pType->SelfHealing);
+	if (percentageAmount > 0)
 	{
-		this->Timers.SelfHealing.Start(this->GetType()->SelfHealing_Rate);
-		this->HP += nSelfHealingAmount;
-		if (this->HP > this->GetType()->Strength)
+		if (this->HP < pType->Strength && timer->StartTime == -1)
+			timer->Start(pType->SelfHealing_Rate);
+
+		if (this->HP > 0 && timer->Completed())
 		{
-			this->HP = this->GetType()->Strength;
-			this->Timers.SelfHealing.Stop();
+			timer->Start(pType->SelfHealing_Rate);
+			this->HP += percentageAmount;
+			if (this->HP > pType->Strength)
+			{
+				this->HP = pType->Strength;
+				timer->Stop();
+			}
 		}
 	}
 }
