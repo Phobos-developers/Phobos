@@ -7,11 +7,11 @@ This page lists the history of changes across stable Phobos releases and also al
 ### From vanilla
 
 - SHP debris hardcoded shadows now respect `Shadow=no` tag value, and due to it being the default value they wouldn't have hardcoded shadows anymore by default. Override this by specifying `Shadow=yes` for SHP debris.
-- Radiation now has owner by default, which means that radiation kills will affect score and radiation field will respect `Affects...` tags. You can override that with `rulesmd.ini->[SOMEWEAPONTYPE]->Rad.NoOwner=yes` tag value.
+- Radiation now has owner by default, which means that radiation kills will affect score and radiation field will respect `Affects...` entries. You can override that with `rulesmd.ini->[SOMEWEAPONTYPE]->Rad.NoOwner=yes` entry.
 
 ### From older Phobos versions
 
-- Tag `rulesmd.ini->[SOMETECHNOTYPE]->Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on.
+- Key `rulesmd.ini->[SOMETECHNOTYPE]->Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on.
 
 ## Changelog
 
@@ -22,23 +22,23 @@ New:
 - Custom Radiation Types (by AlexB, Otamaa, Belonit, Uranusian)
 - New ScriptType actions `71 Timed Area Guard`, `72 Load Onto Transports`, `73 Wait until ammo is full` (by FS-21)
 - Ore drills now have customizable ore type, range, ore growth stage and amount of cells generated (by Kerbiter)
-- Basic projectile interception logic (by AutoGavy, Kerbiter, Erzoid/SukaHati)
+- Basic projectile interception logic (by AutoGavy, ChrisLv_CN, Kerbiter, Erzoid/SukaHati)
 - Customizable harvester active/total counter next to credits counter (by Uranusian)
 - Select Next Idle Harvester hotkey command (by Kerbiter)
 - Dump Object Info hotkey command (by secsome, FS-21)
 - Remove Disguise and Remove Mind Control warhead effects (by secsome)
 - Custom per-warhead SplashLists (by Uranusian)
-- `AnimList.PickRandom` used for randomize `AnimList` with no side effects (by secsome)
+- `AnimList.PickRandom` used to randomize `AnimList` with no side effects (by secsome)
 - Chance-based critical damage system on warheads (by AutoGavy)
 - Optional mind control range limit (by Uranusian)
 - Multiple mind controllers can now release units on overload (by Uranusian, secsome)
 - Spawns now can be killed on low power and have limited pursuing range (by FS-21)
 - Spawns can now have the same exp. level as owner techno (by Uranusian)
 - `TurretOffset` now accepts `F,L,H` and `F,L` values instead of just `F` value (by Kerbiter)
-- ElectricBolt visuals can now be disabled (by Otamaa)
+- ElectricBolt arc visuals can now be disabled per-arc (by Otamaa)
 - Semantic locomotor aliases for modder convenience (by Belonit)
 - Ability to specify amount of shots for strafing aircraft and burst simulation (by Starkku)
-- Customizeable Teleport/Chrono Locomotor properties per TechnoClass (by Otamaa)
+- Customizeable Teleport/Chrono Locomotor properties per TechnoType (by Otamaa)
 
 Vanilla fixes:
 - Map previews with zero size won't crash the game anymore (by Kerbiter, Belonit)
