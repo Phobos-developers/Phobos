@@ -403,7 +403,7 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 		iCurrent = iLength;
 
 	int iTotal = iCurrent;
-	int frame = this->DrawShieldBar_Pip();
+	int frame = this->DrawShieldBar_Pip(true);
 
 	if (iCurrent > 0)
 	{
@@ -477,7 +477,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	if (iTotal > iLength)
 		iTotal = iLength;
 
-	frame = this->DrawShieldBar_Pip();
+	frame = this->DrawShieldBar_Pip(false);
 
 	for (int i = 0; i < iTotal; ++i)
 	{
@@ -489,24 +489,21 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	}
 }
 
-int ShieldClass::DrawShieldBar_Pip()
+int ShieldClass::DrawShieldBar_Pip(const bool isBuilding)
 {
-	CoordStruct ShieldPip = RulesExt::Global()->Pips_Shield.Get();
+	const auto strength = this->GetType()->Strength;
+	const auto shieldPip = isBuilding ?
+		RulesExt::Global()->Pips_Shield_Buildings.Get() :
+		RulesExt::Global()->Pips_Shield.Get();
 
-	if (this->Techno->WhatAmI() == AbstractType::Building)
-		ShieldPip = RulesExt::Global()->Pips_Shield_Buildings;
+	if (this->HP > RulesClass::Instance->ConditionYellow * strength && shieldPip.X != -1)
+		return shieldPip.X;
+	else if (this->HP > RulesClass::Instance->ConditionRed * strength && (shieldPip.Y != -1 || shieldPip.X != -1))
+		return shieldPip.Y == -1 ? shieldPip.X : shieldPip.Y;
+	else if (shieldPip.Z != -1 || shieldPip.X != -1)
+		return shieldPip.Z == -1 ? shieldPip.X : shieldPip.Z;
 
-	if (this->HP > RulesClass::Instance->ConditionYellow * this->GetType()->Strength && ShieldPip.X != -1)
-		return ShieldPip.X;
-	else if (this->HP > RulesClass::Instance->ConditionRed * this->GetType()->Strength && (ShieldPip.Y != -1 || ShieldPip.X != -1))
-		return ShieldPip.Y == -1 ? ShieldPip.X : ShieldPip.Y;
-	else if (ShieldPip.Z != -1 || ShieldPip.X != -1)
-		return ShieldPip.Z == -1 ? ShieldPip.X : ShieldPip.Z;
-
-	if (this->Techno->WhatAmI() == AbstractType::Building)
-		return 5;
-	else
-		return 16;
+	return isBuilding ? 5 : 16;
 }
 
 int ShieldClass::GetHP()

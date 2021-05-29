@@ -51,7 +51,7 @@ private:
 
 	void DrawShieldBar_Building(int iLength, Point2D* pLocation, RectangleStruct* pBound);
 	void DrawShieldBar_Other(int iLength, Point2D* pLocation, RectangleStruct* pBound);
-	int DrawShieldBar_Pip();
+	int DrawShieldBar_Pip(const bool isBuilding);
 
 	/// Properties ///
 	TechnoClass* Techno;
