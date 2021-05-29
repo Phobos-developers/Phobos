@@ -215,49 +215,47 @@ void ShieldClass::TemporalCheck()
 	}
 }
 
+// Is used for DeploysInto/UndeploysInto
 void ShieldClass::ConvertCheck()
 {
-	if (strcmp(this->TechnoID, this->Techno->get_ID()))
+	const auto newID = this->Techno->get_ID();
+
+	if (strcmp(this->TechnoID, newID) == 0)
+		return;
+
+	const auto pType = this->GetType();
+
+	if (pType->Strength && this->Available)
+	{ // Update this shield for the new owner
+		const auto pFrom_TechnoType = TechnoTypeClass::Find(this->TechnoID);
+		const auto pFromType = TechnoTypeExt::ExtMap.Find(pFrom_TechnoType)->Shield;
+
+		if (pFromType->IdleAnim.Get() != pType->IdleAnim.Get())
+			this->KillAnim();
+
+		this->HP = (int)round(
+			(double)this->HP /
+			(double)pFromType->Strength *
+			(double)pType->Strength
+		);
+	}
+	else
 	{
-		if (this->GetType()->Strength)
-		{
-			if (this->Available)
-			{
-				auto pOrigin = TechnoTypeClass::Find(this->TechnoID);
-				auto pOriginExt = TechnoTypeExt::ExtMap.Find(pOrigin);
-				this->HP = int((double)this->HP / pOriginExt->Shield->Strength * this->GetType()->Strength);
-			}
-			else
-			{
-				if (this->HP == 0)
-					this->Timers.Respawn.Resume();
-				else
-					this->Timers.SelfHealing.Resume();
-
-				this->Available = true;
-			}
-
-			sprintf_s(this->TechnoID, this->Techno->get_ID());
-
-			if (this->IdleAnim)
-			{
-				this->KillAnim();
-				this->CreateAnim();
-			}
+		const auto timer = (this->HP <= 0) ? &this->Timers.Respawn : &this->Timers.SelfHealing;
+		if (pType->Strength && !this->Available)
+		{ // Resume this shield when became Available
+			timer->Resume();
+			this->Available = true;
 		}
-		else
-		{
-			sprintf_s(this->TechnoID, this->Techno->get_ID());
-
-			if (this->HP == 0)
-				this->Timers.Respawn.Pause();
-			else
-				this->Timers.SelfHealing.Pause();
-
+		else if (this->Available)
+		{ // Pause this shield when became unAvailable
+			timer->Pause();
 			this->Available = false;
 			this->KillAnim();
 		}
 	}
+
+	strcpy(this->TechnoID, newID);
 }
 
 void ShieldClass::SelfHealing()
