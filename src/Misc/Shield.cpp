@@ -289,23 +289,14 @@ void ShieldClass::SelfHealing()
 
 int ShieldClass::GetPercentageAmount(double iStatus)
 {
-	if (iStatus)
-	{
-		if (iStatus >= -1.0 && iStatus <= 1.0)
-			return int(this->GetType()->Strength * iStatus);
+	if (iStatus == 0)
+		return 0;
 
-		if (iStatus < 0)
-		{
-			// ensure correct flooring I guess? - Kerbiter
-			iStatus *= -1;
-			iStatus = (int)iStatus;
-			iStatus *= -1;
-		}
+	if (iStatus >= -1.0 && iStatus <= 1.0)
+		return (int)round(this->GetType()->Strength * iStatus);
 
-		return (int)iStatus;
-	}
-
-	return 0;
+	if (iStatus < 0)
+		return (int)trunc(iStatus);
 }
 
 void ShieldClass::InvalidatePointer(void* ptr)
