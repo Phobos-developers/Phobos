@@ -176,12 +176,10 @@ bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon)
 {
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
 
-	if (pWHExt->PenetratesShield)
+	if ((pWHExt && pWHExt->PenetratesShield.Get()) || !this->HP)
 		return true;
 
-	bool result = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->GetType()->Armor) != 0.0;
-
-	return this->HP ? result : true;
+	return GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->GetType()->Armor) != 0.0;
 }
 
 void ShieldClass::AI()
