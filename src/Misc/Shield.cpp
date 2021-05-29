@@ -59,14 +59,20 @@ bool ShieldClass::Save(PhobosStreamWriter& Stm) const
 	return Serialize(this, Stm);
 }
 
+// Is used for DeploysInto/UndeploysInto
 void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 {
 	const auto pFromExt = TechnoExt::ExtMap.Find(pFrom);
 	const auto pToExt = TechnoExt::ExtMap.Find(pTo);
-	const auto pToTypeExt = TechnoTypeExt::ExtMap.Find(pTo->GetTechnoType());
-
-	pToExt->ShieldData = std::make_unique<ShieldClass>(pTo);
-	pToExt->ShieldData->HP = int(pFromExt->ShieldData->GetShieldRatio() * pToTypeExt->Shield->Strength);
+	if (pFromExt->ShieldData)
+	{
+		pToExt->ShieldData = std::make_unique<ShieldClass>(pTo);
+		strcpy(pToExt->ShieldData->TechnoID, pFromExt->ShieldData->TechnoID);
+		pToExt->ShieldData->Available = pFromExt->ShieldData->Available;
+		pToExt->ShieldData->HP = pFromExt->ShieldData->HP;
+	}
+	if (pFrom->WhatAmI() == AbstractType::Building && pFromExt->ShieldData)
+		pFromExt->ShieldData = nullptr;
 }
 
 int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
@@ -215,7 +221,7 @@ void ShieldClass::TemporalCheck()
 	}
 }
 
-// Is used for DeploysInto/UndeploysInto
+// Is used for DeploysInto/UndeploysInto and DeploysInto/UndeploysInto
 void ShieldClass::ConvertCheck()
 {
 	const auto newID = this->Techno->get_ID();
@@ -513,9 +519,9 @@ int ShieldClass::GetHP()
 
 double ShieldClass::GetShieldRatio()
 {
-    const auto pType = TechnoTypeClass::Find(this->TechnoID);
-    const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-    return double(this->HP) / double(pTypeExt->Shield->Strength);
+	const auto pType = TechnoTypeClass::Find(this->TechnoID);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	return double(this->HP) / double(pTypeExt->Shield->Strength);
 }
 
 bool ShieldClass::IsAvailable()

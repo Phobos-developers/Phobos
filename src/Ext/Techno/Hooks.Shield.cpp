@@ -167,19 +167,10 @@ DEFINE_HOOK(6F6AC4, TechnoClass_Remove_Shield, 5)
 DEFINE_HOOK_AGAIN(44A03C, DeploysInto_UndeploysInto_SyncShieldStatus, 6) //BuildingClass_Mi_Selling_SyncShieldStatus
 DEFINE_HOOK(739956, DeploysInto_UndeploysInto_SyncShieldStatus, 6) //UnitClass_Deploy_SyncShieldStatus
 {
-	GET(TechnoClass*, pThis, EBP);
-	GET(TechnoClass*, pInto, EBX);
-	auto pThisExt = TechnoExt::ExtMap.Find(pThis);
-	auto pIntoTypeExt = TechnoTypeExt::ExtMap.Find(pInto->GetTechnoType());
+	GET(TechnoClass*, pFrom, EBP);
+	GET(TechnoClass*, pTo, EBX);
 
-	if (pThisExt->ShieldData && pIntoTypeExt->Shield->Strength)
-	{
-		ShieldClass::SyncShieldToAnother(pThis, pInto);
-	}
-
-	if (pThis->WhatAmI() == AbstractType::Building && pThisExt->ShieldData)
-		pThisExt->ShieldData = nullptr;
-
+	ShieldClass::SyncShieldToAnother(pFrom, pTo);
 	return 0;
 }
 
