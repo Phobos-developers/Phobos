@@ -18,7 +18,7 @@ public:
 	{
 	public:
 		Valueable<BulletClass*> InterceptedBullet;
-		std::unique_ptr<ShieldTechnoClass> ShieldData;
+		std::unique_ptr<ShieldClass> ShieldData;
 
 		Valueable<bool> WasCloaked;
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),

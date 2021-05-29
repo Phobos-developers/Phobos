@@ -14,7 +14,7 @@ DEFINE_HOOK(701900, TechnoClass_ReceiveDamage_Shield, 6)
 
 	if (auto pShieldData = pExt->ShieldData.get())
 	{
-		if (!pShieldData->Available())
+		if (!pShieldData->IsAvailable())
 			return 0;
 
 		auto nDamageLeft = pShieldData->ReceiveDamage(args);
@@ -33,7 +33,7 @@ DEFINE_HOOK(7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 5)
 
 	if (auto pShieldData = pExt->ShieldData.get())
 	{
-		if (pShieldData->Available() && pShieldData->GetShieldHP())
+		if (pShieldData->IsAvailable() && pShieldData->GetHP())
 			return 0x7019E3;
 	}
 
@@ -67,7 +67,7 @@ DEFINE_HOOK(708AEB, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_Should
 	{
 		if (auto pShieldData = pExt->ShieldData.get())
 		{
-			if (pShieldData->Available() && pShieldData->GetShieldHP())
+			if (pShieldData->IsAvailable() && pShieldData->GetHP())
 			{
 				R->EAX(TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType())->Shield->Armor);
 				return R->Origin() + 6;
@@ -88,7 +88,7 @@ DEFINE_HOOK(6F36F2, TechnoClass_WhatWeaponShouldIUse_Shield, 6)
 	{
 		if (auto pShieldData = pExt->ShieldData.get())
 		{
-			if (pShieldData->GetShieldHP())
+			if (pShieldData->GetHP())
 			{
 				auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
 
@@ -118,11 +118,11 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
 	{
 		if (auto pShieldData = pExt->ShieldData.get())
 		{
-			if (pShieldData->Available() && pShieldData->GetShieldHP())
+			if (pShieldData->IsAvailable() && pShieldData->GetHP())
 			{
 				if (pThis->GetWeapon(1))
 				{
-					if (!pShieldData->CanBeTargeted(pThis->GetWeapon(0)->WeaponType/*, pThis*/))
+					if (!pShieldData->CanBeTargeted(pThis->GetWeapon(0)->WeaponType))
 						return Secondary;
 
 					return FurtherCheck;
@@ -142,7 +142,7 @@ DEFINE_HOOK(6F9E50, TechnoClass_AI_Shield, 5)
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	if (pTypeData->Shield->Strength && !pExt->ShieldData)
-		pExt->ShieldData = std::make_unique<ShieldTechnoClass>(pThis);
+		pExt->ShieldData = std::make_unique<ShieldClass>(pThis);
 
 	if (pExt->ShieldData)
 		pExt->ShieldData->AI();
@@ -174,7 +174,7 @@ DEFINE_HOOK(739956, DeploysInto_UndeploysInto_SyncShieldStatus, 6) //UnitClass_D
 
 	if (pThisExt->ShieldData && pIntoTypeExt->Shield->Strength)
 	{
-		ShieldTechnoClass::SyncShieldToAnother(pThis, pInto);
+		ShieldClass::SyncShieldToAnother(pThis, pInto);
 	}
 
 	if (pThis->WhatAmI() == AbstractType::Building && pThisExt->ShieldData)
@@ -192,7 +192,7 @@ DEFINE_HOOK(6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 6)
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFS(0x4C, -0x8));
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->ShieldData && pExt->ShieldData->Available())
+	if (pExt->ShieldData && pExt->ShieldData->IsAvailable())
 		pExt->ShieldData->DrawShieldBar(iLength, pLocation, pBound);
 
 	return 0;
@@ -205,7 +205,7 @@ DEFINE_HOOK(6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 7)
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFS(0x4C, -0x8));
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->ShieldData && pExt->ShieldData->Available())
+	if (pExt->ShieldData && pExt->ShieldData->IsAvailable())
 	{
 		int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
 		pExt->ShieldData->DrawShieldBar(iLength, pLocation, pBound);
