@@ -513,7 +513,9 @@ int ShieldClass::GetHP()
 
 double ShieldClass::GetShieldRatio()
 {
-	return double(this->HP) / double(this->GetType()->Strength);
+    const auto pType = TechnoTypeClass::Find(this->TechnoID);
+    const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+    return double(this->HP) / double(pTypeExt->Shield->Strength);
 }
 
 bool ShieldClass::IsAvailable()
