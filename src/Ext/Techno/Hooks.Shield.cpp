@@ -10,14 +10,14 @@ DEFINE_HOOK(701900, TechnoClass_ReceiveDamage_Shield, 6)
 {
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (auto pShieldData = pExt->ShieldData.get())
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (const auto pShieldData = pExt->ShieldData.get())
 	{
 		if (!pShieldData->IsAvailable())
 			return 0;
 
-		auto nDamageLeft = pShieldData->ReceiveDamage(args);
+		const int nDamageLeft = pShieldData->ReceiveDamage(args);
 		if (nDamageLeft >= 0)
 			*args->Damage = nDamageLeft;
 	}
@@ -29,9 +29,9 @@ DEFINE_HOOK(7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 5)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(int*, Damage, EBX);
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (auto pShieldData = pExt->ShieldData.get())
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (const auto pShieldData = pExt->ShieldData.get())
 	{
 		if (pShieldData->IsAvailable() && pShieldData->GetHP())
 			return 0x7019E3;
@@ -53,19 +53,19 @@ DEFINE_HOOK(708AEB, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_Should
 	else
 		pWeapon = R->EBX<WeaponTypeClass*>();
 
-	if (auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead))
+	if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead))
 		if (pWHExt->PenetratesShield)
 			return 0;
-	
+
 	TechnoClass* pTarget = nullptr;
 	if (R->Origin() == 0x6F7D31 || R->Origin() == 0x70CF39)
 		pTarget = R->ESI<TechnoClass*>();
 	else
 		pTarget = R->EBP<TechnoClass*>();
 
-	if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
+	if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
 	{
-		if (auto pShieldData = pExt->ShieldData.get())
+		if (const auto pShieldData = pExt->ShieldData.get())
 		{
 			if (pShieldData->IsAvailable() && pShieldData->GetHP())
 			{
@@ -112,11 +112,11 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
 	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, FurtherCheck = 0x6F3754, OriginalCheck = 0x6F36E3 };
 
 	if (!pTarget)
-		return 0x6F37AD; //Target invalid, skip. (test ebp,ebp  jz loc_6F37AD)
+		return Primary;
 
-	if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
+	if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
 	{
-		if (auto pShieldData = pExt->ShieldData.get())
+		if (const auto pShieldData = pExt->ShieldData.get())
 		{
 			if (pShieldData->IsAvailable() && pShieldData->GetHP())
 			{
@@ -124,8 +124,8 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
 				{
 					if (!pShieldData->CanBeTargeted(pThis->GetWeapon(0)->WeaponType))
 						return Secondary;
-
-					return FurtherCheck;
+					else
+						return FurtherCheck;
 				}
 
 				return Primary;
@@ -138,22 +138,30 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
 DEFINE_HOOK(6F9E50, TechnoClass_AI_Shield, 5)
 {
 	GET(TechnoClass*, pThis, ECX);
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	const auto pShieldType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->Shield;
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pTypeData->Shield->Strength && !pExt->ShieldData)
+	if (pShieldType->Strength && !pExt->ShieldData)
 		pExt->ShieldData = std::make_unique<ShieldClass>(pThis);
 
-	if (pExt->ShieldData)
-		pExt->ShieldData->AI();
+	if (const auto pShieldData = pExt->ShieldData.get())
+		pShieldData->AI();
 
 	return 0;
 }
+/*
+// Ares-hook jmp to this offset
+DEFINE_HOOK(71A88D, TemporalClass_AI_Shield, 0)
+{
+	GET(TemporalClass*, pThis, ESI);
+	return R->EAX<int>() <= 0 ? 0x71A895 : 0x71AB08;
+}
+*/
 
 DEFINE_HOOK(6F6AC4, TechnoClass_Remove_Shield, 5)
 {
 	GET(TechnoClass*, pThis, ECX);
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pExt->ShieldData &&
 		!(pThis->WhatAmI() == AbstractType::Building && pThis->GetTechnoType()->UndeploysInto && pThis->CurrentMission == Mission::Selling))
@@ -181,10 +189,13 @@ DEFINE_HOOK(6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 6)
 	GET(int, iLength, EBX);
 	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x4C, -0x4));
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFS(0x4C, -0x8));
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->ShieldData && pExt->ShieldData->IsAvailable())
-		pExt->ShieldData->DrawShieldBar(iLength, pLocation, pBound);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (const auto pShieldData = pExt->ShieldData.get())
+	{
+		if (pShieldData->IsAvailable())
+			pShieldData->DrawShieldBar(iLength, pLocation, pBound);
+	}
 
 	return 0;
 }
@@ -194,12 +205,15 @@ DEFINE_HOOK(6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 7)
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x4C, -0x4));
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFS(0x4C, -0x8));
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->ShieldData && pExt->ShieldData->IsAvailable())
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (const auto pShieldData = pExt->ShieldData.get())
 	{
-		int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-		pExt->ShieldData->DrawShieldBar(iLength, pLocation, pBound);
+		if (pShieldData->IsAvailable())
+		{
+			const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+			pShieldData->DrawShieldBar(iLength, pLocation, pBound);
+		}
 	}
 
 	return 0;

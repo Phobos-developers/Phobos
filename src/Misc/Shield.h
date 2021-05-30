@@ -31,7 +31,7 @@ private:
 	template <typename T1, typename T2>
 	static bool Serialize(T1 pThis, T2& Stm);
 
-	const ShieldTypeClass* GetType();
+	void UpdateType();
 
 	void SelfHealing();
 	int GetPercentageAmount(double iStatus);
@@ -45,6 +45,7 @@ private:
 	void WeaponNullifyAnim();
 	void ResponseAttack();
 
+	void CloakCheck();
 	void TemporalCheck();
 	void ConvertCheck();
 
@@ -60,6 +61,9 @@ private:
 	int HP;
 	AnimClass* IdleAnim;
 	bool Temporal;
+	bool Cloak;
+
+	ShieldTypeClass* Type;
 
 	struct Timers
 	{
