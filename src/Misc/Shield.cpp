@@ -46,6 +46,7 @@ bool ShieldClass::Serialize(T1 pThis, T2& Stm)
 		.Process(pThis->Timers.Respawn)
 		.Process(pThis->HP)
 		.Process(pThis->Cloak)
+		.Process(pThis->Temporal)
 		.Process(pThis->Available)
 		.Success();
 }
@@ -185,6 +186,42 @@ bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon)
 	return GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->Type->Armor) != 0.0;
 }
 
+void ShieldClass::AI_Temporal()
+{
+	if (!this->Temporal)
+	{
+		this->Temporal = true;
+
+		const auto timer = (this->HP <= 0) ? &this->Timers.Respawn : &this->Timers.SelfHealing;
+		timer->Pause();
+
+		this->CloakCheck();
+
+		if (this->IdleAnim)
+		{
+			switch (this->Type->IdleAnim_TemporalAction)
+			{
+				case AttachedAnimFlag::Hides:
+					this->KillAnim();
+					break;
+
+				case AttachedAnimFlag::Temporal:
+					this->IdleAnim->UnderTemporal = true;
+					break;
+
+				case AttachedAnimFlag::Paused:
+					this->IdleAnim->Pause();
+					break;
+
+				case AttachedAnimFlag::PausedTemporal:
+					this->IdleAnim->Pause();
+					this->IdleAnim->UnderTemporal = true;
+					break;
+			}
+		}
+	}
+}
+
 void ShieldClass::AI()
 {
 	if (!this->Techno || this->Techno->InLimbo || this->Techno->IsImmobilized || this->Techno->Transporter)
@@ -199,9 +236,12 @@ void ShieldClass::AI()
 		return;
 
 	this->TemporalCheck();
+	if (this->Temporal)
+		return;
 
 	this->RespawnShield();
 	this->SelfHealing();
+
 	if (!this->Cloak && this->HP > 0)
 		this->CreateAnim();
 }
@@ -218,21 +258,18 @@ void ShieldClass::CloakCheck()
 
 void ShieldClass::TemporalCheck()
 {
-	if (this->Techno->TemporalTargetingMe && !this->Temporal)
+	if (!this->Temporal)
+		return;
+
+	this->Temporal = false;
+
+	const auto timer = (this->HP <= 0) ? &this->Timers.Respawn : &this->Timers.SelfHealing;
+	timer->Resume();
+
+	if (this->IdleAnim)
 	{
-		this->Temporal = true;
-		if (this->HP == 0)
-			this->Timers.Respawn.Pause();
-		else
-			this->Timers.SelfHealing.Pause();
-	}
-	else if (!this->Techno->TemporalTargetingMe && this->Temporal)
-	{
-		this->Temporal = false;
-		if
-			(this->HP == 0) this->Timers.Respawn.Resume();
-		else
-			this->Timers.SelfHealing.Resume();
+		this->IdleAnim->UnderTemporal = false;
+		this->IdleAnim->Unpause();
 	}
 }
 

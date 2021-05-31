@@ -149,14 +149,24 @@ DEFINE_HOOK(6F9E50, TechnoClass_AI_Shield, 5)
 
 	return 0;
 }
-/*
+
 // Ares-hook jmp to this offset
 DEFINE_HOOK(71A88D, TemporalClass_AI_Shield, 0)
 {
 	GET(TemporalClass*, pThis, ESI);
+	if (auto const pTarget = pThis->Target)
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pTarget);
+		if (const auto pShieldData = pExt->ShieldData.get())
+		{
+			if (pShieldData->IsAvailable())
+				pShieldData->AI_Temporal();
+		}
+	}
+
+	// Recovering vanilla instructions that were broken by a hook call
 	return R->EAX<int>() <= 0 ? 0x71A895 : 0x71AB08;
 }
-*/
 
 DEFINE_HOOK(6F6AC4, TechnoClass_Remove_Shield, 5)
 {
