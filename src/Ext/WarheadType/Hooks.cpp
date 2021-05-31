@@ -14,14 +14,20 @@ DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 	GET_BASE(const CoordStruct*, pCoords, 0x8);
 
 	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH)) {
-		auto const pOwner = pThis->Owner ? pThis->Owner : nullptr;
-		auto const pHouse = pOwner ? pOwner->Owner : nullptr;
+		auto const pTechno = pThis ? pThis->Owner : nullptr;
+		auto const pHouse = pTechno ? pTechno->Owner : nullptr;
 
-		pWHExt->Detonate(pOwner, pHouse, pThis, *pCoords);
+		pWHExt->Detonate(pTechno, pHouse, pThis, *pCoords);
 	}
 
 	DetonationInDamageArea = false;
 
+	return 0;
+}
+
+DEFINE_HOOK(46A290, BulletClass_Detonate_Return, 5)
+{
+	DetonationInDamageArea = true;
 	return 0;
 }
 
@@ -40,9 +46,6 @@ DEFINE_HOOK(489286, MapClass_DamageArea, 6)
 			pWHExt->Detonate(pOwner, pHouse, nullptr, *pCoords);
 		}
 	}
-
-	DetonationInDamageArea = true;
-
 	return 0;
 }
 #pragma endregion
