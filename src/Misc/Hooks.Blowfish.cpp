@@ -4,8 +4,8 @@
 HRESULT __stdcall Blowfish_Loader(
 	REFCLSID  rclsid,
 	LPUNKNOWN pUnkOuter,
-	DWORD     dwClsContext,
-	REFIID    riid,
+	DWORD	 dwClsContext,
+	REFIID	riid,
 	LPVOID* ppv)
 {
 	typedef HRESULT(__stdcall *pDllGetClassObject)(const IID&, const IID&, IClassFactory**);

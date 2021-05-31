@@ -10,12 +10,19 @@
 For now you can discuss the project at a dedicated [channel on C&C Mod Haven](https://discord.gg/sZeMzz6qVg) (which is my C&C modding server).
 
 
-Building and Usage (Windows)
-----------------------------
+Building and Usage
+------------------
 
-0. Install Visual Studio with "Desktop development with C++" workload and "C++ Windows XP Support for VS 2017 (v141) tools" individual component and clone this repo recursively (that will also clone YRpp).
-1. Open the solution file in VS and build it (`DevBuild` build config is recommended).
-2. Upon build completion place the resulting `Phobos.dll` from folder named identical to the used build config in your YR directory and launch Syringe targeting your YR executable (usually `gamemd.exe`).
+0. Install Visual Studio (2019 is recommended) with the following:
+  - "Desktop development with C++" workload;
+  - "C++ Windows XP Support for VS 2017 (v141) tools" individual component.
+If you prefer to use Visual Studio Code (read [MSVC VSCode config guide](https://code.visualstudio.com/docs/cpp/config-msvc)) you may install VS Build Tools with the stuff listed above instead. You can also don't use any code editor or IDE and build via command line scripts included with the project.
+1. Clone this repo recursively via your favorite git client (that will also clone YRpp).
+2. To build the extension:
+  - in Visual Studio: open the solution file in VS and build it (`DevBuild` build config is recommended);
+  - in VSCode: open the project folder and hit `Run Build Task...` (`Ctrl + Shift + B`);
+  - barebones: run `scripts/build_devbuild.bat`.
+3. Upon build completion place the resulting `Phobos.dll` from folder named identical to the used build config in your YR directory and launch Syringe targeting your YR executable (usually `gamemd.exe`).
 
 You can also get a nightly build for those who want to help testing Phobos features as soon as they are done. Those versions are bleeding edge (don't redistribute them outside of testing!) and have build information (commit and branch/tag) in them which is displayed ingame and can't be turned off. There are two ways get a nightly build.
 - **Get an artifact via nightly.link**. This is a service that allows guests to download automatic builds from GitHub. You can get a build for the latest successful (marked with a green tick) `develop` branch commit via [this link](https://nightly.link/Phobos-developers/Phobos/blob/develop/.github/workflows/nightly.yml), or get a build for any up-to-date pull request via an automatic comment that would appear in it. 
@@ -46,10 +53,10 @@ Credits
 
 **Developers**
 - Belonit (Gluk-v48), Metadorius (Kerbiter) - project authors
-- Thrifinesma (Uranusian), SEC-SOME (secsome) - co-developers
+- Thrifinesma (Uranusian), SEC-SOME (secsome), Otamaa (Fahroni, BoredEXE) - co-developers
 
 **Contribution**
-- Belonit (Gluk-v48) - project creator, disable empty spawn positions, custom gamemd icon with Command Line, full-color non-paletted PCX, SpySat, BigGap, TransactMoney, PCX Loading Screen, custom DiskLaser radius, extended tooltips, building upgrades enhancement, hide health bar, Sidebar.GDIPosition, help with CellSpread, Blowfish.dll-related errors fix, zero size map previews
+- Belonit (Gluk-v48) - project creator, disable empty spawn positions, custom gamemd icon with Command Line, full-color non-paletted PCX, SpySat, BigGap, TransactMoney, PCX Loading Screen, custom DiskLaser radius, extended tooltips, building upgrades enhancement, hide health bar, Sidebar.GDIPosition, help with CellSpread, Blowfish.dll-related errors fix, zero size map previews, semantic locomotor aliases
 - Metadorius (Kerbiter) - SHP debris respect Shadow, building upgrades enhancement, extended tooltips, selection priority filtering, TurretOffset enhancement, customizable ore spawners, select next idle harvester hotkey, interceptor enhancement, zero size map previews, nightly build workflow, overhauled Unicode font, docs maintainer, organisational, maintenance and public relations work
 - misha135n2 - YRpp edits
 - tomsons26 - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
@@ -58,21 +65,25 @@ Credits
 - DCoder - unused deployer fixes that are now included in Phobos
 - ZΞPHYɌUS - win/lose themes code
 - ayylmao - help with docs
-- SMxReaver - help with docs
+- SMxReaver - help with docs, extensive and thorough testing
 - 4SG - help with docs
 - wiktorderelf - overhauled Unicode font
 - Thrifinesma (Uranusian) - Mind Control enhancement, custom warhead splash list, harvesters counter, promoted spawns, shields, death after dead fix, overhauled Unicode font, help with docs
-- SEC-SOME (secsome) - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields
+- SEC-SOME (secsome) - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields, AnimList.PickRandom
 - Otamaa (BoredEXE) - help with CellSpread, ported and fixed custom RadType code, togglable ElectricBolt bolts, customizable Chrono Locomotor properties per TechnoClass
 - E1 Elite - TileSet 255 and above bridge repair fix
 - FS-21 - Dump Object Info enhancements, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71, 72 & 73, MC deployer fixes, help with docs
 - AutoGavy - interceptor logic, warhead critical damage system
+- ChrisLv_CN - interceptor logic, general assistance
 - Xkein - general assistance, YRpp edits
 - thomassneddon - general assistance
 - Starkku - Warhead shield penetration & breaking, strafing aircraft weapon customization
 - SukaHati (Erzoid) - Minimum interceptor guard range
+- mevitar - honorary shield tester award
+- Damfoos - extensive and thorough testing
+- Rise of the East community - extensive playtesting of in-dev features
 
-Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](https://github.com/Phobos-developers/Phobos/logo-mono.png)) in your client/launcher, contributing or donating to us via links on the right and the `Sponsor` button on top of the repo.
+Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](logo-mono.png)) in your client/launcher, linking to Phobos repository, contributing or donating to us via links on the right and the `Sponsor` button on top of the repo.
 
 Legal and License
 -----

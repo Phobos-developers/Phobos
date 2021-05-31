@@ -12,13 +12,16 @@
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
 {
-	if (pHouse) {
-		if (this->BigGap) {
-			for (auto pOtherHouse : *HouseClass::Array) {
+	if (pHouse)
+	{
+		if (this->BigGap)
+		{
+			for (auto pOtherHouse : *HouseClass::Array)
+			{
 				if (pOtherHouse->ControlledByHuman() &&	  // Not AI
-					!pOtherHouse->IsObserver() &&         // Not Observer
-					!pOtherHouse->Defeated &&             // Not Defeated
-					pOtherHouse != pHouse &&              // Not pThisHouse
+					!pOtherHouse->IsObserver() &&		 // Not Observer
+					!pOtherHouse->Defeated &&			 // Not Defeated
+					pOtherHouse != pHouse &&			  // Not pThisHouse
 					!pHouse->IsAlliedWith(pOtherHouse))   // Not Allied
 				{
 					pOtherHouse->ReshroudMap();
@@ -26,11 +29,13 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			}
 		}
 
-		if (this->SpySat) {
+		if (this->SpySat)
+		{
 			MapClass::Instance->Reveal(pHouse);
 		}
 
-		if (this->TransactMoney) {
+		if (this->TransactMoney)
+		{
 			pHouse->TransactMoney(this->TransactMoney);
 		}
 	}
@@ -44,14 +49,18 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Crit_Chance;
 
 	const float cellSpread = this->OwnerObject()->CellSpread;
-	if (cellSpread && isCellSpreadWarhead) {
+	if (cellSpread && isCellSpreadWarhead)
+	{
 		auto items = Helpers::Alex::getCellSpreadItems(coords, cellSpread, true);
-		for (auto pTarget : items) {
+		for (auto pTarget : items)
+		{
 			this->DetonateOnOneUnit(pHouse, pTarget);
 		}
 	}
-	else if (pBullet && isCellSpreadWarhead) {
-		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target)) {
+	else if (pBullet && isCellSpreadWarhead)
+	{
+		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
+		{
 			this->DetonateOnOneUnit(pHouse, pTarget);
 		}
 	}
@@ -59,42 +68,45 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
 {
-	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health) {
+	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health)
+	{
 		return;
 	}
 
-	if (!this->CanTargetHouse(pHouse, pTarget)) {
+	if (!this->CanTargetHouse(pHouse, pTarget))
+	{
 		return;
 	}
 
-	if (this->RemoveDisguise) {
+	if (this->RemoveDisguise)
+	{
 		this->ApplyRemoveDisguiseToInf(pHouse, pTarget);
 	}
 
-	if (this->RemoveMindControl) {
+	if (this->RemoveMindControl)
+	{
 		this->ApplyRemoveMindControl(pHouse, pTarget);
 	}
-	
-	if (this->Crit_Chance) {
+
+	if (this->Crit_Chance)
+	{
 		this->ApplyCrit(pHouse, pTarget, pOwner);
 	}
 }
 
 void WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	if (auto pController = pTarget->MindControlledBy) {
+	if (auto pController = pTarget->MindControlledBy)
 		pTarget->MindControlledBy->CaptureManager->FreeUnit(pTarget);
-		if (!pTarget->IsHumanControlled) {
-			pTarget->QueueMission(Mission::Hunt, false);
-		}
-	}
 }
 
 void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	if (pTarget->WhatAmI() == AbstractType::Infantry) {
+	if (pTarget->WhatAmI() == AbstractType::Infantry)
+	{
 		auto pInf = abstract_cast<InfantryClass*>(pTarget);
-		if (pInf->IsDisguised()) {
+		if (pInf->IsDisguised())
+		{
 			pInf->ClearDisguise();
 		}
 	}
@@ -105,20 +117,24 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	//auto& random = ScenarioClass::Instance->Random;
 	const double dice = this->RandomBuffer; //double(random.RandomRanged(1, 10)) / 10;
 
-	if (this->Crit_Chance < dice) {
+	if (this->Crit_Chance < dice)
+	{
 		return;
 	}
 
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType())) {
+	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType()))
+	{
 		if (pTypeExt->ImmuneToCrit)
 			return;
 	}
 
-	if (!this->IsCellEligible(pTarget->GetCell(), this->Crit_Affects)) {
+	if (!this->IsCellEligible(pTarget->GetCell(), this->Crit_Affects))
+	{
 		return;
 	}
 
-	if (!this->IsTechnoEligible(pTarget, this->Crit_Affects)) {
+	if (!this->IsTechnoEligible(pTarget, this->Crit_Affects))
+	{
 		return;
 	}
 

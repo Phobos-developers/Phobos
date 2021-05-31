@@ -12,7 +12,7 @@ class RadTypeClass final : public Enumerable<RadTypeClass>
 private:
 	Nullable<int> DurationMultiple;
 	Nullable<int> ApplicationDelay;
-    Nullable<int> BuildingApplicationDelay;
+	Nullable<int> BuildingApplicationDelay;
 	Nullable<double> LevelFactor;
 	Nullable<int> LevelMax;
 	Nullable<int> LevelDelay;
@@ -24,21 +24,21 @@ private:
 
 public:
 
-    RadTypeClass(const char* const pTitle) : Enumerable<RadTypeClass>(pTitle),
-        LevelDelay(),
-        LightDelay(),
-        RadSiteColor(),
-        LevelMax(),
-        LevelFactor(),
-        LightFactor(),
-        TintFactor(),
-        RadWarhead(),
-        DurationMultiple(),
-        ApplicationDelay(),
-        BuildingApplicationDelay()
-    { }
+	RadTypeClass(const char* const pTitle) : Enumerable<RadTypeClass>(pTitle),
+		LevelDelay(),
+		LightDelay(),
+		RadSiteColor(),
+		LevelMax(),
+		LevelFactor(),
+		LightFactor(),
+		TintFactor(),
+		RadWarhead(),
+		DurationMultiple(),
+		ApplicationDelay(),
+		BuildingApplicationDelay()
+	{ }
 
-    virtual ~RadTypeClass() override = default;
+	virtual ~RadTypeClass() override = default;
 
 	static void AddDefaults();
 
@@ -64,10 +64,10 @@ public:
 		return this->ApplicationDelay.Get(RulesClass::Instance->RadApplicationDelay);
 	}
 
-    int GetBuildingApplicationDelay() const
-    {
-        return this->BuildingApplicationDelay.Get(RulesExt::Global()->RadApplicationDelay_Building);
-    }
+	int GetBuildingApplicationDelay() const
+	{
+		return this->BuildingApplicationDelay.Get(RulesExt::Global()->RadApplicationDelay_Building);
+	}
 
 	int GetLevelMax() const
 	{

@@ -19,7 +19,7 @@ enum class InitState {
 
 /*
  * ==========================
- *    It's a kind of magic
+ *	It's a kind of magic
  * ==========================
 
  * These two templates are the basis of the new class extension standard.

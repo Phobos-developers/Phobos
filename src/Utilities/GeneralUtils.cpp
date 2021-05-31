@@ -58,5 +58,5 @@ const int GeneralUtils::GetRangedRandomOrSingleValue(Point2D range)
 
 const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, int ArmorType)
 {
-    return double(MapClass::GetTotalDamage(100, pWH, ArmorType, 0)) / 100.0;
+	return double(MapClass::GetTotalDamage(100, pWH, ArmorType, 0)) / 100.0;
 }

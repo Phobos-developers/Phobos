@@ -66,7 +66,7 @@ SpawnsTiberium.CellsPerAnim=1 ; single int / comma-sep. range
 ### Customizable Teleport/Chrono Locomotor settings per TechnoType 
 
 ![image](_static/images/cust-Chrono.gif)  
-*Chrono Legionere and Ronco (hero) from [YR:New War] (https://www.moddb.com/mods/yuris-revenge-new-war)*
+*Chrono Legionnaire and Ronco (hero) from [YR:New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
 
 - You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`.
 - Only applicable to Techno that have Teleport/Chrono Locomotor attached.

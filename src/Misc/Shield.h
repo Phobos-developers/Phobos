@@ -10,59 +10,59 @@ class WarheadTypeClass;
 class ShieldTechnoClass
 {
 public:
-    ShieldTechnoClass();
-    ShieldTechnoClass(TechnoClass* pTechno);
-    ~ShieldTechnoClass() = default;
+	ShieldTechnoClass();
+	ShieldTechnoClass(TechnoClass* pTechno);
+	~ShieldTechnoClass() = default;
 
-    int ReceiveDamage(args_ReceiveDamage* args);
-    bool CanBeTargeted(WeaponTypeClass* pWeapon/*, TechnoClass* pSource*/);
-    void AI();
-    void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
-    void InvalidatePointer(void* ptr);
-    int GetShieldHP();
-    double GetShieldRatio();
-    bool Available();
+	int ReceiveDamage(args_ReceiveDamage* args);
+	bool CanBeTargeted(WeaponTypeClass* pWeapon/*, TechnoClass* pSource*/);
+	void AI();
+	void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
+	void InvalidatePointer(void* ptr);
+	int GetShieldHP();
+	double GetShieldRatio();
+	bool Available();
 
-    static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
+	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
 
-    bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
-    bool Save(PhobosStreamWriter& Stm) const;
+	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
+	bool Save(PhobosStreamWriter& Stm) const;
 
 private:
-    // static constexpr int ScanInterval = 15;		//!< Minimum delay between scans in frames.
-    struct UninitAnim
-    {
-        void operator() (AnimClass* const pAnim) const;
-    };
+	// static constexpr int ScanInterval = 15;		//!< Minimum delay between scans in frames.
+	struct UninitAnim
+	{
+		void operator() (AnimClass* const pAnim) const;
+	};
 
-    const TechnoTypeExt::ExtData* GetExt();
+	const TechnoTypeExt::ExtData* GetExt();
 
-    void SelfHealing();
-    int GetPercentageAmount(double iStatus);
-    void BreakShield();
-    void RespawnShield();
-    void DrawShield();
-    void CreateAnim();
-    void KillAnim();
-    void WeaponNullifyAnim();
-    void ResponseAttack();
-    void TemporalCheck();
-    void ConvertCheck();
-    void DrawShieldBarBuilding(int iLength, Point2D* pLocation, RectangleStruct* pBound);
-    void DrawShieldBarOther(int iLength, Point2D* pLocation, RectangleStruct* pBound);
-    int DrawShieldBar_Pip();
+	void SelfHealing();
+	int GetPercentageAmount(double iStatus);
+	void BreakShield();
+	void RespawnShield();
+	void DrawShield();
+	void CreateAnim();
+	void KillAnim();
+	void WeaponNullifyAnim();
+	void ResponseAttack();
+	void TemporalCheck();
+	void ConvertCheck();
+	void DrawShieldBarBuilding(int iLength, Point2D* pLocation, RectangleStruct* pBound);
+	void DrawShieldBarOther(int iLength, Point2D* pLocation, RectangleStruct* pBound);
+	int DrawShieldBar_Pip();
 
-    /// Properties ///
-    TechnoClass* Techno;
-    char TechnoID[0x18];
-    bool Update;
-    int HP;
-    TimerStruct Timer_SelfHealing;
-    TimerStruct Timer_Respawn;
-    Handle<AnimClass*, UninitAnim> Image;
-    bool HaveAnim;
-    bool Temporal;
-    //bool Broken;
-    //SHPStruct* Image;
-    //LightConvertClass* Convert;
+	/// Properties ///
+	TechnoClass* Techno;
+	char TechnoID[0x18];
+	bool Update;
+	int HP;
+	TimerStruct Timer_SelfHealing;
+	TimerStruct Timer_Respawn;
+	Handle<AnimClass*, UninitAnim> Image;
+	bool HaveAnim;
+	bool Temporal;
+	//bool Broken;
+	//SHPStruct* Image;
+	//LightConvertClass* Convert;
 };
