@@ -8,6 +8,7 @@
 #include "Body.h"
 #include "../BulletType/Body.h"
 #include "../Techno/Body.h"
+#include <Utilities/GeneralUtils.h>
 
 DEFINE_HOOK(6F64A9, TechnoClass_DrawHealthBar_Hide, 5)
 {
@@ -84,17 +85,64 @@ DEFINE_HOOK(43E0C4, BuildingClass_Draw_43DA80_TurretMultiOffset, 0)
 	return 0x43E0E8;
 }
 
-DEFINE_HOOK(6B7282, SpawnManagerClass_AI_PromoteSpawns, 5) 
+DEFINE_HOOK(6B7282, SpawnManagerClass_AI_PromoteSpawns, 5)
 {
 	GET(SpawnManagerClass*, pThis, ESI);
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
-	if (pTypeExt->Promote_IncludeSpawns) 
+	//auto Owner = pThis->Owner;
+
+	for (auto i : pThis->SpawnedNodes)
 	{
-		for (auto i : pThis->SpawnedNodes)
+		auto spawn = i->Unit;
+		if (spawn)
 		{
-			if (i->Unit && i->Unit->Veterancy.Veterancy < pThis->Owner->Veterancy.Veterancy)
-				i->Unit->Veterancy.Add(pThis->Owner->Veterancy.Veterancy - i->Unit->Veterancy.Veterancy);
+			if (pTypeExt->Promote_IncludeSpawns)
+			{
+				if (spawn->Veterancy.Veterancy < pThis->Owner->Veterancy.Veterancy)
+					spawn->Veterancy.Add(pThis->Owner->Veterancy.Veterancy - spawn->Veterancy.Veterancy);
+			}
+
+			//auto lastMission = Owner->GetCurrentMission();
+			/**/
+			if (spawn->Target)
+			{
+				auto what = spawn->Target->WhatAmI();
+				if (what == AbstractType::Unit
+					|| what == AbstractType::Infantry
+					|| what == AbstractType::Building
+					|| what == AbstractType::Aircraft
+					)
+				{
+					if (auto tech = static_cast<TechnoClass*>(spawn->Target))
+					{
+						auto WeaponType = spawn->Veterancy.IsElite() ?
+							spawn->GetTechnoType()->EliteWeapon[0].WeaponType :
+							spawn->GetTechnoType()->Weapon[0].WeaponType;
+
+						auto damage = WeaponType->Damage *
+							GeneralUtils::GetWarheadVersusArmor(WeaponType->Warhead, static_cast<int>(tech->GetTechnoType()->Armor));
+
+						if (static_cast<int>(damage) < 0)
+						{
+							if (tech->GetHealthPercentage() == RulesClass::Instance->unknown_double_16F8)//condition green
+							{
+								/*
+								if (Owner->Type()->AttackFriendlies)
+								{
+									Owner->Target = nullptr;
+
+									//reset mission after it nulled target
+									Owner->QueueMission(lastMission, 1);
+									Owner->NextMission();
+								}*/
+
+								pThis->ResetTarget();
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 
