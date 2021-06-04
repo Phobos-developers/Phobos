@@ -31,8 +31,8 @@ FoggedObject::FoggedObject(ObjectClass* pObject)
 	{
 		pCell->GetCoords(&this->Location);
 		pObject->vt_entry_12C(&this->Bound); // __get_render_dimensions
-		this->Bound.X += TacticalClass::Instance->TacticalPos0.X;
-		this->Bound.Y += TacticalClass::Instance->TacticalPos0.Y;
+		this->Bound.X += TacticalClass::Instance->VisibleArea.X;
+		this->Bound.Y += TacticalClass::Instance->VisibleArea.Y;
 		this->CoveredRTTIType = pObject->WhatAmI();
 		this->Translucent = true;
 
@@ -93,8 +93,8 @@ FoggedSmudge::FoggedSmudge(CellClass* pCell, int smudge, unsigned char smudgeDat
 	this->Bound.Width = 60;
 	this->Bound.Height = 30;
 
-	this->Bound.X += TacticalClass::Instance->TacticalPos0.X;
-	this->Bound.Y += TacticalClass::Instance->TacticalPos0.Y;
+	this->Bound.X += TacticalClass::Instance->VisibleArea.X;
+	this->Bound.Y += TacticalClass::Instance->VisibleArea.Y;
 
 	this->Smudge = smudge;
 	this->SmudgeData = smudgeData;
@@ -122,8 +122,8 @@ void FoggedSmudge::Draw(RectangleStruct & rect)
 
 		Point2D position
 		{
-			this->Bound.X - TacticalClass::Instance->TacticalPos0.X - rect.X + Drawing::SurfaceDimensions_Hidden.X + 30,
-			this->Bound.Y - TacticalClass::Instance->TacticalPos0.Y - rect.Y + Drawing::SurfaceDimensions_Hidden.Y
+			this->Bound.X - TacticalClass::Instance->VisibleArea.X - rect.X + Drawing::SurfaceDimensions_Hidden.X + 30,
+			this->Bound.Y - TacticalClass::Instance->VisibleArea.Y - rect.Y + Drawing::SurfaceDimensions_Hidden.Y
 		};
 
 		auto nZAdjust = TacticalClass::Instance->AdjustForZ(this->Location.Z);
@@ -254,8 +254,8 @@ FoggedOverlay::FoggedOverlay(CellClass* pCell, int overlay, unsigned char overla
 	pCell->GetContainingRect(&buffer);
 
 	FogOfWar::UnionRectangle(&this->Bound, &buffer);
-    this->Bound.X += TacticalClass::Instance->TacticalPos0.X - Drawing::SurfaceDimensions_Hidden.X;
-	this->Bound.Y += TacticalClass::Instance->TacticalPos0.Y - Drawing::SurfaceDimensions_Hidden.Y;
+    this->Bound.X += TacticalClass::Instance->VisibleArea.X - Drawing::SurfaceDimensions_Hidden.X;
+	this->Bound.Y += TacticalClass::Instance->VisibleArea.Y - Drawing::SurfaceDimensions_Hidden.Y;
 
 	this->CoveredRTTIType = AbstractType::Overlay;
 	this->Overlay = overlay;

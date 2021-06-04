@@ -123,8 +123,8 @@ bool FogOfWar::DrawIfVisible(FoggedObject* pFoggedObject, RectangleStruct* pRect
 		return false;
 
 	auto rect = pFoggedObject->Bound;
-	rect.X += Drawing::SurfaceDimensions_Hidden.X - TacticalClass::Instance->TacticalPos0.X;
-	rect.Y += Drawing::SurfaceDimensions_Hidden.Y - TacticalClass::Instance->TacticalPos0.Y;
+	rect.X += Drawing::SurfaceDimensions_Hidden.X - TacticalClass::Instance->VisibleArea.X;
+	rect.Y += Drawing::SurfaceDimensions_Hidden.Y - TacticalClass::Instance->VisibleArea.Y;
 
 	RectangleStruct ret = Drawing::Intersect(pRect, &rect, 0, 0);
 	if (ret.Width <= 0 || ret.Height <= 0)
