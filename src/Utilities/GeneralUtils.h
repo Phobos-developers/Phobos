@@ -6,22 +6,41 @@
 #include <Helpers/Iterators.h>
 #include <Helpers/Enumerators.h>
 
-#include <string.h>
+#include <cstring>
 #include <iterator>
 #include <vector>
 
-#define MIN(x) std::numeric_limits<x>::min()
-#define MAX(x) std::numeric_limits<x>::max()
+#include "PhobosTemplate.h"
 
-class GeneralUtils
+namespace GeneralUtils
 {
-public:
-	static bool IsValidString(const char* str);
-	static void IntValidCheck(int* source, const char* section, const char* tag, int defaultValue, int min = MIN(int), int max = MAX(int));
-	static void DoubleValidCheck(double* source, const char* section, const char* tag, double defaultValue, double min = MIN(double), double max = MAX(double));
-	static const wchar_t* LoadStringOrDefault(char* key, const wchar_t* defaultValue);
-	static const wchar_t* LoadStringUnlessMissing(char* key, const wchar_t* defaultValue);
-	static std::vector<CellStruct> AdjacentCellsInRange(unsigned int range);
-	static const int GetRangedRandomOrSingleValue(Point2D range);
-	static const double GetWarheadVersusArmor(WarheadTypeClass* pWH, int ArmorType);
+
+	bool IsValidString(const char* str);
+	
+	const wchar_t* LoadStringOrDefault(char* key, const wchar_t* defaultValue);
+	
+	const wchar_t* LoadStringUnlessMissing(char* key, const wchar_t* defaultValue);
+	
+	std::vector<CellStruct> AdjacentCellsInRange(unsigned int range);
+	
+	const int GetRangedRandomOrSingleValue(const Point2D& range);
+	
+	template<typename T>
+	void NumericValidCheck(T&& source, const char* pSection, const char* pTag, const T&& nDefaultValue,
+		const T&& nMin = std::numeric_limits<T>::min(), const T&& nMax = std::numeric_limits<T>::max())
+	{
+		if (source < nMin || source>nMax)
+		{
+			Debug::Log("[Developer warning][%s]%s="string_formatter<T>
+				" is invalid! Reset to "string_formatter<T>".\n",
+				pSection, pTag, source, nDefaultValue);
+			source = nDefaultValue;
+		}
+	}
+
+	template<typename T>
+	const double GetWarheadVersusArmor(WarheadTypeClass* pWH, T ArmorType)
+	{
+		return double(MapClass::GetTotalDamage(100, pWH, static_cast<int>(ArmorType), 0)) / 100.0;
+	}
 };

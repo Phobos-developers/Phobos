@@ -92,55 +92,32 @@ DEFINE_HOOK(6B7282, SpawnManagerClass_AI_PromoteSpawns, 5)
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
 	//auto Owner = pThis->Owner;
 
-	for (auto i : pThis->SpawnedNodes)
+	for (const auto pNode : pThis->SpawnedNodes)
 	{
-		auto spawn = i->Unit;
-		if (spawn)
+		const auto pSpawn = pNode->Unit;
+		if (pSpawn)
 		{
 			if (pTypeExt->Promote_IncludeSpawns)
-			{
-				if (spawn->Veterancy.Veterancy < pThis->Owner->Veterancy.Veterancy)
-					spawn->Veterancy.Add(pThis->Owner->Veterancy.Veterancy - spawn->Veterancy.Veterancy);
-			}
+				if (pSpawn->Veterancy.Veterancy < pThis->Owner->Veterancy.Veterancy)
+					pSpawn->Veterancy.Add(pThis->Owner->Veterancy.Veterancy - pSpawn->Veterancy.Veterancy);
 
-			//auto lastMission = Owner->GetCurrentMission();
-			/**/
-			if (spawn->Target)
+			// [Vanilla Bug] Fix spawned AircraftTypes's targeting (enable Repair Drones) #222
+			if (pSpawn->Target)
 			{
-				auto what = spawn->Target->WhatAmI();
-				if (what == AbstractType::Unit
-					|| what == AbstractType::Infantry
-					|| what == AbstractType::Building
-					|| what == AbstractType::Aircraft
-					)
+				const auto pTechno = abstract_cast<TechnoClass*>(pSpawn->Target);
+				if (pTechno)
 				{
-					if (auto tech = static_cast<TechnoClass*>(spawn->Target))
-					{
-						auto WeaponType = spawn->Veterancy.IsElite() ?
-							spawn->GetTechnoType()->EliteWeapon[0].WeaponType :
-							spawn->GetTechnoType()->Weapon[0].WeaponType;
+					const auto pWeaponType =
+						pSpawn->Veterancy.IsElite() ?
+						pSpawn->GetTechnoType()->EliteWeapon[0].WeaponType :
+						pSpawn->GetTechnoType()->Weapon[0].WeaponType;
 
-						auto damage = WeaponType->Damage *
-							GeneralUtils::GetWarheadVersusArmor(WeaponType->Warhead, static_cast<int>(tech->GetTechnoType()->Armor));
+					const auto nDamage = pWeaponType->Damage *
+						GeneralUtils::GetWarheadVersusArmor(pWeaponType->Warhead, pTechno->GetTechnoType()->Armor);
 
-						if (static_cast<int>(damage) < 0)
-						{
-							if (tech->GetHealthPercentage() == RulesClass::Instance->unknown_double_16F8)//condition green
-							{
-								/*
-								if (Owner->Type()->AttackFriendlies)
-								{
-									Owner->Target = nullptr;
-
-									//reset mission after it nulled target
-									Owner->QueueMission(lastMission, 1);
-									Owner->NextMission();
-								}*/
-
-								pThis->ResetTarget();
-							}
-						}
-					}
+					if (nDamage < 0)
+						if (pTechno->Health == pTechno->GetTechnoType()->Strength)
+							pThis->ResetTarget();
 				}
 			}
 		}

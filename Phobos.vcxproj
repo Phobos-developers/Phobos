@@ -124,6 +124,7 @@
     <ClInclude Include="src\Utilities\Macro.h" />
     <ClInclude Include="src\Utilities\Parser.h" />
     <ClInclude Include="src\Utilities\Patch.h" />
+    <ClInclude Include="src\Utilities\PhobosTemplate.h" />
     <ClInclude Include="src\Utilities\Template.h" />
     <ClInclude Include="src\Utilities\TemplateDef.h" />
     <ClInclude Include="YRpp\GameTextManager.h" />
