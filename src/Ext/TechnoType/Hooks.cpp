@@ -103,27 +103,10 @@ DEFINE_HOOK(6B7282, SpawnManagerClass_AI_PromoteSpawns, 5)
 
 			// [Vanilla Bug] Fix spawned AircraftTypes's targeting (enable Repair Drones) #222
 			if (pSpawn->Target)
-			{
-				const auto pTechno = abstract_cast<TechnoClass*>(pSpawn->Target);
-				if (pTechno)
-				{
-					const auto nDamage = pTechno->CombatDamage(-1);
-
-					/*
-					const auto pWeaponType =
-						pSpawn->Veterancy.IsElite() ?
-						pSpawn->GetTechnoType()->EliteWeapon[0].WeaponType :
-						pSpawn->GetTechnoType()->Weapon[0].WeaponType;
-
-					const auto nDamage = pWeaponType->Damage *
-						GeneralUtils::GetWarheadVersusArmor(pWeaponType->Warhead, pTechno->GetTechnoType()->Armor);
-					*/
-
-					if (nDamage < 0)
+				if (const auto pTechno = abstract_cast<TechnoClass*>(pSpawn->Target))
+					if (pTechno->CombatDamage() < 0)
 						if (pTechno->Health == pTechno->GetTechnoType()->Strength)
 							pThis->ResetTarget();
-				}
-			}
 		}
 	}
 
