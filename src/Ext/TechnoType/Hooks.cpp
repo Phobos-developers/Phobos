@@ -107,6 +107,9 @@ DEFINE_HOOK(6B7282, SpawnManagerClass_AI_PromoteSpawns, 5)
 				const auto pTechno = abstract_cast<TechnoClass*>(pSpawn->Target);
 				if (pTechno)
 				{
+					const auto nDamage = pTechno->CombatDamage(-1);
+
+					/*
 					const auto pWeaponType =
 						pSpawn->Veterancy.IsElite() ?
 						pSpawn->GetTechnoType()->EliteWeapon[0].WeaponType :
@@ -114,6 +117,7 @@ DEFINE_HOOK(6B7282, SpawnManagerClass_AI_PromoteSpawns, 5)
 
 					const auto nDamage = pWeaponType->Damage *
 						GeneralUtils::GetWarheadVersusArmor(pWeaponType->Warhead, pTechno->GetTechnoType()->Armor);
+					*/
 
 					if (nDamage < 0)
 						if (pTechno->Health == pTechno->GetTechnoType()->Strength)
