@@ -22,9 +22,6 @@ bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pU
 	return false;
 }
 
-// =============================
-// container hooks
-
 DEFINE_HOOK(452678, CanUpgrade_UpgradeBuildings, 8)
 {
 	GET(BuildingClass*, pBuilding, ECX);
