@@ -23,6 +23,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 
 	this->PowersUp_Owner.Read(exINI, pSection, "PowersUp.Owner");
 	this->PowersUp_Buildings.Read(exINI, pSection, "PowersUp.Buildings");
+	this->PowerPlantEnchancer_Buildings.Read(exINI, pSection, "PowerPlantEnchancer.PowerPlants");
+	this->PowerPlantEnchancer_Amount.Read(exINI, pSection, "PowerPlantEnchancer.Amount");
+	this->PowerPlantEnchancer_Factor.Read(exINI, pSection, "PowerPlantEnchancer.Factor");
 
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
@@ -38,6 +41,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm) {
 	Stm
 		.Process(this->PowersUp_Owner)
 		.Process(this->PowersUp_Buildings)
+		.Process(this->PowerPlantEnchancer_Buildings)
+		.Process(this->PowerPlantEnchancer_Amount)
+		.Process(this->PowerPlantEnchancer_Factor)
 		;
 }
 
