@@ -8,7 +8,6 @@
 #include "Body.h"
 #include "../BulletType/Body.h"
 #include "../Techno/Body.h"
-#include <Utilities/GeneralUtils.h>
 
 DEFINE_HOOK(6F64A9, TechnoClass_DrawHealthBar_Hide, 5)
 {
@@ -93,9 +92,7 @@ DEFINE_HOOK(6B7282, SpawnManagerClass_AI_PromoteSpawns, 5)
 	//auto Owner = pThis->Owner;
 
 	for (const auto pNode : pThis->SpawnedNodes)
-	{
-		const auto pSpawn = pNode->Unit;
-		if (pSpawn)
+		if (const auto pSpawn = pNode->Unit)
 		{
 			if (pTypeExt->Promote_IncludeSpawns)
 				if (pSpawn->Veterancy.Veterancy < pThis->Owner->Veterancy.Veterancy)
@@ -108,7 +105,6 @@ DEFINE_HOOK(6B7282, SpawnManagerClass_AI_PromoteSpawns, 5)
 						if (pTechno->Health == pTechno->GetTechnoType()->Strength)
 							pThis->ResetTarget();
 		}
-	}
 
 	return 0;
 }
