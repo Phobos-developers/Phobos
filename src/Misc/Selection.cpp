@@ -24,8 +24,8 @@ public:
 	{
 		if (selectable->Techno && selectable->Techno->IsAlive)
 		{
-			LONG localX = selectable->X - pThis->TacticalPos0.X;
-			LONG localY = selectable->Y - pThis->TacticalPos0.Y;
+			LONG localX = selectable->X - pThis->VisibleArea.X;
+			LONG localY = selectable->Y - pThis->VisibleArea.Y;
 
 			if ((localX >= rect->left && localX < rect->right + rect->left) &&
 				(localY >= rect->top && localY < rect->bottom + rect->top)) {

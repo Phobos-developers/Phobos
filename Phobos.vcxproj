@@ -21,6 +21,7 @@
     <ClCompile Include="src\Ext\BulletType\Body.cpp" />
     <ClCompile Include="src\Ext\Bullet\Body.cpp" />
     <ClCompile Include="src\Ext\Bullet\Hook.cpp" />
+    <ClCompile Include="src\Ext\Cell\Body.cpp" />
     <ClCompile Include="src\Ext\House\Body.cpp" />
     <ClCompile Include="src\Ext\RadSite\Body.cpp" />
     <ClCompile Include="src\Ext\RadSite\Hooks.cpp" />
@@ -44,7 +45,12 @@
     <ClCompile Include="src\Ext\WeaponType\Hook.EBolt.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
+    <ClCompile Include="src\Misc\FogOfWar\FoggedObject.cpp" />
+    <ClCompile Include="src\Misc\FogOfWar\FogOfWar.cpp" />
     <ClCompile Include="src\Misc\CaptureManager.cpp" />
+    <ClCompile Include="src\Misc\FogOfWar\Hooks.cpp" />
+    <ClCompile Include="src\Misc\FogOfWar\Hooks.Process.cpp" />
+    <ClCompile Include="src\Misc\FogOfWar\Hooks.Reveal.cpp" />
     <ClCompile Include="src\Misc\Hooks.Blowfish.cpp" />
     <ClCompile Include="src\Misc\Hooks.INIClass.cpp" />
     <ClCompile Include="src\Misc\Savegame.cpp" />
@@ -85,6 +91,7 @@
     <ClInclude Include="src\Ext\Building\Body.h" />
     <ClInclude Include="src\Ext\BulletType\Body.h" />
     <ClInclude Include="src\Ext\Bullet\Body.h" />
+    <ClInclude Include="src\Ext\Cell\Body.h" />
     <ClInclude Include="src\Ext\House\Body.h" />
     <ClInclude Include="src\Ext\RadSite\Body.h" />
     <ClInclude Include="src\Ext\Script\Body.h" />
@@ -97,6 +104,9 @@
     <ClInclude Include="src\Ext\WeaponType\Body.h" />
     <ClInclude Include="src\Misc\CaptureManager.h" />
     <ClInclude Include="src\Misc\ExtendedToolTips.h" />
+    <ClInclude Include="src\Misc\FogOfWar\BasicHeaders.h" />
+    <ClInclude Include="src\Misc\FogOfWar\FoggedObject.h" />
+    <ClInclude Include="src\Misc\FogOfWar\FogOfWar.h" />
     <ClInclude Include="src\Misc\Savegame.h" />
     <ClInclude Include="src\Misc\SavegameDef.h" />
     <ClInclude Include="src\Misc\Shield.h" />
