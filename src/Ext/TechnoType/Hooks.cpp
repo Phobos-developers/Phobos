@@ -101,8 +101,8 @@ DEFINE_HOOK(6B7282, SpawnManagerClass_AI_PromoteSpawns, 5)
 			// [Vanilla Bug] Fix spawned AircraftTypes's targeting (enable Repair Drones) #222
 			if (pSpawn->Target)
 				if (const auto pTechno = abstract_cast<TechnoClass*>(pSpawn->Target))
-					if (pTechno->CombatDamage() < 0)
-						if (pTechno->Health == pTechno->GetTechnoType()->Strength)
+					if (pSpawn->CombatDamage() < 0) //check negative damage for Attacker
+						if (pTechno->GetHealthPercentage() >= RulesClass::Instance->unknown_double_16F8)//health check
 							pThis->ResetTarget();
 		}
 
