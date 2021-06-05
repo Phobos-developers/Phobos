@@ -89,7 +89,6 @@ DEFINE_HOOK(6B7282, SpawnManagerClass_AI_PromoteSpawns, 5)
 	GET(SpawnManagerClass*, pThis, ESI);
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
-	//auto Owner = pThis->Owner;
 
 	for (const auto pNode : pThis->SpawnedNodes)
 		if (const auto pSpawn = pNode->Unit)
@@ -100,9 +99,9 @@ DEFINE_HOOK(6B7282, SpawnManagerClass_AI_PromoteSpawns, 5)
 
 			// [Vanilla Bug] Fix spawned AircraftTypes's targeting (enable Repair Drones) #222
 			if (pSpawn->Target)
-				if (const auto pTechno = abstract_cast<TechnoClass*>(pSpawn->Target))
+				if (const auto pTarget = abstract_cast<TechnoClass*>(pSpawn->Target))
 					if (pSpawn->CombatDamage() < 0) //check negative damage for Attacker
-						if (pTechno->GetHealthPercentage() >= RulesClass::Instance->unknown_double_16F8)//health check
+						if (pTarget->GetHealthPercentage() >= RulesClass::Instance->ConditionGreen)//health check
 							pThis->ResetTarget();
 		}
 
