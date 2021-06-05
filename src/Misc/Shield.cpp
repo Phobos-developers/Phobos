@@ -19,11 +19,12 @@ ShieldClass::ShieldClass() :
 
 ShieldClass::ShieldClass(TechnoClass* pTechno) :
 	Techno{ pTechno },
-	Available{ true },
 	IdleAnim{ nullptr },
-	Temporal{ false },
+	Timers{ },
 	Cloak{ false },
-	Timers{ }
+	Online{ true },
+	Temporal{ false },
+	Available{ true }
 {
 	this->UpdateType();
 	this->HP = this->Type->Strength;
@@ -46,6 +47,7 @@ bool ShieldClass::Serialize(T1 pThis, T2& Stm)
 		.Process(pThis->Timers.Respawn)
 		.Process(pThis->HP)
 		.Process(pThis->Cloak)
+		.Process(pThis->Online)
 		.Process(pThis->Temporal)
 		.Process(pThis->Available)
 		.Success();
@@ -239,10 +241,12 @@ void ShieldClass::AI()
 	if (this->Temporal)
 		return;
 
+	this->OnlineCheck();
+
 	this->RespawnShield();
 	this->SelfHealing();
 
-	if (!this->Cloak && this->HP > 0)
+	if (!this->Cloak && !this->Temporal && this->Online && (this->HP > 0))
 		this->CreateAnim();
 }
 
@@ -254,6 +258,64 @@ void ShieldClass::CloakCheck()
 	this->Cloak = cloakState == CloakState::Cloaked || cloakState == CloakState::Cloaking;
 	if (this->Cloak)
 		this->IdleAnim = nullptr;
+}
+
+void ShieldClass::OnlineCheck()
+{
+	if (!this->Type->Powered)
+		return;
+
+	const auto timer = (this->HP <= 0) ? &this->Timers.Respawn : &this->Timers.SelfHealing;
+
+	auto pTechno = this->Techno;
+
+	bool isActive = !(pTechno->Deactivated || pTechno->IsUnderEMP());
+
+	if (isActive && this->Techno->WhatAmI() == AbstractType::Building)
+	{
+		auto const pBuilding = static_cast<BuildingClass const*>(this->Techno);
+		isActive = pBuilding->IsPowerOnline();
+	}
+
+	if (!isActive)
+	{
+		this->Online = false;
+		timer->Pause();
+
+		if (this->IdleAnim)
+		{
+			switch (this->Type->IdleAnim_OfflineAction)
+			{
+				case AttachedAnimFlag::Hides:
+					this->KillAnim();
+					break;
+
+				case AttachedAnimFlag::Temporal:
+					this->IdleAnim->UnderTemporal = true;
+					break;
+
+				case AttachedAnimFlag::Paused:
+					this->IdleAnim->Pause();
+					break;
+
+				case AttachedAnimFlag::PausedTemporal:
+					this->IdleAnim->Pause();
+					this->IdleAnim->UnderTemporal = true;
+					break;
+			}
+		}
+	}
+	else
+	{
+		this->Online = true;
+		timer->Resume();
+
+		if (this->IdleAnim)
+		{
+			this->IdleAnim->UnderTemporal = false;
+			this->IdleAnim->Unpause();
+		}
+	}
 }
 
 void ShieldClass::TemporalCheck()
@@ -552,6 +614,11 @@ int ShieldClass::DrawShieldBar_PipAmount(int iLength)
 int ShieldClass::GetHP()
 {
 	return this->HP;
+}
+
+bool ShieldClass::IsOnline()
+{
+	return this->Online;
 }
 
 bool ShieldClass::IsAvailable()

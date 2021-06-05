@@ -24,6 +24,7 @@ public:
 	void InvalidatePointer(void* ptr);
 
 	int GetHP();
+	bool IsOnline();
 	bool IsAvailable();
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
@@ -50,6 +51,7 @@ private:
 	void ResponseAttack();
 
 	void CloakCheck();
+	void OnlineCheck();
 	void TemporalCheck();
 	void ConvertCheck();
 
@@ -61,11 +63,12 @@ private:
 	/// Properties ///
 	TechnoClass* Techno;
 	char TechnoID[0x18];
-	bool Available;
 	int HP;
 	AnimClass* IdleAnim;
-	bool Temporal;
 	bool Cloak;
+	bool Online;
+	bool Temporal;
+	bool Available;
 
 	ShieldTypeClass* Type;
 

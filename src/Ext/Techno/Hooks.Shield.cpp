@@ -14,7 +14,7 @@ DEFINE_HOOK(701900, TechnoClass_ReceiveDamage_Shield, 6)
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	if (const auto pShieldData = pExt->ShieldData.get())
 	{
-		if (!pShieldData->IsAvailable())
+		if (!(pShieldData->IsAvailable() && pShieldData->IsOnline()))
 			return 0;
 
 		const int nDamageLeft = pShieldData->ReceiveDamage(args);
@@ -33,7 +33,7 @@ DEFINE_HOOK(7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 5)
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	if (const auto pShieldData = pExt->ShieldData.get())
 	{
-		if (pShieldData->IsAvailable() && pShieldData->GetHP())
+		if (pShieldData->IsAvailable() && pShieldData->GetHP() && pShieldData->IsOnline())
 			return 0x7019E3;
 	}
 
@@ -67,7 +67,7 @@ DEFINE_HOOK(708AEB, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_Should
 	{
 		if (const auto pShieldData = pExt->ShieldData.get())
 		{
-			if (pShieldData->IsAvailable() && pShieldData->GetHP())
+			if (pShieldData->IsAvailable() && pShieldData->GetHP() && pShieldData->IsOnline())
 			{
 				R->EAX(TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType())->Shield->Armor);
 				return R->Origin() + 6;
@@ -118,7 +118,7 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
 	{
 		if (const auto pShieldData = pExt->ShieldData.get())
 		{
-			if (pShieldData->IsAvailable() && pShieldData->GetHP())
+			if (pShieldData->IsAvailable() && pShieldData->GetHP() && pShieldData->IsOnline())
 			{
 				if (pThis->GetWeapon(1))
 				{
