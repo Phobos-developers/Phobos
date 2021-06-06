@@ -18,7 +18,7 @@ This page lists the history of changes across stable Phobos releases and also al
 ### 0.2
 
 New:
-- Shield logic for TechnoTypes (by Uranusian, secsome) with warhead additions (by Starkku)
+- Shield logic for TechnoTypes (by Uranusian, secsome, Belonit) with warhead additions (by Starkku)
 - Custom Radiation Types (by AlexB, Otamaa, Belonit, Uranusian)
 - New ScriptType actions `71 Timed Area Guard`, `72 Load Onto Transports`, `73 Wait until ammo is full` (by FS-21)
 - Ore drills now have customizable ore type, range, ore growth stage and amount of cells generated (by Kerbiter)
