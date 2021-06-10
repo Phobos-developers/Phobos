@@ -1,6 +1,7 @@
 #include "Body.h"
 
 template<> const DWORD Extension<ScenarioClass>::Canary = 0xABCD1595;
+std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
 void ScenarioExt::Allocate(ScenarioClass* pThis)
 {
@@ -26,7 +27,7 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	INI_EX exINI(pINI);
 
-
+	UNREFERENCED_PARAMETER(pThis);
 
 }
 
