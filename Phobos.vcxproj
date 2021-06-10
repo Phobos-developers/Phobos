@@ -28,6 +28,7 @@
     <ClCompile Include="src\Ext\House\Body.cpp" />
     <ClCompile Include="src\Ext\RadSite\Body.cpp" />
     <ClCompile Include="src\Ext\RadSite\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Scenario\Body.cpp" />
     <ClCompile Include="src\Ext\Script\Body.cpp" />
     <ClCompile Include="src\Ext\Script\Hooks.cpp" />
     <ClCompile Include="src\Ext\Rules\Body.cpp" />
@@ -90,6 +91,7 @@
     <ClInclude Include="src\Ext\Bullet\Body.h" />
     <ClInclude Include="src\Ext\House\Body.h" />
     <ClInclude Include="src\Ext\RadSite\Body.h" />
+    <ClInclude Include="src\Ext\Scenario\Body.h" />
     <ClInclude Include="src\Ext\Script\Body.h" />
     <ClInclude Include="src\Ext\Rules\Body.h" />
     <ClInclude Include="src\Ext\SWType\Body.h" />
