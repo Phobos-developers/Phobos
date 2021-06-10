@@ -6,7 +6,7 @@
 #include <Ext/_Container.hpp>
 #include <Utilities/TemplateDef.h>
 
-#include <vector>
+#include <map>
 
 class ScenarioExt
 {
@@ -16,7 +16,7 @@ public:
 	class ExtData final : public Extension<ScenarioClass>
 	{
 	public:
-		std::vector<int> Waypoints;
+		std::map<int, CellStruct> Waypoints;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject),
 			Waypoints {}
