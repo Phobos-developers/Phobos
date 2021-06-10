@@ -23,11 +23,18 @@ void ScenarioExt::LoadFromINIFile(ScenarioClass* pThis, CCINIClass* pINI)
 
 void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
-	auto pThis = this->OwnerObject();
+	// auto pThis = this->OwnerObject();
 
-	INI_EX exINI(pINI);
+	// INI_EX exINI(pINI);
 
-	UNREFERENCED_PARAMETER(pThis);
+	for (int i = 0; i < pINI->GetKeyCount("Waypoints"); ++i)
+	{
+		const auto pName = pINI->GetKeyName("Waypoints", i);
+		int nCoord = pINI->ReadInteger("Waypoints", pName, -1);
+		if (nCoord == -1)
+			Debug::FatalErrorAndExit("[Fatal Error] Invalid waypoint read! Key name = %s", pName);
+		Global()->Waypoints.push_back(nCoord);
+	}
 
 }
 

@@ -6,6 +6,8 @@
 #include <Ext/_Container.hpp>
 #include <Utilities/TemplateDef.h>
 
+#include <vector>
+
 class ScenarioExt
 {
 public:
@@ -14,8 +16,12 @@ public:
 	class ExtData final : public Extension<ScenarioClass>
 	{
 	public:
-		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
+		std::vector<int> Waypoints;
+
+		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject),
+			Waypoints {}
 		{
+
 		}
 
 		virtual ~ExtData() = default;
