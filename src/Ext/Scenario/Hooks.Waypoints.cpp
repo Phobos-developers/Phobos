@@ -64,7 +64,7 @@ DEFINE_HOOK(68BDC0, ScenarioClass_ReadWaypoints, 8)
 	{
 		const auto pName = pINI->GetKeyName("Waypoints", i);
 		int id;
-		if (sscanf_s(pName, "%d", &id) != 1)
+		if (sscanf_s(pName, "%d", &id) != 1 || id < 0)
 			Debug::Log("[Developer Warning] Failed to parse waypoint %s.\n", pName);
 		int nCoord = pINI->ReadInteger("Waypoints", pName, 0);
 		
@@ -173,4 +173,14 @@ DEFINE_HOOK(68BF90, ScenarioClass_Get_Waypoint_As_String, 6)
 {
 	R->EAX(0x889F64);
 	return 0x68BFD7;
+}
+
+DEFINE_HOOK(688380, ScenStruct_ScenStruct, 5)
+{
+	GET(DynamicVectorClass<CellStruct>*, pThis, ECX);
+
+	// TODO
+
+	R->EAX(pThis);
+	return 0x6886AC;
 }
