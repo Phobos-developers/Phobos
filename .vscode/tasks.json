@@ -4,15 +4,24 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build Phobos development build",
+            "label": "Build Phobos debug build",
             "type": "process",
             "windows": {
-                "command": "scripts/build_devbuild.bat"
+                "command": "scripts/build_debug.bat"
             },
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Build Phobos development build",
+            "type": "process",
+            "windows": {
+                "command": "scripts/build_devbuild.bat"
+            },
+            "group": "build",
             "problemMatcher": "$msCompile"
         },
         {
