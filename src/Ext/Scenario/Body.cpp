@@ -35,6 +35,7 @@ template <typename T>
 void ScenarioExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->Waypoints)
 		;
 }
 
