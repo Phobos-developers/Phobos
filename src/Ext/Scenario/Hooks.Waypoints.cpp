@@ -175,12 +175,38 @@ DEFINE_HOOK(68BF90, ScenarioClass_Get_Waypoint_As_String, 6)
 	return 0x68BFD7;
 }
 
-DEFINE_HOOK(688380, ScenStruct_ScenStruct, 5)
+DEFINE_HOOK(6883B7, ScenStruct_ScenStruct_1, 6)
 {
-	GET(DynamicVectorClass<CellStruct>*, pThis, ECX);
+	GET(int, nStartingCount, EAX);
+	GET(int, nCount, ESI);
 
-	// TODO
+	for (int i = 0; i < 8; ++i)
+	{
+		if (ScenarioExt::Global()->Waypoints.find(i) != ScenarioExt::Global()->Waypoints.end())
+		{
+			++nStartingCount;
+			++nCount;
+		}
+		else
+			break;
+	}
+	
+	R->EAX(nStartingCount);
+	R->ESI(nCount);
 
-	R->EAX(pThis);
-	return 0x6886AC;
+	return 0x6883EB;
+}
+
+DEFINE_HOOK(68843B, ScenStruct_ScenStruct_2, 6)
+{
+	REF_STACK(DynamicVectorClass<CellStruct>, waypoints, STACK_OFFS(0x40, 0x18));
+	REF_STACK(CellStruct, buffer, STACK_OFFS(0x40, 0x20));
+	GET(int, i, ESI);
+
+	if (!ScenarioExt::Global()->OwnerObject()->IsDefinedWaypoint(i))
+	{
+		waypoints.AddItem(ScenarioExt::Global()->Waypoints[i]);
+		Debug::Log("Multiplayer start waypoint found at cell %d,%d\n", buffer.X, buffer.Y);
+	}
+	return 0x6884EF;
 }
