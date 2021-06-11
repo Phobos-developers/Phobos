@@ -63,6 +63,9 @@ DEFINE_HOOK(68BDC0, ScenarioClass_ReadWaypoints, 8)
 	for (int i = 0; i < pINI->GetKeyCount("Waypoints"); ++i)
 	{
 		const auto pName = pINI->GetKeyName("Waypoints", i);
+		int id;
+		if (sscanf_s(pName, "%d", &id) != 1)
+			Debug::FatalErrorAndExit("[Fatal Error] Failed to parse waypoint %s.\n", pName);
 		int nCoord = pINI->ReadInteger("Waypoints", pName, 0);
 		
 		if (nCoord)
@@ -72,11 +75,11 @@ DEFINE_HOOK(68BDC0, ScenarioClass_ReadWaypoints, 8)
 			if (auto pCell = MapClass::Instance->TryGetCellAt(buffer))
 				pCell->Flags |= cf_IsWaypoint;
 			else
-				Debug::FatalErrorAndExit("[Fatal Error] Waypoint %d : [%d, %d] out of the map!\n", i, buffer.X, buffer.Y);
-			ScenarioExt::Global()->Waypoints[i] = buffer;
+				Debug::FatalErrorAndExit("[Fatal Error] Waypoint %d : [%d, %d] out of the map!\n", id, buffer.X, buffer.Y);
+			ScenarioExt::Global()->Waypoints[id] = buffer;
 		}
 		else
-			Debug::FatalErrorAndExit("[Fatal Error] Invalid waypoint %d!\n", i);
+			Debug::FatalErrorAndExit("[Fatal Error] Invalid waypoint %d!\n", id);
 	}
 
 	return 0x68BE8C;
