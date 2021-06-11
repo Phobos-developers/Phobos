@@ -30,7 +30,7 @@ DEFINE_HOOK(68BCE4, ScenarioClass_Get_Waypoint_Cell_0, 7)
 
 DEFINE_HOOK(68BD08, ScenarioClass_Get_Waypoint, 7)
 {
-	GET_STACK(int, nWaypoint, STACK_OFFS(0x10, 0x8));
+	GET_STACK(int, nWaypoint, STACK_OFFS(0x10, -0x8));
 
 	R->ECX(&ScenarioExt::Global()->Waypoints[nWaypoint]);
 
@@ -102,11 +102,11 @@ DEFINE_HOOK(68BE90, ScenarioClass_Write_Waypoints, 5)
 	return 0x68BF1F;
 }
 
-DEFINE_HOOK(68BF30, ScenarioClass_Set_Default_Waypoint, A)
-{
-	Debug::Log(__FUNCTION__" called! Caller = %p\n", R->Stack32(0x0));
-	return 0;
-}
+//DEFINE_HOOK(68BF30, ScenarioClass_Set_Default_Waypoint, A)
+//{
+//	Debug::Log(__FUNCTION__" called! Caller = %p\n", R->Stack32(0x0));
+//	return 0;
+//}
 
 DEFINE_HOOK(68BF50, ScenarioClass_Set_Waypoint, 8)
 {
@@ -118,10 +118,13 @@ DEFINE_HOOK(68BF50, ScenarioClass_Set_Waypoint, 8)
 	return 0x68BF5F;
 }
 
-DEFINE_HOOK(68BF70, ScenarioClass_Get_Waypoint_Cell, B)
+DEFINE_HOOK(68BF74, ScenarioClass_Get_Waypoint_Cell, 7)
 {
-	Debug::Log(__FUNCTION__" called! Caller = %p\n", R->Stack32(0x0));
-	return 0;
+	GET_STACK(int, nWaypoint, 0x4);
+
+	R->ECX(&ScenarioExt::Global()->Waypoints[nWaypoint]);
+
+	return 0x68BF7B;
 }
 
 DEFINE_HOOK(763610, Waypoint_To_String, 5)
@@ -165,7 +168,7 @@ DEFINE_HOOK(763690, String_To_Waypoint, 7)
 	return 0x7636DF;
 }
 
-// shouldn't be invalid, I think - secsome
+// This function is really strange, it returns empty string if a wp is valid, but why? - secsome
 DEFINE_HOOK(68BF90, ScenarioClass_Get_Waypoint_As_String, 6)
 {
 	R->EAX(0x889F64);
