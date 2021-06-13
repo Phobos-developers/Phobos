@@ -8,7 +8,6 @@
 
 DEFINE_HOOK(68BCC0, ScenarioClass_Get_Waypoint_Location, B)
 {
-	// GET_STACK(CellStruct*, pCell, 0x4); in fact
 	GET_STACK(CellStruct*, pCell, 0x4);
 	GET_STACK(int, nWaypoint, 0x8);
 
@@ -46,7 +45,7 @@ DEFINE_HOOK(68BD60, ScenarioClass_Clear_All_Waypoints, 6)
 
 DEFINE_HOOK(68BD80, ScenarioClass_Is_Waypoint_Valid, 5)
 {
-	GET(int, nWaypoint, EAX);
+	GET_STACK(int, nWaypoint, 0x4);
 	auto const& waypoints = ScenarioExt::Global()->Waypoints;
 
 	R->AL(nWaypoint >= 0 && waypoints.find(nWaypoint) != waypoints.end());
@@ -203,10 +202,63 @@ DEFINE_HOOK(68843B, ScenStruct_ScenStruct_2, 6)
 	REF_STACK(CellStruct, buffer, STACK_OFFS(0x40, 0x20));
 	GET(int, i, ESI);
 
-	if (!ScenarioExt::Global()->OwnerObject()->IsDefinedWaypoint(i))
+	if (!ScenarioClass::Instance->IsDefinedWaypoint(i))
 	{
 		waypoints.AddItem(ScenarioExt::Global()->Waypoints[i]);
 		Debug::Log("Multiplayer start waypoint found at cell %d,%d\n", buffer.X, buffer.Y);
 	}
 	return 0x6884EF;
+}
+
+//DEFINE_HOOK(6D6070, Tactical_SetTacticalPosition, 5)
+//{
+//	GET_STACK(DWORD, dwCaller, 0x0);
+//	GET_STACK(CoordStruct*, pCoord, 0x4);
+//
+//	CellStruct cell = CellClass::Coord2Cell(*pCoord);
+//	Debug::Log(__FUNCTION__ "Caller = %p Cell = (%d,%d)\n", dwCaller, cell.X, cell.Y);
+//
+//	return 0;
+//}
+
+DEFINE_HOOK(684CB7, Scen_Waypoint_Call_1, 7)
+{
+	GET(int, nWaypoint, EAX);
+
+	CellStruct cell = ScenarioExt::Global()->Waypoints[nWaypoint];
+
+	R->EAX(*(int*)&cell);
+	return 0x684CBE;
+}
+
+DEFINE_HOOK(6855E4, Scen_Waypoint_Call_2, 5)
+{
+	ScenarioExt::Global()->Waypoints.clear();
+
+	return 0x6855FC;
+}
+
+DEFINE_HOOK(68AFE7, Scen_Waypoint_Call_3, 5)
+{
+	GET(int, nWaypoint, EDI);
+
+	CellStruct cell = ScenarioExt::Global()->Waypoints[nWaypoint];
+
+	R->EDX(*(int*)&cell);
+	return 0x68AFEE;
+}
+
+DEFINE_HOOK(68AF45, Scen_Waypoint_Call_4, 6)
+{
+	int nStartingPoints = 0;
+	for (int i = 0; i < 8; ++i)
+	{
+		if (ScenarioClass::Instance->IsDefinedWaypoint(i))
+			++nStartingPoints;
+		else
+			break;
+	}
+	
+	R->EDX(nStartingPoints);
+	return 0x68AF86;
 }
