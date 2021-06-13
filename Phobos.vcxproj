@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -17,7 +17,7 @@
   <ItemGroup>
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\Dummy.h" />
-    <ClCompile Include="src\Enum\RadTypeClass.cpp" />
+    <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Hooks.cpp" />
     <ClCompile Include="src\Ext\Building\Body.cpp" />
@@ -59,7 +59,6 @@
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Body.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Hooks.cpp" />
-    <ClCompile Include="src\Ext\_Container.cpp" />
     <ClCompile Include="src\Misc\Stream.cpp" />
     <ClCompile Include="src\Misc\Swizzle.cpp" />
     <ClCompile Include="src\Phobos.cpp" />
@@ -80,8 +79,8 @@
     <ClInclude Include="src\Commands\NextIdleHarvester.h" />
     <ClInclude Include="src\Commands\ObjectInfo.h" />
     <ClInclude Include="src\Commands\Commands.h" />
-    <ClInclude Include="src\Enum\RadTypeClass.h" />
-    <ClInclude Include="src\Enum\_Enumerator.hpp" />
+    <ClInclude Include="src\New\Type\RadTypeClass.h" />
+    <ClInclude Include="src\Utilities\Enumerable.h" />
     <ClInclude Include="src\ExtraHeaders\CCToolTip.h" />
     <ClInclude Include="src\ExtraHeaders\Matrix3D.h" />
     <ClInclude Include="src\ExtraHeaders\Themes.h" />
@@ -110,10 +109,10 @@
     <ClInclude Include="src\Phobos.version.h" />
     <ClInclude Include="src\Utilities\Concepts.h" />
     <ClInclude Include="src\Utilities\Constructs.h" />
+    <ClInclude Include="src\Utilities\Container.h" />
     <ClInclude Include="src\Misc\Debug.h" />
     <ClInclude Include="src\Ext\BuildingType\Body.h" />
     <ClInclude Include="src\Ext\WarheadType\Body.h" />
-    <ClInclude Include="src\Ext\_Container.hpp" />
     <ClInclude Include="src\Phobos.h" />
     <ClInclude Include="src\Utilities\Enum.h" />
     <ClInclude Include="src\Utilities\EnumFunctions.h" />

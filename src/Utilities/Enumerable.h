@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Phobos.CRT.h"
-#include "../Misc/Savegame.h"
-#include "../Utilities/Constructs.h"
+#include <Phobos.CRT.h>
+#include <Misc/Savegame.h>
+#include <Utilities/Constructs.h>
 
 #include <algorithm>
 #include <memory>

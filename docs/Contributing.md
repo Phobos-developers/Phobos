@@ -9,11 +9,13 @@ This page describes ways to help or contribute to Phobos and lists the contribut
 Assuming you've successfully cloned and built the project before getting here, you should end up with the following project structure:
 - `src/` - all the project's source code resides here.
   - `Commands/` - source code for new hotkey commands. Every command is a new class that inherits from `PhobosCommandClass` (defined in `Commands.h`) and is defined in a separate file with a few methods and then registered in `Commands.cpp`.
-  - `Enum/` - source code for new enumerated types (types that are declared with a list section in an INI, for example, radiation types) implemented in the project. Every enumerated type class inherits `Enumerable<T>` (where `T` is an enum. type class) class that is defined in `_Enumerator.hpp`.
+  - `New/` - source code for new ingame classes.
+    - `Type/` - new enumerated types (types that are declared with a list section in an INI, for example, radiation types) implemented in the project. Every enumerated type class inherits `Enumerable<T>` (where `T` is an enum. type class) class that is defined in `Enumerable.h`.
+    - `Entity/` - classes that represent ingame entities are located here.
   - `Ext/` - source code for vanilla engine class extensions. Each class extension is kept in a separate folder named after vanilla engine class name and contains the following:
     - `Body.h` and `Body.cpp` contain class and method definitions/declarations and common extension hooks. Each extension class must contain the following to work correctly:
-      - `ExtData` - extension data class definition which inherits `Extension<T>` from `_Container.cpp`/`_Container.hpp` (where `T` is the class that is being extended), which is the actual class that contains new data for vanilla classes;
-      - `ExtContainer` - a definition of a special map class to store and look up `ExtData` instances for base class instances which inherits `Container<T>` from `_Container.cpp`/`_Container.hpp` (where `T` is the extension data class);
+      - `ExtData` - extension data class definition which inherits `Extension<T>` from `Container.h` (where `T` is the class that is being extended), which is the actual class that contains new data for vanilla classes;
+      - `ExtContainer` - a definition of a special map class to store and look up `ExtData` instances for base class instances which inherits `Container<T>` from `Container.h` (where `T` is the extension data class);
       - `ExtMap` - a static instance of `ExtContainer` map;
       - constructor, destructor, serialization, deserialization and (for appropriate classes) INI reading hooks.
     - `Hooks.cpp` and `Hooks.*.cpp` contain non-common hooks to correctly patch in new custom logics.
@@ -21,7 +23,7 @@ Assuming you've successfully cloned and built the project before getting here, y
   - `Misc/` - uncategorized source code, including hooks that don't belong to an extension class.
   - `Utilities/` - common code that is used across the project.
   - `Phobos.cpp`/`Phobos.h` - extension bootstrapping code.
-  - `Phobos.Ext.cpp` - contains ~~dark C++ magic~~ common processing code new or extended classes. If you define a new or extended class you have to add your new class into `MassActions` global variable type declaration in this file.
+  - `Phobos.Ext.cpp` - contains common processing code new or extended classes. If you define a new or extended class you have to add your new class into `MassActions` global variable type declaration in this file.
 - `YRpp/` - contains the header files to interact with / describe types included in game binary and also macros to write hooks using Syringe. Included as a submodule.
 
 ### Code styleguide
