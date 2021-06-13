@@ -34,6 +34,15 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "Build Phobos docs with Sphinx",
+            "type": "process",
+            "windows": {
+                "command": "scripts/build_docs.bat",
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
             "label": "Cleanup build folders",
             "type": "process",
             "windows": {
@@ -41,6 +50,24 @@
             },
             "group": "none",
             "problemMatcher": []
+        },
+        {
+            "label": "Setup VSCode C++ extension initial configuration",
+            "type": "process",
+            "windows": {
+                "command": "scripts/configure_vscode_cpp.bat"
+            },
+            "group": "none",
+            "problemMatcher": [],
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "presentation": {
+                "echo": false,
+                "reveal": "never",
+                "panel": "shared",
+                "showReuseMessage": false
+            }
         }
     ]
 }
