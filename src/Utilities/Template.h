@@ -37,7 +37,7 @@
 #include <MouseClass.h>
 #include <FootClass.h>
 
-#include "../Misc/Savegame.h"
+#include <Misc/Savegame.h>
 
 class INI_EX;
 

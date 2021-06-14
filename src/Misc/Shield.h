@@ -2,7 +2,7 @@
 
 #include <GeneralStructures.h>
 #include <SpecificStructures.h>
-#include "../Ext/TechnoType/Body.h"
+#include <Ext/TechnoType/Body.h>
 
 class TechnoClass;
 class WarheadTypeClass;

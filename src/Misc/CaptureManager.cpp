@@ -5,13 +5,13 @@
 #include <BuildingClass.h>
 #include <AnimClass.h>
 
-#include "../Ext/TechnoType/Body.h"
+#include <Ext/TechnoType/Body.h>
 
 bool CaptureManager::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTarget)
 {
 	if (pManager->MaxControlNodes == 1)
 		return pManager->CanCapture(pTarget);
-	
+
 	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType());
 	if (pTechnoTypeExt && pTechnoTypeExt->MultiMindControl_ReleaseVictim)
 	{
@@ -21,7 +21,7 @@ bool CaptureManager::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTar
 		pManager->MaxControlNodes -= 1;
 		return result;
 	}
-	
+
 	return pManager->CanCapture(pTarget);
 }
 

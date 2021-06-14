@@ -10,14 +10,14 @@
 #include <ScriptClass.h>
 #include <Helpers/Enumerators.h>
 
-#include "../Ext/TechnoType/Body.h"
-#include "../Ext/Techno/Body.h"
+#include <Ext/TechnoType/Body.h>
+#include <Ext/Techno/Body.h>
 
 // #53 New debug feature for AI scripts
 class ObjectInfoCommandClass : public PhobosCommandClass
 {
 public:
-	
+
 	virtual const char* GetName() const override
 	{
 		return "Dump ObjectInfo";

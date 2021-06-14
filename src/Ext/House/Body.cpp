@@ -1,6 +1,6 @@
 #include "Body.h"
-#include "../TechnoType/Body.h"
-#include "../Techno/Body.h"
+#include <Ext/TechnoType/Body.h>
+#include <Ext/Techno/Body.h>
 //Static init
 /*
 template<> const DWORD Extension<HouseClass>::Canary = 0x11111111;

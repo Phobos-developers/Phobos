@@ -1,6 +1,6 @@
 #include "Body.h"
-#include "../WarheadType/Body.h"
-#include "../../Misc/CaptureManager.h"
+#include <Ext/WarheadType/Body.h>
+#include <Misc/CaptureManager.h>
 
 
 #include <TechnoClass.h>

@@ -1,6 +1,6 @@
 #include "Swizzle.h"
 
-#include "../Phobos.h"
+#include <Phobos.h>
 
 #include <SwizzleManagerClass.h>
 

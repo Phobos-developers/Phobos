@@ -1,8 +1,8 @@
 #include "Body.h"
 
-#include "../TechnoType/Body.h"
-#include "../Techno/Body.h"
-#include "../Bullet/Body.h"
+#include <Ext/TechnoType/Body.h>
+#include <Ext/Techno/Body.h>
+#include <Ext/Bullet/Body.h>
 
 DEFINE_HOOK(6FF660, TechnoClass_FireBullet, 6)
 {

@@ -3,9 +3,9 @@
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
-#include "../../Utilities/TemplateDef.h"
+#include <Utilities/TemplateDef.h>
 
-#include "../TechnoType/Body.h"
+#include <Ext/TechnoType/Body.h>
 
 class BuildingExt
 {

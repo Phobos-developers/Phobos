@@ -1,6 +1,6 @@
 #include <Helpers/Macro.h>
 #include <LoadOptionsClass.h>
-#include "../Phobos.h"
+#include <Phobos.h>
 
 DEFINE_HOOK(67D04E, Game_Save_SavegameInformation, 7)
 {

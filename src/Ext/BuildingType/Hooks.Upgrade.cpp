@@ -2,7 +2,7 @@
 #include <BuildingClass.h>
 #include <BuildingTypeClass.h>
 #include <HouseClass.h>
-#include "../../Utilities/EnumFunctions.h"
+#include <Utilities/EnumFunctions.h>
 #include "Body.h"
 
 bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner) {

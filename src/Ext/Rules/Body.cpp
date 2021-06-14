@@ -1,6 +1,6 @@
 #include "Body.h"
-#include "../Side/Body.h"
-#include "../../Utilities/TemplateDef.h"
+#include <Ext/Side/Body.h>
+#include <Utilities/TemplateDef.h>
 #include <New/Type/RadTypeClass.h>
 #include <FPSCounter.h>
 #include <GameOptionsClass.h>

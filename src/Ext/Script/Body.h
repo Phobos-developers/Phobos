@@ -6,7 +6,7 @@
 #include <HouseClass.h>
 
 #include <Utilities/Container.h>
-#include "../../Phobos.h"
+#include <Phobos.h>
 
 class ScriptExt
 {

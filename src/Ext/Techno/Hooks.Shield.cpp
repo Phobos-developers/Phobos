@@ -2,8 +2,8 @@
 #include <SpecificStructures.h>
 
 #include <Utilities/GeneralUtils.h>
-#include "../TechnoType/Body.h"
-#include "../WarheadType/Body.h"
+#include <Ext/TechnoType/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 // #issue 88 : shield logic
 DEFINE_HOOK(701900, TechnoClass_ReceiveDamage_Shield, 6)

@@ -2,7 +2,7 @@
 
 #include "Body.h"
 
-#include "../TechnoType/Body.h"
+#include <Ext/TechnoType/Body.h>
 
 DEFINE_HOOK(6F9E50, TechnoClass_AI, 5)
 {
