@@ -17,22 +17,7 @@ void RadTypeClass::AddDefaults()
 	FindOrAllocate("Radiation");
 }
 
-void RadTypeClass::LoadListSection(CCINIClass * pINI)
-{
-	for (int i = 0; i < pINI->GetKeyCount(GetMainSection()); ++i)
-	{
-		if (pINI->ReadString(GetMainSection(), pINI->GetKeyName(GetMainSection(), i), "", Phobos::readBuffer))
-		{
-			FindOrAllocate(Phobos::readBuffer);
-			Debug::Log("RadTypeClass :: LoadListSection check [%s] \n", Phobos::readBuffer);
-		}
-	}
-
-	for (auto &radType: Array)
-		radType->LoadFromINI(pINI);
-}
-
-void RadTypeClass::LoadFromINI(CCINIClass * pINI)
+void RadTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* section = this->Name;
 
@@ -52,7 +37,7 @@ void RadTypeClass::LoadFromINI(CCINIClass * pINI)
 }
 
 template <typename T>
-void RadTypeClass::Serialize(T & Stm)
+void RadTypeClass::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->DurationMultiple)
@@ -69,12 +54,12 @@ void RadTypeClass::Serialize(T & Stm)
 		;
 };
 
-void RadTypeClass::LoadFromStream(PhobosStreamReader & Stm)
+void RadTypeClass::LoadFromStream(PhobosStreamReader& Stm)
 {
 	this->Serialize(Stm);
 }
 
-void RadTypeClass::SaveToStream(PhobosStreamWriter & Stm)
+void RadTypeClass::SaveToStream(PhobosStreamWriter& Stm)
 {
 	this->Serialize(Stm);
 }

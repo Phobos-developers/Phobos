@@ -17,7 +17,7 @@ private:
 	Nullable<int> LevelMax;
 	Nullable<int> LevelDelay;
 	Nullable<int> LightDelay;
-	Nullable<WarheadTypeClass *> RadWarhead;
+	Nullable<WarheadTypeClass*> RadWarhead;
 	Nullable<ColorStruct> RadSiteColor;
 	Nullable<double> LightFactor;
 	Nullable<double> TintFactor;
@@ -41,8 +41,6 @@ public:
 	virtual ~RadTypeClass() override = default;
 
 	static void AddDefaults();
-
-	static void LoadListSection(CCINIClass * pINI);
 
 	WarheadTypeClass* GetWarhead() const
 	{
@@ -99,7 +97,7 @@ public:
 		return this->TintFactor.Get(RulesClass::Instance->RadTintFactor);
 	}
 
-	virtual void LoadFromINI(CCINIClass *pINI) override;
+	virtual void LoadFromINI(CCINIClass* pINI) override;
 	virtual void LoadFromStream(PhobosStreamReader& Stm);
 	virtual void SaveToStream(PhobosStreamWriter& Stm);
 
