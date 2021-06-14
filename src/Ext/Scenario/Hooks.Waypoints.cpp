@@ -90,14 +90,13 @@ DEFINE_HOOK(68BE90, ScenarioClass_Write_Waypoints, 5)
 
 	pINI->Clear("Waypoints", nullptr);
 
-	for (size_t i = 0; i < ScenarioExt::Global()->Waypoints.size(); ++i)
+	for (const auto& pair : ScenarioExt::Global()->Waypoints)
 	{
-		const auto& cell = ScenarioExt::Global()->Waypoints[i];
 		char buffer[32];
-		sprintf_s(buffer, "%d", i);
-		pINI->WriteInteger("Waypoints", buffer, cell.X + 1000 * cell.Y, false);
+		sprintf_s(buffer, "%d", pair.first);
+		pINI->WriteInteger("Waypoints", buffer, pair.second.X + 1000 * pair.second.Y, false);
 	}
-
+	
 	return 0x68BF1F;
 }
 
