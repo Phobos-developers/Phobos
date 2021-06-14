@@ -6,6 +6,7 @@
         {
             "label": "Build Phobos debug build",
             "type": "process",
+            "command": [],
             "windows": {
                 "command": "scripts/build_debug.bat"
             },
@@ -18,6 +19,7 @@
         {
             "label": "Build Phobos development build",
             "type": "process",
+            "command": [],
             "windows": {
                 "command": "scripts/build_devbuild.bat"
             },
@@ -27,6 +29,7 @@
         {
             "label": "Build Phobos release build",
             "type": "process",
+            "command": [],
             "windows": {
                 "command": "scripts/build_release.bat"
             },
@@ -36,6 +39,7 @@
         {
             "label": "Build Phobos docs with Sphinx",
             "type": "process",
+            "command": [],
             "windows": {
                 "command": "scripts/build_docs.bat",
             },
@@ -45,6 +49,7 @@
         {
             "label": "Cleanup build folders",
             "type": "process",
+            "command": [],
             "windows": {
                 "command": "scripts/clean.bat"
             },
@@ -54,6 +59,7 @@
         {
             "label": "Setup VSCode C++ extension initial configuration",
             "type": "process",
+            "command": [],
             "windows": {
                 "command": "scripts/configure_vscode_cpp.bat"
             },

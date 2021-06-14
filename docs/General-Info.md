@@ -17,7 +17,7 @@ You can hide the warning by specifying the build number after `-b=` as a command
 
 ## Saved games filtering
 
-Phobos fully supports saving and loading thanks to prototype code from publicly released Ares 0.A source and it implements it's own filtering which shouldn't conflict with Ares save filtering. Save games between different versions are incompatible due to changes to Phobos extension classes which are present in almost every build release. The filtering mechanism, hovewer, doesn't apply to nightly versions - those use latest development build number on which this nigthly is based on. While different nightly version saves may be listed, they are most likely incompatible in case there were changes to extension class fields.
+Phobos fully supports saving and loading thanks to prototype code from publicly released Ares 0.A source and it implements it's own filtering which shouldn't conflict with Ares save filtering. Save games between different versions are incompatible due to changes to Phobos extension classes which are present in almost every build release. The filtering mechanism, hovewer, doesn't apply to nightly versions - those use latest development build number on which this nightly is based on. While different nightly version saves may be listed, they are most likely incompatible in case there were changes to extension class fields.
 
 ## Compatibility
 

@@ -9,7 +9,11 @@
 		"visualstudioexptteam.vscodeintellicode",
 		"fernandoescolar.vscode-solution-explorer",
 		"editorconfig.editorconfig",
-		"codezombiech.gitignore"
+		"michelemelluso.gitignore",
+		"spmeesseman.vscode-taskexplorer",
+		"streetsidesoftware.code-spell-checker",
+		"gruntfuggly.todo-tree",
+		"shardulm94.trailing-spaces"
 	],
 	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
 	"unwantedRecommendations": [

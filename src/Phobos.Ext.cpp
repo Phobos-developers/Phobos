@@ -185,10 +185,10 @@ struct MassAction
 	}
 
 private:
-	// T: the method dispatcher class to call with each type 
+	// T: the method dispatcher class to call with each type
 	// TArgs: the arguments to call the method dispatcher's Process() method
 	// TType and TTypes: setup for recursion. TType is the first type, the one
-	//					to handle now. TTypes is the tail that is recursed into
+	// to handle now. TTypes is the tail that is recursively went into.
 
 	// this is the base case, no more types, nothing to call
 	template <typename T, typename... TArgs>

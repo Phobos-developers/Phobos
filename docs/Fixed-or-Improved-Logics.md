@@ -2,14 +2,14 @@
 
 This page describes all ingame logics that are fixed or improved in Phobos without adding anything significant.
 
-## Bugfixes and miscellanous
+## Bugfixes and miscellaneous
 
-- Fixed the bug when deploying mindcontrolled vehicle into a building permanently trasferred the control to the house which mindcontrolled it.
+- Fixed the bug when deploying mindcontrolled vehicle into a building permanently transferred the control to the house which mindcontrolled it.
 - Fixed the bug when units are already dead but still in map (for sinking, crashing, dying animation, etc.), they could die again.
 - Fixed the bug when cloaked Desolator was unable to fire his deploy weapon.
 - SHP debris shadows now respect the `Shadow` tag.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
-- `TurretOffset` tag for voxel turreted technos now accepts FLH (forward, lateral, height) values like `TurretOffset=F,L` or `TurretOffset=F,L,H`, which means turret location can be adjusted in all three axes.
+- `TurretOffset` tag for voxel turreted TechnoTypes now accepts FLH (forward, lateral, height) values like `TurretOffset=F,L` or `TurretOffset=F,L,H`, which means turret location can be adjusted in all three axes.
 - `InfiniteMindControl` with `Damage=1` can now control more than 1 unit.
 - Aircraft with `Fighter` set to false or those using strafing pattern (weapon projectile `ROT` is below 2) now take weapon's `Burst` into accord for all shots instead of just the first one.
 - `EMEffect` used for random AnimList pick is now replaced by a new tag `AnimList.PickRandom` with no side effect. (EMEffect=yes on AA inviso projectile deals no damage to units in movement)
@@ -64,7 +64,7 @@ SpawnsTiberium.CellsPerAnim=1 ; single int / comma-sep. range
 
 ## TechnoType
 
-### Customizable Teleport/Chrono Locomotor settings per TechnoType 
+### Customizable Teleport/Chrono Locomotor settings per TechnoType
 
 ![image](_static/images/cust-Chrono.gif)  
 *Chrono Legionnaire and Ronco (hero) from [YR:New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
@@ -74,8 +74,8 @@ SpawnsTiberium.CellsPerAnim=1 ; single int / comma-sep. range
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]            ; TechnoType 
-WarpOut=                ; Anim (played when Techno warping out)         
+[SOMETECHNO]            ; TechnoType
+WarpOut=                ; Anim (played when Techno warping out)
 WarpIn=                 ; Anim (played when Techno warping in)
 WarpAway=               ; Anim (played when Techno chronowarped by chronosphere)
 ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
@@ -88,7 +88,7 @@ ChronoDelay=            ; integer, delay after teleport for chronosphere
 
 ## Weapons
 
-### Togglable ElectricBolt visuals
+### Toggle-able ElectricBolt visuals
 
 - You can now specify individual ElectricBolt bolts you want to disable. Note that this is only a visual change.
 
