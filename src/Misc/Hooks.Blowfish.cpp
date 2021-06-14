@@ -1,5 +1,5 @@
-#include <Utilities\Macro.h>
-#include "Debug.h"
+#include <Utilities/Macro.h>
+#include <Utilities/Debug.h>
 
 HRESULT __stdcall Blowfish_Loader(
 	REFCLSID  rclsid,

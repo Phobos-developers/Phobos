@@ -44,7 +44,14 @@
 		"istream": "cpp",
 		"streambuf": "cpp",
 		"system_error": "cpp",
-		"xiosbase": "cpp"
+		"xiosbase": "cpp",
+		"ostream": "cpp",
+		"stdexcept": "cpp",
+		"xfacet": "cpp",
+		"xlocale": "cpp",
+		"xlocinfo": "cpp",
+		"xlocnum": "cpp",
+		"xmemory0": "cpp"
 	},
 	"C_Cpp.errorSquiggles": "Enabled",
 

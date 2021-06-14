@@ -1,4 +1,4 @@
-#include <Helpers\Macro.h>
+#include <Helpers/Macro.h>
 
 DEFINE_HOOK(527B0A, INIClass__Get_UUID, 8)
 {

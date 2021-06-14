@@ -1,5 +1,5 @@
 #include "GeneralUtils.h"
-#include <Misc/Debug.h>
+#include "Debug.h"
 #include <ScenarioClass.h>
 
 bool GeneralUtils::IsValidString(const char* str)

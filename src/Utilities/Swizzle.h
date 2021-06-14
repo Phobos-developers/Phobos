@@ -1,18 +1,19 @@
 #pragma once
 
-// Ares has hooked the SwizzleManagerClass, 
+// Ares has hooked the SwizzleManagerClass,
 // so what we need to do is just call the original functions.
 
 #include <type_traits>
 
 #include <Objidl.h>
 
-class PhobosSwizzle {
+class PhobosSwizzle
+{
 public:
 	static PhobosSwizzle Instance;
 
-	PhobosSwizzle() {};
-	~PhobosSwizzle() {};
+	PhobosSwizzle() { }
+	~PhobosSwizzle() { }
 
 	/**
 	* pass in the *address* of the pointer you want to have changed
@@ -27,29 +28,33 @@ public:
 	HRESULT RegisterChange(void* was, void* is);
 
 	template<typename T>
-	void RegisterPointerForChange(T*& ptr) {
+	void RegisterPointerForChange(T*& ptr)
+	{
 		auto pptr = const_cast<std::remove_cv_t<T>**>(&ptr);
 		this->RegisterForChange(reinterpret_cast<void**>(pptr));
-	};
+	}
 };
 
 template<typename T>
-struct is_swizzlable : public std::is_pointer<T>::type {};
+struct is_swizzlable : public std::is_pointer<T>::type { };
 
 struct Swizzle {
 	template <typename T>
-	Swizzle(T& object) {
+	Swizzle(T& object)
+	{
 		swizzle(object, typename is_swizzlable<T>::type());
 	}
 
 private:
 	template <typename TSwizzle>
-	void swizzle(TSwizzle& object, std::true_type) {
+	void swizzle(TSwizzle& object, std::true_type)
+	{
 		PhobosSwizzle::Instance.RegisterPointerForChange(object);
 	}
 
 	template <typename TSwizzle>
-	void swizzle(TSwizzle& object, std::false_type) {
+	void swizzle(TSwizzle& object, std::false_type)
+	{
 		// not swizzlable
 	}
 };

@@ -6,7 +6,7 @@
 #include <Ext/House/Body.h>
 #include <Ext/Side/Body.h>
 #include <Ext/Rules/Body.h>
-#include <Misc/Debug.h>
+#include <Utilities/Debug.h>
 
 DEFINE_HOOK(777C41, UI_ApplyAppIcon, 9)
 {

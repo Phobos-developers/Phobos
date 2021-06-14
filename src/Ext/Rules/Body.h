@@ -7,7 +7,7 @@
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
 
-#include <Misc/Debug.h>
+#include <Utilities/Debug.h>
 
 
 class AnimTypeClass;

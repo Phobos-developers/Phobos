@@ -47,8 +47,8 @@
 #include <Phobos.h>
 #include <Phobos.CRT.h>
 
-#include <Misc/Savegame.h>
-#include <Misc/Debug.h>
+#include "Savegame.h"
+#include "Debug.h"
 
 class ConvertClass;
 
