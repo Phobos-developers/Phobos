@@ -7,6 +7,7 @@
 #include <Ext/House/Body.h>
 #include <Ext/RadSite/Body.h>
 #include <Ext/Rules/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Ext/Script/Body.h>
 #include <Ext/Side/Body.h>
 #include <Ext/SWType/Body.h>
@@ -221,6 +222,7 @@ auto MassActions = MassAction <
 	HouseExt,
 	RadSiteExt,
 	RulesExt,
+	ScenarioExt,
 	ScriptExt,
 	SideExt,
 	SWTypeExt,

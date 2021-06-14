@@ -28,6 +28,8 @@
     <ClCompile Include="src\Ext\House\Body.cpp" />
     <ClCompile Include="src\Ext\RadSite\Body.cpp" />
     <ClCompile Include="src\Ext\RadSite\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Scenario\Body.cpp" />
+    <ClCompile Include="src\Ext\Scenario\Hooks.Waypoints.cpp" />
     <ClCompile Include="src\Ext\Script\Body.cpp" />
     <ClCompile Include="src\Ext\Script\Hooks.cpp" />
     <ClCompile Include="src\Ext\Rules\Body.cpp" />
@@ -90,6 +92,7 @@
     <ClInclude Include="src\Ext\Bullet\Body.h" />
     <ClInclude Include="src\Ext\House\Body.h" />
     <ClInclude Include="src\Ext\RadSite\Body.h" />
+    <ClInclude Include="src\Ext\Scenario\Body.h" />
     <ClInclude Include="src\Ext\Script\Body.h" />
     <ClInclude Include="src\Ext\Rules\Body.h" />
     <ClInclude Include="src\Ext\SWType\Body.h" />
@@ -134,7 +137,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{3FAF7126-F38C-4D1E-9973-C21A37870F60}</ProjectGuid>
     <RootNamespace>Phobos</RootNamespace>
-    <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>Phobos</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

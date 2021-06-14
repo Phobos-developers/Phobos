@@ -14,6 +14,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Aircraft with `Fighter` set to false or those using strafing pattern (weapon projectile `ROT` is below 2) now take weapon's `Burst` into accord for all shots instead of just the first one.
 - `EMEffect` used for random AnimList pick is now replaced by a new tag `AnimList.PickRandom` with no side effect. (EMEffect=yes on AA inviso projectile deals no damage to units in movement)
 - Script action `Move to cell` now obeys YR cell calculation now. Using `1000 * Y + X` as its cell value. (was `128 * Y + X` as it's RA leftover)
+- The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])
 
 ![image](_static/images/remember-target-after-deploying-01.gif)  
 *Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)*

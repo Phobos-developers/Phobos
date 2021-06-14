@@ -153,7 +153,7 @@ DEFINE_HOOK(667A30, RulesClass_DTOR, 5)
 	return 0;
 }
 
-IStream* g_pStm = nullptr;
+IStream* RulesExt::g_pStm = nullptr;
 
 DEFINE_HOOK_AGAIN(674730, RulesClass_SaveLoad_Prefix, 6)
 DEFINE_HOOK(675210, RulesClass_SaveLoad_Prefix, 5)
@@ -161,7 +161,7 @@ DEFINE_HOOK(675210, RulesClass_SaveLoad_Prefix, 5)
 	//GET(RulesClass*, pItem, ECX);
 	GET_STACK(IStream*, pStm, 0x4);
 
-	g_pStm = pStm;
+	RulesExt::g_pStm = pStm;
 
 	return 0;
 }
@@ -171,7 +171,7 @@ DEFINE_HOOK(678841, RulesClass_Load_Suffix, 7)
 	auto buffer = RulesExt::Global();
 
 	PhobosByteStream Stm(0);
-	if (Stm.ReadBlockFromStream(g_pStm))
+	if (Stm.ReadBlockFromStream(RulesExt::g_pStm))
 	{
 		PhobosStreamReader Reader(Stm);
 
@@ -192,7 +192,7 @@ DEFINE_HOOK(675205, RulesClass_Save_Suffix, 8)
 	writer.RegisterChange(buffer);
 
 	buffer->SaveToStream(writer);
-	saver.WriteBlockToStream(g_pStm);
+	saver.WriteBlockToStream(RulesExt::g_pStm);
 
 	return 0;
 }

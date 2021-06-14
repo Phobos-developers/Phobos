@@ -56,6 +56,8 @@ private:
 	static std::unique_ptr<ExtData> Data;
 
 public:
+	static IStream* g_pStm;
+
 	static void Allocate(RulesClass* pThis);
 	static void Remove(RulesClass* pThis);
 
