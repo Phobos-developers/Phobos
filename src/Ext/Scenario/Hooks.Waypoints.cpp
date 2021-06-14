@@ -175,21 +175,17 @@ DEFINE_HOOK(68BF90, ScenarioClass_Get_Waypoint_As_String, 6)
 
 DEFINE_HOOK(6883B7, ScenStruct_ScenStruct_1, 6)
 {
-	GET(int, nStartingCount, EAX);
 	GET(int, nCount, ESI);
 
+	// Waypoint 0-7 are used as multiplayer starting location
 	for (int i = 0; i < 8; ++i)
 	{
-		if (ScenarioExt::Global()->Waypoints.find(i) != ScenarioExt::Global()->Waypoints.end())
-		{
-			++nStartingCount;
-			++nCount;
-		}
-		else
+		if (!ScenarioClass::Instance->IsDefinedWaypoint(i))
 			break;
+		else
+			++nCount;
 	}
-	
-	R->EAX(nStartingCount);
+
 	R->ESI(nCount);
 
 	return 0x6883EB;
@@ -201,7 +197,7 @@ DEFINE_HOOK(68843B, ScenStruct_ScenStruct_2, 6)
 	REF_STACK(CellStruct, buffer, STACK_OFFS(0x40, 0x20));
 	GET(int, i, ESI);
 
-	if (!ScenarioClass::Instance->IsDefinedWaypoint(i))
+	if (ScenarioClass::Instance->IsDefinedWaypoint(i))
 	{
 		waypoints.AddItem(ScenarioExt::Global()->Waypoints[i]);
 		Debug::Log("Multiplayer start waypoint found at cell %d,%d\n", buffer.X, buffer.Y);
