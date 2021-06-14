@@ -18,6 +18,8 @@ DEFINE_HOOK(6F9E50, TechnoClass_AI, 5)
 	TechnoExt::ApplySpawn_LimitRange(pThis);
 	//
 	TechnoExt::ApplyCloak_Undeployed(pThis);
+	//
+	TechnoExt::ApplyTargetHealthCheck(pThis);
 
 	return 0;
 }

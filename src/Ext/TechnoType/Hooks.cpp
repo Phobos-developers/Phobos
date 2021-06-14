@@ -84,19 +84,19 @@ DEFINE_HOOK(43E0C4, BuildingClass_Draw_43DA80_TurretMultiOffset, 0)
 	return 0x43E0E8;
 }
 
-DEFINE_HOOK(6B7282, SpawnManagerClass_AI_PromoteSpawns, 5) 
+DEFINE_HOOK(6B7282, SpawnManagerClass_AI_PromoteSpawns, 5)
 {
 	GET(SpawnManagerClass*, pThis, ESI);
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
-	if (pTypeExt->Promote_IncludeSpawns) 
-	{
-		for (auto i : pThis->SpawnedNodes)
+
+	for (const auto pNode : pThis->SpawnedNodes)
+		if (const auto pSpawn = pNode->Unit)
 		{
-			if (i->Unit && i->Unit->Veterancy.Veterancy < pThis->Owner->Veterancy.Veterancy)
-				i->Unit->Veterancy.Add(pThis->Owner->Veterancy.Veterancy - i->Unit->Veterancy.Veterancy);
+			if (pTypeExt->Promote_IncludeSpawns)
+				if (pSpawn->Veterancy.Veterancy < pThis->Owner->Veterancy.Veterancy)
+					pSpawn->Veterancy.Add(pThis->Owner->Veterancy.Veterancy - pSpawn->Veterancy.Veterancy);
 		}
-	}
 
 	return 0;
 }
