@@ -221,6 +221,7 @@ auto MassActions = MassAction <
 	HouseExt,
 	RadSiteExt,
 	RulesExt,
+	ScenarioExt,
 	ScriptExt,
 	SideExt,
 	SWTypeExt,
