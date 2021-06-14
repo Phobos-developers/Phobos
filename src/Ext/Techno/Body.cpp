@@ -161,6 +161,47 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 	return false;
 }
 
+// [Vanilla Bug] Fix spawned AircraftTypes's targeting (enable Repair Drones) #222
+void TechnoExt::ApplyTargetHealthCheck(TechnoClass* pThis)
+{
+	if (const auto Targettech = abstract_cast<TechnoClass*>(pThis->Target))
+	{
+		if (auto manager = pThis->SpawnManager)
+		{
+			bool needreset = false;
+
+			// When Spawner using negative damage SpawnerWeapon , try to reset 
+			if (pThis->CombatDamage() < 0 && Targettech->GetHealthPercentage() >= RulesClass::Instance->ConditionGreen)
+				needreset = true;
+
+			//check when the nodes itself has negative damage
+			//if the spawner not using negative damage , this will be used a check instead
+			for (const auto nNode : manager->SpawnedNodes)
+			{
+				//fix for aircraft only atm
+				if (nNode->Unit && nNode->Unit->WhatAmI() == AbstractType::Aircraft)
+				{
+					auto Weapon = nNode->Unit->GetWeapon(0)->WeaponType;//only check primary
+					auto result = Weapon->Damage * GeneralUtils::GetWarheadVersusArmor(Weapon->Warhead, Targettech->GetTechnoType()->Armor);
+					/*
+					 * Dev Note : Techno->CombatDamage() check is not working for the spawneee (spawner nodes Unit)
+					 * Changing the method
+					*/
+
+					if (result < 0.0 && Targettech->GetHealthPercentage() >= RulesClass::Instance->ConditionGreen) //check negative damage for Attacker)
+						needreset = true;
+				}
+			}
+
+			if (needreset)
+			{
+				pThis->SetTarget(nullptr);
+				manager->ResetTarget();
+			}
+		}
+	}
+}
+
 bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
 {
 	for (auto pBld : pThis->GetTechnoType()->Dock)

@@ -96,13 +96,6 @@ DEFINE_HOOK(6B7282, SpawnManagerClass_AI_PromoteSpawns, 5)
 			if (pTypeExt->Promote_IncludeSpawns)
 				if (pSpawn->Veterancy.Veterancy < pThis->Owner->Veterancy.Veterancy)
 					pSpawn->Veterancy.Add(pThis->Owner->Veterancy.Veterancy - pSpawn->Veterancy.Veterancy);
-
-			// [Vanilla Bug] Fix spawned AircraftTypes's targeting (enable Repair Drones) #222
-			if (pSpawn->Target)
-				if (const auto pTarget = abstract_cast<TechnoClass*>(pSpawn->Target))
-					if (pSpawn->CombatDamage() < 0) //check negative damage for Attacker
-						if (pTarget->GetHealthPercentage() >= RulesClass::Instance->ConditionGreen)//health check
-							pThis->ResetTarget();
 		}
 
 	return 0;
