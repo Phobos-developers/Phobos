@@ -330,3 +330,31 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=73,0
 ```
+
+## AnimationType
+
+### Anim Create Unit
+
+![image](_static/images/animToUnit.gif)  
+
+- Be caution that `Animation` usually doesnt have `Owner` by default which causing unit created with `Civilian Owner` insted.
+- Using UnitType `DestroyAnim` is mostly recomended since it got rewritten to provide an `Owner` and various properties to the `Animation`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEUNIT]                  ; UnitType , as source unit
+StoreDeathFacingsForAnim=   ; boolean , store `SOMEUNIT` facings for `CreateUnit`
+DestroyAnim=SOMEANIM        ; list of `Animations` played after `SOMEUNIT` got destroyed
+```
+
+In `art.ini`:
+```ini
+[SOMEANIM]                  ; AnimationType
+CreateUnit=                 ; UnitType to create after this `Animation` dissapear
+CreateUnit.Force=			; boolean , `CreateUnit` will ignore game patfinding check
+CreateUnit.Facing=          ; short , `CreateUnit` facings from 0-255 or -1 random
+CreateUnit.UseDeathFacings= ; boolean , Use `SOMEUNIT` death facings for `CreateUnit` facings
+CreateUnit.Offset=          ; X,Y,Z  , Offset modifier for `CreateUnit` location
+CreateUnit.RemapAnim=       ; boolean , allow remap `SOMEANIM` to `Owner` color
+CreateUnit.Mission=	        ; Missions , `CreateUnit` missions after created , default to `Guard`
+```

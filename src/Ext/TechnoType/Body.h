@@ -47,6 +47,7 @@ public:
 		Nullable<AnimTypeClass*> Shield_RespawnAnim;
 		Nullable<AnimTypeClass*> Shield_HitAnim;
 
+		Valueable<bool> StoreDeathFacings;
 		Nullable<AnimTypeClass*> WarpOut;
 		Nullable<AnimTypeClass*> WarpIn;
 		Nullable<AnimTypeClass*> WarpAway;
@@ -75,6 +76,7 @@ public:
 			Promote_IncludeSpawns(false),
 			ImmuneToCrit(false),
 			MultiMindControl_ReleaseVictim(false),
+			StoreDeathFacings(false),
 
 			Shield_Strength(0),
 			Shield_Armor(0),
