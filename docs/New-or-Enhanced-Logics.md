@@ -124,7 +124,7 @@ BreaksShield=false             ; boolean
 
 - Infantry with `NotHuman` is hardcoded to play `Die1` sequence when die.
 - This feature is to remove that limitation and randomize sequence played between `Die1` to `Die5`.
-- Dont forget to tweak your `Infantry` sequence before apply this feature , or it will play invisible sequence.
+- Do not forget to tweak your `Infantry` sequence before apply this feature , or it will play invisible sequence.
 
 In `rulesmd.ini`:
 ```ini
@@ -284,6 +284,18 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]            ; Warhead
 SplashList=<none>        ; list of animations to play
 SplashList.PickRandom=no ; play a random animation from the list? boolean, defaults to no
+```
+
+### NotHuman InfDeath Anim
+
+- This feature is to specify `NotHuman` infantry die sequence anim for Warhead.
+- Each value is represent `Die` sequence anim for infantry (Game only accept 1 to 5).
+- Disabled (-1) mean that game will use `Die1` sequence as default or random if `NotHumanUseAllDeathSequence` is set.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                    ; Warhead
+NotHumanInfDeath=                ; integer (1 to 5), default to -1
 ```
 
 ## Projectiles
