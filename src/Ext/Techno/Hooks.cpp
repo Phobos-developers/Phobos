@@ -48,27 +48,8 @@ DEFINE_HOOK(5184FD, InfantryClass_TakeDamage_NotHumanCheck, 8)
 				{
 					WHSeq = WHSeq > 5 ? 5 : WHSeq;
 
-					switch (WHSeq)
-					{
-					case 1:
-						SeqInt = 11;
-						break;
-					case 2:
-						SeqInt = 12;
-						break;
-					case 3:
-						SeqInt = 13;
-						break;
-					case 4:
-						SeqInt = 14;
-						break;
-					case 5:
-						SeqInt = 15;
-						break;
-					default:
-						SeqInt = SeqInt;
-						break;
-					}
+					//Apply code suggestion by @secsome
+					SeqInt = 10 + WHSeq;
 				}
 			}
 		}
