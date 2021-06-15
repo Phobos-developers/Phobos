@@ -120,6 +120,19 @@ PenetratesShield=false         ; boolean
 BreaksShield=false             ; boolean
 ```
 
+### NotHuman Play more Die sequence Randomly
+
+- Infantry with `NotHuman` is hardcoded to play `Die1` sequence when die.
+- This feature is to remove that limitation and randomize sequence played between `Die1` to `Die5`.
+- Dont forget to tweak your `Infantry` sequence before apply this feature , or it will play invisible sequence.
+
+In `rulesmd.ini`:
+```ini
+[SOMEINFANTRY]                   ; TechnoType Infantry
+NotHuman=yes                     ; Required !
+NotHumanUseAllDeathSequence=yes  ; boolean , to enable this feature
+```
+
 ## Weapons
 
 ### Strafing aircraft weapon customization
