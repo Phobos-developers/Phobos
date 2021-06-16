@@ -79,41 +79,44 @@ DEFINE_HOOK(702299, TechnoClass_ReceiveDamage_DebrisTypes, A)
 	auto &DTypes = type->DebrisTypes;
 	auto &DTypesMax = type->DebrisMaximums;
 
-	auto max = type->MaxDebris -1;
+	//to enable legacy way , spawn debris
+	//some modder may use this as feature
+	if (DTypesMax.Count == 1 && DTypesMax.GetItem(0) > 0 && DTypes.Count > 0)
+		return 0;
+
+	auto max = type->MaxDebris - 1;
 	auto random = ScenarioClass::Instance->Random.RandomRanged(type->MinDebris, max);
 
-	if (DTypes.Count > 0)
+	if (DTypes.Count > 0 && DTypesMax.Count > 0)
 	{
 		int current = 0;
-		if (DTypesMax.Count > 0)
+		do
 		{
-			do
+			if (DTypesMax.GetItem(current) > 0) //check if the next member is eligible to spawn
 			{
-				if (DTypesMax.GetItem(current) > 0) //check if the next member is eligible to spawn
+				auto maxallow = DTypesMax.GetItem(current);
+				maxallow = maxallow > max ? max : maxallow;
+
+				int randAgain = ScenarioClass::Instance->Random.Random() % (maxallow + 1);
+
+				randAgain = randAgain > maxallow ? maxallow : randAgain;//dont allow spawn debris out of the Spesifc maximum value 
+				random -= randAgain;
+
+				auto pAtype = DTypes.GetItem(current);
+				for (; randAgain; --randAgain)
 				{
-					auto maxallow = DTypesMax.GetItem(current);
-					maxallow = maxallow > max ? max : maxallow;
-
-					int randAgain = ScenarioClass::Instance->Random.Random() % (maxallow + 1 );
-
-					randAgain = randAgain > maxallow ? maxallow : randAgain;//dont allow spawn debris out of the Spesifc maximum value 
-					random -= randAgain;
-
-					auto pAtype = DTypes.GetItem(current);
-					for (; randAgain; --randAgain)
-					{
-						auto coords = pTech->GetCoords();
-						GameCreate<VoxelAnimClass>(pAtype, &coords, pTech->Owner);
-					}
-					if (random < 0)
-						break;
+					auto coords = pTech->GetCoords();
+					GameCreate<VoxelAnimClass>(pAtype, &coords, pTech->Owner);
 				}
-				++current;
-			} while (current < type->DebrisTypes.Count);
-		}
+				if (random < 0)
+					break;
+			}
+			++current;
+
+		} while (current < DTypes.Count);
+
 	}
 
-	random = random < 0 ? 0 : random;
 	R->EBX(random); //the rest of the value will be used on next function chain which check EBX in order to spawn more debris 
 
 	return 0x7023E5;
