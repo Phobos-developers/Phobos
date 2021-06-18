@@ -3,6 +3,9 @@
 #include <TechnoClass.h>
 #include <FootClass.h>
 #include <UnitClass.h>
+#include <Utilities/Debug.h>
+
+
 //Replace: checking of HasExtras = > checking of (HasExtras && Shadow)
 DEFINE_HOOK(423365, Phobos_BugFixes_SHPShadowCheck, 8)
 {
@@ -58,6 +61,19 @@ DEFINE_HOOK(737D57, UnitClass_ReceiveDamage_DyingFix, 7)
 
 	if (result != DamageState::PostMortem && pThis->DeathFrameCounter > 0)
 		R->EAX(DamageState::PostMortem);
+
+	return 0;
+}
+
+DEFINE_HOOK(4C7518, EventClass_Execute_StopUnitDeployFire, 9)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pThis->WhatAmI() == AbstractType::Unit && pThis->CurrentMission == Mission::Unload &&
+		pThis->GetTechnoType()->DeployFire && !static_cast<UnitClass*>(pThis)->Type->IsSimpleDeployer)
+	{
+		pThis->QueueMission(Mission::Guard, true);
+	}
 
 	return 0;
 }

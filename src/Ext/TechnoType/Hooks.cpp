@@ -100,3 +100,25 @@ DEFINE_HOOK(6B7282, SpawnManagerClass_AI_PromoteSpawns, 5)
 
 	return 0;
 }
+
+DEFINE_HOOK(73DD12, UnitClass_Mission_Unload_DeployFire, 6)
+{
+	enum { ReturnFromFunction = 0x73DD3C };
+
+	GET(UnitClass*, pThis, ESI);
+
+	int weaponIndex = pThis->GetTechnoType()->DeployFireWeapon;
+
+	if (pThis->GetFireError(pThis->Target, weaponIndex, true) == FireError::OK)
+	{
+		pThis->Fire(pThis->Target, weaponIndex);
+		auto weapon = pThis->GetWeapon(weaponIndex);
+
+		if (weapon && weapon->WeaponType->FireOnce)
+		{
+			pThis->QueueMission(Mission::Guard, true);
+		}
+	}
+
+	return ReturnFromFunction;
+}
