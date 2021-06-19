@@ -1,6 +1,9 @@
 #include "Body.h"
+
 #include <Ext/RadSite/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/BulletType/Body.h>
+
 template<> const DWORD Extension<BulletClass>::Canary = 0x2A2A2A2A;
 BulletExt::ExtContainer BulletExt::ExtMap;
 
@@ -47,25 +50,50 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	}
 }
 
+void BulletExt::InitializeLaserTrail(BulletClass* pThis)
+{
+	auto pExt = BulletExt::ExtMap.Find(pThis);
+	if (pExt->LaserTrail)
+		return;
+
+	auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	if (!pTypeExt->LaserTrail_Type.isset() || !pTypeExt->LaserTrail_Type.Get())
+	{
+		//Debug::Log("BulletExt::Initialize didn't find LaserTrailTypeClass\n");
+		pExt->LaserTrail = nullptr;
+		return;
+	}
+
+	HouseClass* owner = nullptr;
+	if (pThis->Owner)
+		owner = pThis->Owner->Owner;
+
+	//Debug::Log("BulletExt::Initialize found LaserTrailTypeClass of type %s\n", pTypeExt->LaserTrail_Type->Name.data());
+	pExt->LaserTrail = std::make_unique<LaserTrailClass>(pTypeExt->LaserTrail_Type, owner);
+}
 
 // =============================
 // load / save
 
 
 template <typename T>
-void BulletExt::ExtData::Serialize(T& Stm) {
+void BulletExt::ExtData::Serialize(T& Stm)
+{
 	Stm
 		.Process(this->Intercepted)
 		.Process(this->ShouldIntercept)
+		.Process(this->LaserTrail)
 		;
 }
 
-void BulletExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+void BulletExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+{
 	Extension<BulletClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void BulletExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+void BulletExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+{
 	Extension<BulletClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
@@ -73,8 +101,7 @@ void BulletExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
 // =============================
 // container
 
-BulletExt::ExtContainer::ExtContainer() : Container("BulletClass") {
-}
+BulletExt::ExtContainer::ExtContainer() : Container("BulletClass") { }
 
 BulletExt::ExtContainer::~ExtContainer() = default;
 

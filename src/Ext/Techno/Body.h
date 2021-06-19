@@ -5,6 +5,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
+#include <New/Entity/LaserTrailClass.h>
 #include <Misc/Shield.h>
 
 class BulletClass;
@@ -19,12 +20,14 @@ public:
 	public:
 		Valueable<BulletClass*> InterceptedBullet;
 		std::unique_ptr<ShieldTechnoClass> ShieldData;
-
 		Valueable<bool> WasCloaked;
+        ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),
 			InterceptedBullet(nullptr),
 			ShieldData(),
-			WasCloaked(false)
+			WasCloaked(false),
+            LaserTrails()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -59,7 +62,10 @@ public:
 	static bool IsHarvesting(TechnoClass* pThis);
 	static bool HasAvailableDock(TechnoClass* pThis);
 
-	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
+    static void InitializeLaserTrails(FootClass* pThis);
+    static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
+
+    static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
 	static void ApplyInterceptor(TechnoClass* pThis);

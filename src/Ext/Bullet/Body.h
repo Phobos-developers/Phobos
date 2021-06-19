@@ -5,6 +5,8 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
+#include <New/Entity/LaserTrailClass.h>
+
 class BulletExt
 {
 public:
@@ -15,10 +17,12 @@ public:
 	public:
 		Valueable<bool> Intercepted;
 		Valueable<bool> ShouldIntercept;
+		std::unique_ptr<LaserTrailClass> LaserTrail;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject),
 			Intercepted(false),
-			ShouldIntercept(false)
+			ShouldIntercept(false),
+			LaserTrail()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -26,7 +30,6 @@ public:
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel);
@@ -41,6 +44,8 @@ public:
 		ExtContainer();
 		~ExtContainer();
 	};
+
+	static void InitializeLaserTrail(BulletClass* pThis);
 
 	static ExtContainer ExtMap;
 };

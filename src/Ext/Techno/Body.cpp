@@ -7,6 +7,7 @@
 #include <ScenarioClass.h>
 #include <SpawnManagerClass.h>
 #include <InfantryClass.h>
+#include <Unsorted.h>
 
 #include <Ext/BulletType/Body.h>
 
@@ -172,6 +173,67 @@ bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
 	return false;
 }
 
+void TechnoExt::InitializeLaserTrails(FootClass* pThis)
+{
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->LaserTrails.size())
+		return;
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	for (auto const& entry: pTypeExt->LaserTrailData)
+	{
+		pExt->LaserTrails.push_back(
+			std::make_unique<LaserTrailClass>(entry.Type, pThis->Owner, entry.FLH, entry.IsOnTurret));
+	}
+}
+
+// reversed from 6F3D60
+CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
+{
+	auto const pType = pThis->GetTechnoType();
+    auto const pFoot = abstract_cast<FootClass*>(pThis);
+	Matrix3D mtx;
+
+	// Step 1: get body transform matrix
+
+	if (pFoot && pFoot->Locomotor)
+		mtx = pFoot->Locomotor->Draw_Matrix(nullptr);
+	else // no locomotor means no rotation or transform of any kind (f.ex. buildings) - Kerbiter
+		mtx.MakeIdentity();
+
+	// Step 2-3: Turret offset and rotation
+	if (isOnTurret && pThis->HasTurret())
+	{
+		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
+
+		double turretRad = (pThis->TurretFacing().value32() - 8) * -(Math::Pi / 16);
+        double bodyRad = (pThis->PrimaryFacing.current().value32() - 8) * -(Math::Pi / 16);
+		float angle = (float)(turretRad - bodyRad);
+
+		mtx.RotateZ(angle);
+	}
+
+	// Step 4: apply FLH offset
+
+	mtx.Translate((float)pCoord.X, (float)pCoord.Y, (float)pCoord.Z);
+
+	Vector3D<float> result = Game::MatrixMultiply(&mtx,
+		const_cast<Vector3D<float>*>(&Vector3D<float>::Empty));
+
+	// Resulting coords are mirrored along X axis, so we mirror it back - Kerbiter
+	result.Y *= -1;
+
+	// Debug::Log("Real FLH %f %f %f\n", result.X, result.Y, result.Z);
+
+	// Step 5: apply as an offset to global object coords
+
+	CoordStruct location = pThis->GetCoords();
+	location += { (int)result.X, (int)result.Y, (int)result.Z };
+
+	return location;
+}
+
 // =============================
 // load / save
 
@@ -182,6 +244,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->InterceptedBullet)
 		.Process(this->ShieldData)
 		.Process(this->WasCloaked)
+		.Process(this->LaserTrails)
 		;
 }
 

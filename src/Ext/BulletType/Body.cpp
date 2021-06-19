@@ -6,32 +6,39 @@ BulletTypeExt::ExtContainer BulletTypeExt::ExtMap;
 // =============================
 // load / save
 
-void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
+void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+{
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 
-	if (!pINI->GetSection(pSection)) {
+	if (!pINI->GetSection(pSection))
 		return;
-	}
 
 	INI_EX exINI(pINI);
 
 	this->Interceptable.Read(exINI, pSection, "Interceptable");
+
+	// INI_EX exArtINI(CCINIClass::INI_Art);
+	this->LaserTrail_Type.Read(exINI, pSection, "LaserTrail.Type");
 }
 
 template <typename T>
-void BulletTypeExt::ExtData::Serialize(T& Stm) {
+void BulletTypeExt::ExtData::Serialize(T& Stm)
+{
 	Stm
 		.Process(this->Interceptable)
+		.Process(this->LaserTrail_Type)
 		;
 }
 
-void BulletTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+void BulletTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+{
 	Extension<BulletTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void BulletTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+void BulletTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+{
 	Extension<BulletTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
@@ -40,8 +47,7 @@ void BulletTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
 // =============================
 // container
 
-BulletTypeExt::ExtContainer::ExtContainer() : Container("BulletTypeClass") {
-}
+BulletTypeExt::ExtContainer::ExtContainer() : Container("BulletTypeClass") { }
 
 BulletTypeExt::ExtContainer::~ExtContainer() = default;
 

@@ -2,7 +2,6 @@
 
 #include <TechnoTypeClass.h>
 #include <StringTable.h>
-#include <Matrix3D.h>
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
@@ -129,14 +128,36 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
 	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
 
-
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
 
-	//Art tags
+	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
 
 	this->TurretOffset.Read(exArtINI, pThis->ImageFile, "TurretOffset");
+
+	for (size_t i = 0; i <= this->LaserTrailData.size(); ++i)
+	{
+		Nullable<LaserTrailTypeClass*> trail;
+		_snprintf_s(Phobos::readBuffer, Phobos::readLength, "LaserTrail%d.Type", i);
+		trail.Read(exINI, pSection, Phobos::readBuffer);
+
+		if (i == this->LaserTrailData.size() && !trail.isset())
+			break;
+
+		Valueable<CoordStruct> flh;
+		_snprintf_s(Phobos::readBuffer, Phobos::readLength, "LaserTrail%d.FLH", i);
+		flh.Read(exINI, pSection, Phobos::readBuffer);
+
+		Valueable<bool> isOnTurret;
+		_snprintf_s(Phobos::readBuffer, Phobos::readLength, "LaserTrail%d.IsOnTurret", i);
+		isOnTurret.Read(exINI, pSection, Phobos::readBuffer);
+
+		if (i == this->LaserTrailData.size())
+			this->LaserTrailData.push_back({ trail, flh, isOnTurret });
+		else
+			this->LaserTrailData[i] = { trail, flh, isOnTurret };
+	}
 }
 
 template <typename T>
@@ -181,6 +202,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChronoMinimumDelay)
 		.Process(this->ChronoRangeMinimum)
 		.Process(this->ChronoDelay)
+		.Process(this->LaserTrailData)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

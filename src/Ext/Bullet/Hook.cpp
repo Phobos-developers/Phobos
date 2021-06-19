@@ -5,44 +5,84 @@
 
 #include <TechnoClass.h>
 
+// has everything inited except SpawnNextAnim at this point
+DEFINE_HOOK(466556, BulletClass_Init_SetLaserTrail, 6)
+{
+	GET(BulletClass*, pThis, ECX);
+	
+	if (!pThis->Type->Inviso)
+		BulletExt::InitializeLaserTrail(pThis);
+
+	return 0;
+}
+
 DEFINE_HOOK(4666F7, BulletClass_AI, 6)
 {
-	GET(BulletClass*, pBullet, EBP);
+	GET(BulletClass*, pThis, EBP);
+	auto pBulletExt = BulletExt::ExtMap.Find(pThis);
 
-	auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
-	if (pBulletExt && pBulletExt->ShouldIntercept)
+	if (!pBulletExt)
+		return 0;
+
+	if (pBulletExt->ShouldIntercept)
 	{
-		pBullet->Detonate(pBullet->GetCoords());
-		pBullet->Remove();
-		pBullet->UnInit();
+		pThis->Detonate(pThis->GetCoords());
+		pThis->Remove();
+		pThis->UnInit();
 
-		const auto pTechno = pBullet->Owner;
+		const auto pTechno = pThis->Owner;
 		const bool isLimbo =
 			pTechno &&
 			pTechno->InLimbo &&
-			pBullet->WeaponType &&
-			pBullet->WeaponType->LimboLaunch;
+			pThis->WeaponType &&
+			pThis->WeaponType->LimboLaunch;
 
 		if (isLimbo) {
-			pBullet->SetTarget(nullptr);
+			pThis->SetTarget(nullptr);
 			auto damage = pTechno->Health * 2;
-			pTechno->SetLocation(pBullet->GetCoords());
+			pTechno->SetLocation(pThis->GetCoords());
 			pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 		}
 	}
 
-	if (pBulletExt && pBulletExt->Intercepted)
+	if (pBulletExt->Intercepted)
 		pBulletExt->ShouldIntercept = true;
+
+	return 0;
+}
+
+DEFINE_HOOK(4680E2, BulletClass_DrawIt_LaserTrail, 6)
+{
+	GET(BulletClass*, pThis, ESI);
+	auto pBulletExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pBulletExt && pBulletExt->LaserTrail)
+	{
+		CoordStruct location = pThis->GetCoords();
+        BulletVelocity velocity = pThis->Velocity;
+
+        CoordStruct drawnCoords = CoordStruct
+		{
+			(int)(location.X + velocity.X),
+			(int)(location.Y + velocity.Y),
+			(int)(location.Z + velocity.Z)
+		};
+
+		pBulletExt->LaserTrail->Draw(drawnCoords);
+	}
 
 	return 0;
 }
 
 DEFINE_HOOK(4692BD, BulletClass_Logics_ApplyMindControl, 6)
 {
-	GET(BulletClass*, pBullet, ESI);
-	auto pTypeExt = WarheadTypeExt::ExtMap.Find(pBullet->WH);
+	GET(BulletClass*, pThis, ESI);
+
+	auto pTypeExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
 	auto pControlledAnimType = pTypeExt->MindControl_Anim.Get(RulesClass::Instance->ControlledAnimationType);
-	auto pTechno = generic_cast<TechnoClass*>(pBullet->Target);
-	R->AL(CaptureManager::CaptureUnit(pBullet->Owner->CaptureManager, pTechno, pControlledAnimType));
+	auto pTechno = generic_cast<TechnoClass*>(pThis->Target);
+
+	R->AL(CaptureManager::CaptureUnit(pThis->Owner->CaptureManager, pTechno, pControlledAnimType));
+
 	return 0x4692D5;
 }

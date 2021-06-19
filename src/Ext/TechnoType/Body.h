@@ -5,6 +5,8 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
+#include <New/Type/LaserTrailTypeClass.h>
+
 class Matrix3D;
 
 class TechnoTypeExt
@@ -56,6 +58,15 @@ public:
 		Nullable<int> ChronoRangeMinimum;
 		Nullable<int> ChronoDelay;
 
+		struct LaserTrailDataEntry
+		{
+			LaserTrailTypeClass* Type;
+			CoordStruct FLH;
+			bool IsOnTurret;
+		};
+
+		ValueableVector<LaserTrailDataEntry> LaserTrailData;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			HealthBar_Hide(false),
 			UIDescription(),
@@ -95,7 +106,9 @@ public:
 			ChronoDistanceFactor(),
 			ChronoMinimumDelay(),
 			ChronoRangeMinimum(),
-			ChronoDelay()
+			ChronoDelay(),
+
+			LaserTrailData()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -127,7 +140,7 @@ public:
 
 	static ExtContainer ExtMap;
 
-	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
+    static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
