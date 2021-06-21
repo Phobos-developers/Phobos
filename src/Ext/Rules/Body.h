@@ -27,11 +27,13 @@ public:
 		Valueable<Vector3D<int>> Pips_Shield;
 		Valueable<Vector3D<int>> Pips_Shield_Buildings;
 		Valueable<int> RadApplicationDelay_Building;
+		PhobosFixedString<32u> MissingCameo;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Pips_Shield({ -1,-1,-1 })
 			, Pips_Shield_Buildings({ -1,-1,-1 })
 			, RadApplicationDelay_Building(0)
+			, MissingCameo("xxicon.shp")
 		{ }
 
 		virtual ~ExtData() = default;
