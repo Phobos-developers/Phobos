@@ -65,8 +65,8 @@ Credits
 - SMxReaver - help with docs, extensive and thorough testing
 - 4SG - help with docs
 - wiktorderelf - overhauled Unicode font
-- Thrifinesma (Uranusian) - Mind Control enhancement, custom warhead splash list, harvesters counter, promoted spawns, shields, death after dead fix, overhauled Unicode font, help with docs
-- SEC-SOME (secsome) - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields, AnimList.PickRandom
+- Thrifinesma (Uranusian) - Mind Control enhancement, custom warhead splash list, harvesters counter, promoted spawns, shields, death after dead fix, customizeable missing cameo, overhauled Unicode font, help with docs
+- SEC-SOME (secsome) - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields, AnimList.PickRandom, MoveToCell fix, unlimited waypoints
 - Otamaa (BoredEXE) - help with CellSpread, ported and fixed custom RadType code, togglable ElectricBolt bolts, customizable Chrono Locomotor properties per TechnoClass
 - E1 Elite - TileSet 255 and above bridge repair fix
 - FS-21 - Dump Object Info enhancements, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71, 72 & 73, MC deployer fixes, help with docs
