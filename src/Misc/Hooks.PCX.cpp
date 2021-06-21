@@ -52,20 +52,21 @@ DEFINE_HOOK(6A99F3, StripClass_Draw_DrawMissing, 6)
 		_strlwr_s(pFilename);
 
 		if (!_stricmp(pCameoRef->Filename, "xxicon.shp")
-			&& _stricmp(pCameoRef->Filename, pFilename))
+			&& _stricmp(pCameoRef->Filename, pFilename)
+			&& strstr(pFilename, ".pcx"))
 		{
-			if (strstr(pFilename, ".pcx"))
+			PCX::Instance->LoadFile(pFilename);
+			if (auto CameoPCX = PCX::Instance->GetSurface(pFilename))
 			{
-				if (auto CameoPCX = PCX::Instance->GetSurface(pFilename))
-				{
-					GET(int, TLX, ESI);
-					GET(int, TLY, EBP);
-					RectangleStruct bounds = { TLX, TLY, 60, 48 };
-					PCX::Instance->BlitToSurface(&bounds, DSurface::Sidebar, CameoPCX);
+				GET(int, TLX, ESI);
+				GET(int, TLY, EBP);
 
-					return 0x6A9A43; //skip drawing shp cameo
-				}
+				RectangleStruct bounds = { TLX, TLY, 60, 48 };
+				PCX::Instance->BlitToSurface(&bounds, DSurface::Sidebar, CameoPCX);
+
+				return 0x6A9A43; //skip drawing shp cameo
 			}
+
 		}
 	}
 
