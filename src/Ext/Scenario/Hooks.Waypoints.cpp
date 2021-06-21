@@ -127,29 +127,27 @@ DEFINE_HOOK(68BF74, ScenarioClass_Get_Waypoint_Cell, 7)
 
 DEFINE_HOOK(763610, Waypoint_To_String, 5)
 {
-	static std::string* buffer { nullptr };
-
-	if (!buffer)
-		buffer = GameCreate<std::string>();
-
+	static char buffer[8] { '\0' };
 	GET(int, nWaypoint, ECX);
-	buffer->clear();
 
-	if (nWaypoint == -1)
-		*buffer = "0";
+	if (nWaypoint < 0)
+		R->EAX("0");
+	else if (nWaypoint == INT_MAX)
+		R->EAX("FXSHRXX");
 	else
 	{
 		++nWaypoint;
+		int pos = 7;
 		while (nWaypoint > 0)
 		{
-			int m = nWaypoint % 26;
+			--pos;
+			char m = nWaypoint % 26;
 			if (m == 0) m = 26;
-			*buffer = (char)(m + 64) + *buffer;
+			buffer[pos] = m + '@'; // '@' = 'A' - 1
 			nWaypoint = (nWaypoint - m) / 26;
 		}
+		R->EAX(buffer + pos);
 	}
-
-	R->EAX(buffer->c_str());
 	return 0x763621;
 }
 
