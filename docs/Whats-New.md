@@ -39,6 +39,8 @@ New:
 - Semantic locomotor aliases for modder convenience (by Belonit)
 - Ability to specify amount of shots for strafing aircraft and burst simulation (by Starkku)
 - Customizeable Teleport/Chrono Locomotor properties per TechnoType (by Otamaa)
+- Waypoints' upper limit now increases from 702 to 2147483647 (by secsome)
+- Customizeable Missing Cameo file (by Uranusian)
 
 Vanilla fixes:
 - Map previews with zero size won't crash the game anymore (by Kerbiter, Belonit)
@@ -48,6 +50,7 @@ Vanilla fixes:
 - Fixed the bug when units are already dead but still in map (for sinking, crashing, dying animation, etc.), they could die again (by Uranusian)
 - Fixed the bug when cloaked Desolator was unable to fire his deploy weapon (by Otamaa)
 - Fixed the bug when `InfiniteMindControl` with `Damage=1` will auto-release the victim to control new one (by Uranusian)
+- Fixed the bug that script action `Move to cell` was still using leftover from previous game (by secsome)
 
 Phobos fixes:
 - Properly rewritten a fix for mind-controlled vehicles deploying into buildings (by FS-21)
