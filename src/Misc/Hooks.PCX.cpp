@@ -1,5 +1,7 @@
 #include <Helpers/Macro.h>
 #include <PCX.h>
+#include <FileFormats/SHP.h>
+#include <Ext/Rules/Body.h>
 
 DEFINE_HOOK(6B9D9C, RGB_PCX_Loader, 7)
 {
@@ -35,5 +37,37 @@ DEFINE_HOOK(5535D0, PCX_LoadScreen, 6)
 		}
 		return 0x553603;
 	}
+	return 0;
+}
+
+DEFINE_HOOK(6A99F3, StripClass_Draw_DrawMissing, 6)
+{
+	GET_STACK(SHPStruct*, pCameo, STACK_OFFS(0x48C, 0x444));
+
+	if (pCameo)
+	{
+		auto pCameoRef = pCameo->AsReference();
+		char pFilename[0x20];
+		strcpy_s(pFilename, RulesExt::Global()->MissingCameo.data());
+		_strlwr_s(pFilename);
+
+		if (!_stricmp(pCameoRef->Filename, "xxicon.shp")
+			&& _stricmp(pCameoRef->Filename, pFilename))
+		{
+			if (strstr(pFilename, ".pcx"))
+			{
+				if (auto CameoPCX = PCX::Instance->GetSurface(pFilename))
+				{
+					GET(int, TLX, ESI);
+					GET(int, TLY, EBP);
+					RectangleStruct bounds = { TLX, TLY, 60, 48 };
+					PCX::Instance->BlitToSurface(&bounds, DSurface::Sidebar, CameoPCX);
+
+					return 0x6A9A43; //skip drawing shp cameo
+				}
+			}
+		}
+	}
+
 	return 0;
 }
