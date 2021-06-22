@@ -288,7 +288,7 @@ SplashList.PickRandom=no ; play a random animation from the list? boolean, defau
 
 ### NotHuman InfDeath Anim
 
-- This feature is to specify `NotHuman` infantry die sequence anim for Warhead.
+- This feature is to specify `NotHuman` infantry die sequence for Warhead.
 - Each value is represent `Die` sequence anim for infantry (Game only accept 1 to 5).
 - Disabled (-1) mean that game will use `Die1` sequence as default or random if `NotHumanUseAllDeathSequence` is set.
 

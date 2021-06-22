@@ -24,37 +24,34 @@ DEFINE_HOOK(6F9E50, TechnoClass_AI, 5)
 	return 0;
 }
 
-DEFINE_HOOK(5184FD, InfantryClass_TakeDamage_NotHumanCheck, 8)
+DEFINE_HOOK(5184FD, InfantryClass_TakeDamage_DeathWeaponFired_Check, 8)
 {
-	GET(InfantryClass*, pVictim, ESI);
-	GET(InfantryTypeClass*, Victim, EAX);
-	GET_STACK(WarheadTypeClass *, Warhead, STACK_OFFS(0xD0, -0xC));
+	GET(InfantryClass*, pThis, ESI);
+	GET(InfantryTypeClass*, pThisType, EAX);
+	REF_STACK(args_ReceiveDamage const, ReceiveDamageArgs, STACK_OFFS(0xD0, -0x4));
 
-	if (Victim->NotHuman)
+	if (pThisType->NotHuman)
 	{
-		auto SeqInt = 11; //Default WWp Hardcode Sequence::Die1
+		auto SeqInt = 11;
+		auto TypeExt = TechnoTypeExt::ExtMap.Find(pThisType);
 
-		auto Ext = TechnoTypeExt::ExtMap.Find(pVictim->GetTechnoType());
-
-		if (Ext->NHumanUseAllDeathSeq.Get())
+		if (TypeExt->NHumanUseAllDeathSeq.Get())
 			SeqInt = ScenarioClass::Instance->Random.RandomRanged(11, 15);
 
-		if (Warhead)
+		if (ReceiveDamageArgs.WH)
 		{
-			if (auto const WHExt = WarheadTypeExt::ExtMap.Find(Warhead))
+			if (auto const WarheadExt = WarheadTypeExt::ExtMap.Find(ReceiveDamageArgs.WH))
 			{
-				auto WHSeq = WHExt->InfDeathSequence.Get();
-				if (WHSeq > 0)
+				auto WarheadSeq = WarheadExt->InfDeathSequence.Get();
+				if (WarheadSeq > 0)
 				{
-					WHSeq = WHSeq > 5 ? 5 : WHSeq;
-
-					//Apply code suggestion by @secsome
-					SeqInt = 10 + WHSeq;
+					WarheadSeq = WarheadSeq > 5 ? 5 : WarheadSeq;
+					SeqInt = 10 + WarheadSeq;
 				}
 			}
 		}
 
-		pVictim->PlayAnim(static_cast<Sequence>(SeqInt), true, false);
+		pThis->PlayAnim(static_cast<Sequence>(SeqInt), true, false);
 
 		return 0x518515;
 	}
