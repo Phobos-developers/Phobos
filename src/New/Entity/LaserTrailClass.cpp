@@ -21,7 +21,7 @@ bool LaserTrailClass::Draw(CoordStruct location)
             // We spawn new laser segment if the distance is long enough, the game will do the rest - Kerbiter
             LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
                 this->LastLocation.Get(), location,
-                this->CurrentColor.Get(), ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 },
+                this->GetCurrentColor(), ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 },
                 this->Type->Duration.Get());
 
             pLaser->Thickness = this->Type->Thickness;
@@ -34,7 +34,49 @@ bool LaserTrailClass::Draw(CoordStruct location)
         this->LastLocation = location;
     }
 
+    (*this->FramesPassed.GetEx())++;
+
     return result;
+}
+
+ColorStruct LaserTrailClass::GetCurrentColor()
+{
+    if (this->Type->IsRainbowColor.Get())
+    {
+        auto& colors = this->Type->Colors;
+
+        int transitionCycle = (this->FramesPassed / this->Type->TransitionDuration)
+            % colors.size();
+        int currentColorIndex = transitionCycle;
+        int nextColorIndex = (transitionCycle + 1) % colors.size();
+
+        double blendingCoef = (this->FramesPassed % this->Type->TransitionDuration)
+            / this->Type->TransitionDuration;
+
+        ColorStruct color = {
+            (BYTE)(colors[currentColorIndex].R * (1 - blendingCoef) + colors[nextColorIndex].R * blendingCoef),
+            (BYTE)(colors[currentColorIndex].G * (1 - blendingCoef) + colors[nextColorIndex].G * blendingCoef),
+            (BYTE)(colors[currentColorIndex].B * (1 - blendingCoef) + colors[nextColorIndex].B * blendingCoef)
+        };
+
+        // Debug::Log("%d %d %d", color.R, color.G, color.B);
+        return color;
+    }
+
+    return this->Type->Colors[0];
+}
+
+BYTE LaserTrailClass::GetColorChannel(int cycle, int offset)
+{
+    cycle = (cycle + offset) % 6;
+
+    bool maskDown = !((cycle / 3) % 2);
+    bool maskUp = !(((cycle + 1) / 3) % 2);
+
+    BYTE colorUp = (this->FramesPassed * 16) % 256;
+    BYTE colorDown = 255 - colorUp;
+
+    return colorUp*maskUp + colorDown*maskDown;
 }
 
 #pragma region Save/Load
