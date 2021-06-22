@@ -17,6 +17,7 @@ public:
 	bool IsOnTurret;
 	ColorStruct CurrentColor;
 	Nullable<CoordStruct> LastLocation;
+    Valueable<int> FramesPassed;
 
 	LaserTrailClass(LaserTrailTypeClass* pTrailType, HouseClass* pHouse = nullptr,
 		CoordStruct flh = { 0, 0, 0 }, bool isOnTurret = false) :
@@ -24,12 +25,13 @@ public:
 		Visible(true),
 		FLH(flh),
 		IsOnTurret(isOnTurret),
-		CurrentColor(pTrailType->Color),
-		LastLocation()
-	{
-		if (this->Type->IsHouseColor && pHouse)
-			this->CurrentColor = pHouse->LaserColor;
-	}
+		CurrentColor(pTrailType->Colors[0]),
+        LastLocation(),
+        FramesPassed(0)
+    {
+        if (this->Type->IsHouseColor && pHouse)
+            this->CurrentColor = pHouse->LaserColor;
+    }
 
 	LaserTrailClass() :
 		Type(),
@@ -37,13 +39,17 @@ public:
 		FLH(),
 		IsOnTurret(),
 		CurrentColor(),
-		LastLocation()
-	{ }
+        LastLocation(),
+        FramesPassed(0)
+    { }
 
 	bool Update(CoordStruct location);
 
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
+
+    ColorStruct GetCurrentColor();
+    BYTE GetColorChannel(int cycle, int offset);
 
 private:
 	template <typename T>
