@@ -3,6 +3,9 @@
 #include <TechnoClass.h>
 #include <FootClass.h>
 #include <UnitClass.h>
+#include <ScenarioClass.h>
+#include <VoxelAnimClass.h>
+
 //Replace: checking of HasExtras = > checking of (HasExtras && Shadow)
 DEFINE_HOOK(423365, Phobos_BugFixes_SHPShadowCheck, 8)
 {
@@ -62,62 +65,49 @@ DEFINE_HOOK(737D57, UnitClass_ReceiveDamage_DyingFix, 7)
 	return 0;
 }
 
-
-#include <ScenarioClass.h>
-#include <VoxelAnimClass.h>
-#include <Misc/Debug.h>
-
-/**/
 //Possible fixes for issues #109
-//https://github.com/Phobos-developers/Phobos/issues/109
-//A
 DEFINE_HOOK(702299, TechnoClass_ReceiveDamage_DebrisTypes, A)
 {
-	GET(TechnoClass*, pTech, ESI);
+	GET(TechnoClass* const, pThis, ESI);
 
-	auto type = pTech->GetTechnoType();
-	auto &DTypes = type->DebrisTypes;
-	auto &DTypesMax = type->DebrisMaximums;
+	auto pThistype = pThis->GetTechnoType();
+	auto& DebrisTypes = pThistype->DebrisTypes;
+	auto& DebrisMaximus = pThistype->DebrisMaximums;
 
 	//to enable legacy way , spawn debris
-	//some modder may use this as feature
-	if (DTypesMax.Count == 1 && DTypesMax.GetItem(0) > 0 && DTypes.Count > 0)
+	if (DebrisMaximus.Count == 1 && DebrisMaximus.GetItem(0) > 0 && DebrisTypes.Count > 0)
 		return 0;
 
-	auto max = type->MaxDebris - 1;
-	auto random = ScenarioClass::Instance->Random.RandomRanged(type->MinDebris, max);
+	auto MaxDebris = pThistype->MaxDebris;
+	auto SpawnAmount = ScenarioClass::Instance->Random.RandomRanged(pThistype->MinDebris, MaxDebris);
 
-	if (DTypes.Count > 0 && DTypesMax.Count > 0)
+	if (DebrisTypes.Count > 0 && DebrisMaximus.Count > 0)
 	{
-		int current = 0;
+		int currentIndex = 0;
 		do
 		{
-			if (DTypesMax.GetItem(current) > 0) //check if the next member is eligible to spawn
+			if (DebrisMaximus.GetItem(currentIndex) > 0)
 			{
-				auto maxallow = DTypesMax.GetItem(current);
-				maxallow = maxallow > max ? max : maxallow;
+				auto maximums = DebrisMaximus.GetItem(currentIndex);
+				maximums = maximums > MaxDebris ? MaxDebris : maximums;
+				maximums = ScenarioClass::Instance->Random.Random() % (maximums + 1); //0x702337
+				SpawnAmount -= maximums;
 
-				int randAgain = ScenarioClass::Instance->Random.Random() % (maxallow + 1);
-
-				randAgain = randAgain > maxallow ? maxallow : randAgain;//dont allow spawn debris out of the Spesifc maximum value 
-				random -= randAgain;
-
-				auto pAtype = DTypes.GetItem(current);
-				for (; randAgain; --randAgain)
+				for (; maximums; --maximums)
 				{
-					auto coords = pTech->GetCoords();
-					GameCreate<VoxelAnimClass>(pAtype, &coords, pTech->Owner);
+					auto coords = pThis->GetCoords();
+					GameCreate<VoxelAnimClass>(DebrisTypes.GetItem(currentIndex), &coords, pThis->Owner);
 				}
-				if (random < 0)
+
+				if (SpawnAmount < 1)
 					break;
 			}
-			++current;
+			++currentIndex;
 
-		} while (current < DTypes.Count);
-
+		} while (currentIndex < DebrisTypes.Count);
 	}
 
-	R->EBX(random); //the rest of the value will be used on next function chain which check EBX in order to spawn more debris 
+	R->EBX(SpawnAmount);
 
 	return 0x7023E5;
 }
