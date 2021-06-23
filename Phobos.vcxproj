@@ -17,6 +17,8 @@
   <ItemGroup>
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\Dummy.h" />
+    <ClCompile Include="src\Ext\TAction\Body.cpp" />
+    <ClCompile Include="src\Ext\TAction\Hooks.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Hooks.cpp" />
@@ -81,6 +83,7 @@
     <ClInclude Include="src\Commands\NextIdleHarvester.h" />
     <ClInclude Include="src\Commands\ObjectInfo.h" />
     <ClInclude Include="src\Commands\Commands.h" />
+    <ClInclude Include="src\Ext\TAction\Body.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\Utilities\Enumerable.h" />
     <ClInclude Include="src\ExtraHeaders\CCToolTip.h" />
