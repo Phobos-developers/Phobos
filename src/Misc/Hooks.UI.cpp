@@ -72,8 +72,8 @@ DEFINE_HOOK(4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 7)
 		RectangleStruct vRect = { 0, 0, 0, 0 };
 		DSurface::Sidebar->GetRect(&vRect);
 
-		DSurface::Sidebar->DrawTextA(counter, &vRect, &vPos,
-			Drawing::RGB2DWORD(clrToolTip), 0, 0x4108);
+		DSurface::Sidebar->DrawTextA(counter, &vRect, &vPos, Drawing::RGB2DWORD(clrToolTip), 
+			0, TextPrintType::TPF_USE_GRAD_PAL | TextPrintType::TPF_CENTER | TextPrintType::TPF_METAL12);
 	}
 
 	return 0;

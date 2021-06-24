@@ -149,10 +149,10 @@ DEFINE_HOOK(5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 5)
 		Phobos::UI::CostLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"$");
 
 		pINI->ReadString(TOOLTIPS_SECTION, "PowerLabel", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::PowerLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"⚡");
+		Phobos::UI::PowerLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"⚡"); // \u26a1
 
 		pINI->ReadString(TOOLTIPS_SECTION, "TimeLabel", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::TimeLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"⌚");
+		Phobos::UI::TimeLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"⌚"); // \u231a
 	}
 
 	// Sidebar
@@ -161,7 +161,7 @@ DEFINE_HOOK(5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 5)
 			pINI->ReadBool(SIDEBAR_SECTION, "HarvesterCounter.Show", false);
 
 		pINI->ReadString(SIDEBAR_SECTION, "HarvesterCounter.Label", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::HarvesterLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"⛏"); //⛟
+		Phobos::UI::HarvesterLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"⛏"); // \u26cf  //⛟ \u26df
 
 		Phobos::UI::HarvesterCounter_ConditionYellow = 
 			pINI->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionYellow", Phobos::UI::HarvesterCounter_ConditionYellow);
@@ -193,14 +193,14 @@ DEFINE_HOOK(4F4583, GScreenClass_DrawText, 6)
 		auto wanted = Drawing::GetTextDimensions(Phobos::VersionDescription);
 
 		RectangleStruct rect = {
-			DSurface::Composite->GetWidth() - wanted.Width - 10,
+			DSurface::Composite()->GetWidth() - wanted.Width - 10,
 			0,
 			wanted.Width + 10,
 			wanted.Height + 10
 		};
 
-		DSurface::Composite->FillRect(&rect, COLOR_BLACK);
-		DSurface::Composite->DrawTextA(Phobos::VersionDescription, rect.X + 5, 5, COLOR_RED);
+		DSurface::Composite()->FillRect(&rect, COLOR_BLACK);
+		DSurface::Composite()->DrawText(Phobos::VersionDescription, rect.X + 5, 5, COLOR_RED);
 	}
 	return 0;
 }

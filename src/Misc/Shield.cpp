@@ -164,7 +164,9 @@ void ShieldTechnoClass::ResponseAttack()
 		if (pUnit->Type->Harvester)
 		{
 			auto pPos = pUnit->GetDestination(pUnit);
-			if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, { (short)pPos.X / 256,(short)pPos.Y / 256 }))
+			if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, 
+				{ static_cast<short>(pPos.X / 256),static_cast<short>(pPos.Y / 256) })
+				)
 				VoxClass::Play("EVA_OreMinerUnderAttack");
 		}
 	}
@@ -463,7 +465,7 @@ void ShieldTechnoClass::DrawShieldBarBuilding(int iLength, Point2D* pLocation, R
 			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-				frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+				frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradientDescIndex::Flat , 1000, 0, 0, 0, 0, 0);
 		}
 
 		iCurrent = iTotal;
@@ -480,7 +482,7 @@ void ShieldTechnoClass::DrawShieldBarBuilding(int iLength, Point2D* pLocation, R
 			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-				0, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+				0, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradientDescIndex::Flat, 1000, 0, 0, 0, 0, 0);
 		}
 	}
 }
@@ -513,7 +515,7 @@ void ShieldTechnoClass::DrawShieldBarOther(int iLength, Point2D* pLocation, Rect
 	if (this->Techno->IsSelected)
 	{
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPBRD_SHP,
-			frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+			frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradientDescIndex::Flat, 1000, 0, 0, 0, 0, 0);
 	}
 
 	int iTotal = int(this->GetShieldRatio() * iLength);
@@ -532,7 +534,7 @@ void ShieldTechnoClass::DrawShieldBarOther(int iLength, Point2D* pLocation, Rect
 		vPos.Y = vLoc.Y + YOffset;
 
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-			frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+			frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradientDescIndex::Flat, 1000, 0, 0, 0, 0, 0);
 	}
 }
 
