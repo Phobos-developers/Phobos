@@ -23,8 +23,9 @@ public:
 	void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
 	void InvalidatePointer(void* ptr);
 
+	double GetHealthRatio();
 	int GetHP();
-	bool IsOnline();
+	bool IsActive();
 	bool IsAvailable();
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);

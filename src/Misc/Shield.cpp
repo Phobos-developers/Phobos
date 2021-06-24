@@ -144,10 +144,9 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 		return 0;
 	}
-	else if (nDamage == 0)
-	{
-		return 0;
-	}
+
+	// else if (nDamage == 0)
+	return 0;
 }
 
 void ShieldClass::ResponseAttack()
@@ -410,6 +409,8 @@ int ShieldClass::GetPercentageAmount(double iStatus)
 
 	if (iStatus < 0)
 		return (int)trunc(iStatus);
+
+	return 0;
 }
 
 void ShieldClass::InvalidatePointer(void* ptr)
@@ -601,13 +602,17 @@ int ShieldClass::DrawShieldBar_Pip(const bool isBuilding)
 int ShieldClass::DrawShieldBar_PipAmount(int iLength)
 {
 	const auto pType = TechnoTypeClass::Find(this->TechnoID);
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	return Math::clamp(
-		(int)round(double(this->HP) / double(pTypeExt->ShieldType->Strength) * iLength),
+		(int)round(this->GetHealthRatio() * iLength),
 		0,
 		iLength
 	);
+}
+
+double ShieldClass::GetHealthRatio()
+{
+	return static_cast<double>(this->HP) / this->Type->Strength;		
 }
 
 int ShieldClass::GetHP()
@@ -615,9 +620,12 @@ int ShieldClass::GetHP()
 	return this->HP;
 }
 
-bool ShieldClass::IsOnline()
+bool ShieldClass::IsActive()
 {
-	return this->Online;
+	return
+		this->Available &&
+		this->HP > 0 &&
+		this->Online;
 }
 
 bool ShieldClass::IsAvailable()
