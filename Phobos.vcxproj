@@ -17,6 +17,7 @@
   <ItemGroup>
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\Dummy.h" />
+    <ClCompile Include="src\Misc\RetryDialog.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Hooks.cpp" />
