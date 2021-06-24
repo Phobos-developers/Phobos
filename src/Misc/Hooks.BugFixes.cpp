@@ -92,9 +92,10 @@ DEFINE_HOOK(702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, A)
 			{
 				int adjustedMaximum = Math::min(pType->DebrisMaximums.GetItem(currentIndex), pType->MaxDebris);
 				int amountToSpawn = ScenarioClass::Instance->Random.Random() % (adjustedMaximum + 1); //0x702337
+				amountToSpawn = Math::min(amountToSpawn, totalSpawnAmount);
 				totalSpawnAmount -= amountToSpawn;
 
-				for ( ; amountToSpawn; --amountToSpawn)
+				for ( ; amountToSpawn > 0; --amountToSpawn)
 				{
 					GameCreate<VoxelAnimClass>(pType->DebrisTypes.GetItem(currentIndex),
 						&pThis->GetCoords(), pThis->Owner);
