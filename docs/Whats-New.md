@@ -50,7 +50,8 @@ Vanilla fixes:
 - Fixed the bug when units are already dead but still in map (for sinking, crashing, dying animation, etc.), they could die again (by Uranusian)
 - Fixed the bug when cloaked Desolator was unable to fire his deploy weapon (by Otamaa)
 - Fixed the bug when `InfiniteMindControl` with `Damage=1` will auto-release the victim to control new one (by Uranusian)
-- Fixed the bug that script action `Move to cell` was still using leftover from previous game (by secsome)
+- Fixed the bug that script action `Move to cell` was still using leftover cell calculations from previous games (by secsome)
+- Fixed the bug when script action `125 Build At...` didn't play buildup anim (by secsome)
 
 Phobos fixes:
 - Properly rewritten a fix for mind-controlled vehicles deploying into buildings (by FS-21)
