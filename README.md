@@ -49,36 +49,37 @@ Credits
 -------
 
 **Developers**
-- Belonit (Gluk-v48), Metadorius (Kerbiter) - project authors
-- Thrifinesma (Uranusian), SEC-SOME (secsome), Otamaa (Fahroni, BoredEXE) - co-developers
+- **Belonit (Gluk-v48)** - project authors
+- **Metadorius (Kerbiter)** - project authors and project manager
+- **Thrifinesma (Uranusian)**, **SEC-SOME (secsome)**, **Otamaa (Fahroni, BoredEXE)** - co-developers
 
 **Contribution**
-- Belonit (Gluk-v48) - project creator, disable empty spawn positions, custom gamemd icon with Command Line, full-color non-paletted PCX, SpySat, BigGap, TransactMoney, PCX Loading Screen, custom DiskLaser radius, extended tooltips, building upgrades enhancement, hide health bar, Sidebar.GDIPosition, help with CellSpread, Blowfish.dll-related errors fix, zero size map previews, semantic locomotor aliases
-- Metadorius (Kerbiter) - SHP debris respect Shadow, building upgrades enhancement, extended tooltips, selection priority filtering, TurretOffset enhancement, customizable ore spawners, select next idle harvester hotkey, interceptor enhancement, zero size map previews, nightly build workflow, overhauled Unicode font, docs maintainer, organisational, maintenance and public relations work
-- misha135n2 - YRpp edits
-- tomsons26 - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
-- CCHyper - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
-- Ares developers - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code 
-- DCoder - unused deployer fixes that are now included in Phobos
-- ZΞPHYɌUS - win/lose themes code
-- ayylmao - help with docs
-- SMxReaver - help with docs, extensive and thorough testing
-- 4SG - help with docs
-- wiktorderelf - overhauled Unicode font
-- Thrifinesma (Uranusian) - Mind Control enhancement, custom warhead splash list, harvesters counter, promoted spawns, shields, death after dead fix, customizeable missing cameo, overhauled Unicode font, help with docs
-- SEC-SOME (secsome) - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields, AnimList.PickRandom, MoveToCell fix, unlimited waypoints, Build At trigger action buildup anim fix
-- Otamaa (BoredEXE) - help with CellSpread, ported and fixed custom RadType code, togglable ElectricBolt bolts, customizable Chrono Locomotor properties per TechnoClass, DebrisMaximums fixes
-- E1 Elite - TileSet 255 and above bridge repair fix
-- FS-21 - Dump Object Info enhancements, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71, 72 & 73, MC deployer fixes, help with docs
-- AutoGavy - interceptor logic, warhead critical damage system
-- ChrisLv_CN - interceptor logic, general assistance
-- Xkein - general assistance, YRpp edits
-- thomassneddon - general assistance
-- Starkku - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements
-- SukaHati (Erzoid) - Minimum interceptor guard range
-- mevitar - honorary shield tester award
-- Damfoos - extensive and thorough testing
-- Rise of the East community - extensive playtesting of in-dev features
+- **Belonit (Gluk-v48)** - project creator, disable empty spawn positions, custom gamemd icon with Command Line, full-color non-paletted PCX, SpySat, BigGap, TransactMoney, PCX Loading Screen, custom DiskLaser radius, extended tooltips, building upgrades enhancement, hide health bar, Sidebar.GDIPosition, help with CellSpread, Blowfish.dll-related errors fix, zero size map previews, semantic locomotor aliases, shields
+- **Metadorius (Kerbiter)** - SHP debris respect Shadow, building upgrades enhancement, extended tooltips, selection priority filtering, TurretOffset enhancement, customizable ore spawners, select next idle harvester hotkey, interceptor enhancement, zero size map previews, nightly build workflow, overhauled Unicode font, docs maintainer, organisational, maintenance and public relations work
+- **misha135n2** - YRpp edits
+- **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
+- **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
+- **Ares developers** - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code 
+- **DCoder** - unused deployer fixes that are now included in Phobos
+- **ZΞPHYɌUS** - win/lose themes code
+- **ayylmao** - help with docs
+- **SMxReaver** - help with docs, extensive and thorough testing
+- **4SG** - help with docs
+- **wiktorderelf** - overhauled Unicode font
+- **Thrifinesma (Uranusian)** - Mind Control enhancement, custom warhead splash list, harvesters counter, promoted spawns, shields, death after dead fix, customizeable missing cameo, overhauled Unicode font, help with docs
+- **SEC-SOME (secsome)** - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields, AnimList.PickRandom, MoveToCell fix, unlimited waypoints, Build At trigger action buildup anim fix
+- **Otamaa (BoredEXE)** - help with CellSpread, ported and fixed custom RadType code, togglable ElectricBolt bolts, customizable Chrono Locomotor properties per TechnoClass, DebrisMaximums fixes
+- **E1 Elite** - TileSet 255 and above bridge repair fix
+- **FS-21** - Dump Object Info enhancements, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71, 72 & 73, MC deployer fixes, help with docs
+- **AutoGavy** - interceptor logic, warhead critical damage system
+- **ChrisLv_CN** - interceptor logic, general assistance
+- **Xkein** - general assistance, YRpp edits
+- **thomassneddon** - general assistance
+- **Starkku** - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements
+- **SukaHati** (Erzoid) - Minimum interceptor guard range
+- **mevitar** - honorary shield tester award
+- **Damfoos** - extensive and thorough testing
+- **Rise of the East community** - extensive playtesting of in-dev features
 
 Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](logo-mono.png)) in your client/launcher, linking to Phobos repository, contributing or donating to us via links on the right and the `Sponsor` button on top of the repo.
 

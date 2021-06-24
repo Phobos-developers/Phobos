@@ -234,6 +234,7 @@ auto MassActions = MassAction <
 	WarheadTypeExt,
 	WeaponTypeExt,
 	// New classes
+	ShieldTypeClass,
 	RadTypeClass
 	// other classes
 > ();

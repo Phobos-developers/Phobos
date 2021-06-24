@@ -30,6 +30,13 @@ namespace _dp_ ## offset { \
 	declpatch(offset, sizeof(_pd), _pd);\
 }};
 
+#define DEFINE_VTABLE_PATCH(offset, to) \
+namespace definePatch { \
+namespace _dp_ ## offset { \
+	DWORD _pd = reinterpret_cast<DWORD>(to);\
+	declpatch(offset, sizeof(_pd), &_pd);\
+}};
+
 #pragma pack(push, 1)
 #pragma warning(push)
 #pragma warning( disable : 4324)
