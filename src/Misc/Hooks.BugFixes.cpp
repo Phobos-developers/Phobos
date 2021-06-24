@@ -2,6 +2,8 @@
 #include <TechnoClass.h>
 #include <FootClass.h>
 #include <UnitClass.h>
+#include <ScenarioClass.h>
+#include <VoxelAnimClass.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -15,7 +17,7 @@ DEFINE_HOOK(423365, Phobos_BugFixes_SHPShadowCheck, 8)
 		0x4233EE;
 }
 
-/* 
+/*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
 
 	When TileSet number crosses 255 in theater INI files, the NE-SW broken bridges
@@ -63,6 +65,53 @@ DEFINE_HOOK(737D57, UnitClass_ReceiveDamage_DyingFix, 7)
 		R->EAX(DamageState::PostMortem);
 
 	return 0;
+}
+
+// Restore DebrisMaximums logic (issue #109)
+// Author: Otamaa
+DEFINE_HOOK(702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, A)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto pType = pThis->GetTechnoType();
+
+	// If DebrisMaximums has one value, then legacy behavior is used
+	if (pType->DebrisMaximums.Count == 1 &&
+		pType->DebrisMaximums.GetItem(0) > 0 &&
+		pType->DebrisTypes.Count > 0)
+	{
+		return 0;
+	}
+
+	auto totalSpawnAmount = ScenarioClass::Instance->Random.RandomRanged(
+		pType->MinDebris, pType->MaxDebris);
+
+	if (pType->DebrisTypes.Count > 0 && pType->DebrisMaximums.Count > 0)
+	{
+		for (int currentIndex = 0; currentIndex < pType->DebrisTypes.Count; ++currentIndex)
+		{
+			if (pType->DebrisMaximums.GetItem(currentIndex) > 0)
+			{
+				int adjustedMaximum = Math::min(pType->DebrisMaximums.GetItem(currentIndex), pType->MaxDebris);
+				int amountToSpawn = ScenarioClass::Instance->Random.Random() % (adjustedMaximum + 1); //0x702337
+				amountToSpawn = Math::min(amountToSpawn, totalSpawnAmount);
+				totalSpawnAmount -= amountToSpawn;
+
+				for ( ; amountToSpawn > 0; --amountToSpawn)
+				{
+					GameCreate<VoxelAnimClass>(pType->DebrisTypes.GetItem(currentIndex),
+						&pThis->GetCoords(), pThis->Owner);
+				}
+
+				if (totalSpawnAmount < 1)
+					break;
+			}
+		}
+	}
+
+	R->EBX(totalSpawnAmount);
+
+	return 0x7023E5;
 }
 
 // issue #112 Make FireOnce=yes work on other TechnoTypes

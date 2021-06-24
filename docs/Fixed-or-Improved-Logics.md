@@ -17,6 +17,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])
 - Map trigger action `125 Build At...` can now play buildup anim optionally (needs [following changes to `fadata.ini`](https://github.com/Phobos-developers/Phobos/pull/249#issuecomment-866860866)).
 - Vehicles using `DeployFire` will now explicitly use weapon specified by `DeployFireWeapon` for firing the deploy weapon and respect `FireOnce` setting on weapon and any stop commands issued during firing.
+- Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond specified maximums anymore). Only applied when `DebrisMaximums` values amount is more than 1 for compatibility reasons.
 
 ![image](_static/images/remember-target-after-deploying-01.gif)  
 *Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
