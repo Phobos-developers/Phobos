@@ -30,9 +30,7 @@ void TActionExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 // =============================
 // container
 
-TActionExt::ExtContainer::ExtContainer() : Container("TActionClass")
-{
-}
+TActionExt::ExtContainer::ExtContainer() : Container("TActionClass") { }
 
 TActionExt::ExtContainer::~ExtContainer() = default;
 
