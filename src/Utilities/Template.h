@@ -37,7 +37,7 @@
 #include <MouseClass.h>
 #include <FootClass.h>
 
-#include "../Misc/Savegame.h"
+#include "Savegame.h"
 
 class INI_EX;
 
@@ -74,7 +74,7 @@ public:
 
 	// only allow this when explict works, otherwise
 	// the always-non-null pointer will be used in conditionals.
-	//explicit operator T* () noexept {
+	//explicit operator T* () noexcept {
 	//	return this->GetEx();
 	//}
 

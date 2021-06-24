@@ -5,8 +5,8 @@
 #include <CCToolTip.h>
 #include <StringTable.h>
 #include <wchar.h>
-#include "../Ext/TechnoType/Body.h"
-#include "../Ext/SWType/Body.h"
+#include <Ext/TechnoType/Body.h>
+#include <Ext/SWType/Body.h>
 
 class ExtToolTip
 {

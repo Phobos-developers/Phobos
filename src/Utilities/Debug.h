@@ -7,7 +7,6 @@ public:
 	{
 		Undefined = -1,
 		SLFail = 114514
-
 	};
 
 	static void __cdecl Log(const char* pFormat, ...);

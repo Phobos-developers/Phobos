@@ -5,8 +5,8 @@
 #include <InfantryClass.h>
 #include <BuildingClass.h>
 #include <HouseClass.h>
-#include "../Phobos.h"
-#include "../../Misc/CaptureManager.h"
+#include <Phobos.h>
+#include <Misc/CaptureManager.h>
 
 namespace MindControlFixTemp
 {

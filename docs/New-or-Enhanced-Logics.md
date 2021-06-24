@@ -90,10 +90,10 @@ Promote.IncludeSpawns=no  ; boolean
 - `Shield.HitAnim`, if set, will be played when the shield is attacked, similar to `WeaponNullifyAnim` for Iron Curtain.
 - A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable.
   - Buildings now use the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame by default.
-  - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. `Pips.Shield.Building` is used for BuildingTypes. 
-  - `pipbrd.shp` will use its 4th frame to display an infantry's shield strength and the 3th frame for other units if `pipbrd.shp` has extra 2 frames. And `Shield.BracketDelta` can be used as additonal `PixelSelectionBracketDelta` for shield strength. 
+  - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. `Pips.Shield.Building` is used for BuildingTypes.
+  - `pipbrd.shp` will use its 4th frame to display an infantry's shield strength and the 3th frame for other units if `pipbrd.shp` has extra 2 frames. And `Shield.BracketDelta` can be used as additional `PixelSelectionBracketDelta` for shield strength.
 - Warheads have new options that interact with shields.
-  - `PenetratesShield` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield isn't existed. 
+  - `PenetratesShield` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield isn't existed.
   - `BreaksShield` allows the warhead to always break shields of TechnoTypes, regardless of the amount of strength the shield has remaining or the damage dealt, assuming it affects the shield's armor type. Residual damage, if there is any, still respects `Shield.AbsorbOverDamage`.
 
 In `rulesmd.ini`:
@@ -127,9 +127,9 @@ BreaksShield=false             ; boolean
 ![image](_static/images/strafing-01.gif)  
 *Strafing aircraft weapon customization in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
-- Some of the behaviour of strafing aircraft weapons (weapon projectile has `ROT` below 2) can now be customized.
+- Some of the behavior of strafing aircraft weapons (weapon projectile has `ROT` below 2) can now be customized.
   - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired. Valid values range from 1 to 5, any values smaller or larger are effectively treated same as either 1 or 5, respectively. Defaults to 5.
-  - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behaviour of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined. Defaults to false.
+  - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined. Defaults to false.
 
 In `rulesmd.ini`:
 ```ini
@@ -170,7 +170,7 @@ RadSiteWarhead=RadSite          ; WarheadType
 
 ### Radiation enhancements
 
-- Radiation now has owner by default, so any rad-kills will be scored. This behaviour can be reverted by a corresponding tag.
+- Radiation now has owner by default, so any rad-kills will be scored. This behavior can be reverted by a corresponding tag.
   - `AffectsAllies`, `AffectsOwner` and `AffectsEnemies` on `RadSiteWarhead` are respected.
   - Currently the rad maker doesn't gain experience from kills, this may change in future.
 - Radiation is now able to deal damage to Buildings. To enable set `RadApplicationDelay.Building` value more than 0.
@@ -183,9 +183,9 @@ Rad.NoOwner=no  ; boolean
 
 ## Warheads
 
-:::{hint}
+```{hint}
 All new warheads can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
-:::
+```
 
 ### Generate credits on impact
 
@@ -247,7 +247,7 @@ RemoveMindControl=no                 ; boolean
 
 ### Critical damage chance
 
-- Warheads can now apply additional chance-based critical damage with the ability to customize chance, damage, affected targets, and animations of critical strike.
+- Warheads can now apply additional chance-based damage (known as "critical" damage) with the ability to customize chance, damage, affected targets, and animations of critical strike.
 
 In `rulesmd.ini`:
 ```ini
@@ -255,7 +255,7 @@ In `rulesmd.ini`:
 Crit.Chance=0.0     ; float, chance on [0.0-1.0] scale
 Crit.ExtraDamage=0  ; integer, extra damage
 Crit.Affects=all    ; list of "affects" flags (same as SWType's)
-Crit.AnimList=      ; list of animatioms
+Crit.AnimList=      ; list of animations
 
 [SOMETECHNO]     ; TechnoType
 ImmuneToCrit=no  ; boolean
@@ -280,7 +280,7 @@ SplashList.PickRandom=no ; play a random animation from the list? boolean, defau
 ![image](_static/images/projectile-interception-01.gif)  
 *Interception logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberium-crisis) mod*
 
-- Projectiles can now be made targetable by certain TechnoTypes. Interceptor TechnoType's projectile must be `Inviso=yes` in order for it to work and the projectile must be used in a primary Weapon. 
+- Projectiles can now be made targetable by certain TechnoTypes. Interceptor TechnoType's projectile must be `Inviso=yes` and `AA=yes` in order for it to work properly and the projectile must be used in a primary Weapon.
   - `Interceptor.GuardRange` is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
   - `Interceptor.EliteGuardRange` value is used if the unit veterancy is Elite.
   - `Interceptor.MinimumGuardRange` is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
@@ -303,7 +303,7 @@ Interceptable=no ; boolean
 
 ### `71` Timed Area Guard
 
-- Puts the TaskForce into Area Guard Mode for the given units of time. Unlike the orignal timed Guard script (`5,n`) that just stays in place doing a basic guard operation the "Area Guard" action has a more active role attacking nearby invasors or defending units that needs protection.
+- Puts the TaskForce into Area Guard Mode for the given units of time. Unlike the original timed Guard script (`5,n`) that just stays in place doing a basic guard operation the "Area Guard" action has a more active role attacking nearby invaders or defending units that needs protection.
 
 In `aimd.ini`:
 ```ini

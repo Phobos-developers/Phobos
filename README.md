@@ -13,13 +13,10 @@ For now you can discuss the project at a dedicated [channel on C&C Mod Haven](ht
 Building and Usage
 ------------------
 
-0. Install Visual Studio (2019 is recommended) with the following:
-  - "Desktop development with C++" workload;
-  - "C++ Windows XP Support for VS 2017 (v141) tools" individual component.
-If you prefer to use Visual Studio Code (read [MSVC VSCode config guide](https://code.visualstudio.com/docs/cpp/config-msvc)) you may install VS Build Tools with the stuff listed above instead. You can also don't use any code editor or IDE and build via command line scripts included with the project.
+0. Install **Visual Studio** (2019 is recommended, 2017 is minimum) with the dependencies listed in `.vswhere` (it will prompt you to install missing dependences when you open the project, or you can run VS installer and import the config). If you prefer to use **Visual Studio Code** you may install **VS Build Tools** with the stuff from `.vswhere` instead. You can also don't use any code editor or IDE and build via **command line scripts** included with the project.
 1. Clone this repo recursively via your favorite git client (that will also clone YRpp).
 2. To build the extension:
-  - in Visual Studio: open the solution file in VS and build it (`DevBuild` build config is recommended);
+  - in Visual Studio: open the solution file in VS and build it (`Debug` build config is recommended);
   - in VSCode: open the project folder and hit `Run Build Task...` (`Ctrl + Shift + B`);
   - barebones: run `scripts/build_devbuild.bat`.
 3. Upon build completion place the resulting `Phobos.dll` from folder named identical to the used build config in your YR directory and launch Syringe targeting your YR executable (usually `gamemd.exe`).
@@ -68,8 +65,8 @@ Credits
 - SMxReaver - help with docs, extensive and thorough testing
 - 4SG - help with docs
 - wiktorderelf - overhauled Unicode font
-- Thrifinesma (Uranusian) - Mind Control enhancement, custom warhead splash list, harvesters counter, promoted spawns, shields, death after dead fix, overhauled Unicode font, help with docs
-- SEC-SOME (secsome) - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields, AnimList.PickRandom
+- Thrifinesma (Uranusian) - Mind Control enhancement, custom warhead splash list, harvesters counter, promoted spawns, shields, death after dead fix, customizeable missing cameo, overhauled Unicode font, help with docs
+- SEC-SOME (secsome) - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields, AnimList.PickRandom, MoveToCell fix, unlimited waypoints, Build At trigger action buildup anim fix
 - Otamaa (BoredEXE) - help with CellSpread, ported and fixed custom RadType code, togglable ElectricBolt bolts, customizable Chrono Locomotor properties per TechnoClass
 - E1 Elite - TileSet 255 and above bridge repair fix
 - FS-21 - Dump Object Info enhancements, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71, 72 & 73, MC deployer fixes, help with docs
@@ -77,7 +74,7 @@ Credits
 - ChrisLv_CN - interceptor logic, general assistance
 - Xkein - general assistance, YRpp edits
 - thomassneddon - general assistance
-- Starkku - Warhead shield penetration & breaking, strafing aircraft weapon customization
+- Starkku - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements
 - SukaHati (Erzoid) - Minimum interceptor guard range
 - mevitar - honorary shield tester award
 - Damfoos - extensive and thorough testing

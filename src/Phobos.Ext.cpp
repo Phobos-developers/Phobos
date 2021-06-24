@@ -1,22 +1,24 @@
-#include "Phobos.h"
+#include <Phobos.h>
 
-#include "Ext/Building/Body.h"
-#include "Ext/BuildingType/Body.h"
-#include "Ext/Bullet/Body.h"
-#include "Ext/BulletType/Body.h"
-#include "Ext/House/Body.h"
-#include "Ext/RadSite/Body.h"
-#include "Ext/Rules/Body.h"
-#include "Ext/Script/Body.h"
-#include "Ext/Side/Body.h"
-#include "Ext/SWType/Body.h"
-#include "Ext/Techno/Body.h"
-#include "Ext/TechnoType/Body.h"
-#include "Ext/TerrainType/Body.h"
-#include "Ext/WarheadType/Body.h"
-#include "Ext/WeaponType/Body.h"
+#include <Ext/Building/Body.h>
+#include <Ext/BuildingType/Body.h>
+#include <Ext/Bullet/Body.h>
+#include <Ext/BulletType/Body.h>
+#include <Ext/House/Body.h>
+#include <Ext/RadSite/Body.h>
+#include <Ext/Rules/Body.h>
+#include <Ext/Scenario/Body.h>
+#include <Ext/Script/Body.h>
+#include <Ext/Side/Body.h>
+#include <Ext/SWType/Body.h>
+#include <Ext/TAction/Body.h>
+#include <Ext/Techno/Body.h>
+#include <Ext/TechnoType/Body.h>
+#include <Ext/TerrainType/Body.h>
+#include <Ext/WarheadType/Body.h>
+#include <Ext/WeaponType/Body.h>
 
-#include "Enum/RadTypeClass.h"
+#include <New/Type/RadTypeClass.h>
 
 #include <utility>
 
@@ -185,10 +187,10 @@ struct MassAction
 	}
 
 private:
-	// T: the method dispatcher class to call with each type 
+	// T: the method dispatcher class to call with each type
 	// TArgs: the arguments to call the method dispatcher's Process() method
 	// TType and TTypes: setup for recursion. TType is the first type, the one
-	//					to handle now. TTypes is the tail that is recursed into
+	// to handle now. TTypes is the tail that is recursively went into.
 
 	// this is the base case, no more types, nothing to call
 	template <typename T, typename... TArgs>
@@ -221,15 +223,17 @@ auto MassActions = MassAction <
 	HouseExt,
 	RadSiteExt,
 	RulesExt,
+	ScenarioExt,
 	ScriptExt,
 	SideExt,
 	SWTypeExt,
+	TActionExt,
 	TechnoExt,
 	TechnoTypeExt,
 	TerrainTypeExt,
 	WarheadTypeExt,
 	WeaponTypeExt,
-	// enum classes
+	// New classes
 	RadTypeClass
 	// other classes
 > ();

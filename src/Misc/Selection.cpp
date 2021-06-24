@@ -10,25 +10,44 @@ class ExtSelection
 public:
 	using callback_type = bool(__fastcall*)(ObjectClass*);
 
+	static inline class TacticalSelectablesHelper
+	{
+	public:
+		inline size_t size()
+		{
+			return TacticalClass::Instance->SelectableCount;
+		}
+
+		inline TacticalSelectableStruct* begin()
+		{
+			return &Unsorted::TacticalSelectables[0];
+		}
+
+		inline TacticalSelectableStruct* end()
+		{
+			return &Unsorted::TacticalSelectables[size()];
+		}
+	} Array {};
+
 	// Reversed from Is_Selectable, w/o Select call
 	static bool ObjectClass_IsSelectable(ObjectClass* pThis)
 	{
-		auto owner = pThis->GetOwningHouse();
-		return owner && owner->ControlledByPlayer()
+		const auto pOwner = pThis->GetOwningHouse();
+		return pOwner && pOwner->ControlledByPlayer()
 			&& pThis->CanBeSelected() && pThis->CanBeSelectedNow()
 			&& !pThis->InLimbo;
 	}
 
 	// Reversed from Tactical::Select
-	static bool Tactical_IsInSelectionRect(TacticalClass* pThis, RECT* rect, TacticalSelectableStruct* selectable)
+	static bool Tactical_IsInSelectionRect(TacticalClass* pThis, RECT* pRect, const TacticalSelectableStruct& selectable)
 	{
-		if (selectable->Techno && selectable->Techno->IsAlive)
+		if (selectable.Techno && selectable.Techno->IsAlive)
 		{
-			LONG localX = selectable->X - pThis->TacticalPos0.X;
-			LONG localY = selectable->Y - pThis->TacticalPos0.Y;
+			LONG localX = selectable.X - pThis->TacticalPos.X;
+			LONG localY = selectable.Y - pThis->TacticalPos.Y;
 
-			if ((localX >= rect->left && localX < rect->right + rect->left) &&
-				(localY >= rect->top && localY < rect->bottom + rect->top)) {
+			if ((localX >= pRect->left && localX < pRect->right + pRect->left) &&
+				(localY >= pRect->top && localY < pRect->bottom + pRect->top)) {
 				return true;
 			}
 		}
@@ -37,62 +56,48 @@ public:
 
 	static bool Tactical_IsHighPriorityInRect(TacticalClass* pThis, RECT* rect)
 	{
-		auto selected = Unsorted::TacticalSelectables;
-
-		for (int i = 0; i < pThis->SelectableCount; i++, selected++) {
-			if (Tactical_IsInSelectionRect(pThis, rect, selected) && ObjectClass_IsSelectable(selected->Techno)) {
-				auto technoTypeExt = TechnoTypeExt::ExtMap.Find(selected->Techno->GetTechnoType());
-
-				if (technoTypeExt && !technoTypeExt->LowSelectionPriority)
+		for (const auto& selected : Array)
+			if (Tactical_IsInSelectionRect(pThis, rect, selected) && ObjectClass_IsSelectable(selected.Techno))
+				if (!TechnoTypeExt::ExtMap.Find(selected.Techno->GetTechnoType())->LowSelectionPriority)
 					return true;
-			}
-		}
 
 		return false;
 	}
 
 	static // Reversed from Tactical::Select
-	void Tactical_SelectFiltered(TacticalClass* pThis, RECT* rect, callback_type check_callback, bool priorityFiltering)
+	void Tactical_SelectFiltered(TacticalClass* pThis, RECT* pRect, callback_type check_callback, bool bPriorityFiltering)
 	{
 		Unsorted::MoveFeedback = true;
 
-		if (rect->right <= 0 || rect->bottom <= 0 || pThis->SelectableCount <= 0)
+		if (pRect->right <= 0 || pRect->bottom <= 0 || pThis->SelectableCount <= 0)
 			return;
 
-		auto selected = Unsorted::TacticalSelectables;
-		for (int i = 0; i < pThis->SelectableCount; i++, selected++) {
-			if (Tactical_IsInSelectionRect(pThis, rect, selected)) {
-				auto techno = selected->Techno;
-				auto technoType = techno->GetTechnoType();
-				auto technoTypeExt = TechnoTypeExt::ExtMap.Find(technoType);
+		for (const auto& selected : Array)
+			if (Tactical_IsInSelectionRect(pThis, pRect, selected))
+			{
+				const auto pTechno = selected.Techno;
+				auto pTechnoType = pTechno->GetTechnoType();
+				auto TypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
-				if (priorityFiltering && technoTypeExt && technoTypeExt->LowSelectionPriority)
+				if (bPriorityFiltering && TypeExt && TypeExt->LowSelectionPriority)
 					continue;
 
-				if (technoTypeExt && Game::IsTypeSelecting()) {
-					Game::UICommands_TypeSelect_7327D0(technoTypeExt->GetSelectionGroupID());
-				}
-				else if (check_callback) {
-					(*check_callback)(techno);
-				}
-				else {
-					bool isDeployedBuilding = false;
-					if (techno->WhatAmI() == AbstractType::Building) {
-						auto buildingType = abstract_cast<BuildingTypeClass*>(techno->GetType());
+				if (TypeExt && Game::IsTypeSelecting())
+					Game::UICommands_TypeSelect_7327D0(TypeExt->GetSelectionGroupID());
+				else if (check_callback)
+					(*check_callback)(pTechno);
+				else
+				{
+					const auto pBldType = abstract_cast<BuildingTypeClass*>(pTechnoType);
+					const auto pOwner = pTechno->GetOwningHouse();
 
-						if (buildingType->UndeploysInto && buildingType->IsUndeployable()) {
-							isDeployedBuilding = true;
-						}
-					}
-
-					auto owner = techno->GetOwningHouse();
-					if (owner && owner->ControlledByPlayer() && techno->CanBeSelected()
-						&& (techno->WhatAmI() != AbstractType::Building || isDeployedBuilding)) {
-						Unsorted::MoveFeedback = !techno->Select();
+					if (pOwner && pOwner->ControlledByPlayer() && pTechno->CanBeSelected()
+						&& (!pBldType || (pBldType && pBldType->UndeploysInto && pBldType->IsUndeployable())))
+					{
+						Unsorted::MoveFeedback = !pTechno->Select();
 					}
 				}
 			}
-		}
 
 		Unsorted::MoveFeedback = true;
 	}
@@ -113,8 +118,8 @@ public:
 
 			RECT rect{ left , top, right - left + 1, bottom - top + 1 };
 
-			bool priorityFiltering = Phobos::Config::PrioritySelectionFiltering && Tactical_IsHighPriorityInRect(pThis, &rect);
-			Tactical_SelectFiltered(pThis, &rect, check_callback, priorityFiltering);
+			bool bPriorityFiltering = Phobos::Config::PrioritySelectionFiltering && Tactical_IsHighPriorityInRect(pThis, &rect);
+			Tactical_SelectFiltered(pThis, &rect, check_callback, bPriorityFiltering);
 
 			pThis->Band.left = 0;
 			pThis->Band.top = 0;

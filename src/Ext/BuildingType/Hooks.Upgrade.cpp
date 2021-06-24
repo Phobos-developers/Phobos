@@ -2,7 +2,7 @@
 #include <BuildingClass.h>
 #include <BuildingTypeClass.h>
 #include <HouseClass.h>
-#include "../../Utilities/EnumFunctions.h"
+#include <Utilities/EnumFunctions.h>
 #include "Body.h"
 
 bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner) {
@@ -21,9 +21,6 @@ bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pU
 	}
 	return false;
 }
-
-// =============================
-// container hooks
 
 DEFINE_HOOK(452678, CanUpgrade_UpgradeBuildings, 8)
 {

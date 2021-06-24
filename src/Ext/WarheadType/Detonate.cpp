@@ -7,8 +7,8 @@
 #include <AnimTypeClass.h>
 #include <AnimClass.h>
 
-#include "../../Utilities/Helpers.Alex.h"
-#include "../TechnoType/Body.h"
+#include <Utilities/Helpers.Alex.h>
+#include <Ext/TechnoType/Body.h>
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
 {
@@ -19,8 +19,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			for (auto pOtherHouse : *HouseClass::Array)
 			{
 				if (pOtherHouse->ControlledByHuman() &&	  // Not AI
-					!pOtherHouse->IsObserver() &&		 // Not Observer
-					!pOtherHouse->Defeated &&			 // Not Defeated
+					!pOtherHouse->IsObserver() &&		  // Not Observer
+					!pOtherHouse->Defeated &&			  // Not Defeated
 					pOtherHouse != pHouse &&			  // Not pThisHouse
 					!pHouse->IsAlliedWith(pOtherHouse))   // Not Allied
 				{

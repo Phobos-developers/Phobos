@@ -1,6 +1,7 @@
 #include "Patch.h"
 
-#include <Utilities\Macro.h>
+#include "Macro.h"
+
 #include <Phobos.h>
 
 int GetSection(char* sectionName, void** pVirtualAddress)

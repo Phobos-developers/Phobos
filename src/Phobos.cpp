@@ -1,16 +1,14 @@
-﻿#include "Phobos.h"
+﻿#include <Phobos.h>
 
 #include <Helpers/Macro.h>
-
-#include "Phobos.h"
 
 #include <CCINIClass.h>
 #include <Unsorted.h>
 #include <Drawing.h>
 
 #include <Utilities/GeneralUtils.h>
-#include <Misc/Debug.h>
-#include "Utilities/Patch.h"
+#include <Utilities/Debug.h>
+#include <Utilities/Patch.h>
 
 #ifndef IS_RELEASE_VER
 bool HideWarning = false;

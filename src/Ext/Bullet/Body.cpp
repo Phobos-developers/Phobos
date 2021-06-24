@@ -1,6 +1,6 @@
 #include "Body.h"
-#include "../RadSite/Body.h"
-#include "../WeaponType/Body.h"
+#include <Ext/RadSite/Body.h>
+#include <Ext/WeaponType/Body.h>
 template<> const DWORD Extension<BulletClass>::Canary = 0x2A2A2A2A;
 BulletExt::ExtContainer BulletExt::ExtMap;
 

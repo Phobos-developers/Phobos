@@ -4,11 +4,11 @@
 #include <StringTable.h>
 #include <Matrix3D.h>
 
-#include "../BuildingType/Body.h"
-#include "../BulletType/Body.h"
-#include "../Techno/Body.h"
+#include <Ext/BuildingType/Body.h>
+#include <Ext/BulletType/Body.h>
+#include <Ext/Techno/Body.h>
 
-#include "../../Utilities/GeneralUtils.h"
+#include <Utilities/GeneralUtils.h>
 
 template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;

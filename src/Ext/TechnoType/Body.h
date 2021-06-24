@@ -2,8 +2,8 @@
 #include <TechnoTypeClass.h>
 
 #include <Helpers/Macro.h>
-#include "../_Container.hpp"
-#include "../../Utilities/TemplateDef.h"
+#include <Utilities/Container.h>
+#include <Utilities/TemplateDef.h>
 
 class Matrix3D;
 

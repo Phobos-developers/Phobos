@@ -32,7 +32,7 @@
 
 #pragma once
 
-#include "./../Phobos.h"
+#include <Phobos.h>
 
 enum class AirAttackStatus
 {

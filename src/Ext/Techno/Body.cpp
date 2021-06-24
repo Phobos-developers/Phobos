@@ -8,7 +8,7 @@
 #include <SpawnManagerClass.h>
 #include <InfantryClass.h>
 
-#include "../BulletType/Body.h"
+#include <Ext/BulletType/Body.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;

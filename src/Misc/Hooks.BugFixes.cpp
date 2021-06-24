@@ -1,10 +1,12 @@
-#include <Utilities/Macro.h>
 #include <AnimClass.h>
 #include <TechnoClass.h>
 #include <FootClass.h>
 #include <UnitClass.h>
 #include <ScenarioClass.h>
 #include <VoxelAnimClass.h>
+
+#include <Utilities/Macro.h>
+#include <Utilities/Debug.h>
 
 //Replace: checking of HasExtras = > checking of (HasExtras && Shadow)
 DEFINE_HOOK(423365, Phobos_BugFixes_SHPShadowCheck, 8)
@@ -48,8 +50,8 @@ DEFINE_HOOK(4D7431, FootClass_ReceiveDamage_DyingFix, 5)
 	GET(FootClass*, pThis, ESI);
 	GET(DamageState, result, EAX);
 
-	if (result != DamageState::PostMortem && (pThis->IsSinking /*|| pThis->IsCrashing*/))
-		R->EAX(DamageState::PostMortem);
+	if (result != DamageState::PostMortem && (pThis->IsSinking || (!pThis->IsAttackedByLocomotor && pThis->IsCrashing)))
+    R->EAX(DamageState::PostMortem);
 
 	return 0;
 }
@@ -110,4 +112,35 @@ DEFINE_HOOK(702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, A)
 	R->EBX(totalSpawnAmount);
 
 	return 0x7023E5;
+}
+
+// issue #112 Make FireOnce=yes work on other TechnoTypes
+// Author: Starkku
+DEFINE_HOOK(4C7518, EventClass_Execute_StopUnitDeployFire, 9)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto const pUnit = abstract_cast<UnitClass*>(pThis);
+	if (pUnit && pUnit->CurrentMission == Mission::Unload && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
+		pUnit->QueueMission(Mission::Guard, true);
+
+	return 0;
+}
+
+DEFINE_HOOK(73DD12, UnitClass_Mission_Unload_DeployFire, 6)
+{
+	GET(UnitClass*, pThis, ESI);
+
+	int weaponIndex = pThis->GetTechnoType()->DeployFireWeapon;
+
+	if (pThis->GetFireError(pThis->Target, weaponIndex, true) == FireError::OK)
+	{
+		pThis->Fire(pThis->Target, weaponIndex);
+		auto const pWeapon = pThis->GetWeapon(weaponIndex);
+
+		if (pWeapon && pWeapon->WeaponType->FireOnce)
+			pThis->QueueMission(Mission::Guard, true);
+	}
+
+	return 0x73DD3C;
 }

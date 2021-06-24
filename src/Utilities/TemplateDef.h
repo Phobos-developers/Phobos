@@ -39,7 +39,7 @@
 #include "INIParser.h"
 #include "Enum.h"
 #include "Constructs.h"
-#include "../Misc/SavegameDef.h"
+#include "SavegameDef.h"
 
 #include <InfantryTypeClass.h>
 #include <AircraftTypeClass.h>

@@ -1,5 +1,5 @@
 /*
- *  C++ 20 standard introduces this, might be useful. 
+ *  C++ 20 standard introduces this, might be useful.
  *  However, IntelliSense do not recognize them... for now, so do modules.
  *  When it's possible, I might try to make the codes fit with C++ 20 then.
  * 

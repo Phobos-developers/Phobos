@@ -32,9 +32,9 @@
 
 #pragma once
 
-#include "..\Phobos.h"
 #include "Parser.h"
 
+#include <Phobos.h>
 #include <CCINIClass.h>
 
 class INI_EX {

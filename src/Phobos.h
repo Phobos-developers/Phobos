@@ -1,5 +1,5 @@
 #pragma once
-#include "Phobos.version.h"
+#include <Phobos.version.h>
 #include <Windows.h>
 
 class CCINIClass;

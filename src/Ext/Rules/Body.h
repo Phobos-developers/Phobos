@@ -3,11 +3,11 @@
 #include <CCINIClass.h>
 #include <RulesClass.h>
 
-#include <Ext/_Container.hpp>
+#include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
 
-#include <Misc/Debug.h>
+#include <Utilities/Debug.h>
 
 
 class AnimTypeClass;
@@ -27,11 +27,13 @@ public:
 		Valueable<Vector3D<int>> Pips_Shield;
 		Valueable<Vector3D<int>> Pips_Shield_Buildings;
 		Valueable<int> RadApplicationDelay_Building;
+		PhobosFixedString<32u> MissingCameo;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Pips_Shield({ -1,-1,-1 })
 			, Pips_Shield_Buildings({ -1,-1,-1 })
 			, RadApplicationDelay_Building(0)
+			, MissingCameo("xxicon.shp")
 		{ }
 
 		virtual ~ExtData() = default;
@@ -56,6 +58,8 @@ private:
 	static std::unique_ptr<ExtData> Data;
 
 public:
+	static IStream* g_pStm;
+
 	static void Allocate(RulesClass* pThis);
 	static void Remove(RulesClass* pThis);
 

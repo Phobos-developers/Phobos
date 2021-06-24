@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Phobos.CRT.h"
-#include "../Misc/Savegame.h"
-#include "../Utilities/Constructs.h"
+#include <Phobos.CRT.h>
+#include "Savegame.h"
+#include "Constructs.h"
 
 #include <algorithm>
 #include <memory>
@@ -14,17 +14,20 @@
 template <typename T> class Enumerable
 {
 	typedef std::vector<std::unique_ptr<T>> container_t;
+
 public:
 	static container_t Array;
 
 	static int FindIndex(const char* Title)
 	{
-		auto result = std::find_if(Array.begin(), Array.end(), [Title](std::unique_ptr<T>& Item) {
-			return !_strcmpi(Item->Name, Title);
+		auto result = std::find_if(Array.begin(), Array.end(), [Title](std::unique_ptr<T>& Item)
+			{
+				return !_strcmpi(Item->Name, Title);
 			});
-		if (result == Array.end()) {
+
+		if (result == Array.end())
 			return -1;
-		}
+		
 		return std::distance(Array.begin(), result);
 	}
 
@@ -36,10 +39,11 @@ public:
 
 	static T* FindOrAllocate(const char* Title)
 	{
-		if (T* find = Find(Title)) {
+		if (T* find = Find(Title))
 			return find;
-		}
+		
 		Array.push_back(std::make_unique<T>(Title));
+		
 		return Array.back().get();
 	}
 
@@ -52,13 +56,15 @@ public:
 	{
 		const char* section = GetMainSection();
 		int len = pINI->GetKeyCount(section);
-		for (int i = 0; i < len; ++i) {
-			const char* Key = pINI->GetKeyName(section, i);
-			FindOrAllocate(Key);
+
+		for (int i = 0; i < len; ++i)
+		{
+			if (pINI->ReadString(section, pINI->GetKeyName(section, i), "", Phobos::readBuffer))
+				FindOrAllocate(Phobos::readBuffer);
 		}
-		for (size_t i = 0; i < Array.size(); ++i) {
-			Array[i]->LoadFromINI(pINI);
-		}
+		
+		for (const auto& item : Array)
+			item->LoadFromINI(pINI);
 	}
 
 	static bool LoadGlobals(PhobosStreamReader& Stm)
@@ -66,16 +72,16 @@ public:
 		Clear();
 
 		size_t Count = 0;
-		if (!Stm.Load(Count)) {
+		if (!Stm.Load(Count))
 			return false;
-		}
+		
 
 		for (size_t i = 0; i < Count; ++i) {
 			void* oldPtr = nullptr;
 			decltype(Name) name;
-			if (!Stm.Load(oldPtr) || !Stm.Load(name)) {
+
+			if (!Stm.Load(oldPtr) || !Stm.Load(name))
 				return false;
-			}
 
 			auto newPtr = FindOrAllocate(name);
 			PhobosSwizzle::Instance.RegisterChange(oldPtr, newPtr);
@@ -90,7 +96,8 @@ public:
 	{
 		Stm.Save(Array.size());
 
-		for (const auto& item : Array) {
+		for (const auto& item : Array)
+		{
 			// write old pointer and name, then delegate
 			Stm.Save(item.get());
 			Stm.Save(item->Name);
@@ -102,13 +109,14 @@ public:
 
 	static const char* GetMainSection();
 
-	Enumerable(const char* Title) {
+	Enumerable(const char* Title)
+	{
 		this->Name = Title;
 	}
 
 	virtual ~Enumerable() = default;
 
-	virtual void LoadFromINI(CCINIClass* pINI) {}
+	virtual void LoadFromINI(CCINIClass* pINI) { }
 
 	virtual void LoadFromStream(PhobosStreamReader& Stm) = 0;
 

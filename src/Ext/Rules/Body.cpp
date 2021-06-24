@@ -1,7 +1,7 @@
 #include "Body.h"
-#include "../Side/Body.h"
-#include "../../Utilities/TemplateDef.h"
-#include <Enum/RadTypeClass.h>
+#include <Ext/Side/Body.h>
+#include <Utilities/TemplateDef.h>
+#include <New/Type/RadTypeClass.h>
 #include <FPSCounter.h>
 #include <GameOptionsClass.h>
 
@@ -25,7 +25,8 @@ void RulesExt::LoadFromINIFile(RulesClass* pThis, CCINIClass* pINI)
 
 void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
-	RadTypeClass::LoadListSection(pINI);
+	RadTypeClass::LoadFromINIList(pINI);
+
 	Data->LoadBeforeTypeData(pThis, pINI);
 }
 
@@ -59,6 +60,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
 	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
+	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 }
 
 // this runs between the before and after type data loading methods for rules ini
@@ -107,6 +109,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_Shield)
 		.Process(this->Pips_Shield_Buildings)
 		.Process(this->RadApplicationDelay_Building)
+		.Process(this->MissingCameo)
 		;
 }
 
@@ -153,7 +156,7 @@ DEFINE_HOOK(667A30, RulesClass_DTOR, 5)
 	return 0;
 }
 
-IStream* g_pStm = nullptr;
+IStream* RulesExt::g_pStm = nullptr;
 
 DEFINE_HOOK_AGAIN(674730, RulesClass_SaveLoad_Prefix, 6)
 DEFINE_HOOK(675210, RulesClass_SaveLoad_Prefix, 5)
@@ -161,7 +164,7 @@ DEFINE_HOOK(675210, RulesClass_SaveLoad_Prefix, 5)
 	//GET(RulesClass*, pItem, ECX);
 	GET_STACK(IStream*, pStm, 0x4);
 
-	g_pStm = pStm;
+	RulesExt::g_pStm = pStm;
 
 	return 0;
 }
@@ -171,7 +174,7 @@ DEFINE_HOOK(678841, RulesClass_Load_Suffix, 7)
 	auto buffer = RulesExt::Global();
 
 	PhobosByteStream Stm(0);
-	if (Stm.ReadBlockFromStream(g_pStm))
+	if (Stm.ReadBlockFromStream(RulesExt::g_pStm))
 	{
 		PhobosStreamReader Reader(Stm);
 
@@ -192,7 +195,7 @@ DEFINE_HOOK(675205, RulesClass_Save_Suffix, 8)
 	writer.RegisterChange(buffer);
 
 	buffer->SaveToStream(writer);
-	saver.WriteBlockToStream(g_pStm);
+	saver.WriteBlockToStream(RulesExt::g_pStm);
 
 	return 0;
 }
