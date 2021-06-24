@@ -1,10 +1,10 @@
-#include <Utilities/Macro.h>
 #include <AnimClass.h>
 #include <TechnoClass.h>
 #include <FootClass.h>
 #include <UnitClass.h>
-#include <Utilities/Debug.h>
 
+#include <Utilities/Macro.h>
+#include <Utilities/Debug.h>
 
 //Replace: checking of HasExtras = > checking of (HasExtras && Shadow)
 DEFINE_HOOK(423365, Phobos_BugFixes_SHPShadowCheck, 8)
@@ -88,6 +88,7 @@ DEFINE_HOOK(73DD12, UnitClass_Mission_Unload_DeployFire, 6)
 	{
 		pThis->Fire(pThis->Target, weaponIndex);
 		auto const pWeapon = pThis->GetWeapon(weaponIndex);
+
 		if (pWeapon && pWeapon->WeaponType->FireOnce)
 			pThis->QueueMission(Mission::Guard, true);
 	}
