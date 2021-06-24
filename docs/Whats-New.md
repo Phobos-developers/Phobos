@@ -39,7 +39,7 @@ New:
 - Semantic locomotor aliases for modder convenience (by Belonit)
 - Ability to specify amount of shots for strafing aircraft and burst simulation (by Starkku)
 - Customizeable Teleport/Chrono Locomotor properties per TechnoType (by Otamaa)
-- Waypoints' upper limit now increases from 702 to 2147483647 (by secsome)
+- Maximum waypoints amount increased from 702 to 2147483647 (by secsome)
 - Customizeable Missing Cameo file (by Uranusian)
 
 Vanilla fixes:
@@ -52,6 +52,8 @@ Vanilla fixes:
 - Fixed the bug when `InfiniteMindControl` with `Damage=1` will auto-release the victim to control new one (by Uranusian)
 - Fixed the bug that script action `Move to cell` was still using leftover cell calculations from previous games (by secsome)
 - Fixed the bug when script action `125 Build At...` didn't play buildup anim (by secsome)
+- Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond specified maximums anymore) (by Otamaa)
+- Fixes to `DeployFire` logic (`DeployFireWeapon`, `FireOnce`, stop command now work properly) (by Starkku)
 
 Phobos fixes:
 - Properly rewritten a fix for mind-controlled vehicles deploying into buildings (by FS-21)
