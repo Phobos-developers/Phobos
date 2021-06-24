@@ -33,8 +33,8 @@ public:
 	bool Save(PhobosStreamWriter& Stm) const;
 
 private:
-	template <typename T1, typename T2>
-	static bool Serialize(T1 pThis, T2& Stm);
+	template <typename T>
+	bool Serialize(T& Stm);
 
 	void UpdateType();
 

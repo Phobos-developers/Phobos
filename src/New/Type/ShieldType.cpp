@@ -7,21 +7,6 @@ const char* Enumerable<ShieldTypeClass>::GetMainSection()
 	return "ShieldTypes";
 }
 
-void ShieldTypeClass::LoadListSection(CCINIClass* pINI)
-{
-	for (int i = 0; i < pINI->GetKeyCount(GetMainSection()); ++i)
-	{
-		if (pINI->ReadString(GetMainSection(), pINI->GetKeyName(GetMainSection(), i), "", Phobos::readBuffer))
-		{
-			FindOrAllocate(Phobos::readBuffer);
-			Debug::Log("ShieldTypeClass :: LoadListSection check [%s] \n", Phobos::readBuffer);
-		}
-	}
-
-	for (auto& pType : Array)
-		pType->LoadFromINI(pINI);
-}
-
 void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = this->Name;
@@ -50,7 +35,6 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->IdleAnim.Read(exINI, pSection, "IdleAnim");
 	this->BreakAnim.Read(exINI, pSection, "BreakAnim");
-	this->RespawnAnim.Read(exINI, pSection, "RespawnAnim");
 	this->HitAnim.Read(exINI, pSection, "HitAnim");
 }
 
@@ -71,9 +55,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->IdleAnim_TemporalAction)
 		.Process(this->IdleAnim)
 		.Process(this->BreakAnim)
-		.Process(this->RespawnAnim)
 		.Process(this->HitAnim)
-		.Success()
 		;
 }
 

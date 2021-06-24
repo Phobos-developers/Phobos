@@ -36,7 +36,7 @@ public:
 		Valueable<bool> ImmuneToCrit;
 		Valueable<bool> MultiMindControl_ReleaseVictim;
 
-		Valueable<ShieldTypeClass*> Shield;
+		Valueable<ShieldTypeClass*> ShieldType;
 
 		Nullable<AnimTypeClass*> WarpOut;
 		Nullable<AnimTypeClass*> WarpIn;
@@ -66,7 +66,7 @@ public:
 			Promote_IncludeSpawns(false),
 			ImmuneToCrit(false),
 			MultiMindControl_ReleaseVictim(false),
-			Shield(),
+			ShieldType(),
 			WarpOut(),
 			WarpIn(),
 			WarpAway(),

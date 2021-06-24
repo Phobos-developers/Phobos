@@ -19,7 +19,6 @@
 #include <Ext/WeaponType/Body.h>
 
 #include <New/Type/RadTypeClass.h>
-#include "New/Type/RadTypeClass.h"
 
 #include <utility>
 

@@ -12,7 +12,7 @@ DEFINE_HOOK(701900, TechnoClass_ReceiveDamage_Shield, 6)
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	if (const auto pShieldData = pExt->ShieldData.get())
+	if (const auto pShieldData = pExt->Shield.get())
 	{
 		if (!(pShieldData->IsAvailable() && pShieldData->IsOnline()))
 			return 0;
@@ -31,7 +31,7 @@ DEFINE_HOOK(7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 5)
 	GET(int*, Damage, EBX);
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	if (const auto pShieldData = pExt->ShieldData.get())
+	if (const auto pShieldData = pExt->Shield.get())
 	{
 		if (pShieldData->IsAvailable() && pShieldData->GetHP() && pShieldData->IsOnline())
 			return 0x7019E3;
@@ -65,11 +65,11 @@ DEFINE_HOOK(708AEB, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_Should
 
 	if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
 	{
-		if (const auto pShieldData = pExt->ShieldData.get())
+		if (const auto pShieldData = pExt->Shield.get())
 		{
 			if (pShieldData->IsAvailable() && pShieldData->GetHP() && pShieldData->IsOnline())
 			{
-				R->EAX(TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType())->Shield->Armor);
+				R->EAX(TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType())->ShieldType->Armor);
 				return R->Origin() + 6;
 			}
 		}
@@ -86,7 +86,7 @@ DEFINE_HOOK(6F36F2, TechnoClass_WhatWeaponShouldIUse_Shield, 6)
 	GET(TechnoClass*, pTarget, EBP);
 	if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
 	{
-		if (auto pShieldData = pExt->ShieldData.get())
+		if (auto pShieldData = pExt->Shield.get())
 		{
 			if (pShieldData->GetHP())
 			{
@@ -116,7 +116,7 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
 
 	if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
 	{
-		if (const auto pShieldData = pExt->ShieldData.get())
+		if (const auto pShieldData = pExt->Shield.get())
 		{
 			if (pShieldData->IsAvailable() && pShieldData->GetHP() && pShieldData->IsOnline())
 			{
@@ -138,13 +138,13 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
 DEFINE_HOOK(6F9E50, TechnoClass_AI_Shield, 5)
 {
 	GET(TechnoClass*, pThis, ECX);
-	const auto pShieldType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->Shield;
+	const auto pShieldType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->ShieldType;
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pShieldType->Strength && !pExt->ShieldData)
-		pExt->ShieldData = std::make_unique<ShieldClass>(pThis);
+	if (pShieldType->Strength && !pExt->Shield)
+		pExt->Shield = std::make_unique<ShieldClass>(pThis);
 
-	if (const auto pShieldData = pExt->ShieldData.get())
+	if (const auto pShieldData = pExt->Shield.get())
 		pShieldData->AI();
 
 	return 0;
@@ -157,7 +157,7 @@ DEFINE_HOOK(71A88D, TemporalClass_AI_Shield, 0)
 	if (auto const pTarget = pThis->Target)
 	{
 		const auto pExt = TechnoExt::ExtMap.Find(pTarget);
-		if (const auto pShieldData = pExt->ShieldData.get())
+		if (const auto pShieldData = pExt->Shield.get())
 		{
 			if (pShieldData->IsAvailable())
 				pShieldData->AI_Temporal();
@@ -173,10 +173,10 @@ DEFINE_HOOK(6F6AC4, TechnoClass_Remove_Shield, 5)
 	GET(TechnoClass*, pThis, ECX);
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->ShieldData &&
+	if (pExt->Shield &&
 		!(pThis->WhatAmI() == AbstractType::Building && pThis->GetTechnoType()->UndeploysInto && pThis->CurrentMission == Mission::Selling))
 	{
-		pExt->ShieldData = nullptr;
+		pExt->Shield = nullptr;
 	}
 
 	return 0;
@@ -201,7 +201,7 @@ DEFINE_HOOK(6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 6)
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFS(0x4C, -0x8));
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	if (const auto pShieldData = pExt->ShieldData.get())
+	if (const auto pShieldData = pExt->Shield.get())
 	{
 		if (pShieldData->IsAvailable())
 			pShieldData->DrawShieldBar(iLength, pLocation, pBound);
@@ -217,7 +217,7 @@ DEFINE_HOOK(6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 7)
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFS(0x4C, -0x8));
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	if (const auto pShieldData = pExt->ShieldData.get())
+	if (const auto pShieldData = pExt->Shield.get())
 	{
 		if (pShieldData->IsAvailable())
 		{

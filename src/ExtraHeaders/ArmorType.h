@@ -2,7 +2,6 @@
 
 #include <Utilities/Template.h>
 
-
 class ArmorType : public Valueable<int>
 {
 public:

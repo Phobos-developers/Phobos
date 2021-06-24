@@ -33,34 +33,34 @@ ShieldClass::ShieldClass(TechnoClass* pTechno) :
 
 void ShieldClass::UpdateType()
 {
-	this->Type = TechnoTypeExt::ExtMap.Find(this->Techno->GetTechnoType())->Shield;
+	this->Type = TechnoTypeExt::ExtMap.Find(this->Techno->GetTechnoType())->ShieldType;
 }
 
-template <typename T1, typename T2>
-bool ShieldClass::Serialize(T1 pThis, T2& Stm)
+template <typename T>
+bool ShieldClass::Serialize(T& Stm)
 {
 	return Stm
-		.Process(pThis->Techno)
-		.Process(pThis->TechnoID)
-		.Process(pThis->IdleAnim)
-		.Process(pThis->Timers.SelfHealing)
-		.Process(pThis->Timers.Respawn)
-		.Process(pThis->HP)
-		.Process(pThis->Cloak)
-		.Process(pThis->Online)
-		.Process(pThis->Temporal)
-		.Process(pThis->Available)
+		.Process(this->Techno)
+		.Process(this->TechnoID)
+		.Process(this->IdleAnim)
+		.Process(this->Timers.SelfHealing)
+		.Process(this->Timers.Respawn)
+		.Process(this->HP)
+		.Process(this->Cloak)
+		.Process(this->Online)
+		.Process(this->Temporal)
+		.Process(this->Available)
 		.Success();
 }
 
 bool ShieldClass::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
-	return Serialize(this, Stm);
+	return Serialize(Stm);
 }
 
 bool ShieldClass::Save(PhobosStreamWriter& Stm) const
 {
-	return Serialize(this, Stm);
+	return const_cast<ShieldClass*>(this)->Serialize(Stm);
 }
 
 // Is used for DeploysInto/UndeploysInto
@@ -68,17 +68,17 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 {
 	const auto pFromExt = TechnoExt::ExtMap.Find(pFrom);
 	const auto pToExt = TechnoExt::ExtMap.Find(pTo);
-	
-	if (pFromExt->ShieldData)
+
+	if (pFromExt->Shield)
 	{
-		pToExt->ShieldData = std::make_unique<ShieldClass>(pTo);
-		strcpy(pToExt->ShieldData->TechnoID, pFromExt->ShieldData->TechnoID);
-		pToExt->ShieldData->Available = pFromExt->ShieldData->Available;
-		pToExt->ShieldData->HP = pFromExt->ShieldData->HP;
+		pToExt->Shield = std::make_unique<ShieldClass>(pTo);
+		strcpy(pToExt->Shield->TechnoID, pFromExt->Shield->TechnoID);
+		pToExt->Shield->Available = pFromExt->Shield->Available;
+		pToExt->Shield->HP = pFromExt->Shield->HP;
 	}
 
-	if (pFrom->WhatAmI() == AbstractType::Building && pFromExt->ShieldData)
-		pFromExt->ShieldData = nullptr;
+	if (pFrom->WhatAmI() == AbstractType::Building && pFromExt->Shield)
+		pFromExt->Shield = nullptr;
 }
 
 int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
@@ -100,7 +100,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 	if (nDamage > 0)
 	{
-		this->Timers.SelfHealing.Start(this->Type->SelfHealing_Rate); //when attacked, restart the timer
+		this->Timers.SelfHealing.Start(this->Type->SelfHealing_Rate); // when attacked, restart the timer
 		this->ResponseAttack();
 
 		int residueDamage = nDamage - this->HP;
@@ -230,7 +230,6 @@ void ShieldClass::AI()
 		return;
 
 	this->UpdateType();
-
 	this->CloakCheck();
 	this->ConvertCheck();
 
@@ -242,7 +241,6 @@ void ShieldClass::AI()
 		return;
 
 	this->OnlineCheck();
-
 	this->RespawnShield();
 	this->SelfHealing();
 
@@ -256,6 +254,7 @@ void ShieldClass::CloakCheck()
 {
 	const auto cloakState = this->Techno->CloakState;
 	this->Cloak = cloakState == CloakState::Cloaked || cloakState == CloakState::Cloaking;
+
 	if (this->Cloak)
 		this->IdleAnim = nullptr;
 }
@@ -268,7 +267,6 @@ void ShieldClass::OnlineCheck()
 	const auto timer = (this->HP <= 0) ? &this->Timers.Respawn : &this->Timers.SelfHealing;
 
 	auto pTechno = this->Techno;
-
 	bool isActive = !(pTechno->Deactivated || pTechno->IsUnderEMP());
 
 	if (isActive && this->Techno->WhatAmI() == AbstractType::Building)
@@ -348,7 +346,7 @@ void ShieldClass::ConvertCheck()
 	if (pType->Strength && this->Available)
 	{ // Update this shield for the new owner
 		const auto pFrom_TechnoType = TechnoTypeClass::Find(this->TechnoID);
-		const auto pFromType = TechnoTypeExt::ExtMap.Find(pFrom_TechnoType)->Shield;
+		const auto pFromType = TechnoTypeExt::ExtMap.Find(pFrom_TechnoType)->ShieldType;
 
 		if (pFromType->IdleAnim.Get() != pType->IdleAnim.Get())
 			this->KillAnim();
@@ -392,6 +390,7 @@ void ShieldClass::SelfHealing()
 		{
 			timer->Start(pType->SelfHealing_Rate);
 			this->HP += percentageAmount;
+
 			if (this->HP > pType->Strength)
 			{
 				this->HP = pType->Strength;
@@ -605,7 +604,7 @@ int ShieldClass::DrawShieldBar_PipAmount(int iLength)
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	return Math::clamp(
-		(int)round(double(this->HP) / double(pTypeExt->Shield->Strength) * iLength),
+		(int)round(double(this->HP) / double(pTypeExt->ShieldType->Strength) * iLength),
 		0,
 		iLength
 	);

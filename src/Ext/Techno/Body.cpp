@@ -180,7 +180,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->InterceptedBullet)
-		.Process(this->ShieldData)
+		.Process(this->Shield)
 		.Process(this->WasCloaked)
 		;
 }

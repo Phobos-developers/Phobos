@@ -185,11 +185,11 @@ public:
 				append("Ammo = (%d / %d)\n", pFoot->Ammo, pType->Ammo);
 			append("Current HP = (%d / %d)\n", pFoot->Health, pType->Strength);
 			auto pTechnoExt = TechnoExt::ExtMap.Find(pFoot);
-			if (auto pShieldData = pTechnoExt->ShieldData.get())
+			if (auto pShieldData = pTechnoExt->Shield.get())
 			{
 				auto pTypeShieldData = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType());
 
-				append("Current Shield HP = (%d / %d)\n", pShieldData->GetHP(), pTypeShieldData->Shield->Strength);
+				append("Current Shield HP = (%d / %d)\n", pShieldData->GetHP(), pTypeShieldData->ShieldType->Strength);
 			}
 			display();
 		};
@@ -215,11 +215,11 @@ public:
 				append("Ammo = (%d / %d)\n", pBuilding->Ammo, pBuilding->Type->Ammo);
 			append("Current HP = (%d / %d)\n", pBuilding->Health, pBuilding->Type->Strength);
 			auto pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
-			if (auto pShieldData = pTechnoExt->ShieldData.get())
+			if (auto pShieldData = pTechnoExt->Shield.get())
 			{
 				auto pTypeShieldData = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType());
 
-				append("Current Shield HP = (%d / %d)\n", pShieldData->GetHP(), pTypeShieldData->Shield->Strength);
+				append("Current Shield HP = (%d / %d)\n", pShieldData->GetHP(), pTypeShieldData->ShieldType->Strength);
 			}
 			display();
 		};

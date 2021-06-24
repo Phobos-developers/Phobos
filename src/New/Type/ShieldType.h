@@ -22,8 +22,8 @@ public:
 	Valueable<AttachedAnimFlag> IdleAnim_TemporalAction;
 	Nullable<AnimTypeClass*> IdleAnim;
 	Nullable<AnimTypeClass*> BreakAnim;
-	Nullable<AnimTypeClass*> RespawnAnim;
 	Nullable<AnimTypeClass*> HitAnim;
+
 private:
 	Valueable<double> Respawn_Rate__InMinutes;
 	Valueable<double> SelfHealing_Rate__InMinutes;
@@ -43,15 +43,12 @@ public:
 		IdleAnim_TemporalAction(AttachedAnimFlag::Hides),
 		IdleAnim(),
 		BreakAnim(),
-		RespawnAnim(),
 		HitAnim(),
 		Respawn_Rate__InMinutes(0.0),
 		SelfHealing_Rate__InMinutes(0.0)
 	{};
 
 	virtual ~ShieldTypeClass() override = default;
-
-	static void LoadListSection(CCINIClass* pINI);
 
 	virtual void LoadFromINI(CCINIClass* pINI) override;
 	virtual void LoadFromStream(PhobosStreamReader& Stm);
