@@ -601,8 +601,6 @@ int ShieldClass::DrawShieldBar_Pip(const bool isBuilding)
 
 int ShieldClass::DrawShieldBar_PipAmount(int iLength)
 {
-	const auto pType = TechnoTypeClass::Find(this->TechnoID);
-
 	return Math::clamp(
 		(int)round(this->GetHealthRatio() * iLength),
 		0,

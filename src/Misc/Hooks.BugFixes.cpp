@@ -88,6 +88,7 @@ DEFINE_HOOK(702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, A)
 
 	if (pType->DebrisTypes.Count > 0 && pType->DebrisMaximums.Count > 0)
 	{
+		auto cord = pThis->GetCoords();
 		for (int currentIndex = 0; currentIndex < pType->DebrisTypes.Count; ++currentIndex)
 		{
 			if (pType->DebrisMaximums.GetItem(currentIndex) > 0)
@@ -100,7 +101,7 @@ DEFINE_HOOK(702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, A)
 				for ( ; amountToSpawn > 0; --amountToSpawn)
 				{
 					GameCreate<VoxelAnimClass>(pType->DebrisTypes.GetItem(currentIndex),
-						&pThis->GetCoords(), pThis->Owner);
+						&cord, pThis->Owner);
 				}
 
 				if (totalSpawnAmount < 1)
