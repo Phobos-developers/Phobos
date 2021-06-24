@@ -65,49 +65,48 @@ DEFINE_HOOK(737D57, UnitClass_ReceiveDamage_DyingFix, 7)
 	return 0;
 }
 
-//Possible fixes for issues #109
-DEFINE_HOOK(702299, TechnoClass_ReceiveDamage_DebrisTypes, A)
+// Restore DebrisMaximums logic (issue #109)
+// Author: Otamaa
+DEFINE_HOOK(702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, A)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
-	auto pThistype = pThis->GetTechnoType();
-	auto& DebrisTypes = pThistype->DebrisTypes;
-	auto& DebrisMaximus = pThistype->DebrisMaximums;
+	auto pType = pThis->GetTechnoType();
 
-	//to enable legacy way , spawn debris
-	if (DebrisMaximus.Count == 1 && DebrisMaximus.GetItem(0) > 0 && DebrisTypes.Count > 0)
-		return 0;
-
-	auto MaxDebris = pThistype->MaxDebris;
-	auto SpawnAmount = ScenarioClass::Instance->Random.RandomRanged(pThistype->MinDebris, MaxDebris);
-
-	if (DebrisTypes.Count > 0 && DebrisMaximus.Count > 0)
+	// If DebrisMaximums has one value, then legacy behavior is used
+	if (pType->DebrisMaximums.Count == 1 &&
+		pType->DebrisMaximums.GetItem(0) > 0 &&
+		pType->DebrisTypes.Count > 0)
 	{
-		int currentIndex = 0;
-		do
-		{
-			if (DebrisMaximus.GetItem(currentIndex) > 0)
-			{
-				auto maximums = DebrisMaximus.GetItem(currentIndex);
-				maximums = maximums > MaxDebris ? MaxDebris : maximums;
-				maximums = ScenarioClass::Instance->Random.Random() % (maximums + 1); //0x702337
-				SpawnAmount -= maximums;
-
-				for (; maximums; --maximums)
-				{
-					auto coords = pThis->GetCoords();
-					GameCreate<VoxelAnimClass>(DebrisTypes.GetItem(currentIndex), &coords, pThis->Owner);
-				}
-
-				if (SpawnAmount < 1)
-					break;
-			}
-			++currentIndex;
-
-		} while (currentIndex < DebrisTypes.Count);
+		return 0;
 	}
 
-	R->EBX(SpawnAmount);
+	auto totalSpawnAmount = ScenarioClass::Instance->Random.RandomRanged(
+		pType->MinDebris, pType->MaxDebris);
+
+	if (pType->DebrisTypes.Count > 0 && pType->DebrisMaximums.Count > 0)
+	{
+		for (int currentIndex = 0; currentIndex < pType->DebrisTypes.Count; ++currentIndex)
+		{
+			if (pType->DebrisMaximums.GetItem(currentIndex) > 0)
+			{
+				int adjustedMaximum = Math::min(pType->DebrisMaximums.GetItem(currentIndex), pType->MaxDebris);
+				int amountToSpawn = ScenarioClass::Instance->Random.Random() % (adjustedMaximum + 1); //0x702337
+				totalSpawnAmount -= amountToSpawn;
+
+				for ( ; amountToSpawn; --amountToSpawn)
+				{
+					GameCreate<VoxelAnimClass>(pType->DebrisTypes.GetItem(currentIndex),
+						&pThis->GetCoords(), pThis->Owner);
+				}
+
+				if (totalSpawnAmount < 1)
+					break;
+			}
+		}
+	}
+
+	R->EBX(totalSpawnAmount);
 
 	return 0x7023E5;
 }
