@@ -2,6 +2,8 @@
 
 #include <Utilities/SavegameDef.h>
 
+#include <Ext/Scenario/Body.h>
+
 //Static init
 template<> const DWORD Extension<TActionClass>::Canary = 0x91919191;
 TActionExt::ExtContainer TActionExt::ExtMap;
@@ -25,6 +27,43 @@ void TActionExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<TActionClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
+}
+
+bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject,
+	TriggerClass* pTrigger, CellStruct const& location, bool& bHandled)
+{
+	bHandled = true;
+	switch (pThis->ActionKind)
+	{
+	case TriggerAction::PlaySoundEffectRandom:
+		return TActionExt::PlayAudioAtRandomWP(pThis, pHouse, pObject, pTrigger, location);
+	default:
+		bHandled = false;
+		return true;
+	};
+}
+
+bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	std::vector<int> waypoints;
+	waypoints.reserve(ScenarioExt::Global()->Waypoints.size());
+	
+	auto const pScen = ScenarioClass::Instance;
+
+	for (auto pair : ScenarioExt::Global()->Waypoints)
+		if (pScen->IsDefinedWaypoint(pair.first))
+			waypoints.push_back(pair.first);
+
+	if (waypoints.size() > 0)
+	{
+		auto const index = pScen->Random.RandomRanged(0, waypoints.size() - 1);
+		auto const luckyWP = waypoints[index];
+		auto const cell = pScen->GetWaypointCoords(luckyWP);
+		auto const coords = CellClass::Cell2Coord(cell);
+		VocClass::PlayIndexAtPos(pThis->Value, coords);
+	}
+
+	return true;
 }
 
 // =============================

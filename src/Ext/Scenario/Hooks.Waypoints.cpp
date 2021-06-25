@@ -46,9 +46,9 @@ DEFINE_HOOK(68BD60, ScenarioClass_Clear_All_Waypoints, 6)
 DEFINE_HOOK(68BD80, ScenarioClass_Is_Waypoint_Valid, 5)
 {
 	GET_STACK(int, nWaypoint, 0x4);
-	auto const& waypoints = ScenarioExt::Global()->Waypoints;
+	auto& waypoints = ScenarioExt::Global()->Waypoints;
 
-	R->AL(nWaypoint >= 0 && waypoints.find(nWaypoint) != waypoints.end());
+	R->AL(nWaypoint >= 0 && waypoints.find(nWaypoint) != waypoints.end() && waypoints[nWaypoint].X && waypoints[nWaypoint].Y);
 
 	return 0x68BDB3;
 }

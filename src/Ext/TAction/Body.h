@@ -32,6 +32,12 @@ public:
 		void Serialize(T& Stm);
 	};
 
+	static bool Execute(TActionClass* pThis, HouseClass* pHouse,
+			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location, bool& bHandled);
+
+	static bool PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse,
+			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
+
 	class ExtContainer final : public Container<TActionExt>
 	{
 	public:
