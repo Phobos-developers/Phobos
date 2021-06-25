@@ -13,6 +13,24 @@ This page lists the history of changes across stable Phobos releases and also al
 
 - Key `rulesmd.ini->[SOMETECHNOTYPE]->Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on.
 
+### For Map Editor (Final Alert 2)
+
+In `FAData.ini`:
+```ini
+[ParamTypes]
+47=Structures,28
+53=Play BuildUp,10
+
+[ActionsRA2]
+125=Build at...,-10,47,53,0,0,0,1,0,0,[LONG DESC]
+
+[ScriptsRA2]   ; NEEDS FA2EXT.DLL (by AlexB) or FA2SP.DLL (by secsome)
+71=Timed Area Guard,4,0,1,[LONG DESC]         ; FA2Ext.dll only
+71=Timed Area Guard,20,0,1,[LONG DESC]        ; FA2sp.dll only
+72=Load Onto Transports,0,0,1,[LONG DESC]
+73=Wait until ammo is full,0,0,1,[LONG DESC]
+```
+
 ## Changelog
 
 ### 0.2
@@ -51,7 +69,7 @@ Vanilla fixes:
 - Fixed the bug when cloaked Desolator was unable to fire his deploy weapon (by Otamaa)
 - Fixed the bug when `InfiniteMindControl` with `Damage=1` will auto-release the victim to control new one (by Uranusian)
 - Fixed the bug that script action `Move to cell` was still using leftover cell calculations from previous games (by secsome)
-- Fixed the bug when script action `125 Build At...` didn't play buildup anim (by secsome)
+- Fixed the bug when trigger action `125 Build At...` didn't play buildup anim (by secsome)
 - Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond specified maximums anymore) (by Otamaa)
 - Fixes to `DeployFire` logic (`DeployFireWeapon`, `FireOnce`, stop command now work properly) (by Starkku)
 
