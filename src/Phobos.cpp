@@ -193,14 +193,14 @@ DEFINE_HOOK(4F4583, GScreenClass_DrawText, 6)
 		auto wanted = Drawing::GetTextDimensions(Phobos::VersionDescription);
 
 		RectangleStruct rect = {
-			DSurface::Composite()->GetWidth() - wanted.Width - 10,
+			DSurface::Composite->GetWidth() - wanted.Width - 10,
 			0,
 			wanted.Width + 10,
 			wanted.Height + 10
 		};
 
-		DSurface::Composite()->FillRect(&rect, COLOR_BLACK);
-		DSurface::Composite()->DrawText(Phobos::VersionDescription, rect.X + 5, 5, COLOR_RED);
+		DSurface::Composite->FillRect(&rect, COLOR_BLACK);
+		DSurface::Composite->DrawText(Phobos::VersionDescription, rect.X + 5, 5, COLOR_RED);
 	}
 	return 0;
 }
