@@ -66,14 +66,14 @@ DEFINE_HOOK(68BDC0, ScenarioClass_ReadWaypoints, 8)
 		if (sscanf_s(pName, "%d", &id) != 1 || id < 0)
 			Debug::Log("[Developer Warning] Failed to parse waypoint %s.\n", pName);
 		int nCoord = pINI->ReadInteger("Waypoints", pName, 0);
-		
+
 		if (nCoord)
 		{
 			buffer.X = static_cast<short>(nCoord % 1000);
 			buffer.Y = static_cast<short>(nCoord / 1000);
 			if (auto pCell = MapClass::Instance->TryGetCellAt(buffer))
 				pCell->Flags |= cf_IsWaypoint;
-			else
+			else if (ScenarioExt::CellParsed)
 				Debug::Log("[Developer Warning] Can not get waypoint %d : [%d, %d]!\n", id, buffer.X, buffer.Y);
 			ScenarioExt::Global()->Waypoints[id] = buffer;
 		}
@@ -82,6 +82,12 @@ DEFINE_HOOK(68BDC0, ScenarioClass_ReadWaypoints, 8)
 	}
 
 	return 0x68BE8C;
+}
+
+DEFINE_HOOK(6874E7, ScenarioClass_ReadINI_CellParsed, 6)
+{
+	ScenarioExt::CellParsed = true;
+	return 0;
 }
 
 DEFINE_HOOK(68BE90, ScenarioClass_Write_Waypoints, 5)
@@ -96,7 +102,7 @@ DEFINE_HOOK(68BE90, ScenarioClass_Write_Waypoints, 5)
 		sprintf_s(buffer, "%d", pair.first);
 		pINI->WriteInteger("Waypoints", buffer, pair.second.X + 1000 * pair.second.Y, false);
 	}
-	
+
 	return 0x68BF1F;
 }
 
@@ -255,7 +261,7 @@ DEFINE_HOOK(68AF45, Scen_Waypoint_Call_4, 6)
 		else
 			break;
 	}
-	
+
 	R->EDX(nStartingPoints);
 	return 0x68AF86;
 }
