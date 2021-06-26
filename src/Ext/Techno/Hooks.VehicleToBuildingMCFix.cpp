@@ -6,7 +6,7 @@
 #include <BuildingClass.h>
 #include <HouseClass.h>
 #include <Phobos.h>
-#include <Misc/CaptureManager.h>
+#include <New/Entity/CaptureManager.h>
 
 namespace MindControlFixTemp
 {

@@ -5,7 +5,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
-#include <Misc/Shield.h>
+#include <New/Entity/Shield.h>
 
 class BulletClass;
 
