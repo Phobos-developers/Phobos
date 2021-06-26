@@ -11,8 +11,8 @@ class ShieldTypeClass final : public Enumerable<ShieldTypeClass>
 public:
 	Valueable<int> Strength;
 	ArmorType Armor;
-	Valueable<bool> Respawn;
 	Valueable<bool> Powered;
+	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
 	Valueable<double> SelfHealing;
 	Valueable<int> SelfHealing_Rate;
