@@ -95,6 +95,7 @@ namespace detail {
 		return false;
 	}
 
+	/*
 	template <>
 	inline bool read<ArmorType>(ArmorType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
 		int buffer;
@@ -107,6 +108,7 @@ namespace detail {
 		}
 		return false;
 	}
+	*/
 
 	template <>
 	inline bool read<BYTE>(BYTE& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
