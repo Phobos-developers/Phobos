@@ -1,7 +1,6 @@
 #include "Body.h"
 #include <Ext/WarheadType/Body.h>
-#include <New/Entity/CaptureManager.h>
-
+#include <Misc/CaptureManager.h>
 
 #include <TechnoClass.h>
 

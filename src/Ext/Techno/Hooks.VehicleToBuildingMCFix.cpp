@@ -1,12 +1,14 @@
 #include "Body.h"
 
-#include <AnimClass.h>
-#include <UnitClass.h>
-#include <InfantryClass.h>
-#include <BuildingClass.h>
-#include <HouseClass.h>
 #include <Phobos.h>
-#include <New/Entity/CaptureManager.h>
+
+#include <HouseClass.h>
+#include <AnimClass.h>
+#include <BuildingClass.h>
+#include <InfantryClass.h>
+#include <UnitClass.h>
+
+#include <Misc/CaptureManager.h>
 
 namespace MindControlFixTemp
 {

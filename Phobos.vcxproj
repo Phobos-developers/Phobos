@@ -19,7 +19,7 @@
     <ClCompile Include="src\Commands\Dummy.h" />
     <ClCompile Include="src\Ext\TAction\Body.cpp" />
     <ClCompile Include="src\Ext\TAction\Hooks.cpp" />
-    <ClCompile Include="src\New\Entity\CaptureManager.cpp" />
+    <ClCompile Include="src\Misc\CaptureManager.cpp" />
     <ClCompile Include="src\New\Entity\Shield.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
     <ClCompile Include="src\New\Type\ShieldType.cpp" />
@@ -85,7 +85,7 @@
     <ClInclude Include="src\Commands\ObjectInfo.h" />
     <ClInclude Include="src\Commands\Commands.h" />
     <ClInclude Include="src\Ext\TAction\Body.h" />
-    <ClInclude Include="src\New\Entity\CaptureManager.h" />
+    <ClInclude Include="src\Misc\CaptureManager.h" />
     <ClInclude Include="src\New\Entity\Shield.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldType.h" />
