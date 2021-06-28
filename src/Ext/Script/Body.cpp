@@ -81,18 +81,20 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 	DynamicVectorClass<FootClass*> transports;
 
 	auto pUnit = pTeam->FirstUnit;
-	if (pUnit->GetTechnoType()->Passengers > 0
-		&& pUnit->Passengers.NumPassengers < pUnit->GetTechnoType()->Passengers
-		&& pUnit->Passengers.GetTotalSize() < pUnit->GetTechnoType()->Passengers)
+	auto pUnitType = pUnit->GetTechnoType();
+	if (pUnitType->Passengers > 0
+		&& pUnit->Passengers.NumPassengers < pUnitType->Passengers
+		&& pUnit->Passengers.GetTotalSize() < pUnitType->Passengers)
 	{
 		transports.AddItem(pUnit);
 	}
 	while (pUnit->NextTeamMember)
 	{
 		pUnit = pUnit->NextTeamMember;
-		if (pUnit->GetTechnoType()->Passengers > 0
-			&& pUnit->Passengers.NumPassengers < pUnit->GetTechnoType()->Passengers
-			&& pUnit->Passengers.GetTotalSize() < pUnit->GetTechnoType()->Passengers)
+		pUnitType = pUnit->GetTechnoType();
+		if (pUnitType->Passengers > 0
+			&& pUnit->Passengers.NumPassengers < pUnitType->Passengers
+			&& pUnit->Passengers.GetTotalSize() < pUnitType->Passengers)
 		{
 			transports.AddItem(pUnit);
 		}
@@ -103,17 +105,19 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 	for (auto pTransport : transports)
 	{
 		pUnit = pTeam->FirstUnit;
+		pUnitType = pUnit->GetTechnoType();
+		auto pTransprotType = pTransport->GetTechnoType();
 		do
 		{
 			if (!(pTransport == pUnit
-				|| pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType
+				|| pUnitType->WhatAmI() == AbstractType::AircraftType
 				|| pUnit->InLimbo
-				|| pUnit->GetTechnoType()->ConsideredAircraft
+				|| pUnitType->ConsideredAircraft
 				|| pUnit->Health <= 0))
 			{
-				if ((pUnit->GetTechnoType()->Size > 0
-					&& pUnit->GetTechnoType()->Size <= pTransport->GetTechnoType()->SizeLimit)
-					&& (pUnit->GetTechnoType()->Size <= (pTransport->GetTechnoType()->Passengers - pTransport->Passengers.GetTotalSize())))
+				if (pUnit->GetTechnoType()->Size > 0
+					&& pUnitType->Size <= pTransprotType->SizeLimit
+					&& pUnitType->Size <= pTransprotType->Passengers - pTransport->Passengers.GetTotalSize())
 				{
 					pUnit->IsTeamLeader = true;
 					// All fine
@@ -128,6 +132,7 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 				}
 			}
 			pUnit = pUnit->NextTeamMember;
+			pUnitType = pUnit->GetTechnoType();
 		}
 		while (pUnit);
 	}
