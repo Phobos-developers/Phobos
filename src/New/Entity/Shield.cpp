@@ -407,10 +407,7 @@ int ShieldClass::GetPercentageAmount(double iStatus)
 	if (iStatus >= -1.0 && iStatus <= 1.0)
 		return (int)round(this->Type->Strength * iStatus);
 
-	if (iStatus < 0)
-		return (int)trunc(iStatus);
-
-	return 0;
+	return (int)trunc(iStatus);
 }
 
 void ShieldClass::InvalidatePointer(void* ptr)

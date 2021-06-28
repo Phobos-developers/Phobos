@@ -21,11 +21,11 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->Respawn.Read(exINI, pSection, "Respawn");
 	this->Respawn_Rate__InMinutes.Read(exINI, pSection, "Respawn.Rate");
-	this->Respawn_Rate = (int)this->Respawn_Rate__InMinutes * 900;
+	this->Respawn_Rate = (int)(this->Respawn_Rate__InMinutes * 900);
 
 	this->SelfHealing.Read(exINI, pSection, "SelfHealing");
 	this->SelfHealing_Rate__InMinutes.Read(exINI, pSection, "SelfHealing.Rate");
-	this->SelfHealing_Rate = (int)this->SelfHealing_Rate__InMinutes * 900;
+	this->SelfHealing_Rate = (int)(this->SelfHealing_Rate__InMinutes * 900);
 
 	this->AbsorbOverDamage.Read(exINI, pSection, "AbsorbOverDamage");
 	this->BracketDelta.Read(exINI, pSection, "BracketDelta");
