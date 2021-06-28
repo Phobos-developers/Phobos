@@ -105,10 +105,10 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 	for (auto pTransport : transports)
 	{
 		pUnit = pTeam->FirstUnit;
-		pUnitType = pUnit->GetTechnoType();
 		auto pTransprotType = pTransport->GetTechnoType();
 		do
 		{
+			pUnitType = pUnit->GetTechnoType();
 			if (!(pTransport == pUnit
 				|| pUnitType->WhatAmI() == AbstractType::AircraftType
 				|| pUnit->InLimbo
@@ -132,7 +132,6 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 				}
 			}
 			pUnit = pUnit->NextTeamMember;
-			pUnitType = pUnit->GetTechnoType();
 		}
 		while (pUnit);
 	}
