@@ -6,6 +6,7 @@
 #include <BulletClass.h>
 
 #include "Body.h"
+#include <Ext/AnimType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
 
@@ -111,7 +112,8 @@ DEFINE_HOOK(73D223, UnitClass_DrawIt_OreGath, 6)
 	auto const pType = pThis->GetTechnoType();
 	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
 
-	SHPStruct* pSHP;
+	ConvertClass* pDrawer = FileSystem::ANIM_PAL;
+	SHPStruct* pSHP = FileSystem::OREGATH_SHP;
 	int nFrame;
 
 	auto nOverlayIdx = pThis->GetCell()->OverlayTypeIndex;
@@ -120,17 +122,20 @@ DEFINE_HOOK(73D223, UnitClass_DrawIt_OreGath, 6)
 	{
 		auto const pAnimType = pData->OregatherAnims[nIndexInArray];
 		auto const nFramePerFacing = pData->OregatherFramesPerDir[nIndexInArray];
-		pSHP = pAnimType ? pAnimType->GetImage() : FileSystem::OREGATH_SHP;
+		auto const pAnimExt = AnimTypeExt::ExtMap.Find(pAnimType);
+		if (pAnimType)
+		{
+			pSHP = pAnimType->GetImage();
+			if (auto const pPalette = pAnimExt->Palette.GetConvert())
+				pDrawer = pPalette;
+		}
 		nFrame = nFramePerFacing * nFacing + (Unsorted::CurrentFrame + pThis->WalkedFramesSoFar) % nFramePerFacing;
 	}
 	else
-	{
-		pSHP = FileSystem::OREGATH_SHP;
 		nFrame = 15 * nFacing + (Unsorted::CurrentFrame + pThis->WalkedFramesSoFar) % 15;
-	}
 
 	DSurface::Temp->DrawSHP(
-		FileSystem::ANIM_PAL, pSHP, nFrame, pLocation, pBounds,
+		pDrawer, pSHP, nFrame, pLocation, pBounds,
 		BlitterFlags::Flat | BlitterFlags::Alpha | BlitterFlags::Centered,
 		0, pThis->GetZAdjustment() - 2, ZGradientDescIndex::Flat, Brightness,
 		0, nullptr, 0, 0, 0
