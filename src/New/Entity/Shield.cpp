@@ -164,8 +164,9 @@ void ShieldClass::ResponseAttack()
 		const auto pUnit = abstract_cast<UnitClass*>(this->Techno);
 		if (pUnit->Type->Harvester)
 		{
-			const auto pPos = pUnit->GetDestination(pUnit);
-			if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, { (short)pPos.X / 256,(short)pPos.Y / 256 }))
+			const auto pos = pUnit->GetDestination(pUnit);
+			
+			if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, CellClass::Coord2Cell(pos)))
 				VoxClass::Play("EVA_OreMinerUnderAttack");
 		}
 	}
@@ -512,7 +513,7 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 			vPos.X = vPos2.X + vLoc.X + 4 * iLength + 3 - deltaX;
 			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
 
-			DSurface::Temp->DrawSHP(FileSystem::THEATER_PAL, FileSystem::PIPS_SHP,
+			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
 				frame, vPos, *pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
 		}
 	}
@@ -527,7 +528,7 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 			vPos.X = vPos2.X + vLoc.X + 4 * iLength + 3 - deltaX;
 			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
 
-			DSurface::Temp->DrawSHP(FileSystem::THEATER_PAL, FileSystem::PIPS_SHP,
+			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
 				0, vPos, *pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
 		}
 	}
@@ -560,7 +561,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 
 	if (this->Techno->IsSelected)
 	{
-		DSurface::Temp->DrawSHP(FileSystem::THEATER_PAL, FileSystem::PIPBRD_SHP,
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPBRD_SHP,
 			frame, vPos, *pBound, BlitterFlags(0xE00), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
 	}
 
@@ -573,7 +574,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 		vPos.X = vLoc.X + XOffset + 2 * i;
 		vPos.Y = vLoc.Y + YOffset;
 
-		DSurface::Temp->DrawSHP(FileSystem::THEATER_PAL, FileSystem::PIPS_SHP,
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
 			frame, vPos, *pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
 	}
 }
