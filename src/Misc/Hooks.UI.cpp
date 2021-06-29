@@ -51,7 +51,7 @@ DEFINE_HOOK(4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 7)
 {
 	if (Phobos::UI::ShowHarvesterCounter)
 	{
-		auto pPlayer = HouseClass::Player;
+		auto pPlayer = HouseClass::Player();
 		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::Player->SideIndex));
 		wchar_t counter[0x20];
 		auto nActive = HouseExt::ActiveHarvesterCount(pPlayer);
@@ -59,7 +59,7 @@ DEFINE_HOOK(4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 7)
 		auto nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
 
 		ColorStruct clrToolTip = nPercentage > Phobos::UI::HarvesterCounter_ConditionYellow
-			? Drawing::TooltipColor : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
+			? Drawing::TooltipColor() : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
 			? pSideExt->Sidebar_HarvesterCounter_Yellow : pSideExt->Sidebar_HarvesterCounter_Red;
 
 		swprintf_s(counter, L"%ls%d/%d", Phobos::UI::HarvesterLabel, nActive, nTotal);
@@ -72,8 +72,7 @@ DEFINE_HOOK(4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 7)
 		RectangleStruct vRect = { 0, 0, 0, 0 };
 		DSurface::Sidebar->GetRect(&vRect);
 
-		DSurface::Sidebar->DrawTextA(counter, &vRect, &vPos,
-			Drawing::RGB2DWORD(clrToolTip), 0, 0x4108);
+		DSurface::Sidebar->DrawText(counter, vRect, vPos, (WORD)clrToolTip, 0, 0x4108);
 	}
 
 	return 0;
