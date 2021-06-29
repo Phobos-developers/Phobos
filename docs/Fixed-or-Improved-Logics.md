@@ -54,6 +54,33 @@ ChronoDelay=            ; integer, delay after teleport for chronosphere
 
 ```
 
+### Cusomizable Harvester Oregath Animation
+
+- You can now specify which anim should be drawn when harvester gathering different ores
+
+
+In `rulesmd.ini`:
+```ini
+[SOMEHARVESTER]             ; Harvester
+Oregath.Anims=              ; Anims
+Oregath.FramesPerDir=       ; Integer
+Oregath.OverlayTypes=       ; Overlay ID
+```
+
+For example:
+```ini
+[CMIN]
+...
+Oregath.Anims=NUKEANIM,OREGATH
+Oregath.OverlayTypes=112,30
+Oregath.FramesPerDir=5,15
+...
+```
+
+`NUKEANIM` will be played while the chrono miner is gathering normal golds
+`OREGATH(the default anim)` will be played while the chrono miner is gathering gems
+
+
 ### Kill spawns on low power
 
 - `Powered=yes` structures that spawns aircraft like Aircrafts Carriers will stop targeting the enemy if low power.

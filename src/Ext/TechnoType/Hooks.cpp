@@ -99,3 +99,45 @@ DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 
 	return 0;
 }
+
+DEFINE_HOOK(73D223, UnitClass_DrawIt_OreGath, 6)
+{
+	GET(UnitClass*, pThis, ESI);
+	GET(int, nFacing, EDI);
+	GET_STACK(RectangleStruct*, pBounds, STACK_OFFS(0x50, -0x8));
+	LEA_STACK(Point2D*, pLocation, STACK_OFFS(0x50, 0x18));
+	GET_STACK(int, Brightness, STACK_OFFS(0x50, -0x4));
+
+	auto const pType = pThis->GetTechnoType();
+	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
+
+	SHPStruct* pSHP;
+	int nFrame;
+
+	auto nOverlayIdx = pThis->GetCell()->OverlayTypeIndex;
+	auto nIndexInArray = pData->OregatherTypes.IndexOf(nOverlayIdx);
+	if (nOverlayIdx != -1 && nIndexInArray != -1)
+	{
+		auto const pAnimType = pData->OregatherAnims[nIndexInArray];
+		auto const nFramePerFacing = pData->OregatherFramesPerDir[nIndexInArray];
+		pSHP = pAnimType ? pAnimType->GetImage() : FileSystem::OREGATH_SHP;
+		nFrame = nFramePerFacing * nFacing + (Unsorted::CurrentFrame + pThis->WalkedFramesSoFar) % nFramePerFacing;
+	}
+	else
+	{
+		pSHP = FileSystem::OREGATH_SHP;
+		nFrame = 15 * nFacing + (Unsorted::CurrentFrame + pThis->WalkedFramesSoFar) % 15;
+	}
+
+	DSurface::Temp->DrawSHP(
+		FileSystem::ANIM_PAL, pSHP, nFrame, pLocation, pBounds,
+		BlitterFlags::Flat | BlitterFlags::Alpha | BlitterFlags::Centered,
+		0, pThis->GetZAdjustment() - 2, ZGradientDescIndex::Flat, Brightness,
+		0, nullptr, 0, 0, 0
+	);
+
+	R->EBP(Brightness);
+	R->EBX(pBounds);
+
+	return 0x73D28C;
+}

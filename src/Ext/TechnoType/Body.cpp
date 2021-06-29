@@ -108,6 +108,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChronoMinimumDelay.Read(exINI, pSection, "ChronoMinimumDelay");
 	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
 	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
+	this->OregatherAnims.Read(exINI, pSection, "Oregath.Anims");
+	this->OregatherTypes.Read(exINI, pSection, "Oregath.OverlayTypes");
+	this->OregatherFramesPerDir.Read(exINI, pSection, "Oregath.FramesPerDir");
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
@@ -150,6 +153,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChronoMinimumDelay)
 		.Process(this->ChronoRangeMinimum)
 		.Process(this->ChronoDelay)
+		.Process(this->OregatherAnims)
+		.Process(this->OregatherTypes)
+		.Process(this->OregatherFramesPerDir)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
