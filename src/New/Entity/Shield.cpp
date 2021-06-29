@@ -12,19 +12,19 @@
 #include <RadarEventClass.h>
 
 ShieldClass::ShieldClass() :
-	Techno{ nullptr },
-	HP{ 0 },
-	Timers{ }
+	Techno { nullptr },
+	HP { 0 },
+	Timers { }
 { }
 
 ShieldClass::ShieldClass(TechnoClass* pTechno) :
-	Techno{ pTechno },
-	IdleAnim{ nullptr },
-	Timers{ },
-	Cloak{ false },
-	Online{ true },
-	Temporal{ false },
-	Available{ true }
+	Techno { pTechno },
+	IdleAnim { nullptr },
+	Timers { },
+	Cloak { false },
+	Online { true },
+	Temporal { false },
+	Available { true }
 {
 	this->UpdateType();
 	this->HP = this->Type->Strength;
@@ -202,22 +202,22 @@ void ShieldClass::AI_Temporal()
 		{
 			switch (this->Type->IdleAnim_TemporalAction)
 			{
-				case AttachedAnimFlag::Hides:
-					this->KillAnim();
-					break;
+			case AttachedAnimFlag::Hides:
+				this->KillAnim();
+				break;
 
-				case AttachedAnimFlag::Temporal:
-					this->IdleAnim->UnderTemporal = true;
-					break;
+			case AttachedAnimFlag::Temporal:
+				this->IdleAnim->UnderTemporal = true;
+				break;
 
-				case AttachedAnimFlag::Paused:
-					this->IdleAnim->Pause();
-					break;
+			case AttachedAnimFlag::Paused:
+				this->IdleAnim->Pause();
+				break;
 
-				case AttachedAnimFlag::PausedTemporal:
-					this->IdleAnim->Pause();
-					this->IdleAnim->UnderTemporal = true;
-					break;
+			case AttachedAnimFlag::PausedTemporal:
+				this->IdleAnim->Pause();
+				this->IdleAnim->UnderTemporal = true;
+				break;
 			}
 		}
 	}
@@ -283,22 +283,22 @@ void ShieldClass::OnlineCheck()
 		{
 			switch (this->Type->IdleAnim_OfflineAction)
 			{
-				case AttachedAnimFlag::Hides:
-					this->KillAnim();
-					break;
+			case AttachedAnimFlag::Hides:
+				this->KillAnim();
+				break;
 
-				case AttachedAnimFlag::Temporal:
-					this->IdleAnim->UnderTemporal = true;
-					break;
+			case AttachedAnimFlag::Temporal:
+				this->IdleAnim->UnderTemporal = true;
+				break;
 
-				case AttachedAnimFlag::Paused:
-					this->IdleAnim->Pause();
-					break;
+			case AttachedAnimFlag::Paused:
+				this->IdleAnim->Pause();
+				break;
 
-				case AttachedAnimFlag::PausedTemporal:
-					this->IdleAnim->Pause();
-					this->IdleAnim->UnderTemporal = true;
-					break;
+			case AttachedAnimFlag::PausedTemporal:
+				this->IdleAnim->Pause();
+				this->IdleAnim->UnderTemporal = true;
+				break;
 			}
 		}
 	}
@@ -598,16 +598,14 @@ int ShieldClass::DrawShieldBar_Pip(const bool isBuilding)
 
 int ShieldClass::DrawShieldBar_PipAmount(int iLength)
 {
-	return Math::clamp(
-		(int)round(this->GetHealthRatio() * iLength),
-		0,
-		iLength
-	);
+	return this->IsActive()
+		? Math::clamp((int)round(this->GetHealthRatio() * iLength), 0, iLength)
+		: 0;
 }
 
 double ShieldClass::GetHealthRatio()
 {
-	return static_cast<double>(this->HP) / this->Type->Strength;		
+	return static_cast<double>(this->HP) / this->Type->Strength;
 }
 
 int ShieldClass::GetHP()
