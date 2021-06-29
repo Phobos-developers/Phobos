@@ -1,6 +1,6 @@
 #include "Body.h"
-#include "../House/Body.h"
 #include <Phobos.h>
+#include <Helpers/Macro.h>
 #include <Utilities/TemplateDef.h>
 #include <AnimClass.h>
 #include <HouseTypeClass.h>
