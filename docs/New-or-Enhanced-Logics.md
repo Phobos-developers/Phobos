@@ -20,7 +20,7 @@ PowersUp.Owner=Self ; list of owners (Self, Ally and/or Enemy)
 PowersUp.Buildings= ; list of BuildingTypes
 ```
 
-## TechnoTypes
+## Technos
 
 ### Mind Control enhancement
 
@@ -76,7 +76,6 @@ Promote.IncludeSpawns=no  ; boolean
 ![image](_static/images/technoshield-01.gif)  
 *Buildings, Infantries and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
-- Now you can have a shield for any TechnoType if `Shield.Strength` is set greater than 0. It serves as a second health pool with independent `Armor` and `Strength` values.
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
@@ -109,6 +108,7 @@ ShieldType=SOMESHIELDTYPE          ; ShieldType; none by default
 PenetratesShield=false         ; boolean
 BreaksShield=false             ; boolean
 ```
+- Now you can have a shield for any TechnoType. It serves as a second health pool with independent `Armor` and `Strength` values.
   - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed by shield.
   - When the TechnoType with a unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for game calculation.
 - When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoTypes have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
@@ -312,7 +312,7 @@ Interceptor.EliteMinimumGuardRange=0.0  ; double
 Interceptable=no ; boolean
 ```
 
-## ScriptType actions
+## Script actions
 
 ### `71` Timed Area Guard
 

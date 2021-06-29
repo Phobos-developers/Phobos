@@ -24,49 +24,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 - Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
 
-## Vehicles
-
-### Customizable disk laser radius
-
-![image](_static/images/disklaser-radius-values-01.gif)  
-- You can now set disk laser animation radius using a new tag.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]          ; WeaponType
-DiskLaser.Radius=38.2 ; floating point value
-                      ; 38.2 is roughly the default saucer disk radius
-```
-
-### Kill spawns on low power
-
-- `Powered=yes` structures that spawns aircraft like Aircrafts Carriers will stop targeting the enemy if low power.
-- Spawned aircrafts self-destruct if they are flying.
-
-In `rulesmd.ini`:
-```ini
-[SOMESTRUCTURE]       ; BuildingType
-Powered.KillSpawns=no ; boolean
-```
-
-## Terrain
-
-### Customizable ore spawners
-
-- You can now specify which type of tiberium certain TerrainType would generate.
-- It's also now possible to specify a range value for an ore generation area different compared to standard 3x3 rectangle. Ore will be uniformly distributed across all affected cells in a spread range.
-- You can specify which tiberium growth stage will be spawned and how much cells will be filled with ore per tiberium generation animation. Corresponding tags accept either a single integer value or two comma-separated values to allow randomized growth stages from the range (inclusive).
-
-In `rulesmd.ini`:
-```ini
-[SOMETERRAINTYPE]             ; TerrainType
-SpawnsTiberium.Type=0         ; tiberium type index
-SpawnsTiberium.Range=1        ; integer, radius in cells
-SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
-SpawnsTiberium.CellsPerAnim=1 ; single int / comma-sep. range
-```
-
-## TechnoType
+## Technos
 
 ### Customizable Teleport/Chrono Locomotor settings per TechnoType
 
@@ -90,7 +48,47 @@ ChronoDelay=            ; integer, delay after teleport for chronosphere
 
 ```
 
+### Kill spawns on low power
+
+- `Powered=yes` structures that spawns aircraft like Aircrafts Carriers will stop targeting the enemy if low power.
+- Spawned aircrafts self-destruct if they are flying.
+
+In `rulesmd.ini`:
+```ini
+[SOMESTRUCTURE]       ; BuildingType
+Powered.KillSpawns=no ; boolean
+```
+
+## Terrains
+
+### Customizable ore spawners
+
+- You can now specify which type of tiberium certain TerrainType would generate.
+- It's also now possible to specify a range value for an ore generation area different compared to standard 3x3 rectangle. Ore will be uniformly distributed across all affected cells in a spread range.
+- You can specify which tiberium growth stage will be spawned and how much cells will be filled with ore per tiberium generation animation. Corresponding tags accept either a single integer value or two comma-separated values to allow randomized growth stages from the range (inclusive).
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]             ; TerrainType
+SpawnsTiberium.Type=0         ; tiberium type index
+SpawnsTiberium.Range=1        ; integer, radius in cells
+SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
+SpawnsTiberium.CellsPerAnim=1 ; single int / comma-sep. range
+```
+
 ## Weapons
+
+### Customizable disk laser radius
+
+![image](_static/images/disklaser-radius-values-01.gif)  
+- You can now set disk laser animation radius using a new tag.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]          ; WeaponType
+DiskLaser.Radius=38.2 ; floating point value
+                      ; 38.2 is roughly the default saucer disk radius
+```
 
 ### Toggle-able ElectricBolt visuals
 
