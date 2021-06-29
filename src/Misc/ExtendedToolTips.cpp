@@ -132,7 +132,7 @@ DEFINE_HOOK(478E10, CCToolTip__Draw1, 0)
 DEFINE_HOOK(478E4A, CCToolTip__Draw2_SetSurface, 6)
 {
 	if (ExtToolTip::slaveDraw) {
-		R->ESI(DSurface::Composite);
+		R->ESI(DSurface::Composite());
 		return 0x478ED3;
 	}
 	return 0;

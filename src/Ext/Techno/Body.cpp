@@ -85,7 +85,7 @@ void TechnoExt::ApplyPowered_KillSpawns(TechnoClass* pThis)
 					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
 					{
 						pItem->Unit->ReceiveDamage(&pItem->Unit->Health, 0,
-							RulesClass::Global()->C4Warhead, nullptr, false, false, nullptr);
+							RulesClass::Instance()->C4Warhead, nullptr, false, false, nullptr);
 					}
 				}
 			}
