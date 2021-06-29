@@ -20,7 +20,7 @@ public:
 
 	bool Read(INI_EX& parser, const char* pSection, const char* pKey, bool Allocate = false)
 	{
-		int buffer;
+		int buffer = this->Value;
 		if (parser.ReadArmor(pSection, pKey, &buffer))
 		{
 			this->Value = buffer;
