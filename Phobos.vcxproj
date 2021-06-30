@@ -25,6 +25,8 @@
     <ClCompile Include="src\Ext\Sidebar\Body.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Hooks.cpp" />
     <ClCompile Include="src\Ext\Anim\Body.cpp" />
+    <ClCompile Include="src\Ext\IsometricTileType\Body.cpp" />
+    <ClCompile Include="src\Ext\IsometricTileType\Hooks.cpp" />
     <ClCompile Include="src\Ext\TAction\Body.cpp" />
     <ClCompile Include="src\Ext\TAction\Hooks.cpp" />
     <ClCompile Include="src\Ext\Team\Body.cpp" />
@@ -107,6 +109,7 @@
     <ClInclude Include="src\Commands\Commands.h" />
     <ClInclude Include="src\Ext\Sidebar\Body.h" />
     <ClInclude Include="src\Ext\Anim\Body.h" />
+    <ClInclude Include="src\Ext\IsometricTileType\Body.h" />
     <ClInclude Include="src\Ext\TAction\Body.h" />
     <ClInclude Include="src\Ext\Team\Body.h" />
     <ClInclude Include="src\Misc\CaptureManager.h" />

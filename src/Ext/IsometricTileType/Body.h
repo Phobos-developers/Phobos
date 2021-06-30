@@ -2,11 +2,71 @@
 #include <IsometricTileTypeClass.h>
 
 #include <Helpers/Macro.h>
-#include "../_Container.hpp"
-#include "../../Utilities/TemplateDef.h"
+#include <Utilities/Container.h>
+#include <Utilities/TemplateDef.h>
 
-#include <unordered_map>
-#include <string>
+#include <ScenarioClass.h>
+
+class LightConvertPalette
+{
+private:
+	LightConvertPalette(const char* pName)
+	{
+		if (this->Load(pName))
+			Array.AddItem(this);
+	}
+
+	~LightConvertPalette()
+	{
+		Array.Remove(this);
+	}
+
+	char Name[0x20];
+	UniqueGamePtr<BytePalette> Palette;
+
+	bool Load(const char* pName)
+	{
+		strcpy_s(this->Name, pName);
+		if (auto const pPal = FileSystem::AllocatePalette(pName))
+			this->Palette.reset(pPal);
+		return this->Palette != nullptr;
+	}
+public:
+	bool Loaded() const { return this->Palette != nullptr; }
+	operator BytePalette* () { return Palette.get(); }
+
+	static LightConvertPalette* FindOrAllocate(const char* pName)
+	{
+		int nCount = Array.Count;
+		for (auto const pItem : Array)
+			if (_stricmp(pName, pItem->Name) == 0)
+				return pItem;
+
+		auto const pResult = new LightConvertPalette(pName);
+
+		return Array.Count == nCount + 1 ? pResult : nullptr;
+	}
+
+	static LightConvertPalette* FindOrAllocate(CCINIClass* pINI, const char* pSection, const char* pKey, const char* pDefault = "")
+	{
+		if (pINI->ReadString(pSection, pKey, pDefault, Phobos::readBuffer))
+		{
+			if (auto const pSuffix = strstr(Phobos::readBuffer, "~~~"))
+			{
+				auto const theater = ScenarioClass::Instance->Theater;
+				auto const pExtension = Theater::GetTheater(theater).Extension;
+				pSuffix[0] = pExtension[0];
+				pSuffix[1] = pExtension[1];
+				pSuffix[2] = pExtension[2];
+			}
+
+			return FindOrAllocate(Phobos::readBuffer);
+		}
+		return nullptr;
+	}
+
+	static DynamicVectorClass<LightConvertPalette*> Array;
+};
 
 class IsometricTileTypeExt
 {
@@ -16,34 +76,35 @@ public:
 	class ExtData final : public Extension<IsometricTileTypeClass>
 	{
 	public:
-		Valueable<int> TileSetNumber;
-		PhobosFixedString<0x20> CustomPalette;
-		BytePalette* Palette;
-		LightConvertClass* LightConvert;
+		Valueable<int> Tileset;
+		LightConvertPalette* Palette;
 
-		ExtData(IsometricTileTypeClass* OwnerObject) : Extension<IsometricTileTypeClass>(OwnerObject),
-			TileSetNumber(-1),
-			CustomPalette(""),
-			Palette(nullptr),
-			LightConvert(nullptr)
-		{ }
+		ExtData(IsometricTileTypeClass* OwnerObject) : Extension<IsometricTileTypeClass>(OwnerObject)
+			, Tileset { -1 }
+			, Palette { nullptr }
+		{
+		}
 
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		virtual void LoadFromINIFile(CCINIClass* pINI) override;
+
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		void GetSectionName(char* buffer);
-
 	private:
 		template <typename T>
-		void Serialize(T & Stm);
+		void Serialize(T& Stm);
 	};
 
-	class ExtContainer final : public Container<IsometricTileTypeExt> {
+	static int CurrentTileset;
+	static PhobosMap<LightConvertPalette*, PhobosMap<TintStruct, LightConvertClass*>> TileDrawers;
+	static LightConvertClass* InitDrawer(IsometricTileTypeClass* pType, TintStruct& tint);
+
+	class ExtContainer final : public Container<IsometricTileTypeExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();
@@ -51,5 +112,6 @@ public:
 
 	static ExtContainer ExtMap;
 
-	static std::unordered_map<std::string, BytePalette*> Palettes;
+	static bool LoadGlobals(PhobosStreamReader& Stm);
+	static bool SaveGlobals(PhobosStreamWriter& Stm);
 };
