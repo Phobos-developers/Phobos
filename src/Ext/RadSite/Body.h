@@ -42,7 +42,8 @@ public:
 
 		virtual void Add(int amount);
 		virtual void SetRadLevel(int amount);
-		virtual double GetRadLevelAt(CellStruct const& cell);
+		virtual double GetRadLevelAt(CellStruct const& cell) const;
+		virtual void Create_Light();
 
 	private:
 		template <typename T>

@@ -20,9 +20,7 @@
 			 Alex-B : GetRadSiteAt ,Helper that used at FootClass_AI & BuildingClass_AI
 					  Radiate , Uncommented
 			 me(Otamaa) adding some more stuffs and rewriting hook that cause crash
-	TODO : -Testings
-	// Do this Ares Hook will cause a problem ?
-	//4DA584 = FootClass_AI_RadImmune, 7
+
 */
 
 DEFINE_HOOK(469150, BulletClass_Detonate_ApplyRadiation, 5)
@@ -45,57 +43,12 @@ DEFINE_HOOK(469150, BulletClass_Detonate_ApplyRadiation, 5)
 	return 0x46920B;
 }
 
-/*
-// hack it here so we can use this globally if needed
-// *Prototype*
-//able to manually set the RadType instead rely on Weapon RadType
-//Break InfantryClass_AIDeployment_CheckRad atm , will fix later
-DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation, 5)
+//unused function , safeguard
+DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation_UnUsed, 5)
 {
-	GET_STACK(CellStruct, location, 0x4);
-	GET_STACK(int, spread, 0x8);
-	GET_STACK(int, amount, 0xC);
-
-	auto const& Instances = RadSiteExt::Array;
-	auto const pType = RadTypeClass::FindOrAllocate("Radiation");
-
-	if (Instances.Count > 0)
-	{
-		auto const it = std::find_if(Instances.begin(), Instances.end(),
-			[=](RadSiteExt::ExtData* const pSite) // Lambda
-		{// find
-			return
-				pSite->Type == pType &&
-				pSite->OwnerObject()->BaseCell == location &&
-				spread == pSite->OwnerObject()->Spread;
-		});
-
-		if (it == Instances.end())
-		{
-			RadSiteExt::CreateInstance(location, spread, amount, pType, nullptr);
-		}
-		else
-		{
-			auto pRadExt = *it;
-			auto pRadSite = pRadExt->OwnerObject();
-
-			if (pRadSite->GetRadLevel() + amount > pType->GetLevelMax())
-			{
-				amount = pType->GetLevelMax() - pRadSite->GetRadLevel();
-			}
-
-			// Handle It
-			pRadExt->Add(amount);
-		}
-	}
-	else
-	{
-		RadSiteExt::CreateInstance(location, spread, amount, pType, nullptr);
-	}
-
+	Debug::FatalErrorAndExit("[" __FUNCTION__ "] Called ! , You are not suppose to be here ! \n");
 	return 0x46AE5E;
 }
-*/
 
 // Fix for desolator unable to fire his deploy weapon when cloaked 
 DEFINE_HOOK(5213E3, InfantryClass_AIDeployment_CheckRad, 4)
@@ -131,6 +84,9 @@ DEFINE_HOOK(5213E3, InfantryClass_AIDeployment_CheckRad, 4)
 		}
 	}
 
+	//this stuffs not working as intended 
+	//may ignore the Temporary cloaked  state then change it to permanent one
+	//need to be replace with new methods 
 	if (pInf->CloakState == CloakState::Cloaked)
 	{
 		pInf->Uncloak(false);
@@ -232,7 +188,13 @@ DEFINE_HOOK(4DA554, FootClass_AI_RadSiteClass, 5)
 
 	return pFoot->IsAlive ? 0x4DA63B : 0x4DAF00;
 }
+#define GET_RADSITE(reg, value)\
+	GET(RadSiteClass* const, pThis, reg);\
+	RadSiteExt::ExtData* pExt = RadSiteExt::ExtMap.Find(pThis);\
+	auto output = pExt->Type->## value ##;
 
+/* 
+//All part of 0x65B580 Hooks is here 
 DEFINE_HOOK(65B593, RadSiteClass_Activate_Delay, 6)
 {
 	GET(RadSiteClass* const, pThis, ECX);
@@ -253,11 +215,6 @@ DEFINE_HOOK(65B593, RadSiteClass_Activate_Delay, 6)
 
 	return 0x65B59F;
 }
-
-#define GET_RADSITE(reg, value)\
-	GET(RadSiteClass* const, pThis, reg);\
-	RadSiteExt::ExtData* pExt = RadSiteExt::ExtMap.Find(pThis);\
-	auto output = pExt->Type->## value ##;
 
 DEFINE_HOOK(65B5CE, RadSiteClass_Activate_Color, 6)
 {
@@ -298,6 +255,7 @@ DEFINE_HOOK(65B6F2, RadSiteClass_Activate_TintFactor, 6)
 
 	return R->Origin() + 6;
 }
+*/
 
 DEFINE_HOOK(65B843, RadSiteClass_AI_LevelDelay, 6)
 {
@@ -322,10 +280,10 @@ DEFINE_HOOK(65BB67, RadSite_Deactivate, 6)
 {
 	GET_RADSITE(ECX, GetLevelDelay());
 
-	R->ESI(output);
+	GET(int, val, EAX);
 
-	__asm xor  edx, edx; // fixing integer overflow crash
-	__asm idiv esi;
+	R->EAX(val / output);
+	R->EDX(val % output);
 
 	return 0x65BB6D;
 }

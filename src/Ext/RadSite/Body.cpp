@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <New/Type/RadTypeClass.h>
+#include <LightSourceClass.h>
 
 template<> const DWORD Extension<RadSiteClass>::Canary = 0x87654321;
 RadSiteExt::ExtContainer RadSiteExt::ExtMap;
@@ -22,7 +23,8 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 	pRadSite->SetBaseCell(&location);
 	pRadSite->SetSpread(spread);
 	pRadExt->SetRadLevel(amount);
-	pRadSite->Activate();
+	//pRad->Activate();
+	pRadExt->Create_Light();
 
 	Array.AddUnique(pRadExt);
 }
@@ -40,9 +42,74 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Rad
 	pRadSite->SetBaseCell(&location);
 	pRadSite->SetSpread(spread);
 	pRadExt->SetRadLevel(amount);
-	pRadSite->Activate();
+	//pRad->Activate();
+	pRadExt->Create_Light();
 
 	Array.AddUnique(pRadExt);
+}
+
+//RadSiteClass Activate , Rewritten
+void RadSiteExt::ExtData::Create_Light()
+{
+	Debug::Log("[" __FUNCTION__ "] Here Iam\n");
+
+	auto delay = this->Type->GetLevelDelay();
+	auto lightdelay = this->Type->GetLightDelay();
+
+	auto pRad = this->OwnerObject();
+	pRad->RadLevelTimer.StartTime = Unsorted::CurrentFrame;
+	pRad->RadLevelTimer.TimeLeft = delay;
+
+	pRad->RadLightTimer.StartTime = Unsorted::CurrentFrame;
+	pRad->RadLightTimer.TimeLeft = lightdelay;
+
+	auto color = this->Type->GetColor();
+	auto spread = pRad->SpreadInLeptons;
+
+	//=========Level
+	auto level = pRad->RadLevel * this->Type->GetLightFactor();
+	level = level > 2000.0 ? 2000.0 : level;
+
+	auto tint = this->Type->GetTintFactor();
+
+	auto start = pRad->RadDuration;
+
+	pRad->Intensity = static_cast<int>(level);
+	pRad->LevelSteps = start / delay;
+	pRad->IntensitySteps = start / lightdelay;
+	pRad->IntensityDecrement = static_cast<int>(level) / (start / lightdelay);
+
+	//=========Red
+	auto Red = 1000 * color.R / 255 * tint;
+	Red = Red > 2000.0 ? 2000.0 : Red;
+	//=========Green
+	auto Green = 1000 * color.G / 255 * tint;
+	Green = Green > 2000.0 ? 2000.0 : Green;
+	//=========Blue 
+	auto Blue = 1000 * color.B / 255 * tint;
+	Blue = Blue > 2000.0 ? 2000.0 : Blue;
+
+	TintStruct pColotBuffer{ static_cast<int>(Red) ,static_cast<int>(Green) ,static_cast<int>(Blue) };
+	pRad->Tint = pColotBuffer;
+
+	auto pos = MapClass::Instance->TryGetCellAt(pRad->BaseCell);
+	bool update = false;
+
+	if (pRad->LightSource)
+	{
+		pRad->LightSource->ChangeLevels(static_cast<int>(level), pColotBuffer, update);
+		pRad->Radiate();
+	}
+	else
+	{
+		if (auto pLight = GameCreate<LightSourceClass>(pos->GetCoords(), spread, static_cast<int>(level), pColotBuffer))
+		{
+			pRad->LightSource = pLight;
+			pLight->DetailLevel = 0;
+			pLight->Activate(update);
+			pRad->Radiate();
+		}
+	}
 }
 
 /*  Including them as EXT so it keep tracked at save/load */
@@ -56,7 +123,8 @@ void RadSiteExt::ExtData::Add(int amount)
 	pRad->RadLevel = value + amount;
 	pRad->RadDuration = pRad->RadLevel * this->Type->GetDurationMultiple();
 	pRad->RadTimeLeft = pRad->RadDuration;
-	pRad->Activate();
+	//pRad->Activate();
+	this->Create_Light();
 }
 
 void RadSiteExt::ExtData::SetRadLevel(int amount)
@@ -69,7 +137,7 @@ void RadSiteExt::ExtData::SetRadLevel(int amount)
 }
 
 // helper function provided by AlexB
-double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell)
+double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell) const
 {
 	auto pThis = this->OwnerObject();
 	const auto base = MapClass::Instance->GetCellAt(pThis->BaseCell)->GetCoords();
