@@ -433,12 +433,6 @@ public:
 		}
 		return Phobos::readBuffer[0] != 0;
 	}
-
-	struct CaseInsensitiveCompare {
-		bool operator () (PhobosFixedString<Capacity> const left, PhobosFixedString<Capacity> const right) {
-			return _stricmp(left, right) == 0;
-		}
-	};
 };
 
 // a wrapper for an optional value
