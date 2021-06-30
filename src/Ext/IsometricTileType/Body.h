@@ -12,7 +12,7 @@ class LightConvertPalette
 private:
 	LightConvertPalette(const char* pName)
 	{
-		if (this->Load(pName))
+		if (this->LoadFromName(pName))
 			Array.AddItem(this);
 	}
 
@@ -21,12 +21,12 @@ private:
 		Array.Remove(this);
 	}
 
-	char Name[0x20];
+	PhobosFixedString<0x20> Name;
 	UniqueGamePtr<BytePalette> Palette;
 
-	bool Load(const char* pName)
+	bool LoadFromName(const char* pName)
 	{
-		strcpy_s(this->Name, pName);
+		this->Name = pName;
 		if (auto const pPal = FileSystem::AllocatePalette(pName))
 			this->Palette.reset(pPal);
 		return this->Palette != nullptr;
