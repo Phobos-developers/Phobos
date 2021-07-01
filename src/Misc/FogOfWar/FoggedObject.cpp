@@ -13,13 +13,6 @@
 #include <Helpers/Cast.h>
 #include <Utilities/SavegameDef.h>
 
-/*
-* We don't use ": member{init}" like below for constructors to keep consistency except the base class init.
-* FoggedObject::FoggedObject(ObjectTypeClass* pType, CellClass* pCell)
-*	: Type { pType }, AttachedCell { pCell }
-* - secsome
-*/
-
 #define RETURN_IF_FALSE(x) if(!x) return false;
 
 #pragma region Instances
