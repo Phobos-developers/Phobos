@@ -182,6 +182,7 @@ bool FoggedSmudge::Save(PhobosStreamWriter& Stm) const
 		.Process(this->CurrentFrame)
 		.Success();
 }
+
 #pragma endregion
 
 #pragma region FoggedAnim
@@ -191,11 +192,37 @@ FoggedAnim::FoggedAnim(ObjectClass* pObject)
 {
 	auto const pAnim = abstract_cast<AnimClass*>(pObject);
 	this->CurrentFrame = pAnim->Animation.Value;
+	this->Location = pAnim->Location;
 }
 
-bool FoggedAnim::DrawIt() const
+bool FoggedAnim::DrawIt(RectangleStruct& const Bounds) const
 {
-	return false;
+	auto const pType = static_cast<AnimTypeClass*>(this->Type);
+	// auto const pData = AnimTypeExt // CustomPalette support
+
+	auto const pShape = pType->GetImage();
+	RETURN_IF_FALSE(pShape);
+	
+	Point2D ptClient;
+	TacticalClass::Instance->CoordsToClient(this->Location, &ptClient);
+	
+	auto const nHeightOffset = -TacticalClass::Instance->AdjustForZ(this->AttachedCell->GetCoords().Z); // not sure
+	auto const eZGradientDescIndex = pType->Flat ? ZGradientDescIndex::Flat : ZGradientDescIndex::Vertical;
+	auto const pDrawer = pType->ShouldUseCellDrawer ? this->AttachedCell->LightConvert : FileSystem::ANIM_PAL();
+	// Load CustomPalette if exists
+
+	auto const nIntensity = pType->UseNormalLight ? 1000 : this->AttachedCell->LightConvert->Color1.Red;
+
+	DSurface::Temp->DrawSHP(pDrawer, pShape, this->CurrentFrame, &ptClient, &Bounds,
+		BlitterFlags::ZReadWrite | BlitterFlags::Alpha | BlitterFlags::bf_400 | BlitterFlags::Centered,
+		0, nHeightOffset, eZGradientDescIndex, nIntensity, 0, nullptr, 0, 0, 0);
+
+	if (pType->Shadow)
+		DSurface::Temp->DrawSHP(pDrawer, pShape, this->CurrentFrame + pShape->Frames / 2, &ptClient, &Bounds,
+			BlitterFlags::ZReadWrite | BlitterFlags::Alpha | BlitterFlags::bf_400 | BlitterFlags::Centered | BlitterFlags::Darken,
+			0, nHeightOffset, ZGradientDescIndex::Vertical, 1000, 0, nullptr, 0, 0, 0);
+
+	return true;
 }
 
 bool FoggedAnim::Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -204,6 +231,7 @@ bool FoggedAnim::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->Type)
 		.Process(this->AttachedCell)
 		.Process(this->CurrentFrame)
+		.Process(this->Location)
 		.Success();
 }
 
@@ -213,6 +241,7 @@ bool FoggedAnim::Save(PhobosStreamWriter& Stm) const
 		.Process(this->Type)
 		.Process(this->AttachedCell)
 		.Process(this->CurrentFrame)
+		.Process(this->Location)
 		.Success();
 }
 

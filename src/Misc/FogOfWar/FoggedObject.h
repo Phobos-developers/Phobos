@@ -130,6 +130,7 @@ public:
 	/// Properties
 
 	int CurrentFrame;
+	CoordStruct Location;
 };
 
 class FoggedBuilding final : public FoggedObject
