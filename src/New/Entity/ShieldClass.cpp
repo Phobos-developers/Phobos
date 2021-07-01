@@ -523,7 +523,7 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-				frame, vPos, *pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+				frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradientDescIndex::Flat, 1000, 0, 0, 0, 0, 0);
 		}
 	}
 
@@ -538,7 +538,7 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-				0, vPos, *pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+				0, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradientDescIndex::Flat, 1000, 0, 0, 0, 0, 0);
 		}
 	}
 }
@@ -571,7 +571,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	if (this->Techno->IsSelected)
 	{
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPBRD_SHP,
-			frame, vPos, *pBound, BlitterFlags(0xE00), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+			frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradientDescIndex::Flat, 1000, 0, 0, 0, 0, 0);
 	}
 
 	const int iTotal = DrawShieldBar_PipAmount(iLength);
@@ -584,7 +584,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 		vPos.Y = vLoc.Y + YOffset;
 
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-			frame, vPos, *pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+			frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradientDescIndex::Flat, 1000, 0, 0, 0, 0, 0);
 	}
 }
 
