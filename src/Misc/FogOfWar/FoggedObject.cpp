@@ -86,6 +86,7 @@ bool FoggedOverlay::DrawIt(RectangleStruct& const Bounds) const
 	this->AttachedCell->OverlayTypeIndex= nOldOverlay;
 	this->AttachedCell->Powerup = nOldOverlayData;
 
+	return true;
 }
 
 #pragma endregion
