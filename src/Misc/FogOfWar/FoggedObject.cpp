@@ -138,9 +138,29 @@ FoggedSmudge::FoggedSmudge(ObjectClass* pObject)
 
 }
 
-bool FoggedSmudge::DrawIt() const
+bool FoggedSmudge::DrawIt(RectangleStruct& const Bounds) const
 {
-	return false;
+	auto const pType = static_cast<TerrainTypeClass*>(this->Type);
+	auto const pShape = pType->GetImage();
+	RETURN_IF_FALSE(pShape);
+
+	if (!this->AttachedCell->LightConvert)
+		this->AttachedCell->InitLightConvert(0, 0x10000, 0, 1000, 1000, 1000);
+
+	Point2D ptPos
+	{
+		Bound.X - TacticalClass::Instance->TacticalPos.X + DSurface::ViewBounds().X -Bounds.X + 30 ,
+		Bound.Y - TacticalClass::Instance->TacticalPos.Y + DSurface::ViewBounds().Y - Bounds.Y
+	};
+
+	auto const nHeightOffset = -TacticalClass::Instance->AdjustForZ(this->AttachedCell->GetCoords().Z);
+
+	DSurface::Temp->DrawSHP(this->AttachedCell->LightConvert, pShape, this->CurrentFrame, &ptPos, &Bounds,
+		BlitterFlags::Alpha | BlitterFlags::bf_400 | BlitterFlags::Centered, 0, nHeightOffset,
+		ZGradientDescIndex::Vertical, this->AttachedCell->LightConvert->Color1.Green,
+		0, nullptr, 0, 0, 0);
+
+	return true;
 }
 
 #pragma endregion

@@ -96,6 +96,13 @@ class FoggedSmudge final : public FoggedObject
 
 	/// Virtual Methods (Notice that our destructor is in virtual table too)
 	virtual bool DrawIt(RectangleStruct& const Bounds) const override;
+	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
+	virtual bool Save(PhobosStreamWriter& Stm) const override;
+
+	/// Properties
+
+	RectangleStruct Bound;
+	int CurrentFrame;
 };
 
 class FoggedAnim final : public FoggedObject
