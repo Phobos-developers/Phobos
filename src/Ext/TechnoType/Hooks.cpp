@@ -120,7 +120,7 @@ DEFINE_HOOK(73D223, UnitClass_DrawIt_OreGath, 6)
 	auto idxArray = pData->OreGath_TiberiumTypes.size() > 0 ? pData->OreGath_TiberiumTypes.IndexOf(idxTiberium) : 0;
 	if (idxTiberium != -1 && idxArray != -1)
 	{
-		auto const pAnimType = pData->OreGath_Anims[idxArray];
+		auto const pAnimType = pData->OreGath_Anims.size() > 0 ? pData->OreGath_Anims[idxArray] : nullptr;
 		auto const nFramesPerFacing = pData->OreGath_FramesPerDir.size() > 0 ? pData->OreGath_FramesPerDir[idxArray] : 15;
 		auto const pAnimExt = AnimTypeExt::ExtMap.Find(pAnimType);
 		if (pAnimType)
