@@ -174,12 +174,9 @@ DEFINE_HOOK(6F6AC4, TechnoClass_Remove_Shield, 5)
 	GET(TechnoClass*, pThis, ECX);
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->Shield &&
-		!(pThis->WhatAmI() == AbstractType::Building && pThis->GetTechnoType()->UndeploysInto && pThis->CurrentMission == Mission::Selling))
-	{
-		pExt->Shield = nullptr;
-	}
-
+	if (pExt->Shield)
+		pExt->Shield->KillAnim();
+	
 	return 0;
 }
 

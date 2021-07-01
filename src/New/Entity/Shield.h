@@ -17,6 +17,8 @@ public:
 	int ReceiveDamage(args_ReceiveDamage* args);
 	bool CanBeTargeted(WeaponTypeClass* pWeapon);
 
+	void KillAnim();
+
 	void AI_Temporal();
 	void AI();
 
@@ -46,7 +48,6 @@ private:
 	void RespawnShield();
 
 	void CreateAnim();
-	void KillAnim();
 
 	void WeaponNullifyAnim();
 	void ResponseAttack();
