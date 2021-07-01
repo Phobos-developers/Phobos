@@ -2,6 +2,7 @@
 
 #include <CellClass.h>
 #include <BuildingClass.h>
+#include <FootClass.h>
 #include <OverlayClass.h>
 #include <SmudgeClass.h>
 #include <TerrainClass.h>
@@ -21,17 +22,30 @@
 
 #define RETURN_IF_FALSE(x) if(!x) return false;
 
+#pragma region Instances
+
+std::set<FoggedObject*> FoggedObject::Instances;
+std::set<FoggedOverlay*> FoggedOverlay::Instances;
+std::set<FoggedTerrain*> FoggedTerrain::Instances;
+std::set<FoggedSmudge*> FoggedSmudge::Instances;
+std::set<FoggedAnim*> FoggedAnim::Instances;
+std::set<FoggedBuilding*> FoggedBuilding::Instances;
+
+#pragma endregion
+
 #pragma region FoggedObject
 
 FoggedObject::FoggedObject(ObjectClass* pObject)
 {
 	this->Type = pObject->GetType();
 	this->AttachedCell = pObject->GetCell();
+
+	FoggedObject::Instances.insert(this);
 }
 
 FoggedObject::~FoggedObject()
 {
-
+	FoggedObject::Instances.erase(this);
 }
 
 bool FoggedObject::IsValid() const
@@ -39,7 +53,7 @@ bool FoggedObject::IsValid() const
 	return this->Type && this->AttachedCell;
 }
 
-bool FoggedObject::DrawIt(RectangleStruct& const Bounds) const
+bool FoggedObject::DrawIt(RectangleStruct& Bounds) const
 {
 	return false;
 }
@@ -67,10 +81,15 @@ bool FoggedObject::Save(PhobosStreamWriter& Stm) const
 FoggedOverlay::FoggedOverlay(ObjectClass* pObject)
 	: FoggedObject(pObject)
 {
-
+	FoggedOverlay::Instances.insert(this);
 }
 
-bool FoggedOverlay::DrawIt(RectangleStruct& const Bounds) const
+FoggedOverlay::~FoggedOverlay()
+{
+	FoggedOverlay::Instances.erase(this);
+}
+
+bool FoggedOverlay::DrawIt(RectangleStruct& Bounds) const
 {
 	// 4D19C4
 	Point2D ptClient;
@@ -96,10 +115,15 @@ bool FoggedOverlay::DrawIt(RectangleStruct& const Bounds) const
 FoggedTerrain::FoggedTerrain(ObjectClass* pObject)
 	: FoggedObject(pObject)
 {
-	
+	FoggedTerrain::Instances.insert(this);
 }
 
-bool FoggedTerrain::DrawIt(RectangleStruct& const Bounds) const
+FoggedTerrain::~FoggedTerrain()
+{
+	FoggedTerrain::Instances.erase(this);
+}
+
+bool FoggedTerrain::DrawIt(RectangleStruct& Bounds) const
 {
 	auto const pType = static_cast<TerrainTypeClass*>(this->Type);
 	auto const pShape = pType->GetImage();
@@ -135,10 +159,17 @@ bool FoggedTerrain::DrawIt(RectangleStruct& const Bounds) const
 FoggedSmudge::FoggedSmudge(ObjectClass* pObject)
 	: FoggedObject(pObject)
 {
+	this->CurrentFrame = 0; // Dunno how to init it, set it to zero currently
 
+	FoggedSmudge::Instances.insert(this);
 }
 
-bool FoggedSmudge::DrawIt(RectangleStruct& const Bounds) const
+FoggedSmudge::~FoggedSmudge()
+{
+	FoggedSmudge::Instances.erase(this);
+}
+
+bool FoggedSmudge::DrawIt(RectangleStruct& Bounds) const
 {
 	auto const pType = static_cast<TerrainTypeClass*>(this->Type);
 	auto const pShape = pType->GetImage();
@@ -147,10 +178,13 @@ bool FoggedSmudge::DrawIt(RectangleStruct& const Bounds) const
 	if (!this->AttachedCell->LightConvert)
 		this->AttachedCell->InitLightConvert(0, 0x10000, 0, 1000, 1000, 1000);
 
+	Point2D ptClient;
+	TacticalClass::Instance->CoordsToClient(this->AttachedCell->GetCoords(), &ptClient);
+
 	Point2D ptPos
 	{
-		Bound.X - TacticalClass::Instance->TacticalPos.X + DSurface::ViewBounds().X -Bounds.X + 30 ,
-		Bound.Y - TacticalClass::Instance->TacticalPos.Y + DSurface::ViewBounds().Y - Bounds.Y
+		ptClient.X - TacticalClass::Instance->TacticalPos.X + DSurface::ViewBounds().X - Bounds.X ,
+		ptClient.Y - TacticalClass::Instance->TacticalPos.Y + DSurface::ViewBounds().Y - Bounds.Y - 15
 	};
 
 	auto const nHeightOffset = -TacticalClass::Instance->AdjustForZ(this->AttachedCell->GetCoords().Z);
@@ -168,7 +202,6 @@ bool FoggedSmudge::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 	return Stm
 		.Process(this->Type)
 		.Process(this->AttachedCell)
-		.Process(this->Bound)
 		.Process(this->CurrentFrame)
 		.Success();
 }
@@ -178,7 +211,6 @@ bool FoggedSmudge::Save(PhobosStreamWriter& Stm) const
 	return Stm
 		.Process(this->Type)
 		.Process(this->AttachedCell)
-		.Process(this->Bound)
 		.Process(this->CurrentFrame)
 		.Success();
 }
@@ -193,13 +225,18 @@ FoggedAnim::FoggedAnim(ObjectClass* pObject)
 	auto const pAnim = abstract_cast<AnimClass*>(pObject);
 	this->CurrentFrame = pAnim->Animation.Value;
 	this->Location = pAnim->Location;
+
+	FoggedAnim::Instances.erase(this);
 }
 
-bool FoggedAnim::DrawIt(RectangleStruct& const Bounds) const
+FoggedAnim::~FoggedAnim()
+{
+	FoggedAnim::Instances.erase(this);
+}
+
+bool FoggedAnim::DrawIt(RectangleStruct& Bounds) const
 {
 	auto const pType = static_cast<AnimTypeClass*>(this->Type);
-	// auto const pData = AnimTypeExt // CustomPalette support
-
 	auto const pShape = pType->GetImage();
 	RETURN_IF_FALSE(pShape);
 	

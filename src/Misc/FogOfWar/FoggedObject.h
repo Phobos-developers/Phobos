@@ -17,12 +17,15 @@
 * Author - secsome
 */
 
+#include <GeneralStructures.h>
+
+#include <set>
+
 class ObjectClass;
 class ObjectTypeClass;
 class CellClass;
 class PhobosStreamReader;
 class PhobosStreamWriter;
-class RectangleStruct;
 
 class FoggedObject
 {
@@ -41,7 +44,7 @@ public:
 
 	/// Virtual Methods (Notice that our destructor is in virtual table too)
 	virtual bool IsValid() const;
-	virtual bool DrawIt(RectangleStruct& const Bounds) const;
+	virtual bool DrawIt(RectangleStruct& Bounds) const;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	virtual bool Save(PhobosStreamWriter& Stm) const;
 
@@ -49,6 +52,9 @@ public:
 
 	ObjectTypeClass* Type;
 	CellClass* AttachedCell;
+
+	/// Static array
+	static std::set<FoggedObject*> Instances;
 };
 
 class FoggedOverlay final : public FoggedObject
@@ -58,6 +64,8 @@ public:
 	/// The fives
 	FoggedOverlay(ObjectClass* pObject);
 
+	virtual ~FoggedOverlay() override;
+
 	// Neither copy nor move is allowed
 	FoggedOverlay(const FoggedOverlay& lhs) = delete;
 	FoggedOverlay(FoggedOverlay&& rhs) = delete;
@@ -65,7 +73,10 @@ public:
 	FoggedOverlay& operator= (FoggedOverlay&& rhs) = delete;
 
 	/// Virtual Methods (Notice that our destructor is in virtual table too)
-	virtual bool DrawIt(RectangleStruct& const Bounds) const override;
+	virtual bool DrawIt(RectangleStruct& Bounds) const override;
+
+	/// Static array
+	static std::set<FoggedOverlay*> Instances;
 };
 
 class FoggedTerrain final : public FoggedObject
@@ -75,6 +86,8 @@ public:
 	/// The fives
 	FoggedTerrain(ObjectClass* pObject);
 
+	virtual ~FoggedTerrain() override;
+
 	// Neither copy nor move is allowed
 	FoggedTerrain(const FoggedTerrain& lhs) = delete;
 	FoggedTerrain(FoggedTerrain&& rhs) = delete;
@@ -82,7 +95,10 @@ public:
 	FoggedTerrain& operator= (FoggedTerrain&& rhs) = delete;
 
 	/// Virtual Methods (Notice that our destructor is in virtual table too)
-	virtual bool DrawIt(RectangleStruct& const Bounds) const override;
+	virtual bool DrawIt(RectangleStruct& Bounds) const override;
+
+	/// Static array
+	static std::set<FoggedTerrain*> Instances;
 };
 
 class FoggedSmudge final : public FoggedObject
@@ -92,6 +108,8 @@ public:
 	/// The fives
 	FoggedSmudge(ObjectClass* pObject);
 
+	virtual ~FoggedSmudge() override;
+
 	// Neither copy nor move is allowed
 	FoggedSmudge(const FoggedSmudge& lhs) = delete;
 	FoggedSmudge(FoggedSmudge&& rhs) = delete;
@@ -99,14 +117,16 @@ public:
 	FoggedSmudge& operator= (FoggedSmudge&& rhs) = delete;
 
 	/// Virtual Methods (Notice that our destructor is in virtual table too)
-	virtual bool DrawIt(RectangleStruct& const Bounds) const override;
+	virtual bool DrawIt(RectangleStruct& Bounds) const override;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 
 	/// Properties
 
-	RectangleStruct Bound;
 	int CurrentFrame;
+
+	/// Static array
+	static std::set<FoggedSmudge*> Instances;
 };
 
 class FoggedAnim final : public FoggedObject
@@ -116,6 +136,8 @@ public:
 	/// The fives
 	FoggedAnim(ObjectClass* pObject);
 
+	virtual ~FoggedAnim() override;
+
 	// Neither copy nor move is allowed
 	FoggedAnim(const FoggedAnim& lhs) = delete;
 	FoggedAnim(FoggedAnim&& rhs) = delete;
@@ -123,7 +145,7 @@ public:
 	FoggedAnim& operator= (FoggedAnim&& rhs) = delete;
 
 	/// Virtual Methods (Notice that our destructor is in virtual table too)
-	virtual bool DrawIt(RectangleStruct& const Bounds) const override;
+	virtual bool DrawIt(RectangleStruct& Bounds) const override;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 
@@ -131,6 +153,9 @@ public:
 
 	int CurrentFrame;
 	CoordStruct Location;
+
+	/// Static array
+	static std::set<FoggedAnim*> Instances;
 };
 
 class FoggedBuilding final : public FoggedObject
@@ -140,6 +165,8 @@ public:
 	/// The fives
 	FoggedBuilding(ObjectClass* pObject);
 
+	virtual ~FoggedBuilding() override;
+
 	// Neither copy nor move is allowed
 	FoggedBuilding(const FoggedAnim& lhs) = delete;
 	FoggedBuilding(FoggedAnim&& rhs) = delete;
@@ -147,11 +174,14 @@ public:
 	FoggedBuilding& operator= (FoggedBuilding&& rhs) = delete;
 
 	/// Virtual Methods (Notice that our destructor is in virtual table too)
-	virtual bool DrawIt(RectangleStruct& const Bounds) const override;
+	virtual bool DrawIt(RectangleStruct& Bounds) const override;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 
 	/// Properties
 
 	
+
+	/// Static array
+	static std::set<FoggedBuilding*> Instances;
 };
