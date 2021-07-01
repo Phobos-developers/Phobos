@@ -40,7 +40,7 @@ public:
 
 	/// Virtual Methods (Notice that our destructor is in virtual table too)
 	virtual bool IsValid() const;
-	virtual bool DrawIt() const;
+	virtual bool DrawIt(RectangleStruct& const Bounds) const;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	virtual bool Save(PhobosStreamWriter& Stm) const;
 
@@ -64,7 +64,7 @@ public:
 	FoggedOverlay& operator= (FoggedOverlay&& rhs) = delete;
 
 	/// Virtual Methods (Notice that our destructor is in virtual table too)
-	virtual bool DrawIt() const override;
+	virtual bool DrawIt(RectangleStruct& const Bounds) const override;
 };
 
 class FoggedTerrain final : public FoggedObject
@@ -79,7 +79,7 @@ class FoggedTerrain final : public FoggedObject
 	FoggedTerrain& operator= (FoggedTerrain&& rhs) = delete;
 
 	/// Virtual Methods (Notice that our destructor is in virtual table too)
-	virtual bool DrawIt() const override;
+	virtual bool DrawIt(RectangleStruct& const Bounds) const override;
 };
 
 class FoggedSmudge final : public FoggedObject
@@ -94,7 +94,7 @@ class FoggedSmudge final : public FoggedObject
 	FoggedSmudge& operator= (FoggedSmudge&& rhs) = delete;
 
 	/// Virtual Methods (Notice that our destructor is in virtual table too)
-	virtual bool DrawIt() const override;
+	virtual bool DrawIt(RectangleStruct& const Bounds) const override;
 };
 
 class FoggedAnim final : public FoggedObject
@@ -109,7 +109,7 @@ class FoggedAnim final : public FoggedObject
 	FoggedAnim& operator= (FoggedAnim&& rhs) = delete;
 
 	/// Virtual Methods (Notice that our destructor is in virtual table too)
-	virtual bool DrawIt() const override;
+	virtual bool DrawIt(RectangleStruct& const Bounds) const override;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 
@@ -130,7 +130,7 @@ class FoggedBuilding final : public FoggedObject
 	FoggedBuilding& operator= (FoggedBuilding&& rhs) = delete;
 
 	/// Virtual Methods (Notice that our destructor is in virtual table too)
-	virtual bool DrawIt() const override;
+	virtual bool DrawIt(RectangleStruct& const Bounds) const override;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 

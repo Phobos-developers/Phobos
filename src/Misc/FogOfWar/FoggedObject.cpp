@@ -6,8 +6,10 @@
 #include <SmudgeClass.h>
 #include <TerrainClass.h>
 #include <AnimClass.h>
-#include <Helpers/Cast.h>
 
+#include <TacticalClass.h>
+
+#include <Helpers/Cast.h>
 #include <Utilities/SavegameDef.h>
 
 /*
@@ -17,13 +19,9 @@
 * - secsome
 */
 
-#pragma region FoggedObject
+#define RETURN_IF_FALSE(x) if(!x) return false;
 
-FoggedObject::FoggedObject(ObjectTypeClass* pType, CellClass* pCell)
-{
-	this->Type = pType;
-	this->AttachedCell = pCell;
-}
+#pragma region FoggedObject
 
 FoggedObject::FoggedObject(ObjectClass* pObject)
 {
@@ -72,9 +70,22 @@ FoggedOverlay::FoggedOverlay(ObjectClass* pObject)
 
 }
 
-bool FoggedOverlay::DrawIt() const
+bool FoggedOverlay::DrawIt(RectangleStruct& const Bounds) const
 {
-	return false;
+	// 4D19C4
+	Point2D ptClient;
+	RETURN_IF_FALSE(TacticalClass::Instance->CoordsToClient(this->AttachedCell->GetCoords(), &ptClient));
+	ptClient.X -= 30;
+
+	int nOldOverlay = this->AttachedCell->OverlayTypeIndex;
+	unsigned char nOldOverlayData = this->AttachedCell->Powerup;
+	
+	this->AttachedCell->DrawOverlay(ptClient, Bounds);
+	this->AttachedCell->DrawOverlayShadow(ptClient, Bounds);
+
+	this->AttachedCell->OverlayTypeIndex= nOldOverlay;
+	this->AttachedCell->Powerup = nOldOverlayData;
+
 }
 
 #pragma endregion
