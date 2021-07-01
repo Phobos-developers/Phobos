@@ -28,7 +28,6 @@ class FoggedObject
 public:
 
 	/// The fives
-	FoggedObject(ObjectTypeClass* pType, CellClass* pCell);
 	FoggedObject(ObjectClass* pObject);
 
 	virtual ~FoggedObject();
@@ -56,7 +55,6 @@ class FoggedOverlay final : public FoggedObject
 public:
 
 	/// The fives
-	FoggedOverlay(ObjectTypeClass* pType, CellClass* pCell);
 	FoggedOverlay(ObjectClass* pObject);
 
 	// Neither copy nor move is allowed
@@ -72,7 +70,6 @@ public:
 class FoggedTerrain final : public FoggedObject
 {
 	/// The fives
-	FoggedTerrain(ObjectTypeClass* pType, CellClass* pCell);
 	FoggedTerrain(ObjectClass* pObject);
 
 	// Neither copy nor move is allowed
@@ -88,7 +85,6 @@ class FoggedTerrain final : public FoggedObject
 class FoggedSmudge final : public FoggedObject
 {
 	/// The fives
-	FoggedSmudge(ObjectTypeClass* pType, CellClass* pCell);
 	FoggedSmudge(ObjectClass* pObject);
 
 	// Neither copy nor move is allowed
@@ -104,7 +100,6 @@ class FoggedSmudge final : public FoggedObject
 class FoggedAnim final : public FoggedObject
 {
 	/// The fives
-	FoggedAnim(ObjectTypeClass* pType, CellClass* pCell) = delete;
 	FoggedAnim(ObjectClass* pObject);
 
 	// Neither copy nor move is allowed
@@ -126,7 +121,6 @@ class FoggedAnim final : public FoggedObject
 class FoggedBuilding final : public FoggedObject
 {
 	/// The fives
-	FoggedBuilding(ObjectTypeClass* pType, CellClass* pCell) = delete;
 	FoggedBuilding(ObjectClass* pObject);
 
 	// Neither copy nor move is allowed

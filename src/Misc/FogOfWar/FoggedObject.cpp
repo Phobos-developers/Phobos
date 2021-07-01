@@ -66,12 +66,6 @@ bool FoggedObject::Save(PhobosStreamWriter& Stm) const
 
 #pragma region FoggedOverlay
 
-FoggedOverlay::FoggedOverlay(ObjectTypeClass* pType, CellClass* pCell)
-	: FoggedObject(pType, pCell)
-{
-
-}
-
 FoggedOverlay::FoggedOverlay(ObjectClass* pObject)
 	: FoggedObject(pObject)
 {
@@ -87,12 +81,6 @@ bool FoggedOverlay::DrawIt() const
 
 #pragma region FoggedTerrain
 
-FoggedTerrain::FoggedTerrain(ObjectTypeClass* pType, CellClass* pCell)
-	: FoggedObject(pType, pCell)
-{
-
-}
-
 FoggedTerrain::FoggedTerrain(ObjectClass* pObject)
 	: FoggedObject(pObject)
 {
@@ -107,12 +95,6 @@ bool FoggedTerrain::DrawIt() const
 #pragma endregion
 
 #pragma region FoggedSmudge
-
-FoggedSmudge::FoggedSmudge(ObjectTypeClass* pType, CellClass* pCell)
-	: FoggedObject(pType, pCell)
-{
-
-}
 
 FoggedSmudge::FoggedSmudge(ObjectClass* pObject)
 	: FoggedObject(pObject)
