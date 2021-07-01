@@ -70,6 +70,8 @@ public:
 
 class FoggedTerrain final : public FoggedObject
 {
+public:
+
 	/// The fives
 	FoggedTerrain(ObjectClass* pObject);
 
@@ -85,6 +87,8 @@ class FoggedTerrain final : public FoggedObject
 
 class FoggedSmudge final : public FoggedObject
 {
+public:
+
 	/// The fives
 	FoggedSmudge(ObjectClass* pObject);
 
@@ -107,6 +111,8 @@ class FoggedSmudge final : public FoggedObject
 
 class FoggedAnim final : public FoggedObject
 {
+public:
+
 	/// The fives
 	FoggedAnim(ObjectClass* pObject);
 
@@ -128,6 +134,8 @@ class FoggedAnim final : public FoggedObject
 
 class FoggedBuilding final : public FoggedObject
 {
+public:
+
 	/// The fives
 	FoggedBuilding(ObjectClass* pObject);
 

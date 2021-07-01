@@ -163,6 +163,25 @@ bool FoggedSmudge::DrawIt(RectangleStruct& const Bounds) const
 	return true;
 }
 
+bool FoggedSmudge::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	return Stm
+		.Process(this->Type)
+		.Process(this->AttachedCell)
+		.Process(this->Bound)
+		.Process(this->CurrentFrame)
+		.Success();
+}
+
+bool FoggedSmudge::Save(PhobosStreamWriter& Stm) const
+{
+	return Stm
+		.Process(this->Type)
+		.Process(this->AttachedCell)
+		.Process(this->Bound)
+		.Process(this->CurrentFrame)
+		.Success();
+}
 #pragma endregion
 
 #pragma region FoggedAnim
