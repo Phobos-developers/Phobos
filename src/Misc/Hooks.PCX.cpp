@@ -33,7 +33,7 @@ DEFINE_HOOK(5535D0, PCX_LoadScreen, 6)
 			destClip.X = (pSurf->Width - pcx->Width) / 2;
 			destClip.Y = (pSurf->Height - pcx->Height) / 2;
 
-			pSurf->Blit(pSurfBounds, destClip, pcx, pcxBounds, pcxBounds, true, true);
+			pSurf->CopyFrom(&pSurfBounds, &destClip, pcx, &pcxBounds, &pcxBounds, true, true);
 		}
 		return 0x553603;
 	}
