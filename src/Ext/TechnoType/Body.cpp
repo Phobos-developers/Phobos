@@ -109,7 +109,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
 	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
 	this->OregatherAnims.Read(exINI, pSection, "Oregath.Anims");
-	this->OregatherTypes.Read(exINI, pSection, "Oregath.OverlayTypes");
+	this->OregatherTypes.Read(exINI, pSection, "Oregath.TiberiumTypes");
 	this->OregatherFramesPerDir.Read(exINI, pSection, "Oregath.FramesPerDir");
 
 	// Ares 0.A

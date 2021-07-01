@@ -114,14 +114,14 @@ DEFINE_HOOK(73D223, UnitClass_DrawIt_OreGath, 6)
 
 	ConvertClass* pDrawer = FileSystem::ANIM_PAL;
 	SHPStruct* pSHP = FileSystem::OREGATH_SHP;
-	int nFrame;
+	int idxFrame;
 
-	auto nOverlayIdx = pThis->GetCell()->OverlayTypeIndex;
-	auto nIndexInArray = pData->OregatherTypes.IndexOf(nOverlayIdx);
-	if (nOverlayIdx != -1 && nIndexInArray != -1)
+	auto idxTiberium = pThis->GetCell()->GetContainedTiberiumIndex();
+	auto idxArray = pData->OregatherTypes.IndexOf(idxTiberium);
+	if (idxTiberium != -1 && idxArray != -1)
 	{
-		auto const pAnimType = pData->OregatherAnims[nIndexInArray];
-		auto const nFramePerFacing = pData->OregatherFramesPerDir[nIndexInArray];
+		auto const pAnimType = pData->OregatherAnims[idxArray];
+		auto const nFramesPerFacing = pData->OregatherFramesPerDir[idxArray];
 		auto const pAnimExt = AnimTypeExt::ExtMap.Find(pAnimType);
 		if (pAnimType)
 		{
@@ -129,13 +129,13 @@ DEFINE_HOOK(73D223, UnitClass_DrawIt_OreGath, 6)
 			if (auto const pPalette = pAnimExt->Palette.GetConvert())
 				pDrawer = pPalette;
 		}
-		nFrame = nFramePerFacing * nFacing + (Unsorted::CurrentFrame + pThis->WalkedFramesSoFar) % nFramePerFacing;
+		idxFrame = nFramesPerFacing * nFacing + (Unsorted::CurrentFrame + pThis->WalkedFramesSoFar) % nFramesPerFacing;
 	}
 	else
-		nFrame = 15 * nFacing + (Unsorted::CurrentFrame + pThis->WalkedFramesSoFar) % 15;
+		idxFrame = 15 * nFacing + (Unsorted::CurrentFrame + pThis->WalkedFramesSoFar) % 15;
 
 	DSurface::Temp->DrawSHP(
-		pDrawer, pSHP, nFrame, pLocation, pBounds,
+		pDrawer, pSHP, idxFrame, pLocation, pBounds,
 		BlitterFlags::Flat | BlitterFlags::Alpha | BlitterFlags::Centered,
 		0, pThis->GetZAdjustment() - 2, ZGradientDescIndex::Flat, Brightness,
 		0, nullptr, 0, 0, 0
