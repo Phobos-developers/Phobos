@@ -22,6 +22,7 @@ class ObjectTypeClass;
 class CellClass;
 class PhobosStreamReader;
 class PhobosStreamWriter;
+class RectangleStruct;
 
 class FoggedObject
 {

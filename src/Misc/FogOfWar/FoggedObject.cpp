@@ -39,7 +39,7 @@ bool FoggedObject::IsValid() const
 	return this->Type && this->AttachedCell;
 }
 
-bool FoggedObject::DrawIt() const
+bool FoggedObject::DrawIt(RectangleStruct& const Bounds) const
 {
 	return false;
 }
@@ -96,12 +96,36 @@ bool FoggedOverlay::DrawIt(RectangleStruct& const Bounds) const
 FoggedTerrain::FoggedTerrain(ObjectClass* pObject)
 	: FoggedObject(pObject)
 {
-
+	
 }
 
-bool FoggedTerrain::DrawIt() const
+bool FoggedTerrain::DrawIt(RectangleStruct& const Bounds) const
 {
-	return false;
+	auto const pType = static_cast<TerrainTypeClass*>(this->Type);
+	auto const pShape = pType->GetImage();
+	RETURN_IF_FALSE(pShape);
+
+	CoordStruct Location = this->AttachedCell->GetCoords();
+	Point2D ptClient;
+	TacticalClass::Instance->CoordsToClient(Location, &ptClient);
+	ptClient.X += DSurface::ViewBounds().X - Bounds.X;
+	ptClient.X += DSurface::ViewBounds().Y - Bounds.Y;
+
+	auto const nHeightOffset = -TacticalClass::Instance->AdjustForZ(Location.Z);
+	if (!this->AttachedCell->LightConvert)
+		this->AttachedCell->InitLightConvert(0, 0x10000, 0, 1000, 1000, 1000);
+	
+	// Draw
+	DSurface::Temp->DrawSHP(this->AttachedCell->LightConvert, pShape, 0, &ptClient, &Bounds,
+		BlitterFlags::ZReadWrite | BlitterFlags::Alpha | BlitterFlags::bf_400 | BlitterFlags::Centered,
+		0, nHeightOffset - 4, ZGradientDescIndex::Vertical, this->AttachedCell->LightConvert->Color1.Green,
+		0, nullptr, 0, 0, 0);
+	// Draw shadow
+	DSurface::Temp->DrawSHP(this->AttachedCell->LightConvert, pShape, pShape->Frames / 2, &ptClient, &Bounds,
+		BlitterFlags::ZReadWrite | BlitterFlags::Darken | BlitterFlags::bf_400 | BlitterFlags::Centered,
+		0, nHeightOffset - 2, ZGradientDescIndex::Flat, 1000, 0, nullptr, 0, 0, 0);
+
+	return true;
 }
 
 #pragma endregion
