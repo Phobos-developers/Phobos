@@ -48,9 +48,9 @@ public:
 		Nullable<int> ChronoRangeMinimum;
 		Nullable<int> ChronoDelay;
 
-		ValueableVector<AnimTypeClass*> OregatherAnims;
-		ValueableVector<int> OregatherTypes;
-		ValueableVector<int> OregatherFramesPerDir;
+		ValueableVector<AnimTypeClass*> OreGath_Anims;
+		ValueableVector<int> OreGath_TiberiumTypes;
+		ValueableVector<int> OreGath_FramesPerDir;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			HealthBar_Hide(false),
@@ -81,9 +81,9 @@ public:
 			ChronoMinimumDelay(),
 			ChronoRangeMinimum(),
 			ChronoDelay(),
-			OregatherAnims(),
-			OregatherTypes(),
-			OregatherFramesPerDir()
+			OreGath_Anims(),
+			OreGath_TiberiumTypes(),
+			OreGath_FramesPerDir()
 		{ }
 
 		virtual ~ExtData() = default;

@@ -108,9 +108,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChronoMinimumDelay.Read(exINI, pSection, "ChronoMinimumDelay");
 	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
 	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
-	this->OregatherAnims.Read(exINI, pSection, "Oregath.Anims");
-	this->OregatherTypes.Read(exINI, pSection, "Oregath.TiberiumTypes");
-	this->OregatherFramesPerDir.Read(exINI, pSection, "Oregath.FramesPerDir");
+	this->OreGath_Anims.Read(exINI, pSection, "OreGath.Anims");
+	this->OreGath_TiberiumTypes.Read(exINI, pSection, "OreGath.TiberiumTypes");
+	this->OreGath_FramesPerDir.Read(exINI, pSection, "OreGath.FramesPerDir");
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
@@ -153,9 +153,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChronoMinimumDelay)
 		.Process(this->ChronoRangeMinimum)
 		.Process(this->ChronoDelay)
-		.Process(this->OregatherAnims)
-		.Process(this->OregatherTypes)
-		.Process(this->OregatherFramesPerDir)
+		.Process(this->OreGath_Anims)
+		.Process(this->OreGath_TiberiumTypes)
+		.Process(this->OreGath_FramesPerDir)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

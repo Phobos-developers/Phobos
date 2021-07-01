@@ -117,11 +117,11 @@ DEFINE_HOOK(73D223, UnitClass_DrawIt_OreGath, 6)
 	int idxFrame;
 
 	auto idxTiberium = pThis->GetCell()->GetContainedTiberiumIndex();
-	auto idxArray = pData->OregatherTypes.IndexOf(idxTiberium);
+	auto idxArray = pData->OreGath_TiberiumTypes.size() > 0 ? pData->OreGath_TiberiumTypes.IndexOf(idxTiberium) : 0;
 	if (idxTiberium != -1 && idxArray != -1)
 	{
-		auto const pAnimType = pData->OregatherAnims[idxArray];
-		auto const nFramesPerFacing = pData->OregatherFramesPerDir[idxArray];
+		auto const pAnimType = pData->OreGath_Anims[idxArray];
+		auto const nFramesPerFacing = pData->OreGath_FramesPerDir.size() > 0 ? pData->OreGath_FramesPerDir[idxArray] : 15;
 		auto const pAnimExt = AnimTypeExt::ExtMap.Find(pAnimType);
 		if (pAnimType)
 		{
@@ -132,7 +132,9 @@ DEFINE_HOOK(73D223, UnitClass_DrawIt_OreGath, 6)
 		idxFrame = nFramesPerFacing * nFacing + (Unsorted::CurrentFrame + pThis->WalkedFramesSoFar) % nFramesPerFacing;
 	}
 	else
+	{
 		idxFrame = 15 * nFacing + (Unsorted::CurrentFrame + pThis->WalkedFramesSoFar) % 15;
+	}
 
 	DSurface::Temp->DrawSHP(
 		pDrawer, pSHP, idxFrame, pLocation, pBounds,
