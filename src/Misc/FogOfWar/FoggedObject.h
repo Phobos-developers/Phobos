@@ -19,6 +19,7 @@
 
 #include <GeneralStructures.h>
 
+#include <vector>
 #include <set>
 
 class ObjectClass;
@@ -179,8 +180,9 @@ public:
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 
 	/// Properties
-
-	
+	RectangleStruct Bound;
+	Point2D Position;
+	std::vector<FoggedAnim*> Animations;
 
 	/// Static array
 	static std::set<FoggedBuilding*> Instances;

@@ -279,6 +279,139 @@ bool FoggedAnim::Save(PhobosStreamWriter& Stm) const
 
 #pragma region FoggedBuilding
 
-// TO BE IMPLEMENTED
+FoggedBuilding::FoggedBuilding(ObjectClass* pObject)
+	: FoggedObject(pObject)
+{
+	auto const pBld = abstract_cast<BuildingClass*>(pObject);
+	
+	pBld->GetRenderDimensions(&this->Bound);
+	this->Bound.X += TacticalClass::Instance->TacticalPos.X;
+	this->Bound.Y += TacticalClass::Instance->TacticalPos.Y;
+	
+	TacticalClass::Instance->CoordsToClient(pBld->GetCoords(), &this->Position);
+	this->Position.X += DSurface::ViewBounds().X - Bound.X;
+	this->Position.Y += DSurface::ViewBounds().Y - Bound.Y;
+
+	for (auto const pAnim : pBld->Anims)
+		if (pAnim && !pAnim->IsVisible)
+			this->Animations.push_back(GameCreate<FoggedAnim>(pAnim));
+
+	auto const pBldType = static_cast<BuildingTypeClass*>(pBld->GetTechnoType());
+	if (!pBldType->InvisibleInGame)
+	{
+		
+	}
+
+	FoggedBuilding::Instances.erase(this);
+}
+
+FoggedBuilding::~FoggedBuilding()
+{
+	FoggedBuilding::Instances.erase(this);
+}
+
+bool FoggedBuilding::DrawIt(RectangleStruct& Bounds) const
+{
+	return false;
+}
+
+bool FoggedBuilding::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	return Stm
+		.Process(this->Type)
+		.Process(this->AttachedCell)
+		.Process(this->Position)
+		.Process(this->Bound)
+		.Process(this->Animations)
+		.Success();
+}
+
+bool FoggedBuilding::Save(PhobosStreamWriter& Stm) const
+{
+	return Stm
+		.Process(this->Type)
+		.Process(this->AttachedCell)
+		.Process(this->Position)
+		.Process(this->Bound)
+		.Process(this->Animations)
+		.Success();
+}
+
+/*
+* Drawing
+* 
+*	// Following things are from BuildingClass::DrawAgain 
+	ColorStruct SpecialColor;
+	if (pBld->Airstrike)
+		SpecialColor = RulesClass::Instance()->ColorAdd[RulesClass::Instance()->LaserTargetColor];
+	else if (pBld->IsIronCurtained())
+		SpecialColor = RulesClass::Instance()->ColorAdd[RulesClass::Instance()->IronCurtainColor];
+	else if (pBld->ForceShielded)
+		SpecialColor = RulesClass::Instance->ColorAdd[RulesClass::Instance()->ForceShieldColor]; 
+
+	// I'm not quite sure what happened to SpecialColor while drawing, 
+	// so we don't take them into consider for now - secsome
+	
+	// Don't take doors into consideration for now for it is too difficult to impl - secsome
+	
+	Point2D ptZShapeMove { 198,446 };
+	bool bIsRoof = false;
+	
+	auto const eCurrentMission = pBld->GetCurrentMission();
+	if (eCurrentMission == Mission::Unload)
+		if (auto const pLink = pBld->RadioLinks[0])
+			if (pLink->GetTechnoType()->JumpJet || pLink->GetTechnoType()->BalloonHover)
+				bIsRoof = true;
+
+	int nNormalZAdjust = pBldType->NormalZAdjust;
+	SHPStruct* pSHP = nullptr;
+	if (pBld->GetCurrentMission() == Mission::Unload)
+		if (bIsRoof && pBldType->RoofDeployingAnim)
+		{
+			pSHP = pBldType->RoofDeployingAnim;
+			nNormalZAdjust = -40;
+		}
+		else
+		{
+			pSHP = pBldType->DeployingAnim;
+			nNormalZAdjust = -20;
+		}
+
+	if (eCurrentMission != Mission::Construction && eCurrentMission != Mission::Selling)
+		ptZShapeMove += pBldType->ZShapePointMove;
+
+	Point2D ptClient
+	{
+		(pBldType->GetFoundationHeight(false) << 8) - 256,
+		(pBldType->GetFoundationWidth() << 8) - 256
+	};
+	
+	Point2D ptAdjusted;
+	TacticalClass::Instance()->AdjustForZShapeMove(&ptAdjusted, &ptClient);
+	
+	int nFrame = pBld->GetShapeNumber();
+	if (nFrame >= pSHP->Frames / 2)
+		nFrame = pSHP->Frames / 2;
+
+	ptZShapeMove -= ptAdjusted;
+
+	auto const nAdjustForHeight = TacticalClass::Instance()->AdjustForZ(pBld->Location.Z);
+	auto const nBrightness = pBldType->ExtraLight + this->AttachedCell->Color1.R;
+
+	if (Bounds.Height > 0) // pBounds->Height > 0
+		pBld->DrawObject(pSHP, nFrame, &Position, &Bounds, 0, 0x100,
+			nNormalZAdjust - nAdjustForHeight,
+			ZGradientDescIndex::Vertical, 1, nBrightness, 0,
+			pBldType->GetFoundationWidth() >= 8 ? nullptr : (SHPStruct*)0x89DDBC, 0, ptZShapeMove.X, ptZShapeMove.Y, 0);
+	if (pBldType->BibShape && pBld->BState)
+		pBld->DrawObject(pBldType->BibShape, pBld->GetShapeNumber(), &Position, &Bounds, 0, 0x100,
+			-1 - nAdjustForHeight, ZGradientDescIndex::Flat, 1,
+			nBrightness, 0, 0, 0, 0, 0, 0);
+	
+	if (eCurrentMission == Mission::Unload)
+		pBld->DrawObject(bIsRoof ? pBldType->UnderRoofDoorAnim : pBldType->UnderDoorAnim, 
+			pBld->Health / pBldType->Strength <= RulesClass::Instance()->ConditionYellow ? 1 : 0, &Position, &Bounds,
+			0, 0x100, -nAdjustForHeight, ZGradientDescIndex::Flat, 1, nBrightness, 0, 0, 0, 0, 0, 0);
+*/
 
 #pragma endregion
