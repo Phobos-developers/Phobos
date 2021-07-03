@@ -1,12 +1,11 @@
 #pragma once
-
-#include <CCINIClass.h>
 #include <WeaponTypeClass.h>
 
-#include "../_Container.hpp"
-#include "../../Phobos.h"
+#include <Helpers/Macro.h>
+#include <Utilities/Container.h>
+#include <Utilities/TemplateDef.h>
 
-#include "../../Utilities/Debug.h"
+#include <New/Type/RadTypeClass.h>
 
 class WeaponTypeExt
 {
@@ -17,22 +16,42 @@ public:
 	{
 	public:
 
-		double DiskLaser_Radius;
-		int DiskLaser_Circumference;
-
-		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject),
-			DiskLaser_Radius(38.2),
-			DiskLaser_Circumference(240)
+		Valueable<double> DiskLaser_Radius;
+		Valueable<int> DiskLaser_Circumference;
+		Valueable<RadTypeClass*> RadType;
+		Valueable<bool> Rad_NoOwner;
+		Valueable<bool> Bolt_Disable1;
+		Valueable<bool> Bolt_Disable2;
+		Valueable<bool> Bolt_Disable3;
+		Valueable<int> Strafing_Shots;
+		Valueable<bool> Strafing_SimulateBurst;
+		
+		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
+			,DiskLaser_Radius(38.2)
+			,DiskLaser_Circumference(240)
+			,RadType()
+			,Rad_NoOwner(false)
+			,Bolt_Disable1(false)
+			,Bolt_Disable2(false)
+			,Bolt_Disable3(false)
+			,Strafing_Shots(5)
+			,Strafing_SimulateBurst(false)
 		{ }
 
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;
+
+		virtual void LoadFromINIFile(CCINIClass* pINI) override;
+		virtual void Initialize() override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
 
-		virtual void LoadFromStream(IStream* Stm);
+		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 
-		virtual void SaveToStream(IStream* Stm);
+		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
+	private:
+		template <typename T>
+		void Serialize(T& Stm);
 	};
 
 	class ExtContainer final : public Container<WeaponTypeExt> {
@@ -42,4 +61,9 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static bool LoadGlobals(PhobosStreamReader& Stm);
+	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static int nOldCircumference;
 };

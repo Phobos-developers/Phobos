@@ -1,14 +1,9 @@
 #pragma once
-
-#include <CCINIClass.h>
 #include <BuildingTypeClass.h>
 
-#include "../_Container.hpp"
-#include "../../Phobos.h"
-
-#include "../../Utilities/Debug.h"
-
-#include "../../Utilities/CanTargetFlags.h"
+#include <Helpers/Macro.h>
+#include <Utilities/Container.h>
+#include <Utilities/TemplateDef.h>
 
 class BuildingTypeExt
 {
@@ -18,32 +13,43 @@ public:
 	class ExtData final : public Extension<BuildingTypeClass>
 	{
 	public:
-
-		CanTargetFlags PowersUp_Owner;
-
-		char PowersUp_Buildings_buff[1024];
-		DynamicVectorClass<char*> PowersUp_Buildings;
+		Valueable<AffectedHouse> PowersUp_Owner;
+		ValueableVector<BuildingTypeClass*> PowersUp_Buildings;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject),
-			PowersUp_Owner(CanTargetFlags::Self),
+			PowersUp_Owner(AffectedHouse::Owner),
 			PowersUp_Buildings()
 		{ }
 
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		virtual void LoadFromINIFile(CCINIClass * pINI) override;
+		virtual void Initialize() override;
+		virtual void CompleteInitialization();
 
-		virtual void LoadFromStream(IStream* Stm);
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {
+		}
 
-		virtual void SaveToStream(IStream* Stm);
+		virtual void LoadFromStream(PhobosStreamReader & Stm) override;
+
+		virtual void SaveToStream(PhobosStreamWriter & Stm) override;
+
+	private:
+		template <typename T>
+		void Serialize(T& Stm);
 	};
 
 	class ExtContainer final : public Container<BuildingTypeExt> {
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		virtual bool Load(BuildingTypeClass* pThis, IStream* pStm) override;
 	};
 
 	static ExtContainer ExtMap;
+	static bool LoadGlobals(PhobosStreamReader& Stm);
+	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 };
