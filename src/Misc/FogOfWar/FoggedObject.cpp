@@ -74,6 +74,8 @@ bool FoggedObject::Save(PhobosStreamWriter& Stm) const
 FoggedOverlay::FoggedOverlay(ObjectClass* pObject)
 	: FoggedObject(pObject)
 {
+	this->OverlayData = this->AttachedCell->Powerup;
+
 	FoggedOverlay::Instances.insert(this);
 }
 
@@ -89,9 +91,14 @@ bool FoggedOverlay::DrawIt(RectangleStruct& Bounds) const
 	RETURN_IF_FALSE(TacticalClass::Instance->CoordsToClient(this->AttachedCell->GetCoords(), &ptClient));
 	ptClient.X -= 30;
 
+	auto const pType = static_cast<OverlayTypeClass*>(this->Type);
+
 	int nOldOverlay = this->AttachedCell->OverlayTypeIndex;
 	unsigned char nOldOverlayData = this->AttachedCell->Powerup;
 	
+	this->AttachedCell->OverlayTypeIndex = pType->ArrayIndex;
+	this->AttachedCell->Powerup = this->OverlayData;
+
 	this->AttachedCell->DrawOverlay(ptClient, Bounds);
 	this->AttachedCell->DrawOverlayShadow(ptClient, Bounds);
 
@@ -99,6 +106,24 @@ bool FoggedOverlay::DrawIt(RectangleStruct& Bounds) const
 	this->AttachedCell->Powerup = nOldOverlayData;
 
 	return true;
+}
+
+bool FoggedOverlay::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	return Stm
+		.Process(this->Type)
+		.Process(this->AttachedCell)
+		.Process(this->OverlayData)
+		.Success();
+}
+
+bool FoggedOverlay::Save(PhobosStreamWriter& Stm) const
+{
+	return Stm
+		.Process(this->Type)
+		.Process(this->AttachedCell)
+		.Process(this->OverlayData)
+		.Success();
 }
 
 #pragma endregion

@@ -75,6 +75,12 @@ public:
 
 	/// Virtual Methods (Notice that our destructor is in virtual table too)
 	virtual bool DrawIt(RectangleStruct& Bounds) const override;
+	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
+	virtual bool Save(PhobosStreamWriter& Stm) const override;
+
+	/// Properties
+
+	int OverlayData;
 
 	/// Static array
 	static std::set<FoggedOverlay*> Instances;
