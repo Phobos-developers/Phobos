@@ -1,9 +1,12 @@
 #include "Body.h"
-#include <BuildingTypeClass.h>
-#include "../../Utilities/trim.h"
 
 template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
+
+void BuildingTypeExt::ExtData::Initialize()
+{
+
+}
 
 // =============================
 // load / save
@@ -16,65 +19,54 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		return;
 	}
 
-	if (pINI->ReadString(pSection, "PowersUp.Owner", "", Phobos::readBuffer)) {
-		this->PowersUp_Owner = ParseCanTargetFlags(Phobos::readBuffer, this->PowersUp_Owner);
-	}
+	INI_EX exINI(pINI);
 
-	// Parse PowersUp.Buildings
-	if (pINI->ReadString(pSection, "PowersUp.Buildings", "", this->PowersUp_Buildings_buff)) {
+	this->PowersUp_Owner.Read(exINI, pSection, "PowersUp.Owner");
+	this->PowersUp_Buildings.Read(exINI, pSection, "PowersUp.Buildings");
 
-		char* context = nullptr;
-		for (char* cur = strtok_s(this->PowersUp_Buildings_buff, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context)) {
-			this->PowersUp_Buildings.AddItem(Trim::FullTrim(cur));
-		}
-
-		// to appoint a vanilla tag if it wasn't assigned
-		if (this->PowersUp_Buildings.Count && this->OwnerObject()->PowersUpBuilding[0] == 0) {
-			strcpy_s(this->OwnerObject()->PowersUpBuilding, PowersUp_Buildings.GetItem(0));
-		}
-	}
+	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
+		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
 }
 
-void BuildingTypeExt::ExtData::LoadFromStream(IStream* Stm) {
-	#define STM_Process(A) Stm->Read(&A, sizeof(A), 0);
-	#include "Serialize.hpp"
-
-	{// Load PowersUp_Buildings array
-		int count = this->PowersUp_Buildings.Count;
-		char* buf = this->PowersUp_Buildings_buff;
-
-		STM_Process(count);
-		for (int i = 0; i < count; i++) {
-			char tempBuf[sizeof(BuildingTypeClass::ID)];
-			Stm->Read(tempBuf, sizeof(tempBuf), 0);
-			strcpy_s(buf, (sizeof(this->PowersUp_Buildings_buff) - (buf - this->PowersUp_Buildings_buff)), tempBuf);
-			this->PowersUp_Buildings.AddItem(buf);
-
-			buf += strlen(buf) + 1;
-		}
-	}
-
-	#undef STM_Process
-
-	//Stm->Read(&PowersUp_Buildings_buff, sizeof(PowersUp_Buildings_buff), 0)
+void BuildingTypeExt::ExtData::CompleteInitialization() {
+	auto const pThis = this->OwnerObject();
+	UNREFERENCED_PARAMETER(pThis);
 }
 
-void BuildingTypeExt::ExtData::SaveToStream(IStream* Stm) {
-	#define STM_Process(A) Stm->Write(&A, sizeof(A), 0);
-	#include "Serialize.hpp"
-	#undef STM_Process
-
-	{// Save PowersUp_Buildings array
-		int count = this->PowersUp_Buildings.Count;
-		Stm->Write(&count, sizeof(count), 0);
-
-		for (int i = 0; i < count; i++) {
-			char* item = this->PowersUp_Buildings.GetItem(i);
-			Stm->Write(item, sizeof(BuildingTypeClass::ID), 0);
-		}
-	}
+template <typename T>
+void BuildingTypeExt::ExtData::Serialize(T& Stm) {
+	Stm
+		.Process(this->PowersUp_Owner)
+		.Process(this->PowersUp_Buildings)
+		;
 }
 
+void BuildingTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+	Extension<BuildingTypeClass>::LoadFromStream(Stm);
+	this->Serialize(Stm);
+}
+
+void BuildingTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+	Extension<BuildingTypeClass>::SaveToStream(Stm);
+	this->Serialize(Stm);
+}
+
+bool BuildingTypeExt::ExtContainer::Load(BuildingTypeClass* pThis, IStream* pStm) {
+	BuildingTypeExt::ExtData* pData = this->LoadKey(pThis, pStm);
+
+	return pData != nullptr;
+};
+
+bool BuildingTypeExt::LoadGlobals(PhobosStreamReader& Stm) {
+
+	return Stm.Success();
+}
+
+bool BuildingTypeExt::SaveGlobals(PhobosStreamWriter& Stm) {
+
+
+	return Stm.Success();
+}
 // =============================
 // container
 
@@ -115,19 +107,13 @@ DEFINE_HOOK(465010, BuildingTypeClass_SaveLoad_Prefix, 5)
 
 DEFINE_HOOK(4652ED, BuildingTypeClass_Load_Suffix, 7)
 {
-	auto pItem = BuildingTypeExt::ExtMap.Find(BuildingTypeExt::ExtMap.SavingObject);
-	IStream* pStm = BuildingTypeExt::ExtMap.SavingStream;
-
-	pItem->LoadFromStream(pStm);
+	BuildingTypeExt::ExtMap.LoadStatic();
 	return 0;
 }
 
 DEFINE_HOOK(46536A, BuildingTypeClass_Save_Suffix, 7)
 {
-	auto pItem = BuildingTypeExt::ExtMap.Find(BuildingTypeExt::ExtMap.SavingObject);
-	IStream* pStm = BuildingTypeExt::ExtMap.SavingStream;
-
-	pItem->SaveToStream(pStm);
+	BuildingTypeExt::ExtMap.SaveStatic();
 	return 0;
 }
 

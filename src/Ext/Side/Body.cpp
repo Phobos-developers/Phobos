@@ -1,7 +1,7 @@
 #include "Body.h"
+
 #include <Themes.h>
 
-//Static init
 template<> const DWORD Extension<SideClass>::Canary = 0x05B10501;
 SideExt::ExtContainer SideExt::ExtMap;
 
@@ -10,15 +10,7 @@ void SideExt::ExtData::Initialize()
 	const char* pID = this->OwnerObject()->ID;
 
 	this->ArrayIndex = SideClass::FindIndex(pID);
-
-	if(this->ArrayIndex == 0) {
-		// Allied
-		Sidebar_GDIPositions = true;
-	}
-	else {
-		// Other
-		Sidebar_GDIPositions = false;
-	}
+	this->Sidebar_GDIPositions = this->ArrayIndex == 0; // true = Allied
 };
 
 void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
@@ -30,59 +22,59 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 		return;
 	}
 
-	this->Sidebar_GDIPositions = pINI->ReadBool(pSection, "Sidebar.GDIPositions", this->Sidebar_GDIPositions);
-
+	INI_EX exINI(pINI);
+	this->Sidebar_GDIPositions.Read(exINI, pSection, "Sidebar.GDIPositions");
 	this->IngameScore_WinTheme = pINI->ReadTheme(pSection, "IngameScore.WinTheme", this->IngameScore_WinTheme);
 	this->IngameScore_LoseTheme = pINI->ReadTheme(pSection, "IngameScore.LoseTheme", this->IngameScore_LoseTheme);
+	this->Sidebar_HarvesterCounter_Offset.Read(exINI, pSection, "Sidebar.HarvesterCounter.Offset");
+	this->Sidebar_HarvesterCounter_Yellow.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorYellow");
+	this->Sidebar_HarvesterCounter_Red.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorRed");
 }
 
 // =============================
 // load / save
 
-int LoadTheme(IStream* Stm) {
-	size_t pID_len;
+template <typename T>
+void SideExt::ExtData::Serialize(T& Stm)
+{
+	Stm
+		.Process(this->ArrayIndex)
+		.Process(this->Sidebar_GDIPositions)
+		.Process(this->Sidebar_HarvesterCounter_Offset)
+		.Process(this->Sidebar_HarvesterCounter_Yellow)
+		.Process(this->Sidebar_HarvesterCounter_Red)
 
-	Stm->Read(&pID_len, sizeof(pID_len), 0);
-	Stm->Read(&Phobos::readBuffer, pID_len, 0);
-	Phobos::readBuffer[pID_len] = 0;
-
-	return ThemePlayer::Instance->FindIndex(Phobos::readBuffer);
+		.Process(this->IngameScore_WinTheme)
+		.Process(this->IngameScore_LoseTheme)
+		;
 }
 
-void SaveTheme(IStream* Stm, int themeID) {
-	auto pID = ThemePlayer::Instance->GetID(themeID);
-	auto pID_len = strlen(pID);
-
-	Stm->Write(&pID_len, sizeof(pID_len), 0);
-	Stm->Write(pID, pID_len, 0);
+void SideExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+{
+	Extension<SideClass>::LoadFromStream(Stm);
+	this->Serialize(Stm);
 }
 
-void SideExt::ExtData::LoadFromStream(IStream* Stm) {
-	#define STM_Process(A) Stm->Read(&A, sizeof(A), 0);
-	#include "Serialize.hpp"
-
-	this->IngameScore_WinTheme = LoadTheme(Stm);
-	this->IngameScore_LoseTheme = LoadTheme(Stm);
-
-	#undef STM_Process
+void SideExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+{
+	Extension<SideClass>::SaveToStream(Stm);
+	this->Serialize(Stm);
 }
 
-void SideExt::ExtData::SaveToStream(IStream* Stm) {
-	#define STM_Process(A) Stm->Write(&A, sizeof(A), 0);
-	#include "Serialize.hpp"
+bool SideExt::LoadGlobals(PhobosStreamReader& Stm)
+{
+	return Stm.Success();
+}
 
-	SaveTheme(Stm, this->IngameScore_WinTheme);
-	SaveTheme(Stm, this->IngameScore_LoseTheme);
-
-	#undef STM_Process
+bool SideExt::SaveGlobals(PhobosStreamWriter& Stm)
+{
+	return Stm.Success();
 }
 
 // =============================
 // container
 
-SideExt::ExtContainer::ExtContainer() : Container("SideClass") {
-}
-
+SideExt::ExtContainer::ExtContainer() : Container("SideClass") {}
 SideExt::ExtContainer::~ExtContainer() = default;
 
 // =============================
@@ -117,26 +109,31 @@ DEFINE_HOOK(6A4780, SideClass_SaveLoad_Prefix, 6)
 
 DEFINE_HOOK(6A488B, SideClass_Load_Suffix, 6)
 {
-	auto pItem = SideExt::ExtMap.Find(SideExt::ExtMap.SavingObject);
-	IStream* pStm = SideExt::ExtMap.SavingStream;
-
-	pItem->LoadFromStream(pStm);
+	SideExt::ExtMap.LoadStatic();
 	return 0;
 }
 
 DEFINE_HOOK(6A48FC, SideClass_Save_Suffix, 5)
 {
-	auto pItem = SideExt::ExtMap.Find(SideExt::ExtMap.SavingObject);
-	IStream* pStm = SideExt::ExtMap.SavingStream;
-
-	pItem->SaveToStream(pStm);
+	SideExt::ExtMap.SaveStatic();
 	return 0;
 }
 
 DEFINE_HOOK(679A10, SideClass_LoadAllFromINI, 5)
 {
 	GET_STACK(CCINIClass*, pINI, 0x4);
-	SideExt::ExtMap.LoadAllFromINI(pINI);
+	SideExt::ExtMap.LoadAllFromINI(pINI); // bwahaha
 
 	return 0;
 }
+
+/*
+FINE_HOOK(6725C4, RulesClass_Addition_Sides, 8)
+{
+	GET(SideClass *, pItem, EBP);
+	GET_STACK(CCINIClass*, pINI, 0x38);
+
+	SideExt::ExtMap.LoadFromINI(pItem, pINI);
+	return 0;
+}
+*/

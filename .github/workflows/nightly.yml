@@ -30,6 +30,7 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: nuget restore ${{env.SOLUTION_FILE_PATH}}
 
+    - uses: ammaraskar/msvc-problem-matcher@master
     - name: Build
       working-directory: ${{env.GITHUB_WORKSPACE}}
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
@@ -41,4 +42,6 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: compiled-dll-${{github.sha}}
-        path: ${{env.SOLUTION_FILE_PATH}}/${{env.BUILD_CONFIGURATION}}/Phobos.dll
+        path: |
+          ${{env.SOLUTION_FILE_PATH}}/${{env.BUILD_CONFIGURATION}}/Phobos.dll
+          ${{env.SOLUTION_FILE_PATH}}/${{env.BUILD_CONFIGURATION}}/IntDir/Phobos.pdb
