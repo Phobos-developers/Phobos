@@ -15,12 +15,10 @@ public:
 	public:
 		Valueable<bool> Intercepted;
 		Valueable<bool> ShouldIntercept;
-		Valueable<bool> ArcingFixed;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
 			, Intercepted(false)
 			, ShouldIntercept(false)
-			, ArcingFixed(false)
 		{ }
 
 		virtual ~ExtData() = default;

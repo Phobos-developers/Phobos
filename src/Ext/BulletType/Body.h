@@ -16,9 +16,13 @@ public:
 		Valueable<bool> Interceptable;
 		Nullable<Leptons> BallisticScatter_Min;
 		Nullable<Leptons> BallisticScatter_Max;
+		Valueable<bool> Arcing_Accurate;
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject),
-			Interceptable(false)
+			Interceptable(false),
+			BallisticScatter_Min(),
+			BallisticScatter_Max(),
+			Arcing_Accurate(false)
 		{ }
 
 		virtual ~ExtData() = default;

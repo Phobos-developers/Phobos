@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <Ext/BulletType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Misc/CaptureManager.h>
 
@@ -34,9 +35,6 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 
 		if (pBulletExt->Intercepted)
 			pBulletExt->ShouldIntercept = true;
-
-		if (pBullet->Type->Arcing && !pBulletExt->ArcingFixed)
-			pBulletExt->ApplyArcingFix();
 	}
 	return 0;
 }
@@ -49,4 +47,16 @@ DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
 	auto pTechno = generic_cast<TechnoClass*>(pBullet->Target);
 	R->AL(CaptureManager::CaptureUnit(pBullet->Owner->CaptureManager, pTechno, pControlledAnimType));
 	return 0x4692D5;
+}
+
+DEFINE_HOOK(468B72, BulletClass_Unlimbo_ArcingFix, 5)
+{
+	GET(BulletClass*, pThis, EBX);
+	auto const pData = BulletExt::ExtMap.Find(pThis);
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+	if(pThis->Type->Arcing && pTypeExt->Arcing_Accurate)
+		pData->ApplyArcingFix();
+
+	return 0;
 }
