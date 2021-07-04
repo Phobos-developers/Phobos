@@ -32,7 +32,7 @@
     <ClCompile Include="src\Ext\Building\Hooks.cpp" />
     <ClCompile Include="src\Ext\BulletType\Body.cpp" />
     <ClCompile Include="src\Ext\Bullet\Body.cpp" />
-    <ClCompile Include="src\Ext\Bullet\Hook.cpp" />
+    <ClCompile Include="src\Ext\Bullet\Hooks.cpp" />
     <ClCompile Include="src\Ext\House\Body.cpp" />
     <ClCompile Include="src\Ext\RadSite\Body.cpp" />
     <ClCompile Include="src\Ext\RadSite\Hooks.cpp" />
@@ -61,7 +61,6 @@
     <ClCompile Include="src\Misc\Hooks.Blowfish.cpp" />
     <ClCompile Include="src\Misc\Hooks.INIClass.cpp" />
     <ClCompile Include="src\Misc\Hooks.Savegame.cpp" />
-    <ClCompile Include="src\Misc\ArcingProjectileFix.cpp" />
     <ClCompile Include="src\Misc\ExtendedToolTips.cpp" />
     <ClCompile Include="src\Misc\Selection.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />

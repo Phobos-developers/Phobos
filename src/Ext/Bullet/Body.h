@@ -15,15 +15,17 @@ public:
 	public:
 		Valueable<bool> Intercepted;
 		Valueable<bool> ShouldIntercept;
+		Valueable<bool> ArcingFixed;
 
-		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject),
-			Intercepted(false),
-			ShouldIntercept(false)
+		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
+			, Intercepted(false)
+			, ShouldIntercept(false)
+			, ArcingFixed(false)
 		{ }
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 
@@ -31,12 +33,15 @@ public:
 
 		void ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel);
 
+		void ApplyArcingFix();
+
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
 	};
 
-	class ExtContainer final : public Container<BulletExt> {
+	class ExtContainer final : public Container<BulletExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();

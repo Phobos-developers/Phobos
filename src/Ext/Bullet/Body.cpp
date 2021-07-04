@@ -47,6 +47,32 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	}
 }
 
+void BulletExt::ExtData::ApplyArcingFix()
+{
+	auto pThis = this->OwnerObject();
+
+	this->ArcingFixed = true;
+
+	auto sourcePos = pThis->GetCoords();
+	auto targetPos = pThis->TargetCoords;
+
+	auto nZDiff = targetPos.Z - sourcePos.Z;
+	targetPos.Z = 0;
+	sourcePos.Z = 0;
+	auto nDistance = targetPos.DistanceFrom(sourcePos);
+
+	if (pThis->WeaponType && pThis->WeaponType->Lobber)
+		pThis->Speed *= 0.5;
+
+	auto nSpeed = pThis->Speed;
+	auto& pVelocity = pThis->Velocity;
+
+	pVelocity.X = targetPos.X - sourcePos.X;
+	pVelocity.Y = targetPos.Y - sourcePos.Y;
+	pVelocity *= nSpeed / nDistance;
+	pVelocity.Z = nZDiff * nSpeed / nDistance + 0.5 * RulesClass::Instance()->Gravity * nDistance / nSpeed;
+
+}
 
 // =============================
 // load / save
@@ -57,6 +83,7 @@ void BulletExt::ExtData::Serialize(T& Stm) {
 	Stm
 		.Process(this->Intercepted)
 		.Process(this->ShouldIntercept)
+		.Process(this->ArcingFixed)
 		;
 }
 
