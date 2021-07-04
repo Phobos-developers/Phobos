@@ -62,7 +62,7 @@ void BulletExt::ExtData::ApplyArcingFix()
 	auto nDistance = targetPos.DistanceFrom(sourcePos);
 
 	if (pThis->WeaponType && pThis->WeaponType->Lobber)
-		pThis->Speed *= 0.5;
+		pThis->Speed /= 2;
 
 	auto nSpeed = pThis->Speed;
 	auto& pVelocity = pThis->Velocity;
