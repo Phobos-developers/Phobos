@@ -102,3 +102,14 @@ Bolt.Disable1=false    ; boolean
 Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
 ```
+## Projectiles
+
+### Accurate Acring Projectiles
+
+- You can now set projectile with Arcing=yes to make sure the weapon to hit the target higher than the firer.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]        ; ProjectileType
+Arcing.Accurate=false   ; boolean
+```
