@@ -65,31 +65,30 @@ void BulletExt::ExtData::ApplyArcingFix()
 	{
 		auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
-		int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
-		int max = pTypeExt->BallisticScatter_Max.Get(Leptons(RulesClass::Instance()->BallisticScatter));
+		int nMin = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
+		int nMax = pTypeExt->BallisticScatter_Max.Get(Leptons(RulesClass::Instance()->BallisticScatter));
 
-		double random = ScenarioClass::Instance()->Random.RandomRanged(min, max);
-		double theta = ScenarioClass::Instance()->Random.RandomDouble() * 2 * Math::Pi;
+		double random = ScenarioClass::Instance()->Random.RandomRanged(nMin, nMax);
+		double theta = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
 		
-		CoordStruct offset = { random * Math::cos(theta),random * Math::sin(theta),0 };
+		CoordStruct offset { random * Math::cos(theta),random * Math::sin(theta),0 };
 		targetPos += offset;
 	}
 
 	auto nZDiff = targetPos.Z - sourcePos.Z;
 	targetPos.Z = 0;
 	sourcePos.Z = 0;
-	auto nDistance = targetPos.DistanceFrom(sourcePos);
+	auto const nDistance = targetPos.DistanceFrom(sourcePos);
 
 	if (pThis->WeaponType && pThis->WeaponType->Lobber)
 		pThis->Speed /= 2;
 
-	auto nSpeed = pThis->Speed;
-	auto& pVelocity = pThis->Velocity;
+	auto const nSpeed = pThis->Speed;
 
-	pVelocity.X = targetPos.X - sourcePos.X;
-	pVelocity.Y = targetPos.Y - sourcePos.Y;
-	pVelocity *= nSpeed / nDistance;
-	pVelocity.Z = nZDiff * nSpeed / nDistance + 0.5 * RulesClass::Instance()->Gravity * nDistance / nSpeed;
+	pThis->Velocity.X = targetPos.X - sourcePos.X;
+	pThis->Velocity.Y = targetPos.Y - sourcePos.Y;
+	pThis->Velocity *= nSpeed / nDistance;
+	pThis->Velocity.Z = nZDiff * nSpeed / nDistance + 0.5 * RulesClass::Instance()->Gravity * nDistance / nSpeed;
 
 }
 
