@@ -61,7 +61,7 @@ void BulletExt::ExtData::ApplyArcingFix()
 	auto sourcePos = pThis->GetCoords();
 	auto targetPos = pThis->TargetCoords;
 
-	if (pThis->Type->FlakScatter)
+	if (pThis->Type->Inaccurate)
 	{
 		auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
