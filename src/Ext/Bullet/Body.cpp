@@ -1,6 +1,11 @@
 #include "Body.h"
+
+#include <ScenarioClass.h>
+
 #include <Ext/RadSite/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/BulletType/Body.h>
+
 template<> const DWORD Extension<BulletClass>::Canary = 0x2A2A2A2A;
 BulletExt::ExtContainer BulletExt::ExtMap;
 
@@ -55,6 +60,20 @@ void BulletExt::ExtData::ApplyArcingFix()
 
 	auto sourcePos = pThis->GetCoords();
 	auto targetPos = pThis->TargetCoords;
+
+	if (pThis->Type->FlakScatter)
+	{
+		auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+		int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
+		int max = pTypeExt->BallisticScatter_Max.Get(Leptons(RulesClass::Instance()->BallisticScatter));
+
+		double random = ScenarioClass::Instance()->Random.RandomRanged(min, max);
+		double theta = ScenarioClass::Instance()->Random.RandomDouble() * 2 * Math::Pi;
+		
+		CoordStruct offset = { random * Math::cos(theta),random * Math::sin(theta),0 };
+		targetPos += offset;
+	}
 
 	auto nZDiff = targetPos.Z - sourcePos.Z;
 	targetPos.Z = 0;
