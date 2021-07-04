@@ -71,7 +71,12 @@ void BulletExt::ExtData::ApplyArcingFix()
 		double random = ScenarioClass::Instance()->Random.RandomRanged(nMin, nMax);
 		double theta = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
 		
-		CoordStruct offset { random * Math::cos(theta),random * Math::sin(theta),0 };
+		CoordStruct offset
+		{
+			static_cast<int>(random * Math::cos(theta)),
+			static_cast<int>(random * Math::sin(theta)),
+			0
+		};
 		targetPos += offset;
 	}
 
