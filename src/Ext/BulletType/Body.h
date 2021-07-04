@@ -14,6 +14,8 @@ public:
 	{
 	public:
 		Valueable<bool> Interceptable;
+		Nullable<Leptons> BallisticScatter_Min;
+		Nullable<Leptons> BallisticScatter_Max;
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject),
 			Interceptable(false)

@@ -17,12 +17,16 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	INI_EX exINI(pINI);
 
 	this->Interceptable.Read(exINI, pSection, "Interceptable");
+	this->BallisticScatter_Min.Read(exINI, pThis->ID, "BallisticScatter.Min");
+	this->BallisticScatter_Max.Read(exINI, pThis->ID, "BallisticScatter.Max");
 }
 
 template <typename T>
 void BulletTypeExt::ExtData::Serialize(T& Stm) {
 	Stm
 		.Process(this->Interceptable)
+		.Process(this->BallisticScatter_Min)
+		.Process(this->BallisticScatter_Max)
 		;
 }
 
