@@ -56,8 +56,6 @@ void BulletExt::ExtData::ApplyArcingFix()
 {
 	auto pThis = this->OwnerObject();
 
-	this->ArcingFixed = true;
-
 	auto sourcePos = pThis->GetCoords();
 	auto targetPos = pThis->TargetCoords;
 
@@ -94,7 +92,6 @@ void BulletExt::ExtData::ApplyArcingFix()
 	pThis->Velocity.Y = targetPos.Y - sourcePos.Y;
 	pThis->Velocity *= nSpeed / nDistance;
 	pThis->Velocity.Z = nZDiff * nSpeed / nDistance + 0.5 * RulesClass::Instance()->Gravity * nDistance / nSpeed;
-
 }
 
 // =============================
@@ -106,7 +103,6 @@ void BulletExt::ExtData::Serialize(T& Stm) {
 	Stm
 		.Process(this->Intercepted)
 		.Process(this->ShouldIntercept)
-		.Process(this->ArcingFixed)
 		;
 }
 
