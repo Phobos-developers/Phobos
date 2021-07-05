@@ -9,9 +9,27 @@
 
 You can discuss the project at a dedicated [channel on C&C Mod Haven](https://discord.gg/sZeMzz6qVg).
 
+Installation and Usage
+----------------------
 
-Building and Usage
-------------------
+0. If you don't have Syringe installed into your mod already, you can download it together with the [latest Ares package](https://launchpad.net/ares/+download). To install simply drop `Syringe.exe` into your game folder (where your `gamemd.exe` is located). It's highly recommended to **install Ares** too to get full Phobos feature set, just drop all the files from the archive except documentation folder into your game folder.
+1. Obtain a Phobos "package" (official builds can be found on [releases page](https://github.com/Phobos-developers/Phobos/releases); read below to learn how to get nightly builds). You should end up with two files: `Phobos.dll` and `Phobos.pdb`.
+2. Place those files in the game folder (where your `gamemd.exe` is located).
+3. To launch the game with Phobos (and all other installed Syringe-compatible engine extensions including Ares) you need to execute `Syringe.exe "gamemd.exe" [command line arguments for gamemd.exe]` in command line (omit arguments if you don't need any). `RunAres.bat` from Ares package does the same so you may use that as well.
+
+If you already use Ares in your mod, you just need to drop Phobos files mentioned above in your game folder, Syringe will load Phobos automatically.
+
+By default Phobos doesn't do any very noticeable changes except a few bugfixes. To learn how to use Phobos features head over to [official documentation](https://phobos.readthedocs.io).
+
+### Obtaining nightly builds
+
+For those who want to help testing Phobos features as soon as they are done - you can also get a nightly build. Those versions are bleeding edge (don't redistribute them outside of testing!) and have build information (commit and branch/tag) in them which is displayed ingame and can't be turned off. There are two ways to get a nightly build.
+- **Get an artifact via nightly.link**. This is a service that allows guests to download automatic builds from GitHub. You can get a build for the latest successful (marked with a green tick) `develop` branch commit via [this link](https://nightly.link/Phobos-developers/Phobos/blob/develop/.github/workflows/nightly.yml), or get a build for any up-to-date pull request via an automatic comment that would appear in it.
+- **Get an artifact manually from GitHub Actions runs**. You can get an artifact for a specific commit which is built automatically with a GitHub Actions workflow, just press on a green tick, open the workflow, find and download the build artifact. This is limited to authorized users only.
+
+
+Building
+--------
 
 0. Install **Visual Studio** (2019 is recommended, 2017 is minimum) with the dependencies listed in `.vswhere` (it will prompt you to install missing dependences when you open the project, or you can run VS installer and import the config). If you prefer to use **Visual Studio Code** you may install **VS Build Tools** with the stuff from `.vswhere` instead. You can also don't use any code editor or IDE and build via **command line scripts** included with the project.
 1. Clone this repo recursively via your favorite git client (that will also clone YRpp).
@@ -19,11 +37,7 @@ Building and Usage
   - in Visual Studio: open the solution file in VS and build it (`Debug` build config is recommended);
   - in VSCode: open the project folder and hit `Run Build Task...` (`Ctrl + Shift + B`);
   - barebones: run `scripts/build_debug.bat`.
-3. Upon build completion place the resulting `Phobos.dll` from folder named identical to the used build config in your YR directory and launch Syringe targeting your YR executable (usually `gamemd.exe`).
-
-For those who want to help testing Phobos features as soon as they are done - you can also get a nightly build. Those versions are bleeding edge (don't redistribute them outside of testing!) and have build information (commit and branch/tag) in them which is displayed ingame and can't be turned off. There are two ways to get a nightly build.
-- **Get an artifact via nightly.link**. This is a service that allows guests to download automatic builds from GitHub. You can get a build for the latest successful (marked with a green tick) `develop` branch commit via [this link](https://nightly.link/Phobos-developers/Phobos/blob/develop/.github/workflows/nightly.yml), or get a build for any up-to-date pull request via an automatic comment that would appear in it.
-- **Get an artifact manually from GitHub Actions runs**. You can get an artifact for a specific commit which is built automatically with a GitHub Actions workflow, just press on a green tick, open the workflow, find and download the build artifact. This is limited to authorized users only.
+3. Upon build completion the resulting `Phobos.dll` and `Phobos.pdb` would be placed in the subfolder identical to the name of the buildconfig executed.
 
 Documentation
 -------------
@@ -32,8 +46,7 @@ The documentation can be found at [here @ Read the Docs](https://phobos.readthed
 
 You can switch between versions in the bottom left corner, as well as download a PDF version.
 
-How to read code snippets
--------------------------
+### How to read code snippets
 
 ```ini
 ; which section the entries should be in
@@ -84,6 +97,7 @@ Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show
 
 Legal and License
 -----
+
 [![LGPL v3](https://www.gnu.org/graphics/lgplv3-147x51.png)](https://opensource.org/licenses/LGPL-3.0)
 
 The Phobos project is an unofficial open-source community collaboration project to extend the Red Alert 2 Yuri's Revenge engine for modding and compatibility purposes.
