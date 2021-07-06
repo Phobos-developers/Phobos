@@ -46,7 +46,7 @@ DEFINE_HOOK(469150, BulletClass_Detonate_ApplyRadiation, 5)
 //unused function , safeguard
 DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation_UnUsed, 5)
 {
-	Debug::FatalErrorAndExit("[" __FUNCTION__ "] Called ! , You are not suppose to be here ! \n");
+	Debug::Log("[" __FUNCTION__ "] Called ! , You are not suppose to be here ! \n");
 	return 0x46AE5E;
 }
 
@@ -63,7 +63,7 @@ DEFINE_HOOK(5213E3, InfantryClass_AIDeployment_CheckRad, 4)
 	{
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.FindOrAllocate(pWeapon);
 		auto const pRadType = pWeaponExt->RadType;
-		auto const wh = pWeapon->Warhead;
+		auto const warhead = pWeapon->Warhead;
 		auto currentCoord = pInf->GetCell()->MapCoords;
 
 		auto const it = std::find_if(RadSiteExt::Array.begin(), RadSiteExt::Array.end(),
@@ -72,7 +72,7 @@ DEFINE_HOOK(5213E3, InfantryClass_AIDeployment_CheckRad, 4)
 			return
 				pSite->Type == pRadType &&
 				pSite->OwnerObject()->BaseCell == currentCoord &&
-				pSite->OwnerObject()->Spread == static_cast<int>(wh->CellSpread)
+				pSite->OwnerObject()->Spread == static_cast<int>(warhead->CellSpread)
 				;
 		});
 
@@ -84,20 +84,30 @@ DEFINE_HOOK(5213E3, InfantryClass_AIDeployment_CheckRad, 4)
 		}
 	}
 
-	//this stuffs not working as intended 
-	//may ignore the Temporary cloaked  state then change it to permanent one
-	//need to be replace with new methods 
-	if (pInf->CloakState == CloakState::Cloaked)
-	{
-		pInf->Uncloak(false);
-		pInf->Cloakable = false;
-		pInf->NeedsRedraw = true;
-		auto pExt = TechnoExt::ExtMap.Find(pInf);
-		pExt->WasCloaked = true;
-	}
 
 	return (!radLevel || (radLevel < weaponRadLevel / 3)) ?
 		0x5213F4 : 0x521484;
+}
+
+DEFINE_HOOK(521478, InfantryClass_AIDeployment_FireNotOKCloakFix, 4)
+{
+	GET(InfantryClass* const, pThis, ESI);
+
+	auto const pWeapon = pThis->GetDeployWeapon()->WeaponType;
+	AbstractClass* pTarget = nullptr;//default WWP nullptr
+
+	if (pWeapon 
+		&& pWeapon->DecloakToFire
+		&& pWeapon->AreaFire
+		&& pThis->Type->DeployFire
+		&& (pThis->CloakState == CloakState::Cloaked || pThis->CloakState == CloakState::Cloaking))
+	{
+		pTarget = pThis->GetCell(); //target it own cell
+	}
+
+	pThis->SetTarget(pTarget); //Here we go
+
+	return 0x521484;
 }
 
 // Too OP, be aware
@@ -127,16 +137,16 @@ DEFINE_HOOK(43FB23, BuildingClass_AI, 5)
 			if ((delay == 0) || (Unsorted::CurrentFrame % delay != 0))
 				continue;
 
-			if (pRadExt->GetRadLevelAt(CurrentCoord) <= 0.0 || !pType->GetWarhead())
+			if (RadSiteExt::GetRadLevelAt(pRadSite,CurrentCoord) <= 0.0 || !pType->GetWarhead())
 				continue;
 
-			auto wh = pType->GetWarhead();
-			auto absolute = wh->WallAbsoluteDestroyer;
+			auto warhead = pType->GetWarhead();
+			auto absolute = warhead->WallAbsoluteDestroyer;
 			bool ignore = pBuilding->Type->Wall && absolute;
-			auto damage = static_cast<int>((pRadExt->GetRadLevelAt(CurrentCoord) / 2) * pType->GetLevelFactor());
+			auto damage = static_cast<int>((RadSiteExt::GetRadLevelAt(pRadSite, CurrentCoord) / 2) * pType->GetLevelFactor());
 
 			if (pBuilding->IsAlive) // simple fix for previous issues
-				pBuilding->ReceiveDamage(&damage, static_cast<int>(orDistance), wh, nullptr, ignore, absolute, pRadExt->RadHouse.Get());
+				pBuilding->ReceiveDamage(&damage, static_cast<int>(orDistance), warhead, nullptr, ignore, absolute, pRadExt->RadHouse.Get());
 		}
 	}
 
@@ -170,17 +180,17 @@ DEFINE_HOOK(4DA554, FootClass_AI_RadSiteClass, 5)
 				continue;
 
 			// for more precise dmg calculation
-			double RadLevel = pRadExt->GetRadLevelAt(CurrentCoord);
+			double RadLevel = RadSiteExt::GetRadLevelAt(pRadSite, CurrentCoord);
 			if (RadLevel <= 0.0 || !pType->GetWarhead())
 				continue;
 
 			int damage = static_cast<int>(RadLevel * pType->GetLevelFactor());
 			int distance = static_cast<int>(orDistance);
-			auto wh = pType->GetWarhead();
-			auto absolute = wh->WallAbsoluteDestroyer;
+			auto warhead = pType->GetWarhead();
+			auto absolute = warhead->WallAbsoluteDestroyer;
 
 			if (pFoot->IsAlive || !pFoot->IsSinking)// simple fix for previous issues
-				state = pFoot->ReceiveDamage(&damage, distance, wh, nullptr, false, absolute, pRadExt->RadHouse.Get());
+				state = pFoot->ReceiveDamage(&damage, distance, warhead, nullptr, false, absolute, pRadExt->RadHouse.Get());
 		}
 	}
 
@@ -188,6 +198,7 @@ DEFINE_HOOK(4DA554, FootClass_AI_RadSiteClass, 5)
 
 	return pFoot->IsAlive ? 0x4DA63B : 0x4DAF00;
 }
+
 #define GET_RADSITE(reg, value)\
 	GET(RadSiteClass* const, pThis, reg);\
 	RadSiteExt::ExtData* pExt = RadSiteExt::ExtMap.Find(pThis);\
@@ -279,7 +290,6 @@ DEFINE_HOOK(65B8B9, RadSiteClass_AI_LightDelay, 6)
 DEFINE_HOOK(65BB67, RadSite_Deactivate, 6)
 {
 	GET_RADSITE(ECX, GetLevelDelay());
-
 	GET(int, val, EAX);
 
 	R->EAX(val / output);
