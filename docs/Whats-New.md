@@ -76,6 +76,7 @@ Vanilla fixes:
 Phobos fixes:
 - Properly rewritten a fix for mind-controlled vehicles deploying into buildings (by FS-21)
 - Properly rewritten `DeployToFire` fix, tag `Deployed.RememberTarget` is deprecated, now always on (by Kerbiter)
+- New warheads now work with Ares' `GenericWarhead` superweapon (by Belonit)
 
 ### 0.1.1
 

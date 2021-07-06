@@ -143,9 +143,9 @@ DEFINE_HOOK(48381D, CellClass_SpreadTiberium_CellSpread, 6)
 ```
 - New ingame "entity" classes are to be named with `Class` postfix (like `RadTypeClass`). Extension classes are to be named with `Ext` postfix instead (like `RadTypeExt`).
 
-:::{note}
+```{note}
 The styleguide is not exhaustive and may be adjusted in the future.
-:::
+```
 
 ### Git branching model
 

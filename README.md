@@ -64,13 +64,17 @@ Credits
 -------
 
 ### Developers
-- **Belonit (Gluk-v48)** - project author
-- **Metadorius (Kerbiter)** - project author and project manager
-- **Thrifinesma (Uranusian)**, **SEC-SOME (secsome)**, **Otamaa (Fahroni, BoredEXE)** - co-developers
+- **Belonit (Gluk-v48)** - project author ([Patreon](http://patreon.com/belonit), [PayPal](https://paypal.me/Belonit))
+- **Kerbiter (Metadorius)** - project co-author, project manager, DevOps, technical writer ([Patreon](http://patreon.com/kerbiter))
+- **Uranusian (Thrifinesma)** - developer ([Patreon](https://www.patreon.com/uranusian))
+- **secsome (SEC-SOME)** - developer ([Patreon](https://www.patreon.com/secsome))
+- **Otamaa (Fahroni, BoredEXE)** - developer ([PayPal](https://paypal.me/GeneralOtama))
+- **FS-21** - developer
+- **Starkku** - developer
 
-### Contribution
+### Contributions
 - **Belonit (Gluk-v48)** - project creation, disable empty spawn positions, custom gamemd icon with Command Line, full-color non-paletted PCX, SpySat, BigGap, TransactMoney, PCX Loading Screen, custom DiskLaser radius, extended tooltips, building upgrades enhancement, hide health bar, Sidebar.GDIPosition, help with CellSpread, Blowfish.dll-related errors fix, zero size map previews, semantic locomotor aliases, shields
-- **Metadorius (Kerbiter)** - SHP debris respect Shadow, building upgrades enhancement, extended tooltips, selection priority filtering, TurretOffset enhancement, customizable ore spawners, select next idle harvester hotkey, interceptor enhancement, zero size map previews, nightly build workflow, overhauled Unicode font, docs maintainer, project management, code style
+- **Metadorius (Kerbiter)** - SHP debris respect Shadow, building upgrades enhancement, extended tooltips, selection priority filtering, TurretOffset enhancement, customizable ore spawners, select next idle harvester hotkey, interceptor enhancement, zero size map previews, CI/CD, overhauled Unicode font, docs maintenance, VSCode configs, code style
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
 - **Ares developers** - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code, prototype deployer fixes
