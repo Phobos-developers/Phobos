@@ -54,6 +54,9 @@ public:
 		ValueableVector<AnimTypeClass*> OreGathering_Anims;
 		ValueableVector<int> OreGathering_Tiberiums;
 		ValueableVector<int> OreGathering_FramesPerDir;
+		
+		std::vector<DynamicVectorClass<CoordStruct>> WeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> EliteWeaponBurstFLHs;
 
 		Valueable<bool> DestroyAnim_Random;
 

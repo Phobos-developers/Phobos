@@ -89,3 +89,35 @@ DEFINE_HOOK(0x6FD05E, TechnoClass_Rearm_Delay_BurstDelays, 0x7)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x6F3B37, TechnoClass_Transform_6F3AD0_BurstFLH_1, 0x7)
+{
+	GET(TechnoClass*, pThis, EBX);
+	GET_STACK(int, weaponIndex, STACK_OFFS(0xD8, -0x8));
+
+	bool FLHFound = false;
+	CoordStruct FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
+
+	if (FLHFound)
+	{
+		R->ECX(FLH.X);
+		R->EBP(FLH.Y);
+		R->EAX(FLH.Z);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F3C88, TechnoClass_Transform_6F3AD0_BurstFLH_2, 0x6)
+{
+	GET(TechnoClass*, pThis, EBX);
+	GET_STACK(int, weaponIndex, STACK_OFFS(0xD8, -0x8));
+
+	bool FLHFound = false;
+	TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
+
+	if (FLHFound)
+		R->EAX(0);
+
+	return 0;
+}
