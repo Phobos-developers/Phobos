@@ -120,6 +120,38 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exArtINI(CCINIClass::INI_Art);
 
 	this->TurretOffset.Read(exArtINI, pThis->ImageFile, "TurretOffset");
+
+	// Burst FLH's.
+	bool parseMultiWeapons = pThis->TurretCount > 0 && pThis->WeaponCount > 0;
+	auto weaponCount = parseMultiWeapons ? pThis->WeaponCount : 2;
+	this->WeaponBurstFLHs.resize(weaponCount);
+	this->EliteWeaponBurstFLHs.resize(weaponCount);
+	char buffer[64];
+
+	for (int i = 0; i < weaponCount; i++)
+	{
+		for (int j = 0; j < INT_MAX; j++)
+		{
+			_snprintf(buffer, 64, "Weapon%d", i + 1);
+			auto baseKey = parseMultiWeapons ? buffer : i > 0 ? "SecondaryFire" : "PrimaryFire";
+
+			_snprintf(buffer, 64, "%sFLH.Burst%d", baseKey, j);
+			Nullable<CoordStruct> FLH;
+			FLH.Read(exArtINI, pThis->ImageFile, buffer);
+
+			_snprintf(buffer, 64, "Elite%sFLH.Burst%d", baseKey, j);
+			Nullable<CoordStruct> eliteFLH;
+			eliteFLH.Read(exArtINI, pThis->ImageFile, buffer);
+
+			if (FLH.isset() & !eliteFLH.isset())
+				eliteFLH = FLH;
+			else if (!FLH.isset() && !eliteFLH.isset())
+				break;
+
+			WeaponBurstFLHs[i].AddItem(FLH.Get());
+			EliteWeaponBurstFLHs[i].AddItem(eliteFLH.Get());
+		}
+	}
 }
 
 template <typename T>
@@ -158,6 +190,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OreGathering_Anims)
 		.Process(this->OreGathering_Tiberiums)
 		.Process(this->OreGathering_FramesPerDir)
+		.Process(this->WeaponBurstFLHs)
+		.Process(this->EliteWeaponBurstFLHs)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
