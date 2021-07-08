@@ -94,7 +94,7 @@ Credits
 - **thomassneddon** - general assistance
 - **Starkku** - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
-- **mevitar** - honorary shield tester award
+- **mevitar** - honorary shield tester *triple* award
 - **Damfoos** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
 
