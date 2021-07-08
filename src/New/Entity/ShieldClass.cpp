@@ -228,6 +228,15 @@ void ShieldClass::AI()
 	if (!this->Techno || this->Techno->InLimbo || this->Techno->IsImmobilized || this->Techno->Transporter)
 		return;
 
+	if (this->Techno->Health <= 0 || !this->Techno->IsAlive)
+	{
+		if (auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno))
+		{
+			pTechnoExt->Shield = nullptr;
+			return;
+		}
+	}
+
 	this->UpdateType();
 	this->CloakCheck();
 	this->ConvertCheck();
@@ -243,7 +252,7 @@ void ShieldClass::AI()
 	this->RespawnShield();
 	this->SelfHealing();
 
-	if (!this->Cloak && !this->Temporal && this->Online && (this->HP > 0))
+	if (!this->Cloak && !this->Temporal && this->Online && (this->HP > 0 && this->Techno->Health > 0))
 		this->CreateAnim();
 }
 
