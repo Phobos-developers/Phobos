@@ -5,6 +5,8 @@
 #include <ScenarioClass.h>
 #include <VoxelAnimClass.h>
 
+#include <Ext/Techno/Body.h>
+
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
 
@@ -34,6 +36,7 @@ DEFINE_LJMP(0x546C23, 0x546C8B) //Phobos_BugFixes_Tileset255_RefNonMMArray
 
 // WWP's shit code! Wrong check.
 // To avoid units dying when they are already dead.
+// Author: Uranusian
 DEFINE_HOOK(5F53AA, ObjectClass_ReceiveDamage_DyingFix, 6)
 {
 	enum { PostMortem = 0x5F583E, ContinueCheck = 0x5F53B0 };
@@ -53,8 +56,11 @@ DEFINE_HOOK(4D7431, FootClass_ReceiveDamage_DyingFix, 5)
 	GET(DamageState, result, EAX);
 
 	if (result != DamageState::PostMortem && (pThis->IsSinking || (!pThis->IsAttackedByLocomotor && pThis->IsCrashing)))
+	{
+		if (auto pExt = TechnoExt::ExtMap.Find(pThis))
+			pExt->Shield = nullptr;       // this is another bugfix for removing the shield when unit are already dead.  -- Uranusian
 		R->EAX(DamageState::PostMortem);
-
+	}
 	return 0;
 }
 
