@@ -66,7 +66,7 @@ Credits
 ### Developers
 - **Belonit (Gluk-v48)** - project author ([Patreon](http://patreon.com/belonit), [PayPal](https://paypal.me/Belonit))
 - **Kerbiter (Metadorius)** - project co-author, project manager, DevOps, technical writer ([Patreon](http://patreon.com/kerbiter))
-- **Uranusian (Thrifinesma)** - developer ([Patreon](https://www.patreon.com/uranusian))
+- **Uranusian (Thrifinesma)** - developer ([Patreon](https://www.patreon.com/uranusian), [AliPay](https://qr.alipay.com/fkx04799efvz4pudtbygscf))
 - **secsome (SEC-SOME)** - developer ([Patreon](https://www.patreon.com/secsome))
 - **Otamaa (Fahroni, BoredEXE)** - developer ([PayPal](https://paypal.me/GeneralOtama))
 - **FS-21** - developer
@@ -98,7 +98,7 @@ Credits
 - **Damfoos** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
 
-Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](logo-mono.png)) in your client/launcher, linking to Phobos repository, contributing or donating to us via links on the right and the `Sponsor` button on top of the repo.
+Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](logo-mono.png)) in your client/launcher (make it open Phobos GitHub page for extra fanciness), linking to Phobos repository, contributing or donating to us via the links above.
 
 Legal and License
 -----

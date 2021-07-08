@@ -23,9 +23,9 @@
     <ClCompile Include="src\Ext\TAction\Body.cpp" />
     <ClCompile Include="src\Ext\TAction\Hooks.cpp" />
     <ClCompile Include="src\Misc\CaptureManager.cpp" />
-    <ClCompile Include="src\New\Entity\Shield.cpp" />
+    <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
-    <ClCompile Include="src\New\Type\ShieldType.cpp" />
+    <ClCompile Include="src\New\Type\ShieldTypeClass.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Hooks.cpp" />
     <ClCompile Include="src\Ext\Building\Body.cpp" />
@@ -89,9 +89,9 @@
     <ClInclude Include="src\Commands\Commands.h" />
     <ClInclude Include="src\Ext\TAction\Body.h" />
     <ClInclude Include="src\Misc\CaptureManager.h" />
-    <ClInclude Include="src\New\Entity\Shield.h" />
+    <ClInclude Include="src\New\Entity\ShieldClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
-    <ClInclude Include="src\New\Type\ShieldType.h" />
+    <ClInclude Include="src\New\Type\ShieldTypeClass.h" />
     <ClInclude Include="src\Utilities\Enumerable.h" />
     <ClInclude Include="src\ExtraHeaders\CCToolTip.h" />
     <ClInclude Include="src\ExtraHeaders\ArmorType.h" />

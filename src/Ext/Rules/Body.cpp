@@ -5,7 +5,7 @@
 #include <GameOptionsClass.h>
 
 #include <New/Type/RadTypeClass.h>
-#include <New/Type/ShieldType.h>
+#include <New/Type/ShieldTypeClass.h>
 
 template<> const DWORD Extension<RulesClass>::Canary = 0x12341234;
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;

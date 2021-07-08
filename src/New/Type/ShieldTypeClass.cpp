@@ -1,4 +1,4 @@
-#include "ShieldType.h"
+#include "ShieldTypeClass.h"
 
 Enumerable<ShieldTypeClass>::container_t Enumerable<ShieldTypeClass>::Array;
 

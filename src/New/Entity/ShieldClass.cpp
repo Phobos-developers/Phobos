@@ -1,4 +1,4 @@
-#include "Shield.h"
+#include "ShieldClass.h"
 
 #include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>

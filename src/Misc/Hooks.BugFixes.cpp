@@ -36,13 +36,15 @@ DEFINE_LJMP(0x546C23, 0x546C8B) //Phobos_BugFixes_Tileset255_RefNonMMArray
 // To avoid units dying when they are already dead.
 DEFINE_HOOK(5F53AA, ObjectClass_ReceiveDamage_DyingFix, 6)
 {
+	enum { PostMortem = 0x5F583E, ContinueCheck = 0x5F53B0 };
+
 	GET(int, health, EAX);
 	GET(ObjectClass*, pThis, ESI);
 
 	if (health <= 0 || !pThis->IsAlive)
-		return 0x5F583E; // return DamageState::PostMortem
+		return PostMortem;
 
-	return 0x5F53B0; //continue vanilla check
+	return ContinueCheck;
 }
 
 DEFINE_HOOK(4D7431, FootClass_ReceiveDamage_DyingFix, 5)
@@ -51,7 +53,7 @@ DEFINE_HOOK(4D7431, FootClass_ReceiveDamage_DyingFix, 5)
 	GET(DamageState, result, EAX);
 
 	if (result != DamageState::PostMortem && (pThis->IsSinking || (!pThis->IsAttackedByLocomotor && pThis->IsCrashing)))
-    R->EAX(DamageState::PostMortem);
+		R->EAX(DamageState::PostMortem);
 
 	return 0;
 }
