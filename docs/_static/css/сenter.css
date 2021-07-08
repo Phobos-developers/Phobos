@@ -1,0 +1,23 @@
+@media screen and (max-width: 768px) {
+    .wy-nav-side {
+        left: -300px !important;
+    }
+}
+
+.wy-nav-content {
+    max-width: none !important;
+}
+
+.wy-body-for-nav {
+    background: #161b22 !important;
+    max-width: 1400px !important;
+    margin: auto !important;
+}
+
+.wy-grid-for-nav {
+    position: unset !important;
+}
+
+.rst-versions, .wy-nav-side {
+    left: auto !important;
+}
