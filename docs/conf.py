@@ -53,7 +53,7 @@ html_static_path = ['_static']
 
 myst_heading_anchors = 3
 
-myst_enable_extensions = ["colon_fence"]
+myst_enable_extensions = []
 
 html_theme_options = {
     'navigation_depth': 4,

@@ -14,3 +14,6 @@ Nightly/
 DevBuild/
 
 docs/_build/
+
+.vscode/c_cpp_properties.json
+/.vscode/cspell.json

@@ -1,6 +1,7 @@
 #pragma once
 #include <ASMMacros.h>
 #include <GeneralStructures.h>
+#include <Helpers/CompileTime.h>
 
 struct ToolTipManager_Draw
 {
@@ -38,7 +39,7 @@ struct ToolTipManager
 class CCToolTip
 {
 public:
-	static bool HideName;
+	static constexpr reference<bool, 0x884B8C> HideName{};
 
 	const inline void Draw2() const
 	{

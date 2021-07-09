@@ -1,12 +1,11 @@
 #pragma once
-#include "../BuildingType/Body.h"
-#include <Helpers/Enumerators.h>
 #include <BuildingClass.h>
 
-#include "../_Container.hpp"
-#include "../../Phobos.h"
+#include <Helpers/Macro.h>
+#include <Utilities/Container.h>
+#include <Utilities/TemplateDef.h>
 
-#include "../../Utilities/Debug.h"
+#include <Ext/TechnoType/Body.h>
 
 class BuildingExt
 {
@@ -16,32 +15,35 @@ public:
 	class ExtData final : public Extension<BuildingClass>
 	{
 	public:
+		Valueable<bool> DeployedTechno;
 
-		//bool SpySat;
-		//bool BigGap;
-		//int TransactMoney;
-
-		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)//,
-			//SpySat(false),
-			//BigGap(false),
-			//TransactMoney(0)
+		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
+			, DeployedTechno(false)
 		{ }
-
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		// virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
-		virtual void LoadFromStream(IStream* Stm);
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
-		virtual void SaveToStream(IStream* Stm);
+		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
+	private:
+		template <typename T>
+		void Serialize(T& Stm);
 	};
 
-	class ExtContainer final : public Container<BuildingExt> {
+	class ExtContainer final : public Container<BuildingExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();
 	};
 
 	static ExtContainer ExtMap;
+
+	static bool LoadGlobals(PhobosStreamReader& Stm);
+	static bool SaveGlobals(PhobosStreamWriter& Stm);
 };

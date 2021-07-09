@@ -1,11 +1,14 @@
 #pragma once
-#include <Helpers/Macro.h>
-#include <CCINIClass.h>
-#include "Utilities/Debug.h"
-#include "Utilities/GeneralUtils.h"
-#include "Phobos.version.h"
+#include <Phobos.version.h>
+#include <Windows.h>
 
-#define TOOLTIPS_SECTION "ToolTips"
+class CCINIClass;
+class AbstractClass;
+
+constexpr auto NONE_STR = "<none>";
+constexpr auto NONE_STR2 = "none";
+constexpr auto TOOLTIPS_SECTION = "ToolTips";
+constexpr auto SIDEBAR_SECTION = "Sidebar";
 
 class Phobos
 {
@@ -16,6 +19,8 @@ public:
 	static void CloseConfig(CCINIClass*&);
 
 	//variables
+	static HANDLE hInstance;
+
 	static const size_t readLength = 2048;
 	static char readBuffer[readLength];
 	static wchar_t wideBuffer[readLength];
@@ -24,16 +29,25 @@ public:
 	static const char* AppIconPath;
 	static const wchar_t* VersionDescription;
 
+	static void Clear();
+	static void PointerGotInvalid(AbstractClass* const pInvalid, bool const removed);
+	static HRESULT SaveGameData(IStream* pStm);
+	static void LoadGameData(IStream* pStm);
+
 	class UI
 	{
 	public:
 		static bool DisableEmptySpawnPositions;
 		static bool ExtendedToolTips;
 		static int MaxToolTipWidth;
+		static bool ShowHarvesterCounter;
+		static double HarvesterCounter_ConditionYellow;
+		static double HarvesterCounter_ConditionRed;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;
 		static const wchar_t* TimeLabel;
+		static const wchar_t* HarvesterLabel;
 	};
 
 	class Config
@@ -41,5 +55,6 @@ public:
 	public:
 		static bool ToolTipDescriptions;
 		static bool PrioritySelectionFiltering;
+		static bool DevelopmentCommands;
 	};
 };

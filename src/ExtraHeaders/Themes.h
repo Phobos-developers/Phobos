@@ -6,7 +6,8 @@
 
 #include <ASMMacros.h>
 #include <ArrayClasses.h>
-#include <Helpers\String.h>
+#include <Helpers/String.h>
+#include <Helpers/CompileTime.h>
 
 class AudioStream;
 
@@ -38,7 +39,7 @@ public:
 class ThemePlayer
 {
 public:
-	static ThemePlayer* Instance;
+	static constexpr reference<ThemePlayer, 0xA83D10> Instance{};
 
 	const char* GetID(unsigned int index) const
 		{ JMP_THIS(0x721270) }
@@ -79,7 +80,7 @@ public:
 	void Suspend()
 		{ JMP_THIS(0x720F70) }
 
-	void Update()
+	void AI()
 		{ JMP_THIS(0x7209D0) }
 
 	int CurrentTheme; // the playing theme's index
