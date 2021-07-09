@@ -8,11 +8,11 @@
 
 // Latest release build
 #define VERSION_MAJOR 0
-#define VERSION_MINOR 1
+#define VERSION_MINOR 2
 #define VERSION_REVISION 0
 
 // Latest devbuild
-#define BUILD_NUMBER 15
+#define BUILD_NUMBER 16
 
 // Nightly defines GIT_COMMIT and GIT_BRANCH in GH Actions
 
