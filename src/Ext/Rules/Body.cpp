@@ -141,7 +141,7 @@ bool RulesExt::SaveGlobals(PhobosStreamWriter& Stm)
 // =============================
 // container hooks
 
-DEFINE_HOOK(667A1D, RulesClass_CTOR, 5)
+DEFINE_HOOK(0x667A1D, RulesClass_CTOR, 0x5)
 {
 	GET(RulesClass*, pItem, ESI);
 
@@ -150,7 +150,7 @@ DEFINE_HOOK(667A1D, RulesClass_CTOR, 5)
 	return 0;
 }
 
-DEFINE_HOOK(667A30, RulesClass_DTOR, 5)
+DEFINE_HOOK(0x667A30, RulesClass_DTOR, 0x5)
 {
 	GET(RulesClass*, pItem, ECX);
 
@@ -161,8 +161,8 @@ DEFINE_HOOK(667A30, RulesClass_DTOR, 5)
 
 IStream* RulesExt::g_pStm = nullptr;
 
-DEFINE_HOOK_AGAIN(674730, RulesClass_SaveLoad_Prefix, 6)
-DEFINE_HOOK(675210, RulesClass_SaveLoad_Prefix, 5)
+DEFINE_HOOK_AGAIN(0x674730, RulesClass_SaveLoad_Prefix, 0x6)
+DEFINE_HOOK(0x675210, RulesClass_SaveLoad_Prefix, 0x5)
 {
 	//GET(RulesClass*, pItem, ECX);
 	GET_STACK(IStream*, pStm, 0x4);
@@ -172,7 +172,7 @@ DEFINE_HOOK(675210, RulesClass_SaveLoad_Prefix, 5)
 	return 0;
 }
 
-DEFINE_HOOK(678841, RulesClass_Load_Suffix, 7)
+DEFINE_HOOK(0x678841, RulesClass_Load_Suffix, 0x7)
 {
 	auto buffer = RulesExt::Global();
 
@@ -188,7 +188,7 @@ DEFINE_HOOK(678841, RulesClass_Load_Suffix, 7)
 	return 0;
 }
 
-DEFINE_HOOK(675205, RulesClass_Save_Suffix, 8)
+DEFINE_HOOK(0x675205, RulesClass_Save_Suffix, 0x8)
 {
 	auto buffer = RulesExt::Global();
 	PhobosByteStream saver(sizeof(*buffer));
@@ -203,7 +203,7 @@ DEFINE_HOOK(675205, RulesClass_Save_Suffix, 8)
 	return 0;
 }
 
-DEFINE_HOOK(668BF0, RulesClass_Addition, 5)
+DEFINE_HOOK(0x668BF0, RulesClass_Addition, 0x5)
 {
 	GET(RulesClass*, pItem, ECX);
 	GET_STACK(CCINIClass*, pINI, 0x4);
@@ -214,7 +214,7 @@ DEFINE_HOOK(668BF0, RulesClass_Addition, 5)
 	return 0;
 }
 
-DEFINE_HOOK(679A15, RulesData_LoadBeforeTypeData, 6)
+DEFINE_HOOK(0x679A15, RulesData_LoadBeforeTypeData, 0x6)
 {
 	GET(RulesClass*, pItem, ECX);
 	GET_STACK(CCINIClass*, pINI, 0x4);
@@ -225,7 +225,7 @@ DEFINE_HOOK(679A15, RulesData_LoadBeforeTypeData, 6)
 	return 0;
 }
 
-DEFINE_HOOK(679CAF, RulesData_LoadAfterTypeData, 5)
+DEFINE_HOOK(0x679CAF, RulesData_LoadAfterTypeData, 0x5)
 {
 	RulesClass* pItem = RulesClass::Instance();
 	GET(CCINIClass*, pINI, ESI);

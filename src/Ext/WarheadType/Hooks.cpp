@@ -8,7 +8,7 @@
 
 bool DetonationInDamageArea = true;
 
-DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
+DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 {
 	GET(BulletClass* const, pThis, ESI);
 	GET_BASE(const CoordStruct*, pCoords, 0x8);
@@ -25,13 +25,13 @@ DEFINE_HOOK(46920B, BulletClass_Detonate, 6)
 	return 0;
 }
 
-DEFINE_HOOK(46A290, BulletClass_Detonate_Return, 5)
+DEFINE_HOOK(0x46A290, BulletClass_Detonate_Return, 0x5)
 {
 	DetonationInDamageArea = true;
 	return 0;
 }
 
-DEFINE_HOOK(489286, MapClass_DamageArea, 6)
+DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 {
 	if (DetonationInDamageArea) {
 		// GET(const int, Damage, EDX);
@@ -50,7 +50,7 @@ DEFINE_HOOK(489286, MapClass_DamageArea, 6)
 }
 #pragma endregion
 
-DEFINE_HOOK(48A512, WarheadTypeClass_AnimList_SplashList, 6)
+DEFINE_HOOK(0x48A512, WarheadTypeClass_AnimList_SplashList, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
@@ -66,7 +66,7 @@ DEFINE_HOOK(48A512, WarheadTypeClass_AnimList_SplashList, 6)
 	return 0;
 }
 
-DEFINE_HOOK(48A5BD, WarheadTypeClass_AnimList_PickRandom, 6)
+DEFINE_HOOK(0x48A5BD, WarheadTypeClass_AnimList_PickRandom, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
@@ -74,7 +74,7 @@ DEFINE_HOOK(48A5BD, WarheadTypeClass_AnimList_PickRandom, 6)
 	return pWHExt && pWHExt->AnimList_PickRandom ? 0x48A5C7 : 0;
 }
 
-DEFINE_HOOK(48A5B3, WarheadTypeClass_AnimList_CritAnim, 6)
+DEFINE_HOOK(0x48A5B3, WarheadTypeClass_AnimList_CritAnim, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
@@ -90,7 +90,7 @@ DEFINE_HOOK(48A5B3, WarheadTypeClass_AnimList_CritAnim, 6)
 	return 0;
 }
 
-DEFINE_HOOK(6FC339, TechnoClass_CanFire_InsufficientFunds, 6)
+DEFINE_HOOK(0x6FC339, TechnoClass_CanFire_InsufficientFunds, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);

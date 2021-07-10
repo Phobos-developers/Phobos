@@ -109,13 +109,13 @@ bool __stdcall DllMain(HANDLE hInstance, DWORD dwReason, LPVOID v)
 	return true;
 }
 
-DEFINE_HOOK(7CD810, ExeRun, 9)
+DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 {
 	Patch::Apply();
 	return 0;
 }
 
-DEFINE_HOOK(52F639, _YR_CmdLineParse, 5)
+DEFINE_HOOK(0x52F639, _YR_CmdLineParse, 0x5)
 {
 	GET(char**, ppArgs, ESI);
 	GET(int, nNumArgs, EDI);
@@ -124,7 +124,7 @@ DEFINE_HOOK(52F639, _YR_CmdLineParse, 5)
 	return 0;
 }
 
-DEFINE_HOOK(5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 5)
+DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 {
 	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
@@ -174,7 +174,7 @@ DEFINE_HOOK(5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 5)
 	return 0;
 }
 
-DEFINE_HOOK(66E9DF, RulesClass_Process_Phobos, 8)
+DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 {
 	GET(CCINIClass*, rulesINI, EDI);
 
@@ -184,7 +184,7 @@ DEFINE_HOOK(66E9DF, RulesClass_Process_Phobos, 8)
 }
 
 #ifndef IS_RELEASE_VER
-DEFINE_HOOK(4F4583, GScreenClass_DrawText, 6)
+DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 {
 #ifndef STR_GIT_COMMIT
 	if (!HideWarning)

@@ -85,7 +85,7 @@ void ExtToolTip::CreateHelpText(AbstractType itemType, int itemIndex)
 // =============================
 // hooks
 
-DEFINE_HOOK(6A9316, ExtendedToolTip_HelpText, 6)
+DEFINE_HOOK(0x6A9316, ExtendedToolTip_HelpText, 0x6)
 {
 	ExtToolTip::isCameo = true;
 
@@ -106,7 +106,7 @@ DEFINE_HOOK(6A9316, ExtendedToolTip_HelpText, 6)
 	return 0x6A93DE;
 }
 
-DEFINE_HOOK(478E10, CCToolTip__Draw1, 0)
+DEFINE_HOOK(0x478E10, CCToolTip__Draw1, 0x0)
 {
 	GET(CCToolTip*, pThis, ECX);
 	GET_STACK(bool, drawOnSidebar, 4);
@@ -129,7 +129,7 @@ DEFINE_HOOK(478E10, CCToolTip__Draw1, 0)
 	return 0x478E25;
 }
 
-DEFINE_HOOK(478E4A, CCToolTip__Draw2_SetSurface, 6)
+DEFINE_HOOK(0x478E4A, CCToolTip__Draw2_SetSurface, 0x6)
 {
 	if (ExtToolTip::slaveDraw) {
 		R->ESI(DSurface::Composite());
@@ -138,13 +138,13 @@ DEFINE_HOOK(478E4A, CCToolTip__Draw2_SetSurface, 6)
 	return 0;
 }
 
-DEFINE_HOOK(478EE1, CCToolTip__Draw2_SetBuffer, 6)
+DEFINE_HOOK(0x478EE1, CCToolTip__Draw2_SetBuffer, 0x6)
 {
 	ExtToolTip::SetBuffer(R);
 	return 0;
 }
 
-DEFINE_HOOK(478EF8, CCToolTip__Draw2_SetMaxWidth, 5)
+DEFINE_HOOK(0x478EF8, CCToolTip__Draw2_SetMaxWidth, 0x5)
 {
 	if (ExtToolTip::isCameo) {
 		
@@ -159,7 +159,7 @@ DEFINE_HOOK(478EF8, CCToolTip__Draw2_SetMaxWidth, 5)
 	return 0;
 }
 
-DEFINE_HOOK(478F52, CCToolTip__Draw2_SetX, 8)
+DEFINE_HOOK(0x478F52, CCToolTip__Draw2_SetX, 0x8)
 {
 	if (ExtToolTip::slaveDraw) {
 		R->EAX(R->EAX() + DSurface::Sidebar->GetWidth());
@@ -167,7 +167,7 @@ DEFINE_HOOK(478F52, CCToolTip__Draw2_SetX, 8)
 	return 0;
 }
 
-DEFINE_HOOK(478F77, CCToolTip__Draw2_SetY, 6)
+DEFINE_HOOK(0x478F77, CCToolTip__Draw2_SetY, 0x6)
 {
 	if (ExtToolTip::isCameo) {
 		auto const ViewBounds = reinterpret_cast<RectangleStruct*>(0x886FB0);

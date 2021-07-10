@@ -134,7 +134,7 @@ ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject
 - Hooks have to be named using a following scheme: `HookedFunction_HookPurpose`, or `ClassName_HookedMethod_HookPurpose`. Defined-again hooks are exempt from this scheme due to impossibility to define different names for the same hook.
 - Return addresses should use anonymous enums to make it clear what address means what, if applicable:
 ```cpp
-DEFINE_HOOK(48381D, CellClass_SpreadTiberium_CellSpread, 6)
+DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 {
     enum { SpreadReturn = 0x4838CA, NoSpreadReturn = 0x4838B0 };
 

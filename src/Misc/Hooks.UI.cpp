@@ -8,7 +8,7 @@
 #include <Ext/Rules/Body.h>
 #include <Utilities/Debug.h>
 
-DEFINE_HOOK(777C41, UI_ApplyAppIcon, 9)
+DEFINE_HOOK(0x777C41, UI_ApplyAppIcon, 0x9)
 {
 	if (Phobos::AppIconPath != nullptr)
 	{
@@ -21,7 +21,7 @@ DEFINE_HOOK(777C41, UI_ApplyAppIcon, 9)
 	return 0;
 }
 
-DEFINE_HOOK(640B8D, LoadingScreen_DisableEmptySpawnPositions, 6)
+DEFINE_HOOK(0x640B8D, LoadingScreen_DisableEmptySpawnPositions, 0x6)
 {
 	GET(bool, esi, ESI);
 	if (Phobos::UI::DisableEmptySpawnPositions || !esi)
@@ -31,13 +31,13 @@ DEFINE_HOOK(640B8D, LoadingScreen_DisableEmptySpawnPositions, 6)
 	return 0x640B93;
 }
 
-//DEFINE_HOOK(640E78, LoadingScreen_DisableColorPoints, 6)
+//DEFINE_HOOK(0x640E78, LoadingScreen_DisableColorPoints, 0x6)
 //{
 //	return 0x641071;
 //}
 
 // Allow size = 0 for map previews
-DEFINE_HOOK(641B41, LoadingScreen_SkipPreview, 8)
+DEFINE_HOOK(0x641B41, LoadingScreen_SkipPreview, 0x8)
 {
 	GET(RectangleStruct*, pRect, EAX);
 	if (pRect->Width > 0 && pRect->Height > 0)
@@ -47,7 +47,7 @@ DEFINE_HOOK(641B41, LoadingScreen_SkipPreview, 8)
 	return 0x641D4E;
 }
 
-DEFINE_HOOK(4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 7)
+DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 {
 	if (Phobos::UI::ShowHarvesterCounter)
 	{
@@ -79,10 +79,10 @@ DEFINE_HOOK(4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 7)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(6CE8AA, Replace_XXICON_With_New, 7)   //SWTypeClass::Load
-DEFINE_HOOK_AGAIN(6CEE31, Replace_XXICON_With_New, 7)   //SWTypeClass::ReadINI
-DEFINE_HOOK_AGAIN(716D13, Replace_XXICON_With_New, 7)   //TechnoTypeClass::Load
-DEFINE_HOOK(715A4D, Replace_XXICON_With_New, 7)         //TechnoTypeClass::ReadINI
+DEFINE_HOOK_AGAIN(0x6CE8AA, Replace_XXICON_With_New, 0x7)   //SWTypeClass::Load
+DEFINE_HOOK_AGAIN(0x6CEE31, Replace_XXICON_With_New, 0x7)   //SWTypeClass::ReadINI
+DEFINE_HOOK_AGAIN(0x716D13, Replace_XXICON_With_New, 0x7)   //TechnoTypeClass::Load
+DEFINE_HOOK(0x715A4D, Replace_XXICON_With_New, 0x7)         //TechnoTypeClass::ReadINI
 {
 	char pFilename[0x20];
 	strcpy_s(pFilename, RulesExt::Global()->MissingCameo.data());

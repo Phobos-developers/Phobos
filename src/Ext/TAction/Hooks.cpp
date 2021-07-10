@@ -7,7 +7,7 @@
 
 #include <Utilities/Macro.h>
 
-DEFINE_HOOK(6DD8B0, TActionClass_Execute, 6)
+DEFINE_HOOK(0x6DD8B0, TActionClass_Execute, 0x6)
 {
 	GET(TActionClass*, pThis, ECX);
 	GET_STACK(HouseClass*, pHouse, 0x4);
@@ -24,7 +24,7 @@ DEFINE_HOOK(6DD8B0, TActionClass_Execute, 6)
 
 // Bugfix: TAction 125 Build At do not display the buildups
 // Author: secsome
-DEFINE_HOOK(6E427D, TActionClass_CreateBuildingAt, 9)
+DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 {
 	GET(TActionClass*, pThis, ESI);
 	GET(BuildingTypeClass*, pBldType, ECX);
