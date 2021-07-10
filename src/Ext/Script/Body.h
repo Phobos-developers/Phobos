@@ -4,6 +4,12 @@
 #include <ScriptTypeClass.h>
 #include <TeamClass.h>
 #include <HouseClass.h>
+#include <AircraftClass.h>
+#include <MapClass.h>
+#include <BulletClass.h>
+#include <Helpers/Enumerators.h>
+#include <WarheadTypeClass.h>
+#include <SpawnManagerClass.h>
 
 #include "../_Container.hpp"
 #include "../../Phobos.h"
@@ -41,6 +47,9 @@ public:
 	static void ExecuteTimedAreaGuardAction(TeamClass * pTeam);
 	static void LoadIntoTransports(TeamClass * pTeam);
 	static void WaitUntillFullAmmoAction(TeamClass * pTeam);
-
+    static void Mission_Attack(TeamClass *pTeam, bool repeatAction, int calcThreatMode);
+    static TechnoClass* GreatestThreat(TechnoClass *pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy);
+    static bool EvaluateObjectWithMask(TechnoClass *pTechno, int mask);
+    
 	static ExtContainer ExtMap;
 };

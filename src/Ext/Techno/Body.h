@@ -21,10 +21,14 @@ public:
         std::unique_ptr<ShieldTechnoClass> ShieldData;
 
 		Valueable<bool> WasCloaked;
+        Valueable<TechnoClass*> KilledBy;
+        Valueable<bool> LastKillWasTeamTarget;
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),
 			InterceptedBullet(nullptr),
 			ShieldData(),
-			WasCloaked(false)
+			WasCloaked(false),
+            KilledBy(nullptr),
+            LastKillWasTeamTarget(false)
 		{ }
 
         virtual ~ExtData() = default;
@@ -66,4 +70,5 @@ public:
     static void ApplyPowered_KillSpawns(TechnoClass* pThis);
     static void ApplySpawn_LimitRange(TechnoClass* pThis);
     static void ApplyCloak_Undeployed(TechnoClass* pThis);
+    static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 };

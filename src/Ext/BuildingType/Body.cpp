@@ -26,6 +26,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
+
+    // Ares
+    this->SuperWeapons.Read(exINI, pSection, "SuperWeapons");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization() {
@@ -38,6 +41,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm) {
 	Stm
 		.Process(this->PowersUp_Owner)
 		.Process(this->PowersUp_Buildings)
+        .Process(this->SuperWeapons)
 		;
 }
 

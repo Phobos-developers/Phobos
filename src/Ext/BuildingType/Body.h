@@ -1,5 +1,6 @@
 #pragma once
 #include <BuildingTypeClass.h>
+#include <SuperWeaponTypeClass.h >
 
 #include <Helpers/Macro.h>
 #include "../_Container.hpp"
@@ -15,6 +16,7 @@ public:
 	public:
 		Valueable<AffectedHouse> PowersUp_Owner;
 		ValueableVector<BuildingTypeClass*> PowersUp_Buildings;
+        ValueableVector<SuperWeaponTypeClass*> SuperWeapons;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject),
 			PowersUp_Owner(AffectedHouse::Owner),

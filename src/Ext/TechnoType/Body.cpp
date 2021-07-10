@@ -133,6 +133,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
 
+    // Ares 0.2
+    this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
+
+    // Ares 0.9
+    this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
+
 	//Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
 
@@ -153,6 +159,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Interceptor_EliteGuardRange)
 		.Process(this->Interceptor_EliteMinimumGuardRange)
 		.Process(this->GroupAs)
+        .Process(this->RadarJamRadius)
+        .Process(this->InhibitorRange)
 		.Process(this->TurretOffset)
 		.Process(this->Powered_KillSpawns)
 		.Process(this->Spawn_LimitedRange)
