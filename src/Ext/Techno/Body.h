@@ -20,11 +20,9 @@ public:
 		Valueable<BulletClass*> InterceptedBullet;
 		std::unique_ptr<ShieldClass> Shield;
 
-		Valueable<bool> WasCloaked;
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),
 			InterceptedBullet(nullptr),
-			Shield(),
-			WasCloaked(false)
+			Shield()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -65,5 +63,4 @@ public:
 	static void ApplyInterceptor(TechnoClass* pThis);
 	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
 	static void ApplySpawn_LimitRange(TechnoClass* pThis);
-	static void ApplyCloak_Undeployed(TechnoClass* pThis);
 };
