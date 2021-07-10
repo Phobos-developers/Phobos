@@ -1,6 +1,6 @@
 #pragma once
 
-#include "_Enumerator.hpp"
+#include <Utilities/Enumerable.h>
 #include <Utilities/Template.h>
 #include <Utilities/GeneralUtils.h>
 #include <Ext/Rules/Body.h>
@@ -12,37 +12,35 @@ class RadTypeClass final : public Enumerable<RadTypeClass>
 private:
 	Nullable<int> DurationMultiple;
 	Nullable<int> ApplicationDelay;
-    Nullable<int> BuildingApplicationDelay;
+	Nullable<int> BuildingApplicationDelay;
 	Nullable<double> LevelFactor;
 	Nullable<int> LevelMax;
 	Nullable<int> LevelDelay;
 	Nullable<int> LightDelay;
-	Nullable<WarheadTypeClass *> RadWarhead;
+	Nullable<WarheadTypeClass*> RadWarhead;
 	Nullable<ColorStruct> RadSiteColor;
 	Nullable<double> LightFactor;
 	Nullable<double> TintFactor;
 
 public:
 
-    RadTypeClass(const char* const pTitle) : Enumerable<RadTypeClass>(pTitle),
-        LevelDelay(),
-        LightDelay(),
-        RadSiteColor(),
-        LevelMax(),
-        LevelFactor(),
-        LightFactor(),
-        TintFactor(),
-        RadWarhead(),
-        DurationMultiple(),
-        ApplicationDelay(),
-        BuildingApplicationDelay()
-    { }
+	RadTypeClass(const char* const pTitle) : Enumerable<RadTypeClass>(pTitle),
+		LevelDelay(),
+		LightDelay(),
+		RadSiteColor(),
+		LevelMax(),
+		LevelFactor(),
+		LightFactor(),
+		TintFactor(),
+		RadWarhead(),
+		DurationMultiple(),
+		ApplicationDelay(),
+		BuildingApplicationDelay()
+	{ }
 
-    virtual ~RadTypeClass() override = default;
+	virtual ~RadTypeClass() override = default;
 
 	static void AddDefaults();
-
-	static void LoadListSection(CCINIClass * pINI);
 
 	WarheadTypeClass* GetWarhead() const
 	{
@@ -64,10 +62,10 @@ public:
 		return this->ApplicationDelay.Get(RulesClass::Instance->RadApplicationDelay);
 	}
 
-    int GetBuildingApplicationDelay() const
-    {
-        return this->BuildingApplicationDelay.Get(RulesExt::Global()->RadApplicationDelay_Building);
-    }
+	int GetBuildingApplicationDelay() const
+	{
+		return this->BuildingApplicationDelay.Get(RulesExt::Global()->RadApplicationDelay_Building);
+	}
 
 	int GetLevelMax() const
 	{
@@ -99,7 +97,7 @@ public:
 		return this->TintFactor.Get(RulesClass::Instance->RadTintFactor);
 	}
 
-	virtual void LoadFromINI(CCINIClass *pINI) override;
+	virtual void LoadFromINI(CCINIClass* pINI) override;
 	virtual void LoadFromStream(PhobosStreamReader& Stm);
 	virtual void SaveToStream(PhobosStreamWriter& Stm);
 

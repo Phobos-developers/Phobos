@@ -20,7 +20,7 @@ PowersUp.Owner=Self ; list of owners (Self, Ally and/or Enemy)
 PowersUp.Buildings= ; list of BuildingTypes
 ```
 
-## TechnoTypes
+## Technos
 
 ### Mind Control enhancement
 
@@ -76,49 +76,63 @@ Promote.IncludeSpawns=no  ; boolean
 ![image](_static/images/technoshield-01.gif)  
 *Buildings, Infantries and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
-- Now you can have a shield for any TechnoType if `Shield.Strength` is set greater than 0. It serves as a second health pool with independent `Armor` and `Strength` values.
-  - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed by shield.
-  - When the TechnoType with a unbroken shield, `Shield.Armor` will replace `Armor` for game calculation.
-- When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoClasses have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
-  - This also works with Ares' `Convert.*`.
-- `Shield.AbsorbOverDamage`controls whether or not the shield absorbs damage dealt beyond shield's current strength when the shield breaks.
-- `Shield.SelfHealing` and `Shield.Respawn` respect the following settings: 0.0 disables the feature, 1%-100% recovers/respawns the shield strength in percentage, other number recovers/respawns the shield strength directly. Specially, `Shield.SelfHealing` with a negative number deducts the shield strength.
-  - If you want shield recovers/respawns 1 HP per time, currently you need to set tag value to any number between 1 and 2, like `1.1`.
-- `Shield.SelfHealing.Rate` and `Shield.Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
-- `Shield.IdleAnim`, if set, will be played while the shield is intact. This animation is automatically set to loop indefinitely.
-- `Shield.BreakAnim`, if set, will be played when the shield has been broken.
-- `Shield.HitAnim`, if set, will be played when the shield is attacked, similar to `WeaponNullifyAnim` for Iron Curtain.
-- A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable.
-  - Buildings now use the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame by default.
-  - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. `Pips.Shield.Building` is used for BuildingTypes. 
-  - `pipbrd.shp` will use its 4th frame to display an infantry's shield strength and the 3th frame for other units if `pipbrd.shp` has extra 2 frames. And `Shield.BracketDelta` can be used as additonal `PixelSelectionBracketDelta` for shield strength. 
-- Warheads have new options that interact with shields.
-  - `PenetratesShield` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield isn't existed. 
-  - `BreaksShield` allows the warhead to always break shields of TechnoTypes, regardless of the amount of strength the shield has remaining or the damage dealt, assuming it affects the shield's armor type. Residual damage, if there is any, still respects `Shield.AbsorbOverDamage`.
-
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 Pips.Shield=-1,-1,-1           ; int, frames of pips.shp for Green, Yellow, Red
 Pips.Shield.Building=-1,-1,-1  ; int, frames of pips.shp for Green, Yellow, Red
 
+[ShieldTypes]
+0=SOMESHIELDTYPE
+
+[SOMESHIELDTYPE]               ; ShieldType name
+Strength=0                     ; integer
+Armor=none                     ; ArmorType
+Powered=false                  ; boolean
+AbsorbOverDamage=false         ; boolean
+SelfHealing=0.0                ; double, percents or absolute
+SelfHealing.Rate=0.0           ; double, ingame minutes
+Respawn=0.0                    ; double, percents or absolute
+Respawn.Rate=0.0               ; double, ingame minutes
+BracketDelta=0                 ; integer - pixels
+IdleAnim=                      ; animation
+IdleAnim.OfflineAction=Hides   ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+IdleAnim.TemporalAction=Hides  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+BreakAnim=                     ; animation
+HitAnim=                       ; animation
+
 [SOMETECHNO]                   ; TechnoType
-Shield.Strength=0              ; integer
-Shield.Armor=none              ; ArmorType
-Shield.AbsorbOverDamage=false  ; boolean
-Shield.SelfHealing=0.0         ; double, percents or absolute
-Shield.SelfHealing.Rate=0.0    ; double, ingame minutes
-Shield.Respawn=0.0             ; double, percents or absolute
-Shield.Respawn.Rate=0.0        ; double, ingame minutes
-Shield.BracketDelta=0          ; integer - pixels
-Shield.IdleAnim=               ; animation
-Shield.BreakAnim=              ; animation
-Shield.HitAnim=                ; animation
+ShieldType=SOMESHIELDTYPE          ; ShieldType; none by default
 
 [SOMEWARHEAD]                  ; WarheadType
 PenetratesShield=false         ; boolean
 BreaksShield=false             ; boolean
 ```
+- Now you can have a shield for any TechnoType. It serves as a second health pool with independent `Armor` and `Strength` values.
+  - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed by shield.
+  - When the TechnoType with a unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for game calculation.
+- When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoTypes have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
+  - This also works with Ares' `Convert.*`.
+- `Powered` controls whether or not the shield is active when a unit is running low on power or it is affected by EMP.
+  - Attention, if TechnoType itself is not `Powered`, then the shield won't be offline when low power. 
+- `AbsorbOverDamage` controls whether or not the shield absorbs damage dealt beyond shield's current strength when the shield breaks.
+- `SelfHealing` and `Respawn` respect the following settings: 0.0 disables the feature, 1%-100% recovers/respawns the shield strength in percentage, other number recovers/respawns the shield strength directly. Specially, `SelfHealing` with a negative number deducts the shield strength.
+  - If you want shield recovers/respawns 1 HP per time, currently you need to set tag value to any number between 1 and 2, like `1.1`.
+- `SelfHealing.Rate` and `Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
+- `IdleAnim`, if set, will be played while the shield is intact. This animation is automatically set to loop indefinitely.
+  - `Bouncer=yes` animations are not supported at the moment.
+- `IdleAnim.OfflineAction` indicates what happens to the animation when the shield is in a low power state.
+- `IdleAnim.TemporalAction` indicates what happens to the animation when the shield is attacked by temporal weapons.
+- `BreakAnim`, if set, will be played when the shield has been broken.
+- `HitAnim`, if set, will be played when the shield is attacked, similar to `WeaponNullifyAnim` for Iron Curtain.
+- A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable.
+  - Buildings now use the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame by default.
+  - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. `Pips.Shield.Building` is used for BuildingTypes.
+  - `pipbrd.shp` will use its 4th frame to display an infantry's shield strength and the 3th frame for other units if `pipbrd.shp` has extra 2 frames. And `BracketDelta` can be used as additional `PixelSelectionBracketDelta` for shield strength.
+- Warheads have new options that interact with shields.
+  - `PenetratesShield` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield isn't existed.
+  - `BreaksShield` allows the warhead to always break shields of TechnoTypes, regardless of the amount of strength the shield has remaining or the damage dealt, assuming it affects the shield's armor type. Residual damage, if there is any, still respects `AbsorbOverDamage`.
+
 
 ## Weapons
 
@@ -127,9 +141,9 @@ BreaksShield=false             ; boolean
 ![image](_static/images/strafing-01.gif)  
 *Strafing aircraft weapon customization in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
-- Some of the behaviour of strafing aircraft weapons (weapon projectile has `ROT` below 2) can now be customized.
+- Some of the behavior of strafing aircraft weapons (weapon projectile has `ROT` below 2) can now be customized.
   - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired. Valid values range from 1 to 5, any values smaller or larger are effectively treated same as either 1 or 5, respectively. Defaults to 5.
-  - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behaviour of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined. Defaults to false.
+  - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined. Defaults to false.
 
 In `rulesmd.ini`:
 ```ini
@@ -170,7 +184,7 @@ RadSiteWarhead=RadSite          ; WarheadType
 
 ### Radiation enhancements
 
-- Radiation now has owner by default, so any rad-kills will be scored. This behaviour can be reverted by a corresponding tag.
+- Radiation now has owner by default, so any rad-kills will be scored. This behavior can be reverted by a corresponding tag.
   - `AffectsAllies`, `AffectsOwner` and `AffectsEnemies` on `RadSiteWarhead` are respected.
   - Currently the rad maker doesn't gain experience from kills, this may change in future.
 - Radiation is now able to deal damage to Buildings. To enable set `RadApplicationDelay.Building` value more than 0.
@@ -183,9 +197,9 @@ Rad.NoOwner=no  ; boolean
 
 ## Warheads
 
-:::{hint}
+```{hint}
 All new warheads can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
-:::
+```
 
 ### Generate credits on impact
 
@@ -247,7 +261,7 @@ RemoveMindControl=no                 ; boolean
 
 ### Critical damage chance
 
-- Warheads can now apply additional chance-based critical damage with the ability to customize chance, damage, affected targets, and animations of critical strike.
+- Warheads can now apply additional chance-based damage (known as "critical" damage) with the ability to customize chance, damage, affected targets, and animations of critical strike.
 
 In `rulesmd.ini`:
 ```ini
@@ -255,7 +269,7 @@ In `rulesmd.ini`:
 Crit.Chance=0.0     ; float, chance on [0.0-1.0] scale
 Crit.ExtraDamage=0  ; integer, extra damage
 Crit.Affects=all    ; list of "affects" flags (same as SWType's)
-Crit.AnimList=      ; list of animatioms
+Crit.AnimList=      ; list of animations
 
 [SOMETECHNO]     ; TechnoType
 ImmuneToCrit=no  ; boolean
@@ -280,7 +294,7 @@ SplashList.PickRandom=no ; play a random animation from the list? boolean, defau
 ![image](_static/images/projectile-interception-01.gif)  
 *Interception logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberium-crisis) mod*
 
-- Projectiles can now be made targetable by certain TechnoTypes. Interceptor TechnoType's projectile must be `Inviso=yes` in order for it to work and the projectile must be used in a primary Weapon. 
+- Projectiles can now be made targetable by certain TechnoTypes. Interceptor TechnoType's projectile must be `Inviso=yes` and `AA=yes` in order for it to work properly and the projectile must be used in a primary Weapon.
   - `Interceptor.GuardRange` is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
   - `Interceptor.EliteGuardRange` value is used if the unit veterancy is Elite.
   - `Interceptor.MinimumGuardRange` is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
@@ -299,11 +313,11 @@ Interceptor.EliteMinimumGuardRange=0.0  ; double
 Interceptable=no ; boolean
 ```
 
-## ScriptType actions
+## Script actions
 
 ### `71` Timed Area Guard
 
-- Puts the TaskForce into Area Guard Mode for the given units of time. Unlike the orignal timed Guard script (`5,n`) that just stays in place doing a basic guard operation the "Area Guard" action has a more active role attacking nearby invasors or defending units that needs protection.
+- Puts the TaskForce into Area Guard Mode for the given units of time. Unlike the original timed Guard script (`5,n`) that just stays in place doing a basic guard operation the "Area Guard" action has a more active role attacking nearby invaders or defending units that needs protection.
 
 In `aimd.ini`:
 ```ini

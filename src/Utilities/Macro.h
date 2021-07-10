@@ -1,12 +1,12 @@
 #pragma once
-#include <Helpers\Macro.h>
+#include <Helpers/Macro.h>
 #include <ASMMacros.h>
 
 // no more than 8 characters
 #define PATCH_SECTION_NAME ".patch"
 
 #pragma section(PATCH_SECTION_NAME, read, write	)
-namespace definePach {};
+namespace definePatch {};
 
 // Just an example patch that allows you to disable the _YR_CmdLineParse HOOK for Syringe
 // DEFINE_PATCH( 
@@ -24,10 +24,17 @@ struct patch_decl {
 #define declpatch(offset, size, patch) __declspec(allocate(PATCH_SECTION_NAME)) patch_decl _ph = {offset, size, (byte*)patch};
 
 #define DEFINE_PATCH(offset, ...) \
-namespace definePach { \
+namespace definePatch { \
 namespace _dp_ ## offset { \
 	byte _pd[] = {__VA_ARGS__};\
 	declpatch(offset, sizeof(_pd), _pd);\
+}};
+
+#define DEFINE_VTABLE_PATCH(offset, to) \
+namespace definePatch { \
+namespace _dp_ ## offset { \
+	DWORD _pd = reinterpret_cast<DWORD>(to);\
+	declpatch(offset, sizeof(_pd), &_pd);\
 }};
 
 #pragma pack(push, 1)
@@ -46,7 +53,7 @@ struct ljmp_decl {
 #define LJMP_LETTER  0xE9
 
 #define DEFINE_LJMP(from, to) \
-namespace definePach { \
+namespace definePatch { \
 namespace _djmp_ ## from { \
 	ljmp_decl _pd = {LJMP_LETTER, to-from-5};\
 	declpatch(from, 5, &_pd);\
@@ -70,7 +77,7 @@ NAKED void name()
 #define CALL_LETTER 0xE8
 
 #define DEFINE_CALL(from, to) \
-namespace definePach { \
+namespace definePatch { \
 namespace _djmp_ ## from { \
 	ljmp_decl _pd = {CALL_LETTER, to-from-5};\
 	declpatch(from, 5, &_pd);\

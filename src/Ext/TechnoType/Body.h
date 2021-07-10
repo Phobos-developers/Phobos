@@ -2,8 +2,10 @@
 #include <TechnoTypeClass.h>
 
 #include <Helpers/Macro.h>
-#include "../_Container.hpp"
-#include "../../Utilities/TemplateDef.h"
+#include <Utilities/Container.h>
+#include <Utilities/TemplateDef.h>
+
+#include <New/Type/ShieldTypeClass.h>
 
 class Matrix3D;
 
@@ -36,18 +38,7 @@ public:
 		Valueable<bool> ImmuneToCrit;
 		Valueable<bool> MultiMindControl_ReleaseVictim;
 
-		Valueable<int> Shield_Strength;
-		Valueable<signed int> Shield_Armor;
-		Valueable<double> Shield_Respawn;
-		Valueable<double> Shield_Respawn_Rate;
-		Valueable<double> Shield_SelfHealing;
-		Valueable<double> Shield_SelfHealing_Rate;
-		Valueable<bool> Shield_AbsorbOverDamage;
-		Valueable<int> Shield_BracketDelta;
-		Nullable<AnimTypeClass*> Shield_IdleAnim;
-		Nullable<AnimTypeClass*> Shield_BreakAnim;
-		Nullable<AnimTypeClass*> Shield_RespawnAnim;
-		Nullable<AnimTypeClass*> Shield_HitAnim;
+		Valueable<ShieldTypeClass*> ShieldType;
 
 		Nullable<AnimTypeClass*> WarpOut;
 		Nullable<AnimTypeClass*> WarpIn;
@@ -68,7 +59,7 @@ public:
 			MindControlRangeLimit(-1.0),
 			Interceptor(false),
 			Interceptor_GuardRange(0.0),
-            Interceptor_MinimumGuardRange(0.0),
+			Interceptor_MinimumGuardRange(0.0),
 			Interceptor_EliteGuardRange(0.0),
 			Interceptor_EliteMinimumGuardRange(0.0),
 			TurretOffset({0, 0, 0}),
@@ -79,19 +70,7 @@ public:
 			Promote_IncludeSpawns(false),
 			ImmuneToCrit(false),
 			MultiMindControl_ReleaseVictim(false),
-
-			Shield_Strength(0),
-			Shield_Armor(0),
-			Shield_Respawn(0.0),
-			Shield_Respawn_Rate(0.0),
-			Shield_SelfHealing(0.0),
-			Shield_SelfHealing_Rate(0.0),
-			Shield_AbsorbOverDamage(false),
-			Shield_BracketDelta(0),
-			Shield_IdleAnim(),
-			Shield_BreakAnim(),
-			Shield_RespawnAnim(),
-			Shield_HitAnim(),
+			ShieldType(),
 			WarpOut(),
 			WarpIn(),
 			WarpAway(),
@@ -114,26 +93,26 @@ public:
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 		bool IsCountedAsHarvester();
 
-        // Ares 0.A
-        const char* GetSelectionGroupID() const;
+		// Ares 0.A
+		const char* GetSelectionGroupID() const;
 
-    private:
-        template <typename T>
-        void Serialize(T& Stm);
-    };
+	private:
+		template <typename T>
+		void Serialize(T& Stm);
+	};
 
-    class ExtContainer final : public Container<TechnoTypeExt>
-    {
-    public:
-        ExtContainer();
-        ~ExtContainer();
-    };
+	class ExtContainer final : public Container<TechnoTypeExt>
+	{
+	public:
+		ExtContainer();
+		~ExtContainer();
+	};
 
-    static ExtContainer ExtMap;
+	static ExtContainer ExtMap;
 
-    static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
+	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
 
-    // Ares 0.A
-    static const char* GetSelectionGroupID(ObjectTypeClass* pType);
-    static bool HasSelectionGroupID(ObjectTypeClass* pType, const char* pID);
+	// Ares 0.A
+	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
+	static bool HasSelectionGroupID(ObjectTypeClass* pType, const char* pID);
 };

@@ -6,8 +6,8 @@
 #include <BulletClass.h>
 
 #include "Body.h"
-#include "../BulletType/Body.h"
-#include "../Techno/Body.h"
+#include <Ext/BulletType/Body.h>
+#include <Ext/Techno/Body.h>
 
 DEFINE_HOOK(6F64A9, TechnoClass_DrawHealthBar_Hide, 5)
 {

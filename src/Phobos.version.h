@@ -8,11 +8,11 @@
 
 // Latest release build
 #define VERSION_MAJOR 0
-#define VERSION_MINOR 1
+#define VERSION_MINOR 2
 #define VERSION_REVISION 0
 
 // Latest devbuild
-#define BUILD_NUMBER 13
+#define BUILD_NUMBER 16
 
 // Nightly defines GIT_COMMIT and GIT_BRANCH in GH Actions
 
@@ -30,7 +30,7 @@
 	#define FILE_DESCRIPTION "Unstable nightly devbuild of Phobos engine extension"
 	#define FILE_VERSION_STR "Commit " STR_GIT_COMMIT
 	#define FILE_VERSION 0
-	#define PRODUCT_VERSION "Night Build" STR_GIT_COMMIT " @ " STR_GIT_BRANCH
+	#define PRODUCT_VERSION "Nightly Build " STR_GIT_COMMIT " @ " STR_GIT_BRANCH
 #else // Regular devbuild metadata
 	#define SAVEGAME_ID ((BUILD_NUMBER << 24) | (BUILD_NUMBER << 12) | (BUILD_NUMBER))
 	#define FILE_DESCRIPTION "Development build of Phobos engine extension"

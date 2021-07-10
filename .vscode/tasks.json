@@ -4,10 +4,11 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build Phobos development build",
+            "label": "Build Phobos debug build",
             "type": "process",
+            "command": [],
             "windows": {
-                "command": "scripts/build_devbuild.bat"
+                "command": "scripts/build_debug.bat"
             },
             "group": {
                 "kind": "build",
@@ -16,8 +17,19 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "Build Phobos development build",
+            "type": "process",
+            "command": [],
+            "windows": {
+                "command": "scripts/build_devbuild.bat"
+            },
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "Build Phobos release build",
             "type": "process",
+            "command": [],
             "windows": {
                 "command": "scripts/build_release.bat"
             },
@@ -25,13 +37,43 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "Build Phobos docs with Sphinx",
+            "type": "process",
+            "command": [],
+            "windows": {
+                "command": "scripts/build_docs.bat",
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
             "label": "Cleanup build folders",
             "type": "process",
+            "command": [],
             "windows": {
                 "command": "scripts/clean.bat"
             },
             "group": "none",
             "problemMatcher": []
+        },
+        {
+            "label": "Setup VSCode C++ extension initial configuration",
+            "type": "process",
+            "command": [],
+            "windows": {
+                "command": "scripts/configure_vscode_cpp.bat"
+            },
+            "group": "none",
+            "problemMatcher": [],
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "presentation": {
+                "echo": false,
+                "reveal": "never",
+                "panel": "shared",
+                "showReuseMessage": false
+            }
         }
     ]
 }

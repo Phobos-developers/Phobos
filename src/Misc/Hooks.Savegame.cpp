@@ -1,6 +1,6 @@
 #include <Helpers/Macro.h>
 #include <LoadOptionsClass.h>
-#include "../Phobos.h"
+#include <Phobos.h>
 
 DEFINE_HOOK(67D04E, Game_Save_SavegameInformation, 7)
 {
@@ -16,10 +16,9 @@ DEFINE_HOOK(559F27, LoadOptionsClass_GetFileInfo, A)
 	return 0;
 }
 
-
 // Ares saves its things at the end of the save
 // Phobos will save the things at the beginning of the save
-// Considering how DTA gets the scenario name, I decided to save it after Rules.
+// Considering how DTA gets the scenario name, I decided to save it after Rules - secsome
 
 DEFINE_HOOK(67D32C, SaveGame_Phobos, 5)
 {

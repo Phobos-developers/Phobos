@@ -6,7 +6,7 @@ This page lists all user interface additions, changes, fixes that are implemente
 
 - Enabled ability to load full-color non-paletted PCX graphics of any bitness. This applies to every single PCX file that is loaded, including the Ares-supported PCX files.
 - You can specify custom `gamemd.exe` icon via `-icon` command line argument followed by absolute or relative path to an `*.ico` file (f. ex. `gamemd.exe -icon Resources/clienticon.ico`).
-- Fixed `Blowfish.dll`-caused error `***FATAL*** String Manager failed to initilaize properly`, which occurred if `Blowfish.dll` could not be registered in the OS, for example, it happened when the player did not have administrator rights. With Phobos, if the game did not find a registered file in the system, it will no longer try to register this file, but will load it bypassing registration. 
+- Fixed `Blowfish.dll`-caused error `***FATAL*** String Manager failed to initialize properly`, which occurred if `Blowfish.dll` could not be registered in the OS, for example, it happened when the player did not have administrator rights. With Phobos, if the game did not find a registered file in the system, it will no longer try to register this file, but will load it bypassing registration.
 
 ## Audio
 
@@ -96,13 +96,23 @@ Sidebar.GDIPositions= ; boolean
                       ; no for others
 ```
 
+### Custom Missing Cameo (`XXICON.SHP`)
+
+- You can now specify any SHP/PCX file as XXICON.SHP for missing cameo.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+MissingCameo=XXICON.SHP    ; filename - including the .shp/.pcx extension 
+```
+
 ### Harvester counter
 
 ![image](_static/images/harvestercounter-01.gif)  
 *Harvester Counter in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - An additional counter for your active/total harvesters can be added near the credits indicator.
-- You can specify which TechnoType shoule be counted as a Harvester. If not set, the techno with `Harvester=yes` or `Enslaves=SOMESLAVE` will be counted.
+- You can specify which TechnoType should be counted as a Harvester. If not set, the techno with `Harvester=yes` or `Enslaves=SOMESLAVE` will be counted.
 - The counter is displayed with the format of `Label(Active Harvesters)/(Total Harvesters)`. The label is `⛏ U+26CF` by default.
 - You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, negative means left/up, positive means right/down.
 - By setting `HarvesterCounter.ConditionYellow` and `HarvesterCounter.ConditionRed`, the game will warn player by changing the color of counter whenever the active percentage of harvesters less than or equals to them, like HP changing with `ConditionYellow` and `ConditionRed`.
@@ -129,9 +139,9 @@ Sidebar.HarvesterCounter.ColorYellow=255,255,0 ; R,G,B
 Sidebar.HarvesterCounter.ColorRed=255,0,0      ; R,G,B
 ```
 
-:::{note}
+```{note}
 If you use the vanilla font in your mod, you can use {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
-:::
+```
 
 ## Tooltips
 
@@ -143,11 +153,11 @@ If you use the vanilla font in your mod, you can use {download}`the improved fon
 - SWType's tooltip would display it's name, cost,  and recharge time (when applicable).
 - Extended tooltips don't use `TXT_MONEY_FORMAT_1` and `TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time labels (displayed before correspoding values) with the corresponding tags. Characters `$ U+0024`, `⚡ U+26A1` and `⌚ U+231A` are used by default.
 - Fixed a bug when switching build queue tabs via QWER didn't make tooltips disappear as they should, resulting in stuck tooltips.
-- The tooltips can now go over the sidebar bounds to accomodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
+- The tooltips can now go over the sidebar bounds to accommodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
 
-:::{note}
+```{note}
 Same as with harvester counter, you can download {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v3 and higher) or draw your own icons.
-:::
+```
 
 In `uimd.ini`:
 ```ini

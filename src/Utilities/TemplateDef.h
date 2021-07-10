@@ -39,7 +39,7 @@
 #include "INIParser.h"
 #include "Enum.h"
 #include "Constructs.h"
-#include "../Misc/SavegameDef.h"
+#include "SavegameDef.h"
 
 #include <InfantryTypeClass.h>
 #include <AircraftTypeClass.h>
@@ -48,6 +48,7 @@
 #include <FootClass.h>
 #include <VocClass.h>
 #include <VoxClass.h>
+#include <ArmorType.h>
 
 namespace detail {
 	template <typename T>
@@ -93,6 +94,21 @@ namespace detail {
 		}
 		return false;
 	}
+
+	/*
+	template <>
+	inline bool read<ArmorType>(ArmorType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
+		int buffer;
+		if (parser.ReadArmor(pSection, pKey, &buffer)) {
+			value = buffer;
+			return true;
+		}
+		else if (!parser.empty()) {
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid ArmorType");
+		}
+		return false;
+	}
+	*/
 
 	template <>
 	inline bool read<BYTE>(BYTE& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
@@ -466,6 +482,42 @@ namespace detail {
 					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a super weapon affected house");
 					return false;
 				}
+			}
+			value = parsed;
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<AttachedAnimFlag>(AttachedAnimFlag& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = AttachedAnimFlag::None;
+
+			auto str = parser.value();
+
+			if (_strcmpi(str, "hides") == 0)
+			{
+				parsed = AttachedAnimFlag::Hides;
+			}
+			else if (_strcmpi(str, "temporal") == 0)
+			{
+				parsed = AttachedAnimFlag::Temporal;
+			}
+			else if (_strcmpi(str, "paused") == 0)
+			{
+				parsed = AttachedAnimFlag::Paused;
+			}
+			else if (_strcmpi(str, "pausedtemporal") == 0)
+			{
+				parsed = AttachedAnimFlag::PausedTemporal;
+			}
+			else if (_strcmpi(str, "none"))
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a AttachedAnimFlag");
+				return false;
 			}
 			value = parsed;
 			return true;

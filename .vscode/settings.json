@@ -1,0 +1,115 @@
+{
+	"files.associations": {
+		"vector": "cpp",
+		"xstring": "cpp",
+		"algorithm": "cpp",
+		"atomic": "cpp",
+		"bit": "cpp",
+		"bitset": "cpp",
+		"cctype": "cpp",
+		"cmath": "cpp",
+		"compare": "cpp",
+		"concepts": "cpp",
+		"cstddef": "cpp",
+		"cstdint": "cpp",
+		"cstdio": "cpp",
+		"cstdlib": "cpp",
+		"cstring": "cpp",
+		"ctime": "cpp",
+		"cwchar": "cpp",
+		"exception": "cpp",
+		"functional": "cpp",
+		"hash_map": "cpp",
+		"initializer_list": "cpp",
+		"iosfwd": "cpp",
+		"iterator": "cpp",
+		"limits": "cpp",
+		"list": "cpp",
+		"memory": "cpp",
+		"new": "cpp",
+		"set": "cpp",
+		"string": "cpp",
+		"tuple": "cpp",
+		"type_traits": "cpp",
+		"typeinfo": "cpp",
+		"unordered_map": "cpp",
+		"utility": "cpp",
+		"xhash": "cpp",
+		"xmemory": "cpp",
+		"xstddef": "cpp",
+		"xtr1common": "cpp",
+		"xtree": "cpp",
+		"xutility": "cpp",
+		"ios": "cpp",
+		"istream": "cpp",
+		"streambuf": "cpp",
+		"system_error": "cpp",
+		"xiosbase": "cpp",
+		"ostream": "cpp",
+		"stdexcept": "cpp",
+		"xfacet": "cpp",
+		"xlocale": "cpp",
+		"xlocinfo": "cpp",
+		"xlocnum": "cpp",
+		"xmemory0": "cpp"
+	},
+	"C_Cpp.errorSquiggles": "Enabled",
+
+	//-------- Task Explorer Configuration --------
+	"taskExplorer.exclude": [
+		"**/Phobos/scripts/**",
+		"**/Phobos/docs/**"
+	],
+
+	//-------- Code Spell Checker Configuration --------
+	// The Language local to use when spell checking. "en", "en-US" and "en-GB" are currently supported by default.
+	"cSpell.language": "en",
+
+	// Controls the maximum number of spelling errors per document.
+	"cSpell.maxNumberOfProblems": 100,
+
+	// Controls the number of suggestions shown.
+	"cSpell.numSuggestions": 8,
+
+	// The minimum length of a word before checking it against a dictionary.
+	"cSpell.minWordLength": 4,
+
+	// Specify file types to spell check.
+	"cSpell.enabledLanguageIds": [
+		"markdown",
+		"plaintext",
+		"yml",
+		"cpp"
+	],
+
+	// Enable / Disable the spell checker.
+	"cSpell.enabled": true,
+
+	// Display the spell checker status on the status bar.
+	"cSpell.showStatus": true,
+
+	// Enable / Disable compound words like 'errormessage'
+	"cSpell.allowCompoundWords": true,
+
+	// Words to be ignored and not suggested.
+	"cSpell.ignoreWords": [],
+
+	// Specify paths/files to ignore.
+	"cSpell.ignorePaths": [
+		"vscode-extension",
+		".git",
+		"*.dll",
+		"**/*.dll",
+		"*.pdb",
+		"**/*.pdb",
+		"*.lib",
+		"**/*.lib",
+	],
+
+	// flagWords - list of words to be always considered incorrect
+	// This is useful for offensive words and common spelling errors.
+	"cSpell.flagWords": [],
+
+	// Set the delay before spell checking the document. Default is 50.
+	"cSpell.spellCheckDelayMs": 50,
+}

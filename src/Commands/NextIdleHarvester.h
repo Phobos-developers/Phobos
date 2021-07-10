@@ -6,7 +6,7 @@
 
 #include "Commands.h"
 #include <Utilities/GeneralUtils.h>
-#include <Misc/Debug.h>
+#include <Utilities/Debug.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 

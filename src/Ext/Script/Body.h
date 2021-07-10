@@ -11,8 +11,8 @@
 #include <WarheadTypeClass.h>
 #include <SpawnManagerClass.h>
 
-#include "../_Container.hpp"
-#include "../../Phobos.h"
+#include <Utilities/Container.h>
+#include <Phobos.h>
 
 class ScriptExt
 {

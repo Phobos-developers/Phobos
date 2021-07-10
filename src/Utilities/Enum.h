@@ -32,7 +32,18 @@
 
 #pragma once
 
-#include "./../Phobos.h"
+#include <Phobos.h>
+
+enum class AttachedAnimFlag {
+	None = 0x0,
+	Hides = 0x1,
+	Temporal = 0x2,
+	Paused = 0x4,
+
+	PausedTemporal = Paused | Temporal
+};
+
+MAKE_ENUM_FLAGS(AttachedAnimFlag);
 
 enum class AirAttackStatus
 {
