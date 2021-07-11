@@ -196,7 +196,7 @@ namespace Savegame
 	{
 		bool ReadFromStream(PhobosStreamReader& Stm, DynamicVectorClass<T>& Value, bool RegisterForChange) const
 		{
-			Value.Purge();
+			Value.Clear();
 			int Capacity = 0;
 
 			if (!Stm.Load(Capacity))
