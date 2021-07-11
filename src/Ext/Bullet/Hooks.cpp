@@ -55,7 +55,7 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_ArcingFix, 0x5)
 	auto const pData = BulletExt::ExtMap.Find(pThis);
 	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
-	if(pThis->Type->Arcing && pTypeExt->Arcing_Accurate)
+	if(pThis->Type->Arcing && pTypeExt->Arcing_OvershootingFix)
 		pData->ApplyArcingFix();
 
 	return 0;

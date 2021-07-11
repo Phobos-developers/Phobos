@@ -125,12 +125,12 @@ Bolt.Disable3=false    ; boolean
 ```
 ## Projectiles
 
-### Accurate Acring Projectiles
+### Height difference overshooting fix
 
-- You can now set projectile with Arcing=yes to make sure the weapon to hit the target higher than the firer.
+- Now all projectiles fly by a correct trajectory when there's a height difference present between firer and the target. This behavior can be reverted.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]        ; ProjectileType
-Arcing.Accurate=false   ; boolean
+[SOMEPROJECTILETYPE]          ; ProjectileType
+Arcing.OvershootingFix=true   ; boolean
 ```

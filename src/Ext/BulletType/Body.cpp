@@ -10,25 +10,27 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 
-	if (!pINI->GetSection(pSection)) {
+	if (!pINI->GetSection(pSection))
 		return;
-	}
+
 
 	INI_EX exINI(pINI);
 
 	this->Interceptable.Read(exINI, pSection, "Interceptable");
+	this->Arcing_OvershootingFix.Read(exINI, pThis->ID, "Arcing.OvershootingFix");
+
+	// Ares compatibility tags
 	this->BallisticScatter_Min.Read(exINI, pThis->ID, "BallisticScatter.Min");
 	this->BallisticScatter_Max.Read(exINI, pThis->ID, "BallisticScatter.Max");
-	this->Arcing_Accurate.Read(exINI, pThis->ID, "Arcing.Accurate");
 }
 
 template <typename T>
 void BulletTypeExt::ExtData::Serialize(T& Stm) {
 	Stm
 		.Process(this->Interceptable)
+		.Process(this->Arcing_OvershootingFix)
 		.Process(this->BallisticScatter_Min)
 		.Process(this->BallisticScatter_Max)
-		.Process(this->Arcing_Accurate)
 		;
 }
 

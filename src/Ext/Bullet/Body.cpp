@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <ScenarioClass.h>
+#include <Unsorted.h>
 
 #include <Ext/RadSite/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -22,7 +23,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	{
 		auto const it = std::find_if(Instances.begin(), Instances.end(),
 			[=](RadSiteExt::ExtData* const pSite) // Lambda
-			{// find 
+			{
 				return pSite->Type == pRadType &&
 					pSite->OwnerObject()->BaseCell == Cell &&
 					Spread == pSite->OwnerObject()->Spread;
@@ -38,11 +39,8 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 			auto pRadSite = pRadExt->OwnerObject();
 
 			if (pRadSite->GetRadLevel() + RadLevel > pRadType->GetLevelMax())
-			{
 				RadLevel = pRadType->GetLevelMax() - pRadSite->GetRadLevel();
-			}
 
-			// Handle It 
 			pRadExt->Add(RadLevel);
 		}
 	}
@@ -63,12 +61,12 @@ void BulletExt::ExtData::ApplyArcingFix()
 	{
 		auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
-		int nMin = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
-		int nMax = pTypeExt->BallisticScatter_Max.Get(Leptons(RulesClass::Instance()->BallisticScatter));
+		int scatterMin = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
+		int scatterMax = pTypeExt->BallisticScatter_Max.Get(Leptons(RulesClass::Instance()->BallisticScatter));
 
-		double random = ScenarioClass::Instance()->Random.RandomRanged(nMin, nMax);
+		double random = ScenarioClass::Instance()->Random.RandomRanged(scatterMin, scatterMax);
 		double theta = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
-		
+
 		CoordStruct offset
 		{
 			static_cast<int>(random * Math::cos(theta)),
@@ -78,20 +76,23 @@ void BulletExt::ExtData::ApplyArcingFix()
 		targetPos += offset;
 	}
 
-	auto nZDiff = targetPos.Z - sourcePos.Z;
+	int zDelta = targetPos.Z - sourcePos.Z;
 	targetPos.Z = 0;
 	sourcePos.Z = 0;
-	auto const nDistance = targetPos.DistanceFrom(sourcePos);
+	double distance = targetPos.DistanceFrom(sourcePos);
 
 	if (pThis->WeaponType && pThis->WeaponType->Lobber)
 		pThis->Speed /= 2;
 
-	auto const nSpeed = pThis->Speed;
-
 	pThis->Velocity.X = targetPos.X - sourcePos.X;
 	pThis->Velocity.Y = targetPos.Y - sourcePos.Y;
-	pThis->Velocity *= nSpeed / nDistance;
-	pThis->Velocity.Z = nZDiff * nSpeed / nDistance + 0.5 * RulesClass::Instance()->Gravity * nDistance / nSpeed;
+	pThis->Velocity *= pThis->Speed / distance;
+
+	double gravity = (double)RulesClass::Instance()->Gravity;
+	if (pThis->Type->Floater)
+		gravity = Game::GetFloaterGravity();
+
+	pThis->Velocity.Z = zDelta * pThis->Speed / distance + 0.5 * gravity * distance / pThis->Speed;
 }
 
 // =============================
@@ -119,8 +120,7 @@ void BulletExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
 // =============================
 // container
 
-BulletExt::ExtContainer::ExtContainer() : Container("BulletClass") {
-}
+BulletExt::ExtContainer::ExtContainer() : Container("BulletClass") { }
 
 BulletExt::ExtContainer::~ExtContainer() = default;
 
