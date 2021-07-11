@@ -49,7 +49,7 @@ DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
 	return 0x4692D5;
 }
 
-DEFINE_HOOK(468B72, BulletClass_Unlimbo_ArcingFix, 5)
+DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_ArcingFix, 0x5)
 {
 	GET(BulletClass*, pThis, EBX);
 	auto const pData = BulletExt::ExtMap.Find(pThis);
