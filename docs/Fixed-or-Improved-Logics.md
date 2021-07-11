@@ -29,6 +29,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 *Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
 
 - Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
+- Effects like lasers are no longer drawn from wrong firing offset on weapons that use Burst.
 
 ## Technos
 
