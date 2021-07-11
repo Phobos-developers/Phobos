@@ -1232,16 +1232,12 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask)
         break;
 
     case 30:
-        // Cloak Generator, Gap Generator, Radar Jammer or Inhibitor
+        // Inhibitor
         pTypeBuilding = abstract_cast<BuildingTypeClass *>(pTechnoType);
         pTypeTechnoExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
         if (!pTechno->Owner->IsNeutral()
-            && ((pTypeTechnoExt
-                && (pTypeTechnoExt->RadarJamRadius > 0
-                    || pTypeTechnoExt->InhibitorRange > 0))
-                || (pTypeBuilding && (pTypeBuilding->GapGenerator
-                    || pTypeBuilding->CloakGenerator))))
+            && ((pTypeTechnoExt && (pTypeTechnoExt->InhibitorRange > 0)))
         {
             return true;
         }
