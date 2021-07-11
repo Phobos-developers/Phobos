@@ -23,5 +23,5 @@ public:
 	static const wchar_t* LoadStringUnlessMissing(char* key, const wchar_t* defaultValue);
 	static std::vector<CellStruct> AdjacentCellsInRange(unsigned int range);
 	static const int GetRangedRandomOrSingleValue(Point2D range);
-	static const double GetWarheadVersusArmor(WarheadTypeClass* pWH, int ArmorType);
+	static const double GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor ArmorType);
 };

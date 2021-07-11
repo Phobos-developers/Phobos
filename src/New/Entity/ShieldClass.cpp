@@ -10,6 +10,7 @@
 #include <AnimClass.h>
 #include <HouseClass.h>
 #include <RadarEventClass.h>
+#include <TacticalClass.h>
 
 ShieldClass::ShieldClass() :
 	Techno { nullptr },
@@ -129,8 +130,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		if (!nLostHP)
 		{
 			int result = *args->Damage;
-			const int armor = static_cast<int>(this->Techno->GetTechnoType()->Armor);
-			if (result * GeneralUtils::GetWarheadVersusArmor(args->WH, armor) > 0)
+			if (result * GeneralUtils::GetWarheadVersusArmor(args->WH, this->Techno->GetTechnoType()->Armor) > 0)
 				result = 0;
 
 			return result;
@@ -164,8 +164,9 @@ void ShieldClass::ResponseAttack()
 		const auto pUnit = abstract_cast<UnitClass*>(this->Techno);
 		if (pUnit->Type->Harvester)
 		{
-			const auto pPos = pUnit->GetDestination(pUnit);
-			if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, { (short)pPos.X / 256,(short)pPos.Y / 256 }))
+			const auto pos = pUnit->GetDestination(pUnit);
+			
+			if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, CellClass::Coord2Cell(pos)))
 				VoxClass::Play("EVA_OreMinerUnderAttack");
 		}
 	}
@@ -498,7 +499,6 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 {
 	CoordStruct vCoords = { 0, 0, 0 };
 	this->Techno->GetTechnoType()->Dimension2(&vCoords);
-
 	Point2D vPos2 = { 0, 0 };
 	CoordStruct vCoords2 = { -vCoords.X / 2, vCoords.Y / 2,vCoords.Z };
 	TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
@@ -523,7 +523,7 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-				frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+				frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradientDescIndex::Flat, 1000, 0, 0, 0, 0, 0);
 		}
 	}
 
@@ -538,7 +538,7 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-				0, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+				0, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradientDescIndex::Flat, 1000, 0, 0, 0, 0, 0);
 		}
 	}
 }
@@ -571,7 +571,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	if (this->Techno->IsSelected)
 	{
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPBRD_SHP,
-			frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+			frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradientDescIndex::Flat, 1000, 0, 0, 0, 0, 0);
 	}
 
 	const int iTotal = DrawShieldBar_PipAmount(iLength);
@@ -584,7 +584,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 		vPos.Y = vLoc.Y + YOffset;
 
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-			frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, 0, 1000, 0, 0, 0, 0, 0);
+			frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradientDescIndex::Flat, 1000, 0, 0, 0, 0, 0);
 	}
 }
 

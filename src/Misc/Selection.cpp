@@ -2,6 +2,7 @@
 #include "Utilities/Macro.h"
 #include "Ext/TechnoType/Body.h"
 
+#include <TacticalClass.h>
 #include <HouseClass.h>
 #include <Unsorted.h>
 
@@ -39,22 +40,22 @@ public:
 	}
 
 	// Reversed from Tactical::Select
-	static bool Tactical_IsInSelectionRect(TacticalClass* pThis, RECT* pRect, const TacticalSelectableStruct& selectable)
+	static bool Tactical_IsInSelectionRect(TacticalClass* pThis, LTRBStruct* pRect, const TacticalSelectableStruct& selectable)
 	{
 		if (selectable.Techno && selectable.Techno->IsAlive)
 		{
-			LONG localX = selectable.X - pThis->TacticalPos.X;
-			LONG localY = selectable.Y - pThis->TacticalPos.Y;
+			int nLocalX = selectable.X - pThis->TacticalPos.X;
+			int nLocalY = selectable.Y - pThis->TacticalPos.Y;
 
-			if ((localX >= pRect->left && localX < pRect->right + pRect->left) &&
-				(localY >= pRect->top && localY < pRect->bottom + pRect->top)) {
+			if ((nLocalX >= pRect->Left && nLocalX < pRect->Right + pRect->Left) &&
+				(nLocalY >= pRect->Top && nLocalY < pRect->Bottom + pRect->Top)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	static bool Tactical_IsHighPriorityInRect(TacticalClass* pThis, RECT* rect)
+	static bool Tactical_IsHighPriorityInRect(TacticalClass* pThis, LTRBStruct* rect)
 	{
 		for (const auto& selected : Array)
 			if (Tactical_IsInSelectionRect(pThis, rect, selected) && ObjectClass_IsSelectable(selected.Techno))
@@ -65,11 +66,11 @@ public:
 	}
 
 	static // Reversed from Tactical::Select
-	void Tactical_SelectFiltered(TacticalClass* pThis, RECT* pRect, callback_type check_callback, bool bPriorityFiltering)
+	void Tactical_SelectFiltered(TacticalClass* pThis, LTRBStruct* pRect, callback_type check_callback, bool bPriorityFiltering)
 	{
 		Unsorted::MoveFeedback = true;
 
-		if (pRect->right <= 0 || pRect->bottom <= 0 || pThis->SelectableCount <= 0)
+		if (pRect->Right <= 0 || pRect->Bottom <= 0 || pThis->SelectableCount <= 0)
 			return;
 
 		for (const auto& selected : Array)
@@ -105,24 +106,24 @@ public:
 	static // Reversed from Tactical::MakeSelection
 	void __fastcall Tactical_MakeFilteredSelection(TacticalClass* pThis, void*_, callback_type check_callback)
 	{
-		if (pThis->Band.left || pThis->Band.top) {
-			LONG left = pThis->Band.left;
-			LONG right = pThis->Band.right;
-			LONG top = pThis->Band.top;
-			LONG bottom = pThis->Band.bottom;
+		if (pThis->Band.Left || pThis->Band.Top) {
+			int nLeft = pThis->Band.Left;
+			int nRight = pThis->Band.Right;
+			int nTop = pThis->Band.Top;
+			int nBottom = pThis->Band.Bottom;
 
-			if (left > right)
-				std::swap(left, right);
-			if (top > bottom)
-				std::swap(top, bottom);
+			if (nLeft > nRight)
+				std::swap(nLeft, nRight);
+			if (nTop > nBottom)
+				std::swap(nTop, nBottom);
 
-			RECT rect{ left , top, right - left + 1, bottom - top + 1 };
+			LTRBStruct rect { nLeft , nTop, nRight - nLeft + 1, nBottom - nTop + 1 };
 
 			bool bPriorityFiltering = Phobos::Config::PrioritySelectionFiltering && Tactical_IsHighPriorityInRect(pThis, &rect);
 			Tactical_SelectFiltered(pThis, &rect, check_callback, bPriorityFiltering);
 
-			pThis->Band.left = 0;
-			pThis->Band.top = 0;
+			pThis->Band.Left = 0;
+			pThis->Band.Top = 0;
 		}
 	}
 };

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <GeneralDefinitions.h>
+
 #include <Utilities/Template.h>
 
 class ArmorType : public Valueable<int>
@@ -17,6 +19,8 @@ public:
 		this->Value = std::move(value);
 		return *this;
 	}
+
+	operator Armor() const { return  (Armor)this->Value; }
 
 	bool Read(INI_EX& parser, const char* pSection, const char* pKey, bool Allocate = false)
 	{

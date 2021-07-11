@@ -80,7 +80,7 @@ SideExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
-DEFINE_HOOK(6A4609, SideClass_CTOR, 7)
+DEFINE_HOOK(0x6A4609, SideClass_CTOR, 0x7)
 {
 	GET(SideClass*, pItem, ESI);
 
@@ -88,7 +88,7 @@ DEFINE_HOOK(6A4609, SideClass_CTOR, 7)
 	return 0;
 }
 
-DEFINE_HOOK(6A499F, SideClass_SDDTOR, 6)
+DEFINE_HOOK(0x6A499F, SideClass_SDDTOR, 0x6)
 {
 	GET(SideClass*, pItem, ESI);
 
@@ -96,8 +96,8 @@ DEFINE_HOOK(6A499F, SideClass_SDDTOR, 6)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(6A48A0, SideClass_SaveLoad_Prefix, 5)
-DEFINE_HOOK(6A4780, SideClass_SaveLoad_Prefix, 6)
+DEFINE_HOOK_AGAIN(0x6A48A0, SideClass_SaveLoad_Prefix, 0x5)
+DEFINE_HOOK(0x6A4780, SideClass_SaveLoad_Prefix, 0x6)
 {
 	GET_STACK(SideClass*, pItem, 0x4);
 	GET_STACK(IStream*, pStm, 0x8);
@@ -107,19 +107,19 @@ DEFINE_HOOK(6A4780, SideClass_SaveLoad_Prefix, 6)
 	return 0;
 }
 
-DEFINE_HOOK(6A488B, SideClass_Load_Suffix, 6)
+DEFINE_HOOK(0x6A488B, SideClass_Load_Suffix, 0x6)
 {
 	SideExt::ExtMap.LoadStatic();
 	return 0;
 }
 
-DEFINE_HOOK(6A48FC, SideClass_Save_Suffix, 5)
+DEFINE_HOOK(0x6A48FC, SideClass_Save_Suffix, 0x5)
 {
 	SideExt::ExtMap.SaveStatic();
 	return 0;
 }
 
-DEFINE_HOOK(679A10, SideClass_LoadAllFromINI, 5)
+DEFINE_HOOK(0x679A10, SideClass_LoadAllFromINI, 0x5)
 {
 	GET_STACK(CCINIClass*, pINI, 0x4);
 	SideExt::ExtMap.LoadAllFromINI(pINI); // bwahaha
