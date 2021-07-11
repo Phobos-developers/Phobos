@@ -1024,7 +1024,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask)
         break;
 
     case 15:
-        // Naval Objects
+        // Naval Unit & Structure
         if (!pTechno->Owner->IsNeutral()
             && (pTechnoType->Naval || pTechno->GetCell()->LandType == LandType::Water))
         {
@@ -1237,11 +1237,21 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask)
         pTypeTechnoExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
         if (!pTechno->Owner->IsNeutral()
-            && ((pTypeTechnoExt && (pTypeTechnoExt->InhibitorRange > 0)))
+            && (pTypeTechnoExt && pTypeTechnoExt->InhibitorRange > 0))
         {
             return true;
         }
         break;
+
+	case 31:
+		// Naval Unit
+		if (!pTechno->Owner->IsNeutral()
+			&& pTechnoType->WhatAmI() != AbstractType::BuildingType 
+			&& (pTechnoType->Naval || pTechno->GetCell()->LandType == LandType::Water))
+		{
+			return true;
+		}
+		break;
 
     default:
         break;
