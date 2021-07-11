@@ -35,6 +35,7 @@ public:
 		Valueable<bool> Promote_IncludeSpawns;
 		Valueable<bool> ImmuneToCrit;
 		Valueable<bool> MultiMindControl_ReleaseVictim;
+		Valueable<int> CameoPriority;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -66,6 +67,7 @@ public:
 			Promote_IncludeSpawns(false),
 			ImmuneToCrit(false),
 			MultiMindControl_ReleaseVictim(false),
+			CameoPriority(0),
 			ShieldType(),
 			WarpOut(),
 			WarpIn(),

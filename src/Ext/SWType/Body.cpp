@@ -14,6 +14,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm) {
 	Stm
 		.Process(this->Money_Amount)
 		.Process(this->UIDescription)
+		.Process(this->CameoPriority)
 		;
 }
 
@@ -28,6 +29,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	INI_EX exINI(pINI);
 	this->Money_Amount.Read(exINI, pSection, "Money.Amount");
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
+	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
