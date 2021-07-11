@@ -41,10 +41,13 @@ New:
 - Initial Strength for TechnoTypes (by Uranusian)
 - Re-enable obsolete `JumpjetControls` for TechnoTypes' default Jumpjet properties (by Uranusian)
 - Weapon targeting filter (by Uranusian)
+- Burst-specific FLH's for TechnoTypes (by Starkku)
+- Burst delays for weapons (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
 - Fixed DeathWeapon not detonating properly (by Uranusian)
+- Fixed lasers & other effects drawing from wrong offset with weapons that use Burst (by Starkku)
 
 Phobos fixes:
 - Fixed extended building upgrades logic not properly interact with Ares' BuildLimit check (by Uranusian)
