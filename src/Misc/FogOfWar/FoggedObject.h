@@ -34,6 +34,7 @@ public:
 
 	/// The fives
 	FoggedObject(ObjectClass* pObject);
+	FoggedObject();
 
 	virtual ~FoggedObject();
 	
@@ -64,6 +65,7 @@ public:
 
 	/// The fives
 	FoggedOverlay(ObjectClass* pObject);
+	FoggedOverlay(CellClass* pCell);
 
 	virtual ~FoggedOverlay() override;
 
@@ -114,6 +116,7 @@ public:
 
 	/// The fives
 	FoggedSmudge(ObjectClass* pObject);
+	FoggedSmudge(CellClass* pCell);
 
 	virtual ~FoggedSmudge() override;
 

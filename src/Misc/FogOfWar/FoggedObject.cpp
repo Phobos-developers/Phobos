@@ -13,8 +13,6 @@
 #include <Helpers/Cast.h>
 #include <Utilities/SavegameDef.h>
 
-#define RETURN_IF_FALSE(x) if(!x) return false;
-
 #pragma region Instances
 
 std::set<FoggedObject*> FoggedObject::Instances;
@@ -33,6 +31,11 @@ FoggedObject::FoggedObject(ObjectClass* pObject)
 	this->Type = pObject->GetType();
 	this->AttachedCell = pObject->GetCell();
 
+	FoggedObject::Instances.insert(this);
+}
+
+FoggedObject::FoggedObject()
+{
 	FoggedObject::Instances.insert(this);
 }
 
@@ -79,6 +82,16 @@ FoggedOverlay::FoggedOverlay(ObjectClass* pObject)
 	FoggedOverlay::Instances.insert(this);
 }
 
+FoggedOverlay::FoggedOverlay(CellClass* pCell)
+	: FoggedObject()
+{
+	this->Type = OverlayTypeClass::Array->GetItem(pCell->OverlayTypeIndex);
+	this->AttachedCell = pCell;
+	this->OverlayData = pCell->Powerup;
+
+	FoggedOverlay::Instances.insert(this);
+}
+
 FoggedOverlay::~FoggedOverlay()
 {
 	FoggedOverlay::Instances.erase(this);
@@ -88,7 +101,8 @@ bool FoggedOverlay::DrawIt(RectangleStruct& Bounds) const
 {
 	// 4D19C4
 	Point2D ptClient;
-	RETURN_IF_FALSE(TacticalClass::Instance->CoordsToClient(this->AttachedCell->GetCoords(), &ptClient));
+	if (!TacticalClass::Instance->CoordsToClient(this->AttachedCell->GetCoords(), &ptClient))
+		return false;
 	ptClient.X -= 30;
 
 	auto const pType = static_cast<OverlayTypeClass*>(this->Type);
@@ -145,7 +159,8 @@ bool FoggedTerrain::DrawIt(RectangleStruct& Bounds) const
 {
 	auto const pType = static_cast<TerrainTypeClass*>(this->Type);
 	auto const pShape = pType->GetImage();
-	RETURN_IF_FALSE(pShape);
+	if (!pShape)
+		return false;
 
 	CoordStruct Location = this->AttachedCell->GetCoords();
 	Point2D ptClient;
@@ -182,6 +197,16 @@ FoggedSmudge::FoggedSmudge(ObjectClass* pObject)
 	FoggedSmudge::Instances.insert(this);
 }
 
+FoggedSmudge::FoggedSmudge(CellClass* pCell)
+	: FoggedObject()
+{
+	this->Type = SmudgeTypeClass::Array->GetItem(pCell->SmudgeTypeIndex);
+	this->AttachedCell = pCell;
+	this->CurrentFrame = 0; // Dunno how to init it, set it to zero currently
+
+	FoggedSmudge::Instances.insert(this);
+}
+
 FoggedSmudge::~FoggedSmudge()
 {
 	FoggedSmudge::Instances.erase(this);
@@ -191,7 +216,8 @@ bool FoggedSmudge::DrawIt(RectangleStruct& Bounds) const
 {
 	auto const pType = static_cast<TerrainTypeClass*>(this->Type);
 	auto const pShape = pType->GetImage();
-	RETURN_IF_FALSE(pShape);
+	if (!pShape)
+		return false;
 
 	if (!this->AttachedCell->LightConvert)
 		this->AttachedCell->InitLightConvert(0, 0x10000, 0, 1000, 1000, 1000);
@@ -256,7 +282,8 @@ bool FoggedAnim::DrawIt(RectangleStruct& Bounds) const
 {
 	auto const pType = static_cast<AnimTypeClass*>(this->Type);
 	auto const pShape = pType->GetImage();
-	RETURN_IF_FALSE(pShape);
+	if (!pShape)
+		return false;
 	
 	Point2D ptClient;
 	TacticalClass::Instance->CoordsToClient(this->Location, &ptClient);

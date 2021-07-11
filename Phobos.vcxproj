@@ -20,11 +20,16 @@
   <ItemGroup>
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\Dummy.h" />
+    <ClCompile Include="src\Ext\Cell\Body.cpp" />
     <ClCompile Include="src\Ext\TAction\Body.cpp" />
     <ClCompile Include="src\Ext\TAction\Hooks.cpp" />
     <ClCompile Include="src\Misc\CaptureManager.cpp" />
     <ClCompile Include="src\Misc\FogOfWar\FoggedObject.cpp" />
     <ClCompile Include="src\Misc\FogOfWar\FoggedTestGround.cpp" />
+    <ClCompile Include="src\Misc\FogOfWar\FogOfWar.cpp" />
+    <ClCompile Include="src\Misc\FogOfWar\Hoks.Reveal.cpp" />
+    <ClCompile Include="src\Misc\FogOfWar\Hooks.cpp" />
+    <ClCompile Include="src\Misc\FogOfWar\Hooks.Process.cpp" />
     <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
     <ClCompile Include="src\New\Type\ShieldTypeClass.cpp" />
@@ -89,9 +94,11 @@
     <ClInclude Include="src\Commands\NextIdleHarvester.h" />
     <ClInclude Include="src\Commands\ObjectInfo.h" />
     <ClInclude Include="src\Commands\Commands.h" />
+    <ClInclude Include="src\Ext\Cell\Body.h" />
     <ClInclude Include="src\Ext\TAction\Body.h" />
     <ClInclude Include="src\Misc\CaptureManager.h" />
     <ClInclude Include="src\Misc\FogOfWar\FoggedObject.h" />
+    <ClInclude Include="src\Misc\FogOfWar\FogOfWar.h" />
     <ClInclude Include="src\New\Entity\ShieldClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldTypeClass.h" />
