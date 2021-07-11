@@ -36,7 +36,7 @@ In `FAData.ini`:
 ### TBD
 
 New:
-- TBD
+- Setting VehicleType `Speed` to 0 now makes game treat them as stationary (by Starkku)
 
 Vanilla fixes:
 - Fixed the bug when after a failed placement the building/defence tab hotkeys won't trigger placement mode again (by Uranusian)
