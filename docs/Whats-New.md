@@ -33,16 +33,16 @@ In `FAData.ini`:
 
 ## Changelog
 
-### 0.3
+### TBD
 
 New:
-
+- TBD
 
 Vanilla fixes:
-- Fixed the bug when press down building/defense tab hotkeys after a failed placement, the placement mode won't be enabled (by Uranusian)
+- Fixed the bug when after a failed placement the building/defence tab hotkeys won't trigger placement mode again (by Uranusian)
 
 Phobos fixes:
-
+- TBD
 
 ### 0.2
 

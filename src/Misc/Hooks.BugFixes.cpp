@@ -158,6 +158,8 @@ DEFINE_HOOK(0x4ABBD5, DisplayClass_MouseLeftRelease_HotkeyFix, 0x7)
 DEFINE_HOOK(0x4FB2DE, HouseClass_PlaceObject_HotkeyFix, 0x6)
 {
 	GET(TechnoClass*, pObject, ESI);
+
 	pObject->ClearSidebarTabObject();
+	
 	return 0;
 }
