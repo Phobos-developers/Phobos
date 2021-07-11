@@ -30,56 +30,54 @@ ScriptExt::ExtContainer::~ExtContainer() = default;
 void ScriptExt::ProcessAction(TeamClass* pTeam)
 {
 	const int& action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action;
-
-	switch (action) {
-		switch (action)
-		{
-		case 71:
-			ScriptExt::ExecuteTimedAreaGuardAction(pTeam);
-			break;
-		case 72:
-			ScriptExt::LoadIntoTransports(pTeam);
-			break;
-		case 73:
-			ScriptExt::WaitUntillFullAmmoAction(pTeam);
-			break;
-		case 74:
-			// Threats that are far have more priority. Kill until no more targets.
-			ScriptExt::Mission_Attack(pTeam, true, 1);
-			break;
-		case 75:
-			// Threats that are close have more priority. Kill until no more targets.
-			ScriptExt::Mission_Attack(pTeam, true, 0);
-			break;
-		case 76:
-			// Farther targets from Team Leader have more priority. Kill until no more targets.
-			ScriptExt::Mission_Attack(pTeam, true, 3);
-			break;
-		case 77:
-			// Closer targets from Team Leader have more priority. Kill until no more targets.
-			ScriptExt::Mission_Attack(pTeam, true, 2);
-			break;
-		case 78:
-			// Threats that are far have more priority. 1 kill only (good for xx=49,0 combos)
-			ScriptExt::Mission_Attack(pTeam, false, 1);
-			break;
-		case 79:
-			// Threats that are close have more priority. 1 kill only (good for xx=49,0 combos)
-			ScriptExt::Mission_Attack(pTeam, false, 0);
-			break;
-		case 80:
-			// Farther targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
-			ScriptExt::Mission_Attack(pTeam, false, 3);
-			break;
-		case 81:
-			// Closer targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
-			ScriptExt::Mission_Attack(pTeam, false, 2);
-			break;
-		default:
-			// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
-			//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
-			break;
-		}
+	
+	switch (action)
+	{
+	case 71:
+		ScriptExt::ExecuteTimedAreaGuardAction(pTeam);
+		break;
+	case 72:
+		ScriptExt::LoadIntoTransports(pTeam);
+		break;
+	case 73:
+		ScriptExt::WaitUntillFullAmmoAction(pTeam);
+		break;
+	case 74:
+		// Threats that are far have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack(pTeam, true, 1);
+		break;
+	case 75:
+		// Threats that are close have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack(pTeam, true, 0);
+		break;
+	case 76:
+		// Farther targets from Team Leader have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack(pTeam, true, 3);
+		break;
+	case 77:
+		// Closer targets from Team Leader have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack(pTeam, true, 2);
+		break;
+	case 78:
+		// Threats that are far have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack(pTeam, false, 1);
+		break;
+	case 79:
+		// Threats that are close have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack(pTeam, false, 0);
+		break;
+	case 80:
+		// Farther targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack(pTeam, false, 3);
+		break;
+	case 81:
+		// Closer targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack(pTeam, false, 2);
+		break;
+	default:
+		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
+		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
+		break;
 	}
 }
 
@@ -242,7 +240,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
     int bestUnitLeadershipValue = -1;
     bool bAircraftsWithoutAmmo = false;
     TechnoClass* pFocus = nullptr;
-
+	
     // When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
     if (pTeam->GuardAreaTimer.TimeLeft != 0 || pTeam->GuardAreaTimer.InProgress())
     {
@@ -259,7 +257,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
         else
             return;
     }
-
+	
     // This team has no units! END
     if (!pTeam)
     {
@@ -269,7 +267,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
         //Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (End Team: without units)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
         return;
     }
-
+	
     if (!repeatAction)
     {
         for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
@@ -302,7 +300,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
             }
         }
     }
-
+	
     for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
     {
         if (pUnit && pUnit->IsAlive && pUnit->Health > 0 && !pUnit->InLimbo)
@@ -364,7 +362,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
         unitWeaponsHaveAA = true;
     if ((WeaponType1 && WeaponType1->Projectile->AG) || (WeaponType2 && WeaponType2->Projectile->AG))
         unitWeaponsHaveAG = true;
-
+	
     // Special case: a Leader with OpenTopped tag
     if (pLeaderUnitType->OpenTopped && pLeaderUnit->Passengers.NumPassengers > 0)
     {
@@ -400,12 +398,12 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 			}
         }
     }
-
+	
     pFocus = abstract_cast<TechnoClass*>(pTeam->Focus);
     if (!pFocus && !bAircraftsWithoutAmmo)
     {
         int targetMask = scriptArgument;
-
+		
         selectedTarget = GreatestThreat(pLeaderUnit, targetMask, calcThreatMode, enemyHouse);
 
         if (selectedTarget)
@@ -498,9 +496,8 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
             && !pFocus->Transporter
             && pFocus->IsOnMap
             && !pFocus->Absorbed
-            && pFocus->Owner != pLeaderUnit->Owner //->FindByCountryIndex(pTechno->Owner->EnemyHouseIndex)
-            && ((!pLeaderUnit->Owner->IsAlliedWith(pFocus)) 
-				|| (pLeaderUnit->Owner->IsAlliedWith(pFocus) && pFocus->IsMindControlled() && !pLeaderUnit->Owner->IsAlliedWith(pFocus->MindControlledBy))))
+			&& pFocus->Owner != pLeaderUnit->Owner //->FindByCountryIndex(pTechno->Owner->EnemyHouseIndex)
+			&& (!pLeaderUnit->Owner->IsAlliedWith(pFocus) || (pLeaderUnit->Owner->IsAlliedWith(pFocus) && pFocus->IsMindControlled() && !pLeaderUnit->Owner->IsAlliedWith(pFocus->MindControlledBy))))
         {
             validFocus = true;
         }
@@ -680,11 +677,11 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
         auto object = TechnoClass::Array->GetItem(i);
 		auto objectType = object->GetTechnoType();
 		auto pTechnoType = pTechno->GetTechnoType();
-
+		
         if (!object || !objectType || !pTechnoType)
             continue;
 
-        //Debug::Log("DEBUG: TechnoClass::Array[%d] -> Check if [%s] is targetable for [%s].\n", i, object->GetTechnoType()->ID, pTechno->GetTechnoType()->ID);
+        //Debug::Log("DEBUG: TechnoClass::Array[%d] -> Check if [%s] can target [%s]\n", i, pTechno->GetTechnoType()->ID, object->GetTechnoType()->ID);
         if (object->IsInAir() && !unitWeaponsHaveAA)
             continue;
         if (!object->IsInAir() && !unitWeaponsHaveAG) // I don't know if underground is a special case
@@ -723,10 +720,10 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
             && object->IsOnMap
             && !object->Absorbed
             && object->Owner != pTechno->Owner
-            && (!pTechno->Owner->IsAlliedWith(object))
-            || (pTechno->Owner->IsAlliedWith(object)
-                && object->IsMindControlled()
-                && !pTechno->Owner->IsAlliedWith(object->MindControlledBy)))
+			&& (!pTechno->Owner->IsAlliedWith(object)
+			|| (pTechno->Owner->IsAlliedWith(object)
+				&& object->IsMindControlled()
+				&& !pTechno->Owner->IsAlliedWith(object->MindControlledBy))))
         {
             int value = 0;
             //Debug::Log("DEBUG: Possible candidate!!! Go to EvaluateObjectWithMask check.\n");
