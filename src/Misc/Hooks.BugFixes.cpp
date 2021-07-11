@@ -147,3 +147,19 @@ DEFINE_HOOK(0x73DD12, UnitClass_Mission_Unload_DeployFire, 0x6)
 
 	return 0x73DD3C;
 }
+
+// issue #250: Building placement hotkey not responding
+// Author: Uranusian
+DEFINE_HOOK(0x4ABBD5, DisplayClass_MouseLeftRelease_HotkeyFix, 0x7)
+{
+	return R->Origin() + 7;
+}
+
+DEFINE_HOOK(0x4FB2DE, HouseClass_PlaceObject_HotkeyFix, 0x6)
+{
+	GET(TechnoClass*, pObject, ESI);
+
+	pObject->ClearSidebarTabObject();
+	
+	return 0;
+}
