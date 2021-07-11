@@ -80,7 +80,7 @@ public:
 
 	/// Properties
 
-	int OverlayData;
+	unsigned char OverlayData;
 
 	/// Static array
 	static std::set<FoggedOverlay*> Instances;
