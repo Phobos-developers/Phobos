@@ -31,15 +31,17 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 	GET(HouseClass*, pHouse, EDI);
 	REF_STACK(CoordStruct, coord, STACK_OFFS(0x24, 0x18));
 
-	auto pBld = GameCreate<BuildingClass>(pBldType, pHouse);
+	if (auto pBld = static_cast<BuildingClass*>(pBldType->CreateObject(pHouse)))
+	{
+		if (pThis->Bounds.X) // use this one for our flag: bPlayBuildUp
+			pBld->QueueMission(Mission::Construction, true);
 
-	if (pThis->Bounds.X) // use this one for our flag: bPlayBuildUp
-		pBld->QueueMission(Mission::Construction, true);
-
-	if (pBld->Put(coord, Direction::North))
-		pBld->IsReadyToCommence = true;
-	else
-		pBld->UnInit();
+		if (pBld->ForceOccupiersLeave(coord))
+			pBld->Place(0);
+		else
+			pBld->UnInit();
+	}
+	
 
 	return 0x6E42C1;
 }
