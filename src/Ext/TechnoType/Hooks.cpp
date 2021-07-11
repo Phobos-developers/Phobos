@@ -101,7 +101,7 @@ DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(73D223, UnitClass_DrawIt_OreGath, 6)
+DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 	GET(int, nFacing, EDI);
