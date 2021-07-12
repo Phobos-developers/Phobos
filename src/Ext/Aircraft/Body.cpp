@@ -1,6 +1,7 @@
 #include "Body.h"
 #include <Ext/WeaponType/Body.h>
 #include "..\Scenario\Body.h"
+#include "..\IsometricTileType\Body.h"
 
 // TODO: Implement proper extended AircraftClass.
 
