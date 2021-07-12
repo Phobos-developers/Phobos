@@ -33,14 +33,22 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 	GET(HouseClass*, pHouse, EDI);
 	REF_STACK(CoordStruct, coord, STACK_OFFS(0x24, 0x18));
 
-	if (!pThis->Bounds.X) // Use this one as our flag bPlayBuildup
-		return 0;
+	bool bPlayBuildUp = pThis->Bounds.X;
 
 	bool bCreated = false;
 	if (auto pBld = static_cast<BuildingClass*>(pBldType->CreateObject(pHouse)))
 	{
-		pBld->BeginMode(BStateType::Construction);
-		pBld->QueueMission(Mission::Construction, false);
+		if (bPlayBuildUp)
+		{
+			pBld->BeginMode(BStateType::Construction);
+			pBld->QueueMission(Mission::Construction, false);
+		}
+		else
+		{
+			pBld->BeginMode(BStateType::Idle);
+			pBld->QueueMission(Mission::Guard, false);
+			pBld->Place(false);
+		}
 		if (!pBld->ForceCreate(coord))
 			pBld->UnInit();
 		else
