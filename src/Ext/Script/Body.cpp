@@ -739,7 +739,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
                     // Threat affected by distance [recommended default]
                     // Is this object very FAR? then LESS THREAT against pTechno. More CLOSER? MORE THREAT for pTechno
                     int objectThreatValue = objectType->ThreatPosed;
-					int threatMultiplier = 250000;
+					int threatMultiplier = 100000;
 
                     if (objectType->SpecialThreatValue > 0)
                     {
