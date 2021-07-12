@@ -1,4 +1,5 @@
 #include <AnimClass.h>
+#include <BuildingClass.h>
 #include <TechnoClass.h>
 #include <FootClass.h>
 #include <UnitClass.h>
@@ -159,4 +160,19 @@ DEFINE_HOOK(0x4FB2DE, HouseClass_PlaceObject_HotkeyFix, 0x6)
 	pObject->ClearSidebarTabObject();
 	
 	return 0;
+}
+
+// issue #290: Undeploy building into a unit plays EVA_NewRallyPointEstablished
+// Author: secsome
+DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	GET_STACK(CellStruct*, pCell, STACK_OFFS(0x84, -0x8));
+
+	if (pThis->GetTechnoType()->UndeploysInto)
+		pThis->SetRallypoint(pCell, false);
+	else if(pThis->IsUnitFactory())
+		pThis->SetRallypoint(pCell, true);
+
+	return 0x4437AD;
 }
