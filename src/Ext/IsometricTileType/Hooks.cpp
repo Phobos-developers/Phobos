@@ -5,7 +5,7 @@
 #include <CellClass.h>
 #include <ConvertClass.h>
 
-DEFINE_HOOK(544E70, IsometricTileTypeClass_Init_Drawer, 8)
+DEFINE_HOOK(0x544E70, IsometricTileTypeClass_Init_Drawer, 0x8)
 {
 	GET(CellClass*, pCell, ESI); // Luckily, pCell is just ESI, so we don't need other hooks to set it
 
