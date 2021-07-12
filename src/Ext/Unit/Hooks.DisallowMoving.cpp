@@ -6,9 +6,9 @@
 #include <Utilities/GeneralUtils.h>
 #include <Ext/TechnoType/Body.h>
 
-DEFINE_HOOK(0x740A91, UnitClass_Mission_Move_DisallowMoving, 0x8)
+DEFINE_HOOK(0x740AA0, UnitClass_Mission_Move_DisallowMoving, 0xA)
 {
-	GET(UnitClass*, pThis, ECX);
+	GET(UnitClass*, pThis, ESI);
 
 	return pThis->Type->Speed == 0 ? 0x740AEF : 0;
 }
