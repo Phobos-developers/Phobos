@@ -150,10 +150,7 @@ DEFINE_HOOK(0x73DD12, UnitClass_Mission_Unload_DeployFire, 0x6)
 
 // issue #250: Building placement hotkey not responding
 // Author: Uranusian
-DEFINE_HOOK(0x4ABBD5, DisplayClass_MouseLeftRelease_HotkeyFix, 0x7)
-{
-	return R->Origin() + 7;
-}
+DEFINE_LJMP(0x4ABBD5, 0x4ABBD5 + 7); // DisplayClass_MouseLeftRelease_HotkeyFix
 
 DEFINE_HOOK(0x4FB2DE, HouseClass_PlaceObject_HotkeyFix, 0x6)
 {
