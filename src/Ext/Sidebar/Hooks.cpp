@@ -12,8 +12,7 @@ DEFINE_HOOK(0x6A593E, SidebarClass_InitForHouse_AdditionalFiles, 0x5)
 	for (int i = 0; i < 4; i++)
 	{
 		sprintf_s(filename, "tab%02dpp.shp", i);
-		bool parsed = false;
-		SidebarExt::TabProducingProgress[i] = ((SHPFile*)FileSystem::LoadWholeFileEx(filename, parsed));
+		SidebarExt::TabProducingProgress[i] = FileSystem::LoadSHPFile(filename);
 	}
 	return 0;
 }
@@ -27,7 +26,7 @@ DEFINE_HOOK(0x6A5EA1, SidebarClass_UnloadShapes_AdditionalFiles, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x6A70B3, SidebarClass_DrawIt_ProducingProgress, 0xA)
+DEFINE_HOOK(0x6A6EB1, SidebarClass_DrawIt_ProducingProgress, 0x6)
 {
 	if (Phobos::UI::ShowProducingProgress)
 	{
@@ -35,7 +34,6 @@ DEFINE_HOOK(0x6A70B3, SidebarClass_DrawIt_ProducingProgress, 0xA)
 		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::Player->SideIndex));
 		int XOffset = pSideExt->Sidebar_GDIPositions ? 29 : 32;
 		int XBase = pSideExt->Sidebar_GDIPositions ? 26 : 20;
-		int YBase = 200;
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -50,14 +48,21 @@ DEFINE_HOOK(0x6A70B3, SidebarClass_DrawIt_ProducingProgress, 0xA)
 				else
 				{
 					pFactory = pPlayer->GetPrimaryFactory(AbstractType::UnitType, false, BuildCat::DontCare);
+					if (!pFactory || !pFactory->Object)
+						pFactory = pPlayer->GetPrimaryFactory(AbstractType::UnitType, true, BuildCat::DontCare);
+					if (!pFactory || !pFactory->Object)
+						pFactory = pPlayer->GetPrimaryFactory(AbstractType::AircraftType, false, BuildCat::DontCare);
 				}
-				int idxFrame = pFactory ? (int)(((double)pFactory->GetProgress() / 55) * pSHP->Frames) : -1;
 
-				Point2D vPos = { XBase + i * XOffset, YBase };
+				int idxFrame = pFactory
+					? (int)(((double)pFactory->GetProgress() / 54) * (pSHP->Frames - 1))
+					: -1;
+				Point2D vPos = { XBase + i * XOffset, 197 };
 				RectangleStruct sidebarRect = DSurface::Sidebar()->GetRect();
 
-				DSurface::Sidebar()->DrawSHP(FileSystem::SIDEBAR_PAL, pSHP, idxFrame, &vPos,
-					&sidebarRect, BlitterFlags::bf_400, 0, 0, ZGradientDescIndex::Flat, 1000, 0, 0, 0, 0, 0);
+				if (idxFrame != -1)
+					DSurface::Sidebar()->DrawSHP(FileSystem::SIDEBAR_PAL, pSHP, idxFrame, &vPos,
+						&sidebarRect, BlitterFlags::bf_400, 0, 0, ZGradientDescIndex::Flat, 1000, 0, 0, 0, 0, 0);
 			}
 		}
 	}

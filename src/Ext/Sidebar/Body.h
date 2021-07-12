@@ -37,7 +37,7 @@ private:
 public:
 	static IStream* g_pStm;
 
-	static SHPFile* TabProducingProgress[4];
+	static SHPStruct* TabProducingProgress[4];
 
 	static void Allocate(SidebarClass* pThis);
 	static void Remove(SidebarClass* pThis);
