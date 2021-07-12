@@ -3,7 +3,6 @@
 template<> const DWORD Extension<SidebarClass>::Canary = 0x51DEBA12;
 std::unique_ptr<SidebarExt::ExtData> SidebarExt::Data = nullptr;
 
-bool SidebarExt::TabProducingProgressParsed[4] = { false };
 SHPFile* SidebarExt::TabProducingProgress[4];
 
 void SidebarExt::Allocate(SidebarClass* pThis)
