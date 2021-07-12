@@ -143,6 +143,20 @@ Sidebar.HarvesterCounter.ColorRed=255,0,0      ; R,G,B
 If you use the vanilla font in your mod, you can use {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 ```
 
+### Producing Progress
+
+![image](_static/images/producing-progress-01.gif)  
+*Producing Progress bars in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+
+- You can now know your factories' status via sidebar!
+- You need to draw your own assets (`tab0xpp.shp`, x is replaced by 0-3) and put them into `sidec0x.mix`.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+ProducingProgress.Show=no            ; boolean
+```
+
 ## Tooltips
 
 ![image](_static/images/tooltips-01.png)  
