@@ -20,6 +20,21 @@ PowersUp.Owner=Self ; list of owners (Self, Ally and/or Enemy)
 PowersUp.Buildings= ; list of BuildingTypes
 ```
 
+## Infantry
+
+### NotHuman Infantry Use Random Die sequence Anim
+
+- Infantry with `NotHuman` is hardcoded to play `Die1` sequence anim when receive damage.
+- This feature remove that limitation and randomize sequence anim played between `Die1` to `Die5`.
+- Do not forget to tweak `Infantry` sequence before enable this feature , or it will play invisible sequence anim.
+
+In `rulesmd.ini`:
+```ini
+[SOMEINFANTRY]                   ; InfantryType
+NotHuman=yes                     ; Required !
+NotHumanRandomDeathSequence=yes  ; boolean , to enable this feature
+```
+
 ## Vehicles
 
 ### Stationary vehicles
@@ -138,20 +153,6 @@ BreaksShield=false             ; boolean
 - Warheads have new options that interact with shields.
   - `PenetratesShield` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield isn't existed.
   - `BreaksShield` allows the warhead to always break shields of TechnoTypes, regardless of the amount of strength the shield has remaining or the damage dealt, assuming it affects the shield's armor type. Residual damage, if there is any, still respects `AbsorbOverDamage`.
-
-
-### NotHuman Play more Die sequence Randomly
-
-- Infantry with `NotHuman` is hardcoded to play `Die1` sequence when die.
-- This feature is to remove that limitation and randomize sequence played between `Die1` to `Die5`.
-- Do not forget to tweak your `Infantry` sequence before apply this feature , or it will play invisible sequence.
-
-In `rulesmd.ini`:
-```ini
-[SOMEINFANTRY]                   ; TechnoType Infantry
-NotHuman=yes                     ; Required !
-NotHumanUseAllDeathSequence=yes  ; boolean , to enable this feature
-```
 
 ## Weapons
 
@@ -306,16 +307,16 @@ SplashList=<none>        ; list of animations to play
 SplashList.PickRandom=no ; play a random animation from the list? boolean, defaults to no
 ```
 
-### NotHuman InfDeath Anim
+### Trigger spesific NotHuman Infantry Death Sequence Anim
 
-- This feature is to specify `NotHuman` infantry die sequence for Warhead.
+- Trigger spesific `NotHuman` infantry Death sequence anim for Warhead.
 - Each value is represent `Die` sequence anim for infantry (Game only accept 1 to 5).
-- Disabled (-1) mean that game will use `Die1` sequence as default or random if `NotHumanUseAllDeathSequence` is set.
+- Disabled (-1) mean that game will use `Die1` sequence as default or random if `NotHumanRandomDeathSequence` is set.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                    ; Warhead
-NotHumanInfDeath=                ; integer (1 to 5), default to -1
+[SOMEWARHEAD]      ; Warhead
+NotHumanDeathSequence=  ; integer (1 to 5), default to -1
 ```
 
 ## Projectiles

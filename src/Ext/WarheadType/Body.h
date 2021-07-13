@@ -40,7 +40,7 @@ public:
 
 		double RandomBuffer;
 		
-		Valueable<int> InfDeathSequence;
+		Valueable<int> NotHumanDeathSequence;
 
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject),
 			SpySat(false),
@@ -65,7 +65,7 @@ public:
 
 			PenetratesShield(false),
 			BreaksShield(false),
-			InfDeathSequence(-1)
+			NotHumanDeathSequence(-1)
 		{ }
 	private:
 		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr);

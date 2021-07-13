@@ -107,7 +107,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		this->PenetratesShield.Read(exINI, pSection, "PenetratesShield");
 	this->BreaksShield.Read(exINI, pSection, "BreaksShield");
 
-	this->InfDeathSequence.Read(exINI, pSection, "NotHumanInfDeath");
+	this->NotHumanDeathSequence.Read(exINI, pSection, "NotHumanDeathSequence");
 }
 
 template <typename T>
@@ -138,7 +138,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm) {
 
 		.Process(this->PenetratesShield)
 		.Process(this->BreaksShield)
-		.Process(this->InfDeathSequence)
+		.Process(this->NotHumanDeathSequence)
 		;
 }
 

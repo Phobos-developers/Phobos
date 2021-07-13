@@ -37,6 +37,8 @@ In `FAData.ini`:
 
 New:
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary (by Starkku)
+- Allow `NotHuman` Infantry to use random `Death`sequence anim (by Otamaa)
+- Warhead able to trigger spesific `NotHuman` Infantry `Death` sequence anim (by Otamaa)
 
 Vanilla fixes:
 - Fixed the bug when after a failed placement the building/defence tab hotkeys won't trigger placement mode again (by Uranusian)
