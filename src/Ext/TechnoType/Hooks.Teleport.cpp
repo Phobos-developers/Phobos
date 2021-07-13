@@ -8,7 +8,7 @@
 	TechnoTypeClass *pType = pLocomotor->LinkedTo->GetTechnoType(); \
 	TechnoTypeExt::ExtData *pExt = TechnoTypeExt::ExtMap.Find(pType);
 
-DEFINE_HOOK(719439, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 6)
+DEFINE_HOOK(0x719439, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0x6)
 {
 	GET_LOCO(ESI);
 
@@ -17,7 +17,7 @@ DEFINE_HOOK(719439, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 6)
 	return 0x71943F;
 }
 
-DEFINE_HOOK(719788, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 6)
+DEFINE_HOOK(0x719788, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x6)
 {
 	GET_LOCO(ESI);
 
@@ -26,7 +26,7 @@ DEFINE_HOOK(719788, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 6)
 	return 0x71978E;
 }
 
-DEFINE_HOOK(71986A, TeleportLocomotionClass_ILocomotion_Process_WarpAway, 6)
+DEFINE_HOOK(0x71986A, TeleportLocomotionClass_ILocomotion_Process_WarpAway, 0x6)
 {
 	GET_LOCO(ESI);
 
@@ -35,7 +35,7 @@ DEFINE_HOOK(71986A, TeleportLocomotionClass_ILocomotion_Process_WarpAway, 6)
 	return 0x719870;
 }
 
-DEFINE_HOOK(7194D0, TeleportLocomotionClass_ILocomotion_Process_ChronoTrigger, 6)
+DEFINE_HOOK(0x7194D0, TeleportLocomotionClass_ILocomotion_Process_ChronoTrigger, 0x6)
 {
 	GET_LOCO(ESI);
 
@@ -44,7 +44,7 @@ DEFINE_HOOK(7194D0, TeleportLocomotionClass_ILocomotion_Process_ChronoTrigger, 6
 	return 0x7194D6;
 }
 
-DEFINE_HOOK(7194E3, TeleportLocomotionClass_ILocomotion_Process_ChronoDistanceFactor, 6)
+DEFINE_HOOK(0x7194E3, TeleportLocomotionClass_ILocomotion_Process_ChronoDistanceFactor, 0x6)
 {
 	GET_LOCO(ESI);
 	GET(int, val, EAX);
@@ -59,7 +59,7 @@ DEFINE_HOOK(7194E3, TeleportLocomotionClass_ILocomotion_Process_ChronoDistanceFa
 	return 0x7194E9;
 }
 
-DEFINE_HOOK(719519, TeleportLocomotionClass_ILocomotion_Process_ChronoMinimumDelay, 6)
+DEFINE_HOOK(0x719519, TeleportLocomotionClass_ILocomotion_Process_ChronoMinimumDelay, 0x6)
 {
 	GET_LOCO(ESI);
 
@@ -68,7 +68,7 @@ DEFINE_HOOK(719519, TeleportLocomotionClass_ILocomotion_Process_ChronoMinimumDel
 	return 0x71951F;
 }
 
-DEFINE_HOOK(719562, TeleportLocomotionClass_ILocomotion_Process_ChronoMinimumDelay2, 6)
+DEFINE_HOOK(0x719562, TeleportLocomotionClass_ILocomotion_Process_ChronoMinimumDelay2, 0x6)
 {
 	GET_LOCO(ESI);
 
@@ -77,7 +77,7 @@ DEFINE_HOOK(719562, TeleportLocomotionClass_ILocomotion_Process_ChronoMinimumDel
 	return 0x719568;
 }
 
-DEFINE_HOOK(719555, TeleportLocomotionClass_ILocomotion_Process_ChronoRangeMinimum, 6)
+DEFINE_HOOK(0x719555, TeleportLocomotionClass_ILocomotion_Process_ChronoRangeMinimum, 0x6)
 {
 	GET_LOCO(ESI);
 	GET(int, comparator, EDX);
@@ -87,7 +87,7 @@ DEFINE_HOOK(719555, TeleportLocomotionClass_ILocomotion_Process_ChronoRangeMinim
 	return comparator < factor ? 0x71955D : 0x719576;
 }
 
-DEFINE_HOOK(71997B, TeleportLocomotionClass_ILocomotion_Process_ChronoDelay, 6)
+DEFINE_HOOK(0x71997B, TeleportLocomotionClass_ILocomotion_Process_ChronoDelay, 0x6)
 {
 	GET_LOCO(ESI);
 

@@ -12,6 +12,7 @@
 #include <Ext/Script/Body.h>
 #include <Ext/Side/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/TAction/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/TerrainType/Body.h>
@@ -228,17 +229,19 @@ auto MassActions = MassAction <
 	ScriptExt,
 	SideExt,
 	SWTypeExt,
+	TActionExt,
 	TechnoExt,
 	TechnoTypeExt,
 	TerrainTypeExt,
 	WarheadTypeExt,
 	WeaponTypeExt,
 	// New classes
+	ShieldTypeClass,
 	RadTypeClass
 	// other classes
 > ();
 
-DEFINE_HOOK(7258D0, AnnounceInvalidPointer, 6)
+DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 {
 	GET(AbstractClass* const, pInvalid, ECX);
 	GET(bool const, removed, EDX);
@@ -248,7 +251,7 @@ DEFINE_HOOK(7258D0, AnnounceInvalidPointer, 6)
 	return 0;
 }
 
-DEFINE_HOOK(685659, Scenario_ClearClasses, a)
+DEFINE_HOOK(0x685659, Scenario_ClearClasses, 0xa)
 {
 	Phobos::Clear();
 	return 0;

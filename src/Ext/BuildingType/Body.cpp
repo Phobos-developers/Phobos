@@ -78,7 +78,7 @@ BuildingTypeExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
-DEFINE_HOOK(45E50C, BuildingTypeClass_CTOR, 6)
+DEFINE_HOOK(0x45E50C, BuildingTypeClass_CTOR, 0x6)
 {
 	GET(BuildingTypeClass*, pItem, EAX);
 
@@ -86,7 +86,7 @@ DEFINE_HOOK(45E50C, BuildingTypeClass_CTOR, 6)
 	return 0;
 }
 
-DEFINE_HOOK(45E707, BuildingTypeClass_DTOR, 6)
+DEFINE_HOOK(0x45E707, BuildingTypeClass_DTOR, 0x6)
 {
 	GET(BuildingTypeClass*, pItem, ESI);
 
@@ -94,8 +94,8 @@ DEFINE_HOOK(45E707, BuildingTypeClass_DTOR, 6)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(465300, BuildingTypeClass_SaveLoad_Prefix, 5)
-DEFINE_HOOK(465010, BuildingTypeClass_SaveLoad_Prefix, 5)
+DEFINE_HOOK_AGAIN(0x465300, BuildingTypeClass_SaveLoad_Prefix, 0x5)
+DEFINE_HOOK(0x465010, BuildingTypeClass_SaveLoad_Prefix, 0x5)
 {
 	GET_STACK(BuildingTypeClass*, pItem, 0x4);
 	GET_STACK(IStream*, pStm, 0x8);
@@ -105,20 +105,20 @@ DEFINE_HOOK(465010, BuildingTypeClass_SaveLoad_Prefix, 5)
 	return 0;
 }
 
-DEFINE_HOOK(4652ED, BuildingTypeClass_Load_Suffix, 7)
+DEFINE_HOOK(0x4652ED, BuildingTypeClass_Load_Suffix, 0x7)
 {
 	BuildingTypeExt::ExtMap.LoadStatic();
 	return 0;
 }
 
-DEFINE_HOOK(46536A, BuildingTypeClass_Save_Suffix, 7)
+DEFINE_HOOK(0x46536A, BuildingTypeClass_Save_Suffix, 0x7)
 {
 	BuildingTypeExt::ExtMap.SaveStatic();
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(464A56, BuildingTypeClass_LoadFromINI, A)
-DEFINE_HOOK(464A49, BuildingTypeClass_LoadFromINI, A)
+DEFINE_HOOK_AGAIN(0x464A56, BuildingTypeClass_LoadFromINI, 0xA)
+DEFINE_HOOK(0x464A49, BuildingTypeClass_LoadFromINI, 0xA)
 {
 	GET(BuildingTypeClass*, pItem, EBP);
 	GET_STACK(CCINIClass*, pINI, 0x364);
