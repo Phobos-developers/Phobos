@@ -33,7 +33,7 @@ In `FAData.ini`:
 
 ## Changelog
 
-### TBD
+### 0.2.1
 
 New:
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary (by Starkku)
