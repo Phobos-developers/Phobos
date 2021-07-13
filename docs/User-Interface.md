@@ -96,6 +96,16 @@ Sidebar.GDIPositions= ; boolean
                       ; no for others
 ```
 
+### Custom Missing Cameo (`XXICON.SHP`)
+
+- You can now specify any SHP/PCX file as XXICON.SHP for missing cameo.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+MissingCameo=XXICON.SHP    ; filename - including the .shp/.pcx extension 
+```
+
 ### Harvester counter
 
 ![image](_static/images/harvestercounter-01.gif)  

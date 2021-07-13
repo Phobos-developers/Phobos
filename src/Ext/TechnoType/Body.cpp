@@ -15,8 +15,7 @@ TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 
 void TechnoTypeExt::ExtData::Initialize()
 {
-	auto pThis = this->OwnerObject();
-	UNREFERENCED_PARAMETER(pThis);
+	this->ShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
 }
 
 void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
@@ -33,7 +32,6 @@ void TechnoTypeExt::ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, dou
 	if (auto ext = TechnoTypeExt::ExtMap.Find(pType))
 		ext->ApplyTurretOffset(mtx, factor);
 }
-
 
 // Ares 0.A source
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
@@ -99,27 +97,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
-
-	// Shield logic
-	this->Shield_Strength.Read(exINI, pSection, "Shield.Strength");
-	this->Shield_Armor = pINI->ReadArmorType(pSection, "Shield.Armor", this->Shield_Armor);
-
-	this->Shield_Respawn.Read(exINI, pSection, "Shield.Respawn");
-	if (this->Shield_Respawn)
-		this->Shield_Respawn_Rate.Read(exINI, pSection, "Shield.Respawn.Rate");
-
-	this->Shield_SelfHealing.Read(exINI, pSection, "Shield.SelfHealing");
-	if (this->Shield_SelfHealing)
-		this->Shield_SelfHealing_Rate.Read(exINI, pSection, "Shield.SelfHealing.Rate");
-
-	this->Shield_AbsorbOverDamage.Read(exINI, pSection, "Shield.AbsorbOverDamage");
-	this->Shield_IdleAnim.Read(exINI, pSection, "Shield.IdleAnim");
-	this->Shield_BreakAnim.Read(exINI, pSection, "Shield.BreakAnim");
-	this->Shield_RespawnAnim.Read(exINI, pSection, "Shield.RespawnAnim");
-	this->Shield_HitAnim.Read(exINI, pSection, "Shield.HitAnim");
-	this->Shield_BracketDelta.Read(exINI, pSection, "Shield.BracketDelta");
-
-	//
+	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 	this->WarpOut.Read(exINI, pSection, "WarpOut");
 	this->WarpIn.Read(exINI, pSection, "WarpIn");
 	this->WarpAway.Read(exINI, pSection, "WarpAway");
@@ -162,18 +140,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Promote_IncludeSpawns)
 		.Process(this->ImmuneToCrit)
 		.Process(this->MultiMindControl_ReleaseVictim)
-		.Process(this->Shield_Strength)
-		.Process(this->Shield_Armor)
-		.Process(this->Shield_Respawn)
-		.Process(this->Shield_Respawn_Rate)
-		.Process(this->Shield_SelfHealing)
-		.Process(this->Shield_SelfHealing_Rate)
-		.Process(this->Shield_AbsorbOverDamage)
-		.Process(this->Shield_BracketDelta)
-		.Process(this->Shield_IdleAnim)
-		.Process(this->Shield_BreakAnim)
-		.Process(this->Shield_RespawnAnim)
-		.Process(this->Shield_HitAnim)
+		.Process(this->ShieldType)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
 		.Process(this->WarpAway)
@@ -206,7 +173,7 @@ TechnoTypeExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
-DEFINE_HOOK(711835, TechnoTypeClass_CTOR, 5)
+DEFINE_HOOK(0x711835, TechnoTypeClass_CTOR, 0x5)
 {
 	GET(TechnoTypeClass*, pItem, ESI);
 
@@ -215,7 +182,7 @@ DEFINE_HOOK(711835, TechnoTypeClass_CTOR, 5)
 	return 0;
 }
 
-DEFINE_HOOK(711AE0, TechnoTypeClass_DTOR, 5)
+DEFINE_HOOK(0x711AE0, TechnoTypeClass_DTOR, 0x5)
 {
 	GET(TechnoTypeClass*, pItem, ECX);
 
@@ -224,8 +191,8 @@ DEFINE_HOOK(711AE0, TechnoTypeClass_DTOR, 5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(716DC0, TechnoTypeClass_SaveLoad_Prefix, 5)
-DEFINE_HOOK(7162F0, TechnoTypeClass_SaveLoad_Prefix, 6)
+DEFINE_HOOK_AGAIN(0x716DC0, TechnoTypeClass_SaveLoad_Prefix, 0x5)
+DEFINE_HOOK(0x7162F0, TechnoTypeClass_SaveLoad_Prefix, 0x6)
 {
 	GET_STACK(TechnoTypeClass*, pItem, 0x4);
 	GET_STACK(IStream*, pStm, 0x8);
@@ -235,22 +202,22 @@ DEFINE_HOOK(7162F0, TechnoTypeClass_SaveLoad_Prefix, 6)
 	return 0;
 }
 
-DEFINE_HOOK(716DAC, TechnoTypeClass_Load_Suffix, A)
+DEFINE_HOOK(0x716DAC, TechnoTypeClass_Load_Suffix, 0xA)
 {
 	TechnoTypeExt::ExtMap.LoadStatic();
 
 	return 0;
 }
 
-DEFINE_HOOK(717094, TechnoTypeClass_Save_Suffix, 5)
+DEFINE_HOOK(0x717094, TechnoTypeClass_Save_Suffix, 0x5)
 {
 	TechnoTypeExt::ExtMap.SaveStatic();
 
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(716132, TechnoTypeClass_LoadFromINI, 5)
-DEFINE_HOOK(716123, TechnoTypeClass_LoadFromINI, 5)
+DEFINE_HOOK_AGAIN(0x716132, TechnoTypeClass_LoadFromINI, 0x5)
+DEFINE_HOOK(0x716123, TechnoTypeClass_LoadFromINI, 0x5)
 {
 	GET(TechnoTypeClass*, pItem, EBP);
 	GET_STACK(CCINIClass*, pINI, 0x380);
@@ -260,7 +227,7 @@ DEFINE_HOOK(716123, TechnoTypeClass_LoadFromINI, 5)
 	return 0;
 }
 
-DEFINE_HOOK(679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 5)
+DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 {
 	//GET(CCINIClass*, pINI, ESI);
 

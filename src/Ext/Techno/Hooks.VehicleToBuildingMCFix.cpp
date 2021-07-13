@@ -1,11 +1,13 @@
 #include "Body.h"
 
-#include <AnimClass.h>
-#include <UnitClass.h>
-#include <InfantryClass.h>
-#include <BuildingClass.h>
-#include <HouseClass.h>
 #include <Phobos.h>
+
+#include <HouseClass.h>
+#include <AnimClass.h>
+#include <BuildingClass.h>
+#include <InfantryClass.h>
+#include <UnitClass.h>
+
 #include <Misc/CaptureManager.h>
 
 namespace MindControlFixTemp
@@ -51,7 +53,7 @@ void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClas
 	}
 }
 
-DEFINE_HOOK(739956, UnitClass_Deploy_TransferMindControl, 6)
+DEFINE_HOOK(0x739956, UnitClass_Deploy_TransferMindControl, 0x6)
 {
 	GET(UnitClass*, pUnit, EBP);
 	GET(BuildingClass*, pStructure, EBX);
@@ -61,7 +63,7 @@ DEFINE_HOOK(739956, UnitClass_Deploy_TransferMindControl, 6)
 	return 0;
 }
 
-DEFINE_HOOK(44A03C, BuildingClass_Mi_Selling_TransferMindControl, 6)
+DEFINE_HOOK(0x44A03C, BuildingClass_Mi_Selling_TransferMindControl, 0x6)
 {
 	GET(BuildingClass*, pStructure, EBP);
 	GET(UnitClass*, pUnit, EBX);
@@ -73,7 +75,7 @@ DEFINE_HOOK(44A03C, BuildingClass_Mi_Selling_TransferMindControl, 6)
 	return 0;
 }
 
-DEFINE_HOOK(449E2E, BuildingClass_Mi_Selling_CreateUnit, 6)
+DEFINE_HOOK(0x449E2E, BuildingClass_Mi_Selling_CreateUnit, 0x6)
 {
 	GET(BuildingClass*, pStructure, EBP);
 	R->ECX<HouseClass*>(pStructure->GetOriginalOwner());
@@ -81,7 +83,7 @@ DEFINE_HOOK(449E2E, BuildingClass_Mi_Selling_CreateUnit, 6)
 	return 0x449E34;
 }
 
-DEFINE_HOOK(7396AD, UnitClass_Deploy_CreateBuilding, 6)
+DEFINE_HOOK(0x7396AD, UnitClass_Deploy_CreateBuilding, 0x6)
 {
 	GET(UnitClass*, pUnit, EBP);
 	R->EDX<HouseClass*>(pUnit->GetOriginalOwner());
@@ -89,7 +91,7 @@ DEFINE_HOOK(7396AD, UnitClass_Deploy_CreateBuilding, 6)
 	return 0x7396B3;
 }
 
-DEFINE_HOOK(448460, BuildingClass_Captured_MuteSound, 6)
+DEFINE_HOOK(0x448460, BuildingClass_Captured_MuteSound, 0x6)
 {
 	return MindControlFixTemp::isMindControlBeingTransferred ?
 		0x44848F : 0;

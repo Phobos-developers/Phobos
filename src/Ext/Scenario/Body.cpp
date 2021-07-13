@@ -3,6 +3,8 @@
 template<> const DWORD Extension<ScenarioClass>::Canary = 0xABCD1595;
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
+bool ScenarioExt::CellParsed = false;
+
 void ScenarioExt::Allocate(ScenarioClass* pThis)
 {
 	Data = std::make_unique<ScenarioExt::ExtData>(pThis);
@@ -65,7 +67,7 @@ bool ScenarioExt::SaveGlobals(PhobosStreamWriter& Stm)
 // =============================
 // container hooks
 
-DEFINE_HOOK(683549, ScenarioClass_CTOR, 9)
+DEFINE_HOOK(0x683549, ScenarioClass_CTOR, 0x9)
 {
 	GET(ScenarioClass*, pItem, EAX);
 
@@ -74,7 +76,7 @@ DEFINE_HOOK(683549, ScenarioClass_CTOR, 9)
 	return 0;
 }
 
-DEFINE_HOOK(6BEB7D, ScenarioClass_DTOR, 6)
+DEFINE_HOOK(0x6BEB7D, ScenarioClass_DTOR, 0x6)
 {
 	GET(ScenarioClass*, pItem, ESI);
 
@@ -84,8 +86,8 @@ DEFINE_HOOK(6BEB7D, ScenarioClass_DTOR, 6)
 
 IStream* ScenarioExt::g_pStm = nullptr;
 
-DEFINE_HOOK_AGAIN(689470, ScenarioClass_SaveLoad_Prefix, 5)
-DEFINE_HOOK(689310, ScenarioClass_SaveLoad_Prefix, 5)
+DEFINE_HOOK_AGAIN(0x689470, ScenarioClass_SaveLoad_Prefix, 0x5)
+DEFINE_HOOK(0x689310, ScenarioClass_SaveLoad_Prefix, 0x5)
 {
 	GET_STACK(IStream*, pStm, 0x4);
 
@@ -94,7 +96,7 @@ DEFINE_HOOK(689310, ScenarioClass_SaveLoad_Prefix, 5)
 	return 0;
 }
 
-DEFINE_HOOK(689669, ScenarioClass_Load_Suffix, 6)
+DEFINE_HOOK(0x689669, ScenarioClass_Load_Suffix, 0x6)
 {
 	auto buffer = ScenarioExt::Global();
 
@@ -110,7 +112,7 @@ DEFINE_HOOK(689669, ScenarioClass_Load_Suffix, 6)
 	return 0;
 }
 
-DEFINE_HOOK(68945B, ScenarioClass_Save_Suffix, 8)
+DEFINE_HOOK(0x68945B, ScenarioClass_Save_Suffix, 0x8)
 {
 	auto buffer = ScenarioExt::Global();
 	PhobosByteStream saver(sizeof(*buffer));
@@ -125,7 +127,7 @@ DEFINE_HOOK(68945B, ScenarioClass_Save_Suffix, 8)
 	return 0;
 }
 
-DEFINE_HOOK(68AD62, ScenarioClass_LoadFromINI, 6)
+DEFINE_HOOK(0x68AD62, ScenarioClass_LoadFromINI, 0x6)
 {
 	GET(ScenarioClass*, pItem, ESI);
 	GET_STACK(CCINIClass*, pINI, STACK_OFFS(0x38, -0x8));

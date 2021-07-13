@@ -3,7 +3,7 @@
 // #issue 149 : replace power used by power remain
 // Failed cause Ares overtaken 70AA60 = TechnoClass_DrawExtraInfo, 6
 
-//DEFINE_HOOK(70ABDD, TechnoClass_Draw_Stuff_When_Selected_PowerDisplay, 8)
+//DEFINE_HOOK(0x70ABDD, TechnoClass_Draw_Stuff_When_Selected_PowerDisplay, 0x8)
 //{
 //	LEA_STACK(wchar_t*, pString, STACK_OFFS(0x15C, 0x100));
 //	Debug::Log(__FUNCTION__ " string = %ls\n", pString);

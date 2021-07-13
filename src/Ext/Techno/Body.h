@@ -5,7 +5,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
-#include <Misc/Shield.h>
+#include <New/Entity/ShieldClass.h>
 
 class BulletClass;
 
@@ -18,12 +18,12 @@ public:
 	{
 	public:
 		Valueable<BulletClass*> InterceptedBullet;
-		std::unique_ptr<ShieldTechnoClass> ShieldData;
+		std::unique_ptr<ShieldClass> Shield;
 
 		Valueable<bool> WasCloaked;
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),
 			InterceptedBullet(nullptr),
-			ShieldData(),
+			Shield(),
 			WasCloaked(false)
 		{ }
 
@@ -31,7 +31,7 @@ public:
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
-			this->ShieldData->InvalidatePointer(ptr);
+			this->Shield->InvalidatePointer(ptr);
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;

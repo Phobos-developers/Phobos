@@ -42,6 +42,8 @@ private:
 public:
 	static IStream* g_pStm;
 
+	static bool CellParsed;
+
 	static void Allocate(ScenarioClass* pThis);
 	static void Remove(ScenarioClass* pThis);
 
