@@ -20,6 +20,12 @@ PowersUp.Owner=Self ; list of owners (Self, Ally and/or Enemy)
 PowersUp.Buildings= ; list of BuildingTypes
 ```
 
+## Vehicles
+
+### Stationary vehicles
+
+Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
+
 ## Technos
 
 ### Mind Control enhancement

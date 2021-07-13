@@ -1,4 +1,4 @@
-﻿#include <Phobos.h>
+#include <Phobos.h>
 
 #include <Helpers/Macro.h>
 
@@ -109,13 +109,13 @@ bool __stdcall DllMain(HANDLE hInstance, DWORD dwReason, LPVOID v)
 	return true;
 }
 
-DEFINE_HOOK(7CD810, ExeRun, 9)
+DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 {
 	Patch::Apply();
 	return 0;
 }
 
-DEFINE_HOOK(52F639, _YR_CmdLineParse, 5)
+DEFINE_HOOK(0x52F639, _YR_CmdLineParse, 0x5)
 {
 	GET(char**, ppArgs, ESI);
 	GET(int, nNumArgs, EDI);
@@ -124,10 +124,10 @@ DEFINE_HOOK(52F639, _YR_CmdLineParse, 5)
 	return 0;
 }
 
-DEFINE_HOOK(5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 5)
+DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 {
-	Phobos::Config::ToolTipDescriptions = Unsorted::RA2MDINI->ReadBool("Phobos", "ToolTipDescriptions", true);
-	Phobos::Config::PrioritySelectionFiltering = Unsorted::RA2MDINI->ReadBool("Phobos", "PrioritySelectionFiltering", true);
+	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
+	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
 
 	CCINIClass* pINI = Phobos::OpenConfig("uimd.ini");
 
@@ -149,10 +149,10 @@ DEFINE_HOOK(5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 5)
 		Phobos::UI::CostLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"$");
 
 		pINI->ReadString(TOOLTIPS_SECTION, "PowerLabel", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::PowerLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"⚡");
+		Phobos::UI::PowerLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26a1"); // ⚡
 
 		pINI->ReadString(TOOLTIPS_SECTION, "TimeLabel", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::TimeLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"⌚");
+		Phobos::UI::TimeLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u231a"); // ⌚
 	}
 
 	// Sidebar
@@ -161,7 +161,7 @@ DEFINE_HOOK(5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 5)
 			pINI->ReadBool(SIDEBAR_SECTION, "HarvesterCounter.Show", false);
 
 		pINI->ReadString(SIDEBAR_SECTION, "HarvesterCounter.Label", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::HarvesterLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"⛏"); //⛟
+		Phobos::UI::HarvesterLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26cf"); // ⛏
 
 		Phobos::UI::HarvesterCounter_ConditionYellow = 
 			pINI->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionYellow", Phobos::UI::HarvesterCounter_ConditionYellow);
@@ -174,7 +174,7 @@ DEFINE_HOOK(5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 5)
 	return 0;
 }
 
-DEFINE_HOOK(66E9DF, RulesClass_Process_Phobos, 8)
+DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 {
 	GET(CCINIClass*, rulesINI, EDI);
 
@@ -184,13 +184,13 @@ DEFINE_HOOK(66E9DF, RulesClass_Process_Phobos, 8)
 }
 
 #ifndef IS_RELEASE_VER
-DEFINE_HOOK(4F4583, GScreenClass_DrawText, 6)
+DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 {
 #ifndef STR_GIT_COMMIT
 	if (!HideWarning)
 #endif // !STR_GIT_COMMIT
 	{
-		auto wanted = Drawing::GetTextDimensions(Phobos::VersionDescription);
+		auto wanted = Drawing::GetTextDimensions(Phobos::VersionDescription, { 0,0 }, 0, 2, 0);
 
 		RectangleStruct rect = {
 			DSurface::Composite->GetWidth() - wanted.Width - 10,
@@ -199,8 +199,10 @@ DEFINE_HOOK(4F4583, GScreenClass_DrawText, 6)
 			wanted.Height + 10
 		};
 
+		Point2D location { rect.X + 5,5 };
+
 		DSurface::Composite->FillRect(&rect, COLOR_BLACK);
-		DSurface::Composite->DrawTextA(Phobos::VersionDescription, rect.X + 5, 5, COLOR_RED);
+		DSurface::Composite->DrawText(Phobos::VersionDescription, &location, COLOR_RED);
 	}
 	return 0;
 }

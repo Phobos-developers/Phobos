@@ -2,7 +2,7 @@
 
 #include <UnitClass.h>
 
-DEFINE_HOOK(7396D2, UnitClass_TryToDeploy_Transfer, 5)
+DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
 {
 	GET(UnitClass*, pUnit, EBP);
 	GET(BuildingClass*, pStructure, EBX);
@@ -16,7 +16,7 @@ DEFINE_HOOK(7396D2, UnitClass_TryToDeploy_Transfer, 5)
 	return 0;
 }
 
-DEFINE_HOOK(449ADA, BuildingClass_MissionConstruction_DeployToFireFix, 0)
+DEFINE_HOOK(0x449ADA, BuildingClass_MissionConstruction_DeployToFireFix, 0x0)
 {
 	GET(BuildingClass*, pThis, ESI);
 

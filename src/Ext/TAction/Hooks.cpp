@@ -4,10 +4,12 @@
 
 #include <HouseClass.h>
 #include <BuildingClass.h>
+#include <OverlayTypeClass.h>
+#include <VocClass.h>
 
 #include <Utilities/Macro.h>
 
-DEFINE_HOOK(6DD8B0, TActionClass_Execute, 6)
+DEFINE_HOOK(0x6DD8B0, TActionClass_Execute, 0x6)
 {
 	GET(TActionClass*, pThis, ECX);
 	GET_STACK(HouseClass*, pHouse, 0x4);
@@ -24,22 +26,38 @@ DEFINE_HOOK(6DD8B0, TActionClass_Execute, 6)
 
 // Bugfix: TAction 125 Build At do not display the buildups
 // Author: secsome
-DEFINE_HOOK(6E427D, TActionClass_CreateBuildingAt, 9)
+DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 {
 	GET(TActionClass*, pThis, ESI);
 	GET(BuildingTypeClass*, pBldType, ECX);
 	GET(HouseClass*, pHouse, EDI);
 	REF_STACK(CoordStruct, coord, STACK_OFFS(0x24, 0x18));
 
-	auto pBld = GameCreate<BuildingClass>(pBldType, pHouse);
+	bool bPlayBuildUp = pThis->Bounds.X;
 
-	if (pThis->Bounds.X) // use this one for our flag: bPlayBuildUp
-		pBld->QueueMission(Mission::Construction, true);
-
-	if (pBld->Put(coord, Direction::North))
-		pBld->IsReadyToCommence = true;
-	else
-		pBld->UnInit();
-
+	bool bCreated = false;
+	if (auto pBld = static_cast<BuildingClass*>(pBldType->CreateObject(pHouse)))
+	{
+		if (bPlayBuildUp)
+		{
+			pBld->BeginMode(BStateType::Construction);
+			pBld->QueueMission(Mission::Construction, false);
+		}
+		else
+		{
+			pBld->BeginMode(BStateType::Idle);
+			pBld->QueueMission(Mission::Guard, false);
+			pBld->Place(false);
+		}
+		if (!pBld->ForceCreate(coord))
+			pBld->UnInit();
+		else
+		{
+			pBld->IsReadyToCommence = true;
+			bCreated = true;
+		}
+	}
+	
+	R->AL(bCreated);
 	return 0x6E42C1;
 }
