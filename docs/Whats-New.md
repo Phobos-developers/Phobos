@@ -40,10 +40,10 @@ New:
 
 Vanilla fixes:
 - Fixed the bug when after a failed placement the building/defence tab hotkeys won't trigger placement mode again (by Uranusian)
-- Fixed building with `UndeployInto` plays `EVA_NewRallypointEstablished` while undeploying (by secsome)
+- Fixed the bug when building with `UndeployInto` plays `EVA_NewRallypointEstablished` while undeploying (by secsome)
 
 Phobos fixes:
-- Fixed the bug that trigger action 125 "Build At..." wasn't actually producing a building when the target cells were occupied (by secsome)
+- Fixed the bug when trigger action `125 Build At...` wasn't actually producing a building when the target cells were occupied (by secsome)
 
 ### 0.2
 
