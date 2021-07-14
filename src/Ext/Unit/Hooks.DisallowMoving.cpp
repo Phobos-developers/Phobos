@@ -6,7 +6,7 @@
 #include <Utilities/GeneralUtils.h>
 #include <Ext/TechnoType/Body.h>
 
-DEFINE_HOOK(0x740AA0, UnitClass_Mission_Move_DisallowMoving, 0xA)
+DEFINE_HOOK(0x740A93, UnitClass_Mission_Move_DisallowMoving, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
