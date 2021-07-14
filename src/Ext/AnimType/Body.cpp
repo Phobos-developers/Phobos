@@ -1,5 +1,10 @@
 #include "Body.h"
+#include <UnitClass.h>
+#include <TechnoClass.h>
+#include <ScenarioClass.h>
 
+#include <Ext/Anim/Body.h>
+#include <Ext/TechnoType/Body.h>
 template<> const DWORD Extension<AnimTypeClass>::Canary = 0xEAEEEEEE;
 AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;
 
@@ -10,25 +15,78 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->CreateUnit.Read(exINI, pID, "CreateUnit");
-	this->CreateUnit_Force.Read(exINI, pID, "CreateUnit.Force");
 	this->CreateUnit_Facing.Read(exINI, pID, "CreateUnit.Facing");
 	this->CreateUnit_UseDeathFacings.Read(exINI, pID, "CreateUnit.UseDeathFacings");
-	this->CreateUnit_Offset.Read(exINI, pID, "CreateUnit.Offset");
+	this->CreateUnit_useDeathTurrentFacings.Read(exINI, pID, "CreateUnit.UseDeathTurrentFacings");
 	this->CreateUnit_RemapAnim.Read(exINI, pID, "CreateUnit.RemapAnim");
 	this->CreateUnit_Mission.Read(exINI, pID, "CreateUnit.Mission");
+	this->CreateUnit_Owner.Read(exINI, pID, "CreateUnit.Owner");
 }
+
+const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller, HouseClass* pHouseKiller)
+{
+	if (!pThis)
+		return;
+
+	auto Invoker = (pKiller && pKiller->IsAlive) ? pKiller->Owner : pHouseKiller;
+	auto const pType = pThis->Type;
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (pType->DestroyAnim.Count > 0)
+	{
+		auto destroyanimsindex = pType->DestroyAnim.Count;
+		auto const Facing = pThis->Facing.current().value256();
+		auto pAnimType = pType->DestroyAnim[ScenarioClass::Instance->Random.Random() % destroyanimsindex];
+
+		if (destroyanimsindex >= 8 && !pTypeExt->DestroyAnimRandom.Get())
+		{
+			if (destroyanimsindex % 2 == 0)
+			{
+				destroyanimsindex *= static_cast<int>(Facing / 256.0);
+				pAnimType = pType->DestroyAnim[destroyanimsindex];
+			}
+		}
+
+		if (pAnimType)
+		{
+			if (auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->GetCoords()))
+			{
+				auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
+					? pThis->GetOriginalOwner() : pThis->Owner;
+
+				AnimExt::SetAnimOwnerHouseKind(pAnim, Invoker, VictimOwner, Invoker);
+
+				if (pTypeExt->StoreDeathFacings.Get())
+				{
+					if (auto const AnimExt = AnimExt::ExtMap.Find(pAnim))
+					{
+						AnimExt->Fromdeathunit = true;
+						AnimExt->DeathUnitFacing = Facing;
+
+						if (pThis->HasTurret())
+						{
+							AnimExt->DeathUnitHasTurrent = true;
+							AnimExt->DeathUnitTurretFacing = pThis->TurretFacing.current();
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 
 template <typename T>
 void AnimTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->CreateUnit)
+		.Process(this->CreateUnit_Facing)
 		.Process(this->CreateUnit_UseDeathFacings)
-		.Process(this->CreateUnit_Offset)
 		.Process(this->CreateUnit_RemapAnim)
 		.Process(this->CreateUnit_Mission)
-		.Process(this->CreateUnit_Force)
-		.Process(this->SavedData)
+		.Process(this->CreateUnit_useDeathTurrentFacings)
+		.Process(this->CreateUnit_Owner)
 		;
 }
 
@@ -47,7 +105,7 @@ void AnimTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 AnimTypeExt::ExtContainer::ExtContainer() : Container("AnimTypeClass") { }
 AnimTypeExt::ExtContainer::~ExtContainer() = default;
 
-DEFINE_HOOK(42784B, AnimTypeClass_CTOR, 5)
+DEFINE_HOOK(0x42784B, AnimTypeClass_CTOR, 0x5)
 {
 	GET(AnimTypeClass*, pItem, EAX);
 
@@ -55,7 +113,7 @@ DEFINE_HOOK(42784B, AnimTypeClass_CTOR, 5)
 	return 0;
 }
 
-DEFINE_HOOK(428EA8, AnimTypeClass_SDDTOR, 5)
+DEFINE_HOOK(0x428EA8, AnimTypeClass_SDDTOR, 0x5)
 {
 	GET(AnimTypeClass*, pItem, ECX);
 
@@ -63,8 +121,8 @@ DEFINE_HOOK(428EA8, AnimTypeClass_SDDTOR, 5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(428970, AnimTypeClass_SaveLoad_Prefix, 8)
-DEFINE_HOOK(428800, AnimTypeClass_SaveLoad_Prefix, A)
+DEFINE_HOOK_AGAIN(0x428970, AnimTypeClass_SaveLoad_Prefix, 0x8)
+DEFINE_HOOK(0x428800, AnimTypeClass_SaveLoad_Prefix, 0xA)
 {
 	GET_STACK(AnimTypeClass*, pItem, 0x4);
 	GET_STACK(IStream*, pStm, 0x8);
@@ -74,21 +132,21 @@ DEFINE_HOOK(428800, AnimTypeClass_SaveLoad_Prefix, A)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(42892C, AnimTypeClass_Load_Suffix, 6)
-DEFINE_HOOK(428958, AnimTypeClass_Load_Suffix, 6)
+DEFINE_HOOK_AGAIN(0x42892C, AnimTypeClass_Load_Suffix, 0x6)
+DEFINE_HOOK(0x428958, AnimTypeClass_Load_Suffix, 0x6)
 {
 	AnimTypeExt::ExtMap.LoadStatic();
 	return 0;
 }
 
-DEFINE_HOOK(42898A, AnimTypeClass_Save_Suffix, 3)
+DEFINE_HOOK(0x42898A, AnimTypeClass_Save_Suffix, 0x3)
 {
 	AnimTypeExt::ExtMap.SaveStatic();
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(4287E9, AnimTypeClass_LoadFromINI, A)
-DEFINE_HOOK(4287DC, AnimTypeClass_LoadFromINI, A)
+DEFINE_HOOK_AGAIN(0x4287E9, AnimTypeClass_LoadFromINI, 0xA)
+DEFINE_HOOK(0x4287DC, AnimTypeClass_LoadFromINI, 0xA)
 {
 	GET(AnimTypeClass*, pItem, ESI);
 	GET_STACK(CCINIClass*, pINI, 0xBC);

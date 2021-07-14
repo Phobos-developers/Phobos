@@ -10,14 +10,6 @@ class AnimTypeExt
 public:
 	using base_type = AnimTypeClass;
 
-	struct SavedMotionData
-	{
-		bool FromDeathUnit{ false };
-		bool SourceHasTurret{ false };
-		short UnitDeathFacing{ -1 };
-		DirStruct UnitDeathTurretFacing{ };
-	};
-
 	class ExtData final : public Extension<AnimTypeClass>
 	{
 	public:
@@ -25,23 +17,18 @@ public:
 		Valueable<UnitTypeClass*> CreateUnit;
 		Valueable<int> CreateUnit_Facing;
 		Valueable<bool> CreateUnit_UseDeathFacings;
-		Valueable<CoordStruct> CreateUnit_Offset;
+		Valueable<bool> CreateUnit_useDeathTurrentFacings;
 		Valueable<bool> CreateUnit_RemapAnim;
 		Valueable<Mission> CreateUnit_Mission;
-		Valueable<bool> CreateUnit_Force;
-
-		// Not accessible directly
-		SavedMotionData SavedData;
+		Valueable<OwnerHouseKind> CreateUnit_Owner;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, CreateUnit(nullptr)
 			, CreateUnit_Facing(-1)
 			, CreateUnit_UseDeathFacings(false)
-			, CreateUnit_Offset({ 0,0,0 })
 			, CreateUnit_RemapAnim(false)
 			, CreateUnit_Mission(Mission::Guard)
-			, CreateUnit_Force(true)
-			, SavedData()
+			, CreateUnit_Owner(OwnerHouseKind::Victim)
 		{ }
 
 		virtual ~ExtData() = default;
@@ -66,4 +53,5 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+	static const void ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller = nullptr, HouseClass* pHouseKiller = nullptr);
 };

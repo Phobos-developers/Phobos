@@ -107,7 +107,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
 	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
 
-		this->StoreDeathFacings.Read(exINI, pSection, "StoreDeathFacingsForAnim");
+	this->StoreDeathFacings.Read(exINI, pSection, "StoreDeathFacingsForAnim");
+	this->DestroyAnimRandom.Read(exINI, pSection, "DestroyAnim.Random");
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
 
@@ -149,6 +150,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChronoRangeMinimum)
 		.Process(this->ChronoDelay)
 		.Process(this->StoreDeathFacings)
+		.Process(this->DestroyAnimRandom)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
