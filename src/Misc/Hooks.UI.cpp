@@ -73,7 +73,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		DSurface::Sidebar->GetRect(&vRect);
 
 		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB2DWORD(clrToolTip), 0,
-			TextPrintType::TPF_USE_GRAD_PAL | TextPrintType::TPF_CENTER | TextPrintType::TPF_METAL12);
+			TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12);
 	}
 
 	return 0;
