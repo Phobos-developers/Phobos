@@ -1,5 +1,7 @@
 #include <Phobos.h>
 
+#include <Ext/Anim/Body.h>
+#include <Ext/AnimType/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Bullet/Body.h>
@@ -216,6 +218,8 @@ private:
 // Add more class names as you like
 auto MassActions = MassAction <
 	// Ext classes
+	AnimExt,
+	AnimTypeExt,
 	BuildingExt,
 	BuildingTypeExt,
 	BulletExt,

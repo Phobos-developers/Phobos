@@ -182,6 +182,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->InterceptedBullet)
 		.Process(this->Shield)
 		.Process(this->WasCloaked)
+		.Process(this->ReceiveDamage)
 		;
 }
 

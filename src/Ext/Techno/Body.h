@@ -21,10 +21,13 @@ public:
 		std::unique_ptr<ShieldClass> Shield;
 
 		Valueable<bool> WasCloaked;
+		Valueable<bool> ReceiveDamage;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),
 			InterceptedBullet(nullptr),
 			Shield(),
-			WasCloaked(false)
+			WasCloaked(false),
+			ReceiveDamage(false)
 		{ }
 
 		virtual ~ExtData() = default;

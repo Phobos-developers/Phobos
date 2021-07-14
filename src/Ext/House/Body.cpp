@@ -1,6 +1,8 @@
 #include "Body.h"
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
+
+#include <ScenarioClass.h>
 //Static init
 /*
 template<> const DWORD Extension<HouseClass>::Canary = 0x11111111;
@@ -41,6 +43,41 @@ int HouseExt::TotalHarvesterCount(HouseClass* pThis)
 	return result;
 }
 
+//Ares
+HouseClass* HouseExt::GetHouseKind(
+	OwnerHouseKind const kind, bool const allowRandom,
+	HouseClass* const pDefault, HouseClass* const pInvoker,
+	HouseClass* const pKiller, HouseClass* const pVictim)
+{
+	switch (kind) {
+	case OwnerHouseKind::Invoker:
+		return pInvoker ? pInvoker : pDefault;
+	case OwnerHouseKind::Killer:
+		return pKiller ? pKiller : pDefault;
+	case OwnerHouseKind::Victim:
+		return pVictim ? pVictim : pDefault;
+	case OwnerHouseKind::Civilian:
+		return HouseClass::FindCivilianSide();
+	case OwnerHouseKind::Special:
+		return HouseClass::FindSpecial();
+	case OwnerHouseKind::Neutral:
+		return HouseClass::FindNeutral();
+	case OwnerHouseKind::Random:
+		if (allowRandom)
+		{
+			auto& Random = ScenarioClass::Instance->Random;
+			return HouseClass::Array->GetItem(
+				Random.RandomRanged(0, HouseClass::Array->Count - 1));
+		}
+		else
+		{
+			return pDefault;
+		}
+	case OwnerHouseKind::Default:
+	default:
+		return pDefault;
+	}
+}
 // =============================
 // load / save
 

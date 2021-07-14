@@ -20,6 +20,7 @@
   <ItemGroup>
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\Dummy.h" />
+    <ClCompile Include="src\Ext\Anim\Body.cpp" />
     <ClCompile Include="src\Ext\TAction\Body.cpp" />
     <ClCompile Include="src\Ext\TAction\Hooks.cpp" />
     <ClCompile Include="src\Misc\CaptureManager.cpp" />
@@ -28,6 +29,8 @@
     <ClCompile Include="src\New\Type\ShieldTypeClass.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Hooks.cpp" />
+    <ClCompile Include="src\Ext\AnimType\Body.cpp" />
+    <ClCompile Include="src\Ext\AnimType\Hooks.AnimCreateUnit.cpp" />
     <ClCompile Include="src\Ext\Building\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.cpp" />
     <ClCompile Include="src\Ext\BulletType\Body.cpp" />
@@ -88,6 +91,7 @@
     <ClInclude Include="src\Commands\NextIdleHarvester.h" />
     <ClInclude Include="src\Commands\ObjectInfo.h" />
     <ClInclude Include="src\Commands\Commands.h" />
+    <ClInclude Include="src\Ext\Anim\Body.h" />
     <ClInclude Include="src\Ext\TAction\Body.h" />
     <ClInclude Include="src\Misc\CaptureManager.h" />
     <ClInclude Include="src\New\Entity\ShieldClass.h" />
@@ -99,6 +103,7 @@
     <ClInclude Include="src\ExtraHeaders\Matrix3D.h" />
     <ClInclude Include="src\ExtraHeaders\Themes.h" />
     <ClInclude Include="src\Ext\Aircraft\Body.h" />
+    <ClInclude Include="src\Ext\AnimType\Body.h" />
     <ClInclude Include="src\Ext\Building\Body.h" />
     <ClInclude Include="src\Ext\BulletType\Body.h" />
     <ClInclude Include="src\Ext\Bullet\Body.h" />

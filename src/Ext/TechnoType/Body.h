@@ -38,6 +38,7 @@ public:
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
+		Valueable<bool> StoreDeathFacings;
 		Nullable<AnimTypeClass*> WarpOut;
 		Nullable<AnimTypeClass*> WarpIn;
 		Nullable<AnimTypeClass*> WarpAway;
@@ -46,6 +47,8 @@ public:
 		Nullable<int> ChronoMinimumDelay;
 		Nullable<int> ChronoRangeMinimum;
 		Nullable<int> ChronoDelay;
+
+		Valueable<bool> DestroyAnimRandom;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			HealthBar_Hide(false),
@@ -67,6 +70,7 @@ public:
 			ImmuneToCrit(false),
 			MultiMindControl_ReleaseVictim(false),
 			ShieldType(),
+			StoreDeathFacings(false),
 			WarpOut(),
 			WarpIn(),
 			WarpAway(),
@@ -74,7 +78,8 @@ public:
 			ChronoDistanceFactor(),
 			ChronoMinimumDelay(),
 			ChronoRangeMinimum(),
-			ChronoDelay()
+			ChronoDelay(),
+			DestroyAnimRandom(true)
 		{ }
 
 		virtual ~ExtData() = default;
