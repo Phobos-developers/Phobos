@@ -33,6 +33,11 @@ In `FAData.ini`:
 
 ## Changelog
 
+### 0.2.1.1
+
+Phobos fixes:
+- Fixed occasional crashes introduced by `Speed=0` stationary vehicles code (by Starkku)
+
 ### 0.2.1
 
 New:
