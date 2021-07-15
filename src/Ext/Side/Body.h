@@ -20,15 +20,17 @@ public:
 		Valueable<Point2D> Sidebar_HarvesterCounter_Offset;
 		Valueable<ColorStruct> Sidebar_HarvesterCounter_Yellow;
 		Valueable<ColorStruct> Sidebar_HarvesterCounter_Red;
+		Valueable<Point2D> Sidebar_ProducingProgress_Offset;
 
-		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject),
-			ArrayIndex(-1),
-			Sidebar_GDIPositions(false),
-			IngameScore_WinTheme(-2),
-			IngameScore_LoseTheme(-2),
-			Sidebar_HarvesterCounter_Offset({ 0,0 }),
-			Sidebar_HarvesterCounter_Yellow({ 255,255,0 }),
-			Sidebar_HarvesterCounter_Red({ 255,0,0 })
+		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
+			, ArrayIndex(-1)
+			, Sidebar_GDIPositions(false)
+			, IngameScore_WinTheme(-2)
+			, IngameScore_LoseTheme(-2)
+			, Sidebar_HarvesterCounter_Offset({ 0,0 })
+			, Sidebar_HarvesterCounter_Yellow({ 255,255,0 })
+			, Sidebar_HarvesterCounter_Red({ 255,0,0 })
+			, Sidebar_ProducingProgress_Offset({ 0,0 })
 		{ }
 
 		virtual ~ExtData() = default;
@@ -38,8 +40,8 @@ public:
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
 	private:
 		template <typename T>
 		void Serialize(T& Stm);

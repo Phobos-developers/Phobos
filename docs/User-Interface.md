@@ -155,6 +155,9 @@ In `uimd.ini`:
 ```ini
 [Sidebar]
 ProducingProgress.Show=no            ; boolean
+
+[SOMESIDE]                           ; Side
+Sidebar.ProducingProgress.Offset=0,0 ; X,Y, pixels relative to default
 ```
 
 ## Tooltips
