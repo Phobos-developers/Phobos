@@ -42,6 +42,7 @@ Phobos fixes:
 
 New:
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary (by Starkku)
+- Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
 
 Vanilla fixes:
 - Fixed the bug when after a failed placement the building/defence tab hotkeys won't trigger placement mode again (by Uranusian)
