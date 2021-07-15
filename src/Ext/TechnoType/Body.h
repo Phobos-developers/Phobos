@@ -47,6 +47,8 @@ public:
 		Nullable<int> ChronoRangeMinimum;
 		Nullable<int> ChronoDelay;
 
+		Valueable<bool> NotHumanRandomDeathSequence;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			HealthBar_Hide(false),
 			UIDescription(),
@@ -74,7 +76,8 @@ public:
 			ChronoDistanceFactor(),
 			ChronoMinimumDelay(),
 			ChronoRangeMinimum(),
-			ChronoDelay()
+			ChronoDelay(),
+			NotHumanRandomDeathSequence(false)
 		{ }
 
 		virtual ~ExtData() = default;
