@@ -154,7 +154,7 @@ void CaptureManager::DecideUnitFate(CaptureManagerClass* pManager, FootClass* pF
 	// to be implemented (if needed). - secsome
 }
 
-DEFINE_HOOK(471D40, CaptureManagerClass_CaptureUnit, 7)
+DEFINE_HOOK(0x471D40, CaptureManagerClass_CaptureUnit, 0x7)
 {
 	GET(CaptureManagerClass*, pThis, ECX);
 	GET_STACK(TechnoClass*, pTechno, 0x4);
@@ -164,7 +164,7 @@ DEFINE_HOOK(471D40, CaptureManagerClass_CaptureUnit, 7)
 	return 0x471D5A;
 }
 
-DEFINE_HOOK(471FF0, CaptureManagerClass_FreeUnit, 8)
+DEFINE_HOOK(0x471FF0, CaptureManagerClass_FreeUnit, 0x8)
 {
 	GET(CaptureManagerClass*, pThis, ECX);
 	GET_STACK(TechnoClass*, pTechno, 0x4);
@@ -174,7 +174,7 @@ DEFINE_HOOK(471FF0, CaptureManagerClass_FreeUnit, 8)
 	return 0x472006;
 }
 
-DEFINE_HOOK(6FCB34, TechnoClass_CanFire_CanCapture, 6)
+DEFINE_HOOK(0x6FCB34, TechnoClass_CanFire_CanCapture, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(TechnoClass*, pTarget, EBP);

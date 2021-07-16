@@ -4,7 +4,7 @@
 
 #include <MapClass.h>
 
-DEFINE_HOOK(6E9443, TeamClass_AI, 8) {
+DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8) {
 	GET(TeamClass *, pTeam, ESI);
 
 	ScriptExt::ProcessAction(pTeam);
@@ -13,7 +13,7 @@ DEFINE_HOOK(6E9443, TeamClass_AI, 8) {
 }
 
 // Idea from E1Elite - secsome
-DEFINE_HOOK(6E95B3, TeamClass_AI_MoveToCell, 6)
+DEFINE_HOOK(0x6E95B3, TeamClass_AI_MoveToCell, 0x6)
 {
 	if (!R->BL())
 		return 0x6E95A4;

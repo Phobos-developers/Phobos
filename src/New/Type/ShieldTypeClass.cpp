@@ -1,4 +1,4 @@
-#include "ShieldType.h"
+#include "ShieldTypeClass.h"
 
 Enumerable<ShieldTypeClass>::container_t Enumerable<ShieldTypeClass>::Array;
 
@@ -34,6 +34,12 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->IdleAnim_TemporalAction.Read(exINI, pSection, "IdleAnim.TemporalAction");
 
 	this->IdleAnim.Read(exINI, pSection, "IdleAnim");
+	if (this->IdleAnim.Get() && this->IdleAnim->Bouncer)
+	{
+		Debug::Log("[Developer Warning]ShieldTypes don't support Bouncer=yes anims: [%s]IdleAnim=%s\r\n", pSection, this->IdleAnim->get_ID());
+		this->IdleAnim.Reset();
+	}
+
 	this->BreakAnim.Read(exINI, pSection, "BreakAnim");
 	this->HitAnim.Read(exINI, pSection, "HitAnim");
 }

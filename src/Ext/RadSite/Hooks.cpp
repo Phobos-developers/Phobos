@@ -25,7 +25,7 @@
 	//4DA584 = FootClass_AI_RadImmune, 7
 */
 
-DEFINE_HOOK(469150, BulletClass_Detonate_ApplyRadiation, 5)
+DEFINE_HOOK(0x469150, BulletClass_Detonate_ApplyRadiation, 0x5)
 {
 	GET(BulletClass* const, pThis, ESI);
 	GET_BASE(CoordStruct const*, pCoords, 0x8);
@@ -50,7 +50,7 @@ DEFINE_HOOK(469150, BulletClass_Detonate_ApplyRadiation, 5)
 // *Prototype*
 //able to manually set the RadType instead rely on Weapon RadType
 //Break InfantryClass_AIDeployment_CheckRad atm , will fix later
-DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation, 5)
+DEFINE_HOOK(0x46ADE0, BulletClass_ApplyRadiation, 0x5)
 {
 	GET_STACK(CellStruct, location, 0x4);
 	GET_STACK(int, spread, 0x8);
@@ -98,7 +98,7 @@ DEFINE_HOOK(46ADE0, BulletClass_ApplyRadiation, 5)
 */
 
 // Fix for desolator unable to fire his deploy weapon when cloaked 
-DEFINE_HOOK(5213E3, InfantryClass_AIDeployment_CheckRad, 4)
+DEFINE_HOOK(0x5213E3, InfantryClass_AIDeployment_CheckRad, 0x4)
 {
 	GET(InfantryClass*, pInf, ESI);
 	GET(int, weaponRadLevel, EBX);
@@ -145,7 +145,7 @@ DEFINE_HOOK(5213E3, InfantryClass_AIDeployment_CheckRad, 4)
 }
 
 // Too OP, be aware
-DEFINE_HOOK(43FB23, BuildingClass_AI, 5)
+DEFINE_HOOK(0x43FB23, BuildingClass_AI, 0x5)
 {
 	GET(BuildingClass* const, pBuilding, ECX);
 
@@ -189,7 +189,7 @@ DEFINE_HOOK(43FB23, BuildingClass_AI, 5)
 
 // be aware that this function is updated every frame 
 // putting debug log here can become mess because it gonna print bunch of debug line
-DEFINE_HOOK(4DA554, FootClass_AI_RadSiteClass, 5)
+DEFINE_HOOK(0x4DA554, FootClass_AI_RadSiteClass, 0x5)
 {
 	GET(FootClass* const, pFoot, ESI);
 	auto state = static_cast<DamageState>(R->AL());
@@ -233,7 +233,7 @@ DEFINE_HOOK(4DA554, FootClass_AI_RadSiteClass, 5)
 	return pFoot->IsAlive ? 0x4DA63B : 0x4DAF00;
 }
 
-DEFINE_HOOK(65B593, RadSiteClass_Activate_Delay, 6)
+DEFINE_HOOK(0x65B593, RadSiteClass_Activate_Delay, 0x6)
 {
 	GET(RadSiteClass* const, pThis, ECX);
 	auto const pExt = RadSiteExt::ExtMap.Find(pThis);
@@ -259,7 +259,7 @@ DEFINE_HOOK(65B593, RadSiteClass_Activate_Delay, 6)
 	RadSiteExt::ExtData* pExt = RadSiteExt::ExtMap.Find(pThis);\
 	auto output = pExt->Type->## value ##;
 
-DEFINE_HOOK(65B5CE, RadSiteClass_Activate_Color, 6)
+DEFINE_HOOK(0x65B5CE, RadSiteClass_Activate_Color, 0x6)
 {
 	GET_RADSITE(ESI, GetColor());
 
@@ -279,7 +279,7 @@ DEFINE_HOOK(65B5CE, RadSiteClass_Activate_Color, 6)
 	return 0x65B604;
 }
 
-DEFINE_HOOK(65B63E, RadSiteClass_Activate_LightFactor, 6)
+DEFINE_HOOK(0x65B63E, RadSiteClass_Activate_LightFactor, 0x6)
 {
 	GET_RADSITE(ESI, GetLightFactor());
 
@@ -288,9 +288,9 @@ DEFINE_HOOK(65B63E, RadSiteClass_Activate_LightFactor, 6)
 	return 0x65B644;
 }
 
-DEFINE_HOOK_AGAIN(65B6A0, RadSiteClass_Activate_TintFactor, 6)
-DEFINE_HOOK_AGAIN(65B6CA, RadSiteClass_Activate_TintFactor, 6)
-DEFINE_HOOK(65B6F2, RadSiteClass_Activate_TintFactor, 6)
+DEFINE_HOOK_AGAIN(0x65B6A0, RadSiteClass_Activate_TintFactor, 0x6)
+DEFINE_HOOK_AGAIN(0x65B6CA, RadSiteClass_Activate_TintFactor, 0x6)
+DEFINE_HOOK(0x65B6F2, RadSiteClass_Activate_TintFactor, 0x6)
 {
 	GET_RADSITE(ESI, GetTintFactor());
 
@@ -299,7 +299,7 @@ DEFINE_HOOK(65B6F2, RadSiteClass_Activate_TintFactor, 6)
 	return R->Origin() + 6;
 }
 
-DEFINE_HOOK(65B843, RadSiteClass_AI_LevelDelay, 6)
+DEFINE_HOOK(0x65B843, RadSiteClass_AI_LevelDelay, 0x6)
 {
 	GET_RADSITE(ESI, GetLevelDelay());
 
@@ -308,7 +308,7 @@ DEFINE_HOOK(65B843, RadSiteClass_AI_LevelDelay, 6)
 	return 0x65B849;
 }
 
-DEFINE_HOOK(65B8B9, RadSiteClass_AI_LightDelay, 6)
+DEFINE_HOOK(0x65B8B9, RadSiteClass_AI_LightDelay, 0x6)
 {
 	GET_RADSITE(ESI, GetLightDelay());
 
@@ -318,7 +318,7 @@ DEFINE_HOOK(65B8B9, RadSiteClass_AI_LightDelay, 6)
 }
 
 // Additional Hook below 
-DEFINE_HOOK(65BB67, RadSite_Deactivate, 6)
+DEFINE_HOOK(0x65BB67, RadSite_Deactivate, 0x6)
 {
 	GET_RADSITE(ECX, GetLevelDelay());
 

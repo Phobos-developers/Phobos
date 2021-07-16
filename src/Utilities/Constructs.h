@@ -314,7 +314,7 @@ public:
 		if (!this->checked) {
 			this->checked = true;
 			if (this->filename) {
-				auto pPCX = PCX::Instance;
+				auto pPCX = &PCX::Instance();
 				this->exists = (pPCX->GetSurface(this->filename) || pPCX->LoadFile(this->filename));
 			}
 		}

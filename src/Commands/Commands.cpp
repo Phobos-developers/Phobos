@@ -4,7 +4,7 @@
 #include "ObjectInfo.h"
 #include "NextIdleHarvester.h"
 
-DEFINE_HOOK(533066, CommandClassCallback_Register, 6)
+DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
 	// Load it after Ares'
 	// Debug::Log("[Phobos] CommandClassCallback_Register Called!\n");

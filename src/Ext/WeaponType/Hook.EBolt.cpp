@@ -7,7 +7,7 @@ namespace BoltTemp
 	const WeaponTypeExt::ExtData* pType = nullptr;
 }
 
-DEFINE_HOOK(6FD494, TechnoClass_FireEBolt_SetExtMap_AfterAres, 7)
+DEFINE_HOOK(0x6FD494, TechnoClass_FireEBolt_SetExtMap_AfterAres, 0x7)
 {
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFS(0x30, -0x8));
 	GET(EBolt*, pBolt, EAX);
@@ -18,7 +18,7 @@ DEFINE_HOOK(6FD494, TechnoClass_FireEBolt_SetExtMap_AfterAres, 7)
 	return 0;
 }
 
-DEFINE_HOOK(4C2951, EBolt_DTOR, 5)
+DEFINE_HOOK(0x4C2951, EBolt_DTOR, 0x5)
 {
 	GET(EBolt*, pBolt, ECX);
 
@@ -27,7 +27,7 @@ DEFINE_HOOK(4C2951, EBolt_DTOR, 5)
 	return 0;
 }
 
-DEFINE_HOOK(4C24E4, Ebolt_DrawFist_Disable, 8)
+DEFINE_HOOK(0x4C24E4, Ebolt_DrawFist_Disable, 0x8)
 {
 	GET_STACK(EBolt*, pBolt, 0x40);
 	BoltTemp::pType = BoltTemp::boltWeaponTypeExt.get_or_default(pBolt);
@@ -35,12 +35,12 @@ DEFINE_HOOK(4C24E4, Ebolt_DrawFist_Disable, 8)
 	return (BoltTemp::pType && BoltTemp::pType->Bolt_Disable1) ? 0x4C2515 : 0;
 }
 
-DEFINE_HOOK(4C25FD, Ebolt_DrawSecond_Disable, A)
+DEFINE_HOOK(0x4C25FD, Ebolt_DrawSecond_Disable, 0xA)
 {
 	return (BoltTemp::pType && BoltTemp::pType->Bolt_Disable2) ? 0x4C262A : 0;
 }
 
-DEFINE_HOOK(4C26EE, Ebolt_DrawThird_Disable, 8)
+DEFINE_HOOK(0x4C26EE, Ebolt_DrawThird_Disable, 0x8)
 {
 	return (BoltTemp::pType && BoltTemp::pType->Bolt_Disable3) ? 0x4C2710 : 0;
 }

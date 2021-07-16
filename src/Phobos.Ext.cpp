@@ -239,7 +239,7 @@ auto MassActions = MassAction <
 	// other classes
 > ();
 
-DEFINE_HOOK(7258D0, AnnounceInvalidPointer, 6)
+DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 {
 	GET(AbstractClass* const, pInvalid, ECX);
 	GET(bool const, removed, EDX);
@@ -249,7 +249,7 @@ DEFINE_HOOK(7258D0, AnnounceInvalidPointer, 6)
 	return 0;
 }
 
-DEFINE_HOOK(685659, Scenario_ClearClasses, a)
+DEFINE_HOOK(0x685659, Scenario_ClearClasses, 0xa)
 {
 	Phobos::Clear();
 	return 0;

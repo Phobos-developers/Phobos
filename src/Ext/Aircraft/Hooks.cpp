@@ -4,7 +4,7 @@
 #include <Ext/Aircraft/Body.h>
 #include <Ext/WeaponType/Body.h>
 
-DEFINE_HOOK(417FF1, AircraftClass_Mission_Attack_StrafeShots, 6)
+DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 {
 	GET(AircraftClass*, pThis, ESI);
 
@@ -29,7 +29,7 @@ DEFINE_HOOK(417FF1, AircraftClass_Mission_Attack_StrafeShots, 6)
 	return 0;
 }
 
-DEFINE_HOOK(418409, AircraftClass_Mission_Attack_FireAtTarget_BurstFix, 0)
+DEFINE_HOOK(0x418409, AircraftClass_Mission_Attack_FireAtTarget_BurstFix, 0x0)
 {
 	GET(AircraftClass*, pThis, ESI);
 
@@ -40,7 +40,7 @@ DEFINE_HOOK(418409, AircraftClass_Mission_Attack_FireAtTarget_BurstFix, 0)
 	return 0x418478;
 }
 
-DEFINE_HOOK(4186B6, AircraftClass_Mission_Attack_FireAtTarget2_BurstFix, 0)
+DEFINE_HOOK(0x4186B6, AircraftClass_Mission_Attack_FireAtTarget2_BurstFix, 0x0)
 {
 	GET(AircraftClass*, pThis, ESI);
 
@@ -49,7 +49,7 @@ DEFINE_HOOK(4186B6, AircraftClass_Mission_Attack_FireAtTarget2_BurstFix, 0)
 	return 0x4186D7;
 }
 
-DEFINE_HOOK(418805, AircraftClass_Mission_Attack_FireAtTarget2Strafe_BurstFix, 0)
+DEFINE_HOOK(0x418805, AircraftClass_Mission_Attack_FireAtTarget2Strafe_BurstFix, 0x0)
 {
 	GET(AircraftClass*, pThis, ESI);
 
@@ -58,7 +58,7 @@ DEFINE_HOOK(418805, AircraftClass_Mission_Attack_FireAtTarget2Strafe_BurstFix, 0
 	return 0x418826;
 }
 
-DEFINE_HOOK(418914, AircraftClass_Mission_Attack_FireAtTarget3Strafe_BurstFix, 0)
+DEFINE_HOOK(0x418914, AircraftClass_Mission_Attack_FireAtTarget3Strafe_BurstFix, 0x0)
 {
 	GET(AircraftClass*, pThis, ESI);
 
@@ -67,7 +67,7 @@ DEFINE_HOOK(418914, AircraftClass_Mission_Attack_FireAtTarget3Strafe_BurstFix, 0
 	return 0x418935;
 }
 
-DEFINE_HOOK(418A23, AircraftClass_Mission_Attack_FireAtTarget4Strafe_BurstFix, 0)
+DEFINE_HOOK(0x418A23, AircraftClass_Mission_Attack_FireAtTarget4Strafe_BurstFix, 0x0)
 {
 	GET(AircraftClass*, pThis, ESI);
 
@@ -76,7 +76,7 @@ DEFINE_HOOK(418A23, AircraftClass_Mission_Attack_FireAtTarget4Strafe_BurstFix, 0
 	return 0x418A44;
 }
 
-DEFINE_HOOK(418B25, AircraftClass_Mission_Attack_FireAtTarget5Strafe_BurstFix, 0)
+DEFINE_HOOK(0x418B25, AircraftClass_Mission_Attack_FireAtTarget5Strafe_BurstFix, 0x0)
 {
 	GET(AircraftClass*, pThis, ESI);
 

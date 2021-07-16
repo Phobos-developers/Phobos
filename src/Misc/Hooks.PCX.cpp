@@ -3,7 +3,7 @@
 #include <FileFormats/SHP.h>
 #include <Ext/Rules/Body.h>
 
-DEFINE_HOOK(6B9D9C, RGB_PCX_Loader, 7)
+DEFINE_HOOK(0x6B9D9C, RGB_PCX_Loader, 0x7)
 {
 	GET(BSurface*, pSurf, EDI);
 	if (pSurf->BytesPerPixel == 2) {
@@ -12,7 +12,7 @@ DEFINE_HOOK(6B9D9C, RGB_PCX_Loader, 7)
 	return 0;
 }
 
-DEFINE_HOOK(5535D0, PCX_LoadScreen, 6)
+DEFINE_HOOK(0x5535D0, PCX_LoadScreen, 0x6)
 {
 	LEA_STACK(char*, name, 0x84);
 
@@ -33,14 +33,14 @@ DEFINE_HOOK(5535D0, PCX_LoadScreen, 6)
 			destClip.X = (pSurf->Width - pcx->Width) / 2;
 			destClip.Y = (pSurf->Height - pcx->Height) / 2;
 
-			pSurf->Blit(&pSurfBounds, &destClip, pcx, &pcxBounds, &pcxBounds, true, true);
+			pSurf->CopyFrom(&pSurfBounds, &destClip, pcx, &pcxBounds, &pcxBounds, true, true);
 		}
 		return 0x553603;
 	}
 	return 0;
 }
 
-DEFINE_HOOK(6A99F3, StripClass_Draw_DrawMissing, 6)
+DEFINE_HOOK(0x6A99F3, StripClass_Draw_DrawMissing, 0x6)
 {
 	GET_STACK(SHPStruct*, pCameo, STACK_OFFS(0x48C, 0x444));
 

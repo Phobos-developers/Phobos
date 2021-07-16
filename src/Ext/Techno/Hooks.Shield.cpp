@@ -7,7 +7,7 @@
 #include <Ext/WarheadType/Body.h>
 
 // #issue 88 : shield logic
-DEFINE_HOOK(701900, TechnoClass_ReceiveDamage_Shield, 6)
+DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 {
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
@@ -26,7 +26,7 @@ DEFINE_HOOK(701900, TechnoClass_ReceiveDamage_Shield, 6)
 	return 0;
 }
 
-DEFINE_HOOK(7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 5)
+DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(int*, Damage, EBX);
@@ -41,10 +41,10 @@ DEFINE_HOOK(7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 5)
 	return *Damage >= 0 ? 0x7019E3 : 0x7019DD;
 }
 
-DEFINE_HOOK_AGAIN(70CF39, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_EvalThreatRating_Shield
-DEFINE_HOOK_AGAIN(6F7D31, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_CanAutoTargetObject_Shield
-DEFINE_HOOK_AGAIN(6FCB64, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_CanFire_Shield
-DEFINE_HOOK(708AEB, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_ShouldRetaliate_Shield
+DEFINE_HOOK_AGAIN(0x70CF39, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_EvalThreatRating_Shield
+DEFINE_HOOK_AGAIN(0x6F7D31, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_CanAutoTargetObject_Shield
+DEFINE_HOOK_AGAIN(0x6FCB64, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_CanFire_Shield
+DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_ShouldRetaliate_Shield
 {
 	WeaponTypeClass* pWeapon = nullptr;
 	if (R->Origin() == 0x708AEB)
@@ -81,8 +81,8 @@ DEFINE_HOOK(708AEB, TechnoClass_ReplaceArmorWithShields, 6) //TechnoClass_Should
 
 //Abandoned because of Ares!!!! - Uranusian
 /*
-DEFINE_HOOK_AGAIN(6F3725, TechnoClass_WhatWeaponShouldIUse_Shield, 6)
-DEFINE_HOOK(6F36F2, TechnoClass_WhatWeaponShouldIUse_Shield, 6)
+DEFINE_HOOK_AGAIN(0x6F3725, TechnoClass_WhatWeaponShouldIUse_Shield, 0x6)
+DEFINE_HOOK(0x6F36F2, TechnoClass_WhatWeaponShouldIUse_Shield, 0x6)
 {
 	GET(TechnoClass*, pTarget, EBP);
 	if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
@@ -106,7 +106,7 @@ DEFINE_HOOK(6F36F2, TechnoClass_WhatWeaponShouldIUse_Shield, 6)
 }
 */
 
-DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
+DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 0x8)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(TechnoClass*, pTarget, EBP);
@@ -136,7 +136,7 @@ DEFINE_HOOK(6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 8)
 	return OriginalCheck;
 }
 
-DEFINE_HOOK(6F9E50, TechnoClass_AI_Shield, 5)
+DEFINE_HOOK(0x6F9E50, TechnoClass_AI_Shield, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
 	const auto pShieldType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->ShieldType;
@@ -152,7 +152,7 @@ DEFINE_HOOK(6F9E50, TechnoClass_AI_Shield, 5)
 }
 
 // Ares-hook jmp to this offset
-DEFINE_HOOK(71A88D, TemporalClass_AI_Shield, 0)
+DEFINE_HOOK(0x71A88D, TemporalClass_AI_Shield, 0x0)
 {
 	GET(TemporalClass*, pThis, ESI);
 	if (auto const pTarget = pThis->Target)
@@ -169,7 +169,7 @@ DEFINE_HOOK(71A88D, TemporalClass_AI_Shield, 0)
 	return R->EAX<int>() <= 0 ? 0x71A895 : 0x71AB08;
 }
 
-DEFINE_HOOK(6F6AC4, TechnoClass_Remove_Shield, 5)
+DEFINE_HOOK(0x6F6AC4, TechnoClass_Remove_Shield, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
@@ -180,8 +180,8 @@ DEFINE_HOOK(6F6AC4, TechnoClass_Remove_Shield, 5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(44A03C, DeploysInto_UndeploysInto_SyncShieldStatus, 6) //BuildingClass_Mi_Selling_SyncShieldStatus
-DEFINE_HOOK(739956, DeploysInto_UndeploysInto_SyncShieldStatus, 6) //UnitClass_Deploy_SyncShieldStatus
+DEFINE_HOOK_AGAIN(0x44A03C, DeploysInto_UndeploysInto_SyncShieldStatus, 0x6) //BuildingClass_Mi_Selling_SyncShieldStatus
+DEFINE_HOOK(0x739956, DeploysInto_UndeploysInto_SyncShieldStatus, 0x6) //UnitClass_Deploy_SyncShieldStatus
 {
 	GET(TechnoClass*, pFrom, EBP);
 	GET(TechnoClass*, pTo, EBX);
@@ -190,7 +190,7 @@ DEFINE_HOOK(739956, DeploysInto_UndeploysInto_SyncShieldStatus, 6) //UnitClass_D
 	return 0;
 }
 
-DEFINE_HOOK(6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 6)
+DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(int, iLength, EBX);
@@ -207,7 +207,7 @@ DEFINE_HOOK(6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 6)
 	return 0;
 }
 
-DEFINE_HOOK(6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 7)
+DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x4C, -0x4));
