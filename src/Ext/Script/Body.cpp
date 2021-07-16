@@ -74,6 +74,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Farther targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
 		ScriptExt::Mission_Attack(pTeam, false, 3);
 		break;
+	case 82:
+		ScriptExt::MissionFollow(pTeam);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
@@ -1389,5 +1392,73 @@ bool ScriptExt::FollowTheLeader(TeamClass *pTeam, TechnoClass* pLeader = nullptr
 	}
 
 	return true;
+}
+
+
+// Not working, maybe I should reconsider how should work or remove it
+void ScriptExt::MissionFollow(TeamClass* pTeam2)
+{
+	TeamTypeClass* pTriggerTeam1Type = nullptr;
+	TeamTypeClass* pTriggerTeam2Type = nullptr;
+	auto pTeam2Type = pTeam2->Type;
+	TeamClass* pTeam1 = nullptr;
+	bool found1 = false;
+	bool found2 = false;
+
+	if (!pTeam2)
+	{
+		Debug::Log("DEBUG: FollowTeam: Team2 (followers) not exists\n");
+		pTeam2->StepCompleted = true;
+		return;
+	}
+
+	for (int i = 0; i < AITriggerTypeClass::Array->Count && !found2; i++)
+	{
+		pTriggerTeam1Type = AITriggerTypeClass::Array->GetItem(i)->Team1;
+		pTriggerTeam2Type = AITriggerTypeClass::Array->GetItem(i)->Team2;
+
+		if (pTeam2Type && (pTriggerTeam2Type && pTriggerTeam2Type == pTeam2Type))
+		{
+			found2 = true;
+		}
+	}
+
+	if (found2)
+	{
+		// We found this team as Team2 of an AITrigger. T
+		for (int i = 0; i < TeamClass::Array->Count && !found1; i++)
+		{
+			pTeam1 = TeamClass::Array->GetItem(i);
+
+			if (pTeam1->Type == pTriggerTeam1Type)
+			{
+				found1 = true;
+			}
+		}
+
+		if (found1)
+		{
+			// All Teams found, Now Team 2 can follow Team1
+			for (auto pUnit = pTeam2->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+			{
+				if (pUnit->IsAlive && pUnit->Health > 0 && !pUnit->InLimbo)
+				{
+					FollowTheLeader(pTeam1, nullptr, pUnit);
+				}
+			}
+
+			Debug::Log("DEBUG: FollowTeam: Team2 (followers) now follows Team1 (leaders)\n");
+			// This action finished
+			pTeam2->StepCompleted = true;
+			pTeam2->CurrentScript->NextAction();
+			return;
+		}
+		else
+		{
+			Debug::Log("DEBUG: FollowTeam: Team 1 (leaders) not found!\n");
+			pTeam2->StepCompleted = true;
+			return;
+		}
+	}
 }
 
