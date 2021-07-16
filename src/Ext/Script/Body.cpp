@@ -43,36 +43,36 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		ScriptExt::WaitUntillFullAmmoAction(pTeam);
 		break;
 	case 74:
-		// Threats that are far have more priority. Kill until no more targets.
-		ScriptExt::Mission_Attack(pTeam, true, 1);
-		break;
-	case 75:
 		// Threats that are close have more priority. Kill until no more targets.
 		ScriptExt::Mission_Attack(pTeam, true, 0);
 		break;
-	case 76:
-		// Farther targets from Team Leader have more priority. Kill until no more targets.
-		ScriptExt::Mission_Attack(pTeam, true, 3);
+	case 75:
+		// Threats that are far have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack(pTeam, true, 1);
 		break;
-	case 77:
+	case 76:
 		// Closer targets from Team Leader have more priority. Kill until no more targets.
 		ScriptExt::Mission_Attack(pTeam, true, 2);
 		break;
-	case 78:
-		// Threats that are far have more priority. 1 kill only (good for xx=49,0 combos)
-		ScriptExt::Mission_Attack(pTeam, false, 1);
+	case 77:
+		// Farther targets from Team Leader have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack(pTeam, true, 3);
 		break;
-	case 79:
+	case 78:
 		// Threats that are close have more priority. 1 kill only (good for xx=49,0 combos)
 		ScriptExt::Mission_Attack(pTeam, false, 0);
 		break;
-	case 80:
-		// Farther targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
-		ScriptExt::Mission_Attack(pTeam, false, 3);
+	case 79:
+		// Threats that are far have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack(pTeam, false, 1);
 		break;
-	case 81:
+	case 80:
 		// Closer targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
 		ScriptExt::Mission_Attack(pTeam, false, 2);
+		break;
+	case 81:
+		// Farther targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack(pTeam, false, 3);
 		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
