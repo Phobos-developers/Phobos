@@ -1,4 +1,5 @@
 #include <AnimClass.h>
+#include <BuildingClass.h>
 #include <TechnoClass.h>
 #include <FootClass.h>
 #include <UnitClass.h>
@@ -9,7 +10,7 @@
 #include <Utilities/Debug.h>
 
 //Replace: checking of HasExtras = > checking of (HasExtras && Shadow)
-DEFINE_HOOK(423365, Phobos_BugFixes_SHPShadowCheck, 8)
+DEFINE_HOOK(0x423365, Phobos_BugFixes_SHPShadowCheck, 0x8)
 {
 	GET(AnimClass*, pAnim, ESI);
 	return (pAnim->Type->Shadow && pAnim->HasExtras) ?
@@ -34,29 +35,31 @@ DEFINE_LJMP(0x546C23, 0x546C8B) //Phobos_BugFixes_Tileset255_RefNonMMArray
 
 // WWP's shit code! Wrong check.
 // To avoid units dying when they are already dead.
-DEFINE_HOOK(5F53AA, ObjectClass_ReceiveDamage_DyingFix, 6)
+DEFINE_HOOK(0x5F53AA, ObjectClass_ReceiveDamage_DyingFix, 0x6)
 {
+	enum { PostMortem = 0x5F583E, ContinueCheck = 0x5F53B0 };
+
 	GET(int, health, EAX);
 	GET(ObjectClass*, pThis, ESI);
 
 	if (health <= 0 || !pThis->IsAlive)
-		return 0x5F583E; // return DamageState::PostMortem
+		return PostMortem;
 
-	return 0x5F53B0; //continue vanilla check
+	return ContinueCheck;
 }
 
-DEFINE_HOOK(4D7431, FootClass_ReceiveDamage_DyingFix, 5)
+DEFINE_HOOK(0x4D7431, FootClass_ReceiveDamage_DyingFix, 0x5)
 {
 	GET(FootClass*, pThis, ESI);
 	GET(DamageState, result, EAX);
 
 	if (result != DamageState::PostMortem && (pThis->IsSinking || (!pThis->IsAttackedByLocomotor && pThis->IsCrashing)))
-    R->EAX(DamageState::PostMortem);
+		R->EAX(DamageState::PostMortem);
 
 	return 0;
 }
 
-DEFINE_HOOK(737D57, UnitClass_ReceiveDamage_DyingFix, 7)
+DEFINE_HOOK(0x737D57, UnitClass_ReceiveDamage_DyingFix, 0x7)
 {
 	GET(UnitClass*, pThis, ESI);
 	GET(DamageState, result, EAX);
@@ -69,7 +72,7 @@ DEFINE_HOOK(737D57, UnitClass_ReceiveDamage_DyingFix, 7)
 
 // Restore DebrisMaximums logic (issue #109)
 // Author: Otamaa
-DEFINE_HOOK(702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, A)
+DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, 0xA)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
@@ -117,7 +120,7 @@ DEFINE_HOOK(702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, A)
 
 // issue #112 Make FireOnce=yes work on other TechnoTypes
 // Author: Starkku
-DEFINE_HOOK(4C7518, EventClass_Execute_StopUnitDeployFire, 9)
+DEFINE_HOOK(0x4C7518, EventClass_Execute_StopUnitDeployFire, 0x9)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
@@ -128,7 +131,7 @@ DEFINE_HOOK(4C7518, EventClass_Execute_StopUnitDeployFire, 9)
 	return 0;
 }
 
-DEFINE_HOOK(73DD12, UnitClass_Mission_Unload_DeployFire, 6)
+DEFINE_HOOK(0x73DD12, UnitClass_Mission_Unload_DeployFire, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
@@ -144,4 +147,32 @@ DEFINE_HOOK(73DD12, UnitClass_Mission_Unload_DeployFire, 6)
 	}
 
 	return 0x73DD3C;
+}
+
+// issue #250: Building placement hotkey not responding
+// Author: Uranusian
+DEFINE_LJMP(0x4ABBD5, 0x4ABBD5 + 7); // DisplayClass_MouseLeftRelease_HotkeyFix
+
+DEFINE_HOOK(0x4FB2DE, HouseClass_PlaceObject_HotkeyFix, 0x6)
+{
+	GET(TechnoClass*, pObject, ESI);
+
+	pObject->ClearSidebarTabObject();
+	
+	return 0;
+}
+
+// issue #290: Undeploy building into a unit plays EVA_NewRallyPointEstablished
+// Author: secsome
+DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	GET_STACK(CellStruct*, pCell, STACK_OFFS(0x84, -0x8));
+
+	if (pThis->GetTechnoType()->UndeploysInto)
+		pThis->SetRallypoint(pCell, false);
+	else if(pThis->IsUnitFactory())
+		pThis->SetRallypoint(pCell, true);
+
+	return 0x4437AD;
 }

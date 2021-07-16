@@ -5,7 +5,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
-#include <New/Type/ShieldType.h>
+#include <New/Type/ShieldTypeClass.h>
 
 class Matrix3D;
 

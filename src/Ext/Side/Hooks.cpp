@@ -1,12 +1,12 @@
-﻿#include <ScenarioClass.h>
+#include <ScenarioClass.h>
 #include <HouseClass.h>
-#include <Themes.h>
+#include <ThemeClass.h>
 
 #include "Body.h"
 
 // ingame music switch when defeated
-DEFINE_HOOK_AGAIN(4FCB7D, HouseClass_WinLose_Theme, 5)
-DEFINE_HOOK(4FCD66, HouseClass_WinLose_Theme, 5)
+DEFINE_HOOK_AGAIN(0x4FCB7D, HouseClass_WinLose_Theme, 0x5)
+DEFINE_HOOK(0x4FCD66, HouseClass_WinLose_Theme, 0x5)
 {
 	HouseClass* pThis = HouseClass::Player;
 
@@ -16,7 +16,7 @@ DEFINE_HOOK(4FCD66, HouseClass_WinLose_Theme, 5)
 			auto themeIndex = (pThis->IsWinner) ? pData->IngameScore_WinTheme : pData->IngameScore_LoseTheme;
 
 			if (themeIndex >= 0) {
-				ThemePlayer::Instance->Play(themeIndex);
+				ThemeClass::Instance->Play(themeIndex);
 			}
 		}
 	}
