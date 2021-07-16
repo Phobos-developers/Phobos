@@ -3,6 +3,7 @@
 #include <ScriptClass.h>
 #include <ScriptTypeClass.h>
 #include <TeamClass.h>
+#include <AITriggerTypeClass.h>
 #include <HouseClass.h>
 #include <AircraftClass.h>
 #include <MapClass.h>
@@ -50,6 +51,7 @@ public:
     static void Mission_Attack(TeamClass *pTeam, bool repeatAction, int calcThreatMode);
     static TechnoClass* GreatestThreat(TechnoClass *pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy);
     static bool EvaluateObjectWithMask(TechnoClass *pTechno, int mask);
+	static bool FollowTheLeader(TeamClass* pTeam, TechnoClass* pLeader, TechnoClass* pFollower);
     
 	static ExtContainer ExtMap;
 };

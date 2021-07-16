@@ -8,6 +8,7 @@
 #include <TeamClass.h>
 #include <HouseClass.h>
 #include <ScriptClass.h>
+#include <AITriggerTypeClass.h>
 #include <Helpers/Enumerators.h>
 
 #include <Ext/TechnoType/Body.h>
@@ -161,13 +162,32 @@ public:
 			if (pFoot->BelongsToATeam())
 			{
 				auto pTeam = pFoot->Team;
+
+				auto pTeamType = pFoot->Team->Type;
+				bool found = false;
+				for (int i = 0; i < AITriggerTypeClass::Array->Count && !found; i++)
+				{
+					auto pTriggerTeam1Type = AITriggerTypeClass::Array->GetItem(i)->Team1;
+					auto pTriggerTeam2Type = AITriggerTypeClass::Array->GetItem(i)->Team2;
+
+					if (pTeamType && ((pTriggerTeam1Type && pTriggerTeam1Type == pTeamType) || (pTriggerTeam2Type && pTriggerTeam2Type == pTeamType)))
+					{
+						found = true;
+						auto pTriggerType = AITriggerTypeClass::Array->GetItem(i);
+						append("Trigger ID = %s, weights [Current, Min, Max]: %f, %f, %f", pTriggerType->ID, pTriggerType->Weight_Current, pTriggerType->Weight_Minimum, pTriggerType->Weight_Maximum);
+					}
+				}
+				display();
+
 				append("Team ID = %s, Script ID = %s, Taskforce ID = %s",
 					pTeam->Type->ID, pTeam->CurrentScript->Type->get_ID(), pTeam->Type->TaskForce->ID);
 				display();
+
 				if (pTeam->CurrentScript->idxCurrentLine >= 0)
 					append("Current Script [Line = Action, Argument]: %d = %d,%d", pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument);
 				else
 					append("Current Script [Line = Action, Argument]: %d", pTeam->CurrentScript->idxCurrentLine);
+
 				display();
 			}
 
@@ -181,9 +201,18 @@ public:
 				}
 				append("\n");
 			}
+
 			if(pType->Ammo > 0)
 				append("Ammo = (%d / %d)\n", pFoot->Ammo, pType->Ammo);
+
+			auto pTarget = abstract_cast<TechnoClass*>(pFoot->Target);
+			if (pTarget)
+			{
+				append("Current Target = %s, Distance = %d, Location = (%d, %d)\n", pTarget->GetTechnoType()->ID, (pTarget->DistanceFrom(pFoot) / 256), pTarget->GetMapCoords().X, pTarget->GetMapCoords().Y);
+			}
+
 			append("Current HP = (%d / %d)\n", pFoot->Health, pType->Strength);
+
 			auto pTechnoExt = TechnoExt::ExtMap.Find(pFoot);
 			if (auto pShieldData = pTechnoExt->Shield.get())
 			{
@@ -211,9 +240,18 @@ public:
 				}
 				append("\n");
 			}
+			
 			if (pBuilding->Type->Ammo > 0)
 				append("Ammo = (%d / %d)\n", pBuilding->Ammo, pBuilding->Type->Ammo);
+
+			auto pTarget = abstract_cast<TechnoClass*>(pBuilding->Target);
+			if (pTarget)
+			{
+				append("Current Target = %s, Distance = %d, Location = (%d, %d)\n", pTarget->GetTechnoType()->ID, (pTarget->DistanceFrom(pBuilding) / 256), pTarget->GetMapCoords().X, pTarget->GetMapCoords().Y);
+			}
+
 			append("Current HP = (%d / %d)\n", pBuilding->Health, pBuilding->Type->Strength);
+			
 			auto pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
 			if (auto pShieldData = pTechnoExt->Shield.get())
 			{

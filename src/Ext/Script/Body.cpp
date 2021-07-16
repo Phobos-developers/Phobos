@@ -284,12 +284,18 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 					// Let's reset all Team Members objective
                     auto pKillerTechnoData = TechnoExt::ExtMap.Find(pTeamUnit);
                     pKillerTechnoData->LastKillWasTeamTarget = false;
-                    pTeamUnit->SetTarget(nullptr);
-                    pTeamUnit->LastTarget = nullptr;
-                    pTeamUnit->SetFocus(nullptr); // Lets see if this works
-                    pTeamUnit->CurrentTargets.Clear(); // Lets see if this works
 
-                    pTeamUnit->QueueMission(Mission::Guard, true);
+					if (pTeamUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType)
+					{
+						                pTeamUnit->SetTarget(nullptr);
+						                pTeamUnit->LastTarget = nullptr;
+						                pTeamUnit->SetFocus(nullptr); // Lets see if this works
+						                pTeamUnit->CurrentTargets.Clear(); // Lets see if this works
+						                pTeamUnit->QueueMission(Mission::Area_Guard, true);
+					}
+
+					pTeam->QueuedFocus = nullptr;
+					pTeam->Focus = nullptr;
                 }
 
                 // This action finished
@@ -337,8 +343,8 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
     }
 
 	pLeaderUnitType = pLeaderUnit->GetTechnoType();
-    bool unitWeaponsHaveAA = false;
-    bool unitWeaponsHaveAG = false;
+    bool leaderWeaponsHaveAA = false;
+    bool leaderWeaponsHaveAG = false;
     // Note: Replace these lines when I have access to Combat_Damage() method in YRpp if that is better
     WeaponTypeClass* WeaponType1 = pLeaderUnit->Veterancy.IsElite() ?
 		pLeaderUnitType->EliteWeapon[0].WeaponType :
@@ -359,9 +365,9 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
     // Weapon check used for filtering targets.
     // Note: the Team Leader is picked for this task, be careful with leadership values in your mod
     if ((WeaponType1 && WeaponType1->Projectile->AA) || (WeaponType2 && WeaponType2->Projectile->AA))
-        unitWeaponsHaveAA = true;
+        leaderWeaponsHaveAA = true;
     if ((WeaponType1 && WeaponType1->Projectile->AG) || (WeaponType2 && WeaponType2->Projectile->AG))
-        unitWeaponsHaveAG = true;
+        leaderWeaponsHaveAG = true;
 	
     // Special case: a Leader with OpenTopped tag
     if (pLeaderUnitType->OpenTopped && pLeaderUnit->Passengers.NumPassengers > 0)
@@ -392,9 +398,9 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				// Used for filtering targets.
 				// Note: the units inside a openTopped Leader are used for this task
 				if ((passengerWeaponType1 && passengerWeaponType1->Projectile->AA) || (passengerWeaponType2 && passengerWeaponType2->Projectile->AA))
-					unitWeaponsHaveAA = true;
+					leaderWeaponsHaveAA = true;
 				if ((passengerWeaponType1 && passengerWeaponType1->Projectile->AG) || (passengerWeaponType2 && passengerWeaponType2->Projectile->AG))
-					unitWeaponsHaveAG = true;
+					leaderWeaponsHaveAG = true;
 			}
         }
     }
@@ -413,63 +419,107 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 
             for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
             {
-                if (pUnit && pUnit != selectedTarget && pUnit->Target != selectedTarget)
-                {
+				if (pUnit->IsAlive && pUnit->Health > 0 && !pUnit->InLimbo)
+				{
 					auto pUnitType = pUnit->GetTechnoType();
+					bool followerMode = false;
 
-					if (pUnitType)
+					// Should the member be treated as a Leader follower instead of an direct attacker?
+					if (pUnitType && pUnitType->WhatAmI() != AbstractType::AircraftType)
 					{
-						if (pUnitType->Underwater && pUnitType->LandTargeting == 1 && selectedTarget->GetCell()->LandType != LandType::Water) // Land not OK for the Naval unit
+						bool unitWeaponsHaveAA = false;
+						bool unitWeaponsHaveAG = false;
+						// Note: Replace these lines when I have access to Combat_Damage() method in YRpp if that is better
+						WeaponTypeClass* unitWeaponType1 = pUnit->Veterancy.IsElite() ?
+							pUnitType->EliteWeapon[0].WeaponType :
+							pUnitType->Weapon[0].WeaponType;
+						WeaponTypeClass* unitWeaponType2 = pUnit->Veterancy.IsElite() ?
+							pUnitType->EliteWeapon[0].WeaponType :
+							pUnitType->Weapon[0].WeaponType;
+						WeaponTypeClass* unitWeaponType3 = unitWeaponType1;
+						if (pUnitType->IsGattling)
 						{
-							// Naval units like Submarines are unable to target ground targets except if they have anti-ground weapons. Ignore the attack
-							pUnit->CurrentTargets.Clear();
-							pUnit->SetTarget(nullptr);
-							pUnit->SetFocus(nullptr);
-							pUnit->SetDestination(nullptr, false);
-							pUnit->QueueMission(Mission::Area_Guard, true);
-							continue;
+							unitWeaponType3 = pUnit->Veterancy.IsElite() ?
+								pUnitType->EliteWeapon[pUnit->CurrentWeaponNumber].WeaponType :
+								pUnitType->Weapon[pUnit->CurrentWeaponNumber].WeaponType;
+
+							unitWeaponType1 = unitWeaponType3;
 						}
 
-						// Aircraft hack. I hate how this game manages the aircraft missions.
-						if (pUnitType->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0 && pUnit->GetHeight() <= 0)
-						{
-							//Debug::Log("DEBUG: 1212 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
-							pUnit->SetDestination(selectedTarget, false);
-							pUnit->QueueMission(Mission::Attack, true);
-						}
+						// Weapon check used for filtering targets.
+						// Note: the Team Leader is picked for this task, be careful with leadership values in your mod
+						if ((unitWeaponType1 && unitWeaponType1->Projectile->AA) || (unitWeaponType2 && unitWeaponType2->Projectile->AA))
+							unitWeaponsHaveAA = true;
+						if ((unitWeaponType1 && unitWeaponType1->Projectile->AG) || (unitWeaponType2 && unitWeaponType2->Projectile->AG))
+							unitWeaponsHaveAG = true;
 
-						pUnit->SetTarget(selectedTarget);
-						/*
-											if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0 && pUnit->GetHeight() > 0)
-											{
-						//                        if (pUnit->GetTechnoType()->Naval) Debug::Log("DEBUG: 1010 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
-												pUnit->ClickedAction(Action::Attack, selectedTarget, 0);
-												pUnit->QueueMission(Mission::Attack, false);
-											}
-						*/
-						if (pUnit->IsEngineer())
-							pUnit->QueueMission(Mission::Capture, true);
-						else
+						if ((leaderWeaponsHaveAA && selectedTarget->IsInAir() && !unitWeaponsHaveAA) || (leaderWeaponsHaveAG && !selectedTarget->IsInAir() && !unitWeaponsHaveAG))
 						{
-							//                        if (pUnit->GetTechnoType()->Naval) Debug::Log("DEBUG: 9999 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
-													// Aircraft hack. I hate how this game manages the aircraft missions.
-							if (pUnitType->WhatAmI() != AbstractType::AircraftType)
+							followerMode = true;
+							FollowTheLeader(nullptr, pLeaderUnit, pUnit);
+						}
+					}
+
+					if (!followerMode)
+					{
+						if (pUnit && pUnit != selectedTarget && pUnit->Target != selectedTarget)
+						{
+							if (pUnitType)
 							{
-								pUnit->ClickedAction(Action::Attack, selectedTarget, false);
-								pUnit->QueueMission(Mission::Attack, true);
+								if (pUnitType->Underwater && pUnitType->LandTargeting == 1 && selectedTarget->GetCell()->LandType != LandType::Water) // Land not OK for the Naval unit
+								{
+									// Naval units like Submarines are unable to target ground targets except if they have anti-ground weapons. Ignore the attack
+									pUnit->CurrentTargets.Clear();
+									pUnit->SetTarget(nullptr);
+									pUnit->SetFocus(nullptr);
+									pUnit->SetDestination(nullptr, false);
+									pUnit->QueueMission(Mission::Area_Guard, true);
+									continue;
+								}
+
+								// Aircraft hack. I hate how this game manages the aircraft missions.
+								if (pUnitType->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0 && pUnit->GetHeight() <= 0)
+								{
+									//Debug::Log("DEBUG: 1212 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+									pUnit->SetDestination(selectedTarget, false);
+									pUnit->QueueMission(Mission::Attack, true);
+								}
+
+								if (!followerMode)
+									pUnit->SetTarget(selectedTarget);
+								/*
+													if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0 && pUnit->GetHeight() > 0)
+													{
+								//                        if (pUnit->GetTechnoType()->Naval) Debug::Log("DEBUG: 1010 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+														pUnit->ClickedAction(Action::Attack, selectedTarget, 0);
+														pUnit->QueueMission(Mission::Attack, false);
+													}
+								*/
+								if (pUnit->IsEngineer())
+									pUnit->QueueMission(Mission::Capture, true);
+								else
+								{
+									//                        if (pUnit->GetTechnoType()->Naval) Debug::Log("DEBUG: 9999 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+															// Aircraft hack. I hate how this game manages the aircraft missions.
+									if (pUnitType->WhatAmI() != AbstractType::AircraftType && !followerMode)
+									{
+										pUnit->ClickedAction(Action::Attack, selectedTarget, false);
+										pUnit->QueueMission(Mission::Attack, true);
+									}
+								}
+
+								// Tanya / Commando C4 case
+								if (pUnitType->WhatAmI() == AbstractType::InfantryType && abstract_cast<InfantryTypeClass*>(pUnitType)->C4 || pUnit->HasAbility(Ability::C4))
+									pUnit->SetDestination(selectedTarget, false);
 							}
 						}
-
-						// Tanya / Commando C4 case
-						if (pUnitType->WhatAmI() == AbstractType::InfantryType && abstract_cast<InfantryTypeClass*>(pUnitType)->C4 || pUnit->HasAbility(Ability::C4))
-							pUnit->SetDestination(selectedTarget, false);
+						else
+						{
+							//if (pUnit->GetTechnoType()->Naval) Debug::Log("DEBUG: 1313 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+							pUnit->ClickedAction(Action::Attack, selectedTarget, false);
+						}
 					}
-                }
-                else
-                {
-					//if (pUnit->GetTechnoType()->Naval) Debug::Log("DEBUG: 1313 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
-                    pUnit->ClickedAction(Action::Attack, selectedTarget, false);
-                }
+				}
             }
         }
         else
@@ -492,7 +542,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
         if (pFocus && pFocus->IsAlive
             && !pFocus->InLimbo
             && !pFocus->GetTechnoType()->Immune
-            && ((pFocus->IsInAir() && unitWeaponsHaveAA) || (!pFocus->IsInAir() && unitWeaponsHaveAG))
+            && ((pFocus->IsInAir() && leaderWeaponsHaveAA) || (!pFocus->IsInAir() && leaderWeaponsHaveAG))
             && !pFocus->Transporter
             && pFocus->IsOnMap
             && !pFocus->Absorbed
@@ -1260,3 +1310,84 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask)
     // The possible target doesn't fit in te masks
     return false;
 }
+
+// Something similar (not equal) to Script Action 10,0
+bool ScriptExt::FollowTheLeader(TeamClass *pTeam, TechnoClass* pLeader = nullptr, TechnoClass* pFollower = nullptr)
+{
+	if (pTeam && !pLeader)
+	{
+		int bestUnitLeadershipValue = -1;
+
+		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+		{
+			auto pUnitType = pUnit->GetTechnoType();
+			int unitLeadershipRating = pUnitType->LeadershipRating;
+
+			// If there are living Team Members then always exists 1 Leader.
+			if (pUnit && pUnitType && pUnit->IsAlive && pUnit->Health > 0 && !pUnit->InLimbo && pUnitType->WhatAmI() != AbstractType::AircraftType)
+			{
+				if (unitLeadershipRating > bestUnitLeadershipValue)
+				{
+					pLeader = pUnit;
+					bestUnitLeadershipValue = unitLeadershipRating;
+				}
+			}
+		}
+	}
+
+	if (!pLeader)
+	{
+		return false;
+	}
+
+	//auto const& teamStray = RulesClass::Instance->Stray;
+	auto const& teamStray = RulesClass::Instance->RelaxedStray;
+
+	if (!pFollower)
+	{
+		if (!pTeam)
+			return false;
+
+		// All the team members follow the Leader
+		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+		{
+			auto pUnitType = pUnit->GetTechnoType();
+
+			if (pUnit && pUnitType && pUnit != pLeader && pUnit->IsAlive && pUnit->Health > 0 && !pUnit->InLimbo && pUnitType->WhatAmI() != AbstractType::AircraftType)
+			{
+				if (pUnit->DistanceFrom(pLeader) > (teamStray * 256))
+				{
+					// Too far from the leader, regroup with the leader
+					pUnit->SetDestination(pLeader, false);
+					pUnit->QueueMission(Mission::Patrol, false);
+				}
+				else
+				{
+					pUnit->QueueMission(Mission::Area_Guard, false);
+				}
+			}
+		}
+	}
+	else
+	{
+		// Only 1 follower will follow the Leader
+		auto pFollowerType = pFollower->GetTechnoType();
+
+		if (pFollower && pFollowerType && pFollower != pLeader && pFollower->IsAlive && pFollower->Health > 0 && !pFollower->InLimbo && pFollowerType->WhatAmI() != AbstractType::AircraftType)
+		{
+			if (pFollower->DistanceFrom(pLeader) > (teamStray * 256))
+			{
+				// Too far from the leader, regroup with the leader
+				pFollower->SetDestination(pLeader, false);
+				pFollower->QueueMission(Mission::Patrol, false);
+			}
+			else
+			{
+				pFollower->QueueMission(Mission::Area_Guard, false);
+			}
+		}
+	}
+
+	return true;
+}
+
