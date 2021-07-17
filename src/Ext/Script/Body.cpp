@@ -592,7 +592,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 						pUnit->SetTarget(nullptr);
 						pUnit->SetFocus(nullptr);
 						pUnit->SetDestination(nullptr, false);
-						pUnit->QueueMission(Mission::Guard, true);
+						pUnit->QueueMission(Mission::Area_Guard, true);
 						//if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType) Debug::Log("DEBUG: 6666 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
 						pUnit->ClickedAction(Action::Attack, pFocus, false);
 						bForceNextAction = true;
@@ -612,7 +612,10 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 							if (pUnit->Ammo > 0)
 								pUnit->ClickedAction(Action::Attack, pFocus, false);
 							else
+							{
 								pUnit->Mission_Enter();
+								pTeam->GuardAreaTimer.Start(20);
+							}
 						}
 					}
 
@@ -639,6 +642,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 								pUnit->SetFocus(pUnit);
 								pUnit->LastTarget = nullptr;
 								pUnit->SetTarget(pUnit);
+								pTeam->GuardAreaTimer.Start(20);
 							}
 						}
 					}
@@ -661,7 +665,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
                 pUnit->SetTarget(nullptr);
                 pUnit->SetFocus(nullptr);
                 pUnit->SetDestination(nullptr, true);
-                pUnit->QueueMission(Mission::Guard, false);
+                pUnit->QueueMission(Mission::Area_Guard, false);
             }
 
         }
