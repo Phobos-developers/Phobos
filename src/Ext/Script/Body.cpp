@@ -76,13 +76,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		break;
 	case 82:
 		ScriptExt::DecreaseCurrentTriggerWeight(pTeam, -1);
-		// The new Mission Follow needs more test or remove it if that idea doesn't work
-		//ScriptExt::MissionFollow(pTeam);
 		break;
 	case 83:
 		ScriptExt::IncreaseCurrentTriggerWeight(pTeam, -1);
-		// The new Mission Follow needs more test or remove it if that idea doesn't work
-		//ScriptExt::MissionFollow(pTeam);
 		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
@@ -487,27 +483,18 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 								// Aircraft hack. I hate how this game manages the aircraft missions.
 								if (pUnitType->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0 && pUnit->GetHeight() <= 0)
 								{
-									//Debug::Log("DEBUG: 1212 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
 									pUnit->SetDestination(selectedTarget, false);
 									pUnit->QueueMission(Mission::Attack, true);
 								}
 
 								if (!followerMode)
 									pUnit->SetTarget(selectedTarget);
-								/*
-													if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0 && pUnit->GetHeight() > 0)
-													{
-								//                        if (pUnit->GetTechnoType()->Naval) Debug::Log("DEBUG: 1010 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
-														pUnit->ClickedAction(Action::Attack, selectedTarget, 0);
-														pUnit->QueueMission(Mission::Attack, false);
-													}
-								*/
+								
 								if (pUnit->IsEngineer())
 									pUnit->QueueMission(Mission::Capture, true);
 								else
 								{
-									//                        if (pUnit->GetTechnoType()->Naval) Debug::Log("DEBUG: 9999 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
-															// Aircraft hack. I hate how this game manages the aircraft missions.
+									// Aircraft hack. I hate how this game manages the aircraft missions.
 									if (pUnitType->WhatAmI() != AbstractType::AircraftType && !followerMode)
 									{
 										pUnit->ClickedAction(Action::Attack, selectedTarget, false);
@@ -522,7 +509,6 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 						}
 						else
 						{
-							//if (pUnit->GetTechnoType()->Naval) Debug::Log("DEBUG: 1313 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
 							pUnit->ClickedAction(Action::Attack, selectedTarget, false);
 						}
 					}
@@ -575,16 +561,6 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 						&& (pUnitType->WhatAmI() == AbstractType::AircraftType && abstract_cast<AircraftTypeClass*>(pUnitType)->AirportBound))
 					{
 						pUnit->SetTarget(pFocus);
-						/*                    if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0 && pUnit->Target != pFocus)
-											{
-						 //                       if (pUnit->GetTechnoType()->Naval) Debug::Log("DEBUG: 8888 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
-												pUnit->ClickedAction(Action::Attack, pFocus, 0);
-											}*/
-											/*                   if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0 && pUnit->GetHeight() <= 0 && pUnit->Target != pFocus)
-															   {
-																   //                        if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType)  Debug::Log("DEBUG: 7777 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
-																   pUnit->ClickedAction(Action::Attack, pFocus, 0);
-															   }*/
 					}
 
 					if (pUnitType->Underwater
@@ -597,8 +573,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 						pUnit->SetFocus(nullptr);
 						pUnit->SetDestination(nullptr, false);
 						pUnit->QueueMission(Mission::Guard, true);
-						//if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType) Debug::Log("DEBUG: 6666 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
-						pUnit->ClickedAction(Action::Attack, pFocus, false);
+						
 						bForceNextAction = true;
 						continue;
 					}
@@ -609,8 +584,6 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 						&& pUnit->GetCurrentMission() != Mission::Attack
 						&& pUnit->GetCurrentMission() != Mission::Enter)
 					{
-						//pUnit->QueueMission(Mission::Attack, false);
-						//if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType) Debug::Log("DEBUG: 1111 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>",pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
 						if (pUnitType->WhatAmI() == AbstractType::AircraftType)
 						{
 							if (pUnit->Ammo > 0)
@@ -620,22 +593,16 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 						}
 					}
 
-					//Debug::Log("DEBUG: Unit Focus updated!\n");
-					//if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType) Debug::Log("DEBUG: 3333 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID, pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
-					//pUnit->ClickedAction(Action::Attack, pFocus, 0);
-					//pUnit->SetTarget(pFocus);
-
 					//pUnit->SetDestination(pFocus, false);
 					if (pUnitType->WhatAmI() == AbstractType::AircraftType)
 					{
 						if (pUnit->Ammo > 0 && pUnit->GetCurrentMission() != Mission::Attack)
 						{
-							//if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType) Debug::Log("DEBUG: 3131 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID, pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+							
 							pUnit->Mission_Attack();
 						}
 						else
 						{
-							//if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType) Debug::Log("DEBUG: 3232 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID, pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
 							if (pUnit->Ammo <= 0)
 							{
 								pUnit->ForceMission(Mission::Enter);
@@ -659,7 +626,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				//Debug::Log("DEBUG: Clearing Team Focus!\n");
 				pTeam->Focus = nullptr;
 				pTeam->QueuedFocus = nullptr;
-				//if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType) Debug::Log("DEBUG: 5555 [%s] from [%s] [%s], line: %d = %d,%d \n", pUnit->GetTechnoType()->ID ? pUnit->GetTechnoType()->ID : "<NULL>", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+				
 				pUnit->ClickedAction(Action::Attack, pFocus, false);
 				pUnit->CurrentTargets.Clear();
 				pUnit->SetTarget(nullptr);
