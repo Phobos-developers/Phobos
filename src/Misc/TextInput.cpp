@@ -3,33 +3,32 @@
 
 DEFINE_LJMP(0x55E484, 0x55E48D); // Allow message entry in Skirmish
 
-wchar_t ToCyrillic(wchar_t result)
+UINT GetCodepage()
 {
-	int lang = LOWORD(GetKeyboardLayout(NULL));
+	char szLCData[6 + 1];
+	WORD lang = LOWORD(GetKeyboardLayout(NULL));
+	LCID locale = MAKELCID(lang, SORT_DEFAULT);
+	GetLocaleInfoA(locale, LOCALE_IDEFAULTANSICODEPAGE, szLCData, _countof(szLCData));
 
-	if (lang == 0x0419 || lang == 0x0422)
-	{
-		if (result >= 0xC0 && result <= 0xFF) // A-я
-			result += 0x350;
+	return atoi(szLCData);
+}
 
-		if (result == 0xA8) // Ё
-			result = 0x401;
-
-		if (result == 0xB8) // ё
-			result = 0x451;
-	}
-
+wchar_t LocalizeSymbol(char character)
+{
+	wchar_t result;
+	UINT codepage = GetCodepage();
+	MultiByteToWideChar(codepage, MB_USEGLYPHCHARS, &character, 1, &result, 1);
 	return result;
 }
 
 DEFINE_HOOK(0x5D46C7, MessageListClass_Input, 5)
 {
-	R->EBX(ToCyrillic(R->EBX()));
+	R->EBX<wchar_t>(LocalizeSymbol(R->EBX<char>()));
 	return 0;
 }
 
 DEFINE_HOOK(0x61526C, WWUI__NewEditCtrl, 5)
 {
-	R->EDI(ToCyrillic(R->EDI()));
+	R->EDI<wchar_t>(LocalizeSymbol(R->EDI<char>()));
 	return 0;
 }
