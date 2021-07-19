@@ -3,6 +3,12 @@
 
 DEFINE_LJMP(0x55E484, 0x55E48D); // Allow message entry in Skirmish
 
+wchar_t* IMEBuffer = reinterpret_cast<wchar_t*>(0xB730EC);
+// HIMC& IMEContext = *reinterpret_cast<HIMC*>(0xB7355C);
+// wchar_t* IMECompositionString = reinterpret_cast<wchar_t*>(0xB73318);
+// int& IMECompositionStringLength = *reinterpret_cast<int*>(0xB73564);
+// int& IMECompositionCursorPos = *reinterpret_cast<int*>(0xB73568);
+
 UINT GetCodepage()
 {
 	char szLCData[6 + 1];
@@ -23,12 +29,25 @@ wchar_t LocalizeSymbol(char character)
 
 DEFINE_HOOK(0x5D46C7, MessageListClass_Input, 5)
 {
-	R->EBX<wchar_t>(LocalizeSymbol(R->EBX<char>()));
+	if (!IMEBuffer[0])
+		R->EBX<wchar_t>(LocalizeSymbol(R->EBX<char>()));
+	
 	return 0;
 }
 
 DEFINE_HOOK(0x61526C, WWUI__NewEditCtrl, 5)
 {
-	R->EDI<wchar_t>(LocalizeSymbol(R->EDI<char>()));
+	if (!IMEBuffer[0])
+		R->EDI<wchar_t>(LocalizeSymbol(R->EDI<char>()));
+
 	return 0;
 }
+
+//DEFINE_HOOK(0x777F15, IMEUpdateCompositionString, 7)
+//{
+//	IMECompositionString[0] = 0;
+//	ImmGetCompositionStringW(IMEContext, GCS_COMPSTR, IMECompositionString, 256);
+//
+//	return 0;
+//}
+
