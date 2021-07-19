@@ -44,17 +44,18 @@ public:
 		~ExtContainer();
 	};
 
-	static void ProcessAction(TeamClass * pTeam);
-	static void ExecuteTimedAreaGuardAction(TeamClass * pTeam);
-	static void LoadIntoTransports(TeamClass * pTeam);
+	static void ProcessAction(TeamClass* pTeam);
+	static void ExecuteTimedAreaGuardAction(TeamClass* pTeam);
+	static void LoadIntoTransports(TeamClass* pTeam);
 	static void WaitUntillFullAmmoAction(TeamClass * pTeam);
-    static void Mission_Attack(TeamClass *pTeam, bool repeatAction, int calcThreatMode);
-    static TechnoClass* GreatestThreat(TechnoClass *pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy);
-    static bool EvaluateObjectWithMask(TechnoClass *pTechno, int mask);
+    static void Mission_Attack(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
+    static TechnoClass* GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy);
+    static bool EvaluateObjectWithMask(TechnoClass* pTechno, int mask);
 	static bool FollowTheLeader(TeamClass* pTeam, TechnoClass* pLeader, TechnoClass* pFollower);
 	static void DecreaseCurrentTriggerWeight(TeamClass* pTeam, double modifier);
 	static void IncreaseCurrentTriggerWeight(TeamClass* pTeam, double modifier);
 	static void MissionFollow(TeamClass * pTeam);
+	static void Mission_Attack_List(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
 
 	static ExtContainer ExtMap;
 };

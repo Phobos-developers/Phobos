@@ -58,12 +58,45 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	if (!pData)
 		return;
 
+	const char* sectionAITargetType = "AITargetType";
+
 	INI_EX exINI(pINI);
 
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
 	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
+
+	
+	int itemsCount = pINI->GetKeyCount(sectionAITargetType);
+	Debug::Log("DEBUG: AITargetTypeLists Lines: [%d]\n", itemsCount);
+	for (int i = 0; i < itemsCount; ++i)
+	{
+		pINI->ReadString(sectionAITargetType, pINI->GetKeyName(sectionAITargetType, i), "", Phobos::readBuffer);
+		Debug::Log("DEBUG: [%s][%d] = %s\n", sectionAITargetType, i, Phobos::readBuffer);
+		//lineBuffer.Read(exINI, sectionAITargetType, (char*)(i));
+		//ParseList<char*>(lineBuffer, pINI, sectionAITargetType, (char*)(i));
+		DynamicVectorClass<TechnoTypeClass*> objectsList;
+
+		char* context = nullptr;
+		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			TechnoTypeClass* buffer;
+			if (Parser<TechnoTypeClass*>::TryParse(cur, &buffer))
+			{
+				objectsList.AddItem(buffer);
+			}
+			else
+				if (!std::is_pointer<char*>() || !INIClass::IsBlank(cur))
+					Debug::INIParseFailed(sectionAITargetType, (char*)(i), cur);
+		}
+		AITargetTypeLists.AddItem(objectsList);
+		Debug::Log("DEBUG: Line Elements: [%d]\n", AITargetTypeLists[i].Count);
+		objectsList.Clear();
+		//auto objectsList = ;
+		//Parse(objectsList, pINI, section, "BuildTech");
+		//objectsLists.AddItem(pINI->ReadStringtableEntry->ReadString(sectionAITargetType, i, "", Ares::readBuffer))
+	}
 }
 
 // this runs between the before and after type data loading methods for rules ini
@@ -113,6 +146,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_Shield_Buildings)
 		.Process(this->RadApplicationDelay_Building)
 		.Process(this->MissingCameo)
+		.Process(AITargetTypeLists)
 		;
 }
 

@@ -28,6 +28,7 @@ public:
 		Valueable<Vector3D<int>> Pips_Shield_Buildings;
 		Valueable<int> RadApplicationDelay_Building;
 		PhobosFixedString<32u> MissingCameo;
+		DynamicVectorClass<DynamicVectorClass<TechnoTypeClass*>> AITargetTypeLists;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Pips_Shield({ -1,-1,-1 })

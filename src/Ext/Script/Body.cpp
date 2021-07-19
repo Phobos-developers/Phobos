@@ -44,35 +44,35 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		break;
 	case 74:
 		// Threats that are close have more priority. Kill until no more targets.
-		ScriptExt::Mission_Attack(pTeam, true, 0);
+		ScriptExt::Mission_Attack(pTeam, true, 0, -1);
 		break;
 	case 75:
 		// Threats that are far have more priority. Kill until no more targets.
-		ScriptExt::Mission_Attack(pTeam, true, 1);
+		ScriptExt::Mission_Attack(pTeam, true, 1, -1);
 		break;
 	case 76:
 		// Closer targets from Team Leader have more priority. Kill until no more targets.
-		ScriptExt::Mission_Attack(pTeam, true, 2);
+		ScriptExt::Mission_Attack(pTeam, true, 2, -1);
 		break;
 	case 77:
 		// Farther targets from Team Leader have more priority. Kill until no more targets.
-		ScriptExt::Mission_Attack(pTeam, true, 3);
+		ScriptExt::Mission_Attack(pTeam, true, 3, -1);
 		break;
 	case 78:
 		// Threats that are close have more priority. 1 kill only (good for xx=49,0 combos)
-		ScriptExt::Mission_Attack(pTeam, false, 0);
+		ScriptExt::Mission_Attack(pTeam, false, 0, -1);
 		break;
 	case 79:
 		// Threats that are far have more priority. 1 kill only (good for xx=49,0 combos)
-		ScriptExt::Mission_Attack(pTeam, false, 1);
+		ScriptExt::Mission_Attack(pTeam, false, 1, -1);
 		break;
 	case 80:
 		// Closer targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
-		ScriptExt::Mission_Attack(pTeam, false, 2);
+		ScriptExt::Mission_Attack(pTeam, false, 2, -1);
 		break;
 	case 81:
 		// Farther targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
-		ScriptExt::Mission_Attack(pTeam, false, 3);
+		ScriptExt::Mission_Attack(pTeam, false, 3, -1);
 		break;
 	case 82:
 		ScriptExt::DecreaseCurrentTriggerWeight(pTeam, -1);
@@ -80,6 +80,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 83:
 		ScriptExt::IncreaseCurrentTriggerWeight(pTeam, -1);
 		break;
+	//case 84:
+		//ScriptExt::Mission_Attack_List(pTeam, false, 2);
+		//break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
@@ -231,7 +234,7 @@ void ScriptExt::WaitUntillFullAmmoAction(TeamClass* pTeam)
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int calcThreatMode = 0)
+void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int calcThreatMode = 0, int attackAITargetType = -1)
 {
 	auto pScript = pTeam->CurrentScript;
 	int scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument; // This is the target type
@@ -1509,4 +1512,37 @@ void ScriptExt::IncreaseCurrentTriggerWeight(TeamClass* pTeam, double modifier =
 	// This action finished
 	pTeam->StepCompleted = true;
 	//pTeam->CurrentScript->NextAction();
+}
+
+void ScriptExt::Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType)
+{
+	// We'll asume that the Modder used an existing Action parameter that is a Key in the [AITargetType] section
+	/*
+	//CCINIClass:;
+	int itemsCount = pINI->GetKeyCount("AITargetType");
+	TypeList<TechnoTypeClass*> objectsList;
+	if (itemsCount > 0)
+	{
+		INI_EX& parser;
+		if (pINI->ReadString("AITargetType", actionParameter, "", Ares::readBuffer))
+		{
+			Debug::Log("DEBUG: Reading values of line [AITargetType][%d]\n", actionParameter);
+			objectsList =
+				ParseList(objectsList, pINI, "AITargetType", actionParameter);
+		}
+		else
+		{
+			Debug::Log("DEBUG: Impossible to read values in line [AITargetType][%d]\n", actionParameter);
+		}
+	}
+	else
+	{
+		Debug::Log("DEBUG: No elements in [AITargetType] section.\n");
+	}
+	*/
+	if (attackAITargetType < 0)
+		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	if (RulesExt::Global()->AITargetTypeLists.Count > 0 && RulesExt::Global()->AITargetTypeLists.GetItem(attackAITargetType).Count > 0)
+		Mission_Attack(pTeam, true, 0, attackAITargetType);
 }
