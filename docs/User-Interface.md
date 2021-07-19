@@ -96,6 +96,17 @@ Sidebar.GDIPositions= ; boolean
                       ; no for others
 ```
 
+### Cameo Sorting
+
+- You can now specify Cameo Priority for any TechnoType/SuperWeaponType. Vanilla sorting rules are [here](https://modenc.renegadeprojects.com/Cameo_Sorting).
+  - The Cameo Priority is checked just before evevything vanilla. Greater `CameoPriority` wins.
+
+In `rulesmd.ini`:
+```ini
+[SOMENAME]             ; TechnoType/SuperWeaponType
+CameoPriority=0        ; integer
+```
+
 ### Custom Missing Cameo (`XXICON.SHP`)
 
 - You can now specify any SHP/PCX file as XXICON.SHP for missing cameo.
