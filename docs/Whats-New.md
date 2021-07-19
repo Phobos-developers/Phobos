@@ -44,7 +44,7 @@ Vanilla fixes:
 - TBD
 
 Phobos fixes:
-- TBD
+- Fixed the critical damage logic not functioning properly (by Uranusian)
 
 ### 0.2.1.1
 
