@@ -36,12 +36,14 @@ In `FAData.ini`:
 ### TBD
 
 New:
+- LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)
 - Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
 - Customizable cameo sorting priority (by Uranusian)
 - Customizable harvester ore gathering animation (by secsome, Uranusian)
 
+
 Vanilla fixes:
-- TBD
+- Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
 
 Phobos fixes:
 - TBD

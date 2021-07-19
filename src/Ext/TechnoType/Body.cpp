@@ -2,7 +2,6 @@
 
 #include <TechnoTypeClass.h>
 #include <StringTable.h>
-#include <Matrix3D.h>
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
@@ -115,10 +114,37 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
 
-	//Art tags
+	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
 
-	this->TurretOffset.Read(exArtINI, pThis->ImageFile, "TurretOffset");
+	if (strlen(pThis->ImageFile))
+		pSection = pThis->ImageFile;
+
+	this->TurretOffset.Read(exArtINI, pSection, "TurretOffset");
+
+	char tempBuffer[32];
+	for (size_t i = 0; i <= this->LaserTrailData.size(); ++i)
+	{
+		Nullable<LaserTrailTypeClass*> trail;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.Type", i);
+		trail.Read(exArtINI, pSection, tempBuffer);
+
+		if (i == this->LaserTrailData.size() && !trail.isset())
+			break;
+
+		Valueable<CoordStruct> flh;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.FLH", i);
+		flh.Read(exArtINI, pSection, tempBuffer);
+
+		Valueable<bool> isOnTurret;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.IsOnTurret", i);
+		isOnTurret.Read(exArtINI, pSection, tempBuffer);
+
+		if (i == this->LaserTrailData.size())
+			this->LaserTrailData.push_back({ trail, flh, isOnTurret });
+		else
+			this->LaserTrailData[i] = { trail, flh, isOnTurret };
+	}
 }
 
 template <typename T>
@@ -156,6 +182,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OreGathering_Anims)
 		.Process(this->OreGathering_Tiberiums)
 		.Process(this->OreGathering_FramesPerDir)
+		.Process(this->LaserTrailData)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -168,6 +195,26 @@ void TechnoTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<TechnoTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
+}
+
+bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<LaserTrailDataEntry*>(this)->Serialize(stm);
+}
+
+template <typename T>
+bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Serialize(T& stm)
+{
+	return stm
+		.Process(this->Type)
+		.Process(this->FLH)
+		.Process(this->IsOnTurret)
+		.Success();
 }
 
 // =============================
