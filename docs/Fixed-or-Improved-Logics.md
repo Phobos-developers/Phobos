@@ -54,16 +54,16 @@ ChronoDelay=            ; integer, delay after teleport for chronosphere
 
 ```
 
-### Cusomizable Harvester Ore Gather Animation
+### Customizable harvester ore gathering animation
 
-- You can now specify which anim should be drawn when harvester gathering each type of ores.
+- You can now specify which anim should be drawn when a harvester of specified type is gathering specified type of ore.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEHARVESTER]             ; Harvester
-OreGath.Anims=              ; list of animations
-OreGath.FramesPerDir=15     ; list of integers
-OreGath.TiberiumTypes=      ; list of TiberiumType IDs, if not set, always display the first
+[SOMETECHNO]                     ; TechnoType
+OreGathering.Anims=              ; list of animations
+OreGathering.FramesPerDir=15     ; list of integers
+OreGathering.Tiberiums=0         ; list of Tiberium IDs
 ```
 
 ### Kill spawns on low power

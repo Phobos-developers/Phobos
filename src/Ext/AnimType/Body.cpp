@@ -22,9 +22,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 // =============================
 // container
 
-AnimTypeExt::ExtContainer::ExtContainer() : Container("AnimTypeClass")
-{
-}
+AnimTypeExt::ExtContainer::ExtContainer() : Container("AnimTypeClass") { }
 
 AnimTypeExt::ExtContainer::~ExtContainer() = default;
 

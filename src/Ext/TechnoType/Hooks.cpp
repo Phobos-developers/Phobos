@@ -107,7 +107,7 @@ DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 	GET(int, nFacing, EDI);
 	GET_STACK(RectangleStruct*, pBounds, STACK_OFFS(0x50, -0x8));
 	LEA_STACK(Point2D*, pLocation, STACK_OFFS(0x50, 0x18));
-	GET_STACK(int, Brightness, STACK_OFFS(0x50, -0x4));
+	GET_STACK(int, nBrightness, STACK_OFFS(0x50, -0x4));
 
 	auto const pType = pThis->GetTechnoType();
 	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
@@ -117,11 +117,11 @@ DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 	int idxFrame;
 
 	auto idxTiberium = pThis->GetCell()->GetContainedTiberiumIndex();
-	auto idxArray = pData->OreGath_TiberiumTypes.size() > 0 ? pData->OreGath_TiberiumTypes.IndexOf(idxTiberium) : 0;
+	auto idxArray = pData->OreGathering_Tiberiums.size() > 0 ? pData->OreGathering_Tiberiums.IndexOf(idxTiberium) : 0;
 	if (idxTiberium != -1 && idxArray != -1)
 	{
-		auto const pAnimType = pData->OreGath_Anims.size() > 0 ? pData->OreGath_Anims[idxArray] : nullptr;
-		auto const nFramesPerFacing = pData->OreGath_FramesPerDir.size() > 0 ? pData->OreGath_FramesPerDir[idxArray] : 15;
+		auto const pAnimType = pData->OreGathering_Anims.size() > 0 ? pData->OreGathering_Anims[idxArray] : nullptr;
+		auto const nFramesPerFacing = pData->OreGathering_FramesPerDir.size() > 0 ? pData->OreGathering_FramesPerDir[idxArray] : 15;
 		auto const pAnimExt = AnimTypeExt::ExtMap.Find(pAnimType);
 		if (pAnimType)
 		{
@@ -139,11 +139,11 @@ DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 	DSurface::Temp->DrawSHP(
 		pDrawer, pSHP, idxFrame, pLocation, pBounds,
 		BlitterFlags::Flat | BlitterFlags::Alpha | BlitterFlags::Centered,
-		0, pThis->GetZAdjustment() - 2, ZGradientDescIndex::Flat, Brightness,
+		0, pThis->GetZAdjustment() - 2, ZGradientDescIndex::Flat, nBrightness,
 		0, nullptr, 0, 0, 0
 	);
 
-	R->EBP(Brightness);
+	R->EBP(nBrightness);
 	R->EBX(pBounds);
 
 	return 0x73D28C;
