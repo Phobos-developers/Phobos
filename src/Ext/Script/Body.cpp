@@ -80,9 +80,38 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 83:
 		ScriptExt::IncreaseCurrentTriggerWeight(pTeam, -1);
 		break;
-	//case 84:
-		//ScriptExt::Mission_Attack_List(pTeam, false, 2);
-		//break;
+	case 84:
+		// Threats specific targets that are close have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack_List(pTeam, true, 0, -1);
+		break;
+	case 85:
+		// Threats specific targets that are far have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack_List(pTeam, true, 1, -1);
+		break;
+	case 86:
+		// Closer specific targets targets from Team Leader have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack_List(pTeam, true, 2, -1);
+		break;
+	case 87:
+		// Farther specific targets targets from Team Leader have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack_List(pTeam, true, 3, -1);
+		break;
+	case 88:
+		// Threats specific targets that are close have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack_List(pTeam, false, 0, -1);
+		break;
+	case 89:
+		// Threats specific targets that are far have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack_List(pTeam, false, 1, -1);
+		break;
+	case 90:
+		// Closer specific targets targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack_List(pTeam, false, 2, -1);
+		break;
+	case 91:
+		// Farther specific targets targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack_List(pTeam, false, 3, -1);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
@@ -250,9 +279,6 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	// When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
 	if (pTeam->GuardAreaTimer.TimeLeft != 0 || pTeam->GuardAreaTimer.InProgress())
 	{
-		auto pScript = pTeam->CurrentScript;
-		int scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
-
 		pTeam->GuardAreaTimer.TimeLeft--;
 
 		if (pTeam->GuardAreaTimer.TimeLeft == 0)
@@ -288,8 +314,8 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				for (auto pTeamUnit = pTeam->FirstUnit; pTeamUnit; pTeamUnit = pTeamUnit->NextTeamMember)
 				{
 					// Let's reset all Team Members objective
-					auto pKillerTechnoData = TechnoExt::ExtMap.Find(pTeamUnit);
-					pKillerTechnoData->LastKillWasTeamTarget = false;
+					auto pKillerTeamUnitData = TechnoExt::ExtMap.Find(pTeamUnit);
+					pKillerTeamUnitData->LastKillWasTeamTarget = false;
 
 					if (pTeamUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType)
 					{
@@ -416,7 +442,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	{
 		int targetMask = scriptArgument;
 
-		selectedTarget = GreatestThreat(pLeaderUnit, targetMask, calcThreatMode, enemyHouse);
+		selectedTarget = GreatestThreat(pLeaderUnit, targetMask, calcThreatMode, enemyHouse, attackAITargetType);
 
 		if (selectedTarget)
 		{
@@ -428,93 +454,50 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				if (pUnit->IsAlive && pUnit->Health > 0 && !pUnit->InLimbo)
 				{
 					auto pUnitType = pUnit->GetTechnoType();
-					bool followerMode = false;
 
-					// Should the member be treated as a Leader follower instead of an direct attacker?
-					if (pUnitType && pUnitType->WhatAmI() != AbstractType::AircraftType)
+					if (pUnit && pUnitType && pUnit != selectedTarget && pUnit->Target != selectedTarget)
 					{
-						bool unitWeaponsHaveAA = false;
-						bool unitWeaponsHaveAG = false;
-						// Note: Replace these lines when I have access to Combat_Damage() method in YRpp if that is better
-						WeaponTypeClass* unitWeaponType1 = pUnit->Veterancy.IsElite() ?
-							pUnitType->EliteWeapon[0].WeaponType :
-							pUnitType->Weapon[0].WeaponType;
-						WeaponTypeClass* unitWeaponType2 = pUnit->Veterancy.IsElite() ?
-							pUnitType->EliteWeapon[0].WeaponType :
-							pUnitType->Weapon[0].WeaponType;
-						WeaponTypeClass* unitWeaponType3 = unitWeaponType1;
-						if (pUnitType->IsGattling)
+						if (pUnitType->Underwater && pUnitType->LandTargeting == 1 && selectedTarget->GetCell()->LandType != LandType::Water) // Land not OK for the Naval unit
 						{
-							unitWeaponType3 = pUnit->Veterancy.IsElite() ?
-								pUnitType->EliteWeapon[pUnit->CurrentWeaponNumber].WeaponType :
-								pUnitType->Weapon[pUnit->CurrentWeaponNumber].WeaponType;
-
-							unitWeaponType1 = unitWeaponType3;
+							// Naval units like Submarines are unable to target ground targets except if they have anti-ground weapons. Ignore the attack
+							pUnit->CurrentTargets.Clear();
+							pUnit->SetTarget(nullptr);
+							pUnit->SetFocus(nullptr);
+							pUnit->SetDestination(nullptr, false);
+							pUnit->QueueMission(Mission::Area_Guard, true);
+							continue;
 						}
 
-						// Weapon check used for filtering targets.
-						// Note: the Team Leader is picked for this task, be careful with leadership values in your mod
-						if ((unitWeaponType1 && unitWeaponType1->Projectile->AA) || (unitWeaponType2 && unitWeaponType2->Projectile->AA))
-							unitWeaponsHaveAA = true;
-						if ((unitWeaponType1 && unitWeaponType1->Projectile->AG) || (unitWeaponType2 && unitWeaponType2->Projectile->AG))
-							unitWeaponsHaveAG = true;
-
-						if ((leaderWeaponsHaveAA && selectedTarget->IsInAir() && !unitWeaponsHaveAA) || (leaderWeaponsHaveAG && !selectedTarget->IsInAir() && !unitWeaponsHaveAG))
+						// Aircraft hack. I hate how this game manages the aircraft missions.
+						if (pUnitType->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0 && pUnit->GetHeight() <= 0)
 						{
-							followerMode = true;
-							FollowTheLeader(nullptr, pLeaderUnit, pUnit);
+							pUnit->SetDestination(selectedTarget, false);
+							pUnit->QueueMission(Mission::Attack, true);
 						}
-					}
 
-					if (!followerMode)
-					{
-						if (pUnit && pUnit != selectedTarget && pUnit->Target != selectedTarget)
-						{
-							if (pUnitType)
-							{
-								if (pUnitType->Underwater && pUnitType->LandTargeting == 1 && selectedTarget->GetCell()->LandType != LandType::Water) // Land not OK for the Naval unit
-								{
-									// Naval units like Submarines are unable to target ground targets except if they have anti-ground weapons. Ignore the attack
-									pUnit->CurrentTargets.Clear();
-									pUnit->SetTarget(nullptr);
-									pUnit->SetFocus(nullptr);
-									pUnit->SetDestination(nullptr, false);
-									pUnit->QueueMission(Mission::Area_Guard, true);
-									continue;
-								}
+						pUnit->SetTarget(selectedTarget);
 
-								// Aircraft hack. I hate how this game manages the aircraft missions.
-								if (pUnitType->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0 && pUnit->GetHeight() <= 0)
-								{
-									pUnit->SetDestination(selectedTarget, false);
-									pUnit->QueueMission(Mission::Attack, true);
-								}
-
-								if (!followerMode)
-									pUnit->SetTarget(selectedTarget);
-								
-								if (pUnit->IsEngineer())
-									pUnit->QueueMission(Mission::Capture, true);
-								else
-								{
-									// Aircraft hack. I hate how this game manages the aircraft missions.
-									if (pUnitType->WhatAmI() != AbstractType::AircraftType && !followerMode)
-									{
-										pUnit->ClickedAction(Action::Attack, selectedTarget, false);
-										pUnit->QueueMission(Mission::Attack, true);
-									}
-								}
-
-								// Tanya / Commando C4 case
-								if (pUnitType->WhatAmI() == AbstractType::InfantryType && abstract_cast<InfantryTypeClass*>(pUnitType)->C4 || pUnit->HasAbility(Ability::C4))
-									pUnit->SetDestination(selectedTarget, false);
-							}
-						}
+						if (pUnit->IsEngineer())
+							pUnit->QueueMission(Mission::Capture, true);
 						else
 						{
-							pUnit->ClickedAction(Action::Attack, selectedTarget, false);
+							// Aircraft hack. I hate how this game manages the aircraft missions.
+							if (pUnitType->WhatAmI() != AbstractType::AircraftType)
+							{
+								pUnit->ClickedAction(Action::Attack, selectedTarget, false);
+								pUnit->QueueMission(Mission::Attack, true);
+							}
 						}
+
+						// Tanya / Commando C4 case
+						if (pUnitType->WhatAmI() == AbstractType::InfantryType && abstract_cast<InfantryTypeClass*>(pUnitType)->C4 || pUnit->HasAbility(Ability::C4))
+							pUnit->SetDestination(selectedTarget, false);
 					}
+					else
+					{
+						pUnit->ClickedAction(Action::Attack, selectedTarget, false);
+					}
+
 				}
 			}
 		}
@@ -652,11 +635,10 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	}
 }
 
-TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int calcThreatMode = 0, HouseClass* onlyTargetThisHouseEnemy = nullptr)
+TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int calcThreatMode = 0, HouseClass* onlyTargetThisHouseEnemy = nullptr, int attackAITargetType = -1)
 {
 	TechnoClass *bestObject = nullptr;
 	int bestVal = -1;
-	int zone = -1;
 
 	bool unitWeaponsHaveAA = false;
 	bool unitWeaponsHaveAG = false;
@@ -757,18 +739,18 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 		{
 			int value = 0;
 			//Debug::Log("DEBUG: Possible candidate!!! Go to EvaluateObjectWithMask check.\n");
-			if (EvaluateObjectWithMask(object, method))
+			if (EvaluateObjectWithMask(object, method, attackAITargetType))
 			{
 				CellStruct newCell;
-				newCell.X = object->Location.X;
-				newCell.Y = object->Location.Y;
+				newCell.X = (short)object->Location.X;
+				newCell.Y = (short)object->Location.Y;
 
 				bool isGoodTarget = false;
 				if (calcThreatMode == 0)
 				{
 					// Threat affected by distance [recommended default]
 					// Is this object very FAR? then LESS THREAT against pTechno. More CLOSER? MORE THREAT for pTechno
-					int objectThreatValue = objectType->ThreatPosed;
+					double objectThreatValue = objectType->ThreatPosed;
 					int threatMultiplier = 100000;
 
 					if (objectType->SpecialThreatValue > 0)
@@ -841,7 +823,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 	return nullptr;
 }
 
-bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask)
+bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attackAITargetType = -1)
 {
 	if (!pTechno)
 		return false;
@@ -857,6 +839,21 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask)
 	auto const& BuildTech = RulesClass::Instance->BuildTech;
 	auto const& BaseUnit = RulesClass::Instance->BaseUnit;
 	int nSuperWeapons = 0;
+
+	// Special case: validate target if is part of a technos list in [AITargetType] section
+	if (attackAITargetType >= 0 && RulesExt::Global()->AITargetTypeLists.Count > 0)
+	{
+		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypeLists.GetItem(attackAITargetType);
+		
+		for (int i = 0; i < objectsList.Count; i++)
+		{
+			if (objectsList.GetItem(i) == pTechnoType)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 
 	switch (mask)
 	{
@@ -1516,33 +1513,10 @@ void ScriptExt::IncreaseCurrentTriggerWeight(TeamClass* pTeam, double modifier =
 
 void ScriptExt::Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType)
 {
-	// We'll asume that the Modder used an existing Action parameter that is a Key in the [AITargetType] section
-	/*
-	//CCINIClass:;
-	int itemsCount = pINI->GetKeyCount("AITargetType");
-	TypeList<TechnoTypeClass*> objectsList;
-	if (itemsCount > 0)
-	{
-		INI_EX& parser;
-		if (pINI->ReadString("AITargetType", actionParameter, "", Ares::readBuffer))
-		{
-			Debug::Log("DEBUG: Reading values of line [AITargetType][%d]\n", actionParameter);
-			objectsList =
-				ParseList(objectsList, pINI, "AITargetType", actionParameter);
-		}
-		else
-		{
-			Debug::Log("DEBUG: Impossible to read values in line [AITargetType][%d]\n", actionParameter);
-		}
-	}
-	else
-	{
-		Debug::Log("DEBUG: No elements in [AITargetType] section.\n");
-	}
-	*/
+	// We'll asume that the Modder used an valid Action parameter that is a Key in the [AITargetType] section
 	if (attackAITargetType < 0)
 		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
-
+	
 	if (RulesExt::Global()->AITargetTypeLists.Count > 0 && RulesExt::Global()->AITargetTypeLists.GetItem(attackAITargetType).Count > 0)
 		Mission_Attack(pTeam, true, 0, attackAITargetType);
 }

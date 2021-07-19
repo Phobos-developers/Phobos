@@ -67,18 +67,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 
-	
 	int itemsCount = pINI->GetKeyCount(sectionAITargetType);
-	Debug::Log("DEBUG: AITargetTypeLists Lines: [%d]\n", itemsCount);
 	for (int i = 0; i < itemsCount; ++i)
 	{
-		pINI->ReadString(sectionAITargetType, pINI->GetKeyName(sectionAITargetType, i), "", Phobos::readBuffer);
-		Debug::Log("DEBUG: [%s][%d] = %s\n", sectionAITargetType, i, Phobos::readBuffer);
-		//lineBuffer.Read(exINI, sectionAITargetType, (char*)(i));
-		//ParseList<char*>(lineBuffer, pINI, sectionAITargetType, (char*)(i));
 		DynamicVectorClass<TechnoTypeClass*> objectsList;
-
 		char* context = nullptr;
+		pINI->ReadString(sectionAITargetType, pINI->GetKeyName(sectionAITargetType, i), "", Phobos::readBuffer);
+
 		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
 			TechnoTypeClass* buffer;
@@ -91,11 +86,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 					Debug::INIParseFailed(sectionAITargetType, (char*)(i), cur);
 		}
 		AITargetTypeLists.AddItem(objectsList);
-		Debug::Log("DEBUG: Line Elements: [%d]\n", AITargetTypeLists[i].Count);
 		objectsList.Clear();
-		//auto objectsList = ;
-		//Parse(objectsList, pINI, section, "BuildTech");
-		//objectsLists.AddItem(pINI->ReadStringtableEntry->ReadString(sectionAITargetType, i, "", Ares::readBuffer))
 	}
 }
 

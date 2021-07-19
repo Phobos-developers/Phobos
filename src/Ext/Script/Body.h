@@ -49,8 +49,8 @@ public:
 	static void LoadIntoTransports(TeamClass* pTeam);
 	static void WaitUntillFullAmmoAction(TeamClass * pTeam);
     static void Mission_Attack(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
-    static TechnoClass* GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy);
-    static bool EvaluateObjectWithMask(TechnoClass* pTechno, int mask);
+    static TechnoClass* GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy, int attackAITargetType);
+    static bool EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attackAITargetType);
 	static bool FollowTheLeader(TeamClass* pTeam, TechnoClass* pLeader, TechnoClass* pFollower);
 	static void DecreaseCurrentTriggerWeight(TeamClass* pTeam, double modifier);
 	static void IncreaseCurrentTriggerWeight(TeamClass* pTeam, double modifier);
