@@ -37,6 +37,8 @@ In `FAData.ini`:
 
 New:
 - Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
+- Customizable cameo sorting priority (by Uranusian)
+- Customizable harvester ore gathering animation (by secsome, Uranusian)
 
 Vanilla fixes:
 - TBD
