@@ -126,8 +126,7 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 			return rFalse;
 	}
 
-	// cmp esi, 1Fh
-	// jz short loc_6A8477
+	// Restore overridden instructions
 	GET(AbstractType, rtti1, ESI);
 	return rtti1 == AbstractType::Special ? 0x6A8477 : 0x6A8468;
 }

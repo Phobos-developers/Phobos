@@ -99,27 +99,3 @@ DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 
 	return 0;
 }
-
-/*
-DEFINE_HOOK(0x6A853A, StripClass_OperatorLessThan_CameoPriorityForTechno, 0x5) //was 6A8682
-{
-	GET_STACK(TechnoTypeClass*, pLeft, STACK_OFFS(0x1C, 0x8));
-	GET_STACK(TechnoTypeClass*, pRight, STACK_OFFS(0x1C, 0x4));
-	auto pLeftExt = TechnoTypeExt::ExtMap.Find(pLeft);
-	auto pRightExt = TechnoTypeExt::ExtMap.Find(pRight);
-	if (pLeftExt && pRightExt)
-	{
-		auto leftPriority = pLeftExt->CameoPriority;
-		auto rightPriority = pRightExt->CameoPriority;
-		enum { rTrue = 0x6A8692, rFalse = 0x6A86A0 };
-		if (leftPriority > rightPriority)
-			return rTrue;
-		else if (rightPriority > leftPriority)
-			return rFalse;
-	}
-	// cmp esi, 28h
-	// jz short loc_6A855E
-	GET(AbstractType, rtti1, ESI);
-	return rtti1 == AbstractType::UnitType ? 0x6A855E : 0x6A853F;
-}
-*/
