@@ -21,6 +21,7 @@
 #include <Ext/WeaponType/Body.h>
 
 #include <New/Type/RadTypeClass.h>
+#include <New/Type/LaserTrailTypeClass.h>
 
 #include <utility>
 
@@ -239,6 +240,7 @@ auto MassActions = MassAction <
 	WeaponTypeExt,
 	// New classes
 	ShieldTypeClass,
+	LaserTrailTypeClass,
 	RadTypeClass
 	// other classes
 > ();
