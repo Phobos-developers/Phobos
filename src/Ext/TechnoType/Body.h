@@ -48,6 +48,10 @@ public:
 		Nullable<int> ChronoRangeMinimum;
 		Nullable<int> ChronoDelay;
 
+		ValueableVector<AnimTypeClass*> OreGathering_Anims;
+		ValueableVector<int> OreGathering_Tiberiums;
+		ValueableVector<int> OreGathering_FramesPerDir;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			HealthBar_Hide(false),
 			UIDescription(),
@@ -76,7 +80,10 @@ public:
 			ChronoDistanceFactor(),
 			ChronoMinimumDelay(),
 			ChronoRangeMinimum(),
-			ChronoDelay()
+			ChronoDelay(),
+			OreGathering_Anims(),
+			OreGathering_Tiberiums(),
+			OreGathering_FramesPerDir()
 		{ }
 
 		virtual ~ExtData() = default;

@@ -54,6 +54,18 @@ ChronoDelay=            ; integer, delay after teleport for chronosphere
 
 ```
 
+### Customizable harvester ore gathering animation
+
+- You can now specify which anim should be drawn when a harvester of specified type is gathering specified type of ore.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                     ; TechnoType
+OreGathering.Anims=              ; list of animations
+OreGathering.FramesPerDir=15     ; list of integers
+OreGathering.Tiberiums=0         ; list of Tiberium IDs
+```
+
 ### Kill spawns on low power
 
 - `Powered=yes` structures that spawns aircraft like Aircrafts Carriers will stop targeting the enemy if low power.
