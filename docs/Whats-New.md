@@ -8,6 +8,7 @@ This page lists the history of changes across stable Phobos releases and also al
 
 - SHP debris hardcoded shadows now respect `Shadow=no` tag value, and due to it being the default value they wouldn't have hardcoded shadows anymore by default. Override this by specifying `Shadow=yes` for SHP debris.
 - Radiation now has owner by default, which means that radiation kills will affect score and radiation field will respect `Affects...` entries. You can override that with `rulesmd.ini->[SOMEWEAPONTYPE]->Rad.NoOwner=yes` entry.
+- Now all projectiles fly by a correct trajectory when there's a height difference present between firer and the target. This behavior can be reverted with `rulesmd.ini->[SOMEPROJECTILETYPE]->Arcing.OvershootingFix=no` entry.
 
 ### From older Phobos versions
 

@@ -1,6 +1,12 @@
 #include "Body.h"
+
+#include <ScenarioClass.h>
+#include <Unsorted.h>
+
 #include <Ext/RadSite/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/BulletType/Body.h>
+
 template<> const DWORD Extension<BulletClass>::Canary = 0x2A2A2A2A;
 BulletExt::ExtContainer BulletExt::ExtMap;
 
@@ -17,7 +23,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	{
 		auto const it = std::find_if(Instances.begin(), Instances.end(),
 			[=](RadSiteExt::ExtData* const pSite) // Lambda
-			{// find 
+			{
 				return pSite->Type == pRadType &&
 					pSite->OwnerObject()->BaseCell == Cell &&
 					Spread == pSite->OwnerObject()->Spread;
@@ -33,11 +39,8 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 			auto pRadSite = pRadExt->OwnerObject();
 
 			if (pRadSite->GetRadLevel() + RadLevel > pRadType->GetLevelMax())
-			{
 				RadLevel = pRadType->GetLevelMax() - pRadSite->GetRadLevel();
-			}
 
-			// Handle It 
 			pRadExt->Add(RadLevel);
 		}
 	}
@@ -47,6 +50,47 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	}
 }
 
+void BulletExt::ExtData::ApplyArcingFix()
+{
+	auto pThis = this->OwnerObject();
+
+	auto sourcePos = pThis->GetCoords();
+	auto targetPos = pThis->TargetCoords;
+
+	if (pThis->Type->Inaccurate)
+	{
+		auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+		int scatterMin = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
+		int scatterMax = pTypeExt->BallisticScatter_Max.Get(Leptons(RulesClass::Instance()->BallisticScatter));
+
+		double random = ScenarioClass::Instance()->Random.RandomRanged(scatterMin, scatterMax);
+		double theta = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
+
+		CoordStruct offset
+		{
+			static_cast<int>(random * Math::cos(theta)),
+			static_cast<int>(random * Math::sin(theta)),
+			0
+		};
+		targetPos += offset;
+	}
+
+	int zDelta = targetPos.Z - sourcePos.Z;
+	targetPos.Z = 0;
+	sourcePos.Z = 0;
+	double distance = targetPos.DistanceFrom(sourcePos);
+
+	pThis->Velocity.X = targetPos.X - sourcePos.X;
+	pThis->Velocity.Y = targetPos.Y - sourcePos.Y;
+	pThis->Velocity *= pThis->Speed / distance;
+
+	double gravity = (double)RulesClass::Instance()->Gravity;
+	if (pThis->Type->Floater)
+		gravity = Game::GetFloaterGravity();
+
+	pThis->Velocity.Z = zDelta * pThis->Speed / distance + 0.5 * gravity * distance / pThis->Speed;
+}
 
 // =============================
 // load / save
@@ -73,8 +117,7 @@ void BulletExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
 // =============================
 // container
 
-BulletExt::ExtContainer::ExtContainer() : Container("BulletClass") {
-}
+BulletExt::ExtContainer::ExtContainer() : Container("BulletClass") { }
 
 BulletExt::ExtContainer::~ExtContainer() = default;
 

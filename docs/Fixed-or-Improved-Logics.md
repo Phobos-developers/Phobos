@@ -123,3 +123,14 @@ Bolt.Disable1=false    ; boolean
 Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
 ```
+## Projectiles
+
+### Height difference overshooting fix
+
+- Now all projectiles fly by a correct trajectory when there's a height difference present between firer and the target. This behavior can be reverted.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILETYPE]          ; ProjectileType
+Arcing.OvershootingFix=true   ; boolean
+```
