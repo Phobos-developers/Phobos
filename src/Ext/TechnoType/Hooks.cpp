@@ -148,3 +148,13 @@ DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 
 	return 0x73D28C;
 }
+
+DEFINE_HOOK(0x700C58, TechnoClass_CanPlayerMove_NoManualMove, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		return pExt->NoManualMove ? 0x700C62 : 0;
+
+	return 0;
+}

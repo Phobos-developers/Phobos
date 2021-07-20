@@ -36,6 +36,7 @@ public:
 		Valueable<bool> ImmuneToCrit;
 		Valueable<bool> MultiMindControl_ReleaseVictim;
 		Valueable<int> CameoPriority;
+		Valueable<bool> NoManualMove;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -72,6 +73,7 @@ public:
 			ImmuneToCrit(false),
 			MultiMindControl_ReleaseVictim(false),
 			CameoPriority(0),
+			NoManualMove(false),
 			ShieldType(),
 			WarpOut(),
 			WarpIn(),
