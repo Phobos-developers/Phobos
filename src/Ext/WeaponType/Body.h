@@ -25,7 +25,8 @@ public:
 		Valueable<bool> Bolt_Disable3;
 		Valueable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
-		
+		ValueableVector<int> Burst_Delays;
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			,DiskLaser_Radius(38.2)
 			,DiskLaser_Circumference(240)
@@ -36,6 +37,7 @@ public:
 			,Bolt_Disable3(false)
 			,Strafing_Shots(5)
 			,Strafing_SimulateBurst(false)
+			,Burst_Delays()
 		{ }
 
 		virtual ~ExtData() = default;

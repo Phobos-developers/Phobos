@@ -3,8 +3,8 @@
 template<> const DWORD Extension<WeaponTypeClass>::Canary = 0x22222222;
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
-void WeaponTypeExt::ExtData::Initialize() 
-{ 
+void WeaponTypeExt::ExtData::Initialize()
+{
 	this->RadType = RadTypeClass::FindOrAllocate("Radiation");
 }
 
@@ -33,13 +33,14 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// RadTypeClass
 //	if (this->OwnerObject()->RadLevel > 0) 
 //	{
-		this->RadType.Read(exINI, pSection, "RadType", true);
+	this->RadType.Read(exINI, pSection, "RadType", true);
 	//	Debug::Log("Weapon[%s] :: Has RadLevel[%d] Rad check [%s]  \n", pSection , this->OwnerObject()->RadLevel , this->RadType->Name.data());
-		this->Rad_NoOwner.Read(exINI, pSection, "Rad.NoOwner");
-//	}
+	this->Rad_NoOwner.Read(exINI, pSection, "Rad.NoOwner");
+	//	}
 
 	this->Strafing_Shots.Read(exINI, pSection, "Strafing.Shots");
 	this->Strafing_SimulateBurst.Read(exINI, pSection, "Strafing.SimulateBurst");
+	this->Burst_Delays.Read(exINI, pSection, "Burst.Delays");
 }
 
 template <typename T>
@@ -55,6 +56,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Strafing_Shots)
 		.Process(this->Strafing_SimulateBurst)
 		.Process(this->RadType)
+		.Process(this->Burst_Delays)
 		;
 };
 

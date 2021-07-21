@@ -92,7 +92,7 @@ Credits
 - **ChrisLv_CN** - interceptor logic, general assistance
 - **Xkein** - general assistance, YRpp edits
 - **thomassneddon** - general assistance
-- **Starkku** - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements, stationary VehicleTypes
+- **Starkku** - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements, stationary VehicleTypes, Burst logic improvements
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **mevitar** - honorary shield tester *triple* award
 - **Damfoos** - extensive and thorough testing
