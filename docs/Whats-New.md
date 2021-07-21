@@ -46,6 +46,7 @@ Vanilla fixes:
 
 Phobos fixes:
 - Fixed the critical damage logic not functioning properly (by Uranusian)
+- Fixed the bug when executing the stop command game crashes (by Uranusian)
 
 ### 0.2.1.1
 
