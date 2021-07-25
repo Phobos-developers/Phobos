@@ -1,8 +1,7 @@
 #include <Utilities\Macro.h>
-#include <Utilities\Debug.h>
 
 // Allow message entry in Skirmish
-DEFINE_LJMP(0x55E484, 0x55E48D);
+// DEFINE_LJMP(0x55E484, 0x55E48D);
 
 wchar_t* IMEBuffer = reinterpret_cast<wchar_t*>(0xB730EC);
 
