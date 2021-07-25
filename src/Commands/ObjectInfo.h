@@ -202,24 +202,26 @@ public:
 				append("\n");
 			}
 
-			if(pType->Ammo > 0)
-				append("Ammo = (%d / %d)\n", pFoot->Ammo, pType->Ammo);
-
 			auto pTarget = abstract_cast<TechnoClass*>(pFoot->Target);
 			if (pTarget)
 			{
 				append("Current Target = %s, Distance = %d, Location = (%d, %d)\n", pTarget->GetTechnoType()->ID, (pTarget->DistanceFrom(pFoot) / 256), pTarget->GetMapCoords().X, pTarget->GetMapCoords().Y);
 			}
 
-			append("Current HP = (%d / %d)\n", pFoot->Health, pType->Strength);
+			append("Current HP = (%d / %d)", pFoot->Health, pType->Strength);
 
 			auto pTechnoExt = TechnoExt::ExtMap.Find(pFoot);
 			if (auto pShieldData = pTechnoExt->Shield.get())
 			{
 				auto pTypeShieldData = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType());
 
-				append("Current Shield HP = (%d / %d)\n", pShieldData->GetHP(), pTypeShieldData->ShieldType->Strength);
+				append(", Current Shield HP = (%d / %d)", pShieldData->GetHP(), pTypeShieldData->ShieldType->Strength);
 			}
+
+			if (pType->Ammo > 0)
+				append(", Ammo = (%d / %d)", pFoot->Ammo, pType->Ammo);
+
+			append("\n");
 			display();
 		};
 

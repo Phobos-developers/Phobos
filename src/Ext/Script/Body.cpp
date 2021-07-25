@@ -280,7 +280,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	if (pTeam->GuardAreaTimer.TimeLeft != 0 || pTeam->GuardAreaTimer.InProgress())
 	{
 		pTeam->GuardAreaTimer.TimeLeft--;
-
+		if(pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] AAA   (Sleeper function)\n", pTeam->Type->ID);
 		if (pTeam->GuardAreaTimer.TimeLeft == 0)
 		{
 			pTeam->GuardAreaTimer.Stop(); // Needed
@@ -293,6 +293,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	// This team has no units! END
 	if (!pTeam)
 	{
+		if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] BBB   (This team has no units! END)\n", pTeam->Type->ID);
 		// This action finished
 		pTeam->StepCompleted = true;
 		pTeam->CurrentScript->NextAction();
@@ -308,6 +309,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 			auto pKillerTechnoData = TechnoExt::ExtMap.Find(pUnit);
 			if (pKillerTechnoData && pKillerTechnoData->LastKillWasTeamTarget)
 			{
+				if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] DDD   (LastKillWasTeamTarget)\n", pTeam->Type->ID);
 				pTeam->QueuedFocus = nullptr;
 				pTeam->Focus = nullptr;
 
@@ -319,6 +321,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 
 					if (pTeamUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType)
 					{
+						if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] EEE   (Removing Airc Target)\n", pTeam->Type->ID);
 						pTeamUnit->SetTarget(nullptr);
 						pTeamUnit->LastTarget = nullptr;
 						pTeamUnit->SetFocus(nullptr); // Lets see if this works
@@ -351,7 +354,9 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 					&& abstract_cast<AircraftTypeClass*>(pUnitType)->AirportBound
 					&& pUnit->Ammo < pUnitType->Ammo)
 				{
+					if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] FFF   ( :-( Landed Airc has no ammo)\n", pTeam->Type->ID);
 					bAircraftsWithoutAmmo = true;
+					pUnit->CurrentTargets.Clear();
 				}
 
 				// The team leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
@@ -367,6 +372,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 
 	if (!pLeaderUnit || bAircraftsWithoutAmmo)
 	{
+		if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] GGG   (!pLeaderUnit || bAircraftsWithoutAmmo)\n", pTeam->Type->ID);
 		// This action finished
 		pTeam->StepCompleted = true;
 
@@ -446,7 +452,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 
 		if (selectedTarget)
 		{
-			Debug::Log("DEBUG: [%s] selected as target [%s] for Team [%s] (%s). Script line: %d = %d,%d\n", pLeaderUnit->GetTechnoType()->get_ID(), selectedTarget->GetTechnoType()->get_ID(), pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+			Debug::Log("DEBUG: [%s]: Leader [%s] selected as target [%s]. (%s). Script line: %d = %d,%d\n", pTeam->Type->ID, pLeaderUnit->GetTechnoType()->get_ID(), selectedTarget->GetTechnoType()->get_ID(), pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
 			pTeam->Focus = selectedTarget;
 
 			for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
@@ -454,11 +460,14 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				if (pUnit->IsAlive && pUnit->Health > 0 && !pUnit->InLimbo)
 				{
 					auto pUnitType = pUnit->GetTechnoType();
-
+					if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] III   Looking 4 valid Team unit\n", pTeam->Type->ID);
 					if (pUnit && pUnitType && pUnit != selectedTarget && pUnit->Target != selectedTarget)
 					{
+						if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] JJJ   (Upd target, was diff from Team Focus)\n", pTeam->Type->ID);
+						pUnit->CurrentTargets.Clear();
 						if (pUnitType->Underwater && pUnitType->LandTargeting == 1 && selectedTarget->GetCell()->LandType != LandType::Water) // Land not OK for the Naval unit
 						{
+							if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] KKK   (Naval Will do Nothing)\n", pTeam->Type->ID);
 							// Naval units like Submarines are unable to target ground targets except if they have anti-ground weapons. Ignore the attack
 							pUnit->CurrentTargets.Clear();
 							pUnit->SetTarget(nullptr);
@@ -471,6 +480,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 						// Aircraft hack. I hate how this game manages the aircraft missions.
 						if (pUnitType->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0 && pUnit->GetHeight() <= 0)
 						{
+							if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] LLL   (Landed AirC with ammo start attack)\n", pTeam->Type->ID);
 							pUnit->SetDestination(selectedTarget, false);
 							pUnit->QueueMission(Mission::Attack, true);
 						}
@@ -484,17 +494,29 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 							// Aircraft hack. I hate how this game manages the aircraft missions.
 							if (pUnitType->WhatAmI() != AbstractType::AircraftType)
 							{
-								pUnit->ClickedAction(Action::Attack, selectedTarget, false);
+								if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] MMM   (Attack & isn't a aircraft)\n", pTeam->Type->ID);
 								pUnit->QueueMission(Mission::Attack, true);
+								pUnit->ClickedAction(Action::Attack, selectedTarget, false);
+
+								if (pUnit->GetCurrentMission() == Mission::Move && pUnitType->JumpJet)
+								{
+									//pUnit->SetDestination(selectedTarget, false);
+									pUnit->Mission_Attack();
+								}
+
 							}
 						}
 
 						// Tanya / Commando C4 case
 						if (pUnitType->WhatAmI() == AbstractType::InfantryType && abstract_cast<InfantryTypeClass*>(pUnitType)->C4 || pUnit->HasAbility(Ability::C4))
+						{
 							pUnit->SetDestination(selectedTarget, false);
+							pUnit->QueueMission(Mission::Sabotage, true);
+						}
 					}
 					else
 					{
+						if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] NNN   (Don't Upd target, attack the Team Focus)\n", pTeam->Type->ID);
 						pUnit->ClickedAction(Action::Attack, selectedTarget, false);
 					}
 
@@ -505,7 +527,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		{
 			if (!noWaitLoop)
 				pTeam->GuardAreaTimer.Start(16);
-
+			if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] OOO   (selectedTarget not found)\n", pTeam->Type->ID);
 			// This action finished
 			pTeam->StepCompleted = true;
 			pTeam->CurrentScript->NextAction();
@@ -544,8 +566,11 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				{
 					if (pUnit->IsAlive
 						&& !pUnit->InLimbo
-						&& (pUnitType->WhatAmI() == AbstractType::AircraftType && abstract_cast<AircraftTypeClass*>(pUnitType)->AirportBound))
+						&& (pUnitType->WhatAmI() == AbstractType::AircraftType && abstract_cast<AircraftTypeClass*>(pUnitType)->AirportBound)
+						&& pUnit->Ammo > 0
+						&& (pUnit->Target != pTeam->Focus && !pUnit->InAir))
 					{
+						if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] QQQ   (AirC start attack vs pFocus)\n", pTeam->Type->ID);
 						pUnit->SetTarget(pFocus);
 					}
 
@@ -553,44 +578,35 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 						&& pUnitType->LandTargeting == 1
 						&& pFocus->GetCell()->LandType != LandType::Water) // Land not OK for the Naval unit
 					{
+						if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] RRR Subms Will do nothing now\n", pTeam->Type->ID);
 						// Naval units like Submarines are unable to target ground targets except if they have anti-ground weapons. Ignore the attack
 						pUnit->CurrentTargets.Clear();
 						pUnit->SetTarget(nullptr);
 						pUnit->SetFocus(nullptr);
 						pUnit->SetDestination(nullptr, false);
 						pUnit->QueueMission(Mission::Guard, true);
-						
+
 						bForceNextAction = true;
 						continue;
 					}
 
 					if (pUnitType->WhatAmI() == AbstractType::AircraftType
-						&& pUnit->Ammo > 0
-						&& pUnit->GetHeight() > 0
 						&& pUnit->GetCurrentMission() != Mission::Attack
 						&& pUnit->GetCurrentMission() != Mission::Enter)
 					{
-						if (pUnitType->WhatAmI() == AbstractType::AircraftType)
+						if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] SSS2   (AirC start attack vs pFocus)\n", pTeam->Type->ID);
+						if (pUnit->InAir)
 						{
 							if (pUnit->Ammo > 0)
-								pUnit->ClickedAction(Action::Attack, pFocus, false);
-							else
-								pUnit->Mission_Enter();
-						}
-					}
-
-					//pUnit->SetDestination(pFocus, false);
-					if (pUnitType->WhatAmI() == AbstractType::AircraftType)
-					{
-						if (pUnit->Ammo > 0 && pUnit->GetCurrentMission() != Mission::Attack)
-						{
-							
-							pUnit->Mission_Attack();
-						}
-						else
-						{
-							if (pUnit->Ammo <= 0)
 							{
+								if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] TTT1   (AirC start Mission_attack)\n", pTeam->Type->ID);
+								pUnit->QueueMission(Mission::Attack, true);
+								pUnit->ClickedAction(Action::Attack, pFocus, false);
+								pUnit->Mission_Attack();
+							}
+							else
+							{
+								if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] UUU1   (AirC stops, no ammo)\n", pTeam->Type->ID);
 								pUnit->ForceMission(Mission::Enter);
 								pUnit->Mission_Enter();
 								pUnit->SetFocus(pUnit);
@@ -598,13 +614,36 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 								pUnit->SetTarget(pUnit);
 							}
 						}
+						else
+						{
+							if (pUnit->Ammo > 0)
+							{
+								if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] TTT2   (AirC start Mission_attack)\n", pTeam->Type->ID);
+								pUnit->QueueMission(Mission::Attack, true);
+								pUnit->ClickedAction(Action::Attack, pFocus, false);
+								pUnit->Mission_Attack();
+							}
+							else
+							{
+								if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] UUU2   (AirC stops, no ammo)\n", pTeam->Type->ID);
+								pUnit->ForceMission(Mission::Enter);
+								pUnit->Mission_Enter();
+								pUnit->SetFocus(pUnit);
+								pUnit->LastTarget = nullptr;
+								pUnit->SetTarget(pUnit);
+							}
+						}
+
 					}
 
 					// Tanya C4 case
 					if (pUnitType->WhatAmI() == AbstractType::InfantryType
 						&& abstract_cast<InfantryTypeClass*>(pUnitType)->C4
 						|| pUnit->HasAbility(Ability::C4))
+					{
 						pUnit->SetDestination(selectedTarget, false);
+						pUnit->QueueMission(Mission::Sabotage, true);
+					}
 				}
 			}
 			else
@@ -612,7 +651,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				//Debug::Log("DEBUG: Clearing Team Focus!\n");
 				pTeam->Focus = nullptr;
 				pTeam->QueuedFocus = nullptr;
-				
+				if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] VVV   (validFocus = false, do nothing)\n", pTeam->Type->ID);
 				pUnit->ClickedAction(Action::Attack, pFocus, false);
 				pUnit->CurrentTargets.Clear();
 				pUnit->SetTarget(nullptr);
@@ -626,7 +665,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		if (bForceNextAction)
 		{
 			pTeam->StepCompleted = true;
-
+			if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] WWW   (bForceNextAction)\n", pTeam->Type->ID);
 			if (pTeam->CurrentScript->HasNextAction())
 				pTeam->CurrentScript->NextAction();
 			Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (End Team: Naval unable against ground target)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
@@ -844,7 +883,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	if (attackAITargetType >= 0 && RulesExt::Global()->AITargetTypeLists.Count > 0)
 	{
 		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypeLists.GetItem(attackAITargetType);
-		
+
 		for (int i = 0; i < objectsList.Count; i++)
 		{
 			if (objectsList.GetItem(i) == pTechnoType)
@@ -908,9 +947,12 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		// Vehicle or landed Aircraft
 		if (!pTechno->Owner->IsNeutral()
 			&& (pTechnoType->WhatAmI() == AbstractType::UnitType
-				|| (pTypeBuilding && pTypeBuilding->WhatAmI() == AbstractType::BuildingType
-					&& pTypeBuilding->UndeploysInto
-					&& !pTypeBuilding->BaseNormal && pTypeBuilding->Unsellable)
+				|| (pTechnoType->WhatAmI() == AbstractType::BuildingType
+					&& (pTypeBuilding
+						&& (pTypeBuilding->Artillary 
+							|| pTypeBuilding->TickTank 
+							|| pTypeBuilding->ICBMLauncher 
+							|| pTypeBuilding->SensorArray)))
 				|| (pTechnoType->WhatAmI() == AbstractType::AircraftType)))
 		{
 			return true;
@@ -946,7 +988,10 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		if (!pTechno->Owner->IsNeutral()
 			&& (pTechnoType->WhatAmI() != AbstractType::BuildingType
 				|| (pTypeBuilding
-					&& (pTypeBuilding->Artillary || pTypeBuilding->TickTank || pTypeBuilding->ICBMLauncher || pTypeBuilding->SensorArray))))
+					&& (pTypeBuilding->Artillary 
+						|| pTypeBuilding->TickTank 
+						|| pTypeBuilding->ICBMLauncher 
+						|| pTypeBuilding->SensorArray))))
 		{
 			return true;
 		}
@@ -983,7 +1028,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 					|| abstract_cast<UnitTypeClass *>(pTechnoType)->ResourceGatherer))
 				|| (pTypeBuilding
 					&& pTechnoType->WhatAmI() == AbstractType::BuildingType
-					&& (pTypeBuilding->Refinery || pTypeBuilding->OrePurifier || pTypeBuilding->ResourceGatherer))))
+					&& (pTypeBuilding->Refinery 
+						|| pTypeBuilding->OrePurifier 
+						|| pTypeBuilding->ResourceGatherer))))
 		{
 			return true;
 		}
@@ -999,7 +1046,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 				&& abstract_cast<UnitTypeClass *>(pTechnoType)->ResourceGatherer)
 				|| (pTypeBuilding
 					&& pTechnoType->WhatAmI() == AbstractType::BuildingType
-					&& (pTypeBuilding->Refinery || pTypeBuilding->ResourceGatherer))))
+					&& (pTypeBuilding->Refinery 
+						|| pTypeBuilding->ResourceGatherer))))
 		{
 			return true;
 		}
@@ -1143,7 +1191,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		// Radar & SpySat
 		if (!pTechno->Owner->IsNeutral()
 			&& (pTechnoType->WhatAmI() == AbstractType::BuildingType
-				&& (pTypeBuilding->Radar || pTypeBuilding->SpySat)))
+				&& (pTypeBuilding->Radar 
+					|| pTypeBuilding->SpySat)))
 		{
 			return true;
 		}
@@ -1271,7 +1320,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		// Naval Unit
 		if (!pTechno->Owner->IsNeutral()
 			&& pTechnoType->WhatAmI() != AbstractType::BuildingType
-			&& (pTechnoType->Naval || pTechno->GetCell()->LandType == LandType::Water))
+			&& (pTechnoType->Naval 
+				|| pTechno->GetCell()->LandType == LandType::Water))
 		{
 			return true;
 		}
@@ -1516,7 +1566,7 @@ void ScriptExt::Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int cal
 	// We'll asume that the Modder used an valid Action parameter that is a Key in the [AITargetType] section
 	if (attackAITargetType < 0)
 		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
-	
+
 	if (RulesExt::Global()->AITargetTypeLists.Count > 0 && RulesExt::Global()->AITargetTypeLists.GetItem(attackAITargetType).Count > 0)
 		Mission_Attack(pTeam, true, 0, attackAITargetType);
 }
