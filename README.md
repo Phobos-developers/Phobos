@@ -73,7 +73,7 @@ Credits
 - **Starkku** - developer
 
 ### Contributions
-- **Belonit (Gluk-v48)** - project creation, disable empty spawn positions, custom gamemd icon with Command Line, full-color non-paletted PCX, SpySat, BigGap, TransactMoney, PCX Loading Screen, custom DiskLaser radius, extended tooltips, building upgrades enhancement, hide health bar, Sidebar.GDIPosition, help with CellSpread, Blowfish.dll-related errors fix, zero size map previews, semantic locomotor aliases, shields
+- **Belonit (Gluk-v48)** - project creation, disable empty spawn positions, custom gamemd icon with Command Line, full-color non-paletted PCX, SpySat, BigGap, TransactMoney, PCX Loading Screen, custom DiskLaser radius, extended tooltips, building upgrades enhancement, hide health bar, Sidebar.GDIPosition, help with CellSpread, Blowfish.dll-related errors fix, zero size map previews, semantic locomotor aliases, shields, input fix
 - **Kerbiter (Metadorius)** - SHP debris respect Shadow, building upgrades enhancement, extended tooltips, selection priority filtering, TurretOffset enhancement, customizable ore spawners, select next idle harvester hotkey, interceptor enhancement, zero size map previews, CI/CD, overhauled Unicode font, docs maintenance, VSCode configs, code style
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
