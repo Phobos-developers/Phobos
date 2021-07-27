@@ -65,15 +65,28 @@ DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x426598, AnimClass_SDDTOR, 0x7)
+DEFINE_HOOK(0x422967, AnimClass_DTOR, 0x6)
 {
 	GET(AnimClass*, pItem, ESI);
 
-	AnimExt::ExtMap.Remove(pItem);
+	if (AnimExt::ExtMap.Find(pItem))
+		AnimExt::ExtMap.Remove(pItem);
+
+	R->EAX(pItem->Type);
 
 	return 0;
 }
 
+/*Crash when Anim called with GameDelete()
+DEFINE_HOOK(0x426598, AnimClass_SDDTOR, 0x7)
+{
+	GET(AnimClass*, pItem, ESI);
+
+	if(AnimExt::ExtMap.Find(pItem))
+	AnimExt::ExtMap.Remove(pItem);
+
+	return 0;
+}*/
 DEFINE_HOOK_AGAIN(0x425280, AnimClass_SaveLoad_Prefix, 0x5)
 DEFINE_HOOK(0x4253B0, AnimClass_SaveLoad_Prefix, 0x5)
 {
