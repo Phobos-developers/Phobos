@@ -1,10 +1,11 @@
 #pragma once
 
 #include <AnimTypeClass.h>
-#include <Helpers/Macro.h>
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
 
+#include <Utilities/Container.h>
+#include <Utilities/Enum.h>
+#include <Utilities/Constructs.h>
+#include <Utilities/Template.h>
 class AnimTypeExt
 {
 public:
@@ -13,7 +14,7 @@ public:
 	class ExtData final : public Extension<AnimTypeClass>
 	{
 	public:
-
+		CustomPalette Palette;
 		Valueable<UnitTypeClass*> CreateUnit;
 		Valueable<int> CreateUnit_Facing;
 		Valueable<bool> CreateUnit_UseDeathFacings;
@@ -23,7 +24,7 @@ public:
 		Valueable<OwnerHouseKind> CreateUnit_Owner;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
-			, CreateUnit(nullptr)
+			, Palette(CustomPalette::PaletteMode::Temperate)
 			, CreateUnit_Facing(-1)
 			, CreateUnit_UseDeathFacings(false)
 			, CreateUnit_RemapAnim(false)
@@ -32,11 +33,8 @@ public:
 		{ }
 
 		virtual ~ExtData() = default;
-
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
-
 		virtual void InvalidatePointer(void *ptr, bool bRemoved) override { }
-
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 

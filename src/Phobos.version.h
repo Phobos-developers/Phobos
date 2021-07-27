@@ -6,21 +6,32 @@
 #define str(x) str_(x)
 #define str_(x) #x
 
-// Latest release build
+#pragma region Release build version numbering
+
+// Indicates project maturity and completeness
 #define VERSION_MAJOR 0
+
+// Indicates major changes and significant additions, like new logics
 #define VERSION_MINOR 2
+
+// Indicates minor changes, like vanilla bugfixes, unhardcodings or hacks
 #define VERSION_REVISION 1
 
-// Latest devbuild
-#define BUILD_NUMBER 17
+// Indicates Phobos-related bugfixes only
+#define VERSION_PATCH 1
+
+#pragma endregion
+
+// Build number. Incremented on each released build.
+#define BUILD_NUMBER 19
 
 // Nightly defines GIT_COMMIT and GIT_BRANCH in GH Actions
 
 #ifdef IS_RELEASE_VER // Release build metadata
-	#define SAVEGAME_ID ((VERSION_MAJOR << 24) | (VERSION_MINOR << 12) | (VERSION_REVISION))
+	#define SAVEGAME_ID ((VERSION_MAJOR << 24) | (VERSION_MINOR << 16) | (VERSION_REVISION << 8) | VERSION_PATCH)
 	#define FILE_DESCRIPTION "Phobos, Ares-compatible YR engine extension"
-	#define FILE_VERSION_STR str(VERSION_MAJOR) "." str(VERSION_MINOR) "." str(VERSION_REVISION)
-	#define FILE_VERSION VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION
+	#define FILE_VERSION_STR str(VERSION_MAJOR) "." str(VERSION_MINOR) "." str(VERSION_REVISION) "." str(VERSION_PATCH)
+	#define FILE_VERSION VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION, VERSION_PATCH
 	#define PRODUCT_VERSION "Release Build " FILE_VERSION_STR
 #elif defined(GIT_COMMIT) // Nightly devbuild metadata
 	#define STR_GIT_COMMIT str(GIT_COMMIT)

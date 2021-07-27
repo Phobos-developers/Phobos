@@ -1,6 +1,6 @@
-﻿#include <ScenarioClass.h>
+#include <ScenarioClass.h>
 #include <HouseClass.h>
-#include <Themes.h>
+#include <ThemeClass.h>
 
 #include "Body.h"
 
@@ -16,7 +16,7 @@ DEFINE_HOOK(0x4FCD66, HouseClass_WinLose_Theme, 0x5)
 			auto themeIndex = (pThis->IsWinner) ? pData->IngameScore_WinTheme : pData->IngameScore_LoseTheme;
 
 			if (themeIndex >= 0) {
-				ThemePlayer::Instance->Play(themeIndex);
+				ThemeClass::Instance->Play(themeIndex);
 			}
 		}
 	}

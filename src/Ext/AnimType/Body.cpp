@@ -1,11 +1,15 @@
 #include "Body.h"
-#include <UnitClass.h>
-#include <TechnoClass.h>
+#include <Phobos.h>
+#include <Helpers/Macro.h>
+#include <Utilities/TemplateDef.h>
+#include <HouseTypeClass.h>
+#include <HouseClass.h>
 #include <ScenarioClass.h>
-
+#include <UnitClass.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/TechnoType/Body.h>
-template<> const DWORD Extension<AnimTypeClass>::Canary = 0xEAEEEEEE;
+
+template<> const DWORD Extension<AnimTypeClass>::Canary = 0xEEEEEEEE;
 AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;
 
 void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
@@ -14,6 +18,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 
 	INI_EX exINI(pINI);
 
+	this->Palette.LoadFromINI(pINI, pID, "CustomPalette");
 	this->CreateUnit.Read(exINI, pID, "CreateUnit");
 	this->CreateUnit_Facing.Read(exINI, pID, "CreateUnit.Facing");
 	this->CreateUnit_UseDeathFacings.Read(exINI, pID, "CreateUnit.UseDeathFacings");
@@ -80,6 +85,7 @@ template <typename T>
 void AnimTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->Palette);
 		.Process(this->CreateUnit)
 		.Process(this->CreateUnit_Facing)
 		.Process(this->CreateUnit_UseDeathFacings)

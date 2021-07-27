@@ -6,6 +6,8 @@
 #include <Ext/House/Body.h>
 #include <Ext/Side/Body.h>
 #include <Ext/Rules/Body.h>
+#include <Ext/TechnoType/Body.h>
+#include <Ext/SWType/Body.h>
 #include <Utilities/Debug.h>
 
 DEFINE_HOOK(0x777C41, UI_ApplyAppIcon, 0x9)
@@ -73,7 +75,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		DSurface::Sidebar->GetRect(&vRect);
 
 		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB2DWORD(clrToolTip), 0,
-			TextPrintType::TPF_USE_GRAD_PAL | TextPrintType::TPF_CENTER | TextPrintType::TPF_METAL12);
+			TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12);
 	}
 
 	return 0;
@@ -99,4 +101,32 @@ DEFINE_HOOK(0x715A4D, Replace_XXICON_With_New, 0x7)         //TechnoTypeClass::R
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
+{
+	GET_STACK(TechnoTypeClass*, pLeft, STACK_OFFS(0x1C, 0x8));
+	GET_STACK(TechnoTypeClass*, pRight, STACK_OFFS(0x1C, 0x4));
+	GET_STACK(int, idxLeft, STACK_OFFS(0x1C, -0x8));
+	GET_STACK(int, idxRight, STACK_OFFS(0x1C, -0x10));
+	auto pLeftTechnoExt = TechnoTypeExt::ExtMap.Find(pLeft);
+	auto pRightTechnoExt = TechnoTypeExt::ExtMap.Find(pRight);
+	auto pLeftSWExt = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItem(idxLeft));
+	auto pRightSWExt = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItem(idxRight));
+
+	if ((pLeftTechnoExt || pLeftSWExt) && (pRightTechnoExt || pRightSWExt))
+	{
+		auto leftPriority = pLeftTechnoExt ? pLeftTechnoExt->CameoPriority : pLeftSWExt->CameoPriority;
+		auto rightPriority = pRightTechnoExt ? pRightTechnoExt->CameoPriority : pRightSWExt->CameoPriority;
+		enum { rTrue = 0x6A8692, rFalse = 0x6A86A0 };
+
+		if (leftPriority > rightPriority)
+			return rTrue;
+		else if (rightPriority > leftPriority)
+			return rFalse;
+	}
+
+	// Restore overridden instructions
+	GET(AbstractType, rtti1, ESI);
+	return rtti1 == AbstractType::Special ? 0x6A8477 : 0x6A8468;
 }

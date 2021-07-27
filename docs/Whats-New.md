@@ -33,6 +33,29 @@ In `FAData.ini`:
 
 ## Changelog
 
+### TBD
+
+New:
+- LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)
+- Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
+- Customizable cameo sorting priority (by Uranusian)
+- Customizable harvester ore gathering animation (by secsome, Uranusian)
+- Allow making technos unable to be issued with movement order (by Uranusian)
+
+
+Vanilla fixes:
+- Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (by Belonit).
+- Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
+
+Phobos fixes:
+- Fixed the critical damage logic not functioning properly (by Uranusian)
+- Fixed the bug when executing the stop command game crashes (by Uranusian)
+
+### 0.2.1.1
+
+Phobos fixes:
+- Fixed occasional crashes introduced by `Speed=0` stationary vehicles code (by Starkku)
+
 ### 0.2.1
 
 New:

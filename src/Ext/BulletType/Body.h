@@ -1,9 +1,11 @@
-	#pragma once
+#pragma once
 #include <BulletTypeClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
+
+#include <New/Type/LaserTrailTypeClass.h>
 
 class BulletTypeExt
 {
@@ -14,20 +16,23 @@ public:
 	{
 	public:
 		Valueable<bool> Interceptable;
+		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject),
-			Interceptable(false)
+			Interceptable(false),
+			LaserTrail_Types()
 		{ }
 
 		virtual ~ExtData() = default;
 
-		virtual void LoadFromINIFile(CCINIClass * pINI) override;
+		virtual void LoadFromINIFile(CCINIClass* pINI) override;
+		// virtual void Initialize() override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
-		virtual void LoadFromStream(PhobosStreamReader & Stm) override;
+		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		virtual void SaveToStream(PhobosStreamWriter & Stm) override;
 	private:
 		template <typename T>
 		void Serialize(T& Stm);

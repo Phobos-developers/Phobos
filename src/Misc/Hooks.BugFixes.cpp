@@ -128,7 +128,9 @@ DEFINE_HOOK(0x4C7518, EventClass_Execute_StopUnitDeployFire, 0x9)
 	if (pUnit && pUnit->CurrentMission == Mission::Unload && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
 		pUnit->QueueMission(Mission::Guard, true);
 
-	return 0;
+	// Restore overridden instructions
+	GET(Mission, eax, EAX);
+	return eax == Mission::Construction ? 0x4C8109 : 0x4C7521;
 }
 
 DEFINE_HOOK(0x73DD12, UnitClass_Mission_Unload_DeployFire, 0x6)
