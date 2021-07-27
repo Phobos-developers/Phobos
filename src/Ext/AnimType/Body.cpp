@@ -28,20 +28,20 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->CreateUnit_Owner.Read(exINI, pID, "CreateUnit.Owner");
 }
 
-const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller, HouseClass* pHouseKiller)
+const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
 {
 	if (!pThis)
 		return;
 
-	auto Invoker = (pKiller && pKiller->IsAlive) ? pKiller->Owner : pHouseKiller;
+	HouseClass* Invoker = pKiller ? pKiller->Owner : nullptr;
 	auto const pType = pThis->Type;
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	if (pType->DestroyAnim.Count > 0)
 	{
 		auto destroyanimsindex = pType->DestroyAnim.Count;
-		auto const Facing = pThis->Facing.current().value256();
+		auto const Facing = pThis->PrimaryFacing.current().value256();
 		auto pAnimType = pType->DestroyAnim[ScenarioClass::Instance->Random.Random() % destroyanimsindex];
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		if (destroyanimsindex >= 8 && !pTypeExt->DestroyAnimRandom.Get())
 		{
@@ -56,10 +56,10 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 		{
 			if (auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->GetCoords()))
 			{
-				auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
-					? pThis->GetOriginalOwner() : pThis->Owner;
+				//auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
+				//	? pThis->GetOriginalOwner() : pThis->Owner;
 
-				AnimExt::SetAnimOwnerHouseKind(pAnim, Invoker, VictimOwner, Invoker);
+				AnimExt::SetAnimOwnerHouseKind(pAnim, Invoker, pThis->Owner);
 
 				if (pTypeExt->StoreDeathFacings.Get())
 				{
@@ -71,7 +71,7 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 						if (pThis->HasTurret())
 						{
 							AnimExt->DeathUnitHasTurrent = true;
-							AnimExt->DeathUnitTurretFacing = pThis->TurretFacing.current();
+							AnimExt->DeathUnitTurretFacing = pThis->SecondaryFacing.current();
 						}
 					}
 				}
@@ -85,7 +85,7 @@ template <typename T>
 void AnimTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->Palette);
+		.Process(this->Palette)
 		.Process(this->CreateUnit)
 		.Process(this->CreateUnit_Facing)
 		.Process(this->CreateUnit_UseDeathFacings)

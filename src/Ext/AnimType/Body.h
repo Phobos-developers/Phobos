@@ -27,6 +27,7 @@ public:
 			, Palette(CustomPalette::PaletteMode::Temperate)
 			, CreateUnit_Facing(-1)
 			, CreateUnit_UseDeathFacings(false)
+			, CreateUnit_useDeathTurrentFacings(false)
 			, CreateUnit_RemapAnim(false)
 			, CreateUnit_Mission(Mission::Guard)
 			, CreateUnit_Owner(OwnerHouseKind::Victim)
@@ -51,5 +52,5 @@ public:
 	};
 
 	static ExtContainer ExtMap;
-	static const void ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller = nullptr, HouseClass* pHouseKiller = nullptr);
+	static const void ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller = nullptr);
 };

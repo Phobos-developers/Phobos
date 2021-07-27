@@ -7,11 +7,12 @@ template<> const DWORD Extension<AnimClass>::Canary = 0xAAAAAAAA;
 AnimExt::ExtContainer AnimExt::ExtMap;
 
 //Modified from Ares
-const OwnerHouseKind AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, HouseClass* pKiller, bool defaultToVictimOwner)
+const bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner)
 {
 	auto const pAniTypemData = AnimTypeExt::ExtMap.Find(pAnim->Type);
+	auto newOwner = HouseExt::GetHouseKind(pAniTypemData->CreateUnit_Owner, true, defaultToVictimOwner ? pVictim : nullptr, pInvoker, pVictim);
 
-	if (auto newOwner = HouseExt::GetHouseKind(pAniTypemData->CreateUnit_Owner, true, defaultToVictimOwner ? pVictim : nullptr, pInvoker, pKiller, pVictim))
+	if (newOwner)
 	{
 		pAnim->Owner = newOwner;
 
@@ -19,7 +20,7 @@ const OwnerHouseKind AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass
 			pAnim->LightConvert = ColorScheme::Array->Items[newOwner->ColorSchemeIndex]->LightConvert;
 	}
 
-	return pAniTypemData->CreateUnit_Owner;
+	return newOwner ? true: false;
 }
 
 // =============================

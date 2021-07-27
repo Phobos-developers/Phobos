@@ -44,16 +44,12 @@ int HouseExt::TotalHarvesterCount(HouseClass* pThis)
 }
 
 //Ares
-HouseClass* HouseExt::GetHouseKind(
-	OwnerHouseKind const kind, bool const allowRandom,
-	HouseClass* const pDefault, HouseClass* const pInvoker,
-	HouseClass* const pKiller, HouseClass* const pVictim)
+HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRandom,HouseClass* const pDefault, HouseClass* const pInvoker, HouseClass* const pVictim)
 {
 	switch (kind) {
 	case OwnerHouseKind::Invoker:
-		return pInvoker ? pInvoker : pDefault;
 	case OwnerHouseKind::Killer:
-		return pKiller ? pKiller : pDefault;
+		return pInvoker ? pInvoker : pDefault;
 	case OwnerHouseKind::Victim:
 		return pVictim ? pVictim : pDefault;
 	case OwnerHouseKind::Civilian:

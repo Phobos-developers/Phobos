@@ -18,8 +18,8 @@ DEFINE_HOOK(0x737F6D, UnitClass_TakeDamage_Destroy, 0x7)
 
 	R->ECX(R->ESI());
 	TechnoExt::ExtMap.Find(pThis)->ReceiveDamage = true;
+	AnimTypeExt::ProcessDestroyAnims(pThis, Receivedamageargs.Attacker);
 	pThis->Destroy();
-	AnimTypeExt::ProcessDestroyAnims(pThis, Receivedamageargs.Attacker, Receivedamageargs.SourceHouse);
 
 	return 0x737F74;
 }
@@ -57,26 +57,27 @@ DEFINE_HOOK(0x424932, AnimClass_Update_CreateUnit_ActualAffects, 0x6)
 	GET(AnimClass* const, pThis, ESI);
 
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
-	auto const AnimExt = AnimExt::ExtMap.Find(pThis);
 
 	if (auto Unit = pTypeExt->CreateUnit.Get())
 	{
-		auto Location = pThis->GetCoords();
-		Location.Z = 0;
-		auto Cell = MapClass::Instance->TryGetCellAt(pThis->GetCoords());
-		auto const Owner = pThis->Owner;
-		auto DecidedOwner = (!Owner || Owner->Defeated) ? HouseClass::FindCivilianSide() : Owner;
-		auto Random = static_cast<short>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
-		auto aFacing = static_cast<short>(pTypeExt->CreateUnit_Facing.Get());
-		aFacing = Math::min(aFacing, 255);
-		aFacing = aFacing == -1 ? Random : aFacing;
-		auto Facing =
-			(pTypeExt->CreateUnit_UseDeathFacings && AnimExt->Fromdeathunit) ?
-			AnimExt->DeathUnitFacing : aFacing;
+		auto DecidedOwner = HouseClass::FindCivilianSide();
+		auto Owner = pThis->Owner;
+
+		if (Owner && !Owner->Defeated)
+			DecidedOwner = Owner;
 
 		if (auto pTechno = static_cast<TechnoClass*>(Unit->CreateObject(DecidedOwner)))
 		{
+			auto const AnimExt = AnimExt::ExtMap.Find(pThis);
+			auto Location = pThis->GetCoords();
+			Location.Z = 0;
 			bool success = false;
+			auto Cell = MapClass::Instance->TryGetCellAt(pThis->GetCoords());
+			auto Random = static_cast<short>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
+			auto aFacing = static_cast<short>(pTypeExt->CreateUnit_Facing.Get());
+			aFacing = Math::min(aFacing, 255);
+			aFacing = aFacing == -1 ? Random : aFacing;
+			auto Facing = (pTypeExt->CreateUnit_UseDeathFacings && AnimExt->Fromdeathunit) ? AnimExt->DeathUnitFacing : aFacing;
 
 			if (!Cell->GetBuilding())
 			{
@@ -92,7 +93,7 @@ DEFINE_HOOK(0x424932, AnimClass_Update_CreateUnit_ActualAffects, 0x6)
 			if (success)
 			{
 				if (pTechno->HasTurret() && AnimExt->Fromdeathunit && AnimExt->DeathUnitHasTurrent && pTypeExt->CreateUnit_useDeathTurrentFacings.Get())
-					pTechno->TurretFacing.set(AnimExt->DeathUnitTurretFacing);
+					pTechno->SecondaryFacing.set(AnimExt->DeathUnitTurretFacing);
 
 				Debug::Log("[" __FUNCTION__ "] Stored Turret Facing %d \n",
 					AnimExt->DeathUnitTurretFacing.value256());

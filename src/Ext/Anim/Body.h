@@ -21,7 +21,7 @@ public:
 
         ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
 			, DeathUnitFacing(0)
-			, DeathUnitTurretFacing(0)
+			, DeathUnitTurretFacing()
 			, Fromdeathunit(false)
 			, DeathUnitHasTurrent(false)
         { }
@@ -44,6 +44,6 @@ public:
     };
 
     static ExtContainer ExtMap;
-	static const OwnerHouseKind SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker , HouseClass* pVictim, HouseClass* pKiller , bool defaultToVictimOwner = true);
+	static const bool SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker , HouseClass* pVictim, bool defaultToVictimOwner = true);
 
 };
