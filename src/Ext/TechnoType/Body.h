@@ -6,6 +6,7 @@
 #include <Utilities/TemplateDef.h>
 
 #include <New/Type/ShieldTypeClass.h>
+#include <New/Type/LaserTrailTypeClass.h>
 
 class Matrix3D;
 
@@ -53,6 +54,22 @@ public:
 		ValueableVector<int> OreGathering_Tiberiums;
 		ValueableVector<int> OreGathering_FramesPerDir;
 
+		struct LaserTrailDataEntry
+		{
+			ValueableIdx<LaserTrailTypeClass> idxType;
+			Valueable<CoordStruct> FLH;
+			Valueable<bool> IsOnTurret;
+
+			bool Load(PhobosStreamReader& stm, bool registerForChange);
+			bool Save(PhobosStreamWriter& stm) const;
+
+		private:
+			template <typename T>
+			bool Serialize(T& stm);
+		};
+
+		ValueableVector<LaserTrailDataEntry> LaserTrailData;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			HealthBar_Hide(false),
 			UIDescription(),
@@ -85,7 +102,8 @@ public:
 			ChronoDelay(),
 			OreGathering_Anims(),
 			OreGathering_Tiberiums(),
-			OreGathering_FramesPerDir()
+			OreGathering_FramesPerDir(),
+			LaserTrailData()
 		{ }
 
 		virtual ~ExtData() = default;
