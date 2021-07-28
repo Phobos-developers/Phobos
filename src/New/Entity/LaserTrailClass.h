@@ -17,7 +17,7 @@ public:
 	bool IsOnTurret;
 	ColorStruct CurrentColor;
 	Nullable<CoordStruct> LastLocation;
-    Valueable<int> FramesPassed;
+    int FramesPassed;
 
 	LaserTrailClass(LaserTrailTypeClass* pTrailType, HouseClass* pHouse = nullptr,
 		CoordStruct flh = { 0, 0, 0 }, bool isOnTurret = false) :

@@ -13,7 +13,7 @@ bool LaserTrailClass::Update(CoordStruct location)
         // The trail was just inited
         this->LastLocation = location;
     }
-    else if (location.DistanceFrom(this->LastLocation.Get()) > this->Type->Distance) // TODO reimplement IgnoreVertical properly?
+    else if (location.DistanceFrom(this->LastLocation.Get()) > this->Type->SegmentLength) // TODO reimplement IgnoreVertical properly?
     {
         if (this->Visible && (this->Type->IgnoreVertical ? (abs(location.X - this->LastLocation.Get().X) > 16 || abs(location.Y - this->LastLocation.Get().Y) > 16) : true))
         {
@@ -33,7 +33,7 @@ bool LaserTrailClass::Update(CoordStruct location)
 		this->LastLocation = location;
 	}
 
-    (*this->FramesPassed.GetEx())++;
+    this->FramesPassed++;
 
     return result;
 }
@@ -48,17 +48,15 @@ ColorStruct LaserTrailClass::GetCurrentColor()
             % colors.size();
         int currentColorIndex = transitionCycle;
         int nextColorIndex = (transitionCycle + 1) % colors.size();
-
         double blendingCoef = (this->FramesPassed % this->Type->TransitionDuration)
-            / this->Type->TransitionDuration;
-
+            / (double)this->Type->TransitionDuration;
         ColorStruct color = {
             (BYTE)(colors[currentColorIndex].R * (1 - blendingCoef) + colors[nextColorIndex].R * blendingCoef),
             (BYTE)(colors[currentColorIndex].G * (1 - blendingCoef) + colors[nextColorIndex].G * blendingCoef),
             (BYTE)(colors[currentColorIndex].B * (1 - blendingCoef) + colors[nextColorIndex].B * blendingCoef)
         };
 
-        // Debug::Log("%d %d %d", color.R, color.G, color.B);
+        // Debug::Log("%d %d %d \n", color.R, color.G, color.B);
         return color;
     }
 
