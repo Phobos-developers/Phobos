@@ -388,8 +388,8 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		pLeaderUnitType->EliteWeapon[0].WeaponType :
 		pLeaderUnitType->Weapon[0].WeaponType;
 	WeaponTypeClass* WeaponType2 = pLeaderUnit->Veterancy.IsElite() ?
-		pLeaderUnitType->EliteWeapon[0].WeaponType :
-		pLeaderUnitType->Weapon[0].WeaponType;
+		pLeaderUnitType->EliteWeapon[1].WeaponType :
+		pLeaderUnitType->Weapon[1].WeaponType;
 	WeaponTypeClass* WeaponType3 = WeaponType1;
 	if (pLeaderUnitType->IsGattling)
 	{
@@ -422,8 +422,8 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 					pPassengerType->EliteWeapon[0].WeaponType :
 					pPassengerType->Weapon[0].WeaponType;
 				WeaponTypeClass* passengerWeaponType2 = passenger->Veterancy.IsElite() ?
-					pPassengerType->EliteWeapon[0].WeaponType :
-					pPassengerType->Weapon[0].WeaponType;
+					pPassengerType->EliteWeapon[1].WeaponType :
+					pPassengerType->Weapon[1].WeaponType;
 				if (pPassengerType->IsGattling)
 				{
 					WeaponTypeClass* passengerWeaponType3 = passenger->Veterancy.IsElite() ?
@@ -678,49 +678,9 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 {
 	TechnoClass *bestObject = nullptr;
 	int bestVal = -1;
-
+	auto test_object = pTechno->GetTechnoType();
 	bool unitWeaponsHaveAA = false;
 	bool unitWeaponsHaveAG = false;
-
-	// Note: Replace these lines when I have access to Combat_Damage() method in YRpp if that is better
-	WeaponTypeClass* WeaponType1 = pTechno->Veterancy.IsElite() ?
-		pTechno->GetTechnoType()->EliteWeapon[0].WeaponType :
-		pTechno->GetTechnoType()->Weapon[0].WeaponType;
-	WeaponTypeClass* WeaponType2 = pTechno->Veterancy.IsElite() ?
-		pTechno->GetTechnoType()->EliteWeapon[0].WeaponType :
-		pTechno->GetTechnoType()->Weapon[0].WeaponType;
-	WeaponTypeClass* WeaponType3 = WeaponType1;
-
-	if (pTechno->GetTechnoType()->IsGattling)
-	{
-		WeaponType3 = pTechno->Veterancy.IsElite() ?
-			pTechno->GetTechnoType()->EliteWeapon[pTechno->CurrentWeaponNumber].WeaponType :
-			pTechno->GetTechnoType()->Weapon[pTechno->CurrentWeaponNumber].WeaponType;
-
-		WeaponType1 = WeaponType3;
-	}
-
-	// Note: the TEAM LEADER is picked for this task, be careful with leadership values in your mod
-	if ((WeaponType1 && WeaponType1->Projectile->AA) || (WeaponType2 && WeaponType2->Projectile->AA))
-		unitWeaponsHaveAA = true;
-
-	if ((WeaponType1 && WeaponType1->Projectile->AG) || (WeaponType2 && WeaponType2->Projectile->AG))
-		unitWeaponsHaveAG = true;
-
-	int combatDamage = -1;
-	if (WeaponType1 && WeaponType1->Damage > 0)
-		combatDamage = WeaponType1->Damage;
-	if (WeaponType2 && WeaponType1->Damage > 0)
-		combatDamage = WeaponType2->Damage;
-	//Debug::Log("DEBUG: combatDamage: %d\n", combatDamage);
-
-	// Get the max range available of all weapons
-	int maxWeaponRange = -1;
-	if (WeaponType1 && WeaponType1->Range > 0)
-		maxWeaponRange = WeaponType1->Range;
-	if (WeaponType2 && WeaponType1->Range > 0)
-		maxWeaponRange = WeaponType2->Range;
-	//Debug::Log("DEBUG: maxWeaponRange: %d\n", maxWeaponRange);
 
 	// Generic method for targeting
 	for (int i = 0; i < TechnoClass::Array->Count; i++)
@@ -732,37 +692,45 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 		if (!object || !objectType || !pTechnoType)
 			continue;
 
-		//Debug::Log("DEBUG: TechnoClass::Array[%d] -> Check if [%s] can target [%s]\n", i, pTechno->GetTechnoType()->ID, object->GetTechnoType()->ID);
+		// Note: the TEAM LEADER is picked for this task, be careful with leadership values in your mod
+		int weaponIndex = pTechno->SelectWeapon(object);
+		auto weaponType = pTechno->GetWeapon(weaponIndex)->WeaponType;
+		if (weaponType && weaponType->Projectile->AA)
+			unitWeaponsHaveAA = true;
+		if (weaponType && weaponType->Projectile->AG)
+			unitWeaponsHaveAG = true;
+
+		//Debug::Log("DEBUG: TechnoClass::Array[%d] -> [%s] can target [%s] ?? (AA: %d, AG: %d, Idx: %d)\n", i, pTechno->GetTechnoType()->ID, object->GetTechnoType()->ID, unitWeaponsHaveAA, unitWeaponsHaveAG, weaponIndex);
 		if (object->IsInAir() && !unitWeaponsHaveAA)
 			continue;
 		if (!object->IsInAir() && !unitWeaponsHaveAG) // I don't know if underground is a special case
 			continue;
-
+		
 		// Don't pick underground units
 		if (object->InWhichLayer() == Layer::Underground)
 			continue;
-
+		
 		// Stealth ground unit check
 		if (object->CloakState == CloakState::Cloaked && !objectType->Naval)
 			continue;
-
+		
 		// Submarines aren't a valid target
 		if (object->CloakState == CloakState::Cloaked
 			&& objectType->Underwater
 			&& (pTechnoType->NavalTargeting == 0
 				|| pTechnoType->NavalTargeting == 6))
 			continue;
-
+		
 		// Land not OK for the Naval unit
 		if (objectType->Naval
 			&& pTechnoType->LandTargeting == 1
 			&& object->GetCell()->LandType != LandType::Water)
 			continue;
-
+		
 		// OnlyTargetHouseEnemy forces targets of a specific (hated) house
 		if (onlyTargetThisHouseEnemy && object->Owner != onlyTargetThisHouseEnemy)
 			continue;
-
+		
 		if (object != pTechno
 			&& object->IsAlive
 			&& !object->InLimbo
@@ -783,7 +751,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 				CellStruct newCell;
 				newCell.X = (short)object->Location.X;
 				newCell.Y = (short)object->Location.Y;
-
+				
 				bool isGoodTarget = false;
 				if (calcThreatMode == 0)
 				{
@@ -1062,8 +1030,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 			pTechnoType->EliteWeapon[0].WeaponType :
 			pTechnoType->Weapon[0].WeaponType;
 		WeaponType2 = pTechno->Veterancy.IsElite() ?
-			pTechnoType->EliteWeapon[0].WeaponType :
-			pTechnoType->Weapon[0].WeaponType;
+			pTechnoType->EliteWeapon[1].WeaponType :
+			pTechnoType->Weapon[1].WeaponType;
 		WeaponType3 = WeaponType1;
 		if (pTechnoType->IsGattling)
 		{
@@ -1527,10 +1495,10 @@ void ScriptExt::IncreaseCurrentTriggerWeight(TeamClass* pTeam, double modifier =
 	AITriggerTypeClass* pTriggerType = nullptr;
 	auto pTeamType = pTeam->Type;
 	bool found = false;
-
+	
 	if (modifier <= 0)
 		modifier = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
-
+	Debug::Log("DEBUG: [BEFORE] Update Trigger: [%s] (Weight +%d) [Script line: %d]\n", pTeamType->ID, modifier, pTeam->CurrentScript->idxCurrentLine);
 	for (int i = 0; i < AITriggerTypeClass::Array->Count && !found; i++)
 	{
 		auto pTriggerTeam1Type = AITriggerTypeClass::Array->GetItem(i)->Team1;
@@ -1551,9 +1519,13 @@ void ScriptExt::IncreaseCurrentTriggerWeight(TeamClass* pTeam, double modifier =
 		}
 
 		pTriggerType->Weight_Current += modifier;
-
+		Debug::Log("[END1] DEBUG: Update Trigger: [%s] pTriggerType->Weight_Current: %d (+%d)\n", pTriggerType->ID, pTriggerType->Weight_Current, modifier);
 		if (pTriggerType->Weight_Current > pTriggerType->Weight_Maximum)
 			pTriggerType->Weight_Current = pTriggerType->Weight_Maximum;
+	}
+	else
+	{
+		Debug::Log("[END2] DEBUG: Update Trigger failed, not found.\n");
 	}
 
 	// This action finished
