@@ -38,18 +38,24 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 
 	if (pType->DestroyAnim.Count > 0)
 	{
-		auto destroyanimsindex = pType->DestroyAnim.Count;
+		
 		auto const Facing = pThis->PrimaryFacing.current().value256();
-		auto pAnimType = pType->DestroyAnim[ScenarioClass::Instance->Random.Random() % destroyanimsindex];
+		auto pAnimType = pType->DestroyAnim[ScenarioClass::Instance->Random.Random() % pType->DestroyAnim.Count];
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-		if (destroyanimsindex >= 8 && !pTypeExt->DestroyAnimRandom.Get())
+		if (!pTypeExt->DestroyAnimRandom.Get())
 		{
-			if (destroyanimsindex % 2 == 0)
+			auto Index = 0;
+
+			if (pType->DestroyAnim.Count >= 8)
 			{
-				destroyanimsindex *= static_cast<int>(Facing / 256.0);
-				pAnimType = pType->DestroyAnim[destroyanimsindex];
+				Index = pType->DestroyAnim.Count;
+				if (pType->DestroyAnim.Count % 2 == 0)			
+					Index *= static_cast<int>(Facing / 256.0);	
+
 			}
+
+			pAnimType = pType->DestroyAnim[Index];
 		}
 
 		if (pAnimType)
@@ -79,7 +85,6 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 		}
 	}
 }
-
 
 template <typename T>
 void AnimTypeExt::ExtData::Serialize(T& Stm)

@@ -9,18 +9,18 @@ AnimExt::ExtContainer AnimExt::ExtMap;
 //Modified from Ares
 const bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner)
 {
-	auto const pAniTypemData = AnimTypeExt::ExtMap.Find(pAnim->Type);
-	auto newOwner = HouseExt::GetHouseKind(pAniTypemData->CreateUnit_Owner, true, defaultToVictimOwner ? pVictim : nullptr, pInvoker, pVictim);
+	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
+	auto newOwner = HouseExt::GetHouseKind(pTypeExt->CreateUnit_Owner.Get(), true, defaultToVictimOwner ? pVictim : nullptr, pInvoker, pVictim);
 
 	if (newOwner)
 	{
 		pAnim->Owner = newOwner;
 
-		if (pAniTypemData->CreateUnit_RemapAnim.Get())
+		if (pTypeExt->CreateUnit_RemapAnim.Get())
 			pAnim->LightConvert = ColorScheme::Array->Items[newOwner->ColorSchemeIndex]->LightConvert;
 	}
 
-	return newOwner ? true: false;
+	return newOwner;
 }
 
 // =============================
