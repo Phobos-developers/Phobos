@@ -30,7 +30,7 @@ ScriptExt::ExtContainer::~ExtContainer() = default;
 void ScriptExt::ProcessAction(TeamClass* pTeam)
 {
 	const int& action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action;
-
+	
 	switch (action)
 	{
 	case 71:
@@ -275,7 +275,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	int bestUnitLeadershipValue = -1;
 	bool bAircraftsWithoutAmmo = false;
 	TechnoClass* pFocus = nullptr;
-
+	
 	// When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
 	if (pTeam->GuardAreaTimer.TimeLeft != 0 || pTeam->GuardAreaTimer.InProgress())
 	{
@@ -296,7 +296,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] BBB   (This team has no units! END)\n", pTeam->Type->ID);
 		// This action finished
 		pTeam->StepCompleted = true;
-		pTeam->CurrentScript->NextAction();
+		//pTeam->CurrentScript->NextAction();
 		//Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (End Team: without units)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
 		return;
 	}
@@ -335,8 +335,8 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 
 				// This action finished
 				pTeam->StepCompleted = true;
-				pTeam->CurrentScript->NextAction();
-				Debug::Log("DEBUG: [%s] [%s]: Force the jump to NEXT line: %d = %d,%d\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+				//pTeam->CurrentScript->NextAction();
+				Debug::Log("DEBUG: [%s] [%s]: Force the jump to NEXT line: %d = %d,%d\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine+1, pScript->Type->ScriptActions[pScript->idxCurrentLine+1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine+1].Argument);
 				return;
 			}
 		}
@@ -517,7 +517,11 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 					else
 					{
 						if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] NNN   (Don't Upd target, attack the Team Focus)\n", pTeam->Type->ID);
-						pUnit->ClickedAction(Action::Attack, selectedTarget, false);
+						{
+							pUnit->QueueMission(Mission::Attack, true);
+							pUnit->ClickedAction(Action::Attack, selectedTarget, false);
+							pUnit->Mission_Attack();
+						}
 					}
 
 				}
@@ -530,8 +534,8 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 			if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] OOO   (selectedTarget not found)\n", pTeam->Type->ID);
 			// This action finished
 			pTeam->StepCompleted = true;
-			pTeam->CurrentScript->NextAction();
-			Debug::Log("DEBUG: Next script action line for [%s] (%s) will be: %d = %d,%d (reason: New Target NOT FOUND)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+			//pTeam->CurrentScript->NextAction();
+			Debug::Log("DEBUG: Next script action line for [%s] (%s) will be: %d = %d,%d (reason: New Target NOT FOUND)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine+1, pScript->Type->ScriptActions[pScript->idxCurrentLine+1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine+1].Argument);
 			return;
 		}
 	}
@@ -666,9 +670,9 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		{
 			pTeam->StepCompleted = true;
 			if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] WWW   (bForceNextAction)\n", pTeam->Type->ID);
-			if (pTeam->CurrentScript->HasNextAction())
-				pTeam->CurrentScript->NextAction();
-			Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (End Team: Naval unable against ground target)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+			//if (pTeam->CurrentScript->HasNextAction())
+				//pTeam->CurrentScript->NextAction();
+			Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (End Team: Naval unable against ground target)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine+1, pScript->Type->ScriptActions[pScript->idxCurrentLine+1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine+1].Argument);
 			return;
 		}
 	}
@@ -1498,7 +1502,7 @@ void ScriptExt::IncreaseCurrentTriggerWeight(TeamClass* pTeam, double modifier =
 	
 	if (modifier <= 0)
 		modifier = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
-	Debug::Log("DEBUG: [BEFORE] Update Trigger: [%s] (Weight +%d) [Script line: %d]\n", pTeamType->ID, modifier, pTeam->CurrentScript->idxCurrentLine);
+	
 	for (int i = 0; i < AITriggerTypeClass::Array->Count && !found; i++)
 	{
 		auto pTriggerTeam1Type = AITriggerTypeClass::Array->GetItem(i)->Team1;
@@ -1519,7 +1523,7 @@ void ScriptExt::IncreaseCurrentTriggerWeight(TeamClass* pTeam, double modifier =
 		}
 
 		pTriggerType->Weight_Current += modifier;
-		Debug::Log("[END1] DEBUG: Update Trigger: [%s] pTriggerType->Weight_Current: %d (+%d)\n", pTriggerType->ID, pTriggerType->Weight_Current, modifier);
+		
 		if (pTriggerType->Weight_Current > pTriggerType->Weight_Maximum)
 			pTriggerType->Weight_Current = pTriggerType->Weight_Maximum;
 	}
@@ -1531,6 +1535,8 @@ void ScriptExt::IncreaseCurrentTriggerWeight(TeamClass* pTeam, double modifier =
 	// This action finished
 	pTeam->StepCompleted = true;
 	//pTeam->CurrentScript->NextAction();
+
+	return;
 }
 
 void ScriptExt::Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType)
