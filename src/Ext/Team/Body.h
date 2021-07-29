@@ -6,7 +6,10 @@
 #include <AITriggerTypeClass.h>
 #include <Helpers/Enumerators.h>
 
+
+#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
+#include <Utilities/TemplateDef.h>
 #include <Phobos.h>
 
 class TeamExt
