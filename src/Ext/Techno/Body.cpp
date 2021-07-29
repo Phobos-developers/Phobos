@@ -38,7 +38,7 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
                 auto pKillerTechnoData = TechnoExt::ExtMap.Find(pObjectKiller);
                 auto pFootKiller = abstract_cast<FootClass*>(pObjectKiller);
                 auto pFocus = abstract_cast<TechnoClass*>(pFootKiller->Team->Focus);
-                Debug::Log("pObjectKiller [%s] killed [%s] and belongs to Team [%s]\n", pObjectKiller->get_ID(), pVictim->get_ID(), pFootKiller->Team->Type->ID);
+                Debug::Log("DEBUG: pObjectKiller -> [%s] [%s] registered a kill of the type [%s]\n", pFootKiller->Team->Type->ID, pObjectKiller->get_ID(), pVictim->get_ID());
 
                 pKillerTechnoData->LastKillWasTeamTarget = false;
                 if (pFocus == pVictim)

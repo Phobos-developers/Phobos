@@ -336,7 +336,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				// This action finished
 				pTeam->StepCompleted = true;
 				//pTeam->CurrentScript->NextAction();
-				Debug::Log("DEBUG: [%s] [%s]: Force the jump to NEXT line: %d = %d,%d\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine+1, pScript->Type->ScriptActions[pScript->idxCurrentLine+1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine+1].Argument);
+				Debug::Log("DEBUG: [%s] [%s]: Force the jump to NEXT line: %d = %d,%d\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
 				return;
 			}
 		}
@@ -535,7 +535,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 			// This action finished
 			pTeam->StepCompleted = true;
 			//pTeam->CurrentScript->NextAction();
-			Debug::Log("DEBUG: Next script action line for [%s] (%s) will be: %d = %d,%d (reason: New Target NOT FOUND)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine+1, pScript->Type->ScriptActions[pScript->idxCurrentLine+1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine+1].Argument);
+			Debug::Log("DEBUG: Next script action line for [%s] (%s) will be: %d = %d,%d (reason: New Target NOT FOUND)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
 			return;
 		}
 	}
@@ -672,7 +672,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 			if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] WWW   (bForceNextAction)\n", pTeam->Type->ID);
 			//if (pTeam->CurrentScript->HasNextAction())
 				//pTeam->CurrentScript->NextAction();
-			Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (End Team: Naval unable against ground target)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine+1, pScript->Type->ScriptActions[pScript->idxCurrentLine+1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine+1].Argument);
+			Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (End Team: Naval unable against ground target)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
 			return;
 		}
 	}
