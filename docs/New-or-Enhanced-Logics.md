@@ -414,16 +414,16 @@ In `rulesmd.ini`:
 [SOMEUNIT]                  ; UnitType , as source unit
 StoreDeathFacingsForAnim=   ; boolean , store `SOMEUNIT` facings for `CreateUnit`
 DestroyAnim=SOMEANIM        ; list of `Animations` played after `SOMEUNIT` got destroyed
+DestroyAnim.Random=         ; boolean , Allow game to create random DestroyAnim default to yes
 ```
 
 In `art.ini`:
 ```ini
 [SOMEANIM]                  ; AnimationType
 CreateUnit=                 ; UnitType to create after this `Animation` dissapear
-CreateUnit.Force=			; boolean , `CreateUnit` will ignore game patfinding check
 CreateUnit.Facing=          ; short , `CreateUnit` facings from 0-255 or -1 random
 CreateUnit.UseDeathFacings= ; boolean , Use `SOMEUNIT` death facings for `CreateUnit` facings
-CreateUnit.Offset=          ; X,Y,Z  , Offset modifier for `CreateUnit` location
 CreateUnit.RemapAnim=       ; boolean , allow remap `SOMEANIM` to `Owner` color
 CreateUnit.Mission=	        ; Missions , `CreateUnit` missions after created , default to `Guard`
+CreateUnit.Owner=           ; Enumeration , Decide `Owner` of `CreatedUnit` invoker|killer|victim|civilian|special|neutral|random , default to victim
 ```
