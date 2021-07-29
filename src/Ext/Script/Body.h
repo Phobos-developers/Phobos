@@ -12,6 +12,7 @@
 #include <WarheadTypeClass.h>
 #include <SpawnManagerClass.h>
 
+#include <Ext/Team/Body.h>
 #include <Utilities/Container.h>
 #include <Phobos.h>
 
@@ -56,6 +57,7 @@ public:
 	static void IncreaseCurrentTriggerWeight(TeamClass* pTeam, double modifier);
 	static void MissionFollow(TeamClass * pTeam);
 	static void Mission_Attack_List(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
+	static void WaitIfNoTarget(TeamClass *pTeam, int attempts);
 
 	static ExtContainer ExtMap;
 };

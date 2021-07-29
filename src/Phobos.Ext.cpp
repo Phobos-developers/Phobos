@@ -17,6 +17,7 @@
 #include <Ext/TerrainType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Team/Body.h>
 
 #include <New/Type/RadTypeClass.h>
 
@@ -235,7 +236,8 @@ auto MassActions = MassAction <
 	WeaponTypeExt,
 	// New classes
 	ShieldTypeClass,
-	RadTypeClass
+	RadTypeClass,
+	TeamExt
 	// other classes
 > ();
 

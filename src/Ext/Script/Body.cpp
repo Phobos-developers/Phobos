@@ -112,6 +112,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Farther specific targets targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
 		ScriptExt::Mission_Attack_List(pTeam, false, 3, -1);
 		break;
+	case 92:
+		ScriptExt::WaitIfNoTarget(pTeam, -1);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
@@ -285,6 +288,14 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		{
 			pTeam->GuardAreaTimer.Stop(); // Needed
 			noWaitLoop = true;
+
+			auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+
+			if (pTeamData && pTeamData->WaitNoTargetAttempts > 0)
+			{
+				pTeamData->WaitNoTargetAttempts--;
+				Debug::Log("DEBUG: [%s] [%s] Script line: %d = %d,%d WaitIfNoTarget: %d attempts left\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument, pTeamData->WaitNoTargetAttempts);
+			}
 		}
 		else
 			return;
@@ -454,6 +465,13 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		{
 			Debug::Log("DEBUG: [%s]: Leader [%s] selected as target [%s]. (%s). Script line: %d = %d,%d\n", pTeam->Type->ID, pLeaderUnit->GetTechnoType()->get_ID(), selectedTarget->GetTechnoType()->get_ID(), pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
 			pTeam->Focus = selectedTarget;
+			
+			auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+			if (pTeamData && pTeamData->WaitNoTargetAttempts != 0)
+			{
+				Debug::Log("DEBUG: [%s] [%s] Script line: %d = %d,%d WaitIfNoTarget: disabled\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+				pTeamData->WaitNoTargetAttempts = 0;
+			}
 
 			for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 			{
@@ -529,6 +547,13 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		}
 		else
 		{
+			auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+			if (pTeamData && pTeamData->WaitNoTargetAttempts != 0)
+			{
+				Debug::Log("DEBUG: [%s] [%s] Script line: %d = %d,%d WaitIfNoTarget: %d attempts left\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument, pTeamData->WaitNoTargetAttempts);
+				noWaitLoop = false;
+			}
+
 			if (!noWaitLoop)
 				pTeam->GuardAreaTimer.Start(16);
 			if (pTeam->Type->ID[0] == 'C' && pTeam->Type->ID[1] == '0') Debug::Log("DEBUG: [%s] OOO   (selectedTarget not found)\n", pTeam->Type->ID);
@@ -1547,4 +1572,32 @@ void ScriptExt::Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int cal
 
 	if (RulesExt::Global()->AITargetTypeLists.Count > 0 && RulesExt::Global()->AITargetTypeLists.GetItem(attackAITargetType).Count > 0)
 		Mission_Attack(pTeam, true, 0, attackAITargetType);
+}
+
+void ScriptExt::WaitIfNoTarget(TeamClass *pTeam, int attempts = 0)
+{
+	// This passive method prevents Team's Trigger reaching the Max Weight in seconds if there is no target and the script contains a loop (6,nn).
+	// attempts == number of times the Team will wait if Mission_Attack(...) can't find a new target.
+	if (attempts < 0)
+		attempts = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+	Debug::Log("DEBUG: [%s] [%s] Script line: %d = %d,%d WaitIfNoTarget: inside\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument);
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+
+	if (pTeamData)
+	{
+		if (attempts <= 0)
+			pTeamData->WaitNoTargetAttempts = -1; // Infinite waits if no target
+		else
+			pTeamData->WaitNoTargetAttempts = attempts;
+
+		Debug::Log("DEBUG: [%s] [%s] Script line: %d = %d,%d WaitIfNoTarget: set %d attempts\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument, pTeamData->WaitNoTargetAttempts);
+	}
+	else
+	{
+		Debug::Log("DEBUG: no ExtTeam\n");
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+	return;
 }
