@@ -45,17 +45,19 @@ public:
 				auto pPlayer = HouseClass::Player();
 				if (pPlayer->CanBuild(pItem, true, true) == CanBuildResult::Buildable)
 				{
-					if (auto pFactory = pPlayer->GetPrimaryFactory(AbstractType::Building, false, BuildCat::DontCare))
+					if (pItem->FindFactory(true, true, true, pPlayer))
 					{
-						if (pFactory->GetProgress())
+						if (pPlayer->GetPrimaryFactory(AbstractType::Building, false, BuildCat::DontCare))
 							return;
 
-						NetworkEvent Event;
+						NetworkEvent vEvent;
 
-						Event.FillEvent_ProduceAbandonSuspend(
+						vEvent.FillEvent_ProduceAbandonSuspend(
 							pPlayer->ArrayIndex, NetworkEvents::Produce, pItem->WhatAmI(), pItem->GetArrayIndex(), pItem->Naval
 						);
-						Networking::AddEvent(&Event);
+						Networking::AddEvent(&vEvent);
+						SidebarClass::Instance->RedrawSidebar(1);
+
 						return;
 					}
 				}

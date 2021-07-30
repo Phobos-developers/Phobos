@@ -33,7 +33,7 @@ public:
 
 	virtual const wchar_t* GetUIDescription() const override
 	{
-		return GeneralUtils::LoadStringUnlessMissing("TXT_REPEAT_LAST_Combat_DESC", L"Repeat last combat you built if it is buildable.");
+		return GeneralUtils::LoadStringUnlessMissing("TXT_REPEAT_LAST_COMBAT_DESC", L"Repeat last combat you built if it is buildable.");
 	}
 
 	virtual void Execute(DWORD dwUnk) const override
@@ -45,17 +45,19 @@ public:
 				auto pPlayer = HouseClass::Player();
 				if (pPlayer->CanBuild(pItem, true, true) == CanBuildResult::Buildable)
 				{
-					if (auto pFactory = pPlayer->GetPrimaryFactory(AbstractType::Building, false, BuildCat::Combat))
+					if (pItem->FindFactory(true, true, true, pPlayer))
 					{
-						if (pFactory->GetProgress())
+						if (pPlayer->GetPrimaryFactory(AbstractType::Building, false, BuildCat::Combat))
 							return;
 
-						NetworkEvent Event;
+						NetworkEvent vEvent;
 
-						Event.FillEvent_ProduceAbandonSuspend(
+						vEvent.FillEvent_ProduceAbandonSuspend(
 							pPlayer->ArrayIndex, NetworkEvents::Produce, pItem->WhatAmI(), pItem->GetArrayIndex(), pItem->Naval
 						);
-						Networking::AddEvent(&Event);
+						Networking::AddEvent(&vEvent);
+						SidebarClass::Instance->RedrawSidebar(1);
+
 						return;
 					}
 				}
