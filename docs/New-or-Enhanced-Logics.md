@@ -148,7 +148,6 @@ In `rulesmd.ini`:
 ```ini
 [SOMEUNIT]                  ; UnitType
 StoreDeathFacingsForAnim=   ; boolean, whether to store facings for Anim-to-Unit
-DestroyAnim=SOMEANIM        ; list of AnimTypes, played after gets destroyed; default to none
 DestroyAnim.Random=yes      ; boolean, whether to randomize DestroyAnim
 ```
 
@@ -160,7 +159,7 @@ CreateUnit.Facing=-1                ; short, `CreateUnit` facings in range of 0-
 CreateUnit.UseDeathFacings=no       ; boolean, inherit facing from destroyed unit
 CreateUnit.UseTurretDeathFacings=no ; boolean, inherit facing from destroyed unit
 CreateUnit.RemapAnim=               ; boolean, whether to remap anim to owner color
-CreateUnit.Mission=Guard	          ; MissionType
+CreateUnit.Mission=Guard            ; MissionType
 CreateUnit.Owner=Victim             ; owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
 ```
 
