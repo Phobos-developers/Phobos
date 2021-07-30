@@ -8,42 +8,43 @@
 class AnimExt
 {
 public:
-    using base_type = AnimClass;
+	using base_type = AnimClass;
 
-    class ExtData final : public Extension<AnimClass>
-    {
-    public:
-
+	class ExtData final : public Extension<AnimClass>
+	{
+	public:
 		short DeathUnitFacing;
 		DirStruct DeathUnitTurretFacing;
-		bool Fromdeathunit;
-		bool DeathUnitHasTurrent;
+		bool FromDeathUnit;
+		bool DeathUnitHasTurret;
 
-        ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
+		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
 			, DeathUnitFacing(0)
 			, DeathUnitTurretFacing()
-			, Fromdeathunit(false)
-			, DeathUnitHasTurrent(false)
-        { }
+			, FromDeathUnit(false)
+			, DeathUnitHasTurret(false)
+		{ }
 
-        virtual ~ExtData() = default;
-        virtual void InvalidatePointer(void *ptr, bool bRemoved) override {}
-        virtual void LoadFromStream(PhobosStreamReader& Stm)override;
-        virtual void SaveToStream(PhobosStreamWriter& Stm)override;
+		virtual ~ExtData() = default;
 
-    private:
-        template <typename T>
-        void Serialize(T& Stm);
-    };
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
-    class ExtContainer final : public Container<AnimExt> 
-    {
-    public:
-        ExtContainer();
-        ~ExtContainer();
-    };
+		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-    static ExtContainer ExtMap;
+	private:
+		template <typename T>
+		void Serialize(T& Stm);
+	};
+
+	class ExtContainer final : public Container<AnimExt>
+	{
+	public:
+		ExtContainer();
+		~ExtContainer();
+	};
+
+	static ExtContainer ExtMap;
+
 	static const bool SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker , HouseClass* pVictim, bool defaultToVictimOwner = true);
-
 };

@@ -25,14 +25,15 @@ const bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker
 
 // =============================
 // load / save
+
 template <typename T>
 void AnimExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->DeathUnitFacing)
-		.Process(this->Fromdeathunit)
+		.Process(this->FromDeathUnit)
 		.Process(this->DeathUnitTurretFacing)
-		.Process(this->DeathUnitHasTurrent)
+		.Process(this->DeathUnitHasTurret)
 		;
 }
 
@@ -47,14 +48,16 @@ void AnimExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	Extension<AnimClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
+
 // =============================
 // container
 
-AnimExt::ExtContainer::ExtContainer() : Container("AnimClass") {}
+AnimExt::ExtContainer::ExtContainer() : Container("AnimClass") { }
 AnimExt::ExtContainer::~ExtContainer() = default;
 
 // =============================
 // container hooks
+
 DEFINE_HOOK_AGAIN(0x422126, AnimClass_CTOR, 0x5)
 DEFINE_HOOK_AGAIN(0x422707, AnimClass_CTOR, 0x5)
 DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
@@ -86,7 +89,9 @@ DEFINE_HOOK(0x426598, AnimClass_SDDTOR, 0x7)
 	AnimExt::ExtMap.Remove(pItem);
 
 	return 0;
-}*/
+}
+*/
+
 DEFINE_HOOK_AGAIN(0x425280, AnimClass_SaveLoad_Prefix, 0x5)
 DEFINE_HOOK(0x4253B0, AnimClass_SaveLoad_Prefix, 0x5)
 {

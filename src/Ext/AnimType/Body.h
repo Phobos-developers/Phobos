@@ -18,7 +18,7 @@ public:
 		Valueable<UnitTypeClass*> CreateUnit;
 		Valueable<int> CreateUnit_Facing;
 		Valueable<bool> CreateUnit_UseDeathFacings;
-		Valueable<bool> CreateUnit_useDeathTurrentFacings;
+		Valueable<bool> CreateUnit_UseDeathTurretFacings;
 		Valueable<bool> CreateUnit_RemapAnim;
 		Valueable<Mission> CreateUnit_Mission;
 		Valueable<OwnerHouseKind> CreateUnit_Owner;
@@ -27,15 +27,18 @@ public:
 			, Palette(CustomPalette::PaletteMode::Temperate)
 			, CreateUnit_Facing(-1)
 			, CreateUnit_UseDeathFacings(false)
-			, CreateUnit_useDeathTurrentFacings(false)
+			, CreateUnit_UseDeathTurretFacings(false)
 			, CreateUnit_RemapAnim(false)
 			, CreateUnit_Mission(Mission::Guard)
 			, CreateUnit_Owner(OwnerHouseKind::Victim)
 		{ }
 
 		virtual ~ExtData() = default;
+
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
-		virtual void InvalidatePointer(void *ptr, bool bRemoved) override { }
+
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
@@ -52,5 +55,6 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
 	static const void ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller = nullptr);
 };

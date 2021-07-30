@@ -6,6 +6,7 @@
 #include <HouseClass.h>
 #include <ScenarioClass.h>
 #include <UnitClass.h>
+
 #include <Ext/Anim/Body.h>
 #include <Ext/TechnoType/Body.h>
 
@@ -22,7 +23,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->CreateUnit.Read(exINI, pID, "CreateUnit");
 	this->CreateUnit_Facing.Read(exINI, pID, "CreateUnit.Facing");
 	this->CreateUnit_UseDeathFacings.Read(exINI, pID, "CreateUnit.UseDeathFacings");
-	this->CreateUnit_useDeathTurrentFacings.Read(exINI, pID, "CreateUnit.UseDeathTurrentFacings");
+	this->CreateUnit_UseDeathTurretFacings.Read(exINI, pID, "CreateUnit.UseDeathTurretFacings");
 	this->CreateUnit_RemapAnim.Read(exINI, pID, "CreateUnit.RemapAnim");
 	this->CreateUnit_Mission.Read(exINI, pID, "CreateUnit.Mission");
 	this->CreateUnit_Owner.Read(exINI, pID, "CreateUnit.Owner");
@@ -33,29 +34,26 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 	if (!pThis)
 		return;
 
-	HouseClass* Invoker = pKiller ? pKiller->Owner : nullptr;
-	auto const pType = pThis->Type;
+	HouseClass* pInvoker = pKiller ? pKiller->Owner : nullptr;
 
-	if (pType->DestroyAnim.Count > 0)
+	if (pThis->Type->DestroyAnim.Count > 0)
 	{
-		
-		auto const Facing = pThis->PrimaryFacing.current().value256();
-		auto pAnimType = pType->DestroyAnim[ScenarioClass::Instance->Random.Random() % pType->DestroyAnim.Count];
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		auto const facing = pThis->PrimaryFacing.current().value256();
+		auto pAnimType = pThis->Type->DestroyAnim[ScenarioClass::Instance->Random.Random() % pThis->Type->DestroyAnim.Count];
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
-		if (!pTypeExt->DestroyAnimRandom.Get())
+		if (!pTypeExt->DestroyAnim_Random.Get())
 		{
-			auto Index = 0;
+			int idxAnim = 0;
 
-			if (pType->DestroyAnim.Count >= 8)
+			if (pThis->Type->DestroyAnim.Count >= 8)
 			{
-				Index = pType->DestroyAnim.Count;
-				if (pType->DestroyAnim.Count % 2 == 0)			
-					Index *= static_cast<int>(Facing / 256.0);	
-
+				idxAnim = pThis->Type->DestroyAnim.Count;
+				if (pThis->Type->DestroyAnim.Count % 2 == 0)
+					idxAnim *= static_cast<int>(facing / 256.0);
 			}
 
-			pAnimType = pType->DestroyAnim[Index];
+			pAnimType = pThis->Type->DestroyAnim[idxAnim];
 		}
 
 		if (pAnimType)
@@ -65,18 +63,18 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 				//auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
 				//	? pThis->GetOriginalOwner() : pThis->Owner;
 
-				AnimExt::SetAnimOwnerHouseKind(pAnim, Invoker, pThis->Owner);
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
 
 				if (pTypeExt->StoreDeathFacings.Get())
 				{
 					if (auto const AnimExt = AnimExt::ExtMap.Find(pAnim))
 					{
-						AnimExt->Fromdeathunit = true;
-						AnimExt->DeathUnitFacing = Facing;
+						AnimExt->FromDeathUnit = true;
+						AnimExt->DeathUnitFacing = facing;
 
 						if (pThis->HasTurret())
 						{
-							AnimExt->DeathUnitHasTurrent = true;
+							AnimExt->DeathUnitHasTurret = true;
 							AnimExt->DeathUnitTurretFacing = pThis->SecondaryFacing.current();
 						}
 					}
@@ -96,7 +94,7 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CreateUnit_UseDeathFacings)
 		.Process(this->CreateUnit_RemapAnim)
 		.Process(this->CreateUnit_Mission)
-		.Process(this->CreateUnit_useDeathTurrentFacings)
+		.Process(this->CreateUnit_UseDeathTurretFacings)
 		.Process(this->CreateUnit_Owner)
 		;
 }

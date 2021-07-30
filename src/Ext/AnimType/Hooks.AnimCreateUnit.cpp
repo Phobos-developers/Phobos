@@ -1,15 +1,14 @@
-#include <HouseClass.h>
-#include <ScenarioClass.h>
-#include <Ext/TechnoType/Body.h>
-#include <Ext/Techno/Body.h>
-#include <Ext/Anim/Body.h>
+// Anim-to--Unit 
+// Author: Otamaa
 
 #include "Body.h"
 
+#include <HouseClass.h>
+#include <ScenarioClass.h>
 
-// Anim Create Unit 
-// Author : Otamaa
-
+#include <Ext/TechnoType/Body.h>
+#include <Ext/Techno/Body.h>
+#include <Ext/Anim/Body.h>
 
 DEFINE_HOOK(0x737F6D, UnitClass_TakeDamage_Destroy, 0x7)
 {
@@ -24,7 +23,7 @@ DEFINE_HOOK(0x737F6D, UnitClass_TakeDamage_Destroy, 0x7)
 	return 0x737F74;
 }
 
-DEFINE_HOOK(0x738807, UnitClass_Destroy_DesytroyAnim, 0x8)
+DEFINE_HOOK(0x738807, UnitClass_Destroy_DestroyAnim, 0x8)
 {
 	GET(UnitClass* const, pThis, ESI);
 
@@ -36,7 +35,7 @@ DEFINE_HOOK(0x738807, UnitClass_Destroy_DesytroyAnim, 0x8)
 	return 0x73887E;
 }
 
-DEFINE_HOOK(0x423BC8, AnimClass_Update_CreateUnit_MarkOccBits, 0x6)
+DEFINE_HOOK(0x423BC8, AnimClass_Update_CreateUnit_MarkOccupationBits, 0x6)
 {
 	GET(AnimClass* const, pThis, ESI);
 
@@ -58,54 +57,51 @@ DEFINE_HOOK(0x424932, AnimClass_Update_CreateUnit_ActualAffects, 0x6)
 
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
-	if (auto Unit = pTypeExt->CreateUnit.Get())
+	if (auto unit = pTypeExt->CreateUnit.Get())
 	{
-		auto DecidedOwner = HouseClass::FindCivilianSide();
-		auto Owner = pThis->Owner;
+		HouseClass* decidedOwner = (pThis->Owner && !pThis->Owner->Defeated)
+			? pThis->Owner : HouseClass::FindCivilianSide();
 
-		if (Owner && !Owner->Defeated)
-			DecidedOwner = Owner;
-		
-		auto Location = pThis->GetCoords();
-		Location.Z = 0;
+		CoordStruct location = pThis->GetCoords();
+		location.Z = 0;
 
-		pThis->UnmarkAllOccupationBits(Location);
+		pThis->UnmarkAllOccupationBits(location);
 
-		if (auto pTechno = static_cast<TechnoClass*>(Unit->CreateObject(DecidedOwner)))
+		if (auto pTechno = static_cast<TechnoClass*>(unit->CreateObject(decidedOwner)))
 		{
 			bool success = false;
+			auto const pExt = AnimExt::ExtMap.Find(pThis);
 
-			auto const AnimExt = AnimExt::ExtMap.Find(pThis);
+			int aFacing = pTypeExt->CreateUnit_Facing.Get();
+			aFacing = aFacing > 255 ? 255 : aFacing;
+			aFacing = aFacing <= -1 ? ScenarioClass::Instance->Random.RandomRanged(0, 255) : aFacing;
 
-			auto aFacing = pTypeExt->CreateUnit_Facing.Get();
-				 aFacing = aFacing > 255 ? 255 : aFacing;
-				 aFacing = aFacing <= -1 ? ScenarioClass::Instance->Random.RandomRanged(0, 255) : aFacing;
-
-			auto FacingResult = (pTypeExt->CreateUnit_UseDeathFacings.Get() && AnimExt->Fromdeathunit) ? AnimExt->DeathUnitFacing : static_cast<short>(aFacing);
+			short resultingFacing = (pTypeExt->CreateUnit_UseDeathFacings.Get() && pExt->FromDeathUnit)
+				? pExt->DeathUnitFacing : static_cast<short>(aFacing);
 
 			if (!MapClass::Instance->TryGetCellAt(pThis->GetCoords())->GetBuilding())
 			{
 				++Unsorted::IKnowWhatImDoing;
-				success = pTechno->Put(Location, FacingResult);
+				success = pTechno->Put(location, resultingFacing);
 				--Unsorted::IKnowWhatImDoing;
 			}
 			else
 			{
-				success = pTechno->Put(Location, FacingResult);
+				success = pTechno->Put(location, resultingFacing);
 			}
 
 			if (success)
 			{
-				if (pTechno->HasTurret() && AnimExt->Fromdeathunit && AnimExt->DeathUnitHasTurrent && pTypeExt->CreateUnit_useDeathTurrentFacings.Get())
-					pTechno->SecondaryFacing.set(AnimExt->DeathUnitTurretFacing);
+				if (pTechno->HasTurret() && pExt->FromDeathUnit && pExt->DeathUnitHasTurret && pTypeExt->CreateUnit_UseDeathTurretFacings.Get())
+					pTechno->SecondaryFacing.set(pExt->DeathUnitTurretFacing);
 
-				Debug::Log("[" __FUNCTION__ "] Stored Turret Facing %d \n",AnimExt->DeathUnitTurretFacing.value256());
+				Debug::Log("[" __FUNCTION__ "] Stored Turret Facing %d \n",pExt->DeathUnitTurretFacing.value256());
 
 				if (!pTechno->InLimbo)
 					pTechno->QueueMission(pTypeExt->CreateUnit_Mission.Get(), false);
 
-				if (!DecidedOwner->Type->MultiplayPassive)
-					DecidedOwner->RecheckTechTree = true;
+				if (!decidedOwner->Type->MultiplayPassive)
+					decidedOwner->RecheckTechTree = true;
 			}
 			else
 			{

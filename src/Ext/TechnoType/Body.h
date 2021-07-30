@@ -41,7 +41,6 @@ public:
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
-		Valueable<bool> StoreDeathFacings;
 		Nullable<AnimTypeClass*> WarpOut;
 		Nullable<AnimTypeClass*> WarpIn;
 		Nullable<AnimTypeClass*> WarpAway;
@@ -54,7 +53,9 @@ public:
 		ValueableVector<AnimTypeClass*> OreGathering_Anims;
 		ValueableVector<int> OreGathering_Tiberiums;
 		ValueableVector<int> OreGathering_FramesPerDir;
-		Valueable<bool> DestroyAnimRandom;
+
+		Valueable<bool> StoreDeathFacings;
+		Valueable<bool> DestroyAnim_Random;
 
 		struct LaserTrailDataEntry
 		{
@@ -94,7 +95,6 @@ public:
 			CameoPriority(0),
 			NoManualMove(false),
 			ShieldType(),
-			StoreDeathFacings(false),
 			WarpOut(),
 			WarpIn(),
 			WarpAway(),
@@ -107,7 +107,8 @@ public:
 			OreGathering_Tiberiums(),
 			OreGathering_FramesPerDir(),
 			LaserTrailData(),
-			DestroyAnimRandom(true)
+			StoreDeathFacings(false),
+			DestroyAnim_Random(true)
 		{ }
 
 		virtual ~ExtData() = default;

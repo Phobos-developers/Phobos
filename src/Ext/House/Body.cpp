@@ -1,8 +1,10 @@
 #include "Body.h"
+
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
 
 #include <ScenarioClass.h>
+
 //Static init
 /*
 template<> const DWORD Extension<HouseClass>::Canary = 0x11111111;
@@ -43,8 +45,8 @@ int HouseExt::TotalHarvesterCount(HouseClass* pThis)
 	return result;
 }
 
-//Ares
-HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRandom,HouseClass* const pDefault, HouseClass* const pInvoker, HouseClass* const pVictim)
+// Ares
+HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRandom, HouseClass* const pDefault, HouseClass* const pInvoker, HouseClass* const pVictim)
 {
 	switch (kind) {
 	case OwnerHouseKind::Invoker:

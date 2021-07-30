@@ -135,6 +135,36 @@ RadColor=0,255,0                ; RGB
 RadSiteWarhead=RadSite          ; WarheadType
 ```
 
+## Animations
+
+### Anim-to-Unit
+
+![image](_static/images/animToUnit.gif)  
+
+- Animations can now create (or "convert" to) units when they end.
+  - Because anims usually don't have an owner the unit will be created with civilian owner unless you use `DestroyAnim` which was modified to store owner and facing information from the destroyed unit.
+
+In `rulesmd.ini`:
+```ini
+[SOMEUNIT]                  ; UnitType
+StoreDeathFacingsForAnim=   ; boolean, whether to store facings for Anim-to-Unit
+DestroyAnim=SOMEANIM        ; list of AnimTypes, played after gets destroyed; default to none
+DestroyAnim.Random=yes      ; boolean, whether to randomize DestroyAnim
+```
+
+In `art.ini`:
+```ini
+[SOMEANIM]                          ; AnimationType
+CreateUnit=                         ; UnitType
+CreateUnit.Facing=-1                ; short, `CreateUnit` facings in range of 0-255 or -1 for random facing
+CreateUnit.UseDeathFacings=no       ; boolean, inherit facing from destroyed unit
+CreateUnit.UseTurretDeathFacings=no ; boolean, inherit facing from destroyed unit
+CreateUnit.RemapAnim=               ; boolean, whether to remap anim to owner color
+CreateUnit.Mission=Guard	          ; MissionType
+CreateUnit.Owner=Victim             ; owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
+```
+
+
 ## Buildings
 
 ### Extended building upgrades logic
@@ -398,32 +428,4 @@ In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
 x=73,0
-```
-
-## AnimationType
-
-### Anim Create Unit
-
-![image](_static/images/animToUnit.gif)  
-
-- Be caution that `Animation` usually doesnt have `Owner` by default which causing unit created with `Civilian Owner` insted.
-- Using UnitType `DestroyAnim` is mostly recomended since it got rewritten to provide an `Owner` and various properties to the `Animation`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEUNIT]                  ; UnitType , as source unit
-StoreDeathFacingsForAnim=   ; boolean , store `SOMEUNIT` facings for `CreateUnit`
-DestroyAnim=SOMEANIM        ; list of `Animations` played after `SOMEUNIT` got destroyed
-DestroyAnim.Random=         ; boolean , Allow game to create random DestroyAnim default to yes
-```
-
-In `art.ini`:
-```ini
-[SOMEANIM]                  ; AnimationType
-CreateUnit=                 ; UnitType to create after this `Animation` dissapear
-CreateUnit.Facing=          ; short , `CreateUnit` facings from 0-255 or -1 random
-CreateUnit.UseDeathFacings= ; boolean , Use `SOMEUNIT` death facings for `CreateUnit` facings
-CreateUnit.RemapAnim=       ; boolean , allow remap `SOMEANIM` to `Owner` color
-CreateUnit.Mission=	        ; Missions , `CreateUnit` missions after created , default to `Guard`
-CreateUnit.Owner=           ; Enumeration , Decide `Owner` of `CreatedUnit` invoker|killer|victim|civilian|special|neutral|random , default to victim
 ```

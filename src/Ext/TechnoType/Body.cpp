@@ -113,7 +113,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OreGathering_FramesPerDir.Read(exINI, pSection, "OreGathering.FramesPerDir");
 
 	this->StoreDeathFacings.Read(exINI, pSection, "StoreDeathFacingsForAnim");
-	this->DestroyAnimRandom.Read(exINI, pSection, "DestroyAnim.Random");
+	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
+
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
 
@@ -185,7 +186,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OreGathering_FramesPerDir)
 		.Process(this->LaserTrailData)
 		.Process(this->StoreDeathFacings)
-		.Process(this->DestroyAnimRandom)
+		.Process(this->DestroyAnim_Random)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
