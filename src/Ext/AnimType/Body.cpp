@@ -64,21 +64,22 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 				//auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
 				//	? pThis->GetOriginalOwner() : pThis->Owner;
 
-				auto pAnimTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
+				auto const pAnimTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
+				auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+
 				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
 
-				if (pAnimTypeExt->CreateUnit_UseDeathFacings.Get())
-				{
-					if (auto const AnimExt = AnimExt::ExtMap.Find(pAnim))
-					{
-						AnimExt->FromDeathUnit = true;
-						AnimExt->DeathUnitFacing = facing;
+				pAnimExt->FromDeathUnit = true;
 
-						if (pThis->HasTurret())
-						{
-							AnimExt->DeathUnitHasTurret = true;
-							AnimExt->DeathUnitTurretFacing = pThis->SecondaryFacing.current();
-						}
+				if (pAnimTypeExt->CreateUnit_UseDeathFacings.Get())
+					pAnimExt->DeathUnitFacing = facing;
+
+				if (pAnimTypeExt->CreateUnit_UseDeathTurretFacings.Get())
+				{
+					if (pThis->HasTurret())
+					{
+						pAnimExt->DeathUnitHasTurret = true;
+						pAnimExt->DeathUnitTurretFacing = pThis->SecondaryFacing.current();
 					}
 				}
 			}

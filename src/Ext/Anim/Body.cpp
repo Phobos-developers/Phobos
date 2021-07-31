@@ -16,7 +16,7 @@ const bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker
 	{
 		pAnim->Owner = newOwner;
 
-		if (pTypeExt->CreateUnit_RemapAnim.Get())
+		if (pTypeExt->CreateUnit_RemapAnim.Get() && !newOwner->Defeated)
 			pAnim->LightConvert = ColorScheme::Array->Items[newOwner->ColorSchemeIndex]->LightConvert;
 	}
 
