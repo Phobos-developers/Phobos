@@ -69,7 +69,8 @@ BreaksShield=false             ; boolean
 
 ### Laser Trails
 
-!(Insert your image here)[]  
+![Laser Trails](_static/images/lasertrails.gif)  
+*Laser trails used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
 - Technos and projectiles can now have colorful trails of different transparency, thickness and color, which are drawn via laser drawing code.
 - Technos and projectiles can have multiple laser trails. For technos each trail can have custom laser trail type and FLH offset relative to turret and body.

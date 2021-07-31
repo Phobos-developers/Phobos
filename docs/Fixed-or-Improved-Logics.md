@@ -57,6 +57,9 @@ ChronoDelay=            ; integer, delay after teleport for chronosphere
 
 ### Customizable harvester ore gathering animation
 
+![Ore gathering](_static/images/oregath.gif)
+*Custom ore gathering anims in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
+
 - You can now specify which anim should be drawn when a harvester of specified type is gathering specified type of ore.
 
 In `rulesmd.ini`:
