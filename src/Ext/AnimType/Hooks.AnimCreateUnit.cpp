@@ -74,7 +74,7 @@ DEFINE_HOOK(0x424932, AnimClass_Update_CreateUnit_ActualAffects, 0x6)
 
 			int aFacing = pTypeExt->CreateUnit_Facing.Get();
 			aFacing = aFacing > 255 ? 255 : aFacing;
-			aFacing = aFacing <= -1 ? ScenarioClass::Instance->Random.RandomRanged(0, 255) : aFacing;
+			aFacing = pTypeExt->CreateUnit_RandomFacing.Get() ? ScenarioClass::Instance->Random.RandomRanged(0, 255) : aFacing;
 
 			short resultingFacing = (pTypeExt->CreateUnit_UseDeathFacings.Get() && pExt->FromDeathUnit)
 				? pExt->DeathUnitFacing : static_cast<short>(aFacing);

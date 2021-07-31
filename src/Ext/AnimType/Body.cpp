@@ -27,6 +27,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->CreateUnit_RemapAnim.Read(exINI, pID, "CreateUnit.RemapAnim");
 	this->CreateUnit_Mission.Read(exINI, pID, "CreateUnit.Mission");
 	this->CreateUnit_Owner.Read(exINI, pID, "CreateUnit.Owner");
+	this->CreateUnit_RandomFacing.Read(exINI, pID, "CreateUnit.RandomFacing");
 }
 
 const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
@@ -63,9 +64,10 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 				//auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
 				//	? pThis->GetOriginalOwner() : pThis->Owner;
 
+				auto pAnimTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
 				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
 
-				if (pTypeExt->StoreDeathFacings.Get())
+				if (pAnimTypeExt->CreateUnit_UseDeathFacings.Get())
 				{
 					if (auto const AnimExt = AnimExt::ExtMap.Find(pAnim))
 					{
@@ -96,6 +98,7 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CreateUnit_Mission)
 		.Process(this->CreateUnit_UseDeathTurretFacings)
 		.Process(this->CreateUnit_Owner)
+		.Process(this->CreateUnit_RandomFacing)
 		;
 }
 

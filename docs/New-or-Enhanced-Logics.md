@@ -147,7 +147,6 @@ RadSiteWarhead=RadSite          ; WarheadType
 In `rulesmd.ini`:
 ```ini
 [SOMEUNIT]                  ; UnitType
-StoreDeathFacingsForAnim=   ; boolean, whether to store facings for Anim-to-Unit
 DestroyAnim.Random=yes      ; boolean, whether to randomize DestroyAnim
 ```
 
@@ -155,10 +154,11 @@ In `art.ini`:
 ```ini
 [SOMEANIM]                          ; AnimationType
 CreateUnit=                         ; UnitType
-CreateUnit.Facing=-1                ; short, `CreateUnit` facings in range of 0-255 or -1 for random facing
+CreateUnit.Facing=-1                ; short, `CreateUnit` facings in range of 0-255
+CreateUnit.RandomFacing=yes         ; boolean, `CreateUnit` use random facings
 CreateUnit.UseDeathFacings=no       ; boolean, inherit facing from destroyed unit
 CreateUnit.UseTurretDeathFacings=no ; boolean, inherit facing from destroyed unit
-CreateUnit.RemapAnim=               ; boolean, whether to remap anim to owner color
+CreateUnit.RemapAnim=no             ; boolean, whether to remap anim to owner color
 CreateUnit.Mission=Guard            ; MissionType
 CreateUnit.Owner=Victim             ; owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
 ```

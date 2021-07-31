@@ -20,12 +20,14 @@ public:
 		Valueable<bool> CreateUnit_UseDeathFacings;
 		Valueable<bool> CreateUnit_UseDeathTurretFacings;
 		Valueable<bool> CreateUnit_RemapAnim;
+		Valueable<bool> CreateUnit_RandomFacing;
 		Valueable<Mission> CreateUnit_Mission;
 		Valueable<OwnerHouseKind> CreateUnit_Owner;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette(CustomPalette::PaletteMode::Temperate)
 			, CreateUnit_Facing(-1)
+			, CreateUnit_RandomFacing(true)
 			, CreateUnit_UseDeathFacings(false)
 			, CreateUnit_UseDeathTurretFacings(false)
 			, CreateUnit_RemapAnim(false)

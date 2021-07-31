@@ -54,7 +54,6 @@ public:
 		ValueableVector<int> OreGathering_Tiberiums;
 		ValueableVector<int> OreGathering_FramesPerDir;
 
-		Valueable<bool> StoreDeathFacings;
 		Valueable<bool> DestroyAnim_Random;
 
 		struct LaserTrailDataEntry
@@ -107,7 +106,6 @@ public:
 			OreGathering_Tiberiums(),
 			OreGathering_FramesPerDir(),
 			LaserTrailData(),
-			StoreDeathFacings(false),
 			DestroyAnim_Random(true)
 		{ }
 
