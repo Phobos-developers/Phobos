@@ -16,9 +16,9 @@ public:
 	public:
 		CustomPalette Palette;
 		Valueable<UnitTypeClass*> CreateUnit;
-		Valueable<int> CreateUnit_Facing;
-		Valueable<bool> CreateUnit_UseDeathFacings;
-		Valueable<bool> CreateUnit_UseDeathTurretFacings;
+		Valueable<unsigned short> CreateUnit_Facing;
+		Valueable<bool> CreateUnit_InheritDeathFacings;
+		Valueable<bool> CreateUnit_InheritTurretFacings;
 		Valueable<bool> CreateUnit_RemapAnim;
 		Valueable<bool> CreateUnit_RandomFacing;
 		Valueable<Mission> CreateUnit_Mission;
@@ -26,10 +26,10 @@ public:
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette(CustomPalette::PaletteMode::Temperate)
-			, CreateUnit_Facing(-1)
+			, CreateUnit_Facing(0)
 			, CreateUnit_RandomFacing(true)
-			, CreateUnit_UseDeathFacings(false)
-			, CreateUnit_UseDeathTurretFacings(false)
+			, CreateUnit_InheritDeathFacings(false)
+			, CreateUnit_InheritTurretFacings(false)
 			, CreateUnit_RemapAnim(false)
 			, CreateUnit_Mission(Mission::Guard)
 			, CreateUnit_Owner(OwnerHouseKind::Victim)

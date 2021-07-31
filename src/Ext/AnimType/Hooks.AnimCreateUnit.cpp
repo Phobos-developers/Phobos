@@ -72,12 +72,11 @@ DEFINE_HOOK(0x424932, AnimClass_Update_CreateUnit_ActualAffects, 0x6)
 			bool success = false;
 			auto const pExt = AnimExt::ExtMap.Find(pThis);
 
-			int aFacing = pTypeExt->CreateUnit_Facing.Get();
-			aFacing = aFacing > 255 ? 255 : aFacing;
-			aFacing = pTypeExt->CreateUnit_RandomFacing.Get() ? ScenarioClass::Instance->Random.RandomRanged(0, 255) : aFacing;
+			auto aFacing = pTypeExt->CreateUnit_RandomFacing.Get() 
+				? static_cast<unsigned short>(ScenarioClass::Instance->Random.RandomRanged(0, 255)) : pTypeExt->CreateUnit_Facing.Get();
 
-			short resultingFacing = (pTypeExt->CreateUnit_UseDeathFacings.Get() && pExt->FromDeathUnit)
-				? pExt->DeathUnitFacing : static_cast<short>(aFacing);
+			short resultingFacing = (pTypeExt->CreateUnit_InheritDeathFacings.Get() && pExt->FromDeathUnit)
+				? pExt->DeathUnitFacing : aFacing;
 
 			if (!MapClass::Instance->TryGetCellAt(pThis->GetCoords())->GetBuilding())
 			{
@@ -92,7 +91,7 @@ DEFINE_HOOK(0x424932, AnimClass_Update_CreateUnit_ActualAffects, 0x6)
 
 			if (success)
 			{
-				if (pTechno->HasTurret() && pExt->FromDeathUnit && pExt->DeathUnitHasTurret && pTypeExt->CreateUnit_UseDeathTurretFacings.Get())
+				if (pTechno->HasTurret() && pExt->FromDeathUnit && pExt->DeathUnitHasTurret && pTypeExt->CreateUnit_InheritTurretFacings.Get())
 					pTechno->SecondaryFacing.set(pExt->DeathUnitTurretFacing);
 
 				Debug::Log("[" __FUNCTION__ "] Stored Turret Facing %d \n",pExt->DeathUnitTurretFacing.value256());

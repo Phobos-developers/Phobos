@@ -22,8 +22,8 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Palette.LoadFromINI(pINI, pID, "CustomPalette");
 	this->CreateUnit.Read(exINI, pID, "CreateUnit");
 	this->CreateUnit_Facing.Read(exINI, pID, "CreateUnit.Facing");
-	this->CreateUnit_UseDeathFacings.Read(exINI, pID, "CreateUnit.UseDeathFacings");
-	this->CreateUnit_UseDeathTurretFacings.Read(exINI, pID, "CreateUnit.UseDeathTurretFacings");
+	this->CreateUnit_InheritDeathFacings.Read(exINI, pID, "CreateUnit.InheritFacings");
+	this->CreateUnit_InheritTurretFacings.Read(exINI, pID, "CreateUnit.InheritTurretFacings");
 	this->CreateUnit_RemapAnim.Read(exINI, pID, "CreateUnit.RemapAnim");
 	this->CreateUnit_Mission.Read(exINI, pID, "CreateUnit.Mission");
 	this->CreateUnit_Owner.Read(exINI, pID, "CreateUnit.Owner");
@@ -71,10 +71,10 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 
 				pAnimExt->FromDeathUnit = true;
 
-				if (pAnimTypeExt->CreateUnit_UseDeathFacings.Get())
+				if (pAnimTypeExt->CreateUnit_InheritDeathFacings.Get())
 					pAnimExt->DeathUnitFacing = facing;
 
-				if (pAnimTypeExt->CreateUnit_UseDeathTurretFacings.Get())
+				if (pAnimTypeExt->CreateUnit_InheritTurretFacings.Get())
 				{
 					if (pThis->HasTurret())
 					{
@@ -94,10 +94,10 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Palette)
 		.Process(this->CreateUnit)
 		.Process(this->CreateUnit_Facing)
-		.Process(this->CreateUnit_UseDeathFacings)
+		.Process(this->CreateUnit_InheritDeathFacings)
 		.Process(this->CreateUnit_RemapAnim)
 		.Process(this->CreateUnit_Mission)
-		.Process(this->CreateUnit_UseDeathTurretFacings)
+		.Process(this->CreateUnit_InheritTurretFacings)
 		.Process(this->CreateUnit_Owner)
 		.Process(this->CreateUnit_RandomFacing)
 		;

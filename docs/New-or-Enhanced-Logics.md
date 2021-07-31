@@ -154,10 +154,10 @@ In `art.ini`:
 ```ini
 [SOMEANIM]                          ; AnimationType
 CreateUnit=                         ; UnitType
-CreateUnit.Facing=-1                ; short, `CreateUnit` facings in range of 0-255
+CreateUnit.Facing=0                 ; unsigned short, `CreateUnit` facings in range of 0-255
 CreateUnit.RandomFacing=yes         ; boolean, `CreateUnit` use random facings
-CreateUnit.UseDeathFacings=no       ; boolean, inherit facing from destroyed unit
-CreateUnit.UseTurretDeathFacings=no ; boolean, inherit facing from destroyed unit
+CreateUnit.InheritFacings=no        ; boolean, inherit facing from destroyed unit
+CreateUnit.InheritTurretFacings=no  ; boolean, inherit facing from destroyed unit
 CreateUnit.RemapAnim=no             ; boolean, whether to remap anim to owner color
 CreateUnit.Mission=Guard            ; MissionType
 CreateUnit.Owner=Victim             ; owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
