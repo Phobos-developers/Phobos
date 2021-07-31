@@ -16,16 +16,18 @@ public:
 
 		Valueable<int> Money_Amount;
 		Valueable<CSFText> UIDescription;
+		Valueable<int> CameoPriority;
 
-		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject),
-			Money_Amount(0),
-			UIDescription()
+		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
+			, Money_Amount(0)
+			, UIDescription()
+			, CameoPriority(0)
 		{ }
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 
@@ -35,7 +37,8 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	class ExtContainer final : public Container<SWTypeExt> {
+	class ExtContainer final : public Container<SWTypeExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();

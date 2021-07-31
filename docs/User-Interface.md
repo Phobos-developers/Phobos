@@ -7,6 +7,10 @@ This page lists all user interface additions, changes, fixes that are implemente
 - Enabled ability to load full-color non-paletted PCX graphics of any bitness. This applies to every single PCX file that is loaded, including the Ares-supported PCX files.
 - You can specify custom `gamemd.exe` icon via `-icon` command line argument followed by absolute or relative path to an `*.ico` file (f. ex. `gamemd.exe -icon Resources/clienticon.ico`).
 - Fixed `Blowfish.dll`-caused error `***FATAL*** String Manager failed to initialize properly`, which occurred if `Blowfish.dll` could not be registered in the OS, for example, it happened when the player did not have administrator rights. With Phobos, if the game did not find a registered file in the system, it will no longer try to register this file, but will load it bypassing registration.
+- Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (font support required).
+```{note}
+You can use {download}`the improved vanilla font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which has way more Unicode character coverage than the default one.
+```
 
 ## Audio
 
@@ -96,6 +100,17 @@ Sidebar.GDIPositions= ; boolean
                       ; no for others
 ```
 
+### Cameo Sorting
+
+- You can now specify Cameo Priority for any TechnoType/SuperWeaponType. Vanilla sorting rules are [here](https://modenc.renegadeprojects.com/Cameo_Sorting).
+  - The Cameo Priority is checked just before evevything vanilla. Greater `CameoPriority` wins.
+
+In `rulesmd.ini`:
+```ini
+[SOMENAME]             ; TechnoType/SuperWeaponType
+CameoPriority=0        ; integer
+```
+
 ### Custom Missing Cameo (`XXICON.SHP`)
 
 - You can now specify any SHP/PCX file as XXICON.SHP for missing cameo.
@@ -141,6 +156,26 @@ Sidebar.HarvesterCounter.ColorRed=255,0,0      ; R,G,B
 
 ```{note}
 If you use the vanilla font in your mod, you can use {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+```
+
+### Producing Progress
+
+![image](_static/images/producing-progress-01.gif)  
+*Producing Progress bars in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+
+- You can now know your factories' status via sidebar!
+- You need to draw your own assets (`tab0xpp.shp`, x is replaced by 0-3) and put them into `sidec0x.mix`.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+ProducingProgress.Show=no            ; boolean
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                           ; Side
+Sidebar.ProducingProgress.Offset=0,0 ; X,Y, pixels relative to default
 ```
 
 ## Tooltips

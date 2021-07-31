@@ -139,6 +139,14 @@ BreaksShield=false             ; boolean
   - `PenetratesShield` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield isn't existed.
   - `BreaksShield` allows the warhead to always break shields of TechnoTypes, regardless of the amount of strength the shield has remaining or the damage dealt, assuming it affects the shield's armor type. Residual damage, if there is any, still respects `AbsorbOverDamage`.
 
+### No Manual Move
+
+- You can now specify whether a TechnoType is unable to receive move command.
+
+```ini
+[SOMETECHNO]           ; TechnoType
+NoManualMove=no        ; boolean
+```
 
 ## Weapons
 

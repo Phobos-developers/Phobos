@@ -43,6 +43,7 @@ public:
 		static bool ShowHarvesterCounter;
 		static double HarvesterCounter_ConditionYellow;
 		static double HarvesterCounter_ConditionRed;
+		static bool ShowProducingProgress;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;

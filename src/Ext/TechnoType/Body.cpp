@@ -97,7 +97,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
+	this->NoManualMove.Read(exINI, pSection, "NoManualMove");
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
+	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
+
 	this->WarpOut.Read(exINI, pSection, "WarpOut");
 	this->WarpIn.Read(exINI, pSection, "WarpIn");
 	this->WarpAway.Read(exINI, pSection, "WarpAway");
@@ -106,6 +109,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChronoMinimumDelay.Read(exINI, pSection, "ChronoMinimumDelay");
 	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
 	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
+	this->OreGathering_Anims.Read(exINI, pSection, "OreGathering.Anims");
+	this->OreGathering_Tiberiums.Read(exINI, pSection, "OreGathering.Tiberiums");
+	this->OreGathering_FramesPerDir.Read(exINI, pSection, "OreGathering.FramesPerDir");
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
@@ -138,6 +144,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Promote_IncludeSpawns)
 		.Process(this->ImmuneToCrit)
 		.Process(this->MultiMindControl_ReleaseVictim)
+		.Process(this->CameoPriority)
+		.Process(this->NoManualMove)
 		.Process(this->ShieldType)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
@@ -147,6 +155,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChronoMinimumDelay)
 		.Process(this->ChronoRangeMinimum)
 		.Process(this->ChronoDelay)
+		.Process(this->OreGathering_Anims)
+		.Process(this->OreGathering_Tiberiums)
+		.Process(this->OreGathering_FramesPerDir)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
