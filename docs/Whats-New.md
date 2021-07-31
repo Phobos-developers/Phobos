@@ -33,7 +33,7 @@ In `FAData.ini`:
 
 ## Changelog
 
-### TBD
+### 0.2.2
 
 New:
 - Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
@@ -42,7 +42,7 @@ New:
 - Allow making technos unable to be issued with movement order (by Uranusian)
 
 Vanilla fixes:
-- Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (by Belonit).
+- Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (by Belonit)
 
 Phobos fixes:
 - Fixed the critical damage logic not functioning properly (by Uranusian)
