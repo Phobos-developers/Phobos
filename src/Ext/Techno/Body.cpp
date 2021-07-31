@@ -244,6 +244,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield)
 		.Process(this->WasCloaked)
 		.Process(this->LaserTrails)
+		.Process(this->ReceiveDamage)
 		;
 }
 

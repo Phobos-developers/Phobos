@@ -54,6 +54,8 @@ public:
 		ValueableVector<int> OreGathering_Tiberiums;
 		ValueableVector<int> OreGathering_FramesPerDir;
 
+		Valueable<bool> DestroyAnim_Random;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -103,7 +105,8 @@ public:
 			OreGathering_Anims(),
 			OreGathering_Tiberiums(),
 			OreGathering_FramesPerDir(),
-			LaserTrailData()
+			LaserTrailData(),
+			DestroyAnim_Random(true)
 		{ }
 
 		virtual ~ExtData() = default;

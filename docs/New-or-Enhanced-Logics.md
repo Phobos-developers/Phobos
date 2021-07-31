@@ -135,6 +135,35 @@ RadColor=0,255,0                ; RGB
 RadSiteWarhead=RadSite          ; WarheadType
 ```
 
+## Animations
+
+### Anim-to-Unit
+
+![image](_static/images/animToUnit.gif)  
+
+- Animations can now create (or "convert" to) units when they end.
+  - Because anims usually don't have an owner the unit will be created with civilian owner unless you use `DestroyAnim` which was modified to store owner and facing information from the destroyed unit.
+
+In `rulesmd.ini`:
+```ini
+[SOMEUNIT]                  ; UnitType
+DestroyAnim.Random=yes      ; boolean, whether to randomize DestroyAnim
+```
+
+In `art.ini`:
+```ini
+[SOMEANIM]                          ; AnimationType
+CreateUnit=                         ; UnitType
+CreateUnit.Facing=0                 ; unsigned short, `CreateUnit` facings in range of 0-255
+CreateUnit.RandomFacing=yes         ; boolean, `CreateUnit` use random facings
+CreateUnit.InheritFacings=no        ; boolean, inherit facing from destroyed unit
+CreateUnit.InheritTurretFacings=no  ; boolean, inherit facing from destroyed unit
+CreateUnit.RemapAnim=no             ; boolean, whether to remap anim to owner color
+CreateUnit.Mission=Guard            ; MissionType
+CreateUnit.Owner=Victim             ; owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
+```
+
+
 ## Buildings
 
 ### Extended building upgrades logic

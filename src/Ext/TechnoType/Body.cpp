@@ -112,6 +112,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OreGathering_Tiberiums.Read(exINI, pSection, "OreGathering.Tiberiums");
 	this->OreGathering_FramesPerDir.Read(exINI, pSection, "OreGathering.FramesPerDir");
 
+	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
+
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
 
@@ -182,6 +184,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OreGathering_Tiberiums)
 		.Process(this->OreGathering_FramesPerDir)
 		.Process(this->LaserTrailData)
+		.Process(this->DestroyAnim_Random)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
