@@ -33,6 +33,18 @@ In `FAData.ini`:
 
 ## Changelog
 
+### 0.3
+
+New:
+- LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)
+- Anim-to-Unit logic and ability to randomize DestroyAnim (by Otamaa)
+
+Vanilla fixes:
+- Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
+
+Phobos fixes:
+- TBD
+
 ### 0.2.2
 
 New:

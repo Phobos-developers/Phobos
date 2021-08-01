@@ -23,12 +23,13 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Vehicles using `DeployFire` will now explicitly use weapon specified by `DeployFireWeapon` for firing the deploy weapon and respect `FireOnce` setting on weapon and any stop commands issued during firing.
 - Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond specified maximums anymore). Only applied when `DebrisMaximums` values amount is more than 1 for compatibility reasons.
 - Fixed building and defense tab hotkeys not enabling the placement mode after `Cannot build here.` triggered and the placement mode cancelled.
-- Fixed building with `UndeployInto` plays `EVA_NewRallypointEstablished` while undeploying
+- Fixed buildings with `UndeployInto` playing `EVA_NewRallypointEstablished` on undeploying.
 
 ![image](_static/images/remember-target-after-deploying-01.gif)  
 *Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
 
 - Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
+- Fixed laser drawing code to allow for thicker lasers in house color draw mode.
 
 ## Technos
 
@@ -55,6 +56,9 @@ ChronoDelay=            ; integer, delay after teleport for chronosphere
 ```
 
 ### Customizable harvester ore gathering animation
+
+![Ore gathering](_static/images/oregath.gif)
+*Custom ore gathering anims in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - You can now specify which anim should be drawn when a harvester of specified type is gathering specified type of ore.
 

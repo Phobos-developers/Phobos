@@ -1,6 +1,9 @@
 #include "Body.h"
+
 #include <Ext/RadSite/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/BulletType/Body.h>
+
 template<> const DWORD Extension<BulletClass>::Canary = 0x2A2A2A2A;
 BulletExt::ExtContainer BulletExt::ExtMap;
 
@@ -37,7 +40,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 				RadLevel = pRadType->GetLevelMax() - pRadSite->GetRadLevel();
 			}
 
-			// Handle It 
+			// Handle It
 			pRadExt->Add(RadLevel);
 		}
 	}
@@ -47,25 +50,49 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	}
 }
 
+void BulletExt::InitializeLaserTrails(BulletClass* pThis)
+{
+	auto pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->LaserTrails.size())
+		return;
+
+	if (auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
+	{
+		auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
+
+		for (auto const& idxTrail: pTypeExt->LaserTrail_Types)
+		{
+			if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
+			{
+				pExt->LaserTrails.push_back(
+					std::make_unique<LaserTrailClass>(pLaserType, pOwner));
+			}
+		}
+	}
+}
 
 // =============================
 // load / save
 
-
 template <typename T>
-void BulletExt::ExtData::Serialize(T& Stm) {
+void BulletExt::ExtData::Serialize(T& Stm)
+{
 	Stm
 		.Process(this->Intercepted)
 		.Process(this->ShouldIntercept)
+		.Process(this->LaserTrails)
 		;
 }
 
-void BulletExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+void BulletExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+{
 	Extension<BulletClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void BulletExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+void BulletExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+{
 	Extension<BulletClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
@@ -73,8 +100,7 @@ void BulletExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
 // =============================
 // container
 
-BulletExt::ExtContainer::ExtContainer() : Container("BulletClass") {
-}
+BulletExt::ExtContainer::ExtContainer() : Container("BulletClass") { }
 
 BulletExt::ExtContainer::~ExtContainer() = default;
 

@@ -2,10 +2,13 @@
 #include <Phobos.h>
 #include <Helpers/Macro.h>
 #include <Utilities/TemplateDef.h>
-#include <AnimClass.h>
 #include <HouseTypeClass.h>
 #include <HouseClass.h>
 #include <ScenarioClass.h>
+#include <UnitClass.h>
+
+#include <Ext/Anim/Body.h>
+#include <Ext/TechnoType/Body.h>
 
 template<> const DWORD Extension<AnimTypeClass>::Canary = 0xEEEEEEEE;
 AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;
@@ -17,39 +20,103 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->Palette.LoadFromINI(pINI, pID, "CustomPalette");
+	this->CreateUnit.Read(exINI, pID, "CreateUnit");
+	this->CreateUnit_Facing.Read(exINI, pID, "CreateUnit.Facing");
+	this->CreateUnit_InheritDeathFacings.Read(exINI, pID, "CreateUnit.InheritFacings");
+	this->CreateUnit_InheritTurretFacings.Read(exINI, pID, "CreateUnit.InheritTurretFacings");
+	this->CreateUnit_RemapAnim.Read(exINI, pID, "CreateUnit.RemapAnim");
+	this->CreateUnit_Mission.Read(exINI, pID, "CreateUnit.Mission");
+	this->CreateUnit_Owner.Read(exINI, pID, "CreateUnit.Owner");
+	this->CreateUnit_RandomFacing.Read(exINI, pID, "CreateUnit.RandomFacing");
 }
 
-// =============================
-// container
+const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
+{
+	if (!pThis)
+		return;
 
-AnimTypeExt::ExtContainer::ExtContainer() : Container("AnimTypeClass") { }
+	HouseClass* pInvoker = pKiller ? pKiller->Owner : nullptr;
 
-AnimTypeExt::ExtContainer::~ExtContainer() = default;
+	if (pThis->Type->DestroyAnim.Count > 0)
+	{
+		auto const facing = pThis->PrimaryFacing.current().value256();
+		auto pAnimType = pThis->Type->DestroyAnim[ScenarioClass::Instance->Random.Random() % pThis->Type->DestroyAnim.Count];
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
-// =============================
-// load / save
+		if (!pTypeExt->DestroyAnim_Random.Get())
+		{
+			int idxAnim = 0;
+
+			if (pThis->Type->DestroyAnim.Count >= 8)
+			{
+				idxAnim = pThis->Type->DestroyAnim.Count;
+				if (pThis->Type->DestroyAnim.Count % 2 == 0)
+					idxAnim *= static_cast<int>(facing / 256.0);
+			}
+
+			pAnimType = pThis->Type->DestroyAnim[idxAnim];
+		}
+
+		if (pAnimType)
+		{
+			if (auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->GetCoords()))
+			{
+				//auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
+				//	? pThis->GetOriginalOwner() : pThis->Owner;
+
+				auto const pAnimTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
+				auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
+
+				pAnimExt->FromDeathUnit = true;
+
+				if (pAnimTypeExt->CreateUnit_InheritDeathFacings.Get())
+					pAnimExt->DeathUnitFacing = facing;
+
+				if (pAnimTypeExt->CreateUnit_InheritTurretFacings.Get())
+				{
+					if (pThis->HasTurret())
+					{
+						pAnimExt->DeathUnitHasTurret = true;
+						pAnimExt->DeathUnitTurretFacing = pThis->SecondaryFacing.current();
+					}
+				}
+			}
+		}
+	}
+}
 
 template <typename T>
-void AnimTypeExt::ExtData::Serialize(T & Stm)
+void AnimTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->Palette);
+		.Process(this->Palette)
+		.Process(this->CreateUnit)
+		.Process(this->CreateUnit_Facing)
+		.Process(this->CreateUnit_InheritDeathFacings)
+		.Process(this->CreateUnit_RemapAnim)
+		.Process(this->CreateUnit_Mission)
+		.Process(this->CreateUnit_InheritTurretFacings)
+		.Process(this->CreateUnit_Owner)
+		.Process(this->CreateUnit_RandomFacing)
+		;
 }
 
-void AnimTypeExt::ExtData::LoadFromStream(PhobosStreamReader & Stm)
+void AnimTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<AnimTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void AnimTypeExt::ExtData::SaveToStream(PhobosStreamWriter & Stm)
+void AnimTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<AnimTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
-// =============================
-// container hooks
+AnimTypeExt::ExtContainer::ExtContainer() : Container("AnimTypeClass") { }
+AnimTypeExt::ExtContainer::~ExtContainer() = default;
 
 DEFINE_HOOK(0x42784B, AnimTypeClass_CTOR, 0x5)
 {
