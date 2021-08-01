@@ -37,7 +37,7 @@ TeamExt::ExtContainer::~ExtContainer() = default;
 // container hooks
 
 //Everything InitEd beside the Vector below this address
-DEFINE_HOOK(6E8B46, TeamClass_CTOR, 7)
+DEFINE_HOOK(0x6E8B46, TeamClass_CTOR, 0x7)
 {
 	GET(TeamClass*, pThis, ESI);
 	
@@ -47,7 +47,7 @@ DEFINE_HOOK(6E8B46, TeamClass_CTOR, 7)
 }
 
 //before `test` i hope not crash the game ,..
-DEFINE_HOOK(6E8EC6, TeamClass_DTOR, 9)
+DEFINE_HOOK(0x6E8EC6, TeamClass_DTOR, 0x9)
 {
 	GET(TeamClass*, pThis, ESI);
 	
@@ -56,8 +56,8 @@ DEFINE_HOOK(6E8EC6, TeamClass_DTOR, 9)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(6EC450, TeamClass_SaveLoad_Prefix, 5)
-DEFINE_HOOK(6EC540, TeamClass_SaveLoad_Prefix, 8)
+DEFINE_HOOK_AGAIN(0x6EC450, TeamClass_SaveLoad_Prefix, 0x5)
+DEFINE_HOOK(0x6EC540, TeamClass_SaveLoad_Prefix, 0x8)
 {
 	GET_STACK(TeamClass*, pItem, 0x4);
 	GET_STACK(IStream*, pStm, 0x8);
@@ -67,14 +67,14 @@ DEFINE_HOOK(6EC540, TeamClass_SaveLoad_Prefix, 8)
 	return 0;
 }
 
-DEFINE_HOOK(6EC52C, TeamClass_Load_Suffix, 4)
+DEFINE_HOOK(0x6EC52C, TeamClass_Load_Suffix, 0x4)
 {
 	TeamExt::ExtMap.LoadStatic();
 
 	return 0;
 }
 
-DEFINE_HOOK(6EC55A, TeamClass_Save_Suffix, 5)
+DEFINE_HOOK(0x6EC55A, TeamClass_Save_Suffix, 0x5)
 {
 	TeamExt::ExtMap.SaveStatic();
 	return 0;

@@ -22,7 +22,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(702E4E, TechnoClass_Save_Killer_Techno, 6)
+DEFINE_HOOK(0x702E4E, TechnoClass_Save_Killer_Techno, 0x6)
 {
     GET(TechnoClass*, pKiller, EDI);
     GET(TechnoClass*, pVictim, ECX);
@@ -33,7 +33,7 @@ DEFINE_HOOK(702E4E, TechnoClass_Save_Killer_Techno, 6)
     return 0;
 }
 
-DEFINE_HOOK(702E9D, TechnoClass_Save_Killer_Techno2, 6)
+DEFINE_HOOK(0x702E9D, TechnoClass_Save_Killer_Techno2, 0x6)
 {
 	GET(TechnoClass*, pKiller, EDI);
 	GET(TechnoClass*, pVictim, ESI);
