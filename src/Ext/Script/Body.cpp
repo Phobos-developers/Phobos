@@ -542,7 +542,6 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 								pUnit->ClickedAction(Action::Attack, selectedTarget, false);
 								if (pUnit->GetCurrentMission() != Mission::Attack)
 								{
-									pUnit->ClickedAction(Action::Attack, selectedTarget, true);
 									pUnit->Mission_Attack();
 								}
 									
@@ -743,7 +742,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int calcThreatMode = 0, HouseClass* onlyTargetThisHouseEnemy = nullptr, int attackAITargetType = -1)
 {
 	TechnoClass *bestObject = nullptr;
-	int bestVal = -1;
+	double bestVal = -1;
 	bool unitWeaponsHaveAA = false;
 	bool unitWeaponsHaveAG = false;
 
@@ -809,7 +808,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 					&& object->IsMindControlled()
 					&& !pTechno->Owner->IsAlliedWith(object->MindControlledBy))))
 		{
-			int value = 0;
+			double value = 0;
 			//Debug::Log("DEBUG: Possible candidate!!! Go to EvaluateObjectWithMask check.\n");
 			if (EvaluateObjectWithMask(object, method, attackAITargetType))
 			{
@@ -842,7 +841,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 					{
 						// Threat affected by distance
 						// Is this object very FAR? then MORE THREAT against pTechno. More CLOSER? LESS THREAT for pTechno
-						int objectThreatValue = objectType->ThreatPosed;
+						double objectThreatValue = objectType->ThreatPosed;
 
 						if (objectType->SpecialThreatValue > 0)
 						{
@@ -1268,8 +1267,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	case 25:
 		// Super Weapon building
 		pTypeBuilding = abstract_cast<BuildingTypeClass *>(pTechnoType);
+		pBuildingExt = BuildingTypeExt::ExtMap.Find(static_cast<BuildingTypeClass*>(pTypeBuilding));
 
-		if (pBuildingExt = BuildingTypeExt::ExtMap.Find(static_cast<BuildingTypeClass*>(pTypeBuilding)))
+		if (pBuildingExt)
 			nSuperWeapons = pBuildingExt->SuperWeapons.size();
 
 		if (!pTechno->Owner->IsNeutral()
