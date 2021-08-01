@@ -55,7 +55,6 @@ public:
 	static bool FollowTheLeader(TeamClass* pTeam, TechnoClass* pLeader, TechnoClass* pFollower);
 	static void DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
 	static void IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
-	static void MissionFollow(TeamClass * pTeam);
 	static void Mission_Attack_List(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
 	static void WaitIfNoTarget(TeamClass *pTeam, int attempts);
 	static void TeamWeightAward(TeamClass *pTeam, double award);
