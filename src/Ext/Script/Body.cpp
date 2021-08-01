@@ -1399,7 +1399,6 @@ bool ScriptExt::FollowTheLeader(TeamClass *pTeam, TechnoClass* pLeader = nullptr
 		return false;
 	}
 
-	//auto const& teamStray = RulesClass::Instance->Stray;
 	auto const& teamStray = RulesClass::Instance->RelaxedStray;
 
 	if (!pFollower)
