@@ -2,6 +2,9 @@
 #include <StringTable.h>
 #include <CCINIClass.h>
 #include <CellSpread.h>
+#include <HouseClass.h>
+#include <NetworkEvents.h>
+#include <Networking.h>
 
 #include <Helpers/Iterators.h>
 #include <Helpers/Enumerators.h>
@@ -24,4 +27,5 @@ public:
 	static std::vector<CellStruct> AdjacentCellsInRange(unsigned int range);
 	static const int GetRangedRandomOrSingleValue(Point2D range);
 	static const double GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor ArmorType);
+	static const bool ProduceBuilding(HouseClass* pOwner, int idxBuilding);
 };

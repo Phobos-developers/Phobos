@@ -1,10 +1,4 @@
 #pragma once
-#include <BuildingTypeClass.h>
-#include <SidebarClass.h>
-#include <NetworkEvents.h>
-#include <Networking.h>
-#include <HouseClass.h>
-#include <FactoryClass.h>
 
 #include "Commands.h"
 #include <Utilities/GeneralUtils.h>
@@ -40,28 +34,7 @@ public:
 	{
 		if (LastBuildingID != -1)
 		{
-			if (auto pItem = ObjectTypeClass::GetTechnoType(AbstractType::BuildingType, LastBuildingID))
-			{
-				auto pPlayer = HouseClass::Player();
-				if (pPlayer->CanBuild(pItem, true, true) == CanBuildResult::Buildable)
-				{
-					if (pItem->FindFactory(true, true, true, pPlayer))
-					{
-						if (pPlayer->GetPrimaryFactory(AbstractType::Building, false, BuildCat::Combat))
-							return;
-
-						NetworkEvent vEvent;
-
-						vEvent.FillEvent_ProduceAbandonSuspend(
-							pPlayer->ArrayIndex, NetworkEvents::Produce, pItem->WhatAmI(), pItem->GetArrayIndex(), pItem->Naval
-						);
-						Networking::AddEvent(&vEvent);
-						SidebarClass::Instance->RedrawSidebar(1);
-
-						return;
-					}
-				}
-			}
+			GeneralUtils::ProduceBuilding(HouseClass::Player, LastBuildingID);
 		}
 	}
 };
