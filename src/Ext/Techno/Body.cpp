@@ -122,7 +122,7 @@ void TechnoExt::ApplyPowered_KillSpawns(TechnoClass* pThis)
 					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
 					{
 						pItem->Unit->ReceiveDamage(&pItem->Unit->Health, 0,
-							RulesClass::Global()->C4Warhead, nullptr, false, false, nullptr);
+							RulesClass::Instance()->C4Warhead, nullptr, false, false, nullptr);
 					}
 				}
 			}
@@ -260,7 +260,7 @@ void TechnoExt::ExtContainer::InvalidatePointer(void* ptr, bool bRemoved) { }
 // =============================
 // container hooks
 
-DEFINE_HOOK(6F3260, TechnoClass_CTOR, 5)
+DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 {
 	GET(TechnoClass*, pItem, ESI);
 
@@ -269,7 +269,7 @@ DEFINE_HOOK(6F3260, TechnoClass_CTOR, 5)
 	return 0;
 }
 
-DEFINE_HOOK(6F4500, TechnoClass_DTOR, 5)
+DEFINE_HOOK(0x6F4500, TechnoClass_DTOR, 0x5)
 {
 	GET(TechnoClass*, pItem, ECX);
 
@@ -278,8 +278,8 @@ DEFINE_HOOK(6F4500, TechnoClass_DTOR, 5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(70C250, TechnoClass_SaveLoad_Prefix, 8)
-DEFINE_HOOK(70BF50, TechnoClass_SaveLoad_Prefix, 5)
+DEFINE_HOOK_AGAIN(0x70C250, TechnoClass_SaveLoad_Prefix, 0x8)
+DEFINE_HOOK(0x70BF50, TechnoClass_SaveLoad_Prefix, 0x5)
 {
 	GET_STACK(TechnoClass*, pItem, 0x4);
 	GET_STACK(IStream*, pStm, 0x8);
@@ -289,14 +289,14 @@ DEFINE_HOOK(70BF50, TechnoClass_SaveLoad_Prefix, 5)
 	return 0;
 }
 
-DEFINE_HOOK(70C249, TechnoClass_Load_Suffix, 5)
+DEFINE_HOOK(0x70C249, TechnoClass_Load_Suffix, 0x5)
 {
 	TechnoExt::ExtMap.LoadStatic();
 
 	return 0;
 }
 
-DEFINE_HOOK(70C264, TechnoClass_Save_Suffix, 5)
+DEFINE_HOOK(0x70C264, TechnoClass_Save_Suffix, 0x5)
 {
 	TechnoExt::ExtMap.SaveStatic();
 

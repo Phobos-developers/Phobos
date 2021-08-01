@@ -45,6 +45,10 @@ public:
 		: IniFile(pIniFile)
 	{ }
 
+	explicit INI_EX(CCINIClass& iniFile)
+		: IniFile(&iniFile)
+	{ }
+
 	char* value() const {
 		return Phobos::readBuffer;
 	}

@@ -81,7 +81,7 @@ BulletExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
-DEFINE_HOOK(4664BA, BulletClass_CTOR, 5)
+DEFINE_HOOK(0x4664BA, BulletClass_CTOR, 0x5)
 {
 	GET(BulletClass*, pItem, ESI);
 
@@ -89,7 +89,7 @@ DEFINE_HOOK(4664BA, BulletClass_CTOR, 5)
 	return 0;
 }
 
-DEFINE_HOOK(4665E9, BulletClass_DTOR, A)
+DEFINE_HOOK(0x4665E9, BulletClass_DTOR, 0xA)
 {
 	GET(BulletClass*, pItem, ESI);
 
@@ -97,8 +97,8 @@ DEFINE_HOOK(4665E9, BulletClass_DTOR, A)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(46AFB0, BulletClass_SaveLoad_Prefix, 8)
-DEFINE_HOOK(46AE70, BulletClass_SaveLoad_Prefix, 5)
+DEFINE_HOOK_AGAIN(0x46AFB0, BulletClass_SaveLoad_Prefix, 0x8)
+DEFINE_HOOK(0x46AE70, BulletClass_SaveLoad_Prefix, 0x5)
 {
 	GET_STACK(BulletClass*, pItem, 0x4);
 	GET_STACK(IStream*, pStm, 0x8);
@@ -108,14 +108,14 @@ DEFINE_HOOK(46AE70, BulletClass_SaveLoad_Prefix, 5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(46AF97, BulletClass_Load_Suffix, 7)
-DEFINE_HOOK(46AF9E, BulletClass_Load_Suffix, 7)
+DEFINE_HOOK_AGAIN(0x46AF97, BulletClass_Load_Suffix, 0x7)
+DEFINE_HOOK(0x46AF9E, BulletClass_Load_Suffix, 0x7)
 {
 	BulletExt::ExtMap.LoadStatic();
 	return 0;
 }
 
-DEFINE_HOOK(46AFC4, BulletClass_Save_Suffix, 3)
+DEFINE_HOOK(0x46AFC4, BulletClass_Save_Suffix, 0x3)
 {
 	BulletExt::ExtMap.SaveStatic();
 	return 0;

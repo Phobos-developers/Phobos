@@ -1,5 +1,7 @@
 #include <Phobos.h>
 
+#include <Ext/Aircraft/Body.h>
+#include <Ext/AnimType/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Bullet/Body.h>
@@ -217,6 +219,8 @@ private:
 // Add more class names as you like
 auto MassActions = MassAction <
 	// Ext classes
+	AircraftExt,
+	AnimTypeExt,
 	BuildingExt,
 	BuildingTypeExt,
 	BulletExt,
@@ -241,7 +245,7 @@ auto MassActions = MassAction <
 	// other classes
 > ();
 
-DEFINE_HOOK(7258D0, AnnounceInvalidPointer, 6)
+DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 {
 	GET(AbstractClass* const, pInvalid, ECX);
 	GET(bool const, removed, EDX);
@@ -251,7 +255,7 @@ DEFINE_HOOK(7258D0, AnnounceInvalidPointer, 6)
 	return 0;
 }
 
-DEFINE_HOOK(685659, Scenario_ClearClasses, a)
+DEFINE_HOOK(0x685659, Scenario_ClearClasses, 0xa)
 {
 	Phobos::Clear();
 	return 0;

@@ -66,14 +66,14 @@ Credits
 ### Developers
 - **Belonit (Gluk-v48)** - project author ([Patreon](http://patreon.com/belonit), [PayPal](https://paypal.me/Belonit))
 - **Kerbiter (Metadorius)** - project co-author, project manager, DevOps, technical writer ([Patreon](http://patreon.com/kerbiter))
-- **Uranusian (Thrifinesma)** - developer, CN community ambassador ([Patreon](https://www.patreon.com/uranusian), [AliPay](https://i0.hdslb.com/bfs/album/61efa1f1d75373c3bc99447ef01a2f94f9deb1ba.jpg))
+- **Uranusian (Thrifinesma)** - developer, CN community ambassador ([Patreon](https://www.patreon.com/uranusian), [AliPay](http://tiebapic.baidu.com/forum/w%3D580/sign=4b04b953307f9e2f70351d002f31e962/b3f89909b3de9c823bd7f23a7b81800a18d84371.jpg))
 - **secsome (SEC-SOME)** - developer ([Patreon](https://www.patreon.com/secsome))
 - **Otamaa (Fahroni, BoredEXE)** - developer ([PayPal](https://paypal.me/GeneralOtama))
 - **FS-21** - developer
 - **Starkku** - developer
 
 ### Contributions
-- **Belonit (Gluk-v48)** - project creation, disable empty spawn positions, custom gamemd icon with Command Line, full-color non-paletted PCX, SpySat, BigGap, TransactMoney, PCX Loading Screen, custom DiskLaser radius, extended tooltips, building upgrades enhancement, hide health bar, Sidebar.GDIPosition, help with CellSpread, Blowfish.dll-related errors fix, zero size map previews, semantic locomotor aliases, shields
+- **Belonit (Gluk-v48)** - project creation, disable empty spawn positions, custom gamemd icon with Command Line, full-color non-paletted PCX, SpySat, BigGap, TransactMoney, PCX Loading Screen, custom DiskLaser radius, extended tooltips, building upgrades enhancement, hide health bar, Sidebar.GDIPosition, help with CellSpread, Blowfish.dll-related errors fix, zero size map previews, semantic locomotor aliases, shields, input fix
 - **Kerbiter (Metadorius)** - SHP debris respect Shadow, building upgrades enhancement, extended tooltips, selection priority filtering, TurretOffset enhancement, customizable ore spawners, select next idle harvester hotkey, interceptor enhancement, zero size map previews, CI/CD, overhauled Unicode font, docs maintenance, VSCode configs, code style
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
@@ -83,8 +83,8 @@ Credits
 - **SMxReaver** - help with docs, extensive and thorough testing
 - **4SG** - help with docs
 - **wiktorderelf** - overhauled Unicode font
-- **Uranusian (Thrifinesma)** - Mind Control enhancement, custom warhead splash list, harvesters counter, promoted spawns, shields, death after dead fix, customizeable missing cameo, overhauled Unicode font, help with docs
-- **secsome (SEC-SOME)** - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields, AnimList.PickRandom, MoveToCell fix, unlimited waypoints, Build At trigger action buildup anim fix
+- **Uranusian (Thrifinesma)** - Mind Control enhancement, custom warhead splash list, harvesters counter, promoted spawns, shields, death after dead fix, customizeable missing cameo, cameo sorting priority, placement mode responding of tab hotkeys fix, producing progress, custom ore gathering anim, NoManualMove, overhauled Unicode font, help with docs
+- **secsome (SEC-SOME)** - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields, AnimList.PickRandom, MoveToCell fix, unlimited waypoints, Build At trigger action buildup anim fix, Undeploy building into a unit plays `EVA_NewRallyPointEstablished` fix, custom ore gathering anim
 - **Otamaa (Fahroni, BoredEXE)** - help with CellSpread, ported and fixed custom RadType code, togglable ElectricBolt bolts, customizable Chrono Locomotor properties per TechnoClass, DebrisMaximums fixes
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **FS-21** - Dump Object Info enhancements, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71, 72 & 73, MC deployer fixes, help with docs
@@ -92,7 +92,7 @@ Credits
 - **ChrisLv_CN** - interceptor logic, general assistance
 - **Xkein** - general assistance, YRpp edits
 - **thomassneddon** - general assistance
-- **Starkku** - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements
+- **Starkku** - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements, stationary VehicleTypes
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **mevitar** - honorary shield tester *triple* award
 - **Damfoos** - extensive and thorough testing

@@ -22,6 +22,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Map trigger action `125 Build At...` can now play buildup anim optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2).
 - Vehicles using `DeployFire` will now explicitly use weapon specified by `DeployFireWeapon` for firing the deploy weapon and respect `FireOnce` setting on weapon and any stop commands issued during firing.
 - Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond specified maximums anymore). Only applied when `DebrisMaximums` values amount is more than 1 for compatibility reasons.
+- Fixed building and defense tab hotkeys not enabling the placement mode after `Cannot build here.` triggered and the placement mode cancelled.
+- Fixed building with `UndeployInto` plays `EVA_NewRallypointEstablished` while undeploying
 
 ![image](_static/images/remember-target-after-deploying-01.gif)  
 *Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
@@ -50,6 +52,18 @@ ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter 
 ChronoRangeMinimum=     ; integer, can be used to set a small range within which the delay is constant
 ChronoDelay=            ; integer, delay after teleport for chronosphere
 
+```
+
+### Customizable harvester ore gathering animation
+
+- You can now specify which anim should be drawn when a harvester of specified type is gathering specified type of ore.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                     ; TechnoType
+OreGathering.Anims=              ; list of animations
+OreGathering.FramesPerDir=15     ; list of integers
+OreGathering.Tiberiums=0         ; list of Tiberium IDs
 ```
 
 ### Kill spawns on low power

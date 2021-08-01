@@ -14,6 +14,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm) {
 	Stm
 		.Process(this->Money_Amount)
 		.Process(this->UIDescription)
+		.Process(this->CameoPriority)
 		;
 }
 
@@ -28,6 +29,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	INI_EX exINI(pINI);
 	this->Money_Amount.Read(exINI, pSection, "Money.Amount");
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
+	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
@@ -61,7 +63,7 @@ SWTypeExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
-DEFINE_HOOK(6CE6F6, SuperWeaponTypeClass_CTOR, 5)
+DEFINE_HOOK(0x6CE6F6, SuperWeaponTypeClass_CTOR, 0x5)
 {
 	GET(SuperWeaponTypeClass*, pItem, EAX);
 
@@ -69,7 +71,7 @@ DEFINE_HOOK(6CE6F6, SuperWeaponTypeClass_CTOR, 5)
 	return 0;
 }
 
-DEFINE_HOOK(6CEFE0, SuperWeaponTypeClass_SDDTOR, 8)
+DEFINE_HOOK(0x6CEFE0, SuperWeaponTypeClass_SDDTOR, 0x8)
 {
 	GET(SuperWeaponTypeClass*, pItem, ECX);
 
@@ -77,8 +79,8 @@ DEFINE_HOOK(6CEFE0, SuperWeaponTypeClass_SDDTOR, 8)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(6CE8D0, SuperWeaponTypeClass_SaveLoad_Prefix, 8)
-DEFINE_HOOK(6CE800, SuperWeaponTypeClass_SaveLoad_Prefix, A)
+DEFINE_HOOK_AGAIN(0x6CE8D0, SuperWeaponTypeClass_SaveLoad_Prefix, 0x8)
+DEFINE_HOOK(0x6CE800, SuperWeaponTypeClass_SaveLoad_Prefix, 0xA)
 {
 	GET_STACK(SuperWeaponTypeClass*, pItem, 0x4);
 	GET_STACK(IStream*, pStm, 0x8);
@@ -88,20 +90,20 @@ DEFINE_HOOK(6CE800, SuperWeaponTypeClass_SaveLoad_Prefix, A)
 	return 0;
 }
 
-DEFINE_HOOK(6CE8BE, SuperWeaponTypeClass_Load_Suffix, 7)
+DEFINE_HOOK(0x6CE8BE, SuperWeaponTypeClass_Load_Suffix, 0x7)
 {
 	SWTypeExt::ExtMap.LoadStatic();
 	return 0;
 }
 
-DEFINE_HOOK(6CE8EA, SuperWeaponTypeClass_Save_Suffix, 3)
+DEFINE_HOOK(0x6CE8EA, SuperWeaponTypeClass_Save_Suffix, 0x3)
 {
 	SWTypeExt::ExtMap.SaveStatic();
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(6CEE50, SuperWeaponTypeClass_LoadFromINI, A)
-DEFINE_HOOK(6CEE43, SuperWeaponTypeClass_LoadFromINI, A)
+DEFINE_HOOK_AGAIN(0x6CEE50, SuperWeaponTypeClass_LoadFromINI, 0xA)
+DEFINE_HOOK(0x6CEE43, SuperWeaponTypeClass_LoadFromINI, 0xA)
 {
 	GET(SuperWeaponTypeClass*, pItem, EBP);
 	GET_STACK(CCINIClass*, pINI, 0x3FC);

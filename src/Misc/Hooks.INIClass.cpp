@@ -1,6 +1,6 @@
 #include <Helpers/Macro.h>
 
-DEFINE_HOOK(527B0A, INIClass__Get_UUID, 8)
+DEFINE_HOOK(0x527B0A, INIClass__Get_UUID, 0x8)
 {
 	GET(wchar_t*, buffer, ECX);
 

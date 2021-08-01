@@ -1,7 +1,7 @@
 #include "Body.h"
 
 int WeaponTypeExt::nOldCircumference = 240;
-DEFINE_HOOK(4A757B, DiskLaser_Circle, 6)
+DEFINE_HOOK(0x4A757B, DiskLaser_Circle, 0x6)
 {
 	GET(WeaponTypeClass*, pWeapon, EDX);
 

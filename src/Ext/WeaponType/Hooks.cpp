@@ -4,7 +4,7 @@
 #include <Ext/Techno/Body.h>
 #include <Ext/Bullet/Body.h>
 
-DEFINE_HOOK(6FF660, TechnoClass_FireBullet, 6)
+DEFINE_HOOK(0x6FF660, TechnoClass_FireBullet, 0x6)
 {
 	GET(TechnoClass* const, pSource, ESI);
 	GET_BASE(AbstractClass* const, pTarget, 0x8);
