@@ -809,64 +809,66 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 				newCell.Y = (short)object->Location.Y;
 				
 				bool isGoodTarget = false;
-				if (calcThreatMode == 0)
+				if (calcThreatMode == 0 || calcThreatMode == 1)
 				{
-					// Threat affected by distance [recommended default]
-					// Is this object very FAR? then LESS THREAT against pTechno. More CLOSER? MORE THREAT for pTechno
+					// Threat affected by distance
+					int threatMultiplier = 1; //256;
 					double objectThreatValue = objectType->ThreatPosed;
-					int threatMultiplier = 100000;
 
 					if (objectType->SpecialThreatValue > 0)
 					{
-						auto const& TargetSpecialThreatCoefficientDefault = RulesClass::Instance->TargetSpecialThreatCoefficientDefault;
-						objectThreatValue = objectType->SpecialThreatValue * TargetSpecialThreatCoefficientDefault;
+						double const& TargetSpecialThreatCoefficientDefault = RulesClass::Instance->TargetSpecialThreatCoefficientDefault;
+						objectThreatValue += objectType->SpecialThreatValue * TargetSpecialThreatCoefficientDefault;
 					}
 
-					value = objectThreatValue * threatMultiplier / (pTechno->DistanceFrom(object) + 1);
+					// Is Defender house targeting Attacker House? if "yes" then more Threat
+					if (pTechno->Owner == HouseClass::Array->GetItem(object->Owner->EnemyHouseIndex))
+					{
+						double const& EnemyHouseThreatBonus = RulesClass::Instance->EnemyHouseThreatBonus;
+						objectThreatValue += EnemyHouseThreatBonus;
+					}
 
-					if (value > bestVal || bestVal < 0)
-						isGoodTarget = true;
+					// Extra threat based on current health. More damaged == More threat (almost destroyed objects gets more priority)
+					objectThreatValue += object->Health * (1 - object->GetHealthPercentage());
+
+					value = objectThreatValue * threatMultiplier / ((pTechno->DistanceFrom(object) / 256) + 1.0);
+					if (calcThreatMode == 0)
+					{
+						// Is this object very FAR? then LESS THREAT against pTechno.
+						// More CLOSER? MORE THREAT for pTechno.
+						if (value > bestVal || bestVal < 0)
+							isGoodTarget = true;
+					}
+					else
+					{
+						// Is this object very FAR? then MORE THREAT against pTechno.
+						// More CLOSER? LESS THREAT for pTechno.
+						if (value < bestVal || bestVal < 0)
+							isGoodTarget = true;
+					}
 				}
 				else
 				{
-					if (calcThreatMode == 1)
+					// Selection affected by distance
+					if (calcThreatMode == 2)
 					{
-						// Threat affected by distance
-						// Is this object very FAR? then MORE THREAT against pTechno. More CLOSER? LESS THREAT for pTechno
-						double objectThreatValue = objectType->ThreatPosed;
-
-						if (objectType->SpecialThreatValue > 0)
-						{
-							auto const& TargetSpecialThreatCoefficientDefault = RulesClass::Instance->TargetSpecialThreatCoefficientDefault;
-							objectThreatValue = objectType->SpecialThreatValue * TargetSpecialThreatCoefficientDefault;
-						}
-						value = objectThreatValue * 200000 / (pTechno->DistanceFrom(object) + 1);
+						// Is this object very FAR? then LESS THREAT against pTechno.
+						// More CLOSER? MORE THREAT for pTechno.
+						value = pTechno->DistanceFrom(object); // Note: distance in leptons (*256)
 
 						if (value < bestVal || bestVal < 0)
 							isGoodTarget = true;
 					}
 					else
 					{
-						if (calcThreatMode == 2)
+						if (calcThreatMode == 3)
 						{
-							// Selection affected by distance
-							// Is this object very FAR? then LESS THREAT against pTechno. More CLOSER? MORE THREAT for pTechno
-							value = pTechno->DistanceFrom(object);
+							// Is this object very FAR? then MORE THREAT against pTechno.
+							// More CLOSER? LESS THREAT for pTechno.
+							value = pTechno->DistanceFrom(object); // Note: distance in leptons (*256)
 
-							if (value < bestVal || bestVal < 0)
+							if (value > bestVal || bestVal < 0)
 								isGoodTarget = true;
-						}
-						else
-						{
-							if (calcThreatMode == 3)
-							{
-								// Selection affected by distance
-								// Is this object very FAR? then MORE THREAT against pTechno. More CLOSER? LESS THREAT for pTechno
-								value = pTechno->DistanceFrom(object);
-
-								if (value > bestVal || bestVal < 0)
-									isGoodTarget = true;
-							}
 						}
 					}
 				}
