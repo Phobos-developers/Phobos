@@ -38,21 +38,23 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 	bool bCreated = false;
 	if (auto pBld = static_cast<BuildingClass*>(pBldType->CreateObject(pHouse)))
 	{
-		if (bPlayBuildUp)
-		{
-			pBld->BeginMode(BStateType::Construction);
-			pBld->QueueMission(Mission::Construction, false);
-		}
-		else
-		{
-			pBld->BeginMode(BStateType::Idle);
-			pBld->QueueMission(Mission::Guard, false);
-			pBld->Place(false);
-		}
 		if (!pBld->ForceCreate(coord))
+		{
 			pBld->UnInit();
+		}
 		else
 		{
+			if (bPlayBuildUp)
+			{
+				pBld->BeginMode(BStateType::Construction);
+				pBld->QueueMission(Mission::Construction, false);
+			}
+			else
+			{
+				pBld->BeginMode(BStateType::Idle);
+				pBld->QueueMission(Mission::Guard, false);
+				pBld->Place(false);
+			}
 			pBld->IsReadyToCommence = true;
 			bCreated = true;
 		}
