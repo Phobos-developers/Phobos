@@ -33,6 +33,12 @@ In `FAData.ini`:
 
 ## Changelog
 
+### 0.2.2.1
+
+Phobos fixes:
+- Fixed random crashes about CameoPriority (by Uranusian)
+- Fixed trigger action 125 not functioning properly (by Uranusian)
+
 ### 0.2.2
 
 New:
