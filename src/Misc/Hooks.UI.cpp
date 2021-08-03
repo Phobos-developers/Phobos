@@ -111,8 +111,8 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 	GET_STACK(int, idxRight, STACK_OFFS(0x1C, -0x10));
 	auto pLeftTechnoExt = TechnoTypeExt::ExtMap.Find(pLeft);
 	auto pRightTechnoExt = TechnoTypeExt::ExtMap.Find(pRight);
-	auto pLeftSWExt = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItem(idxLeft));
-	auto pRightSWExt = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItem(idxRight));
+	auto pLeftSWExt = pLeftTechnoExt ? SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItem(idxLeft)) : nullptr;
+	auto pRightSWExt = pRightTechnoExt ? SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItem(idxRight)) : nullptr;
 
 	if ((pLeftTechnoExt || pLeftSWExt) && (pRightTechnoExt || pRightSWExt))
 	{
