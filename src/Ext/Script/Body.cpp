@@ -812,13 +812,14 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 				if (calcThreatMode == 0 || calcThreatMode == 1)
 				{
 					// Threat affected by distance
-					int threatMultiplier = 1; //256;
+					double threatMultiplier = 128.0;
 					double objectThreatValue = objectType->ThreatPosed;
-
+					//Debug::Log("DEBUG: Threat eval: Step 1 [%s] %f\n", objectType->ID, objectThreatValue);
 					if (objectType->SpecialThreatValue > 0)
 					{
 						double const& TargetSpecialThreatCoefficientDefault = RulesClass::Instance->TargetSpecialThreatCoefficientDefault;
 						objectThreatValue += objectType->SpecialThreatValue * TargetSpecialThreatCoefficientDefault;
+						//Debug::Log("DEBUG: Threat eval: Step 2 [%s] %f\n", objectType->ID, objectThreatValue);
 					}
 
 					// Is Defender house targeting Attacker House? if "yes" then more Threat
@@ -826,18 +827,21 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 					{
 						double const& EnemyHouseThreatBonus = RulesClass::Instance->EnemyHouseThreatBonus;
 						objectThreatValue += EnemyHouseThreatBonus;
+						//Debug::Log("DEBUG: Threat eval: Step 3 [%s] %f\n", objectType->ID, objectThreatValue);
 					}
 
 					// Extra threat based on current health. More damaged == More threat (almost destroyed objects gets more priority)
 					objectThreatValue += object->Health * (1 - object->GetHealthPercentage());
-
-					value = objectThreatValue * threatMultiplier / ((pTechno->DistanceFrom(object) / 256) + 1.0);
+					//Debug::Log("DEBUG: Threat eval: Step 4 [%s] %f\n", objectType->ID, objectThreatValue);
+					value = (objectThreatValue * threatMultiplier) / ((pTechno->DistanceFrom(object) / 256.0) + 1.0);
+					//Debug::Log("DEBUG: Threat eval: Last Step [%s] %f (distance: %f)\n", objectType->ID, value, pTechno->DistanceFrom(object) / 256.0);
 					if (calcThreatMode == 0)
 					{
 						// Is this object very FAR? then LESS THREAT against pTechno.
 						// More CLOSER? MORE THREAT for pTechno.
 						if (value > bestVal || bestVal < 0)
 							isGoodTarget = true;
+						//if (bestObject) Debug::Log("DEBUG: Threat: New [%s] %f > Last Good [%s] %f -> valid?: %d. Distance: %f\n", objectType->ID, value, bestObject->GetTechnoType()->ID, bestVal, isGoodTarget, pTechno->DistanceFrom(object) / 256.0);
 					}
 					else
 					{
@@ -845,6 +849,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 						// More CLOSER? LESS THREAT for pTechno.
 						if (value < bestVal || bestVal < 0)
 							isGoodTarget = true;
+						//if (bestObject) Debug::Log("DEBUG: Threat eval: New [%s] %f < Last Good [%s] %f ? -> isGoodTarget: %d\n", objectType->ID, value, bestObject->GetTechnoType()->ID, bestVal, isGoodTarget);
 					}
 				}
 				else
