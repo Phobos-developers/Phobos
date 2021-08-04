@@ -13,9 +13,9 @@ if exist c_cpp_properties.json (
     code c_cpp_properties.json
 )
 
-if exist launch.json (
-    echo Debug configuration file already present, skipping.
+if exist settings.json (
+    echo Settings configuration file already present, skipping.
 ) else (
-    copy launch.example.json launch.json
-    code launch.json
+    copy settings.example.json settings.json
+    code settings.json
 )
