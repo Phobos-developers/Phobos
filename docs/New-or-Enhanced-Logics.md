@@ -571,9 +571,24 @@ In `aimd.ini`:
 x=83,n
 ```
 
-.. csv-table:: Frozen Delights!
-   :header: "Treat", "Quantity", "Description"
-   :widths: 15, 10, 30
+.. list-table:: List tables can have captions like this one.
+    :widths: 10 5 10 50
+    :header-rows: 1
+    :stub-columns: 1
 
-   "Albatross", 2.99, "On a stick!"
-   "Popcorn", 1.99, "Straight from the oven"
+    * - List table
+      - Header 1
+      - Header 2
+      - Header 3 long. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet mauris arcu.
+    * - Stub Row 1
+      - Row 1
+      - Column 2
+      - Column 3 long. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet mauris arcu.
+    * - Stub Row 2
+      - Row 2
+      - Column 2
+      - Column 3 long. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet mauris arcu.
+    * - Stub Row 3
+      - Row 3
+      - Column 2
+      - Column 3 long. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet mauris arcu.
