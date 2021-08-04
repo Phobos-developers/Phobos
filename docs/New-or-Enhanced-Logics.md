@@ -430,7 +430,7 @@ In `aimd.ini`:
 x=73,0
 ```
 
-### `74` New Attack Target Type
+### `74` New Attack Action
 
 - This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by threat & distance: Closer targets have more priority. Look at the table below for the possible second parameter values and the Target Type associated.
 
@@ -440,7 +440,7 @@ In `aimd.ini`:
 x=74,n
 ```
 
-### `75` New Attack Target Type
+### `75` New Attack Action
 
 - This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by threat & distance: Farther targets have more priority. Look at the table below for the possible second parameter values and the Target Type associated.
 
@@ -450,7 +450,7 @@ In `aimd.ini`:
 x=75,n
 ```
 
-### `76` New Attack Target Type
+### `76` New Attack Action
 
 - This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by distance: Closer targets have more priority. Look at the table below for the possible second parameter values and the Target Type associated.
 
@@ -460,7 +460,7 @@ In `aimd.ini`:
 x=76,n
 ```
 
-### `77` New Attack Target Type
+### `77` New Attack Action
 
 - This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by distance: Farther targets have more priority. Look at the table below for the possible second parameter values and the Target Type associated.
 
@@ -470,7 +470,7 @@ In `aimd.ini`:
 x=77,n
 ```
 
-### `78` New Attack Target Type
+### `78` New Attack Action
 
 - This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by threat & distance: Closer targets have more priority. Look at the table below for the possible second parameter values and the Target Type associated.
 
@@ -480,7 +480,7 @@ In `aimd.ini`:
 x=78,n
 ```
 
-### `79` New Attack Target Type
+### `79` New Attack Action
 
 - This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by threat & distance: Farther targets have more priority. Look at the table below for the possible second parameter values and the Target Type associated.
 
@@ -490,7 +490,7 @@ In `aimd.ini`:
 x=79,n
 ```
 
-### `80` New Attack Target Type
+### `80` New Attack Action
 
 - This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by distance: Closer targets have more priority. Look at the table below for the possible second parameter values and the Target Type associated.
 
@@ -500,7 +500,7 @@ In `aimd.ini`:
 x=80,n
 ```
 
-### `81` New Attack Target Type
+### `81` New Attack Action
 
 - This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by distance: Farther targets have more priority. Look at the table below for the possible second parameter values and the Target Type associated.
 
@@ -513,86 +513,40 @@ x=81,n
 Note: New Attack actions scripts (74, 75, 78 & 79) that are focused in target threat use TargetSpecialThreatCoefficientDefault and EnemyHouseThreatBonus tags from Rulesmd.ini.
 The following are the target types which can be used the new attack script actions:
 
-=====  =================  ==============================================================================
-Value  Target Type        Description
-=====  =================  ==============================================================================
-1      Anything           Anything [VehicleTypes], [AircraftTypes], [InfantryTypes] and [BuildingTypes]
-2      Structures         Any enemy [BuildingTypes] without Artillary=yes, TickTank=yes, ICBMLauncher=yes or SensorArray=yes
-3      Ore Miners         Any enemy [VehicleTypes] with Harvester=yes or ResourceGatherer=yes, [BuildingTypes] with ResourceGatherer=yes
-4      Infantry           Any enemy [InfantryTypes]
-5      Vehicles           Any enemy [VehicleTypes], [AircraftTypes], [BuildingTypes] with Artillary=yes, TickTank=yes, ICBMLauncher=yes & SensorArray=yes
-6      Factories          Any enemy [BuildingTypes] with a Factory= setting
-7      Base Defenses      Any enemy [BuildingTypes] with IsBaseDefense=yes
-8      Mobile Units       Anything [VehicleTypes], [AircraftTypes] and [InfantryTypes]
-9      Power Plants       Any enemy [BuildingTypes] with positive Power= values
-10     Occupied           Any [BuildingTypes] with garrisoned infantry
-11     Tech Buildings     Any [BuildingTypes] with Unsellable=yes, Capturable=yes, negative TechLevel= values or appears in [AI]>NeutralTechBuildings= list
-12     Refinery           Any enemy [BuildingTypes] with Refinery=yes or ResourceGatherer=yes, [VehicleTypes] with ResourceGatherer=yes & Harvester=no (i.e. Slave Miner)
-13     Mind Controller    Anything [VehicleTypes], [AircraftTypes], [InfantryTypes] and [BuildingTypes] with MindControl=yes in the weapons Warheads
-14     Air Units          Any enemy [AircraftTypes], flying [VehicleTypes] or [InfantryTypes]
-15     Naval              Any enemy [BuildingTypes] and [VehicleTypes] with a Naval=yes, any enemy [VehicleTypes], [AircraftTypes], [InfantryTypes] in a water cell
-16     Disruptors         Any enemy objects with positive InhibitorRange= values, positive RadarJamRadius= values, CloakGenerator=yes or GapGenerator=yes
-17     Ground Vehicles    Any enemy [VehicleTypes] without Naval=yes, landed [AircraftTypes], Deployed vehicles into [BuildingTypes]
-18     Economy            Any enemy [VehicleTypes] with Harvester=yes or ResourceGatherer=yes, [BuildingTypes] with Refinery=yes, ResourceGatherer=yes or OrePurifier=yes
-19     Infantry Factory   Any enemy [BuildingTypes] with Factory=InfantryType
-20     Vehicle Factory    Any enemy [BuildingTypes] with Factory=UnitType
-21     Aircraft Factory   Any enemy [BuildingTypes] with Factory=AircraftType
-22     Radar              Any enemy [BuildingTypes] with Radar=yes or SpySat=yes
-23     Tech Lab           Any enemy [BuildingTypes] in [AI]>BuildTech= list
-24     Naval Factory      Any enemy [BuildingTypes] with Naval=yes and Factory=UnitType
-25     Super Weapon       Any enemy [BuildingTypes] with SuperWeapon=, SuperWeapon2= or SuperWeapons=
-26     Construction Yard  Any enemy [BuildingTypes] with ConstructionYard=yes and Factory=BuildingType
-27     Neutrals           Any neutral object (Civilian)
-28     Generators         Any enemy [BuildingTypes] with CloakGenerator=yes or GapGenerator=yes
-29     Radar Jammer       Any enemy objects with positive RadarJamRadius= values
-30     Inhibitors         Any enemy objects with positive InhibitorRange= values
-31     Naval Units        Any enemy [VehicleTypes] with a Naval=yes or any enemy [VehicleTypes], [AircraftTypes], [InfantryTypes] in a water cell
-32     Capturable         Any [BuildingTypes] with Capturable=yes or any [BuildingTypes] with BridgeRepairHut=yes and Repairable=yes 
-=====  =================  ==============================================================================
-
 | *Value* | *Target Type*     | *Description*                                 |
 | ------: | :---------------: | :-------------------------------------------: |
-1         | Anything          |	Anything [VehicleTypes], [AircraftTypes], [InfantryTypes] and [BuildingTypes]	                                          |
-2         | Structures        |	Any enemy [BuildingTypes] without Artillary=yes, TickTank=yes, ICBMLauncher=yes or SensorArray=yes	                                          |
-3         | Ore Miners        |	Any enemy [VehicleTypes] with Harvester=yes or ResourceGatherer=yes, [BuildingTypes] with ResourceGatherer=yes	                                          |
-4         | Infantry          |	Any enemy [InfantryTypes]	                                          |
-5         | Vehicles          |	Any enemy [VehicleTypes], [AircraftTypes], [BuildingTypes] with Artillary=yes, TickTank=yes, ICBMLauncher=yes & SensorArray=yes	                                          |
-6         | Factories         |	Any enemy [BuildingTypes] with a Factory= setting	                                          |
-7         | Base Defenses     |	Any enemy [BuildingTypes] with IsBaseDefense=yes	                                          |
-8         | Mobile Units      |	Anything [VehicleTypes], [AircraftTypes] and [InfantryTypes]	                                          |
-9         | Power Plants      |	Any enemy [BuildingTypes] with positive Power= values	                                          |
-10        | Occupied          |	Any [BuildingTypes] with garrisoned infantry	                                          |
-11        | Tech Buildings    |	Any [BuildingTypes] with Unsellable=yes, Capturable=yes, negative TechLevel= values or appears in [AI]>NeutralTechBuildings= list	                                          |
-12        |	Refinery          |	Any enemy [BuildingTypes] with Refinery=yes or ResourceGatherer=yes, [VehicleTypes] with ResourceGatherer=yes & Harvester=no (i.e. Slave Miner)											  |
-13        |	Mind Controller   |	Anything [VehicleTypes], [AircraftTypes], [InfantryTypes] and [BuildingTypes] with MindControl=yes in the weapons Warheads											  |
-14        |	Air Units         |	Any enemy [AircraftTypes], flying [VehicleTypes] or [InfantryTypes]											  |
-15        |	Naval             |	Any enemy [BuildingTypes] and [VehicleTypes] with a Naval=yes, any enemy [VehicleTypes], [AircraftTypes], [InfantryTypes] in a water cell											  |
-16        |	Disruptors        |	Any enemy objects with positive InhibitorRange= values, positive RadarJamRadius= values, CloakGenerator=yes or GapGenerator=yes											  |
-17        |	Ground Vehicles   |	Any enemy [VehicleTypes] without Naval=yes, landed [AircraftTypes], Deployed vehicles into [BuildingTypes]											  |
-18        |	Economy           |	Any enemy [VehicleTypes] with Harvester=yes or ResourceGatherer=yes, [BuildingTypes] with Refinery=yes, ResourceGatherer=yes or OrePurifier=yes											  |
-19        |	Infantry Factory  |	Any enemy [BuildingTypes] with Factory=InfantryType											  |
-20        |	Vehicle Factory   |	Any enemy [BuildingTypes] with Factory=UnitType											  |
-21        |	Aircraft Factory  |	Any enemy [BuildingTypes] with Factory=AircraftType											  |
-22        |	Radar             |	Any enemy [BuildingTypes] with Radar=yes or SpySat=yes											  |
-23        |	Tech Lab          |	Any enemy [BuildingTypes] in [AI]>BuildTech= list											  |
-24        |	Naval Factory     |	Any enemy [BuildingTypes] with Naval=yes and Factory=UnitType											  |
-25        |	Super Weapon      |	Any enemy [BuildingTypes] with SuperWeapon=, SuperWeapon2= or SuperWeapons=											  |
-26        |	Construction Yard |	Any enemy [BuildingTypes] with ConstructionYard=yes and Factory=BuildingType											  |
-27        |	Neutrals          |	Any neutral object (Civilian)											  |
-28        |	Generators        |	Any enemy [BuildingTypes] with CloakGenerator=yes or GapGenerator=yes											  |
-29        |	Radar Jammer      |	Any enemy objects with positive RadarJamRadius= values											  |
-30        |	Inhibitors        |	Any enemy objects with positive InhibitorRange= values											  |
-31        |	Naval Units       |	Any enemy [VehicleTypes] with a Naval=yes or any enemy [VehicleTypes], [AircraftTypes], [InfantryTypes] in a water cell											  |
-32        |	Capturable        |	Any [BuildingTypes] with Capturable=yes or any [BuildingTypes] with BridgeRepairHut=yes and Repairable=yes 											  |
-
-
-
-
-
-
-
-
-
+1         | Anything          |	Anything *[VehicleTypes]*, *[AircraftTypes]*, *[InfantryTypes]* and *[BuildingTypes]* |
+2         | Structures        |	Any enemy *[BuildingTypes]* without `Artillary=yes`, `TickTank=yes`, `ICBMLauncher=yes` or `SensorArray=yes` |
+3         | Ore Miners        |	Any enemy *[VehicleTypes]* with `Harvester=yes` or `ResourceGatherer=yes`, *[BuildingTypes]* with `ResourceGatherer=yes` |
+4         | Infantry          |	Any enemy *[InfantryTypes]* |
+5         | Vehicles          |	Any enemy *[VehicleTypes]*, *[AircraftTypes]*, *[BuildingTypes]* with `Artillary=yes`, `TickTank=yes`, `ICBMLauncher=yes` & `SensorArray=yes` |
+6         | Factories         |	Any enemy *[BuildingTypes]* with a Factory= setting |
+7         | Base Defenses     |	Any enemy *[BuildingTypes]* with `IsBaseDefense=yes` |
+8         | Mobile Units      |	Anything *[VehicleTypes]*, *[AircraftTypes]* and *[InfantryTypes]* |
+9         | Power Plants      |	Any enemy *[BuildingTypes]* with positive `Power=` values |
+10        | Occupied          |	Any *[BuildingTypes]* with garrisoned infantry |
+11        | Tech Buildings    |	Any *[BuildingTypes]* with `Unsellable=yes`, `Capturable=yes`, negative `TechLevel=` values or appears in `[AI]>NeutralTechBuildings=` list |
+12        |	Refinery          |	Any enemy *[BuildingTypes]* with `Refinery=yes` or `ResourceGatherer=yes`, *[VehicleTypes]* with `ResourceGatherer=yes` & `Harvester=no` (i.e. Slave Miner) |
+13        |	Mind Controller   |	Anything *[VehicleTypes]*, *[AircraftTypes]*, *[InfantryTypes]* and *[BuildingTypes]* with `MindControl=yes` in the weapons Warheads |
+14        |	Air Units         |	Any enemy *[AircraftTypes]*, flying *[VehicleTypes]* or *[InfantryTypes]* |
+15        |	Naval             |	Any enemy *[BuildingTypes]* and *[VehicleTypes]* with a `Naval=yes`, any enemy *[VehicleTypes]*, *[AircraftTypes]*, *[InfantryTypes]* in a water cell |
+16        |	Disruptors        |	Any enemy objects with positive `InhibitorRange=` values, positive `RadarJamRadius=` values, `CloakGenerator=yes` or `GapGenerator=yes` |
+17        |	Ground Vehicles   |	Any enemy *[VehicleTypes]* without `Naval=yes`, landed *[AircraftTypes]*, Deployed vehicles into *[BuildingTypes]* |
+18        |	Economy           |	Any enemy *[VehicleTypes]* with `Harvester=yes` or `ResourceGatherer=yes`, *[BuildingTypes]* with `Refinery=yes`, `ResourceGatherer=yes` or `OrePurifier=yes` |
+19        |	Infantry Factory  |	Any enemy *[BuildingTypes]* with `Factory=InfantryType` |
+20        |	Vehicle Factory   |	Any enemy *[BuildingTypes]* with `Factory=UnitType` |
+21        |	Aircraft Factory  |	Any enemy *[BuildingTypes]* with `Factory=AircraftType` |
+22        |	Radar             |	Any enemy *[BuildingTypes]* with `Radar=yes` or `SpySat=yes` |
+23        |	Tech Lab          |	Any enemy *[BuildingTypes]* in `[AI]>BuildTech=` list |
+24        |	Naval Factory     |	Any enemy *[BuildingTypes]* with `Naval=yes` and `Factory=UnitType` |
+25        |	Super Weapon      |	Any enemy *[BuildingTypes]* with `SuperWeapon=`, `SuperWeapon2=` or `SuperWeapons=` |
+26        |	Construction Yard |	Any enemy *[BuildingTypes]* with `ConstructionYard=yes` and `Factory=BuildingType` |
+27        |	Neutrals          |	Any neutral object (Civilian) |
+28        |	Generators        |	Any enemy *[BuildingTypes]* with `CloakGenerator=yes` or `GapGenerator=yes` |
+29        |	Radar Jammer      |	Any enemy objects with positive `RadarJamRadius=` values |
+30        |	Inhibitors        |	Any enemy objects with positive `InhibitorRange=` values |
+31        |	Naval Units       |	Any enemy *[VehicleTypes]* with a `Naval=yes` or any enemy *[VehicleTypes]*, *[AircraftTypes]*, *[InfantryTypes]* in a water cell |
+32        |	Capturable        |	Any *[BuildingTypes]* with `Capturable=yes` or any *[BuildingTypes]* with `BridgeRepairHut=yes` and `Repairable=yes` |
 
 ### `82` Decrease AI Trigger Current Weight
 
@@ -602,7 +556,6 @@ In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
 x=82,n
-```
 ```
 
 ### `83` Increase AI Trigger Current Weight
@@ -615,3 +568,113 @@ In `aimd.ini`:
 x=83,n
 ```
 
+### `84` New Attack Action Using Lists
+
+- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by threat & distance: Closer targets have more priority.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=84,n
+```
+
+The second parameter specifies the list of possible *[VehicleTypes]*, *[AircraftTypes]*, *[InfantryTypes]* and *[BuildingTypes]* that can be evaluated. A new section must be declared in RulesMD.ini for making this script work:
+
+In `rulesmd.ini`:
+```ini
+[AITargetType]  ; List of Technos
+0=Techno N,Techno N+1, Techno N+1,... Techno N+M
+1= ...
+2= ...
+...
+```
+
+### `85` New Attack Action Using Lists
+
+- This instructs the TeamType to use the TaskForce to approach and attack any target from the *[AITargetType]* list specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by threat & distance: Farther targets have more priority. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=85,n
+```
+
+### `86` New Attack Action Using Lists
+
+- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by distance: Closer targets have more priority. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=86,n
+```
+
+### `87` New Attack Action Using Lists
+
+- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by distance: Farther targets have more priority. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=87,n
+```
+
+### `88` New Attack Action Using Lists
+
+- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by threat & distance: Closer targets have more priority. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=88,n
+```
+
+### `89` New Attack Action Using Lists
+
+- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by threat & distance: Farther targets have more priority. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=89,n
+```
+
+### `90` New Attack Action Using Lists
+
+- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by distance: Closer targets have more priority. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=90,n
+```
+
+### `91` New Attack Action Using Lists
+
+- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by distance: Farther targets have more priority. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=91,n
+```
+
+### `92` Wait If No Target Found
+
+- When executed before a new Attack ScriptType Actions like `74-81` and `84-91` the TeamType will remember that must wait 1 second if no target was selected. The second parameter is a positive value that specifies how much retries the Attack will do when no target was found before new Attack ScriptType Action is discarded & the script execution jumps to the next line. The value `0` means infinite retries.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=92,n            ; integer n=0
+```
+
+### `93` Team's Trigger Weight Reward
+
+- When executed before a new Attack ScriptType Actions like `74-81` and `84-91` the TeamType will remember that must be rewarded increasing the current Weight of the AI Trigger when the TeamType Target was killed by any of the Team members. The current Weight will never surprass the Minimum Weight and Maximum Weight limits of the AI Trigger. The second parameter is a positive value.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=93,n            ; integer n=0
+```
