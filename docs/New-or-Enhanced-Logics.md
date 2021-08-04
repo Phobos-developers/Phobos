@@ -550,6 +550,50 @@ Value  Target Type        Description
 32     Capturable         Any [BuildingTypes] with Capturable=yes or any [BuildingTypes] with BridgeRepairHut=yes and Repairable=yes 
 =====  =================  ==============================================================================
 
+| *Value* | *Target Type*     | *Description*                                 |
+| ------: | :---------------: | :-------------------------------------------: |
+1         | Anything          |	Anything [VehicleTypes], [AircraftTypes], [InfantryTypes] and [BuildingTypes]	                                          |
+2         | Structures        |	Any enemy [BuildingTypes] without Artillary=yes, TickTank=yes, ICBMLauncher=yes or SensorArray=yes	                                          |
+3         | Ore Miners        |	Any enemy [VehicleTypes] with Harvester=yes or ResourceGatherer=yes, [BuildingTypes] with ResourceGatherer=yes	                                          |
+4         | Infantry          |	Any enemy [InfantryTypes]	                                          |
+5         | Vehicles          |	Any enemy [VehicleTypes], [AircraftTypes], [BuildingTypes] with Artillary=yes, TickTank=yes, ICBMLauncher=yes & SensorArray=yes	                                          |
+6         | Factories         |	Any enemy [BuildingTypes] with a Factory= setting	                                          |
+7         | Base Defenses     |	Any enemy [BuildingTypes] with IsBaseDefense=yes	                                          |
+8         | Mobile Units      |	Anything [VehicleTypes], [AircraftTypes] and [InfantryTypes]	                                          |
+9         | Power Plants      |	Any enemy [BuildingTypes] with positive Power= values	                                          |
+10        | Occupied          |	Any [BuildingTypes] with garrisoned infantry	                                          |
+11        | Tech Buildings    |	Any [BuildingTypes] with Unsellable=yes, Capturable=yes, negative TechLevel= values or appears in [AI]>NeutralTechBuildings= list	                                          |
+12        |	Refinery          |	Any enemy [BuildingTypes] with Refinery=yes or ResourceGatherer=yes, [VehicleTypes] with ResourceGatherer=yes & Harvester=no (i.e. Slave Miner)											  |
+13        |	Mind Controller   |	Anything [VehicleTypes], [AircraftTypes], [InfantryTypes] and [BuildingTypes] with MindControl=yes in the weapons Warheads											  |
+14        |	Air Units         |	Any enemy [AircraftTypes], flying [VehicleTypes] or [InfantryTypes]											  |
+15        |	Naval             |	Any enemy [BuildingTypes] and [VehicleTypes] with a Naval=yes, any enemy [VehicleTypes], [AircraftTypes], [InfantryTypes] in a water cell											  |
+16        |	Disruptors        |	Any enemy objects with positive InhibitorRange= values, positive RadarJamRadius= values, CloakGenerator=yes or GapGenerator=yes											  |
+17        |	Ground Vehicles   |	Any enemy [VehicleTypes] without Naval=yes, landed [AircraftTypes], Deployed vehicles into [BuildingTypes]											  |
+18        |	Economy           |	Any enemy [VehicleTypes] with Harvester=yes or ResourceGatherer=yes, [BuildingTypes] with Refinery=yes, ResourceGatherer=yes or OrePurifier=yes											  |
+19        |	Infantry Factory  |	Any enemy [BuildingTypes] with Factory=InfantryType											  |
+20        |	Vehicle Factory   |	Any enemy [BuildingTypes] with Factory=UnitType											  |
+21        |	Aircraft Factory  |	Any enemy [BuildingTypes] with Factory=AircraftType											  |
+22        |	Radar             |	Any enemy [BuildingTypes] with Radar=yes or SpySat=yes											  |
+23        |	Tech Lab          |	Any enemy [BuildingTypes] in [AI]>BuildTech= list											  |
+24        |	Naval Factory     |	Any enemy [BuildingTypes] with Naval=yes and Factory=UnitType											  |
+25        |	Super Weapon      |	Any enemy [BuildingTypes] with SuperWeapon=, SuperWeapon2= or SuperWeapons=											  |
+26        |	Construction Yard |	Any enemy [BuildingTypes] with ConstructionYard=yes and Factory=BuildingType											  |
+27        |	Neutrals          |	Any neutral object (Civilian)											  |
+28        |	Generators        |	Any enemy [BuildingTypes] with CloakGenerator=yes or GapGenerator=yes											  |
+29        |	Radar Jammer      |	Any enemy objects with positive RadarJamRadius= values											  |
+30        |	Inhibitors        |	Any enemy objects with positive InhibitorRange= values											  |
+31        |	Naval Units       |	Any enemy [VehicleTypes] with a Naval=yes or any enemy [VehicleTypes], [AircraftTypes], [InfantryTypes] in a water cell											  |
+32        |	Capturable        |	Any [BuildingTypes] with Capturable=yes or any [BuildingTypes] with BridgeRepairHut=yes and Repairable=yes 											  |
+
+
+
+
+
+
+
+
+
+
 ### `82` Decrease AI Trigger Current Weight
 
 - When executed this decreases the current Weight of the AI Trigger.The current Weight will never surprass the Minimum Weight and Maximum Weight limits of the AI Trigger. Take note that all TeamTypes of the same AI Trigger will update sooner or later the AI Trigger Current Weight. The second parameter is a positive value.
@@ -571,24 +615,3 @@ In `aimd.ini`:
 x=83,n
 ```
 
-.. list-table:: List tables can have captions like this one.
-    :widths: 10 5 10 50
-    :header-rows: 1
-    :stub-columns: 1
-
-    * - List table
-      - Header 1
-      - Header 2
-      - Header 3 long. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet mauris arcu.
-    * - Stub Row 1
-      - Row 1
-      - Column 2
-      - Column 3 long. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet mauris arcu.
-    * - Stub Row 2
-      - Row 2
-      - Column 2
-      - Column 3 long. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet mauris arcu.
-    * - Stub Row 3
-      - Row 3
-      - Column 2
-      - Column 3 long. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet mauris arcu.
