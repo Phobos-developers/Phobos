@@ -432,7 +432,7 @@ x=73,0
 
 ### `74` New Attack Action
 
-- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by threat & distance: Closer targets have more priority. Look at the table below for the possible second parameter values and the Target Type associated.
+- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by threat & distance: `Closer targets have more priority`. Look at the table below for the possible second parameter values and the Target Type associated.
 
 In `aimd.ini`:
 ```ini
@@ -442,7 +442,7 @@ x=74,n
 
 ### `75` New Attack Action
 
-- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by threat & distance: Farther targets have more priority. Look at the table below for the possible second parameter values and the Target Type associated.
+- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by threat & distance: `Farther targets have more priority`. Look at the table below for the possible second parameter values and the Target Type associated.
 
 In `aimd.ini`:
 ```ini
@@ -452,7 +452,7 @@ x=75,n
 
 ### `76` New Attack Action
 
-- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by distance: Closer targets have more priority. Look at the table below for the possible second parameter values and the Target Type associated.
+- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by distance: `Closer targets have more priority`. Look at the table below for the possible second parameter values and the Target Type associated.
 
 In `aimd.ini`:
 ```ini
@@ -462,7 +462,7 @@ x=76,n
 
 ### `77` New Attack Action
 
-- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by distance: Farther targets have more priority. Look at the table below for the possible second parameter values and the Target Type associated.
+- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by distance: `Farther targets have more priority`. Look at the table below for the possible second parameter values and the Target Type associated.
 
 In `aimd.ini`:
 ```ini
@@ -472,7 +472,7 @@ x=77,n
 
 ### `78` New Attack Action
 
-- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by threat & distance: Closer targets have more priority. Look at the table below for the possible second parameter values and the Target Type associated.
+- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by threat & distance: `Closer targets have more priority`. Look at the table below for the possible second parameter values and the Target Type associated.
 
 In `aimd.ini`:
 ```ini
@@ -482,7 +482,7 @@ x=78,n
 
 ### `79` New Attack Action
 
-- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by threat & distance: Farther targets have more priority. Look at the table below for the possible second parameter values and the Target Type associated.
+- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by threat & distance: `Farther targets have more priority`. Look at the table below for the possible second parameter values and the Target Type associated.
 
 In `aimd.ini`:
 ```ini
@@ -492,7 +492,7 @@ x=79,n
 
 ### `80` New Attack Action
 
-- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by distance: Closer targets have more priority. Look at the table below for the possible second parameter values and the Target Type associated.
+- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by distance: `Closer targets have more priority`. Look at the table below for the possible second parameter values and the Target Type associated.
 
 In `aimd.ini`:
 ```ini
@@ -502,7 +502,7 @@ x=80,n
 
 ### `81` New Attack Action
 
-- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by distance: Farther targets have more priority. Look at the table below for the possible second parameter values and the Target Type associated.
+- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by distance: `Farther targets have more priority`. Look at the table below for the possible second parameter values and the Target Type associated.
 
 In `aimd.ini`:
 ```ini
@@ -570,7 +570,7 @@ x=83,n
 
 ### `84` New Attack Action Using Lists
 
-- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by threat & distance: Closer targets have more priority.
+- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by threat & distance: `Closer targets have more priority`.
 
 In `aimd.ini`:
 ```ini
@@ -591,7 +591,7 @@ In `rulesmd.ini`:
 
 ### `85` New Attack Action Using Lists
 
-- This instructs the TeamType to use the TaskForce to approach and attack any target from the *[AITargetType]* list specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by threat & distance: Farther targets have more priority. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
+- This instructs the TeamType to use the TaskForce to approach and attack any target from the *[AITargetType]* list specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by threat & distance: `Farther targets have more priority`. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
 
 In `aimd.ini`:
 ```ini
@@ -601,7 +601,7 @@ x=85,n
 
 ### `86` New Attack Action Using Lists
 
-- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by distance: Closer targets have more priority. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
+- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by distance: `Closer targets have more priority`. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
 
 In `aimd.ini`:
 ```ini
@@ -611,7 +611,7 @@ x=86,n
 
 ### `87` New Attack Action Using Lists
 
-- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by distance: Farther targets have more priority. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
+- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by distance: `Farther targets have more priority`. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
 
 In `aimd.ini`:
 ```ini
@@ -621,7 +621,7 @@ x=87,n
 
 ### `88` New Attack Action Using Lists
 
-- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by threat & distance: Closer targets have more priority. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
+- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by threat & distance: `Closer targets have more priority`. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
 
 In `aimd.ini`:
 ```ini
@@ -631,7 +631,7 @@ x=88,n
 
 ### `89` New Attack Action Using Lists
 
-- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by threat & distance: Farther targets have more priority. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
+- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by threat & distance: `Farther targets have more priority`. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
 
 In `aimd.ini`:
 ```ini
@@ -641,7 +641,7 @@ x=89,n
 
 ### `90` New Attack Action Using Lists
 
-- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by distance: Closer targets have more priority. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
+- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by distance: `Closer targets have more priority`. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
 
 In `aimd.ini`:
 ```ini
@@ -651,7 +651,7 @@ x=90,n
 
 ### `91` New Attack Action Using Lists
 
-- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by distance: Farther targets have more priority. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
+- This instructs the TeamType to use the TaskForce to approach and attack any target from the list specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by distance: `Farther targets have more priority`. Look at the *[AITargetType]* section declaration in ScriptType Action *84* for more information.
 
 In `aimd.ini`:
 ```ini
