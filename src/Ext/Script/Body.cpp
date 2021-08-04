@@ -908,6 +908,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	TechnoTypeClass* pTechnoType = pTechno->GetTechnoType();
 	auto const& BuildTech = RulesClass::Instance->BuildTech;
 	auto const& BaseUnit = RulesClass::Instance->BaseUnit;
+	auto const& NeutralTechBuildings = RulesClass::Instance->NeutralTechBuildings;
 	int nSuperWeapons = 0;
 
 	// Special case: validate target if is part of a technos list in [AITargetType] section
@@ -975,7 +976,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	case 5:
 		pTypeBuilding = abstract_cast<BuildingTypeClass *>(pTechnoType);
 
-		// Vehicle or landed Aircraft
+		// Vehicle, Aircraft, Deployed vehicle into structure
 		if (!pTechno->Owner->IsNeutral()
 			&& (pTechnoType->WhatAmI() == AbstractType::UnitType
 				|| (pTechnoType->WhatAmI() == AbstractType::BuildingType
@@ -1043,27 +1044,42 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		break;
 
 	case 10:
-		// Aircraft and Air Unit
-		if (!pTechno->Owner->IsNeutral()
-			&& (pTechnoType->WhatAmI() == AbstractType::AircraftType || pTechnoType->JumpJet || pTechno->IsInAir()))
+		// Occupied Building
+		if (pTechnoType->WhatAmI() == AbstractType::BuildingType)
 		{
-			return true;
+			pBuilding = abstract_cast<BuildingClass *>(pTechno);
+
+			if (pBuilding && pBuilding->Occupants.Count > 0)
+			{
+				return true;
+			}
 		}
 		break;
 
 	case 11:
-		// Economy: Harvester, Refinery or Resource helper
 		pTypeBuilding = abstract_cast<BuildingTypeClass *>(pTechnoType);
 
-		if (!pTechno->Owner->IsNeutral()
-			&& ((pTechnoType->WhatAmI() == AbstractType::UnitType
-				&& (abstract_cast<UnitTypeClass *>(pTechnoType)->Harvester
-					|| abstract_cast<UnitTypeClass *>(pTechnoType)->ResourceGatherer))
-				|| (pTypeBuilding
-					&& pTechnoType->WhatAmI() == AbstractType::BuildingType
-					&& (pTypeBuilding->Refinery 
-						|| pTypeBuilding->OrePurifier 
-						|| pTypeBuilding->ResourceGatherer))))
+		// Civilian Tech
+		if (pTechnoType->WhatAmI() == AbstractType::BuildingType
+			&& NeutralTechBuildings.Items)
+		{
+			for (int i = 0; i < NeutralTechBuildings.Count; i++)
+			{
+				auto pTechObject = NeutralTechBuildings.GetItem(i);
+				if (pTechObject->ID == pTechno->get_ID())
+				{
+					return true;
+				}
+			}
+		}
+
+		// Other cases of civilian Tech Structures
+		if (pTechnoType->WhatAmI() == AbstractType::BuildingType
+			&& pTypeBuilding->Unsellable
+			&& pTypeBuilding->Capturable
+			&& pTypeBuilding->TechLevel < 0
+			&& pTypeBuilding->NeedsEngineer
+			&& !pTypeBuilding->BridgeRepairHut)
 		{
 			return true;
 		}
@@ -1116,15 +1132,11 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		break;
 
 	case 14:
-		// Occupied Building
-		if (pTechnoType->WhatAmI() == AbstractType::BuildingType)
+		// Aircraft and Air Unit
+		if (!pTechno->Owner->IsNeutral()
+			&& (pTechnoType->WhatAmI() == AbstractType::AircraftType || pTechnoType->JumpJet || pTechno->IsInAir()))
 		{
-			pBuilding = abstract_cast<BuildingClass *>(pTechno);
-
-			if (pBuilding && pBuilding->Occupants.Count > 0)
-			{
-				return true;
-			}
+			return true;
 		}
 		break;
 
@@ -1170,14 +1182,18 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		break;
 
 	case 18:
+		// Economy: Harvester, Refinery or Resource helper
 		pTypeBuilding = abstract_cast<BuildingTypeClass *>(pTechnoType);
 
-		// Civilian Tech
-		if (pTechnoType->WhatAmI() == AbstractType::BuildingType
-			&& pTypeBuilding->Unsellable
-			&& pTypeBuilding->Capturable
-			&& pTypeBuilding->TechLevel < 0
-			&& !pTypeBuilding->BridgeRepairHut)
+		if (!pTechno->Owner->IsNeutral()
+			&& ((pTechnoType->WhatAmI() == AbstractType::UnitType
+				&& (abstract_cast<UnitTypeClass *>(pTechnoType)->Harvester
+					|| abstract_cast<UnitTypeClass *>(pTechnoType)->ResourceGatherer))
+				|| (pTypeBuilding
+					&& pTechnoType->WhatAmI() == AbstractType::BuildingType
+					&& (pTypeBuilding->Refinery
+						|| pTypeBuilding->OrePurifier
+						|| pTypeBuilding->ResourceGatherer))))
 		{
 			return true;
 		}
@@ -1356,6 +1372,19 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 			&& pTechnoType->WhatAmI() != AbstractType::BuildingType
 			&& (pTechnoType->Naval 
 				|| pTechno->GetCell()->LandType == LandType::Water))
+		{
+			return true;
+		}
+		break;
+
+	case 32:
+		pTypeBuilding = abstract_cast<BuildingTypeClass *>(pTechnoType);
+
+		// Capturable Structure or Repair Hut
+		if (pTechnoType->WhatAmI() == AbstractType::BuildingType
+			&& pTypeBuilding->Capturable
+			|| (pTypeBuilding->BridgeRepairHut
+				&& pTypeBuilding->Repairable))
 		{
 			return true;
 		}
