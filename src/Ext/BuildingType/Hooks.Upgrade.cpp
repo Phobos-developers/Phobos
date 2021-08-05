@@ -62,7 +62,6 @@ DEFINE_HOOK(0x4408EB, Unlimbo_UpgradeBuildings, 0xA)
 
 int CountOwnedNowTotal(HouseClass const* const pHouse, TechnoTypeClass const* const pItem)
 {
-	int index = -1;
 	int sum = 0;
 	const BuildingTypeClass* pBType = nullptr;
 	const char* pPowersUp = nullptr;
@@ -121,7 +120,6 @@ int CheckBuildLimit(HouseClass const* const pHouse, TechnoTypeClass const* const
 {
 	enum { NotReached = 1, ReachedPermanently = -1, ReachedTemporarily = 0 };
 
-	auto const pData = TechnoTypeExt::ExtMap.Find(pItem);
 	int BuildLimit = pItem->BuildLimit;
 	int Remaining = BuildLimitRemaining(pHouse, pItem);
 
@@ -139,11 +137,12 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x3)
 	GET_STACK(bool const, includeInProduction, 0xC);
 	GET(CanBuildResult const, resultOfAres, EAX);
 
-	if (auto pBuilding = abstract_cast<BuildingTypeClass*>(pItem))
-		if (auto pBuildingExt = BuildingTypeExt::ExtMap.Find(pBuilding))
-			if (pBuildingExt->PowersUp_Buildings.size() > 0)
-				if (resultOfAres == CanBuildResult::Buildable)
-					R->EAX(CheckBuildLimit(pThis, pItem, includeInProduction));
+	if (pItem->WhatAmI() == AbstractType::BuildingType)
+		if (auto pBuilding = static_cast<BuildingTypeClass const*>(pItem))
+			if (auto pBuildingExt = BuildingTypeExt::ExtMap.Find(pBuilding))
+				if (pBuildingExt->PowersUp_Buildings.size() > 0)
+					if (resultOfAres == CanBuildResult::Buildable)
+						R->EAX(CheckBuildLimit(pThis, pItem, includeInProduction));
 
 	return 0;
 }
