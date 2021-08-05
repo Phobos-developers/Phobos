@@ -60,8 +60,7 @@ DEFINE_HOOK(0x4408EB, Unlimbo_UpgradeBuildings, 0xA)
 
 #pragma region UpgradesInteraction
 
-int CountOwnedNowTotal(
-	HouseClass const* const pHouse, TechnoTypeClass const* const pItem)
+int CountOwnedNowTotal(HouseClass const* const pHouse, TechnoTypeClass const* const pItem)
 {
 	int index = -1;
 	int sum = 0;
@@ -77,9 +76,7 @@ int CountOwnedNowTotal(
 				for (auto const& pUpgrade : pBld->Upgrades)
 				{
 					if (pUpgrade == pBType)
-					{
 						++sum;
-					}
 				}
 			}
 		}
@@ -110,23 +107,17 @@ int CountOwnedNowTotal(
 	return sum;
 }
 
-int BuildLimitRemaining(
-	HouseClass const* const pHouse, TechnoTypeClass const* const pItem)
+int BuildLimitRemaining(HouseClass const* const pHouse, TechnoTypeClass const* const pItem)
 {
 	auto const BuildLimit = pItem->BuildLimit;
+
 	if (BuildLimit >= 0)
-	{
 		return BuildLimit - CountOwnedNowTotal(pHouse, pItem);
-	}
 	else
-	{
 		return -BuildLimit - pHouse->CountOwnedEver(pItem);
-	}
 }
 
-int CheckBuildLimit(
-	HouseClass const* const pHouse, TechnoTypeClass const* const pItem,
-	bool const includeQueued)
+int CheckBuildLimit(HouseClass const* const pHouse, TechnoTypeClass const* const pItem,bool const includeQueued)
 {
 	enum { NotReached = 1, ReachedPermanently = -1, ReachedTemporarily = 0 };
 
@@ -136,7 +127,7 @@ int CheckBuildLimit(
 
 	if (BuildLimit >= 0 && Remaining <= 0)
 		return (includeQueued && FactoryClass::FindByOwnerAndProduct(pHouse, pItem)) ? NotReached : ReachedPermanently;
-	
+
 	return Remaining > 0 ? NotReached : ReachedTemporarily;
 
 }
