@@ -476,7 +476,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	{
 		int targetMask = scriptArgument;
 
-		selectedTarget = GreatestThreat(pLeaderUnit, targetMask, calcThreatMode, enemyHouse, attackAITargetType);
+		selectedTarget = GreatestThreat(pLeaderUnit, targetMask, calcThreatMode, enemyHouse, attackAITargetType, pLeaderUnit);
 
 		if (selectedTarget)
 		{
@@ -731,7 +731,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	}
 }
 
-TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int calcThreatMode = 0, HouseClass* onlyTargetThisHouseEnemy = nullptr, int attackAITargetType = -1)
+TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int calcThreatMode = 0, HouseClass* onlyTargetThisHouseEnemy = nullptr, int attackAITargetType = -1, TechnoClass* pTeamLeader = nullptr)
 {
 	TechnoClass *bestObject = nullptr;
 	double bestVal = -1;
@@ -802,7 +802,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 		{
 			double value = 0;
 			//Debug::Log("DEBUG: Possible candidate!!! Go to EvaluateObjectWithMask check.\n");
-			if (EvaluateObjectWithMask(object, method, attackAITargetType))
+			if (EvaluateObjectWithMask(object, method, attackAITargetType, pTeamLeader))
 			{
 				CellStruct newCell;
 				newCell.X = (short)object->Location.X;
@@ -893,7 +893,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 	return nullptr;
 }
 
-bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attackAITargetType = -1)
+bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attackAITargetType = -1, TechnoClass *pTeamLeader = nullptr)
 {
 	if (!pTechno)
 		return false;
@@ -905,11 +905,14 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	BuildingTypeClass* pTypeBuilding = nullptr;
 	TechnoTypeExt::ExtData* pTypeTechnoExt = nullptr;
 	BuildingTypeExt::ExtData* pBuildingExt = nullptr;
+	HouseClass* pTeamOwner = nullptr;
 	TechnoTypeClass* pTechnoType = pTechno->GetTechnoType();
 	auto const& BuildTech = RulesClass::Instance->BuildTech;
 	auto const& BaseUnit = RulesClass::Instance->BaseUnit;
 	auto const& NeutralTechBuildings = RulesClass::Instance->NeutralTechBuildings;
 	int nSuperWeapons = 0;
+	double distanceToTarget = 0;
+	TechnoClass* pTarget = nullptr;
 
 	// Special case: validate target if is part of a technos list in [AITargetType] section
 	if (attackAITargetType >= 0 && RulesExt::Global()->AITargetTypeLists.Count > 0)
@@ -1014,21 +1017,57 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		break;
 
 	case 8:
-		pTypeBuilding = abstract_cast<BuildingTypeClass *>(pTechnoType);
-
-		// Any non-building unit
-		if (!pTechno->Owner->IsNeutral()
-			&& (pTechnoType->WhatAmI() != AbstractType::BuildingType
-				|| (pTechnoType->WhatAmI() == AbstractType::BuildingType 
-					&& pTypeBuilding
-					&& (pTypeBuilding->Artillary 
-						|| pTypeBuilding->TickTank 
-						|| pTypeBuilding->ICBMLauncher 
-						|| pTypeBuilding->SensorArray
-						|| pTypeBuilding->ResourceGatherer))))
+		pTarget = abstract_cast<TechnoClass *>(pTechno->Target);
+		
+		if (pTeamLeader && pTarget)
 		{
-			return true;
+			// The possible Target is aiming against me? Revenge!
+			if (abstract_cast<TechnoClass *>(pTechno->Target)->Owner == pTeamLeader->Owner)
+			{
+				Debug::Log("DEBUG: [%s] (pTechno->Target)->Owner == pTeamLeader->Owner -> True\n", pTechno->GetTechnoType()->ID);
+				return true;
+			}
+			
+			for (int i = 0; i < pTechno->CurrentTargets.Count; i++)
+			{
+				if (abstract_cast<TechnoClass *>(pTechno->CurrentTargets.GetItem(i))->Owner == pTeamLeader->Owner)
+				{
+					Debug::Log("DEBUG: [%s] pTechno->CurrentTargets.GetItem(i))->Owner == pTeamLeader->Owner -> True\n", pTechno->GetTechnoType()->ID);
+					return true;
+				}
+			}
+
+			// Note: Replace these lines when I have access to Combat_Damage() method in YRpp if that is better
+			WeaponType1 = pTechno->Veterancy.IsElite() ?
+				pTechnoType->EliteWeapon[0].WeaponType :
+				pTechnoType->Weapon[0].WeaponType;
+			WeaponType2 = pTechno->Veterancy.IsElite() ?
+				pTechnoType->EliteWeapon[1].WeaponType :
+				pTechnoType->Weapon[1].WeaponType;
+			WeaponType3 = WeaponType1;
+			if (pTechnoType->IsGattling)
+			{
+				WeaponType3 = pTechno->Veterancy.IsElite() ?
+					pTechnoType->EliteWeapon[pTechno->CurrentWeaponNumber].WeaponType :
+					pTechnoType->Weapon[pTechno->CurrentWeaponNumber].WeaponType;
+
+				WeaponType1 = WeaponType3;
+			}
+			
+			// Then check if this possible target is too near of the Team Leader
+			distanceToTarget = pTeamLeader->DistanceFrom(pTechno) / 256.0;
+
+			if (!pTechno->Owner->IsNeutral()
+				&& (WeaponType1 && distanceToTarget <= (WeaponType1->Range * 4.0))
+				|| (WeaponType2 && distanceToTarget <= (WeaponType2->Range * 4.0))
+				|| (pTeamLeader->GetTechnoType()->GuardRange > 0
+					&& distanceToTarget <= (pTeamLeader->GetTechnoType()->GuardRange * 2.0)))
+			{
+				Debug::Log("DEBUG: [%s] Ranges checks -> True\n", pTechno->GetTechnoType()->ID);
+				return true;
+			}
 		}
+		Debug::Log("DEBUG: [%s] Action script returns false\n", pTechno->GetTechnoType()->ID);
 		break;
 
 	case 9:
@@ -1378,6 +1417,24 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		break;
 
 	case 32:
+		pTypeBuilding = abstract_cast<BuildingTypeClass *>(pTechnoType);
+
+		// Any non-building unit
+		if (!pTechno->Owner->IsNeutral()
+			&& (pTechnoType->WhatAmI() != AbstractType::BuildingType
+				|| (pTechnoType->WhatAmI() == AbstractType::BuildingType
+					&& pTypeBuilding
+					&& (pTypeBuilding->Artillary
+						|| pTypeBuilding->TickTank
+						|| pTypeBuilding->ICBMLauncher
+						|| pTypeBuilding->SensorArray
+						|| pTypeBuilding->ResourceGatherer))))
+		{
+			return true;
+		}
+		break;
+
+	case 33:
 		pTypeBuilding = abstract_cast<BuildingTypeClass *>(pTechnoType);
 
 		// Capturable Structure or Repair Hut

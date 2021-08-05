@@ -510,19 +510,19 @@ In `aimd.ini`:
 x=81,n
 ```
 
-Note: New Attack actions scripts (74, 75, 78 & 79) that are focused in target threat use TargetSpecialThreatCoefficientDefault and EnemyHouseThreatBonus tags from Rulesmd.ini.
+Note: New Attack actions scripts (74, 75, 78 & 79) that are focused in target threat use `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from Rulesmd.ini.
 The following are the target types which can be used the new attack script actions:
 
 | *Value* | *Target Type*     | *Description*                                 |
 | ------: | :---------------: | :-------------------------------------------: |
-1         | Anything          |	Anything *[VehicleTypes]*, *[AircraftTypes]*, *[InfantryTypes]* and *[BuildingTypes]* |
+1         | Anything          |	Any enemy *[VehicleTypes]*, *[AircraftTypes]*, *[InfantryTypes]* and *[BuildingTypes]* |
 2         | Structures        |	Any enemy *[BuildingTypes]* without `Artillary=yes`, `TickTank=yes`, `ICBMLauncher=yes` or `SensorArray=yes` |
 3         | Ore Miners        |	Any enemy *[VehicleTypes]* with `Harvester=yes` or `ResourceGatherer=yes`, *[BuildingTypes]* with `ResourceGatherer=yes` |
 4         | Infantry          |	Any enemy *[InfantryTypes]* |
 5         | Vehicles          |	Any enemy *[VehicleTypes]*, *[AircraftTypes]*, *[BuildingTypes]* with `Artillary=yes`, `TickTank=yes`, `ICBMLauncher=yes` & `SensorArray=yes` |
 6         | Factories         |	Any enemy *[BuildingTypes]* with a Factory= setting |
 7         | Base Defenses     |	Any enemy *[BuildingTypes]* with `IsBaseDefense=yes` |
-8         | Mobile Units      |	Anything *[VehicleTypes]*, *[AircraftTypes]* and *[InfantryTypes]* |
+8         | House Threats     |	Any object that targets anything of the Team's House or any enemy that is near to the Team Leader |
 9         | Power Plants      |	Any enemy *[BuildingTypes]* with positive `Power=` values |
 10        | Occupied          |	Any *[BuildingTypes]* with garrisoned infantry |
 11        | Tech Buildings    |	Any *[BuildingTypes]* with `Unsellable=yes`, `Capturable=yes`, negative `TechLevel=` values or appears in `[AI]>NeutralTechBuildings=` list |
@@ -546,7 +546,8 @@ The following are the target types which can be used the new attack script actio
 29        |	Radar Jammer      |	Any enemy objects with positive `RadarJamRadius=` values |
 30        |	Inhibitors        |	Any enemy objects with positive `InhibitorRange=` values |
 31        |	Naval Units       |	Any enemy *[VehicleTypes]* with a `Naval=yes` or any enemy *[VehicleTypes]*, *[AircraftTypes]*, *[InfantryTypes]* in a water cell |
-32        |	Capturable        |	Any *[BuildingTypes]* with `Capturable=yes` or any *[BuildingTypes]* with `BridgeRepairHut=yes` and `Repairable=yes` |
+32        | Mobile Units      |	Anything *[VehicleTypes]*, *[AircraftTypes]* and *[InfantryTypes]* |
+33        |	Capturable        |	Any *[BuildingTypes]* with `Capturable=yes` or any *[BuildingTypes]* with `BridgeRepairHut=yes` and `Repairable=yes` |
 
 ### `82` Decrease AI Trigger Current Weight
 
