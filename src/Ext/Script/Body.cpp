@@ -116,7 +116,7 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		ScriptExt::WaitIfNoTarget(pTeam, -1);
 		break;
 	case 93:
-		ScriptExt::TeamWeightAward(pTeam, 0);
+		ScriptExt::TeamWeightReward(pTeam, 0);
 		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
@@ -329,7 +329,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				if (pTeamData->NextSuccessWeightAward > 0)
 				{
 					IncreaseCurrentTriggerWeight(pTeam, false, pTeamData->NextSuccessWeightAward);
-					Debug::Log("DEBUG: [%s] [%s] Script line: %d = %d,%d TeamWeightAward: Team got reward for killing the Target: +%f\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument, pTeamData->NextSuccessWeightAward);
+					Debug::Log("DEBUG: [%s] [%s] Script line: %d = %d,%d TeamWeightReward: Team got reward for killing the Target: +%f\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument, pTeamData->NextSuccessWeightAward);
 
 					pTeamData->NextSuccessWeightAward = 0;
 				}
@@ -476,7 +476,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	{
 		int targetMask = scriptArgument;
 
-		selectedTarget = GreatestThreat(pLeaderUnit, targetMask, calcThreatMode, enemyHouse, attackAITargetType, pLeaderUnit);
+		selectedTarget = GreatestThreat(pLeaderUnit, targetMask, calcThreatMode, enemyHouse, attackAITargetType);
 
 		if (selectedTarget)
 		{
@@ -550,7 +550,8 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 						// Tanya / Commando C4 case
 						if (pUnitType->WhatAmI() == AbstractType::InfantryType && abstract_cast<InfantryTypeClass*>(pUnitType)->C4 || pUnit->HasAbility(Ability::C4))
 						{
-							pUnit->SetDestination(selectedTarget, false);
+							//pUnit->SetDestination(selectedTarget, false);
+							pUnit->Mission_Attack();
 							pUnit->QueueMission(Mission::Sabotage, true);
 						}
 					}
@@ -689,13 +690,15 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 
 					}
 
-					// Tanya C4 case
+					// Tanya / Commando C4 case
 					if (pUnitType->WhatAmI() == AbstractType::InfantryType
 						&& abstract_cast<InfantryTypeClass*>(pUnitType)->C4
 						|| pUnit->HasAbility(Ability::C4))
 					{
-						pUnit->SetDestination(selectedTarget, false);
+						//pUnit->SetDestination(selectedTarget, false);
+						pUnit->Mission_Attack();
 						pUnit->QueueMission(Mission::Sabotage, true);
+						
 					}
 				}
 			}
@@ -731,7 +734,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	}
 }
 
-TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int calcThreatMode = 0, HouseClass* onlyTargetThisHouseEnemy = nullptr, int attackAITargetType = -1, TechnoClass* pTeamLeader = nullptr)
+TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int calcThreatMode = 0, HouseClass* onlyTargetThisHouseEnemy = nullptr, int attackAITargetType = -1)
 {
 	TechnoClass *bestObject = nullptr;
 	double bestVal = -1;
@@ -755,6 +758,10 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 			unitWeaponsHaveAA = true;
 		if (weaponType && weaponType->Projectile->AG)
 			unitWeaponsHaveAG = true;
+
+		// If the target can't be damaged then isn't a valid target
+		if (GeneralUtils::GetWarheadVersusArmor(weaponType->Warhead, objectType->Armor) == 0.0)
+			continue;
 
 		//Debug::Log("DEBUG: TechnoClass::Array[%d] -> [%s] can target [%s] ?? (AA: %d, AG: %d, Idx: %d)\n", i, pTechno->GetTechnoType()->ID, object->GetTechnoType()->ID, unitWeaponsHaveAA, unitWeaponsHaveAG, weaponIndex);
 		if (object->IsInAir() && !unitWeaponsHaveAA)
@@ -802,7 +809,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 		{
 			double value = 0;
 			//Debug::Log("DEBUG: Possible candidate!!! Go to EvaluateObjectWithMask check.\n");
-			if (EvaluateObjectWithMask(object, method, attackAITargetType, pTeamLeader))
+			if (EvaluateObjectWithMask(object, method, attackAITargetType, pTechno))
 			{
 				CellStruct newCell;
 				newCell.X = (short)object->Location.X;
@@ -905,7 +912,6 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	BuildingTypeClass* pTypeBuilding = nullptr;
 	TechnoTypeExt::ExtData* pTypeTechnoExt = nullptr;
 	BuildingTypeExt::ExtData* pBuildingExt = nullptr;
-	HouseClass* pTeamOwner = nullptr;
 	TechnoTypeClass* pTechnoType = pTechno->GetTechnoType();
 	auto const& BuildTech = RulesClass::Instance->BuildTech;
 	auto const& BaseUnit = RulesClass::Instance->BaseUnit;
@@ -1024,7 +1030,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 			// The possible Target is aiming against me? Revenge!
 			if (abstract_cast<TechnoClass *>(pTechno->Target)->Owner == pTeamLeader->Owner)
 			{
-				Debug::Log("DEBUG: [%s] (pTechno->Target)->Owner == pTeamLeader->Owner -> True\n", pTechno->GetTechnoType()->ID);
+				//Debug::Log("DEBUG: [%s] (pTechno->Target)->Owner == pTeamLeader->Owner -> True\n", pTechno->GetTechnoType()->ID);
 				return true;
 			}
 			
@@ -1032,7 +1038,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 			{
 				if (abstract_cast<TechnoClass *>(pTechno->CurrentTargets.GetItem(i))->Owner == pTeamLeader->Owner)
 				{
-					Debug::Log("DEBUG: [%s] pTechno->CurrentTargets.GetItem(i))->Owner == pTeamLeader->Owner -> True\n", pTechno->GetTechnoType()->ID);
+					//Debug::Log("DEBUG: [%s] pTechno->CurrentTargets.GetItem(i))->Owner == pTeamLeader->Owner -> True\n", pTechno->GetTechnoType()->ID);
 					return true;
 				}
 			}
@@ -1063,11 +1069,11 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 				|| (pTeamLeader->GetTechnoType()->GuardRange > 0
 					&& distanceToTarget <= (pTeamLeader->GetTechnoType()->GuardRange * 2.0)))
 			{
-				Debug::Log("DEBUG: [%s] Ranges checks -> True\n", pTechno->GetTechnoType()->ID);
+				//Debug::Log("DEBUG: [%s] Ranges checks -> True\n", pTechno->GetTechnoType()->ID);
 				return true;
 			}
 		}
-		Debug::Log("DEBUG: [%s] Action script returns false\n", pTechno->GetTechnoType()->ID);
+		//Debug::Log("DEBUG: [%s] Action script returns false\n", pTechno->GetTechnoType()->ID);
 		break;
 
 	case 9:
@@ -1649,7 +1655,7 @@ void ScriptExt::WaitIfNoTarget(TeamClass *pTeam, int attempts = 0)
 	return;
 }
 
-void ScriptExt::TeamWeightAward(TeamClass *pTeam, double award = 0)
+void ScriptExt::TeamWeightReward(TeamClass *pTeam, double award = 0)
 {
 	// This passive method prevents Team's Trigger reaching the Max Weight in seconds if there is no target and the script contains a loop (6,nn).
 	// attempts == number of times the Team will wait if Mission_Attack(...) can't find a new target.
@@ -1662,7 +1668,7 @@ void ScriptExt::TeamWeightAward(TeamClass *pTeam, double award = 0)
 	{
 		if (award > 0)
 			pTeamData->NextSuccessWeightAward = award;
-		//Debug::Log("DEBUG: [%s] [%s] Script line: %d = %d,%d TeamWeightAward: Set award: %f\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument, award);
+		//Debug::Log("DEBUG: [%s] [%s] Script line: %d = %d,%d TeamWeightReward: Set award: %f\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument, award);
 	}
 
 	// This action finished

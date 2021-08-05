@@ -50,14 +50,14 @@ public:
 	static void LoadIntoTransports(TeamClass* pTeam);
 	static void WaitUntillFullAmmoAction(TeamClass * pTeam);
     static void Mission_Attack(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
-    static TechnoClass* GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy, int attackAITargetType, TechnoClass* pTeamLeader);
+    static TechnoClass* GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy, int attackAITargetType);
     static bool EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attackAITargetType, TechnoClass *pTeamLeader);
 	static bool FollowTheLeader(TeamClass* pTeam, TechnoClass* pLeader, TechnoClass* pFollower);
 	static void DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
 	static void IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
 	static void Mission_Attack_List(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
 	static void WaitIfNoTarget(TeamClass *pTeam, int attempts);
-	static void TeamWeightAward(TeamClass *pTeam, double award);
+	static void TeamWeightReward(TeamClass *pTeam, double award);
 
 	static ExtContainer ExtMap;
 };

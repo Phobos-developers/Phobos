@@ -37,14 +37,14 @@ DEFINE_HOOK(0x702E4E, TechnoClass_Save_Killer_Techno, 0x6)
 {
     GET(TechnoClass*, pKiller, EDI);
     GET(TechnoClass*, pVictim, ECX);
-	Debug::Log("DEBUG: TechnoClass_Save_Killer_Techno\n");
+	
     if (pKiller && pVictim)
         TechnoExt::ObjectKilledBy(pVictim, pKiller);
 
     return 0;
 }
 
-DEFINE_HOOK(0x702E9D, TechnoClass_Save_Killer_Techno2, 0x6)
+/*DEFINE_HOOK(0x702E9D, TechnoClass_Save_Killer_Techno2, 0x6)
 {
 	GET(TechnoClass*, pKiller, EDI);
 	GET(TechnoClass*, pVictim, ESI);
@@ -53,4 +53,4 @@ DEFINE_HOOK(0x702E9D, TechnoClass_Save_Killer_Techno2, 0x6)
 		TechnoExt::ObjectKilledBy(pVictim, pKiller);
 
 	return 0;
-}
+}*/
