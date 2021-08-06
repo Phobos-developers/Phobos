@@ -64,6 +64,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		return;
 
 	const char* sectionAITargetType = "AITargetType";
+	const char* sectionAIScriptsList = "AIScriptsList";
 
 	INI_EX exINI(pINI);
 
@@ -72,6 +73,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 
+	// Section AITargetType
 	int itemsCount = pINI->GetKeyCount(sectionAITargetType);
 	for (int i = 0; i < itemsCount; ++i)
 	{
@@ -93,6 +95,26 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		AITargetTypeLists.AddItem(objectsList);
 		objectsList.Clear();
 	}
+
+	// Section AIScriptsList
+	int scriptitemsCount = pINI->GetKeyCount(sectionAIScriptsList);
+	for (int i = 0; i < scriptitemsCount; ++i)
+	{
+		DynamicVectorClass<ScriptTypeClass*> objectsList;
+
+		char* context = nullptr;
+		pINI->ReadString(sectionAIScriptsList, pINI->GetKeyName(sectionAIScriptsList, i), "", Phobos::readBuffer);
+
+		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			ScriptTypeClass* pNewScript = new ScriptTypeClass(cur);
+
+			objectsList.AddItem(pNewScript);
+		}
+		AIScriptsLists.AddItem(objectsList);
+		objectsList.Clear();
+	}
+
 }
 
 // this runs between the before and after type data loading methods for rules ini
@@ -143,6 +165,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->RadApplicationDelay_Building)
 		.Process(this->MissingCameo)
 		.Process(AITargetTypeLists)
+		.Process(AIScriptsLists)
 		;
 }
 

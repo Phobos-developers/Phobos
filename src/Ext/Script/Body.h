@@ -58,6 +58,7 @@ public:
 	static void Mission_Attack_List(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
 	static void WaitIfNoTarget(TeamClass *pTeam, int attempts);
 	static void TeamWeightReward(TeamClass *pTeam, double award);
+	static void PickRandomScript(TeamClass * pTeam, int idxScriptsList);
 
 	static ExtContainer ExtMap;
 };

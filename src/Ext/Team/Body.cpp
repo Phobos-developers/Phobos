@@ -67,7 +67,7 @@ DEFINE_HOOK(0x6EC540, TeamClass_SaveLoad_Prefix, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x6EC52C, TeamClass_Load_Suffix, 0x4)
+DEFINE_HOOK(0x6EC52F, TeamClass_Load_Suffix, 0x6)
 {
 	TeamExt::ExtMap.LoadStatic();
 

@@ -29,6 +29,7 @@ public:
 		Valueable<int> RadApplicationDelay_Building;
 		PhobosFixedString<32u> MissingCameo;
 		DynamicVectorClass<DynamicVectorClass<TechnoTypeClass*>> AITargetTypeLists;
+		DynamicVectorClass<DynamicVectorClass<ScriptTypeClass*>> AIScriptsLists;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Pips_Shield({ -1,-1,-1 })

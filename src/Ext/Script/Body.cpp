@@ -118,6 +118,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 93:
 		ScriptExt::TeamWeightReward(pTeam, 0);
 		break;
+	case 94:
+		ScriptExt::PickRandomScript(pTeam, -1);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
@@ -1674,4 +1677,44 @@ void ScriptExt::TeamWeightReward(TeamClass *pTeam, double award = 0)
 	// This action finished
 	pTeam->StepCompleted = true;
 	return;
+}
+
+void ScriptExt::PickRandomScript(TeamClass* pTeam, int idxScriptsList = -1)
+{
+	if (idxScriptsList <= 0)
+		idxScriptsList = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	bool changeFailed = true;
+
+	// We'll asume that the Modder used an valid Action parameter that is a Key in the [AITargetType] section
+	if (idxScriptsList >= 0)
+	{
+		if (idxScriptsList < RulesExt::Global()->AIScriptsLists.Count)
+		{
+			DynamicVectorClass<ScriptTypeClass*> objectsList = RulesExt::Global()->AIScriptsLists.GetItem(idxScriptsList);
+			
+			if (objectsList.Count > 0)
+			{
+				changeFailed = false;
+				int IdxSelectedObject = ScenarioClass::Instance->Random.RandomRanged(0, objectsList.Count - 1);
+
+				ScriptTypeClass* pNewScript = objectsList.GetItem(IdxSelectedObject);
+				Debug::Log("DEBUG: [%s] [%s] Changing the Team Script to [%s] (Random, IdxSelectedObject: %d)\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pNewScript->ID, IdxSelectedObject);
+				pTeam->CurrentScript = nullptr;
+				pTeam->CurrentScript = new ScriptClass(pNewScript);
+				
+				// Ready for jumping to the first line of the new script
+				pTeam->CurrentScript->idxCurrentLine = -1;
+				pTeam->StepCompleted = true;
+				return;
+			}
+		}
+	}
+
+	// This action finished
+	if (changeFailed)
+	{
+		pTeam->StepCompleted = true;
+		Debug::Log("DEBUG: [%s] [%s] Failed to change the Team Script with a random one!\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID);
+	}
 }
