@@ -15,6 +15,6 @@ DevBuild/
 
 docs/_build/
 
-.vscode/c_cpp_properties.json
+/.vscode/c_cpp_properties.json
 /.vscode/cspell.json
-/.vscode/launch.json
+/.vscode/settings.json
