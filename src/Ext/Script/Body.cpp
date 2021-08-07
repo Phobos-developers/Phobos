@@ -1695,18 +1695,27 @@ void ScriptExt::PickRandomScript(TeamClass* pTeam, int idxScriptsList = -1)
 			
 			if (objectsList.Count > 0)
 			{
-				changeFailed = false;
 				int IdxSelectedObject = ScenarioClass::Instance->Random.RandomRanged(0, objectsList.Count - 1);
 
 				ScriptTypeClass* pNewScript = objectsList.GetItem(IdxSelectedObject);
-				Debug::Log("DEBUG: [%s] [%s] Changing the Team Script to [%s] (Random, IdxSelectedObject: %d)\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pNewScript->ID, IdxSelectedObject);
-				pTeam->CurrentScript = nullptr;
-				pTeam->CurrentScript = new ScriptClass(pNewScript);
-				
-				// Ready for jumping to the first line of the new script
-				pTeam->CurrentScript->idxCurrentLine = -1;
-				pTeam->StepCompleted = true;
-				return;
+				if (pNewScript->ActionsCount > 0)
+				{
+					//Debug::Log("DEBUG: [%s] [%s] Changing the Team Script to [%s] (Random, IdxSelectedObject: %d, pNewScript->ActionsCount: %d)\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pNewScript->ID, IdxSelectedObject, pNewScript->ActionsCount);
+					changeFailed = false;
+					pTeam->CurrentScript = nullptr;
+					pTeam->CurrentScript = new ScriptClass(pNewScript);
+
+					// Ready for jumping to the first line of the new script
+					pTeam->CurrentScript->idxCurrentLine = -1;
+					pTeam->StepCompleted = true;
+					return;
+				}
+				else
+				{
+					pTeam->StepCompleted = true;
+					Debug::Log("DEBUG: [%s] Aborting Script change because [%s] has 0 Action scripts!\n", pTeam->Type->ID, pNewScript->ID);
+					return;
+				}
 			}
 		}
 	}
