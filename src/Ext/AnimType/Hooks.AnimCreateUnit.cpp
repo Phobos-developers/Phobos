@@ -81,12 +81,12 @@ DEFINE_HOOK(0x424932, AnimClass_Update_CreateUnit_ActualAffects, 0x6)
 			if (!MapClass::Instance->TryGetCellAt(pThis->GetCoords())->GetBuilding())
 			{
 				++Unsorted::IKnowWhatImDoing;
-				success = pTechno->Put(location, resultingFacing);
+				success = pTechno->Unlimbo(location, resultingFacing);
 				--Unsorted::IKnowWhatImDoing;
 			}
 			else
 			{
-				success = pTechno->Put(location, resultingFacing);
+				success = pTechno->Unlimbo(location, resultingFacing);
 			}
 
 			if (success)

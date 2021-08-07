@@ -26,7 +26,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	if (pBulletExt->ShouldIntercept)
 	{
 		pThis->Detonate(pThis->GetCoords());
-		pThis->Remove();
+		pThis->Limbo();
 		pThis->UnInit();
 
 		const auto pTechno = pThis->Owner;
