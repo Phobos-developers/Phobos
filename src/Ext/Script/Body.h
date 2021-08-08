@@ -59,6 +59,9 @@ public:
 	static void WaitIfNoTarget(TeamClass *pTeam, int attempts);
 	static void TeamWeightReward(TeamClass *pTeam, double award);
 	static void PickRandomScript(TeamClass * pTeam, int idxScriptsList);
+	static void Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType);
+	static void Mission_Move_List(TeamClass *pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType);
+	static TechnoClass* FindBestObject(TechnoClass *pTechno, int method, int calcThreatMode, bool pickAllies, int attackAITargetType);
 
 	static ExtContainer ExtMap;
 };
