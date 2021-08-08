@@ -461,6 +461,8 @@ x=74-81 or 84-91,n
 
 Note: New Attack actions scripts (74, 75, 78 ,79, 84, 85, 88 & 89) that are focused in target threat use `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from Rulesmd.ini.
 
+Note: Aircrafts that attacks other air units will end all the script. This behavior is intentional because without it aircrafts had some bugs that wasn't fixable at the time of developing the feature.
+
 The second parameter with a 0-based index for the *[AITargetType]* section specifies the list of possible *[VehicleTypes]*, *[AircraftTypes]*, *[InfantryTypes]* and *[BuildingTypes]* that can be evaluated. The new *[AITargetType]* section must be declared in RulesMD.ini for making this script work:
 
 In `rulesmd.ini`:
