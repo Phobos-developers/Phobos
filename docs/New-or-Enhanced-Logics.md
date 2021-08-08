@@ -432,89 +432,31 @@ x=73,0
 
 ### `74` New Attack Action
 
-- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by threat & distance: `Closer targets have more priority`. Look at the table below for the possible second parameter values and the Target Type associated.
+- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
 
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=74,n
+x=74-81,n
 ```
 
-### `75` New Attack Action
-
-- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by threat & distance: `Farther targets have more priority`. Look at the table below for the possible second parameter values and the Target Type associated.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=75,n
-```
-
-### `76` New Attack Action
-
-- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by distance: `Closer targets have more priority`. Look at the table below for the possible second parameter values and the Target Type associated.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=76,n
-```
-
-### `77` New Attack Action
-
-- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are inherently self repeating. Target priority is affected by distance: `Farther targets have more priority`. Look at the table below for the possible second parameter values and the Target Type associated.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=77,n
-```
-
-### `78` New Attack Action
-
-- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by threat & distance: `Closer targets have more priority`. Look at the table below for the possible second parameter values and the Target Type associated.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=78,n
-```
-
-### `79` New Attack Action
-
-- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by threat & distance: `Farther targets have more priority`. Look at the table below for the possible second parameter values and the Target Type associated.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=79,n
-```
-
-### `80` New Attack Action
-
-- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by distance: `Closer targets have more priority`. Look at the table below for the possible second parameter values and the Target Type associated.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=80,n
-```
-
-### `81` New Attack Action
-
-- This instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. These attack script actions are self repeating until the team kills the designated target. Target priority is affected by distance: `Farther targets have more priority`. Look at the table below for the possible second parameter values and the Target Type associated.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=81,n
-```
+| *Action* | *Argument*    | *Description*                                 |
+| :------: | :-----------: | :-------------------------------------------: |
+74         | Target Type#  | Target priority is affected by threat & distance: `Closer targets have more priority`. This script action is inherently self repeating |
+75         | Target Type#  | Target priority is affected by threat & distance: `Farther targets have more priority`. This script action is inherently self repeating |
+76         | Target Type#  | Target priority is affected by distance: `Closer targets have more priority`. This script action is inherently self repeating |
+77         | Target Type#  | Target priority is affected by distance: `Farther targets have more priority`. This script action is inherently self repeating |
+78         | Target Type#  | Target priority is affected by threat & distance: `Closer targets have more priority`. This script action are self repeating until a team member kill the designated target |
+79         | Target Type#  | Target priority is affected by threat & distance: `Farther targets have more priority`. This script action are self repeating until a team member kill the designated target |
+80         | Target Type#  | Target priority is affected by distance: `Closer targets have more priority`. This script action are self repeating until a team member kill the designated target |
+81         | Target Type#  | Target priority is affected by distance: `Farther targets have more priority`. This script action are self repeating until a team member kill the designated target |
 
 Note: New Attack actions scripts (74, 75, 78 & 79) that are focused in target threat use `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from Rulesmd.ini.
-The following are the target types which can be used the new attack script actions:
+
+The following are the target types which can be used as second parameter of the new attack script actions:
 
 | *Value* | *Target Type*     | *Description*                                 |
-| ------: | :---------------: | :-------------------------------------------: |
+| :-----: | :---------------: | :-------------------------------------------: |
 1         | Anything          |	Any enemy *[VehicleTypes]*, *[AircraftTypes]*, *[InfantryTypes]* and *[BuildingTypes]* |
 2         | Structures        |	Any enemy *[BuildingTypes]* without `Artillary=yes`, `TickTank=yes`, `ICBMLauncher=yes` or `SensorArray=yes` |
 3         | Ore Miners        |	Any enemy *[VehicleTypes]* with `Harvester=yes` or `ResourceGatherer=yes`, *[BuildingTypes]* with `ResourceGatherer=yes` |
