@@ -459,7 +459,7 @@ x=74-81 or 84-91,n
 90         | [AITargetType] index# | No | Closer | Ends when a team member kill the designated target |
 91         | [AITargetType] index# | No | Farther | Ends when a team member kill the designated target |
 
-Note: New Attack actions scripts (74, 75, 78 & 79) that are focused in target threat use `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from Rulesmd.ini.
+Note: New Attack actions scripts (74, 75, 78 ,79, 84, 85, 88 & 89) that are focused in target threat use `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from Rulesmd.ini.
 
 The second parameter with a 0-based index for the *[AITargetType]* section specifies the list of possible *[VehicleTypes]*, *[AircraftTypes]*, *[InfantryTypes]* and *[BuildingTypes]* that can be evaluated. The new *[AITargetType]* section must be declared in RulesMD.ini for making this script work:
 
