@@ -97,7 +97,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
+	this->NoManualMove.Read(exINI, pSection, "NoManualMove");
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
+	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
+
 	this->WarpOut.Read(exINI, pSection, "WarpOut");
 	this->WarpIn.Read(exINI, pSection, "WarpIn");
 	this->WarpAway.Read(exINI, pSection, "WarpAway");
@@ -106,6 +109,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChronoMinimumDelay.Read(exINI, pSection, "ChronoMinimumDelay");
 	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
 	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
+	this->OreGathering_Anims.Read(exINI, pSection, "OreGathering.Anims");
+	this->OreGathering_Tiberiums.Read(exINI, pSection, "OreGathering.Tiberiums");
+	this->OreGathering_FramesPerDir.Read(exINI, pSection, "OreGathering.FramesPerDir");
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
@@ -138,6 +144,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Promote_IncludeSpawns)
 		.Process(this->ImmuneToCrit)
 		.Process(this->MultiMindControl_ReleaseVictim)
+		.Process(this->CameoPriority)
+		.Process(this->NoManualMove)
 		.Process(this->ShieldType)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
@@ -147,6 +155,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChronoMinimumDelay)
 		.Process(this->ChronoRangeMinimum)
 		.Process(this->ChronoDelay)
+		.Process(this->OreGathering_Anims)
+		.Process(this->OreGathering_Tiberiums)
+		.Process(this->OreGathering_FramesPerDir)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -170,7 +181,7 @@ TechnoTypeExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
-DEFINE_HOOK(711835, TechnoTypeClass_CTOR, 5)
+DEFINE_HOOK(0x711835, TechnoTypeClass_CTOR, 0x5)
 {
 	GET(TechnoTypeClass*, pItem, ESI);
 
@@ -179,7 +190,7 @@ DEFINE_HOOK(711835, TechnoTypeClass_CTOR, 5)
 	return 0;
 }
 
-DEFINE_HOOK(711AE0, TechnoTypeClass_DTOR, 5)
+DEFINE_HOOK(0x711AE0, TechnoTypeClass_DTOR, 0x5)
 {
 	GET(TechnoTypeClass*, pItem, ECX);
 
@@ -188,8 +199,8 @@ DEFINE_HOOK(711AE0, TechnoTypeClass_DTOR, 5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(716DC0, TechnoTypeClass_SaveLoad_Prefix, 5)
-DEFINE_HOOK(7162F0, TechnoTypeClass_SaveLoad_Prefix, 6)
+DEFINE_HOOK_AGAIN(0x716DC0, TechnoTypeClass_SaveLoad_Prefix, 0x5)
+DEFINE_HOOK(0x7162F0, TechnoTypeClass_SaveLoad_Prefix, 0x6)
 {
 	GET_STACK(TechnoTypeClass*, pItem, 0x4);
 	GET_STACK(IStream*, pStm, 0x8);
@@ -199,22 +210,22 @@ DEFINE_HOOK(7162F0, TechnoTypeClass_SaveLoad_Prefix, 6)
 	return 0;
 }
 
-DEFINE_HOOK(716DAC, TechnoTypeClass_Load_Suffix, A)
+DEFINE_HOOK(0x716DAC, TechnoTypeClass_Load_Suffix, 0xA)
 {
 	TechnoTypeExt::ExtMap.LoadStatic();
 
 	return 0;
 }
 
-DEFINE_HOOK(717094, TechnoTypeClass_Save_Suffix, 5)
+DEFINE_HOOK(0x717094, TechnoTypeClass_Save_Suffix, 0x5)
 {
 	TechnoTypeExt::ExtMap.SaveStatic();
 
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(716132, TechnoTypeClass_LoadFromINI, 5)
-DEFINE_HOOK(716123, TechnoTypeClass_LoadFromINI, 5)
+DEFINE_HOOK_AGAIN(0x716132, TechnoTypeClass_LoadFromINI, 0x5)
+DEFINE_HOOK(0x716123, TechnoTypeClass_LoadFromINI, 0x5)
 {
 	GET(TechnoTypeClass*, pItem, EBP);
 	GET_STACK(CCINIClass*, pINI, 0x380);
@@ -224,7 +235,7 @@ DEFINE_HOOK(716123, TechnoTypeClass_LoadFromINI, 5)
 	return 0;
 }
 
-DEFINE_HOOK(679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 5)
+DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 {
 	//GET(CCINIClass*, pINI, ESI);
 

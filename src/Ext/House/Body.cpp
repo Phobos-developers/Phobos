@@ -64,7 +64,7 @@ HouseExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
-DEFINE_HOOK(4F6532, HouseClass_CTOR, 5)
+DEFINE_HOOK(0x4F6532, HouseClass_CTOR, 0x5)
 {
 	GET(HouseClass*, pItem, EAX);
 
@@ -72,7 +72,7 @@ DEFINE_HOOK(4F6532, HouseClass_CTOR, 5)
 	return 0;
 }
 
-DEFINE_HOOK(4F7371, HouseClass_DTOR, 6)
+DEFINE_HOOK(0x4F7371, HouseClass_DTOR, 0x6)
 {
 	GET(HouseClass*, pItem, ESI);
 
@@ -80,8 +80,8 @@ DEFINE_HOOK(4F7371, HouseClass_DTOR, 6)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(504080, HouseClass_SaveLoad_Prefix, 5)
-DEFINE_HOOK(503040, HouseClass_SaveLoad_Prefix, 5)
+DEFINE_HOOK_AGAIN(0x504080, HouseClass_SaveLoad_Prefix, 0x5)
+DEFINE_HOOK(0x503040, HouseClass_SaveLoad_Prefix, 0x5)
 {
 	GET_STACK(HouseClass*, pItem, 0x4);
 	GET_STACK(IStream*, pStm, 0x8);
@@ -91,7 +91,7 @@ DEFINE_HOOK(503040, HouseClass_SaveLoad_Prefix, 5)
 	return 0;
 }
 
-DEFINE_HOOK(504069, HouseClass_Load_Suffix, 7)
+DEFINE_HOOK(0x504069, HouseClass_Load_Suffix, 0x7)
 {
 	auto pItem = HouseExt::ExtMap.Find(HouseExt::ExtMap.SavingObject);
 	IStream* pStm = HouseExt::ExtMap.SavingStream;
@@ -101,7 +101,7 @@ DEFINE_HOOK(504069, HouseClass_Load_Suffix, 7)
 	return 0;
 }
 
-DEFINE_HOOK(5046DE, HouseClass_Save_Suffix, 7)
+DEFINE_HOOK(0x5046DE, HouseClass_Save_Suffix, 0x7)
 {
 	auto pItem = HouseExt::ExtMap.Find(HouseExt::ExtMap.SavingObject);
 	IStream* pStm = HouseExt::ExtMap.SavingStream;
@@ -111,7 +111,7 @@ DEFINE_HOOK(5046DE, HouseClass_Save_Suffix, 7)
 }
 */
 /*
-DEFINE_HOOK(50114D, HouseClass_InitFromINI, 5)
+DEFINE_HOOK(0x50114D, HouseClass_InitFromINI, 0x5)
 {
 	GET(HouseClass* const, pThis, EBX);
 	GET(CCINIClass* const, pINI, ESI);

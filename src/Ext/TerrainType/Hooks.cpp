@@ -13,7 +13,7 @@ namespace TerrainTypeTemp
 	TerrainTypeExt::ExtData* pCurrentExt = nullptr;
 }
 
-DEFINE_HOOK(71C853, TerrainTypeClass_Context_Set, 6)
+DEFINE_HOOK(0x71C853, TerrainTypeClass_Context_Set, 0x6)
 {
 	TerrainTypeTemp::pCurrentType = R->ECX<TerrainTypeClass*>();
 	TerrainTypeTemp::pCurrentExt = TerrainTypeExt::ExtMap.Find(TerrainTypeTemp::pCurrentType);
@@ -34,7 +34,7 @@ void __fastcall TerrainClass_AI_CellsPerAnim(CellClass* pThis, void*, bool force
 
 DEFINE_POINTER_CALL(0x71C8D0, TerrainClass_AI_CellsPerAnim)
 
-DEFINE_HOOK(483811, CellClass_SpreadTiberium_TiberiumType, 8)
+DEFINE_HOOK(0x483811, CellClass_SpreadTiberium_TiberiumType, 0x8)
 {
 	if (TerrainTypeTemp::pCurrentExt)
 	{
@@ -48,7 +48,7 @@ DEFINE_HOOK(483811, CellClass_SpreadTiberium_TiberiumType, 8)
 	return 0;
 }
 
-DEFINE_HOOK(48381D, CellClass_SpreadTiberium_CellSpread, 6)
+DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 {
 	enum { SpreadReturn = 0x4838CA, NoSpreadReturn = 0x4838B0 };
 
@@ -84,7 +84,7 @@ DEFINE_HOOK(48381D, CellClass_SpreadTiberium_CellSpread, 6)
 	return 0;
 }
 
-DEFINE_HOOK(71C8D7, TerrainTypeClass_Context_Unset, 5)
+DEFINE_HOOK(0x71C8D7, TerrainTypeClass_Context_Unset, 0x5)
 {
 	TerrainTypeTemp::pCurrentType = nullptr;
 	TerrainTypeTemp::pCurrentExt = nullptr;

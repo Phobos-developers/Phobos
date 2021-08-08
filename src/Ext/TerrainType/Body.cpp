@@ -79,7 +79,7 @@ TerrainTypeExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
-DEFINE_HOOK(71DBC0, TerrainTypeClass_CTOR, 7)
+DEFINE_HOOK(0x71DBC0, TerrainTypeClass_CTOR, 0x7)
 {
 	GET(TerrainTypeClass*, pItem, ESI);
 
@@ -88,7 +88,7 @@ DEFINE_HOOK(71DBC0, TerrainTypeClass_CTOR, 7)
 	return 0;
 }
 
-DEFINE_HOOK(71E364, TerrainTypeClass_SDDTOR, 6)
+DEFINE_HOOK(0x71E364, TerrainTypeClass_SDDTOR, 0x6)
 {
 	GET(TerrainTypeClass*, pItem, ECX);
 
@@ -97,8 +97,8 @@ DEFINE_HOOK(71E364, TerrainTypeClass_SDDTOR, 6)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(71E1D0, TerrainTypeClass_SaveLoad_Prefix, 5)
-DEFINE_HOOK(71E240, TerrainTypeClass_SaveLoad_Prefix, 8)
+DEFINE_HOOK_AGAIN(0x71E1D0, TerrainTypeClass_SaveLoad_Prefix, 0x5)
+DEFINE_HOOK(0x71E240, TerrainTypeClass_SaveLoad_Prefix, 0x8)
 {
 	GET_STACK(TerrainTypeClass*, pItem, 0x4);
 	GET_STACK(IStream*, pStm, 0x8);
@@ -108,21 +108,21 @@ DEFINE_HOOK(71E240, TerrainTypeClass_SaveLoad_Prefix, 8)
 	return 0;
 }
 
-DEFINE_HOOK(71E235, TerrainTypeClass_Load_Suffix, 5)
+DEFINE_HOOK(0x71E235, TerrainTypeClass_Load_Suffix, 0x5)
 {
 	TerrainTypeExt::ExtMap.LoadStatic();
 
 	return 0;
 }
 
-DEFINE_HOOK(71E25A, TerrainTypeClass_Save_Suffix, 5)
+DEFINE_HOOK(0x71E25A, TerrainTypeClass_Save_Suffix, 0x5)
 {
 	TerrainTypeExt::ExtMap.SaveStatic();
 
 	return 0;
 }
 
-DEFINE_HOOK(71E0A6, TerrainTypeClass_LoadFromINI, 5)
+DEFINE_HOOK(0x71E0A6, TerrainTypeClass_LoadFromINI, 0x5)
 {
 	GET(TerrainTypeClass*, pItem, ESI);
 	GET_STACK(CCINIClass*, pINI, STACK_OFFS(0x210, -0x4));

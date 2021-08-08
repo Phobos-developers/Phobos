@@ -22,7 +22,7 @@ bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pU
 	return false;
 }
 
-DEFINE_HOOK(452678, CanUpgrade_UpgradeBuildings, 8)
+DEFINE_HOOK(0x452678, CanUpgrade_UpgradeBuildings, 0x8)
 {
 	GET(BuildingClass*, pBuilding, ECX);
 	GET_STACK(BuildingTypeClass*, pUpgrade, 0x0C);
@@ -36,7 +36,7 @@ DEFINE_HOOK(452678, CanUpgrade_UpgradeBuildings, 8)
 	return 0x4526B5;  // fail
 }
 
-DEFINE_HOOK(4408EB, Unlimbo_UpgradeBuildings, A)
+DEFINE_HOOK(0x4408EB, Unlimbo_UpgradeBuildings, 0xA)
 {
 	GET(BuildingClass*, buildingUnderMouse, EDI);
 	GET(BuildingClass*, pUpgrade, ESI);

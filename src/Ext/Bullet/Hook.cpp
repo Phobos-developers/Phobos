@@ -4,7 +4,7 @@
 
 #include <TechnoClass.h>
 
-DEFINE_HOOK(4666F7, BulletClass_AI, 6)
+DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 {
 	GET(BulletClass*, pBullet, EBP);
 
@@ -12,7 +12,7 @@ DEFINE_HOOK(4666F7, BulletClass_AI, 6)
 	if (pBulletExt && pBulletExt->ShouldIntercept)
 	{
 		pBullet->Detonate(pBullet->GetCoords());
-		pBullet->Remove();
+		pBullet->Limbo();
 		pBullet->UnInit();
 
 		const auto pTechno = pBullet->Owner;
@@ -36,7 +36,7 @@ DEFINE_HOOK(4666F7, BulletClass_AI, 6)
 	return 0;
 }
 
-DEFINE_HOOK(4692BD, BulletClass_Logics_ApplyMindControl, 6)
+DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
 {
 	GET(BulletClass*, pBullet, ESI);
 	auto pTypeExt = WarheadTypeExt::ExtMap.Find(pBullet->WH);

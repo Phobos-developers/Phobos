@@ -33,6 +33,38 @@ In `FAData.ini`:
 
 ## Changelog
 
+### 0.2.2
+
+New:
+- Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
+- Customizable cameo sorting priority (by Uranusian)
+- Customizable harvester ore gathering animation (by secsome, Uranusian)
+- Allow making technos unable to be issued with movement order (by Uranusian)
+
+Vanilla fixes:
+- Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (by Belonit)
+
+Phobos fixes:
+- Fixed the critical damage logic not functioning properly (by Uranusian)
+- Fixed the bug when executing the stop command game crashes (by Uranusian)
+
+### 0.2.1.1
+
+Phobos fixes:
+- Fixed occasional crashes introduced by `Speed=0` stationary vehicles code (by Starkku)
+
+### 0.2.1
+
+New:
+- Setting VehicleType `Speed` to 0 now makes game treat them as stationary (by Starkku)
+
+Vanilla fixes:
+- Fixed the bug when after a failed placement the building/defence tab hotkeys won't trigger placement mode again (by Uranusian)
+- Fixed the bug when building with `UndeployInto` plays `EVA_NewRallypointEstablished` while undeploying (by secsome)
+
+Phobos fixes:
+- Fixed the bug when trigger action `125 Build At...` wasn't actually producing a building when the target cells were occupied (by secsome)
+
 ### 0.2
 
 New:
@@ -76,6 +108,7 @@ Vanilla fixes:
 Phobos fixes:
 - Properly rewritten a fix for mind-controlled vehicles deploying into buildings (by FS-21)
 - Properly rewritten `DeployToFire` fix, tag `Deployed.RememberTarget` is deprecated, now always on (by Kerbiter)
+- New warheads now work with Ares' `GenericWarhead` superweapon (by Belonit)
 
 ### 0.1.1
 

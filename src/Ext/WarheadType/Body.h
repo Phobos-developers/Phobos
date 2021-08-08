@@ -34,42 +34,44 @@ public:
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
-		
+
 		Valueable<bool> PenetratesShield;
 		Valueable<bool> BreaksShield;
 
 		double RandomBuffer;
 
-		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject),
-			SpySat(false),
-			BigGap(false),
-			TransactMoney(0),
-			SplashList(),
-			SplashList_PickRandom(false),
-			RemoveDisguise(false),
-			RemoveMindControl(false),
-			AnimList_PickRandom(false),
+		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject)
+			, SpySat(false)
+			, BigGap(false)
+			, TransactMoney(0)
+			, SplashList()
+			, SplashList_PickRandom(false)
+			, RemoveDisguise(false)
+			, RemoveMindControl(false)
+			, AnimList_PickRandom(false)
 
-			Crit_Chance(0.0),
-			Crit_ExtraDamage(0),
-			Crit_Affects(AffectedTarget::All),
-			Crit_AnimList(),
-			RandomBuffer(0.0),
+			, Crit_Chance(0.0)
+			, Crit_ExtraDamage(0)
+			, Crit_Affects(AffectedTarget::All)
+			, Crit_AnimList()
+			, RandomBuffer(0.0)
 
-			MindControl_Anim(),
+			, MindControl_Anim()
 
-			AffectsEnemies(true),
-			AffectsOwner(),
+			, AffectsEnemies(true)
+			, AffectsOwner()
 
-			PenetratesShield(false),
-			BreaksShield(false)
+			, PenetratesShield(false)
+			, BreaksShield(false)
 		{ }
+
 	private:
 		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr);
 
 		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
+
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
@@ -79,15 +81,17 @@ public:
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
 	};
 
-	class ExtContainer final : public Container<WarheadTypeExt> {
+	class ExtContainer final : public Container<WarheadTypeExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();
