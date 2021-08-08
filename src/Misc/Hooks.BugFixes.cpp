@@ -178,3 +178,7 @@ DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
 
 	return 0x4437AD;
 }
+
+// issue #232: Naval=yes overrides WaterBound=no and prevents move orders onto Land cells
+// Author: Uranusian
+DEFINE_LJMP(0x47CA05, 0x47CA33); // CellClass_IsClearToBuild_SkipNaval
