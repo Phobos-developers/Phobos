@@ -430,30 +430,49 @@ In `aimd.ini`:
 x=73,0
 ```
 
-### `74-81` New Attack Action
+### `74-81`, `84-91` New Attack Action
 
 - These Actions instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
 
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=74-81,n
+x=74-81 or 84-91,n
 ```
 
-| *Action* | *Argument*    | *Description*                                 |
-| :------: | :-----------: | :-------------------------------------------: |
-74         | Target Type#  | Target priority is affected by threat & distance: `Closer targets have more priority`. This script action is inherently self repeating |
-75         | Target Type#  | Target priority is affected by threat & distance: `Farther targets have more priority`. This script action is inherently self repeating |
-76         | Target Type#  | Target priority is affected by distance: `Closer targets have more priority`. This script action is inherently self repeating |
-77         | Target Type#  | Target priority is affected by distance: `Farther targets have more priority`. This script action is inherently self repeating |
-78         | Target Type#  | Target priority is affected by threat & distance: `Closer targets have more priority`. This script action are self repeating until a team member kill the designated target |
-79         | Target Type#  | Target priority is affected by threat & distance: `Farther targets have more priority`. This script action are self repeating until a team member kill the designated target |
-80         | Target Type#  | Target priority is affected by distance: `Closer targets have more priority`. This script action are self repeating until a team member kill the designated target |
-81         | Target Type#  | Target priority is affected by distance: `Farther targets have more priority`. This script action are self repeating until a team member kill the designated target |
+| *Action* | *Argument*   | *Repeats* | *Target Priority* | *Description*                                 |
+| :------: | :----------: | :-------: | :---------------: | :-------------------------------------------: |
+74         | Target Type# | Yes | Closer, higher threat |  |
+75         | Target Type# | Yes | Farther, higher threat |  |
+76         | Target Type# | Yes | Closer |  |
+77         | Target Type# | Yes | Farther |  |
+78         | Target Type# | No | Closer, higher threat | Ends when a team member kill the designated target |
+79         | Target Type# | No | Farther, higher threat | Ends when a team member kill the designated target |
+80         | Target Type# | No | Closer | Ends when a team member kill the designated target |
+81         | Target Type# | No | Farther | Ends when a team member kill the designated target |
+84         | [AITargetType] index# | Yes | Closer, higher threat |  |
+85         | [AITargetType] index# | Yes | Farther, higher threat |  |
+86         | [AITargetType] index# | Yes | Closer |  |
+87         | [AITargetType] index# | Yes | Farther |  |
+88         | [AITargetType] index# | No | Closer, higher threat | Ends when a team member kill the designated target |
+89         | [AITargetType] index# | No | Farther, higher threat | Ends when a team member kill the designated target |
+90         | [AITargetType] index# | No | Closer | Ends when a team member kill the designated target |
+91         | [AITargetType] index# | No | Farther | Ends when a team member kill the designated target |
 
 Note: New Attack actions scripts (74, 75, 78 & 79) that are focused in target threat use `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from Rulesmd.ini.
 
-The following values are the target types which can be used as second parameter of the new attack script actions:
+The second parameter with a 0-based index for the *[AITargetType]* section specifies the list of possible *[VehicleTypes]*, *[AircraftTypes]*, *[InfantryTypes]* and *[BuildingTypes]* that can be evaluated. The new *[AITargetType]* section must be declared in RulesMD.ini for making this script work:
+
+In `rulesmd.ini`:
+```ini
+[AITargetType]  ; List of Technos
+0=Techno N,Techno N+1, Techno N+1,... Techno N+M
+1= ...
+2= ...
+...
+```
+
+The following values are the *Target Type#* which can be used as second parameter of the new attack script actions:
 
 | *Value* | *Target Type*     | *Description*                                 |
 | :-----: | :---------------: | :-------------------------------------------: |
@@ -511,44 +530,6 @@ In `aimd.ini`:
 x=83,n
 ```
 
-### `84-91` New Attack Action Using Techno Lists
-
-- These Actions instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value).
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=84-91,n
-```
-
-| *Action* | *Argument*    | *Description*                                 |
-| :------: | :-----------: | :-------------------------------------------: |
-84         | [AITargetType] index#  | Target priority is affected by threat & distance: `Closer targets have more priority`. This script action is inherently self repeating |
-85         | [AITargetType] index#  | Target priority is affected by threat & distance: `Farther targets have more priority`. This script action is inherently self repeating |
-86         | [AITargetType] index#  | Target priority is affected by distance: `Closer targets have more priority`. This script action is inherently self repeating |
-87         | [AITargetType] index#  | Target priority is affected by distance: `Farther targets have more priority`. This script action is inherently self repeating |
-88         | [AITargetType] index#  | Target priority is affected by threat & distance: `Closer targets have more priority`. This script action are self repeating until a team member kill the designated target |
-89         | [AITargetType] index#  | Target priority is affected by threat & distance: `Farther targets have more priority`. This script action are self repeating until a team member kill the designated target |
-90         | [AITargetType] index#  | Target priority is affected by distance: `Closer targets have more priority`. This script action are self repeating until a team member kill the designated target |
-91         | [AITargetType] index#  | Target priority is affected by distance: `Farther targets have more priority`. This script action are self repeating until a team member kill the designated target |
-
-The second parameter is a 0-based index for the *[AITargetType]* section that specifies the list of possible *[VehicleTypes]*, *[AircraftTypes]*, *[InfantryTypes]* and *[BuildingTypes]* that can be evaluated. The new *[AITargetType]* section must be declared in RulesMD.ini for making this script work:
-
-In `rulesmd.ini`:
-```ini
-[AITargetType]  ; List of Technos
-0=Techno N,Techno N+1, Techno N+1,... Techno N+M
-1= ...
-2= ...
-...
-```
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=91,n
-```
-
 ### `92` Wait If No Target Found
 
 - When executed before a new Attack ScriptType Actions like `74-81` and `84-91` the TeamType will remember that must wait 1 second if no target was selected. The second parameter is a positive value that specifies how much retries the Attack will do when no target was found before new Attack ScriptType Action is discarded & the script execution jumps to the next line. The value `0` means infinite retries.
@@ -600,13 +581,13 @@ In `aimd.ini`:
 x=95-102,n
 ```
 
-| *Action* | *Argument*    | *Description*                                 |
-| :------: | :-----------: | :-------------------------------------------: |
-95         | Target Type#  | Move to the closest *enemy* target. Target priority is affected by distance: `Closer targets have more priority` |
-96         | Target Type#  | Move to the farther *enemy* target. Target priority is affected by distance: `Farther targets have more priority` |
-97         | Target Type#  | Move to the closest *friendly* target. Target priority is affected by distance: `Closer targets have more priority` |
-98         | Target Type#  | Move to the farther *friendly* target. Target priority is affected by distance: `Farther targets have more priority` |
-99         | [AITargetType] index#  | Move to the closest *enemy* target. Target priority is affected by distance: `Closer targets have more priority` |
-100         | [AITargetType] index#  | Move to the farther *enemy* target. Target priority is affected by distance: `Farther targets have more priority` |
-101         | [AITargetType] index#  | Move to the closest *friendly* target. Target priority is affected by distance: `Closer targets have more priority` |
-102         | [AITargetType] index#  | Move to the farther *friendly* target. Target priority is affected by distance: `Farther targets have more priority` |
+| *Action* | *Argument*    | Target Owner | *Target Priority* |
+| :------: | :-----------: | :----------: | :---------------: |
+95         | Target Type# | Enemy | Closer, higher threat |
+96         | Target Type# | Enemy | Farther, higher threat |
+97         | Target Type# | Friendly | Closer |
+98         | Target Type# | Friendly | Farther |
+99         | [AITargetType] index# | Enemy | Closer, higher threat |
+100        | [AITargetType] index# | Enemy | Closer, higher threat |
+101        | [AITargetType] index# | Friendly | Closer |
+102        | [AITargetType] index# | Friendly | Farther |
