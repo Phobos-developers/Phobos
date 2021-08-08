@@ -552,7 +552,7 @@ x=93,n            ; integer n=0
 
 ### `94` Pick A Random Script
 
-- When executed this action picks a random Script Type and replaces the current script by the new picked. The second parameter is a 0-based index from the new section [AIScriptsList] explained below.
+- When executed this action picks a random Script Type and replaces the current script by the new picked. The second parameter is a 0-based index from the new section *[AIScriptsList]* explained below.
 
 In `aimd.ini`:
 ```ini
