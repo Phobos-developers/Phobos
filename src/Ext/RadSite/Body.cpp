@@ -22,7 +22,7 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 	pRadExt->Type = pWeaponExt->RadType;
 	pRadSite->SetBaseCell(&location);
 	pRadSite->SetSpread(spread);
-	RadSiteExt::SetRadLevel(pRadSite,amount);
+	RadSiteExt::SetRadLevel(pRadSite, amount);
 	RadSiteExt::CreateLight(pRadSite);
 
 	Array.AddUnique(pRadExt);
@@ -31,51 +31,50 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 //RadSiteClass Activate , Rewritten
 void RadSiteExt::CreateLight(RadSiteClass* pThis)
 {
-	Debug::Log("[" __FUNCTION__ "] Here Iam\n");
+	auto pRadExt = RadSiteExt::ExtMap.Find(pThis);
+	auto nLevelDelay = pRadExt->Type->GetLevelDelay();
+	auto nLightDelay = pRadExt->Type->GetLightDelay();
 
-	auto const RadExt = RadSiteExt::ExtMap.Find(pThis);
-	auto leveldelay = RadExt->Type->GetLevelDelay();
-	auto lightdelay = RadExt->Type->GetLightDelay();
 	pThis->RadLevelTimer.StartTime = Unsorted::CurrentFrame;
-	pThis->RadLevelTimer.TimeLeft = leveldelay;
+	pThis->RadLevelTimer.TimeLeft = nLevelDelay;
 	pThis->RadLightTimer.StartTime = Unsorted::CurrentFrame;
-	pThis->RadLightTimer.TimeLeft = lightdelay;
-	auto color = RadExt->Type->GetColor();
+	pThis->RadLightTimer.TimeLeft = nLightDelay;
 
-	//=========Level
-	auto LightFactor = pThis->RadLevel * RadExt->Type->GetLightFactor();
-	LightFactor = LightFactor > 2000.0 ? 2000.0 : LightFactor;
+	auto nLightFactor = pThis->RadLevel * pRadExt->Type->GetLightFactor();
+	nLightFactor = Math::min(nLightFactor, 2000.0);
+	auto nDuration = pThis->RadDuration;
 
-	auto tintfactor = RadExt->Type->GetTintFactor();
-	auto duration = pThis->RadDuration;
-	pThis->Intensity = static_cast<int>(LightFactor);
-	pThis->LevelSteps = duration / leveldelay;
-	pThis->IntensitySteps = duration / lightdelay;
-	pThis->IntensityDecrement = static_cast<int>(LightFactor) / (duration / lightdelay);
+	pThis->Intensity = Game::F2I(nLightFactor);
+	pThis->LevelSteps = nDuration / nLevelDelay;
+	pThis->IntensitySteps = nDuration / nLightDelay;
+	pThis->IntensityDecrement = Game::F2I(nLightFactor) / (nDuration / nLightDelay);
+
+	auto nRadcolor = pRadExt->Type->GetColor();
+	auto nTintFactor = pRadExt->Type->GetTintFactor();
 
 	//=========Red
-	auto Red = 1000 * color.R / 255 * tintfactor;
-	Red = Red > 2000.0 ? 2000.0 : Red;
+	auto red = ((1000 * nRadcolor.R) / 255)* nTintFactor;
+	red = Math::min(red, 2000.0);
 	//=========Green
-	auto Green = 1000 * color.G / 255 * tintfactor;
-	Green = Green > 2000.0 ? 2000.0 : Green;
+	auto green = ((1000 * nRadcolor.G) / 255) * nTintFactor;
+	green = Math::min(green, 2000.0);
 	//=========Blue 
-	auto Blue = 1000 * color.B / 255 * tintfactor;
-	Blue = Blue > 2000.0 ? 2000.0 : Blue;
+	auto blue = ((1000 * nRadcolor.B) / 255) * nTintFactor;
+	blue = Math::min(blue, 2000.0);;
 
-	TintStruct nColorBuffer{ static_cast<int>(Red) ,static_cast<int>(Green) ,static_cast<int>(Blue) };
-	pThis->Tint = nColorBuffer;
+	TintStruct nTintBuffer{ Game::F2I(red) ,Game::F2I(green) ,Game::F2I(blue) };
+	pThis->Tint = nTintBuffer;
 	bool update = false;
 
 	if (pThis->LightSource)
 	{
-		pThis->LightSource->ChangeLevels(static_cast<int>(LightFactor), nColorBuffer, update);
+		pThis->LightSource->ChangeLevels(Game::F2I(nLightFactor), nTintBuffer, update);
 		pThis->Radiate();
 	}
 	else
 	{
-		auto const pos = MapClass::Instance->TryGetCellAt(pThis->BaseCell);
-		if (auto const pLight = GameCreate<LightSourceClass>(pos->GetCoords(), pThis->SpreadInLeptons, static_cast<int>(LightFactor), nColorBuffer))
+		auto const pCell = MapClass::Instance->TryGetCellAt(pThis->BaseCell);
+		if (auto const pLight = GameCreate<LightSourceClass>(pCell->GetCoords(), pThis->SpreadInLeptons, Game::F2I(nLightFactor), nTintBuffer))
 		{
 			pThis->LightSource = pLight;
 			pLight->DetailLevel = 0;
@@ -86,7 +85,7 @@ void RadSiteExt::CreateLight(RadSiteClass* pThis)
 }
 
 // Rewrite because of crashing craziness
-void RadSiteExt::Add(RadSiteClass* pThis,int amount)
+void RadSiteExt::Add(RadSiteClass* pThis, int amount)
 {
 	auto const RadExt = RadSiteExt::ExtMap.Find(pThis);
 	int value = pThis->RadLevel * pThis->RadTimeLeft / pThis->RadDuration;
@@ -97,7 +96,7 @@ void RadSiteExt::Add(RadSiteClass* pThis,int amount)
 	RadSiteExt::CreateLight(pThis);
 }
 
-void RadSiteExt::SetRadLevel(RadSiteClass* pThis,int amount)
+void RadSiteExt::SetRadLevel(RadSiteClass* pThis, int amount)
 {
 	auto const RadExt = RadSiteExt::ExtMap.Find(pThis);
 	const int mult = RadExt->Type->GetDurationMultiple();
