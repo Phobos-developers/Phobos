@@ -38,6 +38,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Waypoints)
+		.Process(this->LocalVariables)
 		;
 }
 
@@ -72,6 +73,9 @@ DEFINE_HOOK(0x683549, ScenarioClass_CTOR, 0x9)
 	GET(ScenarioClass*, pItem, EAX);
 
 	ScenarioExt::Allocate(pItem);
+
+	ScenarioExt::Global()->Waypoints.clear();
+	ScenarioExt::Global()->LocalVariables.clear();
 
 	return 0;
 }

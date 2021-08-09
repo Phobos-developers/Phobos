@@ -17,9 +17,11 @@ public:
 	{
 	public:
 		std::map<int, CellStruct> Waypoints;
+		std::map<int, Variable> LocalVariables;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject),
-			Waypoints {}
+			Waypoints {},
+			LocalVariables {}
 		{
 
 		}
