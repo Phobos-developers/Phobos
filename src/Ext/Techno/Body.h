@@ -23,7 +23,6 @@ public:
 		Valueable<bool> WasCloaked;
 		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		Valueable<bool> ReceiveDamage;
-        Valueable<TechnoClass*> KilledBy;
         Valueable<bool> LastKillWasTeamTarget;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),
@@ -32,7 +31,6 @@ public:
 			WasCloaked(false),
 			LaserTrails(),
 			ReceiveDamage(false),
-            KilledBy(nullptr),
             LastKillWasTeamTarget(false)
 		{ }
 

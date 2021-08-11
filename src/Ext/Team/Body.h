@@ -17,10 +17,14 @@ public:
 	public:
 		int WaitNoTargetAttempts;
 		double NextSuccessWeightAward;
+		int IdxSelectedObjectFromAIList;
+		double CloseEnough;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject),
 			WaitNoTargetAttempts(0),
-			NextSuccessWeightAward(0)
+			NextSuccessWeightAward(0),
+			IdxSelectedObjectFromAIList(-1),
+			CloseEnough(-1)
 		{ }
 
 		virtual ~ExtData() = default;

@@ -86,11 +86,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 			TechnoTypeClass* buffer;
 			if (Parser<TechnoTypeClass*>::TryParse(cur, &buffer))
 			{
+				//Debug::Log("DEBUG: [AITargetType][%d]: Parsed [%s]\n", AITargetTypeLists.Count, cur);
 				objectsList.AddItem(buffer);
 			}
 			else
-				if (!std::is_pointer<char*>() || !INIClass::IsBlank(cur))
-					Debug::INIParseFailed(sectionAITargetType, (char*)(i), cur);
+				Debug::Log("DEBUG: [AITargetType][%d]: Error parsing [%s]\n", AITargetTypeLists.Count, cur);
+				//if (!std::is_pointer<char*>() || !INIClass::IsBlank(cur))
+					//Debug::INIParseFailed(sectionAITargetType, (char*)(i), cur);
 		}
 		AITargetTypeLists.AddItem(objectsList);
 		objectsList.Clear();

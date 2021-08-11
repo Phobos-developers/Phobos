@@ -32,8 +32,6 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
                 pObjectKiller = pKiller;
             }
 
-            pVictimTechnoData->KilledBy = pObjectKiller;
-
             if (pObjectKiller && pObjectKiller->BelongsToATeam())
             {
                 auto pKillerTechnoData = TechnoExt::ExtMap.Find(pObjectKiller);
@@ -282,7 +280,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->WasCloaked)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)
-        .Process(this->KilledBy)
         .Process(this->LastKillWasTeamTarget)
 		;
 }

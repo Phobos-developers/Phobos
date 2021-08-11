@@ -12,6 +12,8 @@ void TeamExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->WaitNoTargetAttempts)
 		.Process(this->NextSuccessWeightAward)
+		.Process(this->IdxSelectedObjectFromAIList)
+		.Process(this->CloseEnough)
 		;
 }
 
