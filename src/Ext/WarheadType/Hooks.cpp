@@ -106,7 +106,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
-	GET_STACK(TechnoClass*, pTarget, STACK_OFFS(0x20, -0x4))
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFS(0x20, -0x4))
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
 	enum { CannotFire = 0x6FCB7E};
@@ -120,8 +120,11 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
-		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTarget->Owner))
-			return CannotFire;
+		if (const auto pTechno = abstract_cast<TechnoClass*>(pTarget))
+		{
+			if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner))
+				return CannotFire;
+		}
 	}
 
 	return 0;
