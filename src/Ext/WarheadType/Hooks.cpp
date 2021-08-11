@@ -4,6 +4,9 @@
 #include <ScenarioClass.h>
 #include <HouseClass.h>
 
+#include <Ext/WeaponType/Body.h>
+#include <Utilities/EnumFunctions.h>
+
 #pragma region DETONATION
 
 bool DetonationInDamageArea = true;
@@ -103,15 +106,22 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire_InsufficientFunds, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
-
-	// Checking for nulptr is not required here, since the game has already executed them before calling the hook
+	GET_STACK(TechnoClass*, pTarget, STACK_OFFS(0x20, -0x4))
+	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
+	enum { CannotFire = 0x6FCB7E};
 
 	if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
 	{
 		const int nMoney = pWHExt->TransactMoney;
 		if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
-			return 0x6FCB7E;
+			return CannotFire;
+	}
+
+	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
+	{
+		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouse, pThis->Owner, pTarget->Owner))
+			return CannotFire;
 	}
 
 	return 0;
