@@ -179,7 +179,7 @@ CreateUnit.Owner=Victim             ; owner house kind, Invoker/Killer/Victim/Ci
 In `rulesmd.ini`:
 ```ini
 [UPGRADENAME]       ; BuildingType
-PowersUp.Owner=Self ; list of owners (Self, Ally and/or Enemy)
+PowersUp.Owner=Self ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 PowersUp.Buildings= ; list of BuildingTypes
 ```
 
@@ -288,6 +288,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]    ; WeaponType
 Rad.NoOwner=no  ; boolean
+```
+
+### Weapon targeting filter
+
+- You can now specify which house this weapon can fire at.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]        ; WeaponType
+CanTargetHouse=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ## Warheads
