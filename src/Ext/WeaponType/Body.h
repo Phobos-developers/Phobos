@@ -25,7 +25,7 @@ public:
 		Valueable<bool> Bolt_Disable3;
 		Valueable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
-		Valueable<AffectedHouse> CanTargetHouse;
+		Valueable<AffectedHouse> CanTargetHouses;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius(38.2)
@@ -37,7 +37,7 @@ public:
 			, Bolt_Disable3(false)
 			, Strafing_Shots(5)
 			, Strafing_SimulateBurst(false)
-			, CanTargetHouse(AffectedHouse::All)
+			, CanTargetHouses(AffectedHouse::All)
 		{ }
 
 		virtual ~ExtData() = default;

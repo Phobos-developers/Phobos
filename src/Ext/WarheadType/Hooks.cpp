@@ -120,7 +120,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
-		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouse, pThis->Owner, pTarget->Owner))
+		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTarget->Owner))
 			return CannotFire;
 	}
 

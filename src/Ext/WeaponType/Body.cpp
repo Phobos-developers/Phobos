@@ -40,7 +40,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Strafing_Shots.Read(exINI, pSection, "Strafing.Shots");
 	this->Strafing_SimulateBurst.Read(exINI, pSection, "Strafing.SimulateBurst");
-	this->CanTargetHouse.Read(exINI, pSection, "CanTargetHouse");
+	this->CanTargetHouses.Read(exINI, pSection, "CanTargetHouses");
 }
 
 template <typename T>
@@ -55,7 +55,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Bolt_Disable3)
 		.Process(this->Strafing_Shots)
 		.Process(this->Strafing_SimulateBurst)
-		.Process(this->CanTargetHouse)
+		.Process(this->CanTargetHouses)
 		.Process(this->RadType)
 		;
 };
