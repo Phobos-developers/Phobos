@@ -102,7 +102,7 @@ DEFINE_HOOK(0x48A5B3, WarheadTypeClass_AnimList_CritAnim, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6FC339, TechnoClass_CanFire_InsufficientFunds, 0x6)
+DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
