@@ -296,8 +296,8 @@ Rad.NoOwner=no  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]        ; WeaponType
-CanTargetHouse=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+[SOMEWEAPON]         ; WeaponType
+CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ## Warheads
