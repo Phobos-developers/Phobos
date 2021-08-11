@@ -153,6 +153,7 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		ScriptExt::Mission_Move_List(pTeam, 3, true, -1);
 		break;
 	case 103:
+		// AISafeDistance equivalent for Mission_Move()
 		ScriptExt::SetCloseEnoughDistance(pTeam, -1);
 		break;
 	case 104:
@@ -1892,7 +1893,7 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 	}
 	else
 	{
-		double closeEnough = RulesClass::Instance->CloseEnough;
+		double closeEnough = RulesClass::Instance->CloseEnough / 256.0;
 		
 		auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 
@@ -1906,7 +1907,6 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 		// Team already have a focused target
 		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 		{
-			
 			if (pUnit
 				&& pUnit->IsAlive
 				&& !pUnit->InLimbo)
@@ -1914,10 +1914,9 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 				if (!pUnit->Locomotor->Is_Moving_Now())
 					pUnit->SetDestination(pFocus, false);
 				
-				if (pUnit->DistanceFrom(pUnit->Destination) > closeEnough)
+				if (pUnit->DistanceFrom(pUnit->Destination) / 256.0 > closeEnough)
 				{
 					bForceNextAction = false; 
-					
 					continue;
 				}
 			}
