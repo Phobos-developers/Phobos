@@ -164,6 +164,22 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Pick 1 farther random objective from specific list for attacking it
 		ScriptExt::Mission_Attack_List1Random(pTeam, true, 3, -1);
 		break;
+	case 106:
+		// Pick 1 closer enemy random objective from specific list for moving to it
+		ScriptExt::Mission_Move_List1Random(pTeam, 2, false, -1, -1);
+		break;
+	case 107:
+		// Pick 1 farther enemy random objective from specific list for moving to it
+		ScriptExt::Mission_Move_List1Random(pTeam, 3, false, -1, -1);
+		break;
+	case 108:
+		// Pick 1 closer friendly random objective from specific list for moving to it
+		ScriptExt::Mission_Move_List1Random(pTeam, 2, true, -1, -1);
+		break;
+	case 109:
+		// Pick 1 farther friendly random objective from specific list for moving to it
+		ScriptExt::Mission_Move_List1Random(pTeam, 3, true, -1, -1);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
@@ -1734,7 +1750,7 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 	int bestUnitLeadershipValue = -1;
 	bool bAircraftsWithoutAmmo = false;
 	TechnoClass* pFocus = nullptr;
-
+	
 	// When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
 	if (pTeam->GuardAreaTimer.TimeLeft != 0 || pTeam->GuardAreaTimer.InProgress())
 	{
@@ -1805,10 +1821,14 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 	if (!pLeaderUnit || bAircraftsWithoutAmmo)
 	{
 		auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-
-		if (pTeamData && pTeamData->CloseEnough > 0)
+		if (pTeamData)
 		{
-			pTeamData->CloseEnough = -1;
+			pTeamData->IdxSelectedObjectFromAIList = -1;
+
+			if (pTeamData->CloseEnough > 0)
+			{
+				pTeamData->CloseEnough = -1;
+			}
 		}
 
 		// This action finished
@@ -1824,13 +1844,13 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 	if (!pFocus && !bAircraftsWithoutAmmo)
 	{
 		int targetMask = scriptArgument;
-
+		
 		selectedTarget = FindBestObject(pLeaderUnit, targetMask, calcThreatMode, pickAllies, attackAITargetType, idxAITargetTypeItem);
 		
 		if (selectedTarget)
 		{
 			pTeam->Focus = selectedTarget;
-
+			
 			auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 			if (pTeamData && pTeamData->WaitNoTargetAttempts != 0)
 			{
@@ -1884,9 +1904,13 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 		else
 		{
 			auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-
 			if (pTeamData)
 			{
+				if (pTeamData->IdxSelectedObjectFromAIList >= 0)
+				{
+					pTeamData->IdxSelectedObjectFromAIList = -1;
+				}
+
 				if (pTeamData->WaitNoTargetAttempts != 0)
 				{
 					pTeam->GuardAreaTimer.Start(16);
@@ -1939,9 +1963,14 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 		
 		if (bForceNextAction)
 		{
-			if (pTeamData && pTeamData->CloseEnough >= 0)
+			if (pTeamData)
 			{
-				pTeamData->CloseEnough = -1;
+				pTeamData->IdxSelectedObjectFromAIList = -1;
+
+				if (pTeamData->CloseEnough >= 0)
+				{
+					pTeamData->CloseEnough = -1;
+				}
 			}
 
 			// This action finished
@@ -1954,6 +1983,12 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 
 void ScriptExt::Mission_Move_List(TeamClass *pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType)
 {
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData)
+	{
+		pTeamData->IdxSelectedObjectFromAIList = -1;
+	}
+
 	if (attackAITargetType < 0)
 		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
 
@@ -1965,14 +2000,14 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 {
 	TechnoClass *bestObject = nullptr;
 	double bestVal = -1;
-
+	
 	// Generic method for targeting
 	for (int i = 0; i < TechnoClass::Array->Count; i++)
 	{
 		auto object = TechnoClass::Array->GetItem(i);
 		auto objectType = object->GetTechnoType();
 		auto pTechnoType = pTechno->GetTechnoType();
-
+		
 		if (!object || !objectType || !pTechnoType)
 			continue;
 
@@ -1996,7 +2031,7 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 			&& pTechnoType->LandTargeting == 1
 			&& object->GetCell()->LandType != LandType::Water)
 			continue;
-
+		
 		if (object != pTechno
 			&& object->IsAlive
 			&& !object->InLimbo
@@ -2060,7 +2095,7 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 						// Is this object very FAR? then LESS THREAT against pTechno.
 						// More CLOSER? MORE THREAT for pTechno.
 						value = pTechno->DistanceFrom(object); // Note: distance is in leptons (*256)
-
+						
 						if (value < bestVal || bestVal < 0)
 							isGoodTarget = true;
 					}
@@ -2071,13 +2106,13 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 							// Is this object very FAR? then MORE THREAT against pTechno.
 							// More CLOSER? LESS THREAT for pTechno.
 							value = pTechno->DistanceFrom(object); // Note: distance is in leptons (*256)
-
+							
 							if (value > bestVal || bestVal < 0)
 								isGoodTarget = true;
 						}
 					}
 				}
-
+				
 				if (isGoodTarget)
 				{
 					bestObject = object;
@@ -2086,7 +2121,7 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 			}
 		}
 	}
-
+	
 	if (bestObject != nullptr) {
 		return bestObject;
 	}
@@ -2117,7 +2152,7 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, 
 		{
 			idxSelectedObject = ScenarioClass::Instance->Random.RandomRanged(0, objectsList.Count - 1);
 			selected = true;
-			Debug::Log("DEBUG: [%s] [%s] Picked a random Techno from the list index [AITargetType][%d]= %s\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, attackAITargetType, objectsList.GetItem(idxSelectedObject)->ID);
+			Debug::Log("DEBUG: [%s] [%s] Picked a random Techno from the list index [AITargetType][%d] = %s\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, attackAITargetType, objectsList.GetItem(idxSelectedObject)->ID);
 		}
 
 		if (selected)
@@ -2150,4 +2185,44 @@ void ScriptExt::SetCloseEnoughDistance(TeamClass *pTeam, double distance = -1)
 	// This action finished
 	pTeam->StepCompleted = true;
 	return;
+}
+
+void ScriptExt::Mission_Move_List1Random(TeamClass *pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem = -1)
+{
+	bool selected = false;
+	int idxSelectedObject = -1;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData && pTeamData->IdxSelectedObjectFromAIList >= 0)
+	{
+		idxSelectedObject = pTeamData->IdxSelectedObjectFromAIList;
+		selected = true;
+	}
+
+	if (attackAITargetType < 0)
+		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	if (attackAITargetType >= 0
+		&& attackAITargetType < RulesExt::Global()->AITargetTypeLists.Count)
+	{
+		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypeLists.GetItem(attackAITargetType);
+
+		if (idxSelectedObject < 0 && objectsList.Count > 0 && !selected)
+		{
+			idxSelectedObject = ScenarioClass::Instance->Random.RandomRanged(0, objectsList.Count - 1);
+			selected = true;
+			Debug::Log("DEBUG: [%s] [%s] Picked a random Techno from the list index [AITargetType][%d] = %s\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, attackAITargetType, objectsList.GetItem(idxSelectedObject)->ID);
+		}
+		
+		if (selected)
+			pTeamData->IdxSelectedObjectFromAIList = idxSelectedObject;
+		Mission_Move(pTeam, calcThreatMode, pickAllies, attackAITargetType, idxSelectedObject);
+	}
+
+	// This action finished
+	if (!selected)
+	{
+		pTeam->StepCompleted = true;
+		Debug::Log("DEBUG: [%s] [%s] Failed to pick a random Techno from the list index [AITargetType][%d]!\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, attackAITargetType);
+	}
 }
