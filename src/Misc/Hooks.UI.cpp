@@ -90,16 +90,16 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		auto nTotal = HouseExt::TotalHarvesterCount(pPlayer);
 		auto nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
 
-		ColorStruct clrToolTip = nPercentage > Phobos::UI::HarvesterCounter_ConditionYellow
-			? Drawing::TooltipColor() : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
-			? pSideExt->Sidebar_HarvesterCounter_Yellow : pSideExt->Sidebar_HarvesterCounter_Red;
+	ColorStruct clrToolTip = nPercentage > Phobos::UI::HarvesterCounter_ConditionYellow
+		? Drawing::TooltipColor() : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
+		? pSideExt->Sidebar_HarvesterCounter_Yellow : pSideExt->Sidebar_HarvesterCounter_Red;
 
-		swprintf_s(counter, L"%ls%d/%d", Phobos::UI::HarvesterLabel, nActive, nTotal);
+	swprintf_s(counter, L"%ls%d/%d", Phobos::UI::HarvesterLabel, nActive, nTotal);
 
-		Point2D vPos = {
-			DSurface::Sidebar->GetWidth() / 2 + 50 + pSideExt->Sidebar_HarvesterCounter_Offset.Get().X,
-			2 + pSideExt->Sidebar_HarvesterCounter_Offset.Get().Y
-		};
+	Point2D vPos = {
+		DSurface::Sidebar->GetWidth() / 2 + 50 + pSideExt->Sidebar_HarvesterCounter_Offset.Get().X,
+		2 + pSideExt->Sidebar_HarvesterCounter_Offset.Get().Y
+	};
 
 		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0,
 			TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12);
@@ -142,6 +142,15 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 
 		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
 	}
+
+	//testing
+	wchar_t str[0x20];
+	swprintf_s(str, L"%d", HouseClass::Player()->SiloMoney);
+	Point2D vPos2 = { 20, 2 };
+	RectangleStruct vRect2 = { 0, 0, 0, 0 };
+	DSurface::Sidebar->GetRect(&vRect2);
+	DSurface::Sidebar->DrawText(str, &vRect2, &vPos2, Drawing::RGB2DWORD(Drawing::TooltipColor()), 0,
+		TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12);
 
 	return 0;
 }

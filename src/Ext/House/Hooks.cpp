@@ -91,3 +91,31 @@ DEFINE_HOOK(0x4FD1CD, HouseClass_RecalcCenter_LimboDelivery, 0x6)
 
 	return 0;
 }
+
+#include <HouseClass.h>
+#include <Utilities/Macro.h>
+#include <Utilities/Enum.h>
+#include <Ext/House/Body.h>
+
+#include <Ext/HouseType/Body.h>
+
+DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
+{
+	GET(HouseClass* const, pThis, ECX);
+
+	auto pTypeExt = HouseTypeExt::ExtMap.Find(pThis->Type);
+
+	if (!pTypeExt)
+		return 0;
+	
+	for (auto & entry: pTypeExt->ScoreSuperWeaponData)
+	{
+		if (!entry.AlreadyGranted && pThis->SiloMoney > entry.Score)
+		{
+			HouseExt::GrantScoreSuperPower(pThis, entry.IdxType, entry.OneTime, entry.InitialReady);
+			entry.AlreadyGranted = true;
+		}
+	}
+	
+	return 0;
+}

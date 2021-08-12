@@ -49,6 +49,8 @@
 #include <FootClass.h>
 #include <VocClass.h>
 #include <VoxClass.h>
+#include <ArmorType.h>
+#include <SuperWeaponTypeClass.h>
 
 namespace detail
 {

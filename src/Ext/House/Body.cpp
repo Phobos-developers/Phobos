@@ -4,7 +4,7 @@
 #include <Ext/Techno/Body.h>
 
 #include <ScenarioClass.h>
-
+#include <SuperClass.h>
 //Static init
 
 template<> const DWORD Extension<HouseClass>::Canary = 0x11111111;
@@ -73,6 +73,19 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 		return pDefault;
 	}
 }
+void HouseExt::GrantScoreSuperPower(HouseClass* pThis, int SWIDX, bool oneTime, bool initialReady)
+{
+	bool NotObserver = !pThis->IsObserver() || !pThis->IsPlayerObserver();
+	auto pSuper = pThis->Supers[SWIDX];
+	if (pSuper->Grant(oneTime, NotObserver, false))
+	{
+		if (initialReady)
+			pSuper->SetReadiness(initialReady);
+		if (NotObserver && pThis == HouseClass::Player && MouseClass::Instance->AddCameo(AbstractType::Special, SWIDX))
+			MouseClass::Instance->RepaintSidebar(1);
+	}
+}
+
 
 void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
