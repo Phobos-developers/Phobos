@@ -511,6 +511,8 @@ The following values are the *Target Type#* which can be used as second paramete
 31        |	Naval Units       |	Any enemy *[VehicleTypes]* with a `Naval=yes` or any enemy *[VehicleTypes]*, *[AircraftTypes]*, *[InfantryTypes]* in a water cell |
 32        | Mobile Units      |	Anything *[VehicleTypes]*, *[AircraftTypes]* and *[InfantryTypes]* |
 33        |	Capturable        |	Any *[BuildingTypes]* with `Capturable=yes` or any *[BuildingTypes]* with `BridgeRepairHut=yes` and `Repairable=yes` |
+34         | Area Threats     |	Any enemy object that is inside of the Team Leader's Guard Area |
+Inside the Area Guard of the Team Leader
 
 ### `82` Decrease AI Trigger Current Weight
 
