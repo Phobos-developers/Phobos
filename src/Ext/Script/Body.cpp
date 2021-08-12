@@ -397,7 +397,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 					}
 				}
 
-				auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+				//auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 				if (pTeamData)
 				{
 					pTeamData->IdxSelectedObjectFromAIList = -1;
@@ -1125,12 +1125,12 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 			
 			// Then check if this possible target is too near of the Team Leader
 			distanceToTarget = pTeamLeader->DistanceFrom(pTechno) / 256.0;
-
+			
 			if (!pTechno->Owner->IsNeutral()
-				&& (WeaponType1 && distanceToTarget <= (WeaponType1->Range * 4.0))
-				|| (WeaponType2 && distanceToTarget <= (WeaponType2->Range * 4.0))
+				&& ((WeaponType1 && distanceToTarget <= (WeaponType1->Range / 256.0 * 4.0))
+				|| (WeaponType2 && distanceToTarget <= (WeaponType2->Range / 256.0 * 4.0))
 				|| (pTeamLeader->GetTechnoType()->GuardRange > 0
-					&& distanceToTarget <= (pTeamLeader->GetTechnoType()->GuardRange * 2.0)))
+					&& distanceToTarget <= (pTeamLeader->GetTechnoType()->GuardRange / 256.0 * 2.0))))
 			{
 				return true;
 			}
@@ -1511,6 +1511,21 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 				&& pTypeBuilding->Repairable))
 		{
 			return true;
+		}
+		break;
+
+	case 34:
+		if (pTeamLeader)
+		{
+			// Inside the Area Guard of the Team Leader
+			distanceToTarget = pTeamLeader->DistanceFrom(pTechno) / 256.0; // Caution, DistanceFrom() return leptons
+			
+			if (!pTechno->Owner->IsNeutral() 
+				&& (pTeamLeader->GetTechnoType()->GuardRange > 0 
+						&& distanceToTarget <= ((pTeamLeader->GetTechnoType()->GuardRange / 256.0) * 2.0)))
+			{
+				return true;
+			}
 		}
 		break;
 
