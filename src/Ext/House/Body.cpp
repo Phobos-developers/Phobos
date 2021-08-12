@@ -5,6 +5,7 @@
 
 #include <ScenarioClass.h>
 #include <SuperClass.h>
+
 //Static init
 
 template<> const DWORD Extension<HouseClass>::Canary = 0x11111111;
