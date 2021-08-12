@@ -33,16 +33,33 @@ In `FAData.ini`:
 
 ## Changelog
 
-### TBD
+### 0.3
 
 New:
-- Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
+- LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)
+- Anim-to-Unit logic and ability to randomize DestroyAnim (by Otamaa)
+- Initial Strength for TechnoTypes (by Uranusian)
 
 Vanilla fixes:
-- TBD
+- Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
 
 Phobos fixes:
 - TBD
+
+### 0.2.2
+
+New:
+- Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
+- Customizable cameo sorting priority (by Uranusian)
+- Customizable harvester ore gathering animation (by secsome, Uranusian)
+- Allow making technos unable to be issued with movement order (by Uranusian)
+
+Vanilla fixes:
+- Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (by Belonit)
+
+Phobos fixes:
+- Fixed the critical damage logic not functioning properly (by Uranusian)
+- Fixed the bug when executing the stop command game crashes (by Uranusian)
 
 ### 0.2.1.1
 

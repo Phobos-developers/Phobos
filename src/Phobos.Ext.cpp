@@ -1,5 +1,8 @@
 #include <Phobos.h>
 
+#include <Ext/Aircraft/Body.h>
+#include <Ext/AnimType/Body.h>
+#include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Bullet/Body.h>
@@ -19,6 +22,7 @@
 #include <Ext/WeaponType/Body.h>
 
 #include <New/Type/RadTypeClass.h>
+#include <New/Type/LaserTrailTypeClass.h>
 
 #include <utility>
 
@@ -216,6 +220,9 @@ private:
 // Add more class names as you like
 auto MassActions = MassAction <
 	// Ext classes
+	AircraftExt,
+	AnimTypeExt,
+	AnimExt,
 	BuildingExt,
 	BuildingTypeExt,
 	BulletExt,
@@ -235,6 +242,7 @@ auto MassActions = MassAction <
 	WeaponTypeExt,
 	// New classes
 	ShieldTypeClass,
+	LaserTrailTypeClass,
 	RadTypeClass
 	// other classes
 > ();

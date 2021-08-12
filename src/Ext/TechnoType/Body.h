@@ -6,6 +6,7 @@
 #include <Utilities/TemplateDef.h>
 
 #include <New/Type/ShieldTypeClass.h>
+#include <New/Type/LaserTrailTypeClass.h>
 
 class Matrix3D;
 
@@ -35,6 +36,9 @@ public:
 		Valueable<bool> Promote_IncludeSpawns;
 		Valueable<bool> ImmuneToCrit;
 		Valueable<bool> MultiMindControl_ReleaseVictim;
+		Valueable<int> CameoPriority;
+		Valueable<bool> NoManualMove;
+		Nullable<int> InitialStrength;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -46,6 +50,28 @@ public:
 		Nullable<int> ChronoMinimumDelay;
 		Nullable<int> ChronoRangeMinimum;
 		Nullable<int> ChronoDelay;
+
+		ValueableVector<AnimTypeClass*> OreGathering_Anims;
+		ValueableVector<int> OreGathering_Tiberiums;
+		ValueableVector<int> OreGathering_FramesPerDir;
+
+		Valueable<bool> DestroyAnim_Random;
+
+		struct LaserTrailDataEntry
+		{
+			ValueableIdx<LaserTrailTypeClass> idxType;
+			Valueable<CoordStruct> FLH;
+			Valueable<bool> IsOnTurret;
+
+			bool Load(PhobosStreamReader& stm, bool registerForChange);
+			bool Save(PhobosStreamWriter& stm) const;
+
+		private:
+			template <typename T>
+			bool Serialize(T& stm);
+		};
+
+		ValueableVector<LaserTrailDataEntry> LaserTrailData;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			HealthBar_Hide(false),
@@ -66,6 +92,9 @@ public:
 			Promote_IncludeSpawns(false),
 			ImmuneToCrit(false),
 			MultiMindControl_ReleaseVictim(false),
+			CameoPriority(0),
+			NoManualMove(false),
+			InitialStrength(),
 			ShieldType(),
 			WarpOut(),
 			WarpIn(),
@@ -74,7 +103,12 @@ public:
 			ChronoDistanceFactor(),
 			ChronoMinimumDelay(),
 			ChronoRangeMinimum(),
-			ChronoDelay()
+			ChronoDelay(),
+			OreGathering_Anims(),
+			OreGathering_Tiberiums(),
+			OreGathering_FramesPerDir(),
+			LaserTrailData(),
+			DestroyAnim_Random(true)
 		{ }
 
 		virtual ~ExtData() = default;

@@ -6,6 +6,7 @@
 
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
+#include <New/Type/LaserTrailTypeClass.h>
 
 template<> const DWORD Extension<RulesClass>::Canary = 0x12341234;
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
@@ -22,6 +23,8 @@ void RulesExt::Remove(RulesClass* pThis)
 
 void RulesExt::LoadFromINIFile(RulesClass* pThis, CCINIClass* pINI)
 {
+	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
+
 	Data->LoadFromINI(pINI);
 }
 
@@ -46,9 +49,10 @@ void RulesExt::ExtData::InitializeConstants()
 
 }
 
+// earliest loader - can't really do much because nothing else is initialized yet, so lookups won't work
 void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 {
-	// earliest loader - can't really do much because nothing else is initialized yet, so lookups won't work
+
 }
 
 void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
@@ -202,6 +206,12 @@ DEFINE_HOOK(0x675205, RulesClass_Save_Suffix, 0x8)
 
 	return 0;
 }
+
+// DEFINE_HOOK(0x52D149, InitRules_PostInit, 0x5)
+// {
+// 	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
+// 	return 0;
+// }
 
 DEFINE_HOOK(0x668BF0, RulesClass_Addition, 0x5)
 {

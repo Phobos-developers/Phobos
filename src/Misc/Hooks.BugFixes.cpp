@@ -128,7 +128,9 @@ DEFINE_HOOK(0x4C7518, EventClass_Execute_StopUnitDeployFire, 0x9)
 	if (pUnit && pUnit->CurrentMission == Mission::Unload && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
 		pUnit->QueueMission(Mission::Guard, true);
 
-	return 0;
+	// Restore overridden instructions
+	GET(Mission, eax, EAX);
+	return eax == Mission::Construction ? 0x4C8109 : 0x4C7521;
 }
 
 DEFINE_HOOK(0x73DD12, UnitClass_Mission_Unload_DeployFire, 0x6)
@@ -176,3 +178,7 @@ DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
 
 	return 0x4437AD;
 }
+
+// issue #232: Naval=yes overrides WaterBound=no and prevents move orders onto Land cells
+// Author: Uranusian
+DEFINE_LJMP(0x47CA05, 0x47CA33); // CellClass_IsClearToBuild_SkipNaval

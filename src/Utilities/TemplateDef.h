@@ -111,6 +111,16 @@ namespace detail {
 	*/
 
 	template <>
+	inline bool read<unsigned short>(unsigned short& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
+		int buffer;
+		if (parser.ReadInteger(pSection, pKey, &buffer)) {
+			value = static_cast<unsigned short>(buffer);
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<BYTE>(BYTE& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
 		int buffer;
 		if (parser.ReadInteger(pSection, pKey, &buffer)) {
