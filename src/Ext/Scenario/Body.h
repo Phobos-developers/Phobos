@@ -18,10 +18,12 @@ public:
 	public:
 		std::map<int, CellStruct> Waypoints;
 		std::map<int, Variable> LocalVariables;
+		std::map<int, Variable> GlobalVariables;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject),
 			Waypoints {},
-			LocalVariables {}
+			LocalVariables {},
+			GlobalVariables {}
 		{
 
 		}

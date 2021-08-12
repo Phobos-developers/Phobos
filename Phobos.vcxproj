@@ -20,7 +20,7 @@
   <ItemGroup>
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\Dummy.h" />
-    <ClCompile Include="src\Ext\Scenario\Hooks.LocalVariables.cpp" />
+    <ClCompile Include="src\Ext\Scenario\Hooks.Variables.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Body.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Hooks.cpp" />
     <ClCompile Include="src\Ext\Anim\Body.cpp" />
