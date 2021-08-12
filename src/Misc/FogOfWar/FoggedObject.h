@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../SavegameDef.h"
+#include <Utilities/SavegameDef.h>
 
 #include <BuildingClass.h>
 

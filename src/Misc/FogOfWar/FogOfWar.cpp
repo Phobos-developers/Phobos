@@ -23,13 +23,13 @@ void FogOfWar::Reveal_DisplayClass_All_To_Look_Ground(TechnoClass* pTechno, DWOR
 			_LOOK_;
 		if (pTechno->DiscoveredByPlayer)
 		{
-			if (SessionClass::Instance && pTechno->Owner == HouseClass::Player)
+			if (SessionClass::Instance->GameMode != GameMode::Campaign && pTechno->Owner == HouseClass::Player())
 				_LOOK_;
 			if (pTechno->Owner->CurrentPlayer || pTechno->Owner->PlayerControl)
 				_LOOK_;
 		}
 		auto const pHouse = pTechno->Owner;
-		auto const pPlayer = HouseClass::Player;
+		auto const pPlayer = HouseClass::Player();
 		if (pPlayer)
 		{
 			if (pPlayer == pHouse)
@@ -73,7 +73,7 @@ bool FogOfWar::MapClass_RevealFogShroud(MapClass* pMap, CellStruct* pCell_, Hous
 	if (bReturn)
 	{
 		TacticalClass::Instance->RegisterCellAsVisible(pCell);
-		pMap->reveal_check(pCell, pHouse, bUnk);
+		pMap->RevealCheck(pCell, pHouse, bUnk);
 	}
 	if (!bContainsBuilding && ScenarioClass::Instance->SpecialFlags.FogOfWar)
 		pCell->CleanFog();
@@ -123,10 +123,10 @@ bool FogOfWar::DrawIfVisible(FoggedObject* pFoggedObject, RectangleStruct* pRect
 		return false;
 
 	auto rect = pFoggedObject->Bound;
-	rect.X += Drawing::SurfaceDimensions_Hidden.X - TacticalClass::Instance->VisibleArea.X;
-	rect.Y += Drawing::SurfaceDimensions_Hidden.Y - TacticalClass::Instance->VisibleArea.Y;
+	rect.X += DSurface::ViewBounds->X - TacticalClass::Instance->TacticalPos.X;
+	rect.Y += DSurface::ViewBounds->Y - TacticalClass::Instance->TacticalPos.Y;
 
-	RectangleStruct ret = Drawing::Intersect(pRect, &rect, 0, 0);
+	RectangleStruct ret = Drawing::Intersect(*pRect, rect);
 	if (ret.Width <= 0 || ret.Height <= 0)
 		return false;
 

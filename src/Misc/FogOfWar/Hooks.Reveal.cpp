@@ -7,7 +7,7 @@
 // 4FC1FF = HouseClass_AcceptDefeat_CleanShroudFog, 6
 
 // MapClass_RevealShroud as Xkein said
-DEFINE_HOOK(4ADFF0, DisplayClass_All_To_Look_Ground, 5) 
+DEFINE_HOOK(0x4ADFF0, DisplayClass_All_To_Look_Ground, 0x5) 
 {
 	// GET(DisplayClass*, pDisplay, ECX);
 	GET_STACK(DWORD, dwUnk, 0x4);
@@ -20,7 +20,7 @@ DEFINE_HOOK(4ADFF0, DisplayClass_All_To_Look_Ground, 5)
 	return 0x4AE0A5;
 }
 
-DEFINE_HOOK(577EBF, MapClass_Reveal, 6)
+DEFINE_HOOK(0x577EBF, MapClass_Reveal, 0x6)
 {
 	GET(CellClass*, pCell, EAX);
 
@@ -33,7 +33,7 @@ DEFINE_HOOK(577EBF, MapClass_Reveal, 6)
 	return 0x577EE9;
 }
 
-DEFINE_HOOK(586683, CellClass_DiscoverTechno, 5)
+DEFINE_HOOK(0x586683, CellClass_DiscoverTechno, 0x5)
 {
 	GET(TechnoClass*, pTechno, EAX);
 	GET(CellClass*, pCell, ESI);
@@ -49,7 +49,7 @@ DEFINE_HOOK(586683, CellClass_DiscoverTechno, 5)
 	return 0x586696;
 }
 
-DEFINE_HOOK(4FC1FF, HouseClass_AcceptDefeat_CleanShroudFog, 6)
+DEFINE_HOOK(0x4FC1FF, HouseClass_AcceptDefeat_CleanShroudFog, 0x6)
 {
 	GET(HouseClass*, pHouse, ESI);
 

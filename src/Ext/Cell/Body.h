@@ -2,10 +2,10 @@
 #include <CellClass.h>
 
 #include <Helpers/Macro.h>
-#include "../_Container.hpp"
-#include "../../Utilities/TemplateDef.h"
+#include <Utilities/Container.h>
+#include <Utilities/TemplateDef.h>
 
-#include "../../Misc/FogOfWar/FoggedObject.h"
+#include <Misc/FogOfWar/FogOfWar.h>
 
 class CellExt
 {

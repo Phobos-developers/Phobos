@@ -31,28 +31,28 @@
 ;//4C800C = Networking_RespondToEvent_20, 5
 */
 
-DEFINE_HOOK(6B8E7A, ScenarioClass_LoadSpecialFlags, 6)
+DEFINE_HOOK(0x6B8E7A, ScenarioClass_LoadSpecialFlags, 0x6)
 {
 	GET(ScenarioClass*, pScenario, ESI);
 
-	pScenario->SpecialFlags.FogOfWar = 
-		RulesClass::Instance->FogOfWar || R->EAX() || GameModeOptionsClass::Instance->FogOfWar;
+	pScenario->SpecialFlags.FogOfWar = true;
+		//RulesClass::Instance->FogOfWar || R->EAX() || GameModeOptionsClass::Instance->FogOfWar;
 	
 	R->ECX(pScenario);
 	return 0x6B8E8B;
 }
 
-DEFINE_HOOK(686C03, SetScenarioFlags_FogOfWar, 5)
+DEFINE_HOOK(0x686C03, SetScenarioFlags_FogOfWar, 0x5)
 {
 	GET(ScenarioFlags, SFlags, EAX);
 
-	SFlags.FogOfWar = RulesClass::Instance->FogOfWar || GameModeOptionsClass::Instance->FogOfWar;
+	SFlags.FogOfWar = true;// RulesClass::Instance->FogOfWar || GameModeOptionsClass::Instance->FogOfWar;
 	R->EDX<int>(*reinterpret_cast<int*>(&SFlags)); // stupid!
 
 	return 0x686C0E;
 }
 
-DEFINE_HOOK(5F4B3E, ObjectClass_DrawIfVisible, 6)
+DEFINE_HOOK(0x5F4B3E, ObjectClass_DrawIfVisible, 0x6)
 {
 	GET(ObjectClass*, pObject, ESI);
 	
@@ -75,7 +75,7 @@ DEFINE_HOOK(5F4B3E, ObjectClass_DrawIfVisible, 6)
 	return SkipWithDrawn;
 }
 
-DEFINE_HOOK(6F5190, TechnoClass_DrawExtras_CheckFog, 6)
+DEFINE_HOOK(0x6F5190, TechnoClass_DrawExtras_CheckFog, 0x6)
 {
 	GET(TechnoClass*, pTechno, ECX);
 
@@ -84,34 +84,34 @@ DEFINE_HOOK(6F5190, TechnoClass_DrawExtras_CheckFog, 6)
 	return FogOfWar::IsLocationFogged(&coord) ? 0x6F5EEC : 0;
 }
 
-DEFINE_HOOK(48049E, CellClass_DrawTileAndSmudge_CheckFog, 6)
+DEFINE_HOOK(0x48049E, CellClass_DrawTileAndSmudge_CheckFog, 0x6)
 {
 	GET(CellClass*, pCell, ESI);
 
-	if (pCell->SmudgeTypeIndex == -1 || pCell->coord_4879B0())
+	if (pCell->SmudgeTypeIndex == -1 || pCell->IsFogged())
 		return 0x4804FB;
 	return 0x4804A4;
 }
 
-DEFINE_HOOK(6D6EDA, TacticalClass_Overlay_CheckFog1, A)
+DEFINE_HOOK(0x6D6EDA, TacticalClass_Overlay_CheckFog1, 0xA)
 {
 	GET(CellClass*, pCell, EAX);
 
-	if (pCell->OverlayTypeIndex == -1 || pCell->coord_4879B0())
+	if (pCell->OverlayTypeIndex == -1 || pCell->IsFogged())
 		return 0x6D7006;
 	return 0x6D6EE4;
 }
 
-DEFINE_HOOK(6D70BC, TacticalClass_Overlay_CheckFog2, A)
+DEFINE_HOOK(0x6D70BC, TacticalClass_Overlay_CheckFog2, 0xA)
 {
 	GET(CellClass*, pCell, EAX);
 
-	if (pCell->OverlayTypeIndex == -1 || pCell->coord_4879B0())
+	if (pCell->OverlayTypeIndex == -1 || pCell->IsFogged())
 		return 0x6D71A4;
 	return 0x6D70C6;
 }
 
-DEFINE_HOOK(71CC8C, TerrainClass_DrawIfVisible, 6)
+DEFINE_HOOK(0x71CC8C, TerrainClass_DrawIfVisible, 0x6)
 {
 	GET(TerrainClass*, pTerrain, EDI);
 
@@ -121,7 +121,7 @@ DEFINE_HOOK(71CC8C, TerrainClass_DrawIfVisible, 6)
 	return 0x71CC9A;
 }
 
-DEFINE_HOOK(5865E2, IsLocationFogged, 5)
+DEFINE_HOOK(0x5865E2, IsLocationFogged, 0x5)
 {
 	GET_STACK(CoordStruct*, pCoord, 0x4);
 

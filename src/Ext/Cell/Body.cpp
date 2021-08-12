@@ -35,7 +35,7 @@ CellExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
-DEFINE_HOOK(47BBF0, CellClass_CTOR, 6)
+DEFINE_HOOK(0x47BBF0, CellClass_CTOR, 0x6)
 {
 	GET(CellClass*, pItem, ECX);
 
@@ -44,7 +44,7 @@ DEFINE_HOOK(47BBF0, CellClass_CTOR, 6)
 	return 0;
 }
 
-DEFINE_HOOK(47BB60, CellClass_DTOR, 6)
+DEFINE_HOOK(0x47BB60, CellClass_DTOR, 0x6)
 {
 	GET(CellClass*, pItem, ECX);
 
@@ -53,8 +53,8 @@ DEFINE_HOOK(47BB60, CellClass_DTOR, 6)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(483C10, CellClass_SaveLoad_Prefix, 5)
-DEFINE_HOOK(4839F0, CellClass_SaveLoad_Prefix, 7)
+DEFINE_HOOK_AGAIN(0x483C10, CellClass_SaveLoad_Prefix, 0x5)
+DEFINE_HOOK(0x4839F0, CellClass_SaveLoad_Prefix, 0x7)
 {
 	GET_STACK(CellClass*, pItem, 0x4);
 	GET_STACK(IStream*, pStm, 0x8);
@@ -64,13 +64,13 @@ DEFINE_HOOK(4839F0, CellClass_SaveLoad_Prefix, 7)
 	return 0;
 }
 
-DEFINE_HOOK(483C00, CellClass_Load_Suffix, 5)
+DEFINE_HOOK(0x483C00, CellClass_Load_Suffix, 0x5)
 {
 	CellExt::ExtMap.LoadStatic();
 	return 0;
 }
 
-DEFINE_HOOK(483C79, CellClass_Save_Suffix, 6)
+DEFINE_HOOK(0x483C79, CellClass_Save_Suffix, 0x6)
 {
 	CellExt::ExtMap.SaveStatic();
 	return 0;

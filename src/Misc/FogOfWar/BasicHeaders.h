@@ -1,6 +1,5 @@
 #pragma once
 
-#include <FoggedObjectClass.h>
 #include <TerrainClass.h>
 #include <OverlayClass.h>
 #include <BuildingClass.h>
