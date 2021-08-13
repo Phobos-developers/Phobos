@@ -42,11 +42,11 @@ void FogOfWar::Reveal_DisplayClass_All_To_Look_Ground(TechnoClass* pTechno, DWOR
 #undef _LOOK_
 }
 
-bool FogOfWar::MapClass_RevealFogShroud(MapClass* pMap, CellStruct* pCell_, HouseClass* pHouse)
+bool FogOfWar::MapClass_RevealFogShroud(CellStruct* pCell_, HouseClass* pHouse)
 {
-	auto pCell = pMap->GetCellAt(*pCell_);
+	auto pCell = MapClass::Instance->GetCellAt(*pCell_);
 	bool bContainsBuilding = pCell->Flags & 2;
-	bool bReturn = !bContainsBuilding || (pCell->CopyFlags & 8);
+	bool bReturn = !bContainsBuilding || !(pCell->CopyFlags & 8);
 	bool bUnk = bReturn;
 	pCell->Flags = pCell->Flags & 0xFFFFFFBF | 2;
 	pCell->CopyFlags = pCell->CopyFlags & 0xFFFFFFDF | 8;
@@ -73,7 +73,7 @@ bool FogOfWar::MapClass_RevealFogShroud(MapClass* pMap, CellStruct* pCell_, Hous
 	if (bReturn)
 	{
 		TacticalClass::Instance->RegisterCellAsVisible(pCell);
-		pMap->RevealCheck(pCell, pHouse, bUnk);
+		MapClass::Instance->RevealCheck(pCell, pHouse, bUnk);
 	}
 	if (!bContainsBuilding && ScenarioClass::Instance->SpecialFlags.FogOfWar)
 		pCell->CleanFog();

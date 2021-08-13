@@ -170,6 +170,7 @@ FoggedTerrain::FoggedTerrain(CoordStruct& location, RectangleStruct& bound, int 
 FoggedTerrain::FoggedTerrain(ObjectClass* pObject, int terrain)
 	: FoggedObject(pObject), Terrain{ terrain }
 {
+	this->Translucent = true;
 }
 
 FoggedTerrain::~FoggedTerrain()
@@ -187,7 +188,7 @@ void FoggedTerrain::Draw(RectangleStruct & rect)
 		Point2D position;
 		TacticalClass::Instance->CoordsToClient(this->Location, &position);
 		position.X += DSurface::ViewBounds->X - rect.X;
-		position.X += DSurface::ViewBounds->Y - rect.Y;
+		position.Y += DSurface::ViewBounds->Y - rect.Y;
 
 		auto nHeightOffset = -TacticalClass::Instance->AdjustForZ(this->Location.Z);
 		ConvertClass* pDrawer;
@@ -281,9 +282,11 @@ FoggedOverlay::~FoggedOverlay()
 void FoggedOverlay::Draw(RectangleStruct & rect)
 {
 	auto const pCell = MapClass::Instance->TryGetCellAt(this->Location);
+	
+	CoordStruct coords = { (((pCell->MapCoords.X << 8) + 128) / 256) << 8, (((pCell->MapCoords.Y << 8) + 128) / 256) << 8, 0 };
 
 	Point2D position;
-	TacticalClass::Instance->CoordsToClient(this->Location, &position);
+	TacticalClass::Instance->CoordsToClient(coords, &position);
 	position.X -= 30;
 
 	int oldOverlay = this->Overlay;
@@ -429,7 +432,6 @@ bool FoggedBuilding::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->Type)
 		.Process(this->FrameIndex)
 		.Process(this->FireStormWall)
-		.Process(this->Translucent)
 		.Success();
 }
 
@@ -440,6 +442,5 @@ bool FoggedBuilding::Save(PhobosStreamWriter& Stm) const
 		.Process(this->Type)
 		.Process(this->FrameIndex)
 		.Process(this->FireStormWall)
-		.Process(this->Translucent)
 		.Success();
 }

@@ -37,12 +37,11 @@ DEFINE_HOOK(0x4ACE3C, MapClass_TryReshroudCell_SetCopyFlag, 0x6)
 DEFINE_HOOK(0x4A9CA0, MapClass_RevealFogShroud, 0x7)
 {
 	// GET(MapClass*, pMap, ECX);
-	MapClass* pMap = MapClass::Instance;
 	GET_STACK(CellStruct*, pCell, 0x4);
 	GET_STACK(HouseClass*, dwUnk, 0x8);
 	// GET_STACK(bool, bUnk, 0xC);
 
-	R->EAX(FogOfWar::MapClass_RevealFogShroud(pMap, pCell, dwUnk));
+	R->EAX(FogOfWar::MapClass_RevealFogShroud(pCell, dwUnk));
 
 	return 0x4A9DC6;
 }
@@ -55,9 +54,9 @@ DEFINE_HOOK(0x486BF0, CellClass_CleanFog, 0x9)
 	for (int i = 1; i < 15; i += 2)
 	{
 		auto pCell = MapClass::Instance->GetCellAt(pLocation);
-		if (pCell && pCell->Level >= i - 2 && pCell->Level <= i)
+		if (pCell && pCell->Level == i - 1) // pCell->Level >= i - 2 && pCell->Level <= i
 		{
-			pCell->Flags |= cf_Fogged;
+			pCell->Flags &= ~cf_Fogged;
 			FogOfWar::ClearFoggedObjects(pCell);
 			++pLocation.X;
 			++pLocation.Y;
@@ -77,7 +76,7 @@ DEFINE_HOOK(0x486A70, CellClass_FogCell, 0x5)
 		{
 			auto pCell = MapClass::Instance->GetCellAt(location);
 			auto nLevel = pCell->Level;
-			if (nLevel >= i - 2 && nLevel <= i)
+			if (nLevel == i - 1) // if (nLevel >= i - 2 && nLevel <= i)
 			{
 				if ((pCell->Flags & cf_Fogged) == 0)
 				{
@@ -98,7 +97,7 @@ DEFINE_HOOK(0x486A70, CellClass_FogCell, 0x5)
 							break;
 						case AbstractType::Terrain:
 							if (auto pTer = abstract_cast<TerrainClass*>(pObject))
-								GameCreate<FoggedTerrain>(pTer, pTer->GetArrayIndex());
+								GameCreate<FoggedTerrain>(pTer, pTer->Type->ArrayIndex);
 							break;
 						default:
 							continue;
