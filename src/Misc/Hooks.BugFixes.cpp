@@ -5,6 +5,7 @@
 #include <UnitClass.h>
 #include <ScenarioClass.h>
 #include <VoxelAnimClass.h>
+#include <BulletClass.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -101,7 +102,7 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, 0xA)
 				amountToSpawn = Math::min(amountToSpawn, totalSpawnAmount);
 				totalSpawnAmount -= amountToSpawn;
 
-				for ( ; amountToSpawn > 0; --amountToSpawn)
+				for (; amountToSpawn > 0; --amountToSpawn)
 				{
 					GameCreate<VoxelAnimClass>(pType->DebrisTypes.GetItem(currentIndex),
 						&cord, pThis->Owner);
@@ -160,7 +161,7 @@ DEFINE_HOOK(0x4FB2DE, HouseClass_PlaceObject_HotkeyFix, 0x6)
 	GET(TechnoClass*, pObject, ESI);
 
 	pObject->ClearSidebarTabObject();
-	
+
 	return 0;
 }
 
@@ -173,7 +174,7 @@ DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
 
 	if (pThis->GetTechnoType()->UndeploysInto)
 		pThis->SetRallypoint(pCell, false);
-	else if(pThis->IsUnitFactory())
+	else if (pThis->IsUnitFactory())
 		pThis->SetRallypoint(pCell, true);
 
 	return 0x4437AD;
@@ -182,3 +183,18 @@ DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
 // issue #232: Naval=yes overrides WaterBound=no and prevents move orders onto Land cells
 // Author: Uranusian
 DEFINE_LJMP(0x47CA05, 0x47CA33); // CellClass_IsClearToBuild_SkipNaval
+
+// bugfix: DeathWeapon not properly detonates
+// Author: Uranusian
+DEFINE_HOOK(0x70D77F, TechnoClass_FireDeathWeapon_ProjectileFix, 0x8)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(BulletClass*, pBullet, EBX);
+	GET(CoordStruct*, pCoord, EAX);
+
+	pBullet->Target = pThis;
+	pBullet->SetLocation(*pCoord);
+	pBullet->Fire(true);
+
+	return 0x70D787;
+}
