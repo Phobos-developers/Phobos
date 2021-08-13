@@ -26,6 +26,7 @@
     <ClCompile Include="src\Ext\TAction\Body.cpp" />
     <ClCompile Include="src\Ext\TAction\Hooks.cpp" />
     <ClCompile Include="src\Misc\CaptureManager.cpp" />
+    <ClCompile Include="src\Misc\MapRevealer.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
     <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
@@ -110,6 +111,7 @@
     <ClInclude Include="src\Misc\FogOfWar\BasicHeaders.h" />
     <ClInclude Include="src\Misc\FogOfWar\FoggedObject.h" />
     <ClInclude Include="src\Misc\FogOfWar\FogOfWar.h" />
+    <ClInclude Include="src\Misc\MapRevealer.h" />
     <ClInclude Include="src\New\Entity\ShieldClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldTypeClass.h" />

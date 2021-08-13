@@ -102,7 +102,6 @@ FoggedSmudge::FoggedSmudge(CellClass* pCell, int smudge, unsigned char smudgeDat
 
 	this->Smudge = smudge;
 	this->SmudgeData = smudgeData;
-	this->CoveredRTTIType = AbstractType::Smudge;
 
 	FogOfWar::FoggedObjects.insert(this);
 

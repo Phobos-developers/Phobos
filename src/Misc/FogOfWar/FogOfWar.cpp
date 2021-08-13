@@ -1,5 +1,6 @@
 #include "FogOfWar.h"
 
+#include "../MapRevealer.h"
 // issue #28 : Fix vanilla YR Fog of War bugs & issues
 // Reimplement it would be nicer.
 
@@ -9,10 +10,9 @@ void FogOfWar::Reveal_DisplayClass_All_To_Look_Ground(TechnoClass* pTechno, DWOR
 {
 #define _LOOK_ \
 	{ \
-		auto coords = pTechno->GetCoords(); \
 		pTechno->See(0, dwUnk2); \
 		if (pTechno->IsInAir()) \
-			MapClass::Instance->RevealArea3(&coords, \
+			MapClass::Instance->RevealArea3(&pTechno->Location, \
 				pTechno->LastSightRange - 3, pTechno->LastSightRange + 3, false); \
 		return; \
 	}
@@ -82,7 +82,8 @@ bool FogOfWar::MapClass_RevealFogShroud(CellStruct* pCell_, HouseClass* pHouse)
 
 bool FogOfWar::IsLocationFogged(CoordStruct* pCoord)
 {
-	auto pCell = MapClass::Instance->GetCellAt(*pCoord);
+	MapRevealer revealer(*pCoord);
+	auto pCell = MapClass::Instance->GetCellAt(revealer.Base());
 	if (pCell->Flags & 2)
 		return false;
 	return ((pCell->GetNeighbourCell(3u)->Flags & 2) == 0);

@@ -54,7 +54,7 @@ DEFINE_HOOK(0x486BF0, CellClass_CleanFog, 0x9)
 	for (int i = 1; i < 15; i += 2)
 	{
 		auto pCell = MapClass::Instance->GetCellAt(pLocation);
-		if (pCell && pCell->Level == i - 1) // pCell->Level >= i - 2 && pCell->Level <= i
+		if (pCell && pCell->Level >= i - 2 && pCell->Level <= i)
 		{
 			pCell->Flags &= ~cf_Fogged;
 			FogOfWar::ClearFoggedObjects(pCell);
@@ -76,7 +76,7 @@ DEFINE_HOOK(0x486A70, CellClass_FogCell, 0x5)
 		{
 			auto pCell = MapClass::Instance->GetCellAt(location);
 			auto nLevel = pCell->Level;
-			if (nLevel == i - 1) // if (nLevel >= i - 2 && nLevel <= i)
+			if (nLevel >= i - 2 && nLevel <= i)
 			{
 				if ((pCell->Flags & cf_Fogged) == 0)
 				{
@@ -174,7 +174,6 @@ DEFINE_HOOK(0x70076E, TechnoClass_GetCursorOverCell_OverFog, 0x5)
 	return 0x700800;
 }
 
-// This function is the key to reduce lag I think
 DEFINE_HOOK(0x6D3470, TacticalClass_DrawFoggedObject, 0x8)
 {
 	GET(TacticalClass*, pTactical, ECX);
