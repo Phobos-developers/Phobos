@@ -31,14 +31,15 @@
 ;//4C800C = Networking_RespondToEvent_20, 5
 */
 
-DEFINE_HOOK(0x6B8E7A, ScenarioClass_LoadSpecialFlags, 0x6)
+DEFINE_HOOK(0x6B8E7A, ScenarioClass_LoadSpecialFlags, 0x5)
 {
 	GET(ScenarioClass*, pScenario, ESI);
 
 	pScenario->SpecialFlags.FogOfWar = true;
 		//RulesClass::Instance->FogOfWar || R->EAX() || GameModeOptionsClass::Instance->FogOfWar;
 	
-	R->ECX(pScenario);
+	R->ECX(R->EDI());
+
 	return 0x6B8E8B;
 }
 
