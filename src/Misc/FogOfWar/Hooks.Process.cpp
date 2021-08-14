@@ -123,7 +123,7 @@ DEFINE_HOOK(0x440B8D, BuildingClass_Put_CheckFog, 0x6)
 	GET(BuildingClass*, pBuilding, ESI);
 
 	if (pBuilding->IsBuildingFogged())
-		GameCreate<FoggedBuilding>(pBuilding, pBuilding->IsStrange() || pBuilding->Translucency);
+		GameCreate<FoggedBuilding>(pBuilding, false);
 
 	return 0x440C08;
 }

@@ -42,42 +42,48 @@ void FogOfWar::Reveal_DisplayClass_All_To_Look_Ground(TechnoClass* pTechno, DWOR
 #undef _LOOK_
 }
 
-bool FogOfWar::MapClass_RevealFogShroud(CellStruct* pCell_, HouseClass* pHouse)
+bool FogOfWar::MapClass_RevealFogShroud(CellStruct* pMapCoords, HouseClass* pHouse)
 {
-	auto pCell = MapClass::Instance->GetCellAt(*pCell_);
-	bool bContainsBuilding = pCell->Flags & 2;
-	bool bReturn = !bContainsBuilding || !(pCell->CopyFlags & 8);
-	bool bUnk = bReturn;
+	auto pCell = MapClass::Instance->GetCellAt(*pMapCoords);
+	bool bUnk = pCell->Flags & 2;
+	bool bUnk2 = bUnk || (pCell->CopyFlags & 8) == 0;
+	bool bRevealCheckParam = bUnk2;
+
 	pCell->Flags = pCell->Flags & 0xFFFFFFBF | 2;
-	pCell->CopyFlags = pCell->CopyFlags & 0xFFFFFFDF | 8;
-	char nOcclusion = TacticalClass::Instance->GetOcclusion(*pCell_, false);
-	char nVisibility = pCell->Visibility;
-	if (nOcclusion != nVisibility)
+	pCell->CopyFlags = pCell->CopyFlags & 0xFFFFFFBF | 8;
+
+	char cVisibility = TacticalClass::Instance->GetOcclusion(*pMapCoords, false);
+	char cVisibility2 = pCell->Visibility;
+	if (cVisibility2 != cVisibility)
 	{
-		nVisibility = nOcclusion;
-		bReturn = true;
-		pCell->Visibility = nOcclusion;
+		cVisibility2 = cVisibility;
+		bUnk2 = true;
+		pCell->Visibility = cVisibility;
 	}
-	if (nVisibility == -1)
-		pCell->CopyFlags |= 0x10u;
-	char nFoggedOcclusion = TacticalClass::Instance->GetOcclusion(*pCell_, true);
-	char nFoggedness = pCell->Foggedness;
-	if (nFoggedOcclusion != nFoggedness)
+	if (cVisibility2 == -1)
+		pCell->CopyFlags |= 0x10;
+
+	char cFoggedness = TacticalClass::Instance->GetOcclusion(*pMapCoords, true);
+	char cFoggedness2 = pCell->Foggedness;
+	if (cFoggedness2 != cFoggedness)
 	{
-		nFoggedness = nFoggedOcclusion;
-		bReturn = true;
-		pCell->Foggedness = nFoggedOcclusion;
+		cFoggedness2 = cFoggedness;
+		bUnk2 = true;
+		pCell->Foggedness = cFoggedness;
 	}
-	if (nFoggedness == -1)
-		pCell->Flags |= 1u;
-	if (bReturn)
+	if (cFoggedness2 == -1)
+		pCell->Flags |= 0x1;
+
+	if (bUnk2)
 	{
 		TacticalClass::Instance->RegisterCellAsVisible(pCell);
-		MapClass::Instance->RevealCheck(pCell, pHouse, bUnk);
+		MapClass::Instance->RevealCheck(pCell, pHouse, bRevealCheckParam);
 	}
-	if (!bContainsBuilding && ScenarioClass::Instance->SpecialFlags.FogOfWar)
+
+	if (!bUnk && ScenarioClass::Instance->SpecialFlags.FogOfWar)
 		pCell->CleanFog();
-	return bReturn;
+
+	return bUnk2;
 }
 
 bool FogOfWar::IsLocationFogged(CoordStruct* pCoord)
