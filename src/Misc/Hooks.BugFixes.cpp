@@ -102,7 +102,7 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, 0xA)
 				amountToSpawn = Math::min(amountToSpawn, totalSpawnAmount);
 				totalSpawnAmount -= amountToSpawn;
 
-				for (; amountToSpawn > 0; --amountToSpawn)
+				for ( ; amountToSpawn > 0; --amountToSpawn)
 				{
 					GameCreate<VoxelAnimClass>(pType->DebrisTypes.GetItem(currentIndex),
 						&cord, pThis->Owner);
@@ -188,13 +188,11 @@ DEFINE_LJMP(0x47CA05, 0x47CA33); // CellClass_IsClearToBuild_SkipNaval
 // Author: Uranusian
 DEFINE_HOOK(0x70D77F, TechnoClass_FireDeathWeapon_ProjectileFix, 0x8)
 {
-	GET(TechnoClass*, pThis, ESI);
 	GET(BulletClass*, pBullet, EBX);
 	GET(CoordStruct*, pCoord, EAX);
 
-	pBullet->Target = pThis;
 	pBullet->SetLocation(*pCoord);
-	pBullet->Fire(true);
+	pBullet->Explode(true);
 
 	return 0x70D787;
 }
