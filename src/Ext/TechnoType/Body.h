@@ -40,6 +40,7 @@ public:
 		Valueable<bool> MultiMindControl_ReleaseVictim;
 		Valueable<int> CameoPriority;
 		Valueable<bool> NoManualMove;
+		Nullable<int> InitialStrength;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -97,6 +98,7 @@ public:
 			MultiMindControl_ReleaseVictim(false),
 			CameoPriority(0),
 			NoManualMove(false),
+			InitialStrength(),
 			ShieldType(),
 			WarpOut(),
 			WarpIn(),

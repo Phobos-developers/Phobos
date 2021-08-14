@@ -38,6 +38,7 @@ In `FAData.ini`:
 New:
 - LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)
 - Anim-to-Unit logic and ability to randomize DestroyAnim (by Otamaa)
+- Initial Strength for TechnoTypes (by Uranusian)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)

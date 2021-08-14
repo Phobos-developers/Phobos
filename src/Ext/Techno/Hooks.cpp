@@ -44,3 +44,29 @@ DEFINE_HOOK(0x702E4E, TechnoClass_Save_Killer_Techno, 0x6)
     return 0;
 }
 
+DEFINE_HOOK_AGAIN(0x7355C0, TechnoClass_Init_InitialStrength, 0x6) // UnitClass_Init
+DEFINE_HOOK_AGAIN(0x517D69, TechnoClass_Init_InitialStrength, 0x6) // InfantryClass_Init
+DEFINE_HOOK_AGAIN(0x442C7B, TechnoClass_Init_InitialStrength, 0x6) // BuildingClass_Init
+DEFINE_HOOK(0x414057, TechnoClass_Init_InitialStrength, 0x6)       // AircraftClass_Init
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (R->Origin() != 0x517D69)
+	{
+		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		{
+			if (R->Origin() != 0x442C7B)
+				R->EAX(pTypeExt->InitialStrength.Get(R->EAX<int>()));
+			else
+				R->ECX(pTypeExt->InitialStrength.Get(R->ECX<int>()));
+		}
+	}
+	else if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	{
+		auto strength = pTypeExt->InitialStrength.Get(R->EDX<int>());
+		pThis->Health = strength;
+		pThis->EstimatedHealth = strength;
+	}
+
+	return 0;
+}

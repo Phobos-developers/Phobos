@@ -249,6 +249,16 @@ In `rulesmd.ini`:
 Promote.IncludeSpawns=no  ; boolean
 ```
 
+### Initial Strength
+
+- You can now specify how many hitpoints a TechnoType starts with.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]        ; TechnoType
+InitialStrength=    ; int
+```
+
 ## Weapons
 
 ### Strafing aircraft weapon customization

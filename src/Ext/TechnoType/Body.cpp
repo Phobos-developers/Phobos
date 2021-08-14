@@ -97,6 +97,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
 	this->NoManualMove.Read(exINI, pSection, "NoManualMove");
+	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
@@ -179,6 +180,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MultiMindControl_ReleaseVictim)
 		.Process(this->CameoPriority)
 		.Process(this->NoManualMove)
+		.Process(this->InitialStrength)
 		.Process(this->ShieldType)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
