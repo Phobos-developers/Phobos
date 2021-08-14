@@ -339,6 +339,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	bool bAircraftsWithoutAmmo = false;
 	TechnoClass* pFocus = nullptr;
 	bool agentMode = false;
+	bool pacifistTeam = true;
 	
 	// When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
 	if (pTeam->GuardAreaTimer.TimeLeft != 0 || pTeam->GuardAreaTimer.InProgress())
@@ -443,39 +444,66 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 					bAircraftsWithoutAmmo = true;
 					pUnit->CurrentTargets.Clear();
 				}
-
-				// The team leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
-				int unitLeadershipRating = pUnitType->LeadershipRating;
-				if (unitLeadershipRating > bestUnitLeadershipValue)
+				
+				bool pacifistUnit = true;
+				if (pUnit->Veterancy.IsElite())
 				{
-					pLeaderUnit = pUnit;
-					bestUnitLeadershipValue = unitLeadershipRating;
+					if (pUnitType->EliteWeapon[0].WeaponType || pUnitType->EliteWeapon[1].WeaponType || (pUnitType->IsGattling && pUnitType->EliteWeapon[pUnit->CurrentWeaponNumber].WeaponType))
+					{
+						pacifistTeam = false;
+						pacifistUnit = false;
+					}
+				}
+				else
+				{
+					if (pUnitType->Weapon[0].WeaponType || pUnitType->Weapon[1].WeaponType || (pUnitType->IsGattling && pUnitType->Weapon[pUnit->CurrentWeaponNumber].WeaponType))
+					{
+						pacifistTeam = false;
+						pacifistUnit = false;
+					}
 				}
 
 				// Any Team member (infantry) is a special agent? If yes ignore some checks based on Weapons.
+				bool isAgent = false;
 				if (pUnitType->WhatAmI() == AbstractType::InfantryType)
 				{
 					auto pTypeInf = abstract_cast<InfantryTypeClass*>(pUnitType);
 
 					if (pTypeInf->Agent || pTypeInf->Infiltrate || pTypeInf->Engineer)
+					{
 						agentMode = true;
+						isAgent = true;
+					}
+				}
+
+				// The team leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
+				int unitLeadershipRating = pUnitType->LeadershipRating;
+				if (unitLeadershipRating > bestUnitLeadershipValue && (!pacifistUnit || isAgent))
+				{
+					pLeaderUnit = pUnit;
+					bestUnitLeadershipValue = unitLeadershipRating;
 				}
 			}
 		}
 	}
 
-	if (!pLeaderUnit || bAircraftsWithoutAmmo)
+	if (!pLeaderUnit || bAircraftsWithoutAmmo || pacifistTeam)
 	{
 		auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 		if (pTeamData)
 		{
 			pTeamData->IdxSelectedObjectFromAIList = -1;
+
+			if (pTeamData->WaitNoTargetAttempts != 0)
+			{
+				pTeamData->WaitNoTargetAttempts = 0; // Disable Script Waits if there are any because a new target was selected
+			}
 		}
 
 		// This action finished
 		pTeam->StepCompleted = true;
 
-		Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (Reason: No Leader found | Exists Aircrafts without ammo)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+		Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (Reason: No Leader found | Exists Aircrafts without ammo | Team members have no weapons)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
 		return;
 	}
 	
