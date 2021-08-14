@@ -564,12 +564,12 @@ In `aimd.ini`:
 x=94,n
 ```
 
-The second parameter is a 0-based index for the *[AIScriptsList]* section that specifies the list of possible *[VehicleTypes]*, *[AircraftTypes]*, *[InfantryTypes]* and *[BuildingTypes]* that can be evaluated. The new *[AIScriptsList]* section must be declared in RulesMD.ini for making this script work:
+The second parameter is a 0-based index for the *[AIScriptsList]* section that specifies the list of possible *[ScriptTypes]* that can be evaluated. The new *[AIScriptsList]* section must be declared in RulesMD.ini for making this script work:
 
 In `rulesmd.ini`:
 ```ini
 [AIScriptsList]  ; List of Technos
-0=Techno N,Techno N+1, Techno N+1,... Techno N+M
+0=ScriptType N,ScriptType N+1, ScriptType N+1,... ScriptType N+M
 1= ...
 2= ...
 ...
@@ -592,6 +592,6 @@ x=95-102,n
 97         | Target Type# | Friendly | Closer |
 98         | Target Type# | Friendly | Farther |
 99         | [AITargetType] index# | Enemy | Closer, higher threat |
-100        | [AITargetType] index# | Enemy | Closer, higher threat |
+100        | [AITargetType] index# | Enemy | Farther, higher threat |
 101        | [AITargetType] index# | Friendly | Closer |
 102        | [AITargetType] index# | Friendly | Farther |
