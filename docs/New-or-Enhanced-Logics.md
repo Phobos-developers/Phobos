@@ -22,17 +22,14 @@ PowersUp.Buildings= ; list of BuildingTypes
 
 ## Infantry
 
-### NotHuman Infantry Use Random Die sequence Anim
-
-- Infantry with `NotHuman` is hardcoded to play `Die1` sequence anim when receive damage.
-- This feature remove that limitation and randomize sequence anim played between `Die1` to `Die5`.
-- Do not forget to tweak `Infantry` sequence before enable this feature , or it will play invisible sequence anim.
+### Random death animaton for NotHuman Infantry
+- Infantry with `NotHuman=yes` can now play random death anim sequence between `Die1` to `Die5` instead of the hardcoded `Die1`.
+  - Do not forget to tweak infantry anim sequences before enabling this feature, otherwise it will play invisible anim sequence.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEINFANTRY]                   ; InfantryType
-NotHuman=yes                     ; Required !
-NotHumanRandomDeathSequence=yes  ; boolean , to enable this feature
+[SOMEINFANTRY]                    ; InfantryType
+NotHuman.RandomDeathSequence=yes  ; boolean
 ```
 
 ## Vehicles
@@ -307,16 +304,13 @@ SplashList=<none>        ; list of animations to play
 SplashList.PickRandom=no ; play a random animation from the list? boolean, defaults to no
 ```
 
-### Trigger spesific NotHuman Infantry Death Sequence Anim
-
-- Trigger spesific `NotHuman` infantry Death sequence anim for Warhead.
-- Each value is represent `Die` sequence anim for infantry (Game only accept 1 to 5).
-- Disabled (-1) mean that game will use `Die1` sequence as default or random if `NotHumanRandomDeathSequence` is set.
+### Trigger specific NotHuman infantry Death anim sequence
+- Warheads are now able to trigger specific `NotHuman=yes` infantry `Death` anim sequence using the corresponding tag. It's value represents sequences from `Die1` to `Die5`.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]      ; Warhead
-NotHumanDeathSequence=  ; integer (1 to 5), default to -1
+[SOMEWARHEAD]            ; Warhead
+NotHuman.DeathSequence=  ; integer (1 to 5)
 ```
 
 ## Projectiles

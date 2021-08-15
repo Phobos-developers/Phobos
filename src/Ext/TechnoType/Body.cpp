@@ -106,7 +106,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChronoMinimumDelay.Read(exINI, pSection, "ChronoMinimumDelay");
 	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
 	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
-	this->NotHumanRandomDeathSequence.Read(exINI, pSection, "NotHumanRandomDeathSequence");
+	this->NotHumanRandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");

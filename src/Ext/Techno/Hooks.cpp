@@ -29,29 +29,26 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 DEFINE_HOOK(0x518505, InfantryClass_TakeDamage_NotHuman, 0x4)
 {
 	GET(InfantryClass* const, pThis, ESI);
-	REF_STACK(args_ReceiveDamage const, ReceiveDamageArgs, STACK_OFFS(0xD0, -0x4));
+	REF_STACK(args_ReceiveDamage const, nReceiveDamageArgs, STACK_OFFS(0xD0, -0x4));
 
-	auto Sequenceint = 11;
-	auto const TypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto nSequenceint = 11;
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if (TypeExt->NotHumanRandomDeathSequence.Get())
-		Sequenceint = ScenarioClass::Instance->Random.RandomRanged(11, 15);
+	if (pTypeExt->NotHumanRandomDeathSequence.Get())
+		nSequenceint = ScenarioClass::Instance->Random.RandomRanged(11, 15);
 
-	if (ReceiveDamageArgs.WH)
+	if (nReceiveDamageArgs.WH)
 	{
-		if (auto const WarheadExt = WarheadTypeExt::ExtMap.Find(ReceiveDamageArgs.WH))
+		if (auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(nReceiveDamageArgs.WH))
 		{
-			auto Warheadsequence = WarheadExt->NotHumanDeathSequence.Get();
-			if (Warheadsequence > 0)
-			{
-				Warheadsequence = Math::min(Warheadsequence, 5);
-				Sequenceint = 10 + Warheadsequence;
-			}
+			auto nWarheadsequence = pWarheadExt->NotHumanDeathSequence.Get();
+			if (nWarheadsequence > 0)
+				nSequenceint = 10 + Math::min(nWarheadsequence, 5);
 		}
 	}
 
 	R->ECX(pThis);
-	pThis->PlayAnim(static_cast<Sequence>(Sequenceint), true);
+	pThis->PlayAnim(static_cast<Sequence>(nSequenceint), true);
 
 	return 0x518515;
 }
