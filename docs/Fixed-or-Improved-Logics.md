@@ -58,6 +58,22 @@ ChronoDelay=            ; integer, delay after teleport for chronosphere
 
 ```
 
+### Re-enable obsolete [JumpjetControls] 
+
+- Re-enable obsolete [JumpjetControls], the keys in it will be as the default value of jumpjet units.
+  - Moreover, added two tags for missing ones.
+
+In `rulesmd.ini`:
+```ini
+[JumpjetControls]
+Crash=5.0       ; float
+NoWabbles=no    ; bool
+```
+
+```{note}
+`CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
+```
+
 ### Customizable harvester ore gathering animation
 
 ![Ore gathering](_static/images/oregath.gif)
