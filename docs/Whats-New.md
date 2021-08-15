@@ -43,7 +43,7 @@ Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
 
 Phobos fixes:
-- TBD
+- Fixed extended building upgrades logic not properly interact with Ares' BuildLimit check (by Uranusian)
 
 ### 0.2.2
 
