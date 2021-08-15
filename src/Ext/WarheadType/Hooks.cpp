@@ -110,7 +110,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFS(0x20, -0x4))
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
-	enum { CannotFire = 0x6FCB7E};
+	enum { CannotFire = 0x6FCB7E };
 
 	if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
 	{
