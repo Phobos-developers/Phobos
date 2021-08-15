@@ -259,7 +259,35 @@ In `rulesmd.ini`:
 InitialStrength=    ; int
 ```
 
+### Firing offsets for specific Burst shots
+
+- You can now specify separate firing offsets for each of the shots fired by weapon with `Burst` via using `(Elite)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on which weapons your TechnoType makes use of. *N* in `BurstN` is zero-based burst shot index, and the values are parsed sequentially until no value for either regular or elite weapon is present, with elite weapon defaulting to regular weapon FLH if only it is missing. If no burst-index specific value is available, value from the base key (f.ex `PrimaryFireFLH`) is used.
+- Burst-index specific firing offsets are absolute firing offsets and the lateral shifting based on burst index that occurs with the base firing offsets is not applied.
+
+In `artmd.ini`:
+```ini
+[SOMETECHNO]                   ; TechnoType Image
+PrimaryFireFLH.BurstN=         ; int - forward, lateral, height
+ElitePrimaryFireFLH.BurstN=    ; int - forward, lateral, height
+SecondaryFireFLH.BurstN=       ; int - forward, lateral, height
+EliteSecondaryFireFLH.BurstN=  ; int - forward, lateral, height
+WeaponXFLH.BurstN=             ; int - forward, lateral, height
+EliteWeaponXFLH.BurstN=        ; int - forward, lateral, height
+```
+
 ## Weapons
+
+### Burst.Delays
+
+- Allows specifying weapon-specific burst shot delays. Takes precedence over the old `BurstDelayX` logic available on VehicleTypes, functions with Infantry & BuildingType weapons (AircraftTypes are not supported due to their weapon firing system being completely different) and allows every shot of `Burst` to have a separate delay instead of only first four shots.
+- If no delay is defined for a shot, it falls back to last delay value defined (f.ex `Burst=3` and `BurstDelays=10` would use 10 as delay for all shots).
+- Using -1 as delay reverts back to old logic (`BurstDelay0-3` for VehicleTypes if available or random value between 3-5 otherwise) for that shot.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                 ; WeaponType
+Burst.Delays=-1              ; int - burst delays (comma-separated) for shots in order from first to last.
+```
 
 ### Strafing aircraft weapon customization
 

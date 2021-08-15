@@ -103,7 +103,7 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, 0xA)
 				amountToSpawn = Math::min(amountToSpawn, totalSpawnAmount);
 				totalSpawnAmount -= amountToSpawn;
 
-				for ( ; amountToSpawn > 0; --amountToSpawn)
+				for (; amountToSpawn > 0; --amountToSpawn)
 				{
 					GameCreate<VoxelAnimClass>(pType->DebrisTypes.GetItem(currentIndex),
 						&cord, pThis->Owner);
@@ -162,6 +162,28 @@ DEFINE_HOOK(0x4FB2DE, HouseClass_PlaceObject_HotkeyFix, 0x6)
 	GET(TechnoClass*, pObject, ESI);
 
 	pObject->ClearSidebarTabObject();
+
+	return 0;
+}
+
+// Issue #46: Laser is mirrored relative to FireFLH
+// Author: Starkku
+DEFINE_HOOK(0x6FF2BE, TechnoClass_Fire_At_BurstOffsetFix_1, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	--pThis->CurrentBurstIndex;
+
+	return 0x6FF2D1;
+}
+
+DEFINE_HOOK(0x6FF660, TechnoClass_Fire_At_BurstOffsetFix_2, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET_BASE(int, weaponIndex, 0xC);
+
+	++pThis->CurrentBurstIndex;
+	pThis->CurrentBurstIndex %= pThis->GetWeapon(weaponIndex)->WeaponType->Burst;
 
 	return 0;
 }

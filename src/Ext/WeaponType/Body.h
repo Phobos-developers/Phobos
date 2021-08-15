@@ -26,7 +26,8 @@ public:
 		Valueable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
 		Valueable<AffectedHouse> CanTargetHouses;
-
+		ValueableVector<int> Burst_Delays;
+		
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius(38.2)
 			, DiskLaser_Circumference(240)
@@ -38,6 +39,7 @@ public:
 			, Strafing_Shots(5)
 			, Strafing_SimulateBurst(false)
 			, CanTargetHouses(AffectedHouse::All)
+			, Burst_Delays()
 		{ }
 
 		virtual ~ExtData() = default;
