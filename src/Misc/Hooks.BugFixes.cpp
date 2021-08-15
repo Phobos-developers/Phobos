@@ -6,6 +6,7 @@
 #include <ScenarioClass.h>
 #include <VoxelAnimClass.h>
 #include <BulletClass.h>
+#include <Ext/Rules/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -195,4 +196,25 @@ DEFINE_HOOK(0x70D77F, TechnoClass_FireDeathWeapon_ProjectileFix, 0x8)
 	pBullet->Explode(true);
 
 	return 0x70D787;
+}
+
+// Fix [JumpjetControls] obsolete in RA2/YR
+// Author: Uranusian
+DEFINE_HOOK(0x7115AE, TechnoTypeClass_CTOR_JumpjetControls, 0xA)
+{
+	GET(TechnoTypeClass*, pThis, ESI);
+	auto pRules = RulesClass::Instance();
+	auto pRulesExt = RulesExt::Global();
+
+	pThis->JumpjetTurnRate = pRules->TurnRate;
+	pThis->JumpjetSpeed = pRules->Speed;
+	pThis->JumpjetClimb = (float)pRules->Climb;
+	pThis->JumpjetCrash = pRulesExt->JumpjetCrash;
+	pThis->JumpjetHeight = pRules->CruiseHeight;
+	pThis->JumpjetAccel = (float)pRules->Acceleration;
+	pThis->JumpjetWobbles = (float)pRules->WobblesPerSecond;
+	pThis->JumpjetNoWobbles = pRulesExt->JumpjetNoWobbles;
+	pThis->JumpjetDeviation = pRules->WobbleDeviation;
+
+	return 0x711601;
 }
