@@ -40,6 +40,7 @@ New:
 - Anim-to-Unit logic and ability to randomize DestroyAnim (by Otamaa)
 - Initial Strength for TechnoTypes (by Uranusian)
 - Re-enable obsolete `JumpjetControls` for TechnoTypes' default Jumpjet properties (by Uranusian)
+- Weapon targeting filter (by Uranusian)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
