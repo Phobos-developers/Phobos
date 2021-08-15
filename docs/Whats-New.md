@@ -42,6 +42,7 @@ New:
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
+- Fixed DeathWeapon not detonating properly (by Uranusian)
 
 Phobos fixes:
 - TBD

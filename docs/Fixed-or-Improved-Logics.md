@@ -31,6 +31,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 - Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode.
+- `DeathWeapon` now will properly detonate. 
+  - But still some settings are ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
 
 ## Technos
 
