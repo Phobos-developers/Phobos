@@ -5,6 +5,8 @@
 #include <UnitClass.h>
 #include <ScenarioClass.h>
 #include <VoxelAnimClass.h>
+#include <BulletClass.h>
+#include <Ext/Rules/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -160,7 +162,7 @@ DEFINE_HOOK(0x4FB2DE, HouseClass_PlaceObject_HotkeyFix, 0x6)
 	GET(TechnoClass*, pObject, ESI);
 
 	pObject->ClearSidebarTabObject();
-	
+
 	return 0;
 }
 
@@ -173,7 +175,7 @@ DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
 
 	if (pThis->GetTechnoType()->UndeploysInto)
 		pThis->SetRallypoint(pCell, false);
-	else if(pThis->IsUnitFactory())
+	else if (pThis->IsUnitFactory())
 		pThis->SetRallypoint(pCell, true);
 
 	return 0x4437AD;
@@ -182,3 +184,37 @@ DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
 // issue #232: Naval=yes overrides WaterBound=no and prevents move orders onto Land cells
 // Author: Uranusian
 DEFINE_LJMP(0x47CA05, 0x47CA33); // CellClass_IsClearToBuild_SkipNaval
+
+// bugfix: DeathWeapon not properly detonates
+// Author: Uranusian
+DEFINE_HOOK(0x70D77F, TechnoClass_FireDeathWeapon_ProjectileFix, 0x8)
+{
+	GET(BulletClass*, pBullet, EBX);
+	GET(CoordStruct*, pCoord, EAX);
+
+	pBullet->SetLocation(*pCoord);
+	pBullet->Explode(true);
+
+	return 0x70D787;
+}
+
+// Fix [JumpjetControls] obsolete in RA2/YR
+// Author: Uranusian
+DEFINE_HOOK(0x7115AE, TechnoTypeClass_CTOR_JumpjetControls, 0xA)
+{
+	GET(TechnoTypeClass*, pThis, ESI);
+	auto pRules = RulesClass::Instance();
+	auto pRulesExt = RulesExt::Global();
+
+	pThis->JumpjetTurnRate = pRules->TurnRate;
+	pThis->JumpjetSpeed = pRules->Speed;
+	pThis->JumpjetClimb = (float)pRules->Climb;
+	pThis->JumpjetCrash = pRulesExt->JumpjetCrash;
+	pThis->JumpjetHeight = pRules->CruiseHeight;
+	pThis->JumpjetAccel = (float)pRules->Acceleration;
+	pThis->JumpjetWobbles = (float)pRules->WobblesPerSecond;
+	pThis->JumpjetNoWobbles = pRulesExt->JumpjetNoWobbles;
+	pThis->JumpjetDeviation = pRules->WobbleDeviation;
+
+	return 0x711601;
+}

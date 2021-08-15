@@ -31,6 +31,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 - Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode.
+- `DeathWeapon` now will properly detonate. 
+  - But still some settings are ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
 
 ## Technos
 
@@ -54,6 +56,22 @@ ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter 
 ChronoRangeMinimum=     ; integer, can be used to set a small range within which the delay is constant
 ChronoDelay=            ; integer, delay after teleport for chronosphere
 
+```
+
+### Re-enable obsolete [JumpjetControls] 
+
+- Re-enable obsolete [JumpjetControls], the keys in it will be as the default value of jumpjet units.
+  - Moreover, added two tags for missing ones.
+
+In `rulesmd.ini`:
+```ini
+[JumpjetControls]
+Crash=5.0       ; float
+NoWabbles=no    ; bool
+```
+
+```{note}
+`CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
 ```
 
 ### Customizable harvester ore gathering animation

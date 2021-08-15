@@ -39,13 +39,15 @@ New:
 - LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)
 - Anim-to-Unit logic and ability to randomize DestroyAnim (by Otamaa)
 - Initial Strength for TechnoTypes (by Uranusian)
+- Re-enable obsolete `JumpjetControls` for TechnoTypes' default Jumpjet properties (by Uranusian)
 - Weapon targeting filter (by Uranusian)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
+- Fixed DeathWeapon not detonating properly (by Uranusian)
 
 Phobos fixes:
-- TBD
+- Fixed extended building upgrades logic not properly interact with Ares' BuildLimit check (by Uranusian)
 
 ### 0.2.2
 
