@@ -45,7 +45,7 @@ Vanilla fixes:
 - Fixed DeathWeapon not detonating properly (by Uranusian)
 
 Phobos fixes:
-- TBD
+- Fixed extended building upgrades logic not properly interact with Ares' BuildLimit check (by Uranusian)
 
 ### 0.2.2
 

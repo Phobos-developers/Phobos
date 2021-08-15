@@ -174,7 +174,7 @@ CreateUnit.Owner=Victim             ; owner house kind, Invoker/Killer/Victim/Ci
 
 - Building upgrades now can be placed on own buildings, on allied buildings and/or on enemy buildings. These three owners can be specified via a new tag, comma-separated. When upgrade is placed on building, it automatically changes it's owner to match the building's owner.
 - One upgrade can now be applied to multiple buildings via a new tag, comma-separated.
-  - Currently Ares-introduced build limit for building upgrades doesn't work with this feature. This may change in future.
+  - Ares-introduced build limit for building upgrades works with this feature. 
 
 In `rulesmd.ini`:
 ```ini
