@@ -99,6 +99,7 @@ int CountOwnedNowTotal(HouseClass const* const pHouse, TechnoTypeClass const* co
 		}
 
 		break;
+
 	default:
 		__assume(0);
 	}
