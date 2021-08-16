@@ -19,27 +19,29 @@ msgstr ""
 
 #: ../Miscellanous.md:1
 msgid "Miscellanous"
-msgstr ""
+msgstr "杂项"
 
 #: ../Miscellanous.md:3
 msgid ""
 "This page describes every change in Phobos that wasn't categorized into a"
 " proper category yet."
-msgstr ""
+msgstr "此页面列出了未分类的杂项内容。"
 
 #: ../Miscellanous.md:5
 msgid "Developer tools"
-msgstr ""
+msgstr "开发者工具"
 
 #: ../Miscellanous.md:7
 msgid "Dump Object Info"
-msgstr ""
+msgstr "输出目标信息"
 
 #: ../Miscellanous.md:9
 msgid ""
 "![image](_static/images/objectinfo-01.png)   *Object info dump from [CnC:"
 " Reloaded](https://www.moddb.com/mods/cncreloaded/)*"
 msgstr ""
+"![image](_static/images/objectinfo-01.png)   \n*目标信息输出，来自[CnC:"
+" Reloaded](https://www.moddb.com/mods/cncreloaded/)*"
 
 #: ../Miscellanous.md:9
 msgid "image"
@@ -49,26 +51,26 @@ msgstr ""
 msgid ""
 "There's a new hotkey to dump selected/hovered object info on press. "
 "Available only when the debug tag is set."
-msgstr ""
+msgstr "用以输出选择/悬浮目标信息的快捷键。仅当debug标签开启时启用。"
 
 #: ../Miscellanous.md:14
 msgid "In `rulesmd.ini`:"
-msgstr ""
+msgstr "在`rulesmd.ini`中："
 
 #: ../Miscellanous.md:20
 msgid "Semantic locomotor aliases"
-msgstr ""
+msgstr "运动模式别称"
 
 #: ../Miscellanous.md:22
 msgid ""
 "It's now possible to write locomotor aliases instead of their CLSIDs in "
 "the `Locomotor` tag value. Use the table below to find the needed alias "
 "for a locomotor."
-msgstr ""
+msgstr "现在可以用指定的文字代替原本的CLSID，可以更加一目了然的编辑`Locomotor`。"
 
 #: ../Miscellanous.md
 msgid "*Alias*"
-msgstr ""
+msgstr "*别称*"
 
 #: ../Miscellanous.md
 msgid "*CLSID*"

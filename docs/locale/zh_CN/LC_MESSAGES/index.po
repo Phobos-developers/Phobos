@@ -51,7 +51,7 @@ msgstr "用户界面"
 
 #: ../index.md:10
 msgid "Miscellanous"
-msgstr "其它"
+msgstr "杂项"
 
 #: ../index.md:10
 msgid "Extension Documentation"
