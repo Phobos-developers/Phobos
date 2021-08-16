@@ -17,7 +17,7 @@
 // 6D3470 = TacticalClass_DrawFoggedObject, 8
 // 51F97C = InfantryClass_MouseOverCell_OverFog, 5
 
-DEFINE_HOOK(0x4ACE3C, MapClass_TryReshroudCell_SetCopyFlag, 0x6)
+DEFINE_HOOK(0x4ACE3C, MapClass_TryReshroudCell_SetCopyFlag, 0x6) // confirmed
 {
 	GET(CellClass*, pCell, EAX);
 
@@ -34,7 +34,7 @@ DEFINE_HOOK(0x4ACE3C, MapClass_TryReshroudCell_SetCopyFlag, 0x6)
 	return 0x4ACE57;
 }
 
-DEFINE_HOOK(0x4A9CA0, MapClass_RevealFogShroud, 0x7)
+DEFINE_HOOK(0x4A9CA0, MapClass_RevealFogShroud, 0x7) // confirmed
 {
 	// GET(MapClass*, pMap, ECX);
 	GET_STACK(CellStruct*, pCell, 0x4);
@@ -46,27 +46,31 @@ DEFINE_HOOK(0x4A9CA0, MapClass_RevealFogShroud, 0x7)
 	return 0x4A9DC6;
 }
 
-DEFINE_HOOK(0x486BF0, CellClass_CleanFog, 0x9)
+DEFINE_HOOK(0x486BF0, CellClass_CleanFog, 0x9) // confirmed
 {
 	GET(CellClass*, pCell_, ECX);
 
-	auto pLocation = pCell_->MapCoords;
+	auto location = pCell_->MapCoords;
 	for (int i = 1; i < 15; i += 2)
 	{
-		auto pCell = MapClass::Instance->GetCellAt(pLocation);
+		auto pCell = MapClass::Instance->GetCellAt(location);
 		if (pCell && pCell->Level >= i - 2 && pCell->Level <= i)
 		{
 			pCell->Flags &= ~cf_Fogged;
 			FogOfWar::ClearFoggedObjects(pCell);
-			++pLocation.X;
-			++pLocation.Y;
+
+			RectangleStruct Dirty;
+			pCell->GetContainingRect(&Dirty);
+			TacticalClass::Instance->RegisterDirtyArea(Dirty, true);
 		}
+		++location.X;
+		++location.Y;
 	}
 
 	return 0x486C4C;
 }
 
-DEFINE_HOOK(0x486A70, CellClass_FogCell, 0x5)
+DEFINE_HOOK(0x486A70, CellClass_FogCell, 0x5) // confirmed
 {
 	GET(CellClass*, pCell_, ECX);
 	auto location = pCell_->MapCoords;
@@ -118,7 +122,7 @@ DEFINE_HOOK(0x486A70, CellClass_FogCell, 0x5)
 	return 0x486BE6;
 }
 
-DEFINE_HOOK(0x440B8D, BuildingClass_Put_CheckFog, 0x6)
+DEFINE_HOOK(0x440B8D, BuildingClass_Put_CheckFog, 0x6) // confirmed
 {
 	GET(BuildingClass*, pBuilding, ESI);
 
@@ -128,7 +132,7 @@ DEFINE_HOOK(0x440B8D, BuildingClass_Put_CheckFog, 0x6)
 	return 0x440C08;
 }
 
-DEFINE_HOOK(0x486C50, CellClass_ClearFoggedObjects, 0x6)
+DEFINE_HOOK(0x486C50, CellClass_ClearFoggedObjects, 0x6) // confirmed
 {
 	GET(CellClass*, pCell, ECX);
 
@@ -174,9 +178,8 @@ DEFINE_HOOK(0x70076E, TechnoClass_GetCursorOverCell_OverFog, 0x5)
 	return 0x700800;
 }
 
-DEFINE_HOOK(0x6D3470, TacticalClass_DrawFoggedObject, 0x8)
+DEFINE_HOOK(0x6D3470, TacticalClass_DrawFoggedObject, 0x8) // confirmed
 {
-	GET(TacticalClass*, pTactical, ECX);
 	// auto const pTactical = TacticalClass::Instance;
 	GET_STACK(RectangleStruct*, pRect1, 0x4);
 	GET_STACK(RectangleStruct*, pRect2, 0x8);
@@ -197,13 +200,13 @@ DEFINE_HOOK(0x6D3470, TacticalClass_DrawFoggedObject, 0x8)
 		if (pRect2->Width > 0 && pRect2->Height > 0)
 			FogOfWar::UnionRectangle(&rect, pRect2);
 
-		if (auto& nVisibleCellCount = pTactical->VisibleCellCount)
+		if (auto& nVisibleCellCount = TacticalClass::Instance->VisibleCellCount)
 		{
 			buffer.Width = buffer.Height = 60;
 
 			for (int i = 0; i < nVisibleCellCount; ++i)
 			{
-				auto const pCell = pTactical->VisibleCells[i];
+				auto const pCell = TacticalClass::Instance->VisibleCells[i];
 				auto location = pCell->GetCoords();
 				Point2D point;
 				TacticalClass::Instance->CoordsToClient(location, &point);

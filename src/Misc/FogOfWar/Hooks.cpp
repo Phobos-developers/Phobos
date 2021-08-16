@@ -1,5 +1,7 @@
 #include "FogOfWar.h"
 
+#include <Utilities/Macro.h>
+
 // ;; loading
 // 6B8E7A = ScenarioClass_LoadSpecialFlags, 6
 // 686C03 = SetScenarioFlags_FogOfWar, 5
@@ -130,3 +132,5 @@ DEFINE_HOOK(0x5865E2, IsLocationFogged, 0x5)
 	
 	return 0;
 }
+
+DEFINE_POINTER_LJMP(0x567DA0, FogOfWar::MapClass_Reveal2);

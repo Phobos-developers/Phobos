@@ -22,6 +22,8 @@ FoggedObject::FoggedObject(AbstractType rtti, CoordStruct& location, RectangleSt
 		auto const pExt = CellExt::ExtMap.Find(pCell);
 		pExt->FoggedObjects.push_back(this);
 	}
+
+	InitComparator();
 }
 
 FoggedObject::FoggedObject(ObjectClass* pObject)
@@ -41,6 +43,8 @@ FoggedObject::FoggedObject(ObjectClass* pObject)
 		auto const pExt = CellExt::ExtMap.Find(pCell);
 		pExt->FoggedObjects.push_back(this);
 	}
+
+	InitComparator();
 }
 
 FoggedObject::~FoggedObject()
@@ -107,6 +111,8 @@ FoggedSmudge::FoggedSmudge(CellClass* pCell, int smudge, unsigned char smudgeDat
 
 	auto const pExt = CellExt::ExtMap.Find(pCell);
 	pExt->FoggedObjects.push_back(this);
+
+	InitComparator();
 }
 
 FoggedSmudge::~FoggedSmudge()
@@ -271,6 +277,8 @@ FoggedOverlay::FoggedOverlay(CellClass* pCell, int overlay, unsigned char overla
 
 	auto const pExt = CellExt::ExtMap.Find(pCell);
 	pExt->FoggedObjects.push_back(this);
+
+	InitComparator();
 }
 
 FoggedOverlay::~FoggedOverlay()

@@ -4,7 +4,7 @@
 // issue #28 : Fix vanilla YR Fog of War bugs & issues
 // Reimplement it would be nicer.
 
-std::unordered_set<FoggedObject*> FogOfWar::FoggedObjects;
+std::set<FoggedObject*> FogOfWar::FoggedObjects;
 
 void FogOfWar::Reveal_DisplayClass_All_To_Look_Ground(TechnoClass* pTechno, DWORD dwUnk, DWORD dwUnk2)
 {
@@ -46,32 +46,32 @@ bool FogOfWar::MapClass_RevealFogShroud(CellStruct* pMapCoords, HouseClass* pHou
 {
 	auto pCell = MapClass::Instance->GetCellAt(*pMapCoords);
 	bool bUnk = pCell->Flags & 2;
-	bool bUnk2 = bUnk || (pCell->CopyFlags & 8) == 0;
+	bool bUnk2 = !bUnk || (pCell->CopyFlags & 8) == 0;
 	bool bRevealCheckParam = bUnk2;
 
 	pCell->Flags = pCell->Flags & 0xFFFFFFBF | 2;
 	pCell->CopyFlags = pCell->CopyFlags & 0xFFFFFFBF | 8;
 
-	char cVisibility = TacticalClass::Instance->GetOcclusion(*pMapCoords, false);
-	char cVisibility2 = pCell->Visibility;
-	if (cVisibility2 != cVisibility)
+	char Occlusion = TacticalClass::Instance->GetOcclusion(*pMapCoords, false);
+	char Visibility = pCell->Visibility;
+	if (Visibility != Occlusion)
 	{
-		cVisibility2 = cVisibility;
+		Visibility = Occlusion;
 		bUnk2 = true;
-		pCell->Visibility = cVisibility;
+		pCell->Visibility = Occlusion;
 	}
-	if (cVisibility2 == -1)
+	if (Visibility == -1)
 		pCell->CopyFlags |= 0x10;
 
-	char cFoggedness = TacticalClass::Instance->GetOcclusion(*pMapCoords, true);
-	char cFoggedness2 = pCell->Foggedness;
-	if (cFoggedness2 != cFoggedness)
+	char FoggedOcclusion = TacticalClass::Instance->GetOcclusion(*pMapCoords, true);
+	char Foggedness = pCell->Foggedness;
+	if (Foggedness != FoggedOcclusion)
 	{
-		cFoggedness2 = cFoggedness;
+		Foggedness = FoggedOcclusion;
 		bUnk2 = true;
-		pCell->Foggedness = cFoggedness;
+		pCell->Foggedness = FoggedOcclusion;
 	}
-	if (cFoggedness2 == -1)
+	if (Foggedness == -1)
 		pCell->Flags |= 0x1;
 
 	if (bUnk2)
@@ -150,4 +150,10 @@ void FogOfWar::UnionRectangle(RectangleStruct* rect1, RectangleStruct* rect2)
     rect.Width = std::max(rect1->X + rect1->Width, rect2->X + rect2->Width) - rect.X;
     rect.Height = std::max(rect1->Y + rect1->Height, rect2->Y + rect2->Height) - rect.Y;
     *rect1 = rect;
+}
+
+void __fastcall FogOfWar::MapClass_Reveal2(MapClass* pThis, void*_, CoordStruct* Coords, int Height, int Radius, int SkipReveal)
+{
+	MapRevealer revealer(*Coords);
+	revealer.UpdateShroud(static_cast<size_t>(std::max(Height, 0)), static_cast<size_t>(std::max(Radius, 0)), SkipReveal);
 }

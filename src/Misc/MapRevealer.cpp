@@ -1,6 +1,7 @@
 #include "MapRevealer.h"
 
 #include <MouseClass.h>
+#include <ScenarioClass.h>
 
 MapRevealer::MapRevealer(const CoordStruct& coords) :
 	BaseCell(this->TranslateBaseCell(coords)),
@@ -88,13 +89,33 @@ void MapRevealer::UpdateShroud(size_t start, size_t radius, bool fog) const
 
 			auto const pCell = MapClass::Instance->GetCellAt(cell);
 
-			auto shroudedness = TacticalClass::Instance->GetOcclusion(cell, false);
-			if (pCell->Foggedness != shroudedness)
+			bool bFlag = false;
+			if (pCell->Visibility != 0xFF)
 			{
-				pCell->Foggedness = static_cast<char>(shroudedness);
-				pCell->VisibilityChanged = true;
-				TacticalClass::Instance->RegisterCellAsVisible(pCell);
+				auto Occulusion = TacticalClass::Instance->GetOcclusion(cell, false);
+				if (pCell->Visibility != Occulusion)
+				{
+					pCell->Visibility = Occulusion;
+					pCell->VisibilityChanged = true;
+					bFlag = true;
+				}
 			}
+
+			if (!ScenarioClass::Instance->SpecialFlags.FogOfWar && !bFlag)
+				continue;
+
+			if (pCell->Foggedness != 0xFF)
+			{
+				auto FoggedOcclusion = TacticalClass::Instance->GetOcclusion(cell, true);
+				if (pCell->Foggedness != FoggedOcclusion)
+				{
+					pCell->Foggedness = FoggedOcclusion;
+					bFlag = true;
+				}
+			}
+
+			if(bFlag) TacticalClass::Instance->RegisterCellAsVisible(pCell);
+
 		}
 	}
 }

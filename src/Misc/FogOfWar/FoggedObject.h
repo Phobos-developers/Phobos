@@ -11,6 +11,7 @@ public:
 	CoordStruct Location;
 	RectangleStruct Bound;
 	bool Translucent;
+	int Comparator;
 
 public:
 	FoggedObject(AbstractType rtti, CoordStruct& location, RectangleStruct& bound);
@@ -23,6 +24,19 @@ public:
 	virtual BuildingTypeClass* GetBuildingType();
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	virtual bool Save(PhobosStreamWriter& Stm) const;
+
+	void InitComparator()
+	{
+		// Don't ask me why, WW did this - secsome
+		auto PixelX = (__int16)(this->Location.X / 256);
+		auto PixelY = (__int16)(this->Location.Y / 256);
+		Comparator = 74 * (PixelY - ((PixelX + PixelY) << 9) - PixelX) - (int)this->CoveredRTTIType + 0x7FFFFFFF;
+	}
+
+	bool operator< (const FoggedObject& another) const
+	{
+		return Comparator < another.Comparator;
+	}
 };
 
 class FoggedSmudge : public FoggedObject

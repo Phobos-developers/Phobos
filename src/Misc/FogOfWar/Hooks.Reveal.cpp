@@ -6,8 +6,7 @@
 // 586683 = CellClass_DiscoverTechno, 5
 // 4FC1FF = HouseClass_AcceptDefeat_CleanShroudFog, 6
 
-// MapClass_RevealShroud as Xkein said
-DEFINE_HOOK(0x4ADFF0, DisplayClass_All_To_Look_Ground, 0x5) 
+DEFINE_HOOK(0x4ADFF0, MapClass_RevealShroud, 0x5)
 {
 	// GET(DisplayClass*, pDisplay, ECX);
 	GET_STACK(DWORD, dwUnk, 0x4);
@@ -20,7 +19,7 @@ DEFINE_HOOK(0x4ADFF0, DisplayClass_All_To_Look_Ground, 0x5)
 	return 0x4AE0A5;
 }
 
-DEFINE_HOOK(0x577EBF, MapClass_Reveal, 0x6)
+DEFINE_HOOK(0x577EBF, MapClass_Reveal, 0x6) // confirmed
 {
 	GET(CellClass*, pCell, EAX);
 

@@ -19,5 +19,7 @@ public:
     // Result will be stored in rect1
 	static void UnionRectangle(RectangleStruct* rect1, RectangleStruct* rect2);
 
-	static std::unordered_set<FoggedObject*> FoggedObjects;
+	static void __fastcall MapClass_Reveal2(MapClass* pThis, void*_, CoordStruct* Coords, int Height, int Radius, int SkipReveal);
+
+	static std::set<FoggedObject*> FoggedObjects;
 };
