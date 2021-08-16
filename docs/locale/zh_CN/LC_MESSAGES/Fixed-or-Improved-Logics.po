@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../Fixed-or-Improved-Logics.md:1
 msgid "Fixed / Improved Logics"
-msgstr "修复或增强的逻辑"
+msgstr "修复或改进的逻辑"
 
 #: ../Fixed-or-Improved-Logics.md:3
 msgid ""
