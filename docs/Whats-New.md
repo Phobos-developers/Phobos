@@ -256,7 +256,7 @@ New:
 - Customizable projectile gravity (by secsome)
 - Gates can now link with walls correctly via `NSGates` or `EWGates` (by Uranusian)
 - Per-warhead toggle for decloak of damaged targets (by Starkku)
-- `DeployFireWeapon=-1` will allow the deployed infantry use both weapon as undeployed (by Uranusian)
+- `DeployFireWeapon=-1` now allows the deployed infantries using both weapons as undeployed (by Uranusian)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
