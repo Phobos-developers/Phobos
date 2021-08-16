@@ -1,6 +1,13 @@
 #include "FogOfWar.h"
 
-#include <Utilities/Macro.h>
+#include <Helpers/Macro.h>
+
+#include <AnimClass.h>
+#include <CellClass.h>
+#include <FootClass.h>
+#include <ScenarioClass.h>
+#include <GameModeOptionsClass.h>
+#include <TerrainClass.h>
 
 // ;; loading
 // 6B8E7A = ScenarioClass_LoadSpecialFlags, 6
@@ -37,8 +44,7 @@ DEFINE_HOOK(0x6B8E7A, ScenarioClass_LoadSpecialFlags, 0x5)
 {
 	GET(ScenarioClass*, pScenario, ESI);
 
-	pScenario->SpecialFlags.FogOfWar = true;
-		//RulesClass::Instance->FogOfWar || R->EAX() || GameModeOptionsClass::Instance->FogOfWar;
+	pScenario->SpecialFlags.FogOfWar = RulesClass::Instance->FogOfWar || R->EAX() || GameModeOptionsClass::Instance->FogOfWar;
 	
 	R->ECX(R->EDI());
 
@@ -49,7 +55,7 @@ DEFINE_HOOK(0x686C03, SetScenarioFlags_FogOfWar, 0x5)
 {
 	GET(ScenarioFlags, SFlags, EAX);
 
-	SFlags.FogOfWar = true;// RulesClass::Instance->FogOfWar || GameModeOptionsClass::Instance->FogOfWar;
+	SFlags.FogOfWar = RulesClass::Instance->FogOfWar || GameModeOptionsClass::Instance->FogOfWar;
 	R->EDX<int>(*reinterpret_cast<int*>(&SFlags)); // stupid!
 
 	return 0x686C0E;
@@ -57,24 +63,35 @@ DEFINE_HOOK(0x686C03, SetScenarioFlags_FogOfWar, 0x5)
 
 DEFINE_HOOK(0x5F4B3E, ObjectClass_DrawIfVisible, 0x6)
 {
-	GET(ObjectClass*, pObject, ESI);
-	
+	GET(ObjectClass*, pThis, ESI);
+
 	enum { Skip = 0x5F4B7F, SkipWithDrawn = 0x5F4D06, DefaultProcess = 0x5F4B48 };
 
-	if (pObject->InLimbo)
+	if (pThis->InLimbo)
 		return Skip;
 
-	if(!ScenarioClass::Instance->SpecialFlags.FogOfWar)
-		return DefaultProcess;
-	
-	if(pObject->WhatAmI()== AbstractType::Cell)
+	if (!ScenarioClass::Instance->SpecialFlags.FogOfWar)
 		return DefaultProcess;
 
-	auto coord = pObject->GetCoords();
-	if (!FogOfWar::IsLocationFogged(&coord))
+	switch (pThis->WhatAmI())
+	{
+	case AbstractType::Anim:
+	{
+		auto pAnim = abstract_cast<AnimClass*>(pThis);
+		auto& pAnimType = pAnim->Type;
+		if (pAnimType && !pAnimType->ShouldFogRemove)
+			return DefaultProcess;
+		break;
+	}
+	/*case AbstractType::Cell:
+		return DefaultProcess;*/
+	}
+
+	auto coords = pThis->GetCoords();
+	if (!FogOfWar::IsLocationFogged(&coords))
 		return DefaultProcess;
 
-	pObject->NeedsRedraw = false;
+	pThis->NeedsRedraw = false;
 	return SkipWithDrawn;
 }
 
@@ -119,9 +136,8 @@ DEFINE_HOOK(0x71CC8C, TerrainClass_DrawIfVisible, 0x6)
 	GET(TerrainClass*, pTerrain, EDI);
 
 	auto coord = pTerrain->GetCoords();
-	if (pTerrain->InLimbo || FogOfWar::IsLocationFogged(&coord))
-		return 0x71CD8D;
-	return 0x71CC9A;
+
+	return pTerrain->InLimbo || FogOfWar::IsLocationFogged(&coord) ? 0x71CD8D : 0x71CC9A;
 }
 
 DEFINE_HOOK(0x5865E2, IsLocationFogged, 0x5)
@@ -132,5 +148,3 @@ DEFINE_HOOK(0x5865E2, IsLocationFogged, 0x5)
 	
 	return 0;
 }
-
-DEFINE_POINTER_LJMP(0x567DA0, FogOfWar::MapClass_Reveal2);

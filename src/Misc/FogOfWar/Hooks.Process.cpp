@@ -1,6 +1,17 @@
 #include "FogOfWar.h"
 
+#include "FoggedObject.h"
+
+#include <Helpers/Macro.h>
+
 #include <InfantryClass.h>
+#include <TerrainClass.h>
+#include <ScenarioClass.h>
+#include <TacticalClass.h>
+#include <HouseClass.h>
+#include <Drawing.h>
+
+#include <Ext/Cell/Body.h>
 
 // ; process cell
 // ;//4ACBC2 = MapClass_UpdateFogOnMap, 7
@@ -17,7 +28,7 @@
 // 6D3470 = TacticalClass_DrawFoggedObject, 8
 // 51F97C = InfantryClass_MouseOverCell_OverFog, 5
 
-DEFINE_HOOK(0x4ACE3C, MapClass_TryReshroudCell_SetCopyFlag, 0x6) // confirmed
+DEFINE_HOOK(0x4ACE3C, MapClass_TryReshroudCell_SetCopyFlag, 0x6)
 {
 	GET(CellClass*, pCell, EAX);
 
@@ -34,19 +45,17 @@ DEFINE_HOOK(0x4ACE3C, MapClass_TryReshroudCell_SetCopyFlag, 0x6) // confirmed
 	return 0x4ACE57;
 }
 
-DEFINE_HOOK(0x4A9CA0, MapClass_RevealFogShroud, 0x7) // confirmed
+DEFINE_HOOK(0x4A9CA0, MapClass_RevealFogShroud, 0x7)
 {
-	// GET(MapClass*, pMap, ECX);
 	GET_STACK(CellStruct*, pCell, 0x4);
 	GET_STACK(HouseClass*, dwUnk, 0x8);
-	// GET_STACK(bool, bUnk, 0xC);
 
 	R->EAX(FogOfWar::MapClass_RevealFogShroud(pCell, dwUnk));
 
 	return 0x4A9DC6;
 }
 
-DEFINE_HOOK(0x486BF0, CellClass_CleanFog, 0x9) // confirmed
+DEFINE_HOOK(0x486BF0, CellClass_CleanFog, 0x9)
 {
 	GET(CellClass*, pCell_, ECX);
 
@@ -70,45 +79,58 @@ DEFINE_HOOK(0x486BF0, CellClass_CleanFog, 0x9) // confirmed
 	return 0x486C4C;
 }
 
-DEFINE_HOOK(0x486A70, CellClass_FogCell, 0x5) // confirmed
+DEFINE_HOOK(0x486A70, CellClass_FogCell, 0x5)
 {
-	GET(CellClass*, pCell_, ECX);
-	auto location = pCell_->MapCoords;
+	if (HouseClass::Player->IsObserver() || HouseClass::Player->Defeated)
+		return 0x486BE6;
+
+	GET(CellClass*, pThis, ECX);
+
 	if (ScenarioClass::Instance->SpecialFlags.FogOfWar)
 	{
+		auto location = pThis->MapCoords;
 		for (int i = 1; i < 15; i += 2)
 		{
 			auto pCell = MapClass::Instance->GetCellAt(location);
 			auto nLevel = pCell->Level;
+
 			if (nLevel >= i - 2 && nLevel <= i)
 			{
-				if ((pCell->Flags & cf_Fogged) == 0)
+				if (!(pCell->Flags & cf_Fogged))
 				{
 					pCell->Flags |= cf_Fogged;
+
 					for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 					{
 						switch (pObject->WhatAmI())
-						{ // foots under the fog won't be drawn
+						{
 						case AbstractType::Unit:
 						case AbstractType::Infantry:
 						case AbstractType::Aircraft:
 							pObject->Deselect();
 							break;
+
 						case AbstractType::Building:
 							if (auto pBld = abstract_cast<BuildingClass*>(pObject))
 								if (pBld->IsBuildingFogged())
-									GameCreate<FoggedBuilding>(pBld, pBld->IsStrange() || pBld->Translucency);
+									GameCreate<FoggedBuilding>(pBld, true);
 							break;
+
 						case AbstractType::Terrain:
-							if (auto pTer = abstract_cast<TerrainClass*>(pObject))
-								GameCreate<FoggedTerrain>(pTer, pTer->Type->ArrayIndex);
+							if (auto pTerrain = abstract_cast<TerrainClass*>(pObject))
+							{
+								auto& pType = pTerrain->Type;
+								GameCreate<FoggedTerrain>(pTerrain, pType->ArrayIndex, pType->IsAnimated ? pTerrain->Animation.Value : 0);
+							}
 							break;
+
 						default:
 							continue;
 						}
 					}
 					if (pCell->OverlayTypeIndex != -1)
 						GameCreate<FoggedOverlay>(pCell, pCell->OverlayTypeIndex, pCell->Powerup);
+					
 					if (pCell->SmudgeTypeIndex != -1 && !pCell->SmudgeData)
 						GameCreate<FoggedSmudge>(pCell, pCell->SmudgeTypeIndex, pCell->SmudgeData);
 				}
@@ -122,7 +144,7 @@ DEFINE_HOOK(0x486A70, CellClass_FogCell, 0x5) // confirmed
 	return 0x486BE6;
 }
 
-DEFINE_HOOK(0x440B8D, BuildingClass_Put_CheckFog, 0x6) // confirmed
+DEFINE_HOOK(0x440B8D, BuildingClass_Put_CheckFog, 0x6)
 {
 	GET(BuildingClass*, pBuilding, ESI);
 
@@ -132,7 +154,7 @@ DEFINE_HOOK(0x440B8D, BuildingClass_Put_CheckFog, 0x6) // confirmed
 	return 0x440C08;
 }
 
-DEFINE_HOOK(0x486C50, CellClass_ClearFoggedObjects, 0x6) // confirmed
+DEFINE_HOOK(0x486C50, CellClass_ClearFoggedObjects, 0x6)
 {
 	GET(CellClass*, pCell, ECX);
 
@@ -141,53 +163,15 @@ DEFINE_HOOK(0x486C50, CellClass_ClearFoggedObjects, 0x6) // confirmed
 	return 0x486D8A;
 }
 
-DEFINE_HOOK(0x70076E, TechnoClass_GetCursorOverCell_OverFog, 0x5)
+DEFINE_HOOK(0x6D3470, TacticalClass_DrawFoggedObject, 0x8)
 {
-	GET(CellClass*, pCell, EBP);
-
-	auto pCellExt = CellExt::ExtMap.Find(pCell);
-
-	if(pCellExt->FoggedObjects.size() == 0)
-		return 0x700800;
-	
-	for (auto& fogged : pCellExt->FoggedObjects)
-	{
-		if (fogged->Translucent)
-		{
-			if (fogged->CoveredRTTIType == AbstractType::Overlay)
-			{
-				int nOverlayIdx = fogged->GetType();
-				if (nOverlayIdx >= 0)
-				{
-					R->Stack(STACK_OFFS(0x2C, 0x14), nOverlayIdx);
-					break;
-				}
-			}
-			else if (fogged->CoveredRTTIType == AbstractType::Building)
-			{
-				auto pBld = static_cast<FoggedBuilding*>(fogged);
-				if (!pBld->Owner || !HouseClass::Player->IsAlliedWith(pBld->Owner))
-				{
-					R->Stack(STACK_OFFS(0x2C, 0x19), true);
-					break;
-				}
-			}
-		}
-	}
-
-	return 0x700800;
-}
-
-DEFINE_HOOK(0x6D3470, TacticalClass_DrawFoggedObject, 0x8) // confirmed
-{
-	// auto const pTactical = TacticalClass::Instance;
 	GET_STACK(RectangleStruct*, pRect1, 0x4);
 	GET_STACK(RectangleStruct*, pRect2, 0x8);
 	GET_STACK(bool, bUkn, 0xC);
 
 	// Draw them
 
-	RectangleStruct rect{ 0,0,0,0 };
+	RectangleStruct rect { 0,0,0,0 };
 
 	if (bUkn && DSurface::ViewBounds->Width > 0 && DSurface::ViewBounds->Height > 0)
 		FogOfWar::UnionRectangle(&rect, &DSurface::ViewBounds());
@@ -215,7 +199,7 @@ DEFINE_HOOK(0x6D3470, TacticalClass_DrawFoggedObject, 0x8) // confirmed
 				FogOfWar::UnionRectangle(&rect, &buffer);
 			}
 		}
-		
+
 		for (auto& dirty : Drawing::DirtyAreas())
 		{
 			buffer = dirty.Rect;
@@ -233,10 +217,50 @@ DEFINE_HOOK(0x6D3470, TacticalClass_DrawFoggedObject, 0x8) // confirmed
 		rect.Height = std::min(rect.Height, DSurface::ViewBounds->Height - rect.Y);
 
 		for (auto pFoggedObj : FogOfWar::FoggedObjects)
-			FogOfWar::DrawIfVisible(pFoggedObj, &rect);
+			if (pFoggedObj->CoveredRTTIType == AbstractType::Building)
+				FogOfWar::DrawBldIfVisible(static_cast<FoggedBuilding*>(pFoggedObj), &rect);
+			else
+				FogOfWar::DrawIfVisible(pFoggedObj, &rect);
 	}
 
 	return 0x6D3650;
+}
+
+DEFINE_HOOK(0x70076E, TechnoClass_GetCursorOverCell_OverFog, 0x5)
+{
+	GET(CellClass*, pCell, EBP);
+
+	auto pCellExt = CellExt::ExtMap.Find(pCell);
+
+	if(pCellExt->FoggedObjects.size() == 0)
+		return 0x700800;
+	
+	for (auto& fogged : pCellExt->FoggedObjects)
+	{
+		if (fogged->Visible)
+		{
+			if (fogged->CoveredRTTIType == AbstractType::Overlay)
+			{
+				int nOverlayIdx = fogged->GetType();
+				if (nOverlayIdx >= 0)
+				{
+					R->Stack(STACK_OFFS(0x2C, 0x14), nOverlayIdx);
+					break;
+				}
+			}
+			else if (fogged->CoveredRTTIType == AbstractType::Building)
+			{
+				auto pBld = static_cast<FoggedBuilding*>(fogged);
+				if (!pBld->Owner || !HouseClass::Player->IsAlliedWith(pBld->Owner))
+				{
+					R->Stack(STACK_OFFS(0x2C, 0x19), true);
+					break;
+				}
+			}
+		}
+	}
+
+	return 0x700800;
 }
 
 DEFINE_HOOK(0x51F97C, InfantryClass_MouseOverCell_OverFog, 0x5)
@@ -251,7 +275,7 @@ DEFINE_HOOK(0x51F97C, InfantryClass_MouseOverCell_OverFog, 0x5)
 
 	for (auto& fogged : pCellExt->FoggedObjects)
 	{
-		if (fogged->Translucent && fogged->CoveredRTTIType == AbstractType::Building)
+		if (fogged->Visible && fogged->CoveredRTTIType == AbstractType::Building)
 		{
 			pBld = fogged->GetBuildingType();
 			pCoord = &fogged->Location;

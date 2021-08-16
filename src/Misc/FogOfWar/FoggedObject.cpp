@@ -1,5 +1,7 @@
 #include "FoggedObject.h"
 
+#include <AnimClass.h>
+#include <AnimTypeClass.h>
 #include <TacticalClass.h>
 #include <Surface.h>
 #include <SmudgeClass.h>
@@ -11,40 +13,22 @@
 
 #include "FogOfWar.h"
 
-FoggedObject::FoggedObject(AbstractType rtti, CoordStruct& location, RectangleStruct& bound)
-	: CoveredRTTIType{ rtti }, Location{ location }, Bound{ bound }, Translucent{ true }
-{
-	auto const pCell = MapClass::Instance->TryGetCellAt(location);
-	if (pCell)
-	{
-		FogOfWar::FoggedObjects.insert(this);
-
-		auto const pExt = CellExt::ExtMap.Find(pCell);
-		pExt->FoggedObjects.push_back(this);
-	}
-
-	InitComparator();
-}
+#include <Ext/Cell/Body.h>
+#include <Ext/AnimType/Body.h>
 
 FoggedObject::FoggedObject(ObjectClass* pObject)
 {
-	auto const pCell = pObject->GetCell();
-	if (pCell)
-	{
-		pCell->GetCoords(&this->Location);
-		pObject->GetRenderDimensions(&this->Bound); // __get_render_dimensions
-		this->Bound.X += TacticalClass::Instance->TacticalPos.X;
-		this->Bound.Y += TacticalClass::Instance->TacticalPos.Y;
-		this->CoveredRTTIType = pObject->WhatAmI();
-		this->Translucent = true;
+	pObject->GetCoords(&this->Location);
+	pObject->GetRenderDimensions(&this->Bound);
+	this->Bound.X += TacticalClass::Instance->TacticalPos.X;
+	this->Bound.Y += TacticalClass::Instance->TacticalPos.Y;
+	this->CoveredRTTIType = pObject->WhatAmI();
+	this->Visible = true;
 
-		FogOfWar::FoggedObjects.insert(this);
+	FogOfWar::FoggedObjects.insert(this);
 
-		auto const pExt = CellExt::ExtMap.Find(pCell);
-		pExt->FoggedObjects.push_back(this);
-	}
-
-	InitComparator();
+	auto const pExt = CellExt::ExtMap.Find(pObject->GetCell());
+	pExt->FoggedObjects.push_back(this);
 }
 
 FoggedObject::~FoggedObject()
@@ -68,7 +52,7 @@ bool FoggedObject::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->CoveredRTTIType)
 		.Process(this->Location)
 		.Process(this->Bound)
-		.Process(this->Translucent)
+		.Process(this->Visible)
 		.Success();
 }
 
@@ -78,24 +62,17 @@ bool FoggedObject::Save(PhobosStreamWriter& Stm) const
 		.Process(this->CoveredRTTIType)
 		.Process(this->Location)
 		.Process(this->Bound)
-		.Process(this->Translucent)
+		.Process(this->Visible)
 		.Success();
-}
-
-FoggedSmudge::FoggedSmudge(CoordStruct& location, RectangleStruct& bound, int smudge)
-	: FoggedObject(AbstractType::Smudge, location, bound), Smudge{ smudge }
-{
 }
 
 FoggedSmudge::FoggedSmudge(CellClass* pCell, int smudge, unsigned char smudgeData)
 {
-	this->CoveredRTTIType = AbstractType::Smudge;
 	pCell->GetCoords(&this->Location);
-	this->Translucent = true;
-	
+	this->Location.Z = pCell->Level * 104;
 	Point2D position;
 	TacticalClass::Instance->CoordsToClient(this->Location, &position);
-	
+
 	this->Bound.X = position.X - 30;
 	this->Bound.Y = position.Y - 15;
 	this->Bound.Width = 60;
@@ -106,13 +83,13 @@ FoggedSmudge::FoggedSmudge(CellClass* pCell, int smudge, unsigned char smudgeDat
 
 	this->Smudge = smudge;
 	this->SmudgeData = smudgeData;
+	this->CoveredRTTIType = AbstractType::Smudge;
+	this->Visible = true;
 
 	FogOfWar::FoggedObjects.insert(this);
 
 	auto const pExt = CellExt::ExtMap.Find(pCell);
 	pExt->FoggedObjects.push_back(this);
-
-	InitComparator();
 }
 
 FoggedSmudge::~FoggedSmudge()
@@ -120,26 +97,26 @@ FoggedSmudge::~FoggedSmudge()
 	this->FoggedObject::~FoggedObject();
 }
 
-void FoggedSmudge::Draw(RectangleStruct & rect)
+void FoggedSmudge::Draw(RectangleStruct& rect)
 {
 	auto const pSmudge = SmudgeTypeClass::Array->GetItem(this->Smudge);
-	if (auto const pShapeData = pSmudge->GetImage())
+	if (auto& pImage = pSmudge->Image)
 	{
-		auto const pCell = MapClass::Instance->TryGetCellAt(this->Location);
+		auto const pCell = MapClass::Instance->GetCellAt(this->Location);
 		if (!pCell->LightConvert)
-			pCell->InitLightConvert(0, 0x10000, 0, 1000, 1000, 1000);
-
-		Point2D position
 		{
+			pCell->InitLightConvert(0, 0x10000, 0, 1000, 1000, 1000);
+		}
+
+		Point2D position {
 			this->Bound.X - TacticalClass::Instance->TacticalPos.X - rect.X + DSurface::ViewBounds->X + 30,
 			this->Bound.Y - TacticalClass::Instance->TacticalPos.Y - rect.Y + DSurface::ViewBounds->Y
 		};
 
-		auto nZAdjust = TacticalClass::Instance->AdjustForZ(this->Location.Z);
+		int nZAdjust = -TacticalClass::Instance->AdjustForZ(this->Location.Z);
 
-		DSurface::Temp->DrawSHP(pCell->LightConvert, pShapeData, 0, &position, &rect,
-			BlitterFlags::Alpha | BlitterFlags::bf_400 | BlitterFlags::Centered, 0, -nZAdjust,
-			ZGradientDescIndex::Vertical, pCell->Color1_Green, 0, 0, 0, 0, 0);
+		DSurface::Temp->DrawSHP(pCell->LightConvert, pImage, 0, &position, &rect,
+			BlitterFlags(0xE00u), 0, nZAdjust, ZGradient::Deg90, pCell->Color1_Green, 0, nullptr, 0, 0, 0);
 	}
 }
 
@@ -167,15 +144,9 @@ bool FoggedSmudge::Save(PhobosStreamWriter& Stm) const
 		.Success();
 }
 
-FoggedTerrain::FoggedTerrain(CoordStruct& location, RectangleStruct& bound, int terrain)
-	: FoggedObject(AbstractType::Terrain, location, bound), Terrain{ terrain }
-{
-}
-
-FoggedTerrain::FoggedTerrain(ObjectClass* pObject, int terrain)
-	: FoggedObject(pObject), Terrain{ terrain }
-{
-	this->Translucent = true;
+FoggedTerrain::FoggedTerrain(ObjectClass* pObject, int terrain, int frameIdx)
+	: FoggedObject(pObject), Terrain { terrain }, FrameIndex { frameIdx } {
+	this->Visible = true;
 }
 
 FoggedTerrain::~FoggedTerrain()
@@ -183,23 +154,24 @@ FoggedTerrain::~FoggedTerrain()
 	this->FoggedObject::~FoggedObject();
 }
 
-void FoggedTerrain::Draw(RectangleStruct & rect)
+void FoggedTerrain::Draw(RectangleStruct& rect)
 {
-	auto const pTerrain = TerrainTypeClass::Array->GetItem(this->Terrain);
-	if (auto const pShapeData = pTerrain->GetImage())
+	auto const pType = TerrainTypeClass::Array->GetItem(this->Terrain);
+
+	if (auto& pImage = pType->Image)
 	{
-		auto const pCell = MapClass::Instance->TryGetCellAt(this->Location);
-		
+		auto const pCell = MapClass::Instance->GetCellAt(this->Location);
+
 		Point2D position;
 		TacticalClass::Instance->CoordsToClient(this->Location, &position);
 		position.X += DSurface::ViewBounds->X - rect.X;
 		position.Y += DSurface::ViewBounds->Y - rect.Y;
 
-		auto nHeightOffset = -TacticalClass::Instance->AdjustForZ(this->Location.Z);
+		int nHeightOffset = -TacticalClass::Instance->AdjustForZ(this->Location.Z);
 		ConvertClass* pDrawer;
 		int nIntensity;
 
-		if (pTerrain->SpawnsTiberium)
+		if (pType->SpawnsTiberium)
 		{
 			pDrawer = FileSystem::GRFTXT_TIBERIUM_PAL;
 			nIntensity = pCell->Color1_Red;
@@ -208,23 +180,19 @@ void FoggedTerrain::Draw(RectangleStruct & rect)
 		else
 		{
 			if (!pCell->LightConvert)
+			{
 				pCell->InitLightConvert(0, 0x10000, 0, 1000, 1000, 1000);
+			}
 			pDrawer = pCell->LightConvert;
 			nIntensity = pCell->Color1_Green;
 		}
 
-		// use BF_FLAT(2000)|BF_ALPHA|BF_400|BF_CENTER if animated 
-		// or just BF_USE_ZBUFFER|BF_ALPHA|BF_400|BF_CENTER
-		DSurface::Temp->DrawSHP(pDrawer, pShapeData, 0, &position, &rect,
-			static_cast<BlitterFlags>(pTerrain->IsAnimated ? 0x2E00 : 0x4E00), 0, nHeightOffset - 12, ZGradientDescIndex::Vertical, nIntensity, 0, 0, 0, 0, 0);
+		//if (*reinterpret_cast<BYTE*>(0x822CF1))
+		DSurface::Temp->DrawSHP(pDrawer, pImage, this->FrameIndex + pImage->Frames / 2, &position, &rect,
+			BlitterFlags(0x4601u), 0, nHeightOffset - 3, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 
-		if (!pCell->LightConvert)
-			pCell->InitLightConvert(0, 0x10000, 0, 1000, 1000, 1000);
-		pDrawer = pCell->LightConvert;
-
-		// BF_USE_ZBUFFER|BF_ALPHA|BF_400|BF_CENTER|BF_DARKEN
-		DSurface::Temp->DrawSHP(pDrawer, pShapeData, pShapeData->Frames / 2, &position, &rect,
-			(BlitterFlags)0x4E01, 0, nHeightOffset - 3, ZGradientDescIndex::Flat, 1000, 0, 0, 0, 0, 0);
+		DSurface::Temp->DrawSHP(pDrawer, pImage, this->FrameIndex, &position, &rect,
+			BlitterFlags(pType->IsAnimated ? 0x2E00u : 0x4E00u), 0, nHeightOffset - 12, ZGradient::Deg90, nIntensity, 0, nullptr, 0, 0, 0);
 	}
 }
 
@@ -242,6 +210,7 @@ bool FoggedTerrain::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	return FoggedObject::Load(Stm, RegisterForChange) && Stm
 		.Process(this->Terrain)
+		.Process(this->FrameIndex)
 		.Success();
 }
 
@@ -249,12 +218,8 @@ bool FoggedTerrain::Save(PhobosStreamWriter& Stm) const
 {
 	return FoggedObject::Save(Stm) && Stm
 		.Process(this->Terrain)
+		.Process(this->FrameIndex)
 		.Success();
-}
-
-FoggedOverlay::FoggedOverlay(CoordStruct& location, RectangleStruct& bound, int overlay, unsigned char overlayData)
-	: FoggedObject(AbstractType::Overlay, location, bound), Overlay{ overlay }, OverlayData{ overlayData }
-{
 }
 
 FoggedOverlay::FoggedOverlay(CellClass* pCell, int overlay, unsigned char overlayData)
@@ -265,20 +230,18 @@ FoggedOverlay::FoggedOverlay(CellClass* pCell, int overlay, unsigned char overla
 	pCell->GetContainingRect(&buffer);
 
 	FogOfWar::UnionRectangle(&this->Bound, &buffer);
-    this->Bound.X += TacticalClass::Instance->TacticalPos.X - DSurface::ViewBounds->X;
+	this->Bound.X += TacticalClass::Instance->TacticalPos.X - DSurface::ViewBounds->X;
 	this->Bound.Y += TacticalClass::Instance->TacticalPos.Y - DSurface::ViewBounds->Y;
 
 	this->CoveredRTTIType = AbstractType::Overlay;
 	this->Overlay = overlay;
 	this->OverlayData = overlayData;
-	this->Translucent = true;
+	this->Visible = true;
 
 	FogOfWar::FoggedObjects.insert(this);
 
 	auto const pExt = CellExt::ExtMap.Find(pCell);
 	pExt->FoggedObjects.push_back(this);
-
-	InitComparator();
 }
 
 FoggedOverlay::~FoggedOverlay()
@@ -286,10 +249,9 @@ FoggedOverlay::~FoggedOverlay()
 	this->FoggedObject::~FoggedObject();
 }
 
-void FoggedOverlay::Draw(RectangleStruct & rect)
+void FoggedOverlay::Draw(RectangleStruct& rect)
 {
-	auto const pCell = MapClass::Instance->TryGetCellAt(this->Location);
-	
+	auto const pCell = MapClass::Instance->GetCellAt(this->Location);
 	CoordStruct coords = { (((pCell->MapCoords.X << 8) + 128) / 256) << 8, (((pCell->MapCoords.Y << 8) + 128) / 256) << 8, 0 };
 
 	Point2D position;
@@ -334,92 +296,252 @@ bool FoggedOverlay::Save(PhobosStreamWriter& Stm) const
 		.Success();
 }
 
-FoggedBuilding::FoggedBuilding(CoordStruct& location, RectangleStruct& bound, BuildingClass* pBuilding, bool bTranslucent)
-	: FoggedObject(AbstractType::Building, location, bound)
+FoggedBuilding::FoggedBuilding(BuildingClass* pBuilding, bool bVisible)
 {
+	this->Location = pBuilding->Location;
+	this->CoveredRTTIType = AbstractType::Building;
+	this->Visible = bVisible;
+
 	this->Owner = pBuilding->Owner;
 	this->Type = pBuilding->Type;
 	this->FrameIndex = pBuilding->GetCurrentFrame();
 	this->FireStormWall = pBuilding->Type->LaserFence;
-	this->Translucent = bTranslucent;
 
-	// MORE!
-}
+	for (int i = 0; i < 21; ++i)
+	{
+		auto& pAnim = pBuilding->Anims[i];
+		if (!pAnim || pAnim->Invisible)
+		{
+			continue;
+		}
 
-FoggedBuilding::FoggedBuilding(BuildingClass* pObject, bool bTranslucent)
-	: FoggedObject(pObject)
-{
-	this->Owner = pObject->Owner;
-	this->Type = pObject->Type;
-	this->FrameIndex = pObject->GetCurrentFrame();
-	this->FireStormWall = pObject->Type->LaserFence;
-	this->Translucent = bTranslucent;
+		auto& pAnimType = pAnim->Type;
+		if (!pAnimType || !pAnimType->ShouldFogRemove)
+		{
+			continue;
+		}
+
+		pAnim->IsFogged = true;
+		this->BuildingAnims.emplace_back(FoggedBuildingAnimStruct {});
+		auto& item = this->BuildingAnims.back();
+
+		item.AnimType = pAnimType;
+		item.FrameIndex = pAnimType->Start + pAnim->Animation.Value;
+		item.Visible = true;
+		item.ZAdjust = pAnim->ZAdjust;
+		item.YSort = pAnim->YSortAdjust;
+
+		pAnim->GetRenderDimensions(&item.OriginalBound);
+		TacticalClass::Instance->RegisterDirtyArea(item.OriginalBound, false);
+		item.Bound.X = item.OriginalBound.X + TacticalClass::Instance->TacticalPos.X;
+		item.Bound.Y = item.OriginalBound.Y + TacticalClass::Instance->TacticalPos.Y;
+		item.Bound.Width = item.OriginalBound.Width;
+		item.Bound.Height = item.OriginalBound.Height;
+	}
+
+	pBuilding->Deselect();
+	pBuilding->IsFogged = true;
+
+	pBuilding->GetRenderDimensions(&this->OriginalBound);
+	TacticalClass::Instance->RegisterDirtyArea(this->OriginalBound, false);
+	this->Bound.X = this->OriginalBound.X + TacticalClass::Instance->TacticalPos.X;
+	this->Bound.Y = this->OriginalBound.Y + TacticalClass::Instance->TacticalPos.Y;
+	this->Bound.Width = this->OriginalBound.Width;
+	this->Bound.Height = this->OriginalBound.Height;
+
+	auto const pExt = CellExt::ExtMap.Find(pBuilding->GetCell());
+	pExt->FoggedObjects.push_back(this);
+	FogOfWar::FoggedObjects.insert(this);
 }
 
 FoggedBuilding::~FoggedBuilding()
 {
+	TacticalClass::Instance->RegisterDirtyArea(this->OriginalBound, false);
+	auto const pCell = MapClass::Instance->GetCellAt(this->Location);
+	if (auto pBld = pCell->GetBuilding())
+	{
+		pBld->IsFogged = false;
+		for (int i = 0; i < 21; ++i)
+		{
+			auto& pAnim = pBld->Anims[i];
+			if (!pAnim)
+			{
+				continue;
+			}
+			pAnim->IsFogged = false;
+		}
+	}
+	if (this->BuildingAnims.size())
+	{
+		for (auto& Anim : this->BuildingAnims)
+		{
+			TacticalClass::Instance->RegisterDirtyArea(Anim.OriginalBound, false);
+		}
+	}
 	this->FoggedObject::~FoggedObject();
 }
 
-// By AutoGavy
-void FoggedBuilding::Draw(RectangleStruct & rect)
+void FoggedBuilding::Draw(RectangleStruct& rect)
 {
-	auto pType = this->Type;
-	auto pSHP = pType->GetImage();
+	auto& pType = this->Type;
+	auto& pSHP = pType->Image;
 	if (!pSHP || pType->InvisibleInGame)
+	{
 		return;
+	}
 
-	Point2D vPos;
-	CoordStruct tempLoc = this->Location - CoordStruct{ 128, 128, 0 };
-	TacticalClass::Instance->CoordsToClient(tempLoc, &vPos);
+	Point2D Pos;
+	CoordStruct tempLoc = this->Location - CoordStruct { 128, 128, 0 };
+	TacticalClass::Instance->CoordsToClient(tempLoc, &Pos);
 
-	vPos.X += DSurface::ViewBounds->X - this->Bound.X;
-	vPos.Y += DSurface::ViewBounds->Y - this->Bound.Y;
+	Pos.X += DSurface::ViewBounds->X - rect.X;
+	Pos.Y += DSurface::ViewBounds->Y - rect.Y;
 
-	Point2D vZShapeMove = {
+	Point2D ZShapeMove = {
 		((pType->GetFoundationWidth(), 0) << 8) - 256,
 		((pType->GetFoundationHeight(false), 0) << 8) - 256
 	};
-	Point2D buffer = vZShapeMove;
-	TacticalClass::Instance->AdjustForZShapeMove(&vZShapeMove, &buffer);
+	Point2D ZShapeMove_Adjusted;
+	TacticalClass::Instance->AdjustForZShapeMove(&ZShapeMove_Adjusted, &ZShapeMove);
 
-	Point2D vOffsetZ = Point2D{
+	Point2D OffsetZ = -ZShapeMove_Adjusted + Point2D {
 		pType->ZShapePointMove.X + 144,
 		pType->ZShapePointMove.Y + 172
-	} - vZShapeMove;
-	int nZAdjust = TacticalClass::Instance->AdjustForZ(this->Location.Z);
+	};
 
-	CellStruct tempPos = CellStruct{ (short)this->Location.X, (short)this->Location.Y };
-	CellClass* const pCell = MapClass::Instance->GetCellAt(tempPos);
+	int BaseZAdjust = -TacticalClass::Instance->AdjustForZ(this->Location.Z) - 2;
+	int ZAdjust = BaseZAdjust;
+	if (!this->FireStormWall)
+	{
+		BaseZAdjust += pType->NormalZAdjust;
+	}
+
+	Point2D tempPos = Point2D { this->Location.X, this->Location.Y };
+	CellClass* pCell = MapClass::Instance->GetTargetCell(tempPos);
 	if (!pCell->LightConvert)
+	{
 		pCell->InitLightConvert(0, 0x10000, 0, 1000, 1000, 1000);
+	}
+	auto Brightness = pType->ExtraLight + pCell->Color1_Red;
 
-	ConvertClass* const pConvert = pType->TerrainPalette ?
-		pCell->LightConvert : (*ColorScheme::Array)[this->Owner->ColorSchemeIndex]->LightConvert;
+	ConvertClass* pConvert = pType->TerrainPalette ?
+		pCell->LightConvert : ColorScheme::Array->GetItem(this->Owner->ColorSchemeIndex)->LightConvert;
 
-	RectangleStruct vBounds = this->Bound;
-	if (vBounds.Width > vPos.Y)
-		vBounds.Width = vPos.Y;
+	RectangleStruct Bounds = rect;
+	int nMaxBoundHeight = Pos.Y + pSHP->Height / 2;
+	if (Bounds.Height > nMaxBoundHeight)
+	{
+		Bounds.Height = nMaxBoundHeight;
+	}
 
-	BlitterFlags eFlag = static_cast<BlitterFlags>(0x4E00u);
-	if (vBounds.Width > 0) {
-		if (this->FireStormWall) {
-			// draw shadow
-			DSurface::Temp->DrawSHP(pConvert, pSHP, this->FrameIndex + pSHP->Frames / 2, &vPos, &vBounds,
-				eFlag | BlitterFlags::Darken, 0, -nZAdjust, ZGradientDescIndex::Flat, 1000, 0, nullptr, 0, 0, 0);
-			// draw main
-			DSurface::Temp->DrawSHP(pConvert, pSHP, this->FrameIndex, &vPos, &vBounds,
-				eFlag, 0, -nZAdjust, ZGradientDescIndex::Flat, DWORD(pType->ExtraLight + pCell->Color1_Red), 0, nullptr, 0, 0, 0);
+	if (Bounds.Height > 0)
+	{
+		if (this->FireStormWall)
+		{
+			DSurface::Temp->DrawSHP(pConvert, pSHP, this->FrameIndex + pSHP->Frames / 2, &Pos, &Bounds,
+				BlitterFlags(0x4E01u), 0, BaseZAdjust, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+
+			DSurface::Temp->DrawSHP(pConvert, pSHP, this->FrameIndex, &Pos, &Bounds,
+				BlitterFlags(0x4E00u), 0, ZAdjust, ZGradient::Ground, Brightness, 0, nullptr, 0, 0, 0);
 		}
-		else {
-			// draw shadow
-			DSurface::Temp->DrawSHP(pConvert, pSHP, this->FrameIndex + pSHP->Frames / 2, &vPos, &vBounds,
-				eFlag | BlitterFlags::Darken, 0, -nZAdjust, ZGradientDescIndex::Flat, 1000, 0, nullptr, 0, 0, 0);
-			// draw main
-			DSurface::Temp->DrawSHP(pConvert, pSHP, this->FrameIndex, &vPos, &vBounds,
-				eFlag, 0, nZAdjust + pType->NormalZAdjust - 2, ZGradientDescIndex::Flat, DWORD(pType->ExtraLight + pCell->Color1_Red), 0, nullptr, 0, vOffsetZ.X, vOffsetZ.Y);
+		else
+		{
+			DSurface::Temp->DrawSHP(pConvert, pSHP, this->FrameIndex + pSHP->Frames / 2, &Pos, &Bounds,
+				BlitterFlags(0x4E01u), 0, BaseZAdjust, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+
+			DSurface::Temp->DrawSHP(pConvert, pSHP, this->FrameIndex, &Pos, &Bounds,
+				BlitterFlags(0x4E00u), 0, ZAdjust, ZGradient::Deg90, Brightness, 0, FileSystem::BUILDINGZ_SHA, 0, OffsetZ.X, OffsetZ.Y);
 		}
 	}
+}
+
+void FoggedBuilding::DrawBuildingAnim(FoggedBuildingAnimStruct& Anim, RectangleStruct& rect)
+{
+	auto& pAnimType = Anim.AnimType;
+	auto& pImage = pAnimType->Image;
+	if (!pImage)
+	{
+		return;
+	}
+	auto& pBldType = this->Type;
+	if (pBldType->InvisibleInGame)
+	{
+		return;
+	}
+
+	Point2D Pos;
+	CoordStruct tempLoc = this->Location - CoordStruct { 128, 128, 0 };
+	TacticalClass::Instance->CoordsToClient(tempLoc, &Pos);
+
+	Pos.X += DSurface::ViewBounds->X - rect.X;
+	Pos.Y += DSurface::ViewBounds->Y - rect.Y + pAnimType->YDrawOffset;
+
+	int nFrameIdx = std::min(Anim.FrameIndex, int(pImage->Frames - 1));
+	BlitterFlags eFlag = BlitterFlags(0x4E00u);
+
+	if (pAnimType->Translucent)
+	{
+		eFlag |= BlitterFlags::TransLucent50;
+	}
+	else
+	{
+		switch (pAnimType->Translucency)
+		{
+		case 25:
+			eFlag |= BlitterFlags::TransLucent25;
+			break;
+		case 50:
+			eFlag |= BlitterFlags::TransLucent50;
+			break;
+		case 75:
+			eFlag |= BlitterFlags::TransLucent75;
+			break;
+		}
+	}
+
+	Point2D tempPos = Point2D { this->Location.X, this->Location.Y };
+	CellClass* pCell = MapClass::Instance->GetTargetCell(tempPos);
+	if (!pCell->LightConvert)
+	{
+		pCell->InitLightConvert(0, 0x10000, 0, 1000, 1000, 1000);
+	}
+	auto Brightness = pBldType->ExtraLight + pCell->Color1_Red;
+
+	int BaseZAdjust = -TacticalClass::Instance->AdjustForZ(this->Location.Z) - 2;
+	int ZAdjust = Anim.ZAdjust * 2 + pAnimType->YDrawOffset - TacticalClass::Instance->AdjustForZ(this->Location.Z + Anim.YSort) - 2;
+	if (pAnimType->Flat)
+	{
+		--ZAdjust;
+	}
+
+	ConvertClass* pConvert = pBldType->TerrainPalette ?
+		pCell->LightConvert : ColorScheme::Array->GetItem(this->Owner->ColorSchemeIndex)->LightConvert;
+
+	if (pAnimType->UseNormalLight)
+	{
+		Brightness = FOGGED_BRIGHTNESS;
+	}
+	if (!pAnimType->ShouldUseCellDrawer)
+	{
+		auto pAnimTypeExt = AnimTypeExt::ExtMap.Find(pAnimType);
+		if (auto convert = pAnimTypeExt->Palette.GetConvert())
+		{
+			pConvert = convert;
+		}
+		else
+		{
+			pConvert = FileSystem::ANIM_PAL;
+			Brightness = FOGGED_BRIGHTNESS;
+		}
+	}
+
+	if (pAnimType->Shadow)
+	{
+		DSurface::Temp->DrawSHP(pConvert, pImage, nFrameIdx + pImage->Frames / 2, &Pos, &rect,
+			BlitterFlags(0x4E01u), 0, BaseZAdjust, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+	}
+	DSurface::Temp->DrawSHP(pConvert, pImage, nFrameIdx, &Pos, &rect,
+		eFlag, 0, ZAdjust, pAnimType->Flat ? ZGradient::Ground : ZGradient::Deg90, Brightness, 0, nullptr, 0, 0, 0);
 }
 
 int FoggedBuilding::GetType()
@@ -437,8 +559,10 @@ bool FoggedBuilding::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 	return FoggedObject::Load(Stm, RegisterForChange) && Stm
 		.Process(this->Owner)
 		.Process(this->Type)
+		.Process(this->OriginalBound)
 		.Process(this->FrameIndex)
 		.Process(this->FireStormWall)
+		.Process(this->Visible)
 		.Success();
 }
 
@@ -447,7 +571,33 @@ bool FoggedBuilding::Save(PhobosStreamWriter& Stm) const
 	return FoggedObject::Save(Stm) && Stm
 		.Process(this->Owner)
 		.Process(this->Type)
+		.Process(this->OriginalBound)
 		.Process(this->FrameIndex)
 		.Process(this->FireStormWall)
+		.Process(this->Visible)
+		.Success();
+}
+
+bool FoggedBuilding::FoggedBuildingAnimStruct::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool FoggedBuilding::FoggedBuildingAnimStruct::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<FoggedBuildingAnimStruct*>(this)->Serialize(stm);
+}
+
+template <typename T>
+bool FoggedBuilding::FoggedBuildingAnimStruct::Serialize(T& stm)
+{
+	return stm
+		.Process(this->AnimType)
+		.Process(this->OriginalBound)
+		.Process(this->Visible)
+		.Process(this->Bound)
+		.Process(this->FrameIndex)
+		.Process(this->ZAdjust)
+		.Process(this->YSort)
 		.Success();
 }

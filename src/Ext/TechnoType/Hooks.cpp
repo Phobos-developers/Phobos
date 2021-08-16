@@ -139,7 +139,7 @@ DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 	DSurface::Temp->DrawSHP(
 		pDrawer, pSHP, idxFrame, pLocation, pBounds,
 		BlitterFlags::Flat | BlitterFlags::Alpha | BlitterFlags::Centered,
-		0, pThis->GetZAdjustment() - 2, ZGradientDescIndex::Flat, nBrightness,
+		0, pThis->GetZAdjustment() - 2, ZGradient::Ground, nBrightness,
 		0, nullptr, 0, 0, 0
 	);
 

@@ -13,6 +13,7 @@
 #include <GameModeOptionsClass.h>
 #include <ScenarioClass.h>
 #include <TacticalClass.h>
+#include <AnimClass.h>
 
 // STL
 #include <vector>

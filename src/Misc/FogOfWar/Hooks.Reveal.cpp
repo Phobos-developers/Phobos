@@ -1,5 +1,12 @@
 #include "FogOfWar.h"
 
+#include <Utilities/Macro.h>
+
+#include <TechnoClass.h>
+#include <FootClass.h>
+#include <CellClass.h>
+#include <MapClass.h>
+
 // ;; reveal
 // 4ADFF0 = MapClass_RevealShroud, 5
 // 577EBF = MapClass_Reveal, 6
@@ -13,7 +20,7 @@ DEFINE_HOOK(0x4ADFF0, MapClass_RevealShroud, 0x5)
 	GET_STACK(DWORD, dwUnk2, 0x8);
 
 	for (auto pTechno : *TechnoClass::Array)
-		if (pTechno)
+		if (pTechno && pTechno->IsAlive)
 			FogOfWar::Reveal_DisplayClass_All_To_Look_Ground(pTechno, dwUnk, dwUnk2);
 
 	return 0x4AE0A5;
@@ -56,3 +63,5 @@ DEFINE_HOOK(0x4FC1FF, HouseClass_AcceptDefeat_CleanShroudFog, 0x6)
 
 	return 0x4FC214;
 }
+
+DEFINE_POINTER_LJMP(0x567DA0, FogOfWar::MapClass_Reveal2);

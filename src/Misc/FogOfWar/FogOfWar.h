@@ -1,21 +1,27 @@
 #pragma once
 
-#include <Phobos.h>
+#include <GeneralDefinitions.h>
 
-#include "BasicHeaders.h"
-#include "FoggedObject.h"
+#include <set>
 
-#include "../../Ext/Cell/Body.h"
+class TechnoClass;
+class HouseClass;
+class FoggedObject;
+class FoggedBuilding;
+struct RectangleStruct;
+class MapClass;
+class CellClass;
 
 class FogOfWar
 {
 public:
 	static void Reveal_DisplayClass_All_To_Look_Ground(TechnoClass* pTechno, DWORD dwUnk, DWORD dwUnk2);
-	static bool MapClass_RevealFogShroud(CellStruct* pCell_, HouseClass* pHouse);
+	static bool MapClass_RevealFogShroud(CellStruct* pMapCoords, HouseClass* pHouse);
 	static bool IsLocationFogged(CoordStruct* pCoord);
 	static void ClearFoggedObjects(CellClass* pCell);
 
 	static bool DrawIfVisible(FoggedObject* pFoggedObject, RectangleStruct* pRect);
+	static bool DrawBldIfVisible(FoggedBuilding* pFoggedBuilding, RectangleStruct* pRect);
     // Result will be stored in rect1
 	static void UnionRectangle(RectangleStruct* rect1, RectangleStruct* rect2);
 

@@ -1,6 +1,12 @@
 #include "FogOfWar.h"
 
-#include "../MapRevealer.h"
+#include "FoggedObject.h"
+
+#include <ScenarioClass.h>
+
+#include <Ext/Cell/Body.h>
+#include <Misc/MapRevealer.h>
+
 // issue #28 : Fix vanilla YR Fog of War bugs & issues
 // Reimplement it would be nicer.
 
@@ -126,7 +132,7 @@ void FogOfWar::ClearFoggedObjects(CellClass* pCell)
 
 bool FogOfWar::DrawIfVisible(FoggedObject* pFoggedObject, RectangleStruct* pRect)
 {
-	if (!pFoggedObject->Translucent)
+	if (!pFoggedObject->Visible)
 		return false;
 
 	auto rect = pFoggedObject->Bound;
@@ -140,6 +146,46 @@ bool FogOfWar::DrawIfVisible(FoggedObject* pFoggedObject, RectangleStruct* pRect
 	pFoggedObject->Draw(*pRect);
 
 	return true;
+}
+
+bool FogOfWar::DrawBldIfVisible(FoggedBuilding* pFoggedBuilding, RectangleStruct* pRect)
+{
+	if (!pFoggedBuilding->Visible)
+		return false;
+
+	if (!pFoggedBuilding->BuildingAnims.size())
+		return FogOfWar::DrawIfVisible(pFoggedBuilding, pRect);
+
+	bool bDrawAllSubAnims = false;
+	for (auto& Anim : pFoggedBuilding->BuildingAnims)
+	{
+		RectangleStruct vRect = *pRect;
+
+		auto rect = Anim.Bound;
+		rect.X += DSurface::ViewBounds->X - TacticalClass::Instance->TacticalPos.X;
+		rect.Y += DSurface::ViewBounds->Y - TacticalClass::Instance->TacticalPos.Y;
+
+		RectangleStruct ret = Drawing::Intersect(vRect, rect);
+		if (ret.Width <= 0 || ret.Height <= 0)
+			continue;
+
+		bDrawAllSubAnims = true;
+		break;
+	}
+
+	if (bDrawAllSubAnims)
+	{
+		pFoggedBuilding->Draw(*pRect);
+		for (auto& Anim : pFoggedBuilding->BuildingAnims)
+		{
+			if (!Anim.Visible) continue;
+			RectangleStruct vRect = *pRect;
+			pFoggedBuilding->DrawBuildingAnim(Anim, vRect);
+		}
+		return true;
+	}
+	else
+		return FogOfWar::DrawIfVisible(pFoggedBuilding, pRect);
 }
 
 void FogOfWar::UnionRectangle(RectangleStruct* rect1, RectangleStruct* rect2)
