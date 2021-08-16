@@ -64,4 +64,6 @@ DEFINE_HOOK(0x4FC1FF, HouseClass_AcceptDefeat_CleanShroudFog, 0x6)
 	return 0x4FC214;
 }
 
+DEFINE_POINTER_LJMP(0x5673A0, FogOfWar::MapClass_Reveal0);
+
 DEFINE_POINTER_LJMP(0x567DA0, FogOfWar::MapClass_Reveal2);

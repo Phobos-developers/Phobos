@@ -198,6 +198,14 @@ void FogOfWar::UnionRectangle(RectangleStruct* rect1, RectangleStruct* rect2)
     *rect1 = rect;
 }
 
+void __fastcall FogOfWar::MapClass_Reveal0(MapClass* pThis, void* _, CoordStruct* pCoord, int Radius,
+		HouseClass* pHouse, bool OnlyOutline, bool a6, bool SkipReveal, bool AllowRevealByHeight, bool Add)
+{
+	MapRevealer const revealer(*pCoord);
+	revealer.Reveal0(*pCoord, Radius, pHouse, OnlyOutline, a6, SkipReveal, AllowRevealByHeight, Add);
+	revealer.UpdateShroud(0, static_cast<size_t>(std::max(Radius, 0)), false);
+}
+
 void __fastcall FogOfWar::MapClass_Reveal2(MapClass* pThis, void*_, CoordStruct* Coords, int Height, int Radius, int SkipReveal)
 {
 	MapRevealer revealer(*Coords);
