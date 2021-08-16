@@ -8,6 +8,11 @@ RadSiteExt::ExtContainer RadSiteExt::ExtMap;
 
 DynamicVectorClass<RadSiteExt::ExtData*> RadSiteExt::Array;
 
+void RadSiteExt::ExtData::Initialize()
+{
+	this->Type = RadTypeClass::FindOrAllocate("Radiation");
+}
+
 void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner)
 {
 	// use real ctor
@@ -144,7 +149,6 @@ void RadSiteExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 // container
 
 RadSiteExt::ExtContainer::ExtContainer() : Container("RadSiteClass") { };
-
 RadSiteExt::ExtContainer::~ExtContainer() = default;
 
 // =============================
