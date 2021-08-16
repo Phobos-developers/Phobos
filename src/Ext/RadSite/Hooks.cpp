@@ -101,6 +101,12 @@ DEFINE_HOOK(0x521478, InfantryClass_AIDeployment_FireNotOKCloakFix, 0x4)
 		&& pWeapon->DecloakToFire
 		&& (pThis->CloakState == CloakState::Cloaked || pThis->CloakState == CloakState::Cloaking))
 	{
+		// FYI this are hack to immedietely stop the Cloaking
+		// since this function is always failing to decloak and set target when cell is occupied 
+		// something is wrong somewhere  # Otamaa
+		auto nDeployFrame = pThis->Type->Sequence->GetSequence(Sequence::DeployedFire).CountFrames;
+		pThis->CloakDelayTimer.Start(nDeployFrame);
+
 		pTarget = MapClass::Instance->TryGetCellAt(pThis->GetCoords());
 	}
 
