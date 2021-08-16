@@ -68,7 +68,7 @@ In `rulesmd.ini`:
 ```ini
 [JumpjetControls]
 Crash=5.0       ; float
-NoWabbles=no    ; bool
+NoWobbles=no    ; bool
 ```
 
 ```{note}
