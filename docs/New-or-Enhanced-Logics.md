@@ -23,6 +23,7 @@ PowersUp.Buildings= ; list of BuildingTypes
 ## Infantry
 
 ### Random death animaton for NotHuman Infantry
+
 - Infantry with `NotHuman=yes` can now play random death anim sequence between `Die1` to `Die5` instead of the hardcoded `Die1`.
   - Do not forget to tweak infantry anim sequences before enabling this feature, otherwise it will play invisible anim sequence.
 
