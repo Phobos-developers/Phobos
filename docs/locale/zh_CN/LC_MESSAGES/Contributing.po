@@ -62,7 +62,7 @@ msgstr ""
 
 #: ../Contributing.md:12
 msgid "`New/` - source code for new ingame classes."
-msgstr ""
+msgstr "`New/` - 新的游戏内类源文件"
 
 #: ../Contributing.md:13
 msgid ""
@@ -71,10 +71,14 @@ msgid ""
 "project. Every enumerated type class inherits `Enumerable<T>` (where `T` "
 "is an enum. type class) class that is defined in `Enumerable.h`."
 msgstr ""
+"`Type/` - 本项目中实装的新的枚举类型类（即需要注册在某个INI"
+"文件中的新的表的类型，例如辐射类）"
+"每个枚举类型类均继承自`Enumerable.h`中的`Enumerable<T>`（其中`T`"
+"为枚举类型名）。"
 
 #: ../Contributing.md:14
 msgid "`Entity/` - classes that represent ingame entities are located here."
-msgstr ""
+msgstr "`Entity/` - 游戏内实体类在此。"
 
 #: ../Contributing.md:15
 msgid ""
@@ -82,6 +86,9 @@ msgid ""
 "extension is kept in a separate folder named after vanilla engine class "
 "name and contains the following:"
 msgstr ""
+"`Ext/` - 原版引擎类的扩展类源码。每个扩展类"
+"均以原版类命名，保存在各自的文件夹下，"
+"并包含以下文件："
 
 #: ../Contributing.md:16
 msgid ""
@@ -89,6 +96,9 @@ msgid ""
 " and common extension hooks. Each extension class must contain the "
 "following to work correctly:"
 msgstr ""
+"`Body.h`与`Body.cpp`包含了类和方法的声明和定义以及"
+"标准扩展钩子（Hook）。每个扩展类必须包含下列"
+"东西以正常运作："
 
 #: ../Contributing.md:17
 msgid ""
@@ -96,6 +106,9 @@ msgid ""
 " from `Container.h` (where `T` is the class that is being extended), "
 "which is the actual class that contains new data for vanilla classes;"
 msgstr ""
+"`ExtData` - 继承自`Container.h`中`Extension<T>`的扩展数据类"
+"（其中`T`是被扩展的类），"
+"这也是包含了原版类中新数据的实际类；"
 
 #: ../Contributing.md:18
 msgid ""
@@ -104,42 +117,48 @@ msgid ""
 "`Container<T>` from `Container.h` (where `T` is the extension data "
 "class);"
 msgstr ""
+"`ExtContainer` - 用以存储和查找`ExtData`实例的映射类；"
 
 #: ../Contributing.md:19
 msgid "`ExtMap` - a static instance of `ExtContainer` map;"
-msgstr ""
+msgstr "`ExtMap` - `ExtContainer`的静态实例;"
 
 #: ../Contributing.md:20
 msgid ""
 "constructor, destructor, serialization, deserialization and (for "
 "appropriate classes) INI reading hooks."
 msgstr ""
+"构造函数，析构函数，序列化，反序列化以及"
+"（某些类的）读取INI的钩子。"
 
 #: ../Contributing.md:21
 msgid ""
 "`Hooks.cpp` and `Hooks.*.cpp` contain non-common hooks to correctly patch"
 " in new custom logics."
 msgstr ""
+"`Hooks.cpp`和`Hooks.*.cpp`存储用以新逻辑的非标准钩子。"
 
 #: ../Contributing.md:22
 msgid ""
 "`ExtraHeaders/` - extra header files to interact with / describe types "
 "included in game binary that are not included in YRpp yet."
 msgstr ""
+"`ExtraHeaders/` - 额外的头文件，用以交互或描述游戏中的未包含在YRpp中的类。"
 
 #: ../Contributing.md:23
 msgid ""
 "`Misc/` - uncategorized source code, including hooks that don't belong to"
 " an extension class."
 msgstr ""
+"`Misc/` - 未分类的源码，包含不属于任何扩展类的钩子。"
 
 #: ../Contributing.md:24
 msgid "`Utilities/` - common code that is used across the project."
-msgstr ""
+msgstr "`Utilities/` - 项目中常用的辅助代码。"
 
 #: ../Contributing.md:25
 msgid "`Phobos.cpp`/`Phobos.h` - extension bootstrapping code."
-msgstr ""
+msgstr "`Phobos.cpp`/`Phobos.h` - 扩展引导代码。"
 
 #: ../Contributing.md:26
 msgid ""
@@ -147,6 +166,9 @@ msgid ""
 "classes. If you define a new or extended class you have to add your new "
 "class into `MassActions` global variable type declaration in this file."
 msgstr ""
+"`Phobos.Ext.cpp` - 包含为新类或扩展类的一般加工代码。"
+"如果你定义了一个新的类，需要将此类加入"
+"全局变量`MassActions`中以进行声明。"
 
 #: ../Contributing.md:27
 msgid ""
@@ -154,6 +176,9 @@ msgid ""
 "included in game binary and also macros to write hooks using Syringe. "
 "Included as a submodule."
 msgstr ""
+"`YRpp/` - 包含了用来交互和描述游戏类的头文件，"
+"以及一些用于Syringe的宏。"
+"以子模块形式包含。"
 
 #: ../Contributing.md:29
 msgid "Code styleguide"
