@@ -1,0 +1,77 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, The Phobos Contributors
+# This file is distributed under the same license as the Phobos package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Phobos \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-08-16 14:17+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../General-Info.md:1
+msgid "General Info"
+msgstr ""
+
+#: ../General-Info.md:3
+msgid "This page lists general info that should be known about the project."
+msgstr ""
+
+#: ../General-Info.md:5
+msgid "Build types"
+msgstr ""
+
+#: ../General-Info.md:7
+msgid "There are three main types of Phobos builds:"
+msgstr ""
+
+#: ../General-Info.md:8
+msgid "*stable builds* - those are numbered like your regular versions (something close to semantic versioning, e.g. version 1.2.3 for example) and ideally should contain no bugs, therefore are safe to use in mods;"
+msgstr ""
+
+#: ../General-Info.md:9
+msgid "*development builds* - those are the builds which contain functionality that needs to be tested. They are numbered plainly starting from 0 and incrementing the number on each release. Mod authors still can include those versions with their mods if they want latest features, though we can't guarantee lack of bugs;"
+msgstr ""
+
+#: ../General-Info.md:10
+msgid "*nightly builds* - bleeding edge versions which can include prototypes, proofs of concepts, scrapped features etc., in other words - we can't guarantee anything in those builds and they absolutely should NOT be used in mod releases and should only be used to help with development and testing."
+msgstr ""
+
+#: ../General-Info.md:12
+msgid "Disabling development build warning"
+msgstr ""
+
+#: ../General-Info.md:14
+msgid "**DISCLAIMER:** We understand that everyone wants to try and use the new features as soon as they're released, but we can't do all the testing ourselves, so we only test the functionality on a basic level. We ask everyone who uses the new development build first to **test the new changes in every possible way first before disabling the development build warning** and proceeding to include the build in your mod release. This would allow us to concentrate on implementing the actual features, which is the most complex task. Learn more on testing [here](Contributing.md#testing)."
+msgstr ""
+
+#: ../General-Info.md:16
+msgid "You can hide the warning by specifying the build number after `-b=` as a command line argument (for example, `-b=1` would hide the warning for development build #1 of Phobos)."
+msgstr ""
+
+#: ../General-Info.md:18
+msgid "Saved games filtering"
+msgstr ""
+
+#: ../General-Info.md:20
+msgid "Phobos fully supports saving and loading thanks to prototype code from publicly released Ares 0.A source and it implements it's own filtering which shouldn't conflict with Ares save filtering. Save games between different versions are incompatible due to changes to Phobos extension classes which are present in almost every build release. The filtering mechanism, hovewer, doesn't apply to nightly versions - those use latest development build number on which this nightly is based on. While different nightly version saves may be listed, they are most likely incompatible in case there were changes to extension class fields."
+msgstr ""
+
+#: ../General-Info.md:22
+msgid "Compatibility"
+msgstr ""
+
+#: ../General-Info.md:24
+msgid "While Phobos is standalone, it is designed to be used alongside [Ares](https://ares.strategy-x.com) and [CnCNet5 spawner](https://github.com/CnCNet/cncnet-for-ares). Adding new features or improving existing ones is done with compatibility with those in mind."
+msgstr ""
+
+#: ../General-Info.md:26
+msgid "While we would also like to support HAres we can't guarantee compatibility with it due to the separation of it's userbase and developers from international community. We welcome any help on the matter though!"
+msgstr ""

@@ -1,0 +1,329 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, The Phobos Contributors
+# This file is distributed under the same license as the Phobos package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Phobos \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-08-16 14:17+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../Fixed-or-Improved-Logics.md:1
+msgid "Fixed / Improved Logics"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:3
+msgid ""
+"This page describes all ingame logics that are fixed or improved in "
+"Phobos without adding anything significant."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:5
+msgid "Bugfixes and miscellaneous"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:7
+msgid ""
+"Fixed the bug when deploying mindcontrolled vehicle into a building "
+"permanently transferred the control to the house which mindcontrolled it."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:8
+msgid ""
+"Fixed the bug when units are already dead but still in map (for sinking, "
+"crashing, dying animation, etc.), they could die again."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:9
+msgid "Fixed the bug when cloaked Desolator was unable to fire his deploy weapon."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:10
+msgid "SHP debris shadows now respect the `Shadow` tag."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:11
+msgid ""
+"Allowed usage of TileSet of 255 and above without making NE-SW broken "
+"bridges unrepairable."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:13
+msgid ""
+"![image](_static/images/turretoffset-01.png)   *Side offset voxel turret "
+"in Breaking Blue project*"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:13 ../Fixed-or-Improved-Logics.md:29
+#: ../Fixed-or-Improved-Logics.md:42 ../Fixed-or-Improved-Logics.md:108
+#: ../Fixed-or-Improved-Logics.md:128
+msgid "image"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:16
+msgid ""
+"`TurretOffset` tag for voxel turreted TechnoTypes now accepts FLH "
+"(forward, lateral, height) values like `TurretOffset=F,L` or "
+"`TurretOffset=F,L,H`, which means turret location can be adjusted in all "
+"three axes."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:17
+msgid "`InfiniteMindControl` with `Damage=1` can now control more than 1 unit."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:18
+msgid ""
+"Aircraft with `Fighter` set to false or those using strafing pattern "
+"(weapon projectile `ROT` is below 2) now take weapon's `Burst` into "
+"accord for all shots instead of just the first one."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:19
+msgid ""
+"`EMEffect` used for random AnimList pick is now replaced by a new tag "
+"`AnimList.PickRandom` with no side effect. (EMEffect=yes on AA inviso "
+"projectile deals no damage to units in movement)"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:20
+msgid ""
+"Script action `Move to cell` now obeys YR cell calculation now. Using "
+"`1000 * Y + X` as its cell value. (was `128 * Y + X` as it's RA leftover)"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:21
+msgid "The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:22
+msgid ""
+"Map trigger action `125 Build At...` can now play buildup anim optionally"
+" (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-"
+"final-alert-2)."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:23
+msgid ""
+"Vehicles using `DeployFire` will now explicitly use weapon specified by "
+"`DeployFireWeapon` for firing the deploy weapon and respect `FireOnce` "
+"setting on weapon and any stop commands issued during firing."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:24
+msgid ""
+"Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond "
+"specified maximums anymore). Only applied when `DebrisMaximums` values "
+"amount is more than 1 for compatibility reasons."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:25
+msgid ""
+"Fixed building and defense tab hotkeys not enabling the placement mode "
+"after `Cannot build here.` triggered and the placement mode cancelled."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:26
+msgid ""
+"Fixed buildings with `UndeployInto` playing "
+"`EVA_NewRallypointEstablished` on undeploying."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:27
+msgid ""
+"Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to"
+" place onto water."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:29
+msgid ""
+"![image](_static/images/remember-target-after-deploying-01.gif)   *Nod "
+"arty keeping target on attack order in [C&C: "
+"Reloaded](https://www.moddb.com/mods/cncreloaded/)*"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:32
+msgid ""
+"Vehicle to building deployers now keep their target when deploying with "
+"`DeployToFire`."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:33
+msgid ""
+"Fixed laser drawing code to allow for thicker lasers in house color draw "
+"mode."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:34
+msgid "`DeathWeapon` now will properly detonate."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:35
+msgid ""
+"But still some settings are ignored like `PreImpactAnim` *(Ares "
+"feature)*, this might change in future."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:36
+msgid ""
+"Effects like lasers are no longer drawn from wrong firing offset on "
+"weapons that use Burst."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:38
+msgid "Technos"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:40
+msgid "Customizable Teleport/Chrono Locomotor settings per TechnoType"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:42
+msgid ""
+"![image](_static/images/cust-Chrono.gif)   *Chrono Legionnaire and Ronco "
+"(hero) from [YR:New War](https://www.moddb.com/mods/yuris-revenge-new-"
+"war)*"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:45
+msgid ""
+"You can now specify Teleport/Chrono Locomotor settings per TechnoType to "
+"override default rules values. Unfilled values default to values in "
+"`[General]`."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:46
+msgid "Only applicable to Techno that have Teleport/Chrono Locomotor attached."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:48 ../Fixed-or-Improved-Logics.md:67
+#: ../Fixed-or-Improved-Logics.md:85 ../Fixed-or-Improved-Logics.md:98
+#: ../Fixed-or-Improved-Logics.md:115 ../Fixed-or-Improved-Logics.md:131
+#: ../Fixed-or-Improved-Logics.md:142
+msgid "In `rulesmd.ini`:"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:62
+msgid "Re-enable obsolete [JumpjetControls]"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:64
+msgid ""
+"Re-enable obsolete [JumpjetControls], the keys in it will be as the "
+"default value of jumpjet units."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:65
+msgid "Moreover, added two tags for missing ones."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:1
+msgid ""
+"`CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for "
+"`JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and "
+"`Acceleration` is for `JumpjetAccel`. All other corresponding keys just "
+"simply have no Jumpjet prefix."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:78
+msgid "Customizable harvester ore gathering animation"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:80
+msgid ""
+"![Ore gathering](_static/images/oregath.gif) *Custom ore gathering anims "
+"in [Project Phantom](https://www.moddb.com/mods/project-phantom)*"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:80
+msgid "Ore gathering"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:83
+msgid ""
+"You can now specify which anim should be drawn when a harvester of "
+"specified type is gathering specified type of ore."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:93
+msgid "Kill spawns on low power"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:95
+msgid ""
+"`Powered=yes` structures that spawns aircraft like Aircrafts Carriers "
+"will stop targeting the enemy if low power."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:96
+msgid "Spawned aircrafts self-destruct if they are flying."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:104
+msgid "Terrains"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:106
+msgid "Customizable ore spawners"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:108
+msgid ""
+"![image](_static/images/ore-01.png)   *Different ore spawners in [Rise of"
+" the East](https://www.moddb.com/mods/riseoftheeast) mod*"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:111
+msgid "You can now specify which type of ore certain TerrainType would generate."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:112
+msgid ""
+"It's also now possible to specify a range value for an ore generation "
+"area different compared to standard 3x3 rectangle. Ore will be uniformly "
+"distributed across all affected cells in a spread range."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:113
+msgid ""
+"You can specify which ore growth stage will be spawned and how much cells"
+" will be filled with ore per ore generation animation. Corresponding tags"
+" accept either a single integer value or two comma-separated values to "
+"allow randomized growth stages from the range (inclusive)."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:124
+msgid "Weapons"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:126
+msgid "Customizable disk laser radius"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:128
+msgid "![image](_static/images/disklaser-radius-values-01.gif)"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:129
+msgid "You can now set disk laser animation radius using a new tag."
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:138
+msgid "Toggle-able ElectricBolt visuals"
+msgstr ""
+
+#: ../Fixed-or-Improved-Logics.md:140
+msgid ""
+"You can now specify individual ElectricBolt bolts you want to disable. "
+"Note that this is only a visual change."
+msgstr ""
+
