@@ -59,7 +59,7 @@ public:
 		std::vector<DynamicVectorClass<CoordStruct>> EliteWeaponBurstFLHs;
 
 		Valueable<bool> DestroyAnim_Random;
-    Valueable<bool> NotHuman_RandomDeathSequence;
+		Valueable<bool> NotHuman_RandomDeathSequence;
 
 		struct LaserTrailDataEntry
 		{
@@ -113,7 +113,7 @@ public:
 			OreGathering_FramesPerDir(),
 			LaserTrailData(),
 			DestroyAnim_Random(true),
-      NotHuman_RandomDeathSequence(false)
+			NotHuman_RandomDeathSequence(false)
 		{ }
 
 		virtual ~ExtData() = default;

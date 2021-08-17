@@ -220,7 +220,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OreGathering_FramesPerDir)
 		.Process(this->LaserTrailData)
 		.Process(this->DestroyAnim_Random)
-    .Process(this->NotHuman_RandomDeathSequence)
+		.Process(this->NotHuman_RandomDeathSequence)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
 		;
