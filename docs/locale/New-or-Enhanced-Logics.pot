@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-16 14:17+0800\n"
+"POT-Creation-Date: 2021-08-17 10:32+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,37 +39,39 @@ msgstr ""
 #: ../New-or-Enhanced-Logics.md:9
 #: ../New-or-Enhanced-Logics.md:111
 #: ../New-or-Enhanced-Logics.md:143
-#: ../New-or-Enhanced-Logics.md:172
-#: ../New-or-Enhanced-Logics.md:205
-#: ../New-or-Enhanced-Logics.md:205
-#: ../New-or-Enhanced-Logics.md:226
-#: ../New-or-Enhanced-Logics.md:241
-#: ../New-or-Enhanced-Logics.md:294
-#: ../New-or-Enhanced-Logics.md:339
-#: ../New-or-Enhanced-Logics.md:352
-#: ../New-or-Enhanced-Logics.md:413
-#: ../New-or-Enhanced-Logics.md:427
+#: ../New-or-Enhanced-Logics.md:171
+#: ../New-or-Enhanced-Logics.md:204
+#: ../New-or-Enhanced-Logics.md:204
+#: ../New-or-Enhanced-Logics.md:225
+#: ../New-or-Enhanced-Logics.md:240
+#: ../New-or-Enhanced-Logics.md:293
+#: ../New-or-Enhanced-Logics.md:338
+#: ../New-or-Enhanced-Logics.md:351
+#: ../New-or-Enhanced-Logics.md:412
+#: ../New-or-Enhanced-Logics.md:426
 msgid "image"
 msgstr ""
 
 #: ../New-or-Enhanced-Logics.md:12
+#: ../New-or-Enhanced-Logics.md:116
 #: ../New-or-Enhanced-Logics.md:148
-#: ../New-or-Enhanced-Logics.md:179
-#: ../New-or-Enhanced-Logics.md:232
-#: ../New-or-Enhanced-Logics.md:246
-#: ../New-or-Enhanced-Logics.md:256
-#: ../New-or-Enhanced-Logics.md:286
-#: ../New-or-Enhanced-Logics.md:301
-#: ../New-or-Enhanced-Logics.md:315
-#: ../New-or-Enhanced-Logics.md:325
-#: ../New-or-Enhanced-Logics.md:344
-#: ../New-or-Enhanced-Logics.md:358
-#: ../New-or-Enhanced-Logics.md:369
-#: ../New-or-Enhanced-Logics.md:379
-#: ../New-or-Enhanced-Logics.md:389
-#: ../New-or-Enhanced-Logics.md:399
-#: ../New-or-Enhanced-Logics.md:416
-#: ../New-or-Enhanced-Logics.md:436
+#: ../New-or-Enhanced-Logics.md:178
+#: ../New-or-Enhanced-Logics.md:213
+#: ../New-or-Enhanced-Logics.md:231
+#: ../New-or-Enhanced-Logics.md:245
+#: ../New-or-Enhanced-Logics.md:255
+#: ../New-or-Enhanced-Logics.md:285
+#: ../New-or-Enhanced-Logics.md:300
+#: ../New-or-Enhanced-Logics.md:314
+#: ../New-or-Enhanced-Logics.md:324
+#: ../New-or-Enhanced-Logics.md:343
+#: ../New-or-Enhanced-Logics.md:357
+#: ../New-or-Enhanced-Logics.md:368
+#: ../New-or-Enhanced-Logics.md:378
+#: ../New-or-Enhanced-Logics.md:388
+#: ../New-or-Enhanced-Logics.md:398
+#: ../New-or-Enhanced-Logics.md:415
+#: ../New-or-Enhanced-Logics.md:435
 msgid "In `rulesmd.ini`:"
 msgstr ""
 
@@ -203,7 +205,8 @@ msgid "try to keep the length of the trail minimal (can be achieved with smaller
 msgstr ""
 
 #: ../New-or-Enhanced-Logics.md:85
-#: ../New-or-Enhanced-Logics.md:267
+#: ../New-or-Enhanced-Logics.md:154
+#: ../New-or-Enhanced-Logics.md:266
 msgid "In `artmd.ini`:"
 msgstr ""
 
@@ -217,11 +220,6 @@ msgstr ""
 
 #: ../New-or-Enhanced-Logics.md:114
 msgid "Allows to have custom radiation type for any weapon now. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation)."
-msgstr ""
-
-#: ../New-or-Enhanced-Logics.md:116
-#: ../New-or-Enhanced-Logics.md:214
-msgid "In `rulesmd.ini`"
 msgstr ""
 
 #: ../New-or-Enhanced-Logics.md:139
@@ -244,191 +242,187 @@ msgstr ""
 msgid "Because anims usually don't have an owner the unit will be created with civilian owner unless you use `DestroyAnim` which was modified to store owner and facing information from the destroyed unit."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:154
-msgid "In `art.ini`:"
-msgstr ""
-
-#: ../New-or-Enhanced-Logics.md:168
+#: ../New-or-Enhanced-Logics.md:167
 msgid "Buildings"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:170
+#: ../New-or-Enhanced-Logics.md:169
 msgid "Extended building upgrades logic"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:172
+#: ../New-or-Enhanced-Logics.md:171
 msgid "![image](_static/images/powersup.owner-01.png)   *Upgrading own and allied Power Plants in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:175
+#: ../New-or-Enhanced-Logics.md:174
 msgid "Building upgrades now can be placed on own buildings, on allied buildings and/or on enemy buildings. These three owners can be specified via a new tag, comma-separated. When upgrade is placed on building, it automatically changes it's owner to match the building's owner."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:176
+#: ../New-or-Enhanced-Logics.md:175
 msgid "One upgrade can now be applied to multiple buildings via a new tag, comma-separated."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:177
+#: ../New-or-Enhanced-Logics.md:176
 msgid "Ares-introduced build limit for building upgrades works with this feature."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:186
+#: ../New-or-Enhanced-Logics.md:185
 msgid "Vehicles"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:188
+#: ../New-or-Enhanced-Logics.md:187
 msgid "Stationary vehicles"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:190
+#: ../New-or-Enhanced-Logics.md:189
 msgid "Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:192
+#: ../New-or-Enhanced-Logics.md:191
 msgid "No Manual Move"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:194
+#: ../New-or-Enhanced-Logics.md:193
 msgid "You can now specify whether a TechnoType is unable to receive move command."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:201
+#: ../New-or-Enhanced-Logics.md:200
 msgid "Technos"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:203
+#: ../New-or-Enhanced-Logics.md:202
 msgid "Mind Control enhancement"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:205
+#: ../New-or-Enhanced-Logics.md:204
 msgid "![image](_static/images/mindcontrol-max-range-01.gif)   *Mind Control Range Limit used in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*   ![image](_static/images/mindcontrol-multiple-01.gif)   *Multiple Mind Control unit auto-releases the first victim in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:210
+#: ../New-or-Enhanced-Logics.md:209
 msgid "Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:211
+#: ../New-or-Enhanced-Logics.md:210
 msgid "Mind controllers with multiple controlling slots can now release the first controlled unit when they have reached the control limit and are ordered to control a new target."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:212
+#: ../New-or-Enhanced-Logics.md:211
 msgid "Allows Warheads to play custom `MindControl.Anim` which defaults to `ControlledAnimationType`."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:224
+#: ../New-or-Enhanced-Logics.md:223
 msgid "Spawn range limit"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:226
+#: ../New-or-Enhanced-Logics.md:225
 msgid "![image](_static/images/spawnrange-01.gif)   *Limited pursue range for spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:229
+#: ../New-or-Enhanced-Logics.md:228
 msgid "The spawned units will abort the infinite pursuit if the enemy is out of range. `Spawner.ExtraLimitRange` adds extra pursuit range to the spawned units."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:239
+#: ../New-or-Enhanced-Logics.md:238
 msgid "Promoted Spawns"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:241
+#: ../New-or-Enhanced-Logics.md:240
 msgid "![image](_static/images/promotedspawns-01.gif)   *Promoted Spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:244
+#: ../New-or-Enhanced-Logics.md:243
 msgid "The spawned units will promote as their owner's veterancy."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:252
+#: ../New-or-Enhanced-Logics.md:251
 msgid "Initial Strength"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:254
+#: ../New-or-Enhanced-Logics.md:253
 msgid "You can now specify how many hitpoints a TechnoType starts with."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:262
+#: ../New-or-Enhanced-Logics.md:261
 msgid "Firing offsets for specific Burst shots"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:264
+#: ../New-or-Enhanced-Logics.md:263
 msgid "You can now specify separate firing offsets for each of the shots fired by weapon with `Burst` via using `(Elite)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on which weapons your TechnoType makes use of. *N* in `BurstN` is zero-based burst shot index, and the values are parsed sequentially until no value for either regular or elite weapon is present, with elite weapon defaulting to regular weapon FLH if only it is missing. If no burst-index specific value is available, value from the base key (f.ex `PrimaryFireFLH`) is used."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:265
+#: ../New-or-Enhanced-Logics.md:264
 msgid "Burst-index specific firing offsets are absolute firing offsets and the lateral shifting based on burst index that occurs with the base firing offsets is not applied."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:278
+#: ../New-or-Enhanced-Logics.md:277
 msgid "Weapons"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:280
+#: ../New-or-Enhanced-Logics.md:279
 msgid "Burst.Delays"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:282
+#: ../New-or-Enhanced-Logics.md:281
 msgid "Allows specifying weapon-specific burst shot delays. Takes precedence over the old `BurstDelayX` logic available on VehicleTypes, functions with Infantry & BuildingType weapons (AircraftTypes are not supported due to their weapon firing system being completely different) and allows every shot of `Burst` to have a separate delay instead of only first four shots."
 msgstr ""
 
+#: ../New-or-Enhanced-Logics.md:282
+msgid "If no delay is defined for a shot, it falls back to last delay value defined (f.ex `Burst=3` and `Burst.Delays=10` would use 10 as delay for all shots)."
+msgstr ""
+
 #: ../New-or-Enhanced-Logics.md:283
-msgid "If no delay is defined for a shot, it falls back to last delay value defined (f.ex `Burst=3` and `BurstDelays=10` would use 10 as delay for all shots)."
+msgid "Using `-1` as delay reverts back to old logic (`BurstDelay0-3` for VehicleTypes if available or random value between 3-5 otherwise) for that shot."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:284
-msgid "Using -1 as delay reverts back to old logic (`BurstDelay0-3` for VehicleTypes if available or random value between 3-5 otherwise) for that shot."
-msgstr ""
-
-#: ../New-or-Enhanced-Logics.md:292
+#: ../New-or-Enhanced-Logics.md:291
 msgid "Strafing aircraft weapon customization"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:294
+#: ../New-or-Enhanced-Logics.md:293
 msgid "![image](_static/images/strafing-01.gif)   *Strafing aircraft weapon customization in [Project Phantom](https://www.moddb.com/mods/project-phantom)*"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:297
+#: ../New-or-Enhanced-Logics.md:296
 msgid "Some of the behavior of strafing aircraft weapons (weapon projectile has `ROT` below 2) can now be customized."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:298
+#: ../New-or-Enhanced-Logics.md:297
 msgid "`Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired. Valid values range from 1 to 5, any values smaller or larger are effectively treated same as either 1 or 5, respectively. Defaults to 5."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:299
+#: ../New-or-Enhanced-Logics.md:298
 msgid "`Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined. Defaults to false."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:308
+#: ../New-or-Enhanced-Logics.md:307
 msgid "Radiation enhancements"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:310
+#: ../New-or-Enhanced-Logics.md:309
 msgid "Radiation now has owner by default, so any rad-kills will be scored. This behavior can be reverted by a corresponding tag."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:311
+#: ../New-or-Enhanced-Logics.md:310
 msgid "`AffectsAllies`, `AffectsOwner` and `AffectsEnemies` on `RadSiteWarhead` are respected."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:312
+#: ../New-or-Enhanced-Logics.md:311
 msgid "Currently the rad maker doesn't gain experience from kills, this may change in future."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:313
+#: ../New-or-Enhanced-Logics.md:312
 msgid "Radiation is now able to deal damage to Buildings. To enable set `RadApplicationDelay.Building` value more than 0."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:321
+#: ../New-or-Enhanced-Logics.md:320
 msgid "Weapon targeting filter"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:323
+#: ../New-or-Enhanced-Logics.md:322
 msgid "You can now specify which house this weapon can fire at."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:331
+#: ../New-or-Enhanced-Logics.md:330
 msgid "Warheads"
 msgstr ""
 
@@ -436,144 +430,144 @@ msgstr ""
 msgid "All new warheads can be used with CellSpread and Ares' GenericWarhead superweapon where applicable."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:337
+#: ../New-or-Enhanced-Logics.md:336
 msgid "Generate credits on impact"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:339
+#: ../New-or-Enhanced-Logics.md:338
 msgid "![image](_static/images/hackerfinallyworks-01.gif)   *`TransactMoney` used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:342
+#: ../New-or-Enhanced-Logics.md:341
 msgid "Warheads can now give credits to its owner at impact."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:350
+#: ../New-or-Enhanced-Logics.md:349
 msgid "Reveal map for owner on impact"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:352
+#: ../New-or-Enhanced-Logics.md:351
 msgid "![image](_static/images/revealwarhead-01.gif)   *`SpySat=yes` on `[NUKE]` warhead reveals the map when nuclear missile detonates*"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:355
+#: ../New-or-Enhanced-Logics.md:354
 msgid "Warheads can now reveal the entire map on impact."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:356
+#: ../New-or-Enhanced-Logics.md:355
 msgid "Reveal only applies to the owner of the warhead."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:364
+#: ../New-or-Enhanced-Logics.md:363
 msgid "Shroud map for enemies on impact"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:366
+#: ../New-or-Enhanced-Logics.md:365
 msgid "Warheads can now shroud the entire map on impact."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:367
+#: ../New-or-Enhanced-Logics.md:366
 msgid "Shroud only applies to enemies of the warhead owner."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:375
+#: ../New-or-Enhanced-Logics.md:374
 msgid "Remove disguise on impact"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:377
+#: ../New-or-Enhanced-Logics.md:376
 msgid "Warheads can now remove disguise of spies."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:385
+#: ../New-or-Enhanced-Logics.md:384
 msgid "Break Mind Control on impact"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:387
+#: ../New-or-Enhanced-Logics.md:386
 msgid "Warheads can now break mind control (doesn't apply to perma-MC-ed objects)."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:395
+#: ../New-or-Enhanced-Logics.md:394
 msgid "Critical damage chance"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:397
+#: ../New-or-Enhanced-Logics.md:396
 msgid "Warheads can now apply additional chance-based damage (known as \"critical\" damage) with the ability to customize chance, damage, affected targets, and animations of critical strike."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:411
+#: ../New-or-Enhanced-Logics.md:410
 msgid "Custom 'SplashList' on Warheads"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:413
+#: ../New-or-Enhanced-Logics.md:412
 msgid "![image](_static/images/splashlist-01.gif)"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:414
+#: ../New-or-Enhanced-Logics.md:413
 msgid "Allows Warheads to play custom water splash animations. See vanilla's [Conventional](https://www.modenc.renegadeprojects.com/Conventional) system here."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:423
+#: ../New-or-Enhanced-Logics.md:422
 msgid "Projectiles"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:425
+#: ../New-or-Enhanced-Logics.md:424
 msgid "Projectile interception logic"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:427
+#: ../New-or-Enhanced-Logics.md:426
 msgid "![image](_static/images/projectile-interception-01.gif)   *Interception logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberium-crisis) mod*"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:430
+#: ../New-or-Enhanced-Logics.md:429
 msgid "Projectiles can now be made targetable by certain TechnoTypes. Interceptor TechnoType's projectile must be `Inviso=yes` and `AA=yes` in order for it to work properly and the projectile must be used in a primary Weapon."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:431
+#: ../New-or-Enhanced-Logics.md:430
 msgid "`Interceptor.GuardRange` is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:432
+#: ../New-or-Enhanced-Logics.md:431
 msgid "`Interceptor.EliteGuardRange` value is used if the unit veterancy is Elite."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:433
+#: ../New-or-Enhanced-Logics.md:432
 msgid "`Interceptor.MinimumGuardRange` is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:434
+#: ../New-or-Enhanced-Logics.md:433
 msgid "`Interceptor.EliteMinimumGuardRange` value is used if the unit veterancy is Elite."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:449
+#: ../New-or-Enhanced-Logics.md:448
 msgid "Script actions"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:451
+#: ../New-or-Enhanced-Logics.md:450
 msgid "`71` Timed Area Guard"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:453
+#: ../New-or-Enhanced-Logics.md:452
 msgid "Puts the TaskForce into Area Guard Mode for the given units of time. Unlike the original timed Guard script (`5,n`) that just stays in place doing a basic guard operation the \"Area Guard\" action has a more active role attacking nearby invaders or defending units that needs protection."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:455
-#: ../New-or-Enhanced-Logics.md:465
-#: ../New-or-Enhanced-Logics.md:475
+#: ../New-or-Enhanced-Logics.md:454
+#: ../New-or-Enhanced-Logics.md:464
+#: ../New-or-Enhanced-Logics.md:474
 msgid "In `aimd.ini`:"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:461
+#: ../New-or-Enhanced-Logics.md:460
 msgid "`72` Load Onto Transports"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:463
+#: ../New-or-Enhanced-Logics.md:462
 msgid "If the TaskForce contains unit(s) that can be carried by the transports of the same TaskForce then this action will make the units enter the transports. In Single player missions the next action must be \"Wait until fully loaded\" (`43,0`) or the script will not continue."
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:471
+#: ../New-or-Enhanced-Logics.md:470
 msgid "`73` Wait until ammo is full"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:473
+#: ../New-or-Enhanced-Logics.md:472
 msgid "If the TaskForce contains unit(s) that use ammo then the the script will not continue until all these units have fully refilled the ammo."
 msgstr ""

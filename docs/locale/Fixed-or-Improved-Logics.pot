@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-16 21:37+0800\n"
+"POT-Creation-Date: 2021-08-17 09:53+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,9 +55,9 @@ msgstr ""
 #: ../Fixed-or-Improved-Logics.md:13
 #: ../Fixed-or-Improved-Logics.md:29
 #: ../Fixed-or-Improved-Logics.md:42
-#: ../Fixed-or-Improved-Logics.md:80
-#: ../Fixed-or-Improved-Logics.md:108
-#: ../Fixed-or-Improved-Logics.md:128
+#: ../Fixed-or-Improved-Logics.md:79
+#: ../Fixed-or-Improved-Logics.md:107
+#: ../Fixed-or-Improved-Logics.md:127
 msgid "image"
 msgstr ""
 
@@ -154,24 +154,24 @@ msgid "Only applicable to Techno that have Teleport/Chrono Locomotor attached."
 msgstr ""
 
 #: ../Fixed-or-Improved-Logics.md:48
-#: ../Fixed-or-Improved-Logics.md:67
-#: ../Fixed-or-Improved-Logics.md:85
-#: ../Fixed-or-Improved-Logics.md:98
-#: ../Fixed-or-Improved-Logics.md:115
-#: ../Fixed-or-Improved-Logics.md:131
-#: ../Fixed-or-Improved-Logics.md:142
+#: ../Fixed-or-Improved-Logics.md:66
+#: ../Fixed-or-Improved-Logics.md:84
+#: ../Fixed-or-Improved-Logics.md:97
+#: ../Fixed-or-Improved-Logics.md:114
+#: ../Fixed-or-Improved-Logics.md:130
+#: ../Fixed-or-Improved-Logics.md:141
 msgid "In `rulesmd.ini`:"
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:62
+#: ../Fixed-or-Improved-Logics.md:61
 msgid "Re-enable obsolete [JumpjetControls]"
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:64
+#: ../Fixed-or-Improved-Logics.md:63
 msgid "Re-enable obsolete [JumpjetControls], the keys in it will be as the default value of jumpjet units."
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:65
+#: ../Fixed-or-Improved-Logics.md:64
 msgid "Moreover, added two tags for missing ones."
 msgstr ""
 
@@ -179,74 +179,74 @@ msgstr ""
 msgid "`CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix."
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:78
+#: ../Fixed-or-Improved-Logics.md:77
 msgid "Customizable harvester ore gathering animation"
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:80
+#: ../Fixed-or-Improved-Logics.md:79
 msgid "![image](_static/images/oregath.gif)   *Custom ore gathering anims in [Project Phantom](https://www.moddb.com/mods/project-phantom)*"
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:83
+#: ../Fixed-or-Improved-Logics.md:82
 msgid "You can now specify which anim should be drawn when a harvester of specified type is gathering specified type of ore."
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:93
+#: ../Fixed-or-Improved-Logics.md:92
 msgid "Kill spawns on low power"
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:95
+#: ../Fixed-or-Improved-Logics.md:94
 msgid "`Powered=yes` structures that spawns aircraft like Aircrafts Carriers will stop targeting the enemy if low power."
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:96
+#: ../Fixed-or-Improved-Logics.md:95
 msgid "Spawned aircrafts self-destruct if they are flying."
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:104
+#: ../Fixed-or-Improved-Logics.md:103
 msgid "Terrains"
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:106
+#: ../Fixed-or-Improved-Logics.md:105
 msgid "Customizable ore spawners"
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:108
+#: ../Fixed-or-Improved-Logics.md:107
 msgid "![image](_static/images/ore-01.png)   *Different ore spawners in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*"
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:111
+#: ../Fixed-or-Improved-Logics.md:110
 msgid "You can now specify which type of ore certain TerrainType would generate."
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:112
+#: ../Fixed-or-Improved-Logics.md:111
 msgid "It's also now possible to specify a range value for an ore generation area different compared to standard 3x3 rectangle. Ore will be uniformly distributed across all affected cells in a spread range."
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:113
+#: ../Fixed-or-Improved-Logics.md:112
 msgid "You can specify which ore growth stage will be spawned and how much cells will be filled with ore per ore generation animation. Corresponding tags accept either a single integer value or two comma-separated values to allow randomized growth stages from the range (inclusive)."
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:124
+#: ../Fixed-or-Improved-Logics.md:123
 msgid "Weapons"
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:126
+#: ../Fixed-or-Improved-Logics.md:125
 msgid "Customizable disk laser radius"
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:128
+#: ../Fixed-or-Improved-Logics.md:127
 msgid "![image](_static/images/disklaser-radius-values-01.gif)"
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:129
+#: ../Fixed-or-Improved-Logics.md:128
 msgid "You can now set disk laser animation radius using a new tag."
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:138
+#: ../Fixed-or-Improved-Logics.md:137
 msgid "Toggle-able ElectricBolt visuals"
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:140
+#: ../Fixed-or-Improved-Logics.md:139
 msgid "You can now specify individual ElectricBolt bolts you want to disable. Note that this is only a visual change."
 msgstr ""

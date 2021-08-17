@@ -56,7 +56,6 @@ ChronoDistanceFactor=   ; integer, amount to divide the distance to destination 
 ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance
 ChronoRangeMinimum=     ; integer, can be used to set a small range within which the delay is constant
 ChronoDelay=            ; integer, delay after teleport for chronosphere
-
 ```
 
 ### Re-enable obsolete [JumpjetControls] 
