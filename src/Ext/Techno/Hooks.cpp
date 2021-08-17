@@ -67,19 +67,13 @@ DEFINE_HOOK(0x6FD05E, TechnoClass_Rearm_Delay_BurstDelays, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
-
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
 	int burstDelay = -1;
 
-	if (pWeaponExt->Burst_Delays.size() >= (unsigned)pThis->CurrentBurstIndex)
-	{
+	if (pWeaponExt->Burst_Delays.size() > (unsigned)pThis->CurrentBurstIndex)
 		burstDelay = pWeaponExt->Burst_Delays[pThis->CurrentBurstIndex - 1];
-	}
 	else if (pWeaponExt->Burst_Delays.size() > 0)
-	{
 		burstDelay = pWeaponExt->Burst_Delays[pWeaponExt->Burst_Delays.size() - 1];
-	}
 
 	if (burstDelay >= 0)
 	{
@@ -87,14 +81,15 @@ DEFINE_HOOK(0x6FD05E, TechnoClass_Rearm_Delay_BurstDelays, 0x7)
 		return 0x6FD099;
 	}
 
-	return 0;
+	// Restore overridden instructions
+	GET(int, idxCurrentBurst, ECX);
+	return idxCurrentBurst <= 0 || idxCurrentBurst > 4 ? 0x6FD084 : 0x6FD067;
 }
 
 DEFINE_HOOK(0x6F3B37, TechnoClass_Transform_6F3AD0_BurstFLH_1, 0x7)
 {
 	GET(TechnoClass*, pThis, EBX);
 	GET_STACK(int, weaponIndex, STACK_OFFS(0xD8, -0x8));
-
 	bool FLHFound = false;
 	CoordStruct FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
 
@@ -112,8 +107,8 @@ DEFINE_HOOK(0x6F3C88, TechnoClass_Transform_6F3AD0_BurstFLH_2, 0x6)
 {
 	GET(TechnoClass*, pThis, EBX);
 	GET_STACK(int, weaponIndex, STACK_OFFS(0xD8, -0x8));
-
 	bool FLHFound = false;
+
 	TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
 
 	if (FLHFound)
