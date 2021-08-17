@@ -86,33 +86,33 @@ msgstr "新的："
 
 #: ../Whats-New.md:39
 msgid "LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)"
-msgstr ""
+msgstr "激光尾迹 (by Kerbiter, ChrisLv_CN)"
 
 #: ../Whats-New.md:40
 msgid "Anim-to-Unit logic and ability to randomize DestroyAnim (by Otamaa)"
-msgstr ""
+msgstr "动画生成单位与随机DestroyAnim (by Otamaa)"
 
 #: ../Whats-New.md:41
 msgid "Initial Strength for TechnoTypes (by Uranusian)"
-msgstr ""
+msgstr "单位初始血量 (by Uranusian)"
 
 #: ../Whats-New.md:42
 msgid ""
 "Re-enable obsolete `JumpjetControls` for TechnoTypes' default Jumpjet "
 "properties (by Uranusian)"
-msgstr ""
+msgstr "重新激活废弃的`JumpjetControls`作为单位的Jumpjet参数初始值 (by Uranusian)"
 
 #: ../Whats-New.md:43
 msgid "Weapon targeting filter (by Uranusian)"
-msgstr ""
+msgstr "武器瞄准筛选 (by Uranusian)"
 
 #: ../Whats-New.md:44
 msgid "Burst-specific FLH's for TechnoTypes (by Starkku)"
-msgstr ""
+msgstr "Burst独立FLH (by Starkku)"
 
 #: ../Whats-New.md:45
 msgid "Burst delays for weapons (by Starkku)"
-msgstr ""
+msgstr "武器Burst间隔 (by Starkku)"
 
 #: ../Whats-New.md:47 ../Whats-New.md:63 ../Whats-New.md:80 ../Whats-New.md:114
 #: ../Whats-New.md:150
@@ -123,17 +123,17 @@ msgstr "原版修复："
 msgid ""
 "Fixed laser drawing code to allow for thicker lasers in house color draw "
 "mode (by Kerbiter, ChrisLv_CN)"
-msgstr ""
+msgstr "修复了激光绘制的代码使其能够在所属方颜色模式下绘制更粗的激光 (by Kerbiter, ChrisLv_CN)"
 
 #: ../Whats-New.md:49
 msgid "Fixed DeathWeapon not detonating properly (by Uranusian)"
-msgstr ""
+msgstr "修复了DeathWeapon不会正确引爆的问题 (by Uranusian)"
 
 #: ../Whats-New.md:50
 msgid ""
 "Fixed lasers & other effects drawing from wrong offset with weapons that "
 "use Burst (by Starkku)"
-msgstr ""
+msgstr "修复了激光和其他效果在Burst武器上绘制偏移错误的问题 (by Starkku)"
 
 #: ../Whats-New.md:52 ../Whats-New.md:66 ../Whats-New.md:72 ../Whats-New.md:84
 #: ../Whats-New.md:127
@@ -144,7 +144,7 @@ msgstr "火卫一修复："
 msgid ""
 "Fixed extended building upgrades logic not properly interact with Ares' "
 "BuildLimit check (by Uranusian)"
-msgstr ""
+msgstr "修复了扩展建筑升级与Ares的BuildLimit检查不兼容的问题 (by Uranusian)"
 
 #: ../Whats-New.md:55
 msgid "0.2.2"
@@ -154,36 +154,36 @@ msgstr ""
 msgid ""
 "Customizable producing progress \"bars\" like CnC:Remastered did (by "
 "Uranusian)"
-msgstr ""
+msgstr "像《命令与征服：重制版》一样的自定义生产进度“条” (by Uranusian)"
 
 #: ../Whats-New.md:59
 msgid "Customizable cameo sorting priority (by Uranusian)"
-msgstr ""
+msgstr "自定义图标排序优先级 (by Uranusian)"
 
 #: ../Whats-New.md:60
 msgid "Customizable harvester ore gathering animation (by secsome, Uranusian)"
-msgstr ""
+msgstr "自定义矿车采矿动画 (by secsome, Uranusian)"
 
 #: ../Whats-New.md:61
 msgid ""
 "Allow making technos unable to be issued with movement order (by "
 "Uranusian)"
-msgstr ""
+msgstr "允许使单位无法接受移动指令 (by Uranusian)"
 
 #: ../Whats-New.md:64
 msgid ""
 "Fixed non-IME keyboard input to be working correctly for languages / "
 "keyboard layouts that use character ranges other than Basic Latin and "
 "Latin-1 Supplement (by Belonit)"
-msgstr ""
+msgstr "修复了非输入法键盘输入对于使用基础拉丁/拉丁-1以外的语言/键盘布局的支持 (by Belonit)"
 
 #: ../Whats-New.md:67
 msgid "Fixed the critical damage logic not functioning properly (by Uranusian)"
-msgstr ""
+msgstr "修复了暴击伤害逻辑工作失常的问题 (by Uranusian)"
 
 #: ../Whats-New.md:68
 msgid "Fixed the bug when executing the stop command game crashes (by Uranusian)"
-msgstr ""
+msgstr "修复了某些情况下按下停止命令时会崩溃的问题 (by Uranusian)"
 
 #: ../Whats-New.md:70
 msgid "0.2.1.1"
@@ -193,7 +193,7 @@ msgstr ""
 msgid ""
 "Fixed occasional crashes introduced by `Speed=0` stationary vehicles code"
 " (by Starkku)"
-msgstr ""
+msgstr "修复了`Speed=0`的单位偶尔崩溃的问题 (by Starkku)"
 
 #: ../Whats-New.md:75
 msgid "0.2.1"
@@ -203,25 +203,25 @@ msgstr ""
 msgid ""
 "Setting VehicleType `Speed` to 0 now makes game treat them as stationary "
 "(by Starkku)"
-msgstr ""
+msgstr "将载具的速度设置为0将认为他们是静止单位 (by Starkku)"
 
 #: ../Whats-New.md:81
 msgid ""
 "Fixed the bug when after a failed placement the building/defence tab "
 "hotkeys won't trigger placement mode again (by Uranusian)"
-msgstr ""
+msgstr "修复了当一次摆放失败后，建筑标签/防御标签快捷键（Q/W）无法正确响应的问题 (by Uranusian)"
 
 #: ../Whats-New.md:82
 msgid ""
 "Fixed the bug when building with `UndeployInto` plays "
 "`EVA_NewRallypointEstablished` while undeploying (by secsome)"
-msgstr ""
+msgstr "修复了有UndeployInto的建筑在反部署时会播放`EVA_NewRallypointEstablished`的问题 (by secsome)"
 
 #: ../Whats-New.md:85
 msgid ""
 "Fixed the bug when trigger action `125 Build At...` wasn't actually "
 "producing a building when the target cells were occupied (by secsome)"
-msgstr ""
+msgstr "修复了触发动作125`将建筑建造于...`在目标单元格被占用时将无法将建筑放下的问题 (by secsome)"
 
 #: ../Whats-New.md:87
 msgid "0.2"
@@ -231,195 +231,195 @@ msgstr ""
 msgid ""
 "Shield logic for TechnoTypes (by Uranusian, secsome, Belonit) with "
 "warhead additions (by Starkku)"
-msgstr ""
+msgstr "护盾逻辑 (by Uranusian, secsome, Belonit) 及对应的新弹头 (by Starkku)"
 
 #: ../Whats-New.md:91
 msgid "Custom Radiation Types (by AlexB, Otamaa, Belonit, Uranusian)"
-msgstr ""
+msgstr "自定义辐射 (by AlexB, Otamaa, Belonit, Uranusian)"
 
 #: ../Whats-New.md:92
 msgid ""
 "New ScriptType actions `71 Timed Area Guard`, `72 Load Onto Transports`, "
 "`73 Wait until ammo is full` (by FS-21)"
-msgstr ""
+msgstr "新的脚本`71 时效性区域警戒`，`72 向载具中装载`，`73 等待直到装满弹药` (by FS-21)"
 
 #: ../Whats-New.md:93
 msgid ""
 "Ore drills now have customizable ore type, range, ore growth stage and "
 "amount of cells generated (by Kerbiter)"
-msgstr ""
+msgstr "矿柱自定义生成矿石类型，范围，生长阶段和生长格数 (by Kerbiter)"
 
 #: ../Whats-New.md:94
 msgid ""
 "Basic projectile interception logic (by AutoGavy, ChrisLv_CN, Kerbiter, "
 "Erzoid/SukaHati)"
-msgstr ""
+msgstr "基本的抛射体拦截逻辑 (by AutoGavy, ChrisLv_CN, Kerbiter, Erzoid/SukaHati)"
 
 #: ../Whats-New.md:95
 msgid ""
 "Customizable harvester active/total counter next to credits counter (by "
 "Uranusian)"
-msgstr ""
+msgstr "资金计数器旁边的可自定义的矿车活动/总共计数器 (by Uranusian)"
 
 #: ../Whats-New.md:96
 msgid "Select Next Idle Harvester hotkey command (by Kerbiter)"
-msgstr ""
+msgstr "选择下一矿车快捷键 (by Kerbiter)"
 
 #: ../Whats-New.md:97
 msgid "Dump Object Info hotkey command (by secsome, FS-21)"
-msgstr ""
+msgstr "输出目标信息快捷键 (by secsome, FS-21)"
 
 #: ../Whats-New.md:98
 msgid "Remove Disguise and Remove Mind Control warhead effects (by secsome)"
-msgstr ""
+msgstr "反伪装和反心控弹头 (by secsome)"
 
 #: ../Whats-New.md:99
 msgid "Custom per-warhead SplashLists (by Uranusian)"
-msgstr ""
+msgstr "自定义弹头水花动画 (by Uranusian)"
 
 #: ../Whats-New.md:100
 msgid ""
 "`AnimList.PickRandom` used to randomize `AnimList` with no side effects "
 "(by secsome)"
-msgstr ""
+msgstr "`AnimList.PickRandom`作为无副作用的随机`AnimList` (by secsome)"
 
 #: ../Whats-New.md:101
 msgid "Chance-based critical damage system on warheads (by AutoGavy)"
-msgstr ""
+msgstr "基于概率的弹头暴击伤害系统 (by AutoGavy)"
 
 #: ../Whats-New.md:102
 msgid "Optional mind control range limit (by Uranusian)"
-msgstr ""
+msgstr "可选的心灵控制距离 (by Uranusian)"
 
 #: ../Whats-New.md:103
 msgid ""
 "Multiple mind controllers can now release units on overload (by "
 "Uranusian, secsome)"
-msgstr ""
+msgstr "多重心控可以在过载时释放单位 (by Uranusian, secsome)"
 
 #: ../Whats-New.md:104
 msgid ""
 "Spawns now can be killed on low power and have limited pursuing range (by"
 " FS-21)"
-msgstr ""
+msgstr "子机在断电模式下坠毁和有限追击距离 (by FS-21)"
 
 #: ../Whats-New.md:105
 msgid "Spawns can now have the same exp. level as owner techno (by Uranusian)"
-msgstr ""
+msgstr "子机与发射者共有经验等级 (by Uranusian)"
 
 #: ../Whats-New.md:106
 msgid ""
 "`TurretOffset` now accepts `F,L,H` and `F,L` values instead of just `F` "
 "value (by Kerbiter)"
-msgstr ""
+msgstr "`TurretOffset`现在除了`F`以外还可以接受`F,L,H`和`F,L`作为值 (by Kerbiter)"
 
 #: ../Whats-New.md:107
 msgid "ElectricBolt arc visuals can now be disabled per-arc (by Otamaa)"
-msgstr ""
+msgstr "特斯拉电弧（ElectricBolt）的视觉特效中单独的弧可以关闭 (by Otamaa)"
 
 #: ../Whats-New.md:108
 msgid "Semantic locomotor aliases for modder convenience (by Belonit)"
-msgstr ""
+msgstr "为modder方便所用的locomotor别称 (by Belonit)"
 
 #: ../Whats-New.md:109
 msgid ""
 "Ability to specify amount of shots for strafing aircraft and burst "
 "simulation (by Starkku)"
-msgstr ""
+msgstr "扫射飞机每轮射击次数与Burst模拟 (by Starkku)"
 
 #: ../Whats-New.md:110
 msgid ""
 "Customizeable Teleport/Chrono Locomotor properties per TechnoType (by "
 "Otamaa)"
-msgstr ""
+msgstr "自定义超时空移动参数 (by Otamaa)"
 
 #: ../Whats-New.md:111
 msgid "Maximum waypoints amount increased from 702 to 2147483647 (by secsome)"
-msgstr ""
+msgstr "路径点数量上限由702增加到2147483647 (by secsome)"
 
 #: ../Whats-New.md:112
 msgid "Customizeable Missing Cameo file (by Uranusian)"
-msgstr ""
+msgstr "自定义缺省图标 (by Uranusian)"
 
 #: ../Whats-New.md:115
 msgid ""
 "Map previews with zero size won't crash the game anymore (by Kerbiter, "
 "Belonit)"
-msgstr ""
+msgstr "0大小的地图预览不再使游戏崩溃 (by Kerbiter, Belonit)"
 
 #: ../Whats-New.md:116
 msgid "Tileset 255+ bridge fix (by E1 Elite)"
-msgstr ""
+msgstr "Tileset 255+的桥修复 (by E1 Elite)"
 
 #: ../Whats-New.md:117
 msgid ""
 "Fixed fatal errors when `Blowfish.dll` couldn't be registered in the "
 "system properly due to missing admin rights (by Belonit)"
-msgstr ""
+msgstr "修复了由于无管理员权限导致的`Blowfish.dll`未被注册导致的致命错误 (by Belonit)"
 
 #: ../Whats-New.md:118
 msgid ""
 "Fix to take Burst into account for aircraft weapon shots beyond the first"
 " one (by Starkku)"
-msgstr ""
+msgstr "修复了扫射攻击的飞机只有第一次攻击时读取Burst的问题 (by Starkku)"
 
 #: ../Whats-New.md:119
 msgid ""
 "Fixed the bug when units are already dead but still in map (for sinking, "
 "crashing, dying animation, etc.), they could die again (by Uranusian)"
-msgstr ""
+msgstr "修复了当单位死亡时仍然可以受到伤害导致多次死亡的问题 (by Uranusian)"
 
 #: ../Whats-New.md:120
 msgid ""
 "Fixed the bug when cloaked Desolator was unable to fire his deploy weapon"
 " (by Otamaa)"
-msgstr ""
+msgstr "修复了辐射工兵在隐形时无法使用部署武器的问题 (by Otamaa)"
 
 #: ../Whats-New.md:121
 msgid ""
 "Fixed the bug when `InfiniteMindControl` with `Damage=1` will auto-"
 "release the victim to control new one (by Uranusian)"
-msgstr ""
+msgstr "多重心控单位可以在过载前释放单位 (by Uranusian)"
 
 #: ../Whats-New.md:122
 msgid ""
 "Fixed the bug that script action `Move to cell` was still using leftover "
 "cell calculations from previous games (by secsome)"
-msgstr ""
+msgstr "修复了脚本动作“移动到坐标”使用先前游戏中的残留计算的问题 (by secsome)"
 
 #: ../Whats-New.md:123
 msgid ""
 "Fixed the bug when trigger action `125 Build At...` didn't play buildup "
 "anim (by secsome)"
-msgstr ""
+msgstr "修复了触发动作125“将建筑建造于...” 不能播放建造动画的问题，由新的参数控制 (by secsome)"
 
 #: ../Whats-New.md:124
 msgid ""
 "Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond "
 "specified maximums anymore) (by Otamaa)"
-msgstr ""
+msgstr "修复了DebrisMaximums（生成的碎片不再能超过对应最大上限） (by Otamaa)"
 
 #: ../Whats-New.md:125
 msgid ""
 "Fixes to `DeployFire` logic (`DeployFireWeapon`, `FireOnce`, stop command"
 " now work properly) (by Starkku)"
-msgstr ""
+msgstr "修复了DeployFire逻辑（DeployFireWeapon, FireOnce, 及停止指令现在可以正常运作） (by Starkku)"
 
 #: ../Whats-New.md:128
 msgid ""
 "Properly rewritten a fix for mind-controlled vehicles deploying into "
 "buildings (by FS-21)"
-msgstr ""
+msgstr "重写了被心控的车辆变成建筑的修复 (by FS-21)"
 
 #: ../Whats-New.md:129
 msgid ""
 "Properly rewritten `DeployToFire` fix, tag `Deployed.RememberTarget` is "
 "deprecated, now always on (by Kerbiter)"
-msgstr ""
+msgstr "重写了`DeployToFire`的修复，标签`Deployed.RememberTarget`已被弃用，永久开启 (by Kerbiter)"
 
 #: ../Whats-New.md:130
 msgid "New warheads now work with Ares' `GenericWarhead` superweapon (by Belonit)"
-msgstr ""
+msgstr "新的弹头特效可以与Ares的通用弹头（`GenericWarhead`）超武兼容 (by Belonit)"
 
 #: ../Whats-New.md:132
 msgid "0.1.1"
@@ -427,7 +427,7 @@ msgstr ""
 
 #: ../Whats-New.md:134
 msgid "Fixed an occasional crash when selecting units with a selection box"
-msgstr ""
+msgstr "修复了选择单位时偶然的崩溃问题"
 
 #: ../Whats-New.md:136
 msgid "0.1"
@@ -435,77 +435,77 @@ msgstr ""
 
 #: ../Whats-New.md:139
 msgid "Full-color PCX graphics support (by Belonit)"
-msgstr ""
+msgstr "全彩色PCX支持 (by Belonit)"
 
 #: ../Whats-New.md:140
 msgid "Support for PCX loading screens of any size (by Belonit)"
-msgstr ""
+msgstr "支持任意大小的PCX载入屏幕 (by Belonit)"
 
 #: ../Whats-New.md:141
 msgid ""
 "Extended sidebar tooltips with descriptions, recharge time and power "
 "consumption/generation (by Kerbiter, Belonit)"
-msgstr ""
+msgstr "带有介绍，充能时间，电力生成/消耗的扩展工具提示 (by Kerbiter, Belonit)"
 
 #: ../Whats-New.md:142
 msgid "Selection priority filtering for box selection (by Kerbiter)"
-msgstr ""
+msgstr "选择优先级筛选 (by Kerbiter)"
 
 #: ../Whats-New.md:143
 msgid "Shroud, reveal and money transact warheads (by Belonit)"
-msgstr ""
+msgstr "迷雾弹，揭示弹和金币弹弹头 (by Belonit)"
 
 #: ../Whats-New.md:144
 msgid "Custom game icon command line arg (by Belonit)"
-msgstr ""
+msgstr "自定义游戏图标命令行参数 (by Belonit)"
 
 #: ../Whats-New.md:145
 msgid "Ability to disable black spawn position dots on map preview (by Belonit)"
-msgstr ""
+msgstr "允许关闭游戏预览时的黑点 (by Belonit)"
 
 #: ../Whats-New.md:146
 msgid ""
 "Ability to specify applicable building owner for building upgrades (by "
 "Kerbiter)"
-msgstr ""
+msgstr "允许将建筑升级建给其它可用所属方 (by Kerbiter)"
 
 #: ../Whats-New.md:147
 msgid "Customizable disk laser radius (by Belonit, Kerbiter)"
-msgstr ""
+msgstr "自定义飞碟激光范围 (by Belonit, Kerbiter)"
 
 #: ../Whats-New.md:148
 msgid "Ability to switch to GDI sidebar layout for any side (by Belonit)"
-msgstr ""
+msgstr "允许为任意阵营切换GDI侧边栏布局 (by Belonit)"
 
 #: ../Whats-New.md:151
 msgid ""
 "Deploying mind-controlled TechnoTypes won't make them permanently mind-"
 "controlled anymore (unfinished fix by DCoder)"
-msgstr ""
+msgstr "部署心灵控制单位不再会使他们永久转变所属方 (未完成的修复by DCoder)"
 
 #: ../Whats-New.md:152
 msgid ""
 "SHP debris hardcoded shadows now respect `Shadow=no` tag value (by "
 "Kerbiter)"
-msgstr ""
+msgstr "SHP碎片硬编码影子现在遵循`Shadow=no`设定 (by Kerbiter)"
 
 #: ../Whats-New.md:153
 msgid ""
 "`DeployToFire` vehicles won't lose target on deploy anymore (unfinished "
 "fix by DCoder)"
-msgstr ""
+msgstr "`DeployToFire`不再会因部署失去目标 (未完成的修复by DCoder)"
 
 #: ../Whats-New.md:154
 msgid ""
 "Fixed QWER hotkey tab switching not hiding the displayed tooltip as it "
 "should (by Belonit)"
-msgstr ""
+msgstr "修复了当通过QWER切换标签页时, 工具提示不会消失的问题 (by Belonit)"
 
 #: ../Whats-New.md:155
 msgid "Sidebar tooltips now can go over sidebar bounds (by Belonit)"
-msgstr ""
+msgstr "侧边栏工具提示现在可以超越侧边栏边界 (by Belonit)"
 
 #: ../Whats-New.md:156
 msgid "Lifted stupidly small limit for tooltip character amount (by Belonit)"
-msgstr ""
+msgstr "提升了小的过分的工具提示字符上限 (by Belonit)"
 
