@@ -629,7 +629,7 @@ msgid ""
 "![image](_static/images/revealwarhead-01.gif)   *`SpySat=yes` on `[NUKE]`"
 " warhead reveals the map when nuclear missile detonates*"
 msgstr ""
-"![image](_static/images/revealwarhead-01.gif)   *`SpySat=yes`在`[NUKE]`"
+"![image](_static/images/revealwarhead-01.gif)  \n*`SpySat=yes`在`[NUKE]`"
 "上，使核弹爆炸时开启全图视野*"
 
 #: ../../New-or-Enhanced-Logics.md:354

@@ -75,7 +75,7 @@ msgstr "声音"
 
 #: ../User-Interface.md:17
 msgid "You can now specify which soundtrack themes would play on win or lose."
-msgstr "你可以指定玩家胜利或视频时播放的音轨。"
+msgstr "你可以指定玩家胜利或失败时播放的音轨。"
 
 #: ../User-Interface.md:19 ../User-Interface.md:47 ../User-Interface.md:68
 #: ../User-Interface.md:94 ../User-Interface.md:108 ../User-Interface.md:118
