@@ -733,20 +733,20 @@ msgstr "`Interceptor.GuardRange`决定拦截抛射体的最大距离。而单位
 msgid ""
 "`Interceptor.EliteGuardRange` value is used if the unit veterancy is "
 "Elite."
-msgstr ""
+msgstr "精英级时使用`Interceptor.EliteGuardRange`。"
 
 #: ../../New-or-Enhanced-Logics.md:432
 msgid ""
 "`Interceptor.MinimumGuardRange` is the minimum range of the unit to "
 "intercept projectile. Any projectile under this range will not be "
 "intercepted."
-msgstr ""
+msgstr "`Interceptor.MinimumGuardRange`决定拦截抛射体的最小距离。小于此距离的抛射体不会被拦截。"
 
 #: ../../New-or-Enhanced-Logics.md:433
 msgid ""
 "`Interceptor.EliteMinimumGuardRange` value is used if the unit veterancy "
 "is Elite."
-msgstr ""
+msgstr "精英级时使用`Interceptor.EliteMinimumGuardRange`。"
 
 #: ../../New-or-Enhanced-Logics.md:448
 msgid "Script actions"
@@ -754,7 +754,7 @@ msgstr "脚本动作"
 
 #: ../../New-or-Enhanced-Logics.md:450
 msgid "`71` Timed Area Guard"
-msgstr ""
+msgstr "`71`时效性区域警戒"
 
 #: ../../New-or-Enhanced-Logics.md:452
 msgid ""
@@ -762,16 +762,16 @@ msgid ""
 "Unlike the original timed Guard script (`5,n`) that just stays in place "
 "doing a basic guard operation the \"Area Guard\" action has a more active"
 " role attacking nearby invaders or defending units that needs protection."
-msgstr ""
+msgstr "可以使单位进入一段时间的区域警戒模式。类似脚本**5 警戒（…秒）** (`5,n`)，但是使用的是更具攻击性的区域境界动作。"
 
 #: ../../New-or-Enhanced-Logics.md:454 ../../New-or-Enhanced-Logics.md:464
 #: ../../New-or-Enhanced-Logics.md:474
 msgid "In `aimd.ini`:"
-msgstr ""
+msgstr "在`aimd.ini`中："
 
 #: ../../New-or-Enhanced-Logics.md:460
 msgid "`72` Load Onto Transports"
-msgstr ""
+msgstr "`72`向载具中装载"
 
 #: ../../New-or-Enhanced-Logics.md:462
 msgid ""
@@ -779,15 +779,15 @@ msgid ""
 "of the same TaskForce then this action will make the units enter the "
 "transports. In Single player missions the next action must be \"Wait "
 "until fully loaded\" (`43,0`) or the script will not continue."
-msgstr ""
+msgstr "使该小队内的所有非载具单位进入载具。在战役中，下一条脚本必须为**43 等待到满载** (`43,0`)，否则脚本将不会继续。"
 
 #: ../../New-or-Enhanced-Logics.md:470
 msgid "`73` Wait until ammo is full"
-msgstr ""
+msgstr "`73`等待直到装满弹药"
 
 #: ../../New-or-Enhanced-Logics.md:472
 msgid ""
 "If the TaskForce contains unit(s) that use ammo then the the script will "
 "not continue until all these units have fully refilled the ammo."
-msgstr ""
+msgstr "当小队内所有成员弹药满时继续执行下一个动作。"
 
