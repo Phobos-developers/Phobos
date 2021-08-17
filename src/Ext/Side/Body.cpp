@@ -1,6 +1,6 @@
 #include "Body.h"
 
-#include <Themes.h>
+#include <ThemeClass.h>
 
 template<> const DWORD Extension<SideClass>::Canary = 0x05B10501;
 SideExt::ExtContainer SideExt::ExtMap;
@@ -29,6 +29,7 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Sidebar_HarvesterCounter_Offset.Read(exINI, pSection, "Sidebar.HarvesterCounter.Offset");
 	this->Sidebar_HarvesterCounter_Yellow.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorYellow");
 	this->Sidebar_HarvesterCounter_Red.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorRed");
+	this->Sidebar_ProducingProgress_Offset.Read(exINI, pSection, "Sidebar.ProducingProgress.Offset");
 }
 
 // =============================
@@ -43,6 +44,7 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->Sidebar_HarvesterCounter_Offset)
 		.Process(this->Sidebar_HarvesterCounter_Yellow)
 		.Process(this->Sidebar_HarvesterCounter_Red)
+		.Process(this->Sidebar_ProducingProgress_Offset)
 
 		.Process(this->IngameScore_WinTheme)
 		.Process(this->IngameScore_LoseTheme)

@@ -36,6 +36,7 @@ int Phobos::UI::MaxToolTipWidth = 0;
 bool Phobos::UI::ShowHarvesterCounter = false;
 double Phobos::UI::HarvesterCounter_ConditionYellow = 0.99;
 double Phobos::UI::HarvesterCounter_ConditionRed = 0.5;
+bool Phobos::UI::ShowProducingProgress = false;
 const wchar_t* Phobos::UI::CostLabel = L"";
 const wchar_t* Phobos::UI::PowerLabel = L"";
 const wchar_t* Phobos::UI::TimeLabel = L"";
@@ -112,6 +113,20 @@ bool __stdcall DllMain(HANDLE hInstance, DWORD dwReason, LPVOID v)
 DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 {
 	Patch::Apply();
+
+#ifdef DEBUG
+	MessageBoxW(NULL,
+	L"You can now attach a debugger.\n\n"
+
+	L"To attach a debugger find the YR process in Process Hacker "
+	L"/ Visual Studio processes window and detach debuggers from it, "
+	L"then you can attach your own debugger. After this you should "
+	L"terminate Syringe.exe because it won't automatically exit when YR is closed.\n\n"
+
+	L"Press OK to continue YR execution.",
+	L"Debugger Notice", MB_OK);
+#endif
+
 	return 0;
 }
 
@@ -167,6 +182,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 			pINI->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionYellow", Phobos::UI::HarvesterCounter_ConditionYellow);
 		Phobos::UI::HarvesterCounter_ConditionRed = 
 			pINI->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionRed", Phobos::UI::HarvesterCounter_ConditionRed);
+
+		Phobos::UI::ShowProducingProgress =
+			pINI->ReadBool(SIDEBAR_SECTION, "ProducingProgress.Show", false);
 	}
 
 	Phobos::CloseConfig(pINI);

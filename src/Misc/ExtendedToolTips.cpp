@@ -109,22 +109,22 @@ DEFINE_HOOK(0x6A9316, ExtendedToolTip_HelpText, 0x6)
 DEFINE_HOOK(0x478E10, CCToolTip__Draw1, 0x0)
 {
 	GET(CCToolTip*, pThis, ECX);
-	GET_STACK(bool, drawOnSidebar, 4);
+	GET_STACK(bool, bFullRedraw, 0x4);
 
-	if (!drawOnSidebar || ExtToolTip::isCameo) { // !onSidebar or (onSidebar && ExtToolTip::isCameo)
+	if (!bFullRedraw || ExtToolTip::isCameo) { // !onSidebar or (onSidebar && ExtToolTip::isCameo)
 		ExtToolTip::isCameo = false;
 		ExtToolTip::slaveDraw = false;
 		ExtToolTip::ClearBuffer();
 
-		pThis->Adjust();	//this function re-create CCToolTip
+		pThis->ToolTipManager::Process();	//this function re-create CCToolTip
 	}
 
-	if (pThis->manager.ActiveTooltip) {
-		if (!drawOnSidebar) {
+	if (pThis->CurrentToolTip) {
+		if (!bFullRedraw) {
 			ExtToolTip::slaveDraw = ExtToolTip::isCameo;
 		}
-		pThis->drawOnSidebar = drawOnSidebar;
-		pThis->Draw2();
+		pThis->FullRedraw = bFullRedraw;
+		pThis->Draw2(pThis->CurrentToolTipData);
 	}
 	return 0x478E25;
 }

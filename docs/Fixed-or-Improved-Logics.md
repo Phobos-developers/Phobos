@@ -23,12 +23,17 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Vehicles using `DeployFire` will now explicitly use weapon specified by `DeployFireWeapon` for firing the deploy weapon and respect `FireOnce` setting on weapon and any stop commands issued during firing.
 - Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond specified maximums anymore). Only applied when `DebrisMaximums` values amount is more than 1 for compatibility reasons.
 - Fixed building and defense tab hotkeys not enabling the placement mode after `Cannot build here.` triggered and the placement mode cancelled.
-- Fixed building with `UndeployInto` plays `EVA_NewRallypointEstablished` while undeploying
+- Fixed buildings with `UndeployInto` playing `EVA_NewRallypointEstablished` on undeploying.
+- Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water.
 
 ![image](_static/images/remember-target-after-deploying-01.gif)  
 *Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
 
 - Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
+- Fixed laser drawing code to allow for thicker lasers in house color draw mode.
+- `DeathWeapon` now will properly detonate. 
+  - But still some settings are ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
+- Effects like lasers are no longer drawn from wrong firing offset on weapons that use Burst.
 
 ## Technos
 
@@ -52,6 +57,37 @@ ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter 
 ChronoRangeMinimum=     ; integer, can be used to set a small range within which the delay is constant
 ChronoDelay=            ; integer, delay after teleport for chronosphere
 
+```
+
+### Re-enable obsolete [JumpjetControls] 
+
+- Re-enable obsolete [JumpjetControls], the keys in it will be as the default value of jumpjet units.
+  - Moreover, added two tags for missing ones.
+
+In `rulesmd.ini`:
+```ini
+[JumpjetControls]
+Crash=5.0       ; float
+NoWabbles=no    ; bool
+```
+
+```{note}
+`CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
+```
+
+### Customizable harvester ore gathering animation
+
+![Ore gathering](_static/images/oregath.gif)
+*Custom ore gathering anims in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
+
+- You can now specify which anim should be drawn when a harvester of specified type is gathering specified type of ore.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                     ; TechnoType
+OreGathering.Anims=              ; list of animations
+OreGathering.FramesPerDir=15     ; list of integers
+OreGathering.Tiberiums=0         ; list of Tiberium IDs
 ```
 
 ### Kill spawns on low power

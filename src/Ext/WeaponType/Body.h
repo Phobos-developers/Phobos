@@ -25,17 +25,21 @@ public:
 		Valueable<bool> Bolt_Disable3;
 		Valueable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
+		Valueable<AffectedHouse> CanTargetHouses;
+		ValueableVector<int> Burst_Delays;
 		
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
-			,DiskLaser_Radius(38.2)
-			,DiskLaser_Circumference(240)
-			,RadType()
-			,Rad_NoOwner(false)
-			,Bolt_Disable1(false)
-			,Bolt_Disable2(false)
-			,Bolt_Disable3(false)
-			,Strafing_Shots(5)
-			,Strafing_SimulateBurst(false)
+			, DiskLaser_Radius(38.2)
+			, DiskLaser_Circumference(240)
+			, RadType()
+			, Rad_NoOwner(false)
+			, Bolt_Disable1(false)
+			, Bolt_Disable2(false)
+			, Bolt_Disable3(false)
+			, Strafing_Shots(5)
+			, Strafing_SimulateBurst(false)
+			, CanTargetHouses(AffectedHouse::All)
+			, Burst_Delays()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -43,7 +47,7 @@ public:
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual void Initialize() override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 
@@ -54,7 +58,8 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	class ExtContainer final : public Container<WeaponTypeExt> {
+	class ExtContainer final : public Container<WeaponTypeExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();

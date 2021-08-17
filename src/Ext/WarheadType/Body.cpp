@@ -7,46 +7,46 @@ WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
 
 bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	if (pHouse && pTarget) {
-		if (this->AffectsOwner.Get(this->OwnerObject()->AffectsAllies) && pTarget->Owner == pHouse) {
+	if (pHouse && pTarget)
+	{
+		if (this->AffectsOwner.Get(this->OwnerObject()->AffectsAllies) && pTarget->Owner == pHouse)
 			return true;
-		}
-
+		
 		bool isAllies = pHouse->IsAlliedWith(pTarget);
 
-		if (this->OwnerObject()->AffectsAllies && isAllies) {
+		if (this->OwnerObject()->AffectsAllies && isAllies)
 			return pTarget->Owner == pHouse ? false : true;
-		}
 
-		if (this->AffectsEnemies && !isAllies) {
+		if (this->AffectsEnemies && !isAllies)
 			return true;
-		}
 
 		return false;
 	}
+
 	return true;
 }
 
 bool WarheadTypeExt::ExtData::IsCellEligible(CellClass* const pCell, AffectedTarget allowed)
 {
-	if (allowed & AffectedTarget::AllCells) {
-		if (pCell->LandType == LandType::Water) {
-			// check whether it supports water
+	if (allowed & AffectedTarget::AllCells)
+	{
+		if (pCell->LandType == LandType::Water) // check whether it supports water
 			return (allowed & AffectedTarget::Water) != AffectedTarget::None;
-		}
-		else {
-			// check whether it supports non-water
+		else                                    // check whether it supports non-water
 			return (allowed & AffectedTarget::Land) != AffectedTarget::None;
-		}
 	}
+
 	return true;
 }
 
 bool WarheadTypeExt::ExtData::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget allowed)
 {
-	if (allowed & AffectedTarget::AllContents) {
-		if (pTechno) {
-			switch (pTechno->WhatAmI()) {
+	if (allowed & AffectedTarget::AllContents)
+	{
+		if (pTechno)
+		{
+			switch (pTechno->WhatAmI())
+			{
 			case AbstractType::Infantry:
 				return (allowed & AffectedTarget::Infantry) != AffectedTarget::None;
 			case AbstractType::Unit:
@@ -56,24 +56,26 @@ bool WarheadTypeExt::ExtData::IsTechnoEligible(TechnoClass* const pTechno, Affec
 				return (allowed & AffectedTarget::Building) != AffectedTarget::None;
 			}
 		}
-		else {
+		else
+		{
 			// is the target cell allowed to be empty?
 			return (allowed & AffectedTarget::NoContent) != AffectedTarget::None;
 		}
 	}
+
 	return true;
 }
 
 // =============================
 // load / save
 
-void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
+void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+{
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 
-	if (!pINI->GetSection(pSection)) {
+	if (!pINI->GetSection(pSection))
 		return;
-	}
 
 	INI_EX exINI(pINI);
 
@@ -111,7 +113,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 }
 
 template <typename T>
-void WarheadTypeExt::ExtData::Serialize(T& Stm) {
+void WarheadTypeExt::ExtData::Serialize(T& Stm)
+{
 	Stm
 		.Process(this->SpySat)
 		.Process(this->BigGap)
@@ -142,34 +145,38 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm) {
 		;
 }
 
-void WarheadTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+void WarheadTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+{
 	Extension<WarheadTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void WarheadTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+void WarheadTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+{
 	Extension<WarheadTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
-bool WarheadTypeExt::LoadGlobals(PhobosStreamReader& Stm) {
+bool WarheadTypeExt::LoadGlobals(PhobosStreamReader& Stm)
+{
 	return Stm.Success();
 }
 
-bool WarheadTypeExt::SaveGlobals(PhobosStreamWriter& Stm) {
+bool WarheadTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
+{
 	return Stm.Success();
 }
 
 // =============================
 // container
 
-WarheadTypeExt::ExtContainer::ExtContainer() : Container("WarheadTypeClass") {
-}
+WarheadTypeExt::ExtContainer::ExtContainer() : Container("WarheadTypeClass") { }
 
 WarheadTypeExt::ExtContainer::~ExtContainer() = default;
 
-void WarheadTypeExt::ExtContainer::InvalidatePointer(void* ptr, bool bRemoved) {
-	
+void WarheadTypeExt::ExtContainer::InvalidatePointer(void* ptr, bool bRemoved)
+{
+
 }
 
 // =============================
@@ -180,6 +187,7 @@ DEFINE_HOOK(0x75D1A9, WarheadTypeClass_CTOR, 0x7)
 	GET(WarheadTypeClass*, pItem, EBP);
 
 	WarheadTypeExt::ExtMap.FindOrAllocate(pItem);
+
 	return 0;
 }
 
@@ -188,6 +196,7 @@ DEFINE_HOOK(0x75E5C8, WarheadTypeClass_SDDTOR, 0x6)
 	GET(WarheadTypeClass*, pItem, ESI);
 
 	WarheadTypeExt::ExtMap.Remove(pItem);
+
 	return 0;
 }
 
@@ -205,12 +214,14 @@ DEFINE_HOOK(0x75E0C0, WarheadTypeClass_SaveLoad_Prefix, 0x8)
 DEFINE_HOOK(0x75E2AE, WarheadTypeClass_Load_Suffix, 0x7)
 {
 	WarheadTypeExt::ExtMap.LoadStatic();
+
 	return 0;
 }
 
 DEFINE_HOOK(0x75E39C, WarheadTypeClass_Save_Suffix, 0x5)
 {
 	WarheadTypeExt::ExtMap.SaveStatic();
+
 	return 0;
 }
 
@@ -221,5 +232,6 @@ DEFINE_HOOK(0x75DEA0, WarheadTypeClass_LoadFromINI, 0x5)
 	GET_STACK(CCINIClass*, pINI, 0x150);
 
 	WarheadTypeExt::ExtMap.LoadFromINI(pItem, pINI);
+
 	return 0;
 }

@@ -5,21 +5,116 @@
 
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	// MindControlRangeLimit
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
-	// Interceptor
 	TechnoExt::ApplyInterceptor(pThis);
-	// Powered.KillSpawns
 	TechnoExt::ApplyPowered_KillSpawns(pThis);
-	// Spawner.LimitRange & Spawner.ExtraLimitRange
 	TechnoExt::ApplySpawn_LimitRange(pThis);
-	//
 	TechnoExt::ApplyCloak_Undeployed(pThis);
+
+	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
+	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
+	for (auto const& trail: pExt->LaserTrails)
+		trail->Update(TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret));
+
+	return 0;
+}
+
+
+DEFINE_HOOK(0x6F42F7, TechnoClass_Init_SetLaserTrails, 0x2)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	TechnoExt::InitializeLaserTrails(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x7355C0, TechnoClass_Init_InitialStrength, 0x6) // UnitClass_Init
+DEFINE_HOOK_AGAIN(0x517D69, TechnoClass_Init_InitialStrength, 0x6) // InfantryClass_Init
+DEFINE_HOOK_AGAIN(0x442C7B, TechnoClass_Init_InitialStrength, 0x6) // BuildingClass_Init
+DEFINE_HOOK(0x414057, TechnoClass_Init_InitialStrength, 0x6)       // AircraftClass_Init
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (R->Origin() != 0x517D69)
+	{
+		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		{
+			if (R->Origin() != 0x442C7B)
+				R->EAX(pTypeExt->InitialStrength.Get(R->EAX<int>()));
+			else
+				R->ECX(pTypeExt->InitialStrength.Get(R->ECX<int>()));
+		}
+	}
+	else if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	{
+		auto strength = pTypeExt->InitialStrength.Get(R->EDX<int>());
+		pThis->Health = strength;
+		pThis->EstimatedHealth = strength;
+	}
+
+	return 0;
+}
+
+// Issue #271: Separate burst delay for weapon type
+// Author: Starkku
+DEFINE_HOOK(0x6FD05E, TechnoClass_Rearm_Delay_BurstDelays, 0x7)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(WeaponTypeClass*, pWeapon, EDI);
+	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	int burstDelay = -1;
+
+	if (pWeaponExt->Burst_Delays.size() > (unsigned)pThis->CurrentBurstIndex)
+		burstDelay = pWeaponExt->Burst_Delays[pThis->CurrentBurstIndex - 1];
+	else if (pWeaponExt->Burst_Delays.size() > 0)
+		burstDelay = pWeaponExt->Burst_Delays[pWeaponExt->Burst_Delays.size() - 1];
+
+	if (burstDelay >= 0)
+	{
+		R->EAX(burstDelay);
+		return 0x6FD099;
+	}
+
+	// Restore overridden instructions
+	GET(int, idxCurrentBurst, ECX);
+	return idxCurrentBurst <= 0 || idxCurrentBurst > 4 ? 0x6FD084 : 0x6FD067;
+}
+
+DEFINE_HOOK(0x6F3B37, TechnoClass_Transform_6F3AD0_BurstFLH_1, 0x7)
+{
+	GET(TechnoClass*, pThis, EBX);
+	GET_STACK(int, weaponIndex, STACK_OFFS(0xD8, -0x8));
+	bool FLHFound = false;
+	CoordStruct FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
+
+	if (FLHFound)
+	{
+		R->ECX(FLH.X);
+		R->EBP(FLH.Y);
+		R->EAX(FLH.Z);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F3C88, TechnoClass_Transform_6F3AD0_BurstFLH_2, 0x6)
+{
+	GET(TechnoClass*, pThis, EBX);
+	GET_STACK(int, weaponIndex, STACK_OFFS(0xD8, -0x8));
+	bool FLHFound = false;
+
+	TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
+
+	if (FLHFound)
+		R->EAX(0);
 
 	return 0;
 }

@@ -2,7 +2,6 @@
 
 #include <TechnoTypeClass.h>
 #include <StringTable.h>
-#include <Matrix3D.h>
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
@@ -97,7 +96,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
+	this->NoManualMove.Read(exINI, pSection, "NoManualMove");
+	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
+	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
+
 	this->WarpOut.Read(exINI, pSection, "WarpOut");
 	this->WarpIn.Read(exINI, pSection, "WarpIn");
 	this->WarpAway.Read(exINI, pSection, "WarpAway");
@@ -106,15 +109,76 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChronoMinimumDelay.Read(exINI, pSection, "ChronoMinimumDelay");
 	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
 	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
-	this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
+
+	this->OreGathering_Anims.Read(exINI, pSection, "OreGathering.Anims");
+	this->OreGathering_Tiberiums.Read(exINI, pSection, "OreGathering.Tiberiums");
+	this->OreGathering_FramesPerDir.Read(exINI, pSection, "OreGathering.FramesPerDir");
+
+	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
+  this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
 
-	//Art tags
+	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
 
-	this->TurretOffset.Read(exArtINI, pThis->ImageFile, "TurretOffset");
+	if (strlen(pThis->ImageFile))
+		pSection = pThis->ImageFile;
+
+	this->TurretOffset.Read(exArtINI, pSection, "TurretOffset");
+
+	char tempBuffer[32];
+	for (size_t i = 0; ; ++i)
+	{
+		NullableIdx<LaserTrailTypeClass> trail;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.Type", i);
+		trail.Read(exArtINI, pSection, tempBuffer);
+
+		if (!trail.isset())
+			break;
+
+		Valueable<CoordStruct> flh;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.FLH", i);
+		flh.Read(exArtINI, pSection, tempBuffer);
+
+		Valueable<bool> isOnTurret;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.IsOnTurret", i);
+		isOnTurret.Read(exArtINI, pSection, tempBuffer);
+
+		this->LaserTrailData.push_back({ ValueableIdx<LaserTrailTypeClass>(trail), flh, isOnTurret });
+	}
+
+	bool parseMultiWeapons = pThis->TurretCount > 0 && pThis->WeaponCount > 0;
+	auto weaponCount = parseMultiWeapons ? pThis->WeaponCount : 2;
+	this->WeaponBurstFLHs.resize(weaponCount);
+	this->EliteWeaponBurstFLHs.resize(weaponCount);
+	char tempBufferFLH[48];
+
+	for (int i = 0; i < weaponCount; i++)
+	{
+		for (int j = 0; j < INT_MAX; j++)
+		{
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "Weapon%d", i + 1);
+			auto prefix = parseMultiWeapons ? tempBuffer : i > 0 ? "SecondaryFire" : "PrimaryFire";
+
+			_snprintf_s(tempBufferFLH, sizeof(tempBufferFLH), "%sFLH.Burst%d", prefix, j);
+			Nullable<CoordStruct> FLH;
+			FLH.Read(exArtINI, pSection, tempBufferFLH);
+
+			_snprintf_s(tempBufferFLH, sizeof(tempBufferFLH), "Elite%sFLH.Burst%d", prefix, j);
+			Nullable<CoordStruct> eliteFLH;
+			eliteFLH.Read(exArtINI, pSection, tempBufferFLH);
+
+			if (FLH.isset() & !eliteFLH.isset())
+				eliteFLH = FLH;
+			else if (!FLH.isset() && !eliteFLH.isset())
+				break;
+
+			WeaponBurstFLHs[i].AddItem(FLH.Get());
+			EliteWeaponBurstFLHs[i].AddItem(eliteFLH.Get());
+		}
+	}
 }
 
 template <typename T>
@@ -139,6 +203,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Promote_IncludeSpawns)
 		.Process(this->ImmuneToCrit)
 		.Process(this->MultiMindControl_ReleaseVictim)
+		.Process(this->CameoPriority)
+		.Process(this->NoManualMove)
+		.Process(this->InitialStrength)
 		.Process(this->ShieldType)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
@@ -148,7 +215,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChronoMinimumDelay)
 		.Process(this->ChronoRangeMinimum)
 		.Process(this->ChronoDelay)
-		.Process(this->NotHuman_RandomDeathSequence)
+		.Process(this->OreGathering_Anims)
+		.Process(this->OreGathering_Tiberiums)
+		.Process(this->OreGathering_FramesPerDir)
+		.Process(this->LaserTrailData)
+		.Process(this->DestroyAnim_Random)
+    .Process(this->NotHuman_RandomDeathSequence)
+		.Process(this->WeaponBurstFLHs)
+		.Process(this->EliteWeaponBurstFLHs)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -161,6 +235,26 @@ void TechnoTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<TechnoTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
+}
+
+bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<LaserTrailDataEntry*>(this)->Serialize(stm);
+}
+
+template <typename T>
+bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Serialize(T& stm)
+{
+	return stm
+		.Process(this->idxType)
+		.Process(this->FLH)
+		.Process(this->IsOnTurret)
+		.Success();
 }
 
 // =============================

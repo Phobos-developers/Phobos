@@ -6,6 +6,7 @@
 #include <Utilities/TemplateDef.h>
 
 #include <New/Type/ShieldTypeClass.h>
+#include <New/Type/LaserTrailTypeClass.h>
 
 class Matrix3D;
 
@@ -35,6 +36,9 @@ public:
 		Valueable<bool> Promote_IncludeSpawns;
 		Valueable<bool> ImmuneToCrit;
 		Valueable<bool> MultiMindControl_ReleaseVictim;
+		Valueable<int> CameoPriority;
+		Valueable<bool> NoManualMove;
+		Nullable<int> InitialStrength;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -47,7 +51,31 @@ public:
 		Nullable<int> ChronoRangeMinimum;
 		Nullable<int> ChronoDelay;
 
-		Valueable<bool> NotHuman_RandomDeathSequence;
+		ValueableVector<AnimTypeClass*> OreGathering_Anims;
+		ValueableVector<int> OreGathering_Tiberiums;
+		ValueableVector<int> OreGathering_FramesPerDir;
+		
+		std::vector<DynamicVectorClass<CoordStruct>> WeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> EliteWeaponBurstFLHs;
+
+		Valueable<bool> DestroyAnim_Random;
+    Valueable<bool> NotHuman_RandomDeathSequence;
+
+		struct LaserTrailDataEntry
+		{
+			ValueableIdx<LaserTrailTypeClass> idxType;
+			Valueable<CoordStruct> FLH;
+			Valueable<bool> IsOnTurret;
+
+			bool Load(PhobosStreamReader& stm, bool registerForChange);
+			bool Save(PhobosStreamWriter& stm) const;
+
+		private:
+			template <typename T>
+			bool Serialize(T& stm);
+		};
+
+		ValueableVector<LaserTrailDataEntry> LaserTrailData;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			HealthBar_Hide(false),
@@ -68,6 +96,9 @@ public:
 			Promote_IncludeSpawns(false),
 			ImmuneToCrit(false),
 			MultiMindControl_ReleaseVictim(false),
+			CameoPriority(0),
+			NoManualMove(false),
+			InitialStrength(),
 			ShieldType(),
 			WarpOut(),
 			WarpIn(),
@@ -77,7 +108,12 @@ public:
 			ChronoMinimumDelay(),
 			ChronoRangeMinimum(),
 			ChronoDelay(),
-			NotHuman_RandomDeathSequence(false)
+			OreGathering_Anims(),
+			OreGathering_Tiberiums(),
+			OreGathering_FramesPerDir(),
+			LaserTrailData(),
+			DestroyAnim_Random(true),
+      NotHuman_RandomDeathSequence(false)
 		{ }
 
 		virtual ~ExtData() = default;

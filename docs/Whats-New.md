@@ -33,6 +33,45 @@ In `FAData.ini`:
 
 ## Changelog
 
+### 0.3
+
+New:
+- LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)
+- Anim-to-Unit logic and ability to randomize DestroyAnim (by Otamaa)
+- Initial Strength for TechnoTypes (by Uranusian)
+- Re-enable obsolete `JumpjetControls` for TechnoTypes' default Jumpjet properties (by Uranusian)
+- Weapon targeting filter (by Uranusian)
+- Burst-specific FLH's for TechnoTypes (by Starkku)
+- Burst delays for weapons (by Starkku)
+
+Vanilla fixes:
+- Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
+- Fixed DeathWeapon not detonating properly (by Uranusian)
+- Fixed lasers & other effects drawing from wrong offset with weapons that use Burst (by Starkku)
+
+Phobos fixes:
+- Fixed extended building upgrades logic not properly interact with Ares' BuildLimit check (by Uranusian)
+
+### 0.2.2
+
+New:
+- Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
+- Customizable cameo sorting priority (by Uranusian)
+- Customizable harvester ore gathering animation (by secsome, Uranusian)
+- Allow making technos unable to be issued with movement order (by Uranusian)
+
+Vanilla fixes:
+- Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (by Belonit)
+
+Phobos fixes:
+- Fixed the critical damage logic not functioning properly (by Uranusian)
+- Fixed the bug when executing the stop command game crashes (by Uranusian)
+
+### 0.2.1.1
+
+Phobos fixes:
+- Fixed occasional crashes introduced by `Speed=0` stationary vehicles code (by Starkku)
+
 ### 0.2.1
 
 New:

@@ -6,6 +6,7 @@
 
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
+#include <New/Type/LaserTrailTypeClass.h>
 
 template<> const DWORD Extension<RulesClass>::Canary = 0x12341234;
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
@@ -22,6 +23,8 @@ void RulesExt::Remove(RulesClass* pThis)
 
 void RulesExt::LoadFromINIFile(RulesClass* pThis, CCINIClass* pINI)
 {
+	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
+
 	Data->LoadFromINI(pINI);
 }
 
@@ -46,9 +49,10 @@ void RulesExt::ExtData::InitializeConstants()
 
 }
 
+// earliest loader - can't really do much because nothing else is initialized yet, so lookups won't work
 void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 {
-	// earliest loader - can't really do much because nothing else is initialized yet, so lookups won't work
+
 }
 
 void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
@@ -64,6 +68,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
 	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
+	this->JumpjetCrash.Read(exINI, "JumpjetControls", "Crash");
+	this->JumpjetNoWobbles.Read(exINI, "JumpjetControls", "NoWobbles");
 }
 
 // this runs between the before and after type data loading methods for rules ini
@@ -113,6 +119,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_Shield_Buildings)
 		.Process(this->RadApplicationDelay_Building)
 		.Process(this->MissingCameo)
+		.Process(this->JumpjetCrash)
+		.Process(this->JumpjetNoWobbles)
 		;
 }
 
@@ -202,6 +210,12 @@ DEFINE_HOOK(0x675205, RulesClass_Save_Suffix, 0x8)
 
 	return 0;
 }
+
+// DEFINE_HOOK(0x52D149, InitRules_PostInit, 0x5)
+// {
+// 	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
+// 	return 0;
+// }
 
 DEFINE_HOOK(0x668BF0, RulesClass_Addition, 0x5)
 {
