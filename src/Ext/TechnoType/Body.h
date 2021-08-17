@@ -59,6 +59,7 @@ public:
 		std::vector<DynamicVectorClass<CoordStruct>> EliteWeaponBurstFLHs;
 
 		Valueable<bool> DestroyAnim_Random;
+		Valueable<bool> NotHuman_RandomDeathSequence;
 
 		struct LaserTrailDataEntry
 		{
@@ -111,7 +112,8 @@ public:
 			OreGathering_Tiberiums(),
 			OreGathering_FramesPerDir(),
 			LaserTrailData(),
-			DestroyAnim_Random(true)
+			DestroyAnim_Random(true),
+			NotHuman_RandomDeathSequence(false)
 		{ }
 
 		virtual ~ExtData() = default;

@@ -183,6 +183,19 @@ PowersUp.Owner=Self ; list of Affected House Enumeration (none|owner/self|allies
 PowersUp.Buildings= ; list of BuildingTypes
 ```
 
+## Infantry
+
+### Random death animaton for NotHuman Infantry
+
+- Infantry with `NotHuman=yes` can now play random death anim sequence between `Die1` to `Die5` instead of the hardcoded `Die1`.
+  - Do not forget to tweak infantry anim sequences before enabling this feature, otherwise it will play invisible anim sequence.
+
+In `rulesmd.ini`:
+```ini
+[SOMEINFANTRY]                    ; InfantryType
+NotHuman.RandomDeathSequence=yes  ; boolean
+```
+
 ## Vehicles
 
 ### Stationary vehicles
@@ -418,6 +431,15 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]            ; Warhead
 SplashList=<none>        ; list of animations to play
 SplashList.PickRandom=no ; play a random animation from the list? boolean, defaults to no
+```
+
+### Trigger specific NotHuman infantry Death anim sequence
+- Warheads are now able to trigger specific `NotHuman=yes` infantry `Death` anim sequence using the corresponding tag. It's value represents sequences from `Die1` to `Die5`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]            ; Warhead
+NotHuman.DeathSequence=  ; integer (1 to 5)
 ```
 
 ## Projectiles

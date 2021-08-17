@@ -76,6 +76,8 @@ Phobos fixes:
 
 New:
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary (by Starkku)
+- Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)
+- Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
 
 Vanilla fixes:
 - Fixed the bug when after a failed placement the building/defence tab hotkeys won't trigger placement mode again (by Uranusian)
