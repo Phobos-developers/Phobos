@@ -352,7 +352,7 @@ msgid ""
 "bar, Sidebar.GDIPosition, help with CellSpread, Blowfish.dll-related "
 "errors fix, zero size map previews, semantic locomotor aliases, shields, "
 "input fix"
-msgstr ""
+msgstr "**Belonit (Gluk-v48)** - 项目创始人，关闭载入图空白起始点，使用程序参数自定义游戏图标，全彩色PCX，视野弹，金币弹，PCX载入图，自定义镭射半径，扩展工具提示，建筑升级增强，隐藏血条，UI使用GDI位置，CellSpread扩展，Blowfish.dll相关错误修复，0大小地图预览，Locomotor代称，护盾，输入修复"
 
 #: ../../README.md:77
 msgid ""
@@ -362,46 +362,46 @@ msgid ""
 "harvester hotkey, interceptor enhancement, zero size map previews, "
 "LaserTrails, laser fixes, CI/CD, overhauled Unicode font, docs "
 "maintenance, VSCode configs, code style"
-msgstr ""
+msgstr "**Kerbiter (Metadorius)** - SHP碎片阴影，建筑升级增强，扩展工具提示，选择优先级筛选，TurretOffset增强，自定义矿柱，选择下一个空闲矿车快捷键，拦截者增强，0大小地图预览，激光尾迹，激光修复，CI/CD，增强Unicode字体，说明书维护，VSCode配置，代码风格"
 
 #: ../../README.md:78
 msgid ""
 "**tomsons26** - all-around help, assistance and guidance in reverse-"
 "engineering, YR binary mappings"
-msgstr ""
+msgstr "**tomsons26** - 全方位帮助，逆向工程方面协助与知道，YR解析"
 
 #: ../../README.md:79
 msgid ""
 "**CCHyper** - all-around help, current project logo, assistance and "
 "guidance in reverse-engineering, YR binary mappings"
-msgstr ""
+msgstr "**CCHyper** - 全方位帮助，项目logo，逆向工程方面协助与知道，YR解析"
 
 #: ../../README.md:80
 msgid ""
 "**Ares developers** - YRpp and Syringe which are used, save/load, project"
 " foundation and generally useful code from Ares, unfinished RadTypes "
 "code, prototype deployer fixes"
-msgstr ""
+msgstr "**Ares开发者** - YRpp和Syringe，存读档，Ares的项目基础与有助的代码，未完成的RadType代码，部署修复原型代码"
 
 #: ../../README.md:81
 msgid "**ZΞPHYɌUS** - win/lose themes code"
-msgstr ""
+msgstr "**ZΞPHYɌUS** - 胜利失败音乐"
 
 #: ../../README.md:82
 msgid "**ayylmao** - help with docs"
-msgstr ""
+msgstr "**ayylmao** -  帮助书写说明书"
 
 #: ../../README.md:83
 msgid "**SMxReaver** - help with docs, extensive and thorough testing"
-msgstr ""
+msgstr "**SMxReaver** - 帮助书写说明书，广泛的深度测试"
 
 #: ../../README.md:84
 msgid "**4SG** - help with docs"
-msgstr ""
+msgstr "**4SG** -  帮助书写说明书"
 
 #: ../../README.md:85
 msgid "**wiktorderelf** - overhauled Unicode font"
-msgstr ""
+msgstr "**wiktorderelf** - 增强Unicode字体"
 
 #: ../../README.md:86
 msgid ""
@@ -411,7 +411,7 @@ msgid ""
 "mode responding of tab hotkeys fix, producing progress, custom ore "
 "gathering anim, NoManualMove, DeathWeapon fix, re-enable obsolete "
 "`JumpjetControls`, overhauled Unicode font, help with docs"
-msgstr ""
+msgstr "**Uranusian (Thrifinesma)** - 心灵控制增强，自定义弹头水花动画，矿车指示器，子机经验同步，护盾，重复死亡修复，自定义缺省图标，图标排序优先级，放置模式相应标签快捷键修复，生产进度条，自定义矿石采集动画，禁止手动移动，死亡武器修复，重新激活废弃的`JumpjetControls`，增强Unicode字体，帮助书写说明书"
 
 #: ../../README.md:87
 msgid ""
@@ -421,67 +421,67 @@ msgid ""
 " AnimList.PickRandom, MoveToCell fix, unlimited waypoints, Build At "
 "trigger action buildup anim fix, Undeploy building into a unit plays "
 "`EVA_NewRallyPointEstablished` fix, custom ore gathering anim"
-msgstr ""
+msgstr "**secsome (SEC-SOME)** - debug信息输出快捷键，重构与移植Ares的帮助代码，引入了更多Ares衍生物，移除伪装弹头，移除心控弹头，心灵控制增强，护盾，AnimList.PickRandom，移动到坐标修复，无限路径点，将建筑建造于触发动作建造动画修复，反部署建筑播放`EVA_NewRallyPointEstablished`修复，自定义矿车动画"
 
 #: ../../README.md:88
 msgid ""
 "**Otamaa (Fahroni, BoredEXE)** - help with CellSpread, ported and fixed "
 "custom RadType code, togglable ElectricBolt bolts, customizable Chrono "
 "Locomotor properties per TechnoClass, DebrisMaximums fixes, Anim-to-Unit"
-msgstr ""
+msgstr "**Otamaa (Fahroni, BoredEXE)** - CellSpread扩展，移植并修复RadType代码，可开关的ElectricBolt电弧，自定义超时空Locomotor相关属性，DebrisMaximums修复，动画生成单位"
 
 #: ../../README.md:89
 msgid "**E1 Elite** - TileSet 255 and above bridge repair fix"
-msgstr ""
+msgstr "**E1 Elite** - TileSet 255以上桥梁维修修复"
 
 #: ../../README.md:90
 msgid ""
 "**FS-21** - Dump Object Info enhancements, Powered.KillSpawns, "
 "Spawner.LimitRange, ScriptType Actions 71, 72 & 73, MC deployer fixes, "
 "help with docs"
-msgstr ""
+msgstr "**FS-21** - debug信息输出增强，建筑断电子机坠毁，子机最大航程，脚本动作71、72与73，心灵控制部署修复，帮助书写说明书"
 
 #: ../../README.md:91
 msgid "**AutoGavy** - interceptor logic, warhead critical damage system"
-msgstr ""
+msgstr "**AutoGavy** - 拦截者逻辑，弹头暴击伤害系统"
 
 #: ../../README.md:92
 msgid ""
 "**ChrisLv_CN** - interceptor logic, LaserTrails, laser fixes, general "
 "assistance (work relicensed under [following permission](images/ChrisLv-"
 "relicense.png))"
-msgstr ""
+msgstr "**ChrisLv_CN** - 拦截者逻辑，激光尾迹，激光修复，一般协助（协议部分请见库的声明）"
 
 #: ../../README.md:93
 msgid "**Xkein** - general assistance, YRpp edits"
-msgstr ""
+msgstr "**Xkein** -  一般协助，YRpp编辑"
 
 #: ../../README.md:94
 msgid "**thomassneddon** - general assistance"
-msgstr ""
+msgstr "**thomassneddon** - 一般协助"
 
 #: ../../README.md:95
 msgid ""
 "**Starkku** - Warhead shield penetration & breaking, strafing aircraft "
 "weapon customization, vehicle DeployFire fixes/improvements, stationary "
 "VehicleTypes, Burst logic improvements"
-msgstr ""
+msgstr "**Starkku** - 弹头护盾穿透与破坏，飞机扫射武器自定义，载具DeployFire修复与升级，静止载具，Burst逻辑升级"
 
 #: ../../README.md:96
 msgid "**SukaHati (Erzoid)** - Minimum interceptor guard range"
-msgstr ""
+msgstr "**SukaHati (Erzoid)** - 拦截者最小警戒距离"
 
 #: ../../README.md:97
 msgid "**mevitar** - honorary shield tester *triple* award"
-msgstr ""
+msgstr "**mevitar** - 荣誉护盾测试员*三重*奖章"
 
 #: ../../README.md:98
 msgid "**Damfoos** - extensive and thorough testing"
-msgstr ""
+msgstr "**Damfoos** - 广泛的深度测试"
 
 #: ../../README.md:99
 msgid "**Rise of the East community** - extensive playtesting of in-dev features"
-msgstr ""
+msgstr "**东方崛起社区** - 对开发中功能的广泛游戏测试"
 
 #: ../../README.md:101
 msgid ""
