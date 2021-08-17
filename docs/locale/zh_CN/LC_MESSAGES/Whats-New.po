@@ -19,22 +19,22 @@ msgstr ""
 
 #: ../Whats-New.md:1
 msgid "What's New"
-msgstr ""
+msgstr "新东西"
 
 #: ../Whats-New.md:3
 msgid ""
 "This page lists the history of changes across stable Phobos releases and "
 "also all the stuff that requires modders to change something in their "
 "mods to accomodate."
-msgstr ""
+msgstr "此页面列出了项目的更新日志以及需要modder对mod做的必要改动。"
 
 #: ../Whats-New.md:5
 msgid "Migrating"
-msgstr ""
+msgstr "迁移"
 
 #: ../Whats-New.md:7
 msgid "From vanilla"
-msgstr ""
+msgstr "由原版"
 
 #: ../Whats-New.md:9
 msgid ""
@@ -42,7 +42,7 @@ msgid ""
 "to it being the default value they wouldn't have hardcoded shadows "
 "anymore by default. Override this by specifying `Shadow=yes` for SHP "
 "debris."
-msgstr ""
+msgstr "SHP碎片硬编码的影子现在遵循`Shadow=no`，并且由于这就是默认值，所以他们不再拥有硬编码的影子。为SHP指定`Shadow=yes`以覆盖此设定。"
 
 #: ../Whats-New.md:10
 msgid ""
@@ -50,30 +50,30 @@ msgid ""
 " affect score and radiation field will respect `Affects...` entries. You "
 "can override that with `rulesmd.ini->[SOMEWEAPONTYPE]->Rad.NoOwner=yes` "
 "entry."
-msgstr ""
+msgstr "辐射现在默认拥有所属方，使得辐射击杀可以被算入得分，且辐射场也会遵循`Affects...`设定。可以通过`rulesmd.ini->[SOMEWEAPONTYPE]->Rad.NoOwner=yes`覆盖此设定。"
 
 #: ../Whats-New.md:12
 msgid "From older Phobos versions"
-msgstr ""
+msgstr "由旧版本火卫一"
 
 #: ../Whats-New.md:14
 msgid ""
 "Key `rulesmd.ini->[SOMETECHNOTYPE]->Deployed.RememberTarget` is "
 "deprecated and can be removed now, the bugfix for `DeployToFire` "
 "deployers is now always on."
-msgstr ""
+msgstr "`rulesmd.ini->[SOMETECHNOTYPE]->Deployed.RememberTarget`已弃用并被移除，对`DeployToFire`的修复现在一直开启。"
 
 #: ../Whats-New.md:16
 msgid "For Map Editor (Final Alert 2)"
-msgstr ""
+msgstr "对地图编辑器（Final Alert 2）"
 
 #: ../Whats-New.md:18
 msgid "In `FAData.ini`:"
-msgstr ""
+msgstr "在`FAData.ini`中："
 
 #: ../Whats-New.md:34
 msgid "Changelog"
-msgstr ""
+msgstr "更新日志"
 
 #: ../Whats-New.md:36
 msgid "0.3"
@@ -82,7 +82,7 @@ msgstr ""
 #: ../Whats-New.md:38 ../Whats-New.md:57 ../Whats-New.md:77 ../Whats-New.md:89
 #: ../Whats-New.md:138
 msgid "New:"
-msgstr ""
+msgstr "新的："
 
 #: ../Whats-New.md:39
 msgid "LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)"
@@ -117,7 +117,7 @@ msgstr ""
 #: ../Whats-New.md:47 ../Whats-New.md:63 ../Whats-New.md:80 ../Whats-New.md:114
 #: ../Whats-New.md:150
 msgid "Vanilla fixes:"
-msgstr ""
+msgstr "原版修复："
 
 #: ../Whats-New.md:48
 msgid ""
@@ -138,7 +138,7 @@ msgstr ""
 #: ../Whats-New.md:52 ../Whats-New.md:66 ../Whats-New.md:72 ../Whats-New.md:84
 #: ../Whats-New.md:127
 msgid "Phobos fixes:"
-msgstr ""
+msgstr "火卫一修复："
 
 #: ../Whats-New.md:53
 msgid ""
