@@ -423,7 +423,6 @@ msgid "**wiktorderelf** - overhauled Unicode font"
 msgstr "**wiktorderelf** - 增强Unicode字体"
 
 #: ../../README.md:86
-#, fuzzy
 msgid ""
 "**Uranusian (Thrifinesma)** - Mind Control enhancement, custom warhead "
 "splash list, harvesters counter, promoted spawns, shields, death after "
@@ -477,7 +476,7 @@ msgid ""
 "**ChrisLv_CN** - interceptor logic, LaserTrails, laser fixes, general "
 "assistance (work relicensed under [following permission](images/ChrisLv-"
 "relicense.png))"
-msgstr "**ChrisLv_CN** - 拦截者逻辑，激光尾迹，激光修复，一般协助（协议部分请见库的声明）"
+msgstr "**ChrisLv_CN** - 拦截者逻辑，激光尾迹，激光修复，一般协助（协议部分请见[库的声明](images/ChrisLv-relicense.png)）"
 
 #: ../../README.md:93
 msgid "**Xkein** - general assistance, YRpp edits"
