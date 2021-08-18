@@ -113,7 +113,7 @@ LaserTrailN.IsOnTurret=no   ; boolean, whether the trail origin is turret
 
 - Allows to have custom radiation type for any weapon now. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [RadiationTypes]
 0=SOMERADTYPE
@@ -151,7 +151,7 @@ In `rulesmd.ini`:
 DestroyAnim.Random=yes      ; boolean, whether to randomize DestroyAnim
 ```
 
-In `art.ini`:
+In `artmd.ini`:
 ```ini
 [SOMEANIM]                          ; AnimationType
 CreateUnit=                         ; UnitType
@@ -163,7 +163,6 @@ CreateUnit.RemapAnim=no             ; boolean, whether to remap anim to owner co
 CreateUnit.Mission=Guard            ; MissionType
 CreateUnit.Owner=Victim             ; owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
 ```
-
 
 ## Buildings
 
@@ -224,7 +223,7 @@ NoManualMove=no        ; boolean
 - Mind controllers with multiple controlling slots can now release the first controlled unit when they have reached the control limit and are ordered to control a new target.
 - Allows Warheads to play custom `MindControl.Anim` which defaults to `ControlledAnimationType`.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                       ; TechnoType
 MindControlRangeLimit=-1.0         ; double
@@ -293,8 +292,8 @@ EliteWeaponXFLH.BurstN=        ; int - forward, lateral, height
 ### Burst.Delays
 
 - Allows specifying weapon-specific burst shot delays. Takes precedence over the old `BurstDelayX` logic available on VehicleTypes, functions with Infantry & BuildingType weapons (AircraftTypes are not supported due to their weapon firing system being completely different) and allows every shot of `Burst` to have a separate delay instead of only first four shots.
-- If no delay is defined for a shot, it falls back to last delay value defined (f.ex `Burst=3` and `BurstDelays=10` would use 10 as delay for all shots).
-- Using -1 as delay reverts back to old logic (`BurstDelay0-3` for VehicleTypes if available or random value between 3-5 otherwise) for that shot.
+- If no delay is defined for a shot, it falls back to last delay value defined (f.ex `Burst=3` and `Burst.Delays=10` would use 10 as delay for all shots).
+- Using `-1` as delay reverts back to old logic (`BurstDelay0-3` for VehicleTypes if available or random value between 3-5 otherwise) for that shot.
 
 In `rulesmd.ini`:
 ```ini
@@ -313,7 +312,7 @@ Burst.Delays=-1              ; int - burst delays (comma-separated) for shots in
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]        ; WeaponType
+[SOMEWEAPON]                 ; WeaponType
 Strafing.Shots=5             ; integer
 Strafing.SimulateBurst=false ; bool
 ```

@@ -56,7 +56,6 @@ ChronoDistanceFactor=   ; integer, amount to divide the distance to destination 
 ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance
 ChronoRangeMinimum=     ; integer, can be used to set a small range within which the delay is constant
 ChronoDelay=            ; integer, delay after teleport for chronosphere
-
 ```
 
 ### Re-enable obsolete [JumpjetControls] 
@@ -68,7 +67,7 @@ In `rulesmd.ini`:
 ```ini
 [JumpjetControls]
 Crash=5.0       ; float
-NoWabbles=no    ; bool
+NoWobbles=no    ; bool
 ```
 
 ```{note}
@@ -77,7 +76,7 @@ NoWabbles=no    ; bool
 
 ### Customizable harvester ore gathering animation
 
-![Ore gathering](_static/images/oregath.gif)
+![image](_static/images/oregath.gif)  
 *Custom ore gathering anims in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - You can now specify which anim should be drawn when a harvester of specified type is gathering specified type of ore.

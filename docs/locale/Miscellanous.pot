@@ -1,0 +1,153 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, The Phobos Contributors
+# This file is distributed under the same license as the Phobos package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Phobos \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-08-18 10:40+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../Miscellanous.md:1
+msgid "Miscellanous"
+msgstr ""
+
+#: ../Miscellanous.md:3
+msgid "This page describes every change in Phobos that wasn't categorized into a proper category yet."
+msgstr ""
+
+#: ../Miscellanous.md:5
+msgid "Developer tools"
+msgstr ""
+
+#: ../Miscellanous.md:7
+msgid "Dump Object Info"
+msgstr ""
+
+#: ../Miscellanous.md:9
+msgid "![image](_static/images/objectinfo-01.png)   *Object info dump from [CnC: Reloaded](https://www.moddb.com/mods/cncreloaded/)*"
+msgstr ""
+
+#: ../Miscellanous.md:9
+msgid "image"
+msgstr ""
+
+#: ../Miscellanous.md:12
+msgid "There's a new hotkey to dump selected/hovered object info on press. Available only when the debug tag is set."
+msgstr ""
+
+#: ../Miscellanous.md:14
+msgid "In `rulesmd.ini`:"
+msgstr ""
+
+#: ../Miscellanous.md:20
+msgid "Semantic locomotor aliases"
+msgstr ""
+
+#: ../Miscellanous.md:22
+msgid "It's now possible to write locomotor aliases instead of their CLSIDs in the `Locomotor` tag value. Use the table below to find the needed alias for a locomotor."
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "*Alias*"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "*CLSID*"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "Drive"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "`{4A582741-9839-11d1-B709-00A024DDAFD1}`"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "Jumpjet"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "`{92612C46-F71F-11d1-AC9F-006008055BB5}`"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "Hover"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "`{4A582742-9839-11d1-B709-00A024DDAFD1}`"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "Rocket"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "`{B7B49766-E576-11d3-9BD9-00104B972FE8}`"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "Tunnel"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "`{4A582743-9839-11d1-B709-00A024DDAFD1}`"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "Walk"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "`{4A582744-9839-11d1-B709-00A024DDAFD1}`"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "DropPod"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "`{4A582745-9839-11d1-B709-00A024DDAFD1}`"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "Fly"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "`{4A582746-9839-11d1-B709-00A024DDAFD1}`"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "Teleport"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "`{4A582747-9839-11d1-B709-00A024DDAFD1}`"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "Mech"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "`{55D141B8-DB94-11d1-AC98-006008055BB5}`"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "Ship"
+msgstr ""
+
+#: ../Miscellanous.md:0
+msgid "`{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}`"
+msgstr ""

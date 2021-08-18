@@ -1,0 +1,429 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, The Phobos Contributors
+# This file is distributed under the same license as the Phobos package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Phobos \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-08-18 10:40+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../Whats-New.md:1
+msgid "What's New"
+msgstr ""
+
+#: ../Whats-New.md:3
+msgid "This page lists the history of changes across stable Phobos releases and also all the stuff that requires modders to change something in their mods to accomodate."
+msgstr ""
+
+#: ../Whats-New.md:5
+msgid "Migrating"
+msgstr ""
+
+#: ../Whats-New.md:7
+msgid "From vanilla"
+msgstr ""
+
+#: ../Whats-New.md:9
+msgid "SHP debris hardcoded shadows now respect `Shadow=no` tag value, and due to it being the default value they wouldn't have hardcoded shadows anymore by default. Override this by specifying `Shadow=yes` for SHP debris."
+msgstr ""
+
+#: ../Whats-New.md:10
+msgid "Radiation now has owner by default, which means that radiation kills will affect score and radiation field will respect `Affects...` entries. You can override that with `rulesmd.ini->[SOMEWEAPONTYPE]->Rad.NoOwner=yes` entry."
+msgstr ""
+
+#: ../Whats-New.md:12
+msgid "From older Phobos versions"
+msgstr ""
+
+#: ../Whats-New.md:14
+msgid "Key `rulesmd.ini->[SOMETECHNOTYPE]->Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on."
+msgstr ""
+
+#: ../Whats-New.md:16
+msgid "For Map Editor (Final Alert 2)"
+msgstr ""
+
+#: ../Whats-New.md:18
+msgid "In `FAData.ini`:"
+msgstr ""
+
+#: ../Whats-New.md:34
+msgid "Changelog"
+msgstr ""
+
+#: ../Whats-New.md:36
+msgid "0.3"
+msgstr ""
+
+#: ../Whats-New.md:38
+#: ../Whats-New.md:57
+#: ../Whats-New.md:77
+#: ../Whats-New.md:91
+#: ../Whats-New.md:140
+msgid "New:"
+msgstr ""
+
+#: ../Whats-New.md:39
+msgid "LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)"
+msgstr ""
+
+#: ../Whats-New.md:40
+msgid "Anim-to-Unit logic and ability to randomize DestroyAnim (by Otamaa)"
+msgstr ""
+
+#: ../Whats-New.md:41
+msgid "Initial Strength for TechnoTypes (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:42
+msgid "Re-enable obsolete `JumpjetControls` for TechnoTypes' default Jumpjet properties (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:43
+msgid "Weapon targeting filter (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:44
+msgid "Burst-specific FLH's for TechnoTypes (by Starkku)"
+msgstr ""
+
+#: ../Whats-New.md:45
+msgid "Burst delays for weapons (by Starkku)"
+msgstr ""
+
+#: ../Whats-New.md:47
+#: ../Whats-New.md:63
+#: ../Whats-New.md:82
+#: ../Whats-New.md:116
+#: ../Whats-New.md:152
+msgid "Vanilla fixes:"
+msgstr ""
+
+#: ../Whats-New.md:48
+msgid "Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)"
+msgstr ""
+
+#: ../Whats-New.md:49
+msgid "Fixed DeathWeapon not detonating properly (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:50
+msgid "Fixed lasers & other effects drawing from wrong offset with weapons that use Burst (by Starkku)"
+msgstr ""
+
+#: ../Whats-New.md:52
+#: ../Whats-New.md:66
+#: ../Whats-New.md:72
+#: ../Whats-New.md:86
+#: ../Whats-New.md:129
+msgid "Phobos fixes:"
+msgstr ""
+
+#: ../Whats-New.md:53
+msgid "Fixed extended building upgrades logic not properly interact with Ares' BuildLimit check (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:55
+msgid "0.2.2"
+msgstr ""
+
+#: ../Whats-New.md:58
+msgid "Customizable producing progress \"bars\" like CnC:Remastered did (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:59
+msgid "Customizable cameo sorting priority (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:60
+msgid "Customizable harvester ore gathering animation (by secsome, Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:61
+msgid "Allow making technos unable to be issued with movement order (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:64
+msgid "Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (by Belonit)"
+msgstr ""
+
+#: ../Whats-New.md:67
+msgid "Fixed the critical damage logic not functioning properly (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:68
+msgid "Fixed the bug when executing the stop command game crashes (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:70
+msgid "0.2.1.1"
+msgstr ""
+
+#: ../Whats-New.md:73
+msgid "Fixed occasional crashes introduced by `Speed=0` stationary vehicles code (by Starkku)"
+msgstr ""
+
+#: ../Whats-New.md:75
+msgid "0.2.1"
+msgstr ""
+
+#: ../Whats-New.md:78
+msgid "Setting VehicleType `Speed` to 0 now makes game treat them as stationary (by Starkku)"
+msgstr ""
+
+#: ../Whats-New.md:79
+msgid "Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)"
+msgstr ""
+
+#: ../Whats-New.md:80
+msgid "Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)"
+msgstr ""
+
+#: ../Whats-New.md:83
+msgid "Fixed the bug when after a failed placement the building/defence tab hotkeys won't trigger placement mode again (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:84
+msgid "Fixed the bug when building with `UndeployInto` plays `EVA_NewRallypointEstablished` while undeploying (by secsome)"
+msgstr ""
+
+#: ../Whats-New.md:87
+msgid "Fixed the bug when trigger action `125 Build At...` wasn't actually producing a building when the target cells were occupied (by secsome)"
+msgstr ""
+
+#: ../Whats-New.md:89
+msgid "0.2"
+msgstr ""
+
+#: ../Whats-New.md:92
+msgid "Shield logic for TechnoTypes (by Uranusian, secsome, Belonit) with warhead additions (by Starkku)"
+msgstr ""
+
+#: ../Whats-New.md:93
+msgid "Custom Radiation Types (by AlexB, Otamaa, Belonit, Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:94
+msgid "New ScriptType actions `71 Timed Area Guard`, `72 Load Onto Transports`, `73 Wait until ammo is full` (by FS-21)"
+msgstr ""
+
+#: ../Whats-New.md:95
+msgid "Ore drills now have customizable ore type, range, ore growth stage and amount of cells generated (by Kerbiter)"
+msgstr ""
+
+#: ../Whats-New.md:96
+msgid "Basic projectile interception logic (by AutoGavy, ChrisLv_CN, Kerbiter, Erzoid/SukaHati)"
+msgstr ""
+
+#: ../Whats-New.md:97
+msgid "Customizable harvester active/total counter next to credits counter (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:98
+msgid "Select Next Idle Harvester hotkey command (by Kerbiter)"
+msgstr ""
+
+#: ../Whats-New.md:99
+msgid "Dump Object Info hotkey command (by secsome, FS-21)"
+msgstr ""
+
+#: ../Whats-New.md:100
+msgid "Remove Disguise and Remove Mind Control warhead effects (by secsome)"
+msgstr ""
+
+#: ../Whats-New.md:101
+msgid "Custom per-warhead SplashLists (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:102
+msgid "`AnimList.PickRandom` used to randomize `AnimList` with no side effects (by secsome)"
+msgstr ""
+
+#: ../Whats-New.md:103
+msgid "Chance-based critical damage system on warheads (by AutoGavy)"
+msgstr ""
+
+#: ../Whats-New.md:104
+msgid "Optional mind control range limit (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:105
+msgid "Multiple mind controllers can now release units on overload (by Uranusian, secsome)"
+msgstr ""
+
+#: ../Whats-New.md:106
+msgid "Spawns now can be killed on low power and have limited pursuing range (by FS-21)"
+msgstr ""
+
+#: ../Whats-New.md:107
+msgid "Spawns can now have the same exp. level as owner techno (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:108
+msgid "`TurretOffset` now accepts `F,L,H` and `F,L` values instead of just `F` value (by Kerbiter)"
+msgstr ""
+
+#: ../Whats-New.md:109
+msgid "ElectricBolt arc visuals can now be disabled per-arc (by Otamaa)"
+msgstr ""
+
+#: ../Whats-New.md:110
+msgid "Semantic locomotor aliases for modder convenience (by Belonit)"
+msgstr ""
+
+#: ../Whats-New.md:111
+msgid "Ability to specify amount of shots for strafing aircraft and burst simulation (by Starkku)"
+msgstr ""
+
+#: ../Whats-New.md:112
+msgid "Customizeable Teleport/Chrono Locomotor properties per TechnoType (by Otamaa)"
+msgstr ""
+
+#: ../Whats-New.md:113
+msgid "Maximum waypoints amount increased from 702 to 2147483647 (by secsome)"
+msgstr ""
+
+#: ../Whats-New.md:114
+msgid "Customizeable Missing Cameo file (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:117
+msgid "Map previews with zero size won't crash the game anymore (by Kerbiter, Belonit)"
+msgstr ""
+
+#: ../Whats-New.md:118
+msgid "Tileset 255+ bridge fix (by E1 Elite)"
+msgstr ""
+
+#: ../Whats-New.md:119
+msgid "Fixed fatal errors when `Blowfish.dll` couldn't be registered in the system properly due to missing admin rights (by Belonit)"
+msgstr ""
+
+#: ../Whats-New.md:120
+msgid "Fix to take Burst into account for aircraft weapon shots beyond the first one (by Starkku)"
+msgstr ""
+
+#: ../Whats-New.md:121
+msgid "Fixed the bug when units are already dead but still in map (for sinking, crashing, dying animation, etc.), they could die again (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:122
+msgid "Fixed the bug when cloaked Desolator was unable to fire his deploy weapon (by Otamaa)"
+msgstr ""
+
+#: ../Whats-New.md:123
+msgid "Fixed the bug when `InfiniteMindControl` with `Damage=1` will auto-release the victim to control new one (by Uranusian)"
+msgstr ""
+
+#: ../Whats-New.md:124
+msgid "Fixed the bug that script action `Move to cell` was still using leftover cell calculations from previous games (by secsome)"
+msgstr ""
+
+#: ../Whats-New.md:125
+msgid "Fixed the bug when trigger action `125 Build At...` didn't play buildup anim (by secsome)"
+msgstr ""
+
+#: ../Whats-New.md:126
+msgid "Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond specified maximums anymore) (by Otamaa)"
+msgstr ""
+
+#: ../Whats-New.md:127
+msgid "Fixes to `DeployFire` logic (`DeployFireWeapon`, `FireOnce`, stop command now work properly) (by Starkku)"
+msgstr ""
+
+#: ../Whats-New.md:130
+msgid "Properly rewritten a fix for mind-controlled vehicles deploying into buildings (by FS-21)"
+msgstr ""
+
+#: ../Whats-New.md:131
+msgid "Properly rewritten `DeployToFire` fix, tag `Deployed.RememberTarget` is deprecated, now always on (by Kerbiter)"
+msgstr ""
+
+#: ../Whats-New.md:132
+msgid "New warheads now work with Ares' `GenericWarhead` superweapon (by Belonit)"
+msgstr ""
+
+#: ../Whats-New.md:134
+msgid "0.1.1"
+msgstr ""
+
+#: ../Whats-New.md:136
+msgid "Fixed an occasional crash when selecting units with a selection box"
+msgstr ""
+
+#: ../Whats-New.md:138
+msgid "0.1"
+msgstr ""
+
+#: ../Whats-New.md:141
+msgid "Full-color PCX graphics support (by Belonit)"
+msgstr ""
+
+#: ../Whats-New.md:142
+msgid "Support for PCX loading screens of any size (by Belonit)"
+msgstr ""
+
+#: ../Whats-New.md:143
+msgid "Extended sidebar tooltips with descriptions, recharge time and power consumption/generation (by Kerbiter, Belonit)"
+msgstr ""
+
+#: ../Whats-New.md:144
+msgid "Selection priority filtering for box selection (by Kerbiter)"
+msgstr ""
+
+#: ../Whats-New.md:145
+msgid "Shroud, reveal and money transact warheads (by Belonit)"
+msgstr ""
+
+#: ../Whats-New.md:146
+msgid "Custom game icon command line arg (by Belonit)"
+msgstr ""
+
+#: ../Whats-New.md:147
+msgid "Ability to disable black spawn position dots on map preview (by Belonit)"
+msgstr ""
+
+#: ../Whats-New.md:148
+msgid "Ability to specify applicable building owner for building upgrades (by Kerbiter)"
+msgstr ""
+
+#: ../Whats-New.md:149
+msgid "Customizable disk laser radius (by Belonit, Kerbiter)"
+msgstr ""
+
+#: ../Whats-New.md:150
+msgid "Ability to switch to GDI sidebar layout for any side (by Belonit)"
+msgstr ""
+
+#: ../Whats-New.md:153
+msgid "Deploying mind-controlled TechnoTypes won't make them permanently mind-controlled anymore (unfinished fix by DCoder)"
+msgstr ""
+
+#: ../Whats-New.md:154
+msgid "SHP debris hardcoded shadows now respect `Shadow=no` tag value (by Kerbiter)"
+msgstr ""
+
+#: ../Whats-New.md:155
+msgid "`DeployToFire` vehicles won't lose target on deploy anymore (unfinished fix by DCoder)"
+msgstr ""
+
+#: ../Whats-New.md:156
+msgid "Fixed QWER hotkey tab switching not hiding the displayed tooltip as it should (by Belonit)"
+msgstr ""
+
+#: ../Whats-New.md:157
+msgid "Sidebar tooltips now can go over sidebar bounds (by Belonit)"
+msgstr ""
+
+#: ../Whats-New.md:158
+msgid "Lifted stupidly small limit for tooltip character amount (by Belonit)"
+msgstr ""

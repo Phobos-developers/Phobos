@@ -1,0 +1,296 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, The Phobos Contributors
+# This file is distributed under the same license as the Phobos package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Phobos \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-08-18 10:40+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../User-Interface.md:1
+msgid "User Interface"
+msgstr ""
+
+#: ../User-Interface.md:3
+msgid "This page lists all user interface additions, changes, fixes that are implemented in Phobos."
+msgstr ""
+
+#: ../User-Interface.md:5
+msgid "Bugfixes and miscellanous"
+msgstr ""
+
+#: ../User-Interface.md:7
+msgid "Enabled ability to load full-color non-paletted PCX graphics of any bitness. This applies to every single PCX file that is loaded, including the Ares-supported PCX files."
+msgstr ""
+
+#: ../User-Interface.md:8
+msgid "You can specify custom `gamemd.exe` icon via `-icon` command line argument followed by absolute or relative path to an `*.ico` file (f. ex. `gamemd.exe -icon Resources/clienticon.ico`)."
+msgstr ""
+
+#: ../User-Interface.md:9
+msgid "Fixed `Blowfish.dll`-caused error `***FATAL*** String Manager failed to initialize properly`, which occurred if `Blowfish.dll` could not be registered in the OS, for example, it happened when the player did not have administrator rights. With Phobos, if the game did not find a registered file in the system, it will no longer try to register this file, but will load it bypassing registration."
+msgstr ""
+
+#: ../User-Interface.md:10
+msgid "Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (font support required)."
+msgstr ""
+
+#: ../User-Interface.md:1
+msgid "You can use {download}`the improved vanilla font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which has way more Unicode character coverage than the default one."
+msgstr ""
+
+#: ../User-Interface.md:15
+msgid "Audio"
+msgstr ""
+
+#: ../User-Interface.md:17
+msgid "You can now specify which soundtrack themes would play on win or lose."
+msgstr ""
+
+#: ../User-Interface.md:19
+#: ../User-Interface.md:47
+#: ../User-Interface.md:68
+#: ../User-Interface.md:94
+#: ../User-Interface.md:108
+#: ../User-Interface.md:118
+#: ../User-Interface.md:144
+#: ../User-Interface.md:175
+#: ../User-Interface.md:206
+msgid "In `rulesmd.ini`:"
+msgstr ""
+
+#: ../User-Interface.md:26
+msgid "Hotkey Commands"
+msgstr ""
+
+#: ../User-Interface.md:28
+msgid "`[ ]` Next Idle Harvester"
+msgstr ""
+
+#: ../User-Interface.md:30
+msgid "Selects and centers the camera on the next TechnoType that is counted via the [harvester counter](#harvester-counter) and is currently idle."
+msgstr ""
+
+#: ../User-Interface.md:31
+msgid "If need localization, just add `TXT_NEXT_IDLE_HARVESTER` and `TXT_NEXT_IDLE_HARVESTER_DESC` into your `.csf` file."
+msgstr ""
+
+#: ../User-Interface.md:33
+msgid "`[ ]` Dump Object Info"
+msgstr ""
+
+#: ../User-Interface.md:35
+msgid "Writes currently hovered or last selected object info in log and shows a message. See [this](Miscellanous.md#dump-object-info) for details."
+msgstr ""
+
+#: ../User-Interface.md:36
+msgid "If need localization, just add `TXT_DUMP_OBJECT_INFO` and `TXT_DUMP_OBJECT_INFO_DESC` into your `.csf` file."
+msgstr ""
+
+#: ../User-Interface.md:38
+msgid "Battle screen UI/UX"
+msgstr ""
+
+#: ../User-Interface.md:40
+msgid "Low priority for box selection"
+msgstr ""
+
+#: ../User-Interface.md:42
+msgid "![smartvesters](_static/images/lowpriority-01.gif)   *Harvesters not selected together with battle units in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*"
+msgstr ""
+
+#: ../User-Interface.md:42
+msgid "smartvesters"
+msgstr ""
+
+#: ../User-Interface.md:45
+msgid "You can now set lower priority for an ingame object (currently has effect on units mostly), which means it will be excluded from box selection if there's at least one normal priority unit in the box. Otherwise it would be selected as normal. Works with box+type selecting (type select hotkey + drag) and regular box selecting. Box shift-selection adds low-priority units to the group if there are no normal priority units among the appended ones."
+msgstr ""
+
+#: ../User-Interface.md:53
+msgid "This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually."
+msgstr ""
+
+#: ../User-Interface.md:55
+#: ../User-Interface.md:214
+msgid "In `RA2MD.ini`:"
+msgstr ""
+
+#: ../User-Interface.md:61
+msgid "Hide health bars"
+msgstr ""
+
+#: ../User-Interface.md:63
+msgid "![image](_static/images/healthbar.hide-01.png)   *Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*"
+msgstr ""
+
+#: ../User-Interface.md:63
+#: ../User-Interface.md:126
+#: ../User-Interface.md:163
+#: ../User-Interface.md:183
+msgid "image"
+msgstr ""
+
+#: ../User-Interface.md:66
+msgid "Health bar display can now be turned off as needed, hiding both the health bar box and health pips."
+msgstr ""
+
+#: ../User-Interface.md:74
+msgid "Loading screen"
+msgstr ""
+
+#: ../User-Interface.md:76
+msgid "PCX files can now be used as loadscreen images."
+msgstr ""
+
+#: ../User-Interface.md:77
+msgid "You can specify custom loadscreen with Ares tag `File.LoadScreen`."
+msgstr ""
+
+#: ../User-Interface.md:78
+msgid "The loadscreen size can now be different from the default `800x600` one; if the image is bigger than the screen it's centered and cropped."
+msgstr ""
+
+#: ../User-Interface.md:79
+msgid "This feature works in conjunction with CnCNet5 spawner DLL which resizes loadscreen window to actual monitor size and places the image in center. If there's no CnCNet5 spawner loaded, the window resolution will be always `800x600`."
+msgstr ""
+
+#: ../User-Interface.md:80
+msgid "You can now disable hardcoded black dots that YR engine shows over empty spawn locations, which allows to use prettier and more correctly placed markers that are produced by Map Renderer instead."
+msgstr ""
+
+#: ../User-Interface.md:82
+#: ../User-Interface.md:135
+#: ../User-Interface.md:169
+#: ../User-Interface.md:197
+msgid "In `uimd.ini`:"
+msgstr ""
+
+#: ../User-Interface.md:88
+msgid "Sidebar / Battle UI"
+msgstr ""
+
+#: ../User-Interface.md:90
+msgid "Specify Sidebar style"
+msgstr ""
+
+#: ../User-Interface.md:92
+msgid "It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords."
+msgstr ""
+
+#: ../User-Interface.md:103
+msgid "Cameo Sorting"
+msgstr ""
+
+#: ../User-Interface.md:105
+msgid "You can now specify Cameo Priority for any TechnoType/SuperWeaponType. Vanilla sorting rules are [here](https://modenc.renegadeprojects.com/Cameo_Sorting)."
+msgstr ""
+
+#: ../User-Interface.md:106
+msgid "The Cameo Priority is checked just before evevything vanilla. Greater `CameoPriority` wins."
+msgstr ""
+
+#: ../User-Interface.md:114
+msgid "Custom Missing Cameo (`XXICON.SHP`)"
+msgstr ""
+
+#: ../User-Interface.md:116
+msgid "You can now specify any SHP/PCX file as XXICON.SHP for missing cameo."
+msgstr ""
+
+#: ../User-Interface.md:124
+msgid "Harvester counter"
+msgstr ""
+
+#: ../User-Interface.md:126
+msgid "![image](_static/images/harvestercounter-01.gif)   *Harvester Counter in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*"
+msgstr ""
+
+#: ../User-Interface.md:129
+msgid "An additional counter for your active/total harvesters can be added near the credits indicator."
+msgstr ""
+
+#: ../User-Interface.md:130
+msgid "You can specify which TechnoType should be counted as a Harvester. If not set, the techno with `Harvester=yes` or `Enslaves=SOMESLAVE` will be counted."
+msgstr ""
+
+#: ../User-Interface.md:131
+msgid "The counter is displayed with the format of `Label(Active Harvesters)/(Total Harvesters)`. The label is `⛏ U+26CF` by default."
+msgstr ""
+
+#: ../User-Interface.md:132
+msgid "You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, negative means left/up, positive means right/down."
+msgstr ""
+
+#: ../User-Interface.md:133
+msgid "By setting `HarvesterCounter.ConditionYellow` and `HarvesterCounter.ConditionRed`, the game will warn player by changing the color of counter whenever the active percentage of harvesters less than or equals to them, like HP changing with `ConditionYellow` and `ConditionRed`."
+msgstr ""
+
+#: ../User-Interface.md:1
+msgid "If you use the vanilla font in your mod, you can use {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example."
+msgstr ""
+
+#: ../User-Interface.md:161
+msgid "Producing Progress"
+msgstr ""
+
+#: ../User-Interface.md:163
+msgid "![image](_static/images/producing-progress-01.gif)   *Producing Progress bars in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*"
+msgstr ""
+
+#: ../User-Interface.md:166
+msgid "You can now know your factories' status via sidebar!"
+msgstr ""
+
+#: ../User-Interface.md:167
+msgid "You need to draw your own assets (`tab0xpp.shp`, x is replaced by 0-3) and put them into `sidec0x.mix`."
+msgstr ""
+
+#: ../User-Interface.md:181
+msgid "Tooltips"
+msgstr ""
+
+#: ../User-Interface.md:183
+msgid "![image](_static/images/tooltips-01.png)   *Extended tooltips used in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*"
+msgstr ""
+
+#: ../User-Interface.md:186
+msgid "Sidebar tooltips can now display extended information about the TechnoType/SWType when hovered over it's cameo. In addition the low character limit is lifted when the feature is enabled via the corresponding tag, allowing for 1024 character long tooltips."
+msgstr ""
+
+#: ../User-Interface.md:187
+msgid "TechnoType's tooltip would display it's name, cost, power and description (when applicable)."
+msgstr ""
+
+#: ../User-Interface.md:188
+msgid "SWType's tooltip would display it's name, cost,  and recharge time (when applicable)."
+msgstr ""
+
+#: ../User-Interface.md:189
+msgid "Extended tooltips don't use `TXT_MONEY_FORMAT_1` and `TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time labels (displayed before correspoding values) with the corresponding tags. Characters `$ U+0024`, `⚡ U+26A1` and `⌚ U+231A` are used by default."
+msgstr ""
+
+#: ../User-Interface.md:190
+msgid "Fixed a bug when switching build queue tabs via QWER didn't make tooltips disappear as they should, resulting in stuck tooltips."
+msgstr ""
+
+#: ../User-Interface.md:191
+msgid "The tooltips can now go over the sidebar bounds to accommodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify)."
+msgstr ""
+
+#: ../User-Interface.md:1
+msgid "Same as with harvester counter, you can download {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v3 and higher) or draw your own icons."
+msgstr ""
+
+#: ../User-Interface.md:212
+msgid "The descriptions are designed to be toggleable by users. For now you can only do that externally via client or manually."
+msgstr ""
