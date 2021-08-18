@@ -3,42 +3,41 @@
 #include <BuildingClass.h>
 #include <HouseClass.h>
 
-int BuildingTypeExt::GetEnchancedPower(BuildingClass* pBuilding, HouseClass* pHouse)
+int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse)
 {
-	int nPower = pBuilding->GetPowerOutput();
+	int nAmount = 0;
+	float fFactor = 1.0f;
 
 	for (const auto pBld : pHouse->Buildings)
 	{
-		const auto pSrcType = abstract_cast<BuildingTypeClass*>(pBuilding->GetType());
-		const auto pType = abstract_cast<BuildingTypeClass*>(pBld->GetType());
-		const auto pExt = BuildingTypeExt::ExtMap.Find(pType);
-
-		if (pExt->PowerPlantEnchancer_Buildings.Contains(pSrcType))
-			if (pExt->PowerPlantEnchancer_Amount > 0)
-				nPower += pExt->PowerPlantEnchancer_Amount;
+		const auto pExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
+		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
+		{
+			fFactor *= pExt->PowerPlantEnhancer_Factor.Get(1.0f);
+			nAmount += pExt->PowerPlantEnhancer_Amount.Get(0);
+		}
 	}
 
-	for (const auto pBld : pHouse->Buildings)
-	{
-		const auto pSrcType = abstract_cast<BuildingTypeClass*>(pBuilding->GetType());
-		const auto pType = abstract_cast<BuildingTypeClass*>(pBld->GetType());
-		const auto pExt = BuildingTypeExt::ExtMap.Find(pType);
-
-		if (pExt->PowerPlantEnchancer_Buildings.Contains(pSrcType))
-			if (pExt->PowerPlantEnchancer_Factor > 0)
-				nPower = static_cast<int>(nPower * pExt->PowerPlantEnchancer_Factor);
-	}
-	
-	return nPower;
+	return static_cast<int>(pBuilding->GetPowerOutput() * fFactor) + nAmount;
 }
 
 // Power Plant Enhancer #131
-DEFINE_HOOK(508CF2, HouseClass_Recalc_508C30_Power_Output, 7)
+DEFINE_HOOK(0x508CF2, HouseClass_Recalc_508C30_PowerOutput_Add, 0x7)
 {
 	GET(HouseClass*, pThis, ESI);
 	GET(BuildingClass*, pBld, EDI);
 	
-	pThis->PowerOutput += BuildingTypeExt::GetEnchancedPower(pBld, pThis);
+	pThis->PowerOutput += BuildingTypeExt::GetEnhancedPower(pBld, pThis);
 
 	return 0x508D07;
+}
+
+DEFINE_HOOK(0x508D45, HouseClass_Recalc_508C30_PowerOutput_Check, 0x5)
+{
+	GET(HouseClass*, pThis, ESI);
+
+	if (pThis->PowerOutput < 0)
+		pThis->PowerOutput = 0;
+
+	return 0;
 }
