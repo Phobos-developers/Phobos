@@ -39,8 +39,7 @@ Phobos fixes:
 - Fixed random crashes about CameoPriority (by Uranusian)
 - Fixed trigger action 125 not functioning properly (by Uranusian)
 - Fixed Area Detonation not fallback to Firer House (by Otamaa)
-- RadSite hook adjustment for `FootClass` to support Ares `RadImmune` Ability (by Otamaa)
-- RadSite `Create Light` hook is overwritten to use Phobos own function (by Otamaa)
+- RadSite hook adjustment for `FootClass` to support Ares `RadImmune`; also various fixes to radiation / desolators (by Otamaa)
 
 ### 0.2.2
 
