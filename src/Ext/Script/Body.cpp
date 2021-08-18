@@ -319,6 +319,19 @@ void ScriptExt::WaitUntillFullAmmoAction(TeamClass* pTeam)
 					return;
 				}
 			}
+			else
+			{
+				if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->InAir && pUnit->GetCurrentMission() != Mission::Enter)
+				{
+					auto pAircraft = static_cast<AircraftTypeClass*>(pUnit->GetTechnoType());
+					if (pAircraft->AirportBound)
+					{
+						pUnit->QueueMission(Mission::Enter, false);
+						pUnit->Mission_Enter();
+					}
+				}
+
+			}
 		}
 		pUnit = pUnit->NextTeamMember;
 	} while (pUnit);
@@ -1983,8 +1996,22 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 				
 				if (pUnit->DistanceFrom(pUnit->Destination) / 256.0 > closeEnough)
 				{
-					bForceNextAction = false; 
+					bForceNextAction = false;
+
+					if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0)
+						pUnit->QueueMission(Mission::Move, false);
+
 					continue;
+				}
+				else
+				{
+					if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
+					{
+						pUnit->QueueMission(Mission::Return, false);
+						pUnit->Mission_Enter();
+
+						continue;
+					}
 				}
 			}
 		}
@@ -2235,15 +2262,48 @@ void ScriptExt::Mission_Move_List1Random(TeamClass *pTeam, int calcThreatMode, b
 	{
 		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypeLists.GetItem(attackAITargetType);
 
+		// Still no random target selected
 		if (idxSelectedObject < 0 && objectsList.Count > 0 && !selected)
 		{
-			idxSelectedObject = ScenarioClass::Instance->Random.RandomRanged(0, objectsList.Count - 1);
-			selected = true;
-			Debug::Log("DEBUG: [%s] [%s] Picked a random Techno from the list index [AITargetType][%d] = %s\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, attackAITargetType, objectsList.GetItem(idxSelectedObject)->ID);
+			DynamicVectorClass<int> validIndexes;
+
+			// Finding the objects from the list that actually exists in the map
+			for (int i = 0; i < TechnoClass::Array->Count; i++)
+			{
+				auto itemFromTechnoList = TechnoClass::Array->GetItem(i);
+				auto itemTypeFromTechnoList = TechnoClass::Array->GetItem(i)->GetTechnoType();
+				bool found = false;
+				
+				for (int j = 0; j < objectsList.Count && !found; j++)
+				{
+					auto objectFromList = objectsList.GetItem(j);
+					
+					if (itemTypeFromTechnoList == objectFromList
+						&& itemFromTechnoList->IsAlive
+						&& !itemFromTechnoList->InLimbo
+						&& itemFromTechnoList->IsOnMap
+						&& !itemFromTechnoList->Absorbed
+						&& ((pickAllies && pTeam->FirstUnit->Owner->IsAlliedWith(itemFromTechnoList))
+							|| (!pickAllies && !pTeam->FirstUnit->Owner->IsAlliedWith(itemFromTechnoList))))
+					{
+						validIndexes.AddItem(j);
+						found = true;
+					}
+				}
+			}
+			
+			if (validIndexes.Count > 0)
+			{
+				idxSelectedObject = validIndexes.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, validIndexes.Count - 1));
+				selected = true;
+				
+				Debug::Log("DEBUG: [%s] [%s] Picked a random Techno from the list index [AITargetType][%d][%d] = %s\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, attackAITargetType, idxSelectedObject, objectsList.GetItem(idxSelectedObject)->ID);
+			}
 		}
 		
 		if (selected)
 			pTeamData->IdxSelectedObjectFromAIList = idxSelectedObject;
+
 		Mission_Move(pTeam, calcThreatMode, pickAllies, attackAITargetType, idxSelectedObject);
 	}
 
