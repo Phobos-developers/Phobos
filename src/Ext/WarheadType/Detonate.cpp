@@ -31,7 +31,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 		if (this->SpySat)
 			MapClass::Instance->Reveal(pHouse);
-		
 
 		if (this->TransactMoney)
 			pHouse->TransactMoney(this->TransactMoney);

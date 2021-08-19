@@ -40,6 +40,7 @@ Phobos fixes:
 - Fixed trigger action 125 not functioning properly (by Uranusian)
 - Fixed Area Detonation not fallback to Firer House (by Otamaa)
 - RadSite hook adjustment for `FootClass` to support Ares `RadImmune`; also various fixes to radiation / desolators (by Otamaa)
+- Fixed `Crit.Affects` not functioning properly (by Uranusian)
 
 ### 0.2.2
 
