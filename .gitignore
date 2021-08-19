@@ -15,8 +15,8 @@ DevBuild/
 
 docs/_build/
 docs/locale/.doctrees/
-docs/locale/*.pot
-docs/locale/zh_CN/LC_MESSAGES/*.mo
+*.pot
+*.mo
 
 /.vscode/c_cpp_properties.json
 /.vscode/cspell.json
