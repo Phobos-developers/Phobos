@@ -47,6 +47,16 @@
 			"problemMatcher": []
 		},
 		{
+			"label": "Build Phobos locale files of zh_CN",
+			"type": "process",
+			"command": [],
+			"windows": {
+				"command": "scripts/build_docs_locale.bat",
+			},
+			"group": "build",
+			"problemMatcher": []
+		},
+		{
 			"label": "Cleanup build folders",
 			"type": "process",
 			"command": [],
