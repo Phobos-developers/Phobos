@@ -1435,7 +1435,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		pBuildingExt = BuildingTypeExt::ExtMap.Find(static_cast<BuildingTypeClass*>(pTypeBuilding));
 
 		if (pBuildingExt)
-			nSuperWeapons = pBuildingExt->SuperWeapons.size();
+			nSuperWeapons = pBuildingExt->SuperWeapons.Count;
 
 		if (!pTechno->Owner->IsNeutral()
 			&& pTechnoType->WhatAmI() == AbstractType::BuildingType

@@ -16,7 +16,7 @@ public:
 	public:
 		Valueable<AffectedHouse> PowersUp_Owner;
 		ValueableVector<BuildingTypeClass*> PowersUp_Buildings;
-        ValueableVector<SuperWeaponTypeClass*> SuperWeapons;
+        DynamicVectorClass<SuperWeaponTypeClass*> SuperWeapons;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject),
 			PowersUp_Owner(AffectedHouse::Owner),
