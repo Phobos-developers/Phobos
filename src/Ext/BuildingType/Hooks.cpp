@@ -8,13 +8,17 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 	int nAmount = 0;
 	float fFactor = 1.0f;
 
-	for (const auto pBld : pHouse->Buildings)
+	// Please don't use this logic to neutral house, I'm not sure why it will lead to lag - secsome
+	if (!pHouse->IsNeutral())
 	{
-		const auto pExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
-		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
+		for (const auto pBld : pHouse->Buildings)
 		{
-			fFactor *= pExt->PowerPlantEnhancer_Factor.Get(1.0f);
-			nAmount += pExt->PowerPlantEnhancer_Amount.Get(0);
+			const auto pExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
+			if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
+			{
+				fFactor *= pExt->PowerPlantEnhancer_Factor.Get(1.0f);
+				nAmount += pExt->PowerPlantEnhancer_Amount.Get(0);
+			}
 		}
 	}
 
