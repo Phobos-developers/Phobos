@@ -543,7 +543,6 @@ x=74-81 or 84-91 or 104-105,n
 104        | [AITargetType] index# | Yes | Closer | Picks 1 random target from the selected list |
 105        | [AITargetType] index# | Yes | Farther | Picks 1 random target from the selected list |
 
-
 Note: New Attack actions scripts (74, 75, 78 ,79, 84, 85, 88 & 89) that are focused in target threat use `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from Rulesmd.ini.
 
 Note: Aircrafts that attacks other air units will end all the script. This behavior is intentional because without it aircrafts had some bugs that wasn't fixable at the time of developing the feature.
@@ -685,10 +684,9 @@ x=95-102 or 106-109,n
 108        | [AITargetType] index# | Friendly | Closer | Picks 1 random target from the selected list |
 109        | [AITargetType] index# | Friendly | Farther | Picks 1 random target from the selected list |
 
-
 ### `103` Modify Target Distance
 
-- By default Movement actions `95-102` ends when the Team Leader reaches a distance declared in rulesmd.ini called CloseEnough. When this action is  executed before the Movement actions `95-102` overwrites CloseEnough value. This action works only the first time and CloseEnough will be used again the next Movement action.
+- By default Movement actions `95-102` &  `106-109` ends when the Team Leader reaches a distance declared in rulesmd.ini called CloseEnough. When this action is  executed before the Movement actions `95-102` overwrites CloseEnough value. This action works only the first time and CloseEnough will be used again the next Movement action.
 
 In `aimd.ini`:
 ```ini
