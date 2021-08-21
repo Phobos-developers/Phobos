@@ -113,7 +113,7 @@ LaserTrailN.IsOnTurret=no   ; boolean, whether the trail origin is turret
 
 - Allows to have custom radiation type for any weapon now. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [RadiationTypes]
 0=SOMERADTYPE
@@ -151,7 +151,7 @@ In `rulesmd.ini`:
 DestroyAnim.Random=yes      ; boolean, whether to randomize DestroyAnim
 ```
 
-In `art.ini`:
+In `artmd.ini`:
 ```ini
 [SOMEANIM]                          ; AnimationType
 CreateUnit=                         ; UnitType
@@ -164,7 +164,6 @@ CreateUnit.Mission=Guard            ; MissionType
 CreateUnit.Owner=Victim             ; owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
 ```
 
-
 ## Buildings
 
 ### Extended building upgrades logic
@@ -174,13 +173,26 @@ CreateUnit.Owner=Victim             ; owner house kind, Invoker/Killer/Victim/Ci
 
 - Building upgrades now can be placed on own buildings, on allied buildings and/or on enemy buildings. These three owners can be specified via a new tag, comma-separated. When upgrade is placed on building, it automatically changes it's owner to match the building's owner.
 - One upgrade can now be applied to multiple buildings via a new tag, comma-separated.
-  - Currently Ares-introduced build limit for building upgrades doesn't work with this feature. This may change in future.
+  - Ares-introduced build limit for building upgrades works with this feature. 
 
 In `rulesmd.ini`:
 ```ini
 [UPGRADENAME]       ; BuildingType
-PowersUp.Owner=Self ; list of owners (Self, Ally and/or Enemy)
+PowersUp.Owner=Self ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 PowersUp.Buildings= ; list of BuildingTypes
+```
+
+## Infantry
+
+### Random death animaton for NotHuman Infantry
+
+- Infantry with `NotHuman=yes` can now play random death anim sequence between `Die1` to `Die5` instead of the hardcoded `Die1`.
+  - Do not forget to tweak infantry anim sequences before enabling this feature, otherwise it will play invisible anim sequence.
+
+In `rulesmd.ini`:
+```ini
+[SOMEINFANTRY]                    ; InfantryType
+NotHuman.RandomDeathSequence=yes  ; boolean
 ```
 
 ## Vehicles
@@ -211,7 +223,7 @@ NoManualMove=no        ; boolean
 - Mind controllers with multiple controlling slots can now release the first controlled unit when they have reached the control limit and are ordered to control a new target.
 - Allows Warheads to play custom `MindControl.Anim` which defaults to `ControlledAnimationType`.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                       ; TechnoType
 MindControlRangeLimit=-1.0         ; double
@@ -259,7 +271,35 @@ In `rulesmd.ini`:
 InitialStrength=    ; int
 ```
 
+### Firing offsets for specific Burst shots
+
+- You can now specify separate firing offsets for each of the shots fired by weapon with `Burst` via using `(Elite)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on which weapons your TechnoType makes use of. *N* in `BurstN` is zero-based burst shot index, and the values are parsed sequentially until no value for either regular or elite weapon is present, with elite weapon defaulting to regular weapon FLH if only it is missing. If no burst-index specific value is available, value from the base key (f.ex `PrimaryFireFLH`) is used.
+- Burst-index specific firing offsets are absolute firing offsets and the lateral shifting based on burst index that occurs with the base firing offsets is not applied.
+
+In `artmd.ini`:
+```ini
+[SOMETECHNO]                   ; TechnoType Image
+PrimaryFireFLH.BurstN=         ; int - forward, lateral, height
+ElitePrimaryFireFLH.BurstN=    ; int - forward, lateral, height
+SecondaryFireFLH.BurstN=       ; int - forward, lateral, height
+EliteSecondaryFireFLH.BurstN=  ; int - forward, lateral, height
+WeaponXFLH.BurstN=             ; int - forward, lateral, height
+EliteWeaponXFLH.BurstN=        ; int - forward, lateral, height
+```
+
 ## Weapons
+
+### Burst.Delays
+
+- Allows specifying weapon-specific burst shot delays. Takes precedence over the old `BurstDelayX` logic available on VehicleTypes, functions with Infantry & BuildingType weapons (AircraftTypes are not supported due to their weapon firing system being completely different) and allows every shot of `Burst` to have a separate delay instead of only first four shots.
+- If no delay is defined for a shot, it falls back to last delay value defined (f.ex `Burst=3` and `Burst.Delays=10` would use 10 as delay for all shots).
+- Using `-1` as delay reverts back to old logic (`BurstDelay0-3` for VehicleTypes if available or random value between 3-5 otherwise) for that shot.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                 ; WeaponType
+Burst.Delays=-1              ; int - burst delays (comma-separated) for shots in order from first to last.
+```
 
 ### Strafing aircraft weapon customization
 
@@ -272,7 +312,7 @@ InitialStrength=    ; int
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]        ; WeaponType
+[SOMEWEAPON]                 ; WeaponType
 Strafing.Shots=5             ; integer
 Strafing.SimulateBurst=false ; bool
 ```
@@ -288,6 +328,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]    ; WeaponType
 Rad.NoOwner=no  ; boolean
+```
+
+### Weapon targeting filter
+
+- You can now specify which house this weapon can fire at.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]         ; WeaponType
+CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ## Warheads
@@ -380,6 +430,15 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]            ; Warhead
 SplashList=<none>        ; list of animations to play
 SplashList.PickRandom=no ; play a random animation from the list? boolean, defaults to no
+```
+
+### Trigger specific NotHuman infantry Death anim sequence
+- Warheads are now able to trigger specific `NotHuman=yes` infantry `Death` anim sequence using the corresponding tag. It's value represents sequences from `Die1` to `Die5`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]            ; Warhead
+NotHuman.DeathSequence=  ; integer (1 to 5)
 ```
 
 ## Projectiles

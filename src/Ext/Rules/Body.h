@@ -31,11 +31,16 @@ public:
 		DynamicVectorClass<DynamicVectorClass<TechnoTypeClass*>> AITargetTypeLists;
 		DynamicVectorClass<DynamicVectorClass<ScriptTypeClass*>> AIScriptsLists;
 
+		Valueable<float> JumpjetCrash;
+		Valueable<bool> JumpjetNoWobbles;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Pips_Shield({ -1,-1,-1 })
 			, Pips_Shield_Buildings({ -1,-1,-1 })
 			, RadApplicationDelay_Building(0)
 			, MissingCameo("xxicon.shp")
+			, JumpjetCrash(5.0f)
+			, JumpjetNoWobbles(false)
 		{ }
 
 		virtual ~ExtData() = default;

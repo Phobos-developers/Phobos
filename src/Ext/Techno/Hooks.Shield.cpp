@@ -106,36 +106,6 @@ DEFINE_HOOK(0x6F36F2, TechnoClass_WhatWeaponShouldIUse_Shield, 0x6)
 }
 */
 
-DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse_Shield, 0x8)
-{
-	GET(TechnoClass*, pThis, ESI);
-	GET(TechnoClass*, pTarget, EBP);
-	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, FurtherCheck = 0x6F3754, OriginalCheck = 0x6F36E3 };
-
-	if (!pTarget)
-		return Primary;
-
-	if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
-	{
-		if (const auto pShieldData = pExt->Shield.get())
-		{
-			if (pShieldData->IsActive())
-			{
-				if (pThis->GetWeapon(1))
-				{
-					if (!pShieldData->CanBeTargeted(pThis->GetWeapon(0)->WeaponType))
-						return Secondary;
-					else
-						return FurtherCheck;
-				}
-
-				return Primary;
-			}
-		}
-	}
-	return OriginalCheck;
-}
-
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI_Shield, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
