@@ -540,6 +540,9 @@ x=74-81 or 84-91,n
 89         | [AITargetType] index# | No | Farther, higher threat | Ends when a team member kill the designated target |
 90         | [AITargetType] index# | No | Closer | Ends when a team member kill the designated target |
 91         | [AITargetType] index# | No | Farther | Ends when a team member kill the designated target |
+104        | [AITargetType] index# | Yes | Closer | Picks 1 random target from the selected list |
+105        | [AITargetType] index# | Yes | Farther | Picks 1 random target from the selected list |
+
 
 Note: New Attack actions scripts (74, 75, 78 ,79, 84, 85, 88 & 89) that are focused in target threat use `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from Rulesmd.ini.
 
@@ -667,13 +670,28 @@ In `aimd.ini`:
 x=95-102,n
 ```
 
-| *Action* | *Argument*    | Target Owner | *Target Priority* |
-| :------: | :-----------: | :----------: | :---------------: |
-95         | Target Type# | Enemy | Closer, higher threat |
-96         | Target Type# | Enemy | Farther, higher threat |
-97         | Target Type# | Friendly | Closer |
-98         | Target Type# | Friendly | Farther |
-99         | [AITargetType] index# | Enemy | Closer, higher threat |
-100        | [AITargetType] index# | Enemy | Farther, higher threat |
-101        | [AITargetType] index# | Friendly | Closer |
-102        | [AITargetType] index# | Friendly | Farther |
+| *Action* | *Argument*    | Target Owner | *Target Priority* | *Description*                                 |
+| :------: | :-----------: | :----------: | :---------------: | :-------------------------------------------: |
+95         | Target Type# | Enemy | Closer, higher threat |  |
+96         | Target Type# | Enemy | Farther, higher threat |  |
+97         | Target Type# | Friendly | Closer |  |
+98         | Target Type# | Friendly | Farther |  |
+99         | [AITargetType] index# | Enemy | Closer, higher threat |  |
+100        | [AITargetType] index# | Enemy | Farther, higher threat |  |
+101        | [AITargetType] index# | Friendly | Closer |  |
+102        | [AITargetType] index# | Friendly | Farther |  |
+106        | [AITargetType] index# | Enemy | Closer | Picks 1 random target from the selected list |
+107        | [AITargetType] index# | Enemy | Farther | Picks 1 random target from the selected list |
+108        | [AITargetType] index# | Friendly | Closer | Picks 1 random target from the selected list |
+109        | [AITargetType] index# | Friendly | Farther | Picks 1 random target from the selected list |
+
+
+### `103` Modify Target Distance
+
+- By default Movement actions `95-102` ends when the Team Leader reaches a distance declared in rulesmd.ini called CloseEnough. When this action is  executed before the Movement actions `95-102` overwrites CloseEnough value. This action works only the first time and CloseEnough will be used again the next Movement action.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=103,n
+```
