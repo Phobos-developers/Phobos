@@ -34,6 +34,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `DeathWeapon` now will properly detonate. 
   - But still some settings are ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
 - Effects like lasers are no longer drawn from wrong firing offset on weapons that use Burst.
+- Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 
 ## Technos
 

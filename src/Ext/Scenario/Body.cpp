@@ -5,6 +5,52 @@ std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
 bool ScenarioExt::CellParsed = false;
 
+void ScenarioExt::ExtData::SetVariableToByID(bool bIsGlobal, int nIndex, char bState)
+{
+	auto& dict = Global()->Variables[bIsGlobal];
+
+	auto itr = dict.find(nIndex);
+
+	if (itr != dict.end() && itr->second.Value != bState)
+	{
+		itr->second.Value = bState;
+		ScenarioClass::Instance->VariablesChanged = true;
+		if (!bIsGlobal)
+			TagClass::NotifyLocalChanged(nIndex);
+		else
+			TagClass::NotifyGlobalChanged(nIndex);
+	}
+}
+
+void ScenarioExt::ExtData::GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut)
+{
+	auto& dict = Global()->Variables[bIsGlobal];
+
+	auto itr = dict.find(nIndex);
+	if (itr != dict.end())
+		*pOut = itr->second.Value;
+}
+
+void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
+{
+	int nCount = pINI->GetKeyCount("VariableNames");
+	for (int i = 0; i < nCount; ++i)
+	{
+		auto pKey = pINI->GetKeyName("VariableNames", i);
+		int nIndex;
+		if (sscanf_s(pKey, "%d", &nIndex) == 1)
+		{
+			auto& var = Global()->Variables[bIsGlobal][nIndex];
+			pINI->ReadString("VariableNames", pKey, pKey, Phobos::readBuffer);
+			strcpy(var.Name, strtok(Phobos::readBuffer, ","));
+			if (auto pState = strtok(nullptr, ","))
+				var.Value = atoi(pState) != 0;
+			else
+				var.Value = 0;
+		}
+	}
+}
+
 void ScenarioExt::Allocate(ScenarioClass* pThis)
 {
 	Data = std::make_unique<ScenarioExt::ExtData>(pThis);
@@ -38,6 +84,8 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Waypoints)
+		.Process(this->Variables[0])
+		.Process(this->Variables[1])
 		;
 }
 
@@ -72,6 +120,10 @@ DEFINE_HOOK(0x683549, ScenarioClass_CTOR, 0x9)
 	GET(ScenarioClass*, pItem, EAX);
 
 	ScenarioExt::Allocate(pItem);
+
+	ScenarioExt::Global()->Waypoints.clear();
+	ScenarioExt::Global()->Variables[0].clear();
+	ScenarioExt::Global()->Variables[1].clear();
 
 	return 0;
 }

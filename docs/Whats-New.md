@@ -44,6 +44,7 @@ New:
 - Burst-specific FLH's for TechnoTypes (by Starkku)
 - Burst delays for weapons (by Starkku)
 - Powerplant Enhancer (by secsome)
+- Unlimited Global / Local Variables (by secsome)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
