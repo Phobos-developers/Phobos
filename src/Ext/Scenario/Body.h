@@ -17,12 +17,18 @@ public:
 	{
 	public:
 		std::map<int, CellStruct> Waypoints;
+		std::map<int, Variable> Variables[2]; // 0 for local, 1 for global
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject),
-			Waypoints {}
+			Waypoints { },
+			Variables { }
 		{
 
 		}
+
+		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
+		void GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut);
+		void ReadVariables(bool bIsGlobal, CCINIClass* pINI);
 
 		virtual ~ExtData() = default;
 
