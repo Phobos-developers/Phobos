@@ -42,8 +42,9 @@ void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
 		{
 			auto& var = Global()->Variables[bIsGlobal][nIndex];
 			pINI->ReadString("VariableNames", pKey, pKey, Phobos::readBuffer);
-			strcpy(var.Name, strtok(Phobos::readBuffer, ","));
-			if (auto pState = strtok(nullptr, ","))
+			char* buffer;
+			strcpy_s(var.Name, strtok_s(Phobos::readBuffer, ",", &buffer));
+			if (auto pState = strtok_s(nullptr, ",", &buffer))
 				var.Value = atoi(pState) != 0;
 			else
 				var.Value = 0;
