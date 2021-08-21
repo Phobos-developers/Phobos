@@ -512,14 +512,14 @@ In `aimd.ini`:
 x=73,0
 ```
 
-### `74-81`, `84-91` New Attack Action
+### `74-81`, `84-91`, `104-105` New Attack Action
 
 - These Actions instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
 
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=74-81 or 84-91,n
+x=74-81 or 84-91 or 104-105,n
 ```
 
 | *Action* | *Argument*   | *Repeats* | *Target Priority* | *Description*                                 |
@@ -660,14 +660,14 @@ In `rulesmd.ini`:
 ...
 ```
 
-### `95-102` Moving Team to techno location
+### `95-102`, `106-109` Moving Team to techno location
 
 - These Actions instructs the TeamType to use the TaskForce to approach the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value).
 
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=95-102,n
+x=95-102 or 106-109,n
 ```
 
 | *Action* | *Argument*    | Target Owner | *Target Priority* | *Description*                                 |
