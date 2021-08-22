@@ -7,6 +7,7 @@
 
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
+#include <New/Entity/GiftBoxClass.h>
 
 class BulletClass;
 
@@ -23,11 +24,13 @@ public:
 		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		Valueable<bool> ReceiveDamage;
 
+		std::unique_ptr<GiftBoxClass> AttachedGiftBox;
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),
 			InterceptedBullet(nullptr),
 			Shield(),
 			LaserTrails(),
-			ReceiveDamage(false)
+			ReceiveDamage(false),
+			AttachedGiftBox()
 		{ }
 
 		virtual ~ExtData() = default;

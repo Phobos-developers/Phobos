@@ -7,6 +7,7 @@
 
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
+#include <New/Entity/GiftBoxClass.h>
 
 class Matrix3D;
 
@@ -76,6 +77,7 @@ public:
 		};
 
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
+		GiftBoxData GboxData;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			HealthBar_Hide(false),
@@ -113,7 +115,8 @@ public:
 			OreGathering_FramesPerDir(),
 			LaserTrailData(),
 			DestroyAnim_Random(true),
-			NotHuman_RandomDeathSequence(false)
+			NotHuman_RandomDeathSequence(false),
+			GboxData()
 		{ }
 
 		virtual ~ExtData() = default;

@@ -179,6 +179,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			EliteWeaponBurstFLHs[i].AddItem(eliteFLH.Get());
 		}
 	}
+
+	GiftBoxData::LoadFromINI(this->GboxData, exINI, pSection);
 }
 
 template <typename T>
@@ -223,6 +225,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NotHuman_RandomDeathSequence)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
+		.Process(this->GboxData)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

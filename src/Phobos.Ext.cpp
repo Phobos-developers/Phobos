@@ -21,6 +21,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
+#include <New/Entity/GiftBoxClass.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 
@@ -241,6 +242,7 @@ auto MassActions = MassAction <
 	WarheadTypeExt,
 	WeaponTypeExt,
 	// New classes
+	GiftBoxClass,
 	ShieldTypeClass,
 	LaserTrailTypeClass,
 	RadTypeClass

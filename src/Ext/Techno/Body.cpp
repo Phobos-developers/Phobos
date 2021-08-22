@@ -258,6 +258,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)
+		.Process(this->AttachedGiftBox)
 		;
 }
 
