@@ -33,6 +33,16 @@ In `FAData.ini`:
 
 ## Changelog
 
+### 0.2.2.1
+
+Phobos fixes:
+- Fixed random crashes about CameoPriority (by Uranusian)
+- Fixed trigger action 125 not functioning properly (by Uranusian)
+- Fixed area warhead detonation not falling back to firer house (by Otamaa)
+- RadSite hook adjustment for `FootClass` to support Ares `RadImmune`; also various fixes to radiation / desolators (by Otamaa)
+- Fixed `Crit.Affects` not functioning properly (by Uranusian)
+- Fixed improper upgrade owner transfer which resulted in built ally / enemy building upgrades keeping the player who built them alive (by Kerbiter)
+
 ### 0.2.2
 
 New:

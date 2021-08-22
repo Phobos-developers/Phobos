@@ -19,33 +19,40 @@ bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pU
 				return true;
 		}
 	}
+
 	return false;
 }
 
-DEFINE_HOOK(0x452678, CanUpgrade_UpgradeBuildings, 0x8)
+DEFINE_HOOK(0x452678, BuildingClass_CanUpgrade_UpgradeBuildings, 0x8)
 {
-	GET(BuildingClass*, pBuilding, ECX);
-	GET_STACK(BuildingTypeClass*, pUpgrade, 0x0C);
-	GET(HouseClass*, upgradeOwner, EAX);
+	enum { Continue = 0x4526A7, ForbidUpgrade = 0x4526B5 };
 
-	if (BuildingTypeExt::CanUpgrade(pBuilding, pUpgrade, upgradeOwner)) {
+	GET(BuildingClass*, pBuilding, ECX);
+	GET_STACK(BuildingTypeClass*, pUpgrade, 0xC);
+	GET(HouseClass*, pUpgradeOwner, EAX);
+
+	if (BuildingTypeExt::CanUpgrade(pBuilding, pUpgrade, pUpgradeOwner))
+	{
 		R->EAX(pBuilding->Type->PowersUpToLevel);
-		return 0x4526A7;  // continue
+		return Continue;
 	}
 
-	return 0x4526B5;  // fail
+	return ForbidUpgrade;
 }
 
-DEFINE_HOOK(0x4408EB, Unlimbo_UpgradeBuildings, 0xA)
+DEFINE_HOOK(0x4408EB, BuildingClass_Unlimbo_UpgradeBuildings, 0xA)
 {
-	GET(BuildingClass*, buildingUnderMouse, EDI);
+	enum { Continue = 0x440912, ForbidUpgrade = 0x440926 };
+
+	GET(BuildingClass*, pBuilding, EDI);
 	GET(BuildingClass*, pUpgrade, ESI);
 
-	if (BuildingTypeExt::CanUpgrade(buildingUnderMouse, pUpgrade->Type, pUpgrade->Owner)) {
+	if (BuildingTypeExt::CanUpgrade(pBuilding, pUpgrade->Type, pUpgrade->Owner))
+	{
 		R->EBX(pUpgrade->Type);
-		pUpgrade->Owner = buildingUnderMouse->Owner;
-		return 0x440912; // continue
+		pUpgrade->SetOwningHouse(pBuilding->Owner, false);
+		return Continue;
 	}
 
-	return 0x440926; // fail
+	return ForbidUpgrade;
 }

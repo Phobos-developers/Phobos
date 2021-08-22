@@ -282,11 +282,11 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]       ; Warhead
 Crit.Chance=0.0     ; float, chance on [0.0-1.0] scale
 Crit.ExtraDamage=0  ; integer, extra damage
-Crit.Affects=all    ; list of "affects" flags (same as SWType's)
+Crit.Affects=all    ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 Crit.AnimList=      ; list of animations
 
-[SOMETECHNO]     ; TechnoType
-ImmuneToCrit=no  ; boolean
+[SOMETECHNO]        ; TechnoType
+ImmuneToCrit=no     ; boolean
 ```
 
 ### Custom 'SplashList' on Warheads

@@ -36,7 +36,7 @@ bool WarheadTypeExt::ExtData::IsCellEligible(CellClass* const pCell, AffectedTar
 			return (allowed & AffectedTarget::Land) != AffectedTarget::None;
 	}
 
-	return true;
+	return allowed != AffectedTarget::None ? true : false;
 }
 
 bool WarheadTypeExt::ExtData::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget allowed)
@@ -63,7 +63,7 @@ bool WarheadTypeExt::ExtData::IsTechnoEligible(TechnoClass* const pTechno, Affec
 		}
 	}
 
-	return true;
+	return allowed != AffectedTarget::None ? true : false;
 }
 
 // =============================
