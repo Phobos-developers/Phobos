@@ -11,9 +11,10 @@ const bool GiftBoxClass::CreateType(int nAt, GiftBoxData &nGboxData, HouseClass*
 	if (!pItem || nGboxData.Count.at(nAt) <= 0)
 		return false;
 
+	bool bSuccess = false;
+
 	for (int b = 0; b < nGboxData.Count.at(nAt); ++b)
 	{
-		bool bSuccess = false;
 		if (auto pObject = pItem->CreateObject(pOwner))
 		{
 			auto pCell = MapClass::Instance->TryGetCellAt(nCoord);
@@ -43,12 +44,10 @@ const bool GiftBoxClass::CreateType(int nAt, GiftBoxData &nGboxData, HouseClass*
 
 			if (!bSuccess && pObject)
 				pObject->UnInit();
-
-			return bSuccess;
 		}
 	}
 
-	return false;
+	return bSuccess;
 }
 
 const void GiftBoxClass::AI(TechnoClass* pTechno)
@@ -99,7 +98,7 @@ const void GiftBoxClass::AI(TechnoClass* pTechno)
 				for (size_t nIndex = 0; nIndex < pTypeExt->GboxData.TechnoList.size(); ++nIndex)
 				{
 					if (!GiftBoxClass::CreateType(nIndex, pTypeExt->GboxData, pOwner, nCoord, nDestination))
-						break;
+						continue;
 				}
 			}
 			else
@@ -120,7 +119,6 @@ const void GiftBoxClass::AI(TechnoClass* pTechno)
 			else
 			{
 				pGiftBox->Reset(pTypeExt->GboxData.DelayMinMax.Get().Y == 0 ? abs(pTypeExt->GboxData.Delay.Get()) : abs(ScenarioClass::Instance->Random.RandomRanged(pTypeExt->GboxData.DelayMinMax.Get().X, pTypeExt->GboxData.DelayMinMax.Get().Y)));
-
 			}
 		}
 	}
