@@ -9,7 +9,7 @@ BulletExt::ExtContainer BulletExt::ExtMap;
 
 void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel)
 {
-	auto pThis = this->OwnerObject();
+	auto const pThis = this->OwnerObject();
 	auto const& Instances = RadSiteExt::Array;
 	auto const pWeapon = pThis->GetWeaponType();
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.FindOrAllocate(pWeapon);
@@ -32,16 +32,16 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 		}
 		else
 		{
-			auto pRadExt = *it;
-			auto pRadSite = pRadExt->OwnerObject();
+			auto const pRadExt = *it;
+			auto const pRadSite = pRadExt->OwnerObject();
 
 			if (pRadSite->GetRadLevel() + RadLevel > pRadType->GetLevelMax())
 			{
 				RadLevel = pRadType->GetLevelMax() - pRadSite->GetRadLevel();
 			}
 
-			// Handle It
-			pRadExt->Add(RadLevel);
+			// Handle It 
+			RadSiteExt::Add(pRadSite, RadLevel);
 		}
 	}
 	else
