@@ -20,7 +20,6 @@ public:
 	public:
 		Valueable<BulletClass*> InterceptedBullet;
 		std::unique_ptr<ShieldClass> Shield;
-		Valueable<bool> WasCloaked;
 		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		Valueable<bool> ReceiveDamage;
 
