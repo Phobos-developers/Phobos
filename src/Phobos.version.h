@@ -18,12 +18,12 @@
 #define VERSION_REVISION 2
 
 // Indicates Phobos-related bugfixes only
-#define VERSION_PATCH 0
+#define VERSION_PATCH 1
 
 #pragma endregion
 
 // Build number. Incremented on each released build.
-#define BUILD_NUMBER 19
+#define BUILD_NUMBER 21
 
 // Nightly defines GIT_COMMIT and GIT_BRANCH in GH Actions
 
