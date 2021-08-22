@@ -72,7 +72,7 @@ DEFINE_HOOK(0x6A6EB1, SidebarClass_DrawIt_ProducingProgress, 0x6)
 				if (idxFrame != -1)
 				{
 					DSurface::Sidebar()->DrawSHP(FileSystem::SIDEBAR_PAL, pSHP, idxFrame, &vPos,
-						&sidebarRect, BlitterFlags::bf_400, 0, 0, ZGradientDescIndex::Flat, 1000, 0, 0, 0, 0, 0);
+						&sidebarRect, BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 				}
 			}
 		}
