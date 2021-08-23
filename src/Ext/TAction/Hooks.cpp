@@ -47,12 +47,17 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 		{
 			pBld->BeginMode(BStateType::Idle);
 			pBld->QueueMission(Mission::Guard, false);
-			pBld->Place(false);
 		}
+
 		if (!pBld->ForceCreate(coord))
+		{
 			pBld->UnInit();
+		}
 		else
 		{
+			if(!bPlayBuildUp)
+				pBld->Place(false);
+			
 			pBld->IsReadyToCommence = true;
 			bCreated = true;
 		}

@@ -31,7 +31,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 		if (this->SpySat)
 			MapClass::Instance->Reveal(pHouse);
-		
 
 		if (this->TransactMoney)
 			pHouse->TransactMoney(this->TransactMoney);
@@ -49,12 +48,12 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	if (cellSpread && isCellSpreadWarhead)
 	{
 		for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
-			this->DetonateOnOneUnit(pHouse, pTarget);
+			this->DetonateOnOneUnit(pHouse, pTarget, pOwner);
 	}
 	else if (pBullet && isCellSpreadWarhead)
 	{
 		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
-			this->DetonateOnOneUnit(pHouse, pTarget);
+			this->DetonateOnOneUnit(pHouse, pTarget, pOwner);
 	}
 }
 

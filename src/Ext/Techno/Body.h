@@ -20,7 +20,6 @@ public:
 	public:
 		Valueable<BulletClass*> InterceptedBullet;
 		std::unique_ptr<ShieldClass> Shield;
-		Valueable<bool> WasCloaked;
 		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		Valueable<bool> ReceiveDamage;
         Valueable<bool> LastKillWasTeamTarget;
@@ -28,7 +27,6 @@ public:
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),
 			InterceptedBullet(nullptr),
 			Shield(),
-			WasCloaked(false),
 			LaserTrails(),
 			ReceiveDamage(false),
             LastKillWasTeamTarget(false)
