@@ -39,6 +39,8 @@ public:
 		Valueable<bool> BreaksShield;
 
 		double RandomBuffer;
+		
+		Valueable<int> NotHuman_DeathSequence;
 
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject)
 			, SpySat(false)
@@ -63,6 +65,8 @@ public:
 
 			, PenetratesShield(false)
 			, BreaksShield(false)
+
+			, NotHuman_DeathSequence(-1)
 		{ }
 
 	private:

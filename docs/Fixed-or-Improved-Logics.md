@@ -31,6 +31,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 - Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode.
+- `DeathWeapon` now will properly detonate. 
+  - But still some settings are ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
+- Effects like lasers are no longer drawn from wrong firing offset on weapons that use Burst.
+- Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 
 ## Technos
 
@@ -53,12 +57,27 @@ ChronoDistanceFactor=   ; integer, amount to divide the distance to destination 
 ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance
 ChronoRangeMinimum=     ; integer, can be used to set a small range within which the delay is constant
 ChronoDelay=            ; integer, delay after teleport for chronosphere
+```
 
+### Re-enable obsolete [JumpjetControls] 
+
+- Re-enable obsolete [JumpjetControls], the keys in it will be as the default value of jumpjet units.
+  - Moreover, added two tags for missing ones.
+
+In `rulesmd.ini`:
+```ini
+[JumpjetControls]
+Crash=5.0       ; float
+NoWobbles=no    ; bool
+```
+
+```{note}
+`CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
 ```
 
 ### Customizable harvester ore gathering animation
 
-![Ore gathering](_static/images/oregath.gif)
+![image](_static/images/oregath.gif)  
 *Custom ore gathering anims in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - You can now specify which anim should be drawn when a harvester of specified type is gathering specified type of ore.

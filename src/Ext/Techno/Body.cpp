@@ -124,22 +124,6 @@ void TechnoExt::ApplySpawn_LimitRange(TechnoClass* pThis)
 	}
 }
 
-// TODO: move the hook to InfantryExt::AI
-void TechnoExt::ApplyCloak_Undeployed(TechnoClass* pThis)
-{
-	if (auto pInf = static_cast<InfantryClass*>(pThis))
-	{
-		auto pTypeData = TechnoExt::ExtMap.Find(pThis);
-		if (pTypeData->WasCloaked && pInf->SequenceAnim == Sequence::Undeploy && pInf->IsDeployed())
-		{
-			pThis->Cloakable = true;
-			pThis->UpdateCloak();
-			pThis->NeedsRedraw = true;
-			pTypeData->WasCloaked = false;
-		}
-	}
-}
-
 bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 {
 	if (!pThis || pThis->InLimbo)
@@ -233,6 +217,36 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 	return location;
 }
 
+CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound)
+{
+	FLHFound = false;
+	CoordStruct FLH = CoordStruct::Empty;
+
+	if (!pThis || weaponIndex < 0)
+		return FLH;
+
+	auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pThis->Veterancy.IsElite())
+	{
+		if (pExt->EliteWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+		{
+			FLHFound = true;
+			FLH = pExt->EliteWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
+		}
+	}
+	else
+	{
+		if (pExt->WeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+		{
+			FLHFound = true;
+			FLH = pExt->WeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
+		}
+	}
+
+	return FLH;
+}
+
 // =============================
 // load / save
 
@@ -242,7 +256,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->InterceptedBullet)
 		.Process(this->Shield)
-		.Process(this->WasCloaked)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)
 		;

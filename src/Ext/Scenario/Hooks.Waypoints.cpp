@@ -4,8 +4,6 @@
 
 #include <MapClass.h>
 
-#include <string>
-
 DEFINE_HOOK(0x68BCC0, ScenarioClass_Get_Waypoint_Location, 0xB)
 {
 	GET_STACK(CellStruct*, pCell, 0x4);

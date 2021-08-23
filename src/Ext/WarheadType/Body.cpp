@@ -36,7 +36,7 @@ bool WarheadTypeExt::ExtData::IsCellEligible(CellClass* const pCell, AffectedTar
 			return (allowed & AffectedTarget::Land) != AffectedTarget::None;
 	}
 
-	return true;
+	return allowed != AffectedTarget::None ? true : false;
 }
 
 bool WarheadTypeExt::ExtData::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget allowed)
@@ -63,7 +63,7 @@ bool WarheadTypeExt::ExtData::IsTechnoEligible(TechnoClass* const pTechno, Affec
 		}
 	}
 
-	return true;
+	return allowed != AffectedTarget::None ? true : false;
 }
 
 // =============================
@@ -108,6 +108,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	else
 		this->PenetratesShield.Read(exINI, pSection, "PenetratesShield");
 	this->BreaksShield.Read(exINI, pSection, "BreaksShield");
+
+	this->NotHuman_DeathSequence.Read(exINI, pSection, "NotHuman.DeathSequence");
 }
 
 template <typename T>
@@ -139,6 +141,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->PenetratesShield)
 		.Process(this->BreaksShield)
+		.Process(this->NotHuman_DeathSequence)
 		;
 }
 

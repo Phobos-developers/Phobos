@@ -15,10 +15,17 @@ public:
 	public:
 		Valueable<AffectedHouse> PowersUp_Owner;
 		ValueableVector<BuildingTypeClass*> PowersUp_Buildings;
+		
+		ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
+		Nullable<int> PowerPlantEnhancer_Amount;
+		Nullable<float> PowerPlantEnhancer_Factor;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject),
 			PowersUp_Owner(AffectedHouse::Owner),
-			PowersUp_Buildings()
+			PowersUp_Buildings(),
+			PowerPlantEnhancer_Buildings(),
+			PowerPlantEnhancer_Amount(),
+			PowerPlantEnhancer_Factor()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -51,5 +58,6 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
+	static int GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 };

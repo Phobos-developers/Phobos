@@ -4,6 +4,10 @@
 #include <ScenarioClass.h>
 #include <HouseClass.h>
 
+#include <Ext/Techno/Body.h>
+#include <Ext/WeaponType/Body.h>
+#include <Utilities/EnumFunctions.h>
+
 #pragma region DETONATION
 
 bool DetonationInDamageArea = true;
@@ -47,7 +51,9 @@ DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 			GET_BASE(TechnoClass*, pOwner, 0x08);
 			GET_BASE(HouseClass*, pHouse, 0x14);
 
-			pWHExt->Detonate(pOwner, pHouse, nullptr, *pCoords);
+			auto const pDecidedHouse = !pHouse && pOwner ? pOwner->Owner : pHouse;
+
+			pWHExt->Detonate(pOwner, pDecidedHouse, nullptr, *pCoords);
 		}	
 	}
 
@@ -99,20 +105,76 @@ DEFINE_HOOK(0x48A5B3, WarheadTypeClass_AnimList_CritAnim, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6FC339, TechnoClass_CanFire_InsufficientFunds, 0x6)
+DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
-
-	// Checking for nulptr is not required here, since the game has already executed them before calling the hook
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFS(0x20, -0x4))
+	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
+	enum { CannotFire = 0x6FCB7E };
 
 	if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
 	{
 		const int nMoney = pWHExt->TransactMoney;
 		if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
-			return 0x6FCB7E;
+			return CannotFire;
+	}
+
+	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
+	{
+		if (const auto pTechno = abstract_cast<TechnoClass*>(pTarget))
+		{
+			if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner))
+				return CannotFire;
+		}
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass*, pTarget, EBP);
+	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, FurtherCheck = 0x6F3754, OriginalCheck = 0x6F36E3 };
+
+	if (!pTarget)
+		return Primary;
+
+	if (const auto pSecondary = pThis->GetWeapon(1))
+	{
+		if (const auto pSecondaryExt = WeaponTypeExt::ExtMap.Find(pSecondary->WeaponType))
+		{
+			if (!EnumFunctions::CanTargetHouse(pSecondaryExt->CanTargetHouses, pThis->Owner, pTarget->Owner))
+				return Primary;
+
+			if (const auto pPrimaryExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(0)->WeaponType))
+			{
+				if (!EnumFunctions::CanTargetHouse(pPrimaryExt->CanTargetHouses, pThis->Owner, pTarget->Owner))
+					return Secondary;
+			}
+		}
+	}
+
+	if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget))
+	{
+		if (const auto pShield = pTargetExt->Shield.get())
+		{
+			if (pShield->IsActive())
+			{
+				if (pThis->GetWeapon(1))
+				{
+					if (!pShield->CanBeTargeted(pThis->GetWeapon(0)->WeaponType))
+						return Secondary;
+					else
+						return FurtherCheck;
+				}
+
+				return Primary;
+			}
+		}
+	}
+
+	return OriginalCheck;
 }
