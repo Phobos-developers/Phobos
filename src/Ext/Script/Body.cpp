@@ -1583,82 +1583,66 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 
 void ScriptExt::DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0)
 {
-	AITriggerTypeClass* pTriggerType = nullptr;
-	auto pTeamType = pTeam->Type;
-	bool found = false;
-
 	if (modifier <= 0)
 		modifier = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
 
-	for (int i = 0; i < AITriggerTypeClass::Array->Count && !found; i++)
-	{
-		auto pTriggerTeam1Type = AITriggerTypeClass::Array->GetItem(i)->Team1;
-		auto pTriggerTeam2Type = AITriggerTypeClass::Array->GetItem(i)->Team2;
-
-		if (pTeamType && ((pTriggerTeam1Type && pTriggerTeam1Type == pTeamType) || (pTriggerTeam2Type && pTriggerTeam2Type == pTeamType)))
-		{
-			found = true;
-			pTriggerType = AITriggerTypeClass::Array->GetItem(i);
-		}
-	}
-
-	if (found)
-	{
-		if (modifier <= 0)
-		{
-			modifier = abs(RulesClass::Instance->AITriggerFailureWeightDelta);
-		}
-
-		pTriggerType->Weight_Current -= modifier;
-
-		if (pTriggerType->Weight_Current < pTriggerType->Weight_Minimum)
-			pTriggerType->Weight_Current = pTriggerType->Weight_Minimum;
-	}
-
-	// This action finished
-	if (forceJumpLine)
-		pTeam->StepCompleted = true;
-}
-
-void ScriptExt::IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0)
-{
-	AITriggerTypeClass* pTriggerType = nullptr;
-	auto pTeamType = pTeam->Type;
-	bool found = false;
-	
 	if (modifier <= 0)
-		modifier = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
-	
-	for (int i = 0; i < AITriggerTypeClass::Array->Count && !found; i++)
-	{
-		auto pTriggerTeam1Type = AITriggerTypeClass::Array->GetItem(i)->Team1;
-		auto pTriggerTeam2Type = AITriggerTypeClass::Array->GetItem(i)->Team2;
+		modifier = abs(RulesClass::Instance->AITriggerFailureWeightDelta);
 
-		if (pTeamType && ((pTriggerTeam1Type && pTriggerTeam1Type == pTeamType) || (pTriggerTeam2Type && pTriggerTeam2Type == pTeamType)))
-		{
-			found = true;
-			pTriggerType = AITriggerTypeClass::Array->GetItem(i);
-		}
-	}
-
-	if (found)
-	{
-		if (modifier <= 0)
-		{
-			modifier = abs(RulesClass::Instance->AITriggerSuccessWeightDelta);
-		}
-
-		pTriggerType->Weight_Current += modifier;
-		
-		if (pTriggerType->Weight_Current > pTriggerType->Weight_Maximum)
-			pTriggerType->Weight_Current = pTriggerType->Weight_Maximum;
-	}
+	ModifyCurrentTriggerWeight(pTeam, forceJumpLine, modifier);
 
 	// This action finished
 	if (forceJumpLine)
 		pTeam->StepCompleted = true;
 
 	return;
+}
+
+void ScriptExt::IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0)
+{
+	if (modifier <= 0)
+		modifier = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	if (modifier <= 0)
+		modifier = abs(RulesClass::Instance->AITriggerSuccessWeightDelta);
+
+	ScriptExt::ModifyCurrentTriggerWeight(pTeam, forceJumpLine, modifier);
+
+	// This action finished
+	if (forceJumpLine)
+		pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0)
+{
+	AITriggerTypeClass* pTriggerType = nullptr;
+	auto pTeamType = pTeam->Type;
+	bool found = false;
+
+	for (int i = 0; i < AITriggerTypeClass::Array->Count && !found; i++)
+	{
+		auto pTriggerTeam1Type = AITriggerTypeClass::Array->GetItem(i)->Team1;
+		auto pTriggerTeam2Type = AITriggerTypeClass::Array->GetItem(i)->Team2;
+
+		if (pTeamType && ((pTriggerTeam1Type && pTriggerTeam1Type == pTeamType) || (pTriggerTeam2Type && pTriggerTeam2Type == pTeamType)))
+		{
+			found = true;
+			pTriggerType = AITriggerTypeClass::Array->GetItem(i);
+		}
+	}
+
+	if (found)
+	{
+		pTriggerType->Weight_Current += modifier;
+
+		if (pTriggerType->Weight_Current > pTriggerType->Weight_Maximum)
+			pTriggerType->Weight_Current = pTriggerType->Weight_Maximum;
+		else
+			if (pTriggerType->Weight_Current < pTriggerType->Weight_Minimum)
+				pTriggerType->Weight_Current = pTriggerType->Weight_Minimum;
+	}
 }
 
 void ScriptExt::Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType)
