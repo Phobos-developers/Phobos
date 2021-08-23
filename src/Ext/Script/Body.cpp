@@ -1587,7 +1587,9 @@ void ScriptExt::DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLin
 		modifier = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
 
 	if (modifier <= 0)
-		modifier = abs(RulesClass::Instance->AITriggerFailureWeightDelta);
+		modifier = RulesClass::Instance->AITriggerFailureWeightDelta;
+	else
+		modifier = modifier * (-1);
 
 	ModifyCurrentTriggerWeight(pTeam, forceJumpLine, modifier);
 
