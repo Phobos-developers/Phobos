@@ -146,16 +146,28 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 	return 0;
 }
 
-// for now here purely for testing purposes
 DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_ScoreCounter, 0x7)
 {
-	wchar_t str[0x20];
-	swprintf_s(str, L"%d", HouseClass::Player()->SiloMoney);
-	Point2D vPos2 = { 20, 2 };
-	RectangleStruct vRect2 = { 0, 0, 0, 0 };
-	DSurface::Sidebar->GetRect(&vRect2);
-	DSurface::Sidebar->DrawText(str, &vRect2, &vPos2, Drawing::RGB2DWORD(Drawing::TooltipColor()), 0,
-		TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12);
+	if (Phobos::UI::ShowScoreCounter)
+	{
+		auto pPlayer = HouseClass::Player();
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::Player->SideIndex));
+		wchar_t counter[0x20];
+
+		swprintf_s(counter, L"%d%ls", pPlayer->SiloMoney, Phobos::UI::ScoreLabel);
+
+		Point2D vPos2 = {
+			DSurface::Sidebar->GetWidth() / 2 - 65 + pSideExt->Sidebar_ScoreCounter_Offset.Get().X,
+			2 + pSideExt->Sidebar_ScoreCounter_Offset.Get().Y
+		};
+
+		RectangleStruct vRect2 = { 0, 0, 0, 0 };
+		DSurface::Sidebar->GetRect(&vRect2);
+
+		DSurface::Sidebar->DrawText(counter, &vRect2, &vPos2, Drawing::RGB2DWORD(pSideExt->Sidebar_ScoreCounter_Color), 0,
+			TextPrintType::UseGradPal | TextPrintType::Metal12);
+			//TextPrintType::UseGradPal | TextPrintType::Metal12 | Phobos::UI::ScoreAlign);
+	}
 
 	return 0;
 }

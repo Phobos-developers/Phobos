@@ -11,11 +11,12 @@
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
+//#include <Utilities/Enum.h>
 
 #include "Misc/BlittersFix.h"
 
 #ifndef IS_RELEASE_VER
-bool HideWarning = false;
+bool HideWarning = true;
 #endif
 
 HANDLE Phobos::hInstance = 0;
@@ -43,6 +44,7 @@ bool Phobos::UI::ShowHarvesterCounter = false;
 double Phobos::UI::HarvesterCounter_ConditionYellow = 0.99;
 double Phobos::UI::HarvesterCounter_ConditionRed = 0.5;
 bool Phobos::UI::ShowProducingProgress = false;
+bool Phobos::UI::ShowScoreCounter = false;
 const wchar_t* Phobos::UI::CostLabel = L"";
 const wchar_t* Phobos::UI::PowerLabel = L"";
 const wchar_t* Phobos::UI::PowerBlackoutLabel = L"";
@@ -51,6 +53,9 @@ const wchar_t* Phobos::UI::HarvesterLabel = L"";
 bool Phobos::UI::ShowPowerDelta = false;
 double Phobos::UI::PowerDelta_ConditionYellow = 0.75;
 double Phobos::UI::PowerDelta_ConditionRed = 1.0;
+const wchar_t* Phobos::UI::ScoreLabel = L"";
+//TODO: ALIGNMENT
+//TextAlign Phobos::UI::ScoreCounter_Align = TextAlign::Left;
 
 bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::ToolTipBlur = false;
@@ -259,6 +264,15 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 		Phobos::UI::PowerDelta_ConditionRed =
 			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "PowerDelta.ConditionRed", Phobos::UI::PowerDelta_ConditionRed);
+
+		Phobos::UI::ShowScoreCounter =
+			pINI->ReadBool(SIDEBAR_SECTION, "ScoreCounter.Show", true); // temp
+
+		pINI->ReadString(SIDEBAR_SECTION, "ScoreCounter.Label", NONE_STR, Phobos::readBuffer);
+		Phobos::UI::ScoreLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u2605"); // ★
+		// TODO ALIGNMENT
+		//Phobos::UI::ScoreCounter_Align.Read(pINI, SIDEBAR_SECTION, "ScoreCounter.Align", TextAlign::Left);
+
 	}
 
 	Phobos::CloseConfig(pINI_UIMD);

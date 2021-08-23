@@ -51,12 +51,17 @@ public:
 		static bool ShowPowerDelta;
 		static double PowerDelta_ConditionYellow;
 		static double PowerDelta_ConditionRed;
+		static bool ShowScoreCounter;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;
 		static const wchar_t* PowerBlackoutLabel;
 		static const wchar_t* TimeLabel;
 		static const wchar_t* HarvesterLabel;
+		static const wchar_t* ScoreLabel;
+
+		//TODO: ALIGNMENT
+		//static TextAlign ScoreCounter_Align;
 	};
 
 	class Config

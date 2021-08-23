@@ -20,8 +20,6 @@ public:
 		{
 			ValueableIdx<SuperWeaponTypeClass> IdxType{ };
 			Valueable<int> Score{ 0 };
-			Valueable<bool> OneTime{ false };
-			Valueable<bool> InitialReady{ false };
 			bool AlreadyGranted{ false };
 
 			bool Load(PhobosStreamReader& stm, bool registerForChange);

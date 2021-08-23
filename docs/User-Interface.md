@@ -232,6 +232,34 @@ Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left | cente
 If you use the vanilla font in your mod, you can use the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 ```
 
+### Score counter
+
+![image](_static/images/scoresuperweapons.gif)  
+*Score Counter in Assault Amerika*
+
+- An additional counter for your active/total harvesters can be added near the credits indicator.
+- The counter is displayed with the format of `(Points)Label`. The label is `★ U+2605` by default.
+- You can adjust counter position by `Sidebar.ScoreCounter.Offset`, negative means left/up, positive means right/down.
+- You can supply your own color through `Sidebar.ScoreCounter.Color`, in RGB values. The color is white (`255,255,255`) by default.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+HarvesterCounter.Show=no					   ; boolean
+HarvesterCounter.Label=<none>				   ; CSF entry key
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                                     ; Side
+Sidebar.ScoreCounter.Offset=0,0                ; X,Y, pixels relative to default
+Sidebar.ScoreCounter.Color=255,255,255		   ; R,G,B
+```
+
+```{note}
+Same as with harvester counter, you can download {download}`the improved font <_static/files/ImprovedFont-v5.zip>` (v5 and higher) or draw your own icons.
+```
+
 ### Producing Progress
 
 ![image](_static/images/producing-progress-01.gif)

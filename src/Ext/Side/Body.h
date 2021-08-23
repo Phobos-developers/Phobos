@@ -30,6 +30,8 @@ public:
 		Nullable<ColorStruct> ToolTip_Background_Color;
 		Nullable<int> ToolTip_Background_Opacity;
 		Nullable<float> ToolTip_Background_BlurSize;
+		Valueable<Point2D> Sidebar_ScoreCounter_Offset;
+		Valueable<ColorStruct> Sidebar_ScoreCounter_Color;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
 			, ArrayIndex { -1 }
@@ -49,6 +51,8 @@ public:
 			, ToolTip_Background_Color { }
 			, ToolTip_Background_Opacity { }
 			, ToolTip_Background_BlurSize { }
+			, Sidebar_ScoreCounter_Offset({ 0,0 })
+			, Sidebar_ScoreCounter_Color({ 255,255,255 })
 		{ }
 
 		virtual ~ExtData() = default;

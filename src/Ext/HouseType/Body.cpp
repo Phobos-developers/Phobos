@@ -30,18 +30,10 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 			_snprintf_s(tempBuffer, sizeof(tempBuffer), "ScoreSuperWeapon%d.Score", i);
 			score.Read(exINI, pSection, tempBuffer);
 
-			Valueable<bool> oneTime;
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "ScoreSuperWeapon%d.OneTime", i);
-			oneTime.Read(exINI, pSection, tempBuffer);
-
-			Valueable<bool> initialReady;
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "ScoreSuperWeapon%d.InitialReady", i);
-			initialReady.Read(exINI, pSection, tempBuffer);
-
 			if (i == ScoreSuperWeaponData.size())
-				this->ScoreSuperWeaponData.push_back({ ValueableIdx<SuperWeaponTypeClass>(swType), score, oneTime, initialReady, false });
+				this->ScoreSuperWeaponData.push_back({ ValueableIdx<SuperWeaponTypeClass>(swType), score, false });
 			else
-				this->ScoreSuperWeaponData[i] = { ValueableIdx<SuperWeaponTypeClass>(swType), score, oneTime, initialReady, false };
+				this->ScoreSuperWeaponData[i] = { ValueableIdx<SuperWeaponTypeClass>(swType), score, false };
 		}
 	}
 }
@@ -82,8 +74,6 @@ bool HouseTypeExt::ExtData::ScoreSuperWeaponDataEntry::Serialize(T& stm)
 	return stm
 		.Process(this->IdxType)
 		.Process(this->Score)
-		.Process(this->OneTime)
-		.Process(this->InitialReady)
 		.Process(this->AlreadyGranted)
 		.Success();
 }

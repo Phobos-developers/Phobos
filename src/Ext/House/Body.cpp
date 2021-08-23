@@ -74,16 +74,19 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 		return pDefault;
 	}
 }
-void HouseExt::GrantScoreSuperPower(HouseClass* pThis, int SWIDX, bool oneTime, bool initialReady)
+
+void HouseExt::GrantScoreSuperPower(HouseClass* pThis, int SWIDX)
 {
+	SuperClass* pSuper = pThis->Supers[SWIDX];
 	bool NotObserver = !pThis->IsObserver() || !pThis->IsPlayerObserver();
-	auto pSuper = pThis->Supers[SWIDX];
-	if (pSuper->Grant(oneTime, NotObserver, false))
+	bool granted;
+	granted = pSuper->Grant(true, NotObserver, false);
+	if (granted && NotObserver && pThis == HouseClass::Player)
 	{
-		if (initialReady)
-			pSuper->SetReadiness(initialReady);
-		if (NotObserver && pThis == HouseClass::Player && MouseClass::Instance->AddCameo(AbstractType::Special, SWIDX))
+		if (MouseClass::Instance->AddCameo(AbstractType::Special, SWIDX))
+		{
 			MouseClass::Instance->RepaintSidebar(1);
+		}
 	}
 }
 

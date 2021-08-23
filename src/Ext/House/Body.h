@@ -75,5 +75,5 @@ public:
 	static int ActiveHarvesterCount(HouseClass* pThis);
 	static int TotalHarvesterCount(HouseClass* pThis);
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
-	static void HouseExt::GrantScoreSuperPower(HouseClass* pThis, int SWIDX, bool OneTime, bool GetReady);
+	static void HouseExt::GrantScoreSuperPower(HouseClass* pThis, int SWIDX);
 };
