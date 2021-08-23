@@ -237,7 +237,7 @@ If you use the vanilla font in your mod, you can use the improved font (v4 and h
 ![image](_static/images/scoresuperweapons.gif)  
 *Score Counter in Assault Amerika*
 
-- An additional counter for your active/total harvesters can be added near the credits indicator.
+- This opt-in counter displayes the in-game score (value of killed units minus value of dead units) for the player.
 - The counter is displayed with the format of `(Points)Label`. The label is `★ U+2605` by default.
 - You can adjust counter position by `Sidebar.ScoreCounter.Offset`, negative means left/up, positive means right/down.
 - You can supply your own color through `Sidebar.ScoreCounter.Color`, in RGB values. The color is white (`255,255,255`) by default.
@@ -245,8 +245,8 @@ If you use the vanilla font in your mod, you can use the improved font (v4 and h
 In `uimd.ini`:
 ```ini
 [Sidebar]
-HarvesterCounter.Show=no					   ; boolean
-HarvesterCounter.Label=<none>				   ; CSF entry key
+ScoreCounter.Show=no					   ; boolean
+ScoreCounter.Label=<none>				   ; CSF entry key
 ```
 
 In `rulesmd.ini`:
