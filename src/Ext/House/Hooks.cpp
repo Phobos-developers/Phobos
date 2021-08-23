@@ -2,9 +2,9 @@
 
 #include <unordered_map>
 
-DEFINE_HOOK(0x508C79, HouseClass_UpdatePower_UpdateCounter, 0x5)
+DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 {
-	GET(HouseClass*, pThis, ESI);
+	GET(HouseClass*, pThis, ECX);
 	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
 	pHouseExt->BuildingCounter.clear();
 
