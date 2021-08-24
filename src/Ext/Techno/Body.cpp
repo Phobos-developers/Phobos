@@ -267,7 +267,7 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 					// Setting & start countdown. Bigger units needs more time
 					int passengerSize = pTypeData->PassengerDeletion_Countdown;
 
-					if (pThis->Passengers.FirstPassenger->GetTechnoType()->Size > 1.0)
+					if (pTypeData->PassengerDeletion_SizeDependence && pThis->Passengers.FirstPassenger->GetTechnoType()->Size > 1.0)
 						passengerSize *= (int)(pThis->Passengers.FirstPassenger->GetTechnoType()->Size + 0.5);
 					
 					pData->PassengerDeletion_Countdown = passengerSize;

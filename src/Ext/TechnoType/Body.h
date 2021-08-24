@@ -43,6 +43,7 @@ public:
 		Valueable<bool> PassengerDeletion_RefundFriendlies;
 		Valueable<int> PassengerDeletion_Countdown;
 		NullableIdx<VocClass> PassengerDeletion_Report;
+		Valueable<bool> PassengerDeletion_SizeDependence;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -121,7 +122,8 @@ public:
 			PassengerDeletion_Refund(false),
 			PassengerDeletion_RefundFriendlies(false),
 			PassengerDeletion_Countdown(0),
-			PassengerDeletion_Report()
+			PassengerDeletion_Report(),
+			PassengerDeletion_SizeDependence(true)
 		{ }
 
 		virtual ~ExtData() = default;

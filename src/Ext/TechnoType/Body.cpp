@@ -120,6 +120,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PassengerDeletion_Refund.Read(exINI, pSection, "PassengerDeletion.Soylent");
 	this->PassengerDeletion_RefundFriendlies.Read(exINI, pSection, "PassengerDeletion.SoylentFriendlies");
 	this->PassengerDeletion_Report.Read(exINI, pSection, "PassengerDeletion.Report");
+	this->PassengerDeletion_SizeDependence.Read(exINI, pSection, "PassengerDeletion.SizeDependence");
 	this->PassengerDeletion_Countdown.Read(exINI, pSection, "PassengerDeletion.Countdown");
 	
 	// Ares 0.A
@@ -232,6 +233,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletion_RefundFriendlies)
 		.Process(this->PassengerDeletion_Countdown)
 		.Process(this->PassengerDeletion_Report)
+		.Process(this->PassengerDeletion_SizeDependence)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
