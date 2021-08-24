@@ -39,6 +39,10 @@ public:
 		Valueable<int> CameoPriority;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
+		Valueable<bool> PassengerDeletion_Refund;
+		Valueable<bool> PassengerDeletion_RefundFriendlies;
+		Valueable<int> PassengerDeletion_Countdown;
+		NullableIdx<VocClass> PassengerDeletion_Report;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -113,7 +117,11 @@ public:
 			OreGathering_FramesPerDir(),
 			LaserTrailData(),
 			DestroyAnim_Random(true),
-			NotHuman_RandomDeathSequence(false)
+			NotHuman_RandomDeathSequence(false),
+			PassengerDeletion_Refund(false),
+			PassengerDeletion_RefundFriendlies(false),
+			PassengerDeletion_Countdown(0),
+			PassengerDeletion_Report()
 		{ }
 
 		virtual ~ExtData() = default;

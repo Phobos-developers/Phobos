@@ -247,6 +247,88 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	return FLH;
 }
 
+void TechnoExt::EatPassengers(TechnoClass* pThis)
+{
+	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pTypeData && pTypeData->PassengerDeletion_Countdown > 0)
+	{
+		auto pData = TechnoExt::ExtMap.Find(pThis);
+
+		if (pThis->Passengers.NumPassengers > 0)
+		{
+			if (pData->PassengerDeletion_Countdown > 0)
+				pData->PassengerDeletion_Countdown--;
+			else
+			{
+				if (pData->PassengerDeletion_Countdown < 0)
+				{
+					// Countdown is off
+					// Setting & start countdown. Bigger units needs more time
+					int passengerSize = pTypeData->PassengerDeletion_Countdown;
+
+					if (pThis->Passengers.FirstPassenger->GetTechnoType()->Size > 1.0)
+						passengerSize *= (int)(pThis->Passengers.FirstPassenger->GetTechnoType()->Size + 0.5);
+					
+					pData->PassengerDeletion_Countdown = passengerSize;
+				}
+				else
+				{
+					// Countdown reached 0
+					// Time for deleting the first unit (FIFO queue)
+					DynamicVectorClass<FootClass*> passengersList;
+
+					// We'll get the passengers list in a more easy data structure
+					while (pThis->Passengers.NumPassengers > 0)
+					{
+						passengersList.AddItem(pThis->Passengers.RemoveFirstPassenger());
+					}
+
+					auto pPassenger = passengersList.GetItem(passengersList.Count - 1);
+					auto pTypePassenger = passengersList.GetItem(passengersList.Count - 1)->GetTechnoType();
+
+					passengersList.RemoveItem(passengersList.Count - 1);
+
+					VocClass::PlayAt(pTypeData->PassengerDeletion_Report, pThis->GetCoords(), nullptr);
+
+					// Check if there is money refund
+					if (pTypeData->PassengerDeletion_Refund)
+					{
+						int soylent = 0;
+
+						// Refund money to the Attacker
+						if (pTypePassenger && pTypePassenger->Soylent > 0)
+						{
+							soylent = pTypePassenger->Soylent;
+						}
+
+						// Is allowed the refund of friendly units?
+						if (!pTypeData->PassengerDeletion_RefundFriendlies && pPassenger->Owner->IsAlliedWith(pThis))
+							soylent = 0;
+
+						if (soylent > 0)
+						{
+							pThis->Owner->GiveMoney(soylent);
+						}
+					}
+
+					// Finally restore the passenger list WITHOUT the oldest passenger (the last of the list)
+					while (passengersList.Count > 0)
+					{
+						pThis->Passengers.AddPassenger(passengersList.GetItem(passengersList.Count - 1));
+						passengersList.RemoveItem(passengersList.Count - 1);
+					}
+
+					// Stop the countdown
+					pData->PassengerDeletion_Countdown = -1;
+				}
+			}
+		}
+		else
+			pData->PassengerDeletion_Countdown = -1;
+	}
+}
+
 // =============================
 // load / save
 
@@ -258,6 +340,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)
+		.Process(this->PassengerDeletion_Countdown)
 		;
 }
 

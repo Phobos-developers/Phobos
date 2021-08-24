@@ -115,8 +115,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OreGathering_FramesPerDir.Read(exINI, pSection, "OreGathering.FramesPerDir");
 
 	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
-  this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
+	this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
 
+	this->PassengerDeletion_Refund.Read(exINI, pSection, "PassengerDeletion.Soylent");
+	this->PassengerDeletion_RefundFriendlies.Read(exINI, pSection, "PassengerDeletion.SoylentFriendlies");
+	this->PassengerDeletion_Report.Read(exINI, pSection, "PassengerDeletion.Report");
+	this->PassengerDeletion_Countdown.Read(exINI, pSection, "PassengerDeletion.Countdown");
+	
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
 
@@ -223,6 +228,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NotHuman_RandomDeathSequence)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
+		.Process(this->PassengerDeletion_Refund)
+		.Process(this->PassengerDeletion_RefundFriendlies)
+		.Process(this->PassengerDeletion_Countdown)
+		.Process(this->PassengerDeletion_Report)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

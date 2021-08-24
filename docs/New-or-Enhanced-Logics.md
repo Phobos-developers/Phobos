@@ -223,6 +223,20 @@ NotHuman.RandomDeathSequence=yes  ; boolean
 NoManualMove=no        ; boolean
 ```
 
+### Automatic Passenger Deletion
+
+- Transports with these tags will erase the passengers overtime. Bigger units takes more time. Optionally this logic can work like a grinder.
+ - Good combination with Ares Abductor logic.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                            ; TechnoType
+PassengerDeletion.Countdown=0           ; integer. Game frames multiplied by the unit size
+PassengerDeletion.Soylent=no            ; boolean
+PassengerDeletion.SoylentFriendlies=no  ; boolean
+PassengerDeletion.Report=               ; sound
+```
+
 ## Technos
 
 ### Mind Control enhancement
