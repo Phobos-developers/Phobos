@@ -4,21 +4,21 @@
 #include <Ext/Techno/Body.h>
 #include <ScenarioClass.h>
 
-const bool GiftBoxClass::CreateType(int nAt, GiftBoxData &nGboxData, HouseClass* pOwner, CoordStruct nCoord, CoordStruct nDestCoord)
+const bool GiftBoxClass::CreateType(int nIndex, GiftBoxData& nGboxData, HouseClass* pOwner, CoordStruct nCoord, CoordStruct nDestCoord)
 {
-	auto pItem = nGboxData.TechnoList.at(nAt);
+	auto pItem = nGboxData.TechnoList.at(nIndex);
 
-	if (!pItem || nGboxData.Count.at(nAt) <= 0)
+	if (!pItem || !nGboxData.Count.at(nIndex))
 		return false;
 
 	bool bSuccess = false;
 
-	for (int b = 0; b < nGboxData.Count.at(nAt); ++b)
+	for (int b = 0; b < nGboxData.Count.at(nIndex); ++b)
 	{
 		if (auto pObject = pItem->CreateObject(pOwner))
 		{
-			auto pCell = MapClass::Instance->TryGetCellAt(nCoord);
-			pObject->OnBridge = pCell->ContainsBridge();
+			if (auto pCell = MapClass::Instance->TryGetCellAt(nCoord))
+				pObject->OnBridge = pCell->ContainsBridge();
 
 			if (pObject->WhatAmI() == AbstractType::Building)
 			{
@@ -27,12 +27,8 @@ const bool GiftBoxClass::CreateType(int nAt, GiftBoxData &nGboxData, HouseClass*
 			}
 			else
 			{
-				auto nRand = static_cast<unsigned int>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
-				
-				//if (pObject->IsCellOccupied(pCell, nRand, -1, nullptr, false) == Move::No || !MapClass::Instance->CoordinatesLegal(pCell->MapCoords))
-				//	nCoord = MapClass::Instance->GetRandomCoordsNear(nCoord, ScenarioClass::Instance->Random.RandomRanged(5, 10), false);
-
-				bSuccess = pObject->Unlimbo(CoordStruct{ 0,0,100000 }, nRand);
+				auto nRandFacing = static_cast<unsigned int>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
+				bSuccess = pObject->Unlimbo(CoordStruct{ 0,0,100000 }, nRandFacing);
 				pObject->SetLocation(nCoord);
 				abstract_cast<FootClass*>(pObject)->MoveTo(&nDestCoord);
 
@@ -65,21 +61,24 @@ const void GiftBoxClass::AI(TechnoClass* pTechno)
 
 			if (pTypeExt->GboxData.RandomRange.Get() > 0)
 			{
-				auto nCellLoc = MapClass::Instance->TryGetCellAt(nCoord);
-				for (CellSpreadEnumerator it((size_t)abs(pTypeExt->GboxData.RandomRange.Get())); it; ++it)
+				if (auto nCellLoc = MapClass::Instance->TryGetCellAt(nCoord))
 				{
-					auto const& offset = *it;
-					if (offset == CellStruct::Empty)
-						continue;
-
-					if (auto pCell = MapClass::Instance->TryGetCellAt(CellClass::Cell2Coord(nCellLoc->MapCoords + offset)))
+					for (CellSpreadEnumerator it((size_t)abs(pTypeExt->GboxData.RandomRange.Get())); it; ++it)
 					{
-						if (pTypeExt->GboxData.EmptyCell.Get() && (pCell->GetBuilding() || pCell->GetUnit(false) || pCell->GetInfantry(false)))
-						{
+						auto const& offset = *it;
+						if (offset == CellStruct::Empty)
 							continue;
+
+						if (auto pCell = MapClass::Instance->TryGetCellAt(CellClass::Cell2Coord(nCellLoc->MapCoords + offset)))
+						{
+							if (pTypeExt->GboxData.EmptyCell.Get() && (pCell->GetBuilding() || pCell->GetUnit(false) || pCell->GetInfantry(false)))
+							{
+								continue;
+							}
+
+							nCoord = CellClass::Cell2Coord(pCell->MapCoords);
+							break;
 						}
-						nCoord = CellClass::Cell2Coord(pCell->MapCoords);
-						break;
 					}
 				}
 			}
@@ -103,7 +102,7 @@ const void GiftBoxClass::AI(TechnoClass* pTechno)
 			}
 			else
 			{
-				auto nRandIdx = ScenarioClass::Instance->Random.RandomRanged(0,static_cast<int>(pTypeExt->GboxData.TechnoList.size()) - 1);
+				auto nRandIdx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(pTypeExt->GboxData.TechnoList.size()) - 1);
 				GiftBoxClass::CreateType(nRandIdx, pTypeExt->GboxData, pOwner, nCoord, nDestination);
 			}
 
@@ -134,7 +133,7 @@ const void GiftBoxClass::Construct(TechnoClass* pTechno)
 		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
 
 		if (!pTechnoExt->AttachedGiftBox.get() && pTypeExt->GboxData)
-		{	
+		{
 			//this only called once then the parent removed after 
 			//smart pointer is best to use , so we dont need to GameDelet<> it manually!
 			pTechnoExt->AttachedGiftBox = std::make_unique<GiftBoxClass>(pTypeExt->GboxData);

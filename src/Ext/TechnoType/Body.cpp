@@ -115,36 +115,36 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OreGathering_FramesPerDir.Read(exINI, pSection, "OreGathering.FramesPerDir");
 
 	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
-  this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
+	this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
 
+	GiftBoxData::LoadFromINI(this->GboxData, exINI, pSection);
+
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
+	auto pSectionArt = (strlen(pThis->ImageFile)) ? pThis->ImageFile : pSection;
 
-	if (strlen(pThis->ImageFile))
-		pSection = pThis->ImageFile;
-
-	this->TurretOffset.Read(exArtINI, pSection, "TurretOffset");
+	this->TurretOffset.Read(exArtINI, pSectionArt, "TurretOffset");
 
 	char tempBuffer[32];
 	for (size_t i = 0; ; ++i)
 	{
 		NullableIdx<LaserTrailTypeClass> trail;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.Type", i);
-		trail.Read(exArtINI, pSection, tempBuffer);
+		trail.Read(exArtINI, pSectionArt, tempBuffer);
 
 		if (!trail.isset())
 			break;
 
 		Valueable<CoordStruct> flh;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.FLH", i);
-		flh.Read(exArtINI, pSection, tempBuffer);
+		flh.Read(exArtINI, pSectionArt, tempBuffer);
 
 		Valueable<bool> isOnTurret;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.IsOnTurret", i);
-		isOnTurret.Read(exArtINI, pSection, tempBuffer);
+		isOnTurret.Read(exArtINI, pSectionArt, tempBuffer);
 
 		this->LaserTrailData.push_back({ ValueableIdx<LaserTrailTypeClass>(trail), flh, isOnTurret });
 	}
@@ -164,11 +164,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 			_snprintf_s(tempBufferFLH, sizeof(tempBufferFLH), "%sFLH.Burst%d", prefix, j);
 			Nullable<CoordStruct> FLH;
-			FLH.Read(exArtINI, pSection, tempBufferFLH);
+			FLH.Read(exArtINI, pSectionArt, tempBufferFLH);
 
 			_snprintf_s(tempBufferFLH, sizeof(tempBufferFLH), "Elite%sFLH.Burst%d", prefix, j);
 			Nullable<CoordStruct> eliteFLH;
-			eliteFLH.Read(exArtINI, pSection, tempBufferFLH);
+			eliteFLH.Read(exArtINI, pSectionArt, tempBufferFLH);
 
 			if (FLH.isset() & !eliteFLH.isset())
 				eliteFLH = FLH;
@@ -179,8 +179,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			EliteWeaponBurstFLHs[i].AddItem(eliteFLH.Get());
 		}
 	}
-
-	GiftBoxData::LoadFromINI(this->GboxData, exINI, pSection);
 }
 
 template <typename T>

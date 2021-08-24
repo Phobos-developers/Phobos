@@ -26,20 +26,20 @@ public:
 	Valueable<bool> EmptyCell;
 	Valueable<bool> RandomType;
 
-	static const void LoadFromINI(GiftBoxData& nGifboxData, INI_EX& parser, const char* pSection)
+	static const void LoadFromINI(GiftBoxData& nGiftboxData, INI_EX& parser, const char* pSection)
 	{
 		if (!pSection)
 			return;
 
-		nGifboxData.TechnoList.Read(parser, pSection, "GiftBox.Types");
-		nGifboxData.Count.Read(parser, pSection, "GiftBox.Nums");
-		nGifboxData.Remove.Read(parser, pSection, "GiftBox.Remove");
-		nGifboxData.Destroy.Read(parser, pSection, "GiftBox.Destroy");
-		nGifboxData.Delay.Read(parser, pSection, "GiftBox.Delay");
-		nGifboxData.DelayMinMax.Read(parser, pSection, "GiftBox.RandomDelay");
-		nGifboxData.RandomRange.Read(parser, pSection, "GiftBox.CellRandomRange");
-		nGifboxData.EmptyCell.Read(parser, pSection, "GiftBox.EmptyCell");
-		nGifboxData.RandomType.Read(parser, pSection, "GiftBox.RandomType");
+		nGiftboxData.TechnoList.Read(parser, pSection, "GiftBox.Types");
+		nGiftboxData.Count.Read(parser, pSection, "GiftBox.Nums");
+		nGiftboxData.Remove.Read(parser, pSection, "GiftBox.Remove");
+		nGiftboxData.Destroy.Read(parser, pSection, "GiftBox.Destroy");
+		nGiftboxData.Delay.Read(parser, pSection, "GiftBox.Delay");
+		nGiftboxData.DelayMinMax.Read(parser, pSection, "GiftBox.RandomDelay");
+		nGiftboxData.RandomRange.Read(parser, pSection, "GiftBox.CellRandomRange");
+		nGiftboxData.EmptyCell.Read(parser, pSection, "GiftBox.EmptyCell");
+		nGiftboxData.RandomType.Read(parser, pSection, "GiftBox.RandomType");
 
 	}
 
