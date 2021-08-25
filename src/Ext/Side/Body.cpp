@@ -41,6 +41,8 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->ToolTip_Background_BlurSize.Read(exINI, pSection, "ToolTip.Background.BlurSize");
 	this->Sidebar_ScoreCounter_Offset.Read(exINI, pSection, "Sidebar.ScoreCounter.Offset");
 	this->Sidebar_ScoreCounter_Color.Read(exINI, pSection, "Sidebar.ScoreCounter.Color");
+	this->Sidebar_ScoreCounter_Align.Read(exINI, pSection, "Sidebar.ScoreCounter.Align");
+	this->Sidebar_ScoreCounter_DrawAtBottom.Read(exINI, pSection, "Sidebar.ScoreCounter.DrawAtBottom");
 }
 
 // =============================
@@ -67,6 +69,9 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->ToolTip_Background_BlurSize)
 		.Process(this->Sidebar_ScoreCounter_Offset)
 		.Process(this->Sidebar_ScoreCounter_Color)
+		.Process(this->Sidebar_ScoreCounter_Align)
+		.Process(this->Sidebar_ScoreCounter_DrawAtBottom)
+
 		.Process(this->IngameScore_WinTheme)
 		.Process(this->IngameScore_LoseTheme)
 		;

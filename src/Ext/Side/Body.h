@@ -32,6 +32,8 @@ public:
 		Nullable<float> ToolTip_Background_BlurSize;
 		Valueable<Point2D> Sidebar_ScoreCounter_Offset;
 		Valueable<ColorStruct> Sidebar_ScoreCounter_Color;
+		Valueable<TextAlign> Sidebar_ScoreCounter_Align;
+		Valueable<bool> Sidebar_ScoreCounter_DrawAtBottom;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
 			, ArrayIndex { -1 }
@@ -53,6 +55,8 @@ public:
 			, ToolTip_Background_BlurSize { }
 			, Sidebar_ScoreCounter_Offset({ 0,0 })
 			, Sidebar_ScoreCounter_Color({ 255,255,255 })
+			, Sidebar_ScoreCounter_Align(TextAlign::Left)
+			, Sidebar_ScoreCounter_DrawAtBottom(false)
 		{ }
 
 		virtual ~ExtData() = default;

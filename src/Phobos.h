@@ -63,9 +63,6 @@ public:
 		static const wchar_t* ScoreLabel;
 
 		static Valueable<TextAlign> HarvesterCounter_Align;
-		static Valueable<TextAlign> ScoreCounter_Align;
-		static bool ScoreCounter_DrawAtBottom;
-		
 	};
 
 	class Config

@@ -171,14 +171,16 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 - The counter is displayed with the format of `Label(Active Harvesters)/(Total Harvesters)`. The label is `⛏ U+26CF` by default.
 - You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, negative means left/up, positive means right/down.
 - By setting `HarvesterCounter.ConditionYellow` and `HarvesterCounter.ConditionRed`, the game will warn player by changing the color of counter whenever the active percentage of harvesters less than or equals to them, like HP changing with `ConditionYellow` and `ConditionRed`.
+- You can specify text alignment with `HarvesterCounter.Align`, accepted values are `Left`, `Right`, `Center`/`Centre`. Defaults to `Center`.
 
 In `uimd.ini`:
 ```ini
 [Sidebar]
-HarvesterCounter.Show=false           ; boolean
-HarvesterCounter.Label=<none>         ; CSF entry key
-HarvesterCounter.ConditionYellow=99%  ; floating point value, percents
-HarvesterCounter.ConditionRed=50%     ; floating point value, percents
+HarvesterCounter.Show=no                 ; boolean
+HarvesterCounter.Label=<none>            ; CSF entry key
+HarvesterCounter.ConditionYellow=99%     ; double, percentage
+HarvesterCounter.ConditionRed=50%        ; double, percentage
+HarvesterCounter.Align=Center			 ; Left, Right, Center/Centre
 ```
 
 In `rulesmd.ini`:
@@ -241,6 +243,8 @@ If you use the vanilla font in your mod, you can use the improved font (v4 and h
 - The counter is displayed with the format of `(Points)Label`. The label is `★ U+2605` by default.
 - You can adjust counter position by `Sidebar.ScoreCounter.Offset`, negative means left/up, positive means right/down.
 - You can supply your own color through `Sidebar.ScoreCounter.Color`, in RGB values. The color is white (`255,255,255`) by default.
+- You can specify text alignment with `Sidebar.ScoreCounter.Align`, accepted values are `Left`, `Right`, `Center`/`Centre`. Defaults to `Left`.
+- You can quickly change the default position of the counter from the top of the sidebar to the bottom with `Sidebar.ScoreCounter.DrawAtBottom`. Defaults to `no`. Bottom counter will be in the middle of the sidebar, below tab arrows.
 
 In `uimd.ini`:
 ```ini
@@ -254,6 +258,8 @@ In `rulesmd.ini`:
 [SOMESIDE]                                     ; Side
 Sidebar.ScoreCounter.Offset=0,0                ; X,Y, pixels relative to default
 Sidebar.ScoreCounter.Color=255,255,255		   ; R,G,B
+Sidebar.ScoreCounter.Align=Left				   ; Left, Right, Center/Centre
+Sidebar.ScoreCounter.DrawAtBottom=no		   ; boolean
 ```
 
 ```{note}

@@ -155,14 +155,14 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_ScoreCounter, 0x7)
 		auto pPlayer = HouseClass::Player();
 		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::Player->SideIndex));
 		auto TextFlags = static_cast<TextPrintType>(static_cast<int>(TextPrintType::UseGradPal | TextPrintType::Metal12)
-			| static_cast<int>(Phobos::UI::ScoreCounter_Align.Get()));
+			| static_cast<int>(pSideExt->Sidebar_ScoreCounter_Align.Get()));
 		int XPosition;
 		int YPosition;
 		wchar_t counter[0x20];
 
 		swprintf_s(counter, L"%d%ls", pPlayer->SiloMoney, Phobos::UI::ScoreLabel);
 
-		if (Phobos::UI::ScoreCounter_DrawAtBottom)
+		if (pSideExt->Sidebar_ScoreCounter_DrawAtBottom.Get())
 		{
 			XPosition = DSurface::Sidebar->GetWidth() / 2;
 			YPosition = DSurface::Sidebar->GetHeight() - 30;
