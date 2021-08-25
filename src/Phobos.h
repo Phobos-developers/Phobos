@@ -1,9 +1,11 @@
 #pragma once
 #include <Phobos.version.h>
 #include <Windows.h>
+#include <Utilities/Template.h>
 
 class CCINIClass;
 class AbstractClass;
+enum class TextAlign;
 
 constexpr auto NONE_STR = "<none>";
 constexpr auto NONE_STR2 = "none";
@@ -60,8 +62,7 @@ public:
 		static const wchar_t* HarvesterLabel;
 		static const wchar_t* ScoreLabel;
 
-		//TODO: ALIGNMENT
-		//static TextAlign ScoreCounter_Align;
+		static Valueable<TextAlign> ScoreCounter_Align;
 	};
 
 	class Config

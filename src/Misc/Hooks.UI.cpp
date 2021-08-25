@@ -165,8 +165,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_ScoreCounter, 0x7)
 		DSurface::Sidebar->GetRect(&vRect2);
 
 		DSurface::Sidebar->DrawText(counter, &vRect2, &vPos2, Drawing::RGB2DWORD(pSideExt->Sidebar_ScoreCounter_Color), 0,
-			TextPrintType::UseGradPal | TextPrintType::Metal12);
-			//TextPrintType::UseGradPal | TextPrintType::Metal12 | Phobos::UI::ScoreAlign);
+			TextPrintType::UseGradPal | TextPrintType::Metal12 | Phobos::UI::ScoreCounter_Align);
 	}
 
 	return 0;

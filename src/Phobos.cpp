@@ -11,7 +11,8 @@
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
-//#include <Utilities/Enum.h>
+#include <Utilities/Enum.h>
+#include <Utilities/TemplateDef.h>
 
 #include "Misc/BlittersFix.h"
 
@@ -54,8 +55,8 @@ bool Phobos::UI::ShowPowerDelta = false;
 double Phobos::UI::PowerDelta_ConditionYellow = 0.75;
 double Phobos::UI::PowerDelta_ConditionRed = 1.0;
 const wchar_t* Phobos::UI::ScoreLabel = L"";
-//TODO: ALIGNMENT
-//TextAlign Phobos::UI::ScoreCounter_Align = TextAlign::Left;
+
+Valueable<TextAlign> Phobos::UI::ScoreCounter_Align{ TextAlign::Left };
 
 bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::ToolTipBlur = false;
@@ -210,7 +211,8 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
 	Phobos::Config::ShowPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowPlacementPreview", true);
 
-	CCINIClass* pINI_UIMD = Phobos::OpenConfig(GameStrings::UIMD_INI);
+	CCINIClass* pINI = Phobos::OpenConfig("uimd.ini");
+	INI_EX exINI(pINI);
 
 	// LoadingScreen
 	{
@@ -270,8 +272,8 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 		pINI->ReadString(SIDEBAR_SECTION, "ScoreCounter.Label", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::ScoreLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u2605"); // ★
-		// TODO ALIGNMENT
-		//Phobos::UI::ScoreCounter_Align.Read(pINI, SIDEBAR_SECTION, "ScoreCounter.Align", TextAlign::Left);
+
+		Phobos::UI::ScoreCounter_Align.Read(exINI, SIDEBAR_SECTION, "ScoreCounter.Align");
 
 	}
 

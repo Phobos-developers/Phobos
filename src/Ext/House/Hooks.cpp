@@ -110,7 +110,7 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 	
 	for (auto & entry: pTypeExt->ScoreSuperWeaponData)
 	{
-		if (!entry.AlreadyGranted && pThis->SiloMoney > entry.Score)
+		if (!entry.AlreadyGranted && pThis->SiloMoney >= entry.Score)
 		{
 			HouseExt::GrantScoreSuperPower(pThis, entry.IdxType);
 			entry.AlreadyGranted = true;
