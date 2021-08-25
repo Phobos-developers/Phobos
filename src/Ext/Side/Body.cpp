@@ -42,7 +42,7 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Sidebar_ScoreCounter_Offset.Read(exINI, pSection, "Sidebar.ScoreCounter.Offset");
 	this->Sidebar_ScoreCounter_Color.Read(exINI, pSection, "Sidebar.ScoreCounter.Color");
 	this->Sidebar_ScoreCounter_Align.Read(exINI, pSection, "Sidebar.ScoreCounter.Align");
-	this->Sidebar_ScoreCounter_DrawAtBottom.Read(exINI, pSection, "Sidebar.ScoreCounter.DrawAtBottom");
+	this->Sidebar_ScoreCounter_DrawOnCommandBar.Read(exINI, pSection, "Sidebar.ScoreCounter.DrawOnCommandBar");
 }
 
 // =============================
@@ -70,7 +70,7 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->Sidebar_ScoreCounter_Offset)
 		.Process(this->Sidebar_ScoreCounter_Color)
 		.Process(this->Sidebar_ScoreCounter_Align)
-		.Process(this->Sidebar_ScoreCounter_DrawAtBottom)
+		.Process(this->Sidebar_ScoreCounter_DrawOnCommandBar)
 
 		.Process(this->IngameScore_WinTheme)
 		.Process(this->IngameScore_LoseTheme)

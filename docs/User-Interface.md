@@ -235,22 +235,21 @@ If you use the vanilla font in your mod, you can use the improved font (v4 and h
 ```
 
 ### Score counter
-
-![image](_static/images/scoresuperweapons.gif)  
-*Score Counter in Assault Amerika*
+ 
+*VACANT: Score Counter on the command bar*
 
 - This opt-in counter displayes the in-game score (value of killed units minus value of dead units) for the player.
 - The counter is displayed with the format of `(Points)Label`. The label is `★ U+2605` by default.
 - You can adjust counter position by `Sidebar.ScoreCounter.Offset`, negative means left/up, positive means right/down.
 - You can supply your own color through `Sidebar.ScoreCounter.Color`, in RGB values. The color is white (`255,255,255`) by default.
 - You can specify text alignment with `Sidebar.ScoreCounter.Align`, accepted values are `Left`, `Right`, `Center`/`Centre`. Defaults to `Left`.
-- You can quickly change the default position of the counter from the top of the sidebar to the bottom with `Sidebar.ScoreCounter.DrawAtBottom`. Defaults to `no`. Bottom counter will be in the middle of the sidebar, below tab arrows.
+- You can also change the default position of the counter from the top of the sidebar to the command bar with `Sidebar.ScoreCounter.DrawOnCommandBar`. Defaults to `no`.
 
 In `uimd.ini`:
 ```ini
 [Sidebar]
-ScoreCounter.Show=no					   ; boolean
-ScoreCounter.Label=<none>				   ; CSF entry key
+ScoreCounter.Show=no						  ; boolean
+ScoreCounter.Label=<none>					  ; CSF entry key
 ```
 
 In `rulesmd.ini`:
@@ -259,7 +258,7 @@ In `rulesmd.ini`:
 Sidebar.ScoreCounter.Offset=0,0                ; X,Y, pixels relative to default
 Sidebar.ScoreCounter.Color=255,255,255		   ; R,G,B
 Sidebar.ScoreCounter.Align=Left				   ; Left, Right, Center/Centre
-Sidebar.ScoreCounter.DrawAtBottom=no		   ; boolean
+Sidebar.ScoreCounter.DrawOnCommandBar=no	   ; boolean
 ```
 
 ```{note}
