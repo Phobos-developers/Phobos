@@ -38,6 +38,7 @@ In `FAData.ini`:
 Phobos fixes:
 
 - Fixed shield not saving properly (by Uranusian)
+- Fixed extended building upgrades logic not properly interact with Ares' BuildLimit check (by Uranusian)
 
 ### 0.2.2.1
 
