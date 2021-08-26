@@ -22,11 +22,13 @@ public:
 		std::unique_ptr<ShieldClass> Shield;
 		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		Valueable<bool> ReceiveDamage;
+		int DeathIfCountdown;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),
 			InterceptedBullet(nullptr),
 			Shield(),
 			LaserTrails(),
+			DeathIfCountdown(-1),
 			ReceiveDamage(false)
 		{ }
 
@@ -73,4 +75,5 @@ public:
 	static void ApplyInterceptor(TechnoClass* pThis);
 	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
 	static void ApplySpawn_LimitRange(TechnoClass* pThis);
+	static void ApplyDeath_If(TechnoClass* pThis);
 };

@@ -300,6 +300,20 @@ WeaponXFLH.BurstN=             ; int - forward, lateral, height
 EliteWeaponXFLH.BurstN=        ; int - forward, lateral, height
 ```
 
+### Kill Unit Automatically
+
+- New ways for self-killing objects under certaing cases.
+- No Ammo: The object will die if the remaining ammo reaches 0.
+- Countdown: The object will die if the countdown reaches 0. Optionally the affected object can decrease the Health until the countdown ends.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                       ; TechnoType
+Death.NoAmmo=no                    ; boolean
+Death.Countdown=0                  ; integer
+Death.Countdown.DecreaseHealth=no  ; boolean
+```
+
 ## Weapons
 
 ### Burst.Delays
