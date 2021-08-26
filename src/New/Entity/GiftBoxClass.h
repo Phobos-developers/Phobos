@@ -126,6 +126,7 @@ public:
 	static const bool CreateType(int nAt, GiftBoxData &nGbox, HouseClass* pOwner, CoordStruct nCoord, CoordStruct nDestCoord);
 	static const void AI(TechnoClass* pTechno);
 	static const void Construct(TechnoClass* pTechno);
+	static const bool AllowDestroy(TechnoClass* pTechno);
 
 	bool IsEnabled{ false };
 	bool IsOpen{ false };

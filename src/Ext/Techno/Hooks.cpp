@@ -120,6 +120,8 @@ DEFINE_HOOK(0x6F3C88, TechnoClass_Transform_6F3AD0_BurstFLH_2, 0x6)
 
 // Issue #237 NotHuman additional animations support
 // Author: Otamaa
+#pragma warning(push)
+#pragma warning(disable : 4067)
 DEFINE_HOOK(0x518505, InfantryClass_TakeDamage_NotHuman, 0x4)
 {
 	GET(InfantryClass* const, pThis, ESI);
@@ -151,3 +153,4 @@ DEFINE_HOOK(0x518505, InfantryClass_TakeDamage_NotHuman, 0x4)
 
 	return 0x518515;
 }
+#pragma warning(pop)
