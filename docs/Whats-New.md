@@ -33,6 +33,12 @@ In `FAData.ini`:
 
 ## Changelog
 
+### 0.2.2.2
+
+Phobos fixes:
+
+- Fixed shield not saving properly (by Uranusian)
+
 ### 0.2.2.1
 
 Phobos fixes:
