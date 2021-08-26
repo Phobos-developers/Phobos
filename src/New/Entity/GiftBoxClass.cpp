@@ -64,7 +64,10 @@ const bool GiftBoxClass::CreateType(int nIndex, GiftBoxData& nGboxData, HouseCla
 				auto nRandFacing = static_cast<unsigned int>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
 				bSuccess = pObject->Unlimbo(CoordStruct{ 0,0,100000 }, nRandFacing);
 				pObject->SetLocation(nCoord);
-				abstract_cast<FootClass*>(pObject)->MoveTo(&nDestCoord);
+
+				auto pDest = MapClass::Instance->TryGetCellAt(nDestCoord);
+				abstract_cast<FootClass*>(pObject)->SetDestination(pDest, true);
+				abstract_cast<FootClass*>(pObject)->QueueMission(Mission::Move, false);
 
 			}
 
@@ -103,7 +106,6 @@ const void GiftBoxClass::AI(TechnoClass* pTechno)
 				auto pOwner = pTechno->Owner;
 				auto nCoord = pTechno->GetCoords();
 				auto pFocus = pTechno->Focus;
-				auto pDest = pTechno->GetDestination();
 
 				if (pTypeExt->GboxData.RandomRange.Get() > 0)
 				{
@@ -134,8 +136,8 @@ const void GiftBoxClass::AI(TechnoClass* pTechno)
 				{
 					if (pFocus)
 						nDestination = pFocus->GetCoords();
-					else if (pDest != CoordStruct::Empty)
-						nDestination = pDest;
+					else if (auto pDest = abstract_cast<FootClass*>(pTechno)->Destination)
+						nDestination = pDest->GetCoords();
 				}
 
 				if (!pTypeExt->GboxData.RandomType.Get())
