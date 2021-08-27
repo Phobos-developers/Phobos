@@ -249,6 +249,14 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 
 void TechnoExt::EatPassengers(TechnoClass* pThis)
 {
+	if (pThis->TemporalTargetingMe 
+		|| pThis->BeingWarpedOut 
+		|| pThis->IsUnderEMP() 
+		|| !pThis->IsAlive 
+		|| pThis->Health <= 0 
+		|| pThis->InLimbo)
+		return;
+
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	if (pTypeData && pTypeData->PassengerDeletion_Countdown > 0)
@@ -277,12 +285,17 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 					// Countdown reached 0
 					// Time for deleting the first unit (FIFO queue)
 					DynamicVectorClass<FootClass*> passengersList;
+					FootClass* pOldPassenger;
 
 					// We'll get the passengers list in a more easy data structure
 					while (pThis->Passengers.NumPassengers > 0)
 					{
-						passengersList.AddItem(pThis->Passengers.RemoveFirstPassenger());
+						pOldPassenger = pThis->Passengers.RemoveFirstPassenger();
+
+						passengersList.AddItem(pOldPassenger);
 					}
+
+					pOldPassenger->UnInit();
 
 					auto pPassenger = passengersList.GetItem(passengersList.Count - 1);
 					auto pTypePassenger = passengersList.GetItem(passengersList.Count - 1)->GetTechnoType();
