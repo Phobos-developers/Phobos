@@ -9,7 +9,7 @@ DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 	GET(AircraftClass*, pThis, ESI);
 
 	if (pThis->MissionStatus < (int)AirAttackStatus::FireAtTarget2_Strafe
-		|| pThis->MissionStatus >(int)AirAttackStatus::FireAtTarget5_Strafe)
+		|| pThis->MissionStatus > (int)AirAttackStatus::FireAtTarget5_Strafe)
 	{
 		return 0;
 	}
