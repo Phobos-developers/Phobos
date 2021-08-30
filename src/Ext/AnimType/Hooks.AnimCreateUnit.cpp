@@ -44,7 +44,12 @@ DEFINE_HOOK(0x423BC8, AnimClass_Update_CreateUnit_MarkOccupationBits, 0x6)
 	if (pTypeExt->CreateUnit.Get())
 	{
 		auto Location = pThis->GetCoords();
-		Location.Z = 0;
+
+		if (auto pCell = pThis->GetCell())
+			Location = pCell->GetCoordsWithBridge();
+		else
+			Location.Z = MapClass::Instance->GetCellFloorHeight(Location);
+
 		pThis->MarkAllOccupationBits(Location);
 	}
 
@@ -62,8 +67,13 @@ DEFINE_HOOK(0x424932, AnimClass_Update_CreateUnit_ActualAffects, 0x6)
 		HouseClass* decidedOwner = (pThis->Owner)
 			? pThis->Owner : HouseClass::FindCivilianSide();
 
+		auto pCell = pThis->GetCell();
 		CoordStruct location = pThis->GetCoords();
-		location.Z = 0;
+
+		if (pCell)
+			location = pCell->GetCoordsWithBridge();
+		else
+			location.Z = MapClass::Instance->GetCellFloorHeight(location);
 
 		pThis->UnmarkAllOccupationBits(location);
 
@@ -72,13 +82,18 @@ DEFINE_HOOK(0x424932, AnimClass_Update_CreateUnit_ActualAffects, 0x6)
 			bool success = false;
 			auto const pExt = AnimExt::ExtMap.Find(pThis);
 
-			auto aFacing = pTypeExt->CreateUnit_RandomFacing.Get() 
+			auto aFacing = pTypeExt->CreateUnit_RandomFacing.Get()
 				? static_cast<unsigned short>(ScenarioClass::Instance->Random.RandomRanged(0, 255)) : pTypeExt->CreateUnit_Facing.Get();
 
 			short resultingFacing = (pTypeExt->CreateUnit_InheritDeathFacings.Get() && pExt->FromDeathUnit)
 				? pExt->DeathUnitFacing : aFacing;
 
-			if (!MapClass::Instance->TryGetCellAt(pThis->GetCoords())->GetBuilding())
+			if (pCell)
+				pTechno->OnBridge = pCell->ContainsBridge();
+
+			BuildingClass* pBuilding = pCell ? pCell->GetBuilding() : MapClass::Instance->TryGetCellAt(location)->GetBuilding();
+
+			if (!pBuilding)
 			{
 				++Unsorted::IKnowWhatImDoing;
 				success = pTechno->Unlimbo(location, resultingFacing);
@@ -94,7 +109,7 @@ DEFINE_HOOK(0x424932, AnimClass_Update_CreateUnit_ActualAffects, 0x6)
 				if (pTechno->HasTurret() && pExt->FromDeathUnit && pExt->DeathUnitHasTurret && pTypeExt->CreateUnit_InheritTurretFacings.Get())
 					pTechno->SecondaryFacing.set(pExt->DeathUnitTurretFacing);
 
-				Debug::Log("[" __FUNCTION__ "] Stored Turret Facing %d \n",pExt->DeathUnitTurretFacing.value256());
+				Debug::Log("[" __FUNCTION__ "] Stored Turret Facing %d \n", pExt->DeathUnitTurretFacing.value256());
 
 				if (!pTechno->InLimbo)
 					pTechno->QueueMission(pTypeExt->CreateUnit_Mission.Get(), false);

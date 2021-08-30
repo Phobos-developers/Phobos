@@ -68,8 +68,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
 	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
-	this->JumpjetCrash.Read(exINI, "JumpjetControls", "Crash");
-	this->JumpjetNoWobbles.Read(exINI, "JumpjetControls", "NoWobbles");
 }
 
 // this runs between the before and after type data loading methods for rules ini
