@@ -12,15 +12,12 @@ void AircraftExt::FireBurst(AircraftClass* pThis, AbstractClass* pTarget, int sh
 
 	if (weaponType->Burst > 0)
 	{
-		while (pThis->CurrentBurstIndex < weaponType->Burst)
+		for (int i = 0; i < weaponType->Burst; i++)
 		{
 			if (weaponType->Burst < 2 && pWeaponTypeExt->Strafing_SimulateBurst)
 				pThis->CurrentBurstIndex = shotNumber;
 
 			pThis->Fire(pThis->Target, weaponIndex);
-
-			if (pThis->CurrentBurstIndex == 0)
-				break;
 		}
 	}
 }
