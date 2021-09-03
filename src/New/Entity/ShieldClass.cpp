@@ -100,8 +100,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->Type->Armor, args->DistanceToEpicenter);
 		else
 			nDamage = -MapClass::GetTotalDamage(-*args->Damage, args->WH, this->Type->Armor, args->DistanceToEpicenter);
-		shieldDamage = (int)((double)nDamage * pWHExt->ShieldAbsorbPercent.Get(this->Type->AbsorbPercent));
-		healthDamage = (int)((double)nDamage * pWHExt->ShieldPassPercent.Get(this->Type->PassPercent));
+		shieldDamage = (int)((double)nDamage * pWHExt->AbsorbPercentShield.Get(this->Type->AbsorbPercent));
+		healthDamage = (int)((double)nDamage * pWHExt->PassPercentShield.Get(this->Type->PassPercent));
 	}
 
 	if (shieldDamage > 0)
