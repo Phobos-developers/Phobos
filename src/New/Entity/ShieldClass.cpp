@@ -91,6 +91,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		return *args->Damage;
 
 	int nDamage = 0;
+	int shieldDamage = 0;
+	int healthDamage = 0;
 
 	if (pWHExt->CanTargetHouse(args->SourceHouse, this->Techno) && !args->WH->Temporal)
 	{
@@ -98,21 +100,23 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->Type->Armor, args->DistanceToEpicenter);
 		else
 			nDamage = -MapClass::GetTotalDamage(-*args->Damage, args->WH, this->Type->Armor, args->DistanceToEpicenter);
+		shieldDamage = (int)((double)nDamage * pWHExt->ShieldAbsorbPercent.Get(this->Type->AbsorbPercent));
+		healthDamage = (int)((double)nDamage * pWHExt->ShieldPassPercent.Get(this->Type->PassPercent));
 	}
 
-	if (nDamage > 0)
+	if (shieldDamage > 0)
 	{
 		this->Timers.SelfHealing.Start(this->Type->SelfHealing_Rate); // when attacked, restart the timer
 		this->ResponseAttack();
 
-		int residueDamage = nDamage - this->HP;
+		int residueDamage = shieldDamage - this->HP;
 		if (residueDamage >= 0 || pWHExt->BreaksShield)
 		{
 
 			if (pWHExt->BreaksShield && residueDamage < 0)
 				residueDamage = 0;
 
-			residueDamage = int((double)residueDamage /
+			residueDamage = int((double)(residueDamage + healthDamage) /
 				GeneralUtils::GetWarheadVersusArmor(args->WH, this->Type->Armor)); //only absord percentage damage
 
 			this->BreakShield();
@@ -122,10 +126,10 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		{
 			this->WeaponNullifyAnim();
 			this->HP = -residueDamage;
-			return 0;
+			return healthDamage;
 		}
 	}
-	else if (nDamage < 0)
+	else if (shieldDamage < 0)
 	{
 		const int nLostHP = this->Type->Strength - this->HP;
 		if (!nLostHP)
@@ -137,11 +141,11 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			return result;
 		}
 
-		const int nRemainLostHP = nLostHP + nDamage;
+		const int nRemainLostHP = nLostHP + shieldDamage;
 		if (nRemainLostHP < 0)
 			this->HP = this->Type->Strength;
 		else
-			this->HP -= nDamage;
+			this->HP -= shieldDamage;
 
 		return 0;
 	}

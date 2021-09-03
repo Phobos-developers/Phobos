@@ -108,6 +108,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	else
 		this->PenetratesShield.Read(exINI, pSection, "PenetratesShield");
 	this->BreaksShield.Read(exINI, pSection, "BreaksShield");
+	this->ShieldAbsorbPercent.Read(exINI, pSection, "ShieldAbsorbPercent");
+	this->ShieldPassPercent.Read(exINI, pSection, "ShieldPassPercent");
 
 	this->NotHuman_DeathSequence.Read(exINI, pSection, "NotHuman.DeathSequence");
 }

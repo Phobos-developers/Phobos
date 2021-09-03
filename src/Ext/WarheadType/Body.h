@@ -42,6 +42,9 @@ public:
 		
 		Valueable<int> NotHuman_DeathSequence;
 
+		Nullable<double> ShieldAbsorbPercent;
+		Nullable<double> ShieldPassPercent;
+
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject)
 			, SpySat(false)
 			, BigGap(false)
@@ -65,6 +68,8 @@ public:
 
 			, PenetratesShield(false)
 			, BreaksShield(false)
+			, ShieldAbsorbPercent()
+			, ShieldPassPercent()
 
 			, NotHuman_DeathSequence(-1)
 		{ }
