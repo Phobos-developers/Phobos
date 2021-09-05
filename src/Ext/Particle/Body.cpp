@@ -91,7 +91,7 @@ DEFINE_HOOK(0x62D803, ParticleClass_Load_Suffix, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x62D82D, ParticleClass_Save_Suffix, 0x5)
+DEFINE_HOOK(0x62D825, ParticleClass_Save_Suffix, 0x7)
 {
 	ParticleExt::ExtMap.SaveStatic();
 	return 0;
