@@ -104,19 +104,3 @@ DEFINE_HOOK(0x645405, ParticleTypeClass_LoadFromINI, 0x5)
 
 	return 0;
 }
-
-// what's this
-/*
-DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
-{
-	//GET(CCINIClass*, pINI, ESI);
-
-	for (auto const& pType : *BuildingTypeClass::Array)
-	{
-		auto const pExt = BuildingTypeExt::ExtMap.Find(pType);
-		pExt->CompleteInitialization();
-	}
-
-	return 0;
-}
-*/
