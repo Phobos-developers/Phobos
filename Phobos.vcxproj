@@ -23,6 +23,7 @@
     <ClCompile Include="src\Ext\AnimType\Hooks.cpp" />
     <ClCompile Include="src\Ext\ParticleType\Body.cpp" />
     <ClCompile Include="src\Ext\Particle\Body.cpp" />
+    <ClCompile Include="src\Ext\Particle\Hooks.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.Variables.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Body.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Hooks.cpp" />

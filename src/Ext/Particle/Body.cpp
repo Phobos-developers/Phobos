@@ -58,7 +58,7 @@ ParticleExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
-DEFINE_HOOK(0x62BCB8, ParticleClass_CTOR, 0x5)
+DEFINE_HOOK(0x62BB13, ParticleClass_CTOR, 0x5)
 {
 	GET(ParticleClass*, pItem, ESI);
 
