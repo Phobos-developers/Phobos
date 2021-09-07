@@ -15,16 +15,10 @@ public:
 	class ExtData final : public Extension<TeamClass>
 	{
 	public:
-		int WaitNoTargetAttempts;
-		double NextSuccessWeightAward;
-		int IdxSelectedObjectFromAIList;
 		double CloseEnough;
 		int Countdown_regroupAtLeader;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject),
-			WaitNoTargetAttempts(0),
-			NextSuccessWeightAward(0),
-			IdxSelectedObjectFromAIList(-1),
 			CloseEnough(-1),
 			Countdown_regroupAtLeader(-1)
 		{ }

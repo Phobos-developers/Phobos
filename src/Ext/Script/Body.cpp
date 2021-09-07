@@ -40,7 +40,7 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 73:
 		ScriptExt::WaitUntillFullAmmoAction(pTeam);
 		break;
-	case 74:
+	case 74: // rename from "74" to "110" when PR #296 "New Script Actions" is merged into develop!
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
 		break;
 	default:
@@ -200,18 +200,15 @@ void ScriptExt::WaitUntillFullAmmoAction(TeamClass* pTeam)
 void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -1)
 {
 	FootClass *pLeaderUnit = nullptr;
-	//TechnoTypeClass* pLeaderUnitType = nullptr;
 	int bestUnitLeadershipValue = -1;
 	int initialCountdown = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
-	//auto pTypeThis = pThis->GetTechnoType();
-	//auto pData = TeamExt::ExtMap.Find(pThis);
 
 	// This team has no units! END
 	if (!pTeam)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-		Debug::Log("DEBUG: [%s] [%s] Mission_Gather_NearTheLeader: END! No team\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID);
+		
 		return;
 	}
 
@@ -221,14 +218,13 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 	{
 		if (pTeamData->Countdown_regroupAtLeader >= 0)
 			countdown = pTeamData->Countdown_regroupAtLeader;
-		Debug::Log("DEBUG: [%s] [%s] Mission_Gather_NearTheLeader: countdown = %d, initialCountdown = %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, countdown, initialCountdown);
 	}
 	else
 	{
 		// Looks like an error...
 		// This action finished
 		pTeam->StepCompleted = true;
-		Debug::Log("DEBUG: [%s] [%s] Mission_Gather_NearTheLeader: END! No pTeamData found\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID);
+		
 		return;
 	}
 
@@ -262,7 +258,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 
 		// This action finished
 		pTeam->StepCompleted = true;
-		Debug::Log("DEBUG: [%s] [%s] Mission_Gather_NearTheLeader: No leader!\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID);
+		
 		return;
 	}
 
@@ -271,15 +267,15 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 	int nUnits = -1; // Leader counts here
 	double closeEnough;
 
-	//if (pTeamData->CloseEnough > 0) // Uncomment when PR #296 "New Script Actions" is merged into develop!
-	//{
-	//	closeEnough = pTeamData->CloseEnough;
-	//	pTeamData->CloseEnough = -1; // This a one-time-use value
-	//}
-	//else
-	//{ // Uncomment when PR #296 "New Script Actions" is merged into develop!
+	if (pTeamData->CloseEnough > 0)
+	{
+		closeEnough = pTeamData->CloseEnough;
+		pTeamData->CloseEnough = -1; // This a one-time-use value
+	}
+	else
+	{ // Uncomment when PR #296 "New Script Actions" is merged into develop!
 	closeEnough = RulesClass::Instance->CloseEnough / 256.0;
-	//}
+	}
 
 	// The leader should stay calm & be the group's center
 	if (pLeaderUnit->Locomotor->Is_Moving_Now())
@@ -332,12 +328,11 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 			}
 		}
 	}
-	Debug::Log("DEBUG: [%s] [%s] Mission_Gather_NearTheLeader: nUnits = %d, nTogether = %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, nUnits, nTogether);
 
 	if (initialCountdown >= 0 && nUnits >= 0 && nUnits == nTogether && countdown > 0)
 	{
 		countdown--; // Update countdown
-		Debug::Log("DEBUG: [%s] [%s] Mission_Gather_NearTheLeader: updated countdown = %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, countdown);
+		
 		// Save counter
 		pTeamData->Countdown_regroupAtLeader = countdown;
 	}
@@ -346,13 +341,13 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 	{
 		// Start countdown.
 		countdown = initialCountdown * 15;
-		Debug::Log("DEBUG: [%s] [%s] Mission_Gather_NearTheLeader: set countdown = %d [initialCountdown]\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, countdown);
+		
 		pTeamData->Countdown_regroupAtLeader = countdown;
 	}
 
 	if (nUnits >= 0 && nUnits > nTogether && countdown > 0)
 	{
-		Debug::Log("DEBUG: [%s] [%s] Mission_Gather_NearTheLeader: units not together yet (current countdown: %d)\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, countdown);
+		// units aren't together so the countdown is in pause
 		return;
 	}
 
@@ -365,14 +360,13 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 
 			// This action finished
 			pTeam->StepCompleted = true;
-			Debug::Log("DEBUG: [%s] [%s] Mission_Gather_NearTheLeader: initialCountdown == 0 that finished!\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID);
+			
 			return;
 		}
 
 		if (initialCountdown > 0 && countdown == 0)
 		{
 			// Countdown ended.
-			Debug::Log("DEBUG: [%s] [%s] Mission_Gather_NearTheLeader: countdown = %d [END]\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, countdown);
 			countdown = -1;
 			pTeamData->Countdown_regroupAtLeader = -1;
 			initialCountdown = 0;
@@ -386,7 +380,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 
 		// This action finished
 		pTeam->StepCompleted = true;
-		Debug::Log("DEBUG: [%s] [%s] Mission_Gather_NearTheLeader: initialCountdown == 0 that finished!\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID);
+		
 		return;
 	}
 
