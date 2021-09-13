@@ -94,6 +94,10 @@ public:
 		bool HasCrit;
 		bool WasDetonatedOnAllMapObjects;
 
+		Valueable<bool> Upgrades;
+		ValueableVector<TechnoTypeClass*> Upgrade_From;
+		ValueableVector<TechnoTypeClass*> Upgrade_To;
+
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
 		Valueable<double> Shield_SelfHealing_Rate_InMinutes;
@@ -175,6 +179,9 @@ public:
 			, RandomBuffer { 0.0 }
 			, HasCrit { false }
 			, WasDetonatedOnAllMapObjects { false }
+			, Upgrades()
+			, Upgrade_From()
+			, Upgrade_To()
 		{ }
 
 	private:
@@ -184,6 +191,7 @@ public:
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
+		void ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);

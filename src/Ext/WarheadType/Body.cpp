@@ -176,6 +176,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
+	this->Upgrades.Read(exINI, pSection, "Upgrades");
+	this->Upgrade_From.Read(exINI, pSection, "Upgrade.From");
+	this->Upgrade_To.Read(exINI, pSection, "Upgrade.To");
 }
 
 template <typename T>
@@ -254,6 +257,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AffectsOwner)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
+
+		.Process(this->Upgrades)
+		.Process(this->Upgrade_From)
+		.Process(this->Upgrade_To)
 		;
 }
 
