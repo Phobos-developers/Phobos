@@ -101,7 +101,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		else
 			nDamage = -MapClass::GetTotalDamage(-*args->Damage, args->WH, this->Type->Armor, args->DistanceToEpicenter);
 		shieldDamage = (int)((double)nDamage * pWHExt->AbsorbPercentShield.Get(this->Type->AbsorbPercent));
-		healthDamage = (int)((double)nDamage * pWHExt->PassPercentShield.Get(this->Type->PassPercent));
+		// passthrough damage shouldn't be affected by shield armor
+		healthDamage = (int)((double)*args->Damage * pWHExt->PassPercentShield.Get(this->Type->PassPercent));
 	}
 
 	if (shieldDamage > 0)
@@ -116,11 +117,11 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			if (pWHExt->BreaksShield && residueDamage < 0)
 				residueDamage = 0;
 
-			residueDamage = int((double)(residueDamage + healthDamage) /
+			residueDamage = int((double)(residueDamage) /
 				GeneralUtils::GetWarheadVersusArmor(args->WH, this->Type->Armor)); //only absord percentage damage
 
 			this->BreakShield();
-			return this->Type->AbsorbOverDamage ? 0 : residueDamage;
+			return this->Type->AbsorbOverDamage ? 0 : residueDamage + healthDamage;
 		}
 		else
 		{
