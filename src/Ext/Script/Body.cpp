@@ -209,7 +209,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-		
+
 		return;
 	}
 
@@ -225,7 +225,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 		// Looks like an error...
 		// This action finished
 		pTeam->StepCompleted = true;
-		
+
 		return;
 	}
 
@@ -234,7 +234,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 	{
 		gatherUnits = true;
 	}
-
+	
 	// Countdown updater
 	if (initialCountdown > 0)
 	{
@@ -261,12 +261,12 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 		// Save counter
 		pTeamData->Countdown_regroupAtLeader = countdown;
 	}
-
+	
 	if (!gatherUnits)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
+		
 		return;
 	}
 	else
@@ -354,7 +354,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 				if (pTypeUnit->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0 && pTypeUnit->Ammo > 0)
 				{
 					auto pAircraft = static_cast<AircraftTypeClass*>(pUnit->GetTechnoType());
-					
+
 					if (pAircraft->AirportBound)
 					{
 						// This aircraft won't count for the script action
@@ -386,159 +386,10 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 				}
 			}
 		}
-
-		if (nUnits >= 0 && nUnits == nTogether)
-		{
-			pTeamData->Countdown_regroupAtLeader = -1;
-
-			// This action finished
-			pTeam->StepCompleted = true;
-
-			return;
-		}
-
-
-
-
-
-
-	}
-
-
-
-
-
-
-
-
-	// Find the leader
-	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
-	{
-		if (pUnit && pUnit->IsAlive
-			&& pUnit->Health > 0
-			&& !pUnit->InLimbo
-			&& pUnit->IsOnMap
-			&& !pUnit->Absorbed)
-		{
-			auto pUnitType = pUnit->GetTechnoType();
-
-			if (pUnitType)
-			{
-				// The team leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
-				int unitLeadershipRating = pUnitType->LeadershipRating;
-				if (unitLeadershipRating > bestUnitLeadershipValue)
-				{
-					pLeaderUnit = pUnit;
-					bestUnitLeadershipValue = unitLeadershipRating;
-				}
-			}
-		}
-	}
-
-	if (!pLeaderUnit)
-	{
-		pTeamData->Countdown_regroupAtLeader = -1;
-
-		// This action finished
-		pTeam->StepCompleted = true;
 		
-		return;
-	}
 
-	// Move all around the leader, the leader always in "Guard Area" Mission or simply in Guard Mission
-	int nTogether = 0;
-	int nUnits = -1; // Leader counts here
-	double closeEnough;
-
-	if (pTeamData->CloseEnough > 0)
-	{
-		closeEnough = pTeamData->CloseEnough;
-		pTeamData->CloseEnough = -1; // This a one-time-use value
-	}
-	else
-	{ // Uncomment when PR #296 "New Script Actions" is merged into develop!
-	closeEnough = RulesClass::Instance->CloseEnough / 256.0;
-	}
-
-	// The leader should stay calm & be the group's center
-	if (pLeaderUnit->Locomotor->Is_Moving_Now())
-		pLeaderUnit->SetDestination(nullptr, false);
-	pLeaderUnit->QueueMission(Mission::Guard, false);
-
-	// Check if units are around the leader
-	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
-	{
-		if (pUnit && pUnit->IsAlive && pUnit->Health > 0 && !pUnit->InLimbo)
+		if (nUnits >= 0 && nUnits == nTogether && (initialCountdown == 0 || (initialCountdown > 0 && countdown <= 0)))
 		{
-			auto pTypeUnit = pUnit->GetTechnoType();
-
-			if (pUnit == pLeaderUnit || !pTypeUnit)
-			{
-				nUnits++;
-
-				continue;
-			}
-
-			// Aircraft case
-			if (pTypeUnit->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0 && pTypeUnit->Ammo > 0)
-			{
-				auto pAircraft = static_cast<AircraftTypeClass*>(pUnit->GetTechnoType());
-				if (pAircraft->AirportBound)
-				{
-					pUnit->QueueMission(Mission::Return, false);
-					pUnit->Mission_Enter();
-
-					continue;
-				}
-			}
-
-			nUnits++;
-
-			if (pUnit->DistanceFrom(pLeaderUnit) / 256.0 > closeEnough)
-			{
-				// Leader's group is too far from me. Regroup
-				if (pUnit->Destination != pLeaderUnit)
-				{
-					pUnit->SetDestination(pLeaderUnit, false);
-					pUnit->QueueMission(Mission::Move, false);
-				}
-			}
-			else
-			{
-				// Is near of the leader, then protect the area
-				pUnit->QueueMission(Mission::Area_Guard, true);
-				nTogether++;
-			}
-		}
-	}
-
-	if (initialCountdown >= 0 && nUnits >= 0 && nUnits == nTogether && countdown > 0)
-	{
-		countdown--; // Update countdown
-		
-		// Save counter
-		pTeamData->Countdown_regroupAtLeader = countdown;
-	}
-
-	if (initialCountdown > 0 && countdown == -1)
-	{
-		// Start countdown.
-		countdown = initialCountdown * 15;
-		
-		pTeamData->Countdown_regroupAtLeader = countdown;
-	}
-
-	if (nUnits >= 0 && nUnits > nTogether && countdown > 0)
-	{
-		// units aren't together so the countdown is in pause
-		return;
-	}
-
-	if (nUnits >= 0 && nUnits == nTogether)
-	{
-		if (initialCountdown == 0)
-		{
-			// Case: when this Script action have no ending set then the only ending requisite is to stay together around the leader.
 			pTeamData->Countdown_regroupAtLeader = -1;
 
 			// This action finished
@@ -546,28 +397,5 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 			
 			return;
 		}
-
-		if (initialCountdown > 0 && countdown == 0)
-		{
-			// Countdown ended.
-			countdown = -1;
-			pTeamData->Countdown_regroupAtLeader = -1;
-			initialCountdown = 0;
-		}
 	}
-
-	if (initialCountdown == 0 && nUnits >= 0 && nUnits == nTogether)
-	{
-		// Case: when this Script action have no ending set then the only ending requisite is to stay together around the leader.
-		pTeamData->Countdown_regroupAtLeader = -1;
-
-		// This action finished
-		pTeam->StepCompleted = true;
-		
-		return;
-	}
-
-	// Save counter
-	pTeamData->Countdown_regroupAtLeader = countdown;
-
 }
