@@ -40,6 +40,10 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 73:
 		ScriptExt::WaitUntillFullAmmoAction(pTeam);
 		break;
+	case 74: // IMPORTANT: This action will be renamed from 74 to 111 or another number when PR 296 gets merged into Develop branch
+		// Un-register success for AITrigger weight adjustment (this is the opposite of 49,0)
+		ScriptExt::UnregisterGreatSuccess(pTeam);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
@@ -192,4 +196,15 @@ void ScriptExt::WaitUntillFullAmmoAction(TeamClass* pTeam)
 		pTeam->CurrentScript->idxCurrentLine += 1;
 	}*/
 	pTeam->StepCompleted = true;
+}
+
+void ScriptExt::UnregisterGreatSuccess(TeamClass* pTeam)
+{
+	if (pTeam)
+	{
+		pTeam->AchievedGreatSuccess = false;
+
+		// This action finished
+		pTeam->StepCompleted = true;
+	}
 }
