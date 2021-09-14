@@ -300,6 +300,24 @@ WeaponXFLH.BurstN=             ; int - forward, lateral, height
 EliteWeaponXFLH.BurstN=        ; int - forward, lateral, height
 ```
 
+### GiftBox
+
+- You can now able to use `GiftBox` to create `TechnoType` from another `TechnoType`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                   ; TechnoType
+GiftBox.Types=                 ; List - list of the `TechnoType` will be created
+GiftBox.Nums=                  ; int - how many each `Type` will be created
+GiftBox.Remove=                ; bool - immediately remove `SOMETECHNO` after creating
+GiftBox.Destroy=               ; bool - trigger `SOMETECHNO` `Destroy` function before `Remove`
+GiftBox.Delay=                 ; int - delay for `Type` creating
+GiftBox.RandomDelay=           ; int,int - use randomize delay instead of normal 'Delay'
+GiftBox.CellRandomRange=       ; int - cell Random offset of created `Type`
+GiftBox.EmptyCell=             ; bool - only allow Empty Cell for `CellRandomRange`
+GiftBox.RandomType=            ; bool - create random `Type` instead of everything at once
+```
+
 ## Weapons
 
 ### Burst.Delays

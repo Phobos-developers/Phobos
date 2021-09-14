@@ -73,12 +73,7 @@ const bool GiftBoxClass::CreateType(int nIndex, GiftBoxData& nGboxData, HouseCla
 
 			if (bSuccess)
 			{
-				if (!pOwner->Type->MultiplayPassive)
-				{
-					pOwner->RecheckTechTree = true;
-					pObject->DiscoveredBy(pOwner);
-
-				}
+				pObject->DiscoveredBy(pOwner);			
 			}
 
 			if (!bSuccess && pObject)
