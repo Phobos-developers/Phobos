@@ -511,3 +511,13 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=73,0
 ```
+
+### `74` Un-register Team success
+
+- Is just the opposite effect of the script action `49,0`. Like if the Team failed.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=74,0
+```
