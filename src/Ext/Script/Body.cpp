@@ -573,7 +573,10 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	pFocus = abstract_cast<TechnoClass*>(pTeam->Focus);
 	if (!pFocus && !bAircraftsWithoutAmmo)
 	{
-		
+		// Favorite Enemy House case. If set, AI will focus against that House
+		if (pTeam->Type->OnlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)
+			enemyHouse = HouseClass::Array->GetItem(pLeaderUnit->Owner->EnemyHouseIndex);
+
 		int targetMask = scriptArgument;
 		selectedTarget = GreatestThreat(pLeaderUnit, targetMask, calcThreatMode, enemyHouse, attackAITargetType, idxAITargetTypeItem, agentMode);
 		
@@ -2028,7 +2031,23 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 {
 	TechnoClass *bestObject = nullptr;
 	double bestVal = -1;
-	
+	HouseClass* enemyHouse = nullptr;
+
+	// Favorite Enemy House case. If set, AI will focus against that House
+	if (!pickAllies && pTechno->BelongsToATeam())
+	{
+		auto pFoot = abstract_cast<FootClass*>(pTechno);
+
+		if (pFoot)
+		{
+			int enemyHouseIndex = pFoot->Team->FirstUnit->Owner->EnemyHouseIndex;
+
+			if (pFoot->Team->Type->OnlyTargetHouseEnemy
+				&& enemyHouseIndex >= 0)
+				enemyHouse = HouseClass::Array->GetItem(enemyHouseIndex);
+		}
+	}
+
 	// Generic method for targeting
 	for (int i = 0; i < TechnoClass::Array->Count; i++)
 	{
@@ -2037,6 +2056,9 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 		auto pTechnoType = pTechno->GetTechnoType();
 		
 		if (!object || !objectType || !pTechnoType)
+			continue;
+
+		if (enemyHouse && enemyHouse != object->Owner)
 			continue;
 
 		// Don't pick underground units
