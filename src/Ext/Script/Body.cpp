@@ -193,3 +193,58 @@ void ScriptExt::WaitUntillFullAmmoAction(TeamClass* pTeam)
 	}*/
 	pTeam->StepCompleted = true;
 }
+
+/*
+
+[DRAFT] UNCONDITIONAL SCRIPT ACTIONS DESCRIPTION:
+
+• 1 boolean variable in TeamExt for saving the evaluation. For example:
+bool ConditionalJumpEvaluation = false;
+
+• 1 integer variable in TeamExt for saving the type of evaluation. For example:
+int ConditionalEvaluationType = -1; // "-1" means no evaluation when a unit is killed by a Team member, maybe I should use the value 0 instead...
+
+• When a unit is killed by a unit that belongs to a Team it will check if "ConditionalEvaluationType" != -1 so in that case it could be evaluated TRUE / FALSE and stored in "ConditionalJumpEvaluation".
+If "ConditionalEvaluationType" is -1 (or 0 ?) then the evaluation process is skipped.
+
+• Functions:
+-> Unset conditional variable (set to 0 / false). Self-explanatory.
+
+-> Jump to line "nn" (0-based) if conditional variable "ConditionalJumpEvaluation" is TRUE.
+When the conditional jump will start the variable "ConditionalEvaluationType" is reset to -1 & the variable "ConditionalJumpEvaluation" is reset to 0 / false.
+if the variable is FALSE then skip jump and go to the next script line.
+
+-> Jump to line "nn" (0-based) if conditional variable "ConditionalJumpEvaluation" is FALSE.
+When the conditional jump will start the variable "ConditionalEvaluationType" is reset to -1.
+if the variable is TRUE then skip jump and go to the next script line.
+
+-> Set conditional jump variable "ConditionalJumpEvaluation" to 1 / true if the killed object is in the specified "nn" list in rulesmd.ini > [AITargetType] section.
+
+-> Set conditional jump variable "ConditionalJumpEvaluation" to 1 / true if the killed object is part of one of the specified list of triggers/teams/taskforces (not yet evaluated this possible function if is viable or not).
+
+-> Set a "nn" type of evaluation in "ConditionalEvaluationType" like the next ones:
+Case 1: Just enable it to value 1 / True. (unconditional jump like the classic "6,nn+1".
+Case 2: For ANY successful kill from the team members. No extra evaluations.
+Case 3: For a destroyed BUILDING by the team.
+Case 4: For a ground object kill (infantry, landed aircraft, vehicles, structures).
+Case 5: For a ground vehicle kill
+Case 6: For a soldier kill
+Case 7: For an air unit kill
+Case 8: For a naval object kill (Structures, units)
+Case 8: For a naval unit kill (not submarines)
+Case 9: For a submerged unit kill
+Case 10: For a stealth unit kill
+Case 11: For a mind controller kill
+Case 12: For a civilian structure kill
+Case 13: For a civilian unit kill
+Case 14: For a harvester kill
+Case 15: For a "Economy" object kill
+Case 16: For a Refinery kill
+Case 17: For a Factory kill
+...
+...
+...
+
+I forgot anything?
+
+*/
