@@ -17,7 +17,7 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	this->CountryCrew.Read(exINI, pSection, "CountryCrew");
-	this->CountryCrew_Type.Read(exINI, pSection, "CountryCrew_Type");
+	this->CountryCrew_Type.Read(exINI, pSection, "CountryCrew.Type");
 }
 
 template <typename T>
@@ -103,18 +103,11 @@ DEFINE_HOOK(0x51255C, HouseTypeClass_Save_Suffix, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x51215C, HouseTypeClass_LoadFromINI, 0x5)
-DEFINE_HOOK(0x511850, HouseTypeClass_LoadFromINI, 0x5)
+DEFINE_HOOK_AGAIN(0x51215A, HouseTypeClass_LoadFromINI, 0x5)
+DEFINE_HOOK(0x51214F, HouseTypeClass_LoadFromINI, 0x5)
 {
-	/* 
-		I got the message below in the IDB when trying to view the pseudocode for this address:
-
-		"local variable allocation has failed, the output may be wrong!"
-
-		I am not sure if this will cause problems	
-	*/
-	GET(HouseTypeClass*, pItem, EBX); 
-	GET_STACK(CCINIClass*, pINI, 0xFF); //no clue, could not figure out how to get offset from looking at the other people's code
+	GET(HouseTypeClass*, pItem, EBX);
+	GET_BASE(CCINIClass*, pINI, 0x8);
 
 	HouseTypeExt::ExtMap.LoadFromINI(pItem, pINI);
 

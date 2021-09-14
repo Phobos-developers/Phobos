@@ -12,8 +12,9 @@ public:
 	class ExtData final : public Extension<HouseTypeClass>
 	{
 	public:
-		Nullable<bool> CountryCrew;
+		Valueable<bool> CountryCrew;
 		Nullable<InfantryTypeClass*> CountryCrew_Type;
+
 		ExtData(HouseTypeClass* OwnerObject) : Extension<HouseTypeClass>(OwnerObject)
 			, CountryCrew(false)
 			, CountryCrew_Type()

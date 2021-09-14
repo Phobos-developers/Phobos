@@ -6,16 +6,11 @@
 DEFINE_HOOK(0x4430BC, BuildingClass_RegisterDestruction_EjectCountryCrew, 0x6)
 {
 	GET(InfantryTypeClass*, pInfType, EAX);
-
 	GET(BuildingClass*, pThis, EDI);
-	HouseTypeClass* pHouseType = pThis->Owner->Type;
-	auto pExt = HouseTypeExt::ExtMap.Find(pHouseType);
+	auto pExt = HouseTypeExt::ExtMap.Find(pThis->Owner->Type);
 
 	if (pExt->CountryCrew)
-	{
-		pInfType = pExt->CountryCrew_Type;
-		R->EAX(pInfType);
-	}
+		R->EAX(pExt->CountryCrew_Type.Get(pInfType));
 
 	return 0;
 }
