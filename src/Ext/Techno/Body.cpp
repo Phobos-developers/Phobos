@@ -14,6 +14,41 @@
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 
+void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
+{
+	if (auto pVictimTechno = static_cast<TechnoClass*>(pVictim))
+	{
+		auto pVictimTechnoData = TechnoExt::ExtMap.Find(pVictim);
+
+		if (pVictimTechnoData && pKiller)
+		{
+			TechnoClass* pObjectKiller;
+			if ((pKiller->GetTechnoType()->Spawned || pKiller->GetTechnoType()->MissileSpawn) && pKiller->SpawnOwner)
+			{
+				pObjectKiller = pKiller->SpawnOwner;
+			}
+			else
+			{
+				pObjectKiller = pKiller;
+			}
+
+			if (pObjectKiller && pObjectKiller->BelongsToATeam())
+			{
+				auto pKillerTechnoData = TechnoExt::ExtMap.Find(pObjectKiller);
+				auto pFootKiller = abstract_cast<FootClass*>(pObjectKiller);
+				auto pFocus = abstract_cast<TechnoClass*>(pFootKiller->Team->Focus);
+				Debug::Log("DEBUG: pObjectKiller -> [%s] [%s] registered a kill of the type [%s]\n", pFootKiller->Team->Type->ID, pObjectKiller->get_ID(), pVictim->get_ID());
+
+				pKillerTechnoData->LastKillWasTeamTarget = false;
+				if (pFocus == pVictim)
+				{
+					pKillerTechnoData->LastKillWasTeamTarget = true;
+				}
+			}
+		}
+	}
+}
+
 void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
 {
 	if (auto Capturer = pThis->MindControlledBy)

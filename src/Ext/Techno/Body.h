@@ -73,4 +73,5 @@ public:
 	static void ApplyInterceptor(TechnoClass* pThis);
 	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
 	static void ApplySpawn_LimitRange(TechnoClass* pThis);
+	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 };
