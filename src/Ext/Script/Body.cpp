@@ -194,27 +194,166 @@ void ScriptExt::WaitUntillFullAmmoAction(TeamClass* pTeam)
 	pTeam->StepCompleted = true;
 }
 
+void ScriptExt::UnsetConditionalJumpVariable(TeamClass* pTeam)
+{
+	// This team has no units! END
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData)
+	{
+		pTeamData->ConditionalJumpEvaluation = false;
+		pTeamData->ConditionalEvaluationType = -1;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+}
+
+void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+
+	if (!pTeam || !pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+	int scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
+
+	if (pTeamData->ConditionalEvaluationType != -1)
+	{
+		if (pTeamData->ConditionalJumpEvaluation)
+		{
+			// Start conditional jump!
+			pTeamData->ConditionalEvaluationType = -1;
+			pTeamData->ConditionalJumpEvaluation = false;
+
+			// Ready for jumping to the new line of the script
+			pTeam->CurrentScript->idxCurrentLine = scriptArgument - 1;
+			pTeam->StepCompleted = true;
+			return;
+		}
+
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::ConditionalJumpIfFalse(TeamClass* pTeam)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+
+	if (!pTeam || !pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+	
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+	int scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
+
+	if (pTeamData->ConditionalEvaluationType != -1)
+	{
+		if (!pTeamData->ConditionalJumpEvaluation)
+		{
+			// Start conditional jump!
+			pTeamData->ConditionalEvaluationType = -1;
+
+			// Ready for jumping to the new line of the script
+			pTeam->CurrentScript->idxCurrentLine = scriptArgument - 1;
+			pTeam->StepCompleted = true;
+			return;
+		}
+
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::SetConditionalJumpCondition(TeamClass* pTeam)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+
+	if (!pTeam || !pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+	int scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
+
+	if (pTeamData->ConditionalEvaluationType != scriptArgument)
+	{
+		pTeamData->ConditionalEvaluationType = scriptArgument;
+		pTeamData->ConditionalJumpEvaluation = false;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
 /*
+
 
 [DRAFT] UNCONDITIONAL SCRIPT ACTIONS DESCRIPTION:
 
-• 1 boolean variable in TeamExt for saving the evaluation. For example:
+[x]• 1 boolean variable in TeamExt for saving the evaluation. For example:
 bool ConditionalJumpEvaluation = false;
 
-• 1 integer variable in TeamExt for saving the type of evaluation. For example:
+[x]• 1 integer variable in TeamExt for saving the type of evaluation. For example:
 int ConditionalEvaluationType = -1; // "-1" means no evaluation when a unit is killed by a Team member, maybe I should use the value 0 instead...
 
 • When a unit is killed by a unit that belongs to a Team it will check if "ConditionalEvaluationType" != -1 so in that case it could be evaluated TRUE / FALSE and stored in "ConditionalJumpEvaluation".
 If "ConditionalEvaluationType" is -1 (or 0 ?) then the evaluation process is skipped.
 
 • Functions:
--> Unset conditional variable (set to 0 / false). Self-explanatory.
+[x]-> Unset conditional variable (set to 0 / false). Self-explanatory.
 
--> Jump to line "nn" (0-based) if conditional variable "ConditionalJumpEvaluation" is TRUE.
+[x]-> Jump to line "nn" (0-based) if conditional variable "ConditionalJumpEvaluation" is TRUE.
 When the conditional jump will start the variable "ConditionalEvaluationType" is reset to -1 & the variable "ConditionalJumpEvaluation" is reset to 0 / false.
 if the variable is FALSE then skip jump and go to the next script line.
 
--> Jump to line "nn" (0-based) if conditional variable "ConditionalJumpEvaluation" is FALSE.
+[x]-> Jump to line "nn" (0-based) if conditional variable "ConditionalJumpEvaluation" is FALSE.
 When the conditional jump will start the variable "ConditionalEvaluationType" is reset to -1.
 if the variable is TRUE then skip jump and go to the next script line.
 
@@ -222,7 +361,7 @@ if the variable is TRUE then skip jump and go to the next script line.
 
 -> Set conditional jump variable "ConditionalJumpEvaluation" to 1 / true if the killed object is part of one of the specified list of triggers/teams/taskforces (not yet evaluated this possible function if is viable or not).
 
--> Set a "nn" type of evaluation in "ConditionalEvaluationType" like the next ones:
+[x]-> Set a "nn" type of evaluation in "ConditionalEvaluationType" like the next ones:
 Case 1: Just enable it to value 1 / True. (unconditional jump like the classic "6,nn+1".
 Case 2: For ANY successful kill from the team members. No extra evaluations.
 Case 3: For a destroyed BUILDING by the team.

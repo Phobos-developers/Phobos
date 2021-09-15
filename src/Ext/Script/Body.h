@@ -5,6 +5,7 @@
 #include <TeamClass.h>
 #include <HouseClass.h>
 
+#include <Ext/Team/Body.h>
 #include <Utilities/Container.h>
 #include <Phobos.h>
 
@@ -41,6 +42,10 @@ public:
 	static void ExecuteTimedAreaGuardAction(TeamClass * pTeam);
 	static void LoadIntoTransports(TeamClass * pTeam);
 	static void WaitUntillFullAmmoAction(TeamClass * pTeam);
+	static void UnsetConditionalJumpVariable(TeamClass* pTeam);
+	static void ConditionalJumpIfTrue(TeamClass* pTeam);
+	static void ConditionalJumpIfFalse(TeamClass* pTeam);
+	static void SetConditionalJumpCondition(TeamClass* pTeam);
 
 	static ExtContainer ExtMap;
 };
