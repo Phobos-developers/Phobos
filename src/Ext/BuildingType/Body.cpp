@@ -29,6 +29,28 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
+
+	// Ares SuperWeapons tag
+	pINI->ReadString(pSection, "SuperWeapons", "", Phobos::readBuffer);
+	//char* super_weapons_list = Phobos::readBuffer;
+	if (strlen(Phobos::readBuffer) > 0 && SuperWeaponTypeClass::Array->Count > 0)
+	{
+		//DynamicVectorClass<SuperWeaponTypeClass*> objectsList;
+		char* context = nullptr;
+
+		//pINI->ReadString(pSection, pINI->GetKeyName(pSection, i), "", Phobos::readBuffer);
+		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			SuperWeaponTypeClass* buffer;
+			if (Parser<SuperWeaponTypeClass*>::TryParse(cur, &buffer))
+			{
+				//Debug::Log("DEBUG: [%s]: Parsed SW [%s]\n", pSection, cur);
+				this->SuperWeapons.AddItem(buffer);
+			}
+			else
+				Debug::Log("DEBUG: [%s]: Error parsing SuperWeapons= [%s]\n", pSection, cur);
+		}
+	}
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization() {
