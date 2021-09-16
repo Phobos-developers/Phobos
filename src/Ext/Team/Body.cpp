@@ -12,6 +12,9 @@ void TeamExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->ConditionalJumpEvaluation)
 		.Process(this->ConditionalEvaluationType)
+		.Process(this->ConditionalComparatorType)
+		.Process(this->KillsCounter)
+		.Process(this->KillsCountLimit)
 		;
 }
 

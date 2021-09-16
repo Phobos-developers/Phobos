@@ -9,6 +9,7 @@
 #include <InfantryClass.h>
 #include <Unsorted.h>
 
+#include <Ext/Team/Body.h>
 #include <Ext/BulletType/Body.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
@@ -43,6 +44,61 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 				if (pFocus == pVictim)
 				{
 					pKillerTechnoData->LastKillWasTeamTarget = true;
+				}
+
+				// Conditional Jump Script Action stuff
+				auto pKillerTeamData = TeamExt::ExtMap.Find(pFootKiller->Team);
+				if (pKillerTeamData)
+				{
+					if (pKillerTeamData->KillsCountLimit >= 0)
+						pKillerTeamData->KillsCounter++;
+
+					if (pKillerTeamData && pKillerTeamData->ConditionalEvaluationType >= 0)
+					{
+						// Evaluate
+
+						if (pKillerTeamData->ConditionalEvaluationType == 0 && pKillerTeamData->KillsCountLimit >= 0)
+						{
+							pKillerTeamData->ConditionalJumpEvaluation = false;
+
+							// Comparators are like in [AITriggerTypes]
+							switch (pKillerTeamData->ConditionalComparatorType)
+							{
+							case 0:
+								// <
+								if (pKillerTeamData->KillsCounter < pKillerTeamData->KillsCountLimit)
+									pKillerTeamData->ConditionalJumpEvaluation = true;
+								break;
+							case 1:
+								// <=
+								if (pKillerTeamData->KillsCounter <= pKillerTeamData->KillsCountLimit)
+									pKillerTeamData->ConditionalJumpEvaluation = true;
+								break;
+							case 2:
+								// =
+								if (pKillerTeamData->KillsCounter = pKillerTeamData->KillsCountLimit)
+									pKillerTeamData->ConditionalJumpEvaluation = true;
+								break;
+							case 3:
+								// >=
+								if (pKillerTeamData->KillsCounter >= pKillerTeamData->KillsCountLimit)
+									pKillerTeamData->ConditionalJumpEvaluation = true;
+								break;
+							case 4:
+								// >
+								if (pKillerTeamData->KillsCounter > pKillerTeamData->KillsCountLimit)
+									pKillerTeamData->ConditionalJumpEvaluation = true;
+								break;
+							case 5:
+								// !=
+								if (pKillerTeamData->KillsCounter != pKillerTeamData->KillsCountLimit)
+									pKillerTeamData->ConditionalJumpEvaluation = true;
+								break;
+							default:
+								break;
+							}
+						}
+					}
 				}
 			}
 		}
