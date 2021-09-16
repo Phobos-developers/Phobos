@@ -20,13 +20,15 @@ public:
 		int ConditionalComparatorType;
 		int KillsCounter;
 		int KillsCountLimit;
+		bool AbortActionAfterKilling;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject),
 			ConditionalJumpEvaluation(false),
 			ConditionalEvaluationType(-1),
 			ConditionalComparatorType(-1),
 			KillsCounter(0),
-			KillsCountLimit(-1)
+			KillsCountLimit(-1),
+			AbortActionAfterKilling(false)
 		{ }
 
 		virtual ~ExtData() = default;

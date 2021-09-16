@@ -908,7 +908,77 @@ void ScriptExt::SetConditionalJumpCondition(TeamClass* pTeam)
 	{
 		pTeamData->ConditionalEvaluationType = scriptArgument;
 		pTeamData->ConditionalJumpEvaluation = false;
+
+		if (scriptArgument != 0)
+		{
+			pTeamData->KillsCountLimit = -1;
+			pTeamData->KillsCounter = 0;
+		}
 	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::SetConditionalCountCondition(TeamClass* pTeam)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+
+	if (!pTeam || !pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+	int scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
+	
+	if (pTeamData->ConditionalEvaluationType != 0 && scriptArgument == 0)
+	{
+		pTeamData->ConditionalEvaluationType = scriptArgument;
+		pTeamData->ConditionalJumpEvaluation = false;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+// Only used by the Conditional Jump code: Don't continue the current action if the team reached the goal & this should make the original attack actions 100% compatible
+void ScriptExt::SetAbortActionAfterSuccessKill(TeamClass* pTeam, bool enable = false)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+
+	if (!pTeam || !pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	pTeamData->AbortActionAfterKilling = enable;
 
 	// This action finished
 	pTeam->StepCompleted = true;

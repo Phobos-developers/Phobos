@@ -15,6 +15,7 @@ void TeamExt::ExtData::Serialize(T& Stm)
 		.Process(this->ConditionalComparatorType)
 		.Process(this->KillsCounter)
 		.Process(this->KillsCountLimit)
+		.Process(this->AbortActionAfterKilling)
 		;
 }
 

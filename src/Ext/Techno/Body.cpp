@@ -9,6 +9,7 @@
 #include <InfantryClass.h>
 #include <Unsorted.h>
 
+#include <Ext/Script/Body.h>
 #include <Ext/Team/Body.h>
 #include <Ext/BulletType/Body.h>
 
@@ -50,53 +51,76 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 				auto pKillerTeamData = TeamExt::ExtMap.Find(pFootKiller->Team);
 				if (pKillerTeamData)
 				{
+					auto pScript = pFootKiller->Team->CurrentScript;
+					int scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
+
 					if (pKillerTeamData->KillsCountLimit >= 0)
 						pKillerTeamData->KillsCounter++;
 
 					if (pKillerTeamData && pKillerTeamData->ConditionalEvaluationType >= 0)
 					{
-						// Evaluate
-
-						if (pKillerTeamData->ConditionalEvaluationType == 0 && pKillerTeamData->KillsCountLimit >= 0)
+						// Evaluate the kills count case
+						if (pKillerTeamData->ConditionalEvaluationType == 0)
 						{
-							pKillerTeamData->ConditionalJumpEvaluation = false;
-
-							// Comparators are like in [AITriggerTypes]
-							switch (pKillerTeamData->ConditionalComparatorType)
+							if (pKillerTeamData->KillsCountLimit >= 0)
 							{
-							case 0:
-								// <
-								if (pKillerTeamData->KillsCounter < pKillerTeamData->KillsCountLimit)
-									pKillerTeamData->ConditionalJumpEvaluation = true;
-								break;
-							case 1:
-								// <=
-								if (pKillerTeamData->KillsCounter <= pKillerTeamData->KillsCountLimit)
-									pKillerTeamData->ConditionalJumpEvaluation = true;
-								break;
-							case 2:
-								// =
-								if (pKillerTeamData->KillsCounter = pKillerTeamData->KillsCountLimit)
-									pKillerTeamData->ConditionalJumpEvaluation = true;
-								break;
-							case 3:
-								// >=
-								if (pKillerTeamData->KillsCounter >= pKillerTeamData->KillsCountLimit)
-									pKillerTeamData->ConditionalJumpEvaluation = true;
-								break;
-							case 4:
-								// >
-								if (pKillerTeamData->KillsCounter > pKillerTeamData->KillsCountLimit)
-									pKillerTeamData->ConditionalJumpEvaluation = true;
-								break;
-							case 5:
-								// !=
-								if (pKillerTeamData->KillsCounter != pKillerTeamData->KillsCountLimit)
-									pKillerTeamData->ConditionalJumpEvaluation = true;
-								break;
-							default:
-								break;
+								pKillerTeamData->ConditionalJumpEvaluation = false;
+
+								// Comparators are like in [AITriggerTypes]
+								switch (pKillerTeamData->ConditionalComparatorType)
+								{
+								case 0:
+									// <
+									if (pKillerTeamData->KillsCounter < pKillerTeamData->KillsCountLimit)
+										pKillerTeamData->ConditionalJumpEvaluation = true;
+									break;
+								case 1:
+									// <=
+									if (pKillerTeamData->KillsCounter <= pKillerTeamData->KillsCountLimit)
+										pKillerTeamData->ConditionalJumpEvaluation = true;
+									break;
+								case 2:
+									// =
+									if (pKillerTeamData->KillsCounter = pKillerTeamData->KillsCountLimit)
+										pKillerTeamData->ConditionalJumpEvaluation = true;
+									break;
+								case 3:
+									// >=
+									if (pKillerTeamData->KillsCounter >= pKillerTeamData->KillsCountLimit)
+										pKillerTeamData->ConditionalJumpEvaluation = true;
+									break;
+								case 4:
+									// >
+									if (pKillerTeamData->KillsCounter > pKillerTeamData->KillsCountLimit)
+										pKillerTeamData->ConditionalJumpEvaluation = true;
+									break;
+								case 5:
+									// !=
+									if (pKillerTeamData->KillsCounter != pKillerTeamData->KillsCountLimit)
+										pKillerTeamData->ConditionalJumpEvaluation = true;
+									break;
+								default:
+									break;
+								}
 							}
+						}
+						else
+						{
+							// Evaluate by kill type
+							// If all the time was the same type of kill evaluation this should remember an old TRUE value or set it TRUE if it is the first time.
+							if (ScriptExt::EvaluateObjectWithMask(pVictim, scriptArgument, -1, -1, pKiller))
+								pKillerTeamData->ConditionalJumpEvaluation = true;
+						}
+
+						// Special case: interrupts if true
+						if (pKillerTeamData->AbortActionAfterKilling && pKillerTeamData->ConditionalJumpEvaluation)
+						{
+							pKillerTeamData->AbortActionAfterKilling = false;
+
+							// Jumping to the next line of the script list
+							pFootKiller->Team->StepCompleted = true;
+
+							return;
 						}
 					}
 				}

@@ -54,6 +54,8 @@ public:
 	static void ConditionalJumpIfTrue(TeamClass* pTeam);
 	static void ConditionalJumpIfFalse(TeamClass* pTeam);
 	static void SetConditionalJumpCondition(TeamClass* pTeam);
+	static void SetConditionalCountCondition(TeamClass* pTeam);
+	static void SetAbortActionAfterSuccessKill(TeamClass* pTeam, bool enable);
 
 	static ExtContainer ExtMap;
 };
