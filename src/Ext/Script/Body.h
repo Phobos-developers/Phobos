@@ -42,6 +42,7 @@ public:
 	static void ExecuteTimedAreaGuardAction(TeamClass * pTeam);
 	static void LoadIntoTransports(TeamClass * pTeam);
 	static void WaitUntillFullAmmoAction(TeamClass * pTeam);
+	static bool EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attackAITargetType, int idxAITargetTypeItem, TechnoClass *pTeamLeader);
 	static void UnsetConditionalJumpVariable(TeamClass* pTeam);
 	static void ConditionalJumpIfTrue(TeamClass* pTeam);
 	static void ConditionalJumpIfFalse(TeamClass* pTeam);
