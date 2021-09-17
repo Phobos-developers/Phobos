@@ -59,7 +59,7 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 
 					if (pKillerTeamData && pKillerTeamData->ConditionalEvaluationType >= 0)
 					{
-						// Evaluate the kills count case
+						// Evaluate by the number of kills
 						if (pKillerTeamData->ConditionalEvaluationType == 0)
 						{
 							if (pKillerTeamData->KillsCountLimit >= 0)

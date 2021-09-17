@@ -42,6 +42,27 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 73:
 		ScriptExt::WaitUntillFullAmmoAction(pTeam);
 		break;
+	case 74:
+		ScriptExt::UnsetConditionalJumpVariable(pTeam);
+		break;
+	case 75:
+		ScriptExt::SetConditionalJumpCondition(pTeam, -1);
+			break;
+	case 76:
+		ScriptExt::SetConditionalCountCondition(pTeam, -1);
+			break;
+	case 77:
+		ScriptExt::SetKillsLimitComparator(pTeam, -1);
+			break;
+	case 78:
+		ScriptExt::SetAbortActionAfterSuccessKill(pTeam, false);
+			break;
+	case 79:
+		ScriptExt::ConditionalJumpIfFalse(pTeam, 1);
+			break;
+	case 80:
+		ScriptExt::ConditionalJumpIfTrue(pTeam, 1);
+			break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
@@ -778,29 +799,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	return false;
 }
 
-void ScriptExt::UnsetConditionalJumpVariable(TeamClass* pTeam)
-{
-	// This team has no units! END
-	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
-
-		return;
-	}
-
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-	if (pTeamData)
-	{
-		pTeamData->ConditionalJumpEvaluation = false;
-		pTeamData->ConditionalEvaluationType = -1;
-	}
-
-	// This action finished
-	pTeam->StepCompleted = true;
-}
-
-void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam)
+// 1-based like the original '6,n' (so the first script line is n=1, I hate that confusing 1-based system)
+void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam, int newScriptLine = -1)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 
@@ -812,23 +812,34 @@ void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam)
 		return;
 	}
 
-	auto pScript = pTeam->CurrentScript;
-	int scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
+	int scriptArgument = newScriptLine;
+	if (scriptArgument < 1)
+	{
+		auto pScript = pTeam->CurrentScript;
+		scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
+	}
 
-	if (pTeamData->ConditionalEvaluationType != -1)
+	if (scriptArgument <= 0)
+	{
+		scriptArgument = 1; // if by mistake you put as first line=0 this corrects it because for WW/EALA this script argument is 1-based
+	}
+
+	if (pTeamData->ConditionalEvaluationType >= 0)
 	{
 		if (pTeamData->ConditionalJumpEvaluation)
 		{
 			// Start conditional jump!
-			pTeamData->ConditionalEvaluationType = -1;
+			// This is magic: for example, for jumping into line 0 of the script list you have to point to the "-1" line so in the next AI iteration the current line will be increased by 1 and then it will point to the desired line 0
+			pTeam->CurrentScript->idxCurrentLine = scriptArgument - 2;
+
+			// Cleaning Conditional Jump related variables
 			pTeamData->ConditionalJumpEvaluation = false;
-
-			// Ready for jumping to the new line of the script
-			pTeam->CurrentScript->idxCurrentLine = scriptArgument - 1;
-			pTeam->StepCompleted = true;
-			return;
+			pTeamData->ConditionalEvaluationType = -1; // Disabled the Conditional jump (this was a 1-time-use)
+			pTeamData->ConditionalComparatorType = -1;
+			pTeamData->KillsCounter = 0;
+			pTeamData->KillsCountLimit = -1;
+			pTeamData->AbortActionAfterKilling = false;
 		}
-
 	}
 
 	// This action finished
@@ -837,7 +848,8 @@ void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam)
 	return;
 }
 
-void ScriptExt::ConditionalJumpIfFalse(TeamClass* pTeam)
+// 1-based like the original '6,n' (so the first script line is n=1, I hate that confusing 1-based system)
+void ScriptExt::ConditionalJumpIfFalse(TeamClass* pTeam, int newScriptLine = -1)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 
@@ -848,71 +860,34 @@ void ScriptExt::ConditionalJumpIfFalse(TeamClass* pTeam)
 
 		return;
 	}
-	
-	if (!pTeamData)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
 
-		return;
+	int scriptArgument = newScriptLine;
+	if (scriptArgument < 1)
+	{
+		auto pScript = pTeam->CurrentScript;
+		scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
 	}
 
-	auto pScript = pTeam->CurrentScript;
-	int scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
+	if (scriptArgument <= 0)
+	{
+		scriptArgument = 1; // if by mistake you put as first line=0 this corrects it because for WW/EALA this script argument is 1-based
+	}
 
-	if (pTeamData->ConditionalEvaluationType != -1)
+	if (pTeamData->ConditionalEvaluationType >= 0)
 	{
 		if (!pTeamData->ConditionalJumpEvaluation)
 		{
 			// Start conditional jump!
-			pTeamData->ConditionalEvaluationType = -1;
+			// This is magic: for example, for jumping into line 0 of the script list you have to point to the "-1" line so in the next AI iteration the current line will be increased by 1 and then it will point to the desired line 0
+			pTeam->CurrentScript->idxCurrentLine = scriptArgument - 2;
 
-			// Ready for jumping to the new line of the script
-			pTeam->CurrentScript->idxCurrentLine = scriptArgument - 1;
-			pTeam->StepCompleted = true;
-			return;
-		}
-
-	}
-
-	// This action finished
-	pTeam->StepCompleted = true;
-
-	return;
-}
-
-void ScriptExt::SetConditionalJumpCondition(TeamClass* pTeam)
-{
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-
-	if (!pTeam || !pTeamData)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
-
-		return;
-	}
-
-	if (!pTeamData)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
-
-		return;
-	}
-
-	auto pScript = pTeam->CurrentScript;
-	int scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
-
-	if (pTeamData->ConditionalEvaluationType != scriptArgument)
-	{
-		pTeamData->ConditionalEvaluationType = scriptArgument;
-		pTeamData->ConditionalJumpEvaluation = false;
-
-		if (scriptArgument != 0)
-		{
-			pTeamData->KillsCountLimit = -1;
+			// Cleaning Conditional Jump related variables
+			pTeamData->ConditionalJumpEvaluation = false;
+			pTeamData->ConditionalEvaluationType = -1; // Disabled the Conditional jump (this was a 1-time-use)
+			pTeamData->ConditionalComparatorType = -1;
 			pTeamData->KillsCounter = 0;
+			pTeamData->KillsCountLimit = -1;
+			pTeamData->AbortActionAfterKilling = false;
 		}
 	}
 
@@ -922,7 +897,8 @@ void ScriptExt::SetConditionalJumpCondition(TeamClass* pTeam)
 	return;
 }
 
-void ScriptExt::SetConditionalCountCondition(TeamClass* pTeam)
+// Enables the conditional jump logic
+void ScriptExt::SetConditionalJumpCondition(TeamClass* pTeam, int evaluationType = -1)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 
@@ -934,21 +910,26 @@ void ScriptExt::SetConditionalCountCondition(TeamClass* pTeam)
 		return;
 	}
 
-	if (!pTeamData)
+	int scriptArgument = evaluationType;
+	if (scriptArgument < 0)
 	{
-		// This action finished
-		pTeam->StepCompleted = true;
-
-		return;
+		auto pScript = pTeam->CurrentScript;
+		scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
 	}
 
-	auto pScript = pTeam->CurrentScript;
-	int scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
-	
-	if (pTeamData->ConditionalEvaluationType != 0 && scriptArgument == 0)
+	if (pTeamData->ConditionalEvaluationType != scriptArgument && scriptArgument >= 0)
 	{
 		pTeamData->ConditionalEvaluationType = scriptArgument;
-		pTeamData->ConditionalJumpEvaluation = false;
+		pTeamData->ConditionalJumpEvaluation = false; // Reset conditional jumping value
+
+		if (scriptArgument > 0)
+		{
+			// Disabling the kills evaluation
+			pTeamData->ConditionalComparatorType = -1;
+			pTeamData->KillsCounter = 0;
+			pTeamData->KillsCountLimit = -1;
+			pTeamData->AbortActionAfterKilling = false;
+		}
 	}
 
 	// This action finished
@@ -957,20 +938,95 @@ void ScriptExt::SetConditionalCountCondition(TeamClass* pTeam)
 	return;
 }
 
-// Only used by the Conditional Jump code: Don't continue the current action if the team reached the goal & this should make the original attack actions 100% compatible
+// Disables the conditional jump logic
+void ScriptExt::UnsetConditionalJumpVariable(TeamClass* pTeam)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+
+	if (!pTeam || !pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	pTeamData->ConditionalJumpEvaluation = false;
+	pTeamData->ConditionalEvaluationType = -1;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+}
+
+void ScriptExt::SetConditionalCountCondition(TeamClass* pTeam, int comparatorType = -1)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+
+	if (!pTeam || !pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	int scriptArgument = comparatorType;
+	if (scriptArgument < 0)
+	{
+		auto pScript = pTeam->CurrentScript;
+		scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
+	}
+	
+	if (pTeamData->ConditionalEvaluationType != 0 && pTeamData->ConditionalComparatorType < 0)
+	{
+		// Enabling new count
+		pTeamData->ConditionalComparatorType = scriptArgument; // Possible values: 0 -> '<', 1 -> '<=', 2 -> '=', 3 -> '>=', 4 -> '>', 5 -> '!='
+		pTeamData->ConditionalEvaluationType = 0; // 0 means 'kills evaluation'
+		pTeamData->ConditionalJumpEvaluation = false; // Reset conditional jumping value
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+// Sets the value that will be used for comparation with the current kills count
+void ScriptExt::SetKillsLimitComparator(TeamClass* pTeam, int newLimit = -1)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+
+	if (!pTeam || !pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	int scriptArgument = newLimit;
+	if (scriptArgument < 0)
+	{
+		auto pScript = pTeam->CurrentScript;
+		scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
+	}
+
+	if (scriptArgument >= 0)
+		pTeamData->AbortActionAfterKilling = scriptArgument;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+// Enable / Disable this modifier feature.
+// Only used by the Conditional Jump code: Don't continue the current action if the team reached the goal (true value).
 void ScriptExt::SetAbortActionAfterSuccessKill(TeamClass* pTeam, bool enable = false)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 
 	if (!pTeam || !pTeamData)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
-
-		return;
-	}
-
-	if (!pTeamData)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
@@ -986,58 +1042,3 @@ void ScriptExt::SetAbortActionAfterSuccessKill(TeamClass* pTeam, bool enable = f
 	return;
 }
 
-/*
-
-
-[DRAFT] UNCONDITIONAL SCRIPT ACTIONS DESCRIPTION:
-
-[x]• 1 boolean variable in TeamExt for saving the evaluation. For example:
-bool ConditionalJumpEvaluation = false;
-
-[x]• 1 integer variable in TeamExt for saving the type of evaluation. For example:
-int ConditionalEvaluationType = -1; // "-1" means no evaluation when a unit is killed by a Team member, maybe I should use the value 0 instead...
-
-• When a unit is killed by a unit that belongs to a Team it will check if "ConditionalEvaluationType" != -1 so in that case it could be evaluated TRUE / FALSE and stored in "ConditionalJumpEvaluation".
-If "ConditionalEvaluationType" is -1 (or 0 ?) then the evaluation process is skipped.
-
-• Functions:
-[x]-> Unset conditional variable (set to 0 / false). Self-explanatory.
-
-[x]-> Jump to line "nn" (0-based) if conditional variable "ConditionalJumpEvaluation" is TRUE.
-When the conditional jump will start the variable "ConditionalEvaluationType" is reset to -1 & the variable "ConditionalJumpEvaluation" is reset to 0 / false.
-if the variable is FALSE then skip jump and go to the next script line.
-
-[x]-> Jump to line "nn" (0-based) if conditional variable "ConditionalJumpEvaluation" is FALSE.
-When the conditional jump will start the variable "ConditionalEvaluationType" is reset to -1.
-if the variable is TRUE then skip jump and go to the next script line.
-
--> Set conditional jump variable "ConditionalJumpEvaluation" to 1 / true if the killed object is in the specified "nn" list in rulesmd.ini > [AITargetType] section.
-
--> Set conditional jump variable "ConditionalJumpEvaluation" to 1 / true if the killed object is part of one of the specified list of triggers/teams/taskforces (not yet evaluated this possible function if is viable or not).
-
-[x]-> Set a "nn" type of evaluation in "ConditionalEvaluationType" like the next ones:
-Case 1: Just enable it to value 1 / True. (unconditional jump like the classic "6,nn+1".
-Case 2: For ANY successful kill from the team members. No extra evaluations.
-Case 3: For a destroyed BUILDING by the team.
-Case 4: For a ground object kill (infantry, landed aircraft, vehicles, structures).
-Case 5: For a ground vehicle kill
-Case 6: For a soldier kill
-Case 7: For an air unit kill
-Case 8: For a naval object kill (Structures, units)
-Case 8: For a naval unit kill (not submarines)
-Case 9: For a submerged unit kill
-Case 10: For a stealth unit kill
-Case 11: For a mind controller kill
-Case 12: For a civilian structure kill
-Case 13: For a civilian unit kill
-Case 14: For a harvester kill
-Case 15: For a "Economy" object kill
-Case 16: For a Refinery kill
-Case 17: For a Factory kill
-...
-...
-...
-
-I forgot anything?
-
-*/

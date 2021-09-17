@@ -50,11 +50,12 @@ public:
 	static void LoadIntoTransports(TeamClass * pTeam);
 	static void WaitUntillFullAmmoAction(TeamClass * pTeam);
 	static bool EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attackAITargetType, int idxAITargetTypeItem, TechnoClass *pTeamLeader);
+	static void ConditionalJumpIfTrue(TeamClass* pTeam, int newScriptLine);
+	static void ConditionalJumpIfFalse(TeamClass* pTeam, int newScriptLine);
+	static void SetConditionalJumpCondition(TeamClass* pTeam, int evaluationType);
 	static void UnsetConditionalJumpVariable(TeamClass* pTeam);
-	static void ConditionalJumpIfTrue(TeamClass* pTeam);
-	static void ConditionalJumpIfFalse(TeamClass* pTeam);
-	static void SetConditionalJumpCondition(TeamClass* pTeam);
-	static void SetConditionalCountCondition(TeamClass* pTeam);
+	static void SetConditionalCountCondition(TeamClass* pTeam, int comparatorType);
+	static void SetKillsLimitComparator(TeamClass* pTeam, int newLimit);
 	static void SetAbortActionAfterSuccessKill(TeamClass* pTeam, bool enable);
 
 	static ExtContainer ExtMap;
