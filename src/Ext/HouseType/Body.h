@@ -9,6 +9,7 @@ class HouseTypeExt
 {
 public:
 	using base_type = HouseTypeClass;
+
 	class ExtData final : public Extension<HouseTypeClass>
 	{
 	public:
@@ -22,6 +23,11 @@ public:
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
+		virtual void Initialize() override;
+
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+		{
+		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;

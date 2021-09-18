@@ -3,6 +3,11 @@
 template<> const DWORD Extension<HouseTypeClass>::Canary = 0xFFFFFFFF; //no clue what this does, could not figure it out
 HouseTypeExt::ExtContainer HouseTypeExt::ExtMap;
 
+void HouseTypeExt::ExtData::Initialize()
+{
+
+}
+
 // =============================
 // load / save
 
@@ -60,18 +65,19 @@ HouseTypeExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
-DEFINE_HOOK(0x51162C, HouseTypeClass_CTOR, 0x7)
+DEFINE_HOOK_AGAIN(0x511643, HouseTypeClass_CTOR, 0x5)
+DEFINE_HOOK(0x511635, HouseTypeClass_CTOR, 0x5)
 {
-	GET(HouseTypeClass*, pItem, ESI);
+	GET(HouseTypeClass*, pItem, EAX);
 
 	HouseTypeExt::ExtMap.FindOrAllocate(pItem);
 
 	return 0;
 }
 
-DEFINE_HOOK(0x5116A0, HouseTypeClass_DTOR, 0x5)
+DEFINE_HOOK(0x5127CF, HouseTypeClass_DTOR, 0x6)
 {
-	GET(HouseTypeClass*, pItem, ECX);
+	GET(HouseTypeClass*, pItem, ESI);
 
 	HouseTypeExt::ExtMap.Remove(pItem);
 
