@@ -94,9 +94,9 @@ public:
 		bool HasCrit;
 		bool WasDetonatedOnAllMapObjects;
 
-		Valueable<bool> Upgrades;
-		ValueableVector<TechnoTypeClass*> Upgrade_From;
-		ValueableVector<TechnoTypeClass*> Upgrade_To;
+		Valueable<bool> Converts;
+		ValueableVector<TechnoTypeClass*> Converts_From;
+		ValueableVector<TechnoTypeClass*> Converts_To;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -181,7 +181,9 @@ public:
 			, WasDetonatedOnAllMapObjects { false }
 			, Upgrades()
 			, Upgrade_From()
-			, Upgrade_To()
+			, Converts()
+			, Converts_From()
+			, Converts_To()
 		{ }
 
 	private:

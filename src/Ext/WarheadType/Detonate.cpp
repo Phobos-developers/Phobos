@@ -8,6 +8,7 @@
 #include <AnimClass.h>
 #include <BitFont.h>
 #include <SuperClass.h>
+#include <AircraftClass.h>
 
 #include <Utilities/Helpers.Alex.h>
 #include <Ext/Bullet/Body.h>
@@ -94,7 +95,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_SelfHealing_Duration > 0 ||
 		this->Shield_AttachTypes.size() > 0 ||
 		this->Shield_RemoveTypes.size() > 0 ||
-		this->Upgrades;
+		this->Converts;
 
 	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 
@@ -130,7 +131,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->Crit_Chance && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner);
 
-	if (this->Upgrades)
+	if (this->Converts)
 		this->ApplyUpgrade(pHouse, pTarget);
 }
 
@@ -311,36 +312,34 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 
 void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	if (this->Upgrade_From.size() && this->Upgrade_To.size())
+	if (this->Converts_From.size() && this->Converts_To.size())
 	{
-		for (int i = 0; i < this->Upgrade_From.size(); i++)
+		// explicitly unsigned because the compiler wants it
+		for (unsigned int i = 0; i < this->Converts_From.size(); i++)
 		{
 			// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
-			if (this->Upgrade_From[i] == pTarget->GetTechnoType() && this->Upgrade_To.size() >= i)
+			if (this->Converts_To.size() >= i && this->Converts_From[i] == pTarget->GetTechnoType())
 			{
-				TechnoTypeClass* pUpgradeType = this->Upgrade_To[i];
+				TechnoTypeClass* pResultType = this->Converts_To[i];
 
 				if (pTarget->WhatAmI() == AbstractType::Infantry &&
-					pUpgradeType->WhatAmI() == AbstractType::InfantryType)
+					pResultType->WhatAmI() == AbstractType::InfantryType)
 				{
-					//
-					static_cast<InfantryClass*>(pTarget)->Type = static_cast<InfantryTypeClass*>(pUpgradeType);
+					abstract_cast<InfantryClass*>(pTarget)->Type = static_cast<InfantryTypeClass*>(pResultType);
 				}
 				else if (pTarget->WhatAmI() == AbstractType::Unit &&
-					pUpgradeType->WhatAmI() == AbstractType::UnitType)
+					pResultType->WhatAmI() == AbstractType::UnitType)
 				{
-					//
-					static_cast<UnitClass*>(pTarget)->Type = static_cast<UnitTypeClass*>(pUpgradeType);
+					abstract_cast<UnitClass*>(pTarget)->Type = static_cast<UnitTypeClass*>(pResultType);
 				}
 				else if (pTarget->WhatAmI() == AbstractType::Aircraft &&
-					pUpgradeType->WhatAmI() == AbstractType::AircraftType)
+					pResultType->WhatAmI() == AbstractType::AircraftType)
 				{
-					//
-					static_cast<AircraftClass*>(pTarget)->Type = static_cast<AircraftTypeClass*>(pUpgradeType);
+					abstract_cast<AircraftClass*>(pTarget)->Type =static_cast<AircraftTypeClass*>(pResultType);
 				}
 				else
 				{
-					Debug::Log("Attempting to convert units of different categories: %s and %s!", pTarget->GetTechnoType()->get_ID(), pUpgradeType->get_ID());
+					Debug::Log("Attempting to convert units of different categories: %s and %s!", pTarget->GetTechnoType()->get_ID(), pResultType->get_ID());
 				}
 				break;
 			}
