@@ -964,7 +964,7 @@ NotHuman.DeathSequence=  ; integer (1 to 5)
 ```
 
 ### Convert TechnoType on impact
-- Warheads can now change TechnoTypes of affected units to other Types. This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). ***This feature does not support Ares' new entities.*** This means that i.e. upon converting to a unit with AttachEffect, the effect ***will not*** be present.
+- Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft). This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). ***This feature does not support Ares' new entities.*** This means that i.e. upon converting to a unit with AttachEffect, the effect ***will not*** be present. ***This feature does not support BuildingTypes at the moment.***
   - `Converts` enables the logic.
   - `Converts.From` specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once.
   - `Converts.To` specifies which TechnoTypes are the result of converion. This entry should have the same length as `Converts.From`, as every listed type can convert separately.
