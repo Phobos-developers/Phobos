@@ -39,33 +39,38 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 				auto pKillerTechnoData = TechnoExt::ExtMap.Find(pObjectKiller);
 				auto pFootKiller = abstract_cast<FootClass*>(pObjectKiller);
 				auto pFocus = abstract_cast<TechnoClass*>(pFootKiller->Team->Focus);
-				Debug::Log("DEBUG: pObjectKiller -> [%s] [%s] registered a kill of the type [%s]\n", pFootKiller->Team->Type->ID, pObjectKiller->get_ID(), pVictim->get_ID());
+				Debug::Log("DEBUG: pObjectKiller -> [%s] [%s] [%s] registered a kill of the type [%s]\n", pFootKiller->Team->Type->ID, pFootKiller->Team->CurrentScript->Type->ID, pObjectKiller->get_ID(), pVictim->get_ID());
 
 				pKillerTechnoData->LastKillWasTeamTarget = false;
 				if (pFocus == pVictim)
 				{
 					pKillerTechnoData->LastKillWasTeamTarget = true;
 				}
-
+				Debug::Log("DEBUG: [%s] [%s] %d = %d,%d - AAAAAAAA\n", pFootKiller->Team->Type->ID, pFootKiller->Team->CurrentScript->Type->ID, pFootKiller->Team->CurrentScript->idxCurrentLine, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Action, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Argument);
 				// Conditional Jump Script Action stuff
 				auto pKillerTeamData = TeamExt::ExtMap.Find(pFootKiller->Team);
 				if (pKillerTeamData)
 				{
+					Debug::Log("DEBUG: [%s] [%s] %d = %d,%d - BBBBBBBBB\n", pFootKiller->Team->Type->ID, pFootKiller->Team->CurrentScript->Type->ID, pFootKiller->Team->CurrentScript->idxCurrentLine, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Action, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Argument);
 					auto pScript = pFootKiller->Team->CurrentScript;
 					int scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
 
 					if (pKillerTeamData->KillsCountLimit >= 0)
 						pKillerTeamData->KillsCounter++;
-
-					if (pKillerTeamData && pKillerTeamData->ConditionalEvaluationType >= 0)
+					Debug::Log("DEBUG: [%s] [%s] %d = %d,%d - CCCCCCCCC KillsCounter: %d, killsLimit: %d, ConditionalEvaluationType: %d\n", pFootKiller->Team->Type->ID, pFootKiller->Team->CurrentScript->Type->ID, pFootKiller->Team->CurrentScript->idxCurrentLine, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Action, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Argument, pKillerTeamData->KillsCounter, pKillerTeamData->KillsCountLimit, pKillerTeamData->ConditionalEvaluationType);
+					if (pKillerTeamData->ConditionalEvaluationType >= 0)
 					{
+						Debug::Log("DEBUG: [%s] [%s] %d = %d,%d - DDDDDDDDD\npKillerTeamData->ConditionalComparatorType: %d\npKillerTeamData->KillsCounter: %d\npKillerTeamData->KillsCountLimit: %d\npKillerTeamData->AbortActionAfterKilling: %d\n", pFootKiller->Team->Type->ID, pFootKiller->Team->CurrentScript->Type->ID, pFootKiller->Team->CurrentScript->idxCurrentLine, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Action, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Argument, pKillerTeamData->ConditionalComparatorType, pKillerTeamData->KillsCounter, pKillerTeamData->KillsCountLimit, pKillerTeamData->AbortActionAfterKilling);
 						// Evaluate by the number of kills
 						if (pKillerTeamData->ConditionalEvaluationType == 0)
 						{
+							Debug::Log("DEBUG: [%s] [%s] %d = %d,%d - EEEEEEE\npKillerTeamData->ConditionalComparatorType: %d\npKillerTeamData->KillsCounter: %d\npKillerTeamData->KillsCountLimit: %d\npKillerTeamData->AbortActionAfterKilling: %d\n", pFootKiller->Team->Type->ID, pFootKiller->Team->CurrentScript->Type->ID, pFootKiller->Team->CurrentScript->idxCurrentLine, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Action, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Argument, pKillerTeamData->ConditionalComparatorType, pKillerTeamData->KillsCounter, pKillerTeamData->KillsCountLimit, pKillerTeamData->AbortActionAfterKilling);
+
 							if (pKillerTeamData->KillsCountLimit >= 0)
 							{
+								Debug::Log("DEBUG: [%s] [%s] %d = %d,%d - FFFFFFF\n", pFootKiller->Team->Type->ID, pFootKiller->Team->CurrentScript->Type->ID, pFootKiller->Team->CurrentScript->idxCurrentLine, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Action, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Argument);
 								pKillerTeamData->ConditionalJumpEvaluation = false;
-
+								
 								// Comparators are like in [AITriggerTypes]
 								switch (pKillerTeamData->ConditionalComparatorType)
 								{
@@ -102,6 +107,7 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 								default:
 									break;
 								}
+								Debug::Log("DEBUG: [%s] [%s] %d = %d,%d - Current kills: %d (Kills comparator is: %d) - Comparator: %d - Evaluation: %d\n", pFootKiller->Team->Type->ID, pFootKiller->Team->CurrentScript->Type->ID, pFootKiller->Team->CurrentScript->idxCurrentLine, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Action, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Argument, pKillerTeamData->KillsCounter, pKillerTeamData->KillsCountLimit, pKillerTeamData->ConditionalComparatorType, pKillerTeamData->ConditionalJumpEvaluation);
 							}
 						}
 						else
@@ -110,13 +116,14 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 							// If all the time was the same type of kill evaluation this should remember an old TRUE value or set it TRUE if it is the first time.
 							if (ScriptExt::EvaluateObjectWithMask(pVictim, scriptArgument, -1, -1, pKiller))
 								pKillerTeamData->ConditionalJumpEvaluation = true;
+							Debug::Log("DEBUG: [%s] [%s] %d = %d,%d - Mask: %d - Evaluation: %d\n", pFootKiller->Team->Type->ID, pFootKiller->Team->CurrentScript->Type->ID, pFootKiller->Team->CurrentScript->idxCurrentLine, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Action, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Argument, scriptArgument, pKillerTeamData->ConditionalJumpEvaluation);
 						}
 
 						// Special case: interrupts if true
 						if (pKillerTeamData->AbortActionAfterKilling && pKillerTeamData->ConditionalJumpEvaluation)
 						{
 							pKillerTeamData->AbortActionAfterKilling = false;
-
+							Debug::Log("DEBUG: [%s] [%s] %d = %d,%d - Force next script line afther Successful kill: %d = %d,%d\n", pFootKiller->Team->Type->ID, pFootKiller->Team->CurrentScript->Type->ID, pFootKiller->Team->CurrentScript->idxCurrentLine, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Action, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine].Argument,  pFootKiller->Team->CurrentScript->idxCurrentLine + 1, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine + 1].Action, pFootKiller->Team->CurrentScript->Type->ScriptActions[pFootKiller->Team->CurrentScript->idxCurrentLine + 1].Argument);
 							// Jumping to the next line of the script list
 							pFootKiller->Team->StepCompleted = true;
 
