@@ -33,6 +33,14 @@ In `FAData.ini`:
 
 ## Changelog
 
+### 0.2.2.2
+
+Phobos fixes:
+- Fixed shield type info not saving properly (by Uranusian)
+- Fixed extended building upgrades logic not properly interacting with Ares' BuildLimit check (by Uranusian)
+- Fix more random crashes for Cameo Priority (by Uranusian)
+- Fix aircraft weapons causing game freeze when burst index was not correctly reset after firing (by Starkku)
+
 ### 0.2.2.1
 
 Phobos fixes:
