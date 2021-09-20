@@ -160,32 +160,22 @@ DEFINE_HOOK(0x700C58, TechnoClass_CanPlayerMove_NoManualMove, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x522790, InfantryClass_SetDisguise_DefaultDisguise, 0x6)
-{
-	GET(InfantryClass*, pThis, ECX);
-
-	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		if (pExt->DefaultDisguise.isset())
-		{
-			pThis->Disguise = pExt->DefaultDisguise;
-			pThis->Disguised = true;
-			return 0x5227BF;
-		}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6)
+DEFINE_HOOK_AGAIN(0x522790, TechnoClass_DefaultDisguise, 0x6) // InfantryClass_SetDisguise_DefaultDisguise
+DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDisguise
 {
 	GET(TechnoClass*, pThis, ESI);
 
 	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	{
 		if (pExt->DefaultDisguise.isset())
 		{
 			pThis->Disguise = pExt->DefaultDisguise;
 			pThis->Disguised = true;
-			return 0x6F4277;
+			return R->Origin() == 0x522790 ? 0x5227BF : 0x6F4277;
 		}
+	}
+
+	pThis->Disguised = false;
 
 	return 0;
 }
