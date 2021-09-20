@@ -25,9 +25,9 @@ public:
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject),
 			ConditionalJumpEvaluation(false),
 			ConditionalEvaluationType(-1),
-			ConditionalComparatorType(-1),
+			ConditionalComparatorType(3),
 			KillsCounter(0),
-			KillsCountLimit(-1),
+			KillsCountLimit(1),
 			AbortActionAfterKilling(false)
 		{ }
 
