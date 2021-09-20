@@ -44,6 +44,7 @@ New:
 - Burst-specific FLHs for TechnoTypes (by Starkku)
 - Burst delays for weapons (by Starkku)
 - PowerPlant Enhancer (by secsome)
+- Custom `DefaultDisguise` for individual InfantryTypes (by secsome)
 - Unlimited Global / Local Variables (by secsome)
 - Adds a "Load Game" button to the retry dialog on mission failure (by secsome)
 - Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)

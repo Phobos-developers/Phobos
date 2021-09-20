@@ -122,7 +122,8 @@ public:
 			NotHuman_RandomDeathSequence(false),
 			OpenTopped_RangeBonus(),
 			OpenTopped_DamageMultiplier(),
-			OpenTopped_WarpDistance()
+			OpenTopped_WarpDistance(),
+			DefaultDisguise()
 		{ }
 
 		virtual ~ExtData() = default;
