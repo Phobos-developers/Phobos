@@ -120,7 +120,7 @@ int BuildLimitRemaining(HouseClass const* const pHouse, TechnoTypeClass const* c
 		return -BuildLimit - pHouse->CountOwnedEver(pItem);
 }
 
-int CheckBuildLimit(HouseClass const* const pHouse, TechnoTypeClass const* const pItem,bool const includeQueued)
+int CheckBuildLimit(HouseClass const* const pHouse, TechnoTypeClass const* const pItem, bool const includeQueued)
 {
 	enum { NotReached = 1, ReachedPermanently = -1, ReachedTemporarily = 0 };
 
