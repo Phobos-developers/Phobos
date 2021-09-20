@@ -1,4 +1,5 @@
 #include <UnitClass.h>
+#include <InfantryClass.h>
 #include <BuildingClass.h>
 #include <ScenarioClass.h>
 #include <HouseClass.h>
@@ -155,6 +156,36 @@ DEFINE_HOOK(0x700C58, TechnoClass_CanPlayerMove_NoManualMove, 0x6)
 
 	if (auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 		return pExt->NoManualMove ? 0x700C62 : 0;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x522790, InfantryClass_SetDisguise_DefaultDisguise, 0x6)
+{
+	GET(InfantryClass*, pThis, ECX);
+
+	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		if (pExt->DefaultDisguise.isset())
+		{
+			pThis->Disguise = pExt->DefaultDisguise;
+			pThis->Disguised = true;
+			return 0x5227BF;
+		}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		if (pExt->DefaultDisguise.isset())
+		{
+			pThis->Disguise = pExt->DefaultDisguise;
+			pThis->Disguised = true;
+			return 0x6F4277;
+		}
 
 	return 0;
 }

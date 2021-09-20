@@ -61,6 +61,8 @@ public:
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
 
+		Nullable<InfantryTypeClass*> DefaultDisguise;
+
 		Nullable<int> OpenTopped_RangeBonus;
 		Nullable<float> OpenTopped_DamageMultiplier;
 		Nullable<int> OpenTopped_WarpDistance;

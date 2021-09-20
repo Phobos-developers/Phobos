@@ -115,7 +115,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OreGathering_FramesPerDir.Read(exINI, pSection, "OreGathering.FramesPerDir");
 
 	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
-  this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
+	this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
+
+	this->DefaultDisguise.Read(exINI, pSection, "DefaultDisguise");
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
@@ -223,6 +225,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrailData)
 		.Process(this->DestroyAnim_Random)
 		.Process(this->NotHuman_RandomDeathSequence)
+		.Process(this->DefaultDisguise)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
 		.Process(this->OpenTopped_RangeBonus)
