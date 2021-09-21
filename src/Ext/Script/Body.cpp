@@ -63,6 +63,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 80:
 		ScriptExt::ConditionalJumpIfTrue(pTeam, -1);
 			break;
+	case 81:
+		ScriptExt::ClearCurrentTeamKills(pTeam);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
@@ -1070,3 +1073,23 @@ void ScriptExt::SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable = -1
 	return;
 }
 
+// Clear the number of kills done by the Team
+void ScriptExt::ClearCurrentTeamKills(TeamClass* pTeam)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+
+	if (!pTeam || !pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	pTeamData->KillsCounter = 0;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}

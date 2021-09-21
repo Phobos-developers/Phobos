@@ -57,6 +57,7 @@ public:
 	static void SetConditionalCountCondition(TeamClass* pTeam, int comparatorType);
 	static void SetKillsLimitComparator(TeamClass* pTeam, int newLimit);
 	static void SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable);
+	static void ClearCurrentTeamKills(TeamClass* pTeam);
 
 	static ExtContainer ExtMap;
 };
