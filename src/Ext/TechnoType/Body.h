@@ -61,6 +61,10 @@ public:
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
 
+		Nullable<int> OpenToppedRangeBonus;
+		Nullable<float> OpenToppedDamageMultiplier;
+		Nullable<int> OpenToppedWarpDistance;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -113,7 +117,11 @@ public:
 			OreGathering_FramesPerDir(),
 			LaserTrailData(),
 			DestroyAnim_Random(true),
-			NotHuman_RandomDeathSequence(false)
+			NotHuman_RandomDeathSequence(false),
+			OpenToppedRangeBonus(),
+			OpenToppedDamageMultiplier(),
+			OpenToppedWarpDistance()
+
 		{ }
 
 		virtual ~ExtData() = default;
