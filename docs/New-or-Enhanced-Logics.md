@@ -229,9 +229,9 @@ NoManualMove=no        ; boolean
 
 ```ini
 [SOMETECHNO]					; require `TechnoType` with `OpenTopped=yes`
-OpenToppedRangeBonus=1			; integer, range bonuses for troops shooting from open topped transport
-OpenToppedDamageMultiplier=1.3  ; float , damage bonuses for troops shooting from open topped transport
-OpenToppedWarpDistance=8		; integer , temporal range bonuses for troops shooting from open topped transport
+OpenTopped.RangeBonus=1			; integer, range bonuses for troops shooting from open topped transport
+OpenTopped.DamageMultiplier=1.3  ; float , damage bonuses for troops shooting from open topped transport
+OpenTopped.WarpDistance=8		; integer , temporal range bonuses for troops shooting from open topped transport
 ```
 
 ## Technos

@@ -127,7 +127,7 @@ DEFINE_HOOK(0x518505, InfantryClass_TakeDamage_NotHuman, 0x4)
 
 	// Die1-Die5 sequences are offset by 10
 	//#define Die(x) x + 10
-	auto Die = [](int x) { return x + 10; };
+	constexpr auto Die = [](int x) { return x + 10; };
 
 	int resultSequence = Die(1);
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
@@ -162,14 +162,11 @@ DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0
 
 	if (auto pTransport = pThis->Transporter)
 	{
-		if (auto pTransportType = pTransport->GetTechnoType())
+		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
 		{
-			if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransportType))
-			{
-				R->EAX(pExt->OpenToppedRangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus));
+			R->EAX(pExt->OpenToppedRangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus));
 
-				return 0x6F72DE;
-			}
+			return 0x6F72DE;
 		}
 	}
 
@@ -184,17 +181,14 @@ DEFINE_HOOK(0x6FE43B, TechnoClass_Fire_OpenTopped_DmgMult, 0x8)
 	if (pThis->InOpenToppedTransport)
 	{
 		GET_STACK(int, nDamage, STACK_OFFS(0xB4, -0x2C));
-		auto nDamageMult = static_cast<float>(RulesClass::Instance->OpenToppedDamageMultiplier);
+		float nDamageMult = static_cast<float>(RulesClass::Instance->OpenToppedDamageMultiplier);
 
 		if (auto pTransport = pThis->Transporter)
 		{
-			if (auto pTransportType = pTransport->GetTechnoType())
+			if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
 			{
-				if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransportType))
-				{
-					//it is float isnt it YRPP ? , check tomson26 YR-IDB !
-					nDamageMult = pExt->OpenToppedDamageMultiplier.Get(static_cast<float>(RulesClass::Instance->OpenToppedDamageMultiplier));
-				}
+				//it is float isnt it YRPP ? , check tomson26 YR-IDB !
+				nDamageMult = pExt->OpenToppedDamageMultiplier.Get(nDamageMult);
 			}
 		}
 
@@ -212,14 +206,11 @@ DEFINE_HOOK(0x71A82C, TemporalClass_AI_Opentopped_WarpDistance, 0xC)
 
 	if (auto pTransport = pThis->Owner->Transporter)
 	{
-		if (auto pTransportType = pTransport->GetTechnoType())
+		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
 		{
-			if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransportType))
-			{
-				R->EDX(pExt->OpenToppedWarpDistance.Get(RulesClass::Instance->OpenToppedWarpDistance));
+			R->EDX(pExt->OpenToppedWarpDistance.Get(RulesClass::Instance->OpenToppedWarpDistance));
 
-				return 0x71A838;
-			}
+			return 0x71A838;
 		}
 	}
 

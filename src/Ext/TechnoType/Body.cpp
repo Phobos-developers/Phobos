@@ -120,9 +120,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
 
-	this->OpenToppedRangeBonus.Read(exINI, pSection, "OpenToppedRangeBonus");
-	this->OpenToppedDamageMultiplier.Read(exINI, pSection, "OpenToppedDamageMultiplier");
-	this->OpenToppedWarpDistance.Read(exINI, pSection, "OpenToppedWarpDistance");
+	this->OpenToppedRangeBonus.Read(exINI, pSection, "OpenTopped.RangeBonus");
+	this->OpenToppedDamageMultiplier.Read(exINI, pSection, "OpenTopped.DamageMultiplier");
+	this->OpenToppedWarpDistance.Read(exINI, pSection, "OpenTopped.WarpDistance");
 
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
