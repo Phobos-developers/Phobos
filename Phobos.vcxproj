@@ -55,7 +55,7 @@
     <ClCompile Include="src\Ext\Side\Body.cpp" />
     <ClCompile Include="src\Ext\Side\Hooks.cpp" />
     <ClCompile Include="src\Ext\Side\Hooks.SidebarGDIPositions.cpp" />
-	<ClCompile Include="src\Ext\Team\Body.cpp" />
+    <ClCompile Include="src\Ext\Team\Body.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Body.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.Teleport.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.cpp" />
@@ -123,7 +123,7 @@
     <ClInclude Include="src\Ext\Rules\Body.h" />
     <ClInclude Include="src\Ext\SWType\Body.h" />
     <ClInclude Include="src\Ext\Side\Body.h" />
-	<ClCompile Include="src\Ext\Team\Body.h" />
+	<ClInclude Include="src\Ext\Team\Body.h" />
     <ClInclude Include="src\Ext\TechnoType\Body.h" />
     <ClInclude Include="src\Ext\Techno\Body.h" />
     <ClInclude Include="src\Ext\TerrainType\Body.h" />
