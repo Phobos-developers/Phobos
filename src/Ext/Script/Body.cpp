@@ -990,7 +990,6 @@ void ScriptExt::SetConditionalCountCondition(TeamClass* pTeam, int comparatorTyp
 			// Enabling new count
 			pTeamData->ConditionalComparatorType = scriptArgument; // Possible values: 0 -> '<', 1 -> '<=', 2 -> '=', 3 -> '>=', 4 -> '>', 5 -> '!='
 			pTeamData->ConditionalJumpEvaluation = false; // Reset conditional jumping value
-			pTeamData->KillsCounter = 0; // If the new evaluation is different then the current kills count should start again
 		}
 	}
 
