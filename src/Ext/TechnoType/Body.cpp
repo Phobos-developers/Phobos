@@ -119,9 +119,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->PassengerDeletion_Refund.Read(exINI, pSection, "PassengerDeletion.Soylent");
 	this->PassengerDeletion_RefundFriendlies.Read(exINI, pSection, "PassengerDeletion.SoylentFriendlies");
-	this->PassengerDeletion_Report.Read(exINI, pSection, "PassengerDeletion.Report");
-	this->PassengerDeletion_SizeDependence.Read(exINI, pSection, "PassengerDeletion.SizeDependence");
-	this->PassengerDeletion_Countdown.Read(exINI, pSection, "PassengerDeletion.Countdown");
+	this->PassengerDeletion_Report.Read(exINI, pSection, "PassengerDeletion.ReportSound");
+	this->PassengerDeletion_SizeDependence.Read(exINI, pSection, "PassengerDeletion.Rate.SizeMultiply");
+	this->PassengerDeletion_Countdown.Read(exINI, pSection, "PassengerDeletion.Rate");
 	
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
