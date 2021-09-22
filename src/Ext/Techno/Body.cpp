@@ -338,7 +338,9 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 			}
 		}
 		else
+		{
 			pData->PassengerDeletion_Countdown = -1;
+		}
 	}
 }
 
