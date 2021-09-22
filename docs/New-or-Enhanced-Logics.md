@@ -231,11 +231,11 @@ NoManualMove=no        ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                            ; TechnoType
-PassengerDeletion.Countdown=0           ; integer, game frames
+PassengerDeletion.Rate=                 ; integer, game frames
+PassengerDeletion.Rate.SizeMultiply=yes ; boolean, whether to multiply frames amount by size
 PassengerDeletion.Soylent=no            ; boolean
 PassengerDeletion.SoylentFriendlies=no  ; boolean
-PassengerDeletion.SizeDependence=yes    ; boolean. Final countdown is done multiplying the Unit size
-PassengerDeletion.Report=               ; sound
+PassengerDeletion.ReportSound=          ; sound
 ```
 
 ## Technos
