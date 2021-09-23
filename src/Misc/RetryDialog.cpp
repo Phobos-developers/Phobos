@@ -2,6 +2,10 @@
 #include <WWMessageBox.h>
 #include <LoadOptionsClass.h>
 #include <ThemeClass.h>
+#include <CCToolTip.h>
+#include <GameOptionsClass.h>
+#include <GScreenClass.h>
+#include <EvadeClass.h>
 
 namespace RetryDialogFlag
 {
@@ -45,9 +49,12 @@ DEFINE_HOOK(0x686092, DoLose_RetryDialogForCampaigns, 0x7)
 		break;
 	}
 
-	PUSH_IMM(1); // For the stack
+	EvadeClass::Instance->Do();
+	if (CCToolTip::Instance())
+		CCToolTip::Instance->SetState(GameOptionsClass::Instance->Tooltips);
+	GScreenClass::Instance->Render();
 
-	return 0x686395;
+	return 0x686231;
 }
 
 DEFINE_HOOK(0x558F4E, LoadOptionClass_Dialog_CenterListBox, 0x5)
