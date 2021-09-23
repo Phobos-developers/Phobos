@@ -23,7 +23,7 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 		}
 	}
 
-	return static_cast<int>(pBuilding->GetPowerOutput() * fFactor) + nAmount;
+	return std::round(pBuilding->GetPowerOutput() * fFactor) + nAmount;
 }
 
 void BuildingTypeExt::ExtData::Initialize()
