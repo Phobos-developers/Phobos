@@ -22,6 +22,8 @@ public:
 		Valueable<CSFText> UIDescription;
 		Valueable<bool> LowSelectionPriority;
 		PhobosFixedString<0x20> GroupAs;
+		Valueable<int> RadarJamRadius;
+		Valueable<int> InhibitorRange;
 		Valueable<double> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
 		Valueable<double> Interceptor_GuardRange;
@@ -82,6 +84,8 @@ public:
 			UIDescription(),
 			LowSelectionPriority(false),
 			GroupAs(NONE_STR),
+			RadarJamRadius(0),
+			InhibitorRange(0),
 			MindControlRangeLimit(-1.0),
 			Interceptor(false),
 			Interceptor_GuardRange(0.0),

@@ -62,12 +62,59 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	if (!pData)
 		return;
 
+	//const char* sectionAITargetType = "AITargetType";
+	//const char* sectionAIScriptsList = "AIScriptsList";
+
 	INI_EX exINI(pINI);
 
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
 	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
+	/*
+	// Section AITargetType
+	int itemsCount = pINI->GetKeyCount(sectionAITargetType);
+	for (int i = 0; i < itemsCount; ++i)
+	{
+		DynamicVectorClass<TechnoTypeClass*> objectsList;
+		char* context = nullptr;
+		pINI->ReadString(sectionAITargetType, pINI->GetKeyName(sectionAITargetType, i), "", Phobos::readBuffer);
+
+		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			TechnoTypeClass* buffer;
+			if (Parser<TechnoTypeClass*>::TryParse(cur, &buffer))
+			{
+				//Debug::Log("DEBUG: [AITargetType][%d]: Parsed [%s]\n", AITargetTypeLists.Count, cur);
+				objectsList.AddItem(buffer);
+			}
+			else
+				Debug::Log("DEBUG: [AITargetType][%d]: Error parsing [%s]\n", AITargetTypeLists.Count, cur);
+			//if (!std::is_pointer<char*>() || !INIClass::IsBlank(cur))
+				//Debug::INIParseFailed(sectionAITargetType, (char*)(i), cur);
+		}
+		AITargetTypeLists.AddItem(objectsList);
+		objectsList.Clear();
+	}
+
+	// Section AIScriptsList
+	int scriptitemsCount = pINI->GetKeyCount(sectionAIScriptsList);
+	for (int i = 0; i < scriptitemsCount; ++i)
+	{
+		DynamicVectorClass<ScriptTypeClass*> objectsList;
+
+		char* context = nullptr;
+		pINI->ReadString(sectionAIScriptsList, pINI->GetKeyName(sectionAIScriptsList, i), "", Phobos::readBuffer);
+
+		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			ScriptTypeClass* pNewScript = new ScriptTypeClass(cur);
+
+			objectsList.AddItem(pNewScript);
+		}
+		AIScriptsLists.AddItem(objectsList);
+		objectsList.Clear();
+	}*/
 }
 
 // this runs between the before and after type data loading methods for rules ini
