@@ -913,7 +913,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	int nSuperWeapons = 0;
 	double distanceToTarget = 0;
 	TechnoClass* pTarget = nullptr;
-
+	/*
 	// Special case: validate target if is part of a technos list in [AITargetType] section
 	if (attackAITargetType >= 0 && RulesExt::Global()->AITargetTypeLists.Count > 0)
 	{
@@ -937,7 +937,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 			}
 			return false;
 		}
-	}
+	}*/
 
 	switch (mask)
 	{
