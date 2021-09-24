@@ -51,6 +51,7 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->Online)
 		.Process(this->Temporal)
 		.Process(this->Available)
+		.Process(this->Type)
 		.Success();
 }
 

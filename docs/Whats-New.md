@@ -47,6 +47,7 @@ New:
 - Unlimited Global / Local Variables (by secsome)
 - Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)
 - Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
+- XDrawOffset for animations (by Morton)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -55,7 +56,15 @@ Vanilla fixes:
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water (by Uranusian)
 
 Phobos fixes:
+- TBA
+
+### 0.2.2.2
+
+Phobos fixes:
+- Fixed shield type info not saving properly (by Uranusian)
 - Fixed extended building upgrades logic not properly interacting with Ares' BuildLimit check (by Uranusian)
+- Fix more random crashes for Cameo Priority (by Uranusian)
+- Fix aircraft weapons causing game freeze when burst index was not correctly reset after firing (by Starkku)
 
 ### 0.2.2.1
 
