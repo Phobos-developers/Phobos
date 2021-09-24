@@ -6,11 +6,13 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 {
 	GET(HouseClass*, pThis, ECX);
 	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+
 	pHouseExt->BuildingCounter.clear();
 
 	// This pre-iterating ensure our process to be done in O(NM) instead of O(N^2),
 	// as M should be much less than N, this will be a great improvement. - secsome
 	for (auto& pBld : pThis->Buildings)
+	{
 		if (pBld && !pBld->InLimbo && pBld->IsOnMap)
 		{
 			const auto pExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
@@ -20,6 +22,7 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 				++pHouseExt->BuildingCounter[pExt];
 			}
 		}
+	}
 
 	return 0;
 }
