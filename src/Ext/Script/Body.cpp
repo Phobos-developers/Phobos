@@ -285,8 +285,8 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 			{
 				if (pTeamData->NextSuccessWeightAward > 0)
 				{
-					IncreaseCurrentTriggerWeight(pTeam, false, pTeamData->NextSuccessWeightAward);
-
+					//IncreaseCurrentTriggerWeight(pTeam, false, pTeamData->NextSuccessWeightAward);
+					// Enable this line when I create & merge the "Current Weight Manipulation" PR
 					pTeamData->NextSuccessWeightAward = 0;
 				}
 			}
