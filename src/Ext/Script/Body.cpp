@@ -1304,10 +1304,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 			for (int i = 0; i < BuildTech.Count; i++)
 			{
 				auto pTechObject = BuildTech.GetItem(i);
+				
 				if (pTechObject->ID == pTechno->get_ID())
-				{
 					return true;
-				}
 			}
 		}
 		break;
