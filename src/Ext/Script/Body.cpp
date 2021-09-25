@@ -1362,9 +1362,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 					auto pMCVObject = BaseUnit.GetItem(i);
 
 					if (pMCVObject->ID == pTechno->get_ID())
-					{
 						return true;
-					}
 				}
 			}
 		}
