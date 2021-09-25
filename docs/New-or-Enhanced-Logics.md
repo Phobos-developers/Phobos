@@ -208,6 +208,17 @@ In `rulesmd.ini`:
 NotHuman.RandomDeathSequence=yes  ; boolean
 ```
 
+### Default disguise for individual InfantryTypes
+
+- Infantry can now have its `DefaultDisguise` overridden per-type.
+  - This tag's priority is higher than Ares' per-side `DefaultDisguise`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEINFANTRY]      ; InfantryType
+DefaultDisguise=E2  ; InfantryType              
+```
+
 ## Vehicles
 
 ### Stationary vehicles
