@@ -1373,9 +1373,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	case 27:
 		// Any Neutral object
 		if (pTechno->Owner->IsNeutral())
-		{
 			return true;
-		}
 		break;
 
 	case 28:
