@@ -260,7 +260,9 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 			}
 		}
 		else
+		{
 			return;
+		}
 	}
 
 	// This team has no units! END
