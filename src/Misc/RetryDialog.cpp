@@ -14,6 +14,8 @@ namespace RetryDialogFlag
 
 DEFINE_HOOK(0x686092, DoLose_RetryDialogForCampaigns, 0x7)
 {
+	enum { OK = 0x6860F6, Cancel = 0x6860EE, LoadGame = 0x686231 };
+
 	while (true)
 	{
 		// WWMessageBox buttons look like below:
@@ -25,15 +27,14 @@ DEFINE_HOOK(0x686092, DoLose_RetryDialogForCampaigns, 0x7)
 			StringTable::LoadString("TXT_TO_REPLAY"),
 			StringTable::LoadString("TXT_OK"),
 			StringTable::LoadString("GUI:LOADGAME"),
-			StringTable::LoadString("TXT_CANCEL"))
-		)
+			StringTable::LoadString("TXT_CANCEL")))
 		{
-		case WWMessageBox::Result::Button1: // ok
-			return 0x6860F6;
+		case WWMessageBox::Result::Button1:
+			return OK;
 		default:
-		case WWMessageBox::Result::Button3: // cancel
-			return 0x6860EE;
-		case WWMessageBox::Result::Button2: // load game
+		case WWMessageBox::Result::Button3:
+			return Cancel;
+		case WWMessageBox::Result::Button2:
 			auto pDialog = GameCreate<LoadOptionsClass>();
 			RetryDialogFlag::IsCalledFromRetryDialog = true;
 			const bool bIsAboutToLoad = pDialog->LoadDialog();
@@ -54,7 +55,7 @@ DEFINE_HOOK(0x686092, DoLose_RetryDialogForCampaigns, 0x7)
 		CCToolTip::Instance->SetState(GameOptionsClass::Instance->Tooltips);
 	GScreenClass::Instance->Render();
 
-	return 0x686231;
+	return LoadGame;
 }
 
 DEFINE_HOOK(0x558F4E, LoadOptionClass_Dialog_CenterListBox, 0x5)
