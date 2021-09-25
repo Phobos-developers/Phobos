@@ -7,7 +7,9 @@ class LaserTrailTypeClass final : public Enumerable<LaserTrailTypeClass>
 {
 public:
 	Valueable<bool> IsHouseColor;
-	Valueable<ColorStruct> Color;
+	Valueable<bool> IsRainbowColor;
+	ValueableVector<ColorStruct> Colors;
+	Valueable<int> TransitionDuration;
 	Valueable<int> FadeDuration;
 	Valueable<int> Thickness;
 	Valueable<int> SegmentLength;
@@ -16,13 +18,17 @@ public:
 
 	LaserTrailTypeClass(const char* pTitle = NONE_STR) : Enumerable<LaserTrailTypeClass>(pTitle),
 		IsHouseColor(false),
-		Color({ 255, 0, 0 }),
+		IsRainbowColor(false),
+		Colors(),
+		TransitionDuration(60),
 		FadeDuration(64),
 		Thickness(4),
 		SegmentLength(128),
 		IgnoreVertical(false),
 		IsIntense(false)
-	{ }
+	{
+		this->Colors.push_back({ 255, 0, 0 });
+	}
 
 	virtual ~LaserTrailTypeClass() override = default;
 
