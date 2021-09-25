@@ -371,8 +371,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 				else
 				{
 					// Is near of the leader, then protect the area
-					if (pUnit->GetCurrentMission() != Mission::Area_Guard 
-						|| pUnit->GetCurrentMission() != Mission::Attack)
+					if (pUnit->GetCurrentMission() != Mission::Area_Guard || pUnit->GetCurrentMission() != Mission::Attack)
 						pUnit->QueueMission(Mission::Area_Guard, true);
 
 					nTogether++;
