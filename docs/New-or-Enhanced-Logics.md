@@ -533,3 +533,13 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=73,0
 ```
+
+### `112` Regroup around the Team Leader
+
+- Puts the TaskForce into Area Guard Mode for the given units of time around the Team Leader (this unit remains almost immobile until the action ends). The default radius around the Leader is `[General] > CloseEnough` and the units will not leave that area. The countdown only works while all the units are inside the area.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=112,n
+```
