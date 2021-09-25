@@ -31,9 +31,11 @@ DEFINE_HOOK(0x686092, DoLose_RetryDialogForCampaigns, 0x7)
 		{
 		case WWMessageBox::Result::Button1:
 			return OK;
+
 		default:
 		case WWMessageBox::Result::Button3:
 			return Cancel;
+
 		case WWMessageBox::Result::Button2:
 			auto pDialog = GameCreate<LoadOptionsClass>();
 			RetryDialogFlag::IsCalledFromRetryDialog = true;
@@ -47,12 +49,15 @@ DEFINE_HOOK(0x686092, DoLose_RetryDialogForCampaigns, 0x7)
 			ThemeClass::Instance->Stop();
 			break;
 		}
+
 		break;
 	}
 
 	EvadeClass::Instance->Do();
+
 	if (CCToolTip::Instance())
 		CCToolTip::Instance->SetState(GameOptionsClass::Instance->Tooltips);
+
 	GScreenClass::Instance->Render();
 
 	return LoadGame;
