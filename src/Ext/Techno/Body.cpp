@@ -24,13 +24,9 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 		{
 			TechnoClass* pObjectKiller;
 			if ((pKiller->GetTechnoType()->Spawned || pKiller->GetTechnoType()->MissileSpawn) && pKiller->SpawnOwner)
-			{
 				pObjectKiller = pKiller->SpawnOwner;
-			}
 			else
-			{
 				pObjectKiller = pKiller;
-			}
 
 			if (pObjectKiller && pObjectKiller->BelongsToATeam())
 			{
