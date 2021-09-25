@@ -48,7 +48,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 				this->SuperWeapons.AddItem(buffer);
 			}
 			else
+			{
 				Debug::Log("DEBUG: [%s]: Error parsing SuperWeapons= [%s]\n", pSection, cur);
+			}
 		}
 	}
 }
