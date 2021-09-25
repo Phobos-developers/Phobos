@@ -514,7 +514,7 @@ x=73,0
 
 ### `74-81` New Attack Action
 
-- These Actions instructs the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
+- These Actions instruct the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
 
 In `aimd.ini`:
 ```ini
@@ -533,8 +533,8 @@ x=74-81 or 84-91 or 104-105,n
 80         | Target Type# | No | Closer | Ends when a team member kill the designated target |
 81         | Target Type# | No | Farther | Ends when a team member kill the designated target |
 
-Note: New Attack actions scripts (74, 75, 78 ,79) that are focused in target threat use `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from Rulesmd.ini.
+Note: New Attack action scripts (74, 75, 78 ,79) that are focused in target threat use `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from Rulesmd.ini.
 
-Note: All Aircrafts that attacks other air units will end the script. This behavior is intentional because without it aircrafts had some bugs that wasn't fixable at the time of developing the feature.
+Note: All Aircrafts that attack other air units will end the script. This behavior is intentional because without it aircrafts had some bugs that weren't fixable at the time of developing the feature.
 
 
