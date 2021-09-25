@@ -162,7 +162,6 @@ DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0
 		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
 		{
 			R->EAX(pExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus));
-
 			return 0x6F72DE;
 		}
 	}
@@ -172,8 +171,9 @@ DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0
 
 DEFINE_HOOK(0x6FE43B, TechnoClass_Fire_OpenTopped_DmgMult, 0x8)
 {
+	enum { ApplyDamageMult = 0x6FE45A, ContinueCheck = 0x6FE460 };
+	
 	GET(TechnoClass* const, pThis, ESI);
-	enum{ ApplyDamageMult = 0x6FE45A , ContinueCheck = 0x6FE460 };
 
 	//replacing whole check due to `fild`
 	if (pThis->InOpenToppedTransport)
@@ -191,7 +191,6 @@ DEFINE_HOOK(0x6FE43B, TechnoClass_Fire_OpenTopped_DmgMult, 0x8)
 		}
 
 		R->EAX(Game::F2I(nDamage * nDamageMult));
-
 		return ApplyDamageMult;
 	}
 
@@ -207,7 +206,6 @@ DEFINE_HOOK(0x71A82C, TemporalClass_AI_Opentopped_WarpDistance, 0xC)
 		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
 		{
 			R->EDX(pExt->OpenTopped_WarpDistance.Get(RulesClass::Instance->OpenToppedWarpDistance));
-
 			return 0x71A838;
 		}
 	}

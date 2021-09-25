@@ -228,7 +228,7 @@ NoManualMove=no        ; boolean
 - You can now override settings of `OpenTopped` transport properties per TechnoType.
 
 ```ini
-[SOMETECHNO]                       ;`TechnoType`
+[SOMETECHNO]                       ; TechnoType
 OpenTopped.RangeBonus=1            ; integer
 OpenTopped.DamageMultiplier=1.3    ; float
 OpenTopped.WarpDistance=8          ; integer

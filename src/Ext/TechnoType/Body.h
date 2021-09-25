@@ -121,7 +121,6 @@ public:
 			OpenTopped_RangeBonus(),
 			OpenTopped_DamageMultiplier(),
 			OpenTopped_WarpDistance()
-
 		{ }
 
 		virtual ~ExtData() = default;
