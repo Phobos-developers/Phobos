@@ -115,13 +115,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OreGathering_FramesPerDir.Read(exINI, pSection, "OreGathering.FramesPerDir");
 
 	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
-	this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
-
-	this->DefaultDisguise.Read(exINI, pSection, "DefaultDisguise");
-
-	this->OpenTopped_RangeBonus.Read(exINI, pSection, "OpenTopped.RangeBonus");
-	this->OpenTopped_DamageMultiplier.Read(exINI, pSection, "OpenTopped.DamageMultiplier");
-	this->OpenTopped_WarpDistance.Read(exINI, pSection, "OpenTopped.WarpDistance");
+  this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
@@ -225,12 +219,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrailData)
 		.Process(this->DestroyAnim_Random)
 		.Process(this->NotHuman_RandomDeathSequence)
-		.Process(this->DefaultDisguise)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
-		.Process(this->OpenTopped_RangeBonus)
-		.Process(this->OpenTopped_DamageMultiplier)
-		.Process(this->OpenTopped_WarpDistance)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

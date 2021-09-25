@@ -40,7 +40,7 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 73:
 		ScriptExt::WaitUntillFullAmmoAction(pTeam);
 		break;
-	case 111:
+	case 74:
 		// Un-register success for AITrigger weight adjustment (this is the opposite of 49,0)
 		ScriptExt::UnregisterGreatSuccess(pTeam);
 		break;

@@ -6,10 +6,10 @@
 #include <ScenarioClass.h>
 
 //Static init
-
+/*
 template<> const DWORD Extension<HouseClass>::Canary = 0x11111111;
 HouseExt::ExtContainer HouseExt::ExtMap;
-
+*/
 
 int HouseExt::ActiveHarvesterCount(HouseClass* pThis)
 {
@@ -79,35 +79,13 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 // =============================
 // load / save
 
-template <typename T>
-void HouseExt::ExtData::Serialize(T& Stm)
-{
-	Stm
-		.Process(this->BuildingCounter);
+/*
+void HouseExt::ExtData::LoadFromStream(IStream* Stm) {
+	
 }
 
-void HouseExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
-{
-	Extension<HouseClass>::LoadFromStream(Stm);
-	this->Serialize(Stm);
-}
-
-void HouseExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
-{
-	Extension<HouseClass>::SaveToStream(Stm);
-	this->Serialize(Stm);
-}
-
-bool HouseExt::LoadGlobals(PhobosStreamReader& Stm)
-{
-	return Stm
-		.Success();
-}
-
-bool HouseExt::SaveGlobals(PhobosStreamWriter& Stm)
-{
-	return Stm
-		.Success();
+void HouseExt::ExtData::SaveToStream(IStream* Stm) {
+	
 }
 
 // =============================
@@ -150,16 +128,24 @@ DEFINE_HOOK(0x503040, HouseClass_SaveLoad_Prefix, 0x5)
 
 DEFINE_HOOK(0x504069, HouseClass_Load_Suffix, 0x7)
 {
-	HouseExt::ExtMap.LoadStatic();
+	auto pItem = HouseExt::ExtMap.Find(HouseExt::ExtMap.SavingObject);
+	IStream* pStm = HouseExt::ExtMap.SavingStream;
+
+	pItem->LoadFromStream(pStm);
+
 	return 0;
 }
 
 DEFINE_HOOK(0x5046DE, HouseClass_Save_Suffix, 0x7)
 {
-	HouseExt::ExtMap.SaveStatic();
+	auto pItem = HouseExt::ExtMap.Find(HouseExt::ExtMap.SavingObject);
+	IStream* pStm = HouseExt::ExtMap.SavingStream;
+
+	pItem->SaveToStream(pStm);
 	return 0;
 }
-
+*/
+/*
 DEFINE_HOOK(0x50114D, HouseClass_InitFromINI, 0x5)
 {
 	GET(HouseClass* const, pThis, EBX);
@@ -168,4 +154,4 @@ DEFINE_HOOK(0x50114D, HouseClass_InitFromINI, 0x5)
 	HouseExt::ExtMap.LoadFromINI(pThis, pINI);
 
 	return 0;
-}
+}*/

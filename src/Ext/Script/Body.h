@@ -5,7 +5,6 @@
 #include <TeamClass.h>
 #include <HouseClass.h>
 
-#include <Ext/Team/Body.h>
 #include <Utilities/Container.h>
 #include <Phobos.h>
 
