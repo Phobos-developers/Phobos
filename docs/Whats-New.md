@@ -47,7 +47,8 @@ New:
 - Unlimited Global / Local Variables (by secsome)
 - Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)
 - Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
-- Customizable OpenTopped Properties (by Otamaa)
+- XDrawOffset for animations (by Morton)
+- Customizable OpenTopped properties (by Otamaa)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)

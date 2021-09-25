@@ -38,7 +38,6 @@ public:
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader & Stm) override;
-
 		virtual void SaveToStream(PhobosStreamWriter & Stm) override;
 
 	private:

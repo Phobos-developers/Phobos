@@ -269,3 +269,28 @@ DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
 
 	return 0;
 }
+
+// Fix the crash of TemporalTargetingMe related "stack dump starts with 0051BB7D"
+// Author: secsome
+DEFINE_HOOK_AGAIN(0x43FCF9, TechnoClass_AI_TemporalTargetingMe_Fix, 0x6) // BuildingClass
+DEFINE_HOOK_AGAIN(0x414BDB, TechnoClass_AI_TemporalTargetingMe_Fix, 0x6) // AircraftClass
+DEFINE_HOOK_AGAIN(0x736204, TechnoClass_AI_TemporalTargetingMe_Fix, 0x6) // UnitClass
+DEFINE_HOOK(0x51BB6E, TechnoClass_AI_TemporalTargetingMe_Fix, 0x6) // InfantryClass
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pThis->TemporalTargetingMe)
+	{
+		// Also check for vftable here to guarantee the TemporalClass not being destoryed already.
+		if (((int*)pThis->TemporalTargetingMe)[0] == 0x7F5180)
+			pThis->TemporalTargetingMe->Update();
+		else // It should had being warped out, delete this object
+		{
+			pThis->TemporalTargetingMe = nullptr;
+			pThis->Limbo();
+			pThis->UnInit();
+		}
+	}
+
+	return R->Origin() + 0xF;
+}
