@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-22 20:05+0800\n"
+"POT-Creation-Date: 2021-09-25 13:40+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -442,10 +442,11 @@ msgid ""
 "warhead, Mind Control removal warhead, Mind Control enhancement, shields,"
 " AnimList.PickRandom, MoveToCell fix, unlimited waypoints, Build At "
 "trigger action buildup anim fix, Undeploy building into a unit plays "
-"`EVA_NewRallyPointEstablished` fix, custom ore gathering anim"
+"`EVA_NewRallyPointEstablished` fix, custom ore gathering anim, "
+"TemporaryClass related crash"
 msgstr ""
 "**secsome (SEC-SOME)** - "
-"debug信息输出快捷键，重构与移植Ares的帮助代码，引入了更多Ares衍生物，移除伪装弹头，移除心控弹头，心灵控制增强，护盾，AnimList.PickRandom，移动到坐标修复，无限路径点，将建筑建造于触发动作建造动画修复，反部署建筑播放`EVA_NewRallyPointEstablished`修复，自定义矿车动画"
+"debug信息输出快捷键，重构与移植Ares的帮助代码，引入了更多Ares衍生物，移除伪装弹头，移除心控弹头，心灵控制增强，护盾，AnimList.PickRandom，移动到坐标修复，无限路径点，将建筑建造于触发动作建造动画修复，反部署建筑播放`EVA_NewRallyPointEstablished`修复，自定义矿车动画，超时空相关崩溃修复"
 
 #: ../../README.md:88
 msgid ""
@@ -501,22 +502,26 @@ msgid "**SukaHati (Erzoid)** - Minimum interceptor guard range"
 msgstr "**SukaHati (Erzoid)** - 拦截者最小警戒距离"
 
 #: ../../README.md:97
+msgid "**Morton (MortonPL)** - XDrawOffset"
+msgstr "**Morton (MortonPL)** - XDrawOffset (X轴动画偏移)"
+
+#: ../../README.md:98
 msgid "**mevitar** - honorary shield tester *triple* award"
 msgstr "**mevitar** - 荣誉护盾测试员*三重*奖章"
 
-#: ../../README.md:98
+#: ../../README.md:99
 msgid "**Damfoos** - extensive and thorough testing"
 msgstr "**Damfoos** - 广泛的深度测试"
 
-#: ../../README.md:99
+#: ../../README.md:100
 msgid "**Rise of the East community** - extensive playtesting of in-dev features"
 msgstr "**东方崛起社区** - 对开发中功能的广泛游戏测试"
 
-#: ../../README.md:100
+#: ../../README.md:101
 msgid "**Chasheen (Chasheenburg)** - CN docs translation"
 msgstr "**Chasheen (Chasheenburg)** - 中文说明书翻译"
 
-#: ../../README.md:102
+#: ../../README.md:103
 msgid ""
 "Thanks to everyone who uses Phobos, tests changes and reports bugs! You "
 "can show your appreciation and help project by displaying the logo "
@@ -528,28 +533,28 @@ msgstr ""
 "感谢每一个使用火卫一，测试更新与反馈bug的人！你可以通过在客户端/启动器中显示logo（可以在[此处](logo-"
 "mono.png)找到单色版本），链接火卫一库，以及通过上述链接贡献或对我们捐款来表达你对我们的赞赏和帮助。"
 
-#: ../../README.md:104
+#: ../../README.md:105
 msgid "Legal and License"
 msgstr "法律许可证"
 
-#: ../../README.md:107
+#: ../../README.md:108
 msgid ""
 "[![LGPL "
 "v3](https://www.gnu.org/graphics/lgplv3-147x51.png)](https://opensource.org/licenses/LGPL-3.0)"
 msgstr ""
 
-#: ../../README.md:107
+#: ../../README.md:108
 msgid "LGPL v3"
 msgstr ""
 
-#: ../../README.md:109
+#: ../../README.md:110
 msgid ""
 "The Phobos project is an unofficial open-source community collaboration "
 "project to extend the Red Alert 2 Yuri's Revenge engine for modding and "
 "compatibility purposes."
 msgstr "火卫一项目是一个非官方的开源社区合作项目，为了扩展红色警戒2尤里的复仇引擎以制作模组或兼容。"
 
-#: ../../README.md:111
+#: ../../README.md:112
 msgid ""
 "This project has no direct affiliation with Electronic Arts Inc. Command "
 "& Conquer, Command & Conquer Red Alert 2, Command & Conquer Yuri's "

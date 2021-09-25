@@ -208,6 +208,17 @@ In `rulesmd.ini`:
 NotHuman.RandomDeathSequence=yes  ; boolean
 ```
 
+### Default disguise for individual InfantryTypes
+
+- Infantry can now have its `DefaultDisguise` overridden per-type.
+  - This tag's priority is higher than Ares' per-side `DefaultDisguise`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEINFANTRY]      ; InfantryType
+DefaultDisguise=E2  ; InfantryType              
+```
+
 ## Vehicles
 
 ### Stationary vehicles
@@ -221,6 +232,17 @@ NotHuman.RandomDeathSequence=yes  ; boolean
 ```ini
 [SOMETECHNO]           ; TechnoType
 NoManualMove=no        ; boolean
+```
+
+### Customizable OpenTopped Properties
+
+- You can now override settings of `OpenTopped` transport properties per TechnoType.
+
+```ini
+[SOMETECHNO]                       ; TechnoType
+OpenTopped.RangeBonus=1            ; integer
+OpenTopped.DamageMultiplier=1.3    ; float
+OpenTopped.WarpDistance=8          ; integer
 ```
 
 ## Technos
@@ -519,7 +541,7 @@ x=73,0
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=74-81 or 84-91 or 104-105,n
+x=74-81,n
 ```
 
 | *Action* | *Argument*   | *Repeats* | *Target Priority* | *Description*                                 |
@@ -536,5 +558,4 @@ x=74-81 or 84-91 or 104-105,n
 Note: New Attack action scripts (74, 75, 78 ,79) that are focused in target threat use `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from Rulesmd.ini.
 
 Note: All Aircrafts that attack other air units will end the script. This behavior is intentional because without it aircrafts had some bugs that weren't fixable at the time of developing the feature.
-
 

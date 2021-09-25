@@ -633,21 +633,21 @@ msgid ""
 "Those would be used in docs and with a link to the respective mod as a "
 "bonus for the mod author. To record GIFs you can use such apps as, for "
 "example, [GifCam](http://blog.bahraniapps.com/gifcam/)."
-msgstr "这些将在文档中使用，可带有额外的可以指向相应mod的链接。要记录gif，你可以使用[GifCam](http://blog.bahraniapps.com/gifcam/)等应用程序。"
+msgstr "这些将在文档中被使用，并可额外为mod作者带有一个可以指向相应mod的链接。要录制gif，你可以使用[GifCam](http://blog.bahraniapps.com/gifcam/)等应用程序。"
 
 #: ../Contributing.md:1
 msgid ""
 "Please, provide screenshots, GIFs and videos in their natural size and "
 "without excess stuff or length."
-msgstr "请提供自然尺寸的屏幕截图，GIF和视频，且没有多余的内容或过长。"
+msgstr "请提供适当尺寸的屏幕截图，GIF和视频，并且不应有多余或过长的内容。"
 
 #: ../Contributing.md:240
 msgid "Promoting the work"
-msgstr "推进工作"
+msgstr "促进工作"
 
 #: ../Contributing.md:242
 msgid ""
 "You can always help us by spreading the word about the project among "
 "people, whether you're an influential youtuber"
-msgstr "无论您是有影响力的Youtuber，您都可以通过在人们中传播有关该项目的信息来帮助我们。"
+msgstr "无论您是不是有影响力的Youtuber，您都可以通过扩散有关该项目的信息来帮助我们。"
 
