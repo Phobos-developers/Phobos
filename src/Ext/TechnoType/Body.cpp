@@ -120,9 +120,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
 
-	this->OpenToppedRangeBonus.Read(exINI, pSection, "OpenTopped.RangeBonus");
-	this->OpenToppedDamageMultiplier.Read(exINI, pSection, "OpenTopped.DamageMultiplier");
-	this->OpenToppedWarpDistance.Read(exINI, pSection, "OpenTopped.WarpDistance");
+	this->OpenTopped_RangeBonus.Read(exINI, pSection, "OpenTopped.RangeBonus");
+	this->OpenTopped_DamageMultiplier.Read(exINI, pSection, "OpenTopped.DamageMultiplier");
+	this->OpenTopped_WarpDistance.Read(exINI, pSection, "OpenTopped.WarpDistance");
 
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
@@ -225,9 +225,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NotHuman_RandomDeathSequence)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
-		.Process(this->OpenToppedRangeBonus)
-		.Process(this->OpenToppedDamageMultiplier)
-		.Process(this->OpenToppedWarpDistance)
+		.Process(this->OpenTopped_RangeBonus)
+		.Process(this->OpenTopped_DamageMultiplier)
+		.Process(this->OpenTopped_WarpDistance)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

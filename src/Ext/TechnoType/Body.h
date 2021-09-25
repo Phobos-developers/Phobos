@@ -61,9 +61,9 @@ public:
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
 
-		Nullable<int> OpenToppedRangeBonus;
-		Nullable<float> OpenToppedDamageMultiplier;
-		Nullable<int> OpenToppedWarpDistance;
+		Nullable<int> OpenTopped_RangeBonus;
+		Nullable<float> OpenTopped_DamageMultiplier;
+		Nullable<int> OpenTopped_WarpDistance;
 
 		struct LaserTrailDataEntry
 		{
@@ -118,9 +118,9 @@ public:
 			LaserTrailData(),
 			DestroyAnim_Random(true),
 			NotHuman_RandomDeathSequence(false),
-			OpenToppedRangeBonus(),
-			OpenToppedDamageMultiplier(),
-			OpenToppedWarpDistance()
+			OpenTopped_RangeBonus(),
+			OpenTopped_DamageMultiplier(),
+			OpenTopped_WarpDistance()
 
 		{ }
 
