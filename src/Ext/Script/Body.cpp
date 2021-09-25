@@ -40,7 +40,7 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 73:
 		ScriptExt::WaitUntillFullAmmoAction(pTeam);
 		break;
-	case 74: // IMPORTANT: This action will be renamed from 74 to 111 or another number when PR 296 gets merged into Develop branch
+	case 74:
 		// Un-register success for AITrigger weight adjustment (this is the opposite of 49,0)
 		ScriptExt::UnregisterGreatSuccess(pTeam);
 		break;
