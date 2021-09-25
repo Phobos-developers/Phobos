@@ -120,10 +120,10 @@ public:
 			LaserTrailData(),
 			DestroyAnim_Random(true),
 			NotHuman_RandomDeathSequence(false),
+			DefaultDisguise(),
 			OpenTopped_RangeBonus(),
 			OpenTopped_DamageMultiplier(),
-			OpenTopped_WarpDistance(),
-			DefaultDisguise()
+			OpenTopped_WarpDistance()
 		{ }
 
 		virtual ~ExtData() = default;

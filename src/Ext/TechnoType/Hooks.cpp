@@ -165,13 +165,15 @@ DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDi
 {
 	GET(TechnoClass*, pThis, ESI);
 
+	enum { SetDisguise = 0x5227BF, DefaultDisguise = 0x6F4277 };
+
 	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
 		if (pExt->DefaultDisguise.isset())
 		{
 			pThis->Disguise = pExt->DefaultDisguise;
 			pThis->Disguised = true;
-			return R->Origin() == 0x522790 ? 0x5227BF : 0x6F4277;
+			return R->Origin() == 0x522790 ? SetDisguise : DefaultDisguise;
 		}
 	}
 

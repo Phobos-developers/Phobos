@@ -47,6 +47,7 @@ New:
 - Custom `DefaultDisguise` for individual InfantryTypes (by secsome)
 - Unlimited Global / Local Variables (by secsome)
 - Adds a "Load Game" button to the retry dialog on mission failure (by secsome)
+- Default disguise for individual InfantryTypes (by secsome)
 - Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)
 - Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
 - XDrawOffset for animations (by Morton)
