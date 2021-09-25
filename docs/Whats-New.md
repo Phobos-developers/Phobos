@@ -51,6 +51,7 @@ New:
 - Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
 - XDrawOffset for animations (by Morton)
 - Customizable OpenTopped properties (by Otamaa)
+- Script Action 111 `Un-register success` for AITrigger weight adjustment (this is the opposite of 49,0)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
