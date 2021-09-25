@@ -223,6 +223,17 @@ NotHuman.RandomDeathSequence=yes  ; boolean
 NoManualMove=no        ; boolean
 ```
 
+### Customizable OpenTopped Properties
+
+- You can now override settings of `OpenTopped` transport properties per TechnoType.
+
+```ini
+[SOMETECHNO]                       ; TechnoType
+OpenTopped.RangeBonus=1            ; integer
+OpenTopped.DamageMultiplier=1.3    ; float
+OpenTopped.WarpDistance=8          ; integer
+```
+
 ## Technos
 
 ### Mind Control enhancement
