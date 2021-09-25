@@ -40,7 +40,7 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 73:
 		ScriptExt::WaitUntillFullAmmoAction(pTeam);
 		break;
-	case 74: // rename from "74" to "110" when PR #296 "New Script Actions" is merged into develop!
+	case 112:
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
 		break;
 	default:
@@ -209,7 +209,6 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -225,15 +224,12 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 		// Looks like an error...
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
 	// Gather permanently until all the team members are near of the Leader
 	if (initialCountdown == 0)
-	{
 		gatherUnits = true;
-	}
 	
 	// Countdown updater
 	if (initialCountdown > 0)
@@ -266,7 +262,6 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-		
 		return;
 	}
 	else
@@ -303,7 +298,6 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 		if (!pLeaderUnit)
 		{
 			pTeamData->Countdown_regroupAtLeader = -1;
-
 			// This action finished
 			pTeam->StepCompleted = true;
 
@@ -324,6 +318,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 		// The leader should stay calm & be the group's center
 		if (pLeaderUnit->Locomotor->Is_Moving_Now())
 			pLeaderUnit->SetDestination(nullptr, false);
+
 		pLeaderUnit->QueueMission(Mission::Guard, false);
 
 		// Check if units are around the leader
@@ -339,14 +334,11 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 				auto pTypeUnit = pUnit->GetTechnoType();
 
 				if (!pTypeUnit)
-				{
 					continue;
-				}
 
 				if (pUnit == pLeaderUnit)
 				{
 					nUnits++;
-
 					continue;
 				}
 
@@ -379,7 +371,8 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 				else
 				{
 					// Is near of the leader, then protect the area
-					if (pUnit->GetCurrentMission() != Mission::Area_Guard || pUnit->GetCurrentMission() != Mission::Attack)
+					if (pUnit->GetCurrentMission() != Mission::Area_Guard 
+						|| pUnit->GetCurrentMission() != Mission::Attack)
 						pUnit->QueueMission(Mission::Area_Guard, true);
 
 					nTogether++;
@@ -388,10 +381,13 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 		}
 		
 
-		if (nUnits >= 0 && nUnits == nTogether && (initialCountdown == 0 || (initialCountdown > 0 && countdown <= 0)))
+		if (nUnits >= 0
+			&& nUnits == nTogether
+			&& (initialCountdown == 0
+				|| (initialCountdown > 0
+					&& countdown <= 0)))
 		{
 			pTeamData->Countdown_regroupAtLeader = -1;
-
 			// This action finished
 			pTeam->StepCompleted = true;
 			
