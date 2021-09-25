@@ -37,9 +37,7 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 
 				pKillerTechnoData->LastKillWasTeamTarget = false;
 				if (pFocus == pVictim)
-				{
 					pKillerTechnoData->LastKillWasTeamTarget = true;
-				}
 			}
 		}
 	}
