@@ -733,9 +733,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		{
 			auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 			if (pTeamData)
-			{
 				pTeamData->IdxSelectedObjectFromAIList = -1;
-			}
 
 			pTeam->StepCompleted = true;
 			Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (Reason: Naval is unable to target ground)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
