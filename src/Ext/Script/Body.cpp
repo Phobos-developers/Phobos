@@ -803,7 +803,9 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 		if (objectType->Naval
 			&& pTechnoType->LandTargeting == 1
 			&& object->GetCell()->LandType != LandType::Water)
+		{
 			continue;
+		}
 
 		// OnlyTargetHouseEnemy forces targets of a specific (hated) house
 		if (onlyTargetThisHouseEnemy && object->Owner != onlyTargetThisHouseEnemy)
