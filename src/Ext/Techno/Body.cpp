@@ -295,7 +295,6 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 					while (pThis->Passengers.NumPassengers > 0)
 					{
 						pOldPassenger = pThis->Passengers.RemoveFirstPassenger();
-
 						passengersList.AddItem(pOldPassenger);
 					}
 
