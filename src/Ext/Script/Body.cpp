@@ -956,6 +956,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		{
 			return true;
 		}
+		
 		break;
 
 	case 3:
