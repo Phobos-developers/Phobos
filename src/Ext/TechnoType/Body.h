@@ -66,6 +66,12 @@ public:
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
 
+		Nullable<InfantryTypeClass*> DefaultDisguise;
+
+		Nullable<int> OpenTopped_RangeBonus;
+		Nullable<float> OpenTopped_DamageMultiplier;
+		Nullable<int> OpenTopped_WarpDistance;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -123,7 +129,11 @@ public:
 			PassengerDeletion_SoylentFriendlies(false),
 			PassengerDeletion_Rate(0),
 			PassengerDeletion_ReportSound(),
-			PassengerDeletion_Rate_SizeMultiply(true)
+			PassengerDeletion_Rate_SizeMultiply(true),
+			DefaultDisguise(),
+			OpenTopped_RangeBonus(),
+			OpenTopped_DamageMultiplier(),
+			OpenTopped_WarpDistance()
 		{ }
 
 		virtual ~ExtData() = default;

@@ -208,6 +208,17 @@ In `rulesmd.ini`:
 NotHuman.RandomDeathSequence=yes  ; boolean
 ```
 
+### Default disguise for individual InfantryTypes
+
+- Infantry can now have its `DefaultDisguise` overridden per-type.
+  - This tag's priority is higher than Ares' per-side `DefaultDisguise`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEINFANTRY]      ; InfantryType
+DefaultDisguise=E2  ; InfantryType              
+```
+
 ## Vehicles
 
 ### Stationary vehicles
@@ -236,6 +247,17 @@ PassengerDeletion.Rate.SizeMultiply=yes ; boolean, whether to multiply frames am
 PassengerDeletion.Soylent=no            ; boolean
 PassengerDeletion.SoylentFriendlies=no  ; boolean
 PassengerDeletion.ReportSound=          ; sound
+```
+
+### Customizable OpenTopped Properties
+
+- You can now override settings of `OpenTopped` transport properties per TechnoType.
+
+```ini
+[SOMETECHNO]                       ; TechnoType
+OpenTopped.RangeBonus=1            ; integer
+OpenTopped.DamageMultiplier=1.3    ; float
+OpenTopped.WarpDistance=8          ; integer
 ```
 
 ## Technos
@@ -525,4 +547,14 @@ In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
 x=73,0
+```
+
+### `112` Regroup around the Team Leader
+
+- Puts the TaskForce into Area Guard Mode for the given units of time around the Team Leader (this unit remains almost immobile until the action ends). The default radius around the Leader is `[General] > CloseEnough` and the units will not leave that area. The countdown only works while all the units are inside the area.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=112,n
 ```
