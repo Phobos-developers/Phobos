@@ -465,10 +465,16 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 
 				// Used for filtering targets.
 				// Note: the units inside a openTopped Leader are used for this task
-				if ((passengerWeaponType1 && passengerWeaponType1->Projectile->AA) || (passengerWeaponType2 && passengerWeaponType2->Projectile->AA))
+				if ((passengerWeaponType1 
+					 && passengerWeaponType1->Projectile->AA) 
+					|| (passengerWeaponType2 
+						&& passengerWeaponType2->Projectile->AA))
 					leaderWeaponsHaveAA = true;
 
-				if ((passengerWeaponType1 && passengerWeaponType1->Projectile->AG) || (passengerWeaponType2 && passengerWeaponType2->Projectile->AG))
+				if ((passengerWeaponType1 
+					 && passengerWeaponType1->Projectile->AG) 
+					|| (passengerWeaponType2 
+						&& passengerWeaponType2->Projectile->AG))
 					leaderWeaponsHaveAG = true;
 			}
 		}
