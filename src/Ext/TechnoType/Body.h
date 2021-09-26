@@ -39,11 +39,11 @@ public:
 		Valueable<int> CameoPriority;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
-		Valueable<bool> PassengerDeletion_Refund;
-		Valueable<bool> PassengerDeletion_RefundFriendlies;
-		Valueable<int> PassengerDeletion_Countdown;
-		NullableIdx<VocClass> PassengerDeletion_Report;
-		Valueable<bool> PassengerDeletion_SizeDependence;
+		Valueable<bool> PassengerDeletion_Soylent;
+		Valueable<bool> PassengerDeletion_SoylentFriendlies;
+		Valueable<int> PassengerDeletion_Rate;
+		NullableIdx<VocClass> PassengerDeletion_ReportSound;
+		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -119,11 +119,11 @@ public:
 			LaserTrailData(),
 			DestroyAnim_Random(true),
 			NotHuman_RandomDeathSequence(false),
-			PassengerDeletion_Refund(false),
-			PassengerDeletion_RefundFriendlies(false),
-			PassengerDeletion_Countdown(0),
-			PassengerDeletion_Report(),
-			PassengerDeletion_SizeDependence(true)
+			PassengerDeletion_Soylent(false),
+			PassengerDeletion_SoylentFriendlies(false),
+			PassengerDeletion_Rate(0),
+			PassengerDeletion_ReportSound(),
+			PassengerDeletion_Rate_SizeMultiply(true)
 		{ }
 
 		virtual ~ExtData() = default;

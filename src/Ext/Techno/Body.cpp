@@ -261,28 +261,28 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if (pTypeData && pTypeData->PassengerDeletion_Countdown > 0)
+	if (pTypeData && pTypeData->PassengerDeletion_Rate > 0)
 	{
 		auto pData = TechnoExt::ExtMap.Find(pThis);
 
 		if (pThis->Passengers.NumPassengers > 0)
 		{
-			if (pData->PassengerDeletion_Countdown > 0)
+			if (pData->PassengerDeletion_Rate > 0)
 			{
-				pData->PassengerDeletion_Countdown--;
+				pData->PassengerDeletion_Rate--;
 			}
 			else
 			{
-				if (pData->PassengerDeletion_Countdown < 0)
+				if (pData->PassengerDeletion_Rate < 0)
 				{
 					// Countdown is off
 					// Setting & start countdown. Bigger units needs more time
-					int passengerSize = pTypeData->PassengerDeletion_Countdown;
+					int passengerSize = pTypeData->PassengerDeletion_Rate;
 
-					if (pTypeData->PassengerDeletion_SizeDependence && pThis->Passengers.FirstPassenger->GetTechnoType()->Size > 1.0)
+					if (pTypeData->PassengerDeletion_Rate_SizeMultiply && pThis->Passengers.FirstPassenger->GetTechnoType()->Size > 1.0)
 						passengerSize *= (int)(pThis->Passengers.FirstPassenger->GetTechnoType()->Size + 0.5);
 					
-					pData->PassengerDeletion_Countdown = passengerSize;
+					pData->PassengerDeletion_Rate = passengerSize;
 				}
 				else
 				{
@@ -298,17 +298,18 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 						passengersList.AddItem(pOldPassenger);
 					}
 
-					pOldPassenger->UnInit();
+					if (pOldPassenger)
+						pOldPassenger->UnInit();
 
 					auto pPassenger = passengersList.GetItem(passengersList.Count - 1);
 					auto pTypePassenger = passengersList.GetItem(passengersList.Count - 1)->GetTechnoType();
 
 					passengersList.RemoveItem(passengersList.Count - 1);
 
-					VocClass::PlayAt(pTypeData->PassengerDeletion_Report, pThis->GetCoords(), nullptr);
+					VocClass::PlayAt(pTypeData->PassengerDeletion_ReportSound, pThis->GetCoords(), nullptr);
 
 					// Check if there is money refund
-					if (pTypeData->PassengerDeletion_Refund)
+					if (pTypeData->PassengerDeletion_Soylent)
 					{
 						int soylent = 0;
 
@@ -317,7 +318,7 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 							soylent = pTypePassenger->Soylent;
 
 						// Is allowed the refund of friendly units?
-						if (!pTypeData->PassengerDeletion_RefundFriendlies && pPassenger->Owner->IsAlliedWith(pThis))
+						if (!pTypeData->PassengerDeletion_SoylentFriendlies && pPassenger->Owner->IsAlliedWith(pThis))
 							soylent = 0;
 
 						if (soylent > 0)
@@ -332,13 +333,13 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 					}
 
 					// Stop the countdown
-					pData->PassengerDeletion_Countdown = -1;
+					pData->PassengerDeletion_Rate = -1;
 				}
 			}
 		}
 		else
 		{
-			pData->PassengerDeletion_Countdown = -1;
+			pData->PassengerDeletion_Rate = -1;
 		}
 	}
 }
@@ -354,7 +355,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)
-		.Process(this->PassengerDeletion_Countdown)
+		.Process(this->PassengerDeletion_Rate)
 		;
 }
 

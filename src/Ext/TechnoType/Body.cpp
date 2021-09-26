@@ -117,11 +117,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
 	this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
 
-	this->PassengerDeletion_Refund.Read(exINI, pSection, "PassengerDeletion.Soylent");
-	this->PassengerDeletion_RefundFriendlies.Read(exINI, pSection, "PassengerDeletion.SoylentFriendlies");
-	this->PassengerDeletion_Report.Read(exINI, pSection, "PassengerDeletion.ReportSound");
-	this->PassengerDeletion_SizeDependence.Read(exINI, pSection, "PassengerDeletion.Rate.SizeMultiply");
-	this->PassengerDeletion_Countdown.Read(exINI, pSection, "PassengerDeletion.Rate");
+	this->PassengerDeletion_Soylent.Read(exINI, pSection, "PassengerDeletion.Soylent");
+	this->PassengerDeletion_SoylentFriendlies.Read(exINI, pSection, "PassengerDeletion.SoylentFriendlies");
+	this->PassengerDeletion_ReportSound.Read(exINI, pSection, "PassengerDeletion.ReportSound");
+	this->PassengerDeletion_Rate_SizeMultiply.Read(exINI, pSection, "PassengerDeletion.Rate.SizeMultiply");
+	this->PassengerDeletion_Rate.Read(exINI, pSection, "PassengerDeletion.Rate");
 	
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
@@ -227,11 +227,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NotHuman_RandomDeathSequence)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
-		.Process(this->PassengerDeletion_Refund)
-		.Process(this->PassengerDeletion_RefundFriendlies)
-		.Process(this->PassengerDeletion_Countdown)
-		.Process(this->PassengerDeletion_Report)
-		.Process(this->PassengerDeletion_SizeDependence)
+		.Process(this->PassengerDeletion_Soylent)
+		.Process(this->PassengerDeletion_SoylentFriendlies)
+		.Process(this->PassengerDeletion_Rate)
+		.Process(this->PassengerDeletion_ReportSound)
+		.Process(this->PassengerDeletion_Rate_SizeMultiply)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

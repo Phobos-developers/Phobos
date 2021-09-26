@@ -22,14 +22,14 @@ public:
 		std::unique_ptr<ShieldClass> Shield;
 		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		Valueable<bool> ReceiveDamage;
-		int PassengerDeletion_Countdown;
+		int PassengerDeletion_Rate;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),
 			InterceptedBullet(nullptr),
 			Shield(),
 			LaserTrails(),
 			ReceiveDamage(false),
-			PassengerDeletion_Countdown(-1)
+			PassengerDeletion_Rate(-1)
 		{ }
 
 		virtual ~ExtData() = default;
