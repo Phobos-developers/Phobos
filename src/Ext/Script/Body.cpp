@@ -618,7 +618,10 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 			&& pFocus->IsOnMap
 			&& !pFocus->Absorbed
 			&& pFocus->Owner != pLeaderUnit->Owner
-			&& (!pLeaderUnit->Owner->IsAlliedWith(pFocus) || (pLeaderUnit->Owner->IsAlliedWith(pFocus) && pFocus->IsMindControlled() && !pLeaderUnit->Owner->IsAlliedWith(pFocus->MindControlledBy))))
+			&& (!pLeaderUnit->Owner->IsAlliedWith(pFocus) 
+				|| (pLeaderUnit->Owner->IsAlliedWith(pFocus) 
+					&& pFocus->IsMindControlled() 
+					&& !pLeaderUnit->Owner->IsAlliedWith(pFocus->MindControlledBy))))
 		{
 			validFocus = true;
 		}
@@ -635,7 +638,8 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				{
 					if (pUnit->IsAlive
 						&& !pUnit->InLimbo
-						&& (pUnitType->WhatAmI() == AbstractType::AircraftType && abstract_cast<AircraftTypeClass*>(pUnitType)->AirportBound)
+						&& (pUnitType->WhatAmI() == AbstractType::AircraftType 
+							&& abstract_cast<AircraftTypeClass*>(pUnitType)->AirportBound)
 						&& pUnit->Ammo > 0
 						&& (pUnit->Target != pTeam->Focus && !pUnit->InAir))
 					{
