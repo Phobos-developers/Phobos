@@ -311,9 +311,7 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 
 						// Refund money to the Attacker
 						if (pTypePassenger && pTypePassenger->Soylent > 0)
-						{
 							soylent = pTypePassenger->Soylent;
-						}
 
 						// Is allowed the refund of friendly units?
 						if (!pTypeData->PassengerDeletion_RefundFriendlies && pPassenger->Owner->IsAlliedWith(pThis))
