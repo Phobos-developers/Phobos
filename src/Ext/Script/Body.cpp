@@ -906,9 +906,11 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 		}
 	}
 
-	if (bestObject != nullptr) {
+	if (bestObject != nullptr)
+	{
 		return bestObject;
 	}
+	
 
 	return nullptr;
 }
