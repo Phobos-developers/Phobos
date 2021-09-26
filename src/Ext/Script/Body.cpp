@@ -369,7 +369,6 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				if (pUnitType->WhatAmI() == AbstractType::InfantryType)
 				{
 					auto pTypeInf = abstract_cast<InfantryTypeClass*>(pUnitType);
-
 					if (pTypeInf->Agent || pTypeInf->Infiltrate || pTypeInf->Engineer)
 					{
 						agentMode = true;
