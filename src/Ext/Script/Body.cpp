@@ -699,7 +699,6 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 								pUnit->SetTarget(pUnit);
 							}
 						}
-
 					}
 
 					// Tanya / Commando C4 case
