@@ -727,7 +727,6 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				else
 					pUnit->QueueMission(Mission::Area_Guard, false);
 			}
-
 		}
 
 		if (bForceNextAction)
