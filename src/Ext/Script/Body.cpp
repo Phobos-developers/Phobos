@@ -1046,10 +1046,13 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 			WeaponType1 = pTechno->Veterancy.IsElite() ?
 				pTechnoType->EliteWeapon[0].WeaponType :
 				pTechnoType->Weapon[0].WeaponType;
+				
 			WeaponType2 = pTechno->Veterancy.IsElite() ?
 				pTechnoType->EliteWeapon[1].WeaponType :
 				pTechnoType->Weapon[1].WeaponType;
+				
 			WeaponType3 = WeaponType1;
+			
 			if (pTechnoType->IsGattling)
 			{
 				WeaponType3 = pTechno->Veterancy.IsElite() ?
