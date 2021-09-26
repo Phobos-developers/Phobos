@@ -411,9 +411,11 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	WeaponTypeClass* WeaponType1 = pLeaderUnit->Veterancy.IsElite() ?
 		pLeaderUnitType->EliteWeapon[0].WeaponType :
 		pLeaderUnitType->Weapon[0].WeaponType;
+		
 	WeaponTypeClass* WeaponType2 = pLeaderUnit->Veterancy.IsElite() ?
 		pLeaderUnitType->EliteWeapon[1].WeaponType :
 		pLeaderUnitType->Weapon[1].WeaponType;
+		
 	WeaponTypeClass* WeaponType3 = WeaponType1;
 
 	if (pLeaderUnitType->IsGattling)
