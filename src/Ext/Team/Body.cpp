@@ -14,6 +14,7 @@ void TeamExt::ExtData::Serialize(T& Stm)
 		.Process(this->NextSuccessWeightAward)
 		.Process(this->IdxSelectedObjectFromAIList)
 		.Process(this->CloseEnough)
+		.Process(this->Countdown_regroupAtLeader)
 		;
 }
 
@@ -81,4 +82,3 @@ DEFINE_HOOK(0x6EC55A, TeamClass_Save_Suffix, 0x5)
 	TeamExt::ExtMap.SaveStatic();
 	return 0;
 }
-

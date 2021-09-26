@@ -20,6 +20,7 @@
   <ItemGroup>
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\Dummy.h" />
+    <ClCompile Include="src\Ext\AnimType\Hooks.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.Variables.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Body.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Hooks.cpp" />
@@ -30,6 +31,7 @@
     <ClCompile Include="src\Misc\CaptureManager.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
     <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
+    <ClCompile Include="src\Misc\RetryDialog.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
     <ClCompile Include="src\New\Type\ShieldTypeClass.cpp" />
     <ClCompile Include="src\New\Type\LaserTrailTypeClass.cpp" />
@@ -38,13 +40,13 @@
     <ClCompile Include="src\Ext\Aircraft\Hooks.cpp" />
     <ClCompile Include="src\Ext\AnimType\Body.cpp" />
     <ClCompile Include="src\Ext\AnimType\Hooks.AnimCreateUnit.cpp" />
-    <ClCompile Include="src\Ext\BuildingType\Hooks.cpp" />
     <ClCompile Include="src\Ext\Building\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.cpp" />
     <ClCompile Include="src\Ext\BulletType\Body.cpp" />
     <ClCompile Include="src\Ext\Bullet\Body.cpp" />
     <ClCompile Include="src\Ext\Bullet\Hooks.cpp" />
     <ClCompile Include="src\Ext\House\Body.cpp" />
+    <ClCompile Include="src\Ext\House\Hooks.cpp" />
     <ClCompile Include="src\Ext\RadSite\Body.cpp" />
     <ClCompile Include="src\Ext\RadSite\Hooks.cpp" />
     <ClCompile Include="src\Ext\Scenario\Body.cpp" />
@@ -154,6 +156,7 @@
     <ClInclude Include="src\Utilities\Patch.h" />
     <ClInclude Include="src\Utilities\Template.h" />
     <ClInclude Include="src\Utilities\TemplateDef.h" />
+    <ClInclude Include="YRpp\EvadeClass.h" />
     <ClInclude Include="YRpp\GameTextManager.h" />
   </ItemGroup>
   <ItemGroup>

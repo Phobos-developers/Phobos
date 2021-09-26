@@ -180,6 +180,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Pick 1 farther friendly random objective from specific list for moving to it
 		ScriptExt::Mission_Move_List1Random(pTeam, 3, true, -1, -1);
 		break;
+	case 112:
+		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
