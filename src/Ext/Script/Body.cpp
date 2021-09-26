@@ -528,6 +528,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 							pUnit->SetFocus(nullptr);
 							pUnit->SetDestination(nullptr, false);
 							pUnit->QueueMission(Mission::Area_Guard, true);
+							
 							continue;
 						}
 
