@@ -343,7 +343,10 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				bool pacifistUnit = true;
 				if (pUnit->Veterancy.IsElite())
 				{
-					if (pUnitType->EliteWeapon[0].WeaponType || pUnitType->EliteWeapon[1].WeaponType || (pUnitType->IsGattling && pUnitType->EliteWeapon[pUnit->CurrentWeaponNumber].WeaponType))
+					if (pUnitType->EliteWeapon[0].WeaponType 
+						|| pUnitType->EliteWeapon[1].WeaponType 
+						|| (pUnitType->IsGattling 
+							&& pUnitType->EliteWeapon[pUnit->CurrentWeaponNumber].WeaponType))
 					{
 						pacifistTeam = false;
 						pacifistUnit = false;
@@ -351,7 +354,10 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				}
 				else
 				{
-					if (pUnitType->Weapon[0].WeaponType || pUnitType->Weapon[1].WeaponType || (pUnitType->IsGattling && pUnitType->Weapon[pUnit->CurrentWeaponNumber].WeaponType))
+					if (pUnitType->Weapon[0].WeaponType 
+						|| pUnitType->Weapon[1].WeaponType 
+						|| (pUnitType->IsGattling 
+							&& pUnitType->Weapon[pUnit->CurrentWeaponNumber].WeaponType))
 					{
 						pacifistTeam = false;
 						pacifistUnit = false;
