@@ -1096,9 +1096,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 			{
 				auto pTechObject = NeutralTechBuildings.GetItem(i);
 				if (pTechObject->ID == pTechno->get_ID())
-				{
 					return true;
-				}
 			}
 		}
 
