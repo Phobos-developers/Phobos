@@ -449,6 +449,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				WeaponTypeClass* passengerWeaponType1 = passenger->Veterancy.IsElite() ?
 					pPassengerType->EliteWeapon[0].WeaponType :
 					pPassengerType->Weapon[0].WeaponType;
+					
 				WeaponTypeClass* passengerWeaponType2 = passenger->Veterancy.IsElite() ?
 					pPassengerType->EliteWeapon[1].WeaponType :
 					pPassengerType->Weapon[1].WeaponType;
