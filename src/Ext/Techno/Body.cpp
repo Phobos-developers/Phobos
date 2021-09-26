@@ -255,7 +255,9 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 		|| !pThis->IsAlive 
 		|| pThis->Health <= 0 
 		|| pThis->InLimbo)
+	{
 		return;
+	}
 
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
