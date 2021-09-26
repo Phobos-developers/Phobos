@@ -794,9 +794,10 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 		// Submarines aren't a valid target
 		if (object->CloakState == CloakState::Cloaked
 			&& objectType->Underwater
-			&& (pTechnoType->NavalTargeting == 0
-				|| pTechnoType->NavalTargeting == 6))
+			&& (pTechnoType->NavalTargeting == 0 || pTechnoType->NavalTargeting == 6))
+		{
 			continue;
+		}
 
 		// Land not OK for the Naval unit
 		if (objectType->Naval
