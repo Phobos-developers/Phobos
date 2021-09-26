@@ -393,7 +393,6 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		if (pTeamData)
 		{
 			pTeamData->IdxSelectedObjectFromAIList = -1;
-
 			if (pTeamData->WaitNoTargetAttempts != 0)
 				pTeamData->WaitNoTargetAttempts = 0;
 		}
