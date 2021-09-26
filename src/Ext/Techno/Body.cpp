@@ -266,7 +266,9 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 		if (pThis->Passengers.NumPassengers > 0)
 		{
 			if (pData->PassengerDeletion_Countdown > 0)
+			{
 				pData->PassengerDeletion_Countdown--;
+			}
 			else
 			{
 				if (pData->PassengerDeletion_Countdown < 0)
