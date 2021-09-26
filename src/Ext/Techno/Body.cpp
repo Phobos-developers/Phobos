@@ -320,9 +320,7 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 							soylent = 0;
 
 						if (soylent > 0)
-						{
 							pThis->Owner->GiveMoney(soylent);
-						}
 					}
 
 					// Finally restore the passenger list WITHOUT the oldest passenger (the last of the list)
