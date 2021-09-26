@@ -126,7 +126,8 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 
 				// issue #314 : [Vanilla Bug] Units retaining orders after changing ownership.
 				// This might be put into DecideUnitFate if it is reimplemented later
-				pTarget->QueueMission(Mission::Guard, false);
+				pTarget->SetTarget(nullptr);
+				pTarget->ForceMission(Mission::Guard);
 				
 				return true;
 			}
