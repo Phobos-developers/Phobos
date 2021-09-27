@@ -3,6 +3,7 @@
 #include <ScriptClass.h>
 #include <ScriptTypeClass.h>
 #include <TeamClass.h>
+#include <AITriggerTypeClass.h >
 #include <HouseClass.h>
 
 #include <Ext/Team/Body.h>
@@ -43,6 +44,11 @@ public:
 	static void LoadIntoTransports(TeamClass * pTeam);
 	static void WaitUntillFullAmmoAction(TeamClass * pTeam);
 	static void Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown);
+	static void DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
+	static void IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
 
 	static ExtContainer ExtMap;
+
+private:
+	static void ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
 };
