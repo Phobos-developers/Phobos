@@ -284,7 +284,6 @@ void TechnoExt::ApplyDeath_If(TechnoClass* pThis)
 			{
 				// Countdown ended. Kill the unit
 				pData->DeathIfCountdown = -1;
-
 				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
 			}
 		}
