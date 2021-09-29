@@ -258,9 +258,7 @@ void TechnoExt::ApplyDeath_If(TechnoClass* pThis)
 	if (pTypeThis && pTypeData && pTypeData->DeathIfNoAmmo)
 	{
 		if (pTypeThis->Ammo > 0 && pThis->Ammo <= 0)
-		{
 			pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
-		}
 	}
 
 	// Death if countdown ends
