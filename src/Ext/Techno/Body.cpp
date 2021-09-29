@@ -288,7 +288,9 @@ void TechnoExt::ApplyDeath_If(TechnoClass* pThis)
 			}
 		}
 		else
+		{
 			pData->DeathIfCountdown = pTypeData->DeathIfCountdown; // Start countdown
+		}
 	}
 }
 
