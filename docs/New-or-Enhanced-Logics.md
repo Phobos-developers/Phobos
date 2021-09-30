@@ -543,3 +543,30 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=112,n
 ```
+
+
+### `74-81` New Attack Action
+
+- These Actions instruct the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=i,n             ; where 74 <= i <= 81
+```
+
+| *Action* | *Argument*   | *Repeats* | *Target Priority* | *Description*                                 |
+| :------: | :----------: | :-------: | :---------------: | :-------------------------------------------: |
+74         | Target Type# | Yes | Closer, higher threat |  |
+75         | Target Type# | Yes | Farther, higher threat |  |
+76         | Target Type# | Yes | Closer |  |
+77         | Target Type# | Yes | Farther |  |
+78         | Target Type# | No | Closer, higher threat | Ends when a team member kill the designated target |
+79         | Target Type# | No | Farther, higher threat | Ends when a team member kill the designated target |
+80         | Target Type# | No | Closer | Ends when a team member kill the designated target |
+81         | Target Type# | No | Farther | Ends when a team member kill the designated target |
+
+Note: New Attack action scripts (74, 75, 78, 79) that are focused in target threat use `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from `rulesmd.ini`.
+
+Note: All Aircrafts that attack other air units will end the script. This behavior is intentional because without it aircrafts had some bugs that weren't fixable at the time of developing the feature.
+

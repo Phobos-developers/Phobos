@@ -3,7 +3,14 @@
 #include <ScriptClass.h>
 #include <ScriptTypeClass.h>
 #include <TeamClass.h>
+#include <AITriggerTypeClass.h>
 #include <HouseClass.h>
+#include <AircraftClass.h>
+#include <MapClass.h>
+#include <BulletClass.h>
+#include <Helpers/Enumerators.h>
+#include <WarheadTypeClass.h>
+#include <SpawnManagerClass.h>
 
 #include <Ext/Team/Body.h>
 #include <Utilities/Container.h>
@@ -41,8 +48,11 @@ public:
 	static void ProcessAction(TeamClass * pTeam);
 	static void ExecuteTimedAreaGuardAction(TeamClass * pTeam);
 	static void LoadIntoTransports(TeamClass * pTeam);
-	static void WaitUntillFullAmmoAction(TeamClass * pTeam);
+	static void WaitUntilFullAmmoAction(TeamClass * pTeam);
 	static void Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown);
+	static void Mission_Attack(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType, int IdxAITargetTypeItem);
+	static TechnoClass* GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy, int attackAITargetType, int idxAITargetTypeItem, bool agentMode);
+	static bool EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attackAITargetType, int idxAITargetTypeItem, TechnoClass *pTeamLeader);
 
 	static ExtContainer ExtMap;
 };
