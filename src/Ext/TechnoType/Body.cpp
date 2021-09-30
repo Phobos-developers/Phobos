@@ -117,6 +117,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
 	this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
 
+	this->PassengerDeletion_Soylent.Read(exINI, pSection, "PassengerDeletion.Soylent");
+	this->PassengerDeletion_SoylentFriendlies.Read(exINI, pSection, "PassengerDeletion.SoylentFriendlies");
+	this->PassengerDeletion_ReportSound.Read(exINI, pSection, "PassengerDeletion.ReportSound");
+	this->PassengerDeletion_Rate_SizeMultiply.Read(exINI, pSection, "PassengerDeletion.Rate.SizeMultiply");
+	this->PassengerDeletion_Rate.Read(exINI, pSection, "PassengerDeletion.Rate");
+	
 	this->DefaultDisguise.Read(exINI, pSection, "DefaultDisguise");
 
 	this->OpenTopped_RangeBonus.Read(exINI, pSection, "OpenTopped.RangeBonus");
@@ -236,6 +242,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefaultDisguise)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
+		.Process(this->PassengerDeletion_Soylent)
+		.Process(this->PassengerDeletion_SoylentFriendlies)
+		.Process(this->PassengerDeletion_Rate)
+		.Process(this->PassengerDeletion_ReportSound)
+		.Process(this->PassengerDeletion_Rate_SizeMultiply)
 		.Process(this->OpenTopped_RangeBonus)
 		.Process(this->OpenTopped_DamageMultiplier)
 		.Process(this->OpenTopped_WarpDistance)

@@ -51,6 +51,7 @@ New:
 - Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
 - XDrawOffset for animations (by Morton)
 - Customizable OpenTopped properties (by Otamaa)
+- Automatic Passenger Deletion (by FS-21)
 - Script Action 74 to 81 for new AI attacks (by FS-21)
 - Script Action to regroup temporarily around the Team Leader (by FS-21)
 

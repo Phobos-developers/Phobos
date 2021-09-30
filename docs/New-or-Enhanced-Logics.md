@@ -234,6 +234,21 @@ DefaultDisguise=E2  ; InfantryType
 NoManualMove=no        ; boolean
 ```
 
+### Automatic Passenger Deletion
+
+- Transports with these tags will erase the passengers overtime. Bigger units takes more time. Optionally this logic can work like a grinder.
+ - Good combination with Ares Abductor logic.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                            ; TechnoType
+PassengerDeletion.Rate=                 ; integer, game frames
+PassengerDeletion.Rate.SizeMultiply=yes ; boolean, whether to multiply frames amount by size
+PassengerDeletion.Soylent=no            ; boolean
+PassengerDeletion.SoylentFriendlies=no  ; boolean
+PassengerDeletion.ReportSound=          ; sound
+```
+
 ### Customizable OpenTopped Properties
 
 - You can now override settings of `OpenTopped` transport properties per TechnoType.
