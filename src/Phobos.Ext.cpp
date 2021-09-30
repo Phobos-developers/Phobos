@@ -15,6 +15,7 @@
 #include <Ext/Side/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/TAction/Body.h>
+#include <Ext/Team/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/TerrainType/Body.h>
@@ -235,6 +236,7 @@ auto MassActions = MassAction <
 	SideExt,
 	SWTypeExt,
 	TActionExt,
+	TeamExt,
 	TechnoExt,
 	TechnoTypeExt,
 	TerrainTypeExt,
