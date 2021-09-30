@@ -24,12 +24,12 @@ public:
 		Valueable<bool> ReceiveDamage;
 		Valueable<bool> LastKillWasTeamTarget;
 
-		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),
-			InterceptedBullet(nullptr),
-			Shield(),
-			LaserTrails(),
-			ReceiveDamage(false),
-			LastKillWasTeamTarget(false)
+		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
+			, InterceptedBullet(nullptr)
+			, Shield()
+			, LaserTrails()
+			, ReceiveDamage(false)
+			, LastKillWasTeamTarget(false)
 		{ }
 
 		virtual ~ExtData() = default;

@@ -19,12 +19,14 @@ public:
 		double NextSuccessWeightAward;
 		int IdxSelectedObjectFromAIList;
 		double CloseEnough;
+		int Countdown_RegroupAtLeader;
 
-		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject),
-			WaitNoTargetAttempts(0),
-			NextSuccessWeightAward(0),
-			IdxSelectedObjectFromAIList(-1),
-			CloseEnough(-1)
+		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject)
+			, WaitNoTargetAttempts(0)
+			, NextSuccessWeightAward(0)
+			, IdxSelectedObjectFromAIList(-1)
+			, CloseEnough(-1)
+			, Countdown_RegroupAtLeader(-1)
 		{ }
 
 		virtual ~ExtData() = default;

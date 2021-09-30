@@ -534,6 +534,17 @@ In `aimd.ini`:
 x=73,0
 ```
 
+### `112` Regroup around the Team Leader
+
+- Puts the TaskForce into Area Guard Mode for the given units of time around the Team Leader (this unit remains almost immobile until the action ends). The default radius around the Leader is `[General] > CloseEnough` and the units will not leave that area. The countdown only works while all the units are inside the area.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=112,n
+```
+
+
 ### `74-81` New Attack Action
 
 - These Actions instruct the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
@@ -541,7 +552,7 @@ x=73,0
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=74-81,n
+x=i,n             ; where 74 <= i <= 81
 ```
 
 | *Action* | *Argument*   | *Repeats* | *Target Priority* | *Description*                                 |
@@ -555,7 +566,7 @@ x=74-81,n
 80         | Target Type# | No | Closer | Ends when a team member kill the designated target |
 81         | Target Type# | No | Farther | Ends when a team member kill the designated target |
 
-Note: New Attack action scripts (74, 75, 78 ,79) that are focused in target threat use `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from Rulesmd.ini.
+Note: New Attack action scripts (74, 75, 78, 79) that are focused in target threat use `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from `rulesmd.ini`.
 
 Note: All Aircrafts that attack other air units will end the script. This behavior is intentional because without it aircrafts had some bugs that weren't fixable at the time of developing the feature.
 
