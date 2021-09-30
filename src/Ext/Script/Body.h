@@ -4,6 +4,7 @@
 #include <ScriptTypeClass.h>
 #include <TeamClass.h>
 #include <AITriggerTypeClass.h>
+
 #include <HouseClass.h>
 #include <AircraftClass.h>
 #include <MapClass.h>
@@ -54,5 +55,11 @@ public:
 	static TechnoClass* GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy, int attackAITargetType, int idxAITargetTypeItem, bool agentMode);
 	static bool EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attackAITargetType, int idxAITargetTypeItem, TechnoClass *pTeamLeader);
 
+	static void DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
+	static void IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
+
 	static ExtContainer ExtMap;
+
+private:
+	static void ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
 };

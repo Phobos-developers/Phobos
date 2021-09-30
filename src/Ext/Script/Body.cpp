@@ -74,6 +74,12 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Farther targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
 		ScriptExt::Mission_Attack(pTeam, false, 3, -1, -1);
 		break;
+	case 82:
+		ScriptExt::DecreaseCurrentTriggerWeight(pTeam, true, 0);
+		break;
+	case 83:
+		ScriptExt::IncreaseCurrentTriggerWeight(pTeam, true, 0);
+		break;
 	case 112:
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
 		break;
@@ -428,7 +434,6 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 		}
 	}
 }
-
 
 void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int calcThreatMode = 0, int attackAITargetType = -1, int idxAITargetTypeItem = -1)
 {
@@ -1667,4 +1672,76 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 
 	// The possible target doesn't fit in te masks
 	return false;
+}
+
+void ScriptExt::DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0)
+{
+	if (modifier <= 0)
+		modifier = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	if (modifier <= 0)
+		modifier = RulesClass::Instance->AITriggerFailureWeightDelta;
+	else
+		modifier = modifier * (-1);
+
+	ModifyCurrentTriggerWeight(pTeam, forceJumpLine, modifier);
+
+	// This action finished
+	if (forceJumpLine)
+		pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0)
+{
+	if (modifier <= 0)
+		modifier = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	if (modifier <= 0)
+		modifier = abs(RulesClass::Instance->AITriggerSuccessWeightDelta);
+
+	ScriptExt::ModifyCurrentTriggerWeight(pTeam, forceJumpLine, modifier);
+
+	// This action finished
+	if (forceJumpLine)
+		pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0)
+{
+	AITriggerTypeClass* pTriggerType = nullptr;
+	auto pTeamType = pTeam->Type;
+	bool found = false;
+
+	for (int i = 0; i < AITriggerTypeClass::Array->Count && !found; i++)
+	{
+		auto pTriggerTeam1Type = AITriggerTypeClass::Array->GetItem(i)->Team1;
+		auto pTriggerTeam2Type = AITriggerTypeClass::Array->GetItem(i)->Team2;
+
+		if (pTeamType 
+			&& ((pTriggerTeam1Type && pTriggerTeam1Type == pTeamType) 
+				|| (pTriggerTeam2Type && pTriggerTeam2Type == pTeamType)))
+		{
+			found = true;
+			pTriggerType = AITriggerTypeClass::Array->GetItem(i);
+		}
+	}
+
+	if (found)
+	{
+		pTriggerType->Weight_Current += modifier;
+
+		if (pTriggerType->Weight_Current > pTriggerType->Weight_Maximum)
+		{
+			pTriggerType->Weight_Current = pTriggerType->Weight_Maximum;
+		}
+		else
+		{
+			if (pTriggerType->Weight_Current < pTriggerType->Weight_Minimum)
+				pTriggerType->Weight_Current = pTriggerType->Weight_Minimum;
+		}
+	}
 }
