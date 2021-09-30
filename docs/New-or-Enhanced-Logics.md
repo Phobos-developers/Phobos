@@ -234,6 +234,21 @@ DefaultDisguise=E2  ; InfantryType
 NoManualMove=no        ; boolean
 ```
 
+### Automatic Passenger Deletion
+
+- Transports with these tags will erase the passengers overtime. Bigger units takes more time. Optionally this logic can work like a grinder.
+ - Good combination with Ares Abductor logic.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                            ; TechnoType
+PassengerDeletion.Rate=                 ; integer, game frames
+PassengerDeletion.Rate.SizeMultiply=yes ; boolean, whether to multiply frames amount by size
+PassengerDeletion.Soylent=no            ; boolean
+PassengerDeletion.SoylentFriendlies=no  ; boolean
+PassengerDeletion.ReportSound=          ; sound
+```
+
 ### Customizable OpenTopped Properties
 
 - You can now override settings of `OpenTopped` transport properties per TechnoType.
@@ -554,12 +569,39 @@ In `aimd.ini`:
 x=83,n
 ```
 
-### `112` Regroup around the Team Leader
+### `112` Regroup temporarily around the Team Leader
 
-- Puts the TaskForce into Area Guard Mode for the given units of time around the Team Leader (this unit remains almost immobile until the action ends). The default radius around the Leader is `[General] > CloseEnough` and the units will not leave that area. The countdown only works while all the units are inside the area.
+- Puts the TaskForce into Area Guard Mode for the given amount of time around the Team Leader (this unit remains almost immobile until the action ends). The default radius around the Leader is `[General] > CloseEnough` and the units will not leave that area.
 
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
 x=112,n
 ```
+
+
+### `74-81` New Attack Action
+
+- These Actions instruct the TeamType to use the TaskForce to approach and attack the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=i,n             ; where 74 <= i <= 81
+```
+
+| *Action* | *Argument*   | *Repeats* | *Target Priority* | *Description*                                 |
+| :------: | :----------: | :-------: | :---------------: | :-------------------------------------------: |
+74         | Target Type# | Yes | Closer, higher threat |  |
+75         | Target Type# | Yes | Farther, higher threat |  |
+76         | Target Type# | Yes | Closer |  |
+77         | Target Type# | Yes | Farther |  |
+78         | Target Type# | No | Closer, higher threat | Ends when a team member kill the designated target |
+79         | Target Type# | No | Farther, higher threat | Ends when a team member kill the designated target |
+80         | Target Type# | No | Closer | Ends when a team member kill the designated target |
+81         | Target Type# | No | Farther | Ends when a team member kill the designated target |
+
+Note: New Attack action scripts (74, 75, 78, 79) that are focused in target threat use `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from `rulesmd.ini`.
+
+Note: All Aircrafts that attack other air units will end the script. This behavior is intentional because without it aircrafts had some bugs that weren't fixable at the time of developing the feature.
+

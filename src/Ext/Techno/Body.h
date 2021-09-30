@@ -22,12 +22,16 @@ public:
 		std::unique_ptr<ShieldClass> Shield;
 		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		Valueable<bool> ReceiveDamage;
+		Valueable<bool> LastKillWasTeamTarget;
+		int PassengerDeletion_Rate;
 
-		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),
-			InterceptedBullet(nullptr),
-			Shield(),
-			LaserTrails(),
-			ReceiveDamage(false)
+		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
+			, InterceptedBullet(nullptr)
+			, Shield()
+			, LaserTrails()
+			, ReceiveDamage(false)
+			, LastKillWasTeamTarget(false)
+			, PassengerDeletion_Rate(-1)
 		{ }
 
 		virtual ~ExtData() = default;
@@ -73,4 +77,6 @@ public:
 	static void ApplyInterceptor(TechnoClass* pThis);
 	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
 	static void ApplySpawn_LimitRange(TechnoClass* pThis);
+	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
+	static void EatPassengers(TechnoClass* pThis);
 };

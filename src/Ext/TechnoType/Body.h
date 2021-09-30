@@ -22,6 +22,8 @@ public:
 		Valueable<CSFText> UIDescription;
 		Valueable<bool> LowSelectionPriority;
 		PhobosFixedString<0x20> GroupAs;
+		Valueable<int> RadarJamRadius;
+		Valueable<int> InhibitorRange;
 		Valueable<double> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
 		Valueable<double> Interceptor_GuardRange;
@@ -39,6 +41,11 @@ public:
 		Valueable<int> CameoPriority;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
+		Valueable<bool> PassengerDeletion_Soylent;
+		Valueable<bool> PassengerDeletion_SoylentFriendlies;
+		Valueable<int> PassengerDeletion_Rate;
+		NullableIdx<VocClass> PassengerDeletion_ReportSound;
+		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -88,6 +95,8 @@ public:
 			UIDescription(),
 			LowSelectionPriority(false),
 			GroupAs(NONE_STR),
+			RadarJamRadius(0),
+			InhibitorRange(0),
 			MindControlRangeLimit(-1.0),
 			Interceptor(false),
 			Interceptor_GuardRange(0.0),
@@ -120,6 +129,11 @@ public:
 			LaserTrailData(),
 			DestroyAnim_Random(true),
 			NotHuman_RandomDeathSequence(false),
+			PassengerDeletion_Soylent(false),
+			PassengerDeletion_SoylentFriendlies(false),
+			PassengerDeletion_Rate(0),
+			PassengerDeletion_ReportSound(),
+			PassengerDeletion_Rate_SizeMultiply(true),
 			DefaultDisguise(),
 			OpenTopped_RangeBonus(),
 			OpenTopped_DamageMultiplier(),
