@@ -127,6 +127,7 @@ New:
 - Script Action 112 to regroup temporarily around the Team Leader (by FS-21)
 - ObjectInfo now shows current Target and AI Trigger data (by FS-21)
 - Shield absorption and passthrough customization (by Morton)
+- Limbo Delivery of buildings (by Morton)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)

@@ -78,11 +78,13 @@ void SWTypeExt::ExtData::FireSuperWeapon(SuperClass* pSW, HouseClass* pHouse, Co
 void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 {
 	// random mode
-	if (this->LimboDelivery_RandomWeightsData[0].size())
+	if (this->LimboDelivery_RandomWeightsData.size())
 	{
 		bool rollOnce = false;
+		int id = -1;
 		size_t rolls = this->LimboDelivery_RollChances.size();
 		size_t weights = this->LimboDelivery_RandomWeightsData.size();
+		size_t ids = this->LimboDelivery_IDs.size();
 		size_t index;
 		size_t j;
 
@@ -102,29 +104,27 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 
 			j = rolls > weights ? weights: i;
 			index = GeneralUtils::ChooseOneWeighted(this->RandomBuffer, &this->LimboDelivery_RandomWeightsData[j]);
-			// extra weight is for chance to fail
-			if (index == this->LimboDelivery_Types.size())
+			// extra weights are bound to automatically fail
+			if (index >= this->LimboDelivery_Types.size())
 				index = size_t(-1);
 			if (index != -1)
 			{
-				LimboDeliver(
-					abstract_cast<BuildingTypeClass*>(this->LimboDelivery_Types[index]),
-					pHouse,
-					this->LimboDelivery_IDs[index]
-				);
+				if (index < ids)
+					id = this->LimboDelivery_IDs[index];
+				LimboDeliver( abstract_cast<BuildingTypeClass*>(this->LimboDelivery_Types[index]), pHouse, id );
 			}
 		}
 	}
 	// no randomness mode
 	else
 	{
+		int id = -1;
+		size_t ids = this->LimboDelivery_IDs.size();
 		for (size_t i = 0; i < this->LimboDelivery_Types.size(); i++)
 		{
-			LimboDeliver(
-				abstract_cast<BuildingTypeClass*>(this->LimboDelivery_Types[i]),
-				pHouse,
-				this->LimboDelivery_IDs[i]
-			);
+			if (i < ids)
+				id = this->LimboDelivery_IDs[i];
+			LimboDeliver(abstract_cast<BuildingTypeClass*>(this->LimboDelivery_Types[i]), pHouse, id);
 		}
 	}
 }
