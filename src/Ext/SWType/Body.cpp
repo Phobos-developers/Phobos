@@ -55,7 +55,8 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	}
 	ValueableVector<int> weights;
 	weights.Read(exINI, pSection, "LimboDelivery.RandomWeights");
-	this->LimboDelivery_RandomWeightsData[0] = weights;
+	if (weights.size())
+		this->LimboDelivery_RandomWeightsData[0] = weights;
 
 	this->LimboKill_Affected.Read(exINI, pSection, "LimboKill.Affected");
 	this->LimboKill_IDs.Read(exINI, pSection, "LimboKill.IDs");
