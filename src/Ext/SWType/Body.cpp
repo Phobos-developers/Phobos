@@ -15,6 +15,13 @@ void SWTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->Money_Amount)
 		.Process(this->UIDescription)
 		.Process(this->CameoPriority)
+		.Process(this->LimboDelivery_Types)
+		.Process(this->LimboDelivery_IDs)
+		.Process(this->LimboDelivery_RandomWeightsData)
+		.Process(this->LimboDelivery_RollChances)
+		.Process(this->LimboKill_Affected)
+		.Process(this->LimboKill_IDs)
+		.Process(this->RandomBuffer)
 		;
 }
 
@@ -30,6 +37,28 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->Money_Amount.Read(exINI, pSection, "Money.Amount");
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
+	this->LimboDelivery_Types.Read(exINI, pSection, "LimboDelivery.Types");
+	this->LimboDelivery_IDs.Read(exINI, pSection, "LimboDelivery.IDs");
+	this->LimboDelivery_RollChances.Read(exINI, pSection, "LimboDelivery.RollChances");
+
+	char tempBuffer[32];
+	for (size_t i = 0; ; ++i)
+	{
+		ValueableVector<int> weights;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LimboDelivery.RandomWeights%d", i);
+		weights.Read(exINI, pSection, tempBuffer);
+
+		if (!weights.size())
+			break;
+
+		this->LimboDelivery_RandomWeightsData.push_back(weights);
+	}
+	ValueableVector<int> weights;
+	weights.Read(exINI, pSection, "LimboDelivery.RandomWeights");
+	this->LimboDelivery_RandomWeightsData[0] = weights;
+
+	this->LimboKill_Affected.Read(exINI, pSection, "LimboKill.Affected");
+	this->LimboKill_IDs.Read(exINI, pSection, "LimboKill.IDs");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
