@@ -674,6 +674,16 @@ In `aimd.ini`:
 x=92,n            ; integer n=0
 ```
 
+### `93` Team's Trigger Weight Reward
+
+- When executed before a new Attack ScriptType Actions like `74-81` and `84-91` the TeamType will remember that must be rewarded increasing the current Weight of the AI Trigger when the TeamType Target was killed by any of the Team members. The current Weight will never surprass the Minimum Weight and Maximum Weight limits of the AI Trigger. The second parameter is a positive value.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=93,n            ; integer n=0
+```
+
 ### `112` Regroup temporarily around the Team Leader
 
 - Puts the TaskForce into Area Guard Mode for the given amount of time around the Team Leader (this unit remains almost immobile until the action ends). The default radius around the Leader is `[General] > CloseEnough` and the units will not leave that area.
@@ -683,3 +693,4 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=112,n
 ```
+
