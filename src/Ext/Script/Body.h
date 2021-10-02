@@ -57,6 +57,7 @@ public:
 
 	static void DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
 	static void IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
+	static void WaitIfNoTarget(TeamClass *pTeam, int attempts);
 
 	static ExtContainer ExtMap;
 
