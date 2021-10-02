@@ -1117,7 +1117,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	double distanceToTarget = 0;
 	TechnoClass* pTarget = nullptr;
 
-	// Special case: validate target if is part of a technos list in [AITargetType] section
+	// Special case: validate target if is part of a technos list in [AITargetType]	section
 	if (attackAITargetType >= 0 && RulesExt::Global()->AITargetTypeLists.Count > 0)
 	{
 		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypeLists.GetItem(attackAITargetType);
