@@ -8,20 +8,22 @@
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
 #include "Ext/Building/Body.h"
+#include "Ext/House/Body.h"
 
 // Too big to be kept in ApplyLimboDelivery
 void LimboDeliver(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 {
-	// BuildLimit check goes before creation - TODO
-	if (pType->BuildLimit >= 0)
+	auto pOwnerExt = HouseExt::ExtMap.Find(pOwner);
+
+	// BuildLimit check goes before creation
+	if (pType->BuildLimit > 0)
 	{
 		int sum = pOwner->CountOwnedNow(pType);
-		// restore Ares' deployable units x build limit fix
+		// copy Ares' deployable units x build limit fix
 		if (auto const pUndeploy = pType->UndeploysInto) {
 			sum += pOwner->CountOwnedNow(pUndeploy);
 		}
-		// sum += pOwner->CountOwnedLimbo(pType);
-		if (sum > pType->BuildLimit)
+		if (sum >= pType->BuildLimit)
 			return;
 	}
 
@@ -37,6 +39,10 @@ void LimboDeliver(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 	pOwner->RecheckPower = true;
 	pOwner->RecheckRadar = true;
 	pOwner->Buildings.AddItem(pBuilding);
+
+	// increment limbo build count
+	if (pOwnerExt)
+		pOwnerExt->OwnedLimboBuildingTypes.Increment(pType->ArrayIndex);
 
 	// Different types of building logics
 	if (pType->ConstructionYard)

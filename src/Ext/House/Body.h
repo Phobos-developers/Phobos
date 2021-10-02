@@ -17,8 +17,10 @@ public:
 	{
 	public:
 		std::map<BuildingTypeExt::ExtData*, int> BuildingCounter;
+		CounterClass OwnedLimboBuildingTypes;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
+			, OwnedLimboBuildingTypes()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -44,8 +46,6 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
-	//temp
-	CounterClass OwnedLimboBuildingTypes;
 	static int CountOwnedLimbo(HouseClass* pThis, BuildingTypeClass const* const pItem);
 
 	static int ActiveHarvesterCount(HouseClass* pThis);
