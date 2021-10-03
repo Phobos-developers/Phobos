@@ -137,6 +137,10 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 112:
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
 		break;
+	case 111:
+		// Un-register success for AITrigger weight adjustment (this is the opposite of 49,0)
+		ScriptExt::UnregisterGreatSuccess(pTeam);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
@@ -2316,4 +2320,15 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 	}
 
 	return bestObject;
+}
+
+void ScriptExt::UnregisterGreatSuccess(TeamClass* pTeam)
+{
+	if (pTeam)
+	{
+		pTeam->AchievedGreatSuccess = false;
+
+		// This action finished
+		pTeam->StepCompleted = true;
+	}
 }
