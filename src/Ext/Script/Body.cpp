@@ -1788,20 +1788,19 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 			if (pTeamData)
 			{
 				if (pTeamData->WaitNoTargetAttempts > 0)
-				{
 					pTeamData->WaitNoTargetAttempts--;
-				}
 			}
 		}
 		else
+		{
 			return;
+		}
 	}
 
 	// This team has no units! END
 	if (!pTeam)
 	{
 		auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-
 		if (pTeamData && pTeamData->CloseEnough > 0)
 		{
 			pTeamData->CloseEnough = -1;
@@ -1809,8 +1808,8 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (Reason: No team members alive)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+
 		return;
 	}
 
@@ -1849,15 +1848,13 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 			pTeamData->IdxSelectedObjectFromAIList = -1;
 
 			if (pTeamData->CloseEnough > 0)
-			{
 				pTeamData->CloseEnough = -1;
-			}
 		}
 
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (Reasons: No Leader | Aircrafts without ammo)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+
 		return;
 	}
 
@@ -1869,16 +1866,13 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 		int targetMask = scriptArgument;
 
 		selectedTarget = FindBestObject(pLeaderUnit, targetMask, calcThreatMode, pickAllies, attackAITargetType, idxAITargetTypeItem);
-
 		if (selectedTarget)
 		{
 			pTeam->Focus = selectedTarget;
 
 			auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 			if (pTeamData && pTeamData->WaitNoTargetAttempts != 0)
-			{
 				pTeamData->WaitNoTargetAttempts = 0;
-			}
 
 			for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 			{
@@ -1905,9 +1899,7 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 
 						// Aircraft hack. I hate how this game auto-manages the aircraft missions.
 						if (pUnitType->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0 && pUnit->GetHeight() <= 0)
-						{
 							pUnit->QueueMission(Mission::Move, false);
-						}
 
 						// Aircraft hack. I hate how this game auto-manages the aircraft missions.
 						if (pUnitType->WhatAmI() != AbstractType::AircraftType)
@@ -1916,9 +1908,7 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 							pUnit->ClickedAction(Action::Move, selectedTarget, false);
 
 							if (pUnit->GetCurrentMission() != Mission::Move)
-							{
 								pUnit->Mission_Move();
-							}
 						}
 					}
 				}
@@ -1930,13 +1920,12 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 			if (pTeamData)
 			{
 				if (pTeamData->IdxSelectedObjectFromAIList >= 0)
-				{
 					pTeamData->IdxSelectedObjectFromAIList = -1;
-				}
 
 				if (pTeamData->WaitNoTargetAttempts != 0)
 				{
 					pTeam->GuardAreaTimer.Start(16);
+
 					return;
 				}
 
@@ -1950,6 +1939,7 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 			// This action finished
 			pTeam->StepCompleted = true;
 			Debug::Log("DEBUG: Next script action line for [%s] (%s) will be: %d = %d,%d (Reason: New target NOT FOUND)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
+
 			return;
 		}
 	}
@@ -1958,11 +1948,8 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 		double closeEnough = RulesClass::Instance->CloseEnough / 256.0;
 
 		auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-
 		if (pTeamData && pTeamData->CloseEnough > 0)
-		{
 			closeEnough = pTeamData->CloseEnough;
-		}
 
 		bool bForceNextAction = true;
 
@@ -2005,14 +1992,13 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 				pTeamData->IdxSelectedObjectFromAIList = -1;
 
 				if (pTeamData->CloseEnough >= 0)
-				{
 					pTeamData->CloseEnough = -1;
-				}
 			}
 
 			// This action finished
 			pTeam->StepCompleted = true;
 			Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (Reason: Reached destination)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
+
 			return;
 		}
 	}
@@ -2028,7 +2014,6 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 	if (!pickAllies && pTechno->BelongsToATeam())
 	{
 		auto pFoot = abstract_cast<FootClass*>(pTechno);
-
 		if (pFoot)
 		{
 			int enemyHouseIndex = pFoot->Team->FirstUnit->Owner->EnemyHouseIndex;
@@ -2090,6 +2075,7 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 				newCell.Y = (short)object->Location.Y;
 
 				bool isGoodTarget = false;
+
 				if (calcThreatMode == 0 || calcThreatMode == 1)
 				{
 					// Threat affected by distance
@@ -2163,8 +2149,8 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 		}
 	}
 
-	if (bestObject != nullptr) {
+	if (bestObject != nullptr)
 		return bestObject;
-	}
+
 	return nullptr;
 }
