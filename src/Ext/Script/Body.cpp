@@ -80,6 +80,12 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 83:
 		ScriptExt::IncreaseCurrentTriggerWeight(pTeam, true, 0);
 		break;
+	case 92:
+		ScriptExt::WaitIfNoTarget(pTeam, -1);
+		break;
+	case 93:
+		ScriptExt::TeamWeightReward(pTeam, 0);
+		break;
 	case 95:
 		// Move to the closest enemy target
 		ScriptExt::Mission_Move(pTeam, 2, false, -1, -1);
@@ -507,7 +513,10 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 			if (pTeamData)
 			{
 				if (pTeamData->NextSuccessWeightAward > 0)
+				{
+					IncreaseCurrentTriggerWeight(pTeam, false, pTeamData->NextSuccessWeightAward);
 					pTeamData->NextSuccessWeightAward = 0;
+				}
 			}
 
 			// Let's clean the Killer mess
@@ -1132,6 +1141,20 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	int nSuperWeapons = 0;
 	double distanceToTarget = 0;
 	TechnoClass* pTarget = nullptr;
+
+	// Special case: validate target if is part of a technos list in [AITargetType]	section
+	if (attackAITargetType >= 0 && RulesExt::Global()->AITargetTypesLists.Count > 0)
+	{
+		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType);
+
+		for (int i = 0; i < objectsList.Count; i++)
+		{
+			if (objectsList.GetItem(i) == pTechnoType)
+				return true;
+		}
+
+		return false;
+	}
 
 	switch (mask)
 	{
@@ -1759,6 +1782,62 @@ void ScriptExt::ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine 
 			if (pTriggerType->Weight_Current < pTriggerType->Weight_Minimum)
 				pTriggerType->Weight_Current = pTriggerType->Weight_Minimum;
 		}
+	}
+}
+
+void ScriptExt::WaitIfNoTarget(TeamClass *pTeam, int attempts = 0)
+{
+	// This method modifies the new attack actions preventing Team's Trigger to jump to next script action
+	// attempts == number of times the Team will wait if Mission_Attack(...) can't find a new target.
+	if (attempts < 0)
+		attempts = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData)
+	{
+		if (attempts <= 0)
+			pTeamData->WaitNoTargetAttempts = -1; // Infinite waits if no target
+		else
+			pTeamData->WaitNoTargetAttempts = attempts;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::TeamWeightReward(TeamClass *pTeam, double award = 0)
+{
+	if (award <= 0)
+		award = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData)
+	{
+		if (award > 0)
+			pTeamData->NextSuccessWeightAward = award;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData)
+		pTeamData->IdxSelectedObjectFromAIList = -1;
+
+	if (attackAITargetType < 0)
+		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	if (RulesExt::Global()->AITargetTypesLists.Count > 0
+		&& RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType).Count > 0)
+	{
+		ScriptExt::Mission_Attack(pTeam, repeatAction, calcThreatMode, attackAITargetType, -1);
 	}
 }
 
