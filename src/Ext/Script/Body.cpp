@@ -83,6 +83,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 92:
 		ScriptExt::WaitIfNoTarget(pTeam, -1);
 		break;
+	case 93:
+		ScriptExt::TeamWeightReward(pTeam, 0);
+		break;
 	case 112:
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
 		break;
@@ -494,7 +497,10 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 			if (pTeamData)
 			{
 				if (pTeamData->NextSuccessWeightAward > 0)
+				{
+					IncreaseCurrentTriggerWeight(pTeam, false, pTeamData->NextSuccessWeightAward);
 					pTeamData->NextSuccessWeightAward = 0;
+				}
 			}
 
 			// Let's clean the Killer mess
@@ -1777,6 +1783,24 @@ void ScriptExt::WaitIfNoTarget(TeamClass *pTeam, int attempts = 0)
 			pTeamData->WaitNoTargetAttempts = -1; // Infinite waits if no target
 		else
 			pTeamData->WaitNoTargetAttempts = attempts;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::TeamWeightReward(TeamClass *pTeam, double award = 0)
+{
+	if (award <= 0)
+		award = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData)
+	{
+		if (award > 0)
+			pTeamData->NextSuccessWeightAward = award;
 	}
 
 	// This action finished
