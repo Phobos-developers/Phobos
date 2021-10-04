@@ -1117,6 +1117,20 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	double distanceToTarget = 0;
 	TechnoClass* pTarget = nullptr;
 
+	// Special case: validate target if is part of a technos list in [AITargetType]	section
+	if (attackAITargetType >= 0 && RulesExt::Global()->AITargetTypesLists.Count > 0)
+	{
+		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType);
+
+		for (int i = 0; i < objectsList.Count; i++)
+		{
+			if (objectsList.GetItem(i) == pTechnoType)
+				return true;
+		}
+
+		return false;
+	}
+
 	switch (mask)
 	{
 	case 1:
@@ -1743,5 +1757,21 @@ void ScriptExt::ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine 
 			if (pTriggerType->Weight_Current < pTriggerType->Weight_Minimum)
 				pTriggerType->Weight_Current = pTriggerType->Weight_Minimum;
 		}
+	}
+}
+
+void ScriptExt::Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData)
+		pTeamData->IdxSelectedObjectFromAIList = -1;
+
+	if (attackAITargetType < 0)
+		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	if (RulesExt::Global()->AITargetTypesLists.Count > 0
+		&& RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType).Count > 0)
+	{
+		ScriptExt::Mission_Attack(pTeam, repeatAction, calcThreatMode, attackAITargetType, -1);
 	}
 }

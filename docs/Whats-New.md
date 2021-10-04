@@ -52,9 +52,9 @@ New:
 - XDrawOffset for animations (by Morton)
 - Customizable OpenTopped properties (by Otamaa)
 - Automatic Passenger Deletion (by FS-21)
-- Script Action 74 to 81 for new AI attacks (by FS-21)
+- Script Action 74 to 81 and 84 to 91 for new AI attacks (by FS-21)
 - Script Actions 82 & 83 for modifying AI Trigger Current Weight (by FS-21)
-- Script Action to regroup temporarily around the Team Leader (by FS-21)
+- Script Action 112 to regroup temporarily around the Team Leader (by FS-21)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
