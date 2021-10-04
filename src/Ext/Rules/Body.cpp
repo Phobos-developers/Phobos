@@ -62,12 +62,35 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	if (!pData)
 		return;
 
+	const char* sectionAITargetTypes = "AITargetTypes";
+
 	INI_EX exINI(pINI);
 
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
 	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
+
+	// Section AITargetType
+	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
+	for (int i = 0; i < itemsCount; ++i)
+	{
+		DynamicVectorClass<TechnoTypeClass*> objectsList;
+		char* context = nullptr;
+		pINI->ReadString(sectionAITargetTypes, pINI->GetKeyName(sectionAITargetTypes, i), "", Phobos::readBuffer);
+
+		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			TechnoTypeClass* buffer;
+			if (Parser<TechnoTypeClass*>::TryParse(cur, &buffer))
+				objectsList.AddItem(buffer);
+			else
+				Debug::Log("DEBUG: [AITargetTypes][%d]: Error parsing [%s]\n", AITargetTypesLists.Count, cur);
+		}
+
+		AITargetTypesLists.AddItem(objectsList);
+		objectsList.Clear();
+	}
 }
 
 // this runs between the before and after type data loading methods for rules ini
@@ -119,6 +142,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->MissingCameo)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
+		.Process(this->AITargetTypesLists)
 		;
 }
 

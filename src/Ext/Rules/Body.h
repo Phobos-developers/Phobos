@@ -28,6 +28,7 @@ public:
 		Valueable<Vector3D<int>> Pips_Shield_Buildings;
 		Valueable<int> RadApplicationDelay_Building;
 		PhobosFixedString<32u> MissingCameo;
+		DynamicVectorClass<DynamicVectorClass<TechnoTypeClass*>> AITargetTypesLists;
 
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
