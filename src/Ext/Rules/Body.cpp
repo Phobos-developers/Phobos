@@ -62,7 +62,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	if (!pData)
 		return;
 
-	const char* sectionAITargetType = "AITargetType";
+	const char* sectionAITargetTypes = "AITargetTypes";
 
 	INI_EX exINI(pINI);
 
@@ -72,27 +72,23 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 
 	// Section AITargetType
-	int itemsCount = pINI->GetKeyCount(sectionAITargetType);
+	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
 	for (int i = 0; i < itemsCount; ++i)
 	{
 		DynamicVectorClass<TechnoTypeClass*> objectsList;
 		char* context = nullptr;
-		pINI->ReadString(sectionAITargetType, pINI->GetKeyName(sectionAITargetType, i), "", Phobos::readBuffer);
+		pINI->ReadString(sectionAITargetTypes, pINI->GetKeyName(sectionAITargetTypes, i), "", Phobos::readBuffer);
 
 		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
 			TechnoTypeClass* buffer;
 			if (Parser<TechnoTypeClass*>::TryParse(cur, &buffer))
-			{
-				//Debug::Log("DEBUG: [AITargetType][%d]: Parsed [%s]\n", AITargetTypeLists.Count, cur);
 				objectsList.AddItem(buffer);
-			}
 			else
-				Debug::Log("DEBUG: [AITargetType][%d]: Error parsing [%s]\n", AITargetTypeLists.Count, cur);
-			//if (!std::is_pointer<char*>() || !INIClass::IsBlank(cur))
-				//Debug::INIParseFailed(sectionAITargetType, (char*)(i), cur);
+				Debug::Log("DEBUG: [AITargetTypes][%d]: Error parsing [%s]\n", AITargetTypesLists.Count, cur);
 		}
-		AITargetTypeLists.AddItem(objectsList);
+
+		AITargetTypesLists.AddItem(objectsList);
 		objectsList.Clear();
 	}
 }
@@ -146,7 +142,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->MissingCameo)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
-		.Process(AITargetTypeLists)
+		.Process(this->AITargetTypesLists)
 		;
 }
 

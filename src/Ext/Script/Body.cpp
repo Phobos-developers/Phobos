@@ -1118,9 +1118,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	TechnoClass* pTarget = nullptr;
 
 	// Special case: validate target if is part of a technos list in [AITargetType]	section
-	if (attackAITargetType >= 0 && RulesExt::Global()->AITargetTypeLists.Count > 0)
+	if (attackAITargetType >= 0 && RulesExt::Global()->AITargetTypesLists.Count > 0)
 	{
-		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypeLists.GetItem(attackAITargetType);
+		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType);
 
 		for (int i = 0; i < objectsList.Count; i++)
 		{
@@ -1769,7 +1769,9 @@ void ScriptExt::Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int cal
 	if (attackAITargetType < 0)
 		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
 
-	if (RulesExt::Global()->AITargetTypeLists.Count > 0 
-		&& RulesExt::Global()->AITargetTypeLists.GetItem(attackAITargetType).Count > 0)
+	if (RulesExt::Global()->AITargetTypesLists.Count > 0
+		&& RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType).Count > 0)
+	{
 		ScriptExt::Mission_Attack(pTeam, repeatAction, calcThreatMode, attackAITargetType, -1);
+	}
 }
