@@ -664,6 +664,16 @@ In `rulesmd.ini`:
 ; ...
 ```
 
+### `92` Wait If No Target Found
+
+- When executed before a new Attack ScriptType Actions like `74-81` and `84-91` the TeamType will remember that must wait 1 second if no target was selected. The second parameter is a positive value that specifies how much retries the Attack will do when no target was found before new Attack ScriptType Action is discarded & the script execution jumps to the next line. The value `0` means infinite retries.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=92,n            ; integer n=0
+```
+
 ### `112` Regroup temporarily around the Team Leader
 
 - Puts the TaskForce into Area Guard Mode for the given amount of time around the Team Leader (this unit remains almost immobile until the action ends). The default radius around the Leader is `[General] > CloseEnough` and the units will not leave that area.

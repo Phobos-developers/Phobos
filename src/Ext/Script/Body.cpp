@@ -80,6 +80,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 83:
 		ScriptExt::IncreaseCurrentTriggerWeight(pTeam, true, 0);
 		break;
+	case 92:
+		ScriptExt::WaitIfNoTarget(pTeam, -1);
+		break;
 	case 112:
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
 		break;
@@ -1758,6 +1761,28 @@ void ScriptExt::ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine 
 				pTriggerType->Weight_Current = pTriggerType->Weight_Minimum;
 		}
 	}
+}
+
+void ScriptExt::WaitIfNoTarget(TeamClass *pTeam, int attempts = 0)
+{
+	// This method modifies the new attack actions preventing Team's Trigger to jump to next script action
+	// attempts == number of times the Team will wait if Mission_Attack(...) can't find a new target.
+	if (attempts < 0)
+		attempts = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData)
+	{
+		if (attempts <= 0)
+			pTeamData->WaitNoTargetAttempts = -1; // Infinite waits if no target
+		else
+			pTeamData->WaitNoTargetAttempts = attempts;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
 }
 
 void ScriptExt::Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType)
