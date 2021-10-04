@@ -605,3 +605,20 @@ Note: New Attack action scripts (74, 75, 78, 79) that are focused in target thre
 
 Note: All Aircrafts that attack other air units will end the script. This behavior is intentional because without it aircrafts had some bugs that weren't fixable at the time of developing the feature.
 
+### `95-98` Moving Team to techno location
+
+- These Actions instructs the TeamType to use the TaskForce to approach the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value).
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=i,n             ; where 95 <= i <= 98
+```
+
+| *Action* | *Argument*    | Target Owner | *Target Priority* | *Description*                                 |
+| :------: | :-----------: | :----------: | :---------------: | :-------------------------------------------: |
+95         | Target Type# | Enemy | Closer, higher threat |  |
+96         | Target Type# | Enemy | Farther, higher threat |  |
+97         | Target Type# | Friendly | Closer |  |
+98         | Target Type# | Friendly | Farther |  |
+
