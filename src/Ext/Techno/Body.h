@@ -33,7 +33,7 @@ public:
 			, ReceiveDamage(false)
 			, LastKillWasTeamTarget(false)
 			, PassengerDeletion_Rate(-1)
-			DeathIfCountdown(-1),
+			, DeathIfCountdown(-1)
 		{ }
 
 		virtual ~ExtData() = default;
