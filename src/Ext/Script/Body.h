@@ -57,7 +57,12 @@ public:
 
 	static void DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
 	static void IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
+	static void WaitIfNoTarget(TeamClass *pTeam, int attempts);
+	static void TeamWeightReward(TeamClass *pTeam, double award);
+	static void PickRandomScript(TeamClass * pTeam, int idxScriptsList);
 	static void Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
+
+	static void Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
 
 	static ExtContainer ExtMap;
 

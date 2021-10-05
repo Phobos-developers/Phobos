@@ -80,6 +80,12 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 83:
 		ScriptExt::IncreaseCurrentTriggerWeight(pTeam, true, 0);
 		break;
+	case 92:
+		ScriptExt::WaitIfNoTarget(pTeam, -1);
+		break;
+	case 93:
+		ScriptExt::TeamWeightReward(pTeam, 0);
+		break;
 	case 104:
 		// Pick 1 closer random objective from specific list for attacking it
 		ScriptExt::Mission_Attack_List1Random(pTeam, true, 2, -1);
@@ -499,7 +505,10 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 			if (pTeamData)
 			{
 				if (pTeamData->NextSuccessWeightAward > 0)
+				{
+					IncreaseCurrentTriggerWeight(pTeam, false, pTeamData->NextSuccessWeightAward);
 					pTeamData->NextSuccessWeightAward = 0;
+				}
 			}
 
 			// Let's clean the Killer mess
@@ -1124,6 +1133,20 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	int nSuperWeapons = 0;
 	double distanceToTarget = 0;
 	TechnoClass* pTarget = nullptr;
+
+	// Special case: validate target if is part of a technos list in [AITargetType]	section
+	if (attackAITargetType >= 0 && RulesExt::Global()->AITargetTypesLists.Count > 0)
+	{
+		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType);
+
+		for (int i = 0; i < objectsList.Count; i++)
+		{
+			if (objectsList.GetItem(i) == pTechnoType)
+				return true;
+		}
+
+		return false;
+	}
 
 	switch (mask)
 	{
@@ -1751,6 +1774,111 @@ void ScriptExt::ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine 
 			if (pTriggerType->Weight_Current < pTriggerType->Weight_Minimum)
 				pTriggerType->Weight_Current = pTriggerType->Weight_Minimum;
 		}
+	}
+}
+
+void ScriptExt::WaitIfNoTarget(TeamClass *pTeam, int attempts = 0)
+{
+	// This method modifies the new attack actions preventing Team's Trigger to jump to next script action
+	// attempts == number of times the Team will wait if Mission_Attack(...) can't find a new target.
+	if (attempts < 0)
+		attempts = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData)
+	{
+		if (attempts <= 0)
+			pTeamData->WaitNoTargetAttempts = -1; // Infinite waits if no target
+		else
+			pTeamData->WaitNoTargetAttempts = attempts;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::TeamWeightReward(TeamClass *pTeam, double award = 0)
+{
+	if (award <= 0)
+		award = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData)
+	{
+		if (award > 0)
+			pTeamData->NextSuccessWeightAward = award;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::PickRandomScript(TeamClass* pTeam, int idxScriptsList = -1)
+{
+	if (idxScriptsList <= 0)
+		idxScriptsList = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	bool changeFailed = true;
+
+	if (idxScriptsList >= 0)
+	{
+		if (idxScriptsList < RulesExt::Global()->AIScriptsLists.Count)
+		{
+			DynamicVectorClass<ScriptTypeClass*> objectsList = RulesExt::Global()->AIScriptsLists.GetItem(idxScriptsList);
+
+			if (objectsList.Count > 0)
+			{
+				int IdxSelectedObject = ScenarioClass::Instance->Random.RandomRanged(0, objectsList.Count - 1);
+
+				ScriptTypeClass* pNewScript = objectsList.GetItem(IdxSelectedObject);
+				if (pNewScript->ActionsCount > 0)
+				{
+					changeFailed = false;
+					pTeam->CurrentScript = nullptr;
+					pTeam->CurrentScript = new ScriptClass(pNewScript);
+
+					// Ready for jumping to the first line of the new script
+					pTeam->CurrentScript->idxCurrentLine = -1;
+					pTeam->StepCompleted = true;
+
+					return;
+				}
+				else
+				{
+					pTeam->StepCompleted = true;
+					Debug::Log("DEBUG: [%s] Aborting Script change because [%s] has 0 Action scripts!\n", pTeam->Type->ID, pNewScript->ID);
+
+					return;
+				}
+			}
+		}
+	}
+
+	// This action finished
+	if (changeFailed)
+	{
+		pTeam->StepCompleted = true;
+		Debug::Log("DEBUG: [%s] [%s] Failed to change the Team Script with a random one!\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID);
+	}
+}
+
+void ScriptExt::Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData)
+		pTeamData->IdxSelectedObjectFromAIList = -1;
+
+	if (attackAITargetType < 0)
+		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	if (RulesExt::Global()->AITargetTypesLists.Count > 0
+		&& RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType).Count > 0)
+	{
+		ScriptExt::Mission_Attack(pTeam, repeatAction, calcThreatMode, attackAITargetType, -1);
 	}
 }
 
