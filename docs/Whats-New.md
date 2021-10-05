@@ -56,6 +56,7 @@ New:
 - Script Actions 82 & 83 for modifying AI Trigger Current Weight (by FS-21)
 - Script Action 92 for waiting & repeat the same new AI attack if no target was found (by FS-21)
 - Script Action 93 that modifies the Team's Trigger Weight when ends the new attack action (by FS-21)
+- Script Action 94 for picking a random script from a list (by FS-21)
 - Script Action 112 to regroup temporarily around the Team Leader (by FS-21)
 - Script Action 95 to 98 for new AI movements towards certain objects (by FS-21)
 

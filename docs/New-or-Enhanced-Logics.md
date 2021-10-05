@@ -684,6 +684,26 @@ In `aimd.ini`:
 x=93,n            ; integer n=0
 ```
 
+### `94` Pick A Random Script
+
+- When executed this action picks a random Script Type and replaces the current script by the new picked. The second parameter is a 0-based index from the new section `AIScriptsList` explained below.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=94,n
+```
+
+The second parameter is a 0-based index for the `AIScriptsList` section that specifies the list of possible `ScriptTypes` that can be evaluated. The new `AIScriptsList` section must be declared in `rulesmd.ini` for making this script work:
+
+In `rulesmd.ini`:
+```ini
+[AIScriptsList]  ; List of ScriptType lists
+0=SOMESCRIPTTYPE,SOMEOTHERSCRIPTTYPE,SAMPLESCRIPTTYPE
+1=ANOTHERSCRIPTTYPE,YETANOTHERSCRIPTTYPE
+; ...
+```
+
 ### `112` Regroup temporarily around the Team Leader
 
 - Puts the TaskForce into Area Guard Mode for the given amount of time around the Team Leader (this unit remains almost immobile until the action ends). The default radius around the Leader is `[General] > CloseEnough` and the units will not leave that area.
