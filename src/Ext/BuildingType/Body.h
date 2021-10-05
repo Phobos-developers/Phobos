@@ -1,5 +1,6 @@
 #pragma once
 #include <BuildingTypeClass.h>
+#include <SuperWeaponTypeClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
@@ -15,6 +16,7 @@ public:
 	public:
 		Valueable<AffectedHouse> PowersUp_Owner;
 		ValueableVector<BuildingTypeClass*> PowersUp_Buildings;
+		DynamicVectorClass<SuperWeaponTypeClass*> SuperWeapons;
 		
 		ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
 		Nullable<int> PowerPlantEnhancer_Amount;
@@ -38,7 +40,6 @@ public:
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader & Stm) override;
-
 		virtual void SaveToStream(PhobosStreamWriter & Stm) override;
 
 	private:

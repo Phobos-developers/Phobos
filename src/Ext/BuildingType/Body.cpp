@@ -1,7 +1,30 @@
 #include "Body.h"
 
+#include <Ext/House/Body.h>
+
 template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
+
+int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse)
+{
+	int nAmount = 0;
+	float fFactor = 1.0f;
+
+	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+	for (const auto pair : pHouseExt->BuildingCounter)
+	{
+		const auto& pExt = pair.first;
+		const auto& nCount = pair.second;
+		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
+		{
+			fFactor *= std::pow(pExt->PowerPlantEnhancer_Factor.Get(1.0f), nCount);
+			nAmount += pExt->PowerPlantEnhancer_Amount.Get(0) * nCount;
+		}
+	}
+
+	return static_cast<int>(std::round(pBuilding->GetPowerOutput() * fFactor)) + nAmount;
+}
 
 void BuildingTypeExt::ExtData::Initialize()
 {
@@ -29,6 +52,30 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
+
+	// Ares SuperWeapons tag
+	pINI->ReadString(pSection, "SuperWeapons", "", Phobos::readBuffer);
+	//char* super_weapons_list = Phobos::readBuffer;
+	if (strlen(Phobos::readBuffer) > 0 && SuperWeaponTypeClass::Array->Count > 0)
+	{
+		//DynamicVectorClass<SuperWeaponTypeClass*> objectsList;
+		char* context = nullptr;
+
+		//pINI->ReadString(pSection, pINI->GetKeyName(pSection, i), "", Phobos::readBuffer);
+		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			SuperWeaponTypeClass* buffer;
+			if (Parser<SuperWeaponTypeClass*>::TryParse(cur, &buffer))
+			{
+				//Debug::Log("DEBUG: [%s]: Parsed SW [%s]\n", pSection, cur);
+				this->SuperWeapons.AddItem(buffer);
+			}
+			else
+			{
+				Debug::Log("DEBUG: [%s]: Error parsing SuperWeapons= [%s]\n", pSection, cur);
+			}
+		}
+	}
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization() {
@@ -44,6 +91,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->PowerPlantEnhancer_Buildings)
 		.Process(this->PowerPlantEnhancer_Amount)
 		.Process(this->PowerPlantEnhancer_Factor)
+		.Process(this->SuperWeapons)
 		;
 }
 

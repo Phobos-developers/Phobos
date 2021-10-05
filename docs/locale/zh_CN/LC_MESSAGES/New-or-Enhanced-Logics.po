@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-19 00:33+0800\n"
+"POT-Creation-Date: 2021-10-03 16:51+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,25 +47,26 @@ msgstr ""
 
 #: ../New-or-Enhanced-Logics.md:9 ../New-or-Enhanced-Logics.md:111
 #: ../New-or-Enhanced-Logics.md:143 ../New-or-Enhanced-Logics.md:171
-#: ../New-or-Enhanced-Logics.md:230 ../New-or-Enhanced-Logics.md:251
-#: ../New-or-Enhanced-Logics.md:266 ../New-or-Enhanced-Logics.md:319
-#: ../New-or-Enhanced-Logics.md:364 ../New-or-Enhanced-Logics.md:377
-#: ../New-or-Enhanced-Logics.md:438 ../New-or-Enhanced-Logics.md:461
+#: ../New-or-Enhanced-Logics.md:267 ../New-or-Enhanced-Logics.md:288
+#: ../New-or-Enhanced-Logics.md:303 ../New-or-Enhanced-Logics.md:356
+#: ../New-or-Enhanced-Logics.md:401 ../New-or-Enhanced-Logics.md:414
+#: ../New-or-Enhanced-Logics.md:475 ../New-or-Enhanced-Logics.md:498
 msgid "image"
 msgstr ""
 
 #: ../New-or-Enhanced-Logics.md:12 ../New-or-Enhanced-Logics.md:116
 #: ../New-or-Enhanced-Logics.md:148 ../New-or-Enhanced-Logics.md:178
 #: ../New-or-Enhanced-Logics.md:190 ../New-or-Enhanced-Logics.md:205
-#: ../New-or-Enhanced-Logics.md:239 ../New-or-Enhanced-Logics.md:257
-#: ../New-or-Enhanced-Logics.md:271 ../New-or-Enhanced-Logics.md:281
-#: ../New-or-Enhanced-Logics.md:311 ../New-or-Enhanced-Logics.md:326
-#: ../New-or-Enhanced-Logics.md:340 ../New-or-Enhanced-Logics.md:350
-#: ../New-or-Enhanced-Logics.md:369 ../New-or-Enhanced-Logics.md:383
-#: ../New-or-Enhanced-Logics.md:394 ../New-or-Enhanced-Logics.md:404
-#: ../New-or-Enhanced-Logics.md:414 ../New-or-Enhanced-Logics.md:424
-#: ../New-or-Enhanced-Logics.md:441 ../New-or-Enhanced-Logics.md:451
-#: ../New-or-Enhanced-Logics.md:470
+#: ../New-or-Enhanced-Logics.md:216 ../New-or-Enhanced-Logics.md:242
+#: ../New-or-Enhanced-Logics.md:276 ../New-or-Enhanced-Logics.md:294
+#: ../New-or-Enhanced-Logics.md:308 ../New-or-Enhanced-Logics.md:318
+#: ../New-or-Enhanced-Logics.md:348 ../New-or-Enhanced-Logics.md:363
+#: ../New-or-Enhanced-Logics.md:377 ../New-or-Enhanced-Logics.md:387
+#: ../New-or-Enhanced-Logics.md:406 ../New-or-Enhanced-Logics.md:420
+#: ../New-or-Enhanced-Logics.md:431 ../New-or-Enhanced-Logics.md:441
+#: ../New-or-Enhanced-Logics.md:451 ../New-or-Enhanced-Logics.md:461
+#: ../New-or-Enhanced-Logics.md:478 ../New-or-Enhanced-Logics.md:488
+#: ../New-or-Enhanced-Logics.md:507
 msgid "In `rulesmd.ini`:"
 msgstr "在`rulesmd.ini`中："
 
@@ -269,7 +270,7 @@ msgid ""
 msgstr "尽量使尾迹长度最小（可以通过设置较小的`FadeDuration`值实现）。"
 
 #: ../New-or-Enhanced-Logics.md:85 ../New-or-Enhanced-Logics.md:154
-#: ../New-or-Enhanced-Logics.md:292
+#: ../New-or-Enhanced-Logics.md:329
 msgid "In `artmd.ini`:"
 msgstr "在`artmd.ini`中："
 
@@ -384,14 +385,26 @@ msgid ""
 msgstr "在启用此功能之前不要忘记调整步兵动画序列，否则它会播放不可见的动画序列。"
 
 #: ../New-or-Enhanced-Logics.md:211
+msgid "Default disguise for individual InfantryTypes"
+msgstr "步兵类型拥有独立的默认伪装"
+
+#: ../New-or-Enhanced-Logics.md:213
+msgid "Infantry can now have its `DefaultDisguise` overridden per-type."
+msgstr "每种步兵单位现在都可以有它自己的“DefaultDisguise”(默认伪装)。"
+
+#: ../New-or-Enhanced-Logics.md:214
+msgid "This tag's priority is higher than Ares' per-side `DefaultDisguise`."
+msgstr "此标签的优先级高于Ares中为Side设定的“DefaultDisguise”。"
+
+#: ../New-or-Enhanced-Logics.md:222
 msgid "Vehicles"
 msgstr "载具"
 
-#: ../New-or-Enhanced-Logics.md:213
+#: ../New-or-Enhanced-Logics.md:224
 msgid "Stationary vehicles"
 msgstr "静止载具"
 
-#: ../New-or-Enhanced-Logics.md:215
+#: ../New-or-Enhanced-Logics.md:226
 msgid ""
 "Setting VehicleType `Speed` to 0 now makes game treat them as stationary,"
 " behaving in very similar manner to deployed vehicles with "
@@ -399,25 +412,49 @@ msgid ""
 " as they won't be able to exit factories."
 msgstr "`Speed=0`的载具现在会视作静止单位，类似`IsSimpleDeployer`的部署载具。不应该被设置在可建造载具上，因为这样它离不开工厂。"
 
-#: ../New-or-Enhanced-Logics.md:217
+#: ../New-or-Enhanced-Logics.md:228
 msgid "No Manual Move"
 msgstr "禁止手动移动"
 
-#: ../New-or-Enhanced-Logics.md:219
+#: ../New-or-Enhanced-Logics.md:230
 msgid ""
 "You can now specify whether a TechnoType is unable to receive move "
 "command."
 msgstr "可以控制某单位是否无视移动指令。"
 
-#: ../New-or-Enhanced-Logics.md:226
+#: ../New-or-Enhanced-Logics.md:237
+msgid "Automatic Passenger Deletion"
+msgstr "自动删除乘客"
+
+#: ../New-or-Enhanced-Logics.md:239
+msgid ""
+"Transports with these tags will erase the passengers overtime. Bigger "
+"units takes more time. Optionally this logic can work like a grinder."
+msgstr "有该标签的载具将随着时间移除其中乘客。大型单位将需要更多时间。该逻辑也可以像粉碎机一样工作。"
+
+#: ../New-or-Enhanced-Logics.md:240
+msgid "Good combination with Ares Abductor logic."
+msgstr "与Ares的劫持犯逻辑是很好的组合。"
+
+#: ../New-or-Enhanced-Logics.md:252
+msgid "Customizable OpenTopped Properties"
+msgstr "自定义可对外射击载具的属性"
+
+#: ../New-or-Enhanced-Logics.md:254
+msgid ""
+"You can now override settings of `OpenTopped` transport properties per "
+"TechnoType."
+msgstr "现在可以微观定义每种可对外射击载具各自的增益参数。"
+
+#: ../New-or-Enhanced-Logics.md:263
 msgid "Technos"
 msgstr "通用"
 
-#: ../New-or-Enhanced-Logics.md:228
+#: ../New-or-Enhanced-Logics.md:265
 msgid "Mind Control enhancement"
 msgstr "心灵控制增强"
 
-#: ../New-or-Enhanced-Logics.md:230
+#: ../New-or-Enhanced-Logics.md:267
 msgid ""
 "![image](_static/images/mindcontrol-max-range-01.gif)   *Mind Control "
 "Range Limit used in [Fantasy ADVENTURE](https://www.moddb.com/mods"
@@ -433,30 +470,30 @@ msgstr ""
 "*多心控自动释放首个目标在[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-"
 "adventure)中*"
 
-#: ../New-or-Enhanced-Logics.md:235
+#: ../New-or-Enhanced-Logics.md:272
 msgid ""
 "Mind controllers now can have the upper limit of the control distance. "
 "Tag values greater than 0 will activate this feature."
 msgstr "拥有心灵控制武器的单位现在可以拥有最大控制距离。大于0将激活此逻辑。"
 
-#: ../New-or-Enhanced-Logics.md:236
+#: ../New-or-Enhanced-Logics.md:273
 msgid ""
 "Mind controllers with multiple controlling slots can now release the "
 "first controlled unit when they have reached the control limit and are "
 "ordered to control a new target."
 msgstr "多重心控单位可以在过载前释放被控制的单位。"
 
-#: ../New-or-Enhanced-Logics.md:237
+#: ../New-or-Enhanced-Logics.md:274
 msgid ""
 "Allows Warheads to play custom `MindControl.Anim` which defaults to "
 "`ControlledAnimationType`."
 msgstr "心灵控制的动画现在可以用`MindControl.Anim`自定义了。"
 
-#: ../New-or-Enhanced-Logics.md:249
+#: ../New-or-Enhanced-Logics.md:286
 msgid "Spawn range limit"
 msgstr "子机最大航程"
 
-#: ../New-or-Enhanced-Logics.md:251
+#: ../New-or-Enhanced-Logics.md:288
 msgid ""
 "![image](_static/images/spawnrange-01.gif)   *Limited pursue range for "
 "spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-"
@@ -466,18 +503,18 @@ msgstr ""
 "*子机限制追击距离在[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-"
 "adventure)中*"
 
-#: ../New-or-Enhanced-Logics.md:254
+#: ../New-or-Enhanced-Logics.md:291
 msgid ""
 "The spawned units will abort the infinite pursuit if the enemy is out of "
 "range. `Spawner.ExtraLimitRange` adds extra pursuit range to the spawned "
 "units."
 msgstr "子机现在可以停止追击超出攻击距离的敌人。`Spawner.ExtraLimitRange`是额外追击距离。"
 
-#: ../New-or-Enhanced-Logics.md:264
+#: ../New-or-Enhanced-Logics.md:301
 msgid "Promoted Spawns"
 msgstr "升级子机"
 
-#: ../New-or-Enhanced-Logics.md:266
+#: ../New-or-Enhanced-Logics.md:303
 msgid ""
 "![image](_static/images/promotedspawns-01.gif)   *Promoted Spawns in "
 "[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*"
@@ -485,23 +522,23 @@ msgstr ""
 "![image](_static/images/promotedspawns-01.gif)  \n"
 "*升级子机在[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)中*"
 
-#: ../New-or-Enhanced-Logics.md:269
+#: ../New-or-Enhanced-Logics.md:306
 msgid "The spawned units will promote as their owner's veterancy."
 msgstr "子机现在可以以发射者的等级出现。"
 
-#: ../New-or-Enhanced-Logics.md:277
+#: ../New-or-Enhanced-Logics.md:314
 msgid "Initial Strength"
 msgstr "初始生命值"
 
-#: ../New-or-Enhanced-Logics.md:279
+#: ../New-or-Enhanced-Logics.md:316
 msgid "You can now specify how many hitpoints a TechnoType starts with."
 msgstr "现在可以指定单位的初始生命值了。"
 
-#: ../New-or-Enhanced-Logics.md:287
+#: ../New-or-Enhanced-Logics.md:324
 msgid "Firing offsets for specific Burst shots"
 msgstr "Burst开火坐标"
 
-#: ../New-or-Enhanced-Logics.md:289
+#: ../New-or-Enhanced-Logics.md:326
 msgid ""
 "You can now specify separate firing offsets for each of the shots fired "
 "by weapon with `Burst` via using "
@@ -514,22 +551,22 @@ msgid ""
 "`PrimaryFireFLH`) is used."
 msgstr "现在可以为Burst指定独立的开火坐标，N从0开始，如果未指定则遵循原版设定。"
 
-#: ../New-or-Enhanced-Logics.md:290
+#: ../New-or-Enhanced-Logics.md:327
 msgid ""
 "Burst-index specific firing offsets are absolute firing offsets and the "
 "lateral shifting based on burst index that occurs with the base firing "
 "offsets is not applied."
 msgstr "应用此逻辑的开火坐标不受因Burst数导致的水平对称影响。"
 
-#: ../New-or-Enhanced-Logics.md:303
+#: ../New-or-Enhanced-Logics.md:340
 msgid "Weapons"
 msgstr "武器"
 
-#: ../New-or-Enhanced-Logics.md:305
+#: ../New-or-Enhanced-Logics.md:342
 msgid "Burst.Delays"
 msgstr "武器定义BurstDelay"
 
-#: ../New-or-Enhanced-Logics.md:307
+#: ../New-or-Enhanced-Logics.md:344
 msgid ""
 "Allows specifying weapon-specific burst shot delays. Takes precedence "
 "over the old `BurstDelayX` logic available on VehicleTypes, functions "
@@ -539,26 +576,25 @@ msgid ""
 " shots."
 msgstr "现在支持为武器设定BurstDelay取代原本的`BurstDelayX`系统。对步兵，载具，建筑类型生效（飞机类型因开火系统完全不同无法支持）。并且允许为每一击都设定间隔，而非仅前四个。"
 
-#: ../New-or-Enhanced-Logics.md:308
-#, fuzzy
+#: ../New-or-Enhanced-Logics.md:345
 msgid ""
 "If no delay is defined for a shot, it falls back to last delay value "
 "defined (f.ex `Burst=3` and `Burst.Delays=10` would use 10 as delay for "
 "all shots)."
 msgstr "如果没有设置对应的间隔，那么就会使用最后设置的间隔。（比如`Burst=3`和`Burst.Delays=10`将每一击都使用10作为间隔。）"
 
-#: ../New-or-Enhanced-Logics.md:309
+#: ../New-or-Enhanced-Logics.md:346
 msgid ""
 "Using `-1` as delay reverts back to old logic (`BurstDelay0-3` for "
 "VehicleTypes if available or random value between 3-5 otherwise) for that"
 " shot."
 msgstr "使用`-1`来取消此逻辑，应用原始的`BurstDelay0-3`。"
 
-#: ../New-or-Enhanced-Logics.md:317
+#: ../New-or-Enhanced-Logics.md:354
 msgid "Strafing aircraft weapon customization"
 msgstr "自定义飞机扫射"
 
-#: ../New-or-Enhanced-Logics.md:319
+#: ../New-or-Enhanced-Logics.md:356
 msgid ""
 "![image](_static/images/strafing-01.gif)   *Strafing aircraft weapon "
 "customization in [Project Phantom](https://www.moddb.com/mods/project-"
@@ -567,13 +603,13 @@ msgstr ""
 "![image](_static/images/strafing-01.gif)  \n"
 "*自定义飞机扫射在[Project Phantom](https://www.moddb.com/mods/project-phantom)中*"
 
-#: ../New-or-Enhanced-Logics.md:322
+#: ../New-or-Enhanced-Logics.md:359
 msgid ""
 "Some of the behavior of strafing aircraft weapons (weapon projectile has "
 "`ROT` below 2) can now be customized."
 msgstr "扫射（武器抛射体ROT小于2）现在可以被自定义了。"
 
-#: ../New-or-Enhanced-Logics.md:323
+#: ../New-or-Enhanced-Logics.md:360
 msgid ""
 "`Strafing.Shots` controls the number of times the weapon is fired during "
 "a single strafe run. `Ammo` is only deducted at the end of the strafe "
@@ -582,7 +618,7 @@ msgid ""
 " 1 or 5, respectively. Defaults to 5."
 msgstr "`Strafing.Shots`决定单轮扫射中武器发射几次。`Ammo`仅在本轮扫射结束后扣除，无论本轮开火几次。有效值为1到5之前，超出则被重置为1或5。默认为5。"
 
-#: ../New-or-Enhanced-Logics.md:324
+#: ../New-or-Enhanced-Logics.md:361
 msgid ""
 "`Strafing.SimulateBurst` controls whether or not the shots fired during "
 "strafing simulate behavior of `Burst`, allowing for alternating firing "
@@ -590,43 +626,43 @@ msgid ""
 "Defaults to false."
 msgstr "`Strafing.SimulateBurst`决定发射过程中是否模拟`Burst`的表现，允许偏移开火坐标。仅当`Burst=1`或未指定时生效。默认否。"
 
-#: ../New-or-Enhanced-Logics.md:333
+#: ../New-or-Enhanced-Logics.md:370
 msgid "Radiation enhancements"
 msgstr "辐射增强"
 
-#: ../New-or-Enhanced-Logics.md:335
+#: ../New-or-Enhanced-Logics.md:372
 msgid ""
 "Radiation now has owner by default, so any rad-kills will be scored. This"
 " behavior can be reverted by a corresponding tag."
 msgstr "辐射现在默认拥有所属方，辐射击杀可以被正常记录。此表现可被指定的标签关闭。"
 
-#: ../New-or-Enhanced-Logics.md:336
+#: ../New-or-Enhanced-Logics.md:373
 msgid ""
 "`AffectsAllies`, `AffectsOwner` and `AffectsEnemies` on `RadSiteWarhead` "
 "are respected."
 msgstr "`AffectsAllies`，`AffectsOwner`和`AffectsEnemies`也会被遵守。"
 
-#: ../New-or-Enhanced-Logics.md:337
+#: ../New-or-Enhanced-Logics.md:374
 msgid ""
 "Currently the rad maker doesn't gain experience from kills, this may "
 "change in future."
 msgstr "目前辐射的产生者无法通过击杀获取经验，未来可能会改。"
 
-#: ../New-or-Enhanced-Logics.md:338
+#: ../New-or-Enhanced-Logics.md:375
 msgid ""
 "Radiation is now able to deal damage to Buildings. To enable set "
 "`RadApplicationDelay.Building` value more than 0."
 msgstr "辐射也可以对建筑产生伤害了，将`RadApplicationDelay.Building`设置大于0即可。"
 
-#: ../New-or-Enhanced-Logics.md:346
+#: ../New-or-Enhanced-Logics.md:383
 msgid "Weapon targeting filter"
 msgstr "武器瞄准筛选"
 
-#: ../New-or-Enhanced-Logics.md:348
+#: ../New-or-Enhanced-Logics.md:385
 msgid "You can now specify which house this weapon can fire at."
 msgstr "现在可以设置武器能够瞄准指定所属方的目标。"
 
-#: ../New-or-Enhanced-Logics.md:356
+#: ../New-or-Enhanced-Logics.md:393
 msgid "Warheads"
 msgstr "弹头"
 
@@ -636,11 +672,11 @@ msgid ""
 "superweapon where applicable."
 msgstr "所有的新弹头对溅射范围和Ares的通用弹头超武都是支持的。"
 
-#: ../New-or-Enhanced-Logics.md:362
+#: ../New-or-Enhanced-Logics.md:399
 msgid "Generate credits on impact"
 msgstr "金币弹"
 
-#: ../New-or-Enhanced-Logics.md:364
+#: ../New-or-Enhanced-Logics.md:401
 msgid ""
 "![image](_static/images/hackerfinallyworks-01.gif)   *`TransactMoney` "
 "used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*"
@@ -649,15 +685,15 @@ msgstr ""
 "*`TransactMoney`使用在[Rise of the "
 "East](https://www.moddb.com/mods/riseoftheeast)中*"
 
-#: ../New-or-Enhanced-Logics.md:367
+#: ../New-or-Enhanced-Logics.md:404
 msgid "Warheads can now give credits to its owner at impact."
 msgstr "弹头引爆时可以指定获得或失去资金。"
 
-#: ../New-or-Enhanced-Logics.md:375
+#: ../New-or-Enhanced-Logics.md:412
 msgid "Reveal map for owner on impact"
 msgstr "揭示弹"
 
-#: ../New-or-Enhanced-Logics.md:377
+#: ../New-or-Enhanced-Logics.md:414
 msgid ""
 "![image](_static/images/revealwarhead-01.gif)   *`SpySat=yes` on `[NUKE]`"
 " warhead reveals the map when nuclear missile detonates*"
@@ -665,90 +701,90 @@ msgstr ""
 "![image](_static/images/revealwarhead-01.gif)  \n"
 "*`SpySat=yes`在`[NUKE]`上，使核弹爆炸时开启全图视野*"
 
-#: ../New-or-Enhanced-Logics.md:380
+#: ../New-or-Enhanced-Logics.md:417
 msgid "Warheads can now reveal the entire map on impact."
 msgstr "弹头可以引爆时揭示全部视野。"
 
-#: ../New-or-Enhanced-Logics.md:381
+#: ../New-or-Enhanced-Logics.md:418
 msgid "Reveal only applies to the owner of the warhead."
 msgstr "仅对所属方有效。"
 
-#: ../New-or-Enhanced-Logics.md:389
+#: ../New-or-Enhanced-Logics.md:426
 msgid "Shroud map for enemies on impact"
 msgstr "迷雾弹"
 
-#: ../New-or-Enhanced-Logics.md:391
+#: ../New-or-Enhanced-Logics.md:428
 msgid "Warheads can now shroud the entire map on impact."
 msgstr "弹头可以引爆时覆盖全部视野。"
 
-#: ../New-or-Enhanced-Logics.md:392
+#: ../New-or-Enhanced-Logics.md:429
 msgid "Shroud only applies to enemies of the warhead owner."
 msgstr "仅对敌人有效。"
 
-#: ../New-or-Enhanced-Logics.md:400
+#: ../New-or-Enhanced-Logics.md:437
 msgid "Remove disguise on impact"
 msgstr "识破伪装"
 
-#: ../New-or-Enhanced-Logics.md:402
+#: ../New-or-Enhanced-Logics.md:439
 msgid "Warheads can now remove disguise of spies."
 msgstr "弹头现在可以移除目标的伪装。"
 
-#: ../New-or-Enhanced-Logics.md:410
+#: ../New-or-Enhanced-Logics.md:447
 msgid "Break Mind Control on impact"
 msgstr "解除心控"
 
-#: ../New-or-Enhanced-Logics.md:412
+#: ../New-or-Enhanced-Logics.md:449
 msgid ""
 "Warheads can now break mind control (doesn't apply to perma-MC-ed "
 "objects)."
 msgstr "弹头现在可以破坏心控链接 (对永久心控无效) 。"
 
-#: ../New-or-Enhanced-Logics.md:420
+#: ../New-or-Enhanced-Logics.md:457
 msgid "Critical damage chance"
 msgstr "暴击"
 
-#: ../New-or-Enhanced-Logics.md:422
+#: ../New-or-Enhanced-Logics.md:459
 msgid ""
 "Warheads can now apply additional chance-based damage (known as "
 "\"critical\" damage) with the ability to customize chance, damage, "
 "affected targets, and animations of critical strike."
 msgstr "现在可以设定某弹头是否会在爆炸时造成暴击伤害。"
 
-#: ../New-or-Enhanced-Logics.md:436
+#: ../New-or-Enhanced-Logics.md:473
 msgid "Custom 'SplashList' on Warheads"
 msgstr "微观定义水花"
 
-#: ../New-or-Enhanced-Logics.md:438
+#: ../New-or-Enhanced-Logics.md:475
 msgid "![image](_static/images/splashlist-01.gif)"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:439
+#: ../New-or-Enhanced-Logics.md:476
 msgid ""
 "Allows Warheads to play custom water splash animations. See vanilla's "
 "[Conventional](https://www.modenc.renegadeprojects.com/Conventional) "
 "system here."
 msgstr "允许弹头自定义水花动画，详情请见[Conventional](https://www.modenc.renegadeprojects.com/Conventional)。"
 
-#: ../New-or-Enhanced-Logics.md:448
+#: ../New-or-Enhanced-Logics.md:485
 msgid "Trigger specific NotHuman infantry Death anim sequence"
 msgstr "触发特定的NotHuman步兵死亡动画序列"
 
-#: ../New-or-Enhanced-Logics.md:449
+#: ../New-or-Enhanced-Logics.md:486
 msgid ""
 "Warheads are now able to trigger specific `NotHuman=yes` infantry `Death`"
 " anim sequence using the corresponding tag. It's value represents "
 "sequences from `Die1` to `Die5`."
 msgstr "弹头可以触发指定的`NotHuman=yes`的步兵的死亡动画序列，值代表`Die1`到`Die5`。"
 
-#: ../New-or-Enhanced-Logics.md:457
+#: ../New-or-Enhanced-Logics.md:494
 msgid "Projectiles"
 msgstr "抛射体"
 
-#: ../New-or-Enhanced-Logics.md:459
+#: ../New-or-Enhanced-Logics.md:496
 msgid "Projectile interception logic"
 msgstr "拦截抛射体"
 
-#: ../New-or-Enhanced-Logics.md:461
+#: ../New-or-Enhanced-Logics.md:498
 msgid ""
 "![image](_static/images/projectile-interception-01.gif)   *Interception "
 "logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberium-"
@@ -757,7 +793,7 @@ msgstr ""
 "![image](_static/images/projectile-interception-01.gif)  \n"
 "*拦截逻辑在[Tiberium Crisis](https://www.moddb.com/mods/tiberium-crisis)中*"
 
-#: ../New-or-Enhanced-Logics.md:464
+#: ../New-or-Enhanced-Logics.md:501
 msgid ""
 "Projectiles can now be made targetable by certain TechnoTypes. "
 "Interceptor TechnoType's projectile must be `Inviso=yes` and `AA=yes` in "
@@ -765,41 +801,41 @@ msgid ""
 "primary Weapon."
 msgstr "抛射体现在可以被单位拦截，拦截者的抛射体必须设置`Inviso=yes`和`AA=yes`以确保拦截可以正常工作。此抛射体必须被用于主武器。"
 
-#: ../New-or-Enhanced-Logics.md:465
+#: ../New-or-Enhanced-Logics.md:502
 msgid ""
 "`Interceptor.GuardRange` is maximum range of the unit to intercept "
 "projectile. The unit weapon range will limit the unit interception range "
 "though."
 msgstr "`Interceptor.GuardRange`决定拦截抛射体的最大距离。而单位的武器距离将限制拦截的实际距离。"
 
-#: ../New-or-Enhanced-Logics.md:466
+#: ../New-or-Enhanced-Logics.md:503
 msgid ""
 "`Interceptor.EliteGuardRange` value is used if the unit veterancy is "
 "Elite."
 msgstr "精英级时使用`Interceptor.EliteGuardRange`。"
 
-#: ../New-or-Enhanced-Logics.md:467
+#: ../New-or-Enhanced-Logics.md:504
 msgid ""
 "`Interceptor.MinimumGuardRange` is the minimum range of the unit to "
 "intercept projectile. Any projectile under this range will not be "
 "intercepted."
 msgstr "`Interceptor.MinimumGuardRange`决定拦截抛射体的最小距离。小于此距离的抛射体不会被拦截。"
 
-#: ../New-or-Enhanced-Logics.md:468
+#: ../New-or-Enhanced-Logics.md:505
 msgid ""
 "`Interceptor.EliteMinimumGuardRange` value is used if the unit veterancy "
 "is Elite."
 msgstr "精英级时使用`Interceptor.EliteMinimumGuardRange`。"
 
-#: ../New-or-Enhanced-Logics.md:483
+#: ../New-or-Enhanced-Logics.md:520
 msgid "Script actions"
 msgstr "脚本动作"
 
-#: ../New-or-Enhanced-Logics.md:485
+#: ../New-or-Enhanced-Logics.md:522
 msgid "`71` Timed Area Guard"
 msgstr "`71`时效性区域警戒"
 
-#: ../New-or-Enhanced-Logics.md:487
+#: ../New-or-Enhanced-Logics.md:524
 msgid ""
 "Puts the TaskForce into Area Guard Mode for the given units of time. "
 "Unlike the original timed Guard script (`5,n`) that just stays in place "
@@ -807,16 +843,18 @@ msgid ""
 " role attacking nearby invaders or defending units that needs protection."
 msgstr "可以使单位进入一段时间的区域警戒模式。类似脚本**5 警戒（…秒）** (`5,n`)，但是使用的是更具攻击性的区域境界动作。"
 
-#: ../New-or-Enhanced-Logics.md:489 ../New-or-Enhanced-Logics.md:499
-#: ../New-or-Enhanced-Logics.md:509
+#: ../New-or-Enhanced-Logics.md:526 ../New-or-Enhanced-Logics.md:536
+#: ../New-or-Enhanced-Logics.md:546 ../New-or-Enhanced-Logics.md:556
+#: ../New-or-Enhanced-Logics.md:566 ../New-or-Enhanced-Logics.md:576
+#: ../New-or-Enhanced-Logics.md:587
 msgid "In `aimd.ini`:"
 msgstr "在`aimd.ini`中："
 
-#: ../New-or-Enhanced-Logics.md:495
+#: ../New-or-Enhanced-Logics.md:532
 msgid "`72` Load Onto Transports"
 msgstr "`72`向载具中装载"
 
-#: ../New-or-Enhanced-Logics.md:497
+#: ../New-or-Enhanced-Logics.md:534
 msgid ""
 "If the TaskForce contains unit(s) that can be carried by the transports "
 "of the same TaskForce then this action will make the units enter the "
@@ -824,13 +862,191 @@ msgid ""
 "until fully loaded\" (`43,0`) or the script will not continue."
 msgstr "使该小队内的所有非载具单位进入载具。在战役中，下一条脚本必须为**43 等待到满载** (`43,0`)，否则脚本将不会继续。"
 
-#: ../New-or-Enhanced-Logics.md:505
+#: ../New-or-Enhanced-Logics.md:542
 msgid "`73` Wait until ammo is full"
 msgstr "`73`等待直到装满弹药"
 
-#: ../New-or-Enhanced-Logics.md:507
+#: ../New-or-Enhanced-Logics.md:544
 msgid ""
 "If the TaskForce contains unit(s) that use ammo then the the script will "
 "not continue until all these units have fully refilled the ammo."
 msgstr "当小队内所有成员弹药满时继续执行下一个动作。"
+
+#: ../New-or-Enhanced-Logics.md:552
+msgid "`82` Decrease AI Trigger Current Weight"
+msgstr "`82` 降低AI触发当前权重"
+
+#: ../New-or-Enhanced-Logics.md:554
+msgid ""
+"When executed this decreases the current Weight of the AI Trigger.The "
+"current Weight will never surprass the Minimum Weight and Maximum Weight "
+"limits of the AI Trigger. Take note that all TeamTypes of the same AI "
+"Trigger will update sooner or later the AI Trigger Current Weight. The "
+"second parameter is a positive value. Take note that the original game "
+"only uses the first of the two Teams for calculating the AI Trigger "
+"Current Weight at the end of the Trigger life, this action ignores if the"
+" Team is the first or the second of the AI Trigger and the Current Weight"
+" is calculated when is executed the action."
+msgstr "当该脚本行为被执行时，它将降低AI触发当前的权重。当前权重将不会逾越AI触发的权重上下限。"
+"要注意的是同个AI触发下的所有TeamTypes或早或晚都会更新当前权重。第二个参数是一个正值。"
+"要注意游戏本体在计算触发周期的当前权重时只采用两个小队中的第一个,而该行为将无视该小队是其中哪个，当前权重都将在行为被执行时进行计算。"
+
+#: ../New-or-Enhanced-Logics.md:562
+msgid "`83` Increase AI Trigger Current Weight"
+msgstr "`83` 增加AI触发当前权重"
+
+#: ../New-or-Enhanced-Logics.md:564
+msgid ""
+"When executed this increases the current Weight of the AI Trigger.The "
+"current Weight will never surprass the Minimum Weight and Maximum Weight "
+"limits of the AI Trigger. Take note that all TeamTypes of the same AI "
+"Trigger will update sooner or later the AI Trigger Current Weight. The "
+"second parameter is a positive value. Take note that the original game "
+"only uses the first of the two Teams for calculating the AI Trigger "
+"Current Weight at the end of the Trigger life, this action ignores if the"
+" Team is the first or the second of the AI Trigger and the Current Weight"
+" is calculated when is executed the action."
+msgstr "当该脚本行为被执行时，它将增加AI触发当前的权重。当前权重将不会逾越AI触发的权重上下限。"
+"要注意的是同个AI触发下的所有TeamTypes或早或晚都会更新当前权重。第二个参数是一个正值。"
+"要注意游戏本体在计算触发周期的当前权重时只采用两个小队中的第一个,而该行为将无视该小队是其中哪个，当前权重都将在行为被执行时进行计算。"
+
+#: ../New-or-Enhanced-Logics.md:572
+msgid "`112` Regroup temporarily around the Team Leader"
+msgstr "`112` 于小队队长周围暂时集结"
+
+#: ../New-or-Enhanced-Logics.md:574
+msgid ""
+"Puts the TaskForce into Area Guard Mode for the given amount of time "
+"around the Team Leader (this unit remains almost immobile until the "
+"action ends). The default radius around the Leader is `[General] > "
+"CloseEnough` and the units will not leave that area."
+msgstr "将使小队成员在小队队长附近进入给定时长的区域警戒状态(该单位将在行为结束前几乎无法移动)。"
+"对队长周围的默认半径定义来自于`[General] > CloseEnough`，其余单位将不会离开这一范围。"
+
+#: ../New-or-Enhanced-Logics.md:583
+msgid "`74-81` New Attack Action"
+msgstr "`74-81` 新攻击行为"
+
+#: ../New-or-Enhanced-Logics.md:585
+msgid ""
+"These Actions instruct the TeamType to use the TaskForce to approach and "
+"attack the target specified by the second parameter. Look at the tables "
+"below for the possible Actions (first parameter value) and Arguments (the"
+" second parameter value)."
+msgstr "这些行为指示TeamType如何使用小队成员接近并攻击由第二个参数给定的目标。"
+"参考下列表格中可以使用的行为(第一参数值)和参数(第二参数值)。"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "*Action*"
+msgstr "*行为*"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "*Argument*"
+msgstr "*参数*"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "*Repeats*"
+msgstr "*重复*"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "*Target Priority*"
+msgstr "*目标优先级*"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "*Description*"
+msgstr "*描述*"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "74"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Target Type#"
+msgstr "目标类型#"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Yes"
+msgstr "是"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Closer, higher threat"
+msgstr "更近时更高威胁"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "75"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Farther, higher threat"
+msgstr "更远时更高威胁"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "76"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Closer"
+msgstr "更近"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "77"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Farther"
+msgstr "更远"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "78"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "No"
+msgstr "否"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Ends when a team member kill the designated target"
+msgstr "当一个小队成员摧毁给定目标时结束"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "79"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "80"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "81"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:604
+msgid ""
+"Note: New Attack action scripts (74, 75, 78, 79) that are focused in "
+"target threat use `TargetSpecialThreatCoefficientDefault` and "
+"`EnemyHouseThreatBonus` tags from `rulesmd.ini`."
+msgstr "注意: 考量目标威胁度的新攻击行为脚本(74, 75, 78, 79)使用来自`rulesmd.ini`的`TargetSpecialThreatCoefficientDefault`和`EnemyHouseThreatBonus`标签。"
+
+#: ../New-or-Enhanced-Logics.md:606
+msgid ""
+"Note: All Aircrafts that attack other air units will end the script. This"
+" behavior is intentional because without it aircrafts had some bugs that "
+"weren't fixable at the time of developing the feature."
+msgstr "注意: 所有Aircrafts在攻击其他空中单位时将结束该脚本。这一行为是有意的，如果缺少这一行为则Aircrafts将在开发该功能的当下存在某些无法修复的bug。"
+
+#~ msgid "`112` Regroup around the Team Leader"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Puts the TaskForce into Area Guard "
+#~ "Mode for the given units of time"
+#~ " around the Team Leader (this unit"
+#~ " remains almost immobile until the "
+#~ "action ends). The default radius around"
+#~ " the Leader is `[General] > "
+#~ "CloseEnough` and the units will not "
+#~ "leave that area. The countdown only "
+#~ "works while all the units are "
+#~ "inside the area."
+#~ msgstr ""
 
