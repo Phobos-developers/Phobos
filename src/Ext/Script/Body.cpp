@@ -1898,9 +1898,9 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, 
 		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
 
 	if (attackAITargetType >= 0
-		&& attackAITargetType < RulesExt::Global()->AITargetTypeLists.Count)
+		&& attackAITargetType < RulesExt::Global()->AITargetTypesLists.Count)
 	{
-		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypeLists.GetItem(attackAITargetType);
+		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType);
 
 		if (idxSelectedObject < 0 && objectsList.Count > 0 && !selected)
 		{
