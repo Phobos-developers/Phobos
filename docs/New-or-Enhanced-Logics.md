@@ -549,7 +549,7 @@ In `aimd.ini`:
 x=73,0
 ```
 
-### `74-81` Generic Target Type Attack Action
+### `74-81`, `104-105` Generic Target Type Attack Action
 
 - These Actions instruct the TeamType to use the TaskForce to approach and attack the target specified by the second parameter which is an index of a generic pre-defined group. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
   - For threat-based attack actions `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from `rulesmd.ini` are accounted.
@@ -558,7 +558,7 @@ x=73,0
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=i,n             ; where 74 <= i <= 81
+x=i,n             ; where 74 <= i <= 81 or 104 <= i <= 105
 ```
 
 | *Action* | *Argument*   | *Repeats* | *Target Priority* | *Description*                                 |
@@ -571,6 +571,8 @@ x=i,n             ; where 74 <= i <= 81
 79         | Target Type# | No | Farther, higher threat | Ends when a team member kill the designated target |
 80         | Target Type# | No | Closer | Ends when a team member kill the designated target |
 81         | Target Type# | No | Farther | Ends when a team member kill the designated target |
+104        | [AITargetTypes] index# | Yes | Closer | Picks 1 random target from the selected list |
+105        | [AITargetTypes] index# | Yes | Farther | Picks 1 random target from the selected list |
 
 - The following values are the *Target Type#* which can be used as second parameter of the new attack script actions:
 
