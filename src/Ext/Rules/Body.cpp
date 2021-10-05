@@ -63,10 +63,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		return;
 
 	const char* sectionAITargetTypes = "AITargetTypes";
+	const char* sectionAIScriptsList = "AIScriptsList";
 
 	INI_EX exINI(pINI);
-
-	const char* sectionAIScriptsList = "AIScriptsList";
 
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
