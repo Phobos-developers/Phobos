@@ -58,6 +58,7 @@ New:
 - Script Action 93 that modifies the Team's Trigger Weight when ends the new attack action (by FS-21)
 - Script Action 94 for picking a random script from a list (by FS-21)
 - Script Action 112 to regroup temporarily around the Team Leader (by FS-21)
+- ObjectInfo now shows, current Target and AI Trigger data (by FS-21)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
