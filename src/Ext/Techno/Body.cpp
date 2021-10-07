@@ -319,7 +319,7 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 					// Countdown reached 0
 					// Time for deleting the first unit (FIFO queue)
 					DynamicVectorClass<FootClass*> passengersList;
-					FootClass* pOldPassenger;
+					FootClass* pOldPassenger = nullptr;
 
 					// We'll get the passengers list in a more easy data structure
 					while (pThis->Passengers.NumPassengers > 0)

@@ -179,7 +179,7 @@ DEFINE_HOOK(0x6FE43B, TechnoClass_Fire_OpenTopped_DmgMult, 0x8)
 	//replacing whole check due to `fild`
 	if (pThis->InOpenToppedTransport)
 	{
-		GET_STACK(int, nDamage, STACK_OFFS(0xB4, -0x2C));
+		GET_STACK(int, nDamage, STACK_OFFS(0xB0, 0x84));
 		float nDamageMult = static_cast<float>(RulesClass::Instance->OpenToppedDamageMultiplier);
 
 		if (auto pTransport = pThis->Transporter)

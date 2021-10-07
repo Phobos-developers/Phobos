@@ -704,6 +704,23 @@ In `rulesmd.ini`:
 ; ...
 ```
 
+### `95-98` Moving Team to techno location
+
+- These Actions instructs the TeamType to use the TaskForce to approach the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value).
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=i,n             ; where 95 <= i <= 98
+```
+
+| *Action* | *Argument*    | Target Owner | *Target Priority* | *Description*                                 |
+| :------: | :-----------: | :----------: | :---------------: | :-------------------------------------------: |
+95         | Target Type# | Enemy | Closer, higher threat |  |
+96         | Target Type# | Enemy | Farther, higher threat |  |
+97         | Target Type# | Friendly | Closer |  |
+98         | Target Type# | Friendly | Farther |  |
+
 ### `112` Regroup temporarily around the Team Leader
 
 - Puts the TaskForce into Area Guard Mode for the given amount of time around the Team Leader (this unit remains almost immobile until the action ends). The default radius around the Leader is `[General] > CloseEnough` and the units will not leave that area.
