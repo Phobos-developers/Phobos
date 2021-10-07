@@ -2020,6 +2020,7 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 							pUnit->SetFocus(nullptr);
 							pUnit->SetDestination(nullptr, false);
 							pUnit->QueueMission(Mission::Area_Guard, true);
+
 							continue;
 						}
 
@@ -2053,7 +2054,6 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 				if (pTeamData->WaitNoTargetAttempts != 0)
 				{
 					pTeam->GuardAreaTimer.Start(16);
-
 					return;
 				}
 
@@ -2148,7 +2148,9 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 
 			if (pFoot->Team->Type->OnlyTargetHouseEnemy
 				&& enemyHouseIndex >= 0)
+			{
 				enemyHouse = HouseClass::Array->GetItem(enemyHouseIndex);
+			}
 		}
 	}
 
@@ -2178,13 +2180,17 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 			&& objectType->Underwater
 			&& (pTechnoType->NavalTargeting == 0
 				|| pTechnoType->NavalTargeting == 6))
+		{
 			continue;
+		}
 
 		// Land not OK for the Naval unit
 		if (objectType->Naval
 			&& pTechnoType->LandTargeting == 1
 			&& object->GetCell()->LandType != LandType::Water)
+		{
 			continue;
+		}
 
 		if (object != pTechno
 			&& object->IsAlive
@@ -2277,8 +2283,5 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 		}
 	}
 
-	if (bestObject != nullptr)
-		return bestObject;
-
-	return nullptr;
+	return bestObject;
 }
