@@ -80,6 +80,38 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 83:
 		ScriptExt::IncreaseCurrentTriggerWeight(pTeam, true, 0);
 		break;
+	case 84:
+		// Threats specific targets that are close have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack_List(pTeam, true, 0, -1);
+		break;
+	case 85:
+		// Threats specific targets that are far have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack_List(pTeam, true, 1, -1);
+		break;
+	case 86:
+		// Closer specific targets targets from Team Leader have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack_List(pTeam, true, 2, -1);
+		break;
+	case 87:
+		// Farther specific targets targets from Team Leader have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack_List(pTeam, true, 3, -1);
+		break;
+	case 88:
+		// Threats specific targets that are close have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack_List(pTeam, false, 0, -1);
+		break;
+	case 89:
+		// Threats specific targets that are far have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack_List(pTeam, false, 1, -1);
+		break;
+	case 90:
+		// Closer specific targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack_List(pTeam, false, 2, -1);
+		break;
+	case 91:
+		// Farther specific targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack_List(pTeam, false, 3, -1);
+		break;
 	case 92:
 		ScriptExt::WaitIfNoTarget(pTeam, -1);
 		break;
