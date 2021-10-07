@@ -104,7 +104,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
-			ScriptTypeClass* pNewScript = new ScriptTypeClass(cur);
+			ScriptTypeClass* pNewScript = GameCreate<ScriptTypeClass>(cur);
 			objectsList.AddItem(pNewScript);
 		}
 

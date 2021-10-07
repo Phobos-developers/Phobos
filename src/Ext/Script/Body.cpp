@@ -1879,7 +1879,7 @@ void ScriptExt::PickRandomScript(TeamClass* pTeam, int idxScriptsList = -1)
 				{
 					changeFailed = false;
 					pTeam->CurrentScript = nullptr;
-					pTeam->CurrentScript = new ScriptClass(pNewScript);
+					pTeam->CurrentScript = GameCreate<ScriptClass>(pNewScript);
 
 					// Ready for jumping to the first line of the new script
 					pTeam->CurrentScript->idxCurrentLine = -1;
