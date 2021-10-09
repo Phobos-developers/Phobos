@@ -118,6 +118,8 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 93:
 		ScriptExt::TeamWeightReward(pTeam, 0);
 		break;
+	case 94:
+		ScriptExt::PickRandomScript(pTeam, -1);
 	case 95:
 		// Move to the closest enemy target
 		ScriptExt::Mission_Move(pTeam, 2, false, -1, -1);
@@ -133,6 +135,49 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 98:
 		// Move to the farther friendly target
 		ScriptExt::Mission_Move(pTeam, 3, true, -1, -1);
+		break;
+	case 99:
+		// Move to the closest specific enemy target
+		ScriptExt::Mission_Move_List(pTeam, 2, false, -1);
+		break;
+	case 100:
+		// Move to the farther specific enemy target
+		ScriptExt::Mission_Move_List(pTeam, 3, false, -1);
+	case 101:
+		// Move to the closest specific friendly target
+		ScriptExt::Mission_Move_List(pTeam, 2, true, -1);
+		break;
+	case 102:
+		// Move to the farther specific friendly target
+		ScriptExt::Mission_Move_List(pTeam, 3, true, -1);
+		break;
+	case 103:
+		// AISafeDistance equivalent for Mission_Move()
+		ScriptExt::SetCloseEnoughDistance(pTeam, -1);
+		break;
+	case 104:
+		// Pick 1 closer random objective from specific list for attacking it
+		ScriptExt::Mission_Attack_List1Random(pTeam, true, 2, -1);
+		break;
+	case 105:
+		// Pick 1 farther random objective from specific list for attacking it
+		ScriptExt::Mission_Attack_List1Random(pTeam, true, 3, -1);
+		break;
+	case 106:
+		// Pick 1 closer enemy random objective from specific list for moving to it
+		ScriptExt::Mission_Move_List1Random(pTeam, 2, false, -1, -1);
+		break;
+	case 107:
+		// Pick 1 farther enemy random objective from specific list for moving to it
+		ScriptExt::Mission_Move_List1Random(pTeam, 3, false, -1, -1);
+		break;
+	case 108:
+		// Pick 1 closer friendly random objective from specific list for moving to it
+		ScriptExt::Mission_Move_List1Random(pTeam, 2, true, -1, -1);
+		break;
+	case 109:
+		// Pick 1 farther friendly random objective from specific list for moving to it
+		ScriptExt::Mission_Move_List1Random(pTeam, 3, true, -1, -1);
 		break;
 	case 112:
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
@@ -1174,7 +1219,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	double distanceToTarget = 0;
 	TechnoClass* pTarget = nullptr;
 
-	// Special case: validate target if is part of a technos list in [AITargetType]	section
+	// Special case: validate target if is part of a technos list in [AITargetTypes] section
 	if (attackAITargetType >= 0 && RulesExt::Global()->AITargetTypesLists.Count > 0)
 	{
 		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType);
@@ -2316,4 +2361,186 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 	}
 
 	return bestObject;
+}
+
+void ScriptExt::Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType)
+{
+	bool selected = false;
+	int idxSelectedObject = -1;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData && pTeamData->IdxSelectedObjectFromAIList >= 0)
+	{
+		idxSelectedObject = pTeamData->IdxSelectedObjectFromAIList;
+		selected = true;
+	}
+
+	if (attackAITargetType < 0)
+		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	if (attackAITargetType >= 0
+		&& attackAITargetType < RulesExt::Global()->AITargetTypesLists.Count)
+	{
+		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType);
+
+		if (idxSelectedObject < 0 && objectsList.Count > 0 && !selected)
+		{
+			DynamicVectorClass<int> validIndexes;
+
+			// Finding the objects from the list that actually exists in the map
+			for (int i = 0; i < TechnoClass::Array->Count; i++)
+			{
+				auto itemFromTechnoList = TechnoClass::Array->GetItem(i);
+				auto itemTypeFromTechnoList = TechnoClass::Array->GetItem(i)->GetTechnoType();
+				bool found = false;
+
+				for (int j = 0; j < objectsList.Count && !found; j++)
+				{
+					auto objectFromList = objectsList.GetItem(j);
+
+					if (itemTypeFromTechnoList == objectFromList
+						&& itemFromTechnoList->IsAlive
+						&& !itemFromTechnoList->InLimbo
+						&& itemFromTechnoList->IsOnMap
+						&& !itemFromTechnoList->Absorbed
+						&& (!pTeam->FirstUnit->Owner->IsAlliedWith(itemFromTechnoList) 
+							|| (pTeam->FirstUnit->Owner->IsAlliedWith(itemFromTechnoList) 
+								&& itemFromTechnoList->IsMindControlled() 
+								&& !pTeam->FirstUnit->Owner->IsAlliedWith(itemFromTechnoList->MindControlledBy))))
+					{
+						validIndexes.AddItem(j);
+						found = true;
+					}
+				}
+			}
+
+			if (validIndexes.Count > 0)
+			{
+				idxSelectedObject = validIndexes.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, validIndexes.Count - 1));
+				selected = true;
+				Debug::Log("DEBUG: [%s] [%s] Picked a random Techno from the list index [AITargetTypes][%d][%d] = %s\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, attackAITargetType, idxSelectedObject, objectsList.GetItem(idxSelectedObject)->ID);
+			}
+		}
+
+		if (selected)
+			pTeamData->IdxSelectedObjectFromAIList = idxSelectedObject;
+
+		Mission_Attack(pTeam, repeatAction, calcThreatMode, attackAITargetType, idxSelectedObject);
+	}
+
+	// This action finished
+	if (!selected)
+	{
+		pTeam->StepCompleted = true;
+		Debug::Log("DEBUG: [%s] [%s] Failed to pick a random Techno from the list index [AITargetTypes][%d]!\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, attackAITargetType);
+	}
+}
+
+void ScriptExt::Mission_Move_List(TeamClass *pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData)
+		pTeamData->IdxSelectedObjectFromAIList = -1;
+
+	if (attackAITargetType < 0)
+		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	if (RulesExt::Global()->AITargetTypesLists.Count > 0
+		&& RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType).Count > 0)
+	{
+		Mission_Move(pTeam, calcThreatMode, pickAllies, attackAITargetType, -1);
+	}
+}
+
+void ScriptExt::Mission_Move_List1Random(TeamClass *pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem = -1)
+{
+	bool selected = false;
+	int idxSelectedObject = -1;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData && pTeamData->IdxSelectedObjectFromAIList >= 0)
+	{
+		idxSelectedObject = pTeamData->IdxSelectedObjectFromAIList;
+		selected = true;
+	}
+
+	if (attackAITargetType < 0)
+		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	if (attackAITargetType >= 0
+		&& attackAITargetType < RulesExt::Global()->AITargetTypesLists.Count)
+	{
+		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType);
+
+		// Still no random target selected
+		if (idxSelectedObject < 0 && objectsList.Count > 0 && !selected)
+		{
+			DynamicVectorClass<int> validIndexes;
+
+			// Finding the objects from the list that actually exists in the map
+			for (int i = 0; i < TechnoClass::Array->Count; i++)
+			{
+				auto itemFromTechnoList = TechnoClass::Array->GetItem(i);
+				auto itemTypeFromTechnoList = TechnoClass::Array->GetItem(i)->GetTechnoType();
+				bool found = false;
+
+				for (int j = 0; j < objectsList.Count && !found; j++)
+				{
+					auto objectFromList = objectsList.GetItem(j);
+
+					if (itemTypeFromTechnoList == objectFromList
+						&& itemFromTechnoList->IsAlive
+						&& !itemFromTechnoList->InLimbo
+						&& itemFromTechnoList->IsOnMap
+						&& !itemFromTechnoList->Absorbed
+						&& ((pickAllies 
+							&& pTeam->FirstUnit->Owner->IsAlliedWith(itemFromTechnoList))
+							|| (!pickAllies 
+								&& !pTeam->FirstUnit->Owner->IsAlliedWith(itemFromTechnoList))))
+					{
+						validIndexes.AddItem(j);
+						found = true;
+					}
+				}
+			}
+
+			if (validIndexes.Count > 0)
+			{
+				idxSelectedObject = validIndexes.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, validIndexes.Count - 1));
+				selected = true;
+				Debug::Log("DEBUG: [%s] [%s] Picked a random Techno from the list index [AITargetTypes][%d][%d] = %s\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, attackAITargetType, idxSelectedObject, objectsList.GetItem(idxSelectedObject)->ID);
+			}
+		}
+
+		if (selected)
+			pTeamData->IdxSelectedObjectFromAIList = idxSelectedObject;
+
+		Mission_Move(pTeam, calcThreatMode, pickAllies, attackAITargetType, idxSelectedObject);
+	}
+
+	// This action finished
+	if (!selected)
+	{
+		pTeam->StepCompleted = true;
+		Debug::Log("DEBUG: [%s] [%s] Failed to pick a random Techno from the list index [AITargetTypes][%d]!\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, attackAITargetType);
+	}
+}
+
+void ScriptExt::SetCloseEnoughDistance(TeamClass *pTeam, double distance = -1)
+{
+	// This passive method replaces the CloseEnough value from rulesmd.ini by a custom one. Used by Mission_Move()
+	if (distance <= 0)
+		distance = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData)
+	{
+		if (distance > 0)
+			pTeamData->CloseEnough = distance;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
 }

@@ -52,13 +52,15 @@ New:
 - XDrawOffset for animations (by Morton)
 - Customizable OpenTopped properties (by Otamaa)
 - Automatic Passenger Deletion (by FS-21)
-- Script Action 74 to 81 and 84 to 91 for new AI attacks (by FS-21)
+- Script Action 74 to 81, 84 to 91 and 104 to 105 for new AI attacks (by FS-21)
 - Script Actions 82 & 83 for modifying AI Trigger Current Weight (by FS-21)
 - Script Action 92 for waiting & repeat the same new AI attack if no target was found (by FS-21)
 - Script Action 93 that modifies the Team's Trigger Weight when ends the new attack action (by FS-21)
 - Script Action 94 for picking a random script from a list (by FS-21)
+- Script Action 95 to 102 and 106 to 109 for new AI movements towards certain objects (by FS-21)
+- Script Action 103 that Modify Target Distance in the new move actions (by FS-21)
 - Script Action 112 to regroup temporarily around the Team Leader (by FS-21)
-- Script Action 95 to 98 for new AI movements towards certain objects (by FS-21)
+
 - ObjectInfo now shows, current Target and AI Trigger data (by FS-21)
 
 Vanilla fixes:
