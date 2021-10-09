@@ -144,7 +144,8 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 			HouseClass* pTargetHouse = HouseClass::Array->Items[j];
 			if (EnumFunctions::CanTargetHouse(this->LimboKill_Affected, pHouse, pTargetHouse))
 			{
-				for (const auto pBuilding : pHouse->Buildings)
+				auto buildings = DynamicVectorClass(pTargetHouse->Buildings);
+				for (const auto pBuilding : buildings)
 				{
 					const auto pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
 					if (pBuildingExt->LimboID == this->LimboKill_IDs[i])
