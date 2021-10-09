@@ -2385,38 +2385,36 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, 
 
 		if (idxSelectedObject < 0 && objectsList.Count > 0 && !selected)
 		{
-			DynamicVectorClass<int> validIndexes;
+			DynamicVectorClass<TechnoClass*> validItems;
 
 			// Finding the objects from the list that actually exists in the map
-			for (int i = 0; i < TechnoClass::Array->Count; i++)
+			for (const auto& pTechno : *TechnoClass::Array)
 			{
-				auto itemFromTechnoList = TechnoClass::Array->GetItem(i);
-				auto itemTypeFromTechnoList = TechnoClass::Array->GetItem(i)->GetTechnoType();
+				auto pTechnoType = pTechno->GetTechnoType();
 				bool found = false;
 
-				for (int j = 0; j < objectsList.Count && !found; j++)
+				for (const auto& pObject : objectsList)
 				{
-					auto objectFromList = objectsList.GetItem(j);
-
-					if (itemTypeFromTechnoList == objectFromList
-						&& itemFromTechnoList->IsAlive
-						&& !itemFromTechnoList->InLimbo
-						&& itemFromTechnoList->IsOnMap
-						&& !itemFromTechnoList->Absorbed
-						&& (!pTeam->FirstUnit->Owner->IsAlliedWith(itemFromTechnoList) 
-							|| (pTeam->FirstUnit->Owner->IsAlliedWith(itemFromTechnoList) 
-								&& itemFromTechnoList->IsMindControlled() 
-								&& !pTeam->FirstUnit->Owner->IsAlliedWith(itemFromTechnoList->MindControlledBy))))
+					if (pTechnoType == pObject
+						&& pTechno->IsAlive
+						&& !pTechno->InLimbo
+						&& pTechno->IsOnMap
+						&& !pTechno->Absorbed
+						&& (!pTeam->FirstUnit->Owner->IsAlliedWith(pTechno)
+							|| (pTeam->FirstUnit->Owner->IsAlliedWith(pTechno)
+								&& pTechno->IsMindControlled()
+								&& !pTeam->FirstUnit->Owner->IsAlliedWith(pTechno->MindControlledBy))))
 					{
-						validIndexes.AddItem(j);
+						validItems.AddItem(pTechno);
 						found = true;
 					}
 				}
 			}
 
-			if (validIndexes.Count > 0)
+			if (validItems.Count > 0)
 			{
-				idxSelectedObject = validIndexes.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, validIndexes.Count - 1));
+				auto selectedObject = validItems.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, validItems.Count - 1));
+				idxSelectedObject = validItems.GetItemIndex(&selectedObject);
 				selected = true;
 				Debug::Log("DEBUG: [%s] [%s] Picked a random Techno from the list index [AITargetTypes][%d][%d] = %s\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, attackAITargetType, idxSelectedObject, objectsList.GetItem(idxSelectedObject)->ID);
 			}
@@ -2475,38 +2473,36 @@ void ScriptExt::Mission_Move_List1Random(TeamClass *pTeam, int calcThreatMode, b
 		// Still no random target selected
 		if (idxSelectedObject < 0 && objectsList.Count > 0 && !selected)
 		{
-			DynamicVectorClass<int> validIndexes;
+			DynamicVectorClass<TechnoClass*> validItems;
 
 			// Finding the objects from the list that actually exists in the map
-			for (int i = 0; i < TechnoClass::Array->Count; i++)
+			for (const auto& pTechno : *TechnoClass::Array)
 			{
-				auto itemFromTechnoList = TechnoClass::Array->GetItem(i);
-				auto itemTypeFromTechnoList = TechnoClass::Array->GetItem(i)->GetTechnoType();
+				auto pTechnoType = pTechno->GetTechnoType();
 				bool found = false;
 
-				for (int j = 0; j < objectsList.Count && !found; j++)
+				for (const auto& pObject : objectsList)
 				{
-					auto objectFromList = objectsList.GetItem(j);
-
-					if (itemTypeFromTechnoList == objectFromList
-						&& itemFromTechnoList->IsAlive
-						&& !itemFromTechnoList->InLimbo
-						&& itemFromTechnoList->IsOnMap
-						&& !itemFromTechnoList->Absorbed
-						&& ((pickAllies 
-							&& pTeam->FirstUnit->Owner->IsAlliedWith(itemFromTechnoList))
-							|| (!pickAllies 
-								&& !pTeam->FirstUnit->Owner->IsAlliedWith(itemFromTechnoList))))
+					if (pTechnoType == pObject
+						&& pTechno->IsAlive
+						&& !pTechno->InLimbo
+						&& pTechno->IsOnMap
+						&& !pTechno->Absorbed
+						&& (!pTeam->FirstUnit->Owner->IsAlliedWith(pTechno)
+							|| (pTeam->FirstUnit->Owner->IsAlliedWith(pTechno)
+								&& pTechno->IsMindControlled()
+								&& !pTeam->FirstUnit->Owner->IsAlliedWith(pTechno->MindControlledBy))))
 					{
-						validIndexes.AddItem(j);
+						validItems.AddItem(pTechno);
 						found = true;
 					}
 				}
 			}
 
-			if (validIndexes.Count > 0)
+			if (validItems.Count > 0)
 			{
-				idxSelectedObject = validIndexes.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, validIndexes.Count - 1));
+				auto selectedObject = validItems.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, validItems.Count - 1));
+				idxSelectedObject = validItems.GetItemIndex(&selectedObject);
 				selected = true;
 				Debug::Log("DEBUG: [%s] [%s] Picked a random Techno from the list index [AITargetTypes][%d][%d] = %s\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, attackAITargetType, idxSelectedObject, objectsList.GetItem(idxSelectedObject)->ID);
 			}
