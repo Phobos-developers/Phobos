@@ -36,6 +36,17 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_SetLaserTrails, 0x2)
 	return 0;
 }
 
+DEFINE_HOOK(0x702E4E, TechnoClass_Save_Killer_Techno, 0x6)
+{
+	GET(TechnoClass*, pKiller, EDI);
+	GET(TechnoClass*, pVictim, ECX);
+
+	if (pKiller && pVictim)
+		TechnoExt::ObjectKilledBy(pVictim, pKiller);
+
+	return 0;
+}
+
 DEFINE_HOOK_AGAIN(0x7355C0, TechnoClass_Init_InitialStrength, 0x6) // UnitClass_Init
 DEFINE_HOOK_AGAIN(0x517D69, TechnoClass_Init_InitialStrength, 0x6) // InfantryClass_Init
 DEFINE_HOOK_AGAIN(0x442C7B, TechnoClass_Init_InitialStrength, 0x6) // BuildingClass_Init
