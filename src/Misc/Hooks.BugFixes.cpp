@@ -294,3 +294,11 @@ DEFINE_HOOK(0x51BB6E, TechnoClass_AI_TemporalTargetingMe_Fix, 0x6) // InfantryCl
 
 	return R->Origin() + 0xF;
 }
+
+// WW take 1 second as 960 milliseconds, this will fix that back to the actual time.
+// Author: secsome
+DEFINE_HOOK(0x6C919F, StandaloneScore_SinglePlayerScoreDialog_ActualTime, 0x5)
+{
+	R->ECX(static_cast<int>(std::round(R->ECX() * 0.96)));
+	return 0;
+}

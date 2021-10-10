@@ -61,7 +61,7 @@ New:
 - Script Action 111 that un-register Team success, is just the opposite effect of Action 49 (by FS-21)
 - Script Action 112 to regroup temporarily around the Team Leader (by FS-21)
 - ObjectInfo now shows current Target and AI Trigger data (by FS-21)
-
+- Wrong campaign actual time fix (by secsome)
 
 
 Vanilla fixes:
