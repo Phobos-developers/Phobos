@@ -741,6 +741,16 @@ In `aimd.ini`:
 x=103,n
 ```
 
+### `111` Un-register Team success
+
+- Is just the opposite effect of the script action `49,0`. Like if the Team failed.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=111,0
+```
+
 ### `112` Regroup temporarily around the Team Leader
 
 - Puts the TaskForce into Area Guard Mode for the given amount of time around the Team Leader (this unit remains almost immobile until the action ends). The default radius around the Leader is `[General] > CloseEnough` and the units will not leave that area.

@@ -179,6 +179,10 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Pick 1 farther friendly random objective from specific list for moving to it
 		ScriptExt::Mission_Move_List1Random(pTeam, 3, true, -1, -1);
 		break;
+	case 111:
+		// Un-register success for AITrigger weight adjustment (this is the opposite of 49,0)
+		ScriptExt::UnregisterGreatSuccess(pTeam);
+		break;
 	case 112:
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
 		break;
@@ -2545,4 +2549,10 @@ void ScriptExt::SetCloseEnoughDistance(TeamClass *pTeam, double distance = -1)
 	pTeam->StepCompleted = true;
 
 	return;
+}
+
+void ScriptExt::UnregisterGreatSuccess(TeamClass* pTeam)
+{
+	pTeam->AchievedGreatSuccess = false;
+	pTeam->StepCompleted = true; // This action finished - FS-21
 }
