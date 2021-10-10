@@ -44,10 +44,12 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 			if (pObjectKiller && pObjectKiller->BelongsToATeam())
 			{
 				auto pKillerTechnoData = TechnoExt::ExtMap.Find(pObjectKiller);
-				auto pFootKiller = abstract_cast<FootClass*>(pObjectKiller);
-				auto pFocus = abstract_cast<TechnoClass*>(pFootKiller->Team->Focus);
-				Debug::Log("DEBUG: pObjectKiller -> [%s] [%s] registered a kill of the type [%s]\n", pFootKiller->Team->Type->ID, pObjectKiller->get_ID(), pVictim->get_ID());
-
+				auto const pFootKiller = abstract_cast<FootClass*>(pObjectKiller);
+				auto const pFocus = abstract_cast<TechnoClass*>(pFootKiller->Team->Focus);
+				/*
+				Debug::Log("DEBUG: pObjectKiller -> [%s] [%s] registered a kill of the type [%s]\n", 
+					pFootKiller->Team->Type->ID, pObjectKiller->get_ID(), pVictim->get_ID());
+				*/
 				pKillerTechnoData->LastKillWasTeamTarget = false;
 				if (pFocus == pVictim)
 					pKillerTechnoData->LastKillWasTeamTarget = true;
@@ -58,13 +60,13 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 
 void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
 {
-	if (auto Capturer = pThis->MindControlledBy)
+	if (auto pCapturer = pThis->MindControlledBy)
 	{
-		auto pCapturerExt = TechnoTypeExt::ExtMap.Find(Capturer->GetTechnoType());
-		if (pCapturerExt && pCapturerExt->MindControlRangeLimit > 0
-			&& pThis->DistanceFrom(Capturer) > pCapturerExt->MindControlRangeLimit * 256.0)
+		auto pCapturerExt = TechnoTypeExt::ExtMap.Find(pCapturer->GetTechnoType());
+		if (pCapturerExt && pCapturerExt->MindControlRangeLimit.Get() > 0 &&
+			pThis->DistanceFrom(pCapturer) > pCapturerExt->MindControlRangeLimit.Get())
 		{
-			Capturer->CaptureManager->FreeUnit(pThis);
+			pCapturer->CaptureManager->FreeUnit(pThis);
 		}
 	}
 }
@@ -72,7 +74,7 @@ void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
 void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 {
 	auto pData = TechnoExt::ExtMap.Find(pThis);
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	if (pData && pTypeData && pTypeData->Interceptor && !pThis->Target &&
 		!(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
@@ -85,13 +87,15 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 					continue;
 			}
 
-			const double guardRange = pThis->Veterancy.IsElite() ?
-				pTypeData->Interceptor_EliteGuardRange * 256 : pTypeData->Interceptor_GuardRange * 256;
-			const double minguardRange = pThis->Veterancy.IsElite() ?
-				pTypeData->Interceptor_EliteMinimumGuardRange * 256 : pTypeData->Interceptor_MinimumGuardRange * 256;
+			const auto guardRange = pThis->Veterancy.IsElite() ?
+				pTypeData->Interceptor_EliteGuardRange : 
+				pTypeData->Interceptor_GuardRange;
+			const auto minguardRange = pThis->Veterancy.IsElite() ?
+				pTypeData->Interceptor_EliteMinimumGuardRange : 
+				pTypeData->Interceptor_MinimumGuardRange;
 
-			double distance = pBullet->Location.DistanceFrom(pThis->Location);
-			if (distance > guardRange || distance < minguardRange)
+			auto distance = pBullet->Location.DistanceFrom(pThis->Location);
+			if (distance > guardRange.Get() || distance < minguardRange.Get())
 				continue;
 
 			/*
@@ -114,10 +118,10 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 
 void TechnoExt::ApplyPowered_KillSpawns(TechnoClass* pThis)
 {
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	if (pTypeData && pThis->WhatAmI() == AbstractType::Building)
 	{
-		auto pBuilding = abstract_cast<BuildingClass*>(pThis);
+		auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
 		if (pTypeData->Powered_KillSpawns && pBuilding->Type->Powered && !pBuilding->IsPowerOnline())
 		{
 			if (auto pManager = pBuilding->SpawnManager)
@@ -138,10 +142,10 @@ void TechnoExt::ApplyPowered_KillSpawns(TechnoClass* pThis)
 
 void TechnoExt::ApplySpawn_LimitRange(TechnoClass* pThis)
 {
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	if (pTypeData && pTypeData->Spawn_LimitedRange)
 	{
-		if (auto pManager = pThis->SpawnManager)
+		if (auto const pManager = pThis->SpawnManager)
 		{
 			auto pTechnoType = pThis->GetTechnoType();
 			int weaponRange = 0;
@@ -168,7 +172,7 @@ void TechnoExt::ApplySpawn_LimitRange(TechnoClass* pThis)
 
 bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 {
-	if (!pThis || pThis->InLimbo)
+	if (!TechnoExt::IsActive(pThis))
 		return false;
 
 	auto slave = pThis->SlaveManager;
@@ -267,7 +271,7 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	if (!pThis || weaponIndex < 0)
 		return FLH;
 
-	auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	if (pThis->Veterancy.IsElite())
 	{

@@ -24,12 +24,12 @@ public:
 		PhobosFixedString<0x20> GroupAs;
 		Valueable<int> RadarJamRadius;
 		Valueable<int> InhibitorRange;
-		Valueable<double> MindControlRangeLimit;
+		Valueable<Leptons> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
-		Valueable<double> Interceptor_GuardRange;
-		Valueable<double> Interceptor_MinimumGuardRange;
-		Valueable<double> Interceptor_EliteGuardRange;
-		Valueable<double> Interceptor_EliteMinimumGuardRange;
+		Valueable<Leptons> Interceptor_GuardRange;
+		Valueable<Leptons> Interceptor_MinimumGuardRange;
+		Valueable<Leptons> Interceptor_EliteGuardRange;
+		Valueable<Leptons> Interceptor_EliteMinimumGuardRange;
 		Valueable<CoordStruct> TurretOffset;
 		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Spawn_LimitedRange;
