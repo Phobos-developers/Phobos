@@ -60,14 +60,14 @@ New:
 - Script Action 95 to 102 and 106 to 109 for new AI movements towards certain objects (by FS-21)
 - Script Action 103 that Modify Target Distance in the new move actions (by FS-21)
 - Script Action 112 to regroup temporarily around the Team Leader (by FS-21)
-
-- ObjectInfo now shows, current Target and AI Trigger data (by FS-21)
+- ObjectInfo now shows current Target and AI Trigger data (by FS-21)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
 - Fixed DeathWeapon not detonating properly (by Uranusian)
 - Fixed lasers & other effects drawing from wrong offset with weapons that use Burst (by Starkku)
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water (by Uranusian)
+- Fixed temporal weapon crash under certain conditions where stack dump starts with 0051BB7D (by secsome)
 
 Phobos fixes:
 - TBA
