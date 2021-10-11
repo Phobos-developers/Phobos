@@ -59,6 +59,7 @@ New:
 - Script Action 94 for picking a random script from a list (by FS-21)
 - Script Action 95 to 102 and 106 to 109 for new AI movements towards certain objects (by FS-21)
 - Script Action 103 that Modify Target Distance in the new move actions (by FS-21)
+- Script Action 110 that Modify how ends the new move actions (by FS-21)
 - Script Action 111 that un-register Team success, is just the opposite effect of Action 49 (by FS-21)
 - Script Action 112 to regroup temporarily around the Team Leader (by FS-21)
 - ObjectInfo now shows current Target and AI Trigger data (by FS-21)

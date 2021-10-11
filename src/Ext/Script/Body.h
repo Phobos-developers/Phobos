@@ -69,9 +69,11 @@ public:
 	static void Mission_Move_List(TeamClass *pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType);
 	static void Mission_Move_List1Random(TeamClass *pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem);
 	static void SetCloseEnoughDistance(TeamClass *pTeam, double distance);
+	static void SetMoveMissionEndMode(TeamClass* pTeam, int mode);
 
 	static ExtContainer ExtMap;
 
 private:
 	static void ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
+	static bool MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, FootClass* pLeader, int mode);
 };

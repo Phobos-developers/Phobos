@@ -741,6 +741,24 @@ In `aimd.ini`:
 x=103,n
 ```
 
+### `110` Set Move Action End Mode
+
+- Sets how the Movement actions ends and jumps to the next line. This action works only the first time and CloseEnough will be used again the next Movement action. 
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=110,n
+```
+
+- The possible argument values are:
+
+| *Argument* | *Action ends when...*                       |
+| :------: | :-------------------------------------------: |
+0         | Team Leader reaches the minimum distance |
+1         | One unit reaches the minimum distance |
+2         | All team members reached the minimum distance |
+
 ### `111` Un-register Team success
 
 - Is just the opposite effect of the script action `49,0`. Like if the Team failed.

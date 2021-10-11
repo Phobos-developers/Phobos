@@ -179,6 +179,10 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Pick 1 farther friendly random objective from specific list for moving to it
 		ScriptExt::Mission_Move_List1Random(pTeam, 3, true, -1, -1);
 		break;
+	case 110:
+		// Set the condition for ending the Mission_Move Actions.
+		ScriptExt::SetMoveMissionEndMode(pTeam, -1);
+		break;
 	case 111:
 		// Un-register success for AITrigger weight adjustment (this is the opposite of 49,0)
 		ScriptExt::UnregisterGreatSuccess(pTeam);
@@ -2158,50 +2162,21 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 	}
 	else
 	{
-		double closeEnough = RulesClass::Instance->CloseEnough / 256.0;
+		int moveDestinationMode = 0;
 
 		auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-		if (pTeamData && pTeamData->CloseEnough > 0)
-			closeEnough = pTeamData->CloseEnough;
-
-		bool bForceNextAction = true;
-
-		// Team already have a focused target
-		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+		if (pTeamData)
 		{
-			if (pUnit
-				&& pUnit->IsAlive
-				&& !pUnit->InLimbo)
-			{
-				if (!pUnit->Locomotor->Is_Moving_Now())
-					pUnit->SetDestination(pFocus, false);
-
-				if (pUnit->DistanceFrom(pUnit->Destination) / 256.0 > closeEnough)
-				{
-					bForceNextAction = false;
-
-					if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0)
-						pUnit->QueueMission(Mission::Move, false);
-
-					continue;
-				}
-				else
-				{
-					if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
-					{
-						pUnit->QueueMission(Mission::Return, false);
-						pUnit->Mission_Enter();
-
-						continue;
-					}
-				}
-			}
+			moveDestinationMode = pTeamData->MoveMissionEndMode;
 		}
+
+		bool bForceNextAction = ScriptExt::MoveMissionEndStatus(pTeam, pFocus, pLeaderUnit, moveDestinationMode);
 
 		if (bForceNextAction)
 		{
 			if (pTeamData)
 			{
+				pTeamData->MoveMissionEndMode = 0;
 				pTeamData->IdxSelectedObjectFromAIList = -1;
 
 				if (pTeamData->CloseEnough >= 0)
@@ -2555,4 +2530,142 @@ void ScriptExt::UnregisterGreatSuccess(TeamClass* pTeam)
 {
 	pTeam->AchievedGreatSuccess = false;
 	pTeam->StepCompleted = true; // This action finished - FS-21
+}
+
+void ScriptExt::SetMoveMissionEndMode(TeamClass* pTeam, int mode = 0)
+{
+	// This passive method replaces the CloseEnough value from rulesmd.ini by a custom one. Used by Mission_Move()
+	if (mode < 0 || mode > 2)
+		mode = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData)
+	{
+		if (mode >= 0 && mode <= 2)
+			pTeamData->MoveMissionEndMode = mode;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, FootClass* pLeader = nullptr, int mode = 0)
+{
+	if (!pTeam || !pFocus || mode < 0)
+		return false;
+
+	if (mode != 2 && mode != 1 && !pLeader)
+		return false;
+
+	double closeEnough = RulesClass::Instance->CloseEnough / 256.0;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (pTeamData && pTeamData->CloseEnough > 0)
+		closeEnough = pTeamData->CloseEnough;
+
+	bool bForceNextAction;
+
+	if (mode == 2)
+		bForceNextAction = true;
+	else
+		bForceNextAction = false;
+	
+	// Team already have a focused target
+	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+	{
+		if (pUnit
+			&& pUnit->IsAlive
+			&& !pUnit->InLimbo
+			&& !pUnit->TemporalTargetingMe
+			&& !pUnit->BeingWarpedOut)
+		{
+			if (!pUnit->Locomotor->Is_Moving_Now())
+				pUnit->SetDestination(pFocus, false);
+
+			if (mode == 2)
+			{
+				// Default mode: all members in range
+				if (pUnit->DistanceFrom(pUnit->Destination) / 256.0 > closeEnough)
+				{
+					bForceNextAction = false;
+					
+					if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0)
+						pUnit->QueueMission(Mission::Move, false);
+
+					continue;
+				}
+				else
+				{
+					if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
+					{
+						pUnit->QueueMission(Mission::Return, false);
+						pUnit->Mission_Enter();
+
+						continue;
+					}
+				}
+			}
+			else
+			{
+				if (mode == 1)
+				{
+					// Any member in range
+					if (pUnit->DistanceFrom(pUnit->Destination) / 256.0 > closeEnough)
+					{
+						if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0)
+							pUnit->QueueMission(Mission::Move, false);
+						
+						continue;
+					}
+					else
+					{
+						bForceNextAction = true;
+						
+						if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
+						{
+							pUnit->QueueMission(Mission::Return, false);
+							pUnit->Mission_Enter();
+
+							continue;
+						}
+					}
+				}
+				else
+				{
+					// All other cases: Team Leader mode in range
+					if (pLeader)
+					{
+						if (pUnit->DistanceFrom(pUnit->Destination) / 256.0 > closeEnough)
+						{
+							if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0)
+								pUnit->QueueMission(Mission::Move, false);
+							
+							continue;
+						}
+						else
+						{
+							if (pUnit == pLeader)
+								bForceNextAction = true;
+							
+							if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
+							{
+								pUnit->QueueMission(Mission::Return, false);
+								pUnit->Mission_Enter();
+
+								continue;
+							}
+						}
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	return bForceNextAction;
 }
