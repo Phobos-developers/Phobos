@@ -62,6 +62,7 @@ public:
 	static void PickRandomScript(TeamClass * pTeam, int idxScriptsList);
 	static void Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem);
 	static TechnoClass* FindBestObject(TechnoClass *pTechno, int method, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem);
+	static void UnregisterGreatSuccess(TeamClass * pTeam);
 
 	static void Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
 

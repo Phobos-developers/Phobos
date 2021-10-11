@@ -134,6 +134,10 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Move to the farther friendly target
 		ScriptExt::Mission_Move(pTeam, 3, true, -1, -1);
 		break;
+	case 111:
+		// Un-register success for AITrigger weight adjustment (this is the opposite of 49,0)
+		ScriptExt::UnregisterGreatSuccess(pTeam);
+		break;
 	case 112:
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
 		break;
@@ -2316,4 +2320,10 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 	}
 
 	return bestObject;
+}
+
+void ScriptExt::UnregisterGreatSuccess(TeamClass* pTeam)
+{
+	pTeam->AchievedGreatSuccess = false;
+	pTeam->StepCompleted = true; // This action finished - FS-21
 }

@@ -23,7 +23,7 @@ public:
 		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		Valueable<bool> ReceiveDamage;
 		Valueable<bool> LastKillWasTeamTarget;
-		int PassengerDeletion_Rate;
+		TimerStruct	PassengerDeletionTimer;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet(nullptr)
@@ -31,7 +31,7 @@ public:
 			, LaserTrails()
 			, ReceiveDamage(false)
 			, LastKillWasTeamTarget(false)
-			, PassengerDeletion_Rate(-1)
+			, PassengerDeletionTimer(-1)
 		{ }
 
 		virtual ~ExtData() = default;
@@ -62,6 +62,8 @@ public:
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static bool IsActive(TechnoClass* pThis);
 
 	static bool IsHarvesting(TechnoClass* pThis);
 	static bool HasAvailableDock(TechnoClass* pThis);
