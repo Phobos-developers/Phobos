@@ -33,8 +33,8 @@ IdleAnim.OfflineAction=Hides   ; AttachedAnimFlag (None, Hides, Temporal, Paused
 IdleAnim.TemporalAction=Hides  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 BreakAnim=                     ; animation
 HitAnim=                       ; animation
-AbsorbPercent=1.0			   ; double, percents
-PassPercent=0.0				   ; double, percents
+AbsorbPercent=1.0              ; double, percents
+PassPercent=0.0                ; double, percents
 
 [SOMETECHNO]                   ; TechnoType
 ShieldType=SOMESHIELDTYPE      ; ShieldType; none by default
@@ -42,7 +42,7 @@ ShieldType=SOMESHIELDTYPE      ; ShieldType; none by default
 [SOMEWARHEAD]                  ; WarheadType
 PenetratesShield=false         ; boolean
 BreaksShield=false             ; boolean
-AbsorbPercentShield=		   ; double, percents
+AbsorbPercentShield=           ; double, percents
 PassPercentShield=             ; double, percents
 ```
 - Now you can have a shield for any TechnoType. It serves as a second health pool with independent `Armor` and `Strength` values.
