@@ -123,7 +123,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 			this->BreakShield();
 
-			return this->Type->AbsorbOverDamage ? 0 : residueDamage + healthDamage;
+			return this->Type->AbsorbOverDamage ? healthDamage : residueDamage + healthDamage;
 		}
 		else
 		{
@@ -155,7 +155,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	}
 
 	// else if (nDamage == 0)
-	return 0;
+	return healthDamage;
 }
 
 void ShieldClass::ResponseAttack()
