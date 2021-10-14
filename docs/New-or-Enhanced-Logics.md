@@ -517,6 +517,19 @@ Interceptor.EliteMinimumGuardRange=0.0  ; double
 Interceptable=no ; boolean
 ```
 
+## Trigger actions
+
+### `500` Save Game
+- Save the current game immediately (singleplayer game only).
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],500,0,0,0,0,0,0,A,[ActionX]
+...
+```
+
 ## Script actions
 
 ### `71` Timed Area Guard
