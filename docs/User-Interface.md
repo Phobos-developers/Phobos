@@ -25,6 +25,11 @@ IngameScore.LoseTheme= ; soundtrack theme ID
 
 ## Hotkey Commands
 
+### `[ ]` Save Game
+
+- Save the current singleplayer game.
+- If need localization, just add `TXT_SAVEGAME`, `TXT_SAVEGAME_DESC` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
+
 ### `[ ]` Next Idle Harvester
 
 - Selects and centers the camera on the next TechnoType that is counted via the [harvester counter](#harvester-counter) and is currently idle.
