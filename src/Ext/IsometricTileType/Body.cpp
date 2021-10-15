@@ -2,53 +2,9 @@
 
 #include <ScenarioClass.h>
 
-DynamicVectorClass<LightConvertPalette*> LightConvertPalette::Array;
-
 template<> const DWORD Extension<IsometricTileTypeClass>::Canary = 0x91577125;
 IsometricTileTypeExt::ExtContainer IsometricTileTypeExt::ExtMap;
 int IsometricTileTypeExt::CurrentTileset = -1;
-PhobosMap<LightConvertPalette*, PhobosMap<TintStruct, LightConvertClass*>> IsometricTileTypeExt::TileDrawers;
-
-LightConvertClass* IsometricTileTypeExt::InitDrawer(IsometricTileTypeClass* pType, TintStruct& tint)
-{
-	// validate the surface
-	if (!DSurface::Primary())
-		return nullptr;
-
-	auto const pData = IsometricTileTypeExt::ExtMap.Find(pType);
-	LightConvertPalette* pLCP = nullptr;
-	if (pData && pData->Palette)
-		pLCP = pData->Palette;
-
-	auto QueryDrawer = [&tint, pLCP](IsometricTileTypeClass* pType) -> LightConvertClass*
-	{
-		return IsometricTileTypeExt::TileDrawers.get_or_default(pLCP).get_or_default(tint, nullptr);
-	};
-
-	// If no custom palette is set, use vanialla one
-	if (!pLCP && tint == TintStruct { 1000,1000,1000 } && LightConvertClass::Array->Count > 0)
-		return *LightConvertClass::Array->begin();
-	
-	ScenarioClass::ScenarioLighting(&tint.Red, &tint.Green, &tint.Blue);
-
-	if (auto const pDrawer = QueryDrawer(pType))
-		return pDrawer;
-
-	int nShadeCount = 53;
-	if (tint.Red + tint.Green + tint.Blue < 2000)
-		nShadeCount = 27;
-	
-	auto pPalette = pLCP && pLCP->Loaded() ? *pLCP : &FileSystem::ISOx_PAL();
-
-	auto const pDrawer = GameCreate<LightConvertClass>(
-		*pPalette, FileSystem::TEMPERAT_PAL(), DSurface::Primary(), tint.Red, tint.Green, tint.Blue,
-		LightConvertClass::Array->Count != 0, nullptr, nShadeCount);
-
-	LightConvertClass::Array->AddItem(pDrawer);
-	IsometricTileTypeExt::TileDrawers[pLCP][tint] = pDrawer;
-
-	return pDrawer;
-}
 
 // =============================
 // load / save
@@ -62,7 +18,6 @@ void IsometricTileTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (pINI->GetSection(pSection))
 	{
-		this->Palette = LightConvertPalette::FindOrAllocate(pINI, pSection, "CustomPalette");
 
 	}
 }
@@ -72,7 +27,6 @@ void IsometricTileTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Tileset)
-		.Process(this->Palette)
 		;
 }
 
@@ -92,7 +46,6 @@ bool IsometricTileTypeExt::LoadGlobals(PhobosStreamReader& Stm)
 {
 	return Stm
 		.Process(IsometricTileTypeExt::CurrentTileset)
-		.Process(IsometricTileTypeExt::TileDrawers)
 		.Success();
 }
 
@@ -100,7 +53,6 @@ bool IsometricTileTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
 	return Stm
 		.Process(IsometricTileTypeExt::CurrentTileset)
-		.Process(IsometricTileTypeExt::TileDrawers)
 		.Success();
 }
 // =============================

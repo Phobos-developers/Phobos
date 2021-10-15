@@ -78,7 +78,6 @@ public:
 	public:
 		Valueable<int> Tileset;
 		LightConvertPalette* Palette;
-
 		ExtData(IsometricTileTypeClass* OwnerObject) : Extension<IsometricTileTypeClass>(OwnerObject)
 			, Tileset { -1 }
 			, Palette { nullptr }
