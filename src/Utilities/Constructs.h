@@ -87,6 +87,7 @@ public:
 	bool LoadFromINI(
 		CCINIClass* pINI, const char* pSection, const char* pKey,
 		const char* pDefault = "");
+	bool LoadFromName(const char* PaletteName);
 
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;

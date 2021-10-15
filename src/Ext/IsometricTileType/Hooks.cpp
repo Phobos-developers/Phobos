@@ -12,10 +12,12 @@ DEFINE_HOOK(0x544E70, IsometricTileTypeClass_Init_Drawer, 0x8)
 	GET(int, Red, ECX);
 	GET(int, Green, EDX);
 	GET_STACK(int, Blue, 0x4);
-	
-	TintStruct tint { Red,Green,Blue };
-	auto const pItem = IsometricTileTypeClass::Array->GetItemOrDefault(pCell->IsoTileTypeIndex);
 
-	R->EAX(IsometricTileTypeExt::InitDrawer(pItem, tint));
-	return 0x544FDE;	
+	if (auto pData = IsometricTileTypeExt::ExtMap.Find(IsometricTileTypeClass::Array->GetItemOrDefault(pCell->IsoTileTypeIndex)))
+	{
+		R->EAX(IsometricTileTypeExt::InitDrawer(IsometricTileTypeExt::LoadedPalettesLookUp[pData->Tileset], Red, Green, Blue));
+		return 0x544FDE;
+	}
+
+	return 0;
 }

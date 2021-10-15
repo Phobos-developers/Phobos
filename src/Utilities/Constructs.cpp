@@ -36,6 +36,19 @@
 #include <FileSystem.h>
 #include <ScenarioClass.h>
 
+bool CustomPalette::LoadFromName(const char* PaletteName)
+{
+	this->Clear();
+
+	if (auto pPal = FileSystem::AllocatePalette(PaletteName))
+	{
+		this->Palette.reset(pPal);
+		this->CreateConvert();
+	}
+
+	return this->Convert != nullptr;
+}
+
 bool CustomPalette::LoadFromINI(
 	CCINIClass* pINI, const char* pSection, const char* pKey,
 	const char* pDefault)
@@ -49,14 +62,7 @@ bool CustomPalette::LoadFromINI(
 			pSuffix[2] = pExtension[2];
 		}
 
-		this->Clear();
-
-		if (auto pPal = FileSystem::AllocatePalette(Phobos::readBuffer)) {
-			this->Palette.reset(pPal);
-			this->CreateConvert();
-		}
-
-		return this->Convert != nullptr;
+		return this->LoadFromName(Phobos::readBuffer);
 	}
 	return false;
 }
