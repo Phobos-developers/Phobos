@@ -294,3 +294,17 @@ DEFINE_HOOK(0x51BB6E, TechnoClass_AI_TemporalTargetingMe_Fix, 0x6) // InfantryCl
 
 	return R->Origin() + 0xF;
 }
+
+// Fixed the bug that units' lighting get corrupted after loading a save with a different lighting being set
+// Author: secsome
+DEFINE_HOOK(0x67E6E5, LoadGame_RecalcLighting, 0x7)
+{
+	ScenarioClass::Instance->RecalcLighting(
+		ScenarioClass::Instance->Red * 10,
+		ScenarioClass::Instance->Green * 10,
+		ScenarioClass::Instance->Blue * 10,
+		0
+	);
+
+	return 0;
+}
