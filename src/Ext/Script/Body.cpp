@@ -1578,10 +1578,11 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	case 20:
 		pTypeBuilding = abstract_cast<BuildingTypeClass*>(pTechnoType);
 
-		// Vehicle Factory
+		// Land Vehicle Factory
 		if (!pTechno->Owner->IsNeutral()
 			&& pTechnoType->WhatAmI() == AbstractType::BuildingType
-			&& pTypeBuilding->Factory == AbstractType::UnitType)
+			&& pTypeBuilding->Factory == AbstractType::UnitType
+			&& !pTypeBuilding->Naval)
 		{
 			return true;
 		}
@@ -1790,6 +1791,19 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 			{
 				return true;
 			}
+		}
+
+		break;
+
+	case 35:
+		pTypeBuilding = abstract_cast<BuildingTypeClass*>(pTechnoType);
+
+		// Land Vehicle Factory & Naval Factory
+		if (!pTechno->Owner->IsNeutral()
+			&& pTechnoType->WhatAmI() == AbstractType::BuildingType
+			&& pTypeBuilding->Factory == AbstractType::UnitType)
+		{
+			return true;
 		}
 
 		break;
