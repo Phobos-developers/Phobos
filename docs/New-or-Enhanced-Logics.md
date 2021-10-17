@@ -521,12 +521,15 @@ Interceptable=no ; boolean
 
 ### `500` Save Game
 - Save the current game immediately (singleplayer game only).
+    - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`
+    - The save's description will be looked like `MapDescName - CSFText`
+        - For example: `Allied Mission 25: Esther's Money - CSFText`
 
 In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],500,0,0,0,0,0,0,A,[ActionX]
+ID=ActionCount,[Action1],500,4,[CSFKey],0,0,0,0,A,[ActionX]
 ...
 ```
 
