@@ -22,7 +22,8 @@ In `FAData.ini`:
 53=Play BuildUp,10
 
 [ActionsRA2]
-125=Build at...,-10,47,53,0,0,0,1,0,0,[LONG DESC]
+125=Build at...,-10,47,53,0,0,0,1,0,0,[LONG DESC],0,1,125
+500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
 
 [ScriptsRA2]   ; NEEDS FA2EXT.DLL (by AlexB) or FA2SP.DLL (by secsome)
 71=Timed Area Guard,4,0,1,[LONG DESC]         ; FA2Ext.dll only
@@ -47,6 +48,7 @@ New:
 - Unlimited Global / Local Variables (by secsome)
 - Adds a "Load Game" button to the retry dialog on mission failure (by secsome)
 - Default disguise for individual InfantryTypes (by secsome)
+- Save Game Trigger Action (by secsome)
 - Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)
 - Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
 - XDrawOffset for animations (by Morton)

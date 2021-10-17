@@ -1,5 +1,9 @@
 #include "Body.h"
 
+#include <SessionClass.h>
+#include <MessageListClass.h>
+#include <HouseClass.h>
+
 #include <Utilities/SavegameDef.h>
 
 #include <Ext/Scenario/Body.h>
@@ -33,14 +37,25 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 	TriggerClass* pTrigger, CellStruct const& location, bool& bHandled)
 {
 	bHandled = true;
+
+	// Vanilla
 	switch (pThis->ActionKind)
 	{
 	case TriggerAction::PlaySoundEffectRandom:
 		return TActionExt::PlayAudioAtRandomWP(pThis, pHouse, pObject, pTrigger, location);
 	default:
+		break;
+	};
+
+	// Phobos
+	switch (static_cast<PhobosTriggerAction>(pThis->ActionKind))
+	{
+	case PhobosTriggerAction::SaveGame:
+		return TActionExt::SaveGame(pThis, pHouse, pObject, pTrigger, location);
+	default:
 		bHandled = false;
 		return true;
-	};
+	}
 }
 
 bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
@@ -61,6 +76,44 @@ bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, Ob
 		auto const cell = pScen->GetWaypointCoords(luckyWP);
 		auto const coords = CellClass::Cell2Coord(cell);
 		VocClass::PlayIndexAtPos(pThis->Value, coords);
+	}
+
+	return true;
+}
+
+bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (SessionClass::Instance->GameMode == GameMode::Campaign || SessionClass::Instance->GameMode == GameMode::Skirmish)
+	{
+		auto PrintMessage = [](const wchar_t* pMessage)
+		{
+			MessageListClass::Instance->PrintMessage(
+				pMessage,
+				RulesClass::Instance->MessageDelay,
+				HouseClass::Player->ColorSchemeIndex,
+				true
+			);
+		};
+
+		char fName[0x80];
+
+		SYSTEMTIME time;
+		GetLocalTime(&time);
+
+		_snprintf_s(fName, 0x7F, "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
+			time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
+
+		PrintMessage(StringTable::LoadString("TXT_SAVING_GAME"));
+
+		wchar_t fDescription[0x80] = { 0 };
+		wcscpy_s(fDescription, ScenarioClass::Instance->UINameLoaded);
+		wcscat_s(fDescription, L" - ");
+		wcscat_s(fDescription, StringTable::LoadString(pThis->Text));
+
+		if (ScenarioClass::Instance->SaveGame(fName, fDescription))
+			PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
+		else
+			PrintMessage(StringTable::LoadString("TXT_ERROR_SAVING_GAME"));
 	}
 
 	return true;
