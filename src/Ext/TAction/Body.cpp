@@ -108,6 +108,7 @@ bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* 
 		wchar_t fDescription[0x80] = { 0 };
 		wcscpy_s(fDescription, ScenarioClass::Instance->UINameLoaded);
 		wcscat_s(fDescription, L" - Trigger Saved");
+
 		if (ScenarioClass::Instance->SaveGame(fName, fDescription))
 			PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
 		else
