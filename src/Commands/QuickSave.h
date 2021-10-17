@@ -6,28 +6,28 @@
 #include "Commands.h"
 #include <Utilities/GeneralUtils.h>
 
-class SaveGameCommandClass : public PhobosCommandClass
+class QuickSaveCommandClass : public PhobosCommandClass
 {
 public:
 	// CommandClass
 	virtual const char* GetName() const override
 	{
-		return "Save game";
+		return "Quicksave";
 	}
 
 	virtual const wchar_t* GetUIName() const override
 	{
-		return GeneralUtils::LoadStringUnlessMissing("TXT_SAVEGAME", L"Save game");
+		return GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE", L"Quicksave");
 	}
 
 	virtual const wchar_t* GetUICategory() const override
 	{
-		return GeneralUtils::LoadStringUnlessMissing("TXT_DEVELOPMENT", L"Development");
+		return GeneralUtils::LoadStringUnlessMissing("TXT_INTERFACE", L"Interface");
 	}
 
 	virtual const wchar_t* GetUIDescription() const override
 	{
-		return GeneralUtils::LoadStringUnlessMissing("TXT_SAVEGAME_DESC", L"Save the current game (Singleplayer only).");
+		return GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_DESC", L"Save the current game (Singleplayer only).");
 	}
 
 	virtual void Execute(DWORD dwUnk) const override
@@ -56,7 +56,7 @@ public:
 
 			wchar_t fDescription[0x80] = { 0 };
 			wcscpy_s(fDescription, ScenarioClass::Instance->UINameLoaded);
-			wcscat_s(fDescription, L" - SaveCommand");
+			wcscat_s(fDescription, L" - QuickSaved");
 
 			if (ScenarioClass::SaveGame(fName, fDescription))
 				PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
@@ -65,6 +65,8 @@ public:
 
 		}
 		else
+		{
 			PrintMessage(StringTable::LoadString("MSG:NotAvailableInMultiplayer"));
+		}
 	}
 };

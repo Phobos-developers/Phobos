@@ -25,10 +25,11 @@ IngameScore.LoseTheme= ; soundtrack theme ID
 
 ## Hotkey Commands
 
-### `[ ]` Save Game
+### `[ ]` Quicksave
 
 - Save the current singleplayer game.
-- If need localization, just add `TXT_SAVEGAME`, `TXT_SAVEGAME_DESC` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
+- If need localization, just add `TXT_QUICKGAME`, `TXT_QUICKGAME_DESC` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
+    - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
 
 ### `[ ]` Next Idle Harvester
 
