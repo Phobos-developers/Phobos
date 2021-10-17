@@ -114,6 +114,7 @@ bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* 
 		else
 			PrintMessage(StringTable::LoadString("TXT_ERROR_SAVING_GAME"));
 	}
+
 	return true;
 }
 
