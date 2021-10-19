@@ -63,7 +63,6 @@ public:
 				PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
 			else
 				PrintMessage(StringTable::LoadString("TXT_ERROR_SAVING_GAME"));
-
 		}
 		else
 		{
