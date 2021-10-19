@@ -28,8 +28,9 @@ IngameScore.LoseTheme= ; soundtrack theme ID
 ### `[ ]` Quicksave
 
 - Save the current singleplayer game.
-- If need localization, just add `TXT_QUICKGAME`, `TXT_QUICKGAME_DESC` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
+- If need localization, just add `TXT_QUICKGAME`, `TXT_QUICKGAME_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
     - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
+    - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`
 
 ### `[ ]` Next Idle Harvester
 

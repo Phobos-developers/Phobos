@@ -56,7 +56,8 @@ public:
 
 			wchar_t fDescription[0x80] = { 0 };
 			wcscpy_s(fDescription, ScenarioClass::Instance->UINameLoaded);
-			wcscat_s(fDescription, L" - QuickSaved");
+			wcscat_s(fDescription, L" - ");
+			wcscat_s(fDescription, GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_SUFFIX", L"Quicksaved"));
 
 			if (ScenarioClass::SaveGame(fName, fDescription))
 				PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
