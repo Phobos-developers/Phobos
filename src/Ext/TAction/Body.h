@@ -9,6 +9,11 @@
 
 class HouseClass;
 
+enum class PhobosTriggerAction : unsigned int
+{
+	SaveGame = 500
+};
+
 class TActionExt
 {
 public:
@@ -36,6 +41,9 @@ public:
 			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location, bool& bHandled);
 
 	static bool PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse,
+			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
+
+	static bool SaveGame(TActionClass* pThis, HouseClass* pHouse,
 			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
 
 	class ExtContainer final : public Container<TActionExt>

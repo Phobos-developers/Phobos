@@ -517,6 +517,22 @@ Interceptor.EliteMinimumGuardRange=0.0  ; double
 Interceptable=no ; boolean
 ```
 
+## Trigger actions
+
+### `500` Save Game
+- Save the current game immediately (singleplayer game only).
+    - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
+    - The save's description will look like `MapDescName - CSFText`.
+        - For example: `Allied Mission 25: Esther's Money - Money Stolen`.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],500,4,[CSFKey],0,0,0,0,A,[ActionX]
+...
+```
+
 ## Script actions
 
 ### `71` Timed Area Guard
