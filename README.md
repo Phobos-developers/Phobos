@@ -92,7 +92,7 @@ Credits
 - **ChrisLv_CN** - interceptor logic, LaserTrails, laser fixes, general assistance (work relicensed under [following permission](images/ChrisLv-relicense.png))
 - **Xkein** - general assistance, YRpp edits
 - **thomassneddon** - general assistance
-- **Starkku** - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements, stationary VehicleTypes, Burst logic improvements
+- **Starkku** - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements, stationary VehicleTypes, Burst logic improvements, TechnoType auto-firing weapons
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **Morton (MortonPL)** - XDrawOffset, Shield Passthrough & Absorption
 - **mevitar** - honorary shield tester *triple* award

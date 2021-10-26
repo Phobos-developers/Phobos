@@ -344,6 +344,17 @@ WeaponXFLH.BurstN=             ; int - forward, lateral, height
 EliteWeaponXFLH.BurstN=        ; int - forward, lateral, height
 ```
 
+### Automatically firing weapons
+
+- You can now make TechnoType automatically fire its weapon(s) without having to scan for suitable targets by setting `AutoFire`, on either its base cell (in which case the weapon that is used for force-firing is used) or itself (in which case normal targeting and weapon selection rules and are respected) depending on if `AutoFire.TargetSelf` is set or not.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]            ; TechnoType
+AutoFire=no             ; boolean
+AutoFire.TargetSelf=no  ; boolean
+```
+
 ## Weapons
 
 ### Burst.Delays
