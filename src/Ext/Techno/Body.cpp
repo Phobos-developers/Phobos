@@ -47,7 +47,7 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 				auto const pFootKiller = abstract_cast<FootClass*>(pObjectKiller);
 				auto const pFocus = abstract_cast<TechnoClass*>(pFootKiller->Team->Focus);
 				/*
-				Debug::Log("DEBUG: pObjectKiller -> [%s] [%s] registered a kill of the type [%s]\n", 
+				Debug::Log("DEBUG: pObjectKiller -> [%s] [%s] registered a kill of the type [%s]\n",
 					pFootKiller->Team->Type->ID, pObjectKiller->get_ID(), pVictim->get_ID());
 				*/
 				pKillerTechnoData->LastKillWasTeamTarget = false;
@@ -88,10 +88,10 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 			}
 
 			const auto guardRange = pThis->Veterancy.IsElite() ?
-				pTypeData->Interceptor_EliteGuardRange : 
+				pTypeData->Interceptor_EliteGuardRange :
 				pTypeData->Interceptor_GuardRange;
 			const auto minguardRange = pThis->Veterancy.IsElite() ?
-				pTypeData->Interceptor_EliteMinimumGuardRange : 
+				pTypeData->Interceptor_EliteMinimumGuardRange :
 				pTypeData->Interceptor_MinimumGuardRange;
 
 			auto distance = pBullet->Location.DistanceFrom(pThis->Location);
@@ -212,7 +212,7 @@ void TechnoExt::InitializeLaserTrails(TechnoClass* pThis)
 
 	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
-		for (auto const& entry: pTypeExt->LaserTrailData)
+		for (auto const& entry : pTypeExt->LaserTrailData)
 		{
 			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
 			{
@@ -369,6 +369,20 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 		else
 			pExt->PassengerDeletionTimer.Stop();
 	}
+}
+
+bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
+{
+	if (pThis->GetTechnoType()->Ammo > 0)
+	{
+		if (const auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		{
+			if (pThis->Ammo <= pExt->NoAmmoAmount && (pExt->NoAmmoWeapon = weaponIndex || pExt->NoAmmoWeapon == -1))
+				return true;
+		}
+	}
+
+	return false;
 }
 
 // =============================

@@ -355,6 +355,30 @@ AutoFire=no             ; boolean
 AutoFire.TargetSelf=no  ; boolean
 ```
 
+### Disabling fallback to (Elite)Secondary weapon
+
+- It is now possible to disable the fallback to `(Elite)Secondary` weapon from `(Elite)Primary` weapon if it cannot fire at the chosen target by setting `NoSecondaryWeaponFallback` to true (defaults to false). This does not apply to special cases where `(Elite)Secondary` weapon is always chosen, including but not necessarily limited to the following:
+  - `OpenTransportWeapon=1` on an unit firing from inside `OpenTopped=true` transport.
+  - `NoAmmoWeapon=1` on an unit with  `Ammo` value higher than 0 and current ammo count lower or  equal to `NoAmmoAmount`.
+  - Deployed `IsSimpleDeployer=true` units with`DeployFireWeapon=1` set or omitted.
+  - `DrainWeapon=true` weapons against enemy `Drainable=yes` buildings.
+  - Units with `IsLocomotor=true` set on `Warhead` of `(Elite)Primary` weapon against buildings.
+  - Weapons with `ElectricAssault=true` set on `Warhead` against `Overpowerable=true` buildings belonging to owner or allies.
+  - `Overpowerable=true` buildings that are currently overpowered.
+  - Any system using `(Elite)WeaponX`, f.ex `Gunner=true` or `IsGattling=true` is also wholly exempt.
+  
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+NoSecondaryWeaponFallback=false   ; boolean
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+NoSecondaryWeaponFallback=false   ; boolean
+```
+
 ## Weapons
 
 ### Burst.Delays
@@ -400,12 +424,25 @@ Rad.NoOwner=no  ; boolean
 
 ### Weapon targeting filter
 
-- You can now specify which house this weapon can fire at.
+- You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]         ; WeaponType
+CanTarget=all        ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
+### AreaFire target customization
+
+- You can now specify how AreaFire weapon picks its target. By default it targets the base cell the firer is currently on, but this can now be changed to fire on the firer itself or at a random cell within the radius of the weapon's `Range` by setting `AreaFire.Target` to `self` or `random` respectively.
+- `AreaFire.Target=self` respects normal targeting rules (Warhead Verses etc.) against the firer itself.
+- `AreaFire.Target=random` ignores cells that are ineligible or contain ineligible objects based on listed values in weapon's `CanTarget`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]         ; WeaponType
+AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
 ```
 
 ## Warheads

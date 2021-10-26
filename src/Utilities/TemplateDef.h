@@ -535,6 +535,33 @@ namespace detail {
 		return false;
 	}
 
+	template <>
+	inline bool read<AreaFireTarget>(AreaFireTarget& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "base") == 0)
+			{
+				value = AreaFireTarget::Base;
+			}
+			else if (_strcmpi(parser.value(), "self") == 0)
+			{
+				value = AreaFireTarget::Self;
+			}
+			else if (_strcmpi(parser.value(), "random") == 0)
+			{
+				value = AreaFireTarget::Random;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an area fire target");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey) {
 		char* context = nullptr;
