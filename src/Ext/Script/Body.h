@@ -66,6 +66,15 @@ public:
 
 	static void Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
 
+	static void ResetAngerAgainstHouses(TeamClass* pTeam);
+	static void SetHouseAngerModifier(TeamClass* pTeam, int modifier);
+	static void ModifyHateHouses_List(TeamClass* pTeam, int idxHousesList);
+	static void ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList);
+	static void ModifyHateHouse_Index(TeamClass* pTeam, int idxHouse);
+	static void SetTheMostHatedHouse(TeamClass* pTeam, int mode);
+	static void OverrideOnlyTargetHouseEnemy(TeamClass* pTeam, int mode);
+	static void DebugAngerNodes(TeamClass* pTeam);
+
 	static ExtContainer ExtMap;
 
 private:

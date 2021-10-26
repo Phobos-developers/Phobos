@@ -20,6 +20,9 @@ public:
 		int IdxSelectedObjectFromAIList;
 		double CloseEnough;
 		int Countdown_RegroupAtLeader;
+		int AngerNodeModifier;
+		bool OnlyTargetHouseEnemy;
+		int OnlyTargetHouseEnemyMode;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject)
 			, WaitNoTargetAttempts(0)
@@ -27,6 +30,9 @@ public:
 			, IdxSelectedObjectFromAIList(-1)
 			, CloseEnough(-1)
 			, Countdown_RegroupAtLeader(-1)
+			, AngerNodeModifier(1000)
+			, OnlyTargetHouseEnemy(false)
+			, OnlyTargetHouseEnemyMode(-1)
 		{ }
 
 		virtual ~ExtData() = default;
