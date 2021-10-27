@@ -2549,6 +2549,9 @@ void ScriptExt::SetCloseEnoughDistance(TeamClass *pTeam, double distance = -1)
 			pTeamData->CloseEnough = distance;
 	}
 
+	if (distance <= 0)
+		pTeamData->CloseEnough = RulesClass::Instance->CloseEnough / 256.0;
+
 	// This action finished
 	pTeam->StepCompleted = true;
 
