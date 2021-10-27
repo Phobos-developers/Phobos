@@ -33,6 +33,8 @@ IdleAnim.OfflineAction=Hides   ; AttachedAnimFlag (None, Hides, Temporal, Paused
 IdleAnim.TemporalAction=Hides  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 BreakAnim=                     ; animation
 HitAnim=                       ; animation
+AbsorbPercent=1.0              ; double, percents
+PassPercent=0.0                ; double, percents
 
 [SOMETECHNO]                   ; TechnoType
 ShieldType=SOMESHIELDTYPE      ; ShieldType; none by default
@@ -40,6 +42,8 @@ ShieldType=SOMESHIELDTYPE      ; ShieldType; none by default
 [SOMEWARHEAD]                  ; WarheadType
 PenetratesShield=false         ; boolean
 BreaksShield=false             ; boolean
+AbsorbPercentShield=           ; double, percents
+PassPercentShield=             ; double, percents
 ```
 - Now you can have a shield for any TechnoType. It serves as a second health pool with independent `Armor` and `Strength` values.
   - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed by shield.
@@ -58,6 +62,8 @@ BreaksShield=false             ; boolean
 - `IdleAnim.TemporalAction` indicates what happens to the animation when the shield is attacked by temporal weapons.
 - `BreakAnim`, if set, will be played when the shield has been broken.
 - `HitAnim`, if set, will be played when the shield is attacked, similar to `WeaponNullifyAnim` for Iron Curtain.
+- `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
+- `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
 - A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable.
   - Buildings now use the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame by default.
   - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. `Pips.Shield.Building` is used for BuildingTypes.
@@ -65,7 +71,8 @@ BreaksShield=false             ; boolean
 - Warheads have new options that interact with shields.
   - `PenetratesShield` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield isn't existed.
   - `BreaksShield` allows the warhead to always break shields of TechnoTypes, regardless of the amount of strength the shield has remaining or the damage dealt, assuming it affects the shield's armor type. Residual damage, if there is any, still respects `AbsorbOverDamage`.
-
+  - `AbsorbPercentShield` overrides the `AbsorbPercent` value set in the ShieldType that is being damaged.
+  - `PassPercentShield` overrides the `PassPercent` value set in the ShieldType that is being damaged.
 
 ### Laser Trails
 
