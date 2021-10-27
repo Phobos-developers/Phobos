@@ -192,7 +192,12 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
-		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
+		if (action > 70)
+		{
+			// Unknown new action. This action finished
+			pTeam->StepCompleted = true;
+			Debug::Log("[%s] [%s] (Line %d): Unknown Script Action: %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action);
+		}
 		break;
 	}
 }
@@ -556,6 +561,15 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	TechnoClass* pFocus = nullptr;
 	bool agentMode = false;
 	bool pacifistTeam = true;
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+
+	if (!pTeamData)
+	{
+		pTeam->StepCompleted = true;
+		Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (Reason: ExtData found)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
+
+		return;
+	}
 
 	// When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
 	if (pTeam->GuardAreaTimer.TimeLeft != 0 || pTeam->GuardAreaTimer.InProgress())
@@ -566,12 +580,8 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 			pTeam->GuardAreaTimer.Stop(); // Needed
 			noWaitLoop = true;
 
-			auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-			if (pTeamData)
-			{
-				if (pTeamData->WaitNoTargetAttempts > 0)
-					pTeamData->WaitNoTargetAttempts--;
-			}
+			if (pTeamData->WaitNoTargetAttempts > 0)
+				pTeamData->WaitNoTargetAttempts--;
 		}
 		else
 		{
@@ -588,20 +598,29 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		return;
 	}
 
+	pFocus = abstract_cast<TechnoClass*>(pTeam->Focus);
+	if (pFocus && pFocus->IsAlive
+		&& !pFocus->InLimbo
+		&& !pFocus->GetTechnoType()->Immune
+		&& pFocus->IsOnMap
+		&& !pFocus->Absorbed)
+	{ }
+	else
+	{
+		pTeam->Focus = nullptr;
+		pFocus = nullptr;
+	}
+
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
 		auto pKillerTechnoData = TechnoExt::ExtMap.Find(pUnit);
 		if (pKillerTechnoData && pKillerTechnoData->LastKillWasTeamTarget)
 		{
 			// Time for Team award check! (if set any)
-			auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-			if (pTeamData)
+			if (pTeamData->NextSuccessWeightAward > 0)
 			{
-				if (pTeamData->NextSuccessWeightAward > 0)
-				{
-					IncreaseCurrentTriggerWeight(pTeam, false, pTeamData->NextSuccessWeightAward);
-					pTeamData->NextSuccessWeightAward = 0;
-				}
+				IncreaseCurrentTriggerWeight(pTeam, false, pTeamData->NextSuccessWeightAward);
+				pTeamData->NextSuccessWeightAward = 0;
 			}
 
 			// Let's clean the Killer mess
@@ -628,9 +647,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 					}
 				}
 
-				//auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-				if (pTeamData)
-					pTeamData->IdxSelectedObjectFromAIList = -1;
+				pTeamData->IdxSelectedObjectFromAIList = -1;
 
 				// This action finished
 				pTeam->StepCompleted = true;
@@ -643,7 +660,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (pUnit && pUnit->IsAlive && pUnit->Health > 0 && !pUnit->InLimbo)
+		if (pUnit && pUnit->IsAlive && !pUnit->InLimbo)
 		{
 			auto pUnitType = pUnit->GetTechnoType();
 			if (pUnitType)
@@ -678,20 +695,18 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				}
 
 				// Any Team member (infantry) is a special agent? If yes ignore some checks based on Weapons.
-				bool isAgent = false;
 				if (pUnitType->WhatAmI() == AbstractType::InfantryType)
 				{
 					auto pTypeInf = abstract_cast<InfantryTypeClass*>(pUnitType);
-					if (pTypeInf->Agent || pTypeInf->Infiltrate || pTypeInf->Engineer)
+					if ((pTypeInf->Agent && pTypeInf->Infiltrate) || pTypeInf->Engineer)
 					{
 						agentMode = true;
-						isAgent = true;
 					}
 				}
 
 				// The team leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
 				int unitLeadershipRating = pUnitType->LeadershipRating;
-				if (unitLeadershipRating > bestUnitLeadershipValue && (!pacifistUnit || isAgent))
+				if (unitLeadershipRating > bestUnitLeadershipValue && (!pacifistUnit || agentMode))
 				{
 					pLeaderUnit = pUnit;
 					bestUnitLeadershipValue = unitLeadershipRating;
@@ -700,15 +715,11 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		}
 	}
 
-	if (!pLeaderUnit || bAircraftsWithoutAmmo || pacifistTeam)
+	if (!pLeaderUnit || bAircraftsWithoutAmmo || (pacifistTeam && !agentMode))
 	{
-		auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-		if (pTeamData)
-		{
-			pTeamData->IdxSelectedObjectFromAIList = -1;
-			if (pTeamData->WaitNoTargetAttempts != 0)
-				pTeamData->WaitNoTargetAttempts = 0;
-		}
+		pTeamData->IdxSelectedObjectFromAIList = -1;
+		if (pTeamData->WaitNoTargetAttempts != 0)
+			pTeamData->WaitNoTargetAttempts = 0;
 
 		// This action finished
 		pTeam->StepCompleted = true;
@@ -793,11 +804,6 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		}
 	}
 
-	auto pLeaderTarget = abstract_cast<TechnoClass*>(pLeaderUnit->Target);
-	if (!pLeaderTarget && pTeam->Focus)
-		pTeam->Focus = nullptr;
-
-	pFocus = abstract_cast<TechnoClass*>(pTeam->Focus);
 	if (!pFocus && !bAircraftsWithoutAmmo)
 	{
 		// Favorite Enemy House case. If set, AI will focus against that House
@@ -811,14 +817,11 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		{
 			Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d): Leader [%s] selected [%s] as target.\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument, pLeaderUnit->GetTechnoType()->get_ID(), selectedTarget->GetTechnoType()->get_ID());
 			pTeam->Focus = selectedTarget;
-
-			auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-			if (pTeamData)
-				pTeamData->WaitNoTargetAttempts = 0; // Disable Script Waits if there are any because a new target was selected
+			pTeamData->WaitNoTargetAttempts = 0; // Disable Script Waits if there are any because a new target was selected
 
 			for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 			{
-				if (pUnit->IsAlive && pUnit->Health > 0 && !pUnit->InLimbo)
+				if (pUnit->IsAlive && !pUnit->InLimbo)
 				{
 					auto pUnitType = pUnit->GetTechnoType();
 					if (pUnitType && pUnit != selectedTarget && pUnit->Target != selectedTarget)
@@ -868,6 +871,19 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 							}
 						}
 
+						// Spy case
+						if (pUnitType->WhatAmI() == AbstractType::InfantryType)
+						{
+							auto pInfantryType = abstract_cast<InfantryTypeClass*>(pUnitType);
+
+							if (pInfantryType && pInfantryType->Infiltrate && pInfantryType->Agent)
+							{
+								// Check if target is an structure and see if spiable
+								if (pUnit->GetCurrentMission() != Mission::Enter)
+									pUnit->Mission_Enter();
+							}
+						}
+
 						// Tanya / Commando C4 case
 						if ((pUnitType->WhatAmI() == AbstractType::InfantryType && (abstract_cast<InfantryTypeClass*>(pUnitType)->C4 || pUnit->HasAbility(Ability::C4))) && pUnit->GetCurrentMission() != Mission::Sabotage)
 						{
@@ -889,17 +905,13 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 			if (!noWaitLoop)
 				pTeam->GuardAreaTimer.Start(16);
 
-			auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-			if (pTeamData)
-			{
-				if (pTeamData->IdxSelectedObjectFromAIList >= 0)
-					pTeamData->IdxSelectedObjectFromAIList = -1;
+			if (pTeamData->IdxSelectedObjectFromAIList >= 0)
+				pTeamData->IdxSelectedObjectFromAIList = -1;
 
-				if (pTeamData->WaitNoTargetAttempts != 0)
-				{
-					pTeam->GuardAreaTimer.Start(16); // No target? let's wait some frames
-					return;
-				}
+			if (pTeamData->WaitNoTargetAttempts != 0)
+			{
+				pTeam->GuardAreaTimer.Start(16); // No target? let's wait some frames
+				return;
 			}
 
 			// This action finished
@@ -943,7 +955,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 						&& (pUnitType->WhatAmI() == AbstractType::AircraftType
 							&& abstract_cast<AircraftTypeClass*>(pUnitType)->AirportBound)
 						&& pUnit->Ammo > 0
-						&& (pUnit->Target != pTeam->Focus && !pUnit->InAir))
+						&& (pUnit->Target != pFocus && !pUnit->InAir))
 					{
 						pUnit->SetTarget(pFocus);
 					}
@@ -972,7 +984,10 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 							if (pUnit->Ammo > 0)
 							{
 								pUnit->QueueMission(Mission::Attack, true);
-								pUnit->ClickedAction(Action::Attack, pFocus, false);
+
+								if (pFocus)
+									pUnit->ClickedAction(Action::Attack, pFocus, false);
+
 								pUnit->Mission_Attack();
 							}
 							else
@@ -1018,7 +1033,9 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				pTeam->Focus = nullptr;
 				pTeam->QueuedFocus = nullptr;
 
-				pUnit->ClickedAction(Action::Attack, pFocus, false);
+				if (pFocus)
+					pUnit->ClickedAction(Action::Attack, pFocus, false);
+
 				pUnit->CurrentTargets.Clear();
 				pUnit->SetTarget(nullptr);
 				pUnit->SetFocus(nullptr);
@@ -1033,9 +1050,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 
 		if (bForceNextAction)
 		{
-			auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-			if (pTeamData)
-				pTeamData->IdxSelectedObjectFromAIList = -1;
+			pTeamData->IdxSelectedObjectFromAIList = -1;
 
 			pTeam->StepCompleted = true;
 			Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (Reason: Naval is unable to target ground)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
@@ -1420,7 +1435,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 			for (int i = 0; i < NeutralTechBuildings.Count; i++)
 			{
 				auto pTechObject = NeutralTechBuildings.GetItem(i);
-				if (pTechObject->ID == pTechno->get_ID())
+				if (_stricmp(pTechObject->ID, pTechno->get_ID()) == 0)
 					return true;
 			}
 		}
@@ -1626,7 +1641,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 			for (int i = 0; i < BuildTech.Count; i++)
 			{
 				auto pTechObject = BuildTech.GetItem(i);
-				if (pTechObject->ID == pTechno->get_ID())
+				if (_stricmp(pTechObject->ID, pTechno->get_ID()) == 0)
 					return true;
 			}
 		}
@@ -1684,7 +1699,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 				for (int i = 0; i < BaseUnit.Count; i++)
 				{
 					auto pMCVObject = BaseUnit.GetItem(i);
-					if (pMCVObject->ID == pTechno->get_ID())
+					if (_stricmp(pMCVObject->ID, pTechno->get_ID()) == 0)
 						return true;
 				}
 			}
@@ -2046,7 +2061,7 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (pUnit && pUnit->IsAlive && pUnit->Health > 0 && !pUnit->InLimbo)
+		if (pUnit && pUnit->IsAlive && !pUnit->InLimbo)
 		{
 			auto pUnitType = pUnit->GetTechnoType();
 			if (pUnitType)
@@ -2107,7 +2122,7 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 
 			for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 			{
-				if (pUnit->IsAlive && pUnit->Health > 0 && !pUnit->InLimbo)
+				if (pUnit->IsAlive && pUnit->IsOnMap && !pUnit->InLimbo)
 				{
 					auto pUnitType = pUnit->GetTechnoType();
 
