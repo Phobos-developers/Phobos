@@ -2354,7 +2354,7 @@ void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage = 0)
 
 	int percentage = ScenarioClass::Instance->Random.RandomRanged(0, 100);
 
-	if (successPercentage <= percentage)
+	if (percentage <= successPercentage)
 	{
 		Debug::Log("DEBUG: ScripType: [%s] [%s] (line: %d) Next script line skipped successfuly. Next line will be: %d = %d,%d -> (Reason: No team members alive)\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->idxCurrentLine + 2, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 2].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 2].Argument);
 		pTeam->CurrentScript->idxCurrentLine++;
