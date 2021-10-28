@@ -142,7 +142,7 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
 		break;
 	case 113:
-		ScriptExt::ResetAngerAgainstHouses(pTeam);
+		// Reserved
 		break;
 	case 114:
 		ScriptExt::SetHouseAngerModifier(pTeam, 0);
@@ -161,6 +161,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 			break;
 	case 119:
 		ScriptExt::SetTheMostHatedHouse(pTeam, 0);
+		break;
+	case 120:
+		ScriptExt::ResetAngerAgainstHouses(pTeam);
 		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
