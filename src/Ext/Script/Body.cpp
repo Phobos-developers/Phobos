@@ -2352,7 +2352,7 @@ void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage = 0)
 	if (successPercentage > 100)
 		successPercentage = 100;
 
-	int percentage = ScenarioClass::Instance->Random.RandomRanged(0, 100);
+	int percentage = ScenarioClass::Instance->Random.RandomRanged(1, 100);
 
 	if (percentage <= successPercentage)
 	{
