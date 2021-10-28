@@ -141,6 +141,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 112:
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
 		break;
+	case 113:
+		ScriptExt::SkipNextAction(pTeam, -1);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
@@ -2325,5 +2328,38 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 void ScriptExt::UnregisterGreatSuccess(TeamClass* pTeam)
 {
 	pTeam->AchievedGreatSuccess = false;
-	pTeam->StepCompleted = true; // This action finished - FS-21
+	pTeam->StepCompleted = true;
+}
+
+void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage = 0)
+{
+	// This team has no units! END
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+		Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (Reason: No team members alive)\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine + 1, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 1].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 1].Argument);
+
+		return;
+	}
+
+	if (successPercentage < 0 || successPercentage > 100)
+		successPercentage = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	if (successPercentage < 0)
+		successPercentage = 0;
+
+	if (successPercentage > 100)
+		successPercentage = 100;
+
+	int percentage = ScenarioClass::Instance->Random.RandomRanged(0, 100);
+
+	if (successPercentage <= percentage)
+	{
+		Debug::Log("DEBUG: ScripType: [%s] [%s] (line: %d) Next script line skipped successfuly. Next line will be: %d = %d,%d -> (Reason: No team members alive)\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->idxCurrentLine + 2, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 2].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 2].Argument);
+		pTeam->CurrentScript->idxCurrentLine++;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
 }

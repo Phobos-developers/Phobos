@@ -65,6 +65,7 @@ public:
 	static void UnregisterGreatSuccess(TeamClass * pTeam);
 
 	static void Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
+	static void SkipNextAction(TeamClass* pTeam, int successPercentage);
 
 	static ExtContainer ExtMap;
 
