@@ -52,6 +52,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 	{
 	case PhobosTriggerAction::SaveGame:
 		return TActionExt::SaveGame(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::EditVariable:
+		return TActionExt::EditVariable(pThis, pHouse, pObject, pTrigger, location);
 	default:
 		bHandled = false;
 		return true;
@@ -116,6 +118,66 @@ bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* 
 			PrintMessage(StringTable::LoadString("TXT_ERROR_SAVING_GAME"));
 	}
 
+	return true;
+}
+
+// Author : secsome
+bool TActionExt::EditVariable(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	// Variable Index
+	// holds by pThis->Value
+
+	// Operations:
+	// 0 : set value - operator=
+	// 1 : add value (minus just uses negative number) - operator+
+	// 2 : multiply value - operator*
+	// 3 : divide value - operator/
+	// 4 : mod value - operator%
+	// 5 : <<
+	// 6 : >>
+	// 7 : ~ (no second param being used)
+	// 8 : ^
+	// 9 : |
+	// 10 : &
+	// holds by pThis->Param3
+
+	// Params:
+	// The second value
+	// holds by pThis->Param4
+
+	// Global Variable or Local
+	// 0 for local and 1 for global
+	// holds by pThis->Param5
+
+	// uses !pThis->Param5 to ensure Param5 is 0 or 1
+	auto& variables = ScenarioExt::Global()->Variables[!pThis->Param5];
+	auto itr = variables.find(pThis->Value);
+	if (itr != variables.end())
+	{
+		auto& nCurrentValue = itr->second.Value;
+		// variable being found
+		switch (pThis->Param3)
+		{
+		case 0: { nCurrentValue = pThis->Param4; break; }
+		case 1: { nCurrentValue += pThis->Param4; break; }
+		case 2: { nCurrentValue *= pThis->Param4; break; }
+		case 3: { nCurrentValue /= pThis->Param4; break; }
+		case 4: { nCurrentValue %= pThis->Param4; break; }
+		case 5: { nCurrentValue <<= pThis->Param4; break; }
+		case 6: { nCurrentValue >>= pThis->Param4; break; }
+		case 7: { nCurrentValue = ~nCurrentValue; break; }
+		case 8: { nCurrentValue ^= pThis->Param4; break; }
+		case 9: { nCurrentValue |= pThis->Param4; break; }
+		case 10: { nCurrentValue &= pThis->Param4; break; }
+		default:
+			return true;
+		}
+
+		if (!pThis->Param5)
+			TagClass::NotifyLocalChanged(pThis->Value);
+		else
+			TagClass::NotifyGlobalChanged(pThis->Value);
+	}
 	return true;
 }
 
