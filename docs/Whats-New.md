@@ -38,7 +38,8 @@ In `FAData.ini`:
 [ActionsRA2]
 125=Build at...,-10,47,53,0,0,0,1,0,0,[LONG DESC],0,1,125
 500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
-501=Edit variable,0,3,21,22,23,24,0,0,0,[LONG DESC],0,1,501,1
+501=Edit variable,0,3,6,6,6,6,0,0,0,[LONG DESC],0,1,501,1
+502=Generate random number,0,3,6,6,6,6,0,0,0,[LONG DESC],0,1,502,1
 
 [ScriptsRA2]   ; NEEDS FA2EXT.DLL (by AlexB) or FA2SP.DLL (by secsome)
 71=Timed Area Guard,4,0,1,[LONG DESC]         ; FA2Ext.dll only

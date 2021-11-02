@@ -54,6 +54,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::SaveGame(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::EditVariable:
 		return TActionExt::EditVariable(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::GenerateRandomNumber:
+		return TActionExt::GenerateRandomNumber(pThis, pHouse, pObject, pTrigger, location);
 	default:
 		bHandled = false;
 		return true;
@@ -178,6 +180,16 @@ bool TActionExt::EditVariable(TActionClass* pThis, HouseClass* pHouse, ObjectCla
 		else
 			TagClass::NotifyGlobalChanged(pThis->Value);
 	}
+	return true;
+}
+
+bool TActionExt::GenerateRandomNumber(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	auto& variables = ScenarioExt::Global()->Variables[!pThis->Param5];
+	auto itr = variables.find(pThis->Value);
+	if (itr != variables.end())
+		itr->second.Value = ScenarioClass::Instance->Random.RandomRanged(pThis->Param3, pThis->Param4);
+
 	return true;
 }
 

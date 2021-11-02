@@ -596,6 +596,18 @@ ID=ActionCount,[Action1],501,[VaraibleIndex],0,[Operation],[Number],[IsGlobalVar
 9         | CurrentValue = CurrentValue or Number |
 10         | CurrentValue = CurrentValue and Number |
 
+### `502` Generate random number
+- Generate a random integer ranged in [Min, Max] and store it in a given variable
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],502,[VaraibleIndex],0,[Min],[Max],[IsGlobalVariable],0,A,[ActionX]
+...
+```
+
+
 ## Script actions
 
 ### `71` Timed Area Guard
