@@ -21,9 +21,24 @@ In `FAData.ini`:
 47=Structures,28
 53=Play BuildUp,10
 
+[EventsRA2]
+500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
+501=Local variable is less than,48,6,0,0,[LONG DESC],0,1,501,1
+502=Local variable equals to,48,6,0,0,[LONG DESC],0,1,502,1
+503=Local variable is greater than or equals to,48,6,0,0,[LONG DESC],0,1,503,1
+504=Local variable is less than or equals,48,6,0,0,[LONG DESC],0,1,504,1
+505=Local variable and X is true,48,6,0,0,[LONG DESC],0,1,505,1
+506=Global variable is greater than,48,6,0,0,[LONG DESC],0,1,506,1
+507=Global variable is less than,48,6,0,0,[LONG DESC],0,1,507,1
+508=Global variable equals to,48,6,0,0,[LONG DESC],0,1,508,1
+509=Global variable is greater than or queals to,48,6,0,0,[LONG DESC],0,1,509,1
+510=Global variable is less than or equals to,48,6,0,0,[LONG DESC],0,1,510,1
+511=Global variable and X is true,48,6,0,0,[LONG DESC],0,1,511,1
+
 [ActionsRA2]
 125=Build at...,-10,47,53,0,0,0,1,0,0,[LONG DESC],0,1,125
 500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
+501=Edit variable,0,3,21,22,23,24,0,0,0,[LONG DESC],0,1,501,1
 
 [ScriptsRA2]   ; NEEDS FA2EXT.DLL (by AlexB) or FA2SP.DLL (by secsome)
 71=Timed Area Guard,4,0,1,[LONG DESC]         ; FA2Ext.dll only
@@ -50,6 +65,7 @@ New:
 - Default disguise for individual InfantryTypes (by secsome)
 - Quicksave hotkey command (by secsome)
 - Save Game Trigger Action (by secsome)
+- Numeric Variables (by secsome)
 - Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)
 - Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
 - XDrawOffset for animations (by Morton)
