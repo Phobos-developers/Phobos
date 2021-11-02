@@ -666,6 +666,17 @@ ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[Actio
 ...
 ```
 
+### `503` Print variable value
+- Print a variable value to the message list
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[ActionX]
+...
+```
+
 
 ## Script actions
 
