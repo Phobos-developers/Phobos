@@ -3,6 +3,7 @@
 #include <SessionClass.h>
 #include <MessageListClass.h>
 #include <HouseClass.h>
+#include <CRT.h>
 
 #include <Utilities/SavegameDef.h>
 
@@ -56,6 +57,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::EditVariable(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::GenerateRandomNumber:
 		return TActionExt::GenerateRandomNumber(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::PrintVariableValue:
+		return TActionExt::PrintVariableValue(pThis, pHouse, pObject, pTrigger, location);
 	default:
 		bHandled = false;
 		return true;
@@ -194,6 +197,19 @@ bool TActionExt::GenerateRandomNumber(TActionClass* pThis, HouseClass* pHouse, O
 			TagClass::NotifyLocalChanged(pThis->Value);
 		else
 			TagClass::NotifyGlobalChanged(pThis->Value);
+	}
+
+	return true;
+}
+
+bool TActionExt::PrintVariableValue(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	auto& variables = ScenarioExt::Global()->Variables[!pThis->Param3];
+	auto itr = variables.find(pThis->Value);
+	if (itr != variables.end())
+	{
+		CRT::swprintf(Phobos::wideBuffer, L"%d", itr->second.Value);
+		MessageListClass::Instance->PrintMessage(Phobos::wideBuffer);
 	}
 
 	return true;

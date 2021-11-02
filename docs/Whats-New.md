@@ -40,6 +40,7 @@ In `FAData.ini`:
 500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
 501=Edit variable,0,3,6,6,6,0,0,0,0,[LONG DESC],0,1,501,1
 502=Generate random number,0,3,6,6,6,0,0,0,0,[LONG DESC],0,1,502,1
+503=Print variable value,0,3,6,0,0,0,0,0,0,[LONG DESC],0,1,503,0
 
 ; FOLLOWING STUFFS NEEDS FA2SP.DLL (by secsome)
 [ScriptTypeLists]
