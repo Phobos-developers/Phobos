@@ -17,6 +17,32 @@
 #include <Utilities/Container.h>
 #include <Phobos.h>
 
+enum class PhobosScripts : int
+{
+	// FS-21 please finish your stuff here, thanks
+	LocalVariableAdd = 500,
+	LocalVariableMultiply,
+	LocalVariableDivide,
+	LocalVariableMod,
+	LocalVariableLeftShift,
+	LocalVariableRightShift,
+	LocalVariableReverse,
+	LocalVariableXor,
+	LocalVariableOr,
+	LocalVariableAnd,
+	GlobalVariableAdd,
+	GlobalVariableMultiply,
+	GlobalVariableDivide,
+	GlobalVariableMod,
+	GlobalVariableLeftShift,
+	GlobalVariableRightShift,
+	GlobalVariableReverse,
+	GlobalVariableXor,
+	GlobalVariableOr,
+	GlobalVariableAnd,
+
+};
+
 class ScriptExt
 {
 public:
@@ -65,6 +91,27 @@ public:
 	static void UnregisterGreatSuccess(TeamClass * pTeam);
 
 	static void Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
+
+	static void LocalVariableAdd(int nVariable, int Number);
+	static void LocalVariableMultiply(int nVariable, int Number);
+	static void LocalVariableDivide(int nVariable, int Number);
+	static void LocalVariableMod(int nVariable, int Number);
+	static void LocalVariableLeftShift(int nVariable, int Number);
+	static void LocalVariableRightShift(int nVariable, int Number);
+	static void LocalVariableReverse(int nVariable, int Number);
+	static void LocalVariableXor(int nVariable, int Number);
+	static void LocalVariableOr(int nVariable, int Number);
+	static void LocalVariableAnd(int nVariable, int Number);
+	static void GlobalVariableAdd(int nVariable, int Number);
+	static void GlobalVariableMultiply(int nVariable, int Number);
+	static void GlobalVariableDivide(int nVariable, int Number);
+	static void GlobalVariableMod(int nVariable, int Number);
+	static void GlobalVariableLeftShift(int nVariable, int Number);
+	static void GlobalVariableRightShift(int nVariable, int Number);
+	static void GlobalVariableReverse(int nVariable, int Number);
+	static void GlobalVariableXor(int nVariable, int Number);
+	static void GlobalVariableOr(int nVariable, int Number);
+	static void GlobalVariableAnd(int nVariable, int Number);
 
 	static ExtContainer ExtMap;
 

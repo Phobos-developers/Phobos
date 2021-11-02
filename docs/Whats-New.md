@@ -38,14 +38,45 @@ In `FAData.ini`:
 [ActionsRA2]
 125=Build at...,-10,47,53,0,0,0,1,0,0,[LONG DESC],0,1,125
 500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
-501=Edit variable,0,3,6,6,6,6,0,0,0,[LONG DESC],0,1,501,1
-502=Generate random number,0,3,6,6,6,6,0,0,0,[LONG DESC],0,1,502,1
+501=Edit variable,0,3,6,6,6,0,0,0,0,[LONG DESC],0,1,501,1
+502=Generate random number,0,3,6,6,6,0,0,0,0,[LONG DESC],0,1,502,1
 
-[ScriptsRA2]   ; NEEDS FA2EXT.DLL (by AlexB) or FA2SP.DLL (by secsome)
-71=Timed Area Guard,4,0,1,[LONG DESC]         ; FA2Ext.dll only
+; FOLLOWING STUFFS NEEDS FA2SP.DLL (by secsome)
+[ScriptTypeLists]
+1=ScriptVariable
+
+[ScriptVariable]
+HasExtraParam=Yes
+BuiltInType=0
+
+[ScriptsRA2]   
 71=Timed Area Guard,20,0,1,[LONG DESC]        ; FA2sp.dll only
 72=Load Onto Transports,0,0,1,[LONG DESC]
 73=Wait until ammo is full,0,0,1,[LONG DESC]
+500=Local variable add,21,0,1,[LONG DESC]
+501=Local variable multiply,21,0,1,[LONG DESC]
+502=Local variable divide,21,0,1,[LONG DESC]
+503=Local variable mod,21,0,1,[LONG DESC]
+504=Local variable left shift,21,0,1,[LONG DESC]
+505=Local variable right shift,21,0,1,[LONG DESC]
+506=Local variable reverse,21,0,1,[LONG DESC]
+507=Local variable xor,21,0,1,[LONG DESC]
+508=Local variable or,21,0,1,[LONG DESC]
+509=Local variable and,21,0,1,[LONG DESC]
+510=Global variable add,22,0,1,[LONG DESC]
+511=Global variable multiply,22,0,1,[LONG DESC]
+512=Global variable divide,22,0,1,[LONG DESC]
+513=Global variable mod,22,0,1,[LONG DESC]
+514=Global variable left shift,22,0,1,[LONG DESC]
+515=Global variable right shift,22,0,1,[LONG DESC]
+516=Global variable reverse,22,0,1,[LONG DESC]
+517=Global variable xor,22,0,1,[LONG DESC]
+518=Global variable or,22,0,1,[LONG DESC]
+519=Global variable and,22,0,1,[LONG DESC]
+
+[ScriptParams] 
+21=Local variables,-1
+22=Global variables,-1
 ```
 
 ## Changelog

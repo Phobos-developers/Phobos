@@ -2,6 +2,8 @@
 #include "../Techno/Body.h"
 #include "../BuildingType/Body.h"
 
+#include <Ext/Scenario/Body.h>
+
 template<> const DWORD Extension<ScriptClass>::Canary = 0x3B3B3B3B;
 ScriptExt::ExtContainer ScriptExt::ExtMap;
 
@@ -30,7 +32,7 @@ ScriptExt::ExtContainer::~ExtContainer() = default;
 void ScriptExt::ProcessAction(TeamClass* pTeam)
 {
 	const int& action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action;
-
+	const int argument = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
 	switch (action)
 	{
 	case 71:
@@ -142,9 +144,51 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
 		break;
 	default:
-		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
-		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
-		break;
+		switch (static_cast<PhobosScripts>(action))
+		{
+		case PhobosScripts::LocalVariableAdd:
+			ScriptExt::LocalVariableAdd(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableMultiply:
+			ScriptExt::LocalVariableMultiply(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableDivide:
+			ScriptExt::LocalVariableDivide(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableMod:
+			ScriptExt::LocalVariableMod(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableLeftShift:
+			ScriptExt::LocalVariableLeftShift(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableRightShift:
+			ScriptExt::LocalVariableRightShift(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableReverse:
+			ScriptExt::LocalVariableReverse(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableXor:
+			ScriptExt::LocalVariableXor(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableOr:
+			ScriptExt::LocalVariableOr(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableAnd:
+			ScriptExt::LocalVariableAnd(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableAdd:
+			ScriptExt::GlobalVariableAdd(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableMultiply:
+			ScriptExt::GlobalVariableMultiply(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableDivide:
+			ScriptExt::GlobalVariableDivide(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableMod:
+			ScriptExt::GlobalVariableMod(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableLeftShift:
+			ScriptExt::GlobalVariableLeftShift(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableRightShift:
+			ScriptExt::GlobalVariableRightShift(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableReverse:
+			ScriptExt::GlobalVariableReverse(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableXor:
+			ScriptExt::GlobalVariableXor(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableOr:
+			ScriptExt::GlobalVariableOr(LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableAnd:
+			ScriptExt::GlobalVariableAnd(LOWORD(argument), HIWORD(argument)); break;
+		default:
+			break;
+		}
 	}
 }
 
@@ -2326,4 +2370,144 @@ void ScriptExt::UnregisterGreatSuccess(TeamClass* pTeam)
 {
 	pTeam->AchievedGreatSuccess = false;
 	pTeam->StepCompleted = true; // This action finished - FS-21
+}
+
+void ScriptExt::LocalVariableAdd(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+		itr->second.Value += Number;
+}
+
+void ScriptExt::LocalVariableMultiply(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+		itr->second.Value *= Number;
+}
+
+void ScriptExt::LocalVariableDivide(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+		itr->second.Value /= Number;
+}
+
+void ScriptExt::LocalVariableMod(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+		itr->second.Value %= Number;
+}
+
+void ScriptExt::LocalVariableLeftShift(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+		itr->second.Value <<= Number;
+}
+
+void ScriptExt::LocalVariableRightShift(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+		itr->second.Value >>= Number;
+}
+
+void ScriptExt::LocalVariableReverse(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+		itr->second.Value = ~itr->second.Value;
+}
+
+void ScriptExt::LocalVariableXor(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+		itr->second.Value ^= Number;
+}
+
+void ScriptExt::LocalVariableOr(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+		itr->second.Value |= Number;
+}
+
+void ScriptExt::LocalVariableAnd(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+		itr->second.Value &= Number;
+}
+
+void ScriptExt::GlobalVariableAdd(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+		itr->second.Value += Number;
+}
+
+void ScriptExt::GlobalVariableMultiply(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+		itr->second.Value *= Number;
+}
+
+void ScriptExt::GlobalVariableDivide(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+		itr->second.Value /= Number;
+}
+
+void ScriptExt::GlobalVariableMod(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+		itr->second.Value %= Number;
+}
+
+void ScriptExt::GlobalVariableLeftShift(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+		itr->second.Value <<= Number;
+}
+
+void ScriptExt::GlobalVariableRightShift(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+		itr->second.Value >>= Number;
+}
+
+void ScriptExt::GlobalVariableReverse(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+		itr->second.Value = ~itr->second.Value;
+}
+
+void ScriptExt::GlobalVariableXor(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+		itr->second.Value ^= Number;
+}
+
+void ScriptExt::GlobalVariableOr(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+		itr->second.Value |= Number;
+}
+
+void ScriptExt::GlobalVariableAnd(int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+		itr->second.Value &= Number;
 }

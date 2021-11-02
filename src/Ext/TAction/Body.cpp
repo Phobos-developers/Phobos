@@ -188,7 +188,13 @@ bool TActionExt::GenerateRandomNumber(TActionClass* pThis, HouseClass* pHouse, O
 	auto& variables = ScenarioExt::Global()->Variables[!pThis->Param5];
 	auto itr = variables.find(pThis->Value);
 	if (itr != variables.end())
+	{
 		itr->second.Value = ScenarioClass::Instance->Random.RandomRanged(pThis->Param3, pThis->Param4);
+		if (!pThis->Param5)
+			TagClass::NotifyLocalChanged(pThis->Value);
+		else
+			TagClass::NotifyGlobalChanged(pThis->Value);
+	}
 
 	return true;
 }

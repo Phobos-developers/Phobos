@@ -527,7 +527,7 @@ Interceptable=no ; boolean
 ## Trigger events
 
 ### `500-511` Variable comparation
-- Compares the varaible's value with given number
+- Compares the variable's value with given number
 
 In `mycampaign.map`:
 ```ini
@@ -578,7 +578,7 @@ In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],501,[VaraibleIndex],0,[Operation],[Number],[IsGlobalVariable],0,A,[ActionX]
+ID=ActionCount,[Action1],501,[VariableIndex],0,[Operation],[Number],[IsGlobalVariable],0,A,[ActionX]
 ...
 ```
 
@@ -603,7 +603,7 @@ In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],502,[VaraibleIndex],0,[Min],[Max],[IsGlobalVariable],0,A,[ActionX]
+ID=ActionCount,[Action1],502,[VariableIndex],0,[Min],[Max],[IsGlobalVariable],0,A,[ActionX]
 ...
 ```
 
@@ -830,4 +830,14 @@ In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
 x=112,n
+```
+### `500 - 519` Edit Variable
+- Operate a variable's value
+    - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
+        - Any numbers exceeding this limit will lead to unexpected results!
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=i,n             ; where 500 <= i <= 519, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the param value.
 ```
