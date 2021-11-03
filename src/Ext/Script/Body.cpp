@@ -147,45 +147,45 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		switch (static_cast<PhobosScripts>(action))
 		{
 		case PhobosScripts::LocalVariableAdd:
-			ScriptExt::LocalVariableAdd(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::LocalVariableAdd(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::LocalVariableMultiply:
-			ScriptExt::LocalVariableMultiply(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::LocalVariableMultiply(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::LocalVariableDivide:
-			ScriptExt::LocalVariableDivide(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::LocalVariableDivide(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::LocalVariableMod:
-			ScriptExt::LocalVariableMod(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::LocalVariableMod(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::LocalVariableLeftShift:
-			ScriptExt::LocalVariableLeftShift(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::LocalVariableLeftShift(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::LocalVariableRightShift:
-			ScriptExt::LocalVariableRightShift(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::LocalVariableRightShift(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::LocalVariableReverse:
-			ScriptExt::LocalVariableReverse(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::LocalVariableReverse(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::LocalVariableXor:
-			ScriptExt::LocalVariableXor(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::LocalVariableXor(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::LocalVariableOr:
-			ScriptExt::LocalVariableOr(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::LocalVariableOr(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::LocalVariableAnd:
-			ScriptExt::LocalVariableAnd(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::LocalVariableAnd(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::GlobalVariableAdd:
-			ScriptExt::GlobalVariableAdd(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::GlobalVariableAdd(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::GlobalVariableMultiply:
-			ScriptExt::GlobalVariableMultiply(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::GlobalVariableMultiply(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::GlobalVariableDivide:
-			ScriptExt::GlobalVariableDivide(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::GlobalVariableDivide(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::GlobalVariableMod:
-			ScriptExt::GlobalVariableMod(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::GlobalVariableMod(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::GlobalVariableLeftShift:
-			ScriptExt::GlobalVariableLeftShift(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::GlobalVariableLeftShift(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::GlobalVariableRightShift:
-			ScriptExt::GlobalVariableRightShift(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::GlobalVariableRightShift(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::GlobalVariableReverse:
-			ScriptExt::GlobalVariableReverse(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::GlobalVariableReverse(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::GlobalVariableXor:
-			ScriptExt::GlobalVariableXor(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::GlobalVariableXor(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::GlobalVariableOr:
-			ScriptExt::GlobalVariableOr(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::GlobalVariableOr(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		case PhobosScripts::GlobalVariableAnd:
-			ScriptExt::GlobalVariableAnd(LOWORD(argument), HIWORD(argument)); break;
+			ScriptExt::GlobalVariableAnd(pTeam, LOWORD(argument), HIWORD(argument)); break;
 		default:
 			break;
 		}
