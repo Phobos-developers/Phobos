@@ -28,7 +28,7 @@ void ScenarioExt::ExtData::GetVariableStateByID(bool bIsGlobal, int nIndex, char
 
 	auto itr = dict.find(nIndex);
 	if (itr != dict.end())
-		*pOut = itr->second.Value;
+		*pOut = static_cast<char>(itr->second.Value);
 }
 
 void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
@@ -45,7 +45,7 @@ void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
 			char* buffer;
 			strcpy_s(var.Name, strtok_s(Phobos::readBuffer, ",", &buffer));
 			if (auto pState = strtok_s(nullptr, ",", &buffer))
-				var.Value = atoi(pState) != 0;
+				var.Value = atoi(pState);
 			else
 				var.Value = 0;
 		}

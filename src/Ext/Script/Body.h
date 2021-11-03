@@ -17,6 +17,32 @@
 #include <Utilities/Container.h>
 #include <Phobos.h>
 
+enum class PhobosScripts : int
+{
+	// FS-21 please finish your stuff here, thanks
+	LocalVariableAdd = 500,
+	LocalVariableMultiply,
+	LocalVariableDivide,
+	LocalVariableMod,
+	LocalVariableLeftShift,
+	LocalVariableRightShift,
+	LocalVariableReverse,
+	LocalVariableXor,
+	LocalVariableOr,
+	LocalVariableAnd,
+	GlobalVariableAdd,
+	GlobalVariableMultiply,
+	GlobalVariableDivide,
+	GlobalVariableMod,
+	GlobalVariableLeftShift,
+	GlobalVariableRightShift,
+	GlobalVariableReverse,
+	GlobalVariableXor,
+	GlobalVariableOr,
+	GlobalVariableAnd,
+
+};
+
 class ScriptExt
 {
 public:
@@ -65,6 +91,27 @@ public:
 	static void UnregisterGreatSuccess(TeamClass * pTeam);
 
 	static void Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
+
+	static void LocalVariableAdd(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableMultiply(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableDivide(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableMod(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableLeftShift(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableRightShift(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableReverse(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableXor(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableOr(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableAnd(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableAdd(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableMultiply(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableDivide(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableMod(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableLeftShift(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableRightShift(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableReverse(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableXor(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableOr(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableAnd(TeamClass* pTeam, int nVariable, int Number);
 
 	static ExtContainer ExtMap;
 

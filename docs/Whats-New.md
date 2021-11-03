@@ -20,16 +20,74 @@ In `FAData.ini`:
 [ParamTypes]
 47=Structures,28
 53=Play BuildUp,10
+54=Use GlobalVar,10
+55=Operation,0
+56=Variable index,0
+57=Lower bound,0
+58=Upper bound,0
+
+[EventsRA2]
+500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
+501=Local variable is less than,48,6,0,0,[LONG DESC],0,1,501,1
+502=Local variable equals to,48,6,0,0,[LONG DESC],0,1,502,1
+503=Local variable is greater than or equals to,48,6,0,0,[LONG DESC],0,1,503,1
+504=Local variable is less than or equals,48,6,0,0,[LONG DESC],0,1,504,1
+505=Local variable and X is true,48,6,0,0,[LONG DESC],0,1,505,1
+506=Global variable is greater than,48,6,0,0,[LONG DESC],0,1,506,1
+507=Global variable is less than,48,6,0,0,[LONG DESC],0,1,507,1
+508=Global variable equals to,48,6,0,0,[LONG DESC],0,1,508,1
+509=Global variable is greater than or queals to,48,6,0,0,[LONG DESC],0,1,509,1
+510=Global variable is less than or equals to,48,6,0,0,[LONG DESC],0,1,510,1
+511=Global variable and X is true,48,6,0,0,[LONG DESC],0,1,511,1
 
 [ActionsRA2]
 125=Build at...,-10,47,53,0,0,0,1,0,0,[LONG DESC],0,1,125
 500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
+501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
+502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
+503=Print variable value,0,56,54,0,0,0,0,0,0,[LONG DESC],0,1,503,0
 
-[ScriptsRA2]   ; NEEDS FA2EXT.DLL (by AlexB) or FA2SP.DLL (by secsome)
-71=Timed Area Guard,4,0,1,[LONG DESC]         ; FA2Ext.dll only
-71=Timed Area Guard,20,0,1,[LONG DESC]        ; FA2sp.dll only
+; FOLLOWING STUFFS NEEDS FA2SP.DLL (by secsome)
+[ScriptTypeLists]
+1=ScriptLocalVariable
+2=ScriptGlobalVariable
+
+[ScriptLocalVariable]
+HasExtraParam=Yes
+BuiltInType=14
+
+[ScriptGlobalVariable]
+HasExtraParam=Yes
+BuiltInType=5
+
+[ScriptsRA2]   
+71=Timed Area Guard,20,0,1,[LONG DESC]
 72=Load Onto Transports,0,0,1,[LONG DESC]
 73=Wait until ammo is full,0,0,1,[LONG DESC]
+500=Local variable add,22,0,1,[LONG DESC]
+501=Local variable multiply,22,0,1,[LONG DESC]
+502=Local variable divide,22,0,1,[LONG DESC]
+503=Local variable mod,22,0,1,[LONG DESC]
+504=Local variable left shift,22,0,1,[LONG DESC]
+505=Local variable right shift,22,0,1,[LONG DESC]
+506=Local variable reverse,22,0,1,[LONG DESC]
+507=Local variable xor,22,0,1,[LONG DESC]
+508=Local variable or,22,0,1,[LONG DESC]
+509=Local variable and,22,0,1,[LONG DESC]
+510=Global variable add,23,0,1,[LONG DESC]
+511=Global variable multiply,23,0,1,[LONG DESC]
+512=Global variable divide,23,0,1,[LONG DESC]
+513=Global variable mod,23,0,1,[LONG DESC]
+514=Global variable left shift,23,0,1,[LONG DESC]
+515=Global variable right shift,23,0,1,[LONG DESC]
+516=Global variable reverse,23,0,1,[LONG DESC]
+517=Global variable xor,23,0,1,[LONG DESC]
+518=Global variable or,23,0,1,[LONG DESC]
+519=Global variable and,23,0,1,[LONG DESC]
+
+[ScriptParams] 
+22=Local variables,-1
+23=Global variables,-2
 ```
 
 ## Changelog
@@ -50,6 +108,7 @@ New:
 - Default disguise for individual InfantryTypes (by secsome)
 - Quicksave hotkey command (by secsome)
 - Save Game Trigger Action (by secsome)
+- Numeric Variables (by secsome)
 - Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)
 - Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
 - XDrawOffset for animations (by Morton)

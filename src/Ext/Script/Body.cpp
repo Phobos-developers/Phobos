@@ -2,6 +2,8 @@
 #include "../Techno/Body.h"
 #include "../BuildingType/Body.h"
 
+#include <Ext/Scenario/Body.h>
+
 template<> const DWORD Extension<ScriptClass>::Canary = 0x3B3B3B3B;
 ScriptExt::ExtContainer ScriptExt::ExtMap;
 
@@ -30,7 +32,7 @@ ScriptExt::ExtContainer::~ExtContainer() = default;
 void ScriptExt::ProcessAction(TeamClass* pTeam)
 {
 	const int& action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action;
-
+	const int argument = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
 	switch (action)
 	{
 	case 71:
@@ -142,9 +144,51 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
 		break;
 	default:
-		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
-		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
-		break;
+		switch (static_cast<PhobosScripts>(action))
+		{
+		case PhobosScripts::LocalVariableAdd:
+			ScriptExt::LocalVariableAdd(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableMultiply:
+			ScriptExt::LocalVariableMultiply(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableDivide:
+			ScriptExt::LocalVariableDivide(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableMod:
+			ScriptExt::LocalVariableMod(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableLeftShift:
+			ScriptExt::LocalVariableLeftShift(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableRightShift:
+			ScriptExt::LocalVariableRightShift(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableReverse:
+			ScriptExt::LocalVariableReverse(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableXor:
+			ScriptExt::LocalVariableXor(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableOr:
+			ScriptExt::LocalVariableOr(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::LocalVariableAnd:
+			ScriptExt::LocalVariableAnd(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableAdd:
+			ScriptExt::GlobalVariableAdd(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableMultiply:
+			ScriptExt::GlobalVariableMultiply(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableDivide:
+			ScriptExt::GlobalVariableDivide(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableMod:
+			ScriptExt::GlobalVariableMod(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableLeftShift:
+			ScriptExt::GlobalVariableLeftShift(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableRightShift:
+			ScriptExt::GlobalVariableRightShift(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableReverse:
+			ScriptExt::GlobalVariableReverse(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableXor:
+			ScriptExt::GlobalVariableXor(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableOr:
+			ScriptExt::GlobalVariableOr(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		case PhobosScripts::GlobalVariableAnd:
+			ScriptExt::GlobalVariableAnd(pTeam, LOWORD(argument), HIWORD(argument)); break;
+		default:
+			break;
+		}
 	}
 }
 
@@ -2326,4 +2370,224 @@ void ScriptExt::UnregisterGreatSuccess(TeamClass* pTeam)
 {
 	pTeam->AchievedGreatSuccess = false;
 	pTeam->StepCompleted = true; // This action finished - FS-21
+}
+
+void ScriptExt::LocalVariableAdd(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+	{
+		itr->second.Value += Number;
+		TagClass::NotifyLocalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::LocalVariableMultiply(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+	{
+		itr->second.Value *= Number;
+		TagClass::NotifyLocalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::LocalVariableDivide(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+	{
+		itr->second.Value /= Number;
+		TagClass::NotifyLocalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::LocalVariableMod(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+	{
+		itr->second.Value %= Number;
+		TagClass::NotifyLocalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::LocalVariableLeftShift(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+	{
+		itr->second.Value <<= Number;
+		TagClass::NotifyLocalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::LocalVariableRightShift(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+	{
+		itr->second.Value >>= Number;
+		TagClass::NotifyLocalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::LocalVariableReverse(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+	{
+		itr->second.Value = ~itr->second.Value;
+		TagClass::NotifyLocalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::LocalVariableXor(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+	{
+		itr->second.Value ^= Number;
+		TagClass::NotifyLocalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::LocalVariableOr(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+	{
+		itr->second.Value |= Number;
+		TagClass::NotifyLocalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::LocalVariableAnd(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[0].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[0].end())
+	{
+		itr->second.Value &= Number;
+		TagClass::NotifyLocalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::GlobalVariableAdd(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+	{
+		itr->second.Value += Number;
+		TagClass::NotifyGlobalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::GlobalVariableMultiply(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+	{
+		itr->second.Value *= Number;
+		TagClass::NotifyGlobalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::GlobalVariableDivide(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+	{
+		itr->second.Value /= Number;
+		TagClass::NotifyGlobalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::GlobalVariableMod(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+	{
+		itr->second.Value %= Number;
+		TagClass::NotifyGlobalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::GlobalVariableLeftShift(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+	{
+		itr->second.Value <<= Number;
+		TagClass::NotifyGlobalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::GlobalVariableRightShift(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+	{
+		itr->second.Value >>= Number;
+		TagClass::NotifyGlobalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::GlobalVariableReverse(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+	{
+		itr->second.Value = ~itr->second.Value;
+		TagClass::NotifyGlobalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::GlobalVariableXor(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+	{
+		itr->second.Value ^= Number;
+		TagClass::NotifyGlobalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::GlobalVariableOr(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+	{
+		itr->second.Value |= Number;
+		TagClass::NotifyGlobalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
+}
+
+void ScriptExt::GlobalVariableAnd(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[1].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[1].end())
+	{
+		itr->second.Value &= Number;
+		TagClass::NotifyGlobalChanged(nVariable);
+		pTeam->StepCompleted = true;
+	}
 }

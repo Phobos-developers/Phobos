@@ -524,6 +524,35 @@ Interceptor.EliteMinimumGuardRange=0.0  ; double
 Interceptable=no ; boolean
 ```
 
+## Trigger events
+
+### `500-511` Variable comparation
+- Compares the variable's value with given number
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[Param],[EventX]
+...
+```
+
+| *Event ID*  | *Description*                                 | *Global* |
+| :------: | :-------------------------------------------: | :-------: |
+500         | CurrentValue > Number | No |
+501         | CurrentValue < CurrentValue | No |
+502         | CurrentValue = CurrentValue | No |
+503         | CurrentValue >= CurrentValue | No |
+504         | CurrentValue <= CurrentValue | No |
+505         | CurrentValue & CurrentValue | No |
+506         | CurrentValue > CurrentValue | Yes |
+507         | CurrentValue < ~CurrentValue | Yes |
+508         | CurrentValue = CurrentValue | Yes |
+509         | CurrentValue >= CurrentValue | Yes |
+510         | CurrentValue <= CurrentValue | Yes |
+511         | CurrentValue & CurrentValue | Yes |
+
+
 ## Trigger actions
 
 ### `500` Save Game
@@ -539,6 +568,56 @@ In `mycampaign.map`:
 ID=ActionCount,[Action1],500,4,[CSFKey],0,0,0,0,A,[ActionX]
 ...
 ```
+
+### `501` Edit Variable
+- Operate a variable's value
+    - The variable's value type is int32, which means it ranges from -2^31 to 2^31-1.
+        - Any numbers exceeding this limit will lead to unexpected results!
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVariable],0,A,[ActionX]
+...
+```
+
+| *Operation*  | *Description*                                 |
+| :------: | :-------------------------------------------: |
+0         | CurrentValue = Number |
+1         | CurrentValue = CurrentValue + Number |
+2         | CurrentValue = CurrentValue * Number |
+3         | CurrentValue = CurrentValue / Number |
+4         | CurrentValue = CurrentValue % Number |
+5         | CurrentValue = CurrentValue leftshift Number |
+6         | CurrentValue = CurrentValue rightshift Number |
+7         | CurrentValue = ~CurrentValue |
+8         | CurrentValue = CurrentValue xor Number |
+9         | CurrentValue = CurrentValue or Number |
+10         | CurrentValue = CurrentValue and Number |
+
+### `502` Generate random number
+- Generate a random integer ranged in [Min, Max] and store it in a given variable
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],502,0,[VariableIndex],[Min],[Max],[IsGlobalVariable],0,A,[ActionX]
+...
+```
+
+### `503` Print variable value
+- Print a variable value to the message list
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[ActionX]
+...
+```
+
 
 ## Script actions
 
@@ -762,4 +841,14 @@ In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
 x=112,n
+```
+### `500 - 519` Edit Variable
+- Operate a variable's value
+    - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
+        - Any numbers exceeding this limit will lead to unexpected results!
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=i,n             ; where 500 <= i <= 519, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the param value.
 ```
