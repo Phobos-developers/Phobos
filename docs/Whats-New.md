@@ -20,6 +20,11 @@ In `FAData.ini`:
 [ParamTypes]
 47=Structures,28
 53=Play BuildUp,10
+54=Use GlobalVar,10
+55=Operation,0
+56=Variable index,0
+57=Lower bound,0
+58=Upper bound,0
 
 [EventsRA2]
 500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -38,46 +43,51 @@ In `FAData.ini`:
 [ActionsRA2]
 125=Build at...,-10,47,53,0,0,0,1,0,0,[LONG DESC],0,1,125
 500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
-501=Edit variable,0,3,6,6,6,0,0,0,0,[LONG DESC],0,1,501,1
-502=Generate random number,0,3,6,6,6,0,0,0,0,[LONG DESC],0,1,502,1
-503=Print variable value,0,3,6,0,0,0,0,0,0,[LONG DESC],0,1,503,0
+501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
+502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
+503=Print variable value,0,56,54,0,0,0,0,0,0,[LONG DESC],0,1,503,0
 
 ; FOLLOWING STUFFS NEEDS FA2SP.DLL (by secsome)
 [ScriptTypeLists]
-1=ScriptVariable
+1=ScriptLocalVariable
+2=ScriptGlobalVariable
 
-[ScriptVariable]
+[ScriptLocalVariable]
 HasExtraParam=Yes
-BuiltInType=0
+BuiltInType=14
+
+[ScriptGlobalVariable]
+HasExtraParam=Yes
+BuiltInType=5
 
 [ScriptsRA2]   
-71=Timed Area Guard,20,0,1,[LONG DESC]        ; FA2sp.dll only
+71=Timed Area Guard,20,0,1,[LONG DESC]
 72=Load Onto Transports,0,0,1,[LONG DESC]
 73=Wait until ammo is full,0,0,1,[LONG DESC]
-500=Local variable add,21,0,1,[LONG DESC]
-501=Local variable multiply,21,0,1,[LONG DESC]
-502=Local variable divide,21,0,1,[LONG DESC]
-503=Local variable mod,21,0,1,[LONG DESC]
-504=Local variable left shift,21,0,1,[LONG DESC]
-505=Local variable right shift,21,0,1,[LONG DESC]
-506=Local variable reverse,21,0,1,[LONG DESC]
-507=Local variable xor,21,0,1,[LONG DESC]
-508=Local variable or,21,0,1,[LONG DESC]
-509=Local variable and,21,0,1,[LONG DESC]
-510=Global variable add,22,0,1,[LONG DESC]
-511=Global variable multiply,22,0,1,[LONG DESC]
-512=Global variable divide,22,0,1,[LONG DESC]
-513=Global variable mod,22,0,1,[LONG DESC]
-514=Global variable left shift,22,0,1,[LONG DESC]
-515=Global variable right shift,22,0,1,[LONG DESC]
-516=Global variable reverse,22,0,1,[LONG DESC]
-517=Global variable xor,22,0,1,[LONG DESC]
-518=Global variable or,22,0,1,[LONG DESC]
-519=Global variable and,22,0,1,[LONG DESC]
+500=Local variable add,22,0,1,[LONG DESC]
+501=Local variable multiply,22,0,1,[LONG DESC]
+502=Local variable divide,22,0,1,[LONG DESC]
+503=Local variable mod,22,0,1,[LONG DESC]
+504=Local variable left shift,22,0,1,[LONG DESC]
+505=Local variable right shift,22,0,1,[LONG DESC]
+506=Local variable reverse,22,0,1,[LONG DESC]
+507=Local variable xor,22,0,1,[LONG DESC]
+508=Local variable or,22,0,1,[LONG DESC]
+509=Local variable and,22,0,1,[LONG DESC]
+510=Global variable add,23,0,1,[LONG DESC]
+511=Global variable multiply,23,0,1,[LONG DESC]
+512=Global variable divide,23,0,1,[LONG DESC]
+513=Global variable mod,23,0,1,[LONG DESC]
+514=Global variable left shift,23,0,1,[LONG DESC]
+515=Global variable right shift,23,0,1,[LONG DESC]
+516=Global variable reverse,23,0,1,[LONG DESC]
+517=Global variable xor,23,0,1,[LONG DESC]
+518=Global variable or,23,0,1,[LONG DESC]
+519=Global variable and,23,0,1,[LONG DESC]
 
 [ScriptParams] 
-21=Local variables,-1
-22=Global variables,-1
+22=Local variables,-1
+23=Global variables,-2
 ```
 
 ## Changelog

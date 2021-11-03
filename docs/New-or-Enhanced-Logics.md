@@ -578,7 +578,7 @@ In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],501,[VariableIndex],0,[Operation],[Number],[IsGlobalVariable],0,A,[ActionX]
+ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVariable],0,A,[ActionX]
 ...
 ```
 
@@ -603,7 +603,7 @@ In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],502,[VariableIndex],0,[Min],[Max],[IsGlobalVariable],0,A,[ActionX]
+ID=ActionCount,[Action1],502,0,[VariableIndex],[Min],[Max],[IsGlobalVariable],0,A,[ActionX]
 ...
 ```
 
