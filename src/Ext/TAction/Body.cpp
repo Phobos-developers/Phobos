@@ -155,7 +155,7 @@ bool TActionExt::EditVariable(TActionClass* pThis, HouseClass* pHouse, ObjectCla
 	// holds by pThis->Param5
 
 	// uses !pThis->Param5 to ensure Param5 is 0 or 1
-	auto& variables = ScenarioExt::Global()->Variables[!pThis->Param5];
+	auto& variables = ScenarioExt::Global()->Variables[pThis->Param5 != 0];
 	auto itr = variables.find(pThis->Value);
 	if (itr != variables.end())
 	{
@@ -188,7 +188,7 @@ bool TActionExt::EditVariable(TActionClass* pThis, HouseClass* pHouse, ObjectCla
 
 bool TActionExt::GenerateRandomNumber(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	auto& variables = ScenarioExt::Global()->Variables[!pThis->Param5];
+	auto& variables = ScenarioExt::Global()->Variables[pThis->Param5 != 0];
 	auto itr = variables.find(pThis->Value);
 	if (itr != variables.end())
 	{
@@ -204,7 +204,7 @@ bool TActionExt::GenerateRandomNumber(TActionClass* pThis, HouseClass* pHouse, O
 
 bool TActionExt::PrintVariableValue(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	auto& variables = ScenarioExt::Global()->Variables[!pThis->Param3];
+	auto& variables = ScenarioExt::Global()->Variables[pThis->Param3 != 0];
 	auto itr = variables.find(pThis->Value);
 	if (itr != variables.end())
 	{

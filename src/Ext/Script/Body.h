@@ -92,26 +92,26 @@ public:
 
 	static void Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
 
-	static void LocalVariableAdd(int nVariable, int Number);
-	static void LocalVariableMultiply(int nVariable, int Number);
-	static void LocalVariableDivide(int nVariable, int Number);
-	static void LocalVariableMod(int nVariable, int Number);
-	static void LocalVariableLeftShift(int nVariable, int Number);
-	static void LocalVariableRightShift(int nVariable, int Number);
-	static void LocalVariableReverse(int nVariable, int Number);
-	static void LocalVariableXor(int nVariable, int Number);
-	static void LocalVariableOr(int nVariable, int Number);
-	static void LocalVariableAnd(int nVariable, int Number);
-	static void GlobalVariableAdd(int nVariable, int Number);
-	static void GlobalVariableMultiply(int nVariable, int Number);
-	static void GlobalVariableDivide(int nVariable, int Number);
-	static void GlobalVariableMod(int nVariable, int Number);
-	static void GlobalVariableLeftShift(int nVariable, int Number);
-	static void GlobalVariableRightShift(int nVariable, int Number);
-	static void GlobalVariableReverse(int nVariable, int Number);
-	static void GlobalVariableXor(int nVariable, int Number);
-	static void GlobalVariableOr(int nVariable, int Number);
-	static void GlobalVariableAnd(int nVariable, int Number);
+	static void LocalVariableAdd(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableMultiply(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableDivide(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableMod(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableLeftShift(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableRightShift(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableReverse(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableXor(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableOr(TeamClass* pTeam, int nVariable, int Number);
+	static void LocalVariableAnd(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableAdd(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableMultiply(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableDivide(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableMod(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableLeftShift(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableRightShift(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableReverse(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableXor(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableOr(TeamClass* pTeam, int nVariable, int Number);
+	static void GlobalVariableAnd(TeamClass* pTeam, int nVariable, int Number);
 
 	static ExtContainer ExtMap;
 
