@@ -126,7 +126,6 @@ bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* 
 	return true;
 }
 
-// Author : secsome
 bool TActionExt::EditVariable(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	// Variable Index
@@ -212,6 +211,42 @@ bool TActionExt::PrintVariableValue(TActionClass* pThis, HouseClass* pHouse, Obj
 		MessageListClass::Instance->PrintMessage(Phobos::wideBuffer);
 	}
 
+	return true;
+}
+
+bool TActionExt::BinaryOperation(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	auto& variables1 = ScenarioExt::Global()->Variables[pThis->Param5 != 0];
+	auto itr1 = variables1.find(pThis->Value);
+	auto& variables2 = ScenarioExt::Global()->Variables[pThis->Param6 != 0];
+	auto itr2 = variables2.find(pThis->Param4);
+
+	if (itr1 != variables1.end() && itr2 != variables2.end())
+	{
+		auto& nCurrentValue = itr1->second.Value;
+		auto& nOptValue = itr2->second.Value;
+		switch (pThis->Param3)
+		{
+		case 0: { nCurrentValue = nOptValue; break; }
+		case 1: { nCurrentValue += nOptValue; break; }
+		case 2: { nCurrentValue *= nOptValue; break; }
+		case 3: { nCurrentValue /= nOptValue; break; }
+		case 4: { nCurrentValue %= nOptValue; break; }
+		case 5: { nCurrentValue <<= nOptValue; break; }
+		case 6: { nCurrentValue >>= nOptValue; break; }
+		case 7: { nCurrentValue = nOptValue; break; }
+		case 8: { nCurrentValue ^= nOptValue; break; }
+		case 9: { nCurrentValue |= nOptValue; break; }
+		case 10: { nCurrentValue &= nOptValue; break; }
+		default:
+			return true;
+		}
+
+		if (!pThis->Param5)
+			TagClass::NotifyLocalChanged(pThis->Value);
+		else
+			TagClass::NotifyGlobalChanged(pThis->Value);
+	}
 	return true;
 }
 

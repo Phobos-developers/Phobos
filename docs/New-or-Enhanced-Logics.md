@@ -666,16 +666,19 @@ ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[Actio
 ...
 ```
 
-### `503` Print variable value
-- Print a variable value to the message list
+### `504` Binary Operation
+- Operate a variable's value with another variable's value
+    - Similar to 501, but the operation number is read from another variable
 
 In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[ActionX]
+ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperationIndex],[IsGlobalVariable],[IsOperationGlobalVariable],A,[ActionX]
 ...
 ```
+
+`Operation` can be looked up at action `501`
 
 
 ## Script actions

@@ -46,6 +46,7 @@ In `FAData.ini`:
 501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
 502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
 503=Print variable value,0,56,54,0,0,0,0,0,0,[LONG DESC],0,1,503,0
+504=Binary operation,0,56,55,56,54,54,0,0,0,[LONG DESC],0,1,504,1
 
 ; FOLLOWING STUFFS NEEDS FA2SP.DLL (by secsome)
 [ScriptTypeLists]

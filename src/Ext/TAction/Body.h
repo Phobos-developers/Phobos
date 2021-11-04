@@ -58,6 +58,9 @@ public:
 	static bool PrintVariableValue(TActionClass* pThis, HouseClass* pHouse,
 			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
 
+	static bool BinaryOperation(TActionClass* pThis, HouseClass* pHouse,
+			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
+
 	class ExtContainer final : public Container<TActionExt>
 	{
 	public:
