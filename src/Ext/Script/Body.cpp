@@ -145,7 +145,7 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		break;
 	}
 
-	if (action >= PhobosScripts::LocalVariableAdd && action <= PhobosScripts::GlobalVariableAnd)
+	if (action >= PhobosScripts::LocalVariableAdd && action <= PhobosScripts::GlobalVariableAndByGlobal)
 		VariablesHandler(pTeam, static_cast<PhobosScripts>(action), argument);
 }
 
