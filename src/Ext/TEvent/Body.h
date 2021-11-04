@@ -23,6 +23,30 @@ enum PhobosTriggerEvent
 	GlobalVariableGreaterThanOrEqualsTo,
 	GlobalVariableLessThanOrEqualsTo,
 	GlobalVariableAndIsTrue,
+	LocalVariableGreaterThanLocalVariable,
+	LocalVariableLessThanLocalVariable,
+	LocalVariableEqualsToLocalVariable,
+	LocalVariableGreaterThanOrEqualsToLocalVariable,
+	LocalVariableLessThanOrEqualsToLocalVariable,
+	LocalVariableAndIsTrueLocalVariable,
+	GlobalVariableGreaterThanLocalVariable,
+	GlobalVariableLessThanLocalVariable,
+	GlobalVariableEqualsToLocalVariable,
+	GlobalVariableGreaterThanOrEqualsToLocalVariable,
+	GlobalVariableLessThanOrEqualsToLocalVariable,
+	GlobalVariableAndIsTrueLocalVariable,
+	LocalVariableGreaterThanGlobalVariable,
+	LocalVariableLessThanGlobalVariable,
+	LocalVariableEqualsToGlobalVariable,
+	LocalVariableGreaterThanOrEqualsToGlobalVariable,
+	LocalVariableLessThanOrEqualsToGlobalVariable,
+	LocalVariableAndIsTrueGlobalVariable,
+	GlobalVariableGreaterThanGlobalVariable,
+	GlobalVariableLessThanGlobalVariable,
+	GlobalVariableEqualsToGlobalVariable,
+	GlobalVariableGreaterThanOrEqualsToGlobalVariable,
+	GlobalVariableLessThanOrEqualsToGlobalVariable,
+	GlobalVariableAndIsTrueGlobalVariable,
 };
 
 class TEventExt
@@ -53,6 +77,8 @@ public:
 
 	template<bool IsGlobal, typename _Pr>
 	static bool VariableCheck(TEventClass* pThis);
+	template<bool IsSrcGlobal, bool IsGlobal, typename _Pr>
+	static bool VariableCheckBinary(TEventClass* pThis);
 
 	class ExtContainer final : public Container<TEventExt>
 	{

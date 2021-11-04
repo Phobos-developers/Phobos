@@ -52,6 +52,10 @@ In `FAData.ini`:
 [ScriptTypeLists]
 1=ScriptLocalVariable
 2=ScriptGlobalVariable
+3=ScriptLocalVariable_Local
+4=ScriptLocalVariable_Global
+5=ScriptGlobalVariable_Local
+6=ScriptGlobalVariable_Global
 
 [ScriptLocalVariable]
 HasExtraParam=Yes
@@ -61,34 +65,116 @@ BuiltInType=14
 HasExtraParam=Yes
 BuiltInType=5
 
+[ScriptLocalVariable_Local]
+HasExtraParam=Yes
+ExtraParamType=ScriptExtType_LocalVariables
+BuiltInType=14
+
+[ScriptLocalVariable_Global]
+HasExtraParam=Yes
+ExtraParamType=ScriptExtType_GlobalVariables
+BuiltInType=14
+
+[ScriptGlobalVariable_Local]
+HasExtraParam=Yes
+ExtraParamType=ScriptExtType_LocalVariables
+BuiltInType=5
+
+[ScriptGlobalVariable_Global]
+HasExtraParam=Yes
+ExtraParamType=ScriptExtType_GlobalVariables
+BuiltInType=5
+
+[ScriptExtType_LocalVariables]
+BuiltInType=14
+
+[ScriptExtType_GlobalVariables]
+BuiltInType=5
+
 [ScriptsRA2]   
 71=Timed Area Guard,20,0,1,[LONG DESC]
 72=Load Onto Transports,0,0,1,[LONG DESC]
 73=Wait until ammo is full,0,0,1,[LONG DESC]
-500=Local variable add,22,0,1,[LONG DESC]
-501=Local variable multiply,22,0,1,[LONG DESC]
-502=Local variable divide,22,0,1,[LONG DESC]
-503=Local variable mod,22,0,1,[LONG DESC]
-504=Local variable left shift,22,0,1,[LONG DESC]
-505=Local variable right shift,22,0,1,[LONG DESC]
-506=Local variable reverse,22,0,1,[LONG DESC]
-507=Local variable xor,22,0,1,[LONG DESC]
-508=Local variable or,22,0,1,[LONG DESC]
-509=Local variable and,22,0,1,[LONG DESC]
-510=Global variable add,23,0,1,[LONG DESC]
-511=Global variable multiply,23,0,1,[LONG DESC]
-512=Global variable divide,23,0,1,[LONG DESC]
-513=Global variable mod,23,0,1,[LONG DESC]
-514=Global variable left shift,23,0,1,[LONG DESC]
-515=Global variable right shift,23,0,1,[LONG DESC]
-516=Global variable reverse,23,0,1,[LONG DESC]
-517=Global variable xor,23,0,1,[LONG DESC]
-518=Global variable or,23,0,1,[LONG DESC]
-519=Global variable and,23,0,1,[LONG DESC]
+500=Local variable set,22,0,1,[LONG DESC]
+501=Local variable add,22,0,1,[LONG DESC]
+502=Local variable minus,22,0,1,[LONG DESC]
+503=Local variable multiply,22,0,1,[LONG DESC]
+504=Local variable divide,22,0,1,[LONG DESC]
+505=Local variable mod,22,0,1,[LONG DESC]
+506=Local variable leftshift,22,0,1,[LONG DESC]
+507=Local variable rightshift,22,0,1,[LONG DESC]
+508=Local variable reverse,22,0,1,[LONG DESC]
+509=Local variable xor,22,0,1,[LONG DESC]
+510=Local variable or,22,0,1,[LONG DESC]
+511=Local variable and,22,0,1,[LONG DESC]
+512=Global variable set,23,0,1,[LONG DESC]
+513=Global variable add,23,0,1,[LONG DESC]
+514=Global variable minus,23,0,1,[LONG DESC]
+515=Global variable multiply,23,0,1,[LONG DESC]
+516=Global variable divide,23,0,1,[LONG DESC]
+517=Global variable mod,23,0,1,[LONG DESC]
+518=Global variable leftshift,23,0,1,[LONG DESC]
+519=Global variable rightshift,23,0,1,[LONG DESC]
+520=Global variable reverse,23,0,1,[LONG DESC]
+521=Global variable xor,23,0,1,[LONG DESC]
+522=Global variable or,23,0,1,[LONG DESC]
+523=Global variable and,23,0,1,[LONG DESC]
+524=Local variable set by local variable,24,0,1,[LONG DESC]
+525=Local variable add by local variable,24,0,1,[LONG DESC]
+526=Local variable minus by local variable,24,0,1,[LONG DESC]
+527=Local variable multiply by local variable,24,0,1,[LONG DESC]
+528=Local variable divide by local variable,24,0,1,[LONG DESC]
+529=Local variable mod by local variable,24,0,1,[LONG DESC]
+530=Local variable leftshift by local variable,24,0,1,[LONG DESC]
+531=Local variable rightshift by local variable,24,0,1,[LONG DESC]
+532=Local variable reverse by local variable,24,0,1,[LONG DESC]
+533=Local variable xor by local variable,24,0,1,[LONG DESC]
+534=Local variable or by local variable,24,0,1,[LONG DESC]
+535=Local variable and by local variable,24,0,1,[LONG DESC]
+536=Global variable set by local variable,25,0,1,[LONG DESC]
+537=Global variable add by local variable,25,0,1,[LONG DESC]
+538=Global variable minus by local variable,25,0,1,[LONG DESC]
+539=Global variable multiply by local variable,25,0,1,[LONG DESC]
+540=Global variable divide by local variable,25,0,1,[LONG DESC]
+541=Global variable mod by local variable,25,0,1,[LONG DESC]
+542=Global variable leftshift by local variable,25,0,1,[LONG DESC]
+543=Global variable rightshift by local variable,25,0,1,[LONG DESC]
+544=Global variable reverse by local variable,25,0,1,[LONG DESC]
+545=Global variable xor by local variable,25,0,1,[LONG DESC]
+546=Global variable or by local variable,25,0,1,[LONG DESC]
+547=Global variable and by local variable,25,0,1,[LONG DESC]
+548=Local variable set by global variable,26,0,1,[LONG DESC]
+549=Local variable add by global variable,26,0,1,[LONG DESC]
+550=Local variable minus by global variable,26,0,1,[LONG DESC]
+551=Local variable multiply by global variable,26,0,1,[LONG DESC]
+552=Local variable divide by global variable,26,0,1,[LONG DESC]
+553=Local variable mod by global variable,26,0,1,[LONG DESC]
+554=Local variable leftshift by global variable,26,0,1,[LONG DESC]
+555=Local variable rightshift by global variable,26,0,1,[LONG DESC]
+556=Local variable reverse by global variable,26,0,1,[LONG DESC]
+557=Local variable xor by global variable,26,0,1,[LONG DESC]
+558=Local variable or by global variable,26,0,1,[LONG DESC]
+559=Local variable and by global variable,26,0,1,[LONG DESC]
+560=Global variable set by global variable,27,0,1,[LONG DESC]
+561=Global variable add by global variable,27,0,1,[LONG DESC]
+562=Global variable minus by global variable,27,0,1,[LONG DESC]
+563=Global variable multiply by global variable,27,0,1,[LONG DESC]
+564=Global variable divide by global variable,27,0,1,[LONG DESC]
+565=Global variable mod by global variable,27,0,1,[LONG DESC]
+566=Global variable leftshift by global variable,27,0,1,[LONG DESC]
+567=Global variable rightshift by global variable,27,0,1,[LONG DESC]
+568=Global variable reverse by global variable,27,0,1,[LONG DESC]
+569=Global variable xor by global variable,27,0,1,[LONG DESC]
+570=Global variable or by global variable,27,0,1,[LONG DESC]
+571=Global variable and by global variable,27,0,1,[LONG DESC]
 
 [ScriptParams] 
 22=Local variables,-1
 23=Global variables,-2
+24=Local variables,-3
+25=Local variables,-4
+26=Global variables,-5
+27=Global variables,-6
 ```
 
 ## Changelog

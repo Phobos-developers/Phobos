@@ -588,17 +588,69 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[Param],[EventX]
 | *Event ID*  | *Description*                                 | *Global* |
 | :------: | :-------------------------------------------: | :-------: |
 500         | CurrentValue > Number | No |
-501         | CurrentValue < CurrentValue | No |
-502         | CurrentValue = CurrentValue | No |
-503         | CurrentValue >= CurrentValue | No |
-504         | CurrentValue <= CurrentValue | No |
-505         | CurrentValue & CurrentValue | No |
-506         | CurrentValue > CurrentValue | Yes |
-507         | CurrentValue < ~CurrentValue | Yes |
-508         | CurrentValue = CurrentValue | Yes |
-509         | CurrentValue >= CurrentValue | Yes |
-510         | CurrentValue <= CurrentValue | Yes |
-511         | CurrentValue & CurrentValue | Yes |
+501         | CurrentValue < Number | No |
+502         | CurrentValue = Number | No |
+503         | CurrentValue >= Number | No |
+504         | CurrentValue <= Number | No |
+505         | CurrentValue & Number | No |
+506         | CurrentValue > Number | Yes |
+507         | CurrentValue < Number | Yes |
+508         | CurrentValue = Number | Yes |
+509         | CurrentValue >= Number | Yes |
+510         | CurrentValue <= Number | Yes |
+511         | CurrentValue & Number | Yes |
+
+### `512-523` Variable comparation with local variable
+- Compares the variable's value with given local variable value
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[LocalVariableIndex],[EventX]
+...
+```
+
+| *Event ID*  | *Description*                                 | *Global* |
+| :------: | :-------------------------------------------: | :-------: |
+512         | CurrentValue > LocalVariableValue | No |
+513         | CurrentValue < LocalVariableValue | No |
+514         | CurrentValue = LocalVariableValue | No |
+515         | CurrentValue >= LocalVariableValue | No |
+516         | CurrentValue <= LocalVariableValue | No |
+517         | CurrentValue & LocalVariableValue | No |
+518         | CurrentValue > LocalVariableValue | Yes |
+519         | CurrentValue < LocalVariableValue | Yes |
+520         | CurrentValue = LocalVariableValue | Yes |
+521         | CurrentValue >= LocalVariableValue | Yes |
+522         | CurrentValue <= LocalVariableValue | Yes |
+523         | CurrentValue & LocalVariableValue | Yes |
+
+### `524-535` Variable comparation with global variable
+- Compares the variable's value with given global variable value
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX]
+...
+```
+
+| *Event ID*  | *Description*                                 | *Global* |
+| :------: | :-------------------------------------------: | :-------: |
+524         | CurrentValue > GlobalVariableValue | No |
+525         | CurrentValue < GlobalVariableValue | No |
+526         | CurrentValue = GlobalVariableValue | No |
+527         | CurrentValue >= GlobalVariableValue | No |
+528         | CurrentValue <= GlobalVariableValue | No |
+529         | CurrentValue & GlobalVariableValue | No |
+530         | CurrentValue > GlobalVariableValue | Yes |
+531         | CurrentValue < GlobalVariableValue | Yes |
+532         | CurrentValue = GlobalVariableValue | Yes |
+533         | CurrentValue >= GlobalVariableValue | Yes |
+534         | CurrentValue <= GlobalVariableValue | Yes |
+535         | CurrentValue & GlobalVariableValue | Yes |
 
 
 ## Trigger actions
