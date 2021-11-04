@@ -9,7 +9,7 @@
 
 class HouseClass;
 
-enum class PhobosTriggerEvent : int
+enum PhobosTriggerEvent
 {
 	LocalVariableGreaterThan = 500,
 	LocalVariableLessThan,

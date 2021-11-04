@@ -133,16 +133,17 @@ bool TActionExt::EditVariable(TActionClass* pThis, HouseClass* pHouse, ObjectCla
 
 	// Operations:
 	// 0 : set value - operator=
-	// 1 : add value (minus just uses negative number) - operator+
-	// 2 : multiply value - operator*
-	// 3 : divide value - operator/
-	// 4 : mod value - operator%
-	// 5 : <<
-	// 6 : >>
-	// 7 : ~ (no second param being used)
-	// 8 : ^
-	// 9 : |
-	// 10 : &
+	// 1 : add value - operator+
+	// 2 : minus value - operator-
+	// 3 : multiply value - operator*
+	// 4 : divide value - operator/
+	// 5 : mod value - operator%
+	// 6 : <<
+	// 7 : >>
+	// 8 : ~ (no second param being used)
+	// 9 : ^
+	// 10 : |
+	// 11 : &
 	// holds by pThis->Param3
 
 	// Params:
@@ -164,15 +165,16 @@ bool TActionExt::EditVariable(TActionClass* pThis, HouseClass* pHouse, ObjectCla
 		{
 		case 0: { nCurrentValue = pThis->Param4; break; }
 		case 1: { nCurrentValue += pThis->Param4; break; }
-		case 2: { nCurrentValue *= pThis->Param4; break; }
-		case 3: { nCurrentValue /= pThis->Param4; break; }
-		case 4: { nCurrentValue %= pThis->Param4; break; }
-		case 5: { nCurrentValue <<= pThis->Param4; break; }
-		case 6: { nCurrentValue >>= pThis->Param4; break; }
-		case 7: { nCurrentValue = ~nCurrentValue; break; }
-		case 8: { nCurrentValue ^= pThis->Param4; break; }
-		case 9: { nCurrentValue |= pThis->Param4; break; }
-		case 10: { nCurrentValue &= pThis->Param4; break; }
+		case 2: { nCurrentValue -= pThis->Param4; break; }
+		case 3: { nCurrentValue *= pThis->Param4; break; }
+		case 4: { nCurrentValue /= pThis->Param4; break; }
+		case 5: { nCurrentValue %= pThis->Param4; break; }
+		case 6: { nCurrentValue <<= pThis->Param4; break; }
+		case 7: { nCurrentValue >>= pThis->Param4; break; }
+		case 8: { nCurrentValue = ~nCurrentValue; break; }
+		case 9: { nCurrentValue ^= pThis->Param4; break; }
+		case 10: { nCurrentValue |= pThis->Param4; break; }
+		case 11: { nCurrentValue &= pThis->Param4; break; }
 		default:
 			return true;
 		}
@@ -229,15 +231,16 @@ bool TActionExt::BinaryOperation(TActionClass* pThis, HouseClass* pHouse, Object
 		{
 		case 0: { nCurrentValue = nOptValue; break; }
 		case 1: { nCurrentValue += nOptValue; break; }
-		case 2: { nCurrentValue *= nOptValue; break; }
-		case 3: { nCurrentValue /= nOptValue; break; }
-		case 4: { nCurrentValue %= nOptValue; break; }
-		case 5: { nCurrentValue <<= nOptValue; break; }
-		case 6: { nCurrentValue >>= nOptValue; break; }
-		case 7: { nCurrentValue = nOptValue; break; }
-		case 8: { nCurrentValue ^= nOptValue; break; }
-		case 9: { nCurrentValue |= nOptValue; break; }
-		case 10: { nCurrentValue &= nOptValue; break; }
+		case 2: { nCurrentValue -= nOptValue; break; }
+		case 3: { nCurrentValue *= nOptValue; break; }
+		case 4: { nCurrentValue /= nOptValue; break; }
+		case 5: { nCurrentValue %= nOptValue; break; }
+		case 6: { nCurrentValue <<= nOptValue; break; }
+		case 7: { nCurrentValue >>= nOptValue; break; }
+		case 8: { nCurrentValue = nOptValue; break; }
+		case 9: { nCurrentValue ^= nOptValue; break; }
+		case 10: { nCurrentValue |= nOptValue; break; }
+		case 11: { nCurrentValue &= nOptValue; break; }
 		default:
 			return true;
 		}

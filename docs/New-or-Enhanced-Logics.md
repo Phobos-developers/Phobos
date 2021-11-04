@@ -634,15 +634,16 @@ ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVar
 | :------: | :-------------------------------------------: |
 0         | CurrentValue = Number |
 1         | CurrentValue = CurrentValue + Number |
-2         | CurrentValue = CurrentValue * Number |
-3         | CurrentValue = CurrentValue / Number |
-4         | CurrentValue = CurrentValue % Number |
-5         | CurrentValue = CurrentValue leftshift Number |
-6         | CurrentValue = CurrentValue rightshift Number |
-7         | CurrentValue = ~CurrentValue |
-8         | CurrentValue = CurrentValue xor Number |
-9         | CurrentValue = CurrentValue or Number |
-10         | CurrentValue = CurrentValue and Number |
+2         | CurrentValue = CurrentValue - Number |
+3         | CurrentValue = CurrentValue * Number |
+4         | CurrentValue = CurrentValue / Number |
+5         | CurrentValue = CurrentValue % Number |
+6         | CurrentValue = CurrentValue leftshift Number |
+7         | CurrentValue = CurrentValue rightshift Number |
+8         | CurrentValue = ~CurrentValue |
+9         | CurrentValue = CurrentValue xor Number |
+10         | CurrentValue = CurrentValue or Number |
+11         | CurrentValue = CurrentValue and Number |
 
 ### `502` Generate random number
 - Generate a random integer ranged in [Min, Max] and store it in a given variable
@@ -904,7 +905,7 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=112,n
 ```
-### `500 - 519` Edit Variable
+### `500 - 523` Edit Variable
 - Operate a variable's value
     - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
         - Any numbers exceeding this limit will lead to unexpected results!
@@ -912,9 +913,28 @@ x=112,n
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=i,n             ; where 500 <= i <= 519, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the param value.
+x=i,n             ; where 500 <= i <= 523, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the param value.
 ```
 
+### `524 - 547` Edit Variable by Local Variable
+- Operate a variable's value by a local variable's value
+    - Similar to 500-523, but the number to operate the value is being read from a local variable
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=i,n             ; where 524 <= i <= 547, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the local variable index.
+```
+
+### `548 - 571` Edit Variable by Global Variable
+- Operate a variable's value by a global variable's value
+    - Similar to 500-523, but the number to operate the value is being read from a global variable
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=i,n             ; where 548 <= i <= 571, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the global variable index.
+```
 
 ## Super Weapons
 
