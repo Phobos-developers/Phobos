@@ -59,6 +59,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::GenerateRandomNumber(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::PrintVariableValue:
 		return TActionExt::PrintVariableValue(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::BinaryOperation:
+		return TActionExt::BinaryOperation(pThis, pHouse, pObject, pTrigger, location);
 	default:
 		bHandled = false;
 		return true;

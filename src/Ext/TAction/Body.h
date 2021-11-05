@@ -15,6 +15,7 @@ enum class PhobosTriggerAction : unsigned int
 	EditVariable,
 	GenerateRandomNumber,
 	PrintVariableValue,
+	BinaryOperation,
 };
 
 class TActionExt
