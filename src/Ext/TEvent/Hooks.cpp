@@ -26,3 +26,16 @@ DEFINE_HOOK(0x71E940, TEventClass_Execute, 0x5)
 
 	return handled ? 0x71EA2D : 0;
 }
+
+DEFINE_HOOK(0x71F683, TEventClass_GetFlags, 0x5)
+{
+	GET(int, eAttach, ESI);
+	GET(int, nEvent, ECX);
+
+	if (nEvent >= PhobosTriggerEvent::LocalVariableGreaterThan && nEvent <= PhobosTriggerEvent::GlobalVariableAndIsTrueGlobalVariable)
+		eAttach |= 0x10; // LOGIC
+
+	R->ESI(eAttach);
+
+	return 0;
+}
