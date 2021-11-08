@@ -27,6 +27,9 @@ void TerrainTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnsTiberium_Range)
 		.Process(this->SpawnsTiberium_GrowthStage)
 		.Process(this->SpawnsTiberium_CellsPerAnim)
+		.Process(this->DestroyAnim)
+		.Process(this->DestroySound)
+		.Process(this->TerrainStrength)
 		;
 }
 
@@ -43,6 +46,10 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnsTiberium_Range.Read(exINI, pSection, "SpawnsTiberium.Range");
 	this->SpawnsTiberium_GrowthStage.Read(exINI, pSection, "SpawnsTiberium.GrowthStage");
 	this->SpawnsTiberium_CellsPerAnim.Read(exINI, pSection, "SpawnsTiberium.CellsPerAnim");
+
+	this->DestroyAnim.Read(exINI, pSection, "DestroyAnim");
+	this->DestroySound.Read(exINI, pSection, "DestroySound");
+	this->TerrainStrength.Read(exINI, pSection, "Strength");
 }
 
 void TerrainTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -122,12 +129,18 @@ DEFINE_HOOK(0x71E25A, TerrainTypeClass_Save_Suffix, 0x5)
 	return 0;
 }
 
+//skip strength
+DEFINE_LJMP(0x71DEC8, 0x71DEE2)
+
 DEFINE_HOOK(0x71E0A6, TerrainTypeClass_LoadFromINI, 0x5)
 {
 	GET(TerrainTypeClass*, pItem, ESI);
 	GET_STACK(CCINIClass*, pINI, STACK_OFFS(0x210, -0x4));
 
 	TerrainTypeExt::ExtMap.LoadFromINI(pItem, pINI);
+
+	if (pItem->Strength == -1)
+		pItem->Strength = TerrainTypeExt::ExtMap.Find(pItem)->TerrainStrength.Get(RulesClass::Instance->TreeStrength);
 
 	return 0;
 }
