@@ -33,6 +33,9 @@
     <ClCompile Include="src\Ext\TEvent\Hooks.cpp" />
     <ClCompile Include="src\Ext\TEvent\Body.cpp" />
     <ClCompile Include="src\Ext\Trigger\Hooks.cpp" />
+    <ClCompile Include="src\Ext\VoxelAnimType\Body.cpp" />
+    <ClCompile Include="src\Ext\VoxelAnim\Body.cpp" />
+    <ClCompile Include="src\Ext\VoxelAnim\Hooks.cpp" />
     <ClCompile Include="src\Misc\CaptureManager.cpp" />
     <ClCompile Include="src\Misc\Hooks.Image.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
@@ -117,6 +120,8 @@
     <ClInclude Include="src\Ext\TAction\Body.h" />
     <ClInclude Include="src\Ext\Team\Body.h" />
     <ClInclude Include="src\Ext\TEvent\Body.h" />
+    <ClInclude Include="src\Ext\VoxelAnimType\Body.h" />
+    <ClInclude Include="src\Ext\VoxelAnim\Body.h" />
     <ClInclude Include="src\Misc\CaptureManager.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
     <ClInclude Include="src\New\Entity\ShieldClass.h" />
