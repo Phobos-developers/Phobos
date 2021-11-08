@@ -30,7 +30,7 @@ public:
 			, IdxSelectedObjectFromAIList(-1)
 			, CloseEnough(-1)
 			, Countdown_RegroupAtLeader(-1)
-			, AngerNodeModifier(1000)
+			, AngerNodeModifier(5000)
 			, OnlyTargetHouseEnemy(false)
 			, OnlyTargetHouseEnemyMode(-1)
 		{ }

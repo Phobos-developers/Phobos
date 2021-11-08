@@ -71,12 +71,14 @@ public:
 	static void ModifyHateHouses_List(TeamClass* pTeam, int idxHousesList);
 	static void ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList);
 	static void ModifyHateHouse_Index(TeamClass* pTeam, int idxHouse);
-	static void SetTheMostHatedHouse(TeamClass* pTeam, int mode);
+	static void SetTheMostHatedHouse(TeamClass* pTeam, int mode, bool random);
 	static void OverrideOnlyTargetHouseEnemy(TeamClass* pTeam, int mode);
-	static void DebugAngerNodes(TeamClass* pTeam);
+	static void AggroHouse(TeamClass* pTeam, int index);
 
 	static ExtContainer ExtMap;
 
 private:
 	static void ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
+	static HouseClass* GetTheMostHatedHouse(TeamClass* pTeam, int mode);
+	static void UpdateEnemyHouseIndex(HouseClass* pHouse);
 };

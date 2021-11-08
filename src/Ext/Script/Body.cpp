@@ -148,22 +148,28 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		ScriptExt::SetHouseAngerModifier(pTeam, 0);
 		break;
 	case 115:
-		ScriptExt::OverrideOnlyTargetHouseEnemy(pTeam, -1); 
-			break;
+		ScriptExt::OverrideOnlyTargetHouseEnemy(pTeam, -1);
+		break;
 	case 116:
 		ScriptExt::ModifyHateHouse_Index(pTeam, -1);
-			break;
+		break;
 	case 117:
 		ScriptExt::ModifyHateHouses_List(pTeam, -1);
-			break;
+		break;
 	case 118:
 		ScriptExt::ModifyHateHouses_List1Random(pTeam, -1);
-			break;
+		break;
 	case 119:
-		ScriptExt::SetTheMostHatedHouse(pTeam, 0);
+		ScriptExt::SetTheMostHatedHouse(pTeam, 0, false);
 		break;
 	case 120:
+		ScriptExt::SetTheMostHatedHouse(pTeam, 0, true);
+		break;
+	case 121:
 		ScriptExt::ResetAngerAgainstHouses(pTeam);
+		break;
+	case 122:
+		ScriptExt::AggroHouse(pTeam, -1);
 		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
@@ -2389,7 +2395,6 @@ void ScriptExt::ResetAngerAgainstHouses(TeamClass* pTeam)
 	}
 
 	pTeam->Owner->EnemyHouseIndex = -1;
-	DebugAngerNodes(pTeam); // Debug function. Remove it when I finish with teh tests!
 	// This action finished
 	pTeam->StepCompleted = true; // This action finished - FS-21
 }
@@ -2452,7 +2457,7 @@ void ScriptExt::ModifyHateHouses_List(TeamClass* pTeam, int idxHousesList = -1)
 						{
 							angerNode.AngerLevel += pTeamData->AngerNodeModifier;
 							changeFailed = false;
-							Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): Changed [%s](Index: %d)->AngerLevel to value: %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument, angerNode.House->Type->ID, angerNode.House->ArrayIndex, angerNode.AngerLevel);
+							//Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): Changed [%s](Index: %d)->AngerLevel to value: %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument, angerNode.House->Type->ID, angerNode.House->ArrayIndex, angerNode.AngerLevel);
 						}
 					}
 				}
@@ -2467,9 +2472,9 @@ void ScriptExt::ModifyHateHouses_List(TeamClass* pTeam, int idxHousesList = -1)
 		Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): Failed to modify any hate value against other houses!\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument);
 	}
 
+	ScriptExt::UpdateEnemyHouseIndex(pTeam->Owner);
 	// This action finished
 	pTeam->StepCompleted = true;
-	DebugAngerNodes(pTeam); // Debug function. Remove it when I finish with teh tests!
 }
 
 void ScriptExt::ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList = -1)
@@ -2493,8 +2498,6 @@ void ScriptExt::ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList
 		if (idxHousesList < RulesExt::Global()->AIHousesLists.Count)
 		{
 			DynamicVectorClass<HouseTypeClass*> objectsList = RulesExt::Global()->AIHousesLists.GetItem(idxHousesList);
-
-			Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): objectsList.Count: %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument, objectsList.Count);
 			if (objectsList.Count > 0)
 			{
 				int IdxSelectedObject = ScenarioClass::Instance->Random.RandomRanged(0, objectsList.Count - 1);
@@ -2502,8 +2505,11 @@ void ScriptExt::ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList
 
 				for (auto& angerNode : pTeam->Owner->AngerNodes)
 				{
+					if (angerNode.House->Defeated)
+						continue;
+
 					HouseTypeClass* angerNodeType = angerNode.House->Type;
-					Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): Comparation %s == %s\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument, angerNodeType->ID, pHouseType->ID);
+
 					if (_stricmp(angerNodeType->ID, pHouseType->ID) == 0)
 					{
 						angerNode.AngerLevel += pTeamData->AngerNodeModifier;
@@ -2521,12 +2527,89 @@ void ScriptExt::ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList
 		Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): Failed to modify any hate value against other houses!\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument);
 	}
 
+	ScriptExt::UpdateEnemyHouseIndex(pTeam->Owner);
 	// This action finished
 	pTeam->StepCompleted = true;
-	DebugAngerNodes(pTeam); // Debug function. Remove it when I finish with teh tests!
 }
 
-void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mode = 0)
+void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mode = 0, bool random = false)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+
+	if (!pTeam || !pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	DynamicVectorClass<HouseClass*> objectsList;
+	int IdxSelectedObject = -1;
+	HouseClass* selectedHouse = nullptr;
+	int highestHateLevel = 0;
+	int newHateLevel = 5000;
+
+	if (pTeamData->AngerNodeModifier > 0)
+		newHateLevel = pTeamData->AngerNodeModifier;
+
+	// Find the highest House hate value
+	for (auto& angerNode : pTeam->Owner->AngerNodes)
+	{
+		if (angerNode.House->Defeated)
+			continue;
+
+		if (pTeam->Owner != angerNode.House && !pTeam->Owner->IsAlliedWith(angerNode.House) && !angerNode.House->Type->MultiplayPassive)
+		{
+			if (random)
+				objectsList.AddItem(angerNode.House);
+
+			if (angerNode.AngerLevel > highestHateLevel)
+				highestHateLevel = angerNode.AngerLevel;
+		}
+	}
+
+	newHateLevel += highestHateLevel;
+
+	// Pick a enemy house
+	if (random)
+	{
+		if (objectsList.Count > 0)
+		{
+			IdxSelectedObject = ScenarioClass::Instance->Random.RandomRanged(0, objectsList.Count - 1);
+			selectedHouse = objectsList.GetItem(IdxSelectedObject);
+		}
+	}
+	else
+	{
+		selectedHouse = GetTheMostHatedHouse(pTeam, mode);
+	}
+
+	if (selectedHouse)
+	{
+		for (auto& angerNode : pTeam->Owner->AngerNodes)
+		{
+			if (angerNode.House->Defeated)
+				continue;
+
+			if (angerNode.House == selectedHouse)
+			{
+				angerNode.AngerLevel = newHateLevel;
+				Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): Picked a new house as enemy [%s]\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument, angerNode.House->Type->ID);
+			}
+		}
+
+		ScriptExt::UpdateEnemyHouseIndex(pTeam->Owner);
+	}
+	else
+	{
+		Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): Failed to pick a new hated house\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument);
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+}
+
+HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mode = 0)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	FootClass *pLeaderUnit = nullptr;
@@ -2536,7 +2619,7 @@ void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mode = 0)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-		return;
+		return nullptr;
 	}
 
 	// Find the Team Leader
@@ -2562,35 +2645,23 @@ void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mode = 0)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-		return;
+		return nullptr;
 	}
 
-	// Find the highest House hate value
-	int newHateLevel = 1;
-
-	for (auto& angerNode : pTeam->Owner->AngerNodes)
-	{
-		HouseTypeClass* angerNodeType = angerNode.House->Type;
-
-		if (!angerNodeType->MultiplayPassive && angerNode.AngerLevel > newHateLevel)
-		{
-			newHateLevel = angerNode.AngerLevel;
-		}
-	}
-
-	newHateLevel += 1000;
 	int objectDistance = -1;
 	int enemyDistance = -1;
-	double enemyThreatValue[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+	double enemyThreatValue[8] = { 0 };
 	HouseClass* enemyHouse = nullptr;
 
 	// Depending the mode check what house will be selected as the most hated
 	for (auto pTechno : *TechnoClass::Array)
 	{
-		if (pTechno->Owner != pTeam->Owner
+		if (!pTechno->Owner->Defeated
+			&& pTechno->Owner != pTeam->Owner
 			&& pTechno->IsAlive
 			&& !pTechno->InLimbo
 			&& pTechno->IsOnMap
+			&& !pTechno->Owner->IsAlliedWith(pTeam->Owner)
 			&& !pTechno->Owner->Type->MultiplayPassive)
 		{
 			if (mode == 0 || mode == 1)
@@ -2642,7 +2713,7 @@ void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mode = 0)
 	{
 		double value = -1;
 
-		for (int i; i < 8; i++)
+		for (int i = 0; i < 8; i++)
 		{
 			if (mode == 2)
 			{
@@ -2665,32 +2736,7 @@ void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mode = 0)
 		}
 	}
 
-	// Setting the new hate level to the selected house
-	if (enemyHouse)
-	{
-		for (auto& angerNode : pTeam->Owner->AngerNodes)
-		{
-			if (angerNode.House == enemyHouse)
-			{
-				angerNode.AngerLevel = newHateLevel;
-
-				// This action finished
-				pTeam->StepCompleted = true;
-
-				Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): The most hated house now is [%s]!\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument, enemyHouse->Type->ID);
-			}
-		}
-	}
-
-	// This action finished
-	if (!enemyHouse)
-	{
-		Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): Failed to select a house as the most hated!\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument);
-	}
-
-	// This action finished
-	pTeam->StepCompleted = true;
-	DebugAngerNodes(pTeam); // Debug function. Remove it when I finish with teh tests!
+	return enemyHouse;
 }
 
 void ScriptExt::OverrideOnlyTargetHouseEnemy(TeamClass* pTeam, int mode = -1)
@@ -2709,35 +2755,37 @@ void ScriptExt::OverrideOnlyTargetHouseEnemy(TeamClass* pTeam, int mode = -1)
 	if (mode < -1 || mode > 2)
 		mode = -1;
 
+	pTeamData->OnlyTargetHouseEnemyMode = mode;
 	/*
 	Modes:
 		0  -> Force "False"
 		1  -> Force "True"
 		2  -> Force "Random boolean"
 		-1 -> Use default value in OnlyTargetHouseEnemy tag
+		Note: only works for new Actions, not vanilla YR actions
 	*/
 	switch (mode)
 	{
-		case 0:
-			pTeamData->OnlyTargetHouseEnemy = false;
-			break;
+	case 0:
+		pTeamData->OnlyTargetHouseEnemy = false;
+		break;
 
-		case 1:
-			pTeamData->OnlyTargetHouseEnemy = true;
-			break;
+	case 1:
+		pTeamData->OnlyTargetHouseEnemy = true;
+		break;
 
-		case 2:
-			pTeamData->OnlyTargetHouseEnemy = (bool)ScenarioClass::Instance->Random.RandomRanged(0, 1);;
-			break;
+	case 2:
+		pTeamData->OnlyTargetHouseEnemy = (bool)ScenarioClass::Instance->Random.RandomRanged(0, 1);;
+		break;
 
-		default:
-			pTeamData->OnlyTargetHouseEnemy = pTeam->Type->OnlyTargetHouseEnemy;
-			pTeamData->OnlyTargetHouseEnemyMode = -1;
-			break;
+	default:
+		pTeamData->OnlyTargetHouseEnemy = pTeam->Type->OnlyTargetHouseEnemy;
+		pTeamData->OnlyTargetHouseEnemyMode = -1;
+		break;
 	}
 
 	Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): Team -> OnlyTargetHouseEnemy override to value: %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument, pTeamData->OnlyTargetHouseEnemy);
-	DebugAngerNodes(pTeam); // Debug function. Remove it when I finish with teh tests!
+
 	// This action finished
 	pTeam->StepCompleted = true;
 }
@@ -2766,30 +2814,121 @@ void ScriptExt::ModifyHateHouse_Index(TeamClass* pTeam, int idxHouse = -1)
 	{
 		for (auto& angerNode : pTeam->Owner->AngerNodes)
 		{
-			if (angerNode.House->ArrayIndex == idxHouse)
+			if (angerNode.House->ArrayIndex == idxHouse && !angerNode.House->Defeated)
 			{
 				angerNode.AngerLevel += pTeamData->AngerNodeModifier;
 				Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): Changed [%s](Index: %d)->AngerLevel to value: %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument, angerNode.House->Type->ID, angerNode.House->ArrayIndex, angerNode.AngerLevel);
 			}
 		}
 	}
-	DebugAngerNodes(pTeam); // Debug function. Remove it when I finish with teh tests!
+
+	ScriptExt::UpdateEnemyHouseIndex(pTeam->Owner);
 	// This action finished
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::DebugAngerNodes(TeamClass* pTeam)
+// The selected house will become the most hated of the map (the effects are only visible if the other houses are enemy of the selected house)
+void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 {
-	// Invalid team
-	if (!pTeam)
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+
+	if (!pTeam || !pTeamData)
 	{
+		// This action finished
+		pTeam->StepCompleted = true;
 		return;
 	}
 
-	Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): Hate list for the house [%s] (Index: %d): Enemy Idx: %d\n-----------------------------------\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument, pTeam->Owner->Type->ID, pTeam->Owner->ArrayIndex, pTeam->Owner->EnemyHouseIndex);
+	DynamicVectorClass<HouseClass*> objectsList;
+	HouseClass* selectedHouse = nullptr;
+	int newHateLevel = 5000;
 
+	if (pTeamData->AngerNodeModifier > 0)
+		newHateLevel = pTeamData->AngerNodeModifier;
+
+	// Store the list of playable houses for later
 	for (auto& angerNode : pTeam->Owner->AngerNodes)
 	{
-		Debug::Log("- [%s] (Index: %d): Anger level: %d\n", angerNode.House->Type->ID, angerNode.House->ArrayIndex, angerNode.AngerLevel);
+		if (!angerNode.House->Defeated && !angerNode.House->Type->MultiplayPassive && !angerNode.House->IsObserver())
+		{
+			objectsList.AddItem(angerNode.House);
+		}
 	}
+
+	// Positive indexes are specific house indexes. -1 is translated as "pick 1 random" & -2 is the owner of the Team executing the script action
+	if (objectsList.Count > 0)
+	{
+		if (index < 0)
+		{
+			if (index == -1)
+				index = ScenarioClass::Instance->Random.RandomRanged(0, objectsList.Count - 1);
+			else
+				index = pTeam->Owner->ArrayIndex;
+		}
+	}
+	else
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	// Note: at most each "For" lasts 10 loops: 8 players + Civilian + Special houses
+	for (auto& pHouse : *HouseClass::Array)
+	{
+		if (!pHouse->Defeated && pHouse->ArrayIndex == index)
+			selectedHouse = pHouse;
+	}
+
+	if (selectedHouse)
+	{
+		// For each playable house set the selected house as the one with highest hate value;
+		for (auto& pHouse : objectsList)
+		{
+			int highestHateLevel = 0;
+
+			for (auto& angerNode : pHouse->AngerNodes)
+			{
+				if (angerNode.AngerLevel > highestHateLevel)
+					highestHateLevel = angerNode.AngerLevel;
+			}
+
+			for (auto& angerNode : pHouse->AngerNodes)
+			{
+				if (selectedHouse == angerNode.House)
+				{
+					angerNode.AngerLevel = highestHateLevel + newHateLevel;
+				}
+			}
+
+			ScriptExt::UpdateEnemyHouseIndex(pHouse);
+		}
+	}
+	else
+	{
+		Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): Failed to pick a new hated house (index: %d)\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument, index);
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
 }
+
+void ScriptExt::UpdateEnemyHouseIndex(HouseClass* pHouse)
+{
+	int angerLevel = 0;
+	int index = -1;
+
+	for (auto& angerNode : pHouse->AngerNodes)
+	{
+		if (!angerNode.House->Defeated && angerNode.AngerLevel > angerLevel)
+		{
+			angerLevel = angerNode.AngerLevel;
+			index = angerNode.House->ArrayIndex;
+		}
+	}
+
+	pHouse->EnemyHouseIndex = index;
+}
+
+
+
