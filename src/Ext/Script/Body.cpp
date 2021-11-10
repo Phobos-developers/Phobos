@@ -160,15 +160,25 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		ScriptExt::ModifyHateHouses_List1Random(pTeam, -1);
 		break;
 	case 119:
-		ScriptExt::SetTheMostHatedHouse(pTeam, 0, false);
+		// <, no random
+		ScriptExt::SetTheMostHatedHouse(pTeam, 0, 0, false);
 		break;
 	case 120:
-		ScriptExt::SetTheMostHatedHouse(pTeam, 0, true);
+		// >, no random
+		ScriptExt::SetTheMostHatedHouse(pTeam, 0, 1, false);
 		break;
 	case 121:
-		ScriptExt::ResetAngerAgainstHouses(pTeam);
+		// < random
+		ScriptExt::SetTheMostHatedHouse(pTeam, 0, 0, true);
 		break;
 	case 122:
+		// > random
+		ScriptExt::SetTheMostHatedHouse(pTeam, 0, 1, true);
+		break;
+	case 123:
+		ScriptExt::ResetAngerAgainstHouses(pTeam);
+		break;
+	case 124:
 		ScriptExt::AggroHouse(pTeam, -1);
 		break;
 	default:
@@ -2532,11 +2542,21 @@ void ScriptExt::ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mode = 0, bool random = false)
+void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int mode = 1, bool random = false)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 
 	if (!pTeam || !pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	if (mask == 0)
+		mask = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	if (mask == 0)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
@@ -2581,7 +2601,7 @@ void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mode = 0, bool random
 	}
 	else
 	{
-		selectedHouse = GetTheMostHatedHouse(pTeam, mode);
+		selectedHouse = GetTheMostHatedHouse(pTeam, mask, mode);
 	}
 
 	if (selectedHouse)
@@ -2609,13 +2629,19 @@ void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mode = 0, bool random
 	pTeam->StepCompleted = true;
 }
 
-HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mode = 0)
+HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int mode = 1)
 {
+	// Note regarding "mode": 1 is used for ">" comparisons and 0 for "<"
+	if (mode <= 0)
+		mode = 0;
+	else
+		mode = 1;
+
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	FootClass *pLeaderUnit = nullptr;
 	int bestUnitLeadershipValue = -1;
 
-	if (!pTeam || !pTeamData)
+	if (!pTeam || !pTeamData || mask == 0)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
@@ -2652,6 +2678,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mode = 0)
 	int enemyDistance = -1;
 	double enemyThreatValue[8] = { 0 };
 	HouseClass* enemyHouse = nullptr;
+	double const& TargetSpecialThreatCoefficientDefault = RulesClass::Instance->TargetSpecialThreatCoefficientDefault;
 
 	// Depending the mode check what house will be selected as the most hated
 	for (auto pTechno : *TechnoClass::Array)
@@ -2662,15 +2689,16 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mode = 0)
 			&& !pTechno->InLimbo
 			&& pTechno->IsOnMap
 			&& !pTechno->Owner->IsAlliedWith(pTeam->Owner)
-			&& !pTechno->Owner->Type->MultiplayPassive)
+			&& !pTechno->Owner->Type->MultiplayPassive
+			&& !pTechno->Owner->Defeated)
 		{
-			if (mode == 0 || mode == 1)
+			if (mask < 0)
 			{
 				objectDistance = pLeaderUnit->DistanceFrom(pTechno); // Note: distance is in leptons (*256)
 
 				if (mode == 0)
 				{
-					// Mode 0: Based in nearest enemy unit
+					// mode 0: Based in NEAREST enemy unit
 					if (objectDistance < enemyDistance || enemyDistance == -1)
 					{
 						enemyDistance = objectDistance;
@@ -2679,19 +2707,20 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mode = 0)
 				}
 				else
 				{
-					// Mode 1: Based in farthest enemy unit
+					// mode 1: Based in FARTHEST enemy unit
 					if (objectDistance > enemyDistance || enemyDistance == -1)
 					{
 						enemyDistance = objectDistance;
 						enemyHouse = pTechno->Owner;
 					}
 				}
+				// TODO: more types of comparisons
 			}
 			else
 			{
-				if (mode == 2 || mode == 3)
+				// mask > 0 : Threat based on the new types in the new attack actions
+				if (ScriptExt::EvaluateObjectWithMask(pTechno, mask, -1, -1, pLeaderUnit))
 				{
-					// Mode 2 & 3: Based in House Threat
 					auto pTechnoType = pTechno->GetTechnoType();
 
 					if (pTechnoType)
@@ -2700,7 +2729,6 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mode = 0)
 
 						if (pTechnoType->SpecialThreatValue > 0)
 						{
-							double const& TargetSpecialThreatCoefficientDefault = RulesClass::Instance->TargetSpecialThreatCoefficientDefault;
 							enemyThreatValue[pTechno->Owner->ArrayIndex] += pTechnoType->SpecialThreatValue * TargetSpecialThreatCoefficientDefault;
 						}
 					}
@@ -2709,16 +2737,17 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mode = 0)
 		}
 	}
 
-	if (mode == 2 || mode == 3)
+	if (mask > 0)
 	{
 		double value = -1;
 
 		for (int i = 0; i < 8; i++)
 		{
-			if (mode == 2)
+			Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): enemyThreatValue[%d] = %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument, i, enemyThreatValue[i]);
+			if (mode == 0)
 			{
-				// Select House with less threat
-				if (enemyThreatValue[i] < value || value == -1)
+				// Select House with LESS threat
+				if ((enemyThreatValue[i] < value || value == -1) && !HouseClass::Array->GetItem(i)->Defeated)
 				{
 					value = enemyThreatValue[i];
 					enemyHouse = HouseClass::Array->GetItem(i);
@@ -2726,8 +2755,8 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mode = 0)
 			}
 			else
 			{
-				// Select House with more threat
-				if (enemyThreatValue[i] > value || value == -1)
+				// Select House with MORE threat
+				if ((enemyThreatValue[i] > value || value == -1) && !HouseClass::Array->GetItem(i)->Defeated)
 				{
 					value = enemyThreatValue[i];
 					enemyHouse = HouseClass::Array->GetItem(i);
