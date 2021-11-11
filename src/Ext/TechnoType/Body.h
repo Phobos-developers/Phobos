@@ -7,6 +7,7 @@
 
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
+#include <New/Type/AttachmentTypeClass.h>
 
 class Matrix3D;
 
@@ -74,9 +75,26 @@ public:
 		Nullable<float> OpenTopped_DamageMultiplier;
 		Nullable<int> OpenTopped_WarpDistance;
 
+		struct AttachmentDataEntry
+		{
+			ValueableIdx<AttachmentTypeClass> Type;
+			NullableIdx<TechnoTypeClass> TechnoType;
+			Valueable<CoordStruct> FLH;
+			Valueable<bool> IsOnTurret;
+
+			bool Load(PhobosStreamReader& stm, bool registerForChange);
+			bool Save(PhobosStreamWriter& stm) const;
+
+		private:
+			template <typename T>
+			bool Serialize(T& stm);
+		};
+
+		ValueableVector<AttachmentDataEntry> AttachmentData;
+
 		struct LaserTrailDataEntry
 		{
-			ValueableIdx<LaserTrailTypeClass> idxType;
+			ValueableIdx<LaserTrailTypeClass> Type;
 			Valueable<CoordStruct> FLH;
 			Valueable<bool> IsOnTurret;
 
@@ -137,7 +155,8 @@ public:
 			DefaultDisguise(),
 			OpenTopped_RangeBonus(),
 			OpenTopped_DamageMultiplier(),
-			OpenTopped_WarpDistance()
+			OpenTopped_WarpDistance(),
+			AttachmentData()
 		{ }
 
 		virtual ~ExtData() = default;

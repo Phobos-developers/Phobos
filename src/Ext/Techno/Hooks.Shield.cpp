@@ -125,6 +125,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI_Shield, 0x5)
 DEFINE_HOOK(0x71A88D, TemporalClass_AI_Shield, 0x0)
 {
 	GET(TemporalClass*, pThis, ESI);
+
+	// Shield logic
 	if (auto const pTarget = pThis->Target)
 	{
 		const auto pExt = TechnoExt::ExtMap.Find(pTarget);

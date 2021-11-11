@@ -7,6 +7,7 @@
 
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
+#include <New/Entity/AttachmentClass.h>
 
 class BulletClass;
 
@@ -25,6 +26,9 @@ public:
 		Valueable<bool> LastKillWasTeamTarget;
 		TimerStruct	PassengerDeletionTimer;
 
+		AttachmentClass* ParentAttachment;
+		ValueableVector<std::unique_ptr<AttachmentClass>> ChildAttachments;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet(nullptr)
 			, Shield()
@@ -32,6 +36,8 @@ public:
 			, ReceiveDamage(false)
 			, LastKillWasTeamTarget(false)
 			, PassengerDeletionTimer(-1)
+			, ParentAttachment()
+			, ChildAttachments()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -72,6 +78,19 @@ public:
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
 	
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
+
+	static bool AttachmentAI(TechnoClass* pThis);
+	static bool AttachTo(TechnoClass* pThis, TechnoClass* pParent);
+	static bool DetachFromParent(TechnoClass* pThis, bool force = false);
+
+	static void InitializeAttachments(TechnoClass* pThis);
+	static void HandleHostDestruction(TechnoClass* pThis);
+	static void UnlimboAttachments(TechnoClass* pThis);
+	static void LimboAttachments(TechnoClass* pThis);
+
+	static bool IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno);
+
+	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
 
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 

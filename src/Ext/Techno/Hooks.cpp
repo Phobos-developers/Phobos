@@ -27,11 +27,12 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 }
 
 
-DEFINE_HOOK(0x6F42F7, TechnoClass_Init_SetLaserTrails, 0x2)
+DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
 
 	TechnoExt::InitializeLaserTrails(pThis);
+	TechnoExt::InitializeAttachments(pThis);
 
 	return 0;
 }

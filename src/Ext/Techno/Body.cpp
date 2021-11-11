@@ -10,6 +10,7 @@
 #include <Unsorted.h>
 
 #include <Ext/BulletType/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -214,7 +215,7 @@ void TechnoExt::InitializeLaserTrails(TechnoClass* pThis)
 	{
 		for (auto const& entry: pTypeExt->LaserTrailData)
 		{
-			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
+			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.Type].get())
 			{
 				pExt->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
 					pLaserType, pThis->Owner, entry.FLH, entry.IsOnTurret));
@@ -369,6 +370,100 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 		else
 			pExt->PassengerDeletionTimer.Stop();
 	}
+}
+
+bool TechnoExt::AttachmentAI(TechnoClass* pThis)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	// auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pExt && pExt->ParentAttachment)
+	{
+		pExt->ParentAttachment->AI();
+		return true;
+	}
+
+	return false;
+}
+
+// Attaches this techno in a first available attachment "slot".
+// Returns true if the attachment is successful.
+bool TechnoExt::AttachTo(TechnoClass* pThis, TechnoClass* pParent)
+{
+	auto const pParentExt = TechnoExt::ExtMap.Find(pParent);
+
+	for (auto const& pAttachment: pParentExt->ChildAttachments)
+	{
+		if (pAttachment->AttachChild(pThis))
+			return true;
+	}
+
+	return false;
+}
+
+bool TechnoExt::DetachFromParent(TechnoClass* pThis, bool isForceDetachment)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	return pExt->ParentAttachment->DetachChild(isForceDetachment);
+}
+
+void TechnoExt::InitializeAttachments(TechnoClass* pThis)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	for (auto& entry : pTypeExt->AttachmentData)
+	{
+		pExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(&entry, pThis, nullptr));
+		pExt->ChildAttachments.back()->Initialize();
+	}
+}
+
+void TechnoExt::HandleHostDestruction(TechnoClass* pThis)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	for (auto const& pAttachment: pExt->ChildAttachments)
+		pAttachment->Uninitialize();
+}
+
+void TechnoExt::UnlimboAttachments(TechnoClass* pThis)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	for (auto const& pAttachment: pExt->ChildAttachments)
+		pAttachment->Unlimbo();
+}
+
+void TechnoExt::LimboAttachments(TechnoClass* pThis)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	for (auto const& pAttachment: pExt->ChildAttachments)
+		pAttachment->Limbo();
+}
+
+bool TechnoExt::IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (!pOtherTechno)
+		return false;
+
+	for (auto const& pAttachment: pExt->ChildAttachments)
+	{
+		if (pAttachment->Child &&
+			(pAttachment->Child == pOtherTechno ||
+			TechnoExt::IsParentOf(pAttachment->Child, pOtherTechno)))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType)
+{
+	WeaponTypeExt::DetonateAt(pWeaponType, pThis, pThis);
 }
 
 // =============================
