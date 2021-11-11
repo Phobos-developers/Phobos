@@ -1,5 +1,6 @@
 #include "Body.h"
 #include <Ext/WarheadType/Body.h>
+#include <Ext/BulletType/Body.h>
 #include <Misc/CaptureManager.h>
 
 #include <TechnoClass.h>
@@ -89,4 +90,65 @@ DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
 	R->AL(CaptureManager::CaptureUnit(pThis->Owner->CaptureManager, pTechno, pControlledAnimType));
 
 	return 0x4692D5;
+}
+
+DEFINE_HOOK(0x4671B9, BulletClass_AI_ApplyGravity, 0x6)
+{
+	GET(BulletTypeClass* const, pType, EAX);
+
+	auto const pData = BulletTypeExt::ExtMap.Find(pType);
+	auto const nGravity = pData->Gravity.Get(RulesClass::Instance->Gravity);
+	__asm { fld nGravity };
+
+	return 0x4671BF;
+}
+
+DEFINE_HOOK(0x6F747E, TechnoClass_Targeting_ApplyGravity, 0x9)
+{
+	GET_STACK(WeaponTypeClass* const, pWeaponType, STACK_OFFS(0x3C, -0x10));
+
+	auto const nGravity = BulletTypeExt::GetAdjustedGravity(pWeaponType->Projectile);
+	__asm { fld nGravity };
+
+	return 0x6F74A4;
+}
+
+DEFINE_HOOK(0x6FDAA6, TechnoClass_FireAngle_6FDA00_ApplyGravity, 0x5)
+{
+	GET(WeaponTypeClass* const, pWeaponType, EDI);
+
+	auto const nGravity = BulletTypeExt::GetAdjustedGravity(pWeaponType->Projectile);
+	__asm { fld nGravity };
+
+	return 0x6FDACE;
+}
+
+DEFINE_HOOK(0x6FECBE, TechnoClass_FireAt_ApplyGravity, 0x6)
+{
+	GET(BulletTypeClass* const, pType, EAX);
+
+	auto const nGravity = BulletTypeExt::GetAdjustedGravity(pType);
+	__asm { fld nGravity };
+
+	return 0x6FECD1;
+}
+
+DEFINE_HOOK(0x772A16, WeaponTypeClass_SetSpeed_ApplyGravity, 0x6)
+{
+	GET(BulletTypeClass* const, pType, EAX);
+
+	auto const nGravity = BulletTypeExt::GetAdjustedGravity(pType);
+	__asm { fld nGravity };
+
+	return 0x772A29;
+}
+
+DEFINE_HOOK(0x773087, WeaponTypeClass_GetSpeed_ApplyGravity, 0x6)
+{
+	GET(BulletTypeClass* const, pType, EAX);
+
+	auto const nGravity = BulletTypeExt::GetAdjustedGravity(pType);
+	__asm { fld nGravity };
+
+	return 0x7730A3;
 }

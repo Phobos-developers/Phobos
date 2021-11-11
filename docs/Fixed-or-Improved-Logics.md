@@ -150,3 +150,15 @@ Bolt.Disable1=false    ; boolean
 Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
 ```
+
+## Projectiles
+
+### Customizable projectile gravity
+
+-  You can now specify individual projectile gravity.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE] ; Projectile
+Gravity=6.0      ; double
+```

@@ -3,6 +3,13 @@
 template<> const DWORD Extension<BulletTypeClass>::Canary = 0xF00DF00D;
 BulletTypeExt::ExtContainer BulletTypeExt::ExtMap;
 
+double BulletTypeExt::GetAdjustedGravity(BulletTypeClass* pType)
+{
+	auto const pData = BulletTypeExt::ExtMap.Find(pType);
+	auto const nGravity = pData->Gravity.Get(RulesClass::Instance->Gravity);
+	return pType->Floater ? nGravity * 0.5 : nGravity;
+}
+
 // =============================
 // load / save
 
@@ -17,6 +24,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	this->Interceptable.Read(exINI, pSection, "Interceptable");
+	this->Gravity.Read(exINI, pSection, "Gravity");
 
 	INI_EX exArtINI(CCINIClass::INI_Art);
 
@@ -32,6 +40,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->Interceptable)
 		.Process(this->LaserTrail_Types)
+		.Process(this->Gravity)
 		;
 }
 

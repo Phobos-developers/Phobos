@@ -17,10 +17,12 @@ public:
 	public:
 		Valueable<bool> Interceptable;
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
+		Nullable<double> Gravity;
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject),
 			Interceptable(false),
-			LaserTrail_Types()
+			LaserTrail_Types(),
+			Gravity()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -45,4 +47,6 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static double GetAdjustedGravity(BulletTypeClass* pType);
 };
