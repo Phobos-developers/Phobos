@@ -153,11 +153,12 @@ DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 DEFINE_HOOK(0x700C58, TechnoClass_CanPlayerMove_NoManualMove, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const& pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if (auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		return pExt->NoManualMove ? 0x700C62 : 0;
+	bool noMove = (pExt && pExt->ParentAttachment) || (pTypeExt && pTypeExt->NoManualMove);
 
-	return 0;
+	return noMove ? 0x700C62 : 0;
 }
 
 DEFINE_HOOK_AGAIN(0x522790, TechnoClass_DefaultDisguise, 0x6) // InfantryClass_SetDisguise_DefaultDisguise
