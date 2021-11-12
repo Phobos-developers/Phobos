@@ -82,6 +82,34 @@ DEFINE_HOOK(0x6CC763, SuperClass_Place_ChronoWarp_SkipChildren, 0x6)
 	return pExt->ParentAttachment ? Skip : Continue;
 }
 
+DEFINE_HOOK_AGAIN(0x6FFDEB, TechnoClass_PlayerAssignMission_HandleChildren, 0x5)
+DEFINE_HOOK(0x6FFCAE, TechnoClass_PlayerAssignMission_HandleChildren, 0x5)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET_STACK(Mission, mission, STACK_OFFS(0x98, -0x4));
+	GET_STACK(ObjectClass* const, pTarget, STACK_OFFS(0x98, -0x8));
+	GET_STACK(CellClass* const, pTargetCell, STACK_OFFS(0x98, -0xC));
+	GET_STACK(CellClass* const, pCellNearTarget, STACK_OFFS(0x98, -0x10));
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+
+	bool oldFeedback = Unsorted::MoveFeedback;
+	Unsorted::MoveFeedback = false;
+
+	for (auto const& attachment : pExt->ChildAttachments)
+	{
+		// Recursive call, PlayerAssignMission == ClickedMission
+		if (attachment->Child && attachment->GetType()->InheritCommands)
+			attachment->Child->ClickedMission(mission, pTarget, pTargetCell, pCellNearTarget);
+	}
+
+	Unsorted::MoveFeedback = oldFeedback;
+
+	// PlayerAssignMission returns bool which indicates whether the player is in planning mode.
+	// This can't change when we handle children so we don't adjust the return value - Kerbiter
+	return 0;
+}
+
+
 // DEFINE_HOOK(0x6CCCCA, SuperClass_Place_ChronoWarp_HandleAttachment, 0x0)
 // {
 // 	enum { Loop = 0x6CC742, Break = 0x6CCCD5 };
