@@ -103,9 +103,9 @@ DEFINE_HOOK(0x4671B9, BulletClass_AI_ApplyGravity, 0x6)
 	return 0x4671BF;
 }
 
-DEFINE_HOOK(0x6F747E, TechnoClass_Targeting_ApplyGravity, 0x9)
+DEFINE_HOOK(0x6F7481, TechnoClass_Targeting_ApplyGravity, 0x6)
 {
-	GET_STACK(WeaponTypeClass* const, pWeaponType, STACK_OFFS(0x3C, -0x10));
+	GET(WeaponTypeClass* const, pWeaponType, EDX);
 
 	auto const nGravity = BulletTypeExt::GetAdjustedGravity(pWeaponType->Projectile);
 	__asm { fld nGravity };
@@ -123,7 +123,7 @@ DEFINE_HOOK(0x6FDAA6, TechnoClass_FireAngle_6FDA00_ApplyGravity, 0x5)
 	return 0x6FDACE;
 }
 
-DEFINE_HOOK(0x6FECBE, TechnoClass_FireAt_ApplyGravity, 0x6)
+DEFINE_HOOK(0x6FECB2, TechnoClass_FireAt_ApplyGravity, 0x6)
 {
 	GET(BulletTypeClass* const, pType, EAX);
 
@@ -133,7 +133,7 @@ DEFINE_HOOK(0x6FECBE, TechnoClass_FireAt_ApplyGravity, 0x6)
 	return 0x6FECD1;
 }
 
-DEFINE_HOOK(0x772A16, WeaponTypeClass_SetSpeed_ApplyGravity, 0x6)
+DEFINE_HOOK(0x772A0A, WeaponTypeClass_SetSpeed_ApplyGravity, 0x6)
 {
 	GET(BulletTypeClass* const, pType, EAX);
 
