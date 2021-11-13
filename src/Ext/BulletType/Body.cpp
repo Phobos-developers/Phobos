@@ -25,6 +25,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Interceptable.Read(exINI, pSection, "Interceptable");
 	this->Gravity.Read(exINI, pSection, "Gravity");
+	this->Gravity_HeightFix.Read(exINI, pSection, "Gravity.HeightFix");
 
 	INI_EX exArtINI(CCINIClass::INI_Art);
 
@@ -41,6 +42,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Interceptable)
 		.Process(this->LaserTrail_Types)
 		.Process(this->Gravity)
+		.Process(this->Gravity_HeightFix)
 		;
 }
 

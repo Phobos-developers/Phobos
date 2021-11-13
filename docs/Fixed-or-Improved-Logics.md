@@ -156,9 +156,12 @@ Bolt.Disable3=false    ; boolean
 ### Customizable projectile gravity
 
 -  You can now specify individual projectile gravity.
+    - Set `Gravity=0` with an arcing projectile can create a straight trail.
+        - Set `Gravity.HeightFix=true` allows the projectile to hit target which is not at the same height while `Gravity=0`.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE] ; Projectile
-Gravity=6.0      ; double
+[SOMEPROJECTILE]        ; Projectile
+Gravity=6.0             ; double
+Gravity.HeightFix=false ; boolean
 ```
