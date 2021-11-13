@@ -94,8 +94,7 @@ DEFINE_HOOK(0x71C8D7, TerrainTypeClass_Context_Unset, 0x5)
 	return 0;
 }
 
-//this one on Very end of it 
-//let everything play first
+//This one on Very end of it , let everything play first
 DEFINE_HOOK(0x71BB2C, TerrainClass_TakeDamage_NowDead_Add, 0x6)
 {
 	GET(TerrainClass*, pThis, ESI);
