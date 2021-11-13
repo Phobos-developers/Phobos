@@ -933,11 +933,11 @@ Remember that Limbo Delivered buildings don't exist physically! This means they 
 ```
 In `rulesmd.ini`:
 ```ini
-[SOMESW]                                ; Super Weapon
-LimboDelivery.Types=                    ; List of BuildingTypes
-LimboDelivery.IDs=                      ; List of numeric IDs. -1 cannot be used.
-LimboDelivery.RollChances=              ; List of percentages.
-LimboDelivery.RandomWeightsN=           ; List of integers.
-LimboKill.Affects=self                  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-LimboKill.IDs=                          ; List of numeric IDs.
+[SOMESW]                        ; Super Weapon
+LimboDelivery.Types=            ; List of BuildingTypes
+LimboDelivery.IDs=              ; List of numeric IDs. -1 cannot be used.
+LimboDelivery.RollChances=      ; List of percentages.
+LimboDelivery.RandomWeightsN=   ; List of integers.
+LimboKill.Affects=self          ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+LimboKill.IDs=                  ; List of numeric IDs.
 ```
