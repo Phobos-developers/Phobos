@@ -924,8 +924,11 @@ Note: This feature might not support every building flag. Flags that are confirm
   - Prerequisite, PrerequisiteOverride, Prerequisite.List# (Ares 0.1), Prerequisite.Negative (Ares 0.1), GenericPrerequisites (Ares 0.1)
   - SuperWeapon, SuperWeapon2, SuperWeapons (Ares 0.9), SW.AuxBuildings (Ares 0.9), SW.NegBuildings (Ares 0.9)
 
-Note: Buildings delivered through LimboDelivery should never have enabled machanics that require interaction with the game world (i.e. factories, cloning vats, service depots).
+Note: In order for this feature to work with AITriggerTypes conditions ("Owning house owns ???" and "Enemy house owns ???"), `LegalTarget` must be set to true.
 
+```{warning}
+Remember that Limbo Delivered buildings don't exist physically! This means they should never have enabled machanics that require interaction with the game world (i.e. factories, cloning vats, service depots, helipads). They also **should have either `KeepAlive=yes` set or be killable with LimboKill** - otherwise the game might never end.
+```
 In `rulesmd.ini`:
 ```ini
 [SOMESW]								; Super Weapon
