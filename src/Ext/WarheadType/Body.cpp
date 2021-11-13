@@ -26,46 +26,6 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	return true;
 }
 
-bool WarheadTypeExt::ExtData::IsCellEligible(CellClass* const pCell, AffectedTarget allowed)
-{
-	if (allowed & AffectedTarget::AllCells)
-	{
-		if (pCell->LandType == LandType::Water) // check whether it supports water
-			return (allowed & AffectedTarget::Water) != AffectedTarget::None;
-		else                                    // check whether it supports non-water
-			return (allowed & AffectedTarget::Land) != AffectedTarget::None;
-	}
-
-	return allowed != AffectedTarget::None ? true : false;
-}
-
-bool WarheadTypeExt::ExtData::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget allowed)
-{
-	if (allowed & AffectedTarget::AllContents)
-	{
-		if (pTechno)
-		{
-			switch (pTechno->WhatAmI())
-			{
-			case AbstractType::Infantry:
-				return (allowed & AffectedTarget::Infantry) != AffectedTarget::None;
-			case AbstractType::Unit:
-			case AbstractType::Aircraft:
-				return (allowed & AffectedTarget::Unit) != AffectedTarget::None;
-			case AbstractType::Building:
-				return (allowed & AffectedTarget::Building) != AffectedTarget::None;
-			}
-		}
-		else
-		{
-			// is the target cell allowed to be empty?
-			return (allowed & AffectedTarget::NoContent) != AffectedTarget::None;
-		}
-	}
-
-	return allowed != AffectedTarget::None ? true : false;
-}
-
 // =============================
 // load / save
 

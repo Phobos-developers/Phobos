@@ -6,6 +6,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
@@ -229,6 +230,55 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 
 			return 0x7099B8;
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
+{
+	enum { DoNotFire = 0x6FE4E7, SkipSetTarget = 0x6FE1D8 };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(CellClass* const, pCell, EAX);
+	GET_STACK(WeaponTypeClass*, pWeaponType, STACK_OFFS(0xB0, 0x70));
+
+	if (auto pExt = WeaponTypeExt::ExtMap.Find(pWeaponType))
+	{
+		if (pExt->AreaFire_Target == AreaFireTarget::Random)
+		{
+			auto const range = pWeaponType->Range / 256.0;
+
+			std::vector<CellStruct> adjacentCells = GeneralUtils::AdjacentCellsInRange(static_cast<size_t>(range + 0.99));
+			size_t size = adjacentCells.size();
+
+			for (unsigned int i = 0; i < size; i++)
+			{
+				int rand = ScenarioClass::Instance->Random.RandomRanged(0, size - 1);
+				unsigned int cellIndex = (i + rand) % size;
+				CellStruct tgtPos = pCell->MapCoords + adjacentCells[cellIndex];
+				CellClass* tgtCell = MapClass::Instance->GetCellAt(tgtPos);
+
+				if (EnumFunctions::AreCellAndObjectsEligible(tgtCell, pExt->CanTarget))
+				{
+					R->EAX(tgtCell);
+					return 0;
+				}
+			}
+
+			return DoNotFire;
+		}
+		else if (pExt->AreaFire_Target == AreaFireTarget::Self)
+		{
+			if (!EnumFunctions::AreCellAndObjectsEligible(pThis->GetCell(), pExt->CanTarget))
+				return DoNotFire;
+
+			pThis->Target = pThis;
+			return SkipSetTarget;
+		}
+
+		if (!EnumFunctions::AreCellAndObjectsEligible(pCell, pExt->CanTarget))
+			return DoNotFire;
 	}
 
 	return 0;

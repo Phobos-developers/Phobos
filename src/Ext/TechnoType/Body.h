@@ -77,6 +77,11 @@ public:
 		Valueable<bool> AutoFire;
 		Valueable<bool> AutoFire_TargetSelf;
 
+		Valueable<bool> NoSecondaryWeaponFallback;
+		
+		Valueable<int> NoAmmoWeapon;
+		Valueable<int> NoAmmoAmount;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -142,7 +147,10 @@ public:
 			OpenTopped_DamageMultiplier(),
 			OpenTopped_WarpDistance(),
 			AutoFire(false),
-			AutoFire_TargetSelf(false)
+			AutoFire_TargetSelf(false),
+			NoSecondaryWeaponFallback(false),
+			NoAmmoWeapon(-1),
+			NoAmmoAmount(0)
 		{ }
 
 		virtual ~ExtData() = default;

@@ -85,9 +85,6 @@ public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
 
-		bool IsCellEligible(CellClass* const pCell, AffectedTarget allowed);
-		bool IsTechnoEligible(TechnoClass* const pCell, AffectedTarget allowed);
-
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
