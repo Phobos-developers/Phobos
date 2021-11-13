@@ -900,3 +900,44 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=i,n             ; where 500 <= i <= 519, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the param value.
 ```
+
+
+## Super Weapons
+
+### LimboDelivery
+
+- Super Weapons can now deliver off-map buildings that act as if they were on the field.
+  - `LimboDelivery.Types` is the list of BuildingTypes that will be created when the Super Weapons fire. Super Weapon Type and coordinates do not matter.
+  - `LimboDelivery.IDs` is the list of numeric IDs that will be assigned to buildings. Necessary for LimboKill to work.
+
+- Created buildings are not affected by any on-map threats. The only way to remove them from the game is by using a Super Weapon with LimboKill set.
+  - `LimboKill.Affects` sets which houses are affected by this feature.
+  - `LimboKill.IDs` lists IDs that will be targeted. Buildings with these IDs will be removed from the game instantly.
+
+- Delivery can be made random with these optional tags. The game will randomly choose only a single building from the list for each roll chance provided.
+  - `LimboDelivery.RollChance` lits chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
+  - `LimboDelivery.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific building. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
+
+Note: This feature might not support every building flag. Flags that are confirmed to work correctly are listed below:
+  - FactoryPlant
+  - OrePurifier
+  - SpySat
+  - KeepAlive (Ares 3.0)
+  - Prerequisite, PrerequisiteOverride, Prerequisite.List# (Ares 0.1), Prerequisite.Negative (Ares 0.1), GenericPrerequisites (Ares 0.1)
+  - SuperWeapon, SuperWeapon2, SuperWeapons (Ares 0.9), SW.AuxBuildings (Ares 0.9), SW.NegBuildings (Ares 0.9)
+
+Note: In order for this feature to work with AITriggerTypes conditions ("Owning house owns ???" and "Enemy house owns ???"), `LegalTarget` must be set to true.
+
+```{warning}
+Remember that Limbo Delivered buildings don't exist physically! This means they should never have enabled machanics that require interaction with the game world (i.e. factories, cloning vats, service depots, helipads). They also **should have either `KeepAlive=yes` set or be killable with LimboKill** - otherwise the game might never end.
+```
+In `rulesmd.ini`:
+```ini
+[SOMESW]                        ; Super Weapon
+LimboDelivery.Types=            ; List of BuildingTypes
+LimboDelivery.IDs=              ; List of numeric IDs. -1 cannot be used.
+LimboDelivery.RollChances=      ; List of percentages.
+LimboDelivery.RandomWeightsN=   ; List of integers.
+LimboKill.Affects=self          ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+LimboKill.IDs=                  ; List of numeric IDs.
+```

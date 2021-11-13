@@ -11,6 +11,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->DeployedTechno)
+		.Process(this->LimboID)
 		;
 }
 
