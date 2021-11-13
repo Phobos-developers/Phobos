@@ -173,7 +173,7 @@ DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0
 DEFINE_HOOK(0x6FE43B, TechnoClass_Fire_OpenTopped_DmgMult, 0x8)
 {
 	enum { ApplyDamageMult = 0x6FE45A, ContinueCheck = 0x6FE460 };
-	
+
 	GET(TechnoClass* const, pThis, ESI);
 
 	//replacing whole check due to `fild`
@@ -208,6 +208,26 @@ DEFINE_HOOK(0x71A82C, TemporalClass_AI_Opentopped_WarpDistance, 0xC)
 		{
 			R->EDX(pExt->OpenTopped_WarpDistance.Get(RulesClass::Instance->OpenToppedWarpDistance));
 			return 0x71A838;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	{
+		if (pExt->AutoFire)
+		{
+			if (pExt->AutoFire_TargetSelf)
+				pThis->Target = pThis;
+			else
+				pThis->Target = pThis->GetCell();
+
+			return 0x7099B8;
 		}
 	}
 
