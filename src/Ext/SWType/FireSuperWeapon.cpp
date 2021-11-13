@@ -19,10 +19,11 @@ void LimboDeliver(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 	if (pType->BuildLimit > 0)
 	{
 		int sum = pOwner->CountOwnedNow(pType);
+
 		// copy Ares' deployable units x build limit fix
-		if (auto const pUndeploy = pType->UndeploysInto) {
+		if (auto const pUndeploy = pType->UndeploysInto)
 			sum += pOwner->CountOwnedNow(pUndeploy);
-		}
+
 		if (sum >= pType->BuildLimit)
 			return;
 	}
@@ -66,14 +67,13 @@ void LimboDeliver(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 	// probably should just port it from Ares 0.A and be done
 
 	// LimboKill init
-	if (auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding))
-		if (ID != -1)
-			pBuildingExt->LimboID = ID;
+	auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
+	if (pBuildingExt && ID != -1)
+		pBuildingExt->LimboID = ID;
 }
 
 void SWTypeExt::ExtData::FireSuperWeapon(SuperClass* pSW, HouseClass* pHouse, CoordStruct coords)
 {
-
 	if (this->LimboDelivery_Types.size())
 		ApplyLimboDelivery(pHouse);
 
@@ -104,20 +104,22 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 		for (size_t i = 0; i < rolls; i++)
 		{
 			this->RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
-			if (!rollOnce)
-				if (this->RandomBuffer > this->LimboDelivery_RollChances[i])
-					continue;
+			if (!rollOnce && this->RandomBuffer > this->LimboDelivery_RollChances[i])
+				continue;
 
 			j = rolls > weights ? weights: i;
 			index = GeneralUtils::ChooseOneWeighted(this->RandomBuffer, &this->LimboDelivery_RandomWeightsData[j]);
+
 			// extra weights are bound to automatically fail
 			if (index >= this->LimboDelivery_Types.size())
 				index = size_t(-1);
+
 			if (index != -1)
 			{
 				if (index < ids)
 					id = this->LimboDelivery_IDs[index];
-				LimboDeliver( abstract_cast<BuildingTypeClass*>(this->LimboDelivery_Types[index]), pHouse, id );
+
+				LimboDeliver(abstract_cast<BuildingTypeClass*>(this->LimboDelivery_Types[index]), pHouse, id);
 			}
 		}
 	}
@@ -126,10 +128,12 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 	{
 		int id = -1;
 		size_t ids = this->LimboDelivery_IDs.size();
+
 		for (size_t i = 0; i < this->LimboDelivery_Types.size(); i++)
 		{
 			if (i < ids)
 				id = this->LimboDelivery_IDs[i];
+
 			LimboDeliver(abstract_cast<BuildingTypeClass*>(this->LimboDelivery_Types[i]), pHouse, id);
 		}
 	}
@@ -166,13 +170,16 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 						// Building logics
 						if (pType->ConstructionYard)
 							pTargetHouse->ConYards.Remove(pBuilding);
+
 						if (pType->SecretLab)
 							pTargetHouse->SecretLabs.Remove(pBuilding);
+
 						if (pType->FactoryPlant)
 						{
 							pTargetHouse->FactoryPlants.Remove(pBuilding);
 							pTargetHouse->CalculateCostMultipliers();
 						}
+
 						if (pType->OrePurifier)
 							pTargetHouse->NumOrePurifiers--;
 

@@ -71,6 +71,7 @@ int GeneralUtils::ChooseOneWeighted(const double dice, const std::vector<int>* w
 
 	for (size_t i = 0; i < weights->size(); i++)
 		sum += (*weights)[i];
+
 	for (size_t i = 0; i < weights->size(); i++)
 	{
 		sum2 += (*weights)[i];
