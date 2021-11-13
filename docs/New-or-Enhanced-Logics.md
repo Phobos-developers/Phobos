@@ -835,7 +835,6 @@ x=93,n            ; integer n=0
 ```
 
 ### `94` Pick A Random Script
-## Super Weapons
 
 - When executed this action picks a random Script Type and replaces the current script by the new picked. The second parameter is a 0-based index from the new section `AIScriptsList` explained below.
 
@@ -901,6 +900,9 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=i,n             ; where 500 <= i <= 519, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the param value.
 ```
+
+
+## Super Weapons
 
 ### LimboDelivery
 
