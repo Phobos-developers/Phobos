@@ -122,14 +122,12 @@ Grinding.Weapon=           ; WeaponType
 ### Customizable projectile gravity
 
 -  You can now specify individual projectile gravity.
-    - Set `Gravity=0` with an arcing projectile can create a straight trail.
-        - Set `Gravity.HeightFix=true` allows the projectile to hit target which is not at the same height while `Gravity=0`.
+    - Setting `Gravity=0` is not recommended. It will cause the projectile unable to hit the target which is not at the same height. We'd suggest to use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]        ; Projectile
 Gravity=6.0             ; double
-Gravity.HeightFix=false ; boolean
 ```
 
 ## Technos
