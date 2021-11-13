@@ -243,7 +243,7 @@ auto MassActions = MassAction <
 	TechnoTypeExt,
 	TerrainTypeExt,
 	VoxelAnimExt,
-	VoxelAnimExt,
+	VoxelAnimTypeExt,
 	WarheadTypeExt,
 	WeaponTypeExt,
 	// New classes
