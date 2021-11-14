@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-03 16:51+0800\n"
+"POT-Creation-Date: 2021-10-08 10:31+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -66,7 +66,8 @@ msgstr ""
 #: ../New-or-Enhanced-Logics.md:431 ../New-or-Enhanced-Logics.md:441
 #: ../New-or-Enhanced-Logics.md:451 ../New-or-Enhanced-Logics.md:461
 #: ../New-or-Enhanced-Logics.md:478 ../New-or-Enhanced-Logics.md:488
-#: ../New-or-Enhanced-Logics.md:507
+#: ../New-or-Enhanced-Logics.md:507 ../New-or-Enhanced-Logics.md:659
+#: ../New-or-Enhanced-Logics.md:699
 msgid "In `rulesmd.ini`:"
 msgstr "在`rulesmd.ini`中："
 
@@ -364,7 +365,7 @@ msgid ""
 " normal."
 msgstr "增幅建筑变卖或摧毁后，增幅电量就会消失。"
 
-#: ../New-or-Enhanced-Logics.md:198
+#: ../New-or-Enhanced-Logics.md:198 ../New-or-Enhanced-Logics.md:395
 msgid "Infantry"
 msgstr "步兵"
 
@@ -396,7 +397,7 @@ msgstr "每种步兵单位现在都可以有它自己的“DefaultDisguise”(�
 msgid "This tag's priority is higher than Ares' per-side `DefaultDisguise`."
 msgstr "此标签的优先级高于Ares中为Side设定的“DefaultDisguise”。"
 
-#: ../New-or-Enhanced-Logics.md:222
+#: ../New-or-Enhanced-Logics.md:222 ../New-or-Enhanced-Logics.md:395
 msgid "Vehicles"
 msgstr "载具"
 
@@ -430,7 +431,7 @@ msgstr "自动删除乘客"
 msgid ""
 "Transports with these tags will erase the passengers overtime. Bigger "
 "units takes more time. Optionally this logic can work like a grinder."
-msgstr "有该标签的载具将随着时间移除其中乘客。大型单位将需要更多时间。该逻辑也可以像粉碎机一样工作。"
+msgstr "有该标签的载具将随着时间移除其中乘客。大型单位将需要更多时间。该逻辑也可以像部队回收站一样工作。"
 
 #: ../New-or-Enhanced-Logics.md:240
 msgid "Good combination with Ares Abductor logic."
@@ -844,9 +845,11 @@ msgid ""
 msgstr "可以使单位进入一段时间的区域警戒模式。类似脚本**5 警戒（…秒）** (`5,n`)，但是使用的是更具攻击性的区域境界动作。"
 
 #: ../New-or-Enhanced-Logics.md:526 ../New-or-Enhanced-Logics.md:536
-#: ../New-or-Enhanced-Logics.md:546 ../New-or-Enhanced-Logics.md:556
-#: ../New-or-Enhanced-Logics.md:566 ../New-or-Enhanced-Logics.md:576
-#: ../New-or-Enhanced-Logics.md:587
+#: ../New-or-Enhanced-Logics.md:546 ../New-or-Enhanced-Logics.md:558
+#: ../New-or-Enhanced-Logics.md:618 ../New-or-Enhanced-Logics.md:628
+#: ../New-or-Enhanced-Logics.md:640 ../New-or-Enhanced-Logics.md:671
+#: ../New-or-Enhanced-Logics.md:681 ../New-or-Enhanced-Logics.md:691
+#: ../New-or-Enhanced-Logics.md:711 ../New-or-Enhanced-Logics.md:728
 msgid "In `aimd.ini`:"
 msgstr "在`aimd.ini`中："
 
@@ -873,68 +876,30 @@ msgid ""
 msgstr "当小队内所有成员弹药满时继续执行下一个动作。"
 
 #: ../New-or-Enhanced-Logics.md:552
-msgid "`82` Decrease AI Trigger Current Weight"
-msgstr "`82` 降低AI触发当前权重"
+msgid "`74-81` Generic Target Type Attack Action"
+msgstr "`74-81` 常规目标类型攻击行为"
 
 #: ../New-or-Enhanced-Logics.md:554
 msgid ""
-"When executed this decreases the current Weight of the AI Trigger.The "
-"current Weight will never surprass the Minimum Weight and Maximum Weight "
-"limits of the AI Trigger. Take note that all TeamTypes of the same AI "
-"Trigger will update sooner or later the AI Trigger Current Weight. The "
-"second parameter is a positive value. Take note that the original game "
-"only uses the first of the two Teams for calculating the AI Trigger "
-"Current Weight at the end of the Trigger life, this action ignores if the"
-" Team is the first or the second of the AI Trigger and the Current Weight"
-" is calculated when is executed the action."
-msgstr "当该脚本行为被执行时，它将降低AI触发当前的权重。当前权重将不会逾越AI触发的权重上下限。"
-"要注意的是同个AI触发下的所有TeamTypes或早或晚都会更新当前权重。第二个参数是一个正值。"
-"要注意游戏本体在计算触发周期的当前权重时只采用两个小队中的第一个,而该行为将无视该小队是其中哪个，当前权重都将在行为被执行时进行计算。"
-
-#: ../New-or-Enhanced-Logics.md:562
-msgid "`83` Increase AI Trigger Current Weight"
-msgstr "`83` 增加AI触发当前权重"
-
-#: ../New-or-Enhanced-Logics.md:564
-msgid ""
-"When executed this increases the current Weight of the AI Trigger.The "
-"current Weight will never surprass the Minimum Weight and Maximum Weight "
-"limits of the AI Trigger. Take note that all TeamTypes of the same AI "
-"Trigger will update sooner or later the AI Trigger Current Weight. The "
-"second parameter is a positive value. Take note that the original game "
-"only uses the first of the two Teams for calculating the AI Trigger "
-"Current Weight at the end of the Trigger life, this action ignores if the"
-" Team is the first or the second of the AI Trigger and the Current Weight"
-" is calculated when is executed the action."
-msgstr "当该脚本行为被执行时，它将增加AI触发当前的权重。当前权重将不会逾越AI触发的权重上下限。"
-"要注意的是同个AI触发下的所有TeamTypes或早或晚都会更新当前权重。第二个参数是一个正值。"
-"要注意游戏本体在计算触发周期的当前权重时只采用两个小队中的第一个,而该行为将无视该小队是其中哪个，当前权重都将在行为被执行时进行计算。"
-
-#: ../New-or-Enhanced-Logics.md:572
-msgid "`112` Regroup temporarily around the Team Leader"
-msgstr "`112` 于小队队长周围暂时集结"
-
-#: ../New-or-Enhanced-Logics.md:574
-msgid ""
-"Puts the TaskForce into Area Guard Mode for the given amount of time "
-"around the Team Leader (this unit remains almost immobile until the "
-"action ends). The default radius around the Leader is `[General] > "
-"CloseEnough` and the units will not leave that area."
-msgstr "将使小队成员在小队队长附近进入给定时长的区域警戒状态(该单位将在行为结束前几乎无法移动)。"
-"对队长周围的默认半径定义来自于`[General] > CloseEnough`，其余单位将不会离开这一范围。"
-
-#: ../New-or-Enhanced-Logics.md:583
-msgid "`74-81` New Attack Action"
-msgstr "`74-81` 新攻击行为"
-
-#: ../New-or-Enhanced-Logics.md:585
-msgid ""
 "These Actions instruct the TeamType to use the TaskForce to approach and "
-"attack the target specified by the second parameter. Look at the tables "
-"below for the possible Actions (first parameter value) and Arguments (the"
-" second parameter value)."
-msgstr "这些行为指示TeamType如何使用小队成员接近并攻击由第二个参数给定的目标。"
-"参考下列表格中可以使用的行为(第一参数值)和参数(第二参数值)。"
+"attack the target specified by the second parameter which is an index of "
+"a generic pre-defined group. Look at the tables below for the possible "
+"Actions (first parameter value) and Arguments (the second parameter "
+"value)."
+msgstr "这些行为指示TeamType如何使用小队成员接近并攻击由第二个参数给定的目标, 该参数是一个预先定义好的通用组别。参考下列表格中可以使用的行为(第一参数值)和参数(第二参数值)。"
+
+#: ../New-or-Enhanced-Logics.md:555 ../New-or-Enhanced-Logics.md:637
+msgid ""
+"For threat-based attack actions `TargetSpecialThreatCoefficientDefault` "
+"and `EnemyHouseThreatBonus` tags from `rulesmd.ini` are accounted."
+msgstr "基于威胁度的攻击行为会参考 `rulesmd.ini` 的 `TargetSpecialThreatCoefficientDefault` 和 `EnemyHouseThreatBonus` 标签。"
+
+#: ../New-or-Enhanced-Logics.md:556 ../New-or-Enhanced-Logics.md:638
+msgid ""
+"All Aircrafts that attack other air units will end the script. This "
+"behavior is intentional because without it aircrafts had some bugs that "
+"weren't fixable at the time of developing the feature."
+msgstr "所有Aircrafts在攻击其他空中单位时将结束该脚本。这一行为是有意的，如果缺少这一行为则Aircrafts将在开发该功能的当下存在某些无法修复的bug。"
 
 #: ../New-or-Enhanced-Logics.md:395
 msgid "*Action*"
@@ -1020,19 +985,659 @@ msgstr ""
 msgid "81"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:604
+#: ../New-or-Enhanced-Logics.md:575
 msgid ""
-"Note: New Attack action scripts (74, 75, 78, 79) that are focused in "
-"target threat use `TargetSpecialThreatCoefficientDefault` and "
-"`EnemyHouseThreatBonus` tags from `rulesmd.ini`."
-msgstr "注意: 考量目标威胁度的新攻击行为脚本(74, 75, 78, 79)使用来自`rulesmd.ini`的`TargetSpecialThreatCoefficientDefault`和`EnemyHouseThreatBonus`标签。"
+"The following values are the *Target Type#* which can be used as second "
+"parameter of the new attack script actions:"
+msgstr "下列值是可被用于新攻击脚本行为的第二参数的*目标类型#*"
 
-#: ../New-or-Enhanced-Logics.md:606
+#: ../New-or-Enhanced-Logics.md:395
+msgid "*Value*"
+msgstr "*值*"
+
+#: ../New-or-Enhanced-Logics.md:395
+#, fuzzy
+msgid "*Target Type*"
+msgstr "*目标类型*"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "1"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Anything"
+msgstr "任意目标"
+
+#: ../New-or-Enhanced-Logics.md:395
 msgid ""
-"Note: All Aircrafts that attack other air units will end the script. This"
-" behavior is intentional because without it aircrafts had some bugs that "
-"weren't fixable at the time of developing the feature."
-msgstr "注意: 所有Aircrafts在攻击其他空中单位时将结束该脚本。这一行为是有意的，如果缺少这一行为则Aircrafts将在开发该功能的当下存在某些无法修复的bug。"
+"Any enemy `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and "
+"`BuildingTypes`"
+msgstr ""
+"任意敌方 `VehicleTypes`, `AircraftTypes`, `InfantryTypes` 和 "
+"`BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "2"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Structures"
+msgstr "建筑"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid ""
+"Any enemy `BuildingTypes` without `Artillary=yes`, `TickTank=yes`, "
+"`ICBMLauncher=yes` or `SensorArray=yes`"
+msgstr ""
+"任何不含 `Artillary=yes`, `TickTank=yes`, "
+"`ICBMLauncher=yes` 或 `SensorArray=yes` 的敌方 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "3"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Ore Miners"
+msgstr "矿车"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid ""
+"Any enemy `VehicleTypes` with `Harvester=yes` or `ResourceGatherer=yes`, "
+"`BuildingTypes` with `ResourceGatherer=yes`"
+msgstr ""
+"任何含有 `Harvester=yes` 或 `ResourceGatherer=yes` 的敌方 `VehicleTypes`, "
+"以及含有 `ResourceGatherer=yes` 的敌方 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "4"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Any enemy `InfantryTypes`"
+msgstr "任意敌方 `InfantryTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "5"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid ""
+"Any enemy `VehicleTypes`, `AircraftTypes`, `BuildingTypes` with "
+"`Artillary=yes`, `TickTank=yes`, `ICBMLauncher=yes` & `SensorArray=yes`"
+msgstr ""
+"任何含有 `Artillary=yes`, `TickTank=yes`, `ICBMLauncher=yes` 和 `SensorArray=yes` 的 "
+" `VehicleTypes`, `AircraftTypes`, `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "6"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Factories"
+msgstr "工厂"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Any enemy `BuildingTypes` with a Factory= setting"
+msgstr "任何含有Factory=设定的敌方 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "7"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Base Defenses"
+msgstr "防御建筑"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Any enemy `BuildingTypes` with `IsBaseDefense=yes`"
+msgstr "任何含有 `IsBaseDefense=yes` 的敌方 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "8"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "House Threats"
+msgstr "所属方威胁"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid ""
+"Any object that targets anything of the Team's House or any enemy that is"
+" near to the Team Leader"
+msgstr "任何将小队所属方的任何单位作为目标的敌方对象，或者任何接近小队队长的敌人"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "9"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Power Plants"
+msgstr "发电厂"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Any enemy `BuildingTypes` with positive `Power=` values"
+msgstr "任何含有正数值 `Power=` 的敌方 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "10"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Occupied"
+msgstr "驻扎建筑"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Any `BuildingTypes` with garrisoned infantry"
+msgstr "任何被步兵驻扎的 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "11"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Tech Buildings"
+msgstr "科技建筑"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid ""
+"Any `BuildingTypes` with `Unsellable=yes`, `Capturable=yes`, negative "
+"`TechLevel=` values or appears in `[AI]>NeutralTechBuildings=` list"
+msgstr "任何含有 `Unsellable=yes`, `Capturable=yes`, 负数值 `TechLevel=` "
+"或出现在 `[AI]>NeutralTechBuildings=` 列表上的 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "12"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Refinery"
+msgstr "矿石精炼厂"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid ""
+"Any enemy `BuildingTypes` with `Refinery=yes` or `ResourceGatherer=yes`, "
+"`VehicleTypes` with `ResourceGatherer=yes` & `Harvester=no` (i.e. Slave "
+"Miner)"
+msgstr "任何含有`Refinery=yes` or `ResourceGatherer=yes` 的敌方 `BuildingTypes` "
+"及含有 `ResourceGatherer=yes` 和 `Harvester=no` 的敌方 `VehicleTypes` (如奴隶矿厂)"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "13"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Mind Controller"
+msgstr "心灵控制者"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid ""
+"Anything `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and "
+"`BuildingTypes` with `MindControl=yes` in the weapons Warheads"
+msgstr "任何拥有带 `MindControl=yes` 弹头的武器的 `VehicleTypes`, `AircraftTypes`, `InfantryTypes` 及 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "14"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Air Units"
+msgstr "空中单位"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Any enemy `AircraftTypes`, flying `VehicleTypes` or `InfantryTypes`"
+msgstr "任意敌方的 `AircraftTypes` 及飞行的 `VehicleTypes` 和 `InfantryTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "15"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Naval"
+msgstr "海上目标"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid ""
+"Any enemy `BuildingTypes` and `VehicleTypes` with a `Naval=yes`, any "
+"enemy `VehicleTypes`, `AircraftTypes`, `InfantryTypes` in a water cell"
+msgstr "任何含有 `Naval=yes` 的敌方 `BuildingTypes` and `VehicleTypes`, "
+"以及在水面单元格上的敌方 `VehicleTypes`, `AircraftTypes`, `InfantryTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "16"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Disruptors"
+msgstr "干扰者"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid ""
+"Any enemy objects with positive `InhibitorRange=` values, positive "
+"`RadarJamRadius=` values, `CloakGenerator=yes` or `GapGenerator=yes`"
+msgstr "任何含有正数值 `InhibitorRange=`, `RadarJamRadius=` 及 `CloakGenerator=yes` 或 `GapGenerator=yes`的敌方对象"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "17"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Ground Vehicles"
+msgstr "地面载具"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid ""
+"Any enemy `VehicleTypes` without `Naval=yes`, landed `AircraftTypes`, "
+"Deployed vehicles into `BuildingTypes`"
+msgstr "任何不含 `Naval=yes` 的敌方 `VehicleTypes`, 着陆的 `AircraftTypes` 及由载具部署而来的 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "18"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Economy"
+msgstr "经济单位"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid ""
+"Any enemy `VehicleTypes` with `Harvester=yes` or `ResourceGatherer=yes`, "
+"`BuildingTypes` with `Refinery=yes`, `ResourceGatherer=yes` or "
+"`OrePurifier=yes`"
+msgstr "任何含有 `Harvester=yes` or `ResourceGatherer=yes` 的敌方 `VehicleTypes`, "
+"及含有 `Refinery=yes`, `ResourceGatherer=yes` 或 `OrePurifier=yes` 的敌方 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "19"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Infantry Factory"
+msgstr "兵营"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Any enemy `BuildingTypes` with `Factory=InfantryType`"
+msgstr "任何含有 `Factory=InfantryType` 的敌方 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "20"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Vehicle Factory"
+msgstr "战车工厂"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Any enemy `BuildingTypes` with `Factory=UnitType`"
+msgstr "任何含有 `Factory=UnitType` 的敌方 `BuildingTypes"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "21"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Aircraft Factory"
+msgstr "机场"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Any enemy `BuildingTypes` with `Factory=AircraftType`"
+msgstr "任何含有 `Factory=AircraftType` 的敌方 `BuildingTypes"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "22"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Radar"
+msgstr "雷达"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Any enemy `BuildingTypes` with `Radar=yes` or `SpySat=yes`"
+msgstr "任何含有 `Radar=yes` or `SpySat=yes` 的敌方 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "23"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Tech Lab"
+msgstr "科技实验室"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Any enemy `BuildingTypes` in `[AI]>BuildTech=` list"
+msgstr "任何在 `[AI]>BuildTech=` 列表上的敌方 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "24"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Naval Factory"
+msgstr "船坞"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Any enemy `BuildingTypes` with `Naval=yes` and `Factory=UnitType`"
+msgstr "任何含有  `Naval=yes` 和 `Factory=UnitType` 的敌方 `BuildingTypes"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "25"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Super Weapon"
+msgstr "超级武器"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid ""
+"Any enemy `BuildingTypes` with `SuperWeapon=`, `SuperWeapon2=` or "
+"`SuperWeapons=`"
+msgstr "任何含有 `SuperWeapon=`, `SuperWeapon2=` 或 `SuperWeapons=` 的敌方 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "26"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Construction Yard"
+msgstr "建造厂"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid ""
+"Any enemy `BuildingTypes` with `ConstructionYard=yes` and "
+"`Factory=BuildingType`"
+msgstr "任何含有  `ConstructionYard=yes` 和 `Factory=BuildingType` 的敌方 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "27"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Neutrals"
+msgstr "中立"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Any neutral object (Civilian)"
+msgstr "任意中立对象 (Civilian)"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "28"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Generators"
+msgstr "发生器"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Any enemy `BuildingTypes` with `CloakGenerator=yes` or `GapGenerator=yes`"
+msgstr "任何含有 `CloakGenerator=yes` 或 `GapGenerator=yes` 的敌方 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "29"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Radar Jammer"
+msgstr "雷达干扰器"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Any enemy objects with positive `RadarJamRadius=` values"
+msgstr "任何含有正数值 `RadarJamRadius=` 的敌方 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "30"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Inhibitors"
+msgstr "屏蔽器"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Any enemy objects with positive `InhibitorRange=` values"
+msgstr "任何含有正数值 `InhibitorRange=` 的敌方 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "31"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "海上单位"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid ""
+"Any enemy `VehicleTypes` with a `Naval=yes` or any enemy `VehicleTypes`, "
+"`AircraftTypes`, `InfantryTypes` in a water cell"
+msgstr "任何含有 `Naval=yes` 的 敌方 `VehicleTypes`, 或在水面单元格上的敌方 `VehicleTypes`, `AircraftTypes`, `InfantryTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "32"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Mobile Units"
+msgstr "机动单位"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Anything `VehicleTypes`, `AircraftTypes` and `InfantryTypes`"
+msgstr "任意 `VehicleTypes`, `AircraftTypes` and `InfantryTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "33"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Capturable"
+msgstr "可占领目标"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid ""
+"Any `BuildingTypes` with `Capturable=yes` or any `BuildingTypes` with "
+"`BridgeRepairHut=yes` and `Repairable=yes`"
+msgstr "任何含有 `Capturable=yes` 或同时有 `BridgeRepairHut=yes` 和 `Repairable=yes` 的 `BuildingTypes`"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "34"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Area Threats"
+msgstr "区域威胁"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Any enemy object that is inside of the Team Leader's Guard Area"
+msgstr "任何处于小队队长的警戒范围内的敌方对象"
+
+#: ../New-or-Enhanced-Logics.md:614
+msgid "`82` Decrease AI Trigger Current Weight"
+msgstr "`82` 降低AI触发当前权重"
+
+#: ../New-or-Enhanced-Logics.md:616
+msgid ""
+"When executed this decreases the current Weight of the AI Trigger.The "
+"current Weight will never surprass the Minimum Weight and Maximum Weight "
+"limits of the AI Trigger. Take note that all TeamTypes of the same AI "
+"Trigger will update sooner or later the AI Trigger Current Weight. The "
+"second parameter is a positive value. Take note that the original game "
+"only uses the first of the two Teams for calculating the AI Trigger "
+"Current Weight at the end of the Trigger life, this action ignores if the"
+" Team is the first or the second of the AI Trigger and the Current Weight"
+" is calculated when is executed the action."
+msgstr "当该脚本行为被执行时，它将降低AI触发当前的权重。当前权重将不会逾越AI触发的权重上下限。要注意的是同个AI触发下的所有TeamTypes或早或晚都会更新当前权重。第二个参数是一个正值。要注意游戏本体在计算触发周期的当前权重时只采用两个小队中的第一个,而该行为将无视该小队是其中哪个，当前权重都将在行为被执行时进行计算。"
+
+#: ../New-or-Enhanced-Logics.md:624
+msgid "`83` Increase AI Trigger Current Weight"
+msgstr "`83` 增加AI触发当前权重"
+
+#: ../New-or-Enhanced-Logics.md:626
+msgid ""
+"When executed this increases the current Weight of the AI Trigger.The "
+"current Weight will never surprass the Minimum Weight and Maximum Weight "
+"limits of the AI Trigger. Take note that all TeamTypes of the same AI "
+"Trigger will update sooner or later the AI Trigger Current Weight. The "
+"second parameter is a positive value. Take note that the original game "
+"only uses the first of the two Teams for calculating the AI Trigger "
+"Current Weight at the end of the Trigger life, this action ignores if the"
+" Team is the first or the second of the AI Trigger and the Current Weight"
+" is calculated when is executed the action."
+msgstr "当该脚本行为被执行时，它将增加AI触发当前的权重。当前权重将不会逾越AI触发的权重上下限。要注意的是同个AI触发下的所有TeamTypes或早或晚都会更新当前权重。第二个参数是一个正值。要注意游戏本体在计算触发周期的当前权重时只采用两个小队中的第一个,而该行为将无视该小队是其中哪个，当前权重都将在行为被执行时进行计算。"
+
+#: ../New-or-Enhanced-Logics.md:634
+msgid "`84-91` `AITargetTypes` Attack Action"
+msgstr "`84-91` `AITargetTypes` 攻击行为"
+
+#: ../New-or-Enhanced-Logics.md:636
+#, fuzzy
+msgid ""
+"These Actions instruct the TeamType to use the TaskForce to approach and "
+"attack the target specified by the second parameter which is an index of "
+"a modder-defined group from `AITargetTypess`. Look at the tables below "
+"for the possible Actions (first parameter value) and Arguments (the "
+"second parameter value)."
+msgstr "这些行为指示TeamType如何使用小队成员接近并攻击由第二个参数给定的目标, 该参数是一个由modder定义的通用组别。参考下列表格中可以使用的行为(第一参数值)和参数(第二参数值)。"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "84"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "`AITargetTypes` index#"
+msgstr "`AITargetTypes` 序号#"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "85"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "86"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "87"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "88"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "89"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "90"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "91"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:657
+msgid ""
+"The second parameter with a 0-based index for the `AITargetTypes` section"
+" specifies the list of possible `VehicleTypes`, `AircraftTypes`, "
+"`InfantryTypes` and `BuildingTypes` that can be evaluated. The new "
+"`AITargetTypes` section must be declared in `rulesmd.ini` for making this"
+" script work:"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:667
+msgid "`92` Wait If No Target Found"
+msgstr "`92` 如果未发现目标则等待"
+
+#: ../New-or-Enhanced-Logics.md:669
+msgid ""
+"When executed before a new Attack ScriptType Actions like `74-81` and "
+"`84-91` the TeamType will remember that must wait 1 second if no target "
+"was selected. The second parameter is a positive value that specifies how"
+" much retries the Attack will do when no target was found before new "
+"Attack ScriptType Action is discarded & the script execution jumps to the"
+" next line. The value `0` means infinite retries."
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:677
+msgid "`93` Team's Trigger Weight Reward"
+msgstr "`93` 小队的触发权重奖励"
+
+#: ../New-or-Enhanced-Logics.md:679
+msgid ""
+"When executed before a new Attack ScriptType Actions like `74-81` and "
+"`84-91` the TeamType will remember that must be rewarded increasing the "
+"current Weight of the AI Trigger when the TeamType Target was killed by "
+"any of the Team members. The current Weight will never surprass the "
+"Minimum Weight and Maximum Weight limits of the AI Trigger. The second "
+"parameter is a positive value."
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:687
+msgid "`94` Pick A Random Script"
+msgstr "`94` 抽选一个随机脚本"
+
+#: ../New-or-Enhanced-Logics.md:689
+msgid ""
+"When executed this action picks a random Script Type and replaces the "
+"current script by the new picked. The second parameter is a 0-based index"
+" from the new section `AIScriptsList` explained below."
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:697
+msgid ""
+"The second parameter is a 0-based index for the `AIScriptsList` section "
+"that specifies the list of possible `ScriptTypes` that can be evaluated. "
+"The new `AIScriptsList` section must be declared in `rulesmd.ini` for "
+"making this script work:"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:707
+msgid "`95-98` Moving Team to techno location"
+msgstr "`95-98` 移动小队至单位地点"
+
+#: ../New-or-Enhanced-Logics.md:709
+msgid ""
+"These Actions instructs the TeamType to use the TaskForce to approach the"
+" target specified by the second parameter. Look at the tables below for "
+"the possible Actions (first parameter value)."
+msgstr "这些行为指示TeamType如何使用小队成员接近并攻击由第二个参数给定的目标。参考下列表格中可以使用的行为(第一参数值)和参数(第二参数值)。"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Target Owner"
+msgstr "目标方"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "95"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Enemy"
+msgstr "敌方"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "96"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "97"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "Friendly"
+msgstr "友方"
+
+#: ../New-or-Enhanced-Logics.md:395
+msgid "98"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:724
+msgid "`112` Regroup temporarily around the Team Leader"
+msgstr "`112` 于小队队长周围暂时集结"
+
+#: ../New-or-Enhanced-Logics.md:726
+msgid ""
+"Puts the TaskForce into Area Guard Mode for the given amount of time "
+"around the Team Leader (this unit remains almost immobile until the "
+"action ends). The default radius around the Leader is `[General] > "
+"CloseEnough` and the units will not leave that area."
+msgstr ""
+"将使小队成员在小队队长附近进入给定时长的区域警戒状态(该单位将在行为结束前几乎无法移动)。对队长周围的默认半径定义来自于`[General] > "
+"CloseEnough`，其余单位将不会离开这一范围。"
 
 #~ msgid "`112` Regroup around the Team Leader"
 #~ msgstr ""

@@ -24,12 +24,12 @@ public:
 		PhobosFixedString<0x20> GroupAs;
 		Valueable<int> RadarJamRadius;
 		Valueable<int> InhibitorRange;
-		Valueable<double> MindControlRangeLimit;
+		Valueable<Leptons> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
-		Valueable<double> Interceptor_GuardRange;
-		Valueable<double> Interceptor_MinimumGuardRange;
-		Valueable<double> Interceptor_EliteGuardRange;
-		Valueable<double> Interceptor_EliteMinimumGuardRange;
+		Valueable<Leptons> Interceptor_GuardRange;
+		Valueable<Leptons> Interceptor_MinimumGuardRange;
+		Valueable<Leptons> Interceptor_EliteGuardRange;
+		Valueable<Leptons> Interceptor_EliteMinimumGuardRange;
 		Valueable<CoordStruct> TurretOffset;
 		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Spawn_LimitedRange;
@@ -77,6 +77,14 @@ public:
 		Nullable<float> OpenTopped_DamageMultiplier;
 		Nullable<int> OpenTopped_WarpDistance;
 
+		Valueable<bool> AutoFire;
+		Valueable<bool> AutoFire_TargetSelf;
+
+		Valueable<bool> NoSecondaryWeaponFallback;
+		
+		Valueable<int> NoAmmoWeapon;
+		Valueable<int> NoAmmoAmount;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -100,12 +108,12 @@ public:
 			GroupAs(NONE_STR),
 			RadarJamRadius(0),
 			InhibitorRange(0),
-			MindControlRangeLimit(-1.0),
+			MindControlRangeLimit(),
 			Interceptor(false),
-			Interceptor_GuardRange(0.0),
-			Interceptor_MinimumGuardRange(0.0),
-			Interceptor_EliteGuardRange(0.0),
-			Interceptor_EliteMinimumGuardRange(0.0),
+			Interceptor_GuardRange(),
+			Interceptor_MinimumGuardRange(),
+			Interceptor_EliteGuardRange(),
+			Interceptor_EliteMinimumGuardRange(),
 			TurretOffset({0, 0, 0}),
 			Powered_KillSpawns(false),
 			Spawn_LimitedRange(false),
@@ -143,7 +151,12 @@ public:
 			DefaultDisguise(),
 			OpenTopped_RangeBonus(),
 			OpenTopped_DamageMultiplier(),
-			OpenTopped_WarpDistance()
+			OpenTopped_WarpDistance(),
+			AutoFire(false),
+			AutoFire_TargetSelf(false),
+			NoSecondaryWeaponFallback(false),
+			NoAmmoWeapon(-1),
+			NoAmmoAmount(0)
 		{ }
 
 		virtual ~ExtData() = default;

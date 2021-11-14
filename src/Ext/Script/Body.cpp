@@ -2,6 +2,8 @@
 #include "../Techno/Body.h"
 #include "../BuildingType/Body.h"
 
+#include <Ext/Scenario/Body.h>
+
 template<> const DWORD Extension<ScriptClass>::Canary = 0x3B3B3B3B;
 ScriptExt::ExtContainer ScriptExt::ExtMap;
 
@@ -29,8 +31,8 @@ ScriptExt::ExtContainer::~ExtContainer() = default;
 
 void ScriptExt::ProcessAction(TeamClass* pTeam)
 {
-	const int& action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action;
-
+	const int action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action;
+	const int argument = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
 	switch (action)
 	{
 	case 71:
@@ -80,20 +82,71 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 83:
 		ScriptExt::IncreaseCurrentTriggerWeight(pTeam, true, 0);
 		break;
+	case 84:
+		// Threats specific targets that are close have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack_List(pTeam, true, 0, -1);
+		break;
+	case 85:
+		// Threats specific targets that are far have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack_List(pTeam, true, 1, -1);
+		break;
+	case 86:
+		// Closer specific targets targets from Team Leader have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack_List(pTeam, true, 2, -1);
+		break;
+	case 87:
+		// Farther specific targets targets from Team Leader have more priority. Kill until no more targets.
+		ScriptExt::Mission_Attack_List(pTeam, true, 3, -1);
+		break;
+	case 88:
+		// Threats specific targets that are close have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack_List(pTeam, false, 0, -1);
+		break;
+	case 89:
+		// Threats specific targets that are far have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack_List(pTeam, false, 1, -1);
+		break;
+	case 90:
+		// Closer specific targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack_List(pTeam, false, 2, -1);
+		break;
+	case 91:
+		// Farther specific targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
+		ScriptExt::Mission_Attack_List(pTeam, false, 3, -1);
+		break;
 	case 92:
 		ScriptExt::WaitIfNoTarget(pTeam, -1);
 		break;
 	case 93:
 		ScriptExt::TeamWeightReward(pTeam, 0);
 		break;
+	case 95:
+		// Move to the closest enemy target
+		ScriptExt::Mission_Move(pTeam, 2, false, -1, -1);
+		break;
+	case 96:
+		// Move to the farther enemy target
+		ScriptExt::Mission_Move(pTeam, 3, false, -1, -1);
+		break;
+	case 97:
+		// Move to the closest friendly target
+		ScriptExt::Mission_Move(pTeam, 2, true, -1, -1);
+		break;
+	case 98:
+		// Move to the farther friendly target
+		ScriptExt::Mission_Move(pTeam, 3, true, -1, -1);
+		break;
+	case 111:
+		// Un-register success for AITrigger weight adjustment (this is the opposite of 49,0)
+		ScriptExt::UnregisterGreatSuccess(pTeam);
+		break;
 	case 112:
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
 		break;
-	default:
-		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
-		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
-		break;
 	}
+
+	if (action >= PhobosScripts::LocalVariableAdd && action <= PhobosScripts::GlobalVariableAndByGlobal)
+		VariablesHandler(pTeam, static_cast<PhobosScripts>(action), argument);
 }
 
 void ScriptExt::ExecuteTimedAreaGuardAction(TeamClass* pTeam)
@@ -1831,7 +1884,7 @@ void ScriptExt::PickRandomScript(TeamClass* pTeam, int idxScriptsList = -1)
 				{
 					changeFailed = false;
 					pTeam->CurrentScript = nullptr;
-					pTeam->CurrentScript = new ScriptClass(pNewScript);
+					pTeam->CurrentScript = GameCreate<ScriptClass>(pNewScript);
 
 					// Ready for jumping to the first line of the new script
 					pTeam->CurrentScript->idxCurrentLine = -1;
@@ -1872,4 +1925,598 @@ void ScriptExt::Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int cal
 	{
 		ScriptExt::Mission_Attack(pTeam, repeatAction, calcThreatMode, attackAITargetType, -1);
 	}
+}
+
+void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pickAllies = false, int attackAITargetType = -1, int idxAITargetTypeItem = -1)
+{
+	auto pScript = pTeam->CurrentScript;
+	int scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument; // This is the target type
+	TechnoClass* selectedTarget = nullptr;
+	bool noWaitLoop = false;
+	FootClass *pLeaderUnit = nullptr;
+	TechnoTypeClass* pLeaderUnitType = nullptr;
+	int bestUnitLeadershipValue = -1;
+	bool bAircraftsWithoutAmmo = false;
+	TechnoClass* pFocus = nullptr;
+
+	// When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
+	if (pTeam->GuardAreaTimer.TimeLeft != 0 || pTeam->GuardAreaTimer.InProgress())
+	{
+		pTeam->GuardAreaTimer.TimeLeft--;
+
+		if (pTeam->GuardAreaTimer.TimeLeft == 0)
+		{
+			pTeam->GuardAreaTimer.Stop(); // Needed
+			noWaitLoop = true;
+
+			auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+			if (pTeamData)
+			{
+				if (pTeamData->WaitNoTargetAttempts > 0)
+					pTeamData->WaitNoTargetAttempts--;
+			}
+		}
+		else
+		{
+			return;
+		}
+	}
+
+	// This team has no units! END
+	if (!pTeam)
+	{
+		auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+		if (pTeamData && pTeamData->CloseEnough > 0)
+		{
+			pTeamData->CloseEnough = -1;
+		}
+
+		// This action finished
+		pTeam->StepCompleted = true;
+		Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (Reason: No team members alive)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+
+		return;
+	}
+
+	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+	{
+		if (pUnit && pUnit->IsAlive && pUnit->Health > 0 && !pUnit->InLimbo)
+		{
+			auto pUnitType = pUnit->GetTechnoType();
+			if (pUnitType)
+			{
+				if (pUnitType->WhatAmI() == AbstractType::AircraftType
+					&& !pUnit->IsInAir()
+					&& abstract_cast<AircraftTypeClass*>(pUnitType)->AirportBound
+					&& pUnit->Ammo < pUnitType->Ammo)
+				{
+					bAircraftsWithoutAmmo = true;
+					pUnit->CurrentTargets.Clear();
+				}
+
+				// The Team Leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
+				int unitLeadershipRating = pUnitType->LeadershipRating;
+				if (unitLeadershipRating > bestUnitLeadershipValue)
+				{
+					pLeaderUnit = pUnit;
+					bestUnitLeadershipValue = unitLeadershipRating;
+				}
+			}
+		}
+	}
+
+	if (!pLeaderUnit || bAircraftsWithoutAmmo)
+	{
+		auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+		if (pTeamData)
+		{
+			pTeamData->IdxSelectedObjectFromAIList = -1;
+
+			if (pTeamData->CloseEnough > 0)
+				pTeamData->CloseEnough = -1;
+		}
+
+		// This action finished
+		pTeam->StepCompleted = true;
+		Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (Reasons: No Leader | Aircrafts without ammo)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+
+		return;
+	}
+
+	pLeaderUnitType = pLeaderUnit->GetTechnoType();
+
+	pFocus = abstract_cast<TechnoClass*>(pTeam->Focus);
+	if (!pFocus && !bAircraftsWithoutAmmo)
+	{
+		int targetMask = scriptArgument;
+
+		selectedTarget = FindBestObject(pLeaderUnit, targetMask, calcThreatMode, pickAllies, attackAITargetType, idxAITargetTypeItem);
+		if (selectedTarget)
+		{
+			pTeam->Focus = selectedTarget;
+
+			auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+			if (pTeamData && pTeamData->WaitNoTargetAttempts != 0)
+				pTeamData->WaitNoTargetAttempts = 0;
+
+			for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+			{
+				if (pUnit->IsAlive && pUnit->Health > 0 && !pUnit->InLimbo)
+				{
+					auto pUnitType = pUnit->GetTechnoType();
+
+					if (pUnit && pUnitType)
+					{
+						pUnit->CurrentTargets.Clear();
+
+						if (pUnitType->Underwater && pUnitType->LandTargeting == 1 && selectedTarget->GetCell()->LandType != LandType::Water) // Land not OK for the Naval unit
+						{
+							// Naval units like Submarines are unable to target ground targets except if they have anti-ground weapons. Ignore the attack
+							pUnit->CurrentTargets.Clear();
+							pUnit->SetTarget(nullptr);
+							pUnit->SetFocus(nullptr);
+							pUnit->SetDestination(nullptr, false);
+							pUnit->QueueMission(Mission::Area_Guard, true);
+
+							continue;
+						}
+
+						pUnit->SetDestination(selectedTarget, false);
+
+						// Aircraft hack. I hate how this game auto-manages the aircraft missions.
+						if (pUnitType->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0 && pUnit->GetHeight() <= 0)
+							pUnit->QueueMission(Mission::Move, false);
+
+						// Aircraft hack. I hate how this game auto-manages the aircraft missions.
+						if (pUnitType->WhatAmI() != AbstractType::AircraftType)
+						{
+							pUnit->QueueMission(Mission::Move, false);
+							pUnit->ClickedAction(Action::Move, selectedTarget, false);
+
+							if (pUnit->GetCurrentMission() != Mission::Move)
+								pUnit->Mission_Move();
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+			if (pTeamData)
+			{
+				if (pTeamData->IdxSelectedObjectFromAIList >= 0)
+					pTeamData->IdxSelectedObjectFromAIList = -1;
+
+				if (pTeamData->WaitNoTargetAttempts != 0)
+				{
+					pTeam->GuardAreaTimer.Start(16);
+					return;
+				}
+
+				if (pTeamData->CloseEnough >= 0)
+					pTeamData->CloseEnough = -1;
+			}
+
+			if (!noWaitLoop)
+				pTeam->GuardAreaTimer.Start(16);
+
+			// This action finished
+			pTeam->StepCompleted = true;
+			Debug::Log("DEBUG: Next script action line for [%s] (%s) will be: %d = %d,%d (Reason: New target NOT FOUND)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
+
+			return;
+		}
+	}
+	else
+	{
+		double closeEnough = RulesClass::Instance->CloseEnough / 256.0;
+
+		auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+		if (pTeamData && pTeamData->CloseEnough > 0)
+			closeEnough = pTeamData->CloseEnough;
+
+		bool bForceNextAction = true;
+
+		// Team already have a focused target
+		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+		{
+			if (pUnit
+				&& pUnit->IsAlive
+				&& !pUnit->InLimbo)
+			{
+				if (!pUnit->Locomotor->Is_Moving_Now())
+					pUnit->SetDestination(pFocus, false);
+
+				if (pUnit->DistanceFrom(pUnit->Destination) / 256.0 > closeEnough)
+				{
+					bForceNextAction = false;
+
+					if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0)
+						pUnit->QueueMission(Mission::Move, false);
+
+					continue;
+				}
+				else
+				{
+					if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
+					{
+						pUnit->QueueMission(Mission::Return, false);
+						pUnit->Mission_Enter();
+
+						continue;
+					}
+				}
+			}
+		}
+
+		if (bForceNextAction)
+		{
+			if (pTeamData)
+			{
+				pTeamData->IdxSelectedObjectFromAIList = -1;
+
+				if (pTeamData->CloseEnough >= 0)
+					pTeamData->CloseEnough = -1;
+			}
+
+			// This action finished
+			pTeam->StepCompleted = true;
+			Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (Reason: Reached destination)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
+
+			return;
+		}
+	}
+}
+
+TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int calcThreatMode = 0, bool pickAllies = false, int attackAITargetType = -1, int idxAITargetTypeItem = -1)
+{
+	TechnoClass *bestObject = nullptr;
+	double bestVal = -1;
+	HouseClass* enemyHouse = nullptr;
+
+	// Favorite Enemy House case. If set, AI will focus against that House
+	if (!pickAllies && pTechno->BelongsToATeam())
+	{
+		auto pFoot = abstract_cast<FootClass*>(pTechno);
+		if (pFoot)
+		{
+			int enemyHouseIndex = pFoot->Team->FirstUnit->Owner->EnemyHouseIndex;
+
+			if (pFoot->Team->Type->OnlyTargetHouseEnemy
+				&& enemyHouseIndex >= 0)
+			{
+				enemyHouse = HouseClass::Array->GetItem(enemyHouseIndex);
+			}
+		}
+	}
+
+	// Generic method for targeting
+	for (int i = 0; i < TechnoClass::Array->Count; i++)
+	{
+		auto object = TechnoClass::Array->GetItem(i);
+		auto objectType = object->GetTechnoType();
+		auto pTechnoType = pTechno->GetTechnoType();
+
+		if (!object || !objectType || !pTechnoType)
+			continue;
+
+		if (enemyHouse && enemyHouse != object->Owner)
+			continue;
+
+		// Don't pick underground units
+		if (object->InWhichLayer() == Layer::Underground)
+			continue;
+
+		// Stealth ground unit check
+		if (object->CloakState == CloakState::Cloaked && !objectType->Naval)
+			continue;
+
+		// Submarines aren't a valid target
+		if (object->CloakState == CloakState::Cloaked
+			&& objectType->Underwater
+			&& (pTechnoType->NavalTargeting == 0
+				|| pTechnoType->NavalTargeting == 6))
+		{
+			continue;
+		}
+
+		// Land not OK for the Naval unit
+		if (objectType->Naval
+			&& pTechnoType->LandTargeting == 1
+			&& object->GetCell()->LandType != LandType::Water)
+		{
+			continue;
+		}
+
+		if (object != pTechno
+			&& object->IsAlive
+			&& !object->InLimbo
+			&& object->IsOnMap
+			&& !object->Absorbed
+			&& ((pickAllies && pTechno->Owner->IsAlliedWith(object))
+				|| (!pickAllies && !pTechno->Owner->IsAlliedWith(object))))
+		{
+			double value = 0;
+
+			if (EvaluateObjectWithMask(object, method, attackAITargetType, idxAITargetTypeItem, pTechno))
+			{
+				CellStruct newCell;
+				newCell.X = (short)object->Location.X;
+				newCell.Y = (short)object->Location.Y;
+
+				bool isGoodTarget = false;
+
+				if (calcThreatMode == 0 || calcThreatMode == 1)
+				{
+					// Threat affected by distance
+					double threatMultiplier = 128.0;
+					double objectThreatValue = objectType->ThreatPosed;
+
+					if (objectType->SpecialThreatValue > 0)
+					{
+						double const& TargetSpecialThreatCoefficientDefault = RulesClass::Instance->TargetSpecialThreatCoefficientDefault;
+						objectThreatValue += objectType->SpecialThreatValue * TargetSpecialThreatCoefficientDefault;
+					}
+
+					// Is Defender house targeting Attacker House? if "yes" then more Threat
+					if (pTechno->Owner == HouseClass::Array->GetItem(object->Owner->EnemyHouseIndex))
+					{
+						double const& EnemyHouseThreatBonus = RulesClass::Instance->EnemyHouseThreatBonus;
+						objectThreatValue += EnemyHouseThreatBonus;
+					}
+
+					// Extra threat based on current health. More damaged == More threat (almost destroyed objects gets more priority)
+					objectThreatValue += object->Health * (1 - object->GetHealthPercentage());
+					value = (objectThreatValue * threatMultiplier) / ((pTechno->DistanceFrom(object) / 256.0) + 1.0);
+
+					if (calcThreatMode == 0)
+					{
+						// Is this object very FAR? then LESS THREAT against pTechno.
+						// More CLOSER? MORE THREAT for pTechno.
+						if (value > bestVal || bestVal < 0)
+							isGoodTarget = true;
+					}
+					else
+					{
+						// Is this object very FAR? then MORE THREAT against pTechno.
+						// More CLOSER? LESS THREAT for pTechno.
+						if (value < bestVal || bestVal < 0)
+							isGoodTarget = true;
+					}
+				}
+				else
+				{
+					// Selection affected by distance
+					if (calcThreatMode == 2)
+					{
+						// Is this object very FAR? then LESS THREAT against pTechno.
+						// More CLOSER? MORE THREAT for pTechno.
+						value = pTechno->DistanceFrom(object); // Note: distance is in leptons (*256)
+
+						if (value < bestVal || bestVal < 0)
+							isGoodTarget = true;
+					}
+					else
+					{
+						if (calcThreatMode == 3)
+						{
+							// Is this object very FAR? then MORE THREAT against pTechno.
+							// More CLOSER? LESS THREAT for pTechno.
+							value = pTechno->DistanceFrom(object); // Note: distance is in leptons (*256)
+
+							if (value > bestVal || bestVal < 0)
+								isGoodTarget = true;
+						}
+					}
+				}
+
+				if (isGoodTarget)
+				{
+					bestObject = object;
+					bestVal = value;
+				}
+			}
+		}
+	}
+
+	return bestObject;
+}
+
+void ScriptExt::UnregisterGreatSuccess(TeamClass* pTeam)
+{
+	pTeam->AchievedGreatSuccess = false;
+	pTeam->StepCompleted = true; // This action finished - FS-21
+}
+
+void ScriptExt::VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg)
+{
+	struct operation_set { int operator()(const int& a, const int& b) { return b; } };
+	struct operation_add { int operator()(const int& a, const int& b) { return a + b; } };
+	struct operation_minus { int operator()(const int& a, const int& b) { return a - b; } };
+	struct operation_multiply { int operator()(const int& a, const int& b) { return a * b; } };
+	struct operation_divide { int operator()(const int& a, const int& b) { return a / b; } };
+	struct operation_mod { int operator()(const int& a, const int& b) { return a % b; } };
+	struct operation_leftshift { int operator()(const int& a, const int& b) { return a << b; } };
+	struct operation_rightshift { int operator()(const int& a, const int& b) { return a >> b; } };
+	struct operation_reverse { int operator()(const int& a, const int& b) { return ~a; } };
+	struct operation_xor { int operator()(const int& a, const int& b) { return a ^ b; } };
+	struct operation_or { int operator()(const int& a, const int& b) { return a | b; } };
+	struct operation_and { int operator()(const int& a, const int& b) { return a & b; } };
+
+	int nLoArg = LOWORD(nArg);
+	int nHiArg = HIWORD(nArg);
+
+	switch (eAction)
+	{
+	case PhobosScripts::LocalVariableSet:
+		VariableOperationHandler<false, operation_set>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableAdd:
+		VariableOperationHandler<false, operation_add>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableMinus:
+		VariableOperationHandler<false, operation_minus>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableMultiply:
+		VariableOperationHandler<false, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableDivide:
+		VariableOperationHandler<false, operation_divide>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableMod:
+		VariableOperationHandler<false, operation_mod>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableLeftShift:
+		VariableOperationHandler<false, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableRightShift:
+		VariableOperationHandler<false, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableReverse:
+		VariableOperationHandler<false, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableXor:
+		VariableOperationHandler<false, operation_xor>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableOr:
+		VariableOperationHandler<false, operation_or>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableAnd:
+		VariableOperationHandler<false, operation_and>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableSet:
+		VariableOperationHandler<true, operation_set>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableAdd:
+		VariableOperationHandler<true, operation_add>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableMinus:
+		VariableOperationHandler<true, operation_minus>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableMultiply:
+		VariableOperationHandler<true, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableDivide:
+		VariableOperationHandler<true, operation_divide>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableMod:
+		VariableOperationHandler<true, operation_mod>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableLeftShift:
+		VariableOperationHandler<true, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableRightShift:
+		VariableOperationHandler<true, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableReverse:
+		VariableOperationHandler<true, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableXor:
+		VariableOperationHandler<true, operation_xor>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableOr:
+		VariableOperationHandler<true, operation_or>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableAnd:
+		VariableOperationHandler<true, operation_and>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableSetByLocal:
+		VariableBinaryOperationHandler<false, false, operation_set>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableAddByLocal:
+		VariableBinaryOperationHandler<false, false, operation_add>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableMinusByLocal:
+		VariableBinaryOperationHandler<false, false, operation_minus>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableMultiplyByLocal:
+		VariableBinaryOperationHandler<false, false, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableDivideByLocal:
+		VariableBinaryOperationHandler<false, false, operation_divide>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableModByLocal:
+		VariableBinaryOperationHandler<false, false, operation_mod>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableLeftShiftByLocal:
+		VariableBinaryOperationHandler<false, false, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableRightShiftByLocal:
+		VariableBinaryOperationHandler<false, false, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableReverseByLocal:
+		VariableBinaryOperationHandler<false, false, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableXorByLocal:
+		VariableBinaryOperationHandler<false, false, operation_xor>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableOrByLocal:
+		VariableBinaryOperationHandler<false, false, operation_or>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableAndByLocal:
+		VariableBinaryOperationHandler<false, false, operation_and>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableSetByLocal:
+		VariableBinaryOperationHandler<false, true, operation_set>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableAddByLocal:
+		VariableBinaryOperationHandler<false, true, operation_add>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableMinusByLocal:
+		VariableBinaryOperationHandler<false, true, operation_minus>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableMultiplyByLocal:
+		VariableBinaryOperationHandler<false, true, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableDivideByLocal:
+		VariableBinaryOperationHandler<false, true, operation_divide>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableModByLocal:
+		VariableBinaryOperationHandler<false, true, operation_mod>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableLeftShiftByLocal:
+		VariableBinaryOperationHandler<false, true, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableRightShiftByLocal:
+		VariableBinaryOperationHandler<false, true, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableReverseByLocal:
+		VariableBinaryOperationHandler<false, true, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableXorByLocal:
+		VariableBinaryOperationHandler<false, true, operation_xor>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableOrByLocal:
+		VariableBinaryOperationHandler<false, true, operation_or>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableAndByLocal:
+		VariableBinaryOperationHandler<false, true, operation_and>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableSetByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_set>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableAddByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_add>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableMinusByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_minus>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableMultiplyByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableDivideByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_divide>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableModByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_mod>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableLeftShiftByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableRightShiftByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableReverseByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableXorByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_xor>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableOrByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_or>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableAndByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_and>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableSetByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_set>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableAddByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_add>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableMinusByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_minus>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableMultiplyByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableDivideByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_divide>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableModByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_mod>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableLeftShiftByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableRightShiftByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableReverseByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableXorByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_xor>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableOrByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_or>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableAndByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_and>(pTeam, nLoArg, nHiArg); break;
+	}
+}
+
+template<bool IsGlobal, class _Pr>
+void ScriptExt::VariableOperationHandler(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[IsGlobal].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[IsGlobal].end())
+	{
+		itr->second.Value = _Pr()(itr->second.Value, Number);
+		if (IsGlobal)
+			TagClass::NotifyGlobalChanged(nVariable);
+		else
+			TagClass::NotifyLocalChanged(nVariable);
+	}
+	pTeam->StepCompleted = true;
+}
+
+template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
+void ScriptExt::VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate)
+{
+	auto itr = ScenarioExt::Global()->Variables[IsSrcGlobal].find(nVarToOperate);
+	if (itr != ScenarioExt::Global()->Variables[IsSrcGlobal].end())
+		VariableOperationHandler<IsGlobal, _Pr>(pTeam, nVariable, itr->second.Value);
+
+	pTeam->StepCompleted = true;
 }

@@ -63,10 +63,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		return;
 
 	const char* sectionAITargetTypes = "AITargetTypes";
+	const char* sectionAIScriptsList = "AIScriptsList";
 
 	INI_EX exINI(pINI);
-
-	const char* sectionAIScriptsList = "AIScriptsList";
 
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
@@ -105,7 +104,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
-			ScriptTypeClass* pNewScript = new ScriptTypeClass(cur);
+			ScriptTypeClass* pNewScript = GameCreate<ScriptTypeClass>(cur);
 			objectsList.AddItem(pNewScript);
 		}
 

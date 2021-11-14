@@ -1,5 +1,10 @@
 #include "Body.h"
 
+#include <SessionClass.h>
+#include <MessageListClass.h>
+#include <HouseClass.h>
+#include <CRT.h>
+
 #include <Utilities/SavegameDef.h>
 
 #include <Ext/Scenario/Body.h>
@@ -33,14 +38,33 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 	TriggerClass* pTrigger, CellStruct const& location, bool& bHandled)
 {
 	bHandled = true;
+
+	// Vanilla
 	switch (pThis->ActionKind)
 	{
 	case TriggerAction::PlaySoundEffectRandom:
 		return TActionExt::PlayAudioAtRandomWP(pThis, pHouse, pObject, pTrigger, location);
 	default:
+		break;
+	};
+
+	// Phobos
+	switch (static_cast<PhobosTriggerAction>(pThis->ActionKind))
+	{
+	case PhobosTriggerAction::SaveGame:
+		return TActionExt::SaveGame(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::EditVariable:
+		return TActionExt::EditVariable(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::GenerateRandomNumber:
+		return TActionExt::GenerateRandomNumber(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::PrintVariableValue:
+		return TActionExt::PrintVariableValue(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::BinaryOperation:
+		return TActionExt::BinaryOperation(pThis, pHouse, pObject, pTrigger, location);
+	default:
 		bHandled = false;
 		return true;
-	};
+	}
 }
 
 bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
@@ -63,6 +87,171 @@ bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, Ob
 		VocClass::PlayIndexAtPos(pThis->Value, coords);
 	}
 
+	return true;
+}
+
+bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (SessionClass::Instance->GameMode == GameMode::Campaign || SessionClass::Instance->GameMode == GameMode::Skirmish)
+	{
+		auto PrintMessage = [](const wchar_t* pMessage)
+		{
+			MessageListClass::Instance->PrintMessage(
+				pMessage,
+				RulesClass::Instance->MessageDelay,
+				HouseClass::Player->ColorSchemeIndex,
+				true
+			);
+		};
+
+		char fName[0x80];
+
+		SYSTEMTIME time;
+		GetLocalTime(&time);
+
+		_snprintf_s(fName, 0x7F, "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
+			time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
+
+		PrintMessage(StringTable::LoadString("TXT_SAVING_GAME"));
+
+		wchar_t fDescription[0x80] = { 0 };
+		wcscpy_s(fDescription, ScenarioClass::Instance->UINameLoaded);
+		wcscat_s(fDescription, L" - ");
+		wcscat_s(fDescription, StringTable::LoadString(pThis->Text));
+
+		if (ScenarioClass::Instance->SaveGame(fName, fDescription))
+			PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
+		else
+			PrintMessage(StringTable::LoadString("TXT_ERROR_SAVING_GAME"));
+	}
+
+	return true;
+}
+
+bool TActionExt::EditVariable(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	// Variable Index
+	// holds by pThis->Value
+
+	// Operations:
+	// 0 : set value - operator=
+	// 1 : add value - operator+
+	// 2 : minus value - operator-
+	// 3 : multiply value - operator*
+	// 4 : divide value - operator/
+	// 5 : mod value - operator%
+	// 6 : <<
+	// 7 : >>
+	// 8 : ~ (no second param being used)
+	// 9 : ^
+	// 10 : |
+	// 11 : &
+	// holds by pThis->Param3
+
+	// Params:
+	// The second value
+	// holds by pThis->Param4
+
+	// Global Variable or Local
+	// 0 for local and 1 for global
+	// holds by pThis->Param5
+
+	// uses !pThis->Param5 to ensure Param5 is 0 or 1
+	auto& variables = ScenarioExt::Global()->Variables[pThis->Param5 != 0];
+	auto itr = variables.find(pThis->Value);
+	if (itr != variables.end())
+	{
+		auto& nCurrentValue = itr->second.Value;
+		// variable being found
+		switch (pThis->Param3)
+		{
+		case 0: { nCurrentValue = pThis->Param4; break; }
+		case 1: { nCurrentValue += pThis->Param4; break; }
+		case 2: { nCurrentValue -= pThis->Param4; break; }
+		case 3: { nCurrentValue *= pThis->Param4; break; }
+		case 4: { nCurrentValue /= pThis->Param4; break; }
+		case 5: { nCurrentValue %= pThis->Param4; break; }
+		case 6: { nCurrentValue <<= pThis->Param4; break; }
+		case 7: { nCurrentValue >>= pThis->Param4; break; }
+		case 8: { nCurrentValue = ~nCurrentValue; break; }
+		case 9: { nCurrentValue ^= pThis->Param4; break; }
+		case 10: { nCurrentValue |= pThis->Param4; break; }
+		case 11: { nCurrentValue &= pThis->Param4; break; }
+		default:
+			return true;
+		}
+
+		if (!pThis->Param5)
+			TagClass::NotifyLocalChanged(pThis->Value);
+		else
+			TagClass::NotifyGlobalChanged(pThis->Value);
+	}
+	return true;
+}
+
+bool TActionExt::GenerateRandomNumber(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	auto& variables = ScenarioExt::Global()->Variables[pThis->Param5 != 0];
+	auto itr = variables.find(pThis->Value);
+	if (itr != variables.end())
+	{
+		itr->second.Value = ScenarioClass::Instance->Random.RandomRanged(pThis->Param3, pThis->Param4);
+		if (!pThis->Param5)
+			TagClass::NotifyLocalChanged(pThis->Value);
+		else
+			TagClass::NotifyGlobalChanged(pThis->Value);
+	}
+
+	return true;
+}
+
+bool TActionExt::PrintVariableValue(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	auto& variables = ScenarioExt::Global()->Variables[pThis->Param3 != 0];
+	auto itr = variables.find(pThis->Value);
+	if (itr != variables.end())
+	{
+		CRT::swprintf(Phobos::wideBuffer, L"%d", itr->second.Value);
+		MessageListClass::Instance->PrintMessage(Phobos::wideBuffer);
+	}
+
+	return true;
+}
+
+bool TActionExt::BinaryOperation(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	auto& variables1 = ScenarioExt::Global()->Variables[pThis->Param5 != 0];
+	auto itr1 = variables1.find(pThis->Value);
+	auto& variables2 = ScenarioExt::Global()->Variables[pThis->Param6 != 0];
+	auto itr2 = variables2.find(pThis->Param4);
+
+	if (itr1 != variables1.end() && itr2 != variables2.end())
+	{
+		auto& nCurrentValue = itr1->second.Value;
+		auto& nOptValue = itr2->second.Value;
+		switch (pThis->Param3)
+		{
+		case 0: { nCurrentValue = nOptValue; break; }
+		case 1: { nCurrentValue += nOptValue; break; }
+		case 2: { nCurrentValue -= nOptValue; break; }
+		case 3: { nCurrentValue *= nOptValue; break; }
+		case 4: { nCurrentValue /= nOptValue; break; }
+		case 5: { nCurrentValue %= nOptValue; break; }
+		case 6: { nCurrentValue <<= nOptValue; break; }
+		case 7: { nCurrentValue >>= nOptValue; break; }
+		case 8: { nCurrentValue = nOptValue; break; }
+		case 9: { nCurrentValue ^= nOptValue; break; }
+		case 10: { nCurrentValue |= nOptValue; break; }
+		case 11: { nCurrentValue &= nOptValue; break; }
+		default:
+			return true;
+		}
+
+		if (!pThis->Param5)
+			TagClass::NotifyLocalChanged(pThis->Value);
+		else
+			TagClass::NotifyGlobalChanged(pThis->Value);
+	}
 	return true;
 }
 
