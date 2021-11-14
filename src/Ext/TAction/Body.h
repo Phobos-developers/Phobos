@@ -15,6 +15,7 @@ enum class PhobosTriggerAction : unsigned int
 	EditVariable,
 	GenerateRandomNumber,
 	PrintVariableValue,
+	BinaryOperation,
 };
 
 class TActionExt
@@ -56,6 +57,9 @@ public:
 			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
 
 	static bool PrintVariableValue(TActionClass* pThis, HouseClass* pHouse,
+			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
+
+	static bool BinaryOperation(TActionClass* pThis, HouseClass* pHouse,
 			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
 
 	class ExtContainer final : public Container<TActionExt>

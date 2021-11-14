@@ -17,10 +17,12 @@
 #include <Utilities/Container.h>
 #include <Phobos.h>
 
-enum class PhobosScripts : int
+enum PhobosScripts
 {
 	// FS-21 please finish your stuff here, thanks
-	LocalVariableAdd = 500,
+	LocalVariableSet = 500,
+	LocalVariableAdd,
+	LocalVariableMinus,
 	LocalVariableMultiply,
 	LocalVariableDivide,
 	LocalVariableMod,
@@ -30,7 +32,9 @@ enum class PhobosScripts : int
 	LocalVariableXor,
 	LocalVariableOr,
 	LocalVariableAnd,
+	GlobalVariableSet,
 	GlobalVariableAdd,
+	GlobalVariableMinus,
 	GlobalVariableMultiply,
 	GlobalVariableDivide,
 	GlobalVariableMod,
@@ -40,7 +44,54 @@ enum class PhobosScripts : int
 	GlobalVariableXor,
 	GlobalVariableOr,
 	GlobalVariableAnd,
-
+	LocalVariableSetByLocal,
+	LocalVariableAddByLocal,
+	LocalVariableMinusByLocal,
+	LocalVariableMultiplyByLocal,
+	LocalVariableDivideByLocal,
+	LocalVariableModByLocal,
+	LocalVariableLeftShiftByLocal,
+	LocalVariableRightShiftByLocal,
+	LocalVariableReverseByLocal,
+	LocalVariableXorByLocal,
+	LocalVariableOrByLocal,
+	LocalVariableAndByLocal,
+	GlobalVariableSetByLocal,
+	GlobalVariableAddByLocal,
+	GlobalVariableMinusByLocal,
+	GlobalVariableMultiplyByLocal,
+	GlobalVariableDivideByLocal,
+	GlobalVariableModByLocal,
+	GlobalVariableLeftShiftByLocal,
+	GlobalVariableRightShiftByLocal,
+	GlobalVariableReverseByLocal,
+	GlobalVariableXorByLocal,
+	GlobalVariableOrByLocal,
+	GlobalVariableAndByLocal,
+	LocalVariableSetByGlobal,
+	LocalVariableAddByGlobal,
+	LocalVariableMinusByGlobal,
+	LocalVariableMultiplyByGlobal,
+	LocalVariableDivideByGlobal,
+	LocalVariableModByGlobal,
+	LocalVariableLeftShiftByGlobal,
+	LocalVariableRightShiftByGlobal,
+	LocalVariableReverseByGlobal,
+	LocalVariableXorByGlobal,
+	LocalVariableOrByGlobal,
+	LocalVariableAndByGlobal,
+	GlobalVariableSetByGlobal,
+	GlobalVariableAddByGlobal,
+	GlobalVariableMinusByGlobal,
+	GlobalVariableMultiplyByGlobal,
+	GlobalVariableDivideByGlobal,
+	GlobalVariableModByGlobal,
+	GlobalVariableLeftShiftByGlobal,
+	GlobalVariableRightShiftByGlobal,
+	GlobalVariableReverseByGlobal,
+	GlobalVariableXorByGlobal,
+	GlobalVariableOrByGlobal,
+	GlobalVariableAndByGlobal,
 };
 
 class ScriptExt
@@ -91,6 +142,12 @@ public:
 	static void UnregisterGreatSuccess(TeamClass * pTeam);
 
 	static void Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
+
+	static void VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg);
+	template<bool IsGlobal, class _Pr>
+	static void VariableOperationHandler(TeamClass* pTeam, int nVariable, int Number);
+	template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
+	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
 
 	static void LocalVariableAdd(TeamClass* pTeam, int nVariable, int Number);
 	static void LocalVariableMultiply(TeamClass* pTeam, int nVariable, int Number);
