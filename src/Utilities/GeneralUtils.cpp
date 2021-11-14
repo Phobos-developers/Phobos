@@ -60,3 +60,24 @@ const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor Ar
 {
 	return double(MapClass::GetTotalDamage(100, pWH, ArmorType, 0)) / 100.0;
 }
+
+// Weighted random element choice (weight) - roll for one.
+// Takes a vector of integer type weights, which are then summed to calculate the chances.
+// Returns chosen index or -1 if nothing is chosen.
+int GeneralUtils::ChooseOneWeighted(const double dice, const std::vector<int>* weights)
+{
+	float sum = 0.0;
+	float sum2 = 0.0;
+
+	for (size_t i = 0; i < weights->size(); i++)
+		sum += (*weights)[i];
+
+	for (size_t i = 0; i < weights->size(); i++)
+	{
+		sum2 += (*weights)[i];
+		if (dice < (sum2 / sum))
+			return i;
+	}
+
+	return -1;
+}
