@@ -39,6 +39,18 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Animations can now be offset on the X axis with `XDrawOffset`.
 
+## Animations
+
+### Ore stage threshold for `HideIfNoOre`
+
+- You can now customize which growth stage should an ore/tiberium cell have to have animation with `HideIfNoOre` displayed. Cells with growth stage less than specified value won't allow the anim to display.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]               ; AnimationType
+HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
+```
+
 ## Technos
 
 ### Customizable Teleport/Chrono Locomotor settings per TechnoType
@@ -149,4 +161,19 @@ IsElectricBolt=true    ; an ElectricBolt Weapon, vanilla tag
 Bolt.Disable1=false    ; boolean
 Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
+```
+
+## Projectiles
+
+### Customizable projectile gravity
+
+-  You can now specify individual projectile gravity.
+    - Set `Gravity=0` with an arcing projectile can create a straight trail.
+        - Set `Gravity.HeightFix=true` allows the projectile to hit target which is not at the same height while `Gravity=0`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]        ; Projectile
+Gravity=6.0             ; double
+Gravity.HeightFix=false ; boolean
 ```

@@ -45,6 +45,12 @@ int HouseExt::TotalHarvesterCount(HouseClass* pThis)
 	return result;
 }
 
+int HouseExt::CountOwnedLimbo(HouseClass* pThis, BuildingTypeClass const* const pItem)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	return pHouseExt->OwnedLimboBuildingTypes.GetItemCount(pItem->ArrayIndex);
+}
+
 // Ares
 HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRandom, HouseClass* const pDefault, HouseClass* const pInvoker, HouseClass* const pVictim)
 {
