@@ -86,9 +86,11 @@ DEFINE_HOOK(0x6E2EA7, TActionClass_Retint_LightSourceFix, 0x3) // Red
 			GameDelete(pBld->LightSource);
 			if (pBld->Type->LightIntensity)
 			{
-				TintStruct color { pBld->Type->LightRedTint,pBld->Type->LightGreenTint,pBld->Type->LightBlueTint };
+				TintStruct color { pBld->Type->LightRedTint, pBld->Type->LightGreenTint, pBld->Type->LightBlueTint };
+
 				pBld->LightSource = GameCreate<LightSourceClass>(pBld->GetCoords(),
 					pBld->Type->LightVisibility, pBld->Type->LightIntensity, color);
+
 				pBld->LightSource->Activate();
 			}
 		}
@@ -106,7 +108,8 @@ DEFINE_HOOK(0x6E2EA7, TActionClass_Retint_LightSourceFix, 0x3) // Red
 			GameDelete(pRadSite->LightSource);
 
 			pRadSite->LightSource = GameCreate<LightSourceClass>(coord,
-					visibility, intensity, color);
+				visibility, intensity, color);
+
 			pRadSite->LightSource->Activate();
 		}
 	}
