@@ -24,6 +24,7 @@ public:
 		Valueable<Mission> CreateUnit_Mission;
 		Valueable<OwnerHouseKind> CreateUnit_Owner;
 		Valueable<int> XDrawOffset;
+		Valueable<int> HideIfNoOre_Threshold;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette(CustomPalette::PaletteMode::Temperate)
@@ -35,6 +36,7 @@ public:
 			, CreateUnit_Mission(Mission::Guard)
 			, CreateUnit_Owner(OwnerHouseKind::Victim)
 			, XDrawOffset(0)
+			, HideIfNoOre_Threshold(0)
 		{ }
 
 		virtual ~ExtData() = default;
