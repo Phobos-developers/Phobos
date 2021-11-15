@@ -82,15 +82,26 @@ DEFINE_HOOK(0x6CC763, SuperClass_Place_ChronoWarp_SkipChildren, 0x6)
 	return pExt->ParentAttachment ? Skip : Continue;
 }
 
+namespace TechnoAttachmentTemp
+{
+	TechnoClass* pParent;
+}
+
+DEFINE_HOOK(0x6FFBE0, TechnoClass_PlayerAssignMission_Context_Set, 0x6)
+{
+	TechnoAttachmentTemp::pParent = R->ECX<TechnoClass*>();
+
+	return 0;
+}
+
 DEFINE_HOOK_AGAIN(0x6FFDEB, TechnoClass_PlayerAssignMission_HandleChildren, 0x5)
 DEFINE_HOOK(0x6FFCAE, TechnoClass_PlayerAssignMission_HandleChildren, 0x5)
 {
-	GET(TechnoClass* const, pThis, ESI);
 	GET_STACK(Mission, mission, STACK_OFFS(0x98, -0x4));
 	GET_STACK(ObjectClass* const, pTarget, STACK_OFFS(0x98, -0x8));
 	GET_STACK(CellClass* const, pTargetCell, STACK_OFFS(0x98, -0xC));
 	GET_STACK(CellClass* const, pCellNearTarget, STACK_OFFS(0x98, -0x10));
-	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const& pExt = TechnoExt::ExtMap.Find(TechnoAttachmentTemp::pParent);
 
 	bool oldFeedback = Unsorted::MoveFeedback;
 	Unsorted::MoveFeedback = false;
