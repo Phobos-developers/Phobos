@@ -1,9 +1,14 @@
+#include <Phobos.h>
+
 #include <Helpers/Macro.h>
+#include <Utilities/Debug.h>
+
 #include <CCINIClass.h>
 #include <RulesClass.h>
 #include <MixFileClass.h>
 #include <InfantryTypeClass.h>
 #include <UnitTypeClass.h>
+
 
 DEFINE_HOOK(0x524734, InfantryTypeClass_ReadINI, 0x6)
 {
@@ -11,6 +16,7 @@ DEFINE_HOOK(0x524734, InfantryTypeClass_ReadINI, 0x6)
 	char tempBuffer[0x19];
 	if (CCINIClass::INI_Art->ReadString(infantryType->ImageFile, "Image", NULL, tempBuffer, 0x19) != 0)
 	{
+		Debug::Log("[Phobos] Replacing image for %s with %s\n", infantryType->ImageFile, tempBuffer);
 		char filename[260];
 		_makepath(filename, 0, 0, tempBuffer, ".SHP");
 		infantryType->Image = (SHPStruct*)MixFileClass::Retrieve(filename, 0);
