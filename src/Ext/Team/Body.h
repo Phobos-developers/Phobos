@@ -21,6 +21,7 @@ public:
 		double CloseEnough;
 		int Countdown_RegroupAtLeader;
 		int MoveMissionEndMode;
+		TechnoClass* SelectedTarget;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject)
 			, WaitNoTargetAttempts(0)
@@ -29,6 +30,7 @@ public:
 			, CloseEnough(-1)
 			, Countdown_RegroupAtLeader(-1)
 			, MoveMissionEndMode(0)
+			, SelectedTarget(nullptr)
 		{ }
 
 		virtual ~ExtData() = default;

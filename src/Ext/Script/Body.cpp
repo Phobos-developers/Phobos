@@ -603,7 +603,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		return;
 	}
 
-	pFocus = abstract_cast<TechnoClass*>(pTeam->Focus);
+	pFocus = pTeamData->SelectedTarget;
 	if (pFocus && pFocus->IsAlive
 		&& !pFocus->InLimbo
 		&& !pFocus->GetTechnoType()->Immune
@@ -612,7 +612,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	{ }
 	else
 	{
-		pTeam->Focus = nullptr;
+		pTeamData->SelectedTarget = nullptr;
 		pFocus = nullptr;
 	}
 
@@ -629,9 +629,9 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 			}
 
 			// Let's clean the Killer mess
-			pTeam->QueuedFocus = nullptr;
-			pTeam->Focus = nullptr;
+			selectedTarget = nullptr;
 			pKillerTechnoData->LastKillWasTeamTarget = false;
+			pTeamData->SelectedTarget = nullptr;
 
 			if (!repeatAction)
 			{
@@ -821,7 +821,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		if (selectedTarget)
 		{
 			Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d): Leader [%s] selected [%s] as target.\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument, pLeaderUnit->GetTechnoType()->get_ID(), selectedTarget->GetTechnoType()->get_ID());
-			pTeam->Focus = selectedTarget;
+			pTeamData->SelectedTarget = selectedTarget;
 			pTeamData->WaitNoTargetAttempts = 0; // Disable Script Waits if there are any because a new target was selected
 
 			for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
@@ -1009,7 +1009,10 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 							if (pUnit->Ammo > 0)
 							{
 								pUnit->QueueMission(Mission::Attack, true);
-								pUnit->ClickedAction(Action::Attack, pFocus, false);
+
+								if (pFocus)
+									pUnit->ClickedAction(Action::Attack, pFocus, false);
+
 								pUnit->Mission_Attack();
 							}
 							else
@@ -1035,8 +1038,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 			}
 			else
 			{
-				pTeam->Focus = nullptr;
-				pTeam->QueuedFocus = nullptr;
+				pTeamData->SelectedTarget = nullptr;
 
 				if (pFocus)
 					pUnit->ClickedAction(Action::Attack, pFocus, false);
@@ -1056,7 +1058,6 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		if (bForceNextAction)
 		{
 			pTeamData->IdxSelectedObjectFromAIList = -1;
-
 			pTeam->StepCompleted = true;
 			Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (Reason: Naval is unable to target ground)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
 
