@@ -45,6 +45,7 @@ const wchar_t* Phobos::UI::HarvesterLabel = L"";
 bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::DevelopmentCommands = true;
+bool Phobos::Config::NoArtImageSwap = true;
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
@@ -187,6 +188,10 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 			pINI->ReadBool(SIDEBAR_SECTION, "ProducingProgress.Show", false);
 	}
 
+	Phobos::CloseConfig(pINI);
+
+	pINI = Phobos::OpenConfig("rulesmd.ini");
+	Phobos::Config::NoArtImageSwap = pINI->ReadBool("General", "NoArtImageSwap", true);
 	Phobos::CloseConfig(pINI);
 
 	return 0;
