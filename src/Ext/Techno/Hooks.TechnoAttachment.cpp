@@ -98,6 +98,16 @@ DEFINE_HOOK_AGAIN(0x6FFDEB, TechnoClass_PlayerAssignMission_HandleChildren, 0x5)
 DEFINE_HOOK(0x6FFCAE, TechnoClass_PlayerAssignMission_HandleChildren, 0x5)
 {
 	GET_STACK(Mission, mission, STACK_OFFS(0x98, -0x4));
+
+	switch (mission)
+	{
+	case Mission::Move:
+	case Mission::AttackMove:
+	case Mission::Enter:
+	case Mission::QMove:
+		return 0;
+	}
+
 	GET_STACK(ObjectClass* const, pTarget, STACK_OFFS(0x98, -0x8));
 	GET_STACK(CellClass* const, pTargetCell, STACK_OFFS(0x98, -0xC));
 	GET_STACK(CellClass* const, pCellNearTarget, STACK_OFFS(0x98, -0x10));
