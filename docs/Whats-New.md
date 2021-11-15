@@ -242,6 +242,7 @@ New:
 - Shield absorption and passthrough customization (by Morton)
 - Limbo Delivery of buildings (by Morton)
 - Ore stage threshold for `HideIfNoOre` (by Otamaa)
+- Image reading in art rules for all TechnoTypes (by Morton)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
