@@ -357,12 +357,12 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -1)
 {
 	FootClass *pLeaderUnit = nullptr;
-	int bestUnitLeadershipValue = -1;
 	int initialCountdown = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
 	bool gatherUnits = false;
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 
 	// This team has no units! END
-	if (!pTeam)
+	if (!pTeam || !pTeamData)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
@@ -370,19 +370,8 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 	}
 
 	// Load countdown
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-	if (pTeamData)
-	{
-		if (pTeamData->Countdown_RegroupAtLeader >= 0)
-			countdown = pTeamData->Countdown_RegroupAtLeader;
-	}
-	else
-	{
-		// Looks like an error...
-		// This action finished
-		pTeam->StepCompleted = true;
-		return;
-	}
+	if (pTeamData->Countdown_RegroupAtLeader >= 0)
+		countdown = pTeamData->Countdown_RegroupAtLeader;
 
 	// Gather permanently until all the team members are near of the Leader
 	if (initialCountdown == 0)
@@ -427,30 +416,9 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 		int nTogether = 0;
 		int nUnits = -1; // Leader counts here
 		double closeEnough;
-
-		// Find the leader
-		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
-		{
-			if (pUnit && pUnit->IsAlive
-				&& pUnit->Health > 0
-				&& !pUnit->InLimbo
-				&& pUnit->IsOnMap
-				&& !pUnit->Absorbed)
-			{
-				auto pUnitType = pUnit->GetTechnoType();
-
-				if (pUnitType)
-				{
-					// The team leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
-					int unitLeadershipRating = pUnitType->LeadershipRating;
-					if (unitLeadershipRating > bestUnitLeadershipValue)
-					{
-						pLeaderUnit = pUnit;
-						bestUnitLeadershipValue = unitLeadershipRating;
-					}
-				}
-			}
-		}
+		
+		// Find the Leader
+		pLeaderUnit = FindTheTeamLeader(pTeam);
 
 		if (!pLeaderUnit)
 		{
@@ -561,7 +529,6 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	bool noWaitLoop = false;
 	FootClass *pLeaderUnit = nullptr;
 	TechnoTypeClass* pLeaderUnitType = nullptr;
-	int bestUnitLeadershipValue = -1;
 	bool bAircraftsWithoutAmmo = false;
 	TechnoClass* pFocus = nullptr;
 	bool agentMode = false;
@@ -708,17 +675,12 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 						agentMode = true;
 					}
 				}
-
-				// The team leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
-				int unitLeadershipRating = pUnitType->LeadershipRating;
-				if (unitLeadershipRating > bestUnitLeadershipValue && (!pacifistUnit || agentMode))
-				{
-					pLeaderUnit = pUnit;
-					bestUnitLeadershipValue = unitLeadershipRating;
-				}
 			}
 		}
 	}
+
+	// Find the Leader
+	pLeaderUnit = FindTheTeamLeader(pTeam);
 
 	if (!pLeaderUnit || bAircraftsWithoutAmmo || (pacifistTeam && !agentMode))
 	{
@@ -2022,7 +1984,6 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 	bool noWaitLoop = false;
 	FootClass *pLeaderUnit = nullptr;
 	TechnoTypeClass* pLeaderUnitType = nullptr;
-	int bestUnitLeadershipValue = -1;
 	bool bAircraftsWithoutAmmo = false;
 	TechnoClass* pFocus = nullptr;
 
@@ -2080,17 +2041,12 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 					bAircraftsWithoutAmmo = true;
 					pUnit->CurrentTargets.Clear();
 				}
-
-				// The Team Leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
-				int unitLeadershipRating = pUnitType->LeadershipRating;
-				if (unitLeadershipRating > bestUnitLeadershipValue)
-				{
-					pLeaderUnit = pUnit;
-					bestUnitLeadershipValue = unitLeadershipRating;
-				}
 			}
 		}
 	}
+
+	// Find the Leader
+	pLeaderUnit = FindTheTeamLeader(pTeam);
 
 	if (!pLeaderUnit || bAircraftsWithoutAmmo)
 	{
@@ -2898,4 +2854,49 @@ void ScriptExt::VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, 
 		VariableOperationHandler<IsGlobal, _Pr>(pTeam, nVariable, itr->second.Value);
 
 	pTeam->StepCompleted = true;
+}
+
+FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
+{
+	FootClass* pLeaderUnit = nullptr;
+	int bestUnitLeadershipValue = -1;
+
+	if (!pTeam)
+	{
+		return pLeaderUnit;
+	}
+
+	// Find the Leader or promote a new one
+	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+	{
+		if (pUnit && pUnit->IsAlive
+			&& !pUnit->InLimbo
+			&& pUnit->IsOnMap
+			&& !pUnit->Absorbed)
+		{
+			if (pUnit->IsTeamLeader)
+			{
+				pLeaderUnit = pUnit;
+				break;
+			}
+
+			auto pUnitType = pUnit->GetTechnoType();
+
+			if (pUnitType)
+			{
+				// The team Leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
+				int unitLeadershipRating = pUnitType->LeadershipRating;
+				if (unitLeadershipRating > bestUnitLeadershipValue)
+				{
+					pLeaderUnit = pUnit;
+					bestUnitLeadershipValue = unitLeadershipRating;
+				}
+			}
+		}
+	}
+
+	if (pLeaderUnit)
+		pLeaderUnit->IsTeamLeader = true;
+
+	return pLeaderUnit;
 }

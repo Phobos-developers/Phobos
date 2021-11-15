@@ -153,6 +153,7 @@ public:
 	static void VariableOperationHandler(TeamClass* pTeam, int nVariable, int Number);
 	template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
+	static FootClass* FindTheTeamLeader(TeamClass* pTeam);
 
 	static void LocalVariableAdd(TeamClass* pTeam, int nVariable, int Number);
 	static void LocalVariableMultiply(TeamClass* pTeam, int nVariable, int Number);
