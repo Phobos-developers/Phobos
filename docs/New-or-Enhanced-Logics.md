@@ -344,6 +344,41 @@ WeaponXFLH.BurstN=             ; int - forward, lateral, height
 EliteWeaponXFLH.BurstN=        ; int - forward, lateral, height
 ```
 
+### Automatically firing weapons
+
+- You can now make TechnoType automatically fire its weapon(s) without having to scan for suitable targets by setting `AutoFire`, on either its base cell (in which case the weapon that is used for force-firing is used) or itself (in which case normal targeting and weapon selection rules and are respected) depending on if `AutoFire.TargetSelf` is set or not.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]            ; TechnoType
+AutoFire=no             ; boolean
+AutoFire.TargetSelf=no  ; boolean
+```
+
+### Disabling fallback to (Elite)Secondary weapon
+
+- It is now possible to disable the fallback to `(Elite)Secondary` weapon from `(Elite)Primary` weapon if it cannot fire at the chosen target by setting `NoSecondaryWeaponFallback` to true (defaults to false). This does not apply to special cases where `(Elite)Secondary` weapon is always chosen, including but not necessarily limited to the following:
+  - `OpenTransportWeapon=1` on an unit firing from inside `OpenTopped=true` transport.
+  - `NoAmmoWeapon=1` on an unit with  `Ammo` value higher than 0 and current ammo count lower or  equal to `NoAmmoAmount`.
+  - Deployed `IsSimpleDeployer=true` units with`DeployFireWeapon=1` set or omitted.
+  - `DrainWeapon=true` weapons against enemy `Drainable=yes` buildings.
+  - Units with `IsLocomotor=true` set on `Warhead` of `(Elite)Primary` weapon against buildings.
+  - Weapons with `ElectricAssault=true` set on `Warhead` against `Overpowerable=true` buildings belonging to owner or allies.
+  - `Overpowerable=true` buildings that are currently overpowered.
+  - Any system using `(Elite)WeaponX`, f.ex `Gunner=true` or `IsGattling=true` is also wholly exempt.
+  
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+NoSecondaryWeaponFallback=false   ; boolean
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+NoSecondaryWeaponFallback=false   ; boolean
+```
+
 ## Weapons
 
 ### Burst.Delays
@@ -389,12 +424,25 @@ Rad.NoOwner=no  ; boolean
 
 ### Weapon targeting filter
 
-- You can now specify which house this weapon can fire at.
+- You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]         ; WeaponType
+CanTarget=all        ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
+### AreaFire target customization
+
+- You can now specify how AreaFire weapon picks its target. By default it targets the base cell the firer is currently on, but this can now be changed to fire on the firer itself or at a random cell within the radius of the weapon's `Range` by setting `AreaFire.Target` to `self` or `random` respectively.
+- `AreaFire.Target=self` respects normal targeting rules (Warhead Verses etc.) against the firer itself.
+- `AreaFire.Target=random` ignores cells that are ineligible or contain ineligible objects based on listed values in weapon's `CanTarget`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]         ; WeaponType
+AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
 ```
 
 ## Warheads
@@ -524,6 +572,87 @@ Interceptor.EliteMinimumGuardRange=0.0  ; double
 Interceptable=no ; boolean
 ```
 
+## Trigger events
+
+### `500-511` Variable comparation
+- Compares the variable's value with given number
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[Param],[EventX]
+...
+```
+
+| *Event ID*  | *Description*                                 | *Global* |
+| :------: | :-------------------------------------------: | :-------: |
+500         | CurrentValue > Number | No |
+501         | CurrentValue < Number | No |
+502         | CurrentValue = Number | No |
+503         | CurrentValue >= Number | No |
+504         | CurrentValue <= Number | No |
+505         | CurrentValue & Number | No |
+506         | CurrentValue > Number | Yes |
+507         | CurrentValue < Number | Yes |
+508         | CurrentValue = Number | Yes |
+509         | CurrentValue >= Number | Yes |
+510         | CurrentValue <= Number | Yes |
+511         | CurrentValue & Number | Yes |
+
+### `512-523` Variable comparation with local variable
+- Compares the variable's value with given local variable value
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[LocalVariableIndex],[EventX]
+...
+```
+
+| *Event ID*  | *Description*                                 | *Global* |
+| :------: | :-------------------------------------------: | :-------: |
+512         | CurrentValue > LocalVariableValue | No |
+513         | CurrentValue < LocalVariableValue | No |
+514         | CurrentValue = LocalVariableValue | No |
+515         | CurrentValue >= LocalVariableValue | No |
+516         | CurrentValue <= LocalVariableValue | No |
+517         | CurrentValue & LocalVariableValue | No |
+518         | CurrentValue > LocalVariableValue | Yes |
+519         | CurrentValue < LocalVariableValue | Yes |
+520         | CurrentValue = LocalVariableValue | Yes |
+521         | CurrentValue >= LocalVariableValue | Yes |
+522         | CurrentValue <= LocalVariableValue | Yes |
+523         | CurrentValue & LocalVariableValue | Yes |
+
+### `524-535` Variable comparation with global variable
+- Compares the variable's value with given global variable value
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX]
+...
+```
+
+| *Event ID*  | *Description*                                 | *Global* |
+| :------: | :-------------------------------------------: | :-------: |
+524         | CurrentValue > GlobalVariableValue | No |
+525         | CurrentValue < GlobalVariableValue | No |
+526         | CurrentValue = GlobalVariableValue | No |
+527         | CurrentValue >= GlobalVariableValue | No |
+528         | CurrentValue <= GlobalVariableValue | No |
+529         | CurrentValue & GlobalVariableValue | No |
+530         | CurrentValue > GlobalVariableValue | Yes |
+531         | CurrentValue < GlobalVariableValue | Yes |
+532         | CurrentValue = GlobalVariableValue | Yes |
+533         | CurrentValue >= GlobalVariableValue | Yes |
+534         | CurrentValue <= GlobalVariableValue | Yes |
+535         | CurrentValue & GlobalVariableValue | Yes |
+
+
 ## Trigger actions
 
 ### `500` Save Game
@@ -539,6 +668,71 @@ In `mycampaign.map`:
 ID=ActionCount,[Action1],500,4,[CSFKey],0,0,0,0,A,[ActionX]
 ...
 ```
+
+### `501` Edit Variable
+- Operate a variable's value
+    - The variable's value type is int32, which means it ranges from -2^31 to 2^31-1.
+        - Any numbers exceeding this limit will lead to unexpected results!
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVariable],0,A,[ActionX]
+...
+```
+
+| *Operation*  | *Description*                                 |
+| :------: | :-------------------------------------------: |
+0         | CurrentValue = Number |
+1         | CurrentValue = CurrentValue + Number |
+2         | CurrentValue = CurrentValue - Number |
+3         | CurrentValue = CurrentValue * Number |
+4         | CurrentValue = CurrentValue / Number |
+5         | CurrentValue = CurrentValue % Number |
+6         | CurrentValue = CurrentValue leftshift Number |
+7         | CurrentValue = CurrentValue rightshift Number |
+8         | CurrentValue = ~CurrentValue |
+9         | CurrentValue = CurrentValue xor Number |
+10         | CurrentValue = CurrentValue or Number |
+11         | CurrentValue = CurrentValue and Number |
+
+### `502` Generate random number
+- Generate a random integer ranged in [Min, Max] and store it in a given variable
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],502,0,[VariableIndex],[Min],[Max],[IsGlobalVariable],0,A,[ActionX]
+...
+```
+
+### `503` Print variable value
+- Print a variable value to the message list
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[ActionX]
+...
+```
+
+### `504` Binary Operation
+- Operate a variable's value with another variable's value
+    - Similar to 501, but the operation number is read from another variable
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperationIndex],[IsGlobalVariable],[IsOperationGlobalVariable],A,[ActionX]
+...
+```
+
+`Operation` can be looked up at action `501`
+
 
 ## Script actions
 
@@ -762,4 +956,74 @@ In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
 x=112,n
+```
+### `500 - 523` Edit Variable
+- Operate a variable's value
+    - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
+        - Any numbers exceeding this limit will lead to unexpected results!
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=i,n             ; where 500 <= i <= 523, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the param value.
+```
+
+### `524 - 547` Edit Variable by Local Variable
+- Operate a variable's value by a local variable's value
+    - Similar to 500-523, but the number to operate the value is being read from a local variable
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=i,n             ; where 524 <= i <= 547, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the local variable index.
+```
+
+### `548 - 571` Edit Variable by Global Variable
+- Operate a variable's value by a global variable's value
+    - Similar to 500-523, but the number to operate the value is being read from a global variable
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=i,n             ; where 548 <= i <= 571, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the global variable index.
+```
+
+## Super Weapons
+
+### LimboDelivery
+
+- Super Weapons can now deliver off-map buildings that act as if they were on the field.
+  - `LimboDelivery.Types` is the list of BuildingTypes that will be created when the Super Weapons fire. Super Weapon Type and coordinates do not matter.
+  - `LimboDelivery.IDs` is the list of numeric IDs that will be assigned to buildings. Necessary for LimboKill to work.
+
+- Created buildings are not affected by any on-map threats. The only way to remove them from the game is by using a Super Weapon with LimboKill set.
+  - `LimboKill.Affects` sets which houses are affected by this feature.
+  - `LimboKill.IDs` lists IDs that will be targeted. Buildings with these IDs will be removed from the game instantly.
+
+- Delivery can be made random with these optional tags. The game will randomly choose only a single building from the list for each roll chance provided.
+  - `LimboDelivery.RollChance` lits chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
+  - `LimboDelivery.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific building. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
+
+Note: This feature might not support every building flag. Flags that are confirmed to work correctly are listed below:
+  - FactoryPlant
+  - OrePurifier
+  - SpySat
+  - KeepAlive (Ares 3.0)
+  - Prerequisite, PrerequisiteOverride, Prerequisite.List# (Ares 0.1), Prerequisite.Negative (Ares 0.1), GenericPrerequisites (Ares 0.1)
+  - SuperWeapon, SuperWeapon2, SuperWeapons (Ares 0.9), SW.AuxBuildings (Ares 0.9), SW.NegBuildings (Ares 0.9)
+
+Note: In order for this feature to work with AITriggerTypes conditions ("Owning house owns ???" and "Enemy house owns ???"), `LegalTarget` must be set to true.
+
+```{warning}
+Remember that Limbo Delivered buildings don't exist physically! This means they should never have enabled machanics that require interaction with the game world (i.e. factories, cloning vats, service depots, helipads). They also **should have either `KeepAlive=yes` set or be killable with LimboKill** - otherwise the game might never end.
+```
+In `rulesmd.ini`:
+```ini
+[SOMESW]                        ; Super Weapon
+LimboDelivery.Types=            ; List of BuildingTypes
+LimboDelivery.IDs=              ; List of numeric IDs. -1 cannot be used.
+LimboDelivery.RollChances=      ; List of percentages.
+LimboDelivery.RandomWeightsN=   ; List of integers.
+LimboKill.Affects=self          ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+LimboKill.IDs=                  ; List of numeric IDs.
 ```

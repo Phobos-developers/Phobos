@@ -2,6 +2,8 @@
 #include "../Techno/Body.h"
 #include "../BuildingType/Body.h"
 
+#include <Ext/Scenario/Body.h>
+
 template<> const DWORD Extension<ScriptClass>::Canary = 0x3B3B3B3B;
 ScriptExt::ExtContainer ScriptExt::ExtMap;
 
@@ -29,8 +31,8 @@ ScriptExt::ExtContainer::~ExtContainer() = default;
 
 void ScriptExt::ProcessAction(TeamClass* pTeam)
 {
-	const int& action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action;
-
+	const int action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action;
+	const int argument = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
 	switch (action)
 	{
 	case 71:
@@ -186,6 +188,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
 		break;
 	}
+
+	if (action >= PhobosScripts::LocalVariableAdd && action <= PhobosScripts::GlobalVariableAndByGlobal)
+		VariablesHandler(pTeam, static_cast<PhobosScripts>(action), argument);
 }
 
 void ScriptExt::ExecuteTimedAreaGuardAction(TeamClass* pTeam)
@@ -2959,5 +2964,194 @@ void ScriptExt::UpdateEnemyHouseIndex(HouseClass* pHouse)
 	pHouse->EnemyHouseIndex = index;
 }
 
+void ScriptExt::VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg)
+{
+	struct operation_set { int operator()(const int& a, const int& b) { return b; } };
+	struct operation_add { int operator()(const int& a, const int& b) { return a + b; } };
+	struct operation_minus { int operator()(const int& a, const int& b) { return a - b; } };
+	struct operation_multiply { int operator()(const int& a, const int& b) { return a * b; } };
+	struct operation_divide { int operator()(const int& a, const int& b) { return a / b; } };
+	struct operation_mod { int operator()(const int& a, const int& b) { return a % b; } };
+	struct operation_leftshift { int operator()(const int& a, const int& b) { return a << b; } };
+	struct operation_rightshift { int operator()(const int& a, const int& b) { return a >> b; } };
+	struct operation_reverse { int operator()(const int& a, const int& b) { return ~a; } };
+	struct operation_xor { int operator()(const int& a, const int& b) { return a ^ b; } };
+	struct operation_or { int operator()(const int& a, const int& b) { return a | b; } };
+	struct operation_and { int operator()(const int& a, const int& b) { return a & b; } };
 
+	int nLoArg = LOWORD(nArg);
+	int nHiArg = HIWORD(nArg);
 
+	switch (eAction)
+	{
+	case PhobosScripts::LocalVariableSet:
+		VariableOperationHandler<false, operation_set>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableAdd:
+		VariableOperationHandler<false, operation_add>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableMinus:
+		VariableOperationHandler<false, operation_minus>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableMultiply:
+		VariableOperationHandler<false, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableDivide:
+		VariableOperationHandler<false, operation_divide>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableMod:
+		VariableOperationHandler<false, operation_mod>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableLeftShift:
+		VariableOperationHandler<false, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableRightShift:
+		VariableOperationHandler<false, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableReverse:
+		VariableOperationHandler<false, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableXor:
+		VariableOperationHandler<false, operation_xor>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableOr:
+		VariableOperationHandler<false, operation_or>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableAnd:
+		VariableOperationHandler<false, operation_and>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableSet:
+		VariableOperationHandler<true, operation_set>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableAdd:
+		VariableOperationHandler<true, operation_add>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableMinus:
+		VariableOperationHandler<true, operation_minus>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableMultiply:
+		VariableOperationHandler<true, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableDivide:
+		VariableOperationHandler<true, operation_divide>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableMod:
+		VariableOperationHandler<true, operation_mod>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableLeftShift:
+		VariableOperationHandler<true, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableRightShift:
+		VariableOperationHandler<true, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableReverse:
+		VariableOperationHandler<true, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableXor:
+		VariableOperationHandler<true, operation_xor>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableOr:
+		VariableOperationHandler<true, operation_or>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableAnd:
+		VariableOperationHandler<true, operation_and>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableSetByLocal:
+		VariableBinaryOperationHandler<false, false, operation_set>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableAddByLocal:
+		VariableBinaryOperationHandler<false, false, operation_add>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableMinusByLocal:
+		VariableBinaryOperationHandler<false, false, operation_minus>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableMultiplyByLocal:
+		VariableBinaryOperationHandler<false, false, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableDivideByLocal:
+		VariableBinaryOperationHandler<false, false, operation_divide>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableModByLocal:
+		VariableBinaryOperationHandler<false, false, operation_mod>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableLeftShiftByLocal:
+		VariableBinaryOperationHandler<false, false, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableRightShiftByLocal:
+		VariableBinaryOperationHandler<false, false, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableReverseByLocal:
+		VariableBinaryOperationHandler<false, false, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableXorByLocal:
+		VariableBinaryOperationHandler<false, false, operation_xor>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableOrByLocal:
+		VariableBinaryOperationHandler<false, false, operation_or>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableAndByLocal:
+		VariableBinaryOperationHandler<false, false, operation_and>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableSetByLocal:
+		VariableBinaryOperationHandler<false, true, operation_set>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableAddByLocal:
+		VariableBinaryOperationHandler<false, true, operation_add>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableMinusByLocal:
+		VariableBinaryOperationHandler<false, true, operation_minus>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableMultiplyByLocal:
+		VariableBinaryOperationHandler<false, true, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableDivideByLocal:
+		VariableBinaryOperationHandler<false, true, operation_divide>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableModByLocal:
+		VariableBinaryOperationHandler<false, true, operation_mod>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableLeftShiftByLocal:
+		VariableBinaryOperationHandler<false, true, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableRightShiftByLocal:
+		VariableBinaryOperationHandler<false, true, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableReverseByLocal:
+		VariableBinaryOperationHandler<false, true, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableXorByLocal:
+		VariableBinaryOperationHandler<false, true, operation_xor>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableOrByLocal:
+		VariableBinaryOperationHandler<false, true, operation_or>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableAndByLocal:
+		VariableBinaryOperationHandler<false, true, operation_and>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableSetByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_set>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableAddByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_add>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableMinusByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_minus>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableMultiplyByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableDivideByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_divide>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableModByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_mod>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableLeftShiftByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableRightShiftByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableReverseByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableXorByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_xor>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableOrByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_or>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::LocalVariableAndByGlobal:
+		VariableBinaryOperationHandler<true, false, operation_and>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableSetByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_set>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableAddByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_add>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableMinusByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_minus>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableMultiplyByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableDivideByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_divide>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableModByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_mod>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableLeftShiftByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableRightShiftByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableReverseByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableXorByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_xor>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableOrByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_or>(pTeam, nLoArg, nHiArg); break;
+	case PhobosScripts::GlobalVariableAndByGlobal:
+		VariableBinaryOperationHandler<true, true, operation_and>(pTeam, nLoArg, nHiArg); break;
+	}
+}
+
+template<bool IsGlobal, class _Pr>
+void ScriptExt::VariableOperationHandler(TeamClass* pTeam, int nVariable, int Number)
+{
+	auto itr = ScenarioExt::Global()->Variables[IsGlobal].find(nVariable);
+	if (itr != ScenarioExt::Global()->Variables[IsGlobal].end())
+	{
+		itr->second.Value = _Pr()(itr->second.Value, Number);
+		if (IsGlobal)
+			TagClass::NotifyGlobalChanged(nVariable);
+		else
+			TagClass::NotifyLocalChanged(nVariable);
+	}
+	pTeam->StepCompleted = true;
+}
+
+template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
+void ScriptExt::VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate)
+{
+	auto itr = ScenarioExt::Global()->Variables[IsSrcGlobal].find(nVarToOperate);
+	if (itr != ScenarioExt::Global()->Variables[IsSrcGlobal].end())
+		VariableOperationHandler<IsGlobal, _Pr>(pTeam, nVariable, itr->second.Value);
+
+	pTeam->StepCompleted = true;
+}

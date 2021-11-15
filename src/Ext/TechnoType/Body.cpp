@@ -129,14 +129,23 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OpenTopped_DamageMultiplier.Read(exINI, pSection, "OpenTopped.DamageMultiplier");
 	this->OpenTopped_WarpDistance.Read(exINI, pSection, "OpenTopped.WarpDistance");
 
-	// Ares 0.A
-	this->GroupAs.Read(pINI, pSection, "GroupAs");
+	this->AutoFire.Read(exINI, pSection, "AutoFire");
+	this->AutoFire_TargetSelf.Read(exINI, pSection, "AutoFire.TargetSelf");
+
+	this->NoSecondaryWeaponFallback.Read(exINI, pSection, "NoSecondaryWeaponFallback");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
 	// Ares 0.9
 	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
+
+	// Ares 0.A
+	this->GroupAs.Read(pINI, pSection, "GroupAs");
+
+	// Ares 0.C
+	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
+	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
 
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
@@ -250,6 +259,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OpenTopped_RangeBonus)
 		.Process(this->OpenTopped_DamageMultiplier)
 		.Process(this->OpenTopped_WarpDistance)
+		.Process(this->AutoFire)
+		.Process(this->AutoFire_TargetSelf)
+		.Process(this->NoSecondaryWeaponFallback)
+		.Process(this->NoAmmoWeapon)
+		.Process(this->NoAmmoAmount)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

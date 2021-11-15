@@ -135,6 +135,13 @@ enum class SuperWeaponFlags : unsigned short {
 
 MAKE_ENUM_FLAGS(SuperWeaponFlags);
 
+enum class AreaFireTarget
+{
+	Base = 0,
+	Self = 1,
+	Random = 2
+};
+
 enum class PhobosAction {
 	None = 0,
 	Hijack = 1,
