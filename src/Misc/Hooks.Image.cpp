@@ -70,11 +70,14 @@ DEFINE_HOOK(0x41CD54, AircraftTypeClass_ReadINI, 0x6)
 		char savedBufffer[0x19];
 		if (CCINIClass::INI_Art->ReadString(aircraftType->ImageFile, "Image", NULL, tempBuffer, 0x19) != 0)
 		{
-			Debug::Log("[Phobos] Replacing image for %s with %s\n", aircraftType->ImageFile, tempBuffer);
-			strcpy(savedBufffer, aircraftType->ImageFile);
-			strcpy(aircraftType->ImageFile, tempBuffer);
-			aircraftType->LoadVoxel();
-			strcpy(aircraftType->ImageFile, savedBufffer);
+			if (aircraftType->Voxel)
+			{
+				Debug::Log("[Phobos] Replacing image for %s with %s\n", aircraftType->ImageFile, tempBuffer);
+				strcpy(savedBufffer, aircraftType->ImageFile);
+				strcpy(aircraftType->ImageFile, tempBuffer);
+				aircraftType->LoadVoxel();
+				strcpy(aircraftType->ImageFile, savedBufffer);
+			}
 		}
 	}
 
