@@ -20,7 +20,7 @@ DEFINE_HOOK(0x524734, InfantryTypeClass_ReadINI, 0x6)
 		char filename[260];
 		_makepath(filename, 0, 0, tempBuffer, ".SHP");
 		infantryType->Image = (SHPStruct*)MixFileClass::Retrieve(filename, 0);
-	}	
+	}
 	
 	return 0;
 }
