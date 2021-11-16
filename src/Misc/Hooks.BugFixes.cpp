@@ -306,7 +306,7 @@ DEFINE_HOOK(0x41EB3F, AITriggerTypeClass_Condition_SupportPowersup, 0x5)		//AITr
 	auto const pType = BuildingTypeClass::Array->Items[idxBld];
 	auto const pPowerup = pType->PowersUpBuilding;
 	int count = 0;
-
+	// TODO: support Phobos extended Building Upgrades logic
 	if (*pPowerup)
 	{
 		auto const pPlugin = BuildingTypeClass::Find(pPowerup);
