@@ -120,7 +120,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
 
-	GiftBoxData::LoadFromINI(this->GboxData, exINI, pSection);
+	this->GiftBoxData.Read(exINI, pSection);
 
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
@@ -223,7 +223,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NotHuman_RandomDeathSequence)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
-		.Process(this->GboxData)
+		.Process(this->GiftBoxData)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

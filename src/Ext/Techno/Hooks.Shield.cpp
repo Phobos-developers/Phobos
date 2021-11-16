@@ -5,6 +5,7 @@
 #include <Utilities/GeneralUtils.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
+#include <New/Entity/GiftBoxClass.h>
 
 // #issue 88 : shield logic
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
@@ -118,6 +119,9 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI_Shield, 0x5)
 	if (const auto pShieldData = pExt->Shield.get())
 		pShieldData->AI();
 
+	if(const auto pAttachedGiftBox = pExt->AttachedGiftBox.get())
+		pAttachedGiftBox->AI();
+
 	return 0;
 }
 
@@ -157,6 +161,8 @@ DEFINE_HOOK(0x739956, DeploysInto_UndeploysInto_SyncShieldStatus, 0x6) //UnitCla
 	GET(TechnoClass*, pTo, EBX);
 
 	ShieldClass::SyncShieldToAnother(pFrom, pTo);
+	GiftBoxClass::SyncToAnotherTechno(pFrom, pTo);
+
 	return 0;
 }
 

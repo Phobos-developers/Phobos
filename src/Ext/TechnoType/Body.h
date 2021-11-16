@@ -77,7 +77,7 @@ public:
 		};
 
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
-		GiftBoxData GboxData;
+		GiftBoxData GiftBoxData;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
 			HealthBar_Hide(false),
@@ -116,7 +116,7 @@ public:
 			LaserTrailData(),
 			DestroyAnim_Random(true),
 			NotHuman_RandomDeathSequence(false),
-			GboxData()
+			GiftBoxData()
 		{ }
 
 		virtual ~ExtData() = default;

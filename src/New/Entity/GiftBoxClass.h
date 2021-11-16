@@ -20,32 +20,26 @@ public:
 	Valueable<bool> Remove;
 	Valueable<bool> Destroy;
 	Valueable<int> Delay;
-
 	Valueable<Point2D> DelayMinMax;
 	Valueable<int> RandomRange;
 	Valueable<bool> EmptyCell;
 	Valueable<bool> RandomType;
 
-	static const void LoadFromINI(GiftBoxData& nGiftboxData, INI_EX& parser, const char* pSection)
+	const void Read(INI_EX& parser, const char* pSection)
 	{
 		if (!pSection)
 			return;
 
-		nGiftboxData.TechnoList.Read(parser, pSection, "GiftBox.Types");
-		nGiftboxData.Count.Read(parser, pSection, "GiftBox.Nums");
-		nGiftboxData.Remove.Read(parser, pSection, "GiftBox.Remove");
-		nGiftboxData.Destroy.Read(parser, pSection, "GiftBox.Destroy");
-		nGiftboxData.Delay.Read(parser, pSection, "GiftBox.Delay");
-		nGiftboxData.DelayMinMax.Read(parser, pSection, "GiftBox.RandomDelay");
-		nGiftboxData.RandomRange.Read(parser, pSection, "GiftBox.CellRandomRange");
-		nGiftboxData.EmptyCell.Read(parser, pSection, "GiftBox.EmptyCell");
-		nGiftboxData.RandomType.Read(parser, pSection, "GiftBox.RandomType");
+		TechnoList.Read(parser, pSection, "GiftBox.Types");
+		Count.Read(parser, pSection, "GiftBox.Nums");
+		Remove.Read(parser, pSection, "GiftBox.Remove");
+		Destroy.Read(parser, pSection, "GiftBox.Destroy");
+		Delay.Read(parser, pSection, "GiftBox.Delay");
+		DelayMinMax.Read(parser, pSection, "GiftBox.RandomDelay");
+		RandomRange.Read(parser, pSection, "GiftBox.CellRandomRange");
+		EmptyCell.Read(parser, pSection, "GiftBox.EmptyCell");
+		RandomType.Read(parser, pSection, "GiftBox.RandomType");
 
-	}
-
-	bool operator==(const GiftBoxData& that) const
-	{
-		return false;
 	}
 
 	operator bool() const
@@ -76,20 +70,24 @@ class GiftBoxClass
 public:
 
 	GiftBoxClass() :
+		Techno{nullptr},
 		IsEnabled{ false },
 		Delay{ 0 }
 	{}
 
-	GiftBoxClass(GiftBoxData& nGData) :
-		IsEnabled{ nGData },
-		Delay{ nGData.DelayMinMax.Get().Y == 0 ? abs(nGData.Delay.Get()) : abs(ScenarioClass::Instance->Random.RandomRanged(nGData.DelayMinMax.Get().X, nGData.DelayMinMax.Get().Y)) }
-	{}
+	GiftBoxClass(TechnoClass* pTechno) :
+		Techno{ pTechno },
+		IsEnabled{ false },
+		Delay{ 0 }
+	{
+		strcpy_s(this->TechnoID, this->Techno->get_ID());
+	}
 
 	~GiftBoxClass() = default;
 
 	bool Open()
 	{
-		return IsEnabled && (IsOpen ? false : CheckDelay());
+		return IsOpen ? false : CheckDelay();
 	}
 
 	bool CheckDelay()
@@ -111,6 +109,7 @@ public:
 	{
 		Delay = delay;
 		IsOpen = false;
+		IsTechnoChange = false;
 	}
 
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -123,23 +122,31 @@ public:
 		return const_cast<GiftBoxClass*>(this)->Serialize(Stm);
 	}
 
-	static const bool CreateType(int nAt, GiftBoxData &nGbox, HouseClass* pOwner, CoordStruct nCoord, CoordStruct nDestCoord);
-	static const void AI(TechnoClass* pTechno);
-	static const void Construct(TechnoClass* pTechno);
-	static const bool AllowDestroy(TechnoClass* pTechno);
+	const void AI();
+	const bool CreateType(int nAt, GiftBoxData &nGbox,CoordStruct nCoord, CoordStruct nDestCoord);
+	const bool OpenDisallowed();
 
+	static CoordStruct GetRandomCoordsNear(GiftBoxData& nGiftBox, CoordStruct nCoord);
+	static void SyncToAnotherTechno(TechnoClass* pFrom, TechnoClass* pTo);
+
+	TechnoClass* Techno{ nullptr };
 	bool IsEnabled{ false };
+	bool IsTechnoChange{ false };
 	bool IsOpen{ false };
 	int Delay{ 0 };
+	char TechnoID[0x18];
 
 private:
 	template <typename T>
 	bool Serialize(T& Stm)
 	{
 		return Stm
-			.Process(this->IsEnabled)
-			.Process(this->IsOpen)
-			.Process(this->Delay)
+			.Process(TechnoID)
+			.Process(IsTechnoChange)
+			.Process(Techno)
+			.Process(IsEnabled)
+			.Process(IsOpen)
+			.Process(Delay)
 			.Success();
 	}
 };
