@@ -122,6 +122,7 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		break;
 	case 94:
 		ScriptExt::PickRandomScript(pTeam, -1);
+		break;
 	case 95:
 		// Move to the closest enemy target
 		ScriptExt::Mission_Move(pTeam, 2, false, -1, -1);
