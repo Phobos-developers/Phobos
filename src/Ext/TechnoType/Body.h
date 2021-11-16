@@ -49,9 +49,9 @@ public:
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
-		Nullable<AnimTypeClass*> WarpOut;
-		Nullable<AnimTypeClass*> WarpIn;
-		Nullable<AnimTypeClass*> WarpAway;
+		ValueableVector<AnimTypeClass*> WarpOut;
+		ValueableVector<AnimTypeClass*> WarpIn;
+		ValueableVector<AnimTypeClass*> WarpAway;
 		Nullable<bool> ChronoTrigger;
 		Nullable<int> ChronoDistanceFactor;
 		Nullable<int> ChronoMinimumDelay;
