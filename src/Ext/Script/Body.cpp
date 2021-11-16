@@ -573,7 +573,6 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	pFocus = pTeamData->SelectedTarget;
 	if (pFocus && pFocus->IsAlive
 		&& !pFocus->InLimbo
-		&& !pFocus->GetTechnoType()->Immune
 		&& pFocus->IsOnMap
 		&& !pFocus->Absorbed)
 	{ }
