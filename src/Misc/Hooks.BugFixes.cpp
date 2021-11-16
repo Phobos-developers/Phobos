@@ -6,6 +6,7 @@
 #include <ScenarioClass.h>
 #include <VoxelAnimClass.h>
 #include <BulletClass.h>
+#include <HouseClass.h>
 #include <Ext/Rules/Body.h>
 
 #include <Utilities/Macro.h>
@@ -293,4 +294,40 @@ DEFINE_HOOK(0x51BB6E, TechnoClass_AI_TemporalTargetingMe_Fix, 0x6) // InfantryCl
 	}
 
 	return R->Origin() + 0xF;
+}
+
+// Fix the issue that AITriggerTypes do not recognize building upgrades
+// Author: Uranusian
+DEFINE_HOOK_AGAIN(0x41EEDF, AITriggerTypeClass_Condition_SupportPowersup, 0x5)	//AITriggerTypeClass_OwnerHouseOwns_SupportPowersup
+DEFINE_HOOK(0x41EB3F, AITriggerTypeClass_Condition_SupportPowersup, 0x5)		//AITriggerTypeClass_EnemyHouseOwns_SupportPowersup
+{
+	GET_STACK(HouseClass*, pHouse, STACK_OFFS(0x14, R->Origin() == 0x41EEDF ? -0x4 : -0x8));
+	GET(int, idxBld, EBP);
+	auto const pType = BuildingTypeClass::Array->Items[idxBld];
+	auto const pPowerup = pType->PowersUpBuilding;
+	int count = 0;
+
+	if (*pPowerup)
+	{
+		auto const pPlugin = BuildingTypeClass::Find(pPowerup);
+		if (pPlugin && pHouse->OwnedBuildingTypes1.GetItemCount(pPlugin->ArrayIndex) > 0)
+		{
+			for (auto const& pBld : pHouse->Buildings)
+			{
+				if (pBld->Type != pPlugin)
+					continue;
+
+				for (const auto& pUpgrade : pBld->Upgrades)
+					if (pUpgrade == pType)
+						count++;
+			}
+		}
+	}
+	else
+	{
+		count = pHouse->OwnedBuildingTypes1.GetItemCount(idxBld);
+	}
+
+	R->EAX(count);
+	return R->Origin() + 0x10;
 }
