@@ -17,6 +17,10 @@ public:
 	int ReceiveDamage(args_ReceiveDamage* args);
 	bool CanBeTargeted(WeaponTypeClass* pWeapon);
 
+	void BreakShield(AnimTypeClass* pBreakAnim = nullptr);
+	void SetRespawn(double amount, int rate);
+	void SetSelfHealing(int duration, double amount, int rate);
+
 	void KillAnim();
 
 	void AI_Temporal();
@@ -26,9 +30,11 @@ public:
 	void InvalidatePointer(void* ptr);
 
 	double GetHealthRatio();
+	void SetHP(int amount);
 	int GetHP();
 	bool IsActive();
 	bool IsAvailable();
+	ShieldTypeClass* GetType();
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
 
@@ -44,7 +50,6 @@ private:
 	void SelfHealing();
 	int GetPercentageAmount(double iStatus);
 
-	void BreakShield();
 	void RespawnShield();
 
 	void CreateAnim();
@@ -72,16 +77,23 @@ private:
 	bool Temporal;
 	bool Available;
 
+	double SelfHealing_External;
+	int SelfHealing_Rate_External;
+	double Respawn_External;
+	int Respawn_Rate_External;
+
 	ShieldTypeClass* Type;
 
 	struct Timers
 	{
 		Timers() :
 			SelfHealing{ },
+			SelfHealing_External { },
 			Respawn{ }
 		{ }
 
 		TimerStruct SelfHealing;
+		TimerStruct SelfHealing_External;
 		TimerStruct Respawn;
 
 	} Timers;

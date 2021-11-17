@@ -16,6 +16,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->Strength.Read(exINI, pSection, "Strength");
+	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
 	this->Armor.Read(exINI, pSection, "Armor");
 	this->Powered.Read(exINI, pSection, "Powered");
 
@@ -52,6 +53,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Strength)
+		.Process(this->InitialStrength)
 		.Process(this->Armor)
 		.Process(this->Powered)
 		.Process(this->Respawn)

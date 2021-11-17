@@ -25,16 +25,23 @@ ShieldClass::ShieldClass(TechnoClass* pTechno) :
 	Cloak { false },
 	Online { true },
 	Temporal { false },
-	Available { true }
+	Available { true },
+	SelfHealing_Rate_External { -1 },
+	Respawn_Rate_External { -1 }
 {
 	this->UpdateType();
-	this->HP = this->Type->Strength;
+	SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
 	strcpy(this->TechnoID, this->Techno->get_ID());
+
+	const auto timer = &this->Timers.SelfHealing;
+
+	if (this->HP < this->Type->Strength && timer->StartTime == -1)
+		timer->Start(this->Type->SelfHealing_Rate);
 }
 
 void ShieldClass::UpdateType()
 {
-	this->Type = TechnoTypeExt::ExtMap.Find(this->Techno->GetTechnoType())->ShieldType;
+	this->Type = TechnoExt::ExtMap.Find(this->Techno)->CurrentShieldType;
 }
 
 template <typename T>
@@ -45,6 +52,7 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->TechnoID)
 		.Process(this->IdleAnim)
 		.Process(this->Timers.SelfHealing)
+		.Process(this->Timers.SelfHealing_External)
 		.Process(this->Timers.Respawn)
 		.Process(this->HP)
 		.Process(this->Cloak)
@@ -52,6 +60,10 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->Temporal)
 		.Process(this->Available)
 		.Process(this->Type)
+		.Process(this->SelfHealing_External)
+		.Process(this->SelfHealing_Rate_External)
+		.Process(this->Respawn_External)
+		.Process(this->Respawn_Rate_External)
 		.Success();
 }
 
@@ -87,7 +99,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 {
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
-	if (!this->HP || *args->Damage == 0 || this->Techno->IsIronCurtained() || pWHExt->PenetratesShield)
+	if (this->Temporal || !this->HP || *args->Damage == 0 || this->Techno->IsIronCurtained() || pWHExt->Shield_Penetrate)
 		return *args->Damage;
 
 	int nDamage = 0;
@@ -101,23 +113,25 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		else
 			nDamage = -MapClass::GetTotalDamage(-*args->Damage, args->WH, this->Type->Armor, args->DistanceToEpicenter);
 
-		shieldDamage = (int)((double)nDamage * pWHExt->AbsorbPercentShield.Get(this->Type->AbsorbPercent));
+		bool affectsShield = pWHExt->Shield_AffectTypes.size() <= 0 || pWHExt->Shield_AffectTypes.Contains(this->Type);
+		double absorbPercent = affectsShield ? pWHExt->Shield_AbsorbPercent.Get(this->Type->AbsorbPercent) : this->Type->AbsorbPercent;
+		double passPercent = affectsShield ? pWHExt->Shield_PassPercent.Get(this->Type->PassPercent) : this->Type->PassPercent;
+
+		shieldDamage = (int)((double)nDamage * absorbPercent);
 		// passthrough damage shouldn't be affected by shield armor
-		healthDamage = (int)((double)*args->Damage * pWHExt->PassPercentShield.Get(this->Type->PassPercent));
+		healthDamage = (int)((double)*args->Damage * passPercent);
 	}
 
 	if (shieldDamage > 0)
 	{
-		this->Timers.SelfHealing.Start(this->Type->SelfHealing_Rate); // when attacked, restart the timer
+		const int rate = this->Timers.SelfHealing_External.InProgress() ? this->SelfHealing_Rate_External : this->Type->SelfHealing_Rate;
+
+		this->Timers.SelfHealing.Start(rate); // when attacked, restart the timer
 		this->ResponseAttack();
 
 		int residueDamage = shieldDamage - this->HP;
-		if (residueDamage >= 0 || pWHExt->BreaksShield)
+		if (residueDamage >= 0)
 		{
-
-			if (pWHExt->BreaksShield && residueDamage < 0)
-				residueDamage = 0;
-
 			residueDamage = int((double)(residueDamage) /
 				GeneralUtils::GetWarheadVersusArmor(args->WH, this->Type->Armor)); //only absord percentage damage
 
@@ -146,6 +160,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		}
 
 		const int nRemainLostHP = nLostHP + shieldDamage;
+
 		if (nRemainLostHP < 0)
 			this->HP = this->Type->Strength;
 		else
@@ -174,7 +189,7 @@ void ShieldClass::ResponseAttack()
 		if (pUnit->Type->Harvester)
 		{
 			const auto pos = pUnit->GetDestination(pUnit);
-			
+
 			if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, CellClass::Coord2Cell(pos)))
 				VoxClass::Play("EVA_OreMinerUnderAttack");
 		}
@@ -191,7 +206,7 @@ bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon)
 {
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
 
-	if ((pWHExt && pWHExt->PenetratesShield.Get()) || !this->HP)
+	if ((pWHExt && pWHExt->Shield_Penetrate.Get()) || !this->HP)
 		return true;
 
 	return GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->Type->Armor) != 0.0;
@@ -398,15 +413,22 @@ void ShieldClass::SelfHealing()
 {
 	const auto pType = this->Type;
 	const auto timer = &this->Timers.SelfHealing;
-	const auto percentageAmount = this->GetPercentageAmount(pType->SelfHealing);
+	const auto timerExt = &this->Timers.SelfHealing_External;
+
+	if (timerExt->Completed() && timer->InProgress())
+	{
+		timer->Start(pType->SelfHealing_Rate);
+		timerExt->Stop();
+	}
+
+	const double amount = timerExt->InProgress() ? this->SelfHealing_External : pType->SelfHealing;
+	const int rate = timerExt->InProgress() ? this->SelfHealing_Rate_External : pType->SelfHealing_Rate;
+	const auto percentageAmount = this->GetPercentageAmount(amount);
 	if (percentageAmount > 0)
 	{
-		if (this->HP < pType->Strength && timer->StartTime == -1)
-			timer->Start(pType->SelfHealing_Rate);
-
 		if (this->HP > 0 && timer->Completed())
 		{
-			timer->Start(pType->SelfHealing_Rate);
+			timer->Start(rate);
 			this->HP += percentageAmount;
 
 			if (this->HP > pType->Strength)
@@ -435,25 +457,25 @@ void ShieldClass::InvalidatePointer(void* ptr)
 		this->KillAnim();
 }
 
-void ShieldClass::BreakShield()
+void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim)
 {
 	this->HP = 0;
 
 	if (this->Type->Respawn)
-		this->Timers.Respawn.Start(this->Type->Respawn_Rate);
+		this->Timers.Respawn.Start(Respawn_Rate_External >= 0 ? Respawn_Rate_External : this->Type->Respawn_Rate);
 
 	this->Timers.SelfHealing.Stop();
 
 	this->KillAnim();
-	if (this->Type->BreakAnim.isset())
+
+	const auto pAnimType = pBreakAnim ? pBreakAnim : this->Type->BreakAnim.isset() ? this->Type->BreakAnim.Get() : nullptr;
+
+	if (pAnimType)
 	{
-		if (const auto pAnimType = this->Type->BreakAnim.Get())
+		if (auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location))
 		{
-			if (auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location))
-			{
-				pAnim->SetOwnerObject(this->Techno);
-				pAnim->Owner = this->Techno->Owner;
-			}
+			pAnim->SetOwnerObject(this->Techno);
+			pAnim->Owner = this->Techno->Owner;
 		}
 	}
 }
@@ -463,8 +485,28 @@ void ShieldClass::RespawnShield()
 	if (this->HP <= 0 && this->Timers.Respawn.Completed())
 	{
 		this->Timers.Respawn.Stop();
-		this->HP = this->GetPercentageAmount(this->Type->Respawn);
+		double amount = Respawn_External > 0.0 ? Respawn_External : this->Type->Respawn;
+		this->HP = this->GetPercentageAmount(amount);
+
+		Respawn_External = 0.0;
+		Respawn_Rate_External = -1;
 	}
+}
+
+void ShieldClass::SetRespawn(double amount, int rate)
+{
+	Respawn_External = amount;
+	Respawn_Rate_External = rate;
+
+	if (this->HP <= 0 && Respawn_Rate_External >= 0)
+		this->Timers.Respawn.Start(Respawn_Rate_External);
+}
+
+void ShieldClass::SetSelfHealing(int duration, double amount, int rate)
+{
+	this->SelfHealing_External = amount > 0 ? amount : Type->SelfHealing;
+	this->SelfHealing_Rate_External = rate >= 0 ? rate : Type->SelfHealing_Rate;
+	this->Timers.SelfHealing_External.Start(duration);
 }
 
 void ShieldClass::CreateAnim()
@@ -629,6 +671,18 @@ double ShieldClass::GetHealthRatio()
 int ShieldClass::GetHP()
 {
 	return this->HP;
+}
+
+void ShieldClass::SetHP(int amount)
+{
+	this->HP = amount;
+	if (this->HP > this->Type->Strength)
+		this->HP = this->Type->Strength;
+}
+
+ShieldTypeClass* ShieldClass::GetType()
+{
+	return this->Type;
 }
 
 bool ShieldClass::IsActive()

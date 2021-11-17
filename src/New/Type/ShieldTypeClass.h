@@ -10,12 +10,14 @@ class ShieldTypeClass final : public Enumerable<ShieldTypeClass>
 {
 public:
 	Valueable<int> Strength;
+	Nullable<int> InitialStrength;
 	ArmorType Armor;
 	Valueable<bool> Powered;
 	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
 	Valueable<double> SelfHealing;
 	Valueable<int> SelfHealing_Rate;
+
 	Valueable<bool> AbsorbOverDamage;
 	Valueable<int> BracketDelta;
 	Valueable<AttachedAnimFlag> IdleAnim_OfflineAction;
@@ -33,6 +35,7 @@ private:
 public:
 	ShieldTypeClass(const char* const pTitle) : Enumerable<ShieldTypeClass>(pTitle),
 		Strength(0),
+		InitialStrength(),
 		Armor(Armor::None),
 		Powered(false),
 		Respawn(0.0),

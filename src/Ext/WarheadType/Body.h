@@ -4,6 +4,7 @@
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
+#include <New/Type/ShieldTypeClass.h>
 
 class WarheadTypeExt
 {
@@ -35,16 +36,34 @@ public:
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
 
-		Valueable<bool> PenetratesShield;
-		Valueable<bool> BreaksShield;
+		Valueable<bool> Shield_Penetrate;
+		Valueable<bool> Shield_Break;
+		Nullable<AnimTypeClass*> Shield_BreakAnim;
 
 		double RandomBuffer;
 		
 		Valueable<int> NotHuman_DeathSequence;
 
-		Nullable<double> AbsorbPercentShield;
-		Nullable<double> PassPercentShield;
+		Nullable<double> Shield_AbsorbPercent;
+		Nullable<double> Shield_PassPercent;
 
+		Valueable<double> Shield_Respawn_Amount;
+		Valueable<int> Shield_Respawn_Rate;
+		Valueable<int> Shield_SelfHealing_Duration;
+		Valueable<double> Shield_SelfHealing_Amount;
+		Valueable<int> Shield_SelfHealing_Rate;
+
+		ValueableVector<ShieldTypeClass*> Shield_AttachTypes;
+		ValueableVector<ShieldTypeClass*> Shield_RemoveTypes;
+		Valueable<bool> Shield_ReplaceOnly;
+		Valueable<bool> Shield_InheritStateOnReplace;
+		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
+
+	private:
+		Valueable<double> Shield_Respawn_Rate_InMinutes;
+		Valueable<double> Shield_SelfHealing_Rate_InMinutes;
+
+	public:
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject)
 			, SpySat(false)
 			, BigGap(false)
@@ -66,10 +85,24 @@ public:
 			, AffectsEnemies(true)
 			, AffectsOwner()
 
-			, PenetratesShield(false)
-			, BreaksShield(false)
-			, AbsorbPercentShield()
-			, PassPercentShield()
+			, Shield_Penetrate(false)
+			, Shield_Break(false)
+			, Shield_BreakAnim()
+			, Shield_AbsorbPercent()
+			, Shield_PassPercent()
+
+			, Shield_Respawn_Amount(0.0)
+			, Shield_Respawn_Rate(-1)
+			, Shield_Respawn_Rate_InMinutes(-1.0)
+			, Shield_SelfHealing_Duration(0)
+		    , Shield_SelfHealing_Amount(0.0)
+		    , Shield_SelfHealing_Rate(-1)
+			, Shield_SelfHealing_Rate_InMinutes(-1.0)
+			, Shield_AttachTypes()
+			, Shield_RemoveTypes()
+			, Shield_ReplaceOnly(false)
+			, Shield_InheritStateOnReplace(false)
+			, Shield_AffectTypes()
 
 			, NotHuman_DeathSequence(-1)
 		{ }
@@ -80,6 +113,7 @@ public:
 		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
+		void ApplyShieldModifiers(TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);

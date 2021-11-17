@@ -24,6 +24,7 @@ public:
 		Valueable<bool> ReceiveDamage;
 		Valueable<bool> LastKillWasTeamTarget;
 		TimerStruct	PassengerDeletionTimer;
+		Valueable<ShieldTypeClass*> CurrentShieldType;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet(nullptr)
@@ -32,6 +33,7 @@ public:
 			, ReceiveDamage(false)
 			, LastKillWasTeamTarget(false)
 			, PassengerDeletionTimer(-1)
+			, CurrentShieldType()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -69,6 +71,7 @@ public:
 	static bool HasAvailableDock(TechnoClass* pThis);
 
 	static void InitializeLaserTrails(TechnoClass* pThis);
+	static void InitializeShield(TechnoClass* pThis);
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
 	
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);

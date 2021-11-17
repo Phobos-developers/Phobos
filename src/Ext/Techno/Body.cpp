@@ -223,6 +223,14 @@ void TechnoExt::InitializeLaserTrails(TechnoClass* pThis)
 	}
 }
 
+void TechnoExt::InitializeShield(TechnoClass* pThis)
+{
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		pExt->CurrentShieldType = pTypeExt->ShieldType;
+}
+
 // reversed from 6F3D60
 CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
 {
@@ -397,6 +405,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)
 		.Process(this->PassengerDeletionTimer)
+		.Process(this->CurrentShieldType)
 		;
 }
 
