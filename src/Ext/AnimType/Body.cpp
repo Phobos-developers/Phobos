@@ -28,6 +28,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->CreateUnit_Mission.Read(exINI, pID, "CreateUnit.Mission");
 	this->CreateUnit_Owner.Read(exINI, pID, "CreateUnit.Owner");
 	this->CreateUnit_RandomFacing.Read(exINI, pID, "CreateUnit.RandomFacing");
+	this->CreateUnit_ConsiderPathfinding.Read(exINI, pID, "CreateUnit.ConsiderPathfinding");
 	this->XDrawOffset.Read(exINI, pID, "XDrawOffset");
 	this->HideIfNoOre_Threshold.Read(exINI, pID, "HideIfNoOre.Threshold");
 }
@@ -102,6 +103,7 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CreateUnit_InheritTurretFacings)
 		.Process(this->CreateUnit_Owner)
 		.Process(this->CreateUnit_RandomFacing)
+		.Process(this->CreateUnit_ConsiderPathfinding)
 		.Process(this->XDrawOffset)
 		.Process(this->HideIfNoOre_Threshold)
 		;

@@ -77,6 +77,23 @@ DEFINE_HOOK(0x424932, AnimClass_Update_CreateUnit_ActualAffects, 0x6)
 
 		pThis->UnmarkAllOccupationBits(location);
 
+		if (pTypeExt->CreateUnit_ConsiderPathfinding)
+		{
+			bool allowBridges = unit->SpeedType != SpeedType::Float;
+
+			auto nCell = MapClass::Instance->Pathfinding_Find(CellClass::Coord2Cell(location),
+				unit->SpeedType, -1, unit->MovementZone, false, 1, 1, true,
+				false, false, allowBridges, CellStruct::Empty, false, false);
+
+			pCell = MapClass::Instance->TryGetCellAt(nCell);
+			location = pThis->GetCoords();
+
+			if (pCell)
+				location = pCell->GetCoordsWithBridge();
+			else
+				location.Z = MapClass::Instance->GetCellFloorHeight(location);
+		}
+
 		if (auto pTechno = static_cast<TechnoClass*>(unit->CreateObject(decidedOwner)))
 		{
 			bool success = false;

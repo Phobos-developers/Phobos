@@ -169,6 +169,7 @@ CreateUnit.InheritTurretFacings=no  ; boolean, inherit facing from destroyed uni
 CreateUnit.RemapAnim=no             ; boolean, whether to remap anim to owner color
 CreateUnit.Mission=Guard            ; MissionType
 CreateUnit.Owner=Victim             ; owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
+CreateUnit.ConsiderPathfinding=no   ; boolean, whether to consider if the created unit can move in the cell and look for eligible cells nearby instead.
 ```
 
 ## Buildings
