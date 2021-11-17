@@ -150,7 +150,7 @@ RadSiteWarhead=RadSite          ; WarheadType
 ![image](_static/images/animToUnit.gif)  
 
 - Animations can now create (or "convert" to) units when they end.
-  - Because anims usually don't have an owner the unit will be created with civilian owner unless you use `DestroyAnim` which was modified to store owner and facing information from the destroyed unit.
+  - Because in most cases animations do not have owner, the unit will be created with civilian owner unless you use `DestroyAnim` which was modified to store owner and facing information from the destroyed unit, or animation from Warhead `AnimList` or one created through map trigger action `41 Play Anim At`.
 
 In `rulesmd.ini`:
 ```ini

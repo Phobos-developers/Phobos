@@ -3,6 +3,7 @@
 
 #include "Body.h"
 
+#include <BulletClass.h>
 #include <HouseClass.h>
 #include <ScenarioClass.h>
 
@@ -143,4 +144,44 @@ DEFINE_HOOK(0x424932, AnimClass_Update_CreateUnit_ActualAffects, 0x6)
 	}
 
 	return (pThis->Type->MakeInfantry != -1) ? 0x42493E : 0x424B31;
+}
+
+DEFINE_HOOK(0x469C98, BulletClass_DetonateAt_DamageAnimSelected, 0x0)
+{
+	GET(BulletClass*, pThis, ESI);
+	GET(AnimClass*, pAnim, EAX);
+
+	if (pAnim)
+	{
+		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
+
+		HouseClass* pInvoker = (pThis->Owner) ? pThis->Owner->Owner : nullptr;
+		HouseClass* pVictim = nullptr;
+
+		if (TechnoClass* Target = generic_cast<TechnoClass*>(pThis->Target))
+			pVictim = Target->Owner;
+
+		if (auto unit = pTypeExt->CreateUnit.Get())
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
+	}
+	else if (pThis->WH == RulesClass::Instance->NukeWarhead)
+		return 0x469CAF;
+
+	return 0x469D06;
+}
+
+DEFINE_HOOK(0x6E2368, ActionClass_PlayAnimAt, 0x7)
+{
+	GET(AnimClass*, pAnim, EAX);
+	GET_STACK(HouseClass*, pHouse, STACK_OFFS(0x18, -0x4));
+
+	if (pAnim)
+	{
+		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
+
+		if (auto unit = pTypeExt->CreateUnit.Get())
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, pHouse, pHouse);
+	}
+
+	return 0;
 }
