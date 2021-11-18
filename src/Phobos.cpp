@@ -145,52 +145,70 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
 
-	CCINIClass* pINI = Phobos::OpenConfig("uimd.ini");
+	//CCINIClass* pINI = Phobos::OpenConfig("uimd.ini");
 
 	// LoadingScreen
 	{
+		//Phobos::UI::DisableEmptySpawnPositions =
+		//	pINI->ReadBool("LoadingScreen", "DisableEmptySpawnPositions", false);
 		Phobos::UI::DisableEmptySpawnPositions =
-			pINI->ReadBool("LoadingScreen", "DisableEmptySpawnPositions", false);
+			CCINIClass::INI_UIMD->ReadBool("LoadingScreen", "DisableEmptySpawnPositions", false);
 	}
 
 	// ToolTips
 	{
+		//Phobos::UI::ExtendedToolTips =
+		//	pINI->ReadBool(TOOLTIPS_SECTION, "ExtendedToolTips", false);
 		Phobos::UI::ExtendedToolTips =
-			pINI->ReadBool(TOOLTIPS_SECTION, "ExtendedToolTips", false);
+			CCINIClass::INI_UIMD->ReadBool(TOOLTIPS_SECTION, "ExtendedToolTips", false);
 
+		//Phobos::UI::MaxToolTipWidth =
+		//	pINI->ReadInteger(TOOLTIPS_SECTION, "MaxWidth", 0);
 		Phobos::UI::MaxToolTipWidth =
-			pINI->ReadInteger(TOOLTIPS_SECTION, "MaxWidth", 0);
+			CCINIClass::INI_UIMD->ReadInteger(TOOLTIPS_SECTION, "MaxWidth", 0);
 
-		pINI->ReadString(TOOLTIPS_SECTION, "CostLabel", NONE_STR, Phobos::readBuffer);
+		//pINI->ReadString(TOOLTIPS_SECTION, "CostLabel", NONE_STR, Phobos::readBuffer);
+		CCINIClass::INI_UIMD->ReadString(TOOLTIPS_SECTION, "CostLabel", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::CostLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"$");
 
-		pINI->ReadString(TOOLTIPS_SECTION, "PowerLabel", NONE_STR, Phobos::readBuffer);
+		//pINI->ReadString(TOOLTIPS_SECTION, "PowerLabel", NONE_STR, Phobos::readBuffer);
+		CCINIClass::INI_UIMD->ReadString(TOOLTIPS_SECTION, "PowerLabel", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::PowerLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26a1"); // ⚡
 
-		pINI->ReadString(TOOLTIPS_SECTION, "TimeLabel", NONE_STR, Phobos::readBuffer);
+		//pINI->ReadString(TOOLTIPS_SECTION, "TimeLabel", NONE_STR, Phobos::readBuffer);
+		CCINIClass::INI_UIMD->ReadString(TOOLTIPS_SECTION, "TimeLabel", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::TimeLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u231a"); // ⌚
 	}
 
 	// Sidebar
 	{
+		//Phobos::UI::ShowHarvesterCounter =
+		//	pINI->ReadBool(SIDEBAR_SECTION, "HarvesterCounter.Show", false);
 		Phobos::UI::ShowHarvesterCounter =
-			pINI->ReadBool(SIDEBAR_SECTION, "HarvesterCounter.Show", false);
+			CCINIClass::INI_UIMD->ReadBool(SIDEBAR_SECTION, "HarvesterCounter.Show", false);
 
-		pINI->ReadString(SIDEBAR_SECTION, "HarvesterCounter.Label", NONE_STR, Phobos::readBuffer);
+		//pINI->ReadString(SIDEBAR_SECTION, "HarvesterCounter.Label", NONE_STR, Phobos::readBuffer);
+		CCINIClass::INI_UIMD->ReadString(SIDEBAR_SECTION, "HarvesterCounter.Label", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::HarvesterLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26cf"); // ⛏
 
-		Phobos::UI::HarvesterCounter_ConditionYellow = 
-			pINI->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionYellow", Phobos::UI::HarvesterCounter_ConditionYellow);
+		//Phobos::UI::HarvesterCounter_ConditionYellow = 
+		//	pINI->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionYellow", Phobos::UI::HarvesterCounter_ConditionYellow);
+		Phobos::UI::HarvesterCounter_ConditionYellow =
+			CCINIClass::INI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionYellow", Phobos::UI::HarvesterCounter_ConditionYellow);
+		//Phobos::UI::HarvesterCounter_ConditionRed =
+		//	pINI->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionRed", Phobos::UI::HarvesterCounter_ConditionRed);
 		Phobos::UI::HarvesterCounter_ConditionRed = 
-			pINI->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionRed", Phobos::UI::HarvesterCounter_ConditionRed);
+			CCINIClass::INI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionRed", Phobos::UI::HarvesterCounter_ConditionRed);
 
+		//Phobos::UI::ShowProducingProgress =
+		//	pINI->ReadBool(SIDEBAR_SECTION, "ProducingProgress.Show", false);
 		Phobos::UI::ShowProducingProgress =
-			pINI->ReadBool(SIDEBAR_SECTION, "ProducingProgress.Show", false);
+			CCINIClass::INI_UIMD->ReadBool(SIDEBAR_SECTION, "ProducingProgress.Show", false);
 	}
 
-	Phobos::CloseConfig(pINI);
+	//Phobos::CloseConfig(pINI);
 
-	pINI = Phobos::OpenConfig("rulesmd.ini");
+	CCINIClass* pINI = Phobos::OpenConfig((const char*)0x826260);
 	Phobos::Config::NoArtImageSwap = pINI->ReadBool("General", "NoArtImageSwap", true);
 	Phobos::CloseConfig(pINI);
 

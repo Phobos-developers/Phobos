@@ -47,14 +47,12 @@ DEFINE_HOOK(0x747B49, VehicleTypeClass_ReadINI, 0x6)
 				unitType->LoadVoxel();
 				strcpy(unitType->ImageFile, savedBufffer);
 			}
-			/*
 			else
 			{
 				char filename[260];
 				_makepath(filename, 0, 0, tempBuffer, ".SHP");
 				unitType->Image = GameCreate<SHPReference>(filename);
 			}
-			*/
 		}
 	}
 
