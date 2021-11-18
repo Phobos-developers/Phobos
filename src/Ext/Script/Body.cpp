@@ -170,17 +170,13 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		ScriptExt::SetTheMostHatedHouse(pTeam, 0, 1, false);
 		break;
 	case 121:
-		// < random
+		// random
 		ScriptExt::SetTheMostHatedHouse(pTeam, 0, 0, true);
 		break;
 	case 122:
-		// > random
-		ScriptExt::SetTheMostHatedHouse(pTeam, 0, 1, true);
-		break;
-	case 123:
 		ScriptExt::ResetAngerAgainstHouses(pTeam);
 		break;
-	case 124:
+	case 123:
 		ScriptExt::AggroHouse(pTeam, -1);
 		break;
 	default:
@@ -2576,14 +2572,20 @@ void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int mode = 
 	// Find the highest House hate value
 	for (auto& angerNode : pTeam->Owner->AngerNodes)
 	{
-		if (angerNode.House->Defeated)
-			continue;
-
-		if (pTeam->Owner != angerNode.House && !pTeam->Owner->IsAlliedWith(angerNode.House) && !angerNode.House->Type->MultiplayPassive)
+		if (pTeam->Owner == angerNode.House
+			|| angerNode.House->Defeated
+			|| pTeam->Owner->IsAlliedWith(angerNode.House)
+			|| angerNode.House->Type->MultiplayPassive)
 		{
-			if (random)
-				objectsList.AddItem(angerNode.House);
+			continue;
+		}
 
+		if (random)
+		{
+			objectsList.AddItem(angerNode.House);
+		}
+		else
+		{
 			if (angerNode.AngerLevel > highestHateLevel)
 				highestHateLevel = angerNode.AngerLevel;
 		}
@@ -3043,6 +3045,15 @@ void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 		if (!angerNode.House->Defeated && !angerNode.House->Type->MultiplayPassive && !angerNode.House->IsObserver())
 		{
 			objectsList.AddItem(angerNode.House);
+		}
+	}
+
+	// Include the own House if we are looking for ANY Human player
+	if (index == -3)
+	{
+		if (!pTeam->Owner->Defeated && !pTeam->Owner->Type->MultiplayPassive && !pTeam->Owner->IsObserver() && !pTeam->Owner->ControlledByHuman())
+		{
+			objectsList.AddItem(pTeam->Owner);
 		}
 	}
 
