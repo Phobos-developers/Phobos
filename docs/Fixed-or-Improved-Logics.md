@@ -141,18 +141,19 @@ SpawnsTiberium.CellsPerAnim=1 ; single int / comma-sep. range
 
 - `Image` tag in art INI is no longer limited to AnimationTypes and BuildingTypes, and can be applied to all TechnoTypes (InfantryTypes, VehicleTypes, AircraftTypes, BuildingTypes).
 - The tag specifies **only** the file name (without extension) of the asset that replaces TechnoType's graphics. If the name in `Image` is also an entry in the art INI, **no tags will be read from it**.
-- **By default this feature is disabled** to remain compatible with YR. To use this feature, enable it in rules with `NoArtImageSwap=false`.
+- **By default this feature is disabled** to remain compatible with YR. To use this feature, enable it in rules with `ArtImageSwap=true`.
+- This feature supports SHP images for InfantryTypes, SHP and VXL images for VehicleTypes and VXL images for AircraftTypes.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-NoArtImageSwap=true
+ArtImageSwap=false  ; disabled by default
 ```
 
 In `artmd.ini`:
 ```ini
 [SOMETECHNO]
-Image=        ; name of the file that will be used as image, without extension
+Image=              ; name of the file that will be used as image, without extension
 ```
 
 ## Weapons
