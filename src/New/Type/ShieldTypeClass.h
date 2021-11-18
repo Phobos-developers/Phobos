@@ -25,6 +25,7 @@ public:
 	Nullable<AnimTypeClass*> IdleAnim;
 	Nullable<AnimTypeClass*> BreakAnim;
 	Nullable<AnimTypeClass*> HitAnim;
+	Nullable<WeaponTypeClass*> BreakWeapon;
 	Valueable<double> AbsorbPercent;
 	Valueable<double> PassPercent;
 
@@ -49,6 +50,7 @@ public:
 		IdleAnim(),
 		BreakAnim(),
 		HitAnim(),
+		BreakWeapon(),
 		AbsorbPercent(1.0),
 		PassPercent(0.0),
 		Respawn_Rate__InMinutes(0.0),

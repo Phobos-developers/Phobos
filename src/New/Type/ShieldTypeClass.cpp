@@ -43,6 +43,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->BreakAnim.Read(exINI, pSection, "BreakAnim");
 	this->HitAnim.Read(exINI, pSection, "HitAnim");
+	this->BreakWeapon.Read(exINI, pSection, "BreakWeapon");
 
 	this->AbsorbPercent.Read(exINI, pSection, "AbsorbPercent");
 	this->PassPercent.Read(exINI, pSection, "PassPercent");
@@ -67,6 +68,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->IdleAnim)
 		.Process(this->BreakAnim)
 		.Process(this->HitAnim)
+		.Process(this->BreakWeapon)
 		.Process(this->AbsorbPercent)
 		.Process(this->PassPercent)
 		;

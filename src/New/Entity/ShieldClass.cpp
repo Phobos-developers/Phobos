@@ -135,13 +135,13 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			residueDamage = int((double)(residueDamage) /
 				GeneralUtils::GetWarheadVersusArmor(args->WH, this->Type->Armor)); //only absord percentage damage
 
-			this->BreakShield();
+			this->BreakShield(pWHExt->Shield_BreakAnim.Get(nullptr), pWHExt->Shield_BreakWeapon.Get(nullptr));
 
 			return this->Type->AbsorbOverDamage ? healthDamage : residueDamage + healthDamage;
 		}
 		else
 		{
-			this->WeaponNullifyAnim();
+			this->WeaponNullifyAnim(pWHExt->Shield_HitAnim.Get(nullptr));
 			this->HP = -residueDamage;
 
 			return healthDamage;
@@ -196,10 +196,12 @@ void ShieldClass::ResponseAttack()
 	}
 }
 
-void ShieldClass::WeaponNullifyAnim()
+void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim)
 {
-	if (this->Type->HitAnim.isset())
-		GameCreate<AnimClass>(this->Type->HitAnim, this->Techno->GetCoords());
+	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim.Get(nullptr);
+
+	if (pAnimType)
+		GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
 }
 
 bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon)
@@ -457,7 +459,7 @@ void ShieldClass::InvalidatePointer(void* ptr)
 		this->KillAnim();
 }
 
-void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim)
+void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreakWeapon)
 {
 	this->HP = 0;
 
@@ -468,7 +470,7 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim)
 
 	this->KillAnim();
 
-	const auto pAnimType = pBreakAnim ? pBreakAnim : this->Type->BreakAnim.isset() ? this->Type->BreakAnim.Get() : nullptr;
+	const auto pAnimType = pBreakAnim ? pBreakAnim : this->Type->BreakAnim.Get(nullptr);
 
 	if (pAnimType)
 	{
@@ -478,6 +480,11 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim)
 			pAnim->Owner = this->Techno->Owner;
 		}
 	}
+
+	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : this->Type->BreakWeapon.Get(nullptr);
+
+	if (pWeaponType)
+		TechnoExt::FireWeaponAtSelf(this->Techno, pWeaponType);
 }
 
 void ShieldClass::RespawnShield()
@@ -493,20 +500,38 @@ void ShieldClass::RespawnShield()
 	}
 }
 
-void ShieldClass::SetRespawn(double amount, int rate)
+void ShieldClass::SetRespawn(double amount, int rate, bool resetTimer)
 {
+	const auto timer = &this->Timers.Respawn;
+
 	Respawn_External = amount;
 	Respawn_Rate_External = rate;
 
-	if (this->HP <= 0 && Respawn_Rate_External >= 0)
-		this->Timers.Respawn.Start(Respawn_Rate_External);
+	if (this->HP <= 0 && Respawn_Rate_External >= 0 && (resetTimer || timer->Expired()))
+		timer->Start(Respawn_Rate_External);
+	else if (this->HP <= 0 && Respawn_Rate_External >= 0 && timer->InProgress())
+	{
+		int passedTime = Unsorted::CurrentFrame - timer->StartTime;
+		int timeLeft = Respawn_Rate_External - passedTime;
+		timer->TimeLeft = timeLeft <= 0 ? 0 : timeLeft;
+	}
 }
 
-void ShieldClass::SetSelfHealing(int duration, double amount, int rate)
+void ShieldClass::SetSelfHealing(int duration, double amount, int rate, bool resetTimer)
 {
+	const auto timer = &this->Timers.SelfHealing;
+	const auto timerExt = &this->Timers.SelfHealing_External;
+
 	this->SelfHealing_External = amount > 0 ? amount : Type->SelfHealing;
 	this->SelfHealing_Rate_External = rate >= 0 ? rate : Type->SelfHealing_Rate;
-	this->Timers.SelfHealing_External.Start(duration);
+
+	if (timerExt->Expired())
+		timerExt->Start(duration);
+	else
+		timerExt->TimeLeft = duration;
+
+	if (this->HP < this->Type->Strength && (resetTimer || timer->Expired()))
+		timer->Start(this->SelfHealing_Rate_External);
 }
 
 void ShieldClass::CreateAnim()

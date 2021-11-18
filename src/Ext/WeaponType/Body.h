@@ -1,4 +1,5 @@
 #pragma once
+#include <BulletClass.h>
 #include <WeaponTypeClass.h>
 
 #include <Helpers/Macro.h>
@@ -75,4 +76,7 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static int nOldCircumference;
+
+	static void DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pSource = nullptr);
+	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pSource = nullptr);
 };

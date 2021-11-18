@@ -17,9 +17,9 @@ public:
 	int ReceiveDamage(args_ReceiveDamage* args);
 	bool CanBeTargeted(WeaponTypeClass* pWeapon);
 
-	void BreakShield(AnimTypeClass* pBreakAnim = nullptr);
-	void SetRespawn(double amount, int rate);
-	void SetSelfHealing(int duration, double amount, int rate);
+	void BreakShield(AnimTypeClass* pBreakAnim = nullptr, WeaponTypeClass* pBreakWeapon = nullptr);
+	void SetRespawn(double amount, int rate, bool resetTimer);
+	void SetSelfHealing(int duration, double amount, int rate, bool resetTimer);
 
 	void KillAnim();
 
@@ -54,7 +54,7 @@ private:
 
 	void CreateAnim();
 
-	void WeaponNullifyAnim();
+	void WeaponNullifyAnim(AnimTypeClass* pHitAnim = nullptr);
 	void ResponseAttack();
 
 	void CloakCheck();

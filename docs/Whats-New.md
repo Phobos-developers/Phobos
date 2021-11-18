@@ -215,6 +215,7 @@ New:
 - LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)
 - Anim-to-Unit logic and ability to randomize DestroyAnim (by Otamaa)
 - Shield modification warheads (by Starkku)
+- Shield BreakWeapon & InitialStrength (by Starkku)
 - Initial Strength for TechnoTypes (by Uranusian)
 - Re-enable obsolete `JumpjetControls` for TechnoTypes' default Jumpjet properties (by Uranusian)
 - Weapon targeting filter (by Uranusian, Starkku)

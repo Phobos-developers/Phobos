@@ -135,7 +135,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 						pExt->Shield->SetHP((int)(shieldType->Strength * ratio));
 						
 						if (pExt->Shield->GetHP() == 0)
-							pExt->Shield->SetRespawn(shieldType->Respawn, shieldType->Respawn_Rate);
+							pExt->Shield->SetRespawn(shieldType->Respawn, shieldType->Respawn_Rate, true);
 					}
 				}
 			}
@@ -148,13 +148,13 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 				return;
 
 			if (this->Shield_Break && pExt->Shield->IsActive())
-				pExt->Shield->BreakShield(this->Shield_BreakAnim.isset() ? this->Shield_BreakAnim.Get() : nullptr);
+				pExt->Shield->BreakShield(this->Shield_BreakAnim.Get(nullptr), this->Shield_BreakWeapon.Get(nullptr));
 
 			if (this->Shield_Respawn_Rate >= 0 || this->Shield_Respawn_Amount > 0.0)
-				pExt->Shield->SetRespawn(this->Shield_Respawn_Amount, this->Shield_Respawn_Rate);
+				pExt->Shield->SetRespawn(this->Shield_Respawn_Amount, this->Shield_Respawn_Rate, this->Shield_Respawn_ResetTimer);
 
 			if (this->Shield_SelfHealing_Duration > 0)
-				pExt->Shield->SetSelfHealing(this->Shield_SelfHealing_Duration, this->Shield_SelfHealing_Amount, this->Shield_SelfHealing_Rate);
+				pExt->Shield->SetSelfHealing(this->Shield_SelfHealing_Duration, this->Shield_SelfHealing_Amount, this->Shield_SelfHealing_Rate, this->Shield_SelfHealing_ResetTimer);
 		}
 	}
 }

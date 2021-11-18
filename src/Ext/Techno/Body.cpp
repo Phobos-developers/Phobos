@@ -10,6 +10,7 @@
 #include <Unsorted.h>
 
 #include <Ext/BulletType/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -229,6 +230,11 @@ void TechnoExt::InitializeShield(TechnoClass* pThis)
 
 	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 		pExt->CurrentShieldType = pTypeExt->ShieldType;
+}
+
+void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType)
+{
+	WeaponTypeExt::DetonateAt(pWeaponType, pThis, pThis);
 }
 
 // reversed from 6F3D60
