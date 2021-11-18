@@ -106,10 +106,10 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 			return;
 	}
 
-	if (EnumFunctions::IsCellEligible(pTarget->GetCell(), this->Crit_Affects))
+	if (!EnumFunctions::IsCellEligible(pTarget->GetCell(), this->Crit_Affects))
 		return;
 
-	if (EnumFunctions::IsTechnoEligible(pTarget, this->Crit_Affects))
+	if (!EnumFunctions::IsTechnoEligible(pTarget, this->Crit_Affects))
 		return;
 
 	auto Damage = this->Crit_ExtraDamage.Get();
