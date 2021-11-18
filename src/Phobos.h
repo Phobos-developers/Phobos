@@ -58,6 +58,6 @@ public:
 		static bool ToolTipDescriptions;
 		static bool PrioritySelectionFiltering;
 		static bool DevelopmentCommands;
-		static bool NoArtImageSwap;
+		static bool ArtImageSwap;
 	};
 };

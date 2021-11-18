@@ -5,23 +5,21 @@
 
 #include <CCINIClass.h>
 #include <RulesClass.h>
-#include <MixFileClass.h>
 #include <InfantryTypeClass.h>
 #include <UnitTypeClass.h>
 #include <AircraftTypeClass.h>
 
-
 DEFINE_HOOK(0x524734, InfantryTypeClass_ReadINI, 0x6)
 {
-	if (!Phobos::Config::NoArtImageSwap)
+	if (Phobos::Config::ArtImageSwap)
 	{
 		GET(InfantryTypeClass*, infantryType, ESI);
-		char tempBuffer[0x19];
-		if (CCINIClass::INI_Art->ReadString(infantryType->ImageFile, "Image", NULL, tempBuffer, 0x19) != 0)
+		char nameBuffer[0x19];
+		if (CCINIClass::INI_Art->ReadString(infantryType->ImageFile, "Image", 0, nameBuffer, 0x19) != 0)
 		{
-			Debug::Log("[Phobos] Replacing image for %s with %s\n", infantryType->ImageFile, tempBuffer);
+			Debug::Log("[Phobos] Replacing image for %s with %s.\n", infantryType->ImageFile, nameBuffer);
 			char filename[260];
-			_makepath(filename, 0, 0, tempBuffer, ".SHP");
+			_makepath(filename, 0, 0, nameBuffer, ".SHP");
 			infantryType->Image = GameCreate<SHPReference>(filename);
 		}
 	}
@@ -29,28 +27,27 @@ DEFINE_HOOK(0x524734, InfantryTypeClass_ReadINI, 0x6)
 	return 0;
 }
 
-
 DEFINE_HOOK(0x747B49, VehicleTypeClass_ReadINI, 0x6)
 {
-	if (!Phobos::Config::NoArtImageSwap)
+	if (Phobos::Config::ArtImageSwap)
 	{
 		GET(UnitTypeClass*, unitType, EDI);
-		char tempBuffer[0x19];
-		char savedBufffer[0x19];
-		if (CCINIClass::INI_Art->ReadString(unitType->ImageFile, "Image", NULL, tempBuffer, 0x19) != 0)
+		char nameBuffer[0x19];
+		if (CCINIClass::INI_Art->ReadString(unitType->ImageFile, "Image", 0, nameBuffer, 0x19) != 0)
 		{
-			Debug::Log("[Phobos] Replacing image for %s with %s\n", unitType->ImageFile, tempBuffer);
+			Debug::Log("[Phobos] Replacing image for %s with %s.\n", unitType->ImageFile, nameBuffer);
 			if (unitType->Voxel)
 			{
-				strcpy(savedBufffer, unitType->ImageFile);
-				strcpy(unitType->ImageFile, tempBuffer);
+				char savedName[0x19];
+				strcpy(savedName, unitType->ImageFile);
+				strcpy(unitType->ImageFile, nameBuffer);
 				unitType->LoadVoxel();
-				strcpy(unitType->ImageFile, savedBufffer);
+				strcpy(unitType->ImageFile, savedName);
 			}
 			else
 			{
 				char filename[260];
-				_makepath(filename, 0, 0, tempBuffer, ".SHP");
+				_makepath(filename, 0, 0, nameBuffer, ".SHP");
 				unitType->Image = GameCreate<SHPReference>(filename);
 			}
 		}
@@ -61,20 +58,20 @@ DEFINE_HOOK(0x747B49, VehicleTypeClass_ReadINI, 0x6)
 
 DEFINE_HOOK(0x41CD54, AircraftTypeClass_ReadINI, 0x6)
 {
-	if (!Phobos::Config::NoArtImageSwap)
+	if (Phobos::Config::ArtImageSwap)
 	{
 		GET(AircraftTypeClass*, aircraftType, ESI);
-		char tempBuffer[0x19];
-		char savedBufffer[0x19];
-		if (CCINIClass::INI_Art->ReadString(aircraftType->ImageFile, "Image", NULL, tempBuffer, 0x19) != 0)
+		char nameBuffer[0x19];
+		if (CCINIClass::INI_Art->ReadString(aircraftType->ImageFile, "Image", 0, nameBuffer, 0x19) != 0)
 		{
 			if (aircraftType->Voxel)
 			{
-				Debug::Log("[Phobos] Replacing image for %s with %s\n", aircraftType->ImageFile, tempBuffer);
-				strcpy(savedBufffer, aircraftType->ImageFile);
-				strcpy(aircraftType->ImageFile, tempBuffer);
+				Debug::Log("[Phobos] Replacing image for %s with %s.\n", aircraftType->ImageFile, nameBuffer);
+				char savedName[0x19];
+				strcpy(savedName, aircraftType->ImageFile);
+				strcpy(aircraftType->ImageFile, nameBuffer);
 				aircraftType->LoadVoxel();
-				strcpy(aircraftType->ImageFile, savedBufffer);
+				strcpy(aircraftType->ImageFile, savedName);
 			}
 		}
 	}
