@@ -329,5 +329,5 @@ DEFINE_HOOK(0x41EB43, AITriggerTypeClass_Condition_SupportPowersup, 0x7)		//AITr
 	}
 
 	R->EAX(count);
-	return R->Origin() + 0x10;
+	return R->Origin() + 0xC;
 }
