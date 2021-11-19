@@ -25,6 +25,7 @@ public:
 		Valueable<OwnerHouseKind> CreateUnit_Owner;
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;
+		Valueable<bool> Layer_UseObjectLayer;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette(CustomPalette::PaletteMode::Temperate)
@@ -37,6 +38,7 @@ public:
 			, CreateUnit_Owner(OwnerHouseKind::Victim)
 			, XDrawOffset(0)
 			, HideIfNoOre_Threshold(0)
+			, Layer_UseObjectLayer(true)
 		{ }
 
 		virtual ~ExtData() = default;

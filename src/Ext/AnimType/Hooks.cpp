@@ -28,3 +28,25 @@ DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
 
 	return 0x423BBF;
 }
+
+DEFINE_HOOK(0x424CB0, AnimClass_In_Which_Layer_AttachedObjectLayer, 0x6)
+{
+	enum { ReturnValue = 0x424CBF, Continue = 0x424CC0 };
+
+	GET(AnimClass*, pThis, ECX);
+
+	auto pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pThis->OwnerObject)
+	{
+		Layer layer = pThis->Type->Layer;
+
+		if (pExt->Layer_UseObjectLayer)
+			layer = pThis->OwnerObject->InWhichLayer();
+
+		R->EAX(layer);
+		return ReturnValue;
+	}
+
+	return Continue;
+}

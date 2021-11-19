@@ -6,6 +6,7 @@ This page lists the history of changes across stable Phobos releases and also al
 
 ### From vanilla
 
+- Animations attached to objects (like parachutes or Ares' AttachEffect) now follow the object's layer instead of being hardcoded to `ground` layer. `Layer.UseObjectLayer` can be set to no to disable this behaviour, in which case it falls back to the animation's own `Layer` setting which defaults to `air` if not specified.
 - SHP debris hardcoded shadows now respect `Shadow=no` tag value, and due to it being the default value they wouldn't have hardcoded shadows anymore by default. Override this by specifying `Shadow=yes` for SHP debris.
 - Radiation now has owner by default, which means that radiation kills will affect score and radiation field will respect `Affects...` entries. You can override that with `rulesmd.ini->[SOMEWEAPONTYPE]->Rad.NoOwner=yes` entry.
 
@@ -242,6 +243,7 @@ New:
 - Shield absorption and passthrough customization (by Morton)
 - Limbo Delivery of buildings (by Morton)
 - Ore stage threshold for `HideIfNoOre` (by Otamaa)
+- Attached animation layer customization (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
