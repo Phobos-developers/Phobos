@@ -49,6 +49,7 @@ public:
 		Nullable<double> Shield_AbsorbPercent;
 		Nullable<double> Shield_PassPercent;
 
+		Valueable<int> Shield_Respawn_Duration;
 		Valueable<double> Shield_Respawn_Amount;
 		Valueable<int> Shield_Respawn_Rate;
 		Valueable<bool> Shield_Respawn_ResetTimer;
@@ -97,6 +98,7 @@ public:
 			, Shield_AbsorbPercent()
 			, Shield_PassPercent()
 
+			, Shield_Respawn_Duration(0)
 			, Shield_Respawn_Amount(0.0)
 			, Shield_Respawn_Rate(-1)
 			, Shield_Respawn_Rate_InMinutes(-1.0)

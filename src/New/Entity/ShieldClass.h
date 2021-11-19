@@ -18,7 +18,7 @@ public:
 	bool CanBeTargeted(WeaponTypeClass* pWeapon);
 
 	void BreakShield(AnimTypeClass* pBreakAnim = nullptr, WeaponTypeClass* pBreakWeapon = nullptr);
-	void SetRespawn(double amount, int rate, bool resetTimer);
+	void SetRespawn(int duration, double amount, int rate, bool resetTimer);
 	void SetSelfHealing(int duration, double amount, int rate, bool resetTimer);
 
 	void KillAnim();
@@ -77,10 +77,10 @@ private:
 	bool Temporal;
 	bool Available;
 
-	double SelfHealing_External;
-	int SelfHealing_Rate_External;
-	double Respawn_External;
-	int Respawn_Rate_External;
+	double SelfHealing_Warhead;
+	int SelfHealing_Rate_Warhead;
+	double Respawn_Warhead;
+	int Respawn_Rate_Warhead;
 
 	ShieldTypeClass* Type;
 
@@ -88,13 +88,15 @@ private:
 	{
 		Timers() :
 			SelfHealing{ },
-			SelfHealing_External { },
-			Respawn{ }
+			SelfHealing_Warhead { },
+			Respawn{ },
+			Respawn_Warhead { }
 		{ }
 
 		TimerStruct SelfHealing;
-		TimerStruct SelfHealing_External;
+		TimerStruct SelfHealing_Warhead;
 		TimerStruct Respawn;
+		TimerStruct Respawn_Warhead;
 
 	} Timers;
 };

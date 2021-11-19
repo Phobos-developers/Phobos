@@ -26,8 +26,8 @@ ShieldClass::ShieldClass(TechnoClass* pTechno) :
 	Online { true },
 	Temporal { false },
 	Available { true },
-	SelfHealing_Rate_External { -1 },
-	Respawn_Rate_External { -1 }
+	SelfHealing_Rate_Warhead { -1 },
+	Respawn_Rate_Warhead { -1 }
 {
 	this->UpdateType();
 	SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
@@ -52,7 +52,7 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->TechnoID)
 		.Process(this->IdleAnim)
 		.Process(this->Timers.SelfHealing)
-		.Process(this->Timers.SelfHealing_External)
+		.Process(this->Timers.SelfHealing_Warhead)
 		.Process(this->Timers.Respawn)
 		.Process(this->HP)
 		.Process(this->Cloak)
@@ -60,10 +60,10 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->Temporal)
 		.Process(this->Available)
 		.Process(this->Type)
-		.Process(this->SelfHealing_External)
-		.Process(this->SelfHealing_Rate_External)
-		.Process(this->Respawn_External)
-		.Process(this->Respawn_Rate_External)
+		.Process(this->SelfHealing_Warhead)
+		.Process(this->SelfHealing_Rate_Warhead)
+		.Process(this->Respawn_Warhead)
+		.Process(this->Respawn_Rate_Warhead)
 		.Success();
 }
 
@@ -124,7 +124,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 	if (shieldDamage > 0)
 	{
-		const int rate = this->Timers.SelfHealing_External.InProgress() ? this->SelfHealing_Rate_External : this->Type->SelfHealing_Rate;
+		const int rate = this->Timers.SelfHealing_Warhead.InProgress() ? this->SelfHealing_Rate_Warhead : this->Type->SelfHealing_Rate;
 
 		this->Timers.SelfHealing.Start(rate); // when attacked, restart the timer
 		this->ResponseAttack();
@@ -415,17 +415,19 @@ void ShieldClass::SelfHealing()
 {
 	const auto pType = this->Type;
 	const auto timer = &this->Timers.SelfHealing;
-	const auto timerExt = &this->Timers.SelfHealing_External;
+	const auto timerWH = &this->Timers.SelfHealing_Warhead;
 
-	if (timerExt->Completed() && timer->InProgress())
+	if (timerWH->Expired() && timer->InProgress())
 	{
-		timer->Start(pType->SelfHealing_Rate);
-		timerExt->Stop();
+		int passedTime = Unsorted::CurrentFrame - timer->StartTime;
+		int timeLeft = pType->SelfHealing_Rate - passedTime;
+		timer->TimeLeft = timeLeft <= 0 ? 0 : timeLeft;
 	}
 
-	const double amount = timerExt->InProgress() ? this->SelfHealing_External : pType->SelfHealing;
-	const int rate = timerExt->InProgress() ? this->SelfHealing_Rate_External : pType->SelfHealing_Rate;
+	const double amount = timerWH->InProgress() ? this->SelfHealing_Warhead : pType->SelfHealing;
+	const int rate = timerWH->InProgress() ? this->SelfHealing_Rate_Warhead : pType->SelfHealing_Rate;
 	const auto percentageAmount = this->GetPercentageAmount(amount);
+
 	if (percentageAmount > 0)
 	{
 		if (this->HP > 0 && timer->Completed())
@@ -464,7 +466,7 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 	this->HP = 0;
 
 	if (this->Type->Respawn)
-		this->Timers.Respawn.Start(Respawn_Rate_External >= 0 ? Respawn_Rate_External : this->Type->Respawn_Rate);
+		this->Timers.Respawn.Start(Timers.Respawn_Warhead.InProgress() ? Respawn_Rate_Warhead : this->Type->Respawn_Rate);
 
 	this->Timers.SelfHealing.Stop();
 
@@ -489,49 +491,61 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 
 void ShieldClass::RespawnShield()
 {
-	if (this->HP <= 0 && this->Timers.Respawn.Completed())
-	{
-		this->Timers.Respawn.Stop();
-		double amount = Respawn_External > 0.0 ? Respawn_External : this->Type->Respawn;
-		this->HP = this->GetPercentageAmount(amount);
+	const auto timer = &this->Timers.Respawn;
+	const auto timerWH = &this->Timers.Respawn_Warhead;
 
-		Respawn_External = 0.0;
-		Respawn_Rate_External = -1;
+	if (this->HP <= 0 && timer->Completed())
+	{
+		timer->Stop();
+		double amount = timerWH->InProgress() ? Respawn_Warhead : this->Type->Respawn;
+		this->HP = this->GetPercentageAmount(amount);
+	}
+	else if (timerWH->Expired() && timer->InProgress())
+	{
+		int passedTime = Unsorted::CurrentFrame - timer->StartTime;
+		int timeLeft = Type->Respawn_Rate - passedTime;
+		timer->TimeLeft = timeLeft <= 0 ? 0 : timeLeft;
 	}
 }
 
-void ShieldClass::SetRespawn(double amount, int rate, bool resetTimer)
+void ShieldClass::SetRespawn(int duration, double amount, int rate, bool resetTimer)
 {
 	const auto timer = &this->Timers.Respawn;
+	const auto timerWH = &this->Timers.Respawn_Warhead;
 
-	Respawn_External = amount;
-	Respawn_Rate_External = rate;
+	this->Respawn_Warhead = amount > 0 ? amount : Type->Respawn;
+	this->Respawn_Rate_Warhead = rate >= 0 ? rate : Type->Respawn_Rate;
+	
+	timerWH->Start(duration);
 
-	if (this->HP <= 0 && Respawn_Rate_External >= 0 && (resetTimer || timer->Expired()))
-		timer->Start(Respawn_Rate_External);
-	else if (this->HP <= 0 && Respawn_Rate_External >= 0 && timer->InProgress())
+	if (this->HP <= 0 && Respawn_Rate_Warhead >= 0 && (resetTimer || timer->Expired()))
+		timer->Start(Respawn_Rate_Warhead);
+	else if (timer->InProgress())
 	{
 		int passedTime = Unsorted::CurrentFrame - timer->StartTime;
-		int timeLeft = Respawn_Rate_External - passedTime;
+		int timeLeft = Respawn_Rate_Warhead - passedTime;
 		timer->TimeLeft = timeLeft <= 0 ? 0 : timeLeft;
 	}
 }
 
 void ShieldClass::SetSelfHealing(int duration, double amount, int rate, bool resetTimer)
 {
-	const auto timer = &this->Timers.SelfHealing;
-	const auto timerExt = &this->Timers.SelfHealing_External;
+	auto timer = &this->Timers.SelfHealing;
+	auto timerWH = &this->Timers.SelfHealing_Warhead;
 
-	this->SelfHealing_External = amount > 0 ? amount : Type->SelfHealing;
-	this->SelfHealing_Rate_External = rate >= 0 ? rate : Type->SelfHealing_Rate;
+	this->SelfHealing_Warhead = amount > 0 ? amount : Type->SelfHealing;
+	this->SelfHealing_Rate_Warhead = rate >= 0 ? rate : Type->SelfHealing_Rate;
 
-	if (timerExt->Expired())
-		timerExt->Start(duration);
-	else
-		timerExt->TimeLeft = duration;
+	timerWH->Start(duration);
 
 	if (this->HP < this->Type->Strength && (resetTimer || timer->Expired()))
-		timer->Start(this->SelfHealing_Rate_External);
+		timer->Start(this->SelfHealing_Rate_Warhead);
+	else if (timer->InProgress())
+	{
+		int passedTime = Unsorted::CurrentFrame - timer->StartTime;
+		int timeLeft = SelfHealing_Rate_Warhead - passedTime;
+		timer->TimeLeft = timeLeft <= 0 ? 0 : timeLeft;
+	}
 }
 
 void ShieldClass::CreateAnim()
