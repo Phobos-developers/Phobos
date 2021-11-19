@@ -298,10 +298,10 @@ DEFINE_HOOK(0x51BB6E, TechnoClass_AI_TemporalTargetingMe_Fix, 0x6) // InfantryCl
 
 // Fix the issue that AITriggerTypes do not recognize building upgrades
 // Author: Uranusian
-DEFINE_HOOK_AGAIN(0x41EEDF, AITriggerTypeClass_Condition_SupportPowersup, 0x5)	//AITriggerTypeClass_OwnerHouseOwns_SupportPowersup
-DEFINE_HOOK(0x41EB3F, AITriggerTypeClass_Condition_SupportPowersup, 0x5)		//AITriggerTypeClass_EnemyHouseOwns_SupportPowersup
+DEFINE_HOOK_AGAIN(0x41EEE3, AITriggerTypeClass_Condition_SupportPowersup, 0x7)	//AITriggerTypeClass_OwnerHouseOwns_SupportPowersup
+DEFINE_HOOK(0x41EB43, AITriggerTypeClass_Condition_SupportPowersup, 0x7)		//AITriggerTypeClass_EnemyHouseOwns_SupportPowersup
 {
-	GET_STACK(HouseClass*, pHouse, STACK_OFFS(0x14, R->Origin() == 0x41EEDF ? -0x4 : -0x8));
+	GET(HouseClass*, pHouse, EDX);
 	GET(int, idxBld, EBP);
 	auto const pType = BuildingTypeClass::Array->Items[idxBld];
 	auto const pPowerup = pType->PowersUpBuilding;
