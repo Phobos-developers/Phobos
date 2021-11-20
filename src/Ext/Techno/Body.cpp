@@ -79,8 +79,12 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 
 	if (pData && pTypeData && interceptor)
 	{
+		bool interceptor_Rookie = pTypeData->Interceptor_Rookie.Get(true);
 		bool interceptor_Veteran = pTypeData->Interceptor_Veteran.Get(true);
 		bool interceptor_Elite = pTypeData->Interceptor_Elite.Get(true);
+
+		if (pThis->Veterancy.IsRookie() && !interceptor_Rookie)
+			interceptor = false;
 
 		if (pThis->Veterancy.IsVeteran() && !interceptor_Veteran)
 			interceptor = false;

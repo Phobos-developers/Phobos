@@ -26,6 +26,7 @@ public:
 		Valueable<int> InhibitorRange;
 		Valueable<Leptons> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
+		Nullable<bool> Interceptor_Rookie;
 		Nullable<bool> Interceptor_Veteran;
 		Nullable<bool> Interceptor_Elite;
 		Valueable<Leptons> Interceptor_GuardRange;
@@ -33,6 +34,7 @@ public:
 		Valueable<Leptons> Interceptor_EliteGuardRange;
 		Valueable<Leptons> Interceptor_EliteMinimumGuardRange;
 		Valueable<int> Interceptor_Success;
+		Valueable<int> Interceptor_RookieSuccess;
 		Valueable<int> Interceptor_VeteranSuccess;
 		Valueable<int> Interceptor_EliteSuccess;
 		Valueable<CoordStruct> TurretOffset;
@@ -112,6 +114,7 @@ public:
 			InhibitorRange(0),
 			MindControlRangeLimit(),
 			Interceptor(false),
+			Interceptor_Rookie(),
 			Interceptor_Veteran(),
 			Interceptor_Elite(),
 			Interceptor_GuardRange(),
@@ -119,6 +122,7 @@ public:
 			Interceptor_EliteGuardRange(),
 			Interceptor_EliteMinimumGuardRange(),
 			Interceptor_Success(100),
+			Interceptor_RookieSuccess(-1),
 			Interceptor_VeteranSuccess(-1),
 			Interceptor_EliteSuccess(-1),
 			TurretOffset({0, 0, 0}),

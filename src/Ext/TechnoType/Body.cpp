@@ -85,6 +85,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
 	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
 	this->Interceptor.Read(exINI, pSection, "Interceptor");
+	this->Interceptor_Rookie.Read(exINI, pSection, "Interceptor.Rookie");
 	this->Interceptor_Veteran.Read(exINI, pSection, "Interceptor.Veteran");
 	this->Interceptor_Elite.Read(exINI, pSection, "Interceptor.Elite");
 	this->Interceptor_GuardRange.Read(exINI, pSection, "Interceptor.GuardRange");
@@ -92,6 +93,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Interceptor_EliteGuardRange.Read(exINI, pSection, "Interceptor.EliteGuardRange");
 	this->Interceptor_EliteMinimumGuardRange.Read(exINI, pSection, "Interceptor.EliteMinimumGuardRange");
 	this->Interceptor_Success.Read(exINI, pSection, "Interceptor.Success");
+	this->Interceptor_RookieSuccess.Read(exINI, pSection, "Interceptor.RookieSuccess");
 	this->Interceptor_VeteranSuccess.Read(exINI, pSection, "Interceptor.VeteranSuccess");
 	this->Interceptor_EliteSuccess.Read(exINI, pSection, "Interceptor.EliteSuccess");
 	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
@@ -220,6 +222,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LowSelectionPriority)
 		.Process(this->MindControlRangeLimit)
 		.Process(this->Interceptor)
+		.Process(this->Interceptor_Rookie)
 		.Process(this->Interceptor_Veteran)
 		.Process(this->Interceptor_Elite)
 		.Process(this->Interceptor_GuardRange)
@@ -227,6 +230,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Interceptor_EliteGuardRange)
 		.Process(this->Interceptor_EliteMinimumGuardRange)
 		.Process(this->Interceptor_Success)
+		.Process(this->Interceptor_RookieSuccess)
 		.Process(this->Interceptor_VeteranSuccess)
 		.Process(this->Interceptor_EliteSuccess)
 		.Process(this->GroupAs)

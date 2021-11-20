@@ -17,8 +17,12 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireBullet, 0x6)
 
 	if (pSourceTypeExt && interceptor)
 	{
+		bool interceptor_Rookie = pSourceTypeExt->Interceptor_Rookie.Get(true);
 		bool interceptor_Veteran = pSourceTypeExt->Interceptor_Veteran.Get(true);
 		bool interceptor_Elite = pSourceTypeExt->Interceptor_Elite.Get(true);
+
+		if (pSource->Veterancy.IsRookie() && !interceptor_Rookie)
+			interceptor = false;
 
 		if (pSource->Veterancy.IsVeteran() && !interceptor_Veteran)
 			interceptor = false;
@@ -65,6 +69,13 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireBullet, 0x6)
 										}
 									}
 								}
+							}
+						}
+						else
+						{
+							if (pSourceTypeExt->Interceptor_RookieSuccess >= 0)
+							{
+								successProbability = pSourceTypeExt->Interceptor_RookieSuccess;
 							}
 						}
 							
