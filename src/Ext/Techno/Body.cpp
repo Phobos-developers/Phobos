@@ -75,42 +75,55 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 {
 	auto pData = TechnoExt::ExtMap.Find(pThis);
 	auto const pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	bool interceptor = pTypeData->Interceptor;
 
-	if (pData && pTypeData && pTypeData->Interceptor && !pThis->Target &&
-		!(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
+	if (pData && pTypeData && interceptor)
 	{
-		for (auto const& pBullet : *BulletClass::Array)
+		bool interceptor_Veteran = pTypeData->Interceptor_Veteran.Get(true);
+		bool interceptor_Elite = pTypeData->Interceptor_Elite.Get(true);
+
+		if (pThis->Veterancy.IsVeteran() && !interceptor_Veteran)
+			interceptor = false;
+
+		if (pThis->Veterancy.IsElite() && !interceptor_Elite)
+			interceptor = false;
+
+		if (interceptor && !pThis->Target &&
+			!(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
 		{
-			if (auto pBulletTypeData = BulletTypeExt::ExtMap.Find(pBullet->Type))
+			for (auto const& pBullet : *BulletClass::Array)
 			{
-				if (!pBulletTypeData->Interceptable)
+				if (auto pBulletTypeData = BulletTypeExt::ExtMap.Find(pBullet->Type))
+				{
+					if (!pBulletTypeData->Interceptable)
+						continue;
+				}
+
+				const auto guardRange = pThis->Veterancy.IsElite() ?
+					pTypeData->Interceptor_EliteGuardRange :
+					pTypeData->Interceptor_GuardRange;
+				const auto minguardRange = pThis->Veterancy.IsElite() ?
+					pTypeData->Interceptor_EliteMinimumGuardRange :
+					pTypeData->Interceptor_MinimumGuardRange;
+
+				auto distance = pBullet->Location.DistanceFrom(pThis->Location);
+				if (distance > guardRange.Get() || distance < minguardRange.Get())
 					continue;
-			}
 
-			const auto guardRange = pThis->Veterancy.IsElite() ?
-				pTypeData->Interceptor_EliteGuardRange :
-				pTypeData->Interceptor_GuardRange;
-			const auto minguardRange = pThis->Veterancy.IsElite() ?
-				pTypeData->Interceptor_EliteMinimumGuardRange :
-				pTypeData->Interceptor_MinimumGuardRange;
+				/*
+				if (pBullet->Location.DistanceFrom(pBullet->TargetCoords) >
+					double(ScenarioClass::Instance->Random.RandomRanged(128, (int)guardRange / 10)) * 10)
+				{
+					continue;
+				}
+				*/
 
-			auto distance = pBullet->Location.DistanceFrom(pThis->Location);
-			if (distance > guardRange.Get() || distance < minguardRange.Get())
-				continue;
-
-			/*
-			if (pBullet->Location.DistanceFrom(pBullet->TargetCoords) >
-				double(ScenarioClass::Instance->Random.RandomRanged(128, (int)guardRange / 10)) * 10)
-			{
-				continue;
-			}
-			*/
-
-			if (!pThis->Owner->IsAlliedWith(pBullet->Owner))
-			{
-				pThis->SetTarget(pBullet);
-				pData->InterceptedBullet = pBullet;
-				break;
+				if (!pThis->Owner->IsAlliedWith(pBullet->Owner))
+				{
+					pThis->SetTarget(pBullet);
+					pData->InterceptedBullet = pBullet;
+					break;
+				}
 			}
 		}
 	}

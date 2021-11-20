@@ -26,10 +26,15 @@ public:
 		Valueable<int> InhibitorRange;
 		Valueable<Leptons> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
+		Nullable<bool> Interceptor_Veteran;
+		Nullable<bool> Interceptor_Elite;
 		Valueable<Leptons> Interceptor_GuardRange;
 		Valueable<Leptons> Interceptor_MinimumGuardRange;
 		Valueable<Leptons> Interceptor_EliteGuardRange;
 		Valueable<Leptons> Interceptor_EliteMinimumGuardRange;
+		Valueable<int> Interceptor_Success;
+		Valueable<int> Interceptor_VeteranSuccess;
+		Valueable<int> Interceptor_EliteSuccess;
 		Valueable<CoordStruct> TurretOffset;
 		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Spawn_LimitedRange;
@@ -107,10 +112,15 @@ public:
 			InhibitorRange(0),
 			MindControlRangeLimit(),
 			Interceptor(false),
+			Interceptor_Veteran(),
+			Interceptor_Elite(),
 			Interceptor_GuardRange(),
 			Interceptor_MinimumGuardRange(),
 			Interceptor_EliteGuardRange(),
 			Interceptor_EliteMinimumGuardRange(),
+			Interceptor_Success(100),
+			Interceptor_VeteranSuccess(-1),
+			Interceptor_EliteSuccess(-1),
 			TurretOffset({0, 0, 0}),
 			Powered_KillSpawns(false),
 			Spawn_LimitedRange(false),
