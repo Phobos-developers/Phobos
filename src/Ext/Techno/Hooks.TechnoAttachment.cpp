@@ -82,6 +82,84 @@ DEFINE_HOOK(0x6CC763, SuperClass_Place_ChronoWarp_SkipChildren, 0x6)
 	return pExt->ParentAttachment ? Skip : Continue;
 }
 
+void ParentClickedWaypoint(TechnoClass* pThis, int idxPath, signed char idxWP)
+{
+	// Rewrite of the original code
+	pThis->AssignPlanningPath(idxPath, idxWP);
+
+	if ((pThis->AbstractFlags & AbstractFlags::Foot) == AbstractFlags::Foot)
+		pThis->unknown_bool_430 = false;
+
+	// Children handling
+	if (auto const& pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		for (auto const& pAttachment : pExt->ChildAttachments)
+		{
+			if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
+				ParentClickedWaypoint(pAttachment->Child, idxPath, idxWP);
+		}
+	}
+}
+
+void ParentClickedAction(TechnoClass* pThis, ObjectClass* pTarget, CellStruct* pCell, CellStruct* pSecondCell)
+{
+	// Rewrite of the original code
+	if (pTarget)
+	{
+		Action whatAction = pThis->MouseOverObject(pTarget, false);
+		pThis->ObjectClickedAction(whatAction, pTarget, false);
+	}
+	else
+	{
+		Action whatAction = pThis->MouseOverCell(pCell, false, false);
+		pThis->CellClickedAction(whatAction, pCell, pSecondCell, false);
+	}
+
+	Unsorted::MoveFeedback = false;
+
+	// Children handling
+	if (auto const& pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		for (auto const& pAttachment : pExt->ChildAttachments)
+		{
+			if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
+				ParentClickedAction(pAttachment->Child, pTarget, pCell, pSecondCell);
+		}
+	}
+}
+
+DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
+{
+	GET_STACK(int, idxPath, STACK_OFFS(0x18, +0x8));
+	GET_STACK(unsigned char, idxWP, STACK_OFFS(0x18, +0xC));
+
+	for (auto const& pObject : ObjectClass::CurrentObjects.get())
+	{
+		if (auto pTechno = abstract_cast<TechnoClass*>(pObject))
+			ParentClickedWaypoint(pTechno, idxPath, idxWP);
+	}
+
+	GET_STACK(ObjectClass* const, pTarget, STACK_OFFS(0x18, -0x4));
+	LEA_STACK(CellStruct* const, pCell, STACK_OFFS(0x18, -0x8));
+	GET_STACK(Action const, action, STACK_OFFS(0x18, -0xC));
+
+	CellStruct invalidCell { -1, -1 };
+	CellStruct* pSecondCell = &invalidCell;
+
+	if (action == Action::Move || action == Action::PatrolWaypoint || action == Action::NoMove)
+		pSecondCell = pCell;
+
+	for (auto const& pObject : ObjectClass::CurrentObjects.get())
+	{
+		if (auto pTechno = abstract_cast<TechnoClass*>(pObject))
+			ParentClickedAction(pTechno, pTarget, pCell, pSecondCell);
+	}
+
+	Unsorted::MoveFeedback = true;
+
+	return 0x4AE99B;
+}
+/*
 namespace TechnoAttachmentTemp
 {
 	TechnoClass* pParent;
@@ -116,11 +194,11 @@ DEFINE_HOOK(0x6FFCAE, TechnoClass_PlayerAssignMission_HandleChildren, 0x5)
 	bool oldFeedback = Unsorted::MoveFeedback;
 	Unsorted::MoveFeedback = false;
 
-	for (auto const& attachment : pExt->ChildAttachments)
+	for (auto const& pAttachment : pExt->ChildAttachments)
 	{
 		// Recursive call, PlayerAssignMission == ClickedMission
-		if (attachment->Child && attachment->GetType()->InheritCommands)
-			attachment->Child->ClickedMission(mission, pTarget, pTargetCell, pCellNearTarget);
+		if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
+			pAttachment->Child->ClickedMission(mission, pTarget, pTargetCell, pCellNearTarget);
 	}
 
 	Unsorted::MoveFeedback = oldFeedback;
@@ -129,7 +207,7 @@ DEFINE_HOOK(0x6FFCAE, TechnoClass_PlayerAssignMission_HandleChildren, 0x5)
 	// This can't change when we handle children so we don't adjust the return value - Kerbiter
 	return 0;
 }
-
+*/
 
 // DEFINE_HOOK(0x6CCCCA, SuperClass_Place_ChronoWarp_HandleAttachment, 0x0)
 // {
