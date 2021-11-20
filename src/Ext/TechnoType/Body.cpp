@@ -134,6 +134,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->NoSecondaryWeaponFallback.Read(exINI, pSection, "NoSecondaryWeaponFallback");
 
+	this->JumpjetAllowLayerDeviation.Read(exINI, pSection, "JumpjetAllowLayerDeviation");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -264,6 +266,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoSecondaryWeaponFallback)
 		.Process(this->NoAmmoWeapon)
 		.Process(this->NoAmmoAmount)
+		.Process(this->JumpjetAllowLayerDeviation)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

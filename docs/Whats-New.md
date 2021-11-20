@@ -244,6 +244,7 @@ New:
 - Limbo Delivery of buildings (by Morton)
 - Ore stage threshold for `HideIfNoOre` (by Otamaa)
 - Attached animation layer customization (by Starkku)
+- Jumpjet unit layer deviation customization (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
