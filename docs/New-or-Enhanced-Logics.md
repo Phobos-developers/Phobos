@@ -558,15 +558,26 @@ NotHuman.DeathSequence=  ; integer (1 to 5)
   - `Interceptor.EliteGuardRange` value is used if the unit veterancy is Elite.
   - `Interceptor.MinimumGuardRange` is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
   - `Interceptor.EliteMinimumGuardRange` value is used if the unit veterancy is Elite.
+  - `Interceptor.Veteran` enable or disable the Interceptor logic when the unit promotes to veteran. Needs `Interceptor=yes` to work and fallback to `Interceptor` tag.
+  - `Interceptor.Elite` enable or disable the Interceptor logic when the unit promotes to elite. Needs `Interceptor=yes` to work and fallback to `Interceptor` tag.
+  - `Interceptor.Success` is a value between 0 and 100. Is the chance for intercepting a projectile.
+  - `Interceptor.VeteranSuccess` is a value between 0 and 100. Is the chance for intercepting a projectile when the unit promotes to veteran. Fallback to `Interceptor.Success`.
+  - `Interceptor.EliteSuccess` is a value between 0 and 100. Is the chance for intercepting a projectile when the unit promotes to elite. Fallback to `Interceptor.Success`.
+
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                            ; TechnoType
 Interceptor=no                          ; boolean
+Interceptor.Veteran=yes                 ; boolean
+Interceptor.Elite=yes                   ; boolean
 Interceptor.GuardRange=0.0              ; double
 Interceptor.EliteGuardRange=0.0         ; double
 Interceptor.MinimumGuardRange=0.0       ; double
 Interceptor.EliteMinimumGuardRange=0.0  ; double
+Interceptor.Success=100                 ; integer
+Interceptor.VeteranSuccess=-1           ; integer
+Interceptor.EliteSuccess=-1             ; integer
 
 [SOMEPROJECTILE] ; Projectile
 Interceptable=no ; boolean

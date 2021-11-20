@@ -242,6 +242,7 @@ New:
 - Shield absorption and passthrough customization (by Morton)
 - Limbo Delivery of buildings (by Morton)
 - Ore stage threshold for `HideIfNoOre` (by Otamaa)
+- New Interception logic tags for controlling the interception success (by FS-21)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
