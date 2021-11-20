@@ -227,21 +227,6 @@ In `rulesmd.ini`:
 DefaultDisguise=E2  ; InfantryType              
 ```
 
-## Vehicles
-
-### Stationary vehicles
-
-- Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
-
-### No Manual Move
-
-- You can now specify whether a TechnoType is unable to receive move command.
-
-```ini
-[SOMETECHNO]           ; TechnoType
-NoManualMove=no        ; boolean
-```
-
 ### Automatic Passenger Deletion
 
 - Transports with these tags will erase the passengers overtime. Bigger units takes more time. Optionally this logic can work like a grinder.
@@ -327,6 +312,15 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]        ; TechnoType
 InitialStrength=    ; int
+```
+
+### No Manual Move
+
+- You can now specify whether a TechnoType is unable to receive move command.
+
+```ini
+[SOMETECHNO]           ; TechnoType
+NoManualMove=no        ; boolean
 ```
 
 ### Firing offsets for specific Burst shots

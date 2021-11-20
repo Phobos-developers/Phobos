@@ -62,6 +62,29 @@ In `artmd.ini`:
 Layer.UseObjectLayer=      ; boolean
 ```
 
+## Vehicles
+
+### Deploy direction for IsSimpleDeployer vehicles & deploy animation customization
+
+- `DeployDir` can be used to set the facing the vehicle needs to turn towards before deploying if it has `DeployingAnim` set. This is works the same as Ares flag of same name other than allowing use of negative numbers to disable the direction-specific deploy and that it only applies to units on ground.
+- In addition there are some new options for `DeployingAnim`:
+  - `DeployingAnim.KeepUnitVisible` determines if the unit is hidden while the animation is playing.
+  - `DeployingAnim.ReverseForUndeploy` controls whether or not the animation is played in reverse for undeploying.
+  - `DeployingAnim.UseUnitDrawer` controls whether or not the animation is displayed in the unit's palette and team colours.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                          ; VehicleType
+DeployDir=0                            ; integer, facing or a negative number to disable.
+DeployingAnim.KeepUnitVisible=false    ; boolean
+DeployingAnim.ReverseForUndeploy=true  ; boolean
+DeployingAnim.UseUnitDrawer=true       ; boolean
+```
+
+### Stationary vehicles
+
+- Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
+
 ## Technos
 
 ### Customizable Teleport/Chrono Locomotor settings per TechnoType
