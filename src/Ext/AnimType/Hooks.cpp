@@ -37,11 +37,11 @@ DEFINE_HOOK(0x424CB0, AnimClass_In_Which_Layer_AttachedObjectLayer, 0x6)
 
 	auto pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pThis->OwnerObject)
+	if (pThis->OwnerObject && pExt->Layer_UseObjectLayer.isset())
 	{
 		Layer layer = pThis->Type->Layer;
 
-		if (pExt->Layer_UseObjectLayer)
+		if (pExt->Layer_UseObjectLayer.Get())
 			layer = pThis->OwnerObject->InWhichLayer();
 
 		R->EAX(layer);

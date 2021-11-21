@@ -187,12 +187,15 @@ DEFINE_HOOK(0x54B8E9, JumpjetLocomotionClass_In_Which_Layer_Deviation, 0x6)
 {
 	GET(TechnoClass*, pThis, EAX);
 
-	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	if (pThis->IsInAir())
 	{
-		if (!pExt->JumpjetAllowLayerDeviation.Get(RulesExt::Global()->JumpjetAllowLayerDeviation.Get()))
+		if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 		{
-			R->EDX(INT32_MAX); // Override JumpjetHeight / CruiseHeight check so it always results in 3 / Layer::Air.
-			return 0x54B96B;
+			if (!pExt->JumpjetAllowLayerDeviation.Get(RulesExt::Global()->JumpjetAllowLayerDeviation.Get()))
+			{
+				R->EDX(INT32_MAX); // Override JumpjetHeight / CruiseHeight check so it always results in 3 / Layer::Air.
+				return 0x54B96B;
+			}
 		}
 	}
 

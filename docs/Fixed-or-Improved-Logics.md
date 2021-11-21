@@ -54,12 +54,12 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 
 ### Layer on animations attached to objects
 
-- You can now customize whether or not animations attached to objects follow the object's layer or respect their own `Layer` setting.
+- You can now customize whether or not animations attached to objects follow the object's layer or respect their own `Layer` setting. If this is unset, attached animations use `ground` layer.
 
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                 ; AnimationType
-Layer.UseObjectLayer=true  ; boolean
+Layer.UseObjectLayer=      ; boolean
 ```
 
 ## Technos
