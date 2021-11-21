@@ -3074,7 +3074,10 @@ void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 	// Include the own House if we are looking for ANY Human player
 	if (index == -3)
 	{
-		if (!pTeam->Owner->Defeated && !pTeam->Owner->Type->MultiplayPassive && !pTeam->Owner->IsObserver() && !pTeam->Owner->ControlledByHuman())
+		if (!pTeam->Owner->Defeated 
+			&& !pTeam->Owner->Type->MultiplayPassive
+			&& !pTeam->Owner->IsObserver()
+			&& !pTeam->Owner->ControlledByHuman())
 		{
 			objectsList.AddItem(pTeam->Owner);
 		}
