@@ -15,6 +15,7 @@ DEFINE_HOOK(0x524734, InfantryTypeClass_ReadINI, 0x6)
 	{
 		GET(InfantryTypeClass*, infantryType, ESI);
 		char nameBuffer[0x19];
+
 		if (CCINIClass::INI_Art->ReadString(infantryType->ImageFile, "Image", 0, nameBuffer, 0x19) != 0)
 		{
 			Debug::Log("[Phobos] Replacing image for %s with %s.\n", infantryType->ImageFile, nameBuffer);
@@ -33,6 +34,7 @@ DEFINE_HOOK(0x747B49, VehicleTypeClass_ReadINI, 0x6)
 	{
 		GET(UnitTypeClass*, unitType, EDI);
 		char nameBuffer[0x19];
+
 		if (CCINIClass::INI_Art->ReadString(unitType->ImageFile, "Image", 0, nameBuffer, 0x19) != 0)
 		{
 			Debug::Log("[Phobos] Replacing image for %s with %s.\n", unitType->ImageFile, nameBuffer);
@@ -62,6 +64,7 @@ DEFINE_HOOK(0x41CD54, AircraftTypeClass_ReadINI, 0x6)
 	{
 		GET(AircraftTypeClass*, aircraftType, ESI);
 		char nameBuffer[0x19];
+
 		if (CCINIClass::INI_Art->ReadString(aircraftType->ImageFile, "Image", 0, nameBuffer, 0x19) != 0)
 		{
 			if (aircraftType->Voxel)
