@@ -64,7 +64,7 @@ Credits
 -------
 
 ### Developers
-- **Belonit (Gluk-v48)** - project author ([Patreon](http://patreon.com/belonit), [PayPal](https://paypal.me/Belonit))
+- **Belonit (Gluk-v48)** - project author
 - **Kerbiter (Metadorius)** - project co-author, project manager, DevOps, technical writer ([Patreon](http://patreon.com/kerbiter))
 - **Uranusian (Thrifinesma)** - developer, CN community ambassador ([Patreon](https://www.patreon.com/uranusian), [AliPay](http://tiebapic.baidu.com/forum/w%3D580/sign=4b04b953307f9e2f70351d002f31e962/b3f89909b3de9c823bd7f23a7b81800a18d84371.jpg))
 - **secsome (SEC-SOME)** - developer ([Patreon](https://www.patreon.com/secsome))
