@@ -754,6 +754,29 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 
 `Operation` can be looked up at action `501`
 
+### `505` Adjust Lighting
+- Adjust specific lighting configs
+    - Set R/G/B to `-1` will keep the previous value
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],504,0,[DrawersFlag],[Red],[Green],[Blue],0,A,[ActionX]
+...
+```
+
+| *DrawersFlag*  | *Description*                                 |
+| :------: | :-------------------------------------------: |
+0         | No Update |
+1         | TileDrawers |
+2         | ColorScheme |
+3         | TileDrawers & ColorScheme |
+4         | HashPals |
+5         | TileDrawers & HashPals |
+6         | ColorScheme & HashPals |
+7         | TileDrawers & ColorScheme & HashPals |
+
 
 ## Script actions
 

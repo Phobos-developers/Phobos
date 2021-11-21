@@ -31,44 +31,48 @@ In `FAData.ini`:
 58=Upper bound,0
 59=Operate var is global,10
 60=Operate var index,0
+61=Variable index,0
+62=Red,0
+63=Green,0
+64=Blue,0
 
 [EventsRA2]
-500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
-501=Local variable is less than,48,6,0,0,[LONG DESC],0,1,501,1
-502=Local variable equals to,48,6,0,0,[LONG DESC],0,1,502,1
-503=Local variable is greater than or equals to,48,6,0,0,[LONG DESC],0,1,503,1
-504=Local variable is less than or equals,48,6,0,0,[LONG DESC],0,1,504,1
-505=Local variable and X is true,48,6,0,0,[LONG DESC],0,1,505,1
-506=Global variable is greater than,48,6,0,0,[LONG DESC],0,1,506,1
-507=Global variable is less than,48,6,0,0,[LONG DESC],0,1,507,1
-508=Global variable equals to,48,6,0,0,[LONG DESC],0,1,508,1
-509=Global variable is greater than or queals to,48,6,0,0,[LONG DESC],0,1,509,1
-510=Global variable is less than or equals to,48,6,0,0,[LONG DESC],0,1,510,1
-511=Global variable and X is true,48,6,0,0,[LONG DESC],0,1,511,1
-512=Local variable is greater than local variable,48,3,0,0,[LONG DESC],0,1,500,1
-513=Local variable is less than local variable,48,3,0,0,[LONG DESC],0,1,501,1
-514=Local variable equals to local variable,48,3,0,0,[LONG DESC],0,1,502,1
-515=Local variable is greater than or equals to local variable,48,3,0,0,[LONG DESC],0,1,503,1
-516=Local variable is less than or equals local variable,48,3,0,0,[LONG DESC],0,1,504,1
-517=Local variable and local variable is true,48,3,0,0,[LONG DESC],0,1,505,1
-518=Global variable is greater than local variable,48,3,0,0,[LONG DESC],0,1,506,1
-519=Global variable is less than local variable,48,3,0,0,[LONG DESC],0,1,507,1
-520=Global variable equals to local variable,48,3,0,0,[LONG DESC],0,1,508,1
-521=Global variable is greater than or queals to local variable,48,3,0,0,[LONG DESC],0,1,509,1
-522=Global variable is less than or equals to local variable,48,3,0,0,[LONG DESC],0,1,510,1
-523=Global variable and local variable is true,48,3,0,0,[LONG DESC],0,1,511,1
-524=Local variable is greater than global variable,48,35,0,0,[LONG DESC],0,1,500,1
-525=Local variable is less than global variable,48,35,0,0,[LONG DESC],0,1,501,1
-526=Local variable equals to global variable,48,35,0,0,[LONG DESC],0,1,502,1
-527=Local variable is greater than or equals to global variable,48,35,0,0,[LONG DESC],0,1,503,1
-528=Local variable is less than or equals global variable,48,35,0,0,[LONG DESC],0,1,504,1
-529=Local variable and global variable is true,48,35,0,0,[LONG DESC],0,1,505,1
-530=Global variable is greater than global variable,48,35,0,0,[LONG DESC],0,1,506,1
-531=Global variable is less than global variable,48,35,0,0,[LONG DESC],0,1,507,1
-532=Global variable equals to global variable,48,35,0,0,[LONG DESC],0,1,508,1
-533=Global variable is greater than or queals to global variable,48,35,0,0,[LONG DESC],0,1,509,1
-534=Global variable is less than or equals to global variable,48,35,0,0,[LONG DESC],0,1,510,1
-535=Global variable and global variable is true,48,35,0,0,[LONG DESC],0,1,511,1
+500=Local variable is greater than,61,6,0,0,[LONG DESC],0,1,500,1
+501=Local variable is less than,61,6,0,0,[LONG DESC],0,1,501,1
+502=Local variable equals to,61,6,0,0,[LONG DESC],0,1,502,1
+503=Local variable is greater than or equals to,61,6,0,0,[LONG DESC],0,1,503,1
+504=Local variable is less than or equals,61,6,0,0,[LONG DESC],0,1,504,1
+505=Local variable and X is true,61,6,0,0,[LONG DESC],0,1,505,1
+506=Global variable is greater than,61,6,0,0,[LONG DESC],0,1,506,1
+507=Global variable is less than,61,6,0,0,[LONG DESC],0,1,507,1
+508=Global variable equals to,61,6,0,0,[LONG DESC],0,1,508,1
+509=Global variable is greater than or queals to,61,6,0,0,[LONG DESC],0,1,509,1
+510=Global variable is less than or equals to,61,6,0,0,[LONG DESC],0,1,510,1
+511=Global variable and X is true,61,6,0,0,[LONG DESC],0,1,511,1
+512=Local variable is greater than local variable,61,3,0,0,[LONG DESC],0,1,500,1
+513=Local variable is less than local variable,61,3,0,0,[LONG DESC],0,1,501,1
+514=Local variable equals to local variable,61,3,0,0,[LONG DESC],0,1,502,1
+515=Local variable is greater than or equals to local variable,61,3,0,0,[LONG DESC],0,1,503,1
+516=Local variable is less than or equals local variable,61,3,0,0,[LONG DESC],0,1,504,1
+517=Local variable and local variable is true,61,3,0,0,[LONG DESC],0,1,505,1
+518=Global variable is greater than local variable,61,3,0,0,[LONG DESC],0,1,506,1
+519=Global variable is less than local variable,61,3,0,0,[LONG DESC],0,1,507,1
+520=Global variable equals to local variable,61,3,0,0,[LONG DESC],0,1,508,1
+521=Global variable is greater than or queals to local variable,61,3,0,0,[LONG DESC],0,1,509,1
+522=Global variable is less than or equals to local variable,61,3,0,0,[LONG DESC],0,1,510,1
+523=Global variable and local variable is true,61,3,0,0,[LONG DESC],0,1,511,1
+524=Local variable is greater than global variable,61,35,0,0,[LONG DESC],0,1,500,1
+525=Local variable is less than global variable,61,35,0,0,[LONG DESC],0,1,501,1
+526=Local variable equals to global variable,61,35,0,0,[LONG DESC],0,1,502,1
+527=Local variable is greater than or equals to global variable,61,35,0,0,[LONG DESC],0,1,503,1
+528=Local variable is less than or equals global variable,61,35,0,0,[LONG DESC],0,1,504,1
+529=Local variable and global variable is true,61,35,0,0,[LONG DESC],0,1,505,1
+530=Global variable is greater than global variable,61,35,0,0,[LONG DESC],0,1,506,1
+531=Global variable is less than global variable,61,35,0,0,[LONG DESC],0,1,507,1
+532=Global variable equals to global variable,61,35,0,0,[LONG DESC],0,1,508,1
+533=Global variable is greater than or queals to global variable,61,35,0,0,[LONG DESC],0,1,509,1
+534=Global variable is less than or equals to global variable,61,35,0,0,[LONG DESC],0,1,510,1
+535=Global variable and global variable is true,61,35,0,0,[LONG DESC],0,1,511,1
 
 [ActionsRA2]
 125=Build at...,-10,47,53,0,0,0,1,0,0,[LONG DESC],0,1,125
@@ -77,6 +81,7 @@ In `FAData.ini`:
 502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
 503=Print variable value,0,56,54,0,0,0,0,0,0,[LONG DESC],0,1,503,0
 504=Binary operation,0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1
+505=Adjust lighting,0,6,62,63,64,0,0,0,0,[LONG DESC],0,1,505,1
 
 ; FOLLOWING STUFFS NEEDS FA2SP.DLL (by secsome)
 [ScriptTypeLists]
@@ -232,6 +237,7 @@ New:
 - Save Game Trigger Action (by secsome)
 - Numeric Variables (by secsome)
 - TechnoType's tooltip would display it's build time now (by secsome) 
+- Adjust Lighting Trigger Action (by secsome)
 - Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)
 - Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
 - XDrawOffset for animations (by Morton)
