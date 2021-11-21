@@ -2695,7 +2695,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 				|| pHouse->IsObserver()
 				|| pHouse->Defeated
 				|| pHouse->Type->MultiplayPassive
-				|| pLeaderUnit->Owner->IsAlliedWith(House))
+				|| pLeaderUnit->Owner->IsAlliedWith(pHouse))
 			{
 				continue;
 			}
@@ -2735,7 +2735,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 				|| !pHouse->ControlledByHuman()
 				|| pHouse->Defeated
 				|| pHouse->Type->MultiplayPassive
-				|| pLeaderUnit->Owner->IsAlliedWith(House))
+				|| pLeaderUnit->Owner->IsAlliedWith(pHouse))
 			{
 				continue;
 			}
@@ -2782,7 +2782,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 			if (pLeaderUnit->Owner == pHouse
 				|| pHouse->Defeated
 				|| pHouse->Type->MultiplayPassive
-				|| pLeaderUnit->Owner->IsAlliedWith(House))
+				|| pLeaderUnit->Owner->IsAlliedWith(pHouse))
 			{
 				continue;
 			}
@@ -2831,7 +2831,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 				|| pHouse->IsObserver()
 				|| pHouse->Defeated
 				|| pHouse->Type->MultiplayPassive
-				|| pLeaderUnit->Owner->IsAlliedWith(House))
+				|| pLeaderUnit->Owner->IsAlliedWith(pHouse))
 			{
 				continue;
 			}
