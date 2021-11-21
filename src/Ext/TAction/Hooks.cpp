@@ -79,40 +79,7 @@ DEFINE_HOOK(0x6E2EA7, TActionClass_Retint_LightSourceFix, 0x3) // Red
 	// Yeah, we just simply recreating these lightsource...
 	// Stupid but works fine.
 
-	for (auto pBld : *BuildingClass::Array)
-	{
-		if (pBld->LightSource)
-		{
-			GameDelete(pBld->LightSource);
-			if (pBld->Type->LightIntensity)
-			{
-				TintStruct color { pBld->Type->LightRedTint, pBld->Type->LightGreenTint, pBld->Type->LightBlueTint };
-
-				pBld->LightSource = GameCreate<LightSourceClass>(pBld->GetCoords(),
-					pBld->Type->LightVisibility, pBld->Type->LightIntensity, color);
-
-				pBld->LightSource->Activate();
-			}
-		}
-	}
-
-	for (auto pRadSite : *RadSiteClass::Array)
-	{
-		if (pRadSite->LightSource)
-		{
-			auto coord = pRadSite->LightSource->Location;
-			auto color = pRadSite->LightSource->LightTint;
-			auto intensity = pRadSite->LightSource->LightIntensity;
-			auto visibility = pRadSite->LightSource->LightVisibility;
-
-			GameDelete(pRadSite->LightSource);
-
-			pRadSite->LightSource = GameCreate<LightSourceClass>(coord,
-				visibility, intensity, color);
-
-			pRadSite->LightSource->Activate();
-		}
-	}
+	TActionExt::RecreateLightSources();
 
 	return 0;
 }

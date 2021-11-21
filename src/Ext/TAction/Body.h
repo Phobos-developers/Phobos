@@ -16,6 +16,7 @@ enum class PhobosTriggerAction : unsigned int
 	GenerateRandomNumber,
 	PrintVariableValue,
 	BinaryOperation,
+	AdjustLighting,
 };
 
 class TActionExt
@@ -44,6 +45,8 @@ public:
 	static bool Execute(TActionClass* pThis, HouseClass* pHouse,
 			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location, bool& bHandled);
 
+	static void RecreateLightSources();
+
 	static bool PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse,
 			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
 
@@ -60,6 +63,9 @@ public:
 			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
 
 	static bool BinaryOperation(TActionClass* pThis, HouseClass* pHouse,
+			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
+
+	static bool AdjustLighting(TActionClass* pThis, HouseClass* pHouse,
 			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
 
 	class ExtContainer final : public Container<TActionExt>

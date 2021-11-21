@@ -3,6 +3,9 @@
 #include <SessionClass.h>
 #include <MessageListClass.h>
 #include <HouseClass.h>
+#include <RadSiteClass.h>
+#include <ScenarioClass.h>
+#include <LightSourceClass.h>
 #include <CRT.h>
 
 #include <Utilities/SavegameDef.h>
@@ -34,6 +37,44 @@ void TActionExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
+void TActionExt::RecreateLightSources()
+{
+	for (auto pBld : *BuildingClass::Array)
+	{
+		if (pBld->LightSource)
+		{
+			GameDelete(pBld->LightSource);
+			if (pBld->Type->LightIntensity)
+			{
+				TintStruct color { pBld->Type->LightRedTint, pBld->Type->LightGreenTint, pBld->Type->LightBlueTint };
+
+				pBld->LightSource = GameCreate<LightSourceClass>(pBld->GetCoords(),
+					pBld->Type->LightVisibility, pBld->Type->LightIntensity, color);
+
+				pBld->LightSource->Activate();
+			}
+		}
+	}
+
+	for (auto pRadSite : *RadSiteClass::Array)
+	{
+		if (pRadSite->LightSource)
+		{
+			auto coord = pRadSite->LightSource->Location;
+			auto color = pRadSite->LightSource->LightTint;
+			auto intensity = pRadSite->LightSource->LightIntensity;
+			auto visibility = pRadSite->LightSource->LightVisibility;
+
+			GameDelete(pRadSite->LightSource);
+
+			pRadSite->LightSource = GameCreate<LightSourceClass>(coord,
+				visibility, intensity, color);
+
+			pRadSite->LightSource->Activate();
+		}
+	}
+}
+
 bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject,
 	TriggerClass* pTrigger, CellStruct const& location, bool& bHandled)
 {
@@ -61,6 +102,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::PrintVariableValue(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::BinaryOperation:
 		return TActionExt::BinaryOperation(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::AdjustLighting:
+		return TActionExt::AdjustLighting(pThis, pHouse, pObject, pTrigger, location);
 	default:
 		bHandled = false;
 		return true;
@@ -252,6 +295,38 @@ bool TActionExt::BinaryOperation(TActionClass* pThis, HouseClass* pHouse, Object
 		else
 			TagClass::NotifyGlobalChanged(pThis->Value);
 	}
+	return true;
+}
+
+bool TActionExt::AdjustLighting(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (pThis->Param3 != -1) ScenarioClass::Instance->Red = pThis->Param3;
+	if (pThis->Param4 != -1) ScenarioClass::Instance->Green = pThis->Param4;
+	if (pThis->Param5 != -1) ScenarioClass::Instance->Blue = pThis->Param5;
+
+	const int r = ScenarioClass::Instance->Red * 10;
+	const int g = ScenarioClass::Instance->Green * 10;
+	const int b = ScenarioClass::Instance->Blue * 10;
+
+	if (pThis->Value & 0b001) // Update TileDrawers
+	{
+		for (auto& pLightConvert : *LightConvertClass::Array)
+			pLightConvert->UpdateColors(r, g, b, false);
+	}
+	if (pThis->Value & 0b010) // Update ColorSchemes
+	{
+		for (auto& pScheme : *ColorScheme::Array)
+			pScheme->LightConvert->UpdateColors(r, g, b, false);
+	}
+	if (pThis->Value & 0b100) // Update HashPals
+		ScenarioClass::UpdateHashPalLighting(r, g, b, false);
+
+	ScenarioClass::UpdateCellLighting();
+	MapClass::Instance->RedrawSidebar(1); // GScreenClass::Flag_To_Redraw
+
+	// #issue 429
+	TActionExt::RecreateLightSources();
+
 	return true;
 }
 
