@@ -2779,8 +2779,13 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 		// House power check
 		for (auto& pHouse : *HouseClass::Array)
 		{
-			if (pLeaderUnit->Owner == pHouse || pHouse->Defeated || pHouse->Type->MultiplayPassive || pLeaderUnit->Owner->IsAlliedWith(pHouse))
+			if (pLeaderUnit->Owner == pHouse
+				|| pHouse->Defeated
+				|| pHouse->Type->MultiplayPassive
+				|| pLeaderUnit->Owner->IsAlliedWith(House))
+			{
 				continue;
+			}
 
 			if (mask == -4)
 				checkedHousePower = pHouse->Power_Drain();
