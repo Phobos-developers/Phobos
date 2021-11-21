@@ -39,6 +39,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Effects like lasers are no longer drawn from wrong firing offset on weapons that use Burst.
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Animations can now be offset on the X axis with `XDrawOffset`.
+- `IsSimpleDeployer` units now only play `DeploySound` and `UndeploySound` once, when done with (un)deploying instead of repeating it over duration of turning and/or `DeployingAnim`.
 
 ## Animations
 

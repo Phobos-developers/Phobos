@@ -263,9 +263,9 @@ DEFINE_HOOK(0x739BA8, UnitClass_DeployUndeploy_DeployAnim, 0x5)
 {
 	enum { Deploy = 0x739C20, DeployUseUnitDrawer = 0x739C0A, Undeploy = 0x739E04, UndeployUseUnitDrawer = 0x739DEE };
 
-	bool isDeploying = R->Origin() == 0x739BA8;
-
 	GET(UnitClass*, pThis, ESI);
+
+	bool isDeploying = R->Origin() == 0x739BA8;
 
 	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
@@ -282,4 +282,20 @@ DEFINE_HOOK(0x739BA8, UnitClass_DeployUndeploy_DeployAnim, 0x5)
 	}
 
 	return isDeploying ? Deploy : Undeploy;
+}
+
+DEFINE_HOOK_AGAIN(0x739E81, UnitClass_DeployUndeploy_DeploySound, 0x6)
+DEFINE_HOOK(0x739C86, UnitClass_DeployUndeploy_DeploySound, 0x6)
+{
+	enum { DeployReturn = 0x739CBF, UndeployReturn = 0x739EB8 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	bool isDeploying = R->Origin() == 0x739C86;
+	bool isDoneWithDeployUndeploy = isDeploying ? pThis->Deployed : !pThis->Deployed;
+
+	if (isDoneWithDeployUndeploy)
+		return 0; // Only play sound when done with deploying or undeploying.
+
+	return isDeploying ? DeployReturn : UndeployReturn;
 }
