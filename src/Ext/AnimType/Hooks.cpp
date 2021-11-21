@@ -45,6 +45,7 @@ DEFINE_HOOK(0x424CB0, AnimClass_In_Which_Layer_AttachedObjectLayer, 0x6)
 			layer = pThis->OwnerObject->InWhichLayer();
 
 		R->EAX(layer);
+		
 		return ReturnValue;
 	}
 
