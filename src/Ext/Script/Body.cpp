@@ -2691,8 +2691,14 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 		// Based on House economy
 		for (auto& pHouse : *HouseClass::Array)
 		{
-			if (pLeaderUnit->Owner == pHouse || pHouse->IsObserver() || pHouse->Defeated || pHouse->Type->MultiplayPassive || pLeaderUnit->Owner->IsAlliedWith(pHouse))
+			if (pLeaderUnit->Owner == pHouse 
+				|| pHouse->IsObserver()
+				|| pHouse->Defeated
+				|| pHouse->Type->MultiplayPassive
+				|| pLeaderUnit->Owner->IsAlliedWith(House))
+			{
 				continue;
+			}
 
 			if (mode == 0)
 			{
