@@ -3162,7 +3162,9 @@ void ScriptExt::UpdateEnemyHouseIndex(HouseClass* pHouse)
 
 	for (auto& angerNode : pHouse->AngerNodes)
 	{
-		if (!angerNode.House->Defeated && !pHouse->IsAlliedWith(angerNode.House) && angerNode.AngerLevel > angerLevel)
+		if (!angerNode.House->Defeated 
+			&& !pHouse->IsAlliedWith(angerNode.House) 
+			&& angerNode.AngerLevel > angerLevel)
 		{
 			angerLevel = angerNode.AngerLevel;
 			index = angerNode.House->ArrayIndex;
