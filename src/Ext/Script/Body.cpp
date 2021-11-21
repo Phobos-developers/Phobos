@@ -2731,8 +2731,14 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 		// Based on Human Controlled check
 		for (auto& pHouse : *HouseClass::Array)
 		{
-			if (pLeaderUnit->Owner == pHouse || !pHouse->ControlledByHuman() || pHouse->Defeated || pHouse->Type->MultiplayPassive || pLeaderUnit->Owner->IsAlliedWith(pHouse))
+			if (pLeaderUnit->Owner == pHouse
+				|| !pHouse->ControlledByHuman()
+				|| pHouse->Defeated
+				|| pHouse->Type->MultiplayPassive
+				|| pLeaderUnit->Owner->IsAlliedWith(House))
+			{
 				continue;
+			}
 
 			CoordStruct houseLocation;
 			houseLocation.X = pHouse->BaseSpawnCell.X;
