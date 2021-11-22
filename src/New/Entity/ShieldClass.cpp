@@ -99,8 +99,11 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 {
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
-	if (this->Temporal || !this->HP || *args->Damage == 0 || this->Techno->IsIronCurtained() || pWHExt->Shield_Penetrate)
+	if (!this->HP || this->Temporal || *args->Damage == 0 ||
+		this->Techno->IsIronCurtained() || pWHExt->Shield_Penetrate)
+	{
 		return *args->Damage;
+	}
 
 	int nDamage = 0;
 	int shieldDamage = 0;
@@ -518,8 +521,10 @@ void ShieldClass::SetRespawn(int duration, double amount, int rate, bool resetTi
 	
 	timerWH->Start(duration);
 
-	if (this->HP <= 0 && Respawn_Rate_Warhead >= 0 && (resetTimer || timer->Expired()))
+	if (this->HP <= 0 && Respawn_Rate_Warhead >= 0 && (resetTimer || timer->Expired())) 
+	{ 
 		timer->Start(Respawn_Rate_Warhead);
+	}
 	else if (timer->InProgress())
 	{
 		int passedTime = Unsorted::CurrentFrame - timer->StartTime;
@@ -539,7 +544,9 @@ void ShieldClass::SetSelfHealing(int duration, double amount, int rate, bool res
 	timerWH->Start(duration);
 
 	if (this->HP < this->Type->Strength && (resetTimer || timer->Expired()))
+	{
 		timer->Start(this->SelfHealing_Rate_Warhead);
+	}
 	else if (timer->InProgress())
 	{
 		int passedTime = Unsorted::CurrentFrame - timer->StartTime;
