@@ -215,24 +215,49 @@ DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x739B32, UnitClass_Deploy_Turning, 0x6)
+{
+	enum { StartAnim = 0x739B9E, Return = 0x739CBE };
+
+	GET(UnitClass*, pThis, ESI);
+
+	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		if (pExt->Deploying_TargetFacing.isset())
+		{
+			if (pThis->PrimaryFacing.current() != pExt->Deploying_TargetFacing.Get())
+			{
+				return Return;
+			}
+			else
+			{
+				pExt->Deploying_TargetFacing.Reset();
+				return StartAnim;
+			}
+		}
+	}
+
+	return 0;
+}
+
 // Ares hooks in at 739B8A, this goes before it and skips & basically reimplements Ares code with some changes.
 DEFINE_HOOK(0x739B7C, UnitClass_Deploy_DeployDir, 0x6)
 {
-	enum { Skip = 0x739C70, Continue = 0x739B9E };
+	enum { Skip = 0x739C70, Continue = 0x739B9E, Return = 0x739CBE };
 
 	GET(UnitClass*, pThis, ESI);
 
 	if (!pThis->InAir)
 	{
-		if (pThis->Type->DeployingAnim)
+		if (pThis->Type->DeployingAnim && !pThis->Deploying)
 		{
-			int deployDir = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->DeployDir.Get(RulesClass::Instance->DeployDir);
+			int deployDir = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->DeployDir.Get(RulesClass::Instance->DeployDir >> 5);
 
 			if (deployDir >= 0)
 			{
-				auto newFacing = DirStruct(deployDir << 13);
+				auto targetFacing = DirStruct(deployDir << 13);
 
-				if (pThis->PrimaryFacing.current() != newFacing)
+				if (pThis->PrimaryFacing.current() != targetFacing)
 				{
 					auto locomotor = pThis->Locomotor.get();
 
@@ -241,9 +266,16 @@ DEFINE_HOOK(0x739B7C, UnitClass_Deploy_DeployDir, 0x6)
 						if (locomotor->Is_Moving_Now())
 							return Skip;
 
-						locomotor->Do_Turn(newFacing);
+						locomotor->Do_Turn(targetFacing);
 
-						return Skip;
+						if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+						{
+							pExt->Deploying_TargetFacing = targetFacing;
+						}
+
+						pThis->Deploying = true;
+
+						return Return;
 					}
 				}
 			}
@@ -269,7 +301,9 @@ DEFINE_HOOK(0x739BA8, UnitClass_DeployUndeploy_DeployAnim, 0x5)
 
 	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
-		if (auto const pAnim = GameCreate<AnimClass>(pThis->Type->DeployingAnim, pThis->Location, 0, 1, 0x600, 0, !isDeploying ? pExt->DeployingAnim_ReverseForUndeploy : false))
+		if (auto const pAnim = GameCreate<AnimClass>(pThis->Type->DeployingAnim,
+			pThis->Location, 0, 1, 0x600, 0,
+			!isDeploying ? pExt->DeployingAnim_ReverseForUndeploy : false))
 		{
 			pThis->DeployAnim = pAnim;
 			pAnim->SetOwnerObject(pThis);
@@ -278,7 +312,9 @@ DEFINE_HOOK(0x739BA8, UnitClass_DeployUndeploy_DeployAnim, 0x5)
 				return isDeploying ? DeployUseUnitDrawer : UndeployUseUnitDrawer;
 		}
 		else
+		{
 			pThis->DeployAnim = nullptr;
+		}
 	}
 
 	return isDeploying ? Deploy : Undeploy;

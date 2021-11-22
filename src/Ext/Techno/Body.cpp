@@ -397,6 +397,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)
 		.Process(this->PassengerDeletionTimer)
+		.Process(this->Deploying_TargetFacing)
 		;
 }
 

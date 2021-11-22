@@ -24,6 +24,7 @@ public:
 		Valueable<bool> ReceiveDamage;
 		Valueable<bool> LastKillWasTeamTarget;
 		TimerStruct	PassengerDeletionTimer;
+		Nullable<DirStruct> Deploying_TargetFacing;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet(nullptr)
@@ -32,6 +33,7 @@ public:
 			, ReceiveDamage(false)
 			, LastKillWasTeamTarget(false)
 			, PassengerDeletionTimer(-1)
+			, Deploying_TargetFacing()
 		{ }
 
 		virtual ~ExtData() = default;
