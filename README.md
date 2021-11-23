@@ -94,7 +94,7 @@ Credits
 - **thomassneddon** - general assistance
 - **Starkku** - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements, stationary VehicleTypes, Burst logic improvements, TechnoType auto-firing weapons, Secondary weapon fallback customization, weapon target type filtering, AreaFire targeting customization, CreateUnit improvements
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
-- **Morton (MortonPL)** - XDrawOffset, Shield Passthrough & Absorption, building LimboDelivery
+- **Morton (MortonPL)** - XDrawOffset, Shield passthrough & absorption, building LimboDelivery, fix for Image in art rules
 - **mevitar** - honorary shield tester *triple* award
 - **Damfoos** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
