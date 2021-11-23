@@ -83,6 +83,11 @@ public:
 		Valueable<int> NoAmmoAmount;
 
 		Nullable<bool> JumpjetAllowLayerDeviation;
+		
+		Valueable<bool> DeployingAnim_KeepUnitVisible;
+		Valueable<bool> DeployingAnim_ReverseForUndeploy;
+		Valueable<bool> DeployingAnim_UseUnitDrawer;
+		Nullable<int> DeployDir;
 
 		struct LaserTrailDataEntry
 		{
@@ -153,7 +158,11 @@ public:
 			NoSecondaryWeaponFallback(false),
 			NoAmmoWeapon(-1),
 			NoAmmoAmount(0),
-			JumpjetAllowLayerDeviation()
+			JumpjetAllowLayerDeviation(),
+			DeployingAnim_KeepUnitVisible(false),
+			DeployingAnim_ReverseForUndeploy(true),
+			DeployingAnim_UseUnitDrawer(true),
+			DeployDir()
 		{ }
 
 		virtual ~ExtData() = default;
