@@ -82,6 +82,8 @@ public:
 		Valueable<int> NoAmmoWeapon;
 		Valueable<int> NoAmmoAmount;
 
+		Nullable<bool> JumpjetAllowLayerDeviation;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -111,7 +113,7 @@ public:
 			Interceptor_MinimumGuardRange(),
 			Interceptor_EliteGuardRange(),
 			Interceptor_EliteMinimumGuardRange(),
-			TurretOffset({0, 0, 0}),
+			TurretOffset({ 0, 0, 0 }),
 			Powered_KillSpawns(false),
 			Spawn_LimitedRange(false),
 			Spawn_LimitedExtraRange(0),
@@ -150,7 +152,8 @@ public:
 			AutoFire_TargetSelf(false),
 			NoSecondaryWeaponFallback(false),
 			NoAmmoWeapon(-1),
-			NoAmmoAmount(0)
+			NoAmmoAmount(0),
+			JumpjetAllowLayerDeviation()
 		{ }
 
 		virtual ~ExtData() = default;

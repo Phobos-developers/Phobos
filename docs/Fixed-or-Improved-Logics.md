@@ -52,6 +52,16 @@ In `artmd.ini`:
 HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 ```
 
+### Layer on animations attached to objects
+
+- You can now customize whether or not animations attached to objects follow the object's layer or respect their own `Layer` setting. If this is unset, attached animations use `ground` layer.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                 ; AnimationType
+Layer.UseObjectLayer=      ; boolean
+```
+
 ## Technos
 
 ### Customizable Teleport/Chrono Locomotor settings per TechnoType
@@ -84,11 +94,24 @@ In `rulesmd.ini`:
 ```ini
 [JumpjetControls]
 Crash=5.0       ; float
-NoWobbles=no    ; bool
+NoWobbles=no    ; boolean
 ```
 
 ```{note}
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
+```
+
+### Jumpjet unit layer deviation customization
+
+- Allows turning on or off jumpjet unit behaviour where they fluctuate between `air` and `top` layers based on whether or not their current altitude is equal / below or above `JumpjetHeight` or `[JumpjetControls] -> CruiseHeight` if former is not set on TechnoType. If disabled, airborne jumpjet units exist only in `air` layer. `JumpjetAllowLayerDeviation` defaults to value of `[JumpjetControls] -> AllowLayerDeviation` if not specified.
+
+In `rulesmd.ini`:
+```ini
+[JumpjetControls]
+AllowLayerDeviation=yes         ; boolean
+
+[SOMETECHNO]                    ; TechnoType
+JumpjetAllowLayerDeviation=yes  ; boolean
 ```
 
 ### Customizable harvester ore gathering animation

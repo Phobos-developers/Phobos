@@ -1,3 +1,4 @@
+#include <AnimClass.h>
 #include <UnitClass.h>
 #include <InfantryClass.h>
 #include <BuildingClass.h>
@@ -178,6 +179,25 @@ DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDi
 	}
 
 	pThis->Disguised = false;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x54B8E9, JumpjetLocomotionClass_In_Which_Layer_Deviation, 0x6)
+{
+	GET(TechnoClass*, pThis, EAX);
+
+	if (pThis->IsInAir())
+	{
+		if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		{
+			if (!pExt->JumpjetAllowLayerDeviation.Get(RulesExt::Global()->JumpjetAllowLayerDeviation.Get()))
+			{
+				R->EDX(INT32_MAX); // Override JumpjetHeight / CruiseHeight check so it always results in 3 / Layer::Air.
+				return 0x54B96B;
+			}
+		}
+	}
 
 	return 0;
 }
