@@ -215,41 +215,16 @@ DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x739B32, UnitClass_Deploy_Turning, 0x6)
-{
-	enum { StartAnim = 0x739B9E, Return = 0x739CBE };
-
-	GET(UnitClass*, pThis, ESI);
-
-	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
-	{
-		if (pExt->Deploying_TargetFacing.isset())
-		{
-			if (pThis->PrimaryFacing.current() != pExt->Deploying_TargetFacing.Get())
-			{
-				return Return;
-			}
-			else
-			{
-				pExt->Deploying_TargetFacing.Reset();
-				return StartAnim;
-			}
-		}
-	}
-
-	return 0;
-}
-
 // Ares hooks in at 739B8A, this goes before it and skips & basically reimplements Ares code with some changes.
 DEFINE_HOOK(0x739B7C, UnitClass_Deploy_DeployDir, 0x6)
 {
-	enum { Skip = 0x739C70, Continue = 0x739B9E, Return = 0x739CBE };
+	enum { Skip = 0x739C70, Continue = 0x739B9E };
 
 	GET(UnitClass*, pThis, ESI);
 
 	if (!pThis->InAir)
 	{
-		if (pThis->Type->DeployingAnim && !pThis->Deploying)
+		if (pThis->Type->DeployingAnim)
 		{
 			int deployDir = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->DeployDir.Get(RulesClass::Instance->DeployDir >> 5);
 
@@ -268,14 +243,7 @@ DEFINE_HOOK(0x739B7C, UnitClass_Deploy_DeployDir, 0x6)
 
 						locomotor->Do_Turn(targetFacing);
 
-						if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
-						{
-							pExt->Deploying_TargetFacing = targetFacing;
-						}
-
-						pThis->Deploying = true;
-
-						return Return;
+						return Skip;
 					}
 				}
 			}
