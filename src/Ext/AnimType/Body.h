@@ -23,6 +23,7 @@ public:
 		Valueable<bool> CreateUnit_RandomFacing;
 		Valueable<Mission> CreateUnit_Mission;
 		Valueable<OwnerHouseKind> CreateUnit_Owner;
+		Valueable<bool> CreateUnit_ConsiderPathfinding;
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;
 		Nullable<bool> Layer_UseObjectLayer;
@@ -36,6 +37,7 @@ public:
 			, CreateUnit_RemapAnim(false)
 			, CreateUnit_Mission(Mission::Guard)
 			, CreateUnit_Owner(OwnerHouseKind::Victim)
+			, CreateUnit_ConsiderPathfinding(false)
 			, XDrawOffset(0)
 			, HideIfNoOre_Threshold(0)
 			, Layer_UseObjectLayer()
