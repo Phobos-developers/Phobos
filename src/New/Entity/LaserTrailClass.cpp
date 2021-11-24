@@ -1,5 +1,7 @@
 #include "LaserTrailClass.h"
 
+#include <EBolt.h>
+
 #include <Utilities/TemplateDef.h>
 
 // Draws LaserTrail if the conditions are suitable.
@@ -17,16 +19,24 @@ bool LaserTrailClass::Update(CoordStruct location)
 	{
 		if (this->Visible && (this->Type->IgnoreVertical ? (abs(location.X - this->LastLocation.Get().X) > 16 || abs(location.Y - this->LastLocation.Get().Y) > 16) : true))
 		{
-			// We spawn new laser segment if the distance is long enough, the game will do the rest - Kerbiter
-			LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
-				this->LastLocation.Get(), location,
-				this->CurrentColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 },
-				this->Type->FadeDuration.Get());
+			if (!this->Type->IsEBolt) // Uses laser
+			{
+				// We spawn new laser segment if the distance is long enough, the game will do the rest - Kerbiter
+				LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
+					this->LastLocation.Get(), location,
+					this->CurrentColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 },
+					this->Type->FadeDuration.Get());
 
-			pLaser->Thickness = this->Type->Thickness;
-			pLaser->IsHouseColor = true;
-			pLaser->IsSupported = this->Type->IsIntense;
+				pLaser->Thickness = this->Type->Thickness;
+				pLaser->IsHouseColor = true;
+				pLaser->IsSupported = this->Type->IsIntense;
 
+			}
+			else // Is EBolt
+			{
+				if (auto const pEBolt = GameCreate<EBolt>())
+					pEBolt->Fire(this->LastLocation, location, 0);
+			}
 			result = true;
 		}
 
