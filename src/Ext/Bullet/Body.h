@@ -7,6 +7,8 @@
 
 #include <New/Entity/LaserTrailClass.h>
 
+#include <Ext/Bullet/Trajectories/StraightTrajactory.h>
+
 class BulletExt
 {
 public:
@@ -18,11 +20,14 @@ public:
 		Valueable<bool> Intercepted;
 		Valueable<bool> ShouldIntercept;
 		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
+		
+		StraightTrajactory Trajactory_Straight;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
 			, Intercepted { false }
 			, ShouldIntercept { false }
 			, LaserTrails {}
+            , Trajactory_Straight {}
 		{ }
 
 		virtual ~ExtData() = default;

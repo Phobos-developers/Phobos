@@ -82,6 +82,7 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->Intercepted)
 		.Process(this->ShouldIntercept)
 		.Process(this->LaserTrails)
+		.Process(this->Trajactory_Straight)
 		;
 }
 

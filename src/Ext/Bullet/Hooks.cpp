@@ -151,28 +151,3 @@ DEFINE_HOOK(0x773087, WeaponTypeClass_GetSpeed_ApplyGravity, 0x6)
 
 	return 0x7730A3;
 }
-
-DEFINE_HOOK(0x6FF031, TechnoClass_FireAt_ReverseVelocityWhileGravityIsZero, 0xA)
-{
-	GET(BulletClass*, pBullet, EBX);
-
-	auto const pData = BulletTypeExt::ExtMap.Find(pBullet->Type);
-
-	if (pBullet->Type->Arcing && BulletTypeExt::GetAdjustedGravity(pBullet->Type) == 0.0)
-	{
-		pBullet->Velocity *= -1;
-		if (pData->Gravity_HeightFix)
-		{
-			auto speed = pBullet->Velocity.Magnitude();
-
-			pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
-			pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
-			pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z - pBullet->SourceCoords.Z);
-
-			auto magnitude = pBullet->Velocity.Magnitude();
-			pBullet->Velocity *= speed / magnitude;
-		}
-	}
-
-	return 0;
-}
