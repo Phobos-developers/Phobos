@@ -150,7 +150,7 @@ RadSiteWarhead=RadSite          ; WarheadType
 ![image](_static/images/animToUnit.gif)  
 
 - Animations can now create (or "convert" to) units when they end.
-  - Because anims usually don't have an owner the unit will be created with civilian owner unless you use `DestroyAnim` which was modified to store owner and facing information from the destroyed unit.
+  - Because in most cases animations do not have owner, the unit will be created with civilian owner unless you use `DestroyAnim` which was modified to store owner and facing information from the destroyed unit, or animation from Warhead `AnimList` or one created through map trigger action `41 Play Anim At`.
 
 In `rulesmd.ini`:
 ```ini
@@ -169,6 +169,7 @@ CreateUnit.InheritTurretFacings=no  ; boolean, inherit facing from destroyed uni
 CreateUnit.RemapAnim=no             ; boolean, whether to remap anim to owner color
 CreateUnit.Mission=Guard            ; MissionType
 CreateUnit.Owner=Victim             ; owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
+CreateUnit.ConsiderPathfinding=no   ; boolean, whether to consider if the created unit can move in the cell and look for eligible cells nearby instead.
 ```
 
 ## Buildings
@@ -224,21 +225,6 @@ In `rulesmd.ini`:
 ```ini
 [SOMEINFANTRY]      ; InfantryType
 DefaultDisguise=E2  ; InfantryType              
-```
-
-## Vehicles
-
-### Stationary vehicles
-
-- Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
-
-### No Manual Move
-
-- You can now specify whether a TechnoType is unable to receive move command.
-
-```ini
-[SOMETECHNO]           ; TechnoType
-NoManualMove=no        ; boolean
 ```
 
 ### Automatic Passenger Deletion
@@ -326,6 +312,15 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]        ; TechnoType
 InitialStrength=    ; int
+```
+
+### No Manual Move
+
+- You can now specify whether a TechnoType is unable to receive move command.
+
+```ini
+[SOMETECHNO]           ; TechnoType
+NoManualMove=no        ; boolean
 ```
 
 ### Firing offsets for specific Burst shots
@@ -1015,7 +1010,7 @@ Note: This feature might not support every building flag. Flags that are confirm
 Note: In order for this feature to work with AITriggerTypes conditions ("Owning house owns ???" and "Enemy house owns ???"), `LegalTarget` must be set to true.
 
 ```{warning}
-Remember that Limbo Delivered buildings don't exist physically! This means they should never have enabled machanics that require interaction with the game world (i.e. factories, cloning vats, service depots, helipads). They also **should have either `KeepAlive=yes` set or be killable with LimboKill** - otherwise the game might never end.
+Remember that Limbo Delivered buildings don't exist physically! This means they should never have enabled machanics that require interaction with the game world (i.e. factories, cloning vats, service depots, helipads). They also **should have either `KeepAlive=no` set or be killable with LimboKill** - otherwise the game might never end.
 ```
 In `rulesmd.ini`:
 ```ini

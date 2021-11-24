@@ -34,6 +34,7 @@ public:
 
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
+		Valueable<bool> JumpjetAllowLayerDeviation;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Pips_Shield({ -1,-1,-1 })
@@ -42,6 +43,7 @@ public:
 			, MissingCameo("xxicon.shp")
 			, JumpjetCrash(5.0)
 			, JumpjetNoWobbles(false)
+			, JumpjetAllowLayerDeviation(true)
 		{ }
 
 		virtual ~ExtData() = default;
