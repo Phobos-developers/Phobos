@@ -300,9 +300,12 @@ bool TActionExt::BinaryOperation(TActionClass* pThis, HouseClass* pHouse, Object
 
 bool TActionExt::AdjustLighting(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	if (pThis->Param3 != -1) ScenarioClass::Instance->Red = pThis->Param3;
-	if (pThis->Param4 != -1) ScenarioClass::Instance->Green = pThis->Param4;
-	if (pThis->Param5 != -1) ScenarioClass::Instance->Blue = pThis->Param5;
+	if (pThis->Param3 != -1) 
+		ScenarioClass::Instance->Red = pThis->Param3;
+	if (pThis->Param4 != -1) 
+		ScenarioClass::Instance->Green = pThis->Param4;
+	if (pThis->Param5 != -1) 
+		ScenarioClass::Instance->Blue = pThis->Param5;
 
 	const int r = ScenarioClass::Instance->Red * 10;
 	const int g = ScenarioClass::Instance->Green * 10;
@@ -313,11 +316,13 @@ bool TActionExt::AdjustLighting(TActionClass* pThis, HouseClass* pHouse, ObjectC
 		for (auto& pLightConvert : *LightConvertClass::Array)
 			pLightConvert->UpdateColors(r, g, b, false);
 	}
+
 	if (pThis->Value & 0b010) // Update ColorSchemes
 	{
 		for (auto& pScheme : *ColorScheme::Array)
 			pScheme->LightConvert->UpdateColors(r, g, b, false);
 	}
+
 	if (pThis->Value & 0b100) // Update HashPals
 		ScenarioClass::UpdateHashPalLighting(r, g, b, false);
 
