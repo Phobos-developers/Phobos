@@ -7,7 +7,9 @@
 #include <VoxelAnimClass.h>
 #include <BulletClass.h>
 #include <HouseClass.h>
+
 #include <Ext/Rules/Body.h>
+#include <Ext/BuildingType/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -304,29 +306,11 @@ DEFINE_HOOK(0x41EB43, AITriggerTypeClass_Condition_SupportPowersup, 0x7)		//AITr
 	GET(HouseClass*, pHouse, EDX);
 	GET(int, idxBld, EBP);
 	auto const pType = BuildingTypeClass::Array->Items[idxBld];
-	auto const pPowerup = pType->PowersUpBuilding;
-	int count = 0;
-	// TODO: support Phobos extended Building Upgrades logic
-	if (*pPowerup)
-	{
-		auto const pPlugin = BuildingTypeClass::Find(pPowerup);
-		if (pPlugin && pHouse->OwnedBuildingTypes1.GetItemCount(pPlugin->ArrayIndex) > 0)
-		{
-			for (auto const& pBld : pHouse->Buildings)
-			{
-				if (pBld->Type != pPlugin)
-					continue;
 
-				for (const auto& pUpgrade : pBld->Upgrades)
-					if (pUpgrade == pType)
-						count++;
-			}
-		}
-	}
-	else
-	{
+	int count = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);
+
+	if (count == -1)
 		count = pHouse->OwnedBuildingTypes1.GetItemCount(idxBld);
-	}
 
 	R->EAX(count);
 	return R->Origin() + 0xC;
