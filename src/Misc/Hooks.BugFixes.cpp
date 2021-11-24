@@ -306,12 +306,12 @@ DEFINE_HOOK(0x41EB43, AITriggerTypeClass_Condition_SupportPowersup, 0x7)		//AITr
 	GET(HouseClass*, pHouse, EDX);
 	GET(int, idxBld, EBP);
 	auto const pType = BuildingTypeClass::Array->Items[idxBld];
-
 	int count = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);
 
 	if (count == -1)
 		count = pHouse->OwnedBuildingTypes1.GetItemCount(idxBld);
 
 	R->EAX(count);
+
 	return R->Origin() + 0xC;
 }
