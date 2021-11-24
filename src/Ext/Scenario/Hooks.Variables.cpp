@@ -53,6 +53,7 @@ DEFINE_HOOK(0x689760, ScenarioClass_GetGlobalStateByID, 0x6)
 	return 0x689786;
 }
 
+// Called by MapGeneratorClass
 DEFINE_HOOK(0x689880, ScenarioClass_ReadGlobalVariables, 0x6)
 {
 	GET_STACK(CCINIClass*, pINI, 0x4);
@@ -60,4 +61,15 @@ DEFINE_HOOK(0x689880, ScenarioClass_ReadGlobalVariables, 0x6)
 	ScenarioExt::Global()->ReadVariables(true, pINI);
 
 	return 0x6898FF;
+}
+
+// ScenarioClass_ReadGlobalVariables inlined in Read_Scenario_INI
+DEFINE_HOOK(0x6876C2, ReadScenarioINI_Inlined_ReadGlobalVariables, 0x6)
+{
+	ScenarioExt::Global()->ReadVariables(true, CCINIClass::INI_Rules);
+
+	// Stupid inline
+	R->ESI(GameMode::Campaign);
+
+	return 0x68773F;
 }
