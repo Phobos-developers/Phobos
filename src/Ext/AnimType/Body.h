@@ -23,8 +23,10 @@ public:
 		Valueable<bool> CreateUnit_RandomFacing;
 		Valueable<Mission> CreateUnit_Mission;
 		Valueable<OwnerHouseKind> CreateUnit_Owner;
+		Valueable<bool> CreateUnit_ConsiderPathfinding;
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;
+		Nullable<bool> Layer_UseObjectLayer;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette(CustomPalette::PaletteMode::Temperate)
@@ -35,8 +37,10 @@ public:
 			, CreateUnit_RemapAnim(false)
 			, CreateUnit_Mission(Mission::Guard)
 			, CreateUnit_Owner(OwnerHouseKind::Victim)
+			, CreateUnit_ConsiderPathfinding(false)
 			, XDrawOffset(0)
 			, HideIfNoOre_Threshold(0)
+			, Layer_UseObjectLayer()
 		{ }
 
 		virtual ~ExtData() = default;

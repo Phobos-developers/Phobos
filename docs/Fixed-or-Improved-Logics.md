@@ -39,6 +39,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Effects like lasers are no longer drawn from wrong firing offset on weapons that use Burst.
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Animations can now be offset on the X axis with `XDrawOffset`.
+- `IsSimpleDeployer` units now only play `DeploySound` and `UndeploySound` once, when done with (un)deploying instead of repeating it over duration of turning and/or `DeployingAnim`.
 
 ## Animations
 
@@ -51,6 +52,39 @@ In `artmd.ini`:
 [SOMEANIM]               ; AnimationType
 HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 ```
+
+### Layer on animations attached to objects
+
+- You can now customize whether or not animations attached to objects follow the object's layer or respect their own `Layer` setting. If this is unset, attached animations use `ground` layer.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                 ; AnimationType
+Layer.UseObjectLayer=      ; boolean
+```
+
+## Vehicles
+
+### Deploy direction for IsSimpleDeployer vehicles & deploy animation customization
+
+- `DeployDir` can be used to set the facing the vehicle needs to turn towards before deploying if it has `DeployingAnim` set. This is works the same as Ares flag of same name other than allowing use of negative numbers to disable the direction-specific deploy and that it only applies to units on ground. If not set, it defaults to `[General] -> DeployDir`.
+- In addition there are some new options for `DeployingAnim`:
+  - `DeployingAnim.KeepUnitVisible` determines if the unit is hidden while the animation is playing.
+  - `DeployingAnim.ReverseForUndeploy` controls whether or not the animation is played in reverse for undeploying.
+  - `DeployingAnim.UseUnitDrawer` controls whether or not the animation is displayed in the unit's palette and team colours.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                          ; VehicleType
+DeployDir=                             ; integer, facing or a negative number to disable direction-specific deploy
+DeployingAnim.KeepUnitVisible=false    ; boolean
+DeployingAnim.ReverseForUndeploy=true  ; boolean
+DeployingAnim.UseUnitDrawer=true       ; boolean
+```
+
+### Stationary vehicles
+
+- Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
 
 ## Technos
 
@@ -84,11 +118,24 @@ In `rulesmd.ini`:
 ```ini
 [JumpjetControls]
 Crash=5.0       ; float
-NoWobbles=no    ; bool
+NoWobbles=no    ; boolean
 ```
 
 ```{note}
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
+```
+
+### Jumpjet unit layer deviation customization
+
+- Allows turning on or off jumpjet unit behaviour where they fluctuate between `air` and `top` layers based on whether or not their current altitude is equal / below or above `JumpjetHeight` or `[JumpjetControls] -> CruiseHeight` if former is not set on TechnoType. If disabled, airborne jumpjet units exist only in `air` layer. `JumpjetAllowLayerDeviation` defaults to value of `[JumpjetControls] -> AllowLayerDeviation` if not specified.
+
+In `rulesmd.ini`:
+```ini
+[JumpjetControls]
+AllowLayerDeviation=yes         ; boolean
+
+[SOMETECHNO]                    ; TechnoType
+JumpjetAllowLayerDeviation=yes  ; boolean
 ```
 
 ### Customizable harvester ore gathering animation
@@ -135,6 +182,25 @@ SpawnsTiberium.Type=0         ; tiberium/ore type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
 SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; single int / comma-sep. range
+```
+
+### Customizable unit image in art
+
+- `Image` tag in art INI is no longer limited to AnimationTypes and BuildingTypes, and can be applied to all TechnoTypes (InfantryTypes, VehicleTypes, AircraftTypes, BuildingTypes).
+- The tag specifies **only** the file name (without extension) of the asset that replaces TechnoType's graphics. If the name in `Image` is also an entry in the art INI, **no tags will be read from it**.
+- **By default this feature is disabled** to remain compatible with YR. To use this feature, enable it in rules with `ArtImageSwap=true`.
+- This feature supports SHP images for InfantryTypes, SHP and VXL images for VehicleTypes and VXL images for AircraftTypes.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ArtImageSwap=false  ; disabled by default
+```
+
+In `artmd.ini`:
+```ini
+[SOMETECHNO]
+Image=              ; name of the file that will be used as image, without extension
 ```
 
 ## Weapons
