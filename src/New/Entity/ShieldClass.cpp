@@ -743,3 +743,8 @@ bool ShieldClass::IsAvailable()
 {
 	return this->Available;
 }
+
+bool ShieldClass::IsBrokenAndNonRespawning()
+{
+	return this->HP <= 0 && !this->Type->Respawn;
+}

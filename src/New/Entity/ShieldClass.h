@@ -34,6 +34,7 @@ public:
 	int GetHP();
 	bool IsActive();
 	bool IsAvailable();
+	bool IsBrokenAndNonRespawning();
 	ShieldTypeClass* GetType();
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);

@@ -61,6 +61,7 @@ public:
 		ValueableVector<ShieldTypeClass*> Shield_AttachTypes;
 		ValueableVector<ShieldTypeClass*> Shield_RemoveTypes;
 		Valueable<bool> Shield_ReplaceOnly;
+		Valueable<bool> Shield_ReplaceNonRespawning;
 		Valueable<bool> Shield_InheritStateOnReplace;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
@@ -111,6 +112,7 @@ public:
 			, Shield_AttachTypes()
 			, Shield_RemoveTypes()
 			, Shield_ReplaceOnly(false)
+			, Shield_ReplaceNonRespawning(false)
 			, Shield_InheritStateOnReplace(false)
 			, Shield_AffectTypes()
 
