@@ -539,7 +539,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	if (!pTeamData)
 	{
 		pTeam->StepCompleted = true;
-		Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (Reason: ExtData found)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
+		Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d -> (Reason: ExtData found)\n", pTeam->Type->ID, pScript->idxCurrentLine, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
 
 		return;
 	}
@@ -566,7 +566,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	if (!pTeam)
 	{
 		pTeam->StepCompleted = true;
-		Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (Reason: No team members alive)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
+		Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d -> (Reason: No team members alive)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
 
 		return;
 	}
@@ -623,7 +623,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 
 				// This action finished
 				pTeam->StepCompleted = true;
-				Debug::Log("DEBUG: [%s] [%s]: Force the jump to NEXT line: %d = %d,%d (No repeatAction set)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
+				Debug::Log("DEBUG: [%s] [%s] (line: %d) Force the jump to next line: %d = %d,%d (This action wont repeat)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
 
 				return;
 			}
@@ -690,7 +690,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 
 		// This action finished
 		pTeam->StepCompleted = true;
-		Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (Reason: No Leader found | Exists Aircrafts without ammo | Team members have no weapons)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
+		Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d -> (Reason: No Leader found | Exists Aircrafts without ammo | Team members have no weapons)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
 
 		return;
 	}
@@ -782,7 +782,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 
 		if (selectedTarget)
 		{
-			Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d): Leader [%s] selected [%s] as target.\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument, pLeaderUnit->GetTechnoType()->get_ID(), selectedTarget->GetTechnoType()->get_ID());
+			Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Leader [%s] (UID: %lu) selected [%s] (UID: %lu) as target.\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument, pLeaderUnit->GetTechnoType()->get_ID(), pLeaderUnit->UniqueID, selectedTarget->GetTechnoType()->get_ID(), selectedTarget->UniqueID);
 			pTeamData->SelectedTarget = selectedTarget;
 			pTeamData->WaitNoTargetAttempts = 0; // Disable Script Waits if there are any because a new target was selected
 
@@ -883,7 +883,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 
 			// This action finished
 			pTeam->StepCompleted = true;
-			Debug::Log("DEBUG: Next script action line for [%s] (%s) will be: %d = %d,%d (Reason: New target NOT FOUND)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
+			Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d (new target NOT FOUND)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
 
 			return;
 		}
@@ -918,6 +918,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				if (auto pUnitType = pUnit->GetTechnoType())
 				{
 					if (pUnit->IsAlive
+						&& !pUnit->Health > 0
 						&& !pUnit->InLimbo
 						&& (pUnitType->WhatAmI() == AbstractType::AircraftType
 							&& abstract_cast<AircraftTypeClass*>(pUnitType)->AirportBound)
@@ -1021,7 +1022,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		{
 			pTeamData->IdxSelectedObjectFromAIList = -1;
 			pTeam->StepCompleted = true;
-			Debug::Log("DEBUG: ScripType: [%s] [%s] Jump to NEXT line: %d = %d,%d -> (Reason: Naval is unable to target ground)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
+			Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to NEXT line: %d = %d,%d (Naval is unable to target ground)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
 
 			return;
 		}
@@ -1055,8 +1056,18 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 		if ((weaponType && weaponType->Projectile->AG) || agentMode)
 			unitWeaponsHaveAG = true;
 
+		int weaponDamage = 0;
+
+		if (weaponType)
+		{
+			if (weaponType->AmbientDamage > 0)
+				weaponDamage = MapClass::GetTotalDamage(weaponType->AmbientDamage, weaponType->Warhead, objectType->Armor, 0) + MapClass::GetTotalDamage(weaponType->Damage, weaponType->Warhead, objectType->Armor, 0);
+			else
+				weaponDamage = MapClass::GetTotalDamage(weaponType->Damage, weaponType->Warhead, objectType->Armor, 0);
+		}
+
 		// If the target can't be damaged then isn't a valid target
-		if (weaponType && GeneralUtils::GetWarheadVersusArmor(weaponType->Warhead, objectType->Armor) == 0.0 && !agentMode)
+		if (weaponType && weaponDamage <= 0 && !agentMode)
 			continue;
 
 		if (!agentMode)
@@ -1098,6 +1109,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 
 		if (object != pTechno
 			&& object->IsAlive
+			&& !object->Health > 0
 			&& !object->InLimbo
 			&& !objectType->Immune
 			&& !object->Transporter
@@ -1752,10 +1764,10 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		pTypeBuilding = abstract_cast<BuildingTypeClass*>(pTechnoType);
 
 		// Capturable Structure or Repair Hut
-		if (pTechnoType->WhatAmI() == AbstractType::BuildingType
-			&& pTypeBuilding->Capturable
-			|| (pTypeBuilding->BridgeRepairHut
-				&& pTypeBuilding->Repairable))
+		if (pTypeBuilding 
+			&& (pTypeBuilding->Capturable 
+				|| (pTypeBuilding->BridgeRepairHut 
+					&& pTypeBuilding->Repairable)))
 		{
 			return true;
 		}
