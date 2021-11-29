@@ -13,6 +13,7 @@
 
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/Script/Body.h>
 
 // #53 New debug feature for AI scripts
 class ObjectInfoCommandClass : public PhobosCommandClass
@@ -223,6 +224,7 @@ public:
 
 			append("\n");
 			display();
+			ScriptExt::DebugAngerNodesData();
 		};
 
 		auto printBuilding = [&append, &display](BuildingClass* pBuilding)
@@ -262,6 +264,7 @@ public:
 				append("Current Shield HP = (%d / %d)\n", pShieldData->GetHP(), pTypeShieldData->ShieldType->Strength);
 			}
 			display();
+			ScriptExt::DebugAngerNodesData();
 		};
 
 		bool dumped = false;

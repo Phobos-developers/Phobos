@@ -151,6 +151,7 @@ public:
 	static void SetTheMostHatedHouse(TeamClass* pTeam, int mask, int mode, bool random);
 	static void OverrideOnlyTargetHouseEnemy(TeamClass* pTeam, int mode);
 	static void AggroHouse(TeamClass* pTeam, int index);
+	static void DebugAngerNodesData();
 
 	static void VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg);
 	template<bool IsGlobal, class _Pr>
