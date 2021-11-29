@@ -2406,7 +2406,8 @@ void ScriptExt::ResetAngerAgainstHouses(TeamClass* pTeam)
 	}
 
 	pTeam->Owner->EnemyHouseIndex = -1;
-	ScriptExt::DebugAngerNodesData(); // DEBUG - DELETE THIS LINE BEFORE MERGING, THIS IS USED ONLY FOR TESTERS!
+	ScriptExt::DebugAngerNodesData();
+
 	// This action finished
 	pTeam->StepCompleted = true; // This action finished - FS-21
 }
@@ -2482,7 +2483,8 @@ void ScriptExt::ModifyHateHouses_List(TeamClass* pTeam, int idxHousesList = -1)
 	}
 
 	ScriptExt::UpdateEnemyHouseIndex(pTeam->Owner);
-	ScriptExt::DebugAngerNodesData(); // DEBUG - DELETE THIS LINE BEFORE MERGING, THIS IS USED ONLY FOR TESTERS!
+	ScriptExt::DebugAngerNodesData();
+
 	// This action finished
 	pTeam->StepCompleted = true;
 }
@@ -2537,7 +2539,8 @@ void ScriptExt::ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList
 	}
 
 	ScriptExt::UpdateEnemyHouseIndex(pTeam->Owner);
-	ScriptExt::DebugAngerNodesData(); // DEBUG - DELETE THIS LINE BEFORE MERGING, THIS IS USED ONLY FOR TESTERS!
+	ScriptExt::DebugAngerNodesData();
+
 	// This action finished
 	pTeam->StepCompleted = true;
 }
@@ -3042,7 +3045,8 @@ void ScriptExt::ModifyHateHouse_Index(TeamClass* pTeam, int idxHouse = -1)
 	}
 
 	ScriptExt::UpdateEnemyHouseIndex(pTeam->Owner);
-	ScriptExt::DebugAngerNodesData(); // DEBUG - DELETE THIS LINE BEFORE MERGING, THIS IS USED ONLY FOR TESTERS!
+	ScriptExt::DebugAngerNodesData();
+
 	// This action finished
 	pTeam->StepCompleted = true;
 }
@@ -3154,7 +3158,9 @@ void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 	{
 		Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): Failed to pick a new hated house with index: %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument, index);
 	}
-	ScriptExt::DebugAngerNodesData(); // DEBUG - DELETE THIS LINE BEFORE MERGING, THIS IS USED ONLY FOR TESTERS!
+
+	ScriptExt::DebugAngerNodesData();
+
 	// This action finished
 	pTeam->StepCompleted = true;
 }
@@ -3372,7 +3378,7 @@ void ScriptExt::VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, 
 
 void ScriptExt::DebugAngerNodesData()
 {
-	Debug::Log("DEBUG: AngerNodes lists of every playable House:\n");
+	Debug::Log("DEBUG: Updated AngerNodes lists of every playable House:\n");
 
 	for (auto pHouse : *HouseClass::Array)
 	{

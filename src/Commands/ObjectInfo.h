@@ -224,7 +224,8 @@ public:
 
 			append("\n");
 			display();
-			ScriptExt::DebugAngerNodesData();
+
+			ScriptExt::DebugAngerNodesData(); // DEBUG - DELETE THIS LINE BEFORE MERGING, THIS IS USED ONLY FOR TESTERS!
 		};
 
 		auto printBuilding = [&append, &display](BuildingClass* pBuilding)
@@ -264,7 +265,8 @@ public:
 				append("Current Shield HP = (%d / %d)\n", pShieldData->GetHP(), pTypeShieldData->ShieldType->Strength);
 			}
 			display();
-			ScriptExt::DebugAngerNodesData();
+
+			ScriptExt::DebugAngerNodesData(); // DEBUG - DELETE THIS LINE BEFORE MERGING, THIS IS USED ONLY FOR TESTERS!
 		};
 
 		bool dumped = false;
