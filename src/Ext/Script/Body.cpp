@@ -47,33 +47,6 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 74:
 		// Threats that are close have more priority. Kill until no more targets.
 		ScriptExt::Mission_Attack(pTeam, true, 0, -1, -1);
-	case 74:
-		ScriptExt::UnsetConditionalJumpVariable(pTeam);
-		break;
-	case 75:
-		ScriptExt::SetConditionalJumpCondition(pTeam, -1);
-			break;
-	case 76:
-		ScriptExt::SetConditionalCountCondition(pTeam, -1);
-			break;
-	case 77:
-		ScriptExt::SetKillsLimitComparator(pTeam, -1);
-			break;
-	case 78:
-			ScriptExt::SetAbortActionAfterSuccessKill(pTeam, -1);
-			break;
-	case 79:
-		ScriptExt::ConditionalJumpIfFalse(pTeam, -1);
-			break;
-	case 80:
-		ScriptExt::ConditionalJumpIfTrue(pTeam, -1);
-			break;
-	case 81:
-		ScriptExt::ClearCurrentTeamKills(pTeam);
-		break;
-	default:
-		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
-		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
 		break;
 	case 75:
 		// Threats that are far have more priority. Kill until no more targets.
@@ -169,6 +142,34 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		break;
 	case 112:
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
+		break;
+	case 1001:
+		ScriptExt::UnsetConditionalJumpVariable(pTeam);
+		break;
+	case 1002:
+		ScriptExt::SetConditionalJumpCondition(pTeam, -1);
+		break;
+	case 1003:
+		ScriptExt::SetConditionalCountCondition(pTeam, -1);
+		break;
+	case 1004:
+		ScriptExt::SetKillsLimitComparator(pTeam, -1);
+		break;
+	case 1005:
+		ScriptExt::SetAbortActionAfterSuccessKill(pTeam, -1);
+		break;
+	case 1006:
+		ScriptExt::ConditionalJumpIfFalse(pTeam, -1);
+		break;
+	case 1007:
+		ScriptExt::ConditionalJumpIfTrue(pTeam, -1);
+		break;
+	case 1008:
+		ScriptExt::ClearCurrentTeamKills(pTeam);
+		break;
+	default:
+		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
+		//Debug::Log("[%s] [%s] %d = %d,%d\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument);
 		break;
 	}
 
