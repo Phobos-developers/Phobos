@@ -9,6 +9,7 @@ constexpr auto NONE_STR = "<none>";
 constexpr auto NONE_STR2 = "none";
 constexpr auto TOOLTIPS_SECTION = "ToolTips";
 constexpr auto SIDEBAR_SECTION = "Sidebar";
+constexpr auto GENERAL_SECTION = "General";
 
 class Phobos
 {
@@ -57,5 +58,6 @@ public:
 		static bool ToolTipDescriptions;
 		static bool PrioritySelectionFiltering;
 		static bool DevelopmentCommands;
+		static bool ArtImageSwap;
 	};
 };

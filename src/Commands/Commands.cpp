@@ -3,6 +3,7 @@
 #include "Dummy.h"
 #include "ObjectInfo.h"
 #include "NextIdleHarvester.h"
+#include "QuickSave.h"
 
 DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
@@ -12,6 +13,7 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	//MakeCommand<DummyCommandClass>();
 	MakeCommand<ObjectInfoCommandClass>();
 	MakeCommand<NextIdleHarvesterCommandClass>();
+	MakeCommand<QuickSaveCommandClass>();
 
 	return 0;
 }

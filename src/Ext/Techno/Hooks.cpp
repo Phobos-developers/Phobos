@@ -6,6 +6,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
@@ -16,10 +17,11 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::ApplyInterceptor(pThis);
 	TechnoExt::ApplyPowered_KillSpawns(pThis);
 	TechnoExt::ApplySpawn_LimitRange(pThis);
+	TechnoExt::EatPassengers(pThis);
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
-	for (auto const& trail: pExt->LaserTrails)
+	for (auto const& trail : pExt->LaserTrails)
 		trail->Update(TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret));
 
 	return 0;
@@ -137,7 +139,7 @@ DEFINE_HOOK(0x518505, InfantryClass_TakeDamage_NotHuman, 0x4)
 	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFS(0xD0, -0x4));
 
 	// Die1-Die5 sequences are offset by 10
-	#define Die(x) x + 10
+	constexpr auto Die = [](int x) { return x + 10; };
 
 	int resultSequence = Die(1);
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
@@ -155,10 +157,140 @@ DEFINE_HOOK(0x518505, InfantryClass_TakeDamage_NotHuman, 0x4)
 		}
 	}
 
-	#undef Die(x)
-
 	R->ECX(pThis);
 	pThis->PlayAnim(static_cast<Sequence>(resultSequence), true);
 
 	return 0x518515;
+}
+
+// Customizable OpenTopped Properties
+// Author: Otamaa
+
+DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0xC)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (auto pTransport = pThis->Transporter)
+	{
+		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
+		{
+			R->EAX(pExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus));
+			return 0x6F72DE;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FE43B, TechnoClass_Fire_OpenTopped_DmgMult, 0x8)
+{
+	enum { ApplyDamageMult = 0x6FE45A, ContinueCheck = 0x6FE460 };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	//replacing whole check due to `fild`
+	if (pThis->InOpenToppedTransport)
+	{
+		GET_STACK(int, nDamage, STACK_OFFS(0xB0, 0x84));
+		float nDamageMult = static_cast<float>(RulesClass::Instance->OpenToppedDamageMultiplier);
+
+		if (auto pTransport = pThis->Transporter)
+		{
+			if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
+			{
+				//it is float isnt it YRPP ? , check tomson26 YR-IDB !
+				nDamageMult = pExt->OpenTopped_DamageMultiplier.Get(nDamageMult);
+			}
+		}
+
+		R->EAX(Game::F2I(nDamage * nDamageMult));
+		return ApplyDamageMult;
+	}
+
+	return ContinueCheck;
+}
+
+DEFINE_HOOK(0x71A82C, TemporalClass_AI_Opentopped_WarpDistance, 0xC)
+{
+	GET(TemporalClass* const, pThis, ESI);
+
+	if (auto pTransport = pThis->Owner->Transporter)
+	{
+		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
+		{
+			R->EDX(pExt->OpenTopped_WarpDistance.Get(RulesClass::Instance->OpenToppedWarpDistance));
+			return 0x71A838;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	{
+		if (pExt->AutoFire)
+		{
+			if (pExt->AutoFire_TargetSelf)
+				pThis->Target = pThis;
+			else
+				pThis->Target = pThis->GetCell();
+
+			return 0x7099B8;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
+{
+	enum { DoNotFire = 0x6FE4E7, SkipSetTarget = 0x6FE1D8 };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(CellClass* const, pCell, EAX);
+	GET_STACK(WeaponTypeClass*, pWeaponType, STACK_OFFS(0xB0, 0x70));
+
+	if (auto pExt = WeaponTypeExt::ExtMap.Find(pWeaponType))
+	{
+		if (pExt->AreaFire_Target == AreaFireTarget::Random)
+		{
+			auto const range = pWeaponType->Range / 256.0;
+
+			std::vector<CellStruct> adjacentCells = GeneralUtils::AdjacentCellsInRange(static_cast<size_t>(range + 0.99));
+			size_t size = adjacentCells.size();
+
+			for (unsigned int i = 0; i < size; i++)
+			{
+				int rand = ScenarioClass::Instance->Random.RandomRanged(0, size - 1);
+				unsigned int cellIndex = (i + rand) % size;
+				CellStruct tgtPos = pCell->MapCoords + adjacentCells[cellIndex];
+				CellClass* tgtCell = MapClass::Instance->GetCellAt(tgtPos);
+
+				if (EnumFunctions::AreCellAndObjectsEligible(tgtCell, pExt->CanTarget))
+				{
+					R->EAX(tgtCell);
+					return 0;
+				}
+			}
+
+			return DoNotFire;
+		}
+		else if (pExt->AreaFire_Target == AreaFireTarget::Self)
+		{
+			if (!EnumFunctions::AreCellAndObjectsEligible(pThis->GetCell(), pExt->CanTarget))
+				return DoNotFire;
+
+			pThis->Target = pThis;
+			return SkipSetTarget;
+		}
+
+		if (!EnumFunctions::AreCellAndObjectsEligible(pCell, pExt->CanTarget))
+			return DoNotFire;
+	}
+
+	return 0;
 }

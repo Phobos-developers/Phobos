@@ -24,12 +24,12 @@ public:
 		PhobosFixedString<0x20> GroupAs;
 		Valueable<int> RadarJamRadius;
 		Valueable<int> InhibitorRange;
-		Valueable<double> MindControlRangeLimit;
+		Valueable<Leptons> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
-		Valueable<double> Interceptor_GuardRange;
-		Valueable<double> Interceptor_MinimumGuardRange;
-		Valueable<double> Interceptor_EliteGuardRange;
-		Valueable<double> Interceptor_EliteMinimumGuardRange;
+		Valueable<Leptons> Interceptor_GuardRange;
+		Valueable<Leptons> Interceptor_MinimumGuardRange;
+		Valueable<Leptons> Interceptor_EliteGuardRange;
+		Valueable<Leptons> Interceptor_EliteMinimumGuardRange;
 		Valueable<CoordStruct> TurretOffset;
 		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Spawn_LimitedRange;
@@ -41,6 +41,11 @@ public:
 		Valueable<int> CameoPriority;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
+		Valueable<bool> PassengerDeletion_Soylent;
+		Valueable<bool> PassengerDeletion_SoylentFriendlies;
+		Valueable<int> PassengerDeletion_Rate;
+		NullableIdx<VocClass> PassengerDeletion_ReportSound;
+		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -62,6 +67,27 @@ public:
 
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
+
+		Nullable<InfantryTypeClass*> DefaultDisguise;
+
+		Nullable<int> OpenTopped_RangeBonus;
+		Nullable<float> OpenTopped_DamageMultiplier;
+		Nullable<int> OpenTopped_WarpDistance;
+
+		Valueable<bool> AutoFire;
+		Valueable<bool> AutoFire_TargetSelf;
+
+		Valueable<bool> NoSecondaryWeaponFallback;
+		
+		Valueable<int> NoAmmoWeapon;
+		Valueable<int> NoAmmoAmount;
+
+		Nullable<bool> JumpjetAllowLayerDeviation;
+		
+		Valueable<bool> DeployingAnim_KeepUnitVisible;
+		Valueable<bool> DeployingAnim_ReverseForUndeploy;
+		Valueable<bool> DeployingAnim_UseUnitDrawer;
+		Nullable<int> DeployDir;
 
 		struct LaserTrailDataEntry
 		{
@@ -86,13 +112,13 @@ public:
 			GroupAs(NONE_STR),
 			RadarJamRadius(0),
 			InhibitorRange(0),
-			MindControlRangeLimit(-1.0),
+			MindControlRangeLimit(),
 			Interceptor(false),
-			Interceptor_GuardRange(0.0),
-			Interceptor_MinimumGuardRange(0.0),
-			Interceptor_EliteGuardRange(0.0),
-			Interceptor_EliteMinimumGuardRange(0.0),
-			TurretOffset({0, 0, 0}),
+			Interceptor_GuardRange(),
+			Interceptor_MinimumGuardRange(),
+			Interceptor_EliteGuardRange(),
+			Interceptor_EliteMinimumGuardRange(),
+			TurretOffset({ 0, 0, 0 }),
 			Powered_KillSpawns(false),
 			Spawn_LimitedRange(false),
 			Spawn_LimitedExtraRange(0),
@@ -117,7 +143,26 @@ public:
 			OreGathering_FramesPerDir(),
 			LaserTrailData(),
 			DestroyAnim_Random(true),
-			NotHuman_RandomDeathSequence(false)
+			NotHuman_RandomDeathSequence(false),
+			PassengerDeletion_Soylent(false),
+			PassengerDeletion_SoylentFriendlies(false),
+			PassengerDeletion_Rate(0),
+			PassengerDeletion_ReportSound(),
+			PassengerDeletion_Rate_SizeMultiply(true),
+			DefaultDisguise(),
+			OpenTopped_RangeBonus(),
+			OpenTopped_DamageMultiplier(),
+			OpenTopped_WarpDistance(),
+			AutoFire(false),
+			AutoFire_TargetSelf(false),
+			NoSecondaryWeaponFallback(false),
+			NoAmmoWeapon(-1),
+			NoAmmoAmount(0),
+			JumpjetAllowLayerDeviation(),
+			DeployingAnim_KeepUnitVisible(false),
+			DeployingAnim_ReverseForUndeploy(true),
+			DeployingAnim_UseUnitDrawer(true),
+			DeployDir()
 		{ }
 
 		virtual ~ExtData() = default;

@@ -23,13 +23,15 @@ public:
 		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		Valueable<bool> ReceiveDamage;
 		Valueable<bool> LastKillWasTeamTarget;
+		TimerStruct	PassengerDeletionTimer;
 
-		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject),
-			InterceptedBullet(nullptr),
-			Shield(),
-			LaserTrails(),
-			ReceiveDamage(false),
-			LastKillWasTeamTarget(false)
+		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
+			, InterceptedBullet(nullptr)
+			, Shield()
+			, LaserTrails()
+			, ReceiveDamage(false)
+			, LastKillWasTeamTarget(false)
+			, PassengerDeletionTimer(-1)
 		{ }
 
 		virtual ~ExtData() = default;
@@ -61,6 +63,8 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
+	static bool IsActive(TechnoClass* pThis);
+
 	static bool IsHarvesting(TechnoClass* pThis);
 	static bool HasAvailableDock(TechnoClass* pThis);
 
@@ -76,4 +80,7 @@ public:
 	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
 	static void ApplySpawn_LimitRange(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
+	static void EatPassengers(TechnoClass* pThis);
+
+	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 };

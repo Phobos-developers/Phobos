@@ -1,7 +1,30 @@
 #include "Body.h"
 
+#include <Ext/House/Body.h>
+
 template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
+
+int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse)
+{
+	int nAmount = 0;
+	float fFactor = 1.0f;
+
+	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+	for (const auto pair : pHouseExt->BuildingCounter)
+	{
+		const auto& pExt = pair.first;
+		const auto& nCount = pair.second;
+		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
+		{
+			fFactor *= std::pow(pExt->PowerPlantEnhancer_Factor.Get(1.0f), nCount);
+			nAmount += pExt->PowerPlantEnhancer_Amount.Get(0) * nCount;
+		}
+	}
+
+	return static_cast<int>(std::round(pBuilding->GetPowerOutput() * fFactor)) + nAmount;
+}
 
 void BuildingTypeExt::ExtData::Initialize()
 {
@@ -48,7 +71,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 				this->SuperWeapons.AddItem(buffer);
 			}
 			else
+			{
 				Debug::Log("DEBUG: [%s]: Error parsing SuperWeapons= [%s]\n", pSection, cur);
+			}
 		}
 	}
 }
@@ -66,6 +91,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->PowerPlantEnhancer_Buildings)
 		.Process(this->PowerPlantEnhancer_Amount)
 		.Process(this->PowerPlantEnhancer_Factor)
+		.Process(this->SuperWeapons)
 		;
 }
 

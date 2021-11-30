@@ -115,16 +115,46 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OreGathering_FramesPerDir.Read(exINI, pSection, "OreGathering.FramesPerDir");
 
 	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
-  this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
+	this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
 
-	// Ares 0.A
-	this->GroupAs.Read(pINI, pSection, "GroupAs");
+	this->PassengerDeletion_Soylent.Read(exINI, pSection, "PassengerDeletion.Soylent");
+	this->PassengerDeletion_SoylentFriendlies.Read(exINI, pSection, "PassengerDeletion.SoylentFriendlies");
+	this->PassengerDeletion_ReportSound.Read(exINI, pSection, "PassengerDeletion.ReportSound");
+	this->PassengerDeletion_Rate_SizeMultiply.Read(exINI, pSection, "PassengerDeletion.Rate.SizeMultiply");
+	this->PassengerDeletion_Rate.Read(exINI, pSection, "PassengerDeletion.Rate");
+	
+	this->DefaultDisguise.Read(exINI, pSection, "DefaultDisguise");
+
+	this->OpenTopped_RangeBonus.Read(exINI, pSection, "OpenTopped.RangeBonus");
+	this->OpenTopped_DamageMultiplier.Read(exINI, pSection, "OpenTopped.DamageMultiplier");
+	this->OpenTopped_WarpDistance.Read(exINI, pSection, "OpenTopped.WarpDistance");
+
+	this->AutoFire.Read(exINI, pSection, "AutoFire");
+	this->AutoFire_TargetSelf.Read(exINI, pSection, "AutoFire.TargetSelf");
+
+	this->NoSecondaryWeaponFallback.Read(exINI, pSection, "NoSecondaryWeaponFallback");
+
+	this->JumpjetAllowLayerDeviation.Read(exINI, pSection, "JumpjetAllowLayerDeviation");
+	
+	this->DeployingAnim_KeepUnitVisible.Read(exINI, pSection, "DeployingAnim.KeepUnitVisible");
+	this->DeployingAnim_ReverseForUndeploy.Read(exINI, pSection, "DeployingAnim.ReverseForUndeploy");
+	this->DeployingAnim_UseUnitDrawer.Read(exINI, pSection, "DeployingAnim.UseUnitDrawer");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
 	// Ares 0.9
 	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
+
+	// Ares 0.A
+	this->GroupAs.Read(pINI, pSection, "GroupAs");
+
+	// Ares 0.C
+	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
+	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
+
+	// Ares 2.0
+	this->DeployDir.Read(exINI, pSection, "DeployDir");
 
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
@@ -227,8 +257,27 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrailData)
 		.Process(this->DestroyAnim_Random)
 		.Process(this->NotHuman_RandomDeathSequence)
+		.Process(this->DefaultDisguise)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
+		.Process(this->PassengerDeletion_Soylent)
+		.Process(this->PassengerDeletion_SoylentFriendlies)
+		.Process(this->PassengerDeletion_Rate)
+		.Process(this->PassengerDeletion_ReportSound)
+		.Process(this->PassengerDeletion_Rate_SizeMultiply)
+		.Process(this->OpenTopped_RangeBonus)
+		.Process(this->OpenTopped_DamageMultiplier)
+		.Process(this->OpenTopped_WarpDistance)
+		.Process(this->AutoFire)
+		.Process(this->AutoFire_TargetSelf)
+		.Process(this->NoSecondaryWeaponFallback)
+		.Process(this->NoAmmoWeapon)
+		.Process(this->NoAmmoAmount)
+		.Process(this->JumpjetAllowLayerDeviation)
+		.Process(this->DeployingAnim_KeepUnitVisible)
+		.Process(this->DeployingAnim_ReverseForUndeploy)
+		.Process(this->DeployingAnim_UseUnitDrawer)
+		.Process(this->DeployDir)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

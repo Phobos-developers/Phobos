@@ -42,6 +42,9 @@ public:
 		
 		Valueable<int> NotHuman_DeathSequence;
 
+		Nullable<double> AbsorbPercentShield;
+		Nullable<double> PassPercentShield;
+
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject)
 			, SpySat(false)
 			, BigGap(false)
@@ -65,6 +68,8 @@ public:
 
 			, PenetratesShield(false)
 			, BreaksShield(false)
+			, AbsorbPercentShield()
+			, PassPercentShield()
 
 			, NotHuman_DeathSequence(-1)
 		{ }
@@ -79,9 +84,6 @@ public:
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
-
-		bool IsCellEligible(CellClass* const pCell, AffectedTarget allowed);
-		bool IsTechnoEligible(TechnoClass* const pCell, AffectedTarget allowed);
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;

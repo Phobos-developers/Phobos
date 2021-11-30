@@ -10,6 +10,11 @@ template <typename T>
 void TeamExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->WaitNoTargetAttempts)
+		.Process(this->NextSuccessWeightAward)
+		.Process(this->IdxSelectedObjectFromAIList)
+		.Process(this->CloseEnough)
+		.Process(this->Countdown_RegroupAtLeader)
 		.Process(this->ConditionalJumpEvaluation)
 		.Process(this->ConditionalEvaluationType)
 		.Process(this->ConditionalComparatorType)

@@ -23,6 +23,8 @@ public:
 	Nullable<AnimTypeClass*> IdleAnim;
 	Nullable<AnimTypeClass*> BreakAnim;
 	Nullable<AnimTypeClass*> HitAnim;
+	Valueable<double> AbsorbPercent;
+	Valueable<double> PassPercent;
 
 private:
 	Valueable<double> Respawn_Rate__InMinutes;
@@ -44,6 +46,8 @@ public:
 		IdleAnim(),
 		BreakAnim(),
 		HitAnim(),
+		AbsorbPercent(1.0),
+		PassPercent(0.0),
 		Respawn_Rate__InMinutes(0.0),
 		SelfHealing_Rate__InMinutes(0.0)
 	{};

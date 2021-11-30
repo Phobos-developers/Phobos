@@ -9,6 +9,15 @@
 
 class HouseClass;
 
+enum class PhobosTriggerAction : unsigned int
+{
+	SaveGame = 500,
+	EditVariable,
+	GenerateRandomNumber,
+	PrintVariableValue,
+	BinaryOperation,
+};
+
 class TActionExt
 {
 public:
@@ -36,6 +45,21 @@ public:
 			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location, bool& bHandled);
 
 	static bool PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse,
+			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
+
+	static bool SaveGame(TActionClass* pThis, HouseClass* pHouse,
+			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
+
+	static bool EditVariable(TActionClass* pThis, HouseClass* pHouse,
+			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
+
+	static bool GenerateRandomNumber(TActionClass* pThis, HouseClass* pHouse,
+			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
+
+	static bool PrintVariableValue(TActionClass* pThis, HouseClass* pHouse,
+			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
+
+	static bool BinaryOperation(TActionClass* pThis, HouseClass* pHouse,
 			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
 
 	class ExtContainer final : public Container<TActionExt>
