@@ -195,11 +195,11 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
-		if (action > 70)
+		if (action > 70 && !(action >= PhobosScripts::LocalVariableAdd && action <= PhobosScripts::GlobalVariableAndByGlobal))
 		{
 			// Unknown new action. This action finished
 			pTeam->StepCompleted = true;
-			Debug::Log("[%s] [%s] (Line %d): Unknown Script Action: %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action);
+			Debug::Log("[%s] [%s] (line %d): Unknown Script Action: %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action);
 		}
 		break;
 	}
