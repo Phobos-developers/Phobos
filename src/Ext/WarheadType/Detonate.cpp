@@ -125,7 +125,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 
 			if (shieldType)
 			{
-				if (shieldType->Strength && (!pExt->Shield || (this->Shield_ReplaceNonRespawning && pExt->Shield->IsExpired())))
+				if (shieldType->Strength && (!pExt->Shield || (this->Shield_ReplaceNonRespawning && pExt->Shield->IsBrokenAndNonRespawning())))
 				{
 					pExt->CurrentShieldType = shieldType;
 					pExt->Shield = std::make_unique<ShieldClass>(pTarget);
