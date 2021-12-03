@@ -80,19 +80,13 @@ const bool GiftBoxClass::CreateType(int nIndex, GiftBoxData& nGboxData, CoordStr
 				bSuccess = pObject->Unlimbo(CoordStruct{ 0,0,100000 }, nRandFacing);
 				pObject->SetLocation(nCoord);
 
+				auto pCurrentCell = MapClass::Instance->TryGetCellAt(nCoord);
 				auto pCellDest = MapClass::Instance->TryGetCellAt(nDestCoord);
 
 				if (pCellDest)
-				{
-					if (pObject->IsCellOccupied(pCellDest, -1, -1, nullptr, false) == Move::OK)
-					{
-						pCellDest->ScatterContent(CoordStruct::Empty, true, true, pObject->OnBridge);
-					}
-					else
-					{
-						pCellDest = nullptr;
-					}
-				}
+					pCellDest->ScatterContent(CoordStruct::Empty, true, true, pObject->OnBridge);
+				else if (pCurrentCell)
+					pCurrentCell->ScatterContent(CoordStruct::Empty, true, true, pObject->OnBridge);
 
 				pFoot->SlaveOwner = nullptr;
 				pFoot->Transporter = nullptr;
@@ -180,6 +174,7 @@ const void GiftBoxClass::AI()
 		auto pType = pTechno->GetTechnoType();
 		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 		const auto newID = pTechno->get_ID();
+		int nDelay;
 
 		if (!IsTechnoChange && (strcmp(this->TechnoID, newID) != 0))
 		{
@@ -191,8 +186,13 @@ const void GiftBoxClass::AI()
 
 		if (!pGiftBox->Delay)
 		{
-			pGiftBox->Delay = pTypeExt->GiftBoxData.DelayMinMax.Get().Y == 0 ?
-				abs(pTypeExt->GiftBoxData.Delay.Get()) : abs(ScenarioClass::Instance->Random.RandomRanged(pTypeExt->GiftBoxData.DelayMinMax.Get().X, pTypeExt->GiftBoxData.DelayMinMax.Get().Y));
+			nDelay = pTypeExt->GiftBoxData.Delay.Get();
+
+			// Use RandomDelay Instead
+			if(pTypeExt->GiftBoxData.DelayMinMax.Get().Y > 0)
+				nDelay = ScenarioClass::Instance->Random.RandomRanged(pTypeExt->GiftBoxData.DelayMinMax.Get().X, pTypeExt->GiftBoxData.DelayMinMax.Get().Y);
+
+			pGiftBox->Delay = abs(nDelay);
 		}
 
 		pGiftBox->IsEnabled = !pGiftBox->OpenDisallowed();
@@ -240,8 +240,13 @@ const void GiftBoxClass::AI()
 			}
 			else
 			{
-				auto nDelay = pTypeExt->GiftBoxData.DelayMinMax.Get().Y == 0 ? abs(pTypeExt->GiftBoxData.Delay.Get()) : abs(ScenarioClass::Instance->Random.RandomRanged(pTypeExt->GiftBoxData.DelayMinMax.Get().X, pTypeExt->GiftBoxData.DelayMinMax.Get().Y));
-				pGiftBox->Reset(nDelay);
+				nDelay = pTypeExt->GiftBoxData.Delay.Get();
+
+				// Use RandomDelay Instead
+				if (pTypeExt->GiftBoxData.DelayMinMax.Get().Y > 0)
+					nDelay = ScenarioClass::Instance->Random.RandomRanged(pTypeExt->GiftBoxData.DelayMinMax.Get().X, pTypeExt->GiftBoxData.DelayMinMax.Get().Y);
+
+				pGiftBox->Reset(abs(nDelay));
 			}
 		}
 	}
