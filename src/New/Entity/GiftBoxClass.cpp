@@ -41,7 +41,6 @@ const bool GiftBoxClass::OpenDisallowed()
 			bIsGarrisoned ||
 			bIsOnWarfactory ||
 			pTechno->TemporalTargetingMe;
-
 	}
 
 	return false;
@@ -96,7 +95,6 @@ const bool GiftBoxClass::CreateType(int nIndex, GiftBoxData& nGboxData, CoordStr
 				pFoot->QueueMission(Mission::Move, false);
 				pFoot->ShouldEnterOccupiable = false;
 				pFoot->ShouldGarrisonStructure = false;
-
 			}
 
 			if (bSuccess)
@@ -177,9 +175,7 @@ const void GiftBoxClass::AI()
 		int nDelay;
 
 		if (!IsTechnoChange && (strcmp(this->TechnoID, newID) != 0))
-		{
 			strcpy_s(this->TechnoID, newID);
-		}
 
 		if (!pTypeExt->GiftBoxData)
 			return;
@@ -231,7 +227,6 @@ const void GiftBoxClass::AI()
 				pTechno->Undiscover();
 				pTechno->Limbo();
 				pTechno->UnInit();
-
 			}
 			else if (pTypeExt->GiftBoxData.Destroy.Get())
 			{
@@ -252,11 +247,9 @@ const void GiftBoxClass::AI()
 	}
 }
 
-DEFINE_HOOK(0x6F6CA0, TechnoClass_Put_Gbox, 0x7)
+DEFINE_HOOK(0x6F6CA0, TechnoClass_Put_GiftBox, 0x7)
 {
 	GET(TechnoClass* const, pThis, ECX);
-	//	GET_STACK(CoordStruct*, pCoord, 0x4);
-	//	GET_STACK(int, Direction, 0x8);
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pThis);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());

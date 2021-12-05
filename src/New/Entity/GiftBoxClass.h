@@ -39,7 +39,6 @@ public:
 		RandomRange.Read(parser, pSection, "GiftBox.CellRandomRange");
 		EmptyCell.Read(parser, pSection, "GiftBox.EmptyCell");
 		RandomType.Read(parser, pSection, "GiftBox.RandomType");
-
 	}
 
 	operator bool() const
@@ -54,15 +53,14 @@ public:
 		Destroy(false),
 		Delay(0),
 		//min(X),max(Y)
-		DelayMinMax({ 0,0 }),
+		DelayMinMax({ 0, 0 }),
+
 		RandomRange(false),
 		EmptyCell(false),
 		RandomType(true)
-	{}
-
-	explicit GiftBoxData(noinit_t) noexcept
 	{ }
 
+	explicit GiftBoxData(noinit_t) noexcept { }
 };
 
 class GiftBoxClass
@@ -73,7 +71,7 @@ public:
 		Techno{nullptr},
 		IsEnabled{ false },
 		Delay{ 0 }
-	{}
+	{ }
 
 	GiftBoxClass(TechnoClass* pTechno) :
 		Techno{ pTechno },

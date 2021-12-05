@@ -302,7 +302,7 @@ EliteWeaponXFLH.BurstN=        ; int - forward, lateral, height
 
 ### GiftBox
 
-- You can now able to use `GiftBox` to create `TechnoType` from another `TechnoType`.
+- You can now use `GiftBox` logic to create `TechnoType` from another `TechnoType`.
 
 In `rulesmd.ini`:
 ```ini
