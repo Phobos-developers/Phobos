@@ -58,49 +58,49 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 				
 				// Conditional Jump Script Action stuff
 				auto pKillerTeamData = TeamExt::ExtMap.Find(pFootKiller->Team);
-				if (pKillerTeamData && pKillerTeamData->ConditionalEvaluationType >= 0 && pKillerTeamData->ConditionalComparatorType >= 0 && pKillerTeamData->KillsCountLimit >= 0)
+				if (pKillerTeamData && pKillerTeamData->ConditionalEvaluationType >= 0 && pKillerTeamData->ConditionalComparatorType >= 0 && pKillerTeamData->ConditionalComparatorValue >= 0)
 				{
 					bool validKill = ScriptExt::EvaluateObjectWithMask(pVictim, pKillerTeamData->ConditionalEvaluationType, -1, -1, pKiller);
 					
 					if (validKill)
 					{
-						if (pKillerTeamData->KillsCountLimit >= 0)
-							pKillerTeamData->KillsCounter++;
+						if (pKillerTeamData->ConditionalComparatorValue >= 0)
+							pKillerTeamData->ConditionalCounter++;
 
 						// Evaluate by the number of kills
 						pKillerTeamData->ConditionalJumpEvaluation = false;
 
-						// Comparators are like [AITriggerTypes] from aimd.ini
+						// Comparators are like in [AITriggerTypes] from aimd.ini
 						switch (pKillerTeamData->ConditionalComparatorType)
 						{
 						case 0:
 							// <
-							if (pKillerTeamData->KillsCounter < pKillerTeamData->KillsCountLimit)
+							if (pKillerTeamData->ConditionalCounter < pKillerTeamData->ConditionalComparatorValue)
 								pKillerTeamData->ConditionalJumpEvaluation = true;
 							break;
 						case 1:
 							// <=
-							if (pKillerTeamData->KillsCounter <= pKillerTeamData->KillsCountLimit)
+							if (pKillerTeamData->ConditionalCounter <= pKillerTeamData->ConditionalComparatorValue)
 								pKillerTeamData->ConditionalJumpEvaluation = true;
 							break;
 						case 2:
 							// ==
-							if (pKillerTeamData->KillsCounter = pKillerTeamData->KillsCountLimit)
+							if (pKillerTeamData->ConditionalCounter = pKillerTeamData->ConditionalComparatorValue)
 								pKillerTeamData->ConditionalJumpEvaluation = true;
 							break;
 						case 3:
 							// >=
-							if (pKillerTeamData->KillsCounter >= pKillerTeamData->KillsCountLimit)
+							if (pKillerTeamData->ConditionalCounter >= pKillerTeamData->ConditionalComparatorValue)
 								pKillerTeamData->ConditionalJumpEvaluation = true;
 							break;
 						case 4:
 							// >
-							if (pKillerTeamData->KillsCounter > pKillerTeamData->KillsCountLimit)
+							if (pKillerTeamData->ConditionalCounter > pKillerTeamData->ConditionalComparatorValue)
 								pKillerTeamData->ConditionalJumpEvaluation = true;
 							break;
 						case 5:
 							// !=
-							if (pKillerTeamData->KillsCounter != pKillerTeamData->KillsCountLimit)
+							if (pKillerTeamData->ConditionalCounter != pKillerTeamData->ConditionalComparatorValue)
 								pKillerTeamData->ConditionalJumpEvaluation = true;
 							break;
 						default:

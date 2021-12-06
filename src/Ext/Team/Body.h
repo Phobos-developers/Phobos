@@ -23,8 +23,8 @@ public:
 		bool ConditionalJumpEvaluation;
 		int ConditionalEvaluationType;
 		int ConditionalComparatorType;
-		int KillsCounter;
-		int KillsCountLimit;
+		int ConditionalCounter;
+		int ConditionalComparatorValue;
 		bool AbortActionAfterKilling;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject)
@@ -36,8 +36,8 @@ public:
 			, ConditionalJumpEvaluation(false)
 			, ConditionalEvaluationType(-1)
 			, ConditionalComparatorType(3)
-			, KillsCounter(0)
-			, KillsCountLimit(1)
+			, ConditionalCounter(0)
+			, ConditionalComparatorValue(1)
 			, AbortActionAfterKilling(false)
 		{ }
 

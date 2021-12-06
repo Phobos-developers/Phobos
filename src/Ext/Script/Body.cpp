@@ -147,13 +147,13 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		ScriptExt::UnsetConditionalJumpVariable(pTeam);
 		break;
 	case 1002:
-		ScriptExt::SetConditionalJumpCondition(pTeam, -1);
+		ScriptExt::SetConditional_JumpCondition(pTeam, 0);
 		break;
 	case 1003:
-		ScriptExt::SetConditionalCountCondition(pTeam, -1);
+		ScriptExt::SetConditional_ComparatorType(pTeam, -1);
 		break;
 	case 1004:
-		ScriptExt::SetKillsLimitComparator(pTeam, -1);
+		ScriptExt::SetConditional_ComparatorValue(pTeam, -1);
 		break;
 	case 1005:
 		ScriptExt::SetAbortActionAfterSuccessKill(pTeam, -1);
@@ -165,7 +165,7 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		ScriptExt::ConditionalJumpIfTrue(pTeam, -1);
 		break;
 	case 1008:
-		ScriptExt::ClearCurrentTeamKills(pTeam);
+		ScriptExt::ClearCurrentConditionalCounter(pTeam);
 		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
@@ -2593,8 +2593,8 @@ void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam, int newScriptLine = -1)
 			pTeamData->ConditionalJumpEvaluation = false;
 			pTeamData->ConditionalEvaluationType = -1; // Disabled the Conditional jump (this was a 1-time-use)
 			pTeamData->ConditionalComparatorType = 3; // >=
-			pTeamData->KillsCounter = 0;
-			pTeamData->KillsCountLimit = 1;
+			pTeamData->ConditionalCounter = 0;
+			pTeamData->ConditionalComparatorValue = 1;
 			pTeamData->AbortActionAfterKilling = false;
 		}
 	}
@@ -2644,8 +2644,8 @@ void ScriptExt::ConditionalJumpIfFalse(TeamClass* pTeam, int newScriptLine = -1)
 			pTeamData->ConditionalJumpEvaluation = false;
 			pTeamData->ConditionalEvaluationType = -1; // Disabled the Conditional jump (this was a 1-time-use)
 			pTeamData->ConditionalComparatorType = 3; // >=
-			pTeamData->KillsCounter = 0;
-			pTeamData->KillsCountLimit = 1;
+			pTeamData->ConditionalCounter = 0;
+			pTeamData->ConditionalComparatorValue = 1;
 			pTeamData->AbortActionAfterKilling = false;
 		}
 	}
@@ -2657,7 +2657,7 @@ void ScriptExt::ConditionalJumpIfFalse(TeamClass* pTeam, int newScriptLine = -1)
 }
 
 // Enables the conditional jump logic against one type of object evaluation (currently +30 types)
-void ScriptExt::SetConditionalJumpCondition(TeamClass* pTeam, int evaluationType = -1)
+void ScriptExt::SetConditional_JumpCondition(TeamClass* pTeam, int evaluationType = 0)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 
@@ -2670,7 +2670,7 @@ void ScriptExt::SetConditionalJumpCondition(TeamClass* pTeam, int evaluationType
 	}
 
 	int scriptArgument = evaluationType;
-	if (scriptArgument < 0)
+	if (scriptArgument != 0)
 	{
 		auto pScript = pTeam->CurrentScript;
 		scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
@@ -2682,9 +2682,9 @@ void ScriptExt::SetConditionalJumpCondition(TeamClass* pTeam, int evaluationType
 		pTeamData->ConditionalJumpEvaluation = false; // Reset conditional jumping value
 		
 		// Reset the kills evaluation
-		pTeamData->ConditionalComparatorType = 3;
-		pTeamData->KillsCounter = 0;
-		pTeamData->KillsCountLimit = 1;
+		pTeamData->ConditionalComparatorType = 3; // Default to >=
+		pTeamData->ConditionalCounter = 0;
+		pTeamData->ConditionalComparatorValue = 1;
 		pTeamData->AbortActionAfterKilling = false;
 	}
 
@@ -2710,16 +2710,16 @@ void ScriptExt::UnsetConditionalJumpVariable(TeamClass* pTeam)
 	pTeamData->ConditionalJumpEvaluation = false;
 	pTeamData->ConditionalEvaluationType = -1; // Disabled the Conditional jump
 	pTeamData->ConditionalComparatorType = 3; // >=
-	pTeamData->KillsCounter = 0;
-	pTeamData->KillsCountLimit = 1;
+	pTeamData->ConditionalCounter = 0;
+	pTeamData->ConditionalComparatorValue = 1;
 	pTeamData->AbortActionAfterKilling = false;
 	
 	// This action finished
 	pTeam->StepCompleted = true;
 }
 
-// Sets the comparator from: <, <=, ==, >=, >, !=
-void ScriptExt::SetConditionalCountCondition(TeamClass* pTeam, int comparatorType = 3)
+// Sets the comparator with 0: <, 1: <=, 2: ==, 3:>=, 4:>, 5:!=
+void ScriptExt::SetConditional_ComparatorType(TeamClass* pTeam, int comparatorType = 3)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 
@@ -2755,7 +2755,7 @@ void ScriptExt::SetConditionalCountCondition(TeamClass* pTeam, int comparatorTyp
 }
 
 // Sets the value that will be used for comparation with the current kills count
-void ScriptExt::SetKillsLimitComparator(TeamClass* pTeam, int newLimit = -1)
+void ScriptExt::SetConditional_ComparatorValue(TeamClass* pTeam, int newLimit = -1)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 
@@ -2776,11 +2776,11 @@ void ScriptExt::SetKillsLimitComparator(TeamClass* pTeam, int newLimit = -1)
 
 	if (scriptArgument >= 0)
 	{
-		pTeamData->KillsCountLimit = scriptArgument;
+		pTeamData->ConditionalComparatorValue = scriptArgument;
 	}
 	else
 	{
-		pTeamData->KillsCountLimit = 1; // Is the default value
+		pTeamData->ConditionalComparatorValue = 1; // Is the default value
 	}
 
 	// This action finished
@@ -2826,7 +2826,7 @@ void ScriptExt::SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable = -1
 }
 
 // Clear the number of kills done by the Team
-void ScriptExt::ClearCurrentTeamKills(TeamClass* pTeam)
+void ScriptExt::ClearCurrentConditionalCounter(TeamClass* pTeam)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 
@@ -2838,10 +2838,151 @@ void ScriptExt::ClearCurrentTeamKills(TeamClass* pTeam)
 		return;
 	}
 
-	pTeamData->KillsCounter = 0;
+	pTeamData->ConditionalCounter = 0;
 
 	// This action finished
 	pTeam->StepCompleted = true;
+}
 
-	return;
+void ScriptExt::ConditionalJump_Economy(TeamClass* pTeam)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	HouseClass* pHouse = nullptr;
+	DynamicVectorClass<HouseClass*> pHousesList;
+	long economyValue = -1;
+	HouseClass* pTempHouse = nullptr;
+
+	if (!pTeam || !pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+	int index = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
+
+	// House selection & obtain the available cash
+	if (index >= 0)
+	{
+		// Standard House index
+		pHouse = HouseClass::Array->GetItem(index);
+		economyValue = pHouse->Available_Money();
+	}
+	else
+	{
+		for (auto pItem : *HouseClass::Array())
+		{
+			if (pTeam->Owner == pItem || pItem->Defeated || pItem->IsObserver() || pItem->Type->MultiplayPassive || pItem->IsNeutral())
+				continue;
+
+			pHousesList.AddItem(pItem);
+		}
+
+		switch (index)
+		{
+			case -1:
+				// Random House (excluding the Team's House)
+				if (pHousesList.Count > 0)
+				{
+					pHouse = pHousesList.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, pHousesList.Count - 1));
+					economyValue = pHouse->Available_Money();
+				}
+				break;
+				
+			case -2:
+				// The Team's House
+				pHouse = pTeam->Owner;
+				economyValue = pHouse->Available_Money();
+				break;
+
+			case -3:
+				// The richest House
+				if (pHousesList.Count > 0)
+				{
+					for (auto pItem : pHousesList)
+					{
+						if (pItem->Available_Money() > economyValue || economyValue == -1)
+						{
+							economyValue = pItem->Available_Money();
+							pTempHouse = pItem;
+						}
+
+						if (pTempHouse)
+							pHouse = pTempHouse;
+					}
+				}
+				break;
+
+			case -4:
+				// The poorest House
+				if (pHousesList.Count > 0)
+				{
+					for (auto pItem : pHousesList)
+					{
+						if (pItem->Available_Money() < economyValue || economyValue == -1)
+						{
+							economyValue = pItem->Available_Money();
+							pTempHouse = pItem;
+						}
+
+						if (pTempHouse)
+							pHouse = pTempHouse;
+					}
+				}
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	// We have selected the house, now check
+	if (economyValue >= 0)
+	{
+		//- House Economy (value comparator accepted: 0:<,1:<=,2:==,3:>=,4:>,5:!=). Also check if richest/poorest.
+		//pTeamData->ConditionalComparatorType
+		//pTeamData->ConditionalComparatorValue
+aaaaaaa
+		// Comparators are like in [AITriggerTypes] from aimd.ini
+		switch (pTeamData->ConditionalComparatorType)
+		{
+		case 0:
+			// <
+			if (pTeamData->ConditionalCounter < pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		case 1:
+			// <=
+			if (pTeamData->ConditionalCounter <= pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		case 2:
+			// ==
+			if (pTeamData->ConditionalCounter = pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		case 3:
+			// >=
+			if (pTeamData->ConditionalCounter >= pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		case 4:
+			// >
+			if (pTeamData->ConditionalCounter > pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		case 5:
+			// !=
+			if (pTeamData->ConditionalCounter != pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		default:
+			break;
+		}
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
 }
