@@ -55,7 +55,7 @@ DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_Sh
 		pWeapon = R->EBX<WeaponTypeClass*>();
 
 	if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead))
-		if (pWHExt->PenetratesShield)
+		if (pWHExt->Shield_Penetrate)
 			return 0;
 
 	TechnoClass* pTarget = nullptr;
@@ -109,10 +109,9 @@ DEFINE_HOOK(0x6F36F2, TechnoClass_WhatWeaponShouldIUse_Shield, 0x6)
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI_Shield, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
-	const auto pShieldType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->ShieldType;
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pShieldType->Strength && !pExt->Shield)
+	if (pExt->CurrentShieldType && pExt->CurrentShieldType->Strength && !pExt->Shield)
 		pExt->Shield = std::make_unique<ShieldClass>(pThis);
 
 	if (const auto pShieldData = pExt->Shield.get())

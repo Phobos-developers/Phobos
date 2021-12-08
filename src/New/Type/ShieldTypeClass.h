@@ -10,12 +10,14 @@ class ShieldTypeClass final : public Enumerable<ShieldTypeClass>
 {
 public:
 	Valueable<int> Strength;
+	Nullable<int> InitialStrength;
 	ArmorType Armor;
 	Valueable<bool> Powered;
 	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
 	Valueable<double> SelfHealing;
 	Valueable<int> SelfHealing_Rate;
+
 	Valueable<bool> AbsorbOverDamage;
 	Valueable<int> BracketDelta;
 	Valueable<AttachedAnimFlag> IdleAnim_OfflineAction;
@@ -23,6 +25,7 @@ public:
 	Nullable<AnimTypeClass*> IdleAnim;
 	Nullable<AnimTypeClass*> BreakAnim;
 	Nullable<AnimTypeClass*> HitAnim;
+	Nullable<WeaponTypeClass*> BreakWeapon;
 	Valueable<double> AbsorbPercent;
 	Valueable<double> PassPercent;
 
@@ -33,6 +36,7 @@ private:
 public:
 	ShieldTypeClass(const char* const pTitle) : Enumerable<ShieldTypeClass>(pTitle),
 		Strength(0),
+		InitialStrength(),
 		Armor(Armor::None),
 		Powered(false),
 		Respawn(0.0),
@@ -46,6 +50,7 @@ public:
 		IdleAnim(),
 		BreakAnim(),
 		HitAnim(),
+		BreakWeapon(),
 		AbsorbPercent(1.0),
 		PassPercent(0.0),
 		Respawn_Rate__InMinutes(0.0),

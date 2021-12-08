@@ -11,6 +11,10 @@ This page lists the history of changes across stable Phobos releases and also al
 
 ### From older Phobos versions
 
+#### From 0.2.2.2
+- Keys `rulesmd.ini->[SOMEWARHEAD]->PenetratesShield` and `rulesmd.ini->[SOMEWARHEAD]->BreaksShield` have been changed to `Shield.Penetrate` and `Shield.Break`, respectively.
+
+#### From 0.1.1
 - Key `rulesmd.ini->[SOMETECHNOTYPE]->Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on.
 
 ### For Map Editor (Final Alert 2)
@@ -210,6 +214,8 @@ BuiltInType=5
 New:
 - LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)
 - Anim-to-Unit logic and ability to randomize DestroyAnim (by Otamaa)
+- Shield modification warheads (by Starkku)
+- Shield BreakWeapon & InitialStrength (by Starkku)
 - Initial Strength for TechnoTypes (by Uranusian)
 - Re-enable obsolete `JumpjetControls` for TechnoTypes' default Jumpjet properties (by Uranusian)
 - Weapon targeting filter (by Uranusian, Starkku)
@@ -257,7 +263,7 @@ Vanilla fixes:
 - Fixed the bug when retinting map lighting with a map action corrupted light sources (by secsome)
 
 Phobos fixes:
-- TBA
+- Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
 
 ### 0.2.2.2
 

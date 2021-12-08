@@ -64,12 +64,31 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Shields
 	if (RulesClass::Instance->C4Warhead == pThis)
-		this->PenetratesShield = true;
+		this->Shield_Penetrate = true;
 	else
-		this->PenetratesShield.Read(exINI, pSection, "PenetratesShield");
-	this->BreaksShield.Read(exINI, pSection, "BreaksShield");
-	this->AbsorbPercentShield.Read(exINI, pSection, "AbsorbPercentShield");
-	this->PassPercentShield.Read(exINI, pSection, "PassPercentShield");
+		this->Shield_Penetrate.Read(exINI, pSection, "Shield.Penetrate");
+	this->Shield_Break.Read(exINI, pSection, "Shield.Break");
+	this->Shield_BreakAnim.Read(exINI, pSection, "Shield.BreakAnim");
+	this->Shield_HitAnim.Read(exINI, pSection, "Shield.HitAnim");
+	this->Shield_BreakWeapon.Read(exINI, pSection, "Shield.BreakWeapon");
+	this->Shield_AbsorbPercent.Read(exINI, pSection, "Shield.AbsorbPercent");
+	this->Shield_PassPercent.Read(exINI, pSection, "Shield.PassPercent");
+	this->Shield_Respawn_Duration.Read(exINI, pSection, "Shield.Respawn.Duration");
+	this->Shield_Respawn_Amount.Read(exINI, pSection, "Shield.Respawn.Amount");
+	this->Shield_Respawn_Rate_InMinutes.Read(exINI, pSection, "Shield.Respawn.Rate");
+	this->Shield_Respawn_Rate = (int)(this->Shield_Respawn_Rate_InMinutes * 900);
+	this->Shield_Respawn_ResetTimer.Read(exINI, pSection, "Shield.Respawn.RestartTimer");
+	this->Shield_SelfHealing_Duration.Read(exINI, pSection, "Shield.SelfHealing.Duration");
+	this->Shield_SelfHealing_Amount.Read(exINI, pSection, "Shield.SelfHealing.Amount");
+	this->Shield_SelfHealing_Rate_InMinutes.Read(exINI, pSection, "Shield.SelfHealing.Rate");
+	this->Shield_SelfHealing_Rate = (int)(this->Shield_SelfHealing_Rate_InMinutes * 900);
+	this->Shield_SelfHealing_ResetTimer.Read(exINI, pSection, "Shield.SelfHealing.RestartTimer");
+	this->Shield_AttachTypes.Read(exINI, pSection, "Shield.AttachTypes");
+	this->Shield_RemoveTypes.Read(exINI, pSection, "Shield.RemoveTypes");
+	this->Shield_ReplaceOnly.Read(exINI, pSection, "Shield.ReplaceOnly");
+	this->Shield_ReplaceNonRespawning.Read(exINI, pSection, "Shield.ReplaceNonRespawning");
+	this->Shield_InheritStateOnReplace.Read(exINI, pSection, "Shield.InheritStateOnReplace");
+	this->Shield_AffectTypes.Read(exINI, pSection, "Shield.AffectTypes");
 
 	this->NotHuman_DeathSequence.Read(exINI, pSection, "NotHuman.DeathSequence");
 }
@@ -101,8 +120,29 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
 
-		.Process(this->PenetratesShield)
-		.Process(this->BreaksShield)
+		.Process(this->Shield_Penetrate)
+		.Process(this->Shield_Break)
+		.Process(this->Shield_BreakAnim)
+		.Process(this->Shield_HitAnim)
+		.Process(this->Shield_BreakWeapon)
+		.Process(this->Shield_AbsorbPercent)
+		.Process(this->Shield_PassPercent)
+
+		.Process(this->Shield_Respawn_Duration)
+		.Process(this->Shield_Respawn_Amount)
+		.Process(this->Shield_Respawn_Rate)
+		.Process(this->Shield_Respawn_ResetTimer)
+		.Process(this->Shield_SelfHealing_Duration)
+		.Process(this->Shield_SelfHealing_Amount)
+		.Process(this->Shield_SelfHealing_Rate)
+		.Process(this->Shield_SelfHealing_ResetTimer)
+		.Process(this->Shield_AttachTypes)
+		.Process(this->Shield_RemoveTypes)
+		.Process(this->Shield_ReplaceOnly)
+		.Process(this->Shield_ReplaceNonRespawning)
+		.Process(this->Shield_InheritStateOnReplace)
+		.Process(this->Shield_AffectTypes)
+
 		.Process(this->NotHuman_DeathSequence)
 		;
 }
