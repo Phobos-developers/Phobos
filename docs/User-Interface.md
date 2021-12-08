@@ -191,7 +191,7 @@ Sidebar.ProducingProgress.Offset=0,0 ; X,Y, pixels relative to default
 *Extended tooltips used in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
 
 - Sidebar tooltips can now display extended information about the TechnoType/SWType when hovered over it's cameo. In addition the low character limit is lifted when the feature is enabled via the corresponding tag, allowing for 1024 character long tooltips.
-- TechnoType's tooltip would display it's name, cost, power, description and build time (when applicable).
+- TechnoType's tooltip would display it's name, cost, power, build time and description (when applicable).
 - SWType's tooltip would display it's name, cost,  and recharge time (when applicable).
 - Extended tooltips don't use `TXT_MONEY_FORMAT_1` and `TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time labels (displayed before correspoding values) with the corresponding tags. Characters `$ U+0024`, `⚡ U+26A1` and `⌚ U+231A` are used by default.
 - Fixed a bug when switching build queue tabs via QWER didn't make tooltips disappear as they should, resulting in stuck tooltips.
