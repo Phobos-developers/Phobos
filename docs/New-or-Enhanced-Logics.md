@@ -445,6 +445,7 @@ Rad.NoOwner=no  ; boolean
 ### Weapon targeting filter
 
 - You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
+  - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
 
 In `rulesmd.ini`:
 ```ini
@@ -457,7 +458,7 @@ CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allie
 
 - You can now specify how AreaFire weapon picks its target. By default it targets the base cell the firer is currently on, but this can now be changed to fire on the firer itself or at a random cell within the radius of the weapon's `Range` by setting `AreaFire.Target` to `self` or `random` respectively.
 - `AreaFire.Target=self` respects normal targeting rules (Warhead Verses etc.) against the firer itself.
-- `AreaFire.Target=random` ignores cells that are ineligible or contain ineligible objects based on listed values in weapon's `CanTarget`.
+- `AreaFire.Target=random` ignores cells that are ineligible or contain ineligible objects based on listed values in weapon's `CanTarget` & `CanTargetHouses`.
 
 In `rulesmd.ini`:
 ```ini
