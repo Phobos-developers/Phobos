@@ -6,7 +6,10 @@
 #include <ScenarioClass.h>
 #include <VoxelAnimClass.h>
 #include <BulletClass.h>
+#include <HouseClass.h>
+
 #include <Ext/Rules/Body.h>
+#include <Ext/BuildingType/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -293,4 +296,22 @@ DEFINE_HOOK(0x51BB6E, TechnoClass_AI_TemporalTargetingMe_Fix, 0x6) // InfantryCl
 	}
 
 	return R->Origin() + 0xF;
+}
+
+// Fix the issue that AITriggerTypes do not recognize building upgrades
+// Author: Uranusian
+DEFINE_HOOK_AGAIN(0x41EEE3, AITriggerTypeClass_Condition_SupportPowersup, 0x7)	//AITriggerTypeClass_OwnerHouseOwns_SupportPowersup
+DEFINE_HOOK(0x41EB43, AITriggerTypeClass_Condition_SupportPowersup, 0x7)		//AITriggerTypeClass_EnemyHouseOwns_SupportPowersup
+{
+	GET(HouseClass*, pHouse, EDX);
+	GET(int, idxBld, EBP);
+	auto const pType = BuildingTypeClass::Array->Items[idxBld];
+	int count = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);
+
+	if (count == -1)
+		count = pHouse->OwnedBuildingTypes1.GetItemCount(idxBld);
+
+	R->EAX(count);
+
+	return R->Origin() + 0xC;
 }
