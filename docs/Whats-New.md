@@ -253,6 +253,7 @@ New:
 - Attached animation layer customization (by Starkku)
 - Jumpjet unit layer deviation customization (by Starkku)
 - IsSimpleDeployer deploy direction & animation customizations (by Starkku)
+- Customizable projectile gravity (by secsome)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
