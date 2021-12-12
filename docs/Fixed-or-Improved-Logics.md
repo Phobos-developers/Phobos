@@ -41,6 +41,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Animations can now be offset on the X axis with `XDrawOffset`.
 - `IsSimpleDeployer` units now only play `DeploySound` and `UndeploySound` once, when done with (un)deploying instead of repeating it over duration of turning and/or `DeployingAnim`.
 - AITrigger can now recognize Building Upgrades as legal condition.
+- Fixed bug when Occupied Building `MuzzleFlashX` is drawn on the center of the building when `X` is go beyond 10.
 
 ## Animations
 

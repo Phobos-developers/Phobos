@@ -262,6 +262,7 @@ Vanilla fixes:
 - Fixed temporal weapon crash under certain conditions where stack dump starts with 0051BB7D (by secsome)
 - Fixed the bug when retinting map lighting with a map action corrupted light sources (by secsome)
 - Fixed the bug that AITriggerTypes do not recognize building upgrades (by Uranusian)
+- Fixed the bug when Occupied Building `MuzzleFlashX` is drawn on the center of the building when `X` is go beyond 10 (by Otamaa)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)

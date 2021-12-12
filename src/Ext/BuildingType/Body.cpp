@@ -75,11 +75,14 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
+	//const char* pArtSection = pThis->ImageFile;
+	auto pArtINI = &CCINIClass::INI_Art();
 
 	if (!pINI->GetSection(pSection))
 		return;
 
 	INI_EX exINI(pINI);
+	INI_EX exArtINI(pArtINI);
 
 	this->PowersUp_Owner.Read(exINI, pSection, "PowersUp.Owner");
 	this->PowersUp_Buildings.Read(exINI, pSection, "PowersUp.Buildings");
@@ -113,6 +116,10 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			}
 		}
 	}
+
+	if (pThis->MaxNumberOccupants > 10)
+		Templated::ParseVectorWithBaseSize(this->PhobosMuzzleFlash, pThis->MaxNumberOccupants, exArtINI, pSection, "MuzzleFlash", Point2D::Empty,true);
+
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -131,6 +138,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PowerPlantEnhancer_Amount)
 		.Process(this->PowerPlantEnhancer_Factor)
 		.Process(this->SuperWeapons)
+		.Process(this->PhobosMuzzleFlash)
 		;
 }
 

@@ -22,12 +22,14 @@ public:
 		Nullable<int> PowerPlantEnhancer_Amount;
 		Nullable<float> PowerPlantEnhancer_Factor;
 
+		DynamicVectorClass<Point2D> PhobosMuzzleFlash;
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject),
 			PowersUp_Owner(AffectedHouse::Owner),
 			PowersUp_Buildings(),
 			PowerPlantEnhancer_Buildings(),
 			PowerPlantEnhancer_Amount(),
-			PowerPlantEnhancer_Factor()
+			PowerPlantEnhancer_Factor(),
+			PhobosMuzzleFlash()
 		{ }
 
 		virtual ~ExtData() = default;
