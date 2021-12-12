@@ -21,7 +21,6 @@
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\Dummy.h" />
     <ClCompile Include="src\Ext\AnimType\Hooks.cpp" />
-    <ClCompile Include="src\Ext\BuildingType\Hooks.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.Variables.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Body.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Hooks.cpp" />
@@ -86,6 +85,7 @@
     <ClCompile Include="src\Misc\Selection.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
+    <ClCompile Include="src\Ext\BuildingType\Hooks.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Body.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Hooks.cpp" />
     <ClCompile Include="src\Utilities\Stream.cpp" />
