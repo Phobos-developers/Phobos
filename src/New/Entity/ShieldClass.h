@@ -88,10 +88,10 @@ private:
 	struct Timers
 	{
 		Timers() :
-			SelfHealing{ },
-			SelfHealing_Warhead { },
-			Respawn{ },
-			Respawn_Warhead { }
+			SelfHealing{ }
+			, SelfHealing_Warhead { }
+			, Respawn{ }
+			, Respawn_Warhead { }
 		{ }
 
 		TimerStruct SelfHealing;

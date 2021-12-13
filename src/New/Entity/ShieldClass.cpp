@@ -12,22 +12,20 @@
 #include <RadarEventClass.h>
 #include <TacticalClass.h>
 
-ShieldClass::ShieldClass() :
-	Techno { nullptr },
-	HP { 0 },
-	Timers { }
+ShieldClass::ShieldClass() : Techno { nullptr }
+	, HP { 0 }
+	, Timers { }
 { }
 
-ShieldClass::ShieldClass(TechnoClass* pTechno) :
-	Techno { pTechno },
-	IdleAnim { nullptr },
-	Timers { },
-	Cloak { false },
-	Online { true },
-	Temporal { false },
-	Available { true },
-	SelfHealing_Rate_Warhead { -1 },
-	Respawn_Rate_Warhead { -1 }
+ShieldClass::ShieldClass(TechnoClass* pTechno) : Techno { pTechno }
+	, IdleAnim { nullptr }
+	, Timers { }
+	, Cloak { false }
+	, Online { true }
+	, Temporal { false }
+	, Available { true }
+	, SelfHealing_Rate_Warhead { -1 }
+	, Respawn_Rate_Warhead { -1 }
 {
 	this->UpdateType();
 	SetHP(this->Type->InitialStrength.Get(this->Type->Strength));

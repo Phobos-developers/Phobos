@@ -34,27 +34,27 @@ private:
 	Valueable<double> SelfHealing_Rate__InMinutes;
 
 public:
-	ShieldTypeClass(const char* const pTitle) : Enumerable<ShieldTypeClass>(pTitle),
-		Strength(0),
-		InitialStrength(),
-		Armor(Armor::None),
-		Powered(false),
-		Respawn(0.0),
-		Respawn_Rate(0),
-		SelfHealing(0.0),
-		SelfHealing_Rate(0),
-		AbsorbOverDamage(false),
-		BracketDelta(0),
-		IdleAnim_OfflineAction(AttachedAnimFlag::Hides),
-		IdleAnim_TemporalAction(AttachedAnimFlag::Hides),
-		IdleAnim(),
-		BreakAnim(),
-		HitAnim(),
-		BreakWeapon(),
-		AbsorbPercent(1.0),
-		PassPercent(0.0),
-		Respawn_Rate__InMinutes(0.0),
-		SelfHealing_Rate__InMinutes(0.0)
+	ShieldTypeClass(const char* const pTitle) : Enumerable<ShieldTypeClass>(pTitle)
+		, Strength(0)
+		, InitialStrength()
+		, Armor(Armor::None)
+		, Powered(false)
+		, Respawn(0.0)
+		, Respawn_Rate(0)
+		, SelfHealing(0.0)
+		, SelfHealing_Rate(0)
+		, AbsorbOverDamage(false)
+		, BracketDelta(0)
+		, IdleAnim_OfflineAction(AttachedAnimFlag::Hides)
+		, IdleAnim_TemporalAction(AttachedAnimFlag::Hides)
+		, IdleAnim()
+		, BreakAnim()
+		, HitAnim()
+		, BreakWeapon()
+		, AbsorbPercent(1.0)
+		, PassPercent(0.0)
+		, Respawn_Rate__InMinutes(0.0)
+		, SelfHealing_Rate__InMinutes(0.0)
 	{};
 
 	virtual ~ShieldTypeClass() override = default;

@@ -22,10 +22,10 @@ public:
 		Valueable<RadTypeClass*> Type;
 		Valueable<HouseClass*> RadHouse;
 
-		ExtData(RadSiteClass* OwnerObject) : Extension<RadSiteClass>(OwnerObject),
-			RadHouse(nullptr),
-			Type(),
-			Weapon(nullptr)
+		ExtData(RadSiteClass* OwnerObject) : Extension<RadSiteClass>(OwnerObject)
+			, RadHouse(nullptr)
+			, Type()
+			, Weapon(nullptr)
 		{ }
 
 		virtual ~ExtData() = default;
