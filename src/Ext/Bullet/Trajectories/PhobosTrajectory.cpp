@@ -168,11 +168,11 @@ PhobosTrajectory* PhobosTrajectory::ProcessFromStream(PhobosStreamWriter& Stm, P
 DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 {
 	GET(BulletClass*, pThis, EBP);
-	auto const pData = BulletTypeExt::ExtMap.Find(pThis->Type);
+
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
-	if (pData->TrajectoryType)
-		pExt->Trajectory->OnAI(pThis);
+	if (auto pTraj = pExt->Trajectory)
+		pTraj->OnAI(pThis);
 
 	return 0;
 }
@@ -183,11 +183,10 @@ DEFINE_HOOK(0x46745C, BulletClass_AI_Postition_Trajectories, 0x7)
 	LEA_STACK(BulletVelocity*, pSpeed, STACK_OFFS(0x1AC, 0x11C));
 	LEA_STACK(BulletVelocity*, pPosition, STACK_OFFS(0x1AC, 0x144));
 
-	auto const pData = BulletTypeExt::ExtMap.Find(pThis->Type);
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
-	if (pData->TrajectoryType)
-		pExt->Trajectory->OnAIVelocity(pThis, pSpeed, pPosition);
+	if (auto pTraj = pExt->Trajectory)
+		pTraj->OnAIVelocity(pThis, pSpeed, pPosition);
 
 	return 0;
 }
