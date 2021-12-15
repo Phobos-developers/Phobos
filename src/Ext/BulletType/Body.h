@@ -8,6 +8,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 
 #include <Ext/Bullet/Trajectories/StraightTrajactory.h>
+#include <Ext/Bullet/Trajectories/SampleTrajactory.h>
 
 class BulletTypeExt
 {
@@ -23,12 +24,14 @@ public:
 		
 		// Trajactories
 		StraightTrajactoryType Trajactory_Straight;
+		SampleTrajactoryType Trajactory_Sample;
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
 			, Interceptable { false }
 			, LaserTrail_Types {}
 			, Gravity {}
 			, Trajactory_Straight {}
+			, Trajactory_Sample {}
 		{ }
 
 		virtual ~ExtData() = default;

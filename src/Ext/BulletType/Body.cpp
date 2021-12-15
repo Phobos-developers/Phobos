@@ -27,6 +27,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Gravity.Read(exINI, pSection, "Gravity");
 
 	this->Trajactory_Straight.Read(pINI, pSection, "Trajactory.Straight");
+	this->Trajactory_Sample.Read(pINI, pSection, "Trajactory.Sample");
 
 	INI_EX exArtINI(CCINIClass::INI_Art);
 
@@ -44,6 +45,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrail_Types)
 		.Process(this->Gravity)
 		.Process(this->Trajactory_Straight)
+		.Process(this->Trajactory_Sample)
 		;
 }
 

@@ -30,6 +30,8 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 
 	if (pData->Trajactory_Straight.IsTrajactoryEnabled)
 		pExt->Trajactory_Straight.OnAI(pThis);
+	else if (pData->Trajactory_Sample.IsTrajactoryEnabled)
+		pExt->Trajactory_Sample.OnAI(pThis);
 
 	return 0;
 }
@@ -38,13 +40,15 @@ DEFINE_HOOK(0x46745C, BulletClass_AI_Postition_Trajectories, 0x7)
 {
 	GET(BulletClass*, pThis, EBP);
 	LEA_STACK(BulletVelocity*, pSpeed, STACK_OFFS(0x1AC, 0x11C));
-	// LEA_STACK(BulletVelocity*, pPosition, STACK_OFFS(0x1AC, 0x144));
+	LEA_STACK(BulletVelocity*, pPosition, STACK_OFFS(0x1AC, 0x144));
 
 	auto const pData = BulletTypeExt::ExtMap.Find(pThis->Type);
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
 	if (pData->Trajactory_Straight.IsTrajactoryEnabled)
-		pExt->Trajactory_Straight.OnAIVelocity(pThis, pSpeed);
+		pExt->Trajactory_Straight.OnAIVelocity(pThis, pSpeed, pPosition);
+	else if (pData->Trajactory_Sample.IsTrajactoryEnabled)
+		pExt->Trajactory_Sample.OnAIVelocity(pThis, pSpeed, pPosition);
 
 	return 0;
 }
@@ -60,6 +64,8 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 
 	if (pData->Trajactory_Straight.IsTrajactoryEnabled)
 		pExt->Trajactory_Straight.OnUnlimbo(pThis, pCoord, pVelocity);
+	else if (pData->Trajactory_Sample.IsTrajactoryEnabled)
+		pExt->Trajactory_Sample.OnUnlimbo(pThis, pCoord, pVelocity);
 
 	return 0;
 }

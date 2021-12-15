@@ -60,7 +60,7 @@ void StraightTrajactory::OnAI(BulletClass* pBullet)
 	
 }
 
-void StraightTrajactory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed)
+void StraightTrajactory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
 {
 	pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type); // We don't want to take the gravity into account
 }

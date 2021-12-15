@@ -25,5 +25,5 @@ public:
 
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) = 0;
 	virtual void OnAI(BulletClass* pBullet) = 0;
-	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed) = 0;
+	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) = 0;
 };
