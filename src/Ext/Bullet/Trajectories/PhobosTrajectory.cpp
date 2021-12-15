@@ -26,9 +26,9 @@ PhobosTrajectoryType* PhobosTrajectoryType::CreateType(CCINIClass* const pINI, c
 	PhobosTrajectoryType* pRet = nullptr;
 
 	pINI->ReadString(pSection, pKey, "", Phobos::readBuffer);
-	if (strcmp(Phobos::readBuffer, "Straight") == 0)
+	if (_stricmp(Phobos::readBuffer, "Straight") == 0)
 		pRet = GameCreate<StraightTrajectoryType>();
-	else if (strcmp(Phobos::readBuffer, "Sample") == 0)
+	else if (_stricmp(Phobos::readBuffer, "Sample") == 0)
 		pRet = GameCreate<SampleTrajectoryType>();
 
 	if (pRet)
