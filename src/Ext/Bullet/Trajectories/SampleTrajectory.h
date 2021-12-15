@@ -1,31 +1,39 @@
 #pragma once
 
-#include "PhobosTrajactory.h"
+#include "PhobosTrajectory.h"
 
 /*
-* This is a sample class telling you how to make a new type of trajactory
+* This is a sample class telling you how to make a new type of Trajectory
 * Author: secsome
 */
 
 // Used in BulletTypeExt
-class SampleTrajactoryType final : public PhobosTrajactoryType
+class SampleTrajectoryType final : public PhobosTrajectoryType
 {
 public:
+	SampleTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Sample)
+		, ExtraHeight { 0.0 }
+	{ }
+
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 
-	virtual void Read(CCINIClass* const pINI, const char* pSection, const char* pMainKey) override;
+	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 
 	// Your type properties
 	double ExtraHeight;
 };
 
 // Used in BulletExt
-class SampleTrajactory final : public PhobosTrajactory
+class SampleTrajectory final : public PhobosTrajectory
 {
 public:
-	// Construct it here
-	SampleTrajactory() : PhobosTrajactory()
+	// This constructor is for Save & Load
+	SampleTrajectory() : PhobosTrajectory(TrajectoryFlag::Sample)
+		, IsFalling { false }
+	{}
+
+	SampleTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Sample)
 		, IsFalling { false }
 	{}
 

@@ -26,8 +26,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Interceptable.Read(exINI, pSection, "Interceptable");
 	this->Gravity.Read(exINI, pSection, "Gravity");
 
-	this->Trajactory_Straight.Read(pINI, pSection, "Trajactory.Straight");
-	this->Trajactory_Sample.Read(pINI, pSection, "Trajactory.Sample");
+	this->TrajectoryType = PhobosTrajectoryType::CreateType(pINI, pSection, "Trajectory");
 
 	INI_EX exArtINI(CCINIClass::INI_Art);
 
@@ -44,9 +43,9 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Interceptable)
 		.Process(this->LaserTrail_Types)
 		.Process(this->Gravity)
-		.Process(this->Trajactory_Straight)
-		.Process(this->Trajactory_Sample)
 		;
+
+	this->TrajectoryType = PhobosTrajectoryType::ProcessFromStream(Stm, this->TrajectoryType);
 }
 
 void BulletTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -83,6 +82,9 @@ DEFINE_HOOK(0x46BDD9, BulletTypeClass_CTOR, 0x5)
 DEFINE_HOOK(0x46C8B6, BulletTypeClass_SDDTOR, 0x6)
 {
 	GET(BulletTypeClass*, pItem, ESI);
+
+	if (auto pType = BulletTypeExt::ExtMap.Find(pItem)->TrajectoryType)
+		GameDelete(pType);
 
 	BulletTypeExt::ExtMap.Remove(pItem);
 	return 0;

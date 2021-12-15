@@ -1,53 +1,46 @@
-#include "SampleTrajactory.h"
+#include "SampleTrajectory.h"
 
 #include <Ext/BulletType/Body.h>
 
 // Save and Load
-bool SampleTrajactoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+bool SampleTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
-	bool ret = this->PhobosTrajactoryType::Load(Stm, RegisterForChange);
-
-	if (ret)
-	{
-		ret &= Stm.Load(this->ExtraHeight);
-	}
-
-	return ret;
-}
-
-bool SampleTrajactoryType::Save(PhobosStreamWriter& Stm) const
-{
-	bool ret = this->PhobosTrajactoryType::Save(Stm);
-
-	Stm.Save(this->ExtraHeight);
-
-	return ret;
-}
-
-// INI reading stuff
-void SampleTrajactoryType::Read(CCINIClass* const pINI, const char* pSection, const char* pMainKey)
-{
-	this->PhobosTrajactoryType::Read(pINI, pSection, pMainKey);
-
-	this->ExtraHeight = pINI->ReadDouble(pSection, "Trajactory.Sample.ExtraHeight", 0.0);
-}
-
-bool SampleTrajactory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
-{
-	Stm.Process(this->IsFalling, RegisterForChange);
+	this->PhobosTrajectoryType::Load(Stm, false);
+	Stm.Process(this->ExtraHeight, false);
 	return true;
 }
 
-bool SampleTrajactory::Save(PhobosStreamWriter& Stm) const
+bool SampleTrajectoryType::Save(PhobosStreamWriter& Stm) const
 {
+	this->PhobosTrajectoryType::Save(Stm);
+	Stm.Process(this->ExtraHeight);
+	return true;
+}
+
+// INI reading stuff
+void SampleTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
+{
+	this->ExtraHeight = pINI->ReadDouble(pSection, "Trajectory.Sample.ExtraHeight", 0.0);
+}
+
+bool SampleTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	this->PhobosTrajectory::Load(Stm, false);
+	Stm.Process(this->IsFalling, false);
+	return true;
+}
+
+bool SampleTrajectory::Save(PhobosStreamWriter& Stm) const
+{
+	this->PhobosTrajectory::Save(Stm);
 	Stm.Process(this->IsFalling);
 	return true;
 }
 
 // Do some math here to set the initial speed of your proj
-void SampleTrajactory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
+void SampleTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
-	auto extraZ = BulletTypeExt::ExtMap.Find(pBullet->Type)->Trajactory_Sample.ExtraHeight;
+	auto extraZ = this->GetTrajectoryType<SampleTrajectoryType>(pBullet)->ExtraHeight;
 
 	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
@@ -56,7 +49,7 @@ void SampleTrajactory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bull
 }
 
 // Some early checks here
-void SampleTrajactory::OnAI(BulletClass* pBullet)
+void SampleTrajectory::OnAI(BulletClass* pBullet)
 {
 	// Close enough
 	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < 100)
@@ -70,7 +63,7 @@ void SampleTrajactory::OnAI(BulletClass* pBullet)
 // Where you update the speed and position
 // pSpeed: The speed of this proj in the next frame
 // pPosition: Current position of the proj, and in the next frame it will be *pSpeed + *pPosition 
-void SampleTrajactory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
+void SampleTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
 {
 	if (!this->IsFalling)
 	{

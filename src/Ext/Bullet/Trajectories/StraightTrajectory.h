@@ -1,19 +1,28 @@
 #pragma once
 
-#include "PhobosTrajactory.h"
+#include "PhobosTrajectory.h"
 
-class StraightTrajactoryType final : public PhobosTrajactoryType
+class StraightTrajectoryType final : public PhobosTrajectoryType
 {
 public:
+	StraightTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Straight)
+	{ }
+
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 
-	virtual void Read(CCINIClass* const pINI, const char* pSection, const char* pMainKey) override;
+	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 };
 
-class StraightTrajactory final : public PhobosTrajactory
+class StraightTrajectory final : public PhobosTrajectory
 {
 public:
+	StraightTrajectory() : PhobosTrajectory(TrajectoryFlag::Straight)
+	{ }
+
+	StraightTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Straight)
+	{}
+
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 

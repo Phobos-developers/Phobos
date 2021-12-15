@@ -7,8 +7,7 @@
 
 #include <New/Type/LaserTrailTypeClass.h>
 
-#include <Ext/Bullet/Trajectories/StraightTrajactory.h>
-#include <Ext/Bullet/Trajectories/SampleTrajactory.h>
+#include <Ext/Bullet/Trajectories/PhobosTrajectory.h>
 
 class BulletTypeExt
 {
@@ -23,15 +22,13 @@ public:
 		Nullable<double> Gravity;
 		
 		// Trajactories
-		StraightTrajactoryType Trajactory_Straight;
-		SampleTrajactoryType Trajactory_Sample;
+		PhobosTrajectoryType* TrajectoryType;
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
 			, Interceptable { false }
 			, LaserTrail_Types {}
 			, Gravity {}
-			, Trajactory_Straight {}
-			, Trajactory_Sample {}
+			, TrajectoryType { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;
