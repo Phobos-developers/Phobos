@@ -30,11 +30,6 @@ ShieldClass::ShieldClass(TechnoClass* pTechno) : Techno { pTechno }
 	this->UpdateType();
 	SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
 	strcpy(this->TechnoID, this->Techno->get_ID());
-
-	const auto timer = &this->Timers.SelfHealing;
-
-	if (this->HP < this->Type->Strength && timer->StartTime == -1)
-		timer->Start(this->Type->SelfHealing_Rate);
 }
 
 void ShieldClass::UpdateType()
@@ -431,6 +426,9 @@ void ShieldClass::SelfHealing()
 
 	if (percentageAmount > 0)
 	{
+		if (this->HP < this->Type->Strength && timer->StartTime == -1)
+			timer->Start(rate);
+
 		if (this->HP > 0 && timer->Completed())
 		{
 			timer->Start(rate);
