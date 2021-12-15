@@ -19,6 +19,5 @@ public:
 
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) override;
 	virtual void OnAI(BulletClass* pBullet) override;
-
-	BulletVelocity StraightSpeed;
+	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed) override;
 };
