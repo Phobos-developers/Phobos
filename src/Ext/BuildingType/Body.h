@@ -23,11 +23,11 @@ public:
 		Nullable<float> PowerPlantEnhancer_Factor;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
-			, PowersUp_Owner(AffectedHouse::Owner)
-			, PowersUp_Buildings()
-			, PowerPlantEnhancer_Buildings()
-			, PowerPlantEnhancer_Amount()
-			, PowerPlantEnhancer_Factor()
+			, PowersUp_Owner { AffectedHouse::Owner }
+			, PowersUp_Buildings {}
+			, PowerPlantEnhancer_Buildings {}
+			, PowerPlantEnhancer_Amount {}
+			, PowerPlantEnhancer_Factor {}
 		{ }
 
 		virtual ~ExtData() = default;

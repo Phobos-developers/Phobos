@@ -20,9 +20,9 @@ public:
 		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
-			, Intercepted(false)
-			, ShouldIntercept(false)
-			, LaserTrails()
+			, Intercepted { false }
+			, ShouldIntercept { false }
+			, LaserTrails {}
 		{ }
 
 		virtual ~ExtData() = default;

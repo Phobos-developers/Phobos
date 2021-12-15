@@ -21,10 +21,10 @@ public:
 		Valueable<bool> Gravity_HeightFix;
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
-			, Interceptable(false)
-			, LaserTrail_Types()
-			, Gravity()
-			, Gravity_HeightFix(false)
+			, Interceptable { false }
+			, LaserTrail_Types {}
+			, Gravity {}
+			, Gravity_HeightFix { false }
 		{ }
 
 		virtual ~ExtData() = default;

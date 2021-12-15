@@ -27,13 +27,13 @@ public:
 		Valueable<ShieldTypeClass*> CurrentShieldType;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
-			, InterceptedBullet(nullptr)
-			, Shield()
-			, LaserTrails()
-			, ReceiveDamage(false)
-			, LastKillWasTeamTarget(false)
-			, PassengerDeletionTimer(-1)
-			, CurrentShieldType()
+			, InterceptedBullet { nullptr }
+			, Shield {}
+			, LaserTrails {}
+			, ReceiveDamage { false }
+			, LastKillWasTeamTarget { false }
+			, PassengerDeletionTimer { -1 }
+			, CurrentShieldType {}
 		{ }
 
 		virtual ~ExtData() = default;
