@@ -21,20 +21,29 @@ bool PhobosTrajectoryType::Save(PhobosStreamWriter& Stm) const
 	return true;
 }
 
-PhobosTrajectoryType* PhobosTrajectoryType::CreateType(CCINIClass* const pINI, const char* pSection, const char* pKey)
+void PhobosTrajectoryType::CreateType(PhobosTrajectoryType* pTraj, CCINIClass* const pINI, const char* pSection, const char* pKey)
 {
 	PhobosTrajectoryType* pRet = nullptr;
+	bool isRead = true;
 
 	pINI->ReadString(pSection, pKey, "", Phobos::readBuffer);
-	if (_stricmp(Phobos::readBuffer, "Straight") == 0)
+	if (INIClass::IsBlank(Phobos::readBuffer))
+		pRet = nullptr;
+	else if (_stricmp(Phobos::readBuffer, "Straight") == 0)
 		pRet = GameCreate<StraightTrajectoryType>();
 	else if (_stricmp(Phobos::readBuffer, "Sample") == 0)
 		pRet = GameCreate<SampleTrajectoryType>();
+	else
+		isRead = false;
 
 	if (pRet)
 		pRet->Read(pINI, pSection);
 
-	return pRet;
+	if (isRead)
+	{
+		GameDelete(pTraj);
+		pTraj = pRet;
+	}
 }
 
 PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& Stm)

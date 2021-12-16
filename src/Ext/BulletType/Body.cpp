@@ -26,7 +26,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Interceptable.Read(exINI, pSection, "Interceptable");
 	this->Gravity.Read(exINI, pSection, "Gravity");
 
-	this->TrajectoryType = PhobosTrajectoryType::CreateType(pINI, pSection, "Trajectory");
+	PhobosTrajectoryType::CreateType(this->TrajectoryType, pINI, pSection, "Trajectory");
 
 	INI_EX exArtINI(CCINIClass::INI_Art);
 
