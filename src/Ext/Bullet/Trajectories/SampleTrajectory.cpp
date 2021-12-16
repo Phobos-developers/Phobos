@@ -20,7 +20,7 @@ bool SampleTrajectoryType::Save(PhobosStreamWriter& Stm) const
 // INI reading stuff
 void SampleTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
-	this->ExtraHeight = pINI->ReadDouble(pSection, "Trajectory.Sample.ExtraHeight", 0.0);
+	this->ExtraHeight = pINI->ReadDouble(pSection, "Trajectory.Sample.ExtraHeight", 1145.14);
 }
 
 bool SampleTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)

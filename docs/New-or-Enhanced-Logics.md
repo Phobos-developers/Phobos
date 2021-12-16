@@ -604,6 +604,7 @@ Interceptable=no ; boolean
 
 - A sample used for programmers to know how to extend this feature. Its trajectory is almost same as `Straight`. But it could have an `ExtraHeight`, means how high is the target coordinate from the target. When the projectile approaches that coordinate, it will free fall and explode when hit the target or ground
     - Speed is read from its weapon
+    - `I don't recommend users to use this trajectory in fact - secsome`
 
 In `rulesmd.ini`
 ```ini
