@@ -606,9 +606,11 @@ Interceptable=no ; boolean
     - Speed is read from its weapon
 
 In `rulesmd.ini`
+```ini
 [SOMEPROJECTILE]
 Trajectory=Sample
 Trajectory.Sample.ExtraHeight=1145.14   ; double
+```
 
 #### Straight Trajectory
 
@@ -616,8 +618,10 @@ Trajectory.Sample.ExtraHeight=1145.14   ; double
     - Speed is read from its weapon.
 
 In `rulesmd.ini`
+```ini
 [SOMEPROJECTILE]
 Trajectory=Straight
+```
 
 ## Trigger events
 
