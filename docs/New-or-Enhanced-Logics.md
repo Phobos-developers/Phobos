@@ -595,6 +595,20 @@ Interceptor.EliteMinimumGuardRange=0.0  ; double
 Interceptable=no ; boolean
 ```
 
+### Projectile Trajectory
+
+- Projectiles can now have very customizable trajectories for each.
+- We currently have 2 types of trajectories:
+  - `Straight`, self-explanatory, is the straight trajectory. 
+  - `Sample` is a sample used for programmers to know how to extend this feature. Its trajectory is almost same as `Straight`. But it could have an `ExtraHeight`, means how high is the target coordinate from the target. When the projectile approaches that coordinate, it will free fall and explode when hit the target or ground.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]                   ; Projectile
+Trajectory=                        ; TrajectoryType - Sample|Straight
+Trajectory.Sample.ExtraHeight=0    ; double - Sample trajectory only
+```
+
 ## Trigger events
 
 ### `500-511` Variable comparation
