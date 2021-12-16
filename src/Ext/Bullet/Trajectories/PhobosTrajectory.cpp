@@ -21,7 +21,7 @@ bool PhobosTrajectoryType::Save(PhobosStreamWriter& Stm) const
 	return true;
 }
 
-void PhobosTrajectoryType::CreateType(PhobosTrajectoryType* pTraj, CCINIClass* const pINI, const char* pSection, const char* pKey)
+void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pTraj, CCINIClass* const pINI, const char* pSection, const char* pKey)
 {
 	PhobosTrajectoryType* pRet = nullptr;
 	bool isRead = true;
