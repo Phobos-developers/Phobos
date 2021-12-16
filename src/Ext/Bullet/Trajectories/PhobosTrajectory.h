@@ -24,7 +24,7 @@ public:
 
 	virtual void Read(CCINIClass* const pINI, const char* pSection) = 0;
 
-	static void CreateType(PhobosTrajectoryType*& pTraj, CCINIClass* const pINI, const char* pSection, const char* pKey);
+	static void CreateType(PhobosTrajectoryType*& pType, CCINIClass* const pINI, const char* pSection, const char* pKey);
 
 	static PhobosTrajectoryType* LoadFromStream(PhobosStreamReader& Stm);
 	static void WriteToStream(PhobosStreamWriter& Stm, PhobosTrajectoryType* pType);

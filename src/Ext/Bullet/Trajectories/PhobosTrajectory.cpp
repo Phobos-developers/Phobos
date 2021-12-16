@@ -21,28 +21,28 @@ bool PhobosTrajectoryType::Save(PhobosStreamWriter& Stm) const
 	return true;
 }
 
-void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pTraj, CCINIClass* const pINI, const char* pSection, const char* pKey)
+void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* const pINI, const char* pSection, const char* pKey)
 {
-	PhobosTrajectoryType* pRet = nullptr;
-	bool isRead = true;
+	PhobosTrajectoryType* pNewType = nullptr;
+	bool bUpdateType = true;
 
 	pINI->ReadString(pSection, pKey, "", Phobos::readBuffer);
 	if (INIClass::IsBlank(Phobos::readBuffer))
-		pRet = nullptr;
+		pNewType = nullptr;
 	else if (_stricmp(Phobos::readBuffer, "Straight") == 0)
-		pRet = GameCreate<StraightTrajectoryType>();
+		pNewType = GameCreate<StraightTrajectoryType>();
 	else if (_stricmp(Phobos::readBuffer, "Sample") == 0)
-		pRet = GameCreate<SampleTrajectoryType>();
+		pNewType = GameCreate<SampleTrajectoryType>();
 	else
-		isRead = false;
+		bUpdateType = false;
 
-	if (pRet)
-		pRet->Read(pINI, pSection);
+	if (pNewType)
+		pNewType->Read(pINI, pSection);
 
-	if (isRead)
+	if (bUpdateType)
 	{
-		GameDelete(pTraj);
-		pTraj = pRet;
+		GameDelete(pType); // GameDelete already has if(pType) check here.
+		pType = pNewType;
 	}
 }
 
