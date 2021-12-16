@@ -598,16 +598,26 @@ Interceptable=no ; boolean
 ### Projectile Trajectory
 
 - Projectiles can now have very customizable trajectories for each.
-- We currently have 2 types of trajectories:
-  - `Straight`, self-explanatory, is the straight trajectory. 
-  - `Sample` is a sample used for programmers to know how to extend this feature. Its trajectory is almost same as `Straight`. But it could have an `ExtraHeight`, means how high is the target coordinate from the target. When the projectile approaches that coordinate, it will free fall and explode when hit the target or ground.
+    - You shouldn't combine this feature with YR's origin trajectories(ROT/Inviso/Arcing).
 
-In `rulesmd.ini`:
-```ini
-[SOMEPROJECTILE]                   ; Projectile
-Trajectory=                        ; TrajectoryType - Sample|Straight
-Trajectory.Sample.ExtraHeight=0    ; double - Sample trajectory only
-```
+#### Sample Trajectory
+
+- A sample used for programmers to know how to extend this feature. Its trajectory is almost same as `Straight`. But it could have an `ExtraHeight`, means how high is the target coordinate from the target. When the projectile approaches that coordinate, it will free fall and explode when hit the target or ground
+    - Speed is read from its weapon
+
+In `rulesmd.ini`
+[SOMEPROJECTILE]
+Trajectory=Sample
+Trajectory.Sample.ExtraHeight=1145.14   ; double
+
+#### Straight Trajectory
+
+- self-explanatory, is the straight trajectory.
+    - Speed is read from its weapon.
+
+In `rulesmd.ini`
+[SOMEPROJECTILE]
+Trajectory=Straight
 
 ## Trigger events
 
