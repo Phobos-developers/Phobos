@@ -385,6 +385,42 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 	}
 }
 
+void TechnoExt::AddExtraTint(TechnoClass* pThis, int nFrames, int nColor, int eMode)
+{
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	
+	int nIndex = pExt->ExtraTint_Color.FindItemIndex(nColor);
+	if (nIndex == -1) // not existed
+	{
+		pExt->ExtraTint_Color.AddItem(nColor);
+		int nTimerIdx = pExt->ExtraTint_Timer.Count;
+		pExt->ExtraTint_Timer.AddItem(TimerStruct {});
+		pExt->ExtraTint_Timer[nTimerIdx].Start(nFrames);
+	}
+	else // existed
+	{
+		switch (eMode)
+		{
+		case 1: // Add to existed timer
+			pExt->ExtraTint_Timer[nIndex].Start(pExt->ExtraTint_Timer[nIndex].GetTimeLeft() + nFrames);
+			break;
+
+		case 2: // Don't touch existed timer
+			break;
+
+		case 0: // Override the existed timer
+		default:
+			pExt->ExtraTint_Timer[nIndex].Start(nFrames);
+			break;
+		}
+	}
+}
+
+void TechnoExt::AddExtraTint(TechnoClass* pThis, int nFrames, int R, int G, int B, int eMode)
+{
+	TechnoExt::AddExtraTint(pThis, nFrames, Drawing::RGB2DWORD(R, G, B), eMode);
+}
+
 bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 {
 	if (pThis->GetTechnoType()->Ammo > 0)
@@ -412,6 +448,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->ReceiveDamage)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->CurrentShieldType)
+		.Process(this->ExtraTint_Color)
+		.Process(this->ExtraTint_Timer)
 		;
 }
 
