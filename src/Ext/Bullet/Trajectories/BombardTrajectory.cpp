@@ -24,24 +24,34 @@ void BombardTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 bool BombardTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	this->PhobosTrajectory::Load(Stm, false);
-	Stm.Process(this->IsFalling, false);
+	
+	Stm
+		.Process(this->IsFalling)
+		.Process(this->Height)
+		;
+
 	return true;
 }
 
 bool BombardTrajectory::Save(PhobosStreamWriter& Stm) const
 {
 	this->PhobosTrajectory::Save(Stm);
-	Stm.Process(this->IsFalling);
+	
+	Stm
+		.Process(this->IsFalling)
+		.Process(this->Height)
+		;
+	
 	return true;
 }
 
 void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
-	auto extraZ = this->GetTrajectoryType<BombardTrajectoryType>(pBullet)->Height;
+	this->Height = this->GetTrajectoryType<BombardTrajectoryType>(pBullet)->Height + pBullet->TargetCoords.Z;
 
 	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
-	pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z + extraZ - pBullet->SourceCoords.Z);
+	pBullet->Velocity.Z = static_cast<double>(this->Height - pBullet->SourceCoords.Z);
 	pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
 }
 
@@ -61,9 +71,7 @@ void BombardTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpee
 	if (!this->IsFalling)
 	{
 		pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type);
-		double dx = pBullet->TargetCoords.X - pBullet->Location.X;
-		double dy = pBullet->TargetCoords.Y - pBullet->Location.Y;
-		if (fabs(dx) - fabs(pBullet->Velocity.X) <= 0.1 || fabs(dy) - fabs(pBullet->Velocity.Y) <= 0.1) // Be careful here, the floats
+		if (pBullet->Location.Z + pBullet->Velocity.Z >= this->Height)
 		{
 			this->IsFalling = true;
 			pSpeed->X = 0.0;

@@ -22,10 +22,12 @@ class BombardTrajectory final : public PhobosTrajectory
 public:
 	BombardTrajectory() : PhobosTrajectory(TrajectoryFlag::Bombard)
 		, IsFalling { false }
+		, Height { 0.0 }
 	{}
 
 	BombardTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Bombard)
 		, IsFalling { false }
+		, Height { 0.0 }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -36,4 +38,5 @@ public:
 	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) override;
 
 	bool IsFalling;
+	double Height;
 };
