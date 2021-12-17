@@ -48,7 +48,7 @@ void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 void BombardTrajectory::OnAI(BulletClass* pBullet)
 {
 	// Close enough
-	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < 100)
+	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < 100) // This value maybe adjusted?
 	{
 		pBullet->Detonate(pBullet->Location);
 		pBullet->UnInit();
@@ -63,7 +63,8 @@ void BombardTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpee
 		pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type);
 		double dx = pBullet->TargetCoords.X - pBullet->Location.X;
 		double dy = pBullet->TargetCoords.Y - pBullet->Location.Y;
-		if (dx * dx + dy * dy < pBullet->Velocity.X * pBullet->Velocity.X + pBullet->Velocity.Y * pBullet->Velocity.Y)
+		double diff = dx * dx + dy * dy < pBullet->Velocity.X* pBullet->Velocity.X + pBullet->Velocity.Y * pBullet->Velocity.Y;
+		if (diff <= 0.1) // Be careful here, the floats
 		{
 			this->IsFalling = true;
 			pSpeed->X = 0.0;

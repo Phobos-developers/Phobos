@@ -46,7 +46,7 @@ public:
 			, CanTargetHouses { AffectedHouse::All }
 			, Burst_Delays {}
 			, AreaFire_Target { AreaFireTarget::Base }
-			, Trajectory_Speed { this->OwnerObject()->Speed }
+			, Trajectory_Speed { 100.0 }
 		{ }
 
 		virtual ~ExtData() = default;

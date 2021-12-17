@@ -475,7 +475,7 @@ AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]          ; WeaponType
-Trajectory.Speed=10.0 ; double
+Trajectory.Speed=100.0 ; double
 ```
 
 ## Warheads
