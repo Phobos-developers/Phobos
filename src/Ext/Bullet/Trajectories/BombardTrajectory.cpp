@@ -1,46 +1,43 @@
-#include "SampleTrajectory.h"
+#include "BombardTrajectory.h"
 
 #include <Ext/BulletType/Body.h>
 
-// Save and Load
-bool SampleTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+bool BombardTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	this->PhobosTrajectoryType::Load(Stm, false);
-	Stm.Process(this->ExtraHeight, false);
+	Stm.Process(this->Height, false);
 	return true;
 }
 
-bool SampleTrajectoryType::Save(PhobosStreamWriter& Stm) const
+bool BombardTrajectoryType::Save(PhobosStreamWriter& Stm) const
 {
 	this->PhobosTrajectoryType::Save(Stm);
-	Stm.Process(this->ExtraHeight);
+	Stm.Process(this->Height);
 	return true;
 }
 
-// INI reading stuff
-void SampleTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
+void BombardTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
-	this->ExtraHeight = pINI->ReadDouble(pSection, "Trajectory.Sample.ExtraHeight", 1145.14);
+	this->Height = pINI->ReadDouble(pSection, "Trajectory.Bombard.Height", 0.0);
 }
 
-bool SampleTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+bool BombardTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	this->PhobosTrajectory::Load(Stm, false);
 	Stm.Process(this->IsFalling, false);
 	return true;
 }
 
-bool SampleTrajectory::Save(PhobosStreamWriter& Stm) const
+bool BombardTrajectory::Save(PhobosStreamWriter& Stm) const
 {
 	this->PhobosTrajectory::Save(Stm);
 	Stm.Process(this->IsFalling);
 	return true;
 }
 
-// Do some math here to set the initial speed of your proj
-void SampleTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
+void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
-	auto extraZ = this->GetTrajectoryType<SampleTrajectoryType>(pBullet)->ExtraHeight;
+	auto extraZ = this->GetTrajectoryType<BombardTrajectoryType>(pBullet)->Height;
 
 	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
@@ -48,8 +45,7 @@ void SampleTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bull
 	pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
 }
 
-// Some early checks here
-void SampleTrajectory::OnAI(BulletClass* pBullet)
+void BombardTrajectory::OnAI(BulletClass* pBullet)
 {
 	// Close enough
 	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < 100)
@@ -60,14 +56,11 @@ void SampleTrajectory::OnAI(BulletClass* pBullet)
 	}
 }
 
-// Where you update the speed and position
-// pSpeed: The speed of this proj in the next frame
-// pPosition: Current position of the proj, and in the next frame it will be *pSpeed + *pPosition 
-void SampleTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
+void BombardTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
 {
 	if (!this->IsFalling)
 	{
-		pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type); 
+		pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type);
 		double dx = pBullet->TargetCoords.X - pBullet->Location.X;
 		double dy = pBullet->TargetCoords.Y - pBullet->Location.Y;
 		if (dx * dx + dy * dy < pBullet->Velocity.X * pBullet->Velocity.X + pBullet->Velocity.Y * pBullet->Velocity.Y)
@@ -80,5 +73,5 @@ void SampleTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed
 			pPosition->Y = pBullet->TargetCoords.Y;
 		}
 	}
-	
+
 }

@@ -468,6 +468,16 @@ In `rulesmd.ini`:
 AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
 ```
 
+### Trajectory Speed
+
+- This tag is being used in Projectile Trajectories
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]          ; WeaponType
+Trajectory.Speed=10.0 ; double
+```
+
 ## Warheads
 
 ```{hint}
@@ -600,29 +610,29 @@ Interceptable=no ; boolean
 - Projectiles can now have very customizable trajectories for each.
     - You shouldn't combine this feature with YR's origin trajectories(ROT/Inviso/Arcing).
 
-#### Sample Trajectory
-
-- A sample used for programmers to know how to extend this feature. Its trajectory is almost same as `Straight`. But it could have an `ExtraHeight`, means how high is the target coordinate from the target. When the projectile approaches that coordinate, it will free fall and explode when hit the target or ground
-    - Speed is read from its weapon
-    - `I don't recommend users to use this trajectory in fact - secsome`
-
-In `rulesmd.ini`
-```ini
-[SOMEPROJECTILE]
-Trajectory=Sample
-Trajectory.Sample.ExtraHeight=1145.14   ; double
-```
-
 #### Straight Trajectory
 
 - self-explanatory, is the straight trajectory.
-    - Speed is read from its weapon.
+    - Initial s is read from its weapon's `Trajectory.Speed`.
 
 In `rulesmd.ini`
 ```ini
 [SOMEPROJECTILE]
 Trajectory=Straight
 ```
+
+#### Bombard Trajectory
+
+- Its trajectory is almost same as `Straight`. But it could have an `ExtraHeight`, means how high is the target coordinate from the target. When the projectile approaches that coordinate, it will free fall and explode when hit the target or ground.
+    - Initial speed is read from its weapon's `Trajectory.Speed`.
+
+In `rulesmd.ini`
+```ini
+[SOMEPROJECTILE]
+Trajectory=Bombard
+Trajectory.Bombard.Height=0.0   ; double
+```
+
 
 ## Trigger events
 

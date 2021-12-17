@@ -9,8 +9,8 @@
 enum class TrajectoryFlag : int
 {
 	Invalid = -1,
-	Sample = 0,
-	Straight = 1,
+	Straight = 0,
+	Bombard = 1,
 };
 
 class PhobosTrajectoryType
@@ -52,6 +52,7 @@ public:
 	{
 		return static_cast<T*>(BulletTypeExt::ExtMap.Find(pBullet->Type)->TrajectoryType);
 	}
+	double GetTrajectorySpeed(BulletClass* pBullet) const;
 
 	static PhobosTrajectory* CreateInstance(PhobosTrajectoryType* pType, BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity);
 

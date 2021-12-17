@@ -2,11 +2,12 @@
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/Bullet/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 #include <BulletClass.h>
 #include <Helpers/Macro.h>
 
-#include "SampleTrajectory.h"
+#include "BombardTrajectory.h"
 #include "StraightTrajectory.h"
 
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -31,8 +32,8 @@ void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* 
 		pNewType = nullptr;
 	else if (_stricmp(Phobos::readBuffer, "Straight") == 0)
 		pNewType = GameCreate<StraightTrajectoryType>();
-	else if (_stricmp(Phobos::readBuffer, "Sample") == 0)
-		pNewType = GameCreate<SampleTrajectoryType>();
+	else if (_stricmp(Phobos::readBuffer, "Bombard") == 0)
+		pNewType = GameCreate<BombardTrajectoryType>();
 	else
 		bUpdateType = false;
 
@@ -55,12 +56,12 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 		Stm.Process(pType->Flag, false);
 		switch (pType->Flag)
 		{
-		case TrajectoryFlag::Sample:
-			pType = GameCreate<SampleTrajectoryType>();
-			break;
-
 		case TrajectoryFlag::Straight:
 			pType = GameCreate<StraightTrajectoryType>();
+			break;
+
+		case TrajectoryFlag::Bombard:
+			pType = GameCreate<BombardTrajectoryType>();
 			break;
 
 		default:
@@ -105,18 +106,23 @@ bool PhobosTrajectory::Save(PhobosStreamWriter& Stm) const
 	return true;
 }
 
+double PhobosTrajectory::GetTrajectorySpeed(BulletClass* pBullet) const
+{
+	return WeaponTypeExt::ExtMap.Find(pBullet->WeaponType)->Trajectory_Speed;
+}
+
 PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
 	PhobosTrajectory* pRet = nullptr;
 
 	switch (pType->Flag)
 	{
-	case TrajectoryFlag::Sample:
-		pRet = GameCreate<SampleTrajectory>(pType);
-		break;
-
 	case TrajectoryFlag::Straight:
 		pRet = GameCreate<StraightTrajectory>(pType);
+		break;
+
+	case TrajectoryFlag::Bombard:
+		pRet = GameCreate<BombardTrajectory>(pType);
 		break;
 	}
 
@@ -135,12 +141,12 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 		Stm.Process(pTraj->Flag, false);
 		switch (pTraj->Flag)
 		{
-		case TrajectoryFlag::Sample:
-			pTraj = GameCreate<SampleTrajectory>();
-			break;
-
 		case TrajectoryFlag::Straight:
 			pTraj = GameCreate<StraightTrajectory>();
+			break;
+
+		case TrajectoryFlag::Bombard:
+			pTraj = GameCreate<BombardTrajectory>();
 			break;
 
 		default:
