@@ -63,7 +63,7 @@ void BombardTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpee
 		pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type);
 		double dx = pBullet->TargetCoords.X - pBullet->Location.X;
 		double dy = pBullet->TargetCoords.Y - pBullet->Location.Y;
-		double diff = dx * dx + dy * dy < pBullet->Velocity.X* pBullet->Velocity.X + pBullet->Velocity.Y * pBullet->Velocity.Y;
+		double diff = dx * dx + dy * dy - pBullet->Velocity.X * pBullet->Velocity.X + pBullet->Velocity.Y * pBullet->Velocity.Y;
 		if (diff <= 0.1) // Be careful here, the floats
 		{
 			this->IsFalling = true;
