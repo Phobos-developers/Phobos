@@ -25,8 +25,8 @@ public:
 		Valueable<bool> LastKillWasTeamTarget;
 		TimerStruct	PassengerDeletionTimer;
 		Valueable<ShieldTypeClass*> CurrentShieldType;
-		DynamicVectorClass<int> ExtraTint_Color;
-		DynamicVectorClass<TimerStruct> ExtraTint_Timer;
+		std::vector<int> ExtraTint_Color;
+		std::vector<TimerStruct> ExtraTint_Timer;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet { nullptr }
@@ -95,6 +95,7 @@ public:
 	static void AddExtraTint(TechnoClass* pThis, int nFrames, int nColor, int eMode);
 	static void AddExtraTint(TechnoClass* pThis, int nFrames, int R, int G, int B, int eMode);
 	static void ApplyExtraTint(TechnoClass* pThis, int& nTintColor, int& nIntensity);
+	static void ApplyExtraTint(TechnoClass* pThis, int& nTintColor);
 
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 };

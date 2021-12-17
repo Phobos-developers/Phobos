@@ -1,6 +1,9 @@
 #pragma once
-#include <BuildingTypeClass.h>
 #include <MessageListClass.h>
+
+#include <ObjectClass.h>
+#include <FootClass.h>
+#include <Ext/Techno/Body.h>
 
 #include "Commands.h"
 #include <Utilities/Debug.h>
@@ -32,6 +35,14 @@ public:
 	virtual void Execute(DWORD dwUnk) const override
 	{
 		Debug::Log("[Phobos] Dummy command runs.\n");
-		MessageListClass::Instance->PrintMessage(L"[Phobos] Dummy command rums");
+		MessageListClass::Instance->PrintMessage(L"[Phobos] Dummy command runs");
+
+		for (auto pObject : ObjectClass::CurrentObjects())
+		{
+			if (auto pTechno = abstract_cast<TechnoClass*>(pObject))
+			{
+				TechnoExt::AddExtraTint(pTechno, 150, 191, 98, 10, 1);
+			}
+		}
 	}
 };
