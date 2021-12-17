@@ -421,6 +421,11 @@ void TechnoExt::AddExtraTint(TechnoClass* pThis, int nFrames, int R, int G, int 
 	TechnoExt::AddExtraTint(pThis, nFrames, Drawing::RGB2DWORD(R, G, B), eMode);
 }
 
+void TechnoExt::ApplyExtraTint(TechnoClass* pThis, int& nTintColor, int& nIntensity)
+{
+
+}
+
 bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 {
 	if (pThis->GetTechnoType()->Ammo > 0)

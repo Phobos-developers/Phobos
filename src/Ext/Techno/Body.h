@@ -94,6 +94,7 @@ public:
 	// eMode 0 - Override existed timer, 1 - Add to existed timer, 2 - Don't touch existed timer
 	static void AddExtraTint(TechnoClass* pThis, int nFrames, int nColor, int eMode);
 	static void AddExtraTint(TechnoClass* pThis, int nFrames, int R, int G, int B, int eMode);
+	static void ApplyExtraTint(TechnoClass* pThis, int& nTintColor, int& nIntensity);
 
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 };

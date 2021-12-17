@@ -291,18 +291,22 @@ DEFINE_HOOK(0x706389, TechnoClass_Techno_Draw_Object_TintColor, 0x6)
 	GET(int, nIntensity, EBP);
 	REF_STACK(int, nTintColor, STACK_OFFS(0x54, -0x2C));
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	int const nCount = pExt->ExtraTint_Color.Count;
-	for (int i = 0; i < nCount; ++i)
-	{
-		if (pExt->ExtraTint_Timer[i].InProgress())
-		{
-			// Calculate intensity here
-			// R->EBP(NewIntensity)
-		}
+	TechnoExt::ApplyExtraTint(pThis, nTintColor, nIntensity);
 
-		nTintColor |= pExt->ExtraTint_Color[i]; // Apply the color
-	}
+	R->EBP(nIntensity);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73C141, UnitClass_DrawAsVXL_TintColor, 0x7)
+{
+	GET(UnitClass*, pThis, EBP);
+	GET(int, nTintColor, ESI);
+	REF_STACK(int, nIntensity, STACK_OFFS(0x1C4, -0x1C));
+
+	TechnoExt::ApplyExtraTint(pThis, nTintColor, nIntensity);
+
+	R->ESI(nTintColor);
 
 	return 0;
 }
