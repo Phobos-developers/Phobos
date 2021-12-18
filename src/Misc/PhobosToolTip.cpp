@@ -104,14 +104,14 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 
 	int nBuildTime = this->GetBuildTime(pType);
 	int nSec = nBuildTime / 15 % 60;
-	int nMin = nBuildTime / 15 / 60 % 60;
-	int nHour = nBuildTime / 15 / 60 / 60;
+	int nMin = nBuildTime / 15 / 60 /* % 60*/;
+	// int nHour = pType->RechargeTime / 15 / 60 / 60;
 
 	std::wostringstream oss;
 	oss << pType->UIName << L"\n"
 		<< Phobos::UI::CostLabel << pType->GetActualCost(HouseClass::Player) << L" "
 		<< Phobos::UI::TimeLabel
-		<< std::setw(2) << std::setfill(L'0') << nHour << L":"
+		// << std::setw(2) << std::setfill(L'0') << nHour << L":"
 		<< std::setw(2) << std::setfill(L'0') << nMin << L":"
 		<< std::setw(2) << std::setfill(L'0') << nSec;
 
@@ -134,8 +134,8 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 	auto const pData = SWTypeExt::ExtMap.Find(pType);
 	
 	int nSec = pType->RechargeTime / 15 % 60;
-	int nMin = pType->RechargeTime / 15 / 60 % 60;
-	int nHour = pType->RechargeTime / 15 / 60 / 60;
+	int nMin = pType->RechargeTime / 15 / 60 /* % 60*/;
+	// int nHour = pType->RechargeTime / 15 / 60 / 60;
 	
 	// Only if we can use v143 with cpp_lastest, we can write std::format here
 	// std::format(L"{}\n {}{} {}{:02d}:{:02d}:{:02d}", UIName, CostLabel, -Money, TimeLabel, Hour, Minute, Second)
@@ -144,7 +144,7 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 	oss << pType->UIName << L"\n"
 		<< Phobos::UI::CostLabel << -pData->Money_Amount << L" "
 		<< Phobos::UI::TimeLabel 
-		<< std::setw(2) << std::setfill(L'0') << nHour << L":" 
+		// << std::setw(2) << std::setfill(L'0') << nHour << L":" 
 		<< std::setw(2) << std::setfill(L'0') << nMin << L":" 
 		<< std::setw(2) << std::setfill(L'0') << nSec;
 
@@ -252,29 +252,7 @@ DEFINE_HOOK(0x478F77, CCToolTip_Draw2_SetY, 0x6)
 	return 0;
 }
 
-//DEFINE_HOOK(0x478F5A, CCToolTip_Draw2_SkipOuterRect, 0x7)
-//{
-//	LEA_STACK(RectangleStruct*, Rect, STACK_OFFS(0x3C, 0x20));
-//
-//	Rect->Width = R->EBX() + R->EDX();
-//	Rect->Height = Rect->Y + R->EDI();
-//
-//	if (PhobosToolTip::Instance.IsCameo)
-//	{
-//		int const maxHeight = DSurface::ViewBounds->Height - 32;
-//
-//		if (Rect->Height > maxHeight)
-//			Rect->Y += maxHeight - Rect->Height;
-//
-//		if (Rect->Y < 0)
-//			Rect->Y = 0;
-//	}
-//
-//	WORD color = Drawing::RGB2DWORD(reinterpret_cast<BYTE*>(0xB0FA1C)[0], reinterpret_cast<BYTE*>(0xB0FA1C)[1], reinterpret_cast<BYTE*>(0xB0FA1C)[2]);
-//	R->EDI(color);
-//	return 0x478FEE;
-//}
-
+// TODO in the future
 //
 //DEFINE_HOOK(0x478E30, CCToolTip_Draw2, 0x7)
 //{
