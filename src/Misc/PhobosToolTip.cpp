@@ -137,6 +137,9 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 	int nMin = pType->RechargeTime / 15 / 60 % 60;
 	int nHour = pType->RechargeTime / 15 / 60 / 60;
 	
+	// Only if we can use v143 with cpp_lastest, we can write std::format here
+	// std::format(L"{}\n {}{} {}{:02d}:{:02d}:{:02d}", UIName, CostLabel, -Money, TimeLabel, Hour, Minute, Second)
+	// leave it here, hoping we can abandon WindowsXP some day - secsome
 	std::wostringstream oss;
 	oss << pType->UIName << L"\n"
 		<< Phobos::UI::CostLabel << -pData->Money_Amount << L" "
@@ -189,9 +192,8 @@ DEFINE_HOOK(0x478E10, CCToolTip__Draw1, 0x0)
 	if (pThis->CurrentToolTip)
 	{
 		if (!bFullRedraw)
-		{
 			PhobosToolTip::Instance.slaveDraw = PhobosToolTip::Instance.isCameo;
-		}
+
 		pThis->FullRedraw = bFullRedraw;
 		pThis->Draw2(pThis->CurrentToolTipData);
 	}
