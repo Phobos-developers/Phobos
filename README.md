@@ -35,9 +35,9 @@ Building
 0. Install **Visual Studio** (2019 is recommended, 2017 is minimum) with the dependencies listed in `.vswhere` (it will prompt you to install missing dependences when you open the project, or you can run VS installer and import the config). If you prefer to use **Visual Studio Code** you may install **VS Build Tools** with the stuff from `.vswhere` instead. You can also don't use any code editor or IDE and build via **command line scripts** included with the project.
 1. Clone this repo recursively via your favorite git client (that will also clone YRpp).
 2. To build the extension:
-  - in Visual Studio: open the solution file in VS and build it (`Debug` build config is recommended);
-  - in VSCode: open the project folder and hit `Run Build Task...` (`Ctrl + Shift + B`);
-  - barebones: run `scripts/build_debug.bat`.
+   - in Visual Studio: open the solution file in VS and build it (`Debug` build config is recommended);
+   - in VSCode: open the project folder and hit `Run Build Task...` (`Ctrl + Shift + B`);
+   - barebones: run `scripts/build_debug.bat`.
 3. Upon build completion the resulting `Phobos.dll` and `Phobos.pdb` would be placed in the subfolder identical to the name of the buildconfig executed.
 
 Documentation
