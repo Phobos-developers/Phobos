@@ -177,14 +177,16 @@ DEFINE_HOOK(0x478EE1, CCToolTip_Draw2_SetBuffer, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x478E10, CCToolTip__Draw1, 0x0)
+DEFINE_HOOK(0x478E10, CCToolTip_Draw1, 0x0)
 {
 	GET(CCToolTip*, pThis, ECX);
 	GET_STACK(bool, bFullRedraw, 0x4);
 
-	if (!bFullRedraw || PhobosToolTip::Instance.isCameo) { // !onSidebar or (onSidebar && ExtToolTip::isCameo)
-		PhobosToolTip::Instance.isCameo = false;
-		PhobosToolTip::Instance.slaveDraw = false;
+	// !onSidebar or (onSidebar && ExtToolTip::IsCameo)
+	if (!bFullRedraw || PhobosToolTip::Instance.IsCameo) 
+	{
+		PhobosToolTip::Instance.IsCameo = false;
+		PhobosToolTip::Instance.SlaveDraw = false;
 
 		pThis->ToolTipManager::Process();	//this function re-create CCToolTip
 	}
@@ -192,7 +194,7 @@ DEFINE_HOOK(0x478E10, CCToolTip__Draw1, 0x0)
 	if (pThis->CurrentToolTip)
 	{
 		if (!bFullRedraw)
-			PhobosToolTip::Instance.slaveDraw = PhobosToolTip::Instance.isCameo;
+			PhobosToolTip::Instance.SlaveDraw = PhobosToolTip::Instance.IsCameo;
 
 		pThis->FullRedraw = bFullRedraw;
 		pThis->Draw2(pThis->CurrentToolTipData);
@@ -200,9 +202,9 @@ DEFINE_HOOK(0x478E10, CCToolTip__Draw1, 0x0)
 	return 0x478E25;
 }
 
-DEFINE_HOOK(0x478E4A, CCToolTip__Draw2_SetSurface, 0x6)
+DEFINE_HOOK(0x478E4A, CCToolTip_Draw2_SetSurface, 0x6)
 {
-	if (PhobosToolTip::Instance.slaveDraw)
+	if (PhobosToolTip::Instance.SlaveDraw)
 	{
 		R->ESI(DSurface::Composite());
 		return 0x478ED3;
@@ -210,9 +212,9 @@ DEFINE_HOOK(0x478E4A, CCToolTip__Draw2_SetSurface, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x478EF8, CCToolTip__Draw2_SetMaxWidth, 0x5)
+DEFINE_HOOK(0x478EF8, CCToolTip_Draw2_SetMaxWidth, 0x5)
 {
-	if (PhobosToolTip::Instance.isCameo)
+	if (PhobosToolTip::Instance.IsCameo)
 	{
 		if (Phobos::UI::MaxToolTipWidth > 0)
 			R->EAX(Phobos::UI::MaxToolTipWidth);
@@ -223,17 +225,17 @@ DEFINE_HOOK(0x478EF8, CCToolTip__Draw2_SetMaxWidth, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x478F52, CCToolTip__Draw2_SetX, 0x8)
+DEFINE_HOOK(0x478F52, CCToolTip_Draw2_SetX, 0x8)
 {
-	if (PhobosToolTip::Instance.slaveDraw)
+	if (PhobosToolTip::Instance.SlaveDraw)
 		R->EAX(R->EAX() + DSurface::Sidebar->GetWidth());
 
 	return 0;
 }
 
-DEFINE_HOOK(0x478F77, CCToolTip__Draw2_SetY, 0x6)
+DEFINE_HOOK(0x478F77, CCToolTip_Draw2_SetY, 0x6)
 {
-	if (PhobosToolTip::Instance.isCameo)
+	if (PhobosToolTip::Instance.IsCameo)
 	{
 		LEA_STACK(RectangleStruct*, Rect, STACK_OFFS(0x3C, 0x20));
 
