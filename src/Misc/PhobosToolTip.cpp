@@ -162,6 +162,7 @@ DEFINE_HOOK(0x6A9316, SidebarClass_StripClass_HelpText, 0x6)
 
 	if (PhobosToolTip::Instance.HelpText(pThis->Cameos[0])) // pStrip->Cameos[nID] in fact
 	{
+		PhobosToolTip::Instance.IsCameo = true;
 		R->EAX(L"X");
 		return 0x6A93DE;	
 	}
@@ -173,7 +174,8 @@ DEFINE_HOOK(0x6A9316, SidebarClass_StripClass_HelpText, 0x6)
 
 DEFINE_HOOK(0x478EE1, CCToolTip_Draw2_SetBuffer, 0x6)
 {
-	R->EDI(PhobosToolTip::Instance.GetBuffer());
+	if (PhobosToolTip::Instance.IsCameo)
+		R->EDI(PhobosToolTip::Instance.GetBuffer());
 	return 0;
 }
 
@@ -249,6 +251,29 @@ DEFINE_HOOK(0x478F77, CCToolTip_Draw2_SetY, 0x6)
 	}
 	return 0;
 }
+
+//DEFINE_HOOK(0x478F5A, CCToolTip_Draw2_SkipOuterRect, 0x7)
+//{
+//	LEA_STACK(RectangleStruct*, Rect, STACK_OFFS(0x3C, 0x20));
+//
+//	Rect->Width = R->EBX() + R->EDX();
+//	Rect->Height = Rect->Y + R->EDI();
+//
+//	if (PhobosToolTip::Instance.IsCameo)
+//	{
+//		int const maxHeight = DSurface::ViewBounds->Height - 32;
+//
+//		if (Rect->Height > maxHeight)
+//			Rect->Y += maxHeight - Rect->Height;
+//
+//		if (Rect->Y < 0)
+//			Rect->Y = 0;
+//	}
+//
+//	WORD color = Drawing::RGB2DWORD(reinterpret_cast<BYTE*>(0xB0FA1C)[0], reinterpret_cast<BYTE*>(0xB0FA1C)[1], reinterpret_cast<BYTE*>(0xB0FA1C)[2]);
+//	R->EDI(color);
+//	return 0x478FEE;
+//}
 
 //
 //DEFINE_HOOK(0x478E30, CCToolTip_Draw2, 0x7)
