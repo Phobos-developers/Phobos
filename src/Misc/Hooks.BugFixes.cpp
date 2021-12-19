@@ -1,3 +1,4 @@
+#include <AirstrikeClass.h>
 #include <AnimClass.h>
 #include <BuildingClass.h>
 #include <TechnoClass.h>
@@ -314,4 +315,32 @@ DEFINE_HOOK(0x41EB43, AITriggerTypeClass_Condition_SupportPowersup, 0x7)		//AITr
 	R->EAX(count);
 
 	return R->Origin() + 0xC;
+}
+
+// Fix the issue that SHP units doesn't apply IronCurtain or other color effects and doesn't accept EMP intensity
+// Author: secsome
+DEFINE_HOOK(0x706389, TechnoClass_DrawAsSHP_TintAndIntensity, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(int, nIntensity, EBP);
+	REF_STACK(int, nTintColor, STACK_OFFS(0x54, -0x2C));
+
+	if (pThis->IsIronCurtained())
+		nTintColor |= Drawing::RGB2DWORD(RulesClass::Instance->ColorAdd[RulesClass::Instance->IronCurtainColor]);
+
+	if(pThis->ForceShielded)
+		nTintColor |= Drawing::RGB2DWORD(RulesClass::Instance->ColorAdd[RulesClass::Instance->ForceShieldColor]);
+
+	if (pThis->Berzerk)
+		nTintColor |= Drawing::RGB2DWORD(RulesClass::Instance->ColorAdd[RulesClass::Instance->BerserkColor]);
+
+	// Boris
+	if (pThis->Airstrike && pThis->Airstrike->Target == pThis)
+		nTintColor |= Drawing::RGB2DWORD(RulesClass::Instance->ColorAdd[RulesClass::Instance->LaserTargetColor]);
+
+	// EMP
+	if (pThis->Deactivated)
+		R->EBP(nIntensity / 2);
+
+	return 0;
 }
