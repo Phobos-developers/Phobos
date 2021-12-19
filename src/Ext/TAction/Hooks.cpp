@@ -12,6 +12,8 @@
 
 #include <Utilities/Macro.h>
 
+#include <Ext/Scenario/Body.h>
+
 DEFINE_HOOK(0x6DD8B0, TActionClass_Execute, 0x6)
 {
 	GET(TActionClass*, pThis, ECX);
@@ -113,6 +115,15 @@ DEFINE_HOOK(0x6E2EA7, TActionClass_Retint_LightSourceFix, 0x3) // Red
 			pRadSite->LightSource->Activate();
 		}
 	}
+
+	// #478
+	ScenarioExt::Global()->RetintTiles = ScenarioExt::Global()->RetintSchemes = ScenarioExt::Global()->RetintHashes = 
+	{ 
+		ScenarioClass::Instance->Red,
+		ScenarioClass::Instance->Green,
+		ScenarioClass::Instance->Blue 
+	};
+
 
 	return 0;
 }

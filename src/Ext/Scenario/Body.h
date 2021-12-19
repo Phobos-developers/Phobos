@@ -14,6 +14,18 @@ struct ExtendedVariable
 	int Value;
 };
 
+struct MapDefaultLightingData
+{
+	int AmbientOriginal;
+	int AmbientCurrent;
+	int AmbientTarget;
+	int Red;
+	int Green;
+	int Blue;
+	int Ground;
+	int Level;
+};
+
 class ScenarioExt
 {
 public:
@@ -25,9 +37,18 @@ public:
 		std::map<int, CellStruct> Waypoints;
 		std::map<int, ExtendedVariable> Variables[2]; // 0 for local, 1 for global
 
+		// Save & Load fixes
+		MapDefaultLightingData InitialLightingData;
+		TintStruct RetintTiles;
+		TintStruct RetintSchemes;
+		TintStruct RetintHashes;
+
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, Waypoints { }
 			, Variables { }
+			, RetintTiles { 1000, 1000, 1000 }
+			, RetintSchemes { 1000, 1000, 1000 }
+			, RetintHashes { 1000, 1000, 1000 }
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

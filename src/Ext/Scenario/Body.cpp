@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <GameModeOptionsClass.h>
+
 template<> const DWORD Extension<ScenarioClass>::Canary = 0xABCD1595;
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
@@ -81,8 +83,18 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// INI_EX exINI(pINI);
 
-	
+	this->InitialLightingData.AmbientOriginal = ScenarioClass::Instance->AmbientOriginal;
+	this->InitialLightingData.AmbientCurrent = ScenarioClass::Instance->AmbientCurrent;
+	this->InitialLightingData.AmbientTarget = ScenarioClass::Instance->AmbientTarget;
+	this->InitialLightingData.Red = ScenarioClass::Instance->Red;
+	this->InitialLightingData.Green = ScenarioClass::Instance->Green;
+	this->InitialLightingData.Blue = ScenarioClass::Instance->Blue;
+	this->InitialLightingData.Ground = ScenarioClass::Instance->Ground;
+	this->InitialLightingData.Level = ScenarioClass::Instance->Level;
 
+	this->RetintTiles.Red = ScenarioClass::Instance->Red;
+	this->RetintTiles.Green = ScenarioClass::Instance->Green;
+	this->RetintTiles.Blue = ScenarioClass::Instance->Blue;
 }
 
 template <typename T>
@@ -92,6 +104,11 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->Waypoints)
 		.Process(this->Variables[0])
 		.Process(this->Variables[1])
+		.Process(this->InitialLightingData)
+		.Process(this->RetintTiles)
+		.Process(this->RetintSchemes)
+		.Process(this->RetintHashes)
+		.Process(GameModeOptionsClass::Instance->BuildOffAlly)
 		;
 }
 
