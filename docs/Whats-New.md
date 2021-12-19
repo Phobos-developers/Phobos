@@ -262,6 +262,8 @@ Vanilla fixes:
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water (by Uranusian)
 - Fixed temporal weapon crash under certain conditions where stack dump starts with 0051BB7D (by secsome)
 - Fixed the bug when retinting map lighting with a map action corrupted light sources (by secsome)
+- Fixed the bug that units' lighting get corrupted after loading a save with a different lighting being set (by secsome)
+- Fixed the bug that `BuildOffAlly` is not correctly saved (by secsome)
 - Fixed the bug that AITriggerTypes do not recognize building upgrades (by Uranusian)
 
 Phobos fixes:
