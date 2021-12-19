@@ -757,6 +757,8 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 ### `505` Adjust Lighting
 - Adjust specific lighting configs
     - Set R/G/B to `-1` will keep the previous value
+    - For more detailed info, check the sheet below
+        - Technos stands for units, aircraft, infantries and the buildings, `CustomPalettes` only includes vanilla YR LightConverts, no Ares CustomPalette is supported
 
 In `mycampaign.map`:
 ```ini
@@ -769,13 +771,13 @@ ID=ActionCount,[Action1],504,0,[DrawersFlag],[Red],[Green],[Blue],0,A,[ActionX]
 | *DrawersFlag*  | *Description*                                 |
 | :------: | :-------------------------------------------: |
 0         | No Update |
-1         | TileDrawers |
-2         | ColorScheme |
-3         | TileDrawers & ColorScheme |
-4         | HashPals |
-5         | TileDrawers & HashPals |
-6         | ColorScheme & HashPals |
-7         | TileDrawers & ColorScheme & HashPals |
+1         | Tiles |
+2         | Technos |
+3         | Tiles & Technos |
+4         | CustomPalettes |
+5         | Tiles & CustomPalettes |
+6         | Technos & CustomPalettes |
+7         | Tiles & Technos & CustomPalettes |
 
 
 ## Script actions

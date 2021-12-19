@@ -311,19 +311,19 @@ bool TActionExt::AdjustLighting(TActionClass* pThis, HouseClass* pHouse, ObjectC
 	const int g = ScenarioClass::Instance->Green * 10;
 	const int b = ScenarioClass::Instance->Blue * 10;
 
-	if (pThis->Value & 0b001) // Update TileDrawers
+	if (pThis->Value & 0b001) // Update Tiles
 	{
 		for (auto& pLightConvert : *LightConvertClass::Array)
 			pLightConvert->UpdateColors(r, g, b, false);
 	}
 
-	if (pThis->Value & 0b010) // Update ColorSchemes
+	if (pThis->Value & 0b010) // Update Units & Buildings
 	{
 		for (auto& pScheme : *ColorScheme::Array)
 			pScheme->LightConvert->UpdateColors(r, g, b, false);
 	}
 
-	if (pThis->Value & 0b100) // Update HashPals
+	if (pThis->Value & 0b100) // Update CustomPalettes (vanilla YR LightConvertClass one, not the Ares ConvertClass only one)
 		ScenarioClass::UpdateHashPalLighting(r, g, b, false);
 
 	ScenarioClass::UpdateCellLighting();
