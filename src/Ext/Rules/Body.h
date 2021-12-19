@@ -81,8 +81,6 @@ public:
 		return Data.get();
 	}
 
-	static DynamicVectorClass<CameoDataStruct> TabCameos[4];
-
 	static void Clear()
 	{
 		Allocate(RulesClass::Instance);
