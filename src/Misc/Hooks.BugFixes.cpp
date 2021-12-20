@@ -9,6 +9,7 @@
 #include <BulletClass.h>
 #include <HouseClass.h>
 
+#include <Ext/Techno/Body.h>
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
 
@@ -339,8 +340,17 @@ DEFINE_HOOK(0x706389, TechnoClass_DrawAsSHP_TintAndIntensity, 0x6)
 		nTintColor |= Drawing::RGB2DWORD(RulesClass::Instance->ColorAdd[RulesClass::Instance->LaserTargetColor]);
 
 	// EMP
-	if (pThis->Deactivated)
-		R->EBP(nIntensity / 2);
+	if (pThis->IsUnderEMP())
+		R->EBP(static_cast<int>(nIntensity * RulesExt::Global()->DeactivateDim_EMP));
+	else if (pThis->Deactivated)
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(pThis);
+		if (!pExt->IsOperated())
+			R->EBP(static_cast<int>(nIntensity * RulesExt::Global()->DeactivateDim_Operator));
+		else
+			R->EBP(static_cast<int>(nIntensity * RulesExt::Global()->DeactivateDim_Powered));
+	}
+
 
 	return 0;
 }

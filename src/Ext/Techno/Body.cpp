@@ -193,6 +193,26 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 	return false;
 }
 
+// Ares 0.A source
+bool TechnoExt::ExtData::IsOperated() const
+{
+	auto pThis = this->OwnerObject();
+	auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (auto pOperator = pExt->Operator)
+	{
+		for (NextObject object(pThis->Passengers.GetFirstPassenger()); object; ++object)
+			if (object->GetType() == pOperator)
+				return true;
+
+		return false;
+	}
+	else if (pExt->IsAPromiscuousWhoreAndLetsAnyoneRideIt)
+		return pThis->Passengers.GetFirstPassenger() != nullptr;
+	else
+		return true;
+}
+
 bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
 {
 	for (auto pBld : pThis->GetTechnoType()->Dock)
