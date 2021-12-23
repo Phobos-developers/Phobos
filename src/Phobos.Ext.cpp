@@ -354,10 +354,10 @@ bool Phobos::DetachFromDebugger()
 			);
 			if (0 <= status)
 			{
+				const auto pid = GetDebuggerProcessId(GetProcessId(hCurrentProcess));
 				status = NtRemoveProcessDebug(hCurrentProcess, hDebug);
 				if (0 <= status)
 				{
-					const auto pid = GetDebuggerProcessId(GetProcessId(hCurrentProcess));
 					sprintf_s(Phobos::readBuffer, "taskkill /F /PID %d", pid);
 					WinExec(Phobos::readBuffer, SW_HIDE);
 					return true;
