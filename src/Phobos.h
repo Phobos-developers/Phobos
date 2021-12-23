@@ -30,6 +30,9 @@ public:
 	static const char* AppIconPath;
 	static const wchar_t* VersionDescription;
 
+#ifdef DEBUG
+	static bool DetachFromDebugger();
+#endif
 	static void Clear();
 	static void PointerGotInvalid(AbstractClass* const pInvalid, bool const removed);
 	static HRESULT SaveGameData(IStream* pStm);

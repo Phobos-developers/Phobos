@@ -116,16 +116,30 @@ DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 	Patch::Apply();
 
 #ifdef DEBUG
-	MessageBoxW(NULL,
-	L"You can now attach a debugger.\n\n"
 
-	L"To attach a debugger find the YR process in Process Hacker "
-	L"/ Visual Studio processes window and detach debuggers from it, "
-	L"then you can attach your own debugger. After this you should "
-	L"terminate Syringe.exe because it won't automatically exit when YR is closed.\n\n"
+	if (Phobos::DetachFromDebugger())
+	{
+		MessageBoxW(NULL,
+		L"You can now attach a debugger.\n\n"
 
-	L"Press OK to continue YR execution.",
-	L"Debugger Notice", MB_OK);
+		L"Press OK to continue YR execution.",
+		L"Debugger Notice", MB_OK);
+	}
+	else
+	{
+		MessageBoxW(NULL,
+		L"You can now attach a debugger.\n\n"
+
+		L"To attach a debugger find the YR process in Process Hacker "
+		L"/ Visual Studio processes window and detach debuggers from it, "
+		L"then you can attach your own debugger. After this you should "
+		L"terminate Syringe.exe because it won't automatically exit when YR is closed.\n\n"
+
+		L"Press OK to continue YR execution.",
+		L"Debugger Notice", MB_OK);
+	}
+
+	
 #endif
 
 	return 0;
