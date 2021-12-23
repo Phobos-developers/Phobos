@@ -112,6 +112,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		AIScriptsLists.AddItem(objectsList);
 		objectsList.Clear();
 	}
+
+	// Ares
+	pData->DeactivateDim_Powered.Read(exINI, "AudioVisual", "DeactivateDimPowered");
+	pData->DeactivateDim_EMP.Read(exINI, "AudioVisual", "DeactivateDimEMP");
+	pData->DeactivateDim_Operator.Read(exINI, "AudioVisual", "DeactivateDimOperator");
 }
 
 // this runs between the before and after type data loading methods for rules ini
@@ -166,6 +171,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetAllowLayerDeviation)
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
+		// Ares
+		.Process(this->DeactivateDim_Powered)
+		.Process(this->DeactivateDim_EMP)
+		.Process(this->DeactivateDim_Operator)
 		;
 }
 

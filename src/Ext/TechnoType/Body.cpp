@@ -143,6 +143,19 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
+	// Ares 0.7
+	if (pINI->ReadString(pSection, "Operator", "", Phobos::readBuffer))
+	{
+		this->IsAPromiscuousWhoreAndLetsAnyoneRideIt = (strcmp(Phobos::readBuffer, "_ANY_") == 0);
+		if (!this->IsAPromiscuousWhoreAndLetsAnyoneRideIt)
+		{
+			if (auto const pOperator = InfantryTypeClass::Find(Phobos::readBuffer))
+				this->Operator = pOperator;
+			else if (!INIClass::IsBlank(Phobos::readBuffer))
+				Debug::INIParseFailed(pSection, "Operator", Phobos::readBuffer);
+		}
+	}
+
 	// Ares 0.9
 	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
 
@@ -278,6 +291,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployingAnim_ReverseForUndeploy)
 		.Process(this->DeployingAnim_UseUnitDrawer)
 		.Process(this->DeployDir)
+		.Process(this->Operator)
+		.Process(this->IsAPromiscuousWhoreAndLetsAnyoneRideIt)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

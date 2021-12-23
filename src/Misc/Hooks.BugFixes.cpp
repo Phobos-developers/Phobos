@@ -1,3 +1,4 @@
+#include <AirstrikeClass.h>
 #include <AnimClass.h>
 #include <BuildingClass.h>
 #include <TechnoClass.h>
@@ -8,6 +9,7 @@
 #include <BulletClass.h>
 #include <HouseClass.h>
 
+#include <Ext/Techno/Body.h>
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
 
@@ -314,4 +316,41 @@ DEFINE_HOOK(0x41EB43, AITriggerTypeClass_Condition_SupportPowersup, 0x7)		//AITr
 	R->EAX(count);
 
 	return R->Origin() + 0xC;
+}
+
+// Fix the issue that SHP units doesn't apply IronCurtain or other color effects and doesn't accept EMP intensity
+// Author: secsome
+DEFINE_HOOK(0x706389, TechnoClass_DrawAsSHP_TintAndIntensity, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(int, nIntensity, EBP);
+	REF_STACK(int, nTintColor, STACK_OFFS(0x54, -0x2C));
+
+	if (pThis->IsIronCurtained())
+		nTintColor |= Drawing::RGB2DWORD(RulesClass::Instance->ColorAdd[RulesClass::Instance->IronCurtainColor]);
+
+	if(pThis->ForceShielded)
+		nTintColor |= Drawing::RGB2DWORD(RulesClass::Instance->ColorAdd[RulesClass::Instance->ForceShieldColor]);
+
+	if (pThis->Berzerk)
+		nTintColor |= Drawing::RGB2DWORD(RulesClass::Instance->ColorAdd[RulesClass::Instance->BerserkColor]);
+
+	// Boris
+	if (pThis->Airstrike && pThis->Airstrike->Target == pThis)
+		nTintColor |= Drawing::RGB2DWORD(RulesClass::Instance->ColorAdd[RulesClass::Instance->LaserTargetColor]);
+
+	// EMP
+	if (pThis->IsUnderEMP())
+		R->EBP(static_cast<int>(nIntensity * RulesExt::Global()->DeactivateDim_EMP));
+	else if (pThis->Deactivated)
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(pThis);
+		if (!pExt->IsOperated())
+			R->EBP(static_cast<int>(nIntensity * RulesExt::Global()->DeactivateDim_Operator));
+		else
+			R->EBP(static_cast<int>(nIntensity * RulesExt::Global()->DeactivateDim_Powered));
+	}
+
+
+	return 0;
 }

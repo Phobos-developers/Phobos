@@ -89,6 +89,10 @@ public:
 		Valueable<bool> DeployingAnim_UseUnitDrawer;
 		Nullable<int> DeployDir;
 
+		// Ares
+		InfantryTypeClass* Operator; //!< Saves a pointer to an InfantryType required to be a passenger of this unit in order for it to work. Defaults to NULL. \sa TechnoClass_Update_CheckOperators, bool IsAPromiscuousWhoreAndLetsAnyoneRideIt
+		bool IsAPromiscuousWhoreAndLetsAnyoneRideIt; //!< If this is true, Operator= is not checked, and the object will work with any passenger, provided there is one. \sa InfantryTypeClass * Operator
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -163,6 +167,8 @@ public:
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
 			, DeployDir {}
+			, Operator { nullptr }
+			, IsAPromiscuousWhoreAndLetsAnyoneRideIt { false }
 		{ }
 
 		virtual ~ExtData() = default;

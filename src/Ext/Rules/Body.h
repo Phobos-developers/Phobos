@@ -35,6 +35,11 @@ public:
 		Valueable<bool> JumpjetNoWobbles;
 		Valueable<bool> JumpjetAllowLayerDeviation;
 
+		// Ares
+		Valueable<double> DeactivateDim_Powered;
+		Valueable<double> DeactivateDim_EMP;
+		Valueable<double> DeactivateDim_Operator;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Pips_Shield { { -1,-1,-1 } }
 			, Pips_Shield_Buildings { { -1,-1,-1 } }
@@ -43,6 +48,9 @@ public:
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, JumpjetAllowLayerDeviation { true }
+			, DeactivateDim_Powered { 0.5 }
+			, DeactivateDim_EMP { 0.8 }
+			, DeactivateDim_Operator { 0.65 }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -46,6 +46,8 @@ public:
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
+		bool IsOperated() const;
+
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
