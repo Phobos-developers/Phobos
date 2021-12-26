@@ -33,3 +33,39 @@ DEFINE_HOOK(0x449ADA, BuildingClass_MissionConstruction_DeployToFireFix, 0x0)
 
 	return 0x449AE8;
 }
+
+DEFINE_HOOK(0x4401BB, Factory_AI_PickWithFreeDocks, 0x6)
+{
+	GET(BuildingClass*, pBuilding, ESI);
+
+	if (Phobos::Config::AllowParallelAIQueues)
+		return 0;
+
+	if (!pBuilding)
+		return 0;
+
+	HouseClass* pOwner = pBuilding->Owner;
+
+	if (!pOwner)
+		return 0;
+
+	if (pOwner->Type->MultiplayPassive
+		|| pOwner->IsPlayer()
+		|| pOwner->IsNeutral())
+		return 0;
+
+	if (pBuilding->Type->Factory == AbstractType::AircraftType)
+	{
+		if (pBuilding->Factory
+			&& !BuildingExt::HasFreeDocks(pBuilding))
+		{
+			auto BuildingExt = BuildingExt::ExtMap.Find(pBuilding);
+			if (!BuildingExt)
+				return 0;
+
+			BuildingExt::UpdatePrimaryFactoryAI(pBuilding);
+		}
+	}
+
+	return 0;
+}
