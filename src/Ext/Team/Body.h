@@ -29,8 +29,8 @@ public:
 			, IdxSelectedObjectFromAIList { -1 }
 			, CloseEnough { -1 }
 			, Countdown_RegroupAtLeader { -1 }
-			, MoveMissionEndMode(0)
-			, SelectedTarget(nullptr)
+			, MoveMissionEndMode { 0 }
+			, SelectedTarget { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;
