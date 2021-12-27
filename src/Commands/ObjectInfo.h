@@ -233,6 +233,16 @@ public:
 			append("Owner = %s (%s), ", pBuilding->Owner->get_ID(), pBuilding->Owner->PlainName);
 			append("Location = (%d, %d)\n", pBuilding->GetMapCoords().X, pBuilding->GetMapCoords().Y);
 
+			if (pBuilding->Factory && pBuilding->Factory->Object)
+			{
+				append("Production: %s (%d%%)\n", pBuilding->Factory->Object->GetTechnoType()->ID, (pBuilding->Factory->GetProgress() * 100 / 54));
+			}
+
+			if (pBuilding->Type->Refinery || pBuilding->Type->ResourceGatherer)
+			{
+				append("Money: %d\n", pBuilding->Owner->Available_Money());
+			}
+
 			if (pBuilding->Occupants.Count > 0)
 			{
 				append("Occupants: %s", pBuilding->Occupants.GetItem(0)->Type->ID);
