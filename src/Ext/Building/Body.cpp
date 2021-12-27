@@ -14,7 +14,9 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 	if (!BuildingExt
 		|| pOwner->Type->MultiplayPassive
 		|| pOwner->IsNeutral())
+	{
 		return;
+	}
 
 	AircraftTypeClass* pAircraft = AircraftTypeClass::Array->GetItem(pOwner->ProducingAircraftTypeIndex);
 	FactoryClass* currFactory = pOwner->GetFactoryProducing(pAircraft);
@@ -39,9 +41,7 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 		if (pBuilding->Type->Factory == AbstractType::AircraftType)
 		{
 			if (!currFactory && pBuilding->Factory)
-			{
 				currFactory = pBuilding->Factory;
-			}
 
 			airFactoryBuilding.AddItem(pBuilding);
 		}
@@ -127,13 +127,9 @@ bool BuildingExt::HasFreeDocks(BuildingClass* pBuilding)
 		int nOccupiedDocks = BuildingExt::CountOccupiedDocks(pBuilding);
 
 		if (nOccupiedDocks < nDocks)
-		{
 			return true;
-		}
 		else
-		{
 			return false;
-		}
 	}
 
 	return false;
