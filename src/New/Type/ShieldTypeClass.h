@@ -32,6 +32,7 @@ public:
 	Valueable<bool>	CanBeAssimilated;
 	Valueable<bool>	CanBeStolen;
 
+	Nullable<bool> AllowTransfer;
 private:
 	Valueable<double> Respawn_Rate__InMinutes;
 	Valueable<double> SelfHealing_Rate__InMinutes;
@@ -62,6 +63,7 @@ public:
 
 		, Respawn_Rate__InMinutes(0.0)
 		, SelfHealing_Rate__InMinutes(0.0)
+		, AllowTransfer()
 	{};
 
 	virtual ~ShieldTypeClass() override = default;

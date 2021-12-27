@@ -57,7 +57,7 @@ class Extension
 public:
 	static const DWORD Canary;
 
-	Extension(T* const OwnerObject) : 
+	Extension(T* const OwnerObject) :
 		AttachedToObject(OwnerObject),
 		Initialized(InitState::Blank)
 	{ }
@@ -163,7 +163,7 @@ public:
 		auto const it = this->Items.find(key);
 		if (it != this->Items.end())
 			return it->second;
-		
+
 		return nullptr;
 	}
 
@@ -329,7 +329,7 @@ public:
 
 		if (auto const ptr = this->Items.find(key))
 			return ptr;
-		
+
 		auto val = new extension_type(key);
 		val->EnsureConstanted();
 

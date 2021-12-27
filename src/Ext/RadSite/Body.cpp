@@ -63,7 +63,7 @@ void RadSiteExt::CreateLight(RadSiteClass* pThis)
 	//=========Green
 	auto green = ((1000 * nRadcolor.G) / 255) * nTintFactor;
 	green = Math::min(green, 2000.0);
-	//=========Blue 
+	//=========Blue
 	auto blue = ((1000 * nRadcolor.B) / 255) * nTintFactor;
 	blue = Math::min(blue, 2000.0);;
 

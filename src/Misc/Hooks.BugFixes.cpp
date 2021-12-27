@@ -1,15 +1,20 @@
+#include <AircraftClass.h>
 #include <AnimClass.h>
 #include <BuildingClass.h>
 #include <TechnoClass.h>
 #include <FootClass.h>
 #include <UnitClass.h>
+#include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
 #include <VoxelAnimClass.h>
 #include <BulletClass.h>
 #include <HouseClass.h>
+#include <FlyLocomotionClass.h>
+#include <JumpjetLocomotionClass.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
+#include <Ext/Techno/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -70,6 +75,10 @@ DEFINE_HOOK(0x737D57, UnitClass_ReceiveDamage_DyingFix, 0x7)
 	GET(UnitClass*, pThis, ESI);
 	GET(DamageState, result, EAX);
 
+	// Immediately release locomotor warhead's hold on a crashable unit if it dies while attacked by one.
+	if (result == DamageState::NowDead && pThis->IsAttackedByLocomotor && pThis->GetTechnoType()->Crashable)
+		pThis->IsAttackedByLocomotor = false;
+
 	if (result != DamageState::PostMortem && pThis->DeathFrameCounter > 0)
 		R->EAX(DamageState::PostMortem);
 
@@ -103,7 +112,7 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, 0xA)
 			if (pType->DebrisMaximums.GetItem(currentIndex) > 0)
 			{
 				int adjustedMaximum = Math::min(pType->DebrisMaximums.GetItem(currentIndex), pType->MaxDebris);
-				int amountToSpawn = ScenarioClass::Instance->Random.Random() % (adjustedMaximum + 1); //0x702337
+				int amountToSpawn = abs(ScenarioClass::Instance->Random.Random()) % (adjustedMaximum + 1); //0x702337
 				amountToSpawn = Math::min(amountToSpawn, totalSpawnAmount);
 				totalSpawnAmount -= amountToSpawn;
 
@@ -309,9 +318,153 @@ DEFINE_HOOK(0x41EB43, AITriggerTypeClass_Condition_SupportPowersup, 0x7)		//AITr
 	int count = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);
 
 	if (count == -1)
-		count = pHouse->OwnedBuildingTypes1.GetItemCount(idxBld);
+		count = pHouse->ActiveBuildingTypes.GetItemCount(idxBld);
 
 	R->EAX(count);
 
 	return R->Origin() + 0xC;
+}
+
+// Dehardcode the stupid Wall-Gate relationships
+// Author: Uranusian
+DEFINE_HOOK(0x441053, BuildingClass_Unlimbo_EWGate, 0x6)
+{
+	GET(BuildingTypeClass*, pThis, ECX);
+
+	return RulesClass::Instance->EWGates.FindItemIndex(pThis) == -1 ? 0 : 0x441065;
+}
+
+DEFINE_HOOK(0x4410E1, BuildingClass_Unlimbo_NSGate, 0x6)
+{
+	GET(BuildingTypeClass*, pThis, ECX);
+
+	return RulesClass::Instance->NSGates.FindItemIndex(pThis) == -1 ? 0 : 0x4410F3;
+}
+
+DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
+{
+	GET(CellClass*, pThis, EBP);
+	GET(int, idxOverlay, EBX);
+	GET_STACK(int, state, STACK_OFFS(0x10, -0x8));
+	bool isWall = idxOverlay != -1 && OverlayTypeClass::Array->GetItem(idxOverlay)->Wall;
+	enum { Attachable = 0x480549 };
+
+	if (isWall)
+	{
+		for (auto pObject = pThis->FirstObject; pObject; pObject = pObject->NextObject)
+		{
+			if (pObject->Health > 0)
+			{
+				if (auto pBuilding = abstract_cast<BuildingClass*>(pObject))
+				{
+					auto pBType = pBuilding->Type;
+					if ((RulesClass::Instance->EWGates.FindItemIndex(pBType) != -1) && (state == 2 || state == 6))
+						return Attachable;
+					else if ((RulesClass::Instance->NSGates.FindItemIndex(pBType) != -1) && (state == 0 || state == 4))
+						return Attachable;
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x415F5C, AircraftClass_FireAt_SpeedModifiers, 0xA)
+{
+	GET(AircraftClass*, pThis, EDI);
+
+	if (pThis->Type->Locomotor == LocomotionClass::CLSIDs::Fly)
+	{
+		if (const auto pLocomotor = static_cast<FlyLocomotionClass*>(pThis->Locomotor.get()))
+		{
+			double currentSpeed = pThis->GetTechnoType()->Speed * pLocomotor->CurrentSpeed *
+				TechnoExt::GetCurrentSpeedMultiplier(pThis);
+
+			R->EAX(static_cast<int>(currentSpeed));
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4CDA78, FlyLocomotionClass_MovementAI_SpeedModifiers, 0x6)
+{
+	GET(FlyLocomotionClass*, pThis, ESI);
+
+	double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
+		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+
+	R->EAX(static_cast<int>(currentSpeed));
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4CE4BF, FlyLocomotionClass_4CE4B0_SpeedModifiers, 0x6)
+{
+	GET(FlyLocomotionClass*, pThis, ECX);
+
+	double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
+		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+
+	R->EAX(static_cast<int>(currentSpeed));
+
+	return 0;
+}
+
+DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
+{
+	GET(JumpjetLocomotionClass*, pThis, ESI);
+
+	double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+	pThis->Speed = (int)(pThis->LinkedTo->GetTechnoType()->JumpjetSpeed * multiplier);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73B2A2, UnitClass_DrawObject_DrawerBlitterFix, 0x6)
+{
+	enum { SkipGameCode = 0x73B2C3 };
+
+	GET(UnitClass* const, pThis, ESI);
+	GET(BlitterFlags, blitterFlags, EDI);
+
+	R->EAX(pThis->GetDrawer()->SelectPlainBlitter(blitterFlags));
+
+	return SkipGameCode;
+}
+
+// Set all bullet params (Bright) from weapon for nuke carrier weapon.
+DEFINE_HOOK(0x44CABA, BuildingClass_Mission_Missile_BulletParams, 0x7)
+{
+	enum { SkipGameCode = 0x44CAF2 };
+
+	GET(BuildingClass* const, pThis, ESI);
+	GET(CellClass* const, pTarget, EAX);
+
+	auto pWeapon = SuperWeaponTypeClass::Array->GetItem(pThis->FiringSWType)->WeaponType;
+	BulletClass* pBullet = nullptr;
+
+	if (pWeapon)
+		pBullet = pWeapon->Projectile->CreateBullet(pTarget, pThis, pWeapon->Damage, pWeapon->Warhead, 255, pWeapon->Bright);
+
+	R->EAX(pBullet);
+	R->EBX(pWeapon);
+	return SkipGameCode;
+}
+
+// Set all bullet params (Bright) from weapon for nuke payload weapon.
+DEFINE_HOOK(0x46B3E6, BulletClass_NukeMaker_BulletParams, 0x8)
+{
+	enum { SkipGameCode = 0x46B40D };
+
+	GET_STACK(BulletClass* const, pThis, STACK_OFFS(0x70, 0x60));
+	GET_STACK(TechnoClass* const, pOwner, STACK_OFFS(0x74, 0x50));
+	GET(WeaponTypeClass* const, pWeapon, ESI);
+	GET(AbstractClass* const, pTarget, EBX);
+
+	pThis->Construct(pWeapon->Projectile, pTarget, pOwner, pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright);
+
+	R->EDI(pThis);
+	return SkipGameCode;
 }

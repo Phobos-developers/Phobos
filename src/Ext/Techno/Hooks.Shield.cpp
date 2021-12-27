@@ -56,10 +56,6 @@ DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_Sh
 	else
 		pWeapon = R->EBX<WeaponTypeClass*>();
 
-	if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead))
-		if (pWHExt->Shield_Penetrate)
-			return 0;
-
 	TechnoClass* pTarget = nullptr;
 	if (R->Origin() == 0x6F7D31 || R->Origin() == 0x70CF39)
 		pTarget = R->ESI<TechnoClass*>();
@@ -70,9 +66,12 @@ DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_Sh
 	{
 		if (const auto pShieldData = pExt->Shield.get())
 		{
+			if (pShieldData->CanBePenetrated(pWeapon->Warhead))
+				return 0;
+
 			if (pShieldData->IsActive())
 			{
-				R->EAX(TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType())->ShieldType->Armor);
+				R->EAX(pShieldData->GetType()->Armor);
 				return R->Origin() + 6;
 			}
 		}
@@ -112,7 +111,13 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI_Shield, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
+	// Set current shield type if it is not set.
+	if (!pExt->CurrentShieldType->Strength && pTypeExt->ShieldType->Strength)
+		pExt->CurrentShieldType = pTypeExt->ShieldType;
+
+	// Create shield class instance if it does not exist.
 	if (pExt->CurrentShieldType && pExt->CurrentShieldType->Strength && !pExt->Shield)
 		pExt->Shield = std::make_unique<ShieldClass>(pThis);
 
@@ -147,7 +152,7 @@ DEFINE_HOOK(0x6F6AC4, TechnoClass_Remove_Shield, 0x5)
 
 	if (pExt->Shield)
 		pExt->Shield->KillAnim();
-	
+
 	return 0;
 }
 

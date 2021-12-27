@@ -1,5 +1,6 @@
 #pragma once
 #include <TechnoClass.h>
+#include <AnimClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
@@ -24,7 +25,11 @@ public:
 		Valueable<bool> ReceiveDamage;
 		Valueable<bool> LastKillWasTeamTarget;
 		TimerStruct	PassengerDeletionTimer;
+		Valueable<int> PassengerDeletionCountDown;
 		Valueable<ShieldTypeClass*> CurrentShieldType;
+		Valueable<int> LastWarpDistance;
+		int Death_Countdown;
+		Valueable<AnimTypeClass*> MindControlRingAnimType;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet { nullptr }
@@ -32,8 +37,12 @@ public:
 			, LaserTrails {}
 			, ReceiveDamage { false }
 			, LastKillWasTeamTarget { false }
-			, PassengerDeletionTimer { -1 }
-			, CurrentShieldType {}
+			, PassengerDeletionTimer {}
+			, PassengerDeletionCountDown { -1 }
+			, CurrentShieldType { nullptr }
+			, LastWarpDistance {}
+			, Death_Countdown(-1)
+			, MindControlRingAnimType { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -73,7 +82,7 @@ public:
 	static void InitializeLaserTrails(TechnoClass* pThis);
 	static void InitializeShield(TechnoClass* pThis);
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
-	
+
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
@@ -84,8 +93,11 @@ public:
 	static void ApplyInterceptor(TechnoClass* pThis);
 	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
 	static void ApplySpawn_LimitRange(TechnoClass* pThis);
+	static void CheckDeathConditions(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void EatPassengers(TechnoClass* pThis);
-
+	static void UpdateSharedAmmo(TechnoClass* pThis);
+	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
+	static void UpdateMindControlAnim(TechnoClass* pThis);
 };

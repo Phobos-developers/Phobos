@@ -1,4 +1,4 @@
-// Anim-to--Unit 
+// Anim-to--Unit
 // Author: Otamaa
 
 #include "Body.h"
@@ -82,7 +82,7 @@ DEFINE_HOOK(0x424932, AnimClass_Update_CreateUnit_ActualAffects, 0x6)
 		{
 			bool allowBridges = unit->SpeedType != SpeedType::Float;
 
-			auto nCell = MapClass::Instance->Pathfinding_Find(CellClass::Coord2Cell(location),
+			auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
 				unit->SpeedType, -1, unit->MovementZone, false, 1, 1, true,
 				false, false, allowBridges, CellStruct::Empty, false, false);
 
@@ -165,6 +165,8 @@ DEFINE_HOOK(0x469C98, BulletClass_DetonateAt_DamageAnimSelected, 0x0)
 
 		if (auto unit = pTypeExt->CreateUnit.Get())
 			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
+		else if (!pAnim->Owner && pThis->Owner)
+			pAnim->Owner = pThis->Owner->Owner;
 	}
 	else if (pThis->WH == RulesClass::Instance->NukeWarhead)
 	{
@@ -185,7 +187,8 @@ DEFINE_HOOK(0x6E2368, ActionClass_PlayAnimAt, 0x7)
 
 		if (auto unit = pTypeExt->CreateUnit.Get())
 			AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, pHouse, pHouse);
-
+		else if (!pAnim->Owner && pHouse)
+			pAnim->Owner = pHouse;
 	}
 
 	return 0;

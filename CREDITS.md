@@ -1,0 +1,172 @@
+# Credits
+
+This page lists all the individual contributions to the project by their author.
+
+- **Belonit (Gluk-v48)**:
+  - Disable empty spawn positions
+  - `gamemd.exe` icon customization
+  - Full-color non-paletted PCX support
+  - Initial SpySat, BigGap, TransactMoney warheads
+  - PCX Loading Screen support
+  - Custom DiskLaser radius
+  - Extended tooltips
+  - Building upgrades enhancement
+  - Option to hide health bar
+  - Sidebar.GDIPosition
+  - Help with CellSpread
+  - Blowfish.dll-related errors fix
+  - Zero size map previews fix
+  - Semantic locomotor aliases
+  - Shield logic
+  - Non-ASCII input fix
+- **Kerbiter (Metadorius)**:
+  - SHP debris respect `Shadow` fix
+  - Building upgrades enhancement
+  - Extended tooltips
+  - Selection priority filtering
+  - `TurretOffset` enhancement
+  - Customizable ore spawners
+  - Select next idle harvester hotkey
+  - Interceptor enhancement
+  - Zero size map previews fix
+  - LaserTrails port and rework
+  - Laser graphics fixes
+  - GitHub Actions setup
+  - Overhauled Unicode font
+  - Official docs
+  - VSCode configs
+  - Code style
+- **Uranusian (Thrifinesma)**:
+  - Mind Control enhancement
+  - Custom warhead splash list
+  - Harvester counter
+  - Spawns promotion
+  - Shield logic
+  - Multiple death fix
+  - Customizable missing cameo
+  - Cameo sorting priority
+  - Tab hotkey placement fix
+  - Producing progress indicators
+  - Custom ore gathering anim
+  - `NoManualMove`
+  - Weapon target house filtering
+  - `DeathWeapon` fix
+  - Re-enable obsolete `JumpjetControls`
+  - `AITrigger` Building Upgrades support
+  - Wall-Gate links
+  - Ability for deployed infantry to use both weapons
+  - Font icon additions
+  - Official CN docs
+- **secsome (SEC-SOME)**:
+  - Debug info dump hotkey
+  - Refactoring & porting of Ares helper code
+  - Disguise removal warhead
+  - Mind Control removal warhead
+  - Mind Control enhancement
+  - Shields logic help
+  - `AnimList.PickRandom`
+  - `MoveToCell` fix
+  - Unlimited waypoints
+  - `Build At` trigger action buildup anim fix
+  - Undeploy building into a unit plays `EVA_NewRallyPointEstablished` fix
+  - Custom ore gathering anim
+  - `TemporalClass` related crash
+  - Retry dialog on mission failure
+  - Default disguise for individual InfantryTypes
+  - PowerPlant Enhancer
+  - SaveGame Trigger Action
+  - QuickSave command
+  - Numeric variables
+  - Custom gravity for projectiles
+  - Retint map actions bugfix
+  - Sharpnel enhancement
+  - Vanilla map preview reading bugfix
+- **Otamaa (Fahroni, BoredEXE)**:
+  - Help with CellSpread
+  - Ported and fixed custom RadType code
+  - Togglable ElectricBolt bolts
+  - Customizable Chrono Locomotor properties per TechnoClass
+  - `DebrisMaximums` fixes, Anim-to-Unit
+  - `NotHuman` anim sequences improvements
+  - Customizable `OpenTopped` Properties
+  - Hooks for ScriptType Actions 92 & 93
+  - Ore stage threshold for `HideIfNoOre`
+  - Occupied building `MuzzleFlashX` bugfix
+  - `EnemyUIName=` for other TechnoTypes
+  - TerrainType `DestroyAnim` & `DestroySound`
+  - Laser trails for VoxelAnims
+- **FS-21**:
+  - Dump Object Info enhancements
+  - `Powered.KillSpawns`
+  - `Spawner.LimitRange`
+  - ScriptType Actions 71 to 113
+  - MC deployer fixes
+  - Help with docs
+  - Automatic Passenger Deletion logic
+  - `Fire SW At Location` Trigger Action
+  - `Fire SW At Waypoint` Trigger Action
+  - Kill Object Automatically logic
+  - Customizable resource storage
+  - Override Uncloaked Underwater attack behavior
+  - AI Aircraft docks fix
+  - Customize resource storage
+  - Shared Ammo logic
+- **Starkku**:
+  - Warhead shield penetration & breaking
+  - Strafing aircraft weapon customization
+  - Vehicle `DeployFire` fixes/improvements
+  - Stationary VehicleTypes
+  - Burst logic improvements
+  - TechnoType auto-firing weapons
+  - Secondary weapon fallback customization
+  - Weapon target type filtering
+  - `AreaFire` targeting customization
+  - `CreateUnit` improvements
+  - Attached animation & jumpjet unit layer customization
+  - `IsSimpleDeployer` improvements
+  - Shield modification warheads
+  - Warhead decloaking toggle
+  - Warp(In/Out)Weapon
+  - Grinder improvements / additions
+  - Attached animation position customization
+  - Critical hit logic additions
+  - Aircraft & jumpjet speed modifiers fix
+  - Local warhead screen shaking
+  - Vehicle custom palette fix
+  - Weapon owner detachment
+  - Feedback weapon
+  - TerrainType & ore minimap color customization
+  - Laser fixes & improvements
+  - Mind control indicator animation cloak fix
+  - Warhead / Play animation trigger animation owner fix
+  - Nuke carrier & payload Bright fix
+- **Morton (MortonPL)**:
+  - `XDrawOffset`
+  - Shield passthrough & absorption
+  - Building `LimboDelivery` logic
+  - Fix for `Image` in art rules
+  - Power delta counter
+  - Help with docs
+- **ChrisLv_CN** (work relicensed under [following permission](images/ChrisLv-relicense.png)):
+   - General assistance
+   - Interceptor logic prototype
+   - LaserTrails prototype
+   - Laser fixes prototype
+- **SukaHati (Erzoid)** - Minimum interceptor guard range
+- **E1 Elite** - TileSet 255 and above bridge repair fix
+- **AutoGavy** - interceptor logic, Warhead critical hit logic
+- **Chasheen (Chasheenburg)** - CN docs translation
+- **Ares developers** - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code, prototype deployer fixes
+- **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
+- **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
+- **ZΞPHYɌUS** - win/lose themes code
+- **ayylmao** - help with docs, extensive and thorough testing
+- **SMxReaver** - help with docs, extensive and thorough testing
+- **4SG** - help with docs
+- **wiktorderelf** - overhauled Unicode font
+- **thomassneddon** - general assistance
+- **Xkein** - general assistance, YRpp edits
+- **mevitar** - honorary shield tester *triple* award
+- **Damfoos** - extensive and thorough testing
+- **Dmitry Volkov** - extensive and thorough testing
+- **Rise of the East community** - extensive playtesting of in-dev features

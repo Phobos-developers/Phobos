@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-13 17:46+0800\n"
+"POT-Creation-Date: 2022-01-07 11:14+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -85,7 +85,8 @@ msgstr "你可以指定玩家胜利或失败时播放的音轨。"
 
 #: ../User-Interface.md:19 ../User-Interface.md:54 ../User-Interface.md:75
 #: ../User-Interface.md:101 ../User-Interface.md:115 ../User-Interface.md:125
-#: ../User-Interface.md:151 ../User-Interface.md:182 ../User-Interface.md:213
+#: ../User-Interface.md:151 ../User-Interface.md:182 ../User-Interface.md:208
+#: ../User-Interface.md:247
 msgid "In `rulesmd.ini`:"
 msgstr "在`rulesmd.ini`中："
 
@@ -128,7 +129,7 @@ msgstr "`[ ]` 下一空闲矿车"
 msgid ""
 "Selects and centers the camera on the next TechnoType that is counted via"
 " the [harvester counter](#harvester-counter) and is currently idle."
-msgstr "选择并居中下一个被[矿车指示器]计数且处于空闲状态的单位。"
+msgstr "选择并居中下一个被[矿车指示器](#harvester-counter)计数且处于空闲状态的单位。"
 
 #: ../User-Interface.md:38
 msgid ""
@@ -191,7 +192,7 @@ msgid ""
 " do that externally via client or manually."
 msgstr "用户可以自由指定是否启用这个逻辑。目前只能人工设置或内置到客户端中。"
 
-#: ../User-Interface.md:62 ../User-Interface.md:221
+#: ../User-Interface.md:62 ../User-Interface.md:255
 msgid "In `RA2MD.ini`:"
 msgstr "在`RA2MD.ini`中："
 
@@ -208,7 +209,7 @@ msgstr ""
 "*隐藏血条在[CnC: Final War](https://www.moddb.com/mods/cncfinalwar)中*"
 
 #: ../User-Interface.md:70 ../User-Interface.md:133 ../User-Interface.md:170
-#: ../User-Interface.md:190
+#: ../User-Interface.md:190 ../User-Interface.md:224
 msgid "image"
 msgstr ""
 
@@ -252,7 +253,7 @@ msgid ""
 msgstr "现在可以关闭YR引擎硬编码的黑点"
 
 #: ../User-Interface.md:89 ../User-Interface.md:142 ../User-Interface.md:176
-#: ../User-Interface.md:204
+#: ../User-Interface.md:200 ../User-Interface.md:238
 msgid "In `uimd.ini`:"
 msgstr "在`uimd.ini`中："
 
@@ -339,7 +340,7 @@ msgid ""
 "the color of counter whenever the active percentage of harvesters less "
 "than or equals to them, like HP changing with `ConditionYellow` and "
 "`ConditionRed`."
-msgstr "当正在工作的矿车数量低于一定百分比时，矿车指示器将改变它的颜色警示玩家。通过`HarvesterCounter.ConditionYellow`和`HarvesterCounter.ConditionRed`指定百分比，类似血条颜色通过`ConditionYellow`和`ConditionRed`改变。"
+msgstr "当正在工作的矿车数量低于一定百分比时，矿车指示器将改变其颜色警示玩家。通过`HarvesterCounter.ConditionYellow`和`HarvesterCounter.ConditionRed`指定百分比，类似血条颜色通过`ConditionYellow`和`ConditionRed`改变。"
 
 #: ../User-Interface.md:1
 msgid ""
@@ -378,10 +379,60 @@ msgid ""
 msgstr "需要自行在`sidec0x.mix`中添加``tab0xpp.shp`(x为0-3) 作为生产进度的素材。"
 
 #: ../User-Interface.md:188
+msgid "Power delta counter"
+msgstr "电力变动指示器"
+
+#: ../User-Interface.md:190
+msgid ""
+"![image](_static/images/powerdelta-01.gif)   *Power delta Counter in "
+"[Assault Amerika](https://www.moddb.com/mods/assault-amerika)*"
+msgstr ""
+"![image](_static/images/powerdelta-01.gif)  \n"
+"*电力变动指示器在[Assault Amerika](https://www.moddb.com/mods/assault-amerika)中*"
+
+#: ../User-Interface.md:193
+msgid ""
+"An additional counter for your power delta (surplus) can be added near "
+"the credits indicator."
+msgstr "现在可以在金钱指示器旁边追加一个电力变动指示器。"
+
+#: ../User-Interface.md:194
+msgid ""
+"The counter is displayed with the format of `Label(sign)(Power Delta)`. "
+"The label is PowerLabel used in tooltips (by default `⚡ U+26A1`)."
+msgstr "该指示器以`标志 电力盈余`的格式显示，标志默认为`⚡ U+26A1`。"
+
+#: ../User-Interface.md:195
+msgid ""
+"You can adjust counter position by `Sidebar.PowerDelta.Offset`, negative "
+"means left/up, positive means right/down."
+msgstr "可以通过`Sidebar.PowerDelta.Offset`调整指示器的位置。负数左/上，正数右/下。"
+
+#: ../User-Interface.md:196
+msgid ""
+"You can adjust counter text alignment by `Sidebar.PowerDelta.Align`, "
+"acceptable values are left, right, center/centre."
+msgstr "可以通过`Sidebar.PowerDelta.Align`调整指示器的对齐方式为左对齐（`left`），右对齐（`right`）或居中对齐（`center`/`centre`）。"
+
+#: ../User-Interface.md:197
+msgid ""
+"By setting `PowerDelta.ConditionYellow` and `PowerDelta.ConditionRed`, "
+"the game will warn player by changing the color of counter whenever the "
+"percentage of used power exceeds the value (i.e. when drain to output "
+"ratio is above 100%, the counter will turn red)."
+msgstr "当使用电量的百分比低于一定值时，电力变动指示器将改变其颜色警示玩家。通过`PowerDelta.ConditionYellow`和`PowerDelta.ConditionRed`指定百分比（例如，当负载：电力大于100%时，指示器会变为红色）。"
+
+#: ../User-Interface.md:198
+msgid ""
+"The exception for this rule is when both power output and drain are 0 - "
+"in this case the counter will default to yellow."
+msgstr "当电力与负载均为0时，指示器恒为黄色。"
+
+#: ../User-Interface.md:222
 msgid "Tooltips"
 msgstr "工具提示"
 
-#: ../User-Interface.md:190
+#: ../User-Interface.md:224
 msgid ""
 "![image](_static/images/tooltips-01.png)   *Extended tooltips used in "
 "[CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*"
@@ -389,7 +440,7 @@ msgstr ""
 "![image](_static/images/tooltips-01.png)  \n"
 "*扩展工具提示在[CnC: Final War](https://www.moddb.com/mods/cncfinalwar)中*"
 
-#: ../User-Interface.md:193
+#: ../User-Interface.md:227
 msgid ""
 "Sidebar tooltips can now display extended information about the "
 "TechnoType/SWType when hovered over it's cameo. In addition the low "
@@ -397,19 +448,19 @@ msgid ""
 "corresponding tag, allowing for 1024 character long tooltips."
 msgstr "鼠标悬浮在图标上时显示的工具提示现在可以更加详细了。同时，最大字数限制也提高到了1024。"
 
-#: ../User-Interface.md:194
+#: ../User-Interface.md:228
 msgid ""
 "TechnoType's tooltip would display it's name, cost, power, build time and"
 " description (when applicable)."
 msgstr "拓展后`TechnoType`的工具提示将显示名称，所需资金，所需电力，所需时间，描述。"
 
-#: ../User-Interface.md:195
+#: ../User-Interface.md:229
 msgid ""
 "SWType's tooltip would display it's name, cost,  and recharge time (when "
 "applicable)."
 msgstr "拓展后`SWType`的工具提示将显示名称，所需资金，充能时间。"
 
-#: ../User-Interface.md:196
+#: ../User-Interface.md:230
 msgid ""
 "Extended tooltips don't use `TXT_MONEY_FORMAT_1` and "
 "`TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time labels"
@@ -419,13 +470,13 @@ msgstr ""
 "扩展工具提示不使用`TXT_MONEY_FORMAT_1`和`TXT_MONEY_FORMAT_2`。取而代之你可以自己指定金钱，电力，时间的标志（在对应值前显示）。默认分别为`$"
 " U+0024`，`⚡ U+26A1`，`⌚ U+231A`。"
 
-#: ../User-Interface.md:197
+#: ../User-Interface.md:231
 msgid ""
 "Fixed a bug when switching build queue tabs via QWER didn't make tooltips"
 " disappear as they should, resulting in stuck tooltips."
 msgstr "修复了当通过QWER切换标签页时, 工具提示不会消失的问题。"
 
-#: ../User-Interface.md:198
+#: ../User-Interface.md:232
 msgid ""
 "The tooltips can now go over the sidebar bounds to accommodate for longer"
 " contents. You can control maximum text width with a new tag (paddings "
@@ -441,7 +492,7 @@ msgstr ""
 "类似矿车指示器，你可以使用{download}`增强字库 "
 "<_static/files/ImprovedFont-v4.zip>`（v3或更高版本）或自己绘制标志。"
 
-#: ../User-Interface.md:219
+#: ../User-Interface.md:253
 msgid ""
 "The descriptions are designed to be toggleable by users. For now you can "
 "only do that externally via client or manually."

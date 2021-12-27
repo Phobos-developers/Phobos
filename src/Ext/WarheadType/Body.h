@@ -23,11 +23,18 @@ public:
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
 		Valueable<bool> AnimList_PickRandom;
+		Valueable<bool> DecloakDamagedTargets;
+		Valueable<bool> ShakeIsLocal;
 
-		Valueable<int> Crit_ExtraDamage;
 		Valueable<double> Crit_Chance;
+		Valueable<bool> Crit_ApplyChancePerTarget;
+		Valueable<int> Crit_ExtraDamage;
+		Nullable<WarheadTypeClass*> Crit_Warhead;
 		Valueable<AffectedTarget> Crit_Affects;
 		ValueableVector<AnimTypeClass*> Crit_AnimList;
+		Nullable<bool> Crit_AnimList_PickRandom;
+		Valueable<bool> Crit_AnimOnAffectedTargets;
+		Valueable<double> Crit_AffectBelowPercent;
 
 		Nullable<AnimTypeClass*> MindControl_Anim;
 
@@ -48,7 +55,8 @@ public:
 		Valueable<double> Shield_Steal_Multiplier;
 
 		double RandomBuffer;
-		
+		bool HasCrit;
+
 		Valueable<int> NotHuman_DeathSequence;
 
 		Nullable<double> Shield_AbsorbPercent;
@@ -59,7 +67,7 @@ public:
 		Valueable<int> Shield_Respawn_Rate;
 		Valueable<bool> Shield_Respawn_ResetTimer;
 		Valueable<int> Shield_SelfHealing_Duration;
-		Valueable<double> Shield_SelfHealing_Amount;
+		Nullable<double> Shield_SelfHealing_Amount;
 		Valueable<int> Shield_SelfHealing_Rate;
 		Valueable<bool> Shield_SelfHealing_ResetTimer;
 
@@ -68,6 +76,7 @@ public:
 		Valueable<bool> Shield_ReplaceOnly;
 		Valueable<bool> Shield_ReplaceNonRespawning;
 		Valueable<bool> Shield_InheritStateOnReplace;
+		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
 	private:
@@ -84,12 +93,20 @@ public:
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
 			, AnimList_PickRandom { false }
+			, DecloakDamagedTargets { true }
+			, ShakeIsLocal { false }
 
 			, Crit_Chance { 0.0 }
+			, Crit_ApplyChancePerTarget { false }
 			, Crit_ExtraDamage { 0 }
+			, Crit_Warhead {}
 			, Crit_Affects { AffectedTarget::All }
 			, Crit_AnimList {}
+			, Crit_AnimList_PickRandom {}
+			, Crit_AnimOnAffectedTargets { false }
+			, Crit_AffectBelowPercent { 1.0 }
 			, RandomBuffer { 0.0 }
+			, HasCrit { false }
 
 			, MindControl_Anim {}
 
@@ -115,7 +132,7 @@ public:
 			, Shield_Respawn_Rate_InMinutes { -1.0 }
 			, Shield_Respawn_ResetTimer { false }
 			, Shield_SelfHealing_Duration { 0 }
-			, Shield_SelfHealing_Amount { 0.0 }
+			, Shield_SelfHealing_Amount { }
 			, Shield_SelfHealing_Rate { -1 }
 			, Shield_SelfHealing_Rate_InMinutes { -1.0 }
 			, Shield_SelfHealing_ResetTimer { false }
@@ -124,6 +141,7 @@ public:
 			, Shield_ReplaceOnly { false }
 			, Shield_ReplaceNonRespawning { false }
 			, Shield_InheritStateOnReplace { false }
+			, Shield_MinimumReplaceDelay { 0 }
 			, Shield_AffectTypes {}
 
 			, NotHuman_DeathSequence { -1 }
@@ -164,4 +182,7 @@ public:
 	static ExtContainer ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static void DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage);
+	static void DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage);
 };

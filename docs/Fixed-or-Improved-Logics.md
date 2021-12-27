@@ -4,11 +4,26 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 ## Bugfixes and miscellaneous
 
+- Fixed the bug when reading a map which puts `Preview(Pack)` after `Map` lead to the game fail to draw the preview
 - Fixed the bug when retinting map lighting with a map action corrupted light sources.
 - Fixed the bug when deploying mindcontrolled vehicle into a building permanently transferred the control to the house which mindcontrolled it.
 - Fixed the bug when units are already dead but still in map (for sinking, crashing, dying animation, etc.), they could die again.
 - Fixed the bug when cloaked Desolator was unable to fire his deploy weapon.
 - Fixed the bug that temporaryed unit cannot be erased correctly and no longer raise an error.
+- Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond specified maximums anymore). Only applied when `DebrisMaximums` values amount is more than 1 for compatibility reasons.
+- Fixed building and defense tab hotkeys not enabling the placement mode after `Cannot build here.` triggered and the placement mode cancelled.
+- Fixed buildings with `UndeployInto` playing `EVA_NewRallypointEstablished` on undeploying.
+- Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water.
+- Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` > `AllowParallelAIQueues=no` is set.
+- Fixed laser drawing code to allow for thicker lasers in house color draw mode.
+- Fixed `DeathWeapon` not detonating properly. 
+  - Some settings are still ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
+- Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
+- Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
+- Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
+- Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
+- Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
+
 - SHP debris shadows now respect the `Shadow` tag.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
 - Adds a "Load Game" button to the retry dialog on mission failure.
@@ -20,29 +35,56 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `InfiniteMindControl` with `Damage=1` can now control more than 1 unit.
 - Aircraft with `Fighter` set to false or those using strafing pattern (weapon projectile `ROT` is below 2) now take weapon's `Burst` into accord for all shots instead of just the first one.
 - `EMEffect` used for random AnimList pick is now replaced by a new tag `AnimList.PickRandom` with no side effect. (EMEffect=yes on AA inviso projectile deals no damage to units in movement)
-- Script action `Move to cell` now obeys YR cell calculation now. Using `1000 * Y + X` as its cell value. (was `128 * Y + X` as it's RA leftover)
+- Script action `Move to cell` now obeys YR cell calculation now. Using `1000 * Y + X` as its cell value. (was `128 * Y + X` as it's a RA1 leftover)
 - The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])
 - Map trigger action `125 Build At...` can now play buildup anim optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2).
 - Vehicles using `DeployFire` will now explicitly use weapon specified by `DeployFireWeapon` for firing the deploy weapon and respect `FireOnce` setting on weapon and any stop commands issued during firing.
-- Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond specified maximums anymore). Only applied when `DebrisMaximums` values amount is more than 1 for compatibility reasons.
-- Fixed building and defense tab hotkeys not enabling the placement mode after `Cannot build here.` triggered and the placement mode cancelled.
-- Fixed buildings with `UndeployInto` playing `EVA_NewRallypointEstablished` on undeploying.
-- Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water.
+- Infantry with `DeployFireWeapon=-1` can now fire both weapons (decided by its target), regardless of deployed or not.
 
 ![image](_static/images/remember-target-after-deploying-01.gif)  
 *Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
 
 - Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
-- Fixed laser drawing code to allow for thicker lasers in house color draw mode.
-- `DeathWeapon` now will properly detonate. 
-  - But still some settings are ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
 - Effects like lasers are no longer drawn from wrong firing offset on weapons that use Burst.
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Animations can now be offset on the X axis with `XDrawOffset`.
 - `IsSimpleDeployer` units now only play `DeploySound` and `UndeploySound` once, when done with (un)deploying instead of repeating it over duration of turning and/or `DeployingAnim`.
 - AITrigger can now recognize Building Upgrades as legal condition.
+- `EWGates` and `NSGates` now will link walls like `xxGateOne` and `xxGateTwo` do.
+- Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
+- Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
+- Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
+- Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
+- Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
+- Aircraft & jumpjet units are now affected by speed modifiers such as `SpeedAircraft/Infantry/UnitsMult` on `Countries`, `VeteranSpeed` and Crates / AttachEffect (Ares feature).
+- Both voxel and SHP vehicle units should now correctly respect custom palette set through `Palette`.
+- Weapons fired by EMPulse superweapons without `EMPulse.TargetSelf=true` *(Ares feature)* can now create radiation.
+- Setting `RadarInvisible` to true on TerrainTypes now hides them from minimap display.
+- Mind control indicator animations will now correctly restore on mind controlled objects when uncloaked.
+- Animations from Warhead `AnimList` & `SplashList` etc. as well as animations created through map trigger `41 Play Anim At` now have the appropriate house set as owner of the animation by default.
+- Nuke carrier & payload weapons now respect `Bright` setting on the weapons always when appropriate (previously only payload did and only if Superweapon had `Nuke.SiloLaunch=false` *(Ares feature)*).
 
 ## Animations
+
+### Attached animation position customization
+
+- You can now customize whether or not animations attached to objects are centered at the object's actual center rather than the bottom of their top-leftmost cell (cell #0).
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                       ; AnimationType
+UseCenterCoordsIfAttached=false  ; boolean
+```
+
+### Layer on animations attached to objects
+
+- You can now customize whether or not animations attached to objects follow the object's layer or respect their own `Layer` setting. If this is unset, attached animations use `ground` layer.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]             ; AnimationType
+Layer.UseObjectLayer=  ; boolean
+```
 
 ### Ore stage threshold for `HideIfNoOre`
 
@@ -54,40 +96,58 @@ In `artmd.ini`:
 HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 ```
 
-### Layer on animations attached to objects
+## Buildings
 
-- You can now customize whether or not animations attached to objects follow the object's layer or respect their own `Layer` setting. If this is unset, attached animations use `ground` layer.
+### Customizable & new grinder properties
 
-In `artmd.ini`:
-```ini
-[SOMEANIM]                 ; AnimationType
-Layer.UseObjectLayer=      ; boolean
-```
-
-## Vehicles
-
-### Deploy direction for IsSimpleDeployer vehicles & deploy animation customization
-
-- `DeployDir` can be used to set the facing the vehicle needs to turn towards before deploying if it has `DeployingAnim` set. This is works the same as Ares flag of same name other than allowing use of negative numbers to disable the direction-specific deploy and that it only applies to units on ground. If not set, it defaults to `[General] -> DeployDir`.
-- In addition there are some new options for `DeployingAnim`:
-  - `DeployingAnim.KeepUnitVisible` determines if the unit is hidden while the animation is playing.
-  - `DeployingAnim.ReverseForUndeploy` controls whether or not the animation is played in reverse for undeploying.
-  - `DeployingAnim.UseUnitDrawer` controls whether or not the animation is displayed in the unit's palette and team colours.
+- You can now customize which types of objects a building with `Grinding` set can grind as well as the grinding sound.
+  - `Grinding.AllowAllies` changes whether or not to allow units to enter allies' buildings.
+  - `Grinding.AllowOwner` changes whether or not to allow units to enter your own buildings.
+  - `Grinding.AllowTypes` can be used to define InfantryTypes and VehicleTypes that can be grinded by the building. Listing any will disable grinding for all types except those listed.
+  - `Grinding.DisallowTypes` can be used to exclude InfantryTypes or VehicleTypes from being able to enter the grinder building.
+  - `Grinding.Sound` is a sound played by when object is grinded by the building. If not set, defaults to `[AudioVisual]`->`EnterGrinderSound`.
+  - `Grinding.Weapon` is a weapon fired at the building & by the building when it grinds an object. Will only be fired if at least weapon's `ROF` amount of frames have passed since it was last fired.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                          ; VehicleType
-DeployDir=                             ; integer, facing or a negative number to disable direction-specific deploy
-DeployingAnim.KeepUnitVisible=false    ; boolean
-DeployingAnim.ReverseForUndeploy=true  ; boolean
-DeployingAnim.UseUnitDrawer=true       ; boolean
+[SOMEBUILDING]             ; BuildingType
+Grinding.AllowAllies=false ; boolean
+Grinding.AllowOwner=true   ; boolean
+Grinding.AllowTypes=       ; List of InfantryTypes / VehicleTypes
+Grinding.DisallowTypes=    ; List of InfantryTypes / VehicleTypes
+Grinding.Sound=            ; Sound
+Grinding.Weapon=           ; WeaponType
 ```
 
-### Stationary vehicles
+## Projectiles
 
-- Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
+### Customizable projectile gravity
+
+-  You can now specify individual projectile gravity.
+    - Setting `Gravity=0` is not recommended. It will cause the projectile unable to hit the target which is not at the same height. We'd suggest to use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]        ; Projectile
+Gravity=6.0             ; double
+```
 
 ## Technos
+
+### Customizable harvester ore gathering animation
+
+![image](_static/images/oregath.gif)  
+*Custom ore gathering anims in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
+
+- You can now specify which anim should be drawn when a harvester of specified type is gathering specified type of ore.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                     ; TechnoType
+OreGathering.Anims=              ; list of animations
+OreGathering.FramesPerDir=15     ; list of integers
+OreGathering.Tiberiums=0         ; list of Tiberium IDs
+```
 
 ### Customizable Teleport/Chrono Locomotor settings per TechnoType
 
@@ -110,20 +170,34 @@ ChronoRangeMinimum=     ; integer, can be used to set a small range within which
 ChronoDelay=            ; integer, delay after teleport for chronosphere
 ```
 
-### Re-enable obsolete [JumpjetControls] 
+### Customizable unit image in art
 
-- Re-enable obsolete [JumpjetControls], the keys in it will be as the default value of jumpjet units.
-  - Moreover, added two tags for missing ones.
+- `Image` tag in art INI is no longer limited to AnimationTypes and BuildingTypes, and can be applied to all TechnoTypes (InfantryTypes, VehicleTypes, AircraftTypes, BuildingTypes).
+- The tag specifies **only** the file name (without extension) of the asset that replaces TechnoType's graphics. If the name in `Image` is also an entry in the art INI, **no tags will be read from it**.
+- **By default this feature is disabled** to remain compatible with YR. To use this feature, enable it in rules with `ArtImageSwap=true`.
+- This feature supports SHP images for InfantryTypes, SHP and VXL images for VehicleTypes and VXL images for AircraftTypes.
 
 In `rulesmd.ini`:
 ```ini
-[JumpjetControls]
-Crash=5.0       ; float
-NoWobbles=no    ; boolean
+[General]
+ArtImageSwap=false  ; disabled by default
 ```
 
-```{note}
-`CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
+In `artmd.ini`:
+```ini
+[SOMETECHNO]
+Image=              ; name of the file that will be used as image, without extension
+```
+
+### Customize resource storage
+
+- Now Ares `Storage` feature can set which Tiberium type from `[Tiberiums]` list should be used for storing resources in structures with `Refinery.UseStorage=yes` and `Storage` > 0.
+- This tag can not be used without Ares.
+
+In `rulesmd.ini`:
+```ini
+[General]
+Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
 ```
 
 ### Jumpjet unit layer deviation customization
@@ -139,21 +213,6 @@ AllowLayerDeviation=yes         ; boolean
 JumpjetAllowLayerDeviation=yes  ; boolean
 ```
 
-### Customizable harvester ore gathering animation
-
-![image](_static/images/oregath.gif)  
-*Custom ore gathering anims in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
-
-- You can now specify which anim should be drawn when a harvester of specified type is gathering specified type of ore.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                     ; TechnoType
-OreGathering.Anims=              ; list of animations
-OreGathering.FramesPerDir=15     ; list of integers
-OreGathering.Tiberiums=0         ; list of Tiberium IDs
-```
-
 ### Kill spawns on low power
 
 - `Powered=yes` structures that spawns aircraft like Aircrafts Carriers will stop targeting the enemy if low power.
@@ -163,6 +222,22 @@ In `rulesmd.ini`:
 ```ini
 [SOMESTRUCTURE]       ; BuildingType
 Powered.KillSpawns=no ; boolean
+```
+
+### Re-enable obsolete [JumpjetControls] 
+
+- Re-enable obsolete [JumpjetControls], the keys in it will be as the default value of jumpjet units.
+  - Moreover, added two tags for missing ones.
+
+In `rulesmd.ini`:
+```ini
+[JumpjetControls]
+Crash=5.0       ; float
+NoWobbles=no    ; boolean
+```
+
+```{note}
+`CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
 ```
 
 ## Terrains
@@ -185,23 +260,70 @@ SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; single int / comma-sep. range
 ```
 
-### Customizable unit image in art
+### Minimap color customization
 
-- `Image` tag in art INI is no longer limited to AnimationTypes and BuildingTypes, and can be applied to all TechnoTypes (InfantryTypes, VehicleTypes, AircraftTypes, BuildingTypes).
-- The tag specifies **only** the file name (without extension) of the asset that replaces TechnoType's graphics. If the name in `Image` is also an entry in the art INI, **no tags will be read from it**.
-- **By default this feature is disabled** to remain compatible with YR. To use this feature, enable it in rules with `ArtImageSwap=true`.
-- This feature supports SHP images for InfantryTypes, SHP and VXL images for VehicleTypes and VXL images for AircraftTypes.
+- TerrainTypes can now be made to display on minimap with different colors by setting `MinimapColor`.
 
 In `rulesmd.ini`:
 ```ini
-[General]
-ArtImageSwap=false  ; disabled by default
+[SOMETERRAINTYPE]  ; TerrainType
+MinimapColor=      ; integer - Red,Green,Blue
 ```
 
-In `artmd.ini`:
+## Tiberiums (ores)
+
+### Minimap color customization
+
+- Ore can now be made to display on minimap with different colors by setting `MinimapColor` on Tiberiums.
+
+In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]
-Image=              ; name of the file that will be used as image, without extension
+[SOMEORE]      ; Tiberium
+MinimapColor=  ; integer - Red,Green,Blue
+```
+
+## Vehicles
+
+### IsSimpleDeployer vehicle deploy animation / direction customization
+
+- `DeployingAnim.AllowAnyDirection` if set, disables any direction constraints for deployers with `DeployingAnim` set. Only works for ground units.
+- `DeployingAnim.KeepUnitVisible` determines if the unit is hidden while the animation is playing.
+- `DeployingAnim.ReverseForUndeploy` controls whether or not the animation is played in reverse for undeploying.
+- `DeployingAnim.UseUnitDrawer` controls whether or not the animation is displayed in the unit's palette and team colours or regular animation palette, including a potential custom palette.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                          ; VehicleType
+DeployingAnim.AllowAnyDirection=false  ; boolean
+DeployingAnim.KeepUnitVisible=false    ; boolean
+DeployingAnim.ReverseForUndeploy=true  ; boolean
+DeployingAnim.UseUnitDrawer=true       ; boolean
+```
+
+### Stationary vehicles
+
+- Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
+
+## Warheads
+
+### Customizing decloak on damaging targets
+
+- You can now specify whether or not the warhead decloaks objects that are damaged by the warhead.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]               ; WarheadType
+DecloakDamagedTargets=true  ; boolean
+```
+
+### Restricting screen shaking to current view
+
+- You can now specify whether or not the warhead can only shake screen (`ShakeX/Ylo/hi`) if it is detonated while visible on current screen view.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]       ; WarheadType
+ShakeIsLocal=false  ; boolean
 ```
 
 ## Weapons
@@ -218,6 +340,28 @@ DiskLaser.Radius=38.2 ; floating point value
                       ; 38.2 is roughly the default saucer disk radius
 ```
 
+### Detaching weapon from owner TechnoType
+
+- You can now control if weapon is detached from the TechnoType that fired it. This results in the weapon / warhead being able to damage the TechnoType itself even if it does not have `DamageSelf=true` set, but also treats it as if owned by no house or object, meaning any ownership-based checks like `AffectsAllies` do not function as expected and no experience is awarded.
+  - The effect of this is inherited through `AirburstWeapon` and `ShrapnelWeapon`.
+  - This does not affect projectile image or functionality or `FirersPalette` on initially fired weapon, but `FirersPalette` will not function for any weapons inheriting the effect.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPONTYPE]         ; WeaponType
+DetachedFromOwner=false  ; boolean
+```
+
+### Single-color lasers
+
+- You can now set laser to draw using only `LaserInnerColor` by setting `IsSingleColor`, in same manner as `IsHouseColor` lasers do using player's team color. These lasers respect laser thickness.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]         ; WeaponType
+IsSingleColor=false  ; boolean
+```
+
 ### Toggle-able ElectricBolt visuals
 
 - You can now specify individual ElectricBolt bolts you want to disable. Note that this is only a visual change.
@@ -229,19 +373,4 @@ IsElectricBolt=true    ; an ElectricBolt Weapon, vanilla tag
 Bolt.Disable1=false    ; boolean
 Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
-```
-
-## Projectiles
-
-### Customizable projectile gravity
-
--  You can now specify individual projectile gravity.
-    - Set `Gravity=0` with an arcing projectile can create a straight trail.
-        - Set `Gravity.HeightFix=true` allows the projectile to hit target which is not at the same height while `Gravity=0`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEPROJECTILE]        ; Projectile
-Gravity=6.0             ; double
-Gravity.HeightFix=false ; boolean
 ```

@@ -1,9 +1,11 @@
 #include "Body.h"
+#include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Misc/CaptureManager.h>
 
 #include <TechnoClass.h>
+#include <TacticalClass.h>
 
 // has everything inited except SpawnNextAnim at this point
 DEFINE_HOOK(0x466556, BulletClass_Init_SetLaserTrail, 0x6)
@@ -37,7 +39,8 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			pThis->WeaponType &&
 			pThis->WeaponType->LimboLaunch;
 
-		if (isLimbo) {
+		if (isLimbo)
+		{
 			pThis->SetTarget(nullptr);
 			auto damage = pTechno->Health * 2;
 			pTechno->SetLocation(pThis->GetCoords());
@@ -53,7 +56,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	if (pBulletExt && pBulletExt->LaserTrails.size())
 	{
 		CoordStruct location = pThis->GetCoords();
-		BulletVelocity velocity = pThis->Velocity;
+		const BulletVelocity& velocity = pThis->Velocity;
 
 		// We adjust LaserTrails to account for vanilla bug of drawing stuff one frame ahead.
 		// Pretty meh solution but works until we fix the bug - Kerbiter
@@ -64,7 +67,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			(int)(location.Z + velocity.Z)
 		};
 
-		for (auto const& trail: pBulletExt->LaserTrails)
+		for (auto const& trail : pBulletExt->LaserTrails)
 		{
 			// We insert initial position so the first frame of trail doesn't get skipped - Kerbiter
 			// TODO move hack to BulletClass creation
@@ -152,26 +155,53 @@ DEFINE_HOOK(0x773087, WeaponTypeClass_GetSpeed_ApplyGravity, 0x6)
 	return 0x7730A3;
 }
 
-DEFINE_HOOK(0x6FF031, TechnoClass_FireAt_ReverseVelocityWhileGravityIsZero, 0xA)
+DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 {
-	GET(BulletClass*, pBullet, EBX);
+	enum { Shrapnel = 0x46A40C, Skip = 0x46ADCD };
+
+	GET(BulletClass*, pBullet, EDI);
 
 	auto const pData = BulletTypeExt::ExtMap.Find(pBullet->Type);
 
-	if (pBullet->Type->Arcing && BulletTypeExt::GetAdjustedGravity(pBullet->Type) == 0.0)
+	if (auto const pObject = pBullet->GetCell()->FirstObject)
 	{
-		pBullet->Velocity *= -1;
-		if (pData->Gravity_HeightFix)
-		{
-			auto speed = pBullet->Velocity.Magnitude();
+		if (pObject->WhatAmI() != AbstractType::Building || pData->Shrapnel_AffectsBuildings)
+			return Shrapnel;
+	}
+	else if (pData->Shrapnel_AffectsGround)
+		return Shrapnel;
 
-			pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
-			pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
-			pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z - pBullet->SourceCoords.Z);
+	return Skip;
+}
 
-			auto magnitude = pBullet->Velocity.Magnitude();
-			pBullet->Velocity *= speed / magnitude;
-		}
+DEFINE_HOOK(0x4690D4, BulletClass_Logics_ScreenShake, 0x6)
+{
+	enum { SkipShaking = 0x469130 };
+
+	GET(WarheadTypeClass*, pWarhead, EAX);
+	GET_BASE(CoordStruct*, pCoords, 0x8);
+
+	if (auto const pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
+	{
+		Point2D screenCoords;
+
+		if (pExt->ShakeIsLocal && !TacticalClass::Instance->CoordsToClient(*pCoords, &screenCoords))
+			return SkipShaking;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetachFromOwner, 0x8)
+{
+	GET(BulletClass*, pThis, ESI);
+	
+	if (pThis->Owner && pThis->WeaponType)
+	{
+		auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
+
+		if (pWeaponExt->DetachedFromOwner)
+			pThis->Owner = nullptr;
 	}
 
 	return 0;

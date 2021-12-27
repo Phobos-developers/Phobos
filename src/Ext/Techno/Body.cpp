@@ -320,68 +320,85 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 
 		if (pThis->Passengers.NumPassengers > 0)
 		{
-			if (pExt->PassengerDeletionTimer.Expired())
+			FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+
+			if (pExt->PassengerDeletionCountDown < 0)
 			{
-				FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
-				ObjectClass* pLastPassenger = nullptr;
+				// Setting & start countdown. Bigger units needs more time
+				int passengerSize = pData->PassengerDeletion_Rate;
+				if (pData->PassengerDeletion_Rate_SizeMultiply && pPassenger->GetTechnoType()->Size > 1.0)
+					passengerSize *= (int)(pPassenger->GetTechnoType()->Size + 0.5);
 
-				// Passengers are designed as a FIFO queue but being implemented as a list
-				while (pPassenger->NextObject)
+				pExt->PassengerDeletionCountDown = passengerSize;
+				pExt->PassengerDeletionTimer.Start(passengerSize);
+			}
+			else
+			{
+				if (pExt->PassengerDeletionTimer.Completed())
 				{
-					pLastPassenger = pPassenger;
-					pPassenger = static_cast<FootClass*>(pPassenger->NextObject);
-				}
+					ObjectClass* pLastPassenger = nullptr;
 
-				if (pLastPassenger)
-					pLastPassenger->NextObject = nullptr;
-				else
-					pThis->Passengers.FirstPassenger = nullptr;
-
-				--pThis->Passengers.NumPassengers;
-
-				if (pPassenger)
-				{
-					if (auto const pPassengerType = pPassenger->GetTechnoType())
+					// Passengers are designed as a FIFO queue but being implemented as a list
+					while (pPassenger->NextObject)
 					{
-						VocClass::PlayAt(pData->PassengerDeletion_ReportSound, pThis->GetCoords(), nullptr);
-
-						// Check if there is money refund
-						if (pData->PassengerDeletion_Soylent)
-						{
-							int nMoneyToGive = 0;
-
-							// Refund money to the Attacker
-							if (pPassengerType && pPassengerType->Soylent > 0)
-								nMoneyToGive = pPassengerType->Soylent;
-
-							// Is allowed the refund of friendly units?
-							if (!pData->PassengerDeletion_SoylentFriendlies && pPassenger->Owner->IsAlliedWith(pThis))
-								nMoneyToGive = 0;
-
-							if (nMoneyToGive > 0)
-								pThis->Owner->GiveMoney(nMoneyToGive);
-						}
+						pLastPassenger = pPassenger;
+						pPassenger = static_cast<FootClass*>(pPassenger->NextObject);
 					}
 
-					pPassenger->UnInit();
-				}
-				pExt->PassengerDeletionTimer.Stop();
+					if (pLastPassenger)
+						pLastPassenger->NextObject = nullptr;
+					else
+						pThis->Passengers.FirstPassenger = nullptr;
 
-				if (pThis->Passengers.NumPassengers > 0)
-				{
-					pPassenger = pThis->Passengers.GetFirstPassenger();
+					--pThis->Passengers.NumPassengers;
 
-					// Setting & start countdown. Bigger units needs more time
-					int passengerSize = pData->PassengerDeletion_Rate;
-					if (pData->PassengerDeletion_Rate_SizeMultiply && pPassenger->GetTechnoType()->Size > 1.0)
-						passengerSize *= (int)(pPassenger->GetTechnoType()->Size + 0.5);
+					if (pPassenger)
+					{
+						if (auto const pPassengerType = pPassenger->GetTechnoType())
+						{
+							VocClass::PlayAt(pData->PassengerDeletion_ReportSound, pThis->GetCoords(), nullptr);
 
-					pExt->PassengerDeletionTimer.Start(passengerSize);
+							if (pData->PassengerDeletion_Anim.isset())
+							{
+								const auto pAnimType = pData->PassengerDeletion_Anim.Get();
+								if (auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location))
+								{
+									pAnim->SetOwnerObject(pThis);
+									pAnim->Owner = pThis->Owner;
+								}
+							}
+
+							// Check if there is money refund
+							if (pData->PassengerDeletion_Soylent)
+							{
+								int nMoneyToGive = 0;
+
+								// Refund money to the Attacker
+								if (pPassengerType && pPassengerType->Soylent > 0)
+									nMoneyToGive = pPassengerType->Soylent;
+
+								// Is allowed the refund of friendly units?
+								if (!pData->PassengerDeletion_SoylentFriendlies && pPassenger->Owner->IsAlliedWith(pThis))
+									nMoneyToGive = 0;
+
+								if (nMoneyToGive > 0)
+									pThis->Owner->GiveMoney(nMoneyToGive);
+							}
+						}
+
+						pPassenger->UnInit();
+					}
+
+					pExt->PassengerDeletionTimer.Stop();
+					pExt->PassengerDeletionCountDown = -1;
 				}
 			}
 		}
 		else
+		{
 			pExt->PassengerDeletionTimer.Stop();
+			pExt->PassengerDeletionCountDown = -1;
+		}
 	}
 }
 
@@ -399,6 +416,142 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 	return false;
 }
 
+// Feature: Kill Object Automatically
+void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
+{
+	auto pTypeThis = pThis->GetTechnoType();
+	auto pTypeData = TechnoTypeExt::ExtMap.Find(pTypeThis);
+	auto pData = TechnoExt::ExtMap.Find(pThis);
+
+	// Death if no ammo
+	if (pTypeThis && pTypeData && pTypeData->Death_NoAmmo)
+	{
+		if (pTypeThis->Ammo > 0 && pThis->Ammo <= 0)
+			pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+	}
+
+	// Death if countdown ends
+	if (pTypeThis && pData && pTypeData && pTypeData->Death_Countdown > 0)
+	{
+		if (pData->Death_Countdown >= 0)
+		{
+			if (pData->Death_Countdown > 0)
+			{
+				pData->Death_Countdown--; // Update countdown
+			}
+			else
+			{
+				// Countdown ended. Kill the unit
+				pData->Death_Countdown = -1;
+				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+			}
+		}
+		else
+		{
+			pData->Death_Countdown = pTypeData->Death_Countdown; // Start countdown
+		}
+	}
+}
+
+void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
+{
+	if (!pThis)
+		return;
+
+	if (const auto pType = pThis->GetTechnoType())
+	{
+		if (pType->OpenTopped && pThis->Passengers.NumPassengers > 0)
+		{
+			if (const auto pExt = TechnoTypeExt::ExtMap.Find(pType))
+			{
+				if (pExt->Ammo_Shared && pType->Ammo > 0)
+				{
+					auto passenger = pThis->Passengers.FirstPassenger;
+					TechnoTypeClass* passengerType;
+
+					do
+					{
+						passengerType = passenger->GetTechnoType();
+						auto pPassengerExt = TechnoTypeExt::ExtMap.Find(passengerType);
+
+						if (pPassengerExt && pPassengerExt->Ammo_Shared)
+						{
+							if (pExt->Ammo_Shared_Group < 0 || pExt->Ammo_Shared_Group == pPassengerExt->Ammo_Shared_Group)
+							{
+								if (pThis->Ammo > 0 && (passenger->Ammo < passengerType->Ammo))
+								{
+									pThis->Ammo--;
+									passenger->Ammo++;
+								}
+							}
+						}
+
+						passenger = static_cast<FootClass*>(passenger->NextObject);
+					}
+					while (passenger);
+				}
+			}
+		}
+	}
+}
+
+double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
+{
+	double houseMultiplier = 1.0;
+
+	if (pThis->WhatAmI() == AbstractType::Aircraft)
+		houseMultiplier = pThis->Owner->Type->SpeedAircraftMult;
+	else if (pThis->WhatAmI() == AbstractType::Infantry)
+		houseMultiplier = pThis->Owner->Type->SpeedInfantryMult;
+	else
+		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
+
+	return pThis->SpeedMultiplier * houseMultiplier *
+		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
+}
+
+void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
+{
+	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		if (pThis->IsMindControlled())
+		{
+			if (pThis->MindControlRingAnim && !pExt->MindControlRingAnimType)
+			{
+				pExt->MindControlRingAnimType = pThis->MindControlRingAnim->Type;
+			}
+			else if (!pThis->MindControlRingAnim && pExt->MindControlRingAnimType &&
+				pThis->CloakState == CloakState::Uncloaked && !pThis->InLimbo && pThis->IsAlive)
+			{
+				auto coords = CoordStruct::Empty;
+				coords = *pThis->GetCoords(&coords);
+				int offset = 0;
+
+				if (const auto pBuilding = specific_cast<BuildingClass*>(pThis))
+					offset = Unsorted::LevelHeight * pBuilding->Type->Height;
+				else
+					offset = pThis->GetTechnoType()->MindControlRingOffset;
+
+				coords.Z += offset;
+				auto anim = GameCreate<AnimClass>(pExt->MindControlRingAnimType, coords, 0, 1);
+
+				if (anim)
+				{
+					pThis->MindControlRingAnim = anim;
+					pThis->MindControlRingAnim->SetOwnerObject(pThis);
+
+					if (pThis->WhatAmI() == AbstractType::Building)
+						pThis->MindControlRingAnim->ZAdjust = -1024;
+				}
+			}
+		}
+		else if (pExt->MindControlRingAnimType)
+		{
+			pExt->MindControlRingAnimType = nullptr;
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -411,7 +564,11 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)
 		.Process(this->PassengerDeletionTimer)
+		.Process(this->PassengerDeletionCountDown)
 		.Process(this->CurrentShieldType)
+		.Process(this->LastWarpDistance)
+		.Process(this->Death_Countdown)
+		.Process(this->MindControlRingAnimType)
 		;
 }
 

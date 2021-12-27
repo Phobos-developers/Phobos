@@ -38,6 +38,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			pHouse->TransactMoney(this->TransactMoney);
 	}
 
+	this->HasCrit = false;
 	this->RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
 
 	// List all Warheads here that respect CellSpread
@@ -102,9 +103,9 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 			if (shieldIndex >= 0)
 			{
 				ratio = pExt->Shield->GetHealthRatio();
+				pExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
 				pExt->Shield->KillAnim();
 				pExt->Shield = nullptr;
-				pExt->CurrentShieldType = nullptr;
 			}
 		}
 
@@ -125,15 +126,16 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 
 			if (shieldType)
 			{
-				if (shieldType->Strength && (!pExt->Shield || (this->Shield_ReplaceNonRespawning && pExt->Shield->IsBrokenAndNonRespawning())))
+				if (shieldType->Strength && (!pExt->Shield || (this->Shield_ReplaceNonRespawning && pExt->Shield->IsBrokenAndNonRespawning() && 
+					pExt->Shield->GetFramesSinceLastBroken() >= this->Shield_MinimumReplaceDelay)))
 				{
 					pExt->CurrentShieldType = shieldType;
-					pExt->Shield = std::make_unique<ShieldClass>(pTarget);
+					pExt->Shield = std::make_unique<ShieldClass>(pTarget, true);
 
 					if (this->Shield_ReplaceOnly && this->Shield_InheritStateOnReplace)
 					{
 						pExt->Shield->SetHP((int)(shieldType->Strength * ratio));
-						
+
 						if (pExt->Shield->GetHP() == 0)
 							pExt->Shield->SetRespawn(shieldType->Respawn_Rate, shieldType->Respawn, shieldType->Respawn_Rate, true);
 					}
@@ -154,7 +156,10 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 				pExt->Shield->SetRespawn(this->Shield_Respawn_Duration, this->Shield_Respawn_Amount, this->Shield_Respawn_Rate, this->Shield_Respawn_ResetTimer);
 
 			if (this->Shield_SelfHealing_Duration > 0)
-				pExt->Shield->SetSelfHealing(this->Shield_SelfHealing_Duration, this->Shield_SelfHealing_Amount, this->Shield_SelfHealing_Rate, this->Shield_SelfHealing_ResetTimer);
+			{
+				double amount = this->Shield_SelfHealing_Amount.Get(pExt->Shield->GetType()->SelfHealing);
+				pExt->Shield->SetSelfHealing(this->Shield_SelfHealing_Duration, amount, this->Shield_SelfHealing_Rate, this->Shield_SelfHealing_ResetTimer);
+			}
 		}
 	}
 }
@@ -171,14 +176,18 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, Techn
 	{
 		auto pInf = abstract_cast<InfantryClass*>(pTarget);
 		if (pInf->IsDisguised())
-			pInf->ClearDisguise();
+			pInf->Disguised = false;
 	}
 }
 
 void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
 {
-	//auto& random = ScenarioClass::Instance->Random;
-	const double dice = this->RandomBuffer; //double(random.RandomRanged(1, 10)) / 10;
+	double dice;
+
+	if (this->Crit_ApplyChancePerTarget)
+		dice = ScenarioClass::Instance->Random.RandomDouble();
+	else
+		dice = this->RandomBuffer;
 
 	if (this->Crit_Chance < dice)
 		return;
@@ -186,6 +195,9 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType()))
 	{
 		if (pTypeExt->ImmuneToCrit)
+			return;
+
+		if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent)
 			return;
 	}
 
@@ -195,7 +207,20 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (!EnumFunctions::IsTechnoEligible(pTarget, this->Crit_Affects))
 		return;
 
-	auto Damage = this->Crit_ExtraDamage.Get();
+	this->HasCrit = true;
 
-	pTarget->ReceiveDamage(&Damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
+	if (this->Crit_AnimOnAffectedTargets && this->Crit_AnimList.size())
+	{
+		int idx = this->OwnerObject()->EMEffect || this->Crit_AnimList_PickRandom.Get(this->AnimList_PickRandom) ?
+			ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0;
+
+		GameCreate<AnimClass>(this->Crit_AnimList[idx], pTarget->Location);
+	}
+
+	auto damage = this->Crit_ExtraDamage.Get();
+
+	if (this->Crit_Warhead.isset())
+		WarheadTypeExt::DetonateAt(this->Crit_Warhead.Get(), pTarget, pOwner, damage);
+	else
+		pTarget->ReceiveDamage(&damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
 }

@@ -20,6 +20,10 @@ public:
 		int IdxSelectedObjectFromAIList;
 		double CloseEnough;
 		int Countdown_RegroupAtLeader;
+		int MoveMissionEndMode;
+		int WaitNoTargetCounter;
+		TimerStruct WaitNoTargetTimer;
+		FootClass* TeamLeader;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject)
 			, WaitNoTargetAttempts { 0 }
@@ -27,6 +31,10 @@ public:
 			, IdxSelectedObjectFromAIList { -1 }
 			, CloseEnough { -1 }
 			, Countdown_RegroupAtLeader { -1 }
+			, MoveMissionEndMode { 0 }
+			, WaitNoTargetCounter { 0 }
+			, WaitNoTargetTimer { 0 }
+			, TeamLeader { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;

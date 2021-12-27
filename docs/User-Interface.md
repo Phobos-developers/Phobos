@@ -23,26 +23,20 @@ IngameScore.WinTheme=  ; soundtrack theme ID
 IngameScore.LoseTheme= ; soundtrack theme ID
 ```
 
-## Hotkey Commands
-
-### `[ ]` Quicksave
-
-- Save the current singleplayer game.
-- If need localization, just add `TXT_QUICKGAME`, `TXT_QUICKGAME_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
-    - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
-    - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`
-
-### `[ ]` Next Idle Harvester
-
-- Selects and centers the camera on the next TechnoType that is counted via the [harvester counter](#harvester-counter) and is currently idle.
-- If need localization, just add `TXT_NEXT_IDLE_HARVESTER` and `TXT_NEXT_IDLE_HARVESTER_DESC` into your `.csf` file.
-
-### `[ ]` Dump Object Info
-
-- Writes currently hovered or last selected object info in log and shows a message. See [this](Miscellanous.md#dump-object-info) for details.
-- If need localization, just add `TXT_DUMP_OBJECT_INFO` and `TXT_DUMP_OBJECT_INFO_DESC` into your `.csf` file.
-
 ## Battle screen UI/UX
+
+### Hide health bars
+
+![image](_static/images/healthbar.hide-01.png)  
+*Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
+
+- Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
+
+In `rulesmd.ini`:
+```ini
+[SOMENAME]         ; TechnoType
+HealthBar.Hide=no  ; boolean
+```
 
 ### Low priority for box selection
 
@@ -65,18 +59,25 @@ In `RA2MD.ini`:
 PrioritySelectionFiltering=yes ; bool
 ```
 
-### Hide health bars
+## Hotkey Commands
 
-![image](_static/images/healthbar.hide-01.png)  
-*Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
+### `[ ]` Dump Object Info
 
-- Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
+- Writes currently hovered or last selected object info in log and shows a message. See [this](Miscellanous.md#dump-object-info) for details.
+- If need localization, just add `TXT_DUMP_OBJECT_INFO` and `TXT_DUMP_OBJECT_INFO_DESC` into your `.csf` file.
 
-In `rulesmd.ini`:
-```ini
-[SOMENAME]         ; TechnoType
-HealthBar.Hide=no  ; boolean
-```
+### `[ ]` Next Idle Harvester
+
+- Selects and centers the camera on the next TechnoType that is counted via the [harvester counter](#harvester-counter) and is currently idle.
+- If need localization, just add `TXT_NEXT_IDLE_HARVESTER` and `TXT_NEXT_IDLE_HARVESTER_DESC` into your `.csf` file.
+
+### `[ ]` Quicksave
+
+- Save the current singleplayer game.
+- If need localization, just add `TXT_QUICKGAME`, `TXT_QUICKGAME_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
+    - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
+    - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`
+
 
 ## Loading screen
 
@@ -93,19 +94,6 @@ DisableEmptySpawnPositions=no ; boolean
 ```
 
 ## Sidebar / Battle UI
-
-### Specify Sidebar style
-
-- It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords.
-
-In `rulesmd.ini`:
-```ini
-[SOMESIDE]            ; Side
-Sidebar.GDIPositions= ; boolean
-                      ; default values are:
-                      ; yes for the first side
-                      ; no for others
-```
 
 ### Cameo Sorting
 
@@ -165,6 +153,40 @@ Sidebar.HarvesterCounter.ColorRed=255,0,0      ; R,G,B
 If you use the vanilla font in your mod, you can use {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 ```
 
+### Power delta counter
+
+![image](_static/images/powerdelta-01.gif)  
+*Power delta Counter in [Assault Amerika](https://www.moddb.com/mods/assault-amerika)*
+
+- An additional counter for your power delta (surplus) can be added near the credits indicator.
+- The counter is displayed with the format of `Label(sign)(Power Delta)`. The label is PowerLabel used in tooltips (by default `⚡ U+26A1`).
+- You can adjust counter position by `Sidebar.PowerDelta.Offset`, negative means left/up, positive means right/down.
+- You can adjust counter text alignment by `Sidebar.PowerDelta.Align`, acceptable values are left, right, center/centre.
+- By setting `PowerDelta.ConditionYellow` and `PowerDelta.ConditionRed`, the game will warn player by changing the color of counter whenever the percentage of used power exceeds the value (i.e. when drain to output ratio is above 100%, the counter will turn red).
+- The exception for this rule is when both power output and drain are 0 - in this case the counter will default to yellow.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+PowerDelta.Show=no                  ; boolean
+PowerDelta.ConditionYellow=75%      ; double, percentage
+PowerDelta.ConditionRed=100%        ; double, percentage
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                               ; Side
+Sidebar.PowerDelta.Offset=0,0            ; X,Y, pixels relative to default
+Sidebar.PowerDelta.ColorGreen=0,255,0    ; R,G,B
+Sidebar.PowerDelta.ColorYellow=255,255,0 ; R,G,B
+Sidebar.PowerDelta.ColorRed=255,0,0      ; R,G,B
+Sidebar.PowerDelta.Align=left            ; left|center|centre|right
+```
+
+```{note}
+If you use the vanilla font in your mod, you can use {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+```
+
 ### Producing Progress
 
 ![image](_static/images/producing-progress-01.gif)  
@@ -183,6 +205,19 @@ In `rulesmd.ini`:
 ```ini
 [SOMESIDE]                           ; Side
 Sidebar.ProducingProgress.Offset=0,0 ; X,Y, pixels relative to default
+```
+
+### Specify Sidebar style
+
+- It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords.
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]            ; Side
+Sidebar.GDIPositions= ; boolean
+                      ; default values are:
+                      ; yes for the first side
+                      ; no for others
 ```
 
 ## Tooltips

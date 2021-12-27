@@ -48,6 +48,9 @@ public:
 		static double HarvesterCounter_ConditionYellow;
 		static double HarvesterCounter_ConditionRed;
 		static bool ShowProducingProgress;
+		static bool ShowPowerDelta;
+		static double PowerDelta_ConditionYellow;
+		static double PowerDelta_ConditionRed;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;
@@ -62,5 +65,6 @@ public:
 		static bool PrioritySelectionFiltering;
 		static bool DevelopmentCommands;
 		static bool ArtImageSwap;
+		static bool AllowParallelAIQueues;
 	};
 };

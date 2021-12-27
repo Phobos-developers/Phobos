@@ -20,7 +20,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	{
 		auto const it = std::find_if(Instances.begin(), Instances.end(),
 			[=](RadSiteExt::ExtData* const pSite) // Lambda
-			{// find 
+			{// find
 				return pSite->Type == pRadType &&
 					pSite->OwnerObject()->BaseCell == Cell &&
 					Spread == pSite->OwnerObject()->Spread;
@@ -40,7 +40,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 				RadLevel = pRadType->GetLevelMax() - pRadSite->GetRadLevel();
 			}
 
-			// Handle It 
+			// Handle It
 			RadSiteExt::Add(pRadSite, RadLevel);
 		}
 	}
@@ -83,6 +83,8 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShouldIntercept)
 		.Process(this->LaserTrails)
 		;
+
+	this->Trajectory = PhobosTrajectory::ProcessFromStream(Stm, this->Trajectory);
 }
 
 void BulletExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -118,6 +120,9 @@ DEFINE_HOOK(0x4664BA, BulletClass_CTOR, 0x5)
 DEFINE_HOOK(0x4665E9, BulletClass_DTOR, 0xA)
 {
 	GET(BulletClass*, pItem, ESI);
+
+	if (auto pTraj = BulletExt::ExtMap.Find(pItem)->Trajectory)
+		GameDelete(pTraj);
 
 	BulletExt::ExtMap.Remove(pItem);
 	return 0;

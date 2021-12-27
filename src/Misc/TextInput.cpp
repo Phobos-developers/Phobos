@@ -27,7 +27,7 @@ DEFINE_HOOK(0x5D46C7, MessageListClass_Input, 5)
 {
 	if (!IMEBuffer[0])
 		R->EBX<wchar_t>(LocalizeCaracter(R->EBX<char>()));
-	
+
 	return 0;
 }
 
