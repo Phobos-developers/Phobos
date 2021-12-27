@@ -204,7 +204,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			Nullable<CoordStruct> eliteFLH;
 			eliteFLH.Read(exArtINI, pArtSection, tempBufferFLH);
 
-			if (FLH.isset() & !eliteFLH.isset())
+			if (FLH.isset() && !eliteFLH.isset())
 				eliteFLH = FLH;
 			else if (!FLH.isset() && !eliteFLH.isset())
 				break;

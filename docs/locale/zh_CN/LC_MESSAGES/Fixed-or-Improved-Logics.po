@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-26 22:43+0800\n"
+"POT-Creation-Date: 2021-12-13 17:46+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,41 +33,47 @@ msgstr "Bug修复与其它"
 
 #: ../Fixed-or-Improved-Logics.md:7
 msgid ""
+"Fixed the bug when retinting map lighting with a map action corrupted "
+"light sources."
+msgstr "修复了重绘地图光照触发会使建筑光效失灵的问题。"
+
+#: ../Fixed-or-Improved-Logics.md:8
+msgid ""
 "Fixed the bug when deploying mindcontrolled vehicle into a building "
 "permanently transferred the control to the house which mindcontrolled it."
 msgstr "心控对于可以部署的载具, 部署后不再会永久改变所属方。"
 
-#: ../Fixed-or-Improved-Logics.md:8
+#: ../Fixed-or-Improved-Logics.md:9
 msgid ""
 "Fixed the bug when units are already dead but still in map (for sinking, "
 "crashing, dying animation, etc.), they could die again."
 msgstr "修复了当单位已经死亡却还在地图上时（例如沉没，坠毁，死亡动画等）还能再次死亡的问题。"
 
-#: ../Fixed-or-Improved-Logics.md:9
+#: ../Fixed-or-Improved-Logics.md:10
 msgid "Fixed the bug when cloaked Desolator was unable to fire his deploy weapon."
 msgstr "修复了隐形的辐射工兵无法发射部署武器的问题。"
 
-#: ../Fixed-or-Improved-Logics.md:10
+#: ../Fixed-or-Improved-Logics.md:11
 msgid ""
 "Fixed the bug that temporaryed unit cannot be erased correctly and no "
 "longer raise an error."
 msgstr "修复了被超时空武器冻结的单位不能被正确抹消的问题，并不会再生成错误。"
 
-#: ../Fixed-or-Improved-Logics.md:11
+#: ../Fixed-or-Improved-Logics.md:12
 msgid "SHP debris shadows now respect the `Shadow` tag."
 msgstr "SHP碎片可以通过`Shadow`控制阴影。"
 
-#: ../Fixed-or-Improved-Logics.md:12
+#: ../Fixed-or-Improved-Logics.md:13
 msgid ""
 "Allowed usage of TileSet of 255 and above without making NE-SW broken "
 "bridges unrepairable."
 msgstr "允许使用TileSet 255及以上,不再会使东北到西南方向的桥梁不可维修。"
 
-#: ../Fixed-or-Improved-Logics.md:13
+#: ../Fixed-or-Improved-Logics.md:14
 msgid "Adds a \"Load Game\" button to the retry dialog on mission failure."
 msgstr "在重新开始游戏的对话框中增加了一个“读取游戏”按钮"
 
-#: ../Fixed-or-Improved-Logics.md:15
+#: ../Fixed-or-Improved-Logics.md:16
 msgid ""
 "![image](_static/images/turretoffset-01.png)   *Side offset voxel turret "
 "in Breaking Blue project*"
@@ -75,13 +81,13 @@ msgstr ""
 "![image](_static/images/turretoffset-01.png)  \n"
 "*VXL炮台侧偏移，在Breaking Blue project中*"
 
-#: ../Fixed-or-Improved-Logics.md:15 ../Fixed-or-Improved-Logics.md:31
-#: ../Fixed-or-Improved-Logics.md:46 ../Fixed-or-Improved-Logics.md:83
-#: ../Fixed-or-Improved-Logics.md:111 ../Fixed-or-Improved-Logics.md:131
+#: ../Fixed-or-Improved-Logics.md:16 ../Fixed-or-Improved-Logics.md:32
+#: ../Fixed-or-Improved-Logics.md:94 ../Fixed-or-Improved-Logics.md:144
+#: ../Fixed-or-Improved-Logics.md:172 ../Fixed-or-Improved-Logics.md:211
 msgid "image"
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:18
+#: ../Fixed-or-Improved-Logics.md:19
 msgid ""
 "`TurretOffset` tag for voxel turreted TechnoTypes now accepts FLH "
 "(forward, lateral, height) values like `TurretOffset=F,L` or "
@@ -89,35 +95,35 @@ msgid ""
 "three axes."
 msgstr "`TurretOffset`现在可以像FLH(`TurretOffset=F,L`或`TurretOffset=F,L,H`)，一样指定，一个数为前后，两个数的第二个数为左右，三个数的第三个数为上下。"
 
-#: ../Fixed-or-Improved-Logics.md:19
+#: ../Fixed-or-Improved-Logics.md:20
 msgid "`InfiniteMindControl` with `Damage=1` can now control more than 1 unit."
 msgstr "`Damage=1`的`InfiniteMindControl`现在可以控制多于1个单位。"
 
-#: ../Fixed-or-Improved-Logics.md:20
+#: ../Fixed-or-Improved-Logics.md:21
 msgid ""
 "Aircraft with `Fighter` set to false or those using strafing pattern "
 "(weapon projectile `ROT` is below 2) now take weapon's `Burst` into "
 "accord for all shots instead of just the first one."
 msgstr "`Fighter=no`的飞机或扫射型飞机（即抛射体ROT小于2）现在会在每次攻击时都读取`Burst`，而非仅第一次。"
 
-#: ../Fixed-or-Improved-Logics.md:21
+#: ../Fixed-or-Improved-Logics.md:22
 msgid ""
 "`EMEffect` used for random AnimList pick is now replaced by a new tag "
 "`AnimList.PickRandom` with no side effect. (EMEffect=yes on AA inviso "
 "projectile deals no damage to units in movement)"
 msgstr "`AnimList.PickRandom`取代`EMEffect`，可以使弹头爆炸时随机播放动画。"
 
-#: ../Fixed-or-Improved-Logics.md:22
+#: ../Fixed-or-Improved-Logics.md:23
 msgid ""
 "Script action `Move to cell` now obeys YR cell calculation now. Using "
 "`1000 * Y + X` as its cell value. (was `128 * Y + X` as it's RA leftover)"
 msgstr "修复了脚本动作“移动到坐标”使用先前游戏中的残留计算的问题。"
 
-#: ../Fixed-or-Improved-Logics.md:23
+#: ../Fixed-or-Improved-Logics.md:24
 msgid "The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])"
 msgstr "路径点上限由702增加至2147483647。"
 
-#: ../Fixed-or-Improved-Logics.md:24
+#: ../Fixed-or-Improved-Logics.md:25
 msgid ""
 "Map trigger action `125 Build At...` can now play buildup anim optionally"
 " (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-"
@@ -126,39 +132,39 @@ msgstr ""
 "地图触发动作`125将建筑建造于...`现在可选是否播放建造动画 (需要[自行修改`fadata.ini`](Whats-New.md#for-"
 "map-editor-final-alert-2)。"
 
-#: ../Fixed-or-Improved-Logics.md:25
+#: ../Fixed-or-Improved-Logics.md:26
 msgid ""
 "Vehicles using `DeployFire` will now explicitly use weapon specified by "
 "`DeployFireWeapon` for firing the deploy weapon and respect `FireOnce` "
 "setting on weapon and any stop commands issued during firing."
 msgstr "修复了`DeployFire`逻辑，使`DeployFireWeapon`，`FireOnce`，及停止指令可以正常运作。"
 
-#: ../Fixed-or-Improved-Logics.md:26
+#: ../Fixed-or-Improved-Logics.md:27
 msgid ""
 "Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond "
 "specified maximums anymore). Only applied when `DebrisMaximums` values "
 "amount is more than 1 for compatibility reasons."
 msgstr "修复了`DebrisMaximums`（产生的碎片不再能超过指定的最大值）。出于稳定性考量，只有当`DebrisMaximums`设定的值多于1个的时候才会激活此修复。"
 
-#: ../Fixed-or-Improved-Logics.md:27
+#: ../Fixed-or-Improved-Logics.md:28
 msgid ""
 "Fixed building and defense tab hotkeys not enabling the placement mode "
 "after `Cannot build here.` triggered and the placement mode cancelled."
 msgstr "修复了Q/W快捷键在失败摆放之后不会再把建造完成的建筑放到鼠标上的问题。"
 
-#: ../Fixed-or-Improved-Logics.md:28
+#: ../Fixed-or-Improved-Logics.md:29
 msgid ""
 "Fixed buildings with `UndeployInto` playing "
 "`EVA_NewRallypointEstablished` on undeploying."
 msgstr "可反部署的建筑，在反部署时不再会触发`EVA_NewRallypointEstablished`语音。"
 
-#: ../Fixed-or-Improved-Logics.md:29
+#: ../Fixed-or-Improved-Logics.md:30
 msgid ""
 "Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to"
 " place onto water."
 msgstr "修复了`Naval=yes`会无视`WaterBound=no`强制将建筑限制在水面上的问题。"
 
-#: ../Fixed-or-Improved-Logics.md:31
+#: ../Fixed-or-Improved-Logics.md:32
 msgid ""
 "![image](_static/images/remember-target-after-deploying-01.gif)   *Nod "
 "arty keeping target on attack order in [C&C: "
@@ -167,53 +173,157 @@ msgstr ""
 "![image](_static/images/remember-target-after-deploying-01.gif)  \n"
 "*Nod炮台保持攻击指令在[C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)中*"
 
-#: ../Fixed-or-Improved-Logics.md:34
+#: ../Fixed-or-Improved-Logics.md:35
 msgid ""
 "Vehicle to building deployers now keep their target when deploying with "
 "`DeployToFire`."
 msgstr "`DeployToFire`的载具在部署后会保持它们之前的攻击目标。"
 
-#: ../Fixed-or-Improved-Logics.md:35
+#: ../Fixed-or-Improved-Logics.md:36
 msgid ""
 "Fixed laser drawing code to allow for thicker lasers in house color draw "
 "mode."
 msgstr "修复了激光绘制的代码以允许所属方颜色绘制模式下更粗的激光。"
 
-#: ../Fixed-or-Improved-Logics.md:36
+#: ../Fixed-or-Improved-Logics.md:37
 msgid "`DeathWeapon` now will properly detonate."
 msgstr "`DeathWeapon`现在会正确引爆了。"
 
-#: ../Fixed-or-Improved-Logics.md:37
+#: ../Fixed-or-Improved-Logics.md:38
 msgid ""
 "But still some settings are ignored like `PreImpactAnim` *(Ares "
 "feature)*, this might change in future."
 msgstr "但是仍有部分设置被忽略，如`PreImpactAnim`*（Ares功能）*，未来可能会改。"
 
-#: ../Fixed-or-Improved-Logics.md:38
+#: ../Fixed-or-Improved-Logics.md:39
 msgid ""
 "Effects like lasers are no longer drawn from wrong firing offset on "
 "weapons that use Burst."
 msgstr "对于使用Burst的武器来说，效果如激光不再会绘制在错误的位置上。"
 
-#: ../Fixed-or-Improved-Logics.md:39
+#: ../Fixed-or-Improved-Logics.md:40
 msgid ""
 "Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local "
 "Variables (`VariableNames` in map) are now unlimited."
 msgstr "全局变量（`rulesmd.ini`中的`VariableNames`）与局部变量（地图中的`VariableNames`）均扩展为无上限的了。"
 
-#: ../Fixed-or-Improved-Logics.md:40
+#: ../Fixed-or-Improved-Logics.md:41
 msgid "Animations can now be offset on the X axis with `XDrawOffset`."
 msgstr "现在可以用XDrawOffset为动画设置X轴偏移量了。"
 
 #: ../Fixed-or-Improved-Logics.md:42
+msgid ""
+"`IsSimpleDeployer` units now only play `DeploySound` and `UndeploySound` "
+"once, when done with (un)deploying instead of repeating it over duration "
+"of turning and/or `DeployingAnim`."
+msgstr "`IsSimpleDeployer`的单位现在只会播放`DeploySound`和`UndeploySound`一次。"
+
+#: ../Fixed-or-Improved-Logics.md:43
+msgid "AITrigger can now recognize Building Upgrades as legal condition."
+msgstr "AI触发现在可以将建筑升级当做可用条件。"
+
+#: ../Fixed-or-Improved-Logics.md:45
+msgid "Animations"
+msgstr "动画"
+
+#: ../Fixed-or-Improved-Logics.md:47
+msgid "Ore stage threshold for `HideIfNoOre`"
+msgstr "可根据矿石阶段下限的`HideIfNoOre`"
+
+#: ../Fixed-or-Improved-Logics.md:49
+msgid ""
+"You can now customize which growth stage should an ore/tiberium cell have"
+" to have animation with `HideIfNoOre` displayed. Cells with growth stage "
+"less than specified value won't allow the anim to display."
+msgstr "现在可以定义有矿石的单元格在矿石的什么阶段才会播放`HideIfNoOre`了。"
+
+#: ../Fixed-or-Improved-Logics.md:51 ../Fixed-or-Improved-Logics.md:61
+#: ../Fixed-or-Improved-Logics.md:201
+msgid "In `artmd.ini`:"
+msgstr "在`artmd.ini`中："
+
+#: ../Fixed-or-Improved-Logics.md:57
+msgid "Layer on animations attached to objects"
+msgstr "附加动画的图层"
+
+#: ../Fixed-or-Improved-Logics.md:59
+msgid ""
+"You can now customize whether or not animations attached to objects "
+"follow the object's layer or respect their own `Layer` setting. If this "
+"is unset, attached animations use `ground` layer."
+msgstr "现在可以指定动画是否跟随被附加的单位的图层，否则使用动画自己的图层。如果不设置，附加动画使用`Ground`图层。"
+
+#: ../Fixed-or-Improved-Logics.md:67
+msgid "Vehicles"
+msgstr "载具"
+
+#: ../Fixed-or-Improved-Logics.md:69
+msgid ""
+"Deploy direction for IsSimpleDeployer vehicles & deploy animation "
+"customization"
+msgstr "自定义IsSimpleDeployer载具部署方向和动画"
+
+#: ../Fixed-or-Improved-Logics.md:71
+msgid ""
+"`DeployDir` can be used to set the facing the vehicle needs to turn "
+"towards before deploying if it has `DeployingAnim` set. This is works the"
+" same as Ares flag of same name other than allowing use of negative "
+"numbers to disable the direction-specific deploy and that it only applies"
+" to units on ground. If not set, it defaults to `[General] -> DeployDir`."
+msgstr "`DeployDir`用以设置有`DeployingAnim`的载具的部署方向。这与Ares的同名标签完全一致，除了使用负数将关闭强制转向。如果不设置，默认为`[General] -> DeployDir`。"
+
+#: ../Fixed-or-Improved-Logics.md:72
+msgid "In addition there are some new options for `DeployingAnim`:"
+msgstr "此外，`DeployingAnim`还有一些新设定："
+
+#: ../Fixed-or-Improved-Logics.md:73
+msgid ""
+"`DeployingAnim.KeepUnitVisible` determines if the unit is hidden while "
+"the animation is playing."
+msgstr "`DeployingAnim.KeepUnitVisible`决定部署动画播放期间是否使单位持续可见。"
+
+#: ../Fixed-or-Improved-Logics.md:74
+msgid ""
+"`DeployingAnim.ReverseForUndeploy` controls whether or not the animation "
+"is played in reverse for undeploying."
+msgstr "`DeployingAnim.ReverseForUndeploy`决定反部署时是否反向播放部署动画。"
+
+#: ../Fixed-or-Improved-Logics.md:75
+msgid ""
+"`DeployingAnim.UseUnitDrawer` controls whether or not the animation is "
+"displayed in the unit's palette and team colours."
+msgstr "`DeployingAnim.UseUnitDrawer`控制部署动画是否使用单位色盘和所属色。"
+
+#: ../Fixed-or-Improved-Logics.md:77 ../Fixed-or-Improved-Logics.md:100
+#: ../Fixed-or-Improved-Logics.md:118 ../Fixed-or-Improved-Logics.md:133
+#: ../Fixed-or-Improved-Logics.md:149 ../Fixed-or-Improved-Logics.md:162
+#: ../Fixed-or-Improved-Logics.md:179 ../Fixed-or-Improved-Logics.md:195
+#: ../Fixed-or-Improved-Logics.md:214 ../Fixed-or-Improved-Logics.md:225
+#: ../Fixed-or-Improved-Logics.md:242
+msgid "In `rulesmd.ini`:"
+msgstr "在`rulesmd.ini`中："
+
+#: ../Fixed-or-Improved-Logics.md:86
+msgid "Stationary vehicles"
+msgstr "静止载具"
+
+#: ../Fixed-or-Improved-Logics.md:88
+msgid ""
+"Setting VehicleType `Speed` to 0 now makes game treat them as stationary,"
+" behaving in very similar manner to deployed vehicles with "
+"`IsSimpleDeployer` set to true. Should not be used on buildable vehicles,"
+" as they won't be able to exit factories."
+msgstr "给载具类型设置`Speed`为0可以使游戏认为此载具是静止的。行为类似于部署后的`IsSimpleDeployer`载具。不应该给可建造载具设置，否则其无法开出工厂。"
+
+#: ../Fixed-or-Improved-Logics.md:90
 msgid "Technos"
 msgstr "通用"
 
-#: ../Fixed-or-Improved-Logics.md:44
+#: ../Fixed-or-Improved-Logics.md:92
 msgid "Customizable Teleport/Chrono Locomotor settings per TechnoType"
 msgstr "自定义超时空属性"
 
-#: ../Fixed-or-Improved-Logics.md:46
+#: ../Fixed-or-Improved-Logics.md:94
 msgid ""
 "![image](_static/images/cust-Chrono.gif)   *Chrono Legionnaire and Ronco "
 "(hero) from [YR:New War](https://www.moddb.com/mods/yuris-revenge-new-"
@@ -223,35 +333,28 @@ msgstr ""
 "*超时空军团兵和Ronco（英雄）来自[YR:New War](https://www.moddb.com/mods/yuris-revenge-"
 "new-war)*"
 
-#: ../Fixed-or-Improved-Logics.md:49
+#: ../Fixed-or-Improved-Logics.md:97
 msgid ""
 "You can now specify Teleport/Chrono Locomotor settings per TechnoType to "
 "override default rules values. Unfilled values default to values in "
 "`[General]`."
 msgstr "现在全局中的超时空属性可以在每个单位中微观定义，默认均为对应的全局标签。"
 
-#: ../Fixed-or-Improved-Logics.md:50
+#: ../Fixed-or-Improved-Logics.md:98
 msgid "Only applicable to Techno that have Teleport/Chrono Locomotor attached."
 msgstr "仅对拥有Teleport/Chrono运动模式的单位有效。"
 
-#: ../Fixed-or-Improved-Logics.md:52 ../Fixed-or-Improved-Logics.md:70
-#: ../Fixed-or-Improved-Logics.md:88 ../Fixed-or-Improved-Logics.md:101
-#: ../Fixed-or-Improved-Logics.md:118 ../Fixed-or-Improved-Logics.md:134
-#: ../Fixed-or-Improved-Logics.md:145
-msgid "In `rulesmd.ini`:"
-msgstr "在`rulesmd.ini`中："
-
-#: ../Fixed-or-Improved-Logics.md:65
+#: ../Fixed-or-Improved-Logics.md:113
 msgid "Re-enable obsolete [JumpjetControls]"
 msgstr "重新激活失效的[JumpjetControls]"
 
-#: ../Fixed-or-Improved-Logics.md:67
+#: ../Fixed-or-Improved-Logics.md:115
 msgid ""
 "Re-enable obsolete [JumpjetControls], the keys in it will be as the "
 "default value of jumpjet units."
 msgstr "重新激活失效的[JumpjetControls]，其中的标签会作为Jumpjet类单位的初始值。"
 
-#: ../Fixed-or-Improved-Logics.md:68
+#: ../Fixed-or-Improved-Logics.md:116
 msgid "Moreover, added two tags for missing ones."
 msgstr "此外，增加了新标签对应空缺的项。"
 
@@ -263,11 +366,26 @@ msgid ""
 "simply have no Jumpjet prefix."
 msgstr "`CruiseHeight`对应`JumpjetHeight`，`WobblesPerSecond`对应`JumpjetWobbles`，`WobbleDeviation`对应`JumpjetDeviation`，`Acceleration`对应`JumpjetAccel`。其他对应标签为无Jumpjet前缀的标签。"
 
-#: ../Fixed-or-Improved-Logics.md:81
+#: ../Fixed-or-Improved-Logics.md:129
+msgid "Jumpjet unit layer deviation customization"
+msgstr "自定义Jumpjet浮动图层"
+
+#: ../Fixed-or-Improved-Logics.md:131
+msgid ""
+"Allows turning on or off jumpjet unit behaviour where they fluctuate "
+"between `air` and `top` layers based on whether or not their current "
+"altitude is equal / below or above `JumpjetHeight` or `[JumpjetControls] "
+"-> CruiseHeight` if former is not set on TechnoType. If disabled, "
+"airborne jumpjet units exist only in `air` layer. "
+"`JumpjetAllowLayerDeviation` defaults to value of `[JumpjetControls] -> "
+"AllowLayerDeviation` if not specified."
+msgstr "原版中，Jumpjet的高度在`JumpjetHeight`以下时使用Air图层，否则使用Top图层。此逻辑允许将Jumpjet锁定在Air图层。"
+
+#: ../Fixed-or-Improved-Logics.md:142
 msgid "Customizable harvester ore gathering animation"
 msgstr "自定义采矿动画"
 
-#: ../Fixed-or-Improved-Logics.md:83
+#: ../Fixed-or-Improved-Logics.md:144
 msgid ""
 "![image](_static/images/oregath.gif)   *Custom ore gathering anims in "
 "[Project Phantom](https://www.moddb.com/mods/project-phantom)*"
@@ -275,35 +393,35 @@ msgstr ""
 "![image](_static/images/oregath.gif)   \n"
 "*自定义采矿动画在[Project Phantom](https://www.moddb.com/mods/project-phantom)中*"
 
-#: ../Fixed-or-Improved-Logics.md:86
+#: ../Fixed-or-Improved-Logics.md:147
 msgid ""
 "You can now specify which anim should be drawn when a harvester of "
 "specified type is gathering specified type of ore."
 msgstr "现在可以自定义矿车的在不同矿石上的采矿动画了。"
 
-#: ../Fixed-or-Improved-Logics.md:96
+#: ../Fixed-or-Improved-Logics.md:157
 msgid "Kill spawns on low power"
 msgstr "建筑断电子机坠毁"
 
-#: ../Fixed-or-Improved-Logics.md:98
+#: ../Fixed-or-Improved-Logics.md:159
 msgid ""
 "`Powered=yes` structures that spawns aircraft like Aircrafts Carriers "
 "will stop targeting the enemy if low power."
 msgstr "需要供电 (`Powered=yes`) 的建筑类子机发射者现在可以在断电时停止瞄准敌人。"
 
-#: ../Fixed-or-Improved-Logics.md:99
+#: ../Fixed-or-Improved-Logics.md:160
 msgid "Spawned aircrafts self-destruct if they are flying."
 msgstr "而飞行中的子机将会直接坠毁。"
 
-#: ../Fixed-or-Improved-Logics.md:107
+#: ../Fixed-or-Improved-Logics.md:168
 msgid "Terrains"
 msgstr "地形"
 
-#: ../Fixed-or-Improved-Logics.md:109
+#: ../Fixed-or-Improved-Logics.md:170
 msgid "Customizable ore spawners"
 msgstr "自定义矿柱"
 
-#: ../Fixed-or-Improved-Logics.md:111
+#: ../Fixed-or-Improved-Logics.md:172
 msgid ""
 "![image](_static/images/ore-01.png)   *Different ore spawners in [Rise of"
 " the East](https://www.moddb.com/mods/riseoftheeast) mod*"
@@ -311,18 +429,18 @@ msgstr ""
 "![image](_static/images/ore-01.png)  \n"
 "*不同种类的矿柱在[Rise of the East](https://www.moddb.com/mods/riseoftheeast)中*"
 
-#: ../Fixed-or-Improved-Logics.md:114
+#: ../Fixed-or-Improved-Logics.md:175
 msgid "You can now specify which type of ore certain TerrainType would generate."
 msgstr "在可以指定矿柱 (`SpawnsTiberium=yes`) 的地形对象生成的矿石种类。\""
 
-#: ../Fixed-or-Improved-Logics.md:115
+#: ../Fixed-or-Improved-Logics.md:176
 msgid ""
 "It's also now possible to specify a range value for an ore generation "
 "area different compared to standard 3x3 rectangle. Ore will be uniformly "
 "distributed across all affected cells in a spread range."
 msgstr "现在还可以为与标准 3x3 矩形不同的矿石生成区域指定范围。矿石将均匀分布在分布范围内的所有受影响的单元格中。"
 
-#: ../Fixed-or-Improved-Logics.md:116
+#: ../Fixed-or-Improved-Logics.md:177
 msgid ""
 "You can specify which ore growth stage will be spawned and how much cells"
 " will be filled with ore per ore generation animation. Corresponding tags"
@@ -332,38 +450,80 @@ msgstr ""
 "也可以指定将生成矿石的哪个阶段以及每个矿石生成动画周期中会填充多少单元格。 "
 "相应的标签接受一个整数值或两个逗号分隔的值，以允许范围内（含）的随机生长阶段。"
 
-#: ../Fixed-or-Improved-Logics.md:127
+#: ../Fixed-or-Improved-Logics.md:188
+msgid "Customizable unit image in art"
+msgstr "单位在art中引用图像"
+
+#: ../Fixed-or-Improved-Logics.md:190
+msgid ""
+"`Image` tag in art INI is no longer limited to AnimationTypes and "
+"BuildingTypes, and can be applied to all TechnoTypes (InfantryTypes, "
+"VehicleTypes, AircraftTypes, BuildingTypes)."
+msgstr "art中的`Image`不再限定于动画和建筑使用，全部的科技类型都可以使用。"
+
+#: ../Fixed-or-Improved-Logics.md:191
+msgid ""
+"The tag specifies **only** the file name (without extension) of the asset"
+" that replaces TechnoType's graphics. If the name in `Image` is also an "
+"entry in the art INI, **no tags will be read from it**."
+msgstr "此标签**仅**指定文件名（不含拓展名）。若有同名节存在，节内内容**不会被读取**。"
+
+#: ../Fixed-or-Improved-Logics.md:192
+msgid ""
+"**By default this feature is disabled** to remain compatible with YR. To "
+"use this feature, enable it in rules with `ArtImageSwap=true`."
+msgstr "**此功能默认关闭**以保持对YR的兼容，启动此功能需要`ArtImageSwap=true`。"
+
+#: ../Fixed-or-Improved-Logics.md:193
+msgid ""
+"This feature supports SHP images for InfantryTypes, SHP and VXL images "
+"for VehicleTypes and VXL images for AircraftTypes."
+msgstr "此功能支持步兵使用SHP，飞机使用VXL，载具使用SHP和VXL。"
+
+#: ../Fixed-or-Improved-Logics.md:207
 msgid "Weapons"
 msgstr "武器"
 
-#: ../Fixed-or-Improved-Logics.md:129
+#: ../Fixed-or-Improved-Logics.md:209
 msgid "Customizable disk laser radius"
 msgstr "自定义飞碟激光半径"
 
-#: ../Fixed-or-Improved-Logics.md:131
+#: ../Fixed-or-Improved-Logics.md:211
 msgid "![image](_static/images/disklaser-radius-values-01.gif)"
 msgstr ""
 
-#: ../Fixed-or-Improved-Logics.md:132
+#: ../Fixed-or-Improved-Logics.md:212
 msgid "You can now set disk laser animation radius using a new tag."
 msgstr "现在可以通过一个新标签来设置飞碟激光半径"
 
-#: ../Fixed-or-Improved-Logics.md:141
+#: ../Fixed-or-Improved-Logics.md:221
 msgid "Toggle-able ElectricBolt visuals"
 msgstr "可开关的特斯拉特效"
 
-#: ../Fixed-or-Improved-Logics.md:143
+#: ../Fixed-or-Improved-Logics.md:223
 msgid ""
 "You can now specify individual ElectricBolt bolts you want to disable. "
 "Note that this is only a visual change."
 msgstr "现在可以关闭特斯拉武器的特定电流。注意这只是视觉变化。"
 
-#~ msgid ""
-#~ "![Ore gathering](_static/images/oregath.gif) *Custom "
-#~ "ore gathering anims in [Project "
-#~ "Phantom](https://www.moddb.com/mods/project-phantom)*"
-#~ msgstr ""
+#: ../Fixed-or-Improved-Logics.md:234
+msgid "Projectiles"
+msgstr "抛射体"
 
-#~ msgid "Ore gathering"
-#~ msgstr ""
+#: ../Fixed-or-Improved-Logics.md:236
+msgid "Customizable projectile gravity"
+msgstr "自定义抛射体重力"
 
+#: ../Fixed-or-Improved-Logics.md:238
+msgid "You can now specify individual projectile gravity."
+msgstr "现在可以为抛射体指定重力"
+
+#: ../Fixed-or-Improved-Logics.md:239
+msgid "Set `Gravity=0` with an arcing projectile can create a straight trail."
+msgstr "设置`Gravity=0`将会生成直线弹道"
+
+#: ../Fixed-or-Improved-Logics.md:240
+msgid ""
+"Set `Gravity.HeightFix=true` allows the projectile to hit target which is"
+" not at the same height while `Gravity=0`."
+msgstr "设置`Gravity.HeightFix=true`将允许`Gravity=0`的抛射体攻击不在同一高度的目标。"

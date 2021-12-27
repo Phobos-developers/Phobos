@@ -28,10 +28,11 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 }
 
 
-DEFINE_HOOK(0x6F42F7, TechnoClass_Init_SetLaserTrails, 0x2)
+DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
 
+	TechnoExt::InitializeShield(pThis);
 	TechnoExt::InitializeLaserTrails(pThis);
 
 	return 0;
@@ -248,7 +249,7 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 
 DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 {
-	enum { DoNotFire = 0x6FE4E7, SkipSetTarget = 0x6FE1D8 };
+	enum { DoNotFire = 0x6FE4E7, SkipSetTarget = 0x6FE1D5 };
 
 	GET(TechnoClass* const, pThis, ESI);
 	GET(CellClass* const, pCell, EAX);
@@ -270,7 +271,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 				CellStruct tgtPos = pCell->MapCoords + adjacentCells[cellIndex];
 				CellClass* tgtCell = MapClass::Instance->GetCellAt(tgtPos);
 
-				if (EnumFunctions::AreCellAndObjectsEligible(tgtCell, pExt->CanTarget))
+				if (EnumFunctions::AreCellAndObjectsEligible(tgtCell, pExt->CanTarget, pExt->CanTargetHouses, pThis->Owner, true))
 				{
 					R->EAX(tgtCell);
 					return 0;
@@ -281,14 +282,14 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 		}
 		else if (pExt->AreaFire_Target == AreaFireTarget::Self)
 		{
-			if (!EnumFunctions::AreCellAndObjectsEligible(pThis->GetCell(), pExt->CanTarget))
+			if (!EnumFunctions::AreCellAndObjectsEligible(pThis->GetCell(), pExt->CanTarget, pExt->CanTargetHouses, nullptr, false))
 				return DoNotFire;
 
-			pThis->Target = pThis;
+			R->EAX(pThis);
 			return SkipSetTarget;
 		}
 
-		if (!EnumFunctions::AreCellAndObjectsEligible(pCell, pExt->CanTarget))
+		if (!EnumFunctions::AreCellAndObjectsEligible(pCell, pExt->CanTarget, pExt->CanTargetHouses, nullptr, false))
 			return DoNotFire;
 	}
 

@@ -20,7 +20,7 @@ public:
 		CounterClass OwnedLimboBuildingTypes;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
-			, OwnedLimboBuildingTypes()
+			, OwnedLimboBuildingTypes {}
 		{ }
 
 		virtual ~ExtData() = default;
