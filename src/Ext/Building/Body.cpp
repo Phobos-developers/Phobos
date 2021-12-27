@@ -11,9 +11,7 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 		return;
 
 	auto BuildingExt = BuildingExt::ExtMap.Find(pThis);
-	if (!BuildingExt
-		|| pOwner->Type->MultiplayPassive
-		|| pOwner->IsNeutral())
+	if (!BuildingExt)
 	{
 		return;
 	}
