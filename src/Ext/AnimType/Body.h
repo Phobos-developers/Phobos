@@ -29,18 +29,18 @@ public:
 		Nullable<bool> Layer_UseObjectLayer;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
-			, Palette(CustomPalette::PaletteMode::Temperate)
-			, CreateUnit_Facing(0)
-			, CreateUnit_RandomFacing(true)
-			, CreateUnit_InheritDeathFacings(false)
-			, CreateUnit_InheritTurretFacings(false)
-			, CreateUnit_RemapAnim(false)
-			, CreateUnit_Mission(Mission::Guard)
-			, CreateUnit_Owner(OwnerHouseKind::Victim)
-			, CreateUnit_ConsiderPathfinding(false)
-			, XDrawOffset(0)
-			, HideIfNoOre_Threshold(0)
-			, Layer_UseObjectLayer()
+			, Palette { CustomPalette::PaletteMode::Temperate }
+			, CreateUnit_Facing { 0 }
+			, CreateUnit_RandomFacing { true }
+			, CreateUnit_InheritDeathFacings { false }
+			, CreateUnit_InheritTurretFacings { false }
+			, CreateUnit_RemapAnim { false }
+			, CreateUnit_Mission { Mission::Guard }
+			, CreateUnit_Owner { OwnerHouseKind::Victim }
+			, CreateUnit_ConsiderPathfinding { false }
+			, XDrawOffset { 0 }
+			, HideIfNoOre_Threshold { 0 }
+			, Layer_UseObjectLayer {}
 		{ }
 
 		virtual ~ExtData() = default;

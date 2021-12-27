@@ -23,14 +23,14 @@ public:
 		Valueable<Point2D> Sidebar_ProducingProgress_Offset;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
-			, ArrayIndex(-1)
-			, Sidebar_GDIPositions(false)
-			, IngameScore_WinTheme(-2)
-			, IngameScore_LoseTheme(-2)
-			, Sidebar_HarvesterCounter_Offset({ 0,0 })
-			, Sidebar_HarvesterCounter_Yellow({ 255,255,0 })
-			, Sidebar_HarvesterCounter_Red({ 255,0,0 })
-			, Sidebar_ProducingProgress_Offset({ 0,0 })
+			, ArrayIndex { -1 }
+			, Sidebar_GDIPositions { false }
+			, IngameScore_WinTheme { -2 }
+			, IngameScore_LoseTheme { -2 }
+			, Sidebar_HarvesterCounter_Offset { { 0,0 } }
+			, Sidebar_HarvesterCounter_Yellow { { 255,255,0 } }
+			, Sidebar_HarvesterCounter_Red { { 255,0,0 } }
+			, Sidebar_ProducingProgress_Offset { { 0,0 } }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -63,64 +63,17 @@ DEFINE_HOOK(0x4408EB, BuildingClass_Unlimbo_UpgradeBuildings, 0xA)
 
 #pragma region UpgradesInteraction
 
-int CountOwnedNowTotal(HouseClass const* const pHouse, TechnoTypeClass const* const pItem)
-{
-	int sum = 0;
-	const BuildingTypeClass* pBType = nullptr;
-	const char* pPowersUp = nullptr;
-
-	auto checkUpgrade = [pHouse, pBType, &sum](BuildingTypeClass* pTPowersUp)
-	{
-		for (auto const& pBld : pHouse->Buildings)
-		{
-			if (pBld->Type == pTPowersUp)
-			{
-				for (auto const& pUpgrade : pBld->Upgrades)
-				{
-					if (pUpgrade == pBType)
-						++sum;
-				}
-			}
-		}
-	};
-
-	switch (pItem->WhatAmI())
-	{
-	case AbstractType::BuildingType:
-		pBType = static_cast<BuildingTypeClass const*>(pItem);
-		pPowersUp = pBType->PowersUpBuilding;
-		if (pPowersUp[0])
-		{
-			if (auto const pTPowersUp = BuildingTypeClass::Find(pPowersUp))
-				checkUpgrade(pTPowersUp);
-		}
-
-		if (auto pBuildingExt = BuildingTypeExt::ExtMap.Find(pBType))
-		{
-			for (auto pTPowersUp : pBuildingExt->PowersUp_Buildings)
-				checkUpgrade(pTPowersUp);
-		}
-
-		break;
-
-	default:
-		__assume(0);
-	}
-
-	return sum;
-}
-
-int BuildLimitRemaining(HouseClass const* const pHouse, TechnoTypeClass const* const pItem)
+int BuildLimitRemaining(HouseClass const* const pHouse, BuildingTypeClass const* const pItem)
 {
 	auto const BuildLimit = pItem->BuildLimit;
 
 	if (BuildLimit >= 0)
-		return BuildLimit - CountOwnedNowTotal(pHouse, pItem);
+		return BuildLimit - BuildingTypeExt::GetUpgradesAmount(const_cast<BuildingTypeClass*>(pItem), const_cast<HouseClass*>(pHouse));
 	else
 		return -BuildLimit - pHouse->CountOwnedEver(pItem);
 }
 
-int CheckBuildLimit(HouseClass const* const pHouse, TechnoTypeClass const* const pItem, bool const includeQueued)
+int CheckBuildLimit(HouseClass const* const pHouse, BuildingTypeClass const* const pItem, bool const includeQueued)
 {
 	enum { NotReached = 1, ReachedPermanently = -1, ReachedTemporarily = 0 };
 
@@ -146,7 +99,7 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x3)
 		if (auto pBuildingExt = BuildingTypeExt::ExtMap.Find(pBuilding))
 		{
 			if (pBuildingExt->PowersUp_Buildings.size() > 0 && resultOfAres == CanBuildResult::Buildable)
-				R->EAX(CheckBuildLimit(pThis, pItem, includeInProduction));
+				R->EAX(CheckBuildLimit(pThis, pBuilding, includeInProduction));
 		}
 	}
 

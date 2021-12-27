@@ -93,6 +93,34 @@ bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 		.Success();
 }
 
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner)
+{
+	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(pTarget, pOwner,
+		pThis->Damage, pThis->Warhead, 0, pThis->Bright))
+	{
+		const CoordStruct& coords = pTarget->GetCoords();
+
+		pBullet->SetWeaponType(pThis);
+		pBullet->Limbo();
+		pBullet->SetLocation(coords);
+		pBullet->Explode(true);
+		pBullet->UnInit();
+	}
+}
+
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner)
+{
+	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(nullptr, pOwner,
+		pThis->Damage, pThis->Warhead, 0, pThis->Bright))
+	{
+		pBullet->SetWeaponType(pThis);
+		pBullet->Limbo();
+		pBullet->SetLocation(coords);
+		pBullet->Explode(true);
+		pBullet->UnInit();
+	}
+}
+
 // =============================
 // container
 

@@ -1,5 +1,8 @@
 #include "ExtendedToolTips.h"
 
+#include <AircraftClass.h>
+#include <InfantryClass.h>
+
 void ExtToolTip::CreateHelpText(AbstractType itemType, int itemIndex)
 {
 	AbstractTypeClass* pAbstract = nullptr;
@@ -58,7 +61,46 @@ void ExtToolTip::CreateHelpText(AbstractType itemType, int itemIndex)
 	}
 
 	// append Time label
-	const long rechargeTime = pSW ? pSW->RechargeTime : 0;
+	long rechargeTime = 0;
+	if (pSW)
+	{
+		rechargeTime = pSW->RechargeTime;
+	}
+	else if(pTechno)
+	{
+		// TechnoClass::Time_To_Build() accept a TechnoClass and but only uses its Type,
+		// RTTIType and House. That's why we can just create a fake buffer and send it
+		// to the function. For the Type, we need to hack their vtables, so the following
+		// checks are necessary.
+		// Author : secsome - 2021/12/08
+		static char pTrick[0x6C8]; // Just big enough to hold all types
+		switch (pTechno->WhatAmI())
+		{
+		case AbstractType::BuildingType:
+			*reinterpret_cast<int*>(pTrick) = 0x7E3EBC; // BuildingClass::`vtable`
+			reinterpret_cast<BuildingClass*>(pTrick)->Type = (BuildingTypeClass*)pTechno;
+			break;
+		case AbstractType::AircraftType:
+			*reinterpret_cast<int*>(pTrick) = 0x7E22A4; // AircraftClass::`vtable`
+			reinterpret_cast<AircraftClass*>(pTrick)->Type = (AircraftTypeClass*)pTechno;
+			break;
+		case AbstractType::InfantryType:
+			*reinterpret_cast<int*>(pTrick) = 0x7EB058; // InfantryClass::`vtable`
+			reinterpret_cast<InfantryClass*>(pTrick)->Type = (InfantryTypeClass*)pTechno;
+			break;
+		case AbstractType::UnitType:
+			*reinterpret_cast<int*>(pTrick) = 0x7F5C70; // UnitClass::`vtable`
+			reinterpret_cast<UnitClass*>(pTrick)->Type = (UnitTypeClass*)pTechno;
+			break;
+		}
+
+		// TechnoTypeClass only has 4 final classes : 
+		// BuildingTypeClass, AircraftTypeClass, InfantryTypeClass and UnitTypeClass
+		// It has to be these four classes, otherwise pTechno will just be nullptr
+		reinterpret_cast<TechnoClass*>(pTrick)->Owner = HouseClass::Player;
+		rechargeTime = reinterpret_cast<TechnoClass*>(pTrick)->TimeToBuild();
+	}
+
 	if (rechargeTime > 0) {
 		const int sec = (rechargeTime / 15) % 60;
 		const int min = (rechargeTime / 15) / 60;

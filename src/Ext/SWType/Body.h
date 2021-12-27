@@ -27,16 +27,16 @@ public:
 		ValueableVector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
-			, Money_Amount(0)
-			, UIDescription()
-			, CameoPriority(0)
-			, LimboDelivery_Types()
-			, LimboDelivery_IDs()
-			, LimboDelivery_RollChances()
-			, LimboDelivery_RandomWeightsData()
-			, LimboKill_Affected(AffectedHouse::Owner)
-			, LimboKill_IDs()
-			, RandomBuffer(0.0)
+			, Money_Amount { 0 }
+			, UIDescription {}
+			, CameoPriority { 0 }
+			, LimboDelivery_Types {}
+			, LimboDelivery_IDs {}
+			, LimboDelivery_RollChances {}
+			, LimboDelivery_RandomWeightsData {}
+			, LimboKill_Affected { AffectedHouse::Owner }
+			, LimboKill_IDs {}
+			, RandomBuffer { 0.0 }
 		{ }
 
 

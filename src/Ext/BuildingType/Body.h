@@ -22,12 +22,12 @@ public:
 		Nullable<int> PowerPlantEnhancer_Amount;
 		Nullable<float> PowerPlantEnhancer_Factor;
 
-		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject),
-			PowersUp_Owner(AffectedHouse::Owner),
-			PowersUp_Buildings(),
-			PowerPlantEnhancer_Buildings(),
-			PowerPlantEnhancer_Amount(),
-			PowerPlantEnhancer_Factor()
+		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
+			, PowersUp_Owner { AffectedHouse::Owner }
+			, PowersUp_Buildings {}
+			, PowerPlantEnhancer_Buildings {}
+			, PowerPlantEnhancer_Amount {}
+			, PowerPlantEnhancer_Factor {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -61,4 +61,5 @@ public:
 
 	static int GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
+	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 };
