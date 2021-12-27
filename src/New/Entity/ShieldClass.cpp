@@ -17,13 +17,14 @@ ShieldClass::ShieldClass() : Techno { nullptr }
 	, Timers { }
 { }
 
-ShieldClass::ShieldClass(TechnoClass* pTechno) : Techno { pTechno }
+ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTechno }
 	, IdleAnim { nullptr }
 	, Timers { }
 	, Cloak { false }
 	, Online { true }
 	, Temporal { false }
 	, Available { true }
+	, Attached { isAttached }
 	, SelfHealing_Rate_Warhead { -1 }
 	, Respawn_Rate_Warhead { -1 }
 {
@@ -52,6 +53,7 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->Online)
 		.Process(this->Temporal)
 		.Process(this->Available)
+		.Process(this->Attached)
 		.Process(this->Type)
 		.Process(this->SelfHealing_Warhead)
 		.Process(this->SelfHealing_Rate_Warhead)
@@ -78,6 +80,7 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 
 	if (pFromExt->Shield)
 	{
+		pToExt->CurrentShieldType = pFromExt->CurrentShieldType;
 		pToExt->Shield = std::make_unique<ShieldClass>(pTo);
 		strcpy(pToExt->Shield->TechnoID, pFromExt->Shield->TechnoID);
 		pToExt->Shield->Available = pFromExt->Shield->Available;
@@ -260,9 +263,11 @@ void ShieldClass::AI()
 		}
 	}
 
+	if (this->ConvertCheck())
+		return;
+
 	this->UpdateType();
 	this->CloakCheck();
-	this->ConvertCheck();
 
 	if (!this->Available)
 		return;
@@ -365,33 +370,50 @@ void ShieldClass::TemporalCheck()
 }
 
 // Is used for DeploysInto/UndeploysInto and DeploysInto/UndeploysInto
-void ShieldClass::ConvertCheck()
+bool ShieldClass::ConvertCheck()
 {
 	const auto newID = this->Techno->get_ID();
 
 	if (strcmp(this->TechnoID, newID) == 0)
-		return;
+		return false;
 
-	const auto pType = this->Type;
+	const auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
+	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(this->Techno->GetTechnoType());
+	const auto pOldType = this->Type;
+	bool allowTransfer = this->Type->AllowTransfer.Get(Attached);
 
-	if (pType->Strength && this->Available)
-	{ // Update this shield for the new owner
-		const auto pFrom_TechnoType = TechnoTypeClass::Find(this->TechnoID);
-		const auto pFromType = TechnoTypeExt::ExtMap.Find(pFrom_TechnoType)->ShieldType;
+	// Update shield type.
+	if (!allowTransfer && !pTechnoTypeExt->ShieldType->Strength)
+	{
+		this->KillAnim();
+		pTechnoExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
+		pTechnoExt->Shield = nullptr;
 
-		if (pFromType->IdleAnim.Get() != pType->IdleAnim.Get())
+		return true;
+	}
+	else if (pTechnoTypeExt->ShieldType->Strength)
+	{
+		pTechnoExt->CurrentShieldType = pTechnoTypeExt->ShieldType;
+	}
+
+	const auto pNewType = pTechnoExt->CurrentShieldType;
+
+	// Update shield properties.
+	if (pNewType->Strength && this->Available)
+	{
+		if (pOldType->IdleAnim.Get() != pNewType->IdleAnim.Get())
 			this->KillAnim();
 
 		this->HP = (int)round(
 			(double)this->HP /
-			(double)pFromType->Strength *
-			(double)pType->Strength
+			(double)pOldType->Strength *
+			(double)pNewType->Strength
 		);
 	}
 	else
 	{
 		const auto timer = (this->HP <= 0) ? &this->Timers.Respawn : &this->Timers.SelfHealing;
-		if (pType->Strength && !this->Available)
+		if (pNewType->Strength && !this->Available)
 		{ // Resume this shield when became Available
 			timer->Resume();
 			this->Available = true;
@@ -405,6 +427,8 @@ void ShieldClass::ConvertCheck()
 	}
 
 	strcpy(this->TechnoID, newID);
+
+	return false;
 }
 
 void ShieldClass::SelfHealing()
@@ -514,11 +538,11 @@ void ShieldClass::SetRespawn(int duration, double amount, int rate, bool resetTi
 
 	this->Respawn_Warhead = amount > 0 ? amount : Type->Respawn;
 	this->Respawn_Rate_Warhead = rate >= 0 ? rate : Type->Respawn_Rate;
-	
+
 	timerWH->Start(duration);
 
-	if (this->HP <= 0 && Respawn_Rate_Warhead >= 0 && (resetTimer || timer->Expired())) 
-	{ 
+	if (this->HP <= 0 && Respawn_Rate_Warhead >= 0 && (resetTimer || timer->Expired()))
+	{
 		timer->Start(Respawn_Rate_Warhead);
 	}
 	else if (timer->InProgress())

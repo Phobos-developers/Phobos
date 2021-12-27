@@ -102,9 +102,9 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 			if (shieldIndex >= 0)
 			{
 				ratio = pExt->Shield->GetHealthRatio();
+				pExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
 				pExt->Shield->KillAnim();
 				pExt->Shield = nullptr;
-				pExt->CurrentShieldType = nullptr;
 			}
 		}
 
@@ -128,7 +128,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 				if (shieldType->Strength && (!pExt->Shield || (this->Shield_ReplaceNonRespawning && pExt->Shield->IsBrokenAndNonRespawning())))
 				{
 					pExt->CurrentShieldType = shieldType;
-					pExt->Shield = std::make_unique<ShieldClass>(pTarget);
+					pExt->Shield = std::make_unique<ShieldClass>(pTarget, true);
 
 					if (this->Shield_ReplaceOnly && this->Shield_InheritStateOnReplace)
 					{

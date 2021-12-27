@@ -11,7 +11,8 @@ class ShieldClass
 {
 public:
 	ShieldClass();
-	ShieldClass(TechnoClass* pTechno);
+	ShieldClass(TechnoClass* pTechno, bool isAttached);
+	ShieldClass(TechnoClass* pTechno) : ShieldClass(pTechno, false) {};
 	~ShieldClass() = default;
 
 	int ReceiveDamage(args_ReceiveDamage* args);
@@ -61,7 +62,7 @@ private:
 	void CloakCheck();
 	void OnlineCheck();
 	void TemporalCheck();
-	void ConvertCheck();
+	bool ConvertCheck();
 
 	void DrawShieldBar_Building(int iLength, Point2D* pLocation, RectangleStruct* pBound);
 	void DrawShieldBar_Other(int iLength, Point2D* pLocation, RectangleStruct* pBound);
@@ -77,6 +78,7 @@ private:
 	bool Online;
 	bool Temporal;
 	bool Available;
+	bool Attached;
 
 	double SelfHealing_Warhead;
 	int SelfHealing_Rate_Warhead;
