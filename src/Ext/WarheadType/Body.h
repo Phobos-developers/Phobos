@@ -23,6 +23,7 @@ public:
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
 		Valueable<bool> AnimList_PickRandom;
+		Valueable<bool> DecloakDamagedTargets;
 
 		Valueable<int> Crit_ExtraDamage;
 		Valueable<double> Crit_Chance;
@@ -79,6 +80,7 @@ public:
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
 			, AnimList_PickRandom { false }
+			, DecloakDamagedTargets { true }
 
 			, Crit_Chance { 0.0 }
 			, Crit_ExtraDamage { 0 }

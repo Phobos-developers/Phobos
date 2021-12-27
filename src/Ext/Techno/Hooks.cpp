@@ -284,3 +284,17 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFS(0xC4, -0xC));
+
+	if (auto pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
+	{
+		if (pExt->DecloakDamagedTargets)
+			pThis->Uncloak(false);
+	}
+
+	return 0x702823;
+}
