@@ -20,7 +20,7 @@ public:
 	public:
 		Valueable<bool> DeployedTechno;
 		Valueable<int> LimboID;
-		Valueable<BuildingClass*> CurrentAirFactory;
+		Nullable<BuildingClass*> CurrentAirFactory;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, DeployedTechno { false }
