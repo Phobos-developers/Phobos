@@ -25,14 +25,14 @@ public:
 		int OnlyTargetHouseEnemyMode;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject)
-			, WaitNoTargetAttempts(0)
-			, NextSuccessWeightAward(0)
-			, IdxSelectedObjectFromAIList(-1)
-			, CloseEnough(-1)
-			, Countdown_RegroupAtLeader(-1)
-			, AngerNodeModifier(5000)
-			, OnlyTargetHouseEnemy(false)
-			, OnlyTargetHouseEnemyMode(-1)
+			, WaitNoTargetAttempts { 0 }
+			, NextSuccessWeightAward { 0 }
+			, IdxSelectedObjectFromAIList { -1 }
+			, CloseEnough { -1 }
+			, Countdown_RegroupAtLeader { -1 }
+			, AngerNodeModifier { 5000 }
+			, OnlyTargetHouseEnemy { false }
+			, OnlyTargetHouseEnemyMode { -1 }
 		{ }
 
 		virtual ~ExtData() = default;
