@@ -24,7 +24,10 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 	// Update what is the current air factory for future comparisons
 	if (BuildingExt->CurrentAirFactory)
 	{
-		int nDocks = BuildingExt->CurrentAirFactory->Type->NumberOfDocks;
+		int nDocks = 0;
+		if (BuildingExt->CurrentAirFactory->Type)
+			nDocks = BuildingExt->CurrentAirFactory->Type->NumberOfDocks;
+
 		int nOccupiedDocks = CountOccupiedDocks(BuildingExt->CurrentAirFactory);
 
 		if (nOccupiedDocks < nDocks)
