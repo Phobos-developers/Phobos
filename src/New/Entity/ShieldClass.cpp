@@ -131,6 +131,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		if (pWHExt->DecloakDamagedTargets)
 			this->Techno->Uncloak(false);
 
+		this->ShieldStolen(args, shieldDamage);
+
 		int residueDamage = shieldDamage - this->HP;
 		if (residueDamage >= 0)
 		{
@@ -194,6 +196,52 @@ void ShieldClass::ResponseAttack()
 
 			if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, CellClass::Coord2Cell(pos)))
 				VoxClass::Play("EVA_OreMinerUnderAttack");
+		}
+	}
+}
+
+void ShieldClass::ShieldStolen(args_ReceiveDamage* args, int shieldDamage)
+{
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+	if (args->Attacker)
+	{
+		auto const pAttackerType = TechnoTypeExt::ExtMap.Find(args->Attacker->GetTechnoType());
+		const auto pAttacker = TechnoExt::ExtMap.Find(args->Attacker);
+
+		if (this->GetType()->CanBeStolen && 
+			pWHExt->Shield_Steal.Get() &&
+			pWHExt->Shield_Assimilate_Rate.Get() >= 0 &&
+			pAttacker->Shield.get() &&
+			pAttackerType->ShieldType.Get()->Strength > 0)
+		{
+			double assimilateRate = pWHExt->Shield_Assimilate_Rate.Get() > 10 ? 1 : pWHExt->Shield_Assimilate_Rate.Get();
+			int stolenHP = (int)(shieldDamage * assimilateRate);
+			if (pAttackerType->ShieldType.Get()->Strength.Get() < pAttacker->Shield.get()->GetHP() + stolenHP)
+			{
+				pAttacker->Shield.get()->SetHP(pAttackerType->ShieldType.Get()->Strength);
+			}
+			else
+			{
+				pAttacker->Shield.get()->SetHP(pAttacker->Shield.get()->GetHP() + stolenHP);
+			}
+		}
+
+		if (this->GetType()->CanBeStolenType && !pAttacker->Shield.get() && pWHExt->Shield_StealTargetType.Get())
+		{
+			pAttacker->CurrentShieldType = this->GetType();
+
+			ShieldClass* newShield = new ShieldClass(pAttacker->OwnerObject());
+			pAttacker->Shield.reset(newShield);
+
+			auto initShieldRate = pWHExt->Shield_StealTargetType_InitShieldHealthRate;
+			if (initShieldRate < 0 || initShieldRate > 1.0)
+			{
+				pAttacker->Shield.get()->SetHP(0);
+			}
+			else
+			{
+				pAttacker->Shield.get()->SetHP((int)(pAttacker->CurrentShieldType.Get()->Strength * initShieldRate));
+			}
 		}
 	}
 }

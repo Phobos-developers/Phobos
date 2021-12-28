@@ -60,6 +60,7 @@ private:
 
 	void WeaponNullifyAnim(AnimTypeClass* pHitAnim = nullptr);
 	void ResponseAttack();
+	void ShieldStolen(args_ReceiveDamage* args, int shieldDamage);
 
 	void CloakCheck();
 	void OnlineCheck();
