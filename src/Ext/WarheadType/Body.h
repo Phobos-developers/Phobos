@@ -42,10 +42,10 @@ public:
 		Nullable<AnimTypeClass*> Shield_HitAnim;
 		Nullable<WeaponTypeClass*> Shield_BreakWeapon;
 
-		Valueable<bool> Shield_Stole;
-		Valueable<double> Shield_Stolen_Rate;
-		Valueable<bool> Shield_StoleType;
-		Valueable<double> Shield_StolenType_InitRate;
+		Valueable<bool> Shield_Assimilate;
+		Valueable<double> Shield_Assimilate_Multiplier;
+		Valueable<bool> Shield_Steal;
+		Valueable<double> Shield_Steal_Multiplier;
 
 		double RandomBuffer;
 		
@@ -104,10 +104,10 @@ public:
 			, Shield_AbsorbPercent {}
 			, Shield_PassPercent {}
 
-			, Shield_Stole { false }
-			, Shield_Stolen_Rate { 1.0 }
-			, Shield_StoleType { false }
-			, Shield_StolenType_InitRate { 0.0 }
+			, Shield_Assimilate { false }
+			, Shield_Assimilate_Multiplier { 1.0 }
+			, Shield_Steal { false }
+			, Shield_Steal_Multiplier { 0.0 }
 
 			, Shield_Respawn_Duration { 0 }
 			, Shield_Respawn_Amount { 0.0 }

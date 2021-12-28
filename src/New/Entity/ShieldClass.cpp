@@ -202,38 +202,38 @@ void ShieldClass::ShieldStolen(args_ReceiveDamage* args, int shieldDamage)
 		auto const pAttackerType = TechnoTypeExt::ExtMap.Find(args->Attacker->GetTechnoType());
 		const auto pAttacker = TechnoExt::ExtMap.Find(args->Attacker);
 
-		if (this->GetType()->CanBeStolen && 
-			pWHExt->Shield_Stole.Get() &&
-			pWHExt->Shield_Stolen_Rate.Get() >= 0 &&
-			pAttacker->Shield.get() &&
-			pAttackerType->ShieldType.Get()->Strength > 0)
+		if (this->GetType()->CanBeAssimilated && 
+			pWHExt->Shield_Assimilate &&
+			pWHExt->Shield_Assimilate_Multiplier >= 0 &&
+			pAttacker->Shield &&
+			pAttackerType->ShieldType->Strength > 0)
 		{
-			double stolenRate = pWHExt->Shield_Stolen_Rate.Get() > 10 ? 1 : pWHExt->Shield_Stolen_Rate.Get();
+			double stolenRate = pWHExt->Shield_Assimilate_Multiplier > 10 ? 1 : pWHExt->Shield_Assimilate_Multiplier;
 			int stolenHP = (int)(shieldDamage * stolenRate);
-			if (pAttackerType->ShieldType.Get()->Strength.Get() < pAttacker->Shield.get()->GetHP() + stolenHP)
+			if (pAttackerType->ShieldType->Strength < pAttacker->Shield->GetHP() + stolenHP)
 			{
-				pAttacker->Shield.get()->SetHP(pAttackerType->ShieldType.Get()->Strength);
+				pAttacker->Shield->SetHP(pAttackerType->ShieldType->Strength);
 			}
 			else
 			{
-				pAttacker->Shield.get()->SetHP(pAttacker->Shield.get()->GetHP() + stolenHP);
+				pAttacker->Shield->SetHP(pAttacker->Shield->GetHP() + stolenHP);
 			}
 		}
 
-		if (this->GetType()->CanBeStolenType && !pAttacker->Shield.get() && pWHExt->Shield_StoleType.Get())
+		if (this->GetType()->CanBeStolen && !pAttacker->Shield && pWHExt->Shield_Steal)
 		{
 			pAttacker->CurrentShieldType = this->GetType();
 
 			ShieldClass* newShield = new ShieldClass(pAttacker->OwnerObject());
 			pAttacker->Shield.reset(newShield);
 
-			if (pWHExt->Shield_StolenType_InitRate < 0 || pWHExt->Shield_StolenType_InitRate > 1.0)
+			if (pWHExt->Shield_Steal_Multiplier < 0 || pWHExt->Shield_Steal_Multiplier > 1.0)
 			{
-				pAttacker->Shield.get()->SetHP(0);
+				pAttacker->Shield->SetHP(0);
 			}
 			else
 			{
-				pAttacker->Shield.get()->SetHP((int)(pAttacker->CurrentShieldType.Get()->Strength * pWHExt->Shield_StolenType_InitRate));
+				pAttacker->Shield->SetHP((int)(pAttacker->CurrentShieldType->Strength * pWHExt->Shield_Steal_Multiplier));
 			}
 		}
 	}
