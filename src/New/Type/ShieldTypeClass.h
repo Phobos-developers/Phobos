@@ -29,6 +29,9 @@ public:
 	Valueable<double> AbsorbPercent;
 	Valueable<double> PassPercent;
 
+	Valueable<bool>	CanBeStolen;
+	Valueable<bool>	CanBeStolenType;
+
 private:
 	Valueable<double> Respawn_Rate__InMinutes;
 	Valueable<double> SelfHealing_Rate__InMinutes;
@@ -53,6 +56,10 @@ public:
 		, BreakWeapon()
 		, AbsorbPercent(1.0)
 		, PassPercent(0.0)
+
+		, CanBeStolen(true)
+		, CanBeStolenType(true)
+
 		, Respawn_Rate__InMinutes(0.0)
 		, SelfHealing_Rate__InMinutes(0.0)
 	{};

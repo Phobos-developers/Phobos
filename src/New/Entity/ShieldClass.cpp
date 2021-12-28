@@ -125,6 +125,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		this->Timers.SelfHealing.Start(rate); // when attacked, restart the timer
 		this->ResponseAttack();
 
+		this->ShieldStolen(args, shieldDamage);
+
 		int residueDamage = shieldDamage - this->HP;
 		if (residueDamage >= 0)
 		{
@@ -188,6 +190,51 @@ void ShieldClass::ResponseAttack()
 
 			if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, CellClass::Coord2Cell(pos)))
 				VoxClass::Play("EVA_OreMinerUnderAttack");
+		}
+	}
+}
+
+void ShieldClass::ShieldStolen(args_ReceiveDamage* args, int shieldDamage)
+{
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+	if (args->Attacker)
+	{
+		auto const pAttackerType = TechnoTypeExt::ExtMap.Find(args->Attacker->GetTechnoType());
+		const auto pAttacker = TechnoExt::ExtMap.Find(args->Attacker);
+
+		if (this->GetType()->CanBeStolen && 
+			pWHExt->Shield_Stole.Get() &&
+			pWHExt->Shield_Stolen_Rate.Get() >= 0 &&
+			pAttacker->Shield.get() &&
+			pAttackerType->ShieldType.Get()->Strength > 0)
+		{
+			double stolenRate = pWHExt->Shield_Stolen_Rate.Get() > 10 ? 1 : pWHExt->Shield_Stolen_Rate.Get();
+			int stolenHP = (int)(shieldDamage * stolenRate);
+			if (pAttackerType->ShieldType.Get()->Strength.Get() < pAttacker->Shield.get()->GetHP() + stolenHP)
+			{
+				pAttacker->Shield.get()->SetHP(pAttackerType->ShieldType.Get()->Strength);
+			}
+			else
+			{
+				pAttacker->Shield.get()->SetHP(pAttacker->Shield.get()->GetHP() + stolenHP);
+			}
+		}
+
+		if (this->GetType()->CanBeStolenType && !pAttacker->Shield.get() && pWHExt->Shield_StoleType.Get())
+		{
+			pAttacker->CurrentShieldType = this->GetType();
+
+			ShieldClass* newShield = new ShieldClass(pAttacker->OwnerObject());
+			pAttacker->Shield.reset(newShield);
+
+			if (pWHExt->Shield_StolenType_InitRate < 0 || pWHExt->Shield_StolenType_InitRate > 1.0)
+			{
+				pAttacker->Shield.get()->SetHP(0);
+			}
+			else
+			{
+				pAttacker->Shield.get()->SetHP((int)(pAttacker->CurrentShieldType.Get()->Strength * pWHExt->Shield_StolenType_InitRate));
+			}
 		}
 	}
 }

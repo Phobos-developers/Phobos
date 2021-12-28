@@ -86,6 +86,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_ReplaceNonRespawning.Read(exINI, pSection, "Shield.ReplaceNonRespawning");
 	this->Shield_InheritStateOnReplace.Read(exINI, pSection, "Shield.InheritStateOnReplace");
 	this->Shield_AffectTypes.Read(exINI, pSection, "Shield.AffectTypes");
+	this->Shield_Stole.Read(exINI, pSection, "Shield.Stole");
+	this->Shield_Stolen_Rate.Read(exINI, pSection, "Shield.Stolen.Rate");
+	this->Shield_StoleType.Read(exINI, pSection, "Shield.StoleType");
+	this->Shield_StolenType_InitRate.Read(exINI, pSection, "Shield.StolenType.InitRate");
 
 	this->NotHuman_DeathSequence.Read(exINI, pSection, "NotHuman.DeathSequence");
 }
@@ -124,6 +128,11 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_BreakWeapon)
 		.Process(this->Shield_AbsorbPercent)
 		.Process(this->Shield_PassPercent)
+
+		.Process(this->Shield_Stole)
+		.Process(this->Shield_Stolen_Rate)
+		.Process(this->Shield_StoleType)
+		.Process(this->Shield_StolenType_InitRate)
 
 		.Process(this->Shield_Respawn_Duration)
 		.Process(this->Shield_Respawn_Amount)

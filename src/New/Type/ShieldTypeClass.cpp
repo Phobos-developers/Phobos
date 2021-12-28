@@ -47,6 +47,9 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->AbsorbPercent.Read(exINI, pSection, "AbsorbPercent");
 	this->PassPercent.Read(exINI, pSection, "PassPercent");
+
+	this->CanBeStolen.Read(exINI, pSection, "CanBeStolen");
+	this->CanBeStolenType.Read(exINI, pSection, "CanBeStolenType");
 }
 
 template <typename T>
@@ -71,6 +74,8 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->BreakWeapon)
 		.Process(this->AbsorbPercent)
 		.Process(this->PassPercent)
+		.Process(this->CanBeStolen)
+		.Process(this->CanBeStolenType)
 		;
 }
 
