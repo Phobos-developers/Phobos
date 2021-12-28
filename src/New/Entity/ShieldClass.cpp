@@ -133,6 +133,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			this->Techno->Uncloak(false);
 		this->ShieldStolen(args, shieldDamage);
 
+		this->ShieldStolen(args, shieldDamage);
+
 		int residueDamage = shieldDamage - this->HP;
 		if (residueDamage >= 0)
 		{
@@ -208,38 +210,39 @@ void ShieldClass::ShieldStolen(args_ReceiveDamage* args, int shieldDamage)
 		auto const pAttackerType = TechnoTypeExt::ExtMap.Find(args->Attacker->GetTechnoType());
 		const auto pAttacker = TechnoExt::ExtMap.Find(args->Attacker);
 
-		if (this->GetType()->CanBeAssimilated && 
-			pWHExt->Shield_Assimilate &&
-			pWHExt->Shield_Assimilate_Multiplier >= 0 &&
-			pAttacker->Shield &&
-			pAttackerType->ShieldType->Strength > 0)
+		if (this->GetType()->CanBeStolen && 
+			pWHExt->Shield_Steal.Get() &&
+			pWHExt->Shield_Assimilate_Rate.Get() >= 0 &&
+			pAttacker->Shield.get() &&
+			pAttackerType->ShieldType.Get()->Strength > 0)
 		{
-			double stolenRate = pWHExt->Shield_Assimilate_Multiplier > 10 ? 1 : pWHExt->Shield_Assimilate_Multiplier;
-			int stolenHP = (int)(shieldDamage * stolenRate);
-			if (pAttackerType->ShieldType->Strength < pAttacker->Shield->GetHP() + stolenHP)
+			double assimilateRate = pWHExt->Shield_Assimilate_Rate.Get() > 10 ? 1 : pWHExt->Shield_Assimilate_Rate.Get();
+			int stolenHP = (int)(shieldDamage * assimilateRate);
+			if (pAttackerType->ShieldType.Get()->Strength.Get() < pAttacker->Shield.get()->GetHP() + stolenHP)
 			{
-				pAttacker->Shield->SetHP(pAttackerType->ShieldType->Strength);
+				pAttacker->Shield.get()->SetHP(pAttackerType->ShieldType.Get()->Strength);
 			}
 			else
 			{
-				pAttacker->Shield->SetHP(pAttacker->Shield->GetHP() + stolenHP);
+				pAttacker->Shield.get()->SetHP(pAttacker->Shield.get()->GetHP() + stolenHP);
 			}
 		}
 
-		if (this->GetType()->CanBeStolen && !pAttacker->Shield && pWHExt->Shield_Steal)
+		if (this->GetType()->CanBeStolenType && !pAttacker->Shield.get() && pWHExt->Shield_StealTargetType.Get())
 		{
 			pAttacker->CurrentShieldType = this->GetType();
 
 			ShieldClass* newShield = new ShieldClass(pAttacker->OwnerObject());
 			pAttacker->Shield.reset(newShield);
 
-			if (pWHExt->Shield_Steal_Multiplier < 0 || pWHExt->Shield_Steal_Multiplier > 1.0)
+			auto initShieldRate = pWHExt->Shield_StealTargetType_InitShieldHealthRate;
+			if (initShieldRate < 0 || initShieldRate > 1.0)
 			{
-				pAttacker->Shield->SetHP(0);
+				pAttacker->Shield.get()->SetHP(0);
 			}
 			else
 			{
-				pAttacker->Shield->SetHP((int)(pAttacker->CurrentShieldType->Strength * pWHExt->Shield_Steal_Multiplier));
+				pAttacker->Shield.get()->SetHP((int)(pAttacker->CurrentShieldType.Get()->Strength * initShieldRate));
 			}
 		}
 	}
