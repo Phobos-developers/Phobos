@@ -33,12 +33,12 @@ public:
 			, IdxSelectedObjectFromAIList { -1 }
 			, CloseEnough { -1 }
 			, Countdown_RegroupAtLeader { -1 }
-			, ConditionalJumpEvaluation(false)
-			, ConditionalEvaluationType(-1)
-			, ConditionalComparatorType(3)
-			, ConditionalCounter(0)
-			, ConditionalComparatorValue(1)
-			, AbortActionAfterKilling(false)
+			, ConditionalJumpEvaluation { false }
+			, ConditionalEvaluationType { -1 }
+			, ConditionalComparatorType { 3 }
+			, ConditionalCounter { 0 }
+			, ConditionalComparatorValue { 1 }
+			, AbortActionAfterKilling { false }
 		{ }
 
 		virtual ~ExtData() = default;
