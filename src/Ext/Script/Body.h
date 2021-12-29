@@ -139,6 +139,7 @@ public:
 	static void SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable);
 	static void ClearCurrentConditionalCounter(TeamClass* pTeam);
 	static void ConditionalJump_Economy(TeamClass* pTeam);
+	static void ConditionalJump_Power(TeamClass* pTeam, int mode);
 
 	static void DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
 	static void IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);

@@ -2938,44 +2938,522 @@ void ScriptExt::ConditionalJump_Economy(TeamClass* pTeam)
 		}
 	}
 
+	//- House Economy (value comparator accepted: 0:<,1:<=,2:==,3:>=,4:>,5:!=).
+	pTeamData->ConditionalJumpEvaluation = false;
+
 	// We have selected the house, now check
 	if (economyValue >= 0)
 	{
-		//- House Economy (value comparator accepted: 0:<,1:<=,2:==,3:>=,4:>,5:!=). Also check if richest/poorest.
-		//pTeamData->ConditionalComparatorType
-		//pTeamData->ConditionalComparatorValue
-aaaaaaa
+
 		// Comparators are like in [AITriggerTypes] from aimd.ini
 		switch (pTeamData->ConditionalComparatorType)
 		{
 		case 0:
 			// <
-			if (pTeamData->ConditionalCounter < pTeamData->ConditionalComparatorValue)
+			if (economyValue < pTeamData->ConditionalComparatorValue)
 				pTeamData->ConditionalJumpEvaluation = true;
 			break;
 		case 1:
 			// <=
-			if (pTeamData->ConditionalCounter <= pTeamData->ConditionalComparatorValue)
+			if (economyValue <= pTeamData->ConditionalComparatorValue)
 				pTeamData->ConditionalJumpEvaluation = true;
 			break;
 		case 2:
 			// ==
-			if (pTeamData->ConditionalCounter = pTeamData->ConditionalComparatorValue)
+			if (economyValue = pTeamData->ConditionalComparatorValue)
 				pTeamData->ConditionalJumpEvaluation = true;
 			break;
 		case 3:
 			// >=
-			if (pTeamData->ConditionalCounter >= pTeamData->ConditionalComparatorValue)
+			if (economyValue >= pTeamData->ConditionalComparatorValue)
 				pTeamData->ConditionalJumpEvaluation = true;
 			break;
 		case 4:
 			// >
-			if (pTeamData->ConditionalCounter > pTeamData->ConditionalComparatorValue)
+			if (economyValue > pTeamData->ConditionalComparatorValue)
 				pTeamData->ConditionalJumpEvaluation = true;
 			break;
 		case 5:
 			// !=
-			if (pTeamData->ConditionalCounter != pTeamData->ConditionalComparatorValue)
+			if (economyValue != pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		default:
+			break;
+		}
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+}
+
+void ScriptExt::ConditionalJump_Power(TeamClass* pTeam, int mode = 0)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	HouseClass* pHouse = nullptr;
+	DynamicVectorClass<HouseClass*> pHousesList;
+	long powerValue = -100000000;
+	HouseClass* pTempHouse = nullptr;
+
+	if (!pTeam || !pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+	int index = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
+
+	// House selection & obtain the available cash
+	if (index >= 0)
+	{
+		// Standard House index
+		pHouse = HouseClass::Array->GetItem(index);
+
+		if (mode == 2)
+		{
+			// Difference between produced energy and consumed.
+			powerValue = pHouse->PowerOutput - pHouse->Power_Drain();
+		}
+		else
+		{
+			if (mode == 1)
+			{
+				// Total power drain
+				powerValue = pHouse->Power_Drain();
+			}
+			else
+			{
+				// mode == 0. Total Energy produced, default case
+				powerValue = pHouse->PowerOutput; 
+			}
+		}
+	}
+	else
+	{
+		for (auto pItem : *HouseClass::Array())
+		{
+			if (pTeam->Owner == pItem || pItem->Defeated || pItem->IsObserver() || pItem->Type->MultiplayPassive || pItem->IsNeutral())
+				continue;
+
+			pHousesList.AddItem(pItem);
+		}
+
+		switch (index)
+		{
+		case -1:
+			// Random House (excluding the Team's House)
+			if (pHousesList.Count > 0)
+			{
+				pHouse = pHousesList.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, pHousesList.Count - 1));
+				
+				if (mode == 2)
+				{
+					// Difference between produced energy and consumed.
+					powerValue = pHouse->PowerOutput - pHouse->Power_Drain();
+				}
+				else
+				{
+					if (mode == 1)
+					{
+						// Total power drain
+						powerValue = pHouse->Power_Drain();
+					}
+					else
+					{
+						// mode == 0. Total Energy produced, default case
+						powerValue = pHouse->PowerOutput;
+					}
+				}
+			}
+			break;
+
+		case -2:
+			// The Team's House
+			pHouse = pTeam->Owner;
+
+			if (mode == 2)
+			{
+				// Difference between produced energy and consumed.
+				powerValue = pHouse->PowerOutput - pHouse->Power_Drain();
+			}
+			else
+			{
+				if (mode == 1)
+				{
+					// Total power drain
+					powerValue = pHouse->Power_Drain();
+				}
+				else
+				{
+					// mode == 0. Total Energy produced, default case
+					powerValue = pHouse->PowerOutput;
+				}
+			}
+			break;
+
+		case -3:
+			// The House with major energy
+			if (pHousesList.Count > 0)
+			{
+				for (auto pItem : pHousesList)
+				{
+					int tempPowerValue = -100000000;
+
+					if (mode == 2)
+					{
+						// Difference between produced energy and consumed.
+						tempPowerValue = pHouse->PowerOutput - pHouse->Power_Drain();
+					}
+					else
+					{
+						if (mode == 1)
+						{
+							// Total power drain
+							tempPowerValue = pHouse->Power_Drain();
+						}
+						else
+						{
+							// mode == 0. Total Energy produced, default case
+							tempPowerValue = pHouse->PowerOutput;
+						}
+					}
+
+					if (tempPowerValue > powerValue || powerValue == -100000000)
+					{
+						powerValue = tempPowerValue;
+						pTempHouse = pItem;
+					}
+
+
+					if (pTempHouse)
+						pHouse = pTempHouse;
+				}
+			}
+			break;
+
+		case -4:
+			// The House with minor energy
+			if (pHousesList.Count > 0)
+			{
+				for (auto pItem : pHousesList)
+				{
+					int tempPowerValue = -1;
+
+					if (mode == 2)
+					{
+						// Difference between produced energy and consumed.
+						tempPowerValue = pHouse->PowerOutput - pHouse->Power_Drain();
+					}
+					else
+					{
+						if (mode == 1)
+						{
+							// Total power drain
+							tempPowerValue = pHouse->Power_Drain();
+						}
+						else
+						{
+							// mode == 0. Total Energy produced, default case
+							tempPowerValue = pHouse->PowerOutput;
+						}
+					}
+
+					if (tempPowerValue < powerValue || powerValue == -1)
+					{
+						powerValue = tempPowerValue;
+						pTempHouse = pItem;
+					}
+
+					if (pTempHouse)
+						pHouse = pTempHouse;
+				}
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	//- House Economy (value comparator accepted: 0:<,1:<=,2:==,3:>=,4:>,5:!=).
+	pTeamData->ConditionalJumpEvaluation = false;
+
+	// We have selected the house, now check
+	if (powerValue != -100000000)
+	{
+		// Comparators are like in [AITriggerTypes] from aimd.ini
+		switch (pTeamData->ConditionalComparatorType)
+		{
+		case 0:
+			// <
+			if (powerValue < pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		case 1:
+			// <=
+			if (powerValue <= pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		case 2:
+			// ==
+			if (powerValue = pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		case 3:
+			// >=
+			if (powerValue >= pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		case 4:
+			// >
+			if (powerValue > pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		case 5:
+			// !=
+			if (powerValue != pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		default:
+			break;
+		}
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+}
+
+void ScriptExt::ConditionalJump_Objects(TeamClass* pTeam, int mode = 0)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	HouseClass* pHouse = nullptr;
+	DynamicVectorClass<HouseClass*> pHousesList;
+	long powerValue = -100000000;
+	HouseClass* pTempHouse = nullptr;
+
+	if (!pTeam || !pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+	int index = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument;
+
+	// House selection & obtain the available cash
+	if (index >= 0)
+	{
+		// Standard House index
+		pHouse = HouseClass::Array->GetItem(index);
+
+		if (mode == 2)
+		{
+			// Difference between produced energy and consumed.
+			powerValue = pHouse->OwnedAircraft
+		}
+		else
+		{
+			if (mode == 1)
+			{
+				// Total power drain
+				powerValue = pHouse->Power_Drain();
+			}
+			else
+			{
+				// mode == 0. Total Energy produced, default case
+				powerValue = pHouse->PowerOutput;
+			}
+		}
+	}
+	else
+	{
+		for (auto pItem : *HouseClass::Array())
+		{
+			if (pTeam->Owner == pItem || pItem->Defeated || pItem->IsObserver() || pItem->Type->MultiplayPassive || pItem->IsNeutral())
+				continue;
+
+			pHousesList.AddItem(pItem);
+		}
+
+		switch (index)
+		{
+		case -1:
+			// Random House (excluding the Team's House)
+			if (pHousesList.Count > 0)
+			{
+				pHouse = pHousesList.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, pHousesList.Count - 1));
+
+				if (mode == 2)
+				{
+					// Difference between produced energy and consumed.
+					powerValue = pHouse->PowerOutput - pHouse->Power_Drain();
+				}
+				else
+				{
+					if (mode == 1)
+					{
+						// Total power drain
+						powerValue = pHouse->Power_Drain();
+					}
+					else
+					{
+						// mode == 0. Total Energy produced, default case
+						powerValue = pHouse->PowerOutput;
+					}
+				}
+			}
+			break;
+
+		case -2:
+			// The Team's House
+			pHouse = pTeam->Owner;
+
+			if (mode == 2)
+			{
+				// Difference between produced energy and consumed.
+				powerValue = pHouse->PowerOutput - pHouse->Power_Drain();
+			}
+			else
+			{
+				if (mode == 1)
+				{
+					// Total power drain
+					powerValue = pHouse->Power_Drain();
+				}
+				else
+				{
+					// mode == 0. Total Energy produced, default case
+					powerValue = pHouse->PowerOutput;
+				}
+			}
+			break;
+
+		case -3:
+			// The House with major energy
+			if (pHousesList.Count > 0)
+			{
+				for (auto pItem : pHousesList)
+				{
+					int tempPowerValue = -100000000;
+
+					if (mode == 2)
+					{
+						// Difference between produced energy and consumed.
+						tempPowerValue = pHouse->PowerOutput - pHouse->Power_Drain();
+					}
+					else
+					{
+						if (mode == 1)
+						{
+							// Total power drain
+							tempPowerValue = pHouse->Power_Drain();
+						}
+						else
+						{
+							// mode == 0. Total Energy produced, default case
+							tempPowerValue = pHouse->PowerOutput;
+						}
+					}
+
+					if (tempPowerValue > powerValue || powerValue == -100000000)
+					{
+						powerValue = tempPowerValue;
+						pTempHouse = pItem;
+					}
+
+
+					if (pTempHouse)
+						pHouse = pTempHouse;
+				}
+			}
+			break;
+
+		case -4:
+			// The House with minor energy
+			if (pHousesList.Count > 0)
+			{
+				for (auto pItem : pHousesList)
+				{
+					int tempPowerValue = -1;
+
+					if (mode == 2)
+					{
+						// Difference between produced energy and consumed.
+						tempPowerValue = pHouse->PowerOutput - pHouse->Power_Drain();
+					}
+					else
+					{
+						if (mode == 1)
+						{
+							// Total power drain
+							tempPowerValue = pHouse->Power_Drain();
+						}
+						else
+						{
+							// mode == 0. Total Energy produced, default case
+							tempPowerValue = pHouse->PowerOutput;
+						}
+					}
+
+					if (tempPowerValue < powerValue || powerValue == -1)
+					{
+						powerValue = tempPowerValue;
+						pTempHouse = pItem;
+					}
+
+					if (pTempHouse)
+						pHouse = pTempHouse;
+				}
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	//- House Economy (value comparator accepted: 0:<,1:<=,2:==,3:>=,4:>,5:!=).
+	pTeamData->ConditionalJumpEvaluation = false;
+
+	// We have selected the house, now check
+	if (powerValue != -100000000)
+	{
+		// Comparators are like in [AITriggerTypes] from aimd.ini
+		switch (pTeamData->ConditionalComparatorType)
+		{
+		case 0:
+			// <
+			if (powerValue < pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		case 1:
+			// <=
+			if (powerValue <= pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		case 2:
+			// ==
+			if (powerValue = pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		case 3:
+			// >=
+			if (powerValue >= pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		case 4:
+			// >
+			if (powerValue > pTeamData->ConditionalComparatorValue)
+				pTeamData->ConditionalJumpEvaluation = true;
+			break;
+		case 5:
+			// !=
+			if (powerValue != pTeamData->ConditionalComparatorValue)
 				pTeamData->ConditionalJumpEvaluation = true;
 			break;
 		default:
