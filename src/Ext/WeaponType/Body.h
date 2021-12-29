@@ -1,4 +1,5 @@
 #pragma once
+#include <BulletClass.h>
 #include <WeaponTypeClass.h>
 
 #include <Helpers/Macro.h>
@@ -31,19 +32,19 @@ public:
 		Valueable<AreaFireTarget> AreaFire_Target;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
-			, DiskLaser_Radius(38.2)
-			, DiskLaser_Circumference(240)
-			, RadType()
-			, Rad_NoOwner(false)
-			, Bolt_Disable1(false)
-			, Bolt_Disable2(false)
-			, Bolt_Disable3(false)
-			, Strafing_Shots(5)
-			, Strafing_SimulateBurst(false)
-			, CanTarget(AffectedTarget::All)
-			, CanTargetHouses(AffectedHouse::All)
-			, Burst_Delays()
-			, AreaFire_Target(AreaFireTarget::Base)
+			, DiskLaser_Radius { 38.2 }
+			, DiskLaser_Circumference { 240 }
+			, RadType {}
+			, Rad_NoOwner { false }
+			, Bolt_Disable1 { false }
+			, Bolt_Disable2 { false }
+			, Bolt_Disable3 { false }
+			, Strafing_Shots { 5 }
+			, Strafing_SimulateBurst { false }
+			, CanTarget { AffectedTarget::All }
+			, CanTargetHouses { AffectedHouse::All }
+			, Burst_Delays {}
+			, AreaFire_Target { AreaFireTarget::Base }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -75,4 +76,7 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static int nOldCircumference;
+
+	static void DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pSource = nullptr);
+	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pSource = nullptr);
 };

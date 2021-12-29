@@ -14,14 +14,14 @@ public:
 	Valueable<bool> IgnoreVertical;
 	Valueable<bool> IsIntense;
 
-	LaserTrailTypeClass(const char* pTitle = NONE_STR) : Enumerable<LaserTrailTypeClass>(pTitle),
-		IsHouseColor(false),
-		Color({ 255, 0, 0 }),
-		FadeDuration(64),
-		Thickness(4),
-		SegmentLength(128),
-		IgnoreVertical(false),
-		IsIntense(false)
+	LaserTrailTypeClass(const char* pTitle = NONE_STR) : Enumerable<LaserTrailTypeClass>(pTitle)
+		, IsHouseColor(false)
+		, Color({ 255, 0, 0 })
+		, FadeDuration(64)
+		, Thickness(4)
+		, SegmentLength(128)
+		, IgnoreVertical(false)
+		, IsIntense(false)
 	{ }
 
 	virtual ~LaserTrailTypeClass() override = default;

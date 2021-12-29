@@ -12,6 +12,7 @@
 #include <Ext/Script/Body.h>
 #include <Ext/Team/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -291,6 +292,19 @@ void TechnoExt::InitializeLaserTrails(TechnoClass* pThis)
 	}
 }
 
+void TechnoExt::InitializeShield(TechnoClass* pThis)
+{
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		pExt->CurrentShieldType = pTypeExt->ShieldType;
+}
+
+void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType)
+{
+	WeaponTypeExt::DetonateAt(pWeaponType, pThis, pThis);
+}
+
 // reversed from 6F3D60
 CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
 {
@@ -465,6 +479,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)
 		.Process(this->PassengerDeletionTimer)
+		.Process(this->CurrentShieldType)
 		.Process(this->LastKillWasTeamTarget)
 		;
 }
