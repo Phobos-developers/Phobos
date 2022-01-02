@@ -143,6 +143,28 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 112:
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
 		break;
+	case 124:
+		// Stop Timed Jump
+		ScriptExt::Stop_ForceJump_Countdown(pTeam);
+		break;
+	case 125:
+		// Start Timed Jump that jumps to the next line when the countdown finish (in frames)
+		ScriptExt::Set_ForceJump_Countdown(pTeam, false, -1);
+		break;
+	case 126:
+		// Start Timed Jump that jumps to the same line when the countdown finish (in frames)
+		ScriptExt::Set_ForceJump_Countdown(pTeam, true, -1);
+		break;
+
+	default:
+		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
+		if (action > 70 && !(action >= PhobosScripts::LocalVariableAdd && action <= PhobosScripts::GlobalVariableAndByGlobal))
+		{
+			// Unknown new action. This action finished
+			pTeam->StepCompleted = true;
+			Debug::Log("[%s] [%s] (line %d): Unknown Script Action: %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action);
+		}
+		break;
 	}
 
 	if (action >= PhobosScripts::LocalVariableAdd && action <= PhobosScripts::GlobalVariableAndByGlobal)
@@ -2519,4 +2541,60 @@ void ScriptExt::VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, 
 		VariableOperationHandler<IsGlobal, _Pr>(pTeam, nVariable, itr->second.Value);
 
 	pTeam->StepCompleted = true;
+}
+
+void ScriptExt::Set_ForceJump_Countdown(TeamClass *pTeam, bool repeatLine = false, int count = 0)
+{
+	if (!pTeam)
+		return;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+		return;
+
+	if (count <= 0)
+		count = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	if (count > 0)
+	{
+		pTeamData->ForceJump_InitialCountdown = count;
+		pTeamData->ForceJump_Countdown.Start(count);
+		pTeamData->ForceJump_RepeatMode = repeatLine;
+	}
+	else
+	{
+		pTeamData->ForceJump_InitialCountdown = -1;
+		pTeamData->ForceJump_Countdown.Stop();
+		pTeamData->ForceJump_Countdown = -1;
+		pTeamData->ForceJump_RepeatMode = false;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+	Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d) Set Timed Jump -> (Countdown: %d, repeat action: %d)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument, count, repeatLine);
+}
+
+void ScriptExt::Stop_ForceJump_Countdown(TeamClass *pTeam)
+{
+	if (!pTeam)
+		return;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+		return;
+
+	pTeamData->ForceJump_InitialCountdown = -1;
+	pTeamData->ForceJump_Countdown.Stop();
+	pTeamData->ForceJump_Countdown = -1;
+	pTeamData->ForceJump_RepeatMode = false;
+
+	auto pScript = pTeam->CurrentScript;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+	Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d): Stopped Timed Jump\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+
+	return;
 }

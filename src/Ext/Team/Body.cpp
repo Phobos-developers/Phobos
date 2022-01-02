@@ -15,6 +15,9 @@ void TeamExt::ExtData::Serialize(T& Stm)
 		.Process(this->IdxSelectedObjectFromAIList)
 		.Process(this->CloseEnough)
 		.Process(this->Countdown_RegroupAtLeader)
+		.Process(this->ForceJump_Countdown)
+		.Process(this->ForceJump_InitialCountdown)
+		.Process(this->ForceJump_RepeatMode)
 		;
 }
 

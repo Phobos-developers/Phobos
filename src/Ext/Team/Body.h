@@ -20,6 +20,9 @@ public:
 		int IdxSelectedObjectFromAIList;
 		double CloseEnough;
 		int Countdown_RegroupAtLeader;
+		TimerStruct ForceJump_Countdown;
+		int ForceJump_InitialCountdown;
+		bool ForceJump_RepeatMode;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject)
 			, WaitNoTargetAttempts { 0 }
@@ -27,6 +30,9 @@ public:
 			, IdxSelectedObjectFromAIList { -1 }
 			, CloseEnough { -1 }
 			, Countdown_RegroupAtLeader { -1 }
+			, ForceJump_Countdown { -1 }
+			, ForceJump_InitialCountdown { -1 }
+			, ForceJump_RepeatMode { false }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -142,6 +142,8 @@ public:
 	static void UnregisterGreatSuccess(TeamClass * pTeam);
 
 	static void Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
+	static void Set_ForceJump_Countdown(TeamClass *pTeam, bool repeatLine, int count);
+	static void Stop_ForceJump_Countdown(TeamClass *pTeam);
 
 	static void VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg);
 	template<bool IsGlobal, class _Pr>
