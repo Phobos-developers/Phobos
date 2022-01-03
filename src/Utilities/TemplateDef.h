@@ -52,28 +52,28 @@
 
 namespace Templated
 {
-	template <typename Ta>
-	void ParseVectorWithBaseSize(DynamicVectorClass<Ta>& nVec, int nBaseSize, INI_EX& nParser, const char* pSection, const char* pBaseFlag, Ta nDefaultVal, bool bParseDebug = false)
+	template <typename T>
+	void ParseVectorWithBaseSize(DynamicVectorClass<T>& result, int baseSize, INI_EX& iniParser, const char* pSection, const char* pBaseFlag, T defaultValue, bool debug = false)
 	{
-		nVec.Clear();
-		nVec.Reserve(nBaseSize);
+		result.Clear();
+		result.Reserve(baseSize);
 
-		for (int i = nVec.Count; i < nBaseSize; ++i)
-			nVec[i] = nDefaultVal;
+		for (int i = result.Count; i < baseSize; ++i)
+			result[i] = defaultValue;
 
-		nVec.Count = nBaseSize;
+		result.Count = baseSize;
 
-		for (int i = 0; i < nBaseSize; ++i)
+		for (int i = 0; i < baseSize; ++i)
 		{
-			Valueable<Ta> nBuffer;
-			std::string nFlag(pBaseFlag + std::to_string(i));
-			nFlag.shrink_to_fit();
+			Valueable<T> buffer;
+			std::string flag(pBaseFlag + std::to_string(i));
+			flag.shrink_to_fit();
 
-			if (bParseDebug)
-				Debug::Log("ParseVectorWithBaseSize for [%s]=%s idx[%d] \n", pSection, nFlag.c_str(), i);
+			if (debug)
+				Debug::Log("ParseVectorWithBaseSize for [%s]=%s idx[%d] \n", pSection, flag.c_str(), i);
 
-			nBuffer.Read(nParser, pSection, nFlag.c_str());
-			nVec[i] = nBuffer.Get();
+			buffer.Read(iniParser, pSection, flag.c_str());
+			result[i] = buffer.Get();
 		}
 	}
 };
