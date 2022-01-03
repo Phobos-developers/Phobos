@@ -246,3 +246,15 @@ In `rulesmd.ini`:
 Gravity=6.0             ; double
 Gravity.HeightFix=false ; boolean
 ```
+
+## Warheads
+
+### Customizing decloak on damaging targets
+
+- You can now specify whether or not the warhead decloaks objects that are damaged by the warhead.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]               ; WarheadType
+DecloakDamagedTargets=true  ; boolean
+```
