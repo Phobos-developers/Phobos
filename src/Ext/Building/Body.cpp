@@ -12,9 +12,7 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 
 	auto BuildingExt = BuildingExt::ExtMap.Find(pThis);
 	if (!BuildingExt)
-	{
 		return;
-	}
 
 	AircraftTypeClass* pAircraft = AircraftTypeClass::Array->GetItem(pOwner->ProducingAircraftTypeIndex);
 	FactoryClass* currFactory = pOwner->GetFactoryProducing(pAircraft);
@@ -109,9 +107,7 @@ int BuildingExt::CountOccupiedDocks(BuildingClass* pBuilding)
 	for (auto i = 0; i < pBuilding->RadioLinks.Capacity; ++i)
 	{
 		if (auto const pLink = pBuilding->GetNthLink(i))
-		{
 			nOccupiedDocks++;
-		}
 	}
 
 	return nOccupiedDocks;
