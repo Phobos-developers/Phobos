@@ -55,7 +55,7 @@ class Extension
 	InitState Initialized;
 
 public:
-	static const DWORD Canary;
+	static inline const DWORD Canary;
 
 	Extension(T* const OwnerObject) : 
 		AttachedToObject(OwnerObject),
@@ -137,6 +137,10 @@ protected:
 
 	// load any ini file: rules, game mode, scenario or map
 	virtual void LoadFromINIFile(CCINIClass* pINI) { }
+
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 };
 
 // a non-virtual base class for a pointer to pointer map.
