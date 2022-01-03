@@ -25,7 +25,7 @@ DEFINE_HOOK(0x44043D, BuildingClass_AI_Temporaled_Chronosparkle_MuzzleFix, 0x8)
 	{
 		GET(int, nFiringIndex, EBX);
 		auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
-		R->EAX(&pTypeExt->PhobosMuzzleFlash[nFiringIndex]);
+		R->EAX(&pTypeExt->OccupierMuzzleFlashes[nFiringIndex]);
 	}
 
 	return 0;
@@ -39,7 +39,7 @@ DEFINE_HOOK(0x45387A, BuildingClass_FireOffset_Replace_MuzzleFix, 0xA)
 	if (pType->MaxNumberOccupants > 10)
 	{
 		auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
-		R->EDX(&pTypeExt->PhobosMuzzleFlash[pThis->FiringOccupantIndex]);
+		R->EDX(&pTypeExt->OccupierMuzzleFlashes[pThis->FiringOccupantIndex]);
 	}
 
 	return 0;
@@ -54,7 +54,7 @@ DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 	{
 		GET(int, nFiringIndex, EDI);
 		auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
-		R->ECX(&pTypeExt->PhobosMuzzleFlash[nFiringIndex]);
+		R->ECX(&pTypeExt->OccupierMuzzleFlashes[nFiringIndex]);
 	}
 
 	return 0;

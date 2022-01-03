@@ -118,7 +118,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	if (pThis->MaxNumberOccupants > 10)
-		Templated::ParseVectorWithBaseSize(this->PhobosMuzzleFlash, pThis->MaxNumberOccupants, exArtINI, pSection, "MuzzleFlash", Point2D::Empty,true);
+		Templated::ParseVectorWithBaseSize(this->OccupierMuzzleFlashes, pThis->MaxNumberOccupants, exArtINI, pSection, "MuzzleFlash", Point2D::Empty,true);
 
 }
 
@@ -138,7 +138,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PowerPlantEnhancer_Amount)
 		.Process(this->PowerPlantEnhancer_Factor)
 		.Process(this->SuperWeapons)
-		.Process(this->PhobosMuzzleFlash)
+		.Process(this->OccupierMuzzleFlashes)
 		;
 }
 
