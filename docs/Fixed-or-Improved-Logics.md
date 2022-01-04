@@ -28,6 +28,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed building and defense tab hotkeys not enabling the placement mode after `Cannot build here.` triggered and the placement mode cancelled.
 - Fixed buildings with `UndeployInto` playing `EVA_NewRallypointEstablished` on undeploying.
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water.
+- Infantry with `DeployFireWeapon=-1` can now fire both weapons (decided by its target), regardless of deployed or not.
 
 ![image](_static/images/remember-target-after-deploying-01.gif)  
 *Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
@@ -42,6 +43,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `IsSimpleDeployer` units now only play `DeploySound` and `UndeploySound` once, when done with (un)deploying instead of repeating it over duration of turning and/or `DeployingAnim`.
 - AITrigger can now recognize Building Upgrades as legal condition.
 - `EWGates` and `NSGates` now will link walls like `xxGateOne` and `xxGateTwo` do.
+- Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
 
 ## Animations
 
@@ -245,4 +247,16 @@ In `rulesmd.ini`:
 [SOMEPROJECTILE]        ; Projectile
 Gravity=6.0             ; double
 Gravity.HeightFix=false ; boolean
+```
+
+## Warheads
+
+### Customizing decloak on damaging targets
+
+- You can now specify whether or not the warhead decloaks objects that are damaged by the warhead.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]               ; WarheadType
+DecloakDamagedTargets=true  ; boolean
 ```

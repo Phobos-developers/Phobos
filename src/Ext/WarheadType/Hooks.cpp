@@ -61,12 +61,12 @@ DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 }
 #pragma endregion
 
-DEFINE_HOOK(0x48A512, WarheadTypeClass_AnimList_SplashList, 0x6)
+DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-	if (pWHExt && pThis->Conventional && pWHExt->SplashList.size())
+	if (pWHExt && pWHExt->SplashList.size())
 	{
 		GET(int, nDamage, ECX);
 		int idx = pWHExt->SplashList_PickRandom ?

@@ -44,23 +44,20 @@ public:
 	static bool Execute(TActionClass* pThis, HouseClass* pHouse,
 			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location, bool& bHandled);
 
-	static bool PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse,
-			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
+#pragma push_macro("ACTION_FUNC")
+#define ACTION_FUNC(name) \
+	static bool name(TActionClass* pThis, HouseClass* pHouse, \
+		ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 
-	static bool SaveGame(TActionClass* pThis, HouseClass* pHouse,
-			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
+	ACTION_FUNC(PlayAudioAtRandomWP);
+	ACTION_FUNC(SaveGame);
+	ACTION_FUNC(EditVariable);
+	ACTION_FUNC(GenerateRandomNumber);
+	ACTION_FUNC(PrintVariableValue);
+	ACTION_FUNC(BinaryOperation);
 
-	static bool EditVariable(TActionClass* pThis, HouseClass* pHouse,
-			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
-
-	static bool GenerateRandomNumber(TActionClass* pThis, HouseClass* pHouse,
-			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
-
-	static bool PrintVariableValue(TActionClass* pThis, HouseClass* pHouse,
-			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
-
-	static bool BinaryOperation(TActionClass* pThis, HouseClass* pHouse,
-			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location);
+#undef ACTION_FUNC
+#pragma pop_macro("ACTION_FUNC")
 
 	class ExtContainer final : public Container<TActionExt>
 	{

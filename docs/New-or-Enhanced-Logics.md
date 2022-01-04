@@ -37,7 +37,8 @@ HitAnim=                             ; animation
 BreakWeapon=                         ; WeaponType
 AbsorbPercent=1.0                    ; double, percents
 PassPercent=0.0                      ; double, percents
-                                     
+AllowTransfer=                       ; boolean
+
 [SOMETECHNO]                         ; TechnoType
 ShieldType=SOMESHIELDTYPE            ; ShieldType; none by default
                                      
@@ -85,6 +86,7 @@ Shield.InheritStateOnReplace=false   ; boolean
 - `BreakWeapon`, if set, will be fired at the TechnoType once the shield breaks.
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
+- `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
 - A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable.
   - Buildings now use the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame by default.
   - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. `Pips.Shield.Building` is used for BuildingTypes.

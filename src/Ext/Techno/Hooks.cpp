@@ -153,6 +153,16 @@ DEFINE_HOOK(0x518505, InfantryClass_TakeDamage_NotHuman, 0x4)
 	return 0x518515;
 }
 
+DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
+{
+    GET(TechnoTypeClass*, pType, ECX);
+
+    if (pType->DeployFireWeapon == -1)
+        return 0x52194E;
+
+    return 0;
+}
+
 // Customizable OpenTopped Properties
 // Author: Otamaa
 
@@ -283,4 +293,18 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFS(0xC4, -0xC));
+
+	if (auto pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
+	{
+		if (pExt->DecloakDamagedTargets)
+			pThis->Uncloak(false);
+	}
+
+	return 0x702823;
 }
