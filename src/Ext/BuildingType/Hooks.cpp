@@ -4,16 +4,17 @@
 
 DEFINE_HOOK(0x460285, BuildingTypeClass_LoadFromINI_Muzzle, 0x6)
 {
+	enum { Skip = 0x460388, Read = 0x460299 };
+
 	GET(BuildingTypeClass*, pThis, EBP);
 
+	// Restore overriden instructions
 	R->Stack(STACK_OFFS(0x368, 0x358), 0);
 	R->EDX(0);
 
-	auto nCount = pThis->MaxNumberOccupants;
-
-	//manipulate this so it can disable itself use phobos one instead
-	nCount = Math::clamp(nCount, 0, 11);
-	return !nCount || nCount == 11 ? 0x460388 : 0x460299;
+	// Disable Vanilla Muzzle flash when MaxNumberOccupants is 0 or more than 10
+	return !pThis->MaxNumberOccupants || pThis->MaxNumberOccupants > 10
+		? Skip : Read;
 }
 
 DEFINE_HOOK(0x44043D, BuildingClass_AI_Temporaled_Chronosparkle_MuzzleFix, 0x8)
