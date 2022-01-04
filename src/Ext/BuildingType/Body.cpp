@@ -75,11 +75,14 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
+	const char* pArtSection = pThis->ImageFile;
+	auto pArtINI = &CCINIClass::INI_Art();
 
 	if (!pINI->GetSection(pSection))
 		return;
 
 	INI_EX exINI(pINI);
+	INI_EX exArtINI(pArtINI);
 
 	this->PowersUp_Owner.Read(exINI, pSection, "PowersUp.Owner");
 	this->PowersUp_Buildings.Read(exINI, pSection, "PowersUp.Buildings");
@@ -113,6 +116,22 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			}
 		}
 	}
+
+	if (pThis->MaxNumberOccupants > 10)
+	{
+		char tempBuffer[32];
+		this->OccupierMuzzleFlashes.Clear();
+		this->OccupierMuzzleFlashes.Reserve(pThis->MaxNumberOccupants);
+
+		for (int i = 0; i < pThis->MaxNumberOccupants; ++i)
+		{
+			Nullable<Point2D> nMuzzleLocation;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "MuzzleFlash%d", i);
+			nMuzzleLocation.Read(exArtINI, pArtSection, tempBuffer);
+			this->OccupierMuzzleFlashes[i] = nMuzzleLocation.Get(Point2D::Empty);
+		}
+	}
+
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -131,6 +150,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PowerPlantEnhancer_Amount)
 		.Process(this->PowerPlantEnhancer_Factor)
 		.Process(this->SuperWeapons)
+		.Process(this->OccupierMuzzleFlashes)
 		;
 }
 
