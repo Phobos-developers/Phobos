@@ -112,7 +112,13 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI_Shield, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
+	// Set current shield type if it is not set.
+	if (!pExt->CurrentShieldType->Strength && pTypeExt->ShieldType->Strength)
+		pExt->CurrentShieldType = pTypeExt->ShieldType;
+
+	// Create shield class instance if it does not exist.
 	if (pExt->CurrentShieldType && pExt->CurrentShieldType->Strength && !pExt->Shield)
 		pExt->Shield = std::make_unique<ShieldClass>(pThis);
 

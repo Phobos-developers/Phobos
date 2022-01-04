@@ -29,6 +29,7 @@ public:
 	Valueable<double> AbsorbPercent;
 	Valueable<double> PassPercent;
 
+	Nullable<bool> AllowTransfer;
 private:
 	Valueable<double> Respawn_Rate__InMinutes;
 	Valueable<double> SelfHealing_Rate__InMinutes;
@@ -55,6 +56,7 @@ public:
 		, PassPercent(0.0)
 		, Respawn_Rate__InMinutes(0.0)
 		, SelfHealing_Rate__InMinutes(0.0)
+		, AllowTransfer()
 	{};
 
 	virtual ~ShieldTypeClass() override = default;

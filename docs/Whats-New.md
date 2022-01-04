@@ -255,6 +255,8 @@ New:
 - IsSimpleDeployer deploy direction & animation customizations (by Starkku)
 - Customizable projectile gravity (by secsome)
 - Gates can now link with walls correctly via `NSGates` or `EWGates` (by Uranusian)
+- Per-warhead toggle for decloak of damaged targets (by Starkku)
+- `DeployFireWeapon=-1` now allows the deployed infantries using both weapons as undeployed (by Uranusian)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -265,6 +267,7 @@ Vanilla fixes:
 - Fixed the bug when retinting map lighting with a map action corrupted light sources (by secsome)
 - Fixed the bug that AITriggerTypes do not recognize building upgrades (by Uranusian)
 - Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` > `AllowParallelAIQueues=no` is set (by FS-21)
+- Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10 (by Otamaa)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
