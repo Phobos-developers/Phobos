@@ -24,13 +24,13 @@ public:
 
 		DynamicVectorClass<Point2D> OccupierMuzzleFlashes;
 
-		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject),
-			PowersUp_Owner(AffectedHouse::Owner),
-			PowersUp_Buildings(),
-			PowerPlantEnhancer_Buildings(),
-			PowerPlantEnhancer_Amount(),
-			PowerPlantEnhancer_Factor(),
-			OccupierMuzzleFlashes()
+		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
+			, PowersUp_Owner { AffectedHouse::Owner }
+			, PowersUp_Buildings {}
+			, PowerPlantEnhancer_Buildings {}
+			, PowerPlantEnhancer_Amount {}
+			, PowerPlantEnhancer_Factor {}
+			, OccupierMuzzleFlashes()
 		{ }
 
 		virtual ~ExtData() = default;

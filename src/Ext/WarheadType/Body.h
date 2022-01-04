@@ -23,6 +23,7 @@ public:
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
 		Valueable<bool> AnimList_PickRandom;
+		Valueable<bool> DecloakDamagedTargets;
 
 		Valueable<int> Crit_ExtraDamage;
 		Valueable<double> Crit_Chance;
@@ -54,7 +55,7 @@ public:
 		Valueable<int> Shield_Respawn_Rate;
 		Valueable<bool> Shield_Respawn_ResetTimer;
 		Valueable<int> Shield_SelfHealing_Duration;
-		Valueable<double> Shield_SelfHealing_Amount;
+		Nullable<double> Shield_SelfHealing_Amount;
 		Valueable<int> Shield_SelfHealing_Rate;
 		Valueable<bool> Shield_SelfHealing_ResetTimer;
 
@@ -71,52 +72,53 @@ public:
 
 	public:
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject)
-			, SpySat(false)
-			, BigGap(false)
-			, TransactMoney(0)
-			, SplashList()
-			, SplashList_PickRandom(false)
-			, RemoveDisguise(false)
-			, RemoveMindControl(false)
-			, AnimList_PickRandom(false)
+			, SpySat { false }
+			, BigGap { false }
+			, TransactMoney { 0 }
+			, SplashList {}
+			, SplashList_PickRandom { false }
+			, RemoveDisguise { false }
+			, RemoveMindControl { false }
+			, AnimList_PickRandom { false }
+			, DecloakDamagedTargets { true }
 
-			, Crit_Chance(0.0)
-			, Crit_ExtraDamage(0)
-			, Crit_Affects(AffectedTarget::All)
-			, Crit_AnimList()
-			, RandomBuffer(0.0)
+			, Crit_Chance { 0.0 }
+			, Crit_ExtraDamage { 0 }
+			, Crit_Affects { AffectedTarget::All }
+			, Crit_AnimList {}
+			, RandomBuffer { 0.0 }
 
-			, MindControl_Anim()
+			, MindControl_Anim {}
 
-			, AffectsEnemies(true)
-			, AffectsOwner()
+			, AffectsEnemies { true }
+			, AffectsOwner {}
 
-			, Shield_Penetrate(false)
-			, Shield_Break(false)
-			, Shield_BreakAnim()
-			, Shield_HitAnim()
-			, Shield_BreakWeapon()
-			, Shield_AbsorbPercent()
-			, Shield_PassPercent()
+			, Shield_Penetrate { false }
+			, Shield_Break { false }
+			, Shield_BreakAnim {}
+			, Shield_HitAnim {}
+			, Shield_BreakWeapon {}
+			, Shield_AbsorbPercent {}
+			, Shield_PassPercent {}
 
-			, Shield_Respawn_Duration(0)
-			, Shield_Respawn_Amount(0.0)
-			, Shield_Respawn_Rate(-1)
-			, Shield_Respawn_Rate_InMinutes(-1.0)
-			, Shield_Respawn_ResetTimer(false)
-			, Shield_SelfHealing_Duration(0)
-			, Shield_SelfHealing_Amount(0.0)
-			, Shield_SelfHealing_Rate(-1)
-			, Shield_SelfHealing_Rate_InMinutes(-1.0)
-			, Shield_SelfHealing_ResetTimer(false)
-			, Shield_AttachTypes()
-			, Shield_RemoveTypes()
-			, Shield_ReplaceOnly(false)
-			, Shield_ReplaceNonRespawning(false)
-			, Shield_InheritStateOnReplace(false)
-			, Shield_AffectTypes()
+			, Shield_Respawn_Duration { 0 }
+			, Shield_Respawn_Amount { 0.0 }
+			, Shield_Respawn_Rate { -1 }
+			, Shield_Respawn_Rate_InMinutes { -1.0 }
+			, Shield_Respawn_ResetTimer { false }
+			, Shield_SelfHealing_Duration { 0 }
+			, Shield_SelfHealing_Amount { }
+			, Shield_SelfHealing_Rate { -1 }
+			, Shield_SelfHealing_Rate_InMinutes { -1.0 }
+			, Shield_SelfHealing_ResetTimer { false }
+			, Shield_AttachTypes {}
+			, Shield_RemoveTypes {}
+			, Shield_ReplaceOnly { false }
+			, Shield_ReplaceNonRespawning { false }
+			, Shield_InheritStateOnReplace { false }
+			, Shield_AffectTypes {}
 
-			, NotHuman_DeathSequence(-1)
+			, NotHuman_DeathSequence { -1 }
 		{ }
 
 	private:

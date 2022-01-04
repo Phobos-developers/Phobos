@@ -165,7 +165,6 @@
     <ClInclude Include="src\Utilities\Patch.h" />
     <ClInclude Include="src\Utilities\Template.h" />
     <ClInclude Include="src\Utilities\TemplateDef.h" />
-    <ClInclude Include="YRpp\EvadeClass.h" />
     <ClInclude Include="YRpp\GameTextManager.h" />
   </ItemGroup>
   <ItemGroup>

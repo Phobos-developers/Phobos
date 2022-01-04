@@ -35,9 +35,9 @@ Building
 0. Install **Visual Studio** (2019 is recommended, 2017 is minimum) with the dependencies listed in `.vswhere` (it will prompt you to install missing dependences when you open the project, or you can run VS installer and import the config). If you prefer to use **Visual Studio Code** you may install **VS Build Tools** with the stuff from `.vswhere` instead. You can also don't use any code editor or IDE and build via **command line scripts** included with the project.
 1. Clone this repo recursively via your favorite git client (that will also clone YRpp).
 2. To build the extension:
-  - in Visual Studio: open the solution file in VS and build it (`Debug` build config is recommended);
-  - in VSCode: open the project folder and hit `Run Build Task...` (`Ctrl + Shift + B`);
-  - barebones: run `scripts/build_debug.bat`.
+   - in Visual Studio: open the solution file in VS and build it (`Debug` build config is recommended);
+   - in VSCode: open the project folder and hit `Run Build Task...` (`Ctrl + Shift + B`);
+   - barebones: run `scripts/build_debug.bat`.
 3. Upon build completion the resulting `Phobos.dll` and `Phobos.pdb` would be placed in the subfolder identical to the name of the buildconfig executed.
 
 Documentation
@@ -64,8 +64,8 @@ Credits
 -------
 
 ### Developers
-- **Belonit (Gluk-v48)** - project author
-- **Kerbiter (Metadorius)** - project co-author, project manager, DevOps, technical writer ([Patreon](http://patreon.com/kerbiter))
+- **Belonit (Gluk-v48)** - project author (retired)
+- **Kerbiter (Metadorius)** - project co-author, current maintainer ([Patreon](http://patreon.com/kerbiter))
 - **Uranusian (Thrifinesma)** - developer, CN community ambassador ([Patreon](https://www.patreon.com/uranusian), [AliPay](http://tiebapic.baidu.com/forum/w%3D580/sign=4b04b953307f9e2f70351d002f31e962/b3f89909b3de9c823bd7f23a7b81800a18d84371.jpg))
 - **secsome (SEC-SOME)** - developer ([Patreon](https://www.patreon.com/secsome))
 - **Otamaa (Fahroni, BoredEXE)** - developer ([PayPal](https://paypal.me/GeneralOtama))
@@ -83,7 +83,7 @@ Credits
 - **SMxReaver** - help with docs, extensive and thorough testing
 - **4SG** - help with docs
 - **wiktorderelf** - overhauled Unicode font
-- **Uranusian (Thrifinesma)** - Mind Control enhancement, custom warhead splash list, harvesters counter, promoted spawns, shields, death after dead fix, customizeable missing cameo, cameo sorting priority, placement mode responding of tab hotkeys fix, producing progress, custom ore gathering anim, NoManualMove, weapon target house filtering, DeathWeapon fix, re-enable obsolete `JumpjetControls`, AITrigger Building Upgrades recognition, overhauled Unicode font, docs maintenance, CN docs translation
+- **Uranusian (Thrifinesma)** - Mind Control enhancement, custom warhead splash list, harvesters counter, promoted spawns, shields, death after dead fix, customizeable missing cameo, cameo sorting priority, placement mode responding of tab hotkeys fix, producing progress, custom ore gathering anim, NoManualMove, weapon target house filtering, DeathWeapon fix, re-enable obsolete `JumpjetControls`, AITrigger Building Upgrades recognition, Wall-Gate links, overhauled Unicode font, docs maintenance, CN docs translation
 - **secsome (SEC-SOME)** - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields, AnimList.PickRandom, MoveToCell fix, unlimited waypoints, Build At trigger action buildup anim fix, Undeploy building into a unit plays `EVA_NewRallyPointEstablished` fix, custom ore gathering anim, TemporaryClass related crash, Retry dialog on mission failure, Default disguise for individual InfantryTypes, PowerPlant Enhancer, SaveGame Trigger Action, QuickSave command, Numeric variables, Custom gravity for projectiles, Retint map actions bugfix
 - **Otamaa (Fahroni, BoredEXE)** - help with CellSpread, ported and fixed custom RadType code, togglable ElectricBolt bolts, customizable Chrono Locomotor properties per TechnoClass, DebrisMaximums fixes, Anim-to-Unit, NotHuman anim sequences improvements, Customizable OpenTopped Properties, hooks for ScriptType Actions 92 & 93, ore stage threshold for `HideIfNoOre`, occupied building `MuzzleFlashX` bugfix
 - **E1 Elite** - TileSet 255 and above bridge repair fix
@@ -92,7 +92,7 @@ Credits
 - **ChrisLv_CN** - interceptor logic, LaserTrails, laser fixes, general assistance (work relicensed under [following permission](images/ChrisLv-relicense.png))
 - **Xkein** - general assistance, YRpp edits
 - **thomassneddon** - general assistance
-- **Starkku** - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements, stationary VehicleTypes, Burst logic improvements, TechnoType auto-firing weapons, Secondary weapon fallback customization, weapon target type filtering, AreaFire targeting customization, CreateUnit improvements, Attached animation & jumpjet unit layer customization, IsSimpleDeployer improvements, Shield modification warheads
+- **Starkku** - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements, stationary VehicleTypes, Burst logic improvements, TechnoType auto-firing weapons, Secondary weapon fallback customization, weapon target type filtering, AreaFire targeting customization, CreateUnit improvements, Attached animation & jumpjet unit layer customization, IsSimpleDeployer improvements, Shield modification warheads, Warhead decloaking toggle
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **Morton (MortonPL)** - XDrawOffset, Shield passthrough & absorption, building LimboDelivery, fix for Image in art rules
 - **mevitar** - honorary shield tester *triple* award

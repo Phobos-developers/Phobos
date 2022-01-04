@@ -48,6 +48,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
 	this->AnimList_PickRandom.Read(exINI, pSection, "AnimList.PickRandom");
+	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
 
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
@@ -63,10 +64,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
 
 	// Shields
-	if (RulesClass::Instance->C4Warhead == pThis)
-		this->Shield_Penetrate = true;
-	else
-		this->Shield_Penetrate.Read(exINI, pSection, "Shield.Penetrate");
+	this->Shield_Penetrate.Read(exINI, pSection, "Shield.Penetrate");
 	this->Shield_Break.Read(exINI, pSection, "Shield.Break");
 	this->Shield_BreakAnim.Read(exINI, pSection, "Shield.BreakAnim");
 	this->Shield_HitAnim.Read(exINI, pSection, "Shield.HitAnim");
@@ -108,6 +106,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RemoveMindControl)
 
 		.Process(this->AnimList_PickRandom)
+
+		.Process(this->DecloakDamagedTargets)
 
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ExtraDamage)

@@ -19,8 +19,8 @@ public:
 		Valueable<int> LimboID;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
-			, DeployedTechno(false)
-			, LimboID(-1)
+			, DeployedTechno { false }
+			, LimboID { -1 }
 
 		{ }
 
