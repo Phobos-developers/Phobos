@@ -50,34 +50,6 @@
 #include <VoxClass.h>
 #include <ArmorType.h>
 
-namespace Templated
-{
-	template <typename T>
-	void ParseVectorWithBaseSize(DynamicVectorClass<T>& result, int baseSize, INI_EX& iniParser, const char* pSection, const char* pBaseFlag, T defaultValue, bool debug = false)
-	{
-		result.Clear();
-		result.Reserve(baseSize);
-
-		for (int i = result.Count; i < baseSize; ++i)
-			result[i] = defaultValue;
-
-		result.Count = baseSize;
-
-		for (int i = 0; i < baseSize; ++i)
-		{
-			Valueable<T> buffer;
-			std::string flag(pBaseFlag + std::to_string(i));
-			flag.shrink_to_fit();
-
-			if (debug)
-				Debug::Log("ParseVectorWithBaseSize for [%s]=%s idx[%d] \n", pSection, flag.c_str(), i);
-
-			buffer.Read(iniParser, pSection, flag.c_str());
-			result[i] = buffer.Get();
-		}
-	}
-};
-
 namespace detail {
 	template <typename T>
 	inline bool read(T& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate = false) {

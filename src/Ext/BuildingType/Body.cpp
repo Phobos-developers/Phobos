@@ -75,7 +75,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-	//const char* pArtSection = pThis->ImageFile;
+	const char* pArtSection = pThis->ImageFile;
 	auto pArtINI = &CCINIClass::INI_Art();
 
 	if (!pINI->GetSection(pSection))
@@ -118,7 +118,19 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	if (pThis->MaxNumberOccupants > 10)
-		Templated::ParseVectorWithBaseSize(this->OccupierMuzzleFlashes, pThis->MaxNumberOccupants, exArtINI, pSection, "MuzzleFlash", Point2D::Empty,true);
+	{
+		char tempBuffer[32];
+		this->OccupierMuzzleFlashes.Clear();
+		this->OccupierMuzzleFlashes.Reserve(pThis->MaxNumberOccupants);
+
+		for (int i = 0; i < pThis->MaxNumberOccupants; ++i)
+		{
+			Nullable<Point2D> nMuzzleLocation;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "MuzzleFlash%d", i);
+			nMuzzleLocation.Read(exArtINI, pArtSection, tempBuffer);
+			this->OccupierMuzzleFlashes[i] = nMuzzleLocation.Get(Point2D::Empty);
+		}
+	}
 
 }
 
