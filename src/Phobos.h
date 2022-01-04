@@ -70,5 +70,6 @@ public:
 		static bool ShowPlacementPreview;
 		static bool RealTimeTimers;
 		static bool RealTimeTimers_Adaptive;
+		static int CampaignDefaultGameSpeed;
 	};
 };

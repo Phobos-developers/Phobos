@@ -60,6 +60,7 @@ bool Phobos::Config::ArtImageSwap = false;
 bool Phobos::Config::ShowPlacementPreview = false;
 bool Phobos::Config::RealTimeTimers = false;
 bool Phobos::Config::RealTimeTimers_Adaptive = false;
+int Phobos::Config::CampaignDefaultGameSpeed = 2;
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
@@ -270,6 +271,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	CCINIClass* pINI_RULESMD = Phobos::OpenConfig(GameStrings::RULESMD_INI);
 
 	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool(GameStrings::General, "ArtImageSwap", false);
+	Phobos::Config::CampaignDefaultGameSpeed = pINI_RULESMD->ReadInteger(GameStrings::General, "CampaignDefaultGameSpped", 2);
 
 	if (pINI_RULESMD->ReadBool(GameStrings::General, "FixTransparencyBlitters", true))
 		BlittersFix::Apply();
