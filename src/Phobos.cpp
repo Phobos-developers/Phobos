@@ -41,6 +41,9 @@ const wchar_t* Phobos::UI::CostLabel = L"";
 const wchar_t* Phobos::UI::PowerLabel = L"";
 const wchar_t* Phobos::UI::TimeLabel = L"";
 const wchar_t* Phobos::UI::HarvesterLabel = L"";
+bool Phobos::UI::ShowPowerDelta = false;
+double Phobos::UI::PowerDelta_ConditionYellow = 0.75;
+double Phobos::UI::PowerDelta_ConditionRed = 1.0;
 
 bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::PrioritySelectionFiltering = true;
@@ -201,6 +204,15 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 		Phobos::UI::ShowProducingProgress =
 			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "ProducingProgress.Show", false);
+
+		Phobos::UI::ShowPowerDelta =
+			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "PowerDelta.Show", false);
+
+		Phobos::UI::PowerDelta_ConditionYellow =
+			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "PowerDelta.ConditionYellow", Phobos::UI::PowerDelta_ConditionYellow);
+
+		Phobos::UI::PowerDelta_ConditionRed =
+			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "PowerDelta.ConditionRed", Phobos::UI::PowerDelta_ConditionRed);
 	}
 
 	Phobos::CloseConfig(pINI_UIMD);
