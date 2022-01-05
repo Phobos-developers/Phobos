@@ -148,6 +148,16 @@ enum class PhobosAction {
 	Drive = 2
 };
 
+enum class TextAlign : int
+{
+	None = 0xFFF,
+	Left = 0x000,
+	Center = 0x100,
+	Right = 0x200,
+};
+
+MAKE_ENUM_FLAGS(TextAlign);
+
 class MouseCursorHotSpotX {
 public:
 	typedef MouseHotSpotX Value;
