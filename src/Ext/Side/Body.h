@@ -21,6 +21,10 @@ public:
 		Valueable<ColorStruct> Sidebar_HarvesterCounter_Yellow;
 		Valueable<ColorStruct> Sidebar_HarvesterCounter_Red;
 		Valueable<Point2D> Sidebar_ProducingProgress_Offset;
+		Valueable<Point2D> Sidebar_PowerDelta_Offset;
+		Valueable<ColorStruct> Sidebar_PowerDelta_Green;
+		Valueable<ColorStruct> Sidebar_PowerDelta_Yellow;
+		Valueable<ColorStruct> Sidebar_PowerDelta_Red;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
 			, ArrayIndex { -1 }
@@ -31,6 +35,10 @@ public:
 			, Sidebar_HarvesterCounter_Yellow { { 255,255,0 } }
 			, Sidebar_HarvesterCounter_Red { { 255,0,0 } }
 			, Sidebar_ProducingProgress_Offset { { 0,0 } }
+			, Sidebar_PowerDelta_Offset { { 0,0 } }
+			, Sidebar_PowerDelta_Green { { 0,255,0 } }
+			, Sidebar_PowerDelta_Yellow { { 255,255,0 } }
+			, Sidebar_PowerDelta_Red { { 255,0,0 } }
 		{ }
 
 		virtual ~ExtData() = default;
