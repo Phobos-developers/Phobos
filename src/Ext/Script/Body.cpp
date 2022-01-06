@@ -2541,44 +2541,6 @@ void ScriptExt::UnregisterGreatSuccess(TeamClass* pTeam)
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage = 0)
-{
-	// This team has no units! END
-	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
-		Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d -> (No team members alive)\n", 
-			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, 
-			pTeam->CurrentScript->idxCurrentLine + 1, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 1].Action, 
-			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 1].Argument);
-
-		return;
-	}
-
-	if (successPercentage < 0 || successPercentage > 100)
-		successPercentage = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
-
-	if (successPercentage < 0)
-		successPercentage = 0;
-
-	if (successPercentage > 100)
-		successPercentage = 100;
-
-	int percentage = ScenarioClass::Instance->Random.RandomRanged(1, 100);
-
-	if (percentage <= successPercentage)
-	{
-		Debug::Log("DEBUG: ScripType: [%s] [%s] (line: %d) Next script line skipped successfuly. Next line will be: %d = %d,%d\n", 
-			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->idxCurrentLine + 2, 
-			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 2].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 2].Argument);
-		pTeam->CurrentScript->idxCurrentLine++;
-	}
-
-	// This action finished
-	pTeam->StepCompleted = true;
-}
-
 void ScriptExt::SetMoveMissionEndMode(TeamClass* pTeam, int mode = 0)
 {
 	// This passive method replaces the CloseEnough value from rulesmd.ini by a custom one. Used by Mission_Move()
@@ -2715,6 +2677,45 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 	}
 	
 	return bForceNextAction;
+}
+
+
+void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage = 0)
+{
+	// This team has no units! END
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+		Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d -> (No team members alive)\n", 
+			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, 
+			pTeam->CurrentScript->idxCurrentLine + 1, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 1].Action, 
+			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 1].Argument);
+
+		return;
+	}
+
+	if (successPercentage < 0 || successPercentage > 100)
+		successPercentage = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	if (successPercentage < 0)
+		successPercentage = 0;
+
+	if (successPercentage > 100)
+		successPercentage = 100;
+
+	int percentage = ScenarioClass::Instance->Random.RandomRanged(1, 100);
+
+	if (percentage <= successPercentage)
+	{
+		Debug::Log("DEBUG: ScripType: [%s] [%s] (line: %d) Next script line skipped successfuly. Next line will be: %d = %d,%d\n", 
+			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->idxCurrentLine + 2, 
+			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 2].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 2].Argument);
+		pTeam->CurrentScript->idxCurrentLine++;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
 }
 
 void ScriptExt::VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg)
@@ -2953,4 +2954,3 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 
 	return pLeaderUnit;
 }
-
