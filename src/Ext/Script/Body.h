@@ -147,6 +147,7 @@ public:
 	static void Mission_Move_List1Random(TeamClass *pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem);
 	static void SetCloseEnoughDistance(TeamClass *pTeam, double distance);
 	static void SetMoveMissionEndMode(TeamClass* pTeam, int mode);
+	static void SkipNextAction(TeamClass* pTeam, int successPercentage);
 
 	static void VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg);
 	template<bool IsGlobal, class _Pr>

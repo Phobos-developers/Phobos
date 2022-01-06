@@ -193,6 +193,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case 112:
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
 		break;
+	case 113:
+		ScriptExt::SkipNextAction(pTeam, -1);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		if (action > 70 && !(action >= PhobosScripts::LocalVariableAdd && action <= PhobosScripts::GlobalVariableAndByGlobal))
@@ -2535,7 +2538,7 @@ void ScriptExt::SetCloseEnoughDistance(TeamClass *pTeam, double distance = -1)
 void ScriptExt::UnregisterGreatSuccess(TeamClass* pTeam)
 {
 	pTeam->AchievedGreatSuccess = false;
-	pTeam->StepCompleted = true; // This action finished - FS-21
+	pTeam->StepCompleted = true;
 }
 
 void ScriptExt::SetMoveMissionEndMode(TeamClass* pTeam, int mode = 0)
@@ -2674,6 +2677,45 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 	}
 	
 	return bForceNextAction;
+}
+
+
+void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage = 0)
+{
+	// This team has no units! END
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+		Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d -> (No team members alive)\n", 
+			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, 
+			pTeam->CurrentScript->idxCurrentLine + 1, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 1].Action, 
+			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 1].Argument);
+
+		return;
+	}
+
+	if (successPercentage < 0 || successPercentage > 100)
+		successPercentage = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+
+	if (successPercentage < 0)
+		successPercentage = 0;
+
+	if (successPercentage > 100)
+		successPercentage = 100;
+
+	int percentage = ScenarioClass::Instance->Random.RandomRanged(1, 100);
+
+	if (percentage <= successPercentage)
+	{
+		Debug::Log("DEBUG: ScripType: [%s] [%s] (line: %d) Next script line skipped successfuly. Next line will be: %d = %d,%d\n", 
+			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->idxCurrentLine + 2, 
+			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 2].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 2].Argument);
+		pTeam->CurrentScript->idxCurrentLine++;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
 }
 
 void ScriptExt::VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg)
