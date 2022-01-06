@@ -261,6 +261,7 @@ New:
 - Per-warhead toggle for decloak of damaged targets (by Starkku)
 - `DeployFireWeapon=-1` now allows the deployed infantries using both weapons as undeployed (by Uranusian)
 - Power delta (surplus) counter for sidebar (by Morton)
+- Added Production and Money to Dump Object Info command (by FS-21)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -274,6 +275,10 @@ Vanilla fixes:
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
+- Improved shield behavior for forced damage (by Uranusian)
+- Fixed SplashList animations playing when a unit is hit on a bridge over water (by Uranusian)
+- Fixed shielded objects not decloaking if shield takes damage (by Starkku)
+
 
 ### 0.2.2.2
 
