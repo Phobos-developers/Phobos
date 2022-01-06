@@ -36,13 +36,13 @@ public:
 		Valueable<bool> JumpjetAllowLayerDeviation;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
-			, Pips_Shield({ -1,-1,-1 })
-			, Pips_Shield_Buildings({ -1,-1,-1 })
-			, RadApplicationDelay_Building(0)
-			, MissingCameo("xxicon.shp")
-			, JumpjetCrash(5.0)
-			, JumpjetNoWobbles(false)
-			, JumpjetAllowLayerDeviation(true)
+			, Pips_Shield { { -1,-1,-1 } }
+			, Pips_Shield_Buildings { { -1,-1,-1 } }
+			, RadApplicationDelay_Building { 0 }
+			, MissingCameo { "xxicon.shp" }
+			, JumpjetCrash { 5.0 }
+			, JumpjetNoWobbles { false }
+			, JumpjetAllowLayerDeviation { true }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -80,8 +80,6 @@ public:
 	{
 		return Data.get();
 	}
-
-	static DynamicVectorClass<CameoDataStruct> TabCameos[4];
 
 	static void Clear()
 	{

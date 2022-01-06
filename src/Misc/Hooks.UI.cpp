@@ -78,6 +78,36 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 			TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12);
 	}
 
+	if (Phobos::UI::ShowPowerDelta)
+	{
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::Player->SideIndex));
+		wchar_t counter[0x20];
+		auto delta = HouseClass::Player->PowerOutput - HouseClass::Player->PowerDrain;
+
+		double percent = HouseClass::Player->PowerOutput != 0
+			? (double)HouseClass::Player->PowerDrain / (double)HouseClass::Player->PowerOutput : HouseClass::Player->PowerDrain != 0
+			? Phobos::UI::PowerDelta_ConditionRed : Phobos::UI::PowerDelta_ConditionYellow;
+
+		ColorStruct clrToolTip = percent < Phobos::UI::PowerDelta_ConditionYellow
+			? pSideExt->Sidebar_PowerDelta_Green : LESS_EQUAL(percent, Phobos::UI::PowerDelta_ConditionRed)
+			? pSideExt->Sidebar_PowerDelta_Yellow : pSideExt->Sidebar_PowerDelta_Red;
+
+		auto TextFlags = static_cast<TextPrintType>(static_cast<int>(TextPrintType::UseGradPal | TextPrintType::Metal12)
+				| static_cast<int>(pSideExt->Sidebar_PowerDelta_Align.Get()));
+
+		swprintf_s(counter, L"%ls%+d", Phobos::UI::PowerLabel, delta);
+
+		Point2D vPos = {
+			DSurface::Sidebar->GetWidth() / 2 - 70 + pSideExt->Sidebar_PowerDelta_Offset.Get().X,
+			2 + pSideExt->Sidebar_PowerDelta_Offset.Get().Y
+		};
+
+		RectangleStruct vRect = { 0, 0, 0, 0 };
+		DSurface::Sidebar->GetRect(&vRect);
+
+		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB2DWORD(clrToolTip), 0, TextFlags);
+	}
+
 	return 0;
 }
 

@@ -19,10 +19,10 @@ public:
 		bool DeathUnitHasTurret;
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
-			, DeathUnitFacing(0)
-			, DeathUnitTurretFacing()
-			, FromDeathUnit(false)
-			, DeathUnitHasTurret(false)
+			, DeathUnitFacing { 0 }
+			, DeathUnitTurretFacing {}
+			, FromDeathUnit { false }
+			, DeathUnitHasTurret { false }
 		{ }
 
 		virtual ~ExtData() = default;
