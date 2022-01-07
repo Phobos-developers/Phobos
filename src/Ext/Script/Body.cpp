@@ -921,7 +921,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				if (auto pUnitType = pUnit->GetTechnoType())
 				{
 					if (pUnit->IsAlive
-						&& !pUnit->Health > 0
+						&& pUnit->Health > 0
 						&& !pUnit->InLimbo
 						&& (pUnitType->WhatAmI() == AbstractType::AircraftType
 							&& abstract_cast<AircraftTypeClass*>(pUnitType)->AirportBound)
@@ -1112,7 +1112,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 
 		if (object != pTechno
 			&& object->IsAlive
-			&& !object->Health > 0
+			&& object->Health > 0
 			&& !object->InLimbo
 			&& !objectType->Immune
 			&& !object->Transporter
