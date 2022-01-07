@@ -86,7 +86,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 
 		double percent = HouseClass::Player->PowerOutput != 0
 			? (double)HouseClass::Player->PowerDrain / (double)HouseClass::Player->PowerOutput : HouseClass::Player->PowerDrain != 0
-			? Phobos::UI::PowerDelta_ConditionRed : Phobos::UI::PowerDelta_ConditionYellow;
+			? Phobos::UI::PowerDelta_ConditionRed*2.f : Phobos::UI::PowerDelta_ConditionYellow;
 
 		ColorStruct clrToolTip = percent < Phobos::UI::PowerDelta_ConditionYellow
 			? pSideExt->Sidebar_PowerDelta_Green : LESS_EQUAL(percent, Phobos::UI::PowerDelta_ConditionRed)
