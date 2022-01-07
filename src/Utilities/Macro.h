@@ -2,6 +2,8 @@
 #include <Helpers/Macro.h>
 #include <ASMMacros.h>
 
+#define GET_REGISTER_STATIC_TYPE(type, dst, reg) static type dst; _asm { mov dst, reg }
+
 // no more than 8 characters
 #define PATCH_SECTION_NAME ".patch"
 

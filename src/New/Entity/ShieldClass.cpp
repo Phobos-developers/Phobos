@@ -30,7 +30,7 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTech
 {
 	this->UpdateType();
 	SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
-	strcpy(this->TechnoID, this->Techno->get_ID());
+	strcpy_s(this->TechnoID, this->Techno->get_ID());
 }
 
 void ShieldClass::UpdateType()
@@ -82,7 +82,7 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 	{
 		pToExt->CurrentShieldType = pFromExt->CurrentShieldType;
 		pToExt->Shield = std::make_unique<ShieldClass>(pTo);
-		strcpy(pToExt->Shield->TechnoID, pFromExt->Shield->TechnoID);
+		strcpy_s(pToExt->Shield->TechnoID, pFromExt->Shield->TechnoID);
 		pToExt->Shield->Available = pFromExt->Shield->Available;
 		pToExt->Shield->HP = pFromExt->Shield->HP;
 	}
@@ -439,7 +439,7 @@ bool ShieldClass::ConvertCheck()
 		}
 	}
 
-	strcpy(this->TechnoID, newID);
+	strcpy_s(this->TechnoID, newID);
 
 	return false;
 }

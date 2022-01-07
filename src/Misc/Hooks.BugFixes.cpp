@@ -8,9 +8,12 @@
 #include <VoxelAnimClass.h>
 #include <BulletClass.h>
 #include <HouseClass.h>
+#include <BombClass.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
+#include <Ext/Anim/Body.h>
+#include <Ext/AnimType/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -361,3 +364,56 @@ DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 
 	return 0;
 }
+
+namespace Bugfix_BombClass_Functions
+{
+	/*	Padding added when converting __thiscall to __fastcall*/
+	static AnimClass* __fastcall AnimClass_ctor_withpadding(AnimClass* pThis, void*_, AnimTypeClass* pType, CoordStruct* pCoord, int LoopDelay,
+		int LoopCount, DWORD flags, int ForceZAdjust, bool reverse)
+	{ JMP_THIS(0x421EA0); }
+
+	AnimClass* __fastcall _BombClass_Detonate_AnimCtor_SetOwner(
+		AnimClass* pThis,
+		void* _,
+		AnimTypeClass* pType,
+		CoordStruct* pCoord,
+		int LoopDelay,
+		int LoopCount,
+		DWORD flags,
+		int ForceZAdjust,
+		bool reverse)
+	{
+		// yes , this is working , you can get registers/stack inside DEFINE_POINTER_CALL
+		// check TSpp macros for more way getting them !
+		GET_REGISTER_STATIC_TYPE(BombClass*, pThisBomb, esi);
+
+		if (pType)
+		{
+			auto pAnim = AnimClass_ctor_withpadding(pThis, _, pType, pCoord, LoopDelay, LoopCount, flags, ForceZAdjust, reverse);
+
+			if (AnimTypeExt::ExtMap.Find(pAnim->Type)->CreateUnit.Get())
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse, pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
+			else
+				pAnim->Owner = pThisBomb->OwnerHouse;
+
+			return pAnim;
+		}
+
+		return nullptr;
+	}
+}
+
+// I Learn these trick from AlexB 
+// We can insert/replace the stack after push happen
+// since HouseClass* for the Call is on very end , it pushed early which ESP+0x0
+// after nullptr HouseClass* pushed , before next argument is push we can insert Appropriate HouseClass* !
+DEFINE_HOOK(0x438762, BombClass_Detonate_FixNoOwner_Exp, 0x6)
+{
+	GET(BombClass *, pThis, ESI);
+
+	R->Stack(0x0, pThis->OwnerHouse);
+
+	return 0;
+}
+
+DEFINE_POINTER_CALL(0x438852, Bugfix_BombClass_Functions::_BombClass_Detonate_AnimCtor_SetOwner);
