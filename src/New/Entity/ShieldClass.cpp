@@ -96,7 +96,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
 	if (!this->HP || this->Temporal || *args->Damage == 0 ||
-		this->Techno->IsIronCurtained() || pWHExt->Shield_Penetrate)
+		this->Techno->IsIronCurtained() || CanBePenetrated(pWHExt->OwnerObject()))
 	{
 		return *args->Damage;
 	}
@@ -210,10 +210,20 @@ bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon)
 {
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
 
-	if ((pWHExt && pWHExt->Shield_Penetrate.Get()) || !this->HP)
+	if ((pWHExt && CanBePenetrated(pWHExt->OwnerObject())) || !this->HP)
 		return true;
 
 	return GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->Type->Armor) != 0.0;
+}
+
+bool ShieldClass::CanBePenetrated(WarheadTypeClass* pWarhead)
+{
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	if (pWHExt->Shield_AffectTypes.size() > 0 && !pWHExt->Shield_AffectTypes.Contains(this->Type))
+		return false;
+
+	return pWHExt->Shield_Penetrate;
 }
 
 void ShieldClass::AI_Temporal()
