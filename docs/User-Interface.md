@@ -209,7 +209,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMESIDE]                               ; Side
 Sidebar.PowerDelta.Offset=0,0            ; X,Y, pixels relative to default
-Sidebar.PowerDelta.ColorGreen=255,255,0  ; R,G,B
+Sidebar.PowerDelta.ColorGreen=0,255,0    ; R,G,B
 Sidebar.PowerDelta.ColorYellow=255,255,0 ; R,G,B
 Sidebar.PowerDelta.ColorRed=255,0,0      ; R,G,B
 Sidebar.PowerDelta.Align=left            ; left|center|centre|right
