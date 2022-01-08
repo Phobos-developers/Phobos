@@ -897,6 +897,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		bool validFocus = false;
 
 		if (pFocus && pFocus->IsAlive
+			&& pFocus->Health > 0
 			&& !pFocus->InLimbo
 			&& !pFocus->GetTechnoType()->Immune
 			&& ((pFocus->IsInAir() && leaderWeaponsHaveAA) || (!pFocus->IsInAir() && leaderWeaponsHaveAG))
@@ -1118,6 +1119,8 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 			&& !object->Transporter
 			&& object->IsOnMap
 			&& !object->Absorbed
+			&& !object->TemporalTargetingMe
+			&& !object->BeingWarpedOut
 			&& object->Owner != pTechno->Owner
 			&& (!pTechno->Owner->IsAlliedWith(object)
 				|| (pTechno->Owner->IsAlliedWith(object)
@@ -1259,7 +1262,10 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		if (!pTechno->Owner->IsNeutral()
 			&& (pTechnoType->WhatAmI() == AbstractType::BuildingType
 				|| (pTypeBuilding
-					&& !(pTypeBuilding->Artillary || pTypeBuilding->TickTank || pTypeBuilding->ICBMLauncher || pTypeBuilding->SensorArray))))
+					&& !(pTypeBuilding->Artillary 
+						|| pTypeBuilding->TickTank 
+						|| pTypeBuilding->ICBMLauncher 
+						|| pTypeBuilding->SensorArray))))
 		{
 			return true;
 		}
@@ -1456,9 +1462,6 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 
 	case 13:
 		// Mind Controller
-		pTypeBuilding = abstract_cast<BuildingTypeClass*>(pTechnoType);
-
-		// Note: Replace these lines when I have access to Combat_Damage() method in YRpp if that is better
 		WeaponType1 = pTechno->Veterancy.IsElite() ?
 			pTechnoType->EliteWeapon[0].WeaponType :
 			pTechnoType->Weapon[0].WeaponType;
@@ -1490,7 +1493,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	case 14:
 		// Aircraft and Air Unit
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTechnoType->WhatAmI() == AbstractType::AircraftType || pTechnoType->JumpJet || pTechno->IsInAir()))
+			&& (pTechnoType->WhatAmI() == AbstractType::AircraftType 
+				|| pTechnoType->JumpJet 
+				|| pTechno->IsInAir()))
 		{
 			return true;
 		}
@@ -1500,7 +1505,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	case 15:
 		// Naval Unit & Structure
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTechnoType->Naval || pTechno->GetCell()->LandType == LandType::Water))
+			&& (pTechnoType->Naval 
+				|| pTechno->GetCell()->LandType == LandType::Water))
 		{
 			return true;
 		}
@@ -1593,7 +1599,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		// is Aircraft Factory
 		if (!pTechno->Owner->IsNeutral()
 			&& (pTechnoType->WhatAmI() == AbstractType::BuildingType
-				&& (pTypeBuilding->Factory == AbstractType::AircraftType || pTypeBuilding->Helipad)))
+				&& (pTypeBuilding->Factory == AbstractType::AircraftType 
+					|| pTypeBuilding->Helipad)))
 		{
 			return true;
 		}
@@ -1614,8 +1621,6 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		break;
 
 	case 23:
-		pTypeBuilding = abstract_cast<BuildingTypeClass*>(pTechnoType);
-
 		// Buildable Tech
 		if (!pTechno->Owner->IsNeutral()
 			&& pTechnoType->WhatAmI() == AbstractType::BuildingType
@@ -1702,7 +1707,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		pTypeBuilding = abstract_cast<BuildingTypeClass*>(pTechnoType);
 
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTypeBuilding && (pTypeBuilding->GapGenerator || pTypeBuilding->CloakGenerator)))
+			&& (pTypeBuilding && (pTypeBuilding->GapGenerator 
+				|| pTypeBuilding->CloakGenerator)))
 		{
 			return true;
 		}
@@ -1711,21 +1717,22 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 
 	case 29:
 		// Radar Jammer
-		pTypeBuilding = abstract_cast<BuildingTypeClass*>(pTechnoType);
 		pTypeTechnoExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
-		if (!pTechno->Owner->IsNeutral() && (pTypeTechnoExt && (pTypeTechnoExt->RadarJamRadius > 0)))
+		if (!pTechno->Owner->IsNeutral() 
+			&& (pTypeTechnoExt 
+				&& (pTypeTechnoExt->RadarJamRadius > 0)))
 			return true;
 
 		break;
 
 	case 30:
 		// Inhibitor
-		pTypeBuilding = abstract_cast<BuildingTypeClass*>(pTechnoType);
 		pTypeTechnoExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTypeTechnoExt && pTypeTechnoExt->InhibitorRange > 0))
+			&& (pTypeTechnoExt 
+				&& pTypeTechnoExt->InhibitorRange > 0))
 		{
 			return true;
 		}
