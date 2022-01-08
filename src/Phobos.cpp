@@ -61,7 +61,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		{
 			Phobos::AppIconPath = ppArgs[++i];
 		}
-#ifndef IS_RELEASE_VER 
+#ifndef IS_RELEASE_VER
 		if (_stricmp(pArg, "-b=" str(BUILD_NUMBER)) == 0)
 		{
 			HideWarning = true;
@@ -142,7 +142,7 @@ DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 		L"Debugger Notice", MB_OK);
 	}
 
-	
+
 #endif
 
 	return 0;
@@ -199,7 +199,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		Phobos::UI::HarvesterCounter_ConditionYellow =
 			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionYellow", Phobos::UI::HarvesterCounter_ConditionYellow);
 
-		Phobos::UI::HarvesterCounter_ConditionRed = 
+		Phobos::UI::HarvesterCounter_ConditionRed =
 			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionRed", Phobos::UI::HarvesterCounter_ConditionRed);
 
 		Phobos::UI::ShowProducingProgress =

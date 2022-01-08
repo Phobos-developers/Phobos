@@ -17,7 +17,7 @@ public:
 		Valueable<AffectedHouse> PowersUp_Owner;
 		ValueableVector<BuildingTypeClass*> PowersUp_Buildings;
 		DynamicVectorClass<SuperWeaponTypeClass*> SuperWeapons;
-		
+
 		ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
 		Nullable<int> PowerPlantEnhancer_Amount;
 		Nullable<float> PowerPlantEnhancer_Factor;

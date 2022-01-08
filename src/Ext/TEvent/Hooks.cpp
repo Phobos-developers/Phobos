@@ -45,7 +45,7 @@ DEFINE_HOOK(0x71F3FE, TEventClass_BuildINIEntry, 0x5)
 {
 	GET(int, eNeedType, EAX);
 	GET(TEventClass*, pThis, ECX);
-	
+
 	int nEvent = static_cast<int>(pThis->EventKind);
 	if (nEvent >= PhobosTriggerEvent::LocalVariableGreaterThan && nEvent <= PhobosTriggerEvent::GlobalVariableAndIsTrueGlobalVariable)
 		eNeedType = 43;

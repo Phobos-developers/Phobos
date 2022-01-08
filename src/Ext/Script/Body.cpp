@@ -380,7 +380,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 	// Gather permanently until all the team members are near of the Leader
 	if (initialCountdown == 0)
 		gatherUnits = true;
-	
+
 	// Countdown updater
 	if (initialCountdown > 0)
 	{
@@ -407,7 +407,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 		// Save counter
 		pTeamData->Countdown_RegroupAtLeader = countdown;
 	}
-	
+
 	if (!gatherUnits)
 	{
 		// This action finished
@@ -420,7 +420,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 		int nTogether = 0;
 		int nUnits = -1; // Leader counts here
 		double closeEnough;
-		
+
 		// Find the Leader
 		pLeaderUnit = FindTheTeamLeader(pTeam);
 
@@ -507,7 +507,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 				}
 			}
 		}
-		
+
 
 		if (nUnits >= 0
 			&& nUnits == nTogether
@@ -518,7 +518,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 			pTeamData->Countdown_RegroupAtLeader = -1;
 			// This action finished
 			pTeam->StepCompleted = true;
-			
+
 			return;
 		}
 	}
@@ -652,7 +652,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				bool pacifistUnit = true;
 				if (pUnit->Veterancy.IsElite())
 				{
-					if (pUnitType->EliteWeapon[0].WeaponType || pUnitType->EliteWeapon[1].WeaponType 
+					if (pUnitType->EliteWeapon[0].WeaponType || pUnitType->EliteWeapon[1].WeaponType
 						|| (pUnitType->IsGattling && pUnitType->EliteWeapon[pUnit->CurrentWeaponNumber].WeaponType))
 					{
 						pacifistTeam = false;
@@ -661,7 +661,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				}
 				else
 				{
-					if (pUnitType->Weapon[0].WeaponType || pUnitType->Weapon[1].WeaponType 
+					if (pUnitType->Weapon[0].WeaponType || pUnitType->Weapon[1].WeaponType
 						|| (pUnitType->IsGattling && pUnitType->Weapon[pUnit->CurrentWeaponNumber].WeaponType))
 					{
 						pacifistTeam = false;
@@ -1767,9 +1767,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		pTypeBuilding = abstract_cast<BuildingTypeClass*>(pTechnoType);
 
 		// Capturable Structure or Repair Hut
-		if (pTypeBuilding 
-			&& (pTypeBuilding->Capturable 
-				|| (pTypeBuilding->BridgeRepairHut 
+		if (pTypeBuilding
+			&& (pTypeBuilding->Capturable
+				|| (pTypeBuilding->BridgeRepairHut
 					&& pTypeBuilding->Repairable)))
 		{
 			return true;
@@ -1861,8 +1861,8 @@ void ScriptExt::ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine 
 		auto pTriggerTeam1Type = AITriggerTypeClass::Array->GetItem(i)->Team1;
 		auto pTriggerTeam2Type = AITriggerTypeClass::Array->GetItem(i)->Team2;
 
-		if (pTeamType 
-			&& ((pTriggerTeam1Type && pTriggerTeam1Type == pTeamType) 
+		if (pTeamType
+			&& ((pTriggerTeam1Type && pTriggerTeam1Type == pTeamType)
 				|| (pTriggerTeam2Type && pTriggerTeam2Type == pTeamType)))
 		{
 			found = true;
@@ -2580,7 +2580,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 		bForceNextAction = true;
 	else
 		bForceNextAction = false;
-	
+
 	// Team already have a focused target
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
@@ -2599,7 +2599,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 				if (pUnit->DistanceFrom(pUnit->Destination) / 256.0 > closeEnough)
 				{
 					bForceNextAction = false;
-					
+
 					if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0)
 						pUnit->QueueMission(Mission::Move, false);
 
@@ -2625,13 +2625,13 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 					{
 						if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0)
 							pUnit->QueueMission(Mission::Move, false);
-						
+
 						continue;
 					}
 					else
 					{
 						bForceNextAction = true;
-						
+
 						if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
 						{
 							pUnit->QueueMission(Mission::Return, false);
@@ -2650,14 +2650,14 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 						{
 							if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0)
 								pUnit->QueueMission(Mission::Move, false);
-							
+
 							continue;
 						}
 						else
 						{
 							if (pUnit == pLeader)
 								bForceNextAction = true;
-							
+
 							if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
 							{
 								pUnit->QueueMission(Mission::Return, false);
@@ -2675,7 +2675,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 			}
 		}
 	}
-	
+
 	return bForceNextAction;
 }
 
@@ -2687,9 +2687,9 @@ void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage = 0)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-		Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d -> (No team members alive)\n", 
-			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, 
-			pTeam->CurrentScript->idxCurrentLine + 1, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 1].Action, 
+		Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d -> (No team members alive)\n",
+			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine,
+			pTeam->CurrentScript->idxCurrentLine + 1, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 1].Action,
 			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 1].Argument);
 
 		return;
@@ -2708,8 +2708,8 @@ void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage = 0)
 
 	if (percentage <= successPercentage)
 	{
-		Debug::Log("DEBUG: ScripType: [%s] [%s] (line: %d) Next script line skipped successfuly. Next line will be: %d = %d,%d\n", 
-			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->idxCurrentLine + 2, 
+		Debug::Log("DEBUG: ScripType: [%s] [%s] (line: %d) Next script line skipped successfuly. Next line will be: %d = %d,%d\n",
+			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->idxCurrentLine + 2,
 			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 2].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 2].Argument);
 		pTeam->CurrentScript->idxCurrentLine++;
 	}

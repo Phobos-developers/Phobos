@@ -73,7 +73,7 @@ public:
 	static void InitializeLaserTrails(TechnoClass* pThis);
 	static void InitializeShield(TechnoClass* pThis);
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
-	
+
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);

@@ -330,7 +330,7 @@ bool Phobos::DetachFromDebugger()
 	HMODULE hModule = LoadLibrary("ntdll.dll");
 	if (hModule != NULL)
 	{
-		auto const NtRemoveProcessDebug = 
+		auto const NtRemoveProcessDebug =
 			(NTSTATUS(__stdcall*)(HANDLE, HANDLE))GetProcAddress(hModule, "NtRemoveProcessDebug");
 		auto const NtSetInformationDebugObject =
 			(NTSTATUS(__stdcall*)(HANDLE, ULONG, PVOID, ULONG, PULONG))GetProcAddress(hModule, "NtSetInformationDebugObject");

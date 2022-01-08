@@ -20,7 +20,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	{
 		auto const it = std::find_if(Instances.begin(), Instances.end(),
 			[=](RadSiteExt::ExtData* const pSite) // Lambda
-			{// find 
+			{// find
 				return pSite->Type == pRadType &&
 					pSite->OwnerObject()->BaseCell == Cell &&
 					Spread == pSite->OwnerObject()->Spread;
@@ -40,7 +40,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 				RadLevel = pRadType->GetLevelMax() - pRadSite->GetRadLevel();
 			}
 
-			// Handle It 
+			// Handle It
 			RadSiteExt::Add(pRadSite, RadLevel);
 		}
 	}

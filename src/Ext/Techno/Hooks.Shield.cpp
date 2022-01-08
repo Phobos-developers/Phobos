@@ -152,7 +152,7 @@ DEFINE_HOOK(0x6F6AC4, TechnoClass_Remove_Shield, 0x5)
 
 	if (pExt->Shield)
 		pExt->Shield->KillAnim();
-	
+
 	return 0;
 }
 

@@ -133,7 +133,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 					if (this->Shield_ReplaceOnly && this->Shield_InheritStateOnReplace)
 					{
 						pExt->Shield->SetHP((int)(shieldType->Strength * ratio));
-						
+
 						if (pExt->Shield->GetHP() == 0)
 							pExt->Shield->SetRespawn(shieldType->Respawn_Rate, shieldType->Respawn, shieldType->Respawn_Rate, true);
 					}
