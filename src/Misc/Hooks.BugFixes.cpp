@@ -365,42 +365,35 @@ DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 	return 0;
 }
 
-namespace Bugfix_BombClass_Functions
+#pragma region BombClass_BugFix
+/*Padding added when converting __thiscall to __fastcall*/
+static AnimClass* __fastcall _AnimClass_ctor_(AnimClass* pThis, void*_, AnimTypeClass* pType, CoordStruct* pCoord, int LoopDelay,
+	int LoopCount, DWORD flags, int ForceZAdjust, bool reverse)
+{ JMP_THIS(0x421EA0); }
+
+static AnimClass* __fastcall _BombClass_Detonate_Anim_setOwner_(
+	AnimClass* pThis,
+	void* _,
+	AnimTypeClass* pType,
+	CoordStruct* pCoord,
+	int LoopDelay,
+	int LoopCount,
+	DWORD flags,
+	int ForceZAdjust,
+	bool reverse)
 {
-	/*	Padding added when converting __thiscall to __fastcall*/
-	static AnimClass* __fastcall AnimClass_ctor_withpadding(AnimClass* pThis, void*_, AnimTypeClass* pType, CoordStruct* pCoord, int LoopDelay,
-		int LoopCount, DWORD flags, int ForceZAdjust, bool reverse)
-	{ JMP_THIS(0x421EA0); }
+	// yes , this is working , you can get registers/stack inside DEFINE_POINTER_CALL
+	// check TSpp macros for more way getting them !
+	GET_REGISTER_STATIC_TYPE(BombClass*, pThisBomb, esi);
 
-	AnimClass* __fastcall _BombClass_Detonate_AnimCtor_SetOwner(
-		AnimClass* pThis,
-		void* _,
-		AnimTypeClass* pType,
-		CoordStruct* pCoord,
-		int LoopDelay,
-		int LoopCount,
-		DWORD flags,
-		int ForceZAdjust,
-		bool reverse)
-	{
-		// yes , this is working , you can get registers/stack inside DEFINE_POINTER_CALL
-		// check TSpp macros for more way getting them !
-		GET_REGISTER_STATIC_TYPE(BombClass*, pThisBomb, esi);
+	auto pAnim = _AnimClass_ctor_(pThis, _, pType, pCoord, LoopDelay, LoopCount, flags, ForceZAdjust, reverse);
 
-		if (pType)
-		{
-			auto pAnim = AnimClass_ctor_withpadding(pThis, _, pType, pCoord, LoopDelay, LoopCount, flags, ForceZAdjust, reverse);
+	if (AnimTypeExt::ExtMap.Find(pAnim->Type)->CreateUnit.Get())
+		AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse, pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
+	else
+		pAnim->Owner = pThisBomb->OwnerHouse;
 
-			if (AnimTypeExt::ExtMap.Find(pAnim->Type)->CreateUnit.Get())
-				AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse, pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
-			else
-				pAnim->Owner = pThisBomb->OwnerHouse;
-
-			return pAnim;
-		}
-
-		return nullptr;
-	}
+	return pAnim;
 }
 
 // I Learn these trick from AlexB 
@@ -416,4 +409,5 @@ DEFINE_HOOK(0x438762, BombClass_Detonate_FixNoOwner_Exp, 0x6)
 	return 0;
 }
 
-DEFINE_POINTER_CALL(0x438852, Bugfix_BombClass_Functions::_BombClass_Detonate_AnimCtor_SetOwner);
+DEFINE_POINTER_CALL(0x438852, _BombClass_Detonate_Anim_setOwner_);
+#pragma endregion
