@@ -132,21 +132,24 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 {
 	auto const pData = SWTypeExt::ExtMap.Find(pType);
-	
-	int nSec = pType->RechargeTime / 15 % 60;
-	int nMin = pType->RechargeTime / 15 / 60 /* % 60*/;
-	// int nHour = pType->RechargeTime / 15 / 60 / 60;
-	
-	// Only if we can use v143 with cpp_lastest, we can write std::format here
-	// std::format(L"{}\n {}{} {}{:02d}:{:02d}:{:02d}", UIName, CostLabel, -Money, TimeLabel, Hour, Minute, Second)
-	// leave it here, hoping we can abandon WindowsXP some day - secsome
+
 	std::wostringstream oss;
-	oss << pType->UIName << L"\n"
-		<< Phobos::UI::CostLabel << -pData->Money_Amount << L" "
-		<< Phobos::UI::TimeLabel 
-		// << std::setw(2) << std::setfill(L'0') << nHour << L":" 
-		<< std::setw(2) << std::setfill(L'0') << nMin << L":" 
-		<< std::setw(2) << std::setfill(L'0') << nSec;
+	oss << pType->UIName << L"\n";
+	
+	if (int nCost = -pData->Money_Amount)
+		oss << Phobos::UI::CostLabel << nCost << L" ";
+		
+	if (pType->RechargeTime)
+	{
+		int nSec = pType->RechargeTime / 15 % 60;
+		int nMin = pType->RechargeTime / 15 / 60 /* % 60*/;
+		// int nHour = pType->RechargeTime / 15 / 60 / 60;
+
+		oss << Phobos::UI::TimeLabel
+			// << std::setw(2) << std::setfill(L'0') << nHour << L":" 
+			<< std::setw(2) << std::setfill(L'0') << nMin << L":"
+			<< std::setw(2) << std::setfill(L'0') << nSec;
+	}
 
 	if (auto pDesc = this->GetUIDescription(pData))
 		oss << L"\n" << pDesc;
