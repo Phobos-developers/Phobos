@@ -25,7 +25,7 @@ const char* Phobos::AppIconPath = nullptr;
 #ifdef STR_GIT_COMMIT
 const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
 #elif !defined(IS_RELEASE_VER)
-const wchar_t* Phobos::VersionDescription = L"Phobos development build #" str(BUILD_NUMBER) L". Please test the build before shipping.";
+const wchar_t* Phobos::VersionDescription = L"Phobos development build #" _STR(BUILD_NUMBER) L". Please test the build before shipping.";
 #else
 //const wchar_t* Phobos::VersionDescription = L"Phobos release build v" FILE_VERSION_STR L".";
 #endif
@@ -61,8 +61,8 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		{
 			Phobos::AppIconPath = ppArgs[++i];
 		}
-#ifndef IS_RELEASE_VER
-		if (_stricmp(pArg, "-b=" str(BUILD_NUMBER)) == 0)
+#ifndef IS_RELEASE_VER 
+		if (_stricmp(pArg, "-b=" _STR(BUILD_NUMBER)) == 0)
 		{
 			HideWarning = true;
 		}
