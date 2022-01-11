@@ -24,6 +24,7 @@ public:
 		Valueable<bool> ReceiveDamage;
 		Valueable<bool> LastKillWasTeamTarget;
 		TimerStruct	PassengerDeletionTimer;
+		Valueable<int> PassengerDeletionCountDown;
 		Valueable<ShieldTypeClass*> CurrentShieldType;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
@@ -32,7 +33,8 @@ public:
 			, LaserTrails {}
 			, ReceiveDamage { false }
 			, LastKillWasTeamTarget { false }
-			, PassengerDeletionTimer { -1 }
+			, PassengerDeletionTimer {}
+			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType {}
 		{ }
 
