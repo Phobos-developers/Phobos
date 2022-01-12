@@ -122,6 +122,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PassengerDeletion_ReportSound.Read(exINI, pSection, "PassengerDeletion.ReportSound");
 	this->PassengerDeletion_Rate_SizeMultiply.Read(exINI, pSection, "PassengerDeletion.Rate.SizeMultiply");
 	this->PassengerDeletion_Rate.Read(exINI, pSection, "PassengerDeletion.Rate");
+	this->PassengerDeletion_Anim.Read(exINI, pSection, "PassengerDeletion.Anim");
 
 	this->DefaultDisguise.Read(exINI, pSection, "DefaultDisguise");
 
@@ -265,6 +266,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletion_Rate)
 		.Process(this->PassengerDeletion_ReportSound)
 		.Process(this->PassengerDeletion_Rate_SizeMultiply)
+		.Process(this->PassengerDeletion_Anim)
 		.Process(this->OpenTopped_RangeBonus)
 		.Process(this->OpenTopped_DamageMultiplier)
 		.Process(this->OpenTopped_WarpDistance)
