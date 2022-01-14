@@ -11,7 +11,7 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	{
 		if (this->AffectsOwner.Get(this->OwnerObject()->AffectsAllies) && pTarget->Owner == pHouse)
 			return true;
-		
+
 		bool isAllies = pHouse->IsAlliedWith(pTarget);
 
 		if (this->OwnerObject()->AffectsAllies && isAllies)

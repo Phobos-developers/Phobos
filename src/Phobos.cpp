@@ -25,7 +25,7 @@ const char* Phobos::AppIconPath = nullptr;
 #ifdef STR_GIT_COMMIT
 const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
 #elif !defined(IS_RELEASE_VER)
-const wchar_t* Phobos::VersionDescription = L"Phobos development build #" str(BUILD_NUMBER) L". Please test the build before shipping.";
+const wchar_t* Phobos::VersionDescription = L"Phobos development build #" _STR(BUILD_NUMBER) L". Please test the build before shipping.";
 #else
 //const wchar_t* Phobos::VersionDescription = L"Phobos release build v" FILE_VERSION_STR L".";
 #endif
@@ -41,6 +41,9 @@ const wchar_t* Phobos::UI::CostLabel = L"";
 const wchar_t* Phobos::UI::PowerLabel = L"";
 const wchar_t* Phobos::UI::TimeLabel = L"";
 const wchar_t* Phobos::UI::HarvesterLabel = L"";
+bool Phobos::UI::ShowPowerDelta = false;
+double Phobos::UI::PowerDelta_ConditionYellow = 0.75;
+double Phobos::UI::PowerDelta_ConditionRed = 1.0;
 
 bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::PrioritySelectionFiltering = true;
@@ -60,7 +63,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 			Phobos::AppIconPath = ppArgs[++i];
 		}
 #ifndef IS_RELEASE_VER 
-		if (_stricmp(pArg, "-b=" str(BUILD_NUMBER)) == 0)
+		if (_stricmp(pArg, "-b=" _STR(BUILD_NUMBER)) == 0)
 		{
 			HideWarning = true;
 		}
@@ -140,7 +143,7 @@ DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 		L"Debugger Notice", MB_OK);
 	}
 
-	
+
 #endif
 
 	return 0;
@@ -197,11 +200,20 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		Phobos::UI::HarvesterCounter_ConditionYellow =
 			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionYellow", Phobos::UI::HarvesterCounter_ConditionYellow);
 
-		Phobos::UI::HarvesterCounter_ConditionRed = 
+		Phobos::UI::HarvesterCounter_ConditionRed =
 			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionRed", Phobos::UI::HarvesterCounter_ConditionRed);
 
 		Phobos::UI::ShowProducingProgress =
 			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "ProducingProgress.Show", false);
+
+		Phobos::UI::ShowPowerDelta =
+			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "PowerDelta.Show", false);
+
+		Phobos::UI::PowerDelta_ConditionYellow =
+			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "PowerDelta.ConditionYellow", Phobos::UI::PowerDelta_ConditionYellow);
+
+		Phobos::UI::PowerDelta_ConditionRed =
+			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "PowerDelta.ConditionRed", Phobos::UI::PowerDelta_ConditionRed);
 	}
 
 	Phobos::CloseConfig(pINI_UIMD);

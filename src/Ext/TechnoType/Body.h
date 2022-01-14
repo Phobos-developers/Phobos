@@ -61,7 +61,7 @@ public:
 		ValueableVector<AnimTypeClass*> OreGathering_Anims;
 		ValueableVector<int> OreGathering_Tiberiums;
 		ValueableVector<int> OreGathering_FramesPerDir;
-		
+
 		std::vector<DynamicVectorClass<CoordStruct>> WeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> EliteWeaponBurstFLHs;
 
@@ -78,12 +78,12 @@ public:
 		Valueable<bool> AutoFire_TargetSelf;
 
 		Valueable<bool> NoSecondaryWeaponFallback;
-		
+
 		Valueable<int> NoAmmoWeapon;
 		Valueable<int> NoAmmoAmount;
 
 		Nullable<bool> JumpjetAllowLayerDeviation;
-		
+
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
 		Valueable<bool> DeployingAnim_ReverseForUndeploy;
 		Valueable<bool> DeployingAnim_UseUnitDrawer;

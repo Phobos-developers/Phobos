@@ -185,6 +185,40 @@ In `rulesmd.ini`:
 Sidebar.ProducingProgress.Offset=0,0 ; X,Y, pixels relative to default
 ```
 
+### Power delta counter
+
+![image](_static/images/powerdelta-01.gif)  
+*Power delta Counter in [Assault Amerika](https://www.moddb.com/mods/assault-amerika)*
+
+- An additional counter for your power delta (surplus) can be added near the credits indicator.
+- The counter is displayed with the format of `Label(sign)(Power Delta)`. The label is PowerLabel used in tooltips (by default `⚡ U+26A1`).
+- You can adjust counter position by `Sidebar.PowerDelta.Offset`, negative means left/up, positive means right/down.
+- You can adjust counter text alignment by `Sidebar.PowerDelta.Align`, acceptable values are left, right, center/centre.
+- By setting `PowerDelta.ConditionYellow` and `PowerDelta.ConditionRed`, the game will warn player by changing the color of counter whenever the percentage of used power exceeds the value (i.e. when drain to output ratio is above 100%, the counter will turn red).
+- The exception for this rule is when both power output and drain are 0 - in this case the counter will default to yellow.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+PowerDelta.Show=no                  ; boolean
+PowerDelta.ConditionYellow=75%      ; double, percentage
+PowerDelta.ConditionRed=100%        ; double, percentage
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                               ; Side
+Sidebar.PowerDelta.Offset=0,0            ; X,Y, pixels relative to default
+Sidebar.PowerDelta.ColorGreen=0,255,0    ; R,G,B
+Sidebar.PowerDelta.ColorYellow=255,255,0 ; R,G,B
+Sidebar.PowerDelta.ColorRed=255,0,0      ; R,G,B
+Sidebar.PowerDelta.Align=left            ; left|center|centre|right
+```
+
+```{note}
+If you use the vanilla font in your mod, you can use {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+```
+
 ## Tooltips
 
 ![image](_static/images/tooltips-01.png)  

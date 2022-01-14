@@ -1,10 +1,10 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define wstr(x) wstr_(x)
-#define wstr_(x) L ## #x
-#define str(x) str_(x)
-#define str_(x) #x
+#define _WSTR(x) _WSTR_(x)
+#define _WSTR_(x) L ## #x
+#define _STR(x) _STR_(x)
+#define _STR_(x) #x
 
 #pragma region Release build version numbering
 
@@ -23,19 +23,19 @@
 #pragma endregion
 
 // Build number. Incremented on each released build.
-#define BUILD_NUMBER 25
+#define BUILD_NUMBER 26
 
 // Nightly defines GIT_COMMIT and GIT_BRANCH in GH Actions
 
 #ifdef IS_RELEASE_VER // Release build metadata
 	#define SAVEGAME_ID ((VERSION_MAJOR << 24) | (VERSION_MINOR << 16) | (VERSION_REVISION << 8) | VERSION_PATCH)
 	#define FILE_DESCRIPTION "Phobos, Ares-compatible YR engine extension"
-	#define FILE_VERSION_STR str(VERSION_MAJOR) "." str(VERSION_MINOR) "." str(VERSION_REVISION) "." str(VERSION_PATCH)
+	#define FILE_VERSION_STR _STR(VERSION_MAJOR) "." _STR(VERSION_MINOR) "." _STR(VERSION_REVISION) "." _STR(VERSION_PATCH)
 	#define FILE_VERSION VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION, VERSION_PATCH
 	#define PRODUCT_VERSION "Release Build " FILE_VERSION_STR
 #elif defined(GIT_COMMIT) // Nightly devbuild metadata
-	#define STR_GIT_COMMIT str(GIT_COMMIT)
-	#define STR_GIT_BRANCH str(GIT_BRANCH)
+	#define STR_GIT_COMMIT _STR(GIT_COMMIT)
+	#define STR_GIT_BRANCH _STR(GIT_BRANCH)
 
 	#define SAVEGAME_ID ((BUILD_NUMBER << 24) | (BUILD_NUMBER << 12) | (BUILD_NUMBER))
 	#define FILE_DESCRIPTION "Unstable nightly devbuild of Phobos engine extension"
@@ -45,9 +45,9 @@
 #else // Regular devbuild metadata
 	#define SAVEGAME_ID ((BUILD_NUMBER << 24) | (BUILD_NUMBER << 12) | (BUILD_NUMBER))
 	#define FILE_DESCRIPTION "Development build of Phobos engine extension"
-	#define FILE_VERSION_STR "Build #" str(BUILD_NUMBER)
+	#define FILE_VERSION_STR "Build #" _STR(BUILD_NUMBER)
 	#define FILE_VERSION 0,0,0,BUILD_NUMBER
-	#define PRODUCT_VERSION "Development Build #" str(BUILD_NUMBER)
+	#define PRODUCT_VERSION "Development Build #" _STR(BUILD_NUMBER)
 #endif
 
 #endif // VERSION_H

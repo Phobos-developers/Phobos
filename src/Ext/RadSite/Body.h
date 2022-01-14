@@ -35,7 +35,7 @@ public:
 			return sizeof(*this);
 		}
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) 
+		virtual void InvalidatePointer(void* ptr, bool bRemoved)
 		{
 			AnnounceInvalidPointer(RadHouse, ptr);
 		}
@@ -56,7 +56,7 @@ public:
 	static void Add(RadSiteClass* pThis,int amount);
 	static void SetRadLevel(RadSiteClass* pThis,int amount);
 	static const double GetRadLevelAt(RadSiteClass* pThis,CellStruct const& cell);
-	
+
 	class ExtContainer final : public Container<RadSiteExt>
 	{
 	public:
