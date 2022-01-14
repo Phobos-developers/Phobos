@@ -366,14 +366,18 @@ DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 }
 
 #pragma region BombClass_BugFix
-/*Padding added when converting __thiscall to __fastcall*/
+
+/* AnimClass::Ctor moved out and converted to __fastcall with `void*_` as padding */
 static AnimClass* __fastcall _AnimClass_ctor_(AnimClass* pThis, void*_, AnimTypeClass* pType, CoordStruct* pCoord, int LoopDelay,
 	int LoopCount, DWORD flags, int ForceZAdjust, bool reverse)
-{ JMP_THIS(0x421EA0); }
+{
+	JMP_THIS(0x421EA0);
+}
 
+// Ares hook is above this AnimClass::Ctor function , be carefull !
 static AnimClass* __fastcall _BombClass_Detonate_Anim_setOwner_(
-	AnimClass* pThis,
-	void* _,
+	AnimClass* pThis, // this were allocated memory for AnimClass*
+	void* _, // padding
 	AnimTypeClass* pType,
 	CoordStruct* pCoord,
 	int LoopDelay,
@@ -382,28 +386,37 @@ static AnimClass* __fastcall _BombClass_Detonate_Anim_setOwner_(
 	int ForceZAdjust,
 	bool reverse)
 {
-	// yes , this is working , you can get registers/stack inside DEFINE_POINTER_CALL
-	// check TSpp macros for more way getting them !
-	GET_REGISTER_STATIC_TYPE(BombClass*, pThisBomb, esi);
+	// check Type just in case it crash the game when it doesnt have any
+	if (pType)
+	{
+		// yes , you can get registers/stack inside DEFINE_POINTER_CALL
+		GET_REGISTER_STATIC_TYPE(BombClass*, pThisBomb, esi);
 
-	auto pAnim = _AnimClass_ctor_(pThis, _, pType, pCoord, LoopDelay, LoopCount, flags, ForceZAdjust, reverse);
+		auto pAnim = _AnimClass_ctor_(pThis, _, pType, pCoord, LoopDelay, LoopCount, flags, ForceZAdjust, reverse);
 
-	if (AnimTypeExt::ExtMap.Find(pAnim->Type)->CreateUnit.Get())
-		AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse, pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
-	else
-		pAnim->Owner = pThisBomb->OwnerHouse;
+		if (AnimTypeExt::ExtMap.Find(pAnim->Type)->CreateUnit.Get())
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse, pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
+		else
+			pAnim->Owner = pThisBomb->OwnerHouse;
 
-	return pAnim;
+		return pAnim;
+	}
+
+	// no Type , just delete the allocated space then return nullptr
+	GameDelete(pThis);
+	return nullptr;	
 }
 
 // I Learn these trick from AlexB 
 // We can insert/replace the stack after push happen
 // since HouseClass* for the Call is on very end , it pushed early which ESP+0x0
-// after nullptr HouseClass* pushed , before next argument is push we can insert Appropriate HouseClass* !
+// after nullptr HouseClass* pushed , before next argument is push 
+// we can insert Appropriate HouseClass* !
 DEFINE_HOOK(0x438762, BombClass_Detonate_FixNoOwner_Exp, 0x6)
 {
 	GET(BombClass *, pThis, ESI);
 
+	// Also insert HouseClass* just in case BombClass lose their Techno Owner 
 	R->Stack(0x0, pThis->OwnerHouse);
 
 	return 0;
