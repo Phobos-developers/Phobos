@@ -268,7 +268,7 @@ DefaultDisguise=E2  ; InfantryType
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                            ; TechnoType
-PassengerDeletion.Rate=0                 ; integer, game frames
+PassengerDeletion.Rate=0                ; integer, game frames
 PassengerDeletion.Rate.SizeMultiply=yes ; boolean, whether to multiply frames amount by size
 PassengerDeletion.Soylent=no            ; boolean
 PassengerDeletion.SoylentFriendlies=no  ; boolean

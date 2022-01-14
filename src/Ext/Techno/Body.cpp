@@ -358,9 +358,9 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 						{
 							VocClass::PlayAt(pData->PassengerDeletion_ReportSound, pThis->GetCoords(), nullptr);
 
-							const auto pAnimType = pData->PassengerDeletion_Anim.Get(nullptr);
-							if (pAnimType)
+							if (pData->PassengerDeletion_Anim.isset())
 							{
+								const auto pAnimType = pData->PassengerDeletion_Anim.Get();
 								if (auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location))
 								{
 									pAnim->SetOwnerObject(pThis);
