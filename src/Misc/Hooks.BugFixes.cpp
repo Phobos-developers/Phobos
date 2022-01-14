@@ -9,6 +9,7 @@
 #include <BulletClass.h>
 #include <HouseClass.h>
 #include <BombClass.h>
+#include <WarheadTypeClass.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
@@ -365,35 +366,38 @@ DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x438857, BombClass_Detonate_Anim_setOwner, 0x5)
+static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
+(
+	CoordStruct* pCoord,
+	int nDamage,
+	TechnoClass* pSource,
+	WarheadTypeClass* pWarhead,
+	bool AffectTiberium, //true
+	HouseClass* pSourceHouse //nullptr
+)
 {
-	// why ? , EAX is not guarantee to be AnimClass*
-	// casting it to make sure we got correct pointer !
-	GET(AbstractClass*, pPointer, EAX);
-	GET(BombClass*, pThis, ESI);
+	GET_REGISTER_STATIC_TYPE(BombClass*, pThisBomb, esi);
+	auto nCoord = *pCoord;
+	auto nDamageAreaResult = MapClass::Instance()->DamageArea
+	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse);
+	auto nLandType = MapClass::Instance()->GetCellAt(nCoord)->LandType;
 
-	if (auto pAnim = specific_cast<AnimClass*>(pPointer))
+	if (auto pAnimType = MapClass::SelectDamageAnimation(nDamage, pWarhead, nLandType, nCoord))
 	{
-		if (AnimTypeExt::ExtMap.Find(pAnim->Type)->CreateUnit.Get())
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->OwnerHouse, pThis->Target ? pThis->Target->GetOwningHouse() : nullptr, false);
-		else
-			pAnim->Owner = pThis->OwnerHouse;
+		if (auto pAnim = GameCreate<AnimClass>(pAnimType, nCoord, 0, 1, 0x2600, -15, false))
+		{
+			if (AnimTypeExt::ExtMap.Find(pAnim->Type)->CreateUnit.Get())
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse,
+					pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
+			else
+				pAnim->Owner = pThisBomb->OwnerHouse;
+		}
 	}
 
-	return 0;
+	return nDamageAreaResult;
 }
 
-// I Learn these trick from AlexB 
-// We can insert/replace the stack after push happen
-// since HouseClass* for the Call is on very end , it pushed early which ESP+0x0
-// after nullptr HouseClass* pushed , before next argument is push 
-// we can insert Appropriate HouseClass* !
-DEFINE_HOOK(0x438762, BombClass_Detonate_FixNoOwner_Exp, 0x6)
-{
-	GET(BombClass *, pThis, ESI);
-
-	// Also insert HouseClass* just in case BombClass lose their Techno Owner 
-	R->Stack(0x0, pThis->OwnerHouse);
-
-	return 0;
-}
+// skip the Explosion Anim
+DEFINE_LJMP(0x4387A8, 0x438857);
+// it easier to replace __fastcall pointer call than __thiscall 
+DEFINE_POINTER_CALL(0x4387A3, _BombClass_Detonate_DamageArea);
