@@ -365,46 +365,22 @@ DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 	return 0;
 }
 
-#pragma region BombClass_BugFix
-
-/* AnimClass::Ctor moved out and converted to __fastcall with `void*_` as padding */
-static AnimClass* __fastcall _AnimClass_ctor_(AnimClass* pThis, void*_, AnimTypeClass* pType, CoordStruct* pCoord, int LoopDelay,
-	int LoopCount, DWORD flags, int ForceZAdjust, bool reverse)
+DEFINE_HOOK(0x438857, BombClass_Detonate_Anim_setOwner, 0x5)
 {
-	JMP_THIS(0x421EA0);
-}
+	// why ? , EAX is not guarantee to be AnimClass*
+	// casting it to make sure we got correct pointer !
+	GET(AbstractClass*, pPointer, EAX);
+	GET(BombClass*, pThis, ESI);
 
-// Ares hook is above this AnimClass::Ctor function , be carefull !
-static AnimClass* __fastcall _BombClass_Detonate_Anim_setOwner_(
-	AnimClass* pThis, // this were allocated memory for AnimClass*
-	void* _, // padding
-	AnimTypeClass* pType,
-	CoordStruct* pCoord,
-	int LoopDelay,
-	int LoopCount,
-	DWORD flags,
-	int ForceZAdjust,
-	bool reverse)
-{
-	// check Type just in case it crash the game when it doesnt have any
-	if (pType)
+	if (auto pAnim = specific_cast<AnimClass*>(pPointer))
 	{
-		// yes , you can get registers/stack inside DEFINE_POINTER_CALL
-		GET_REGISTER_STATIC_TYPE(BombClass*, pThisBomb, esi);
-
-		auto pAnim = _AnimClass_ctor_(pThis, _, pType, pCoord, LoopDelay, LoopCount, flags, ForceZAdjust, reverse);
-
 		if (AnimTypeExt::ExtMap.Find(pAnim->Type)->CreateUnit.Get())
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse, pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->OwnerHouse, pThis->Target ? pThis->Target->GetOwningHouse() : nullptr, false);
 		else
-			pAnim->Owner = pThisBomb->OwnerHouse;
-
-		return pAnim;
+			pAnim->Owner = pThis->OwnerHouse;
 	}
 
-	// no Type , just delete the allocated space then return nullptr
-	GameDelete(pThis);
-	return nullptr;	
+	return 0;
 }
 
 // I Learn these trick from AlexB 
@@ -421,6 +397,3 @@ DEFINE_HOOK(0x438762, BombClass_Detonate_FixNoOwner_Exp, 0x6)
 
 	return 0;
 }
-
-DEFINE_POINTER_CALL(0x438852, _BombClass_Detonate_Anim_setOwner_);
-#pragma endregion
