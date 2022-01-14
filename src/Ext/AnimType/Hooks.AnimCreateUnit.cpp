@@ -1,4 +1,4 @@
-// Anim-to--Unit 
+// Anim-to--Unit
 // Author: Otamaa
 
 #include "Body.h"

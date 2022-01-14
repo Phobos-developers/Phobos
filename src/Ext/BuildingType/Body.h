@@ -17,10 +17,12 @@ public:
 		Valueable<AffectedHouse> PowersUp_Owner;
 		ValueableVector<BuildingTypeClass*> PowersUp_Buildings;
 		DynamicVectorClass<SuperWeaponTypeClass*> SuperWeapons;
-		
+
 		ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
 		Nullable<int> PowerPlantEnhancer_Amount;
 		Nullable<float> PowerPlantEnhancer_Factor;
+
+		DynamicVectorClass<Point2D> OccupierMuzzleFlashes;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
@@ -28,6 +30,7 @@ public:
 			, PowerPlantEnhancer_Buildings {}
 			, PowerPlantEnhancer_Amount {}
 			, PowerPlantEnhancer_Factor {}
+			, OccupierMuzzleFlashes()
 		{ }
 
 		virtual ~ExtData() = default;

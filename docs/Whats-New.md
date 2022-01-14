@@ -237,14 +237,17 @@ New:
 - XDrawOffset for animations (by Morton)
 - Customizable OpenTopped properties (by Otamaa)
 - Automatic Passenger Deletion (by FS-21)
-- Script Action 74 to 81 and 84 to 91 for new AI attacks (by FS-21)
+- Script Action 74 to 81, 84 to 91 and 104 to 105 for new AI attacks (by FS-21)
 - Script Actions 82 & 83 for modifying AI Trigger Current Weight (by FS-21)
 - Script Action 92 for waiting & repeat the same new AI attack if no target was found (by FS-21)
 - Script Action 93 that modifies the Team's Trigger Weight when ends the new attack action (by FS-21)
 - Script Action 94 for picking a random script from a list (by FS-21)
-- Script Action 95 to 98 for new AI movements towards certain objects (by FS-21)
+- Script Action 95 to 102 and 106 to 109 for new AI movements towards certain objects (by FS-21)
+- Script Action 103 that Modify Target Distance in the new move actions (by FS-21)
+- Script Action 110 that Modify how ends the new move actions (by FS-21)
 - Script Action 111 that un-register Team success, is just the opposite effect of Action 49 (by FS-21)
 - Script Action 112 to regroup temporarily around the Team Leader (by FS-21)
+- Script Action 113 to Randomly Skip Next Action (by FS-21)
 - ObjectInfo now shows current Target and AI Trigger data (by FS-21)
 - Shield absorption and passthrough customization (by Morton)
 - Limbo Delivery of buildings (by Morton)
@@ -255,6 +258,10 @@ New:
 - IsSimpleDeployer deploy direction & animation customizations (by Starkku)
 - Customizable projectile gravity (by secsome)
 - Gates can now link with walls correctly via `NSGates` or `EWGates` (by Uranusian)
+- Per-warhead toggle for decloak of damaged targets (by Starkku)
+- `DeployFireWeapon=-1` now allows the deployed infantries using both weapons as undeployed (by Uranusian)
+- Power delta (surplus) counter for sidebar (by Morton)
+- Added Production and Money to Dump Object Info command (by FS-21)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -264,9 +271,14 @@ Vanilla fixes:
 - Fixed temporal weapon crash under certain conditions where stack dump starts with 0051BB7D (by secsome)
 - Fixed the bug when retinting map lighting with a map action corrupted light sources (by secsome)
 - Fixed the bug that AITriggerTypes do not recognize building upgrades (by Uranusian)
+- Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10 (by Otamaa)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
+- Improved shield behavior for forced damage (by Uranusian)
+- Fixed SplashList animations playing when a unit is hit on a bridge over water (by Uranusian)
+- Fixed shielded objects not decloaking if shield takes damage (by Starkku)
+
 
 ### 0.2.2.2
 

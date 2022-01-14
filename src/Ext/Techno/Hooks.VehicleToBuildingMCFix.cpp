@@ -44,7 +44,7 @@ void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClas
 	if (auto Anim = pTechnoFrom->MindControlRingAnim)
 	{
 		auto ToAnim = &pTechnoTo->MindControlRingAnim;
-		
+
 		if (*ToAnim)
 			(*ToAnim)->TimeToDie = 1;
 

@@ -20,6 +20,8 @@ public:
 		int IdxSelectedObjectFromAIList;
 		double CloseEnough;
 		int Countdown_RegroupAtLeader;
+		int MoveMissionEndMode;
+		TechnoClass* SelectedTarget;
 		int AngerNodeModifier;
 		bool OnlyTargetHouseEnemy;
 		int OnlyTargetHouseEnemyMode;
@@ -30,6 +32,8 @@ public:
 			, IdxSelectedObjectFromAIList { -1 }
 			, CloseEnough { -1 }
 			, Countdown_RegroupAtLeader { -1 }
+			, MoveMissionEndMode { 0 }
+			, SelectedTarget { nullptr }
 			, AngerNodeModifier { 5000 }
 			, OnlyTargetHouseEnemy { false }
 			, OnlyTargetHouseEnemyMode { -1 }

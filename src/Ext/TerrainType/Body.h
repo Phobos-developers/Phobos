@@ -36,7 +36,7 @@ public:
 
 		int GetTiberiumGrowthStage();
 		int GetCellsPerAnim();
-	
+
 	private:
 		template <typename T>
 		void Serialize(T& Stm);

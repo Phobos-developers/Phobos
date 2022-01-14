@@ -23,6 +23,7 @@ public:
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
 		Valueable<bool> AnimList_PickRandom;
+		Valueable<bool> DecloakDamagedTargets;
 
 		Valueable<int> Crit_ExtraDamage;
 		Valueable<double> Crit_Chance;
@@ -43,7 +44,7 @@ public:
 		Nullable<WeaponTypeClass*> Shield_BreakWeapon;
 
 		double RandomBuffer;
-		
+
 		Valueable<int> NotHuman_DeathSequence;
 
 		Nullable<double> Shield_AbsorbPercent;
@@ -54,7 +55,7 @@ public:
 		Valueable<int> Shield_Respawn_Rate;
 		Valueable<bool> Shield_Respawn_ResetTimer;
 		Valueable<int> Shield_SelfHealing_Duration;
-		Valueable<double> Shield_SelfHealing_Amount;
+		Nullable<double> Shield_SelfHealing_Amount;
 		Valueable<int> Shield_SelfHealing_Rate;
 		Valueable<bool> Shield_SelfHealing_ResetTimer;
 
@@ -79,6 +80,7 @@ public:
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
 			, AnimList_PickRandom { false }
+			, DecloakDamagedTargets { true }
 
 			, Crit_Chance { 0.0 }
 			, Crit_ExtraDamage { 0 }
@@ -105,7 +107,7 @@ public:
 			, Shield_Respawn_Rate_InMinutes { -1.0 }
 			, Shield_Respawn_ResetTimer { false }
 			, Shield_SelfHealing_Duration { 0 }
-			, Shield_SelfHealing_Amount { 0.0 }
+			, Shield_SelfHealing_Amount { }
 			, Shield_SelfHealing_Rate { -1 }
 			, Shield_SelfHealing_Rate_InMinutes { -1.0 }
 			, Shield_SelfHealing_ResetTimer { false }

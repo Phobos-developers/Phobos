@@ -9,7 +9,7 @@
 namespace definePatch {};
 
 // Just an example patch that allows you to disable the _YR_CmdLineParse HOOK for Syringe
-// DEFINE_PATCH( 
+// DEFINE_PATCH(
 // /* Offset */ 0x52F639,
 // /*   Data */ 0x33, 0xDB, 0x83, 0xFF, 0x01
 // );

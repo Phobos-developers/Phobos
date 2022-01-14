@@ -24,6 +24,7 @@ public:
 		Valueable<bool> ReceiveDamage;
 		Valueable<bool> LastKillWasTeamTarget;
 		TimerStruct	PassengerDeletionTimer;
+		Valueable<int> PassengerDeletionCountDown;
 		Valueable<ShieldTypeClass*> CurrentShieldType;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
@@ -32,7 +33,8 @@ public:
 			, LaserTrails {}
 			, ReceiveDamage { false }
 			, LastKillWasTeamTarget { false }
-			, PassengerDeletionTimer { -1 }
+			, PassengerDeletionTimer {}
+			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType {}
 		{ }
 
@@ -73,7 +75,7 @@ public:
 	static void InitializeLaserTrails(TechnoClass* pThis);
 	static void InitializeShield(TechnoClass* pThis);
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
-	
+
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
