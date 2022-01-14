@@ -809,13 +809,9 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 
 	bool onlyTargetHouseEnemy = pTeam->Type->OnlyTargetHouseEnemy;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-	if (pTeamData)
+	if (pTeamData->OnlyTargetHouseEnemyMode != -1)
 	{
-		if (pTeamData->OnlyTargetHouseEnemyMode != -1)
-		{
-			onlyTargetHouseEnemy = pTeamData->OnlyTargetHouseEnemy;
-		}
+		onlyTargetHouseEnemy = pTeamData->OnlyTargetHouseEnemy;
 	}
 
 	if (!pFocus && !bAircraftsWithoutAmmo)
