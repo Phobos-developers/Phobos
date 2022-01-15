@@ -270,6 +270,7 @@ Vanilla fixes:
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water (by Uranusian)
 - Fixed temporal weapon crash under certain conditions where stack dump starts with 0051BB7D (by secsome)
 - Fixed the bug when retinting map lighting with a map action corrupted light sources (by secsome)
+- Fixed the bug that UnitTrackerClass buffer limited to 512 and lead to incorrect result while scoring (by secsome)
 - Fixed the bug that AITriggerTypes do not recognize building upgrades (by Uranusian)
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10 (by Otamaa)
 
