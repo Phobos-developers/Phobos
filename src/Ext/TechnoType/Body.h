@@ -92,10 +92,10 @@ public:
 
 		Nullable<bool> JumpjetAllowLayerDeviation;
 
+		Valueable<bool> DeployingAnim_AllowAnyDirection;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
 		Valueable<bool> DeployingAnim_ReverseForUndeploy;
 		Valueable<bool> DeployingAnim_UseUnitDrawer;
-		Nullable<int> DeployDir;
 
 		struct LaserTrailDataEntry
 		{
@@ -175,10 +175,10 @@ public:
 			, NoAmmoWeapon { -1 }
 			, NoAmmoAmount { 0 }
 			, JumpjetAllowLayerDeviation {}
+			, DeployingAnim_AllowAnyDirection { false }
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
-			, DeployDir {}
 			, EnemyUIName {}
 		{ }
 
