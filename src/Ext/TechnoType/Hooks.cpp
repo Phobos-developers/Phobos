@@ -303,3 +303,41 @@ DEFINE_HOOK(0x739C86, UnitClass_DeployUndeploy_DeploySound, 0x6)
 
 	return isDeploying ? DeployReturn : UndeployReturn;
 }
+
+// Issue #503
+// Author : Otamaa
+DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
+{
+	enum {SetUIName = 0x4AE678 };
+
+	GET(ObjectClass* , pObject, ECX);
+
+	auto pDecidedUIName = pObject->GetUIName();
+	auto pFoot = generic_cast<FootClass*>(pObject);
+	auto pTechnoType = pObject->GetTechnoType();
+
+	if (pFoot && pTechnoType && !pObject->IsDisguised())
+	{
+		bool IsAlly = true;
+		bool IsCivilian = false;
+		bool IsObserver = HouseClass::Observer || HouseClass::IsPlayerObserver();
+
+		if (auto pOwnerHouse = pFoot->GetOwningHouse())
+		{
+			IsAlly = pOwnerHouse->IsAlliedWith(HouseClass::Player);
+			IsCivilian = (pOwnerHouse == HouseClass::FindCivilianSide()) || pOwnerHouse->IsNeutral();
+		}
+
+		if (!IsAlly && !IsCivilian && !IsObserver)
+		{
+			auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+			if (auto pEnemyUIName = pTechnoTypeExt->EnemyUIName.Get().Text)
+			{
+				pDecidedUIName = pEnemyUIName;
+			}
+		}
+	}
+
+	R->EAX(pDecidedUIName);
+	return SetUIName;
+}

@@ -213,6 +213,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			EliteWeaponBurstFLHs[i].AddItem(eliteFLH.Get());
 		}
 	}
+
+	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
 }
 
 template <typename T>
@@ -278,6 +280,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployingAnim_ReverseForUndeploy)
 		.Process(this->DeployingAnim_UseUnitDrawer)
 		.Process(this->DeployDir)
+		.Process(this->EnemyUIName)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
