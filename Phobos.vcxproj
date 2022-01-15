@@ -35,6 +35,7 @@
     <ClCompile Include="src\Ext\Trigger\Hooks.cpp" />
     <ClCompile Include="src\Misc\CaptureManager.cpp" />
     <ClCompile Include="src\Misc\Hooks.Image.cpp" />
+    <ClCompile Include="src\Misc\Hooks.Overlay.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
     <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="src\Utilities\Template.h" />
     <ClInclude Include="src\Utilities\TemplateDef.h" />
     <ClInclude Include="YRpp\GameTextManager.h" />
+    <ClInclude Include="YRpp\Straws.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src\version.rc" />

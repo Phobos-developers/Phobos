@@ -11,6 +11,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that temporaryed unit cannot be erased correctly and no longer raise an error.
 - SHP debris shadows now respect the `Shadow` tag.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
+- Allowed usage of OverlayTypes exceeding 255 limit.
 - Adds a "Load Game" button to the retry dialog on mission failure.
 
 ![image](_static/images/turretoffset-01.png)  
