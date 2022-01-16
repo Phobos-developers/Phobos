@@ -6,6 +6,7 @@
 #include <ScenarioClass.h>
 #include <Surface.h>
 #include <Straws.h>
+#include <Pipes.h>
 #include <SessionClass.h>
 
 // This hook is just original YR code except the overlay reader.
@@ -27,7 +28,7 @@ DEFINE_HOOK(0x5FD2E0, OverlayClass_ReadINI, 0x7)
 			struct OverlayByteReader
 			{
 				OverlayByteReader(CCINIClass* pINI, const char* pSection)
-					: ls(TRUE, 0x2000), bs { nullptr,0 }
+					: ls { TRUE, 0x2000 }, bs { nullptr, 0 }
 				{
 					pBuffer = YRMemory::Allocate(512000);
 					uuLength = pINI->ReadUUBlock(pSection, pBuffer, 512000);
@@ -73,14 +74,15 @@ DEFINE_HOOK(0x5FD2E0, OverlayClass_ReadINI, 0x7)
 				ret[2] = ByteReaders[2].Get();
 				ret[3] = ByteReaders[3].Get();
 
-				return *(size_t*)ret;
+				return (ret[0] | (ret[1] << 8) | (ret[2] << 16) | (ret[3] << 24));
 			}
-
-			OverlayByteReader ByteReaders[4];
 
 			OverlayReader(CCINIClass* pINI)
 				:ByteReaders { {pINI,"OverlayPack" }, { pINI,"OverlayPack2" }, { pINI,"OverlayPack3" }, { pINI,"OverlayPack4" }, }
 			{}
+
+		private:
+			OverlayByteReader ByteReaders[4];
 		};
 
 		OverlayReader reader(pINI);
@@ -140,4 +142,97 @@ DEFINE_HOOK(0x5FD2E0, OverlayClass_ReadINI, 0x7)
 	AbstractClass::RemoveAllInactive();
 
 	return 0x5FD69A;
+}
+
+DEFINE_HOOK(0x5FD6A0, OverlayClass_WriteINI, 0x6)
+{
+	GET(CCINIClass*, pINI, ECX);
+
+	pINI->Clear("OVERLAY", nullptr);
+	
+	struct OverlayWriter
+	{
+		struct OverlayByteWriter
+		{
+			OverlayByteWriter(const char* pSection, size_t nBufferLength)
+				: bp { nullptr,0 }, lp { FALSE,0x2000 }, uuLength { 0 }, lpSectionName { pSection }
+			{
+				this->Buffer = YRMemory::Allocate(nBufferLength);
+				bp.Buffer.Buffer = this->Buffer;
+				bp.Buffer.Size = nBufferLength;
+				bp.Buffer.Allocated = false;
+				lp.Put_To(bp);
+			}
+
+			~OverlayByteWriter()
+			{
+				YRMemory::Deallocate(this->Buffer);
+			}
+
+			void Put(unsigned char data)
+			{
+				uuLength += lp.Put(&data, 1);
+			}
+
+			void PutBlock(CCINIClass* pINI)
+			{
+				pINI->Clear(this->lpSectionName, nullptr);
+				pINI->WriteUUBlock(this->lpSectionName, this->Buffer, uuLength);
+			}
+
+			const char* lpSectionName;
+			size_t uuLength;
+			void* Buffer;
+			BufferPipe bp;
+			LCWPipe lp;
+		};
+
+		OverlayWriter(size_t nLen)
+			: ByteWriters{ { "OverlayPack", nLen}, { "OverlayPack2", nLen }, { "OverlayPack3", nLen }, { "OverlayPack4", nLen }}
+		{ }
+
+		void Put(int nOverlay)
+		{
+			unsigned char bytes[4];
+			bytes[0] = (nOverlay & 0xFF);
+			bytes[1] = ((nOverlay >> 8) & 0xFF);
+			bytes[2] = ((nOverlay >> 16) & 0xFF);
+			bytes[3] = ((nOverlay >> 24) & 0xFF);
+			ByteWriters[0].Put(bytes[0]);
+			ByteWriters[1].Put(bytes[1]);
+			ByteWriters[2].Put(bytes[2]);
+			ByteWriters[3].Put(bytes[3]);
+		}
+
+		void PutBlock(CCINIClass* pINI)
+		{
+			ByteWriters[0].PutBlock(pINI);
+			ByteWriters[1].PutBlock(pINI);
+			ByteWriters[2].PutBlock(pINI);
+			ByteWriters[3].PutBlock(pINI);
+		}
+
+	private:
+		OverlayByteWriter ByteWriters[4];
+	};
+
+	size_t len = DSurface::Alternate->Width * DSurface::Alternate->Height;
+	OverlayWriter writer(len);
+	OverlayWriter::OverlayByteWriter datawriter("OverlayDataPack", len);
+
+	for (short i = 0; i < 0x200; ++i)
+	{
+		for (short j = 0; j < 0x200; ++j)
+		{
+			CellStruct mapCoord { j,i };
+			auto const pCell = MapClass::Instance->GetCellAt(mapCoord);
+			writer.Put(pCell->OverlayTypeIndex);
+			datawriter.Put(pCell->OverlayData);
+		}
+	}
+
+	writer.PutBlock(pINI);
+	datawriter.PutBlock(pINI);
+
+	return 0x5FD8EB;
 }

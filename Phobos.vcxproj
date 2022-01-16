@@ -167,7 +167,7 @@
     <ClInclude Include="src\Utilities\Template.h" />
     <ClInclude Include="src\Utilities\TemplateDef.h" />
     <ClInclude Include="YRpp\GameTextManager.h" />
-    <ClInclude Include="YRpp\Straws.h" />
+    <ClInclude Include="YRpp\Pipes.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src\version.rc" />
