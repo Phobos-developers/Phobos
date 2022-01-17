@@ -1046,7 +1046,7 @@ x=124,0
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=125,n           ; integer n=0
+x=125,n           ; integer n=0, in frames
 ```
 
 ### `126` Start a Timed Jump to the same line
@@ -1056,7 +1056,7 @@ x=125,n           ; integer n=0
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=126,n           ; integer n=0
+x=126,n           ; integer n=0, in frames
 ```
 
 ### `500 - 523` Edit Variable
