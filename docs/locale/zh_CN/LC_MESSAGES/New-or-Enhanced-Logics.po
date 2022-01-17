@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-04 22:02+0800\n"
+"POT-Creation-Date: 2022-01-07 11:14+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,8 +68,8 @@ msgstr ""
 #: ../New-or-Enhanced-Logics.md:519 ../New-or-Enhanced-Logics.md:529
 #: ../New-or-Enhanced-Logics.md:539 ../New-or-Enhanced-Logics.md:556
 #: ../New-or-Enhanced-Logics.md:566 ../New-or-Enhanced-Logics.md:585
-#: ../New-or-Enhanced-Logics.md:899 ../New-or-Enhanced-Logics.md:939
-#: ../New-or-Enhanced-Logics.md:1043
+#: ../New-or-Enhanced-Logics.md:901 ../New-or-Enhanced-Logics.md:941
+#: ../New-or-Enhanced-Logics.md:1092
 msgid "In `rulesmd.ini`:"
 msgstr "在`rulesmd.ini`中："
 
@@ -1355,7 +1355,7 @@ msgstr "例如：`盟军战役25: 僵僵の钱 - 钱全被偷光了!`"
 msgid "`501` Edit Variable"
 msgstr "`501` 编辑变量"
 
-#: ../New-or-Enhanced-Logics.md:696 ../New-or-Enhanced-Logics.md:984
+#: ../New-or-Enhanced-Logics.md:696 ../New-or-Enhanced-Logics.md:1033
 msgid "Operate a variable's value"
 msgstr "计算一个变量的值"
 
@@ -1365,7 +1365,7 @@ msgid ""
 "2^31-1."
 msgstr "变量类型为int32，即值域范围为[-2147483648,2147483647]。"
 
-#: ../New-or-Enhanced-Logics.md:698 ../New-or-Enhanced-Logics.md:986
+#: ../New-or-Enhanced-Logics.md:698 ../New-or-Enhanced-Logics.md:1035
 msgid "Any numbers exceeding this limit will lead to unexpected results!"
 msgstr "超过此范围可能会引起预期外的效果。"
 
@@ -1518,11 +1518,13 @@ msgstr "可以使单位进入一段时间的区域警戒模式。类似脚本**5
 #: ../New-or-Enhanced-Logics.md:766 ../New-or-Enhanced-Logics.md:776
 #: ../New-or-Enhanced-Logics.md:786 ../New-or-Enhanced-Logics.md:798
 #: ../New-or-Enhanced-Logics.md:858 ../New-or-Enhanced-Logics.md:868
-#: ../New-or-Enhanced-Logics.md:880 ../New-or-Enhanced-Logics.md:911
-#: ../New-or-Enhanced-Logics.md:921 ../New-or-Enhanced-Logics.md:931
-#: ../New-or-Enhanced-Logics.md:951 ../New-or-Enhanced-Logics.md:968
-#: ../New-or-Enhanced-Logics.md:978 ../New-or-Enhanced-Logics.md:988
-#: ../New-or-Enhanced-Logics.md:998 ../New-or-Enhanced-Logics.md:1008
+#: ../New-or-Enhanced-Logics.md:880 ../New-or-Enhanced-Logics.md:913
+#: ../New-or-Enhanced-Logics.md:923 ../New-or-Enhanced-Logics.md:933
+#: ../New-or-Enhanced-Logics.md:953 ../New-or-Enhanced-Logics.md:978
+#: ../New-or-Enhanced-Logics.md:988 ../New-or-Enhanced-Logics.md:1006
+#: ../New-or-Enhanced-Logics.md:1016 ../New-or-Enhanced-Logics.md:1026
+#: ../New-or-Enhanced-Logics.md:1037 ../New-or-Enhanced-Logics.md:1047
+#: ../New-or-Enhanced-Logics.md:1057
 msgid "In `aimd.ini`:"
 msgstr "在`aimd.ini`中："
 
@@ -2118,8 +2120,8 @@ msgid ""
 msgstr "当该脚本行为被执行时，它将增加AI触发当前的权重。当前权重将不会逾越AI触发的权重上下限。要注意的是同个AI触发下的所有TeamTypes或早或晚都会更新当前权重。第二个参数是一个正值。要注意游戏本体在计算触发周期的当前权重时只采用两个小队中的第一个,而该行为将无视该小队是其中哪个，当前权重都将在行为被执行时进行计算。"
 
 #: ../New-or-Enhanced-Logics.md:874
-msgid "`84-91` `AITargetTypes` Attack Action"
-msgstr "`84-91` `AITargetTypes` 攻击行为"
+msgid "`84-91`, `104-105` `AITargetTypes` Attack Action"
+msgstr "`84-91`，`104-105` `AITargetTypes` 攻击行为"
 
 #: ../New-or-Enhanced-Logics.md:876
 msgid ""
@@ -2168,7 +2170,19 @@ msgstr ""
 msgid "91"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:897
+#: ../New-or-Enhanced-Logics.md:473
+msgid "104"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:473
+msgid "Picks 1 random target from the list"
+msgstr "从列表中随机选择一个目标"
+
+#: ../New-or-Enhanced-Logics.md:473
+msgid "105"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:899
 msgid ""
 "The second parameter with a 0-based index for the `AITargetTypes` section"
 " specifies the list of possible `VehicleTypes`, `AircraftTypes`, "
@@ -2177,11 +2191,11 @@ msgid ""
 " script work:"
 msgstr "第二个参数是基于0的`AITargetTypes`中的索引，指定了可用的`VehicleTypes`，`AircraftTypes`，`InfantryTypes`和`BuildingTypes`列表。要使本脚本正常工作，需要在`rulesmd.ini`中声明[AITargetTypes]。"
 
-#: ../New-or-Enhanced-Logics.md:907
+#: ../New-or-Enhanced-Logics.md:909
 msgid "`92` Wait If No Target Found"
 msgstr "`92` 如果未发现目标则等待"
 
-#: ../New-or-Enhanced-Logics.md:909
+#: ../New-or-Enhanced-Logics.md:911
 msgid ""
 "When executed before a new Attack ScriptType Actions like `74-81` and "
 "`84-91` the TeamType will remember that must wait 1 second if no target "
@@ -2191,11 +2205,11 @@ msgid ""
 " next line. The value `0` means infinite retries."
 msgstr "在执行`74-81`和`84-91`之前执行，第二个参数代表这些脚本未找到目标时的重试次数，0代表无限次重试。"
 
-#: ../New-or-Enhanced-Logics.md:917
+#: ../New-or-Enhanced-Logics.md:919
 msgid "`93` Team's Trigger Weight Reward"
 msgstr "`93` 小队的触发权重奖励"
 
-#: ../New-or-Enhanced-Logics.md:919
+#: ../New-or-Enhanced-Logics.md:921
 msgid ""
 "When executed before a new Attack ScriptType Actions like `74-81` and "
 "`84-91` the TeamType will remember that must be rewarded increasing the "
@@ -2205,18 +2219,18 @@ msgid ""
 "parameter is a positive value."
 msgstr "在执行`74-81`和`84-91`之前执行，代表这些脚本每击杀一个目标单位时增加的触发权重。n必须是正数。"
 
-#: ../New-or-Enhanced-Logics.md:927
+#: ../New-or-Enhanced-Logics.md:929
 msgid "`94` Pick A Random Script"
 msgstr "`94` 抽选一个随机脚本"
 
-#: ../New-or-Enhanced-Logics.md:929
+#: ../New-or-Enhanced-Logics.md:931
 msgid ""
 "When executed this action picks a random Script Type and replaces the "
 "current script by the new picked. The second parameter is a 0-based index"
 " from the new section `AIScriptsList` explained below."
 msgstr "执行此动作将会随机挑选一个脚本，并替换当前脚本。第二个参数是基于0的`AIScriptsList`中的索引，见下。"
 
-#: ../New-or-Enhanced-Logics.md:937
+#: ../New-or-Enhanced-Logics.md:939
 msgid ""
 "The second parameter is a 0-based index for the `AIScriptsList` section "
 "that specifies the list of possible `ScriptTypes` that can be evaluated. "
@@ -2224,11 +2238,11 @@ msgid ""
 "making this script work:"
 msgstr "第二个参数是基于0的`AIScriptsList`中的索引，指定了可用的`ScriptTypes`列表。要使本脚本正常工作，需要在`rulesmd.ini`中声明[AIScriptsList]。"
 
-#: ../New-or-Enhanced-Logics.md:947
-msgid "`95-98` Moving Team to techno location"
-msgstr "`95-98` 移动小队至单位地点"
-
 #: ../New-or-Enhanced-Logics.md:949
+msgid "`95-98`, `106-109` Moving Team to techno location"
+msgstr "`95-98`，`106-109` 移动小队至单位地点"
+
+#: ../New-or-Enhanced-Logics.md:951
 msgid ""
 "These Actions instructs the TeamType to use the TaskForce to approach the"
 " target specified by the second parameter. Look at the tables below for "
@@ -2263,21 +2277,105 @@ msgstr "友方"
 msgid "98"
 msgstr ""
 
-#: ../New-or-Enhanced-Logics.md:964
+#: ../New-or-Enhanced-Logics.md:473
+msgid "99"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:473
+msgid "[AITargetType] index#"
+msgstr "`AITargetTypes` 序号#"
+
+#: ../New-or-Enhanced-Logics.md:473
+msgid "100"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:473
+msgid "101"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:473
+msgid "102"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:473
+msgid "106"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:473
+msgid "Picks 1 random target from the selected list"
+msgstr "从被选中的列表中随机选择一个目标"
+
+#: ../New-or-Enhanced-Logics.md:473
+msgid "107"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:473
+msgid "108"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:473
+msgid "109"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:974
+msgid "`103` Modify Target Distance"
+msgstr "`103` 自定义目标距离"
+
+#: ../New-or-Enhanced-Logics.md:976
+msgid ""
+"By default Movement actions `95-102` & `106-109` ends when the Team "
+"Leader reaches a distance declared in rulesmd.ini called CloseEnough. "
+"When this action is  executed before the Movement actions `95-102` "
+"overwrites CloseEnough value. This action works only the first time and "
+"CloseEnough will be used again the next Movement action."
+msgstr "移动动作（`95-102`与`106-109`）默认会在其小队队长抵达目标周围`CloseEnough`距离视为完成。当此动作在移动动作之前执行时，将覆盖`CloseEnough`设定的值。此动作首次生效后就失效，即下次移动动作会恢复使用`CloseEnough`。"
+
+#: ../New-or-Enhanced-Logics.md:984
+msgid "`110` Set Move Action End Mode"
+msgstr "`110` 设置移动动作结束模式"
+
+#: ../New-or-Enhanced-Logics.md:986
+msgid ""
+"Sets how the Movement actions ends and jumps to the next line. This "
+"action works only the first time and CloseEnough will be used again the "
+"next Movement action."
+msgstr "设定移动动作怎样视为完成。此动作首次生效后就失效，即下次移动动作会恢复使用`CloseEnough`。"
+
+#: ../New-or-Enhanced-Logics.md:994
+msgid "The possible argument values are:"
+msgstr "可选参数为："
+
+#: ../New-or-Enhanced-Logics.md:473
+msgid "*Action ends when...*"
+msgstr "*动作结束当...*"
+
+#: ../New-or-Enhanced-Logics.md:473
+msgid "Team Leader reaches the minimum distance"
+msgstr "小队队长抵达最小距离"
+
+#: ../New-or-Enhanced-Logics.md:473
+msgid "One unit reaches the minimum distance"
+msgstr "一个单位抵达最小距离"
+
+#: ../New-or-Enhanced-Logics.md:473
+msgid "All team members reached the minimum distance"
+msgstr "所有成员抵达最小距离"
+
+#: ../New-or-Enhanced-Logics.md:1002
 msgid "`111` Un-register Team success"
 msgstr "`111` 取消任务执行成功"
 
-#: ../New-or-Enhanced-Logics.md:966
+#: ../New-or-Enhanced-Logics.md:1004
 msgid ""
 "Is just the opposite effect of the script action `49,0`. Like if the Team"
 " failed."
 msgstr "就是`49,0`的反向版本。"
 
-#: ../New-or-Enhanced-Logics.md:974
+#: ../New-or-Enhanced-Logics.md:1012
 msgid "`112` Regroup temporarily around the Team Leader"
 msgstr "`112` 于小队队长周围暂时集结"
 
-#: ../New-or-Enhanced-Logics.md:976
+#: ../New-or-Enhanced-Logics.md:1014
 msgid ""
 "Puts the TaskForce into Area Guard Mode for the given amount of time "
 "around the Team Leader (this unit remains almost immobile until the "
@@ -2287,102 +2385,114 @@ msgstr ""
 "将使小队成员在小队队长附近进入给定时长的区域警戒状态(该单位将在行为结束前几乎无法移动)。对队长周围的默认半径定义来自于`[General] > "
 "CloseEnough`，其余单位将不会离开这一范围。"
 
-#: ../New-or-Enhanced-Logics.md:983
+#: ../New-or-Enhanced-Logics.md:1022
+msgid "`113` Randomly Skip Next Action"
+msgstr "`113` 随机跳过下一动作"
+
+#: ../New-or-Enhanced-Logics.md:1024
+msgid ""
+"When executed this action picks a random value between 1 and 100. If the "
+"value is equal or below the second parameter then the next action will be"
+" skipped. If the second parameter is 0 means that the next action will "
+"never be skipped and 100 means thay always will be skipped."
+msgstr "执行此动作时会挑选一个1-100之间的随机数，如果此数值小于等于第二个参数，则跳过下一个动作。第二个参数为0时，下一个脚本一定会执行；为100时，下一个脚本一定不会执行。"
+
+#: ../New-or-Enhanced-Logics.md:1032
 msgid "`500 - 523` Edit Variable"
 msgstr "`500 - 523` 编辑变量"
 
-#: ../New-or-Enhanced-Logics.md:985
+#: ../New-or-Enhanced-Logics.md:1034
 msgid ""
 "The variable's value type is int16 instead of int32 in trigger actions "
 "for some reason, which means it ranges from -2^15 to 2^15-1."
 msgstr "由于某些原因，变量的类型是int16而不是像触发动作中那样是int32，意味着值域范围为[-32768,32767]。"
 
-#: ../New-or-Enhanced-Logics.md:994
+#: ../New-or-Enhanced-Logics.md:1043
 msgid "`524 - 547` Edit Variable by Local Variable"
 msgstr "`524 - 547` 通过局部变量编辑变量"
 
-#: ../New-or-Enhanced-Logics.md:995
+#: ../New-or-Enhanced-Logics.md:1044
 msgid "Operate a variable's value by a local variable's value"
 msgstr "通过局部变量的值计算变量的值"
 
-#: ../New-or-Enhanced-Logics.md:996
+#: ../New-or-Enhanced-Logics.md:1045
 msgid ""
 "Similar to 500-523, but the number to operate the value is being read "
 "from a local variable"
 msgstr "类似500-523，但是数字的值由局部变量中读取"
 
-#: ../New-or-Enhanced-Logics.md:1004
+#: ../New-or-Enhanced-Logics.md:1053
 msgid "`548 - 571` Edit Variable by Global Variable"
 msgstr "`548 - 571` 通过全局变量编辑变量"
 
-#: ../New-or-Enhanced-Logics.md:1005
+#: ../New-or-Enhanced-Logics.md:1054
 msgid "Operate a variable's value by a global variable's value"
 msgstr "通过全部变量的值计算变量的值"
 
-#: ../New-or-Enhanced-Logics.md:1006
+#: ../New-or-Enhanced-Logics.md:1055
 msgid ""
 "Similar to 500-523, but the number to operate the value is being read "
 "from a global variable"
 msgstr "类似500-523，但是数字的值由全局变量中读取"
 
-#: ../New-or-Enhanced-Logics.md:1014
+#: ../New-or-Enhanced-Logics.md:1063
 msgid "Super Weapons"
 msgstr "超级武器"
 
-#: ../New-or-Enhanced-Logics.md:1016
+#: ../New-or-Enhanced-Logics.md:1065
 msgid "LimboDelivery"
 msgstr "虚拟投放"
 
-#: ../New-or-Enhanced-Logics.md:1018
+#: ../New-or-Enhanced-Logics.md:1067
 msgid ""
 "Super Weapons can now deliver off-map buildings that act as if they were "
 "on the field."
 msgstr "超级武器现在可以投放不在地图上的建筑，好似他们在地图上一样。"
 
-#: ../New-or-Enhanced-Logics.md:1019
+#: ../New-or-Enhanced-Logics.md:1068
 msgid ""
 "`LimboDelivery.Types` is the list of BuildingTypes that will be created "
 "when the Super Weapons fire. Super Weapon Type and coordinates do not "
 "matter."
 msgstr "`LimboDelivery.Types`列出此超武生效后创建的建筑列表。超武类型和发射位置并不重要。"
 
-#: ../New-or-Enhanced-Logics.md:1020
+#: ../New-or-Enhanced-Logics.md:1069
 msgid ""
 "`LimboDelivery.IDs` is the list of numeric IDs that will be assigned to "
 "buildings. Necessary for LimboKill to work."
 msgstr "`LimboDelivery.IDs`列出数字ID用以绑定建筑。要使虚拟击杀生效就必须设置。"
 
-#: ../New-or-Enhanced-Logics.md:1022
+#: ../New-or-Enhanced-Logics.md:1071
 msgid ""
 "Created buildings are not affected by any on-map threats. The only way to"
 " remove them from the game is by using a Super Weapon with LimboKill set."
 msgstr "被创建的建筑不会被任何地图内威胁影响到。只有虚拟击杀的超武才能移除这些建筑。"
 
-#: ../New-or-Enhanced-Logics.md:1023
+#: ../New-or-Enhanced-Logics.md:1072
 msgid "`LimboKill.Affects` sets which houses are affected by this feature."
 msgstr "`LimboKill.Affects`指定哪些所属方会被此功能影响"
 
-#: ../New-or-Enhanced-Logics.md:1024
+#: ../New-or-Enhanced-Logics.md:1073
 msgid ""
 "`LimboKill.IDs` lists IDs that will be targeted. Buildings with these IDs"
 " will be removed from the game instantly."
 msgstr "`LimboKill.IDs`列出目标ID。拥有此ID的虚拟投放建筑会被立刻移除。"
 
-#: ../New-or-Enhanced-Logics.md:1026
+#: ../New-or-Enhanced-Logics.md:1075
 msgid ""
 "Delivery can be made random with these optional tags. The game will "
 "randomly choose only a single building from the list for each roll chance"
 " provided."
 msgstr "投放可以通过一些可选的标签随机化。此时游戏会随机选择其中一种建筑投放。"
 
-#: ../New-or-Enhanced-Logics.md:1027
+#: ../New-or-Enhanced-Logics.md:1076
 msgid ""
 "`LimboDelivery.RollChance` lits chances of each \"dice roll\" happening. "
 "Valid values range from 0% (never happens) to 100% (always happens). "
 "Defaults to a single sure roll."
 msgstr "指定虚拟投放的概率，值域为[0%,100%]（从不发生，总是发生），默认为一次成功的投放。"
 
-#: ../New-or-Enhanced-Logics.md:1028
+#: ../New-or-Enhanced-Logics.md:1077
 msgid ""
 "`LimboDelivery.RandomWeightsN` lists the weights for each \"dice roll\" "
 "that increase the probability of picking a specific building. Valid "
@@ -2392,35 +2502,35 @@ msgid ""
 "used."
 msgstr "指定虚拟投放的权重，RandomWeights相当于RandomWeights0。每次虚拟投放时都会给对应的建筑增加这些权重，若对应次投放没有指定权重，则使用指定的最后一次权重。"
 
-#: ../New-or-Enhanced-Logics.md:1030
+#: ../New-or-Enhanced-Logics.md:1079
 msgid ""
 "Note: This feature might not support every building flag. Flags that are "
 "confirmed to work correctly are listed below:"
 msgstr "注意：被虚拟投放的建筑不一定会使所有标签生效，以下标签是确定生效的："
 
-#: ../New-or-Enhanced-Logics.md:1031
+#: ../New-or-Enhanced-Logics.md:1080
 msgid "FactoryPlant"
 msgstr "工业工厂"
 
-#: ../New-or-Enhanced-Logics.md:1032
+#: ../New-or-Enhanced-Logics.md:1081
 msgid "OrePurifier"
 msgstr "矿石精炼器"
 
-#: ../New-or-Enhanced-Logics.md:1033
+#: ../New-or-Enhanced-Logics.md:1082
 msgid "SpySat"
 msgstr "间谍卫星"
 
-#: ../New-or-Enhanced-Logics.md:1034
+#: ../New-or-Enhanced-Logics.md:1083
 msgid "KeepAlive (Ares 3.0)"
 msgstr "续命（KeepAlive, Ares 3.0）"
 
-#: ../New-or-Enhanced-Logics.md:1035
+#: ../New-or-Enhanced-Logics.md:1084
 msgid ""
 "Prerequisite, PrerequisiteOverride, Prerequisite.List# (Ares 0.1), "
 "Prerequisite.Negative (Ares 0.1), GenericPrerequisites (Ares 0.1)"
 msgstr "建造前提（含Ares扩展）"
 
-#: ../New-or-Enhanced-Logics.md:1036
+#: ../New-or-Enhanced-Logics.md:1085
 msgid ""
 "SuperWeapon, SuperWeapon2, SuperWeapons (Ares 0.9), SW.AuxBuildings (Ares"
 " 0.9), SW.NegBuildings (Ares 0.9)"
@@ -2428,7 +2538,7 @@ msgstr ""
 "SuperWeapon、SuperWeapon2，SuperWeapons、SW.AuxBuildings、SW.NegBuildings（Ares"
 " 0.9）"
 
-#: ../New-or-Enhanced-Logics.md:1038
+#: ../New-or-Enhanced-Logics.md:1087
 msgid ""
 "Note: In order for this feature to work with AITriggerTypes conditions "
 "(\"Owning house owns ???\" and \"Enemy house owns ???\"), `LegalTarget` "

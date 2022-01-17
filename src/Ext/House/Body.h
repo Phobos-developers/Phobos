@@ -9,7 +9,7 @@
 
 #include <map>
 
-class HouseExt 
+class HouseExt
 {
 public:
 	using base_type = HouseClass;

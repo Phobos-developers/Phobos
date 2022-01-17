@@ -20,6 +20,8 @@ public:
 		int IdxSelectedObjectFromAIList;
 		double CloseEnough;
 		int Countdown_RegroupAtLeader;
+		int MoveMissionEndMode;
+		TechnoClass* SelectedTarget;
 		TimerStruct ForceJump_Countdown;
 		int ForceJump_InitialCountdown;
 		bool ForceJump_RepeatMode;
@@ -30,6 +32,8 @@ public:
 			, IdxSelectedObjectFromAIList { -1 }
 			, CloseEnough { -1 }
 			, Countdown_RegroupAtLeader { -1 }
+			, MoveMissionEndMode { 0 }
+			, SelectedTarget { nullptr }
 			, ForceJump_Countdown { -1 }
 			, ForceJump_InitialCountdown { -1 }
 			, ForceJump_RepeatMode { false }

@@ -83,7 +83,7 @@ Shield.InheritStateOnReplace=false   ; boolean
 - `IdleAnim.TemporalAction` indicates what happens to the animation when the shield is attacked by temporal weapons.
 - `BreakAnim`, if set, will be played when the shield has been broken.
 - `HitAnim`, if set, will be played when the shield is attacked, similar to `WeaponNullifyAnim` for Iron Curtain.
-- `BreakWeapon`, if set, will be fired at the TechnoType once the shield breaks.
+- `BreakWeapon`, if set, will be fired at the TechnoType once the shield breaks. Note: for this to work it requires that the WeaponType used has been explicitly listed in `[WeaponTypes]`, which is only available with Ares.
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
 - `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
@@ -871,7 +871,7 @@ In `aimd.ini`:
 x=83,n
 ```
 
-### `84-91` `AITargetTypes` Attack Action
+### `84-91`, `104-105` `AITargetTypes` Attack Action
 
 - These Actions instruct the TeamType to use the TaskForce to approach and attack the target specified by the second parameter which is an index of a modder-defined group from `AITargetTypess`. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
   - For threat-based attack actions `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from `rulesmd.ini` are accounted.
@@ -880,7 +880,7 @@ x=83,n
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=i,n             ; where 84 <= i <= 91
+x=i,n             ; where 84 <= i <= 91 or 104 <= i <= 105
 ```
 
 | *Action* | *Argument*   | *Repeats* | *Target Priority* | *Description*                                 |
@@ -893,6 +893,8 @@ x=i,n             ; where 84 <= i <= 91
 89         | `AITargetTypes` index# | No | Farther, higher threat | Ends when a team member kill the designated target |
 90         | `AITargetTypes` index# | No | Closer | Ends when a team member kill the designated target |
 91         | `AITargetTypes` index# | No | Farther | Ends when a team member kill the designated target |
+104        | `AITargetTypes` index# | Yes | Closer | Picks 1 random target from the list |
+105        | `AITargetTypes` index# | Yes | Farther | Picks 1 random target from the list |
 
 - The second parameter with a 0-based index for the `AITargetTypes` section specifies the list of possible `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` that can be evaluated. The new `AITargetTypes` section must be declared in `rulesmd.ini` for making this script work:
 
@@ -944,14 +946,14 @@ In `rulesmd.ini`:
 ; ...
 ```
 
-### `95-98` Moving Team to techno location
+### `95-98`, `106-109` Moving Team to techno location
 
 - These Actions instructs the TeamType to use the TaskForce to approach the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value).
 
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=i,n             ; where 95 <= i <= 98
+x=i,n             ; where 95 <= i <= 98 or 106 <= i <= 109
 ```
 
 | *Action* | *Argument*    | Target Owner | *Target Priority* | *Description*                                 |
@@ -960,6 +962,42 @@ x=i,n             ; where 95 <= i <= 98
 96         | Target Type# | Enemy | Farther, higher threat |  |
 97         | Target Type# | Friendly | Closer |  |
 98         | Target Type# | Friendly | Farther |  |
+99         | [AITargetType] index# | Enemy | Closer, higher threat |  |
+100        | [AITargetType] index# | Enemy | Farther, higher threat |  |
+101        | [AITargetType] index# | Friendly | Closer |  |
+102        | [AITargetType] index# | Friendly | Farther |  |
+106        | [AITargetType] index# | Enemy | Closer | Picks 1 random target from the selected list |
+107        | [AITargetType] index# | Enemy | Farther | Picks 1 random target from the selected list |
+108        | [AITargetType] index# | Friendly | Closer | Picks 1 random target from the selected list |
+109        | [AITargetType] index# | Friendly | Farther | Picks 1 random target from the selected list |
+
+### `103` Modify Target Distance
+
+- By default Movement actions `95-102` & `106-109` ends when the Team Leader reaches a distance declared in rulesmd.ini called CloseEnough. When this action is  executed before the Movement actions `95-102` overwrites CloseEnough value. This action works only the first time and CloseEnough will be used again the next Movement action.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=103,n
+```
+
+### `110` Set Move Action End Mode
+
+- Sets how the Movement actions ends and jumps to the next line. This action works only the first time and CloseEnough will be used again the next Movement action. 
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=110,n
+```
+
+- The possible argument values are:
+
+| *Argument* | *Action ends when...*                       |
+| :------: | :-------------------------------------------: |
+0         | Team Leader reaches the minimum distance |
+1         | One unit reaches the minimum distance |
+2         | All team members reached the minimum distance |
 
 ### `111` Un-register Team success
 
@@ -979,6 +1017,16 @@ In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
 x=112,n
+```
+
+### `113` Randomly Skip Next Action
+
+- When executed this action picks a random value between 1 and 100. If the value is equal or below the second parameter then the next action will be skipped. If the second parameter is 0 means that the next action will never be skipped and 100 means thay always will be skipped.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=113,n           ; where 0 > n <= 100
 ```
 
 ### `124` Stop the Timed Jumps

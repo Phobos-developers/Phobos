@@ -44,7 +44,7 @@ public:
 		Nullable<WeaponTypeClass*> Shield_BreakWeapon;
 
 		double RandomBuffer;
-		
+
 		Valueable<int> NotHuman_DeathSequence;
 
 		Nullable<double> Shield_AbsorbPercent;

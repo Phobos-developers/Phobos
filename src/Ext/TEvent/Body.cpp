@@ -148,7 +148,7 @@ bool TEventExt::VariableCheckBinary(TEventClass* pThis)
 		// We uses TechnoName for our src variable index
 		int nSrcVariable = atoi(pThis->TechnoName);
 		auto itrsrc = ScenarioExt::Global()->Variables[IsSrcGlobal].find(nSrcVariable);
-		
+
 		if (itrsrc != ScenarioExt::Global()->Variables[IsSrcGlobal].end())
 			return _Pr()(itr->second.Value, itrsrc->second.Value);
 	}

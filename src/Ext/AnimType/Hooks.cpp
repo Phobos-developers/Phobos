@@ -31,7 +31,7 @@ DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
 
 DEFINE_HOOK(0x424CB0, AnimClass_In_Which_Layer_AttachedObjectLayer, 0x6)
 {
-	enum { ReturnValue = 0x424CBF, Continue = 0x424CC0 };
+	enum { ReturnValue = 0x424CBF };
 
 	GET(AnimClass*, pThis, ECX);
 
@@ -45,9 +45,9 @@ DEFINE_HOOK(0x424CB0, AnimClass_In_Which_Layer_AttachedObjectLayer, 0x6)
 			layer = pThis->OwnerObject->InWhichLayer();
 
 		R->EAX(layer);
-		
+
 		return ReturnValue;
 	}
 
-	return Continue;
+	return 0;
 }

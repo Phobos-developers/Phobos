@@ -81,7 +81,7 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// INI_EX exINI(pINI);
 
-	
+
 
 }
 
