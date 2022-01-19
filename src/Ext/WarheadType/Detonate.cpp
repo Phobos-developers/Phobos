@@ -190,6 +190,9 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	{
 		if (pTypeExt->ImmuneToCrit)
 			return;
+
+		if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent)
+			return;
 	}
 
 	if (!EnumFunctions::IsCellEligible(pTarget->GetCell(), this->Crit_Affects))
@@ -197,6 +200,14 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 
 	if (!EnumFunctions::IsTechnoEligible(pTarget, this->Crit_Affects))
 		return;
+
+	if (this->Crit_AnimOnAffectedTargets && this->Crit_AnimList.size())
+	{
+		int idx = this->OwnerObject()->EMEffect || this->Crit_AnimList_PickRandom.Get(this->AnimList_PickRandom) ?
+			ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0;
+
+		GameCreate<AnimClass>(this->Crit_AnimList[idx], pTarget->Location);
+	}
 
 	auto Damage = this->Crit_ExtraDamage.Get();
 

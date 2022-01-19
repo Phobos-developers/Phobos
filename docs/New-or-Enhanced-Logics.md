@@ -611,18 +611,21 @@ RemoveMindControl=no                 ; boolean
 
 ### Critical damage chance
 
-- Warheads can now apply additional chance-based damage (known as "critical" damage) with the ability to customize chance, damage, affected targets, and animations of critical strike.
+- Warheads can now apply additional chance-based damage (known as "critical" damage) with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical strike.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]       ; Warhead
-Crit.Chance=0.0     ; float, chance on [0.0-1.0] scale
-Crit.ExtraDamage=0  ; integer, extra damage
-Crit.Affects=all    ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-Crit.AnimList=      ; list of animations
+[SOMEWARHEAD]                     ; Warhead
+Crit.Chance=0.0                   ; float, chance on [0.0-1.0] scale
+Crit.ExtraDamage=0                ; integer, extra damage
+Crit.Affects=all                  ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+Crit.AffectBelowPercent=1.0       ; float, maximum percentage of hitpoints targets (if applicable) can have left to be affected.
+Crit.AnimList=                    ; list of animations
+Crit.AnimList.PickRandom=         ; boolean, pick animation from list by random, defaults to AnimList.PickRandom
+Crit.AnimOnAffectedTargets=false  ; boolean, if set plays animation on every affected target instead of once at primary target.
 
-[SOMETECHNO]        ; TechnoType
-ImmuneToCrit=no     ; boolean
+[SOMETECHNO]                      ; TechnoType
+ImmuneToCrit=no                   ; boolean
 ```
 
 ### Custom 'SplashList' on Warheads

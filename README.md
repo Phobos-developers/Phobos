@@ -103,7 +103,7 @@ Credits
 - **ChrisLv_CN** - interceptor logic, LaserTrails, laser fixes, general assistance (work relicensed under [following permission](images/ChrisLv-relicense.png))
 - **Xkein** - general assistance, YRpp edits
 - **thomassneddon** - general assistance
-- **Starkku** - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements, stationary VehicleTypes, Burst logic improvements, TechnoType auto-firing weapons, Secondary weapon fallback customization, weapon target type filtering, AreaFire targeting customization, CreateUnit improvements, Attached animation & jumpjet unit layer customization, IsSimpleDeployer improvements, Shield modification warheads, Warhead decloaking toggle, Warp(In/Out)Weapon, Grinder improvements / additions, Attached animation position customization
+- **Starkku** - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements, stationary VehicleTypes, Burst logic improvements, TechnoType auto-firing weapons, Secondary weapon fallback customization, weapon target type filtering, AreaFire targeting customization, CreateUnit improvements, Attached animation & jumpjet unit layer customization, IsSimpleDeployer improvements, Shield modification warheads, Warhead decloaking toggle, Warp(In/Out)Weapon, Grinder improvements / additions, Attached animation position customization, Critical damage additions
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **Morton (MortonPL)** - XDrawOffset, Shield passthrough & absorption, building LimboDelivery, fix for Image in art rules, power delta counter
 - **mevitar** - honorary shield tester *triple* award

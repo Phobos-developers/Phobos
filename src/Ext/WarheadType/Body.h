@@ -29,6 +29,9 @@ public:
 		Valueable<double> Crit_Chance;
 		Valueable<AffectedTarget> Crit_Affects;
 		ValueableVector<AnimTypeClass*> Crit_AnimList;
+		Nullable<bool> Crit_AnimList_PickRandom;
+		Valueable<bool> Crit_AnimOnAffectedTargets;
+		Valueable<double> Crit_AffectBelowPercent;
 
 		Nullable<AnimTypeClass*> MindControl_Anim;
 
@@ -86,6 +89,9 @@ public:
 			, Crit_ExtraDamage { 0 }
 			, Crit_Affects { AffectedTarget::All }
 			, Crit_AnimList {}
+			, Crit_AnimList_PickRandom {}
+			, Crit_AnimOnAffectedTargets { false }
+			, Crit_AffectBelowPercent { 1.0 }
 			, RandomBuffer { 0.0 }
 
 			, MindControl_Anim {}

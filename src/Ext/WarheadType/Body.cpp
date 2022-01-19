@@ -55,6 +55,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_ExtraDamage.Read(exINI, pSection, "Crit.ExtraDamage");
 	this->Crit_Affects.Read(exINI, pSection, "Crit.Affects");
 	this->Crit_AnimList.Read(exINI, pSection, "Crit.AnimList");
+	this->Crit_AnimList_PickRandom.Read(exINI, pSection, "Crit.AnimList.PickRandom");
+	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
+	this->Crit_AffectBelowPercent.Read(exINI, pSection, "Crit.AffectBelowPercent");
 
 	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
 
@@ -113,6 +116,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_ExtraDamage)
 		.Process(this->Crit_Affects)
 		.Process(this->Crit_AnimList)
+		.Process(this->Crit_AnimList_PickRandom)
+		.Process(this->Crit_AnimOnAffectedTargets)
+		.Process(this->Crit_AffectBelowPercent)
 
 		.Process(this->MindControl_Anim)
 
