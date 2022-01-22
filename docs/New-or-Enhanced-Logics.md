@@ -83,7 +83,7 @@ Shield.InheritStateOnReplace=false   ; boolean
 - `IdleAnim.TemporalAction` indicates what happens to the animation when the shield is attacked by temporal weapons.
 - `BreakAnim`, if set, will be played when the shield has been broken.
 - `HitAnim`, if set, will be played when the shield is attacked, similar to `WeaponNullifyAnim` for Iron Curtain.
-- `BreakWeapon`, if set, will be fired at the TechnoType once the shield breaks.
+- `BreakWeapon`, if set, will be fired at the TechnoType once the shield breaks. Note: for this to work it requires that the WeaponType used has been explicitly listed in `[WeaponTypes]`, which is only available with Ares.
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
 - `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
