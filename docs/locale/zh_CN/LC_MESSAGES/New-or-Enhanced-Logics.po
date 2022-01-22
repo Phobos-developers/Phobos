@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-07 11:14+0800\n"
+"POT-Creation-Date: 2022-01-22 00:17+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -185,8 +185,10 @@ msgstr "如果设置了`HitAnim`，那么护盾被攻击时将播放此动画，
 #: ../New-or-Enhanced-Logics.md:86
 msgid ""
 "`BreakWeapon`, if set, will be fired at the TechnoType once the shield "
-"breaks."
-msgstr "如果设置了`BreakWeapon`，那么护盾被击碎时将引爆此武器。"
+"breaks. Note: for this to work it requires that the WeaponType used has "
+"been explicitly listed in `[WeaponTypes]`, which is only available with "
+"Ares."
+msgstr "如果设置了`BreakWeapon`，那么护盾被击碎时将引爆此武器。注意：要使得此逻辑正常运作，需要将武器注册在`[WeaponTypes]`中。"
 
 #: ../New-or-Enhanced-Logics.md:87
 msgid ""
@@ -2490,7 +2492,7 @@ msgid ""
 "`LimboDelivery.RollChance` lits chances of each \"dice roll\" happening. "
 "Valid values range from 0% (never happens) to 100% (always happens). "
 "Defaults to a single sure roll."
-msgstr "指定虚拟投放的概率，值域为[0%,100%]（从不发生，总是发生），默认为一次成功的投放。"
+msgstr "`LimboDelivery.RollChance`指定虚拟投放的概率，值域为[0%,100%]（从不发生，总是发生），默认为一次成功的投放。"
 
 #: ../New-or-Enhanced-Logics.md:1077
 msgid ""
@@ -2500,7 +2502,7 @@ msgid ""
 "likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a"
 " roll attempt doesn't have weights specified, the last weights will be "
 "used."
-msgstr "指定虚拟投放的权重，RandomWeights相当于RandomWeights0。每次虚拟投放时都会给对应的建筑增加这些权重，若对应次投放没有指定权重，则使用指定的最后一次权重。"
+msgstr "`LimboDelivery.RandomWeightsN`指定虚拟投放的权重，RandomWeights相当于RandomWeights0。每次虚拟投放时都会给对应的建筑增加这些权重，若对应次投放没有指定权重，则使用指定的最后一次权重。"
 
 #: ../New-or-Enhanced-Logics.md:1079
 msgid ""
