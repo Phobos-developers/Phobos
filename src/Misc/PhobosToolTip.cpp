@@ -139,7 +139,7 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 	if (int nCost = -pData->Money_Amount)
 		oss << Phobos::UI::CostLabel << nCost << L" ";
 		
-	if (pType->RechargeTime)
+	if (pType->RechargeTime > 0)
 	{
 		int nSec = pType->RechargeTime / 15 % 60;
 		int nMin = pType->RechargeTime / 15 / 60 /* % 60*/;
