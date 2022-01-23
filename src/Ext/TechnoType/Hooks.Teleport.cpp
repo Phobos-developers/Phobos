@@ -2,6 +2,8 @@
 #include <LocomotionClass.h>
 #include <TeleportLocomotionClass.h>
 
+#include <Ext/Techno/Body.h>
+
 #define GET_LOCO(reg_Loco) \
 	GET(ILocomotion *, Loco, reg_Loco); \
 	TeleportLocomotionClass *pLocomotor = static_cast<TeleportLocomotionClass*>(Loco); \
@@ -14,6 +16,9 @@ DEFINE_HOOK(0x719439, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 
 	R->EDX<AnimTypeClass*>(pExt->WarpOut.Get(RulesClass::Instance->WarpOut));
 
+	if (pExt->WarpOutWeapon.isset())
+		TechnoExt::FireWeaponAtSelf(pLocomotor->LinkedTo, pExt->WarpOutWeapon.Get());
+
 	return 0x71943F;
 }
 
@@ -22,6 +27,16 @@ DEFINE_HOOK(0x719788, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x
 	GET_LOCO(ESI);
 
 	R->EDX<AnimTypeClass*>(pExt->WarpIn.Get(RulesClass::Instance->WarpOut));
+
+	TechnoExt::ExtData* pTechnoExt = TechnoExt::ExtMap.Find(pLocomotor->LinkedTo);
+
+	bool isInMinRange = pTechnoExt->LastWarpDistance < pExt->ChronoRangeMinimum.Get(RulesClass::Instance->ChronoRangeMinimum);
+
+	auto weaponType = isInMinRange ? pExt->WarpInMinRangeWeapon.Get(pExt->WarpInWeapon.isset() ? pExt->WarpInWeapon.Get() : nullptr) :
+		pExt->WarpInWeapon.isset() ? pExt->WarpInWeapon.Get() : nullptr;
+
+	if (weaponType)
+		TechnoExt::FireWeaponAtSelf(pLocomotor->LinkedTo, weaponType);
 
 	return 0x71978E;
 }
@@ -81,6 +96,10 @@ DEFINE_HOOK(0x719555, TeleportLocomotionClass_ILocomotion_Process_ChronoRangeMin
 {
 	GET_LOCO(ESI);
 	GET(int, comparator, EDX);
+
+	TechnoExt::ExtData* pTechnoExt = TechnoExt::ExtMap.Find(pLocomotor->LinkedTo);
+
+	pTechnoExt->LastWarpDistance = comparator;
 
 	auto factor = pExt->ChronoRangeMinimum.Get(RulesClass::Instance->ChronoRangeMinimum);
 

@@ -59,6 +59,10 @@ public:
 		Nullable<int> ChronoRangeMinimum;
 		Nullable<int> ChronoDelay;
 
+		Nullable<WeaponTypeClass*> WarpInWeapon;
+		Nullable<WeaponTypeClass*> WarpInMinRangeWeapon;
+		Nullable<WeaponTypeClass*> WarpOutWeapon;
+
 		ValueableVector<AnimTypeClass*> OreGathering_Anims;
 		ValueableVector<int> OreGathering_Tiberiums;
 		ValueableVector<int> OreGathering_FramesPerDir;
@@ -140,6 +144,9 @@ public:
 			, ChronoMinimumDelay {}
 			, ChronoRangeMinimum {}
 			, ChronoDelay {}
+			, WarpInWeapon {}
+			, WarpInMinRangeWeapon {}
+			, WarpOutWeapon {}
 			, OreGathering_Anims {}
 			, OreGathering_Tiberiums {}
 			, OreGathering_FramesPerDir {}

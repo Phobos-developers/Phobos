@@ -415,6 +415,19 @@ DestroyAnim=       ; Animation
 DestroySound=      ; Sound
 ```
 
+### Weapons fired on warping in / out
+
+- It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.
+  - `WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance traveled (in leptons) was less than `ChronoRangeMinimum`. This works regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon` is not set, it defaults to `WarpInWeapon`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]           ; TechnoType
+WarpInWeapon=          ; WeaponType
+WarpInMinRangeWeapon=  ; WeaponType
+WarpOutWeapon=         ; WeaponType
+```
+
 ## Weapons
 
 ### Burst.Delays

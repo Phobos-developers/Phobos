@@ -27,6 +27,7 @@ public:
 		TimerStruct	PassengerDeletionTimer;
 		Valueable<int> PassengerDeletionCountDown;
 		Valueable<ShieldTypeClass*> CurrentShieldType;
+		Valueable<int> LastWarpDistance;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet { nullptr }
@@ -37,6 +38,7 @@ public:
 			, PassengerDeletionTimer {}
 			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType {}
+			, LastWarpDistance {}
 		{ }
 
 		virtual ~ExtData() = default;
