@@ -3,6 +3,7 @@
 #include <TeleportLocomotionClass.h>
 
 #include <Ext/Techno/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 #define GET_LOCO(reg_Loco) \
 	GET(ILocomotion *, Loco, reg_Loco); \
@@ -17,7 +18,7 @@ DEFINE_HOOK(0x719439, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 	R->EDX<AnimTypeClass*>(pExt->WarpOut.Get(RulesClass::Instance->WarpOut));
 
 	if (pExt->WarpOutWeapon.isset())
-		TechnoExt::FireWeaponAtSelf(pLocomotor->LinkedTo, pExt->WarpOutWeapon.Get());
+		WeaponTypeExt::DetonateAt(pExt->WarpOutWeapon.Get(), pLocomotor->LinkedTo, pExt->WarpOutWeapon_FireAsSelf ? pLocomotor->LinkedTo : nullptr);
 
 	return 0x71943F;
 }
@@ -36,7 +37,10 @@ DEFINE_HOOK(0x719788, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x
 		pExt->WarpInWeapon.isset() ? pExt->WarpInWeapon.Get() : nullptr;
 
 	if (weaponType)
-		TechnoExt::FireWeaponAtSelf(pLocomotor->LinkedTo, weaponType);
+	{
+		int damage = pExt->WarpInWeapon_UseDistanceAsDamage ? pTechnoExt->LastWarpDistance / 256 : weaponType->Damage;
+		WeaponTypeExt::DetonateAt(weaponType, pLocomotor->LinkedTo, pExt->WarpInWeapon_FireAsSelf ? pLocomotor->LinkedTo : nullptr, damage);
+	}
 
 	return 0x71978E;
 }
