@@ -46,8 +46,8 @@ public:
 		Valueable<int> PassengerDeletion_Rate;
 		NullableIdx<VocClass> PassengerDeletion_ReportSound;
 		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
-		Valueable<bool> DeathIfNoAmmo;
-		Valueable<int> DeathIfCountdown;
+		Valueable<bool> Death_NoAmmo;
+		Valueable<int> Death_Countdown;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -165,8 +165,8 @@ public:
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
 			, DeployDir {}
-			, DeathIfNoAmmo { false }
-			, DeathIfCountdown { 0 }
+			, Death_NoAmmo { false }
+			, Death_Countdown { 0 }
 		{ }
 
 		virtual ~ExtData() = default;

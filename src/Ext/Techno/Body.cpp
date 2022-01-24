@@ -414,31 +414,31 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 	auto pData = TechnoExt::ExtMap.Find(pThis);
 
 	// Death if no ammo
-	if (pTypeThis && pTypeData && pTypeData->DeathIfNoAmmo)
+	if (pTypeThis && pTypeData && pTypeData->Death_NoAmmo)
 	{
 		if (pTypeThis->Ammo > 0 && pThis->Ammo <= 0)
 			pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
 	}
 
 	// Death if countdown ends
-	if (pTypeThis && pData && pTypeData && pTypeData->DeathIfCountdown > 0)
+	if (pTypeThis && pData && pTypeData && pTypeData->Death_Countdown > 0)
 	{
-		if (pData->DeathIfCountdown >= 0)
+		if (pData->Death_Countdown >= 0)
 		{
-			if (pData->DeathIfCountdown > 0)
+			if (pData->Death_Countdown > 0)
 			{
-				pData->DeathIfCountdown--; // Update countdown
+				pData->Death_Countdown--; // Update countdown
 			}
 			else
 			{
 				// Countdown ended. Kill the unit
-				pData->DeathIfCountdown = -1;
+				pData->Death_Countdown = -1;
 				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
 			}
 		}
 		else
 		{
-			pData->DeathIfCountdown = pTypeData->DeathIfCountdown; // Start countdown
+			pData->Death_Countdown = pTypeData->Death_Countdown; // Start countdown
 		}
 	}
 }
@@ -457,7 +457,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->PassengerDeletionCountDown)
 		.Process(this->CurrentShieldType)
-		.Process(this->DeathIfCountdown)
+		.Process(this->Death_Countdown)
 		;
 }
 

@@ -98,8 +98,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
 	this->NoManualMove.Read(exINI, pSection, "NoManualMove");
 	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
-	this->DeathIfNoAmmo.Read(exINI, pSection, "Death.NoAmmo");
-	this->DeathIfCountdown.Read(exINI, pSection, "Death.Countdown");
+	this->Death_NoAmmo.Read(exINI, pSection, "Death.NoAmmo");
+	this->Death_Countdown.Read(exINI, pSection, "Death.Countdown");
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
@@ -244,8 +244,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CameoPriority)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
-		.Process(this->DeathIfNoAmmo)
-		.Process(this->DeathIfCountdown)
+		.Process(this->Death_NoAmmo)
+		.Process(this->Death_Countdown)
 		.Process(this->ShieldType)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)

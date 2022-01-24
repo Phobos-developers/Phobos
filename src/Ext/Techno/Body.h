@@ -26,7 +26,7 @@ public:
 		TimerStruct	PassengerDeletionTimer;
 		Valueable<int> PassengerDeletionCountDown;
 		Valueable<ShieldTypeClass*> CurrentShieldType;
-		int DeathIfCountdown;
+		int Death_Countdown;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet { nullptr }
@@ -37,7 +37,7 @@ public:
 			, PassengerDeletionTimer {}
 			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType {}
-			, DeathIfCountdown(-1)
+			, Death_Countdown(-1)
 		{ }
 
 		virtual ~ExtData() = default;
