@@ -428,16 +428,6 @@ void TechnoExt::ApplyDeath_If(TechnoClass* pThis)
 			if (pData->DeathIfCountdown > 0)
 			{
 				pData->DeathIfCountdown--; // Update countdown
-
-				if (pTypeData->DeathIfCountdown_DecreaseHealth)
-				{
-					// Use the Health bar as a kind of indicator (in the case of immortal units, if not it simply weakens the unit)
-					double multiplier = ((pData->DeathIfCountdown * 100.0) / pTypeData->DeathIfCountdown) / 100.0;
-					int newHP = (int)(pTypeThis->Strength * multiplier);
-
-					if (pThis->Health > 0 && pThis->Health > newHP && newHP > 0)
-						pThis->Health = newHP;
-				}
 			}
 			else
 			{
