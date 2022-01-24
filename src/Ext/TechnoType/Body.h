@@ -165,8 +165,8 @@ public:
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
 			, DeployDir {}
-			DeathIfNoAmmo(false),
-			DeathIfCountdown(0),
+			, DeathIfNoAmmo { false }
+			, DeathIfCountdown { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
