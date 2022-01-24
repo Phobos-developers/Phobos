@@ -48,7 +48,6 @@ public:
 		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
 		Valueable<bool> DeathIfNoAmmo;
 		Valueable<int> DeathIfCountdown;
-		Valueable<bool> DeathIfCountdown_DecreaseHealth;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -134,7 +133,6 @@ public:
 			InitialStrength(),
 			DeathIfNoAmmo(false),
 			DeathIfCountdown(0),
-			DeathIfCountdown_DecreaseHealth(false),
 			ShieldType(),
 			WarpOut(),
 			WarpIn(),

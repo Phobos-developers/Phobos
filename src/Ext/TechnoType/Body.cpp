@@ -100,7 +100,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
 	this->DeathIfNoAmmo.Read(exINI, pSection, "Death.NoAmmo");
 	this->DeathIfCountdown.Read(exINI, pSection, "Death.Countdown");
-	this->DeathIfCountdown_DecreaseHealth.Read(exINI, pSection, "Death.Countdown.DecreaseHealth");
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
@@ -247,7 +246,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InitialStrength)
 		.Process(this->DeathIfNoAmmo)
 		.Process(this->DeathIfCountdown)
-		.Process(this->DeathIfCountdown_DecreaseHealth)
 		.Process(this->ShieldType)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)

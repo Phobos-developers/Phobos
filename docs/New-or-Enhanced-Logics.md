@@ -378,14 +378,13 @@ NoSecondaryWeaponFallback=false   ; boolean
 
 - New ways for self-killing objects under certaing cases.
 - No Ammo: The object will die if the remaining ammo reaches 0.
-- Countdown: The object will die if the countdown reaches 0. Optionally the affected object can decrease the Health until the countdown ends.
+- Countdown: The object will die if the countdown reaches 0.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                       ; TechnoType
 Death.NoAmmo=no                    ; boolean
 Death.Countdown=0                  ; integer
-Death.Countdown.DecreaseHealth=no  ; boolean
 ```
 
 ## Weapons
