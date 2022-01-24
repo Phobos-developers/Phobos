@@ -31,7 +31,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Bolt_Disable3.Read(exINI, pSection, "Bolt.Disable3");
 
 	// RadTypeClass
-//	if (this->OwnerObject()->RadLevel > 0) 
+//	if (this->OwnerObject()->RadLevel > 0)
 //	{
 	this->RadType.Read(exINI, pSection, "RadType", true);
 	//	Debug::Log("Weapon[%s] :: Has RadLevel[%d] Rad check [%s]  \n", pSection , this->OwnerObject()->RadLevel , this->RadType->Name.data());
@@ -91,6 +91,34 @@ bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 	return Stm
 		.Process(nOldCircumference)
 		.Success();
+}
+
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner)
+{
+	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(pTarget, pOwner,
+		pThis->Damage, pThis->Warhead, 0, pThis->Bright))
+	{
+		const CoordStruct& coords = pTarget->GetCoords();
+
+		pBullet->SetWeaponType(pThis);
+		pBullet->Limbo();
+		pBullet->SetLocation(coords);
+		pBullet->Explode(true);
+		pBullet->UnInit();
+	}
+}
+
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner)
+{
+	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(nullptr, pOwner,
+		pThis->Damage, pThis->Warhead, 0, pThis->Bright))
+	{
+		pBullet->SetWeaponType(pThis);
+		pBullet->Limbo();
+		pBullet->SetLocation(coords);
+		pBullet->Explode(true);
+		pBullet->UnInit();
+	}
 }
 
 // =============================

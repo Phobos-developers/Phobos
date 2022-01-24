@@ -23,8 +23,6 @@ void RulesExt::Remove(RulesClass* pThis)
 
 void RulesExt::LoadFromINIFile(RulesClass* pThis, CCINIClass* pINI)
 {
-	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
-
 	Data->LoadFromINI(pINI);
 }
 
@@ -32,6 +30,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
 	RadTypeClass::LoadFromINIList(pINI);
 	ShieldTypeClass::LoadFromINIList(pINI);
+	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
 
 	Data->LoadBeforeTypeData(pThis, pINI);
 }
@@ -73,7 +72,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
 
-	// Section AITargetType
+	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
 	for (int i = 0; i < itemsCount; ++i)
 	{

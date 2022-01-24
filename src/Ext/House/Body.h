@@ -9,7 +9,7 @@
 
 #include <map>
 
-class HouseExt 
+class HouseExt
 {
 public:
 	using base_type = HouseClass;
@@ -20,7 +20,7 @@ public:
 		CounterClass OwnedLimboBuildingTypes;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
-			, OwnedLimboBuildingTypes()
+			, OwnedLimboBuildingTypes {}
 		{ }
 
 		virtual ~ExtData() = default;

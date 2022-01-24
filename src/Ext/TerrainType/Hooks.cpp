@@ -39,7 +39,7 @@ DEFINE_HOOK(0x483811, CellClass_SpreadTiberium_TiberiumType, 0x8)
 	if (TerrainTypeTemp::pCurrentExt)
 	{
 		LEA_STACK(int*, pTibType, STACK_OFFS(0x1C, -0x4));
-		
+
 		*pTibType = TerrainTypeTemp::pCurrentExt->SpawnsTiberium_Type;
 
 		return 0x483819;

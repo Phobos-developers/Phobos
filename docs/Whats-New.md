@@ -11,6 +11,10 @@ This page lists the history of changes across stable Phobos releases and also al
 
 ### From older Phobos versions
 
+#### From 0.2.2.2
+- Keys `rulesmd.ini->[SOMEWARHEAD]->PenetratesShield` and `rulesmd.ini->[SOMEWARHEAD]->BreaksShield` have been changed to `Shield.Penetrate` and `Shield.Break`, respectively.
+
+#### From 0.1.1
 - Key `rulesmd.ini->[SOMETECHNOTYPE]->Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on.
 
 ### For Map Editor (Final Alert 2)
@@ -210,6 +214,8 @@ BuiltInType=5
 New:
 - LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)
 - Anim-to-Unit logic and ability to randomize DestroyAnim (by Otamaa)
+- Shield modification warheads (by Starkku)
+- Shield BreakWeapon & InitialStrength (by Starkku)
 - Initial Strength for TechnoTypes (by Uranusian)
 - Re-enable obsolete `JumpjetControls` for TechnoTypes' default Jumpjet properties (by Uranusian)
 - Weapon targeting filter (by Uranusian, Starkku)
@@ -225,19 +231,23 @@ New:
 - Quicksave hotkey command (by secsome)
 - Save Game Trigger Action (by secsome)
 - Numeric Variables (by secsome)
+- TechnoType's tooltip would display it's build time now (by secsome) 
 - Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)
 - Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
 - XDrawOffset for animations (by Morton)
 - Customizable OpenTopped properties (by Otamaa)
 - Automatic Passenger Deletion (by FS-21)
-- Script Action 74 to 81 and 84 to 91 for new AI attacks (by FS-21)
+- Script Action 74 to 81, 84 to 91 and 104 to 105 for new AI attacks (by FS-21)
 - Script Actions 82 & 83 for modifying AI Trigger Current Weight (by FS-21)
 - Script Action 92 for waiting & repeat the same new AI attack if no target was found (by FS-21)
 - Script Action 93 that modifies the Team's Trigger Weight when ends the new attack action (by FS-21)
 - Script Action 94 for picking a random script from a list (by FS-21)
-- Script Action 95 to 98 for new AI movements towards certain objects (by FS-21)
+- Script Action 95 to 102 and 106 to 109 for new AI movements towards certain objects (by FS-21)
+- Script Action 103 that Modify Target Distance in the new move actions (by FS-21)
+- Script Action 110 that Modify how ends the new move actions (by FS-21)
 - Script Action 111 that un-register Team success, is just the opposite effect of Action 49 (by FS-21)
 - Script Action 112 to regroup temporarily around the Team Leader (by FS-21)
+- Script Action 113 to Randomly Skip Next Action (by FS-21)
 - ObjectInfo now shows current Target and AI Trigger data (by FS-21)
 - Shield absorption and passthrough customization (by Morton)
 - Limbo Delivery of buildings (by Morton)
@@ -246,6 +256,12 @@ New:
 - Attached animation layer customization (by Starkku)
 - Jumpjet unit layer deviation customization (by Starkku)
 - IsSimpleDeployer deploy direction & animation customizations (by Starkku)
+- Customizable projectile gravity (by secsome)
+- Gates can now link with walls correctly via `NSGates` or `EWGates` (by Uranusian)
+- Per-warhead toggle for decloak of damaged targets (by Starkku)
+- `DeployFireWeapon=-1` now allows the deployed infantries using both weapons as undeployed (by Uranusian)
+- Power delta (surplus) counter for sidebar (by Morton)
+- Added Production and Money to Dump Object Info command (by FS-21)
 - New ways for self-killing objects under certaing cases (by FS-21)
 
 Vanilla fixes:
@@ -255,9 +271,15 @@ Vanilla fixes:
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water (by Uranusian)
 - Fixed temporal weapon crash under certain conditions where stack dump starts with 0051BB7D (by secsome)
 - Fixed the bug when retinting map lighting with a map action corrupted light sources (by secsome)
+- Fixed the bug that AITriggerTypes do not recognize building upgrades (by Uranusian)
+- Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10 (by Otamaa)
 
 Phobos fixes:
-- TBA
+- Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
+- Improved shield behavior for forced damage (by Uranusian)
+- Fixed SplashList animations playing when a unit is hit on a bridge over water (by Uranusian)
+- Fixed shielded objects not decloaking if shield takes damage (by Starkku)
+
 
 ### 0.2.2.2
 

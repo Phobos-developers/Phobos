@@ -26,6 +26,43 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 	return static_cast<int>(std::round(pBuilding->GetPowerOutput() * fFactor)) + nAmount;
 }
 
+int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse) // not including producing upgrades
+{
+	int result = 0;
+	bool isUpgrade = false;
+	auto pPowersUp = pBuilding->PowersUpBuilding;
+
+	auto checkUpgrade = [pHouse, pBuilding, &result, &isUpgrade](BuildingTypeClass* pTPowersUp)
+	{
+		isUpgrade = true;
+		for (auto const& pBld : pHouse->Buildings)
+		{
+			if (pBld->Type == pTPowersUp)
+			{
+				for (auto const& pUpgrade : pBld->Upgrades)
+				{
+					if (pUpgrade == pBuilding)
+						++result;
+				}
+			}
+		}
+	};
+
+	if (pPowersUp[0])
+	{
+		if (auto const pTPowersUp = BuildingTypeClass::Find(pPowersUp))
+			checkUpgrade(pTPowersUp);
+	}
+
+	if (auto pBuildingExt = BuildingTypeExt::ExtMap.Find(pBuilding))
+	{
+		for (auto pTPowersUp : pBuildingExt->PowersUp_Buildings)
+			checkUpgrade(pTPowersUp);
+	}
+
+	return isUpgrade ? result : -1;
+}
+
 void BuildingTypeExt::ExtData::Initialize()
 {
 
@@ -34,15 +71,18 @@ void BuildingTypeExt::ExtData::Initialize()
 // =============================
 // load / save
 
-void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
+void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+{
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
+	const char* pArtSection = pThis->ImageFile;
+	auto pArtINI = &CCINIClass::INI_Art();
 
-	if (!pINI->GetSection(pSection)) {
+	if (!pINI->GetSection(pSection))
 		return;
-	}
 
 	INI_EX exINI(pINI);
+	INI_EX exArtINI(pArtINI);
 
 	this->PowersUp_Owner.Read(exINI, pSection, "PowersUp.Owner");
 	this->PowersUp_Buildings.Read(exINI, pSection, "PowersUp.Buildings");
@@ -62,7 +102,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		char* context = nullptr;
 
 		//pINI->ReadString(pSection, pINI->GetKeyName(pSection, i), "", Phobos::readBuffer);
-		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
 			SuperWeaponTypeClass* buffer;
 			if (Parser<SuperWeaponTypeClass*>::TryParse(cur, &buffer))
@@ -76,15 +116,33 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 			}
 		}
 	}
+
+	if (pThis->MaxNumberOccupants > 10)
+	{
+		char tempBuffer[32];
+		this->OccupierMuzzleFlashes.Clear();
+		this->OccupierMuzzleFlashes.Reserve(pThis->MaxNumberOccupants);
+
+		for (int i = 0; i < pThis->MaxNumberOccupants; ++i)
+		{
+			Nullable<Point2D> nMuzzleLocation;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "MuzzleFlash%d", i);
+			nMuzzleLocation.Read(exArtINI, pArtSection, tempBuffer);
+			this->OccupierMuzzleFlashes[i] = nMuzzleLocation.Get(Point2D::Empty);
+		}
+	}
+
 }
 
-void BuildingTypeExt::ExtData::CompleteInitialization() {
+void BuildingTypeExt::ExtData::CompleteInitialization()
+{
 	auto const pThis = this->OwnerObject();
 	UNREFERENCED_PARAMETER(pThis);
 }
 
 template <typename T>
-void BuildingTypeExt::ExtData::Serialize(T& Stm) {
+void BuildingTypeExt::ExtData::Serialize(T& Stm)
+{
 	Stm
 		.Process(this->PowersUp_Owner)
 		.Process(this->PowersUp_Buildings)
@@ -92,31 +150,37 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->PowerPlantEnhancer_Amount)
 		.Process(this->PowerPlantEnhancer_Factor)
 		.Process(this->SuperWeapons)
+		.Process(this->OccupierMuzzleFlashes)
 		;
 }
 
-void BuildingTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+void BuildingTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+{
 	Extension<BuildingTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void BuildingTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+void BuildingTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+{
 	Extension<BuildingTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
-bool BuildingTypeExt::ExtContainer::Load(BuildingTypeClass* pThis, IStream* pStm) {
+bool BuildingTypeExt::ExtContainer::Load(BuildingTypeClass* pThis, IStream* pStm)
+{
 	BuildingTypeExt::ExtData* pData = this->LoadKey(pThis, pStm);
 
 	return pData != nullptr;
 };
 
-bool BuildingTypeExt::LoadGlobals(PhobosStreamReader& Stm) {
+bool BuildingTypeExt::LoadGlobals(PhobosStreamReader& Stm)
+{
 
 	return Stm.Success();
 }
 
-bool BuildingTypeExt::SaveGlobals(PhobosStreamWriter& Stm) {
+bool BuildingTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
+{
 
 
 	return Stm.Success();
@@ -124,8 +188,7 @@ bool BuildingTypeExt::SaveGlobals(PhobosStreamWriter& Stm) {
 // =============================
 // container
 
-BuildingTypeExt::ExtContainer::ExtContainer() : Container("BuildingTypeClass") {
-}
+BuildingTypeExt::ExtContainer::ExtContainer() : Container("BuildingTypeClass") { }
 
 BuildingTypeExt::ExtContainer::~ExtContainer() = default;
 

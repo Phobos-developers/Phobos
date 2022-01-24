@@ -17,17 +17,20 @@ public:
 		Valueable<AffectedHouse> PowersUp_Owner;
 		ValueableVector<BuildingTypeClass*> PowersUp_Buildings;
 		DynamicVectorClass<SuperWeaponTypeClass*> SuperWeapons;
-		
+
 		ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
 		Nullable<int> PowerPlantEnhancer_Amount;
 		Nullable<float> PowerPlantEnhancer_Factor;
 
-		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject),
-			PowersUp_Owner(AffectedHouse::Owner),
-			PowersUp_Buildings(),
-			PowerPlantEnhancer_Buildings(),
-			PowerPlantEnhancer_Amount(),
-			PowerPlantEnhancer_Factor()
+		DynamicVectorClass<Point2D> OccupierMuzzleFlashes;
+
+		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
+			, PowersUp_Owner { AffectedHouse::Owner }
+			, PowersUp_Buildings {}
+			, PowerPlantEnhancer_Buildings {}
+			, PowerPlantEnhancer_Amount {}
+			, PowerPlantEnhancer_Factor {}
+			, OccupierMuzzleFlashes()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -61,4 +64,5 @@ public:
 
 	static int GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
+	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 };

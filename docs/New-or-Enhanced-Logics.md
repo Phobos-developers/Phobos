@@ -18,36 +18,57 @@ Pips.Shield.Building=-1,-1,-1  ; int, frames of pips.shp for Green, Yellow, Red
 [ShieldTypes]
 0=SOMESHIELDTYPE
 
-[SOMESHIELDTYPE]               ; ShieldType name
-Strength=0                     ; integer
-Armor=none                     ; ArmorType
-Powered=false                  ; boolean
-AbsorbOverDamage=false         ; boolean
-SelfHealing=0.0                ; double, percents or absolute
-SelfHealing.Rate=0.0           ; double, ingame minutes
-Respawn=0.0                    ; double, percents or absolute
-Respawn.Rate=0.0               ; double, ingame minutes
-BracketDelta=0                 ; integer - pixels
-IdleAnim=                      ; animation
-IdleAnim.OfflineAction=Hides   ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
-IdleAnim.TemporalAction=Hides  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
-BreakAnim=                     ; animation
-HitAnim=                       ; animation
-AbsorbPercent=1.0              ; double, percents
-PassPercent=0.0                ; double, percents
+[SOMESHIELDTYPE]                     ; ShieldType name
+Strength=0                           ; integer
+InitialStrength=0                    ; integer
+Armor=none                           ; ArmorType
+Powered=false                        ; boolean
+AbsorbOverDamage=false               ; boolean
+SelfHealing=0.0                      ; double, percents or absolute
+SelfHealing.Rate=0.0                 ; double, ingame minutes
+Respawn=0.0                          ; double, percents or absolute
+Respawn.Rate=0.0                     ; double, ingame minutes
+BracketDelta=0                       ; integer - pixels
+IdleAnim=                            ; animation
+IdleAnim.OfflineAction=Hides         ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+IdleAnim.TemporalAction=Hides        ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+BreakAnim=                           ; animation
+HitAnim=                             ; animation
+BreakWeapon=                         ; WeaponType
+AbsorbPercent=1.0                    ; double, percents
+PassPercent=0.0                      ; double, percents
+AllowTransfer=                       ; boolean
 
-[SOMETECHNO]                   ; TechnoType
-ShieldType=SOMESHIELDTYPE      ; ShieldType; none by default
-
-[SOMEWARHEAD]                  ; WarheadType
-PenetratesShield=false         ; boolean
-BreaksShield=false             ; boolean
-AbsorbPercentShield=           ; double, percents
-PassPercentShield=             ; double, percents
+[SOMETECHNO]                         ; TechnoType
+ShieldType=SOMESHIELDTYPE            ; ShieldType; none by default
+                                     
+[SOMEWARHEAD]                        ; WarheadType
+Shield.Penetrate=false               ; boolean
+Shield.Break=false                   ; boolean
+Shield.BreakAnim=                    ; animation
+Shield.HitAnim=                      ; animation
+Shield.BreakWeapon=                  ; WeaponType
+Shield.AbsorbPercent=                ; double, percents
+Shield.PassPercent=                  ; double, percents
+Shield.Respawn.Duration=0            ; integer, game frames
+Shield.Respawn.Amount=0.0            ; double, percents or absolute
+Shield.Respawn.Rate=-1.0             ; double, ingame minutes
+Shield.Respawn.ResetTimer=false      ; boolean
+Shield.SelfHealing.Duration=0        ; integer, game frames
+Shield.SelfHealing.Amount=0.0        ; double, percents or absolute
+Shield.SelfHealing.Rate=-1.0         ; double, ingame minutes
+Shield.SelfHealing.ResetTimer=false  ; boolean
+Shield.AffectTypes=                  ; List of ShieldType names
+Shield.AttachTypes=                  ; List of ShieldType names
+Shield.RemoveTypes=                  ; List of ShieldType names
+Shield.ReplaceOnly=false             ; boolean
+Shield.ReplaceNonRespawning=false    ; boolean
+Shield.InheritStateOnReplace=false   ; boolean
 ```
 - Now you can have a shield for any TechnoType. It serves as a second health pool with independent `Armor` and `Strength` values.
   - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed by shield.
   - When the TechnoType with a unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for game calculation.
+  - `InitialStrength` can be used to set a different initial strength value from maximum.
 - When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoTypes have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
   - This also works with Ares' `Convert.*`.
 - `Powered` controls whether or not the shield is active when a unit is running low on power or it is affected by EMP.
@@ -62,17 +83,29 @@ PassPercentShield=             ; double, percents
 - `IdleAnim.TemporalAction` indicates what happens to the animation when the shield is attacked by temporal weapons.
 - `BreakAnim`, if set, will be played when the shield has been broken.
 - `HitAnim`, if set, will be played when the shield is attacked, similar to `WeaponNullifyAnim` for Iron Curtain.
+- `BreakWeapon`, if set, will be fired at the TechnoType once the shield breaks. Note: for this to work it requires that the WeaponType used has been explicitly listed in `[WeaponTypes]`, which is only available with Ares.
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
+- `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
 - A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable.
   - Buildings now use the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame by default.
   - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. `Pips.Shield.Building` is used for BuildingTypes.
   - `pipbrd.shp` will use its 4th frame to display an infantry's shield strength and the 3th frame for other units if `pipbrd.shp` has extra 2 frames. And `BracketDelta` can be used as additional `PixelSelectionBracketDelta` for shield strength.
 - Warheads have new options that interact with shields.
-  - `PenetratesShield` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield isn't existed.
-  - `BreaksShield` allows the warhead to always break shields of TechnoTypes, regardless of the amount of strength the shield has remaining or the damage dealt, assuming it affects the shield's armor type. Residual damage, if there is any, still respects `AbsorbOverDamage`.
-  - `AbsorbPercentShield` overrides the `AbsorbPercent` value set in the ShieldType that is being damaged.
-  - `PassPercentShield` overrides the `PassPercent` value set in the ShieldType that is being damaged.
+  - `Shield.Penetrate` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield doesn't exist.
+  - `Shield.Break` allows the warhead to always break shields of TechnoTypes. This is done before damage is dealt.
+  - `Shield.BreakAnim` will be displayed instead of ShieldType `BreakAnim` if the shield is broken by the Warhead, either through damage or `Shield.Break`.
+  - `Shield.HitAnim` will be displayed instead of ShieldType `HitAnim` if set when Warhead hits the shield.
+  - `Shield.BreakWeapon` will be fired instead of ShieldType `BreakWeapon` if the shield is broken by the Warhead, either through damage or `Shield.Break`.
+  - `Shield.AbsorbPercent` overrides the `AbsorbPercent` value set in the ShieldType that is being damaged.
+  - `Shield.PassPercent` overrides the `PassPercent` value set in the ShieldType that is being damaged.
+  - `Shield.Respawn.Rate` & `Shield.Respawn.Amount` override ShieldType `Respawn.Rate` and `Respawn.Amount` for duration of `Shield.Respawn.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.Respawn.ResetTimer` is set, currently running shield respawn timer is reset, otherwise the timer's duration is adjusted to match `Shield.Respawn.Rate` without restarting the timer.  If the effect expires while respawn timer is running, remaining time is adjusted to match ShieldType `Respawn.Rate`. Re-applying the effect resets the duration to `Shield.Respawn.Duration`
+  - `Shield.SelfHealing.Rate` & `Shield.SelfHealing.Amount` override ShieldType `SelfHealing.Rate` and `SelfHealing.Amount` for duration of `Shield.SelfHealing.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.SelfHealing.ResetTimer` is set, currently running self-healing timer is restarted, otherwise timer's duration 'is adjusted to match `Shield.SelfHealing.Rate` without restarting the timer. If the effect expires while self-healing timer is running, remaining time is adjusted to match ShieldType `SelfHealing.Rate`. Re-applying the effect resets the duration to `Shield.SelfHealing.Duration`.
+  - `Shield.AffectsTypes` allows listing which ShieldTypes can be affected by any of the effects listed above. If none are listed, all ShieldTypes are affected.
+  - `Shield.AttachTypes` & `Shield.RemoveTypes` allows listing ShieldTypes that are attached or removed, respectively from any targets affected by the warhead (positive `Verses` values). Normally only first listed ShieldType in `Shield.AttachTypes` is applied.
+    - If `Shield.ReplaceOnly` is set, shields from `Shield.AttachTypes` are only applied to affected targets from which shields were simultaneously removed, matching the order listed in `Shield.RemoveTypes`. If `Shield.AttachTypes` contains less items than `Shield.RemoveTypes`, last item from the former is used for any remaining removed shields.
+    - If `Shield.ReplaceNonRespawning` is set, shield from `Shield.AttachTypes` replaces existing shields that have been broken and cannot respawn on their own.
+    - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
 ### Laser Trails
 
@@ -368,12 +401,6 @@ In `rulesmd.ini`:
 NoSecondaryWeaponFallback=false   ; boolean
 ```
 
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                      ; TechnoType
-NoSecondaryWeaponFallback=false   ; boolean
-```
-
 ### Kill Unit Automatically
 
 - New ways for self-killing objects under certaing cases.
@@ -433,6 +460,7 @@ Rad.NoOwner=no  ; boolean
 ### Weapon targeting filter
 
 - You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
+  - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
 
 In `rulesmd.ini`:
 ```ini
@@ -445,7 +473,7 @@ CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allie
 
 - You can now specify how AreaFire weapon picks its target. By default it targets the base cell the firer is currently on, but this can now be changed to fire on the firer itself or at a random cell within the radius of the weapon's `Range` by setting `AreaFire.Target` to `self` or `random` respectively.
 - `AreaFire.Target=self` respects normal targeting rules (Warhead Verses etc.) against the firer itself.
-- `AreaFire.Target=random` ignores cells that are ineligible or contain ineligible objects based on listed values in weapon's `CanTarget`.
+- `AreaFire.Target=random` ignores cells that are ineligible or contain ineligible objects based on listed values in weapon's `CanTarget` & `CanTargetHouses`.
 
 In `rulesmd.ini`:
 ```ini
@@ -856,7 +884,7 @@ In `aimd.ini`:
 x=83,n
 ```
 
-### `84-91` `AITargetTypes` Attack Action
+### `84-91`, `104-105` `AITargetTypes` Attack Action
 
 - These Actions instruct the TeamType to use the TaskForce to approach and attack the target specified by the second parameter which is an index of a modder-defined group from `AITargetTypess`. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
   - For threat-based attack actions `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from `rulesmd.ini` are accounted.
@@ -865,7 +893,7 @@ x=83,n
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=i,n             ; where 84 <= i <= 91
+x=i,n             ; where 84 <= i <= 91 or 104 <= i <= 105
 ```
 
 | *Action* | *Argument*   | *Repeats* | *Target Priority* | *Description*                                 |
@@ -878,6 +906,8 @@ x=i,n             ; where 84 <= i <= 91
 89         | `AITargetTypes` index# | No | Farther, higher threat | Ends when a team member kill the designated target |
 90         | `AITargetTypes` index# | No | Closer | Ends when a team member kill the designated target |
 91         | `AITargetTypes` index# | No | Farther | Ends when a team member kill the designated target |
+104        | `AITargetTypes` index# | Yes | Closer | Picks 1 random target from the list |
+105        | `AITargetTypes` index# | Yes | Farther | Picks 1 random target from the list |
 
 - The second parameter with a 0-based index for the `AITargetTypes` section specifies the list of possible `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` that can be evaluated. The new `AITargetTypes` section must be declared in `rulesmd.ini` for making this script work:
 
@@ -929,14 +959,14 @@ In `rulesmd.ini`:
 ; ...
 ```
 
-### `95-98` Moving Team to techno location
+### `95-98`, `106-109` Moving Team to techno location
 
 - These Actions instructs the TeamType to use the TaskForce to approach the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value).
 
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=i,n             ; where 95 <= i <= 98
+x=i,n             ; where 95 <= i <= 98 or 106 <= i <= 109
 ```
 
 | *Action* | *Argument*    | Target Owner | *Target Priority* | *Description*                                 |
@@ -945,6 +975,42 @@ x=i,n             ; where 95 <= i <= 98
 96         | Target Type# | Enemy | Farther, higher threat |  |
 97         | Target Type# | Friendly | Closer |  |
 98         | Target Type# | Friendly | Farther |  |
+99         | [AITargetType] index# | Enemy | Closer, higher threat |  |
+100        | [AITargetType] index# | Enemy | Farther, higher threat |  |
+101        | [AITargetType] index# | Friendly | Closer |  |
+102        | [AITargetType] index# | Friendly | Farther |  |
+106        | [AITargetType] index# | Enemy | Closer | Picks 1 random target from the selected list |
+107        | [AITargetType] index# | Enemy | Farther | Picks 1 random target from the selected list |
+108        | [AITargetType] index# | Friendly | Closer | Picks 1 random target from the selected list |
+109        | [AITargetType] index# | Friendly | Farther | Picks 1 random target from the selected list |
+
+### `103` Modify Target Distance
+
+- By default Movement actions `95-102` & `106-109` ends when the Team Leader reaches a distance declared in rulesmd.ini called CloseEnough. When this action is  executed before the Movement actions `95-102` overwrites CloseEnough value. This action works only the first time and CloseEnough will be used again the next Movement action.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=103,n
+```
+
+### `110` Set Move Action End Mode
+
+- Sets how the Movement actions ends and jumps to the next line. This action works only the first time and CloseEnough will be used again the next Movement action. 
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=110,n
+```
+
+- The possible argument values are:
+
+| *Argument* | *Action ends when...*                       |
+| :------: | :-------------------------------------------: |
+0         | Team Leader reaches the minimum distance |
+1         | One unit reaches the minimum distance |
+2         | All team members reached the minimum distance |
 
 ### `111` Un-register Team success
 
@@ -965,6 +1031,17 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=112,n
 ```
+
+### `113` Randomly Skip Next Action
+
+- When executed this action picks a random value between 1 and 100. If the value is equal or below the second parameter then the next action will be skipped. If the second parameter is 0 means that the next action will never be skipped and 100 means thay always will be skipped.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=113,n           ; where 0 > n <= 100
+```
+
 ### `500 - 523` Edit Variable
 - Operate a variable's value
     - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.

@@ -19,10 +19,10 @@ public:
 		Valueable<Point2D> SpawnsTiberium_CellsPerAnim;
 
 		ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
-			, SpawnsTiberium_Type(0)
-			, SpawnsTiberium_Range(1)
-			, SpawnsTiberium_GrowthStage({ 3, 0 })
-			, SpawnsTiberium_CellsPerAnim({ 1, 0 })
+			, SpawnsTiberium_Type { 0 }
+			, SpawnsTiberium_Range { 1 }
+			, SpawnsTiberium_GrowthStage { { 3, 0 } }
+			, SpawnsTiberium_CellsPerAnim { { 1, 0 } }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -36,7 +36,7 @@ public:
 
 		int GetTiberiumGrowthStage();
 		int GetCellsPerAnim();
-	
+
 	private:
 		template <typename T>
 		void Serialize(T& Stm);

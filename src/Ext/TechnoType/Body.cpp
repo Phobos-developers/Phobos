@@ -124,7 +124,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PassengerDeletion_ReportSound.Read(exINI, pSection, "PassengerDeletion.ReportSound");
 	this->PassengerDeletion_Rate_SizeMultiply.Read(exINI, pSection, "PassengerDeletion.Rate.SizeMultiply");
 	this->PassengerDeletion_Rate.Read(exINI, pSection, "PassengerDeletion.Rate");
-	
+
 	this->DefaultDisguise.Read(exINI, pSection, "DefaultDisguise");
 
 	this->OpenTopped_RangeBonus.Read(exINI, pSection, "OpenTopped.RangeBonus");
@@ -137,7 +137,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoSecondaryWeaponFallback.Read(exINI, pSection, "NoSecondaryWeaponFallback");
 
 	this->JumpjetAllowLayerDeviation.Read(exINI, pSection, "JumpjetAllowLayerDeviation");
-	
+
 	this->DeployingAnim_KeepUnitVisible.Read(exINI, pSection, "DeployingAnim.KeepUnitVisible");
 	this->DeployingAnim_ReverseForUndeploy.Read(exINI, pSection, "DeployingAnim.ReverseForUndeploy");
 	this->DeployingAnim_UseUnitDrawer.Read(exINI, pSection, "DeployingAnim.UseUnitDrawer");
@@ -206,7 +206,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			Nullable<CoordStruct> eliteFLH;
 			eliteFLH.Read(exArtINI, pArtSection, tempBufferFLH);
 
-			if (FLH.isset() & !eliteFLH.isset())
+			if (FLH.isset() && !eliteFLH.isset())
 				eliteFLH = FLH;
 			else if (!FLH.isset() && !eliteFLH.isset())
 				break;

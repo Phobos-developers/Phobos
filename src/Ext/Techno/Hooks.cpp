@@ -29,11 +29,23 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 }
 
 
-DEFINE_HOOK(0x6F42F7, TechnoClass_Init_SetLaserTrails, 0x2)
+DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
 
+	TechnoExt::InitializeShield(pThis);
 	TechnoExt::InitializeLaserTrails(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x702E4E, TechnoClass_Save_Killer_Techno, 0x6)
+{
+	GET(TechnoClass*, pKiller, EDI);
+	GET(TechnoClass*, pVictim, ECX);
+
+	if (pKiller && pVictim)
+		TechnoExt::ObjectKilledBy(pVictim, pKiller);
 
 	return 0;
 }
@@ -153,6 +165,16 @@ DEFINE_HOOK(0x518505, InfantryClass_TakeDamage_NotHuman, 0x4)
 	return 0x518515;
 }
 
+DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
+{
+    GET(TechnoTypeClass*, pType, ECX);
+
+    if (pType->DeployFireWeapon == -1)
+        return 0x52194E;
+
+    return 0;
+}
+
 // Customizable OpenTopped Properties
 // Author: Otamaa
 
@@ -238,7 +260,7 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 
 DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 {
-	enum { DoNotFire = 0x6FE4E7, SkipSetTarget = 0x6FE1D8 };
+	enum { DoNotFire = 0x6FE4E7, SkipSetTarget = 0x6FE1D5 };
 
 	GET(TechnoClass* const, pThis, ESI);
 	GET(CellClass* const, pCell, EAX);
@@ -260,7 +282,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 				CellStruct tgtPos = pCell->MapCoords + adjacentCells[cellIndex];
 				CellClass* tgtCell = MapClass::Instance->GetCellAt(tgtPos);
 
-				if (EnumFunctions::AreCellAndObjectsEligible(tgtCell, pExt->CanTarget))
+				if (EnumFunctions::AreCellAndObjectsEligible(tgtCell, pExt->CanTarget, pExt->CanTargetHouses, pThis->Owner, true))
 				{
 					R->EAX(tgtCell);
 					return 0;
@@ -271,16 +293,30 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 		}
 		else if (pExt->AreaFire_Target == AreaFireTarget::Self)
 		{
-			if (!EnumFunctions::AreCellAndObjectsEligible(pThis->GetCell(), pExt->CanTarget))
+			if (!EnumFunctions::AreCellAndObjectsEligible(pThis->GetCell(), pExt->CanTarget, pExt->CanTargetHouses, nullptr, false))
 				return DoNotFire;
 
-			pThis->Target = pThis;
+			R->EAX(pThis);
 			return SkipSetTarget;
 		}
 
-		if (!EnumFunctions::AreCellAndObjectsEligible(pCell, pExt->CanTarget))
+		if (!EnumFunctions::AreCellAndObjectsEligible(pCell, pExt->CanTarget, pExt->CanTargetHouses, nullptr, false))
 			return DoNotFire;
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFS(0xC4, -0xC));
+
+	if (auto pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
+	{
+		if (pExt->DecloakDamagedTargets)
+			pThis->Uncloak(false);
+	}
+
+	return 0x702823;
 }

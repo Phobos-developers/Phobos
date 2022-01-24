@@ -10,6 +10,7 @@
 #include <Unsorted.h>
 
 #include <Ext/BulletType/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -223,6 +224,19 @@ void TechnoExt::InitializeLaserTrails(TechnoClass* pThis)
 	}
 }
 
+void TechnoExt::InitializeShield(TechnoClass* pThis)
+{
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		pExt->CurrentShieldType = pTypeExt->ShieldType;
+}
+
+void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType)
+{
+	WeaponTypeExt::DetonateAt(pWeaponType, pThis, pThis);
+}
+
 // reversed from 6F3D60
 CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
 {
@@ -306,68 +320,75 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 
 		if (pThis->Passengers.NumPassengers > 0)
 		{
-			if (pExt->PassengerDeletionTimer.Expired())
+			FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+
+			if (pExt->PassengerDeletionCountDown < 0)
 			{
-				FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
-				ObjectClass* pLastPassenger = nullptr;
-
-				// Passengers are designed as a FIFO queue but being implemented as a list
-				while (pPassenger->NextObject)
-				{
-					pLastPassenger = pPassenger;
-					pPassenger = static_cast<FootClass*>(pPassenger->NextObject);
-				}
-
-				if (pLastPassenger)
-					pLastPassenger->NextObject = nullptr;
-				else
-					pThis->Passengers.FirstPassenger = nullptr;
-
-				--pThis->Passengers.NumPassengers;
-
-				if (pPassenger)
-				{
-					if (auto const pPassengerType = pPassenger->GetTechnoType())
-					{
-						VocClass::PlayAt(pData->PassengerDeletion_ReportSound, pThis->GetCoords(), nullptr);
-
-						// Check if there is money refund
-						if (pData->PassengerDeletion_Soylent)
-						{
-							int nMoneyToGive = 0;
-
-							// Refund money to the Attacker
-							if (pPassengerType && pPassengerType->Soylent > 0)
-								nMoneyToGive = pPassengerType->Soylent;
-
-							// Is allowed the refund of friendly units?
-							if (!pData->PassengerDeletion_SoylentFriendlies && pPassenger->Owner->IsAlliedWith(pThis))
-								nMoneyToGive = 0;
-
-							if (nMoneyToGive > 0)
-								pThis->Owner->GiveMoney(nMoneyToGive);
-						}
-					}
-
-					pPassenger->UnInit();
-				}
-				pExt->PassengerDeletionTimer.Stop();
-
-				if (pThis->Passengers.NumPassengers > 0)
-				{
-					pPassenger = pThis->Passengers.GetFirstPassenger();
-
 					// Setting & start countdown. Bigger units needs more time
 					int passengerSize = pData->PassengerDeletion_Rate;
 					if (pData->PassengerDeletion_Rate_SizeMultiply && pPassenger->GetTechnoType()->Size > 1.0)
 						passengerSize *= (int)(pPassenger->GetTechnoType()->Size + 0.5);
 
+					pExt->PassengerDeletionCountDown = passengerSize;
 					pExt->PassengerDeletionTimer.Start(passengerSize);
+			}
+			else
+			{
+				if (pExt->PassengerDeletionTimer.Completed())
+				{
+					ObjectClass* pLastPassenger = nullptr;
+
+					// Passengers are designed as a FIFO queue but being implemented as a list
+					while (pPassenger->NextObject)
+					{
+						pLastPassenger = pPassenger;
+						pPassenger = static_cast<FootClass*>(pPassenger->NextObject);
+					}
+
+					if (pLastPassenger)
+						pLastPassenger->NextObject = nullptr;
+					else
+						pThis->Passengers.FirstPassenger = nullptr;
+
+					--pThis->Passengers.NumPassengers;
+
+					if (pPassenger)
+					{
+						if (auto const pPassengerType = pPassenger->GetTechnoType())
+						{
+							VocClass::PlayAt(pData->PassengerDeletion_ReportSound, pThis->GetCoords(), nullptr);
+
+							// Check if there is money refund
+							if (pData->PassengerDeletion_Soylent)
+							{
+								int nMoneyToGive = 0;
+
+								// Refund money to the Attacker
+								if (pPassengerType && pPassengerType->Soylent > 0)
+									nMoneyToGive = pPassengerType->Soylent;
+
+								// Is allowed the refund of friendly units?
+								if (!pData->PassengerDeletion_SoylentFriendlies && pPassenger->Owner->IsAlliedWith(pThis))
+									nMoneyToGive = 0;
+
+								if (nMoneyToGive > 0)
+									pThis->Owner->GiveMoney(nMoneyToGive);
+							}
+						}
+
+						pPassenger->UnInit();
+					}
+
+					pExt->PassengerDeletionTimer.Stop();
+					pExt->PassengerDeletionCountDown = -1;
 				}
 			}
 		}
 		else
+		{
 			pExt->PassengerDeletionTimer.Stop();
+			pExt->PassengerDeletionCountDown = -1;
+		}
 	}
 }
 
@@ -444,6 +465,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)
 		.Process(this->PassengerDeletionTimer)
+		.Process(this->PassengerDeletionCountDown)
+		.Process(this->CurrentShieldType)
 		.Process(this->DeathIfCountdown)
 		;
 }

@@ -24,15 +24,19 @@ public:
 		Valueable<bool> ReceiveDamage;
 		Valueable<bool> LastKillWasTeamTarget;
 		TimerStruct	PassengerDeletionTimer;
+		Valueable<int> PassengerDeletionCountDown;
+		Valueable<ShieldTypeClass*> CurrentShieldType;
 		int DeathIfCountdown;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
-			, InterceptedBullet(nullptr)
-			, Shield()
-			, LaserTrails()
-			, ReceiveDamage(false)
-			, LastKillWasTeamTarget(false)
-			, PassengerDeletionTimer(-1)
+			, InterceptedBullet { nullptr }
+			, Shield {}
+			, LaserTrails {}
+			, ReceiveDamage { false }
+			, LastKillWasTeamTarget { false }
+			, PassengerDeletionTimer {}
+			, PassengerDeletionCountDown { -1 }
+			, CurrentShieldType {}
 			, DeathIfCountdown(-1)
 		{ }
 
@@ -71,9 +75,12 @@ public:
 	static bool HasAvailableDock(TechnoClass* pThis);
 
 	static void InitializeLaserTrails(TechnoClass* pThis);
+	static void InitializeShield(TechnoClass* pThis);
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
-	
+
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
+
+	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
 
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 

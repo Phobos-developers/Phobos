@@ -61,12 +61,12 @@ DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 }
 #pragma endregion
 
-DEFINE_HOOK(0x48A512, WarheadTypeClass_AnimList_SplashList, 0x6)
+DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-	if (pWHExt && pThis->Conventional && pWHExt->SplashList.size())
+	if (pWHExt && pWHExt->SplashList.size())
 	{
 		GET(int, nDamage, ECX);
 		int idx = pWHExt->SplashList_PickRandom ?
@@ -132,7 +132,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 		if (targetCell)
 		{
-			if (!EnumFunctions::IsCellEligible(targetCell, pWeaponExt->CanTarget))
+			if (!EnumFunctions::IsCellEligible(targetCell, pWeaponExt->CanTarget, true))
 				return CannotFire;
 		}
 
@@ -160,7 +160,7 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 	{
 		if (const auto pPrimaryExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(0)->WeaponType))
 		{
-			if (pThis->GetWeapon(1)->WeaponType && !EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget))
+			if (pThis->GetWeapon(1)->WeaponType && !EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true))
 				return Secondary;
 		}
 	}
@@ -176,9 +176,6 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, FurtherCheck = 0x6F3754, OriginalCheck = 0x6F36E3 };
 
-	if (!pTargetTechno)
-		return Primary;
-
 	CellClass* targetCell = nullptr;
 
 	if (const auto pCell = abstract_cast<CellClass*>(pTarget))
@@ -192,9 +189,9 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 		{
 			if (const auto pSecondaryExt = WeaponTypeExt::ExtMap.Find(pSecondary->WeaponType))
 			{
-				if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pSecondaryExt->CanTarget)) ||
-					!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondaryExt->CanTarget) ||
-					!EnumFunctions::CanTargetHouse(pSecondaryExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))
+				if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pSecondaryExt->CanTarget, true)) ||
+					(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondaryExt->CanTarget) ||
+					!EnumFunctions::CanTargetHouse(pSecondaryExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
 				{
 					return Primary;
 				}
@@ -204,15 +201,18 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 					if (pTypeExt->NoSecondaryWeaponFallback && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1))
 						return Primary;
 
-					if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pPrimaryExt->CanTarget)) ||
-						!EnumFunctions::IsTechnoEligible(pTargetTechno, pPrimaryExt->CanTarget) ||
-						!EnumFunctions::CanTargetHouse(pPrimaryExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))
+					if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pPrimaryExt->CanTarget, true)) ||
+						(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pPrimaryExt->CanTarget) ||
+						!EnumFunctions::CanTargetHouse(pPrimaryExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
 					{
 						return Secondary;
 					}
 				}
 			}
 		}
+
+		if (!pTargetTechno)
+			return Primary;
 
 		if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
 		{

@@ -20,11 +20,11 @@ DEFINE_HOOK(0x524734, InfantryTypeClass_ReadINI, 0x6)
 		{
 			Debug::Log("[Phobos] Replacing image for %s with %s.\n", infantryType->ImageFile, nameBuffer);
 			char filename[260];
-			_makepath(filename, 0, 0, nameBuffer, ".SHP");
+			_makepath_s(filename, 0, 0, nameBuffer, ".SHP");
 			infantryType->Image = GameCreate<SHPReference>(filename);
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -41,15 +41,15 @@ DEFINE_HOOK(0x747B49, VehicleTypeClass_ReadINI, 0x6)
 			if (unitType->Voxel)
 			{
 				char savedName[0x19];
-				strcpy(savedName, unitType->ImageFile);
-				strcpy(unitType->ImageFile, nameBuffer);
+				strcpy_s(savedName, unitType->ImageFile);
+				strcpy_s(unitType->ImageFile, nameBuffer);
 				unitType->LoadVoxel();
-				strcpy(unitType->ImageFile, savedName);
+				strcpy_s(unitType->ImageFile, savedName);
 			}
 			else
 			{
 				char filename[260];
-				_makepath(filename, 0, 0, nameBuffer, ".SHP");
+				_makepath_s(filename, 0, 0, nameBuffer, ".SHP");
 				unitType->Image = GameCreate<SHPReference>(filename);
 			}
 		}
@@ -71,10 +71,10 @@ DEFINE_HOOK(0x41CD54, AircraftTypeClass_ReadINI, 0x6)
 			{
 				Debug::Log("[Phobos] Replacing image for %s with %s.\n", aircraftType->ImageFile, nameBuffer);
 				char savedName[0x19];
-				strcpy(savedName, aircraftType->ImageFile);
-				strcpy(aircraftType->ImageFile, nameBuffer);
+				strcpy_s(savedName, aircraftType->ImageFile);
+				strcpy_s(aircraftType->ImageFile, nameBuffer);
 				aircraftType->LoadVoxel();
-				strcpy(aircraftType->ImageFile, savedName);
+				strcpy_s(aircraftType->ImageFile, savedName);
 			}
 		}
 	}

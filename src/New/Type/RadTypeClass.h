@@ -24,18 +24,18 @@ private:
 
 public:
 
-	RadTypeClass(const char* const pTitle) : Enumerable<RadTypeClass>(pTitle),
-		LevelDelay(),
-		LightDelay(),
-		RadSiteColor(),
-		LevelMax(),
-		LevelFactor(),
-		LightFactor(),
-		TintFactor(),
-		RadWarhead(),
-		DurationMultiple(),
-		ApplicationDelay(),
-		BuildingApplicationDelay()
+	RadTypeClass(const char* const pTitle) : Enumerable<RadTypeClass>(pTitle)
+		, LevelDelay()
+		, LightDelay()
+		, RadSiteColor()
+		, LevelMax()
+		, LevelFactor()
+		, LightFactor()
+		, TintFactor()
+		, RadWarhead()
+		, DurationMultiple()
+		, ApplicationDelay()
+		, BuildingApplicationDelay()
 	{ }
 
 	virtual ~RadTypeClass() override = default;

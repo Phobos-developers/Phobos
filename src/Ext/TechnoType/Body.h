@@ -63,7 +63,7 @@ public:
 		ValueableVector<AnimTypeClass*> OreGathering_Anims;
 		ValueableVector<int> OreGathering_Tiberiums;
 		ValueableVector<int> OreGathering_FramesPerDir;
-		
+
 		std::vector<DynamicVectorClass<CoordStruct>> WeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> EliteWeaponBurstFLHs;
 
@@ -80,12 +80,12 @@ public:
 		Valueable<bool> AutoFire_TargetSelf;
 
 		Valueable<bool> NoSecondaryWeaponFallback;
-		
+
 		Valueable<int> NoAmmoWeapon;
 		Valueable<int> NoAmmoAmount;
 
 		Nullable<bool> JumpjetAllowLayerDeviation;
-		
+
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
 		Valueable<bool> DeployingAnim_ReverseForUndeploy;
 		Valueable<bool> DeployingAnim_UseUnitDrawer;
@@ -107,66 +107,66 @@ public:
 
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
 
-		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject),
-			HealthBar_Hide(false),
-			UIDescription(),
-			LowSelectionPriority(false),
-			GroupAs(NONE_STR),
-			RadarJamRadius(0),
-			InhibitorRange(0),
-			MindControlRangeLimit(),
-			Interceptor(false),
-			Interceptor_GuardRange(),
-			Interceptor_MinimumGuardRange(),
-			Interceptor_EliteGuardRange(),
-			Interceptor_EliteMinimumGuardRange(),
-			TurretOffset({ 0, 0, 0 }),
-			Powered_KillSpawns(false),
-			Spawn_LimitedRange(false),
-			Spawn_LimitedExtraRange(0),
-			Harvester_Counted(),
-			Promote_IncludeSpawns(false),
-			ImmuneToCrit(false),
-			MultiMindControl_ReleaseVictim(false),
-			CameoPriority(0),
-			NoManualMove(false),
-			InitialStrength(),
+		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
+			, HealthBar_Hide { false }
+			, UIDescription {}
+			, LowSelectionPriority { false }
+			, GroupAs { NONE_STR }
+			, RadarJamRadius { 0 }
+			, InhibitorRange { 0 }
+			, MindControlRangeLimit {}
+			, Interceptor { false }
+			, Interceptor_GuardRange {}
+			, Interceptor_MinimumGuardRange {}
+			, Interceptor_EliteGuardRange {}
+			, Interceptor_EliteMinimumGuardRange {}
+			, TurretOffset { { 0, 0, 0 } }
+			, Powered_KillSpawns { false }
+			, Spawn_LimitedRange { false }
+			, Spawn_LimitedExtraRange { 0 }
+			, Harvester_Counted {}
+			, Promote_IncludeSpawns { false }
+			, ImmuneToCrit { false }
+			, MultiMindControl_ReleaseVictim { false }
+			, CameoPriority { 0 }
+			, NoManualMove { false }
+			, InitialStrength {}
+			, ShieldType {}
+			, WarpOut {}
+			, WarpIn {}
+			, WarpAway {}
+			, ChronoTrigger {}
+			, ChronoDistanceFactor {}
+			, ChronoMinimumDelay {}
+			, ChronoRangeMinimum {}
+			, ChronoDelay {}
+			, OreGathering_Anims {}
+			, OreGathering_Tiberiums {}
+			, OreGathering_FramesPerDir {}
+			, LaserTrailData {}
+			, DestroyAnim_Random { true }
+			, NotHuman_RandomDeathSequence { false }
+			, PassengerDeletion_Soylent { false }
+			, PassengerDeletion_SoylentFriendlies { false }
+			, PassengerDeletion_Rate { 0 }
+			, PassengerDeletion_ReportSound {}
+			, PassengerDeletion_Rate_SizeMultiply { true }
+			, DefaultDisguise {}
+			, OpenTopped_RangeBonus {}
+			, OpenTopped_DamageMultiplier {}
+			, OpenTopped_WarpDistance {}
+			, AutoFire { false }
+			, AutoFire_TargetSelf { false }
+			, NoSecondaryWeaponFallback { false }
+			, NoAmmoWeapon { -1 }
+			, NoAmmoAmount { 0 }
+			, JumpjetAllowLayerDeviation {}
+			, DeployingAnim_KeepUnitVisible { false }
+			, DeployingAnim_ReverseForUndeploy { true }
+			, DeployingAnim_UseUnitDrawer { true }
+			, DeployDir {}
 			DeathIfNoAmmo(false),
 			DeathIfCountdown(0),
-			ShieldType(),
-			WarpOut(),
-			WarpIn(),
-			WarpAway(),
-			ChronoTrigger(),
-			ChronoDistanceFactor(),
-			ChronoMinimumDelay(),
-			ChronoRangeMinimum(),
-			ChronoDelay(),
-			OreGathering_Anims(),
-			OreGathering_Tiberiums(),
-			OreGathering_FramesPerDir(),
-			LaserTrailData(),
-			DestroyAnim_Random(true),
-			NotHuman_RandomDeathSequence(false),
-			PassengerDeletion_Soylent(false),
-			PassengerDeletion_SoylentFriendlies(false),
-			PassengerDeletion_Rate(0),
-			PassengerDeletion_ReportSound(),
-			PassengerDeletion_Rate_SizeMultiply(true),
-			DefaultDisguise(),
-			OpenTopped_RangeBonus(),
-			OpenTopped_DamageMultiplier(),
-			OpenTopped_WarpDistance(),
-			AutoFire(false),
-			AutoFire_TargetSelf(false),
-			NoSecondaryWeaponFallback(false),
-			NoAmmoWeapon(-1),
-			NoAmmoAmount(0),
-			JumpjetAllowLayerDeviation(),
-			DeployingAnim_KeepUnitVisible(false),
-			DeployingAnim_ReverseForUndeploy(true),
-			DeployingAnim_UseUnitDrawer(true),
-			DeployDir()
 		{ }
 
 		virtual ~ExtData() = default;

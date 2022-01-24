@@ -60,12 +60,12 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 		{
 			if(!bPlayBuildUp)
 				pBld->Place(false);
-			
+
 			pBld->IsReadyToCommence = true;
 			bCreated = true;
 		}
 	}
-	
+
 	R->AL(bCreated);
 	return 0x6E42C1;
 }
