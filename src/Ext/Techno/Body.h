@@ -88,7 +88,7 @@ public:
 	static void ApplyInterceptor(TechnoClass* pThis);
 	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
 	static void ApplySpawn_LimitRange(TechnoClass* pThis);
-	static void ApplyDeath_If(TechnoClass* pThis);
+	static void CheckDeathConditions(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void EatPassengers(TechnoClass* pThis);
 

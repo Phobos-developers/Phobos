@@ -407,7 +407,7 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 }
 
 // Feature: Kill Object Automatically
-void TechnoExt::ApplyDeath_If(TechnoClass* pThis)
+void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 {
 	auto pTypeThis = pThis->GetTechnoType();
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pTypeThis);
