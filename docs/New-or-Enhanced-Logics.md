@@ -403,9 +403,9 @@ NoSecondaryWeaponFallback=false   ; boolean
 
 ### Kill Unit Automatically
 
-- New ways for self-killing objects under certaing cases.
-- No Ammo: The object will die if the remaining ammo reaches 0.
-- Countdown: The object will die if the countdown reaches 0.
+- Objects can be destroyed automatically under certaing cases:
+  - No Ammo: The object will die if the remaining ammo reaches 0.
+  - Countdown: The object will die if the countdown reaches 0.
 
 In `rulesmd.ini`:
 ```ini
