@@ -104,10 +104,13 @@ int BuildingExt::CountOccupiedDocks(BuildingClass* pBuilding)
 
 	int nOccupiedDocks = 0;
 
-	for (auto i = 0; i < pBuilding->RadioLinks.Capacity; ++i)
+	if (pBuilding->RadioLinks.IsAllocated)
 	{
-		if (auto const pLink = pBuilding->GetNthLink(i))
-			nOccupiedDocks++;
+		for (auto i = 0; i < pBuilding->RadioLinks.Capacity; ++i)
+		{
+			if (auto const pLink = pBuilding->GetNthLink(i))
+				nOccupiedDocks++;
+		}
 	}
 
 	return nOccupiedDocks;
