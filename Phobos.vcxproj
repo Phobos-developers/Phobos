@@ -75,6 +75,7 @@
     <ClCompile Include="src\Ext\Unit\Hooks.DisallowMoving.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Detonate.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Shield.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.Grinding.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Body.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hook.EBolt.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.cpp" />
