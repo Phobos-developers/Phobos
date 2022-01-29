@@ -320,7 +320,7 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 	return 0x702823;
 }
 
-DEFINE_HOOK(0x73DE90, UnitClass_Mi_Unload_SimpleDeployer_Phobos, 0x6)
+DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
 {
 	GET(UnitClass*, pUnit, ESI);
 
