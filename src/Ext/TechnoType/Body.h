@@ -46,6 +46,7 @@ public:
 		Valueable<int> PassengerDeletion_Rate;
 		NullableIdx<VocClass> PassengerDeletion_ReportSound;
 		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
+		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -149,6 +150,7 @@ public:
 			, PassengerDeletion_Rate { 0 }
 			, PassengerDeletion_ReportSound {}
 			, PassengerDeletion_Rate_SizeMultiply { true }
+			, PassengerDeletion_Anim {}
 			, DefaultDisguise {}
 			, OpenTopped_RangeBonus {}
 			, OpenTopped_DamageMultiplier {}

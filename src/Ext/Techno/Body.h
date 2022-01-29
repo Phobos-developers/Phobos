@@ -1,5 +1,6 @@
 #pragma once
 #include <TechnoClass.h>
+#include <AnimClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
