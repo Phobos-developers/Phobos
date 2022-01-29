@@ -319,3 +319,28 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 
 	return 0x702823;
 }
+
+DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
+{
+	GET(UnitClass*, pUnit, ESI);
+
+	auto pTechnoExt = TechnoExt::ExtMap.Find(pUnit);
+	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType());
+
+	if (pTechnoExt && pTechnoTypeExt)
+	{
+		if (pTechnoExt->LaserTrails.size())
+			pTechnoExt->LaserTrails.clear();
+
+		for (auto const& entry : pTechnoTypeExt->LaserTrailData)
+		{
+			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
+			{
+				pTechnoExt->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
+					pLaserType, pUnit->Owner, entry.FLH, entry.IsOnTurret));
+			}
+		}
+	}
+
+	return 0;
+}
