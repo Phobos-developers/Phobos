@@ -211,5 +211,5 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 
 	auto Damage = this->Crit_ExtraDamage.Get();
 
-	pTarget->ReceiveDamage(&Damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
+	pTarget->ReceiveDamage(&Damage, 0, this->Crit_Warhead.Get(this->OwnerObject()), pOwner, false, false, pHouse);
 }

@@ -53,6 +53,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
 	this->Crit_ExtraDamage.Read(exINI, pSection, "Crit.ExtraDamage");
+	this->Crit_Warhead.Read(exINI, pSection, "Crit.Warhead");
 	this->Crit_Affects.Read(exINI, pSection, "Crit.Affects");
 	this->Crit_AnimList.Read(exINI, pSection, "Crit.AnimList");
 	this->Crit_AnimList_PickRandom.Read(exINI, pSection, "Crit.AnimList.PickRandom");
@@ -114,6 +115,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ExtraDamage)
+		.Process(this->Crit_Warhead)
 		.Process(this->Crit_Affects)
 		.Process(this->Crit_AnimList)
 		.Process(this->Crit_AnimList_PickRandom)

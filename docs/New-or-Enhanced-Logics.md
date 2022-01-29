@@ -611,13 +611,14 @@ RemoveMindControl=no                 ; boolean
 
 ### Critical damage chance
 
-- Warheads can now apply additional chance-based damage (known as "critical" damage) with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical strike.
+- Warheads can now apply additional chance-based damage (known as "critical" damage) with the ability to customize chance, damage, warhead, affected targets, affected target HP threshold and animations of critical strike.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                     ; Warhead
 Crit.Chance=0.0                   ; float, chance on [0.0-1.0] scale
 Crit.ExtraDamage=0                ; integer, extra damage
+Crit.Warhead=                     ; Warhead, used for applying the damage, current warhead is used if not set.
 Crit.Affects=all                  ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 Crit.AffectBelowPercent=1.0       ; float, maximum percentage of hitpoints targets (if applicable) can have left to be affected.
 Crit.AnimList=                    ; list of animations

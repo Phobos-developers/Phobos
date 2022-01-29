@@ -26,6 +26,7 @@ public:
 		Valueable<bool> DecloakDamagedTargets;
 
 		Valueable<int> Crit_ExtraDamage;
+		Nullable<WarheadTypeClass*> Crit_Warhead;
 		Valueable<double> Crit_Chance;
 		Valueable<AffectedTarget> Crit_Affects;
 		ValueableVector<AnimTypeClass*> Crit_AnimList;
@@ -87,6 +88,7 @@ public:
 
 			, Crit_Chance { 0.0 }
 			, Crit_ExtraDamage { 0 }
+			, Crit_Warhead {}
 			, Crit_Affects { AffectedTarget::All }
 			, Crit_AnimList {}
 			, Crit_AnimList_PickRandom {}
