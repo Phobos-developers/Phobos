@@ -105,6 +105,7 @@ public:
 		};
 
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
+		Valueable<CSFText> EnemyUIName;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -165,6 +166,7 @@ public:
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
 			, DeployDir {}
+			, EnemyUIName {}
 		{ }
 
 		virtual ~ExtData() = default;
