@@ -344,3 +344,46 @@ DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
+{
+	GET(TechnoClass*, pTechno, EDI);
+
+	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+
+	if (pTechnoExt && pTechnoTypeExt)
+	{
+		if (pTechnoExt->LaserTrails.size())
+			pTechnoExt->LaserTrails.clear();
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x5F4F4E, ObjectClass_Unlimbo_LaserTrails, 0x7)
+{
+	GET(TechnoClass*, pTechno, ECX);
+
+	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+	if (pTechnoExt)
+	{
+		if (pTechnoExt->LaserTrails.size())
+			pTechnoExt->LaserTrails.clear();
+
+		auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+		if (pTechnoTypeExt && pTechnoTypeExt->LaserTrailData.size() > 0)
+		{
+			for (auto const& entry : pTechnoTypeExt->LaserTrailData)
+			{
+				if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
+				{
+					pTechnoExt->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
+						pLaserType, pTechno->Owner, entry.FLH, entry.IsOnTurret));
+				}
+			}
+		}
+	}
+
+	return 0;
+}
