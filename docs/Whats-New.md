@@ -262,6 +262,7 @@ New:
 - `DeployFireWeapon=-1` now allows the deployed infantries using both weapons as undeployed (by Uranusian)
 - Power delta (surplus) counter for sidebar (by Morton)
 - Added Production and Money to Dump Object Info command (by FS-21)
+- Customizable projectile trajectory (by secsome)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)

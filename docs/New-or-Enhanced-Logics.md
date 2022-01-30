@@ -469,6 +469,16 @@ In `rulesmd.ini`:
 AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
 ```
 
+### Trajectory Speed
+
+- This tag is being used in Projectile Trajectories
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]          ; WeaponType
+Trajectory.Speed=100.0 ; double
+```
+
 ## Warheads
 
 ```{hint}
@@ -595,6 +605,35 @@ Interceptor.EliteMinimumGuardRange=0.0  ; double
 [SOMEPROJECTILE] ; Projectile
 Interceptable=no ; boolean
 ```
+
+### Projectile Trajectory
+
+- Projectiles can now have very customizable trajectories for each.
+    - You shouldn't combine this feature with YR's origin trajectories(ROT/Inviso/Arcing).
+
+#### Straight Trajectory
+
+- self-explanatory, is the straight trajectory.
+    - Initial s is read from its weapon's `Trajectory.Speed`.
+
+In `rulesmd.ini`
+```ini
+[SOMEPROJECTILE]
+Trajectory=Straight
+```
+
+#### Bombard Trajectory
+
+- Its trajectory is almost same as `Straight`. But it could have an `ExtraHeight`, means how high is the target coordinate from the target. When the projectile approaches that coordinate, it will free fall and explode when hit the target or ground.
+    - Initial speed is read from its weapon's `Trajectory.Speed`.
+
+In `rulesmd.ini`
+```ini
+[SOMEPROJECTILE]
+Trajectory=Bombard
+Trajectory.Bombard.Height=0.0   ; double
+```
+
 
 ## Trigger events
 
