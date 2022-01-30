@@ -402,6 +402,19 @@ In `rulesmd.ini`:
 NoSecondaryWeaponFallback=false   ; boolean
 ```
 
+## Terrains
+
+### Destroy animation & sound
+
+- You can now specify a destroy animation and sound for a TerrainType that are played when it is destroyed.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]  ; TerrainType
+DestroyAnim=       ; Animation
+DestroySound=      ; Sound
+```
+
 ## Weapons
 
 ### Burst.Delays
