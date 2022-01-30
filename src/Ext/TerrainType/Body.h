@@ -18,16 +18,16 @@ public:
 		Valueable<int> SpawnsTiberium_Range;
 		Valueable<Point2D> SpawnsTiberium_GrowthStage;
 		Valueable<Point2D> SpawnsTiberium_CellsPerAnim;
-		Valueable<AnimTypeClass*> DestroyAnim;
-		ValueableIdx<VocClass> DestroySound;
+		Nullable<AnimTypeClass*> DestroyAnim;
+		NullableIdx<VocClass> DestroySound;
 
 		ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
 			, SpawnsTiberium_Type { 0 }
 			, SpawnsTiberium_Range { 1 }
 			, SpawnsTiberium_GrowthStage { { 3, 0 } }
 			, SpawnsTiberium_CellsPerAnim { { 1, 0 } }
-			, DestroyAnim(nullptr)
-			, DestroySound(-1)
+			, DestroyAnim()
+			, DestroySound()
 		{ }
 
 		virtual ~ExtData() = default;

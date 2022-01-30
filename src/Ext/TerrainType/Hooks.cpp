@@ -104,12 +104,9 @@ DEFINE_HOOK(0x71BB2C, TerrainClass_TakeDamage_NowDead_Add, 0x6)
 	if (auto const pTerrainExt = TerrainTypeExt::ExtMap.Find(pThis->Type))
 	{
 		auto const nCoords = pThis->GetCoords();
-		auto const nSoundIndex = pTerrainExt->DestroySound.Get();
+		VocClass::PlayIndexAtPos(pTerrainExt->DestroySound.Get(-1), nCoords);
 
-		if (nSoundIndex != -1)
-			VocClass::PlayIndexAtPos(nSoundIndex, nCoords);
-
-		if (auto const pAnimType = pTerrainExt->DestroyAnim.Get())
+		if (auto const pAnimType = pTerrainExt->DestroyAnim.Get(nullptr))
 			GameCreate<AnimClass>(pAnimType, nCoords);
 	}
 
