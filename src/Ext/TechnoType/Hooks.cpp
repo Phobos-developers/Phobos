@@ -308,7 +308,7 @@ DEFINE_HOOK(0x739C86, UnitClass_DeployUndeploy_DeploySound, 0x6)
 // Author : Otamaa
 DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 {
-	enum {SetUIName = 0x4AE678 };
+	enum { SetUIName = 0x4AE678 };
 
 	GET(ObjectClass* , pObject, ECX);
 
@@ -331,6 +331,7 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 		if (!IsAlly && !IsCivilian && !IsObserver)
 		{
 			auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+
 			if (auto pEnemyUIName = pTechnoTypeExt->EnemyUIName.Get().Text)
 			{
 				pDecidedUIName = pEnemyUIName;

@@ -164,7 +164,7 @@ public:
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
 			, DeployDir {}
-			, EnemyUIName{ }
+			, EnemyUIName {}
 		{ }
 
 		virtual ~ExtData() = default;
