@@ -782,19 +782,12 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		}
 	}
 
-	bool onlyTargetHouseEnemy = pTeam->Type->OnlyTargetHouseEnemy;
-
-	if (pTeamData->OnlyTargetHouseEnemyMode != -1)
-	{
-		onlyTargetHouseEnemy = pTeamData->OnlyTargetHouseEnemy;
-	}
-
 	if (!pFocus && !bAircraftsWithoutAmmo)
 	{
 		// This part of the code is used for picking a new target.
 
 		// Favorite Enemy House case. If set, AI will focus against that House
-		if (onlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)
+		if (pTeam->Type->OnlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)
 			enemyHouse = HouseClass::Array->GetItem(pLeaderUnit->Owner->EnemyHouseIndex);
 
 		int targetMask = scriptArgument;
