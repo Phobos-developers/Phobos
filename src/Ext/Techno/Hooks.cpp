@@ -354,8 +354,11 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 
 	if (pTechnoExt && pTechnoTypeExt)
 	{
-		if (pTechnoExt->LaserTrails.size())
-			pTechnoExt->LaserTrails.clear();
+		for (auto &pLaserTrail : pTechnoExt->LaserTrails)
+		{
+			pLaserTrail->Visible = false;
+			pLaserTrail->LastLocation = { };
+		}
 	}
 
 	return 0;
@@ -368,20 +371,10 @@ DEFINE_HOOK(0x5F4F4E, ObjectClass_Unlimbo_LaserTrails, 0x7)
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 	if (pTechnoExt)
 	{
-		if (pTechnoExt->LaserTrails.size())
-			pTechnoExt->LaserTrails.clear();
-
-		auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
-		if (pTechnoTypeExt && pTechnoTypeExt->LaserTrailData.size() > 0)
+		for (auto &pLaserTrail : pTechnoExt->LaserTrails)
 		{
-			for (auto const& entry : pTechnoTypeExt->LaserTrailData)
-			{
-				if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
-				{
-					pTechnoExt->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
-						pLaserType, pTechno->Owner, entry.FLH, entry.IsOnTurret));
-				}
-			}
+			pLaserTrail->LastLocation = { };
+			pLaserTrail->Visible = true;
 		}
 	}
 
