@@ -46,6 +46,7 @@ public:
 		Valueable<int> PassengerDeletion_Rate;
 		NullableIdx<VocClass> PassengerDeletion_ReportSound;
 		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
+		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
 		Valueable<bool> Death_NoAmmo;
 		Valueable<int> Death_Countdown;
 
@@ -106,6 +107,7 @@ public:
 		};
 
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
+		Valueable<CSFText> EnemyUIName;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -151,6 +153,7 @@ public:
 			, PassengerDeletion_Rate { 0 }
 			, PassengerDeletion_ReportSound {}
 			, PassengerDeletion_Rate_SizeMultiply { true }
+			, PassengerDeletion_Anim {}
 			, DefaultDisguise {}
 			, OpenTopped_RangeBonus {}
 			, OpenTopped_DamageMultiplier {}
@@ -165,6 +168,7 @@ public:
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
 			, DeployDir {}
+			, EnemyUIName {}
 			, Death_NoAmmo { false }
 			, Death_Countdown { 0 }
 		{ }

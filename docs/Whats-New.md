@@ -262,6 +262,8 @@ New:
 - `DeployFireWeapon=-1` now allows the deployed infantries using both weapons as undeployed (by Uranusian)
 - Power delta (surplus) counter for sidebar (by Morton)
 - Added Production and Money to Dump Object Info command (by FS-21)
+- `EnemyUIName=` Now also works for other TechnoTypes (by Otamaa)
+- `DestroyAnim` & `DestroySound` for TerrainTypes (by Otamaa)
 - New ways for self-killing objects under certaing cases (by FS-21)
 
 Vanilla fixes:

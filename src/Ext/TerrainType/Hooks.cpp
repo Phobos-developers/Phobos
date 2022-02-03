@@ -3,9 +3,11 @@
 #include <ScenarioClass.h>
 #include <TiberiumClass.h>
 #include <OverlayTypeClass.h>
+#include <TerrainClass.h>
+#include <SpecificStructures.h>
+#include <AnimClass.h>
 
 #include <Utilities/GeneralUtils.h>
-#include <Utilities/Macro.h>
 
 namespace TerrainTypeTemp
 {
@@ -88,6 +90,25 @@ DEFINE_HOOK(0x71C8D7, TerrainTypeClass_Context_Unset, 0x5)
 {
 	TerrainTypeTemp::pCurrentType = nullptr;
 	TerrainTypeTemp::pCurrentExt = nullptr;
+
+	return 0;
+}
+
+//This one on Very end of it , let everything play first
+DEFINE_HOOK(0x71BB2C, TerrainClass_TakeDamage_NowDead_Add, 0x6)
+{
+	GET(TerrainClass*, pThis, ESI);
+	//saved for later usage !
+	//REF_STACK(args_ReceiveDamage const, ReceiveDamageArgs, STACK_OFFS(0x3C, -0x4));
+
+	if (auto const pTerrainExt = TerrainTypeExt::ExtMap.Find(pThis->Type))
+	{
+		auto const nCoords = pThis->GetCoords();
+		VocClass::PlayIndexAtPos(pTerrainExt->DestroySound.Get(-1), nCoords);
+
+		if (auto const pAnimType = pTerrainExt->DestroyAnim.Get(nullptr))
+			GameCreate<AnimClass>(pAnimType, nCoords);
+	}
 
 	return 0;
 }
