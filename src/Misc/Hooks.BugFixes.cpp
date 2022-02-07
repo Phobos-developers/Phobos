@@ -71,6 +71,10 @@ DEFINE_HOOK(0x737D57, UnitClass_ReceiveDamage_DyingFix, 0x7)
 	GET(UnitClass*, pThis, ESI);
 	GET(DamageState, result, EAX);
 
+	// Immediately release locomotor warhead's hold on a crashable unit if it dies while attacked by one.
+	if (result == DamageState::NowDead && pThis->IsAttackedByLocomotor && pThis->GetTechnoType()->Crashable)
+		pThis->IsAttackedByLocomotor = false;
+
 	if (result != DamageState::PostMortem && pThis->DeathFrameCounter > 0)
 		R->EAX(DamageState::PostMortem);
 
