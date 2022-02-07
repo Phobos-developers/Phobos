@@ -3,6 +3,33 @@
 template<> const DWORD Extension<BuildingClass>::Canary = 0x87654321;
 BuildingExt::ExtContainer BuildingExt::ExtMap;
 
+void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType, int idxStorageTiberiumType)
+{
+	auto const pDepositableTiberium = TiberiumClass::Array->GetItem(idxStorageTiberiumType);
+	float depositableTiberiumAmount = 0.0f; // Number of 'bails' that will be stored.
+	auto const pTiberium = TiberiumClass::Array->GetItem(idxTiberiumType);
+
+	if (amount > 0.0)
+	{
+		auto pBuildingType = pThis->Type;
+
+		if (pBuildingType)
+		{
+			auto const pExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
+
+			if (pExt)
+			{
+				if (pExt->Refinery_UseStorage)
+				{
+					// Store Tiberium in structures
+					depositableTiberiumAmount = (amount * pTiberium->Value) / pDepositableTiberium->Value;
+					pThis->Owner->GiveTiberium(depositableTiberiumAmount, idxStorageTiberiumType);
+				}
+			}
+		}
+	}
+}
+
 // =============================
 // load / save
 

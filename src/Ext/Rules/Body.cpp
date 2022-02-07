@@ -66,6 +66,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	INI_EX exINI(pINI);
 
+	this->Storage_TiberiumIndex.Read(exINI, GENERAL_SECTION, "Storage.TiberiumIndex");
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
 	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
@@ -165,6 +166,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetAllowLayerDeviation)
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
+		.Process(this->Storage_TiberiumIndex)
 		;
 }
 

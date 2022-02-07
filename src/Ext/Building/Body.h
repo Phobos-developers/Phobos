@@ -1,11 +1,14 @@
 #pragma once
 #include <BuildingClass.h>
+#include <HouseClass.h>
+#include <TiberiumClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/TechnoType/Body.h>
+#include <Ext/BuildingType/Body.h>
 
 class BuildingExt
 {
@@ -49,4 +52,6 @@ public:
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static void StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType, int idxStorageTiberiumType);
 };
