@@ -344,3 +344,39 @@ DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
+{
+	GET(TechnoClass*, pTechno, EDI);
+
+	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+
+	if (pTechnoExt && pTechnoTypeExt)
+	{
+		for (auto &pLaserTrail : pTechnoExt->LaserTrails)
+		{
+			pLaserTrail->Visible = false;
+			pLaserTrail->LastLocation = { };
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x5F4F4E, ObjectClass_Unlimbo_LaserTrails, 0x7)
+{
+	GET(TechnoClass*, pTechno, ECX);
+
+	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+	if (pTechnoExt)
+	{
+		for (auto &pLaserTrail : pTechnoExt->LaserTrails)
+		{
+			pLaserTrail->LastLocation = { };
+			pLaserTrail->Visible = true;
+		}
+	}
+
+	return 0;
+}
