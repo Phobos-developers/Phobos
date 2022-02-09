@@ -293,13 +293,10 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 {
 	if (SuperWeaponTypeClass::Array->Count > 0)
 	{
-
 		int swIdx = pThis->Param3;
 		int houseIdx = -1;
-		DynamicVectorClass<int> housesListIdx;
-		CellStruct targetLocation;
-		targetLocation.X = X;
-		targetLocation.Y = Y;
+		std::vector<int> housesListIdx;
+		CellStruct targetLocation = { (short)X,(short)Y };
 
 		do
 		{
@@ -364,12 +361,12 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 					&& !pHouse->IsObserver()
 					&& !pHouse->Type->MultiplayPassive)
 				{
-					housesListIdx.AddItem(pHouse->ArrayIndex);
+					housesListIdx.push_back(pHouse->ArrayIndex);
 				}
 			}
 
-			if (housesListIdx.Count > 0)
-				houseIdx = ScenarioClass::Instance->Random.RandomRanged(0, housesListIdx.Count - 1);
+			if (housesListIdx.size() > 0)
+				houseIdx = housesListIdx.at(ScenarioClass::Instance->Random.RandomRanged(0, housesListIdx.size() - 1));
 			else
 				return true;
 
@@ -399,12 +396,12 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 					&& !pHouse->Defeated
 					&& !pHouse->IsObserver())
 				{
-					housesListIdx.AddItem(pHouse->ArrayIndex);
+					housesListIdx.push_back(pHouse->ArrayIndex);
 				}
 			}
 
-			if (housesListIdx.Count > 0)
-				houseIdx = ScenarioClass::Instance->Random.RandomRanged(0, housesListIdx.Count - 1);
+			if (housesListIdx.size() > 0)
+				houseIdx = housesListIdx.at(ScenarioClass::Instance->Random.RandomRanged(0, housesListIdx.size() - 1));
 			else
 				return true;
 
@@ -421,7 +418,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		HouseClass* pHouse = HouseClass::Array->GetItem(houseIdx);
 		SuperWeaponTypeClass* pSuperType = SuperWeaponTypeClass::Array->GetItem(swIdx);
-		SuperClass* pSuper = new SuperClass(pSuperType, pHouse);
+		SuperClass* pSuper = GameCreate<SuperClass>(pSuperType, pHouse);
 
 		if (auto const pSWExt = SWTypeExt::ExtMap.Find(pSuperType))
 		{
