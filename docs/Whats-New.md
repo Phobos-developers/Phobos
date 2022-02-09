@@ -264,6 +264,8 @@ New:
 - Added Production and Money to Dump Object Info command (by FS-21)
 - `EnemyUIName=` Now also works for other TechnoTypes (by Otamaa)
 - `DestroyAnim` & `DestroySound` for TerrainTypes (by Otamaa)
+- Trigger Action 505 for Firing at specified location (by FS-21)
+- Trigger Action 506 for Firing at waypoint (by FS-21)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
