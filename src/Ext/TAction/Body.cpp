@@ -296,18 +296,18 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		int swIdx = pThis->Param3;
 		int houseIdx = -1;
 		std::vector<int> housesListIdx;
-		CellStruct targetLocation = { (short)X,(short)Y };
+		CellStruct targetLocation = { (short)X, (short)Y };
 
 		do
 		{
 			if (X < 0)
 			{
-				targetLocation.X = ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MapCoordBounds.Right);
+				targetLocation.X = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MapCoordBounds.Right);
 			}
 
 			if (Y < 0)
 			{
-				targetLocation.Y = ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MapCoordBounds.Bottom);
+				targetLocation.Y = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MapCoordBounds.Bottom);
 			}
 		} while (!MapClass::Instance->IsWithinUsableArea(targetLocation, false));
 		
