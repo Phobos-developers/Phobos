@@ -112,8 +112,8 @@ Shield.InheritStateOnReplace=false   ; boolean
 ![Laser Trails](_static/images/lasertrails.gif)  
 *Laser trails used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
-- Technos and projectiles can now have colorful trails of different transparency, thickness and color, which are drawn via laser drawing code.
-- Technos and projectiles can have multiple laser trails. For technos each trail can have custom laser trail type and FLH offset relative to turret and body.
+- Technos , Projectiles , and VoxelAnims can now have colorful trails of different transparency, thickness and color, which are drawn via laser drawing code.
+- Technos , Projectiles , and VoxelAnims can have multiple laser trails. For technos each trail can have custom laser trail type and FLH offset relative to turret and body.
 
 ```{warning}
 Laser trails are very resource intensive! Due to the game not utilizing GPU having a lot of trails can quickly drop the FPS on even good machines. To reduce that effect:
@@ -144,6 +144,12 @@ LaserTrailN.Type=SOMETRAIL  ; LaserTrailType
 LaserTrailN.FLH=0,0,0       ; integer - Forward,Lateral,Height
 LaserTrailN.IsOnTurret=no   ; boolean, whether the trail origin is turret
 ; where N = 0, 1, 2, ...
+```
+
+in `rulesmd.ini`:
+```ini
+[SOMEVOXELANIM]             ; VoxelAnim
+LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
 ```
 
 ### Custom Radiation Types
