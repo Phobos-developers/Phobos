@@ -29,7 +29,7 @@ DEFINE_HOOK(0x719788, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x
 
 	R->EDX<AnimTypeClass*>(pExt->WarpIn.Get(RulesClass::Instance->WarpOut));
 
-	TechnoExt::ExtData* pTechnoExt = TechnoExt::ExtMap.Find(pLocomotor->LinkedTo);
+	auto pTechnoExt = TechnoExt::ExtMap.Find(pLocomotor->LinkedTo);
 
 	bool isInMinRange = pTechnoExt->LastWarpDistance < pExt->ChronoRangeMinimum.Get(RulesClass::Instance->ChronoRangeMinimum);
 

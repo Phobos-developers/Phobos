@@ -110,9 +110,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
 	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
 
-	this->WarpInWeapon.Read(exINI, pSection, "WarpInWeapon");
-	this->WarpInMinRangeWeapon.Read(exINI, pSection, "WarpInMinRangeWeapon");
-	this->WarpOutWeapon.Read(exINI, pSection, "WarpOutWeapon");
+	this->WarpInWeapon.Read(exINI, pSection, "WarpInWeapon", true);
+	this->WarpInMinRangeWeapon.Read(exINI, pSection, "WarpInMinRangeWeapon", true);
+	this->WarpOutWeapon.Read(exINI, pSection, "WarpOutWeapon", true);
 	this->WarpInWeapon_UseDistanceAsDamage.Read(exINI, pSection, "WarpInWeapon.UseDistanceAsDamage");
 	this->WarpInWeapon_FireAsSelf.Read(exINI, pSection, "WarpInWeapon.FireAsSelf");
 	this->WarpOutWeapon_FireAsSelf.Read(exINI, pSection, "WarpOutWeapon.FireAsSelf");
