@@ -262,6 +262,8 @@ New:
 - `DeployFireWeapon=-1` now allows the deployed infantries using both weapons as undeployed (by Uranusian)
 - Power delta (surplus) counter for sidebar (by Morton)
 - Added Production and Money to Dump Object Info command (by FS-21)
+- `EnemyUIName=` Now also works for other TechnoTypes (by Otamaa)
+- `DestroyAnim` & `DestroySound` for TerrainTypes (by Otamaa)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -273,6 +275,7 @@ Vanilla fixes:
 - Fixed the bug that AITriggerTypes do not recognize building upgrades (by Uranusian)
 - Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` > `AllowParallelAIQueues=no` is set (by FS-21)
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10 (by Otamaa)
+- Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead (by Starkku)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
