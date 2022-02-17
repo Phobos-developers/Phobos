@@ -246,9 +246,9 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 		if (pExt->AutoFire)
 		{
 			if (pExt->AutoFire_TargetSelf)
-				pThis->Target = pThis;
+				pThis->SetTarget(pThis);
 			else
-				pThis->Target = pThis->GetCell();
+				pThis->SetTarget(pThis->GetCell());
 
 			return 0x7099B8;
 		}
