@@ -568,9 +568,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	if (!pTeam)
 	{
 		if (pTeamData->CloseEnough > 0)
-		{
 			pTeamData->CloseEnough = -1;
-		}
 
 		// This action finished
 		pTeam->StepCompleted = true;
@@ -1031,9 +1029,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 					if (pUnitType->WhatAmI() != AbstractType::AircraftType)
 					{
 						if (pUnit->Target != pFocus)
-						{
 							pUnit->SetTarget(pFocus);
-						}
 
 						if (pUnit->GetCurrentMission() != Mission::Attack
 							&& pUnit->GetCurrentMission() != Mission::Unload
@@ -2069,9 +2065,7 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 	if (!pTeam)
 	{
 		if (pTeamData->CloseEnough > 0)
-		{
 			pTeamData->CloseEnough = -1;
-		}
 
 		// This action finished
 		pTeam->StepCompleted = true;
