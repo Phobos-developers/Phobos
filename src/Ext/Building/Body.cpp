@@ -11,13 +11,9 @@ void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiber
 
 	if (amount > 0.0)
 	{
-		auto pBuildingType = pThis->Type;
-
-		if (pBuildingType)
+		if (auto pBuildingType = pThis->Type)
 		{
-			auto const pExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
-
-			if (pExt)
+			if (auto const pExt = BuildingTypeExt::ExtMap.Find(pBuildingType))
 			{
 				if (pExt->Refinery_UseStorage)
 				{
