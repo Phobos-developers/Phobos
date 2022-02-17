@@ -27,6 +27,8 @@ public:
 		TimerStruct	PassengerDeletionTimer;
 		Valueable<int> PassengerDeletionCountDown;
 		Valueable<ShieldTypeClass*> CurrentShieldType;
+		std::vector<int> ExtraTint_Color;
+		std::vector<TimerStruct> ExtraTint_Timer;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet { nullptr }
@@ -37,6 +39,8 @@ public:
 			, PassengerDeletionTimer {}
 			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType {}
+			, ExtraTint_Color {}
+			, ExtraTint_Timer {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -89,6 +93,12 @@ public:
 	static void ApplySpawn_LimitRange(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void EatPassengers(TechnoClass* pThis);
+	
+	// eMode 0 - Override existed timer, 1 - Add to existed timer, 2 - Don't touch existed timer
+	static void AddExtraTint(TechnoClass* pThis, int nFrames, int nColor, int eMode);
+	static void AddExtraTint(TechnoClass* pThis, int nFrames, int R, int G, int B, int eMode);
+	static void ApplyExtraTint(TechnoClass* pThis, int& nTintColor, int& nIntensity);
+	static void ApplyExtraTint(TechnoClass* pThis, int& nTintColor);
 
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 };

@@ -402,6 +402,72 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 	}
 }
 
+void TechnoExt::AddExtraTint(TechnoClass* pThis, int nFrames, int nColor, int eMode)
+{
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	
+	size_t nIndex = 0;
+	for (; nIndex < pExt->ExtraTint_Color.size(); ++nIndex)
+		if (pExt->ExtraTint_Color[nIndex] == nColor)
+			break;
+
+	if (nIndex == pExt->ExtraTint_Color.size()) // not existed
+	{
+		pExt->ExtraTint_Color.push_back(nColor);
+		pExt->ExtraTint_Timer.emplace_back(TimerStruct {}).Start(nFrames);
+	}
+	else // existed
+	{
+		switch (eMode)
+		{
+		case 1: // Add to existed timer
+			pExt->ExtraTint_Timer[nIndex].Start(pExt->ExtraTint_Timer[nIndex].GetTimeLeft() + nFrames);
+			break;
+
+		case 2: // Don't touch existed timer
+			break;
+
+		case 0: // Override the existed timer
+		default:
+			pExt->ExtraTint_Timer[nIndex].Start(nFrames);
+			break;
+		}
+	}
+}
+
+void TechnoExt::AddExtraTint(TechnoClass* pThis, int nFrames, int R, int G, int B, int eMode)
+{
+	TechnoExt::AddExtraTint(pThis, nFrames, Drawing::RGB2DWORD(R, G, B), eMode);
+}
+
+void TechnoExt::ApplyExtraTint(TechnoClass* pThis, int& nTintColor, int& nIntensity)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	const int nCount = pExt->ExtraTint_Color.size();
+	for (int i = 0; i < nCount; ++i)
+	{
+		if (pExt->ExtraTint_Timer[i].InProgress())
+		{
+			nTintColor |= pExt->ExtraTint_Color[i];
+			UNREFERENCED_PARAMETER(nIntensity);
+		}
+	}
+}
+
+void TechnoExt::ApplyExtraTint(TechnoClass* pThis, int& nTintColor)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	const int nCount = pExt->ExtraTint_Color.size();
+	for (int i = 0; i < nCount; ++i)
+	{
+		if (pExt->ExtraTint_Timer[i].InProgress())
+		{
+			nTintColor |= pExt->ExtraTint_Color[i];
+
+		}
+	}
+}
+
 bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 {
 	if (pThis->GetTechnoType()->Ammo > 0)
@@ -430,6 +496,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->PassengerDeletionCountDown)
 		.Process(this->CurrentShieldType)
+		.Process(this->ExtraTint_Color)
+		.Process(this->ExtraTint_Timer)
 		;
 }
 
