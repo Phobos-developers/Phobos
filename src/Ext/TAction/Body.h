@@ -43,6 +43,8 @@ public:
 		void Serialize(T& Stm);
 	};
 
+	static void RecreateLightSources();
+
 	static bool Execute(TActionClass* pThis, HouseClass* pHouse,
 			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location, bool& bHandled);
 
@@ -57,6 +59,7 @@ public:
 	ACTION_FUNC(GenerateRandomNumber);
 	ACTION_FUNC(PrintVariableValue);
 	ACTION_FUNC(BinaryOperation);
+	ACTION_FUNC(AdjustLighting);
 	ACTION_FUNC(RunSuperWeaponAtLocation);
 	ACTION_FUNC(RunSuperWeaponAtWaypoint);
 
