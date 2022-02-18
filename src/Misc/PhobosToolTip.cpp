@@ -202,7 +202,7 @@ DEFINE_HOOK(0x478E10, CCToolTip_Draw1, 0x0)
 			PhobosToolTip::Instance.SlaveDraw = PhobosToolTip::Instance.IsCameo;
 
 		pThis->FullRedraw = bFullRedraw;
-		pThis->Draw2(pThis->CurrentToolTipData);
+		pThis->DrawText(pThis->CurrentToolTipData);
 	}
 	return 0x478E25;
 }
