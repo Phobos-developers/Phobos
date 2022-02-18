@@ -21,6 +21,7 @@
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\Dummy.h" />
     <ClCompile Include="src\Ext\AnimType\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Cell\Body.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.Variables.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Body.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Hooks.cpp" />
@@ -34,9 +35,12 @@
     <ClCompile Include="src\Ext\TEvent\Body.cpp" />
     <ClCompile Include="src\Ext\Trigger\Hooks.cpp" />
     <ClCompile Include="src\Misc\CaptureManager.cpp" />
+    <ClCompile Include="src\Misc\FogOfWar.cpp" />
     <ClCompile Include="src\Misc\Hooks.Image.cpp" />
+    <ClCompile Include="src\Misc\MapRevealer.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
+    <ClCompile Include="src\New\Entity\FoggedObject.cpp" />
     <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
     <ClCompile Include="src\Misc\RetryDialog.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
@@ -111,13 +115,16 @@
     <ClInclude Include="src\Commands\ObjectInfo.h" />
     <ClInclude Include="src\Commands\Commands.h" />
     <ClInclude Include="src\Commands\QuickSave.h" />
+    <ClInclude Include="src\Ext\Cell\Body.h" />
     <ClInclude Include="src\Ext\Sidebar\Body.h" />
     <ClInclude Include="src\Ext\Anim\Body.h" />
     <ClInclude Include="src\Ext\TAction\Body.h" />
     <ClInclude Include="src\Ext\Team\Body.h" />
     <ClInclude Include="src\Ext\TEvent\Body.h" />
     <ClInclude Include="src\Misc\CaptureManager.h" />
+    <ClInclude Include="src\Misc\MapRevealer.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
+    <ClInclude Include="src\New\Entity\FoggedObject.h" />
     <ClInclude Include="src\New\Entity\ShieldClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldTypeClass.h" />
