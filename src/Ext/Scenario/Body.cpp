@@ -1,6 +1,6 @@
 #include "Body.h"
 
-#include <GameModeOptionsClass.h>
+#include <SessionClass.h>
 
 template<> const DWORD Extension<ScenarioClass>::Canary = 0xABCD1595;
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
@@ -109,7 +109,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentTint_Hashes)
 
 		// Extra datas
-		.Process(GameModeOptionsClass::Instance)
+		.Process(SessionClass::Instance->Config)
 		;
 }
 
