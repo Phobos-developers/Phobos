@@ -613,7 +613,7 @@ void ShieldClass::KillAnim()
 {
 	if (this->IdleAnim)
 	{
-		GameDelete(this->IdleAnim);
+		this->IdleAnim->DetachFromObject(this->Techno, false);
 		this->IdleAnim = nullptr;
 	}
 }
