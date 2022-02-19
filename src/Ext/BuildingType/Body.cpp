@@ -132,6 +132,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		}
 	}
 
+	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -151,6 +152,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PowerPlantEnhancer_Factor)
 		.Process(this->SuperWeapons)
 		.Process(this->OccupierMuzzleFlashes)
+		.Process(this->Refinery_UseStorage)
 		;
 }
 

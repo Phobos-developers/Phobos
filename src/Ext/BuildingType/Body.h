@@ -24,6 +24,8 @@ public:
 
 		DynamicVectorClass<Point2D> OccupierMuzzleFlashes;
 
+		Valueable<bool> Refinery_UseStorage;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -31,6 +33,7 @@ public:
 			, PowerPlantEnhancer_Amount {}
 			, PowerPlantEnhancer_Factor {}
 			, OccupierMuzzleFlashes()
+			, Refinery_UseStorage { false }
 		{ }
 
 		virtual ~ExtData() = default;
