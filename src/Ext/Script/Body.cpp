@@ -31,8 +31,8 @@ ScriptExt::ExtContainer::~ExtContainer() = default;
 
 void ScriptExt::ProcessAction(TeamClass* pTeam)
 {
-	const int action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action;
-	const int argument = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+	const int action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action;
+	const int argument = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 	switch (action)
 	{
 	case 71:
@@ -202,7 +202,7 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		{
 			// Unknown new action. This action finished
 			pTeam->StepCompleted = true;
-			Debug::Log("[%s] [%s] (line %d): Unknown Script Action: %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action);
+			Debug::Log("[%s] [%s] (line %d): Unknown Script Action: %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->CurrentMission, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action);
 		}
 		break;
 	}
@@ -226,10 +226,10 @@ void ScriptExt::ExecuteTimedAreaGuardAction(TeamClass* pTeam)
 			pUnit = pUnit->NextTeamMember;
 			pUnit->QueueMission(Mission::Area_Guard, true);
 		}
-		pTeam->GuardAreaTimer.Start(15 * pScriptType->ScriptActions[pScript->idxCurrentLine].Argument);
+		pTeam->GuardAreaTimer.Start(15 * pScriptType->ScriptActions[pScript->CurrentMission].Argument);
 	}
 	/*else {
-		Debug::Log("[%s] [%s] %d = %d,%d (Countdown: %d)\n", pTeam->Type->ID, pScriptType->ID, pScript->idxCurrentLine, currentLineAction->Action, currentLineAction->Argument, pTeam->GuardAreaTimer.GetTimeLeft());
+		Debug::Log("[%s] [%s] %d = %d,%d (Countdown: %d)\n", pTeam->Type->ID, pScriptType->ID, pScript->CurrentMission, currentLineAction->Action, currentLineAction->Argument, pTeam->GuardAreaTimer.GetTimeLeft());
 	}
 	*/
 
@@ -310,8 +310,8 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 	while (pUnit);
 
 	// This action finished
-	if (pTeam->CurrentScript->HasNextAction())
-		pTeam->CurrentScript->idxCurrentLine += 1;
+	if (pTeam->CurrentScript->HasNextMission())
+		pTeam->CurrentScript->CurrentMission += 1;
 	pTeam->StepCompleted = true;
 }
 
@@ -353,7 +353,7 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 	// This action finished
 	/*if (pTeam->CurrentScript->HasNextAction())
 	{
-		pTeam->CurrentScript->idxCurrentLine += 1;
+		pTeam->CurrentScript->CurrentMission += 1;
 	}*/
 	pTeam->StepCompleted = true;
 }
@@ -361,7 +361,7 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -1)
 {
 	FootClass *pLeaderUnit = nullptr;
-	int initialCountdown = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+	int initialCountdown = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 	bool gatherUnits = false;
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 
@@ -527,7 +527,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int calcThreatMode = 0, int attackAITargetType = -1, int idxAITargetTypeItem = -1)
 {
 	auto pScript = pTeam->CurrentScript;
-	int scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument; // This is the target type
+	int scriptArgument = pScript->Type->ScriptActions[pScript->CurrentMission].Argument; // This is the target type
 	TechnoClass* selectedTarget = nullptr;
 	HouseClass* enemyHouse = nullptr;
 	bool noWaitLoop = false;
@@ -545,7 +545,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	if (!pTeamData)
 	{
 		pTeam->StepCompleted = true;
-		Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d -> (Reason: ExtData found)\n", pTeam->Type->ID, pScript->idxCurrentLine, pScript->Type->ID, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
+		Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d -> (Reason: ExtData found)\n", pTeam->Type->ID, pScript->CurrentMission, pScript->Type->ID, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
 
 		return;
 	}
@@ -572,7 +572,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 
 		// This action finished
 		pTeam->StepCompleted = true;
-		Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d -> (Reason: No team members alive)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
+		Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d -> (Reason: No team members alive)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
 
 		return;
 	}
@@ -630,6 +630,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 				// This action finished
 				pTeam->StepCompleted = true;
 				Debug::Log("DEBUG: [%s] [%s] (line: %d) Force the jump to next line: %d = %d,%d (This action wont repeat)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
+
 				return;
 			}
 		}
@@ -699,7 +700,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 
 		// This action finished
 		pTeam->StepCompleted = true;
-		Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d -> (Reason: No Leader found | Exists Aircrafts without ammo | Team members have no weapons)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
+		Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d -> (Reason: No Leader found | Exists Aircrafts without ammo | Team members have no weapons)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
 
 		return;
 	}
@@ -904,7 +905,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 
 			// This action finished
 			pTeam->StepCompleted = true;
-			Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d (new target NOT FOUND)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->idxCurrentLine + 1, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine + 1].Argument);
+			Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d (new target NOT FOUND)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
 
 			return;
 		}
@@ -1850,7 +1851,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 void ScriptExt::DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0)
 {
 	if (modifier <= 0)
-		modifier = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+		modifier = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
 	if (modifier <= 0)
 		modifier = RulesClass::Instance->AITriggerFailureWeightDelta;
@@ -1869,7 +1870,7 @@ void ScriptExt::DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLin
 void ScriptExt::IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0)
 {
 	if (modifier <= 0)
-		modifier = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+		modifier = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
 	if (modifier <= 0)
 		modifier = abs(RulesClass::Instance->AITriggerSuccessWeightDelta);
@@ -1924,7 +1925,7 @@ void ScriptExt::WaitIfNoTarget(TeamClass *pTeam, int attempts = 0)
 	// This method modifies the new attack actions preventing Team's Trigger to jump to next script action
 	// attempts == number of times the Team will wait if Mission_Attack(...) can't find a new target.
 	if (attempts < 0)
-		attempts = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+		attempts = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (pTeamData)
@@ -1944,7 +1945,7 @@ void ScriptExt::WaitIfNoTarget(TeamClass *pTeam, int attempts = 0)
 void ScriptExt::TeamWeightReward(TeamClass *pTeam, double award = 0)
 {
 	if (award <= 0)
-		award = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+		award = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (pTeamData)
@@ -1962,7 +1963,7 @@ void ScriptExt::TeamWeightReward(TeamClass *pTeam, double award = 0)
 void ScriptExt::PickRandomScript(TeamClass* pTeam, int idxScriptsList = -1)
 {
 	if (idxScriptsList <= 0)
-		idxScriptsList = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+		idxScriptsList = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
 	bool changeFailed = true;
 
@@ -1984,7 +1985,7 @@ void ScriptExt::PickRandomScript(TeamClass* pTeam, int idxScriptsList = -1)
 					pTeam->CurrentScript = GameCreate<ScriptClass>(pNewScript);
 
 					// Ready for jumping to the first line of the new script
-					pTeam->CurrentScript->idxCurrentLine = -1;
+					pTeam->CurrentScript->CurrentMission = -1;
 					pTeam->StepCompleted = true;
 
 					return;
@@ -2015,7 +2016,7 @@ void ScriptExt::Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int cal
 		pTeamData->IdxSelectedObjectFromAIList = -1;
 
 	if (attackAITargetType < 0)
-		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
 	if (RulesExt::Global()->AITargetTypesLists.Count > 0
 		&& RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType).Count > 0)
@@ -2027,7 +2028,7 @@ void ScriptExt::Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int cal
 void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pickAllies = false, int attackAITargetType = -1, int idxAITargetTypeItem = -1)
 {
 	auto pScript = pTeam->CurrentScript;
-	int scriptArgument = pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument; // This is the target type
+	int scriptArgument = pScript->Type->ScriptActions[pScript->CurrentMission].Argument; // This is the target type
 	TechnoClass* selectedTarget = nullptr;
 	bool noWaitLoop = false;
 	FootClass *pLeaderUnit = nullptr;
@@ -2403,7 +2404,7 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, 
 	}
 
 	if (attackAITargetType < 0)
-		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
 	if (attackAITargetType >= 0
 		&& attackAITargetType < RulesExt::Global()->AITargetTypesLists.Count)
@@ -2468,7 +2469,7 @@ void ScriptExt::Mission_Move_List(TeamClass *pTeam, int calcThreatMode, bool pic
 		pTeamData->IdxSelectedObjectFromAIList = -1;
 
 	if (attackAITargetType < 0)
-		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
 	if (RulesExt::Global()->AITargetTypesLists.Count > 0
 		&& RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType).Count > 0)
@@ -2491,7 +2492,7 @@ void ScriptExt::Mission_Move_List1Random(TeamClass *pTeam, int calcThreatMode, b
 	}
 
 	if (attackAITargetType < 0)
-		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
 	if (attackAITargetType >= 0
 		&& attackAITargetType < RulesExt::Global()->AITargetTypesLists.Count)
@@ -2554,7 +2555,7 @@ void ScriptExt::SetCloseEnoughDistance(TeamClass *pTeam, double distance = -1)
 {
 	// This passive method replaces the CloseEnough value from rulesmd.ini by a custom one. Used by Mission_Move()
 	if (distance <= 0)
-		distance = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+		distance = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (pTeamData)
@@ -2582,7 +2583,7 @@ void ScriptExt::SetMoveMissionEndMode(TeamClass* pTeam, int mode = 0)
 {
 	// This passive method replaces the CloseEnough value from rulesmd.ini by a custom one. Used by Mission_Move()
 	if (mode < 0 || mode > 2)
-		mode = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+		mode = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (pTeamData)
@@ -2725,15 +2726,15 @@ void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage = 0)
 		// This action finished
 		pTeam->StepCompleted = true;
 		Debug::Log("DEBUG: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d -> (No team members alive)\n",
-			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine,
-			pTeam->CurrentScript->idxCurrentLine + 1, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 1].Action,
-			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 1].Argument);
+			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->CurrentMission,
+			pTeam->CurrentScript->CurrentMission + 1, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission + 1].Action,
+			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission + 1].Argument);
 
 		return;
 	}
 
 	if (successPercentage < 0 || successPercentage > 100)
-		successPercentage = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+		successPercentage = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
 	if (successPercentage < 0)
 		successPercentage = 0;
@@ -2746,9 +2747,9 @@ void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage = 0)
 	if (percentage <= successPercentage)
 	{
 		Debug::Log("DEBUG: ScripType: [%s] [%s] (line: %d) Next script line skipped successfuly. Next line will be: %d = %d,%d\n",
-			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->idxCurrentLine + 2,
-			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 2].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine + 2].Argument);
-		pTeam->CurrentScript->idxCurrentLine++;
+			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->CurrentMission, pTeam->CurrentScript->CurrentMission + 2,
+			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission + 2].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission + 2].Argument);
+		pTeam->CurrentScript->CurrentMission++;
 	}
 
 	// This action finished

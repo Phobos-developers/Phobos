@@ -215,10 +215,10 @@ DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 	return 0;
 }
 
-// Ares hooks in at 739B8A, this goes before it and skips & basically reimplements Ares code with some changes.
+// Ares hooks in at 739B8A, this goes before it and skips it if needed.
 DEFINE_HOOK(0x739B7C, UnitClass_Deploy_DeployDir, 0x6)
 {
-	enum { Skip = 0x739C70, Continue = 0x739B9E };
+	enum { SkipAnim = 0x739C70, PlayAnim = 0x739B9E };
 
 	GET(UnitClass*, pThis, ESI);
 
@@ -226,36 +226,16 @@ DEFINE_HOOK(0x739B7C, UnitClass_Deploy_DeployDir, 0x6)
 	{
 		if (pThis->Type->DeployingAnim)
 		{
-			int deployDir = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->DeployDir.Get(RulesClass::Instance->DeployDir >> 5);
+			if (TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->DeployingAnim_AllowAnyDirection)
+				return PlayAnim;
 
-			if (deployDir >= 0)
-			{
-				auto targetFacing = DirStruct(deployDir << 13);
-
-				if (pThis->PrimaryFacing.current() != targetFacing)
-				{
-					auto locomotor = pThis->Locomotor.get();
-
-					if (locomotor)
-					{
-						if (locomotor->Is_Moving_Now())
-							return Skip;
-
-						locomotor->Do_Turn(targetFacing);
-
-						return Skip;
-					}
-				}
-			}
-
-			return Continue;
+			return 0;
 		}
 
 		pThis->Deployed = true;
-
 	}
 
-	return Skip;
+	return SkipAnim;
 }
 
 DEFINE_HOOK_AGAIN(0x739D8B, UnitClass_DeployUndeploy_DeployAnim, 0x5)

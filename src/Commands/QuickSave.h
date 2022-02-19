@@ -30,7 +30,7 @@ public:
 		return GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_DESC", L"Save the current game (Singleplayer only).");
 	}
 
-	virtual void Execute(DWORD dwUnk) const override
+	virtual void Execute(WWKey eInput) const override
 	{
 		auto PrintMessage = [](const wchar_t* pMessage)
 		{

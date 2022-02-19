@@ -1,11 +1,14 @@
 #pragma once
 #include <BuildingClass.h>
+#include <HouseClass.h>
+#include <TiberiumClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/TechnoType/Body.h>
+#include <Ext/BuildingType/Body.h>
 
 class BuildingExt
 {
@@ -17,10 +20,12 @@ public:
 	public:
 		Valueable<bool> DeployedTechno;
 		Valueable<int> LimboID;
+		Valueable<int> GrindingWeapon_LastFiredFrame;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, DeployedTechno { false }
 			, LimboID { -1 }
+			, GrindingWeapon_LastFiredFrame { 0 }
 
 		{ }
 
@@ -49,4 +54,6 @@ public:
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static void StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType, int idxStorageTiberiumType);
 };
