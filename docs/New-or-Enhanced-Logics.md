@@ -771,6 +771,7 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 `Operation` can be looked up at action `501`
 
 ### `505` Fire Super Weapon at specified location
+
 - Launch a Super Weapon from [SuperWeaponTypes] list at a specified location.
 - `HouseIndex` can take various values:
 
@@ -793,6 +794,7 @@ ID=ActionCount,[Action1],505,0,0,[SuperWeaponTypesIndex],[HouseIndex],[Coordinat
 ```
 
 ### `506` Fire Super Weapon at specified Waypoint
+
 - Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint.
 
 In `mycampaign.map`:
@@ -801,7 +803,7 @@ In `mycampaign.map`:
 ...
 ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointIndex],0,A,[ActionX]
 ...
-
+```
 
 ## Script actions
 
