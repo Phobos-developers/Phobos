@@ -35,6 +35,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->DeployedTechno)
 		.Process(this->LimboID)
+		.Process(this->GrindingWeapon_LastFiredFrame)
 		;
 }
 

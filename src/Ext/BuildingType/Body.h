@@ -26,6 +26,13 @@ public:
 
 		Valueable<bool> Refinery_UseStorage;
 
+		Valueable<bool> Grinding_AllowAllies;
+		Valueable<bool> Grinding_AllowOwner;
+		ValueableVector<TechnoTypeClass*> Grinding_AllowTypes;
+		ValueableVector<TechnoTypeClass*> Grinding_DisallowTypes;
+		NullableIdx<VocClass> Grinding_Sound;
+		Nullable<WeaponTypeClass*> Grinding_Weapon;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -34,6 +41,12 @@ public:
 			, PowerPlantEnhancer_Factor {}
 			, OccupierMuzzleFlashes()
 			, Refinery_UseStorage { false }
+			, Grinding_AllowAllies { false }
+			, Grinding_AllowOwner { true }
+			, Grinding_AllowTypes {}
+			, Grinding_DisallowTypes {}
+			, Grinding_Sound {}
+			, Grinding_Weapon {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -68,4 +81,5 @@ public:
 	static int GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);
+	static bool CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno);
 };

@@ -63,6 +63,37 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 	return isUpgrade ? result : -1;
 }
 
+bool BuildingTypeExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
+{
+	if (!pBuilding->Type->Grinding || (pTechno->WhatAmI() != AbstractType::Infantry && pTechno->WhatAmI() != AbstractType::Unit))
+		return false;
+
+	if ((pBuilding->Type->InfantryAbsorb || pBuilding->Type->UnitAbsorb) && 
+		(pTechno->WhatAmI() == AbstractType::Infantry && !pBuilding->Type->InfantryAbsorb ||
+		pTechno->WhatAmI() == AbstractType::Unit && !pBuilding->Type->UnitAbsorb))
+	{
+		return false;
+	}
+
+	if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
+	{
+		if (pBuilding->Owner == pTechno->Owner && !pExt->Grinding_AllowOwner)
+			return false;
+
+		if (pBuilding->Owner != pTechno->Owner && pBuilding->Owner->IsAlliedWith(pTechno) && !pExt->Grinding_AllowAllies)
+			return false;
+
+		if (pExt->Grinding_AllowTypes.size() > 0 && !pExt->Grinding_AllowTypes.Contains(pTechno->GetTechnoType()))
+			return false;
+
+		if (pExt->Grinding_DisallowTypes.size() > 0 && pExt->Grinding_DisallowTypes.Contains(pTechno->GetTechnoType()))
+			return false;
+	}
+
+	return true;
+}
+
+
 void BuildingTypeExt::ExtData::Initialize()
 {
 
@@ -92,6 +123,13 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
+
+	this->Grinding_AllowAllies.Read(exINI, pSection, "Grinding.AllowAllies");
+	this->Grinding_AllowOwner.Read(exINI, pSection, "Grinding.AllowOwner");
+	this->Grinding_AllowTypes.Read(exINI, pSection, "Grinding.AllowTypes");
+	this->Grinding_DisallowTypes.Read(exINI, pSection, "Grinding.DisallowTypes");
+	this->Grinding_Sound.Read(exINI, pSection, "Grinding.Sound");
+	this->Grinding_Weapon.Read(exINI, pSection, "Grinding.Weapon", true);
 
 	// Ares SuperWeapons tag
 	pINI->ReadString(pSection, "SuperWeapons", "", Phobos::readBuffer);
@@ -153,6 +191,12 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuperWeapons)
 		.Process(this->OccupierMuzzleFlashes)
 		.Process(this->Refinery_UseStorage)
+		.Process(this->Grinding_AllowAllies)
+		.Process(this->Grinding_AllowOwner)
+		.Process(this->Grinding_AllowTypes)
+		.Process(this->Grinding_DisallowTypes)
+		.Process(this->Grinding_Sound)
+		.Process(this->Grinding_Weapon)
 		;
 }
 

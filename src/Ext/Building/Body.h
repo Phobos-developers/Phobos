@@ -20,10 +20,12 @@ public:
 	public:
 		Valueable<bool> DeployedTechno;
 		Valueable<int> LimboID;
+		Valueable<int> GrindingWeapon_LastFiredFrame;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, DeployedTechno { false }
 			, LimboID { -1 }
+			, GrindingWeapon_LastFiredFrame { 0 }
 
 		{ }
 
