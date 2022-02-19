@@ -264,6 +264,7 @@ New:
 - Added Production and Money to Dump Object Info command (by FS-21)
 - `EnemyUIName=` Now also works for other TechnoTypes (by Otamaa)
 - `DestroyAnim` & `DestroySound` for TerrainTypes (by Otamaa)
+- Weapons fired on warping in / out (by Starkku)
 - `Storage.TiberiumIndex` for customizing resource storage in structures (by FS-21)
 
 Vanilla fixes:
