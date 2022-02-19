@@ -29,7 +29,7 @@ public:
 		return L"Dummy";
 	}
 
-	virtual void Execute(DWORD dwUnk) const override
+	virtual void Execute(WWKey eInput) const override
 	{
 		Debug::Log("[Phobos] Dummy command runs.\n");
 		MessageListClass::Instance->PrintMessage(L"[Phobos] Dummy command rums");

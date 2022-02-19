@@ -314,7 +314,7 @@ DEFINE_HOOK(0x41EB43, AITriggerTypeClass_Condition_SupportPowersup, 0x7)		//AITr
 	int count = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);
 
 	if (count == -1)
-		count = pHouse->OwnedBuildingTypes1.GetItemCount(idxBld);
+		count = pHouse->ActiveBuildingTypes.GetItemCount(idxBld);
 
 	R->EAX(count);
 
