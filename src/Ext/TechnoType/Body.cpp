@@ -144,6 +144,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->JumpjetAllowLayerDeviation.Read(exINI, pSection, "JumpjetAllowLayerDeviation");
 
+	this->DeployingAnim_AllowAnyDirection.Read(exINI, pSection, "DeployingAnim.AllowAnyDirection");
 	this->DeployingAnim_KeepUnitVisible.Read(exINI, pSection, "DeployingAnim.KeepUnitVisible");
 	this->DeployingAnim_ReverseForUndeploy.Read(exINI, pSection, "DeployingAnim.ReverseForUndeploy");
 	this->DeployingAnim_UseUnitDrawer.Read(exINI, pSection, "DeployingAnim.UseUnitDrawer");
@@ -160,9 +161,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.C
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
 	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
-
-	// Ares 2.0
-	this->DeployDir.Read(exINI, pSection, "DeployDir");
 
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
@@ -291,10 +289,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoAmmoWeapon)
 		.Process(this->NoAmmoAmount)
 		.Process(this->JumpjetAllowLayerDeviation)
+		.Process(this->DeployingAnim_AllowAnyDirection)
 		.Process(this->DeployingAnim_KeepUnitVisible)
 		.Process(this->DeployingAnim_ReverseForUndeploy)
 		.Process(this->DeployingAnim_UseUnitDrawer)
-		.Process(this->DeployDir)
 		.Process(this->EnemyUIName)
 		;
 }

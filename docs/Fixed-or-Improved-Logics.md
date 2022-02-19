@@ -96,18 +96,17 @@ Grinding.Weapon=           ; WeaponType
 
 ## Vehicles
 
-### Deploy direction for IsSimpleDeployer vehicles & deploy animation customization
+### IsSimpleDeployer vehicle deploy animation / direction customization
 
-- `DeployDir` can be used to set the facing the vehicle needs to turn towards before deploying if it has `DeployingAnim` set. This is works the same as Ares flag of same name other than allowing use of negative numbers to disable the direction-specific deploy and that it only applies to units on ground. If not set, it defaults to `[General] -> DeployDir`.
-- In addition there are some new options for `DeployingAnim`:
-  - `DeployingAnim.KeepUnitVisible` determines if the unit is hidden while the animation is playing.
-  - `DeployingAnim.ReverseForUndeploy` controls whether or not the animation is played in reverse for undeploying.
-  - `DeployingAnim.UseUnitDrawer` controls whether or not the animation is displayed in the unit's palette and team colours.
+- `DeployingAnim.AllowAnyDirection` if set, disables any direction constraints for deployers with `DeployingAnim` set. Only works for ground units.
+- `DeployingAnim.KeepUnitVisible` determines if the unit is hidden while the animation is playing.
+- `DeployingAnim.ReverseForUndeploy` controls whether or not the animation is played in reverse for undeploying.
+- `DeployingAnim.UseUnitDrawer` controls whether or not the animation is displayed in the unit's palette and team colours or regular animation palette, including a potential custom palette.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]                          ; VehicleType
-DeployDir=                             ; integer, facing or a negative number to disable direction-specific deploy
+DeployingAnim.AllowAnyDirection=false  ; boolean
 DeployingAnim.KeepUnitVisible=false    ; boolean
 DeployingAnim.ReverseForUndeploy=true  ; boolean
 DeployingAnim.UseUnitDrawer=true       ; boolean
