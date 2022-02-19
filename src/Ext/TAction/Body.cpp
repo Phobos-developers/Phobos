@@ -301,14 +301,10 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		do
 		{
 			if (X < 0)
-			{
 				targetLocation.X = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MapCoordBounds.Right);
-			}
 
 			if (Y < 0)
-			{
 				targetLocation.Y = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MapCoordBounds.Bottom);
-			}
 		} while (!MapClass::Instance->IsWithinUsableArea(targetLocation, false));
 		
 		// Only valid House indexes
