@@ -34,7 +34,7 @@ public:
 		return GeneralUtils::LoadStringUnlessMissing("TXT_NEXT_IDLE_HARVESTER_DESC", L"Select the next harvester that is idle (not harvesting).");
 	}
 
-	virtual void Execute(DWORD dwUnk) const override
+	virtual void Execute(WWKey eInput) const override
 	{
 		// Debug::Log("[Phobos] Dummy command runs.\n");
 		// MessageListClass::Instance->PrintMessage(L"[Phobos] Dummy command rums");

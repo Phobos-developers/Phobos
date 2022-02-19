@@ -131,7 +131,7 @@ bool TEventExt::VariableCheck(TEventClass* pThis)
 	if (itr != ScenarioExt::Global()->Variables[IsGlobal].end())
 	{
 		// We uses TechnoName for our operator number
-		int nOpt = atoi(pThis->TechnoName);
+		int nOpt = atoi(pThis->String);
 		return _Pr()(itr->second.Value, nOpt);
 	}
 
@@ -146,7 +146,7 @@ bool TEventExt::VariableCheckBinary(TEventClass* pThis)
 	if (itr != ScenarioExt::Global()->Variables[IsGlobal].end())
 	{
 		// We uses TechnoName for our src variable index
-		int nSrcVariable = atoi(pThis->TechnoName);
+		int nSrcVariable = atoi(pThis->String);
 		auto itrsrc = ScenarioExt::Global()->Variables[IsSrcGlobal].find(nSrcVariable);
 
 		if (itrsrc != ScenarioExt::Global()->Variables[IsSrcGlobal].end())

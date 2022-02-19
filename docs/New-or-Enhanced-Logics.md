@@ -415,6 +415,24 @@ DestroyAnim=       ; Animation
 DestroySound=      ; Sound
 ```
 
+### Weapons fired on warping in / out
+
+- It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.
+  - `WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance traveled (in leptons) was less than `ChronoRangeMinimum`. This works regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon` is not set, it defaults to `WarpInWeapon`.
+  - If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of `WarpIn(MinRange)Weapon` is overriden by the number of whole cells teleported across.
+  - `WarpInWeapon.FireAsSelf` & `WarpOutWeapon.FireAsSelf` can be used to disable firing the weapon with the teleporting TechnoType as an owner. This allows damaging itself, but also makes certain Weapon or Warhead features reliant on owner not available.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                            ; TechnoType
+WarpInWeapon=                           ; WeaponType
+WarpInMinRangeWeapon=                   ; WeaponType
+WarpInWeapon.UseDistanceAsDamage=false  ; boolean
+WarpInWeapon.FireAsSelf=true            ; boolean
+WarpOutWeapon=                          ; WeaponType
+WarpOutWeapon.FireAsSelf=true           ; boolean
+```
+
 ## Weapons
 
 ### Burst.Delays

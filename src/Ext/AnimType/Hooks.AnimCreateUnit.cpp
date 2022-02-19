@@ -82,7 +82,7 @@ DEFINE_HOOK(0x424932, AnimClass_Update_CreateUnit_ActualAffects, 0x6)
 		{
 			bool allowBridges = unit->SpeedType != SpeedType::Float;
 
-			auto nCell = MapClass::Instance->Pathfinding_Find(CellClass::Coord2Cell(location),
+			auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
 				unit->SpeedType, -1, unit->MovementZone, false, 1, 1, true,
 				false, false, allowBridges, CellStruct::Empty, false, false);
 

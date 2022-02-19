@@ -95,8 +95,13 @@ bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 
 void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner)
 {
+	WeaponTypeExt::DetonateAt(pThis, pTarget, pOwner, pThis->Damage);
+}
+
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage)
+{
 	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(pTarget, pOwner,
-		pThis->Damage, pThis->Warhead, 0, pThis->Bright))
+		damage, pThis->Warhead, 0, pThis->Bright))
 	{
 		const CoordStruct& coords = pTarget->GetCoords();
 
@@ -110,8 +115,13 @@ void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, Tec
 
 void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner)
 {
+	WeaponTypeExt::DetonateAt(pThis, coords, pOwner, pThis->Damage);
+}
+
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage)
+{
 	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(nullptr, pOwner,
-		pThis->Damage, pThis->Warhead, 0, pThis->Bright))
+		damage, pThis->Warhead, 0, pThis->Bright))
 	{
 		pBullet->SetWeaponType(pThis);
 		pBullet->Limbo();
