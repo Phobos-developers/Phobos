@@ -43,7 +43,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->BreakAnim.Read(exINI, pSection, "BreakAnim");
 	this->HitAnim.Read(exINI, pSection, "HitAnim");
-	this->BreakWeapon.Read(exINI, pSection, "BreakWeapon");
+	this->BreakWeapon.Read(exINI, pSection, "BreakWeapon", true);
 
 	this->AbsorbPercent.Read(exINI, pSection, "AbsorbPercent");
 	this->PassPercent.Read(exINI, pSection, "PassPercent");

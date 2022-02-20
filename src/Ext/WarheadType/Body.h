@@ -64,6 +64,7 @@ public:
 		Valueable<bool> Shield_ReplaceOnly;
 		Valueable<bool> Shield_ReplaceNonRespawning;
 		Valueable<bool> Shield_InheritStateOnReplace;
+		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
 	private:
@@ -116,6 +117,7 @@ public:
 			, Shield_ReplaceOnly { false }
 			, Shield_ReplaceNonRespawning { false }
 			, Shield_InheritStateOnReplace { false }
+			, Shield_MinimumReplaceDelay { 0 }
 			, Shield_AffectTypes {}
 
 			, NotHuman_DeathSequence { -1 }

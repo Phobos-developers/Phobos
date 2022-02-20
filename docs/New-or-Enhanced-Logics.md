@@ -63,6 +63,7 @@ Shield.AttachTypes=                  ; List of ShieldType names
 Shield.RemoveTypes=                  ; List of ShieldType names
 Shield.ReplaceOnly=false             ; boolean
 Shield.ReplaceNonRespawning=false    ; boolean
+Shield.MinimumReplaceDelay=0         ; integer, game frames
 Shield.InheritStateOnReplace=false   ; boolean
 ```
 - Now you can have a shield for any TechnoType. It serves as a second health pool with independent `Armor` and `Strength` values.
@@ -83,7 +84,7 @@ Shield.InheritStateOnReplace=false   ; boolean
 - `IdleAnim.TemporalAction` indicates what happens to the animation when the shield is attacked by temporal weapons.
 - `BreakAnim`, if set, will be played when the shield has been broken.
 - `HitAnim`, if set, will be played when the shield is attacked, similar to `WeaponNullifyAnim` for Iron Curtain.
-- `BreakWeapon`, if set, will be fired at the TechnoType once the shield breaks. Note: for this to work it requires that the WeaponType used has been explicitly listed in `[WeaponTypes]`, which is only available with Ares.
+- `BreakWeapon`, if set, will be fired at the TechnoType once the shield breaks.
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
 - `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
@@ -105,6 +106,7 @@ Shield.InheritStateOnReplace=false   ; boolean
   - `Shield.AttachTypes` & `Shield.RemoveTypes` allows listing ShieldTypes that are attached or removed, respectively from any targets affected by the warhead (positive `Verses` values). Normally only first listed ShieldType in `Shield.AttachTypes` is applied.
     - If `Shield.ReplaceOnly` is set, shields from `Shield.AttachTypes` are only applied to affected targets from which shields were simultaneously removed, matching the order listed in `Shield.RemoveTypes`. If `Shield.AttachTypes` contains less items than `Shield.RemoveTypes`, last item from the former is used for any remaining removed shields.
     - If `Shield.ReplaceNonRespawning` is set, shield from `Shield.AttachTypes` replaces existing shields that have been broken and cannot respawn on their own.
+      - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
 ### Laser Trails
