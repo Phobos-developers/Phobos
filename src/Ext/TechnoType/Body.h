@@ -97,6 +97,8 @@ public:
 		Valueable<bool> DeployingAnim_ReverseForUndeploy;
 		Valueable<bool> DeployingAnim_UseUnitDrawer;
 
+		Valueable<int> ForceWeapon_Naval_Decloaked;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -180,6 +182,7 @@ public:
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
 			, EnemyUIName {}
+			, ForceWeapon_Naval_Decloaked { -1 }
 		{ }
 
 		virtual ~ExtData() = default;
