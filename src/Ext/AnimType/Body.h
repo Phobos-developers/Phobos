@@ -27,6 +27,7 @@ public:
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;
 		Nullable<bool> Layer_UseObjectLayer;
+		Valueable<bool> UseCenterCoordsIfAttached;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -41,6 +42,7 @@ public:
 			, XDrawOffset { 0 }
 			, HideIfNoOre_Threshold { 0 }
 			, Layer_UseObjectLayer {}
+			, UseCenterCoordsIfAttached { false }
 		{ }
 
 		virtual ~ExtData() = default;

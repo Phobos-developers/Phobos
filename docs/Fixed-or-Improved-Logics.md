@@ -67,8 +67,18 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 
 In `artmd.ini`:
 ```ini
-[SOMEANIM]                 ; AnimationType
-Layer.UseObjectLayer=      ; boolean
+[SOMEANIM]             ; AnimationType
+Layer.UseObjectLayer=  ; boolean
+```
+
+### Attached animation position customization
+
+- You can now customize whether or not animations attached to objects are centered at the object's actual center rather than the bottom of their top-leftmost cell (cell #0).
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                       ; AnimationType
+UseCenterCoordsIfAttached=false  ; boolean
 ```
 
 ## Buildings
