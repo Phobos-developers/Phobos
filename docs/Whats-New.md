@@ -267,6 +267,7 @@ New:
 - Weapons fired on warping in / out (by Starkku)
 - `Storage.TiberiumIndex` for customizing resource storage in structures (by FS-21)
 - Grinder improvements & customizations (by Starkku)
+- `ForceWeapon.Naval.Decloacked` for overriding uncloaked underwater attack behavior (by FS-21)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
