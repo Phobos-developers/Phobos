@@ -463,7 +463,7 @@ void ShieldClass::SelfHealing()
 
 	if (percentageAmount != 0)
 	{
-		if (this->HP < this->Type->Strength && timer->StartTime == -1)
+		if ((this->HP < this->Type->Strength || percentageAmount < 0) && timer->StartTime == -1)
 			timer->Start(rate);
 
 		if (this->HP > 0 && timer->Completed())
