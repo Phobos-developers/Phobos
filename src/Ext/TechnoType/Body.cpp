@@ -223,6 +223,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
 
 	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
+	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 }
 
 template <typename T>
@@ -297,6 +298,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployingAnim_UseUnitDrawer)
 		.Process(this->EnemyUIName)
 		.Process(this->Ammo_Shared)
+		.Process(this->Ammo_Shared_group)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

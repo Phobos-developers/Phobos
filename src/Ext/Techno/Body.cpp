@@ -450,10 +450,13 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 
 						if (pPassengerExt && pPassengerExt->Ammo_Shared)
 						{
-							if (pThis->Ammo > 0 && (passenger->Ammo < passengerType->Ammo))
+							if (pExt->Ammo_Shared_Group < 0 || pExt->Ammo_Shared_Group == pPassengerExt->Ammo_Shared_Group)
 							{
-								pThis->Ammo--;
-								passenger->Ammo++;
+								if (pThis->Ammo > 0 && (passenger->Ammo < passengerType->Ammo))
+								{
+									pThis->Ammo--;
+									passenger->Ammo++;
+								}
 							}
 						}
 

@@ -98,6 +98,7 @@ public:
 		Valueable<bool> DeployingAnim_UseUnitDrawer;
 
 		Valueable<bool> Ammo_Shared;
+		Valueable<int> Ammo_Shared_Group;
 
 		struct LaserTrailDataEntry
 		{
@@ -183,6 +184,7 @@ public:
 			, DeployingAnim_UseUnitDrawer { true }
 			, EnemyUIName {}
 			, Ammo_Shared { false }
+			, Ammo_Shared_Group { -1 }
 		{ }
 
 		virtual ~ExtData() = default;
