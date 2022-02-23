@@ -416,6 +416,55 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 	return false;
 }
 
+void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
+{
+	if (!pThis)
+		return;
+
+	if (auto pType = pThis->GetTechnoType())
+	{
+		if (pType->OpenTopped && pThis->Passengers.NumPassengers > 0)
+		{
+			if (const auto pExt = TechnoTypeExt::ExtMap.Find(pType))
+			{
+				if (pExt->Ammo_Shared)
+				{
+					// Safe check before everything else
+					if (pThis->Ammo > pType->Ammo)
+					{
+						pThis->Ammo = pType->Ammo;
+					}
+					else if (pThis->Ammo < 0)
+					{
+						pThis->Ammo = 0;
+						return;
+					}
+
+					auto passenger = pThis->Passengers.FirstPassenger;
+					TechnoTypeClass* passengerType;
+
+					do
+					{
+						passengerType = passenger->GetTechnoType();
+						auto pPassengerExt = TechnoTypeExt::ExtMap.Find(passengerType);
+
+						if (pPassengerExt && pPassengerExt->Ammo_Shared)
+						{
+							if (pThis->Ammo > 0 && (passenger->Ammo < passengerType->Ammo))
+							{
+								pThis->Ammo--;
+								passenger->Ammo++;
+							}
+						}
+
+						passenger = static_cast<FootClass*>(passenger->NextObject);
+					} while (passenger);
+				}
+			}
+		}
+	}
+}
+
 // =============================
 // load / save
 

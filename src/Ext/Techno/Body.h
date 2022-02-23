@@ -91,6 +91,7 @@ public:
 	static void ApplySpawn_LimitRange(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void EatPassengers(TechnoClass* pThis);
+	static void UpdateSharedAmmo(TechnoClass* pThis);
 
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 };
