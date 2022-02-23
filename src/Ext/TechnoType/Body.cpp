@@ -298,7 +298,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployingAnim_UseUnitDrawer)
 		.Process(this->EnemyUIName)
 		.Process(this->Ammo_Shared)
-		.Process(this->Ammo_Shared_group)
+		.Process(this->Ammo_Shared_Group)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
