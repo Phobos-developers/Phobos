@@ -627,13 +627,13 @@ Interceptor.EliteMinimumGuardRange=0.0  ; double
 Interceptable=no ; boolean
 ```
 
-### Sharpnel enhancement
-- Sharpnel behavior can be forced to trigger now.
+### Shrapnel enhancement
+- Shrapnel behavior can be forced to trigger now.
 
 In `rulesmd.ini`
 [SOMEPROJECTILE] ; Projectile
-Sharpnel.Forced=no ; boolean
-Sharpnel.AffectBuildings=no ; boolean
+Shrapnel.Forced=no ; boolean
+Shrapnel.AffectsBuildings=no ; boolean
 
 ## Trigger events
 

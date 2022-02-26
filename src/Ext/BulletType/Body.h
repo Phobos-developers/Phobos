@@ -19,16 +19,16 @@ public:
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
 		Nullable<double> Gravity;
 		Valueable<bool> Gravity_HeightFix;
-		Valueable<bool> Sharpnel_Forced;
-		Valueable<bool> Sharpnel_AffectBuildings;
+		Valueable<bool> Shrapnel_Forced;
+		Valueable<bool> Shrapnel_AffectsBuildings;
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
 			, Interceptable { false }
 			, LaserTrail_Types {}
 			, Gravity {}
 			, Gravity_HeightFix { false }
-			, Sharpnel_Forced { false }
-			, Sharpnel_AffectBuildings { false }
+			, Shrapnel_Forced { false }
+			, Shrapnel_AffectsBuildings { false }
 		{ }
 
 		virtual ~ExtData() = default;
