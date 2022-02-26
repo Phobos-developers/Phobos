@@ -628,11 +628,11 @@ Interceptable=no ; boolean
 ```
 
 ### Shrapnel enhancement
-- Shrapnel behavior can be forced to trigger now.
+- Shrapnel behavior can be triggered on the ground and buildings.
 
 In `rulesmd.ini`
 [SOMEPROJECTILE] ; Projectile
-Shrapnel.Forced=no ; boolean
+Shrapnel.AffectsGround=no ; boolean
 Shrapnel.AffectsBuildings=no ; boolean
 
 ## Trigger events
