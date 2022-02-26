@@ -627,6 +627,14 @@ Interceptor.EliteMinimumGuardRange=0.0  ; double
 Interceptable=no ; boolean
 ```
 
+### Sharpnel enhancement
+- Sharpnel behavior can be forced to trigger now.
+
+In `rulesmd.ini`
+[SOMEPROJECTILE] ; Projectile
+Sharpnel.Forced=no ; boolean
+Sharpnel.AffectBuildings=no ; boolean
+
 ## Trigger events
 
 ### `500-511` Variable comparation
