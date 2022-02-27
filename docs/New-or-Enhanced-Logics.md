@@ -803,8 +803,8 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 
 | *House Index* | *Description*                                 |
 | :------: | :-------------------------------------------: |
->= 0       | The index of the current House in the map |
-4475-4482  | Like in the index range 0-7 |
+> = 0       | The index of the current House in the map |
+4475 - 4482  | Like in the index range 0 - 7 |
 -1         | Pick a random House that isn't Neutral |
 -2         | Pick the first Neutral House |
 -3         | Pick a random Human Player |
