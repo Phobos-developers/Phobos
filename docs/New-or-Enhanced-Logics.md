@@ -820,6 +820,18 @@ ID=ActionCount,[Action1],505,0,0,[SuperWeaponTypesIndex],[HouseIndex],[Coordinat
 ...
 ```
 
+### `506` Fire Super Weapon at specified Waypoint
+
+- Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointIndex],0,A,[ActionX]
+...
+```
+
 
 ## Script actions
 
