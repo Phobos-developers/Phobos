@@ -801,9 +801,9 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 - Launch a Super Weapon from [SuperWeaponTypes] list at a specified location.
 - `HouseIndex` can take various values:
 
-| *Action* | *Description*                                 |
+| *House Index* | *Description*                                 |
 | :------: | :-------------------------------------------: |
-           |  |
+74         |  |
 >= 0       | The index of the current House in the map |
 4475-4482  | Like in the index range 0-7 |
 -1         | Pick a random House that isn't Neutral |
@@ -831,7 +831,6 @@ In `mycampaign.map`:
 ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointIndex],0,A,[ActionX]
 ...
 ```
-
 
 ## Script actions
 
