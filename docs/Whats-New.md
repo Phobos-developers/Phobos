@@ -268,6 +268,7 @@ New:
 - `Storage.TiberiumIndex` for customizing resource storage in structures (by FS-21)
 - Grinder improvements & customizations (by Starkku)
 - Attached animation position customization (by Starkku)
+- Shared Ammo for transports to passengers (by FS-21)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
