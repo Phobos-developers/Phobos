@@ -801,11 +801,9 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 - Launch a Super Weapon from [SuperWeaponTypes] list at a specified location.
 - `HouseIndex` can take various values:
 
-| *House Index* | *Description*                                 |
-| :-----------: | :-------------------------------------------: |
--1              | Pick a random House that isn't Neutral        |
--2              | Pick the first Neutral House                  |
--3              | Pick a random Human Player                    |
+| *Action* | *Argument*   | *Repeats* | *Target Priority* | *Description*                                 |
+| :------: | :----------: | :-------: | :---------------: | :-------------------------------------------: |
+74         | Target Type# | Yes | Closer, higher threat |  |
 
 
 ## Script actions
