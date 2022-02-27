@@ -804,7 +804,7 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 | *Action* | *Argument*   | *Repeats* | *Target Priority* | *Description*                                 |
 | :------: | :----------: | :-------: | :---------------: | :-------------------------------------------: |
 74         | Target Type# | Yes | Closer, higher threat |  |
-
+>= 0       | Target Type# | Yes | Closer, higher threat | The index of the current House in the map |
 
 ## Script actions
 
