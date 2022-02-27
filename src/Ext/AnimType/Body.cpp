@@ -45,7 +45,7 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 	if (pThis->Type->DestroyAnim.Count > 0)
 	{
 		auto const facing = pThis->PrimaryFacing.current().value256();
-		auto pAnimType = pThis->Type->DestroyAnim[ScenarioClass::Instance->Random.Random() % pThis->Type->DestroyAnim.Count];
+		AnimTypeClass* pAnimType = nullptr;
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
 		if (!pTypeExt->DestroyAnim_Random.Get())
@@ -60,6 +60,13 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 			}
 
 			pAnimType = pThis->Type->DestroyAnim[idxAnim];
+		}
+		else
+		{
+			int const nIDx_Rand = pThis->Type->DestroyAnim.Count == 1 ?
+				0 : ScenarioClass::Instance->Random.RandomRanged(0, (pThis->Type->DestroyAnim.Count - 1));
+			pAnimType = pThis->Type->DestroyAnim[nIDx_Rand];
+
 		}
 
 		if (pAnimType)
