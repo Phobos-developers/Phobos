@@ -30,7 +30,6 @@ public:
 		Valueable<AffectedHouse> CanTargetHouses;
 		ValueableVector<int> Burst_Delays;
 		Valueable<AreaFireTarget> AreaFire_Target;
-		//Valueable<int> OpenTopped_ModifyAmmo;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
@@ -46,7 +45,6 @@ public:
 			, CanTargetHouses { AffectedHouse::All }
 			, Burst_Delays {}
 			, AreaFire_Target { AreaFireTarget::Base }
-			//, OpenTopped_ModifyAmmo { 0 }
 		{ }
 
 		virtual ~ExtData() = default;

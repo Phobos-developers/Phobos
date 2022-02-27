@@ -380,44 +380,6 @@ DEFINE_HOOK(0x5F4F4E, ObjectClass_Unlimbo_LaserTrails, 0x7)
 
 	return 0;
 }
-/*
-DEFINE_HOOK(0x6FF27F, TechnoClass_Fire_ModifyAmmo, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-	GET(WeaponTypeClass*, pWeapon, EBX);
-
-	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	if (pWeaponExt->OpenTopped_ModifyAmmo == 0)
-		return 0;
-
-	if (!pThis)
-		return 0;
-
-	if (auto pType = pThis->GetTechnoType())
-	{
-		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType))
-		{
-			if (pThis->InOpenToppedTransport)
-			{
-				auto pTransport = pThis->Transporter;
-
-				if (auto pTransportType = pTransport->GetTechnoType())
-				{
-					if (pTransportType->Ammo == 0)
-						return 0;
-
-					if (pType->Ammo > 0 && pTransport->Ammo <= 0)
-					{
-						pTransport->Ammo += pWeaponExt->OpenTopped_ModifyAmmo;
-					}
-				}
-			}
-		}
-	}
-
-	return 0;
-}
-*/
 
 // Update ammo rounds
 DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
