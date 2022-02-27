@@ -627,6 +627,14 @@ Interceptor.EliteMinimumGuardRange=0.0  ; double
 Interceptable=no ; boolean
 ```
 
+### Shrapnel enhancement
+- Shrapnel behavior can be triggered on the ground and buildings.
+
+In `rulesmd.ini`
+[SOMEPROJECTILE] ; Projectile
+Shrapnel.AffectsGround=no ; boolean
+Shrapnel.AffectsBuildings=no ; boolean
+
 ## Trigger events
 
 ### `500-511` Variable comparation

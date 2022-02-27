@@ -233,7 +233,8 @@ New:
 - Quicksave hotkey command (by secsome)
 - Save Game Trigger Action (by secsome)
 - Numeric Variables (by secsome)
-- TechnoType's tooltip would display it's build time now (by secsome) 
+- TechnoType's tooltip would display it's build time now (by secsome)
+- Sharpnel enhancement (by secsome)
 - Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)
 - Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
 - XDrawOffset for animations (by Morton)
@@ -269,6 +270,7 @@ New:
 - Weapons fired on warping in / out (by Starkku)
 - `Storage.TiberiumIndex` for customizing resource storage in structures (by FS-21)
 - Grinder improvements & customizations (by Starkku)
+- Attached animation position customization (by Starkku)
 - Trigger Action 505 for Firing at specified location (by FS-21)
 - Trigger Action 506 for Firing at waypoint (by FS-21)
 
