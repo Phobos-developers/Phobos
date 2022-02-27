@@ -421,25 +421,14 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 	if (!pThis)
 		return;
 
-	if (auto pType = pThis->GetTechnoType())
+	if (const auto pType = pThis->GetTechnoType())
 	{
 		if (pType->OpenTopped && pThis->Passengers.NumPassengers > 0)
 		{
 			if (const auto pExt = TechnoTypeExt::ExtMap.Find(pType))
 			{
-				if (pExt->Ammo_Shared)
+				if (pExt->Ammo_Shared && pType->Ammo > 0)
 				{
-					// Safe check before everything else
-					if (pThis->Ammo > pType->Ammo)
-					{
-						pThis->Ammo = pType->Ammo;
-					}
-					else if (pThis->Ammo < 0)
-					{
-						pThis->Ammo = 0;
-						return;
-					}
-
 					auto passenger = pThis->Passengers.FirstPassenger;
 					TechnoTypeClass* passengerType;
 
