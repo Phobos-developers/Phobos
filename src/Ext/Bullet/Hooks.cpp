@@ -176,3 +176,22 @@ DEFINE_HOOK(0x6FF031, TechnoClass_FireAt_ReverseVelocityWhileGravityIsZero, 0xA)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
+{
+	enum { Shrapnel = 0x46A40C, Skip = 0x46ADCD };
+
+	GET(BulletClass*, pBullet, EDI);
+	
+	auto const pData = BulletTypeExt::ExtMap.Find(pBullet->Type);
+	
+	if (auto const pObject = pBullet->GetCell()->FirstObject)
+	{
+		if (pObject->WhatAmI() != AbstractType::Building || pData->Shrapnel_AffectsBuildings)
+			return Shrapnel;
+	}
+	else if (pData->Shrapnel_AffectsGround)
+		return Shrapnel;
+
+	return Skip;
+}
