@@ -121,6 +121,52 @@ BuiltInType=14
 [ScriptExtType_GlobalVariables]
 BuiltInType=5
 
+[ScriptParamTypes]
+1=AITargetTypes,1,1,0
+2=AITargetCategories,0,0,0
+3=AIScriptsList,1,1,0
+4=EndingTypeMoveMission,0,0,0
+
+; Phobos new script actions 74-...
+[AITargetCategories]
+0=0 - Not specified
+1=1 - Any enemy
+2=2 - Any enemy structure, ignore deployed vehicles
+3=3 - Any enemy harvesters
+4=4 - Any enemy infantry
+5=5 - Any enemy vehicle (including Aircrafts & Jumpjets)
+6=6 - Any enemy factories
+7=7 - Any enemy defensive structures
+8=8 - Any enemy non-building object - infantry, vehicles, aircrafts & deployed units.
+9=9 - Any enemy structures with Power 0 or more
+10=10 - Any enemy aircraft & flying units like jumpjets
+11=11 - Harvesters, Refineries & Resource Purifiers
+12=12 - Any enemy refineries
+13=13 - Any enemy unit or structure with Mind Control weapon
+14=14 - Any enemy structure with infantry inside garrisoned like bunkers
+15=15 - Any enemy unit & structure in with Naval set to yes
+16=16 - Any enemy Stealth Generator (uncloacked), Gap Generator, Radar Jammer & Inhibitor
+17=17 - Any enemy ground vehicles (unlike 5 that included Air units)
+18=18 - Civilian capturable & unsellable structures
+19=19 - Any enemy infantry factories
+20=20 - Any enemy vehicle factories
+21=21 - Any enemy helipad factories
+22=22 - Enemy structures with Radar or SpySat set
+23=23 - Any enemy Battle Labs
+24=24 - Any enemy naval factories
+25=25 - Any enemy structure with Super Weapons
+26=26 - Any enemy factories & undeployed MCV vehicles
+27=27 - Only Civilian (Neutral) Structures
+28=28 - Any enemy Stealth Generator (uncloacked) & Gap Generator
+29=29 - Any enemy Radar Jammer
+30=30 - Any enemy Inhibitor
+31=31 - Any enemy Naval unit
+32=32 - Any enemy unit deployed into Building (ignores MCV case)
+33=33 - Capturable Structure or Repair Hut
+34=34 - Any enemy Inside the Area Guard of the Team Leader
+35=35 - Any enemy Land Vehicle Factory & Naval Factory
+36=36 - Any enemy structure, ignore defenses
+
 [ScriptsRA2]   
 71=Timed Area Guard,20,0,1,[LONG DESC]
 72=Load Onto Transports,0,0,1,[LONG DESC]
