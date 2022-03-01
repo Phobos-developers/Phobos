@@ -27,6 +27,8 @@ public:
 		TimerStruct	PassengerDeletionTimer;
 		Valueable<int> PassengerDeletionCountDown;
 		Valueable<ShieldTypeClass*> CurrentShieldType;
+		Valueable<int> LastWarpDistance;
+		int Death_Countdown;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet { nullptr }
@@ -37,6 +39,8 @@ public:
 			, PassengerDeletionTimer {}
 			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType {}
+			, LastWarpDistance {}
+			, Death_Countdown(-1)
 		{ }
 
 		virtual ~ExtData() = default;
@@ -87,6 +91,7 @@ public:
 	static void ApplyInterceptor(TechnoClass* pThis);
 	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
 	static void ApplySpawn_LimitRange(TechnoClass* pThis);
+	static void CheckDeathConditions(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void EatPassengers(TechnoClass* pThis);
 

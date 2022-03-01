@@ -402,6 +402,19 @@ In `rulesmd.ini`:
 NoSecondaryWeaponFallback=false   ; boolean
 ```
 
+### Kill Unit Automatically
+
+- Objects can be destroyed automatically under certaing cases:
+  - No Ammo: The object will die if the remaining ammo reaches 0.
+  - Countdown: The object will die if the countdown reaches 0.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                       ; TechnoType
+Death.NoAmmo=no                    ; boolean
+Death.Countdown=0                  ; integer
+```
+
 ## Terrains
 
 ### Destroy animation & sound
@@ -413,6 +426,24 @@ In `rulesmd.ini`:
 [SOMETERRAINTYPE]  ; TerrainType
 DestroyAnim=       ; Animation
 DestroySound=      ; Sound
+```
+
+### Weapons fired on warping in / out
+
+- It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.
+  - `WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance traveled (in leptons) was less than `ChronoRangeMinimum`. This works regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon` is not set, it defaults to `WarpInWeapon`.
+  - If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of `WarpIn(MinRange)Weapon` is overriden by the number of whole cells teleported across.
+  - `WarpInWeapon.FireAsSelf` & `WarpOutWeapon.FireAsSelf` can be used to disable firing the weapon with the teleporting TechnoType as an owner. This allows damaging itself, but also makes certain Weapon or Warhead features reliant on owner not available.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                            ; TechnoType
+WarpInWeapon=                           ; WeaponType
+WarpInMinRangeWeapon=                   ; WeaponType
+WarpInWeapon.UseDistanceAsDamage=false  ; boolean
+WarpInWeapon.FireAsSelf=true            ; boolean
+WarpOutWeapon=                          ; WeaponType
+WarpOutWeapon.FireAsSelf=true           ; boolean
 ```
 
 ## Weapons
@@ -609,6 +640,14 @@ Interceptor.EliteMinimumGuardRange=0.0  ; double
 Interceptable=no ; boolean
 ```
 
+### Shrapnel enhancement
+- Shrapnel behavior can be triggered on the ground and buildings.
+
+In `rulesmd.ini`
+[SOMEPROJECTILE] ; Projectile
+Shrapnel.AffectsGround=no ; boolean
+Shrapnel.AffectsBuildings=no ; boolean
+
 ## Trigger events
 
 ### `500-511` Variable comparation
@@ -770,6 +809,40 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 
 `Operation` can be looked up at action `501`
 
+### `505` Fire Super Weapon at specified location
+
+- Launch a Super Weapon from [SuperWeaponTypes] list at a specified location.
+- `HouseIndex` can take various values:
+
+| *House Index* | *Description*                                 |
+| :-------: | :-------------------------------------------: |
+| >= 0      | The index of the current House in the map |
+| 4475-4482 | Like in the index range 0-7 |
+| -1        | Pick a random House that isn't Neutral |
+| -2        | Pick the first Neutral House |
+| -3        | Pick a random Human Player |
+
+- Coordinates X & Y can take possitive values or -1, in which case these values can take a random value from the visible map area.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],505,0,0,[SuperWeaponTypesIndex],[HouseIndex],[CoordinateX],[CoordinateY],A,[ActionX]
+...
+```
+
+### `506` Fire Super Weapon at specified Waypoint
+
+- Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointIndex],0,A,[ActionX]
+...
+```
 
 ## Script actions
 

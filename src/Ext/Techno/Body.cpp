@@ -324,13 +324,13 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 
 			if (pExt->PassengerDeletionCountDown < 0)
 			{
-					// Setting & start countdown. Bigger units needs more time
-					int passengerSize = pData->PassengerDeletion_Rate;
-					if (pData->PassengerDeletion_Rate_SizeMultiply && pPassenger->GetTechnoType()->Size > 1.0)
-						passengerSize *= (int)(pPassenger->GetTechnoType()->Size + 0.5);
+				// Setting & start countdown. Bigger units needs more time
+				int passengerSize = pData->PassengerDeletion_Rate;
+				if (pData->PassengerDeletion_Rate_SizeMultiply && pPassenger->GetTechnoType()->Size > 1.0)
+					passengerSize *= (int)(pPassenger->GetTechnoType()->Size + 0.5);
 
-					pExt->PassengerDeletionCountDown = passengerSize;
-					pExt->PassengerDeletionTimer.Start(passengerSize);
+				pExt->PassengerDeletionCountDown = passengerSize;
+				pExt->PassengerDeletionTimer.Start(passengerSize);
 			}
 			else
 			{
@@ -416,6 +416,43 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 	return false;
 }
 
+// Feature: Kill Object Automatically
+void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
+{
+	auto pTypeThis = pThis->GetTechnoType();
+	auto pTypeData = TechnoTypeExt::ExtMap.Find(pTypeThis);
+	auto pData = TechnoExt::ExtMap.Find(pThis);
+
+	// Death if no ammo
+	if (pTypeThis && pTypeData && pTypeData->Death_NoAmmo)
+	{
+		if (pTypeThis->Ammo > 0 && pThis->Ammo <= 0)
+			pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+	}
+
+	// Death if countdown ends
+	if (pTypeThis && pData && pTypeData && pTypeData->Death_Countdown > 0)
+	{
+		if (pData->Death_Countdown >= 0)
+		{
+			if (pData->Death_Countdown > 0)
+			{
+				pData->Death_Countdown--; // Update countdown
+			}
+			else
+			{
+				// Countdown ended. Kill the unit
+				pData->Death_Countdown = -1;
+				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+			}
+		}
+		else
+		{
+			pData->Death_Countdown = pTypeData->Death_Countdown; // Start countdown
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -430,6 +467,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->PassengerDeletionCountDown)
 		.Process(this->CurrentShieldType)
+		.Process(this->LastWarpDistance)
+		.Process(this->Death_Countdown)
 		;
 }
 
