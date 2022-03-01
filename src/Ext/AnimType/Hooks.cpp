@@ -51,3 +51,21 @@ DEFINE_HOOK(0x424CB0, AnimClass_In_Which_Layer_AttachedObjectLayer, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x424C49, AnimClass_AttachTo_BuildingCoords, 0x5)
+{
+	GET(AnimClass*, pThis, ESI);
+	GET(ObjectClass*, pObject, EDI);
+	GET(CoordStruct*, pCoords, EAX);
+
+	auto pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pExt->UseCenterCoordsIfAttached)
+	{
+		pCoords = pObject->GetCenterCoord(pCoords);
+		pCoords->X += 128;
+		pCoords->Y += 128;
+	}
+
+	return 0;
+}

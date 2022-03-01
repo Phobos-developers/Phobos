@@ -324,13 +324,13 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 
 			if (pExt->PassengerDeletionCountDown < 0)
 			{
-					// Setting & start countdown. Bigger units needs more time
-					int passengerSize = pData->PassengerDeletion_Rate;
-					if (pData->PassengerDeletion_Rate_SizeMultiply && pPassenger->GetTechnoType()->Size > 1.0)
-						passengerSize *= (int)(pPassenger->GetTechnoType()->Size + 0.5);
+				// Setting & start countdown. Bigger units needs more time
+				int passengerSize = pData->PassengerDeletion_Rate;
+				if (pData->PassengerDeletion_Rate_SizeMultiply && pPassenger->GetTechnoType()->Size > 1.0)
+					passengerSize *= (int)(pPassenger->GetTechnoType()->Size + 0.5);
 
-					pExt->PassengerDeletionCountDown = passengerSize;
-					pExt->PassengerDeletionTimer.Start(passengerSize);
+				pExt->PassengerDeletionCountDown = passengerSize;
+				pExt->PassengerDeletionTimer.Start(passengerSize);
 			}
 			else
 			{
@@ -467,6 +467,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->PassengerDeletionCountDown)
 		.Process(this->CurrentShieldType)
+		.Process(this->LastWarpDistance)
 		.Process(this->Death_Countdown)
 		;
 }

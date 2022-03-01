@@ -45,6 +45,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `EWGates` and `NSGates` now will link walls like `xxGateOne` and `xxGateTwo` do.
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
+- Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
+- Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
+- Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
 
 ## Animations
 
@@ -64,24 +67,56 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 
 In `artmd.ini`:
 ```ini
-[SOMEANIM]                 ; AnimationType
-Layer.UseObjectLayer=      ; boolean
+[SOMEANIM]             ; AnimationType
+Layer.UseObjectLayer=  ; boolean
+```
+
+### Attached animation position customization
+
+- You can now customize whether or not animations attached to objects are centered at the object's actual center rather than the bottom of their top-leftmost cell (cell #0).
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                       ; AnimationType
+UseCenterCoordsIfAttached=false  ; boolean
+```
+
+## Buildings
+
+### Customizable & new grinder properties
+
+- You can now customize which types of objects a building with `Grinding` set can grind as well as the grinding sound.
+  - `Grinding.AllowAllies` changes whether or not to allow units to enter allies' buildings.
+  - `Grinding.AllowOwner` changes whether or not to allow units to enter your own buildings.
+  - `Grinding.AllowTypes` can be used to define InfantryTypes and VehicleTypes that can be grinded by the building. Listing any will disable grinding for all types except those listed.
+  - `Grinding.DisallowTypes` can be used to exclude InfantryTypes or VehicleTypes from being able to enter the grinder building.
+  - `Grinding.Sound` is a sound played by when object is grinded by the building. If not set, defaults to `[AudioVisual]`->`EnterGrinderSound`.
+  - `Grinding.Weapon` is a weapon fired at the building & by the building when it grinds an object. Will only be fired if at least weapon's `ROF` amount of frames have passed since it was last fired.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]             ; BuildingType
+Grinding.AllowAllies=false ; boolean
+Grinding.AllowOwner=true   ; boolean
+Grinding.AllowTypes=       ; List of InfantryTypes / VehicleTypes
+Grinding.DisallowTypes=    ; List of InfantryTypes / VehicleTypes
+Grinding.Sound=            ; Sound
+Grinding.Weapon=           ; WeaponType
 ```
 
 ## Vehicles
 
-### Deploy direction for IsSimpleDeployer vehicles & deploy animation customization
+### IsSimpleDeployer vehicle deploy animation / direction customization
 
-- `DeployDir` can be used to set the facing the vehicle needs to turn towards before deploying if it has `DeployingAnim` set. This is works the same as Ares flag of same name other than allowing use of negative numbers to disable the direction-specific deploy and that it only applies to units on ground. If not set, it defaults to `[General] -> DeployDir`.
-- In addition there are some new options for `DeployingAnim`:
-  - `DeployingAnim.KeepUnitVisible` determines if the unit is hidden while the animation is playing.
-  - `DeployingAnim.ReverseForUndeploy` controls whether or not the animation is played in reverse for undeploying.
-  - `DeployingAnim.UseUnitDrawer` controls whether or not the animation is displayed in the unit's palette and team colours.
+- `DeployingAnim.AllowAnyDirection` if set, disables any direction constraints for deployers with `DeployingAnim` set. Only works for ground units.
+- `DeployingAnim.KeepUnitVisible` determines if the unit is hidden while the animation is playing.
+- `DeployingAnim.ReverseForUndeploy` controls whether or not the animation is played in reverse for undeploying.
+- `DeployingAnim.UseUnitDrawer` controls whether or not the animation is displayed in the unit's palette and team colours or regular animation palette, including a potential custom palette.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]                          ; VehicleType
-DeployDir=                             ; integer, facing or a negative number to disable direction-specific deploy
+DeployingAnim.AllowAnyDirection=false  ; boolean
 DeployingAnim.KeepUnitVisible=false    ; boolean
 DeployingAnim.ReverseForUndeploy=true  ; boolean
 DeployingAnim.UseUnitDrawer=true       ; boolean
@@ -167,6 +202,17 @@ In `rulesmd.ini`:
 ```ini
 [SOMESTRUCTURE]       ; BuildingType
 Powered.KillSpawns=no ; boolean
+```
+
+### Customize resource storage
+
+- Now Ares `Storage` feature can set which Tiberium type from `[Tiberiums]` list should be used for storing resources in structures with `Refinery.UseStorage=yes` and `Storage` > 0.
+- This tag can not be used without Ares.
+
+In `rulesmd.ini`:
+```ini
+[General]
+Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
 ```
 
 ### Customizable unit image in art

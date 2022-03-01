@@ -27,6 +27,7 @@ public:
 		TimerStruct	PassengerDeletionTimer;
 		Valueable<int> PassengerDeletionCountDown;
 		Valueable<ShieldTypeClass*> CurrentShieldType;
+		Valueable<int> LastWarpDistance;
 		int Death_Countdown;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
@@ -38,6 +39,7 @@ public:
 			, PassengerDeletionTimer {}
 			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType {}
+			, LastWarpDistance {}
 			, Death_Countdown(-1)
 		{ }
 
