@@ -796,6 +796,40 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 
 `Operation` can be looked up at action `501`
 
+### `505` Fire Super Weapon at specified location
+
+- Launch a Super Weapon from [SuperWeaponTypes] list at a specified location.
+- `HouseIndex` can take various values:
+
+| *House Index* | *Description*                                 |
+| :-------: | :-------------------------------------------: |
+| >= 0      | The index of the current House in the map |
+| 4475-4482 | Like in the index range 0-7 |
+| -1        | Pick a random House that isn't Neutral |
+| -2        | Pick the first Neutral House |
+| -3        | Pick a random Human Player |
+
+- Coordinates X & Y can take possitive values or -1, in which case these values can take a random value from the visible map area.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],505,0,0,[SuperWeaponTypesIndex],[HouseIndex],[CoordinateX],[CoordinateY],A,[ActionX]
+...
+```
+
+### `506` Fire Super Weapon at specified Waypoint
+
+- Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointIndex],0,A,[ActionX]
+...
+```
 
 ## Script actions
 
