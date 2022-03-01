@@ -121,12 +121,6 @@ BuiltInType=14
 [ScriptExtType_GlobalVariables]
 BuiltInType=5
 
-[ScriptParamTypes]
-1=AITargetTypes,1,1,0
-2=AITargetCategories,0,0,0
-3=AIScriptsList,1,1,0
-4=EndingTypeMoveMission,0,0,0
-
 ; Phobos new script actions 74-...
 [AITargetCategories]
 0=0 - Not specified
