@@ -47,6 +47,8 @@ public:
 		NullableIdx<VocClass> PassengerDeletion_ReportSound;
 		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
 		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
+		Valueable<bool> Death_NoAmmo;
+		Valueable<int> Death_Countdown;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -183,6 +185,8 @@ public:
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
 			, EnemyUIName {}
+			, Death_NoAmmo { false }
+			, Death_Countdown { 0 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 		{ }

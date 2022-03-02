@@ -273,6 +273,7 @@ New:
 - Attached animation position customization (by Starkku)
 - Trigger Action 505 for Firing at specified location (by FS-21)
 - Trigger Action 506 for Firing at waypoint (by FS-21)
+- New ways for self-killing objects under certaing cases (by FS-21)
 - Shared Ammo for transports to passengers (by FS-21)
 
 Vanilla fixes:
