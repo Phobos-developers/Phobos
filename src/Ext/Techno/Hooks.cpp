@@ -17,6 +17,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::ApplyInterceptor(pThis);
 	TechnoExt::ApplyPowered_KillSpawns(pThis);
 	TechnoExt::ApplySpawn_LimitRange(pThis);
+	TechnoExt::CheckDeathConditions(pThis);
 	TechnoExt::EatPassengers(pThis);
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw

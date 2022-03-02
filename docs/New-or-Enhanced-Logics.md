@@ -402,6 +402,19 @@ In `rulesmd.ini`:
 NoSecondaryWeaponFallback=false   ; boolean
 ```
 
+### Kill Unit Automatically
+
+- Objects can be destroyed automatically under certaing cases:
+  - No Ammo: The object will die if the remaining ammo reaches 0.
+  - Countdown: The object will die if the countdown reaches 0.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                       ; TechnoType
+Death.NoAmmo=no                    ; boolean
+Death.Countdown=0                  ; integer
+```
+
 ### Override Uncloaked Underwater attack behavior
 
 ![image](_static/images/underwater-new-attack-tag.gif)  
