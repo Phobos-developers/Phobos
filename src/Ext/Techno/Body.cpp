@@ -416,6 +416,84 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 	return false;
 }
 
+// Feature: Kill Object Automatically
+void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
+{
+	auto pTypeThis = pThis->GetTechnoType();
+	auto pTypeData = TechnoTypeExt::ExtMap.Find(pTypeThis);
+	auto pData = TechnoExt::ExtMap.Find(pThis);
+
+	// Death if no ammo
+	if (pTypeThis && pTypeData && pTypeData->Death_NoAmmo)
+	{
+		if (pTypeThis->Ammo > 0 && pThis->Ammo <= 0)
+			pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+	}
+
+	// Death if countdown ends
+	if (pTypeThis && pData && pTypeData && pTypeData->Death_Countdown > 0)
+	{
+		if (pData->Death_Countdown >= 0)
+		{
+			if (pData->Death_Countdown > 0)
+			{
+				pData->Death_Countdown--; // Update countdown
+			}
+			else
+			{
+				// Countdown ended. Kill the unit
+				pData->Death_Countdown = -1;
+				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+			}
+		}
+		else
+		{
+			pData->Death_Countdown = pTypeData->Death_Countdown; // Start countdown
+		}
+	}
+}
+
+void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
+{
+	if (!pThis)
+		return;
+
+	if (const auto pType = pThis->GetTechnoType())
+	{
+		if (pType->OpenTopped && pThis->Passengers.NumPassengers > 0)
+		{
+			if (const auto pExt = TechnoTypeExt::ExtMap.Find(pType))
+			{
+				if (pExt->Ammo_Shared && pType->Ammo > 0)
+				{
+					auto passenger = pThis->Passengers.FirstPassenger;
+					TechnoTypeClass* passengerType;
+
+					do
+					{
+						passengerType = passenger->GetTechnoType();
+						auto pPassengerExt = TechnoTypeExt::ExtMap.Find(passengerType);
+
+						if (pPassengerExt && pPassengerExt->Ammo_Shared)
+						{
+							if (pExt->Ammo_Shared_Group < 0 || pExt->Ammo_Shared_Group == pPassengerExt->Ammo_Shared_Group)
+							{
+								if (pThis->Ammo > 0 && (passenger->Ammo < passengerType->Ammo))
+								{
+									pThis->Ammo--;
+									passenger->Ammo++;
+								}
+							}
+						}
+
+						passenger = static_cast<FootClass*>(passenger->NextObject);
+					} while (passenger);
+				}
+			}
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -431,6 +509,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletionCountDown)
 		.Process(this->CurrentShieldType)
 		.Process(this->LastWarpDistance)
+		.Process(this->Death_Countdown)
 		;
 }
 

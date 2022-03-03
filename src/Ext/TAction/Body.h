@@ -16,6 +16,8 @@ enum class PhobosTriggerAction : unsigned int
 	GenerateRandomNumber,
 	PrintVariableValue,
 	BinaryOperation,
+	RunSuperWeaponAtLocation,
+	RunSuperWeaponAtWaypoint,
 };
 
 class TActionExt
@@ -55,6 +57,10 @@ public:
 	ACTION_FUNC(GenerateRandomNumber);
 	ACTION_FUNC(PrintVariableValue);
 	ACTION_FUNC(BinaryOperation);
+	ACTION_FUNC(RunSuperWeaponAtLocation);
+	ACTION_FUNC(RunSuperWeaponAtWaypoint);
+
+	static bool RunSuperWeaponAt(TActionClass* pThis, int X, int Y);
 
 #undef ACTION_FUNC
 #pragma pop_macro("ACTION_FUNC")
