@@ -381,3 +381,36 @@ DEFINE_HOOK(0x5F4F4E, ObjectClass_Unlimbo_LaserTrails, 0x7)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x6F3428, TechnoClass_GetWeapon_ForceWeapon, 0x6)
+{
+	GET(TechnoClass*, pTechno, ECX);
+
+	if (pTechno && pTechno->Target)
+	{
+		auto pTechnoType = pTechno->GetTechnoType();
+		if (!pTechnoType)
+			return 0;
+
+		auto pTarget = abstract_cast<TechnoClass*>(pTechno->Target);
+		if (!pTarget)
+			return 0;
+
+		auto pTargetType = pTarget->GetTechnoType();
+		if (!pTargetType)
+			return 0;
+
+		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType))
+		{
+			if (pTechnoTypeExt->ForceWeapon_Naval_Decloaked >= 0 
+				&& pTargetType->Cloakable && pTargetType->Naval 
+				&& pTarget->CloakState == CloakState::Uncloaked)
+			{
+				R->EAX(pTechnoTypeExt->ForceWeapon_Naval_Decloaked);
+				return 0x6F37AF;
+			}
+		}
+	}
+
+	return 0;
+}
