@@ -287,6 +287,24 @@ OpenTopped.DamageMultiplier=1.3    ; float
 OpenTopped.WarpDistance=8          ; integer
 ```
 
+### Shared Ammo
+
+- Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo to passengers that have `Ammo.Shared=yes`.
+In addition, a transport can filter who will receive ammo if passengers have the same value in `Ammo.Shared.Group=<integer>` of the transport, ignoring other passengers with different groups values.
+- Transports with `Ammo.Shared.Group=-1` will transfer ammo to any passenger with `Ammo.Shared=yes` ignoring the group.
+- Transports must have ammo and should be able to reload ammo.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO1]                           ; TechnoType, transport with OpenTopped=yes
+Ammo.Shared=no                          ; boolean
+Ammo.Shared.Group=-1                    ; integer
+
+[SOMETECHNO2]                           ; TechnoType, passenger
+Ammo.Shared=no                          ; boolean
+Ammo.Shared.Group=-1                    ; integer
+```
+
 ## Technos
 
 ### Mind Control enhancement

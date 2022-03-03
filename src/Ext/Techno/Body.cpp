@@ -453,6 +453,47 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 	}
 }
 
+void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
+{
+	if (!pThis)
+		return;
+
+	if (const auto pType = pThis->GetTechnoType())
+	{
+		if (pType->OpenTopped && pThis->Passengers.NumPassengers > 0)
+		{
+			if (const auto pExt = TechnoTypeExt::ExtMap.Find(pType))
+			{
+				if (pExt->Ammo_Shared && pType->Ammo > 0)
+				{
+					auto passenger = pThis->Passengers.FirstPassenger;
+					TechnoTypeClass* passengerType;
+
+					do
+					{
+						passengerType = passenger->GetTechnoType();
+						auto pPassengerExt = TechnoTypeExt::ExtMap.Find(passengerType);
+
+						if (pPassengerExt && pPassengerExt->Ammo_Shared)
+						{
+							if (pExt->Ammo_Shared_Group < 0 || pExt->Ammo_Shared_Group == pPassengerExt->Ammo_Shared_Group)
+							{
+								if (pThis->Ammo > 0 && (passenger->Ammo < passengerType->Ammo))
+								{
+									pThis->Ammo--;
+									passenger->Ammo++;
+								}
+							}
+						}
+
+						passenger = static_cast<FootClass*>(passenger->NextObject);
+					} while (passenger);
+				}
+			}
+		}
+	}
+}
+
 // =============================
 // load / save
 

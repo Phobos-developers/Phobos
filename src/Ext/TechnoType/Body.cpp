@@ -225,6 +225,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
 
 	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
+	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
+	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 }
 
 template <typename T>
@@ -301,6 +303,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployingAnim_UseUnitDrawer)
 		.Process(this->EnemyUIName)
 		.Process(this->ForceWeapon_Naval_Decloaked)
+		.Process(this->Ammo_Shared)
+		.Process(this->Ammo_Shared_Group)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

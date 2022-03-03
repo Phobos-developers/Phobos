@@ -414,3 +414,13 @@ DEFINE_HOOK(0x6F3428, TechnoClass_GetWeapon_ForceWeapon, 0x6)
 
 	return 0;
 }
+
+// Update ammo rounds
+DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
+{
+	GET(TechnoClass* const, pThis, ECX);
+
+	TechnoExt::UpdateSharedAmmo(pThis);
+
+	return 0;
+}

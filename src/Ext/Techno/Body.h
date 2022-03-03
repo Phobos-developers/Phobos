@@ -94,6 +94,7 @@ public:
 	static void CheckDeathConditions(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void EatPassengers(TechnoClass* pThis);
+	static void UpdateSharedAmmo(TechnoClass* pThis);
 
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 };
