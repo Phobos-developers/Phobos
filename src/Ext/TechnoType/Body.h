@@ -99,6 +99,8 @@ public:
 		Valueable<bool> DeployingAnim_ReverseForUndeploy;
 		Valueable<bool> DeployingAnim_UseUnitDrawer;
 
+		Valueable<int> ForceWeapon_Naval_Decloaked;
+
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
 
@@ -187,6 +189,7 @@ public:
 			, EnemyUIName {}
 			, Death_NoAmmo { false }
 			, Death_Countdown { 0 }
+			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 		{ }
