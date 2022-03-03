@@ -415,6 +415,20 @@ Death.NoAmmo=no                    ; boolean
 Death.Countdown=0                  ; integer
 ```
 
+### Override Uncloaked Underwater attack behavior
+
+![image](_static/images/underwater-new-attack-tag.gif)  
+*Naval underwater behavior in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*  
+
+- Overrides a part of the vanilla YR logic for allowing naval units to use a different weapon if the naval unit is uncloaked.
+- Useful if your naval unit have 1 weapon only for underwater and another weapon for surface objects.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+ForceWeapon.Naval.Decloacked=-1   ; Integer. 0 for primary weapon, 1 for secondary weapon
+```
+
 ## Terrains
 
 ### Destroy animation & sound
