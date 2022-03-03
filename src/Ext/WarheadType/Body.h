@@ -25,9 +25,10 @@ public:
 		Valueable<bool> AnimList_PickRandom;
 		Valueable<bool> DecloakDamagedTargets;
 
+		Valueable<double> Crit_Chance;
+		Valueable<bool> Crit_ApplyChancePerTarget;
 		Valueable<int> Crit_ExtraDamage;
 		Nullable<WarheadTypeClass*> Crit_Warhead;
-		Valueable<double> Crit_Chance;
 		Valueable<AffectedTarget> Crit_Affects;
 		ValueableVector<AnimTypeClass*> Crit_AnimList;
 		Nullable<bool> Crit_AnimList_PickRandom;
@@ -48,6 +49,7 @@ public:
 		Nullable<WeaponTypeClass*> Shield_BreakWeapon;
 
 		double RandomBuffer;
+		bool HasCrit;
 
 		Valueable<int> NotHuman_DeathSequence;
 
@@ -87,6 +89,7 @@ public:
 			, DecloakDamagedTargets { true }
 
 			, Crit_Chance { 0.0 }
+			, Crit_ApplyChancePerTarget { false }
 			, Crit_ExtraDamage { 0 }
 			, Crit_Warhead {}
 			, Crit_Affects { AffectedTarget::All }
@@ -95,6 +98,7 @@ public:
 			, Crit_AnimOnAffectedTargets { false }
 			, Crit_AffectBelowPercent { 1.0 }
 			, RandomBuffer { 0.0 }
+			, HasCrit { false }
 
 			, MindControl_Anim {}
 
@@ -164,4 +168,7 @@ public:
 	static ExtContainer ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static void DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage);
+	static void DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage);
 };

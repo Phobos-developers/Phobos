@@ -609,24 +609,29 @@ In `rulesmd.ini`:
 RemoveMindControl=no                 ; boolean
 ```
 
-### Critical damage chance
+### Chance-based extra damage or Warhead detonation / 'critical hits'
 
-- Warheads can now apply additional chance-based damage (known as "critical" damage) with the ability to customize chance, damage, warhead, affected targets, affected target HP threshold and animations of critical strike.
+- Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                     ; Warhead
-Crit.Chance=0.0                   ; float, chance on [0.0-1.0] scale
-Crit.ExtraDamage=0                ; integer, extra damage
-Crit.Warhead=                     ; Warhead, used for applying the damage, current warhead is used if not set.
+Crit.Chance=0.0                   ; float, chance for critical hit to occur in [0.0-1.0] scale
+Crit.ApplyChancePerTarget=false   ; boolean, if set to true critical hit chance is determined individually for each target instead of only once when Warhead detonates.
+Crit.ExtraDamage=0                ; integer, damage dealt to affected targets.
+Crit.Warhead=                     ; Warhead, if set the warhead is detonated at every affected target instead of simply dealing damage using current warhead.
 Crit.Affects=all                  ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 Crit.AffectBelowPercent=1.0       ; float, maximum percentage of hitpoints targets (if applicable) can have left to be affected.
-Crit.AnimList=                    ; list of animations
+Crit.AnimList=                    ; list of animations to play instead of Warhead's AnimList.
 Crit.AnimList.PickRandom=         ; boolean, pick animation from list by random, defaults to AnimList.PickRandom
-Crit.AnimOnAffectedTargets=false  ; boolean, if set plays animation on every affected target instead of once at primary target.
+Crit.AnimOnAffectedTargets=false  ; boolean, if set to true plays animation on every affected target instead of once at primary target. Animation from Warhead's AnimList is also played unlike if this is not set.
 
 [SOMETECHNO]                      ; TechnoType
-ImmuneToCrit=no                   ; boolean
+ImmuneToCrit=no                   ; boolean, whether TechnoType is immune to critical hits.
+```
+
+```{warning}
+If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chain of Warheads with it that loops back to the first one there is a possibility for the game to get stuck in a loop and freeze or crash afterwards.
 ```
 
 ### Custom 'SplashList' on Warheads

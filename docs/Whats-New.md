@@ -276,7 +276,7 @@ New:
 - New ways for self-killing objects under certaing cases (by FS-21)
 - `ForceWeapon.Naval.Decloacked` for overriding uncloaked underwater attack behavior (by FS-21)
 - Shared Ammo for transports to passengers (by FS-21)
-- Critical damage target HP threshold & additional animation customizations (by Starkku)
+- Additional critical hit logic customizations (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)

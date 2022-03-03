@@ -55,4 +55,5 @@ public:
 	static ExtContainer ExtMap;
 
 	static double GetAdjustedGravity(BulletTypeClass* pType);
+	static BulletTypeClass* GetDefaultBulletType();
 };
