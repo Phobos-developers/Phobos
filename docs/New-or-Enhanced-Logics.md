@@ -287,6 +287,24 @@ OpenTopped.DamageMultiplier=1.3    ; float
 OpenTopped.WarpDistance=8          ; integer
 ```
 
+### Shared Ammo
+
+- Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo to passengers that have `Ammo.Shared=yes`.
+In addition, a transport can filter who will receive ammo if passengers have the same value in `Ammo.Shared.Group=<integer>` of the transport, ignoring other passengers with different groups values.
+- Transports with `Ammo.Shared.Group=-1` will transfer ammo to any passenger with `Ammo.Shared=yes` ignoring the group.
+- Transports must have ammo and should be able to reload ammo.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO1]                           ; TechnoType, transport with OpenTopped=yes
+Ammo.Shared=no                          ; boolean
+Ammo.Shared.Group=-1                    ; integer
+
+[SOMETECHNO2]                           ; TechnoType, passenger
+Ammo.Shared=no                          ; boolean
+Ammo.Shared.Group=-1                    ; integer
+```
+
 ## Technos
 
 ### Mind Control enhancement
@@ -400,6 +418,33 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                      ; TechnoType
 NoSecondaryWeaponFallback=false   ; boolean
+```
+
+### Kill Unit Automatically
+
+- Objects can be destroyed automatically under certaing cases:
+  - No Ammo: The object will die if the remaining ammo reaches 0.
+  - Countdown: The object will die if the countdown reaches 0.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                       ; TechnoType
+Death.NoAmmo=no                    ; boolean
+Death.Countdown=0                  ; integer
+```
+
+### Override Uncloaked Underwater attack behavior
+
+![image](_static/images/underwater-new-attack-tag.gif)  
+*Naval underwater behavior in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*  
+
+- Overrides a part of the vanilla YR logic for allowing naval units to use a different weapon if the naval unit is uncloaked.
+- Useful if your naval unit have 1 weapon only for underwater and another weapon for surface objects.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+ForceWeapon.Naval.Decloacked=-1   ; Integer. 0 for primary weapon, 1 for secondary weapon
 ```
 
 ## Terrains
@@ -796,6 +841,40 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 
 `Operation` can be looked up at action `501`
 
+### `505` Fire Super Weapon at specified location
+
+- Launch a Super Weapon from [SuperWeaponTypes] list at a specified location.
+- `HouseIndex` can take various values:
+
+| *House Index* | *Description*                                 |
+| :-------: | :-------------------------------------------: |
+| >= 0      | The index of the current House in the map |
+| 4475-4482 | Like in the index range 0-7 |
+| -1        | Pick a random House that isn't Neutral |
+| -2        | Pick the first Neutral House |
+| -3        | Pick a random Human Player |
+
+- Coordinates X & Y can take possitive values or -1, in which case these values can take a random value from the visible map area.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],505,0,0,[SuperWeaponTypesIndex],[HouseIndex],[CoordinateX],[CoordinateY],A,[ActionX]
+...
+```
+
+### `506` Fire Super Weapon at specified Waypoint
+
+- Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointIndex],0,A,[ActionX]
+...
+```
 
 ## Script actions
 

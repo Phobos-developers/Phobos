@@ -98,6 +98,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
 	this->NoManualMove.Read(exINI, pSection, "NoManualMove");
 	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
+	this->Death_NoAmmo.Read(exINI, pSection, "Death.NoAmmo");
+	this->Death_Countdown.Read(exINI, pSection, "Death.Countdown");
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
@@ -221,6 +223,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
+
+	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
+	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
+	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 }
 
 template <typename T>
@@ -250,6 +256,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CameoPriority)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
+		.Process(this->Death_NoAmmo)
+		.Process(this->Death_Countdown)
 		.Process(this->ShieldType)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
@@ -294,6 +302,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployingAnim_ReverseForUndeploy)
 		.Process(this->DeployingAnim_UseUnitDrawer)
 		.Process(this->EnemyUIName)
+		.Process(this->ForceWeapon_Naval_Decloaked)
+		.Process(this->Ammo_Shared)
+		.Process(this->Ammo_Shared_Group)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
