@@ -1,6 +1,9 @@
 #include "Body.h"
 
+#include <BulletClass.h>
 #include <HouseClass.h>
+
+#include <Ext/BulletType/Body.h>
 
 template<> const DWORD Extension<WarheadTypeClass>::Canary = 0x22222222;
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
@@ -24,6 +27,36 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	}
 
 	return true;
+}
+
+void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage)
+{
+	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
+
+	if (BulletClass* pBullet = pType->CreateBullet(pTarget, pOwner,
+		damage, pThis, 0, false))
+	{
+		const CoordStruct& coords = pTarget->GetCoords();
+
+		pBullet->Limbo();
+		pBullet->SetLocation(coords);
+		pBullet->Explode(true);
+		pBullet->UnInit();
+	}
+}
+
+void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage)
+{
+	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
+
+	if (BulletClass* pBullet = pType->CreateBullet(nullptr, pOwner,
+		damage, pThis, 0, false))
+	{
+		pBullet->Limbo();
+		pBullet->SetLocation(coords);
+		pBullet->Explode(true);
+		pBullet->UnInit();
+	}
 }
 
 // =============================
@@ -52,9 +85,14 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
+	this->Crit_ApplyChancePerTarget.Read(exINI, pSection, "Crit.ApplyChancePerTarget");
 	this->Crit_ExtraDamage.Read(exINI, pSection, "Crit.ExtraDamage");
+	this->Crit_Warhead.Read(exINI, pSection, "Crit.Warhead");
 	this->Crit_Affects.Read(exINI, pSection, "Crit.Affects");
 	this->Crit_AnimList.Read(exINI, pSection, "Crit.AnimList");
+	this->Crit_AnimList_PickRandom.Read(exINI, pSection, "Crit.AnimList.PickRandom");
+	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
+	this->Crit_AffectBelowPercent.Read(exINI, pSection, "Crit.AffectBelowPercent");
 
 	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
 
@@ -110,9 +148,14 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DecloakDamagedTargets)
 
 		.Process(this->Crit_Chance)
+		.Process(this->Crit_ApplyChancePerTarget)
 		.Process(this->Crit_ExtraDamage)
+		.Process(this->Crit_Warhead)
 		.Process(this->Crit_Affects)
 		.Process(this->Crit_AnimList)
+		.Process(this->Crit_AnimList_PickRandom)
+		.Process(this->Crit_AnimOnAffectedTargets)
+		.Process(this->Crit_AffectBelowPercent)
 
 		.Process(this->MindControl_Anim)
 

@@ -10,6 +10,16 @@ double BulletTypeExt::GetAdjustedGravity(BulletTypeClass* pType)
 	return pType->Floater ? nGravity * 0.5 : nGravity;
 }
 
+BulletTypeClass* BulletTypeExt::GetDefaultBulletType()
+{
+	BulletTypeClass* pType = BulletTypeClass::Find(NONE_STR);
+
+	if (pType)
+		return pType;
+
+	return GameCreate<BulletTypeClass>(NONE_STR);
+}
+
 // =============================
 // load / save
 

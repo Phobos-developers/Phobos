@@ -38,6 +38,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			pHouse->TransactMoney(this->TransactMoney);
 	}
 
+	this->HasCrit = false;
 	this->RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
 
 	// List all Warheads here that respect CellSpread
@@ -180,8 +181,12 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, Techn
 
 void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
 {
-	//auto& random = ScenarioClass::Instance->Random;
-	const double dice = this->RandomBuffer; //double(random.RandomRanged(1, 10)) / 10;
+	double dice;
+
+	if (this->Crit_ApplyChancePerTarget)
+		dice = ScenarioClass::Instance->Random.RandomDouble();
+	else
+		dice = this->RandomBuffer;
 
 	if (this->Crit_Chance < dice)
 		return;
@@ -189,6 +194,9 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType()))
 	{
 		if (pTypeExt->ImmuneToCrit)
+			return;
+
+		if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent)
 			return;
 	}
 
@@ -198,7 +206,20 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (!EnumFunctions::IsTechnoEligible(pTarget, this->Crit_Affects))
 		return;
 
-	auto Damage = this->Crit_ExtraDamage.Get();
+	this->HasCrit = true;
 
-	pTarget->ReceiveDamage(&Damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
+	if (this->Crit_AnimOnAffectedTargets && this->Crit_AnimList.size())
+	{
+		int idx = this->OwnerObject()->EMEffect || this->Crit_AnimList_PickRandom.Get(this->AnimList_PickRandom) ?
+			ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0;
+
+		GameCreate<AnimClass>(this->Crit_AnimList[idx], pTarget->Location);
+	}
+
+	auto damage = this->Crit_ExtraDamage.Get();
+
+	if (this->Crit_Warhead.isset())
+		WarheadTypeExt::DetonateAt(this->Crit_Warhead.Get(), pTarget, pOwner, damage);
+	else
+		pTarget->ReceiveDamage(&damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
 }
