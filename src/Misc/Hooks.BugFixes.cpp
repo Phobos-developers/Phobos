@@ -71,6 +71,10 @@ DEFINE_HOOK(0x737D57, UnitClass_ReceiveDamage_DyingFix, 0x7)
 	GET(UnitClass*, pThis, ESI);
 	GET(DamageState, result, EAX);
 
+	// Immediately release locomotor warhead's hold on a crashable unit if it dies while attacked by one.
+	if (result == DamageState::NowDead && pThis->IsAttackedByLocomotor && pThis->GetTechnoType()->Crashable)
+		pThis->IsAttackedByLocomotor = false;
+
 	if (result != DamageState::PostMortem && pThis->DeathFrameCounter > 0)
 		R->EAX(DamageState::PostMortem);
 
@@ -104,7 +108,7 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, 0xA)
 			if (pType->DebrisMaximums.GetItem(currentIndex) > 0)
 			{
 				int adjustedMaximum = Math::min(pType->DebrisMaximums.GetItem(currentIndex), pType->MaxDebris);
-				int amountToSpawn = ScenarioClass::Instance->Random.Random() % (adjustedMaximum + 1); //0x702337
+				int amountToSpawn = abs(ScenarioClass::Instance->Random.Random()) % (adjustedMaximum + 1); //0x702337
 				amountToSpawn = Math::min(amountToSpawn, totalSpawnAmount);
 				totalSpawnAmount -= amountToSpawn;
 
@@ -310,7 +314,7 @@ DEFINE_HOOK(0x41EB43, AITriggerTypeClass_Condition_SupportPowersup, 0x7)		//AITr
 	int count = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);
 
 	if (count == -1)
-		count = pHouse->OwnedBuildingTypes1.GetItemCount(idxBld);
+		count = pHouse->ActiveBuildingTypes.GetItemCount(idxBld);
 
 	R->EAX(count);
 

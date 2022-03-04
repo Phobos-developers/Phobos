@@ -21,7 +21,8 @@ public:
 		double CloseEnough;
 		int Countdown_RegroupAtLeader;
 		int MoveMissionEndMode;
-		TechnoClass* SelectedTarget;
+		int WaitNoTargetCounter;
+		TimerStruct WaitNoTargetTimer;
 		int AngerNodeModifier;
 		bool OnlyTargetHouseEnemy;
 		int OnlyTargetHouseEnemyMode;
@@ -33,7 +34,8 @@ public:
 			, CloseEnough { -1 }
 			, Countdown_RegroupAtLeader { -1 }
 			, MoveMissionEndMode { 0 }
-			, SelectedTarget { nullptr }
+			, WaitNoTargetCounter { 0 }
+			, WaitNoTargetTimer { 0 }
 			, AngerNodeModifier { 5000 }
 			, OnlyTargetHouseEnemy { false }
 			, OnlyTargetHouseEnemyMode { -1 }

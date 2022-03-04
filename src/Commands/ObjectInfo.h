@@ -51,7 +51,7 @@ public:
 		JMP_STD(0x7CB7BA);
 	}
 
-	virtual void Execute(DWORD dwUnk) const override
+	virtual void Execute(WWKey eInput) const override
 	{
 		if (this->CheckDebugDeactivated())
 			return;
@@ -184,10 +184,10 @@ public:
 					pTeam->Type->ID, pTeam->CurrentScript->Type->get_ID(), pTeam->Type->TaskForce->ID);
 				display();
 
-				if (pTeam->CurrentScript->idxCurrentLine >= 0)
-					append("Current Script [Line = Action, Argument]: %d = %d,%d", pTeam->CurrentScript->idxCurrentLine, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument);
+				if (pTeam->CurrentScript->CurrentMission >= 0)
+					append("Current Script [Line = Action, Argument]: %d = %d,%d", pTeam->CurrentScript->CurrentMission, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument);
 				else
-					append("Current Script [Line = Action, Argument]: %d", pTeam->CurrentScript->idxCurrentLine);
+					append("Current Script [Line = Action, Argument]: %d", pTeam->CurrentScript->CurrentMission);
 
 				display();
 			}

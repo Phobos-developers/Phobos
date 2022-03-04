@@ -6,9 +6,24 @@
 [![license](https://img.shields.io/github/license/Phobos-developers/Phobos.svg)](https://www.gnu.org/licenses/lgpl-3.0.en.html)
 
 # Phobos
-...is a WIP community project providing a set of new features and fixes for Yuri's Revenge based on [modified YRpp](https://github.com/Metadorius/YRpp) and [Syringe](https://github.com/Ares-Developers/Syringe) to allow injecting code. It's meant to accompany [Ares](https://github.com/Ares-Developers/Ares) rather than replace it, thus it won't introduce incompatibilities.
+...is a community engine extension project providing a set of new features and fixes for Yuri's Revenge based on [modified YRpp](https://github.com/Metadorius/YRpp) and [Syringe](https://github.com/Ares-Developers/Syringe) to allow injecting code. It's meant to accompany [Ares](https://github.com/Ares-Developers/Ares) rather than replace it, thus it won't introduce incompatibilities.
+
+While Phobos is independent of Ares and does NOT require Ares specifically to function, Phobos complements some of the features found in Ares and vice versa.
 
 You can discuss the project at a dedicated [channel on C&C Mod Haven](https://discord.gg/sZeMzz6qVg).
+
+Downloads
+---------
+
+You can choose one of the following:
+- [Latest stable branch build](https://github.com/Phobos-developers/Phobos/releases/latest) (most bug-free release but very slow on new features)
+- [Latest development branch builds](https://github.com/Phobos-developers/Phobos/releases) (a bit less less bug-free releases, devbuilds get new features when they are finished)
+- [Latest development branch nightly](https://nightly.link/Phobos-developers/Phobos/blob/develop/.github/workflows/nightly.yml) (added unreleased stuff that will be in next devbuild)
+- Individual new feature builds (for testing) can be found in [pull requests](https://github.com/Phobos-developers/Phobos/pulls)
+
+### Note on nightly builds
+
+Last two listed versions are bleeding edge (don't redistribute them outside of testing!) and have build information (commit and branch/tag) in them which is displayed ingame and can't be turned off. You can get a build for development branch (link above) any up-to-date pull request via an automatic bot comment that would appear in it and would contain the most recent successfully compiled version of Phobos for that feature branch. Alternatively, you can get an artifact manually from GitHub Actions runs. You can get an artifact for a specific commit which is built automatically with a GitHub Actions workflow, just press on a green tick, open the workflow, find and download the build artifact. This is limited to authorized users only.
 
 Installation and Usage
 ----------------------
@@ -20,32 +35,16 @@ Installation and Usage
 
 If you already use Ares in your mod, you just need to drop Phobos files mentioned above in your game folder, Syringe will load Phobos automatically. This also applies to mods using XNA client with Syringe; if your mod doesn't use Syringe and Ares (or you just haven't set up the client) yet we recommend to use [CnCNet client mod base by Starkku](https://github.com/Starkku/cncnet-client-mod-base) which is compatible with Ares and Phobos out of the box.
 
-By default Phobos doesn't do any very noticeable changes except a few bugfixes. To learn how to use Phobos features head over to [official documentation](https://phobos.readthedocs.io).
-
-### Obtaining nightly builds
-
-For those who want to help testing Phobos features as soon as they are done - you can also get a nightly build. Those versions are bleeding edge (don't redistribute them outside of testing!) and have build information (commit and branch/tag) in them which is displayed ingame and can't be turned off. There are two ways to get a nightly build.
-- **Get an artifact via nightly.link**. This is a service that allows guests to download automatic builds from GitHub. You can get a build for the latest successful (marked with a green tick) `develop` branch commit via [this link](https://nightly.link/Phobos-developers/Phobos/blob/develop/.github/workflows/nightly.yml), or get a build for any up-to-date pull request via an automatic comment that would appear in it.
-- **Get an artifact manually from GitHub Actions runs**. You can get an artifact for a specific commit which is built automatically with a GitHub Actions workflow, just press on a green tick, open the workflow, find and download the build artifact. This is limited to authorized users only.
-
-
-Building
---------
-
-0. Install **Visual Studio** (2019 is recommended, 2017 is minimum) with the dependencies listed in `.vsconfig` (it will prompt you to install missing dependences when you open the project, or you can run VS installer and import the config). If you prefer to use **Visual Studio Code** you may install **VS Build Tools** with the stuff from `.vsconfig` instead. You can also don't use any code editor or IDE and build via **command line scripts** included with the project.
-1. Clone this repo recursively via your favorite git client (that will also clone YRpp).
-2. To build the extension:
-   - in Visual Studio: open the solution file in VS and build it (`Debug` build config is recommended);
-   - in VSCode: open the project folder and hit `Run Build Task...` (`Ctrl + Shift + B`);
-   - barebones: run `scripts/build_debug.bat`.
-3. Upon build completion the resulting `Phobos.dll` and `Phobos.pdb` would be placed in the subfolder identical to the name of the buildconfig executed.
+By default Phobos doesn't do any very noticeable changes except a few bugfixes. To learn how to use Phobos features head over to official documentation.
 
 Documentation
 -------------
 
-The documentation can be found at [here @ Read the Docs](https://phobos.readthedocs.io) and is split by a few major categories, each represented with a page on the sidebar. Each page has it's contents grouped into multiple subcategories, be it buildings, technotypes, infantries, superweapons or something else.
+- [Official docs](https://phobos.readthedocs.io) (also available in [Chinese](https://phobos.readthedocs.io/zh_CN/latest))
 
-You can switch between versions in the bottom left corner, as well as download a PDF version.
+You can switch between versions (displays latest develop nightly version by default) in the bottom left corner, as well as download a PDF version.
+
+The documentation is split by a few major categories, each represented with a page on the sidebar. Each page has it's contents grouped into multiple subcategories, be it buildings, technotypes, infantries, superweapons or something else.
 
 ### How to read code snippets
 
@@ -59,6 +58,17 @@ You can switch between versions in the bottom left corner, as well as download a
 ; if the default value is not static - it's written and explained in a comment
 UIDescription=<none> ; CSF entry key
 ```
+
+Building manually
+-----------------
+
+0. Install **Visual Studio** (2019 is recommended, 2017 is minimum) with the dependencies listed in `.vsconfig` (it will prompt you to install missing dependences when you open the project, or you can run VS installer and import the config). If you prefer to use **Visual Studio Code** you may install **VS Build Tools** with the stuff from `.vsconfig` instead. You can also don't use any code editor or IDE and build via **command line scripts** included with the project.
+1. Clone this repo recursively via your favorite git client (that will also clone YRpp).
+2. To build the extension:
+   - in Visual Studio: open the solution file in VS and build it (`Debug` build config is recommended);
+   - in VSCode: open the project folder and hit `Run Build Task...` (`Ctrl + Shift + B`);
+   - barebones: run `scripts/build_debug.bat`.
+3. Upon build completion the resulting `Phobos.dll` and `Phobos.pdb` would be placed in the subfolder identical to the name of the buildconfig executed.
 
 Credits
 -------
@@ -85,19 +95,20 @@ Credits
 - **4SG** - help with docs
 - **wiktorderelf** - overhauled Unicode font
 - **Uranusian (Thrifinesma)** - Mind Control enhancement, custom warhead splash list, harvesters counter, promoted spawns, shields, death after dead fix, customizeable missing cameo, cameo sorting priority, placement mode responding of tab hotkeys fix, producing progress, custom ore gathering anim, NoManualMove, weapon target house filtering, DeathWeapon fix, re-enable obsolete `JumpjetControls`, AITrigger Building Upgrades recognition, Wall-Gate links, deployed infantry using both weapons, overhauled Unicode font, docs maintenance, CN docs translation
-- **secsome (SEC-SOME)** - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields, AnimList.PickRandom, MoveToCell fix, unlimited waypoints, Build At trigger action buildup anim fix, Undeploy building into a unit plays `EVA_NewRallyPointEstablished` fix, custom ore gathering anim, TemporaryClass related crash, Retry dialog on mission failure, Default disguise for individual InfantryTypes, PowerPlant Enhancer, SaveGame Trigger Action, QuickSave command, Numeric variables, Custom gravity for projectiles, Retint map actions bugfix
-- **Otamaa (Fahroni, BoredEXE)** - help with CellSpread, ported and fixed custom RadType code, togglable ElectricBolt bolts, customizable Chrono Locomotor properties per TechnoClass, DebrisMaximums fixes, Anim-to-Unit, NotHuman anim sequences improvements, Customizable OpenTopped Properties, hooks for ScriptType Actions 92 & 93, ore stage threshold for `HideIfNoOre`, occupied building `MuzzleFlashX` bugfix
+- **secsome (SEC-SOME)** - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields, AnimList.PickRandom, MoveToCell fix, unlimited waypoints, Build At trigger action buildup anim fix, Undeploy building into a unit plays `EVA_NewRallyPointEstablished` fix, custom ore gathering anim, TemporaryClass related crash, Retry dialog on mission failure, Default disguise for individual InfantryTypes, PowerPlant Enhancer, SaveGame Trigger Action, QuickSave command, Numeric variables, Custom gravity for projectiles, Retint map actions bugfix, Sharpnel enhancement
+- **Otamaa (Fahroni, BoredEXE)** - help with CellSpread, ported and fixed custom RadType code, togglable ElectricBolt bolts, customizable Chrono Locomotor properties per TechnoClass, DebrisMaximums fixes, Anim-to-Unit, NotHuman anim sequences improvements, Customizable OpenTopped Properties, hooks for ScriptType Actions 92 & 93, ore stage threshold for `HideIfNoOre`, occupied building `MuzzleFlashX` bugfix,`EnemyUIName=` for other TechnoTypes, TerrainType `DestroyAnim` & `DestroySound`
 - **E1 Elite** - TileSet 255 and above bridge repair fix
-- **FS-21** - Dump Object Info enhancements, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71 to 113, MC deployer fixes, help with docs, Automatic Passenger Deletion
-- **AutoGavy** - interceptor logic, warhead critical damage system
+- **FS-21** - Dump Object Info enhancements, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71 to 113, MC deployer fixes, help with docs, Automatic Passenger Deletion, Fire SW At Location Trigger Action, Fire SW At Waypoint Trigger Action, Kill Object Automatically, Customize resource storage, Override Uncloaked Underwater attack behavior, AI Aircraft docks fix, Shared Ammo
+- **AutoGavy** - interceptor logic, warhead critical damage system, Customize resource storage
 - **ChrisLv_CN** - interceptor logic, LaserTrails, laser fixes, general assistance (work relicensed under [following permission](images/ChrisLv-relicense.png))
 - **Xkein** - general assistance, YRpp edits
 - **thomassneddon** - general assistance
-- **Starkku** - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements, stationary VehicleTypes, Burst logic improvements, TechnoType auto-firing weapons, Secondary weapon fallback customization, weapon target type filtering, AreaFire targeting customization, CreateUnit improvements, Attached animation & jumpjet unit layer customization, IsSimpleDeployer improvements, Shield modification warheads, Warhead decloaking toggle
+- **Starkku** - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements, stationary VehicleTypes, Burst logic improvements, TechnoType auto-firing weapons, Secondary weapon fallback customization, weapon target type filtering, AreaFire targeting customization, CreateUnit improvements, Attached animation & jumpjet unit layer customization, IsSimpleDeployer improvements, Shield modification warheads, Warhead decloaking toggle, Warp(In/Out)Weapon, Grinder improvements / additions, Attached animation position customization
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **Morton (MortonPL)** - XDrawOffset, Shield passthrough & absorption, building LimboDelivery, fix for Image in art rules, power delta counter
 - **mevitar** - honorary shield tester *triple* award
 - **Damfoos** - extensive and thorough testing
+- **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
 - **Chasheen (Chasheenburg)** - CN docs translation
 

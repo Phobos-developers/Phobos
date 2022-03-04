@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-13 17:59+0800\n"
+"POT-Creation-Date: 2022-01-22 00:25+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -108,7 +108,7 @@ msgid ""
 "Developers/Ares) rather than replace it, thus it won't introduce "
 "incompatibilities."
 msgstr ""
-"**...（Phobos，福波斯）**是一个还在开发中的基于[自定义 "
+"...（Phobos，福波斯）是一个还在开发中的基于[自定义 "
 "YRpp](https://github.com/Metadorius/YRpp)与[注射器](https://github.com/Ares-"
 "Developers/Syringe)的社区项目，旨在为尤里的复仇提供一些新功能或修复bug。这意味着它可以与[战神 "
 "(Ares，火星，阿瑞斯)](https://github.com/Ares-"
@@ -227,16 +227,16 @@ msgstr "生成"
 #: ../../README.md:35
 msgid ""
 "Install **Visual Studio** (2019 is recommended, 2017 is minimum) with the"
-" dependencies listed in `.vswhere` (it will prompt you to install missing"
-" dependences when you open the project, or you can run VS installer and "
-"import the config). If you prefer to use **Visual Studio Code** you may "
-"install **VS Build Tools** with the stuff from `.vswhere` instead. You "
-"can also don't use any code editor or IDE and build via **command line "
-"scripts** included with the project."
+" dependencies listed in `.vsconfig` (it will prompt you to install "
+"missing dependences when you open the project, or you can run VS "
+"installer and import the config). If you prefer to use **Visual Studio "
+"Code** you may install **VS Build Tools** with the stuff from `.vsconfig`"
+" instead. You can also don't use any code editor or IDE and build via "
+"**command line scripts** included with the project."
 msgstr ""
-"使用`.vswhere`中列出的依赖项安装**Visual "
+"使用`.vsconfig`中列出的依赖项安装**Visual "
 "Studio**（建议2019，最低为2017）（打开项目时会提示安装缺少的依赖项，也可以运行VS安装程序并导入配置）。如果你更喜欢使用**Visual"
-" Studio Code**，也可以使用`.vswhere`中的内容安装**VS Build "
+" Studio Code**，也可以使用`.vsconfig`中的内容安装**VS Build "
 "Tools**。你也可以不使用任何代码编辑器或IDE，并通过项目中包含的命令行脚本进行构建。"
 
 #: ../../README.md:36
@@ -349,11 +349,15 @@ msgstr "**FS-21** - 开发者"
 msgid "**Starkku** - developer"
 msgstr "**Starkku** - 开发者"
 
-#: ../../README.md:75
+#: ../../README.md:74
+msgid "**Morton (MortonPL)** - developer"
+msgstr "**Morton (MortonPL)** - 开发者"
+
+#: ../../README.md:76
 msgid "Contributions"
 msgstr "贡献者"
 
-#: ../../README.md:76
+#: ../../README.md:77
 msgid ""
 "**Belonit (Gluk-v48)** - project creation, disable empty spawn positions,"
 " custom gamemd icon with Command Line, full-color non-paletted PCX, "
@@ -366,7 +370,7 @@ msgstr ""
 "**Belonit (Gluk-v48)** - "
 "项目创始人，关闭载入图空白起始点，使用程序参数自定义游戏图标，全彩色PCX，视野弹，金币弹，PCX载入图，自定义镭射半径，扩展工具提示，建筑升级增强，隐藏血条，UI使用GDI位置，CellSpread扩展，Blowfish.dll相关错误修复，0大小地图预览，Locomotor代称，护盾，输入修复"
 
-#: ../../README.md:77
+#: ../../README.md:78
 msgid ""
 "**Kerbiter (Metadorius)** - SHP debris respect Shadow, building upgrades "
 "enhancement, extended tooltips, selection priority filtering, "
@@ -378,46 +382,46 @@ msgstr ""
 "**Kerbiter (Metadorius)** - "
 "SHP碎片阴影，建筑升级增强，扩展工具提示，选择优先级筛选，TurretOffset增强，自定义矿柱，选择下一个空闲矿车快捷键，拦截者增强，0大小地图预览，激光尾迹，激光修复，CI/CD，增强Unicode字体，说明书维护，VSCode配置，代码风格"
 
-#: ../../README.md:78
+#: ../../README.md:79
 msgid ""
 "**tomsons26** - all-around help, assistance and guidance in reverse-"
 "engineering, YR binary mappings"
 msgstr "**tomsons26** - 全方位帮助，逆向工程方面协助与知道，YR解析"
 
-#: ../../README.md:79
+#: ../../README.md:80
 msgid ""
 "**CCHyper** - all-around help, current project logo, assistance and "
 "guidance in reverse-engineering, YR binary mappings"
 msgstr "**CCHyper** - 全方位帮助，项目logo，逆向工程方面协助与知道，YR解析"
 
-#: ../../README.md:80
+#: ../../README.md:81
 msgid ""
 "**Ares developers** - YRpp and Syringe which are used, save/load, project"
 " foundation and generally useful code from Ares, unfinished RadTypes "
 "code, prototype deployer fixes"
 msgstr "**Ares开发者** - YRpp和Syringe，存读档，Ares的项目基础与有助的代码，未完成的RadType代码，部署修复原型代码"
 
-#: ../../README.md:81
+#: ../../README.md:82
 msgid "**ZΞPHYɌUS** - win/lose themes code"
 msgstr "**ZΞPHYɌUS** - 胜利失败音乐"
 
-#: ../../README.md:82
+#: ../../README.md:83
 msgid "**ayylmao** - help with docs"
 msgstr "**ayylmao** -  帮助书写说明书"
 
-#: ../../README.md:83
+#: ../../README.md:84
 msgid "**SMxReaver** - help with docs, extensive and thorough testing"
 msgstr "**SMxReaver** - 帮助书写说明书，广泛的深度测试"
 
-#: ../../README.md:84
+#: ../../README.md:85
 msgid "**4SG** - help with docs"
 msgstr "**4SG** -  帮助书写说明书"
 
-#: ../../README.md:85
+#: ../../README.md:86
 msgid "**wiktorderelf** - overhauled Unicode font"
 msgstr "**wiktorderelf** - 增强Unicode字体"
 
-#: ../../README.md:86
+#: ../../README.md:87
 msgid ""
 "**Uranusian (Thrifinesma)** - Mind Control enhancement, custom warhead "
 "splash list, harvesters counter, promoted spawns, shields, death after "
@@ -425,13 +429,13 @@ msgid ""
 "mode responding of tab hotkeys fix, producing progress, custom ore "
 "gathering anim, NoManualMove, weapon target house filtering, DeathWeapon "
 "fix, re-enable obsolete `JumpjetControls`, AITrigger Building Upgrades "
-"recognition, overhauled Unicode font, docs maintenance, CN docs "
-"translation"
+"recognition, Wall-Gate links, deployed infantry using both weapons, "
+"overhauled Unicode font, docs maintenance, CN docs translation"
 msgstr ""
 "**Uranusian (Thrifinesma)** - "
-"心灵控制增强，自定义弹头水花动画，矿车指示器，子机经验同步，护盾，重复死亡修复，自定义缺省图标，图标排序优先级，放置模式相应标签快捷键修复，生产进度条，自定义矿石采集动画，禁止手动移动，武器瞄准筛选所属方，死亡武器修复，重新激活废弃的`JumpjetControls`，AI触发识别建筑升级，增强Unicode字体，说明书维护，中文说明书翻译"
+"心灵控制增强，自定义弹头水花动画，矿车指示器，子机经验同步，护盾，重复死亡修复，自定义缺省图标，图标排序优先级，放置模式相应标签快捷键修复，生产进度条，自定义矿石采集动画，禁止手动移动，武器瞄准筛选所属方，死亡武器修复，重新激活废弃的`JumpjetControls`，AI触发识别建筑升级，围墙闸门连接，部署步兵使用全部武器，增强Unicode字体，说明书维护，中文说明书翻译"
 
-#: ../../README.md:87
+#: ../../README.md:88
 msgid ""
 "**secsome (SEC-SOME)** - debug info dump hotkey, refactoring & porting of"
 " Ares helper code, introducing more Ares-derived stuff, disguise removal "
@@ -447,36 +451,36 @@ msgstr ""
 "**secsome (SEC-SOME)** - "
 "debug信息输出快捷键，重构与移植Ares的帮助代码，引入了更多Ares衍生物，移除伪装弹头，移除心控弹头，心灵控制增强，护盾，AnimList.PickRandom，移动到坐标修复，无限路径点，将建筑建造于触发动作建造动画修复，反部署建筑播放`EVA_NewRallyPointEstablished`修复，自定义矿车动画，超时空相关崩溃修复，于重新开始任务对话框添加的读档按钮，步兵类型独立默认伪装，电厂增强，存档触发，存档快捷键，数字变量，自定义抛射体重力，重绘地图颜色修复"
 
-#: ../../README.md:88
+#: ../../README.md:89
 msgid ""
 "**Otamaa (Fahroni, BoredEXE)** - help with CellSpread, ported and fixed "
 "custom RadType code, togglable ElectricBolt bolts, customizable Chrono "
 "Locomotor properties per TechnoClass, DebrisMaximums fixes, Anim-to-Unit,"
 " NotHuman anim sequences improvements, Customizable OpenTopped "
 "Properties, hooks for ScriptType Actions 92 & 93, ore stage threshold for"
-" `HideIfNoOre`"
+" `HideIfNoOre`, occupied building `MuzzleFlashX` bugfix"
 msgstr ""
 "**Otamaa (Fahroni, BoredEXE)** - "
-"CellSpread扩展，移植并修复RadType代码，可开关的ElectricBolt电弧，自定义超时空Locomotor相关属性，DebrisMaximums修复，动画生成单位，NotHuman死亡动画增强，自定义可对外射击载具属性，92&93号脚本动作钩子，`HideIfNoOre`的矿石阶段限制"
+"CellSpread扩展，移植并修复RadType代码，可开关的ElectricBolt电弧，自定义超时空Locomotor相关属性，DebrisMaximums修复，动画生成单位，NotHuman死亡动画增强，自定义可对外射击载具属性，92&93号脚本动作钩子，`HideIfNoOre`的矿石阶段限制，驻军建筑开火位置修复"
 
-#: ../../README.md:89
+#: ../../README.md:90
 msgid "**E1 Elite** - TileSet 255 and above bridge repair fix"
 msgstr "**E1 Elite** - TileSet 255以上桥梁维修修复"
 
-#: ../../README.md:90
+#: ../../README.md:91
 msgid ""
 "**FS-21** - Dump Object Info enhancements, Powered.KillSpawns, "
-"Spawner.LimitRange, ScriptType Actions 71, 72, 73, 74 to 81, 92, 93, 94, "
-"95 to 98, 111, 112, MC deployer fixes, help with docs, Automatic "
-"Passenger Deletion"
-msgstr "**FS-21** - debug信息输出增强，建筑断电子机坠毁，子机最大航程，脚本动作71、72、73、74到81、92、93、94、95到98、111、112，心灵控制部署修复，帮助书写说明书，自动乘客删除"
+"Spawner.LimitRange, ScriptType Actions 71 to 113, MC deployer fixes, help"
+" with docs, Automatic Passenger Deletion"
+msgstr ""
+"**FS-21** - "
+"debug信息输出增强，建筑断电子机坠毁，子机最大航程，脚本动作71到113，心灵控制部署修复，帮助书写说明书，自动乘客删除"
 
-
-#: ../../README.md:91
+#: ../../README.md:92
 msgid "**AutoGavy** - interceptor logic, warhead critical damage system"
 msgstr "**AutoGavy** - 拦截者逻辑，弹头暴击伤害系统"
 
-#: ../../README.md:92
+#: ../../README.md:93
 msgid ""
 "**ChrisLv_CN** - interceptor logic, LaserTrails, laser fixes, general "
 "assistance (work relicensed under [following permission](images/ChrisLv-"
@@ -485,15 +489,15 @@ msgstr ""
 "**ChrisLv_CN** - 拦截者逻辑，激光尾迹，激光修复，一般协助（协议部分请见[库的声明](images/ChrisLv-"
 "relicense.png)）"
 
-#: ../../README.md:93
+#: ../../README.md:94
 msgid "**Xkein** - general assistance, YRpp edits"
 msgstr "**Xkein** -  一般协助，YRpp编辑"
 
-#: ../../README.md:94
+#: ../../README.md:95
 msgid "**thomassneddon** - general assistance"
 msgstr "**thomassneddon** - 一般协助"
 
-#: ../../README.md:95
+#: ../../README.md:96
 msgid ""
 "**Starkku** - Warhead shield penetration & breaking, strafing aircraft "
 "weapon customization, vehicle DeployFire fixes/improvements, stationary "
@@ -501,36 +505,38 @@ msgid ""
 "Secondary weapon fallback customization, weapon target type filtering, "
 "AreaFire targeting customization, CreateUnit improvements, Attached "
 "animation & jumpjet unit layer customization, IsSimpleDeployer "
-"improvements, Shield modification warheads"
-msgstr "**Starkku** - 弹头护盾穿透与破坏，飞机扫射武器自定义，载具DeployFire修复与升级，静止载具，Burst逻辑升级，单位自动开火，副武器推算机顶一，武器瞄准类型筛选，AreaFire瞄准自定义，CreateUnit升级，附加动画和Jumpjet浮动图层自定义，IsSimpleDeployer增强，护盾修改弹头"
+"improvements, Shield modification warheads, Warhead decloaking toggle"
+msgstr ""
+"**Starkku** - "
+"弹头护盾穿透与破坏，飞机扫射武器自定义，载具DeployFire修复与升级，静止载具，Burst逻辑升级，单位自动开火，副武器推算机顶一，武器瞄准类型筛选，AreaFire瞄准自定义，CreateUnit升级，附加动画和Jumpjet浮动图层自定义，IsSimpleDeployer增强，护盾修改弹头，弹头解除隐身开关"
 
-#: ../../README.md:96
+#: ../../README.md:97
 msgid "**SukaHati (Erzoid)** - Minimum interceptor guard range"
 msgstr "**SukaHati (Erzoid)** - 拦截者最小警戒距离"
 
-#: ../../README.md:97
+#: ../../README.md:98
 msgid ""
 "**Morton (MortonPL)** - XDrawOffset, Shield passthrough & absorption, "
-"building LimboDelivery, fix for Image in art rules"
-msgstr "**Morton (MortonPL)** - XDrawOffset (X轴动画偏移)，护盾穿透和吸收，虚拟投放建筑，art单位读取Image"
+"building LimboDelivery, fix for Image in art rules, power delta counter"
+msgstr "**Morton (MortonPL)** - XDrawOffset (X轴动画偏移)，护盾穿透和吸收，虚拟投放建筑，art单位读取Image，电力变动指示器"
 
-#: ../../README.md:98
+#: ../../README.md:99
 msgid "**mevitar** - honorary shield tester *triple* award"
 msgstr "**mevitar** - 荣誉护盾测试员*三重*奖章"
 
-#: ../../README.md:99
+#: ../../README.md:100
 msgid "**Damfoos** - extensive and thorough testing"
 msgstr "**Damfoos** - 广泛的深度测试"
 
-#: ../../README.md:100
+#: ../../README.md:101
 msgid "**Rise of the East community** - extensive playtesting of in-dev features"
 msgstr "**东方崛起社区** - 对开发中功能的广泛游戏测试"
 
-#: ../../README.md:101
+#: ../../README.md:102
 msgid "**Chasheen (Chasheenburg)** - CN docs translation"
 msgstr "**Chasheen (Chasheenburg)** - 中文说明书翻译"
 
-#: ../../README.md:103
+#: ../../README.md:104
 msgid ""
 "Thanks to everyone who uses Phobos, tests changes and reports bugs! You "
 "can show your appreciation and help project by displaying the logo "
@@ -542,28 +548,28 @@ msgstr ""
 "感谢每一个使用火卫一，测试更新与反馈bug的人！你可以通过在客户端/启动器中显示logo（可以在[此处](logo-"
 "mono.png)找到单色版本），链接火卫一库，以及通过上述链接贡献或对我们捐款来表达你对我们的赞赏和帮助。"
 
-#: ../../README.md:105
+#: ../../README.md:106
 msgid "Legal and License"
 msgstr "法律许可证"
 
-#: ../../README.md:108
+#: ../../README.md:109
 msgid ""
 "[![LGPL "
 "v3](https://www.gnu.org/graphics/lgplv3-147x51.png)](https://opensource.org/licenses/LGPL-3.0)"
 msgstr ""
 
-#: ../../README.md:108
+#: ../../README.md:109
 msgid "LGPL v3"
 msgstr ""
 
-#: ../../README.md:110
+#: ../../README.md:111
 msgid ""
 "The Phobos project is an unofficial open-source community collaboration "
 "project to extend the Red Alert 2 Yuri's Revenge engine for modding and "
 "compatibility purposes."
 msgstr "火卫一项目是一个非官方的开源社区合作项目，为了扩展红色警戒2尤里的复仇引擎以制作模组或兼容。"
 
-#: ../../README.md:112
+#: ../../README.md:113
 msgid ""
 "This project has no direct affiliation with Electronic Arts Inc. Command "
 "& Conquer, Command & Conquer Red Alert 2, Command & Conquer Yuri's "
