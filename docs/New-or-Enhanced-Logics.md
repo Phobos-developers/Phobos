@@ -612,22 +612,29 @@ RemoveMindControl=no                 ; boolean
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
 
 - Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
-
+  - `Crit.Chance` determines chance for a critical hit to occur. By default this is checked once when the Warhead is detonated and every target that is susceptible to critical hits will be affected. If `Crit.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
+  - `Crit.ExtraDamage` determines the damage dealt by the critical hit. If `Crit.Warhead` is set, the damage is used to detonate the specified Warhead on each affected target, otherwise the damage is directly dealt based on current Warhead's `Verses` settings.
+  - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against.
+  - `Crit.AffectsBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
+  - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list.
+    - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
+  - `ImmuneToCrit` can be set on TechnoTypes to make them immune to critical hits.
+  
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                     ; Warhead
-Crit.Chance=0.0                   ; float, chance for critical hit to occur in [0.0-1.0] scale
-Crit.ApplyChancePerTarget=false   ; boolean, if set to true critical hit chance is determined individually for each target instead of only once when Warhead detonates.
-Crit.ExtraDamage=0                ; integer, damage dealt to affected targets.
-Crit.Warhead=                     ; Warhead, if set the warhead is detonated at every affected target instead of simply dealing damage using current warhead.
+Crit.Chance=0.0                   ; float, percents or absolute (0.0-1.0)
+Crit.ApplyChancePerTarget=false   ; boolean
+Crit.ExtraDamage=0                ; integer
+Crit.Warhead=                     ; Warhead
 Crit.Affects=all                  ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-Crit.AffectBelowPercent=1.0       ; float, maximum percentage of hitpoints targets (if applicable) can have left to be affected.
-Crit.AnimList=                    ; list of animations to play instead of Warhead's AnimList.
-Crit.AnimList.PickRandom=         ; boolean, pick animation from list by random, defaults to AnimList.PickRandom
-Crit.AnimOnAffectedTargets=false  ; boolean, if set to true plays animation on every affected target instead of once at primary target. Animation from Warhead's AnimList is also played unlike if this is not set.
+Crit.AffectBelowPercent=1.0       ; float, percents or absolute (0.0-1.0)
+Crit.AnimList=                    ; list of animations
+Crit.AnimList.PickRandom=         ; boolean
+Crit.AnimOnAffectedTargets=false  ; boolean
 
 [SOMETECHNO]                      ; TechnoType
-ImmuneToCrit=no                   ; boolean, whether TechnoType is immune to critical hits.
+ImmuneToCrit=no                   ; boolean
 ```
 
 ```{warning}
