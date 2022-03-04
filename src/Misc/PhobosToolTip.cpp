@@ -107,9 +107,12 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 	int nMin = nBuildTime / 15 / 60 /* % 60*/;
 	// int nHour = pType->RechargeTime / 15 / 60 / 60;
 
+	int cost = pType->GetActualCost(HouseClass::Player);
+
 	std::wostringstream oss;
 	oss << pType->UIName << L"\n"
-		<< Phobos::UI::CostLabel << pType->GetActualCost(HouseClass::Player) << L" "
+		<< (cost < 0 ? L"+" : L"") 
+		<< Phobos::UI::CostLabel << std::abs(cost) << L" "
 		<< Phobos::UI::TimeLabel
 		// << std::setw(2) << std::setfill(L'0') << nHour << L":"
 		<< std::setw(2) << std::setfill(L'0') << nMin << L":"
@@ -135,12 +138,14 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 
 	std::wostringstream oss;
 	oss << pType->UIName << L"\n";
-	
+	bool showCost = false;
+
 	if (int nCost = std::abs(pData->Money_Amount))
 	{
-		if (pData->Money_Amount < 0)
+		if (pData->Money_Amount > 0)
 			oss << '+';
 		oss << Phobos::UI::CostLabel << nCost;
+		showCost = true;
 	}
 		
 	if (pType->RechargeTime > 0)
@@ -149,12 +154,12 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 		int nMin = pType->RechargeTime / 15 / 60 /* % 60*/;
 		// int nHour = pType->RechargeTime / 15 / 60 / 60;
 
-		oss << L" " << Phobos::UI::TimeLabel
+		oss << (showCost ? L" " : L"") << Phobos::UI::TimeLabel
 			// << std::setw(2) << std::setfill(L'0') << nHour << L":" 
 			<< std::setw(2) << std::setfill(L'0') << nMin << L":"
 			<< std::setw(2) << std::setfill(L'0') << nSec << L"\n";
 	}
-	else
+	else if (showCost)
 		oss << "\n";
 
 	if (auto pDesc = this->GetUIDescription(pData))
