@@ -1150,7 +1150,7 @@ x=113,n           ; where 0 > n <= 100
 
 ### `114` Set House hate value modifier
 
-- Affects how much hate applies to a selected house (depends of the script action). This anger value is applied only inside the scriptType of the Team.
+- Affects how much hate applies to a selected house (depends of the script action).
 - Positive values increase hate and negative values decrease hate.
 - Affects Script Actions: 116, 117, 118, 119, 120 & 121.
 
