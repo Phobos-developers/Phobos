@@ -234,7 +234,6 @@ New:
 - Save Game Trigger Action (by secsome)
 - Numeric Variables (by secsome)
 - TechnoType's tooltip would display it's build time now (by secsome)
-- Sharpnel enhancement (by secsome)
 - Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)
 - Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
 - XDrawOffset for animations (by Morton)
@@ -275,6 +274,7 @@ New:
 - Trigger Action 506 for Firing at waypoint (by FS-21)
 - New ways for self-killing objects under certaing cases (by FS-21)
 - `ForceWeapon.Naval.Decloacked` for overriding uncloaked underwater attack behavior (by FS-21)
+- Shrapnel enhancement (by secsome)
 - Shared Ammo for transports to passengers (by FS-21)
 - Additional critical hit logic customizations (by Starkku)
 - Laser trails for VoxelAnims (by Otamaa)
@@ -296,7 +296,7 @@ Phobos fixes:
 - Improved shield behavior for forced damage (by Uranusian)
 - Fixed SplashList animations playing when a unit is hit on a bridge over water (by Uranusian)
 - Fixed shielded objects not decloaking if shield takes damage (by Starkku)
-
+- Fixed critical hit animation playing even if no critical hits were dealt due to `Crit.Affects` or `ImmuneToCrit` settings (by Starkku)
 
 ### 0.2.2.2
 
