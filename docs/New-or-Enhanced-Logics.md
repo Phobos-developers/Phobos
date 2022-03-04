@@ -1148,6 +1148,166 @@ In `aimd.ini`:
 x=113,n           ; where 0 > n <= 100
 ```
 
+### `114` Set House hate value modifier
+
+- Affects how much hate applies to a selected house (depends of the script action). This anger value is applied only inside the scriptType of the Team.
+- Positive values increase hate and negative values decrease hate.
+- Affects Script Actions: 116, 117, 118, 119, 120 & 121.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=114,n           ; integer n=0
+```
+
+### `115` Override OnlyTargetHouseEnemy value
+
+- The value of the tag `OnlyTargetHouseEnemy` in AI Triggers can be modified for the new Attack & Move actions. Only affects the next new attack or move action script.
+- These anger values are applied only in the House owner of the team. 
+- Only works for new Phobos Actions, not vanilla YR or Ares actions.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=115,n           ; integer n=-1
+```
+
+- The possible argument values are:
+
+| *Argument* | *Description*                        |
+| :------: | :-------------------------------------------: |
+| -1       | Use default value specified in `OnlyTargetHouseEnemy` |
+| 0        | Force `OnlyTargetHouseEnemy` value to FALSE |
+| 1        | Force `OnlyTargetHouseEnemy` value to TRUE |
+| 2        | Force `OnlyTargetHouseEnemy` value to TRUE or FALSE randomly |
+
+### `116` Modify House hate using House index
+
+- Modifies the Team's hate towards a specific house using its House index.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=116,n           ; integer n >= 0
+```
+
+### `117` Modify hate values from a list of Countries
+
+- The House Team picks a list of countries from the `rulesmd.ini` section called `[AIHousesList]`.
+- The House Team modify the hate towards all Houses in the map that use the countries in that list.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=117,n           ; integer n >= 0
+```
+
+The second parameter is a 0-based index for the `AIHousesList` section that specifies the list of possible `Countries` that can be evaluated. The new `AIHousesList` section must be declared in `rulesmd.ini` for making this script work:
+
+In `rulesmd.ini`:
+```ini
+[AIHousesList]  ; List of Countries lists
+0=SOMECOUNTRY,SOMEOTHERCOUNTRY,SAMPLECOUNTRY
+1=ANOTHERCOUNTRY,YETANOTHERCOUNTRY
+; ...
+```
+
+### `118` Modify hate value against a random Country from a list of Countries
+
+- Like action 117 but the House owner of the Team only picks 1 house randomly from the specified list of countries.
+- The House Team modify the hate towards all Houses in the map that use the selected country.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=118,n           ; integer n >= 0
+```
+
+### `119` Set the most hated House ("<" comparison)
+
+- Increases the Team House hate against an enemy House making that enemy House as the main target.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=119,n           ; integer
+```
+
+The possible argument values are:
+
+| *Argument* | *Description*                        |
+| :------: | :-------------------------------------------: |
+| -7       | The House with less house kills is selected |
+| -6       | The House with less free power (free = production - consumption) is selected |
+| -5       | The House with less power production is selected |
+| -4       | The House with less power consumption is selected |
+| -3       | The nearest enemy Human base is selected |
+| -2       | The poorest House is selected |
+| -1       | The enemy House with nearest unit to the Team Leader is selected |
+| > 0      | *Target Type#* index. The House with less threat of the selected *Target Type#* (sum of all the units of the same checked type * threat value) |
+
+### `120` Set the most hated House (">" comparison)
+
+- Increases the Team House hate against an enemy House making that enemy House as the main target.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=120,n           ; integer
+```
+
+The possible argument values are:
+
+| *Argument* | *Description*                        |
+| :------: | :-------------------------------------------: |
+| -7       | The House with more house kills is selected |
+| -6       | The House with more free power (free = production - consumption) is selected |
+| -5       | The House with more power production is selected |
+| -4       | The House with more power consumption is selected |
+| -3       | The farthest enemy Human base is selected |
+| -2       | The richest House is selected |
+| -1       | The enemy House with farthest unit to the Team Leader is selected |
+| > 0      | *Target Type#* index. The House with more threat of the selected *Target Type#* (sum of all the units of the same checked type * threat value) |
+
+### `121` Set the most hated House randomly
+
+- Increases the Team House hate against an enemy House picked randomly.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=121,0
+```
+
+### `122` Reset hate against other Houses
+
+- All hate levels in the Team House against every House are set to 0.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=122,0
+```
+
+### `123` Set a House as the most hated House of the map
+
+- A House will become the most hated House of the map (the effects are only visible if the other houses are enemies of the selected house)
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=123,n           ; integer
+```
+
+The possible argument values are:
+
+| *Argument* | *Description*                        |
+| :------: | :-------------------------------------------: |
+| -3       | All Human players will be hated by everyone |
+| -2       | The Team House will be the most hated by everyone (allies remain allies) |
+| -1       | Selects a random House. The own House is excluded in the selection of the most hated by everyone |
+| >= 0     | House index that will be hated by everyone |
+
 ### `500 - 523` Edit Variable
 - Operate a variable's value
     - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
