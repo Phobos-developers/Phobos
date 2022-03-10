@@ -18,7 +18,7 @@ Downloads
 You can choose one of the following:
 - [Latest stable branch build](https://github.com/Phobos-developers/Phobos/releases/latest) (most bug-free release but very slow on new features)
 - [Latest development branch builds](https://github.com/Phobos-developers/Phobos/releases) (a bit less less bug-free releases, devbuilds get new features when they are finished)
-- [Latest development branch nightly](https://nightly.link/Phobos-developers/Phobos/blob/develop/.github/workflows/nightly.yml) (added unreleased stuff that will be in next devbuild)
+- [Latest development branch nightly](https://nightly.link/Phobos-developers/Phobos/blob/develop/.github/workflows/nightly.yml) (added unreleased features that will be in next devbuild)
 - Individual new feature builds (for testing) can be found in [pull requests](https://github.com/Phobos-developers/Phobos/pulls)
 
 ### Note on nightly builds
@@ -44,7 +44,7 @@ Documentation
 
 You can switch between versions (displays latest develop nightly version by default) in the bottom left corner, as well as download a PDF version.
 
-The documentation is split by a few major categories, each represented with a page on the sidebar. Each page has it's contents grouped into multiple subcategories, be it buildings, technotypes, infantries, superweapons or something else.
+The documentation is split by a few major categories, each represented with a page on the sidebar. Each page has its contents grouped into multiple subcategories, be it buildings, technotypes, infantries, superweapons or something else.
 
 ### How to read code snippets
 
@@ -62,7 +62,7 @@ UIDescription=<none> ; CSF entry key
 Building manually
 -----------------
 
-0. Install **Visual Studio** (2019 is recommended, 2017 is minimum) with the dependencies listed in `.vsconfig` (it will prompt you to install missing dependences when you open the project, or you can run VS installer and import the config). If you prefer to use **Visual Studio Code** you may install **VS Build Tools** with the stuff from `.vsconfig` instead. You can also don't use any code editor or IDE and build via **command line scripts** included with the project.
+0. Install **Visual Studio** (2019 is recommended, 2017 is minimum) with the dependencies listed in `.vsconfig` (it will prompt you to install missing dependences when you open the project, or you can run VS installer and import the config). If you prefer to use **Visual Studio Code** you may install **VS Build Tools** with the dependencies from `.vsconfig` instead. You can also don't use any code editor or IDE and build via **command line scripts** included with the project.
 1. Clone this repo recursively via your favorite git client (that will also clone YRpp).
 2. To build the extension:
    - in Visual Studio: open the solution file in VS and build it (`Debug` build config is recommended);
@@ -122,4 +122,3 @@ Legal and License
 The Phobos project is an unofficial open-source community collaboration project to extend the Red Alert 2 Yuri's Revenge engine for modding and compatibility purposes.
 
 This project has no direct affiliation with Electronic Arts Inc. Command & Conquer, Command & Conquer Red Alert 2, Command & Conquer Yuri's Revenge are registered trademarks of Electronic Arts Inc. All Rights Reserved.
-
