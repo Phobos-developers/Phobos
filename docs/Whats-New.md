@@ -309,6 +309,7 @@ Phobos fixes:
 - Fixed critical hit animation playing even if no critical hits were dealt due to `Crit.Affects` or `ImmuneToCrit` settings (by Starkku)
 </details>
 
+
 ### 0.2.2.2
 
 <details>
@@ -320,6 +321,7 @@ Phobos fixes:
 - Fix more random crashes for Cameo Priority (by Uranusian)
 - Fix aircraft weapons causing game freeze when burst index was not correctly reset after firing (by Starkku)
 </details>
+
 
 ### 0.2.2.1
 
@@ -334,6 +336,7 @@ Phobos fixes:
 - Fixed `Crit.Affects` not functioning properly (by Uranusian)
 - Fixed improper upgrade owner transfer which resulted in built ally / enemy building upgrades keeping the player who built them alive (by Kerbiter)
 </details>
+
 
 ### 0.2.2
 
@@ -354,6 +357,7 @@ Phobos fixes:
 - Fixed the bug when executing the stop command game crashes (by Uranusian)
 </details>
 
+
 ### 0.2.1.1
 
 <details>
@@ -362,6 +366,7 @@ Phobos fixes:
 Phobos fixes:
 - Fixed occasional crashes introduced by `Speed=0` stationary vehicles code (by Starkku)
 </details>
+
 
 ### 0.2.1
 
@@ -378,6 +383,7 @@ Vanilla fixes:
 Phobos fixes:
 - Fixed the bug when trigger action `125 Build At...` wasn't actually producing a building when the target cells were occupied (by secsome)
 </details>
+
 
 ### 0.2
 
@@ -428,6 +434,7 @@ Phobos fixes:
 - New warheads now work with Ares' `GenericWarhead` superweapon (by Belonit)
 </details>
 
+
 ### 0.1.1
 
 <details>
@@ -436,6 +443,7 @@ Phobos fixes:
 Phobos fixes:
 - Fixed an occasional crash when selecting units with a selection box
 </details>
+
 
 ### 0.1
 
