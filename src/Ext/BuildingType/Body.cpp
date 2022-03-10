@@ -63,6 +63,36 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 	return isUpgrade ? result : -1;
 }
 
+bool BuildingTypeExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
+{
+	if (!pBuilding->Type->Grinding || (pTechno->WhatAmI() != AbstractType::Infantry && pTechno->WhatAmI() != AbstractType::Unit))
+		return false;
+
+	if ((pBuilding->Type->InfantryAbsorb || pBuilding->Type->UnitAbsorb) &&
+		(pTechno->WhatAmI() == AbstractType::Infantry && !pBuilding->Type->InfantryAbsorb ||
+		pTechno->WhatAmI() == AbstractType::Unit && !pBuilding->Type->UnitAbsorb))
+	{
+		return false;
+	}
+
+	if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
+	{
+		if (pBuilding->Owner == pTechno->Owner && !pExt->Grinding_AllowOwner)
+			return false;
+
+		if (pBuilding->Owner != pTechno->Owner && pBuilding->Owner->IsAlliedWith(pTechno) && !pExt->Grinding_AllowAllies)
+			return false;
+
+		if (pExt->Grinding_AllowTypes.size() > 0 && !pExt->Grinding_AllowTypes.Contains(pTechno->GetTechnoType()))
+			return false;
+
+		if (pExt->Grinding_DisallowTypes.size() > 0 && pExt->Grinding_DisallowTypes.Contains(pTechno->GetTechnoType()))
+			return false;
+	}
+
+	return true;
+}
+
 void BuildingTypeExt::ExtData::Initialize()
 {
 
@@ -140,6 +170,14 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
+
+	this->PlacementPreview_Show.Read(exINI, pSection, "PlacementPreview.Show");
+	this->PlacementPreview_Shape.Read(exINI, pSection, "PlacementPreview.Shape");
+	this->PlacementPreview_ShapeFrame.Read(exINI, pSection, "PlacementPreview.ShapeFrame");
+	this->PlacementPreview_Offset.Read(exINI, pSection, "PlacementPreview.Offset");
+	this->PlacementPreview_Remap.Read(exINI, pSection, "PlacementPreview.Remap");
+	this->PlacementPreview_Palette.LoadFromINI(pINI, pSection, "PlacementPreview.Palette");
+	this->PlacementPreview_Transculency.Read(exINI, pSection, "PlacementPreview.TransculentLevel");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -166,6 +204,15 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Grinding_DisallowTypes)
 		.Process(this->Grinding_Sound)
 		.Process(this->Grinding_Weapon)
+
+		.Process(PlacementPreview_Remap)
+		.Process(PlacementPreview_Palette)
+		.Process(PlacementPreview_Offset)
+		.Process(PlacementPreview_Show)
+		.Process(PlacementPreview_Shape)
+		.Process(PlacementPreview_ShapeFrame)
+		.Process(PlacementPreview_Transculency)
+
 		;
 }
 

@@ -33,6 +33,14 @@ public:
 		NullableIdx<VocClass> Grinding_Sound;
 		Nullable<WeaponTypeClass*> Grinding_Weapon;
 
+		Nullable<bool> PlacementPreview_Show;
+		Nullable<SHPStruct*> PlacementPreview_Shape;
+		Valueable<int> PlacementPreview_ShapeFrame;
+		Nullable<Point2D> PlacementPreview_Offset;
+		Valueable<bool> PlacementPreview_Remap;
+		CustomPalette PlacementPreview_Palette;
+		Valueable<int> PlacementPreview_Transculency;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -47,6 +55,14 @@ public:
 			, Grinding_DisallowTypes {}
 			, Grinding_Sound {}
 			, Grinding_Weapon {}
+
+			, PlacementPreview_Remap{ true }
+			, PlacementPreview_Palette{}
+			, PlacementPreview_Offset{}
+			, PlacementPreview_Show{}
+			, PlacementPreview_Shape{}
+			, PlacementPreview_ShapeFrame{ 0 }
+			, PlacementPreview_Transculency{ 0 }
 		{ }
 
 		virtual ~ExtData() = default;

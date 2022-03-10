@@ -35,6 +35,8 @@ public:
 		Valueable<bool> JumpjetNoWobbles;
 		Valueable<bool> JumpjetAllowLayerDeviation;
 		Valueable<int> Storage_TiberiumIndex;
+		Valueable<bool> Building_PlacementPreview;
+		Valueable<int> PlacementGrid_Transculency;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Pips_Shield { { -1,-1,-1 } }
@@ -45,6 +47,8 @@ public:
 			, JumpjetNoWobbles { false }
 			, JumpjetAllowLayerDeviation { true }
 			, Storage_TiberiumIndex { -1 }
+			, Building_PlacementPreview{ }
+			, PlacementGrid_Transculency { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
