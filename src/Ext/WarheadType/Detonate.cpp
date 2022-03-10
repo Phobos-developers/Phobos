@@ -62,6 +62,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	{
 		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 			this->DetonateOnOneUnit(pHouse, pTarget, pOwner);
+		else if (auto pCell = abstract_cast<CellClass*>(pBullet->Target))
+			this->DetonateOnCell(pHouse, pCell, pOwner);
 	}
 }
 
@@ -80,6 +82,15 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->RemoveMindControl)
 		this->ApplyRemoveMindControl(pHouse, pTarget);
+
+	if (this->Crit_Chance)
+		this->ApplyCrit(pHouse, pTarget, pOwner);
+}
+
+void WarheadTypeExt::ExtData::DetonateOnCell(HouseClass* pHouse, CellClass* pTarget, TechnoClass* pOwner)
+{
+	if (!pTarget)
+		return;
 
 	if (this->Crit_Chance)
 		this->ApplyCrit(pHouse, pTarget, pOwner);
@@ -179,7 +190,7 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, Techn
 	}
 }
 
-void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
+void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, AbstractClass* pTarget, TechnoClass* pOwner)
 {
 	double dice;
 
@@ -191,19 +202,34 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (this->Crit_Chance < dice)
 		return;
 
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType()))
-	{
-		if (pTypeExt->ImmuneToCrit)
-			return;
+	auto pTechno = abstract_cast<TechnoClass*>(pTarget);
+	CellClass* pTargetCell = nullptr;
 
-		if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent)
-			return;
+	if (pTechno)
+	{
+		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
+		{
+			if (pTypeExt->ImmuneToCrit)
+				return;
+
+			if (pTechno->GetHealthPercentage() > this->Crit_AffectBelowPercent)
+				return;
+		}
+
+		pTargetCell = pTechno->GetCell();
+	}
+	else if (auto pCell = abstract_cast<CellClass*>(pTarget))
+	{
+		pTargetCell = pCell;
 	}
 
-	if (!EnumFunctions::IsCellEligible(pTarget->GetCell(), this->Crit_Affects))
+	if (!pTechno && pTargetCell && !this->Crit_Warhead.isset())
 		return;
 
-	if (!EnumFunctions::IsTechnoEligible(pTarget, this->Crit_Affects))
+	if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, this->Crit_Affects, true))
+		return;
+
+	if (pTechno && !EnumFunctions::IsTechnoEligible(pTechno, this->Crit_Affects))
 		return;
 
 	this->HasCrit = true;
@@ -213,13 +239,21 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 		int idx = this->OwnerObject()->EMEffect || this->Crit_AnimList_PickRandom.Get(this->AnimList_PickRandom) ?
 			ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0;
 
-		GameCreate<AnimClass>(this->Crit_AnimList[idx], pTarget->Location);
+		if (pTechno || pTargetCell)
+			GameCreate<AnimClass>(this->Crit_AnimList[idx], pTechno ? pTechno->Location : pTargetCell->GetCoords());
 	}
 
 	auto damage = this->Crit_ExtraDamage.Get();
 
-	if (this->Crit_Warhead.isset())
-		WarheadTypeExt::DetonateAt(this->Crit_Warhead.Get(), pTarget, pOwner, damage);
-	else
-		pTarget->ReceiveDamage(&damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
+	if (pTechno)
+	{
+		if (this->Crit_Warhead.isset())
+			WarheadTypeExt::DetonateAt(this->Crit_Warhead.Get(), pTechno, pOwner, damage);
+		else
+			pTechno->ReceiveDamage(&damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
+	}
+	else if (pTargetCell && this->Crit_Warhead.isset())
+	{
+		WarheadTypeExt::DetonateAt(this->Crit_Warhead.Get(), pTargetCell->GetCoords(), pOwner, damage);
+	}
 }

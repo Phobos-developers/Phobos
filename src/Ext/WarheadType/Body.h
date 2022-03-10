@@ -135,10 +135,11 @@ public:
 
 	private:
 		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr);
+		void DetonateOnCell(HouseClass* pHouse, CellClass* pTarget, TechnoClass* pOwner = nullptr);
 
 		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
-		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
+		void ApplyCrit(HouseClass* pHouse, AbstractClass* pTarget, TechnoClass* Owner);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
 
 	public:
