@@ -18,7 +18,6 @@ This page lists the history of changes across stable Phobos releases and also al
 - Key `rulesmd.ini->[SOMETECHNOTYPE]->Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on.
 
 ### For Map Editor (Final Alert 2)
-
 <details>
     <summary>Click to show</summary>
 
@@ -217,10 +216,10 @@ This page lists the history of changes across stable Phobos releases and also al
 
 ### 0.3
 
-New:
 <details>
     <summary>Click to show</summary>
 
+New:
     - LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)
     - Anim-to-Unit logic and ability to randomize DestroyAnim (by Otamaa)
     - Shield modification warheads (by Starkku)
@@ -285,12 +284,8 @@ New:
     - Shared Ammo for transports to passengers (by FS-21)
     - Additional critical hit logic customizations (by Starkku)
     - Laser trails for VoxelAnims (by Otamaa)
-</details>
 
 Vanilla fixes:
-<details>
-    <summary>Click to show</summary>
-
     - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
     - Fixed DeathWeapon not detonating properly (by Uranusian)
     - Fixed lasers & other effects drawing from wrong offset with weapons that use Burst (by Starkku)
@@ -302,12 +297,8 @@ Vanilla fixes:
     - Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` > `AllowParallelAIQueues=no` is set (by FS-21)
     - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10 (by Otamaa)
     - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead (by Starkku)
-</details>
 
 Phobos fixes:
-<details>
-    <summary>Click to show</summary>
-
     - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
     - Improved shield behavior for forced damage (by Uranusian)
     - Fixed SplashList animations playing when a unit is hit on a bridge over water (by Uranusian)
@@ -317,10 +308,10 @@ Phobos fixes:
 
 ### 0.2.2.2
 
-Phobos fixes:
 <details>
     <summary>Click to show</summary>
 
+Phobos fixes:
     - Fixed shield type info not saving properly (by Uranusian)
     - Fixed extended building upgrades logic not properly interacting with Ares' BuildLimit check (by Uranusian)
     - Fix more random crashes for Cameo Priority (by Uranusian)
@@ -329,10 +320,10 @@ Phobos fixes:
 
 ### 0.2.2.1
 
-Phobos fixes:c
 <details>
     <summary>Click to show</summary>
 
+Phobos fixes:
     - Fixed random crashes about CameoPriority (by Uranusian)
     - Fixed trigger action 125 not functioning properly (by Uranusian)
     - Fixed area warhead detonation not falling back to firer house (by Otamaa)
@@ -343,70 +334,54 @@ Phobos fixes:c
 
 ### 0.2.2
 
-New:
 <details>
     <summary>Click to show</summary>
 
+New:
     - Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
     - Customizable cameo sorting priority (by Uranusian)
     - Customizable harvester ore gathering animation (by secsome, Uranusian)
     - Allow making technos unable to be issued with movement order (by Uranusian)
-</details>
 
 Vanilla fixes:
-<details>
-    <summary>Click to show</summary>
-
     - Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (by Belonit)
-</details>
 
 Phobos fixes:
-<details>
-    <summary>Click to show</summary>
-
     - Fixed the critical damage logic not functioning properly (by Uranusian)
     - Fixed the bug when executing the stop command game crashes (by Uranusian)
 </details>
 
 ### 0.2.1.1
 
-Phobos fixes:
 <details>
     <summary>Click to show</summary>
 
+Phobos fixes:
     - Fixed occasional crashes introduced by `Speed=0` stationary vehicles code (by Starkku)
 </details>
 
 ### 0.2.1
 
-New:
 <details>
     <summary>Click to show</summary>
 
+New:
     - Setting VehicleType `Speed` to 0 now makes game treat them as stationary (by Starkku)
-</details>
 
 Vanilla fixes:
-<details>
-    <summary>Click to show</summary>
-
     - Fixed the bug when after a failed placement the building/defence tab hotkeys won't trigger placement mode again (by Uranusian)
     - Fixed the bug when building with `UndeployInto` plays `EVA_NewRallypointEstablished` while undeploying (by secsome)
-</details>
 
 Phobos fixes:
-<details>
-    <summary>Click to show</summary>
-
     - Fixed the bug when trigger action `125 Build At...` wasn't actually producing a building when the target cells were occupied (by secsome)
 </details>
 
 ### 0.2
 
-New:
 <details>
     <summary>Click to show</summary>
 
+New:
     - Shield logic for TechnoTypes (by Uranusian, secsome, Belonit) with warhead additions (by Starkku)
     - Custom Radiation Types (by AlexB, Otamaa, Belonit, Uranusian)
     - New ScriptType actions `71 Timed Area Guard`, `72 Load Onto Transports`, `73 Wait until ammo is full` (by FS-21)
@@ -430,12 +405,8 @@ New:
     - Customizeable Teleport/Chrono Locomotor properties per TechnoType (by Otamaa)
     - Maximum waypoints amount increased from 702 to 2147483647 (by secsome)
     - Customizeable Missing Cameo file (by Uranusian)
-</details>
 
 Vanilla fixes:
-<details>
-    <summary>Click to show</summary>
-
     - Map previews with zero size won't crash the game anymore (by Kerbiter, Belonit)
     - Tileset 255+ bridge fix (by E1 Elite)
     - Fixed fatal errors when `Blowfish.dll` couldn't be registered in the system properly due to missing admin rights (by Belonit)
@@ -447,30 +418,28 @@ Vanilla fixes:
     - Fixed the bug when trigger action `125 Build At...` didn't play buildup anim (by secsome)
     - Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond specified maximums anymore) (by Otamaa)
     - Fixes to `DeployFire` logic (`DeployFireWeapon`, `FireOnce`, stop command now work properly) (by Starkku)
-</details>
 
 Phobos fixes:
-<details>
-    <summary>Click to show</summary>
-
     - Properly rewritten a fix for mind-controlled vehicles deploying into buildings (by FS-21)
     - Properly rewritten `DeployToFire` fix, tag `Deployed.RememberTarget` is deprecated, now always on (by Kerbiter)
     - New warheads now work with Ares' `GenericWarhead` superweapon (by Belonit)
 </details>
 
 ### 0.1.1
+
 <details>
     <summary>Click to show</summary>
 
+Phobos fixes:
     - Fixed an occasional crash when selecting units with a selection box
 </details>
 
 ### 0.1
 
-New:
 <details>
     <summary>Click to show</summary>
 
+New:
     - Full-color PCX graphics support (by Belonit)
     - Support for PCX loading screens of any size (by Belonit)
     - Extended sidebar tooltips with descriptions, recharge time and power consumption/generation (by Kerbiter, Belonit)
@@ -481,12 +450,8 @@ New:
     - Ability to specify applicable building owner for building upgrades (by Kerbiter)
     - Customizable disk laser radius (by Belonit, Kerbiter)
     - Ability to switch to GDI sidebar layout for any side (by Belonit)
-</details>
 
 Vanilla fixes:
-<details>
-    <summary>Click to show</summary>
-
     - Deploying mind-controlled TechnoTypes won't make them permanently mind-controlled anymore (unfinished fix by DCoder)
     - SHP debris hardcoded shadows now respect `Shadow=no` tag value (by Kerbiter)
     - `DeployToFire` vehicles won't lose target on deploy anymore (unfinished fix by DCoder)
@@ -494,3 +459,4 @@ Vanilla fixes:
     - Sidebar tooltips now can go over sidebar bounds (by Belonit)
     - Lifted stupidly small limit for tooltip character amount (by Belonit)
 </details>
+
