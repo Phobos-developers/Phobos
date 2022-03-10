@@ -68,7 +68,7 @@ bool BuildingTypeExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTec
 	if (!pBuilding->Type->Grinding || (pTechno->WhatAmI() != AbstractType::Infantry && pTechno->WhatAmI() != AbstractType::Unit))
 		return false;
 
-	if ((pBuilding->Type->InfantryAbsorb || pBuilding->Type->UnitAbsorb) && 
+	if ((pBuilding->Type->InfantryAbsorb || pBuilding->Type->UnitAbsorb) &&
 		(pTechno->WhatAmI() == AbstractType::Infantry && !pBuilding->Type->InfantryAbsorb ||
 		pTechno->WhatAmI() == AbstractType::Unit && !pBuilding->Type->UnitAbsorb))
 	{
@@ -171,6 +171,18 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
+
+	this->PackupSound_PlayGlobal.Read(exINI, pSection, "PackupSoundPlayGlobal");
+	this->DisableDamageSound.Read(exINI, pSection, "DisableDamagedSound");
+
+	this->BuildingOccupyDamageMult.Read(exINI, pSection, "OccupyDamageMultiplier");
+	this->BuildingOccupyROFMult.Read(exINI, pSection, "OccupyROFMultiplier");
+
+	this->BuildingBunkerDamageMult.Read(exINI, pSection, "BunkerDamageMultiplier");
+	this->BuildingBunkerROFMult.Read(exINI, pSection, "BunkerROFMultMultiplier");
+
+	this->BunkerWallsUpSound.Read(exINI, pSection, "BunkerWallsUpSound");
+	this->BunkerWallsDownSound.Read(exINI, pSection, "BunkerWallsDownSound");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -197,6 +209,12 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Grinding_DisallowTypes)
 		.Process(this->Grinding_Sound)
 		.Process(this->Grinding_Weapon)
+		.Process(this->PackupSound_PlayGlobal)
+		.Process(this->DisableDamageSound)
+		.Process(this->BuildingOccupyDamageMult)
+		.Process(this->BuildingOccupyROFMult)
+		.Process(this->BuildingBunkerDamageMult)
+		.Process(this->BuildingBunkerROFMult)
 		;
 }
 

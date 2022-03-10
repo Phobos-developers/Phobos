@@ -33,20 +33,37 @@ public:
 		NullableIdx<VocClass> Grinding_Sound;
 		Nullable<WeaponTypeClass*> Grinding_Weapon;
 
+		Valueable<bool> PackupSound_PlayGlobal;
+		Valueable<bool> DisableDamageSound;
+		Nullable<float> BuildingOccupyDamageMult;
+		Nullable<float> BuildingOccupyROFMult;
+		Nullable<float> BuildingBunkerDamageMult;
+		Nullable<float> BuildingBunkerROFMult;
+		NullableIdx<VocClass> BunkerWallsUpSound;
+		NullableIdx<VocClass> BunkerWallsDownSound;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
-			, PowersUp_Owner { AffectedHouse::Owner }
-			, PowersUp_Buildings {}
-			, PowerPlantEnhancer_Buildings {}
-			, PowerPlantEnhancer_Amount {}
-			, PowerPlantEnhancer_Factor {}
+			, PowersUp_Owner{ AffectedHouse::Owner }
+			, PowersUp_Buildings{}
+			, PowerPlantEnhancer_Buildings{}
+			, PowerPlantEnhancer_Amount{}
+			, PowerPlantEnhancer_Factor{}
 			, OccupierMuzzleFlashes()
-			, Refinery_UseStorage { false }
-			, Grinding_AllowAllies { false }
-			, Grinding_AllowOwner { true }
-			, Grinding_AllowTypes {}
-			, Grinding_DisallowTypes {}
-			, Grinding_Sound {}
-			, Grinding_Weapon {}
+			, Refinery_UseStorage{ false }
+			, Grinding_AllowAllies{ false }
+			, Grinding_AllowOwner{ true }
+			, Grinding_AllowTypes{}
+			, Grinding_DisallowTypes{}
+			, Grinding_Sound{}
+			, Grinding_Weapon{}
+			, PackupSound_PlayGlobal { false }
+			, DisableDamageSound { false }
+			, BuildingOccupyDamageMult {}
+			, BuildingOccupyROFMult {}
+			, BuildingBunkerDamageMult {}
+			, BuildingBunkerROFMult {}
+			, BunkerWallsUpSound {}
+			, BunkerWallsDownSound {}
 		{ }
 
 		virtual ~ExtData() = default;
