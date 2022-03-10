@@ -49,6 +49,8 @@
 #include <VocClass.h>
 #include <VoxClass.h>
 #include <ArmorType.h>
+#include <ParticleSystemTypeClass.h>
+#include <ScriptTypeClass.h>
 
 namespace detail {
 	template <typename T>
@@ -63,6 +65,46 @@ namespace detail {
 				return true;
 			}
 			else {
+				Debug::INIParseFailed(pSection, pKey, pValue);
+			}
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read(ParticleSystemTypeClass*& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto const pValue = parser.value();
+			auto const parsed = !allocate ? ParticleSystemTypeClass::Find(pValue) : GameCreate<ParticleSystemTypeClass>(pValue);
+			if (parsed || INIClass::IsBlank(pValue))
+			{
+				value = parsed;
+				return true;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, pValue);
+			}
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read(ScriptTypeClass*& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto const pValue = parser.value();
+			auto const parsed = !allocate ? ScriptTypeClass::Find(pValue) : GameCreate<ScriptTypeClass>(pValue);
+			if (parsed || INIClass::IsBlank(pValue))
+			{
+				value = parsed;
+				return true;
+			}
+			else
+			{
 				Debug::INIParseFailed(pSection, pKey, pValue);
 			}
 		}
@@ -346,6 +388,30 @@ namespace detail {
 		}
 		else if (!parser.empty()) {
 			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid floating point number");
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<TypeList<int>>(TypeList<int>& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			value.Clear();
+			char* context = nullptr;
+			for (auto pCur = strtok_s(parser.value(), Phobos::readDelims, &context); pCur; pCur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				int buffer = 0;
+				if (Parser<int>::Parse(pCur, &buffer))
+				{
+					value.AddItem(buffer);
+					return true;
+				}
+				else if (!INIClass::IsBlank(pCur))
+				{
+					Debug::INIParseFailed(pSection, pKey, pCur);
+				}
+			}
 		}
 		return false;
 	}

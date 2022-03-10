@@ -9,7 +9,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 
 class Matrix3D;
-
+class ParticleSystemTypeClass;
 class TechnoTypeExt
 {
 public:
@@ -121,6 +121,13 @@ public:
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
 		Valueable<CSFText> EnemyUIName;
 
+		Nullable<TypeList<int>> Overload_Count;
+		Nullable<TypeList<int>> Overload_Damage;
+		Nullable<TypeList<int>> Overload_Frames;
+		NullableIdx<VocClass> Overload_DeathSound;
+		Nullable<ParticleSystemTypeClass*> Overload_ParticleSys;
+		Valueable<bool> Draw_MindControlLink;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -192,6 +199,12 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
+			, Draw_MindControlLink{ true }
+			, Overload_Count{}
+			, Overload_Damage{}
+			, Overload_Frames{}
+			, Overload_DeathSound{}
+			, Overload_ParticleSys{}
 		{ }
 
 		virtual ~ExtData() = default;

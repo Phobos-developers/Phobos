@@ -227,6 +227,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
 	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
 	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
+
+	this->Overload_Count.Read(exINI, pSection, "Overload.Count");
+	this->Overload_Damage.Read(exINI, pSection, "Overload.Damage");
+	this->Overload_Frames.Read(exINI, pSection, "Overload.Frames");
+	this->Overload_DeathSound.Read(exINI, pSection, "Overload.DeathSound");
+	this->Overload_ParticleSys.Read(exINI, pSection, "Overload.ParticleSys");
+
+	this->Draw_MindControlLink.Read(exINI, pSection, "MindControll.DrawLink");
 }
 
 template <typename T>
@@ -305,6 +313,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceWeapon_Naval_Decloaked)
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
+		.Process(this->Overload_Count)
+		.Process(this->Overload_Damage)
+		.Process(this->Overload_Frames)
+		.Process(this->Overload_DeathSound)
+		.Process(this->Overload_ParticleSys)
+		.Process(this->Draw_MindControlLink)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

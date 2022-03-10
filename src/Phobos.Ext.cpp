@@ -7,6 +7,7 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <Ext/CaptureManager/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/RadSite/Body.h>
 #include <Ext/Rules/Body.h>
@@ -230,6 +231,7 @@ auto MassActions = MassAction <
 	BuildingTypeExt,
 	BulletExt,
 	BulletTypeExt,
+	CaptureExt,
 	HouseExt,
 	RadSiteExt,
 	RulesExt,
