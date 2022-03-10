@@ -104,6 +104,8 @@ public:
 		Valueable<int> Ammo_Shared_Group;
 		Nullable<bool> JumpjetTurnToTarget;
 
+		Nullable<SelfHealGainType> SelfHealGainType;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -192,6 +194,7 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
+			, SelfHealGainType()
 		{ }
 
 		virtual ~ExtData() = default;

@@ -28,6 +28,8 @@ public:
 		DynamicVectorClass<DynamicVectorClass<ScriptTypeClass*>> AIScriptsLists;
 
 		Valueable<int> Storage_TiberiumIndex;
+		Nullable<int> InfantryGainSelfHealCap;
+		Nullable<int> UnitsGainSelfHealCap;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
@@ -40,9 +42,14 @@ public:
 		Nullable<SHPStruct*> Pips_Shield_Background;
 		Valueable<Vector3D<int>> Pips_Shield_Building;
 		Nullable<int> Pips_Shield_Building_Empty;
-
+		Valueable<Point2D> Pips_SelfHeal_Infantry;
+		Valueable<Point2D> Pips_SelfHeal_Units;
+		Valueable<Point2D> Pips_SelfHeal_Buildings;
+		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
+			, InfantryGainSelfHealCap {}
+			, UnitsGainSelfHealCap {}
 			, RadApplicationDelay_Building { 0 }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
@@ -54,6 +61,9 @@ public:
 			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { -1,-1,-1 } }
 			, Pips_Shield_Building_Empty { }
+			, Pips_SelfHeal_Infantry {{ 13, 20 }}
+			, Pips_SelfHeal_Units {{ 13, 20 }}
+			, Pips_SelfHeal_Buildings {{ 13, 20 }}
 		{ }
 
 		virtual ~ExtData() = default;
