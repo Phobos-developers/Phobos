@@ -198,3 +198,16 @@ DEFINE_HOOK(0x4426DB, BuildingClass_DisableDamagedSound, 0x8)
 	auto const pExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 	return pExt && pExt->DisableDamageSound.Get() ? Skip : Continue;
 }
+
+DEFINE_HOOK(0x44E85F, BuildingClass_Power_DegradeWithHealth, 0x7)
+{
+	GET(BuildingClass*, pThis, ESI);
+	GET_STACK(int, nPowMult, STACK_OFFS(0xC, 0x4));
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	R->EAX(Game::F2I(pTypeExt->Power_DegradeWithHealth.Get()
+		? (nPowMult * pThis->GetHealthPercentage()) : (100.0 * nPowMult)));
+
+	return 0x44E86F;
+}

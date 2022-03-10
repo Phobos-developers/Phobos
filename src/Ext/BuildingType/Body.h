@@ -42,6 +42,8 @@ public:
 		NullableIdx<VocClass> BunkerWallsUpSound;
 		NullableIdx<VocClass> BunkerWallsDownSound;
 
+		Valueable<bool> Power_DegradeWithHealth;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner{ AffectedHouse::Owner }
 			, PowersUp_Buildings{}
@@ -64,6 +66,7 @@ public:
 			, BuildingBunkerROFMult {}
 			, BunkerWallsUpSound {}
 			, BunkerWallsDownSound {}
+			, Power_DegradeWithHealth{ true }
 		{ }
 
 		virtual ~ExtData() = default;

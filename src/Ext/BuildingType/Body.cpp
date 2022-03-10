@@ -183,6 +183,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->BunkerWallsUpSound.Read(exINI, pSection, "BunkerWallsUpSound");
 	this->BunkerWallsDownSound.Read(exINI, pSection, "BunkerWallsDownSound");
+
+	this->Power_DegradeWithHealth.Read(exINI, pSection, "Power.DegradeWithHealth");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -215,6 +217,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingOccupyROFMult)
 		.Process(this->BuildingBunkerDamageMult)
 		.Process(this->BuildingBunkerROFMult)
+		.Process(this->Power_DegradeWithHealth)
 		;
 }
 
