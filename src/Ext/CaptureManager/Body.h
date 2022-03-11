@@ -14,17 +14,7 @@ public:
 	{
 	public:
 
-
-		TypeList<int> OverloadCount;
-		TypeList<int> OverloadFrames;
-		TypeList<int> OverloadDamage;
-		int OverloadDeathSound;
-
 		ExtData(CaptureManagerClass* OwnerObject) : Extension<base_type>(OwnerObject)
-			, OverloadCount { }
-			, OverloadFrames { }
-			, OverloadDamage { }
-			, OverloadDeathSound { }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -40,12 +30,7 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 		virtual void InitializeConstants() override;
 
-		void CleanUp()
-		{
-			this->OverloadCount.Clear();
-			this->OverloadFrames.Clear();
-			this->OverloadDamage.Clear();
-		}
+		void CleanUp() { }
 
 	private:
 		template <typename T>

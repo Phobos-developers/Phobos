@@ -233,7 +233,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Overload_Frames.Read(exINI, pSection, "Overload.Frames");
 	this->Overload_DeathSound.Read(exINI, pSection, "Overload.DeathSound");
 	this->Overload_ParticleSys.Read(exINI, pSection, "Overload.ParticleSys");
-
+	this->Overload_ParticleSysCount.Read(exINI, pSection, "Overload.ParticleSysCount");
 	this->Draw_MindControlLink.Read(exINI, pSection, "MindControll.DrawLink");
 }
 
@@ -318,6 +318,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Overload_Frames)
 		.Process(this->Overload_DeathSound)
 		.Process(this->Overload_ParticleSys)
+		.Process(this->Overload_ParticleSysCount)
 		.Process(this->Draw_MindControlLink)
 		;
 }

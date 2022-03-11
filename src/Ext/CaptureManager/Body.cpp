@@ -6,18 +6,7 @@ template<> const DWORD Extension<CaptureExt::base_type>::Canary = 0x87654121;
 CaptureExt::ExtContainer CaptureExt::ExtMap;
 
 void CaptureExt::ExtData::InitializeConstants()
-{
-	if (auto const pOwner = OwnerObject()->Owner)
-	{
-		if (auto const pManagerOwnerExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType()))
-		{
-			OverloadCount = pManagerOwnerExt->Overload_Count.Get(RulesClass::Instance->OverloadCount);
-			OverloadFrames = pManagerOwnerExt->Overload_Frames.Get(RulesClass::Instance->OverloadFrames);
-			OverloadDamage = pManagerOwnerExt->Overload_Damage.Get(RulesClass::Instance->OverloadDamage);
-			OverloadDeathSound = pManagerOwnerExt->Overload_DeathSound.Get(RulesClass::Instance->MasterMindOverloadDeathSound);
-		}
-	}
-}
+{}
 
 // =============================
 // load / save

@@ -121,11 +121,12 @@ public:
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
 		Valueable<CSFText> EnemyUIName;
 
-		Nullable<TypeList<int>> Overload_Count;
-		Nullable<TypeList<int>> Overload_Damage;
-		Nullable<TypeList<int>> Overload_Frames;
+		NullableVector<int> Overload_Count;
+		NullableVector<int> Overload_Damage;
+		NullableVector<int> Overload_Frames;
 		NullableIdx<VocClass> Overload_DeathSound;
 		Nullable<ParticleSystemTypeClass*> Overload_ParticleSys;
+		Nullable<int> Overload_ParticleSysCount;
 		Valueable<bool> Draw_MindControlLink;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
@@ -200,11 +201,12 @@ public:
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 			, Draw_MindControlLink{ true }
-			, Overload_Count{}
-			, Overload_Damage{}
-			, Overload_Frames{}
-			, Overload_DeathSound{}
-			, Overload_ParticleSys{}
+			, Overload_Count {}
+			, Overload_Damage {}
+			, Overload_Frames {}
+			, Overload_DeathSound {}
+			, Overload_ParticleSys {}
+			, Overload_ParticleSysCount {}
 		{ }
 
 		virtual ~ExtData() = default;
