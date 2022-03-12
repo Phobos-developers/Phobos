@@ -78,7 +78,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 
 			if (pTypeExt->PlacementPreview_Show.Get(RulesExt::Global()->Building_PlacementPreview.Get()))
 			{
-				auto pImage = pTypeExt->PlacementPreview_Shape.Get(pType->GetImage());
+				auto const pImage = pTypeExt->PlacementPreview_Shape.Get(pType->GetImage());
 
 				if (!pImage)
 					return 0x0;
@@ -115,7 +115,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 
 				auto const nREct = DSurface::Temp()->GetRect();
 				auto const nScheme = ColorScheme::Array()->GetItem(HouseClass::Player->ColorSchemeIndex);
-				auto const nPalette = pTypeExt->PlacementPreview_Remap.Get() ? nScheme->LightConvert : pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL());
+				auto const nPalette = pTypeExt->PlacementPreview_Remap.Get() ? nScheme->LightConvert : pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
 				Point2D nDefault{ 0 , -15 };
 				nPoint += pTypeExt->PlacementPreview_Offset.Get(nDefault);
 
