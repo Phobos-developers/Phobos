@@ -150,51 +150,62 @@ static void BunkerPlaySound(BuildingClass const* pThis, bool bUp = false)
 		VocClass::PlayAt(nSound, pThis->Location);
 }
 
-DEFINE_HOOK(0x45933D, BuildingClass_BunkerUpSound_1, 0x5)
+DEFINE_HOOK_AGAIN(0x45933D, BuildingClass_BunkerSound, 0x5)
+DEFINE_HOOK_AGAIN(0x4595D9, BuildingClass_BunkerSound, 0x5)
+DEFINE_HOOK(0x459494, BuildingClass_BunkerSound, 0x5)
 {
-	GET(BuildingClass*, pThis, ESI);
-	BunkerPlaySound(pThis, true);
-	return 0x459374;
-}
+	BuildingClass const* pThis = R->Origin() == 0x4595D9 ?
+		R->EDI<BuildingClass*>() : R->ESI<BuildingClass*>();
 
-DEFINE_HOOK(0x4595D9, BuildingClass_BunkerUpSound_2, 0x5)
-{
-	GET(BuildingClass*, pThis, EDI);
-	BunkerPlaySound(pThis, true);
-	return 0x459612;
-}
+	BunkerPlaySound(pThis, R->Origin() != 0x459494);
 
-DEFINE_HOOK(0x459494, BuildingClass_BunkerDownSound, 0x5)
-{
-	GET(BuildingClass*, pThis, ESI);
-	BunkerPlaySound(pThis);
+	switch (R->Origin())
+	{
+	case 0x45933D:
+		return 0x459374;
+	case 0x4595D9:
+		return 0x459612;
+	}
+
 	return 0x4594CD;
 }
 
+// not working  ?
+// hook itself is fine , but it not play globally as it should :s
 DEFINE_HOOK(0x44A86A, BuildingClass_Mi_Selling_PackupSound, 0x6)
 {
 	GET(BuildingClass* const, pThis, EBP);
-
-	auto const nSound = pThis->Type->PackupSound;
 	CoordStruct nBuffer;
 	pThis->GetCenterCoord(&nBuffer);
 	auto const pExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
-
-	if (pExt && pExt->PackupSound_PlayGlobal.Get())
-		VocClass::PlayGlobal(nSound, 8192, 1.0, nullptr);
-	else
-		VocClass::PlayAt(nSound, nBuffer, nullptr);
-
+	VocClass::PlayIndexAtPos(pThis->Type->PackupSound,nBuffer, pExt && pExt->PackupSound_PlayGlobal.Get());
 	return 0x44A89E;
 }
 
-DEFINE_HOOK(0x4426DB, BuildingClass_DisableDamagedSound, 0x8)
+DEFINE_HOOK_AGAIN(0x4426DB, BuildingClass_ReceiveDamage_DisableDamageSound, 0x8)
+DEFINE_HOOK_AGAIN(0x702777, BuildingClass_ReceiveDamage_DisableDamageSound, 0x8)
+DEFINE_HOOK(0x70272E, BuildingClass_ReceiveDamage_DisableDamageSound, 0x8)
 {
-	enum { Skip = 0x44270B, Continue = 0x0 };
+	GET(TechnoClass*, pThis, ESI);
 
-	GET(BuildingClass* const, pThis, ESI);
-	auto const pExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
-	return pExt && pExt->DisableDamageSound.Get() ? Skip : Continue;
+	if (auto const pBuilding = specific_cast<BuildingClass*>(pThis))
+	{
+		auto const pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+		if(pExt && pExt->DisableDamageSound.Get())
+		{
+			switch (R->Origin())
+			{
+			case 0x70272E:
+				return 0x702765;
+			case 0x702777:
+				return 0x7027AE;
+			case 0x4426DB:
+				return 0x44270B;
+			}
+		}
+	}
+
+	return 0x0;
 }
 
 DEFINE_HOOK(0x44E85F, BuildingClass_Power_DegradeWithHealth, 0x7)
