@@ -6,6 +6,7 @@
 #include <HouseClass.h>
 #include <Ext/Rules/Body.h>
 #include <Utilities/Macro.h>
+#include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x460285, BuildingTypeClass_LoadFromINI_Muzzle, 0x6)
 {
@@ -68,15 +69,13 @@ DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 
 DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 {
-	ObjectClass* pObject = Make_Global<ObjectClass*>(0x88098C);
-
-	if (auto const pBuilding = specific_cast<BuildingClass*>(pObject))
+	if (auto const pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance->CurrentBuilding))
 	{
 		if (auto const pType = pBuilding->Type)
 		{
 			auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 
-			if (pTypeExt->PlacementPreview_Show.Get(RulesExt::Global()->Building_PlacementPreview.Get()))
+			if (pTypeExt && pTypeExt->PlacementPreview_Show.Get(RulesExt::Global()->Building_PlacementPreview.Get()))
 			{
 				auto const pImage = pTypeExt->PlacementPreview_Shape.Get(pType->GetImage());
 
@@ -95,24 +94,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 				Point2D nPoint{ 0,0 };
 				TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, nHeight),&nPoint);
 
-				auto nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
-				auto const nFlag_ = Math::clamp(pTypeExt->PlacementPreview_Transculency.Get(), 0, 3);
-
-				switch (nFlag_)
-				{
-				case 1:
-					nFlag = nFlag | BlitterFlags::TransLucent25;
-					break;
-				case 2:
-					nFlag = nFlag | BlitterFlags::TransLucent50;
-					break;
-				case 3:
-					nFlag = nFlag | BlitterFlags::TransLucent75;
-					break;
-				default:
-					break;
-				}
-
+				auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->PlacementPreview_TranslucentLevel.Get());
 				auto const nREct = DSurface::Temp()->GetRect();
 				auto const nScheme = ColorScheme::Array()->GetItem(HouseClass::Player->ColorSchemeIndex);
 				auto const nPalette = pTypeExt->PlacementPreview_Remap.Get() ? nScheme->LightConvert : pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
@@ -147,22 +129,7 @@ static void __fastcall CellClass_Draw_It_Shape(Surface* Surface, ConvertClass* P
 	int Brightness, // 0~2000. Final color = saturate(OriginalColor * Brightness / 1000.0f)
 	int TintColor, SHPStruct* ZShape, int ZShapeFrame, int XOffset, int YOffset)
 {
-	auto const nFlag_ = Math::clamp(RulesExt::Global()->PlacementGrid_Transculency.Get(), 0, 3);
-
-	switch (nFlag_)
-	{
-	case 1:
-		Flags = Flags | BlitterFlags::TransLucent25;
-		break;
-	case 2:
-		Flags = Flags | BlitterFlags::TransLucent50;
-		break;
-	case 3:
-		Flags = Flags | BlitterFlags::TransLucent75;
-		break;
-	default:
-		break;
-	}
+	Flags = Flags | EnumFunctions::GetTranslucentLevel(RulesExt::Global()->PlacementGrid_TranslucentLevel.Get());
 
 	CC_Draw_Shape(Surface, Palette, SHP, FrameIndex, Position, Bounds, Flags, Remap, ZAdjust,
 		ZGradientDescIndex, Brightness, TintColor, ZShape, ZShapeFrame, XOffset, YOffset);

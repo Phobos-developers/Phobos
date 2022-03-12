@@ -39,7 +39,7 @@ public:
 		Nullable<Point2D> PlacementPreview_Offset;
 		Valueable<bool> PlacementPreview_Remap;
 		CustomPalette PlacementPreview_Palette;
-		Valueable<int> PlacementPreview_Transculency;
+		Valueable<int> PlacementPreview_TranslucentLevel;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
@@ -56,13 +56,13 @@ public:
 			, Grinding_Sound {}
 			, Grinding_Weapon {}
 
-			, PlacementPreview_Remap{ true }
-			, PlacementPreview_Palette{}
-			, PlacementPreview_Offset{}
-			, PlacementPreview_Show{}
-			, PlacementPreview_Shape{}
-			, PlacementPreview_ShapeFrame{ 0 }
-			, PlacementPreview_Transculency{ 0 }
+			, PlacementPreview_Remap { true }
+			, PlacementPreview_Palette {}
+			, PlacementPreview_Offset {}
+			, PlacementPreview_Show {}
+			, PlacementPreview_Shape {}
+			, PlacementPreview_ShapeFrame { 0 }
+			, PlacementPreview_TranslucentLevel { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
