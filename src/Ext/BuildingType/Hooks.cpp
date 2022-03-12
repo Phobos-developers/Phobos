@@ -171,23 +171,21 @@ DEFINE_HOOK(0x459494, BuildingClass_BunkerDownSound, 0x5)
 	return 0x4594CD;
 }
 
-DEFINE_HOOK(0x44A827, BuildingClass_Mi_Selling_PackupSound, 0x6)
+DEFINE_HOOK(0x44A86A, BuildingClass_Mi_Selling_PackupSound, 0x6)
 {
 	GET(BuildingClass* const, pThis, EBP);
 
-	if (auto Sound = pThis->Type->PackupSound == -1 ? RulesClass::Instance->SellSound : pThis->Type->PackupSound)
-	{
-		CoordStruct nBuffer;
-		pThis->GetCenterCoord(&nBuffer);
+	auto const nSound = pThis->Type->PackupSound;
+	CoordStruct nBuffer;
+	pThis->GetCenterCoord(&nBuffer);
+	auto const pExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 
-		auto const pExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
-		if (pExt && pExt->PackupSound_PlayGlobal.Get())
-			VocClass::PlayGlobal(Sound, 8192, 1.0, nullptr);
-		else
-			VocClass::PlayAt(Sound, nBuffer, nullptr);
-	}
+	if (pExt && pExt->PackupSound_PlayGlobal.Get())
+		VocClass::PlayGlobal(nSound, 8192, 1.0, nullptr);
+	else
+		VocClass::PlayAt(nSound, nBuffer, nullptr);
 
-	return 0x44A85B;
+	return 0x44A89E;
 }
 
 DEFINE_HOOK(0x4426DB, BuildingClass_DisableDamagedSound, 0x8)
@@ -206,8 +204,7 @@ DEFINE_HOOK(0x44E85F, BuildingClass_Power_DegradeWithHealth, 0x7)
 
 	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 
-	R->EAX(Game::F2I(pTypeExt->Power_DegradeWithHealth.Get()
-		? (nPowMult * pThis->GetHealthPercentage()) : (100.0 * nPowMult)));
+	R->EAX(pTypeExt->Power_DegradeWithHealth.Get() ? Game::F2I(nPowMult * pThis->GetHealthPercentage()) : (nPowMult));
 
 	return 0x44E86F;
 }
