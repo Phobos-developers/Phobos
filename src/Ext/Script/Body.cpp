@@ -218,20 +218,11 @@ void ScriptExt::ExecuteTimedAreaGuardAction(TeamClass* pTeam)
 
 	if (pTeam->GuardAreaTimer.TimeLeft == 0 && !pTeam->GuardAreaTimer.InProgress())
 	{
-		auto pUnit = pTeam->FirstUnit;
-
-		pUnit->QueueMission(Mission::Area_Guard, true);
-		while (pUnit->NextTeamMember)
-		{
-			pUnit = pUnit->NextTeamMember;
+		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 			pUnit->QueueMission(Mission::Area_Guard, true);
-		}
+
 		pTeam->GuardAreaTimer.Start(15 * pScriptType->ScriptActions[pScript->CurrentMission].Argument);
 	}
-	/*else {
-		Debug::Log("[%s] [%s] %d = %d,%d (Countdown: %d)\n", pTeam->Type->ID, pScriptType->ID, pScript->CurrentMission, currentLineAction->Action, currentLineAction->Argument, pTeam->GuardAreaTimer.GetTimeLeft());
-	}
-	*/
 
 	if (pTeam->GuardAreaTimer.Completed())
 	{
@@ -244,44 +235,33 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 {
 	DynamicVectorClass<FootClass*> transports;
 
-	auto pUnit = pTeam->FirstUnit;
-	auto pUnitType = pUnit->GetTechnoType();
-	if (pUnitType->Passengers > 0
-		&& pUnit->Passengers.NumPassengers < pUnitType->Passengers
-		&& pUnit->Passengers.GetTotalSize() < pUnitType->Passengers)
+	// Collect available transports
+	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		transports.AddItem(pUnit);
-	}
-	while (pUnit->NextTeamMember)
-	{
-		pUnit = pUnit->NextTeamMember;
-		pUnitType = pUnit->GetTechnoType();
-		if (pUnitType->Passengers > 0
-			&& pUnit->Passengers.NumPassengers < pUnitType->Passengers
-			&& pUnit->Passengers.GetTotalSize() < pUnitType->Passengers)
-		{
-			transports.AddItem(pUnit);
-		}
-	}
-	// We got all the transports.
+		auto const pType = pUnit->GetTechnoType();
 
-	// Now add units into transports
+		if (pType->Passengers > 0)
+			if (pUnit->Passengers.NumPassengers < pType->Passengers)
+				if (pUnit->Passengers.GetTotalSize() < pType->Passengers)
+					transports.AddItem(pUnit);
+	}
+
+	// Now load units into transports
 	for (auto pTransport : transports)
 	{
-		pUnit = pTeam->FirstUnit;
-		auto pTransprotType = pTransport->GetTechnoType();
-		do
+		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 		{
-			pUnitType = pUnit->GetTechnoType();
-			if (!(pTransport == pUnit
-				|| pUnitType->WhatAmI() == AbstractType::AircraftType
-				|| pUnit->InLimbo
-				|| pUnitType->ConsideredAircraft
-				|| pUnit->Health <= 0))
+			auto const pTransportType = pTransport->GetTechnoType();
+			auto const pUnitType = pUnit->GetTechnoType();
+			if (pTransport != pUnit
+				&& pUnitType->WhatAmI() != AbstractType::AircraftType
+				&& !pUnit->InLimbo
+				&& !pUnitType->ConsideredAircraft
+				&& pUnit->Health > 0)
 			{
 				if (pUnit->GetTechnoType()->Size > 0
-					&& pUnitType->Size <= pTransprotType->SizeLimit
-					&& pUnitType->Size <= pTransprotType->Passengers - pTransport->Passengers.GetTotalSize())
+					&& pUnitType->Size <= pTransportType->SizeLimit
+					&& pUnitType->Size <= pTransportType->Passengers - pTransport->Passengers.GetTotalSize())
 				{
 					pUnit->IsTeamLeader = true;
 					// All fine
@@ -295,41 +275,33 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 					}
 				}
 			}
-			pUnit = pUnit->NextTeamMember;
 		}
-		while (pUnit);
 	}
 
-	pUnit = pTeam->FirstUnit;
-	do
-	{
+	// Is loading
+	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 		if (pUnit->GetCurrentMission() == Mission::Enter)
 			return;
-		pUnit = pUnit->NextTeamMember;
-	}
-	while (pUnit);
 
 	// This action finished
 	if (pTeam->CurrentScript->HasNextMission())
-		pTeam->CurrentScript->CurrentMission += 1;
+		++pTeam->CurrentScript->CurrentMission;
+	
 	pTeam->StepCompleted = true;
 }
 
 void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 {
-	auto pUnit = pTeam->FirstUnit;
-
-	do
+	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (pUnit && !pUnit->InLimbo && pUnit->Health > 0)
+		if (!pUnit->InLimbo && pUnit->Health > 0)
 		{
 			if (pUnit->GetTechnoType()->Ammo > 0 && pUnit->Ammo < pUnit->GetTechnoType()->Ammo)
 			{
 				// If an aircraft object have AirportBound it must be evaluated
-				if (pUnit->WhatAmI() == AbstractType::Aircraft)
+				if (auto pAircraft = abstract_cast<AircraftClass*>(pUnit))
 				{
-					auto pAircraft = static_cast<AircraftTypeClass*>(pUnit->GetTechnoType());
-					if (pAircraft->AirportBound)
+					if (pAircraft->Type->AirportBound)
 					{
 						// Reset last target, at long term battles this prevented the aircraft to pick a new target (rare vanilla YR bug)
 						pUnit->SetTarget(nullptr);
@@ -337,24 +309,16 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 						// Fix YR bug (when returns from the last attack the aircraft switch in loop between Mission::Enter & Mission::Guard, making it impossible to land in the dock)
 						if (pUnit->IsInAir() && pUnit->CurrentMission != Mission::Enter)
 							pUnit->QueueMission(Mission::Enter, true);
+
 						return;
 					}
 				}
-				else if (pUnit->GetTechnoType()->Reload != 0)
-				{ // Don't skip units that can reload themselves
+				else if (pUnit->GetTechnoType()->Reload != 0) // Don't skip units that can reload themselves
 					return;
-				}
 			}
 		}
-		pUnit = pUnit->NextTeamMember;
 	}
-	while (pUnit);
 
-	// This action finished
-	/*if (pTeam->CurrentScript->HasNextAction())
-	{
-		pTeam->CurrentScript->CurrentMission += 1;
-	}*/
 	pTeam->StepCompleted = true;
 }
 
@@ -363,10 +327,10 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 	FootClass *pLeaderUnit = nullptr;
 	int initialCountdown = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 	bool gatherUnits = false;
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pExt = TeamExt::ExtMap.Find(pTeam);
 
 	// This team has no units! END
-	if (!pTeam || !pTeamData)
+	if (!pTeam)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
@@ -374,8 +338,8 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 	}
 
 	// Load countdown
-	if (pTeamData->Countdown_RegroupAtLeader >= 0)
-		countdown = pTeamData->Countdown_RegroupAtLeader;
+	if (pExt->Countdown_RegroupAtLeader >= 0)
+		countdown = pExt->Countdown_RegroupAtLeader;
 
 	// Gather permanently until all the team members are near of the Leader
 	if (initialCountdown == 0)
@@ -389,23 +353,16 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 			countdown--; // Update countdown
 			gatherUnits = true;
 		}
-		else
+		else if (countdown == 0) // Countdown ended
+			countdown = -1;
+		else // Start countdown.
 		{
-			if (countdown == 0)
-			{
-				// Countdown ended
-				countdown = -1;
-			}
-			else
-			{
-				// Start countdown.
-				countdown = initialCountdown * 15;
-				gatherUnits = true;
-			}
+			countdown = initialCountdown * 15;
+			gatherUnits = true;
 		}
 
 		// Save counter
-		pTeamData->Countdown_RegroupAtLeader = countdown;
+		pExt->Countdown_RegroupAtLeader = countdown;
 	}
 
 	if (!gatherUnits)
@@ -426,7 +383,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 
 		if (!pLeaderUnit)
 		{
-			pTeamData->Countdown_RegroupAtLeader = -1;
+			pExt->Countdown_RegroupAtLeader = -1;
 			// This action finished
 			pTeam->StepCompleted = true;
 
@@ -434,10 +391,10 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 		}
 
 		// Leader's area radius where the Team members are considered "near" to the Leader
-		if (pTeamData->CloseEnough > 0)
+		if (pExt->CloseEnough > 0)
 		{
-			closeEnough = pTeamData->CloseEnough;
-			pTeamData->CloseEnough = -1; // This a one-time-use value
+			closeEnough = pExt->CloseEnough;
+			pExt->CloseEnough = -1; // This a one-time-use value
 		}
 		else
 		{
@@ -515,7 +472,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 				|| (initialCountdown > 0
 					&& countdown <= 0)))
 		{
-			pTeamData->Countdown_RegroupAtLeader = -1;
+			pExt->Countdown_RegroupAtLeader = -1;
 			// This action finished
 			pTeam->StepCompleted = true;
 
