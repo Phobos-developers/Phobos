@@ -138,12 +138,6 @@ public:
 			, Experience_FirerGetsExp(false)
 			, Experience_CalculatePercentFromFirer(false)
 
-			, Crit_Chance(0.0)
-			, Crit_ExtraDamage(0)
-			, Crit_Affects(AffectedTarget::All)
-			, Crit_AnimList()
-			, RandomBuffer(0.0)
-
 			, MindControl_Anim {}
 
 			, Shield_Penetrate { false }
