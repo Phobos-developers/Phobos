@@ -17,9 +17,53 @@
 #include <Utilities/Container.h>
 #include <Phobos.h>
 
-enum PhobosScripts
+enum class PhobosScripts : unsigned int
 {
-	// FS-21 please finish your stuff here, thanks
+	TimedAreaGuard = 71,
+	LoadIntoTransports,
+	WaitUntilFullAmmo,
+	RepeatAttackCloserThreat,
+	RepeatAttackFartherThreat,
+	RepeatAttackCloser,
+	RepeatAttackFarther,
+	SingleAttackCloserThreat,
+	SingleAttackFartherThreat,
+	SingleAttackCloser,
+	SingleAttackFarther,
+	DecreaseCurrentAITriggerWeight,
+	IncreaseCurrentAITriggerWeight,
+	RepeatAttackTypeCloserThreat,
+	RepeatAttackTypeFartherThreat,
+	RepeatAttackTypeCloser,
+	RepeatAttackTypeFarther,
+	SingleAttackTypeCloserThreat,
+	SingleAttackTypeFartherThreat,
+	SingleAttackTypeCloser,
+	SingleAttackTypeFarther,
+	WaitIfNoTarget,
+	TeamWeightReward,
+	PickRandomScript,
+	MoveToEnemyCloser,
+	MoveToEnemyFarther,
+	MoveToFriendlyCloser,
+	MoveToFriendlyFarther,
+	MoveToTypeEnemyCloser,
+	MoveToTypeEnemyFarther,
+	MoveToTypeFriendlyCloser,
+	MoveToTypeFriendlyFarther,
+	ModifyTargetDistance,
+	RandomAttackTypeCloser,
+	RandomAttackTypeFarther,
+	RandomMoveToTypeEnemyCloser,
+	RandomMoveToTypeEnemyFarther,
+	RandomMoveToTypeFriendlyCloser,
+	RandomMoveToTypeFriendlyFarther,
+	SetMoveMissionEndMode,
+	UnregisterGreatSuccess,
+	GatherAroundLeader,
+	RandomSkipNextAction,
+
+	// Variables
 	LocalVariableSet = 500,
 	LocalVariableAdd,
 	LocalVariableMinus,
@@ -148,34 +192,15 @@ public:
 	static void SetCloseEnoughDistance(TeamClass *pTeam, double distance);
 	static void SetMoveMissionEndMode(TeamClass* pTeam, int mode);
 	static void SkipNextAction(TeamClass* pTeam, int successPercentage);
+	static FootClass* FindTheTeamLeader(TeamClass* pTeam);
 
+	static bool IsExtVariableAction(int action);
 	static void VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg);
 	template<bool IsGlobal, class _Pr>
 	static void VariableOperationHandler(TeamClass* pTeam, int nVariable, int Number);
 	template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
-	static FootClass* FindTheTeamLeader(TeamClass* pTeam);
-
-	static void LocalVariableAdd(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableMultiply(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableDivide(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableMod(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableLeftShift(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableRightShift(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableReverse(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableXor(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableOr(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableAnd(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableAdd(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableMultiply(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableDivide(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableMod(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableLeftShift(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableRightShift(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableReverse(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableXor(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableOr(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableAnd(TeamClass* pTeam, int nVariable, int Number);
+	
 
 	static ExtContainer ExtMap;
 
