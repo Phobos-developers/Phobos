@@ -203,7 +203,6 @@ public:
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
-		void ApplyModifyExperience(TechnoClass* pTarget, TechnoClass* pOwner);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);

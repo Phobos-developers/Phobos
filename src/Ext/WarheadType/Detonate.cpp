@@ -114,7 +114,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_Respawn_Duration > 0 ||
 		this->Shield_SelfHealing_Duration > 0 ||
 		this->Shield_AttachTypes.size() > 0 ||
-		this->Shield_RemoveTypes.size() > 0;
+		this->Shield_RemoveTypes.size() > 0 ||
 		this->Crit_Chance ||
 		isTransact(this)
 		;

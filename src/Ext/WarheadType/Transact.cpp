@@ -1,5 +1,17 @@
 #include "Body.h"
 
+#include <InfantryClass.h>
+#include <BulletClass.h>
+#include <HouseClass.h>
+#include <ScenarioClass.h>
+#include <AnimTypeClass.h>
+#include <AnimClass.h>
+
+#include <Utilities/Helpers.Alex.h>
+#include <Ext/Techno/Body.h>
+#include <Ext/TechnoType/Body.h>
+#include <Utilities/EnumFunctions.h>
+
 // Add or substract experience for real
 int AddExpCustom(VeterancyStruct* vstruct, int ownerCost, int victimCost) {
 	double toBeAdded = (double)victimCost
@@ -36,7 +48,12 @@ void WarheadTypeExt::ExtData::TransactOnAllUnits(HouseClass* pHouse, const Coord
 		this->Transact_Source_Experience_Percent ||
 		this->Transact_Target_Experience_Flat ||
 		this->Transact_Target_Experience_Percent)
-		TransactExperience(pTarget, pOwner);
+	{
+		for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
+		{
+			TransactExperience(pTarget, pOwner);
+		}
+	}
 
 	// Future transactions here
 }
