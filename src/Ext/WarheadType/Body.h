@@ -31,14 +31,15 @@ public:
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 
+		Valueable<int> Transact_Source_Experience_Flat;
+		Valueable<double> Transact_Source_Experience_Percent;
+		Valueable<bool> Transact_Source_Experience_Percent_CalcFromTarget;
+		Valueable<int> Transact_Target_Experience_Flat;
+		Valueable<double> Transact_Target_Experience_Percent;
+		Valueable<bool> Transact_Target_Experience_Percent_CalcFromSource;
+
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
-		Valueable<int> Experience_GivenFlat;
-		Valueable<double> Experience_GivenPercent;
-		Valueable<bool> Experience_Transfer;
-		Valueable<bool> Experience_FirerGetsExp;
-		Valueable<bool> Experience_CalculatePercentFromFirer;
-
 		Valueable<int> Crit_ExtraDamage;
 		Nullable<WarheadTypeClass*> Crit_Warhead;
 		Valueable<AffectedTarget> Crit_Affects;
@@ -132,11 +133,13 @@ public:
 			, Crit_AnimOnAffectedTargets { false }
 			, Crit_AffectBelowPercent { 1.0 }
 			, Crit_SuppressWhenIntercepted { false }
-			, Experience_GivenFlat(0)
-			, Experience_GivenPercent(0.0)
-			, Experience_Transfer(false)
-			, Experience_FirerGetsExp(false)
-			, Experience_CalculatePercentFromFirer(false)
+
+			, Transact_Source_Experience_Flat(0)
+			, Transact_Source_Experience_Percent(0.0)
+			, Transact_Source_Experience_Percent_CalcFromTarget(false)
+			, Transact_Target_Experience_Percent(0.0)
+			, Transact_Target_Experience_Percent_CalcFromSource(false)
+			, Transact_Target_Experience_Flat(0)
 
 			, MindControl_Anim {}
 
@@ -190,6 +193,11 @@ public:
 
 	private:
 		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
+		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr);
+		void DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner);
+		void TransactOnOneUnit(TechnoClass* pTarget, TechnoClass* pOwner = nullptr);
+		void TransactOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner);
+		void TransactExperience(TechnoClass* pTarget, TechnoClass* pOwner);
 
 		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);

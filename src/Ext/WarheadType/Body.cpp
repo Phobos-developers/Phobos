@@ -116,11 +116,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
 	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
 
-	this->Experience_GivenFlat.Read(exINI, pSection, "Experience.GivenFlat");
-	this->Experience_GivenPercent.Read(exINI, pSection, "Experience.GivenPercent");
-	this->Experience_Transfer.Read(exINI, pSection, "Experience.Transfer");
-	this->Experience_FirerGetsExp.Read(exINI, pSection, "Experience.FirerGetsExp");
-	this->Experience_CalculatePercentFromFirer.Read(exINI, pSection, "Experience.CalculatePercentFromFirer");
+	// Transact
+	this->Transact_Source_Experience_Flat.Read(exINI, pSection, "Transact.Source.Experience.Flat");
+	this->Transact_Source_Experience_Percent.Read(exINI, pSection, "Transact.Source.Experience.Percent");
+	this->Transact_Source_Experience_Percent_CalcFromTarget.Read(exINI, pSection, "Transact.Source.Experience.Percent.CalcFromTarget");
+	this->Transact_Target_Experience_Flat.Read(exINI, pSection, "Transact.Target.Experience.Flat");
+	this->Transact_Target_Experience_Percent.Read(exINI, pSection, "Transact.Target.Experience.Percent");
+	this->Transact_Target_Experience_Percent_CalcFromSource.Read(exINI, pSection, "Transact.Target.Experience.Percent.CalcFromSource");
 
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
@@ -215,11 +217,12 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_AffectBelowPercent)
 		.Process(this->Crit_SuppressWhenIntercepted)
 		
-		.Process(this->Experience_GivenFlat)
-		.Process(this->Experience_GivenPercent)
-		.Process(this->Experience_Transfer)
-		.Process(this->Experience_FirerGetsExp)
-		.Process(this->Experience_CalculatePercentFromFirer)
+		.Process(this->Transact_Source_Experience_Flat)
+		.Process(this->Transact_Source_Experience_Percent)
+		.Process(this->Transact_Source_Experience_Percent_CalcFromTarget)
+		.Process(this->Transact_Target_Experience_Flat)
+		.Process(this->Transact_Target_Experience_Percent)
+		.Process(this->Transact_Target_Experience_Percent_CalcFromSource)
 
 		.Process(this->MindControl_Anim)
 
