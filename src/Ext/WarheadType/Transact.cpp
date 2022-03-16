@@ -1,25 +1,15 @@
 #include "Body.h"
 
-#include <InfantryClass.h>
-#include <BulletClass.h>
-#include <HouseClass.h>
-#include <ScenarioClass.h>
-#include <AnimTypeClass.h>
-#include <AnimClass.h>
-
 #include <Utilities/Helpers.Alex.h>
-#include <Ext/Techno/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <Utilities/EnumFunctions.h>
 
 // Add or substract experience for real
-int AddExpCustom(VeterancyStruct* vstruct, int ownerCost, int victimCost) {
-	double toBeAdded = (double)victimCost
-		/ (ownerCost * RulesClass::Instance->VeteranRatio);
-	// Used in experience transfer to get the actual amount carried
+int AddExpCustom(VeterancyStruct* vstruct, int targetCost, int exp) {
+	double toBeAdded = (double)exp / (targetCost * RulesClass::Instance->VeteranRatio);
+	// Used in experience transfer to get the actual amount substracted
 	int transffered = (int)(Math::min(vstruct->Veterancy, abs(toBeAdded))
-		* (ownerCost * RulesClass::Instance->VeteranRatio));
-	if (victimCost < 0 && transffered <= 0.0) {
+		* (targetCost * RulesClass::Instance->VeteranRatio));
+	// Don't do anything when current exp at 0
+	if (exp < 0 && transffered <= 0) {
 		vstruct->Reset();
 		transffered = 0;
 	}
@@ -71,13 +61,13 @@ void WarheadTypeExt::ExtData::TransactExperience(TechnoClass* pTarget, TechnoCla
 	// Percent from Source
 	if (!CLOSE_ENOUGH(this->Transact_Source_Experience_Percent, 0.0) && pOwnerTechno)
 	{
-		int sourceValue;
+		int sourceExpFromPercent;
 		if (this->Transact_Source_Experience_Percent_CalcFromTarget && pTargetTechno)
-			sourceValue = (int)((pOwnerTechno->GetActualCost(pTarget->Owner) * this->Transact_Source_Experience_Percent));
+			sourceExpFromPercent = (int)((pTargetTechno->GetActualCost(pTarget->Owner) * this->Transact_Source_Experience_Percent));
 		else
-			sourceValue = (int)((pOwnerTechno->GetActualCost(pOwner->Owner) * this->Transact_Source_Experience_Percent));
+			sourceExpFromPercent = (int)((pOwnerTechno->GetActualCost(pOwner->Owner) * this->Transact_Source_Experience_Percent));
 
-		sourceExp = abs(sourceValue) > abs(sourceExp) ? sourceValue : sourceExp;
+		sourceExp = abs(sourceExpFromPercent) > abs(sourceExp) ? sourceExpFromPercent : sourceExp;
 	}
 
 	// Flat from Target
@@ -87,31 +77,31 @@ void WarheadTypeExt::ExtData::TransactExperience(TechnoClass* pTarget, TechnoCla
 	// Percent from Target
 	if (!CLOSE_ENOUGH(this->Transact_Target_Experience_Percent, 0.0) && pTargetTechno)
 	{
-		int targetValue;
-		if (this->Transact_Target_Experience_Percent_CalcFromSource && pTargetTechno)
-			targetValue = (int)((pTargetTechno->GetActualCost(pOwner->Owner) * this->Transact_Target_Experience_Percent));
+		int targetExpFromPercent;
+		if (this->Transact_Target_Experience_Percent_CalcFromSource && pOwnerTechno)
+			targetExpFromPercent = (int)((pOwnerTechno->GetActualCost(pOwner->Owner) * this->Transact_Target_Experience_Percent));
 		else
-			targetValue = (int)((pTargetTechno->GetActualCost(pTarget->Owner) * this->Transact_Target_Experience_Percent));
+			targetExpFromPercent = (int)((pTargetTechno->GetActualCost(pTarget->Owner) * this->Transact_Target_Experience_Percent));
 
-		targetExp = abs(targetValue) > abs(targetExp) ? targetValue : targetExp;
+		targetExp = abs(targetExpFromPercent) > abs(targetExp) ? targetExpFromPercent : targetExp;
 	}
 
-	// Transact
+	// Transact (A loses B gains)
 	if (sourceExp != 0 && targetExp != 0 && targetExp * sourceExp < 0)
 	{
-		int transExp = abs(sourceExp) > abs(targetExp) ? targetExp : sourceExp;
+		int transExp = abs(sourceExp) > abs(targetExp) ? abs(targetExp) : abs(sourceExp);
 
 		if (sourceExp < 0)
 		{
 			transExp = AddExpCustom(&pOwner->Veterancy,
 				pOwnerTechno->GetActualCost(pOwner->Owner), -transExp);
 			AddExpCustom(&pTarget->Veterancy,
-				pOwnerTechno->GetActualCost(pTarget->Owner), transExp);
+				pTargetTechno->GetActualCost(pTarget->Owner), transExp);
 		}
 		else
 		{
 			transExp = AddExpCustom(&pTarget->Veterancy,
-				pOwnerTechno->GetActualCost(pTarget->Owner), -transExp);
+				pTargetTechno->GetActualCost(pTarget->Owner), -transExp);
 			AddExpCustom(&pOwner->Veterancy,
 				pOwnerTechno->GetActualCost(pOwner->Owner), transExp);
 		}
