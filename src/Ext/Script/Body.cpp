@@ -379,7 +379,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 		double closeEnough;
 
 		// Find the Leader
-		pLeaderUnit = pTeamData->TeamLeader;
+		pLeaderUnit = pExt->TeamLeader;
 		if (!pLeaderUnit
 			|| !pLeaderUnit->IsAlive
 			|| pLeaderUnit->Health <= 0
@@ -388,7 +388,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 			|| pLeaderUnit->Absorbed)
 		{
 			pLeaderUnit = FindTheTeamLeader(pTeam);
-			pTeamData->TeamLeader = pLeaderUnit;
+			pExt->TeamLeader = pLeaderUnit;
 		}
 
 		if (!pLeaderUnit)
