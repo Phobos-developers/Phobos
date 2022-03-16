@@ -528,7 +528,7 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 				int offset = 0;
 
 				if (const auto pBuilding = specific_cast<BuildingClass*>(pThis))
-					offset = 104 * pBuilding->Type->Height;
+					offset = Unsorted::LevelHeight * pBuilding->Type->Height;
 				else
 					offset = pThis->GetTechnoType()->MindControlRingOffset;
 
