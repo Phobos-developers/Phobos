@@ -87,6 +87,7 @@ Credits
 - **Morton (MortonPL)** - developer
 - **Trsdy (chaserli)** - developer
 
+- **Morton (MortonPL)** - XDrawOffset, Shield passthrough & absorption, building LimboDelivery, fix for Image in art rules, power delta counter, transact warhead
 For all contributions see [full credits list](CREDITS.md).
 
 Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](https://github.com/Phobos-developers/Phobos/blob/develop/logo-mono.png)) in your client/launcher (make it open Phobos GitHub page for extra fanciness), linking to Phobos repository, contributing or donating to us via the links above.

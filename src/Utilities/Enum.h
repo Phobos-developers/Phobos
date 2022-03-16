@@ -180,6 +180,11 @@ enum class TextAlign : int
 
 MAKE_ENUM_FLAGS(TextAlign);
 
+enum class TransactValueType: int {
+	Experience = 0,
+	// Other....
+};
+
 class MouseCursorHotSpotX
 {
 public:

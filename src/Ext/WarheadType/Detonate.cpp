@@ -18,14 +18,6 @@
 #include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
-bool isTransact(WarheadTypeExt::ExtData* pExt)
-{
-	return pExt->Transact_Source_Experience_Flat ||
-		pExt->Transact_Source_Experience_Percent ||
-		pExt->Transact_Target_Experience_Flat ||
-		pExt->Transact_Target_Experience_Percent;
-}
-
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBulletExt, CoordStruct coords)
 {
 	auto const pBullet = pBulletExt ? pBulletExt->OwnerObject() : nullptr;
@@ -116,7 +108,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_AttachTypes.size() > 0 ||
 		this->Shield_RemoveTypes.size() > 0 ||
 		this->Crit_Chance ||
-		isTransact(this)
+		this->Transact
 		;
 
 	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
@@ -125,7 +117,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	if (cellSpread && isCellSpreadWarhead)
 	{
 		this->DetonateOnAllUnits(pHouse, coords, cellSpread, pOwner);
-		if (isTransact(this))
+		if (this->Transact)
 			this->TransactOnAllUnits(pHouse, coords, cellSpread, pOwner);
 	}
 	else if (pBullet && isCellSpreadWarhead)
@@ -133,8 +125,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 		{
 			this->DetonateOnOneUnit(pHouse, pTarget, pOwner);
-			if (isTransact(this))
-				this->TransactOnOneUnit(pTarget, pOwner);
+			if (this->Transact)
+				this->TransactOnOneUnit(pTarget, pOwner, 1);
 		}
 	}
 }

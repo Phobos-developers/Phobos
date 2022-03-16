@@ -117,12 +117,15 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
 
 	// Transact
-	this->Transact_Source_Experience_Flat.Read(exINI, pSection, "Transact.Source.Experience.Flat");
-	this->Transact_Source_Experience_Percent.Read(exINI, pSection, "Transact.Source.Experience.Percent");
-	this->Transact_Source_Experience_Percent_CalcFromTarget.Read(exINI, pSection, "Transact.Source.Experience.Percent.CalcFromTarget");
-	this->Transact_Target_Experience_Flat.Read(exINI, pSection, "Transact.Target.Experience.Flat");
-	this->Transact_Target_Experience_Percent.Read(exINI, pSection, "Transact.Target.Experience.Percent");
-	this->Transact_Target_Experience_Percent_CalcFromSource.Read(exINI, pSection, "Transact.Target.Experience.Percent.CalcFromSource");
+	this->Transact.Read(exINI, pSection, "Transact");
+	this->Transact_SpreadAmongTargets.Read(exINI, pSection, "Transact.SpreadAmongTargets");
+	this->Transact_Experience_Value.Read(exINI, pSection, "Transact.Experience.Value");
+	this->Transact_Experience_Source_Flat.Read(exINI, pSection, "Transact.Experience.Source.Flat");
+	this->Transact_Experience_Source_Percent.Read(exINI, pSection, "Transact.Experience.Source.Percent");
+	this->Transact_Experience_Source_Percent_CalcFromTarget.Read(exINI, pSection, "Transact.Experience.Source.Percent.CalcFromTarget");
+	this->Transact_Experience_Target_Flat.Read(exINI, pSection, "Transact.Experience.Target.Flat");
+	this->Transact_Experience_Target_Percent.Read(exINI, pSection, "Transact.Experience.Target.Percent");
+	this->Transact_Experience_Target_Percent_CalcFromSource.Read(exINI, pSection, "Transact.Experience.Target.Percent.CalcFromSource");
 
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
@@ -217,12 +220,15 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_AffectBelowPercent)
 		.Process(this->Crit_SuppressWhenIntercepted)
 		
-		.Process(this->Transact_Source_Experience_Flat)
-		.Process(this->Transact_Source_Experience_Percent)
-		.Process(this->Transact_Source_Experience_Percent_CalcFromTarget)
-		.Process(this->Transact_Target_Experience_Flat)
-		.Process(this->Transact_Target_Experience_Percent)
-		.Process(this->Transact_Target_Experience_Percent_CalcFromSource)
+		.Process(this->Transact)
+		.Process(this->Transact_SpreadAmongTargets)
+		.Process(this->Transact_Experience_Value)
+		.Process(this->Transact_Experience_Source_Flat)
+		.Process(this->Transact_Experience_Source_Percent)
+		.Process(this->Transact_Experience_Source_Percent_CalcFromTarget)
+		.Process(this->Transact_Experience_Target_Flat)
+		.Process(this->Transact_Experience_Target_Percent)
+		.Process(this->Transact_Experience_Target_Percent_CalcFromSource)
 
 		.Process(this->MindControl_Anim)
 

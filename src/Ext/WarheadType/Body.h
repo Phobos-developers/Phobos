@@ -31,12 +31,15 @@ public:
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 
-		Valueable<int> Transact_Source_Experience_Flat;
-		Valueable<double> Transact_Source_Experience_Percent;
-		Valueable<bool> Transact_Source_Experience_Percent_CalcFromTarget;
-		Valueable<int> Transact_Target_Experience_Flat;
-		Valueable<double> Transact_Target_Experience_Percent;
-		Valueable<bool> Transact_Target_Experience_Percent_CalcFromSource;
+		Valueable<bool> Transact;
+		Valueable<int> Transact_Experience_Value;
+		Valueable<int> Transact_Experience_Source_Flat;
+		Valueable<double> Transact_Experience_Source_Percent;
+		Valueable<bool> Transact_Experience_Source_Percent_CalcFromTarget;
+		Valueable<int> Transact_Experience_Target_Flat;
+		Valueable<double> Transact_Experience_Target_Percent;
+		Valueable<bool> Transact_Experience_Target_Percent_CalcFromSource;
+		Valueable<bool> Transact_SpreadAmongTargets;
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
@@ -134,12 +137,15 @@ public:
 			, Crit_AffectBelowPercent { 1.0 }
 			, Crit_SuppressWhenIntercepted { false }
 
-			, Transact_Source_Experience_Flat(0)
-			, Transact_Source_Experience_Percent(0.0)
-			, Transact_Source_Experience_Percent_CalcFromTarget(false)
-			, Transact_Target_Experience_Percent(0.0)
-			, Transact_Target_Experience_Percent_CalcFromSource(false)
-			, Transact_Target_Experience_Flat(0)
+			, Transact { false }
+			, Transact_Experience_Value { 1 }
+			, Transact_Experience_Source_Flat { 0 }
+			, Transact_Experience_Source_Percent { 0.0 }
+			, Transact_Experience_Source_Percent_CalcFromTarget { false }
+			, Transact_Experience_Target_Flat { 0 }
+			, Transact_Experience_Target_Percent { 0.0 }
+			, Transact_Experience_Target_Percent_CalcFromSource { false }
+			, Transact_SpreadAmongTargets { false }
 
 			, MindControl_Anim {}
 
@@ -195,9 +201,11 @@ public:
 		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
 		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr);
 		void DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner);
-		void TransactOnOneUnit(TechnoClass* pTarget, TechnoClass* pOwner = nullptr);
+		void TransactOnOneUnit(TechnoClass* pTarget, TechnoClass* pOwner, int targets);
 		void TransactOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner);
-		void TransactExperience(TechnoClass* pTarget, TechnoClass* pOwner);
+		int TransactGetValue(TechnoClass* pTarget, TechnoClass* pOwner, int flat, double percent, boolean calcFromTarget, int targetValue, int ownerValue);
+		std::vector<std::vector<int>> TransactGetSourceAndTarget(TechnoClass* pTarget, TechnoTypeClass* pTargetType, TechnoClass* pOwner, TechnoTypeClass* pOwnerType, int targets);
+		int TransactOneValue(TechnoClass* pTechno, TechnoTypeClass* pTechnoType, int transactValue, TransactValueType valueType);
 
 		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
