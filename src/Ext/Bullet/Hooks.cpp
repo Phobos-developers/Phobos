@@ -4,6 +4,7 @@
 #include <Misc/CaptureManager.h>
 
 #include <TechnoClass.h>
+#include <TacticalClass.h>
 
 // has everything inited except SpawnNextAnim at this point
 DEFINE_HOOK(0x466556, BulletClass_Init_SetLaserTrail, 0x6)
@@ -194,4 +195,22 @@ DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 		return Shrapnel;
 
 	return Skip;
+}
+
+DEFINE_HOOK(0x4690D4, BulletClass_Logics_ScreenShake, 0x6)
+{
+	enum { SkipShaking = 0x469130 };
+
+	GET(WarheadTypeClass*, pWarhead, EAX);
+	GET_BASE(CoordStruct*, pCoords, 0x8);
+
+	if (auto const pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
+	{
+		Point2D screenCoords;
+
+		if (pExt->ShakeIsLocal && !TacticalClass::Instance->CoordsToClient(*pCoords, &screenCoords))
+			return SkipShaking;
+	}
+
+	return 0;
 }

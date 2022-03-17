@@ -278,6 +278,7 @@ New:
 - Shared Ammo for transports to passengers (by FS-21)
 - Additional critical hit logic customizations (by Starkku)
 - Laser trails for VoxelAnims (by Otamaa)
+- Local warhead screen shaking (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
