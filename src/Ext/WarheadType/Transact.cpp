@@ -11,12 +11,19 @@ int AddExpCustom(VeterancyStruct* vstruct, int targetCost, int exp)
 	int transffered = (int)(Math::min(vstruct->Veterancy, abs(toBeAdded))
 		* (targetCost * RulesClass::Instance->VeteranRatio));
 	// Don't do anything when current exp at 0
-	if (exp < 0 && transffered <= 0) {
+	if (exp < 0 && transffered <= 0)
+	{
 		vstruct->Reset();
 		transffered = 0;
 	}
-	else {
+	else
+	{
 		vstruct->Add(toBeAdded);
+	}
+	// Prevent going above elite level of 2.0
+	if (vstruct->IsElite())
+	{
+		vstruct->SetElite();
 	}
 	return transffered;
 }
@@ -26,13 +33,14 @@ int WarheadTypeExt::ExtData::TransactOneValue(TechnoClass* pTechno, TechnoTypeCl
 	int transferred = 0;
 	switch (valueType)
 	{
-	case TransactValueType::Experience:
-		transferred = AddExpCustom(&pTechno->Veterancy,
-			pTechnoType->GetActualCost(pTechno->Owner), transactValue);
-		break;
-	default:
-		break;
+		case TransactValueType::Experience:
+			transferred = AddExpCustom(&pTechno->Veterancy,
+				pTechnoType->GetActualCost(pTechno->Owner), transactValue);
+			break;
+		default:
+			break;
 	}
+
 	return transferred;
 }
 
@@ -41,11 +49,10 @@ int WarheadTypeExt::ExtData::TransactGetValue(TechnoClass* pTarget, TechnoClass*
 	int flatValue = 0, percentValue = 0;
 
 	// Flat
-	if (pOwner)
-		flatValue = flat;
+	flatValue = flat;
 
 	// Percent
-	if (!CLOSE_ENOUGH(percent, 0.0) && pOwner)
+	if (!CLOSE_ENOUGH(percent, 0.0))
 	{
 		if (calcFromTarget && pTarget)
 			percentValue = (int)(targetValue * percent);
@@ -64,20 +71,20 @@ std::vector<std::vector<int>> WarheadTypeExt::ExtData::TransactGetSourceAndTarge
 
 	// SOURCE
 	//		Experience
-	int sourceExp = this->TransactGetValue(pTarget, pOwner,
+	int sourceExp = pOwner ? this->TransactGetValue(pTarget, pOwner,
 		this->Transact_Experience_Source_Flat, this->Transact_Experience_Source_Percent,
 		this->Transact_Experience_Source_Percent_CalcFromTarget,
-		pTargetType->GetActualCost(pTarget->Owner), pOwnerType->GetActualCost(pOwner->Owner));
+		pTargetType->GetActualCost(pTarget->Owner), pOwnerType->GetActualCost(pOwner->Owner)) : 0;
 	sourceValues.push_back(sourceExp / targets);
-	// Others ...
+	//		Others ...
 	allValues.push_back(sourceValues);
 
 	// TARGET
 	//		Experience
-	int targetExp = this->TransactGetValue(pOwner, pTarget,
+	int targetExp = pTarget ? this->TransactGetValue(pOwner, pTarget,
 		this->Transact_Experience_Target_Flat, this->Transact_Experience_Target_Percent,
 		this->Transact_Experience_Target_Percent_CalcFromSource,
-		pOwnerType->GetActualCost(pOwner->Owner), pTargetType->GetActualCost(pTarget->Owner));
+		pOwnerType->GetActualCost(pOwner->Owner), pTargetType->GetActualCost(pTarget->Owner)) : 0;
 	targetValues.push_back(targetExp / targets);
 	//		Others ...
 	allValues.push_back(targetValues);
@@ -87,8 +94,8 @@ std::vector<std::vector<int>> WarheadTypeExt::ExtData::TransactGetSourceAndTarge
 
 void WarheadTypeExt::ExtData::TransactOnOneUnit(TechnoClass* pTarget, TechnoClass* pOwner, int targets)
 {
-	auto const pTargetType = (pTarget) ? pTarget->GetTechnoType() : nullptr;
-	auto const pOwnerType = (pOwner) ? pOwner->GetTechnoType() : nullptr;
+	auto const pTargetType = pTarget ? pTarget->GetTechnoType() : nullptr;
+	auto const pOwnerType = pOwner ? pOwner->GetTechnoType() : nullptr;
 
 	std::vector<std::vector<int>> allValues = this->TransactGetSourceAndTarget(pTarget, pTargetType, pOwner, pOwnerType, targets);
 
