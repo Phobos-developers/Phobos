@@ -196,15 +196,15 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case PhobosScripts::RandomSkipNextAction:
 		ScriptExt::SkipNextAction(pTeam, -1);
 		break;
-	case 124:
+	case PhobosScripts::StopForceJumpCountdown:
 		// Stop Timed Jump
 		ScriptExt::Stop_ForceJump_Countdown(pTeam);
 		break;
-	case 125:
+	case PhobosScripts::NextLineForceJumpCountdown:
 		// Start Timed Jump that jumps to the next line when the countdown finish (in frames)
 		ScriptExt::Set_ForceJump_Countdown(pTeam, false, -1);
 		break;
-	case 126:
+	case PhobosScripts::SameLineForceJumpCountdown:
 		// Start Timed Jump that jumps to the same line when the countdown finish (in frames)
 		ScriptExt::Set_ForceJump_Countdown(pTeam, true, -1);
 		break;
@@ -2980,7 +2980,7 @@ void ScriptExt::Set_ForceJump_Countdown(TeamClass *pTeam, bool repeatLine = fals
 		return;
 
 	if (count <= 0)
-		count = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->idxCurrentLine].Argument;
+		count = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
 	if (count > 0)
 	{
@@ -3000,7 +3000,7 @@ void ScriptExt::Set_ForceJump_Countdown(TeamClass *pTeam, bool repeatLine = fals
 
 	// This action finished
 	pTeam->StepCompleted = true;
-	Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d) Set Timed Jump -> (Countdown: %d, repeat action: %d)\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument, count, repeatLine);
+	Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d) Set Timed Jump -> (Countdown: %d, repeat action: %d)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, count, repeatLine);
 }
 
 void ScriptExt::Stop_ForceJump_Countdown(TeamClass *pTeam)
@@ -3021,7 +3021,7 @@ void ScriptExt::Stop_ForceJump_Countdown(TeamClass *pTeam)
 
 	// This action finished
 	pTeam->StepCompleted = true;
-	Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d): Stopped Timed Jump\n", pTeam->Type->ID, pScript->Type->ID, pScript->idxCurrentLine, pScript->Type->ScriptActions[pScript->idxCurrentLine].Action, pScript->Type->ScriptActions[pScript->idxCurrentLine].Argument);
+	Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d): Stopped Timed Jump\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
 
 	return;
 }

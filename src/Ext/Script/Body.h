@@ -62,6 +62,9 @@ enum class PhobosScripts : unsigned int
 	UnregisterGreatSuccess = 111,
 	GatherAroundLeader = 112,
 	RandomSkipNextAction = 113,
+	StopForceJumpCountdown = 124,
+	NextLineForceJumpCountdown = 125,
+	SameLineForceJumpCountdown = 126,
 
 	// Variables
 	LocalVariableSet = 500,
