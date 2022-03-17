@@ -46,6 +46,9 @@ public:
 		Valueable<int> PassengerDeletion_Rate;
 		NullableIdx<VocClass> PassengerDeletion_ReportSound;
 		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
+		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
+		Valueable<bool> Death_NoAmmo;
+		Valueable<int> Death_Countdown;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -57,6 +60,13 @@ public:
 		Nullable<int> ChronoMinimumDelay;
 		Nullable<int> ChronoRangeMinimum;
 		Nullable<int> ChronoDelay;
+
+		Nullable<WeaponTypeClass*> WarpInWeapon;
+		Nullable<WeaponTypeClass*> WarpInMinRangeWeapon;
+		Nullable<WeaponTypeClass*> WarpOutWeapon;
+		Valueable<bool> WarpInWeapon_UseDistanceAsDamage;
+		Valueable<bool> WarpInWeapon_FireAsSelf;
+		Valueable<bool> WarpOutWeapon_FireAsSelf;
 
 		ValueableVector<AnimTypeClass*> OreGathering_Anims;
 		ValueableVector<int> OreGathering_Tiberiums;
@@ -84,10 +94,15 @@ public:
 
 		Nullable<bool> JumpjetAllowLayerDeviation;
 
+		Valueable<bool> DeployingAnim_AllowAnyDirection;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
 		Valueable<bool> DeployingAnim_ReverseForUndeploy;
 		Valueable<bool> DeployingAnim_UseUnitDrawer;
-		Nullable<int> DeployDir;
+
+		Valueable<int> ForceWeapon_Naval_Decloaked;
+
+		Valueable<bool> Ammo_Shared;
+		Valueable<int> Ammo_Shared_Group;
 
 		struct LaserTrailDataEntry
 		{
@@ -104,6 +119,7 @@ public:
 		};
 
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
+		Valueable<CSFText> EnemyUIName;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -138,6 +154,12 @@ public:
 			, ChronoMinimumDelay {}
 			, ChronoRangeMinimum {}
 			, ChronoDelay {}
+			, WarpInWeapon {}
+			, WarpInMinRangeWeapon {}
+			, WarpOutWeapon {}
+			, WarpInWeapon_UseDistanceAsDamage { false }
+			, WarpInWeapon_FireAsSelf { true }
+			, WarpOutWeapon_FireAsSelf { true }
 			, OreGathering_Anims {}
 			, OreGathering_Tiberiums {}
 			, OreGathering_FramesPerDir {}
@@ -149,6 +171,7 @@ public:
 			, PassengerDeletion_Rate { 0 }
 			, PassengerDeletion_ReportSound {}
 			, PassengerDeletion_Rate_SizeMultiply { true }
+			, PassengerDeletion_Anim {}
 			, DefaultDisguise {}
 			, OpenTopped_RangeBonus {}
 			, OpenTopped_DamageMultiplier {}
@@ -159,10 +182,16 @@ public:
 			, NoAmmoWeapon { -1 }
 			, NoAmmoAmount { 0 }
 			, JumpjetAllowLayerDeviation {}
+			, DeployingAnim_AllowAnyDirection { false }
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
-			, DeployDir {}
+			, EnemyUIName {}
+			, Death_NoAmmo { false }
+			, Death_Countdown { 0 }
+			, ForceWeapon_Naval_Decloaked { -1 }
+			, Ammo_Shared { false }
+			, Ammo_Shared_Group { -1 }
 		{ }
 
 		virtual ~ExtData() = default;

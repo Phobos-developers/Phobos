@@ -27,6 +27,8 @@ void TerrainTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnsTiberium_Range)
 		.Process(this->SpawnsTiberium_GrowthStage)
 		.Process(this->SpawnsTiberium_CellsPerAnim)
+		.Process(this->DestroyAnim)
+		.Process(this->DestroySound)
 		;
 }
 
@@ -43,6 +45,12 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnsTiberium_Range.Read(exINI, pSection, "SpawnsTiberium.Range");
 	this->SpawnsTiberium_GrowthStage.Read(exINI, pSection, "SpawnsTiberium.GrowthStage");
 	this->SpawnsTiberium_CellsPerAnim.Read(exINI, pSection, "SpawnsTiberium.CellsPerAnim");
+
+	this->DestroyAnim.Read(exINI, pSection, "DestroyAnim");
+	this->DestroySound.Read(exINI, pSection, "DestroySound");
+
+	//Strength is already part of ObjecTypeClass::ReadIni Duh!
+	//this->TerrainStrength.Read(exINI, pSection, "Strength");
 }
 
 void TerrainTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -73,7 +81,6 @@ bool TerrainTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 // container
 
 TerrainTypeExt::ExtContainer::ExtContainer() : Container("TerrainTypeClass") { }
-
 TerrainTypeExt::ExtContainer::~ExtContainer() = default;
 
 // =============================

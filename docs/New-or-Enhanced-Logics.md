@@ -112,8 +112,8 @@ Shield.InheritStateOnReplace=false   ; boolean
 ![Laser Trails](_static/images/lasertrails.gif)  
 *Laser trails used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
-- Technos and projectiles can now have colorful trails of different transparency, thickness and color, which are drawn via laser drawing code.
-- Technos and projectiles can have multiple laser trails. For technos each trail can have custom laser trail type and FLH offset relative to turret and body.
+- Technos, Projectiles, and VoxelAnims can now have colorful trails of different transparency, thickness and color, which are drawn via laser drawing code.
+- Technos, Projectiles, and VoxelAnims can have multiple laser trails. For technos each trail can have custom laser trail type and FLH offset relative to turret and body.
 
 ```{warning}
 Laser trails are very resource intensive! Due to the game not utilizing GPU having a lot of trails can quickly drop the FPS on even good machines. To reduce that effect:
@@ -144,6 +144,12 @@ LaserTrailN.Type=SOMETRAIL  ; LaserTrailType
 LaserTrailN.FLH=0,0,0       ; integer - Forward,Lateral,Height
 LaserTrailN.IsOnTurret=no   ; boolean, whether the trail origin is turret
 ; where N = 0, 1, 2, ...
+```
+
+in `rulesmd.ini`:
+```ini
+[SOMEVOXELANIM]             ; VoxelAnim
+LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
 ```
 
 ### Custom Radiation Types
@@ -268,11 +274,12 @@ DefaultDisguise=E2  ; InfantryType
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                            ; TechnoType
-PassengerDeletion.Rate=                 ; integer, game frames
+PassengerDeletion.Rate=0                ; integer, game frames
 PassengerDeletion.Rate.SizeMultiply=yes ; boolean, whether to multiply frames amount by size
 PassengerDeletion.Soylent=no            ; boolean
 PassengerDeletion.SoylentFriendlies=no  ; boolean
 PassengerDeletion.ReportSound=          ; sound
+PassengerDeletion.Anim=                 ; animation
 ```
 
 ### Customizable OpenTopped Properties
@@ -284,6 +291,24 @@ PassengerDeletion.ReportSound=          ; sound
 OpenTopped.RangeBonus=1            ; integer
 OpenTopped.DamageMultiplier=1.3    ; float
 OpenTopped.WarpDistance=8          ; integer
+```
+
+### Shared Ammo
+
+- Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo to passengers that have `Ammo.Shared=yes`.
+In addition, a transport can filter who will receive ammo if passengers have the same value in `Ammo.Shared.Group=<integer>` of the transport, ignoring other passengers with different groups values.
+- Transports with `Ammo.Shared.Group=-1` will transfer ammo to any passenger with `Ammo.Shared=yes` ignoring the group.
+- Transports must have ammo and should be able to reload ammo.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO1]                           ; TechnoType, transport with OpenTopped=yes
+Ammo.Shared=no                          ; boolean
+Ammo.Shared.Group=-1                    ; integer
+
+[SOMETECHNO2]                           ; TechnoType, passenger
+Ammo.Shared=no                          ; boolean
+Ammo.Shared.Group=-1                    ; integer
 ```
 
 ## Technos
@@ -399,6 +424,64 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                      ; TechnoType
 NoSecondaryWeaponFallback=false   ; boolean
+```
+
+### Kill Unit Automatically
+
+- Objects can be destroyed automatically under certaing cases:
+  - No Ammo: The object will die if the remaining ammo reaches 0.
+  - Countdown: The object will die if the countdown reaches 0.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                       ; TechnoType
+Death.NoAmmo=no                    ; boolean
+Death.Countdown=0                  ; integer
+```
+
+### Override Uncloaked Underwater attack behavior
+
+![image](_static/images/underwater-new-attack-tag.gif)  
+*Naval underwater behavior in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*  
+
+- Overrides a part of the vanilla YR logic for allowing naval units to use a different weapon if the naval unit is uncloaked.
+- Useful if your naval unit have 1 weapon only for underwater and another weapon for surface objects.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+ForceWeapon.Naval.Decloacked=-1   ; Integer. 0 for primary weapon, 1 for secondary weapon
+```
+
+## Terrains
+
+### Destroy animation & sound
+
+- You can now specify a destroy animation and sound for a TerrainType that are played when it is destroyed.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]  ; TerrainType
+DestroyAnim=       ; Animation
+DestroySound=      ; Sound
+```
+
+### Weapons fired on warping in / out
+
+- It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.
+  - `WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance traveled (in leptons) was less than `ChronoRangeMinimum`. This works regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon` is not set, it defaults to `WarpInWeapon`.
+  - If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of `WarpIn(MinRange)Weapon` is overriden by the number of whole cells teleported across.
+  - `WarpInWeapon.FireAsSelf` & `WarpOutWeapon.FireAsSelf` can be used to disable firing the weapon with the teleporting TechnoType as an owner. This allows damaging itself, but also makes certain Weapon or Warhead features reliant on owner not available.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                            ; TechnoType
+WarpInWeapon=                           ; WeaponType
+WarpInMinRangeWeapon=                   ; WeaponType
+WarpInWeapon.UseDistanceAsDamage=false  ; boolean
+WarpInWeapon.FireAsSelf=true            ; boolean
+WarpOutWeapon=                          ; WeaponType
+WarpOutWeapon.FireAsSelf=true           ; boolean
 ```
 
 ## Weapons
@@ -532,20 +615,36 @@ In `rulesmd.ini`:
 RemoveMindControl=no                 ; boolean
 ```
 
-### Critical damage chance
+### Chance-based extra damage or Warhead detonation / 'critical hits'
 
-- Warheads can now apply additional chance-based damage (known as "critical" damage) with the ability to customize chance, damage, affected targets, and animations of critical strike.
-
+- Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
+  - `Crit.Chance` determines chance for a critical hit to occur. By default this is checked once when the Warhead is detonated and every target that is susceptible to critical hits will be affected. If `Crit.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
+  - `Crit.ExtraDamage` determines the damage dealt by the critical hit. If `Crit.Warhead` is set, the damage is used to detonate the specified Warhead on each affected target, otherwise the damage is directly dealt based on current Warhead's `Verses` settings.
+  - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against.
+  - `Crit.AffectsBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
+  - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list.
+    - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
+  - `ImmuneToCrit` can be set on TechnoTypes to make them immune to critical hits.
+  
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]       ; Warhead
-Crit.Chance=0.0     ; float, chance on [0.0-1.0] scale
-Crit.ExtraDamage=0  ; integer, extra damage
-Crit.Affects=all    ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-Crit.AnimList=      ; list of animations
+[SOMEWARHEAD]                     ; Warhead
+Crit.Chance=0.0                   ; float, percents or absolute (0.0-1.0)
+Crit.ApplyChancePerTarget=false   ; boolean
+Crit.ExtraDamage=0                ; integer
+Crit.Warhead=                     ; Warhead
+Crit.Affects=all                  ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+Crit.AffectBelowPercent=1.0       ; float, percents or absolute (0.0-1.0)
+Crit.AnimList=                    ; list of animations
+Crit.AnimList.PickRandom=         ; boolean
+Crit.AnimOnAffectedTargets=false  ; boolean
 
-[SOMETECHNO]        ; TechnoType
-ImmuneToCrit=no     ; boolean
+[SOMETECHNO]                      ; TechnoType
+ImmuneToCrit=no                   ; boolean
+```
+
+```{warning}
+If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chain of Warheads with it that loops back to the first one there is a possibility for the game to get stuck in a loop and freeze or crash afterwards.
 ```
 
 ### Custom 'SplashList' on Warheads
@@ -594,6 +693,14 @@ Interceptor.EliteMinimumGuardRange=0.0  ; double
 [SOMEPROJECTILE] ; Projectile
 Interceptable=no ; boolean
 ```
+
+### Shrapnel enhancement
+- Shrapnel behavior can be triggered on the ground and buildings.
+
+In `rulesmd.ini`
+[SOMEPROJECTILE] ; Projectile
+Shrapnel.AffectsGround=no ; boolean
+Shrapnel.AffectsBuildings=no ; boolean
 
 ## Trigger events
 
@@ -756,6 +863,40 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 
 `Operation` can be looked up at action `501`
 
+### `505` Fire Super Weapon at specified location
+
+- Launch a Super Weapon from [SuperWeaponTypes] list at a specified location.
+- `HouseIndex` can take various values:
+
+| *House Index* | *Description*                                 |
+| :-------: | :-------------------------------------------: |
+| >= 0      | The index of the current House in the map |
+| 4475-4482 | Like in the index range 0-7 |
+| -1        | Pick a random House that isn't Neutral |
+| -2        | Pick the first Neutral House |
+| -3        | Pick a random Human Player |
+
+- Coordinates X & Y can take possitive values or -1, in which case these values can take a random value from the visible map area.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],505,0,0,[SuperWeaponTypesIndex],[HouseIndex],[CoordinateX],[CoordinateY],A,[ActionX]
+...
+```
+
+### `506` Fire Super Weapon at specified Waypoint
+
+- Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointIndex],0,A,[ActionX]
+...
+```
 
 ## Script actions
 

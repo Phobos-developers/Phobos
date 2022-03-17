@@ -17,6 +17,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::ApplyInterceptor(pThis);
 	TechnoExt::ApplyPowered_KillSpawns(pThis);
 	TechnoExt::ApplySpawn_LimitRange(pThis);
+	TechnoExt::CheckDeathConditions(pThis);
 	TechnoExt::EatPassengers(pThis);
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
@@ -246,9 +247,9 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 		if (pExt->AutoFire)
 		{
 			if (pExt->AutoFire_TargetSelf)
-				pThis->Target = pThis;
+				pThis->SetTarget(pThis);
 			else
-				pThis->Target = pThis->GetCell();
+				pThis->SetTarget(pThis->GetCell());
 
 			return 0x7099B8;
 		}
@@ -318,4 +319,108 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 	}
 
 	return 0x702823;
+}
+
+DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
+{
+	GET(UnitClass*, pUnit, ESI);
+
+	auto pTechnoExt = TechnoExt::ExtMap.Find(pUnit);
+	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType());
+
+	if (pTechnoExt && pTechnoTypeExt)
+	{
+		if (pTechnoExt->LaserTrails.size())
+			pTechnoExt->LaserTrails.clear();
+
+		for (auto const& entry : pTechnoTypeExt->LaserTrailData)
+		{
+			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
+			{
+				pTechnoExt->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
+					pLaserType, pUnit->Owner, entry.FLH, entry.IsOnTurret));
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
+{
+	GET(TechnoClass*, pTechno, EDI);
+
+	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+
+	if (pTechnoExt && pTechnoTypeExt)
+	{
+		for (auto &pLaserTrail : pTechnoExt->LaserTrails)
+		{
+			pLaserTrail->Visible = false;
+			pLaserTrail->LastLocation = { };
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x5F4F4E, ObjectClass_Unlimbo_LaserTrails, 0x7)
+{
+	GET(TechnoClass*, pTechno, ECX);
+
+	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+	if (pTechnoExt)
+	{
+		for (auto &pLaserTrail : pTechnoExt->LaserTrails)
+		{
+			pLaserTrail->LastLocation = { };
+			pLaserTrail->Visible = true;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F3428, TechnoClass_GetWeapon_ForceWeapon, 0x6)
+{
+	GET(TechnoClass*, pTechno, ECX);
+
+	if (pTechno && pTechno->Target)
+	{
+		auto pTechnoType = pTechno->GetTechnoType();
+		if (!pTechnoType)
+			return 0;
+
+		auto pTarget = abstract_cast<TechnoClass*>(pTechno->Target);
+		if (!pTarget)
+			return 0;
+
+		auto pTargetType = pTarget->GetTechnoType();
+		if (!pTargetType)
+			return 0;
+
+		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType))
+		{
+			if (pTechnoTypeExt->ForceWeapon_Naval_Decloaked >= 0 
+				&& pTargetType->Cloakable && pTargetType->Naval 
+				&& pTarget->CloakState == CloakState::Uncloaked)
+			{
+				R->EAX(pTechnoTypeExt->ForceWeapon_Naval_Decloaked);
+				return 0x6F37AF;
+			}
+		}
+	}
+
+	return 0;
+}
+
+// Update ammo rounds
+DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
+{
+	GET(TechnoClass* const, pThis, ECX);
+
+	TechnoExt::UpdateSharedAmmo(pThis);
+
+	return 0;
 }

@@ -77,6 +77,8 @@ In `FAData.ini`:
 502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
 503=Print variable value,0,56,54,0,0,0,0,0,0,[LONG DESC],0,1,503,0
 504=Binary operation,0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1
+505=Fire Super Weapon at specified location (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
+506=Fire Super Weapon at specified waypoint (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
 
 ; FOLLOWING STUFFS NEEDS FA2SP.DLL (by secsome)
 [ScriptTypeLists]
@@ -231,7 +233,7 @@ New:
 - Quicksave hotkey command (by secsome)
 - Save Game Trigger Action (by secsome)
 - Numeric Variables (by secsome)
-- TechnoType's tooltip would display it's build time now (by secsome) 
+- TechnoType's tooltip would display it's build time now (by secsome)
 - Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)
 - Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
 - XDrawOffset for animations (by Morton)
@@ -263,6 +265,20 @@ New:
 - `DeployFireWeapon=-1` now allows the deployed infantries using both weapons as undeployed (by Uranusian)
 - Power delta (surplus) counter for sidebar (by Morton)
 - Added Production and Money to Dump Object Info command (by FS-21)
+- `EnemyUIName=` Now also works for other TechnoTypes (by Otamaa)
+- `DestroyAnim` & `DestroySound` for TerrainTypes (by Otamaa)
+- Weapons fired on warping in / out (by Starkku)
+- `Storage.TiberiumIndex` for customizing resource storage in structures (by FS-21)
+- Grinder improvements & customizations (by Starkku)
+- Attached animation position customization (by Starkku)
+- Trigger Action 505 for Firing at specified location (by FS-21)
+- Trigger Action 506 for Firing at waypoint (by FS-21)
+- New ways for self-killing objects under certaing cases (by FS-21)
+- `ForceWeapon.Naval.Decloacked` for overriding uncloaked underwater attack behavior (by FS-21)
+- Shrapnel enhancement (by secsome)
+- Shared Ammo for transports to passengers (by FS-21)
+- Additional critical hit logic customizations (by Starkku)
+- Laser trails for VoxelAnims (by Otamaa)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -271,15 +287,18 @@ Vanilla fixes:
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water (by Uranusian)
 - Fixed temporal weapon crash under certain conditions where stack dump starts with 0051BB7D (by secsome)
 - Fixed the bug when retinting map lighting with a map action corrupted light sources (by secsome)
+- Fixed the bug when reading a map which puts `Preview(Pack)` after `Map` lead to the game fail to draw the preview (by secsome)
 - Fixed the bug that AITriggerTypes do not recognize building upgrades (by Uranusian)
+- Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` > `AllowParallelAIQueues=no` is set (by FS-21)
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10 (by Otamaa)
+- Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead (by Starkku)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
 - Improved shield behavior for forced damage (by Uranusian)
 - Fixed SplashList animations playing when a unit is hit on a bridge over water (by Uranusian)
 - Fixed shielded objects not decloaking if shield takes damage (by Starkku)
-
+- Fixed critical hit animation playing even if no critical hits were dealt due to `Crit.Affects` or `ImmuneToCrit` settings (by Starkku)
 
 ### 0.2.2.2
 

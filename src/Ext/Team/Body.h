@@ -21,7 +21,8 @@ public:
 		double CloseEnough;
 		int Countdown_RegroupAtLeader;
 		int MoveMissionEndMode;
-		TechnoClass* SelectedTarget;
+		int WaitNoTargetCounter;
+		TimerStruct WaitNoTargetTimer;
 		TimerStruct ForceJump_Countdown;
 		int ForceJump_InitialCountdown;
 		bool ForceJump_RepeatMode;
@@ -33,7 +34,8 @@ public:
 			, CloseEnough { -1 }
 			, Countdown_RegroupAtLeader { -1 }
 			, MoveMissionEndMode { 0 }
-			, SelectedTarget { nullptr }
+			, WaitNoTargetCounter { 0 }
+			, WaitNoTargetTimer { 0 }
 			, ForceJump_Countdown { -1 }
 			, ForceJump_InitialCountdown { -1 }
 			, ForceJump_RepeatMode { false }

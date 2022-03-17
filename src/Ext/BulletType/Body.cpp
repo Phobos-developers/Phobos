@@ -10,6 +10,16 @@ double BulletTypeExt::GetAdjustedGravity(BulletTypeClass* pType)
 	return pType->Floater ? nGravity * 0.5 : nGravity;
 }
 
+BulletTypeClass* BulletTypeExt::GetDefaultBulletType()
+{
+	BulletTypeClass* pType = BulletTypeClass::Find(NONE_STR);
+
+	if (pType)
+		return pType;
+
+	return GameCreate<BulletTypeClass>(NONE_STR);
+}
+
 // =============================
 // load / save
 
@@ -26,6 +36,8 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Interceptable.Read(exINI, pSection, "Interceptable");
 	this->Gravity.Read(exINI, pSection, "Gravity");
 	this->Gravity_HeightFix.Read(exINI, pSection, "Gravity.HeightFix");
+	this->Shrapnel_AffectsGround.Read(exINI, pSection, "Shrapnel.AffectsGround");
+	this->Shrapnel_AffectsBuildings.Read(exINI, pSection, "Shrapnel.AffectsBuildings");
 
 	INI_EX exArtINI(CCINIClass::INI_Art);
 
@@ -43,6 +55,8 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrail_Types)
 		.Process(this->Gravity)
 		.Process(this->Gravity_HeightFix)
+		.Process(this->Shrapnel_AffectsGround)
+		.Process(this->Shrapnel_AffectsBuildings)
 		;
 }
 
