@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Misc/CaptureManager.h>
@@ -38,7 +39,8 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			pThis->WeaponType &&
 			pThis->WeaponType->LimboLaunch;
 
-		if (isLimbo) {
+		if (isLimbo)
+		{
 			pThis->SetTarget(nullptr);
 			auto damage = pTechno->Health * 2;
 			pTechno->SetLocation(pThis->GetCoords());
@@ -65,7 +67,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			(int)(location.Z + velocity.Z)
 		};
 
-		for (auto const& trail: pBulletExt->LaserTrails)
+		for (auto const& trail : pBulletExt->LaserTrails)
 		{
 			// We insert initial position so the first frame of trail doesn't get skipped - Kerbiter
 			// TODO move hack to BulletClass creation
@@ -183,9 +185,9 @@ DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 	enum { Shrapnel = 0x46A40C, Skip = 0x46ADCD };
 
 	GET(BulletClass*, pBullet, EDI);
-	
+
 	auto const pData = BulletTypeExt::ExtMap.Find(pBullet->Type);
-	
+
 	if (auto const pObject = pBullet->GetCell()->FirstObject)
 	{
 		if (pObject->WhatAmI() != AbstractType::Building || pData->Shrapnel_AffectsBuildings)
@@ -210,6 +212,21 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_ScreenShake, 0x6)
 
 		if (pExt->ShakeIsLocal && !TacticalClass::Instance->CoordsToClient(*pCoords, &screenCoords))
 			return SkipShaking;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetachFromOwner, 0x8)
+{
+	GET(BulletClass*, pThis, ESI);
+	
+	if (pThis->Owner && pThis->WeaponType)
+	{
+		auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
+
+		if (pWeaponExt->DetachedFromOwner)
+			pThis->Owner = nullptr;
 	}
 
 	return 0;

@@ -52,6 +52,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
 - Aircraft & jumpjet units are now affected by speed modifiers such as `SpeedAircraft/Infantry/UnitsMult` on `Countries`, `VeteranSpeed` and Crates / AttachEffect (Ares feature).
 - Both voxel and SHP vehicle units should now correctly respect custom palette set through `Palette`.
+- Weapons fired by EMPulse superweapons without `EMPulse.TargetSelf=true` *(Ares feature)* can now create radiation.
 
 ## Animations
 
@@ -283,6 +284,18 @@ IsElectricBolt=true    ; an ElectricBolt Weapon, vanilla tag
 Bolt.Disable1=false    ; boolean
 Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
+```
+
+### Detaching weapon from owner TechnoType
+
+- You can now control if weapon is detached from the TechnoType that fired it. This results in the weapon / warhead being able to damage the TechnoType itself even if it does not have `DamageSelf=true` set, but also treats it as if owned by no house or object, meaning any ownership-based checks like `AffectsAllies` do not function as expected and no experience is awarded.
+  - The effect of this is inherited through `AirburstWeapon` and `ShrapnelWeapon`.
+  - This does not affect projectile image or functionality or `FirersPalette` on initially fired weapon, but `FirersPalette` will not function for any weapons inheriting the effect.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPONTYPE]         ; WeaponType
+DetachedFromOwner=false  ; boolean
 ```
 
 ## Projectiles

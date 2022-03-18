@@ -453,6 +453,21 @@ In `rulesmd.ini`:
 ForceWeapon.Naval.Decloaked=-1   ; Integer. 0 for primary weapon, 1 for secondary weapon
 ```
 
+### Weapons fired on warping in / out
+
+- It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.
+  - `WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance traveled (in leptons) was less than `ChronoRangeMinimum`. This works regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon` is not set, it defaults to `WarpInWeapon`.
+  - If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of `WarpIn(MinRange)Weapon` is overriden by the number of whole cells teleported across.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                            ; TechnoType
+WarpInWeapon=                           ; WeaponType
+WarpInMinRangeWeapon=                   ; WeaponType
+WarpInWeapon.UseDistanceAsDamage=false  ; boolean
+WarpOutWeapon=                          ; WeaponType
+```
+
 ## Terrains
 
 ### Destroy animation & sound
@@ -464,24 +479,6 @@ In `rulesmd.ini`:
 [SOMETERRAINTYPE]  ; TerrainType
 DestroyAnim=       ; Animation
 DestroySound=      ; Sound
-```
-
-### Weapons fired on warping in / out
-
-- It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.
-  - `WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance traveled (in leptons) was less than `ChronoRangeMinimum`. This works regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon` is not set, it defaults to `WarpInWeapon`.
-  - If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of `WarpIn(MinRange)Weapon` is overriden by the number of whole cells teleported across.
-  - `WarpInWeapon.FireAsSelf` & `WarpOutWeapon.FireAsSelf` can be used to disable firing the weapon with the teleporting TechnoType as an owner. This allows damaging itself, but also makes certain Weapon or Warhead features reliant on owner not available.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                            ; TechnoType
-WarpInWeapon=                           ; WeaponType
-WarpInMinRangeWeapon=                   ; WeaponType
-WarpInWeapon.UseDistanceAsDamage=false  ; boolean
-WarpInWeapon.FireAsSelf=true            ; boolean
-WarpOutWeapon=                          ; WeaponType
-WarpOutWeapon.FireAsSelf=true           ; boolean
 ```
 
 ## Weapons
@@ -549,6 +546,17 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]         ; WeaponType
 AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
+```
+
+### Feedback weapon
+
+- You can now specify an auxiliary weapon to be fired on the firer itself when a weapon is fired.
+  - `FireInTransport` setting of the feedback weapon is respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If feedback weapon is fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on feedback weapons.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]     ; WeaponType
+FeedbackWeapon=  ; WeaponType
 ```
 
 ## Warheads
