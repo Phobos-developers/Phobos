@@ -6,8 +6,10 @@
 #include <CRT.h>
 #include <SuperWeaponTypeClass.h>
 #include <SuperClass.h>
+#include <TacticalClass.h>
 #include <Ext/SWType/Body.h>
 #include <Utilities/SavegameDef.h>
+#include <New/Entity/BannerClass.h>
 
 #include <Ext/Scenario/Body.h>
 
@@ -67,6 +69,12 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::RunSuperWeaponAtLocation(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::RunSuperWeaponAtWaypoint:
 		return TActionExt::RunSuperWeaponAtWaypoint(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::CreateBannerPCX:
+		return TActionExt::CreateBannerPCX(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::CreateBannerCSF:
+		return TActionExt::CreateBannerCSF(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::DeleteBanner:
+		return TActionExt::DeleteBanner(pThis, pHouse, pObject, pTrigger, location);
 	default:
 		bHandled = false;
 		return true;
@@ -426,6 +434,78 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 				pSuper->RechargeTimer.TimeLeft = oldleft;
 			}
 		}
+	}
+
+	return true;
+}
+
+bool TActionExt::CreateBannerPCX(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	// debug
+	auto PrintMessage = [](const wchar_t* pMessage)
+	{
+		MessageListClass::Instance->PrintMessage(
+			pMessage,
+			RulesClass::Instance->MessageDelay,
+			HouseClass::Player->ColorSchemeIndex,
+			true
+		);
+	};
+	PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
+
+	BannerClass(pThis->Param3, CoordStruct { pThis->Param4, pThis->Param5, 0 }, BannerType::PCX, pThis->Text);
+
+	return true;
+}
+
+bool TActionExt::CreateBannerCSF(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	// debug
+	auto PrintMessage = [](const wchar_t* pMessage)
+	{
+		MessageListClass::Instance->PrintMessage(
+			pMessage,
+			RulesClass::Instance->MessageDelay,
+			HouseClass::Player->ColorSchemeIndex,
+			true
+		);
+	};
+	PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
+
+	BannerClass(pThis->Param3, CoordStruct { pThis->Param4, pThis->Param5, 0 }, BannerType::CSF, pThis->Text);
+
+	return true;
+}
+
+bool TActionExt::DeleteBanner(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	// debug
+	auto PrintMessage = [](const wchar_t* pMessage)
+	{
+		MessageListClass::Instance->PrintMessage(
+			pMessage,
+			RulesClass::Instance->MessageDelay,
+			HouseClass::Player->ColorSchemeIndex,
+			true
+		);
+	};
+	PrintMessage(StringTable::LoadString("TXT_ERROR_SAVING_GAME"));
+	
+	// pop banner here
+	int j = -1;
+	for (int i = 0; i < BannerClass::Instances.Count; i++)
+	{
+		if (BannerClass::Instances[i]->GetId() == pThis->Param3)
+		{
+			j = i;
+			break;
+		}
+	}
+	if (j != -1)
+	{
+		auto pBanner = BannerClass::Instances[j];
+		BannerClass::Instances.RemoveItem(j);
+		delete pBanner;
 	}
 
 	return true;
