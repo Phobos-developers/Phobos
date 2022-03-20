@@ -1,5 +1,7 @@
 #include "BannerClass.h"
 
+DynamicVectorClass<BannerClass*> BannerClass::Instances;
+
 BannerClass::BannerClass() : Id { 0 }
 , Type { BannerType::PCX }
 , Position { CoordStruct() }

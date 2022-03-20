@@ -3,15 +3,11 @@
 #include <GeneralStructures.h>
 #include <PCX.h>
 
-#include <Utilities/Container.h>
+#include <Utilities/SavegameDef.h>
+#include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
 #include <Helpers/Template.h>
-
-enum class BannerType: int
-{
-	PCX = 0,
-	CSF = 1,
-};
+#include <Utilities/Enum.h>
 
 class BannerClass
 {
@@ -41,4 +37,3 @@ private:
 	char Source[32];
 
 };
-#pragma once

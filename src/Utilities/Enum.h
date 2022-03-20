@@ -248,3 +248,9 @@ public:
 		return false;
 	}
 };
+
+enum class BannerType : int
+{
+	PCX = 0,
+	CSF = 1,
+};
