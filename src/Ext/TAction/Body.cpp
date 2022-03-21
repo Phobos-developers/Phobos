@@ -69,10 +69,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::RunSuperWeaponAtLocation(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::RunSuperWeaponAtWaypoint:
 		return TActionExt::RunSuperWeaponAtWaypoint(pThis, pHouse, pObject, pTrigger, location);
-	case PhobosTriggerAction::CreateBannerPCX:
-		return TActionExt::CreateBannerPCX(pThis, pHouse, pObject, pTrigger, location);
-	case PhobosTriggerAction::CreateBannerCSF:
-		return TActionExt::CreateBannerCSF(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::CreateBanner:
+		return TActionExt::CreateBanner(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::DeleteBanner:
 		return TActionExt::DeleteBanner(pThis, pHouse, pObject, pTrigger, location);
 	default:
@@ -439,7 +437,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 	return true;
 }
 
-bool TActionExt::CreateBannerPCX(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+bool TActionExt::CreateBanner(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	// debug
 	auto PrintMessage = [](const wchar_t* pMessage)
@@ -454,27 +452,20 @@ bool TActionExt::CreateBannerPCX(TActionClass* pThis, HouseClass* pHouse, Object
 	PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
 
 	BannerTypeClass* pBannerType = BannerTypeClass::Array[pThis->Param4].get();
-	new BannerClass(pBannerType, pThis->Param3, CoordStruct{ pThis->Param5, pThis->Param6, 0 });
 
-	return true;
-}
-
-bool TActionExt::CreateBannerCSF(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
-{
-	// debug
-	auto PrintMessage = [](const wchar_t* pMessage)
+	bool found = false;
+	for (int i = 0; i < BannerClass::Array.Count; i++)
 	{
-		MessageListClass::Instance->PrintMessage(
-			pMessage,
-			RulesClass::Instance->MessageDelay,
-			HouseClass::Player->ColorSchemeIndex,
-			true
-		);
-	};
-	PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
-
-	BannerTypeClass* pBannerType = BannerTypeClass::Array[pThis->Param4].get();
-	new BannerClass(pBannerType, pThis->Param3, CoordStruct{ pThis->Param5, pThis->Param6, 0 });
+		if (BannerClass::Array[i]->Id == pThis->Param3)
+		{
+			BannerClass::Array[i]->Type = pBannerType;
+			BannerClass::Array[i]->Position = CoordStruct{ pThis->Param5, pThis->Param6, 0 };
+			found = true;
+			break;
+		}
+	}
+	if (!found)
+		new BannerClass(pBannerType, pThis->Param3, CoordStruct{ pThis->Param5, pThis->Param6, 0 });
 
 	return true;
 }
