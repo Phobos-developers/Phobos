@@ -2,6 +2,7 @@
 
 #include <GeneralStructures.h>
 #include <PCX.h>
+#include <TacticalClass.h>
 
 #include <Utilities/SavegameDef.h>
 #include <Utilities/Constructs.h>
@@ -9,16 +10,33 @@
 #include <Helpers/Template.h>
 #include <Utilities/Enum.h>
 
+#include <New/Type/BannerTypeClass.h>
+
 class BannerClass
 {
 public:
-	BannerClass();
-	BannerClass(int id, CoordStruct position, BannerType type, char source[32]);
-	~BannerClass() = default;
-	static DynamicVectorClass<BannerClass*> Instances;
+	static DynamicVectorClass<BannerClass*> Array;
 
-	void LoadContent();
-	int GetId() { return this->Id; }
+	BannerTypeClass* Type;
+	int Id;
+	CoordStruct Position;
+
+	BannerClass(BannerTypeClass* pBannerType, int id, CoordStruct position) :
+		Type(pBannerType),
+		Id(id),
+		Position(position)
+	{
+		BannerClass::Array.AddItem(this);
+	}
+
+	BannerClass() :
+		Type(),
+		Id(),
+		Position()
+	{
+		BannerClass::Array.AddItem(this);
+	}
+
 	void Render();
 
 	void InvalidatePointer(void* ptr) { };
@@ -29,11 +47,4 @@ public:
 private:
 	template <typename T>
 	bool Serialize(T& Stm);
-
-	/// Properties ///
-	int Id;
-	BannerType Type;
-	CoordStruct Position;
-	char Source[32];
-
 };

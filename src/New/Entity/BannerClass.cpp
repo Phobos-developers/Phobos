@@ -1,21 +1,6 @@
 #include "BannerClass.h"
 
-DynamicVectorClass<BannerClass*> BannerClass::Instances;
-
-BannerClass::BannerClass() : Id { 0 }
-, Type { BannerType::PCX }
-, Position { CoordStruct() }
-, Source { 0 }
-{ }
-
-BannerClass::BannerClass(int id, CoordStruct position, BannerType type, char source[32]) : Id { id }
-, Type { BannerType::PCX }
-, Position { position }
-{
-	strcpy(this->Source, source);
-	this->LoadContent();
-	BannerClass::Instances.AddItem(this);
-}
+DynamicVectorClass<BannerClass*> BannerClass::Array;
 
 template <typename T>
 bool BannerClass::Serialize(T& Stm)
@@ -24,7 +9,6 @@ bool BannerClass::Serialize(T& Stm)
 		.Process(this->Id)
 		.Process(this->Type)
 		.Process(this->Position)
-		.Process(this->Source)
 		.Success();
 }
 
@@ -38,35 +22,32 @@ bool BannerClass::Save(PhobosStreamWriter& Stm) const
 	return const_cast<BannerClass*>(this)->Serialize(Stm);
 }
 
-void BannerClass::LoadContent()
-{
-	switch (this->Type)
-	{
-	case BannerType::PCX:
-		// load pcx
-		PCX::Instance->LoadFile(this->Source);
-		break;
-	case BannerType::CSF:
-		// TODO load csf ???
-		break;
-	default:
-		break;
-	}
-}
-
 void BannerClass::Render()
 {
-	switch (this->Type)
+	int x = (int)((double)this->Position.X / 100.f) * DSurface::Composite->Width;
+	int y = (int)((double)this->Position.Y / 100.f) * DSurface::Composite->Height;
+	switch (this->Type->Type)
 	{
 	case BannerType::PCX:
-		if (auto pcx = PCX::Instance->GetSurface(this->Source))
+		BSurface* pcx;
+		pcx = PCX::Instance->GetSurface(this->Type->Banner_PCX.Get().data());
+		if (pcx)
 		{
-			RectangleStruct bounds = { this->Position.X, this->Position.X, pcx->Width, pcx->Height };
+			RectangleStruct bounds = { x, y, pcx->Width, pcx->Height };
 			PCX::Instance->BlitToSurface(&bounds, DSurface::Composite, pcx);
 		}
 		break;
 	case BannerType::CSF:
-		// TODO print csf
+		ColorStruct clr;
+		RectangleStruct vRect;
+		vRect = { 0, 0, 0, 0 };
+		DSurface::Composite->GetRect(&vRect);
+		Point2D vPos = Point2D{ x, y };
+		const wchar_t* a;
+		a = this->Type->Banner_CSF.Get().Text;
+
+		DSurface::Composite->DrawText(a, &vRect, &vPos, Drawing::RGB2DWORD(clr), 0,
+			TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12);
 		break;
 	default:
 		break;

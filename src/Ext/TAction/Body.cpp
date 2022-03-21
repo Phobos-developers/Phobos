@@ -453,7 +453,8 @@ bool TActionExt::CreateBannerPCX(TActionClass* pThis, HouseClass* pHouse, Object
 	};
 	PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
 
-	BannerClass(pThis->Param3, CoordStruct { pThis->Param4, pThis->Param5, 0 }, BannerType::PCX, pThis->Text);
+	BannerTypeClass* pBannerType = BannerTypeClass::Array[pThis->Param4].get();
+	new BannerClass(pBannerType, pThis->Param3, CoordStruct{ pThis->Param5, pThis->Param6, 0 });
 
 	return true;
 }
@@ -472,7 +473,8 @@ bool TActionExt::CreateBannerCSF(TActionClass* pThis, HouseClass* pHouse, Object
 	};
 	PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
 
-	BannerClass(pThis->Param3, CoordStruct { pThis->Param4, pThis->Param5, 0 }, BannerType::CSF, pThis->Text);
+	BannerTypeClass* pBannerType = BannerTypeClass::Array[pThis->Param4].get();
+	new BannerClass(pBannerType, pThis->Param3, CoordStruct{ pThis->Param5, pThis->Param6, 0 });
 
 	return true;
 }
@@ -493,9 +495,9 @@ bool TActionExt::DeleteBanner(TActionClass* pThis, HouseClass* pHouse, ObjectCla
 	
 	// pop banner here
 	int j = -1;
-	for (int i = 0; i < BannerClass::Instances.Count; i++)
+	for (int i = 0; i < BannerClass::Array.Count; i++)
 	{
-		if (BannerClass::Instances[i]->GetId() == pThis->Param3)
+		if (BannerClass::Array[i]->Id == pThis->Param3)
 		{
 			j = i;
 			break;
@@ -503,8 +505,8 @@ bool TActionExt::DeleteBanner(TActionClass* pThis, HouseClass* pHouse, ObjectCla
 	}
 	if (j != -1)
 	{
-		auto pBanner = BannerClass::Instances[j];
-		BannerClass::Instances.RemoveItem(j);
+		auto pBanner = BannerClass::Array[j];
+		BannerClass::Array.RemoveItem(j);
 		delete pBanner;
 	}
 

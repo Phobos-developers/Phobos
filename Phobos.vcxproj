@@ -56,6 +56,7 @@
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
     <ClCompile Include="src\New\Type\ShieldTypeClass.cpp" />
     <ClCompile Include="src\New\Type\LaserTrailTypeClass.cpp" />
+    <ClCompile Include="src\New\Type\BannerTypeClass.cpp" />
     <ClCompile Include="src\New\Entity\LaserTrailClass.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Hooks.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldTypeClass.h" />
     <ClInclude Include="src\New\Type\LaserTrailTypeClass.h" />
+    <ClInclude Include="src\New\Type\BannerTypeClass.h" />
     <ClInclude Include="src\New\Entity\LaserTrailClass.h" />
     <ClInclude Include="src\Utilities\Enumerable.h" />
     <ClInclude Include="src\Ext\Aircraft\Body.h" />

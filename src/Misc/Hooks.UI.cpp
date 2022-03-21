@@ -225,7 +225,7 @@ DEFINE_HOOK(0x456776, BuildingClass_DrawRadialIndicator_Visibility, 0x6)
 
 DEFINE_HOOK(0x6D4B25, TacticalClass_Render_Banner, 0x5)
 {
-	for (auto pBanner: BannerClass::Instances)
+	for (auto pBanner: BannerClass::Array)
 	{
 		pBanner->Render();
 	}
