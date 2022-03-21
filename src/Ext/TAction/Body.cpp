@@ -451,21 +451,21 @@ bool TActionExt::CreateBanner(TActionClass* pThis, HouseClass* pHouse, ObjectCla
 	};
 	PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
 
-	BannerTypeClass* pBannerType = BannerTypeClass::Array[pThis->Param4].get();
+	BannerTypeClass* pBannerType = BannerTypeClass::Array[pThis->Param3].get();
 
 	bool found = false;
 	for (int i = 0; i < BannerClass::Array.Count; i++)
 	{
-		if (BannerClass::Array[i]->Id == pThis->Param3)
+		if (BannerClass::Array[i]->Id == pThis->Value)
 		{
 			BannerClass::Array[i]->Type = pBannerType;
-			BannerClass::Array[i]->Position = CoordStruct{ pThis->Param5, pThis->Param6, 0 };
+			BannerClass::Array[i]->Position = CoordStruct{ pThis->Param4, pThis->Param5, 0 };
 			found = true;
 			break;
 		}
 	}
 	if (!found)
-		new BannerClass(pBannerType, pThis->Param3, CoordStruct{ pThis->Param5, pThis->Param6, 0 });
+		new BannerClass(pBannerType, pThis->Value, CoordStruct{ pThis->Param4, pThis->Param5, 0 });
 
 	return true;
 }
@@ -488,7 +488,7 @@ bool TActionExt::DeleteBanner(TActionClass* pThis, HouseClass* pHouse, ObjectCla
 	int j = -1;
 	for (int i = 0; i < BannerClass::Array.Count; i++)
 	{
-		if (BannerClass::Array[i]->Id == pThis->Param3)
+		if (BannerClass::Array[i]->Id == pThis->Value)
 		{
 			j = i;
 			break;

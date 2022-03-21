@@ -17,16 +17,11 @@ void BannerTypeClass::LoadFromINI(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->Banner_CSF.Read(exINI, section, "Banner.CSF");
-
-	pINI->ReadString(section, "Banner.PCX", NONE_STR, Phobos::readBuffer);
-	// ???????//
-	//this->Banner_PCX = Valueable<PhobosFixedString<32>>(PhobosFixedString<32>(GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"$")));
-	this->Banner_PCX = Valueable<PhobosFixedString<32>>(PhobosFixedString<32>());
-
-	if (this->Banner_PCX.Get())
+	this->Banner_PCX.Read(pINI, section, "Banner.PCX");
+	
+	if (this->Banner_PCX)
 	{
 		this->Type = BannerType::PCX;
-		PCX::Instance->LoadFile(this->Banner_PCX.Get().data());
 	}
 	else if (this->Banner_CSF.Get())
 	{

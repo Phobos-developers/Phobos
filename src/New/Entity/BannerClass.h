@@ -27,6 +27,7 @@ public:
 		Position(position)
 	{
 		BannerClass::Array.AddItem(this);
+		PCX::Instance->LoadFile(this->Type->Banner_PCX.data());
 	}
 
 	BannerClass() :

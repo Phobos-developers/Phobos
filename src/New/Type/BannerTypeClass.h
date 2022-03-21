@@ -7,9 +7,9 @@
 class BannerTypeClass final : public Enumerable<BannerTypeClass>
 {
 public:
-	Valueable<PhobosFixedString<0x20>> Banner_PCX;
+	PhobosFixedString<0x20> Banner_PCX;
 	Valueable<CSFText> Banner_CSF;
-	Valueable<BannerType> Type;
+	BannerType Type;
 
 	BannerTypeClass(const char* pTitle = NONE_STR) : Enumerable<BannerTypeClass>(pTitle)
 		, Type(BannerType::CSF)
