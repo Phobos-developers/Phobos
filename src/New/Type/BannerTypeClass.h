@@ -10,6 +10,7 @@ public:
 	PhobosFixedString<0x20> Banner_PCX;
 	Valueable<CSFText> Banner_CSF;
 	BannerType Type;
+	wchar_t Text[256];
 
 	BannerTypeClass(const char* pTitle = NONE_STR) : Enumerable<BannerTypeClass>(pTitle)
 		, Type(BannerType::CSF)

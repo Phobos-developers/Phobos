@@ -26,6 +26,7 @@ void BannerTypeClass::LoadFromINI(CCINIClass* pINI)
 	else if (this->Banner_CSF.Get())
 	{
 		this->Type = BannerType::CSF;
+		wcscpy(this->Text, this->Banner_CSF.Get().Text);
 	}
 }
 
@@ -36,6 +37,7 @@ void BannerTypeClass::Serialize(T& Stm)
 		.Process(this->Type)
 		.Process(this->Banner_CSF)
 		.Process(this->Banner_PCX)
+		.Process(this->Text)
 		;
 }
 
