@@ -23,6 +23,7 @@ public:
 		int MoveMissionEndMode;
 		int WaitNoTargetCounter;
 		TimerStruct WaitNoTargetTimer;
+		FootClass* TeamLeader;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject)
 			, WaitNoTargetAttempts { 0 }
@@ -33,6 +34,7 @@ public:
 			, MoveMissionEndMode { 0 }
 			, WaitNoTargetCounter { 0 }
 			, WaitNoTargetTimer { 0 }
+			, TeamLeader { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;
