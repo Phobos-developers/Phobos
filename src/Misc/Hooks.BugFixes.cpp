@@ -8,6 +8,8 @@
 #include <VoxelAnimClass.h>
 #include <BulletClass.h>
 #include <HouseClass.h>
+#include <FlyLocomotionClass.h>
+#include <JumpjetLocomotionClass.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
@@ -361,6 +363,49 @@ DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 				}
 			}
 		}
+	}
+
+	return 0;
+}
+
+
+DEFINE_HOOK(0x4CFE21, FlyLocomotionClass_Apparent_Speed_Modifiers, 0x7)
+{
+	enum { SkipGameCode = 0x4CFE3E };
+
+	GET_STACK(FlyLocomotionClass*, pThis, STACK_OFFS(0x4, 0x4));
+
+	auto pFoot = pThis->LinkedTo;
+
+	double currentSpeed = pFoot->GetTechnoType()->Speed * pThis->CurrentSpeed *
+		pFoot->SpeedMultiplier * pFoot->Owner->Type->SpeedAircraftMult *
+		(pFoot->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
+
+	R->EAX(currentSpeed);
+
+	return SkipGameCode;
+}
+
+
+DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
+{
+	GET(JumpjetLocomotionClass*, pThis, ESI);
+
+	if (pThis->CurrentSpeed > 0.0)
+	{
+		auto pFoot = pThis->LinkedTo;
+
+		double houseMultiplier = 1.0;
+
+		if (pFoot->WhatAmI() == AbstractType::Infantry)
+			houseMultiplier = pFoot->Owner->Type->SpeedInfantryMult;
+		else
+			houseMultiplier = pFoot->Owner->Type->SpeedUnitsMult;
+
+		double multiplier = pFoot->SpeedMultiplier * houseMultiplier *
+			(pFoot->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
+
+		pThis->Speed = (int)(pFoot->GetTechnoType()->JumpjetSpeed * multiplier);
 	}
 
 	return 0;
