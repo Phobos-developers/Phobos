@@ -597,7 +597,7 @@ BigGap=no     ; boolean
 
 ### Remove disguise on impact
 
-- Warheads can now remove disguise of spies.
+- Warheads can now remove disguise from disguised infantry such as spies. This will work even if the disguised was acquired by default through `PermaDisguise`.
 
 In `rulesmd.ini`:
 ```ini

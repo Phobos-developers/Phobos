@@ -298,6 +298,7 @@ Phobos fixes:
 - Fixed SplashList animations playing when a unit is hit on a bridge over water (by Uranusian)
 - Fixed shielded objects not decloaking if shield takes damage (by Starkku)
 - Fixed critical hit animation playing even if no critical hits were dealt due to `Crit.Affects` or `ImmuneToCrit` settings (by Starkku)
+- Fixed `RemoveDisguise` not working on `PermaDisguise` infantry (by Starkku)
 
 ### 0.2.2.2
 

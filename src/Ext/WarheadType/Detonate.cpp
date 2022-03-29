@@ -175,7 +175,7 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, Techn
 	{
 		auto pInf = abstract_cast<InfantryClass*>(pTarget);
 		if (pInf->IsDisguised())
-			pInf->ClearDisguise();
+			pInf->Disguised = false;
 	}
 }
 
