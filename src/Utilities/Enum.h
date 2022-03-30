@@ -253,4 +253,5 @@ enum class BannerType : int
 {
 	PCX = 0,
 	CSF = 1,
+	SHP = 2
 };

@@ -20,20 +20,26 @@ public:
 	BannerTypeClass* Type;
 	int Id;
 	CoordStruct Position;
+	int Variable;
+	bool IsGlobalVariable;
 
-	BannerClass(BannerTypeClass* pBannerType, int id, CoordStruct position) :
+	BannerClass(BannerTypeClass* pBannerType, int id, CoordStruct position, int variable, bool isGlobalVariable) :
 		Type(pBannerType),
 		Id(id),
-		Position(position)
+		Position(position),
+		Variable(variable),
+		IsGlobalVariable(isGlobalVariable)
 	{
 		BannerClass::Array.AddItem(this);
-		PCX::Instance->LoadFile(this->Type->Banner_PCX.data());
+		PCX::Instance->LoadFile(this->Type->Content_PCX.data());
 	}
 
 	BannerClass() :
 		Type(),
 		Id(),
-		Position()
+		Position(),
+		Variable(),
+		IsGlobalVariable()
 	{
 		BannerClass::Array.AddItem(this);
 	}
@@ -48,4 +54,7 @@ public:
 private:
 	template <typename T>
 	bool Serialize(T& Stm);
+	void RenderPCX(int x, int y);
+	void RenderSHP(int x, int y);
+	void RenderCSF(int x, int y);
 };

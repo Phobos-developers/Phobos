@@ -16,17 +16,37 @@ void BannerTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	INI_EX exINI(pINI);
 
-	this->Banner_CSF.Read(exINI, section, "Banner.CSF");
-	this->Banner_PCX.Read(pINI, section, "Banner.PCX");
+	this->Content_CSF.Read(exINI, section, "Content.CSF");
+	this->Content_PCX.Read(pINI, section, "Content.PCX");
+	this->Content_SHP.Read(pINI, section, "Content.SHP");
+	this->Content_Palette.Read(pINI, section, "Content.Palette");
 	
-	if (this->Banner_PCX)
+	if (this->Content_PCX)
 	{
 		this->Type = BannerType::PCX;
 	}
-	else if (this->Banner_CSF.Get())
+	else if (this->Content_SHP)
+	{
+		this->Type = BannerType::SHP;
+		char filename[0x20];
+		strcpy(filename, this->Content_SHP);
+		_strlwr_s(filename);
+		this->ImageSHP = FileSystem::LoadSHPFile(filename);
+		if (this->Content_Palette)
+		{
+			strcpy(filename, this->Content_Palette);
+			_strlwr_s(filename);
+			this->Palette = FileSystem::LoadPALFile(filename, DSurface::Composite);
+		}
+		else
+		{
+			this->Palette = FileSystem::PALETTE_PAL;
+		}
+	}
+	else if (this->Content_CSF.Get())
 	{
 		this->Type = BannerType::CSF;
-		wcscpy(this->Text, this->Banner_CSF.Get().Text);
+		wcscpy(this->Text, this->Content_CSF.Get().Text);
 	}
 }
 
@@ -35,9 +55,12 @@ void BannerTypeClass::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Type)
-		.Process(this->Banner_CSF)
-		.Process(this->Banner_PCX)
+		.Process(this->Content_CSF)
+		.Process(this->Content_PCX)
+		.Process(this->Content_SHP)
+		.Process(this->Content_Palette)
 		.Process(this->Text)
+		.Process(this->ImageSHP)
 		;
 }
 

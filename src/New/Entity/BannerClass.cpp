@@ -11,6 +11,8 @@ bool BannerClass::Serialize(T& Stm)
 		.Process(this->Id)
 		.Process(this->Type)
 		.Process(this->Position)
+		.Process(this->Variable)
+		.Process(this->IsGlobalVariable)
 		.Success();
 }
 
@@ -24,13 +26,13 @@ bool BannerClass::Save(PhobosStreamWriter& Stm) const
 	return const_cast<BannerClass*>(this)->Serialize(Stm);
 }
 
-void RenderPCX(BannerTypeClass* pType, int x, int y)
+void BannerClass::RenderPCX(int x, int y)
 {
 	int xsize = 0;
 	int ysize = 0;
 	BSurface* pcx;
 	char filename[0x20];
-	strcpy(filename, pType->Banner_PCX.data());
+	strcpy(filename, this->Type->Content_PCX.data());
 	_strlwr_s(filename);
 	pcx = PCX::Instance->GetSurface(filename);
 	if (pcx)
@@ -40,11 +42,28 @@ void RenderPCX(BannerTypeClass* pType, int x, int y)
 		xsize = pcx->Width;
 		ysize = pcx->Height;
 		RectangleStruct bounds = { x, y, xsize, ysize };
+
 		PCX::Instance->BlitToSurface(&bounds, DSurface::Composite, pcx);
 	}
 }
 
-void RenderCSF(BannerTypeClass* pType, int x, int y)
+void BannerClass::RenderSHP(int x, int y)
+{
+	if (this->Type->ImageSHP && this->Type->Palette)
+	{
+		x = x - this->Type->ImageSHP->Width / 2;
+		y = y - this->Type->ImageSHP->Height / 2;
+		int xsize = this->Type->ImageSHP->Width;
+		int ysize = this->Type->ImageSHP->Height;
+		RectangleStruct bounds = { x, y, xsize, ysize };
+		Point2D vPos = { x, y };
+
+		DSurface::Temp->DrawSHP(this->Type->Palette, this->Type->ImageSHP, 0, &vPos, &bounds,
+			BlitterFlags::Flat | BlitterFlags::Alpha, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+	}
+}
+
+void BannerClass::RenderCSF(int x, int y)
 {
 	ColorStruct clr = { 255, 0, 0 };
 	RectangleStruct vRect = { 0, 0, 0, 0 };
@@ -53,19 +72,18 @@ void RenderCSF(BannerTypeClass* pType, int x, int y)
 	wchar_t text[10];
 	wchar_t text2[266];
 
-	auto& variables = ScenarioExt::Global()->Variables[1];
-	auto itr = variables.find(1);
+	auto& variables = ScenarioExt::Global()->Variables[this->IsGlobalVariable != 0];
+	auto itr = variables.find(this->Variable);
 	if (itr != variables.end())
 	{
 		swprintf_s(text, L" %d", itr->second.Value);
 	}
-	wcscpy(text2, pType->Text);
+	wcscpy(text2, this->Type->Text);
 	wcscat(text2, text);
 
 	DSurface::Composite->DrawText(text2, &vRect, &vPos, Drawing::RGB2DWORD(clr), 0,
 		TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12 | TextPrintType::Background);
 }
-
 
 void BannerClass::Render()
 {
@@ -74,10 +92,13 @@ void BannerClass::Render()
 	switch (this->Type->Type)
 	{
 	case BannerType::PCX:
-		RenderPCX(this->Type, x, y);
+		this->RenderPCX(x, y);
+		break;
+	case BannerType::SHP:
+		this->RenderSHP(x, y);
 		break;
 	case BannerType::CSF:
-		RenderCSF(this->Type, x, y);
+		this->RenderCSF(x, y);
 		break;
 	default:
 		break;

@@ -7,10 +7,16 @@
 class BannerTypeClass final : public Enumerable<BannerTypeClass>
 {
 public:
-	PhobosFixedString<0x20> Banner_PCX;
-	Valueable<CSFText> Banner_CSF;
+	// read from INI
+	PhobosFixedString<0x20> Content_PCX;
+	PhobosFixedString<0x20> Content_SHP;
+	PhobosFixedString<0x20> Content_Palette;
+	Valueable<CSFText> Content_CSF;
+	// internal
 	BannerType Type;
 	wchar_t Text[256];
+	SHPStruct* ImageSHP;
+	ConvertClass* Palette;
 
 	BannerTypeClass(const char* pTitle = NONE_STR) : Enumerable<BannerTypeClass>(pTitle)
 		, Type(BannerType::CSF)
