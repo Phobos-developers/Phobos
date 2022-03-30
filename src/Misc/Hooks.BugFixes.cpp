@@ -1,3 +1,4 @@
+#include <AircraftClass.h>
 #include <AnimClass.h>
 #include <BuildingClass.h>
 #include <TechnoClass.h>
@@ -13,6 +14,7 @@
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
+#include <Ext/Techno/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -368,24 +370,47 @@ DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 	return 0;
 }
 
-
-DEFINE_HOOK(0x4CFE21, FlyLocomotionClass_Apparent_Speed_Modifiers, 0x7)
+DEFINE_HOOK(0x415F5C, AircraftClass_FireAt_SpeedModifiers, 0xA)
 {
-	enum { SkipGameCode = 0x4CFE3E };
+	GET(AircraftClass*, pThis, EDI);
 
-	GET_STACK(FlyLocomotionClass*, pThis, STACK_OFFS(0x4, 0x4));
+	if (pThis->Type->Locomotor == LocomotionClass::CLSIDs::Fly)
+	{
+		if (const auto pLocomotor = static_cast<FlyLocomotionClass*>(pThis->Locomotor.get()))
+		{
+			double currentSpeed = pThis->GetTechnoType()->Speed * pLocomotor->CurrentSpeed *
+				TechnoExt::GetCurrentSpeedMultiplier(pThis);
 
-	auto pFoot = pThis->LinkedTo;
+			R->EAX(static_cast<int>(currentSpeed));
+		}
+	}
 
-	double currentSpeed = pFoot->GetTechnoType()->Speed * pThis->CurrentSpeed *
-		pFoot->SpeedMultiplier * pFoot->Owner->Type->SpeedAircraftMult *
-		(pFoot->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
-
-	R->EAX(currentSpeed);
-
-	return SkipGameCode;
+	return 0;
 }
 
+DEFINE_HOOK(0x4CDA78, FlyLocomotionClass_MovementAI_SpeedModifiers, 0x6)
+{
+	GET(FlyLocomotionClass*, pThis, ESI);
+
+	double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
+		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+
+	R->EAX(static_cast<int>(currentSpeed));
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4CE4BF, FlyLocomotionClass_4CE4B0_SpeedModifiers, 0x6)
+{
+	GET(FlyLocomotionClass*, pThis, ECX);
+
+	double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
+		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+
+	R->EAX(static_cast<int>(currentSpeed));
+
+	return 0;
+}
 
 DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 {
@@ -393,19 +418,9 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 
 	if (pThis->CurrentSpeed > 0.0)
 	{
-		auto pFoot = pThis->LinkedTo;
+		double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
 
-		double houseMultiplier = 1.0;
-
-		if (pFoot->WhatAmI() == AbstractType::Infantry)
-			houseMultiplier = pFoot->Owner->Type->SpeedInfantryMult;
-		else
-			houseMultiplier = pFoot->Owner->Type->SpeedUnitsMult;
-
-		double multiplier = pFoot->SpeedMultiplier * houseMultiplier *
-			(pFoot->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
-
-		pThis->Speed = (int)(pFoot->GetTechnoType()->JumpjetSpeed * multiplier);
+		pThis->Speed = (int)(pThis->LinkedTo->GetTechnoType()->JumpjetSpeed * multiplier);
 	}
 
 	return 0;
