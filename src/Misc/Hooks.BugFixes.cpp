@@ -416,11 +416,8 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 {
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
-	if (pThis->CurrentSpeed > 0.0)
-	{
-		double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
-		pThis->Speed = (int)(pThis->LinkedTo->GetTechnoType()->JumpjetSpeed * multiplier);
-	}
+	double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+	pThis->Speed = (int)(pThis->LinkedTo->GetTechnoType()->JumpjetSpeed * multiplier);
 
 	return 0;
 }
