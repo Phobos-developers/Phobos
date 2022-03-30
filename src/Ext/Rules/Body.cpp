@@ -54,6 +54,37 @@ void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 
 }
 
+namespace ObjectTypeParser
+{
+	template<typename T>
+	void Exec(CCINIClass* pINI, DynamicVectorClass<DynamicVectorClass<T*>>& nVecDest, const char* pKey, bool bDebug = true)
+	{
+		for (int i = 0; i < pINI->GetKeyCount(pKey); ++i)
+		{
+			DynamicVectorClass<T*> _Buffer;
+			char* context = nullptr;
+			pINI->ReadString(pKey, pINI->GetKeyName(pKey, i), "", Phobos::readBuffer);
+
+			for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context);
+				cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				T* buffer;
+
+				if(Parser<T*>::TryParse(cur, &buffer))
+					_Buffer.AddItem(buffer);
+				else
+				{
+					if (bDebug)
+						Debug::Log("ObjectTypeParser DEBUG: [%s][%d]: Error parsing [%s]\n", pKey, nVecDest.Count, cur);
+				}
+			}
+
+			nVecDest.AddItem(_Buffer);
+			_Buffer.Clear();
+		}
+	}
+};
+
 void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
 	RulesExt::ExtData* pData = RulesExt::Global();
@@ -74,44 +105,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
 
 	// Section AITargetTypes
-	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
-	for (int i = 0; i < itemsCount; ++i)
-	{
-		DynamicVectorClass<TechnoTypeClass*> objectsList;
-		char* context = nullptr;
-		pINI->ReadString(sectionAITargetTypes, pINI->GetKeyName(sectionAITargetTypes, i), "", Phobos::readBuffer);
-
-		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
-		{
-			TechnoTypeClass* buffer;
-			if (Parser<TechnoTypeClass*>::TryParse(cur, &buffer))
-				objectsList.AddItem(buffer);
-			else
-				Debug::Log("DEBUG: [AITargetTypes][%d]: Error parsing [%s]\n", AITargetTypesLists.Count, cur);
-		}
-
-		AITargetTypesLists.AddItem(objectsList);
-		objectsList.Clear();
-	}
+	ObjectTypeParser::Exec(pINI, AITargetTypesLists, sectionAITargetTypes, true);
 
 	// Section AIScriptsList
-	int scriptitemsCount = pINI->GetKeyCount(sectionAIScriptsList);
-	for (int i = 0; i < scriptitemsCount; ++i)
-	{
-		DynamicVectorClass<ScriptTypeClass*> objectsList;
-
-		char* context = nullptr;
-		pINI->ReadString(sectionAIScriptsList, pINI->GetKeyName(sectionAIScriptsList, i), "", Phobos::readBuffer);
-
-		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
-		{
-			ScriptTypeClass* pNewScript = GameCreate<ScriptTypeClass>(cur);
-			objectsList.AddItem(pNewScript);
-		}
-
-		AIScriptsLists.AddItem(objectsList);
-		objectsList.Clear();
-	}
+	ObjectTypeParser::Exec(pINI, AIScriptsLists, sectionAIScriptsList, false);
 }
 
 // this runs between the before and after type data loading methods for rules ini

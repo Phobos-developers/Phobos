@@ -49,6 +49,8 @@
 #include <VocClass.h>
 #include <VoxClass.h>
 #include <ArmorType.h>
+#include <ParticleSystemTypeClass.h>
+#include <ScriptTypeClass.h>
 
 namespace detail {
 	template <typename T>
@@ -63,6 +65,46 @@ namespace detail {
 				return true;
 			}
 			else {
+				Debug::INIParseFailed(pSection, pKey, pValue);
+			}
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read(ParticleSystemTypeClass*& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto const pValue = parser.value();
+			auto const parsed = !allocate ? ParticleSystemTypeClass::Find(pValue) : GameCreate<ParticleSystemTypeClass>(pValue);
+			if (parsed || INIClass::IsBlank(pValue))
+			{
+				value = parsed;
+				return true;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, pValue);
+			}
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read(ScriptTypeClass*& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto const pValue = parser.value();
+			auto const parsed = !allocate ? ScriptTypeClass::Find(pValue) : GameCreate<ScriptTypeClass>(pValue);
+			if (parsed || INIClass::IsBlank(pValue))
+			{
+				value = parsed;
+				return true;
+			}
+			else
+			{
 				Debug::INIParseFailed(pSection, pKey, pValue);
 			}
 		}
