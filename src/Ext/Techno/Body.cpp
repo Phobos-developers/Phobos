@@ -494,6 +494,21 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 	}
 }
 
+double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
+{
+	double houseMultiplier = 1.0;
+
+	if (pThis->WhatAmI() == AbstractType::Aircraft)
+		houseMultiplier = pThis->Owner->Type->SpeedAircraftMult;
+	else if (pThis->WhatAmI() == AbstractType::Infantry)
+		houseMultiplier = pThis->Owner->Type->SpeedInfantryMult;
+	else
+		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
+
+	return pThis->SpeedMultiplier * houseMultiplier *
+		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
+}
+
 // =============================
 // load / save
 
