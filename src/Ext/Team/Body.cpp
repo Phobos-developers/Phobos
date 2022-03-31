@@ -19,6 +19,8 @@ void TeamExt::ExtData::Serialize(T& Stm)
 		.Process(this->WaitNoTargetCounter)
 		.Process(this->WaitNoTargetTimer)
 		.Process(this->TeamLeader)
+		.Process(this->TriggersSideIdx)
+		.Process(this->TriggersHouseIdx)
 		;
 }
 

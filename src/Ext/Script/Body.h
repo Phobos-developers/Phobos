@@ -13,6 +13,7 @@
 #include <WarheadTypeClass.h>
 #include <SpawnManagerClass.h>
 
+#include <Ext/House/Body.h>
 #include <Ext/Team/Body.h>
 #include <Utilities/Container.h>
 #include <Phobos.h>
@@ -62,6 +63,13 @@ enum class PhobosScripts : unsigned int
 	UnregisterGreatSuccess = 111,
 	GatherAroundLeader = 112,
 	RandomSkipNextAction = 113,
+	SetSideIdxForManagingTriggers = 127,
+	SetHouseIdxForManagingTriggers = 128,
+	ManageAllAITriggers = 129,
+	EnableTriggersFromList = 130,
+	DisableTriggersFromList = 131,
+	EnableTriggersWithObjects = 132,
+	DisableTriggersWithObjects = 133,
 
 	// Variables
 	LocalVariableSet = 500,
@@ -193,6 +201,8 @@ public:
 	static void SetMoveMissionEndMode(TeamClass* pTeam, int mode);
 	static void SkipNextAction(TeamClass* pTeam, int successPercentage);
 	static FootClass* FindTheTeamLeader(TeamClass* pTeam);
+	static void ManageTriggersFromList(TeamClass* pTeam, int idxAITriggerType, bool isEnabled);
+	static void ManageAllTriggersFromHouse(TeamClass* pTeam, HouseClass* pHouse, int sideIdx, int houseIdx, bool isEnabled);
 
 	static bool IsExtVariableAction(int action);
 	static void VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg);
@@ -200,7 +210,10 @@ public:
 	static void VariableOperationHandler(TeamClass* pTeam, int nVariable, int Number);
 	template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
-	
+	static void SetSideIdxForManagingTriggers(TeamClass* pTeam, int sideIdx);
+	static void SetHouseIdxForManagingTriggers(TeamClass* pTeam, int houseIdx);
+	static void ManageAITriggers(TeamClass* pTeam, int enabled);
+	static void ManageTriggersWithObjects(TeamClass* pTeam, int idxAITargetType, bool isEnabled);
 
 	static ExtContainer ExtMap;
 

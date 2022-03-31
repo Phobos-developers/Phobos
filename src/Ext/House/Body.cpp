@@ -82,6 +82,155 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 		return pDefault;
 	}
 }
+
+int HouseExt::GetHouseIndex(int param, TeamClass* pTeam = nullptr, TActionClass* pTAction = nullptr)
+{
+	if ((pTeam && pTAction) || (param == 8997 && !pTeam && !pTAction))
+		return -1;
+	
+	int houseIdx = -1;
+	std::vector<int> housesListIdx;
+
+	// Transtale the Multiplayer index into a valid index for the HouseClass array
+	if (param >= HouseClass::PlayerAtA && param <= HouseClass::PlayerAtH)
+	{
+		switch (param)
+		{
+		case HouseClass::PlayerAtA:
+			houseIdx = 0;
+			break;
+
+		case HouseClass::PlayerAtB:
+			houseIdx = 1;
+			break;
+
+		case HouseClass::PlayerAtC:
+			houseIdx = 2;
+			break;
+
+		case HouseClass::PlayerAtD:
+			houseIdx = 3;
+			break;
+
+		case HouseClass::PlayerAtE:
+			houseIdx = 4;
+			break;
+
+		case HouseClass::PlayerAtF:
+			houseIdx = 5;
+			break;
+
+		case HouseClass::PlayerAtG:
+			houseIdx = 6;
+			break;
+
+		case HouseClass::PlayerAtH:
+			houseIdx = 7;
+			break;
+
+		default:
+			break;
+		}
+
+		if (houseIdx >= 0)
+		{
+			HouseClass* pHouse = HouseClass::Array->GetItem(houseIdx);
+
+			if (!pHouse->Defeated
+				&& !pHouse->IsObserver()
+				&& !pHouse->Type->MultiplayPassive)
+			{
+				return houseIdx;
+			}
+		}
+
+		return -1;
+	}
+
+	// Special case that returns the house index of the TeamClass object or the Trigger Action
+	if (param == 8997)
+	{
+		return (pTeam ? pTeam->Owner->ArrayIndex : pTAction->TeamType->Owner->ArrayIndex);
+	}
+
+	// Positive index values check. Includes any kind of House
+	if (param >= 0)
+	{
+		if (param < HouseClass::Array->Count)
+		{
+			HouseClass* pHouse = HouseClass::Array->GetItem(param);
+
+			if (!pHouse->Defeated
+				&& !pHouse->IsObserver())
+			{
+				return houseIdx;
+			}
+		}
+
+		return -1;
+	}
+
+	// Special cases
+	switch (param)
+	{
+	case -1:
+		// Random non-neutral
+		for (auto pHouse : *HouseClass::Array)
+		{
+			if (!pHouse->Defeated
+				&& !pHouse->IsObserver()
+				&& !pHouse->Type->MultiplayPassive)
+			{
+				housesListIdx.push_back(pHouse->ArrayIndex);
+			}
+		}
+
+		if (housesListIdx.size() > 0)
+			houseIdx = housesListIdx.at(ScenarioClass::Instance->Random.RandomRanged(0, housesListIdx.size() - 1));
+		else
+			return -1;
+
+		break;
+
+	case -2:
+		// Find first Neutral house
+		for (auto pHouseNeutral : *HouseClass::Array)
+		{
+			if (pHouseNeutral->IsNeutral())
+			{
+				houseIdx = pHouseNeutral->ArrayIndex;
+				break;
+			}
+		}
+
+		break;
+
+	case -3:
+		// Random Human Player
+		for (auto pHouse : *HouseClass::Array)
+		{
+			if (pHouse->ControlledByHuman()
+				&& !pHouse->Defeated
+				&& !pHouse->IsObserver())
+			{
+				housesListIdx.push_back(pHouse->ArrayIndex);
+			}
+		}
+
+		if (housesListIdx.size() > 0)
+			houseIdx = housesListIdx.at(ScenarioClass::Instance->Random.RandomRanged(0, housesListIdx.size() - 1));
+		else
+			return -1;
+
+		break;
+
+	default:
+		break;
+	}
+
+	return houseIdx;
+}
+
 // =============================
 // load / save
 

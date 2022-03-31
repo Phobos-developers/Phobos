@@ -1170,6 +1170,87 @@ In `aimd.ini`:
 x=113,n           ; where 0 > n <= 100
 ```
 
+### `127` Set Side Index For Managing AI Triggers
+
+- Set the side index for enabling and disabling triggers.
+0 means any side.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=127,n           ; integer, where 0 > n, default -1
+```
+
+### `128` Set House Index For Managing AI Triggers
+
+- Set the House index for enabling and disabling triggers. The indexes aren't the ones used in [Countries], these are internal in-game House indexes.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=128,n           ; integer
+```
+
+- The possible argument values are:
+
+| *Argument* | *Description*                          |
+| :--------: | :-------------------------------------------: |
+| 4475-4482  | Multiplayer start location indexes |
+| 8997       | Special case that returns the house index of the Team object |
+| >= 0       | House index. Neutral houses can be used |
+| -1         | Random non-neutral House |
+| -2         | Find the first Neutral house available |
+| -3         | Random Human Player alive |
+
+### `129` Enable Or Disable All AI Triggers
+
+- All AI Triggers will be enabled or disabled.
+You must set the affected side with Action 127 and House with Action 128.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=129,n           ; integer, 1 == enable, 0 == disable
+```
+
+### `130` Enable AI Triggers From List
+
+- When executed this action enable all AI Trigger Types from the selected list in `AITriggersList`. The second parameter is a 0-based index from the new section `AITriggersList` explained below.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=130,n
+```
+
+The second parameter is a 0-based index for the `AITriggersList` section that specifies the list of possible `AITriggerTypes` that can be evaluated. The new `AITriggersList` section must be declared in `rulesmd.ini` for making this script work:
+
+In `rulesmd.ini`:
+```ini
+[AITriggersList]  ; List of AITriggerTypes lists
+0=SOMEAITRIGGERTYPE,SOMEOTHERAITRIGGERTYPE,SAMPLETRIGGERTYPE
+1=ANOTHERTRIGGERTYPE,YETANOTHERTRIGGERTYPE
+; ...
+```
+
+### `131` Disable AI Triggers From List
+
+- Works silimar to the Action 130. When executed this action disable all AI Trigger Types from the selected list in `AITriggersList`. The second parameter is a 0-based index from the new section `AITriggersList`.
+
+### `132` Enable AI Triggers If Contains Any Objects From the List
+
+- When executed this action all AI Trigger Types that contains any unit of the selected list in `AITargetTypes` will be enabled. The second parameter is a 0-based index from the new section `AITargetTypes`.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=132,n
+```
+
+### `133` Disable AI Triggers If Contains Any Objects From the List
+
+- Works silimar to the Action 132. When executed this action all AI Trigger Types that contains any unit of the selected list in `AITargetTypes` will be disabled. The second parameter is a 0-based index from the new section `AITargetTypes`.
+
 ### `500 - 523` Edit Variable
 - Operate a variable's value
     - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.

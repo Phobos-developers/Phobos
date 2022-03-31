@@ -162,6 +162,14 @@ public:
 			if (pFoot->BelongsToATeam())
 			{
 				auto pTeam = pFoot->Team;
+			//DEBUG: DELETE THESE LINES BEFORE A FUTURE MERGE INTO DEVELOP !!!
+			//ScriptExt::ManageTriggersFromList(nullptr, 0, false);
+			Debug::Log("List of available Triggers:\n");
+			for (int i = 0; i < AITriggerTypeClass::Array->Count; i++)
+			{
+				auto pTrigger = AITriggerTypeClass::Array->GetItem(i);
+				Debug::Log("[%d] = %s [IsEnabled: %d] [SideIdx: %d] [HouseIdx: %d] [Curr: %f Min: %f, Max %f]\n", i, pTrigger->ID, pTrigger->IsEnabled, pTrigger->SideIndex, pTrigger->HouseIndex, pTrigger->Weight_Current, pTrigger->Weight_Minimum, pTrigger->Weight_Maximum);
+			}
 
 				auto pTeamType = pFoot->Team->Type;
 				bool found = false;
@@ -271,6 +279,15 @@ public:
 
 				append("Current Shield HP = (%d / %d)\n", pShieldData->GetHP(), pTypeShieldData->ShieldType->Strength);
 			}
+			//DEBUG: DELETE THESE LINES BEFORE A FUTURE MERGE INTO DEVELOP !!!
+			//ScriptExt::ManageTriggersFromList(nullptr, 0, true);
+			Debug::Log("List of available Triggers:\n");
+			for (int i = 0; i < AITriggerTypeClass::Array->Count; i++)
+			{
+				auto pTrigger = AITriggerTypeClass::Array->GetItem(i);
+				Debug::Log("[%d] = %s [IsEnabled: %d] [SideIdx: %d] [HouseIdx: %d] [Curr: %f Min: %f, Max %f]\n", i, pTrigger->ID, pTrigger->IsEnabled, pTrigger->SideIndex, pTrigger->HouseIndex, pTrigger->Weight_Current, pTrigger->Weight_Minimum, pTrigger->Weight_Maximum);
+			}
+
 			display();
 		};
 

@@ -24,6 +24,8 @@ public:
 		int WaitNoTargetCounter;
 		TimerStruct WaitNoTargetTimer;
 		FootClass* TeamLeader;
+		int TriggersSideIdx;
+		int TriggersHouseIdx;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject)
 			, WaitNoTargetAttempts { 0 }
@@ -35,6 +37,8 @@ public:
 			, WaitNoTargetCounter { 0 }
 			, WaitNoTargetTimer { 0 }
 			, TeamLeader { nullptr }
+			, TriggersSideIdx { -1 }
+			, TriggersHouseIdx { -1 }
 		{ }
 
 		virtual ~ExtData() = default;
