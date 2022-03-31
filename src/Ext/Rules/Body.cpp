@@ -63,6 +63,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	const char* sectionAITargetTypes = "AITargetTypes";
 	const char* sectionAIScriptsList = "AIScriptsList";
+	const char* sectionAITriggersList = "AITriggersList";
 
 	INI_EX exINI(pINI);
 
@@ -110,6 +111,25 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		}
 
 		AIScriptsLists.AddItem(objectsList);
+		objectsList.Clear();
+	}
+
+	// Section AITriggersList
+	int triggerItemsCount = pINI->GetKeyCount(sectionAITriggersList);
+	for (int i = 0; i < triggerItemsCount; ++i)
+	{
+		DynamicVectorClass<AITriggerTypeClass*> objectsList;
+
+		char* context = nullptr;
+		pINI->ReadString(sectionAITriggersList, pINI->GetKeyName(sectionAITriggersList, i), "", Phobos::readBuffer);
+
+		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			AITriggerTypeClass* pNewTrigger = GameCreate<AITriggerTypeClass>(cur);
+			objectsList.AddItem(pNewTrigger);
+		}
+
+		AITriggersLists.AddItem(objectsList);
 		objectsList.Clear();
 	}
 }
@@ -166,6 +186,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetAllowLayerDeviation)
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
+		.Process(this->AITriggersLists)
 		.Process(this->Storage_TiberiumIndex)
 		;
 }

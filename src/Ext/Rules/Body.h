@@ -2,6 +2,7 @@
 
 #include <CCINIClass.h>
 #include <RulesClass.h>
+#include <AITriggerTypeClass.h>
 
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
@@ -30,6 +31,7 @@ public:
 		PhobosFixedString<32u> MissingCameo;
 		DynamicVectorClass<DynamicVectorClass<TechnoTypeClass*>> AITargetTypesLists;
 		DynamicVectorClass<DynamicVectorClass<ScriptTypeClass*>> AIScriptsLists;
+		DynamicVectorClass<DynamicVectorClass<AITriggerTypeClass*>> AITriggersLists;
 
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
