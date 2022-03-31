@@ -19,7 +19,9 @@ void BannerTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Content_CSF.Read(exINI, section, "Content.CSF");
 	this->Content_PCX.Read(pINI, section, "Content.PCX");
 	this->Content_SHP.Read(pINI, section, "Content.SHP");
-	this->Content_Palette.Read(pINI, section, "Content.Palette");
+	this->Content_SHP_Palette.Read(pINI, section, "Content.SHP.Palette");
+	this->Content_CSF_Color.Read(exINI, section, "Content.CSF.Color");
+	this->Content_CSF_DrawBackground.Read(exINI, section, "Content.CSF.DrawBackground");
 	
 	if (this->Content_PCX)
 	{
@@ -32,9 +34,9 @@ void BannerTypeClass::LoadFromINI(CCINIClass* pINI)
 		strcpy(filename, this->Content_SHP);
 		_strlwr_s(filename);
 		this->ImageSHP = FileSystem::LoadSHPFile(filename);
-		if (this->Content_Palette)
+		if (this->Content_SHP_Palette)
 		{
-			strcpy(filename, this->Content_Palette);
+			strcpy(filename, this->Content_SHP_Palette);
 			_strlwr_s(filename);
 			this->Palette = FileSystem::LoadPALFile(filename, DSurface::Composite);
 		}
@@ -56,9 +58,11 @@ void BannerTypeClass::Serialize(T& Stm)
 	Stm
 		.Process(this->Type)
 		.Process(this->Content_CSF)
+		.Process(this->Content_CSF_Color)
+		.Process(this->Content_CSF_DrawBackground)
 		.Process(this->Content_PCX)
 		.Process(this->Content_SHP)
-		.Process(this->Content_Palette)
+		.Process(this->Content_SHP_Palette)
 		.Process(this->Text)
 		.Process(this->ImageSHP)
 		;

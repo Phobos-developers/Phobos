@@ -53,8 +53,6 @@ void BannerClass::RenderSHP(int x, int y)
 	{
 		x = x - this->Type->ImageSHP->Width / 2;
 		y = y - this->Type->ImageSHP->Height / 2;
-		int xsize = this->Type->ImageSHP->Width;
-		int ysize = this->Type->ImageSHP->Height;
 		Point2D vPos = { x, y };
 
 		DSurface::Composite->DrawSHP(this->Type->Palette, this->Type->ImageSHP, 0, &vPos, &DSurface::ViewBounds,
@@ -64,7 +62,6 @@ void BannerClass::RenderSHP(int x, int y)
 
 void BannerClass::RenderCSF(int x, int y)
 {
-	ColorStruct clr = { 255, 0, 0 };
 	RectangleStruct vRect = { 0, 0, 0, 0 };
 	DSurface::Composite->GetRect(&vRect);
 	Point2D vPos = Point2D{ x, y };
@@ -80,8 +77,11 @@ void BannerClass::RenderCSF(int x, int y)
 	wcscpy(text2, this->Type->Text);
 	wcscat(text2, text);
 
-	DSurface::Composite->DrawText(text2, &vRect, &vPos, Drawing::RGB2DWORD(clr), 0,
-		TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12 | TextPrintType::Background);
+	TextPrintType textFlags = TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12 |
+		(this->Type->Content_CSF_DrawBackground ? TextPrintType::Background : (TextPrintType)0);
+
+	DSurface::Composite->DrawText(text2, &vRect, &vPos,
+		Drawing::RGB2DWORD(this->Type->Content_CSF_Color.Get(Drawing::TooltipColor())), 0, textFlags);
 }
 
 void BannerClass::Render()
