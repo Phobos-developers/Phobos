@@ -55,11 +55,10 @@ void BannerClass::RenderSHP(int x, int y)
 		y = y - this->Type->ImageSHP->Height / 2;
 		int xsize = this->Type->ImageSHP->Width;
 		int ysize = this->Type->ImageSHP->Height;
-		RectangleStruct bounds = { x, y, xsize, ysize };
 		Point2D vPos = { x, y };
 
-		DSurface::Temp->DrawSHP(this->Type->Palette, this->Type->ImageSHP, 0, &vPos, &bounds,
-			BlitterFlags::Flat | BlitterFlags::Alpha, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+		DSurface::Composite->DrawSHP(this->Type->Palette, this->Type->ImageSHP, 0, &vPos, &DSurface::ViewBounds,
+			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 }
 
