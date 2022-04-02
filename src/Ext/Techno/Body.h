@@ -29,6 +29,7 @@ public:
 		Valueable<ShieldTypeClass*> CurrentShieldType;
 		Valueable<int> LastWarpDistance;
 		int Death_Countdown;
+		Valueable<bool> IsLeggedCyborg;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet { nullptr }
@@ -40,7 +41,8 @@ public:
 			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType {}
 			, LastWarpDistance {}
-			, Death_Countdown(-1)
+			, Death_Countdown { -1 }
+			, IsLeggedCyborg { false }
 		{ }
 
 		virtual ~ExtData() = default;

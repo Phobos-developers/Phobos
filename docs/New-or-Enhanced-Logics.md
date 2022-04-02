@@ -453,6 +453,16 @@ In `rulesmd.ini`:
 ForceWeapon.Naval.Decloacked=-1   ; Integer. 0 for primary weapon, 1 for secondary weapon
 ```
 
+### Repair Legless Cyborgs in transports
+
+- Now transports can restore cyborg legs when the damaged soldier enter into the transport.
+
+In `rulesmd.ini`:
+```ini
+[SOME_TRANSPORT]                  ; TechnoType
+CanRepairCyborgLegs=false         ; boolean
+```
+
 ## Terrains
 
 ### Destroy animation & sound

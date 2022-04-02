@@ -525,6 +525,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentShieldType)
 		.Process(this->LastWarpDistance)
 		.Process(this->Death_Countdown)
+		.Process(this->IsLeggedCyborg)
 		;
 }
 
