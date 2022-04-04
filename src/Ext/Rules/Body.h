@@ -35,7 +35,6 @@ public:
 		Valueable<bool> JumpjetNoWobbles;
 		Valueable<bool> JumpjetAllowLayerDeviation;
 		Valueable<int> Storage_TiberiumIndex;
-		Valueable<bool> Building_PlacementPreview;
 		Valueable<int> PlacementGrid_TranslucentLevel;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
@@ -47,7 +46,6 @@ public:
 			, JumpjetNoWobbles { false }
 			, JumpjetAllowLayerDeviation { true }
 			, Storage_TiberiumIndex { -1 }
-			, Building_PlacementPreview{ }
 			, PlacementGrid_TranslucentLevel{ 0 }
 		{ }
 

@@ -7,6 +7,7 @@
 #include <Ext/Rules/Body.h>
 #include <Utilities/Macro.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/GeneralUtils.h>
 
 DEFINE_HOOK(0x460285, BuildingTypeClass_LoadFromINI_Muzzle, 0x6)
 {
@@ -75,14 +76,14 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 		{
 			auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 
-			if (pTypeExt && pTypeExt->PlacementPreview_Show.Get(RulesExt::Global()->Building_PlacementPreview.Get()))
+			if (pTypeExt && pTypeExt->PlacementPreview_Show.Get(Phobos::Config::EnableBuildingPlacementPreview))
 			{
-				auto const pImage = pTypeExt->PlacementPreview_Shape.Get(pType->LoadBuildup());
+				bool const isUpgrade = GeneralUtils::IsValidString(pType->PowersUpBuilding);
+				auto const pImage = pTypeExt->PlacementPreview_Shape.Get(!isUpgrade ? pType->LoadBuildup() : pType->GetImage());
 
 				if (!pImage)
 					return 0x0;
 
-				auto const nFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get((pImage->Frames/2)-1), 0, (int)pImage->Frames);
 				CellStruct const nDisplayCell = Make_Global<CellStruct>(0x88095C);
 				CellStruct const nDisplayCell_Offset = Make_Global<CellStruct>(0x880960);
 				auto const pCell = MapClass::Instance->TryGetCellAt(nDisplayCell + nDisplayCell_Offset);
@@ -90,19 +91,20 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 				if (!pCell)
 					return 0x0;
 
+				auto const nFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get(!isUpgrade ? ((pImage->Frames / 2) - 1) : 0), 0, (int)pImage->Frames);
 				auto const nHeight = pCell->GetFloorHeight({ 0,0 });
+				auto const nOffset = pTypeExt->PlacementPreview_Offset.Get();
 				Point2D nPoint{ 0,0 };
-				TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, nHeight),&nPoint);
-
+				TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, nHeight + nOffset.Z), &nPoint);
+				nPoint.X += nOffset.X;
+				nPoint.Y += nOffset.Y;
 				auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->PlacementPreview_TranslucentLevel.Get());
 				auto const nREct = DSurface::Temp()->GetRect();
-				auto const nScheme = ColorScheme::Array()->GetItem(HouseClass::Player->ColorSchemeIndex);
-				auto const nPalette = pTypeExt->PlacementPreview_Remap.Get() ? nScheme->LightConvert : pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
-				Point2D nDefault{ 0 , -15 };
-				nPoint += pTypeExt->PlacementPreview_Offset.Get(nDefault);
+				auto const pScheme = ColorScheme::Array()->GetItem(pBuilding->Owner->ColorSchemeIndex);
+				auto const pPalette = pTypeExt->PlacementPreview_Remap.Get() ? pScheme->LightConvert : pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
 
 				DSurface::Temp()->DrawSHP(
-					nPalette,
+					pPalette,
 					pImage,
 					nFrame,
 					&nPoint,
@@ -110,8 +112,8 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 					nFlag,
 					0,
 					0,
-					ZGradient::Ground ,
-					 1000,
+					ZGradient::Ground,
+					1000,
 					0,
 					nullptr,
 					0,
