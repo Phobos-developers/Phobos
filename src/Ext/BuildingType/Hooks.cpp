@@ -68,6 +68,10 @@ DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 	return 0;
 }
 
+static SHPStruct* GetBuildingShape(BuildingTypeClass* pThis)
+{
+
+}
 DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 {
 	if (auto const pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance->CurrentBuilding))
@@ -78,8 +82,19 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 
 			if (pTypeExt && pTypeExt->PlacementPreview_Show.Get(Phobos::Config::EnableBuildingPlacementPreview))
 			{
-				bool const isUpgrade = GeneralUtils::IsValidString(pType->PowersUpBuilding);
-				auto const pImage = pTypeExt->PlacementPreview_Shape.Get(!isUpgrade ? pType->LoadBuildup() : pType->GetImage());
+				SHPStruct* Selected = nullptr;
+				bool bBuildupExist = false;
+
+				if (pType->LoadBuildup())
+				{
+					bBuildupExist = true;
+					Selected = pType->LoadBuildup();
+				}
+				else
+				{ Selected = pType->GetImage(); }
+
+				//bool const isUpgrade = GeneralUtils::IsValidString(pType->PowersUpBuilding);
+				auto const pImage = pTypeExt->PlacementPreview_Shape.Get(Selected);
 
 				if (!pImage)
 					return 0x0;
@@ -91,14 +106,14 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 				if (!pCell)
 					return 0x0;
 
-				auto const nFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get(!isUpgrade ? ((pImage->Frames / 2) - 1) : 0), 0, (int)pImage->Frames);
+				auto const nFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get(bBuildupExist ? ((pImage->Frames / 2) - 1) : 0), 0, (int)pImage->Frames);
 				auto const nHeight = pCell->GetFloorHeight({ 0,0 });
 				auto const nOffset = pTypeExt->PlacementPreview_Offset.Get();
 				Point2D nPoint{ 0,0 };
 				TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, nHeight + nOffset.Z), &nPoint);
 				nPoint.X += nOffset.X;
 				nPoint.Y += nOffset.Y;
-				auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->PlacementPreview_TranslucentLevel.Get());
+				auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->PlacementPreview_TranslucentLevel.Get(RulesExt::Global()->BuildingPlacementPreview_TranslucantLevel.Get()));
 				auto const nREct = DSurface::Temp()->GetRect();
 				auto const pScheme = ColorScheme::Array()->GetItem(pBuilding->Owner->ColorSchemeIndex);
 				auto const pPalette = pTypeExt->PlacementPreview_Remap.Get() ? pScheme->LightConvert : pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
