@@ -77,12 +77,12 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 
 			if (pTypeExt && pTypeExt->PlacementPreview_Show.Get(RulesExt::Global()->Building_PlacementPreview.Get()))
 			{
-				auto const pImage = pTypeExt->PlacementPreview_Shape.Get(pType->GetImage());
+				auto const pImage = pTypeExt->PlacementPreview_Shape.Get(pType->LoadBuildup());
 
 				if (!pImage)
 					return 0x0;
 
-				auto const nFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get(), 0, (int)pImage->Frames);
+				auto const nFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get((pImage->Frames/2)-1), 0, (int)pImage->Frames);
 				CellStruct const nDisplayCell = Make_Global<CellStruct>(0x88095C);
 				CellStruct const nDisplayCell_Offset = Make_Global<CellStruct>(0x880960);
 				auto const pCell = MapClass::Instance->TryGetCellAt(nDisplayCell + nDisplayCell_Offset);
@@ -109,8 +109,14 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 					&nREct,
 					nFlag,
 					0,
-					0, ZGradient::Ground ,
-					 1000, 0, nullptr, 0, 0, 0
+					0,
+					ZGradient::Ground ,
+					 1000,
+					0,
+					nullptr,
+					0,
+					0,
+					0
 
 				);
 			}

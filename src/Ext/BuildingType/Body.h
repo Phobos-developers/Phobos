@@ -35,7 +35,7 @@ public:
 
 		Nullable<bool> PlacementPreview_Show;
 		Nullable<SHPStruct*> PlacementPreview_Shape;
-		Valueable<int> PlacementPreview_ShapeFrame;
+		Nullable<int> PlacementPreview_ShapeFrame;
 		Nullable<Point2D> PlacementPreview_Offset;
 		Valueable<bool> PlacementPreview_Remap;
 		CustomPalette PlacementPreview_Palette;
@@ -61,7 +61,7 @@ public:
 			, PlacementPreview_Offset {}
 			, PlacementPreview_Show {}
 			, PlacementPreview_Shape {}
-			, PlacementPreview_ShapeFrame { 0 }
+			, PlacementPreview_ShapeFrame { }
 			, PlacementPreview_TranslucentLevel { 0 }
 		{ }
 

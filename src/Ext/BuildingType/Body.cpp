@@ -178,6 +178,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	{
 		if (GeneralUtils::IsValidString(Phobos::readBuffer))
 		{
+			// we cannot load same SHP file twice it may produce artifact , prevent it !
 			if (_strcmpi(Phobos::readBuffer, pSection) || _strcmpi(Phobos::readBuffer, pArtSection))
 				this->PlacementPreview_Shape.Read(exINI, pSection, "PlacementPreview.Shape");
 			else
