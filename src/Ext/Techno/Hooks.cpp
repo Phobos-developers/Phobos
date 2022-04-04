@@ -111,13 +111,9 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_Transform_6F3AD0_BurstFLH_1, 0x7)
 	CoordStruct FLH = CoordStruct::Empty;
 
 	if (auto pInf = abstract_cast<InfantryClass*>(pThis))
-	{
 		FLH = TechnoExt::GetInfantryFLH(pInf, weaponIndex, FLHFound);
-	}
 	else
-	{
 		FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
-	}
 
 	if (FLHFound)
 	{
