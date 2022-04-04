@@ -225,6 +225,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
 	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
 	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
+	
+	this->CrouchedPrimaryFireFLH.Read(exArtINI, pArtSection, "CrouchedPrimaryFireFLH");
+	this->CrouchedSecondaryFireFLH.Read(exArtINI, pArtSection, "CrouchedSecondaryFireFLH");
+	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
+	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
 }
 
 template <typename T>
@@ -301,6 +306,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceWeapon_Naval_Decloaked)
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
+		.Process(this->CrouchedPrimaryFireFLH)
+		.Process(this->CrouchedSecondaryFireFLH)
+		.Process(this->DeployedPrimaryFireFLH)
+		.Process(this->DeployedSecondaryFireFLH)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

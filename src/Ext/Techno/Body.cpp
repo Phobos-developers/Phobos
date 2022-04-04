@@ -307,6 +307,54 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	return FLH;
 }
 
+CoordStruct TechnoExt::GetInfantryFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound)
+{
+	FLHFound = false;
+	CoordStruct FLH = CoordStruct::Empty;
+
+	if (!pThis || weaponIndex < 0)
+		return FLH;
+
+	if (auto pTechnoType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	{
+		if (pThis->IsDeployed())
+		{
+			if (weaponIndex == 0 && pTechnoType->DeployedPrimaryFireFLH.isset())
+			{
+				auto deployerFLH = pTechnoType->DeployedPrimaryFireFLH.Get();
+				FLH = deployerFLH;
+				FLHFound = true;
+			}
+			else if (weaponIndex == 1 && pTechnoType->DeployedSecondaryFireFLH.isset())
+			{
+				auto deployerFLH = pTechnoType->DeployedSecondaryFireFLH.Get();
+				FLH = deployerFLH;
+				FLHFound = true;
+			}
+		}
+		else
+		{
+			if (pThis->Crawling)
+			{
+				if (weaponIndex == 0 && pTechnoType->CrouchedPrimaryFireFLH.isset())
+				{
+					auto crouchedFLH = pTechnoType->CrouchedPrimaryFireFLH.Get();
+					FLH = crouchedFLH;
+					FLHFound = true;
+				}
+				else if (weaponIndex == 1 && pTechnoType->CrouchedSecondaryFireFLH.isset())
+				{
+					auto crouchedFLH = pTechnoType->CrouchedSecondaryFireFLH.Get();
+					FLH = crouchedFLH;
+					FLHFound = true;
+				}
+			}
+		}
+	}
+
+	return FLH;
+}
+
 void TechnoExt::EatPassengers(TechnoClass* pThis)
 {
 	if (!TechnoExt::IsActive(pThis))

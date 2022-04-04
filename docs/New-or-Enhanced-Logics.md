@@ -246,6 +246,19 @@ PowerPlantEnhancer.Factor=1.0      ; float
 
 ## Infantry
 
+### Customizable FLH When Infantry Is Crouched Or Deployed
+
+- Now infantry can override `PrimaryFireFLH` and `SecondaryFireFLH` if is crouched or deployed.
+
+In `artmd.ini`:
+```ini
+[SOMEINFANTRY]              ; InfantryType
+CrouchedPrimaryFireFLH=     ; integer - Forward,Lateral,Height
+CrouchedSecondaryFireFLH=   ; integer - Forward,Lateral,Height
+DeployedPrimaryFireFLH=     ; integer - Forward,Lateral,Height
+DeployedSecondaryFireFLH=   ; integer - Forward,Lateral,Height
+```
+
 ### Default disguise for individual InfantryTypes
 
 - Infantry can now have its `DefaultDisguise` overridden per-type.
@@ -287,6 +300,7 @@ Ammo.Shared.Group=-1                    ; integer
 ```
 
 ## Projectiles
+
 
 ### Projectile interception logic
 

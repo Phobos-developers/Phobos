@@ -119,6 +119,11 @@ public:
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
 		Valueable<CSFText> EnemyUIName;
 
+		Nullable<CoordStruct> CrouchedPrimaryFireFLH;
+		Nullable<CoordStruct> CrouchedSecondaryFireFLH;
+		Nullable<CoordStruct> DeployedPrimaryFireFLH;
+		Nullable<CoordStruct> DeployedSecondaryFireFLH;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -188,6 +193,10 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
+			, CrouchedPrimaryFireFLH { }
+			, CrouchedSecondaryFireFLH { }
+			, DeployedPrimaryFireFLH { }
+			, DeployedSecondaryFireFLH { }
 		{ }
 
 		virtual ~ExtData() = default;
