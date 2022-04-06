@@ -136,6 +136,7 @@ This page lists all the individual contributions to the project by their author.
   - Weapon owner detachment
   - Feedback weapon
   - TerrainType & ore minimap color customization
+  - Laser fixes & improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption

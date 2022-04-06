@@ -445,3 +445,17 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x6FD446, TechnoClass_FireLaser_IsSingleColor, 0x7)
+{
+	GET(WeaponTypeClass* const, pWeapon, ECX);
+	GET(LaserDrawClass* const, pLaser, EAX);
+
+	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
+	{
+		if (!pLaser->IsHouseColor && pWeaponExt->Laser_IsSingleColor)
+			pLaser->IsHouseColor = true;
+	}
+
+	return 0;
+}

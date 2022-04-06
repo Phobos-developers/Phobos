@@ -291,6 +291,7 @@ New:
 - Weapon owner detachment (by Starkku)
 - Feedback weapon (by Starkku)
 - TerrainType & ore minimap color customization (by Starkku)
+- Single-color weapon lasers (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -314,6 +315,7 @@ Phobos fixes:
 - Fixed shielded objects not decloaking if shield takes damage (by Starkku)
 - Fixed critical hit animation playing even if no critical hits were dealt due to `Crit.Affects` or `ImmuneToCrit` settings (by Starkku)
 - Fixed `RemoveDisguise` not working on `PermaDisguise` infantry (by Starkku)
+- Fixed single-color laser (IsHouseColor, IsSingleColor, LaserTrails) glow falloff to match the vanilla appearance (by Starkku)
 </details>
 
 

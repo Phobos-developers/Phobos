@@ -351,6 +351,16 @@ In `rulesmd.ini`:
 DetachedFromOwner=false  ; boolean
 ```
 
+### Single-color lasers
+
+- You can now set laser to draw using only `LaserInnerColor` by setting `IsSingleColor`, in same manner as `IsHouseColor` lasers do using player's team color. These lasers respect laser thickness.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]         ; WeaponType
+IsSingleColor=false  ; boolean
+```
+
 ### Toggle-able ElectricBolt visuals
 
 - You can now specify individual ElectricBolt bolts you want to disable. Note that this is only a visual change.
