@@ -45,7 +45,7 @@ DEFINE_HOOK(0x51F0AF, InfantryClass_WhatAction_Grinding, 0x0)
 	GET(TechnoClass*, pTarget, ESI);
 	GET(Action, action, EBP);
 
-	if (auto pBuilding = static_cast<BuildingClass*>(pTarget))
+	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
 		if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
 		{
@@ -69,7 +69,7 @@ DEFINE_HOOK(0x51E63A, InfantryClass_WhatAction_Grinding_Engineer, 0x6)
 	GET(InfantryClass*, pThis, EDI);
 	GET(TechnoClass*, pTarget, ESI);
 
-	if (auto pBuilding = static_cast<BuildingClass*>(pTarget))
+	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
 		if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
 		{
@@ -90,7 +90,7 @@ DEFINE_HOOK(0x740134, UnitClass_WhatAction_Grinding, 0x0)
 	GET(TechnoClass*, pTarget, EDI);
 	GET(Action, action, EBX);
 
-	if (auto pBuilding = static_cast<BuildingClass*>(pTarget))
+	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
 		if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
 		{
