@@ -284,30 +284,70 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 
 	if (!pThis || weaponIndex < 0)
 		return FLH;
-
+	
 	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
+	
+	auto pInf = abstract_cast<InfantryClass*>(pThis);
+	auto pThisType = pThis->GetTechnoType();
 	if (pThis->Veterancy.IsElite())
 	{
-		if (pExt->EliteWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+		if (pInf && pInf->IsDeployed())
 		{
-			FLHFound = true;
-			FLH = pExt->EliteWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
+			if (pExt->EliteDeployedWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+			{
+				FLHFound = true;
+				FLH = pExt->EliteDeployedWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
+			}
+		}
+		else if (pInf && pInf->Crawling)
+		{
+			if (pExt->EliteCrouchedWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+			{
+				FLHFound = true;
+				FLH = pExt->EliteCrouchedWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
+			}
+		}
+		else
+		{
+			if (pExt->EliteWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+			{
+				FLHFound = true;
+				FLH = pExt->EliteWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
+			}
 		}
 	}
 	else
 	{
-		if (pExt->WeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+		if (pInf && pInf->IsDeployed())
 		{
-			FLHFound = true;
-			FLH = pExt->WeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
+			if (pExt->DeployedWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+			{
+				FLHFound = true;
+				FLH = pExt->DeployedWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
+			}
+		}
+		else if (pInf && pInf->Crawling)
+		{
+			if (pExt->CrouchedWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+			{
+				FLHFound = true;
+				FLH = pExt->CrouchedWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
+			}
+		}
+		else
+		{
+			if (pExt->WeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+			{
+				FLHFound = true;
+				FLH = pExt->WeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
+			}
 		}
 	}
 
 	return FLH;
 }
 
-CoordStruct TechnoExt::GetInfantryFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound)
+CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound)
 {
 	FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;

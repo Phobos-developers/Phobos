@@ -220,6 +220,66 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		}
 	}
 
+	this->CrouchedWeaponBurstFLHs.resize(weaponCount);
+	this->EliteCrouchedWeaponBurstFLHs.resize(weaponCount);
+	char tempBufferCrouchedFLH[48];
+
+	// Crouched Weapon Burst FLH for infantry
+	for (int i = 0; i < weaponCount; i++)
+	{
+		for (int j = 0; j < INT_MAX; j++)
+		{
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "CrouchedWeapon%d", i + 1);
+			auto prefix = parseMultiWeapons ? tempBuffer : i > 0 ? "CrouchedSecondaryFire" : "CrouchedPrimaryFire";
+
+			_snprintf_s(tempBufferCrouchedFLH, sizeof(tempBufferCrouchedFLH), "%sFLH.Burst%d", prefix, j);
+			Nullable<CoordStruct> FLH;
+			FLH.Read(exArtINI, pArtSection, tempBufferCrouchedFLH);
+
+			_snprintf_s(tempBufferCrouchedFLH, sizeof(tempBufferCrouchedFLH), "Elite%sFLH.Burst%d", prefix, j);
+			Nullable<CoordStruct> eliteFLH;
+			eliteFLH.Read(exArtINI, pArtSection, tempBufferCrouchedFLH);
+
+			if (FLH.isset() && !eliteFLH.isset())
+				eliteFLH = FLH;
+			else if (!FLH.isset() && !eliteFLH.isset())
+				break;
+
+			CrouchedWeaponBurstFLHs[i].AddItem(FLH.Get());
+			EliteCrouchedWeaponBurstFLHs[i].AddItem(eliteFLH.Get());
+		}
+	}
+
+	this->DeployedWeaponBurstFLHs.resize(weaponCount);
+	this->EliteDeployedWeaponBurstFLHs.resize(weaponCount);
+	char tempBufferDeployedFLH[48];
+
+	// Deployed Weapon Burst FLH for infantry
+	for (int i = 0; i < weaponCount; i++)
+	{
+		for (int j = 0; j < INT_MAX; j++)
+		{
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "DeployedWeapon%d", i + 1);
+			auto prefix = parseMultiWeapons ? tempBuffer : i > 0 ? "DeployedSecondaryFire" : "DeployedPrimaryFire";
+
+			_snprintf_s(tempBufferDeployedFLH, sizeof(tempBufferDeployedFLH), "%sFLH.Burst%d", prefix, j);
+			Nullable<CoordStruct> FLH;
+			FLH.Read(exArtINI, pArtSection, tempBufferDeployedFLH);
+
+			_snprintf_s(tempBufferDeployedFLH, sizeof(tempBufferDeployedFLH), "Elite%sFLH.Burst%d", prefix, j);
+			Nullable<CoordStruct> eliteFLH;
+			eliteFLH.Read(exArtINI, pArtSection, tempBufferDeployedFLH);
+
+			if (FLH.isset() && !eliteFLH.isset())
+				eliteFLH = FLH;
+			else if (!FLH.isset() && !eliteFLH.isset())
+				break;
+
+			DeployedWeaponBurstFLHs[i].AddItem(FLH.Get());
+			EliteDeployedWeaponBurstFLHs[i].AddItem(eliteFLH.Get());
+		}
+	}
+
 	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
 
 	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
@@ -310,6 +370,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CrouchedSecondaryFireFLH)
 		.Process(this->DeployedPrimaryFireFLH)
 		.Process(this->DeployedSecondaryFireFLH)
+		.Process(this->CrouchedWeaponBurstFLHs)
+		.Process(this->EliteCrouchedWeaponBurstFLHs)
+		.Process(this->DeployedWeaponBurstFLHs)
+		.Process(this->EliteDeployedWeaponBurstFLHs)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

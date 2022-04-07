@@ -123,6 +123,10 @@ public:
 		Nullable<CoordStruct> CrouchedSecondaryFireFLH;
 		Nullable<CoordStruct> DeployedPrimaryFireFLH;
 		Nullable<CoordStruct> DeployedSecondaryFireFLH;
+		std::vector<DynamicVectorClass<CoordStruct>> CrouchedWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
