@@ -158,6 +158,60 @@ bool BuildingExt::HasFreeDocks(BuildingClass* pBuilding)
 	return false;
 }
 
+bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
+{
+	if (!pBuilding->Type->Grinding || (pTechno->WhatAmI() != AbstractType::Infantry && pTechno->WhatAmI() != AbstractType::Unit))
+		return false;
+
+	if ((pBuilding->Type->InfantryAbsorb || pBuilding->Type->UnitAbsorb) &&
+		(pTechno->WhatAmI() == AbstractType::Infantry && !pBuilding->Type->InfantryAbsorb ||
+			pTechno->WhatAmI() == AbstractType::Unit && !pBuilding->Type->UnitAbsorb))
+	{
+		return false;
+	}
+
+	if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
+	{
+		if (pBuilding->Owner == pTechno->Owner && !pExt->Grinding_AllowOwner)
+			return false;
+
+		if (pBuilding->Owner != pTechno->Owner && pBuilding->Owner->IsAlliedWith(pTechno) && !pExt->Grinding_AllowAllies)
+			return false;
+
+		if (pExt->Grinding_AllowTypes.size() > 0 && !pExt->Grinding_AllowTypes.Contains(pTechno->GetTechnoType()))
+			return false;
+
+		if (pExt->Grinding_DisallowTypes.size() > 0 && pExt->Grinding_DisallowTypes.Contains(pTechno->GetTechnoType()))
+			return false;
+	}
+
+	return true;
+}
+
+bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno)
+{
+	if (const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
+	{
+		if (const auto pExt = BuildingExt::ExtMap.Find(pBuilding))
+		{
+			if (pTypeExt->Grinding_Weapon.isset()
+				&& Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon.Get()->ROF)
+			{
+				TechnoExt::FireWeaponAtSelf(pBuilding, pTypeExt->Grinding_Weapon.Get());
+				pExt->GrindingWeapon_LastFiredFrame = Unsorted::CurrentFrame;
+			}
+		}
+
+		if (pTypeExt->Grinding_Sound.isset())
+		{
+			VocClass::PlayAt(pTypeExt->Grinding_Sound.Get(), pTechno->GetCoords());
+			return true;
+		}
+	}
+
+	return false;
+}
+
 // =============================
 // load / save
 

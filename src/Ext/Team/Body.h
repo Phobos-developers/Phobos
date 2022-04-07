@@ -23,6 +23,7 @@ public:
 		int MoveMissionEndMode;
 		int WaitNoTargetCounter;
 		TimerStruct WaitNoTargetTimer;
+		FootClass* TeamLeader;
 		int AngerNodeModifier;
 		bool OnlyTargetHouseEnemy;
 		int OnlyTargetHouseEnemyMode;
@@ -36,6 +37,7 @@ public:
 			, MoveMissionEndMode { 0 }
 			, WaitNoTargetCounter { 0 }
 			, WaitNoTargetTimer { 0 }
+			, TeamLeader { nullptr }
 			, AngerNodeModifier { 5000 }
 			, OnlyTargetHouseEnemy { false }
 			, OnlyTargetHouseEnemyMode { -1 }

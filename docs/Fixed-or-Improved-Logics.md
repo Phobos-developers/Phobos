@@ -50,6 +50,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
 - Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
+- Aircraft & jumpjet units are now affected by speed modifiers such as `SpeedAircraft/Infantry/UnitsMult` on `Countries`, `VeteranSpeed` and Crates / AttachEffect (Ares feature).
 
 ## Animations
 

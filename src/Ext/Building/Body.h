@@ -8,6 +8,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
+#include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/BuildingType/Body.h>
@@ -64,4 +65,6 @@ public:
 	static void UpdatePrimaryFactoryAI(BuildingClass* pThis);
 	static int CountOccupiedDocks(BuildingClass* pBuilding);
 	static bool HasFreeDocks(BuildingClass* pBuilding);
+	static bool CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno);
+	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno);
 };
