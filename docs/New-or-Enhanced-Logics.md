@@ -698,9 +698,11 @@ Interceptable=no ; boolean
 - Shrapnel behavior can be triggered on the ground and buildings.
 
 In `rulesmd.ini`
-[SOMEPROJECTILE] ; Projectile
-Shrapnel.AffectsGround=no ; boolean
-Shrapnel.AffectsBuildings=no ; boolean
+```ini
+[SOMEPROJECTILE]              ; Projectile
+Shrapnel.AffectsGround=no     ; boolean
+Shrapnel.AffectsBuildings=no  ; boolean
+```
 
 ## Trigger events
 
