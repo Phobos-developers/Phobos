@@ -421,3 +421,15 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x73B2A2, UnitClass_DrawObject_DrawerBlitterFix, 0x6)
+{
+	enum { SkipGameCode = 0x73B2C3 };
+
+	GET(UnitClass* const, pThis, ESI);
+	GET(BlitterFlags, blitterFlags, EDI);
+
+	R->EAX(pThis->GetDrawer()->SelectPlainBlitter(blitterFlags));
+
+	return SkipGameCode;
+}
