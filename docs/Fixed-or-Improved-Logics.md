@@ -311,3 +311,13 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]               ; WarheadType
 DecloakDamagedTargets=true  ; boolean
 ```
+
+### Restricting screen shaking to current view
+
+- You can now specify whether or not the warhead can only shake screen (`ShakeX/Ylo/hi`) if it is detonated while visible on current screen view.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]       ; WarheadType
+ShakeIsLocal=false  ; boolean
+```
