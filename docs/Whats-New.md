@@ -281,6 +281,7 @@ New:
 - Local warhead screen shaking (by Starkku)
 - Weapon owner detachment (by Starkku)
 - Feedback weapon (by Starkku)
+- TerrainType & ore minimap color customization (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)

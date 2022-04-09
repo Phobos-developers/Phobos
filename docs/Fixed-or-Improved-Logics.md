@@ -53,6 +53,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Aircraft & jumpjet units are now affected by speed modifiers such as `SpeedAircraft/Infantry/UnitsMult` on `Countries`, `VeteranSpeed` and Crates / AttachEffect (Ares feature).
 - Both voxel and SHP vehicle units should now correctly respect custom palette set through `Palette`.
 - Weapons fired by EMPulse superweapons without `EMPulse.TargetSelf=true` *(Ares feature)* can now create radiation.
+- Setting `RadarInvisible` to true on TerrainTypes now hides them from minimap display.
 
 ## Animations
 
@@ -257,6 +258,28 @@ SpawnsTiberium.Type=0         ; tiberium/ore type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
 SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; single int / comma-sep. range
+```
+
+### Minimap color customization
+
+- TerrainTypes can now be made to display on minimap with different colors by setting `MinimapColor`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]  ; TerrainType
+MinimapColor=      ; integer - Red,Green,Blue
+```
+
+## Tiberiums (ores)
+
+### Minimap color customization
+
+- Ore can now be made to display on minimap with different colors by setting `MinimapColor` on Tiberiums.
+
+In `rulesmd.ini`:
+```ini
+[SOMEORE]      ; Tiberium
+MinimapColor=  ; integer - Red,Green,Blue
 ```
 
 ## Weapons
