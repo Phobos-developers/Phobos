@@ -212,6 +212,7 @@ public:
 	static void SetTheMostHatedHouse(TeamClass* pTeam, int mask, int mode, bool random);
 	static void OverrideOnlyTargetHouseEnemy(TeamClass* pTeam, int mode);
 	static void AggroHouse(TeamClass* pTeam, int index);
+	static HouseClass* GetTheMostHatedHouse(TeamClass* pTeam, int mask, int mode);
 	static void DebugAngerNodesData();
 
 	static bool IsExtVariableAction(int action);
@@ -227,6 +228,6 @@ public:
 private:
 	static void ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
 	static bool MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, FootClass* pLeader, int mode);
-	static HouseClass* GetTheMostHatedHouse(TeamClass* pTeam, int mask, int mode);
+	
 	static void UpdateEnemyHouseIndex(HouseClass* pHouse);
 };

@@ -1259,6 +1259,9 @@ The possible argument values are:
 
 | *Argument* | *Description*                        |
 | :------: | :-------------------------------------------: |
+| -10      | The House with less factories is selected (excluded the aircraft factories) |
+| -9       | The House with less aircraft docks is selected |
+| -8       | The House with less naval units is selected |
 | -7       | The House with less house kills is selected |
 | -6       | The House with less free power (free = production - consumption) is selected |
 | -5       | The House with less power production is selected |
@@ -1282,7 +1285,10 @@ The possible argument values are:
 
 | *Argument* | *Description*                        |
 | :------: | :-------------------------------------------: |
-| -7       | The House with more house kills is selected |
+| -10      | The House with more factories is selected (excluded the aircraft factories) |
+| -9       | The House with more aircraft docks is selected |
+| -8       | The House with more naval units is selected |
+| -7       | The House with more kills is selected |
 | -6       | The House with more free power (free = production - consumption) is selected |
 | -5       | The House with more power production is selected |
 | -4       | The House with more power consumption is selected |

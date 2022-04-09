@@ -3095,6 +3095,9 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 	long houseMoney = -1;
 	int enemyPower = -1000000000;
 	int enemyKills = -1;
+	int enemyAirDocks = -1;
+	int enemyStructures = -1;
+	int enemyNavalUnits = -1;
 
 	if (mask == -2)
 	{
@@ -3263,6 +3266,145 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 				if (currentKills > enemyKills || enemyKills < 0)
 				{
 					enemyKills = currentKills;
+					enemyHouse = pHouse;
+				}
+			}
+		}
+
+		if (enemyHouse)
+			Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): selected House [%s] (index: %d)\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->CurrentMission, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument, enemyHouse->Type->ID, enemyHouse->ArrayIndex);
+
+		return enemyHouse;
+	}
+
+	if (mask == -8)
+	{
+		// Based on number of House naval units
+		for (auto& pHouse : *HouseClass::Array)
+		{
+			if (pLeaderUnit->Owner == pHouse
+				|| pHouse->IsObserver()
+				|| pHouse->Defeated
+				|| pHouse->Type->MultiplayPassive
+				|| pLeaderUnit->Owner->IsAlliedWith(pHouse))
+			{
+				continue;
+			}
+
+			int currentNavalUnits = 0;
+
+			for (auto& pUnit : *TechnoClass::Array)
+			{
+				if (pUnit->IsAlive
+					&& pUnit->Health > 0
+					&& pUnit->Owner == pHouse
+					&& !pUnit->InLimbo
+					&& pUnit->IsOnMap
+					&& ScriptExt::EvaluateObjectWithMask(pUnit, 31, -1, -1, nullptr))
+				{
+					currentNavalUnits++;
+				}
+			}
+
+			if (mode == 0)
+			{
+				// The House with less naval units is selected
+				if (currentNavalUnits < enemyNavalUnits || enemyNavalUnits < 0)
+				{
+					enemyNavalUnits = currentNavalUnits;
+					enemyHouse = pHouse;
+				}
+			}
+			else
+			{
+				// The House with more naval units is selected
+				if (currentNavalUnits > enemyNavalUnits || enemyNavalUnits < 0)
+				{
+					enemyNavalUnits = currentNavalUnits;
+					enemyHouse = pHouse;
+				}
+			}
+		}
+
+		if (enemyHouse)
+			Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): selected House [%s] (index: %d)\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->CurrentMission, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument, enemyHouse->Type->ID, enemyHouse->ArrayIndex);
+
+		return enemyHouse;
+	}
+
+	if (mask == -9)
+	{
+		// Based on number of House aircraft docks
+		for (auto& pHouse : *HouseClass::Array)
+		{
+			if (pLeaderUnit->Owner == pHouse
+				|| pHouse->IsObserver()
+				|| pHouse->Defeated
+				|| pHouse->Type->MultiplayPassive
+				|| pLeaderUnit->Owner->IsAlliedWith(pHouse))
+			{
+				continue;
+			}
+
+			int currentAirDocks = pHouse->AirportDocks;
+
+			if (mode == 0)
+			{
+				// The House with less Aircraft docks is selected
+				if (currentAirDocks < enemyAirDocks || enemyAirDocks < 0)
+				{
+					enemyAirDocks = currentAirDocks;
+					enemyHouse = pHouse;
+				}
+			}
+			else
+			{
+				// The House with more Aircraft docks is selected
+				if (currentAirDocks > enemyAirDocks || enemyAirDocks < 0)
+				{
+					enemyAirDocks = currentAirDocks;
+					enemyHouse = pHouse;
+				}
+			}
+		}
+
+		if (enemyHouse)
+			Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): selected House [%s] (index: %d)\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->CurrentMission, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument, enemyHouse->Type->ID, enemyHouse->ArrayIndex);
+
+		return enemyHouse;
+	}
+
+	if (mask == -10)
+	{
+		// Based on number of House factories (except aircraft factories)
+		for (auto& pHouse : *HouseClass::Array)
+		{
+			if (pLeaderUnit->Owner == pHouse
+				|| pHouse->IsObserver()
+				|| pHouse->Defeated
+				|| pHouse->Type->MultiplayPassive
+				|| pLeaderUnit->Owner->IsAlliedWith(pHouse))
+			{
+				continue;
+			}
+
+			int currentFactories = pHouse->NumWarFactories + pHouse->NumConYards + pHouse->NumShipyards + pHouse->NumBarracks;
+
+			if (mode == 0)
+			{
+				// The House with less factories is selected
+				if (currentFactories < enemyStructures || enemyStructures < 0)
+				{
+					enemyStructures = currentFactories;
+					enemyHouse = pHouse;
+				}
+			}
+			else
+			{
+				// The House with more factories is selected
+				if (currentFactories > enemyStructures || enemyStructures < 0)
+				{
+					enemyStructures = currentFactories;
 					enemyHouse = pHouse;
 				}
 			}
