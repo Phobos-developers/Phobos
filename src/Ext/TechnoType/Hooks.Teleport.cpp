@@ -18,7 +18,7 @@ DEFINE_HOOK(0x719439, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 	R->EDX<AnimTypeClass*>(pExt->WarpOut.Get(RulesClass::Instance->WarpOut));
 
 	if (pExt->WarpOutWeapon.isset())
-		WeaponTypeExt::DetonateAt(pExt->WarpOutWeapon.Get(), pLocomotor->LinkedTo, pExt->WarpOutWeapon_FireAsSelf ? pLocomotor->LinkedTo : nullptr);
+		WeaponTypeExt::DetonateAt(pExt->WarpOutWeapon.Get(), pLocomotor->LinkedTo, pLocomotor->LinkedTo);
 
 	return 0x71943F;
 }
@@ -39,7 +39,7 @@ DEFINE_HOOK(0x719788, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x
 	if (weaponType)
 	{
 		int damage = pExt->WarpInWeapon_UseDistanceAsDamage ? pTechnoExt->LastWarpDistance / 256 : weaponType->Damage;
-		WeaponTypeExt::DetonateAt(weaponType, pLocomotor->LinkedTo, pExt->WarpInWeapon_FireAsSelf ? pLocomotor->LinkedTo : nullptr, damage);
+		WeaponTypeExt::DetonateAt(weaponType, pLocomotor->LinkedTo, pLocomotor->LinkedTo, damage);
 	}
 
 	return 0x71978E;
