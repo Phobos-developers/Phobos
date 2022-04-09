@@ -450,7 +450,7 @@ Death.Countdown=0                  ; integer
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                      ; TechnoType
-ForceWeapon.Naval.Decloacked=-1   ; Integer. 0 for primary weapon, 1 for secondary weapon
+ForceWeapon.Naval.Decloaked=-1   ; Integer. 0 for primary weapon, 1 for secondary weapon
 ```
 
 ## Terrains
