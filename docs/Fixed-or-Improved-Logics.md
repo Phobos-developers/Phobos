@@ -60,6 +60,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Both voxel and SHP vehicle units should now correctly respect custom palette set through `Palette`.
 - Weapons fired by EMPulse superweapons without `EMPulse.TargetSelf=true` *(Ares feature)* can now create radiation.
 - Setting `RadarInvisible` to true on TerrainTypes now hides them from minimap display.
+- Mind control indicator animations will now correctly restore on mind controlled objects when uncloaked.
 
 ## Animations
 

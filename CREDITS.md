@@ -137,6 +137,7 @@ This page lists all the individual contributions to the project by their author.
   - Feedback weapon
   - TerrainType & ore minimap color customization
   - Laser fixes & improvements
+  - Mind control indicator animation cloak fix
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
