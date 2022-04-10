@@ -38,6 +38,7 @@ public:
 	bool IsAvailable();
 	bool IsBrokenAndNonRespawning();
 	ShieldTypeClass* GetType();
+	int GetFramesSinceLastBroken();
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
 
@@ -85,6 +86,8 @@ private:
 	int SelfHealing_Rate_Warhead;
 	double Respawn_Warhead;
 	int Respawn_Rate_Warhead;
+
+	int LastBreakFrame;
 
 	ShieldTypeClass* Type;
 

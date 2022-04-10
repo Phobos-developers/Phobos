@@ -19,6 +19,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::ApplySpawn_LimitRange(pThis);
 	TechnoExt::CheckDeathConditions(pThis);
 	TechnoExt::EatPassengers(pThis);
+	TechnoExt::UpdateMindControlAnim(pThis);
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
@@ -493,6 +494,20 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 
 			WeaponTypeExt::DetonateAt(fbWeapon, pThis, pThis);
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FD446, TechnoClass_FireLaser_IsSingleColor, 0x7)
+{
+	GET(WeaponTypeClass* const, pWeapon, ECX);
+	GET(LaserDrawClass* const, pLaser, EAX);
+
+	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
+	{
+		if (!pLaser->IsHouseColor && pWeaponExt->Laser_IsSingleColor)
+			pLaser->IsHouseColor = true;
 	}
 
 	return 0;

@@ -46,6 +46,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AreaFire_Target.Read(exINI, pSection, "AreaFire.Target");
 	this->DetachedFromOwner.Read(exINI, pSection, "DetachedFromOwner");
 	this->FeedbackWeapon.Read(exINI, pSection, "FeedbackWeapon", true);
+	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
 }
 
 template <typename T>
@@ -67,6 +68,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AreaFire_Target)
 		.Process(this->DetachedFromOwner)
 		.Process(this->FeedbackWeapon)
+		.Process(this->Laser_IsSingleColor)
 		;
 };
 

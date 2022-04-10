@@ -29,6 +29,7 @@ public:
 		Valueable<ShieldTypeClass*> CurrentShieldType;
 		Valueable<int> LastWarpDistance;
 		int Death_Countdown;
+		Valueable<AnimTypeClass*> MindControlRingAnimType;
 		Valueable<bool> IsLeggedCyborg;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
@@ -39,9 +40,10 @@ public:
 			, LastKillWasTeamTarget { false }
 			, PassengerDeletionTimer {}
 			, PassengerDeletionCountDown { -1 }
-			, CurrentShieldType {}
+			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
 			, Death_Countdown { -1 }
+			, MindControlRingAnimType { nullptr }
 			, IsLeggedCyborg { false }
 		{ }
 
@@ -99,4 +101,5 @@ public:
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
+	static void UpdateMindControlAnim(TechnoClass* pThis);
 };
