@@ -4,6 +4,81 @@ This page describes all the engine features that are either new and introduced b
 
 ## New types / ingame entities
 
+### Custom Radiation Types
+
+![image](_static/images/radtype-01.png)  
+*Mixing different radiation types*
+
+- Allows to have custom radiation type for any weapon now. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
+
+In `rulesmd.ini`:
+```ini
+[RadiationTypes]
+0=SOMERADTYPE
+
+[SOMEWEAPON]                    ; WeaponType
+RadType=Radiation               ; RadType to use instead
+                                ; of default [Radiation]
+
+[SOMERADTYPE]                   ; custom RadType name
+RadDurationMultiple=1           ; int
+RadApplicationDelay=16          ; int
+RadApplicationDelay.Building=0  ; int
+RadLevelMax=500                 ; int
+RadLevelDelay=90                ; int
+RadLightDelay=90                ; int
+RadLevelFactor=0.2              ; double
+RadLightFactor=0.1              ; double
+RadTintFactor=1.0               ; double
+RadColor=0,255,0                ; RGB
+RadSiteWarhead=RadSite          ; WarheadType
+```
+
+### Laser Trails
+
+![Laser Trails](_static/images/lasertrails.gif)  
+*Laser trails used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
+
+- Technos, Projectiles, and VoxelAnims can now have colorful trails of different transparency, thickness and color, which are drawn via laser drawing code.
+- Technos, Projectiles, and VoxelAnims can have multiple laser trails. For technos each trail can have custom laser trail type and FLH offset relative to turret and body.
+
+```{warning}
+Laser trails are very resource intensive! Due to the game not utilizing GPU having a lot of trails can quickly drop the FPS on even good machines. To reduce that effect:
+ - don't put too many laser trails on units and projectiles;
+ - make sure you set as high `SegmentLength` value as possible without trails being too jagged;
+ - try to keep the length of the trail minimal (can be achieved with smaller `FadeDuration` durations).
+```
+
+In `artmd.ini`:
+```ini
+[LaserTrailTypes]
+0=SOMETRAIL
+
+[SOMETRAIL]                 ; LaserTrailType name
+IsHouseColor=no             ; boolean
+Color=255,0,0               ; integer - Red,Green,Blue
+FadeDuration=64             ; integer
+Thickness=4                 ; integer
+SegmentLength=128           ; integer, minimal length of each trail segment
+IgnoreVertical=no           ; boolean, whether the trail won't be drawn on vertical movement
+IsIntense=no                ; boolean, whether the laser is "supported" (AKA prism forwarding)
+
+[SOMEPROJECTILE]            ; BulletType Image
+LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
+
+[SOMETECHNO]                ; TechnoType Image
+LaserTrailN.Type=SOMETRAIL  ; LaserTrailType
+LaserTrailN.FLH=0,0,0       ; integer - Forward,Lateral,Height
+LaserTrailN.IsOnTurret=no   ; boolean, whether the trail origin is turret
+; where N = 0, 1, 2, ...
+```
+
+in `rulesmd.ini`:
+```ini
+[SOMEVOXELANIM]             ; VoxelAnim
+LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
+```
+
 ### Shields
 
 ![image](_static/images/technoshield-01.gif)  
@@ -41,7 +116,7 @@ AllowTransfer=                       ; boolean
 
 [SOMETECHNO]                         ; TechnoType
 ShieldType=SOMESHIELDTYPE            ; ShieldType; none by default
-                                     
+
 [SOMEWARHEAD]                        ; WarheadType
 Shield.Penetrate=false               ; boolean
 Shield.Break=false                   ; boolean
@@ -107,81 +182,6 @@ Shield.InheritStateOnReplace=false   ; boolean
     - If `Shield.ReplaceNonRespawning` is set, shield from `Shield.AttachTypes` replaces existing shields that have been broken and cannot respawn on their own.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
-### Laser Trails
-
-![Laser Trails](_static/images/lasertrails.gif)  
-*Laser trails used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
-
-- Technos, Projectiles, and VoxelAnims can now have colorful trails of different transparency, thickness and color, which are drawn via laser drawing code.
-- Technos, Projectiles, and VoxelAnims can have multiple laser trails. For technos each trail can have custom laser trail type and FLH offset relative to turret and body.
-
-```{warning}
-Laser trails are very resource intensive! Due to the game not utilizing GPU having a lot of trails can quickly drop the FPS on even good machines. To reduce that effect:
- - don't put too many laser trails on units and projectiles;
- - make sure you set as high `SegmentLength` value as possible without trails being too jagged;
- - try to keep the length of the trail minimal (can be achieved with smaller `FadeDuration` durations).
-```
-
-In `artmd.ini`:
-```ini
-[LaserTrailTypes]
-0=SOMETRAIL
-
-[SOMETRAIL]                 ; LaserTrailType name
-IsHouseColor=no             ; boolean
-Color=255,0,0               ; integer - Red,Green,Blue
-FadeDuration=64             ; integer
-Thickness=4                 ; integer
-SegmentLength=128           ; integer, minimal length of each trail segment
-IgnoreVertical=no           ; boolean, whether the trail won't be drawn on vertical movement
-IsIntense=no                ; boolean, whether the laser is "supported" (AKA prism forwarding)
-
-[SOMEPROJECTILE]            ; BulletType Image
-LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
-
-[SOMETECHNO]                ; TechnoType Image
-LaserTrailN.Type=SOMETRAIL  ; LaserTrailType
-LaserTrailN.FLH=0,0,0       ; integer - Forward,Lateral,Height
-LaserTrailN.IsOnTurret=no   ; boolean, whether the trail origin is turret
-; where N = 0, 1, 2, ...
-```
-
-in `rulesmd.ini`:
-```ini
-[SOMEVOXELANIM]             ; VoxelAnim
-LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
-```
-
-### Custom Radiation Types
-
-![image](_static/images/radtype-01.png)  
-*Mixing different radiation types*
-
-- Allows to have custom radiation type for any weapon now. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
-
-In `rulesmd.ini`:
-```ini
-[RadiationTypes]
-0=SOMERADTYPE
-
-[SOMEWEAPON]                    ; WeaponType
-RadType=Radiation               ; RadType to use instead
-                                ; of default [Radiation]
-
-[SOMERADTYPE]                   ; custom RadType name
-RadDurationMultiple=1           ; int
-RadApplicationDelay=16          ; int
-RadApplicationDelay.Building=0  ; int
-RadLevelMax=500                 ; int
-RadLevelDelay=90                ; int
-RadLightDelay=90                ; int
-RadLevelFactor=0.2              ; double
-RadLightFactor=0.1              ; double
-RadTintFactor=1.0               ; double
-RadColor=0,255,0                ; RGB
-RadSiteWarhead=RadSite          ; WarheadType
-```
-
 ## Animations
 
 ### Anim-to-Unit
@@ -213,7 +213,7 @@ CreateUnit.ConsiderPathfinding=no   ; boolean, whether to consider if the create
 
 ## Buildings
 
-### Extended building upgrades logic
+### Extended building upgrades
 
 ![image](_static/images/powersup.owner-01.png)  
 *Upgrading own and allied Power Plants in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
@@ -229,10 +229,10 @@ PowersUp.Owner=Self ; list of Affected House Enumeration (none|owner/self|allies
 PowersUp.Buildings= ; list of BuildingTypes
 ```
 
-### Power plant enhancer logic
+### Power plant enhancer
 
-- When it exists, it can increase the power amount generated by the plants. 
-  - When buffer structures are sold or destroyed, the power amount returns to normal.
+- When it exists, it can increase the power amount generated by the power plants. 
+  - When enchancing structures are sold or destroyed, the power amount returns to normal.
 
 In `rulesmd.ini`:
 ```ini
@@ -243,17 +243,6 @@ PowerPlantEnhancer.Factor=1.0      ; float
 ```
 
 ## Infantry
-
-### Random death animaton for NotHuman Infantry
-
-- Infantry with `NotHuman=yes` can now play random death anim sequence between `Die1` to `Die5` instead of the hardcoded `Die1`.
-  - Do not forget to tweak infantry anim sequences before enabling this feature, otherwise it will play invisible anim sequence.
-
-In `rulesmd.ini`:
-```ini
-[SOMEINFANTRY]                    ; InfantryType
-NotHuman.RandomDeathSequence=yes  ; boolean
-```
 
 ### Default disguise for individual InfantryTypes
 
@@ -266,31 +255,15 @@ In `rulesmd.ini`:
 DefaultDisguise=E2  ; InfantryType              
 ```
 
-### Automatic Passenger Deletion
+### Random death animaton for NotHuman Infantry
 
-- Transports with these tags will erase the passengers overtime. Bigger units takes more time. Optionally this logic can work like a grinder.
- - Good combination with Ares Abductor logic.
+- Infantry with `NotHuman=yes` can now play random death anim sequence between `Die1` to `Die5` instead of the hardcoded `Die1`.
+  - Do not forget to tweak infantry anim sequences before enabling this feature, otherwise it will play invisible anim sequence.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                            ; TechnoType
-PassengerDeletion.Rate=0                ; integer, game frames
-PassengerDeletion.Rate.SizeMultiply=yes ; boolean, whether to multiply frames amount by size
-PassengerDeletion.Soylent=no            ; boolean
-PassengerDeletion.SoylentFriendlies=no  ; boolean
-PassengerDeletion.ReportSound=          ; sound
-PassengerDeletion.Anim=                 ; animation
-```
-
-### Customizable OpenTopped Properties
-
-- You can now override settings of `OpenTopped` transport properties per TechnoType.
-
-```ini
-[SOMETECHNO]                       ; TechnoType
-OpenTopped.RangeBonus=1            ; integer
-OpenTopped.DamageMultiplier=1.3    ; float
-OpenTopped.WarpDistance=8          ; integer
+[SOMEINFANTRY]                    ; InfantryType
+NotHuman.RandomDeathSequence=yes  ; boolean
 ```
 
 ### Shared Ammo
@@ -309,371 +282,6 @@ Ammo.Shared.Group=-1                    ; integer
 [SOMETECHNO2]                           ; TechnoType, passenger
 Ammo.Shared=no                          ; boolean
 Ammo.Shared.Group=-1                    ; integer
-```
-
-## Technos
-
-### Mind Control enhancement
-
-![image](_static/images/mindcontrol-max-range-01.gif)  
-*Mind Control Range Limit used in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*  
-![image](_static/images/mindcontrol-multiple-01.gif)  
-*Multiple Mind Control unit auto-releases the first victim in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
-
-- Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
-- Mind controllers with multiple controlling slots can now release the first controlled unit when they have reached the control limit and are ordered to control a new target.
-- Allows Warheads to play custom `MindControl.Anim` which defaults to `ControlledAnimationType`.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                       ; TechnoType
-MindControlRangeLimit=-1.0         ; double
-MultiMindControl.ReleaseVictim=no  ; boolean
-
-[SOMEWARHEAD]                            ; Warhead
-MindControl.Anim=ControlledAnimationType ; AnimType
-```
-
-### Spawn range limit
-
-![image](_static/images/spawnrange-01.gif)  
-*Limited pursue range for spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
-
-- The spawned units will abort the infinite pursuit if the enemy is out of range.
-`Spawner.ExtraLimitRange` adds extra pursuit range to the spawned units.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]              ; TechnoType
-Spawner.LimitRange=no     ; boolean
-Spawner.ExtraLimitRange=0 ; integer
-```
-
-### Promoted Spawns
-
-![image](_static/images/promotedspawns-01.gif)  
-*Promoted Spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
-
-- The spawned units will promote as their owner's veterancy.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]              ; TechnoType
-Promote.IncludeSpawns=no  ; boolean
-```
-
-### Initial Strength
-
-- You can now specify how many hitpoints a TechnoType starts with.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]        ; TechnoType
-InitialStrength=    ; int
-```
-
-### No Manual Move
-
-- You can now specify whether a TechnoType is unable to receive move command.
-
-```ini
-[SOMETECHNO]           ; TechnoType
-NoManualMove=no        ; boolean
-```
-
-### Firing offsets for specific Burst shots
-
-- You can now specify separate firing offsets for each of the shots fired by weapon with `Burst` via using `(Elite)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on which weapons your TechnoType makes use of. *N* in `BurstN` is zero-based burst shot index, and the values are parsed sequentially until no value for either regular or elite weapon is present, with elite weapon defaulting to regular weapon FLH if only it is missing. If no burst-index specific value is available, value from the base key (f.ex `PrimaryFireFLH`) is used.
-- Burst-index specific firing offsets are absolute firing offsets and the lateral shifting based on burst index that occurs with the base firing offsets is not applied.
-
-In `artmd.ini`:
-```ini
-[SOMETECHNO]                   ; TechnoType Image
-PrimaryFireFLH.BurstN=         ; int - forward, lateral, height
-ElitePrimaryFireFLH.BurstN=    ; int - forward, lateral, height
-SecondaryFireFLH.BurstN=       ; int - forward, lateral, height
-EliteSecondaryFireFLH.BurstN=  ; int - forward, lateral, height
-WeaponXFLH.BurstN=             ; int - forward, lateral, height
-EliteWeaponXFLH.BurstN=        ; int - forward, lateral, height
-```
-
-### Automatically firing weapons
-
-- You can now make TechnoType automatically fire its weapon(s) without having to scan for suitable targets by setting `AutoFire`, on either its base cell (in which case the weapon that is used for force-firing is used) or itself (in which case normal targeting and weapon selection rules and are respected) depending on if `AutoFire.TargetSelf` is set or not.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]            ; TechnoType
-AutoFire=no             ; boolean
-AutoFire.TargetSelf=no  ; boolean
-```
-
-### Disabling fallback to (Elite)Secondary weapon
-
-- It is now possible to disable the fallback to `(Elite)Secondary` weapon from `(Elite)Primary` weapon if it cannot fire at the chosen target by setting `NoSecondaryWeaponFallback` to true (defaults to false). This does not apply to special cases where `(Elite)Secondary` weapon is always chosen, including but not necessarily limited to the following:
-  - `OpenTransportWeapon=1` on an unit firing from inside `OpenTopped=true` transport.
-  - `NoAmmoWeapon=1` on an unit with  `Ammo` value higher than 0 and current ammo count lower or  equal to `NoAmmoAmount`.
-  - Deployed `IsSimpleDeployer=true` units with`DeployFireWeapon=1` set or omitted.
-  - `DrainWeapon=true` weapons against enemy `Drainable=yes` buildings.
-  - Units with `IsLocomotor=true` set on `Warhead` of `(Elite)Primary` weapon against buildings.
-  - Weapons with `ElectricAssault=true` set on `Warhead` against `Overpowerable=true` buildings belonging to owner or allies.
-  - `Overpowerable=true` buildings that are currently overpowered.
-  - Any system using `(Elite)WeaponX`, f.ex `Gunner=true` or `IsGattling=true` is also wholly exempt.
-  
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                      ; TechnoType
-NoSecondaryWeaponFallback=false   ; boolean
-```
-
-### Kill Unit Automatically
-
-- Objects can be destroyed automatically under certaing cases:
-  - No Ammo: The object will die if the remaining ammo reaches 0.
-  - Countdown: The object will die if the countdown reaches 0.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                       ; TechnoType
-Death.NoAmmo=no                    ; boolean
-Death.Countdown=0                  ; integer
-```
-
-### Override Uncloaked Underwater attack behavior
-
-![image](_static/images/underwater-new-attack-tag.gif)  
-*Naval underwater behavior in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*  
-
-- Overrides a part of the vanilla YR logic for allowing naval units to use a different weapon if the naval unit is uncloaked.
-- Useful if your naval unit have 1 weapon only for underwater and another weapon for surface objects.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                      ; TechnoType
-ForceWeapon.Naval.Decloaked=-1   ; Integer. 0 for primary weapon, 1 for secondary weapon
-```
-
-### Weapons fired on warping in / out
-
-- It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.
-  - `WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance traveled (in leptons) was less than `ChronoRangeMinimum`. This works regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon` is not set, it defaults to `WarpInWeapon`.
-  - If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of `WarpIn(MinRange)Weapon` is overriden by the number of whole cells teleported across.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                            ; TechnoType
-WarpInWeapon=                           ; WeaponType
-WarpInMinRangeWeapon=                   ; WeaponType
-WarpInWeapon.UseDistanceAsDamage=false  ; boolean
-WarpOutWeapon=                          ; WeaponType
-```
-
-## Terrains
-
-### Destroy animation & sound
-
-- You can now specify a destroy animation and sound for a TerrainType that are played when it is destroyed.
-
-In `rulesmd.ini`:
-```ini
-[SOMETERRAINTYPE]  ; TerrainType
-DestroyAnim=       ; Animation
-DestroySound=      ; Sound
-```
-
-## Weapons
-
-### Burst.Delays
-
-- Allows specifying weapon-specific burst shot delays. Takes precedence over the old `BurstDelayX` logic available on VehicleTypes, functions with Infantry & BuildingType weapons (AircraftTypes are not supported due to their weapon firing system being completely different) and allows every shot of `Burst` to have a separate delay instead of only first four shots.
-- If no delay is defined for a shot, it falls back to last delay value defined (f.ex `Burst=3` and `Burst.Delays=10` would use 10 as delay for all shots).
-- Using `-1` as delay reverts back to old logic (`BurstDelay0-3` for VehicleTypes if available or random value between 3-5 otherwise) for that shot.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]                 ; WeaponType
-Burst.Delays=-1              ; int - burst delays (comma-separated) for shots in order from first to last.
-```
-
-### Strafing aircraft weapon customization
-
-![image](_static/images/strafing-01.gif)  
-*Strafing aircraft weapon customization in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
-
-- Some of the behavior of strafing aircraft weapons (weapon projectile has `ROT` below 2) can now be customized.
-  - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired. Valid values range from 1 to 5, any values smaller or larger are effectively treated same as either 1 or 5, respectively. Defaults to 5.
-  - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined. Defaults to false.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]                 ; WeaponType
-Strafing.Shots=5             ; integer
-Strafing.SimulateBurst=false ; bool
-```
-
-### Radiation enhancements
-
-- Radiation now has owner by default, so any rad-kills will be scored. This behavior can be reverted by a corresponding tag.
-  - `AffectsAllies`, `AffectsOwner` and `AffectsEnemies` on `RadSiteWarhead` are respected.
-  - Currently the rad maker doesn't gain experience from kills, this may change in future.
-- Radiation is now able to deal damage to Buildings. To enable set `RadApplicationDelay.Building` value more than 0.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]    ; WeaponType
-Rad.NoOwner=no  ; boolean
-```
-
-### Weapon targeting filter
-
-- You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
-  - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]         ; WeaponType
-CanTarget=all        ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-```
-
-### AreaFire target customization
-
-- You can now specify how AreaFire weapon picks its target. By default it targets the base cell the firer is currently on, but this can now be changed to fire on the firer itself or at a random cell within the radius of the weapon's `Range` by setting `AreaFire.Target` to `self` or `random` respectively.
-- `AreaFire.Target=self` respects normal targeting rules (Warhead Verses etc.) against the firer itself.
-- `AreaFire.Target=random` ignores cells that are ineligible or contain ineligible objects based on listed values in weapon's `CanTarget` & `CanTargetHouses`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]         ; WeaponType
-AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
-```
-
-### Feedback weapon
-
-- You can now specify an auxiliary weapon to be fired on the firer itself when a weapon is fired.
-  - `FireInTransport` setting of the feedback weapon is respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If feedback weapon is fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on feedback weapons.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]     ; WeaponType
-FeedbackWeapon=  ; WeaponType
-```
-
-## Warheads
-
-```{hint}
-All new warheads can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
-```
-
-### Generate credits on impact
-
-![image](_static/images/hackerfinallyworks-01.gif)  
-*`TransactMoney` used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
-
-- Warheads can now give credits to its owner at impact.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD]   ; Warhead
-TransactMoney=0 ; integer - credits added or subtracted
-```
-
-### Reveal map for owner on impact
-
-![image](_static/images/revealwarhead-01.gif)  
-*`SpySat=yes` on `[NUKE]` warhead reveals the map when nuclear missile detonates*
-
-- Warheads can now reveal the entire map on impact.
-- Reveal only applies to the owner of the warhead.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD] ; Warhead
-SpySat=no     ; boolean
-```
-
-### Shroud map for enemies on impact
-
-- Warheads can now shroud the entire map on impact.
-- Shroud only applies to enemies of the warhead owner.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD] ; Warhead
-BigGap=no     ; boolean
-```
-
-### Remove disguise on impact
-
-- Warheads can now remove disguise from disguised infantry such as spies. This will work even if the disguised was acquired by default through `PermaDisguise`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD]                      ; Warhead
-RemoveDisguise=no                  ; boolean
-```
-
-### Break Mind Control on impact
-
-- Warheads can now break mind control (doesn't apply to perma-MC-ed objects).
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD]                        ; Warhead
-RemoveMindControl=no                 ; boolean
-```
-
-### Chance-based extra damage or Warhead detonation / 'critical hits'
-
-- Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
-  - `Crit.Chance` determines chance for a critical hit to occur. By default this is checked once when the Warhead is detonated and every target that is susceptible to critical hits will be affected. If `Crit.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
-  - `Crit.ExtraDamage` determines the damage dealt by the critical hit. If `Crit.Warhead` is set, the damage is used to detonate the specified Warhead on each affected target, otherwise the damage is directly dealt based on current Warhead's `Verses` settings.
-  - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against.
-  - `Crit.AffectsBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
-  - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list.
-    - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
-  - `ImmuneToCrit` can be set on TechnoTypes to make them immune to critical hits.
-  
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD]                     ; Warhead
-Crit.Chance=0.0                   ; float, percents or absolute (0.0-1.0)
-Crit.ApplyChancePerTarget=false   ; boolean
-Crit.ExtraDamage=0                ; integer
-Crit.Warhead=                     ; Warhead
-Crit.Affects=all                  ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-Crit.AffectBelowPercent=1.0       ; float, percents or absolute (0.0-1.0)
-Crit.AnimList=                    ; list of animations
-Crit.AnimList.PickRandom=         ; boolean
-Crit.AnimOnAffectedTargets=false  ; boolean
-
-[SOMETECHNO]                      ; TechnoType
-ImmuneToCrit=no                   ; boolean
-```
-
-```{warning}
-If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chain of Warheads with it that loops back to the first one there is a possibility for the game to get stuck in a loop and freeze or crash afterwards.
-```
-
-### Custom 'SplashList' on Warheads
-
-![image](_static/images/splashlist-01.gif)  
-- Allows Warheads to play custom water splash animations. See vanilla's [Conventional](https://www.modenc.renegadeprojects.com/Conventional) system here.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD]            ; Warhead
-SplashList=<none>        ; list of animations to play
-SplashList.PickRandom=no ; play a random animation from the list? boolean, defaults to no
-```
-
-### Trigger specific NotHuman infantry Death anim sequence
-- Warheads are now able to trigger specific `NotHuman=yes` infantry `Death` anim sequence using the corresponding tag. It's value represents sequences from `Die1` to `Die5`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD]            ; Warhead
-NotHuman.DeathSequence=  ; integer (1 to 5)
 ```
 
 ## Projectiles
@@ -705,207 +313,11 @@ Interceptable=no ; boolean
 ### Shrapnel enhancement
 - Shrapnel behavior can be triggered on the ground and buildings.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]              ; Projectile
 Shrapnel.AffectsGround=no     ; boolean
 Shrapnel.AffectsBuildings=no  ; boolean
-```
-
-## Trigger events
-
-### `500-511` Variable comparation
-- Compares the variable's value with given number
-
-In `mycampaign.map`:
-```ini
-[Events]
-...
-ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[Param],[EventX]
-...
-```
-
-| *Event ID*  | *Description*                                 | *Global* |
-| :------: | :-------------------------------------------: | :-------: |
-500         | CurrentValue > Number | No |
-501         | CurrentValue < Number | No |
-502         | CurrentValue = Number | No |
-503         | CurrentValue >= Number | No |
-504         | CurrentValue <= Number | No |
-505         | CurrentValue & Number | No |
-506         | CurrentValue > Number | Yes |
-507         | CurrentValue < Number | Yes |
-508         | CurrentValue = Number | Yes |
-509         | CurrentValue >= Number | Yes |
-510         | CurrentValue <= Number | Yes |
-511         | CurrentValue & Number | Yes |
-
-### `512-523` Variable comparation with local variable
-- Compares the variable's value with given local variable value
-
-In `mycampaign.map`:
-```ini
-[Events]
-...
-ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[LocalVariableIndex],[EventX]
-...
-```
-
-| *Event ID*  | *Description*                                 | *Global* |
-| :------: | :-------------------------------------------: | :-------: |
-512         | CurrentValue > LocalVariableValue | No |
-513         | CurrentValue < LocalVariableValue | No |
-514         | CurrentValue = LocalVariableValue | No |
-515         | CurrentValue >= LocalVariableValue | No |
-516         | CurrentValue <= LocalVariableValue | No |
-517         | CurrentValue & LocalVariableValue | No |
-518         | CurrentValue > LocalVariableValue | Yes |
-519         | CurrentValue < LocalVariableValue | Yes |
-520         | CurrentValue = LocalVariableValue | Yes |
-521         | CurrentValue >= LocalVariableValue | Yes |
-522         | CurrentValue <= LocalVariableValue | Yes |
-523         | CurrentValue & LocalVariableValue | Yes |
-
-### `524-535` Variable comparation with global variable
-- Compares the variable's value with given global variable value
-
-In `mycampaign.map`:
-```ini
-[Events]
-...
-ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX]
-...
-```
-
-| *Event ID*  | *Description*                                 | *Global* |
-| :------: | :-------------------------------------------: | :-------: |
-524         | CurrentValue > GlobalVariableValue | No |
-525         | CurrentValue < GlobalVariableValue | No |
-526         | CurrentValue = GlobalVariableValue | No |
-527         | CurrentValue >= GlobalVariableValue | No |
-528         | CurrentValue <= GlobalVariableValue | No |
-529         | CurrentValue & GlobalVariableValue | No |
-530         | CurrentValue > GlobalVariableValue | Yes |
-531         | CurrentValue < GlobalVariableValue | Yes |
-532         | CurrentValue = GlobalVariableValue | Yes |
-533         | CurrentValue >= GlobalVariableValue | Yes |
-534         | CurrentValue <= GlobalVariableValue | Yes |
-535         | CurrentValue & GlobalVariableValue | Yes |
-
-
-## Trigger actions
-
-### `500` Save Game
-- Save the current game immediately (singleplayer game only).
-    - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
-    - The save's description will look like `MapDescName - CSFText`.
-        - For example: `Allied Mission 25: Esther's Money - Money Stolen`.
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],500,4,[CSFKey],0,0,0,0,A,[ActionX]
-...
-```
-
-### `501` Edit Variable
-- Operate a variable's value
-    - The variable's value type is int32, which means it ranges from -2^31 to 2^31-1.
-        - Any numbers exceeding this limit will lead to unexpected results!
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVariable],0,A,[ActionX]
-...
-```
-
-| *Operation*  | *Description*                                 |
-| :------: | :-------------------------------------------: |
-0         | CurrentValue = Number |
-1         | CurrentValue = CurrentValue + Number |
-2         | CurrentValue = CurrentValue - Number |
-3         | CurrentValue = CurrentValue * Number |
-4         | CurrentValue = CurrentValue / Number |
-5         | CurrentValue = CurrentValue % Number |
-6         | CurrentValue = CurrentValue leftshift Number |
-7         | CurrentValue = CurrentValue rightshift Number |
-8         | CurrentValue = ~CurrentValue |
-9         | CurrentValue = CurrentValue xor Number |
-10         | CurrentValue = CurrentValue or Number |
-11         | CurrentValue = CurrentValue and Number |
-
-### `502` Generate random number
-- Generate a random integer ranged in [Min, Max] and store it in a given variable
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],502,0,[VariableIndex],[Min],[Max],[IsGlobalVariable],0,A,[ActionX]
-...
-```
-
-### `503` Print variable value
-- Print a variable value to the message list
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[ActionX]
-...
-```
-
-### `504` Binary Operation
-- Operate a variable's value with another variable's value
-    - Similar to 501, but the operation number is read from another variable
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperationIndex],[IsGlobalVariable],[IsOperationGlobalVariable],A,[ActionX]
-...
-```
-
-`Operation` can be looked up at action `501`
-
-### `505` Fire Super Weapon at specified location
-
-- Launch a Super Weapon from [SuperWeaponTypes] list at a specified location.
-- `HouseIndex` can take various values:
-
-| *House Index* | *Description*                                 |
-| :-------: | :-------------------------------------------: |
-| >= 0      | The index of the current House in the map |
-| 4475-4482 | Like in the index range 0-7 |
-| -1        | Pick a random House that isn't Neutral |
-| -2        | Pick the first Neutral House |
-| -3        | Pick a random Human Player |
-
-- Coordinates X & Y can take possitive values or -1, in which case these values can take a random value from the visible map area.
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],505,0,0,[SuperWeaponTypesIndex],[HouseIndex],[CoordinateX],[CoordinateY],A,[ActionX]
-...
-```
-
-### `506` Fire Super Weapon at specified Waypoint
-
-- Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint.
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointIndex],0,A,[ActionX]
-...
 ```
 
 ## Script actions
@@ -1249,4 +661,591 @@ LimboDelivery.RollChances=      ; List of percentages.
 LimboDelivery.RandomWeightsN=   ; List of integers.
 LimboKill.Affects=self          ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 LimboKill.IDs=                  ; List of numeric IDs.
+```
+
+## Technos
+
+### Automatic Passenger Deletion
+
+- Transports with these tags will erase the passengers overtime. Bigger units takes more time. Optionally this logic can work like a grinder.
+ - Good combination with Ares Abductor logic.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                            ; TechnoType
+PassengerDeletion.Rate=0                ; integer, game frames
+PassengerDeletion.Rate.SizeMultiply=yes ; boolean, whether to multiply frames amount by size
+PassengerDeletion.Soylent=no            ; boolean
+PassengerDeletion.SoylentFriendlies=no  ; boolean
+PassengerDeletion.ReportSound=          ; sound
+PassengerDeletion.Anim=                 ; animation
+```
+
+### Automatically firing weapons
+
+- You can now make TechnoType automatically fire its weapon(s) without having to scan for suitable targets by setting `AutoFire`, on either its base cell (in which case the weapon that is used for force-firing is used) or itself (in which case normal targeting and weapon selection rules and are respected) depending on if `AutoFire.TargetSelf` is set or not.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]            ; TechnoType
+AutoFire=no             ; boolean
+AutoFire.TargetSelf=no  ; boolean
+```
+
+### Customizable OpenTopped Properties
+
+- You can now override settings of `OpenTopped` transport properties per TechnoType.
+
+```ini
+[SOMETECHNO]                       ; TechnoType
+OpenTopped.RangeBonus=1            ; integer
+OpenTopped.DamageMultiplier=1.3    ; float
+OpenTopped.WarpDistance=8          ; integer
+```
+
+### Disabling fallback to (Elite)Secondary weapon
+
+- It is now possible to disable the fallback to `(Elite)Secondary` weapon from `(Elite)Primary` weapon if it cannot fire at the chosen target by setting `NoSecondaryWeaponFallback` to true (defaults to false). This does not apply to special cases where `(Elite)Secondary` weapon is always chosen, including but not necessarily limited to the following:
+  - `OpenTransportWeapon=1` on an unit firing from inside `OpenTopped=true` transport.
+  - `NoAmmoWeapon=1` on an unit with  `Ammo` value higher than 0 and current ammo count lower or  equal to `NoAmmoAmount`.
+  - Deployed `IsSimpleDeployer=true` units with`DeployFireWeapon=1` set or omitted.
+  - `DrainWeapon=true` weapons against enemy `Drainable=yes` buildings.
+  - Units with `IsLocomotor=true` set on `Warhead` of `(Elite)Primary` weapon against buildings.
+  - Weapons with `ElectricAssault=true` set on `Warhead` against `Overpowerable=true` buildings belonging to owner or allies.
+  - `Overpowerable=true` buildings that are currently overpowered.
+  - Any system using `(Elite)WeaponX`, f.ex `Gunner=true` or `IsGattling=true` is also wholly exempt.
+  
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+NoSecondaryWeaponFallback=false   ; boolean
+```
+
+### Firing offsets for specific Burst shots
+
+- You can now specify separate firing offsets for each of the shots fired by weapon with `Burst` via using `(Elite)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on which weapons your TechnoType makes use of. *N* in `BurstN` is zero-based burst shot index, and the values are parsed sequentially until no value for either regular or elite weapon is present, with elite weapon defaulting to regular weapon FLH if only it is missing. If no burst-index specific value is available, value from the base key (f.ex `PrimaryFireFLH`) is used.
+- Burst-index specific firing offsets are absolute firing offsets and the lateral shifting based on burst index that occurs with the base firing offsets is not applied.
+
+In `artmd.ini`:
+```ini
+[SOMETECHNO]                   ; TechnoType Image
+PrimaryFireFLH.BurstN=         ; int - forward, lateral, height
+ElitePrimaryFireFLH.BurstN=    ; int - forward, lateral, height
+SecondaryFireFLH.BurstN=       ; int - forward, lateral, height
+EliteSecondaryFireFLH.BurstN=  ; int - forward, lateral, height
+WeaponXFLH.BurstN=             ; int - forward, lateral, height
+EliteWeaponXFLH.BurstN=        ; int - forward, lateral, height
+```
+
+### Initial Strength
+
+- You can now specify how many hitpoints a TechnoType starts with.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]        ; TechnoType
+InitialStrength=    ; int
+```
+
+### Kill Unit Automatically
+
+- Objects can be destroyed automatically under certaing cases:
+  - No Ammo: The object will die if the remaining ammo reaches 0.
+  - Countdown: The object will die if the countdown reaches 0.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                       ; TechnoType
+Death.NoAmmo=no                    ; boolean
+Death.Countdown=0                  ; integer
+```
+
+### Mind Control enhancement
+
+![image](_static/images/mindcontrol-max-range-01.gif)  
+*Mind Control Range Limit used in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*  
+![image](_static/images/mindcontrol-multiple-01.gif)  
+*Multiple Mind Control unit auto-releases the first victim in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+
+- Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
+- Mind controllers with multiple controlling slots can now release the first controlled unit when they have reached the control limit and are ordered to control a new target.
+- Allows Warheads to play custom `MindControl.Anim` which defaults to `ControlledAnimationType`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                       ; TechnoType
+MindControlRangeLimit=-1.0         ; double
+MultiMindControl.ReleaseVictim=no  ; boolean
+
+[SOMEWARHEAD]                            ; Warhead
+MindControl.Anim=ControlledAnimationType ; AnimType
+```
+
+### No Manual Move
+
+- You can now specify whether a TechnoType is unable to receive move command.
+
+```ini
+[SOMETECHNO]           ; TechnoType
+NoManualMove=no        ; boolean
+```
+
+### Override Uncloaked Underwater attack behavior
+
+![image](_static/images/underwater-new-attack-tag.gif)  
+*Naval underwater behavior in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*  
+
+- Overrides a part of the vanilla YR logic for allowing naval units to use a different weapon if the naval unit is uncloaked.
+- Useful if your naval unit have 1 weapon only for underwater and another weapon for surface objects.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+ForceWeapon.Naval.Decloaked=-1    ; Integer. 0 for primary weapon, 1 for secondary weapon
+```
+
+### Promoted Spawns
+
+![image](_static/images/promotedspawns-01.gif)  
+*Promoted Spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+
+- The spawned units will promote as their owner's veterancy.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]              ; TechnoType
+Promote.IncludeSpawns=no  ; boolean
+```
+
+### Spawn range limit
+
+![image](_static/images/spawnrange-01.gif)  
+*Limited pursue range for spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+
+- The spawned units will abort the infinite pursuit if the enemy is out of range.
+`Spawner.ExtraLimitRange` adds extra pursuit range to the spawned units.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]              ; TechnoType
+Spawner.LimitRange=no     ; boolean
+Spawner.ExtraLimitRange=0 ; integer
+```
+
+### Weapons fired on warping in / out
+
+- It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.
+  - `WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance traveled (in leptons) was less than `ChronoRangeMinimum`. This works regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon` is not set, it defaults to `WarpInWeapon`.
+  - If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of `WarpIn(MinRange)Weapon` is overriden by the number of whole cells teleported across.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                            ; TechnoType
+WarpInWeapon=                           ; WeaponType
+WarpInMinRangeWeapon=                   ; WeaponType
+WarpInWeapon.UseDistanceAsDamage=false  ; boolean
+WarpOutWeapon=                          ; WeaponType
+```
+
+## Terrains
+
+### Destroy animation & sound
+
+- You can now specify a destroy animation and sound for a TerrainType that are played when it is destroyed.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]  ; TerrainType
+DestroyAnim=       ; Animation
+DestroySound=      ; Sound
+```
+
+## Trigger actions
+
+### `500` Save Game
+- Save the current game immediately (singleplayer game only).
+    - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
+    - The save's description will look like `MapDescName - CSFText`.
+        - For example: `Allied Mission 25: Esther's Money - Money Stolen`.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],500,4,[CSFKey],0,0,0,0,A,[ActionX]
+...
+```
+
+### `501` Edit Variable
+- Operate a variable's value
+    - The variable's value type is int32, which means it ranges from -2^31 to 2^31-1.
+        - Any numbers exceeding this limit will lead to unexpected results!
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVariable],0,A,[ActionX]
+...
+```
+
+| *Operation*  | *Description*                                 |
+| :------: | :-------------------------------------------: |
+0         | CurrentValue = Number |
+1         | CurrentValue = CurrentValue + Number |
+2         | CurrentValue = CurrentValue - Number |
+3         | CurrentValue = CurrentValue * Number |
+4         | CurrentValue = CurrentValue / Number |
+5         | CurrentValue = CurrentValue % Number |
+6         | CurrentValue = CurrentValue leftshift Number |
+7         | CurrentValue = CurrentValue rightshift Number |
+8         | CurrentValue = ~CurrentValue |
+9         | CurrentValue = CurrentValue xor Number |
+10         | CurrentValue = CurrentValue or Number |
+11         | CurrentValue = CurrentValue and Number |
+
+### `502` Generate random number
+- Generate a random integer ranged in [Min, Max] and store it in a given variable
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],502,0,[VariableIndex],[Min],[Max],[IsGlobalVariable],0,A,[ActionX]
+...
+```
+
+### `503` Print variable value
+- Print a variable value to the message list
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[ActionX]
+...
+```
+
+### `504` Binary Operation
+- Operate a variable's value with another variable's value
+    - Similar to 501, but the operation number is read from another variable
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperationIndex],[IsGlobalVariable],[IsOperationGlobalVariable],A,[ActionX]
+...
+```
+
+`Operation` can be looked up at action `501`
+
+### `505` Fire Super Weapon at specified location
+
+- Launch a Super Weapon from [SuperWeaponTypes] list at a specified location.
+- `HouseIndex` can take various values:
+
+| *House Index* | *Description*                                 |
+| :-------: | :-------------------------------------------: |
+| >= 0      | The index of the current House in the map |
+| 4475-4482 | Like in the index range 0-7 |
+| -1        | Pick a random House that isn't Neutral |
+| -2        | Pick the first Neutral House |
+| -3        | Pick a random Human Player |
+
+- Coordinates X & Y can take possitive values or -1, in which case these values can take a random value from the visible map area.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],505,0,0,[SuperWeaponTypesIndex],[HouseIndex],[CoordinateX],[CoordinateY],A,[ActionX]
+...
+```
+
+### `506` Fire Super Weapon at specified Waypoint
+
+- Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointIndex],0,A,[ActionX]
+...
+```
+
+## Trigger events
+
+### `500-511` Variable comparation
+- Compares the variable's value with given number
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[Param],[EventX]
+...
+```
+
+| *Event ID*  | *Description*                                 | *Global* |
+| :------: | :-------------------------------------------: | :-------: |
+500         | CurrentValue > Number | No |
+501         | CurrentValue < Number | No |
+502         | CurrentValue = Number | No |
+503         | CurrentValue >= Number | No |
+504         | CurrentValue <= Number | No |
+505         | CurrentValue & Number | No |
+506         | CurrentValue > Number | Yes |
+507         | CurrentValue < Number | Yes |
+508         | CurrentValue = Number | Yes |
+509         | CurrentValue >= Number | Yes |
+510         | CurrentValue <= Number | Yes |
+511         | CurrentValue & Number | Yes |
+
+### `512-523` Variable comparation with local variable
+- Compares the variable's value with given local variable value
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[LocalVariableIndex],[EventX]
+...
+```
+
+| *Event ID*  | *Description*                                 | *Global* |
+| :------: | :-------------------------------------------: | :-------: |
+512         | CurrentValue > LocalVariableValue | No |
+513         | CurrentValue < LocalVariableValue | No |
+514         | CurrentValue = LocalVariableValue | No |
+515         | CurrentValue >= LocalVariableValue | No |
+516         | CurrentValue <= LocalVariableValue | No |
+517         | CurrentValue & LocalVariableValue | No |
+518         | CurrentValue > LocalVariableValue | Yes |
+519         | CurrentValue < LocalVariableValue | Yes |
+520         | CurrentValue = LocalVariableValue | Yes |
+521         | CurrentValue >= LocalVariableValue | Yes |
+522         | CurrentValue <= LocalVariableValue | Yes |
+523         | CurrentValue & LocalVariableValue | Yes |
+
+### `524-535` Variable comparation with global variable
+- Compares the variable's value with given global variable value
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX]
+...
+```
+
+| *Event ID*  | *Description*                                 | *Global* |
+| :------: | :-------------------------------------------: | :-------: |
+524         | CurrentValue > GlobalVariableValue | No |
+525         | CurrentValue < GlobalVariableValue | No |
+526         | CurrentValue = GlobalVariableValue | No |
+527         | CurrentValue >= GlobalVariableValue | No |
+528         | CurrentValue <= GlobalVariableValue | No |
+529         | CurrentValue & GlobalVariableValue | No |
+530         | CurrentValue > GlobalVariableValue | Yes |
+531         | CurrentValue < GlobalVariableValue | Yes |
+532         | CurrentValue = GlobalVariableValue | Yes |
+533         | CurrentValue >= GlobalVariableValue | Yes |
+534         | CurrentValue <= GlobalVariableValue | Yes |
+535         | CurrentValue & GlobalVariableValue | Yes |
+
+## Warheads
+
+```{hint}
+All new warheads can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
+```
+
+### Break Mind Control on impact
+
+- Warheads can now break mind control (doesn't apply to perma-MC-ed objects).
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                        ; Warhead
+RemoveMindControl=no                 ; boolean
+```
+
+### Chance-based extra damage or Warhead detonation / 'critical hits'
+
+- Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
+  - `Crit.Chance` determines chance for a critical hit to occur. By default this is checked once when the Warhead is detonated and every target that is susceptible to critical hits will be affected. If `Crit.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
+  - `Crit.ExtraDamage` determines the damage dealt by the critical hit. If `Crit.Warhead` is set, the damage is used to detonate the specified Warhead on each affected target, otherwise the damage is directly dealt based on current Warhead's `Verses` settings.
+  - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against.
+  - `Crit.AffectsBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
+  - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list.
+    - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
+  - `ImmuneToCrit` can be set on TechnoTypes to make them immune to critical hits.
+  
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                     ; Warhead
+Crit.Chance=0.0                   ; float, percents or absolute (0.0-1.0)
+Crit.ApplyChancePerTarget=false   ; boolean
+Crit.ExtraDamage=0                ; integer
+Crit.Warhead=                     ; Warhead
+Crit.Affects=all                  ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+Crit.AffectBelowPercent=1.0       ; float, percents or absolute (0.0-1.0)
+Crit.AnimList=                    ; list of animations
+Crit.AnimList.PickRandom=         ; boolean
+Crit.AnimOnAffectedTargets=false  ; boolean
+
+[SOMETECHNO]                      ; TechnoType
+ImmuneToCrit=no                   ; boolean
+```
+
+```{warning}
+If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chain of Warheads with it that loops back to the first one there is a possibility for the game to get stuck in a loop and freeze or crash afterwards.
+```
+
+### Custom 'SplashList' on Warheads
+
+![image](_static/images/splashlist-01.gif)  
+- Allows Warheads to play custom water splash animations. See vanilla's [Conventional](https://www.modenc.renegadeprojects.com/Conventional) system here.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]            ; Warhead
+SplashList=<none>        ; list of animations to play
+SplashList.PickRandom=no ; play a random animation from the list? boolean, defaults to no
+```
+
+### Generate credits on impact
+
+![image](_static/images/hackerfinallyworks-01.gif)  
+*`TransactMoney` used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
+
+- Warheads can now give credits to its owner at impact.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]   ; Warhead
+TransactMoney=0 ; integer - credits added or subtracted
+```
+
+### Remove disguise on impact
+
+- Warheads can now remove disguise from disguised infantry such as spies. This will work even if the disguised was acquired by default through `PermaDisguise`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                      ; Warhead
+RemoveDisguise=no                  ; boolean
+```
+
+### Reveal map for owner on impact
+
+![image](_static/images/revealwarhead-01.gif)  
+*`SpySat=yes` on `[NUKE]` warhead reveals the map when nuclear missile detonates*
+
+- Warheads can now reveal the entire map on impact.
+- Reveal only applies to the owner of the warhead.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD] ; Warhead
+SpySat=no     ; boolean
+```
+
+### Shroud map for enemies on impact
+
+- Warheads can now shroud the entire map on impact.
+- Shroud only applies to enemies of the warhead owner.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD] ; Warhead
+BigGap=no     ; boolean
+```
+
+### Trigger specific NotHuman infantry Death anim sequence
+- Warheads are now able to trigger specific `NotHuman=yes` infantry `Death` anim sequence using the corresponding tag. It's value represents sequences from `Die1` to `Die5`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]            ; Warhead
+NotHuman.DeathSequence=  ; integer (1 to 5)
+```
+
+## Weapons
+
+### AreaFire target customization
+
+- You can now specify how AreaFire weapon picks its target. By default it targets the base cell the firer is currently on, but this can now be changed to fire on the firer itself or at a random cell within the radius of the weapon's `Range` by setting `AreaFire.Target` to `self` or `random` respectively.
+- `AreaFire.Target=self` respects normal targeting rules (Warhead Verses etc.) against the firer itself.
+- `AreaFire.Target=random` ignores cells that are ineligible or contain ineligible objects based on listed values in weapon's `CanTarget` & `CanTargetHouses`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]         ; WeaponType
+AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
+```
+
+### Burst.Delays
+
+- Allows specifying weapon-specific burst shot delays. Takes precedence over the old `BurstDelayX` logic available on VehicleTypes, functions with Infantry & BuildingType weapons (AircraftTypes are not supported due to their weapon firing system being completely different) and allows every shot of `Burst` to have a separate delay instead of only first four shots.
+- If no delay is defined for a shot, it falls back to last delay value defined (f.ex `Burst=3` and `Burst.Delays=10` would use 10 as delay for all shots).
+- Using `-1` as delay reverts back to old logic (`BurstDelay0-3` for VehicleTypes if available or random value between 3-5 otherwise) for that shot.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                 ; WeaponType
+Burst.Delays=-1              ; int - burst delays (comma-separated) for shots in order from first to last.
+```
+
+### Feedback weapon
+
+- You can now specify an auxiliary weapon to be fired on the firer itself when a weapon is fired.
+  - `FireInTransport` setting of the feedback weapon is respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If feedback weapon is fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on feedback weapons.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]     ; WeaponType
+FeedbackWeapon=  ; WeaponType
+```
+
+### Radiation enhancements
+
+- Radiation now has owner by default, so any rad-kills will be scored. This behavior can be reverted by a corresponding tag.
+  - `AffectsAllies`, `AffectsOwner` and `AffectsEnemies` on `RadSiteWarhead` are respected.
+  - Currently the rad maker doesn't gain experience from kills, this may change in future.
+- Radiation is now able to deal damage to Buildings. To enable set `RadApplicationDelay.Building` value more than 0.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]    ; WeaponType
+Rad.NoOwner=no  ; boolean
+```
+
+### Strafing aircraft weapon customization
+
+![image](_static/images/strafing-01.gif)  
+*Strafing aircraft weapon customization in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
+
+- Some of the behavior of strafing aircraft weapons (weapon projectile has `ROT` below 2) can now be customized.
+  - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired. Valid values range from 1 to 5, any values smaller or larger are effectively treated same as either 1 or 5, respectively. Defaults to 5.
+  - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined. Defaults to false.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                 ; WeaponType
+Strafing.Shots=5             ; integer
+Strafing.SimulateBurst=false ; bool
+```
+
+### Weapon targeting filter
+
+- You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
+  - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]         ; WeaponType
+CanTarget=all        ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
