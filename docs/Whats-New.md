@@ -323,6 +323,7 @@ Phobos fixes:
 - Fixed critical hit animation playing even if no critical hits were dealt due to `Crit.Affects` or `ImmuneToCrit` settings (by Starkku)
 - Fixed `RemoveDisguise` not working on `PermaDisguise` infantry (by Starkku)
 - Fixed single-color laser (IsHouseColor, IsSingleColor, LaserTrails) glow falloff to match the vanilla appearance (by Starkku)
+- Fixed a potential cause of crashes concerning shield animations (such in conjunction with cloaking) (by Starkku)
 </details>
 
 

@@ -57,6 +57,8 @@ private:
 	void RespawnShield();
 
 	void CreateAnim();
+	void UpdateIdleAnim();
+	AnimTypeClass* GetIdleAnimType();
 
 	void WeaponNullifyAnim(AnimTypeClass* pHitAnim = nullptr);
 	void ResponseAttack();

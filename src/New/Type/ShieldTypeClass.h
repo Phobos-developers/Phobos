@@ -22,7 +22,8 @@ public:
 	Valueable<int> BracketDelta;
 	Valueable<AttachedAnimFlag> IdleAnim_OfflineAction;
 	Valueable<AttachedAnimFlag> IdleAnim_TemporalAction;
-	Nullable<AnimTypeClass*> IdleAnim;
+	Damageable<AnimTypeClass*> IdleAnim;
+	Damageable<AnimTypeClass*> IdleAnimDamaged;
 	Nullable<AnimTypeClass*> BreakAnim;
 	Nullable<AnimTypeClass*> HitAnim;
 	Nullable<WeaponTypeClass*> BreakWeapon;
@@ -49,6 +50,7 @@ public:
 		, IdleAnim_OfflineAction(AttachedAnimFlag::Hides)
 		, IdleAnim_TemporalAction(AttachedAnimFlag::Hides)
 		, IdleAnim()
+		, IdleAnimDamaged()
 		, BreakAnim()
 		, HitAnim()
 		, BreakWeapon()
@@ -64,6 +66,8 @@ public:
 	virtual void LoadFromINI(CCINIClass* pINI) override;
 	virtual void LoadFromStream(PhobosStreamReader& Stm);
 	virtual void SaveToStream(PhobosStreamWriter& Stm);
+
+	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio);
 
 private:
 	template <typename T>

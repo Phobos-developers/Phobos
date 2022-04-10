@@ -7,6 +7,16 @@ const char* Enumerable<ShieldTypeClass>::GetMainSection()
 	return "ShieldTypes";
 }
 
+AnimTypeClass* ShieldTypeClass::GetIdleAnimType(bool isDamaged, double healthRatio)
+{
+	auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio);
+
+	if (isDamaged && damagedAnim)
+		return damagedAnim;
+	else
+		return this->IdleAnim.Get(healthRatio);
+}
+
 void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = this->Name;
@@ -34,12 +44,8 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->IdleAnim_OfflineAction.Read(exINI, pSection, "IdleAnim.OfflineAction");
 	this->IdleAnim_TemporalAction.Read(exINI, pSection, "IdleAnim.TemporalAction");
 
-	this->IdleAnim.Read(exINI, pSection, "IdleAnim");
-	if (this->IdleAnim.Get() && this->IdleAnim->Bouncer)
-	{
-		Debug::Log("[Developer Warning]ShieldTypes don't support Bouncer=yes anims: [%s]IdleAnim=%s\r\n", pSection, this->IdleAnim->get_ID());
-		this->IdleAnim.Reset();
-	}
+	this->IdleAnim.Read(exINI, pSection, "IdleAnim.%s");
+	this->IdleAnimDamaged.Read(exINI, pSection, "IdleAnimDamaged.%s");
 
 	this->BreakAnim.Read(exINI, pSection, "BreakAnim");
 	this->HitAnim.Read(exINI, pSection, "HitAnim");

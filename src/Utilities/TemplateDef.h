@@ -864,3 +864,45 @@ void __declspec(noinline) NullableIdxVector<Lookuper>::Read(INI_EX& parser, cons
 		}
 	}
 }
+
+// Damageable
+
+template <typename T>
+void __declspec(noinline) Damageable<T>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, const char* const pSingleFlag)
+{
+
+	// read the common flag, with the trailing dot being stripped
+	char flagName[0x40];
+	auto const pSingleFormat = pSingleFlag ? pSingleFlag : pBaseFlag;
+	auto res = _snprintf_s(flagName, _TRUNCATE, pSingleFormat, "");
+	if (res > 0 && flagName[res - 1] == '.')
+	{
+		flagName[res - 1] = '\0';
+	}
+
+	T placeholder;
+	if (detail::read(placeholder, parser, pSection, flagName))
+		this->SetAll(placeholder);
+
+	_snprintf_s(flagName, _TRUNCATE, pBaseFlag, "ConditionYellow");
+	detail::read(this->ConditionYellow, parser, pSection, flagName);
+
+	_snprintf_s(flagName, _TRUNCATE, pBaseFlag, "ConditionRed");
+	detail::read(this->ConditionRed, parser, pSection, flagName);
+};
+
+template <typename T>
+bool Damageable<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	return Savegame::ReadPhobosStream(Stm, this->BaseValue, RegisterForChange)
+		&& Savegame::ReadPhobosStream(Stm, this->ConditionYellow, RegisterForChange)
+		&& Savegame::ReadPhobosStream(Stm, this->ConditionRed, RegisterForChange);
+}
+
+template <typename T>
+bool Damageable<T>::Save(PhobosStreamWriter& Stm) const
+{
+	return Savegame::WritePhobosStream(Stm, this->BaseValue)
+		&& Savegame::WritePhobosStream(Stm, this->ConditionYellow)
+		&& Savegame::WritePhobosStream(Stm, this->ConditionRed);
+}

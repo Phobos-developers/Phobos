@@ -149,6 +149,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			this->WeaponNullifyAnim(pWHExt->Shield_HitAnim.Get(nullptr));
 			this->HP = -residueDamage;
 
+			UpdateIdleAnim();
+
 			return healthDamage;
 		}
 	}
@@ -170,6 +172,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			this->HP = this->Type->Strength;
 		else
 			this->HP -= shieldDamage;
+
+		UpdateIdleAnim();
 
 		return 0;
 	}
@@ -417,7 +421,10 @@ bool ShieldClass::ConvertCheck()
 	// Update shield properties.
 	if (pNewType->Strength && this->Available)
 	{
-		if (pOldType->IdleAnim.Get() != pNewType->IdleAnim.Get())
+		bool isDamaged = this->Techno->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
+		double healthRatio = this->GetHealthRatio();
+
+		if (pOldType->GetIdleAnimType(isDamaged, healthRatio) != pNewType->GetIdleAnimType(isDamaged, healthRatio))
 			this->KillAnim();
 
 		this->HP = (int)round(
@@ -473,6 +480,8 @@ void ShieldClass::SelfHealing()
 		{
 			timer->Start(rate);
 			this->HP += percentageAmount;
+
+			UpdateIdleAnim();
 
 			if (this->HP > pType->Strength)
 			{
@@ -599,18 +608,17 @@ void ShieldClass::SetSelfHealing(int duration, double amount, int rate, bool res
 
 void ShieldClass::CreateAnim()
 {
-	if (!this->IdleAnim && this->Type->IdleAnim.isset())
+	auto idleAnimType = this->GetIdleAnimType();
+
+	if (!this->IdleAnim && idleAnimType)
 	{
-		if (auto const pAnimType = this->Type->IdleAnim.Get())
-		{
-			if (auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location))
+			if (auto const pAnim = GameCreate<AnimClass>(idleAnimType, this->Techno->Location))
 			{
 				pAnim->SetOwnerObject(this->Techno);
 				pAnim->Owner = this->Techno->Owner;
 				pAnim->RemainingIterations = 0xFFu;
 				this->IdleAnim = pAnim;
 			}
-		}
 	}
 }
 
@@ -618,9 +626,28 @@ void ShieldClass::KillAnim()
 {
 	if (this->IdleAnim)
 	{
-		GameDelete(this->IdleAnim);
+		this->IdleAnim->DetachFromObject(this->Techno, false);
 		this->IdleAnim = nullptr;
 	}
+}
+
+void ShieldClass::UpdateIdleAnim()
+{
+	if (this->IdleAnim && this->IdleAnim->Type != this->GetIdleAnimType())
+	{
+		this->KillAnim();
+		this->CreateAnim();
+	}
+}
+
+AnimTypeClass* ShieldClass::GetIdleAnimType()
+{
+	if (!this->Type || !this->Techno)
+		return nullptr;
+
+	bool isDamaged = this->Techno->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
+
+	return this->Type->GetIdleAnimType(isDamaged, this->GetHealthRatio());
 }
 
 void ShieldClass::DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound)
