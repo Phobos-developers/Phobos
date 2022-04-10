@@ -612,13 +612,13 @@ void ShieldClass::CreateAnim()
 
 	if (!this->IdleAnim && idleAnimType)
 	{
-			if (auto const pAnim = GameCreate<AnimClass>(idleAnimType, this->Techno->Location))
-			{
-				pAnim->SetOwnerObject(this->Techno);
-				pAnim->Owner = this->Techno->Owner;
-				pAnim->RemainingIterations = 0xFFu;
-				this->IdleAnim = pAnim;
-			}
+		if (auto const pAnim = GameCreate<AnimClass>(idleAnimType, this->Techno->Location))
+		{
+			pAnim->SetOwnerObject(this->Techno);
+			pAnim->Owner = this->Techno->Owner;
+			pAnim->RemainingIterations = 0xFFu;
+			this->IdleAnim = pAnim;
+		}
 	}
 }
 
@@ -703,8 +703,10 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 			vPos.X = vPos2.X + vLoc.X + 4 * iLength + 3 - deltaX;
 			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
 
+			int emptyFrame = this->Type->Pips_Building_Empty.Get(RulesExt::Global()->Pips_Shield_Building_Empty.Get(0));
+
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-				0, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+				emptyFrame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		}
 	}
 }
@@ -717,11 +719,15 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->Type->BracketDelta;
 	vLoc.Y -= 5;
 
+	auto pipBoard = this->Type->Pips_Background_SHP ? this->Type->Pips_Background_SHP :
+		RulesExt::Global()->Pips_Shield_Background_SHP ? RulesExt::Global()->Pips_Shield_Background_SHP :
+		FileSystem::PIPBRD_SHP;
+
 	if (iLength == 8)
 	{
 		vPos.X = vLoc.X + 11;
 		vPos.Y = vLoc.Y - 25 + YOffset;
-		frame = FileSystem::PIPBRD_SHP->Frames > 2 ? 3 : 1;
+		frame = pipBoard->Frames > 2 ? 3 : 1;
 		XOffset = -5;
 		YOffset -= 24;
 	}
@@ -729,14 +735,14 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	{
 		vPos.X = vLoc.X + 1;
 		vPos.Y = vLoc.Y - 26 + YOffset;
-		frame = FileSystem::PIPBRD_SHP->Frames > 2 ? 2 : 0;
+		frame = pipBoard->Frames > 2 ? 2 : 0;
 		XOffset = -15;
 		YOffset -= 25;
 	}
 
 	if (this->Techno->IsSelected)
 	{
-		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPBRD_SHP,
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, pipBoard,
 			frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
@@ -757,9 +763,13 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 int ShieldClass::DrawShieldBar_Pip(const bool isBuilding)
 {
 	const auto strength = this->Type->Strength;
-	const auto shieldPip = isBuilding ?
-		RulesExt::Global()->Pips_Shield_Buildings.Get() :
-		RulesExt::Global()->Pips_Shield.Get();
+	const auto pips_Shield = isBuilding ? this->Type->Pips_Building.Get() :this->Type->Pips.Get();
+	const auto pips_Global = isBuilding ? RulesExt::Global()->Pips_Shield_Building.Get() : RulesExt::Global()->Pips_Shield.Get();
+
+	auto shieldPip = pips_Global;
+
+	if (pips_Shield.X != -1)
+		shieldPip = pips_Shield;
 
 	if (this->HP > RulesClass::Instance->ConditionYellow * strength && shieldPip.X != -1)
 		return shieldPip.X;

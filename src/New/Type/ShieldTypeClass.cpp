@@ -55,6 +55,19 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->PassPercent.Read(exINI, pSection, "PassPercent");
 
 	this->AllowTransfer.Read(exINI, pSection, "AllowTransfer");
+
+	this->Pips.Read(exINI, pSection, "Pips");
+	this->Pips_Background_Filename.Read(pINI, pSection, "Pips.Background");
+	this->Pips_Building.Read(exINI, pSection, "Pips.Building");
+	this->Pips_Building_Empty.Read(exINI, pSection, "Pips.Building.Empty");
+
+	if (this->Pips_Background_Filename)
+	{
+		char filename[0x20];
+		strcpy(filename, this->Pips_Background_Filename);
+		_strlwr_s(filename);
+		this->Pips_Background_SHP = FileSystem::LoadSHPFile(filename);
+	}
 }
 
 template <typename T>
@@ -80,6 +93,11 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->AbsorbPercent)
 		.Process(this->PassPercent)
 		.Process(this->AllowTransfer)
+		.Process(this->Pips)
+		.Process(this->Pips_Background_Filename)
+		.Process(this->Pips_Background_SHP)
+		.Process(this->Pips_Building)
+		.Process(this->Pips_Building_Empty)
 		;
 }
 
