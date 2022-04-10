@@ -20,6 +20,7 @@ public:
 		Valueable<Point2D> SpawnsTiberium_CellsPerAnim;
 		Nullable<AnimTypeClass*> DestroyAnim;
 		NullableIdx<VocClass> DestroySound;
+		Nullable<ColorStruct> MinimapColor;
 
 		ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
 			, SpawnsTiberium_Type { 0 }
@@ -28,6 +29,7 @@ public:
 			, SpawnsTiberium_CellsPerAnim { { 1, 0 } }
 			, DestroyAnim {}
 			, DestroySound {}
+			, MinimapColor {}
 		{ }
 
 		virtual ~ExtData() = default;

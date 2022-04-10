@@ -12,12 +12,12 @@ class HouseClass;
 enum class PhobosTriggerAction : unsigned int
 {
 	SaveGame = 500,
-	EditVariable,
-	GenerateRandomNumber,
-	PrintVariableValue,
-	BinaryOperation,
-	RunSuperWeaponAtLocation,
-	RunSuperWeaponAtWaypoint,
+	EditVariable = 501,
+	GenerateRandomNumber = 502,
+	PrintVariableValue = 503,
+	BinaryOperation = 504,
+	RunSuperWeaponAtLocation = 505,
+	RunSuperWeaponAtWaypoint = 506,
 };
 
 class TActionExt

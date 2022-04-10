@@ -33,172 +33,172 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 {
 	const int action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action;
 	const int argument = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
-	switch (action)
+	switch (static_cast<PhobosScripts>(action))
 	{
-	case 71:
+	case PhobosScripts::TimedAreaGuard:
 		ScriptExt::ExecuteTimedAreaGuardAction(pTeam);
 		break;
-	case 72:
+	case PhobosScripts::LoadIntoTransports:
 		ScriptExt::LoadIntoTransports(pTeam);
 		break;
-	case 73:
+	case PhobosScripts::WaitUntilFullAmmo:
 		ScriptExt::WaitUntilFullAmmoAction(pTeam);
 		break;
-	case 74:
+	case PhobosScripts::RepeatAttackCloserThreat:
 		// Threats that are close have more priority. Kill until no more targets.
 		ScriptExt::Mission_Attack(pTeam, true, 0, -1, -1);
 		break;
-	case 75:
+	case PhobosScripts::RepeatAttackFartherThreat:
 		// Threats that are far have more priority. Kill until no more targets.
 		ScriptExt::Mission_Attack(pTeam, true, 1, -1, -1);
 		break;
-	case 76:
+	case PhobosScripts::RepeatAttackCloser:
 		// Closer targets from Team Leader have more priority. Kill until no more targets.
 		ScriptExt::Mission_Attack(pTeam, true, 2, -1, -1);
 		break;
-	case 77:
+	case PhobosScripts::RepeatAttackFarther:
 		// Farther targets from Team Leader have more priority. Kill until no more targets.
 		ScriptExt::Mission_Attack(pTeam, true, 3, -1, -1);
 		break;
-	case 78:
+	case PhobosScripts::SingleAttackCloserThreat:
 		// Threats that are close have more priority. 1 kill only (good for xx=49,0 combos)
 		ScriptExt::Mission_Attack(pTeam, false, 0, -1, -1);
 		break;
-	case 79:
+	case PhobosScripts::SingleAttackFartherThreat:
 		// Threats that are far have more priority. 1 kill only (good for xx=49,0 combos)
 		ScriptExt::Mission_Attack(pTeam, false, 1, -1, -1);
 		break;
-	case 80:
+	case PhobosScripts::SingleAttackCloser:
 		// Closer targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
 		ScriptExt::Mission_Attack(pTeam, false, 2, -1, -1);
 		break;
-	case 81:
+	case PhobosScripts::SingleAttackFarther:
 		// Farther targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
 		ScriptExt::Mission_Attack(pTeam, false, 3, -1, -1);
 		break;
-	case 82:
+	case PhobosScripts::DecreaseCurrentAITriggerWeight:
 		ScriptExt::DecreaseCurrentTriggerWeight(pTeam, true, 0);
 		break;
-	case 83:
+	case PhobosScripts::IncreaseCurrentAITriggerWeight:
 		ScriptExt::IncreaseCurrentTriggerWeight(pTeam, true, 0);
 		break;
-	case 84:
+	case PhobosScripts::RepeatAttackTypeCloserThreat:
 		// Threats specific targets that are close have more priority. Kill until no more targets.
 		ScriptExt::Mission_Attack_List(pTeam, true, 0, -1);
 		break;
-	case 85:
+	case PhobosScripts::RepeatAttackTypeFartherThreat:
 		// Threats specific targets that are far have more priority. Kill until no more targets.
 		ScriptExt::Mission_Attack_List(pTeam, true, 1, -1);
 		break;
-	case 86:
+	case PhobosScripts::RepeatAttackTypeCloser:
 		// Closer specific targets targets from Team Leader have more priority. Kill until no more targets.
 		ScriptExt::Mission_Attack_List(pTeam, true, 2, -1);
 		break;
-	case 87:
+	case PhobosScripts::RepeatAttackTypeFarther:
 		// Farther specific targets targets from Team Leader have more priority. Kill until no more targets.
 		ScriptExt::Mission_Attack_List(pTeam, true, 3, -1);
 		break;
-	case 88:
+	case PhobosScripts::SingleAttackTypeCloserThreat:
 		// Threats specific targets that are close have more priority. 1 kill only (good for xx=49,0 combos)
 		ScriptExt::Mission_Attack_List(pTeam, false, 0, -1);
 		break;
-	case 89:
+	case PhobosScripts::SingleAttackTypeFartherThreat:
 		// Threats specific targets that are far have more priority. 1 kill only (good for xx=49,0 combos)
 		ScriptExt::Mission_Attack_List(pTeam, false, 1, -1);
 		break;
-	case 90:
+	case PhobosScripts::SingleAttackTypeCloser:
 		// Closer specific targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
 		ScriptExt::Mission_Attack_List(pTeam, false, 2, -1);
 		break;
-	case 91:
+	case PhobosScripts::SingleAttackTypeFarther:
 		// Farther specific targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
 		ScriptExt::Mission_Attack_List(pTeam, false, 3, -1);
 		break;
-	case 92:
+	case PhobosScripts::WaitIfNoTarget:
 		ScriptExt::WaitIfNoTarget(pTeam, -1);
 		break;
-	case 93:
+	case PhobosScripts::TeamWeightReward:
 		ScriptExt::TeamWeightReward(pTeam, 0);
 		break;
-	case 94:
+	case PhobosScripts::PickRandomScript:
 		ScriptExt::PickRandomScript(pTeam, -1);
 		break;
-	case 95:
+	case PhobosScripts::MoveToEnemyCloser:
 		// Move to the closest enemy target
 		ScriptExt::Mission_Move(pTeam, 2, false, -1, -1);
 		break;
-	case 96:
+	case PhobosScripts::MoveToEnemyFarther:
 		// Move to the farther enemy target
 		ScriptExt::Mission_Move(pTeam, 3, false, -1, -1);
 		break;
-	case 97:
+	case PhobosScripts::MoveToFriendlyCloser:
 		// Move to the closest friendly target
 		ScriptExt::Mission_Move(pTeam, 2, true, -1, -1);
 		break;
-	case 98:
+	case PhobosScripts::MoveToFriendlyFarther:
 		// Move to the farther friendly target
 		ScriptExt::Mission_Move(pTeam, 3, true, -1, -1);
 		break;
-	case 99:
+	case PhobosScripts::MoveToTypeEnemyCloser:
 		// Move to the closest specific enemy target
 		ScriptExt::Mission_Move_List(pTeam, 2, false, -1);
 		break;
-	case 100:
+	case PhobosScripts::MoveToTypeEnemyFarther:
 		// Move to the farther specific enemy target
 		ScriptExt::Mission_Move_List(pTeam, 3, false, -1);
-	case 101:
+	case PhobosScripts::MoveToTypeFriendlyCloser:
 		// Move to the closest specific friendly target
 		ScriptExt::Mission_Move_List(pTeam, 2, true, -1);
 		break;
-	case 102:
+	case PhobosScripts::MoveToTypeFriendlyFarther:
 		// Move to the farther specific friendly target
 		ScriptExt::Mission_Move_List(pTeam, 3, true, -1);
 		break;
-	case 103:
+	case PhobosScripts::ModifyTargetDistance:
 		// AISafeDistance equivalent for Mission_Move()
 		ScriptExt::SetCloseEnoughDistance(pTeam, -1);
 		break;
-	case 104:
+	case PhobosScripts::RandomAttackTypeCloser:
 		// Pick 1 closer random objective from specific list for attacking it
 		ScriptExt::Mission_Attack_List1Random(pTeam, true, 2, -1);
 		break;
-	case 105:
+	case PhobosScripts::RandomAttackTypeFarther:
 		// Pick 1 farther random objective from specific list for attacking it
 		ScriptExt::Mission_Attack_List1Random(pTeam, true, 3, -1);
 		break;
-	case 106:
+	case PhobosScripts::RandomMoveToTypeEnemyCloser:
 		// Pick 1 closer enemy random objective from specific list for moving to it
 		ScriptExt::Mission_Move_List1Random(pTeam, 2, false, -1, -1);
 		break;
-	case 107:
+	case PhobosScripts::RandomMoveToTypeEnemyFarther:
 		// Pick 1 farther enemy random objective from specific list for moving to it
 		ScriptExt::Mission_Move_List1Random(pTeam, 3, false, -1, -1);
 		break;
-	case 108:
+	case PhobosScripts::RandomMoveToTypeFriendlyCloser:
 		// Pick 1 closer friendly random objective from specific list for moving to it
 		ScriptExt::Mission_Move_List1Random(pTeam, 2, true, -1, -1);
 		break;
-	case 109:
+	case PhobosScripts::RandomMoveToTypeFriendlyFarther:
 		// Pick 1 farther friendly random objective from specific list for moving to it
 		ScriptExt::Mission_Move_List1Random(pTeam, 3, true, -1, -1);
 		break;
-	case 110:
+	case PhobosScripts::SetMoveMissionEndMode:
 		// Set the condition for ending the Mission_Move Actions.
 		ScriptExt::SetMoveMissionEndMode(pTeam, -1);
 		break;
-	case 111:
+	case PhobosScripts::UnregisterGreatSuccess:
 		// Un-register success for AITrigger weight adjustment (this is the opposite of 49,0)
 		ScriptExt::UnregisterGreatSuccess(pTeam);
 		break;
-	case 112:
+	case PhobosScripts::GatherAroundLeader:
 		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
 		break;
-	case 113:
+	case PhobosScripts::RandomSkipNextAction:
 		ScriptExt::SkipNextAction(pTeam, -1);
 		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
-		if (action > 70 && !(action >= PhobosScripts::LocalVariableAdd && action <= PhobosScripts::GlobalVariableAndByGlobal))
+		if (action > 70 && !IsExtVariableAction(action))
 		{
 			// Unknown new action. This action finished
 			pTeam->StepCompleted = true;
@@ -207,7 +207,7 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		break;
 	}
 
-	if (action >= PhobosScripts::LocalVariableAdd && action <= PhobosScripts::GlobalVariableAndByGlobal)
+	if (IsExtVariableAction(action))
 		VariablesHandler(pTeam, static_cast<PhobosScripts>(action), argument);
 }
 
@@ -218,20 +218,11 @@ void ScriptExt::ExecuteTimedAreaGuardAction(TeamClass* pTeam)
 
 	if (pTeam->GuardAreaTimer.TimeLeft == 0 && !pTeam->GuardAreaTimer.InProgress())
 	{
-		auto pUnit = pTeam->FirstUnit;
-
-		pUnit->QueueMission(Mission::Area_Guard, true);
-		while (pUnit->NextTeamMember)
-		{
-			pUnit = pUnit->NextTeamMember;
+		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 			pUnit->QueueMission(Mission::Area_Guard, true);
-		}
+
 		pTeam->GuardAreaTimer.Start(15 * pScriptType->ScriptActions[pScript->CurrentMission].Argument);
 	}
-	/*else {
-		Debug::Log("[%s] [%s] %d = %d,%d (Countdown: %d)\n", pTeam->Type->ID, pScriptType->ID, pScript->CurrentMission, currentLineAction->Action, currentLineAction->Argument, pTeam->GuardAreaTimer.GetTimeLeft());
-	}
-	*/
 
 	if (pTeam->GuardAreaTimer.Completed())
 	{
@@ -244,44 +235,33 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 {
 	DynamicVectorClass<FootClass*> transports;
 
-	auto pUnit = pTeam->FirstUnit;
-	auto pUnitType = pUnit->GetTechnoType();
-	if (pUnitType->Passengers > 0
-		&& pUnit->Passengers.NumPassengers < pUnitType->Passengers
-		&& pUnit->Passengers.GetTotalSize() < pUnitType->Passengers)
+	// Collect available transports
+	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		transports.AddItem(pUnit);
-	}
-	while (pUnit->NextTeamMember)
-	{
-		pUnit = pUnit->NextTeamMember;
-		pUnitType = pUnit->GetTechnoType();
-		if (pUnitType->Passengers > 0
-			&& pUnit->Passengers.NumPassengers < pUnitType->Passengers
-			&& pUnit->Passengers.GetTotalSize() < pUnitType->Passengers)
-		{
-			transports.AddItem(pUnit);
-		}
-	}
-	// We got all the transports.
+		auto const pType = pUnit->GetTechnoType();
 
-	// Now add units into transports
+		if (pType->Passengers > 0)
+			if (pUnit->Passengers.NumPassengers < pType->Passengers)
+				if (pUnit->Passengers.GetTotalSize() < pType->Passengers)
+					transports.AddItem(pUnit);
+	}
+
+	// Now load units into transports
 	for (auto pTransport : transports)
 	{
-		pUnit = pTeam->FirstUnit;
-		auto pTransprotType = pTransport->GetTechnoType();
-		do
+		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 		{
-			pUnitType = pUnit->GetTechnoType();
-			if (!(pTransport == pUnit
-				|| pUnitType->WhatAmI() == AbstractType::AircraftType
-				|| pUnit->InLimbo
-				|| pUnitType->ConsideredAircraft
-				|| pUnit->Health <= 0))
+			auto const pTransportType = pTransport->GetTechnoType();
+			auto const pUnitType = pUnit->GetTechnoType();
+			if (pTransport != pUnit
+				&& pUnitType->WhatAmI() != AbstractType::AircraftType
+				&& !pUnit->InLimbo
+				&& !pUnitType->ConsideredAircraft
+				&& pUnit->Health > 0)
 			{
 				if (pUnit->GetTechnoType()->Size > 0
-					&& pUnitType->Size <= pTransprotType->SizeLimit
-					&& pUnitType->Size <= pTransprotType->Passengers - pTransport->Passengers.GetTotalSize())
+					&& pUnitType->Size <= pTransportType->SizeLimit
+					&& pUnitType->Size <= pTransportType->Passengers - pTransport->Passengers.GetTotalSize())
 				{
 					pUnit->IsTeamLeader = true;
 					// All fine
@@ -295,41 +275,33 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 					}
 				}
 			}
-			pUnit = pUnit->NextTeamMember;
 		}
-		while (pUnit);
 	}
 
-	pUnit = pTeam->FirstUnit;
-	do
-	{
+	// Is loading
+	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 		if (pUnit->GetCurrentMission() == Mission::Enter)
 			return;
-		pUnit = pUnit->NextTeamMember;
-	}
-	while (pUnit);
 
 	// This action finished
 	if (pTeam->CurrentScript->HasNextMission())
-		pTeam->CurrentScript->CurrentMission += 1;
+		++pTeam->CurrentScript->CurrentMission;
+	
 	pTeam->StepCompleted = true;
 }
 
 void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 {
-	auto pUnit = pTeam->FirstUnit;
-
-	do
+	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (pUnit && !pUnit->InLimbo && pUnit->Health > 0)
+		if (!pUnit->InLimbo && pUnit->Health > 0)
 		{
 			if (pUnit->GetTechnoType()->Ammo > 0 && pUnit->Ammo < pUnit->GetTechnoType()->Ammo)
 			{
 				// If an aircraft object have AirportBound it must be evaluated
-				if (pUnit->WhatAmI() == AbstractType::Aircraft)
+				if (auto pAircraft = abstract_cast<AircraftClass*>(pUnit))
 				{
-					auto pAircraft = static_cast<AircraftTypeClass*>(pUnit->GetTechnoType());
-					if (pAircraft->AirportBound)
+					if (pAircraft->Type->AirportBound)
 					{
 						// Reset last target, at long term battles this prevented the aircraft to pick a new target (rare vanilla YR bug)
 						pUnit->SetTarget(nullptr);
@@ -337,24 +309,16 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 						// Fix YR bug (when returns from the last attack the aircraft switch in loop between Mission::Enter & Mission::Guard, making it impossible to land in the dock)
 						if (pUnit->IsInAir() && pUnit->CurrentMission != Mission::Enter)
 							pUnit->QueueMission(Mission::Enter, true);
+
 						return;
 					}
 				}
-				else if (pUnit->GetTechnoType()->Reload != 0)
-				{ // Don't skip units that can reload themselves
+				else if (pUnit->GetTechnoType()->Reload != 0) // Don't skip units that can reload themselves
 					return;
-				}
 			}
 		}
-		pUnit = pUnit->NextTeamMember;
 	}
-	while (pUnit);
 
-	// This action finished
-	/*if (pTeam->CurrentScript->HasNextAction())
-	{
-		pTeam->CurrentScript->CurrentMission += 1;
-	}*/
 	pTeam->StepCompleted = true;
 }
 
@@ -363,10 +327,10 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 	FootClass *pLeaderUnit = nullptr;
 	int initialCountdown = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 	bool gatherUnits = false;
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pExt = TeamExt::ExtMap.Find(pTeam);
 
 	// This team has no units! END
-	if (!pTeam || !pTeamData)
+	if (!pTeam)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
@@ -374,8 +338,8 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 	}
 
 	// Load countdown
-	if (pTeamData->Countdown_RegroupAtLeader >= 0)
-		countdown = pTeamData->Countdown_RegroupAtLeader;
+	if (pExt->Countdown_RegroupAtLeader >= 0)
+		countdown = pExt->Countdown_RegroupAtLeader;
 
 	// Gather permanently until all the team members are near of the Leader
 	if (initialCountdown == 0)
@@ -389,23 +353,16 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 			countdown--; // Update countdown
 			gatherUnits = true;
 		}
-		else
+		else if (countdown == 0) // Countdown ended
+			countdown = -1;
+		else // Start countdown.
 		{
-			if (countdown == 0)
-			{
-				// Countdown ended
-				countdown = -1;
-			}
-			else
-			{
-				// Start countdown.
-				countdown = initialCountdown * 15;
-				gatherUnits = true;
-			}
+			countdown = initialCountdown * 15;
+			gatherUnits = true;
 		}
 
 		// Save counter
-		pTeamData->Countdown_RegroupAtLeader = countdown;
+		pExt->Countdown_RegroupAtLeader = countdown;
 	}
 
 	if (!gatherUnits)
@@ -422,11 +379,21 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 		double closeEnough;
 
 		// Find the Leader
-		pLeaderUnit = FindTheTeamLeader(pTeam);
+		pLeaderUnit = pExt->TeamLeader;
+		if (!pLeaderUnit
+			|| !pLeaderUnit->IsAlive
+			|| pLeaderUnit->Health <= 0
+			|| pLeaderUnit->InLimbo
+			|| !pLeaderUnit->IsOnMap
+			|| pLeaderUnit->Absorbed)
+		{
+			pLeaderUnit = FindTheTeamLeader(pTeam);
+			pExt->TeamLeader = pLeaderUnit;
+		}
 
 		if (!pLeaderUnit)
 		{
-			pTeamData->Countdown_RegroupAtLeader = -1;
+			pExt->Countdown_RegroupAtLeader = -1;
 			// This action finished
 			pTeam->StepCompleted = true;
 
@@ -434,10 +401,10 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 		}
 
 		// Leader's area radius where the Team members are considered "near" to the Leader
-		if (pTeamData->CloseEnough > 0)
+		if (pExt->CloseEnough > 0)
 		{
-			closeEnough = pTeamData->CloseEnough;
-			pTeamData->CloseEnough = -1; // This a one-time-use value
+			closeEnough = pExt->CloseEnough;
+			pExt->CloseEnough = -1; // This a one-time-use value
 		}
 		else
 		{
@@ -515,7 +482,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 				|| (initialCountdown > 0
 					&& countdown <= 0)))
 		{
-			pTeamData->Countdown_RegroupAtLeader = -1;
+			pExt->Countdown_RegroupAtLeader = -1;
 			// This action finished
 			pTeam->StepCompleted = true;
 
@@ -686,7 +653,17 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	}
 
 	// Find the Leader
-	pLeaderUnit = FindTheTeamLeader(pTeam);
+	pLeaderUnit = pTeamData->TeamLeader;
+	if (!pLeaderUnit
+		|| !pLeaderUnit->IsAlive
+		|| pLeaderUnit->Health <= 0
+		|| pLeaderUnit->InLimbo
+		|| !pLeaderUnit->IsOnMap
+		|| pLeaderUnit->Absorbed)
+	{
+		pLeaderUnit = FindTheTeamLeader(pTeam);
+		pTeamData->TeamLeader = pLeaderUnit;
+	}
 
 	if (!pLeaderUnit || bAircraftsWithoutAmmo || (pacifistTeam && !agentMode))
 	{
@@ -2112,7 +2089,17 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 	}
 
 	// Find the Leader
-	pLeaderUnit = FindTheTeamLeader(pTeam);
+	pLeaderUnit = pTeamData->TeamLeader;
+	if (!pLeaderUnit
+		|| !pLeaderUnit->IsAlive
+		|| pLeaderUnit->Health <= 0
+		|| pLeaderUnit->InLimbo
+		|| !pLeaderUnit->IsOnMap
+		|| pLeaderUnit->Absorbed)
+	{
+		pLeaderUnit = FindTheTeamLeader(pTeam);
+		pTeamData->TeamLeader = pLeaderUnit;
+	}
 
 	if (!pLeaderUnit || bAircraftsWithoutAmmo)
 	{
@@ -2765,7 +2752,7 @@ void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage = 0)
 
 	if (percentage <= successPercentage)
 	{
-		Debug::Log("DEBUG: ScripType: [%s] [%s] (line: %d = %d,%d) Next script line skipped successfuly. Next line will be: %d = %d,%d\n",
+		Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Next script line skipped successfuly. Next line will be: %d = %d,%d\n",
 			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->CurrentMission, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument, pTeam->CurrentScript->CurrentMission + 2,
 			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission + 2].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission + 2].Argument);
 		pTeam->CurrentScript->CurrentMission++;
@@ -2971,6 +2958,7 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 {
 	FootClass* pLeaderUnit = nullptr;
 	int bestUnitLeadershipValue = -1;
+	bool teamLeaderFound = false;
 
 	if (!pTeam)
 	{
@@ -2980,7 +2968,18 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 	// Find the Leader or promote a new one
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (pUnit && pUnit->IsAlive
+		if (!pUnit)
+			continue;
+
+		// Preventing >1 leaders in teams
+		if (teamLeaderFound)
+		{
+			pUnit->IsTeamLeader = false;
+			continue;
+		}
+
+		if (pUnit->IsAlive
+			&& pUnit->Health > 0
 			&& !pUnit->InLimbo
 			&& pUnit->IsOnMap
 			&& !pUnit->Absorbed)
@@ -2988,11 +2987,11 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 			if (pUnit->IsTeamLeader)
 			{
 				pLeaderUnit = pUnit;
-				break;
+				teamLeaderFound = true;
+				continue;
 			}
 
 			auto pUnitType = pUnit->GetTechnoType();
-
 			if (pUnitType)
 			{
 				// The team Leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
@@ -3004,10 +3003,20 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 				}
 			}
 		}
+		else
+		{
+			pUnit->IsTeamLeader = false;
+		}
 	}
 
 	if (pLeaderUnit)
 		pLeaderUnit->IsTeamLeader = true;
 
 	return pLeaderUnit;
+}
+
+bool ScriptExt::IsExtVariableAction(int action)
+{
+	auto eAction = static_cast<PhobosScripts>(action);
+	return eAction >= PhobosScripts::LocalVariableAdd && eAction <= PhobosScripts::GlobalVariableAndByGlobal;
 }
