@@ -23,26 +23,20 @@ IngameScore.WinTheme=  ; soundtrack theme ID
 IngameScore.LoseTheme= ; soundtrack theme ID
 ```
 
-## Hotkey Commands
-
-### `[ ]` Quicksave
-
-- Save the current singleplayer game.
-- If need localization, just add `TXT_QUICKGAME`, `TXT_QUICKGAME_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
-    - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
-    - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`
-
-### `[ ]` Next Idle Harvester
-
-- Selects and centers the camera on the next TechnoType that is counted via the [harvester counter](#harvester-counter) and is currently idle.
-- If need localization, just add `TXT_NEXT_IDLE_HARVESTER` and `TXT_NEXT_IDLE_HARVESTER_DESC` into your `.csf` file.
-
-### `[ ]` Dump Object Info
-
-- Writes currently hovered or last selected object info in log and shows a message. See [this](Miscellanous.md#dump-object-info) for details.
-- If need localization, just add `TXT_DUMP_OBJECT_INFO` and `TXT_DUMP_OBJECT_INFO_DESC` into your `.csf` file.
-
 ## Battle screen UI/UX
+
+### Hide health bars
+
+![image](_static/images/healthbar.hide-01.png)  
+*Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
+
+- Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
+
+In `rulesmd.ini`:
+```ini
+[SOMENAME]         ; TechnoType
+HealthBar.Hide=no  ; boolean
+```
 
 ### Low priority for box selection
 
@@ -65,18 +59,25 @@ In `RA2MD.ini`:
 PrioritySelectionFiltering=yes ; bool
 ```
 
-### Hide health bars
+## Hotkey Commands
 
-![image](_static/images/healthbar.hide-01.png)  
-*Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
+### `[ ]` Dump Object Info
 
-- Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
+- Writes currently hovered or last selected object info in log and shows a message. See [this](Miscellanous.md#dump-object-info) for details.
+- If need localization, just add `TXT_DUMP_OBJECT_INFO` and `TXT_DUMP_OBJECT_INFO_DESC` into your `.csf` file.
 
-In `rulesmd.ini`:
-```ini
-[SOMENAME]         ; TechnoType
-HealthBar.Hide=no  ; boolean
-```
+### `[ ]` Next Idle Harvester
+
+- Selects and centers the camera on the next TechnoType that is counted via the [harvester counter](#harvester-counter) and is currently idle.
+- If need localization, just add `TXT_NEXT_IDLE_HARVESTER` and `TXT_NEXT_IDLE_HARVESTER_DESC` into your `.csf` file.
+
+### `[ ]` Quicksave
+
+- Save the current singleplayer game.
+- If need localization, just add `TXT_QUICKGAME`, `TXT_QUICKGAME_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
+    - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
+    - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`
+
 
 ## Loading screen
 
@@ -93,19 +94,6 @@ DisableEmptySpawnPositions=no ; boolean
 ```
 
 ## Sidebar / Battle UI
-
-### Specify Sidebar style
-
-- It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords.
-
-In `rulesmd.ini`:
-```ini
-[SOMESIDE]            ; Side
-Sidebar.GDIPositions= ; boolean
-                      ; default values are:
-                      ; yes for the first side
-                      ; no for others
-```
 
 ### Cameo Sorting
 
@@ -165,26 +153,6 @@ Sidebar.HarvesterCounter.ColorRed=255,0,0      ; R,G,B
 If you use the vanilla font in your mod, you can use {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 ```
 
-### Producing Progress
-
-![image](_static/images/producing-progress-01.gif)  
-*Producing Progress bars in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
-
-- You can now know your factories' status via sidebar!
-- You need to draw your own assets (`tab0xpp.shp`, x is replaced by 0-3) and put them into `sidec0x.mix`.
-
-In `uimd.ini`:
-```ini
-[Sidebar]
-ProducingProgress.Show=no            ; boolean
-```
-
-In `rulesmd.ini`:
-```ini
-[SOMESIDE]                           ; Side
-Sidebar.ProducingProgress.Offset=0,0 ; X,Y, pixels relative to default
-```
-
 ### Power delta counter
 
 ![image](_static/images/powerdelta-01.gif)  
@@ -217,6 +185,39 @@ Sidebar.PowerDelta.Align=left            ; left|center|centre|right
 
 ```{note}
 If you use the vanilla font in your mod, you can use {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+```
+
+### Producing Progress
+
+![image](_static/images/producing-progress-01.gif)  
+*Producing Progress bars in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+
+- You can now know your factories' status via sidebar!
+- You need to draw your own assets (`tab0xpp.shp`, x is replaced by 0-3) and put them into `sidec0x.mix`.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+ProducingProgress.Show=no            ; boolean
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                           ; Side
+Sidebar.ProducingProgress.Offset=0,0 ; X,Y, pixels relative to default
+```
+
+### Specify Sidebar style
+
+- It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords.
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]            ; Side
+Sidebar.GDIPositions= ; boolean
+                      ; default values are:
+                      ; yes for the first side
+                      ; no for others
 ```
 
 ## Tooltips

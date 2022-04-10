@@ -391,7 +391,17 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 		double closeEnough;
 
 		// Find the Leader
-		pLeaderUnit = FindTheTeamLeader(pTeam);
+		pLeaderUnit = pExt->TeamLeader;
+		if (!pLeaderUnit
+			|| !pLeaderUnit->IsAlive
+			|| pLeaderUnit->Health <= 0
+			|| pLeaderUnit->InLimbo
+			|| !pLeaderUnit->IsOnMap
+			|| pLeaderUnit->Absorbed)
+		{
+			pLeaderUnit = FindTheTeamLeader(pTeam);
+			pExt->TeamLeader = pLeaderUnit;
+		}
 
 		if (!pLeaderUnit)
 		{
@@ -655,7 +665,17 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	}
 
 	// Find the Leader
-	pLeaderUnit = FindTheTeamLeader(pTeam);
+	pLeaderUnit = pTeamData->TeamLeader;
+	if (!pLeaderUnit
+		|| !pLeaderUnit->IsAlive
+		|| pLeaderUnit->Health <= 0
+		|| pLeaderUnit->InLimbo
+		|| !pLeaderUnit->IsOnMap
+		|| pLeaderUnit->Absorbed)
+	{
+		pLeaderUnit = FindTheTeamLeader(pTeam);
+		pTeamData->TeamLeader = pLeaderUnit;
+	}
 
 	if (!pLeaderUnit || bAircraftsWithoutAmmo || (pacifistTeam && !agentMode))
 	{
@@ -2064,7 +2084,17 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 	}
 
 	// Find the Leader
-	pLeaderUnit = FindTheTeamLeader(pTeam);
+	pLeaderUnit = pTeamData->TeamLeader;
+	if (!pLeaderUnit
+		|| !pLeaderUnit->IsAlive
+		|| pLeaderUnit->Health <= 0
+		|| pLeaderUnit->InLimbo
+		|| !pLeaderUnit->IsOnMap
+		|| pLeaderUnit->Absorbed)
+	{
+		pLeaderUnit = FindTheTeamLeader(pTeam);
+		pTeamData->TeamLeader = pLeaderUnit;
+	}
 
 	if (!pLeaderUnit || bAircraftsWithoutAmmo)
 	{
@@ -2717,7 +2747,7 @@ void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage = 0)
 
 	if (percentage <= successPercentage)
 	{
-		Debug::Log("DEBUG: ScripType: [%s] [%s] (line: %d = %d,%d) Next script line skipped successfuly. Next line will be: %d = %d,%d\n",
+		Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Next script line skipped successfuly. Next line will be: %d = %d,%d\n",
 			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->CurrentMission, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument, pTeam->CurrentScript->CurrentMission + 2,
 			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission + 2].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission + 2].Argument);
 		pTeam->CurrentScript->CurrentMission++;
@@ -2923,6 +2953,7 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 {
 	FootClass* pLeaderUnit = nullptr;
 	int bestUnitLeadershipValue = -1;
+	bool teamLeaderFound = false;
 
 	if (!pTeam)
 	{
@@ -2932,7 +2963,18 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 	// Find the Leader or promote a new one
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (pUnit && pUnit->IsAlive
+		if (!pUnit)
+			continue;
+
+		// Preventing >1 leaders in teams
+		if (teamLeaderFound)
+		{
+			pUnit->IsTeamLeader = false;
+			continue;
+		}
+
+		if (pUnit->IsAlive
+			&& pUnit->Health > 0
 			&& !pUnit->InLimbo
 			&& pUnit->IsOnMap
 			&& !pUnit->Absorbed)
@@ -2940,11 +2982,11 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 			if (pUnit->IsTeamLeader)
 			{
 				pLeaderUnit = pUnit;
-				break;
+				teamLeaderFound = true;
+				continue;
 			}
 
 			auto pUnitType = pUnit->GetTechnoType();
-
 			if (pUnitType)
 			{
 				// The team Leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
@@ -2955,6 +2997,10 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 					bestUnitLeadershipValue = unitLeadershipRating;
 				}
 			}
+		}
+		else
+		{
+			pUnit->IsTeamLeader = false;
 		}
 	}
 

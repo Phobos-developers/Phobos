@@ -126,7 +126,8 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 
 			if (shieldType)
 			{
-				if (shieldType->Strength && (!pExt->Shield || (this->Shield_ReplaceNonRespawning && pExt->Shield->IsBrokenAndNonRespawning())))
+				if (shieldType->Strength && (!pExt->Shield || (this->Shield_ReplaceNonRespawning && pExt->Shield->IsBrokenAndNonRespawning() && 
+					pExt->Shield->GetFramesSinceLastBroken() >= this->Shield_MinimumReplaceDelay)))
 				{
 					pExt->CurrentShieldType = shieldType;
 					pExt->Shield = std::make_unique<ShieldClass>(pTarget, true);
@@ -175,7 +176,7 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, Techn
 	{
 		auto pInf = abstract_cast<InfantryClass*>(pTarget);
 		if (pInf->IsDisguised())
-			pInf->ClearDisguise();
+			pInf->Disguised = false;
 	}
 }
 

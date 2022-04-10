@@ -24,6 +24,7 @@ public:
 		Valueable<bool> RemoveMindControl;
 		Valueable<bool> AnimList_PickRandom;
 		Valueable<bool> DecloakDamagedTargets;
+		Valueable<bool> ShakeIsLocal;
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
@@ -70,6 +71,7 @@ public:
 		Valueable<bool> Shield_ReplaceOnly;
 		Valueable<bool> Shield_ReplaceNonRespawning;
 		Valueable<bool> Shield_InheritStateOnReplace;
+		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
 	private:
@@ -87,6 +89,7 @@ public:
 			, RemoveMindControl { false }
 			, AnimList_PickRandom { false }
 			, DecloakDamagedTargets { true }
+			, ShakeIsLocal { false }
 
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }
@@ -128,6 +131,7 @@ public:
 			, Shield_ReplaceOnly { false }
 			, Shield_ReplaceNonRespawning { false }
 			, Shield_InheritStateOnReplace { false }
+			, Shield_MinimumReplaceDelay { 0 }
 			, Shield_AffectTypes {}
 
 			, NotHuman_DeathSequence { -1 }
