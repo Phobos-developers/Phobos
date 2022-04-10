@@ -109,6 +109,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizable resource storage
   - Override Uncloaked Underwater attack behavior
   - AI Aircraft docks fix
+  - Customize resource storage
   - Shared Ammo logic
 - **Starkku**:
   - Warhead shield penetration & breaking
@@ -149,7 +150,7 @@ This page lists all the individual contributions to the project by their author.
    - Laser fixes prototype
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
-- **AutoGavy** - interceptor logic, Warhead critical hit logic, Customize resource storage
+- **AutoGavy** - interceptor logic, Warhead critical hit logic
 - **Chasheen (Chasheenburg)** - CN docs translation
 - **Ares developers** - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code, prototype deployer fixes
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
