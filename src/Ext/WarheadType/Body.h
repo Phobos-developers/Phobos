@@ -24,6 +24,7 @@ public:
 		Valueable<bool> RemoveMindControl;
 		Valueable<bool> AnimList_PickRandom;
 		Valueable<bool> DecloakDamagedTargets;
+		Valueable<bool> ShakeIsLocal;
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
@@ -87,6 +88,7 @@ public:
 			, RemoveMindControl { false }
 			, AnimList_PickRandom { false }
 			, DecloakDamagedTargets { true }
+			, ShakeIsLocal { false }
 
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }

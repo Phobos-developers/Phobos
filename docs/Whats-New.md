@@ -278,6 +278,10 @@ New:
 - Shared Ammo for transports to passengers (by FS-21)
 - Additional critical hit logic customizations (by Starkku)
 - Laser trails for VoxelAnims (by Otamaa)
+- Local warhead screen shaking (by Starkku)
+- Weapon owner detachment (by Starkku)
+- Feedback weapon (by Starkku)
+- TerrainType & ore minimap color customization (by Starkku)
 -  Repair Legless Cyborgs In Transports (by FS-21)
 
 Vanilla fixes:
@@ -293,6 +297,7 @@ Vanilla fixes:
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10 (by Otamaa)
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead (by Starkku)
 - Fixed aircraft & jumpjet units not being affected by speed modifiers (by Starkku)
+- Fixed vehicles (both voxel & SHP) to fully respect `Palette` (by Starkku)
 - Fixed bug that restored cyborg legs when the soldier leave transports (by FS-21)
 
 Phobos fixes:
