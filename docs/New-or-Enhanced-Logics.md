@@ -34,6 +34,51 @@ RadColor=0,255,0                ; RGB
 RadSiteWarhead=RadSite          ; WarheadType
 ```
 
+### Laser Trails
+
+![Laser Trails](_static/images/lasertrails.gif)  
+*Laser trails used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
+
+- Technos, Projectiles, and VoxelAnims can now have colorful trails of different transparency, thickness and color, which are drawn via laser drawing code.
+- Technos, Projectiles, and VoxelAnims can have multiple laser trails. For technos each trail can have custom laser trail type and FLH offset relative to turret and body.
+
+```{warning}
+Laser trails are very resource intensive! Due to the game not utilizing GPU having a lot of trails can quickly drop the FPS on even good machines. To reduce that effect:
+ - don't put too many laser trails on units and projectiles;
+ - make sure you set as high `SegmentLength` value as possible without trails being too jagged;
+ - try to keep the length of the trail minimal (can be achieved with smaller `FadeDuration` durations).
+```
+
+In `artmd.ini`:
+```ini
+[LaserTrailTypes]
+0=SOMETRAIL
+
+[SOMETRAIL]                 ; LaserTrailType name
+IsHouseColor=no             ; boolean
+Color=255,0,0               ; integer - Red,Green,Blue
+FadeDuration=64             ; integer
+Thickness=4                 ; integer
+SegmentLength=128           ; integer, minimal length of each trail segment
+IgnoreVertical=no           ; boolean, whether the trail won't be drawn on vertical movement
+IsIntense=no                ; boolean, whether the laser is "supported" (AKA prism forwarding)
+
+[SOMEPROJECTILE]            ; BulletType Image
+LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
+
+[SOMETECHNO]                ; TechnoType Image
+LaserTrailN.Type=SOMETRAIL  ; LaserTrailType
+LaserTrailN.FLH=0,0,0       ; integer - Forward,Lateral,Height
+LaserTrailN.IsOnTurret=no   ; boolean, whether the trail origin is turret
+; where N = 0, 1, 2, ...
+```
+
+in `rulesmd.ini`:
+```ini
+[SOMEVOXELANIM]             ; VoxelAnim
+LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
+```
+
 ### Shields
 
 ![image](_static/images/technoshield-01.gif)  
@@ -137,51 +182,6 @@ Shield.InheritStateOnReplace=false   ; boolean
     - If `Shield.ReplaceNonRespawning` is set, shield from `Shield.AttachTypes` replaces existing shields that have been broken and cannot respawn on their own.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
-### Laser Trails
-
-![Laser Trails](_static/images/lasertrails.gif)  
-*Laser trails used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
-
-- Technos, Projectiles, and VoxelAnims can now have colorful trails of different transparency, thickness and color, which are drawn via laser drawing code.
-- Technos, Projectiles, and VoxelAnims can have multiple laser trails. For technos each trail can have custom laser trail type and FLH offset relative to turret and body.
-
-```{warning}
-Laser trails are very resource intensive! Due to the game not utilizing GPU having a lot of trails can quickly drop the FPS on even good machines. To reduce that effect:
- - don't put too many laser trails on units and projectiles;
- - make sure you set as high `SegmentLength` value as possible without trails being too jagged;
- - try to keep the length of the trail minimal (can be achieved with smaller `FadeDuration` durations).
-```
-
-In `artmd.ini`:
-```ini
-[LaserTrailTypes]
-0=SOMETRAIL
-
-[SOMETRAIL]                 ; LaserTrailType name
-IsHouseColor=no             ; boolean
-Color=255,0,0               ; integer - Red,Green,Blue
-FadeDuration=64             ; integer
-Thickness=4                 ; integer
-SegmentLength=128           ; integer, minimal length of each trail segment
-IgnoreVertical=no           ; boolean, whether the trail won't be drawn on vertical movement
-IsIntense=no                ; boolean, whether the laser is "supported" (AKA prism forwarding)
-
-[SOMEPROJECTILE]            ; BulletType Image
-LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
-
-[SOMETECHNO]                ; TechnoType Image
-LaserTrailN.Type=SOMETRAIL  ; LaserTrailType
-LaserTrailN.FLH=0,0,0       ; integer - Forward,Lateral,Height
-LaserTrailN.IsOnTurret=no   ; boolean, whether the trail origin is turret
-; where N = 0, 1, 2, ...
-```
-
-in `rulesmd.ini`:
-```ini
-[SOMEVOXELANIM]             ; VoxelAnim
-LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
-```
-
 ## Animations
 
 ### Anim-to-Unit
@@ -213,7 +213,7 @@ CreateUnit.ConsiderPathfinding=no   ; boolean, whether to consider if the create
 
 ## Buildings
 
-### Extended building upgrades logic
+### Extended building upgrades
 
 ![image](_static/images/powersup.owner-01.png)  
 *Upgrading own and allied Power Plants in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
@@ -229,10 +229,10 @@ PowersUp.Owner=Self ; list of Affected House Enumeration (none|owner/self|allies
 PowersUp.Buildings= ; list of BuildingTypes
 ```
 
-### Power plant enhancer logic
+### Power plant enhancer
 
-- When it exists, it can increase the power amount generated by the plants. 
-  - When buffer structures are sold or destroyed, the power amount returns to normal.
+- When it exists, it can increase the power amount generated by the power plants. 
+  - When enchancing structures are sold or destroyed, the power amount returns to normal.
 
 In `rulesmd.ini`:
 ```ini
@@ -313,10 +313,12 @@ Interceptable=no ; boolean
 ### Shrapnel enhancement
 - Shrapnel behavior can be triggered on the ground and buildings.
 
-In `rulesmd.ini`
-[SOMEPROJECTILE] ; Projectile
-Shrapnel.AffectsGround=no ; boolean
-Shrapnel.AffectsBuildings=no ; boolean
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]              ; Projectile
+Shrapnel.AffectsGround=no     ; boolean
+Shrapnel.AffectsBuildings=no  ; boolean
+```
 
 ## Script actions
 
@@ -461,7 +463,6 @@ x=i,n             ; where 84 <= i <= 91 or 104 <= i <= 105
 
 In `rulesmd.ini`:
 ```ini
-<<<<<<< HEAD
 [AITargetTypes]  ; List of TechnoType lists
 0=SOMETECHNOTYPE,SOMEOTHERTECHNOTYPE,SAMPLETECHNOTYPE
 1=ANOTHERTECHNOTYPE,YETANOTHERTECHNOTYPE
@@ -476,47 +477,16 @@ In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
 x=92,n            ; integer n=0
-=======
-[SOMETECHNO]                      ; TechnoType
-ForceWeapon.Naval.Decloaked=-1   ; Integer. 0 for primary weapon, 1 for secondary weapon
->>>>>>> develop
 ```
 
 ### `93` Team's Trigger Weight Reward
 
-<<<<<<< HEAD
 - When executed before a new Attack ScriptType Actions like `74-81` and `84-91` the TeamType will remember that must be rewarded increasing the current Weight of the AI Trigger when the TeamType Target was killed by any of the Team members. The current Weight will never surprass the Minimum Weight and Maximum Weight limits of the AI Trigger. The second parameter is a positive value.
-=======
-- It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.
-  - `WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance traveled (in leptons) was less than `ChronoRangeMinimum`. This works regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon` is not set, it defaults to `WarpInWeapon`.
-  - If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of `WarpIn(MinRange)Weapon` is overriden by the number of whole cells teleported across.
->>>>>>> develop
 
 In `aimd.ini`:
 ```ini
-<<<<<<< HEAD
 [SOMESCRIPTTYPE]  ; ScriptType
 x=93,n            ; integer n=0
-=======
-[SOMETECHNO]                            ; TechnoType
-WarpInWeapon=                           ; WeaponType
-WarpInMinRangeWeapon=                   ; WeaponType
-WarpInWeapon.UseDistanceAsDamage=false  ; boolean
-WarpOutWeapon=                          ; WeaponType
-```
-
-## Terrains
-
-### Destroy animation & sound
-
-- You can now specify a destroy animation and sound for a TerrainType that are played when it is destroyed.
-
-In `rulesmd.ini`:
-```ini
-[SOMETERRAINTYPE]  ; TerrainType
-DestroyAnim=       ; Animation
-DestroySound=      ; Sound
->>>>>>> develop
 ```
 
 ### `94` Pick A Random Script
@@ -584,26 +554,7 @@ In `aimd.ini`:
 x=110,n
 ```
 
-<<<<<<< HEAD
 - The possible argument values are:
-=======
-### Feedback weapon
-
-- You can now specify an auxiliary weapon to be fired on the firer itself when a weapon is fired.
-  - `FireInTransport` setting of the feedback weapon is respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If feedback weapon is fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on feedback weapons.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]     ; WeaponType
-FeedbackWeapon=  ; WeaponType
-```
-
-## Warheads
-
-```{hint}
-All new warheads can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
-```
->>>>>>> develop
 
 | *Argument* | *Action ends when...*                       |
 | :------: | :-------------------------------------------: |
@@ -641,16 +592,10 @@ In `aimd.ini`:
 x=113,n           ; where 0 > n <= 100
 ```
 
-<<<<<<< HEAD
 ### `500 - 523` Edit Variable
 - Operate a variable's value
     - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
         - Any numbers exceeding this limit will lead to unexpected results!
-=======
-### Remove disguise on impact
-
-- Warheads can now remove disguise from disguised infantry such as spies. This will work even if the disguised was acquired by default through `PermaDisguise`.
->>>>>>> develop
 
 In `aimd.ini`:
 ```ini
@@ -838,16 +783,7 @@ MindControl.Anim=ControlledAnimationType ; AnimType
 
 ### No Manual Move
 
-<<<<<<< HEAD
 - You can now specify whether a TechnoType is unable to receive move command.
-=======
-In `rulesmd.ini`
-```ini
-[SOMEPROJECTILE]              ; Projectile
-Shrapnel.AffectsGround=no     ; boolean
-Shrapnel.AffectsBuildings=no  ; boolean
-```
->>>>>>> develop
 
 ```ini
 [SOMETECHNO]           ; TechnoType
@@ -865,7 +801,7 @@ NoManualMove=no        ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                      ; TechnoType
-ForceWeapon.Naval.Decloacked=-1   ; Integer. 0 for primary weapon, 1 for secondary weapon
+ForceWeapon.Naval.Decloaked=-1    ; Integer. 0 for primary weapon, 1 for secondary weapon
 ```
 
 ### Promoted Spawns
@@ -901,7 +837,6 @@ Spawner.ExtraLimitRange=0 ; integer
 - It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.
   - `WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance traveled (in leptons) was less than `ChronoRangeMinimum`. This works regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon` is not set, it defaults to `WarpInWeapon`.
   - If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of `WarpIn(MinRange)Weapon` is overriden by the number of whole cells teleported across.
-  - `WarpInWeapon.FireAsSelf` & `WarpOutWeapon.FireAsSelf` can be used to disable firing the weapon with the teleporting TechnoType as an owner. This allows damaging itself, but also makes certain Weapon or Warhead features reliant on owner not available.
 
 In `rulesmd.ini`:
 ```ini
@@ -909,9 +844,7 @@ In `rulesmd.ini`:
 WarpInWeapon=                           ; WeaponType
 WarpInMinRangeWeapon=                   ; WeaponType
 WarpInWeapon.UseDistanceAsDamage=false  ; boolean
-WarpInWeapon.FireAsSelf=true            ; boolean
 WarpOutWeapon=                          ; WeaponType
-WarpOutWeapon.FireAsSelf=true           ; boolean
 ```
 
 ## Terrains
@@ -1122,9 +1055,6 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX
 534         | CurrentValue <= GlobalVariableValue | Yes |
 535         | CurrentValue & GlobalVariableValue | Yes |
 
-
-
-
 ## Warheads
 
 ```{hint}
@@ -1200,7 +1130,7 @@ TransactMoney=0 ; integer - credits added or subtracted
 
 ### Remove disguise on impact
 
-- Warheads can now remove disguise of spies.
+- Warheads can now remove disguise from disguised infantry such as spies. This will work even if the disguised was acquired by default through `PermaDisguise`.
 
 In `rulesmd.ini`:
 ```ini
@@ -1266,6 +1196,17 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]                 ; WeaponType
 Burst.Delays=-1              ; int - burst delays (comma-separated) for shots in order from first to last.
+```
+
+### Feedback weapon
+
+- You can now specify an auxiliary weapon to be fired on the firer itself when a weapon is fired.
+  - `FireInTransport` setting of the feedback weapon is respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If feedback weapon is fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on feedback weapons.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]     ; WeaponType
+FeedbackWeapon=  ; WeaponType
 ```
 
 ### Radiation enhancements
