@@ -1,3 +1,4 @@
+#include <AircraftClass.h>
 #include <AnimClass.h>
 #include <BuildingClass.h>
 #include <TechnoClass.h>
@@ -8,9 +9,12 @@
 #include <VoxelAnimClass.h>
 #include <BulletClass.h>
 #include <HouseClass.h>
+#include <FlyLocomotionClass.h>
+#include <JumpjetLocomotionClass.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
+#include <Ext/Techno/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -364,4 +368,68 @@ DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x415F5C, AircraftClass_FireAt_SpeedModifiers, 0xA)
+{
+	GET(AircraftClass*, pThis, EDI);
+
+	if (pThis->Type->Locomotor == LocomotionClass::CLSIDs::Fly)
+	{
+		if (const auto pLocomotor = static_cast<FlyLocomotionClass*>(pThis->Locomotor.get()))
+		{
+			double currentSpeed = pThis->GetTechnoType()->Speed * pLocomotor->CurrentSpeed *
+				TechnoExt::GetCurrentSpeedMultiplier(pThis);
+
+			R->EAX(static_cast<int>(currentSpeed));
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4CDA78, FlyLocomotionClass_MovementAI_SpeedModifiers, 0x6)
+{
+	GET(FlyLocomotionClass*, pThis, ESI);
+
+	double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
+		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+
+	R->EAX(static_cast<int>(currentSpeed));
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4CE4BF, FlyLocomotionClass_4CE4B0_SpeedModifiers, 0x6)
+{
+	GET(FlyLocomotionClass*, pThis, ECX);
+
+	double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
+		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+
+	R->EAX(static_cast<int>(currentSpeed));
+
+	return 0;
+}
+
+DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
+{
+	GET(JumpjetLocomotionClass*, pThis, ESI);
+
+	double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+	pThis->Speed = (int)(pThis->LinkedTo->GetTechnoType()->JumpjetSpeed * multiplier);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73B2A2, UnitClass_DrawObject_DrawerBlitterFix, 0x6)
+{
+	enum { SkipGameCode = 0x73B2C3 };
+
+	GET(UnitClass* const, pThis, ESI);
+	GET(BlitterFlags, blitterFlags, EDI);
+
+	R->EAX(pThis->GetDrawer()->SelectPlainBlitter(blitterFlags));
+
+	return SkipGameCode;
 }

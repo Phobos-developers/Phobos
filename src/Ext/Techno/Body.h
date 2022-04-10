@@ -95,6 +95,6 @@ public:
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void EatPassengers(TechnoClass* pThis);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
-
+	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 };

@@ -76,6 +76,8 @@
     <ClCompile Include="src\Ext\WarheadType\Detonate.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Shield.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Grinding.cpp" />
+    <ClCompile Include="src\Ext\Tiberium\Body.cpp" />
+    <ClCompile Include="src\Ext\Tiberium\Hooks.cpp" />
     <ClCompile Include="src\Ext\VoxelAnimType\Body.cpp" />
     <ClCompile Include="src\Ext\VoxelAnim\Body.cpp" />
     <ClCompile Include="src\Ext\VoxelAnim\Hooks.cpp" />
@@ -144,6 +146,7 @@
     <ClInclude Include="src\Ext\TechnoType\Body.h" />
     <ClInclude Include="src\Ext\Techno\Body.h" />
     <ClInclude Include="src\Ext\TerrainType\Body.h" />
+    <ClInclude Include="src\Ext\Tiberium\Body.h" />
     <ClInclude Include="src\Ext\VoxelAnimType\Body.h" />
     <ClInclude Include="src\Ext\VoxelAnim\Body.h" />
     <ClInclude Include="src\Ext\WeaponType\Body.h" />

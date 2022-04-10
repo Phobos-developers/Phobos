@@ -18,6 +18,7 @@ void TeamExt::ExtData::Serialize(T& Stm)
 		.Process(this->MoveMissionEndMode)
 		.Process(this->WaitNoTargetCounter)
 		.Process(this->WaitNoTargetTimer)
+		.Process(this->TeamLeader)
 		;
 }
 

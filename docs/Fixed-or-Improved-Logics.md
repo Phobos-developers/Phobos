@@ -51,6 +51,15 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `IsSimpleDeployer` units now only play `DeploySound` and `UndeploySound` once, when done with (un)deploying instead of repeating it over duration of turning and/or `DeployingAnim`.
 - AITrigger can now recognize Building Upgrades as legal condition.
 - `EWGates` and `NSGates` now will link walls like `xxGateOne` and `xxGateTwo` do.
+- Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
+- Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
+- Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
+- Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
+- Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
+- Aircraft & jumpjet units are now affected by speed modifiers such as `SpeedAircraft/Infantry/UnitsMult` on `Countries`, `VeteranSpeed` and Crates / AttachEffect (Ares feature).
+- Both voxel and SHP vehicle units should now correctly respect custom palette set through `Palette`.
+- Weapons fired by EMPulse superweapons without `EMPulse.TargetSelf=true` *(Ares feature)* can now create radiation.
+- Setting `RadarInvisible` to true on TerrainTypes now hides them from minimap display.
 
 ## Animations
 
@@ -250,6 +259,28 @@ SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; single int / comma-sep. range
 ```
 
+### Minimap color customization
+
+- TerrainTypes can now be made to display on minimap with different colors by setting `MinimapColor`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]  ; TerrainType
+MinimapColor=      ; integer - Red,Green,Blue
+```
+
+## Tiberiums (ores)
+
+### Minimap color customization
+
+- Ore can now be made to display on minimap with different colors by setting `MinimapColor` on Tiberiums.
+
+In `rulesmd.ini`:
+```ini
+[SOMEORE]      ; Tiberium
+MinimapColor=  ; integer - Red,Green,Blue
+```
+
 ## Vehicles
 
 ### IsSimpleDeployer vehicle deploy animation / direction customization
@@ -299,6 +330,33 @@ Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
 ```
 
+### Detaching weapon from owner TechnoType
+
+- You can now control if weapon is detached from the TechnoType that fired it. This results in the weapon / warhead being able to damage the TechnoType itself even if it does not have `DamageSelf=true` set, but also treats it as if owned by no house or object, meaning any ownership-based checks like `AffectsAllies` do not function as expected and no experience is awarded.
+  - The effect of this is inherited through `AirburstWeapon` and `ShrapnelWeapon`.
+  - This does not affect projectile image or functionality or `FirersPalette` on initially fired weapon, but `FirersPalette` will not function for any weapons inheriting the effect.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPONTYPE]         ; WeaponType
+DetachedFromOwner=false  ; boolean
+```
+
+## Projectiles
+
+### Customizable projectile gravity
+
+-  You can now specify individual projectile gravity.
+    - Set `Gravity=0` with an arcing projectile can create a straight trail.
+        - Set `Gravity.HeightFix=true` allows the projectile to hit target which is not at the same height while `Gravity=0`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]        ; Projectile
+Gravity=6.0             ; double
+Gravity.HeightFix=false ; boolean
+```
+
 ## Warheads
 
 ### Customizing decloak on damaging targets
@@ -309,4 +367,14 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]               ; WarheadType
 DecloakDamagedTargets=true  ; boolean
+```
+
+### Restricting screen shaking to current view
+
+- You can now specify whether or not the warhead can only shake screen (`ShakeX/Ylo/hi`) if it is detonated while visible on current screen view.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]       ; WarheadType
+ShakeIsLocal=false  ; boolean
 ```

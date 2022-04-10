@@ -461,6 +461,7 @@ x=i,n             ; where 84 <= i <= 91 or 104 <= i <= 105
 
 In `rulesmd.ini`:
 ```ini
+<<<<<<< HEAD
 [AITargetTypes]  ; List of TechnoType lists
 0=SOMETECHNOTYPE,SOMEOTHERTECHNOTYPE,SAMPLETECHNOTYPE
 1=ANOTHERTECHNOTYPE,YETANOTHERTECHNOTYPE
@@ -475,16 +476,47 @@ In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
 x=92,n            ; integer n=0
+=======
+[SOMETECHNO]                      ; TechnoType
+ForceWeapon.Naval.Decloaked=-1   ; Integer. 0 for primary weapon, 1 for secondary weapon
+>>>>>>> develop
 ```
 
 ### `93` Team's Trigger Weight Reward
 
+<<<<<<< HEAD
 - When executed before a new Attack ScriptType Actions like `74-81` and `84-91` the TeamType will remember that must be rewarded increasing the current Weight of the AI Trigger when the TeamType Target was killed by any of the Team members. The current Weight will never surprass the Minimum Weight and Maximum Weight limits of the AI Trigger. The second parameter is a positive value.
+=======
+- It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.
+  - `WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance traveled (in leptons) was less than `ChronoRangeMinimum`. This works regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon` is not set, it defaults to `WarpInWeapon`.
+  - If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of `WarpIn(MinRange)Weapon` is overriden by the number of whole cells teleported across.
+>>>>>>> develop
 
 In `aimd.ini`:
 ```ini
+<<<<<<< HEAD
 [SOMESCRIPTTYPE]  ; ScriptType
 x=93,n            ; integer n=0
+=======
+[SOMETECHNO]                            ; TechnoType
+WarpInWeapon=                           ; WeaponType
+WarpInMinRangeWeapon=                   ; WeaponType
+WarpInWeapon.UseDistanceAsDamage=false  ; boolean
+WarpOutWeapon=                          ; WeaponType
+```
+
+## Terrains
+
+### Destroy animation & sound
+
+- You can now specify a destroy animation and sound for a TerrainType that are played when it is destroyed.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]  ; TerrainType
+DestroyAnim=       ; Animation
+DestroySound=      ; Sound
+>>>>>>> develop
 ```
 
 ### `94` Pick A Random Script
@@ -552,7 +584,26 @@ In `aimd.ini`:
 x=110,n
 ```
 
+<<<<<<< HEAD
 - The possible argument values are:
+=======
+### Feedback weapon
+
+- You can now specify an auxiliary weapon to be fired on the firer itself when a weapon is fired.
+  - `FireInTransport` setting of the feedback weapon is respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If feedback weapon is fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on feedback weapons.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]     ; WeaponType
+FeedbackWeapon=  ; WeaponType
+```
+
+## Warheads
+
+```{hint}
+All new warheads can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
+```
+>>>>>>> develop
 
 | *Argument* | *Action ends when...*                       |
 | :------: | :-------------------------------------------: |
@@ -590,10 +641,16 @@ In `aimd.ini`:
 x=113,n           ; where 0 > n <= 100
 ```
 
+<<<<<<< HEAD
 ### `500 - 523` Edit Variable
 - Operate a variable's value
     - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
         - Any numbers exceeding this limit will lead to unexpected results!
+=======
+### Remove disguise on impact
+
+- Warheads can now remove disguise from disguised infantry such as spies. This will work even if the disguised was acquired by default through `PermaDisguise`.
+>>>>>>> develop
 
 In `aimd.ini`:
 ```ini
@@ -781,7 +838,16 @@ MindControl.Anim=ControlledAnimationType ; AnimType
 
 ### No Manual Move
 
+<<<<<<< HEAD
 - You can now specify whether a TechnoType is unable to receive move command.
+=======
+In `rulesmd.ini`
+```ini
+[SOMEPROJECTILE]              ; Projectile
+Shrapnel.AffectsGround=no     ; boolean
+Shrapnel.AffectsBuildings=no  ; boolean
+```
+>>>>>>> develop
 
 ```ini
 [SOMETECHNO]           ; TechnoType

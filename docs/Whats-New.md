@@ -287,6 +287,10 @@ New:
 - Shared Ammo for transports to passengers (by FS-21)
 - Additional critical hit logic customizations (by Starkku)
 - Laser trails for VoxelAnims (by Otamaa)
+- Local warhead screen shaking (by Starkku)
+- Weapon owner detachment (by Starkku)
+- Feedback weapon (by Starkku)
+- TerrainType & ore minimap color customization (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -300,6 +304,8 @@ Vanilla fixes:
 - Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` > `AllowParallelAIQueues=no` is set (by FS-21)
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10 (by Otamaa)
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead (by Starkku)
+- Fixed aircraft & jumpjet units not being affected by speed modifiers (by Starkku)
+- Fixed vehicles (both voxel & SHP) to fully respect `Palette` (by Starkku)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
@@ -307,6 +313,7 @@ Phobos fixes:
 - Fixed SplashList animations playing when a unit is hit on a bridge over water (by Uranusian)
 - Fixed shielded objects not decloaking if shield takes damage (by Starkku)
 - Fixed critical hit animation playing even if no critical hits were dealt due to `Crit.Affects` or `ImmuneToCrit` settings (by Starkku)
+- Fixed `RemoveDisguise` not working on `PermaDisguise` infantry (by Starkku)
 </details>
 
 

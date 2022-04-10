@@ -2,7 +2,6 @@
 
 #include <ScenarioClass.h>
 #include <TiberiumClass.h>
-#include <OverlayTypeClass.h>
 #include <TerrainClass.h>
 #include <SpecificStructures.h>
 #include <AnimClass.h>
@@ -108,6 +107,48 @@ DEFINE_HOOK(0x71BB2C, TerrainClass_TakeDamage_NowDead_Add, 0x6)
 
 		if (auto const pAnimType = pTerrainExt->DestroyAnim.Get(nullptr))
 			GameCreate<AnimClass>(pAnimType, nCoords);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x47C065, CellClass_CellColor_TerrainRadarColor, 0x6)
+{
+	enum { SkipTerrainColor = 0x47C0AE, ReturnFromFunction = 0x47C0A3 };
+
+	GET(CellClass*, pThis, ECX);
+	GET_STACK(ColorStruct*, arg0, STACK_OFFS(0x14, -0x4));
+	GET_STACK(ColorStruct*, arg4, STACK_OFFS(0x14, -0x8));
+
+	auto pTerrain = pThis->GetTerrain(false);
+
+	if (pTerrain)
+	{
+		if (pTerrain->Type->RadarInvisible)
+		{
+			R->ESI(pThis);
+			return SkipTerrainColor;
+		}
+		else if (auto const pTerrainExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type))
+		{
+			if (pTerrainExt->MinimapColor.isset())
+			{
+				auto& color = pTerrainExt->MinimapColor.Get();
+
+				arg0->R = color.R;
+				arg0->G = color.G;
+				arg0->B = color.B;
+
+				arg4->R = color.R;
+				arg4->G = color.G;
+				arg4->B = color.B;
+
+				R->ECX(arg4);
+				R->AL(color.B);
+
+				return ReturnFromFunction;
+			}
+		}
 	}
 
 	return 0;

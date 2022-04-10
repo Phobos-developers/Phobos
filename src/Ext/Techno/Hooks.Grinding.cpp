@@ -3,7 +3,6 @@
 #include <InfantryClass.h>
 
 #include <Ext/Building/Body.h>
-#include <Ext/BuildingType/Body.h>
 
 DEFINE_HOOK(0x43C30A, BuildingClass_ReceiveMessage_Grinding, 0x6)
 {
@@ -32,7 +31,7 @@ DEFINE_HOOK(0x43C30A, BuildingClass_ReceiveMessage_Grinding, 0x6)
 			return ReturnNegative;
 		}
 
-		return BuildingTypeExt::CanGrindTechno(pThis, pFrom) ? ReturnRoger : ReturnNegative;
+		return BuildingExt::CanGrindTechno(pThis, pFrom) ? ReturnRoger : ReturnNegative;
 	}
 
 	return 0;
@@ -46,14 +45,14 @@ DEFINE_HOOK(0x51F0AF, InfantryClass_WhatAction_Grinding, 0x0)
 	GET(TechnoClass*, pTarget, ESI);
 	GET(Action, action, EBP);
 
-	if (auto pBuilding = static_cast<BuildingClass*>(pTarget))
+	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
 		if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
 		{
 			if (pBuilding->Type->Grinding && pThis->Owner->IsPlayerControl() && !pBuilding->IsBeingWarpedOut() &&
 				pThis->Owner->IsAlliedWith(pTarget) && (pExt->Grinding_AllowAllies || action == Action::Select))
 			{
-				action = BuildingTypeExt::CanGrindTechno(pBuilding, pThis) ? Action::Repair : Action::NoEnter;
+				action = BuildingExt::CanGrindTechno(pBuilding, pThis) ? Action::Repair : Action::NoEnter;
 				R->EBP(action);
 				return ReturnValue;
 			}
@@ -70,11 +69,11 @@ DEFINE_HOOK(0x51E63A, InfantryClass_WhatAction_Grinding_Engineer, 0x6)
 	GET(InfantryClass*, pThis, EDI);
 	GET(TechnoClass*, pTarget, ESI);
 
-	if (auto pBuilding = static_cast<BuildingClass*>(pTarget))
+	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
 		if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
 		{
-			bool canBeGrinded = BuildingTypeExt::CanGrindTechno(pBuilding, pThis);
+			bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
 			R->EBP(canBeGrinded ? Action::Repair : Action::NoGRepair);
 			return ReturnValue;
 		}
@@ -91,7 +90,7 @@ DEFINE_HOOK(0x740134, UnitClass_WhatAction_Grinding, 0x0)
 	GET(TechnoClass*, pTarget, EDI);
 	GET(Action, action, EBX);
 
-	if (auto pBuilding = static_cast<BuildingClass*>(pTarget))
+	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
 		if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
 		{
@@ -101,7 +100,7 @@ DEFINE_HOOK(0x740134, UnitClass_WhatAction_Grinding, 0x0)
 				if (pThis->SendCommand(RadioCommand::QueryCanEnter, pTarget) == RadioCommand::AnswerPositive)
 				{
 					bool isFlying = pThis->GetTechnoType()->MovementZone == MovementZone::Fly;
-					bool canBeGrinded = BuildingTypeExt::CanGrindTechno(pBuilding, pThis);
+					bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
 					action = pBuilding->Type->Grinding ? canBeGrinded && !isFlying ? Action::Repair : Action::NoEnter : !isFlying ? Action::Enter : Action::NoEnter;
 					R->EBX(action);
 				}
@@ -123,66 +122,28 @@ DEFINE_HOOK(0x4DFABD, FootClass_Try_Grinding_CheckIfAllowed, 0x8)
 	GET(FootClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EBX);
 
-	if (!BuildingTypeExt::CanGrindTechno(pBuilding, pThis))
+	if (!BuildingExt::CanGrindTechno(pBuilding, pThis))
 		return Skip;
 
 	return 0;
 }
 
-DEFINE_HOOK(0x5198AD, InfantryClass_PerCellProcess_Grinding, 0x6)
+DEFINE_HOOK(0x5198B3, InfantryClass_PerCellProcess_Grinding, 0x5)
 {
 	enum { Continue = 0x5198CE };
 
 	GET(InfantryClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EBX);
 
-	if (const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
-	{
-		if (const auto pExt = BuildingExt::ExtMap.Find(pBuilding))
-		{ 
-			if (pTypeExt->Grinding_Weapon.isset()
-				&& Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon.Get()->ROF)
-			{
-				TechnoExt::FireWeaponAtSelf(pBuilding, pTypeExt->Grinding_Weapon.Get());
-				pExt->GrindingWeapon_LastFiredFrame = Unsorted::CurrentFrame;
-			}
-		}
-
-		if (pTypeExt->Grinding_Sound.isset())
-		{
-			VocClass::PlayAt(pTypeExt->Grinding_Sound.Get(), pThis->GetCoords());
-			return Continue;
-		}
-	}
-
-	return 0;
+	return BuildingExt::DoGrindingExtras(pBuilding, pThis) ? Continue : 0;
 }
 
-DEFINE_HOOK(0x73A1BC, UnitClass_PerCellProcess_Grinding, 0x7)
+DEFINE_HOOK(0x73A1C3, UnitClass_PerCellProcess_Grinding, 0x5)
 {
 	enum { Continue = 0x73A1DE};
 
 	GET(UnitClass*, pThis, EBP);
 	GET(BuildingClass*, pBuilding, EBX);
 
-	if (const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
-	{
-		if (const auto pExt = BuildingExt::ExtMap.Find(pBuilding))
-		{
-			if (pTypeExt->Grinding_Weapon.isset()
-				&& Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon.Get()->ROF)
-			{
-				TechnoExt::FireWeaponAtSelf(pBuilding, pTypeExt->Grinding_Weapon.Get());
-				pExt->GrindingWeapon_LastFiredFrame = Unsorted::CurrentFrame;
-			}
-		}
-
-		if (pTypeExt->Grinding_Sound.isset())
-		{
-			VocClass::PlayAt(pTypeExt->Grinding_Sound.Get(), pThis->GetCoords());
-			return Continue;
-		}
-	}
-
-	return 0;
+	return BuildingExt::DoGrindingExtras(pBuilding, pThis) ? Continue : 0;
 }
