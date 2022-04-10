@@ -32,7 +32,8 @@ public:
 		Valueable<AreaFireTarget> AreaFire_Target;
 		Valueable<bool> DetachedFromOwner;
 		Nullable<WeaponTypeClass*> FeedbackWeapon;
-
+		Valueable<bool> Laser_IsSingleColor;
+		
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
 			, DiskLaser_Circumference { 240 }
@@ -49,6 +50,7 @@ public:
 			, AreaFire_Target { AreaFireTarget::Base }
 			, DetachedFromOwner { false }
 			, FeedbackWeapon {}
+			, Laser_IsSingleColor { false }
 		{ }
 
 		virtual ~ExtData() = default;
