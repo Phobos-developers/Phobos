@@ -4,6 +4,7 @@
 General Info<General-Info.md>
 What's New<Whats-New.md>
 Contributing<Contributing.md>
+Credits<CREDITS.md>
 License<License.md>
 ```
 

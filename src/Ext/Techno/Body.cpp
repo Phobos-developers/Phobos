@@ -487,7 +487,8 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 						}
 
 						passenger = static_cast<FootClass*>(passenger->NextObject);
-					} while (passenger);
+					}
+					while (passenger);
 				}
 			}
 		}
@@ -509,6 +510,48 @@ double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
 }
 
+void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
+{
+	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		if (pThis->IsMindControlled())
+		{
+			if (pThis->MindControlRingAnim && !pExt->MindControlRingAnimType)
+			{
+				pExt->MindControlRingAnimType = pThis->MindControlRingAnim->Type;
+			}
+			else if (!pThis->MindControlRingAnim && pExt->MindControlRingAnimType &&
+				pThis->CloakState == CloakState::Uncloaked && !pThis->InLimbo && pThis->IsAlive)
+			{
+				auto coords = CoordStruct::Empty;
+				coords = *pThis->GetCoords(&coords);
+				int offset = 0;
+
+				if (const auto pBuilding = specific_cast<BuildingClass*>(pThis))
+					offset = Unsorted::LevelHeight * pBuilding->Type->Height;
+				else
+					offset = pThis->GetTechnoType()->MindControlRingOffset;
+
+				coords.Z += offset;
+				auto anim = GameCreate<AnimClass>(pExt->MindControlRingAnimType, coords, 0, 1);
+
+				if (anim)
+				{
+					pThis->MindControlRingAnim = anim;
+					pThis->MindControlRingAnim->SetOwnerObject(pThis);
+
+					if (pThis->WhatAmI() == AbstractType::Building)
+						pThis->MindControlRingAnim->ZAdjust = -1024;
+				}
+			}
+		}
+		else if (pExt->MindControlRingAnimType)
+		{
+			pExt->MindControlRingAnimType = nullptr;
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -525,6 +568,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentShieldType)
 		.Process(this->LastWarpDistance)
 		.Process(this->Death_Countdown)
+		.Process(this->MindControlRingAnimType)
 		;
 }
 

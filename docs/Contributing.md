@@ -239,4 +239,4 @@ Please, provide screenshots, GIFs and videos in their natural size and without e
 
 ### Promoting the work
 
-You can always help us by spreading the word about the project among people, whether you're an influential youtuber
+You can always help us by spreading the word about the project among people, whether you're an influential youtuber, a C&C related community leader or just an average player.

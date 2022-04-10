@@ -82,6 +82,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
 	this->AnimList_PickRandom.Read(exINI, pSection, "AnimList.PickRandom");
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
+	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
 
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
@@ -106,7 +107,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_Break.Read(exINI, pSection, "Shield.Break");
 	this->Shield_BreakAnim.Read(exINI, pSection, "Shield.BreakAnim");
 	this->Shield_HitAnim.Read(exINI, pSection, "Shield.HitAnim");
-	this->Shield_BreakWeapon.Read(exINI, pSection, "Shield.BreakWeapon");
+	this->Shield_BreakWeapon.Read(exINI, pSection, "Shield.BreakWeapon", true);
 	this->Shield_AbsorbPercent.Read(exINI, pSection, "Shield.AbsorbPercent");
 	this->Shield_PassPercent.Read(exINI, pSection, "Shield.PassPercent");
 	this->Shield_Respawn_Duration.Read(exINI, pSection, "Shield.Respawn.Duration");
@@ -124,6 +125,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_ReplaceOnly.Read(exINI, pSection, "Shield.ReplaceOnly");
 	this->Shield_ReplaceNonRespawning.Read(exINI, pSection, "Shield.ReplaceNonRespawning");
 	this->Shield_InheritStateOnReplace.Read(exINI, pSection, "Shield.InheritStateOnReplace");
+	this->Shield_MinimumReplaceDelay.Read(exINI, pSection, "Shield.MinimumReplaceDelay");
 	this->Shield_AffectTypes.Read(exINI, pSection, "Shield.AffectTypes");
 
 	this->NotHuman_DeathSequence.Read(exINI, pSection, "NotHuman.DeathSequence");
@@ -136,16 +138,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpySat)
 		.Process(this->BigGap)
 		.Process(this->TransactMoney)
-
 		.Process(this->SplashList)
 		.Process(this->SplashList_PickRandom)
-
 		.Process(this->RemoveDisguise)
 		.Process(this->RemoveMindControl)
-
 		.Process(this->AnimList_PickRandom)
-
 		.Process(this->DecloakDamagedTargets)
+		.Process(this->ShakeIsLocal)
 
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ApplyChancePerTarget)
@@ -184,6 +183,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_ReplaceOnly)
 		.Process(this->Shield_ReplaceNonRespawning)
 		.Process(this->Shield_InheritStateOnReplace)
+		.Process(this->Shield_MinimumReplaceDelay)
 		.Process(this->Shield_AffectTypes)
 
 		.Process(this->NotHuman_DeathSequence)
