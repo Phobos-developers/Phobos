@@ -129,6 +129,12 @@ This page lists all the individual contributions to the project by their author.
   - Grinder improvements / additions
   - Attached animation position customization
   - Critical hit logic additions
+  - Aircraft & jumpjet speed modifiers fix
+  - Local warhead screen shaking
+  - Vehicle custom palette fix
+  - Weapon owner detachment
+  - Feedback weapon
+  - TerrainType & ore minimap color customization
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
