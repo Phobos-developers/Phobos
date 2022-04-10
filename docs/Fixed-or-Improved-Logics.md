@@ -51,6 +51,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
 - Aircraft & jumpjet units are now affected by speed modifiers such as `SpeedAircraft/Infantry/UnitsMult` on `Countries`, `VeteranSpeed` and Crates / AttachEffect (Ares feature).
+- Both voxel and SHP vehicle units should now correctly respect custom palette set through `Palette`.
+- Weapons fired by EMPulse superweapons without `EMPulse.TargetSelf=true` *(Ares feature)* can now create radiation.
+- Setting `RadarInvisible` to true on TerrainTypes now hides them from minimap display.
 
 ## Animations
 
@@ -257,6 +260,28 @@ SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; single int / comma-sep. range
 ```
 
+### Minimap color customization
+
+- TerrainTypes can now be made to display on minimap with different colors by setting `MinimapColor`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]  ; TerrainType
+MinimapColor=      ; integer - Red,Green,Blue
+```
+
+## Tiberiums (ores)
+
+### Minimap color customization
+
+- Ore can now be made to display on minimap with different colors by setting `MinimapColor` on Tiberiums.
+
+In `rulesmd.ini`:
+```ini
+[SOMEORE]      ; Tiberium
+MinimapColor=  ; integer - Red,Green,Blue
+```
+
 ## Weapons
 
 ### Customizable disk laser radius
@@ -284,6 +309,18 @@ Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
 ```
 
+### Detaching weapon from owner TechnoType
+
+- You can now control if weapon is detached from the TechnoType that fired it. This results in the weapon / warhead being able to damage the TechnoType itself even if it does not have `DamageSelf=true` set, but also treats it as if owned by no house or object, meaning any ownership-based checks like `AffectsAllies` do not function as expected and no experience is awarded.
+  - The effect of this is inherited through `AirburstWeapon` and `ShrapnelWeapon`.
+  - This does not affect projectile image or functionality or `FirersPalette` on initially fired weapon, but `FirersPalette` will not function for any weapons inheriting the effect.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPONTYPE]         ; WeaponType
+DetachedFromOwner=false  ; boolean
+```
+
 ## Projectiles
 
 ### Customizable projectile gravity
@@ -309,4 +346,14 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]               ; WarheadType
 DecloakDamagedTargets=true  ; boolean
+```
+
+### Restricting screen shaking to current view
+
+- You can now specify whether or not the warhead can only shake screen (`ShakeX/Ylo/hi`) if it is detonated while visible on current screen view.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]       ; WarheadType
+ShakeIsLocal=false  ; boolean
 ```

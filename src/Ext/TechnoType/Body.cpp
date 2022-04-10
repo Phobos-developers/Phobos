@@ -116,8 +116,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->WarpInMinRangeWeapon.Read(exINI, pSection, "WarpInMinRangeWeapon", true);
 	this->WarpOutWeapon.Read(exINI, pSection, "WarpOutWeapon", true);
 	this->WarpInWeapon_UseDistanceAsDamage.Read(exINI, pSection, "WarpInWeapon.UseDistanceAsDamage");
-	this->WarpInWeapon_FireAsSelf.Read(exINI, pSection, "WarpInWeapon.FireAsSelf");
-	this->WarpOutWeapon_FireAsSelf.Read(exINI, pSection, "WarpOutWeapon.FireAsSelf");
 
 	this->OreGathering_Anims.Read(exINI, pSection, "OreGathering.Anims");
 	this->OreGathering_Tiberiums.Read(exINI, pSection, "OreGathering.Tiberiums");
@@ -271,8 +269,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarpInMinRangeWeapon)
 		.Process(this->WarpOutWeapon)
 		.Process(this->WarpInWeapon_UseDistanceAsDamage)
-		.Process(this->WarpInWeapon_FireAsSelf)
-		.Process(this->WarpOutWeapon_FireAsSelf)
 		.Process(this->OreGathering_Anims)
 		.Process(this->OreGathering_Tiberiums)
 		.Process(this->OreGathering_FramesPerDir)

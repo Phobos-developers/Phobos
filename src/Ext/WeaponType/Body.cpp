@@ -44,6 +44,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CanTargetHouses.Read(exINI, pSection, "CanTargetHouses");
 	this->Burst_Delays.Read(exINI, pSection, "Burst.Delays");
 	this->AreaFire_Target.Read(exINI, pSection, "AreaFire.Target");
+	this->DetachedFromOwner.Read(exINI, pSection, "DetachedFromOwner");
+	this->FeedbackWeapon.Read(exINI, pSection, "FeedbackWeapon", true);
 }
 
 template <typename T>
@@ -63,6 +65,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RadType)
 		.Process(this->Burst_Delays)
 		.Process(this->AreaFire_Target)
+		.Process(this->DetachedFromOwner)
+		.Process(this->FeedbackWeapon)
 		;
 };
 

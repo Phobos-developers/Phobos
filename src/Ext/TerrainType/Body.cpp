@@ -29,6 +29,7 @@ void TerrainTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnsTiberium_CellsPerAnim)
 		.Process(this->DestroyAnim)
 		.Process(this->DestroySound)
+		.Process(this->MinimapColor)
 		;
 }
 
@@ -48,6 +49,8 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DestroyAnim.Read(exINI, pSection, "DestroyAnim");
 	this->DestroySound.Read(exINI, pSection, "DestroySound");
+
+	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
 
 	//Strength is already part of ObjecTypeClass::ReadIni Duh!
 	//this->TerrainStrength.Read(exINI, pSection, "Strength");
@@ -91,6 +94,9 @@ DEFINE_HOOK(0x71DBC0, TerrainTypeClass_CTOR, 0x7)
 	GET(TerrainTypeClass*, pItem, ESI);
 
 	TerrainTypeExt::ExtMap.FindOrAllocate(pItem);
+
+	// Override the default value (true) from game constructor.
+	pItem->RadarInvisible = false;
 
 	return 0;
 }

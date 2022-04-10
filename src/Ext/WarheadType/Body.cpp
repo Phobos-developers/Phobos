@@ -82,6 +82,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
 	this->AnimList_PickRandom.Read(exINI, pSection, "AnimList.PickRandom");
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
+	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
 
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
@@ -136,16 +137,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpySat)
 		.Process(this->BigGap)
 		.Process(this->TransactMoney)
-
 		.Process(this->SplashList)
 		.Process(this->SplashList_PickRandom)
-
 		.Process(this->RemoveDisguise)
 		.Process(this->RemoveMindControl)
-
 		.Process(this->AnimList_PickRandom)
-
 		.Process(this->DecloakDamagedTargets)
+		.Process(this->ShakeIsLocal)
 
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ApplyChancePerTarget)
