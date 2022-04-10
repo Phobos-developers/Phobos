@@ -303,60 +303,6 @@ DeployingAnim.UseUnitDrawer=true       ; boolean
 
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
 
-## Weapons
-
-### Customizable disk laser radius
-
-![image](_static/images/disklaser-radius-values-01.gif)  
-- You can now set disk laser animation radius using a new tag.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]          ; WeaponType
-DiskLaser.Radius=38.2 ; floating point value
-                      ; 38.2 is roughly the default saucer disk radius
-```
-
-### Toggle-able ElectricBolt visuals
-
-- You can now specify individual ElectricBolt bolts you want to disable. Note that this is only a visual change.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPONTYPE]       ; WeaponType
-IsElectricBolt=true    ; an ElectricBolt Weapon, vanilla tag
-Bolt.Disable1=false    ; boolean
-Bolt.Disable2=false    ; boolean
-Bolt.Disable3=false    ; boolean
-```
-
-### Detaching weapon from owner TechnoType
-
-- You can now control if weapon is detached from the TechnoType that fired it. This results in the weapon / warhead being able to damage the TechnoType itself even if it does not have `DamageSelf=true` set, but also treats it as if owned by no house or object, meaning any ownership-based checks like `AffectsAllies` do not function as expected and no experience is awarded.
-  - The effect of this is inherited through `AirburstWeapon` and `ShrapnelWeapon`.
-  - This does not affect projectile image or functionality or `FirersPalette` on initially fired weapon, but `FirersPalette` will not function for any weapons inheriting the effect.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPONTYPE]         ; WeaponType
-DetachedFromOwner=false  ; boolean
-```
-
-## Projectiles
-
-### Customizable projectile gravity
-
--  You can now specify individual projectile gravity.
-    - Set `Gravity=0` with an arcing projectile can create a straight trail.
-        - Set `Gravity.HeightFix=true` allows the projectile to hit target which is not at the same height while `Gravity=0`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEPROJECTILE]        ; Projectile
-Gravity=6.0             ; double
-Gravity.HeightFix=false ; boolean
-```
-
 ## Warheads
 
 ### Customizing decloak on damaging targets
@@ -377,4 +323,43 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]       ; WarheadType
 ShakeIsLocal=false  ; boolean
+```
+
+## Weapons
+
+### Customizable disk laser radius
+
+![image](_static/images/disklaser-radius-values-01.gif)  
+- You can now set disk laser animation radius using a new tag.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]          ; WeaponType
+DiskLaser.Radius=38.2 ; floating point value
+                      ; 38.2 is roughly the default saucer disk radius
+```
+
+### Detaching weapon from owner TechnoType
+
+- You can now control if weapon is detached from the TechnoType that fired it. This results in the weapon / warhead being able to damage the TechnoType itself even if it does not have `DamageSelf=true` set, but also treats it as if owned by no house or object, meaning any ownership-based checks like `AffectsAllies` do not function as expected and no experience is awarded.
+  - The effect of this is inherited through `AirburstWeapon` and `ShrapnelWeapon`.
+  - This does not affect projectile image or functionality or `FirersPalette` on initially fired weapon, but `FirersPalette` will not function for any weapons inheriting the effect.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPONTYPE]         ; WeaponType
+DetachedFromOwner=false  ; boolean
+```
+
+### Toggle-able ElectricBolt visuals
+
+- You can now specify individual ElectricBolt bolts you want to disable. Note that this is only a visual change.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPONTYPE]       ; WeaponType
+IsElectricBolt=true    ; an ElectricBolt Weapon, vanilla tag
+Bolt.Disable1=false    ; boolean
+Bolt.Disable2=false    ; boolean
+Bolt.Disable3=false    ; boolean
 ```
