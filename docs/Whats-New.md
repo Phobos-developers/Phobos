@@ -128,7 +128,7 @@ This page lists the history of changes across stable Phobos releases and also al
   [ScriptExtType_GlobalVariables]
   BuiltInType=5
 
-  [ScriptsRA2]   
+  [ScriptsRA2]
   71=Timed Area Guard,20,0,1,[LONG DESC]
   72=Load Onto Transports,0,0,1,[LONG DESC]
   73=Wait until ammo is full,0,0,1,[LONG DESC]

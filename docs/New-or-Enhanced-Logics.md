@@ -71,7 +71,7 @@ AllowTransfer=                       ; boolean
 
 [SOMETECHNO]                         ; TechnoType
 ShieldType=SOMESHIELDTYPE            ; ShieldType; none by default
-                                     
+
 [SOMEWARHEAD]                        ; WarheadType
 Shield.Penetrate=false               ; boolean
 Shield.Break=false                   ; boolean

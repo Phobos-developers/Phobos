@@ -83,34 +83,7 @@ Credits
 - **Starkku** - developer
 - **Morton (MortonPL)** - developer
 
-### Contributions
-- **Belonit (Gluk-v48)** - project creation, disable empty spawn positions, custom gamemd icon with Command Line, full-color non-paletted PCX, SpySat, BigGap, TransactMoney, PCX Loading Screen, custom DiskLaser radius, extended tooltips, building upgrades enhancement, hide health bar, Sidebar.GDIPosition, help with CellSpread, Blowfish.dll-related errors fix, zero size map previews, semantic locomotor aliases, shields, input fix
-- **Kerbiter (Metadorius)** - SHP debris respect Shadow, building upgrades enhancement, extended tooltips, selection priority filtering, TurretOffset enhancement, customizable ore spawners, select next idle harvester hotkey, interceptor enhancement, zero size map previews, LaserTrails, laser fixes, CI/CD, overhauled Unicode font, docs maintenance, VSCode configs, code style
-- **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
-- **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
-- **Ares developers** - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code, prototype deployer fixes
-- **ZΞPHYɌUS** - win/lose themes code
-- **ayylmao** - help with docs
-- **SMxReaver** - help with docs, extensive and thorough testing
-- **4SG** - help with docs
-- **wiktorderelf** - overhauled Unicode font
-- **Uranusian (Thrifinesma)** - Mind Control enhancement, custom warhead splash list, harvesters counter, promoted spawns, shields, death after dead fix, customizeable missing cameo, cameo sorting priority, placement mode responding of tab hotkeys fix, producing progress, custom ore gathering anim, NoManualMove, weapon target house filtering, DeathWeapon fix, re-enable obsolete `JumpjetControls`, AITrigger Building Upgrades recognition, Wall-Gate links, deployed infantry using both weapons, overhauled Unicode font, docs maintenance, CN docs translation
-- **secsome (SEC-SOME)** - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields, AnimList.PickRandom, MoveToCell fix, unlimited waypoints, Build At trigger action buildup anim fix, Undeploy building into a unit plays `EVA_NewRallyPointEstablished` fix, custom ore gathering anim, TemporaryClass related crash, Retry dialog on mission failure, Default disguise for individual InfantryTypes, PowerPlant Enhancer, SaveGame Trigger Action, QuickSave command, Numeric variables, Custom gravity for projectiles, Retint map actions bugfix, Sharpnel enhancement, Vanilla map preview reading bugfix
-- **Otamaa (Fahroni, BoredEXE)** - help with CellSpread, ported and fixed custom RadType code, togglable ElectricBolt bolts, customizable Chrono Locomotor properties per TechnoClass, DebrisMaximums fixes, Anim-to-Unit, NotHuman anim sequences improvements, Customizable OpenTopped Properties, hooks for ScriptType Actions 92 & 93, ore stage threshold for `HideIfNoOre`, occupied building `MuzzleFlashX` bugfix,`EnemyUIName=` for other TechnoTypes, TerrainType `DestroyAnim` & `DestroySound`, Laser trails for VoxelAnims
-- **E1 Elite** - TileSet 255 and above bridge repair fix
-- **FS-21** - Dump Object Info enhancements, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71 to 113, MC deployer fixes, help with docs, Automatic Passenger Deletion, Fire SW At Location Trigger Action, Fire SW At Waypoint Trigger Action, Kill Object Automatically, Customize resource storage, Override Uncloaked Underwater attack behavior, AI Aircraft docks fix, Shared Ammo
-- **AutoGavy** - interceptor logic, Warhead critical hit logic, Customize resource storage
-- **ChrisLv_CN** - interceptor logic, LaserTrails, laser fixes, general assistance (work relicensed under [following permission](images/ChrisLv-relicense.png))
-- **Xkein** - general assistance, YRpp edits
-- **thomassneddon** - general assistance
-- **Starkku** - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements, stationary VehicleTypes, Burst logic improvements, TechnoType auto-firing weapons, Secondary weapon fallback customization, weapon target type filtering, AreaFire targeting customization, CreateUnit improvements, Attached animation & jumpjet unit layer customization, IsSimpleDeployer improvements, Shield modification warheads, Warhead decloaking toggle, Warp(In/Out)Weapon, Grinder improvements / additions, Attached animation position customization, Critical hit logic additions
-- **SukaHati (Erzoid)** - Minimum interceptor guard range
-- **Morton (MortonPL)** - XDrawOffset, Shield passthrough & absorption, building LimboDelivery, fix for Image in art rules, power delta counter
-- **mevitar** - honorary shield tester *triple* award
-- **Damfoos** - extensive and thorough testing
-- **Dmitry Volkov** - extensive and thorough testing
-- **Rise of the East community** - extensive playtesting of in-dev features
-- **Chasheen (Chasheenburg)** - CN docs translation
+For all contributions see [full credits list](CREDITS.md).
 
 Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](logo-mono.png)) in your client/launcher (make it open Phobos GitHub page for extra fanciness), linking to Phobos repository, contributing or donating to us via the links above.
 
