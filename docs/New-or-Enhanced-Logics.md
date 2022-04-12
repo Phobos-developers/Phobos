@@ -34,6 +34,46 @@ RadColor=0,255,0                ; RGB
 RadSiteWarhead=RadSite          ; WarheadType
 ```
 
+### Digital display of HP and SP
+
+![image](_static/images/ShowValue1.png)
+
+![image](_static/images/ShowValue2.png)
+
+In `rulesmd.ini`:
+
+```ini
+
+[DigitalDisplayTypes] ;New registry for registering digital display types
+
+[AudioVisual]
+DigitalDisplay.Enable= 							        ;bool whether to enable digital display, all digital displays will not be displayed if no
+Buildings.DefaultDigitalDisplayTypeHP= 			;DigitalDisplayType The default digital display type used for building blood, if not written or the corresponding type does not exist, it will not be displayed
+DefaultDigitalDisplayTypeSP= 					      ;DigitalDisplayType The default digital display type used for building shields, not displayed if not written or if the corresponding type does not exist
+Infantrys.DefaultDigitalDisplayTypeHP= 			;DigitalDisplayType The default digital display type used for infantry blood, not displayed if not written or if the corresponding type does not exist
+Infantrys.DefaultDigitalDisplayTypeSP= 			;DigitalDisplayType The default digital display type used for infantry shields, not shown if not written or if the corresponding type does not exist
+Units.DefaultDigitalDisplayTypeHP= 				  ;DigitalDisplayType The default digital display type used for other units' blood, not displayed if not written or if the corresponding type does not exist
+DefaultDigitalDisplayTypeHP= 					      ;DigitalDisplayType The default digital display type used for other units' shields, not displayed if not written or if the corresponding type does not exist
+
+[SomeDigitalDisplayType]
+Text.ColorHigh= 			                      ;r,g,b the color of the Text digital display when green blood, default 0,255,0
+Text.ColorMid= 				                      ;r,g,b Yellow blood when the color of the Text digital display, the default 255,255,0
+Text.ColorLow= 				                      ;r,g,b red blood when the color of the Text digital display, default 255,0,0
+Text.Background= 			                      ;bool Whether the Text display has a black background, default no
+UseSHP= 					                          ;bool whether to use SHP digital display, default no
+SHP.SHPFile= 				                        ;filename with extend name, the name of the SHP file used by the SHP number display, default number.shp
+							                              ;The SHP display uses frames 0-9 of the SHP file for green blood, 10-19 for yellow blood, and 20-29 for red blood.
+							                              ;30-32 frames are the separator for green, yellow and red blood respectively
+SHP.PALFile=				                        ;filename with extend name, the palette file used by SHP, default is ra1 palette
+SHP.Interval= 				                      ;integer the width of a single digit of the SHP display plus the value of the interval between digits
+
+[SomeTechnoType]
+DigitalDisplayType= 		                    ;DigitalDisplayType The type of digital display used for this unit of blood, the default [AudioVisual] in the corresponding type, do not write or do not exist the corresponding type is not displayed
+
+[SomeShieldType]
+DigitalDisplayType= 		                    ;DigitalDisplayType The digital display type used for the unit's blood volume, defaulted to the corresponding type in [AudioVisual] of the unit to which it is attached, will not be displayed if the corresponding type is not written or does not exist
+```
+
 ### Laser Trails
 
 ![Laser Trails](_static/images/lasertrails.gif)  
@@ -183,46 +223,6 @@ Shield.InheritStateOnReplace=false   ; boolean
     - If `Shield.ReplaceNonRespawning` is set, shield from `Shield.AttachTypes` replaces existing shields that have been broken and cannot respawn on their own.
       - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
-
-### Show Health and Shield Value
-
-![image](_static/images/ShowValue1.png)
-
-![image](_static/images/ShowValue2.png)
-
-In `rulesmd.ini`:
-
-```ini
-
-[DigitalDisplayTypes] ;New registry for registering digital display types
-
-[AudioVisual]
-DigitalDisplay.Enable= 							        ;bool whether to enable digital display, all digital displays will not be displayed if no
-Buildings.DefaultDigitalDisplayTypeHP= 			;DigitalDisplayType The default digital display type used for building blood, if not written or the corresponding type does not exist, it will not be displayed
-DefaultDigitalDisplayTypeSP= 					      ;DigitalDisplayType The default digital display type used for building shields, not displayed if not written or if the corresponding type does not exist
-Infantrys.DefaultDigitalDisplayTypeHP= 			;DigitalDisplayType The default digital display type used for infantry blood, not displayed if not written or if the corresponding type does not exist
-Infantrys.DefaultDigitalDisplayTypeSP= 			;DigitalDisplayType The default digital display type used for infantry shields, not shown if not written or if the corresponding type does not exist
-Units.DefaultDigitalDisplayTypeHP= 				  ;DigitalDisplayType The default digital display type used for other units' blood, not displayed if not written or if the corresponding type does not exist
-DefaultDigitalDisplayTypeHP= 					      ;DigitalDisplayType The default digital display type used for other units' shields, not displayed if not written or if the corresponding type does not exist
-
-[SomeDigitalDisplayType]
-Text.ColorHigh= 			                      ;r,g,b the color of the Text digital display when green blood, default 0,255,0
-Text.ColorMid= 				                      ;r,g,b Yellow blood when the color of the Text digital display, the default 255,255,0
-Text.ColorLow= 				                      ;r,g,b red blood when the color of the Text digital display, default 255,0,0
-Text.Background= 			                      ;bool Whether the Text display has a black background, default no
-UseSHP= 					                          ;bool whether to use SHP digital display, default no
-SHP.SHPFile= 				                        ;filename with extend name, the name of the SHP file used by the SHP number display, default number.shp
-							                              ;The SHP display uses frames 0-9 of the SHP file for green blood, 10-19 for yellow blood, and 20-29 for red blood.
-							                              ;30-32 frames are the separator for green, yellow and red blood respectively
-SHP.PALFile=				                        ;filename with extend name, the palette file used by SHP, default is ra1 palette
-SHP.Interval= 				                      ;integer the width of a single digit of the SHP display plus the value of the interval between digits
-
-[SomeTechnoType]
-DigitalDisplayType= 		                    ;DigitalDisplayType The type of digital display used for this unit of blood, the default [AudioVisual] in the corresponding type, do not write or do not exist the corresponding type is not displayed
-
-[SomeShieldType]
-DigitalDisplayType= 		                    ;DigitalDisplayType The digital display type used for the unit's blood volume, defaulted to the corresponding type in [AudioVisual] of the unit to which it is attached, will not be displayed if the corresponding type is not written or does not exist
-```
 
 ## Animations
 
