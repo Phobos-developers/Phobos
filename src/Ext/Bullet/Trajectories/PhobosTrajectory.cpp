@@ -195,7 +195,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x46745C, BulletClass_AI_Postition_Trajectories, 0x7)
+DEFINE_HOOK(0x46745C, BulletClass_AI_Position_Trajectories, 0x7)
 {
 	GET(BulletClass*, pThis, EBP);
 	LEA_STACK(BulletVelocity*, pSpeed, STACK_OFFS(0x1AC, 0x11C));
@@ -205,6 +205,49 @@ DEFINE_HOOK(0x46745C, BulletClass_AI_Postition_Trajectories, 0x7)
 
 	if (auto pTraj = pExt->Trajectory)
 		pTraj->OnAIVelocity(pThis, pSpeed, pPosition);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
+{
+	enum { SkipCheck = 0x4678F8, ContinueAfterCheck = 0x467879 };
+
+	GET(BulletClass*, pThis, EBP);
+
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (auto pTraj = pExt->Trajectory)
+	{
+		auto flag = pTraj->OnAITargetCoordCheck(pThis);
+
+		if (flag == TrajectoryCheckReturnType::SkipGameCheck)
+			return SkipCheck;
+		if (flag == TrajectoryCheckReturnType::SatisfyGameCheck)
+			return ContinueAfterCheck;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x467921, BulletClass_AI_TechnoCheck_Trajectories, 0x6)
+{
+	enum { SkipCheck = 0x467965, ContinueAfterCheck = 0x467514 };
+
+	GET(BulletClass*, pThis, EBP);
+	GET(TechnoClass*, pTechno, ESI);
+
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (auto pTraj = pExt->Trajectory)
+	{
+		auto flag = pTraj->OnAITechnoCheck(pThis, pTechno);
+
+		if (flag == TrajectoryCheckReturnType::SkipGameCheck)
+			return SkipCheck;
+		if (flag == TrajectoryCheckReturnType::SatisfyGameCheck)
+			return ContinueAfterCheck;
+	}
 
 	return 0;
 }
@@ -220,23 +263,6 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 
 	if (auto pType = pData->TrajectoryType)
 		pExt->Trajectory = PhobosTrajectory::CreateInstance(pType, pThis, pCoord, pVelocity);
-
-	return 0;
-}
-
-// Disables weird collision checks that alter trajectory if bullet
-// goes on a cell with enemy technos for custom Trajectory projectiles.
-DEFINE_HOOK(0x467921, BulletClass_AI_Trajectories_SkipChecks, 0x6)
-{
-	enum { SkipCheck = 0x467965 };
-
-	GET(BulletClass*, pThis, EBP);
-
-	if (auto const pExt = BulletTypeExt::ExtMap.Find(pThis->Type))
-	{
-		if (pExt->TrajectoryType != nullptr)
-			return SkipCheck;
-	}
 
 	return 0;
 }

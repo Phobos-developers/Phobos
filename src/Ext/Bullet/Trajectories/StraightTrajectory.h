@@ -29,4 +29,6 @@ public:
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) override;
 	virtual void OnAI(BulletClass* pBullet) override;
 	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) override;
+	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
+	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 };

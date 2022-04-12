@@ -51,3 +51,14 @@ void StraightTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpe
 {
 	pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type); // We don't want to take the gravity into account
 }
+
+TrajectoryCheckReturnType StraightTrajectory::OnAITargetCoordCheck(BulletClass* pBullet)
+{
+	return TrajectoryCheckReturnType::ExecuteGameCheck; // Execute game checks.
+}
+
+TrajectoryCheckReturnType StraightTrajectory::OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno)
+{
+	return TrajectoryCheckReturnType::SkipGameCheck; // Bypass game checks entirely.
+}
+

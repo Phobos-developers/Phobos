@@ -13,6 +13,13 @@ enum class TrajectoryFlag : int
 	Bombard = 1,
 };
 
+enum class TrajectoryCheckReturnType : int
+{
+	ExecuteGameCheck = 0,
+	SkipGameCheck = 1,
+	SatisfyGameCheck = 2,
+};
+
 class PhobosTrajectoryType
 {
 public:
@@ -46,6 +53,8 @@ public:
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) = 0;
 	virtual void OnAI(BulletClass* pBullet) = 0;
 	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) = 0;
+	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) = 0;
+	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) = 0;
 
 	template<typename T = PhobosTrajectoryType>
 	T* GetTrajectoryType(BulletClass* pBullet) const

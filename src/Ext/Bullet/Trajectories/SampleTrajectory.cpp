@@ -82,3 +82,20 @@ void SampleTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed
 	}
 	
 }
+
+// Where additional checks based on bullet reaching its target coordinate can be done.
+// Vanilla code will do additional checks regarding buildings on target coordinate and Vertical projectiles and will detonate the projectile if they pass.
+// Return value determines what is done regards to the game checks: they can be skipped, executed as normal or treated as if the condition is already satisfied.
+TrajectoryCheckReturnType SampleTrajectory::OnAITargetCoordCheck(BulletClass* pBullet)
+{
+	return TrajectoryCheckReturnType::ExecuteGameCheck; // Execute game checks.
+}
+
+// Where additional checks based on a TechnoClass instance in same cell as the bullet can be done.
+// Vanilla code will do additional trajectory alterations here if there is an enemy techno in the cell.
+// Return value determines what is done regards to the game checks: they can be skipped, executed as normal or treated as if the condition is already satisfied.
+// pTechno: TechnoClass instance in same cell as the bullet.
+TrajectoryCheckReturnType SampleTrajectory::OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno)
+{
+	return TrajectoryCheckReturnType::ExecuteGameCheck; // Execute game checks.
+}

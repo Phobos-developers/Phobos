@@ -83,3 +83,13 @@ void BombardTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpee
 	}
 
 }
+
+TrajectoryCheckReturnType BombardTrajectory::OnAITargetCoordCheck(BulletClass* pBullet)
+{
+	return TrajectoryCheckReturnType::ExecuteGameCheck; // Execute game checks.
+}
+
+TrajectoryCheckReturnType BombardTrajectory::OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno)
+{
+	return TrajectoryCheckReturnType::SkipGameCheck; // Bypass game checks entirely.
+}
