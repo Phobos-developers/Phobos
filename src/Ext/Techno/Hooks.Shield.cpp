@@ -180,6 +180,8 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 			pShieldData->DrawShieldBar(iLength, pLocation, pBound);
 	}
 
+	TechnoExt::DrawBuildingHPValue(pThis, pLocation);
+
 	return 0;
 }
 
@@ -198,6 +200,8 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 			pShieldData->DrawShieldBar(iLength, pLocation, pBound);
 		}
 	}
+
+	TechnoExt::DrawFootClassHPValue(pThis, pLocation);
 
 	return 0;
 }

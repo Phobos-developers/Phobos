@@ -29,6 +29,7 @@ public:
 	void AI();
 
 	void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
+
 	void InvalidatePointer(void* ptr);
 
 	double GetHealthRatio();
@@ -41,6 +42,10 @@ public:
 	int GetFramesSinceLastBroken();
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
+
+	bool IsGreenSP();
+	bool IsYellowSP();
+	bool IsRedSP();
 
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;
@@ -68,6 +73,10 @@ private:
 
 	void DrawShieldBar_Building(int iLength, Point2D* pLocation, RectangleStruct* pBound);
 	void DrawShieldBar_Other(int iLength, Point2D* pLocation, RectangleStruct* pBound);
+	void DrawBuildingShieldTextValue(Point2D vPos);
+	void DrawBuildingShieldSHPValue(Point2D vPos);
+	void DrawFootClassShieldTextValue(Point2D vPos);
+	void DrawFootClassShieldSHPValue(Point2D vPos);
 	int DrawShieldBar_Pip(const bool isBuilding);
 	int DrawShieldBar_PipAmount(int iLength);
 

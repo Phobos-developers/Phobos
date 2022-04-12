@@ -49,6 +49,17 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->PassPercent.Read(exINI, pSection, "PassPercent");
 
 	this->AllowTransfer.Read(exINI, pSection, "AllowTransfer");
+
+	this->ShieldValue_Show.Read(exINI, pSection, "ShieldValue.Show");
+	this->ShieldValue_ShowColorHigh.Read(exINI, pSection, "ShieldValue.ShowColorHigh");
+	this->ShieldValue_ShowColorMid.Read(exINI, pSection, "ShieldValue.ShowColorMid");
+	this->ShieldValue_ShowColorLow.Read(exINI, pSection, "ShieldValue.ShowColorLow");
+	this->ShieldValue_ShowOffset.Read(exINI, pSection, "ShieldValue.ShowOffset");
+	this->ShieldValue_ShowBackground.Read(exINI, pSection, "ShieldValue_ShowBackground");
+	this->ShieldValue_UseSHPShow.Read(exINI, pSection, "ShieldValue_UseSHPShow");
+	this->ShieldValue_ShowSHP.Read(pINI, pSection, "ShieldValue_ShowSHP");
+	this->ShieldValue_ShowPAL.Read(pINI, pSection, "ShieldValue_ShowPAL");
+	this->ShieldValue_ShowInterval.Read(exINI, pSection, "ShieldValue_ShowInterval");
 }
 
 template <typename T>
@@ -74,6 +85,15 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->AbsorbPercent)
 		.Process(this->PassPercent)
 		.Process(this->AllowTransfer)
+		.Process(this->ShieldValue_ShowColorHigh)
+		.Process(this->ShieldValue_ShowColorMid)
+		.Process(this->ShieldValue_ShowColorLow)
+		.Process(this->ShieldValue_ShowOffset)
+		.Process(this->ShieldValue_ShowBackground)
+		.Process(this->ShieldValue_UseSHPShow)
+		.Process(this->ShieldValue_ShowSHP)
+		.Process(this->ShieldValue_ShowPAL)
+		.Process(this->ShieldValue_ShowInterval)
 		;
 }
 

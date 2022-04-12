@@ -102,6 +102,21 @@ public:
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
 
+		Nullable<bool> HP_Show;
+		Nullable<Vector3D<int>> HP_ShowColorHigh;
+		Nullable<Vector3D<int>> HP_ShowColorMid;
+		Nullable<Vector3D<int>> HP_ShowColorLow;
+		Nullable<Vector2D<int>> HP_ShowOffset;
+		Nullable<bool> HP_ShowBackground;
+
+		Nullable<bool> HP_UseSHPShow;
+		PhobosFixedString<32U> HP_ShowSHP;
+		PhobosFixedString<32U> HP_ShowPAL;
+		Nullable<int> HP_ShowInterval;
+
+		ConvertClass* SHP_HealthPAL;
+		SHPStruct* SHP_HealthSHP;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -188,6 +203,18 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
+			, HP_Show {}
+			, HP_ShowColorHigh {}
+			, HP_ShowColorMid {}
+			, HP_ShowColorLow {}
+			, HP_ShowOffset {}
+			, HP_ShowBackground {}
+			, HP_UseSHPShow {}
+			, HP_ShowSHP { "" }
+			, HP_ShowPAL { "" }
+			, HP_ShowInterval {}
+			, SHP_HealthPAL { nullptr }
+			, SHP_HealthSHP { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;

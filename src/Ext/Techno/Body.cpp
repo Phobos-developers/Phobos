@@ -7,6 +7,7 @@
 #include <ScenarioClass.h>
 #include <SpawnManagerClass.h>
 #include <InfantryClass.h>
+#include <TacticalClass.h>
 #include <Unsorted.h>
 
 #include <Ext/BulletType/Body.h>
@@ -551,6 +552,337 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 		}
 	}
 }
+
+
+
+DynamicVectorClass<char> TechnoExt::IntToVector(int s)
+{
+	DynamicVectorClass<char>res;
+	if (s == 0)
+	{
+		res.AddItem(0);
+		return res;
+	}
+	while (s)
+	{
+		res.AddItem(s % 10);
+		s /= 10;
+	}
+	return res;
+}
+
+void TechnoExt::DrawBuildingHPValue(TechnoClass* pThis, Point2D* pLocation)
+{//pos use for reference ShieldClass::DrawShieldBar_Building
+	if (pThis->WhatAmI() != AbstractType::Building) return;
+	const TechnoTypeClass* const pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	bool ShowHP = pTypeExt->HP_Show.Get(RulesExt::Global()->Buildings_ShowHP.Get());
+
+	if (!ShowHP)
+		return;
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+	Point2D vLoc = *pLocation;
+	vLoc.X -= 5;
+	vLoc.Y -= 3;
+
+	CoordStruct vCoords = { 0, 0, 0 };
+	pThis->GetTechnoType()->Dimension2(&vCoords);
+	Point2D vPos2 = { 0, 0 };
+	Point2D vPosH = { 0, 0 };
+	CoordStruct vCoords2 = { -vCoords.X / 2, vCoords.Y / 2,vCoords.Z };
+	TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
+
+	Vector2D<int>ShowHPOffsetVector2D = pTypeExt->HP_ShowOffset.Get(RulesExt::Global()->Buildings_ShowHPOffset.Get());
+
+	vLoc.Y -= 5;
+	vPosH.X = vPos2.X + vLoc.X + 4 * 17 - 110 + ShowHPOffsetVector2D.X;
+	vPosH.Y = vPos2.Y + vLoc.Y - 2 * 17 + 40 + ShowHPOffsetVector2D.Y;
+	//vPosH.Y += pType->PixelSelectionBracketDelta;
+	//Building's PixelSelectionBracketDetla is ineffctive
+
+	if (pExt->Shield == nullptr || pExt->Shield->IsBrokenAndNonRespawning())
+	{
+		vPosH.X += RulesExt::Global()->Units_ShowHPOffset_WithoutShield.Get().X;
+		vPosH.Y += RulesExt::Global()->Units_ShowHPOffset_WithoutShield.Get().Y;
+	}
+
+	bool UseSHPShow = pTypeExt->HP_UseSHPShow.Get(RulesExt::Global()->Buildings_UseSHPShowHP);
+
+	if (UseSHPShow)
+	{
+		vPosH.X += 10;
+		vPosH.Y -= 27;
+		DrawBuildingSHPValue(pThis, pTypeExt, vPosH);
+	}
+	else
+	{
+		vPosH.X += 30;
+		DrawBuildingTextValue(pThis, pTypeExt, vPosH);
+	}
+}
+
+void TechnoExt::DrawBuildingTextValue(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D vPos)
+{
+	wchar_t Healthpoint[0x20];
+	swprintf_s(Healthpoint, L"%d/%d", pThis->Health, pThis->GetTechnoType()->Strength);
+
+	COLORREF ShowHPColor;
+
+	if (pThis->IsGreenHP())
+	{
+		Vector3D<int>ShowHPColorHighVector3D = pTypeExt->HP_ShowColorHigh.Get(RulesExt::Global()->Buildings_ShowColorHPHigh.Get());
+		COLORREF ShowHPColorHigh = Drawing::RGB2DWORD(ShowHPColorHighVector3D.X, ShowHPColorHighVector3D.Y, ShowHPColorHighVector3D.Z);
+		ShowHPColor = ShowHPColorHigh;
+	}
+	else if (pThis->IsYellowHP())
+	{
+		Vector3D<int>ShowHPColorMidVector3D = pTypeExt->HP_ShowColorMid.Get(RulesExt::Global()->Buildings_ShowColorHPMid.Get());
+		COLORREF ShowHPColorMid = Drawing::RGB2DWORD(ShowHPColorMidVector3D.X, ShowHPColorMidVector3D.Y, ShowHPColorMidVector3D.Z);
+		ShowHPColor = ShowHPColorMid;
+	}
+	else
+	{
+		Vector3D<int>ShowHPColorLowVector3D = pTypeExt->HP_ShowColorLow.Get(RulesExt::Global()->Buildings_ShowColorHPLow.Get());
+		COLORREF ShowHPColorLow = Drawing::RGB2DWORD(ShowHPColorLowVector3D.X, ShowHPColorLowVector3D.Y, ShowHPColorLowVector3D.Z);
+		ShowHPColor = ShowHPColorLow;
+	}
+
+	bool ShowBackground = pTypeExt->HP_ShowBackground.Get(RulesExt::Global()->Buildings_ShowBackground.Get());
+
+	RectangleStruct rect = { 0,0,0,0 };
+	DSurface::Temp->GetRect(&rect);
+	COLORREF BackColor = 0;
+	TextPrintType PrintType = TextPrintType(int(TextPrintType::Right) + (ShowBackground ? int(TextPrintType::GradAll) : 0));
+
+	//DSurface::Temp->DrawText(Healthpoint, vPosH.X, vPosH.Y, ShowHPColor);
+	DSurface::Temp->DrawTextA(Healthpoint, &rect, &vPos, ShowHPColor, BackColor, PrintType);
+}
+
+void TechnoExt::DrawBuildingSHPValue(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D vPos)
+{
+	const int Strength = pThis->GetTechnoType()->Strength;
+	const int Health = pThis->Health;
+
+	const DynamicVectorClass<char>StrengthVector = IntToVector(Strength);
+	const DynamicVectorClass<char>HealthVector = IntToVector(Health);
+
+	const int Length = StrengthVector.Count + HealthVector.Count + 1;
+
+	const int Interval = pTypeExt->HP_ShowInterval.Get(RulesExt::Global()->Buildings_HPNumberInterval);
+
+	SHPStruct* NumberSHP = pTypeExt->SHP_HealthSHP;
+	if (NumberSHP == nullptr)
+	{
+		char FilenameSHP[0x20];
+		strcpy_s(FilenameSHP, pTypeExt->HP_ShowSHP.data());
+		if (strcmp(FilenameSHP, "") == 0)
+			strcpy_s(FilenameSHP, RulesExt::Global()->Buildings_HPNumberSHP.data());
+		NumberSHP = pTypeExt->SHP_HealthSHP = FileSystem::LoadSHPFile(FilenameSHP);
+	}
+	if (NumberSHP == nullptr) return;
+	ConvertClass* NumberPAL = pTypeExt->SHP_HealthPAL;
+	if (NumberPAL == nullptr)
+	{
+		char FilenamePAL[0x20];
+		strcpy_s(FilenamePAL, pTypeExt->HP_ShowPAL.data());
+		if (strcmp(FilenamePAL, "") == 0)
+			strcpy_s(FilenamePAL, RulesExt::Global()->Buildings_HPNumberPAL.data());
+		if (strcmp(FilenamePAL, "") == 0) NumberPAL = pTypeExt->SHP_HealthPAL = FileSystem::PALETTE_PAL;
+		else NumberPAL = pTypeExt->SHP_HealthPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Composite);
+	}
+	if (NumberPAL == nullptr) return;
+	int base = 0;
+	if (pThis->IsYellowHP()) base = 10;
+	else if (pThis->IsRedHP()) base = 20;
+
+	//vPos.X -= (HealthVector.Count * Interval + StrengthVector.Count * Interval + Interval);
+
+	for (int i = HealthVector.Count - 1; i >= 0; i--)
+	{
+		int num = base + HealthVector.GetItem(i);
+		vPos.X += Interval;
+		vPos.Y -= int(0.5 * Interval);
+		DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, num, &vPos, &DSurface::ViewBounds,
+			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+	}
+	vPos.X += Interval;
+	vPos.Y -= int(0.5 * Interval);
+	int frame = 30;
+	if (base == 10) frame = 31;
+	else if (base == 20) frame = 32;
+	DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, frame, &vPos, &DSurface::ViewBounds,
+			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+
+	for (int i = StrengthVector.Count - 1; i >= 0; i--)
+	{
+		int num = base + StrengthVector.GetItem(i);
+		vPos.X += Interval;
+		vPos.Y -= int(0.5 * Interval);
+		DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, num, &vPos, &DSurface::ViewBounds,
+			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+	}
+}
+
+void TechnoExt::DrawFootClassHPValue(TechnoClass* pThis, Point2D* pLocation)
+{//pos use for reference ShieldClass::DrawShieldBar_Other
+	if (pThis->WhatAmI() == AbstractType::Building) return;
+	const TechnoTypeClass* const pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	bool ShowHP = pTypeExt->HP_Show.Get(RulesExt::Global()->Units_ShowHP.Get());
+
+	if (!ShowHP)
+		return;
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	Vector2D<int>ShowHPOffsetVector2D = pTypeExt->HP_ShowOffset.Get(RulesExt::Global()->Units_ShowHPOffset.Get());
+
+	const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+
+	Point2D vPosH = { 0,0 };
+	Point2D vLoc = *pLocation;
+
+	vLoc.Y -= 5;
+	if (iLength == 8)
+	{
+		vPosH.X = vLoc.X - 15;
+		vPosH.Y = vLoc.Y - 50;
+	}
+	else
+	{
+		vPosH.X = vLoc.X - 20;
+		vPosH.Y = vLoc.Y - 45;
+	}
+	vPosH.X += ShowHPOffsetVector2D.X;
+	vPosH.Y += ShowHPOffsetVector2D.Y;
+	vPosH.Y += pType->PixelSelectionBracketDelta;
+
+	if (pExt->Shield == nullptr || pExt->Shield->IsBrokenAndNonRespawning())
+	{
+		vPosH.X += RulesExt::Global()->Units_ShowHPOffset_WithoutShield.Get().X;
+		vPosH.Y += RulesExt::Global()->Units_ShowHPOffset_WithoutShield.Get().Y;
+	}
+
+	bool UseSHPShow = pTypeExt->HP_UseSHPShow.Get(RulesExt::Global()->Units_UseSHPShowHP.Get());
+
+	if (UseSHPShow)
+	{
+		vPosH.X -= 8;
+		vPosH.Y -= 15;
+		DrawFootClassSHPValue(pThis, pTypeExt, vPosH);
+	}
+	else
+	{
+		vPosH.X += 18;
+		if (iLength != 8) vPosH.X += 4;
+		DrawFootClassTextValue(pThis, pTypeExt, vPosH);
+	}
+
+}
+
+void TechnoExt::DrawFootClassTextValue(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D vPos)
+{
+	wchar_t Healthpoint[0x20];
+	swprintf_s(Healthpoint, L"%d/%d", pThis->Health, pThis->GetTechnoType()->Strength);
+
+	COLORREF ShowHPColor;
+
+	if (pThis->IsGreenHP())
+	{
+		Vector3D<int>ShowHPColorHighVector3D = pTypeExt->HP_ShowColorHigh.Get(RulesExt::Global()->Units_ShowColorHPHigh.Get());
+		COLORREF ShowHPColorHigh = Drawing::RGB2DWORD(ShowHPColorHighVector3D.X, ShowHPColorHighVector3D.Y, ShowHPColorHighVector3D.Z);
+		ShowHPColor = ShowHPColorHigh;
+	}
+	else if (pThis->IsYellowHP())
+	{
+		Vector3D<int>ShowHPColorMidVector3D = pTypeExt->HP_ShowColorMid.Get(RulesExt::Global()->Units_ShowColorHPMid.Get());
+		COLORREF ShowHPColorMid = Drawing::RGB2DWORD(ShowHPColorMidVector3D.X, ShowHPColorMidVector3D.Y, ShowHPColorMidVector3D.Z);
+		ShowHPColor = ShowHPColorMid;
+	}
+	else
+	{
+		Vector3D<int>ShowHPColorLowVector3D = pTypeExt->HP_ShowColorLow.Get(RulesExt::Global()->Units_ShowColorHPLow.Get());
+		COLORREF ShowHPColorLow = Drawing::RGB2DWORD(ShowHPColorLowVector3D.X, ShowHPColorLowVector3D.Y, ShowHPColorLowVector3D.Z);
+		ShowHPColor = ShowHPColorLow;
+	}
+
+	bool ShowBackground = pTypeExt->HP_ShowBackground.Get(RulesExt::Global()->Units_ShowBackground.Get());
+
+	RectangleStruct rect = { 0,0,0,0 };
+	DSurface::Temp->GetRect(&rect);
+	COLORREF BackColor = 0;
+	TextPrintType PrintType = TextPrintType(int(TextPrintType::Center) + (ShowBackground ? int(TextPrintType::GradAll) : 0));
+
+	//DSurface::Temp->DrawText(Healthpoint, vPosH.X, vPosH.Y, ShowHPColor);
+	DSurface::Temp->DrawTextA(Healthpoint, &rect, &vPos, ShowHPColor, BackColor, PrintType);
+}
+
+void TechnoExt::DrawFootClassSHPValue(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D vPos)
+{
+	const int Strength = pThis->GetTechnoType()->Strength;
+	const int Health = pThis->Health;
+
+	const DynamicVectorClass<char>StrengthVector = IntToVector(Strength);
+	const DynamicVectorClass<char>HealthVector = IntToVector(Health);
+
+	const int Length = StrengthVector.Count + HealthVector.Count + 1;
+
+	const int Interval = pTypeExt->HP_ShowInterval.Get(RulesExt::Global()->Units_HPNumberInterval.Get());
+
+	SHPStruct* NumberSHP = pTypeExt->SHP_HealthSHP;
+	if (NumberSHP == nullptr)
+	{
+		char FilenameSHP[0x20];
+		strcpy_s(FilenameSHP, pTypeExt->HP_ShowSHP.data());
+		if (strcmp(FilenameSHP, "") == 0)
+			strcpy_s(FilenameSHP, RulesExt::Global()->Units_HPNumberSHP.data());
+		NumberSHP = pTypeExt->SHP_HealthSHP = FileSystem::LoadSHPFile(FilenameSHP);
+	}
+	if (NumberSHP == nullptr) return;
+	ConvertClass* NumberPAL = pTypeExt->SHP_HealthPAL;
+	if (NumberPAL == nullptr)
+	{
+		char FilenamePAL[0x20];
+		strcpy_s(FilenamePAL, pTypeExt->HP_ShowPAL.data());
+		if (strcmp(FilenamePAL, "") == 0)
+			strcpy_s(FilenamePAL, RulesExt::Global()->Units_HPNumberPAL.data());
+		if (strcmp(FilenamePAL, "") == 0) NumberPAL = pTypeExt->SHP_HealthPAL = FileSystem::PALETTE_PAL;
+		else NumberPAL = pTypeExt->SHP_HealthPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Composite);
+	}
+	if (NumberPAL == nullptr) return;
+
+	int base = 0;
+	if (pThis->IsYellowHP()) base = 10;
+	else if (pThis->IsRedHP()) base = 20;
+
+	vPos.X -= ((HealthVector.Count * Interval + StrengthVector.Count * Interval + Interval) / 2);
+
+	for (int i = HealthVector.Count - 1; i >= 0; i--)
+	{
+		int num = base + HealthVector.GetItem(i);
+		vPos.X += Interval;
+		DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, num, &vPos, &DSurface::ViewBounds,
+			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+	}
+
+	vPos.X += Interval;
+	int frame = 30;
+	if (base == 10) frame = 31;
+	else if (base == 20) frame = 32;
+	DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, frame, &vPos, &DSurface::ViewBounds,
+			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+
+	for (int i = StrengthVector.Count - 1; i >= 0; i--)
+	{
+		int num = base + StrengthVector.GetItem(i);
+		vPos.X += Interval;
+		DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, num, &vPos, &DSurface::ViewBounds,
+			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+	}
+}
+
 
 // =============================
 // load / save

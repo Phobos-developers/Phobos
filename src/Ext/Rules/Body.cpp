@@ -63,6 +63,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	const char* sectionAITargetTypes = "AITargetTypes";
 	const char* sectionAIScriptsList = "AIScriptsList";
+	const char* sectionAudioVisual = "AudioVisual";
+	const char* sectionShowValue = "ShowValue";
 
 	INI_EX exINI(pINI);
 
@@ -72,6 +74,47 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
+
+	this->Buildings_ShowHP.Read(exINI, sectionShowValue, "Buildings.ShowHP");
+	this->Buildings_ShowShield.Read(exINI, sectionShowValue, "Buildings.ShowShield");
+	this->Buildings_ShowColorHPHigh.Read(exINI, sectionShowValue, "Buildings.ShowColorHPHigh");
+	this->Buildings_ShowColorHPMid.Read(exINI, sectionShowValue, "Buildings.ShowColorHPMid");
+	this->Buildings_ShowColorHPLow.Read(exINI, sectionShowValue, "Buildings.ShowColorHPLow");
+	this->Buildings_ShowColorShieldHigh.Read(exINI, sectionShowValue, "Buildings.ShowColorShieldHigh");
+	this->Buildings_ShowColorShieldMid.Read(exINI, sectionShowValue, "Buildings.ShowColorShieldMid");
+	this->Buildings_ShowColorShieldLow.Read(exINI, sectionShowValue, "Buildings.ShowColorShieldLow");
+	this->Buildings_ShowHPOffset.Read(exINI, sectionShowValue, "Buildings.ShowHPOffset");
+	this->Buildings_ShowShieldOffset.Read(exINI, sectionShowValue, "Buildings.ShowShieldOffset");
+	this->Buildings_ShowBackground.Read(exINI, sectionShowValue, "Buildings.ShowBackground");
+	this->Buildings_ShowHPOffset_WithoutShield.Read(exINI, sectionShowValue, "Buildings.ShowHPOffset.WithoutShield");
+	this->Units_ShowHP.Read(exINI, sectionShowValue, "Units.ShowHP");
+	this->Units_ShowShield.Read(exINI, sectionShowValue, "Units.ShowShield");
+	this->Units_ShowColorHPHigh.Read(exINI, sectionShowValue, "Units.ShowColorHPHigh");
+	this->Units_ShowColorHPMid.Read(exINI, sectionShowValue, "Units.ShowColorHPMid");
+	this->Units_ShowColorHPLow.Read(exINI, sectionShowValue, "Units.ShowColorHPLow");
+	this->Units_ShowColorShieldHigh.Read(exINI, sectionShowValue, "Units.ShowColorShieldHigh");
+	this->Units_ShowColorShieldMid.Read(exINI, sectionShowValue, "Units.ShowColorShieldMid");
+	this->Units_ShowColorShieldLow.Read(exINI, sectionShowValue, "Units.ShowColorShieldLow");
+	this->Units_ShowHPOffset.Read(exINI, sectionShowValue, "Units.ShowHPOffset");
+	this->Units_ShowShieldOffset.Read(exINI, sectionShowValue, "Units.ShowShieldOffset");
+	this->Units_ShowBackground.Read(exINI, sectionShowValue, "Units.ShowBackground");
+	this->Units_ShowHPOffset_WithoutShield.Read(exINI, sectionShowValue, "Units.ShowHPOffset.WithoutShield");
+	this->Buildings_UseSHPShowHP.Read(exINI, sectionShowValue, "Buildings.UseSHPShowHP");
+	this->Buildings_UseSHPShowShield.Read(exINI, sectionShowValue, "Buildings.UseSHPShowShield");
+	this->Buildings_HPNumberSHP.Read(pINI, sectionShowValue, "Buildings.HPNumberSHP");
+	this->Buildings_HPNumberPAL.Read(pINI, sectionShowValue, "Buildings.HPNumberPAL");
+	this->Buildings_ShieldNumberSHP.Read(pINI, sectionShowValue, "Buildings.ShieldNumberSHP");
+	this->Buildings_ShieldNumberPAL.Read(pINI, sectionShowValue, "Buildings.ShieldNumberPAL");
+	this->Buildings_HPNumberInterval.Read(exINI, sectionShowValue, "Buildings.HPNumberInterval");
+	this->Buildings_ShieldNumberInterval.Read(exINI, sectionShowValue, "Buildings,ShieldNumberInterval");
+	this->Units_UseSHPShowHP.Read(exINI, sectionShowValue, "Units.UseSHPShowHP");
+	this->Units_UseSHPShowShield.Read(exINI, sectionShowValue, "Units.UseSHPShowShield");
+	this->Units_HPNumberSHP.Read(pINI, sectionShowValue, "Units.HPNumberSHP");
+	this->Units_HPNumberPAL.Read(pINI, sectionShowValue, "Units.HPNumberPAL");
+	this->Units_ShieldNumberSHP.Read(pINI, sectionShowValue, "Units.ShieldNumberSHP");
+	this->Units_ShieldNumberPAL.Read(pINI, sectionShowValue, "Units.ShieldNumberPAL");
+	this->Units_HPNumberInterval.Read(exINI, sectionShowValue, "Units.HPNumberInterval");
+	this->Units_ShieldNumberInterval.Read(exINI, sectionShowValue, "Units.ShieldNumberInterval");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);

@@ -225,6 +225,17 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
 	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
 	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
+
+	this->HP_Show.Read(exINI, pSection, "HP.Show");
+	this->HP_ShowColorHigh.Read(exINI, pSection, "HP.ShowColorHigh");
+	this->HP_ShowColorMid.Read(exINI, pSection, "HP.ShowColorMid");
+	this->HP_ShowColorLow.Read(exINI, pSection, "HP.ShowColorLow");
+	this->HP_ShowOffset.Read(exINI, pSection, "HP.ShowOffset");
+	this->HP_ShowBackground.Read(exINI, pSection, "HP.ShowBackground");
+	this->HP_UseSHPShow.Read(exINI, pSection, "HP.UseSHPShow");
+	this->HP_ShowSHP.Read(pINI, pSection, "HP.ShowSHP");
+	this->HP_ShowPAL.Read(pINI, pSection, "HP.ShowPAL");
+	this->HP_ShowInterval.Read(exINI, pSection, "HP.ShowInterval");
 }
 
 template <typename T>
@@ -301,6 +312,16 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceWeapon_Naval_Decloaked)
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
+		.Process(this->HP_Show)
+		.Process(this->HP_ShowColorHigh)
+		.Process(this->HP_ShowColorMid)
+		.Process(this->HP_ShowColorLow)
+		.Process(this->HP_ShowOffset)
+		.Process(this->HP_ShowBackground)
+		.Process(this->HP_UseSHPShow)
+		.Process(this->HP_ShowSHP)
+		.Process(this->HP_ShowPAL)
+		.Process(this->HP_ShowInterval)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

@@ -30,6 +30,21 @@ public:
 	Valueable<double> PassPercent;
 
 	Nullable<bool> AllowTransfer;
+
+	Nullable<bool> ShieldValue_Show;
+	Nullable<Vector3D<int>> ShieldValue_ShowColorHigh;
+	Nullable<Vector3D<int>> ShieldValue_ShowColorMid;
+	Nullable<Vector3D<int>> ShieldValue_ShowColorLow;
+	Nullable<Vector2D<int>> ShieldValue_ShowOffset;
+	Nullable<bool> ShieldValue_ShowBackground;
+	Nullable<bool> ShieldValue_UseSHPShow;
+	PhobosFixedString<32U> ShieldValue_ShowSHP;
+	PhobosFixedString<32U> ShieldValue_ShowPAL;
+	Nullable<int> ShieldValue_ShowInterval;
+
+	ConvertClass* SHPShowValue_PAL;
+	SHPStruct* SHPShowValue_SHP;
+
 private:
 	Valueable<double> Respawn_Rate__InMinutes;
 	Valueable<double> SelfHealing_Rate__InMinutes;
@@ -57,6 +72,18 @@ public:
 		, Respawn_Rate__InMinutes(0.0)
 		, SelfHealing_Rate__InMinutes(0.0)
 		, AllowTransfer()
+		, ShieldValue_Show()
+		, ShieldValue_ShowColorHigh()
+		, ShieldValue_ShowColorMid()
+		, ShieldValue_ShowColorLow()
+		, ShieldValue_ShowOffset()
+		, ShieldValue_ShowBackground()
+		, ShieldValue_UseSHPShow()
+		, ShieldValue_ShowSHP("")
+		, ShieldValue_ShowPAL("")
+		, ShieldValue_ShowInterval()
+		, SHPShowValue_PAL(nullptr)
+		, SHPShowValue_SHP(nullptr)
 	{};
 
 	virtual ~ShieldTypeClass() override = default;

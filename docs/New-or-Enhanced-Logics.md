@@ -717,6 +717,7 @@ OpenTopped.WarpDistance=8          ; integer
   - `Overpowerable=true` buildings that are currently overpowered.
   - Any system using `(Elite)WeaponX`, f.ex `Gunner=true` or `IsGattling=true` is also wholly exempt.
   
+
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                      ; TechnoType
@@ -1084,6 +1085,7 @@ RemoveMindControl=no                 ; boolean
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
   - `ImmuneToCrit` can be set on TechnoTypes to make them immune to critical hits.
   
+
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                     ; Warhead
@@ -1251,3 +1253,80 @@ In `rulesmd.ini`:
 CanTarget=all        ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
+
+### Show Health and Shield Value
+
+In `rulesmd.ini`:
+
+```ini
+;SHP value use shp file 0-9 frames as GreenHP/SP number 10-19 as Yellow
+;20-29 as red.
+;30 frame as GreenHP/SP separate symbol, 31 as Yellow, 32 as Red
+
+[ShowValue] ;new header
+Buildings.ShowHP=				;bool default no
+Buildings.ShowShield=			;bool default no
+Buildings.ShowColorHPHigh=		;r,g,b GreenHP text show color, default 0,255,0
+Buildings.ShowColorHPMid=		;r,g,b YellowHP text show color, default 255,255,0
+Buildings.ShowColorHPLow=		;r,g,b ReadHP text show color, default 255,0,0
+Buildings.ShowColorShieldHigh=	;r,g,b GreenSP text show color, default 0,0,255
+Buildings.ShowColorShieldMid=	;r,g,b YellowSP text show color, default 0,0,255
+Buildings.ShowColorShieldLow=	;r,g,b RedSP text show color, default 0,0,255
+Buildings.ShowHPOffset=			;x,y intergers, default 0,0
+Buildings.ShowShieldOffset=		;x,y intergers, default 0,0
+Buildings.ShowBackground=		;bool text show has black background? default no
+Buildings.UseSHPShowHP=			;bool default no
+Buildings.UseSHPShowShield=		;bool default no
+Buildings.HPNumberSHP=			;filename with extended name default number.shp
+Buildings.HPNumberPAL=			;filename with extended name default ra1 palette(FileSystem::PALETTE_PAL)
+Buildings.ShieldNumberSHP= 		;filename with extended name default number.shp
+Buildings.ShieldNumberPAL=		;filename with extended name default ra1 palette(FileSystem::PALETTE_PAL)
+Buildings.HPNumberInterval=		;interger SHP number interval default 8
+Buildings.ShieldNumberInterval=	;interger SHP number interval default 8
+Buildings.ShowHPOffset.WithoutShield= ;x,y intergers, default 0,0
+Units.ShowHP=					;bool
+Units.ShowShield=				;bool
+Units.ShowColorHPHigh=			;r,g,b
+Units.ShowColorHPMid=			;r,g,b
+Units.ShowColorHPLow=			;r,g,b
+Units.ShowColorShieldHigh=		;r,g,b
+Units.ShowColorShieldMid=		;r,g,b
+Units.ShowColorShieldLow=		;r,g,b
+Units.ShowHPOffset=				;x,y
+Units.ShowShieldOffset=			;x,y
+Units.ShowBackground=			;bool
+Units.UseSHPShowHP=				;bool
+Units.UseSHPShowShield=			;bool
+Units.HPNumberSHP=				;filename
+Units.HPNumberPAL=				;filename
+Units.ShieldNumberSHP=			;filename
+Units.ShieldNumberPAL=			;filename
+Units.HPNumberInterval=			;interger
+Units.ShieldNumberInterval=		;interger
+Units.ShowHPOffset.WithoutShield= ;x,y
+
+[SOMETechnoType]
+HP.Show=						;bool default [ShowValue]>Buildings/Units.ShowHP
+HP.ShowColorHigh=				;r,g,b default [ShowValue]>Buildings/Units.ShowColorHPHigh
+HP.ShowColorMid=				;r,g,b default [ShowValue]>Buildings/Units.ShowColorHPMid
+HP.ShowColorLow=				;r,g,b default [ShowValue]>Buildings/Units.ShowColorHPLow
+HP.ShowOffset=					;x,y intergers default [ShowValue]>Buildings/Units.ShowHPOffset
+HP.ShowBackground=				;bool default [ShowValue]>Buildings/Units.ShowBackground
+HP.UseSHPShow=					;bool default [ShowValue]>Buildings/Units.UseSHPShowHP
+HP.ShowSHP=						;filename default [ShowValue]>Buildings/Units.HPNumberSHP
+HP.ShowPAL=						;filename default [ShowValue]>Buildings/Units.HPNumberPAL
+HP.ShowInterval=				;interger default [ShowValue]>Buildings/Units.HPNumberInterval
+
+[SOMEShieldType]
+ShieldValue.Show=				;bool
+ShieldValue.ShowColorHigh=		;r,g,b
+ShieldValue.ShowColorMid=		;r,g,b
+ShieldValue.ShowColorLow=		;r,g,b
+ShieldValue.ShowOffset=			;x,y
+ShieldValue.ShowBackground=		;bool
+ShieldValue.UseSHPShow=			;bool
+ShieldValue.ShowSHP=			;filename
+ShieldValue.ShowPAL=			;filename
+ShieldValue.ShowInterval=		;interger
+```
+
