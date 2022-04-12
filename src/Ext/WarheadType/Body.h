@@ -18,6 +18,7 @@ public:
 		Valueable<bool> SpySat;
 		Valueable<bool> BigGap;
 		Valueable<int> TransactMoney;
+		Valueable<bool> TransactMoney_Display;
 		ValueableVector<AnimTypeClass*> SplashList;
 		Valueable<bool> SplashList_PickRandom;
 		Valueable<bool> RemoveDisguise;
@@ -83,6 +84,7 @@ public:
 			, SpySat { false }
 			, BigGap { false }
 			, TransactMoney { 0 }
+			, TransactMoney_Display { false }
 			, SplashList {}
 			, SplashList_PickRandom { false }
 			, RemoveDisguise { false }

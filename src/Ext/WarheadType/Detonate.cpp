@@ -10,6 +10,7 @@
 #include <Utilities/Helpers.Alex.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
+#include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
@@ -35,7 +36,18 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			MapClass::Instance->Reveal(pHouse);
 
 		if (this->TransactMoney)
+		{
 			pHouse->TransactMoney(this->TransactMoney);
+
+			if (this->TransactMoney_Display)
+			{
+				bool isPositive = this->TransactMoney > 0;
+				auto color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
+				wchar_t moneyStr[0x20];
+				swprintf_s(moneyStr, L"%s$%d", isPositive ? L"" : L"-", std::abs(this->TransactMoney));
+				FlyingStrings::Add(moneyStr, pOwner ? pOwner->Location : coords, color);
+			}
+		}
 	}
 
 	this->HasCrit = false;
@@ -126,7 +138,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 
 			if (shieldType)
 			{
-				if (shieldType->Strength && (!pExt->Shield || (this->Shield_ReplaceNonRespawning && pExt->Shield->IsBrokenAndNonRespawning() && 
+				if (shieldType->Strength && (!pExt->Shield || (this->Shield_ReplaceNonRespawning && pExt->Shield->IsBrokenAndNonRespawning() &&
 					pExt->Shield->GetFramesSinceLastBroken() >= this->Shield_MinimumReplaceDelay)))
 				{
 					pExt->CurrentShieldType = shieldType;

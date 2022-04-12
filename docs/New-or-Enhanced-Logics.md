@@ -1185,11 +1185,13 @@ SplashList.PickRandom=no ; play a random animation from the list? boolean, defau
 *`TransactMoney` used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
 
 - Warheads can now give credits to its owner at impact.
+  - `TransactMoney.Display` can be set to display the amount of credits given or deducted. This is displayed on the firing object, or at the warhead detonation location if firer is not known. The number is displayed in green if given, red if deducted and will move upwards after appearing.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]   ; Warhead
-TransactMoney=0 ; integer - credits added or subtracted
+[SOMEWARHEAD]                ; Warhead
+TransactMoney=0              ; integer - credits added or subtracted
+TransactMoney.Display=false  ; boolean
 ```
 
 ### Remove disguise on impact

@@ -139,6 +139,8 @@ This page lists all the individual contributions to the project by their author.
   - Mind control indicator animation cloak fix
   - Warhead / Play animation trigger animation owner fix
   - Nuke carrier & payload Bright fix
+  - Display damage numbers hotkey command
+  - TransactMoney.Display
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
