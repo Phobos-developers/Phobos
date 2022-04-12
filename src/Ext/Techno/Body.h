@@ -101,11 +101,7 @@ public:
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 	static void UpdateMindControlAnim(TechnoClass* pThis);
 
-	static void DrawBuildingHPValue(TechnoClass* pThis, Point2D* pLocation);
-	static void DrawFootClassHPValue(TechnoClass* pThis, Point2D* pLocation);
-	static void DrawBuildingSHPValue(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D vPos);
-	static void DrawBuildingTextValue(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D vPos);
-	static void DrawFootClassSHPValue(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D vPos);
-	static void DrawFootClassTextValue(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D vPos);
-	static DynamicVectorClass<char> IntToVector(int s);
+	static void DigitalDisplayHealth(TechnoClass* pThis, Point2D* pLocation);
+	static void DigitalDisplayTextHealth(TechnoClass* pThis, DigitalDisplayTypeClass* pDisplayType, Point2D Pos);
+	static void DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeClass* pDisplayType, Point2D Pos);
 };

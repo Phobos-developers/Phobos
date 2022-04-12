@@ -7,6 +7,7 @@
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
+#include <New/Type/DigitalDisplayTypeClass.h>
 
 template<> const DWORD Extension<RulesClass>::Canary = 0x12341234;
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
@@ -31,6 +32,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	RadTypeClass::LoadFromINIList(pINI);
 	ShieldTypeClass::LoadFromINIList(pINI);
 	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
+	DigitalDisplayTypeClass::LoadFromINIList(pINI);
 
 	Data->LoadBeforeTypeData(pThis, pINI);
 }
@@ -64,7 +66,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	const char* sectionAITargetTypes = "AITargetTypes";
 	const char* sectionAIScriptsList = "AIScriptsList";
 	const char* sectionAudioVisual = "AudioVisual";
-	const char* sectionShowValue = "ShowValue";
 
 	INI_EX exINI(pINI);
 
@@ -74,47 +75,14 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
-
-	this->Buildings_ShowHP.Read(exINI, sectionShowValue, "Buildings.ShowHP");
-	this->Buildings_ShowShield.Read(exINI, sectionShowValue, "Buildings.ShowShield");
-	this->Buildings_ShowColorHPHigh.Read(exINI, sectionShowValue, "Buildings.ShowColorHPHigh");
-	this->Buildings_ShowColorHPMid.Read(exINI, sectionShowValue, "Buildings.ShowColorHPMid");
-	this->Buildings_ShowColorHPLow.Read(exINI, sectionShowValue, "Buildings.ShowColorHPLow");
-	this->Buildings_ShowColorShieldHigh.Read(exINI, sectionShowValue, "Buildings.ShowColorShieldHigh");
-	this->Buildings_ShowColorShieldMid.Read(exINI, sectionShowValue, "Buildings.ShowColorShieldMid");
-	this->Buildings_ShowColorShieldLow.Read(exINI, sectionShowValue, "Buildings.ShowColorShieldLow");
-	this->Buildings_ShowHPOffset.Read(exINI, sectionShowValue, "Buildings.ShowHPOffset");
-	this->Buildings_ShowShieldOffset.Read(exINI, sectionShowValue, "Buildings.ShowShieldOffset");
-	this->Buildings_ShowBackground.Read(exINI, sectionShowValue, "Buildings.ShowBackground");
-	this->Buildings_ShowHPOffset_WithoutShield.Read(exINI, sectionShowValue, "Buildings.ShowHPOffset.WithoutShield");
-	this->Units_ShowHP.Read(exINI, sectionShowValue, "Units.ShowHP");
-	this->Units_ShowShield.Read(exINI, sectionShowValue, "Units.ShowShield");
-	this->Units_ShowColorHPHigh.Read(exINI, sectionShowValue, "Units.ShowColorHPHigh");
-	this->Units_ShowColorHPMid.Read(exINI, sectionShowValue, "Units.ShowColorHPMid");
-	this->Units_ShowColorHPLow.Read(exINI, sectionShowValue, "Units.ShowColorHPLow");
-	this->Units_ShowColorShieldHigh.Read(exINI, sectionShowValue, "Units.ShowColorShieldHigh");
-	this->Units_ShowColorShieldMid.Read(exINI, sectionShowValue, "Units.ShowColorShieldMid");
-	this->Units_ShowColorShieldLow.Read(exINI, sectionShowValue, "Units.ShowColorShieldLow");
-	this->Units_ShowHPOffset.Read(exINI, sectionShowValue, "Units.ShowHPOffset");
-	this->Units_ShowShieldOffset.Read(exINI, sectionShowValue, "Units.ShowShieldOffset");
-	this->Units_ShowBackground.Read(exINI, sectionShowValue, "Units.ShowBackground");
-	this->Units_ShowHPOffset_WithoutShield.Read(exINI, sectionShowValue, "Units.ShowHPOffset.WithoutShield");
-	this->Buildings_UseSHPShowHP.Read(exINI, sectionShowValue, "Buildings.UseSHPShowHP");
-	this->Buildings_UseSHPShowShield.Read(exINI, sectionShowValue, "Buildings.UseSHPShowShield");
-	this->Buildings_HPNumberSHP.Read(pINI, sectionShowValue, "Buildings.HPNumberSHP");
-	this->Buildings_HPNumberPAL.Read(pINI, sectionShowValue, "Buildings.HPNumberPAL");
-	this->Buildings_ShieldNumberSHP.Read(pINI, sectionShowValue, "Buildings.ShieldNumberSHP");
-	this->Buildings_ShieldNumberPAL.Read(pINI, sectionShowValue, "Buildings.ShieldNumberPAL");
-	this->Buildings_HPNumberInterval.Read(exINI, sectionShowValue, "Buildings.HPNumberInterval");
-	this->Buildings_ShieldNumberInterval.Read(exINI, sectionShowValue, "Buildings,ShieldNumberInterval");
-	this->Units_UseSHPShowHP.Read(exINI, sectionShowValue, "Units.UseSHPShowHP");
-	this->Units_UseSHPShowShield.Read(exINI, sectionShowValue, "Units.UseSHPShowShield");
-	this->Units_HPNumberSHP.Read(pINI, sectionShowValue, "Units.HPNumberSHP");
-	this->Units_HPNumberPAL.Read(pINI, sectionShowValue, "Units.HPNumberPAL");
-	this->Units_ShieldNumberSHP.Read(pINI, sectionShowValue, "Units.ShieldNumberSHP");
-	this->Units_ShieldNumberPAL.Read(pINI, sectionShowValue, "Units.ShieldNumberPAL");
-	this->Units_HPNumberInterval.Read(exINI, sectionShowValue, "Units.HPNumberInterval");
-	this->Units_ShieldNumberInterval.Read(exINI, sectionShowValue, "Units.ShieldNumberInterval");
+	
+	this->DigitalDisplay_Enable.Read(exINI, sectionAudioVisual, "DigitalDisplay.Enable");
+	this->Buildings_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypeHP");
+	this->Buildings_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypeSP");
+	this->Infantrys_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Infantrys.DefaultDigitalDisplayTypeHP");
+	this->Infantrys_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Infantrys.DefaultDigitalDisplayTypeSP");
+	this->Units_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Units.DefaultDigitalDisplayTypeHP");
+	this->Units_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Units.DefaultDigitalDisplayTypeSP");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -210,46 +178,13 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
 		.Process(this->Storage_TiberiumIndex)
-		.Process(this->Buildings_ShowHP)
-		.Process(this->Buildings_ShowShield)
-		.Process(this->Buildings_ShowColorHPHigh)
-		.Process(this->Buildings_ShowColorHPMid)
-		.Process(this->Buildings_ShowColorHPLow)
-		.Process(this->Buildings_ShowColorShieldHigh)
-		.Process(this->Buildings_ShowColorShieldMid)
-		.Process(this->Buildings_ShowColorShieldLow)
-		.Process(this->Buildings_ShowHPOffset)
-		.Process(this->Buildings_ShowShieldOffset)
-		.Process(this->Buildings_ShowBackground)
-		.Process(this->Buildings_ShowHPOffset_WithoutShield)
-		.Process(this->Units_ShowHP)
-		.Process(this->Units_ShowShield)
-		.Process(this->Units_ShowColorHPHigh)
-		.Process(this->Units_ShowColorHPMid)
-		.Process(this->Units_ShowColorHPLow)
-		.Process(this->Units_ShowColorShieldHigh)
-		.Process(this->Units_ShowColorShieldMid)
-		.Process(this->Units_ShowColorShieldLow)
-		.Process(this->Units_ShowHPOffset)
-		.Process(this->Units_ShowShieldOffset)
-		.Process(this->Units_ShowBackground)
-		.Process(this->Units_ShowHPOffset_WithoutShield)
-		.Process(this->Buildings_UseSHPShowHP)
-		.Process(this->Buildings_UseSHPShowShield)
-		.Process(this->Buildings_HPNumberSHP)
-		.Process(this->Buildings_HPNumberPAL)
-		.Process(this->Buildings_ShieldNumberSHP)
-		.Process(this->Buildings_ShieldNumberPAL)
-		.Process(this->Buildings_HPNumberInterval)
-		.Process(this->Buildings_ShieldNumberInterval)
-		.Process(this->Units_UseSHPShowHP)
-		.Process(this->Units_UseSHPShowShield)
-		.Process(this->Units_HPNumberSHP)
-		.Process(this->Units_HPNumberPAL)
-		.Process(this->Units_ShieldNumberSHP)
-		.Process(this->Units_ShieldNumberPAL)
-		.Process(this->Units_HPNumberInterval)
-		.Process(this->Units_ShieldNumberInterval)
+		.Process(this->DigitalDisplay_Enable)
+		.Process(this->Buildings_DefaultDigitalDisplayTypeHP)
+		.Process(this->Buildings_DefaultDigitalDisplayTypeSP)
+		.Process(this->Infantrys_DefaultDigitalDisplayTypeHP)
+		.Process(this->Infantrys_DefaultDigitalDisplayTypeSP)
+		.Process(this->Units_DefaultDigitalDisplayTypeHP)
+		.Process(this->Units_DefaultDigitalDisplayTypeSP)
 		;
 }
 

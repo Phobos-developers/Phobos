@@ -292,6 +292,7 @@ New:
 - Feedback weapon (by Starkku)
 - TerrainType & ore minimap color customization (by Starkku)
 - Single-color weapon lasers (by Starkku)
+- Digital display HP and SP (by ststl)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)

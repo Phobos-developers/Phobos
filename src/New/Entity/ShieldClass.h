@@ -73,10 +73,8 @@ private:
 
 	void DrawShieldBar_Building(int iLength, Point2D* pLocation, RectangleStruct* pBound);
 	void DrawShieldBar_Other(int iLength, Point2D* pLocation, RectangleStruct* pBound);
-	void DrawBuildingShieldTextValue(Point2D vPos);
-	void DrawBuildingShieldSHPValue(Point2D vPos);
-	void DrawFootClassShieldTextValue(Point2D vPos);
-	void DrawFootClassShieldSHPValue(Point2D vPos);
+	void DigitalDisplayTextShield(DigitalDisplayTypeClass* pDisplayType, Point2D Pos);
+	void DigitalDisplaySHPShield(DigitalDisplayTypeClass* pDisplayType, Point2D Pos);
 	int DrawShieldBar_Pip(const bool isBuilding);
 	int DrawShieldBar_PipAmount(int iLength);
 

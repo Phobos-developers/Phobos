@@ -184,6 +184,46 @@ Shield.InheritStateOnReplace=false   ; boolean
       - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
+### Show Health and Shield Value
+
+![image](_static/images/ShowValue1.png)
+
+![image](_static/images/ShowValue2.png)
+
+In `rulesmd.ini`:
+
+```ini
+
+[DigitalDisplayTypes] ;New registry for registering digital display types
+
+[AudioVisual]
+DigitalDisplay.Enable= 							        ;bool whether to enable digital display, all digital displays will not be displayed if no
+Buildings.DefaultDigitalDisplayTypeHP= 			;DigitalDisplayType The default digital display type used for building blood, if not written or the corresponding type does not exist, it will not be displayed
+DefaultDigitalDisplayTypeSP= 					      ;DigitalDisplayType The default digital display type used for building shields, not displayed if not written or if the corresponding type does not exist
+Infantrys.DefaultDigitalDisplayTypeHP= 			;DigitalDisplayType The default digital display type used for infantry blood, not displayed if not written or if the corresponding type does not exist
+Infantrys.DefaultDigitalDisplayTypeSP= 			;DigitalDisplayType The default digital display type used for infantry shields, not shown if not written or if the corresponding type does not exist
+Units.DefaultDigitalDisplayTypeHP= 				  ;DigitalDisplayType The default digital display type used for other units' blood, not displayed if not written or if the corresponding type does not exist
+DefaultDigitalDisplayTypeHP= 					      ;DigitalDisplayType The default digital display type used for other units' shields, not displayed if not written or if the corresponding type does not exist
+
+[SomeDigitalDisplayType]
+Text.ColorHigh= 			                      ;r,g,b the color of the Text digital display when green blood, default 0,255,0
+Text.ColorMid= 				                      ;r,g,b Yellow blood when the color of the Text digital display, the default 255,255,0
+Text.ColorLow= 				                      ;r,g,b red blood when the color of the Text digital display, default 255,0,0
+Text.Background= 			                      ;bool Whether the Text display has a black background, default no
+UseSHP= 					                          ;bool whether to use SHP digital display, default no
+SHP.SHPFile= 				                        ;filename with extend name, the name of the SHP file used by the SHP number display, default number.shp
+							                              ;The SHP display uses frames 0-9 of the SHP file for green blood, 10-19 for yellow blood, and 20-29 for red blood.
+							                              ;30-32 frames are the separator for green, yellow and red blood respectively
+SHP.PALFile=				                        ;filename with extend name, the palette file used by SHP, default is ra1 palette
+SHP.Interval= 				                      ;integer the width of a single digit of the SHP display plus the value of the interval between digits
+
+[SomeTechnoType]
+DigitalDisplayType= 		                    ;DigitalDisplayType The type of digital display used for this unit of blood, the default [AudioVisual] in the corresponding type, do not write or do not exist the corresponding type is not displayed
+
+[SomeShieldType]
+DigitalDisplayType= 		                    ;DigitalDisplayType The digital display type used for the unit's blood volume, defaulted to the corresponding type in [AudioVisual] of the unit to which it is attached, will not be displayed if the corresponding type is not written or does not exist
+```
+
 ## Animations
 
 ### Anim-to-Unit
@@ -1253,160 +1293,3 @@ In `rulesmd.ini`:
 CanTarget=all        ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
-
-### Show Health and Shield Value
-
-![image](_static/images/ShowValue1.png)
-
-![image](_static/images/ShowValue2.png)
-
-In `rulesmd.ini`:
-
-```ini
-;SHP value use shp file 0-9 frames as GreenHP/SP number 10-19 as Yellow
-;20-29 as red.
-;30 frame as GreenHP/SP separate symbol, 31 as Yellow, 32 as Red
-;global or local
-;I'm not good at English, introduction in chinese is provided, you can use google translation
-
-[ShowValue] ;new header
-Buildings.ShowHP=				;bool default no
-Buildings.ShowShield=			;bool default no
-Buildings.ShowColorHPHigh=		;r,g,b GreenHP text show color, default 0,255,0
-Buildings.ShowColorHPMid=		;r,g,b YellowHP text show color, default 255,255,0
-Buildings.ShowColorHPLow=		;r,g,b ReadHP text show color, default 255,0,0
-Buildings.ShowColorShieldHigh=	;r,g,b GreenSP text show color, default 0,0,255
-Buildings.ShowColorShieldMid=	;r,g,b YellowSP text show color, default 0,0,255
-Buildings.ShowColorShieldLow=	;r,g,b RedSP text show color, default 0,0,255
-Buildings.ShowHPOffset=			;x,y intergers, default 0,0
-Buildings.ShowShieldOffset=		;x,y intergers, default 0,0
-Buildings.ShowBackground=		;bool text show has black background? default no
-Buildings.UseSHPShowHP=			;bool default no
-Buildings.UseSHPShowShield=		;bool default no
-Buildings.HPNumberSHP=			;filename with extended name default number.shp
-Buildings.HPNumberPAL=			;filename with extended name default ra1 palette(FileSystem::PALETTE_PAL)
-Buildings.ShieldNumberSHP= 		;filename with extended name default number.shp
-Buildings.ShieldNumberPAL=		;filename with extended name default ra1 palette(FileSystem::PALETTE_PAL)
-Buildings.HPNumberInterval=		;interger SHP number interval default 8
-Buildings.ShieldNumberInterval=	;interger SHP number interval default 8
-Buildings.ShowHPOffset.WithoutShield= ;x,y intergers, default 0,0
-Units.ShowHP=					;bool
-Units.ShowShield=				;bool
-Units.ShowColorHPHigh=			;r,g,b
-Units.ShowColorHPMid=			;r,g,b
-Units.ShowColorHPLow=			;r,g,b
-Units.ShowColorShieldHigh=		;r,g,b
-Units.ShowColorShieldMid=		;r,g,b
-Units.ShowColorShieldLow=		;r,g,b
-Units.ShowHPOffset=				;x,y
-Units.ShowShieldOffset=			;x,y
-Units.ShowBackground=			;bool
-Units.UseSHPShowHP=				;bool
-Units.UseSHPShowShield=			;bool
-Units.HPNumberSHP=				;filename
-Units.HPNumberPAL=				;filename
-Units.ShieldNumberSHP=			;filename
-Units.ShieldNumberPAL=			;filename
-Units.HPNumberInterval=			;interger
-Units.ShieldNumberInterval=		;interger
-Units.ShowHPOffset.WithoutShield= ;x,y
-
-[SOMETechnoType]
-HP.Show=						;bool default [ShowValue]>Buildings/Units.ShowHP
-HP.ShowColorHigh=				;r,g,b default [ShowValue]>Buildings/Units.ShowColorHPHigh
-HP.ShowColorMid=				;r,g,b default [ShowValue]>Buildings/Units.ShowColorHPMid
-HP.ShowColorLow=				;r,g,b default [ShowValue]>Buildings/Units.ShowColorHPLow
-HP.ShowOffset=					;x,y intergers default [ShowValue]>Buildings/Units.ShowHPOffset
-HP.ShowBackground=				;bool default [ShowValue]>Buildings/Units.ShowBackground
-HP.UseSHPShow=					;bool default [ShowValue]>Buildings/Units.UseSHPShowHP
-HP.ShowSHP=						;filename default [ShowValue]>Buildings/Units.HPNumberSHP
-HP.ShowPAL=						;filename default [ShowValue]>Buildings/Units.HPNumberPAL
-HP.ShowInterval=				;interger default [ShowValue]>Buildings/Units.HPNumberInterval
-
-[SOMEShieldType]
-ShieldValue.Show=				;bool
-ShieldValue.ShowColorHigh=		;r,g,b
-ShieldValue.ShowColorMid=		;r,g,b
-ShieldValue.ShowColorLow=		;r,g,b
-ShieldValue.ShowOffset=			;x,y
-ShieldValue.ShowBackground=		;bool
-ShieldValue.UseSHPShow=			;bool
-ShieldValue.ShowSHP=			;filename
-ShieldValue.ShowPAL=			;filename
-ShieldValue.ShowInterval=		;interger
-```
-
-```ini
-;in chinese
-;以下所有shp数显中使用SHP文件的0-9帧为绿血，10-19为黄血，20-29为红血，30为绿血间隔符，31黄，32红
-;如果你认真看完，就应该知道这个数显大部分功能都是既可以跟随全局又可以微观定义的
-
-[ShowValue] ;新项，专用于数显
-Buildings.ShowHP=bool 				;建筑是否显示HP，默认no
-Buildings.ShowShield=bool 			;建筑是否显示护盾值，默认no
-Buildings.ShowColorHPHigh=r,g,b 	;建筑高于66%血量时HP颜色，默认0,255,0
-Buildings.ShowColorHPMid=r,g,b 		;建筑高于33%血量时HP颜色，默认255,255,0
-Buildings.ShowColorHPLow=r,g,b 		;建筑低于33%血量时HP颜色，默认255,0,0
-Buildings.ShowColorShieldHigh=r,g,b ;建筑高于33%护盾值时护盾值颜色，默认0,0,255
-Buildings.ShowColorShieldMid=r,g,b 	;建筑高于33%护盾值时护盾值颜色，默认0,0,255
-Buildings.ShowColorShieldLow=r,g,b 	;建筑高于33%护盾值时护盾值颜色，默认0,0,255
-Buildings.ShowHPOffset=x,y 			;建筑HP向右、下偏移量，默认0,0
-Buildings.ShowShieldOffset=x,y		;建筑护盾值向右、下偏移量，默认0,0
-Buildings.ShowBackground=bool		;建筑血量护盾显示是否带有黑色背景
-Buildings.UseSHPShowHP=bool			;建筑HP是否使用SHP数显，默认no
-Buildings.UseSHPShowShield=bool		;建筑护盾是否使用SHP数显，默认no
-Buildings.HPNumberSHP=string		;建筑生命值数显SHP文件名（包括拓展名，最多32字符），默认number.shp
-Buildings.HPNumberPAL=string 		;建筑生命值数显色盘PAL文件名（包括拓展名，最多32字符），默认为动画色盘
-Buildings.ShieldNumberSHP=string 	;建筑护盾值数显SHP文件名（包括拓展名，最多32字符），默认number.shp
-Buildings.ShieldNumberPAL=string 	;建筑生命值数显色盘PAL文件名（包括拓展名，最多32字符），默认为动画色盘
-Buildings.HPNumberInterval=int 		;建筑生命值SHP数显的数字间隔，默认8
-Buildings.ShieldNumberInterval=int 	;建筑护盾值SHP数显的数字间隔，默认8
-Buildings.ShowHPOffset.WithoutShield=x,y ;没有护盾时的HP显示位置，默认0,0
-Units.ShowHP=bool
-Units.ShowShield=bool
-Units.ShowColorHPHigh=r,g,b
-Units.ShowColorHPMid=r,g,b
-Units.ShowColorHPLow=r,g,b
-Units.ShowColorShieldHigh=r,g,b
-Units.ShowColorShieldMid=r,g,b
-Units.ShowColorShieldLow=r,g,b
-Units.ShowHPOffset=x,y
-Units.ShowShieldOffset=x,y
-Units.ShowBackground=bool
-Units.UseSHPShowHP=bool
-Units.UseSHPShowShield=bool
-Units.HPNumberSHP=string
-Units.HPNumberPAL=string
-Units.ShieldNumberSHP=string
-Units.ShieldNumberPAL=string
-Units.HPNumberInterval=int
-Units.ShieldNumberInterval=int
-
-[TechnoType]
-HP.Show=bool 				;该单位是否显示HP，默认全局
-HP.ShowColorHigh=r,g,b 		;绿血颜色，默认全局
-HP.ShowColorMid=r,g,b 		;黄血HP颜色，默认全局
-HP.ShowColorLow=r,g,b 		;红血HP颜色，默认全局 
-HP.ShowOffset=x,y 			;偏移量，默认全局
-HP.ShowBackground=bool 		;文字HP显示是否带有黑色背景，默认全局
-HP.UseSHPShow=bool
-HP.ShowSHP=string
-HP.ShowPAL=string
-HP.ShowInterval=int
-HugeHP.Show=bool 			;该单位是否拥有大血条显示，默认no
-HugeHP.Priority=int 		;该单位大血条优先级，大血条只能显示优先级最高的一个单位，默认-1
-
-[ShieldType]
-ShieldValue.Show=bool 			;该护盾是否显示护盾值，默认全局
-ShieldValue.ShowColorHigh=r,g,b ;该护盾高于66%护盾值显示护盾值颜色，默认全局
-ShieldValue.ShowColorMid=r,g,b 	;该护盾高于66%护盾值显示护盾值颜色，默认全局
-ShieldValue.ShowColorLow=r,g,b 	;该护盾高于66%护盾值显示护盾值颜色，默认全局
-ShieldValue.ShowOffset=x,y 		;该护盾显示护盾值偏移量，默认全局
-ShieldValue.ShowBackground=bool ;该护盾显示是否有黑色背景，默认全局
-ShieldValue.UseSHPShow=bool
-ShieldValue.ShowSHP=string
-ShieldValue.ShowPAL=string
-ShieldValue.ShowInterval=int
-
-```
-
