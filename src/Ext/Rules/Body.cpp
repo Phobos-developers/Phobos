@@ -106,7 +106,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Buildings_ShieldNumberSHP.Read(pINI, sectionShowValue, "Buildings.ShieldNumberSHP");
 	this->Buildings_ShieldNumberPAL.Read(pINI, sectionShowValue, "Buildings.ShieldNumberPAL");
 	this->Buildings_HPNumberInterval.Read(exINI, sectionShowValue, "Buildings.HPNumberInterval");
-	this->Buildings_ShieldNumberInterval.Read(exINI, sectionShowValue, "Buildings,ShieldNumberInterval");
+	this->Buildings_ShieldNumberInterval.Read(exINI, sectionShowValue, "Buildings.ShieldNumberInterval");
 	this->Units_UseSHPShowHP.Read(exINI, sectionShowValue, "Units.UseSHPShowHP");
 	this->Units_UseSHPShowShield.Read(exINI, sectionShowValue, "Units.UseSHPShowShield");
 	this->Units_HPNumberSHP.Read(pINI, sectionShowValue, "Units.HPNumberSHP");
