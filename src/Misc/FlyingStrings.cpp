@@ -11,7 +11,7 @@
 std::vector<FlyingStrings::Item> FlyingStrings::Data;
 int FlyingStrings::CurrentCycleWidth = -FlyingStrings::MaxCycleWidth;
 
-bool FlyingStrings::DrawAllowed(CoordStruct &nCoords)
+bool FlyingStrings::DrawAllowed(CoordStruct& nCoords)
 {
 	if (auto const pCell = MapClass::Instance->TryGetCellAt(nCoords))
 	{
@@ -24,9 +24,9 @@ bool FlyingStrings::DrawAllowed(CoordStruct &nCoords)
 	return false;
 }
 
-void FlyingStrings::Add(const wchar_t *text, CoordStruct coords, ColorStruct color, bool isCyclic)
+void FlyingStrings::Add(const wchar_t* text, CoordStruct coords, ColorStruct color, bool isCyclic)
 {
-	Item item{};
+	Item item {};
 	item.Location = coords;
 
 	item.CreationFrame = Unsorted::CurrentFrame;
@@ -52,8 +52,10 @@ void FlyingStrings::UpdateAll()
 	if (Data.empty())
 		return;
 
-	for (auto const &dataItem : Data)
+	for (int i = Data.size() - 1; i >= 0; --i)
 	{
+		auto& dataItem = Data[i];
+
 		Point2D point;
 
 		TacticalClass::Instance->CoordsToClient(dataItem.Location, &point);
@@ -70,12 +72,8 @@ void FlyingStrings::UpdateAll()
 		{
 			DSurface::Temp->DrawText(dataItem.Text, point.X, point.Y, dataItem.Color);
 		}
+
+		if (Unsorted::CurrentFrame > dataItem.CreationFrame + Duration || Unsorted::CurrentFrame < dataItem.CreationFrame)
+			Data.erase(Data.begin() + i);
 	}
-
-	auto const it = std::remove_if(Data.begin(), Data.end(), [](Item nItem) {
-		return Unsorted::CurrentFrame > nItem.CreationFrame + Duration || Unsorted::CurrentFrame < nItem.CreationFrame;
-		});
-
-	if (it != Data.end())
-		Data.erase(it);
 }
