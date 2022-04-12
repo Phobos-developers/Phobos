@@ -1339,7 +1339,6 @@ ShieldValue.ShowInterval=		;interger
 ```ini
 ;in chinese
 ;以下所有shp数显中使用SHP文件的0-9帧为绿血，10-19为黄血，20-29为红血，30为绿血间隔符，31黄，32红
-;给的number.shp使用shieldnum.pal色盘显示为蓝色
 ;如果你认真看完，就应该知道这个数显大部分功能都是既可以跟随全局又可以微观定义的
 
 [ShowValue] ;新项，专用于数显
@@ -1351,8 +1350,8 @@ Buildings.ShowColorHPLow=r,g,b 		;建筑低于33%血量时HP颜色，默认255,0
 Buildings.ShowColorShieldHigh=r,g,b ;建筑高于33%护盾值时护盾值颜色，默认0,0,255
 Buildings.ShowColorShieldMid=r,g,b 	;建筑高于33%护盾值时护盾值颜色，默认0,0,255
 Buildings.ShowColorShieldLow=r,g,b 	;建筑高于33%护盾值时护盾值颜色，默认0,0,255
-Buildings.ShowHPOffset=x,y 			;建筑HP向右、上偏移量，默认0,0
-Buildings.ShowShieldOffset=x,y		;建筑护盾值向右、上偏移量，默认0,0
+Buildings.ShowHPOffset=x,y 			;建筑HP向右、下偏移量，默认0,0
+Buildings.ShowShieldOffset=x,y		;建筑护盾值向右、下偏移量，默认0,0
 Buildings.ShowBackground=bool		;建筑血量护盾显示是否带有黑色背景
 Buildings.UseSHPShowHP=bool			;建筑HP是否使用SHP数显，默认no
 Buildings.UseSHPShowShield=bool		;建筑护盾是否使用SHP数显，默认no
