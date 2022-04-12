@@ -1256,6 +1256,10 @@ CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allie
 
 ### Show Health and Shield Value
 
+![image](_static/images/ShowValue1.png)
+
+![image](_static/images/ShowValue2.png)
+
 In `rulesmd.ini`:
 
 ```ini
