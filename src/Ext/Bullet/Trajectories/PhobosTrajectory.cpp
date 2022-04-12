@@ -223,3 +223,20 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 
 	return 0;
 }
+
+// Disables weird collision checks that alter trajectory if bullet
+// goes on a cell with enemy technos for custom Trajectory projectiles.
+DEFINE_HOOK(0x467921, BulletClass_AI_Trajectories_SkipChecks, 0x6)
+{
+	enum { SkipCheck = 0x467965 };
+
+	GET(BulletClass*, pThis, EBP);
+
+	if (auto const pExt = BulletTypeExt::ExtMap.Find(pThis->Type))
+	{
+		if (pExt->TrajectoryType != nullptr)
+			return SkipCheck;
+	}
+
+	return 0;
+}
