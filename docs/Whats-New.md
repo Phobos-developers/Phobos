@@ -292,6 +292,7 @@ New:
 - Feedback weapon (by Starkku)
 - TerrainType & ore minimap color customization (by Starkku)
 - Single-color weapon lasers (by Starkku)
+- Customizable projectile trajectory (by secsome)
 - Digital display of HP and SP (by ststl)
 
 Vanilla fixes:
