@@ -39,7 +39,7 @@ enum class AttachedAnimFlag
 	None = 0x0,
 	Hides = 0x1,
 	Temporal = 0x2,
-	Paused = 0x4,
+	Paused   = 0x4,
 
 	PausedTemporal = Paused | Temporal
 };
@@ -52,17 +52,17 @@ enum class SuperWeaponAITargetingMode
 	Nuke = 1,
 	LightningStorm = 2,
 	PsychicDominator = 3,
-	ParaDrop = 4,
-	GeneticMutator = 5,
-	ForceShield = 6,
-	NoTarget = 7,
-	Offensive = 8,
-	Stealth = 9,
-	Self = 10,
-	Base = 11,
-	MultiMissile = 12,
-	HunterSeeker = 13,
-	EnemyBase = 14
+	ParaDrop         = 4,
+	GeneticMutator   = 5,
+	ForceShield      = 6,
+	NoTarget         = 7,
+	Offensive        = 8,
+	Stealth          = 9,
+	Self             = 10,
+	Base             = 11,
+	MultiMissile     = 12,
+	HunterSeeker     = 13,
+	EnemyBase        = 14
 };
 
 enum class AffectedTarget : unsigned char
@@ -91,10 +91,10 @@ enum class AffectedHouse : unsigned char
 	Allies = 0x2,
 	Enemies = 0x4,
 
-	Team = Owner | Allies,
+	Team      = Owner | Allies,
 	NotAllies = Owner | Enemies,
-	NotOwner = Allies | Enemies,
-	All = Owner | Allies | Enemies
+	NotOwner  = Allies | Enemies,
+	All       = Owner | Allies | Enemies
 };
 
 MAKE_ENUM_FLAGS(AffectedHouse);
@@ -121,7 +121,7 @@ enum class SuperWeaponFlags : unsigned short
 	NoMoney = 0x10,
 	NoCleanup = 0x20,
 	NoMessage = 0x40,
-	PreClick = 0x80,
+	PreClick  = 0x80,
 	PostClick = 0x100
 };
 
@@ -129,8 +129,8 @@ MAKE_ENUM_FLAGS(SuperWeaponFlags);
 
 enum class AreaFireTarget
 {
-	Base = 0,
-	Self = 1,
+	Base   = 0,
+	Self   = 1,
 	Random = 2
 };
 
@@ -167,15 +167,24 @@ enum class PhobosAction
 {
 	None = 0,
 	Hijack = 1,
-	Drive = 2
+	Drive  = 2
 };
 
 enum class TextAlign : int
 {
-	None = 0xFFF,
-	Left = 0x000,
+	None   = 0xFFF,
+	Left   = 0x000,
 	Center = 0x100,
-	Right = 0x200,
+	Right  = 0x200,
+};
+
+enum class BannerNumberType : int
+{
+	None = 0,
+	Variable = 1,
+	Prefixed = 2,
+	Suffixed = 3,
+	Fraction = 4
 };
 
 MAKE_ENUM_FLAGS(TextAlign);
@@ -247,11 +256,4 @@ public:
 		}
 		return false;
 	}
-};
-
-enum class BannerType : int
-{
-	PCX = 0,
-	CSF = 1,
-	SHP = 2
 };

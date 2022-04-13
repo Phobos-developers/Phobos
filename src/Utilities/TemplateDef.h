@@ -874,6 +874,42 @@ namespace detail
 		return false;
 	}
 
+	template <>
+	inline bool read<BannerNumberType>(BannerNumberType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = BannerNumberType::None;
+			auto str = parser.value();
+			if (_strcmpi(str, "variable") == 0)
+			{
+				parsed = BannerNumberType::Variable;
+			}
+			else if (_strcmpi(str, "prefixed") == 0)
+			{
+				parsed = BannerNumberType::Prefixed;
+			}
+			else if (_strcmpi(str, "suffixed") == 0)
+			{
+				parsed = BannerNumberType::Suffixed;
+			}
+			else if (_strcmpi(str, "fraction") == 0)
+			{
+				parsed = BannerNumberType::Fraction;
+			}
+			else if (_strcmpi(str, "none") == 0)
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), 
+					"Content.VariableFormat can be either none, prefixed, suffixed or fraction");
+				return false;
+			}
+			if (parsed != BannerNumberType::None)
+				value = parsed;
+			return true;
+		}
+		return false;
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{

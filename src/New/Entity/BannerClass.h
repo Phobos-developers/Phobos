@@ -20,25 +20,27 @@ public:
 	BannerTypeClass* Type;
 	int Id;
 	CoordStruct Position;
-	int Variable;
+	int Variables[4];
 	bool IsGlobalVariable;
 
-	BannerClass(BannerTypeClass* pBannerType, int id, CoordStruct position, int variable, bool isGlobalVariable) :
+	BannerClass(BannerTypeClass* pBannerType, int id, CoordStruct position, int variable[4], bool isGlobalVariable) :
 		Type(pBannerType),
 		Id(id),
 		Position(position),
-		Variable(variable),
+		Variables(),
 		IsGlobalVariable(isGlobalVariable)
 	{
 		BannerClass::Array.AddItem(this);
-		PCX::Instance->LoadFile(this->Type->Content_PCX.data());
+		this->Type->LoadImage();
+		for (int i = 0; i < 4; i++)
+			this->Variables[i] = variable[i];
 	}
 
 	BannerClass() :
 		Type(),
 		Id(),
 		Position(),
-		Variable(),
+		Variables(),
 		IsGlobalVariable()
 	{
 		BannerClass::Array.AddItem(this);

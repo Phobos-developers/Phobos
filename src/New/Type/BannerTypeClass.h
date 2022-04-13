@@ -4,34 +4,56 @@
 #include <Utilities/Template.h>
 #include <Utilities/Enum.h>
 
+enum class BannerType : int
+{
+	PCX = 0,
+	CSF = 1,
+	SHP = 2,
+	VariableFormat = 3
+};
+
 class BannerTypeClass final : public Enumerable<BannerTypeClass>
 {
 public:
 	// read from INI
-	PhobosFixedString<0x20> Content_PCX;
-	PhobosFixedString<0x20> Content_SHP;
-	PhobosFixedString<0x20> Content_SHP_Palette;
-	Valueable<CSFText> Content_CSF;
-	Nullable<ColorStruct> Content_CSF_Color;
-	Valueable<bool> Content_CSF_DrawBackground;
+	struct Content
+	{
+		PhobosFixedString<0x20> PCX;
+		struct SHP
+		{
+			PhobosFixedString<0x20> _;
+			PhobosFixedString<0x20> Palette;
+		};
+		SHP SHP;
+		struct CSF
+		{
+			Valueable<CSFText> _;
+			Nullable<ColorStruct> Color;
+			Valueable<bool> DrawBackground;
+		};
+		CSF CSF;
+		struct VariableFormat
+		{
+			Valueable<BannerNumberType> _;
+			Valueable<CSFText> Label;
+		};
+		VariableFormat VariableFormat;
+	};
+	Content Content;
 	// internal
-	BannerType Type;
-	wchar_t Text[256];
+	BannerType BannerType;
 	SHPStruct* ImageSHP;
+	BSurface* ImagePCX;
 	ConvertClass* Palette;
 
 	BannerTypeClass(const char* pTitle = NONE_STR) : Enumerable<BannerTypeClass>(pTitle)
-		, Content_PCX()
-		, Content_SHP()
-		, Content_SHP_Palette()
-		, Content_CSF()
-		, Content_CSF_Color()
-		, Content_CSF_DrawBackground(false)
-		, Type(BannerType::CSF)
-		, Text()
+		, Content()
+		, BannerType(BannerType::CSF)
 		, ImageSHP()
 		, Palette()
 	{ }
+
+	void LoadImage();
 
 	virtual ~BannerTypeClass() override = default;
 
