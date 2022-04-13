@@ -49,11 +49,11 @@ In `rulesmd.ini`:
 [AudioVisual]
 DigitalDisplay.Enable= 							        ;bool whether to enable digital display, all digital displays will not be displayed if no
 Buildings.DefaultDigitalDisplayTypeHP= 			;DigitalDisplayType The default digital display type used for building blood, if not written or the corresponding type does not exist, it will not be displayed
-DefaultDigitalDisplayTypeSP= 					      ;DigitalDisplayType The default digital display type used for building shields, not displayed if not written or if the corresponding type does not exist
+Buildings.DefaultDigitalDisplayTypeSP= 			;DigitalDisplayType The default digital display type used for building shields, not displayed if not written or if the corresponding type does not exist
 Infantrys.DefaultDigitalDisplayTypeHP= 			;DigitalDisplayType The default digital display type used for infantry blood, not displayed if not written or if the corresponding type does not exist
 Infantrys.DefaultDigitalDisplayTypeSP= 			;DigitalDisplayType The default digital display type used for infantry shields, not shown if not written or if the corresponding type does not exist
 Units.DefaultDigitalDisplayTypeHP= 				  ;DigitalDisplayType The default digital display type used for other units' blood, not displayed if not written or if the corresponding type does not exist
-DefaultDigitalDisplayTypeHP= 					      ;DigitalDisplayType The default digital display type used for other units' shields, not displayed if not written or if the corresponding type does not exist
+Units.DefaultDigitalDisplayTypeSP= 					;DigitalDisplayType The default digital display type used for other units' shields, not displayed if not written or if the corresponding type does not exist
 
 [SomeDigitalDisplayType]
 Text.ColorHigh= 			                      ;r,g,b the color of the Text digital display when green blood, default 0,255,0
