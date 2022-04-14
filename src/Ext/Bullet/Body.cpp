@@ -83,6 +83,8 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShouldIntercept)
 		.Process(this->LaserTrails)
 		;
+
+	this->Trajectory = PhobosTrajectory::ProcessFromStream(Stm, this->Trajectory);
 }
 
 void BulletExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -118,6 +120,9 @@ DEFINE_HOOK(0x4664BA, BulletClass_CTOR, 0x5)
 DEFINE_HOOK(0x4665E9, BulletClass_DTOR, 0xA)
 {
 	GET(BulletClass*, pItem, ESI);
+
+	if (auto pTraj = BulletExt::ExtMap.Find(pItem)->Trajectory)
+		GameDelete(pTraj);
 
 	BulletExt::ExtMap.Remove(pItem);
 	return 0;

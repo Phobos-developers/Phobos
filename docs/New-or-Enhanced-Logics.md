@@ -46,31 +46,31 @@ In `rulesmd.ini`:
 [DigitalDisplayTypes] ;New registry for registering digital display types
 
 [AudioVisual]
-DigitalDisplay.Enable=						;bool whether to enable digital display, all digital displays will not be displayed if no
+DigitalDisplay.Enable=				;bool whether to enable digital display, all digital displays will not be displayed if no
 Buildings.DefaultDigitalDisplayTypeHP=		;DigitalDisplayType The default digital display type used for building health, if not written or the corresponding type does not exist, it will not be displayed
 Buildings.DefaultDigitalDisplayTypeSP=		;DigitalDisplayType The default digital display type used for building shields, not displayed if not written or if the corresponding type does not exist
-Infantrys.DefaultDigitalDisplayTypeHP= 	;DigitalDisplayType The default digital display type used for infantry health, not displayed if not written or if the corresponding type does not exist
-Infantrys.DefaultDigitalDisplayTypeSP= 	;DigitalDisplayType The default digital display type used for infantry shields, not shown if not written or if the corresponding type does not exist
+Infantrys.DefaultDigitalDisplayTypeHP= 		;DigitalDisplayType The default digital display type used for infantry health, not displayed if not written or if the corresponding type does not exist
+Infantrys.DefaultDigitalDisplayTypeSP=		;DigitalDisplayType The default digital display type used for infantry shields, not shown if not written or if the corresponding type does not exist
 Units.DefaultDigitalDisplayTypeHP= 		;DigitalDisplayType The default digital display type used for other units' health, not displayed if not written or if the corresponding type does not exist
 Units.DefaultDigitalDisplayTypeSP= 		;DigitalDisplayType The default digital display type used for other units' shields, not displayed if not written or if the corresponding type does not exist
 
 [SomeDigitalDisplayType]
-Text.ColorHigh=							;r,g,b the color of the Text digital display when green HP, default 0,255,0
-Text.ColorMid= 							;r,g,b Yellow HP when the color of the Text digital display,  default 255,255,0
-Text.ColorLow=								;r,g,b red HP when the color of the Text digital display, default 255,0,0
-Text.Background=							;bool Whether the Text display has a black background, default no
-UseSHP=									;bool whether to use SHP digital display, default no
-SHP.SHPFile=								;filename with extend name, the name of the SHP file used by the SHP number display, default number.shp
-											;The SHP display uses frames 0-9 of the SHP file for green HP, 10-19 for yellow HP, and 20-29 for red HP.
-											;30-32 frames are the separator for green, yellow and red HP respectively
-SHP.PALFile= 								;filename with extend name, the palette file used by SHP, default is ra1 palette
-SHP.Interval=								;integer the width of a single digit of the SHP display plus the value of the interval between digits
+Text.ColorHigh=					;r,g,b the color of the Text digital display when green HP, default 0,255,0
+Text.ColorMid= 					;r,g,b Yellow HP when the color of the Text digital display,  default 255,255,0
+Text.ColorLow=					;r,g,b red HP when the color of the Text digital display, default 255,0,0
+Text.Background=				;bool Whether the Text display has a black background, default no
+UseSHP=						;bool whether to use SHP digital display, default no
+SHP.SHPFile=					;filename with extend name, the name of the SHP file used by the SHP number display, default number.shp
+						;The SHP display uses frames 0-9 of the SHP file for green HP, 10-19 for yellow HP, and 20-29 for red HP.
+						;30-32 frames are the separator for green, yellow and red HP respectively
+SHP.PALFile= 					;filename with extend name, the palette file used by SHP, default is ra1 palette
+SHP.Interval=					;integer the width of a single digit of the SHP display plus the value of the interval between digits
 
 [SomeTechnoType]
-DigitalDisplayType=						;DigitalDisplayType The type of digital display used for this unit HP, the default [AudioVisual] in the corresponding type, do not write or do not exist the corresponding type is not displayed
+DigitalDisplayType=				;DigitalDisplayType The type of digital display used for this unit HP, the default [AudioVisual] in the corresponding type, do not write or do not exist the corresponding type is not displayed
 
 [SomeShieldType]
-DigitalDisplayType=						;DigitalDisplayType The digital display type used for the shield, defaulted to the corresponding type in [AudioVisual] of the unit to which it is attached, will not be displayed if the corresponding type is not written or does not exist
+DigitalDisplayType=				;DigitalDisplayType The digital display type used for the shield, defaulted to the corresponding type in [AudioVisual] of the unit to which it is attached, will not be displayed if the corresponding type is not written or does not exist
 
 ```
 
@@ -350,6 +350,34 @@ Interceptor.EliteMinimumGuardRange=0.0  ; double
 
 [SOMEPROJECTILE] ; Projectile
 Interceptable=no ; boolean
+```
+
+### Projectile trajectories
+
+- Projectiles can now have customizable trajectories.
+  - `Trajectory` should not be combined with original game's projectile trajectory logics (`Arcing`, `ROT` or `Inviso`).
+
+#### Straight trajectory
+
+- Self-explanatory, is a straight-shot trajectory.
+  - Initial speed is determined by weapon's `Trajectory.Speed`.
+
+In `rulesmd.ini`
+```ini
+[SOMEPROJECTILE]     ; Projectile
+Trajectory=Straight  ; Trajectory type
+```
+
+#### Bombard trajectory
+
+- Similar trajectory to `Straight`, but targets a coordinate above the intended target (height determined by `Trajectory.Bombard.Height`). When the projectile approaches that coordinate, it will free fall and explodes when it hits the target or ground.
+  - Initial speed is determined by weapon's `Trajectory.Speed`.
+
+In `rulesmd.ini`
+```ini
+[SOMEPROJECTILE]               ; Projectile
+Trajectory=Bombard             ; Trajectory type
+Trajectory.Bombard.Height=0.0  ; double
 ```
 
 ### Shrapnel enhancement
@@ -1280,6 +1308,16 @@ In `rulesmd.ini`:
 [SOMEWEAPON]                 ; WeaponType
 Strafing.Shots=5             ; integer
 Strafing.SimulateBurst=false ; bool
+```
+
+### Trajectory speed
+
+- This sets projectile speed used by custom [projectile trajectories](#projectile-trajectories).
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]            ; WeaponType
+Trajectory.Speed=100.0  ; double
 ```
 
 ### Weapon targeting filter

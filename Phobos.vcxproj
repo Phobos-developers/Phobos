@@ -21,6 +21,9 @@
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\Dummy.h" />
     <ClCompile Include="src\Ext\AnimType\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Bullet\Trajectories\BombardTrajectory.cpp" />
+    <ClCompile Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.cpp" />
+    <ClCompile Include="src\Ext\Bullet\Trajectories\StraightTrajectory.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.Variables.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Body.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Hooks.cpp" />
@@ -119,6 +122,9 @@
     <ClInclude Include="src\Commands\ObjectInfo.h" />
     <ClInclude Include="src\Commands\Commands.h" />
     <ClInclude Include="src\Commands\QuickSave.h" />
+    <ClInclude Include="src\Ext\Bullet\Trajectories\BombardTrajectory.h" />
+    <ClInclude Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.h" />
+    <ClInclude Include="src\Ext\Bullet\Trajectories\StraightTrajectory.h" />
     <ClInclude Include="src\Ext\Sidebar\Body.h" />
     <ClInclude Include="src\Ext\Anim\Body.h" />
     <ClInclude Include="src\Ext\TAction\Body.h" />
