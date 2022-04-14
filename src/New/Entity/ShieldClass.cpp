@@ -833,10 +833,11 @@ void ShieldClass::DigitalDisplayTextShield(DigitalDisplayTypeClass* pDisplayType
 
 	TextPrintType PrintType;
 
+	//0x400 is TextPrintType::Background pr#563 YRpp
 	if (Techno->WhatAmI() == AbstractType::Building)
-		PrintType = TextPrintType(int(TextPrintType::Right) + (ShowBackground ? int(TextPrintType::Background) : 0));
+		PrintType = TextPrintType(int(TextPrintType::Right) + (ShowBackground ? 0x400 : 0));
 	else
-		PrintType = TextPrintType(int(TextPrintType::Center) + (ShowBackground ? int(TextPrintType::Background) : 0));
+		PrintType = TextPrintType(int(TextPrintType::Center) + (ShowBackground ? 0x400 : 0));
 
 	//DSurface::Temp->DrawTextA(Shieldpoint, vPosS.X, vPosS.Y, ShowShieldColor);
 	DSurface::Temp->DrawTextA(Shieldpoint, &rect, &Pos, ShowShieldColor, BackColor, PrintType);

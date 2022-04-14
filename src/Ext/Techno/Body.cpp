@@ -693,10 +693,11 @@ void TechnoExt::DigitalDisplayTextHealth(TechnoClass* pThis, DigitalDisplayTypeC
 
 	TextPrintType PrintType;
 
+	//0x400 is TextPrintType::Background pr#563 YRpp
 	if (pThis->WhatAmI() == AbstractType::Building)
-		PrintType = TextPrintType(int(TextPrintType::Right) + (ShowBackground ? int(TextPrintType::Background) : 0));
+		PrintType = TextPrintType(int(TextPrintType::Right) + (ShowBackground ? 0x400 : 0));
 	else
-		PrintType = TextPrintType(int(TextPrintType::Center) + (ShowBackground ? int(TextPrintType::Background) : 0));
+		PrintType = TextPrintType(int(TextPrintType::Center) + (ShowBackground ? 0x400 : 0));
 
 	//DSurface::Temp->DrawText(Healthpoint, vPosH.X, vPosH.Y, ShowHPColor);
 	DSurface::Temp->DrawTextA(Healthpoint, &rect, &Pos, HPColor, BackColor, PrintType);
