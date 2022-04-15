@@ -6,6 +6,7 @@
 #include <Unsorted.h>
 #include <Drawing.h>
 
+#include "Utilities\Parser.h"
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
@@ -50,6 +51,7 @@ bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::DevelopmentCommands = true;
 bool Phobos::Config::ArtImageSwap = false;
 bool Phobos::Config::AllowParallelAIQueues = true;
+bool Phobos::Config::ExtendParallelAIQueues[5] = { true, true, true, true, true };
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
@@ -232,6 +234,15 @@ DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 	// Ares tags
 	Phobos::Config::DevelopmentCommands = rulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
 	Phobos::Config::AllowParallelAIQueues = rulesINI->ReadBool("GlobalControls", "AllowParallelAIQueues", Phobos::Config::AllowParallelAIQueues);
+
+	if (rulesINI->ReadString("GlobalControls", "ExtendParallelAIQueues", "", Phobos::readBuffer))
+	{
+		bool temp[5] = {};
+		int read = Parser<bool, 5>::Parse(Phobos::readBuffer, temp);
+
+		for (int i = 0; i < read; ++i)
+			Phobos::Config::ExtendParallelAIQueues[i] = temp[i];
+	}
 
 	return 0;
 }

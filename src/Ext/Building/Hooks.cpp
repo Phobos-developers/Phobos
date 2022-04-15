@@ -2,6 +2,7 @@
 
 #include <BulletClass.h>
 #include <UnitClass.h>
+#include <Ext/House/Body.h>
 
 DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
 {
@@ -55,7 +56,8 @@ DEFINE_HOOK(0x4401BB, Factory_AI_PickWithFreeDocks, 0x6)
 		|| pOwner->IsNeutral())
 		return 0;
 
-	if (pBuilding->Type->Factory == AbstractType::AircraftType)
+	if (pBuilding->Type->Factory == AbstractType::AircraftType 
+		&& !Phobos::Config::ExtendParallelAIQueues[3])
 	{
 		if (pBuilding->Factory
 			&& !BuildingExt::HasFreeDocks(pBuilding))
@@ -65,6 +67,66 @@ DEFINE_HOOK(0x4401BB, Factory_AI_PickWithFreeDocks, 0x6)
 				return 0;
 
 			BuildingExt::UpdatePrimaryFactoryAI(pBuilding);
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory, 0x6)
+{
+	GET(BuildingClass*, pBuilding, ESI);
+	HouseClass* pOwner = pBuilding->Owner;
+
+	if (pOwner->Production && Phobos::Config::AllowParallelAIQueues)
+	{
+		HouseExt::ExtData* pData = HouseExt::ExtMap.Find(pOwner);
+		BuildingClass** currFactory = nullptr;
+		switch (pBuilding->Type->Factory)
+		{
+		case AbstractType::BuildingType:
+			currFactory = &pData->Factory_BuildingType;
+			break;
+		case AbstractType::UnitType:
+			currFactory = pBuilding->Type->Naval
+				? &pData->Factory_NavyType
+				: &pData->Factory_VehicleType;
+			break;
+		case AbstractType::InfantryType:
+			currFactory = &pData->Factory_InfantryType;
+			break;
+		case AbstractType::AircraftType:
+			currFactory = &pData->Factory_AircraftType;
+			break;
+		}
+		if (!currFactory)
+		{
+			Game::RaiseError(E_POINTER);
+		}
+		else if (!*currFactory)
+		{
+			*currFactory = pBuilding;
+			return 0;
+		}
+		else if (*currFactory != pBuilding)
+		{
+			if (pBuilding->Type->Factory == AbstractType::InfantryType
+				&& !Phobos::Config::ExtendParallelAIQueues[0])
+				return 0x4503CA;
+			else if (pBuilding->Type->Factory == AbstractType::UnitType
+				&& !Phobos::Config::ExtendParallelAIQueues[1]
+				&& !pBuilding->Type->Naval)
+				return 0x4503CA;
+			else if (pBuilding->Type->Factory == AbstractType::UnitType
+				&& !Phobos::Config::ExtendParallelAIQueues[2]
+				&& pBuilding->Type->Naval)
+				return 0x4503CA;
+			else if (pBuilding->Type->Factory == AbstractType::AircraftType
+				&& !Phobos::Config::ExtendParallelAIQueues[3])
+				return 0x4503CA;
+			else if (pBuilding->Type->Factory == AbstractType::BuildingType
+				&& !Phobos::Config::ExtendParallelAIQueues[4])
+				return 0x4503CA;
 		}
 	}
 
