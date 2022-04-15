@@ -782,12 +782,14 @@ InitialStrength=    ; int
 - Objects can be destroyed automatically under certaing cases:
   - No Ammo: The object will die if the remaining ammo reaches 0.
   - Countdown: The object will die if the countdown reaches 0.
+  - Peaceful: If `NoAmmo` or `Countdown` is set, the object will be directly removed from the game peacefully, without triggering deathweapon or "Unit lost" EVA.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                       ; TechnoType
 Death.NoAmmo=no                    ; boolean
 Death.Countdown=0                  ; integer
+Death.Peaceful=no                  ; boolean, default to no
 ```
 
 ### Mind Control enhancement
