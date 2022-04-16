@@ -1289,22 +1289,3 @@ In `rulesmd.ini`:
 CanTarget=all        ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
-
-
-### Fire superweapons by units
-
-- Superweapons can be launched when a unit is firing using its primary/secondary or any certain gattling stage weapon.
-    - `FireSuperWeapons.RealLaunch` controls whether the owner of the technotype must own the listed superweapon or launch them out of nowhere
-    - `FireSuperWeapons.UseWeapon ` indicate the weapon index used for launching superweapon. 0 for primary, 1 for secondary. Gattling weapons are supported as well, but the exact number should be find out by user (I don't know how this is calculated yet). Death weapon is not supported.
-    - `FireSuperWeapons.TargetSelf` indicate whether the superweapon should be launched at the firer itself or the target cell
-
-In `rulesmd.ini`
-
-```ini
-
-[TechnoType]                               ; Infantry, Unit, Aircraft, and eventually Building
-FireSuperWeapons=                          ; list of SuperWeaponTypes
-FireSuperWeapons.RealLaunch = bool         ; Default to no
-FireSuperWeapons.UseWeapon = int           ; Default to -1
-FireSuperWeapons.TargetSelf =bool          ; Default to no
-```

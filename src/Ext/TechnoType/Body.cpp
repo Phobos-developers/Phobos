@@ -227,11 +227,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 
 
-	//Fire Superweapon group
-	this->FireSuperWeapons.Read(exINI, pSection, "FireSuperWeapons");
-	this->FireSuperWeapons_RealLaunch.Read(exINI, pSection, "FireSuperWeapons.RealLaunch");
-	this->FireSuperWeapons_UseWeapon.Read(exINI, pSection, "FireSuperWeapons.UseWeapon");
-	this->FireSuperWeapons_TargetSelf.Read(exINI, pSection, "FireSuperWeapons.TargetSelf");
 
 }
 
@@ -309,10 +304,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceWeapon_Naval_Decloaked)
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
-		.Process(this->FireSuperWeapons)
-		.Process(this->FireSuperWeapons_RealLaunch)
-		.Process(this->FireSuperWeapons_UseWeapon)
-		.Process(this->FireSuperWeapons_TargetSelf)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -421,41 +412,4 @@ DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 	}
 
 	return 0;
-}
-
-// Fire superweapon using primary/secondary/gattling weapon
-// Originated from https://github.com/ChrisLv-CN/YRDynamicPatcher-Kratos/blob/main/DynamicPatcher/Projects/Extension/Kraotos/MyExtension/FireSuperWeapon.cs
-// Possible conflict with DP-Kratos, this might subject to further test
-// RealLaunch flag for all superweapons, this might change in the future
-void TechnoTypeExt::FireSuperWeaponControl(TechnoClass* pTechno, int wpIdx, AbstractClass* pTarget)
-{
-	if (SuperWeaponTypeClass::Array->Count > 0) {
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
-		const auto list = pTypeExt->FireSuperWeapons;
-		if (!list.HasValue()) {
-			return;
-		}
-		else {
-			const int useWeapon = pTypeExt->FireSuperWeapons_UseWeapon.Get();
-			if (useWeapon == -1 || useWeapon == wpIdx) {
-				const auto pHouse = pTechno->Owner;
-				for (const auto pSWType : list.GetElements()) {
-					SuperClass* pSuper = nullptr;
-					if (pTypeExt->FireSuperWeapons_RealLaunch.Get()) {
-						pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType));
-						if (!pSuper->IsCharged) {
-							continue;
-						}
-					}
-					else {
-						pSuper = GameCreate<SuperClass>(pSWType, pHouse);
-					}
-					const CellStruct cell = pTypeExt->FireSuperWeapons_TargetSelf.Get() ? CellClass::Coord2Cell(pTechno->GetCoords()) : CellClass::Coord2Cell(pTarget->GetCoords());
-					pSuper->SetReadiness(true);
-					pSuper->Launch(cell, true);
-					pSuper->Reset();
-				}
-			}
-		}
-	} return;
 }

@@ -104,13 +104,6 @@ public:
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
 
-		//Fire SuperWeapon group
-
-		NullableVector<SuperWeaponTypeClass*> FireSuperWeapons;
-		Valueable<bool> FireSuperWeapons_RealLaunch;
-		Valueable<int> FireSuperWeapons_UseWeapon;
-		Valueable<bool> FireSuperWeapons_TargetSelf;
-
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -197,10 +190,6 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
-			, FireSuperWeapons{}
-			, FireSuperWeapons_RealLaunch{false}
-			, FireSuperWeapons_TargetSelf{false}
-			, FireSuperWeapons_UseWeapon{-1}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -238,8 +227,6 @@ public:
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
 	static bool HasSelectionGroupID(ObjectTypeClass* pType, const char* pID);
 
-	//Auxiliary fire control
-	static void FireSuperWeaponControl(TechnoClass* pTechno, int wpIdx, AbstractClass* pTarget);
 
 	
 };
