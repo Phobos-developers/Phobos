@@ -7,9 +7,7 @@
 
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
-#include <WeaponTypeClass.h>
-#include <SuperClass.h>
-#include <SuperWeaponTypeClass.h>
+
 class Matrix3D;
 
 class TechnoTypeExt
@@ -226,7 +224,4 @@ public:
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
 	static bool HasSelectionGroupID(ObjectTypeClass* pType, const char* pID);
-
-
-	
 };

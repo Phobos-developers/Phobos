@@ -13,7 +13,7 @@
 #include <Utilities/EnumFunctions.h>
 
 
-#include<MessageListClass.h>
+#include <SuperClass.h>
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
 {
 	if (pHouse)
@@ -39,25 +39,25 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		if (this->TransactMoney)
 			pHouse->TransactMoney(this->TransactMoney);
 
-		if (auto pSWType = this->SpawnSuperWeapon.Get()) {
-
-			SuperClass* pSuper = nullptr;
-			bool canLaunch = false;
-			if (this->SpawnSuperWeapon_RealLaunch.Get()) {
-				pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType));
-				if (pSuper && pSuper->IsCharged) {
+		if (this->SpawnSuperWeapons.HasValue()) {
+			for (const auto pSWType : this->SpawnSuperWeapons.GetElements()) {
+				SuperClass* pSuper = nullptr;
+				bool canLaunch = false;
+				if (this->SpawnSuperWeapons_RealLaunch.Get()) {
+					pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType));
+					if (pSuper && pSuper->IsCharged) {
+						canLaunch = true;
+					}
+				}
+				else if (pSuper = GameCreate<SuperClass>(pSWType, pHouse)) {
 					canLaunch = true;
 				}
+				if (canLaunch) {
+					pSuper->SetReadiness(true);
+					pSuper->Launch(CellClass::Coord2Cell(coords), true);
+					pSuper->Reset();
+				}
 			}
-			else if (pSuper = GameCreate<SuperClass>(pSWType, pHouse)) {
-				canLaunch = true;
-			}
-			if (canLaunch) {
-				pSuper->SetReadiness(true);
-				pSuper->Launch(CellClass::Coord2Cell(coords), true);
-				pSuper->Reset();
-			}
-
 		}
 	}
 

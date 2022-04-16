@@ -75,8 +75,8 @@ public:
 		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
-		Nullable<SuperWeaponTypeClass*> SpawnSuperWeapon;
-		Valueable<bool> SpawnSuperWeapon_RealLaunch;
+		NullableVector<SuperWeaponTypeClass*> SpawnSuperWeapons;
+		Valueable<bool> SpawnSuperWeapons_RealLaunch;
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
 		Valueable<double> Shield_SelfHealing_Rate_InMinutes;
@@ -139,8 +139,8 @@ public:
 
 			, NotHuman_DeathSequence { -1 }
 
-			, SpawnSuperWeapon{}
-			, SpawnSuperWeapon_RealLaunch{false}
+			, SpawnSuperWeapons{}
+			, SpawnSuperWeapons_RealLaunch{false}
 		{ }
 
 	private:
