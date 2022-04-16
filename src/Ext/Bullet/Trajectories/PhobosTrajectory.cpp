@@ -230,9 +230,9 @@ DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x467921, BulletClass_AI_TechnoCheck_Trajectories, 0x6)
+DEFINE_HOOK(0x467927, BulletClass_AI_TechnoCheck_Trajectories, 0x5)
 {
-	enum { SkipCheck = 0x467965, ContinueAfterCheck = 0x467514 };
+	enum { SkipCheck = 0x467A26, ContinueAfterCheck = 0x467514 };
 
 	GET(BulletClass*, pThis, EBP);
 	GET(TechnoClass*, pTechno, ESI);
