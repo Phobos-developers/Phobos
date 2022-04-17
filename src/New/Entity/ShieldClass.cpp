@@ -210,7 +210,7 @@ void ShieldClass::ShieldStolen(args_ReceiveDamage* args, int shieldDamage)
 		auto const pAttackerType = TechnoTypeExt::ExtMap.Find(args->Attacker->GetTechnoType());
 		const auto pAttacker = TechnoExt::ExtMap.Find(args->Attacker);
 
-		if (this->GetType()->CanBeStolen && 
+		if (this->GetType()->CanBeAssimilated && 
 			pWHExt->Shield_Steal.Get() &&
 			pWHExt->Shield_Assimilate_Rate.Get() >= 0 &&
 			pAttacker->Shield.get() &&

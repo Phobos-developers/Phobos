@@ -29,7 +29,7 @@ public:
 	Valueable<double> AbsorbPercent;
 	Valueable<double> PassPercent;
 
-	Valueable<bool>	CanBeStolen;
+	Valueable<bool>	CanBeAssimilated;
 	Valueable<bool>	CanBeStolenType;
 
 	Nullable<bool> AllowTransfer;
@@ -58,7 +58,7 @@ public:
 		, AbsorbPercent(1.0)
 		, PassPercent(0.0)
 
-		, CanBeStolen(true)
+		, CanBeAssimilated(true)
 		, CanBeStolenType(true)
 
 		, Respawn_Rate__InMinutes(0.0)

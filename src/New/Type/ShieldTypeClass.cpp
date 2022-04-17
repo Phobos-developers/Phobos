@@ -51,7 +51,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->AllowTransfer.Read(exINI, pSection, "AllowTransfer");
 
-	this->CanBeStolen.Read(exINI, pSection, "CanBeStolen");
+	this->CanBeAssimilated.Read(exINI, pSection, "CanBeAssimilated");
 	this->CanBeStolenType.Read(exINI, pSection, "CanBeStolenType");
 }
 
@@ -80,7 +80,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->CanBeAssimilated)
 		.Process(this->CanBeStolen)
 		.Process(this->AllowTransfer)
-		.Process(this->CanBeStolen)
+		.Process(this->CanBeAssimilated)
 		.Process(this->CanBeStolenType)
 		;
 }
