@@ -113,6 +113,8 @@ BreakWeapon=                         ; WeaponType
 AbsorbPercent=1.0                    ; double, percents
 PassPercent=0.0                      ; double, percents
 AllowTransfer=                       ; boolean
+CanBeStolen=true   					 ; boolean
+CanBeStolenType=true  				 ; boolean
 
 [SOMETECHNO]                         ; TechnoType
 ShieldType=SOMESHIELDTYPE            ; ShieldType; none by default
@@ -140,6 +142,10 @@ Shield.ReplaceOnly=false             ; boolean
 Shield.ReplaceNonRespawning=false    ; boolean
 Shield.MinimumReplaceDelay=0         ; integer, game frames
 Shield.InheritStateOnReplace=false   ; boolean
+Shield.Steal=false  				 ; boolean
+Shield.Assimilate.Rate=1.0 			 ; double, percents
+Shield.StealTargetType=false 		 ; boolean
+Shield.StealTargetType.InitShieldHealthRate=0.0 ; double, percents
 ```
 - Now you can have a shield for any TechnoType. It serves as a second health pool with independent `Armor` and `Strength` values.
   - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed by shield.
@@ -167,6 +173,8 @@ Shield.InheritStateOnReplace=false   ; boolean
   - Buildings now use the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame by default.
   - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. `Pips.Shield.Building` is used for BuildingTypes.
   - `pipbrd.shp` will use its 4th frame to display an infantry's shield strength and the 3th frame for other units if `pipbrd.shp` has extra 2 frames. And `BracketDelta` can be used as additional `PixelSelectionBracketDelta` for shield strength.
+- `CanBeStolen` controls whether allows the attacker to recover his shield by damaging this shield (if he can)
+- `CanBeStolenType`  controls whether allows the attacker to get the same shield by damaging this shield (if he can)
 - Warheads have new options that interact with shields.
   - `Shield.Penetrate` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield doesn't exist.
   - `Shield.Break` allows the warhead to always break shields of TechnoTypes. This is done before damage is dealt.
@@ -183,6 +191,10 @@ Shield.InheritStateOnReplace=false   ; boolean
     - If `Shield.ReplaceNonRespawning` is set, shield from `Shield.AttachTypes` replaces existing shields that have been broken and cannot respawn on their own.
       - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
+  - `Shield.Steal `allows the attacker to recover his shield HP by using this warhead to damage a shield.
+  - `Shield.Assimilate.Rate` minimum = 0, maximum = 10.0, decides how much the attacker can recover his shield HP by a single damage.
+  - `Shield.StealTargetType` allows the attacker to get the target shield (if he does not have any shield).
+  - `Shield.StealTargetType.InitShieldHealthRate` minimum = 0, maximum = 1.0, decides the original (not settings) shield HP when he stole the shield.
 
 ## Animations
 
@@ -745,6 +757,7 @@ OpenTopped.WarpDistance=8          ; integer
   - `Overpowerable=true` buildings that are currently overpowered.
   - Any system using `(Elite)WeaponX`, f.ex `Gunner=true` or `IsGattling=true` is also wholly exempt.
   
+
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                      ; TechnoType
@@ -1112,6 +1125,7 @@ RemoveMindControl=no                 ; boolean
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
   - `ImmuneToCrit` can be set on TechnoTypes to make them immune to critical hits.
   
+
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                     ; Warhead
