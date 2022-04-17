@@ -128,12 +128,11 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		this->Timers.SelfHealing.Start(rate); // when attacked, restart the timer
 		this->ResponseAttack();
 
-		
 		if (pWHExt->DecloakDamagedTargets)
 			this->Techno->Uncloak(false);
-		this->ShieldStolen(args, shieldDamage);
 
 		this->ShieldStolen(args, shieldDamage);
+
 
 		int residueDamage = shieldDamage - this->HP;
 		if (residueDamage >= 0)
@@ -210,7 +209,7 @@ void ShieldClass::ShieldStolen(args_ReceiveDamage* args, int shieldDamage)
 		auto const pAttackerType = TechnoTypeExt::ExtMap.Find(args->Attacker->GetTechnoType());
 		const auto pAttacker = TechnoExt::ExtMap.Find(args->Attacker);
 
-		if (this->GetType()->CanBeAssimilated && 
+		if (this->GetType()->CanBeStolen && 
 			pWHExt->Shield_Steal.Get() &&
 			pWHExt->Shield_Assimilate_Rate.Get() >= 0 &&
 			pAttacker->Shield.get() &&
