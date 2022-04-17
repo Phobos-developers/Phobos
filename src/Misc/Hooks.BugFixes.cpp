@@ -433,3 +433,38 @@ DEFINE_HOOK(0x73B2A2, UnitClass_DrawObject_DrawerBlitterFix, 0x6)
 
 	return SkipGameCode;
 }
+
+// Set all bullet params (Bright) from weapon for nuke carrier weapon.
+DEFINE_HOOK(0x44CABA, BuildingClass_Mission_Missile_BulletParams, 0x7)
+{
+	enum { SkipGameCode = 0x44CAF2 };
+
+	GET(BuildingClass* const, pThis, ESI);
+	GET(CellClass* const, pTarget, EAX);
+
+	auto pWeapon = SuperWeaponTypeClass::Array->GetItem(pThis->FiringSWType)->WeaponType;
+	BulletClass* pBullet = nullptr;
+
+	if (pWeapon)
+		pBullet = pWeapon->Projectile->CreateBullet(pTarget, pThis, pWeapon->Damage, pWeapon->Warhead, 255, pWeapon->Bright);
+
+	R->EAX(pBullet);
+	R->EBX(pWeapon);
+	return SkipGameCode;
+}
+
+// Set all bullet params (Bright) from weapon for nuke payload weapon.
+DEFINE_HOOK(0x46B3E6, BulletClass_NukeMaker_BulletParams, 0x8)
+{
+	enum { SkipGameCode = 0x46B40D };
+
+	GET_STACK(BulletClass* const, pThis, STACK_OFFS(0x70, 0x60));
+	GET_STACK(TechnoClass* const, pOwner, STACK_OFFS(0x74, 0x50));
+	GET(WeaponTypeClass* const, pWeapon, ESI);
+	GET(AbstractClass* const, pTarget, EBX);
+
+	pThis->Construct(pWeapon->Projectile, pTarget, pOwner, pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright);
+
+	R->EDI(pThis);
+	return SkipGameCode;
+}
