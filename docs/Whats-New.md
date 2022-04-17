@@ -293,6 +293,7 @@ New:
 - TerrainType & ore minimap color customization (by Starkku)
 - Single-color weapon lasers (by Starkku)
 - Customizable projectile trajectory (by secsome)
+- Extend Parallel AI Queues (by Netsu-Negi)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)

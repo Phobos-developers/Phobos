@@ -27,6 +27,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - SHP debris shadows now respect the `Shadow` tag.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
 - Adds a "Load Game" button to the retry dialog on mission failure.
+- Adds a "ExtendParallelAIQueues" flag to custom ai clone factory behaviour.
 
 ![image](_static/images/turretoffset-01.png)  
 *Side offset voxel turret in Breaking Blue project*

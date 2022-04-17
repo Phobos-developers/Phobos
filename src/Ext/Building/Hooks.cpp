@@ -73,6 +73,16 @@ DEFINE_HOOK(0x4401BB, Factory_AI_PickWithFreeDocks, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPPulseBulletWeapon, 0x8)
+{
+	GET(WeaponTypeClass*, pWeapon, EBP);
+	GET_STACK(BulletClass*, pBullet, STACK_OFFS(0xF0, 0xA4));
+
+	pBullet->SetWeaponType(pWeapon);
+
+	return 0;
+}
+
 DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory, 0x6)
 {
 	GET(BuildingClass*, pBuilding, ESI);
@@ -88,9 +98,10 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory, 0x6)
 			currFactory = &pData->Factory_BuildingType;
 			break;
 		case AbstractType::UnitType:
-			currFactory = pBuilding->Type->Naval
-				? &pData->Factory_NavyType
-				: &pData->Factory_VehicleType;
+			if (!pBuilding->Type->Naval)
+				currFactory = &pData->Factory_VehicleType;
+			else
+				currFactory = &pData->Factory_NavyType;
 			break;
 		case AbstractType::InfantryType:
 			currFactory = &pData->Factory_InfantryType;
@@ -129,17 +140,6 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory, 0x6)
 				return 0x4503CA;
 		}
 	}
-
-	return 0;
-}
-
-
-DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPPulseBulletWeapon, 0x8)
-{
-	GET(WeaponTypeClass*, pWeapon, EBP);
-	GET_STACK(BulletClass*, pBullet, STACK_OFFS(0xF0, 0xA4));
-
-	pBullet->SetWeaponType(pWeapon);
 
 	return 0;
 }
