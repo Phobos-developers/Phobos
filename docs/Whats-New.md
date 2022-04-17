@@ -293,6 +293,8 @@ New:
 - TerrainType & ore minimap color customization (by Starkku)
 - Single-color weapon lasers (by Starkku)
 -  Repair Legless Cyborgs In Transports (by FS-21)
+- Customizable projectile trajectory (by secsome)
+- Correct owner house for Warhead Anim/SplashList & Play Animation trigger animations (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -310,6 +312,7 @@ Vanilla fixes:
 - Fixed vehicles (both voxel & SHP) to fully respect `Palette` (by Starkku)
 - Fixed mind control indicator animations not reappearing on mind controlled objects that are cloaked and then uncloaked (by Starkku)
 - Fixed bug that restored cyborg legs when the soldier leave transports (by FS-21)
+- Fixed Nuke carrier and payload weapons not respecting `Bright` setting on weapon (by Starkku)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
