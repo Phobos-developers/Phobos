@@ -138,6 +138,8 @@ This page lists all the individual contributions to the project by their author.
   - TerrainType & ore minimap color customization
   - Laser fixes & improvements
   - Mind control indicator animation cloak fix
+  - Warhead / Play animation trigger animation owner fix
+  - Nuke carrier & payload Bright fix
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
