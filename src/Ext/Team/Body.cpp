@@ -19,6 +19,13 @@ void TeamExt::ExtData::Serialize(T& Stm)
 		.Process(this->WaitNoTargetCounter)
 		.Process(this->WaitNoTargetTimer)
 		.Process(this->TeamLeader)
+		.Process(this->ConditionalJump_Evaluation)
+		.Process(this->ConditionalJump_ComparatorMode)
+		.Process(this->ConditionalJump_ComparatorValue)
+		.Process(this->ConditionalJump_EnabledKillsCount)
+		.Process(this->ConditionalJump_Counter)
+		.Process(this->AbortActionAfterKilling)
+		.Process(this->ConditionalJump_Index)
 		;
 }
 

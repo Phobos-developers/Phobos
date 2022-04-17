@@ -13,6 +13,7 @@
 #include <WarheadTypeClass.h>
 #include <SpawnManagerClass.h>
 
+#include <TechnoClass.h>
 #include <Ext/Team/Body.h>
 #include <Utilities/Container.h>
 #include <Phobos.h>
@@ -62,6 +63,20 @@ enum class PhobosScripts : unsigned int
 	UnregisterGreatSuccess = 111,
 	GatherAroundLeader = 112,
 	RandomSkipNextAction = 113,
+
+	AbortActionAfterSuccessKill = 134,
+	ConditionalJumpResetCounter = 135,
+	ConditionalJumpSetComparatorMode = 136,
+	ConditionalJumpSetComparatorValue = 137,
+	ConditionalJumpSetIndex = 138,
+	ConditionalJumpResetVariables = 139,
+	ConditionalJumpIfFalse = 140,
+	ConditionalJumpIfTrue = 141,
+	ConditionalJumpManageKillsCounter = 142,
+	ConditionalJumpCheckEconomy = 143,
+	ConditionalJumpCheckPower = 144,
+	ConditionalJumpKillEvaluation = 145,
+	ConditionalJumpCheckObjects = 146,
 
 	// Variables
 	LocalVariableSet = 500,
@@ -184,6 +199,20 @@ public:
 	static void Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem);
 	static TechnoClass* FindBestObject(TechnoClass *pTechno, int method, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem);
 	static void UnregisterGreatSuccess(TeamClass * pTeam);
+
+	static void ConditionalJumpIfTrue(TeamClass* pTeam, int newScriptLine);
+	static void ConditionalJumpIfFalse(TeamClass* pTeam, int newScriptLine);
+	static void ConditionalJump_KillEvaluation(TeamClass* pTeam);
+	static void ConditionalJump_ManageKillsCounter(TeamClass* pTeam, int enable);
+	static void ConditionalJump_SetIndex(TeamClass* pTeam, int index);
+	static void ConditionalJump_SetComparatorValue(TeamClass* pTeam, int value);
+	static void ConditionalJump_SetComparatorMode(TeamClass* pTeam, int value);
+	static void ConditionalJump_ResetCounter(TeamClass* pTeam);
+	static void SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable);
+	static void ConditionalJump_ResetVariables(TeamClass* pTeam);
+	static void ConditionalJump_CheckEconomy(TeamClass* pTeam);
+	static void ConditionalJump_CheckPower(TeamClass* pTeam, int mode);
+	static void ConditionalJump_CheckObjects(TeamClass* pTeam);
 
 	static void Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
 	static void Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);

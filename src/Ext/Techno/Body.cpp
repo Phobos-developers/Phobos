@@ -11,6 +11,8 @@
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Team/Body.h>
+#include <Ext/Script/Body.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -52,8 +54,49 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 					pFootKiller->Team->Type->ID, pObjectKiller->get_ID(), pVictim->get_ID());
 				*/
 				pKillerTechnoData->LastKillWasTeamTarget = false;
-				if (pFocus == pVictim)
+
+				if (pFocus
+					&& pVictim
+					&& pFocus->GetTechnoType() == pVictim->GetTechnoType())
+				{
 					pKillerTechnoData->LastKillWasTeamTarget = true;
+				}
+
+				// Conditional Jump Script Action stuff
+				if (auto pKillerTeamData = TeamExt::ExtMap.Find(pFootKiller->Team))
+				{
+					if (pKillerTeamData->ConditionalJump_EnabledKillsCount)
+					{
+						
+						bool isValidKill = pKillerTeamData->ConditionalJump_Index < 0 ? false : ScriptExt::EvaluateObjectWithMask(pVictim, pKillerTeamData->ConditionalJump_Index, -1, -1, pKiller);;
+
+						if (isValidKill || pKillerTechnoData->LastKillWasTeamTarget)
+							pKillerTeamData->ConditionalJump_Counter++;
+					}
+
+					// Special case for interrupting current action
+					if (pKillerTeamData->AbortActionAfterKilling
+						&& pKillerTechnoData->LastKillWasTeamTarget)
+					{
+						pKillerTeamData->AbortActionAfterKilling = false;
+						auto pTeam = pFootKiller->Team;
+
+						Debug::Log("DEBUG: [%s] [%s] %d = %d,%d - Force next script action after successful kill: %d = %d,%d\n"
+							, pTeam->Type->ID
+							, pTeam->CurrentScript->Type->ID
+							, pTeam->CurrentScript->CurrentMission
+							, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action
+							, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument
+							, pTeam->CurrentScript->CurrentMission + 1
+							, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission + 1].Action
+							, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission + 1].Argument);
+
+						// Jumping to the next line of the script list
+						pTeam->StepCompleted = true;
+
+						return;
+					}
+				}
 			}
 		}
 	}

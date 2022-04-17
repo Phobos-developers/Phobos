@@ -99,7 +99,7 @@ This page lists all the individual contributions to the project by their author.
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
   - `Spawner.LimitRange`
-  - ScriptType Actions 71 to 113
+  - ScriptType Actions 71 to 113 & 134 to 146
   - MC deployer fixes
   - Help with docs
   - Automatic Passenger Deletion logic

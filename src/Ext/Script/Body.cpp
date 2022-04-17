@@ -196,6 +196,45 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case PhobosScripts::RandomSkipNextAction:
 		ScriptExt::SkipNextAction(pTeam, -1);
 		break;
+	case PhobosScripts::AbortActionAfterSuccessKill:
+		ScriptExt::SetAbortActionAfterSuccessKill(pTeam, -1);
+		break;
+	case PhobosScripts::ConditionalJumpResetCounter:
+		ScriptExt::ConditionalJump_ResetCounter(pTeam);
+		break;
+	case PhobosScripts::ConditionalJumpSetComparatorMode:
+		ScriptExt::ConditionalJump_SetComparatorMode(pTeam, -1);
+		break;
+	case PhobosScripts::ConditionalJumpSetComparatorValue:
+		ScriptExt::ConditionalJump_SetComparatorValue(pTeam, -1);
+		break;
+	case PhobosScripts::ConditionalJumpSetIndex:
+		ScriptExt::ConditionalJump_SetIndex(pTeam, -1000000);
+		break;
+	case PhobosScripts::ConditionalJumpResetVariables:
+		ScriptExt::ConditionalJump_ResetVariables(pTeam);
+		break;
+	case PhobosScripts::ConditionalJumpIfFalse:
+		ScriptExt::ConditionalJumpIfFalse(pTeam, -1);
+		break;
+	case PhobosScripts::ConditionalJumpIfTrue:
+		ScriptExt::ConditionalJumpIfTrue(pTeam, -1);
+		break;
+	case PhobosScripts::ConditionalJumpManageKillsCounter:
+		ScriptExt::ConditionalJump_ManageKillsCounter(pTeam, -1);
+		break;
+	case PhobosScripts::ConditionalJumpCheckEconomy:
+		ScriptExt::ConditionalJump_CheckEconomy(pTeam);
+		break;
+	case PhobosScripts::ConditionalJumpCheckPower:
+		ScriptExt::ConditionalJump_CheckPower(pTeam, -1);
+		break;
+	case PhobosScripts::ConditionalJumpKillEvaluation:
+		ScriptExt::ConditionalJump_KillEvaluation(pTeam);
+		break;
+	case PhobosScripts::ConditionalJumpCheckObjects:
+		ScriptExt::ConditionalJump_CheckObjects(pTeam);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		if (action > 70 && !IsExtVariableAction(action))
@@ -3002,4 +3041,1187 @@ bool ScriptExt::IsExtVariableAction(int action)
 {
 	auto eAction = static_cast<PhobosScripts>(action);
 	return eAction >= PhobosScripts::LocalVariableAdd && eAction <= PhobosScripts::GlobalVariableAndByGlobal;
+}
+
+// 1-based like the original action '6,n' (so the first script line is n=1)
+void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam, int newScriptLine = -1)
+{
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+	int scriptArgument = newScriptLine;
+
+	if (scriptArgument < 1)
+		scriptArgument = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
+
+	// if by mistake you put as first line=0 this corrects it because for WW/EALA this script argument is 1-based
+	if (scriptArgument < 1)
+		scriptArgument = 1;
+	
+	if (pTeamData->ConditionalJump_Evaluation)
+	{
+		Debug::Log("DEBUG: [%s] [%s] %d = %d,%d - Conditional Jump was a success! - New Line: %d = %d,%d\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, scriptArgument - 1, pScript->Type->ScriptActions[scriptArgument - 1].Action, pScript->Type->ScriptActions[scriptArgument - 1].Argument);
+
+		// Start conditional jump!
+		// This is magic: for example, for jumping into line 0 of the script list you have to point to the "-1" line so in the next AI iteration the current line will be increased by 1 and then it will point to the desired line 0
+		pScript->CurrentMission = scriptArgument - 2;
+
+		// Cleaning Conditional Jump related variables
+		pTeamData->ConditionalJump_Evaluation = false;
+		pTeamData->ConditionalJump_ComparatorMode = 3; // >=
+		pTeamData->ConditionalJump_ComparatorValue = 1;
+		pTeamData->ConditionalJump_EnabledKillsCount = false;
+		pTeamData->ConditionalJump_Counter = 0;
+		pTeamData->AbortActionAfterKilling = false;
+		pTeamData->ConditionalJump_Index = -1000000;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+// 1-based like the original action '6,n' (so the first script line is n=1)
+void ScriptExt::ConditionalJumpIfFalse(TeamClass* pTeam, int newScriptLine = -1)
+{
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+	int scriptArgument = newScriptLine;
+
+	if (scriptArgument < 1)
+		scriptArgument = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
+
+	// if by mistake you put as first line=0 this corrects it because for WW/EALA this script argument is 1-based
+	if (scriptArgument < 1)
+		scriptArgument = 1;
+
+	if (!pTeamData->ConditionalJump_Evaluation)
+	{
+		Debug::Log("DEBUG: [%s] [%s] %d = %d,%d - Conditional Jump was a success! - New Line: %d = %d,%d\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, scriptArgument - 1, pScript->Type->ScriptActions[scriptArgument - 1].Action, pScript->Type->ScriptActions[scriptArgument - 1].Argument);
+
+		// Start conditional jump!
+		// This is magic: for example, for jumping into line 0 of the script list you have to point to the "-1" line so in the next AI iteration the current line will be increased by 1 and then it will point to the desired line 0
+		pScript->CurrentMission = scriptArgument - 2;
+
+		// Cleaning Conditional Jump related variables
+		pTeamData->ConditionalJump_Evaluation = false;
+		pTeamData->ConditionalJump_ComparatorMode = 3; // >=
+		pTeamData->ConditionalJump_ComparatorValue = 1;
+		pTeamData->ConditionalJump_EnabledKillsCount = false;
+		pTeamData->ConditionalJump_Counter = 0;
+		pTeamData->AbortActionAfterKilling = false;
+		pTeamData->ConditionalJump_Index = -1000000;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::ConditionalJump_KillEvaluation(TeamClass* pTeam)
+{
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	if (!pTeamData->ConditionalJump_EnabledKillsCount)
+		return;
+
+	if (pTeamData->ConditionalJump_Counter < 0)
+		pTeamData->ConditionalJump_Counter = 0;
+
+	int counter = pTeamData->ConditionalJump_Counter;
+	int comparator = pTeamData->ConditionalJump_ComparatorValue;
+
+	// Start evaluation by the number of kills
+	bool evaluation = false;
+
+	switch (pTeamData->ConditionalJump_ComparatorMode)
+	{
+	case 0:
+		// <
+		if (counter < comparator)
+			evaluation = true;
+		break;
+	case 1:
+		// <=
+		if (counter <= comparator)
+			evaluation = true;
+		break;
+	case 2:
+		// ==
+		if (counter = comparator)
+			evaluation = true;
+		break;
+	case 3:
+		// >=
+		if (counter >= comparator)
+			evaluation = true;
+		break;
+	case 4:
+		// >
+		if (counter > comparator)
+			evaluation = true;
+		break;
+	case 5:
+		// !=
+		if (counter != comparator)
+			evaluation = true;
+		break;
+	default:
+		break;
+	}
+
+	pTeamData->ConditionalJump_Evaluation = evaluation;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::ConditionalJump_ManageKillsCounter(TeamClass* pTeam, int enable = -1)
+{
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+	
+	auto pScript = pTeam->CurrentScript;
+	int scriptArgument = enable;
+
+	if (scriptArgument < 0 || scriptArgument > 1)
+		scriptArgument = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
+
+	if (scriptArgument <= 0)
+		scriptArgument = 0;
+	else
+		scriptArgument = 1;
+
+	if (scriptArgument <= 0)
+		pTeamData->ConditionalJump_EnabledKillsCount = false;
+	else
+		pTeamData->ConditionalJump_EnabledKillsCount = true;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::ConditionalJump_SetIndex(TeamClass* pTeam, int index = -1000000)
+{
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+	int scriptArgument = index;
+
+	if (scriptArgument == -1000000)
+		scriptArgument = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
+
+//	if (scriptArgument < 0)
+//		scriptArgument = -1;
+
+	pTeamData->ConditionalJump_Index = scriptArgument;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::ConditionalJump_SetComparatorValue(TeamClass* pTeam, int value = -1)
+{
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+	int scriptArgument = value;
+
+	if (scriptArgument < 0)
+		scriptArgument = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
+
+//	if (scriptArgument < 0)
+//		scriptArgument = 0;
+
+	pTeamData->ConditionalJump_ComparatorValue = scriptArgument;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+// Possible values are 3:">=" -> 0:"<", 1:"<=", 2:"==", 3:">=", 4:">", 5:"!="
+void ScriptExt::ConditionalJump_SetComparatorMode(TeamClass* pTeam, int value = -1)
+{
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+	int scriptArgument = value;
+
+	if (scriptArgument < 0 || scriptArgument > 5)
+		scriptArgument = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
+
+	if (scriptArgument < 0 || scriptArgument > 5)
+		scriptArgument = 3; // >=
+
+	pTeamData->ConditionalJump_ComparatorMode = scriptArgument;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::ConditionalJump_ResetCounter(TeamClass* pTeam)
+{
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+	pTeamData->ConditionalJump_Counter = 0;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::ConditionalJump_ResetVariables(TeamClass* pTeam)
+{
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	// Cleaning Conditional Jump related variables
+	pTeamData->ConditionalJump_Evaluation = false;
+	pTeamData->ConditionalJump_ComparatorMode = 3; // >=
+	pTeamData->ConditionalJump_ComparatorValue = 1;
+	pTeamData->ConditionalJump_EnabledKillsCount = false;
+	pTeamData->ConditionalJump_Counter = 0;
+	pTeamData->AbortActionAfterKilling = false;
+	pTeamData->ConditionalJump_Index = -1000000;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable = -1)
+{
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	int scriptArgument = enable;
+	if (scriptArgument < 0)
+	{
+		auto pScript = pTeam->CurrentScript;
+		scriptArgument = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
+	}
+
+	if (scriptArgument >= 1)
+		pTeamData->AbortActionAfterKilling = true;
+	else
+		pTeamData->AbortActionAfterKilling = false;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::ConditionalJump_CheckEconomy(TeamClass* pTeam)
+{
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	HouseClass* pHouse = nullptr;
+	DynamicVectorClass<HouseClass*> pHousesList;
+	long economyValue = -1;
+	int index = pTeamData->ConditionalJump_Index;
+
+	// House selection & obtain the available cash
+	if (index >= 0)
+	{
+		// Standard House index
+		pHouse = HouseClass::Array->GetItem(index);
+		economyValue = pHouse->Available_Money();
+	}
+	else
+	{
+		for (auto pItem : *HouseClass::Array())
+		{
+			if (pTeam->Owner == pItem || pItem->Defeated || pItem->IsObserver() || pItem->Type->MultiplayPassive || pItem->IsNeutral())
+				continue;
+
+			pHousesList.AddItem(pItem);
+		}
+
+		switch (index)
+		{
+		case -1:
+			// Random House (excluding the Team's House)
+			if (pHousesList.Count > 0)
+			{
+				pHouse = pHousesList.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, pHousesList.Count - 1));
+				economyValue = pHouse->Available_Money();
+			}
+			break;
+
+		case -2:
+			// The Team's House
+			pHouse = pTeam->Owner;
+			economyValue = pHouse->Available_Money();
+			break;
+
+		case -3:
+			// The richest House
+			if (pHousesList.Count > 0)
+			{
+				HouseClass* pTempHouse = nullptr;
+
+				for (auto pItem : pHousesList)
+				{
+					if (pItem->Available_Money() > economyValue || economyValue == -1)
+					{
+						economyValue = pItem->Available_Money();
+						pTempHouse = pItem;
+					}
+				}
+
+				if (pTempHouse)
+					pHouse = pTempHouse;
+			}
+			break;
+
+		case -4:
+			// The poorest House
+			if (pHousesList.Count > 0)
+			{
+				HouseClass* pTempHouse = nullptr;
+
+				for (auto pItem : pHousesList)
+				{
+					if (pItem->Available_Money() < economyValue || economyValue == -1)
+					{
+						economyValue = pItem->Available_Money();
+						pTempHouse = pItem;
+					}
+				}
+
+				if (pTempHouse)
+					pHouse = pTempHouse;
+			}
+			break;
+
+		case -5:
+			// The richest enemy House
+			if (pHousesList.Count > 0)
+			{
+				HouseClass* pTempHouse = nullptr;
+
+				for (auto pItem : pHousesList)
+				{
+					if (pTeam->Owner->IsAlliedWith(pItem))
+						continue;
+
+					if (pItem->Available_Money() > economyValue || economyValue == -1)
+					{
+						economyValue = pItem->Available_Money();
+						pTempHouse = pItem;
+					}
+				}
+
+				if (pTempHouse)
+					pHouse = pTempHouse;
+			}
+			break;
+
+		case -6:
+			// The poorest enemy House
+			if (pHousesList.Count > 0)
+			{
+				HouseClass* pTempHouse = nullptr;
+
+				for (auto pItem : pHousesList)
+				{
+					if (pTeam->Owner->IsAlliedWith(pItem))
+						continue;
+
+					if (pItem->Available_Money() < economyValue || economyValue == -1)
+					{
+						economyValue = pItem->Available_Money();
+						pTempHouse = pItem;
+					}
+				}
+
+				if (pTempHouse)
+					pHouse = pTempHouse;
+			}
+			break;
+
+		case -7:
+			// The richest friendly House
+			if (pHousesList.Count > 0)
+			{
+				HouseClass* pTempHouse = nullptr;
+
+				for (auto pItem : pHousesList)
+				{
+					if (!pTeam->Owner->IsAlliedWith(pItem))
+						continue;
+
+					if (pItem->Available_Money() > economyValue || economyValue == -1)
+					{
+						economyValue = pItem->Available_Money();
+						pTempHouse = pItem;
+					}
+				}
+
+				if (pTempHouse)
+					pHouse = pTempHouse;
+			}
+			break;
+
+		case -8:
+			// The poorest friendly House
+			if (pHousesList.Count > 0)
+			{
+				HouseClass* pTempHouse = nullptr;
+
+				for (auto pItem : pHousesList)
+				{
+					if (!pTeam->Owner->IsAlliedWith(pItem))
+						continue;
+
+					if (pItem->Available_Money() < economyValue || economyValue == -1)
+					{
+						economyValue = pItem->Available_Money();
+						pTempHouse = pItem;
+					}
+				}
+
+				if (pTempHouse)
+					pHouse = pTempHouse;
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	pTeamData->ConditionalJump_Evaluation = false;
+
+	// We have selected the house, now check
+	if (economyValue >= 0)
+	{
+		int comparatorValue = pTeamData->ConditionalJump_ComparatorValue;
+
+		// Comparators are like in [AITriggerTypes] from aimd.ini
+		switch (pTeamData->ConditionalJump_ComparatorMode)
+		{
+		case 0:
+			// <
+			if (economyValue < comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		case 1:
+			// <=
+			if (economyValue <= comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		case 2:
+			// ==
+			if (economyValue = comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		case 3:
+			// >=
+			if (economyValue >= comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		case 4:
+			// >
+			if (economyValue > comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		case 5:
+			// !=
+			if (economyValue != comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		default:
+			break;
+		}
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+}
+
+void ScriptExt::ConditionalJump_CheckPower(TeamClass* pTeam, int mode = -1)
+{
+	HouseClass* pHouse = nullptr;
+	DynamicVectorClass<HouseClass*> pHousesList;
+	long powerValue = -100000000;
+
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+	int index = pTeamData->ConditionalJump_Index;
+
+	if (mode < 0)
+		mode = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
+
+	if (mode < 0)
+		mode = 0;
+
+	// House selection & obtain the available cash
+	if (index >= 0)
+	{
+		// Standard House index
+		pHouse = HouseClass::Array->GetItem(index);
+
+		switch (mode)
+		{
+		case 2:
+			// Difference between produced energy and consumed.
+			powerValue = pHouse->PowerOutput - pHouse->Power_Drain();
+			break;
+		case 1:
+			// Total power drain
+			powerValue = pHouse->Power_Drain();
+			break;
+		default:
+			// mode == 0 (or an unknown value). Total Energy produced, default case
+			powerValue = pHouse->PowerOutput;
+			break;
+		}
+	}
+	else
+	{
+		for (auto pItem : *HouseClass::Array())
+		{
+			if (pTeam->Owner == pItem || pItem->Defeated || pItem->IsObserver() || pItem->Type->MultiplayPassive || pItem->IsNeutral())
+				continue;
+
+			pHousesList.AddItem(pItem);
+		}
+
+		switch (index)
+		{
+		case -1:
+			// Random House (excluding the Team's House)
+			if (pHousesList.Count > 0)
+			{
+				pHouse = pHousesList.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, pHousesList.Count - 1));
+
+				switch (mode)
+				{
+				case 2:
+					// Difference between produced energy and consumed.
+					powerValue = pHouse->PowerOutput - pHouse->Power_Drain();
+					break;
+				case 1:
+					// Total power drain
+					powerValue = pHouse->Power_Drain();
+					break;
+				default:
+					// mode == 0 (or an unknown value). Total Energy produced, default case
+					powerValue = pHouse->PowerOutput;
+					break;
+				}
+			}
+			break;
+
+		case -2:
+			// The Team's House
+			pHouse = pTeam->Owner;
+
+			switch (mode)
+			{
+			case 2:
+				// Difference between produced energy and consumed.
+				powerValue = pHouse->PowerOutput - pHouse->Power_Drain();
+				break;
+			case 1:
+				// Total power drain
+				powerValue = pHouse->Power_Drain();
+				break;
+			default:
+				// mode == 0 (or an unknown value). Total Energy produced, default case
+				powerValue = pHouse->PowerOutput;
+				break;
+			}
+			break;
+
+		case -3:
+			// The House with more energy
+			if (pHousesList.Count > 0)
+			{
+				HouseClass* pTempHouse = nullptr;
+
+				for (auto pItem : pHousesList)
+				{
+					int tempPowerValue = -100000000;
+
+					switch (mode)
+					{
+					case 2:
+						// Difference between produced energy and consumed.
+						tempPowerValue = pItem->PowerOutput - pItem->Power_Drain();
+						break;
+					case 1:
+						// Total power drain
+						tempPowerValue = pItem->Power_Drain();
+						break;
+					default:
+						// mode == 0 (or an unknown value). Total Energy produced, default case
+						tempPowerValue = pItem->PowerOutput;
+						break;
+					}
+
+					if (tempPowerValue > powerValue || powerValue == -100000000)
+					{
+						powerValue = tempPowerValue;
+						pTempHouse = pItem;
+					}
+				}
+
+				if (pTempHouse)
+					pHouse = pTempHouse;
+			}
+			break;
+
+		case -4:
+			// The House with less energy
+			if (pHousesList.Count > 0)
+			{
+				HouseClass* pTempHouse = nullptr;
+
+				for (auto pItem : pHousesList)
+				{
+					int tempPowerValue = -100000000;
+
+					switch (mode)
+					{
+					case 2:
+						// Difference between produced energy and consumed.
+						tempPowerValue = pItem->PowerOutput - pItem->Power_Drain();
+						break;
+					case 1:
+						// Total power drain
+						tempPowerValue = pItem->Power_Drain();
+						break;
+					default:
+						// mode == 0 (or an unknown value). Total Energy produced, default case
+						tempPowerValue = pItem->PowerOutput;
+						break;
+					}
+
+					if (tempPowerValue < powerValue || powerValue == -1)
+					{
+						powerValue = tempPowerValue;
+						pTempHouse = pItem;
+					}
+				}
+
+				if (pTempHouse)
+					pHouse = pTempHouse;
+			}
+			break;
+
+		case -5:
+			// The enemy House with major energy
+			if (pHousesList.Count > 0)
+			{
+				HouseClass* pTempHouse = nullptr;
+
+				for (auto pItem : pHousesList)
+				{
+					if (pTeam->Owner->IsAlliedWith(pItem))
+						continue;
+
+					int tempPowerValue = -100000000;
+
+					switch (mode)
+					{
+					case 2:
+						// Difference between produced energy and consumed.
+						tempPowerValue = pItem->PowerOutput - pItem->Power_Drain();
+						break;
+					case 1:
+						// Total power drain
+						tempPowerValue = pItem->Power_Drain();
+						break;
+					default:
+						// mode == 0 (or an unknown value). Total Energy produced, default case
+						tempPowerValue = pItem->PowerOutput;
+						break;
+					}
+
+					if (tempPowerValue > powerValue || powerValue == -100000000)
+					{
+						powerValue = tempPowerValue;
+						pTempHouse = pItem;
+					}
+				}
+
+				if (pTempHouse)
+					pHouse = pTempHouse;
+			}
+			break;
+
+		case -6:
+			// The enemy House with minor energy
+			if (pHousesList.Count > 0)
+			{
+				HouseClass* pTempHouse = nullptr;
+
+				for (auto pItem : pHousesList)
+				{
+					if (pTeam->Owner->IsAlliedWith(pItem))
+						continue;
+
+					int tempPowerValue = -100000000;
+
+					switch (mode)
+					{
+					case 2:
+						// Difference between produced energy and consumed.
+						tempPowerValue = pItem->PowerOutput - pItem->Power_Drain();
+						break;
+					case 1:
+						// Total power drain
+						tempPowerValue = pItem->Power_Drain();
+						break;
+					default:
+						// mode == 0 (or an unknown value). Total Energy produced, default case
+						tempPowerValue = pItem->PowerOutput;
+						break;
+					}
+
+					if (tempPowerValue < powerValue || powerValue == -1)
+					{
+						powerValue = tempPowerValue;
+						pTempHouse = pItem;
+					}
+				}
+
+				if (pTempHouse)
+					pHouse = pTempHouse;
+			}
+			break;
+
+		case -7:
+			// The friendly House with major energy
+			if (pHousesList.Count > 0)
+			{
+				HouseClass* pTempHouse = nullptr;
+
+				for (auto pItem : pHousesList)
+				{
+					if (!pTeam->Owner->IsAlliedWith(pItem))
+						continue;
+
+					int tempPowerValue = -100000000;
+
+					switch (mode)
+					{
+					case 2:
+						// Difference between produced energy and consumed.
+						tempPowerValue = pItem->PowerOutput - pItem->Power_Drain();
+						break;
+					case 1:
+						// Total power drain
+						tempPowerValue = pItem->Power_Drain();
+						break;
+					default:
+						// mode == 0 (or an unknown value). Total Energy produced, default case
+						tempPowerValue = pItem->PowerOutput;
+						break;
+					}
+
+					if (tempPowerValue > powerValue || powerValue == -100000000)
+					{
+						powerValue = tempPowerValue;
+						pTempHouse = pItem;
+					}
+				}
+
+				if (pTempHouse)
+					pHouse = pTempHouse;
+			}
+			break;
+
+		case -8:
+			// The friendly House with minor energy
+			if (pHousesList.Count > 0)
+			{
+				HouseClass* pTempHouse = nullptr;
+
+				for (auto pItem : pHousesList)
+				{
+					if (!pTeam->Owner->IsAlliedWith(pItem))
+						continue;
+
+					int tempPowerValue = -100000000;
+
+					switch (mode)
+					{
+					case 2:
+						// Difference between produced energy and consumed.
+						tempPowerValue = pItem->PowerOutput - pItem->Power_Drain();
+						break;
+					case 1:
+						// Total power drain
+						tempPowerValue = pItem->Power_Drain();
+						break;
+					default:
+						// mode == 0 (or an unknown value). Total Energy produced, default case
+						tempPowerValue = pItem->PowerOutput;
+						break;
+					}
+
+					if (tempPowerValue < powerValue || powerValue == -1)
+					{
+						powerValue = tempPowerValue;
+						pTempHouse = pItem;
+					}
+				}
+
+				if (pTempHouse)
+					pHouse = pTempHouse;
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	// House Economy (Accepted comparator values: 0:<,1:<=,2:==,3:>=,4:>,5:!=).
+	pTeamData->ConditionalJump_Evaluation = false;
+
+	// We have selected the house, now check
+	if (powerValue != -100000000)
+	{
+		int comparatorValue = pTeamData->ConditionalJump_ComparatorValue;
+
+		// Comparators are like in [AITriggerTypes] from aimd.ini
+		switch (pTeamData->ConditionalJump_ComparatorMode)
+		{
+		case 0:
+			// <
+			if (powerValue < comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		case 1:
+			// <=
+			if (powerValue <= comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		case 2:
+			// ==
+			if (powerValue = comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		case 3:
+			// >=
+			if (powerValue >= comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		case 4:
+			// >
+			if (powerValue > comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		case 5:
+			// !=
+			if (powerValue != comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		default:
+			break;
+		}
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+}
+
+// Count objects from [AITargetTypes] lists
+void ScriptExt::ConditionalJump_CheckObjects(TeamClass* pTeam)
+{
+	long countValue = 0;
+
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	int index = pTeamData->ConditionalJump_Index;
+
+	if (index >= 0 && RulesExt::Global()->AITargetTypesLists.Count > 0)
+	{
+		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypesLists.GetItem(index);
+
+		if (objectsList.Count == 0)
+			return;
+
+		for (auto const pTechno : *TechnoClass::Array())
+		{
+			if (auto pTechnoType = pTechno->GetTechnoType())
+			{
+				if (pTechno->IsAlive
+					&& pTechno->Health > 0
+					&& !pTechno->InLimbo
+					&& pTechno->IsOnMap
+					&& (!pTeam->FirstUnit->Owner->IsAlliedWith(pTechno)
+						|| (pTeam->FirstUnit->Owner->IsAlliedWith(pTechno)
+							&& pTechno->IsMindControlled()
+							&& !pTeam->FirstUnit->Owner->IsAlliedWith(pTechno->MindControlledBy))))
+				{
+					for (int i = 0; i < objectsList.Count; i++)
+					{
+						if (objectsList.GetItem(i) == pTechnoType)
+						{
+							countValue++;
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		pTeamData->ConditionalJump_Evaluation = false;
+		int comparatorValue = pTeamData->ConditionalJump_ComparatorValue;
+
+		// Comparators are like in [AITriggerTypes] from aimd.ini
+		switch (pTeamData->ConditionalJump_ComparatorMode)
+		{
+		case 0:
+			// <
+			if (countValue < comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		case 1:
+			// <=
+			if (countValue <= comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		case 2:
+			// ==
+			if (countValue = comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		case 3:
+			// >=
+			if (countValue >= comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		case 4:
+			// >
+			if (countValue > comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		case 5:
+			// !=
+			if (countValue != comparatorValue)
+				pTeamData->ConditionalJump_Evaluation = true;
+			break;
+		default:
+			break;
+		}
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
 }

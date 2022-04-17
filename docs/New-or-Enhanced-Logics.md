@@ -594,6 +594,184 @@ In `aimd.ini`:
 x=113,n           ; where 0 > n <= 100
 ```
 
+### `134` Action Abortion After Success Kill
+- If the team kills a target and this option is enabled the current action is interrumped and jumps to the next script line.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=134,0           ; integer, 0 for disable it, 1 for enable it
+```
+
+### `135` Conditional Jump, Reset Counter
+- Puts the Team's kill counter to 0.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=135,0           ;
+```
+
+### `136` Conditional Jump, Set Comparator Mode
+- Sets the comparator used in Conditional Jumps.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=136,3           ; integer, from 0 to 5
+```
+
+- The possible comparator values:
+
+| *Argument* | *Comparator type* |
+| :--------: | :---------------: |
+| 0          | < |
+| 1          | <= |
+| 2          | = |
+| 3          | >= |
+| 4          | > |
+| 5          | != |
+
+### `137` Conditional Jump, Set Comparator Value
+- Sets the value used in Conditional Jumps comparisons.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=137,1           ; integer
+```
+
+### `138` Conditional Jump, Set Index
+- Sets the index of a list used in Conditional Jumps comparisons. Depends of the Conditional Jump Action.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=138,n           ; integer
+```
+
+### `139` Conditional Jump, Clear variables
+- Reset all variables related to Conditional Jumps.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=139,0           ;
+```
+
+### `140` Conditional Jump, Jump if False
+- Check the Conditional Jump evaluation and jumps to the specified line if the value is false. Like in the script Action 6,x the line number is 1-based.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=140,n           ; integer, n > 0
+```
+
+### `141` Conditional Jump, Jump if True
+- Check the Conditional Jump evaluation and jumps to the specified line if the value is true. Like in the script Action 6,x the line number is 1-based.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=141,n           ; integer, n > 0
+```
+
+### `142` Conditional Jump, Manage Kills Counter
+- The team kills counter will work if this Action enables it.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=142,0           ; integer, 0 for disable it, 1 for enable it
+```
+
+### `143` Conditional Jump, Check Economy values
+- Checks the Houses economy and saves the result for the Conditional Jump evaluation.
+- The checked House is selected by the Script Action `138`.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=143,0           ; integer
+```
+
+- The possible House index values are:
+
+| *Argument* | *Description* |
+| :--------: | :---------------: |
+| >= 0       | House index in-game |
+| -1         | Random House (excluding the Team's House) |
+| -2         | The Team's House |
+| -3         | The richest House |
+| -4         | The poorest House |
+| -5         | The richest enemy House |
+| -6         | The poorest enemy House |
+| -7         | The richest friendly House |
+| -8         | The poorest friendly House |
+
+### `144` Conditional Jump, Check Power values
+- Checks the Houses power and saves the result for the Conditional Jump evaluation.
+- The checked House is selected by the Script Action `138`.
+- The Action argument establish the kind of energy check.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=144,0           ; integer, 0 >= n <=2
+```
+
+- The possible House index values are:
+
+| *Argument* | *Description* |
+| :--------: | :---------------: |
+| >= 0       | House index in-game |
+| -1         | Random House (excluding the Team's House) |
+| -2         | The Team's House |
+| -3         | The House with more energy |
+| -4         | The House with less energy |
+| -5         | The enemy House with more energy |
+| -6         | The enemy House with less energy |
+| -7         | The friendly House with more energy |
+| -8         | The friendly House with less energy |
+
+- The possible values for the Action argument:
+
+| *Argument* | *Description* |
+| :--------: | :---------------: |
+| 0          | Total energy produced |
+| 1          | Total power drain |
+| 2          | Difference between produced energy and consumed |
+
+### `145` Conditional Jump, Check Kills Count
+- Checks the Team kills count and saves the result for the Conditional Jump evaluation.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=145,0           ;
+```
+
+### `146` Conditional Jump, Check Enemy Objects Count
+- Count the number of enemy living object instances and saves the result for the Conditional Jump evaluation.
+- The list of objects that will be used by this Action is selected by the Script Action `138`.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=146,0           ;
+```
+
+- This Action use a 0-based index for the `AITargetTypes` section and specifies the list of possible `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` that can be evaluated. The new `AITargetTypes` section must be declared in `rulesmd.ini` for making this script work:
+
+In `rulesmd.ini`:
+```ini
+[AITargetTypes]  ; List of TechnoType lists
+0=SOMETECHNOTYPE,SOMEOTHERTECHNOTYPE,SAMPLETECHNOTYPE
+1=ANOTHERTECHNOTYPE,YETANOTHERTECHNOTYPE
+; ...
+```
+
 ### `500 - 523` Edit Variable
 - Operate a variable's value
     - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
