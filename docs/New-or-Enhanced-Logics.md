@@ -312,6 +312,34 @@ Interceptor.EliteMinimumGuardRange=0.0  ; double
 Interceptable=no ; boolean
 ```
 
+### Projectile trajectories
+
+- Projectiles can now have customizable trajectories.
+  - `Trajectory` should not be combined with original game's projectile trajectory logics (`Arcing`, `ROT` or `Inviso`).
+
+#### Straight trajectory
+
+- Self-explanatory, is a straight-shot trajectory.
+  - Initial speed is determined by weapon's `Trajectory.Speed`.
+
+In `rulesmd.ini`
+```ini
+[SOMEPROJECTILE]     ; Projectile
+Trajectory=Straight  ; Trajectory type
+```
+
+#### Bombard trajectory
+
+- Similar trajectory to `Straight`, but targets a coordinate above the intended target (height determined by `Trajectory.Bombard.Height`). When the projectile approaches that coordinate, it will free fall and explodes when it hits the target or ground.
+  - Initial speed is determined by weapon's `Trajectory.Speed`.
+
+In `rulesmd.ini`
+```ini
+[SOMEPROJECTILE]               ; Projectile
+Trajectory=Bombard             ; Trajectory type
+Trajectory.Bombard.Height=0.0  ; double
+```
+
 ### Shrapnel enhancement
 - Shrapnel behavior can be triggered on the ground and buildings.
 
@@ -1322,6 +1350,16 @@ In `rulesmd.ini`:
 [SOMEWEAPON]                 ; WeaponType
 Strafing.Shots=5             ; integer
 Strafing.SimulateBurst=false ; bool
+```
+
+### Trajectory speed
+
+- This sets projectile speed used by custom [projectile trajectories](#projectile-trajectories).
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]            ; WeaponType
+Trajectory.Speed=100.0  ; double
 ```
 
 ### Weapon targeting filter

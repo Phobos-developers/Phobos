@@ -7,6 +7,8 @@
 
 #include <New/Type/LaserTrailTypeClass.h>
 
+#include <Ext/Bullet/Trajectories/PhobosTrajectory.h>
+
 class BulletTypeExt
 {
 public:
@@ -18,7 +20,9 @@ public:
 		Valueable<bool> Interceptable;
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
 		Nullable<double> Gravity;
-		Valueable<bool> Gravity_HeightFix;
+		
+		PhobosTrajectoryType* TrajectoryType;
+		
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
 
@@ -26,7 +30,7 @@ public:
 			, Interceptable { false }
 			, LaserTrail_Types {}
 			, Gravity {}
-			, Gravity_HeightFix { false }
+			, TrajectoryType { nullptr }
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
 		{ }
