@@ -121,25 +121,127 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory, 0x6)
 		}
 		else if (*currFactory != pBuilding)
 		{
-			if (pBuilding->Type->Factory == AbstractType::InfantryType
-				&& !Phobos::Config::ExtendParallelAIQueues[0])
-				return 0x4503CA;
+			enum { Skip = 0x4503CA };
+			if (pBuilding->Type->Factory == AbstractType::BuildingType
+				&& !Phobos::Config::ExtendParallelAIQueues[4])
+				return Skip;
 			else if (pBuilding->Type->Factory == AbstractType::UnitType
 				&& !Phobos::Config::ExtendParallelAIQueues[1]
 				&& !pBuilding->Type->Naval)
-				return 0x4503CA;
+				return Skip;
 			else if (pBuilding->Type->Factory == AbstractType::UnitType
 				&& !Phobos::Config::ExtendParallelAIQueues[2]
 				&& pBuilding->Type->Naval)
-				return 0x4503CA;
+				return Skip;
+			else if (pBuilding->Type->Factory == AbstractType::InfantryType
+				&& !Phobos::Config::ExtendParallelAIQueues[0])
+				return Skip;
 			else if (pBuilding->Type->Factory == AbstractType::AircraftType
 				&& !Phobos::Config::ExtendParallelAIQueues[3])
-				return 0x4503CA;
-			else if (pBuilding->Type->Factory == AbstractType::BuildingType
-				&& !Phobos::Config::ExtendParallelAIQueues[4])
-				return 0x4503CA;
+				return Skip;
 		}
 	}
 
+	return 0;
+}
+
+DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction, 0x8)
+{
+	GET(FactoryClass*, pFactory, ESI);
+
+	if (!Phobos::Config::AllowParallelAIQueues)
+		return 0;
+
+	HouseClass* pOwner = pFactory->Owner;
+
+	HouseExt::ExtData* pData = HouseExt::ExtMap.Find(pOwner);
+	TechnoClass* pTechno = pFactory->Object;
+	switch (pTechno->WhatAmI())
+	{
+	case AbstractType::Building:
+		if (!Phobos::Config::ExtendParallelAIQueues[4])
+			pData->Factory_BuildingType = nullptr;
+		break;
+	case AbstractType::Unit:
+		if (!pTechno->GetTechnoType()->Naval)
+		{
+			if (!Phobos::Config::ExtendParallelAIQueues[1])
+				pData->Factory_VehicleType = nullptr;
+		}
+		else
+		{
+			if (!Phobos::Config::ExtendParallelAIQueues[2])
+				pData->Factory_NavyType = nullptr;
+		}
+		break;
+	case AbstractType::Infantry:
+		if (!Phobos::Config::ExtendParallelAIQueues[0])
+			pData->Factory_InfantryType = nullptr;
+		break;
+	case AbstractType::Aircraft:
+		if (!Phobos::Config::ExtendParallelAIQueues[3])
+			pData->Factory_AircraftType = nullptr;
+		break;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType, 0x6)
+{
+	GET(UnitClass*, pUnit, EDI);
+
+	GET(BuildingClass*, pFactory, ESI);
+
+	if (!Phobos::Config::AllowParallelAIQueues)
+		return 0;
+
+	HouseExt::ExtData* pData = HouseExt::ExtMap.Find(pFactory->Owner);
+
+	if (!pUnit->Type->Naval)
+	{
+		if (!Phobos::Config::ExtendParallelAIQueues[1])
+			pData->Factory_VehicleType = nullptr;
+	}
+	else
+	{
+		if (!Phobos::Config::ExtendParallelAIQueues[2])
+			pData->Factory_NavyType = nullptr;
+	}
+
+	return 0;
+}
+
+
+DEFINE_HOOK(0x444131, BuildingClass_KickOutUnit_InfantryType, 0x6)
+{
+	GET(HouseClass*, H, EAX);
+
+	if (!Phobos::Config::AllowParallelAIQueues || Phobos::Config::ExtendParallelAIQueues[0])
+		return 0;
+
+	HouseExt::ExtMap.Find(H)->Factory_InfantryType = nullptr;
+	return 0;
+}
+
+DEFINE_HOOK(0x44531F, BuildingClass_KickOutUnit_BuildingType, 0xA)
+{
+	GET(HouseClass*, H, EAX);
+
+	if (!Phobos::Config::AllowParallelAIQueues || Phobos::Config::ExtendParallelAIQueues[4])
+		return 0;
+
+	HouseExt::ExtMap.Find(H)->Factory_BuildingType = nullptr;
+	return 0;
+}
+
+DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType, 0xA)
+{
+	GET(HouseClass*, H, EDX);
+
+	if (!Phobos::Config::AllowParallelAIQueues || Phobos::Config::ExtendParallelAIQueues[3])
+		return 0;
+
+	HouseExt::ExtMap.Find(H)->Factory_AircraftType = nullptr;
 	return 0;
 }
