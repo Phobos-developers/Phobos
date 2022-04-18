@@ -3907,7 +3907,7 @@ void ScriptExt::ConditionalJump_CheckPower(TeamClass* pTeam, int mode = -1)
 			break;
 
 		case -5:
-			// The enemy House with major energy
+			// The enemy House with more energy
 			if (pHousesList.Count > 0)
 			{
 				HouseClass* pTempHouse = nullptr;
@@ -3948,7 +3948,7 @@ void ScriptExt::ConditionalJump_CheckPower(TeamClass* pTeam, int mode = -1)
 			break;
 
 		case -6:
-			// The enemy House with minor energy
+			// The enemy House with less energy
 			if (pHousesList.Count > 0)
 			{
 				HouseClass* pTempHouse = nullptr;
@@ -3989,7 +3989,7 @@ void ScriptExt::ConditionalJump_CheckPower(TeamClass* pTeam, int mode = -1)
 			break;
 
 		case -7:
-			// The friendly House with major energy
+			// The friendly House with more energy
 			if (pHousesList.Count > 0)
 			{
 				HouseClass* pTempHouse = nullptr;
@@ -4030,7 +4030,7 @@ void ScriptExt::ConditionalJump_CheckPower(TeamClass* pTeam, int mode = -1)
 			break;
 
 		case -8:
-			// The friendly House with minor energy
+			// The friendly House with less energy
 			if (pHousesList.Count > 0)
 			{
 				HouseClass* pTempHouse = nullptr;
