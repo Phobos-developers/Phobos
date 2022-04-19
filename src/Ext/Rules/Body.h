@@ -36,6 +36,21 @@ public:
 		Valueable<bool> JumpjetAllowLayerDeviation;
 		Valueable<int> Storage_TiberiumIndex;
 
+		SHPStruct* SHP_SelectBrdSHP_INF;
+		ConvertClass* SHP_SelectBrdPAL_INF;
+		SHPStruct* SHP_SelectBrdSHP_UNIT;
+		ConvertClass* SHP_SelectBrdPAL_UNIT;
+
+		Valueable<bool> UseSelectBrd;
+		PhobosFixedString<32U> SelectBrd_SHP_Infantry;
+		PhobosFixedString<32U> SelectBrd_PAL_Infantry;
+		Nullable<Vector3D<int>> SelectBrd_Frame_Infantry;
+		Nullable<Vector2D<int>> SelectBrd_DrawOffset_Infantry;
+		PhobosFixedString<32U> SelectBrd_SHP_Unit;
+		PhobosFixedString<32U> SelectBrd_PAL_Unit;
+		Nullable<Vector3D<int>> SelectBrd_Frame_Unit;
+		Nullable<Vector2D<int>> SelectBrd_DrawOffset_Unit;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Pips_Shield { { -1,-1,-1 } }
 			, Pips_Shield_Buildings { { -1,-1,-1 } }
@@ -45,6 +60,19 @@ public:
 			, JumpjetNoWobbles { false }
 			, JumpjetAllowLayerDeviation { true }
 			, Storage_TiberiumIndex { -1 }
+			, SHP_SelectBrdSHP_INF { nullptr }
+			, SHP_SelectBrdPAL_INF { nullptr }
+			, SHP_SelectBrdSHP_UNIT { nullptr }
+			, SHP_SelectBrdPAL_UNIT { nullptr }
+			, UseSelectBrd { false }
+			, SelectBrd_SHP_Infantry { "select.shp" }
+			, SelectBrd_PAL_Infantry { "palette.pal" }
+			, SelectBrd_Frame_Infantry { {0,0,0} }
+			, SelectBrd_DrawOffset_Infantry { {0,0} }
+			, SelectBrd_SHP_Unit { "select.shp" }
+			, SelectBrd_PAL_Unit { "palette.shp" }
+			, SelectBrd_Frame_Unit { {3,3,3} }
+			, SelectBrd_DrawOffset_Unit { {0,0} }
 		{ }
 
 		virtual ~ExtData() = default;

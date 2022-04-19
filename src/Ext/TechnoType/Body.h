@@ -119,6 +119,16 @@ public:
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
 		Valueable<CSFText> EnemyUIName;
 
+		SHPStruct* SHP_SelectBrdSHP;
+		ConvertClass* SHP_SelectBrdPAL;
+
+		Valueable<bool> UseCustomSelectBrd;
+		PhobosFixedString<32U> SelectBrd_SHP;
+		PhobosFixedString<32U> SelectBrd_PAL;
+		Nullable<Vector3D<int>> SelectBrd_Frame;
+		Nullable<Vector2D<int>> SelectBrd_DrawOffset;
+		Nullable<bool> SelectBrd_Show;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -188,6 +198,14 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
+			, SHP_SelectBrdSHP { nullptr }
+			, SHP_SelectBrdPAL { nullptr }
+			, UseCustomSelectBrd {}
+			, SelectBrd_SHP {}
+			, SelectBrd_PAL { "palette.pal" }
+			, SelectBrd_Frame {}
+			, SelectBrd_DrawOffset {}
+			, SelectBrd_Show { true }
 		{ }
 
 		virtual ~ExtData() = default;

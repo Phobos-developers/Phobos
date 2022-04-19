@@ -552,6 +552,150 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 	}
 }
 
+void TechnoExt::DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry)
+{
+	Point2D vPos = { 0, 0 };
+	Point2D vLoc = *pLocation;
+	Point2D vOfs = { 0, 0};
+
+	int frame, XOffset, YOffset;
+
+	Vector3D<int> glbSelectbrdFrame = isInfantry ?
+		RulesExt::Global()->SelectBrd_Frame_Infantry :
+		RulesExt::Global()->SelectBrd_Frame_Unit;
+
+	Vector3D<int> selectbrdFrame = pTypeExt->SelectBrd_Frame.Get();
+
+	if (selectbrdFrame.X == NULL
+		|| selectbrdFrame.Y == NULL
+		|| selectbrdFrame.Z == NULL)
+	{
+		if (glbSelectbrdFrame.X == NULL)
+		{
+			if (isInfantry)
+				selectbrdFrame = { 0,0,0 };
+			else
+				selectbrdFrame = { 3,3,3 };
+		}
+		else
+		{
+			if (glbSelectbrdFrame.Y == NULL
+				&& glbSelectbrdFrame.Z == NULL)
+			{
+				glbSelectbrdFrame.Y = glbSelectbrdFrame.X;
+				glbSelectbrdFrame.Z = glbSelectbrdFrame.X;
+			}
+			selectbrdFrame = glbSelectbrdFrame;
+		}
+	}
+
+	vOfs = pTypeExt->SelectBrd_DrawOffset.Get();
+	if (vOfs.X == NULL || vOfs.Y == NULL)
+	{
+		if (isInfantry)
+			vOfs = RulesExt::Global()->SelectBrd_DrawOffset_Infantry.Get();
+		else
+			vOfs = RulesExt::Global()->SelectBrd_DrawOffset_Unit.Get();
+	}
+
+	XOffset = vOfs.X;
+
+	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta;
+	YOffset += vOfs.Y;
+	vLoc.Y -= 5;
+
+	if (iLength == 8)
+	{
+		vPos.X = vLoc.X + 1 + XOffset;
+		vPos.Y = vLoc.Y + 6 + YOffset;
+	}
+	else
+	{
+		vPos.X = vLoc.X + 2 + XOffset;
+		vPos.Y = vLoc.Y + 6 + YOffset;
+	}
+
+	SHPStruct* SelectBrdSHP = pTypeExt->SHP_SelectBrdSHP;
+	SHPStruct* GlbSelectBrdSHP = nullptr;
+	if (isInfantry)
+		GlbSelectBrdSHP = RulesExt::Global()->SHP_SelectBrdSHP_INF;
+	else
+		GlbSelectBrdSHP = RulesExt::Global()->SHP_SelectBrdSHP_UNIT;
+	if (SelectBrdSHP == nullptr)
+	{
+		char FilenameSHP[0x20];
+		strcpy_s(FilenameSHP, pTypeExt->SelectBrd_SHP.data());
+
+		if (strcmp(FilenameSHP, "") == 0)
+		{
+			if (GlbSelectBrdSHP == nullptr)
+			{
+				char GlbFilenameSHP[0x20];
+				if (isInfantry)
+					strcpy_s(GlbFilenameSHP, RulesExt::Global()->SelectBrd_SHP_Infantry.data());
+				else
+					strcpy_s(GlbFilenameSHP, RulesExt::Global()->SelectBrd_SHP_Unit.data());
+
+				if (strcmp(GlbFilenameSHP, "") == 0)
+					return;
+				else
+					SelectBrdSHP = pTypeExt->SHP_SelectBrdSHP = FileSystem::LoadSHPFile(GlbFilenameSHP);
+			}
+			else
+				SelectBrdSHP = GlbSelectBrdSHP;
+		}
+		else
+			SelectBrdSHP = pTypeExt->SHP_SelectBrdSHP = FileSystem::LoadSHPFile(FilenameSHP);
+	}
+	if (SelectBrdSHP == nullptr) return;
+
+	ConvertClass* SelectBrdPAL = pTypeExt->SHP_SelectBrdPAL;
+	ConvertClass* GlbSelectBrdPAL = nullptr;
+	if (isInfantry)
+		GlbSelectBrdPAL = RulesExt::Global()->SHP_SelectBrdPAL_INF;
+	else
+		GlbSelectBrdPAL = RulesExt::Global()->SHP_SelectBrdPAL_UNIT;
+	if (SelectBrdPAL == nullptr)
+	{
+		char FilenamePAL[0x20];
+		strcpy_s(FilenamePAL, pTypeExt->SelectBrd_PAL.data());
+
+		if (strcmp(FilenamePAL, "") == 0)
+		{
+			if (GlbSelectBrdPAL == nullptr)
+			{
+				char GlbFilenamePAL[0x20];
+				if (isInfantry)
+					strcpy_s(GlbFilenamePAL, RulesExt::Global()->SelectBrd_PAL_Infantry.data());
+				else
+					strcpy_s(GlbFilenamePAL, RulesExt::Global()->SelectBrd_PAL_Unit.data());
+
+				if (strcmp(GlbFilenamePAL, "") == 0)
+					return;
+				else
+					SelectBrdPAL = pTypeExt->SHP_SelectBrdPAL = FileSystem::LoadPALFile(GlbFilenamePAL, DSurface::Temp);
+			}
+			else
+				SelectBrdPAL = GlbSelectBrdPAL;
+		}
+		else
+			SelectBrdPAL = pTypeExt->SHP_SelectBrdPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
+	}
+	if (SelectBrdPAL == nullptr) return;
+
+	if (pThis->IsSelected)
+	{
+		if (pThis->IsGreenHP())
+			frame = selectbrdFrame.X;
+		else if (pThis->IsYellowHP())
+			frame = selectbrdFrame.Y;
+		else if (pThis->IsRedHP())
+			frame = selectbrdFrame.Z;
+		DSurface::Temp->DrawSHP(SelectBrdPAL, SelectBrdSHP,
+			frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	}
+}
+
 // =============================
 // load / save
 
