@@ -231,7 +231,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SelectBrd_PAL.Read(pINI, pSection, "SelectBrd.PAL");
 	this->SelectBrd_Frame.Read(exINI, pSection, "SelectBrd.Frame");
 	this->SelectBrd_DrawOffset.Read(exINI, pSection, "SelectBrd.DrawOffset");
-	this->SelectBrd_Show.Read(exINI, pSection, "SelectBrd.Show");
 }
 
 template <typename T>
@@ -313,7 +312,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelectBrd_PAL)
 		.Process(this->SelectBrd_Frame)
 		.Process(this->SelectBrd_DrawOffset)
-		.Process(this->SelectBrd_Show)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

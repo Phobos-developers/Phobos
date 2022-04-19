@@ -127,7 +127,6 @@ public:
 		PhobosFixedString<32U> SelectBrd_PAL;
 		Nullable<Vector3D<int>> SelectBrd_Frame;
 		Nullable<Vector2D<int>> SelectBrd_DrawOffset;
-		Nullable<bool> SelectBrd_Show;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -202,10 +201,9 @@ public:
 			, SHP_SelectBrdPAL { nullptr }
 			, UseCustomSelectBrd {}
 			, SelectBrd_SHP {}
-			, SelectBrd_PAL { "palette.pal" }
+			, SelectBrd_PAL {}
 			, SelectBrd_Frame {}
 			, SelectBrd_DrawOffset {}
-			, SelectBrd_Show { true }
 		{ }
 
 		virtual ~ExtData() = default;
