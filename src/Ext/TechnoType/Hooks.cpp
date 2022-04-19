@@ -322,16 +322,3 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 	R->EAX(pDecidedUIName);
 	return SetUIName;
 }
-
-/*
-DEFINE_HOOK(0x6FDD50, TechnoClass_Fire, 0x6)
-{
-	GET(TechnoClass*, pTechno, ECX);
-	GET_STACK(AbstractClass*, pTarget, 0x4);   
-	GET_STACK(int, wpIdx, 0x8);                
-
-
-	return 0x0;
-}
-*/
-

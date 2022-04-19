@@ -39,26 +39,20 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		if (this->TransactMoney)
 			pHouse->TransactMoney(this->TransactMoney);
 
-		if (this->SpawnSuperWeapons.HasValue()) {
-			for (const auto pSWType : this->SpawnSuperWeapons.GetElements()) {
-				SuperClass* pSuper = nullptr;
-				bool canLaunch = false;
-				if (this->SpawnSuperWeapons_RealLaunch.Get()) {
-					pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType));
-					if (pSuper && pSuper->IsCharged) {
-						canLaunch = true;
-					}
-				}
-				else if (pSuper = GameCreate<SuperClass>(pSWType, pHouse)) {
-					canLaunch = true;
-				}
-				if (canLaunch) {
+
+		for (const auto pSWType : this->SpawnSuperWeapons) 
+		{
+			if (SuperClass* pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType))) 
+			{
+				if (pSuper->IsCharged || !this->SpawnSuperWeapons_RealLaunch.Get()) 
+				{
 					pSuper->SetReadiness(true);
 					pSuper->Launch(CellClass::Coord2Cell(coords), true);
 					pSuper->Reset();
 				}
 			}
 		}
+		
 	}
 
 	this->HasCrit = false;

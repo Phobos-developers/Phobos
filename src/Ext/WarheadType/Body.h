@@ -75,7 +75,7 @@ public:
 		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
-		NullableVector<SuperWeaponTypeClass*> SpawnSuperWeapons;
+		ValueableVector<SuperWeaponTypeClass*> SpawnSuperWeapons;
 		Valueable<bool> SpawnSuperWeapons_RealLaunch;
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
