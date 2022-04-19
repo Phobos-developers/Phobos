@@ -12,7 +12,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
-
+#include <Ext/SWType/Body.h>
 #include <SuperClass.h>
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
 {
@@ -42,10 +42,11 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 		for (const auto pSWType : this->SpawnSuperWeapons) 
 		{
-			if (SuperClass* pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType))) 
+			if (const auto pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType))) 
 			{
-				if (pSuper->IsCharged || !this->SpawnSuperWeapons_RealLaunch.Get()) 
-				{
+				const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
+				if ((pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)) || !this->SpawnSuperWeapons_RealLaunch)
+				{//Real launch if the player has the SW ready and has enough $. Otherwise launch it regardless of any constraint, but the SW still reset
 					pSuper->SetReadiness(true);
 					pSuper->Launch(CellClass::Coord2Cell(coords), true);
 					pSuper->Reset();
