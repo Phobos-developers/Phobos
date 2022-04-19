@@ -70,7 +70,7 @@ public:
 			, SelectBrd_Frame_Infantry { {0,0,0} }
 			, SelectBrd_DrawOffset_Infantry { {0,0} }
 			, SelectBrd_SHP_Unit { "select.shp" }
-			, SelectBrd_PAL_Unit { "palette.shp" }
+			, SelectBrd_PAL_Unit { "palette.pal" }
 			, SelectBrd_Frame_Unit { {3,3,3} }
 			, SelectBrd_DrawOffset_Unit { {0,0} }
 		{ }

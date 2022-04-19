@@ -202,7 +202,7 @@ public:
 			, UseCustomSelectBrd {}
 			, SelectBrd_SHP {}
 			, SelectBrd_PAL {}
-			, SelectBrd_Frame {}
+			, SelectBrd_Frame { {-1,-1} }
 			, SelectBrd_DrawOffset {}
 		{ }
 

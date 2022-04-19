@@ -561,32 +561,14 @@ void TechnoExt::DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 	int frame, XOffset, YOffset;
 
 	Vector3D<int> glbSelectbrdFrame = isInfantry ?
-		RulesExt::Global()->SelectBrd_Frame_Infantry :
-		RulesExt::Global()->SelectBrd_Frame_Unit;
+		RulesExt::Global()->SelectBrd_Frame_Infantry.Get() :
+		RulesExt::Global()->SelectBrd_Frame_Unit.Get();
 
 	Vector3D<int> selectbrdFrame = pTypeExt->SelectBrd_Frame.Get();
 
-	if (selectbrdFrame.X == NULL
-		|| selectbrdFrame.Y == NULL
-		|| selectbrdFrame.Z == NULL)
+	if (selectbrdFrame.X == -1)
 	{
-		if (glbSelectbrdFrame.X == NULL)
-		{
-			if (isInfantry)
-				selectbrdFrame = { 0,0,0 };
-			else
-				selectbrdFrame = { 3,3,3 };
-		}
-		else
-		{
-			if (glbSelectbrdFrame.Y == NULL
-				&& glbSelectbrdFrame.Z == NULL)
-			{
-				glbSelectbrdFrame.Y = glbSelectbrdFrame.X;
-				glbSelectbrdFrame.Z = glbSelectbrdFrame.X;
-			}
-			selectbrdFrame = glbSelectbrdFrame;
-		}
+		selectbrdFrame = glbSelectbrdFrame;
 	}
 
 	vOfs = pTypeExt->SelectBrd_DrawOffset.Get();
@@ -689,7 +671,7 @@ void TechnoExt::DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 			frame = selectbrdFrame.X;
 		else if (pThis->IsYellowHP())
 			frame = selectbrdFrame.Y;
-		else if (pThis->IsRedHP())
+		else
 			frame = selectbrdFrame.Z;
 		DSurface::Temp->DrawSHP(SelectBrdPAL, SelectBrdSHP,
 			frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
