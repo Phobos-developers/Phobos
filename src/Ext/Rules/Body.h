@@ -51,7 +51,7 @@ public:
 		Nullable<Vector3D<int>> SelectBrd_Frame_Unit;
 		Nullable<Vector2D<int>> SelectBrd_DrawOffset_Unit;
 		Nullable<int> SelectBrd_DefaultTranslucentLevel;
-		Nullable<int> SelectBrd_DefaultShowEnemy;
+		Valueable<bool> SelectBrd_DefaultShowEnemy;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Pips_Shield { { -1,-1,-1 } }
