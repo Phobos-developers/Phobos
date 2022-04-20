@@ -77,6 +77,7 @@ enum class PhobosScripts : unsigned int
 	ConditionalJumpCheckPower = 144,
 	ConditionalJumpKillEvaluation = 145,
 	ConditionalJumpCheckObjects = 146,
+	ConditionalJumpCheckCount = 147,
 
 	// Variables
 	LocalVariableSet = 500,
@@ -213,6 +214,7 @@ public:
 	static void ConditionalJump_CheckEconomy(TeamClass* pTeam);
 	static void ConditionalJump_CheckPower(TeamClass* pTeam, int mode);
 	static void ConditionalJump_CheckObjects(TeamClass* pTeam);
+	static void ConditionalJump_CheckCount(TeamClass* pTeam, int modifier);
 
 	static void Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
 	static void Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
@@ -236,4 +238,5 @@ public:
 private:
 	static void ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
 	static bool MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, FootClass* pLeader, int mode);
+	static bool ConditionalJump_MakeEvaluation(int comparatorMode, int studiedValue, int comparatorValue);
 };

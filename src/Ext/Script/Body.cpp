@@ -235,6 +235,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case PhobosScripts::ConditionalJumpCheckObjects:
 		ScriptExt::ConditionalJump_CheckObjects(pTeam);
 		break;
+	case PhobosScripts::ConditionalJumpCheckCount:
+		ScriptExt::ConditionalJump_CheckCount(pTeam, 0);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		if (action > 70 && !IsExtVariableAction(action))
@@ -3395,7 +3398,6 @@ void ScriptExt::ConditionalJump_ResetCounter(TeamClass* pTeam)
 		return;
 	}
 
-	auto pScript = pTeam->CurrentScript;
 	pTeamData->ConditionalJump_Counter = 0;
 
 	// This action finished
@@ -3670,49 +3672,11 @@ void ScriptExt::ConditionalJump_CheckEconomy(TeamClass* pTeam)
 		}
 	}
 
-	pTeamData->ConditionalJump_Evaluation = false;
-
-	// We have selected the house, now check
+	// We have selected the house, now check economy
 	if (economyValue >= 0)
 	{
 		int comparatorValue = pTeamData->ConditionalJump_ComparatorValue;
-
-		// Comparators are like in [AITriggerTypes] from aimd.ini
-		switch (pTeamData->ConditionalJump_ComparatorMode)
-		{
-		case 0:
-			// <
-			if (economyValue < comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		case 1:
-			// <=
-			if (economyValue <= comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		case 2:
-			// ==
-			if (economyValue = comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		case 3:
-			// >=
-			if (economyValue >= comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		case 4:
-			// >
-			if (economyValue > comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		case 5:
-			// !=
-			if (economyValue != comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		default:
-			break;
-		}
+		pTeamData->ConditionalJump_Evaluation = ScriptExt::ConditionalJump_MakeEvaluation(pTeamData->ConditionalJump_ComparatorMode, economyValue, comparatorValue);
 	}
 
 	// This action finished
@@ -4075,50 +4039,11 @@ void ScriptExt::ConditionalJump_CheckPower(TeamClass* pTeam, int mode = -1)
 		}
 	}
 
-	// House Economy (Accepted comparator values: 0:<,1:<=,2:==,3:>=,4:>,5:!=).
-	pTeamData->ConditionalJump_Evaluation = false;
-
-	// We have selected the house, now check
+	// We have selected the house, now check House Economy (Accepted comparator values: 0:<,1:<=,2:==,3:>=,4:>,5:!=)
 	if (powerValue != -100000000)
 	{
 		int comparatorValue = pTeamData->ConditionalJump_ComparatorValue;
-
-		// Comparators are like in [AITriggerTypes] from aimd.ini
-		switch (pTeamData->ConditionalJump_ComparatorMode)
-		{
-		case 0:
-			// <
-			if (powerValue < comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		case 1:
-			// <=
-			if (powerValue <= comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		case 2:
-			// ==
-			if (powerValue = comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		case 3:
-			// >=
-			if (powerValue >= comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		case 4:
-			// >
-			if (powerValue > comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		case 5:
-			// !=
-			if (powerValue != comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		default:
-			break;
-		}
+		pTeamData->ConditionalJump_Evaluation = ScriptExt::ConditionalJump_MakeEvaluation(pTeamData->ConditionalJump_ComparatorMode, powerValue, comparatorValue);
 	}
 
 	// This action finished
@@ -4181,47 +4106,95 @@ void ScriptExt::ConditionalJump_CheckObjects(TeamClass* pTeam)
 			}
 		}
 
-		pTeamData->ConditionalJump_Evaluation = false;
 		int comparatorValue = pTeamData->ConditionalJump_ComparatorValue;
-
-		// Comparators are like in [AITriggerTypes] from aimd.ini
-		switch (pTeamData->ConditionalJump_ComparatorMode)
-		{
-		case 0:
-			// <
-			if (countValue < comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		case 1:
-			// <=
-			if (countValue <= comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		case 2:
-			// ==
-			if (countValue = comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		case 3:
-			// >=
-			if (countValue >= comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		case 4:
-			// >
-			if (countValue > comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		case 5:
-			// !=
-			if (countValue != comparatorValue)
-				pTeamData->ConditionalJump_Evaluation = true;
-			break;
-		default:
-			break;
-		}
+		pTeamData->ConditionalJump_Evaluation = ScriptExt::ConditionalJump_MakeEvaluation(pTeamData->ConditionalJump_ComparatorMode, countValue, comparatorValue);
 	}
 
 	// This action finished
 	pTeam->StepCompleted = true;
+}
+
+// A simple counter. The count can be increased or decreased
+void ScriptExt::ConditionalJump_CheckCount(TeamClass* pTeam, int modifier = 0)
+{
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+
+	if (modifier == 0)
+		modifier = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
+
+	if (modifier == 0)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	pTeamData->ConditionalJump_Counter += modifier;
+	int currentCount = pTeamData->ConditionalJump_Counter;
+	int comparatorValue = pTeamData->ConditionalJump_ComparatorValue;
+	pTeamData->ConditionalJump_Evaluation = ScriptExt::ConditionalJump_MakeEvaluation(pTeamData->ConditionalJump_ComparatorMode, currentCount, comparatorValue);
+
+	// This action finished
+	pTeam->StepCompleted = true;
+}
+
+bool ScriptExt::ConditionalJump_MakeEvaluation(int comparatorMode = -1, int studiedValue = 0, int comparatorValue = 0)
+{
+	int result = false;
+
+	// Comparators are like in [AITriggerTypes] from aimd.ini
+	switch (comparatorMode)
+	{
+	case 0:
+		// <
+		if (studiedValue < comparatorValue)
+			result = true;
+		break;
+	case 1:
+		// <=
+		if (studiedValue <= comparatorValue)
+			result = true;
+		break;
+	case 2:
+		// ==
+		if (studiedValue = comparatorValue)
+			result = true;
+		break;
+	case 3:
+		// >=
+		if (studiedValue >= comparatorValue)
+			result = true;
+		break;
+	case 4:
+		// >
+		if (studiedValue > comparatorValue)
+			result = true;
+		break;
+	case 5:
+		// !=
+		if (studiedValue != comparatorValue)
+			result = true;
+		break;
+	default:
+		break;
+	}
+
+	return result;
 }
