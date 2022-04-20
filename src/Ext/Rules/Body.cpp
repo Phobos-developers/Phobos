@@ -82,6 +82,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->SelectBrd_PAL_Unit.Read(pINI, "AudioVisual", "SelectBrd.PAL.Unit");
 	this->SelectBrd_Frame_Unit.Read(exINI, "AudioVisual", "SelectBrd.Frame.Unit");
 	this->SelectBrd_DrawOffset_Unit.Read(exINI, "AudioVisual", "SelectBrd.DrawOffset.Unit");
+	this->SelectBrd_DefaultTranslucentLevel.Read(exINI, "AudioVisual", "SelectBrd.DefaultTranslucentLevel");
+	this->SelectBrd_DefaultShowEnemy.Read(exINI, "AudioVisual", "SelectBrd.DefaultShowEnemy");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -186,6 +188,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelectBrd_PAL_Unit)
 		.Process(this->SelectBrd_Frame_Unit)
 		.Process(this->SelectBrd_DrawOffset_Unit)
+		.Process(this->SelectBrd_DefaultTranslucentLevel)
+		.Process(this->SelectBrd_DefaultShowEnemy)
 		;
 }
 

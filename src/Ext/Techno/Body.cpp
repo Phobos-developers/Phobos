@@ -11,6 +11,7 @@
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -566,6 +567,12 @@ void TechnoExt::DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 
 	Vector3D<int> selectbrdFrame = pTypeExt->SelectBrd_Frame.Get();
 
+	auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->SelectBrd_TranslucentLevel.Get(RulesExt::Global()->SelectBrd_DefaultTranslucentLevel.Get()));
+
+	auto const canSee = pThis->Owner->IsAlliedWith(HouseClass::Player)
+		|| HouseClass::IsPlayerObserver()
+		|| pTypeExt->SelectBrd_ShowEnemy.Get(RulesExt::Global()->SelectBrd_DefaultShowEnemy.Get());
+
 	if (selectbrdFrame.X == -1)
 	{
 		selectbrdFrame = glbSelectbrdFrame;
@@ -665,7 +672,7 @@ void TechnoExt::DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 	}
 	if (SelectBrdPAL == nullptr) return;
 
-	if (pThis->IsSelected)
+	if (pThis->IsSelected && canSee)
 	{
 		if (pThis->IsGreenHP())
 			frame = selectbrdFrame.X;
@@ -674,7 +681,7 @@ void TechnoExt::DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 		else
 			frame = selectbrdFrame.Z;
 		DSurface::Temp->DrawSHP(SelectBrdPAL, SelectBrdSHP,
-			frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			frame, &vPos, pBound, nFlag, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
 

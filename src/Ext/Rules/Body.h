@@ -50,6 +50,8 @@ public:
 		PhobosFixedString<32U> SelectBrd_PAL_Unit;
 		Nullable<Vector3D<int>> SelectBrd_Frame_Unit;
 		Nullable<Vector2D<int>> SelectBrd_DrawOffset_Unit;
+		Nullable<int> SelectBrd_DefaultTranslucentLevel;
+		Nullable<int> SelectBrd_DefaultShowEnemy;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Pips_Shield { { -1,-1,-1 } }
@@ -73,6 +75,8 @@ public:
 			, SelectBrd_PAL_Unit { "palette.pal" }
 			, SelectBrd_Frame_Unit { {3,3,3} }
 			, SelectBrd_DrawOffset_Unit { {0,0} }
+			, SelectBrd_DefaultTranslucentLevel { 0 }
+			, SelectBrd_DefaultShowEnemy { true }
 		{ }
 
 		virtual ~ExtData() = default;
