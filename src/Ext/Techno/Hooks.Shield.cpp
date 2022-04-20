@@ -203,9 +203,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	{
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-		bool useSelectBrd = RulesExt::Global()->UseSelectBrd.Get();
-		if (useSelectBrd != pTypeExt->UseCustomSelectBrd.Get() && pTypeExt->UseCustomSelectBrd.Get() != NULL)
-			useSelectBrd = pTypeExt->UseCustomSelectBrd.Get();
+		const auto useSelectBrd = pTypeExt->UseCustomSelectBrd.Get(RulesExt::Global()->UseSelectBrd.Get());
 
 		if (useSelectBrd)
 		{

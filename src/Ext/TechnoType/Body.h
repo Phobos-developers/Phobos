@@ -122,7 +122,7 @@ public:
 		SHPStruct* SHP_SelectBrdSHP;
 		ConvertClass* SHP_SelectBrdPAL;
 
-		Valueable<bool> UseCustomSelectBrd;
+		Nullable<bool> UseCustomSelectBrd;
 		PhobosFixedString<32U> SelectBrd_SHP;
 		PhobosFixedString<32U> SelectBrd_PAL;
 		Nullable<Vector3D<int>> SelectBrd_Frame;
