@@ -65,7 +65,7 @@ enum class PhobosScripts : unsigned int
 	RandomSkipNextAction = 113,
 
 	AbortActionAfterSuccessKill = 134,
-	ConditionalJumpResetCounter = 135,
+	ConditionalJumpSetCounter = 135,
 	ConditionalJumpSetComparatorMode = 136,
 	ConditionalJumpSetComparatorValue = 137,
 	ConditionalJumpSetIndex = 138,
@@ -208,7 +208,7 @@ public:
 	static void ConditionalJump_SetIndex(TeamClass* pTeam, int index);
 	static void ConditionalJump_SetComparatorValue(TeamClass* pTeam, int value);
 	static void ConditionalJump_SetComparatorMode(TeamClass* pTeam, int value);
-	static void ConditionalJump_ResetCounter(TeamClass* pTeam);
+	static void ConditionalJump_SetCounter(TeamClass* pTeam, int value);
 	static void SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable);
 	static void ConditionalJump_ResetVariables(TeamClass* pTeam);
 	static void ConditionalJump_CheckEconomy(TeamClass* pTeam);

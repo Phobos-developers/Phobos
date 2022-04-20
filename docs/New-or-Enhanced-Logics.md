@@ -632,12 +632,12 @@ x=134,0           ; integer, 0 for disable it, 1 for enable it
 ```
 
 ### `135` Conditional Jump, Reset Counter
-- Puts the Team's kill counter to 0.
+- Sets the Team's counter to any initial value. It can be used for counting kills.
 
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=135,0           ;
+x=135,n           ; integer
 ```
 
 ### `136` Conditional Jump, Set Comparator Mode

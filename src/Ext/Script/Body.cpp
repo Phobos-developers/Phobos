@@ -199,8 +199,8 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case PhobosScripts::AbortActionAfterSuccessKill:
 		ScriptExt::SetAbortActionAfterSuccessKill(pTeam, -1);
 		break;
-	case PhobosScripts::ConditionalJumpResetCounter:
-		ScriptExt::ConditionalJump_ResetCounter(pTeam);
+	case PhobosScripts::ConditionalJumpSetCounter:
+		ScriptExt::ConditionalJump_SetCounter(pTeam, -100000000);
 		break;
 	case PhobosScripts::ConditionalJumpSetComparatorMode:
 		ScriptExt::ConditionalJump_SetComparatorMode(pTeam, -1);
@@ -3181,47 +3181,7 @@ void ScriptExt::ConditionalJump_KillEvaluation(TeamClass* pTeam)
 
 	int counter = pTeamData->ConditionalJump_Counter;
 	int comparator = pTeamData->ConditionalJump_ComparatorValue;
-
-	// Start evaluation by the number of kills
-	bool evaluation = false;
-
-	switch (pTeamData->ConditionalJump_ComparatorMode)
-	{
-	case 0:
-		// <
-		if (counter < comparator)
-			evaluation = true;
-		break;
-	case 1:
-		// <=
-		if (counter <= comparator)
-			evaluation = true;
-		break;
-	case 2:
-		// ==
-		if (counter = comparator)
-			evaluation = true;
-		break;
-	case 3:
-		// >=
-		if (counter >= comparator)
-			evaluation = true;
-		break;
-	case 4:
-		// >
-		if (counter > comparator)
-			evaluation = true;
-		break;
-	case 5:
-		// !=
-		if (counter != comparator)
-			evaluation = true;
-		break;
-	default:
-		break;
-	}
-
-	pTeamData->ConditionalJump_Evaluation = evaluation;
+	pTeamData->ConditionalJump_Evaluation = ScriptExt::ConditionalJump_MakeEvaluation(pTeamData->ConditionalJump_ComparatorMode, counter, comparator);
 
 	// This action finished
 	pTeam->StepCompleted = true;
@@ -3379,7 +3339,7 @@ void ScriptExt::ConditionalJump_SetComparatorMode(TeamClass* pTeam, int value = 
 	return;
 }
 
-void ScriptExt::ConditionalJump_ResetCounter(TeamClass* pTeam)
+void ScriptExt::ConditionalJump_SetCounter(TeamClass* pTeam, int value = -100000000)
 {
 	if (!pTeam)
 	{
@@ -3398,7 +3358,12 @@ void ScriptExt::ConditionalJump_ResetCounter(TeamClass* pTeam)
 		return;
 	}
 
-	pTeamData->ConditionalJump_Counter = 0;
+	auto pScript = pTeam->CurrentScript;
+
+	if (value == -100000000)
+		value = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
+
+	pTeamData->ConditionalJump_Counter = value;
 
 	// This action finished
 	pTeam->StepCompleted = true;
@@ -4155,7 +4120,7 @@ void ScriptExt::ConditionalJump_CheckCount(TeamClass* pTeam, int modifier = 0)
 	pTeam->StepCompleted = true;
 }
 
-bool ScriptExt::ConditionalJump_MakeEvaluation(int comparatorMode = -1, int studiedValue = 0, int comparatorValue = 0)
+bool ScriptExt::ConditionalJump_MakeEvaluation(int comparatorMode, int studiedValue, int comparatorValue)
 {
 	int result = false;
 
