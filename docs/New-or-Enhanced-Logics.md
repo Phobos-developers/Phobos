@@ -1206,17 +1206,16 @@ NotHuman.DeathSequence=  ; integer (1 to 5)
 
 
 - Superweapons can be launched when a standard warhead is detonated. This means that animation warheads and weapons from _Ares_ are **not** supported. Nevertheless, the warhead from an animation which is used using `AttachEffect.Animation` still works.
-
-    - `SpawnSuperWeapons` specifies the superweapons to launch when the warhead is detonated. 
-    - `SpawnSuperWeapons.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons and sufficient fund to support `Money.Amout`. Otherwise they will be launched out of nowhere.
-    - In either case, the superweapon is launched without any constraint. For example, `SW.Designators` and `SW.Inhibitors` are ignored. The user should not abuse such behavior.
+  - `SpawnSuperWeapons` specifies the superweapons to launch when the warhead is detonated. 
+  - `SpawnSuperWeapons.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons and sufficient fund to support `Money.Amout`. Otherwise they will be launched out of nowhere.
+  - In either case, the superweapon is launched without any constraint. For example, `SW.Designators` and `SW.Inhibitors` are ignored. The user should not abuse such behavior.
    
 In `rulesmd.ini`:
 
 ```ini
 [Warhead]                           
-SpawnSuperWeapons=                        ; list of superweapons
-SpawnSuperWeapons.RealLaunch= no          ; bool
+SpawnSuperWeapons=               ; list of superweapons
+SpawnSuperWeapons.RealLaunch=no  ; bool
 ```
 
 

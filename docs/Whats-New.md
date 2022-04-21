@@ -293,6 +293,7 @@ New:
 - TerrainType & ore minimap color customization (by Starkku)
 - Single-color weapon lasers (by Starkku)
 - Customizable projectile trajectory (by secsome)
+- Superweapon support on warhead detonation (by Trsdy)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
