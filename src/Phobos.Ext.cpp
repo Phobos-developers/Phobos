@@ -19,6 +19,9 @@
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/TerrainType/Body.h>
+#include <Ext/Tiberium/Body.h>
+#include <Ext/VoxelAnim/Body.h>
+#include <Ext/VoxelAnimType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -240,6 +243,9 @@ auto MassActions = MassAction <
 	TechnoExt,
 	TechnoTypeExt,
 	TerrainTypeExt,
+	TiberiumExt,
+	VoxelAnimExt,
+	VoxelAnimTypeExt,
 	WarheadTypeExt,
 	WeaponTypeExt,
 	// New classes

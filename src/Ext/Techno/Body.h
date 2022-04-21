@@ -29,6 +29,8 @@ public:
 		Valueable<int> PassengerDeletionCountDown;
 		Valueable<ShieldTypeClass*> CurrentShieldType;
 		Valueable<int> LastWarpDistance;
+		int Death_Countdown;
+		Valueable<AnimTypeClass*> MindControlRingAnimType;
 
 		AttachmentClass* ParentAttachment;
 		ValueableVector<std::unique_ptr<AttachmentClass>> ChildAttachments;
@@ -41,8 +43,10 @@ public:
 			, LastKillWasTeamTarget { false }
 			, PassengerDeletionTimer {}
 			, PassengerDeletionCountDown { -1 }
-			, CurrentShieldType {}
+			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
+			, Death_Countdown(-1)
+			, MindControlRingAnimType { nullptr }
 			, ParentAttachment {}
 			, ChildAttachments {}
 		{ }
@@ -106,8 +110,11 @@ public:
 	static void ApplyInterceptor(TechnoClass* pThis);
 	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
 	static void ApplySpawn_LimitRange(TechnoClass* pThis);
+	static void CheckDeathConditions(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void EatPassengers(TechnoClass* pThis);
-
+	static void UpdateSharedAmmo(TechnoClass* pThis);
+	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
+	static void UpdateMindControlAnim(TechnoClass* pThis);
 };

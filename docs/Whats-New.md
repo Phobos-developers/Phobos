@@ -12,204 +12,215 @@ This page lists the history of changes across stable Phobos releases and also al
 ### From older Phobos versions
 
 #### From 0.2.2.2
+
 - Keys `rulesmd.ini->[SOMEWARHEAD]->PenetratesShield` and `rulesmd.ini->[SOMEWARHEAD]->BreaksShield` have been changed to `Shield.Penetrate` and `Shield.Break`, respectively.
 
 #### From 0.1.1
+
 - Key `rulesmd.ini->[SOMETECHNOTYPE]->Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on.
 
 ### For Map Editor (Final Alert 2)
 
-In `FAData.ini`:
-```ini
-[ParamTypes]
-47=Structures,28
-53=Play BuildUp,10
-54=Use GlobalVar,10
-55=Operation,0
-56=Variable index,0
-57=Lower bound,0
-58=Upper bound,0
-59=Operate var is global,10
-60=Operate var index,0
+<details>
+  <summary>Click to show</summary>
 
-[EventsRA2]
-500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
-501=Local variable is less than,48,6,0,0,[LONG DESC],0,1,501,1
-502=Local variable equals to,48,6,0,0,[LONG DESC],0,1,502,1
-503=Local variable is greater than or equals to,48,6,0,0,[LONG DESC],0,1,503,1
-504=Local variable is less than or equals,48,6,0,0,[LONG DESC],0,1,504,1
-505=Local variable and X is true,48,6,0,0,[LONG DESC],0,1,505,1
-506=Global variable is greater than,48,6,0,0,[LONG DESC],0,1,506,1
-507=Global variable is less than,48,6,0,0,[LONG DESC],0,1,507,1
-508=Global variable equals to,48,6,0,0,[LONG DESC],0,1,508,1
-509=Global variable is greater than or queals to,48,6,0,0,[LONG DESC],0,1,509,1
-510=Global variable is less than or equals to,48,6,0,0,[LONG DESC],0,1,510,1
-511=Global variable and X is true,48,6,0,0,[LONG DESC],0,1,511,1
-512=Local variable is greater than local variable,48,3,0,0,[LONG DESC],0,1,500,1
-513=Local variable is less than local variable,48,3,0,0,[LONG DESC],0,1,501,1
-514=Local variable equals to local variable,48,3,0,0,[LONG DESC],0,1,502,1
-515=Local variable is greater than or equals to local variable,48,3,0,0,[LONG DESC],0,1,503,1
-516=Local variable is less than or equals local variable,48,3,0,0,[LONG DESC],0,1,504,1
-517=Local variable and local variable is true,48,3,0,0,[LONG DESC],0,1,505,1
-518=Global variable is greater than local variable,48,3,0,0,[LONG DESC],0,1,506,1
-519=Global variable is less than local variable,48,3,0,0,[LONG DESC],0,1,507,1
-520=Global variable equals to local variable,48,3,0,0,[LONG DESC],0,1,508,1
-521=Global variable is greater than or queals to local variable,48,3,0,0,[LONG DESC],0,1,509,1
-522=Global variable is less than or equals to local variable,48,3,0,0,[LONG DESC],0,1,510,1
-523=Global variable and local variable is true,48,3,0,0,[LONG DESC],0,1,511,1
-524=Local variable is greater than global variable,48,35,0,0,[LONG DESC],0,1,500,1
-525=Local variable is less than global variable,48,35,0,0,[LONG DESC],0,1,501,1
-526=Local variable equals to global variable,48,35,0,0,[LONG DESC],0,1,502,1
-527=Local variable is greater than or equals to global variable,48,35,0,0,[LONG DESC],0,1,503,1
-528=Local variable is less than or equals global variable,48,35,0,0,[LONG DESC],0,1,504,1
-529=Local variable and global variable is true,48,35,0,0,[LONG DESC],0,1,505,1
-530=Global variable is greater than global variable,48,35,0,0,[LONG DESC],0,1,506,1
-531=Global variable is less than global variable,48,35,0,0,[LONG DESC],0,1,507,1
-532=Global variable equals to global variable,48,35,0,0,[LONG DESC],0,1,508,1
-533=Global variable is greater than or queals to global variable,48,35,0,0,[LONG DESC],0,1,509,1
-534=Global variable is less than or equals to global variable,48,35,0,0,[LONG DESC],0,1,510,1
-535=Global variable and global variable is true,48,35,0,0,[LONG DESC],0,1,511,1
+  In `FAData.ini`:
+  ```ini
+  [ParamTypes]
+  47=Structures,28
+  53=Play BuildUp,10
+  54=Use GlobalVar,10
+  55=Operation,0
+  56=Variable index,0
+  57=Lower bound,0
+  58=Upper bound,0
+  59=Operate var is global,10
+  60=Operate var index,0
 
-[ActionsRA2]
-125=Build at...,-10,47,53,0,0,0,1,0,0,[LONG DESC],0,1,125
-500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
-501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
-502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
-503=Print variable value,0,56,54,0,0,0,0,0,0,[LONG DESC],0,1,503,0
-504=Binary operation,0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1
+  [EventsRA2]
+  500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
+  501=Local variable is less than,48,6,0,0,[LONG DESC],0,1,501,1
+  502=Local variable equals to,48,6,0,0,[LONG DESC],0,1,502,1
+  503=Local variable is greater than or equals to,48,6,0,0,[LONG DESC],0,1,503,1
+  504=Local variable is less than or equals,48,6,0,0,[LONG DESC],0,1,504,1
+  505=Local variable and X is true,48,6,0,0,[LONG DESC],0,1,505,1
+  506=Global variable is greater than,48,6,0,0,[LONG DESC],0,1,506,1
+  507=Global variable is less than,48,6,0,0,[LONG DESC],0,1,507,1
+  508=Global variable equals to,48,6,0,0,[LONG DESC],0,1,508,1
+  509=Global variable is greater than or queals to,48,6,0,0,[LONG DESC],0,1,509,1
+  510=Global variable is less than or equals to,48,6,0,0,[LONG DESC],0,1,510,1
+  511=Global variable and X is true,48,6,0,0,[LONG DESC],0,1,511,1
+  512=Local variable is greater than local variable,48,3,0,0,[LONG DESC],0,1,500,1
+  513=Local variable is less than local variable,48,3,0,0,[LONG DESC],0,1,501,1
+  514=Local variable equals to local variable,48,3,0,0,[LONG DESC],0,1,502,1
+  515=Local variable is greater than or equals to local variable,48,3,0,0,[LONG DESC],0,1,503,1
+  516=Local variable is less than or equals local variable,48,3,0,0,[LONG DESC],0,1,504,1
+  517=Local variable and local variable is true,48,3,0,0,[LONG DESC],0,1,505,1
+  518=Global variable is greater than local variable,48,3,0,0,[LONG DESC],0,1,506,1
+  519=Global variable is less than local variable,48,3,0,0,[LONG DESC],0,1,507,1
+  520=Global variable equals to local variable,48,3,0,0,[LONG DESC],0,1,508,1
+  521=Global variable is greater than or queals to local variable,48,3,0,0,[LONG DESC],0,1,509,1
+  522=Global variable is less than or equals to local variable,48,3,0,0,[LONG DESC],0,1,510,1
+  523=Global variable and local variable is true,48,3,0,0,[LONG DESC],0,1,511,1
+  524=Local variable is greater than global variable,48,35,0,0,[LONG DESC],0,1,500,1
+  525=Local variable is less than global variable,48,35,0,0,[LONG DESC],0,1,501,1
+  526=Local variable equals to global variable,48,35,0,0,[LONG DESC],0,1,502,1
+  527=Local variable is greater than or equals to global variable,48,35,0,0,[LONG DESC],0,1,503,1
+  528=Local variable is less than or equals global variable,48,35,0,0,[LONG DESC],0,1,504,1
+  529=Local variable and global variable is true,48,35,0,0,[LONG DESC],0,1,505,1
+  530=Global variable is greater than global variable,48,35,0,0,[LONG DESC],0,1,506,1
+  531=Global variable is less than global variable,48,35,0,0,[LONG DESC],0,1,507,1
+  532=Global variable equals to global variable,48,35,0,0,[LONG DESC],0,1,508,1
+  533=Global variable is greater than or queals to global variable,48,35,0,0,[LONG DESC],0,1,509,1
+  534=Global variable is less than or equals to global variable,48,35,0,0,[LONG DESC],0,1,510,1
+  535=Global variable and global variable is true,48,35,0,0,[LONG DESC],0,1,511,1
 
-; FOLLOWING STUFFS NEEDS FA2SP.DLL (by secsome)
-[ScriptTypeLists]
-1=ScriptLocalVariable
-2=ScriptGlobalVariable
-3=ScriptLocalVariable_Local
-4=ScriptLocalVariable_Global
-5=ScriptGlobalVariable_Local
-6=ScriptGlobalVariable_Global
+  [ActionsRA2]
+  125=Build at...,-10,47,53,0,0,0,1,0,0,[LONG DESC],0,1,125
+  500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
+  501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
+  502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
+  503=Print variable value,0,56,54,0,0,0,0,0,0,[LONG DESC],0,1,503,0
+  504=Binary operation,0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1
+  505=Fire Super Weapon at specified location (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
+  506=Fire Super Weapon at specified waypoint (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
 
-[ScriptLocalVariable]
-HasExtraParam=Yes
-BuiltInType=14
+  ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
+  [ScriptTypeLists]
+  1=ScriptLocalVariable
+  2=ScriptGlobalVariable
+  3=ScriptLocalVariable_Local
+  4=ScriptLocalVariable_Global
+  5=ScriptGlobalVariable_Local
+  6=ScriptGlobalVariable_Global
 
-[ScriptGlobalVariable]
-HasExtraParam=Yes
-BuiltInType=5
+  [ScriptLocalVariable]
+  HasExtraParam=Yes
+  BuiltInType=14
 
-[ScriptLocalVariable_Local]
-HasExtraParam=Yes
-ExtraParamType=ScriptExtType_LocalVariables
-BuiltInType=14
+  [ScriptGlobalVariable]
+  HasExtraParam=Yes
+  BuiltInType=5
 
-[ScriptLocalVariable_Global]
-HasExtraParam=Yes
-ExtraParamType=ScriptExtType_GlobalVariables
-BuiltInType=14
+  [ScriptLocalVariable_Local]
+  HasExtraParam=Yes
+  ExtraParamType=ScriptExtType_LocalVariables
+  BuiltInType=14
 
-[ScriptGlobalVariable_Local]
-HasExtraParam=Yes
-ExtraParamType=ScriptExtType_LocalVariables
-BuiltInType=5
+  [ScriptLocalVariable_Global]
+  HasExtraParam=Yes
+  ExtraParamType=ScriptExtType_GlobalVariables
+  BuiltInType=14
 
-[ScriptGlobalVariable_Global]
-HasExtraParam=Yes
-ExtraParamType=ScriptExtType_GlobalVariables
-BuiltInType=5
+  [ScriptGlobalVariable_Local]
+  HasExtraParam=Yes
+  ExtraParamType=ScriptExtType_LocalVariables
+  BuiltInType=5
 
-[ScriptExtType_LocalVariables]
-BuiltInType=14
+  [ScriptGlobalVariable_Global]
+  HasExtraParam=Yes
+  ExtraParamType=ScriptExtType_GlobalVariables
+  BuiltInType=5
 
-[ScriptExtType_GlobalVariables]
-BuiltInType=5
+  [ScriptExtType_LocalVariables]
+  BuiltInType=14
 
-[ScriptsRA2]   
-71=Timed Area Guard,20,0,1,[LONG DESC]
-72=Load Onto Transports,0,0,1,[LONG DESC]
-73=Wait until ammo is full,0,0,1,[LONG DESC]
-500=Local variable set,22,0,1,[LONG DESC]
-501=Local variable add,22,0,1,[LONG DESC]
-502=Local variable minus,22,0,1,[LONG DESC]
-503=Local variable multiply,22,0,1,[LONG DESC]
-504=Local variable divide,22,0,1,[LONG DESC]
-505=Local variable mod,22,0,1,[LONG DESC]
-506=Local variable leftshift,22,0,1,[LONG DESC]
-507=Local variable rightshift,22,0,1,[LONG DESC]
-508=Local variable reverse,22,0,1,[LONG DESC]
-509=Local variable xor,22,0,1,[LONG DESC]
-510=Local variable or,22,0,1,[LONG DESC]
-511=Local variable and,22,0,1,[LONG DESC]
-512=Global variable set,23,0,1,[LONG DESC]
-513=Global variable add,23,0,1,[LONG DESC]
-514=Global variable minus,23,0,1,[LONG DESC]
-515=Global variable multiply,23,0,1,[LONG DESC]
-516=Global variable divide,23,0,1,[LONG DESC]
-517=Global variable mod,23,0,1,[LONG DESC]
-518=Global variable leftshift,23,0,1,[LONG DESC]
-519=Global variable rightshift,23,0,1,[LONG DESC]
-520=Global variable reverse,23,0,1,[LONG DESC]
-521=Global variable xor,23,0,1,[LONG DESC]
-522=Global variable or,23,0,1,[LONG DESC]
-523=Global variable and,23,0,1,[LONG DESC]
-524=Local variable set by local variable,24,0,1,[LONG DESC]
-525=Local variable add by local variable,24,0,1,[LONG DESC]
-526=Local variable minus by local variable,24,0,1,[LONG DESC]
-527=Local variable multiply by local variable,24,0,1,[LONG DESC]
-528=Local variable divide by local variable,24,0,1,[LONG DESC]
-529=Local variable mod by local variable,24,0,1,[LONG DESC]
-530=Local variable leftshift by local variable,24,0,1,[LONG DESC]
-531=Local variable rightshift by local variable,24,0,1,[LONG DESC]
-532=Local variable reverse by local variable,24,0,1,[LONG DESC]
-533=Local variable xor by local variable,24,0,1,[LONG DESC]
-534=Local variable or by local variable,24,0,1,[LONG DESC]
-535=Local variable and by local variable,24,0,1,[LONG DESC]
-536=Global variable set by local variable,25,0,1,[LONG DESC]
-537=Global variable add by local variable,25,0,1,[LONG DESC]
-538=Global variable minus by local variable,25,0,1,[LONG DESC]
-539=Global variable multiply by local variable,25,0,1,[LONG DESC]
-540=Global variable divide by local variable,25,0,1,[LONG DESC]
-541=Global variable mod by local variable,25,0,1,[LONG DESC]
-542=Global variable leftshift by local variable,25,0,1,[LONG DESC]
-543=Global variable rightshift by local variable,25,0,1,[LONG DESC]
-544=Global variable reverse by local variable,25,0,1,[LONG DESC]
-545=Global variable xor by local variable,25,0,1,[LONG DESC]
-546=Global variable or by local variable,25,0,1,[LONG DESC]
-547=Global variable and by local variable,25,0,1,[LONG DESC]
-548=Local variable set by global variable,26,0,1,[LONG DESC]
-549=Local variable add by global variable,26,0,1,[LONG DESC]
-550=Local variable minus by global variable,26,0,1,[LONG DESC]
-551=Local variable multiply by global variable,26,0,1,[LONG DESC]
-552=Local variable divide by global variable,26,0,1,[LONG DESC]
-553=Local variable mod by global variable,26,0,1,[LONG DESC]
-554=Local variable leftshift by global variable,26,0,1,[LONG DESC]
-555=Local variable rightshift by global variable,26,0,1,[LONG DESC]
-556=Local variable reverse by global variable,26,0,1,[LONG DESC]
-557=Local variable xor by global variable,26,0,1,[LONG DESC]
-558=Local variable or by global variable,26,0,1,[LONG DESC]
-559=Local variable and by global variable,26,0,1,[LONG DESC]
-560=Global variable set by global variable,27,0,1,[LONG DESC]
-561=Global variable add by global variable,27,0,1,[LONG DESC]
-562=Global variable minus by global variable,27,0,1,[LONG DESC]
-563=Global variable multiply by global variable,27,0,1,[LONG DESC]
-564=Global variable divide by global variable,27,0,1,[LONG DESC]
-565=Global variable mod by global variable,27,0,1,[LONG DESC]
-566=Global variable leftshift by global variable,27,0,1,[LONG DESC]
-567=Global variable rightshift by global variable,27,0,1,[LONG DESC]
-568=Global variable reverse by global variable,27,0,1,[LONG DESC]
-569=Global variable xor by global variable,27,0,1,[LONG DESC]
-570=Global variable or by global variable,27,0,1,[LONG DESC]
-571=Global variable and by global variable,27,0,1,[LONG DESC]
+  [ScriptExtType_GlobalVariables]
+  BuiltInType=5
 
-[ScriptParams] 
-22=Local variables,-1
-23=Global variables,-2
-24=Local variables,-3
-25=Local variables,-4
-26=Global variables,-5
-27=Global variables,-6
-```
+  [ScriptsRA2]
+  71=Timed Area Guard,20,0,1,[LONG DESC]
+  72=Load Onto Transports,0,0,1,[LONG DESC]
+  73=Wait until ammo is full,0,0,1,[LONG DESC]
+  500=Local variable set,22,0,1,[LONG DESC]
+  501=Local variable add,22,0,1,[LONG DESC]
+  502=Local variable minus,22,0,1,[LONG DESC]
+  503=Local variable multiply,22,0,1,[LONG DESC]
+  504=Local variable divide,22,0,1,[LONG DESC]
+  505=Local variable mod,22,0,1,[LONG DESC]
+  506=Local variable leftshift,22,0,1,[LONG DESC]
+  507=Local variable rightshift,22,0,1,[LONG DESC]
+  508=Local variable reverse,22,0,1,[LONG DESC]
+  509=Local variable xor,22,0,1,[LONG DESC]
+  510=Local variable or,22,0,1,[LONG DESC]
+  511=Local variable and,22,0,1,[LONG DESC]
+  512=Global variable set,23,0,1,[LONG DESC]
+  513=Global variable add,23,0,1,[LONG DESC]
+  514=Global variable minus,23,0,1,[LONG DESC]
+  515=Global variable multiply,23,0,1,[LONG DESC]
+  516=Global variable divide,23,0,1,[LONG DESC]
+  517=Global variable mod,23,0,1,[LONG DESC]
+  518=Global variable leftshift,23,0,1,[LONG DESC]
+  519=Global variable rightshift,23,0,1,[LONG DESC]
+  520=Global variable reverse,23,0,1,[LONG DESC]
+  521=Global variable xor,23,0,1,[LONG DESC]
+  522=Global variable or,23,0,1,[LONG DESC]
+  523=Global variable and,23,0,1,[LONG DESC]
+  524=Local variable set by local variable,24,0,1,[LONG DESC]
+  525=Local variable add by local variable,24,0,1,[LONG DESC]
+  526=Local variable minus by local variable,24,0,1,[LONG DESC]
+  527=Local variable multiply by local variable,24,0,1,[LONG DESC]
+  528=Local variable divide by local variable,24,0,1,[LONG DESC]
+  529=Local variable mod by local variable,24,0,1,[LONG DESC]
+  530=Local variable leftshift by local variable,24,0,1,[LONG DESC]
+  531=Local variable rightshift by local variable,24,0,1,[LONG DESC]
+  532=Local variable reverse by local variable,24,0,1,[LONG DESC]
+  533=Local variable xor by local variable,24,0,1,[LONG DESC]
+  534=Local variable or by local variable,24,0,1,[LONG DESC]
+  535=Local variable and by local variable,24,0,1,[LONG DESC]
+  536=Global variable set by local variable,25,0,1,[LONG DESC]
+  537=Global variable add by local variable,25,0,1,[LONG DESC]
+  538=Global variable minus by local variable,25,0,1,[LONG DESC]
+  539=Global variable multiply by local variable,25,0,1,[LONG DESC]
+  540=Global variable divide by local variable,25,0,1,[LONG DESC]
+  541=Global variable mod by local variable,25,0,1,[LONG DESC]
+  542=Global variable leftshift by local variable,25,0,1,[LONG DESC]
+  543=Global variable rightshift by local variable,25,0,1,[LONG DESC]
+  544=Global variable reverse by local variable,25,0,1,[LONG DESC]
+  545=Global variable xor by local variable,25,0,1,[LONG DESC]
+  546=Global variable or by local variable,25,0,1,[LONG DESC]
+  547=Global variable and by local variable,25,0,1,[LONG DESC]
+  548=Local variable set by global variable,26,0,1,[LONG DESC]
+  549=Local variable add by global variable,26,0,1,[LONG DESC]
+  550=Local variable minus by global variable,26,0,1,[LONG DESC]
+  551=Local variable multiply by global variable,26,0,1,[LONG DESC]
+  552=Local variable divide by global variable,26,0,1,[LONG DESC]
+  553=Local variable mod by global variable,26,0,1,[LONG DESC]
+  554=Local variable leftshift by global variable,26,0,1,[LONG DESC]
+  555=Local variable rightshift by global variable,26,0,1,[LONG DESC]
+  556=Local variable reverse by global variable,26,0,1,[LONG DESC]
+  557=Local variable xor by global variable,26,0,1,[LONG DESC]
+  558=Local variable or by global variable,26,0,1,[LONG DESC]
+  559=Local variable and by global variable,26,0,1,[LONG DESC]
+  560=Global variable set by global variable,27,0,1,[LONG DESC]
+  561=Global variable add by global variable,27,0,1,[LONG DESC]
+  562=Global variable minus by global variable,27,0,1,[LONG DESC]
+  563=Global variable multiply by global variable,27,0,1,[LONG DESC]
+  564=Global variable divide by global variable,27,0,1,[LONG DESC]
+  565=Global variable mod by global variable,27,0,1,[LONG DESC]
+  566=Global variable leftshift by global variable,27,0,1,[LONG DESC]
+  567=Global variable rightshift by global variable,27,0,1,[LONG DESC]
+  568=Global variable reverse by global variable,27,0,1,[LONG DESC]
+  569=Global variable xor by global variable,27,0,1,[LONG DESC]
+  570=Global variable or by global variable,27,0,1,[LONG DESC]
+  571=Global variable and by global variable,27,0,1,[LONG DESC]
+
+  [ScriptParams] 
+  22=Local variables,-1
+  23=Global variables,-2
+  24=Local variables,-3
+  25=Local variables,-4
+  26=Global variables,-5
+  27=Global variables,-6
+  ```
+</details>
 
 ## Changelog
 
 ### 0.3
+
+<details>
+  <summary>Click to show</summary>
 
 New:
 - LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)
@@ -231,7 +242,7 @@ New:
 - Quicksave hotkey command (by secsome)
 - Save Game Trigger Action (by secsome)
 - Numeric Variables (by secsome)
-- TechnoType's tooltip would display it's build time now (by secsome) 
+- TechnoType's tooltip would display it's build time now (by secsome)
 - Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)
 - Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
 - XDrawOffset for animations (by Morton)
@@ -267,6 +278,22 @@ New:
 - Weapons fired on warping in / out (by Starkku)
 - `Storage.TiberiumIndex` for customizing resource storage in structures (by FS-21)
 - Grinder improvements & customizations (by Starkku)
+- Attached animation position customization (by Starkku)
+- Trigger Action 505 for Firing at specified location (by FS-21)
+- Trigger Action 506 for Firing at waypoint (by FS-21)
+- New ways for self-killing objects under certaing cases (by FS-21)
+- `ForceWeapon.Naval.Decloacked` for overriding uncloaked underwater attack behavior (by FS-21)
+- Shrapnel enhancement (by secsome)
+- Shared Ammo for transports to passengers (by FS-21)
+- Additional critical hit logic customizations (by Starkku)
+- Laser trails for VoxelAnims (by Otamaa)
+- Local warhead screen shaking (by Starkku)
+- Weapon owner detachment (by Starkku)
+- Feedback weapon (by Starkku)
+- TerrainType & ore minimap color customization (by Starkku)
+- Single-color weapon lasers (by Starkku)
+- Customizable projectile trajectory (by secsome)
+- Correct owner house for Warhead Anim/SplashList & Play Animation trigger animations (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -275,26 +302,44 @@ Vanilla fixes:
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water (by Uranusian)
 - Fixed temporal weapon crash under certain conditions where stack dump starts with 0051BB7D (by secsome)
 - Fixed the bug when retinting map lighting with a map action corrupted light sources (by secsome)
+- Fixed the bug when reading a map which puts `Preview(Pack)` after `Map` lead to the game fail to draw the preview (by secsome)
 - Fixed the bug that AITriggerTypes do not recognize building upgrades (by Uranusian)
+- Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` > `AllowParallelAIQueues=no` is set (by FS-21)
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10 (by Otamaa)
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead (by Starkku)
+- Fixed aircraft & jumpjet units not being affected by speed modifiers (by Starkku)
+- Fixed vehicles (both voxel & SHP) to fully respect `Palette` (by Starkku)
+- Fixed mind control indicator animations not reappearing on mind controlled objects that are cloaked and then uncloaked (by Starkku)
+- Fixed Nuke carrier and payload weapons not respecting `Bright` setting on weapon (by Starkku)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
 - Improved shield behavior for forced damage (by Uranusian)
 - Fixed SplashList animations playing when a unit is hit on a bridge over water (by Uranusian)
 - Fixed shielded objects not decloaking if shield takes damage (by Starkku)
+- Fixed critical hit animation playing even if no critical hits were dealt due to `Crit.Affects` or `ImmuneToCrit` settings (by Starkku)
+- Fixed `RemoveDisguise` not working on `PermaDisguise` infantry (by Starkku)
+- Fixed single-color laser (IsHouseColor, IsSingleColor, LaserTrails) glow falloff to match the vanilla appearance (by Starkku)
+</details>
 
 
 ### 0.2.2.2
+
+<details>
+  <summary>Click to show</summary>
 
 Phobos fixes:
 - Fixed shield type info not saving properly (by Uranusian)
 - Fixed extended building upgrades logic not properly interacting with Ares' BuildLimit check (by Uranusian)
 - Fix more random crashes for Cameo Priority (by Uranusian)
 - Fix aircraft weapons causing game freeze when burst index was not correctly reset after firing (by Starkku)
+</details>
+
 
 ### 0.2.2.1
+
+<details>
+  <summary>Click to show</summary>
 
 Phobos fixes:
 - Fixed random crashes about CameoPriority (by Uranusian)
@@ -303,8 +348,13 @@ Phobos fixes:
 - RadSite hook adjustment for `FootClass` to support Ares `RadImmune`; also various fixes to radiation / desolators (by Otamaa)
 - Fixed `Crit.Affects` not functioning properly (by Uranusian)
 - Fixed improper upgrade owner transfer which resulted in built ally / enemy building upgrades keeping the player who built them alive (by Kerbiter)
+</details>
+
 
 ### 0.2.2
+
+<details>
+  <summary>Click to show</summary>
 
 New:
 - Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
@@ -318,13 +368,23 @@ Vanilla fixes:
 Phobos fixes:
 - Fixed the critical damage logic not functioning properly (by Uranusian)
 - Fixed the bug when executing the stop command game crashes (by Uranusian)
+</details>
+
 
 ### 0.2.1.1
 
+<details>
+  <summary>Click to show</summary>
+
 Phobos fixes:
 - Fixed occasional crashes introduced by `Speed=0` stationary vehicles code (by Starkku)
+</details>
+
 
 ### 0.2.1
+
+<details>
+  <summary>Click to show</summary>
 
 New:
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary (by Starkku)
@@ -335,8 +395,13 @@ Vanilla fixes:
 
 Phobos fixes:
 - Fixed the bug when trigger action `125 Build At...` wasn't actually producing a building when the target cells were occupied (by secsome)
+</details>
+
 
 ### 0.2
+
+<details>
+  <summary>Click to show</summary>
 
 New:
 - Shield logic for TechnoTypes (by Uranusian, secsome, Belonit) with warhead additions (by Starkku)
@@ -380,12 +445,23 @@ Phobos fixes:
 - Properly rewritten a fix for mind-controlled vehicles deploying into buildings (by FS-21)
 - Properly rewritten `DeployToFire` fix, tag `Deployed.RememberTarget` is deprecated, now always on (by Kerbiter)
 - New warheads now work with Ares' `GenericWarhead` superweapon (by Belonit)
+</details>
+
 
 ### 0.1.1
 
+<details>
+  <summary>Click to show</summary>
+
+Phobos fixes:
 - Fixed an occasional crash when selecting units with a selection box
+</details>
+
 
 ### 0.1
+
+<details>
+<summary>Click to show</summary>
 
 New:
 - Full-color PCX graphics support (by Belonit)
@@ -406,3 +482,5 @@ Vanilla fixes:
 - Fixed QWER hotkey tab switching not hiding the displayed tooltip as it should (by Belonit)
 - Sidebar tooltips now can go over sidebar bounds (by Belonit)
 - Lifted stupidly small limit for tooltip character amount (by Belonit)
+</details>
+

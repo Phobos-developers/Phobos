@@ -416,6 +416,142 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 	return false;
 }
 
+// Feature: Kill Object Automatically
+void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
+{
+	auto pTypeThis = pThis->GetTechnoType();
+	auto pTypeData = TechnoTypeExt::ExtMap.Find(pTypeThis);
+	auto pData = TechnoExt::ExtMap.Find(pThis);
+
+	// Death if no ammo
+	if (pTypeThis && pTypeData && pTypeData->Death_NoAmmo)
+	{
+		if (pTypeThis->Ammo > 0 && pThis->Ammo <= 0)
+			pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+	}
+
+	// Death if countdown ends
+	if (pTypeThis && pData && pTypeData && pTypeData->Death_Countdown > 0)
+	{
+		if (pData->Death_Countdown >= 0)
+		{
+			if (pData->Death_Countdown > 0)
+			{
+				pData->Death_Countdown--; // Update countdown
+			}
+			else
+			{
+				// Countdown ended. Kill the unit
+				pData->Death_Countdown = -1;
+				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+			}
+		}
+		else
+		{
+			pData->Death_Countdown = pTypeData->Death_Countdown; // Start countdown
+		}
+	}
+}
+
+void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
+{
+	if (!pThis)
+		return;
+
+	if (const auto pType = pThis->GetTechnoType())
+	{
+		if (pType->OpenTopped && pThis->Passengers.NumPassengers > 0)
+		{
+			if (const auto pExt = TechnoTypeExt::ExtMap.Find(pType))
+			{
+				if (pExt->Ammo_Shared && pType->Ammo > 0)
+				{
+					auto passenger = pThis->Passengers.FirstPassenger;
+					TechnoTypeClass* passengerType;
+
+					do
+					{
+						passengerType = passenger->GetTechnoType();
+						auto pPassengerExt = TechnoTypeExt::ExtMap.Find(passengerType);
+
+						if (pPassengerExt && pPassengerExt->Ammo_Shared)
+						{
+							if (pExt->Ammo_Shared_Group < 0 || pExt->Ammo_Shared_Group == pPassengerExt->Ammo_Shared_Group)
+							{
+								if (pThis->Ammo > 0 && (passenger->Ammo < passengerType->Ammo))
+								{
+									pThis->Ammo--;
+									passenger->Ammo++;
+								}
+							}
+						}
+
+						passenger = static_cast<FootClass*>(passenger->NextObject);
+					}
+					while (passenger);
+				}
+			}
+		}
+	}
+}
+
+double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
+{
+	double houseMultiplier = 1.0;
+
+	if (pThis->WhatAmI() == AbstractType::Aircraft)
+		houseMultiplier = pThis->Owner->Type->SpeedAircraftMult;
+	else if (pThis->WhatAmI() == AbstractType::Infantry)
+		houseMultiplier = pThis->Owner->Type->SpeedInfantryMult;
+	else
+		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
+
+	return pThis->SpeedMultiplier * houseMultiplier *
+		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
+}
+
+void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
+{
+	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		if (pThis->IsMindControlled())
+		{
+			if (pThis->MindControlRingAnim && !pExt->MindControlRingAnimType)
+			{
+				pExt->MindControlRingAnimType = pThis->MindControlRingAnim->Type;
+			}
+			else if (!pThis->MindControlRingAnim && pExt->MindControlRingAnimType &&
+				pThis->CloakState == CloakState::Uncloaked && !pThis->InLimbo && pThis->IsAlive)
+			{
+				auto coords = CoordStruct::Empty;
+				coords = *pThis->GetCoords(&coords);
+				int offset = 0;
+
+				if (const auto pBuilding = specific_cast<BuildingClass*>(pThis))
+					offset = Unsorted::LevelHeight * pBuilding->Type->Height;
+				else
+					offset = pThis->GetTechnoType()->MindControlRingOffset;
+
+				coords.Z += offset;
+				auto anim = GameCreate<AnimClass>(pExt->MindControlRingAnimType, coords, 0, 1);
+
+				if (anim)
+				{
+					pThis->MindControlRingAnim = anim;
+					pThis->MindControlRingAnim->SetOwnerObject(pThis);
+
+					if (pThis->WhatAmI() == AbstractType::Building)
+						pThis->MindControlRingAnim->ZAdjust = -1024;
+				}
+			}
+		}
+		else if (pExt->MindControlRingAnimType)
+		{
+			pExt->MindControlRingAnimType = nullptr;
+		}
+	}
+}
+
 bool TechnoExt::AttachmentAI(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
@@ -520,6 +656,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletionCountDown)
 		.Process(this->CurrentShieldType)
 		.Process(this->LastWarpDistance)
+		.Process(this->Death_Countdown)
+		.Process(this->MindControlRingAnimType)
 		;
 }
 

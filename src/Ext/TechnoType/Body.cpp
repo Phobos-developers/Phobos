@@ -99,6 +99,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
 	this->NoManualMove.Read(exINI, pSection, "NoManualMove");
 	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
+	this->Death_NoAmmo.Read(exINI, pSection, "Death.NoAmmo");
+	this->Death_Countdown.Read(exINI, pSection, "Death.Countdown");
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
@@ -115,8 +117,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->WarpInMinRangeWeapon.Read(exINI, pSection, "WarpInMinRangeWeapon", true);
 	this->WarpOutWeapon.Read(exINI, pSection, "WarpOutWeapon", true);
 	this->WarpInWeapon_UseDistanceAsDamage.Read(exINI, pSection, "WarpInWeapon.UseDistanceAsDamage");
-	this->WarpInWeapon_FireAsSelf.Read(exINI, pSection, "WarpInWeapon.FireAsSelf");
-	this->WarpOutWeapon_FireAsSelf.Read(exINI, pSection, "WarpOutWeapon.FireAsSelf");
 
 	this->OreGathering_Anims.Read(exINI, pSection, "OreGathering.Anims");
 	this->OreGathering_Tiberiums.Read(exINI, pSection, "OreGathering.Tiberiums");
@@ -249,6 +249,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
+
+	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
+	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
+	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 }
 
 template <typename T>
@@ -278,6 +282,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CameoPriority)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
+		.Process(this->Death_NoAmmo)
+		.Process(this->Death_Countdown)
 		.Process(this->ShieldType)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
@@ -291,8 +297,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarpInMinRangeWeapon)
 		.Process(this->WarpOutWeapon)
 		.Process(this->WarpInWeapon_UseDistanceAsDamage)
-		.Process(this->WarpInWeapon_FireAsSelf)
-		.Process(this->WarpOutWeapon_FireAsSelf)
 		.Process(this->OreGathering_Anims)
 		.Process(this->OreGathering_Tiberiums)
 		.Process(this->OreGathering_FramesPerDir)
@@ -322,6 +326,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployingAnim_ReverseForUndeploy)
 		.Process(this->DeployingAnim_UseUnitDrawer)
 		.Process(this->EnemyUIName)
+		.Process(this->ForceWeapon_Naval_Decloaked)
+		.Process(this->Ammo_Shared)
+		.Process(this->Ammo_Shared_Group)
 		.Process(this->AttachmentData)
 		;
 }

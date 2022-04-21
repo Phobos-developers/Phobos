@@ -17,81 +17,125 @@
 #include <Utilities/Container.h>
 #include <Phobos.h>
 
-enum PhobosScripts
+enum class PhobosScripts : unsigned int
 {
-	// FS-21 please finish your stuff here, thanks
+	TimedAreaGuard = 71,
+	LoadIntoTransports = 72,
+	WaitUntilFullAmmo = 73,
+	RepeatAttackCloserThreat = 74,
+	RepeatAttackFartherThreat = 75,
+	RepeatAttackCloser = 76,
+	RepeatAttackFarther = 77,
+	SingleAttackCloserThreat = 78,
+	SingleAttackFartherThreat = 79,
+	SingleAttackCloser = 80,
+	SingleAttackFarther = 81,
+	DecreaseCurrentAITriggerWeight = 82,
+	IncreaseCurrentAITriggerWeight = 83,
+	RepeatAttackTypeCloserThreat = 84,
+	RepeatAttackTypeFartherThreat = 85,
+	RepeatAttackTypeCloser = 86,
+	RepeatAttackTypeFarther = 87,
+	SingleAttackTypeCloserThreat = 88,
+	SingleAttackTypeFartherThreat = 89,
+	SingleAttackTypeCloser = 90,
+	SingleAttackTypeFarther = 91,
+	WaitIfNoTarget = 92,
+	TeamWeightReward = 93,
+	PickRandomScript = 94,
+	MoveToEnemyCloser = 95,
+	MoveToEnemyFarther = 96,
+	MoveToFriendlyCloser = 97,
+	MoveToFriendlyFarther = 98,
+	MoveToTypeEnemyCloser = 99,
+	MoveToTypeEnemyFarther = 100,
+	MoveToTypeFriendlyCloser = 101,
+	MoveToTypeFriendlyFarther = 102,
+	ModifyTargetDistance = 103,
+	RandomAttackTypeCloser = 104,
+	RandomAttackTypeFarther = 105,
+	RandomMoveToTypeEnemyCloser = 106,
+	RandomMoveToTypeEnemyFarther = 107,
+	RandomMoveToTypeFriendlyCloser = 108,
+	RandomMoveToTypeFriendlyFarther = 109,
+	SetMoveMissionEndMode = 110,
+	UnregisterGreatSuccess = 111,
+	GatherAroundLeader = 112,
+	RandomSkipNextAction = 113,
+
+	// Variables
 	LocalVariableSet = 500,
-	LocalVariableAdd,
-	LocalVariableMinus,
-	LocalVariableMultiply,
-	LocalVariableDivide,
-	LocalVariableMod,
-	LocalVariableLeftShift,
-	LocalVariableRightShift,
-	LocalVariableReverse,
-	LocalVariableXor,
-	LocalVariableOr,
-	LocalVariableAnd,
-	GlobalVariableSet,
-	GlobalVariableAdd,
-	GlobalVariableMinus,
-	GlobalVariableMultiply,
-	GlobalVariableDivide,
-	GlobalVariableMod,
-	GlobalVariableLeftShift,
-	GlobalVariableRightShift,
-	GlobalVariableReverse,
-	GlobalVariableXor,
-	GlobalVariableOr,
-	GlobalVariableAnd,
-	LocalVariableSetByLocal,
-	LocalVariableAddByLocal,
-	LocalVariableMinusByLocal,
-	LocalVariableMultiplyByLocal,
-	LocalVariableDivideByLocal,
-	LocalVariableModByLocal,
-	LocalVariableLeftShiftByLocal,
-	LocalVariableRightShiftByLocal,
-	LocalVariableReverseByLocal,
-	LocalVariableXorByLocal,
-	LocalVariableOrByLocal,
-	LocalVariableAndByLocal,
-	GlobalVariableSetByLocal,
-	GlobalVariableAddByLocal,
-	GlobalVariableMinusByLocal,
-	GlobalVariableMultiplyByLocal,
-	GlobalVariableDivideByLocal,
-	GlobalVariableModByLocal,
-	GlobalVariableLeftShiftByLocal,
-	GlobalVariableRightShiftByLocal,
-	GlobalVariableReverseByLocal,
-	GlobalVariableXorByLocal,
-	GlobalVariableOrByLocal,
-	GlobalVariableAndByLocal,
-	LocalVariableSetByGlobal,
-	LocalVariableAddByGlobal,
-	LocalVariableMinusByGlobal,
-	LocalVariableMultiplyByGlobal,
-	LocalVariableDivideByGlobal,
-	LocalVariableModByGlobal,
-	LocalVariableLeftShiftByGlobal,
-	LocalVariableRightShiftByGlobal,
-	LocalVariableReverseByGlobal,
-	LocalVariableXorByGlobal,
-	LocalVariableOrByGlobal,
-	LocalVariableAndByGlobal,
-	GlobalVariableSetByGlobal,
-	GlobalVariableAddByGlobal,
-	GlobalVariableMinusByGlobal,
-	GlobalVariableMultiplyByGlobal,
-	GlobalVariableDivideByGlobal,
-	GlobalVariableModByGlobal,
-	GlobalVariableLeftShiftByGlobal,
-	GlobalVariableRightShiftByGlobal,
-	GlobalVariableReverseByGlobal,
-	GlobalVariableXorByGlobal,
-	GlobalVariableOrByGlobal,
-	GlobalVariableAndByGlobal,
+	LocalVariableAdd = 501,
+	LocalVariableMinus = 502,
+	LocalVariableMultiply = 503,
+	LocalVariableDivide = 504,
+	LocalVariableMod = 505,
+	LocalVariableLeftShift = 506,
+	LocalVariableRightShift = 507,
+	LocalVariableReverse = 508,
+	LocalVariableXor = 509,
+	LocalVariableOr = 510,
+	LocalVariableAnd = 511,
+	GlobalVariableSet = 512,
+	GlobalVariableAdd = 513,
+	GlobalVariableMinus = 514,
+	GlobalVariableMultiply = 515,
+	GlobalVariableDivide = 516,
+	GlobalVariableMod = 517,
+	GlobalVariableLeftShift = 518,
+	GlobalVariableRightShift = 519,
+	GlobalVariableReverse = 520,
+	GlobalVariableXor = 521,
+	GlobalVariableOr = 522,
+	GlobalVariableAnd = 523,
+	LocalVariableSetByLocal = 524,
+	LocalVariableAddByLocal = 525,
+	LocalVariableMinusByLocal = 526,
+	LocalVariableMultiplyByLocal = 527,
+	LocalVariableDivideByLocal = 528,
+	LocalVariableModByLocal = 529,
+	LocalVariableLeftShiftByLocal = 530,
+	LocalVariableRightShiftByLocal = 531,
+	LocalVariableReverseByLocal = 532,
+	LocalVariableXorByLocal = 533,
+	LocalVariableOrByLocal = 534,
+	LocalVariableAndByLocal = 535,
+	GlobalVariableSetByLocal = 536,
+	GlobalVariableAddByLocal = 537,
+	GlobalVariableMinusByLocal = 538,
+	GlobalVariableMultiplyByLocal = 539,
+	GlobalVariableDivideByLocal = 540,
+	GlobalVariableModByLocal = 541,
+	GlobalVariableLeftShiftByLocal = 542,
+	GlobalVariableRightShiftByLocal = 543,
+	GlobalVariableReverseByLocal = 544,
+	GlobalVariableXorByLocal = 545,
+	GlobalVariableOrByLocal = 546,
+	GlobalVariableAndByLocal = 547,
+	LocalVariableSetByGlobal = 548,
+	LocalVariableAddByGlobal = 549,
+	LocalVariableMinusByGlobal = 550,
+	LocalVariableMultiplyByGlobal = 551,
+	LocalVariableDivideByGlobal = 552,
+	LocalVariableModByGlobal = 553,
+	LocalVariableLeftShiftByGlobal = 554,
+	LocalVariableRightShiftByGlobal = 555,
+	LocalVariableReverseByGlobal = 556,
+	LocalVariableXorByGlobal = 557,
+	LocalVariableOrByGlobal = 558,
+	LocalVariableAndByGlobal = 559,
+	GlobalVariableSetByGlobal = 560,
+	GlobalVariableAddByGlobal = 561,
+	GlobalVariableMinusByGlobal = 562,
+	GlobalVariableMultiplyByGlobal = 563,
+	GlobalVariableDivideByGlobal = 564,
+	GlobalVariableModByGlobal = 565,
+	GlobalVariableLeftShiftByGlobal = 566,
+	GlobalVariableRightShiftByGlobal = 567,
+	GlobalVariableReverseByGlobal = 568,
+	GlobalVariableXorByGlobal = 569,
+	GlobalVariableOrByGlobal = 570,
+	GlobalVariableAndByGlobal = 571,
 };
 
 class ScriptExt
@@ -148,34 +192,15 @@ public:
 	static void SetCloseEnoughDistance(TeamClass *pTeam, double distance);
 	static void SetMoveMissionEndMode(TeamClass* pTeam, int mode);
 	static void SkipNextAction(TeamClass* pTeam, int successPercentage);
+	static FootClass* FindTheTeamLeader(TeamClass* pTeam);
 
+	static bool IsExtVariableAction(int action);
 	static void VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg);
 	template<bool IsGlobal, class _Pr>
 	static void VariableOperationHandler(TeamClass* pTeam, int nVariable, int Number);
 	template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
-	static FootClass* FindTheTeamLeader(TeamClass* pTeam);
-
-	static void LocalVariableAdd(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableMultiply(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableDivide(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableMod(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableLeftShift(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableRightShift(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableReverse(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableXor(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableOr(TeamClass* pTeam, int nVariable, int Number);
-	static void LocalVariableAnd(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableAdd(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableMultiply(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableDivide(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableMod(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableLeftShift(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableRightShift(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableReverse(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableXor(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableOr(TeamClass* pTeam, int nVariable, int Number);
-	static void GlobalVariableAnd(TeamClass* pTeam, int nVariable, int Number);
+	
 
 	static ExtContainer ExtMap;
 

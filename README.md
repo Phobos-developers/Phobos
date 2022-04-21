@@ -18,7 +18,7 @@ Downloads
 You can choose one of the following:
 - [Latest stable branch build](https://github.com/Phobos-developers/Phobos/releases/latest) (most bug-free release but very slow on new features)
 - [Latest development branch builds](https://github.com/Phobos-developers/Phobos/releases) (a bit less less bug-free releases, devbuilds get new features when they are finished)
-- [Latest development branch nightly](https://nightly.link/Phobos-developers/Phobos/blob/develop/.github/workflows/nightly.yml) (added unreleased stuff that will be in next devbuild)
+- [Latest development branch nightly](https://nightly.link/Phobos-developers/Phobos/blob/develop/.github/workflows/nightly.yml) (added unreleased features that will be in next devbuild)
 - Individual new feature builds (for testing) can be found in [pull requests](https://github.com/Phobos-developers/Phobos/pulls)
 
 ### Note on nightly builds
@@ -44,7 +44,7 @@ Documentation
 
 You can switch between versions (displays latest develop nightly version by default) in the bottom left corner, as well as download a PDF version.
 
-The documentation is split by a few major categories, each represented with a page on the sidebar. Each page has it's contents grouped into multiple subcategories, be it buildings, technotypes, infantries, superweapons or something else.
+The documentation is split by a few major categories, each represented with a page on the sidebar. Each page has its contents grouped into multiple subcategories, be it buildings, technotypes, infantries, superweapons or something else.
 
 ### How to read code snippets
 
@@ -62,7 +62,7 @@ UIDescription=<none> ; CSF entry key
 Building manually
 -----------------
 
-0. Install **Visual Studio** (2019 is recommended, 2017 is minimum) with the dependencies listed in `.vsconfig` (it will prompt you to install missing dependences when you open the project, or you can run VS installer and import the config). If you prefer to use **Visual Studio Code** you may install **VS Build Tools** with the stuff from `.vsconfig` instead. You can also don't use any code editor or IDE and build via **command line scripts** included with the project.
+0. Install **Visual Studio** (2019 is recommended, 2017 is minimum) with the dependencies listed in `.vsconfig` (it will prompt you to install missing dependences when you open the project, or you can run VS installer and import the config). If you prefer to use **Visual Studio Code** you may install **VS Build Tools** with the dependencies from `.vsconfig` instead. You can also don't use any code editor or IDE and build via **command line scripts** included with the project.
 1. Clone this repo recursively via your favorite git client (that will also clone YRpp).
 2. To build the extension:
    - in Visual Studio: open the solution file in VS and build it (`Debug` build config is recommended);
@@ -77,40 +77,13 @@ Credits
 - **Belonit (Gluk-v48)** - project author (retired)
 - **Kerbiter (Metadorius)** - project co-author, current maintainer ([Patreon](http://patreon.com/kerbiter))
 - **Uranusian (Thrifinesma)** - developer, CN community ambassador ([Patreon](https://www.patreon.com/uranusian), [AliPay](http://tiebapic.baidu.com/forum/w%3D580/sign=4b04b953307f9e2f70351d002f31e962/b3f89909b3de9c823bd7f23a7b81800a18d84371.jpg))
-- **secsome (SEC-SOME)** - developer ([Patreon](https://www.patreon.com/secsome))
+- **secsome (SEC-SOME)** - developer
 - **Otamaa (Fahroni, BoredEXE)** - developer ([PayPal](https://paypal.me/GeneralOtama))
 - **FS-21** - developer
 - **Starkku** - developer
 - **Morton (MortonPL)** - developer
 
-### Contributions
-- **Belonit (Gluk-v48)** - project creation, disable empty spawn positions, custom gamemd icon with Command Line, full-color non-paletted PCX, SpySat, BigGap, TransactMoney, PCX Loading Screen, custom DiskLaser radius, extended tooltips, building upgrades enhancement, hide health bar, Sidebar.GDIPosition, help with CellSpread, Blowfish.dll-related errors fix, zero size map previews, semantic locomotor aliases, shields, input fix
-- **Kerbiter (Metadorius)** - SHP debris respect Shadow, building upgrades enhancement, extended tooltips, selection priority filtering, TurretOffset enhancement, customizable ore spawners, select next idle harvester hotkey, interceptor enhancement, zero size map previews, LaserTrails, laser fixes, CI/CD, overhauled Unicode font, docs maintenance, VSCode configs, code style
-- **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
-- **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
-- **Ares developers** - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code, prototype deployer fixes
-- **ZΞPHYɌUS** - win/lose themes code
-- **ayylmao** - help with docs
-- **SMxReaver** - help with docs, extensive and thorough testing
-- **4SG** - help with docs
-- **wiktorderelf** - overhauled Unicode font
-- **Uranusian (Thrifinesma)** - Mind Control enhancement, custom warhead splash list, harvesters counter, promoted spawns, shields, death after dead fix, customizeable missing cameo, cameo sorting priority, placement mode responding of tab hotkeys fix, producing progress, custom ore gathering anim, NoManualMove, weapon target house filtering, DeathWeapon fix, re-enable obsolete `JumpjetControls`, AITrigger Building Upgrades recognition, Wall-Gate links, deployed infantry using both weapons, overhauled Unicode font, docs maintenance, CN docs translation
-- **secsome (SEC-SOME)** - debug info dump hotkey, refactoring & porting of Ares helper code, introducing more Ares-derived stuff, disguise removal warhead, Mind Control removal warhead, Mind Control enhancement, shields, AnimList.PickRandom, MoveToCell fix, unlimited waypoints, Build At trigger action buildup anim fix, Undeploy building into a unit plays `EVA_NewRallyPointEstablished` fix, custom ore gathering anim, TemporaryClass related crash, Retry dialog on mission failure, Default disguise for individual InfantryTypes, PowerPlant Enhancer, SaveGame Trigger Action, QuickSave command, Numeric variables, Custom gravity for projectiles, Retint map actions bugfix
-- **Otamaa (Fahroni, BoredEXE)** - help with CellSpread, ported and fixed custom RadType code, togglable ElectricBolt bolts, customizable Chrono Locomotor properties per TechnoClass, DebrisMaximums fixes, Anim-to-Unit, NotHuman anim sequences improvements, Customizable OpenTopped Properties, hooks for ScriptType Actions 92 & 93, ore stage threshold for `HideIfNoOre`, occupied building `MuzzleFlashX` bugfix,`EnemyUIName=` for other TechnoTypes, TerrainType `DestroyAnim` & `DestroySound`
-- **E1 Elite** - TileSet 255 and above bridge repair fix
-- **FS-21** - Dump Object Info enhancements, Powered.KillSpawns, Spawner.LimitRange, ScriptType Actions 71 to 113, MC deployer fixes, help with docs, Automatic Passenger Deletion, Customize resource storage
-- **AutoGavy** - interceptor logic, warhead critical damage system
-- **ChrisLv_CN** - interceptor logic, LaserTrails, laser fixes, general assistance (work relicensed under [following permission](images/ChrisLv-relicense.png))
-- **Xkein** - general assistance, YRpp edits
-- **thomassneddon** - general assistance
-- **Starkku** - Warhead shield penetration & breaking, strafing aircraft weapon customization, vehicle DeployFire fixes/improvements, stationary VehicleTypes, Burst logic improvements, TechnoType auto-firing weapons, Secondary weapon fallback customization, weapon target type filtering, AreaFire targeting customization, CreateUnit improvements, Attached animation & jumpjet unit layer customization, IsSimpleDeployer improvements, Shield modification warheads, Warhead decloaking toggle, Warp(In/Out)Weapon, Grinder improvements / additions
-- **SukaHati (Erzoid)** - Minimum interceptor guard range
-- **Morton (MortonPL)** - XDrawOffset, Shield passthrough & absorption, building LimboDelivery, fix for Image in art rules, power delta counter
-- **mevitar** - honorary shield tester *triple* award
-- **Damfoos** - extensive and thorough testing
-- **Dmitry Volkov** - extensive and thorough testing
-- **Rise of the East community** - extensive playtesting of in-dev features
-- **Chasheen (Chasheenburg)** - CN docs translation
+For all contributions see [full credits list](CREDITS.md).
 
 Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](logo-mono.png)) in your client/launcher (make it open Phobos GitHub page for extra fanciness), linking to Phobos repository, contributing or donating to us via the links above.
 
@@ -122,4 +95,3 @@ Legal and License
 The Phobos project is an unofficial open-source community collaboration project to extend the Red Alert 2 Yuri's Revenge engine for modding and compatibility purposes.
 
 This project has no direct affiliation with Electronic Arts Inc. Command & Conquer, Command & Conquer Red Alert 2, Command & Conquer Yuri's Revenge are registered trademarks of Electronic Arts Inc. All Rights Reserved.
-

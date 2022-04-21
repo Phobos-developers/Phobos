@@ -463,7 +463,7 @@ void ShieldClass::SelfHealing()
 
 	if (percentageAmount != 0)
 	{
-		if (this->HP < this->Type->Strength && timer->StartTime == -1)
+		if ((this->HP < this->Type->Strength || percentageAmount < 0) && timer->StartTime == -1)
 			timer->Start(rate);
 
 		if (this->HP > 0 && timer->Completed())
@@ -524,6 +524,8 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 	}
 
 	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : this->Type->BreakWeapon.Get(nullptr);
+
+	this->LastBreakFrame = Unsorted::CurrentFrame;
 
 	if (pWeaponType)
 		TechnoExt::FireWeaponAtSelf(this->Techno, pWeaponType);
@@ -766,6 +768,11 @@ void ShieldClass::SetHP(int amount)
 ShieldTypeClass* ShieldClass::GetType()
 {
 	return this->Type;
+}
+
+int ShieldClass::GetFramesSinceLastBroken()
+{
+	return Unsorted::CurrentFrame - this->LastBreakFrame;
 }
 
 bool ShieldClass::IsActive()
