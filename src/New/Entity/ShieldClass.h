@@ -11,11 +11,17 @@ class ShieldClass
 {
 public:
 	ShieldClass();
-	ShieldClass(TechnoClass* pTechno);
+	ShieldClass(TechnoClass* pTechno, bool isAttached);
+	ShieldClass(TechnoClass* pTechno) : ShieldClass(pTechno, false) {};
 	~ShieldClass() = default;
 
 	int ReceiveDamage(args_ReceiveDamage* args);
 	bool CanBeTargeted(WeaponTypeClass* pWeapon);
+	bool CanBePenetrated(WarheadTypeClass* pWarhead);
+
+	void BreakShield(AnimTypeClass* pBreakAnim = nullptr, WeaponTypeClass* pBreakWeapon = nullptr);
+	void SetRespawn(int duration, double amount, int rate, bool resetTimer);
+	void SetSelfHealing(int duration, double amount, int rate, bool resetTimer);
 
 	void KillAnim();
 
@@ -26,9 +32,12 @@ public:
 	void InvalidatePointer(void* ptr);
 
 	double GetHealthRatio();
+	void SetHP(int amount);
 	int GetHP();
 	bool IsActive();
 	bool IsAvailable();
+	bool IsBrokenAndNonRespawning();
+	ShieldTypeClass* GetType();
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
 
@@ -44,18 +53,17 @@ private:
 	void SelfHealing();
 	int GetPercentageAmount(double iStatus);
 
-	void BreakShield();
 	void RespawnShield();
 
 	void CreateAnim();
 
-	void WeaponNullifyAnim();
+	void WeaponNullifyAnim(AnimTypeClass* pHitAnim = nullptr);
 	void ResponseAttack();
 
 	void CloakCheck();
 	void OnlineCheck();
 	void TemporalCheck();
-	void ConvertCheck();
+	bool ConvertCheck();
 
 	void DrawShieldBar_Building(int iLength, Point2D* pLocation, RectangleStruct* pBound);
 	void DrawShieldBar_Other(int iLength, Point2D* pLocation, RectangleStruct* pBound);
@@ -71,18 +79,28 @@ private:
 	bool Online;
 	bool Temporal;
 	bool Available;
+	bool Attached;
+
+	double SelfHealing_Warhead;
+	int SelfHealing_Rate_Warhead;
+	double Respawn_Warhead;
+	int Respawn_Rate_Warhead;
 
 	ShieldTypeClass* Type;
 
 	struct Timers
 	{
 		Timers() :
-			SelfHealing{ },
-			Respawn{ }
+			SelfHealing{ }
+			, SelfHealing_Warhead { }
+			, Respawn{ }
+			, Respawn_Warhead { }
 		{ }
 
 		TimerStruct SelfHealing;
+		TimerStruct SelfHealing_Warhead;
 		TimerStruct Respawn;
+		TimerStruct Respawn_Warhead;
 
 	} Timers;
 };

@@ -30,6 +30,11 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Sidebar_HarvesterCounter_Yellow.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorYellow");
 	this->Sidebar_HarvesterCounter_Red.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorRed");
 	this->Sidebar_ProducingProgress_Offset.Read(exINI, pSection, "Sidebar.ProducingProgress.Offset");
+	this->Sidebar_PowerDelta_Offset.Read(exINI, pSection, "Sidebar.PowerDelta.Offset");
+	this->Sidebar_PowerDelta_Green.Read(exINI, pSection, "Sidebar.PowerDelta.ColorGreen");
+	this->Sidebar_PowerDelta_Yellow.Read(exINI, pSection, "Sidebar.PowerDelta.ColorYellow");
+	this->Sidebar_PowerDelta_Red.Read(exINI, pSection, "Sidebar.PowerDelta.ColorRed");
+	this->Sidebar_PowerDelta_Align.Read(exINI, pSection, "Sidebar.PowerDelta.Align");
 }
 
 // =============================
@@ -45,6 +50,11 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->Sidebar_HarvesterCounter_Yellow)
 		.Process(this->Sidebar_HarvesterCounter_Red)
 		.Process(this->Sidebar_ProducingProgress_Offset)
+		.Process(this->Sidebar_PowerDelta_Offset)
+		.Process(this->Sidebar_PowerDelta_Green)
+		.Process(this->Sidebar_PowerDelta_Yellow)
+		.Process(this->Sidebar_PowerDelta_Red)
+		.Process(this->Sidebar_PowerDelta_Align)
 
 		.Process(this->IngameScore_WinTheme)
 		.Process(this->IngameScore_LoseTheme)

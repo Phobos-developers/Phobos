@@ -26,3 +26,44 @@ DEFINE_HOOK(0x71E940, TEventClass_Execute, 0x5)
 
 	return handled ? 0x71EA2D : 0;
 }
+
+DEFINE_HOOK(0x7271F9, TEventClass_GetFlags, 0x5)
+{
+	GET(int, eAttach, EAX);
+	GET(TEventClass*, pThis, ESI);
+
+	int nEvent = static_cast<int>(pThis->EventKind);
+	if (nEvent >= PhobosTriggerEvent::LocalVariableGreaterThan && nEvent <= PhobosTriggerEvent::GlobalVariableAndIsTrueGlobalVariable)
+		eAttach |= 0x10; // LOGIC
+
+	R->EAX(eAttach);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x71F3FE, TEventClass_BuildINIEntry, 0x5)
+{
+	GET(int, eNeedType, EAX);
+	GET(TEventClass*, pThis, ECX);
+
+	int nEvent = static_cast<int>(pThis->EventKind);
+	if (nEvent >= PhobosTriggerEvent::LocalVariableGreaterThan && nEvent <= PhobosTriggerEvent::GlobalVariableAndIsTrueGlobalVariable)
+		eNeedType = 43;
+
+	R->EAX(eNeedType);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x726577, TEventClass_Persistable, 0x7)
+{
+	GET(TEventClass*, pThis, EDI);
+
+	int nEvent = static_cast<int>(pThis->EventKind);
+	if (nEvent >= PhobosTriggerEvent::LocalVariableGreaterThan && nEvent <= PhobosTriggerEvent::GlobalVariableAndIsTrueGlobalVariable)
+		R->AL(true);
+	else
+		R->AL(pThis->GetStateB());
+
+	return 0x72657E;
+}

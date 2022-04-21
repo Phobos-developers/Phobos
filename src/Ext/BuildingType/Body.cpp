@@ -26,6 +26,74 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 	return static_cast<int>(std::round(pBuilding->GetPowerOutput() * fFactor)) + nAmount;
 }
 
+int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse) // not including producing upgrades
+{
+	int result = 0;
+	bool isUpgrade = false;
+	auto pPowersUp = pBuilding->PowersUpBuilding;
+
+	auto checkUpgrade = [pHouse, pBuilding, &result, &isUpgrade](BuildingTypeClass* pTPowersUp)
+	{
+		isUpgrade = true;
+		for (auto const& pBld : pHouse->Buildings)
+		{
+			if (pBld->Type == pTPowersUp)
+			{
+				for (auto const& pUpgrade : pBld->Upgrades)
+				{
+					if (pUpgrade == pBuilding)
+						++result;
+				}
+			}
+		}
+	};
+
+	if (pPowersUp[0])
+	{
+		if (auto const pTPowersUp = BuildingTypeClass::Find(pPowersUp))
+			checkUpgrade(pTPowersUp);
+	}
+
+	if (auto pBuildingExt = BuildingTypeExt::ExtMap.Find(pBuilding))
+	{
+		for (auto pTPowersUp : pBuildingExt->PowersUp_Buildings)
+			checkUpgrade(pTPowersUp);
+	}
+
+	return isUpgrade ? result : -1;
+}
+
+bool BuildingTypeExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
+{
+	if (!pBuilding->Type->Grinding || (pTechno->WhatAmI() != AbstractType::Infantry && pTechno->WhatAmI() != AbstractType::Unit))
+		return false;
+
+	if ((pBuilding->Type->InfantryAbsorb || pBuilding->Type->UnitAbsorb) && 
+		(pTechno->WhatAmI() == AbstractType::Infantry && !pBuilding->Type->InfantryAbsorb ||
+		pTechno->WhatAmI() == AbstractType::Unit && !pBuilding->Type->UnitAbsorb))
+	{
+		return false;
+	}
+
+	if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
+	{
+		if (pBuilding->Owner == pTechno->Owner && !pExt->Grinding_AllowOwner)
+			return false;
+
+		if (pBuilding->Owner != pTechno->Owner && pBuilding->Owner->IsAlliedWith(pTechno) && !pExt->Grinding_AllowAllies)
+			return false;
+
+		if (pExt->Grinding_AllowTypes.size() > 0 && !pExt->Grinding_AllowTypes.Contains(pTechno->GetTechnoType()))
+			return false;
+
+		if (pExt->Grinding_DisallowTypes.size() > 0 && pExt->Grinding_DisallowTypes.Contains(pTechno->GetTechnoType()))
+			return false;
+	}
+
+	return true;
+}
+
+
 void BuildingTypeExt::ExtData::Initialize()
 {
 
@@ -34,15 +102,18 @@ void BuildingTypeExt::ExtData::Initialize()
 // =============================
 // load / save
 
-void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
+void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+{
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
+	const char* pArtSection = pThis->ImageFile;
+	auto pArtINI = &CCINIClass::INI_Art();
 
-	if (!pINI->GetSection(pSection)) {
+	if (!pINI->GetSection(pSection))
 		return;
-	}
 
 	INI_EX exINI(pINI);
+	INI_EX exArtINI(pArtINI);
 
 	this->PowersUp_Owner.Read(exINI, pSection, "PowersUp.Owner");
 	this->PowersUp_Buildings.Read(exINI, pSection, "PowersUp.Buildings");
@@ -53,6 +124,13 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
 
+	this->Grinding_AllowAllies.Read(exINI, pSection, "Grinding.AllowAllies");
+	this->Grinding_AllowOwner.Read(exINI, pSection, "Grinding.AllowOwner");
+	this->Grinding_AllowTypes.Read(exINI, pSection, "Grinding.AllowTypes");
+	this->Grinding_DisallowTypes.Read(exINI, pSection, "Grinding.DisallowTypes");
+	this->Grinding_Sound.Read(exINI, pSection, "Grinding.Sound");
+	this->Grinding_Weapon.Read(exINI, pSection, "Grinding.Weapon", true);
+
 	// Ares SuperWeapons tag
 	pINI->ReadString(pSection, "SuperWeapons", "", Phobos::readBuffer);
 	//char* super_weapons_list = Phobos::readBuffer;
@@ -62,7 +140,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		char* context = nullptr;
 
 		//pINI->ReadString(pSection, pINI->GetKeyName(pSection, i), "", Phobos::readBuffer);
-		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
 			SuperWeaponTypeClass* buffer;
 			if (Parser<SuperWeaponTypeClass*>::TryParse(cur, &buffer))
@@ -76,15 +154,34 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 			}
 		}
 	}
+
+	if (pThis->MaxNumberOccupants > 10)
+	{
+		char tempBuffer[32];
+		this->OccupierMuzzleFlashes.Clear();
+		this->OccupierMuzzleFlashes.Reserve(pThis->MaxNumberOccupants);
+
+		for (int i = 0; i < pThis->MaxNumberOccupants; ++i)
+		{
+			Nullable<Point2D> nMuzzleLocation;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "MuzzleFlash%d", i);
+			nMuzzleLocation.Read(exArtINI, pArtSection, tempBuffer);
+			this->OccupierMuzzleFlashes[i] = nMuzzleLocation.Get(Point2D::Empty);
+		}
+	}
+
+	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
 }
 
-void BuildingTypeExt::ExtData::CompleteInitialization() {
+void BuildingTypeExt::ExtData::CompleteInitialization()
+{
 	auto const pThis = this->OwnerObject();
 	UNREFERENCED_PARAMETER(pThis);
 }
 
 template <typename T>
-void BuildingTypeExt::ExtData::Serialize(T& Stm) {
+void BuildingTypeExt::ExtData::Serialize(T& Stm)
+{
 	Stm
 		.Process(this->PowersUp_Owner)
 		.Process(this->PowersUp_Buildings)
@@ -92,31 +189,44 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->PowerPlantEnhancer_Amount)
 		.Process(this->PowerPlantEnhancer_Factor)
 		.Process(this->SuperWeapons)
+		.Process(this->OccupierMuzzleFlashes)
+		.Process(this->Refinery_UseStorage)
+		.Process(this->Grinding_AllowAllies)
+		.Process(this->Grinding_AllowOwner)
+		.Process(this->Grinding_AllowTypes)
+		.Process(this->Grinding_DisallowTypes)
+		.Process(this->Grinding_Sound)
+		.Process(this->Grinding_Weapon)
 		;
 }
 
-void BuildingTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+void BuildingTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+{
 	Extension<BuildingTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void BuildingTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+void BuildingTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+{
 	Extension<BuildingTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
-bool BuildingTypeExt::ExtContainer::Load(BuildingTypeClass* pThis, IStream* pStm) {
+bool BuildingTypeExt::ExtContainer::Load(BuildingTypeClass* pThis, IStream* pStm)
+{
 	BuildingTypeExt::ExtData* pData = this->LoadKey(pThis, pStm);
 
 	return pData != nullptr;
 };
 
-bool BuildingTypeExt::LoadGlobals(PhobosStreamReader& Stm) {
+bool BuildingTypeExt::LoadGlobals(PhobosStreamReader& Stm)
+{
 
 	return Stm.Success();
 }
 
-bool BuildingTypeExt::SaveGlobals(PhobosStreamWriter& Stm) {
+bool BuildingTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
+{
 
 
 	return Stm.Success();
@@ -124,8 +234,7 @@ bool BuildingTypeExt::SaveGlobals(PhobosStreamWriter& Stm) {
 // =============================
 // container
 
-BuildingTypeExt::ExtContainer::ExtContainer() : Container("BuildingTypeClass") {
-}
+BuildingTypeExt::ExtContainer::ExtContainer() : Container("BuildingTypeClass") { }
 
 BuildingTypeExt::ExtContainer::~ExtContainer() = default;
 

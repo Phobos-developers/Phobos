@@ -9,7 +9,7 @@
 
 #include <map>
 
-class HouseExt 
+class HouseExt
 {
 public:
 	using base_type = HouseClass;
@@ -17,8 +17,10 @@ public:
 	{
 	public:
 		std::map<BuildingTypeExt::ExtData*, int> BuildingCounter;
+		CounterClass OwnedLimboBuildingTypes;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
+			, OwnedLimboBuildingTypes {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -43,6 +45,8 @@ public:
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static int CountOwnedLimbo(HouseClass* pThis, BuildingTypeClass const* const pItem);
 
 	static int ActiveHarvesterCount(HouseClass* pThis);
 	static int TotalHarvesterCount(HouseClass* pThis);

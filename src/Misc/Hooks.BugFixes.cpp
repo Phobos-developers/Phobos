@@ -3,10 +3,14 @@
 #include <TechnoClass.h>
 #include <FootClass.h>
 #include <UnitClass.h>
+#include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
 #include <VoxelAnimClass.h>
 #include <BulletClass.h>
+#include <HouseClass.h>
+
 #include <Ext/Rules/Body.h>
+#include <Ext/BuildingType/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -66,6 +70,10 @@ DEFINE_HOOK(0x737D57, UnitClass_ReceiveDamage_DyingFix, 0x7)
 {
 	GET(UnitClass*, pThis, ESI);
 	GET(DamageState, result, EAX);
+
+	// Immediately release locomotor warhead's hold on a crashable unit if it dies while attacked by one.
+	if (result == DamageState::NowDead && pThis->IsAttackedByLocomotor && pThis->GetTechnoType()->Crashable)
+		pThis->IsAttackedByLocomotor = false;
 
 	if (result != DamageState::PostMortem && pThis->DeathFrameCounter > 0)
 		R->EAX(DamageState::PostMortem);
@@ -293,4 +301,67 @@ DEFINE_HOOK(0x51BB6E, TechnoClass_AI_TemporalTargetingMe_Fix, 0x6) // InfantryCl
 	}
 
 	return R->Origin() + 0xF;
+}
+
+// Fix the issue that AITriggerTypes do not recognize building upgrades
+// Author: Uranusian
+DEFINE_HOOK_AGAIN(0x41EEE3, AITriggerTypeClass_Condition_SupportPowersup, 0x7)	//AITriggerTypeClass_OwnerHouseOwns_SupportPowersup
+DEFINE_HOOK(0x41EB43, AITriggerTypeClass_Condition_SupportPowersup, 0x7)		//AITriggerTypeClass_EnemyHouseOwns_SupportPowersup
+{
+	GET(HouseClass*, pHouse, EDX);
+	GET(int, idxBld, EBP);
+	auto const pType = BuildingTypeClass::Array->Items[idxBld];
+	int count = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);
+
+	if (count == -1)
+		count = pHouse->ActiveBuildingTypes.GetItemCount(idxBld);
+
+	R->EAX(count);
+
+	return R->Origin() + 0xC;
+}
+
+// Dehardcode the stupid Wall-Gate relationships
+// Author: Uranusian
+DEFINE_HOOK(0x441053, BuildingClass_Unlimbo_EWGate, 0x6)
+{
+	GET(BuildingTypeClass*, pThis, ECX);
+
+	return RulesClass::Instance->EWGates.FindItemIndex(pThis) == -1 ? 0 : 0x441065;
+}
+
+DEFINE_HOOK(0x4410E1, BuildingClass_Unlimbo_NSGate, 0x6)
+{
+	GET(BuildingTypeClass*, pThis, ECX);
+
+	return RulesClass::Instance->NSGates.FindItemIndex(pThis) == -1 ? 0 : 0x4410F3;
+}
+
+DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
+{
+	GET(CellClass*, pThis, EBP);
+	GET(int, idxOverlay, EBX);
+	GET_STACK(int, state, STACK_OFFS(0x10, -0x8));
+	bool isWall = idxOverlay != -1 && OverlayTypeClass::Array->GetItem(idxOverlay)->Wall;
+	enum { Attachable = 0x480549 };
+
+	if (isWall)
+	{
+		for (auto pObject = pThis->FirstObject; pObject; pObject = pObject->NextObject)
+		{
+			if (pObject->Health > 0)
+			{
+				if (auto pBuilding = abstract_cast<BuildingClass*>(pObject))
+				{
+					auto pBType = pBuilding->Type;
+					if ((RulesClass::Instance->EWGates.FindItemIndex(pBType) != -1) && (state == 2 || state == 6))
+						return Attachable;
+					else if ((RulesClass::Instance->NSGates.FindItemIndex(pBType) != -1) && (state == 0 || state == 4))
+						return Attachable;
+				}
+			}
+		}
+	}
+
+	return 0;
 }

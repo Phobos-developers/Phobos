@@ -25,7 +25,7 @@ const char* Phobos::AppIconPath = nullptr;
 #ifdef STR_GIT_COMMIT
 const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
 #elif !defined(IS_RELEASE_VER)
-const wchar_t* Phobos::VersionDescription = L"Phobos development build #" str(BUILD_NUMBER) L". Please test the build before shipping.";
+const wchar_t* Phobos::VersionDescription = L"Phobos development build #" _STR(BUILD_NUMBER) L". Please test the build before shipping.";
 #else
 //const wchar_t* Phobos::VersionDescription = L"Phobos release build v" FILE_VERSION_STR L".";
 #endif
@@ -41,10 +41,14 @@ const wchar_t* Phobos::UI::CostLabel = L"";
 const wchar_t* Phobos::UI::PowerLabel = L"";
 const wchar_t* Phobos::UI::TimeLabel = L"";
 const wchar_t* Phobos::UI::HarvesterLabel = L"";
+bool Phobos::UI::ShowPowerDelta = false;
+double Phobos::UI::PowerDelta_ConditionYellow = 0.75;
+double Phobos::UI::PowerDelta_ConditionRed = 1.0;
 
 bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::DevelopmentCommands = true;
+bool Phobos::Config::ArtImageSwap = false;
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
@@ -58,7 +62,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 			Phobos::AppIconPath = ppArgs[++i];
 		}
 #ifndef IS_RELEASE_VER 
-		if (_stricmp(pArg, "-b=" str(BUILD_NUMBER)) == 0)
+		if (_stricmp(pArg, "-b=" _STR(BUILD_NUMBER)) == 0)
 		{
 			HideWarning = true;
 		}
@@ -115,16 +119,30 @@ DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 	Patch::Apply();
 
 #ifdef DEBUG
-	MessageBoxW(NULL,
-	L"You can now attach a debugger.\n\n"
 
-	L"To attach a debugger find the YR process in Process Hacker "
-	L"/ Visual Studio processes window and detach debuggers from it, "
-	L"then you can attach your own debugger. After this you should "
-	L"terminate Syringe.exe because it won't automatically exit when YR is closed.\n\n"
+	if (Phobos::DetachFromDebugger())
+	{
+		MessageBoxW(NULL,
+		L"You can now attach a debugger.\n\n"
 
-	L"Press OK to continue YR execution.",
-	L"Debugger Notice", MB_OK);
+		L"Press OK to continue YR execution.",
+		L"Debugger Notice", MB_OK);
+	}
+	else
+	{
+		MessageBoxW(NULL,
+		L"You can now attach a debugger.\n\n"
+
+		L"To attach a debugger find the YR process in Process Hacker "
+		L"/ Visual Studio processes window and detach debuggers from it, "
+		L"then you can attach your own debugger. After this you should "
+		L"terminate Syringe.exe because it won't automatically exit when YR is closed.\n\n"
+
+		L"Press OK to continue YR execution.",
+		L"Debugger Notice", MB_OK);
+	}
+
+
 #endif
 
 	return 0;
@@ -144,49 +162,63 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
 
-	CCINIClass* pINI = Phobos::OpenConfig("uimd.ini");
+	CCINIClass* pINI_UIMD = Phobos::OpenConfig("uimd.ini");
 
 	// LoadingScreen
 	{
 		Phobos::UI::DisableEmptySpawnPositions =
-			pINI->ReadBool("LoadingScreen", "DisableEmptySpawnPositions", false);
+			pINI_UIMD->ReadBool("LoadingScreen", "DisableEmptySpawnPositions", false);
 	}
 
 	// ToolTips
 	{
 		Phobos::UI::ExtendedToolTips =
-			pINI->ReadBool(TOOLTIPS_SECTION, "ExtendedToolTips", false);
+			pINI_UIMD->ReadBool(TOOLTIPS_SECTION, "ExtendedToolTips", false);
 
 		Phobos::UI::MaxToolTipWidth =
-			pINI->ReadInteger(TOOLTIPS_SECTION, "MaxWidth", 0);
+			pINI_UIMD->ReadInteger(TOOLTIPS_SECTION, "MaxWidth", 0);
 
-		pINI->ReadString(TOOLTIPS_SECTION, "CostLabel", NONE_STR, Phobos::readBuffer);
+		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "CostLabel", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::CostLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"$");
 
-		pINI->ReadString(TOOLTIPS_SECTION, "PowerLabel", NONE_STR, Phobos::readBuffer);
+		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "PowerLabel", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::PowerLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26a1"); // ⚡
 
-		pINI->ReadString(TOOLTIPS_SECTION, "TimeLabel", NONE_STR, Phobos::readBuffer);
+		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "TimeLabel", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::TimeLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u231a"); // ⌚
 	}
 
 	// Sidebar
 	{
 		Phobos::UI::ShowHarvesterCounter =
-			pINI->ReadBool(SIDEBAR_SECTION, "HarvesterCounter.Show", false);
+			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "HarvesterCounter.Show", false);
 
-		pINI->ReadString(SIDEBAR_SECTION, "HarvesterCounter.Label", NONE_STR, Phobos::readBuffer);
+		pINI_UIMD->ReadString(SIDEBAR_SECTION, "HarvesterCounter.Label", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::HarvesterLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26cf"); // ⛏
 
-		Phobos::UI::HarvesterCounter_ConditionYellow = 
-			pINI->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionYellow", Phobos::UI::HarvesterCounter_ConditionYellow);
-		Phobos::UI::HarvesterCounter_ConditionRed = 
-			pINI->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionRed", Phobos::UI::HarvesterCounter_ConditionRed);
+		Phobos::UI::HarvesterCounter_ConditionYellow =
+			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionYellow", Phobos::UI::HarvesterCounter_ConditionYellow);
+
+		Phobos::UI::HarvesterCounter_ConditionRed =
+			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionRed", Phobos::UI::HarvesterCounter_ConditionRed);
 
 		Phobos::UI::ShowProducingProgress =
-			pINI->ReadBool(SIDEBAR_SECTION, "ProducingProgress.Show", false);
+			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "ProducingProgress.Show", false);
+
+		Phobos::UI::ShowPowerDelta =
+			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "PowerDelta.Show", false);
+
+		Phobos::UI::PowerDelta_ConditionYellow =
+			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "PowerDelta.ConditionYellow", Phobos::UI::PowerDelta_ConditionYellow);
+
+		Phobos::UI::PowerDelta_ConditionRed =
+			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "PowerDelta.ConditionRed", Phobos::UI::PowerDelta_ConditionRed);
 	}
 
+	Phobos::CloseConfig(pINI_UIMD);
+
+	CCINIClass* pINI = Phobos::OpenConfig((const char*)0x826260);
+	Phobos::Config::ArtImageSwap = pINI->ReadBool("General", "ArtImageSwap", false);
 	Phobos::CloseConfig(pINI);
 
 	return 0;

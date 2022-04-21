@@ -17,12 +17,30 @@ public:
 		Valueable<int> Money_Amount;
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
+		ValueableVector<TechnoTypeClass*> LimboDelivery_Types;
+		ValueableVector<int> LimboDelivery_IDs;
+		ValueableVector<float> LimboDelivery_RollChances;
+		Valueable<AffectedHouse> LimboKill_Affected;
+		ValueableVector<int> LimboKill_IDs;
+		Valueable<double> RandomBuffer;
+
+		ValueableVector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
-			, Money_Amount(0)
-			, UIDescription()
-			, CameoPriority(0)
+			, Money_Amount { 0 }
+			, UIDescription {}
+			, CameoPriority { 0 }
+			, LimboDelivery_Types {}
+			, LimboDelivery_IDs {}
+			, LimboDelivery_RollChances {}
+			, LimboDelivery_RandomWeightsData {}
+			, LimboKill_Affected { AffectedHouse::Owner }
+			, LimboKill_IDs {}
+			, RandomBuffer { 0.0 }
 		{ }
+
+
+		void FireSuperWeapon(SuperClass* pSW, HouseClass* pHouse, CoordStruct coords);
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;
@@ -33,6 +51,9 @@ public:
 
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 	private:
+		void ApplyLimboDelivery(HouseClass* pHouse);
+		void ApplyLimboKill(HouseClass* pHouse);
+
 		template <typename T>
 		void Serialize(T& Stm);
 	};

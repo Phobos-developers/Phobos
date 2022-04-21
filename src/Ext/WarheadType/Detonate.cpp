@@ -8,7 +8,9 @@
 #include <AnimClass.h>
 
 #include <Utilities/Helpers.Alex.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
+#include <Utilities/EnumFunctions.h>
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
 {
@@ -42,7 +44,12 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	const bool isCellSpreadWarhead =
 		this->RemoveDisguise ||
 		this->RemoveMindControl ||
-		this->Crit_Chance;
+		this->Crit_Chance ||
+		this->Shield_Break ||
+		this->Shield_Respawn_Duration > 0 ||
+		this->Shield_SelfHealing_Duration > 0 ||
+		this->Shield_AttachTypes.size() > 0 ||
+		this->Shield_RemoveTypes.size() > 0;
 
 	const float cellSpread = this->OwnerObject()->CellSpread;
 	if (cellSpread && isCellSpreadWarhead)
@@ -65,6 +72,8 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (!this->CanTargetHouse(pHouse, pTarget))
 		return;
 
+	this->ApplyShieldModifiers(pTarget);
+
 	if (this->RemoveDisguise)
 		this->ApplyRemoveDisguiseToInf(pHouse, pTarget);
 
@@ -73,6 +82,84 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->Crit_Chance)
 		this->ApplyCrit(pHouse, pTarget, pOwner);
+}
+
+void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
+{
+	if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
+	{
+		bool canAffectTarget = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor) != 0.0;
+
+		int shieldIndex = -1;
+		double ratio = 1.0;
+
+		// Remove shield.
+		if (pExt->Shield && canAffectTarget)
+		{
+			const auto shieldType = pExt->Shield->GetType();
+			shieldIndex = this->Shield_RemoveTypes.IndexOf(shieldType);
+
+			if (shieldIndex >= 0)
+			{
+				ratio = pExt->Shield->GetHealthRatio();
+				pExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
+				pExt->Shield->KillAnim();
+				pExt->Shield = nullptr;
+			}
+		}
+
+		// Attach shield.
+		if (canAffectTarget && Shield_AttachTypes.size() > 0)
+		{
+			ShieldTypeClass* shieldType = nullptr;
+
+			if (this->Shield_ReplaceOnly)
+			{
+				if (shieldIndex >= 0)
+					shieldType = Shield_AttachTypes[Math::min(shieldIndex, (signed)Shield_AttachTypes.size() - 1)];
+			}
+			else
+			{
+				shieldType = Shield_AttachTypes.size() > 0 ? Shield_AttachTypes[0] : nullptr;
+			}
+
+			if (shieldType)
+			{
+				if (shieldType->Strength && (!pExt->Shield || (this->Shield_ReplaceNonRespawning && pExt->Shield->IsBrokenAndNonRespawning())))
+				{
+					pExt->CurrentShieldType = shieldType;
+					pExt->Shield = std::make_unique<ShieldClass>(pTarget, true);
+
+					if (this->Shield_ReplaceOnly && this->Shield_InheritStateOnReplace)
+					{
+						pExt->Shield->SetHP((int)(shieldType->Strength * ratio));
+
+						if (pExt->Shield->GetHP() == 0)
+							pExt->Shield->SetRespawn(shieldType->Respawn_Rate, shieldType->Respawn, shieldType->Respawn_Rate, true);
+					}
+				}
+			}
+		}
+
+		// Apply other modifiers.
+		if (pExt->Shield)
+		{
+			if (this->Shield_AffectTypes.size() > 0 && !this->Shield_AffectTypes.Contains(pExt->Shield->GetType()))
+				return;
+
+			if (this->Shield_Break && pExt->Shield->IsActive())
+				pExt->Shield->BreakShield(this->Shield_BreakAnim.Get(nullptr), this->Shield_BreakWeapon.Get(nullptr));
+
+			if (this->Shield_Respawn_Duration > 0)
+				pExt->Shield->SetRespawn(this->Shield_Respawn_Duration, this->Shield_Respawn_Amount, this->Shield_Respawn_Rate, this->Shield_Respawn_ResetTimer);
+
+			if (this->Shield_SelfHealing_Duration > 0)
+			{
+				double amount = this->Shield_SelfHealing_Amount.Get(pExt->Shield->GetType()->SelfHealing);
+				pExt->Shield->SetSelfHealing(this->Shield_SelfHealing_Duration, amount, this->Shield_SelfHealing_Rate, this->Shield_SelfHealing_ResetTimer);
+			}
+		}
+	}
 }
 
 void WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget)
@@ -105,10 +192,10 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 			return;
 	}
 
-	if (!this->IsCellEligible(pTarget->GetCell(), this->Crit_Affects))
+	if (!EnumFunctions::IsCellEligible(pTarget->GetCell(), this->Crit_Affects))
 		return;
 
-	if (!this->IsTechnoEligible(pTarget, this->Crit_Affects))
+	if (!EnumFunctions::IsTechnoEligible(pTarget, this->Crit_Affects))
 		return;
 
 	auto Damage = this->Crit_ExtraDamage.Get();

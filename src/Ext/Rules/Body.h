@@ -33,14 +33,18 @@ public:
 
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
+		Valueable<bool> JumpjetAllowLayerDeviation;
+		Valueable<int> Storage_TiberiumIndex;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
-			, Pips_Shield({ -1,-1,-1 })
-			, Pips_Shield_Buildings({ -1,-1,-1 })
-			, RadApplicationDelay_Building(0)
-			, MissingCameo("xxicon.shp")
-			, JumpjetCrash(5.0)
-			, JumpjetNoWobbles(false)
+			, Pips_Shield { { -1,-1,-1 } }
+			, Pips_Shield_Buildings { { -1,-1,-1 } }
+			, RadApplicationDelay_Building { 0 }
+			, MissingCameo { "xxicon.shp" }
+			, JumpjetCrash { 5.0 }
+			, JumpjetNoWobbles { false }
+			, JumpjetAllowLayerDeviation { true }
+			, Storage_TiberiumIndex { -1 }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -78,8 +82,6 @@ public:
 	{
 		return Data.get();
 	}
-
-	static DynamicVectorClass<CameoDataStruct> TabCameos[4];
 
 	static void Clear()
 	{

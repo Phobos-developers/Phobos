@@ -535,6 +535,68 @@ namespace detail {
 		return false;
 	}
 
+	template <>
+	inline bool read<AreaFireTarget>(AreaFireTarget& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "base") == 0)
+			{
+				value = AreaFireTarget::Base;
+			}
+			else if (_strcmpi(parser.value(), "self") == 0)
+			{
+				value = AreaFireTarget::Self;
+			}
+			else if (_strcmpi(parser.value(), "random") == 0)
+			{
+				value = AreaFireTarget::Random;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an area fire target");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<TextAlign>(TextAlign& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = TextAlign::None;
+			auto str = parser.value();
+			if (_strcmpi(str, "left") == 0)
+			{
+				parsed = TextAlign::Left;
+			}
+			else if (_strcmpi(str, "center") == 0)
+			{
+				parsed = TextAlign::Center;
+			}
+			else if (_strcmpi(str, "centre") == 0)
+			{
+				parsed = TextAlign::Center;
+			}
+			else if (_strcmpi(str, "right") == 0)
+			{
+				parsed = TextAlign::Right;
+			}
+			else if (_strcmpi(str, "none") == 0)
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Text Alignment can be either Left, Center/Centre or Right");
+				return false;
+			}
+			if (parsed != TextAlign::None)
+				value = parsed;
+			return true;
+		}
+		return false;
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey) {
 		char* context = nullptr;

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-16 14:17+0800\n"
+"POT-Creation-Date: 2022-01-07 11:14+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,7 +43,9 @@ msgid ""
 "You can specify custom `gamemd.exe` icon via `-icon` command line "
 "argument followed by absolute or relative path to an `*.ico` file (f. ex."
 " `gamemd.exe -icon Resources/clienticon.ico`)."
-msgstr "可以通过命令行参数`-icon <路径>`指定`gamemd.exe`的图标，路径可以是绝对路径也可以是相对路径（例如`gamemd.exe -icon Resources/clienticon.ico`）。"
+msgstr ""
+"可以通过命令行参数`-icon <路径>`指定`gamemd.exe`的图标，路径可以是绝对路径也可以是相对路径（例如`gamemd.exe "
+"-icon Resources/clienticon.ico`）。"
 
 #: ../User-Interface.md:9
 msgid ""
@@ -53,7 +55,9 @@ msgid ""
 "have administrator rights. With Phobos, if the game did not find a "
 "registered file in the system, it will no longer try to register this "
 "file, but will load it bypassing registration."
-msgstr "修复了由`Blowfish.dll`导致的错误`***FATAL*** String Manager failed to initialize properly`。原理见英文原文，不翻译。"
+msgstr ""
+"修复了由`Blowfish.dll`导致的错误`***FATAL*** String Manager failed to initialize "
+"properly`。原理见英文原文，不翻译。"
 
 #: ../User-Interface.md:10
 msgid ""
@@ -67,7 +71,9 @@ msgid ""
 "You can use {download}`the improved vanilla font "
 "<_static/files/ImprovedFont-v4.zip>` (v4 and higher) which has way more "
 "Unicode character coverage than the default one."
-msgstr "你可以{download}`原版增强字库 <_static/files/ImprovedFont-v4.zip>`（v4或更高版本）来覆盖默认字库。此字库拥有更多的Unicode字符。"
+msgstr ""
+"你可以{download}`原版增强字库 "
+"<_static/files/ImprovedFont-v4.zip>`（v4或更高版本）来覆盖默认字库。此字库拥有更多的Unicode字符。"
 
 #: ../User-Interface.md:15
 msgid "Audio"
@@ -77,9 +83,10 @@ msgstr "声音"
 msgid "You can now specify which soundtrack themes would play on win or lose."
 msgstr "你可以指定玩家胜利或失败时播放的音轨。"
 
-#: ../User-Interface.md:19 ../User-Interface.md:47 ../User-Interface.md:68
-#: ../User-Interface.md:94 ../User-Interface.md:108 ../User-Interface.md:118
-#: ../User-Interface.md:144 ../User-Interface.md:175 ../User-Interface.md:206
+#: ../User-Interface.md:19 ../User-Interface.md:54 ../User-Interface.md:75
+#: ../User-Interface.md:101 ../User-Interface.md:115 ../User-Interface.md:125
+#: ../User-Interface.md:151 ../User-Interface.md:182 ../User-Interface.md:208
+#: ../User-Interface.md:247
 msgid "In `rulesmd.ini`:"
 msgstr "在`rulesmd.ini`中："
 
@@ -88,60 +95,87 @@ msgid "Hotkey Commands"
 msgstr "快捷键指令"
 
 #: ../User-Interface.md:28
+msgid "`[ ]` Quicksave"
+msgstr "`[ ]` 快捷保存"
+
+#: ../User-Interface.md:30
+msgid "Save the current singleplayer game."
+msgstr "保存当前单人游戏。"
+
+#: ../User-Interface.md:31
+msgid ""
+"If need localization, just add `TXT_QUICKGAME`, `TXT_QUICKGAME_DESC`, "
+"`TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your "
+"`.csf` file."
+msgstr "如果需要本地化，只需要在`.csf`文件中增加`TXT_QUICKGAME`，`TXT_QUICKGAME_DESC`和`TXT_QUICKSAVE_SUFFIX`即可。"
+
+#: ../User-Interface.md:32
+msgid ""
+"These vanilla CSF entries will be used: `TXT_SAVING_GAME`, "
+"`TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`."
+msgstr "以下原版CSF被使用：`TXT_SAVING_GAME`，`TXT_GAME_WAS_SAVED`和`TXT_ERROR_SAVING_GAME`。"
+
+#: ../User-Interface.md:33
+msgid ""
+"The save should be looks like `Allied Mission 25: Esther's Money - "
+"QuickSaved`"
+msgstr "存档名会是`Allied Mission 25: Esther's Money - QuickSaved`"
+
+#: ../User-Interface.md:35
 msgid "`[ ]` Next Idle Harvester"
 msgstr "`[ ]` 下一空闲矿车"
 
-#: ../User-Interface.md:30
+#: ../User-Interface.md:37
 msgid ""
 "Selects and centers the camera on the next TechnoType that is counted via"
 " the [harvester counter](#harvester-counter) and is currently idle."
-msgstr "选择并居中下一个被[矿车指示器]计数且处于空闲状态的单位。"
+msgstr "选择并居中下一个被[矿车指示器](#harvester-counter)计数且处于空闲状态的单位。"
 
-#: ../User-Interface.md:31
+#: ../User-Interface.md:38
 msgid ""
 "If need localization, just add `TXT_NEXT_IDLE_HARVESTER` and "
 "`TXT_NEXT_IDLE_HARVESTER_DESC` into your `.csf` file."
 msgstr "如果需要本地化，只需要在`.csf`文件中增加`TXT_NEXT_IDLE_HARVESTER`和`TXT_NEXT_IDLE_HARVESTER_DESC`即可。"
 
-#: ../User-Interface.md:33
+#: ../User-Interface.md:40
 msgid "`[ ]` Dump Object Info"
 msgstr "`[ ]` 输出目标信息"
 
-#: ../User-Interface.md:35
+#: ../User-Interface.md:42
 msgid ""
 "Writes currently hovered or last selected object info in log and shows a "
 "message. See [this](Miscellanous.md#dump-object-info) for details."
 msgstr "将当前鼠标悬浮或选中的目标信息写入日志并输出信息。详情请见[此处](Miscellanous.md#dump-object-info)。"
 
-#: ../User-Interface.md:36
+#: ../User-Interface.md:43
 msgid ""
 "If need localization, just add `TXT_DUMP_OBJECT_INFO` and "
 "`TXT_DUMP_OBJECT_INFO_DESC` into your `.csf` file."
 msgstr "如果需要本地化，只需要在`.csf`文件中增加`TXT_DUMP_OBJECT_INFO`和`TXT_DUMP_OBJECT_INFO_DESC`即可。"
 
-#: ../User-Interface.md:38
+#: ../User-Interface.md:45
 msgid "Battle screen UI/UX"
 msgstr "战斗界面UI/UX"
 
-#: ../User-Interface.md:40
+#: ../User-Interface.md:47
 msgid "Low priority for box selection"
 msgstr "框选低优先级"
 
-#: ../User-Interface.md:42
+#: ../User-Interface.md:49
 msgid ""
 "![smartvesters](_static/images/lowpriority-01.gif)   *Harvesters not "
 "selected together with battle units in [Rise of the "
 "East](https://www.moddb.com/mods/riseoftheeast) mod*"
 msgstr ""
-"![smartvesters](_static/images/lowpriority-01.gif)  \n*在战斗单位中"
-"矿车不被选中在[Rise of the "
+"![smartvesters](_static/images/lowpriority-01.gif)  \n"
+"*在战斗单位中矿车不被选中在[Rise of the "
 "East](https://www.moddb.com/mods/riseoftheeast)中*"
 
-#: ../User-Interface.md:42
+#: ../User-Interface.md:49
 msgid "smartvesters"
 msgstr ""
 
-#: ../User-Interface.md:45
+#: ../User-Interface.md:52
 msgid ""
 "You can now set lower priority for an ingame object (currently has effect"
 " on units mostly), which means it will be excluded from box selection if "
@@ -152,58 +186,58 @@ msgid ""
 "appended ones."
 msgstr "现在可以为游戏内的物体设定为低选择权重。这样的单位将不会在**框选**，**T框选**，**Shift框选**有正常选择权重的单位时被选中。"
 
-#: ../User-Interface.md:53
+#: ../User-Interface.md:60
 msgid ""
 "This behavior is designed to be toggleable by users. For now you can only"
 " do that externally via client or manually."
 msgstr "用户可以自由指定是否启用这个逻辑。目前只能人工设置或内置到客户端中。"
 
-#: ../User-Interface.md:55 ../User-Interface.md:214
+#: ../User-Interface.md:62 ../User-Interface.md:255
 msgid "In `RA2MD.ini`:"
 msgstr "在`RA2MD.ini`中："
 
-#: ../User-Interface.md:61
+#: ../User-Interface.md:68
 msgid "Hide health bars"
 msgstr "隐藏血条"
 
-#: ../User-Interface.md:63
+#: ../User-Interface.md:70
 msgid ""
 "![image](_static/images/healthbar.hide-01.png)   *Health bars hidden in "
 "[CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*"
 msgstr ""
-"![image](_static/images/healthbar.hide-01.png)  \n*隐藏血条在"
-"[CnC: Final War](https://www.moddb.com/mods/cncfinalwar)中*"
+"![image](_static/images/healthbar.hide-01.png)  \n"
+"*隐藏血条在[CnC: Final War](https://www.moddb.com/mods/cncfinalwar)中*"
 
-#: ../User-Interface.md:63 ../User-Interface.md:126 ../User-Interface.md:163
-#: ../User-Interface.md:183
+#: ../User-Interface.md:70 ../User-Interface.md:133 ../User-Interface.md:170
+#: ../User-Interface.md:190 ../User-Interface.md:224
 msgid "image"
 msgstr ""
 
-#: ../User-Interface.md:66
+#: ../User-Interface.md:73
 msgid ""
 "Health bar display can now be turned off as needed, hiding both the "
 "health bar box and health pips."
 msgstr "如果需要，血条可以被关闭显示。"
 
-#: ../User-Interface.md:74
+#: ../User-Interface.md:81
 msgid "Loading screen"
 msgstr "载入屏幕"
 
-#: ../User-Interface.md:76
+#: ../User-Interface.md:83
 msgid "PCX files can now be used as loadscreen images."
 msgstr "载入图像现在可以使用PCX格式。"
 
-#: ../User-Interface.md:77
+#: ../User-Interface.md:84
 msgid "You can specify custom loadscreen with Ares tag `File.LoadScreen`."
 msgstr "自定义载入屏幕可以通过Ares标签`File.LoadScreen`实现。"
 
-#: ../User-Interface.md:78
+#: ../User-Interface.md:85
 msgid ""
 "The loadscreen size can now be different from the default `800x600` one; "
 "if the image is bigger than the screen it's centered and cropped."
 msgstr "载入图的大小现在可以大于默认的`800x600`，一定为居中绘制。"
 
-#: ../User-Interface.md:79
+#: ../User-Interface.md:86
 msgid ""
 "This feature works in conjunction with CnCNet5 spawner DLL which resizes "
 "loadscreen window to actual monitor size and places the image in center. "
@@ -211,102 +245,102 @@ msgid ""
 "always `800x600`."
 msgstr "此功能是与CnCNet5生成器Dll搭配使用的，它将把载入界面固定为当前游戏分辨率大小并把载入图置于中间。如果没有CnCNet5生成器，那么载入分辨率将被锁定为`800x600`。"
 
-#: ../User-Interface.md:80
+#: ../User-Interface.md:87
 msgid ""
 "You can now disable hardcoded black dots that YR engine shows over empty "
 "spawn locations, which allows to use prettier and more correctly placed "
 "markers that are produced by Map Renderer instead."
 msgstr "现在可以关闭YR引擎硬编码的黑点"
 
-#: ../User-Interface.md:82 ../User-Interface.md:135 ../User-Interface.md:169
-#: ../User-Interface.md:197
+#: ../User-Interface.md:89 ../User-Interface.md:142 ../User-Interface.md:176
+#: ../User-Interface.md:200 ../User-Interface.md:238
 msgid "In `uimd.ini`:"
 msgstr "在`uimd.ini`中："
 
-#: ../User-Interface.md:88
+#: ../User-Interface.md:95
 msgid "Sidebar / Battle UI"
 msgstr "侧边栏/战斗UI"
 
-#: ../User-Interface.md:90
+#: ../User-Interface.md:97
 msgid "Specify Sidebar style"
 msgstr "指定侧边栏风格"
 
-#: ../User-Interface.md:92
+#: ../User-Interface.md:99
 msgid ""
 "It's now possible to switch hardcoded sidebar button coords to use GDI "
 "sidebar coords."
 msgstr "现在可以切换侧边栏是否使用GDI侧边栏坐标。"
 
-#: ../User-Interface.md:103
+#: ../User-Interface.md:110
 msgid "Cameo Sorting"
 msgstr "图标排序"
 
-#: ../User-Interface.md:105
+#: ../User-Interface.md:112
 msgid ""
 "You can now specify Cameo Priority for any TechnoType/SuperWeaponType. "
 "Vanilla sorting rules are "
 "[here](https://modenc.renegadeprojects.com/Cameo_Sorting)."
 msgstr "现在可以为任意单位或超武指定图标优先级。原版排序规则见[这里](https://modenc.renegadeprojects.com/Cameo_Sorting)。"
 
-#: ../User-Interface.md:106
+#: ../User-Interface.md:113
 msgid ""
 "The Cameo Priority is checked just before evevything vanilla. Greater "
 "`CameoPriority` wins."
 msgstr "图标优先级是最优先检查的。大的优先级排在前面。"
 
-#: ../User-Interface.md:114
+#: ../User-Interface.md:121
 msgid "Custom Missing Cameo (`XXICON.SHP`)"
 msgstr "自定义缺省图标（`XXICON.SHP`）"
 
-#: ../User-Interface.md:116
+#: ../User-Interface.md:123
 msgid "You can now specify any SHP/PCX file as XXICON.SHP for missing cameo."
 msgstr "现在可以指定任意SHP/PCX文件为缺省图标（XXICON.SHP）"
 
-#: ../User-Interface.md:124
+#: ../User-Interface.md:131
 msgid "Harvester counter"
 msgstr "矿车指示器"
 
-#: ../User-Interface.md:126
+#: ../User-Interface.md:133
 msgid ""
 "![image](_static/images/harvestercounter-01.gif)   *Harvester Counter in "
 "[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*"
 msgstr ""
-"![image](_static/images/harvestercounter-01.gif)  \n*矿车指示器在"
-"[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)中*"
+"![image](_static/images/harvestercounter-01.gif)  \n"
+"*矿车指示器在[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)中*"
 
-#: ../User-Interface.md:129
+#: ../User-Interface.md:136
 msgid ""
 "An additional counter for your active/total harvesters can be added near "
 "the credits indicator."
 msgstr "现在可以在金钱指示器旁边追加一个矿车指示器。"
 
-#: ../User-Interface.md:130
+#: ../User-Interface.md:137
 msgid ""
 "You can specify which TechnoType should be counted as a Harvester. If not"
 " set, the techno with `Harvester=yes` or `Enslaves=SOMESLAVE` will be "
 "counted."
 msgstr "可以将任意单位指定为被计算的矿车。如果未设定，带有`Harvester=yes`或`Enslaves=SOMESLAVE`的单位将被计算。"
 
-#: ../User-Interface.md:131
+#: ../User-Interface.md:138
 msgid ""
 "The counter is displayed with the format of `Label(Active "
 "Harvesters)/(Total Harvesters)`. The label is `⛏ U+26CF` by default."
 msgstr "该指示器以`标志 激活矿车数/总矿车数`的格式显示，标志默认为`⛏ U+26CF`。"
 
-#: ../User-Interface.md:132
+#: ../User-Interface.md:139
 msgid ""
 "You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, "
 "negative means left/up, positive means right/down."
 msgstr "可以通过``调整指示器的位置。负数左/上，正数右/下。"
 
-#: ../User-Interface.md:133
+#: ../User-Interface.md:140
 msgid ""
 "By setting `HarvesterCounter.ConditionYellow` and "
 "`HarvesterCounter.ConditionRed`, the game will warn player by changing "
 "the color of counter whenever the active percentage of harvesters less "
 "than or equals to them, like HP changing with `ConditionYellow` and "
 "`ConditionRed`."
-msgstr "当正在工作的矿车数量低于一定百分比时，矿车指示器将改变它的颜色警示玩家。通过`HarvesterCounter.ConditionYellow`和`HarvesterCounter.ConditionRed`指定百分比，类似血条颜色通过`ConditionYellow`和`ConditionRed`改变。"
+msgstr "当正在工作的矿车数量低于一定百分比时，矿车指示器将改变其颜色警示玩家。通过`HarvesterCounter.ConditionYellow`和`HarvesterCounter.ConditionRed`指定百分比，类似血条颜色通过`ConditionYellow`和`ConditionRed`改变。"
 
 #: ../User-Interface.md:1
 msgid ""
@@ -316,45 +350,97 @@ msgid ""
 "need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-"
 "design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for "
 "example."
-msgstr "如果你的mod使用原版字库，可以使用已经包含上文提到过的标志的{download}`增强字库 <_static/files/ImprovedFont-v4.zip>`（v4或更高版本）。否则你需要自行编辑字库，比如使用[WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D)。"
+msgstr ""
+"如果你的mod使用原版字库，可以使用已经包含上文提到过的标志的{download}`增强字库 "
+"<_static/files/ImprovedFont-v4.zip>`（v4或更高版本）。否则你需要自行编辑字库，比如使用[WWFontEditor](http://nyerguds"
+".arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D)。"
 
-#: ../User-Interface.md:161
+#: ../User-Interface.md:168
 msgid "Producing Progress"
 msgstr "生产进度"
 
-#: ../User-Interface.md:163
+#: ../User-Interface.md:170
 msgid ""
 "![image](_static/images/producing-progress-01.gif)   *Producing Progress "
 "bars in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-"
 "adventure)*"
 msgstr ""
-"![image](_static/images/producing-progress-01.gif)  \n*生产进度条"
-"在[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-"
-"adventure)中*"
+"![image](_static/images/producing-progress-01.gif)  \n"
+"*生产进度条在[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)中*"
 
-#: ../User-Interface.md:166
+#: ../User-Interface.md:173
 msgid "You can now know your factories' status via sidebar!"
 msgstr "现在可以通过侧边栏了解到你的工厂的状态了！"
 
-#: ../User-Interface.md:167
+#: ../User-Interface.md:174
 msgid ""
 "You need to draw your own assets (`tab0xpp.shp`, x is replaced by 0-3) "
 "and put them into `sidec0x.mix`."
 msgstr "需要自行在`sidec0x.mix`中添加``tab0xpp.shp`(x为0-3) 作为生产进度的素材。"
 
-#: ../User-Interface.md:181
+#: ../User-Interface.md:188
+msgid "Power delta counter"
+msgstr "电力变动指示器"
+
+#: ../User-Interface.md:190
+msgid ""
+"![image](_static/images/powerdelta-01.gif)   *Power delta Counter in "
+"[Assault Amerika](https://www.moddb.com/mods/assault-amerika)*"
+msgstr ""
+"![image](_static/images/powerdelta-01.gif)  \n"
+"*电力变动指示器在[Assault Amerika](https://www.moddb.com/mods/assault-amerika)中*"
+
+#: ../User-Interface.md:193
+msgid ""
+"An additional counter for your power delta (surplus) can be added near "
+"the credits indicator."
+msgstr "现在可以在金钱指示器旁边追加一个电力变动指示器。"
+
+#: ../User-Interface.md:194
+msgid ""
+"The counter is displayed with the format of `Label(sign)(Power Delta)`. "
+"The label is PowerLabel used in tooltips (by default `⚡ U+26A1`)."
+msgstr "该指示器以`标志 电力盈余`的格式显示，标志默认为`⚡ U+26A1`。"
+
+#: ../User-Interface.md:195
+msgid ""
+"You can adjust counter position by `Sidebar.PowerDelta.Offset`, negative "
+"means left/up, positive means right/down."
+msgstr "可以通过`Sidebar.PowerDelta.Offset`调整指示器的位置。负数左/上，正数右/下。"
+
+#: ../User-Interface.md:196
+msgid ""
+"You can adjust counter text alignment by `Sidebar.PowerDelta.Align`, "
+"acceptable values are left, right, center/centre."
+msgstr "可以通过`Sidebar.PowerDelta.Align`调整指示器的对齐方式为左对齐（`left`），右对齐（`right`）或居中对齐（`center`/`centre`）。"
+
+#: ../User-Interface.md:197
+msgid ""
+"By setting `PowerDelta.ConditionYellow` and `PowerDelta.ConditionRed`, "
+"the game will warn player by changing the color of counter whenever the "
+"percentage of used power exceeds the value (i.e. when drain to output "
+"ratio is above 100%, the counter will turn red)."
+msgstr "当使用电量的百分比低于一定值时，电力变动指示器将改变其颜色警示玩家。通过`PowerDelta.ConditionYellow`和`PowerDelta.ConditionRed`指定百分比（例如，当负载：电力大于100%时，指示器会变为红色）。"
+
+#: ../User-Interface.md:198
+msgid ""
+"The exception for this rule is when both power output and drain are 0 - "
+"in this case the counter will default to yellow."
+msgstr "当电力与负载均为0时，指示器恒为黄色。"
+
+#: ../User-Interface.md:222
 msgid "Tooltips"
 msgstr "工具提示"
 
-#: ../User-Interface.md:183
+#: ../User-Interface.md:224
 msgid ""
 "![image](_static/images/tooltips-01.png)   *Extended tooltips used in "
 "[CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*"
 msgstr ""
-"![image](_static/images/tooltips-01.png)  \n*扩展工具提示在"
-"[CnC: Final War](https://www.moddb.com/mods/cncfinalwar)中*"
+"![image](_static/images/tooltips-01.png)  \n"
+"*扩展工具提示在[CnC: Final War](https://www.moddb.com/mods/cncfinalwar)中*"
 
-#: ../User-Interface.md:186
+#: ../User-Interface.md:227
 msgid ""
 "Sidebar tooltips can now display extended information about the "
 "TechnoType/SWType when hovered over it's cameo. In addition the low "
@@ -362,33 +448,35 @@ msgid ""
 "corresponding tag, allowing for 1024 character long tooltips."
 msgstr "鼠标悬浮在图标上时显示的工具提示现在可以更加详细了。同时，最大字数限制也提高到了1024。"
 
-#: ../User-Interface.md:187
+#: ../User-Interface.md:228
 msgid ""
-"TechnoType's tooltip would display it's name, cost, power and description"
-" (when applicable)."
-msgstr "拓展后`TechnoType`的工具提示将显示名称，所需资金，所需电力，描述。"
+"TechnoType's tooltip would display it's name, cost, power, build time and"
+" description (when applicable)."
+msgstr "拓展后`TechnoType`的工具提示将显示名称，所需资金，所需电力，所需时间，描述。"
 
-#: ../User-Interface.md:188
+#: ../User-Interface.md:229
 msgid ""
 "SWType's tooltip would display it's name, cost,  and recharge time (when "
 "applicable)."
 msgstr "拓展后`SWType`的工具提示将显示名称，所需资金，充能时间。"
 
-#: ../User-Interface.md:189
+#: ../User-Interface.md:230
 msgid ""
 "Extended tooltips don't use `TXT_MONEY_FORMAT_1` and "
 "`TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time labels"
 " (displayed before correspoding values) with the corresponding tags. "
 "Characters `$ U+0024`, `⚡ U+26A1` and `⌚ U+231A` are used by default."
-msgstr "扩展工具提示不使用`TXT_MONEY_FORMAT_1`和`TXT_MONEY_FORMAT_2`。取而代之你可以自己指定金钱，电力，时间的标志（在对应值前显示）。默认分别为`$ U+0024`，`⚡ U+26A1`，`⌚ U+231A`。"
+msgstr ""
+"扩展工具提示不使用`TXT_MONEY_FORMAT_1`和`TXT_MONEY_FORMAT_2`。取而代之你可以自己指定金钱，电力，时间的标志（在对应值前显示）。默认分别为`$"
+" U+0024`，`⚡ U+26A1`，`⌚ U+231A`。"
 
-#: ../User-Interface.md:190
+#: ../User-Interface.md:231
 msgid ""
 "Fixed a bug when switching build queue tabs via QWER didn't make tooltips"
 " disappear as they should, resulting in stuck tooltips."
 msgstr "修复了当通过QWER切换标签页时, 工具提示不会消失的问题。"
 
-#: ../User-Interface.md:191
+#: ../User-Interface.md:232
 msgid ""
 "The tooltips can now go over the sidebar bounds to accommodate for longer"
 " contents. You can control maximum text width with a new tag (paddings "
@@ -400,9 +488,11 @@ msgid ""
 "Same as with harvester counter, you can download {download}`the improved "
 "font <_static/files/ImprovedFont-v4.zip>` (v3 and higher) or draw your "
 "own icons."
-msgstr "类似矿车指示器，你可以使用{download}`增强字库 <_static/files/ImprovedFont-v4.zip>`（v3或更高版本）或自己绘制标志。"
+msgstr ""
+"类似矿车指示器，你可以使用{download}`增强字库 "
+"<_static/files/ImprovedFont-v4.zip>`（v3或更高版本）或自己绘制标志。"
 
-#: ../User-Interface.md:212
+#: ../User-Interface.md:253
 msgid ""
 "The descriptions are designed to be toggleable by users. For now you can "
 "only do that externally via client or manually."

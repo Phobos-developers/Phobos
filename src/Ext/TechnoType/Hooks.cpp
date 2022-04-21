@@ -1,4 +1,6 @@
+#include <AnimClass.h>
 #include <UnitClass.h>
+#include <AnimClass.h>
 #include <InfantryClass.h>
 #include <BuildingClass.h>
 #include <ScenarioClass.h>
@@ -181,4 +183,143 @@ DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDi
 	pThis->Disguised = false;
 
 	return 0;
+}
+
+DEFINE_HOOK(0x54B8E9, JumpjetLocomotionClass_In_Which_Layer_Deviation, 0x6)
+{
+	GET(TechnoClass*, pThis, EAX);
+
+	if (pThis->IsInAir())
+	{
+		if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		{
+			if (!pExt->JumpjetAllowLayerDeviation.Get(RulesExt::Global()->JumpjetAllowLayerDeviation.Get()))
+			{
+				R->EDX(INT32_MAX); // Override JumpjetHeight / CruiseHeight check so it always results in 3 / Layer::Air.
+				return 0x54B96B;
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pTypeExt->DeployingAnim_KeepUnitVisible && (pThis->Deploying || pThis->Undeploying))
+		return 0x73CF62;
+
+	return 0;
+}
+
+// Ares hooks in at 739B8A, this goes before it and skips it if needed.
+DEFINE_HOOK(0x739B7C, UnitClass_Deploy_DeployDir, 0x6)
+{
+	enum { SkipAnim = 0x739C70, PlayAnim = 0x739B9E };
+
+	GET(UnitClass*, pThis, ESI);
+
+	if (!pThis->InAir)
+	{
+		if (pThis->Type->DeployingAnim)
+		{
+			if (TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->DeployingAnim_AllowAnyDirection)
+				return PlayAnim;
+
+			return 0;
+		}
+
+		pThis->Deployed = true;
+	}
+
+	return SkipAnim;
+}
+
+DEFINE_HOOK_AGAIN(0x739D8B, UnitClass_DeployUndeploy_DeployAnim, 0x5)
+DEFINE_HOOK(0x739BA8, UnitClass_DeployUndeploy_DeployAnim, 0x5)
+{
+	enum { Deploy = 0x739C20, DeployUseUnitDrawer = 0x739C0A, Undeploy = 0x739E04, UndeployUseUnitDrawer = 0x739DEE };
+
+	GET(UnitClass*, pThis, ESI);
+
+	bool isDeploying = R->Origin() == 0x739BA8;
+
+	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	{
+		if (auto const pAnim = GameCreate<AnimClass>(pThis->Type->DeployingAnim,
+			pThis->Location, 0, 1, 0x600, 0,
+			!isDeploying ? pExt->DeployingAnim_ReverseForUndeploy : false))
+		{
+			pThis->DeployAnim = pAnim;
+			pAnim->SetOwnerObject(pThis);
+
+			if (pExt->DeployingAnim_UseUnitDrawer)
+				return isDeploying ? DeployUseUnitDrawer : UndeployUseUnitDrawer;
+		}
+		else
+		{
+			pThis->DeployAnim = nullptr;
+		}
+	}
+
+	return isDeploying ? Deploy : Undeploy;
+}
+
+DEFINE_HOOK_AGAIN(0x739E81, UnitClass_DeployUndeploy_DeploySound, 0x6)
+DEFINE_HOOK(0x739C86, UnitClass_DeployUndeploy_DeploySound, 0x6)
+{
+	enum { DeployReturn = 0x739CBF, UndeployReturn = 0x739EB8 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	bool isDeploying = R->Origin() == 0x739C86;
+	bool isDoneWithDeployUndeploy = isDeploying ? pThis->Deployed : !pThis->Deployed;
+
+	if (isDoneWithDeployUndeploy)
+		return 0; // Only play sound when done with deploying or undeploying.
+
+	return isDeploying ? DeployReturn : UndeployReturn;
+}
+
+// Issue #503
+// Author : Otamaa
+DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
+{
+	enum { SetUIName = 0x4AE678 };
+
+	GET(ObjectClass* , pObject, ECX);
+
+	auto pDecidedUIName = pObject->GetUIName();
+	auto pFoot = generic_cast<FootClass*>(pObject);
+	auto pTechnoType = pObject->GetTechnoType();
+
+	if (pFoot && pTechnoType && !pObject->IsDisguised())
+	{
+		bool IsAlly = true;
+		bool IsCivilian = false;
+		bool IsObserver = HouseClass::Observer || HouseClass::IsPlayerObserver();
+
+		if (auto pOwnerHouse = pFoot->GetOwningHouse())
+		{
+			IsAlly = pOwnerHouse->IsAlliedWith(HouseClass::Player);
+			IsCivilian = (pOwnerHouse == HouseClass::FindCivilianSide()) || pOwnerHouse->IsNeutral();
+		}
+
+		if (!IsAlly && !IsCivilian && !IsObserver)
+		{
+			auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+
+			if (auto pEnemyUIName = pTechnoTypeExt->EnemyUIName.Get().Text)
+			{
+				pDecidedUIName = pEnemyUIName;
+			}
+		}
+	}
+
+	R->EAX(pDecidedUIName);
+	return SetUIName;
 }

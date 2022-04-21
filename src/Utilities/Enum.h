@@ -135,11 +135,28 @@ enum class SuperWeaponFlags : unsigned short {
 
 MAKE_ENUM_FLAGS(SuperWeaponFlags);
 
+enum class AreaFireTarget
+{
+	Base = 0,
+	Self = 1,
+	Random = 2
+};
+
 enum class PhobosAction {
 	None = 0,
 	Hijack = 1,
 	Drive = 2
 };
+
+enum class TextAlign : int
+{
+	None = 0xFFF,
+	Left = 0x000,
+	Center = 0x100,
+	Right = 0x200,
+};
+
+MAKE_ENUM_FLAGS(TextAlign);
 
 class MouseCursorHotSpotX {
 public:

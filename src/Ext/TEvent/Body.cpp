@@ -66,6 +66,57 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 		return TEventExt::VariableCheck<true, std::less_equal<int>>(pThis);
 	case PhobosTriggerEvent::GlobalVariableAndIsTrue:
 		return TEventExt::VariableCheck<true, and_with>(pThis);
+
+	case PhobosTriggerEvent::LocalVariableGreaterThanLocalVariable:
+		return TEventExt::VariableCheckBinary<false, false, std::greater<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableLessThanLocalVariable:
+		return TEventExt::VariableCheckBinary<false, false, std::less<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableEqualsToLocalVariable:
+		return TEventExt::VariableCheckBinary<false, false, std::equal_to<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableGreaterThanOrEqualsToLocalVariable:
+		return TEventExt::VariableCheckBinary<false, false, std::greater_equal<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableLessThanOrEqualsToLocalVariable:
+		return TEventExt::VariableCheckBinary<false, false, std::less_equal<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableAndIsTrueLocalVariable:
+		return TEventExt::VariableCheckBinary<false, false, and_with>(pThis);
+	case PhobosTriggerEvent::GlobalVariableGreaterThanLocalVariable:
+		return TEventExt::VariableCheckBinary<false, true, std::greater<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableLessThanLocalVariable:
+		return TEventExt::VariableCheckBinary<false, true, std::less<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableEqualsToLocalVariable:
+		return TEventExt::VariableCheckBinary<false, true, std::equal_to<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableGreaterThanOrEqualsToLocalVariable:
+		return TEventExt::VariableCheckBinary<false, true, std::greater_equal<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableLessThanOrEqualsToLocalVariable:
+		return TEventExt::VariableCheckBinary<false, true, std::less_equal<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableAndIsTrueLocalVariable:
+		return TEventExt::VariableCheckBinary<false, true, and_with>(pThis);
+
+	case PhobosTriggerEvent::LocalVariableGreaterThanGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, false, std::greater<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableLessThanGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, false, std::less<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableEqualsToGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, false, std::equal_to<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableGreaterThanOrEqualsToGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, false, std::greater_equal<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableLessThanOrEqualsToGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, false, std::less_equal<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableAndIsTrueGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, false, and_with>(pThis);
+	case PhobosTriggerEvent::GlobalVariableGreaterThanGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, true, std::greater<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableLessThanGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, true, std::less<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableEqualsToGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, true, std::equal_to<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableGreaterThanOrEqualsToGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, true, std::greater_equal<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableLessThanOrEqualsToGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, true, std::less_equal<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableAndIsTrueGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, true, and_with>(pThis);
+
 	default:
 		bHandled = false;
 		return true;
@@ -80,8 +131,26 @@ bool TEventExt::VariableCheck(TEventClass* pThis)
 	if (itr != ScenarioExt::Global()->Variables[IsGlobal].end())
 	{
 		// We uses TechnoName for our operator number
-		int nOpt = atoi(pThis->TechnoName);
+		int nOpt = atoi(pThis->String);
 		return _Pr()(itr->second.Value, nOpt);
+	}
+
+	return false;
+}
+
+template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
+bool TEventExt::VariableCheckBinary(TEventClass* pThis)
+{
+	auto itr = ScenarioExt::Global()->Variables[IsGlobal].find(pThis->Value);
+
+	if (itr != ScenarioExt::Global()->Variables[IsGlobal].end())
+	{
+		// We uses TechnoName for our src variable index
+		int nSrcVariable = atoi(pThis->String);
+		auto itrsrc = ScenarioExt::Global()->Variables[IsSrcGlobal].find(nSrcVariable);
+
+		if (itrsrc != ScenarioExt::Global()->Variables[IsSrcGlobal].end())
+			return _Pr()(itr->second.Value, itrsrc->second.Value);
 	}
 
 	return false;

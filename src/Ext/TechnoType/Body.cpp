@@ -111,6 +111,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
 	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
 
+	this->WarpInWeapon.Read(exINI, pSection, "WarpInWeapon", true);
+	this->WarpInMinRangeWeapon.Read(exINI, pSection, "WarpInMinRangeWeapon", true);
+	this->WarpOutWeapon.Read(exINI, pSection, "WarpOutWeapon", true);
+	this->WarpInWeapon_UseDistanceAsDamage.Read(exINI, pSection, "WarpInWeapon.UseDistanceAsDamage");
+	this->WarpInWeapon_FireAsSelf.Read(exINI, pSection, "WarpInWeapon.FireAsSelf");
+	this->WarpOutWeapon_FireAsSelf.Read(exINI, pSection, "WarpOutWeapon.FireAsSelf");
+
 	this->OreGathering_Anims.Read(exINI, pSection, "OreGathering.Anims");
 	this->OreGathering_Tiberiums.Read(exINI, pSection, "OreGathering.Tiberiums");
 	this->OreGathering_FramesPerDir.Read(exINI, pSection, "OreGathering.FramesPerDir");
@@ -123,13 +130,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PassengerDeletion_ReportSound.Read(exINI, pSection, "PassengerDeletion.ReportSound");
 	this->PassengerDeletion_Rate_SizeMultiply.Read(exINI, pSection, "PassengerDeletion.Rate.SizeMultiply");
 	this->PassengerDeletion_Rate.Read(exINI, pSection, "PassengerDeletion.Rate");
-	
+	this->PassengerDeletion_Anim.Read(exINI, pSection, "PassengerDeletion.Anim");
+
 	this->DefaultDisguise.Read(exINI, pSection, "DefaultDisguise");
 
 	this->OpenTopped_RangeBonus.Read(exINI, pSection, "OpenTopped.RangeBonus");
 	this->OpenTopped_DamageMultiplier.Read(exINI, pSection, "OpenTopped.DamageMultiplier");
 	this->OpenTopped_WarpDistance.Read(exINI, pSection, "OpenTopped.WarpDistance");
 
+	this->AutoFire.Read(exINI, pSection, "AutoFire");
+	this->AutoFire_TargetSelf.Read(exINI, pSection, "AutoFire.TargetSelf");
 	// The following loop iterates over size + 1 INI entries so that the
 	// vector contents can be properly overriden via scenario rules - Kerbiter
 	for (size_t i = 0; i <= this->AttachmentData.size(); ++i)
@@ -159,14 +169,27 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->AttachmentData[i] = { ValueableIdx<AttachmentTypeClass>(type), technoType, flh, isOnTurret };
 	}
 
-	// Ares 0.A
-	this->GroupAs.Read(pINI, pSection, "GroupAs");
+	this->NoSecondaryWeaponFallback.Read(exINI, pSection, "NoSecondaryWeaponFallback");
+
+	this->JumpjetAllowLayerDeviation.Read(exINI, pSection, "JumpjetAllowLayerDeviation");
+
+	this->DeployingAnim_AllowAnyDirection.Read(exINI, pSection, "DeployingAnim.AllowAnyDirection");
+	this->DeployingAnim_KeepUnitVisible.Read(exINI, pSection, "DeployingAnim.KeepUnitVisible");
+	this->DeployingAnim_ReverseForUndeploy.Read(exINI, pSection, "DeployingAnim.ReverseForUndeploy");
+	this->DeployingAnim_UseUnitDrawer.Read(exINI, pSection, "DeployingAnim.UseUnitDrawer");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
 	// Ares 0.9
 	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
+
+	// Ares 0.A
+	this->GroupAs.Read(pINI, pSection, "GroupAs");
+
+	// Ares 0.C
+	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
+	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
 
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
@@ -215,7 +238,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			Nullable<CoordStruct> eliteFLH;
 			eliteFLH.Read(exArtINI, pArtSection, tempBufferFLH);
 
-			if (FLH.isset() & !eliteFLH.isset())
+			if (FLH.isset() && !eliteFLH.isset())
 				eliteFLH = FLH;
 			else if (!FLH.isset() && !eliteFLH.isset())
 				break;
@@ -224,6 +247,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			EliteWeaponBurstFLHs[i].AddItem(eliteFLH.Get());
 		}
 	}
+
+	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
 }
 
 template <typename T>
@@ -262,6 +287,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChronoMinimumDelay)
 		.Process(this->ChronoRangeMinimum)
 		.Process(this->ChronoDelay)
+		.Process(this->WarpInWeapon)
+		.Process(this->WarpInMinRangeWeapon)
+		.Process(this->WarpOutWeapon)
+		.Process(this->WarpInWeapon_UseDistanceAsDamage)
+		.Process(this->WarpInWeapon_FireAsSelf)
+		.Process(this->WarpOutWeapon_FireAsSelf)
 		.Process(this->OreGathering_Anims)
 		.Process(this->OreGathering_Tiberiums)
 		.Process(this->OreGathering_FramesPerDir)
@@ -276,9 +307,21 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletion_Rate)
 		.Process(this->PassengerDeletion_ReportSound)
 		.Process(this->PassengerDeletion_Rate_SizeMultiply)
+		.Process(this->PassengerDeletion_Anim)
 		.Process(this->OpenTopped_RangeBonus)
 		.Process(this->OpenTopped_DamageMultiplier)
 		.Process(this->OpenTopped_WarpDistance)
+		.Process(this->AutoFire)
+		.Process(this->AutoFire_TargetSelf)
+		.Process(this->NoSecondaryWeaponFallback)
+		.Process(this->NoAmmoWeapon)
+		.Process(this->NoAmmoAmount)
+		.Process(this->JumpjetAllowLayerDeviation)
+		.Process(this->DeployingAnim_AllowAnyDirection)
+		.Process(this->DeployingAnim_KeepUnitVisible)
+		.Process(this->DeployingAnim_ReverseForUndeploy)
+		.Process(this->DeployingAnim_UseUnitDrawer)
+		.Process(this->EnemyUIName)
 		.Process(this->AttachmentData)
 		;
 }

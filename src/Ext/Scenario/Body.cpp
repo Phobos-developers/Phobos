@@ -33,6 +33,11 @@ void ScenarioExt::ExtData::GetVariableStateByID(bool bIsGlobal, int nIndex, char
 
 void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
 {
+	if (!bIsGlobal) // Local variables need to be read again
+		Global()->Variables[false].clear();
+	else if (Global()->Variables[true].size() != 0) // Global variables had been loaded, DO NOT CHANGE THEM
+		return;
+
 	int nCount = pINI->GetKeyCount("VariableNames");
 	for (int i = 0; i < nCount; ++i)
 	{
@@ -76,7 +81,7 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// INI_EX exINI(pINI);
 
-	
+
 
 }
 

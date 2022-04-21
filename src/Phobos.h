@@ -9,6 +9,7 @@ constexpr auto NONE_STR = "<none>";
 constexpr auto NONE_STR2 = "none";
 constexpr auto TOOLTIPS_SECTION = "ToolTips";
 constexpr auto SIDEBAR_SECTION = "Sidebar";
+constexpr auto GENERAL_SECTION = "General";
 
 class Phobos
 {
@@ -29,6 +30,9 @@ public:
 	static const char* AppIconPath;
 	static const wchar_t* VersionDescription;
 
+#ifdef DEBUG
+	static bool DetachFromDebugger();
+#endif
 	static void Clear();
 	static void PointerGotInvalid(AbstractClass* const pInvalid, bool const removed);
 	static HRESULT SaveGameData(IStream* pStm);
@@ -44,6 +48,9 @@ public:
 		static double HarvesterCounter_ConditionYellow;
 		static double HarvesterCounter_ConditionRed;
 		static bool ShowProducingProgress;
+		static bool ShowPowerDelta;
+		static double PowerDelta_ConditionYellow;
+		static double PowerDelta_ConditionRed;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;
@@ -57,5 +64,6 @@ public:
 		static bool ToolTipDescriptions;
 		static bool PrioritySelectionFiltering;
 		static bool DevelopmentCommands;
+		static bool ArtImageSwap;
 	};
 };

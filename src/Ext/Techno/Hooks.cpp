@@ -6,6 +6,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
@@ -27,12 +28,24 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 }
 
 
-DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
+DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
 
+	TechnoExt::InitializeShield(pThis);
 	TechnoExt::InitializeLaserTrails(pThis);
 	TechnoExt::InitializeAttachments(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x702E4E, TechnoClass_Save_Killer_Techno, 0x6)
+{
+	GET(TechnoClass*, pKiller, EDI);
+	GET(TechnoClass*, pVictim, ECX);
+
+	if (pKiller && pVictim)
+		TechnoExt::ObjectKilledBy(pVictim, pKiller);
 
 	return 0;
 }
@@ -152,6 +165,16 @@ DEFINE_HOOK(0x518505, InfantryClass_TakeDamage_NotHuman, 0x4)
 	return 0x518515;
 }
 
+DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
+{
+    GET(TechnoTypeClass*, pType, ECX);
+
+    if (pType->DeployFireWeapon == -1)
+        return 0x52194E;
+
+    return 0;
+}
+
 // Customizable OpenTopped Properties
 // Author: Otamaa
 
@@ -174,7 +197,7 @@ DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0
 DEFINE_HOOK(0x6FE43B, TechnoClass_Fire_OpenTopped_DmgMult, 0x8)
 {
 	enum { ApplyDamageMult = 0x6FE45A, ContinueCheck = 0x6FE460 };
-	
+
 	GET(TechnoClass* const, pThis, ESI);
 
 	//replacing whole check due to `fild`
@@ -209,6 +232,150 @@ DEFINE_HOOK(0x71A82C, TemporalClass_AI_Opentopped_WarpDistance, 0xC)
 		{
 			R->EDX(pExt->OpenTopped_WarpDistance.Get(RulesClass::Instance->OpenToppedWarpDistance));
 			return 0x71A838;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	{
+		if (pExt->AutoFire)
+		{
+			if (pExt->AutoFire_TargetSelf)
+				pThis->SetTarget(pThis);
+			else
+				pThis->SetTarget(pThis->GetCell());
+
+			return 0x7099B8;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
+{
+	enum { DoNotFire = 0x6FE4E7, SkipSetTarget = 0x6FE1D5 };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(CellClass* const, pCell, EAX);
+	GET_STACK(WeaponTypeClass*, pWeaponType, STACK_OFFS(0xB0, 0x70));
+
+	if (auto pExt = WeaponTypeExt::ExtMap.Find(pWeaponType))
+	{
+		if (pExt->AreaFire_Target == AreaFireTarget::Random)
+		{
+			auto const range = pWeaponType->Range / 256.0;
+
+			std::vector<CellStruct> adjacentCells = GeneralUtils::AdjacentCellsInRange(static_cast<size_t>(range + 0.99));
+			size_t size = adjacentCells.size();
+
+			for (unsigned int i = 0; i < size; i++)
+			{
+				int rand = ScenarioClass::Instance->Random.RandomRanged(0, size - 1);
+				unsigned int cellIndex = (i + rand) % size;
+				CellStruct tgtPos = pCell->MapCoords + adjacentCells[cellIndex];
+				CellClass* tgtCell = MapClass::Instance->GetCellAt(tgtPos);
+
+				if (EnumFunctions::AreCellAndObjectsEligible(tgtCell, pExt->CanTarget, pExt->CanTargetHouses, pThis->Owner, true))
+				{
+					R->EAX(tgtCell);
+					return 0;
+				}
+			}
+
+			return DoNotFire;
+		}
+		else if (pExt->AreaFire_Target == AreaFireTarget::Self)
+		{
+			if (!EnumFunctions::AreCellAndObjectsEligible(pThis->GetCell(), pExt->CanTarget, pExt->CanTargetHouses, nullptr, false))
+				return DoNotFire;
+
+			R->EAX(pThis);
+			return SkipSetTarget;
+		}
+
+		if (!EnumFunctions::AreCellAndObjectsEligible(pCell, pExt->CanTarget, pExt->CanTargetHouses, nullptr, false))
+			return DoNotFire;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFS(0xC4, -0xC));
+
+	if (auto pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
+	{
+		if (pExt->DecloakDamagedTargets)
+			pThis->Uncloak(false);
+	}
+
+	return 0x702823;
+}
+
+DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
+{
+	GET(UnitClass*, pUnit, ESI);
+
+	auto pTechnoExt = TechnoExt::ExtMap.Find(pUnit);
+	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType());
+
+	if (pTechnoExt && pTechnoTypeExt)
+	{
+		if (pTechnoExt->LaserTrails.size())
+			pTechnoExt->LaserTrails.clear();
+
+		for (auto const& entry : pTechnoTypeExt->LaserTrailData)
+		{
+			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.Type].get())
+			{
+				pTechnoExt->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
+					pLaserType, pUnit->Owner, entry.FLH, entry.IsOnTurret));
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
+{
+	GET(TechnoClass*, pTechno, EDI);
+
+	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+
+	if (pTechnoExt && pTechnoTypeExt)
+	{
+		for (auto &pLaserTrail : pTechnoExt->LaserTrails)
+		{
+			pLaserTrail->Visible = false;
+			pLaserTrail->LastLocation = { };
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x5F4F4E, ObjectClass_Unlimbo_LaserTrails, 0x7)
+{
+	GET(TechnoClass*, pTechno, ECX);
+
+	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+	if (pTechnoExt)
+	{
+		for (auto &pLaserTrail : pTechnoExt->LaserTrails)
+		{
+			pLaserTrail->LastLocation = { };
+			pLaserTrail->Visible = true;
 		}
 	}
 

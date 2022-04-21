@@ -1,5 +1,6 @@
 #pragma once
 #include <TechnoClass.h>
+#include <AnimClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
@@ -25,19 +26,25 @@ public:
 		Valueable<bool> ReceiveDamage;
 		Valueable<bool> LastKillWasTeamTarget;
 		TimerStruct	PassengerDeletionTimer;
+		Valueable<int> PassengerDeletionCountDown;
+		Valueable<ShieldTypeClass*> CurrentShieldType;
+		Valueable<int> LastWarpDistance;
 
 		AttachmentClass* ParentAttachment;
 		ValueableVector<std::unique_ptr<AttachmentClass>> ChildAttachments;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
-			, InterceptedBullet(nullptr)
-			, Shield()
-			, LaserTrails()
-			, ReceiveDamage(false)
-			, LastKillWasTeamTarget(false)
-			, PassengerDeletionTimer(-1)
-			, ParentAttachment()
-			, ChildAttachments()
+			, InterceptedBullet { nullptr }
+			, Shield {}
+			, LaserTrails {}
+			, ReceiveDamage { false }
+			, LastKillWasTeamTarget { false }
+			, PassengerDeletionTimer {}
+			, PassengerDeletionCountDown { -1 }
+			, CurrentShieldType {}
+			, LastWarpDistance {}
+			, ParentAttachment {}
+			, ChildAttachments {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -75,8 +82,9 @@ public:
 	static bool HasAvailableDock(TechnoClass* pThis);
 
 	static void InitializeLaserTrails(TechnoClass* pThis);
+	static void InitializeShield(TechnoClass* pThis);
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
-	
+
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static bool AttachmentAI(TechnoClass* pThis);
@@ -100,4 +108,6 @@ public:
 	static void ApplySpawn_LimitRange(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void EatPassengers(TechnoClass* pThis);
+
+	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 };
