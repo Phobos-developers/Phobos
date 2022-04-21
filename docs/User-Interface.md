@@ -56,7 +56,7 @@ LowSelectionPriority=no ; boolean
 In `RA2MD.ini`:
 ```ini
 [Phobos]
-PrioritySelectionFiltering=yes ; bool
+PrioritySelectionFiltering=yes ; boolean
 ```
 
 ### Placement preview
@@ -64,25 +64,25 @@ PrioritySelectionFiltering=yes ; bool
 ![placepreview](_static/images/placepreview.png)  
 *Building placement preview using 50% translucency in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
-- Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `BuildingPlacementPreview.DefaultTranslucentLevel=` and then further customized for each building with `PlacementPreview.TranslucentLevel=`.
-- The building placement grid *(place.shp)* translucency setting can be adjusted via `BuildingPlacementGrid.TranslucentLevel=`.
-- If using the building's appropriate `Buildup=` is not desired, customizations allow for you to choose the exact SHP and frame you'd prefer to preview instead through `PlacementPreview.Shape=` and `PlacementPreview.ShapeFrame=`
-- `PlacementPreview.ShapeFrame=` tag defaults to building's artmd.ini `Buildup=` entry second to last non-shadow frame. If there is no 'Buildup=' specified it will instead attempt to default to the building's normal first frame (animation frames and bibs are not included in this preview).
+- Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `BuildingPlacementPreview.DefaultTranslucentLevel` and then further customized for each building with `PlacementPreview.TranslucentLevel`.
+- The building placement grid *(place.shp)* translucency setting can be adjusted via `BuildingPlacementGrid.TranslucentLevel`.
+- If using the building's appropriate `Buildup` is not desired, customizations allow for you to choose the exact SHP and frame you'd prefer to show as preview instead through `PlacementPreview.Shape` and `PlacementPreview.ShapeFrame`
+- `PlacementPreview.ShapeFrame=` tag defaults to building's artmd.ini `Buildup` entry's last non-shadow frame. If there is no 'Buildup' specified it will instead attempt to default to the building's normal first frame (animation frames and bibs are not included in this preview).
 
 In `rulesmd.ini`:
 ```ini
 [AUDIOVISUAL]
-BuildingPlacementGrid.TranslucentLevel=0            ;int, 0=0% 1=25% 2=50% 3=75%
-BuildingPlacementPreview.DefaultTranslucentLevel=3  ;int, 0=0% 1=25% 2=50% 3=75%
+BuildingPlacementGrid.TranslucentLevel=0            ;integer, 0=0% 1=25% 2=50% 3=75%
+BuildingPlacementPreview.DefaultTranslucentLevel=3  ;integer, 0=0% 1=25% 2=50% 3=75%
 
 [BUILDINGTYPE]
-PlacementPreview.Show=                         ;boolean, defaults to [Phobos]->ShowBuildingPlacementPreview
-PlacementPreview.Shape=                        ;SHP file, defaults to building's artmd.ini `Buildup=` (based on Building's Image)
-PlacementPreview.ShapeFrame=                   ;integer, frame used to showcase the preview
-PlacementPreview.Offset=0,-15,1                ;integers, expressed in X,Y,Z used to alter position preview
-PlacementPreview.Remap=true                    ;boolean, does this preview use player remap colors 
-PlacementPreview.Palette=                      ; .PAL file, this option not used if PlacementPreview.Remap= is set to true
-PlacementPreview.TranslucentLevel=             ;integer, defaults to `AUDIOVISUAL->BuildingPlacementPreview.DefaultTranslucentLevel`
+PlacementPreview.Show=              ; boolean, defaults to [Phobos]->ShowBuildingPlacementPreview
+PlacementPreview.Shape=             ; filename - including the .shp extension. If not set uses building's artmd.ini Buildup SHP (based on Building's Image)
+PlacementPreview.ShapeFrame=        ; integer, zero-based frame index used for displaying the preview
+PlacementPreview.Offset=0,-15,1     ; integers, expressed in X,Y,Z used to alter position preview
+PlacementPreview.Remap=true         ; boolean, does this preview use player remap colors 
+PlacementPreview.Palette=           ; filename - including the .pal extension. This option is not used if PlacementPreview.Remap is set to true
+PlacementPreview.TranslucentLevel=  ; integer, defaults to [AudioVisual]->BuildingPlacementPreview.DefaultTranslucentLevel
 ```
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
@@ -90,9 +90,8 @@ PlacementPreview.TranslucentLevel=             ;integer, defaults to `AUDIOVISUA
 In `ra2md.ini`:
 ```ini
 [Phobos]
-ShowBuildingPlacementPreview=no     ;bool , global setting
+ShowBuildingPlacementPreview=no  ; boolean
 ```
-
 
 ## Hotkey Commands
 
