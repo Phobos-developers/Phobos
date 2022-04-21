@@ -39,7 +39,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		if (this->TransactMoney)
 			pHouse->TransactMoney(this->TransactMoney);
 
-
 		for (const auto pSWType : this->SpawnSuperWeapons) 
 		{
 			if (const auto pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType))) 
