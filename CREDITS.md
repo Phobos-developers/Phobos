@@ -111,6 +111,7 @@ This page lists all the individual contributions to the project by their author.
   - AI Aircraft docks fix
   - Customize resource storage
   - Shared Ammo logic
+  - Customizable FLH When Infantry Is Prone Or Deployed
 - **Starkku**:
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization

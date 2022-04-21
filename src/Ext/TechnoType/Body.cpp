@@ -67,6 +67,44 @@ bool TechnoTypeExt::ExtData::IsCountedAsHarvester()
 	return false;
 }
 
+void TechnoTypeExt::GetBurstFLHs(TechnoTypeClass* pThis, INI_EX &exArtINI, const char* pArtSection,
+	std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag)
+{
+	char tempBuffer[32];
+	char tempBufferFLH[48];
+
+	bool parseMultiWeapons = pThis->TurretCount > 0 && pThis->WeaponCount > 0;
+	auto weaponCount = parseMultiWeapons ? pThis->WeaponCount : 2;
+	nFLH.resize(weaponCount);
+	nEFlh.resize(weaponCount);
+
+	for (int i = 0; i < weaponCount; i++)
+	{
+		for (int j = 0; j < INT_MAX; j++)
+		{
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%sWeapon%d", pPrefixTag, i + 1);
+			auto prefix = parseMultiWeapons ? tempBuffer : i > 0 ? "%sSecondaryFire" : "%sPrimaryFire";
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), prefix, pPrefixTag);
+
+			_snprintf_s(tempBufferFLH, sizeof(tempBufferFLH), "%sFLH.Burst%d", tempBuffer, j);
+			Nullable<CoordStruct> FLH;
+			FLH.Read(exArtINI, pArtSection, tempBufferFLH);
+
+			_snprintf_s(tempBufferFLH, sizeof(tempBufferFLH), "Elite%sFLH.Burst%d", tempBuffer, j);
+			Nullable<CoordStruct> eliteFLH;
+			eliteFLH.Read(exArtINI, pArtSection, tempBufferFLH);
+
+			if (FLH.isset() && !eliteFLH.isset())
+				eliteFLH = FLH;
+			else if (!FLH.isset() && !eliteFLH.isset())
+				break;
+
+			nFLH[i].AddItem(FLH.Get());
+			nEFlh[i].AddItem(eliteFLH.Get());
+		}
+	}
+};
+
 // =============================
 // load / save
 
@@ -189,96 +227,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->LaserTrailData.push_back({ ValueableIdx<LaserTrailTypeClass>(trail), flh, isOnTurret });
 	}
 
-	bool parseMultiWeapons = pThis->TurretCount > 0 && pThis->WeaponCount > 0;
-	auto weaponCount = parseMultiWeapons ? pThis->WeaponCount : 2;
-	this->WeaponBurstFLHs.resize(weaponCount);
-	this->EliteWeaponBurstFLHs.resize(weaponCount);
-	char tempBufferFLH[48];
-
-	for (int i = 0; i < weaponCount; i++)
-	{
-		for (int j = 0; j < INT_MAX; j++)
-		{
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "Weapon%d", i + 1);
-			auto prefix = parseMultiWeapons ? tempBuffer : i > 0 ? "SecondaryFire" : "PrimaryFire";
-
-			_snprintf_s(tempBufferFLH, sizeof(tempBufferFLH), "%sFLH.Burst%d", prefix, j);
-			Nullable<CoordStruct> FLH;
-			FLH.Read(exArtINI, pArtSection, tempBufferFLH);
-
-			_snprintf_s(tempBufferFLH, sizeof(tempBufferFLH), "Elite%sFLH.Burst%d", prefix, j);
-			Nullable<CoordStruct> eliteFLH;
-			eliteFLH.Read(exArtINI, pArtSection, tempBufferFLH);
-
-			if (FLH.isset() && !eliteFLH.isset())
-				eliteFLH = FLH;
-			else if (!FLH.isset() && !eliteFLH.isset())
-				break;
-
-			WeaponBurstFLHs[i].AddItem(FLH.Get());
-			EliteWeaponBurstFLHs[i].AddItem(eliteFLH.Get());
-		}
-	}
-
-	this->CrouchedWeaponBurstFLHs.resize(weaponCount);
-	this->EliteCrouchedWeaponBurstFLHs.resize(weaponCount);
-	char tempBufferCrouchedFLH[48];
-
-	// Crouched Weapon Burst FLH for infantry
-	for (int i = 0; i < weaponCount; i++)
-	{
-		for (int j = 0; j < INT_MAX; j++)
-		{
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "CrouchedWeapon%d", i + 1);
-			auto prefix = parseMultiWeapons ? tempBuffer : i > 0 ? "CrouchedSecondaryFire" : "CrouchedPrimaryFire";
-
-			_snprintf_s(tempBufferCrouchedFLH, sizeof(tempBufferCrouchedFLH), "%sFLH.Burst%d", prefix, j);
-			Nullable<CoordStruct> FLH;
-			FLH.Read(exArtINI, pArtSection, tempBufferCrouchedFLH);
-
-			_snprintf_s(tempBufferCrouchedFLH, sizeof(tempBufferCrouchedFLH), "Elite%sFLH.Burst%d", prefix, j);
-			Nullable<CoordStruct> eliteFLH;
-			eliteFLH.Read(exArtINI, pArtSection, tempBufferCrouchedFLH);
-
-			if (FLH.isset() && !eliteFLH.isset())
-				eliteFLH = FLH;
-			else if (!FLH.isset() && !eliteFLH.isset())
-				break;
-
-			CrouchedWeaponBurstFLHs[i].AddItem(FLH.Get());
-			EliteCrouchedWeaponBurstFLHs[i].AddItem(eliteFLH.Get());
-		}
-	}
-
-	this->DeployedWeaponBurstFLHs.resize(weaponCount);
-	this->EliteDeployedWeaponBurstFLHs.resize(weaponCount);
-	char tempBufferDeployedFLH[48];
-
-	// Deployed Weapon Burst FLH for infantry
-	for (int i = 0; i < weaponCount; i++)
-	{
-		for (int j = 0; j < INT_MAX; j++)
-		{
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "DeployedWeapon%d", i + 1);
-			auto prefix = parseMultiWeapons ? tempBuffer : i > 0 ? "DeployedSecondaryFire" : "DeployedPrimaryFire";
-
-			_snprintf_s(tempBufferDeployedFLH, sizeof(tempBufferDeployedFLH), "%sFLH.Burst%d", prefix, j);
-			Nullable<CoordStruct> FLH;
-			FLH.Read(exArtINI, pArtSection, tempBufferDeployedFLH);
-
-			_snprintf_s(tempBufferDeployedFLH, sizeof(tempBufferDeployedFLH), "Elite%sFLH.Burst%d", prefix, j);
-			Nullable<CoordStruct> eliteFLH;
-			eliteFLH.Read(exArtINI, pArtSection, tempBufferDeployedFLH);
-
-			if (FLH.isset() && !eliteFLH.isset())
-				eliteFLH = FLH;
-			else if (!FLH.isset() && !eliteFLH.isset())
-				break;
-
-			DeployedWeaponBurstFLHs[i].AddItem(FLH.Get());
-			EliteDeployedWeaponBurstFLHs[i].AddItem(eliteFLH.Get());
-		}
-	}
+	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, WeaponBurstFLHs, EliteWeaponBurstFLHs, "");
+	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, DeployedWeaponBurstFLHs, EliteDeployedWeaponBurstFLHs, "Deployed");
+	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, CrouchedWeaponBurstFLHs, EliteCrouchedWeaponBurstFLHs, "Prone");
 
 	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
 
@@ -286,8 +237,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
 	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 	
-	this->CrouchedPrimaryFireFLH.Read(exArtINI, pArtSection, "CrouchedPrimaryFireFLH");
-	this->CrouchedSecondaryFireFLH.Read(exArtINI, pArtSection, "CrouchedSecondaryFireFLH");
+	this->PronePrimaryFireFLH.Read(exArtINI, pArtSection, "PronePrimaryFireFLH");
+	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
 }
@@ -366,8 +317,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceWeapon_Naval_Decloaked)
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
-		.Process(this->CrouchedPrimaryFireFLH)
-		.Process(this->CrouchedSecondaryFireFLH)
+		.Process(this->PronePrimaryFireFLH)
+		.Process(this->ProneSecondaryFireFLH)
 		.Process(this->DeployedPrimaryFireFLH)
 		.Process(this->DeployedSecondaryFireFLH)
 		.Process(this->CrouchedWeaponBurstFLHs)

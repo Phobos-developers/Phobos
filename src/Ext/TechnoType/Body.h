@@ -119,8 +119,8 @@ public:
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
 		Valueable<CSFText> EnemyUIName;
 
-		Nullable<CoordStruct> CrouchedPrimaryFireFLH;
-		Nullable<CoordStruct> CrouchedSecondaryFireFLH;
+		Nullable<CoordStruct> PronePrimaryFireFLH;
+		Nullable<CoordStruct> ProneSecondaryFireFLH;
 		Nullable<CoordStruct> DeployedPrimaryFireFLH;
 		Nullable<CoordStruct> DeployedSecondaryFireFLH;
 		std::vector<DynamicVectorClass<CoordStruct>> CrouchedWeaponBurstFLHs;
@@ -197,8 +197,8 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
-			, CrouchedPrimaryFireFLH { }
-			, CrouchedSecondaryFireFLH { }
+			, PronePrimaryFireFLH { }
+			, ProneSecondaryFireFLH { }
 			, DeployedPrimaryFireFLH { }
 			, DeployedSecondaryFireFLH { }
 		{ }
@@ -233,6 +233,7 @@ public:
 	static ExtContainer ExtMap;
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
+	static void GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);

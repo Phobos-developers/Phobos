@@ -288,60 +288,29 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	
 	auto pInf = abstract_cast<InfantryClass*>(pThis);
-	auto pThisType = pThis->GetTechnoType();
+	auto &pickedFLHs = pExt->WeaponBurstFLHs;
+
 	if (pThis->Veterancy.IsElite())
 	{
 		if (pInf && pInf->IsDeployed())
-		{
-			if (pExt->EliteDeployedWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
-			{
-				FLHFound = true;
-				FLH = pExt->EliteDeployedWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
-			}
-		}
+			pickedFLHs = pExt->EliteDeployedWeaponBurstFLHs;
 		else if (pInf && pInf->Crawling)
-		{
-			if (pExt->EliteCrouchedWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
-			{
-				FLHFound = true;
-				FLH = pExt->EliteCrouchedWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
-			}
-		}
+			pickedFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
 		else
-		{
-			if (pExt->EliteWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
-			{
-				FLHFound = true;
-				FLH = pExt->EliteWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
-			}
-		}
+			pickedFLHs = pExt->EliteWeaponBurstFLHs;
 	}
 	else
 	{
 		if (pInf && pInf->IsDeployed())
-		{
-			if (pExt->DeployedWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
-			{
-				FLHFound = true;
-				FLH = pExt->DeployedWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
-			}
-		}
+			pickedFLHs = pExt->DeployedWeaponBurstFLHs;
 		else if (pInf && pInf->Crawling)
-		{
-			if (pExt->CrouchedWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
-			{
-				FLHFound = true;
-				FLH = pExt->CrouchedWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
-			}
-		}
-		else
-		{
-			if (pExt->WeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
-			{
-				FLHFound = true;
-				FLH = pExt->WeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
-			}
-		}
+			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
+	}
+
+	if (pickedFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+	{
+		FLHFound = true;
+		FLH = pickedFLHs[weaponIndex][pThis->CurrentBurstIndex];
 	}
 
 	return FLH;
@@ -357,38 +326,30 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 
 	if (auto pTechnoType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
+		Nullable<CoordStruct> pickedFLH;
+
 		if (pThis->IsDeployed())
 		{
-			if (weaponIndex == 0 && pTechnoType->DeployedPrimaryFireFLH.isset())
-			{
-				auto deployerFLH = pTechnoType->DeployedPrimaryFireFLH.Get();
-				FLH = deployerFLH;
-				FLHFound = true;
-			}
-			else if (weaponIndex == 1 && pTechnoType->DeployedSecondaryFireFLH.isset())
-			{
-				auto deployerFLH = pTechnoType->DeployedSecondaryFireFLH.Get();
-				FLH = deployerFLH;
-				FLHFound = true;
-			}
+			if (weaponIndex == 0)
+				pickedFLH = pTechnoType->DeployedPrimaryFireFLH;
+			else if (weaponIndex == 1)
+				pickedFLH = pTechnoType->DeployedSecondaryFireFLH;
 		}
 		else
 		{
 			if (pThis->Crawling)
 			{
-				if (weaponIndex == 0 && pTechnoType->CrouchedPrimaryFireFLH.isset())
-				{
-					auto crouchedFLH = pTechnoType->CrouchedPrimaryFireFLH.Get();
-					FLH = crouchedFLH;
-					FLHFound = true;
-				}
-				else if (weaponIndex == 1 && pTechnoType->CrouchedSecondaryFireFLH.isset())
-				{
-					auto crouchedFLH = pTechnoType->CrouchedSecondaryFireFLH.Get();
-					FLH = crouchedFLH;
-					FLHFound = true;
-				}
+				if (weaponIndex == 0)
+					pickedFLH = pTechnoType->PronePrimaryFireFLH;
+				else if (weaponIndex == 1)
+					pickedFLH = pTechnoType->ProneSecondaryFireFLH;
 			}
+		}
+
+		if (pickedFLH.isset())
+		{
+			FLH = pickedFLH.Get();
+			FLHFound = true;
 		}
 	}
 
