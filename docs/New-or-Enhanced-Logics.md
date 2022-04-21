@@ -810,6 +810,17 @@ In `aimd.ini`:
 x=146,n           ; Integer
 ```
 
+### `148` Conditional Jump, Manage Variables Reset If The Jump Is Successful
+- By default the Conditional Jump variables are cleaned after a successful jump.
+- This Action enables the ability to retain variables value after the jump.
+- This Action behavior isn't affected by the Action 139 "Reset Variables".
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=148,0           ; Integer, 1 = true, 0 = false
+```
+
 ### `500 - 523` Edit Variable
 - Operate a variable's value
     - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.

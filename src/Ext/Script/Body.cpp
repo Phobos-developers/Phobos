@@ -238,6 +238,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case PhobosScripts::ConditionalJumpCheckCount:
 		ScriptExt::ConditionalJump_CheckCount(pTeam, 0);
 		break;
+	case PhobosScripts::ConditionalJumpManageResetIfJump:
+		ScriptExt::ConditionalJump_ManageResetIfJump(pTeam, -1);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		if (action > 70 && !IsExtVariableAction(action))
@@ -3085,13 +3088,8 @@ void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam, int newScriptLine = -1)
 		pScript->CurrentMission = scriptArgument - 2;
 
 		// Cleaning Conditional Jump related variables
-		pTeamData->ConditionalJump_Evaluation = false;
-		pTeamData->ConditionalJump_ComparatorMode = 3; // >=
-		pTeamData->ConditionalJump_ComparatorValue = 1;
-		pTeamData->ConditionalJump_EnabledKillsCount = false;
-		pTeamData->ConditionalJump_Counter = 0;
-		pTeamData->AbortActionAfterKilling = false;
-		pTeamData->ConditionalJump_Index = -1000000;
+		if (pTeamData->ConditionalJump_ResetVariablesIfJump)
+			ScriptExt::ConditionalJump_ResetVariables(pTeam);
 	}
 
 	// This action finished
@@ -3139,13 +3137,8 @@ void ScriptExt::ConditionalJumpIfFalse(TeamClass* pTeam, int newScriptLine = -1)
 		pScript->CurrentMission = scriptArgument - 2;
 
 		// Cleaning Conditional Jump related variables
-		pTeamData->ConditionalJump_Evaluation = false;
-		pTeamData->ConditionalJump_ComparatorMode = 3; // >=
-		pTeamData->ConditionalJump_ComparatorValue = 1;
-		pTeamData->ConditionalJump_EnabledKillsCount = false;
-		pTeamData->ConditionalJump_Counter = 0;
-		pTeamData->AbortActionAfterKilling = false;
-		pTeamData->ConditionalJump_Index = -1000000;
+		if (pTeamData->ConditionalJump_ResetVariablesIfJump)
+			ScriptExt::ConditionalJump_ResetVariables(pTeam);
 	}
 
 	// This action finished
@@ -3398,6 +3391,41 @@ void ScriptExt::ConditionalJump_ResetVariables(TeamClass* pTeam)
 	pTeamData->ConditionalJump_Counter = 0;
 	pTeamData->AbortActionAfterKilling = false;
 	pTeamData->ConditionalJump_Index = -1000000;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+
+	return;
+}
+
+void ScriptExt::ConditionalJump_ManageResetIfJump(TeamClass* pTeam, int enable = -1)
+{
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+
+	if (enable < 0)
+		enable = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
+
+	if (enable > 0)
+		pTeamData->ConditionalJump_ResetVariablesIfJump = true;
+	else
+		pTeamData->ConditionalJump_ResetVariablesIfJump = false;
 
 	// This action finished
 	pTeam->StepCompleted = true;
