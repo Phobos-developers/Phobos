@@ -91,5 +91,5 @@ TrajectoryCheckReturnType BombardTrajectory::OnAITargetCoordCheck(BulletClass* p
 
 TrajectoryCheckReturnType BombardTrajectory::OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno)
 {
-	return TrajectoryCheckReturnType::SkipGameCheck; // Bypass game checks entirely.
+	return TrajectoryCheckReturnType::ExecuteGameCheck; // Execute game checks.
 }
