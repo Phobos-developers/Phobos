@@ -311,6 +311,7 @@ Vanilla fixes:
 - Fixed aircraft & jumpjet units not being affected by speed modifiers (by Starkku)
 - Fixed vehicles (both voxel & SHP) to fully respect `Palette` (by Starkku)
 - Fixed mind control indicator animations not reappearing on mind controlled objects that are cloaked and then uncloaked (by Starkku)
+- Fixed Nuke carrier and payload weapons not respecting `Bright` setting on weapon (by Starkku)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
