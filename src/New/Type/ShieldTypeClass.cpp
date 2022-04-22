@@ -51,8 +51,6 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->AllowTransfer.Read(exINI, pSection, "AllowTransfer");
 
 	this->DigitalDisplayType.Read(exINI, pSection, "DigitalDisplayType");
-
-
 }
 
 template <typename T>

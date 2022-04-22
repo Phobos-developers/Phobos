@@ -778,12 +778,23 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 		return;
 
 	DigitalDisplayTypeClass* pDisplayType = nullptr;
+	AbstractType TechnoAbstractType = Techno->WhatAmI();
 
-	if (Techno->WhatAmI() == AbstractType::Infantry)
+	switch (TechnoAbstractType)
+	{
+	case AbstractType::Infantry:
 		pDisplayType = Type->DigitalDisplayType.Get(RulesExt::Global()->Infantrys_DefaultDigitalDisplayTypeSP.Get());
-	else
+		break;
+	case AbstractType::Unit:
 		pDisplayType = Type->DigitalDisplayType.Get(RulesExt::Global()->Units_DefaultDigitalDisplayTypeSP.Get());
-
+		break;
+	case AbstractType::Aircraft:
+		pDisplayType = Type->DigitalDisplayType.Get(RulesExt::Global()->Aircrafts_DefaultDigitalDisplayTypeSP.Get());
+		break;
+	default:
+		break;
+	}
+	
 	//Debug::Log("[DigitalDisplay] Address[0x%X],Name[%s]\n", pDisplayType, (pDisplayType ? pDisplayType->Name.data() : ""));
 
 	if (pDisplayType == nullptr)
@@ -798,6 +809,10 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	{
 		PosS.X -= 8;
 		PosS.Y -= 13;
+
+		if (iLength == 8) 
+			PosS.Y -= 4;
+		
 		DigitalDisplaySHPShield(pDisplayType, PosS);
 	}
 	else
@@ -810,7 +825,6 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 		DigitalDisplayTextShield(pDisplayType, PosS);
 	}
 }
-
 
 void ShieldClass::DigitalDisplayTextShield(DigitalDisplayTypeClass* pDisplayType, Point2D Pos)
 {
@@ -829,11 +843,8 @@ void ShieldClass::DigitalDisplayTextShield(DigitalDisplayTypeClass* pDisplayType
 	swprintf_s(Shieldpoint, L"%d/%d", HP, Type->Strength.Get());
 
 	RectangleStruct rect = { 0,0,0,0 };
-
 	DSurface::Temp->GetRect(&rect);
-
 	COLORREF BackColor = 0;
-
 	TextPrintType PrintType;
 
 	//0x400 is TextPrintType::Background pr#563 YRpp
@@ -849,19 +860,12 @@ void ShieldClass::DigitalDisplayTextShield(DigitalDisplayTypeClass* pDisplayType
 void ShieldClass::DigitalDisplaySHPShield(DigitalDisplayTypeClass* pDisplayType, Point2D Pos)
 {
 	const int Strength = Type->Strength.Get();
-
 	const int Health = HP;
-
 	const DynamicVectorClass<char> vStrength = IntToVector(Strength);
-
 	const DynamicVectorClass<char> vHealth = IntToVector(Health);
-
 	const int Length = vStrength.Count + vHealth.Count + 1;
-
 	const int Interval = pDisplayType->SHP_Interval.Get();
-
 	SHPStruct* SHPFile = pDisplayType->SHPFile;
-
 	ConvertClass* PALFile = pDisplayType->PALFile;
 
 	if (SHPFile == nullptr ||
@@ -920,7 +924,6 @@ void ShieldClass::DigitalDisplaySHPShield(DigitalDisplayTypeClass* pDisplayType,
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 }
-
 
 int ShieldClass::DrawShieldBar_Pip(const bool isBuilding)
 {

@@ -83,7 +83,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Infantrys_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Infantrys.DefaultDigitalDisplayTypeSP");
 	this->Units_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Units.DefaultDigitalDisplayTypeHP");
 	this->Units_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Units.DefaultDigitalDisplayTypeSP");
-
+	this->Aircrafts_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Aircrafts.DefaultDigitalDisplayTypeSP");
+	this->Aircrafts_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Aircrafts.DefaultDigitalDisplayTypeSP");
+	
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
 	for (int i = 0; i < itemsCount; ++i)
@@ -185,6 +187,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Infantrys_DefaultDigitalDisplayTypeSP)
 		.Process(this->Units_DefaultDigitalDisplayTypeHP)
 		.Process(this->Units_DefaultDigitalDisplayTypeSP)
+		.Process(this->Aircrafts_DefaultDigitalDisplayTypeHP)
+		.Process(this->Aircrafts_DefaultDigitalDisplayTypeSP)
 		;
 }
 
