@@ -96,17 +96,17 @@ void AttachmentClass::AI()
 		if (pType->InheritStateEffects)
 		{
 			this->Child->CloakState = this->Parent->CloakState;
-			// this->Child->BeingWarpedOut = this->Parent->BeingWarpedOut;
+			this->Child->BeingWarpedOut = this->Parent->BeingWarpedOut;
 			this->Child->Deactivated = this->Parent->Deactivated;
-			// this->Child->Flash(this->Parent->Flashing.DurationRemaining);
+			this->Child->Flash(this->Parent->Flashing.DurationRemaining);
 
 			this->Child->IronCurtainTimer = this->Parent->IronCurtainTimer;
 			this->Child->IdleActionTimer = this->Parent->IdleActionTimer;
 			this->Child->IronTintTimer = this->Parent->IronTintTimer;
 			this->Child->CloakDelayTimer = this->Parent->CloakDelayTimer;
-			// this->Child->ChronoLockRemaining = this->Parent->ChronoLockRemaining;
+			this->Child->ChronoLockRemaining = this->Parent->ChronoLockRemaining;
 			this->Child->Berzerk = this->Parent->Berzerk;
-			// this->Child->ChronoWarpedByHouse = this->Parent->ChronoWarpedByHouse;
+			this->Child->ChronoWarpedByHouse = this->Parent->ChronoWarpedByHouse;
 			this->Child->EMPLockRemaining = this->Parent->EMPLockRemaining;
 			this->Child->ShouldLoseTargetNow = this->Parent->ShouldLoseTargetNow;
 		}

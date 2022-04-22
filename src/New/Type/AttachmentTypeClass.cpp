@@ -21,13 +21,13 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->InheritOwner.Read(exINI, section, "InheritOwner");
 	this->InheritStateEffects.Read(exINI, section, "InheritStateEffects");
 
-	this->SyncDamage.Read(exINI, section, "SyncDamage");
-	this->SyncDamage_IsRelative.Read(exINI, section, "SyncDamage.IsRelative");
-	this->SyncExperienceGain.Read(exINI, section, "SyncExperienceGain");
-	this->SyncExperienceGain_IsRelative.Read(exINI, section, "SyncExperienceGain.IsRelative");
+	// this->SyncDamage.Read(exINI, section, "SyncDamage");
+	// this->SyncDamage_IsRelative.Read(exINI, section, "SyncDamage.IsRelative");
+	// this->SyncExperienceGain.Read(exINI, section, "SyncExperienceGain");
+	// this->SyncExperienceGain_IsRelative.Read(exINI, section, "SyncExperienceGain.IsRelative");
 
-	this->CanBeForceDetached.Read(exINI, section, "CanBeForceDetached");
-	this->RestoreAtHealth.Read(exINI, section, "RestoreAtHealth");
+	// this->CanBeForceDetached.Read(exINI, section, "CanBeForceDetached");
+	// this->RestoreAtHealth.Read(exINI, section, "RestoreAtHealth");
 
 	this->ForceDetachWeapon_Child.Read(exINI, section, "ForceDetachWeapon.Child");
 	this->ForceDetachWeapon_Parent.Read(exINI, section, "ForceDetachWeapon.Parent");
@@ -47,12 +47,12 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->InheritCommands)
 		.Process(this->InheritOwner)
 		.Process(this->InheritStateEffects)
-		.Process(this->SyncDamage)
-		.Process(this->SyncDamage_IsRelative)
-		.Process(this->SyncExperienceGain)
-		.Process(this->SyncExperienceGain_IsRelative)
-		.Process(this->CanBeForceDetached)
-		.Process(this->RestoreAtHealth)
+		// .Process(this->SyncDamage)
+		// .Process(this->SyncDamage_IsRelative)
+		// .Process(this->SyncExperienceGain)
+		// .Process(this->SyncExperienceGain_IsRelative)
+		// .Process(this->CanBeForceDetached)
+		// .Process(this->RestoreAtHealth)
 		.Process(this->ForceDetachWeapon_Child)
 		.Process(this->ForceDetachWeapon_Parent)
 		.Process(this->DestructionWeapon_Child)

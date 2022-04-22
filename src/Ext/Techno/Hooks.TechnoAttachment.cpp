@@ -159,6 +159,53 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 
 	return 0x4AE99B;
 }
+
+namespace TechnoAttachmentTemp
+{
+	bool stopPressed = false;
+}
+
+DEFINE_HOOK(0x730EA0, StopCommand_Context_Set, 0x5)
+{
+	TechnoAttachmentTemp::stopPressed = true;
+	return 0;
+}
+
+namespace TechnoAttachmentTemp
+{
+	TechnoClass* pParent = nullptr;
+}
+
+DEFINE_HOOK(0x6FFE00, TechnoClass_ClickedEvent_Context_Set, 0x5)
+{
+	TechnoAttachmentTemp::pParent = R->ECX<TechnoClass*>();
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x6FFEB1, TechnoClass_ClickedEvent_HandleChildren, 0x6)
+DEFINE_HOOK(0x6FFE4F, TechnoClass_ClickedEvent_HandleChildren, 0x6)
+{
+	if (TechnoAttachmentTemp::stopPressed && TechnoAttachmentTemp::pParent)
+	{
+		if (auto const& pExt = TechnoExt::ExtMap.Find(TechnoAttachmentTemp::pParent))
+		{
+			for (auto const& pAttachment : pExt->ChildAttachments)
+			{
+				if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
+					pAttachment->Child->ClickedEvent(NetworkEvents::Idle);
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x730F20, StopCommand_Context_Unset, 0x1)
+{
+	TechnoAttachmentTemp::stopPressed = false;
+	return 0;
+}
+
 /*
 namespace TechnoAttachmentTemp
 {

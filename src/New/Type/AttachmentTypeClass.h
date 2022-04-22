@@ -18,12 +18,11 @@ public:
 	// Explanation: 200 damage to 400 HP host with 200 HP part will...
 	// - ...kill the part (200 - 200 = 0) if the mode is absolute
 	// - ...leave the part alive (200 - 200*(200/400) = 100) if the mode is relative
-	Valueable<bool> SyncDamage;
-	Valueable<bool> SyncDamage_IsRelative;
-	Valueable<bool> SyncExperienceGain;
-	Valueable<bool> SyncExperienceGain_IsRelative;
-	Valueable<bool> CanBeForceDetached;
-	Nullable<int> RestoreAtHealth; // if host is healed to that health it's respawned
+	// Valueable<bool> SyncDamage;
+	// Valueable<bool> SyncDamage_IsRelative;
+	// Valueable<bool> SyncExperienceGain;
+	// Valueable<bool> SyncExperienceGain_IsRelative;
+	// Valueable<bool> CanBeForceDetached;
 	Nullable<WeaponTypeClass*> ForceDetachWeapon_Child;
 	Nullable<WeaponTypeClass*> ForceDetachWeapon_Parent;
 	Nullable<WeaponTypeClass*> DestructionWeapon_Child;
@@ -41,12 +40,12 @@ public:
 		, InheritCommands(false)
 		, InheritOwner(false)
 		, InheritStateEffects(true)
-		, SyncDamage(false)
-		, SyncDamage_IsRelative(false)
-		, SyncExperienceGain(false)
-		, SyncExperienceGain_IsRelative(false)
-		, CanBeForceDetached(false)
-		, RestoreAtHealth()
+		// , SyncDamage(false)
+		// , SyncDamage_IsRelative(false)
+		// , SyncExperienceGain(false)
+		// , SyncExperienceGain_IsRelative(false)
+		// , CanBeForceDetached(false)
+		// , RestoreAtHealth()
 		, ForceDetachWeapon_Child()
 		, ForceDetachWeapon_Parent()
 		, DestructionWeapon_Child()
