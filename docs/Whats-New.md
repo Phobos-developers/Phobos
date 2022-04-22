@@ -293,6 +293,7 @@ New:
 - TerrainType & ore minimap color customization (by Starkku)
 - Single-color weapon lasers (by Starkku)
 - Customizable projectile trajectory (by secsome)
+- Correct owner house for Warhead Anim/SplashList & Play Animation trigger animations (by Starkku)
 - Digital display of HP and SP (by ststl)
 
 Vanilla fixes:
