@@ -5,7 +5,6 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 
-#include <Misc/FlyingStrings.h>
 #include <Utilities/GeneralUtils.h>
 
 #include <AnimClass.h>
@@ -123,12 +122,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	}
 
 	if (Phobos::Debug_DisplayDamageNumbers && shieldDamage != 0)
-	{
-		auto color = shieldDamage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 };
-		wchar_t damageStr[0x20];
-		swprintf_s(damageStr, L"%d", shieldDamage);
-		FlyingStrings::Add(damageStr, this->Techno->Location, color, true);
-	}
+		TechnoExt::DisplayDamageNumberString(this->Techno, shieldDamage, true);
 
 	if (shieldDamage > 0)
 	{

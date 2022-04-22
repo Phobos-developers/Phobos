@@ -6,7 +6,6 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
@@ -465,16 +464,11 @@ DEFINE_HOOK(0x6FD446, TechnoClass_FireLaser_IsSingleColor, 0x7)
 
 DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 {
-	GET(ObjectClass* const, pThis, ESI);
+	GET(TechnoClass* const, pThis, ESI);
 	GET(int* const, pDamage, EBX);
 
 	if (Phobos::Debug_DisplayDamageNumbers && *pDamage)
-	{
-		auto color = *pDamage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
-		wchar_t damageStr[0x20];
-		swprintf_s(damageStr, L"%d", *pDamage);
-		FlyingStrings::Add(damageStr, pThis->Location, color, true);
-	}
+		TechnoExt::DisplayDamageNumberString(pThis, *pDamage, false);
 
 	return 0;
 }

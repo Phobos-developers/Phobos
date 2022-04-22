@@ -24,14 +24,15 @@ public:
 		Valueable<bool> DeployedTechno;
 		Valueable<int> LimboID;
 		Valueable<int> GrindingWeapon_LastFiredFrame;
-		Nullable<BuildingClass*> CurrentAirFactory;
+		BuildingClass* CurrentAirFactory;
+		int AccumulatedGrindingRefund;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, DeployedTechno { false }
 			, LimboID { -1 }
 			, GrindingWeapon_LastFiredFrame { 0 }
-			, CurrentAirFactory(nullptr)
-
+			, CurrentAirFactory { nullptr }
+			, AccumulatedGrindingRefund { 0 }
 		{ }
 
 		virtual ~ExtData() = default;

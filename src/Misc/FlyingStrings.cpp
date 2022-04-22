@@ -9,7 +9,6 @@
 #include <BitFont.h>
 
 std::vector<FlyingStrings::Item> FlyingStrings::Data;
-int FlyingStrings::CurrentCycleWidth = -FlyingStrings::MaxCycleWidth;
 
 bool FlyingStrings::DrawAllowed(CoordStruct& nCoords)
 {
@@ -24,26 +23,14 @@ bool FlyingStrings::DrawAllowed(CoordStruct& nCoords)
 	return false;
 }
 
-void FlyingStrings::Add(const wchar_t* text, CoordStruct coords, ColorStruct color, bool isCyclic)
+void FlyingStrings::Add(const wchar_t* text, CoordStruct coords, ColorStruct color, Point2D pixelOffset)
 {
 	Item item {};
 	item.Location = coords;
-
+	item.PixelOffset = pixelOffset;
 	item.CreationFrame = Unsorted::CurrentFrame;
 	item.Color = Drawing::RGB2DWORD(color);
 	PhobosCRT::wstrCopy(item.Text, text, 0x20);
-
-	if (isCyclic)
-	{
-		if (CurrentCycleWidth >= MaxCycleWidth)
-			CurrentCycleWidth = -MaxCycleWidth;
-
-		int width = 0, height = 0;
-		BitFont::Instance->GetTextDimension(item.Text, &width, &height, MaxCycleWidth);
-		item.XOffset = CurrentCycleWidth;
-		CurrentCycleWidth += (width + 2);
-	}
-
 	Data.push_back(item);
 }
 
@@ -60,8 +47,7 @@ void FlyingStrings::UpdateAll()
 
 		TacticalClass::Instance->CoordsToClient(dataItem.Location, &point);
 
-		if (dataItem.XOffset != 0)
-			point.X += dataItem.XOffset;
+		point += dataItem.PixelOffset;
 
 		if (Unsorted::CurrentFrame > dataItem.CreationFrame + Duration - 70)
 		{
