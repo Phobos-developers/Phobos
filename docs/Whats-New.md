@@ -217,6 +217,16 @@ This page lists the history of changes across stable Phobos releases and also al
 
 ## Changelog
 
+### TBD
+
+<details>
+  <summary>Click to show</summary>
+
+New:
+- Techno Attachment logic (by Kerbiter)
+
+</details>
+
 ### 0.3
 
 <details>

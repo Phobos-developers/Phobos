@@ -4,34 +4,40 @@ This page describes all the engine features that are either new and introduced b
 
 ## New types / ingame entities
 
-### Custom Radiation Types
+### Attachments
 
-![image](_static/images/radtype-01.png)  
-*Mixing different radiation types*
+![Unit Attachment](your image here)  
+*Attachments used in [mod name](link)*
 
-- Allows to have custom radiation type for any weapon now. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
+```{warning}
+This feature is not final and is under development. Currently unit-to-unit attachment with same locomotor is being prioritized. Other types of attachments are WIP and probably have many bugs and are mainly untested.
+```
+
+- Technos now can be attached one to another in a tree like way. The attached units won't process any locomotion code and act like a part of a parent unit in a configurable.
 
 In `rulesmd.ini`:
 ```ini
-[RadiationTypes]
-0=SOMERADTYPE
+[AttachmentTypes]
+0=MNT                                 ; (example)
 
-[SOMEWEAPON]                    ; WeaponType
-RadType=Radiation               ; RadType to use instead
-                                ; of default [Radiation]
+[MNT]
+RestoreAtCreation=yes                 ; boolean, whether to spawn the unit when it's created
+InheritTilt=yes                       ; boolean, whether the child tilts with the parent
+InheritOwner=no                       ; boolean, whether the child inherits owner of the parent while it's attached
+InheritStateEffects=yes               ; boolean (state effects = chaos, iron curtain etc.)
+InheritCommands=yes                   ; boolean
+DestructionWeapon.Child=              ; WeaponType, detonated on child when parent is destroyed
+DestructionWeapon.Parent=             ; WeaponType, detonated on parent when child is destroyed
+ForceDetachWeapon.Child=              ; WeaponType, detonated on child when it is force detached
+ForceDetachWeapon.Parent=             ; WeaponType, detonated on parent when a child is force detached from it
+ParentDestructionMission=             ; MissionType, queued to child when parent is destroyed
+ParentDetachmentMission=              ; MissionType, queued to child when parent is destroyed
 
-[SOMERADTYPE]                   ; custom RadType name
-RadDurationMultiple=1           ; int
-RadApplicationDelay=16          ; int
-RadApplicationDelay.Building=0  ; int
-RadLevelMax=500                 ; int
-RadLevelDelay=90                ; int
-RadLightDelay=90                ; int
-RadLevelFactor=0.2              ; double
-RadLightFactor=0.1              ; double
-RadTintFactor=1.0               ; double
-RadColor=0,255,0                ; RGB
-RadSiteWarhead=RadSite          ; WarheadType
+[SUMTECHNO]
+AttachmentX.Type=MNT                  ; AttachmentType (example)
+AttachmentX.TechnoType=               ; TechnoType that can be attached
+AttachmentX.FLH=0,0,0                 ; integer - Forward, Lateral, Height
+AttachmentX.IsOnTurret=no
 ```
 
 ### Laser Trails
@@ -183,6 +189,36 @@ Shield.InheritStateOnReplace=false   ; boolean
     - If `Shield.ReplaceNonRespawning` is set, shield from `Shield.AttachTypes` replaces existing shields that have been broken and cannot respawn on their own.
       - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
+
+### Radiation Types
+
+![image](_static/images/radtype-01.png)  
+*Mixing different radiation types*
+
+- Allows to have custom radiation type for any weapon now. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
+
+In `rulesmd.ini`:
+```ini
+[RadiationTypes]
+0=SOMERADTYPE
+
+[SOMEWEAPON]                    ; WeaponType
+RadType=Radiation               ; RadType to use instead
+                                ; of default [Radiation]
+
+[SOMERADTYPE]                   ; custom RadType name
+RadDurationMultiple=1           ; int
+RadApplicationDelay=16          ; int
+RadApplicationDelay.Building=0  ; int
+RadLevelMax=500                 ; int
+RadLevelDelay=90                ; int
+RadLightDelay=90                ; int
+RadLevelFactor=0.2              ; double
+RadLightFactor=0.1              ; double
+RadTintFactor=1.0               ; double
+RadColor=0,255,0                ; RGB
+RadSiteWarhead=RadSite          ; WarheadType
+```
 
 ## Animations
 
