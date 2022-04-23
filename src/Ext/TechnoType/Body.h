@@ -104,6 +104,7 @@ public:
 		Valueable<int> Ammo_Shared_Group;
 
 		Nullable<DigitalDisplayTypeClass*> DigitalDisplayType;
+		Nullable<DigitalDisplayTypeClass*> DigitalDisplayType_Shield;
 
 		struct LaserTrailDataEntry
 		{
@@ -192,6 +193,7 @@ public:
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 			, DigitalDisplayType {}
+			, DigitalDisplayType_Shield {}
 		{ }
 
 		virtual ~ExtData() = default;

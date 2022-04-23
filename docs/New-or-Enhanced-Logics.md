@@ -80,6 +80,7 @@ Align=                                  ; Left/Right/Center/Default, Alignment m
 
 [SomeTechnoType]
 DigitalDisplayType=                     ; DigitalDisplayType, The type of digital display used for this unit HP, the default [AudioVisual] in the corresponding type
+DigitalDisplayType.Shield=              ; DigitalDisplayType, Override [ShieldType] > DigitalDisplayType, default don't override
 
 [SomeShieldType]
 DigitalDisplayType=                     ; DigitalDisplayType, The digital display type used for the shield, defaulted to the corresponding type in [AudioVisual] of the unit to which it is attached

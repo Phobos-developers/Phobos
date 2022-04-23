@@ -794,6 +794,10 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	default:
 		break;
 	}
+
+	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(Techno->GetTechnoType());
+
+	pDisplayType = pTechnoTypeExt->DigitalDisplayType_Shield.Get(pDisplayType);
 	
 	//Debug::Log("[DigitalDisplay] Address[0x%X],Name[%s]\n", pDisplayType, (pDisplayType ? pDisplayType->Name.data() : ""));
 
