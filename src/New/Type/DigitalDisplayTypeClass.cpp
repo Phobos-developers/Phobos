@@ -25,6 +25,17 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass * pINI)
 	this->SHP_SHPFile.Read(pINI, section, "SHP.SHPFile");
 	this->SHP_PALFile.Read(pINI, section, "SHP.PALFile");
 	this->SHP_Interval.Read(exINI, section, "SHP.Interval");
+	this->SHP_Interval_Building.Read(exINI, section, "SHP.Interval.Building");
+	this->Align.Read(pINI, section, "Align");
+
+	if (strcmp(Align.data(), "Left") == 0)
+		Alignment = AlignType::Left;
+	else if (strcmp(Align.data(), "Right") == 0)
+		Alignment = AlignType::Right;
+	else if (strcmp(Align.data(), "Center") == 0)
+		Alignment = AlignType::Center;
+	else
+		Alignment = AlignType::Default;
 
 	if (UseSHP.Get())
 	{
@@ -52,6 +63,9 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->SHP_SHPFile)
 		.Process(this->SHP_PALFile)
 		.Process(this->SHP_Interval)
+		.Process(this->SHP_Interval_Building)
+		.Process(this->Align)
+		.Process(this->Alignment)
 		;
 }
 

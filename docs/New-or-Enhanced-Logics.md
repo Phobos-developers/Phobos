@@ -42,6 +42,12 @@ RadSiteWarhead=RadSite          ; WarheadType
 
 The SHP display uses frames 0-9 of the SHP file for green HP, 10-19 for yellow HP, and 20-29 for red HP, 30-32 frames are the separator for green, yellow and red HP respectively.
 
+Default Alignment:
+  Text: building right-aligned, others centered.
+  SHP: building left-aligned, others centered.
+
+Offset and interval: Positive integer are to the right(x) and down(y), negative numbers are to the left(x) and up(y)
+
 All will not be displayed if not written or if the corresponding type does not exist.
 
 In `rulesmd.ini`:
@@ -68,7 +74,9 @@ Text.Background=                        ; boolean, Whether the Text display has 
 UseSHP=                                 ; boolean, whether to use SHP digital display, default no
 SHP.SHPFile=                            ; filename, with extend name, the name of the SHP file used by the SHP number display, default number.shp
 SHP.PALFile=                            ; filename, with extend name, the palette file used by SHP, default is ra1 palette
-SHP.Interval=                           ; integer, the width of a single digit of the SHP display plus the value of the interval between digits
+SHP.Interval=                           ; integer - x,y , horizontal and vertical spacing between two SHP digitals of techno expect building, default 8,0
+SHP.Interval.Building=                  ; integer - x,y , horizontal and vertical spacing between two SHP digitals of buildings, default 8,4
+Align=                                  ; Left/Right/Center/Default, Alignment mode, default Default
 
 [SomeTechnoType]
 DigitalDisplayType=                     ; DigitalDisplayType, The type of digital display used for this unit HP, the default [AudioVisual] in the corresponding type

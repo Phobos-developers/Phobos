@@ -18,24 +18,39 @@ public:
 	Valueable<bool> Text_Background;
 	Valueable<Vector2D<int>> Offset;
 	Nullable<Vector2D<int>> Offset_WithoutShield;
+	PhobosFixedString<0x10> Align;
 	Valueable<bool> UseSHP;
 	PhobosFixedString<0x20> SHP_SHPFile;
 	PhobosFixedString<0x20> SHP_PALFile;
-	Valueable<int> SHP_Interval;
+	Valueable<Vector2D<int>> SHP_Interval;
+	Valueable<Vector2D<int>> SHP_Interval_Building;
+	
+	enum AlignType
+	{
+		Default = 0,
+		Left = 1,
+		Center = 2,
+		Right = 3
+	};
+	
 	SHPStruct* SHPFile;
 	ConvertClass* PALFile;
+	AlignType Alignment;
 
 	DigitalDisplayTypeClass(const char* pTitle = NONE_STR) : Enumerable<DigitalDisplayTypeClass>(pTitle)
-		,Text_ColorHigh({ 0, 255, 0 })
-		,Text_ColorMid({ 255, 255, 0 })
-		,Text_ColorLow({ 255, 0, 0 })
-		,Text_Background(false)
-		,Offset({ 0, 0 })
-		,Offset_WithoutShield()
-		,UseSHP(false)
-		,SHP_SHPFile("number.shp")
-		,SHP_PALFile("")
-		,SHP_Interval(8)
+		, Text_ColorHigh({ 0, 255, 0 })
+		, Text_ColorMid({ 255, 255, 0 })
+		, Text_ColorLow({ 255, 0, 0 })
+		, Text_Background(false)
+		, Offset({ 0, 0 })
+		, Offset_WithoutShield()
+		, Align("")
+		, UseSHP(false)
+		, SHP_SHPFile("number.shp")
+		, SHP_PALFile("")
+		, SHP_Interval({ 8, 0 })
+		, SHP_Interval_Building({ 8, -4 })
+		, Alignment(AlignType::Default)
 	{ }
 	
 	virtual ~DigitalDisplayTypeClass() override = default;
