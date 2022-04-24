@@ -73,7 +73,7 @@ LaserTrailN.IsOnTurret=no   ; boolean, whether the trail origin is turret
 ; where N = 0, 1, 2, ...
 ```
 
-in `rulesmd.ini`:
+In `rulesmd.ini`:
 ```ini
 [SOMEVOXELANIM]             ; VoxelAnim
 LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
@@ -322,7 +322,7 @@ Interceptable=no ; boolean
 - Self-explanatory, is a straight-shot trajectory.
   - Initial speed is determined by weapon's `Trajectory.Speed`.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]     ; Projectile
 Trajectory=Straight  ; Trajectory type
@@ -333,7 +333,7 @@ Trajectory=Straight  ; Trajectory type
 - Similar trajectory to `Straight`, but targets a coordinate above the intended target (height determined by `Trajectory.Bombard.Height`). When the projectile approaches that coordinate, it will free fall and explodes when it hits the target or ground.
   - Initial speed is determined by weapon's `Trajectory.Speed`.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]               ; Projectile
 Trajectory=Bombard             ; Trajectory type
