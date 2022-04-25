@@ -423,11 +423,22 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pTypeThis);
 	auto pData = TechnoExt::ExtMap.Find(pThis);
 
+	const bool peacefulDeath = pTypeData->Death_Peaceful.Get();
 	// Death if no ammo
 	if (pTypeThis && pTypeData && pTypeData->Death_NoAmmo)
 	{
 		if (pTypeThis->Ammo > 0 && pThis->Ammo <= 0)
-			pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+		{
+			if (peacefulDeath)
+			{
+				pThis->Limbo();
+				pThis->UnInit();
+			}
+			else
+			{
+				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+			}
+		}
 	}
 
 	// Death if countdown ends
@@ -443,7 +454,15 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 			{
 				// Countdown ended. Kill the unit
 				pData->Death_Countdown = -1;
-				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+				if (peacefulDeath)
+				{
+					pThis->Limbo();
+					pThis->UnInit();
+				}
+				else
+				{
+					pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+				}
 			}
 		}
 		else
