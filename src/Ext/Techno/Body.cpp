@@ -11,6 +11,7 @@
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <JumpjetLocomotionClass.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -554,11 +555,11 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 
 
 
-#include<JumpjetLocomotionClass.h>
+
 static bool CanFireAt(TechnoClass* pTechno, AbstractClass* pTarget)
 {//Is there a already implemented function to tell whether the pTechno can target at pTarget?
  //Need help here
-	int wpnIdx = pTechno->SelectWeapon(pTarget);
+	const int wpnIdx = pTechno->SelectWeapon(pTarget);
 	FireError fErr = pTechno->GetFireError(pTarget, wpnIdx, true);
 	if (!(fErr == FireError::ILLEGAL
 		|| fErr == FireError::CANT
@@ -573,36 +574,30 @@ static bool CanFireAt(TechnoClass* pTechno, AbstractClass* pTarget)
 void TechnoExt::JumpjetVehicleFacingFix(TechnoClass* pThis)
 {
 	const auto pType = pThis->GetTechnoType();
-	if (pType->JumpJet && pThis->IsInAir() && pThis->WhatAmI() == AbstractType::Unit && !pType->Turret)
-	{// is jumpjet, no turret, is in air, is unit, no turret
+	if (pType->JumpJet && pThis->IsInAir() 
+		&& pThis->WhatAmI() == AbstractType::Unit && !pType->Turret)
+	{
 		const auto pFoot = abstract_cast<UnitClass*>(pThis);
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-		const auto pExt = TechnoExt::ExtMap.Find(pThis);
-		if (pExt && pTypeExt && pTypeExt->JumpjetFacing)
+		if (pTypeExt && pTypeExt->JumpjetFacing && pFoot->GetCurrentSpeed() == 0)
 		{
-			if (pFoot->GetCurrentSpeed() == 0 && pFoot->Locomotor)
+			if (const auto pTarget = pThis->Target)
 			{
-				if (const auto pCell = MapClass::Instance->TryGetCellAt(pThis->Location))
+				const auto pLoco = static_cast<JumpjetLocomotionClass*>(pFoot->Locomotor.get());
+				if (pLoco && !pLoco->LocomotionFacing.in_motion() && CanFireAt(pThis, pTarget))
 				{
-					const auto pTarget = pThis->Target;
-					if (pTarget && CanFireAt(pThis, pTarget))
+					const CoordStruct source = pThis->Location;
+					const CoordStruct target = pTarget->GetCoords();
+					const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
+					if (pThis->GetRealFacing().value32() != tgtDir.value32())
 					{
-						const auto loco = static_cast<JumpjetLocomotionClass*>(pFoot->Locomotor.get());
-						if (loco && !loco->LocomotionFacing.in_motion())
-						{
-							const CoordStruct source = pThis->Location;
-							const CoordStruct target = pTarget->GetCoords();
-							const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
-							const DirStruct currentDir = pThis->GetRealFacing();
-							if (currentDir.value32() != tgtDir.value32())
-							{
-								loco->LocomotionFacing.turn(tgtDir);
-							}
-
-						}
+						pLoco->LocomotionFacing.turn(tgtDir);
 					}
+
 				}
+
 			}
+			
 		}
 	}
 }
