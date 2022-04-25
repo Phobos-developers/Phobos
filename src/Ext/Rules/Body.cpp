@@ -72,6 +72,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
+	this->PlacementGrid_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementGrid.TranslucentLevel");
+	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementPreview.DefaultTranslucentLevel");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -167,6 +169,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
 		.Process(this->Storage_TiberiumIndex)
+		.Process(this->PlacementGrid_TranslucentLevel)
+		.Process(this->BuildingPlacementPreview_TranslucentLevel)
 		;
 }
 
