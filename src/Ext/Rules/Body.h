@@ -36,6 +36,8 @@ public:
 		Valueable<bool> JumpjetNoWobbles;
 		Valueable<bool> JumpjetAllowLayerDeviation;
 		Valueable<int> Storage_TiberiumIndex;
+		Valueable<int> PlacementGrid_TranslucentLevel;
+		Valueable<int> BuildingPlacementPreview_TranslucentLevel;
 
 		Valueable<bool> DigitalDisplay_Enable;
 		Valueable<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypeHP;
@@ -56,6 +58,8 @@ public:
 			, JumpjetNoWobbles { false }
 			, JumpjetAllowLayerDeviation { true }
 			, Storage_TiberiumIndex { -1 }
+			, PlacementGrid_TranslucentLevel{ 0 }
+			, BuildingPlacementPreview_TranslucentLevel { 3 }
 			, DigitalDisplay_Enable { false }
 			, Buildings_DefaultDigitalDisplayTypeHP { nullptr }
 			, Buildings_DefaultDigitalDisplayTypeSP { nullptr }

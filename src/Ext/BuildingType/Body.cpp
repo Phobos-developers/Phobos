@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/House/Body.h>
+#include <Utilities/GeneralUtils.h>
 
 template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
@@ -140,6 +141,26 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
+
+	this->PlacementPreview_Show.Read(exINI, pSection, "PlacementPreview.Show");
+
+	if (pINI->GetString(pSection, "PlacementPreview.Shape", Phobos::readBuffer))
+	{
+		if (GeneralUtils::IsValidString(Phobos::readBuffer))
+		{
+			// we cannot load same SHP file twice it may produce artifact , prevent it !
+			if (_strcmpi(Phobos::readBuffer, pSection) || _strcmpi(Phobos::readBuffer, pArtSection))
+				this->PlacementPreview_Shape.Read(exINI, pSection, "PlacementPreview.Shape");
+			else
+				Debug::Log("Cannot Load PlacementPreview.Shape for [%s]Art[%s] ! \n",pSection , pArtSection);
+		}
+	}
+
+	this->PlacementPreview_ShapeFrame.Read(exINI, pSection, "PlacementPreview.ShapeFrame");
+	this->PlacementPreview_Offset.Read(exINI, pSection, "PlacementPreview.Offset");
+	this->PlacementPreview_Remap.Read(exINI, pSection, "PlacementPreview.Remap");
+	this->PlacementPreview_Palette.LoadFromINI(pINI, pSection, "PlacementPreview.Palette");
+	this->PlacementPreview_TranslucentLevel.Read(exINI, pSection, "PlacementPreview.Translucent");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -166,6 +187,15 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Grinding_DisallowTypes)
 		.Process(this->Grinding_Sound)
 		.Process(this->Grinding_Weapon)
+
+		.Process(PlacementPreview_Remap)
+		.Process(PlacementPreview_Palette)
+		.Process(PlacementPreview_Offset)
+		.Process(PlacementPreview_Show)
+		.Process(PlacementPreview_Shape)
+		.Process(PlacementPreview_ShapeFrame)
+		.Process(PlacementPreview_TranslucentLevel)
+
 		;
 }
 

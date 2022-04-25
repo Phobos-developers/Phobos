@@ -126,7 +126,7 @@ LaserTrailN.IsOnTurret=no   ; boolean, whether the trail origin is turret
 ; where N = 0, 1, 2, ...
 ```
 
-in `rulesmd.ini`:
+In `rulesmd.ini`:
 ```ini
 [SOMEVOXELANIM]             ; VoxelAnim
 LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
@@ -375,7 +375,7 @@ Interceptable=no ; boolean
 - Self-explanatory, is a straight-shot trajectory.
   - Initial speed is determined by weapon's `Trajectory.Speed`.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]     ; Projectile
 Trajectory=Straight  ; Trajectory type
@@ -386,7 +386,7 @@ Trajectory=Straight  ; Trajectory type
 - Similar trajectory to `Straight`, but targets a coordinate above the intended target (height determined by `Trajectory.Bombard.Height`). When the projectile approaches that coordinate, it will free fall and explodes when it hits the target or ground.
   - Initial speed is determined by weapon's `Trajectory.Speed`.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]               ; Projectile
 Trajectory=Bombard             ; Trajectory type
@@ -835,12 +835,14 @@ InitialStrength=    ; int
 - Objects can be destroyed automatically under certaing cases:
   - No Ammo: The object will die if the remaining ammo reaches 0.
   - Countdown: The object will die if the countdown reaches 0.
+  - Peaceful: If `NoAmmo` or `Countdown` is set, the object will be directly removed from the game peacefully, without triggering deathweapon or "Unit lost" EVA.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                       ; TechnoType
 Death.NoAmmo=no                    ; boolean
 Death.Countdown=0                  ; integer
+Death.Peaceful=no                  ; boolean, whether to not trigger DeathWeapon and EVA
 ```
 
 ### Mind Control enhancement

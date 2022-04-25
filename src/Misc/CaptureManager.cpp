@@ -124,6 +124,9 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 					}
 				}
 
+				pTarget->QueueMission(Mission::Move, false);
+				pTarget->SetDestination(pTarget->GetCell(), true);
+
 				return true;
 			}
 

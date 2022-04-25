@@ -50,6 +50,7 @@ bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::DevelopmentCommands = true;
 bool Phobos::Config::ArtImageSwap = false;
 bool Phobos::Config::AllowParallelAIQueues = true;
+bool Phobos::Config::EnableBuildingPlacementPreview = false;
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
@@ -62,7 +63,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		{
 			Phobos::AppIconPath = ppArgs[++i];
 		}
-#ifndef IS_RELEASE_VER 
+#ifndef IS_RELEASE_VER
 		if (_stricmp(pArg, "-b=" _STR(BUILD_NUMBER)) == 0)
 		{
 			HideWarning = true;
@@ -162,6 +163,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 {
 	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
+	Phobos::Config::EnableBuildingPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowBuildingPlacementPreview",false);
 
 	CCINIClass* pINI_UIMD = Phobos::OpenConfig("uimd.ini");
 

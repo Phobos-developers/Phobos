@@ -50,6 +50,7 @@ public:
 		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
 		Valueable<bool> Death_NoAmmo;
 		Valueable<int> Death_Countdown;
+		Valueable<bool> Death_Peaceful;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -189,6 +190,7 @@ public:
 			, EnemyUIName {}
 			, Death_NoAmmo { false }
 			, Death_Countdown { 0 }
+			, Death_Peaceful { false }
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }

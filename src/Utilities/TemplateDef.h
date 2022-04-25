@@ -205,15 +205,20 @@ namespace detail {
 	template <>
 	inline bool read<SHPStruct*>(SHPStruct*& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
 		if (parser.ReadString(pSection, pKey)) {
-			char flag[256];
+
 			auto const pValue = parser.value();
-			_snprintf_s(flag, 255, "%s.shp", pValue);
-			if (auto const pImage = FileSystem::LoadSHPFile(flag)) {
+			std::string Result = pValue;
+
+			if (!strstr(pValue, ".shp")) {
+				Result += ".shp";
+			}
+
+			if (auto const pImage = FileSystem::LoadSHPFile(Result.c_str())) {
 				value = pImage;
 				return true;
 			}
 			else {
-				Debug::Log("Failed to find file %s referenced by [%s]%s=%s\n", flag, pSection, pKey, pValue);
+				Debug::Log("Failed to find file %s referenced by [%s]%s=%s\n", Result.c_str(), pSection, pKey, pValue);
 			}
 		}
 		return false;

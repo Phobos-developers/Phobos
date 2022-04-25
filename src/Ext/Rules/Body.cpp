@@ -75,8 +75,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
-	
-	this->DigitalDisplay_Enable.Read(exINI, sectionAudioVisual, "DigitalDisplay.Enable");
+	this->PlacementGrid_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementGrid.TranslucentLevel");
+	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementPreview.DefaultTranslucentLevel");
+
+  this->DigitalDisplay_Enable.Read(exINI, sectionAudioVisual, "DigitalDisplay.Enable");
 	this->Buildings_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypeHP");
 	this->Buildings_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypeSP");
 	this->Infantrys_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Infantrys.DefaultDigitalDisplayTypeHP");
@@ -85,7 +87,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Units_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Units.DefaultDigitalDisplayTypeSP");
 	this->Aircrafts_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Aircrafts.DefaultDigitalDisplayTypeSP");
 	this->Aircrafts_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Aircrafts.DefaultDigitalDisplayTypeSP");
-	
+  
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
 	for (int i = 0; i < itemsCount; ++i)
@@ -180,6 +182,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
 		.Process(this->Storage_TiberiumIndex)
+		.Process(this->PlacementGrid_TranslucentLevel)
+		.Process(this->BuildingPlacementPreview_TranslucentLevel)
 		.Process(this->DigitalDisplay_Enable)
 		.Process(this->Buildings_DefaultDigitalDisplayTypeHP)
 		.Process(this->Buildings_DefaultDigitalDisplayTypeSP)
