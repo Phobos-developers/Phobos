@@ -68,10 +68,6 @@ DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 	return 0;
 }
 
-static SHPStruct* GetBuildingShape(BuildingTypeClass* pThis)
-{
-
-}
 DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 {
 	if (auto const pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance->CurrentBuilding))
@@ -91,7 +87,9 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 					Selected = pType->LoadBuildup();
 				}
 				else
-				{ Selected = pType->GetImage(); }
+				{
+					Selected = pType->GetImage();
+				}
 
 				//bool const isUpgrade = GeneralUtils::IsValidString(pType->PowersUpBuilding);
 				auto const pImage = pTypeExt->PlacementPreview_Shape.Get(Selected);
