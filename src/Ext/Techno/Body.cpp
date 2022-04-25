@@ -429,13 +429,16 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 	{
 		if (pTypeThis->Ammo > 0 && pThis->Ammo <= 0)
 		{
-			if (peacefulDeath) {
+			if (peacefulDeath)
+			{
 				pThis->Limbo();
 				pThis->UnInit();
-			}else
-			pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+			}
+			else
+			{
+				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+			}
 		}
-			
 	}
 
 	// Death if countdown ends
@@ -451,12 +454,15 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 			{
 				// Countdown ended. Kill the unit
 				pData->Death_Countdown = -1;
-				if (peacefulDeath) {
+				if (peacefulDeath)
+				{
 					pThis->Limbo();
 					pThis->UnInit();
 				}
 				else
-				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+				{
+					pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+				}
 			}
 		}
 		else

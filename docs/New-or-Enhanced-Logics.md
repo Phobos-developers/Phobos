@@ -789,7 +789,7 @@ In `rulesmd.ini`:
 [SOMETECHNO]                       ; TechnoType
 Death.NoAmmo=no                    ; boolean
 Death.Countdown=0                  ; integer
-Death.Peaceful=no                  ; boolean, default to no
+Death.Peaceful=no                  ; boolean, whether to not trigger DeathWeapon and EVA
 ```
 
 ### Mind Control enhancement
