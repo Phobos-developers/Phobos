@@ -102,6 +102,7 @@ public:
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
 
+		Valueable<bool> JumpjetFacing;
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -188,6 +189,7 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
+			, JumpjetFacing{false}
 		{ }
 
 		virtual ~ExtData() = default;

@@ -552,6 +552,61 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 	}
 }
 
+
+
+#include<JumpjetLocomotionClass.h>
+static bool CanFireAt(TechnoClass* pTechno, AbstractClass* pTarget)
+{//Is there a already implemented function to tell whether the pTechno can target at pTarget?
+ //Need help here
+	int wpnIdx = pTechno->SelectWeapon(pTarget);
+	FireError fErr = pTechno->GetFireError(pTarget, wpnIdx, true);
+	if (!(fErr == FireError::ILLEGAL
+		|| fErr == FireError::CANT
+		|| fErr == FireError::MOVING
+		|| fErr == FireError::RANGE))
+	{
+		return pTechno->IsCloseEnough(pTarget, wpnIdx);
+	}
+	else
+		return false;
+}
+void TechnoExt::JumpjetVehicleFacingFix(TechnoClass* pThis)
+{
+	const auto pType = pThis->GetTechnoType();
+	if (pType->JumpJet && pThis->IsInAir() && pThis->WhatAmI() == AbstractType::Unit && !pType->Turret)
+	{// is jumpjet, no turret, is in air, is unit, no turret
+		const auto pFoot = abstract_cast<UnitClass*>(pThis);
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		const auto pExt = TechnoExt::ExtMap.Find(pThis);
+		if (pExt && pTypeExt && pTypeExt->JumpjetFacing)
+		{
+			if (pFoot->GetCurrentSpeed() == 0 && pFoot->Locomotor)
+			{
+				if (const auto pCell = MapClass::Instance->TryGetCellAt(pThis->Location))
+				{
+					const auto pTarget = pThis->Target;
+					if (pTarget && CanFireAt(pThis, pTarget))
+					{
+						const auto loco = static_cast<JumpjetLocomotionClass*>(pFoot->Locomotor.get());
+						if (loco && !loco->LocomotionFacing.in_motion())
+						{
+							const CoordStruct source = pThis->Location;
+							const CoordStruct target = pTarget->GetCoords();
+							const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
+							const DirStruct currentDir = pThis->GetRealFacing();
+							if (currentDir.value32() != tgtDir.value32())
+							{
+								loco->LocomotionFacing.turn(tgtDir);
+							}
+
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 // =============================
 // load / save
 
