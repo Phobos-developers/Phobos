@@ -78,7 +78,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PlacementGrid_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementGrid.TranslucentLevel");
 	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementPreview.DefaultTranslucentLevel");
 
-  this->DigitalDisplay_Enable.Read(exINI, sectionAudioVisual, "DigitalDisplay.Enable");
+  	this->DigitalDisplay_Enable.Read(exINI, sectionAudioVisual, "DigitalDisplay.Enable");
 	this->Buildings_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypeHP");
 	this->Buildings_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypeSP");
 	this->Infantrys_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Infantrys.DefaultDigitalDisplayTypeHP");
