@@ -553,9 +553,6 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 	}
 }
 
-
-
-
 static bool CanFireAt(TechnoClass* pTechno, AbstractClass* pTarget)
 {//Is there a already implemented function to tell whether the pTechno can target at pTarget?
  //Need help here
@@ -571,15 +568,17 @@ static bool CanFireAt(TechnoClass* pTechno, AbstractClass* pTarget)
 	else
 		return false;
 }
+
 void TechnoExt::JumpjetVehicleFacingFix(TechnoClass* pThis)
 {
 	const auto pType = pThis->GetTechnoType();
-	if (pType->JumpJet && pThis->IsInAir() 
+	if (pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet && pThis->IsInAir()
 		&& pThis->WhatAmI() == AbstractType::Unit && !pType->Turret)
 	{
 		const auto pFoot = abstract_cast<UnitClass*>(pThis);
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-		if (pTypeExt && pTypeExt->JumpjetFacing && pFoot->GetCurrentSpeed() == 0)
+		if (pTypeExt && pTypeExt->JumpjetFacingTarget.Get(RulesExt::Global()->JumpjetFacingTarget)
+			&& pFoot && pFoot->GetCurrentSpeed() == 0)
 		{
 			if (const auto pTarget = pThis->Target)
 			{
@@ -590,14 +589,9 @@ void TechnoExt::JumpjetVehicleFacingFix(TechnoClass* pThis)
 					const CoordStruct target = pTarget->GetCoords();
 					const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
 					if (pThis->GetRealFacing().value32() != tgtDir.value32())
-					{
 						pLoco->LocomotionFacing.turn(tgtDir);
-					}
-
 				}
-
 			}
-			
 		}
 	}
 }

@@ -34,6 +34,7 @@ public:
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 		Valueable<bool> JumpjetAllowLayerDeviation;
+		Valueable<bool> JumpjetFacingTarget;
 		Valueable<int> Storage_TiberiumIndex;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
@@ -45,6 +46,7 @@ public:
 			, JumpjetNoWobbles { false }
 			, JumpjetAllowLayerDeviation { true }
 			, Storage_TiberiumIndex { -1 }
+			, JumpjetFacingTarget { false }
 		{ }
 
 		virtual ~ExtData() = default;
