@@ -90,6 +90,7 @@ private:
 	int Respawn_Rate_Warhead;
 
 	int LastBreakFrame;
+	double LastTechnoHealthRatio;
 
 	ShieldTypeClass* Type;
 

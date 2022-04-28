@@ -59,6 +59,8 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->SelfHealing_Rate_Warhead)
 		.Process(this->Respawn_Warhead)
 		.Process(this->Respawn_Rate_Warhead)
+		.Process(this->LastBreakFrame)
+		.Process(this->LastTechnoHealthRatio)
 		.Success();
 }
 
@@ -300,8 +302,15 @@ void ShieldClass::AI()
 	this->RespawnShield();
 	this->SelfHealing();
 
+	double ratio = this->Techno->GetHealthPercentage();
+
+	if (GeneralUtils::HasHealthRatioThresholdChanged(LastTechnoHealthRatio, ratio))
+		UpdateIdleAnim();
+
 	if (!this->Cloak && !this->Temporal && this->Online && (this->HP > 0 && this->Techno->Health > 0))
 		this->CreateAnim();
+
+	LastTechnoHealthRatio = ratio;
 }
 
 // The animation is automatically destroyed when the associated unit receives the isCloak statute.
@@ -763,7 +772,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 int ShieldClass::DrawShieldBar_Pip(const bool isBuilding)
 {
 	const auto strength = this->Type->Strength;
-	const auto pips_Shield = isBuilding ? this->Type->Pips_Building.Get() :this->Type->Pips.Get();
+	const auto pips_Shield = isBuilding ? this->Type->Pips_Building.Get() : this->Type->Pips.Get();
 	const auto pips_Global = isBuilding ? RulesExt::Global()->Pips_Shield_Building.Get() : RulesExt::Global()->Pips_Shield.Get();
 
 	auto shieldPip = pips_Global;
