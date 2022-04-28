@@ -100,5 +100,5 @@ public:
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 	static void UpdateMindControlAnim(TechnoClass* pThis);
-	static void JumpjetVehicleFacingFix(TechnoClass* pThis);
+	static void JumpjetUnitFacingFix(TechnoClass* pThis);
 };

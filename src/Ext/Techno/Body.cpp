@@ -553,15 +553,15 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 	}
 }
 
-static bool CanFireAt(TechnoClass* pTechno, AbstractClass* pTarget)
-{//Is there a already implemented function to tell whether the pTechno can target at pTarget?
- //Need help here
+//Is there a already implemented function to tell whether the pTechno can target at pTarget?
+static bool __fastcall CanFireAt(TechnoClass* pTechno, AbstractClass* pTarget)
+{
 	const int wpnIdx = pTechno->SelectWeapon(pTarget);
-	FireError fErr = pTechno->GetFireError(pTarget, wpnIdx, true);
-	if (!(fErr == FireError::ILLEGAL
-		|| fErr == FireError::CANT
-		|| fErr == FireError::MOVING
-		|| fErr == FireError::RANGE))
+	const FireError fErr = pTechno->GetFireError(pTarget, wpnIdx, true);
+	if (   fErr != FireError::ILLEGAL
+		&& fErr != FireError::CANT
+		&& fErr != FireError::MOVING
+		&& fErr != FireError::RANGE)
 	{
 		return pTechno->IsCloseEnough(pTarget, wpnIdx);
 	}
@@ -569,11 +569,11 @@ static bool CanFireAt(TechnoClass* pTechno, AbstractClass* pTarget)
 		return false;
 }
 
-void TechnoExt::JumpjetVehicleFacingFix(TechnoClass* pThis)
+void TechnoExt::JumpjetUnitFacingFix(TechnoClass* pThis)
 {
 	const auto pType = pThis->GetTechnoType();
 	if (pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet && pThis->IsInAir()
-		&& pThis->WhatAmI() == AbstractType::Unit && !pType->Turret)
+		&& pThis->WhatAmI() == AbstractType::Unit && !pType->TurretSpins)
 	{
 		const auto pFoot = abstract_cast<UnitClass*>(pThis);
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
