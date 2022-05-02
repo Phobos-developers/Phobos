@@ -816,9 +816,12 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 		PosS.X -= 8;
 		PosS.Y -= 13;
 
-		if (iLength == 8) 
-			PosS.Y -= 4;
-		
+		if (iLength == 8)
+		{
+			PosS.X -= 4;
+			PosS.Y += 2;
+		}
+
 		DigitalDisplaySHPShield(pDisplayType, PosS);
 	}
 	else
@@ -846,7 +849,13 @@ void ShieldClass::DigitalDisplayTextShield(DigitalDisplayTypeClass* pDisplayType
 	bool ShowBackground = pDisplayType->Text_Background.Get();
 
 	wchar_t Shieldpoint[0x20];
-	swprintf_s(Shieldpoint, L"%d/%d", HP, Type->Strength.Get());
+	
+	if (pDisplayType->Percentage.Get())
+		swprintf_s(Shieldpoint, L"%d%%", int(GetHealthRatio() * 100));
+	else if(pDisplayType->HideStrength.Get())
+		swprintf_s(Shieldpoint, L"%d", HP);
+	else
+		swprintf_s(Shieldpoint, L"%d/%d", HP, Type->Strength.Get());
 
 	RectangleStruct rect = { 0,0,0,0 };
 	DSurface::Temp->GetRect(&rect);
@@ -880,18 +889,30 @@ void ShieldClass::DigitalDisplayTextShield(DigitalDisplayTypeClass* pDisplayType
 
 void ShieldClass::DigitalDisplaySHPShield(DigitalDisplayTypeClass* pDisplayType, Point2D Pos)
 {
-	const int Strength = Type->Strength.Get();
-	const int Health = HP;
-	const DynamicVectorClass<char> vStrength = IntToVector(Strength);
-	const DynamicVectorClass<char> vHealth = IntToVector(Health);
+	DynamicVectorClass<char> vStrength;
+	DynamicVectorClass<char> vHealth;
 	const int Length = vStrength.Count + vHealth.Count + 1;
 	const Vector2D<int> Interval = (Techno->WhatAmI() == AbstractType::Building ? pDisplayType->SHP_Interval_Building.Get() : pDisplayType->SHP_Interval.Get());
 	SHPStruct* SHPFile = pDisplayType->SHPFile;
 	ConvertClass* PALFile = pDisplayType->PALFile;
+	bool Percentage = pDisplayType->Percentage.Get();
+	bool HideStrength = pDisplayType->HideStrength.Get();
 
 	if (SHPFile == nullptr ||
 		PALFile == nullptr)
 		return;
+
+	if (Percentage)
+	{
+		vHealth = IntToVector(int(GetHealthRatio() * 100));
+	}
+	else
+	{
+		vHealth = IntToVector(HP);
+		
+		if (!HideStrength)
+			vStrength = IntToVector(Type->Strength);
+	}
 
 	bool LeftToRight = true;
 
@@ -900,20 +921,38 @@ void ShieldClass::DigitalDisplaySHPShield(DigitalDisplayTypeClass* pDisplayType,
 	case DigitalDisplayTypeClass::AlignType::Left:
 		break;
 	case DigitalDisplayTypeClass::AlignType::Right:
+	{
 		LeftToRight = false;
-		break;
+	}
+	break;
 	case DigitalDisplayTypeClass::AlignType::Center:
-		Pos.X -= ((vHealth.Count * Interval.X + vStrength.Count * Interval.X + Interval.X) / 2);
-		break;
+	{
+		if (Percentage)
+			Pos.X -= (vHealth.Count * Interval.X + Interval.X) / 2;
+		else if (HideStrength)
+			Pos.X -= (vHealth.Count * Interval.X) / 2;
+		else
+			Pos.X -= (vHealth.Count * Interval.X + vStrength.Count * Interval.X + Interval.X) / 2;
+	}
+	break;
 	default:
+	{
 		if (Techno->WhatAmI() != AbstractType::Building)
-			Pos.X -= ((vHealth.Count * Interval.X + vStrength.Count * Interval.X + Interval.X) / 2);
-		break;
+		{
+			if (Percentage)
+				Pos.X -= (vHealth.Count * Interval.X + Interval.X) / 2;
+			else if(HideStrength)
+				Pos.X -= (vHealth.Count * Interval.X) / 2;
+			else
+				Pos.X -= (vHealth.Count * Interval.X + vStrength.Count * Interval.X + Interval.X) / 2;
+		}
+	}
+	break;
 	}
 
 	int base = 0;
 
-	if (IsYellowSP()) 
+	if (IsYellowSP())
 		base = 10;
 
 	if (IsRedSP())
@@ -934,6 +973,9 @@ void ShieldClass::DigitalDisplaySHPShield(DigitalDisplayTypeClass* pDisplayType,
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
+	if (!Percentage && HideStrength)
+		return;
+
 	if (LeftToRight)
 		Pos.X += Interval.X;
 	else
@@ -948,8 +990,21 @@ void ShieldClass::DigitalDisplaySHPShield(DigitalDisplayTypeClass* pDisplayType,
 	else if (base == 20)
 		frame = 32;
 
+	if (Percentage)
+	{
+		frame = 33;
+
+		if (base == 10)
+			frame = 34;
+		else if (base == 20)
+			frame = 35;
+	}
+
 	DSurface::Composite->DrawSHP(PALFile, SHPFile, frame, &Pos, &DSurface::ViewBounds,
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+
+	if (Percentage)
+		return;
 
 	for (int i = vStrength.Count - 1; i >= 0; i--)
 	{

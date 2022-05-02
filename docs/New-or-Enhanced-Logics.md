@@ -36,11 +36,13 @@ RadSiteWarhead=RadSite          ; WarheadType
 
 ### Digital display of HP and SP
 
-![image](_static/images/ShowValue1.png)
+![image](_static/images/DigitalDisplay1.png)
 
-![image](_static/images/ShowValue2.png)
+![image](_static/images/DigitalDisplay2.png)
 
-The SHP display uses frames 0-9 of the SHP file for green HP, 10-19 for yellow HP, and 20-29 for red HP, 30-32 frames are the separator for green, yellow and red HP respectively.
+Text display use percentage style can't display percent sign because it dose not exist in game.fnt
+
+The SHP display uses frames 0-9 of the SHP file for green HP, 10-19 for yellow HP, and 20-29 for red HP, 30-32 frames are the separator for green, yellow and red HP respectively. In percentage style use 33-35 frams as percent sign.
 
 Default Alignment:
   Text: building right-aligned, others centered.
@@ -57,33 +59,35 @@ In `rulesmd.ini`:
 
 [AudioVisual]
 DigitalDisplay.Enable=                  ; boolean, whether to enable digital display, all digital displays will not be displayed if no
-Buildings.DefaultDigitalDisplayTypeHP=  ; DigitalDisplayType, The default digital display type used for building health
-Buildings.DefaultDigitalDisplayTypeSP=  ; DigitalDisplayType, The default digital display type used for building shield
-Infantrys.DefaultDigitalDisplayTypeHP=  ; DigitalDisplayType, The default digital display type used for infantry health
-Infantrys.DefaultDigitalDisplayTypeSP=  ; DigitalDisplayType, The default digital display type used for infantry shield
-Units.DefaultDigitalDisplayTypeHP=      ; DigitalDisplayType, The default digital display type used for other unit health
-Units.DefaultDigitalDisplayTypeSP=      ; DigitalDisplayType, The default digital display type used for other unit shield
-Aircrafts.DefaultDigitalDisplayTypeHP=  ; DigitalDisplayType, The default digital display type used for other aircraft health
-Aircrafts.DefaultDigitalDisplayTypeSP=  ; DigitalDisplayType, The default digital display type used for other aircraft shield
+Buildings.DefaultDigitalDisplayTypeHP=  ; DigitalDisplayType, the default digital display type used for building health
+Buildings.DefaultDigitalDisplayTypeSP=  ; DigitalDisplayType, the default digital display type used for building shield
+Infantrys.DefaultDigitalDisplayTypeHP=  ; DigitalDisplayType, the default digital display type used for infantry health
+Infantrys.DefaultDigitalDisplayTypeSP=  ; DigitalDisplayType, the default digital display type used for infantry shield
+Units.DefaultDigitalDisplayTypeHP=      ; DigitalDisplayType, the default digital display type used for other unit health
+Units.DefaultDigitalDisplayTypeSP=      ; DigitalDisplayType, the default digital display type used for other unit shield
+Aircrafts.DefaultDigitalDisplayTypeHP=  ; DigitalDisplayType, the default digital display type used for other aircraft health
+Aircrafts.DefaultDigitalDisplayTypeSP=  ; DigitalDisplayType, the default digital display type used for other aircraft shield
 
 [SomeDigitalDisplayType]
-Text.ColorHigh=                         ; RGB, The color of the Text digital display when green HP, default 0,255,0
-Text.ColorMid=                          ; RGB, The color of the Text digital display when yellow HP,  default 255,255,0
-Text.ColorLow=                          ; RGB, The color of the Text digital display when red HP, default 255,0,0
-Text.Background=                        ; boolean, Whether the Text display has a black background, default no
+Text.ColorHigh=                         ; RGB, the color of the Text digital display when green HP, default 0,255,0
+Text.ColorMid=                          ; RGB, the color of the Text digital display when yellow HP,  default 255,255,0
+Text.ColorLow=                          ; RGB, the color of the Text digital display when red HP, default 255,0,0
+Text.Background=                        ; boolean, whether the Text display has a black background, default no
 UseSHP=                                 ; boolean, whether to use SHP digital display, default no
 SHP.SHPFile=                            ; filename, with extend name, the name of the SHP file used by the SHP number display, default number.shp
-SHP.PALFile=                            ; filename, with extend name, the palette file used by SHP, default is ra1 palette
+SHP.PALFile=                            ; filename, with extend name, the palette file used by SHP, default palette.pal
 SHP.Interval=                           ; integer - x,y , horizontal and vertical spacing between two SHP digitals of techno expect building, default 8,0
 SHP.Interval.Building=                  ; integer - x,y , horizontal and vertical spacing between two SHP digitals of buildings, default 8,4
 Align=                                  ; Left/Right/Center/Default, Alignment mode, default Default
+Percentage=                             ; boolean, whether use percentage style, default no
+HideStrength=                           ; boolean, whether don't display strength, default no
 
 [SomeTechnoType]
-DigitalDisplayType=                     ; DigitalDisplayType, The type of digital display used for this unit HP, the default [AudioVisual] in the corresponding type
-DigitalDisplayType.Shield=              ; DigitalDisplayType, Override [ShieldType] > DigitalDisplayType, default don't override
+DigitalDisplayType=                     ; DigitalDisplayType, the type of digital display used for this unit HP, the default [AudioVisual] in the corresponding type
+DigitalDisplayType.Shield=              ; DigitalDisplayType, override [ShieldType] > DigitalDisplayType, default don't override
 
 [SomeShieldType]
-DigitalDisplayType=                     ; DigitalDisplayType, The digital display type used for the shield, defaulted to the corresponding type in [AudioVisual] of the unit to which it is attached
+DigitalDisplayType=                     ; DigitalDisplayType, the digital display type used for the shield, defaulted to the corresponding type in [AudioVisual] of the unit to which it is attached
 
 ```
 

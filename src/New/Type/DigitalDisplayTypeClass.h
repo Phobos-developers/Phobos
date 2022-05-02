@@ -24,6 +24,8 @@ public:
 	PhobosFixedString<0x20> SHP_PALFile;
 	Valueable<Vector2D<int>> SHP_Interval;
 	Valueable<Vector2D<int>> SHP_Interval_Building;
+	Valueable<bool> Percentage;
+	Valueable<bool> HideStrength;
 	
 	enum AlignType
 	{
@@ -51,6 +53,8 @@ public:
 		, SHP_Interval({ 8, 0 })
 		, SHP_Interval_Building({ 8, -4 })
 		, Alignment(AlignType::Default)
+		, Percentage(false)
+		, HideStrength(false)
 	{ }
 	
 	virtual ~DigitalDisplayTypeClass() override = default;

@@ -27,6 +27,8 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass * pINI)
 	this->SHP_Interval.Read(exINI, section, "SHP.Interval");
 	this->SHP_Interval_Building.Read(exINI, section, "SHP.Interval.Building");
 	this->Align.Read(pINI, section, "Align");
+	this->Percentage.Read(exINI, section, "Percentage");
+	this->HideStrength.Read(exINI, section, "HideStrength");
 
 	if (strcmp(Align.data(), "Left") == 0)
 		Alignment = AlignType::Left;
