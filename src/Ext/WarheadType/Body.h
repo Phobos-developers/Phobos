@@ -25,6 +25,7 @@ public:
 		Valueable<bool> AnimList_PickRandom;
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
+		Nullable<double> VeterancyModifier;
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
@@ -90,6 +91,7 @@ public:
 			, AnimList_PickRandom { false }
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
+			, VeterancyModifier{ }
 
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }
@@ -144,6 +146,7 @@ public:
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
+		void ApplyVeterancyModifier(TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);

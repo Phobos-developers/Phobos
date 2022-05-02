@@ -50,7 +50,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_Respawn_Duration > 0 ||
 		this->Shield_SelfHealing_Duration > 0 ||
 		this->Shield_AttachTypes.size() > 0 ||
-		this->Shield_RemoveTypes.size() > 0;
+		this->Shield_RemoveTypes.size() > 0 ||
+		this->VeterancyModifier.isset();
 
 	const float cellSpread = this->OwnerObject()->CellSpread;
 	if (cellSpread && isCellSpreadWarhead)
@@ -83,6 +84,16 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->Crit_Chance)
 		this->ApplyCrit(pHouse, pTarget, pOwner);
+
+	if (this->VeterancyModifier.isset())
+		this->ApplyVeterancyModifier(pTarget);
+}
+
+void WarheadTypeExt::ExtData::ApplyVeterancyModifier(TechnoClass* pTarget)
+{
+	pTarget->Veterancy.Add(
+		Math::clamp(this->VeterancyModifier.Get(0),0.-pTarget->Veterancy.Veterancy,2.0)
+	);
 }
 
 void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
