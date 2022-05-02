@@ -63,10 +63,10 @@ Buildings.DefaultDigitalDisplayTypeHP=  ; DigitalDisplayType, the default digita
 Buildings.DefaultDigitalDisplayTypeSP=  ; DigitalDisplayType, the default digital display type used for building shield
 Infantrys.DefaultDigitalDisplayTypeHP=  ; DigitalDisplayType, the default digital display type used for infantry health
 Infantrys.DefaultDigitalDisplayTypeSP=  ; DigitalDisplayType, the default digital display type used for infantry shield
-Units.DefaultDigitalDisplayTypeHP=      ; DigitalDisplayType, the default digital display type used for other unit health
-Units.DefaultDigitalDisplayTypeSP=      ; DigitalDisplayType, the default digital display type used for other unit shield
-Aircrafts.DefaultDigitalDisplayTypeHP=  ; DigitalDisplayType, the default digital display type used for other aircraft health
-Aircrafts.DefaultDigitalDisplayTypeSP=  ; DigitalDisplayType, the default digital display type used for other aircraft shield
+Units.DefaultDigitalDisplayTypeHP=      ; DigitalDisplayType, the default digital display type used for vehicle health
+Units.DefaultDigitalDisplayTypeSP=      ; DigitalDisplayType, the default digital display type used for vehicle shield
+Aircrafts.DefaultDigitalDisplayTypeHP=  ; DigitalDisplayType, the default digital display type used for aircraft health
+Aircrafts.DefaultDigitalDisplayTypeSP=  ; DigitalDisplayType, the default digital display type used for aircraft shield
 
 [SomeDigitalDisplayType]
 Text.ColorHigh=                         ; RGB, the color of the Text digital display when green HP, default 0,255,0
