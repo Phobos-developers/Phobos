@@ -68,6 +68,8 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->SHP_Interval_Building)
 		.Process(this->Align)
 		.Process(this->Alignment)
+		.Process(this->Percentage)
+		.Process(this->HideStrength)
 		;
 }
 
