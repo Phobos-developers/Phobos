@@ -119,6 +119,7 @@ public:
 
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
 		Valueable<CSFText> EnemyUIName;
+		ValueableIdxVector<TechnoTypeClass> RandomProduct;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -190,6 +191,7 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
+			, RandomProduct {}
 		{ }
 
 		virtual ~ExtData() = default;

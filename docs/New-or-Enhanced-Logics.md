@@ -268,6 +268,16 @@ In `rulesmd.ini`:
 NotHuman.RandomDeathSequence=yes  ; boolean
 ```
 
+### Random Product
+
+- Producing this infantry will become a random one in the `RandomProduct`, can include self
+
+In `rulesmd.ini`:
+```ini
+[SOMEINFANTRY]  ; InfantryType
+RandomProduct=  ; list of InfantryTypes
+```
+
 ### Shared Ammo
 
 - Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo to passengers that have `Ammo.Shared=yes`.
@@ -745,6 +755,7 @@ OpenTopped.WarpDistance=8          ; integer
   - `Overpowerable=true` buildings that are currently overpowered.
   - Any system using `(Elite)WeaponX`, f.ex `Gunner=true` or `IsGattling=true` is also wholly exempt.
   
+
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                      ; TechnoType
@@ -991,7 +1002,7 @@ In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],505,0,0,[SuperWeaponTypesIndex],[HouseIndex],[CoordinateX],[CoordinateY],A,[ActionX]
+ID=ActionCount,[Action1],505,4,[SuperWeaponType],0,[HouseIndex],[CoordinateX],[CoordinateY],A,[ActionX]
 ...
 ```
 
@@ -1003,7 +1014,18 @@ In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointIndex],0,A,[ActionX]
+ID=ActionCount,[Action1],506,4,[SuperWeaponType],0,[HouseIndex],[WaypointIndex],0,A,[ActionX]
+...
+```
+
+### `9931` Message for specified house
+
+- Print message like action 11 for specified house
+
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],9931,4,[CSFkey],[HouseIndex],0,0,0,A,[ActionX]
 ...
 ```
 
@@ -1114,6 +1136,7 @@ RemoveMindControl=no                 ; boolean
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
   - `ImmuneToCrit` can be set on TechnoTypes to make them immune to critical hits.
   
+
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                     ; Warhead
@@ -1202,6 +1225,17 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]            ; Warhead
 NotHuman.DeathSequence=  ; integer (1 to 5)
+```
+
+## Vehicles
+
+### Random Product
+- Producing this vehicle will become a random one in the `RandomProduct`, can include self
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]   ; VehicleType
+RandomProduct=  ; list of VehicleTypes
 ```
 
 ## Weapons

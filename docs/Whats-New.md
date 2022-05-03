@@ -82,8 +82,9 @@ This page lists the history of changes across stable Phobos releases and also al
   502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
   503=Print variable value,0,56,54,0,0,0,0,0,0,[LONG DESC],0,1,503,0
   504=Binary operation,0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1
-  505=Fire Super Weapon at specified location (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
-  506=Fire Super Weapon at specified waypoint (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
+  505=Fire Super Weapon at specified location (Phobos),-4,36,0,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
+  506=Fire Super Weapon at specified waypoint (Phobos),-4,36,0,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
+  9931=Message For Specified House (Phobos),-4,13,2,0,0,0,0,0,0,Print message like action 11 for specified house,0,1,9931,1
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
   [ScriptTypeLists]
@@ -294,6 +295,9 @@ New:
 - Single-color weapon lasers (by Starkku)
 - Customizable projectile trajectory (by secsome)
 - Correct owner house for Warhead Anim/SplashList & Play Animation trigger animations (by Starkku)
+- Action 505,506 use SuperWeaponType ID
+- Action 9931 Message for specified house
+- Random product of infantry and vehicle
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
