@@ -333,6 +333,11 @@ New:
 - Implemented support for PCX images for campaign loading screen (by FlyStar)
 - Implemented support for PCX images for observer loading screen (by Uranusian)
 - Animated (non-tiberium spawning) TerrainTypes (by Starkku)
+- Customizable aircraft spawner spawn delay (by Starkku)
+- Customizable Cluster scatter distance (by Starkku)
+- Customizable FlakScatter distance (by Starkku)
+- Customizable debris & meteor impact and warhead detonation behaviour (by Starkku, Otamaa)
+- Custom warhead debris animations (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -362,6 +367,7 @@ Vanilla fixes:
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding (only applies to Z-aware drawing mode for now) (by Apollo)
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something (by Kerbiter)
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true` (by Starkku)
+- Fixed the range for number of debris spawned by Warhead to use MaxDebris instead of MaxDebris - 1 (by Starkku)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)

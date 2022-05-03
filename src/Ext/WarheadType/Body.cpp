@@ -35,7 +35,7 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, T
 	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
 
 	if (BulletClass* pBullet = pType->CreateBullet(pTarget, pOwner,
-		damage, pThis, 0, false))
+		damage, pThis, 0, pThis->Bright))
 	{
 		const CoordStruct& coords = pTarget->GetCoords();
 
@@ -51,7 +51,7 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coor
 	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
 
 	if (BulletClass* pBullet = pType->CreateBullet(nullptr, pOwner,
-		damage, pThis, 0, false))
+		damage, pThis, 0, pThis->Bright))
 	{
 		pBullet->Limbo();
 		pBullet->SetLocation(coords);
@@ -161,6 +161,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->LaunchSW_RealLaunch.Read(exINI, pSection, "LaunchSW.RealLaunch");
 	this->LaunchSW_IgnoreInhibitors.Read(exINI, pSection, "LaunchSW.IgnoreInhibitors");
 	this->AllowDamageOnSelf.Read(exINI, pSection, "AllowDamageOnSelf");
+	this->DebrisAnims.Read(exINI, pSection, "DebrisAnims");
+	this->Debris_Conventional.Read(exINI, pSection, "Debris.Conventional");
 
 	this->DetonateOnAllMapObjects.Read(exINI, pSection, "DetonateOnAllMapObjects");
 	this->DetonateOnAllMapObjects_RequireVerses.Read(exINI, pSection, "DetonateOnAllMapObjects.RequireVerses");
@@ -236,6 +238,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaunchSW_RealLaunch)
 		.Process(this->LaunchSW_IgnoreInhibitors)
 		.Process(this->AllowDamageOnSelf)
+		.Process(this->DebrisAnims)
+		.Process(this->Debris_Conventional)
 
 		.Process(this->DetonateOnAllMapObjects)
 		.Process(this->DetonateOnAllMapObjects_RequireVerses)

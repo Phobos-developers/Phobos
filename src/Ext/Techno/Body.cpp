@@ -255,13 +255,13 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (pTypeExt->Spawn_LimitedRange)
+	if (pTypeExt->Spawner_LimitRange)
 	{
 		if (auto const pManager = pThis->SpawnManager)
 		{
 			auto pTechnoType = pThis->GetTechnoType();
 			int weaponRange = 0;
-			int weaponRangeExtra = pTypeExt->Spawn_LimitedExtraRange * Unsorted::LeptonsPerCell;
+			int weaponRangeExtra = pTypeExt->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
 
 			auto setWeaponRange = [&weaponRange](WeaponTypeClass* pWeaponType)
 			{

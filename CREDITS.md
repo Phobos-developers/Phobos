@@ -97,6 +97,7 @@ This page lists all the individual contributions to the project by their author.
   - `EnemyUIName=` for other TechnoTypes
   - TerrainType `DestroyAnim` & `DestroySound`
   - Laser trails for VoxelAnims
+  - Debris & meteor impact behaviour settings
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
@@ -154,6 +155,11 @@ This page lists all the individual contributions to the project by their author.
   - Trailer animation owner inheritance
   - Warhead detonation on all objects on map
   - Animated TerrainTypes extension
+  - Spawner spawn delay customization
+  - Cluster scatter distance customization
+  - FlakScatter distance customization
+  - Debris & meteor impact behaviour settings
+  - Custom warhead debris animations
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption

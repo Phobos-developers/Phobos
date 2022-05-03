@@ -37,8 +37,9 @@ public:
 		Valueable<bool> Interceptor_KeepIntact;
 		Valueable<CoordStruct> TurretOffset;
 		Valueable<bool> Powered_KillSpawns;
-		Valueable<bool> Spawn_LimitedRange;
-		Valueable<int> Spawn_LimitedExtraRange;
+		Valueable<bool> Spawner_LimitRange;
+		Valueable<int> Spawner_ExtraLimitRange;
+		Nullable<int> Spawner_DelayFrames;
 		Nullable<bool> Harvester_Counted;
 		Valueable<bool> Promote_IncludeSpawns;
 		Valueable<bool> ImmuneToCrit;
@@ -169,8 +170,9 @@ public:
 			, Interceptor_KeepIntact { false }
 			, TurretOffset { { 0, 0, 0 } }
 			, Powered_KillSpawns { false }
-			, Spawn_LimitedRange { false }
-			, Spawn_LimitedExtraRange { 0 }
+			, Spawner_LimitRange { false }
+			, Spawner_ExtraLimitRange { 0 }
+			, Spawner_DelayFrames {}
 			, Harvester_Counted {}
 			, Promote_IncludeSpawns { false }
 			, ImmuneToCrit { false }

@@ -79,6 +79,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
   - Only applies to Z-aware drawing mode for now.
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true`
+- Warheads spawning debris now use `MaxDebris` as an actual cap for number of debris to spawn instead of `MaxDebris` - 1.
 
 ## Animations
 
@@ -110,6 +111,22 @@ In `artmd.ini`:
 ```ini
 [SOMEANIM]                       ; AnimationType
 UseCenterCoordsIfAttached=false  ; boolean
+```
+
+### Customizable debris & meteor impact and warhead detonation behaviour
+
+- `ExplodeOnWater` can be set to true to make the animation explode on impact with water. `ExpireAnim` will be played and `Warhead` is detonated or used to deal damage / generate light flash.
+- `Warhead.Detonate`, if set to true, makes the `Warhead` fully detonate instead of simply being used to deal damage and generate light flash if it has `Bright=true`.
+- `SplashAnims` contains list of animations used if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[CombatDamage]` -> `SplashList` if `IsMeteor` is set, otherwise to a single animation specified in `[General]` -> `Wake`.
+  - If `SplashAnims.PickRandom` is set to true, picks a random animation from `SplashAnims` to use on each impact with water. Otherwise last listed animation from `SplashAnims` is used.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                    ; AnimationType
+ExplodeOnWater=false          ; boolean
+Warhead.Detonate=false        ; boolean
+SplashAnims=                  ; list of animations
+SplashAnims.PickRandom=false  ; boolean
 ```
 
 ### Layer on animations attached to objects
@@ -166,6 +183,17 @@ Grinding.DisplayRefund.Offset=0,0  ; X,Y, pixels relative to default
 
 ## Projectiles
 
+### Cluster scatter distance customization
+
+- `ClusterScatter.Min` and `ClusterScatter.Max` can be used to set minimum and maximum distance, respectively, in cells from the original detonation coordinate any additional detonations if `Cluster` is set to value higher than 1 can appear at.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]         ; Projectile
+ClusterScatter.Min=1.0  ; float, distance in cells
+ClusterScatter.Max=2.0  ; float, distance in cells
+```
+
 ### Customizable projectile gravity
 
 -  You can now specify individual projectile gravity.
@@ -175,6 +203,17 @@ In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]        ; Projectile
 Gravity=6.0             ; floating point value
+```
+
+### FlakScatter distance customization
+
+- By default `FlakScatter=true` makes `Inviso=true` projectiles scatter by random distance (in cells) from 0 to `[CombatDamage]` -> `BallisticScatter`. This distance range can now be customized by setting `BallisticScatter.Min` & `BallisticScatter.Max` on the projectile. If not set, the default values are used.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]      ; Projectile
+BallisticScatter.Min= ; float, distance in cells
+BallisticScatter.Max= ; float, distance in cells
 ```
 
 ## Technos
@@ -422,6 +461,12 @@ DeployingAnim.UseUnitDrawer=true       ; boolean
 
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
 
+## VoxelAnims
+
+### Customizable debris & meteor impact and warhead detonation behaviour
+
+- The INI keys and behaviour is mostly identical to the [equivalent behaviour available to regular animations](#customizable-debris-%26-meteor-impact-and-warhead-detonation-behaviour). Main difference is that the keys must be listed in the VoxelAnim's entry in `rulesmd.ini`, not `artmd.ini`.
+
 ### Preserve Iron Curtain status on type conversion
 
 ![image](_static/images/preserve-ic.gif)
@@ -441,6 +486,18 @@ IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.K
 ```
 
 ## Warheads
+
+### Custom debris animations and additional debris spawn settings
+
+- You can now use `DebrisAnims` to specify a list of debris animations to spawn instead of animations from `[General]` -> `MetallicDebris` when Warhead with `MaxDebris` > 0 and no `DebrisTypes` (VoxelAnims) listed is detonated.
+- `Debris.Conventional`, if set to true, makes `DebrisTypes` or `DebrisAnims` only spawn if Warhead is fired on non-water cell.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]              ; WarheadType
+DebrisAnims=               ; List of animations
+Debris.Conventional=false  ; boolean
+```
 
 ### Allowing damage dealt to firer
 
