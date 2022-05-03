@@ -795,7 +795,7 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 		if (Percentage)
 			Pos.X -= (vHealth.Count * Interval.X + Interval.X) / 2;
 		else if (HideStrength)
-			Pos.X -= (vHealth.Count * Interval.X);
+			Pos.X -= (vHealth.Count * Interval.X) / 2;
 		else
 			Pos.X -= (vHealth.Count * Interval.X + vStrength.Count * Interval.X + Interval.X) / 2;
 	}
