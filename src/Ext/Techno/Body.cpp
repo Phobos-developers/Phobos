@@ -571,16 +571,35 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 	}
 }
 
+//issue #621: let the mcv in hunt mission deploy asap
 void TechnoExt::MCVLocoAIFix(TechnoClass* pThis)
 {
 	if (pThis->WhatAmI() == AbstractType::Unit &&
-		pThis->GetTechnoType()->Category == Category::Support &&
-		!pThis->GetOwningHouse()->ControlledByHuman())
-	{
+	pThis->GetTechnoType()->Category == Category::Support &&
+	!pThis->GetOwningHouse()->ControlledByHuman()
+		)
+	{// All mcv at the skirmish beginning is hunting 
 		const auto pFoot = abstract_cast<UnitClass*>(pThis);
-		if (pFoot->GetCurrentMission() == Mission::Hunt
-			&& !pFoot->Destination)
-			pThis->QueueMission(Mission::Guard,false);
+		const auto deployType = pFoot->Type->DeploysInto;
+		if (deployType &&
+			pFoot->GetCurrentMission() == Mission::Hunt &&
+			!pFoot->Destination)
+		{//for other locomotors they don't have a destination, so give it the nearest location
+			CellStruct coord = pFoot->GetCell()->MapCoords;
+			const auto clsid = pFoot->Type->Locomotor;
+			coord.X -= deployType->GetFoundationWidth() / 2;
+			coord.Y -= deployType->GetFoundationHeight(true) / 2;
+			coord = MapClass::Instance->NearByLocation(
+				coord, pFoot->Type->SpeedType, -1, MovementZone::Normal, false,
+				deployType->GetFoundationWidth(), deployType->GetFoundationHeight(true),
+				true, false, false, false, CellStruct::Empty, false, true);
+
+			if (const auto tgtCell = MapClass::Instance->TryGetCellAt(coord))
+			{
+				pFoot->SetDestination(tgtCell, true);
+				pFoot->QueueMission(Mission::Unload, false);
+			}
+		}
 	}
 }
 
