@@ -575,10 +575,12 @@ void TechnoExt::MCVLocoAIFix(TechnoClass* pThis)
 {
 	if (pThis->WhatAmI() == AbstractType::Unit &&
 		pThis->GetTechnoType()->Category == Category::Support &&
-		!pThis->GetOwningHouse()->ControlledByHuman() &&
-		pThis->GetCurrentMission()==Mission::Hunt)
+		!pThis->GetOwningHouse()->ControlledByHuman())
 	{
-		pThis->ForceMission(Mission::Unload);
+		const auto pFoot = abstract_cast<UnitClass*>(pThis);
+		if (pFoot->GetCurrentMission() == Mission::Hunt
+			&& !pFoot->Destination)
+			pThis->QueueMission(Mission::Guard,false);
 	}
 }
 
