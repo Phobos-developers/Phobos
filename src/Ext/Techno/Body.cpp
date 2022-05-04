@@ -571,6 +571,17 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 	}
 }
 
+void TechnoExt::MCVLocoAIFix(TechnoClass* pThis)
+{
+	if (pThis->WhatAmI() == AbstractType::Unit &&
+		pThis->GetTechnoType()->Category == Category::Support &&
+		!pThis->GetOwningHouse()->ControlledByHuman() &&
+		pThis->GetCurrentMission()==Mission::Hunt)
+	{
+		pThis->ForceMission(Mission::Unload);
+	}
+}
+
 // =============================
 // load / save
 
