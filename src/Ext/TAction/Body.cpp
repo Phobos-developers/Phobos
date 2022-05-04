@@ -429,9 +429,9 @@ bool TActionExt::MessageForSpecifiedHouse(TActionClass* pThis, HouseClass* pHous
 	HouseClass* pTargetHouse = nullptr;
 
 	if (HouseClass::Index_IsMP(houseIdx))
-		pTargetHouse = HouseClass::FindByIndex(pThis->Param4);
+		pTargetHouse = HouseClass::FindByIndex(houseIdx);
 	else
-		pTargetHouse = HouseClass::FindByCountryIndex(pThis->Param4);
+		pTargetHouse = HouseClass::FindByCountryIndex(houseIdx);
 
 	if (pTargetHouse == nullptr)
 		return true;
