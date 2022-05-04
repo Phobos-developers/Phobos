@@ -11,7 +11,7 @@
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
-
+#include <LocomotionClass.h>
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 
@@ -597,8 +597,26 @@ void TechnoExt::MCVLocoAIFix(TechnoClass* pThis)
 			if (const auto tgtCell = MapClass::Instance->TryGetCellAt(coord))
 			{
 				pFoot->SetDestination(tgtCell, true);
-				pFoot->QueueMission(Mission::Unload, false);
+				pFoot->QueueMission(Mission::Guard, false);
 			}
+		}
+	}
+}
+
+void TechnoExt::HarvesterLocoFix(TechnoClass* pThis)
+{
+	if (pThis->WhatAmI() == AbstractType::Unit)
+	{
+		const auto pFoot = abstract_cast<UnitClass*>(pThis);
+		if (pFoot && !pThis->IsSelected && pFoot->Type->Harvester &&
+			(pFoot->Type->Locomotor == LocomotionClass::CLSIDs::Tunnel ||
+			 pFoot->Type->Locomotor == LocomotionClass::CLSIDs::Jumpjet) &&
+			(pFoot->GetCurrentMission() == Mission::Guard ||
+			 pFoot->GetCurrentMission() == Mission::Area_Guard) &&
+			!TechnoExt::IsHarvesting(pThis) && !pFoot->Locomotor->Is_Really_Moving_Now()
+		)
+		{
+			pFoot->QueueMission(Mission::Harvest, true);
 		}
 	}
 }

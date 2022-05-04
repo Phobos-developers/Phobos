@@ -101,4 +101,5 @@ public:
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 	static void UpdateMindControlAnim(TechnoClass* pThis);
 	static void MCVLocoAIFix(TechnoClass* pThis);
+	static void HarvesterLocoFix(TechnoClass* pThis);
 };
