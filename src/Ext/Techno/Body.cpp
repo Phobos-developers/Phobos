@@ -571,6 +571,70 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 	}
 }
 
+#pragma push_macro("NOT_FLAT")
+#define NOT_FLAT -114
+//Don't know if such thing exists already or not
+static int _FlatAreaLevel(ObjectClass* ignoreMe, CellClass* cell, short spacex, short spacey, int previousLevel)
+{
+	if (!cell)
+		return NOT_FLAT;
+	bool isClear = false;
+	if (cell->OverlayTypeIndex == -1)
+	{
+		if (auto content = cell->FirstObject)
+		{
+			if (ignoreMe && content->UniqueID == ignoreMe->UniqueID && !content->NextObject)
+				isClear = true;
+		}
+		else isClear = true;
+	}
+	if (!isClear)
+		return NOT_FLAT;
+
+	const int level = cell->GetLevel();
+	if (level != previousLevel)
+		return NOT_FLAT;
+
+	if (spacex <= 1 && spacey <= 1)
+		return level;
+
+	int Slevel = _FlatAreaLevel(ignoreMe, cell->GetNeighbourCell(Direction::S), 1, spacey - 1, level);
+	if (spacex == 1)
+		return Slevel == previousLevel ? Slevel : NOT_FLAT;
+
+	if (Slevel == NOT_FLAT)
+		return NOT_FLAT;
+
+	int Elevel = _FlatAreaLevel(ignoreMe, cell->GetNeighbourCell(Direction::E), spacex - 1, spacey, level);
+	if (Elevel != NOT_FLAT 
+		&& Slevel == Elevel && Elevel == level && level == previousLevel)
+		return level;
+	else
+		return NOT_FLAT;
+}
+
+static inline bool EnoughSpaceToExpand(ObjectClass* ignoreThis, CellClass* cell, short spacex, short spacey)
+{
+	return _FlatAreaLevel(ignoreThis, cell, spacex, spacey, cell->GetLevel()) != NOT_FLAT;
+}
+
+//Didn't always succeed, don't know why
+static bool TriedToDeployHere(UnitClass* mcv, short spacex, short spacey)
+{
+	CellStruct coord = mcv->GetCell()->MapCoords;
+
+	coord.X -= spacex / 2;
+	coord.Y -= spacey / 2;
+
+	if (EnoughSpaceToExpand(mcv, MapClass::Instance->GetCellAt(coord),
+		spacex, spacey))
+		return mcv->TryToDeploy();
+	else return false;
+}
+
+#undef NOT_FLAT
+#pragma pop_macro("NOT_FLAT")
+
 //issue #621: let the mcv in hunt mission deploy asap
 void TechnoExt::MCVLocoAIFix(TechnoClass* pThis)
 {
@@ -581,28 +645,32 @@ void TechnoExt::MCVLocoAIFix(TechnoClass* pThis)
 	{// All mcv at the skirmish beginning is hunting 
 		const auto pFoot = abstract_cast<UnitClass*>(pThis);
 		const auto deployType = pFoot->Type->DeploysInto;
-		if (deployType &&
-			pFoot->GetCurrentMission() == Mission::Hunt &&
-			!pFoot->Destination)
-		{//for other locomotors they don't have a destination, so give it the nearest location
-			CellStruct coord = pFoot->GetCell()->MapCoords;
-			const auto clsid = pFoot->Type->Locomotor;
-			coord.X -= deployType->GetFoundationWidth() / 2;
-			coord.Y -= deployType->GetFoundationHeight(true) / 2;
-			coord = MapClass::Instance->NearByLocation(
-				coord, pFoot->Type->SpeedType, -1, MovementZone::Normal, false,
-				deployType->GetFoundationWidth(), deployType->GetFoundationHeight(true),
-				true, false, false, false, CellStruct::Empty, false, true);
+		if (pFoot && deployType)
+		{
+			short XWidth = deployType->GetFoundationWidth();
+			short YWidth = deployType->GetFoundationHeight(true);
+			if (!pFoot->Destination &&
+				(pFoot->GetCurrentMission() == Mission::Hunt || pFoot->GetCurrentMission() == Mission::Unload) &&
+				!TriedToDeployHere(pFoot, XWidth, YWidth)
+				)
+			{//for other locomotors they don't have a destination, so give it the nearest location
+				CellStruct coord = pFoot->GetCell()->MapCoords;
+				coord = MapClass::Instance->NearByLocation(
+					coord, pFoot->Type->SpeedType, -1, MovementZone::Normal, false,
+					XWidth, YWidth,
+					true, false, false, false, CellStruct::Empty, false, true);
 
-			if (const auto tgtCell = MapClass::Instance->TryGetCellAt(coord))
-			{
-				pFoot->SetDestination(tgtCell, true);
-				pFoot->QueueMission(Mission::Guard, false);
+				if (const auto tgtCell = MapClass::Instance->TryGetCellAt(coord))
+				{
+					pFoot->SetDestination(tgtCell, true);
+					pFoot->QueueMission(Mission::Guard, false);
+				}
 			}
 		}
 	}
 }
 
+//Not working for no ore map? whatever
 void TechnoExt::HarvesterLocoFix(TechnoClass* pThis)
 {
 	if (pThis->WhatAmI() == AbstractType::Unit)
