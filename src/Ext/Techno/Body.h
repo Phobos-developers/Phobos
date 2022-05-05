@@ -31,6 +31,7 @@ public:
 		int Death_Countdown;
 		AnimTypeClass* MindControlRingAnimType;
 		int DamageNumberOffset;
+		HouseClass* OriginalPassengerOwner;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet { nullptr }
@@ -45,6 +46,7 @@ public:
 			, Death_Countdown(-1)
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset { INT32_MIN }
+			, OriginalPassengerOwner {}
 		{ }
 
 		virtual ~ExtData() = default;

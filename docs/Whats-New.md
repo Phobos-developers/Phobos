@@ -303,6 +303,7 @@ New:
 - Building-provided self-healing customization (by Starkku)
 - Building placement preview (by Otamaa)
 - Passable & buildable-upon TerrainTypes (by Starkku)
+- Toggle for passengers to automatically change owner if transport owner changes (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
