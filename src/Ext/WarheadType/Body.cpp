@@ -129,6 +129,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_AffectTypes.Read(exINI, pSection, "Shield.AffectTypes");
 
 	this->NotHuman_DeathSequence.Read(exINI, pSection, "NotHuman.DeathSequence");
+
+	this->MindContol_Threshhold.Read(exINI, pSection, "MindControl.Threshhold");
+	this->MindContol_Damage.Read(exINI, pSection, "MindControl.Damage");
+	this->MindContol_Warhead.Read(exINI, pSection, "MindControl.Warhead", true);
+	this->MindContol_CanKill.Read(exINI, pSection, "MindContol.CanKill");
 }
 
 template <typename T>
@@ -187,6 +192,11 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_AffectTypes)
 
 		.Process(this->NotHuman_DeathSequence)
+
+		.Process(this->MindContol_Threshhold)
+		.Process(this->MindContol_Damage)
+		.Process(this->MindContol_Warhead)
+		.Process(this->MindContol_CanKill)
 		;
 }
 

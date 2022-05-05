@@ -6,6 +6,7 @@
 #include <Utilities/TemplateDef.h>
 
 #include <New/Entity/LaserTrailClass.h>
+#include <Ext/WarheadType/Body.h>
 
 #include "Trajectories/PhobosTrajectory.h"
 

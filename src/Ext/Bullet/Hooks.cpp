@@ -6,6 +6,7 @@
 
 #include <TechnoClass.h>
 #include <TacticalClass.h>
+#include <ScenarioClass.h>
 
 // has everything inited except SpawnNextAnim at this point
 DEFINE_HOOK(0x466556, BulletClass_Init_SetLaserTrail, 0x6)
@@ -93,6 +94,112 @@ DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
 	R->AL(CaptureManager::CaptureUnit(pThis->Owner->CaptureManager, pTechno, pControlledAnimType));
 
 	return 0x4692D5;
+}
+
+DEFINE_HOOK(0x469211, BulletClass_Logics_MindControlAlternative1, 0x6)
+{
+	GET(BulletClass*, pBullet, ESI);
+
+	if (!pBullet->Target)
+		return 0;
+
+	auto pBulletWH = pBullet->WH;
+	auto pTarget = generic_cast<TechnoClass*>(pBullet->Target);
+
+	if (pTarget 
+		&& pBullet->Owner 
+		&& pBulletWH 
+		&& pBulletWH->MindControl)
+	{
+		if (auto pTargetType = pTarget->GetTechnoType())
+		{
+			if (auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(pBulletWH))
+			{
+				auto currentHealthPerc = pTarget->Health * 100 / pTargetType->Strength;
+
+				if (pWarheadExt->MindContol_Threshhold < 0 || pWarheadExt->MindContol_Threshhold > 100)
+					pWarheadExt->MindContol_Threshhold = 100;
+
+				if (pWarheadExt->MindContol_Threshhold < 100 
+					&& pWarheadExt->MindContol_Damage.isset() 
+					&& pWarheadExt->MindContol_Warhead.isset() 
+					&& currentHealthPerc >= pWarheadExt->MindContol_Threshhold)
+				{
+					return 0x469343;
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x469BD6, BulletClass_Logics_MindControlAlternative2, 0x6)
+{
+	GET(BulletClass*, pBullet, ESI);
+	GET(AnimTypeClass*, pAnimType, EBX);
+
+	if (!pBullet->Target)
+		return 0;
+
+	auto pBulletWH = pBullet->WH;
+	auto pTarget = generic_cast<TechnoClass*>(pBullet->Target);
+
+	if (pTarget 
+		&& pBullet->Owner 
+		&& pBulletWH 
+		&& pBulletWH->MindControl)
+	{
+		if (auto pTargetType = pTarget->GetTechnoType())
+		{
+			auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(pBulletWH);
+			auto currentHealthPerc = pTarget->Health * 100 / pTargetType->Strength;
+
+			if (pWarheadExt && pWarheadExt->MindContol_Threshhold < 100 
+				&& pWarheadExt->MindContol_Damage.isset() 
+				&& pWarheadExt->MindContol_Warhead.isset() 
+				&& currentHealthPerc >= pWarheadExt->MindContol_Threshhold)
+			{
+				int damage = pWarheadExt->MindContol_Damage;
+				WarheadTypeClass* pAltWarhead = pWarheadExt->MindContol_Warhead;
+				auto pAttacker = pBullet->Owner;
+				auto pAttackingHouse = pBullet->Owner->Owner;
+				int realDamage = MapClass::GetTotalDamage(damage, pAltWarhead, pTargetType->Armor, 0);
+
+				if (pTarget->Health <= realDamage && !pWarheadExt->MindContol_CanKill)
+				{
+					pTarget->Health = 100000000;
+					realDamage = 1;
+					pTarget->ReceiveDamage(&realDamage, 0, pAltWarhead, pAttacker, true, false, pAttackingHouse);
+					pTarget->Health = 1;
+				}
+				else
+				{
+					pTarget->ReceiveDamage(&damage, 0, pAltWarhead, pAttacker, true, false, pAttackingHouse);
+				}
+
+				// If the alternative Warhead have AnimList tag declared then use it
+				if (pWarheadExt->MindContol_Warhead->AnimList.Count > 0)
+				{
+					int animListCount = pWarheadExt->MindContol_Warhead->AnimList.Count;
+					auto const pAltWarheadExt = WarheadTypeExt::ExtMap.Find(pBulletWH);
+					int idx = pAltWarhead->EMEffect || pAltWarheadExt->AnimList_PickRandom ?
+						ScenarioClass::Instance->Random.RandomRanged(0, animListCount - 1) :
+						std::min((size_t)animListCount * 25 - 1, (size_t)damage) / 25;
+
+					pAnimType = pWarheadExt->MindContol_Warhead->AnimList[idx];
+				}
+				else
+				{
+					pAnimType = nullptr;
+				}
+
+				R->EBX(pAnimType);
+			}
+		}
+	}
+
+	return 0;
 }
 
 DEFINE_HOOK(0x4671B9, BulletClass_AI_ApplyGravity, 0x6)

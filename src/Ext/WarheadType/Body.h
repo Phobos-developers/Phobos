@@ -74,6 +74,11 @@ public:
 		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
+		Valueable<int> MindContol_Threshhold;
+		Nullable<int> MindContol_Damage;
+		Nullable<WarheadTypeClass*> MindContol_Warhead;
+		Valueable<bool> MindContol_CanKill;
+
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
 		Valueable<double> Shield_SelfHealing_Rate_InMinutes;
@@ -135,6 +140,11 @@ public:
 			, Shield_AffectTypes {}
 
 			, NotHuman_DeathSequence { -1 }
+
+			, MindContol_Threshhold { 100 }
+			, MindContol_Damage {}
+			, MindContol_Warhead {}
+			, MindContol_CanKill { false }
 		{ }
 
 	private:
