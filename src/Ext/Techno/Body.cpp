@@ -8,6 +8,7 @@
 #include <SpawnManagerClass.h>
 #include <InfantryClass.h>
 #include <Unsorted.h>
+#include <JumpjetLocomotionClass.h>
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -567,6 +568,48 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 		else if (pExt->MindControlRingAnimType)
 		{
 			pExt->MindControlRingAnimType = nullptr;
+		}
+	}
+}
+
+static bool __fastcall CheckIfCanFireAt(TechnoClass* pTechno, AbstractClass* pTarget)
+{
+	const int wpnIdx = pTechno->SelectWeapon(pTarget);
+	const FireError fErr = pTechno->GetFireError(pTarget, wpnIdx, true);
+	if (fErr != FireError::ILLEGAL
+		&& fErr != FireError::CANT
+		&& fErr != FireError::MOVING
+		&& fErr != FireError::RANGE)
+	{
+		return pTechno->IsCloseEnough(pTarget, wpnIdx);
+	}
+	else
+		return false;
+}
+
+void TechnoExt::JumpjetUnitFacingFix(TechnoClass* pThis)
+{
+	const auto pType = pThis->GetTechnoType();
+	if (pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet && pThis->IsInAir()
+		&& pThis->WhatAmI() == AbstractType::Unit && !pType->TurretSpins)
+	{
+		const auto pFoot = abstract_cast<UnitClass*>(pThis);
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		if (pTypeExt && pTypeExt->JumpjetFacingTarget.Get(RulesExt::Global()->JumpjetFacingTarget)
+			&& pFoot && pFoot->GetCurrentSpeed() == 0)
+		{
+			if (const auto pTarget = pThis->Target)
+			{
+				const auto pLoco = static_cast<JumpjetLocomotionClass*>(pFoot->Locomotor.get());
+				if (pLoco && !pLoco->LocomotionFacing.in_motion() && CheckIfCanFireAt(pThis, pTarget))
+				{
+					const CoordStruct source = pThis->Location;
+					const CoordStruct target = pTarget->GetCoords();
+					const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
+					if (pThis->GetRealFacing().value32() != tgtDir.value32())
+						pLoco->LocomotionFacing.turn(tgtDir);
+				}
+			}
 		}
 	}
 }
