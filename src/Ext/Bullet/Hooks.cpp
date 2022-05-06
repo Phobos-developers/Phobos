@@ -153,7 +153,7 @@ DEFINE_HOOK(0x469BD6, BulletClass_Logics_MindControlAlternative2, 0x6)
 		if (auto pTargetType = pTarget->GetTechnoType())
 		{
 			auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(pBulletWH);
-			auto currentHealthPerc = pTarget->Health * 100 / pTargetType->Strength;
+			double currentHealthPerc = pTarget->GetHealthPercentage() * 100;
 
 			if (pWarheadExt && pWarheadExt->MindContol_Threshhold < 100 
 				&& pWarheadExt->MindContol_Damage.isset() 
@@ -177,21 +177,19 @@ DEFINE_HOOK(0x469BD6, BulletClass_Logics_MindControlAlternative2, 0x6)
 				{
 					pTarget->ReceiveDamage(&damage, 0, pAltWarhead, pAttacker, true, false, pAttackingHouse);
 				}
+				
+				pAnimType = nullptr;
 
 				// If the alternative Warhead have AnimList tag declared then use it
 				if (pWarheadExt->MindContol_Warhead->AnimList.Count > 0)
 				{
 					int animListCount = pWarheadExt->MindContol_Warhead->AnimList.Count;
 					auto const pAltWarheadExt = WarheadTypeExt::ExtMap.Find(pBulletWH);
-					int idx = pAltWarhead->EMEffect || pAltWarheadExt->AnimList_PickRandom ?
-						ScenarioClass::Instance->Random.RandomRanged(0, animListCount - 1) :
-						std::min((size_t)animListCount * 25 - 1, (size_t)damage) / 25;
 
-					pAnimType = pWarheadExt->MindContol_Warhead->AnimList[idx];
-				}
-				else
-				{
-					pAnimType = nullptr;
+					if (CellClass* pCell = MapClass::Instance->TryGetCellAt(pTarget->Location))
+					{
+						pAnimType = MapClass::SelectDamageAnimation(damage, pAltWarhead, pCell->LandType, pTarget->Location);
+					}
 				}
 
 				R->EBX(pAnimType);
