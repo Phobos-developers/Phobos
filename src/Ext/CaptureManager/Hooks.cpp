@@ -61,22 +61,13 @@ void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void
 			int nCurIdx = 0;
 			int const nNodeCount = pThis->ControlNodes.Count;
 
-			if (nNodeCount > OverloadCount[0])
+			for (int i = 0; i < (int)(OverloadCount.size()); ++i)
 			{
-				if (OverloadCount.size() > 1) //check if the Overload size actually more than one
-				{
-					for (int i = 1; nNodeCount > OverloadCount[i]; ++i)
-					{
-						if (nCurIdx >= (int)(OverloadCount.size() - 1) || i >= (int)(OverloadCount.size() - 1))
-							break;
-
-						++nCurIdx;
-					}
-				}
+				if(nNodeCount > OverloadCount[i])
+					nCurIdx = i+1; //select the index !
 			}
 
-			// nCuridx is following Overload .size , so it may causing problem if other vector .size not match Overload .size
-			// fixed it !
+			// prevent nCurIdx selecting out of bound index !
 			constexpr auto FixIdx = [](const Iterator<int>& iter, int nInput) {
 				return iter.empty() ? 0 : iter[nInput > (int)iter.size() ? (int)iter.size() : nInput];
 			};

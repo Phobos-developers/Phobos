@@ -234,7 +234,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Overload_DeathSound.Read(exINI, pSection, "Overload.DeathSound");
 	this->Overload_ParticleSys.Read(exINI, pSection, "Overload.ParticleSys");
 	this->Overload_ParticleSysCount.Read(exINI, pSection, "Overload.ParticleSysCount");
-	this->Draw_MindControlLink.Read(exINI, pSection, "MindControll.DrawLink");
+	this->Draw_MindControlLink.Read(exINI, pSection, "MindControl.DrawLink");
 }
 
 template <typename T>
