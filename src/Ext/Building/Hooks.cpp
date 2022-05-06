@@ -2,6 +2,8 @@
 
 #include <BulletClass.h>
 #include <UnitClass.h>
+#include <InfantryClass.h>
+#include <ScenarioClass.h>
 
 DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
 {
@@ -78,6 +80,49 @@ DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPPulseBulletWeapon, 0x8)
 	GET_STACK(BulletClass*, pBullet, STACK_OFFS(0xF0, 0xA4));
 
 	pBullet->SetWeaponType(pWeapon);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType, 0x6)
+{
+	GET(UnitClass*, pUnit, EDI);
+	GET(BuildingClass*, pFactory, ESI);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType());
+	if (!pTypeExt->RandomProduct.empty())
+	{
+		int iPos = ScenarioClass::Instance->Random(0, int(pTypeExt->RandomProduct.size()) - 1);
+		TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pTypeExt->RandomProduct[iPos]);
+		UnitClass* pNewUnit = static_cast<UnitClass*>(pType->CreateObject(pUnit->GetOwningHouse()));
+		pNewUnit->Limbo();
+		pNewUnit->Unlimbo(pUnit->Location, Direction::SouthEast);
+		pUnit->Limbo();
+		pUnit->UnInit();
+		R->EDI(pNewUnit);
+		pUnit = pNewUnit;
+	}
+
+	return 0;
+}
+
+
+DEFINE_HOOK(0x444131, BuildingClass_KickOutUnit_InfantryType, 0x6)
+{
+	GET(HouseClass*, pHouse, EAX);
+	GET(InfantryClass*, pInf, EDI);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pInf->GetTechnoType());
+	if (!pTypeExt->RandomProduct.empty())
+	{
+		int iPos = ScenarioClass::Instance->Random(0, int(pTypeExt->RandomProduct.size()) - 1);
+		TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pTypeExt->RandomProduct[iPos]);
+		InfantryClass* pNewInf = static_cast<InfantryClass*>(pType->CreateObject(pHouse));
+		pInf->Limbo();
+		pInf->UnInit();
+		R->EDI(pNewInf);
+		pInf = pNewInf;
+	}
 
 	return 0;
 }
