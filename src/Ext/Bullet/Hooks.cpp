@@ -115,7 +115,7 @@ DEFINE_HOOK(0x469211, BulletClass_Logics_MindControlAlternative1, 0x6)
 		{
 			if (auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(pBulletWH))
 			{
-				auto currentHealthPerc = pTarget->Health * 100 / pTargetType->Strength;
+				double currentHealthPerc = pTarget->GetHealthPercentage() * 100;
 
 				if (pWarheadExt->MindContol_Threshhold < 0 || pWarheadExt->MindContol_Threshhold > 100)
 					pWarheadExt->MindContol_Threshhold = 100;
