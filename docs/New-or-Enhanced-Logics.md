@@ -1286,10 +1286,7 @@ In `rulesmd.ini`:
 Rad.NoOwner=no  ; boolean
 ```
 
-### `500 - 523` Edit Variable
-- Operate a variable's value
-    - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
-        - Any numbers exceeding this limit will lead to unexpected results!
+### Strafing aircraft weapon customization
 
 ![image](_static/images/strafing-01.gif)  
 *Strafing aircraft weapon customization in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
