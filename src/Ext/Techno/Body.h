@@ -100,7 +100,9 @@ public:
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 	static void UpdateMindControlAnim(TechnoClass* pThis);
-
+	static bool CheckIfCanFireAt(TechnoClass* pThis, AbstractClass* pTarget);
+	static void ForceJumpjetTurnToTarget(TechnoClass* pThis);
+  
 	static void DigitalDisplayHealth(TechnoClass* pThis, Point2D* pLocation);
 	static void DigitalDisplayTextHealth(TechnoClass* pThis, DigitalDisplayTypeClass* pDisplayType, Point2D Pos);
 	static void DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeClass* pDisplayType, Point2D Pos);

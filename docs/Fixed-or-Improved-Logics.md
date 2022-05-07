@@ -20,6 +20,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Some settings are still ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
+- Fixed jumpjet units cannot turn its facing to the target when firing from a different direction.
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
 - Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
@@ -212,6 +213,21 @@ AllowLayerDeviation=yes         ; boolean
 [SOMETECHNO]                    ; TechnoType
 JumpjetAllowLayerDeviation=yes  ; boolean
 ```
+
+### Jumpjet facing target customization 
+
+- Allows jumpjet units to face towards the target when firing from different directions. Set `[JumpjetControls] -> TurnToTarget=yes` to enable it for all jumpjet locomotor units. This behavior can be overriden by setting `[UnitType] -> JumpjetTurnToTarget` for specific units.
+- This behavior does not apply to `TurretSpins=yes` units for obvious reasons.
+
+In `rulesmd.ini`:
+```ini
+[JumpjetControls]
+TurnToTarget=no        ; boolean
+
+[SOMEUNITTYPE]         ; UnitType with jumpjet locomotor
+JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
+```
+
 
 ### Kill spawns on low power
 

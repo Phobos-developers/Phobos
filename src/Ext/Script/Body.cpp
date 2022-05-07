@@ -1817,6 +1817,23 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 
 		break;
 
+	case 36:
+		// Building that isn't a defense
+		pTypeBuilding = abstract_cast<BuildingTypeClass*>(pTechnoType);
+
+		if (!pTechno->Owner->IsNeutral()
+			&& pTypeBuilding
+			&& !pTypeBuilding->IsBaseDefense
+			&& !(pTypeBuilding->Artillary 
+				|| pTypeBuilding->TickTank
+				|| pTypeBuilding->ICBMLauncher
+				|| pTypeBuilding->SensorArray))
+		{
+			return true;
+		}
+
+		break;
+
 	default:
 		break;
 	}
