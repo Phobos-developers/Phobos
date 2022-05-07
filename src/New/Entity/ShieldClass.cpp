@@ -121,6 +121,9 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		healthDamage = (int)((double)*args->Damage * passPercent);
 	}
 
+	if (Phobos::Debug_DisplayDamageNumbers && shieldDamage != 0)
+		TechnoExt::DisplayDamageNumberString(this->Techno, shieldDamage, true);
+
 	if (shieldDamage > 0)
 	{
 		const int rate = this->Timers.SelfHealing_Warhead.InProgress() ? this->SelfHealing_Rate_Warhead : this->Type->SelfHealing_Rate;

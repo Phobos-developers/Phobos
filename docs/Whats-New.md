@@ -295,6 +295,8 @@ New:
 - Single-color weapon lasers (by Starkku)
 - Customizable projectile trajectory (by secsome)
 - Correct owner house for Warhead Anim/SplashList & Play Animation trigger animations (by Starkku)
+- Display damage numbers debug hotkey command (by Starkku)
+- Toggleable display of TransactMoney amounts (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
