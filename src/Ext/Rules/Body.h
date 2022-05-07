@@ -34,7 +34,7 @@ public:
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 		Valueable<bool> JumpjetAllowLayerDeviation;
-		Valueable<bool> JumpjetFacingTarget;
+		Valueable<bool> JumpjetTurnToTarget;
 		Valueable<int> Storage_TiberiumIndex;
 		Valueable<int> PlacementGrid_TranslucentLevel;
 		Valueable<int> BuildingPlacementPreview_TranslucentLevel;
@@ -50,7 +50,7 @@ public:
 			, Storage_TiberiumIndex { -1 }
 			, PlacementGrid_TranslucentLevel{ 0 }
 			, BuildingPlacementPreview_TranslucentLevel { 3 }
-			, JumpjetFacingTarget { false }
+			, JumpjetTurnToTarget { false }
 		{ }
 
 		virtual ~ExtData() = default;

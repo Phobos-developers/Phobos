@@ -72,7 +72,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
-	this->JumpjetFacingTarget.Read(exINI, "JumpjetControls", "FacingTarget");
+	this->JumpjetTurnToTarget.Read(exINI, "JumpjetControls", "TurnToTarget");
 	this->PlacementGrid_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementGrid.TranslucentLevel");
 	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementPreview.DefaultTranslucentLevel");
 
@@ -167,7 +167,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
 		.Process(this->JumpjetAllowLayerDeviation)
-		.Process(this->JumpjetFacingTarget)
+		.Process(this->JumpjetTurnToTarget)
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
 		.Process(this->Storage_TiberiumIndex)

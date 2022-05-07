@@ -216,18 +216,16 @@ JumpjetAllowLayerDeviation=yes  ; boolean
 
 ### Jumpjet facing target customization 
 
-- Allows jumpjet units to face towards the target when firing from different directions. Set `[JumpjetControls] -> FacingTarget=yes` to enable it for all jumpjet locomotor units. This behavior can be overriden by setting `[UnitType] -> JumpjetFacingTarget` for specific units.
+- Allows jumpjet units to face towards the target when firing from different directions. Set `[JumpjetControls] -> TurnToTarget=yes` to enable it for all jumpjet locomotor units. This behavior can be overriden by setting `[UnitType] -> JumpjetTurnToTarget` for specific units.
 - This behavior does not apply to `TurretSpins=yes` units for obvious reasons.
 
 In `rulesmd.ini`:
 ```ini
 [JumpjetControls]
-FacingTarget=no        ; boolean
+TurnToTarget=no        ; boolean
 
-[UnitType]
-JumpjetFacingTarget=   ; boolean, override the tag in JumpjetControls
-Locomotor=Jumpjet      ; Jumpjet only
-TurretSpins=no         ; It's meaningless to use that for disks obviously
+[SOMEUNITTYPE]         ; UnitType with jumpjet locomotor
+JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
 ```
 
 
