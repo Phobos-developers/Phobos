@@ -184,10 +184,16 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 		return true;
 
 	auto mission = pThis->GetCurrentMission();
-	if ((mission == Mission::Harvest || mission == Mission::Unload || mission == Mission::Enter)
-		&& TechnoExt::HasAvailableDock(pThis))
+	if (TechnoExt::HasAvailableDock(pThis))
 	{
-		return true;
+		if (mission == Mission::Harvest || mission == Mission::Unload || mission == Mission::Enter)
+			return true;
+		else if (pThis->WhatAmI() == AbstractType::Unit && mission == Mission::Guard
+			&& !pThis->IsSelected)
+		{
+			if (auto pFoot = abstract_cast<UnitClass*>(pThis))
+				return pFoot->Locomotor->Is_Really_Moving_Now();
+		}
 	}
 
 	return false;
