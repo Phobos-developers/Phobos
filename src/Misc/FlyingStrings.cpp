@@ -13,12 +13,7 @@ std::vector<FlyingStrings::Item> FlyingStrings::Data;
 bool FlyingStrings::DrawAllowed(CoordStruct& nCoords)
 {
 	if (auto const pCell = MapClass::Instance->TryGetCellAt(nCoords))
-	{
-		if (pCell->IsFogged() || pCell->IsShrouded())
-			return false;
-
-		return true;
-	}
+		return !(pCell->IsFogged() || pCell->IsShrouded());
 
 	return false;
 }
