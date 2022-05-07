@@ -3085,6 +3085,4 @@ void ScriptExt::Stop_ForceJump_Countdown(TeamClass *pTeam)
 	// This action finished
 	pTeam->StepCompleted = true;
 	Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d): Stopped Timed Jump\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
-
-	return;
 }
