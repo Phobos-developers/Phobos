@@ -23,6 +23,9 @@ public:
 		int MoveMissionEndMode;
 		int WaitNoTargetCounter;
 		TimerStruct WaitNoTargetTimer;
+		TimerStruct ForceJump_Countdown;
+		int ForceJump_InitialCountdown;
+		bool ForceJump_RepeatMode;
 		FootClass* TeamLeader;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject)
@@ -34,6 +37,9 @@ public:
 			, MoveMissionEndMode { 0 }
 			, WaitNoTargetCounter { 0 }
 			, WaitNoTargetTimer { 0 }
+			, ForceJump_Countdown { -1 }
+			, ForceJump_InitialCountdown { -1 }
+			, ForceJump_RepeatMode { false }
 			, TeamLeader { nullptr }
 		{ }
 

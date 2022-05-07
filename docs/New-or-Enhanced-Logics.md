@@ -624,6 +624,36 @@ In `aimd.ini`:
 x=113,n           ; where 0 > n <= 100
 ```
 
+### `124` Stop the Timed Jumps
+
+- If the Timed Jumps were activated this action stop the process.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=124,0
+```
+
+### `125` Start a Timed Jump to the next line
+
+- When the timer ends the current script action ends and start the next one in the script type list.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=125,n           ; integer n=0, in frames
+```
+
+### `126` Start a Timed Jump to the same line
+
+- When the timer ends the current script action ends and start again the same script action. The timer jump repeats again (infinite loop) until is stopped with action 124 or the team is destroyed.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=126,n           ; integer n=0, in frames
+```
+
 ### `500 - 523` Edit Variable
 - Operate a variable's value
     - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
