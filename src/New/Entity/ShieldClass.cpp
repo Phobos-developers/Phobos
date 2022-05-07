@@ -715,13 +715,13 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 
 	if (pDisplayType->UseSHP)
 	{
-		PosS.X += 10;
-		PosS.Y -= 28;
+		PosS.X += 18;
+		PosS.Y -= 32;
 		DigitalDisplaySHPShield(pDisplayType, PosS);
 	}
 	else
 	{
-		PosS.X += 35;	
+		PosS.X += 35;
 		DigitalDisplayTextShield(pDisplayType, PosS);
 	}
 }
@@ -813,13 +813,12 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 
 	if (UseSHP)
 	{
-		PosS.X -= 8;
 		PosS.Y -= 13;
 
 		if (iLength == 8)
 		{
 			PosS.X -= 4;
-			PosS.Y += 2;
+			PosS.Y -= 4;
 		}
 
 		DigitalDisplaySHPShield(pDisplayType, PosS);
@@ -827,10 +826,10 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	else
 	{
 		PosS.X += 18;
-		
-		if (iLength != 8) 
+
+		if (iLength != 8)
 			PosS.X += 4;
-		
+
 		DigitalDisplayTextShield(pDisplayType, PosS);
 	}
 }

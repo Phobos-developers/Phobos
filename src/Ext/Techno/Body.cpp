@@ -634,7 +634,7 @@ void TechnoExt::DigitalDisplayHealth(TechnoClass* pThis, Point2D* pLocation)
 		Loc.X -= 5;
 		Loc.Y -= 3;
 	}
-	
+
 	Loc.Y -= 5;
 
 	DigitalDisplayTypeClass* pDisplayType = nullptr;
@@ -710,18 +710,16 @@ void TechnoExt::DigitalDisplayHealth(TechnoClass* pThis, Point2D* pLocation)
 	{
 		if (pThis->WhatAmI() == AbstractType::Building)
 		{
-			PosH.X += 10;
-			PosH.Y -= 27;
+			PosH.X += 18;
+			PosH.Y -= 31;
 		}
 		else
 		{
-			PosH.X -= 8;
 			PosH.Y -= 15;
-			
+
 			if (iLength == 8)
 			{
 				PosH.X -= 4;
-				PosH.Y += 2;
 			}
 		}
 		DigitalDisplaySHPHealth(pThis, pDisplayType, PosH);
