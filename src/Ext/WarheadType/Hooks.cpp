@@ -120,15 +120,20 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
 			return CannotFire;
 	}
-
 	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
+		const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
+
 		CellClass* targetCell = nullptr;
 
-		if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-			targetCell = pCell;
-		else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
-			targetCell = pObject->GetCell();
+		// Ignore target cell for airborne technos.
+		if (!pTechno || !pTechno->IsInAir())
+		{
+			if (const auto pCell = abstract_cast<CellClass*>(pTarget))
+				targetCell = pCell;
+			else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
+				targetCell = pObject->GetCell();
+		}
 
 		if (targetCell)
 		{
@@ -136,7 +141,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 				return CannotFire;
 		}
 
-		if (const auto pTechno = abstract_cast<TechnoClass*>(pTarget))
+		if (pTechno)
 		{
 			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget) ||
 				!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner))
@@ -178,10 +183,14 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 	CellClass* targetCell = nullptr;
 
-	if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-		targetCell = pCell;
-	else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
-		targetCell = pObject->GetCell();
+	// Ignore target cell for airborne technos.
+	if (!pTargetTechno || !pTargetTechno->IsInAir())
+	{
+		if (const auto pCell = abstract_cast<CellClass*>(pTarget))
+			targetCell = pCell;
+		else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
+			targetCell = pObject->GetCell();
+	}
 
 	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{

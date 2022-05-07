@@ -100,4 +100,6 @@ public:
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 	static void UpdateMindControlAnim(TechnoClass* pThis);
+	static bool CheckIfCanFireAt(TechnoClass* pThis, AbstractClass* pTarget);
+	static void ForceJumpjetTurnToTarget(TechnoClass* pThis);
 };

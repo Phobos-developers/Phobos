@@ -86,7 +86,8 @@ This page lists all the individual contributions to the project by their author.
   - Ported and fixed custom RadType code
   - Togglable ElectricBolt bolts
   - Customizable Chrono Locomotor properties per TechnoClass
-  - `DebrisMaximums` fixes, Anim-to-Unit
+  - `DebrisMaximums` fixes
+  - Anim-to-Unit
   - `NotHuman` anim sequences improvements
   - Customizable `OpenTopped` Properties
   - Hooks for ScriptType Actions 92 & 93
@@ -103,13 +104,11 @@ This page lists all the individual contributions to the project by their author.
   - MC deployer fixes
   - Help with docs
   - Automatic Passenger Deletion logic
-  - `Fire SW At Location` Trigger Action
-  - `Fire SW At Waypoint` Trigger Action
+  - `Fire SW At Location/Waypoint` Trigger Action
   - Kill Object Automatically logic
   - Customizable resource storage
   - Override Uncloaked Underwater attack behavior
   - AI Aircraft docks fix
-  - Customize resource storage
   - Shared Ammo logic
 - **Starkku**:
   - Warhead shield penetration & breaking
@@ -152,10 +151,11 @@ This page lists all the individual contributions to the project by their author.
    - Interceptor logic prototype
    - LaserTrails prototype
    - Laser fixes prototype
+- **Trsdy** - Jumpjet facing fix
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
-- **Chasheen (Chasheenburg)** - CN docs translation
+- **Chasheen (Chasheenburg)** - CN docs help
 - **Ares developers** - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code, prototype deployer fixes
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
