@@ -168,7 +168,7 @@ DEFINE_HOOK(0x469BD6, BulletClass_Logics_MindControlAlternative2, 0x6)
 
 				if (pTarget->Health <= realDamage && !pWarheadExt->MindContol_CanKill)
 				{
-					pTarget->Health = 100000000;
+					pTarget->Health += abs(realDamage);
 					realDamage = 1;
 					pTarget->ReceiveDamage(&realDamage, 0, pAltWarhead, pAttacker, true, false, pAttackingHouse);
 					pTarget->Health = 1;
