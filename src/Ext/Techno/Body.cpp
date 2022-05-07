@@ -580,7 +580,9 @@ bool TechnoExt::CheckIfCanFireAt(TechnoClass* pThis, AbstractClass* pTarget)
 		&& fErr != FireError::CANT
 		&& fErr != FireError::MOVING
 		&& fErr != FireError::RANGE)
+	{
 		return pThis->IsCloseEnough(pTarget, wpnIdx);
+	}
 	else
 		return false;
 }
