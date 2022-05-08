@@ -571,13 +571,20 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 	}
 }
 
-#pragma push_macro("NOT_FLAT")
-#define NOT_FLAT -114
-//Don't know if such thing exists already or not
+
+enum CellFailure
+{
+	No = -1145,
+	NotClear = No,
+	InvalidCell= No,
+	DifferentLevel= No
+};
+//Don't know if such thing exists already or not, maybe more efficient (or less?)
+//DO NOT USE THIS
 static int _FlatAreaLevel(ObjectClass* ignoreMe, CellClass* cell, short spacex, short spacey, int previousLevel)
 {
 	if (!cell)
-		return NOT_FLAT;
+		return CellFailure::InvalidCell;
 	bool isClear = false;
 	if (cell->OverlayTypeIndex == -1)
 	{
@@ -589,54 +596,39 @@ static int _FlatAreaLevel(ObjectClass* ignoreMe, CellClass* cell, short spacex, 
 		else isClear = true;
 	}
 	if (!isClear)
-		return NOT_FLAT;
+		return CellFailure::NotClear;
 
 	const int level = cell->GetLevel();
 	if (level != previousLevel)
-		return NOT_FLAT;
+		return CellFailure::DifferentLevel;
 
 	if (spacex <= 1 && spacey <= 1)
 		return level;
 
 	int Slevel = _FlatAreaLevel(ignoreMe, cell->GetNeighbourCell(Direction::S), 1, spacey - 1, level);
-	if (spacex == 1)
-		return Slevel == previousLevel ? Slevel : NOT_FLAT;
 
-	if (Slevel == NOT_FLAT)
-		return NOT_FLAT;
+	if (Slevel == CellFailure::No)
+		return CellFailure::No;
+
+	if (spacex == 1)
+		return Slevel == previousLevel ? Slevel : CellFailure::DifferentLevel;
+
 
 	int Elevel = _FlatAreaLevel(ignoreMe, cell->GetNeighbourCell(Direction::E), spacex - 1, spacey, level);
-	if (Elevel != NOT_FLAT 
+	if (Elevel != CellFailure::No
 		&& Slevel == Elevel && Elevel == level && level == previousLevel)
 		return level;
 	else
-		return NOT_FLAT;
+		return CellFailure::DifferentLevel;
 }
 
 static inline bool EnoughSpaceToExpand(ObjectClass* ignoreThis, CellClass* cell, short spacex, short spacey)
 {
-	return _FlatAreaLevel(ignoreThis, cell, spacex, spacey, cell->GetLevel()) != NOT_FLAT;
+	return _FlatAreaLevel(ignoreThis, cell, spacex, spacey, cell->GetLevel()) != CellFailure::No;
 }
-
-//Didn't always succeed, don't know why
-static bool TriedToDeployHere(UnitClass* mcv, short spacex, short spacey)
-{
-	CellStruct coord = mcv->GetCell()->MapCoords;
-
-	coord.X -= spacex / 2;
-	coord.Y -= spacey / 2;
-
-	if (EnoughSpaceToExpand(mcv, MapClass::Instance->GetCellAt(coord),
-		spacex, spacey))
-		return mcv->TryToDeploy();
-	else return false;
-}
-
-#undef NOT_FLAT
-#pragma pop_macro("NOT_FLAT")
 
 //issue #621: let the mcv in hunt mission deploy asap
-void TechnoExt::MCVLocoAIFix(TechnoClass* pThis)
+void TechnoExt::MCVFindBetterPlace(TechnoClass* pThis)
 {
 	if (pThis->WhatAmI() == AbstractType::Unit &&
 	pThis->GetTechnoType()->Category == Category::Support &&
@@ -651,7 +643,7 @@ void TechnoExt::MCVLocoAIFix(TechnoClass* pThis)
 			short YWidth = deployType->GetFoundationHeight(true);
 			if (!pFoot->Destination &&
 				(pFoot->GetCurrentMission() == Mission::Hunt || pFoot->GetCurrentMission() == Mission::Unload) &&
-				!TriedToDeployHere(pFoot, XWidth, YWidth)
+				!EnoughSpaceToExpand(pFoot, pFoot->GetCell(), XWidth, YWidth)
 				)
 			{//for other locomotors they don't have a destination, so give it the nearest location
 				CellStruct coord = pFoot->GetCell()->MapCoords;

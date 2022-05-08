@@ -20,7 +20,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::CheckDeathConditions(pThis);
 	TechnoExt::EatPassengers(pThis);
 	TechnoExt::UpdateMindControlAnim(pThis);
-	TechnoExt::MCVLocoAIFix(pThis);
+	TechnoExt::MCVFindBetterPlace(pThis);
 	TechnoExt::HarvesterLocoFix(pThis);
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw

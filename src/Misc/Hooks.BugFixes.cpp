@@ -468,3 +468,14 @@ DEFINE_HOOK(0x46B3E6, BulletClass_NukeMaker_BulletParams, 0x8)
 	R->EDI(pThis);
 	return SkipGameCode;
 }
+
+//Force guard mission to mcv when hunt
+DEFINE_HOOK(0x73F015, UnitClass_Hunt_ResetMCV, 6)
+{
+	GET(UnitClass*, pThis, ESI);
+
+	if (pThis->Type->Category == Category::Support && !pThis->IsHumanControlled && pThis->MissionStatus)
+		pThis->QueueMission(Mission::Guard, false);
+
+	return 0;
+}

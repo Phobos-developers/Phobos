@@ -100,6 +100,6 @@ public:
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 	static void UpdateMindControlAnim(TechnoClass* pThis);
-	static void MCVLocoAIFix(TechnoClass* pThis);
+	static void MCVFindBetterPlace(TechnoClass* pThis);
 	static void HarvesterLocoFix(TechnoClass* pThis);
 };
