@@ -11,6 +11,10 @@ This page lists the history of changes across stable Phobos releases and also al
 
 ### From older Phobos versions
 
+#### From pre-0.3 devbuilds
+
+- `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
+
 #### From 0.2.2.2
 
 - Keys `rulesmd.ini->[SOMEWARHEAD]->PenetratesShield` and `rulesmd.ini->[SOMEWARHEAD]->BreaksShield` have been changed to `Shield.Penetrate` and `Shield.Break`, respectively.

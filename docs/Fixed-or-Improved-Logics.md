@@ -131,7 +131,7 @@ Grinding.DisplayRefund.Offset=0,0  ; X,Y, pixels relative to default
 ### Customizable projectile gravity
 
 -  You can now specify individual projectile gravity.
-    - Setting `Gravity=0` is not recommended. It will cause the projectile unable to hit the target which is not at the same height. We'd suggest to use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
+    - Setting `Gravity=0` is not recommended as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. We suggest to use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 
 In `rulesmd.ini`:
 ```ini
