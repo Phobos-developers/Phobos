@@ -88,7 +88,7 @@ public:
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
-
+	static void inline KillSelf(TechnoClass* pThis, bool isPeaceful);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);

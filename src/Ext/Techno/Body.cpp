@@ -420,28 +420,32 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 }
 
 // Feature: Kill Object Automatically
+void inline TechnoExt::KillSelf(TechnoClass* pThis, bool isPeaceful)
+{
+	if (isPeaceful)
+	{
+		pThis->Limbo();
+		pThis->UnInit();
+	}
+	else
+	{
+		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+	}
+}
+
 void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 {
 	auto pTypeThis = pThis->GetTechnoType();
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pTypeThis);
 	auto pData = TechnoExt::ExtMap.Find(pThis);
 
-	const bool peacefulDeath = pTypeData->Death_Peaceful.Get();
+	const bool isPeaceful = pTypeData->Death_Peaceful;
+
 	// Death if no ammo
 	if (pTypeThis && pTypeData && pTypeData->Death_NoAmmo)
 	{
 		if (pTypeThis->Ammo > 0 && pThis->Ammo <= 0)
-		{
-			if (peacefulDeath)
-			{
-				pThis->Limbo();
-				pThis->UnInit();
-			}
-			else
-			{
-				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
-			}
-		}
+			TechnoExt::KillSelf(pThis, isPeaceful);
 	}
 
 	// Death if countdown ends
@@ -457,15 +461,7 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 			{
 				// Countdown ended. Kill the unit
 				pData->Death_Countdown = -1;
-				if (peacefulDeath)
-				{
-					pThis->Limbo();
-					pThis->UnInit();
-				}
-				else
-				{
-					pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
-				}
+				TechnoExt::KillSelf(pThis, isPeaceful);
 			}
 		}
 		else
@@ -473,6 +469,11 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 			pData->Death_Countdown = pTypeData->Death_Countdown; // Start countdown
 		}
 	}
+
+	// Death if slave owner dead
+	if (pTypeThis->Slaved && (!pThis->SlaveOwner || !pThis->SlaveOwner->IsAlive) && pTypeData->Death_WithMaster)
+		TechnoExt::KillSelf(pThis, isPeaceful);
+
 }
 
 void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
