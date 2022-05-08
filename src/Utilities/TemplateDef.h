@@ -1016,15 +1016,13 @@ void __declspec(noinline) NullableIdxVector<Lookuper>::Read(INI_EX& parser, cons
 template <typename T>
 void __declspec(noinline) Damageable<T>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, const char* const pSingleFlag)
 {
-
 	// read the common flag, with the trailing dot being stripped
 	char flagName[0x40];
 	auto const pSingleFormat = pSingleFlag ? pSingleFlag : pBaseFlag;
 	auto res = _snprintf_s(flagName, _TRUNCATE, pSingleFormat, "");
+
 	if (res > 0 && flagName[res - 1] == '.')
-	{
 		flagName[res - 1] = '\0';
-	}
 	
 	detail::read(this->BaseValue, parser, pSection, flagName);
 
