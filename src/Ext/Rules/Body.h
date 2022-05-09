@@ -67,7 +67,6 @@ public:
 			, Pips_Shield_Background_SHP {}
 			, Pips_Shield_Building { { -1,-1,-1 } }
 			, Pips_Shield_Building_Empty {}
-			, JumpjetTurnToTarget { false }
 			, DigitalDisplay_Enable { false }
 			, Buildings_DefaultDigitalDisplayTypeHP { nullptr }
 			, Buildings_DefaultDigitalDisplayTypeSP { nullptr }

@@ -912,7 +912,7 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
 				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 			Pos.X += Interval.X;
-			Pos.Y += Interval.Y;
+			Pos.Y -= Interval.Y;
 		}
 
 		if (!Percentage && HideStrength)
@@ -921,7 +921,7 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 		DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &Pos, &DSurface::ViewBounds,
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 		Pos.X += Interval.X;
-		Pos.Y += Interval.Y;
+		Pos.Y -= Interval.Y;
 
 		if (Percentage)
 			return;
@@ -933,7 +933,7 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
 				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 			Pos.X += Interval.X;
-			Pos.Y += Interval.Y;
+			Pos.Y -= Interval.Y;
 		}
 	}
 	else

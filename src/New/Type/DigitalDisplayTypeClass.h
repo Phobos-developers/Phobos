@@ -51,7 +51,7 @@ public:
 		, SHP_SHPFile("number.shp")
 		, SHP_PALFile("")
 		, SHP_Interval({ 8, 0 })
-		, SHP_Interval_Building({ 8, -4 })
+		, SHP_Interval_Building({ 8, 4 })
 		, Alignment(AlignType::Default)
 		, Percentage(false)
 		, HideStrength(false)
