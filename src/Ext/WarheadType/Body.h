@@ -74,7 +74,7 @@ public:
 		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
-		Valueable<int> MindContol_Threshhold;
+		Valueable<int> MindContol_Threshold;
 		Nullable<int> MindContol_Damage;
 		Nullable<WarheadTypeClass*> MindContol_Warhead;
 		Valueable<bool> MindContol_CanKill;
@@ -141,7 +141,7 @@ public:
 
 			, NotHuman_DeathSequence { -1 }
 
-			, MindContol_Threshhold { 100 }
+			, MindContol_Threshold { 100 }
 			, MindContol_Damage {}
 			, MindContol_Warhead {}
 			, MindContol_CanKill { false }

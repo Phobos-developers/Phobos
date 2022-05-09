@@ -117,13 +117,13 @@ DEFINE_HOOK(0x469211, BulletClass_Logics_MindControlAlternative1, 0x6)
 			{
 				double currentHealthPerc = pTarget->GetHealthPercentage() * 100;
 
-				if (pWarheadExt->MindContol_Threshhold < 0 || pWarheadExt->MindContol_Threshhold > 100)
-					pWarheadExt->MindContol_Threshhold = 100;
+				if (pWarheadExt->MindContol_Threshold < 0 || pWarheadExt->MindContol_Threshold > 100)
+					pWarheadExt->MindContol_Threshold = 100;
 
-				if (pWarheadExt->MindContol_Threshhold < 100 
+				if (pWarheadExt->MindContol_Threshold < 100 
 					&& pWarheadExt->MindContol_Damage.isset() 
 					&& pWarheadExt->MindContol_Warhead.isset() 
-					&& currentHealthPerc >= pWarheadExt->MindContol_Threshhold)
+					&& currentHealthPerc >= pWarheadExt->MindContol_Threshold)
 				{
 					return 0x469343;
 				}
@@ -155,10 +155,10 @@ DEFINE_HOOK(0x469BD6, BulletClass_Logics_MindControlAlternative2, 0x6)
 			auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(pBulletWH);
 			double currentHealthPerc = pTarget->GetHealthPercentage() * 100;
 
-			if (pWarheadExt && pWarheadExt->MindContol_Threshhold < 100 
+			if (pWarheadExt && pWarheadExt->MindContol_Threshold < 100 
 				&& pWarheadExt->MindContol_Damage.isset() 
 				&& pWarheadExt->MindContol_Warhead.isset() 
-				&& currentHealthPerc >= pWarheadExt->MindContol_Threshhold)
+				&& currentHealthPerc >= pWarheadExt->MindContol_Threshold)
 			{
 				int damage = pWarheadExt->MindContol_Damage;
 				WarheadTypeClass* pAltWarhead = pWarheadExt->MindContol_Warhead;
