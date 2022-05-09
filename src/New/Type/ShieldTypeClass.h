@@ -24,7 +24,8 @@ public:
 	Valueable<int> BracketDelta;
 	Valueable<AttachedAnimFlag> IdleAnim_OfflineAction;
 	Valueable<AttachedAnimFlag> IdleAnim_TemporalAction;
-	Nullable<AnimTypeClass*> IdleAnim;
+	Damageable<AnimTypeClass*> IdleAnim;
+	Damageable<AnimTypeClass*> IdleAnimDamaged;
 	Nullable<AnimTypeClass*> BreakAnim;
 	Nullable<AnimTypeClass*> HitAnim;
 	Nullable<WeaponTypeClass*> BreakWeapon;
@@ -32,6 +33,12 @@ public:
 	Valueable<double> PassPercent;
 
 	Nullable<bool> AllowTransfer;
+  
+	Valueable<Vector3D<int>> Pips;
+	PhobosFixedString<32u> Pips_Background_Filename;
+	SHPStruct* Pips_Background_SHP;
+	Valueable<Vector3D<int>> Pips_Building;
+	Nullable<int> Pips_Building_Empty;
 
 	Nullable<DigitalDisplayTypeClass*> DigitalDisplayType;
 
@@ -54,6 +61,7 @@ public:
 		, IdleAnim_OfflineAction(AttachedAnimFlag::Hides)
 		, IdleAnim_TemporalAction(AttachedAnimFlag::Hides)
 		, IdleAnim()
+		, IdleAnimDamaged()
 		, BreakAnim()
 		, HitAnim()
 		, BreakWeapon()
@@ -62,6 +70,11 @@ public:
 		, Respawn_Rate__InMinutes(0.0)
 		, SelfHealing_Rate__InMinutes(0.0)
 		, AllowTransfer()
+		, Pips {{ - 1,-1,-1 }}
+		, Pips_Background_Filename {}
+		, Pips_Background_SHP {}
+		, Pips_Building {{ -1,-1,-1 }}
+		, Pips_Building_Empty {}
 		, DigitalDisplayType()
 	{};
 
@@ -70,6 +83,8 @@ public:
 	virtual void LoadFromINI(CCINIClass* pINI) override;
 	virtual void LoadFromStream(PhobosStreamReader& Stm);
 	virtual void SaveToStream(PhobosStreamWriter& Stm);
+
+	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio);
 
 private:
 	template <typename T>

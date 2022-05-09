@@ -62,6 +62,8 @@ private:
 	void RespawnShield();
 
 	void CreateAnim();
+	void UpdateIdleAnim();
+	AnimTypeClass* GetIdleAnimType();
 
 	void WeaponNullifyAnim(AnimTypeClass* pHitAnim = nullptr);
 	void ResponseAttack();
@@ -95,6 +97,7 @@ private:
 	int Respawn_Rate_Warhead;
 
 	int LastBreakFrame;
+	double LastTechnoHealthRatio;
 
 	ShieldTypeClass* Type;
 

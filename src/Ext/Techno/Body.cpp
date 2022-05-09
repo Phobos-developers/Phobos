@@ -9,12 +9,14 @@
 #include <InfantryClass.h>
 #include <TacticalClass.h>
 #include <Unsorted.h>
+#include <BitFont.h>
 #include <JumpjetLocomotionClass.h>
 
 #include <PhobosHelper/Helper.h>
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Misc/FlyingStrings.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
@@ -620,6 +622,33 @@ void TechnoExt::ForceJumpjetTurnToTarget(TechnoClass* pThis)
 	}
 }
 
+void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage)
+{
+	if (!pThis || damage == 0)
+		return;
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	auto color = isShieldDamage ? damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 } :
+		damage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
+
+	wchar_t damageStr[0x20];
+	swprintf_s(damageStr, L"%d", damage);
+	auto coords = CoordStruct::Empty;
+	coords = *pThis->GetCenterCoord(&coords);
+
+	int maxOffset = 30;
+	int width = 0, height = 0;
+	BitFont::Instance->GetTextDimension(damageStr, &width, &height, 120);
+
+	if (!pExt->DamageNumberOffset.isset() || pExt->DamageNumberOffset >= maxOffset)
+		pExt->DamageNumberOffset = -maxOffset;
+
+	FlyingStrings::Add(damageStr, coords, color, Point2D { pExt->DamageNumberOffset - (width / 2), 0 });
+
+	pExt->DamageNumberOffset = pExt->DamageNumberOffset + width;
+}
+
 void TechnoExt::DigitalDisplayHealth(TechnoClass* pThis, Point2D* pLocation)
 {//pos use for reference ShieldClass::DrawShieldBar_Building
 
@@ -956,6 +985,7 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
     }
   }
 }
+
 // =============================
 // load / save
 

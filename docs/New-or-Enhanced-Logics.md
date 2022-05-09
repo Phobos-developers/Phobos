@@ -144,8 +144,10 @@ LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-Pips.Shield=-1,-1,-1           ; int, frames of pips.shp for Green, Yellow, Red
-Pips.Shield.Building=-1,-1,-1  ; int, frames of pips.shp for Green, Yellow, Red
+Pips.Shield=-1,-1,-1               ; int, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Shield.Building=-1,-1,-1      ; int, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Shield.Background=PIPBRD.SHP  ; filename - including the .shp/.pcx extension
+Pips.Shield.Building.Empty=0       ; int, frame of pips.shp (zero-based) for empty building pip
 
 [ShieldTypes]
 0=SOMESHIELDTYPE
@@ -161,7 +163,16 @@ SelfHealing.Rate=0.0                 ; double, ingame minutes
 Respawn=0.0                          ; double, percents or absolute
 Respawn.Rate=0.0                     ; double, ingame minutes
 BracketDelta=0                       ; integer - pixels
+Pips=-1,-1,-1                        ; int, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Building=-1,-1,-1               ; int, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Background=                     ; filename - including the .shp/.pcx extension
+Pips.Building.Empty=                 ; int, frame of pips.shp (zero-based) for empty building pip
 IdleAnim=                            ; animation
+IdleAnim.ConditionYellow=            ; animation
+IdleAnim.ConditionRed=               ; animation
+IdleAnimDamaged=                     ; animation
+IdleAnimDamaged.ConditionYellow=     ; animation
+IdleAnimDamaged.ConditionRed=        ; animation
 IdleAnim.OfflineAction=Hides         ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 IdleAnim.TemporalAction=Hides        ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 BreakAnim=                           ; animation
@@ -211,7 +222,9 @@ Shield.InheritStateOnReplace=false   ; boolean
   - If you want shield recovers/respawns 1 HP per time, currently you need to set tag value to any number between 1 and 2, like `1.1`.
 - `SelfHealing.Rate` and `Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
 - `IdleAnim`, if set, will be played while the shield is intact. This animation is automatically set to loop indefinitely.
-  - `Bouncer=yes` animations are not supported at the moment.
+  - `IdleAnim.ConditionYellow` and `IdleAnim.ConditionRed` can be used to set different animations for when shield health is at or below the percentage defined in `[AudioVisual]`->`ConditionYellow`/`ConditionRed`, respectively. If `IdleAnim.ConditionRed` is not set it falls back to `IdleAnim.ConditionYellow`, which in turn falls back to `IdleAnim`.
+  - `IdleAnimDamaged`, `IdleAnimDamaged.ConditionYellow` and `IdleAnimDamaged.ConditionRed` are used in an identical manner, but only when health of the object the shield is attached to is at or below `[AudioVisual]`->`ConditionYellow`. Follows similar fallback sequence to regular `IdleAnim` variants and if none are set, falls back to the regular `IdleAnim` or variants thereof.
+  - `Bouncer=true` and `IsMeteor=true` animations can exhibit irregular behaviour when used as `IdleAnim` and should be avoided.
 - `IdleAnim.OfflineAction` indicates what happens to the animation when the shield is in a low power state.
 - `IdleAnim.TemporalAction` indicates what happens to the animation when the shield is attacked by temporal weapons.
 - `BreakAnim`, if set, will be played when the shield has been broken.
@@ -220,10 +233,13 @@ Shield.InheritStateOnReplace=false   ; boolean
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
 - `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
-- A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable.
-  - Buildings now use the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame by default.
-  - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. `Pips.Shield.Building` is used for BuildingTypes.
-  - `pipbrd.shp` will use its 4th frame to display an infantry's shield strength and the 3th frame for other units if `pipbrd.shp` has extra 2 frames. And `BracketDelta` can be used as additional `PixelSelectionBracketDelta` for shield strength.
+- A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable. Several customizations are available for the shield strength pips.
+  - By default, buildings use the 6th frame of `pips.shp` to display the shield strength while others use the 17th frame.
+  - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit is set, then it will always display that frame, or if 3 digits are set, it will use those if shield's current strength is at or below `ConditionYellow` and `ConditionRed`, respectively. `Pips.Shield.Building` is used for BuildingTypes. -1 as value will use the default frame, whether it is fallback to first value or the aforementioned hardcoded defaults.
+  - `Pips.Shield.Background` can be used to set the background or 'frame' for non-building pips, which defaults to `pipbrd.shp`. 4th frame is used to display an infantry's shield strength and the 3th frame for other units, or 2nd and 1st respectively if not enough frames are available.
+  - `Pips.Shield.Building.Empty` can be used to set the frame of `pips.shp` displayed for empty building strength pips, defaults to 1st frame of `pips.shp`.
+  - The above customizations are also available on per ShieldType basis, e.g `[ShieldType]`->`Pips` instead of `[AudioVisual]`->`Pips.Shield` and so on. ShieldType settings take precedence over the global ones, but will fall back to them if not set.
+  - `BracketDelta` can be used as additional vertical offset (negative shifts it up) for shield strength bar. Much like `PixelSelectionBracketDelta`, it is not applied on buildings.
 - Warheads have new options that interact with shields.
   - `Shield.Penetrate` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield doesn't exist.
   - `Shield.Break` allows the warhead to always break shields of TechnoTypes. This is done before damage is dealt.
@@ -679,6 +695,36 @@ In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
 x=113,n           ; where 0 > n <= 100
+```
+
+### `124` Stop the Timed Jumps
+
+- If the Timed Jumps were activated this action stop the process.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=124,0
+```
+
+### `125` Start a Timed Jump to the next line
+
+- When the timer ends the current script action ends and start the next one in the script type list.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=125,n           ; integer n=0, in frames
+```
+
+### `126` Start a Timed Jump to the same line
+
+- When the timer ends the current script action ends and start again the same script action. The timer jump repeats again (infinite loop) until is stopped with action 124 or the team is destroyed.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=126,n           ; integer n=0, in frames
 ```
 
 ### `500 - 523` Edit Variable
@@ -1212,11 +1258,19 @@ SplashList.PickRandom=no ; play a random animation from the list? boolean, defau
 *`TransactMoney` used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
 
 - Warheads can now give credits to its owner at impact.
+  - `TransactMoney.Display` can be set to display the amount of credits given or deducted. The number is displayed in green if given, red if deducted and will move upwards after appearing.
+    - `TransactMoney.Display.AtFirer` if set, makes the credits display appear on firer instead of target. If set and firer is not known, it will display at target regardless.
+    - `TransactMoney.Display.Houses` determines which houses can see the credits display.
+    - `TransactMoney.Display.Offset` is additional pixel offset for the center of the credits display, by default (0,0) at target's/firer's center.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]   ; Warhead
-TransactMoney=0 ; integer - credits added or subtracted
+[SOMEWARHEAD]                        ; Warhead
+TransactMoney=0                      ; integer - credits added or subtracted
+TransactMoney.Display=false          ; boolean
+TransactMoney.Display.AtFirer=false  ; boolean
+TransactMoney.Display.Houses=All     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 ```
 
 ### Remove disguise on impact

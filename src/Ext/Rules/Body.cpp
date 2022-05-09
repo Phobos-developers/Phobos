@@ -70,16 +70,26 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->Storage_TiberiumIndex.Read(exINI, GENERAL_SECTION, "Storage.TiberiumIndex");
-	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
-	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
-	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
-	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
+	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
+	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 	this->JumpjetTurnToTarget.Read(exINI, "JumpjetControls", "TurnToTarget");
 	this->PlacementGrid_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementGrid.TranslucentLevel");
 	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementPreview.DefaultTranslucentLevel");
+	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
+	this->Pips_Shield_Background_Filename.Read(pINI, "AudioVisual", "Pips.Shield.Background");
+	this->Pips_Shield_Building.Read(exINI, "AudioVisual", "Pips.Shield.Building");
+	this->Pips_Shield_Building_Empty.Read(exINI, "AudioVisual", "Pips.Shield.Building.Empty");
 
-  	this->DigitalDisplay_Enable.Read(exINI, sectionAudioVisual, "DigitalDisplay.Enable");
+	if (this->Pips_Shield_Background_Filename)
+	{
+		char filename[0x20];
+		strcpy(filename, this->Pips_Shield_Background_Filename);
+		_strlwr_s(filename);
+		this->Pips_Shield_Background_SHP = FileSystem::LoadSHPFile(filename);
+	}
+
+  this->DigitalDisplay_Enable.Read(exINI, sectionAudioVisual, "DigitalDisplay.Enable");
 	this->Buildings_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypeHP");
 	this->Buildings_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypeSP");
 	this->Infantrys_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Infantrys.DefaultDigitalDisplayTypeHP");
@@ -97,7 +107,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		char* context = nullptr;
 		pINI->ReadString(sectionAITargetTypes, pINI->GetKeyName(sectionAITargetTypes, i), "", Phobos::readBuffer);
 
-		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
 			TechnoTypeClass* buffer;
 			if (Parser<TechnoTypeClass*>::TryParse(cur, &buffer))
@@ -119,7 +129,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		char* context = nullptr;
 		pINI->ReadString(sectionAIScriptsList, pINI->GetKeyName(sectionAIScriptsList, i), "", Phobos::readBuffer);
 
-		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
 			ScriptTypeClass* pNewScript = GameCreate<ScriptTypeClass>(cur);
 			objectsList.AddItem(pNewScript);
@@ -173,19 +183,21 @@ template <typename T>
 void RulesExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->Pips_Shield)
-		.Process(this->Pips_Shield_Buildings)
+		.Process(this->AITargetTypesLists)
+		.Process(this->AIScriptsLists)
+		.Process(this->Storage_TiberiumIndex)
 		.Process(this->RadApplicationDelay_Building)
-		.Process(this->MissingCameo)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
 		.Process(this->JumpjetAllowLayerDeviation)
 		.Process(this->JumpjetTurnToTarget)
-		.Process(this->AITargetTypesLists)
-		.Process(this->AIScriptsLists)
-		.Process(this->Storage_TiberiumIndex)
 		.Process(this->PlacementGrid_TranslucentLevel)
 		.Process(this->BuildingPlacementPreview_TranslucentLevel)
+		.Process(this->Pips_Shield)
+		.Process(this->Pips_Shield_Background_Filename)
+		.Process(this->Pips_Shield_Background_SHP)
+		.Process(this->Pips_Shield_Building)
+		.Process(this->Pips_Shield_Building_Empty)
 		.Process(this->DigitalDisplay_Enable)
 		.Process(this->Buildings_DefaultDigitalDisplayTypeHP)
 		.Process(this->Buildings_DefaultDigitalDisplayTypeSP)
