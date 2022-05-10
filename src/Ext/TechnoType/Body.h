@@ -102,6 +102,7 @@ public:
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
+		Nullable<bool> JumpjetTurnToTarget;
 
 		struct LaserTrailDataEntry
 		{
@@ -179,6 +180,7 @@ public:
 			, NoAmmoWeapon { -1 }
 			, NoAmmoAmount { 0 }
 			, JumpjetAllowLayerDeviation {}
+			, JumpjetTurnToTarget {}
 			, DeployingAnim_AllowAnyDirection { false }
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }

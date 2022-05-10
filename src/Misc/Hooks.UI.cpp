@@ -9,6 +9,7 @@
 #include <Ext/Rules/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Misc/FlyingStrings.h>
 #include <Utilities/Debug.h>
 
 DEFINE_HOOK(0x777C41, UI_ApplyAppIcon, 0x9)
@@ -187,4 +188,10 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 	// Restore overridden instructions
 	GET(AbstractType, rtti1, ESI);
 	return rtti1 == AbstractType::Special ? 0x6A8477 : 0x6A8468;
+}
+
+DEFINE_HOOK(0x6D4684, TacticalClass_Draw_FlyingStrings, 0x6)
+{
+	FlyingStrings::UpdateAll();
+	return 0;
 }
