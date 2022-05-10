@@ -728,9 +728,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->Type->BracketDelta;
 	vLoc.Y -= 5;
 
-	auto pipBoard = this->Type->Pips_Background_SHP ? this->Type->Pips_Background_SHP :
-		RulesExt::Global()->Pips_Shield_Background_SHP ? RulesExt::Global()->Pips_Shield_Background_SHP :
-		FileSystem::PIPBRD_SHP;
+	auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP()));
 
 	if (iLength == 8)
 	{

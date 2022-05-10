@@ -74,17 +74,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PlacementGrid_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementGrid.TranslucentLevel");
 	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementPreview.DefaultTranslucentLevel");
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
-	this->Pips_Shield_Background_Filename.Read(pINI, "AudioVisual", "Pips.Shield.Background");
+	this->Pips_Shield_Background.Read(exINI, "AudioVisual", "Pips.Shield.Background");
 	this->Pips_Shield_Building.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 	this->Pips_Shield_Building_Empty.Read(exINI, "AudioVisual", "Pips.Shield.Building.Empty");
-
-	if (this->Pips_Shield_Background_Filename)
-	{
-		char filename[0x20];
-		strcpy(filename, this->Pips_Shield_Background_Filename);
-		_strlwr_s(filename);
-		this->Pips_Shield_Background_SHP = FileSystem::LoadSHPFile(filename);
-	}
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -181,8 +173,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlacementGrid_TranslucentLevel)
 		.Process(this->BuildingPlacementPreview_TranslucentLevel)
 		.Process(this->Pips_Shield)
-		.Process(this->Pips_Shield_Background_Filename)
-		.Process(this->Pips_Shield_Background_SHP)
+		.Process(this->Pips_Shield_Background)
 		.Process(this->Pips_Shield_Building)
 		.Process(this->Pips_Shield_Building_Empty)
 		;

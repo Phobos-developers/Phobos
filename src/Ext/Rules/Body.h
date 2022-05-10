@@ -37,8 +37,7 @@ public:
 		Valueable<int> PlacementGrid_TranslucentLevel;
 		Valueable<int> BuildingPlacementPreview_TranslucentLevel;
 		Valueable<Vector3D<int>> Pips_Shield;
-		PhobosFixedString<32u> Pips_Shield_Background_Filename;
-		SHPStruct* Pips_Shield_Background_SHP;
+		Nullable<SHPStruct*> Pips_Shield_Background;
 		Valueable<Vector3D<int>> Pips_Shield_Building;
 		Nullable<int> Pips_Shield_Building_Empty;
 
@@ -50,12 +49,11 @@ public:
 			, JumpjetAllowLayerDeviation { true }
 			, JumpjetTurnToTarget { false }
 			, MissingCameo { "xxicon.shp" }
-			, PlacementGrid_TranslucentLevel{ 0 }
+			, PlacementGrid_TranslucentLevel { 0 }
 			, BuildingPlacementPreview_TranslucentLevel { 3 }
-			, Pips_Shield_Background_Filename {}
-			, Pips_Shield_Background_SHP {}
+			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { -1,-1,-1 } }
-			, Pips_Shield_Building_Empty {}
+			, Pips_Shield_Building_Empty { }
 		{ }
 
 		virtual ~ExtData() = default;

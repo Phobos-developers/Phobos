@@ -33,8 +33,7 @@ public:
 	Nullable<bool> AllowTransfer;
 
 	Valueable<Vector3D<int>> Pips;
-	PhobosFixedString<32u> Pips_Background_Filename;
-	SHPStruct* Pips_Background_SHP;
+	Nullable<SHPStruct*> Pips_Background;
 	Valueable<Vector3D<int>> Pips_Building;
 	Nullable<int> Pips_Building_Empty;
 
@@ -66,12 +65,11 @@ public:
 		, Respawn_Rate__InMinutes(0.0)
 		, SelfHealing_Rate__InMinutes(0.0)
 		, AllowTransfer()
-		, Pips {{ - 1,-1,-1 }}
-		, Pips_Background_Filename {}
-		, Pips_Background_SHP {}
-		, Pips_Building {{ -1,-1,-1 }}
-		, Pips_Building_Empty {}
-	{};
+		, Pips { { -1,-1,-1 } }
+		, Pips_Background { }
+		, Pips_Building { { -1,-1,-1 } }
+		, Pips_Building_Empty { }
+	{ };
 
 	virtual ~ShieldTypeClass() override = default;
 
