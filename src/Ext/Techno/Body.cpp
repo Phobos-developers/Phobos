@@ -435,45 +435,46 @@ void inline TechnoExt::KillSelf(TechnoClass* pThis, bool isPeaceful)
 
 void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 {
-	auto pTypeThis = pThis->GetTechnoType();
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pTypeThis);
-	auto pData = TechnoExt::ExtMap.Find(pThis);
-
-	const bool isPeaceful = pTypeData->Death_Peaceful;
-
-	// Death if no ammo
-	if (pTypeThis && pTypeData && pTypeData->Death_NoAmmo)
+	auto pType = pThis->GetTechnoType();
+	if (auto pTypeData = TechnoTypeExt::ExtMap.Find(pType))
 	{
-		if (pTypeThis->Ammo > 0 && pThis->Ammo <= 0)
-			TechnoExt::KillSelf(pThis, isPeaceful);
-	}
+		const bool isPeaceful = pTypeData->Death_Peaceful;
 
-	// Death if countdown ends
-	if (pTypeThis && pData && pTypeData && pTypeData->Death_Countdown > 0)
-	{
-		if (pData->Death_Countdown >= 0)
+		// Death if no ammo
+		if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeData->Death_NoAmmo)
 		{
-			if (pData->Death_Countdown > 0)
+			TechnoExt::KillSelf(pThis, isPeaceful);
+			return;
+		}
+
+		auto pData = TechnoExt::ExtMap.Find(pThis);
+		// Death if countdown ends
+		if (pData && pTypeData->Death_Countdown > 0)
+		{
+			if (pData->Death_Countdown >= 0)
 			{
-				pData->Death_Countdown--; // Update countdown
+				if (pData->Death_Countdown > 0)
+				{
+					pData->Death_Countdown--; // Update countdown
+				}
+				else
+				{
+					// Countdown ended. Kill the unit
+					pData->Death_Countdown = -1;
+					TechnoExt::KillSelf(pThis, isPeaceful);
+					return;
+				}
 			}
 			else
 			{
-				// Countdown ended. Kill the unit
-				pData->Death_Countdown = -1;
-				TechnoExt::KillSelf(pThis, isPeaceful);
+				pData->Death_Countdown = pTypeData->Death_Countdown; // Start countdown
 			}
 		}
-		else
-		{
-			pData->Death_Countdown = pTypeData->Death_Countdown; // Start countdown
-		}
+
+		// Death if slave owner dead
+		if (pType->Slaved && (!pThis->SlaveOwner || !pThis->SlaveOwner->IsAlive) && pTypeData->Death_WithMaster)
+			TechnoExt::KillSelf(pThis, isPeaceful);
 	}
-
-	// Death if slave owner dead
-	if (pTypeThis->Slaved && (!pThis->SlaveOwner || !pThis->SlaveOwner->IsAlive) && pTypeData->Death_WithMaster)
-		TechnoExt::KillSelf(pThis, isPeaceful);
-
 }
 
 void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
