@@ -205,7 +205,7 @@ public:
 			auto pTarget = abstract_cast<TechnoClass*>(pFoot->Target);
 			if (pTarget)
 			{
-				append("Target = %s, Distance = %d, Location = (%d, %d)\n", pTarget->GetTechnoType()->ID, (pTarget->DistanceFrom(pFoot) / 256), pTarget->GetMapCoords().X, pTarget->GetMapCoords().Y);
+				append("Target = %s, Distance = %d, Location = (%d, %d)\n", pTarget->GetTechnoType()->ID, (pTarget->DistanceFrom(pFoot) / Unsorted::LeptonsPerCell), pTarget->GetMapCoords().X, pTarget->GetMapCoords().Y);
 			}
 
 			append("Current HP = (%d / %d)", pFoot->Health, pType->Strength);
@@ -259,7 +259,7 @@ public:
 			auto pTarget = abstract_cast<TechnoClass*>(pBuilding->Target);
 			if (pTarget)
 			{
-				append("Target = %s, Distance = %d, Location = (%d, %d)\n", pTarget->GetTechnoType()->ID, (pTarget->DistanceFrom(pBuilding) / 256), pTarget->GetMapCoords().X, pTarget->GetMapCoords().Y);
+				append("Target = %s, Distance = %d, Location = (%d, %d)\n", pTarget->GetTechnoType()->ID, (pTarget->DistanceFrom(pBuilding) / Unsorted::LeptonsPerCell), pTarget->GetMapCoords().X, pTarget->GetMapCoords().Y);
 			}
 
 			append("Current HP = (%d / %d)\n", pBuilding->Health, pBuilding->Type->Strength);
