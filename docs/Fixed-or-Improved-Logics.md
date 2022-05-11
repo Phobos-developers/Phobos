@@ -145,24 +145,28 @@ Gravity=6.0             ; double
 
 ### Building-provided self-healing customization
 
-- It is now possible to set a global cap for the effects of `InfantryGainSelfHeal` and `UnitsGainSelfHeal` by setting `InfantryGainSelfHealCap` & `UnitsGainSelfHealCap` under `[General], respectively.
+- It is now possible to set a global cap for the effects of `InfantryGainSelfHeal` and `UnitsGainSelfHeal` by setting `InfantryGainSelfHealCap` & `UnitsGainSelfHealCap` under `[General]`, respectively.
 - It is also possible to change the pip frames displayed from `pips.shp` individually for infantry, units and buildings by setting the frames for infantry & unit self-healing on `Pips.SelfHeal.Infantry/Units/Buildings` under `[AudioVisual]`, respectively.
+  - `Pips.SelfHeal.Infantry/Units/Buildings.Offset` can be used to customize the pixel offsets for the displayed pips, individually for infantry, units and buildings.
 - Whether or not a TechnoType benefits from effects of `InfantryGainSelfHeal` or `UnitsGainSelfHeal` buildings or neither can now be controlled by setting `SelfHealGainType`.
   - If `SelfHealGainType` is not set, InfantryTypes and VehicleTypes with `Organic` set to true gain self-healing from `InfantryGainSelfHeal`, other VehicleTypes from `UnitsGainSelfHeal` and AircraftTypes & BuildingTypes never gain self-healing.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-InfantryGainSelfHealCap=      ; int, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
-UnitsGainSelfHealCap=         ; int, maximum amount of UnitsGainSelfHeal that can be in effect at once, must be 1 or higher
+InfantryGainSelfHealCap=               ; int, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
+UnitsGainSelfHealCap=                  ; int, maximum amount of UnitsGainSelfHeal that can be in effect at once, must be 1 or higher
+                                       
+[AudioVisual]                          
+Pips.SelfHeal.Infantry=13,20           ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Units=13,20              ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Buildings=13,20          ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Infantry.Offset=25,-35   ; X,Y, pixels relative to default
+Pips.SelfHeal.Units.Offset=33,-32      ; X,Y, pixels relative to default
+Pips.SelfHeal.Buildings.Offset=15,10   ; X,Y, pixels relative to default
 
-[AudioVisual]
-Pips.SelfHeal.Infantry=13,20  ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
-Pips.SelfHeal.Units=13,20     ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
-Pips.SelfHeal.Buildings=13,20 ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
-
-[SOMETECHNO]                  ; TechnoType
-SelfHealGainType=             ; Self-Heal Gain Type Enumeration (none|infantry|units)
+[SOMETECHNO]                           ; TechnoType
+SelfHealGainType=                      ; Self-Heal Gain Type Enumeration (none|infantry|units)
 ```
 
 ### Customizable harvester ore gathering animation

@@ -594,7 +594,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
 {
 	bool drawPip = false;
-	bool isOrganic = true;
+	bool isInfantryHeal = false;
 	int selfHealFrames = 0;
 
 	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
@@ -602,21 +602,26 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 		if (pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::None)
 			return;
 
-		if (pThis->Owner->InfantrySelfHeal > 0 &&
-			((!pExt->SelfHealGainType.isset() && (pThis->WhatAmI() == AbstractType::Infantry ||
-				pThis->GetTechnoType()->Organic && pThis->WhatAmI() == AbstractType::Unit)) ||
-				pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Infantry))
+		bool hasInfantrySelfHeal = pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Infantry;
+		bool hasUnitSelfHeal = pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Units;
+		bool isOrganic = false;
+
+		if (pThis->WhatAmI() == AbstractType::Infantry || 
+			pThis->GetTechnoType()->Organic && pThis->WhatAmI() == AbstractType::Unit)
+		{
+			isOrganic = true;
+		}
+
+		if (pThis->Owner->InfantrySelfHeal > 0 && (hasInfantrySelfHeal || isOrganic))
 		{
 			drawPip = true;
 			selfHealFrames = RulesClass::Instance->SelfHealInfantryFrames;
+			isInfantryHeal = true;
 		}
-		else if (pThis->Owner->UnitsSelfHeal > 0 &&
-			((!pExt->SelfHealGainType.isset() && pThis->WhatAmI() == AbstractType::Unit) ||
-				pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Units))
+		else if (pThis->Owner->UnitsSelfHeal > 0 && (hasUnitSelfHeal || pThis->WhatAmI() == AbstractType::Unit))
 		{
 			drawPip = true;
 			selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
-			isOrganic = false;
 		}
 	}
 
@@ -635,27 +640,30 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 
 		if (pThis->WhatAmI() == AbstractType::Unit || pThis->WhatAmI() == AbstractType::Aircraft)
 		{
+			auto& offset = RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get();
 			pipFrames = RulesExt::Global()->Pips_SelfHeal_Units;
-			xOffset = 33;
-			yOffset = -32 + pThis->GetTechnoType()->PixelSelectionBracketDelta;
+			xOffset = offset.X;
+			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
 		}
 		else if (pThis->WhatAmI() == AbstractType::Infantry)
 		{
+			auto& offset = RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get();
 			pipFrames = RulesExt::Global()->Pips_SelfHeal_Infantry;
-			xOffset = 25;
-			yOffset = -35 + pThis->GetTechnoType()->PixelSelectionBracketDelta;
+			xOffset = offset.X;
+			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
 		}
 		else
 		{
 			auto pType = abstract_cast<BuildingTypeClass*>(pThis->GetTechnoType());
 			int fHeight = pType->GetFoundationHeight(false);
 
+			auto& offset = RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get();
 			pipFrames = RulesExt::Global()->Pips_SelfHeal_Buildings;
-			xOffset = 12 + 30 * fHeight;
-			yOffset = 15 + -15 * fHeight + pType->Height * -15;
+			xOffset = offset.X + 30 * fHeight;
+			yOffset = offset.Y + -15 * fHeight + pType->Height * -15;
 		}
 
-		int pipFrame = isOrganic ? pipFrames.Get().X : pipFrames.Get().Y;
+		int pipFrame = isInfantryHeal ? pipFrames.Get().X : pipFrames.Get().Y;
 
 		Point2D position = { pLocation->X + xOffset, pLocation->Y + yOffset };
 
