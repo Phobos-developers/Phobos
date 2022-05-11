@@ -17,12 +17,14 @@ public:
 		DirStruct DeathUnitTurretFacing;
 		bool FromDeathUnit;
 		bool DeathUnitHasTurret;
+		TechnoClass* Invoker;
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
 			, DeathUnitFacing { 0 }
 			, DeathUnitTurretFacing {}
 			, FromDeathUnit { false }
 			, DeathUnitHasTurret { false }
+			, Invoker {}
 		{ }
 
 		virtual ~ExtData() = default;

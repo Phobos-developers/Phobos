@@ -149,6 +149,7 @@ This page lists all the individual contributions to the project by their author.
   - Automatic passenger owner change toggle
   - Interceptor improvements
   - OpenTopped transport rangefinding & deactivated state customizations
+  - Animation damage / weapon improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption

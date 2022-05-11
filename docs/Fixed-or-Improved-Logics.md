@@ -69,6 +69,22 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 ## Animations
 
+### Animation weapon and damage settings
+
+- `Weapon` can be set to a WeaponType, to create a projectile and immediately detonate it instead of simply dealing `Damage` by `Warhead`. This allows weapon effects to be applied.
+- `Damage.Delay` determines delay between two applications of `Damage`. Requires `Damage` to be set to 1.0 or above. Value of 0 disables the delay. Keep in mind that this is measured in animation frames, not game frames. Depending on `Rate`, animation may or may not advance animation frames on every game frame.
+- `Damage.DealtByOwner`, if set to true, makes any `Damage` dealt to be considered as coming from the animation's owner. Owner in this case is the firer of the weapon if it is Warhead `AnimList/SplashList` animation, the destroyed vehicle if it is `DestroyAnim` animation or the object the animation is attached to. Does not affect which house the `Damage` dealt by `Warhead` is dealt by.
+
+*`Weapon` and `Damage.Delay`, beyond the other additions, should function similarly to the equivalent features introduced by Ares and take precedence over them if Phobos is used together with Ares.*
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                 ; AnimationType
+Weapon=                    ; WeaponType
+Damage.Delay=0             ; integer, animation frames
+Damage.DealtByOwner=false  ; boolean
+```
+
 ### Attached animation position customization
 
 - You can now customize whether or not animations attached to objects are centered at the object's actual center rather than the bottom of their top-leftmost cell (cell #0).

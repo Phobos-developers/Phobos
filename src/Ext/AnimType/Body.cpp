@@ -33,6 +33,9 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->HideIfNoOre_Threshold.Read(exINI, pID, "HideIfNoOre.Threshold");
 	this->Layer_UseObjectLayer.Read(exINI, pID, "Layer.UseObjectLayer");
 	this->UseCenterCoordsIfAttached.Read(exINI, pID, "UseCenterCoordsIfAttached");
+	this->Weapon.Read(exINI, pID, "Weapon", true);
+	this->Damage_Delay.Read(exINI, pID, "Damage.Delay");
+	this->Damage_DealtByOwner.Read(exINI, pID, "Damage.DealtByOwner");
 }
 
 const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
@@ -81,6 +84,7 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 
 				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
 
+				pAnimExt->Invoker = pThis;
 				pAnimExt->FromDeathUnit = true;
 
 				if (pAnimTypeExt->CreateUnit_InheritDeathFacings.Get())
@@ -117,6 +121,9 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->HideIfNoOre_Threshold)
 		.Process(this->Layer_UseObjectLayer)
 		.Process(this->UseCenterCoordsIfAttached)
+		.Process(this->Weapon)
+		.Process(this->Damage_Delay)
+		.Process(this->Damage_DealtByOwner)
 		;
 }
 

@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/Anim/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 DEFINE_HOOK(0x422CAB, AnimClass_DrawIt_XDrawOffset, 0x5)
 {
@@ -68,4 +69,57 @@ DEFINE_HOOK(0x424C49, AnimClass_AttachTo_BuildingCoords, 0x5)
 	}
 
 	return 0;
+}
+
+// Goes before and replaces Ares animation damage / weapon hook at 0x424538.
+DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
+{
+	enum { SkipDamage = 0x42465D, Continue = 0x42464C };
+
+	GET(AnimClass*, pThis, ESI);
+
+	if (pThis->Type->Damage < 1.0 || pThis->HasExtras)
+		return SkipDamage;
+
+	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	int delay = pTypeExt->Damage_Delay.Get();
+
+	if (pThis->Type->Damage >= 1.0 && delay > 0 && pThis->Animation.Value % delay != 0)
+		return SkipDamage;
+
+	double damage = pThis->Type->Damage;
+
+	if (pThis->OwnerObject && pThis->OwnerObject->WhatAmI() == AbstractType::Terrain)
+		damage *= 5.0;
+
+	pThis->Damage += damage;
+
+	if (pThis->Damage < 1.0 || pThis->IsPlaying)
+		return SkipDamage;
+
+	int appliedDamage = Game::F2I(pThis->Damage);
+	auto const pExt = AnimExt::ExtMap.Find(pThis);
+	TechnoClass* pInvoker = nullptr;
+	
+	if (pTypeExt->Damage_DealtByOwner)
+		pInvoker = pExt->Invoker ? pExt->Invoker : pThis->OwnerObject ? abstract_cast<TechnoClass*>(pThis->OwnerObject) : nullptr;
+
+	if (pTypeExt->Weapon.isset())
+	{
+		WeaponTypeExt::DetonateAt(pTypeExt->Weapon.Get(), pThis->GetCoords(), pInvoker, appliedDamage);
+	}
+	else
+	{
+		auto pWarhead = pThis->Type->Warhead ? pThis->Type->Warhead :
+			strcmp(pThis->Type->get_ID(), "INVISO") ? RulesClass::Instance->FlameDamage2 : RulesClass::Instance->C4Warhead;
+
+		auto pOwner = pInvoker ? pInvoker->Owner : pThis->Owner ? pThis->Owner :
+			pThis->OwnerObject ? pThis->OwnerObject->GetOwningHouse() : nullptr;
+
+		MapClass::DamageArea(pThis->GetCoords(), appliedDamage, pInvoker, pWarhead, true, pOwner);
+	}
+
+	pThis->Damage -= appliedDamage;
+
+	return Continue;
 }
