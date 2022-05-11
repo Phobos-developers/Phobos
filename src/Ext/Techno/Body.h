@@ -105,4 +105,6 @@ public:
 	static bool CheckIfCanFireAt(TechnoClass* pThis, AbstractClass* pTarget);
 	static void ForceJumpjetTurnToTarget(TechnoClass* pThis);
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
+	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
+	static void ApplyGainedSelfHeal(TechnoClass* pThis);
 };

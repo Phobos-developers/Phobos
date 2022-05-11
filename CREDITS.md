@@ -141,6 +141,7 @@ This page lists all the individual contributions to the project by their author.
   - Nuke carrier & payload Bright fix
   - Display damage numbers hotkey command
   - TransactMoney.Display
+  - Building-provided self-heal customization
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
