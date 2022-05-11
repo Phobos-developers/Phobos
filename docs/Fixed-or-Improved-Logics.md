@@ -20,6 +20,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Some settings are still ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
+- Fixed jumpjet units cannot turn its facing to the target when firing from a different direction.
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
 - Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
@@ -107,16 +108,22 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
   - `Grinding.DisallowTypes` can be used to exclude InfantryTypes or VehicleTypes from being able to enter the grinder building.
   - `Grinding.Sound` is a sound played by when object is grinded by the building. If not set, defaults to `[AudioVisual]`->`EnterGrinderSound`.
   - `Grinding.Weapon` is a weapon fired at the building & by the building when it grinds an object. Will only be fired if at least weapon's `ROF` amount of frames have passed since it was last fired.
+  - `Grinding.DisplayRefund` can be set to display the amount of credits acquired upon grinding on the building. Multiple refunded objects within a short period of time have their refund amounts coalesced into single display.
+    - `Grinding.DisplayRefund.Houses` determines which houses can see the credits display.
+    - `Grinding.DisplayRefund.Offset` is additional pixel offset for the center of the credits display, by default (0,0) at building's center.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEBUILDING]             ; BuildingType
-Grinding.AllowAllies=false ; boolean
-Grinding.AllowOwner=true   ; boolean
-Grinding.AllowTypes=       ; List of InfantryTypes / VehicleTypes
-Grinding.DisallowTypes=    ; List of InfantryTypes / VehicleTypes
-Grinding.Sound=            ; Sound
-Grinding.Weapon=           ; WeaponType
+[SOMEBUILDING]                     ; BuildingType
+Grinding.AllowAllies=false         ; boolean
+Grinding.AllowOwner=true           ; boolean
+Grinding.AllowTypes=               ; List of InfantryTypes / VehicleTypes
+Grinding.DisallowTypes=            ; List of InfantryTypes / VehicleTypes
+Grinding.Sound=                    ; Sound
+Grinding.Weapon=                   ; WeaponType
+Grinding.DisplayRefund=false       ; boolean
+Grinding.DisplayRefund.Houses=All  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Grinding.DisplayRefund.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
 ## Projectiles
@@ -124,7 +131,7 @@ Grinding.Weapon=           ; WeaponType
 ### Customizable projectile gravity
 
 -  You can now specify individual projectile gravity.
-    - Setting `Gravity=0` is not recommended. It will cause the projectile unable to hit the target which is not at the same height. We'd suggest to use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
+    - Setting `Gravity=0` is not recommended as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. We suggest to use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 
 In `rulesmd.ini`:
 ```ini
@@ -212,6 +219,21 @@ AllowLayerDeviation=yes         ; boolean
 [SOMETECHNO]                    ; TechnoType
 JumpjetAllowLayerDeviation=yes  ; boolean
 ```
+
+### Jumpjet facing target customization 
+
+- Allows jumpjet units to face towards the target when firing from different directions. Set `[JumpjetControls] -> TurnToTarget=yes` to enable it for all jumpjet locomotor units. This behavior can be overriden by setting `[UnitType] -> JumpjetTurnToTarget` for specific units.
+- This behavior does not apply to `TurretSpins=yes` units for obvious reasons.
+
+In `rulesmd.ini`:
+```ini
+[JumpjetControls]
+TurnToTarget=no        ; boolean
+
+[SOMEUNITTYPE]         ; UnitType with jumpjet locomotor
+JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
+```
+
 
 ### Kill spawns on low power
 

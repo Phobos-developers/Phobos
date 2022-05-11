@@ -25,28 +25,37 @@ public:
 	class ExtData final : public Extension<RulesClass>
 	{
 	public:
-		Valueable<Vector3D<int>> Pips_Shield;
-		Valueable<Vector3D<int>> Pips_Shield_Buildings;
-		Valueable<int> RadApplicationDelay_Building;
-		PhobosFixedString<32u> MissingCameo;
 		DynamicVectorClass<DynamicVectorClass<TechnoTypeClass*>> AITargetTypesLists;
 		DynamicVectorClass<DynamicVectorClass<ScriptTypeClass*>> AIScriptsLists;
 		DynamicVectorClass<DynamicVectorClass<AITriggerTypeClass*>> AITriggersLists;
 
+		Valueable<int> Storage_TiberiumIndex;
+		Valueable<int> RadApplicationDelay_Building;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 		Valueable<bool> JumpjetAllowLayerDeviation;
-		Valueable<int> Storage_TiberiumIndex;
+		Valueable<bool> JumpjetTurnToTarget;
+		PhobosFixedString<32u> MissingCameo;
+		Valueable<int> PlacementGrid_TranslucentLevel;
+		Valueable<int> BuildingPlacementPreview_TranslucentLevel;
+		Valueable<Vector3D<int>> Pips_Shield;
+		Nullable<SHPStruct*> Pips_Shield_Background;
+		Valueable<Vector3D<int>> Pips_Shield_Building;
+		Nullable<int> Pips_Shield_Building_Empty;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
-			, Pips_Shield { { -1,-1,-1 } }
-			, Pips_Shield_Buildings { { -1,-1,-1 } }
+			, Storage_TiberiumIndex { -1 }
 			, RadApplicationDelay_Building { 0 }
-			, MissingCameo { "xxicon.shp" }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, JumpjetAllowLayerDeviation { true }
-			, Storage_TiberiumIndex { -1 }
+			, JumpjetTurnToTarget { false }
+			, MissingCameo { "xxicon.shp" }
+			, PlacementGrid_TranslucentLevel { 0 }
+			, BuildingPlacementPreview_TranslucentLevel { 3 }
+			, Pips_Shield_Background { }
+			, Pips_Shield_Building { { -1,-1,-1 } }
+			, Pips_Shield_Building_Empty { }
 		{ }
 
 		virtual ~ExtData() = default;

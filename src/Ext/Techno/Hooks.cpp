@@ -20,6 +20,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::CheckDeathConditions(pThis);
 	TechnoExt::EatPassengers(pThis);
 	TechnoExt::UpdateMindControlAnim(pThis);
+	TechnoExt::ForceJumpjetTurnToTarget(pThis);//TODO: move to locomotor processing
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
@@ -457,6 +458,17 @@ DEFINE_HOOK(0x6FD446, TechnoClass_FireLaser_IsSingleColor, 0x7)
 		if (!pLaser->IsHouseColor && pWeaponExt->Laser_IsSingleColor)
 			pLaser->IsHouseColor = true;
 	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(int* const, pDamage, EBX);
+
+	if (Phobos::Debug_DisplayDamageNumbers && *pDamage)
+		TechnoExt::DisplayDamageNumberString(pThis, *pDamage, false);
 
 	return 0;
 }

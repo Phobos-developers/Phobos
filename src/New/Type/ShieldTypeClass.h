@@ -22,7 +22,8 @@ public:
 	Valueable<int> BracketDelta;
 	Valueable<AttachedAnimFlag> IdleAnim_OfflineAction;
 	Valueable<AttachedAnimFlag> IdleAnim_TemporalAction;
-	Nullable<AnimTypeClass*> IdleAnim;
+	Damageable<AnimTypeClass*> IdleAnim;
+	Damageable<AnimTypeClass*> IdleAnimDamaged;
 	Nullable<AnimTypeClass*> BreakAnim;
 	Nullable<AnimTypeClass*> HitAnim;
 	Nullable<WeaponTypeClass*> BreakWeapon;
@@ -30,6 +31,12 @@ public:
 	Valueable<double> PassPercent;
 
 	Nullable<bool> AllowTransfer;
+
+	Valueable<Vector3D<int>> Pips;
+	Nullable<SHPStruct*> Pips_Background;
+	Valueable<Vector3D<int>> Pips_Building;
+	Nullable<int> Pips_Building_Empty;
+
 private:
 	Valueable<double> Respawn_Rate__InMinutes;
 	Valueable<double> SelfHealing_Rate__InMinutes;
@@ -49,6 +56,7 @@ public:
 		, IdleAnim_OfflineAction(AttachedAnimFlag::Hides)
 		, IdleAnim_TemporalAction(AttachedAnimFlag::Hides)
 		, IdleAnim()
+		, IdleAnimDamaged()
 		, BreakAnim()
 		, HitAnim()
 		, BreakWeapon()
@@ -57,13 +65,19 @@ public:
 		, Respawn_Rate__InMinutes(0.0)
 		, SelfHealing_Rate__InMinutes(0.0)
 		, AllowTransfer()
-	{};
+		, Pips { { -1,-1,-1 } }
+		, Pips_Background { }
+		, Pips_Building { { -1,-1,-1 } }
+		, Pips_Building_Empty { }
+	{ };
 
 	virtual ~ShieldTypeClass() override = default;
 
 	virtual void LoadFromINI(CCINIClass* pINI) override;
 	virtual void LoadFromStream(PhobosStreamReader& Stm);
 	virtual void SaveToStream(PhobosStreamWriter& Stm);
+
+	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio);
 
 private:
 	template <typename T>

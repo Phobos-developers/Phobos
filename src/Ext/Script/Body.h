@@ -63,6 +63,9 @@ enum class PhobosScripts : unsigned int
 	UnregisterGreatSuccess = 111,
 	GatherAroundLeader = 112,
 	RandomSkipNextAction = 113,
+	StopForceJumpCountdown = 124,
+	NextLineForceJumpCountdown = 125,
+	SameLineForceJumpCountdown = 126,
 	SetSideIdxForManagingTriggers = 127,
 	SetHouseIdxForManagingTriggers = 128,
 	ManageAllAITriggers = 129,
@@ -201,6 +204,8 @@ public:
 	static void SetMoveMissionEndMode(TeamClass* pTeam, int mode);
 	static void SkipNextAction(TeamClass* pTeam, int successPercentage);
 	static FootClass* FindTheTeamLeader(TeamClass* pTeam);
+	static void Set_ForceJump_Countdown(TeamClass *pTeam, bool repeatLine, int count);
+	static void Stop_ForceJump_Countdown(TeamClass *pTeam);
 	static void ManageTriggersFromList(TeamClass* pTeam, int idxAITriggerType, bool isEnabled);
 	static void ManageAllTriggersFromHouse(TeamClass* pTeam, HouseClass* pHouse, int sideIdx, int houseIdx, bool isEnabled);
 

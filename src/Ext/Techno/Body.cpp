@@ -8,9 +8,12 @@
 #include <SpawnManagerClass.h>
 #include <InfantryClass.h>
 #include <Unsorted.h>
+#include <BitFont.h>
+#include <JumpjetLocomotionClass.h>
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Misc/FlyingStrings.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -423,11 +426,22 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pTypeThis);
 	auto pData = TechnoExt::ExtMap.Find(pThis);
 
+	const bool peacefulDeath = pTypeData->Death_Peaceful.Get();
 	// Death if no ammo
 	if (pTypeThis && pTypeData && pTypeData->Death_NoAmmo)
 	{
 		if (pTypeThis->Ammo > 0 && pThis->Ammo <= 0)
-			pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+		{
+			if (peacefulDeath)
+			{
+				pThis->Limbo();
+				pThis->UnInit();
+			}
+			else
+			{
+				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+			}
+		}
 	}
 
 	// Death if countdown ends
@@ -443,7 +457,15 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 			{
 				// Countdown ended. Kill the unit
 				pData->Death_Countdown = -1;
-				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+				if (peacefulDeath)
+				{
+					pThis->Limbo();
+					pThis->UnInit();
+				}
+				else
+				{
+					pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+				}
 			}
 		}
 		else
@@ -550,6 +572,77 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 			pExt->MindControlRingAnimType = nullptr;
 		}
 	}
+}
+
+bool TechnoExt::CheckIfCanFireAt(TechnoClass* pThis, AbstractClass* pTarget)
+{
+	const int wpnIdx = pThis->SelectWeapon(pTarget);
+	const FireError fErr = pThis->GetFireError(pTarget, wpnIdx, true);
+	if (   fErr != FireError::ILLEGAL
+		&& fErr != FireError::CANT
+		&& fErr != FireError::MOVING
+		&& fErr != FireError::RANGE)
+	{
+		return pThis->IsCloseEnough(pTarget, wpnIdx);
+	}
+	else
+		return false;
+}
+
+void TechnoExt::ForceJumpjetTurnToTarget(TechnoClass* pThis)
+{
+	const auto pType = pThis->GetTechnoType();
+	if (pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet && pThis->IsInAir()
+		&& pThis->WhatAmI() == AbstractType::Unit && !pType->TurretSpins)
+	{
+		const auto pFoot = abstract_cast<UnitClass*>(pThis);
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (pTypeExt && pTypeExt->JumpjetTurnToTarget.Get(RulesExt::Global()->JumpjetTurnToTarget)
+			&& pFoot && pFoot->GetCurrentSpeed() == 0)
+		{
+			if (const auto pTarget = pThis->Target)
+			{
+				const auto pLoco = static_cast<JumpjetLocomotionClass*>(pFoot->Locomotor.get());
+				if (pLoco && !pLoco->LocomotionFacing.in_motion() && TechnoExt::CheckIfCanFireAt(pThis, pTarget))
+				{
+					const CoordStruct source = pThis->Location;
+					const CoordStruct target = pTarget->GetCoords();
+					const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
+					
+					if (pThis->GetRealFacing().value32() != tgtDir.value32())
+						pLoco->LocomotionFacing.turn(tgtDir);
+				}
+			}
+		}
+	}
+}
+
+void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage)
+{
+	if (!pThis || damage == 0)
+		return;
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	auto color = isShieldDamage ? damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 } :
+		damage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
+
+	wchar_t damageStr[0x20];
+	swprintf_s(damageStr, L"%d", damage);
+	auto coords = CoordStruct::Empty;
+	coords = *pThis->GetCenterCoord(&coords);
+
+	int maxOffset = 30;
+	int width = 0, height = 0;
+	BitFont::Instance->GetTextDimension(damageStr, &width, &height, 120);
+
+	if (!pExt->DamageNumberOffset.isset() || pExt->DamageNumberOffset >= maxOffset)
+		pExt->DamageNumberOffset = -maxOffset;
+
+	FlyingStrings::Add(damageStr, coords, color, Point2D { pExt->DamageNumberOffset - (width / 2), 0 });
+
+	pExt->DamageNumberOffset = pExt->DamageNumberOffset + width;
 }
 
 // =============================
