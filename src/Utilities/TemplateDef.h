@@ -660,6 +660,33 @@ namespace detail
 		}
 		return false;
 	}
+	
+	template <>
+	inline bool read<SelfHealGainType>(SelfHealGainType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "none") == 0)
+			{
+				value = SelfHealGainType::None;
+			}
+			else if (_strcmpi(parser.value(), "infantry") == 0)
+			{
+				value = SelfHealGainType::Infantry;
+			}
+			else if (_strcmpi(parser.value(), "units") == 0)
+			{
+				value = SelfHealGainType::Units;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a self heal gain type");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
 
 	template <>
 	inline bool read<TextAlign>(TextAlign& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)

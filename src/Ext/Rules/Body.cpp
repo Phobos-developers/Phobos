@@ -67,6 +67,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->Storage_TiberiumIndex.Read(exINI, GENERAL_SECTION, "Storage.TiberiumIndex");
+	this->InfantryGainSelfHealCap.Read(exINI, GENERAL_SECTION, "InfantryGainSelfHealCap");
+	this->UnitsGainSelfHealCap.Read(exINI, GENERAL_SECTION, "UnitsGainSelfHealCap");
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
@@ -77,6 +79,12 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Shield_Background.Read(exINI, "AudioVisual", "Pips.Shield.Background");
 	this->Pips_Shield_Building.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 	this->Pips_Shield_Building_Empty.Read(exINI, "AudioVisual", "Pips.Shield.Building.Empty");
+	this->Pips_SelfHeal_Infantry.Read(exINI, "AudioVisual", "Pips.SelfHeal.Infantry");
+	this->Pips_SelfHeal_Units.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units");
+	this->Pips_SelfHeal_Buildings.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings");
+	this->Pips_SelfHeal_Infantry_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Infantry.Offset");
+	this->Pips_SelfHeal_Units_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units.Offset");
+	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings.Offset");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -165,6 +173,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
 		.Process(this->Storage_TiberiumIndex)
+		.Process(this->InfantryGainSelfHealCap)
+		.Process(this->UnitsGainSelfHealCap)
 		.Process(this->RadApplicationDelay_Building)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
@@ -176,6 +186,12 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_Shield_Background)
 		.Process(this->Pips_Shield_Building)
 		.Process(this->Pips_Shield_Building_Empty)
+		.Process(this->Pips_SelfHeal_Infantry)
+		.Process(this->Pips_SelfHeal_Units)
+		.Process(this->Pips_SelfHeal_Buildings)
+		.Process(this->Pips_SelfHeal_Infantry_Offset)
+		.Process(this->Pips_SelfHeal_Units_Offset)
+		.Process(this->Pips_SelfHeal_Buildings_Offset)
 		;
 }
 
