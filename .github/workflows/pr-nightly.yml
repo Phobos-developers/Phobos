@@ -22,7 +22,7 @@ jobs:
     - uses: actions/checkout@v3
       with:
         submodules: recursive
-        ref: ${{ github.event.pull_request.head.sha }}
+        # ref: ${{ github.event.pull_request.head.sha }}
 
     - name: Build Phobos
       uses: ./.github/actions/build-phobos  # Setup steps are reused
