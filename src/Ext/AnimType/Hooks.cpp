@@ -78,29 +78,34 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 
 	GET(AnimClass*, pThis, ESI);
 
-	if (pThis->Type->Damage < 1.0 || pThis->HasExtras)
+	if (pThis->Type->Damage <= 0.0 || pThis->HasExtras)
 		return SkipDamage;
 
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	int animFrame = pThis->Animation.Value;
 	int delay = pTypeExt->Damage_Delay.Get();
-
-	if (pThis->Type->Damage >= 1.0 && delay > 0 && pThis->Animation.Value % delay != 0)
-		return SkipDamage;
-
-	double damage = pThis->Type->Damage;
+	double damageMultiplier = 1.0;
 
 	if (pThis->OwnerObject && pThis->OwnerObject->WhatAmI() == AbstractType::Terrain)
-		damage *= 5.0;
+		damageMultiplier = 5.0;
 
-	pThis->Damage += damage;
+	// Reset accumulated damage at start of animation.
+	if (animFrame <= 1)
+		pThis->Damage = 0.0;
 
-	if (pThis->Damage < 1.0 || pThis->IsPlaying)
+	if (pThis->Type->Damage >= 1.0 && delay > 0 && (animFrame - 1) % delay != 0)
 		return SkipDamage;
 
+	pThis->Damage += pThis->Type->Damage * damageMultiplier;
 	int appliedDamage = Game::F2I(pThis->Damage);
+	pThis->Damage -= appliedDamage;
+
+	if (appliedDamage <= 0 || pThis->IsPlaying)
+		return SkipDamage;
+
 	auto const pExt = AnimExt::ExtMap.Find(pThis);
 	TechnoClass* pInvoker = nullptr;
-	
+
 	if (pTypeExt->Damage_DealtByOwner)
 		pInvoker = pExt->Invoker ? pExt->Invoker : pThis->OwnerObject ? abstract_cast<TechnoClass*>(pThis->OwnerObject) : nullptr;
 
@@ -118,8 +123,6 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 
 		MapClass::DamageArea(pThis->GetCoords(), appliedDamage, pInvoker, pWarhead, true, pOwner);
 	}
-
-	pThis->Damage -= appliedDamage;
 
 	return Continue;
 }
