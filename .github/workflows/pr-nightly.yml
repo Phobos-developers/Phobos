@@ -29,12 +29,3 @@ jobs:
       with:
         sln-path: ${{env.SOLUTION_FILE_PATH}}
         build-config: ${{env.BUILD_CONFIGURATION}}
-
-    - name: Upload Artifact
-      if: ${{success()}}
-      uses: actions/upload-artifact@v2
-      with:
-        name: compiled-dll-${{github.sha}}
-        path: |
-          ${{input.sln-path}}/${{input.build-config}}/Phobos.dll
-          ${{input.sln-path}}/${{input.build-config}}/IntDir/Phobos.pdb
