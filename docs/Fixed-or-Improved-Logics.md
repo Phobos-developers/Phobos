@@ -64,6 +64,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Mind control indicator animations will now correctly restore on mind controlled objects when uncloaked.
 - Animations from Warhead `AnimList` & `SplashList` etc. as well as animations created through map trigger `41 Play Anim At` now have the appropriate house set as owner of the animation by default.
 - Nuke carrier & payload weapons now respect `Bright` setting on the weapons always when appropriate (previously only payload did and only if Superweapon had `Nuke.SiloLaunch=false` *(Ares feature)*).
+- Self-healing pips from `InfantryGainSelfHeal` & `UnitsGainSelfHeal` now respect unit's `PixelSelectionBracketDelta` like health bar pips do.
+- Buildings using `SelfHealing` will now correctly revert to undamaged graphics if their health is restored back by self-healing.
 
 ## Animations
 
@@ -140,6 +142,32 @@ Gravity=6.0             ; double
 ```
 
 ## Technos
+
+### Building-provided self-healing customization
+
+- It is now possible to set a global cap for the effects of `InfantryGainSelfHeal` and `UnitsGainSelfHeal` by setting `InfantryGainSelfHealCap` & `UnitsGainSelfHealCap` under `[General]`, respectively.
+- It is also possible to change the pip frames displayed from `pips.shp` individually for infantry, units and buildings by setting the frames for infantry & unit self-healing on `Pips.SelfHeal.Infantry/Units/Buildings` under `[AudioVisual]`, respectively.
+  - `Pips.SelfHeal.Infantry/Units/Buildings.Offset` can be used to customize the pixel offsets for the displayed pips, individually for infantry, units and buildings.
+- Whether or not a TechnoType benefits from effects of `InfantryGainSelfHeal` or `UnitsGainSelfHeal` buildings or neither can now be controlled by setting `SelfHealGainType`.
+  - If `SelfHealGainType` is not set, InfantryTypes and VehicleTypes with `Organic` set to true gain self-healing from `InfantryGainSelfHeal`, other VehicleTypes from `UnitsGainSelfHeal` and AircraftTypes & BuildingTypes never gain self-healing.
+
+In `rulesmd.ini`:
+```ini
+[General]
+InfantryGainSelfHealCap=               ; int, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
+UnitsGainSelfHealCap=                  ; int, maximum amount of UnitsGainSelfHeal that can be in effect at once, must be 1 or higher
+                                       
+[AudioVisual]                          
+Pips.SelfHeal.Infantry=13,20           ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Units=13,20              ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Buildings=13,20          ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Infantry.Offset=25,-35   ; X,Y, pixels relative to default
+Pips.SelfHeal.Units.Offset=33,-32      ; X,Y, pixels relative to default
+Pips.SelfHeal.Buildings.Offset=15,10   ; X,Y, pixels relative to default
+
+[SOMETECHNO]                           ; TechnoType
+SelfHealGainType=                      ; Self-Heal Gain Type Enumeration (none|infantry|units)
+```
 
 ### Customizable harvester ore gathering animation
 
