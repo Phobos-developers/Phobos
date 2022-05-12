@@ -129,10 +129,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->NotHuman_DeathSequence.Read(exINI, pSection, "NotHuman.DeathSequence");
 
-	this->MindContol_Threshold.Read(exINI, pSection, "MindControl.Threshold");
-	this->MindContol_Damage.Read(exINI, pSection, "MindControl.Damage");
-	this->MindContol_Warhead.Read(exINI, pSection, "MindControl.Warhead", true);
-	this->MindContol_CanKill.Read(exINI, pSection, "MindContol.CanKill");
+	this->MindControl_Threshold.Read(exINI, pSection, "MindControl.Threshold");
+	this->MindControl_Threshold_Inverse.Read(exINI, pSection, "MindControl.Threshold.Inverse");
+	this->MindControl_AlternateDamage.Read(exINI, pSection, "MindControl.AlternateDamage");
+	this->MindControl_AlternateWarhead.Read(exINI, pSection, "MindControl.AlternateWarhead", true);
+	this->MindControl_CanKill.Read(exINI, pSection, "MindControl.CanKill");
 
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -197,10 +198,11 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->NotHuman_DeathSequence)
 
-		.Process(this->MindContol_Threshold)
-		.Process(this->MindContol_Damage)
-		.Process(this->MindContol_Warhead)
-		.Process(this->MindContol_CanKill)
+		.Process(this->MindControl_Threshold)
+		.Process(this->MindControl_Threshold_Inverse)
+		.Process(this->MindControl_AlternateDamage)
+		.Process(this->MindControl_AlternateWarhead)
+		.Process(this->MindControl_CanKill)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

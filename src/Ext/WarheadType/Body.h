@@ -73,10 +73,11 @@ public:
 		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
-		Valueable<int> MindContol_Threshold;
-		Nullable<int> MindContol_Damage;
-		Nullable<WarheadTypeClass*> MindContol_Warhead;
-		Valueable<bool> MindContol_CanKill;
+		Valueable<double> MindControl_Threshold;
+		Valueable<bool> MindControl_Threshold_Inverse;
+		Nullable<int> MindControl_AlternateDamage;
+		Nullable<WarheadTypeClass*> MindControl_AlternateWarhead;
+		Valueable<bool> MindControl_CanKill;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -146,10 +147,11 @@ public:
 
 			, NotHuman_DeathSequence { -1 }
 
-			, MindContol_Threshold { 100 }
-			, MindContol_Damage {}
-			, MindContol_Warhead {}
-			, MindContol_CanKill { false }
+			, MindControl_Threshold { 1.0 }
+			, MindControl_Threshold_Inverse { false }
+			, MindControl_AlternateDamage {}
+			, MindControl_AlternateWarhead {}
+			, MindControl_CanKill { false }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
