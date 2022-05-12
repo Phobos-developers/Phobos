@@ -154,7 +154,7 @@ void TechnoExt::ApplySpawn_LimitRange(TechnoClass* pThis)
 		{
 			auto pTechnoType = pThis->GetTechnoType();
 			int weaponRange = 0;
-			int weaponRangeExtra = pTypeData->Spawn_LimitedExtraRange * 256;
+			int weaponRangeExtra = pTypeData->Spawn_LimitedExtraRange * Unsorted::LeptonsPerCell;
 
 			auto setWeaponRange = [&weaponRange](WeaponTypeClass* pWeaponType)
 			{
@@ -656,11 +656,12 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 		{
 			auto pType = abstract_cast<BuildingTypeClass*>(pThis->GetTechnoType());
 			int fHeight = pType->GetFoundationHeight(false);
+			int yAdjust = -Unsorted::CellHeightInPixels / 2;
 
 			auto& offset = RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get();
 			pipFrames = RulesExt::Global()->Pips_SelfHeal_Buildings;
-			xOffset = offset.X + 30 * fHeight;
-			yOffset = offset.Y + -15 * fHeight + pType->Height * -15;
+			xOffset = offset.X + Unsorted::CellWidthInPixels / 2 * fHeight;
+			yOffset = offset.Y + yAdjust * fHeight + pType->Height * yAdjust;
 		}
 
 		int pipFrame = isInfantryHeal ? pipFrames.Get().X : pipFrames.Get().Y;
@@ -793,7 +794,7 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 	auto coords = CoordStruct::Empty;
 	coords = *pThis->GetCenterCoord(&coords);
 
-	int maxOffset = 30;
+	int maxOffset = Unsorted::CellWidthInPixels / 2;
 	int width = 0, height = 0;
 	BitFont::Instance->GetTextDimension(damageStr, &width, &height, 120);
 

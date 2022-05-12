@@ -399,7 +399,7 @@ namespace detail
 		double buffer;
 		if (parser.ReadDouble(pSection, pKey, &buffer))
 		{
-			value = Leptons(Game::F2I(buffer * 256.0));
+			value = Leptons(Game::F2I(buffer * Unsorted::LeptonsPerCell));
 			return true;
 		}
 		else if (!parser.empty())
