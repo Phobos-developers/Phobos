@@ -36,9 +36,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `InfiniteMindControl` with `Damage=1` can now control more than 1 unit.
 - Aircraft with `Fighter` set to false or those using strafing pattern (weapon projectile `ROT` is below 2) now take weapon's `Burst` into accord for all shots instead of just the first one.
 - `EMEffect` used for random AnimList pick is now replaced by a new tag `AnimList.PickRandom` with no side effect. (EMEffect=yes on AA inviso projectile deals no damage to units in movement)
-- Script action `Move to cell` now obeys YR cell calculation now. Using `1000 * Y + X` as its cell value. (was `128 * Y + X` as it's a RA1 leftover)
-- The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])
-- Map trigger action `125 Build At...` can now play buildup anim optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2).
 - Vehicles using `DeployFire` will now explicitly use weapon specified by `DeployFireWeapon` for firing the deploy weapon and respect `FireOnce` setting on weapon and any stop commands issued during firing.
 - Infantry with `DeployFireWeapon=-1` can now fire both weapons (decided by its target), regardless of deployed or not.
 
@@ -47,7 +44,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 - Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
 - Effects like lasers are no longer drawn from wrong firing offset on weapons that use Burst.
-- Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Animations can now be offset on the X axis with `XDrawOffset`.
 - `IsSimpleDeployer` units now only play `DeploySound` and `UndeploySound` once, when done with (un)deploying instead of repeating it over duration of turning and/or `DeployingAnim`.
 - AITrigger can now recognize Building Upgrades as legal condition.

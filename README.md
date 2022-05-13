@@ -17,13 +17,13 @@ Downloads
 
 You can choose one of the following:
 - [Latest stable branch build](https://github.com/Phobos-developers/Phobos/releases/latest) (most bug-free release but very slow on new features)
-- [Latest development branch builds](https://github.com/Phobos-developers/Phobos/releases) (a bit less less bug-free releases, devbuilds get new features when they are finished)
+- [Latest development branch builds](https://github.com/Phobos-developers/Phobos/releases) (a bit less bug-free releases, devbuilds get new features when they are finished)
 - [Latest development branch nightly](https://nightly.link/Phobos-developers/Phobos/blob/develop/.github/workflows/nightly.yml) (added unreleased features that will be in next devbuild)
-- Individual new feature builds (for testing) can be found in [pull requests](https://github.com/Phobos-developers/Phobos/pulls)
+- Individual new feature nightly builds for testing can be found in [pull requests](https://github.com/Phobos-developers/Phobos/pulls)
 
 ### Note on nightly builds
 
-Last two listed versions are bleeding edge (don't redistribute them outside of testing!) and have build information (commit and branch/tag) in them which is displayed ingame and can't be turned off. You can get a build for development branch (link above) any up-to-date pull request via an automatic bot comment that would appear in it and would contain the most recent successfully compiled version of Phobos for that feature branch. Alternatively, you can get an artifact manually from GitHub Actions runs. You can get an artifact for a specific commit which is built automatically with a GitHub Actions workflow, just press on a green tick, open the workflow, find and download the build artifact. This is limited to authorized users only.
+Last two listed versions are bleeding edge (don't redistribute them outside of testing!) and have build information (commit and branch/tag) in them which is displayed ingame and can't be turned off. You can get a build for development branch (link above) any up-to-date pull request via an automatic bot comment that would appear in it and would contain the most recent successfully compiled version of Phobos for that feature branch. Please note that the build is  produced *only if the PR has no merge conflicts*. Alternatively, you can get an artifact manually from GitHub Actions runs. You can get an artifact for a specific commit which is built automatically with a GitHub Actions workflow, just press on a green tick, open the workflow, find and download the build artifact. This is limited to authorized users only.
 
 Installation and Usage
 ----------------------
