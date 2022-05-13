@@ -301,11 +301,8 @@ New:
 - Correct owner house for Warhead Anim/SplashList & Play Animation trigger animations (by Starkku)
 - Display damage numbers debug hotkey command (by Starkku)
 - Toggleable display of TransactMoney amounts (by Starkku)
-<<<<<<< HEAD
-- Digital display of HP and SP (by ststl)
-=======
 - Building-provided self-healing customization (by Starkku)
->>>>>>> 62119a2c91aaa6249ea50415d25ad3683c252f2f
+- Digital display of HP and SP (by ststl)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
