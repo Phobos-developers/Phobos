@@ -52,13 +52,18 @@ Offset and interval: Positive integer are to the right(x) and down(y), negative 
 
 All will not be displayed if not written or if the corresponding type does not exist.
 
+In `Ra2MD.ini`:
+
+```ini
+DigitalDisplay.Enable=                  ; boolean, whether to enable digital display, all digital displays will not be displayed if no
+```
+
 In `rulesmd.ini`:
 
 ```ini
 [DigitalDisplayTypes] ;New registry for registering digital display types
 
 [AudioVisual]
-DigitalDisplay.Enable=                  ; boolean, whether to enable digital display, all digital displays will not be displayed if no
 Buildings.DefaultDigitalDisplayTypeHP=  ; DigitalDisplayType, the default digital display type used for building health
 Buildings.DefaultDigitalDisplayTypeSP=  ; DigitalDisplayType, the default digital display type used for building shield
 Infantrys.DefaultDigitalDisplayTypeHP=  ; DigitalDisplayType, the default digital display type used for infantry health
@@ -81,6 +86,7 @@ SHP.Interval.Building=                  ; integer - x,y , can be negative, horiz
 Offset=                                 ; integer - x,y , can be negative, horizontal and vertical offset of the position 
 Offset.WithoutShield=                   ; integer - x,y , the offset of HP when the shield fails
 Align=                                  ; Left/Right/Center/Default, Alignment mode, default Default
+Anchor=                                 ; Left/Right/TopLeft/TopRight, start drawing digitals point anchor the healthbar, default TopLeft
 Percentage=                             ; boolean, whether use percentage style, default no
 HideStrength=                           ; boolean, whether don't display strength, default no
 

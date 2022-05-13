@@ -43,7 +43,6 @@ public:
 		Valueable<Vector3D<int>> Pips_Shield_Building;
 		Nullable<int> Pips_Shield_Building_Empty;
 
-		Valueable<bool> DigitalDisplay_Enable;
 		Valueable<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypeHP;
 		Valueable<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypeSP;
 		Valueable<DigitalDisplayTypeClass*> Infantrys_DefaultDigitalDisplayTypeHP;
@@ -67,7 +66,6 @@ public:
 			, Pips_Shield_Background_SHP {}
 			, Pips_Shield_Building { { -1,-1,-1 } }
 			, Pips_Shield_Building_Empty {}
-			, DigitalDisplay_Enable { false }
 			, Buildings_DefaultDigitalDisplayTypeHP { nullptr }
 			, Buildings_DefaultDigitalDisplayTypeSP { nullptr }
 			, Infantrys_DefaultDigitalDisplayTypeHP { nullptr }
