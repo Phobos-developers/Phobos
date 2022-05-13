@@ -137,19 +137,25 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 	auto const pData = SWTypeExt::ExtMap.Find(pType);
 
 	std::wostringstream oss;
-	oss << pType->UIName << L"\n";
+	oss << pType->UIName;
 	bool showCost = false;
 
 	if (int nCost = std::abs(pData->Money_Amount))
 	{
+		oss << L"\n";
+
 		if (pData->Money_Amount > 0)
 			oss << '+';
+
 		oss << Phobos::UI::CostLabel << nCost;
 		showCost = true;
 	}
 		
 	if (pType->RechargeTime > 0)
 	{
+		if (!showCost)
+			oss << L"\n";
+
 		int nSec = pType->RechargeTime / 15 % 60;
 		int nMin = pType->RechargeTime / 15 / 60 /* % 60*/;
 		// int nHour = pType->RechargeTime / 15 / 60 / 60;
@@ -157,13 +163,11 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 		oss << (showCost ? L" " : L"") << Phobos::UI::TimeLabel
 			// << std::setw(2) << std::setfill(L'0') << nHour << L":" 
 			<< std::setw(2) << std::setfill(L'0') << nMin << L":"
-			<< std::setw(2) << std::setfill(L'0') << nSec << L"\n";
+			<< std::setw(2) << std::setfill(L'0') << nSec;
 	}
-	else if (showCost)
-		oss << "\n";
 
 	if (auto pDesc = this->GetUIDescription(pData))
-		oss << pDesc;
+		oss << L"\n" << pDesc;
 
 	this->TextBuffer = oss.str();
 }

@@ -105,6 +105,8 @@ public:
 		Valueable<int> Ammo_Shared_Group;
 		Nullable<bool> JumpjetTurnToTarget;
 
+		Nullable<SelfHealGainType> SelfHealGainType;
+
 		Nullable<DigitalDisplayTypeClass*> DigitalDisplayType;
 		Nullable<DigitalDisplayTypeClass*> DigitalDisplayType_Shield;
 
@@ -196,6 +198,7 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
+			, SelfHealGainType()
 			, DigitalDisplayType {}
 			, DigitalDisplayType_Shield {}
 		{ }

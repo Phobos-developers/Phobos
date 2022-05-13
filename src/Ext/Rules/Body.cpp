@@ -70,6 +70,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->Storage_TiberiumIndex.Read(exINI, GENERAL_SECTION, "Storage.TiberiumIndex");
+	this->InfantryGainSelfHealCap.Read(exINI, GENERAL_SECTION, "InfantryGainSelfHealCap");
+	this->UnitsGainSelfHealCap.Read(exINI, GENERAL_SECTION, "UnitsGainSelfHealCap");
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
@@ -77,17 +79,15 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PlacementGrid_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementGrid.TranslucentLevel");
 	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementPreview.DefaultTranslucentLevel");
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
-	this->Pips_Shield_Background_Filename.Read(pINI, "AudioVisual", "Pips.Shield.Background");
+	this->Pips_Shield_Background.Read(exINI, "AudioVisual", "Pips.Shield.Background");
 	this->Pips_Shield_Building.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 	this->Pips_Shield_Building_Empty.Read(exINI, "AudioVisual", "Pips.Shield.Building.Empty");
-
-	if (this->Pips_Shield_Background_Filename)
-	{
-		char filename[0x20];
-		strcpy(filename, this->Pips_Shield_Background_Filename);
-		_strlwr_s(filename);
-		this->Pips_Shield_Background_SHP = FileSystem::LoadSHPFile(filename);
-	}
+	this->Pips_SelfHeal_Infantry.Read(exINI, "AudioVisual", "Pips.SelfHeal.Infantry");
+	this->Pips_SelfHeal_Units.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units");
+	this->Pips_SelfHeal_Buildings.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings");
+	this->Pips_SelfHeal_Infantry_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Infantry.Offset");
+	this->Pips_SelfHeal_Units_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units.Offset");
+	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings.Offset");
 
 	this->Buildings_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypeHP");
 	this->Buildings_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypeSP");
@@ -185,6 +185,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
 		.Process(this->Storage_TiberiumIndex)
+		.Process(this->InfantryGainSelfHealCap)
+		.Process(this->UnitsGainSelfHealCap)
 		.Process(this->RadApplicationDelay_Building)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
@@ -193,10 +195,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlacementGrid_TranslucentLevel)
 		.Process(this->BuildingPlacementPreview_TranslucentLevel)
 		.Process(this->Pips_Shield)
-		.Process(this->Pips_Shield_Background_Filename)
-		.Process(this->Pips_Shield_Background_SHP)
+		.Process(this->Pips_Shield_Background)
 		.Process(this->Pips_Shield_Building)
 		.Process(this->Pips_Shield_Building_Empty)
+<<<<<<< HEAD
 		.Process(this->Buildings_DefaultDigitalDisplayTypeHP)
 		.Process(this->Buildings_DefaultDigitalDisplayTypeSP)
 		.Process(this->Infantrys_DefaultDigitalDisplayTypeHP)
@@ -205,6 +207,14 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Units_DefaultDigitalDisplayTypeSP)
 		.Process(this->Aircrafts_DefaultDigitalDisplayTypeHP)
 		.Process(this->Aircrafts_DefaultDigitalDisplayTypeSP)
+=======
+		.Process(this->Pips_SelfHeal_Infantry)
+		.Process(this->Pips_SelfHeal_Units)
+		.Process(this->Pips_SelfHeal_Buildings)
+		.Process(this->Pips_SelfHeal_Infantry_Offset)
+		.Process(this->Pips_SelfHeal_Units_Offset)
+		.Process(this->Pips_SelfHeal_Buildings_Offset)
+>>>>>>> 62119a2c91aaa6249ea50415d25ad3683c252f2f
 		;
 }
 

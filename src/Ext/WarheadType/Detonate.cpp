@@ -47,7 +47,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				bool isPositive = this->TransactMoney > 0;
 				auto color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
 				wchar_t moneyStr[0x20];
-				swprintf_s(moneyStr, L"%s$%d", isPositive ? L"+" : L"-", std::abs(this->TransactMoney));
+				swprintf_s(moneyStr, L"%ls%ls%d", isPositive ? L"+" : L"-", Phobos::UI::CostLabel, std::abs(this->TransactMoney));
 				auto displayCoord = this->TransactMoney_Display_AtFirer ? (pOwner ? pOwner->Location : coords) : coords;
 
 				int width = 0, height = 0;
