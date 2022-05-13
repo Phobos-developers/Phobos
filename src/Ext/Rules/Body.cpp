@@ -198,7 +198,12 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_Shield_Background)
 		.Process(this->Pips_Shield_Building)
 		.Process(this->Pips_Shield_Building_Empty)
-<<<<<<< HEAD
+		.Process(this->Pips_SelfHeal_Infantry)
+		.Process(this->Pips_SelfHeal_Units)
+		.Process(this->Pips_SelfHeal_Buildings)
+		.Process(this->Pips_SelfHeal_Infantry_Offset)
+		.Process(this->Pips_SelfHeal_Units_Offset)
+		.Process(this->Pips_SelfHeal_Buildings_Offset)
 		.Process(this->Buildings_DefaultDigitalDisplayTypeHP)
 		.Process(this->Buildings_DefaultDigitalDisplayTypeSP)
 		.Process(this->Infantrys_DefaultDigitalDisplayTypeHP)
@@ -207,14 +212,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Units_DefaultDigitalDisplayTypeSP)
 		.Process(this->Aircrafts_DefaultDigitalDisplayTypeHP)
 		.Process(this->Aircrafts_DefaultDigitalDisplayTypeSP)
-=======
-		.Process(this->Pips_SelfHeal_Infantry)
-		.Process(this->Pips_SelfHeal_Units)
-		.Process(this->Pips_SelfHeal_Buildings)
-		.Process(this->Pips_SelfHeal_Infantry_Offset)
-		.Process(this->Pips_SelfHeal_Units_Offset)
-		.Process(this->Pips_SelfHeal_Buildings_Offset)
->>>>>>> 62119a2c91aaa6249ea50415d25ad3683c252f2f
 		;
 }
 
