@@ -166,9 +166,6 @@ void DigitalDisplayTypeClass::DigitalDisplay(TechnoClass* pThis, Point2D* pLocat
 
 	bool UseSHP = pDisplayType->UseSHP;
 
-	RectangleStruct rect = { Pos.X,Pos.Y,4,4 };
-	DSurface::Composite->DrawRect(&rect, Drawing::RGB2DWORD(0, 0, 255));
-
 	if (UseSHP)
 		DigitalDisplaySHP(pThis, pDisplayType, Pos, Shield);
 	else
@@ -222,9 +219,6 @@ void DigitalDisplayTypeClass::DigitalDisplayText(TechnoClass* pThis, DigitalDisp
 
 	if (Shield)
 		Pos.Y -= 10;
-
-	RectangleStruct recttmp = { Pos.X,Pos.Y,4,4 };
-	DSurface::Composite->DrawRect(&recttmp, Drawing::RGB2DWORD(255, 0, 255));
 
 	switch (pDisplayType->Alignment)
 	{
@@ -418,9 +412,6 @@ void DigitalDisplayTypeClass::DigitalDisplaySHP(TechnoClass* pThis, DigitalDispl
 	}
 	break;
 	}
-
-	RectangleStruct rect = { Pos.X,Pos.Y,4,4 };
-	DSurface::Composite->DrawRect(&rect, Drawing::RGB2DWORD(255, 0, 0));
 
 	int base = 0;
 	int signframe = 30;
