@@ -82,26 +82,50 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 		return SkipDamage;
 
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
-	int animFrame = pThis->Animation.Value;
 	int delay = pTypeExt->Damage_Delay.Get();
-	double damageMultiplier = 1.0;
+
+	int damageMultiplier = 1;
 
 	if (pThis->OwnerObject && pThis->OwnerObject->WhatAmI() == AbstractType::Terrain)
-		damageMultiplier = 5.0;
+		damageMultiplier = 5;
 
-	// Reset accumulated damage at start of animation.
-	if (animFrame <= 1)
-		pThis->Damage = 0.0;
+	bool adjustAccum = false;
+	double damage = 0;
+	int appliedDamage = 0;
 
-	if (pThis->Type->Damage >= 1.0 && delay > 0 && (animFrame - 1) % delay != 0)
-		return SkipDamage;
+	if (delay <= 0 || pThis->Type->Damage < 1.0) // If Damage.Delay is less than 1 or Damage is a fraction.
+	{
+		adjustAccum = true;
+		damage = damageMultiplier * pThis->Type->Damage + pThis->Accum;
+		pThis->Accum = damage;
 
-	pThis->Damage += pThis->Type->Damage * damageMultiplier;
-	int appliedDamage = Game::F2I(pThis->Damage);
-	pThis->Damage -= appliedDamage;
+		// Deal damage if it is at least 1, otherwise accumulate it for later.
+		if (damage >= 1.0)
+			appliedDamage = static_cast<int>(std::round(damage));
+		else
+			return SkipDamage;
+	}
+	else
+	{
+		// Accum here is used as a counter for Damage.Delay, which cannot deal fractional damage.
+		damage = pThis->Accum + 1.0;
+		pThis->Accum = damage;
+
+		if (damage < delay)
+			return SkipDamage;
+
+		// Use Type->Damage as the actually dealt damage.
+		appliedDamage = static_cast<int>(std::round(pThis->Type->Damage)) * damageMultiplier;
+	}
 
 	if (appliedDamage <= 0 || pThis->IsPlaying)
 		return SkipDamage;
+
+	// Store fractional damage if needed, or reset the accum if hit the Damage.Delay counter.
+	if (adjustAccum)
+		pThis->Accum = damage - appliedDamage;
+	else
+		pThis->Accum = 0.0;
 
 	auto const pExt = AnimExt::ExtMap.Find(pThis);
 	TechnoClass* pInvoker = nullptr;
