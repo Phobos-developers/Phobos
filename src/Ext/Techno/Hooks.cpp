@@ -20,6 +20,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::CheckDeathConditions(pThis);
 	TechnoExt::EatPassengers(pThis);
 	TechnoExt::UpdateMindControlAnim(pThis);
+	TechnoExt::ForceJumpjetTurnToTarget(pThis);//TODO: move to locomotor processing
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
@@ -271,7 +272,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 	{
 		if (pExt->AreaFire_Target == AreaFireTarget::Random)
 		{
-			auto const range = pWeaponType->Range / 256.0;
+			auto const range = pWeaponType->Range / static_cast<double>(Unsorted::LeptonsPerCell);
 
 			std::vector<CellStruct> adjacentCells = GeneralUtils::AdjacentCellsInRange(static_cast<size_t>(range + 0.99));
 			size_t size = adjacentCells.size();
@@ -459,4 +460,40 @@ DEFINE_HOOK(0x6FD446, TechnoClass_FireLaser_IsSingleColor, 0x7)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(int* const, pDamage, EBX);
+
+	if (Phobos::Debug_DisplayDamageNumbers && *pDamage)
+		TechnoExt::DisplayDamageNumberString(pThis, *pDamage, false);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FA793, TechnoClass_AI_SelfHealGain, 0x5)
+{
+	enum { SkipGameSelfHeal = 0x6FA941 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	TechnoExt::ApplyGainedSelfHeal(pThis);
+
+	return SkipGameSelfHeal;
+}
+
+
+DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
+{
+	enum { SkipGameDrawing = 0x70A6C0 };
+
+	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x74, -0x4));
+	GET_STACK(RectangleStruct*, pBounds, STACK_OFFS(0x74, -0xC));
+
+	TechnoExt::DrawSelfHealPips(pThis, pLocation, pBounds);
+
+	return SkipGameDrawing;
 }

@@ -196,6 +196,18 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case PhobosScripts::RandomSkipNextAction:
 		ScriptExt::SkipNextAction(pTeam, -1);
 		break;
+	case PhobosScripts::StopForceJumpCountdown:
+		// Stop Timed Jump
+		ScriptExt::Stop_ForceJump_Countdown(pTeam);
+		break;
+	case PhobosScripts::NextLineForceJumpCountdown:
+		// Start Timed Jump that jumps to the next line when the countdown finish (in frames)
+		ScriptExt::Set_ForceJump_Countdown(pTeam, false, -1);
+		break;
+	case PhobosScripts::SameLineForceJumpCountdown:
+		// Start Timed Jump that jumps to the same line when the countdown finish (in frames)
+		ScriptExt::Set_ForceJump_Countdown(pTeam, true, -1);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		if (action > 70 && !IsExtVariableAction(action))
@@ -820,7 +832,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 							if (pUnitType->WhatAmI() != AbstractType::AircraftType)
 							{
 								pUnit->QueueMission(Mission::Attack, true);
-								pUnit->ClickedAction(Action::Attack, selectedTarget, false);
+								pUnit->ObjectClickedAction(Action::Attack, selectedTarget, false);
 
 								if (pUnit->GetCurrentMission() != Mission::Attack)
 									pUnit->Mission_Attack();
@@ -853,7 +865,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 					else
 					{
 						pUnit->QueueMission(Mission::Attack, true);
-						pUnit->ClickedAction(Action::Attack, selectedTarget, false);
+						pUnit->ObjectClickedAction(Action::Attack, selectedTarget, false);
 						pUnit->Mission_Attack();
 					}
 				}
@@ -955,7 +967,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 								pUnit->QueueMission(Mission::Attack, true);
 
 								if (pFocus)
-									pUnit->ClickedAction(Action::Attack, pFocus, false);
+									pUnit->ObjectClickedAction(Action::Attack, pFocus, false);
 
 								pUnit->Mission_Attack();
 							}
@@ -975,7 +987,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 								pUnit->QueueMission(Mission::Attack, true);
 
 								if (pFocus)
-									pUnit->ClickedAction(Action::Attack, pFocus, false);
+									pUnit->ObjectClickedAction(Action::Attack, pFocus, false);
 
 								pUnit->Mission_Attack();
 							}
@@ -1817,6 +1829,23 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 
 		break;
 
+	case 36:
+		// Building that isn't a defense
+		pTypeBuilding = abstract_cast<BuildingTypeClass*>(pTechnoType);
+
+		if (!pTechno->Owner->IsNeutral()
+			&& pTypeBuilding
+			&& !pTypeBuilding->IsBaseDefense
+			&& !(pTypeBuilding->Artillary 
+				|| pTypeBuilding->TickTank
+				|| pTypeBuilding->ICBMLauncher
+				|| pTypeBuilding->SensorArray))
+		{
+			return true;
+		}
+
+		break;
+
 	default:
 		break;
 	}
@@ -2158,7 +2187,7 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 						if (pUnitType->WhatAmI() != AbstractType::AircraftType)
 						{
 							pUnit->QueueMission(Mission::Move, false);
-							pUnit->ClickedAction(Action::Move, selectedTarget, false);
+							pUnit->ObjectClickedAction(Action::Move, selectedTarget, false);
 
 							if (pUnit->GetCurrentMission() != Mission::Move)
 								pUnit->Mission_Move();
@@ -3002,4 +3031,58 @@ bool ScriptExt::IsExtVariableAction(int action)
 {
 	auto eAction = static_cast<PhobosScripts>(action);
 	return eAction >= PhobosScripts::LocalVariableAdd && eAction <= PhobosScripts::GlobalVariableAndByGlobal;
+}
+
+void ScriptExt::Set_ForceJump_Countdown(TeamClass *pTeam, bool repeatLine = false, int count = 0)
+{
+	if (!pTeam)
+		return;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+		return;
+
+	if (count <= 0)
+		count = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
+
+	if (count > 0)
+	{
+		pTeamData->ForceJump_InitialCountdown = count;
+		pTeamData->ForceJump_Countdown.Start(count);
+		pTeamData->ForceJump_RepeatMode = repeatLine;
+	}
+	else
+	{
+		pTeamData->ForceJump_InitialCountdown = -1;
+		pTeamData->ForceJump_Countdown.Stop();
+		pTeamData->ForceJump_Countdown = -1;
+		pTeamData->ForceJump_RepeatMode = false;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+	Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d) Set Timed Jump -> (Countdown: %d, repeat action: %d)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, count, repeatLine);
+}
+
+void ScriptExt::Stop_ForceJump_Countdown(TeamClass *pTeam)
+{
+	if (!pTeam)
+		return;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+		return;
+
+	pTeamData->ForceJump_InitialCountdown = -1;
+	pTeamData->ForceJump_Countdown.Stop();
+	pTeamData->ForceJump_Countdown = -1;
+	pTeamData->ForceJump_RepeatMode = false;
+
+	auto pScript = pTeam->CurrentScript;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+	Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d): Stopped Timed Jump\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
 }

@@ -11,6 +11,10 @@ This page lists the history of changes across stable Phobos releases and also al
 
 ### From older Phobos versions
 
+#### From pre-0.3 devbuilds
+
+- `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
+
 #### From 0.2.2.2
 
 - Keys `rulesmd.ini->[SOMEWARHEAD]->PenetratesShield` and `rulesmd.ini->[SOMEWARHEAD]->BreaksShield` have been changed to `Shield.Penetrate` and `Shield.Break`, respectively.
@@ -260,6 +264,7 @@ New:
 - Script Action 111 that un-register Team success, is just the opposite effect of Action 49 (by FS-21)
 - Script Action 112 to regroup temporarily around the Team Leader (by FS-21)
 - Script Action 113 to Randomly Skip Next Action (by FS-21)
+- Script Action 124 to 126 for timed Script Action jumps (by FS-21)
 - ObjectInfo now shows current Target and AI Trigger data (by FS-21)
 - Shield absorption and passthrough customization (by Morton)
 - Limbo Delivery of buildings (by Morton)
@@ -280,8 +285,8 @@ New:
 - `Storage.TiberiumIndex` for customizing resource storage in structures (by FS-21)
 - Grinder improvements & customizations (by Starkku)
 - Attached animation position customization (by Starkku)
-- Trigger Action 505 for Firing at specified location (by FS-21)
-- Trigger Action 506 for Firing at waypoint (by FS-21)
+- Trigger Action 505 for Firing SW at specified location (by FS-21)
+- Trigger Action 506 for Firing SW at waypoint (by FS-21)
 - New ways for self-killing objects under certaing cases (by FS-21)
 - `ForceWeapon.Naval.Decloacked` for overriding uncloaked underwater attack behavior (by FS-21)
 - Shrapnel enhancement (by secsome)
@@ -295,9 +300,12 @@ New:
 - Single-color weapon lasers (by Starkku)
 - Customizable projectile trajectory (by secsome)
 - Correct owner house for Warhead Anim/SplashList & Play Animation trigger animations (by Starkku)
-- Action 505,506 use SuperWeaponType ID
-- Action 9931 Message for specified house
-- Random product of infantry and vehicle
+- Display damage numbers debug hotkey command (by Starkku)
+- Toggleable display of TransactMoney amounts (by Starkku)
+- Building-provided self-healing customization (by Starkku)
+- Action 505,506 use SuperWeaponType ID (by ststl)
+- Action 9931 Message for specified house (by ststl)
+- Random product of infantry and vehicle (by ststl)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -315,6 +323,7 @@ Vanilla fixes:
 - Fixed vehicles (both voxel & SHP) to fully respect `Palette` (by Starkku)
 - Fixed mind control indicator animations not reappearing on mind controlled objects that are cloaked and then uncloaked (by Starkku)
 - Fixed Nuke carrier and payload weapons not respecting `Bright` setting on weapon (by Starkku)
+- Fixed buildings not reverting to undamaged graphics when HP was restored above `[AudioVisual]`->`ConditionYellow` via `SelfHealing` (by Starkku)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
@@ -324,6 +333,7 @@ Phobos fixes:
 - Fixed critical hit animation playing even if no critical hits were dealt due to `Crit.Affects` or `ImmuneToCrit` settings (by Starkku)
 - Fixed `RemoveDisguise` not working on `PermaDisguise` infantry (by Starkku)
 - Fixed single-color laser (IsHouseColor, IsSingleColor, LaserTrails) glow falloff to match the vanilla appearance (by Starkku)
+- Fixed a potential cause of crashes concerning shield animations (such in conjunction with cloaking) (by Starkku)
 </details>
 
 

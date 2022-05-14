@@ -30,6 +30,7 @@ public:
 		Valueable<int> LastWarpDistance;
 		int Death_Countdown;
 		Valueable<AnimTypeClass*> MindControlRingAnimType;
+		Nullable<int> DamageNumberOffset;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet { nullptr }
@@ -43,6 +44,7 @@ public:
 			, LastWarpDistance {}
 			, Death_Countdown(-1)
 			, MindControlRingAnimType { nullptr }
+			, DamageNumberOffset {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -100,4 +102,9 @@ public:
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 	static void UpdateMindControlAnim(TechnoClass* pThis);
+	static bool CheckIfCanFireAt(TechnoClass* pThis, AbstractClass* pTarget);
+	static void ForceJumpjetTurnToTarget(TechnoClass* pThis);
+	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
+	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
+	static void ApplyGainedSelfHeal(TechnoClass* pThis);
 };
