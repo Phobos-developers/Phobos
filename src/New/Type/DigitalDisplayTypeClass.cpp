@@ -115,7 +115,7 @@ void DigitalDisplayTypeClass::DigitalDisplay(TechnoClass* pThis, Point2D* pLocat
 
 	HealthBarAnchors Anchor = (pDisplayType->Anchoring & DigitalDisplayTypeClass::AnchorType::Right
 		? HealthBarAnchors::TopRight : HealthBarAnchors::TopLeft);
-	Point2D Pos = TechnoExt::GetHealthBarPostion(pThis, Shield, Anchor);
+	Point2D Pos = TechnoExt::GetHealthBarPosition(pThis, Shield, Anchor);
 		
 	if (pExt->Shield == nullptr ||
 		pExt->Shield->IsBrokenAndNonRespawning())

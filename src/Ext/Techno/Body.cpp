@@ -823,7 +823,7 @@ Point2D TechnoExt::GetScreenLocation(TechnoClass* pThis)
 	return res;
 }
 
-Point2D TechnoExt::GetHealthBarPostion(TechnoClass* pThis, bool Shield, HealthBarAnchors Anchor)
+Point2D TechnoExt::GetHealthBarPosition(TechnoClass* pThis, bool Shield, HealthBarAnchors Anchor)
 {
 	Point2D Loc = GetScreenLocation(pThis);
 	Point2D Pos = { 0, 0 };

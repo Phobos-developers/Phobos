@@ -122,5 +122,5 @@ public:
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
 	static Point2D GetScreenLocation(TechnoClass* pThis);
-	static Point2D GetHealthBarPostion(TechnoClass* pThis, bool Shield = false, HealthBarAnchors Anchor = HealthBarAnchors::TopLeft);
+	static Point2D GetHealthBarPosition(TechnoClass* pThis, bool Shield = false, HealthBarAnchors Anchor = HealthBarAnchors::TopLeft);
 };
