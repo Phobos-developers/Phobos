@@ -69,5 +69,6 @@ public:
 		static bool ArtImageSwap;
 		static bool AllowParallelAIQueues;
 		static bool EnableBuildingPlacementPreview;
+		static bool ExtendParallelAIQueues[5];
 	};
 };
