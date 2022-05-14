@@ -809,6 +809,95 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 	pExt->DamageNumberOffset = pExt->DamageNumberOffset + width;
 }
 
+int operator & (HealthBarAnchors a, HealthBarAnchors b)
+{
+	return static_cast<int>(a) & static_cast<int>(b);
+}
+
+Point2D TechnoExt::GetScreenLocation(TechnoClass* pThis)
+{
+	CoordStruct Loc = pThis->GetCoords();
+	Point2D res = { 0,0 };
+	TacticalClass::Instance->CoordsToScreen(&res, &Loc);
+	res -= TacticalClass::Instance->TacticalPos;
+	return res;
+}
+
+Point2D TechnoExt::GetHealthBarPostion(TechnoClass* pThis, bool Shield, HealthBarAnchors Anchor)
+{
+	Point2D Loc = GetScreenLocation(pThis);
+	Point2D Pos = { 0, 0 };
+	AbstractType thisAbstractType = pThis->WhatAmI();
+	int iLength = thisAbstractType == AbstractType::Infantry ? 8 : 17;
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+
+	if (thisAbstractType == AbstractType::Building)
+	{
+		BuildingTypeClass* pBuildingType = abstract_cast<BuildingTypeClass*>(pThis->GetTechnoType());
+		CoordStruct Coords = { 0, 0, 0 };
+		pBuildingType->Dimension2(&Coords);
+		Point2D Pos2 = { 0, 0 };
+		CoordStruct Coords2 = { -Coords.X / 2, Coords.Y / 2, Coords.Z };
+		TacticalClass::Instance->CoordsToScreen(&Pos2, &Coords2);
+		int FoundationHeight = abstract_cast<BuildingTypeClass*>(pType)->GetFoundationHeight(true);
+		
+		iLength = FoundationHeight * 7 + FoundationHeight / 2;
+		Pos.X = Pos2.X + Loc.X + 4 * iLength + 3 - (Shield ? 6 : 0);
+		Pos.Y = Pos2.Y + Loc.Y - 2 * iLength + 4 - (Shield ? 3 : 0);
+
+		if (Anchor & HealthBarAnchors::Center)
+		{
+			Pos.X -= iLength * 2 + 2;
+			Pos.Y += iLength + 1;
+		}
+		else
+		{
+			if (!(Anchor & HealthBarAnchors::Right))
+			{
+				Pos.X -= (iLength + 1) * 4;
+				Pos.Y += (iLength + 1) * 2;
+			}
+		}
+
+		if (!(Anchor & HealthBarAnchors::Bottom))
+		{
+			Pos.Y += 4;
+			Pos.X += 4;
+		}
+	}
+	else
+	{
+		Pos.X = Loc.X - iLength + (iLength == 8);
+		Pos.Y = Loc.Y - 28 + (iLength == 8);
+		Pos.Y += pType->PixelSelectionBracketDelta;
+
+		if (Shield)
+		{
+			Pos.Y -= 5;
+
+			auto pExt = ExtMap.Find(pThis);
+
+			if (pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning())
+				Pos.Y += pExt->Shield->GetType()->BracketDelta.Get();
+		}
+
+		if (Anchor & HealthBarAnchors::Center)
+		{
+			Pos.X += iLength;
+		}
+		else
+		{
+			if (Anchor & HealthBarAnchors::Right)
+				Pos.X += iLength * 2;
+		}
+
+		if (Anchor & HealthBarAnchors::Bottom)
+			Pos.Y += 4;
+	}
+
+	return Pos;
+}
+
 // =============================
 // load / save
 

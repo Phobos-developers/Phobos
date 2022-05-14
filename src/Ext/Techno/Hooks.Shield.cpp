@@ -5,6 +5,7 @@
 #include <Utilities/GeneralUtils.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
+#include <TacticalClass.h>
 
 // #issue 88 : shield logic
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)

@@ -11,6 +11,20 @@
 
 class BulletClass;
 
+enum class HealthBarAnchors
+{
+	Left = 0,
+	TopLeft = 0,
+	Right = 1,
+	TopRight = 1,
+	Bottom = 2,
+	BottomLeft = 2,
+	BottomRight = 3,
+	Center = 4,
+	TopCenter = 4,
+	BottomCenter = 6,
+};
+
 class TechnoExt
 {
 public:
@@ -107,4 +121,6 @@ public:
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
+	static Point2D GetScreenLocation(TechnoClass* pThis);
+	static Point2D GetHealthBarPostion(TechnoClass* pThis, bool Shield = false, HealthBarAnchors Anchor = HealthBarAnchors::TopLeft);
 };
