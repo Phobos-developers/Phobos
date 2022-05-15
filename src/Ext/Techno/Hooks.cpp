@@ -35,7 +35,10 @@ DEFINE_HOOK(0x54AEC0, JumpjetLoco_Process, 0x8)
 	GET_STACK(ILocomotion*, iLoco, 0x4);
 	const auto pLoco = static_cast<JumpjetLocomotionClass*>(iLoco);
 	const auto pThis = pLoco->Owner;
-	if (pThis->WhatAmI() == AbstractType::Unit && pThis->IsInAir() && !pThis->GetTechnoType()->TurretSpins)
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	if (pTypeExt && pTypeExt->JumpjetTurnToTarget.Get(RulesExt::Global()->JumpjetTurnToTarget) &&
+		pThis->WhatAmI() == AbstractType::Unit && pThis->IsInAir() && !pType->TurretSpins && pLoco)
 	{
 		if (const auto pTarget = pThis->Target)
 		{
