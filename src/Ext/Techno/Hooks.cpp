@@ -1,6 +1,6 @@
 #include <InfantryClass.h>
 #include <ScenarioClass.h>
-
+#include <JumpjetLocomotionClass.h>
 #include "Body.h"
 
 #include <Ext/TechnoType/Body.h>
@@ -20,7 +20,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::CheckDeathConditions(pThis);
 	TechnoExt::EatPassengers(pThis);
 	TechnoExt::UpdateMindControlAnim(pThis);
-	TechnoExt::ForceJumpjetTurnToTarget(pThis);//TODO: move to locomotor processing
+	//TechnoExt::ForceJumpjetTurnToTarget(pThis);//Moved to JumpjetLocomotion::Process
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
@@ -30,6 +30,24 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x54AEC0, JumpjetLoco_Process, 0x8)
+{
+	GET_STACK(ILocomotion*, iLoco, 0x4);
+	const auto pLoco = static_cast<JumpjetLocomotionClass*>(iLoco);
+	const auto pThis = pLoco->Owner;
+	if (pThis->WhatAmI() == AbstractType::Unit && pThis->IsInAir() && !pThis->GetTechnoType()->TurretSpins)
+	{
+		if (const auto pTarget = pThis->Target)
+		{
+			const CoordStruct source = pThis->Location;
+			const CoordStruct target = pTarget->GetCoords();
+			const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
+			if (pThis->GetRealFacing().value32() != tgtDir.value32())
+				pLoco->LocomotionFacing.turn(tgtDir);
+		}
+	}
+	return 0;
+}
 
 DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 {
