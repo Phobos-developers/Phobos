@@ -558,17 +558,12 @@ void TechnoExt::DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 	Point2D vPos = { 0, 0 };
 	Point2D vLoc = *pLocation;
 	Point2D vOfs = { 0, 0};
-
 	int frame, XOffset, YOffset;
-
 	Vector3D<int> glbSelectbrdFrame = isInfantry ?
 		RulesExt::Global()->SelectBrd_Frame_Infantry.Get() :
 		RulesExt::Global()->SelectBrd_Frame_Unit.Get();
-
 	Vector3D<int> selectbrdFrame = pTypeExt->SelectBrd_Frame.Get();
-
 	auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->SelectBrd_TranslucentLevel.Get(RulesExt::Global()->SelectBrd_DefaultTranslucentLevel.Get()));
-
 	auto const canSee = pThis->Owner->IsAlliedWith(HouseClass::Player)
 		|| HouseClass::IsPlayerObserver()
 		|| pTypeExt->SelectBrd_ShowEnemy.Get(RulesExt::Global()->SelectBrd_DefaultShowEnemy.Get());
@@ -579,18 +574,8 @@ void TechnoExt::DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 	}
 
 	vOfs = pTypeExt->SelectBrd_DrawOffset.Get();
-	if (vOfs.X == NULL || vOfs.Y == NULL)
-	{
-		if (isInfantry)
-			vOfs = RulesExt::Global()->SelectBrd_DrawOffset_Infantry.Get();
-		else
-			vOfs = RulesExt::Global()->SelectBrd_DrawOffset_Unit.Get();
-	}
-
 	XOffset = vOfs.X;
-
-	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta;
-	YOffset += vOfs.Y;
+	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta + vOfs.Y;
 	vLoc.Y -= 5;
 
 	if (iLength == 8)
