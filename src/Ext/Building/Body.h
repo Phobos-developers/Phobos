@@ -39,7 +39,11 @@ public:
 
 		// virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override 
+		{
+			if (this->CurrentAirFactory == ptr)
+				this->CurrentAirFactory = nullptr;
+		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -54,6 +58,18 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+			switch (abs)
+			{
+			case AbstractType::Building:
+				return false;
+			default:
+				return true;
+			}
+		}
 	};
 
 	static ExtContainer ExtMap;

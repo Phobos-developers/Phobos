@@ -52,6 +52,8 @@ public:
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
 			this->Shield->InvalidatePointer(ptr);
+			if (this->InterceptedBullet.Get() == ptr)
+				this->InterceptedBullet = nullptr;
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
@@ -67,6 +69,19 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+			switch (abs)
+			{
+			case AbstractType::Anim:
+			case AbstractType::Bullet:
+				return false;
+			default:
+				return true;
+			}
+		}
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 	};
