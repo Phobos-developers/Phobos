@@ -123,6 +123,17 @@ public:
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
 		Valueable<CSFText> EnemyUIName;
 
+		SHPStruct* SHP_SelectBrdSHP;
+		ConvertClass* SHP_SelectBrdPAL;
+
+		Nullable<bool> UseCustomSelectBrd;
+		PhobosFixedString<32U> SelectBrd_SHP;
+		PhobosFixedString<32U> SelectBrd_PAL;
+		Nullable<Vector3D<int>> SelectBrd_Frame;
+		Nullable<Vector2D<int>> SelectBrd_DrawOffset;
+		Nullable<int> SelectBrd_TranslucentLevel;
+		Nullable<bool> SelectBrd_ShowEnemy;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -195,6 +206,15 @@ public:
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 			, SelfHealGainType()
+			, SHP_SelectBrdSHP { nullptr }
+			, SHP_SelectBrdPAL { nullptr }
+			, UseCustomSelectBrd {}
+			, SelectBrd_SHP {}
+			, SelectBrd_PAL {}
+			, SelectBrd_Frame { {-1,-1,-1} }
+			, SelectBrd_DrawOffset {}
+			, SelectBrd_TranslucentLevel {}
+			, SelectBrd_ShowEnemy {}
 		{ }
 
 		virtual ~ExtData() = default;

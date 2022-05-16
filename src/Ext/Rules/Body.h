@@ -49,6 +49,23 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
 
+		SHPStruct* SHP_SelectBrdSHP_INF;
+		ConvertClass* SHP_SelectBrdPAL_INF;
+		SHPStruct* SHP_SelectBrdSHP_UNIT;
+		ConvertClass* SHP_SelectBrdPAL_UNIT;
+
+		Valueable<bool> UseSelectBrd;
+		PhobosFixedString<32U> SelectBrd_SHP_Infantry;
+		PhobosFixedString<32U> SelectBrd_PAL_Infantry;
+		Nullable<Vector3D<int>> SelectBrd_Frame_Infantry;
+		Nullable<Vector2D<int>> SelectBrd_DrawOffset_Infantry;
+		PhobosFixedString<32U> SelectBrd_SHP_Unit;
+		PhobosFixedString<32U> SelectBrd_PAL_Unit;
+		Nullable<Vector3D<int>> SelectBrd_Frame_Unit;
+		Nullable<Vector2D<int>> SelectBrd_DrawOffset_Unit;
+		Nullable<int> SelectBrd_DefaultTranslucentLevel;
+		Valueable<bool> SelectBrd_DefaultShowEnemy;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -70,6 +87,21 @@ public:
 			, Pips_SelfHeal_Infantry_Offset {{ 25, -35 }}
 			, Pips_SelfHeal_Units_Offset {{ 33, -32 }}
 			, Pips_SelfHeal_Buildings_Offset {{ 15, 10 }}
+			, SHP_SelectBrdSHP_INF { nullptr }
+			, SHP_SelectBrdPAL_INF { nullptr }
+			, SHP_SelectBrdSHP_UNIT { nullptr }
+			, SHP_SelectBrdPAL_UNIT { nullptr }
+			, UseSelectBrd { false }
+			, SelectBrd_SHP_Infantry { "select.shp" }
+			, SelectBrd_PAL_Infantry { "palette.pal" }
+			, SelectBrd_Frame_Infantry { {0,0,0} }
+			, SelectBrd_DrawOffset_Infantry { {0,0} }
+			, SelectBrd_SHP_Unit { "select.shp" }
+			, SelectBrd_PAL_Unit { "palette.pal" }
+			, SelectBrd_Frame_Unit { {3,3,3} }
+			, SelectBrd_DrawOffset_Unit { {0,0} }
+			, SelectBrd_DefaultTranslucentLevel { 0 }
+			, SelectBrd_DefaultShowEnemy { true }
 		{ }
 
 		virtual ~ExtData() = default;
