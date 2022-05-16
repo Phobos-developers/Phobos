@@ -809,11 +809,6 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 	pExt->DamageNumberOffset = pExt->DamageNumberOffset + width;
 }
 
-int operator & (HealthBarAnchors a, HealthBarAnchors b)
-{
-	return static_cast<int>(a) & static_cast<int>(b);
-}
-
 Point2D TechnoExt::GetScreenLocation(TechnoClass* pThis)
 {
 	CoordStruct Loc = pThis->GetCoords();

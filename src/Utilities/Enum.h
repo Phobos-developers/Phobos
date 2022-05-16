@@ -165,6 +165,22 @@ enum class TextAlign : int
 
 MAKE_ENUM_FLAGS(TextAlign);
 
+enum class HealthBarAnchors
+{
+	Left = 0,
+	TopLeft = 0,
+	Right = 1,
+	TopRight = 1,
+	Bottom = 2,
+	BottomLeft = 2,
+	BottomRight = 3,
+	Center = 4,
+	TopCenter = 4,
+	BottomCenter = 6,
+};
+
+MAKE_ENUM_FLAGS(HealthBarAnchors);
+
 class MouseCursorHotSpotX {
 public:
 	typedef MouseHotSpotX Value;
