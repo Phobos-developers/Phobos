@@ -236,10 +236,10 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		ScriptExt::ConditionalJump_ManageKillsCounter(pTeam, -1);
 		break;
 	case PhobosScripts::ConditionalJumpCheckAliveHumans:
-		ScriptExt::ConditionalJump_CheckEconomy(pTeam);///////////// 143
+		ScriptExt::ConditionalJump_CheckAliveHumans(pTeam, -1);
 		break;
 	case PhobosScripts::ConditionalJumpCheckHumanIsMostHated:
-		ScriptExt::ConditionalJump_CheckPower(pTeam);///////////// 144
+		ScriptExt::ConditionalJump_CheckHumanIsMostHated(pTeam);
 		break;
 	case PhobosScripts::ConditionalJumpKillEvaluation:
 		ScriptExt::ConditionalJump_KillEvaluation(pTeam);
@@ -3754,7 +3754,7 @@ void ScriptExt::ConditionalJump_CheckHumanIsMostHated(TeamClass* pTeam)
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::ConditionalJumpCheckAliveHumans(TeamClass* pTeam, int mode = 0)
+void ScriptExt::ConditionalJump_CheckAliveHumans(TeamClass* pTeam, int mode = 0)
 {
 	if (!pTeam)
 	{

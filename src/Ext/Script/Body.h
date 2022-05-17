@@ -216,7 +216,7 @@ public:
 	static void SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable);
 	static void ConditionalJump_ResetVariables(TeamClass* pTeam);
 	static void ConditionalJump_CheckHumanIsMostHated(TeamClass* pTeam);
-	static void ConditionalJumpCheckAliveHumans(TeamClass* pTeam, int mode);
+	static void ConditionalJump_CheckAliveHumans(TeamClass* pTeam, int mode);
 	static void ConditionalJump_CheckObjects(TeamClass* pTeam);
 	static void ConditionalJump_CheckCount(TeamClass* pTeam, int modifier);
 	static void ConditionalJump_ManageResetIfJump(TeamClass* pTeam, int enable);
