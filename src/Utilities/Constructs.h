@@ -84,6 +84,10 @@ public:
 		return this->Convert.get();
 	}
 
+	ConvertClass* GetOrDefaultConvert(ConvertClass* pDefault) const {
+		return this->Convert.get() ? this->Convert.get() : pDefault;
+	}
+
 	bool LoadFromINI(
 		CCINIClass* pINI, const char* pSection, const char* pKey,
 		const char* pDefault = "");

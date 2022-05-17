@@ -468,3 +468,16 @@ DEFINE_HOOK(0x46B3E6, BulletClass_NukeMaker_BulletParams, 0x8)
 	R->EDI(pThis);
 	return SkipGameCode;
 }
+
+DEFINE_HOOK(0x6FA781, TechnoClass_AI_SelfHealing_BuildingGraphics, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
+	{
+		pBuilding->UpdatePlacement(PlacementType::Redraw);
+		pBuilding->ToggleDamagedAnims(false);
+	}
+
+	return 0;
+}

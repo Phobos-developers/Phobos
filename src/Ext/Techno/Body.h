@@ -30,6 +30,7 @@ public:
 		Valueable<int> LastWarpDistance;
 		int Death_Countdown;
 		Valueable<AnimTypeClass*> MindControlRingAnimType;
+		Nullable<int> DamageNumberOffset;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet { nullptr }
@@ -43,6 +44,7 @@ public:
 			, LastWarpDistance {}
 			, Death_Countdown(-1)
 			, MindControlRingAnimType { nullptr }
+			, DamageNumberOffset {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -50,6 +52,8 @@ public:
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
 			this->Shield->InvalidatePointer(ptr);
+			if (this->InterceptedBullet.Get() == ptr)
+				this->InterceptedBullet = nullptr;
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
@@ -65,6 +69,19 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+			switch (abs)
+			{
+			case AbstractType::Anim:
+			case AbstractType::Bullet:
+				return false;
+			default:
+				return true;
+			}
+		}
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 	};
@@ -100,4 +117,9 @@ public:
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 	static void UpdateMindControlAnim(TechnoClass* pThis);
+	static bool CheckIfCanFireAt(TechnoClass* pThis, AbstractClass* pTarget);
+	static void ForceJumpjetTurnToTarget(TechnoClass* pThis);
+	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
+	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
+	static void ApplyGainedSelfHeal(TechnoClass* pThis);
 };

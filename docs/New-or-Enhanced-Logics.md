@@ -73,7 +73,7 @@ LaserTrailN.IsOnTurret=no   ; boolean, whether the trail origin is turret
 ; where N = 0, 1, 2, ...
 ```
 
-in `rulesmd.ini`:
+In `rulesmd.ini`:
 ```ini
 [SOMEVOXELANIM]             ; VoxelAnim
 LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
@@ -87,8 +87,10 @@ LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-Pips.Shield=-1,-1,-1           ; int, frames of pips.shp for Green, Yellow, Red
-Pips.Shield.Building=-1,-1,-1  ; int, frames of pips.shp for Green, Yellow, Red
+Pips.Shield=-1,-1,-1               ; int, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Shield.Building=-1,-1,-1      ; int, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Shield.Background=PIPBRD.SHP  ; filename - including the .shp/.pcx extension
+Pips.Shield.Building.Empty=0       ; int, frame of pips.shp (zero-based) for empty building pip
 
 [ShieldTypes]
 0=SOMESHIELDTYPE
@@ -104,7 +106,16 @@ SelfHealing.Rate=0.0                 ; double, ingame minutes
 Respawn=0.0                          ; double, percents or absolute
 Respawn.Rate=0.0                     ; double, ingame minutes
 BracketDelta=0                       ; integer - pixels
+Pips=-1,-1,-1                        ; int, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Building=-1,-1,-1               ; int, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Background=                     ; filename - including the .shp/.pcx extension
+Pips.Building.Empty=                 ; int, frame of pips.shp (zero-based) for empty building pip
 IdleAnim=                            ; animation
+IdleAnim.ConditionYellow=            ; animation
+IdleAnim.ConditionRed=               ; animation
+IdleAnimDamaged=                     ; animation
+IdleAnimDamaged.ConditionYellow=     ; animation
+IdleAnimDamaged.ConditionRed=        ; animation
 IdleAnim.OfflineAction=Hides         ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 IdleAnim.TemporalAction=Hides        ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 BreakAnim=                           ; animation
@@ -143,7 +154,7 @@ Shield.InheritStateOnReplace=false   ; boolean
 ```
 - Now you can have a shield for any TechnoType. It serves as a second health pool with independent `Armor` and `Strength` values.
   - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed by shield.
-  - When the TechnoType with a unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for game calculation.
+  - When a TechnoType has an unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for game calculation.
   - `InitialStrength` can be used to set a different initial strength value from maximum.
 - When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoTypes have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
   - This also works with Ares' `Convert.*`.
@@ -154,7 +165,9 @@ Shield.InheritStateOnReplace=false   ; boolean
   - If you want shield recovers/respawns 1 HP per time, currently you need to set tag value to any number between 1 and 2, like `1.1`.
 - `SelfHealing.Rate` and `Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
 - `IdleAnim`, if set, will be played while the shield is intact. This animation is automatically set to loop indefinitely.
-  - `Bouncer=yes` animations are not supported at the moment.
+  - `IdleAnim.ConditionYellow` and `IdleAnim.ConditionRed` can be used to set different animations for when shield health is at or below the percentage defined in `[AudioVisual]`->`ConditionYellow`/`ConditionRed`, respectively. If `IdleAnim.ConditionRed` is not set it falls back to `IdleAnim.ConditionYellow`, which in turn falls back to `IdleAnim`.
+  - `IdleAnimDamaged`, `IdleAnimDamaged.ConditionYellow` and `IdleAnimDamaged.ConditionRed` are used in an identical manner, but only when health of the object the shield is attached to is at or below `[AudioVisual]`->`ConditionYellow`. Follows similar fallback sequence to regular `IdleAnim` variants and if none are set, falls back to the regular `IdleAnim` or variants thereof.
+  - `Bouncer=true` and `IsMeteor=true` animations can exhibit irregular behaviour when used as `IdleAnim` and should be avoided.
 - `IdleAnim.OfflineAction` indicates what happens to the animation when the shield is in a low power state.
 - `IdleAnim.TemporalAction` indicates what happens to the animation when the shield is attacked by temporal weapons.
 - `BreakAnim`, if set, will be played when the shield has been broken.
@@ -163,10 +176,13 @@ Shield.InheritStateOnReplace=false   ; boolean
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
 - `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
-- A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable.
-  - Buildings now use the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame by default.
-  - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. `Pips.Shield.Building` is used for BuildingTypes.
-  - `pipbrd.shp` will use its 4th frame to display an infantry's shield strength and the 3th frame for other units if `pipbrd.shp` has extra 2 frames. And `BracketDelta` can be used as additional `PixelSelectionBracketDelta` for shield strength.
+- A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable. Several customizations are available for the shield strength pips.
+  - By default, buildings use the 6th frame of `pips.shp` to display the shield strength while others use the 17th frame.
+  - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit is set, then it will always display that frame, or if 3 digits are set, it will use those if shield's current strength is at or below `ConditionYellow` and `ConditionRed`, respectively. `Pips.Shield.Building` is used for BuildingTypes. -1 as value will use the default frame, whether it is fallback to first value or the aforementioned hardcoded defaults.
+  - `Pips.Shield.Background` can be used to set the background or 'frame' for non-building pips, which defaults to `pipbrd.shp`. 4th frame is used to display an infantry's shield strength and the 3th frame for other units, or 2nd and 1st respectively if not enough frames are available.
+  - `Pips.Shield.Building.Empty` can be used to set the frame of `pips.shp` displayed for empty building strength pips, defaults to 1st frame of `pips.shp`.
+  - The above customizations are also available on per ShieldType basis, e.g `[ShieldType]`->`Pips` instead of `[AudioVisual]`->`Pips.Shield` and so on. ShieldType settings take precedence over the global ones, but will fall back to them if not set.
+  - `BracketDelta` can be used as additional vertical offset (negative shifts it up) for shield strength bar. Much like `PixelSelectionBracketDelta`, it is not applied on buildings.
 - Warheads have new options that interact with shields.
   - `Shield.Penetrate` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield doesn't exist.
   - `Shield.Break` allows the warhead to always break shields of TechnoTypes. This is done before damage is dealt.
@@ -322,7 +338,7 @@ Interceptable=no ; boolean
 - Self-explanatory, is a straight-shot trajectory.
   - Initial speed is determined by weapon's `Trajectory.Speed`.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]     ; Projectile
 Trajectory=Straight  ; Trajectory type
@@ -333,7 +349,7 @@ Trajectory=Straight  ; Trajectory type
 - Similar trajectory to `Straight`, but targets a coordinate above the intended target (height determined by `Trajectory.Bombard.Height`). When the projectile approaches that coordinate, it will free fall and explodes when it hits the target or ground.
   - Initial speed is determined by weapon's `Trajectory.Speed`.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]               ; Projectile
 Trajectory=Bombard             ; Trajectory type
@@ -622,148 +638,6 @@ In `aimd.ini`:
 x=113,n           ; where 0 > n <= 100
 ```
 
-### `134` Action Abortion After Success Kill
-- If the team kills a target and this option is enabled the current action is interrumped and jumps to the next script line.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=134,0           ; integer, 0 for disable it, 1 for enable it
-```
-
-### `135` Conditional Jump, Reset Counter
-- Sets the Team's counter to any initial value. It can be used for counting kills.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=135,n           ; integer
-```
-
-### `136` Conditional Jump, Set Comparator Mode
-- Sets the comparator used in Conditional Jumps.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=136,3           ; integer, from 0 to 5
-```
-
-- The possible comparator values:
-
-| *Argument* | *Comparator type* |
-| :--------: | :---------------: |
-| 0          | < |
-| 1          | <= |
-| 2          | = |
-| 3          | >= |
-| 4          | > |
-| 5          | != |
-
-### `137` Conditional Jump, Set Comparator Value
-- Sets the value used in Conditional Jumps comparisons.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=137,1           ; integer
-```
-
-### `138` Conditional Jump, Set Index
-- Sets the index of a list used in Conditional Jumps comparisons. Depends of the Conditional Jump Action.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=138,n           ; integer
-```
-
-### `139` Conditional Jump, Clear variables
-- Reset all variables related to Conditional Jumps.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=139,0           ;
-```
-
-### `140` Conditional Jump, Jump if False
-- Check the Conditional Jump evaluation and jumps to the specified line if the value is false. Like in the script Action 6,x the line number is 1-based.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=140,n           ; integer, n > 0
-```
-
-### `141` Conditional Jump, Jump if True
-- Check the Conditional Jump evaluation and jumps to the specified line if the value is true. Like in the script Action 6,x the line number is 1-based.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=141,n           ; integer, n > 0
-```
-
-### `142` Conditional Jump, Manage Kills Counter
-- The team kills counter will work if this Action enables it.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=142,0           ; integer, 0 for disable it, 1 for enable it
-```
-
-### `145` Conditional Jump, Check Kills Count
-- Checks the Team kills count and saves the result for the Conditional Jump evaluation.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=145,0           ;
-```
-
-### `146` Conditional Jump, Check Enemy Objects Count
-- Count the number of enemy living object instances and saves the result for the Conditional Jump evaluation.
-- The list of objects that will be used by this Action is selected by the Script Action `138`.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=146,0           ;
-```
-
-- This Action use a 0-based index for the `AITargetTypes` section and specifies the list of possible `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` that can be evaluated. The new `AITargetTypes` section must be declared in `rulesmd.ini` for making this script work:
-
-In `rulesmd.ini`:
-```ini
-[AITargetTypes]  ; List of TechnoType lists
-0=SOMETECHNOTYPE,SOMEOTHERTECHNOTYPE,SAMPLETECHNOTYPE
-1=ANOTHERTECHNOTYPE,YETANOTHERTECHNOTYPE
-; ...
-```
-
-### `147` Conditional Jump, Check Simple Count
-- Increases or decreases the Conditional Jump counter with the specified value by the Action argument and saves the comparison result for the Conditional Jump evaluation.
-- The Count can be reseted using the Script Action `135`.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=146,n           ; Integer
-```
-
-### `148` Conditional Jump, Manage Variables Reset If The Jump Is Successful
-- By default the Conditional Jump variables are cleaned after a successful jump.
-- This Action enables the ability to retain variables value after the jump.
-- This Action behavior isn't affected by the Action 139 "Reset Variables".
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=148,0           ; Integer, 1 = true, 0 = false
-```
-
 ### `500 - 523` Edit Variable
 - Operate a variable's value
     - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
@@ -924,12 +798,14 @@ InitialStrength=    ; int
 - Objects can be destroyed automatically under certaing cases:
   - No Ammo: The object will die if the remaining ammo reaches 0.
   - Countdown: The object will die if the countdown reaches 0.
+  - Peaceful: If `NoAmmo` or `Countdown` is set, the object will be directly removed from the game peacefully, without triggering deathweapon or "Unit lost" EVA.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                       ; TechnoType
 Death.NoAmmo=no                    ; boolean
 Death.Countdown=0                  ; integer
+Death.Peaceful=no                  ; boolean, whether to not trigger DeathWeapon and EVA
 ```
 
 ### Mind Control enhancement
@@ -1019,7 +895,7 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
-## Terrains
+## Terrain
 
 ### Destroy animation & sound
 
@@ -1031,201 +907,6 @@ In `rulesmd.ini`:
 DestroyAnim=       ; Animation
 DestroySound=      ; Sound
 ```
-
-## Trigger actions
-
-### `500` Save Game
-- Save the current game immediately (singleplayer game only).
-    - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
-    - The save's description will look like `MapDescName - CSFText`.
-        - For example: `Allied Mission 25: Esther's Money - Money Stolen`.
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],500,4,[CSFKey],0,0,0,0,A,[ActionX]
-...
-```
-
-### `501` Edit Variable
-- Operate a variable's value
-    - The variable's value type is int32, which means it ranges from -2^31 to 2^31-1.
-        - Any numbers exceeding this limit will lead to unexpected results!
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVariable],0,A,[ActionX]
-...
-```
-
-| *Operation*  | *Description*                                 |
-| :------: | :-------------------------------------------: |
-0         | CurrentValue = Number |
-1         | CurrentValue = CurrentValue + Number |
-2         | CurrentValue = CurrentValue - Number |
-3         | CurrentValue = CurrentValue * Number |
-4         | CurrentValue = CurrentValue / Number |
-5         | CurrentValue = CurrentValue % Number |
-6         | CurrentValue = CurrentValue leftshift Number |
-7         | CurrentValue = CurrentValue rightshift Number |
-8         | CurrentValue = ~CurrentValue |
-9         | CurrentValue = CurrentValue xor Number |
-10         | CurrentValue = CurrentValue or Number |
-11         | CurrentValue = CurrentValue and Number |
-
-### `502` Generate random number
-- Generate a random integer ranged in [Min, Max] and store it in a given variable
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],502,0,[VariableIndex],[Min],[Max],[IsGlobalVariable],0,A,[ActionX]
-...
-```
-
-### `503` Print variable value
-- Print a variable value to the message list
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[ActionX]
-...
-```
-
-### `504` Binary Operation
-- Operate a variable's value with another variable's value
-    - Similar to 501, but the operation number is read from another variable
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperationIndex],[IsGlobalVariable],[IsOperationGlobalVariable],A,[ActionX]
-...
-```
-
-`Operation` can be looked up at action `501`
-
-### `505` Fire Super Weapon at specified location
-
-- Launch a Super Weapon from [SuperWeaponTypes] list at a specified location.
-- `HouseIndex` can take various values:
-
-| *House Index* | *Description*                                 |
-| :-------: | :-------------------------------------------: |
-| >= 0      | The index of the current House in the map |
-| 4475-4482 | Like in the index range 0-7 |
-| -1        | Pick a random House that isn't Neutral |
-| -2        | Pick the first Neutral House |
-| -3        | Pick a random Human Player |
-
-- Coordinates X & Y can take possitive values or -1, in which case these values can take a random value from the visible map area.
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],505,0,0,[SuperWeaponTypesIndex],[HouseIndex],[CoordinateX],[CoordinateY],A,[ActionX]
-...
-```
-
-### `506` Fire Super Weapon at specified Waypoint
-
-- Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint.
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointIndex],0,A,[ActionX]
-...
-```
-
-## Trigger events
-
-### `500-511` Variable comparation
-- Compares the variable's value with given number
-
-In `mycampaign.map`:
-```ini
-[Events]
-...
-ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[Param],[EventX]
-...
-```
-
-| *Event ID*  | *Description*                                 | *Global* |
-| :------: | :-------------------------------------------: | :-------: |
-500         | CurrentValue > Number | No |
-501         | CurrentValue < Number | No |
-502         | CurrentValue = Number | No |
-503         | CurrentValue >= Number | No |
-504         | CurrentValue <= Number | No |
-505         | CurrentValue & Number | No |
-506         | CurrentValue > Number | Yes |
-507         | CurrentValue < Number | Yes |
-508         | CurrentValue = Number | Yes |
-509         | CurrentValue >= Number | Yes |
-510         | CurrentValue <= Number | Yes |
-511         | CurrentValue & Number | Yes |
-
-### `512-523` Variable comparation with local variable
-- Compares the variable's value with given local variable value
-
-In `mycampaign.map`:
-```ini
-[Events]
-...
-ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[LocalVariableIndex],[EventX]
-...
-```
-
-| *Event ID*  | *Description*                                 | *Global* |
-| :------: | :-------------------------------------------: | :-------: |
-512         | CurrentValue > LocalVariableValue | No |
-513         | CurrentValue < LocalVariableValue | No |
-514         | CurrentValue = LocalVariableValue | No |
-515         | CurrentValue >= LocalVariableValue | No |
-516         | CurrentValue <= LocalVariableValue | No |
-517         | CurrentValue & LocalVariableValue | No |
-518         | CurrentValue > LocalVariableValue | Yes |
-519         | CurrentValue < LocalVariableValue | Yes |
-520         | CurrentValue = LocalVariableValue | Yes |
-521         | CurrentValue >= LocalVariableValue | Yes |
-522         | CurrentValue <= LocalVariableValue | Yes |
-523         | CurrentValue & LocalVariableValue | Yes |
-
-### `524-535` Variable comparation with global variable
-- Compares the variable's value with given global variable value
-
-In `mycampaign.map`:
-```ini
-[Events]
-...
-ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX]
-...
-```
-
-| *Event ID*  | *Description*                                 | *Global* |
-| :------: | :-------------------------------------------: | :-------: |
-524         | CurrentValue > GlobalVariableValue | No |
-525         | CurrentValue < GlobalVariableValue | No |
-526         | CurrentValue = GlobalVariableValue | No |
-527         | CurrentValue >= GlobalVariableValue | No |
-528         | CurrentValue <= GlobalVariableValue | No |
-529         | CurrentValue & GlobalVariableValue | No |
-530         | CurrentValue > GlobalVariableValue | Yes |
-531         | CurrentValue < GlobalVariableValue | Yes |
-532         | CurrentValue = GlobalVariableValue | Yes |
-533         | CurrentValue >= GlobalVariableValue | Yes |
-534         | CurrentValue <= GlobalVariableValue | Yes |
-535         | CurrentValue & GlobalVariableValue | Yes |
 
 ## Warheads
 
@@ -1293,11 +974,19 @@ SplashList.PickRandom=no ; play a random animation from the list? boolean, defau
 *`TransactMoney` used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
 
 - Warheads can now give credits to its owner at impact.
+  - `TransactMoney.Display` can be set to display the amount of credits given or deducted. The number is displayed in green if given, red if deducted and will move upwards after appearing.
+    - `TransactMoney.Display.AtFirer` if set, makes the credits display appear on firer instead of target. If set and firer is not known, it will display at target regardless.
+    - `TransactMoney.Display.Houses` determines which houses can see the credits display.
+    - `TransactMoney.Display.Offset` is additional pixel offset for the center of the credits display, by default (0,0) at target's/firer's center.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]   ; Warhead
-TransactMoney=0 ; integer - credits added or subtracted
+[SOMEWARHEAD]                        ; Warhead
+TransactMoney=0                      ; integer - credits added or subtracted
+TransactMoney.Display=false          ; boolean
+TransactMoney.Display.AtFirer=false  ; boolean
+TransactMoney.Display.Houses=All     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 ```
 
 ### Remove disguise on impact

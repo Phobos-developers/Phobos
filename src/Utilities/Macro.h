@@ -2,6 +2,18 @@
 #include <Helpers/Macro.h>
 #include <ASMMacros.h>
 
+template<typename T>
+__forceinline T &Make_Global(const uintptr_t address)
+{
+	return *reinterpret_cast<T *>(address);
+}
+
+template<typename T>
+__forceinline T *Make_Pointer(const uintptr_t address)
+{
+	return reinterpret_cast<T *>(address);
+}
+
 // no more than 8 characters
 #define PATCH_SECTION_NAME ".patch"
 

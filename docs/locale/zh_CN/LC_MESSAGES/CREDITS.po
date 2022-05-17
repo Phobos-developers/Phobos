@@ -1,0 +1,673 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, The Phobos Contributors
+# This file is distributed under the same license as the Phobos package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Phobos \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-04-24 14:09+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../CREDITS.md:1
+msgid "Credits"
+msgstr "工作人员名单表"
+
+#: ../../CREDITS.md:3
+msgid ""
+"This page lists all the individual contributions to the project by their "
+"author."
+msgstr "本页面列出所有对本项目做出贡献的人及其贡献名单。"
+
+#: ../../CREDITS.md:5
+msgid "**Belonit (Gluk-v48)**:"
+msgstr ""
+
+#: ../../CREDITS.md:6
+msgid "Disable empty spawn positions"
+msgstr "禁止空起始点"
+
+#: ../../CREDITS.md:7
+msgid "`gamemd.exe` icon customization"
+msgstr "自定义`gamemd.exe`图标"
+
+#: ../../CREDITS.md:8
+msgid "Full-color non-paletted PCX support"
+msgstr "全彩色PCX支持"
+
+#: ../../CREDITS.md:9
+msgid "Initial SpySat, BigGap, TransactMoney warheads"
+msgstr "最初的视野弹头和金币弹头"
+
+#: ../../CREDITS.md:10
+msgid "PCX Loading Screen support"
+msgstr "PCX载入图支持"
+
+#: ../../CREDITS.md:11
+msgid "Custom DiskLaser radius"
+msgstr "自定义飞碟激光半径"
+
+#: ../../CREDITS.md:12 ../../CREDITS.md:25
+msgid "Extended tooltips"
+msgstr "扩展工具提示"
+
+#: ../../CREDITS.md:13 ../../CREDITS.md:24
+msgid "Building upgrades enhancement"
+msgstr "建筑升级增强"
+
+#: ../../CREDITS.md:14
+msgid "Option to hide health bar"
+msgstr "隐藏血条"
+
+#: ../../CREDITS.md:15
+msgid "Sidebar.GDIPosition"
+msgstr "侧边栏GDI位置"
+
+#: ../../CREDITS.md:16 ../../CREDITS.md:85
+msgid "Help with CellSpread"
+msgstr "弹头波及范围协助"
+
+#: ../../CREDITS.md:17
+msgid "Blowfish.dll-related errors fix"
+msgstr "Blowfish.dll相关错误修复"
+
+#: ../../CREDITS.md:18 ../../CREDITS.md:31
+msgid "Zero size map previews fix"
+msgstr "0大小地图预览修复"
+
+#: ../../CREDITS.md:19
+msgid "Semantic locomotor aliases"
+msgstr "运动模式代称"
+
+#: ../../CREDITS.md:20 ../../CREDITS.md:44
+msgid "Shield logic"
+msgstr "护盾逻辑"
+
+#: ../../CREDITS.md:21
+msgid "Non-ASCII input fix"
+msgstr "非ASCII输入修复"
+
+#: ../../CREDITS.md:22
+msgid "**Kerbiter (Metadorius)**:"
+msgstr ""
+
+#: ../../CREDITS.md:23
+msgid "SHP debris respect `Shadow` fix"
+msgstr "SHP碎片遵循`Shadow`修复"
+
+#: ../../CREDITS.md:26
+msgid "Selection priority filtering"
+msgstr "选择优先级筛选"
+
+#: ../../CREDITS.md:27
+msgid "`TurretOffset` enhancement"
+msgstr "`TurretOffset`增强"
+
+#: ../../CREDITS.md:28
+msgid "Customizable ore spawners"
+msgstr "自定义矿柱"
+
+#: ../../CREDITS.md:29
+msgid "Select next idle harvester hotkey"
+msgstr "选择下一个空闲矿车快捷键"
+
+#: ../../CREDITS.md:30
+msgid "Interceptor enhancement"
+msgstr "拦截者增强"
+
+#: ../../CREDITS.md:32
+msgid "LaserTrails port and rework"
+msgstr "激光尾迹导入与重做"
+
+#: ../../CREDITS.md:33
+msgid "Laser graphics fixes"
+msgstr "激光图像修复"
+
+#: ../../CREDITS.md:34
+msgid "GitHub Actions setup"
+msgstr "GitHub Actions安装"
+
+#: ../../CREDITS.md:35
+msgid "Overhauled Unicode font"
+msgstr "增强Unicode字体"
+
+#: ../../CREDITS.md:36
+msgid "Official docs"
+msgstr "官方说明书"
+
+#: ../../CREDITS.md:37
+msgid "VSCode configs"
+msgstr "VSCode配置"
+
+#: ../../CREDITS.md:38
+msgid "Code style"
+msgstr "代码样式"
+
+#: ../../CREDITS.md:39
+msgid "**Uranusian (Thrifinesma)**:"
+msgstr "**[Uranusian](https://space.bilibili.com/3339044) (Thrifinesma)**:"
+
+#: ../../CREDITS.md:40 ../../CREDITS.md:65
+msgid "Mind Control enhancement"
+msgstr "心灵控制增强"
+
+#: ../../CREDITS.md:41
+msgid "Custom warhead splash list"
+msgstr "自定义弹头水花动画"
+
+#: ../../CREDITS.md:42
+msgid "Harvester counter"
+msgstr "矿车计数器"
+
+#: ../../CREDITS.md:43
+msgid "Spawns promotion"
+msgstr "子机升级"
+
+#: ../../CREDITS.md:45
+msgid "Multiple death fix"
+msgstr "多重死亡修复"
+
+#: ../../CREDITS.md:46
+msgid "Customizable missing cameo"
+msgstr "自定义缺省图标"
+
+#: ../../CREDITS.md:47
+msgid "Cameo sorting priority"
+msgstr "图标排序优先级"
+
+#: ../../CREDITS.md:48
+msgid "Tab hotkey placement fix"
+msgstr "标签快捷键放置修复"
+
+#: ../../CREDITS.md:49
+msgid "Producing progress indicators"
+msgstr "生产进度指示器"
+
+#: ../../CREDITS.md:50 ../../CREDITS.md:72
+msgid "Custom ore gathering anim"
+msgstr "自定义矿车采矿动画"
+
+#: ../../CREDITS.md:51
+msgid "`NoManualMove`"
+msgstr "无法手动移动"
+
+#: ../../CREDITS.md:52
+msgid "Weapon target house filtering"
+msgstr "武器瞄准所属方筛选"
+
+#: ../../CREDITS.md:53
+msgid "`DeathWeapon` fix"
+msgstr "死亡武器修复"
+
+#: ../../CREDITS.md:54
+msgid "Re-enable obsolete `JumpjetControls`"
+msgstr "重激活废弃的`JumpjetControls`"
+
+#: ../../CREDITS.md:55
+msgid "`AITrigger` Building Upgrades support"
+msgstr "AI触发对建筑升级的支持"
+
+#: ../../CREDITS.md:56
+msgid "Wall-Gate links"
+msgstr "闸门-围墙链接"
+
+#: ../../CREDITS.md:57
+msgid "Ability for deployed infantry to use both weapons"
+msgstr "部署步兵可以使用双武器"
+
+#: ../../CREDITS.md:58
+msgid "Font icon additions"
+msgstr "额外字体图标"
+
+#: ../../CREDITS.md:59
+msgid "Official CN docs"
+msgstr "官方中文说明书"
+
+#: ../../CREDITS.md:60
+msgid "**secsome (SEC-SOME)**:"
+msgstr ""
+
+#: ../../CREDITS.md:61
+msgid "Debug info dump hotkey"
+msgstr "调试信息快捷键"
+
+#: ../../CREDITS.md:62
+msgid "Refactoring & porting of Ares helper code"
+msgstr "重构与导入Ares助手代码"
+
+#: ../../CREDITS.md:63
+msgid "Disguise removal warhead"
+msgstr "伪装移除弹头"
+
+#: ../../CREDITS.md:64
+msgid "Mind Control removal warhead"
+msgstr "心灵控制移除弹头"
+
+#: ../../CREDITS.md:66
+msgid "Shields logic help"
+msgstr "护盾逻辑帮助"
+
+#: ../../CREDITS.md:67
+msgid "`AnimList.PickRandom`"
+msgstr "弹头随机动画"
+
+#: ../../CREDITS.md:68
+msgid "`MoveToCell` fix"
+msgstr "移动到单元格修复"
+
+#: ../../CREDITS.md:69
+msgid "Unlimited waypoints"
+msgstr "无限路径点"
+
+#: ../../CREDITS.md:70
+msgid "`Build At` trigger action buildup anim fix"
+msgstr "触发动作`将建筑建造于`建造动画修复"
+
+#: ../../CREDITS.md:71
+msgid "Undeploy building into a unit plays `EVA_NewRallyPointEstablished` fix"
+msgstr "反部署建筑播放`EVA_NewRallyPointEstablished`修复"
+
+#: ../../CREDITS.md:73
+msgid "`TemporalClass` related crash"
+msgstr "`TemporalClass`相关修复"
+
+#: ../../CREDITS.md:74
+msgid "Retry dialog on mission failure"
+msgstr "任务失败重试对话框"
+
+#: ../../CREDITS.md:75
+msgid "Default disguise for individual InfantryTypes"
+msgstr "步兵微观默认伪装"
+
+#: ../../CREDITS.md:76
+msgid "PowerPlant Enhancer"
+msgstr "电厂增幅器"
+
+#: ../../CREDITS.md:77
+msgid "SaveGame Trigger Action"
+msgstr "保存游戏触发动作"
+
+#: ../../CREDITS.md:78
+msgid "QuickSave command"
+msgstr "快捷保存快捷键"
+
+#: ../../CREDITS.md:79
+msgid "Numeric variables"
+msgstr "数字变量"
+
+#: ../../CREDITS.md:80
+msgid "Custom gravity for projectiles"
+msgstr "抛射体自定义重力"
+
+#: ../../CREDITS.md:81
+msgid "Retint map actions bugfix"
+msgstr "地图触发光照修复"
+
+#: ../../CREDITS.md:82
+msgid "Sharpnel enhancement"
+msgstr "溅射增强"
+
+#: ../../CREDITS.md:83
+msgid "Vanilla map preview reading bugfix"
+msgstr "原版地图预览读取修复"
+
+#: ../../CREDITS.md:84
+msgid "**Otamaa (Fahroni, BoredEXE)**:"
+msgstr ""
+
+#: ../../CREDITS.md:86
+msgid "Ported and fixed custom RadType code"
+msgstr "导入并修复自定义辐射代码"
+
+#: ../../CREDITS.md:87
+msgid "Togglable ElectricBolt bolts"
+msgstr "可开关的电弧"
+
+#: ../../CREDITS.md:88
+msgid "Customizable Chrono Locomotor properties per TechnoClass"
+msgstr "微观超时空运动属性"
+
+#: ../../CREDITS.md:89
+msgid "`DebrisMaximums` fixes"
+msgstr "碎片修复"
+
+#: ../../CREDITS.md:90
+msgid "Anim-to-Unit"
+msgstr "动画生成单位"
+
+#: ../../CREDITS.md:91
+msgid "`NotHuman` anim sequences improvements"
+msgstr "`NotHuman`动画序列增强"
+
+#: ../../CREDITS.md:92
+msgid "Customizable `OpenTopped` Properties"
+msgstr "自定义对外开火属性"
+
+#: ../../CREDITS.md:93
+msgid "Hooks for ScriptType Actions 92 & 93"
+msgstr "脚本动作92&93的hook"
+
+#: ../../CREDITS.md:94
+msgid "Ore stage threshold for `HideIfNoOre`"
+msgstr "`HideIfNoOre`的矿石下限"
+
+#: ../../CREDITS.md:95
+msgid "Occupied building `MuzzleFlashX` bugfix"
+msgstr "进驻建筑`MuzzleFlashX`修复"
+
+#: ../../CREDITS.md:96
+msgid "`EnemyUIName=` for other TechnoTypes"
+msgstr "`EnemyUIName=`对其他单位"
+
+#: ../../CREDITS.md:97
+msgid "TerrainType `DestroyAnim` & `DestroySound`"
+msgstr "地形对象的摧毁动画与摧毁音效"
+
+#: ../../CREDITS.md:98
+msgid "Laser trails for VoxelAnims"
+msgstr "VXL碎片激光尾迹"
+
+#: ../../CREDITS.md:99
+msgid "**FS-21**:"
+msgstr ""
+
+#: ../../CREDITS.md:100
+msgid "Dump Object Info enhancements"
+msgstr "输出目标信息增强"
+
+#: ../../CREDITS.md:101
+msgid "`Powered.KillSpawns`"
+msgstr "断电子机坠毁"
+
+#: ../../CREDITS.md:102
+msgid "`Spawner.LimitRange`"
+msgstr "子机最大航程"
+
+#: ../../CREDITS.md:103
+msgid "ScriptType Actions 71 to 113"
+msgstr "脚本动作71到113"
+
+#: ../../CREDITS.md:104
+msgid "MC deployer fixes"
+msgstr "心控部署修复"
+
+#: ../../CREDITS.md:105 ../../CREDITS.md:148
+msgid "Help with docs"
+msgstr "说明书帮助"
+
+#: ../../CREDITS.md:106
+msgid "Automatic Passenger Deletion logic"
+msgstr "自动删除乘客逻辑"
+
+#: ../../CREDITS.md:107
+msgid "`Fire SW At Location/Waypoint` Trigger Action"
+msgstr "`将超级武器发射到地点/路径点`触发动作"
+
+#: ../../CREDITS.md:108
+msgid "Kill Object Automatically logic"
+msgstr "单位自杀逻辑"
+
+#: ../../CREDITS.md:109
+msgid "Customizable resource storage"
+msgstr "自定义资源存储"
+
+#: ../../CREDITS.md:110
+msgid "Override Uncloaked Underwater attack behavior"
+msgstr "覆盖隐形水下单位攻击行为"
+
+#: ../../CREDITS.md:111
+msgid "AI Aircraft docks fix"
+msgstr "AI飞机停机坪修复"
+
+#: ../../CREDITS.md:112
+msgid "Shared Ammo logic"
+msgstr "分享弹药逻辑"
+
+#: ../../CREDITS.md:113
+msgid "**Starkku**:"
+msgstr ""
+
+#: ../../CREDITS.md:114
+msgid "Warhead shield penetration & breaking"
+msgstr "护盾穿透与击破弹头"
+
+#: ../../CREDITS.md:115
+msgid "Strafing aircraft weapon customization"
+msgstr "飞机扫射武器自定义"
+
+#: ../../CREDITS.md:116
+msgid "Vehicle `DeployFire` fixes/improvements"
+msgstr "载具部署开火修复/增强"
+
+#: ../../CREDITS.md:117
+msgid "Stationary VehicleTypes"
+msgstr "静止载具"
+
+#: ../../CREDITS.md:118
+msgid "Burst logic improvements"
+msgstr "Burst逻辑增强"
+
+#: ../../CREDITS.md:119
+msgid "TechnoType auto-firing weapons"
+msgstr "单位自动开火"
+
+#: ../../CREDITS.md:120
+msgid "Secondary weapon fallback customization"
+msgstr "自定义副武器自动推算"
+
+#: ../../CREDITS.md:121
+msgid "Weapon target type filtering"
+msgstr "武器瞄准目标筛选"
+
+#: ../../CREDITS.md:122
+msgid "`AreaFire` targeting customization"
+msgstr "自定义`AreaFire`瞄准"
+
+#: ../../CREDITS.md:123
+msgid "`CreateUnit` improvements"
+msgstr "`CreateUnit`增强"
+
+#: ../../CREDITS.md:124
+msgid "Attached animation & jumpjet unit layer customization"
+msgstr "自定义附加动画与Jumpjet单位图层"
+
+#: ../../CREDITS.md:125
+msgid "`IsSimpleDeployer` improvements"
+msgstr "`IsSimpleDeployer`增强"
+
+#: ../../CREDITS.md:126
+msgid "Shield modification warheads"
+msgstr "护盾修改弹头"
+
+#: ../../CREDITS.md:127
+msgid "Warhead decloaking toggle"
+msgstr "弹头反隐形开关"
+
+#: ../../CREDITS.md:128
+msgid "Warp(In/Out)Weapon"
+msgstr "传送武器"
+
+#: ../../CREDITS.md:129
+msgid "Grinder improvements / additions"
+msgstr "部队回收站逻辑增强/扩展"
+
+#: ../../CREDITS.md:130
+msgid "Attached animation position customization"
+msgstr "自定义附加动画位置"
+
+#: ../../CREDITS.md:131
+msgid "Critical hit logic additions"
+msgstr "暴击逻辑增强"
+
+#: ../../CREDITS.md:132
+msgid "Aircraft & jumpjet speed modifiers fix"
+msgstr "飞机与Jumpjet速度加成修复"
+
+#: ../../CREDITS.md:133
+msgid "Local warhead screen shaking"
+msgstr "局部弹头屏幕震动"
+
+#: ../../CREDITS.md:134
+msgid "Vehicle custom palette fix"
+msgstr "载具自定义色盘"
+
+#: ../../CREDITS.md:135
+msgid "Weapon owner detachment"
+msgstr "武器所属方解绑"
+
+#: ../../CREDITS.md:136
+msgid "Feedback weapon"
+msgstr "反馈武器"
+
+#: ../../CREDITS.md:137
+msgid "TerrainType & ore minimap color customization"
+msgstr "地形对象小地图颜色自定义"
+
+#: ../../CREDITS.md:138
+msgid "Laser fixes & improvements"
+msgstr "激光修复与增强"
+
+#: ../../CREDITS.md:139
+msgid "Mind control indicator animation cloak fix"
+msgstr "心灵控制指示动画隐形修复"
+
+#: ../../CREDITS.md:140
+msgid "Warhead / Play animation trigger animation owner fix"
+msgstr "弹头与播放动画触发动画所属方修复"
+
+#: ../../CREDITS.md:141
+msgid "Nuke carrier & payload Bright fix"
+msgstr "核弹Bright修复"
+
+#: ../../CREDITS.md:142
+msgid "**Morton (MortonPL)**:"
+msgstr ""
+
+#: ../../CREDITS.md:143
+msgid "`XDrawOffset`"
+msgstr "X绘制偏移"
+
+#: ../../CREDITS.md:144
+msgid "Shield passthrough & absorption"
+msgstr "护盾穿透与吸收"
+
+#: ../../CREDITS.md:145
+msgid "Building `LimboDelivery` logic"
+msgstr "建筑虚拟投放逻辑"
+
+#: ../../CREDITS.md:146
+msgid "Fix for `Image` in art rules"
+msgstr "修复art中Image逻辑"
+
+#: ../../CREDITS.md:147
+msgid "Power delta counter"
+msgstr "电力变动指示器"
+
+#: ../../CREDITS.md:149
+msgid ""
+"**ChrisLv_CN** (work relicensed under [following permission](images"
+"/ChrisLv-relicense.png)):"
+msgstr "**ChrisLv_CN** (授权见[此处](images/ChrisLv-relicense.png)):"
+
+#: ../../CREDITS.md:150
+msgid "General assistance"
+msgstr "一般协助"
+
+#: ../../CREDITS.md:151
+msgid "Interceptor logic prototype"
+msgstr "拦截逻辑原型"
+
+#: ../../CREDITS.md:152
+msgid "LaserTrails prototype"
+msgstr "激光尾迹原型"
+
+#: ../../CREDITS.md:153
+msgid "Laser fixes prototype"
+msgstr "激光修复原型"
+
+#: ../../CREDITS.md:154
+msgid "**SukaHati (Erzoid)** - Minimum interceptor guard range"
+msgstr "**SukaHati (Erzoid)** - 拦截者最小警戒距离"
+
+#: ../../CREDITS.md:155
+msgid "**E1 Elite** - TileSet 255 and above bridge repair fix"
+msgstr "**E1 Elite** - TileSet 255以上桥梁维修修复"
+
+#: ../../CREDITS.md:156
+msgid "**AutoGavy** - interceptor logic, Warhead critical hit logic"
+msgstr "**AutoGavy** - 拦截者逻辑，弹头暴击伤害系统"
+
+#: ../../CREDITS.md:157
+msgid "**Chasheen (Chasheenburg)** - CN docs help"
+msgstr "**Chasheen (Chasheenburg)** - 中文说明书协助"
+
+#: ../../CREDITS.md:158
+msgid ""
+"**Ares developers** - YRpp and Syringe which are used, save/load, project"
+" foundation and generally useful code from Ares, unfinished RadTypes "
+"code, prototype deployer fixes"
+msgstr "**Ares开发者** - YRpp和Syringe，存读档，Ares的项目基础与有助的代码，未完成的RadType代码，部署修复原型代码"
+
+#: ../../CREDITS.md:159
+msgid ""
+"**tomsons26** - all-around help, assistance and guidance in reverse-"
+"engineering, YR binary mappings"
+msgstr "**tomsons26** - 全方位帮助，逆向工程方面协助与指导，YR解析"
+
+#: ../../CREDITS.md:160
+msgid ""
+"**CCHyper** - all-around help, current project logo, assistance and "
+"guidance in reverse-engineering, YR binary mappings"
+msgstr "**CCHyper** - 全方位帮助，项目logo，逆向工程方面协助与指导，YR解析"
+
+#: ../../CREDITS.md:161
+msgid "**ZΞPHYɌUS** - win/lose themes code"
+msgstr "**ZΞPHYɌUS** - 胜利失败音乐"
+
+#: ../../CREDITS.md:162
+msgid "**ayylmao** - help with docs, extensive and thorough testing"
+msgstr "**ayylmao** -  帮助书写说明书，广泛的深度测试"
+
+#: ../../CREDITS.md:163
+msgid "**SMxReaver** - help with docs, extensive and thorough testing"
+msgstr "**SMxReaver** - 帮助书写说明书，广泛的深度测试"
+
+#: ../../CREDITS.md:164
+msgid "**4SG** - help with docs"
+msgstr "**4SG** -  帮助书写说明书"
+
+#: ../../CREDITS.md:165
+msgid "**wiktorderelf** - overhauled Unicode font"
+msgstr "**wiktorderelf** - 增强Unicode字体"
+
+#: ../../CREDITS.md:166
+msgid "**thomassneddon** - general assistance"
+msgstr "**thomassneddon** - 一般协助"
+
+#: ../../CREDITS.md:167
+msgid "**Xkein** - general assistance, YRpp edits"
+msgstr "**Xkein** -  一般协助，YRpp编辑"
+
+#: ../../CREDITS.md:168
+msgid "**mevitar** - honorary shield tester *triple* award"
+msgstr "**mevitar** - 荣誉护盾测试员*三重*奖章"
+
+#: ../../CREDITS.md:169
+msgid "**Damfoos** - extensive and thorough testing"
+msgstr "**Damfoos** - 广泛的深度测试"
+
+#: ../../CREDITS.md:170
+msgid "**Dmitry Volkov** - extensive and thorough testing"
+msgstr "**Dmitry Volkov** - 广泛的深度测试"
+
+#: ../../CREDITS.md:171
+msgid "**Rise of the East community** - extensive playtesting of in-dev features"
+msgstr "**东方崛起社区** - 对开发中功能的广泛游戏测试"

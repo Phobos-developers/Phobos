@@ -1,7 +1,7 @@
-name: Nightly Build comment on pull request
+name: Nightly Build Comment on Pull Request
 on:
   workflow_run:
-    workflows: ['Nightly Build']
+    workflows: ['Pull Request Nightly Build']
     types: [completed]
 jobs:
   pr_comment:
