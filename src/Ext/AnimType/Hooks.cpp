@@ -93,7 +93,14 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 	double damage = 0;
 	int appliedDamage = 0;
 
-	if (delay <= 0 || pThis->Type->Damage < 1.0) // If Damage.Delay is less than 1 or Damage is a fraction.
+	if (pTypeExt->Damage_ApplyOnce) // If damage is to be applied only once per animation loop
+	{
+		if (pThis->Animation.Value == std::max(delay - 1, 1))
+			appliedDamage = static_cast<int>(std::round(pThis->Type->Damage)) * damageMultiplier;
+		else
+			return SkipDamage;
+	}
+	else if (delay <= 0 || pThis->Type->Damage < 1.0) // If Damage.Delay is less than 1 or Damage is a fraction.
 	{
 		adjustAccum = true;
 		damage = damageMultiplier * pThis->Type->Damage + pThis->Accum;

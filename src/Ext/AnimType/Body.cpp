@@ -36,6 +36,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Weapon.Read(exINI, pID, "Weapon", true);
 	this->Damage_Delay.Read(exINI, pID, "Damage.Delay");
 	this->Damage_DealtByOwner.Read(exINI, pID, "Damage.DealtByOwner");
+	this->Damage_ApplyOnce.Read(exINI, pID, "Damage.ApplyOnce");
 }
 
 const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
@@ -124,6 +125,7 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Weapon)
 		.Process(this->Damage_Delay)
 		.Process(this->Damage_DealtByOwner)
+		.Process(this->Damage_ApplyOnce)
 		;
 }
 

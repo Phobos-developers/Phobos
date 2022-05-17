@@ -31,6 +31,7 @@ public:
 		Nullable<WeaponTypeClass*> Weapon;
 		Valueable<int> Damage_Delay;
 		Valueable<bool> Damage_DealtByOwner;
+		Valueable<bool> Damage_ApplyOnce;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -49,6 +50,7 @@ public:
 			, Weapon {}
 			, Damage_Delay { 0 }
 			, Damage_DealtByOwner { false }
+			, Damage_ApplyOnce { false }
 		{ }
 
 		virtual ~ExtData() = default;
