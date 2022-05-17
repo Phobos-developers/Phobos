@@ -73,8 +73,8 @@ enum class PhobosScripts : unsigned int
 	ConditionalJumpIfFalse = 140,
 	ConditionalJumpIfTrue = 141,
 	ConditionalJumpManageKillsCounter = 142,
-	ConditionalJumpCheckEconomy = 143,
-	ConditionalJumpCheckPower = 144,
+	ConditionalJumpCheckAliveHumans = 143,
+	ConditionalJumpCheckHumanIsMostHated = 144,
 	ConditionalJumpKillEvaluation = 145,
 	ConditionalJumpCheckObjects = 146,
 	ConditionalJumpCheckCount = 147,
@@ -212,8 +212,8 @@ public:
 	static void ConditionalJump_SetCounter(TeamClass* pTeam, int value);
 	static void SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable);
 	static void ConditionalJump_ResetVariables(TeamClass* pTeam);
-	static void ConditionalJump_CheckEconomy(TeamClass* pTeam);
-	static void ConditionalJump_CheckPower(TeamClass* pTeam, int mode);
+	static void ConditionalJump_CheckHumanIsMostHated(TeamClass* pTeam);
+	static void ConditionalJumpCheckAliveHumans(TeamClass* pTeam, int mode);
 	static void ConditionalJump_CheckObjects(TeamClass* pTeam);
 	static void ConditionalJump_CheckCount(TeamClass* pTeam, int modifier);
 	static void ConditionalJump_ManageResetIfJump(TeamClass* pTeam, int enable);

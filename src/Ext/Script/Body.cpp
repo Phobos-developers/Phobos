@@ -223,11 +223,11 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case PhobosScripts::ConditionalJumpManageKillsCounter:
 		ScriptExt::ConditionalJump_ManageKillsCounter(pTeam, -1);
 		break;
-	case PhobosScripts::ConditionalJumpCheckEconomy:
-		ScriptExt::ConditionalJump_CheckEconomy(pTeam);
+	case PhobosScripts::ConditionalJumpCheckAliveHumans:
+		ScriptExt::ConditionalJump_CheckEconomy(pTeam);///////////// 143
 		break;
-	case PhobosScripts::ConditionalJumpCheckPower:
-		ScriptExt::ConditionalJump_CheckPower(pTeam, -1);
+	case PhobosScripts::ConditionalJumpCheckHumanIsMostHated:
+		ScriptExt::ConditionalJump_CheckPower(pTeam);///////////// 144
 		break;
 	case PhobosScripts::ConditionalJumpKillEvaluation:
 		ScriptExt::ConditionalJump_KillEvaluation(pTeam);
@@ -3470,579 +3470,6 @@ void ScriptExt::SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable = -1
 	return;
 }
 
-void ScriptExt::ConditionalJump_CheckEconomy(TeamClass* pTeam)
-{
-	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
-
-		return;
-	}
-
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-	if (!pTeamData)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
-
-		return;
-	}
-
-	HouseClass* pHouse = nullptr;
-	DynamicVectorClass<HouseClass*> pHousesList;
-	long economyValue = -1;
-	int index = pTeamData->ConditionalJump_Index;
-
-	// House selection & obtain the available cash
-	if (index >= 0)
-	{
-		// Standard House index
-		pHouse = HouseClass::Array->GetItem(index);
-		economyValue = pHouse->Available_Money();
-	}
-	else
-	{
-		for (auto pItem : *HouseClass::Array())
-		{
-			if (pTeam->Owner == pItem || pItem->Defeated || pItem->IsObserver() || pItem->Type->MultiplayPassive || pItem->IsNeutral())
-				continue;
-
-			pHousesList.AddItem(pItem);
-		}
-
-		switch (index)
-		{
-		case -1:
-			// Random House (excluding the Team's House)
-			if (pHousesList.Count > 0)
-			{
-				pHouse = pHousesList.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, pHousesList.Count - 1));
-				economyValue = pHouse->Available_Money();
-			}
-			break;
-
-		case -2:
-			// The Team's House
-			pHouse = pTeam->Owner;
-			economyValue = pHouse->Available_Money();
-			break;
-
-		case -3:
-			// The richest House
-			if (pHousesList.Count > 0)
-			{
-				HouseClass* pTempHouse = nullptr;
-
-				for (auto pItem : pHousesList)
-				{
-					if (pItem->Available_Money() > economyValue || economyValue == -1)
-					{
-						economyValue = pItem->Available_Money();
-						pTempHouse = pItem;
-					}
-				}
-
-				if (pTempHouse)
-					pHouse = pTempHouse;
-			}
-			break;
-
-		case -4:
-			// The poorest House
-			if (pHousesList.Count > 0)
-			{
-				HouseClass* pTempHouse = nullptr;
-
-				for (auto pItem : pHousesList)
-				{
-					if (pItem->Available_Money() < economyValue || economyValue == -1)
-					{
-						economyValue = pItem->Available_Money();
-						pTempHouse = pItem;
-					}
-				}
-
-				if (pTempHouse)
-					pHouse = pTempHouse;
-			}
-			break;
-
-		case -5:
-			// The richest enemy House
-			if (pHousesList.Count > 0)
-			{
-				HouseClass* pTempHouse = nullptr;
-
-				for (auto pItem : pHousesList)
-				{
-					if (pTeam->Owner->IsAlliedWith(pItem))
-						continue;
-
-					if (pItem->Available_Money() > economyValue || economyValue == -1)
-					{
-						economyValue = pItem->Available_Money();
-						pTempHouse = pItem;
-					}
-				}
-
-				if (pTempHouse)
-					pHouse = pTempHouse;
-			}
-			break;
-
-		case -6:
-			// The poorest enemy House
-			if (pHousesList.Count > 0)
-			{
-				HouseClass* pTempHouse = nullptr;
-
-				for (auto pItem : pHousesList)
-				{
-					if (pTeam->Owner->IsAlliedWith(pItem))
-						continue;
-
-					if (pItem->Available_Money() < economyValue || economyValue == -1)
-					{
-						economyValue = pItem->Available_Money();
-						pTempHouse = pItem;
-					}
-				}
-
-				if (pTempHouse)
-					pHouse = pTempHouse;
-			}
-			break;
-
-		case -7:
-			// The richest friendly House
-			if (pHousesList.Count > 0)
-			{
-				HouseClass* pTempHouse = nullptr;
-
-				for (auto pItem : pHousesList)
-				{
-					if (!pTeam->Owner->IsAlliedWith(pItem))
-						continue;
-
-					if (pItem->Available_Money() > economyValue || economyValue == -1)
-					{
-						economyValue = pItem->Available_Money();
-						pTempHouse = pItem;
-					}
-				}
-
-				if (pTempHouse)
-					pHouse = pTempHouse;
-			}
-			break;
-
-		case -8:
-			// The poorest friendly House
-			if (pHousesList.Count > 0)
-			{
-				HouseClass* pTempHouse = nullptr;
-
-				for (auto pItem : pHousesList)
-				{
-					if (!pTeam->Owner->IsAlliedWith(pItem))
-						continue;
-
-					if (pItem->Available_Money() < economyValue || economyValue == -1)
-					{
-						economyValue = pItem->Available_Money();
-						pTempHouse = pItem;
-					}
-				}
-
-				if (pTempHouse)
-					pHouse = pTempHouse;
-			}
-			break;
-
-		default:
-			break;
-		}
-	}
-
-	// We have selected the house, now check economy
-	if (economyValue >= 0)
-	{
-		int comparatorValue = pTeamData->ConditionalJump_ComparatorValue;
-		pTeamData->ConditionalJump_Evaluation = ScriptExt::ConditionalJump_MakeEvaluation(pTeamData->ConditionalJump_ComparatorMode, economyValue, comparatorValue);
-	}
-
-	// This action finished
-	pTeam->StepCompleted = true;
-}
-
-void ScriptExt::ConditionalJump_CheckPower(TeamClass* pTeam, int mode = -1)
-{
-	HouseClass* pHouse = nullptr;
-	DynamicVectorClass<HouseClass*> pHousesList;
-	long powerValue = -100000000;
-
-	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
-
-		return;
-	}
-
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-	if (!pTeamData)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
-
-		return;
-	}
-
-	auto pScript = pTeam->CurrentScript;
-	int index = pTeamData->ConditionalJump_Index;
-
-	if (mode < 0)
-		mode = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
-
-	if (mode < 0)
-		mode = 0;
-
-	// House selection & obtain the available cash
-	if (index >= 0)
-	{
-		// Standard House index
-		pHouse = HouseClass::Array->GetItem(index);
-
-		switch (mode)
-		{
-		case 2:
-			// Difference between produced energy and consumed.
-			powerValue = pHouse->PowerOutput - pHouse->Power_Drain();
-			break;
-		case 1:
-			// Total power drain
-			powerValue = pHouse->Power_Drain();
-			break;
-		default:
-			// mode == 0 (or an unknown value). Total Energy produced, default case
-			powerValue = pHouse->PowerOutput;
-			break;
-		}
-	}
-	else
-	{
-		for (auto pItem : *HouseClass::Array())
-		{
-			if (pTeam->Owner == pItem || pItem->Defeated || pItem->IsObserver() || pItem->Type->MultiplayPassive || pItem->IsNeutral())
-				continue;
-
-			pHousesList.AddItem(pItem);
-		}
-
-		switch (index)
-		{
-		case -1:
-			// Random House (excluding the Team's House)
-			if (pHousesList.Count > 0)
-			{
-				pHouse = pHousesList.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, pHousesList.Count - 1));
-
-				switch (mode)
-				{
-				case 2:
-					// Difference between produced energy and consumed.
-					powerValue = pHouse->PowerOutput - pHouse->Power_Drain();
-					break;
-				case 1:
-					// Total power drain
-					powerValue = pHouse->Power_Drain();
-					break;
-				default:
-					// mode == 0 (or an unknown value). Total Energy produced, default case
-					powerValue = pHouse->PowerOutput;
-					break;
-				}
-			}
-			break;
-
-		case -2:
-			// The Team's House
-			pHouse = pTeam->Owner;
-
-			switch (mode)
-			{
-			case 2:
-				// Difference between produced energy and consumed.
-				powerValue = pHouse->PowerOutput - pHouse->Power_Drain();
-				break;
-			case 1:
-				// Total power drain
-				powerValue = pHouse->Power_Drain();
-				break;
-			default:
-				// mode == 0 (or an unknown value). Total Energy produced, default case
-				powerValue = pHouse->PowerOutput;
-				break;
-			}
-			break;
-
-		case -3:
-			// The House with more energy
-			if (pHousesList.Count > 0)
-			{
-				HouseClass* pTempHouse = nullptr;
-
-				for (auto pItem : pHousesList)
-				{
-					int tempPowerValue = -100000000;
-
-					switch (mode)
-					{
-					case 2:
-						// Difference between produced energy and consumed.
-						tempPowerValue = pItem->PowerOutput - pItem->Power_Drain();
-						break;
-					case 1:
-						// Total power drain
-						tempPowerValue = pItem->Power_Drain();
-						break;
-					default:
-						// mode == 0 (or an unknown value). Total Energy produced, default case
-						tempPowerValue = pItem->PowerOutput;
-						break;
-					}
-
-					if (tempPowerValue > powerValue || powerValue == -100000000)
-					{
-						powerValue = tempPowerValue;
-						pTempHouse = pItem;
-					}
-				}
-
-				if (pTempHouse)
-					pHouse = pTempHouse;
-			}
-			break;
-
-		case -4:
-			// The House with less energy
-			if (pHousesList.Count > 0)
-			{
-				HouseClass* pTempHouse = nullptr;
-
-				for (auto pItem : pHousesList)
-				{
-					int tempPowerValue = -100000000;
-
-					switch (mode)
-					{
-					case 2:
-						// Difference between produced energy and consumed.
-						tempPowerValue = pItem->PowerOutput - pItem->Power_Drain();
-						break;
-					case 1:
-						// Total power drain
-						tempPowerValue = pItem->Power_Drain();
-						break;
-					default:
-						// mode == 0 (or an unknown value). Total Energy produced, default case
-						tempPowerValue = pItem->PowerOutput;
-						break;
-					}
-
-					if (tempPowerValue < powerValue || powerValue == -1)
-					{
-						powerValue = tempPowerValue;
-						pTempHouse = pItem;
-					}
-				}
-
-				if (pTempHouse)
-					pHouse = pTempHouse;
-			}
-			break;
-
-		case -5:
-			// The enemy House with more energy
-			if (pHousesList.Count > 0)
-			{
-				HouseClass* pTempHouse = nullptr;
-
-				for (auto pItem : pHousesList)
-				{
-					if (pTeam->Owner->IsAlliedWith(pItem))
-						continue;
-
-					int tempPowerValue = -100000000;
-
-					switch (mode)
-					{
-					case 2:
-						// Difference between produced energy and consumed.
-						tempPowerValue = pItem->PowerOutput - pItem->Power_Drain();
-						break;
-					case 1:
-						// Total power drain
-						tempPowerValue = pItem->Power_Drain();
-						break;
-					default:
-						// mode == 0 (or an unknown value). Total Energy produced, default case
-						tempPowerValue = pItem->PowerOutput;
-						break;
-					}
-
-					if (tempPowerValue > powerValue || powerValue == -100000000)
-					{
-						powerValue = tempPowerValue;
-						pTempHouse = pItem;
-					}
-				}
-
-				if (pTempHouse)
-					pHouse = pTempHouse;
-			}
-			break;
-
-		case -6:
-			// The enemy House with less energy
-			if (pHousesList.Count > 0)
-			{
-				HouseClass* pTempHouse = nullptr;
-
-				for (auto pItem : pHousesList)
-				{
-					if (pTeam->Owner->IsAlliedWith(pItem))
-						continue;
-
-					int tempPowerValue = -100000000;
-
-					switch (mode)
-					{
-					case 2:
-						// Difference between produced energy and consumed.
-						tempPowerValue = pItem->PowerOutput - pItem->Power_Drain();
-						break;
-					case 1:
-						// Total power drain
-						tempPowerValue = pItem->Power_Drain();
-						break;
-					default:
-						// mode == 0 (or an unknown value). Total Energy produced, default case
-						tempPowerValue = pItem->PowerOutput;
-						break;
-					}
-
-					if (tempPowerValue < powerValue || powerValue == -1)
-					{
-						powerValue = tempPowerValue;
-						pTempHouse = pItem;
-					}
-				}
-
-				if (pTempHouse)
-					pHouse = pTempHouse;
-			}
-			break;
-
-		case -7:
-			// The friendly House with more energy
-			if (pHousesList.Count > 0)
-			{
-				HouseClass* pTempHouse = nullptr;
-
-				for (auto pItem : pHousesList)
-				{
-					if (!pTeam->Owner->IsAlliedWith(pItem))
-						continue;
-
-					int tempPowerValue = -100000000;
-
-					switch (mode)
-					{
-					case 2:
-						// Difference between produced energy and consumed.
-						tempPowerValue = pItem->PowerOutput - pItem->Power_Drain();
-						break;
-					case 1:
-						// Total power drain
-						tempPowerValue = pItem->Power_Drain();
-						break;
-					default:
-						// mode == 0 (or an unknown value). Total Energy produced, default case
-						tempPowerValue = pItem->PowerOutput;
-						break;
-					}
-
-					if (tempPowerValue > powerValue || powerValue == -100000000)
-					{
-						powerValue = tempPowerValue;
-						pTempHouse = pItem;
-					}
-				}
-
-				if (pTempHouse)
-					pHouse = pTempHouse;
-			}
-			break;
-
-		case -8:
-			// The friendly House with less energy
-			if (pHousesList.Count > 0)
-			{
-				HouseClass* pTempHouse = nullptr;
-
-				for (auto pItem : pHousesList)
-				{
-					if (!pTeam->Owner->IsAlliedWith(pItem))
-						continue;
-
-					int tempPowerValue = -100000000;
-
-					switch (mode)
-					{
-					case 2:
-						// Difference between produced energy and consumed.
-						tempPowerValue = pItem->PowerOutput - pItem->Power_Drain();
-						break;
-					case 1:
-						// Total power drain
-						tempPowerValue = pItem->Power_Drain();
-						break;
-					default:
-						// mode == 0 (or an unknown value). Total Energy produced, default case
-						tempPowerValue = pItem->PowerOutput;
-						break;
-					}
-
-					if (tempPowerValue < powerValue || powerValue == -1)
-					{
-						powerValue = tempPowerValue;
-						pTempHouse = pItem;
-					}
-				}
-
-				if (pTempHouse)
-					pHouse = pTempHouse;
-			}
-			break;
-
-		default:
-			break;
-		}
-	}
-
-	// We have selected the house, now check House Economy (Accepted comparator values: 0:<,1:<=,2:==,3:>=,4:>,5:!=)
-	if (powerValue != -100000000)
-	{
-		int comparatorValue = pTeamData->ConditionalJump_ComparatorValue;
-		pTeamData->ConditionalJump_Evaluation = ScriptExt::ConditionalJump_MakeEvaluation(pTeamData->ConditionalJump_ComparatorMode, powerValue, comparatorValue);
-	}
-
-	// This action finished
-	pTeam->StepCompleted = true;
-}
-
 // Count objects from [AITargetTypes] lists
 void ScriptExt::ConditionalJump_CheckObjects(TeamClass* pTeam)
 {
@@ -4190,4 +3617,119 @@ bool ScriptExt::ConditionalJump_MakeEvaluation(int comparatorMode, int studiedVa
 	}
 
 	return result;
+}
+
+void ScriptExt::ConditionalJump_CheckHumanIsMostHated(TeamClass* pTeam)
+{
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	HouseClass* pEnemyHouse = nullptr;
+
+	if (auto pHouse = pTeam->Owner)
+	{
+		int angerLevel = -1;
+		bool isHumanHouse = false;
+
+		for (auto pNode : pHouse->AngerNodes)
+		{
+			if (!pNode.House->Type->MultiplayPassive 
+				&& !pNode.House->Defeated 
+				&& !pNode.House->IsObserver() 
+				&& ((pNode.AngerLevel > angerLevel 
+					&& !pHouse->IsAlliedWith(pNode.House)) 
+					|| angerLevel < 0))
+			{
+				angerLevel = pNode.AngerLevel;
+				pEnemyHouse = pNode.House;
+			}
+		}
+
+		if (pEnemyHouse && pEnemyHouse->ControlledByHuman())
+		{
+			isHumanHouse = true;
+		}
+
+		pTeamData->ConditionalJump_Evaluation = isHumanHouse;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+}
+
+void ScriptExt::ConditionalJumpCheckAliveHumans(TeamClass* pTeam, int mode = 0)
+{
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+
+		return;
+	}
+
+	if (mode < 0 || mode > 2)
+		mode = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
+
+	if (mode < 0 || mode > 2)
+		mode = 0;
+
+	if (auto pHouse = pTeam->Owner)
+	{
+		pTeamData->ConditionalJump_Evaluation = false;
+
+		// Find an alive human House
+		for (auto pNode : pHouse->AngerNodes)
+		{
+			if (!pNode.House->Type->MultiplayPassive
+				&& !pNode.House->Defeated
+				&& !pNode.House->IsObserver()
+				&& pNode.House->ControlledByHuman())
+			{
+				if (mode == 1 && !pHouse->IsAlliedWith(pNode.House)) // Mode 1: Enemy humans
+				{
+					pTeamData->ConditionalJump_Evaluation = true;
+					break;
+				}
+				else if (mode == 2 && !pHouse->IsAlliedWith(pNode.House)) // Mode 2: Friendly humans
+				{
+					pTeamData->ConditionalJump_Evaluation = true;
+					break;
+				}
+
+				// mode 0: Any human
+				pTeamData->ConditionalJump_Evaluation = true;
+				break;
+			}
+		}
+
+		// If we are looking for any human the own House should be checked
+		if (mode == 0 && pHouse->ControlledByHuman())
+			pTeamData->ConditionalJump_Evaluation = true;
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
 }
