@@ -798,7 +798,7 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 	int width = 0, height = 0;
 	BitFont::Instance->GetTextDimension(damageStr, &width, &height, 120);
 
-	if (!pExt->DamageNumberOffset.isset() || pExt->DamageNumberOffset >= maxOffset)
+	if (pExt->DamageNumberOffset >= maxOffset || pExt->DamageNumberOffset < -maxOffset)
 		pExt->DamageNumberOffset = -maxOffset;
 
 	FlyingStrings::Add(damageStr, coords, color, Point2D { pExt->DamageNumberOffset - (width / 2), 0 });

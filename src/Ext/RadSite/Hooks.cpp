@@ -151,7 +151,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI, 0x5)
 			auto damage = Game::F2I((RadSiteExt::GetRadLevelAt(pRadSite, nCurrentCoord) / 2) * pType->GetLevelFactor());
 
 			if (pBuilding->IsAlive) // simple fix for previous issues
-				if (pBuilding->ReceiveDamage(&damage, Game::F2I(orDistance), pWarhead, nullptr, ignore, absolute, pRadExt->RadHouse.Get()) == DamageState::NowDead)
+				if (pBuilding->ReceiveDamage(&damage, Game::F2I(orDistance), pWarhead, nullptr, ignore, absolute, pRadExt->RadHouse) == DamageState::NowDead)
 					break; //dont continue , meaningless
 		}
 	}
@@ -198,7 +198,7 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 
 			if (pFoot->IsAlive || !pFoot->IsSinking)
 			{
-				if (pFoot->ReceiveDamage(&damage, distance, pWarhead, nullptr, false, absolute, pRadExt->RadHouse.Get()) == DamageState::NowDead)
+				if (pFoot->ReceiveDamage(&damage, distance, pWarhead, nullptr, false, absolute, pRadExt->RadHouse) == DamageState::NowDead)
 					break; //dont continue , meaningless
 			}
 		}
