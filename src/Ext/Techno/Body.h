@@ -51,7 +51,9 @@ public:
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
-			this->Shield->InvalidatePointer(ptr);
+			if (auto const pShield = this->Shield.get())
+				pShield->InvalidatePointer(ptr);
+
 			if (this->InterceptedBullet.Get() == ptr)
 				this->InterceptedBullet = nullptr;
 		}
