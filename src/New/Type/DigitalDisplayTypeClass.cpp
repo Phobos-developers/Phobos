@@ -177,12 +177,12 @@ void DigitalDisplayTypeClass::DigitalDisplayText(TechnoClass* pThis, DigitalDisp
 	}
 	else
 	{
-		if (pThis->IsGreenHP())
-			Color = Drawing::RGB2DWORD(pDisplayType->Text_ColorHigh.Get());
+		if (pThis->IsRedHP() || pThis->Health == 0)
+			Color = Drawing::RGB2DWORD(pDisplayType->Text_ColorLow.Get());
 		else if (pThis->IsYellowHP())
 			Color = Drawing::RGB2DWORD(pDisplayType->Text_ColorMid.Get());
 		else
-			Color = Drawing::RGB2DWORD(pDisplayType->Text_ColorLow.Get());
+			Color = Drawing::RGB2DWORD(pDisplayType->Text_ColorHigh.Get());
 	}
 
 	bool ShowBackground = pDisplayType->Text_Background;
@@ -280,13 +280,16 @@ void DigitalDisplayTypeClass::DigitalDisplaySHP(TechnoClass* pThis, DigitalDispl
 		return;
 
 	if (pDisplayType->Anchoring & DigitalDisplayTypeClass::AnchorType::Top)
-		Pos.Y -= isBuilding ? 24 : 18;
+	{
+		Pos.Y -= isBuilding ? 14 : 8;
+		Pos.Y -= SHPFile->Height;
+	}
 
 	if (isBuilding)
 		Pos.X -= 4 + (!Shield ? 6 : 0);
 
 	if (Shield)
-		Pos.Y -= 7;
+		Pos.Y -= SHPFile->Height - 3;
 
 	if (Percentage)
 	{
@@ -408,9 +411,9 @@ void DigitalDisplayTypeClass::DigitalDisplaySHP(TechnoClass* pThis, DigitalDispl
 	int base = 0;
 	int signframe = 30;
 
-	if (pThis->IsYellowHP())
+	if (!Shield && pThis->IsYellowHP() || Shield && pExt->Shield->IsYellowSP())
 		base = 10;
-	else if (pThis->IsRedHP())
+	else if (!Shield && (pThis->IsRedHP() || pThis->Health == 0) || Shield && pExt->Shield->IsRedSP())
 		base = 20;
 
 	if (base == 10)
