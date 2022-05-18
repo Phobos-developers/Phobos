@@ -526,8 +526,10 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 	{
 		if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 		{
+			bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
 			bool isOrganic = pThis->WhatAmI() == AbstractType::Infantry || pThis->WhatAmI() == AbstractType::Unit && pThis->GetTechnoType()->Organic;
-			auto selfHealType = pExt->SelfHealGainType.Get(isOrganic ? SelfHealGainType::Infantry : SelfHealGainType::Units);
+			auto defaultSelfHealType = isBuilding ? SelfHealGainType::None : isOrganic ? SelfHealGainType::Infantry : SelfHealGainType::Units;
+			auto selfHealType = pExt->SelfHealGainType.Get(defaultSelfHealType);
 
 			if (selfHealType == SelfHealGainType::None)
 				return;
