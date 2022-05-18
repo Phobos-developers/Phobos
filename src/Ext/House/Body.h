@@ -18,9 +18,13 @@ public:
 	public:
 		std::map<BuildingTypeExt::ExtData*, int> BuildingCounter;
 		CounterClass OwnedLimboBuildingTypes;
+		bool ForceOnlyTargetHouseEnemy;
+		int ForceOnlyTargetHouseEnemyMode;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
+			, ForceOnlyTargetHouseEnemy { false }
+			, ForceOnlyTargetHouseEnemyMode { -1 }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -51,4 +55,6 @@ public:
 	static int ActiveHarvesterCount(HouseClass* pThis);
 	static int TotalHarvesterCount(HouseClass* pThis);
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
+
+	static void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode);
 };

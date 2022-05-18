@@ -208,6 +208,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Start Timed Jump that jumps to the same line when the countdown finish (in frames)
 		ScriptExt::Set_ForceJump_Countdown(pTeam, true, -1);
 		break;
+	case PhobosScripts::ForceGlobalOnlyTargetHouseEnemy:
+		ScriptExt::ForceGlobalOnlyTargetHouseEnemy(pTeam, -1);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		if (action > 70 && !IsExtVariableAction(action))
@@ -529,6 +532,14 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		return;
 	}
 
+	auto pHouseExt = HouseExt::ExtMap.Find(pTeam->Owner);
+	if (!pHouseExt)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+		return;
+	}
+
 	// When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
 	if (pTeamData->WaitNoTargetCounter > 0)
 	{
@@ -775,6 +786,9 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		// This part of the code is used for picking a new target.
 
 		// Favorite Enemy House case. If set, AI will focus against that House
+		if (pHouseExt->ForceOnlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)
+			enemyHouse = HouseClass::Array->GetItem(pLeaderUnit->Owner->EnemyHouseIndex);
+
 		if (pTeam->Type->OnlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)
 			enemyHouse = HouseClass::Array->GetItem(pLeaderUnit->Owner->EnemyHouseIndex);
 
@@ -3085,4 +3099,41 @@ void ScriptExt::Stop_ForceJump_Countdown(TeamClass *pTeam)
 	// This action finished
 	pTeam->StepCompleted = true;
 	Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d): Stopped Timed Jump\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
+}
+
+void ScriptExt::ForceGlobalOnlyTargetHouseEnemy(TeamClass* pTeam, int mode = -1)
+{
+	if (!pTeam)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	auto pHouseExt = HouseExt::ExtMap.Find(pTeam->Owner);
+	if (!pHouseExt)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	if (mode < 0 || mode > 2)
+		mode = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
+
+	if (mode < -1 || mode > 2)
+		mode = -1;
+
+	/*
+	Modes:
+		0  -> Force "False"
+		1  -> Force "True"
+		2  -> Force "Random boolean"
+		-1 -> Use default value in OnlyTargetHouseEnemy tag
+		Note: only works for new Actions, not vanilla YR actions
+	*/
+	HouseExt::ForceOnlyTargetHouseEnemy(pTeam->Owner, mode);
+
+	// This action finished
+	pTeam->StepCompleted = true;
 }

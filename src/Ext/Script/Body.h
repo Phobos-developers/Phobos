@@ -13,6 +13,7 @@
 #include <WarheadTypeClass.h>
 #include <SpawnManagerClass.h>
 
+#include <Ext/House/Body.h>
 #include <Ext/Team/Body.h>
 #include <Utilities/Container.h>
 #include <Phobos.h>
@@ -65,6 +66,7 @@ enum class PhobosScripts : unsigned int
 	StopForceJumpCountdown = 124,
 	NextLineForceJumpCountdown = 125,
 	SameLineForceJumpCountdown = 126,
+	ForceGlobalOnlyTargetHouseEnemy = 150,
 
 	// Variables
 	LocalVariableSet = 500,
@@ -198,6 +200,8 @@ public:
 	static FootClass* FindTheTeamLeader(TeamClass* pTeam);
 	static void Set_ForceJump_Countdown(TeamClass *pTeam, bool repeatLine, int count);
 	static void Stop_ForceJump_Countdown(TeamClass *pTeam);
+
+	static void ForceGlobalOnlyTargetHouseEnemy(TeamClass* pTeam, int mode);
 
 	static bool IsExtVariableAction(int action);
 	static void VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg);
