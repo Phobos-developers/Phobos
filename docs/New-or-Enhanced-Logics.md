@@ -40,8 +40,6 @@ RadSiteWarhead=RadSite          ; WarheadType
 
 ![image](_static/images/DigitalDisplay2.png)
 
-Text display use percentage style can't display percent sign because it dose not exist in game.fnt
-
 The SHP display uses frames 0-9 of the SHP file for green HP, 10-19 for yellow HP, and 20-29 for red HP, 30-32 frames are the separator for green, yellow and red HP respectively. In percentage style use 33-35 frams as percent sign.
 
 Default Alignment:

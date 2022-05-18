@@ -146,9 +146,10 @@ void DigitalDisplayTypeClass::DigitalDisplayText(TechnoClass* pThis, DigitalDisp
 	if (pDisplayType->Percentage.Get())
 	{
 		if (Shield)
-			swprintf_s(Healthpoint, L"%d%%", int(pExt->Shield->GetHealthRatio() * 100));
+			swprintf_s(Healthpoint, L"%d", int(pExt->Shield->GetHealthRatio() * 100));
 		else
-			swprintf_s(Healthpoint, L"%d%%", int(pThis->GetHealthPercentage() * 100));
+			swprintf_s(Healthpoint, L"%d", int(pThis->GetHealthPercentage() * 100));
+		wcscat_s(Healthpoint, L"%%");
 	}
 	else if (pDisplayType->HideStrength.Get())
 	{
