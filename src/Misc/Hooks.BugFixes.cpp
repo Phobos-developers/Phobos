@@ -366,6 +366,17 @@ DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 	return 0;
 }
 
+namespace FetchBomb {
+	BombClass* pThisBomb;
+}
+
+DEFINE_HOOK(0x438771, BombClass_Detonate_fetch, 0x6)
+{
+	GET(BombClass*, pThis, ESI);
+	FetchBomb::pThisBomb = pThis;
+	return 0x0;
+}
+
 static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 (
 	CoordStruct* pCoord,
@@ -376,7 +387,7 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 	HouseClass* pSourceHouse //nullptr
 )
 {
-	GET_REGISTER_STATIC_TYPE(BombClass*, pThisBomb, esi);
+	auto const pThisBomb = FetchBomb::pThisBomb;
 	auto nCoord = *pCoord;
 	auto nDamageAreaResult = MapClass::Instance()->DamageArea
 	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse);
@@ -393,7 +404,8 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 				pAnim->Owner = pThisBomb->OwnerHouse;
 		}
 	}
-
+	
+	FetchBomb::pThisBomb = nullptr;
 	return nDamageAreaResult;
 }
 
