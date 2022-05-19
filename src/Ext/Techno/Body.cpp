@@ -834,7 +834,7 @@ Point2D TechnoExt::GetHealthBarPosition(TechnoClass* pThis, bool Shield, HealthB
 		Point2D Pos2 = { 0, 0 };
 		CoordStruct Coords2 = { -Coords.X / 2, Coords.Y / 2, Coords.Z };
 		TacticalClass::Instance->CoordsToScreen(&Pos2, &Coords2);
-		int FoundationHeight = abstract_cast<BuildingTypeClass*>(pType)->GetFoundationHeight(true);
+		int FoundationHeight = abstract_cast<BuildingTypeClass*>(pType)->GetFoundationHeight(false);
 		
 		iLength = FoundationHeight * 7 + FoundationHeight / 2;
 		Pos.X = Pos2.X + Loc.X + 4 * iLength + 3 - (Shield ? 6 : 0);
