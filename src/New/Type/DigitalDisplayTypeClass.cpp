@@ -466,6 +466,8 @@ void DigitalDisplayTypeClass::DigitalDisplaySHP(TechnoClass* pThis, DigitalDispl
 			{
 				DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &Pos, &DSurface::ViewBounds,
 					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+				Pos.X -= Interval.X;
+				Pos.Y += Interval.Y;
 			}
 
 			for (int i = 0; i < vHealth.Count; i++)
