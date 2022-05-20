@@ -313,6 +313,25 @@ In `aimd.ini`:
 x=126,n           ; integer n=0, in frames
 ```
 
+### `150` Force Global OnlyTargetHouseEnemy value in Teams
+
+- Sets the TeamType tag value for `OnlyTargetHouseEnemy` tag. Only affects the new Attack / Move actions. 
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=150,n           ; integer
+```
+
+- The possible argument values are:
+
+| *Argument* | *Description*                       |
+| :--------: | :------------------------------------------: |
+| -1         | Disable Global value for Force `OnlyTargetHouseEnemy` tag. Default value |
+| 0          | Force `OnlyTargetHouseEnemy` = false |
+| 1          | Force `OnlyTargetHouseEnemy` = true |
+| 2          | Force random boolean value |
+
 ### `500 - 523` Edit Variable
 - Operate a variable's value
     - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
