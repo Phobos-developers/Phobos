@@ -143,6 +143,7 @@ This page lists all the individual contributions to the project by their author.
   - TransactMoney.Display
   - Building-provided self-heal customization
   - AI deploy script DeploysInto fix
+  - Passable & buildable-upon TerrainTypes
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
