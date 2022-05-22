@@ -209,6 +209,14 @@ DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
 	return 0;
 }
 
+// Author: Otamaa
+DEFINE_HOOK(0x5223B3, InfantryClass_DeployFire_DeployFireWeapon_Add, 0x6)
+{
+  GET(InfantryClass*, pThis, ESI);
+  R->EDI(pThis->Type->DeployFireWeapon == -1  ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
+  return 0x5223B9;
+}
+
 // Customizable OpenTopped Properties
 // Author: Otamaa
 

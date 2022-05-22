@@ -1060,14 +1060,14 @@ void __declspec(noinline) Damageable<T>::Read(INI_EX& parser, const char* const 
 
 	if (res > 0 && flagName[res - 1] == '.')
 		flagName[res - 1] = '\0';
-	
-	detail::read(this->BaseValue, parser, pSection, flagName);
+
+	this->BaseValue.Read(parser, pSection, flagName);
 
 	_snprintf_s(flagName, _TRUNCATE, pBaseFlag, "ConditionYellow");
-	conditionYellowAvailable = detail::read(this->ConditionYellow, parser, pSection, flagName) || conditionYellowAvailable;
+	this->ConditionYellow.Read(parser, pSection, flagName);
 
 	_snprintf_s(flagName, _TRUNCATE, pBaseFlag, "ConditionRed");
-	conditionRedAvailable = detail::read(this->ConditionRed, parser, pSection, flagName) || conditionRedAvailable;
+	this->ConditionRed.Read(parser, pSection, flagName);
 };
 
 template <typename T>
