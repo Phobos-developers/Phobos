@@ -198,7 +198,7 @@ public:
 			, Ammo_Shared_Group { -1 }
 			, SelfHealGainType()
 			, Passengers_SyncOwner { false }
-			, Passengers_SyncOwner_RevertOnExit { false }
+			, Passengers_SyncOwner_RevertOnExit { true }
 		{ }
 
 		virtual ~ExtData() = default;
