@@ -106,6 +106,9 @@ public:
 
 		Nullable<SelfHealGainType> SelfHealGainType;
 
+		Nullable<double> InitialStrength_Cloning;
+		Nullable<double> InitialStrength_Cloning_Min;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -195,6 +198,8 @@ public:
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 			, SelfHealGainType()
+			, InitialStrength_Cloning {}
+			, InitialStrength_Cloning_Min {}
 		{ }
 
 		virtual ~ExtData() = default;

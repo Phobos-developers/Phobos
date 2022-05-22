@@ -302,6 +302,7 @@ New:
 - Toggleable display of TransactMoney amounts (by Starkku)
 - Building-provided self-healing customization (by Starkku)
 - Building placement preview (by Otamaa)
+- Initial Strength for Cloned Infantry (by FS-21)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
