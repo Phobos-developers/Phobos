@@ -825,6 +825,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastWarpDistance)
 		.Process(this->Death_Countdown)
 		.Process(this->MindControlRingAnimType)
+		.Process(this->OriginalPassengerOwner)
 		;
 }
 

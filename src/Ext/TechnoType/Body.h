@@ -105,6 +105,8 @@ public:
 		Nullable<bool> JumpjetTurnToTarget;
 
 		Nullable<SelfHealGainType> SelfHealGainType;
+		Valueable<bool> Passengers_SyncOwner;
+		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
 		struct LaserTrailDataEntry
 		{
@@ -195,6 +197,8 @@ public:
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 			, SelfHealGainType()
+			, Passengers_SyncOwner { false }
+			, Passengers_SyncOwner_RevertOnExit { true }
 		{ }
 
 		virtual ~ExtData() = default;

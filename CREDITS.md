@@ -144,6 +144,7 @@ This page lists all the individual contributions to the project by their author.
   - Building-provided self-heal customization
   - AI deploy script DeploysInto fix
   - Passable & buildable-upon TerrainTypes
+  - Automatic passenger owner change toggle
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
