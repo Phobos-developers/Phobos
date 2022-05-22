@@ -81,7 +81,7 @@ DEFINE_HOOK(0x73FB71, UnitClass_CanEnterCell_PassableTerrain, 0x6)
 		if (pTypeExt->IsPassable)
 		{
 			R->EBP(0);
-			return 0x73FD37;
+			return Return;
 		}
 	}
 
