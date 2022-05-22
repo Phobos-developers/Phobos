@@ -302,6 +302,8 @@ New:
 - Toggleable display of TransactMoney amounts (by Starkku)
 - Building-provided self-healing customization (by Starkku)
 - Building placement preview (by Otamaa)
+- Passable & buildable-upon TerrainTypes (by Starkku)
+- Toggle for passengers to automatically change owner if transport owner changes (by Starkku)
 - Initial Strength for Cloned Infantry (by FS-21)
 
 Vanilla fixes:
@@ -324,6 +326,7 @@ Vanilla fixes:
 - Fixed jumpjet units being unable to turn to the target when firing from a different direction (by trsdy)
 - Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations (by Starkku)
 - Fixed AI script action Deploy getting stuck with vehicles with `DeploysInto` if there was no space to deploy at initial location (by Starkku)
+- Fixed `Foundation=0x0` causing crashes if used on TerrainTypes.
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)

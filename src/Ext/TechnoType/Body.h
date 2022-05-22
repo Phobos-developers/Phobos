@@ -105,6 +105,8 @@ public:
 		Nullable<bool> JumpjetTurnToTarget;
 
 		Nullable<SelfHealGainType> SelfHealGainType;
+		Valueable<bool> Passengers_SyncOwner;
+		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
 		Nullable<double> InitialStrength_Cloning;
 		Nullable<double> InitialStrength_Cloning_Min;
@@ -198,6 +200,8 @@ public:
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 			, SelfHealGainType()
+			, Passengers_SyncOwner { false }
+			, Passengers_SyncOwner_RevertOnExit { true }
 			, InitialStrength_Cloning {}
 			, InitialStrength_Cloning_Min {}
 		{ }

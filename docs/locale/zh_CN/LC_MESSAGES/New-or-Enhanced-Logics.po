@@ -2005,7 +2005,7 @@ msgid ""
 "underwater behavior in [C&C: "
 "Reloaded](https://www.moddb.com/mods/cncreloaded)*"
 msgstr ""
-"![image](_static/images/powersup.owner-01.png)  \n"
+"![image](_static/images/underwater-new-attack-tag.gif)  \n"
 "*海军水下行为在[CnC: Reloaded](https://www.moddb.com/mods/cncreloaded)中*"
 
 #: ../New-or-Enhanced-Logics.md:828
