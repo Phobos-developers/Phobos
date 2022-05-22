@@ -19,18 +19,18 @@ public:
 	class ExtData final : public Extension<TechnoClass>
 	{
 	public:
-		Valueable<BulletClass*> InterceptedBullet;
+		BulletClass* InterceptedBullet;
 		std::unique_ptr<ShieldClass> Shield;
-		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
-		Valueable<bool> ReceiveDamage;
-		Valueable<bool> LastKillWasTeamTarget;
+		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
+		bool ReceiveDamage;
+		bool LastKillWasTeamTarget;
 		TimerStruct	PassengerDeletionTimer;
-		Valueable<int> PassengerDeletionCountDown;
-		Valueable<ShieldTypeClass*> CurrentShieldType;
-		Valueable<int> LastWarpDistance;
+		int PassengerDeletionCountDown;
+		ShieldTypeClass* CurrentShieldType;
+		int LastWarpDistance;
 		int Death_Countdown;
-		Valueable<AnimTypeClass*> MindControlRingAnimType;
-		Nullable<int> DamageNumberOffset;
+		AnimTypeClass* MindControlRingAnimType;
+		int DamageNumberOffset;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet { nullptr }
@@ -44,14 +44,17 @@ public:
 			, LastWarpDistance {}
 			, Death_Countdown(-1)
 			, MindControlRingAnimType { nullptr }
-			, DamageNumberOffset {}
+			, DamageNumberOffset { INT32_MIN }
 		{ }
 
 		virtual ~ExtData() = default;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
-			this->Shield->InvalidatePointer(ptr);
+			if (auto const pShield = this->Shield.get())
+				pShield->InvalidatePointer(ptr);
+
+				this->InterceptedBullet = nullptr;
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
@@ -67,6 +70,19 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+			switch (abs)
+			{
+			case AbstractType::Anim:
+			case AbstractType::Bullet:
+				return false;
+			default:
+				return true;
+			}
+		}
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 	};

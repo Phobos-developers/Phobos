@@ -17,9 +17,9 @@ public:
 	class ExtData final : public Extension<BulletClass>
 	{
 	public:
-		Valueable<bool> Intercepted;
-		Valueable<bool> ShouldIntercept;
-		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
+		bool Intercepted;
+		bool ShouldIntercept;
+		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		
 		PhobosTrajectory* Trajectory;
 
