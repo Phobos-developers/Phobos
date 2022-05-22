@@ -32,6 +32,10 @@ public:
 		AnimTypeClass* MindControlRingAnimType;
 		int DamageNumberOffset;
 
+		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
+		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
+		HouseClass* OriginalPassengerOwner;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet { nullptr }
 			, Shield {}
@@ -45,6 +49,7 @@ public:
 			, Death_Countdown(-1)
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset { INT32_MIN }
+			, OriginalPassengerOwner {}
 		{ }
 
 		virtual ~ExtData() = default;

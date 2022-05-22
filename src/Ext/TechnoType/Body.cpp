@@ -150,7 +150,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployingAnim_ReverseForUndeploy.Read(exINI, pSection, "DeployingAnim.ReverseForUndeploy");
 	this->DeployingAnim_UseUnitDrawer.Read(exINI, pSection, "DeployingAnim.UseUnitDrawer");
 
+	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
+	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 	this->SelfHealGainType.Read(exINI, pSection, "SelfHealGainType");
+	this->Passengers_SyncOwner.Read(exINI, pSection, "Passengers.SyncOwner");
+	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -222,7 +226,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			EliteWeaponBurstFLHs[i].AddItem(eliteFLH.Get());
 		}
 	}
-
 	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
 
 	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
@@ -310,6 +313,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
 		.Process(this->SelfHealGainType)
+		.Process(this->Passengers_SyncOwner)
+		.Process(this->Passengers_SyncOwner_RevertOnExit)
 		.Process(this->DigitalDisplayType)
 		.Process(this->DigitalDisplayType_Shield)
 		;
