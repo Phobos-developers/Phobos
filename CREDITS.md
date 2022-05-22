@@ -142,6 +142,7 @@ This page lists all the individual contributions to the project by their author.
   - Display damage numbers hotkey command
   - TransactMoney.Display
   - Building-provided self-heal customization
+  - AI deploy script DeploysInto fix
   - Passable & buildable-upon TerrainTypes
 - **Morton (MortonPL)**:
   - `XDrawOffset`
