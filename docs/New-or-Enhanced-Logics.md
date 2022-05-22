@@ -510,13 +510,11 @@ InitialStrength=    ; int
 *Initial strength for cloned infantry example in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*  
 
 - You can now specify how many hitpoints an Infantry Type starts with when leaves a Cloning Structure with `Cloning=yes`.
-- If `InitialStrength.Cloning.Min` is declared then a random value between `InitialStrength.Cloning.Min` and `InitialStrength.Cloning` is used for the new unit.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                  ; BuildingType
-InitialStrength.Cloning=        ; double / percentage
-InitialStrength.Cloning.Min=    ; double / percentage
+InitialStrength.Cloning=        ; single double/percentage or comma-sep. range
 ```
 
 ### Kill Unit Automatically

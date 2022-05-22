@@ -108,8 +108,7 @@ public:
 		Valueable<bool> Passengers_SyncOwner;
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
-		Nullable<double> InitialStrength_Cloning;
-		Nullable<double> InitialStrength_Cloning_Min;
+		Valueable<Vector2D<double>> InitialStrength_Cloning;
 
 		struct LaserTrailDataEntry
 		{
@@ -202,8 +201,7 @@ public:
 			, SelfHealGainType()
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
-			, InitialStrength_Cloning {}
-			, InitialStrength_Cloning_Min {}
+			, InitialStrength_Cloning{ { 1.0, 0.0 } }
 		{ }
 
 		virtual ~ExtData() = default;

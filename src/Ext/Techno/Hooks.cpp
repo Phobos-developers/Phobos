@@ -93,28 +93,17 @@ DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
 	{
 		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType()))
 		{
-			if (pTypeExt->InitialStrength_Cloning.isset())
+			if (auto pTypeUnit = pFoot->GetTechnoType())
 			{
-				if (auto pTypeUnit = pFoot->GetTechnoType())
-				{
-					auto strength = pTypeUnit->Strength * pTypeExt->InitialStrength_Cloning;
+				Vector2D<double> range = pTypeExt->InitialStrength_Cloning.Get();
+				double percentage = range.X >= range.Y ? range.X : (ScenarioClass::Instance->Random.RandomRanged(range.X * 100, range.Y * 100) / 100.0);
+				int strength = pTypeUnit->Strength * percentage;
 
-					if (strength <= 0)
-						strength = 1;
-
-					if (pTypeExt->InitialStrength_Cloning_Min.isset())
-					{
-						int strengthMin = pTypeUnit->Strength * pTypeExt->InitialStrength_Cloning_Min.Get(pTypeExt->InitialStrength_Cloning);
-
-						if (strengthMin > strength)
-							strengthMin = strength;
-
-						strength = ScenarioClass::Instance->Random.RandomRanged(strengthMin, strength);
-					}
-
-					pFoot->Health = strength;
-					pFoot->EstimatedHealth = strength;
-				}
+				if (strength <= 0)
+					strength = 1;
+				
+				pFoot->Health = strength;
+				pFoot->EstimatedHealth = strength;
 			}
 		}
 	}
