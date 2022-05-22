@@ -429,6 +429,7 @@ PassengerDeletion.Anim=                 ; animation
 - Transports with `Passengers.SyncOwner` set to true will have the owner of their passengers changed to match the transport if transport's owner changes.
   - On `OpenTopped=true` transports this will also disable checks that prevent target acquisition by passengers when the transport is temporarily mind controlled.
   - `Passengers.SyncOwner.RevertOnExit`, if set to true (which is the default), changes the passengers' owner back to whatever it was originally when they entered the transport when they are ejected.
+  - Does not work on passengers acquired through use of `Abductor=true` weapon *(Ares feature)*.
 
 In `rulesmd.ini`:
 ```ini
