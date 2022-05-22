@@ -104,10 +104,10 @@ msgstr "保存当前单人游戏。"
 
 #: ../User-Interface.md:31
 msgid ""
-"If need localization, just add `TXT_QUICKGAME`, `TXT_QUICKGAME_DESC`, "
+"If need localization, just add `TXT_QUICKSAVE`, `TXT_QUICKSAVE_DESC`, "
 "`TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your "
 "`.csf` file."
-msgstr "如果需要本地化，只需要在`.csf`文件中增加`TXT_QUICKGAME`，`TXT_QUICKGAME_DESC`和`TXT_QUICKSAVE_SUFFIX`即可。"
+msgstr "如果需要本地化，只需要在`.csf`文件中增加`TXT_QUICKSAVE`，`TXT_QUICKSAVE_DESC`和`TXT_QUICKSAVE_SUFFIX`即可。"
 
 #: ../User-Interface.md:32
 msgid ""
