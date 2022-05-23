@@ -419,7 +419,7 @@ LimboKill.IDs=                  ; List of numeric IDs.
 
 ## Technos
 
-### Automatic Passenger Deletion
+### Automatic passenger deletion
 
 - Transports with these tags will erase the passengers overtime. Bigger units takes more time. Optionally this logic can work like a grinder.
  - Good combination with Ares Abductor logic.
@@ -433,6 +433,20 @@ PassengerDeletion.Soylent=no            ; boolean
 PassengerDeletion.SoylentFriendlies=no  ; boolean
 PassengerDeletion.ReportSound=          ; sound
 PassengerDeletion.Anim=                 ; animation
+```
+
+### Automatic passenger owner change to match transport owner
+
+- Transports with `Passengers.SyncOwner` set to true will have the owner of their passengers changed to match the transport if transport's owner changes.
+  - On `OpenTopped=true` transports this will also disable checks that prevent target acquisition by passengers when the transport is temporarily mind controlled.
+  - `Passengers.SyncOwner.RevertOnExit`, if set to true (which is the default), changes the passengers' owner back to whatever it was originally when they entered the transport when they are ejected.
+  - Does not work on passengers acquired through use of `Abductor=true` weapon *(Ares feature)*.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                             ; TechnoType
+Passengers.SyncOwner=false               ; boolean
+Passengers.SyncOwner.RevertOnExit=true   ; boolean
 ```
 
 ### Automatically firing weapons

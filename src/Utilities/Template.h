@@ -357,16 +357,27 @@ public:
 template<typename T>
 class Damageable
 {
-protected:
-	bool conditionYellowAvailable { false };
-	bool conditionRedAvailable { false };
 public:
-	T BaseValue {};
-	T ConditionYellow {};
-	T ConditionRed {};
+	Valueable<T> BaseValue {};
+	Nullable<T> ConditionYellow {};
+	Nullable<T> ConditionRed {};
 
 	Damageable() = default;
-	explicit Damageable(T const& all) noexcept(noexcept(T { all })) : BaseValue(all), ConditionYellow(all), ConditionRed(all), conditionYellowAvailable(true), conditionRedAvailable(true) { }
+	explicit Damageable(T const& all)
+		noexcept(noexcept(T { all }))
+		: BaseValue { all }
+	{
+	}
+
+	explicit Damageable(T const& undamaged, T const& damaged)
+		noexcept(noexcept(T { undamaged }) && noexcept(T { damaged }))
+		: BaseValue { undamaged }, ConditionYellow { damaged }
+	{ }
+
+	explicit Damageable(T const& green, T const& yellow, T const& red)
+		noexcept(noexcept(T { green }) && noexcept(T { yellow }) && noexcept(T { red }))
+		: BaseValue { green }, ConditionYellow { yellow }, ConditionRed { red }
+	{ }
 
 	inline void Read(INI_EX& parser, const char* pSection, const char* pBaseFlag, const char* pSingleFlag = nullptr);
 
@@ -387,9 +398,9 @@ public:
 
 	const T& Get(double ratio) const noexcept
 	{
-		if (conditionRedAvailable && ratio <= RulesClass::Instance->ConditionRed)
+		if (this->ConditionRed.isset() && ratio <= RulesClass::Instance->ConditionRed)
 			return this->ConditionRed;
-		else if (conditionYellowAvailable && ratio <= RulesClass::Instance->ConditionYellow)
+		else if (this->ConditionYellow.isset() && ratio <= RulesClass::Instance->ConditionYellow)
 			return this->ConditionYellow;
 
 		return this->BaseValue;

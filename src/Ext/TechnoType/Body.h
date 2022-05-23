@@ -98,6 +98,7 @@ public:
 		Valueable<bool> DeployingAnim_ReverseForUndeploy;
 		Valueable<bool> DeployingAnim_UseUnitDrawer;
 
+		Valueable<CSFText> EnemyUIName;
 		Valueable<int> ForceWeapon_Naval_Decloaked;
 
 		Valueable<bool> Ammo_Shared;
@@ -105,6 +106,8 @@ public:
 		Nullable<bool> JumpjetTurnToTarget;
 
 		Nullable<SelfHealGainType> SelfHealGainType;
+		Valueable<bool> Passengers_SyncOwner;
+		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
 		struct LaserTrailDataEntry
 		{
@@ -121,6 +124,7 @@ public:
 		};
 
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
+
 		Valueable<CSFText> EnemyUIName;
 		ValueableIdxVector<TechnoTypeClass> RandomProduct;
 
@@ -188,14 +192,16 @@ public:
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
-			, EnemyUIName {}
 			, Death_NoAmmo { false }
 			, Death_Countdown { 0 }
 			, Death_Peaceful { false }
+			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 			, SelfHealGainType()
+			, Passengers_SyncOwner { false }
+			, Passengers_SyncOwner_RevertOnExit { true }
 			, RandomProduct {}
 		{ }
 

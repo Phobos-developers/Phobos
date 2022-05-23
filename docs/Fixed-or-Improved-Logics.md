@@ -20,7 +20,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Some settings are still ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
-- Fixed jumpjet units cannot turn its facing to the target when firing from a different direction.
+- Fixed jumpjet units being unable to turn to the target when firing from a different direction.
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
 - Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
@@ -62,6 +62,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Nuke carrier & payload weapons now respect `Bright` setting on the weapons always when appropriate (previously only payload did and only if Superweapon had `Nuke.SiloLaunch=false` *(Ares feature)*).
 - Self-healing pips from `InfantryGainSelfHeal` & `UnitsGainSelfHeal` now respect unit's `PixelSelectionBracketDelta` like health bar pips do.
 - Buildings using `SelfHealing` will now correctly revert to undamaged graphics if their health is restored back by self-healing.
+- Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations.
+- Allow use of `Foundation=0x0` on TerrainTypes without crashing for similar results as for buildings.
 
 ## Animations
 
@@ -314,6 +316,19 @@ In `rulesmd.ini`:
 ```ini
 [SOMETERRAINTYPE]  ; TerrainType
 MinimapColor=      ; integer - Red,Green,Blue
+```
+
+### Passable & buildable-upon TerrainTypes
+
+- TerrainTypes can now be made passable or buildable upon by setting `IsPassable` or `CanBeBuiltOn`, respectively.
+  - Movement cursor is displayed on `IsPassable` TerrainTypes unless force-firing.
+  - `CanBeBuiltOn=true` terrain objects are removed when building is placed on them.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]   ; TerrainType
+IsPassable=false    ; boolean
+CanBeBuiltOn=false  ; boolean
 ```
 
 ## Tiberiums (ores)
