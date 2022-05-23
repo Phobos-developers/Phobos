@@ -125,7 +125,6 @@ public:
 
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
 
-		Valueable<CSFText> EnemyUIName;
 		ValueableIdxVector<TechnoTypeClass> RandomProduct;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
