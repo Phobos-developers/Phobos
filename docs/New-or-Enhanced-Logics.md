@@ -919,6 +919,40 @@ In `rulesmd.ini`:
 BigGap=false   ; boolean
 ```
 
+### Transact Warhead
+
+- It is now possible to increase, decrease or transfer specific "values" between Technos.
+  - To enable this feature, `Transact=true` must be set and at least one source or target value needs to be non-zero.
+  - Source is the Techno that fired the warhead, Target is a Techno (or group) that is affected by the warhead.
+  - Flat values are amounts that are directly added/substracted, while percent values are calculated relatively to the unit's state.
+    - In case of experience, value from percent is calculated by multiplying it by current unit cost.
+    - By default Source.Percent (percent of value that Source will receive) is calculated from Source unit cost, however it is possible to force calculation from Target cost with `CalcFromTarget` (Target and `CalcFtomSOurce` behaves analogically).
+  - When both Flat and Percent values are set, the one that yields higher value is used.
+  - Transfer occurs only when either the calculated experience to Source or to Target is negative. If both values are positive or negative, then all units gain or lose experience, respectively.
+  - In transfer, if Source and Target values are different, then the smaller of them is used.
+  - In transfer, if it is not possible to transfer the whole amount (i.e. a unit has not enough experience), then only the maximum possible transfer amount is transferred.
+  - Source values are ignored if the warhead is not created by a unit (i.e. via a super weapon or map action). Target values are ignored if the warhead doesn't affect any units (fired at empty ground).
+    - In both cases, transfer is impossible.
+  - `Transact.SpreadAmongTargets` has effect on warheads with CellSpread. When set, instead of applying the full value to each Target separately, the value will be divided among the victims.
+
+It is impossible to revert veterancy-caused unit type conversion from Ares by demoting a unit!
+
+Currently supported "values" are:
+- Experience
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                                           ; Warhead
+Transact=false                                          ; boolean
+Transact.SpreadAmongTargets=false                       ; boolean
+Transact.Experience.Source.Flat=0                       ; integer
+Transact.Experience.Source.Percent=0.0                  ; float, percents or absolute (-1.0 - 1.0)
+Transact.Experience.Source.Percent.CalcFromTarget=false ; boolean
+Transact.Experience.Target.Flat=0                       ; integer
+Transact.Experience.Target.Percent=0.0                  ; float, percents or absolute (-1.0 - 1.0)
+Transact.Experience.Target.Percent.CalcFromSource=false ; boolean
+```
+
 ### Trigger specific NotHuman infantry Death anim sequence
 - Warheads are now able to trigger specific `NotHuman=yes` infantry `Death` anim sequence using the corresponding tag. It's value represents sequences from `Die1` to `Die5`.
 
