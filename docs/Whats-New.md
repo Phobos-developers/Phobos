@@ -303,6 +303,8 @@ New:
 - `CreateUnit` improvements & additions (units spawning in air, spawn animation) (by Starkku)
 - Option to center pause menu background (by Starkku)
 - LaunchSW.DisplayMoney (by Starkku)
+- Disguise logic improvements (by Starkku)
+- Custom insignias (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -312,7 +314,7 @@ Vanilla fixes:
 - Prevented units from retaining previous order after ownership change (by Trsdy)
 - Break the mind-control link when capturing a mind-controlled building with an engineer (by Trsdy)
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations (by Starkku)
-- Cloaked objects displaying to observers (by Starkku)
+- Cloaked & disguised objects displaying to observers (by Starkku)
 - Cloaked objects from allies displaying to player in single player missions (by Trsdy)
 - Skip `NaturalParticleSystem` displaying from in-map pre-placed structures (by Trsdy)
 - Made sure that `Suicide=yes` weapon does kill the firer (by Trsdy)
@@ -334,6 +336,7 @@ Vanilla fixes:
 - Transports with `OpenTopped=true` and weapon that has `Burst` above 1 and passengers firing out no longer have the passenger firing offset shift lateral position based on burst index (by Starkku)
 - Light tint created by a building is now able to be removed after loading the game (by Trsdy)
 - Prevented crashing jumpjet units from firing (by Trsdy)
+- Fixed disguised infantry not using custom palette for drawing the disguise when needed (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

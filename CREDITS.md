@@ -165,7 +165,7 @@ This page lists all the individual contributions to the project by their author.
   - Railgun particle target coordinate fix
   - Building target coordinate offset fix
   - Warhead / weapon detonation at superweapon target cell
-  - Cloaked objects displaying to observers
+  - Cloaked & disguised objects displaying to observers
   - Building airstrike target eligibility customization
   - IvanBomb detonation & image display centered on buildings
   - Customizable ROF random delay
@@ -184,6 +184,8 @@ This page lists all the individual contributions to the project by their author.
   - TechnoType target evaluation map zone check behaviour customization
   - CanC4 damage rounding fix & toggle
   - Option to center pause menu background
+  - Disguise logic improvements
+  - Custom insignias
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

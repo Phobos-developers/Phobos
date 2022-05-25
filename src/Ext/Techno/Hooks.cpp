@@ -413,3 +413,42 @@ DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
 
 	return AllowedObject;
 }
+
+DEFINE_HOOK(0x6F534E, TechnoClass_DrawExtras_Insignia, 0x5)
+{
+	enum { SkipGameCode = 0x6F5388 };
+
+	GET(TechnoClass*, pThis, EBP);
+	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x98, -0x4));
+	GET(RectangleStruct*, pBounds, ESI);
+
+	if (pThis->VisualCharacter(false, nullptr) != VisualType::Hidden)
+		TechnoExt::DrawInsignia(pThis, pLocation, pBounds);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
+{
+	enum { SkipGameCode = 0x70EFF2 };
+
+	GET(TechnoClass*, pThis, ECX);
+
+	int maxSpeed = 0;
+
+	if (pThis)
+	{
+		maxSpeed = pThis->GetTechnoType()->Speed;
+
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+		if (pTypeExt->UseDisguiseMovementSpeed && pThis->IsDisguised())
+		{
+			if (auto const pType = static_cast<TechnoTypeClass*>(pThis->Disguise))
+				maxSpeed = pType->Speed;
+		}
+	}
+
+	R->EAX(maxSpeed);
+	return SkipGameCode;
+}

@@ -87,6 +87,72 @@ void TechnoExt::SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo)
 	}
 }
 
+// Based on Ares source.
+void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
+{
+	Point2D offset = *pLocation;
+
+	SHPStruct* pShapeFile = FileSystem::PIPS_SHP;
+	int defaultFrameIndex = -1;
+
+	auto pTechnoType = pThis->GetTechnoType();
+	auto pOwner = pThis->Owner;
+
+	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::Player))
+	{
+		if (auto const pType = static_cast<TechnoTypeClass*>(pThis->Disguise))
+		{
+			pTechnoType = pType;
+			pOwner = pThis->DisguisedAsHouse;
+		}
+	}
+
+	TechnoTypeExt::ExtData* pExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+
+	bool isVisibleToPlayer = pOwner->IsAlliedWith(HouseClass::Player)
+		|| HouseClass::IsPlayerObserver()
+		|| pExt->Insignia_ShowEnemy.Get(RulesExt::Global()->EnemyInsignia);
+
+	if (!isVisibleToPlayer)
+		return;
+
+	if (SHPStruct* pCustomShapeFile = pExt->Insignia.Get(pThis))
+	{
+		pShapeFile = pCustomShapeFile;
+		defaultFrameIndex = 0;
+	}
+	else
+	{
+		VeterancyStruct* pVeterancy = &pThis->Veterancy;
+
+		if (pVeterancy->IsElite())
+			defaultFrameIndex = 15;
+		else if (pVeterancy->IsVeteran())
+			defaultFrameIndex = 14;
+	}
+
+	int frameIndex = pExt->InsigniaFrame.Get(pThis);
+
+	if (frameIndex == -1)
+		frameIndex = defaultFrameIndex;
+
+	if (frameIndex != -1 && pShapeFile)
+	{
+		offset.X += 5;
+		offset.Y += 2;
+		if (pThis->WhatAmI() != AbstractType::Infantry)
+		{
+			offset.X += 5;
+			offset.Y += 4;
+		}
+
+		DSurface::Temp->DrawSHP(
+			FileSystem::PALETTE_PAL, pShapeFile, frameIndex, &offset, pBounds, BlitterFlags(0xE00), 0, -2, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	}
+
+	return;
+}
+
 double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 {
 	double houseMultiplier = 1.0;

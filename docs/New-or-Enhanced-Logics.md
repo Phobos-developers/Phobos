@@ -646,6 +646,32 @@ AutoFire=false             ; boolean
 AutoFire.TargetSelf=false  ; boolean
 ```
 
+### Customizable veterancy insignias
+
+- You can now customize veterancy insignia of TechnoTypes.
+  - `Insignia.Rookie|Veteran|Elite` can be used to set a custom insignia file for each veterancy stage. Like the original / default file, `pips.shp`, they are drawn using `palette.pal` as palette.
+  - `InsigniaFrame.Rookie|Veteran|Elite` can be used to set (zero-based) frame index of the insignia to display for each veterancy stage. Using -1 uses the default setting. Default settings are -1 (none) for rookie, 14 for veteran and 15 for elite.
+  - `Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players. Defaults to `[General]` -> `EnemyInsignia`, which in turn defaults to true.
+
+In `rulesmd.ini`:
+```ini
+[General]
+EnemyInsignia=true        ; boolean
+
+[SOMETECHNO]              ; TechnoType
+Insignia.Rookie=          ; filename - excluding the .shp extension
+Insignia.Veteran=         ; filename - excluding the .shp extension
+Insignia.Elite=           ; filename - excluding the .shp extension
+InsigniaFrame.Rookie=-1   ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Veteran=-1  ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Elite=-1    ; int, frame of insignia shp (zero-based) or -1 for default
+Insignia.ShowEnemy=       ; boolean
+```
+
+```{note}
+Insignia customization should function similarly to the equivalent feature introduced by Ares and takes precedence over it if Phobos is used together with Ares.
+```
+
 ### Customizable OpenTopped properties
 
 - You can now override global `OpenTopped` transport properties per TechnoType.
@@ -680,6 +706,20 @@ In `rulesmd.ini`:
 [SOMETECHNO]                             ; TechnoType
 NoSecondaryWeaponFallback=false          ; boolean
 NoSecondaryWeaponFallback.AllowAA=false  ; boolean
+```
+
+### Disguise logic additions (disguise-based movement speed, ally disguise blinking)
+
+- `ShowAllyDisguiseBlinking`, if set to true, will allow players to see blinking disguises on disguised ally units. Additionally observer players can see blinking disguises of all players.
+- `UseDisguiseMovementSpeed`, if set, makes disguised unit adjust its movement speed to match that of the disguise, if applicable. Note that this applies even when the disguise is revealed, as long as it has not been removed.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ShowAllyDisguiseBlinking=false   ; boolean
+
+[SOMETECHNO]                     ; TechnoType
+UseDisguiseMovementSpeed=false   ; boolean
 ```
 
 ### Firing offsets for specific Burst shots

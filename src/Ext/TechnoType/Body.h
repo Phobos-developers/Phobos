@@ -90,6 +90,7 @@ public:
 		Valueable<bool> NotHuman_RandomDeathSequence;
 
 		Nullable<InfantryTypeClass*> DefaultDisguise;
+		Valueable<bool> UseDisguiseMovementSpeed;
 
 		Nullable<int> OpenTopped_RangeBonus;
 		Nullable<float> OpenTopped_DamageMultiplier;
@@ -132,6 +133,10 @@ public:
 		Valueable<bool> Explodes_KillPassengers;
 		Nullable<int> DeployFireWeapon;
 		Valueable<TargetZoneScanType> TargetZoneScanType;
+
+		Promotable<SHPStruct*> Insignia;
+		Promotable<int> InsigniaFrame;
+		Nullable<bool> Insignia_ShowEnemy;
 
 		struct LaserTrailDataEntry
 		{
@@ -205,7 +210,8 @@ public:
 			, NotHuman_RandomDeathSequence { false }
 
 			, DefaultDisguise {}
-
+			, UseDisguiseMovementSpeed {}
+			
 			, OpenTopped_RangeBonus {}
 			, OpenTopped_DamageMultiplier {}
 			, OpenTopped_WarpDistance {}
@@ -262,6 +268,9 @@ public:
 			, Explodes_KillPassengers { true }
 			, DeployFireWeapon {}
 			, TargetZoneScanType { TargetZoneScanType::Same }
+			, Insignia {}
+			, InsigniaFrame { -1 }
+			, Insignia_ShowEnemy {}
 		{ }
 
 		virtual ~ExtData() = default;
