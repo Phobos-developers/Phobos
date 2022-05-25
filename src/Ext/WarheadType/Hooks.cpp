@@ -106,3 +106,19 @@ DEFINE_HOOK(0x48A5B3, WarheadTypeClass_AnimList_CritAnim, 0x6)
 
 	return 0;
 }
+
+
+DEFINE_HOOK(0x4896EC, Explosion_Damage_DamageSelf, 0x6)
+{
+	enum { SkipCheck = 0x489702 };
+
+	GET_BASE(WarheadTypeClass*, pWarhead, 0xC);
+
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead))
+	{
+		if (pWHExt->AllowDamageOnSelf)
+			return SkipCheck;
+	}
+
+	return 0;
+}

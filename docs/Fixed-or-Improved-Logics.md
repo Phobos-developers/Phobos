@@ -387,6 +387,17 @@ DeployingAnim.UseUnitDrawer=true       ; boolean
 
 ## Warheads
 
+### Allowing damage dealt to firer
+
+- You can now allow warhead to deal damage (and apply damage-adjacent effects such as `KillDriver` and `DisableWeapons/Sonar/Flash.Duration` *(Ares features)*) on the object that is considered as the firer of the Warhead even if it does not have `DamageSelf=true`.
+  - Note that effect of `Psychedelic=true`, despite being tied to damage will still fail to apply on the firer as it does not affect any objects belonging to same house as the firer, including itself.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]            ; WarheadType
+AllowDamageOnSelf=false  ; boolean
+```
+
 ### Customizing decloak on damaging targets
 
 - You can now specify whether or not the warhead decloaks objects that are damaged by the warhead.
@@ -419,18 +430,6 @@ In `rulesmd.ini`:
 [SOMEWEAPON]          ; WeaponType
 DiskLaser.Radius=38.2 ; floating point value
                       ; 38.2 is roughly the default saucer disk radius
-```
-
-### Detaching weapon from owner TechnoType
-
-- You can now control if weapon is detached from the TechnoType that fired it. This results in the weapon / warhead being able to damage the TechnoType itself even if it does not have `DamageSelf=true` set, but also treats it as if owned by no house or object, meaning any ownership-based checks like `AffectsAllies` do not function as expected and no experience is awarded.
-  - The effect of this is inherited through `AirburstWeapon` and `ShrapnelWeapon`.
-  - This does not affect projectile image or functionality or `FirersPalette` on initially fired weapon, but `FirersPalette` will not function for any weapons inheriting the effect.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPONTYPE]         ; WeaponType
-DetachedFromOwner=false  ; boolean
 ```
 
 ### Single-color lasers

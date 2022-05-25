@@ -196,21 +196,6 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_ScreenShake, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetachFromOwner, 0x8)
-{
-	GET(BulletClass*, pThis, ESI);
-
-	if (pThis->Owner && pThis->WeaponType)
-	{
-		auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
-
-		if (pWeaponExt->DetachedFromOwner)
-			pThis->Owner = nullptr;
-	}
-
-	return 0;
-}
-
 DEFINE_HOOK(0x469A75, BulletClass_Logics_DamageHouse, 0x7)
 {
 	GET(BulletClass*, pThis, ESI);

@@ -293,7 +293,6 @@ New:
 - Additional critical hit logic customizations (by Starkku)
 - Laser trails for VoxelAnims (by Otamaa)
 - Local warhead screen shaking (by Starkku)
-- Weapon owner detachment (by Starkku)
 - Feedback weapon (by Starkku)
 - TerrainType & ore minimap color customization (by Starkku)
 - Single-color weapon lasers (by Starkku)
@@ -311,6 +310,7 @@ New:
 - Initial Strength for Cloned Infantry (by FS-21)
 - OpenTopped transport rangefinding & deactivated state customizations (by Starkku)
 - Animation damage / weapon improvements (by Starkku)
+- Warhead self-damaging toggle (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)

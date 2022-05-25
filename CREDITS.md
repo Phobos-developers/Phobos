@@ -134,7 +134,6 @@ This page lists all the individual contributions to the project by their author.
   - Aircraft & jumpjet speed modifiers fix
   - Local warhead screen shaking
   - Vehicle custom palette fix
-  - Weapon owner detachment
   - Feedback weapon
   - TerrainType & ore minimap color customization
   - Laser fixes & improvements
@@ -150,6 +149,7 @@ This page lists all the individual contributions to the project by their author.
   - Interceptor improvements
   - OpenTopped transport rangefinding & deactivated state customizations
   - Animation damage / weapon improvements
+  - Warhead self-damaging toggle
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
