@@ -26,6 +26,17 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 	return static_cast<int>(std::round(pBuilding->GetPowerOutput() * fFactor)) + nAmount;
 }
 
+void BuildingTypeExt::PlayBunkerSound(BuildingClass const* pThis, bool bUp)
+{
+	auto nSound = bUp ? RulesClass::Instance->BunkerWallsUpSound : RulesClass::Instance->BunkerWallsDownSound;
+
+	if (auto const TypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type))
+		nSound = bUp ? TypeExt->BunkerWallsUpSound.Get(nSound) : TypeExt->BunkerWallsDownSound.Get(nSound);
+
+	if (nSound != -1)
+		VocClass::PlayAt(nSound, pThis->Location);
+}
+
 int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse) // not including producing upgrades
 {
 	int result = 0;
