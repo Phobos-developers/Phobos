@@ -287,6 +287,7 @@ New:
 - Default campaign game speed override and custom campaign game speed FPS (by Morton)
 - `AnimList` on zero damage Warheads toggle via `AnimList.ShowOnZeroDamage` (by Starkku)
 - Including INI files and inheriting INI sections (by Morton)
+- Additions to automatic passenger deletion (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -318,6 +319,8 @@ Phobos fixes:
 - Reimplemented the bugfix for jumpjet units' facing when firing, discard the inappropriate `JumpjetTurnToTarget` tag (by Trsdy)
 - Fixed `RadSiteWarhead.Detonate` not detonating precisely on the affected object (thus requiring `CellSpread`) (by Starkku)
 - Allow PowerPlant Enhancer to be affected by EMP (by Trsdy)
+- `Gunner=true` transports now correctly change turret if a passenger is removed by `PassengerDeletion`.
+- `PassengerDeletion.Soylent` now correctly calculates refund value if removed passenger has no explicitly set `Soylent` value.
 </details>
 
 

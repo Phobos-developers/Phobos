@@ -184,13 +184,27 @@ void TechnoExt::ExtData::EatPassengers()
 
 			if (this->PassengerDeletionCountDown < 0)
 			{
-				// Setting & start countdown. Bigger units needs more time
-				int passengerSize = pTypeExt->PassengerDeletion_Rate;
-				if (pTypeExt->PassengerDeletion_Rate_SizeMultiply && pPassenger->GetTechnoType()->Size > 1.0)
-					passengerSize *= (int)(pPassenger->GetTechnoType()->Size + 0.5);
+				int timerLength = 0;
 
-				this->PassengerDeletionCountDown = passengerSize;
-				this->PassengerDeletionTimer.Start(passengerSize);
+				if (pTypeExt->PassengerDeletion_UseCostAsRate)
+				{
+					// Use passenger cost as countdown.
+					timerLength = (int)(pPassenger->GetTechnoType()->Cost * pTypeExt->PassengerDeletion_CostMultiplier);
+
+					if (pTypeExt->PassengerDeletion_Rate > 0)
+						timerLength = std::min(timerLength, pTypeExt->PassengerDeletion_Rate.Get());
+				}
+				else
+				{
+					// Use explicit rate optionally multiplied by unit size as countdown.
+					timerLength = pTypeExt->PassengerDeletion_Rate;
+
+					if (pTypeExt->PassengerDeletion_Rate_SizeMultiply && pPassenger->GetTechnoType()->Size > 1.0)
+						timerLength *= (int)(pPassenger->GetTechnoType()->Size + 0.5);
+				}
+
+				this->PassengerDeletionCountDown = timerLength;
+				this->PassengerDeletionTimer.Start(timerLength);
 			}
 			else
 			{
@@ -231,18 +245,35 @@ void TechnoExt::ExtData::EatPassengers()
 							// Check if there is money refund
 							if (pTypeExt->PassengerDeletion_Soylent)
 							{
-								int nMoneyToGive = 0;
-
-								// Refund money to the Attacker
-								if (pPassengerType && pPassengerType->Soylent > 0)
-									nMoneyToGive = pPassengerType->Soylent;
+								int nMoneyToGive = pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true);
+								nMoneyToGive = (int)(nMoneyToGive * pTypeExt->PassengerDeletion_SoylentMultiplier);
 
 								// Is allowed the refund of friendly units?
 								if (!pTypeExt->PassengerDeletion_SoylentFriendlies && pPassenger->Owner->IsAlliedWith(pThis))
 									nMoneyToGive = 0;
 
 								if (nMoneyToGive > 0)
+								{
 									pThis->Owner->GiveMoney(nMoneyToGive);
+
+									if (pTypeExt->PassengerDeletion_DisplaySoylent)
+									{
+										FlyingStrings::AddMoneyString(nMoneyToGive, pThis->Owner,
+											pTypeExt->PassengerDeletion_DisplaySoylentToHouses, pThis->Location, pTypeExt->PassengerDeletion_DisplaySoylentOffset);
+									}
+								}
+							}
+						}
+
+						// Handle gunner change.
+						if (pThis->GetTechnoType()->Gunner)
+						{
+							if (auto const pFoot = abstract_cast<FootClass*>(pThis))
+							{
+								pFoot->RemoveGunner(pPassenger);
+
+								if (pThis->Passengers.NumPassengers > 0)
+									pFoot->ReceiveGunner(pThis->Passengers.FirstPassenger);
 							}
 						}
 

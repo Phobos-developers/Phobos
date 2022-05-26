@@ -41,11 +41,18 @@ public:
 		Valueable<int> CameoPriority;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
-		Valueable<bool> PassengerDeletion_Soylent;
-		Valueable<bool> PassengerDeletion_SoylentFriendlies;
+		
 		Valueable<int> PassengerDeletion_Rate;
-		NullableIdx<VocClass> PassengerDeletion_ReportSound;
 		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
+		Valueable<bool> PassengerDeletion_UseCostAsRate;
+		Valueable<double> PassengerDeletion_CostMultiplier;
+		Valueable<bool> PassengerDeletion_Soylent;
+		Valueable<double> PassengerDeletion_SoylentMultiplier;
+		Valueable<bool> PassengerDeletion_SoylentFriendlies;
+		Valueable<bool> PassengerDeletion_DisplaySoylent;
+		Valueable<AffectedHouse> PassengerDeletion_DisplaySoylentToHouses;
+		Valueable<Point2D> PassengerDeletion_DisplaySoylentOffset;
+		NullableIdx<VocClass> PassengerDeletion_ReportSound;
 		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
 
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
@@ -203,11 +210,17 @@ public:
 			, DestroyAnim_Random { true }
 			, NotHuman_RandomDeathSequence { false }
 
-			, PassengerDeletion_Soylent { false }
-			, PassengerDeletion_SoylentFriendlies { false }
 			, PassengerDeletion_Rate { 0 }
-			, PassengerDeletion_ReportSound {}
 			, PassengerDeletion_Rate_SizeMultiply { true }
+			, PassengerDeletion_UseCostAsRate { false }
+			, PassengerDeletion_CostMultiplier { 1.0 }
+			, PassengerDeletion_Soylent { false }
+			, PassengerDeletion_SoylentMultiplier { 1.0 }
+			, PassengerDeletion_SoylentFriendlies { false }
+			, PassengerDeletion_DisplaySoylent { false }
+			, PassengerDeletion_DisplaySoylentToHouses { AffectedHouse::All }
+			, PassengerDeletion_DisplaySoylentOffset {{ 0, 0 }}
+			, PassengerDeletion_ReportSound {}
 			, PassengerDeletion_Anim {}
 
 			, DefaultDisguise {}

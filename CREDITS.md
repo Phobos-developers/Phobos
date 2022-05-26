@@ -178,6 +178,7 @@ This page lists all the individual contributions to the project by their author.
   - Removal of hardcoded AA & Gattling weapon selection restrictions
   - Projectile obstacle logic additions
   - `AnimList` on zero damage Warheads toggle
+  - Additions to automatic passenger deletion
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

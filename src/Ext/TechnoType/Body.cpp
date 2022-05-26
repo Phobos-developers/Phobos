@@ -185,11 +185,17 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
 	this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
 
-	this->PassengerDeletion_Soylent.Read(exINI, pSection, "PassengerDeletion.Soylent");
-	this->PassengerDeletion_SoylentFriendlies.Read(exINI, pSection, "PassengerDeletion.SoylentFriendlies");
-	this->PassengerDeletion_ReportSound.Read(exINI, pSection, "PassengerDeletion.ReportSound");
-	this->PassengerDeletion_Rate_SizeMultiply.Read(exINI, pSection, "PassengerDeletion.Rate.SizeMultiply");
 	this->PassengerDeletion_Rate.Read(exINI, pSection, "PassengerDeletion.Rate");
+	this->PassengerDeletion_Rate_SizeMultiply.Read(exINI, pSection, "PassengerDeletion.Rate.SizeMultiply");
+	this->PassengerDeletion_UseCostAsRate.Read(exINI, pSection, "PassengerDeletion.UseCostAsRate");
+	this->PassengerDeletion_CostMultiplier.Read(exINI, pSection, "PassengerDeletion.CostMultiplier");
+	this->PassengerDeletion_Soylent.Read(exINI, pSection, "PassengerDeletion.Soylent");
+	this->PassengerDeletion_SoylentMultiplier.Read(exINI, pSection, "PassengerDeletion.SoylentMultiplier");
+	this->PassengerDeletion_SoylentFriendlies.Read(exINI, pSection, "PassengerDeletion.SoylentFriendlies");
+	this->PassengerDeletion_DisplaySoylent.Read(exINI, pSection, "PassengerDeletion.DisplaySoylent");
+	this->PassengerDeletion_DisplaySoylentToHouses.Read(exINI, pSection, "PassengerDeletion.DisplaySoylentToHouses");
+	this->PassengerDeletion_DisplaySoylentOffset.Read(exINI, pSection, "PassengerDeletion.DisplaySoylentOffset");
+	this->PassengerDeletion_ReportSound.Read(exINI, pSection, "PassengerDeletion.ReportSound");
 	this->PassengerDeletion_Anim.Read(exINI, pSection, "PassengerDeletion.Anim");
 
 	this->DefaultDisguise.Read(exINI, pSection, "DefaultDisguise");
@@ -348,12 +354,18 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefaultDisguise)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
-
-		.Process(this->PassengerDeletion_Soylent)
-		.Process(this->PassengerDeletion_SoylentFriendlies)
+		
 		.Process(this->PassengerDeletion_Rate)
-		.Process(this->PassengerDeletion_ReportSound)
 		.Process(this->PassengerDeletion_Rate_SizeMultiply)
+		.Process(this->PassengerDeletion_UseCostAsRate)
+		.Process(this->PassengerDeletion_CostMultiplier)
+		.Process(this->PassengerDeletion_Soylent)
+		.Process(this->PassengerDeletion_SoylentMultiplier)
+		.Process(this->PassengerDeletion_SoylentFriendlies)
+		.Process(this->PassengerDeletion_DisplaySoylent)
+		.Process(this->PassengerDeletion_DisplaySoylentToHouses)
+		.Process(this->PassengerDeletion_DisplaySoylentOffset)
+		.Process(this->PassengerDeletion_ReportSound)
 		.Process(this->PassengerDeletion_Anim)
 
 		.Process(this->OpenTopped_RangeBonus)

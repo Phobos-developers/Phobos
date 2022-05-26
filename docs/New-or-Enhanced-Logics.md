@@ -585,18 +585,32 @@ Detonate.AtFirer=false  ; boolean
 
 ### Automatic passenger deletion
 
-- Transports with these tags will erase the passengers overtime. Bigger units takes more time. Optionally this logic can work like a grinder.
- - Good combination with Ares Abductor logic.
+- Transports can erase passengers over time.
+  - `PassengerDeletion.Rate` determines the interval in game frames that it takes to erase a single passenger.
+    - If `PassengerDeletion.Rate.SizeMultiply` is set to true, this time interval is multiplied by the passenger's `Size`.
+  - `PassengerDeletion.UseCostAsRate`, if set to true, changes the time interval for erasing a passenger to be based on the passenger's `Cost`. This does not factor in modifiers like `FactoryPlant`.
+    - `PassengerDeletion.CostMultiplier` can be used to modify the cost-based time interval. If `PassengerDeletion.Rate` is also set to a value higher than 0, it serves as a maximum cap for the time interval.
+  - If `PassengerDeletion.Soylent` is set to true, an amount of credits is refunded to the owner of the transport. The exact amount refunded is determined by the passengers `Soylent`, or if not set, its `Cost` (this is affected by modifiers such as `FactoryPlant`).
+    - `PassengerDeletion.SoylentMultiplier` is a direct multiplier applied to the refunded amount of credits.
+    - `PassengerDeletion.SoylentFriendlies` can be set to true to allow refunding passengers that belong to the transport's owner or one of their allies.
+    - `PassengerDeletion.DisplaySoylent` can be set to true to display the amount of credits refunded on the transport. `PassengerDeletion.DisplaySoylentToHouses` determines which houses can see this and `PassengerDeletion.DisplaySoylentOffset` can be used to adjust the display offset.
+  - `PassengerDeletion.ReportSound` and `PassengerDeletion.Anim` can be used to specify a sound and animation to play when a passenger is erased, respectively.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                               ; TechnoType
-PassengerDeletion.Rate=0                   ; integer, game frames
-PassengerDeletion.Rate.SizeMultiply=true   ; boolean, whether to multiply frames amount by size
-PassengerDeletion.Soylent=no               ; boolean
-PassengerDeletion.SoylentFriendlies=false  ; boolean
-PassengerDeletion.ReportSound=             ; Sound
-PassengerDeletion.Anim=                    ; Animation
+[SOMETECHNO]                                  ; TechnoType
+PassengerDeletion.Rate=0                      ; integer, game frames
+PassengerDeletion.Rate.SizeMultiply=true      ; boolean
+PassengerDeletion.UseCostAsRate=false         ; boolean
+PassengerDeletion.CostMultiplier=1.0          ; floating point value, percents or absolute
+PassengerDeletion.Soylent=false               ; boolean
+PassengerDeletion.SoylentMultiplier=1.0       ; float, percents or absolute
+PassengerDeletion.SoylentFriendlies=false     ; boolean
+PassengerDeletion.DisplaySoylent=false        ; boolean
+PassengerDeletion.DisplaySoylentToHouses=All  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+PassengerDeletion.DisplaySoylentOffset=0,0    ; X,Y, pixels relative to default
+PassengerDeletion.ReportSound=                ; Sound
+PassengerDeletion.Anim=                       ; Animation
 ```
 
 ### Automatic passenger owner change to match transport owner
