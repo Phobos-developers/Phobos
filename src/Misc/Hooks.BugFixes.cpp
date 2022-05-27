@@ -370,7 +370,7 @@ DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x415F5C, AircraftClass_FireAt_SpeedModifiers, 0xA)
+DEFINE_HOOK(0x415F5C, AircraftClass_Fire_At_SpeedModifiers, 0xA)
 {
 	GET(AircraftClass*, pThis, EDI);
 

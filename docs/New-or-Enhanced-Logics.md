@@ -323,7 +323,8 @@ Ammo.Shared.Group=-1                    ; integer
 ![image](_static/images/projectile-interception-01.gif)  
 *Interception logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberium-crisis) mod*
 
-- Projectiles can now be made targetable by certain TechnoTypes. Interceptor TechnoType's projectile must be `Inviso=yes` and `AA=yes` in order for it to work properly and the projectile must be used in a primary Weapon.
+- Projectiles can now be made interceptable by certain TechnoTypes. The TechnoType scans for interceptable projectiles within a range if it has no other target and will use one of its weapons (**NOTE:** *This weapon needs `AA=true` on its projectile to function correctly*) to shoot at them. Projectiles can define `Armor` and `Strength`. Weapons that cannot target the projectile's armor type will not attempt to intercept it. On interception, if the projectile has `Armor` set, an amount equaling to the intercepting weapon's `Damage` adjusted by Warhead `Verses` and the TechnoType's firepower multipliers is deducted from the projectile's current strength. Regardless of if the current projectile strength was reduced or not, if it sits at 0 or below after interception, the projectile is detonated.
+  - `Interceptor.Weapon` determines the weapon (0 = `Primary`, 1 = `Secondary`) to be used for intercepting projectiles.
   - `Interceptor.GuardRange` is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
   - `Interceptor.EliteGuardRange` value is used if the unit veterancy is Elite.
   - `Interceptor.MinimumGuardRange` is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
@@ -333,6 +334,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                            ; TechnoType
 Interceptor=no                          ; boolean
+Interceptor.Weapon=0                    ; integer, weapon slot index (0 or 1)
 Interceptor.GuardRange=0.0              ; double
 Interceptor.EliteGuardRange=0.0         ; double
 Interceptor.MinimumGuardRange=0.0       ; double
@@ -340,6 +342,8 @@ Interceptor.EliteMinimumGuardRange=0.0  ; double
 
 [SOMEPROJECTILE] ; Projectile
 Interceptable=no ; boolean
+Strength=0       ; integer
+Armor=           ; ArmorType
 ```
 
 ### Projectile trajectories
@@ -653,6 +657,7 @@ RemoveMindControl=no                 ; boolean
   - `Crit.AffectsBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
   - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list.
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
+  - `Crit.SuppressOnIntercept`, if set, prevents critical hits from occuring at all if the projectile the warhead was detonated from a [projectile that was intercepted](#projectile-interception-logic).
   - `ImmuneToCrit` can be set on TechnoTypes to make them immune to critical hits.
   
 In `rulesmd.ini`:
@@ -667,6 +672,7 @@ Crit.AffectBelowPercent=1.0       ; float, percents or absolute (0.0-1.0)
 Crit.AnimList=                    ; list of animations
 Crit.AnimList.PickRandom=         ; boolean
 Crit.AnimOnAffectedTargets=false  ; boolean
+Crit.SuppressOnIntercept=false    ; boolean
 
 [SOMETECHNO]                      ; TechnoType
 ImmuneToCrit=no                   ; boolean

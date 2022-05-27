@@ -13,7 +13,10 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 	GET(BulletClass*, pThis, ECX);
 
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
 		pExt->FirerHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
+		pExt->CurrentStrength = pThis->Type->Strength;
+	}
 
 	if (!pThis->Type->Inviso)
 		BulletExt::InitializeLaserTrails(pThis);
@@ -29,7 +32,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	if (!pBulletExt)
 		return 0;
 
-	if (pBulletExt->ShouldIntercept)
+	if (pBulletExt->Intercepted)
 	{
 		pThis->Detonate(pThis->GetCoords());
 		pThis->Limbo();
@@ -50,9 +53,6 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 		}
 	}
-
-	if (pBulletExt->Intercepted)
-		pBulletExt->ShouldIntercept = true;
 
 	// LaserTrails update routine is in BulletClass::AI hook because BulletClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
@@ -80,6 +80,25 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			trail->Update(drawnCoords);
 		}
 
+	}
+
+	return 0;
+}
+
+// Inviso bullets behave differently in BulletClass::AI when their target is bullet and 
+// seemingly (at least partially) adopt characteristics of a vertical projectile.
+// This is a potentially slightly hacky solution to that, as proper solution
+// would likely require making sense of BulletClass::AI and ain't nobody got time for that.
+DEFINE_HOOK(0x4668BD, BulletClass_AI_Interceptor_InvisoSkip, 0x6)
+{
+	enum { DetonateBullet = 0x467F9B };
+
+	GET(BulletClass*, pThis, EBP);
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (pThis->Type->Inviso && pExt->IsInterceptor)
+			return DetonateBullet;
 	}
 
 	return 0;
@@ -136,26 +155,6 @@ DEFINE_HOOK(0x6FECB2, TechnoClass_FireAt_ApplyGravity, 0x6)
 	__asm { fld nGravity };
 
 	return 0x6FECD1;
-}
-
-DEFINE_HOOK(0x772A0A, WeaponTypeClass_SetSpeed_ApplyGravity, 0x6)
-{
-	GET(BulletTypeClass* const, pType, EAX);
-
-	auto const nGravity = BulletTypeExt::GetAdjustedGravity(pType);
-	__asm { fld nGravity };
-
-	return 0x772A29;
-}
-
-DEFINE_HOOK(0x773087, WeaponTypeClass_GetSpeed_ApplyGravity, 0x6)
-{
-	GET(BulletTypeClass* const, pType, EAX);
-
-	auto const nGravity = BulletTypeExt::GetAdjustedGravity(pType);
-	__asm { fld nGravity };
-
-	return 0x7730A3;
 }
 
 DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)

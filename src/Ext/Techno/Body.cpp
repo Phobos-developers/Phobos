@@ -12,6 +12,7 @@
 #include <BitFont.h>
 #include <JumpjetLocomotionClass.h>
 
+#include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Misc/FlyingStrings.h>
@@ -86,9 +87,19 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 	{
 		for (auto const& pBullet : *BulletClass::Array)
 		{
-			if (auto pBulletTypeData = BulletTypeExt::ExtMap.Find(pBullet->Type))
+			auto pExt = BulletExt::ExtMap.Find(pBullet);
+			auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+
+			if (!pTypeExt->Interceptable)
+				continue;
+
+			if (pTypeExt->Armor >= 0)
 			{
-				if (!pBulletTypeData->Interceptable)
+				int weaponIndex = pThis->SelectWeapon(pBullet);
+				auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+				double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor);
+
+				if (versus == 0.0)
 					continue;
 			}
 
@@ -100,21 +111,16 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 				pTypeData->Interceptor_MinimumGuardRange;
 
 			auto distance = pBullet->Location.DistanceFrom(pThis->Location);
+
 			if (distance > guardRange.Get() || distance < minguardRange.Get())
 				continue;
 
-			/*
-			if (pBullet->Location.DistanceFrom(pBullet->TargetCoords) >
-				double(ScenarioClass::Instance->Random.RandomRanged(128, (int)guardRange / 10)) * 10)
-			{
-				continue;
-			}
-			*/
+			bool isAllied = pBullet->Owner ? pThis->Owner->IsAlliedWith(pBullet->Owner) :
+				pThis->Owner->IsAlliedWith(pExt->FirerHouse);
 
-			if (!pThis->Owner->IsAlliedWith(pBullet->Owner))
+			if (!isAllied)
 			{
 				pThis->SetTarget(pBullet);
-				pData->InterceptedBullet = pBullet;
 				break;
 			}
 		}
@@ -657,7 +663,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 		bool hasUnitSelfHeal = pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Units;
 		bool isOrganic = false;
 
-		if (pThis->WhatAmI() == AbstractType::Infantry || 
+		if (pThis->WhatAmI() == AbstractType::Infantry ||
 			pThis->GetTechnoType()->Organic && pThis->WhatAmI() == AbstractType::Unit)
 		{
 			isOrganic = true;
@@ -820,7 +826,6 @@ template <typename T>
 void TechnoExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->InterceptedBullet)
 		.Process(this->Shield)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)

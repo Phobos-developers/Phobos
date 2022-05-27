@@ -17,6 +17,8 @@ public:
 	class ExtData final : public Extension<BulletTypeClass>
 	{
 	public:
+		Valueable<int> Strength;
+		ArmorType Armor;
 		Valueable<bool> Interceptable;
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
 		Nullable<double> Gravity;
@@ -27,6 +29,8 @@ public:
 		Valueable<bool> Shrapnel_AffectsBuildings;
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
+			, Strength { 0 }
+			, Armor { -1 }
 			, Interceptable { false }
 			, LaserTrail_Types {}
 			, Gravity {}

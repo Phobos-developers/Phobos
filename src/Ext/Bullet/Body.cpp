@@ -61,7 +61,7 @@ void BulletExt::InitializeLaserTrails(BulletClass* pThis)
 	{
 		auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
 
-		for (auto const& idxTrail: pTypeExt->LaserTrail_Types)
+		for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
 		{
 			if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
 			{
@@ -69,6 +69,32 @@ void BulletExt::InitializeLaserTrails(BulletClass* pThis)
 					std::make_unique<LaserTrailClass>(pLaserType, pOwner));
 			}
 		}
+	}
+}
+
+void BulletExt::InterceptBullet(BulletClass* pThis, TechnoClass* pSource, WeaponTypeClass* pWeapon)
+{
+	if (!pThis || !pSource || !pWeapon)
+		return;
+
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->Armor >= 0)
+	{
+		double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor);
+
+		if (versus != 0.0)
+		{
+			pExt->CurrentStrength -= static_cast<int>(pWeapon->Damage * versus * pSource->FirepowerMultiplier);
+
+			if (pExt->CurrentStrength <= 0)
+				pExt->Intercepted = true;
+		}
+	}
+	else
+	{
+		pExt->Intercepted = true;
 	}
 }
 
@@ -80,8 +106,9 @@ void BulletExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->FirerHouse)
+		.Process(this->CurrentStrength)
+		.Process(this->IsInterceptor)
 		.Process(this->Intercepted)
-		.Process(this->ShouldIntercept)
 		.Process(this->LaserTrails)
 		;
 

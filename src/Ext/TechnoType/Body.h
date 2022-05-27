@@ -30,6 +30,7 @@ public:
 		Valueable<Leptons> Interceptor_MinimumGuardRange;
 		Valueable<Leptons> Interceptor_EliteGuardRange;
 		Valueable<Leptons> Interceptor_EliteMinimumGuardRange;
+		Valueable<int> Interceptor_Weapon;
 		Valueable<CoordStruct> TurretOffset;
 		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Spawn_LimitedRange;
@@ -147,6 +148,7 @@ public:
 			, Interceptor_MinimumGuardRange {}
 			, Interceptor_EliteGuardRange {}
 			, Interceptor_EliteMinimumGuardRange {}
+			, Interceptor_Weapon { 0 }
 			, TurretOffset { { 0, 0, 0 } }
 			, Powered_KillSpawns { false }
 			, Spawn_LimitedRange { false }

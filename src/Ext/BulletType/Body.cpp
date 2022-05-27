@@ -33,6 +33,8 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	INI_EX exINI(pINI);
 
+	this->Strength.Read(exINI, pSection, "Strength");
+	this->Armor.Read(exINI, pSection, "Armor");
 	this->Interceptable.Read(exINI, pSection, "Interceptable");
 	this->Gravity.Read(exINI, pSection, "Gravity");
 
@@ -53,6 +55,8 @@ template <typename T>
 void BulletTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->Strength)
+		.Process(this->Armor)
 		.Process(this->Interceptable)
 		.Process(this->LaserTrail_Types)
 		.Process(this->Gravity)
