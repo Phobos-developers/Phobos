@@ -59,7 +59,7 @@ public:
 			if (auto const pShield = this->Shield.get())
 				pShield->InvalidatePointer(ptr);
 
-				this->InterceptedBullet = nullptr;
+			AnnounceInvalidPointer(InterceptedBullet, ptr);
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
