@@ -304,6 +304,7 @@ New:
 - Building placement preview (by Otamaa)
 - Passable & buildable-upon TerrainTypes (by Starkku)
 - Toggle for passengers to automatically change owner if transport owner changes (by Starkku)
+- Superweapon launch on warhead detonation (by Trsdy)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)

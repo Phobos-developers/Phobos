@@ -7,10 +7,12 @@
 #include <AnimTypeClass.h>
 #include <AnimClass.h>
 #include <BitFont.h>
+#include <SuperClass.h>
 
 #include <Utilities/Helpers.Alex.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
+#include <Ext/SWType/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
@@ -57,6 +59,24 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				pixelOffset.X -= (width / 2);
 
 				FlyingStrings::Add(moneyStr, displayCoord, color, pixelOffset);
+			}
+		}
+
+		for (const auto pSWType : this->LaunchSW)
+		{
+			if (const auto pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType)))
+			{
+				const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
+				const auto cell = CellClass::Coord2Cell(coords);
+				if ((pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)) || !this->LaunchSW_RealLaunch)
+				{
+					if (this->LaunchSW_IgnoreInhibitors || !SWTypeExt::HasInhibitor(pSWExt, pHouse, cell))
+					{
+						pSuper->SetReadiness(true);
+						pSuper->Launch(cell, true);
+						pSuper->Reset();
+					}
+				}
 			}
 		}
 	}

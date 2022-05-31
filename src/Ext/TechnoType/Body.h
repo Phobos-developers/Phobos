@@ -23,7 +23,7 @@ public:
 		Valueable<bool> LowSelectionPriority;
 		PhobosFixedString<0x20> GroupAs;
 		Valueable<int> RadarJamRadius;
-		Valueable<int> InhibitorRange;
+		Nullable<int> InhibitorRange;
 		Valueable<Leptons> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
 		Valueable<Leptons> Interceptor_GuardRange;
@@ -131,7 +131,7 @@ public:
 			, LowSelectionPriority { false }
 			, GroupAs { NONE_STR }
 			, RadarJamRadius { 0 }
-			, InhibitorRange { 0 }
+			, InhibitorRange { }
 			, MindControlRangeLimit {}
 			, Interceptor { false }
 			, Interceptor_GuardRange {}

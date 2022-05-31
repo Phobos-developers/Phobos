@@ -1537,7 +1537,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		if (!pTechno->Owner->IsNeutral()
 			&& ((pTypeTechnoExt
 				&& (pTypeTechnoExt->RadarJamRadius > 0
-					|| pTypeTechnoExt->InhibitorRange > 0))
+					|| pTypeTechnoExt->InhibitorRange.isset()))
 				|| (pTypeBuilding && (pTypeBuilding->GapGenerator
 					|| pTypeBuilding->CloakGenerator))))
 		{
@@ -1748,7 +1748,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 
 		if (!pTechno->Owner->IsNeutral()
 			&& (pTypeTechnoExt 
-				&& pTypeTechnoExt->InhibitorRange > 0))
+				&& pTypeTechnoExt->InhibitorRange.isset()))
 		{
 			return true;
 		}
