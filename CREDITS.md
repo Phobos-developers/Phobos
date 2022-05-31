@@ -150,6 +150,7 @@ This page lists all the individual contributions to the project by their author.
   - OpenTopped transport rangefinding & deactivated state customizations
   - Animation damage / weapon improvements
   - Warhead self-damaging toggle
+  - Trailer animation owner inheritance
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption

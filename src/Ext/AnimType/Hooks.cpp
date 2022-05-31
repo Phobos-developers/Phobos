@@ -157,3 +157,20 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 
 	return Continue;
 }
+
+DEFINE_HOOK(0x424322, AnimClass_AI_TrailerInheritOwner, 0x6)
+{
+	GET(AnimClass*, pThis, ESI);
+	GET(AnimClass*, pTrailerAnim, EAX);
+
+	if (auto const pExt = AnimExt::ExtMap.Find(pThis))
+	{
+		if (auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim))
+		{
+			pTrailerAnim->Owner = pThis->Owner;
+			pTrailerAnimExt->Invoker = pExt->Invoker;
+		}
+	}
+
+	return 0;
+}

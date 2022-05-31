@@ -66,6 +66,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allow use of `Foundation=0x0` on TerrainTypes without crashing for similar results as for buildings.
 - Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to some Ares-introduced Warhead effects like EMP.
 - `OpenTopped` transports now take `OpenTransportWeapon` setting of passengers into consideration when determining weapon range used for threat scanning and approaching targets.
+- Trailer animations now inherit the owner of the object they are attached to.
 
 ## Animations
 
