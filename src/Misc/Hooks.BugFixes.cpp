@@ -181,7 +181,7 @@ DEFINE_HOOK(0x4FB2DE, HouseClass_PlaceObject_HotkeyFix, 0x6)
 
 // Issue #46: Laser is mirrored relative to FireFLH
 // Author: Starkku
-DEFINE_HOOK(0x6FF2BE, TechnoClass_Fire_At_BurstOffsetFix_1, 0x6)
+DEFINE_HOOK(0x6FF2BE, TechnoClass_FireAt_BurstOffsetFix_1, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
@@ -190,7 +190,7 @@ DEFINE_HOOK(0x6FF2BE, TechnoClass_Fire_At_BurstOffsetFix_1, 0x6)
 	return 0x6FF2D1;
 }
 
-DEFINE_HOOK(0x6FF660, TechnoClass_Fire_At_BurstOffsetFix_2, 0x6)
+DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_BurstOffsetFix_2, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET_BASE(int, weaponIndex, 0xC);
@@ -370,7 +370,7 @@ DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x415F5C, AircraftClass_Fire_At_SpeedModifiers, 0xA)
+DEFINE_HOOK(0x415F5C, AircraftClass_FireAt_SpeedModifiers, 0xA)
 {
 	GET(AircraftClass*, pThis, EDI);
 

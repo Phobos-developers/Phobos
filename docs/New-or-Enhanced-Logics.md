@@ -326,8 +326,8 @@ Ammo.Shared.Group=-1                    ; integer
 - Projectiles can now be made interceptable by certain TechnoTypes by setting `Interceptable=true` on them. The TechnoType scans for interceptable projectiles within a range if it has no other target and will use one of its weapons (**NOTE:** *This weapon needs `AA=true` on its projectile to function correctly*) to shoot at them. Projectiles can define `Armor` and `Strength`. Weapons that cannot target the projectile's armor type will not attempt to intercept it. On interception, if the projectile has `Armor` set, an amount equaling to the intercepting weapon's `Damage` adjusted by Warhead `Verses` and the TechnoType's firepower multipliers is deducted from the projectile's current strength. Regardless of if the current projectile strength was reduced or not, if it sits at 0 or below after interception, the projectile is detonated.
   - `Interceptor.Weapon` determines the weapon (0 = `Primary`, 1 = `Secondary`) to be used for intercepting projectiles.
   - `Interceptor.CanTargetHouses` controls which houses the projectiles (or rather their firers) can belong to be eligible for interception. 
-  - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
-  - `Interceptor.MinimumGuardRange` (and `Interceptor.(Rookie|Veteran|EliteMinimumGuardRange) is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
+  - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
+  - `Interceptor.MinimumGuardRange` (and `Interceptor.(Rookie|Veteran|EliteMinimumGuardRange`) is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
   - `Interceptable.DeleteOnIntercept` determines whether or not the projectile will simply be deleted on detonation upon interception, or if it will properly detonate. Will be overridden by `Interceptor.DeleteOnIntercept` setting on the interceptor.
   - `Interceptable.WeaponOverride` can be set to a WeaponType that will be used to override characteristics such as `Damage` and `Warhead` of the current projectile for detonation after interception. Will be overridden by `Interceptor.WeaponOverride` setting on the interceptor.
     - On interceptors, `Interceptor.WeaponReplaceProjectile` can be set to true to make `Interceptor.WeaponOverride` also replace the intercepted projectile's type (including `Image` and other projectile characteristics) and `Speed` with its own. Does not replace particle systems (`AttachedSystem`, *Ares feature*).
@@ -671,22 +671,22 @@ RemoveMindControl=no                 ; boolean
   - `Crit.AffectsBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
   - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list.
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
-  - `Crit.SuppressOnIntercept`, if set, prevents critical hits from occuring at all if the projectile the warhead was detonated from a [projectile that was intercepted](#projectile-interception-logic).
+  - `Crit.SuppressWhenIntercepted`, if set, prevents critical hits from occuring at all if the warhead was detonated from a [projectile that was intercepted](#projectile-interception-logic).
   - `ImmuneToCrit` can be set on TechnoTypes to make them immune to critical hits.
   
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                     ; Warhead
-Crit.Chance=0.0                   ; float, percents or absolute (0.0-1.0)
-Crit.ApplyChancePerTarget=false   ; boolean
-Crit.ExtraDamage=0                ; integer
-Crit.Warhead=                     ; Warhead
-Crit.Affects=all                  ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-Crit.AffectBelowPercent=1.0       ; float, percents or absolute (0.0-1.0)
-Crit.AnimList=                    ; list of animations
-Crit.AnimList.PickRandom=         ; boolean
-Crit.AnimOnAffectedTargets=false  ; boolean
-Crit.SuppressOnIntercept=false    ; boolean
+[SOMEWARHEAD]                       ; Warhead
+Crit.Chance=0.0                     ; float, percents or absolute (0.0-1.0)
+Crit.ApplyChancePerTarget=false     ; boolean
+Crit.ExtraDamage=0                  ; integer
+Crit.Warhead=                       ; Warhead
+Crit.Affects=all                    ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+Crit.AffectBelowPercent=1.0         ; float, percents or absolute (0.0-1.0)
+Crit.AnimList=                      ; list of animations
+Crit.AnimList.PickRandom=           ; boolean
+Crit.AnimOnAffectedTargets=false    ; boolean
+Crit.SuppressWhenIntercepted=false  ; boolean
 
 [SOMETECHNO]                      ; TechnoType
 ImmuneToCrit=no                   ; boolean

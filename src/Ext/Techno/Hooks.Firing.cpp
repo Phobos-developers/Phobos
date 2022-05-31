@@ -222,7 +222,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 // Weapon Firing
 
-DEFINE_HOOK(0x6FE43B, TechnoClass_Fire_At_OpenToppedDmgMult, 0x8)
+DEFINE_HOOK(0x6FE43B, TechnoClass_FireAt_OpenToppedDmgMult, 0x8)
 {
 	enum { ApplyDamageMult = 0x6FE45A, ContinueCheck = 0x6FE460 };
 
@@ -250,7 +250,7 @@ DEFINE_HOOK(0x6FE43B, TechnoClass_Fire_At_OpenToppedDmgMult, 0x8)
 	return ContinueCheck;
 }
 
-DEFINE_HOOK(0x6FE19A, TechnoClass_Fire_At_AreaFire, 0x6)
+DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 {
 	enum { DoNotFire = 0x6FE4E7, SkipSetTarget = 0x6FE1D5 };
 
@@ -299,7 +299,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_Fire_At_AreaFire, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6FF43F, TechnoClass_Fire_At_FeedbackWeapon, 0x6)
+DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EBX);
@@ -321,7 +321,7 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_Fire_At_FeedbackWeapon, 0x6)
 }
 
 
-DEFINE_HOOK(0x6FF660, TechnoClass_Fire_At_Interceptor, 0x6)
+DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 {
 	GET(TechnoClass* const, pSource, ESI);
 	GET_BASE(AbstractClass* const, pTarget, 0x8);
