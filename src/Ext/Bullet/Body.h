@@ -17,6 +17,7 @@ public:
 	class ExtData final : public Extension<BulletClass>
 	{
 	public:
+		HouseClass* FirerHouse;
 		bool Intercepted;
 		bool ShouldIntercept;
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
@@ -24,6 +25,7 @@ public:
 		PhobosTrajectory* Trajectory;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
+			, FirerHouse { nullptr }
 			, Intercepted { false }
 			, ShouldIntercept { false }
 			, LaserTrails {}

@@ -42,7 +42,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 			if (this->TransactMoney_Display &&
 				(this->TransactMoney_Display_Houses == AffectedHouse::All ||
-					pOwner && EnumFunctions::CanTargetHouse(this->TransactMoney_Display_Houses, pOwner->Owner, HouseClass::Player)))
+					EnumFunctions::CanTargetHouse(this->TransactMoney_Display_Houses, pHouse, HouseClass::Player)))
 			{
 				bool isPositive = this->TransactMoney > 0;
 				auto color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
