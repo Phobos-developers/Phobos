@@ -16,6 +16,7 @@
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Misc/FlyingStrings.h>
+#include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -103,22 +104,17 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 					continue;
 			}
 
-			const auto guardRange = pThis->Veterancy.IsElite() ?
-				pTypeData->Interceptor_EliteGuardRange :
-				pTypeData->Interceptor_GuardRange;
-			const auto minguardRange = pThis->Veterancy.IsElite() ?
-				pTypeData->Interceptor_EliteMinimumGuardRange :
-				pTypeData->Interceptor_MinimumGuardRange;
+			const auto &guardRange = pTypeData->Interceptor_GuardRange.Get(pThis);
+			const auto &minguardRange = pTypeData->Interceptor_MinimumGuardRange.Get(pThis);
 
 			auto distance = pBullet->Location.DistanceFrom(pThis->Location);
 
-			if (distance > guardRange.Get() || distance < minguardRange.Get())
+			if (distance > guardRange || distance < minguardRange)
 				continue;
 
-			bool isAllied = pBullet->Owner ? pThis->Owner->IsAlliedWith(pBullet->Owner) :
-				pThis->Owner->IsAlliedWith(pExt->FirerHouse);
+			auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pExt->FirerHouse;
 
-			if (!isAllied)
+			if (EnumFunctions::CanTargetHouse(pTypeData->Interceptor_CanTargetHouses, pThis->Owner, bulletOwner))
 			{
 				pThis->SetTarget(pBullet);
 				break;

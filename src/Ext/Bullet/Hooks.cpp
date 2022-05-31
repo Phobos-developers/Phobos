@@ -34,7 +34,9 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 
 	if (pBulletExt->Intercepted)
 	{
-		pThis->Detonate(pThis->GetCoords());
+		if (pBulletExt->Intercepted_Detonate)
+			pThis->Detonate(pThis->GetCoords());
+
 		pThis->Limbo();
 		pThis->UnInit();
 

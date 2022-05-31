@@ -26,11 +26,15 @@ public:
 		Nullable<int> InhibitorRange;
 		Valueable<Leptons> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
-		Valueable<Leptons> Interceptor_GuardRange;
-		Valueable<Leptons> Interceptor_MinimumGuardRange;
-		Valueable<Leptons> Interceptor_EliteGuardRange;
-		Valueable<Leptons> Interceptor_EliteMinimumGuardRange;
+		Valueable<AffectedHouse> Interceptor_CanTargetHouses;
+		Promotable<Leptons> Interceptor_GuardRange;
+		Promotable<Leptons> Interceptor_MinimumGuardRange;
 		Valueable<int> Interceptor_Weapon;
+		Nullable<bool> Interceptor_DeleteOnIntercept;
+		Nullable<WeaponTypeClass*> Interceptor_WeaponOverride;
+		Valueable<bool> Interceptor_WeaponReplaceProjectile;
+		Valueable<bool> Interceptor_WeaponCumulativeDamage;
+		Valueable<bool> Interceptor_KeepIntact;
 		Valueable<CoordStruct> TurretOffset;
 		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Spawn_LimitedRange;
@@ -144,11 +148,15 @@ public:
 			, InhibitorRange { }
 			, MindControlRangeLimit {}
 			, Interceptor { false }
+			, Interceptor_CanTargetHouses { AffectedHouse::Enemies }
 			, Interceptor_GuardRange {}
 			, Interceptor_MinimumGuardRange {}
-			, Interceptor_EliteGuardRange {}
-			, Interceptor_EliteMinimumGuardRange {}
 			, Interceptor_Weapon { 0 }
+			, Interceptor_DeleteOnIntercept {}
+			, Interceptor_WeaponOverride {}
+			, Interceptor_WeaponReplaceProjectile { false }
+			, Interceptor_WeaponCumulativeDamage { false }
+			, Interceptor_KeepIntact { false }
 			, TurretOffset { { 0, 0, 0 } }
 			, Powered_KillSpawns { false }
 			, Spawn_LimitedRange { false }

@@ -21,6 +21,7 @@ public:
 		int CurrentStrength;
 		bool IsInterceptor;
 		bool Intercepted;
+		bool Intercepted_Detonate;
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		
 		PhobosTrajectory* Trajectory;
@@ -30,6 +31,7 @@ public:
 			, CurrentStrength { 0 }
 			, IsInterceptor { false }
 			, Intercepted { false }
+			, Intercepted_Detonate { true }
 			, LaserTrails {}
 			, Trajectory { nullptr }
 		{ }
