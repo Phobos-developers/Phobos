@@ -30,7 +30,7 @@ public:
 		Valueable<bool> UseCenterCoordsIfAttached;
 		Nullable<WeaponTypeClass*> Weapon;
 		Valueable<int> Damage_Delay;
-		Valueable<bool> Damage_DealtByOwner;
+		Valueable<bool> Damage_DealtByInvoker;
 		Valueable<bool> Damage_ApplyOnce;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
@@ -49,7 +49,7 @@ public:
 			, UseCenterCoordsIfAttached { false }
 			, Weapon {}
 			, Damage_Delay { 0 }
-			, Damage_DealtByOwner { false }
+			, Damage_DealtByInvoker { false }
 			, Damage_ApplyOnce { false }
 		{ }
 

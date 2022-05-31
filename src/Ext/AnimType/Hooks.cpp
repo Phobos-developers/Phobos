@@ -137,7 +137,7 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 	auto const pExt = AnimExt::ExtMap.Find(pThis);
 	TechnoClass* pInvoker = nullptr;
 
-	if (pTypeExt->Damage_DealtByOwner)
+	if (pTypeExt->Damage_DealtByInvoker)
 		pInvoker = pExt->Invoker ? pExt->Invoker : pThis->OwnerObject ? abstract_cast<TechnoClass*>(pThis->OwnerObject) : nullptr;
 
 	if (pTypeExt->Weapon.isset())
