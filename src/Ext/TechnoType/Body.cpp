@@ -177,6 +177,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->TurretOffset.Read(exArtINI, pArtSection, "TurretOffset");
 
+	this->UniversalConvert_Deploy.Read(exINI, pSection, "UniversalConvert.Deploy");
+
 	char tempBuffer[32];
 	for (size_t i = 0; ; ++i)
 	{
@@ -309,6 +311,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelfHealGainType)
 		.Process(this->Passengers_SyncOwner)
 		.Process(this->Passengers_SyncOwner_RevertOnExit)
+		.Process(this->UniversalConvert_Deploy)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

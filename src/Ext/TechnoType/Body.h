@@ -109,6 +109,8 @@ public:
 		Valueable<bool> Passengers_SyncOwner;
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
+		ValueableVector<TechnoTypeClass*> UniversalConvert_Deploy;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -199,6 +201,7 @@ public:
 			, SelfHealGainType()
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
+			, UniversalConvert_Deploy {}
 		{ }
 
 		virtual ~ExtData() = default;

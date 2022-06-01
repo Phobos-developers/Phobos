@@ -505,3 +505,257 @@ DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
 
 	return SkipGameDrawing;
 }
+
+DEFINE_HOOK(0x522510, InfantryClass_DoingDeploy, 0x6)
+{
+	GET(InfantryClass*, pThis, ECX);
+
+	if (!pThis)
+		return 0;
+	//UniversalConvert_Inprogress
+
+	if (pThis->IsFallingDown && pThis->GetHeight() > 0)
+		return 0;
+
+	if (pThis->IsFallingDown && !pThis->GetHeight() > 0)
+		pThis->IsFallingDown = false;
+
+	auto newLocation = pThis->Location;
+	auto newCell = MapClass::Instance->GetCellAt(newLocation);
+	
+	if (pThis->IsCellOccupied(newCell, -1, -1, nullptr, false) == Move::OK)
+	{
+		if (auto pOldTechno = static_cast<TechnoClass*>(pThis))
+		{
+			if (auto pOldTechnoType = pOldTechno->GetTechnoType())
+			{
+				if (auto pOldTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pOldTechnoType))
+				{
+					TechnoTypeClass* pNewTechnoType = nullptr;
+
+					if (pOldTechnoTypeExt->UniversalConvert_Deploy.size() > 0)
+						pNewTechnoType = pOldTechnoTypeExt->UniversalConvert_Deploy.at(0);
+					else
+						return 0;
+
+					// For a "infantry into vehicle" case we need to check if the cell is free of extra soldiers
+					if (pOldTechnoType->WhatAmI() == AbstractType::InfantryType && pNewTechnoType->WhatAmI() != AbstractType::InfantryType)
+					{
+						int nInfantry = 0;
+						for (auto pObject = pOldTechno->GetCell()->FirstObject; pObject; pObject = pObject->NextObject)
+						{
+							nInfantry++;
+						}
+
+						if (nInfantry > 1)
+							return 0;
+					}
+					
+					auto pOwner = pOldTechno->Owner;
+					auto pNewTechno = static_cast<TechnoClass*>(pNewTechnoType->CreateObject(pOwner));
+
+					// Transfer some stats from the old object to the new:
+					// Health update
+					double nHealthPercent = (double)(1.0 * pOldTechno->Health / pOldTechnoType->Strength);
+					pNewTechno->Health = (int)round(pNewTechno->GetTechnoType()->Strength * nHealthPercent);
+					pNewTechno->EstimatedHealth = pNewTechno->Health;
+
+					// Veterancy update
+					VeterancyStruct nVeterancy = pOldTechno->Veterancy;
+					pNewTechno->Veterancy = nVeterancy;
+
+					// Team update
+					if (pOldTechno->BelongsToATeam())
+					{
+						auto pOldFoot = static_cast<FootClass*>(pOldTechno);
+						auto pNewFoot = static_cast<FootClass*>(pNewTechno);
+
+						if (pNewFoot)
+							pNewFoot->Team = pOldFoot->Team;
+					}
+
+					// Ammo Update
+					auto nAmmo = pNewTechno->Ammo;
+
+					if (nAmmo >= pOldTechno->Ammo)
+						nAmmo = pOldTechno->Ammo;
+
+					pNewTechno->Ammo = nAmmo;
+
+					// If the object was selected it should remain selected
+					bool selected = false;
+					if (pOldTechno->IsSelected)
+						selected = true;
+
+					// Mind Control update
+					if (pOldTechno->IsMindControlled())
+						TechnoExt::TransferMindControlOnDeploy(pOldTechno, pNewTechno);
+
+					// Initial Mission update
+					pNewTechno->QueueMission(Mission::Guard, true);
+
+					// Facing update
+					short newPrimaryFacing = pOldTechno->PrimaryFacing.current().value256();
+					
+					// Some vodoo magic
+					pOldTechno->Limbo();
+					pNewTechno->Unlimbo(newLocation, newPrimaryFacing);
+
+					if (pOldTechno->InLimbo)
+						pOwner->RegisterLoss(pOldTechno, false);
+
+					if (!pNewTechno->InLimbo)
+						pOwner->RegisterGain(pNewTechno, true);
+
+					pNewTechno->Owner->RecheckTechTree = true;
+
+					// Jumpjet tricks
+					if (pNewTechno->GetTechnoType()->JumpJet || pNewTechno->GetTechnoType()->BalloonHover)
+					{
+						CoordStruct loc = CoordStruct::Empty;
+
+						if (pNewTechno->IsInAir())
+							loc = newLocation; //pNewTechno->Location;
+
+						pNewTechno->SetDestination(pOldTechno, true);
+						pNewTechno->Scatter(loc, true, false);
+					}
+					else
+					{
+						pNewTechno->IsFallingDown = false;
+
+						if (pNewTechno->IsInAir())
+							pNewTechno->IsFallingDown = true;
+					}
+
+					if (selected)
+						pNewTechno->Select();
+
+					pOldTechno->UnInit();
+				}
+			}
+		}
+	}
+	
+	return 0;
+}
+
+//DEFINE_HOOK(0x521328, InfantryClass_UpdateDeploy, 0x6)
+DEFINE_HOOK(0x4DA9B7, InfantryClass_AI_JumpjetDeploy, 0xA)
+{
+	//GET(TechnoClass*, pThis, ESI);
+
+	//pThis->SequenceAnim = Sequence::Deploy;
+	//pThis->ShouldDeploy = true;
+	/*
+	if (auto pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		if (auto pInfantry = abstract_cast<InfantryClass*>(pThis))
+		{
+			if (pInfantry->Type->Deployer && pInfantry->Type->DeployToLand)
+			{
+				if (pThis->GetHeight() > 0)
+				{
+					//pInfantry->SequenceAnim = Sequence::Deploy;
+					//pInfantry->ShouldDeploy = true;
+					//pThis->ForceMission(Mission::Guard);
+					//pThis->SetDestination(pThis->GetCell(), true);
+				//	pInfantry->ClickedEvent(NetworkEvents::Deploy);
+					
+				//	CellStruct currentCell = pThis->GetCell()->MapCoords;
+					CoordStruct coord = pThis->Location;
+				//	coord.X = currentCell.X;
+				//	coord.Y = currentCell.Y;
+					coord.Z = 0;
+					pInfantry->Locomotor->Destination(&coord);
+				}
+				else
+				{
+					pExt->DeployToLand_JumpjetLanding = false;
+				}
+				if (pExt->DeployToLand_JumpjetLanding)
+				{
+
+					if (pThis->GetHeight() > 0)
+					{
+						pExt->DeployToLand_JumpjetLanding = false;
+					}
+					else
+					{
+						auto pType = pInfantry->Type;
+						auto loco = pInfantry->Locomotor;
+						const auto pLoco = static_cast<JumpjetLocomotionClass*>(pInfantry->Locomotor.get());
+						JumpjetLocomotionClass *pLocomotor = static_cast<JumpjetLocomotionClass*>(pLoco);
+						pLocomotor->Climb = -1.0;
+						pLocomotor->CurrentSpeed = 5;
+						pLocomotor->CurrentHeight = pLocomotor->CurrentHeight - 1;
+						auto loc = pThis->Location;
+						loc.Z = 0;
+						pLocomotor->Destination(&loc);
+					}
+
+					
+				//JumpjetLocomotionClass::ChangeLocomotorTo(pInfantry, LocomotionClass::CLSIDs::Walk);
+				}
+				//LocomotionClass    ChangeLocomotorTo //if (pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet && pThis->IsInAir()
+					//const auto pLoco = static_cast<JumpjetLocomotionClass*>(pFoot->Locomotor.get());
+				/*if (pExt->DeployToLand_JumpjetLanding)
+				{
+					if (pThis->GetHeight() > 0 && pThis->IsInAir()) //pExt->LastJumpjetMapCoords == pThis->Location && 
+					{
+						Debug::Log("Lazy unit. Trying again to Force landing...\n");
+
+						//pThis->ForceMission(Mission::Guard);
+						//pThis->SetDestination(pThis->GetCell()->GetNeighbourCell(0), true);
+
+						pThis->SetDestination(pThis->GetCell(), true);
+						//pThis->ForceMission(Mission::Move);
+						pThis->SetHeight(pThis->GetHeight() - 128);
+						//pThis->MissionStatus
+						pThis->IsFallingDown = true;
+						pThis->FallRate = -1;
+					}
+					else
+					{
+						//pThis->IsFallingDown = false;
+						//pThis->FallRate = 0;
+						pExt->DeployToLand_JumpjetLanding = false;
+						//pInfantry->ClickedEvent(NetworkEvents::Deploy);pType = GameCreate<BombardTrajectoryType>();
+						//pInfantry->Locomotor->Stop_Moving();
+						//auto pType = GameCreate<TechnoTypeClass*>("E2");// (const char *id, eSpeedType speedtype)
+						auto unit = GameCreate<UnitTypeClass>("E2");
+						if (auto pTechno = static_cast<TechnoClass*>(unit->CreateObject(pThis->Owner)))
+						{
+							pThis->WasFallingDown = true;
+							CoordStruct loc = pThis->Location;
+							//	coord.X = currentCell.X;
+							//	coord.Y = currentCell.Y;
+							//loc.Z = 0;
+							pTechno->Location = loc;
+							pTechno->Health = 100;
+							pTechno->EstimatedHealth = 100;
+							pTechno->SetHeight(0);
+
+							
+							//auto infantry = GameCreate<InfantryTypeClass>("E2");
+							//pInfantry->Type = GameCreate<InfantryTypeClass>("E2");
+							//CoordStruct loc = pThis->Location;
+							//pThis = pTechno;
+							pThis->UnInit();
+							pTechno->Unlimbo(loc, 0);
+							//pThis->UnInit();
+						}
+					}
+
+				}
+
+				if (!pExt->DeployToLand_JumpjetLanding)
+				{
+					return 0x4DAAEE;
+				}
+			}
+		}
+	}*/
+
+	return 0;
+}
