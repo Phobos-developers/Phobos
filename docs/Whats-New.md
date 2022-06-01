@@ -40,6 +40,9 @@ This page lists the history of changes across stable Phobos releases and also al
   58=Upper bound,0
   59=Operate var is global,10
   60=Operate var index,0
+  61=RandomPoolID,0
+  62=RemoveFromPool,10
+  63=Title,10
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -88,6 +91,11 @@ This page lists the history of changes across stable Phobos releases and also al
   504=Binary operation,0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1
   505=Fire Super Weapon at specified location (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
   506=Fire Super Weapon at specified waypoint (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
+  9932=Put Trigger into specificed Pool,-2,14,61,0,0,0,0,0,0,Add trigger to specified random pool enable by action 9933,0,1,9932,1
+  9933=Enable a Trigger of specified Pool,0,0,61,62,0,0,0,0,0,Randomized enable a trigger of specified Random Pool,0,1,9933,1
+  9934=Remove a Trigger from specified Pool,-2,14,61,0,0,0,0,0,0,Remove trigger from specificed random pool,0,1,9934,1
+  9935=Set Text of Score Interface ,-4,13,71,0,0,0,0,0,0,Set text of score interface Title or Message as Text of CSFLabel,0,1,9935,1
+  9936=Set Theme of Score Interface,-4,17,0,0,0,0,0,0,0,Set theme of score interface,0,1,9936,1
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
   [ScriptTypeLists]
