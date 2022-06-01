@@ -18,6 +18,11 @@ enum class PhobosTriggerAction : unsigned int
 	BinaryOperation = 504,
 	RunSuperWeaponAtLocation = 505,
 	RunSuperWeaponAtWaypoint = 506,
+	RandomTriggerPut = 9932,
+	RandomTriggerEnable = 9933,
+	RandomTriggerRemove = 9934,
+	ScoreCampaignText = 9935,
+	ScoreCampaignTheme = 9936
 };
 
 class TActionExt
@@ -59,6 +64,11 @@ public:
 	ACTION_FUNC(BinaryOperation);
 	ACTION_FUNC(RunSuperWeaponAtLocation);
 	ACTION_FUNC(RunSuperWeaponAtWaypoint);
+	ACTION_FUNC(RandomTriggerPut);
+	ACTION_FUNC(RandomTriggerEnable);
+	ACTION_FUNC(RandomTriggerRemove);
+	ACTION_FUNC(ScoreCampaignText);
+	ACTION_FUNC(ScoreCampaignTheme);
 
 	static bool RunSuperWeaponAt(TActionClass* pThis, int X, int Y);
 

@@ -6,8 +6,10 @@
 #include <CRT.h>
 #include <SuperWeaponTypeClass.h>
 #include <SuperClass.h>
+#include <TriggerClass.h>
 #include <Ext/SWType/Body.h>
 #include <Utilities/SavegameDef.h>
+#include <Utilities/PhobosGlobal.h>
 
 #include <Ext/Scenario/Body.h>
 
@@ -423,6 +425,86 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		}
 	}
 
+	return true;
+}
+
+bool TActionExt::RandomTriggerPut(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	TriggerTypeClass* pTargetType = pThis->TriggerType;
+
+	if (pTargetType == nullptr)
+		return true;
+
+	TriggerClass* pTarget = TriggerClass::GetInstance(pTargetType);
+	int PoolID = pThis->Param3;
+
+	if (pTarget != nullptr)
+		PhobosGlobal::Global()->RandomTriggerPool[PoolID].emplace(pTarget);
+
+	return true;
+}
+
+bool TActionExt::RandomTriggerEnable(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	int PoolID = pThis->Param3;
+	bool TakeOff = pThis->Param4;
+
+	if (!PhobosGlobal::Global()->RandomTriggerPool.count(PoolID))
+		return true;
+
+	auto& Pool = PhobosGlobal::Global()->RandomTriggerPool[PoolID];
+
+	if (Pool.empty())
+		return true;
+
+	int Pos = ScenarioClass::Instance->Random.RandomRanged(0, Pool.size() - 1);
+	auto it = Pool.begin();
+
+	while (Pos > 0 && it != Pool.end())
+	{
+		it++;
+		Pos--;
+	}
+	TriggerClass* pTarget = *it;
+
+	pTarget->Enable();
+
+	if (TakeOff)
+	{
+		Pool.erase(pTarget);
+		if (Pool.empty())
+			PhobosGlobal::Global()->RandomTriggerPool.erase(PoolID);
+	}
+	return true;
+}
+
+bool TActionExt::RandomTriggerRemove(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	int PoolID = pThis->Param3;
+	TriggerTypeClass* pTriggerType = pThis->TriggerType;
+	TriggerClass* pTarget = TriggerClass::GetInstance(pTriggerType);
+	auto& Poolmap = PhobosGlobal::Global()->RandomTriggerPool;
+	if (!Poolmap.count(PoolID))
+		return true;
+	auto& Pool = Poolmap[PoolID];
+	if (!Pool.count(pTarget))
+		return true;
+	Pool.erase(pTarget);
+	return true;
+}
+
+bool TActionExt::ScoreCampaignText(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (pThis->Param3 == 0)
+		ScenarioExt::Global()->ParTitle = pThis->Text;
+	else
+		ScenarioExt::Global()->ParMessage = pThis->Text;
+	return true;
+}
+
+bool TActionExt::ScoreCampaignTheme(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	ScenarioExt::Global()->ScoreCampaignTheme = pThis->Text;
 	return true;
 }
 

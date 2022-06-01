@@ -3,6 +3,8 @@
 #include <memory>
 #include <type_traits>
 #include <vector>
+#include <set>
+#include <map>
 
 struct IStream;
 
@@ -132,6 +134,75 @@ public:
 
 	PhobosStreamReader& operator = (const PhobosStreamReader&) = delete;
 
+	template <typename _Ty>
+	PhobosStreamReader& Process(std::set<_Ty>& s, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+		{
+			s.clear();
+			size_t size;
+			this->Process(size, RegisterForChange);
+			for (size_t i = 0; i < size; i++)
+			{
+				_Ty obj;
+				this->Process(obj, RegisterForChange);
+				s.emplace(obj);
+			}
+		}
+		return *this;
+	}
+
+	template <typename _Kty, typename _Ty>
+	PhobosStreamReader& Process(std::map<_Kty, _Ty>& m, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+		{
+			m.clear();
+			size_t size;
+			this->Process(size, RegisterForChange);
+			for (size_t i = 0; i < size; i++)
+			{
+				_Kty key;
+				_Ty value;
+				this->Process(key, RegisterForChange);
+				this->Process(value, RegisterForChange);
+				m.emplace(key, value);
+			}
+		}
+		return *this;
+	}
+
+	template <typename _Kty, typename _Ty>
+	PhobosStreamReader& Process(std::multimap<_Kty, _Ty>& m, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+		{
+			m.clear();
+			size_t size;
+			this->Process(size, RegisterForChange);
+			for (size_t i = 0; i < size; i++)
+			{
+				_Kty key;
+				_Ty value;
+				this->Process(key, RegisterForChange);
+				this->Process(value, RegisterForChange);
+				m.emplace(key, value);
+			}
+		}
+		return *this;
+	}
+
+	template <typename _Ty1, typename _Ty2>
+	PhobosStreamReader& Process(std::pair<_Ty1, _Ty2>& p, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+		{
+			this->Process(p.first, RegisterForChange);
+			this->Process(p.second, RegisterForChange);
+		}
+		return *this;
+	}
+
 	template <typename T>
 	PhobosStreamReader& Process(T& value, bool RegisterForChange = true)
 	{
@@ -212,6 +283,68 @@ public:
 	PhobosStreamWriter(const PhobosStreamWriter&) = delete;
 
 	PhobosStreamWriter& operator = (const PhobosStreamWriter&) = delete;
+
+	template <typename _Ty>
+	PhobosStreamWriter& Process(std::set<_Ty>& s, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+		{
+			size_t size = s.size();
+			this->Process(size, RegisterForChange);
+			for (auto& obj : s)
+			{
+				this->Process(obj, RegisterForChange);
+			}
+		}
+		return *this;
+	}
+
+	template <typename _Kty, typename _Ty>
+	PhobosStreamWriter& Process(std::map<_Kty, _Ty>& m, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+		{
+			size_t size = m.size();
+			this->Process(size, RegisterForChange);
+			for (std::pair<const _Kty, _Ty>& p : m)
+			{
+				_Kty key = p.first;
+				_Ty value = p.second;
+				this->Process(key, RegisterForChange);
+				this->Process(value, RegisterForChange);
+			}
+		}
+		return *this;
+	}
+
+	template <typename _Kty, typename _Ty>
+	PhobosStreamWriter& Process(std::multimap<_Kty, _Ty>& m, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+		{
+			size_t size = m.size();
+			this->Process(size, RegisterForChange);
+			for (std::pair<const _Kty, _Ty>& p : m)
+			{
+				_Kty key = p.first;
+				_Ty value = p.second;
+				this->Process(key, RegisterForChange);
+				this->Process(value, RegisterForChange);
+			}
+		}
+		return *this;
+	}
+
+	template <typename _Ty1, typename _Ty2>
+	PhobosStreamWriter& Process(std::pair<_Ty1, _Ty2>& p, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+		{
+			this->Process(p.first, RegisterForChange);
+			this->Process(p.second, RegisterForChange);
+		}
+		return *this;
+	}
 
 	template <typename T>
 	PhobosStreamWriter& Process(T& value, bool RegisterForChange = true)

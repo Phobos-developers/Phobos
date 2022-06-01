@@ -1,5 +1,7 @@
 #include <Phobos.h>
 
+#include <Utilities/PhobosGlobal.h>
+
 #include <Ext/Aircraft/Body.h>
 #include <Ext/AnimType/Body.h>
 #include <Ext/Anim/Body.h>
@@ -255,6 +257,13 @@ auto MassActions = MassAction <
 	// other classes
 > ();
 
+//if you need entities pointer like TechnoClass* you'd
+//better put it here, else while get nullptr after loaded
+auto ProcessAfter = MassAction <
+	//AttachmentClass
+	PhobosGlobal
+>();
+
 DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 {
 	GET(AbstractClass* const, pInvalid, ECX);
@@ -301,6 +310,26 @@ void Phobos::LoadGameData(IStream* pStm)
 		Debug::Log("Error loading the game\n");
 	else
 		Debug::Log("Finished loading the game\n");
+}
+
+HRESULT Phobos::SaveGameDataAfter(IStream* pStm)
+{
+	Debug::Log("Saveing after Phobos data\n");
+
+	if (!ProcessAfter.Save(pStm))
+		return E_FAIL;
+	Debug::Log("Finish saving after data\n");
+	return S_OK;
+}
+
+void Phobos::LoadGameDataAfter(IStream* pStm)
+{
+	Debug::Log("Loading after Phobos data\n");
+
+	if (!ProcessAfter.Load(pStm))
+		Debug::Log("Error loading after data\n");
+	else
+		Debug::Log("Finished loading after data\n");
 }
 
 #ifdef DEBUG

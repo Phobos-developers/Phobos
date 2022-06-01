@@ -6,6 +6,7 @@
 #include <type_traits>
 
 #include <Objidl.h>
+#include <Utilities/PointerMapper.h>
 
 class PhobosSwizzle
 {
@@ -49,7 +50,10 @@ private:
 	template <typename TSwizzle>
 	void swizzle(TSwizzle& object, std::true_type)
 	{
-		PhobosSwizzle::Instance.RegisterPointerForChange(object);
+		if (PointerMapper::Exist(reinterpret_cast<void*>(object)))
+			object = reinterpret_cast<TSwizzle>(PointerMapper::Mapping(reinterpret_cast<void*>(object)));
+		else
+			PhobosSwizzle::Instance.RegisterPointerForChange(object);
 	}
 
 	template <typename TSwizzle>

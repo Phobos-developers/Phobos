@@ -24,10 +24,16 @@ public:
 	public:
 		std::map<int, CellStruct> Waypoints;
 		std::map<int, ExtendedVariable> Variables[2]; // 0 for local, 1 for global
+		CSFText ParTitle;
+		CSFText ParMessage;
+		Nullable<PhobosFixedString<0x20>> ScoreCampaignTheme;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, Waypoints { }
 			, Variables { }
+			, ParTitle { nullptr }
+			, ParMessage { nullptr }
+			, ScoreCampaignTheme { }
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
