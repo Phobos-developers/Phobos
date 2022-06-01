@@ -113,6 +113,7 @@ public:
 		Nullable<SelfHealGainType> SelfHealGainType;
 		Valueable<bool> Passengers_SyncOwner;
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
+		Valueable<bool> OpenTopped_IgnoreRangefinding;
 
 		struct LaserTrailDataEntry
 		{
@@ -197,6 +198,7 @@ public:
 			, OpenTopped_RangeBonus {}
 			, OpenTopped_DamageMultiplier {}
 			, OpenTopped_WarpDistance {}
+			, OpenTopped_IgnoreRangefinding { false }
 			, AutoFire { false }
 			, AutoFire_TargetSelf { false }
 			, NoSecondaryWeaponFallback { false }

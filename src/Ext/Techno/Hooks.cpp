@@ -371,3 +371,54 @@ DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
 
 	return SkipGameDrawing;
 }
+
+// Reimplements the game function with few changes / optimizations
+DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
+{
+	enum { ReturnResult = 0x70138F };
+
+	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(int, weaponIndex, STACK_OFFS(0x8, -0x4));
+
+	int result = 0;
+	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+	if (pWeapon)
+	{
+		result = pWeapon->Range;
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+		if (pThis->GetTechnoType()->OpenTopped && !pTypeExt->OpenTopped_IgnoreRangefinding)
+		{
+			int smallestRange = INT32_MAX;
+			auto pPassenger = pThis->Passengers.FirstPassenger;
+
+			while (pPassenger && (pPassenger->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
+			{
+				int openTWeaponIndex = pPassenger->GetTechnoType()->OpenTransportWeapon;
+				int tWeaponIndex = 0;
+
+				if (openTWeaponIndex != -1)
+					tWeaponIndex = openTWeaponIndex;
+				else if (pPassenger->GetTechnoType()->TurretCount > 0)
+					tWeaponIndex = pPassenger->CurrentWeaponNumber;
+
+				WeaponTypeClass* pTWeapon = pPassenger->GetWeapon(tWeaponIndex)->WeaponType;
+
+				if (pTWeapon)
+				{
+					if (pTWeapon->Range < smallestRange)
+						smallestRange = pTWeapon->Range;
+				}
+
+				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+			}
+
+			if (result > smallestRange)
+				result = smallestRange;
+		}
+	}
+
+	R->EBX(result);
+	return ReturnResult;
+}
