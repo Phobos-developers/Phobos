@@ -24,27 +24,52 @@ public:
 	class ExtData final : public Extension<RulesClass>
 	{
 	public:
-		Valueable<Vector3D<int>> Pips_Shield;
-		Valueable<Vector3D<int>> Pips_Shield_Buildings;
-		Valueable<int> RadApplicationDelay_Building;
-		PhobosFixedString<32u> MissingCameo;
 		DynamicVectorClass<DynamicVectorClass<TechnoTypeClass*>> AITargetTypesLists;
 		DynamicVectorClass<DynamicVectorClass<ScriptTypeClass*>> AIScriptsLists;
 
+		Valueable<int> Storage_TiberiumIndex;
+		Nullable<int> InfantryGainSelfHealCap;
+		Nullable<int> UnitsGainSelfHealCap;
+		Valueable<int> RadApplicationDelay_Building;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 		Valueable<bool> JumpjetAllowLayerDeviation;
-		Valueable<int> Storage_TiberiumIndex;
+		Valueable<bool> JumpjetTurnToTarget;
+		PhobosFixedString<32u> MissingCameo;
+		Valueable<int> PlacementGrid_TranslucentLevel;
+		Valueable<int> BuildingPlacementPreview_TranslucentLevel;
+		Valueable<Vector3D<int>> Pips_Shield;
+		Nullable<SHPStruct*> Pips_Shield_Background;
+		Valueable<Vector3D<int>> Pips_Shield_Building;
+		Nullable<int> Pips_Shield_Building_Empty;
+		Valueable<Point2D> Pips_SelfHeal_Infantry;
+		Valueable<Point2D> Pips_SelfHeal_Units;
+		Valueable<Point2D> Pips_SelfHeal_Buildings;
+		Valueable<Point2D> Pips_SelfHeal_Infantry_Offset;
+		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
+		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
-			, Pips_Shield { { -1,-1,-1 } }
-			, Pips_Shield_Buildings { { -1,-1,-1 } }
+			, Storage_TiberiumIndex { -1 }
+			, InfantryGainSelfHealCap {}
+			, UnitsGainSelfHealCap {}
 			, RadApplicationDelay_Building { 0 }
-			, MissingCameo { "xxicon.shp" }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, JumpjetAllowLayerDeviation { true }
-			, Storage_TiberiumIndex { -1 }
+			, JumpjetTurnToTarget { false }
+			, MissingCameo { "xxicon.shp" }
+			, PlacementGrid_TranslucentLevel { 0 }
+			, BuildingPlacementPreview_TranslucentLevel { 3 }
+			, Pips_Shield_Background { }
+			, Pips_Shield_Building { { -1,-1,-1 } }
+			, Pips_Shield_Building_Empty { }
+			, Pips_SelfHeal_Infantry {{ 13, 20 }}
+			, Pips_SelfHeal_Units {{ 13, 20 }}
+			, Pips_SelfHeal_Buildings {{ 13, 20 }}
+			, Pips_SelfHeal_Infantry_Offset {{ 25, -35 }}
+			, Pips_SelfHeal_Units_Offset {{ 33, -32 }}
+			, Pips_SelfHeal_Buildings_Offset {{ 15, 10 }}
 		{ }
 
 		virtual ~ExtData() = default;

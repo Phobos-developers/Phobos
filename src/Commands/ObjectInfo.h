@@ -205,18 +205,16 @@ public:
 			auto pTarget = abstract_cast<TechnoClass*>(pFoot->Target);
 			if (pTarget)
 			{
-				append("Target = %s, Distance = %d, Location = (%d, %d)\n", pTarget->GetTechnoType()->ID, (pTarget->DistanceFrom(pFoot) / 256), pTarget->GetMapCoords().X, pTarget->GetMapCoords().Y);
+				append("Target = %s, Distance = %d, Location = (%d, %d)\n", pTarget->GetTechnoType()->ID, (pTarget->DistanceFrom(pFoot) / Unsorted::LeptonsPerCell), pTarget->GetMapCoords().X, pTarget->GetMapCoords().Y);
 			}
 
 			append("Current HP = (%d / %d)", pFoot->Health, pType->Strength);
 
 			auto pTechnoExt = TechnoExt::ExtMap.Find(pFoot);
-			if (auto pShieldData = pTechnoExt->Shield.get())
-			{
-				auto pTypeShieldData = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType());
+			auto pShieldData = pTechnoExt->Shield.get();
 
-				append(", Current Shield HP = (%d / %d)", pShieldData->GetHP(), pTypeShieldData->ShieldType->Strength);
-			}
+			if (pTechnoExt->CurrentShieldType && pShieldData)
+				append(", Current Shield HP = (%d / %d)", pShieldData->GetHP(), pTechnoExt->CurrentShieldType->Strength);
 
 			if (pType->Ammo > 0)
 				append(", Ammo = (%d / %d)", pFoot->Ammo, pType->Ammo);
@@ -259,18 +257,17 @@ public:
 			auto pTarget = abstract_cast<TechnoClass*>(pBuilding->Target);
 			if (pTarget)
 			{
-				append("Target = %s, Distance = %d, Location = (%d, %d)\n", pTarget->GetTechnoType()->ID, (pTarget->DistanceFrom(pBuilding) / 256), pTarget->GetMapCoords().X, pTarget->GetMapCoords().Y);
+				append("Target = %s, Distance = %d, Location = (%d, %d)\n", pTarget->GetTechnoType()->ID, (pTarget->DistanceFrom(pBuilding) / Unsorted::LeptonsPerCell), pTarget->GetMapCoords().X, pTarget->GetMapCoords().Y);
 			}
 
 			append("Current HP = (%d / %d)\n", pBuilding->Health, pBuilding->Type->Strength);
 
 			auto pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
-			if (auto pShieldData = pTechnoExt->Shield.get())
-			{
-				auto pTypeShieldData = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType());
+			auto pShieldData = pTechnoExt->Shield.get();
 
-				append("Current Shield HP = (%d / %d)\n", pShieldData->GetHP(), pTypeShieldData->ShieldType->Strength);
-			}
+			if (pTechnoExt->CurrentShieldType && pShieldData)
+				append("Current Shield HP = (%d / %d)\n", pShieldData->GetHP(), pTechnoExt->CurrentShieldType->Strength);
+
 			display();
 		};
 
