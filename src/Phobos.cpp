@@ -10,6 +10,8 @@
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
 
+#include "Misc/Patches.Blitters.h"
+
 #ifndef IS_RELEASE_VER
 bool HideWarning = false;
 #endif
@@ -65,6 +67,15 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		{
 			Phobos::AppIconPath = ppArgs[++i];
 		}
+		// BlitTranslucencyFix
+		if (_stricmp(pArg, "-BlittersFix") == 0)
+		{
+			Patch::Apply(VARIABLE_PATCH::Blit25TranslucencyFix);
+			Patch::Apply(VARIABLE_PATCH::Blit50TranslucencyFix1);
+			Patch::Apply(VARIABLE_PATCH::Blit50TranslucencyFix2);
+			Patch::Apply(VARIABLE_PATCH::Blit75TranslucencyFix);
+	}
+
 #ifndef IS_RELEASE_VER
 		if (_stricmp(pArg, "-b=" _STR(BUILD_NUMBER)) == 0)
 		{

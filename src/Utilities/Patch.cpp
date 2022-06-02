@@ -1,7 +1,5 @@
 #include "Patch.h"
-
 #include "Macro.h"
-
 #include <Phobos.h>
 
 int GetSection(char* sectionName, void** pVirtualAddress)
@@ -33,17 +31,20 @@ void Patch::Apply()
 	while(offset < len)
 	{
 		auto pItem = (patch_decl*)((DWORD)buffer + offset);
-		if (pItem->offset == 0) {
+		if (pItem->offset == 0)
 			return;
-		}
 
-		auto pAddress = (void*)pItem->offset;
-
-		DWORD protect_flag;
-		VirtualProtect(pAddress, pItem->size, PAGE_EXECUTE_READWRITE, &protect_flag);
-		memcpy(pAddress, pItem->pData, pItem->size);
-		VirtualProtect(pAddress, pItem->size, protect_flag, NULL);
-
+		Apply(pItem);
 		offset += sizeof(patch_decl);
 	}
+}
+
+void Patch::Apply(const patch_decl* pItem)
+{
+	auto pAddress = (void*)pItem->offset;
+
+	DWORD protect_flag;
+	VirtualProtect(pAddress, pItem->size, PAGE_EXECUTE_READWRITE, &protect_flag);
+	memcpy(pAddress, pItem->pData, pItem->size);
+	VirtualProtect(pAddress, pItem->size, protect_flag, NULL);
 }

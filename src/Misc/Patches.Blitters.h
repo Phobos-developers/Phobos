@@ -4,11 +4,11 @@
 #pragma region C3 SHP translucency fixes
 
 // 50% translucency blitter pt. 1
-DEFINE_PATCH(0x4987F7,
+DEFINE_VARIABLE_PATCH(0x4987F7, Blit50TranslucencyFix1,
 	0x66, 0xBA, 0xDE, 0xF7)		// mov	dx, 0xF7DE
 
 // 50% translucency blitter pt. 2
-DEFINE_PATCH(0x498817,
+DEFINE_VARIABLE_PATCH(0x498817, Blit50TranslucencyFix2,
 	0x8B, 0x04, 0x41,			// mov    eax, DWORD PTR [ecx+eax*2]
 	0x89, 0xC1,					// mov    ecx, eax
 	0x33, 0x0B,					// xor    ecx, DWORD PTR [ebx]
@@ -19,7 +19,7 @@ DEFINE_PATCH(0x498817,
 	0x90, 0x90, 0x90, 0x90)		// nop nop nop nop
 
 // 75% translucency blitter
-DEFINE_PATCH(0x4985FE,
+DEFINE_VARIABLE_PATCH(0x4985FE, Blit75TranslucencyFix,
 	0x66, 0xBE, 0xDE, 0xF7,					// mov    si, 0xF7DE
 	0x66, 0x8B, 0x0A,						// mov    cx, WORD PTR [edx]
 	0x31, 0xC0,								// xor    eax, eax
@@ -49,7 +49,7 @@ DEFINE_PATCH(0x4985FE,
 	0x47)									// inc    edi
 
 // 25% translucency blitter
-DEFINE_PATCH(0x4989EE,
+DEFINE_VARIABLE_PATCH(0x4989EE, Blit25TranslucencyFix,
 	0x66, 0xBE, 0xDE, 0xF7,					// mov    si, 0xF7DE
 	0x66, 0x8B, 0x0A,						// mov    cx, WORD PTR [edx]
 	0x31, 0xC0,								// xor    eax, eax
