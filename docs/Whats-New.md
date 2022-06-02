@@ -313,6 +313,8 @@ New:
 - Passable & buildable-upon TerrainTypes (by Starkku)
 - Toggle for passengers to automatically change owner if transport owner changes (by Starkku)
 - Superweapon launch on warhead detonation (by Trsdy)
+- Trigger Action 9932-9934 Random Trigger Pool (by ststl)
+- Trigger Action 9936,9937 set text, Theme of score interface (by FlyStar)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
