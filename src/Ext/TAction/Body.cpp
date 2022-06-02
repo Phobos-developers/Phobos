@@ -496,9 +496,9 @@ bool TActionExt::RandomTriggerRemove(TActionClass* pThis, HouseClass* pHouse, Ob
 bool TActionExt::ScoreCampaignText(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	if (pThis->Param3 == 0)
-		ScenarioExt::Global()->ParTitle = pThis->Text;
-	else
 		ScenarioExt::Global()->ParMessage = pThis->Text;
+	else
+		ScenarioExt::Global()->ParTitle = pThis->Text;
 	return true;
 }
 

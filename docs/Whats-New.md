@@ -94,7 +94,7 @@ This page lists the history of changes across stable Phobos releases and also al
   9932=Put Trigger into specificed Pool,-2,14,61,0,0,0,0,0,0,Add trigger to specified random pool enable by action 9933,0,1,9932,1
   9933=Enable a Trigger of specified Pool,0,0,61,62,0,0,0,0,0,Randomized enable a trigger of specified Random Pool,0,1,9933,1
   9934=Remove a Trigger from specified Pool,-2,14,61,0,0,0,0,0,0,Remove trigger from specificed random pool,0,1,9934,1
-  9935=Set Text of Score Interface ,-4,13,71,0,0,0,0,0,0,Set text of score interface Title or Message as Text of CSFLabel,0,1,9935,1
+  9935=Set Text of Score Interface ,-4,13,63,0,0,0,0,0,0,Set text of score interface Title or Message as Text of CSFLabel,0,1,9935,1
   9936=Set Theme of Score Interface,-4,17,0,0,0,0,0,0,0,Set theme of score interface,0,1,9936,1
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
