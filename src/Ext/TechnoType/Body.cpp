@@ -91,7 +91,18 @@ void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX &exArtINI, const char* pArtSe
 			nEFlh[i].push_back(eliteFLH.Get());
 		}
 	}
-};
+}
+
+TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
+{
+	if (pType->AbsID == AbstractType::AircraftType || pType->AbsID == AbstractType::BuildingType ||
+		pType->AbsID == AbstractType::InfantryType || pType->AbsID == AbstractType::UnitType)
+	{
+		return static_cast<TechnoTypeClass*>(pType);
+	}
+
+	return nullptr;
+}
 
 // =============================
 // load / save

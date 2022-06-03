@@ -85,7 +85,7 @@ DEFINE_HOOK(0x7060A9, TechnoClass_TechnoClass_DrawObject_DisguisePalette, 0x6)
 
 	LightConvertClass* convert = nullptr;
 
-	auto const pType = pThis->IsDisguised() ? static_cast<TechnoTypeClass*>(pThis->Disguise) : nullptr;
+	auto const pType = pThis->IsDisguised() ? TechnoTypeExt::GetTechnoType(pThis->Disguise) : nullptr;
 	int colorIndex = pThis->GetDisguiseHouse(true)->ColorSchemeIndex;
 
 	if (pType && pType->Palette && pType->Palette->Count > 0)

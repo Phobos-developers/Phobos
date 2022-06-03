@@ -444,7 +444,7 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 
 		if (pTypeExt->UseDisguiseMovementSpeed && pThis->IsDisguised())
 		{
-			if (auto const pType = static_cast<TechnoTypeClass*>(pThis->Disguise))
+			if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
 				maxSpeed = pType->Speed;
 		}
 	}

@@ -100,16 +100,20 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::Player))
 	{
-		if (auto const pType = static_cast<TechnoTypeClass*>(pThis->Disguise))
+		if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
 		{
 			pTechnoType = pType;
 			pOwner = pThis->DisguisedAsHouse;
+		}
+		else if (!pOwner->IsAlliedWith(HouseClass::Player) && !HouseClass::IsPlayerObserver())
+		{
+			return;
 		}
 	}
 
 	TechnoTypeExt::ExtData* pExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
-	bool isVisibleToPlayer = pOwner->IsAlliedWith(HouseClass::Player)
+	bool isVisibleToPlayer = (pOwner && pOwner->IsAlliedWith(HouseClass::Player))
 		|| HouseClass::IsPlayerObserver()
 		|| pExt->Insignia_ShowEnemy.Get(RulesExt::Global()->EnemyInsignia);
 
