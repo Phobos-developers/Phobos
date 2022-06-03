@@ -225,6 +225,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TargetZoneScanType.Read(exINI, pSection, "TargetZoneScanType");
 
 	this->Insignia.Read(exINI, pSection, "Insignia.%s");
+	this->InsigniaFrames.Read(exINI, pSection, "InsigniaFrames");
 	this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
 	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
 
@@ -450,6 +451,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployFireWeapon)
 		.Process(this->TargetZoneScanType)
 		.Process(this->Insignia)
+		.Process(this->InsigniaFrames)
 		.Process(this->InsigniaFrame)
 		.Process(this->Insignia_ShowEnemy)
 		;

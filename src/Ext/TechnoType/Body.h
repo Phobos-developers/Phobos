@@ -135,6 +135,7 @@ public:
 		Valueable<TargetZoneScanType> TargetZoneScanType;
 
 		Promotable<SHPStruct*> Insignia;
+		Valueable<Vector3D<int>> InsigniaFrames;
 		Promotable<int> InsigniaFrame;
 		Nullable<bool> Insignia_ShowEnemy;
 
@@ -269,6 +270,7 @@ public:
 			, DeployFireWeapon {}
 			, TargetZoneScanType { TargetZoneScanType::Same }
 			, Insignia {}
+			, InsigniaFrames {{ -1, -1, -1 }}
 			, InsigniaFrame { -1 }
 			, Insignia_ShowEnemy {}
 		{ }

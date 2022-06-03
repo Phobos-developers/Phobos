@@ -120,22 +120,32 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 	if (!isVisibleToPlayer)
 		return;
 
+	bool isCustomInsignia = false;
+
 	if (SHPStruct* pCustomShapeFile = pExt->Insignia.Get(pThis))
 	{
 		pShapeFile = pCustomShapeFile;
 		defaultFrameIndex = 0;
+		isCustomInsignia = true;
 	}
-	else
-	{
-		VeterancyStruct* pVeterancy = &pThis->Veterancy;
 
-		if (pVeterancy->IsElite())
-			defaultFrameIndex = 15;
-		else if (pVeterancy->IsVeteran())
-			defaultFrameIndex = 14;
+	VeterancyStruct* pVeterancy = &pThis->Veterancy;
+	auto& insigniaFrames = pExt->InsigniaFrames.Get();
+	int insigniaFrame = insigniaFrames.X;
+
+	if (pVeterancy->IsVeteran())
+	{
+		defaultFrameIndex = !isCustomInsignia ? 14 : defaultFrameIndex;
+		insigniaFrame = insigniaFrames.Y;
+	}
+	else if (pVeterancy->IsElite())
+	{
+		defaultFrameIndex = !isCustomInsignia ? 15 : defaultFrameIndex;
+		insigniaFrame = insigniaFrames.Z;
 	}
 
 	int frameIndex = pExt->InsigniaFrame.Get(pThis);
+	frameIndex = frameIndex == -1 ? insigniaFrame : frameIndex;
 
 	if (frameIndex == -1)
 		frameIndex = defaultFrameIndex;
@@ -144,6 +154,7 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 	{
 		offset.X += 5;
 		offset.Y += 2;
+
 		if (pThis->WhatAmI() != AbstractType::Infantry)
 		{
 			offset.X += 5;
