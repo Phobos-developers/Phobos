@@ -138,7 +138,12 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 	TechnoClass* pInvoker = nullptr;
 
 	if (pTypeExt->Damage_DealtByInvoker)
-		pInvoker = pExt->Invoker ? pExt->Invoker : pThis->OwnerObject ? abstract_cast<TechnoClass*>(pThis->OwnerObject) : nullptr;
+	{
+		pInvoker = pExt->Invoker;
+
+		if (!pInvoker)
+			pInvoker = pThis->OwnerObject ? abstract_cast<TechnoClass*>(pThis->OwnerObject) : nullptr;
+	}
 
 	if (pTypeExt->Weapon.isset())
 	{
@@ -146,11 +151,15 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 	}
 	else
 	{
-		auto pWarhead = pThis->Type->Warhead ? pThis->Type->Warhead :
-			strcmp(pThis->Type->get_ID(), "INVISO") ? RulesClass::Instance->FlameDamage2 : RulesClass::Instance->C4Warhead;
+		auto pWarhead = pThis->Type->Warhead;
 
-		auto pOwner = pInvoker ? pInvoker->Owner : pThis->Owner ? pThis->Owner :
-			pThis->OwnerObject ? pThis->OwnerObject->GetOwningHouse() : nullptr;
+		if (!pWarhead)
+			pWarhead = strcmp(pThis->Type->get_ID(), "INVISO") ? RulesClass::Instance->FlameDamage2 : RulesClass::Instance->C4Warhead;
+
+		auto pOwner = pInvoker ? pInvoker->Owner : nullptr;
+		
+		if (!pOwner)
+			pOwner = pThis->OwnerObject ? pThis->OwnerObject->GetOwningHouse() : nullptr;
 
 		MapClass::DamageArea(pThis->GetCoords(), appliedDamage, pInvoker, pWarhead, true, pOwner);
 	}
