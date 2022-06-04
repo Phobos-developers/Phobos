@@ -283,11 +283,13 @@ DEFINE_HOOK(0x685659, Scenario_ClearClasses, 0xa)
 void Phobos::Clear()
 {
 	MassActions.Clear();
+	ProcessAfter.Clear();
 }
 
 void Phobos::PointerGotInvalid(AbstractClass* const pInvalid, bool const removed)
 {
 	MassActions.InvalidPointer(pInvalid, removed);
+	ProcessAfter.InvalidPointer(pInvalid, removed);
 }
 
 HRESULT Phobos::SaveGameData(IStream* pStm)

@@ -8,6 +8,11 @@ PhobosGlobal* PhobosGlobal::Global()
 	return &GlobalObject;
 }
 
+void PhobosGlobal::Clear()
+{
+	GlobalObject = PhobosGlobal();
+}
+
 //Save/Load
 #pragma region save/load
 
