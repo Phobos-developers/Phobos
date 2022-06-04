@@ -473,7 +473,7 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 		}
 
 		// Death if slave owner dead
-		if (pType->Slaved && (!pThis->SlaveOwner || !pThis->SlaveOwner->IsAlive) && pTypeData->Death_WithSlaveOwner)
+		if (pType->Slaved && (!pThis->SlaveOwner || !pThis->SlaveOwner->IsAlive) && pTypeData->Death_WithSlaveowner)
 			TechnoExt::KillSelf(pThis, isPeaceful);
 	}
 }
