@@ -154,8 +154,8 @@ This page lists all the individual contributions to the project by their author.
    - LaserTrails prototype
    - Laser fixes prototype
 - **Trsdy**
-   - Jumpjet facing fix
    - Kill slaves alongside with owner; peaceful self-removal
+   - Jumpjet facing fix
    - Warhead superweapon launch logic
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
