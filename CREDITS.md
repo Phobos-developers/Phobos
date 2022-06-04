@@ -153,7 +153,7 @@ This page lists all the individual contributions to the project by their author.
    - Interceptor logic prototype
    - LaserTrails prototype
    - Laser fixes prototype
-- **Trsdy**
+- **Trsdy** - Jumpjet facing fix
    - Kill slaves alongside with owner; peaceful self-removal
    - Jumpjet facing fix
    - Warhead superweapon launch logic
