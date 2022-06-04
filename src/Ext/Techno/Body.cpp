@@ -742,7 +742,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 	Point2D vLoc = *pLocation;
 	Point2D vOfs = { 0, 0 };
 	int frame, XOffset, YOffset;
-	Vector3D<int> glbSelectbrdFrame = isInfantry ?
+	Vector3D<int> glbSelectboxFrame = isInfantry ?
 		RulesExt::Global()->SelectBox_Frame_Infantry.Get() :
 		RulesExt::Global()->SelectBox_Frame_Unit.Get();
 	Vector3D<int> selectboxFrame = pTypeExt->SelectBox_Frame.Get();
@@ -752,7 +752,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 		|| pTypeExt->SelectBox_ShowEnemy.Get(RulesExt::Global()->SelectBox_DefaultShowEnemy.Get());
 
 	if (selectboxFrame.X == -1)
-		selectboxFrame = glbSelectbrdFrame;
+		selectboxFrame = glbSelectboxFrame;
 
 	vOfs = pTypeExt->SelectBox_DrawOffset.Get(pThis->WhatAmI() == AbstractType::Infantry ?
 		RulesExt::Global()->SelectBox_DrawOffset_Infantry.Get() : RulesExt::Global()->SelectBox_DrawOffset_Unit.Get());
