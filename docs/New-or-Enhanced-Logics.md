@@ -262,6 +262,19 @@ PowerPlantEnhancer.Factor=1.0      ; float
 
 ## Infantry
 
+### Customizable FLH When Infantry Is Prone Or Deployed
+
+- Now infantry can override `PrimaryFireFLH` and `SecondaryFireFLH` if is prone (crawling) or deployed. Also works in conjunction with [burst-index specific firing offsets](#firing-offsets-for-specific-burst-shots).
+
+In `artmd.ini`:
+```ini
+[SOMEINFANTRY]             ; InfantryType
+PronePrimaryFireFLH=       ; integer - Forward,Lateral,Height
+ProneSecondaryFireFLH=     ; integer - Forward,Lateral,Height
+DeployedPrimaryFireFLH=    ; integer - Forward,Lateral,Height
+DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
+```
+
 ### Default disguise for individual InfantryTypes
 
 - Infantry can now have its `DefaultDisguise` overridden per-type.
@@ -303,6 +316,7 @@ Ammo.Shared.Group=-1                    ; integer
 ```
 
 ## Projectiles
+
 
 ### Projectile interception logic
 
@@ -408,7 +422,7 @@ LimboKill.IDs=                  ; List of numeric IDs.
 
 ## Technos
 
-### Automatic Passenger Deletion
+### Automatic passenger deletion
 
 - Transports with these tags will erase the passengers overtime. Bigger units takes more time. Optionally this logic can work like a grinder.
  - Good combination with Ares Abductor logic.
@@ -422,6 +436,20 @@ PassengerDeletion.Soylent=no            ; boolean
 PassengerDeletion.SoylentFriendlies=no  ; boolean
 PassengerDeletion.ReportSound=          ; sound
 PassengerDeletion.Anim=                 ; animation
+```
+
+### Automatic passenger owner change to match transport owner
+
+- Transports with `Passengers.SyncOwner` set to true will have the owner of their passengers changed to match the transport if transport's owner changes.
+  - On `OpenTopped=true` transports this will also disable checks that prevent target acquisition by passengers when the transport is temporarily mind controlled.
+  - `Passengers.SyncOwner.RevertOnExit`, if set to true (which is the default), changes the passengers' owner back to whatever it was originally when they entered the transport when they are ejected.
+  - Does not work on passengers acquired through use of `Abductor=true` weapon *(Ares feature)*.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                             ; TechnoType
+Passengers.SyncOwner=false               ; boolean
+Passengers.SyncOwner.RevertOnExit=true   ; boolean
 ```
 
 ### Automatically firing weapons
@@ -466,18 +494,13 @@ NoSecondaryWeaponFallback=false   ; boolean
 
 ### Firing offsets for specific Burst shots
 
-- You can now specify separate firing offsets for each of the shots fired by weapon with `Burst` via using `(Elite)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on which weapons your TechnoType makes use of. *N* in `BurstN` is zero-based burst shot index, and the values are parsed sequentially until no value for either regular or elite weapon is present, with elite weapon defaulting to regular weapon FLH if only it is missing. If no burst-index specific value is available, value from the base key (f.ex `PrimaryFireFLH`) is used.
+- You can now specify separate firing offsets for each of the shots fired by weapon with `Burst` via using `(Elite)(Prone/Deployed)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on which weapons your TechnoType makes use of. *N* in `BurstN` is zero-based burst shot index, and the values are parsed sequentially until no value for either regular or elite weapon is present, with elite weapon defaulting to regular weapon FLH if only it is missing. If no burst-index specific value is available, value from the base key (f.ex `PrimaryFireFLH`) is used.
 - Burst-index specific firing offsets are absolute firing offsets and the lateral shifting based on burst index that occurs with the base firing offsets is not applied.
 
 In `artmd.ini`:
 ```ini
-[SOMETECHNO]                   ; TechnoType Image
-PrimaryFireFLH.BurstN=         ; int - forward, lateral, height
-ElitePrimaryFireFLH.BurstN=    ; int - forward, lateral, height
-SecondaryFireFLH.BurstN=       ; int - forward, lateral, height
-EliteSecondaryFireFLH.BurstN=  ; int - forward, lateral, height
-WeaponXFLH.BurstN=             ; int - forward, lateral, height
-EliteWeaponXFLH.BurstN=        ; int - forward, lateral, height
+[SOMETECHNO]    ; TechnoType Image
+FLHKEY.BurstN=  ; int - forward, lateral, height. FLHKey refers to weapon-specific FLH key name and N is zero-based burst shot index.
 ```
 
 ### Initial Strength
@@ -728,6 +751,24 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]            ; Warhead
 NotHuman.DeathSequence=  ; integer (1 to 5)
+```
+### Launch superweapons on impact
+
+- Superweapons can now be launched when a warhead is detonated.
+  - `LaunchSW` specifies the superweapons to launch when the warhead is detonated.
+  - `LaunchSW.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons and sufficient fund to support `Money.Amout`. Otherwise they will be launched out of nowhere.
+  - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of the superweapon, otherwise only non-inhibited superweapons are launched.
+
+```{note}
+Animation weapons from _Ares_ are **not** supported. Nevertheless, animation warheads may work in certain circumstances. Also, due to the nature of some superweapon types, not all superweapons are suitable for launch.
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                 ; Warhead
+LaunchSW=                     ; list of superweapons
+LaunchSW.RealLaunch=no        ; bool
+LaunchSW.IgnoreInhibitors=no  ; bool
 ```
 
 ## Weapons
