@@ -289,23 +289,72 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 
 	if (!pThis || weaponIndex < 0)
 		return FLH;
-
+	
 	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	
+	auto pInf = abstract_cast<InfantryClass*>(pThis);
+	auto &pickedFLHs = pExt->WeaponBurstFLHs;
 
 	if (pThis->Veterancy.IsElite())
 	{
-		if (pExt->EliteWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
-		{
-			FLHFound = true;
-			FLH = pExt->EliteWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
-		}
+		if (pInf && pInf->IsDeployed())
+			pickedFLHs = pExt->EliteDeployedWeaponBurstFLHs;
+		else if (pInf && pInf->Crawling)
+			pickedFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
+		else
+			pickedFLHs = pExt->EliteWeaponBurstFLHs;
 	}
 	else
 	{
-		if (pExt->WeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+		if (pInf && pInf->IsDeployed())
+			pickedFLHs = pExt->DeployedWeaponBurstFLHs;
+		else if (pInf && pInf->Crawling)
+			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
+	}
+
+	if (pickedFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+	{
+		FLHFound = true;
+		FLH = pickedFLHs[weaponIndex][pThis->CurrentBurstIndex];
+	}
+
+	return FLH;
+}
+
+CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound)
+{
+	FLHFound = false;
+	CoordStruct FLH = CoordStruct::Empty;
+
+	if (!pThis || weaponIndex < 0)
+		return FLH;
+
+	if (auto pTechnoType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	{
+		Nullable<CoordStruct> pickedFLH;
+
+		if (pThis->IsDeployed())
 		{
+			if (weaponIndex == 0)
+				pickedFLH = pTechnoType->DeployedPrimaryFireFLH;
+			else if (weaponIndex == 1)
+				pickedFLH = pTechnoType->DeployedSecondaryFireFLH;
+		}
+		else
+		{
+			if (pThis->Crawling)
+			{
+				if (weaponIndex == 0)
+					pickedFLH = pTechnoType->PronePrimaryFireFLH;
+				else if (weaponIndex == 1)
+					pickedFLH = pTechnoType->ProneSecondaryFireFLH;
+			}
+		}
+
+		if (pickedFLH.isset())
+		{
+			FLH = pickedFLH.Get();
 			FLHFound = true;
-			FLH = pExt->WeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
 		}
 	}
 
@@ -527,8 +576,10 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 	{
 		if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 		{
+			bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
 			bool isOrganic = pThis->WhatAmI() == AbstractType::Infantry || pThis->WhatAmI() == AbstractType::Unit && pThis->GetTechnoType()->Organic;
-			auto selfHealType = pExt->SelfHealGainType.Get(isOrganic ? SelfHealGainType::Infantry : SelfHealGainType::Units);
+			auto defaultSelfHealType = isBuilding ? SelfHealGainType::None : isOrganic ? SelfHealGainType::Infantry : SelfHealGainType::Units;
+			auto selfHealType = pExt->SelfHealGainType.Get(defaultSelfHealType);
 
 			if (selfHealType == SelfHealGainType::None)
 				return;
@@ -918,7 +969,7 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 	int width = 0, height = 0;
 	BitFont::Instance->GetTextDimension(damageStr, &width, &height, 120);
 
-	if (!pExt->DamageNumberOffset.isset() || pExt->DamageNumberOffset >= maxOffset)
+	if (pExt->DamageNumberOffset >= maxOffset || pExt->DamageNumberOffset < -maxOffset)
 		pExt->DamageNumberOffset = -maxOffset;
 
 	FlyingStrings::Add(damageStr, coords, color, Point2D { pExt->DamageNumberOffset - (width / 2), 0 });
@@ -943,6 +994,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastWarpDistance)
 		.Process(this->Death_Countdown)
 		.Process(this->MindControlRingAnimType)
+		.Process(this->OriginalPassengerOwner)
 		;
 }
 

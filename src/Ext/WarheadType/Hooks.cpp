@@ -4,6 +4,7 @@
 #include <ScenarioClass.h>
 #include <HouseClass.h>
 
+#include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
@@ -19,8 +20,9 @@ DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH))
 	{
 		GET_BASE(const CoordStruct*, pCoords, 0x8);
+		auto const pExt = BulletExt::ExtMap.Find(pThis);
 		auto const pTechno = pThis ? pThis->Owner : nullptr;
-		auto const pHouse = pTechno ? pTechno->Owner : nullptr;
+		auto const pHouse = pTechno ? pTechno->Owner : pExt->FirerHouse;
 
 		pWHExt->Detonate(pTechno, pHouse, pThis, *pCoords);
 	}
