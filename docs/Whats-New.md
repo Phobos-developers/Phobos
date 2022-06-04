@@ -42,7 +42,8 @@ This page lists the history of changes across stable Phobos releases and also al
   60=Operate var index,0
   61=RandomPoolID,0
   62=RemoveFromPool,10
-  63=Title,10
+  63=IsTitle,10
+  64=Map,8
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -96,6 +97,7 @@ This page lists the history of changes across stable Phobos releases and also al
   9934=Remove a Trigger from specified Pool,-2,14,61,0,0,0,0,0,0,Remove trigger from specificed random pool,0,1,9934,1
   9935=Set Text of Score Interface ,-4,13,63,0,0,0,0,0,0,Set text of score interface Title or Message as Text of CSFLabel,0,1,9935,1
   9936=Set Theme of Score Interface,-4,17,0,0,0,0,0,0,0,Set theme of score interface,0,1,9936,1
+  9937=Set Next Mission,-4,64,0,0,0,0,0,0,0,Set next mission. Parm is ID in mapselmd.ini,0,1,9937,1
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
   [ScriptTypeLists]
@@ -314,7 +316,8 @@ New:
 - Toggle for passengers to automatically change owner if transport owner changes (by Starkku)
 - Superweapon launch on warhead detonation (by Trsdy)
 - Trigger Action 9932-9934 Random Trigger Pool (by ststl)
-- Trigger Action 9936,9937 set text, Theme of score interface (by FlyStar)
+- Trigger Action 9935,9936 set text, Theme of score interface (by FlyStar)
+- Trigger Action 9937 set next mission (by FlyStar)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)

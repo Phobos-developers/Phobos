@@ -26,3 +26,11 @@ DEFINE_HOOK(0x6C935C, ScoreDialog_Handle_ScoreThemeB, 0x5)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x5AE192, SelectNextMission, 0x6)
+{
+	if(ScenarioExt::Global()->NextMission.isset())
+		R->EAX(ScenarioExt::Global()->NextMission.Get().data());
+
+	return 0;
+}

@@ -95,6 +95,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->ParTitle)
 		.Process(this->ParMessage)
 		.Process(this->ScoreCampaignTheme)
+		.Process(this->NextMission)
 		;
 }
 
