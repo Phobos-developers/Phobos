@@ -462,6 +462,7 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 					// Countdown ended. Kill the unit
 					pData->Death_Countdown = -1;
 					TechnoExt::KillSelf(pThis, isPeaceful);
+					
 					return;
 				}
 			}
@@ -472,7 +473,7 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 		}
 
 		// Death if slave owner dead
-		if (pType->Slaved && (!pThis->SlaveOwner || !pThis->SlaveOwner->IsAlive) && pTypeData->Death_WithMaster)
+		if (pType->Slaved && (!pThis->SlaveOwner || !pThis->SlaveOwner->IsAlive) && pTypeData->Death_WithSlaveOwner)
 			TechnoExt::KillSelf(pThis, isPeaceful);
 	}
 }
