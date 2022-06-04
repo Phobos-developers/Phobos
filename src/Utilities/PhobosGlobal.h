@@ -26,6 +26,7 @@ public:
 	void InvalidatePointer(void* ptr, bool bRemoved) { };
 	
 	static void Clear();
+	void Reset();
 
 private:
 	template <typename T>
