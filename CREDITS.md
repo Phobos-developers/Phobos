@@ -153,8 +153,7 @@ This page lists all the individual contributions to the project by their author.
    - Interceptor logic prototype
    - LaserTrails prototype
    - Laser fixes prototype
-- **Trsdy** - Jumpjet facing fix
-   - Kill slaves alongside with owner; peaceful self-removal
+- **Trsdy**
    - Jumpjet facing fix
    - Warhead superweapon launch logic
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
