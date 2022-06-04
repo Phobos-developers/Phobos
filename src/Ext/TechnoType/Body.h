@@ -125,6 +125,15 @@ public:
 
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
 
+		Nullable<CoordStruct> PronePrimaryFireFLH;
+		Nullable<CoordStruct> ProneSecondaryFireFLH;
+		Nullable<CoordStruct> DeployedPrimaryFireFLH;
+		Nullable<CoordStruct> DeployedSecondaryFireFLH;
+		std::vector<DynamicVectorClass<CoordStruct>> CrouchedWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -199,6 +208,10 @@ public:
 			, SelfHealGainType()
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
+			, PronePrimaryFireFLH { }
+			, ProneSecondaryFireFLH { }
+			, DeployedPrimaryFireFLH { }
+			, DeployedSecondaryFireFLH { }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -231,6 +244,7 @@ public:
 	static ExtContainer ExtMap;
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
+	static void GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);

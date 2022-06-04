@@ -315,6 +315,8 @@ New:
 - Passable & buildable-upon TerrainTypes (by Starkku)
 - Toggle for passengers to automatically change owner if transport owner changes (by Starkku)
 - Superweapon launch on warhead detonation (by Trsdy)
+- Correct owner house for Warhead Anim/SplashList & Play Animation trigger animations (by Starkku)
+- Customizable FLH When Infantry Is Crouched Or Deployed (by FS-21)
 - Trigger Action 9932-9934 Random Trigger Pool (by ststl)
 - Trigger Action 9935,9936 set text, Theme of score interface (by FlyStar)
 - Trigger Action 9937 set next mission (by FlyStar)

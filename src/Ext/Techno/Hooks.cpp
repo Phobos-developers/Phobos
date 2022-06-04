@@ -109,7 +109,15 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_Transform_6F3AD0_BurstFLH_1, 0x7)
 	GET(TechnoClass*, pThis, EBX);
 	GET_STACK(int, weaponIndex, STACK_OFFS(0xD8, -0x8));
 	bool FLHFound = false;
-	CoordStruct FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
+	CoordStruct FLH = CoordStruct::Empty;
+
+	FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
+
+	if (!FLHFound)
+	{
+		if (auto pInf = abstract_cast<InfantryClass*>(pThis))
+			FLH = TechnoExt::GetSimpleFLH(pInf, weaponIndex, FLHFound);
+	}
 
 	if (FLHFound)
 	{
