@@ -123,16 +123,16 @@ public:
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
 		Valueable<CSFText> EnemyUIName;
 
-		SHPStruct* SHP_SelectBrdSHP;
-		ConvertClass* SHP_SelectBrdPAL;
+		SHPStruct* SHP_SelectBoxSHP;
+		ConvertClass* SHP_SelectBoxPAL;
 
-		Nullable<bool> UseCustomSelectBrd;
-		PhobosFixedString<32U> SelectBrd_SHP;
-		PhobosFixedString<32U> SelectBrd_PAL;
-		Nullable<Vector3D<int>> SelectBrd_Frame;
-		Nullable<Vector2D<int>> SelectBrd_DrawOffset;
-		Nullable<int> SelectBrd_TranslucentLevel;
-		Nullable<bool> SelectBrd_ShowEnemy;
+		Nullable<bool> UseCustomSelectBox;
+		PhobosFixedString<32U> SelectBox_SHP;
+		PhobosFixedString<32U> SelectBox_PAL;
+		Nullable<Vector3D<int>> SelectBox_Frame;
+		Nullable<Vector2D<int>> SelectBox_DrawOffset;
+		Nullable<int> SelectBox_TranslucentLevel;
+		Nullable<bool> SelectBox_ShowEnemy;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -206,15 +206,15 @@ public:
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 			, SelfHealGainType()
-			, SHP_SelectBrdSHP { nullptr }
-			, SHP_SelectBrdPAL { nullptr }
-			, UseCustomSelectBrd {}
-			, SelectBrd_SHP {}
-			, SelectBrd_PAL {}
-			, SelectBrd_Frame { {-1,-1,-1} }
-			, SelectBrd_DrawOffset {}
-			, SelectBrd_TranslucentLevel {}
-			, SelectBrd_ShowEnemy {}
+			, SHP_SelectBoxSHP { nullptr }
+			, SHP_SelectBoxPAL { nullptr }
+			, UseCustomSelectBox {}
+			, SelectBox_SHP {}
+			, SelectBox_PAL {}
+			, SelectBox_Frame { {-1,-1,-1} }
+			, SelectBox_DrawOffset {}
+			, SelectBox_TranslucentLevel {}
+			, SelectBox_ShowEnemy {}
 		{ }
 
 		virtual ~ExtData() = default;

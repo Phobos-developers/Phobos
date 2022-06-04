@@ -86,17 +86,17 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_SelfHeal_Units_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units.Offset");
 	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings.Offset");
 
-	this->UseSelectBrd.Read(exINI, "AudioVisual", "UseSelectBrd");
-	this->SelectBrd_SHP_Infantry.Read(pINI, "AudioVisual", "SelectBrd.SHP.Infantry");
-	this->SelectBrd_PAL_Infantry.Read(pINI, "AudioVisual", "SelectBrd.PAL.Infantry");
-	this->SelectBrd_Frame_Infantry.Read(exINI, "AudioVisual", "SelectBrd.Frame.Infantry");
-	this->SelectBrd_DrawOffset_Infantry.Read(exINI, "AudioVisual", "SelectBrd.DrawOffset.Infantry");
-	this->SelectBrd_SHP_Unit.Read(pINI, "AudioVisual", "SelectBrd.SHP.Unit");
-	this->SelectBrd_PAL_Unit.Read(pINI, "AudioVisual", "SelectBrd.PAL.Unit");
-	this->SelectBrd_Frame_Unit.Read(exINI, "AudioVisual", "SelectBrd.Frame.Unit");
-	this->SelectBrd_DrawOffset_Unit.Read(exINI, "AudioVisual", "SelectBrd.DrawOffset.Unit");
-	this->SelectBrd_DefaultTranslucentLevel.Read(exINI, "AudioVisual", "SelectBrd.DefaultTranslucentLevel");
-	this->SelectBrd_DefaultShowEnemy.Read(exINI, "AudioVisual", "SelectBrd.DefaultShowEnemy");
+	this->UseSelectBox.Read(exINI, "AudioVisual", "UseSelectBox");
+	this->SelectBox_SHP_Infantry.Read(pINI, "AudioVisual", "SelectBox.SHP.Infantry");
+	this->SelectBox_PAL_Infantry.Read(pINI, "AudioVisual", "SelectBox.PAL.Infantry");
+	this->SelectBox_Frame_Infantry.Read(exINI, "AudioVisual", "SelectBox.Frame.Infantry");
+	this->SelectBox_DrawOffset_Infantry.Read(exINI, "AudioVisual", "SelectBox.DrawOffset.Infantry");
+	this->SelectBox_SHP_Unit.Read(pINI, "AudioVisual", "SelectBox.SHP.Unit");
+	this->SelectBox_PAL_Unit.Read(pINI, "AudioVisual", "SelectBox.PAL.Unit");
+	this->SelectBox_Frame_Unit.Read(exINI, "AudioVisual", "SelectBox.Frame.Unit");
+	this->SelectBox_DrawOffset_Unit.Read(exINI, "AudioVisual", "SelectBox.DrawOffset.Unit");
+	this->SelectBox_DefaultTranslucentLevel.Read(exINI, "AudioVisual", "SelectBox.DefaultTranslucentLevel");
+	this->SelectBox_DefaultShowEnemy.Read(exINI, "AudioVisual", "SelectBox.DefaultShowEnemy");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -204,17 +204,17 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_SelfHeal_Infantry_Offset)
 		.Process(this->Pips_SelfHeal_Units_Offset)
 		.Process(this->Pips_SelfHeal_Buildings_Offset)
-		.Process(this->UseSelectBrd)
-		.Process(this->SelectBrd_SHP_Infantry)
-		.Process(this->SelectBrd_PAL_Infantry)
-		.Process(this->SelectBrd_Frame_Infantry)
-		.Process(this->SelectBrd_DrawOffset_Infantry)
-		.Process(this->SelectBrd_SHP_Unit)
-		.Process(this->SelectBrd_PAL_Unit)
-		.Process(this->SelectBrd_Frame_Unit)
-		.Process(this->SelectBrd_DrawOffset_Unit)
-		.Process(this->SelectBrd_DefaultTranslucentLevel)
-		.Process(this->SelectBrd_DefaultShowEnemy)
+		.Process(this->UseSelectBox)
+		.Process(this->SelectBox_SHP_Infantry)
+		.Process(this->SelectBox_PAL_Infantry)
+		.Process(this->SelectBox_Frame_Infantry)
+		.Process(this->SelectBox_DrawOffset_Infantry)
+		.Process(this->SelectBox_SHP_Unit)
+		.Process(this->SelectBox_PAL_Unit)
+		.Process(this->SelectBox_Frame_Unit)
+		.Process(this->SelectBox_DrawOffset_Unit)
+		.Process(this->SelectBox_DefaultTranslucentLevel)
+		.Process(this->SelectBox_DefaultShowEnemy)
 		;
 }
 

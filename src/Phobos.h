@@ -69,6 +69,6 @@ public:
 		static bool ArtImageSwap;
 		static bool AllowParallelAIQueues;
 		static bool EnableBuildingPlacementPreview;
-		static bool EnableSelectBrd;
+		static bool EnableSelectBox;
 	};
 };

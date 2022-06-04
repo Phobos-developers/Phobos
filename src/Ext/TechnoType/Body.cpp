@@ -229,13 +229,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
 	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 
-	this->UseCustomSelectBrd.Read(exINI, pSection, "UseCustomSelectBrd");
-	this->SelectBrd_SHP.Read(pINI, pSection, "SelectBrd.SHP");
-	this->SelectBrd_PAL.Read(pINI, pSection, "SelectBrd.PAL");
-	this->SelectBrd_Frame.Read(exINI, pSection, "SelectBrd.Frame");
-	this->SelectBrd_DrawOffset.Read(exINI, pSection, "SelectBrd.DrawOffset");
-	this->SelectBrd_TranslucentLevel.Read(exINI, pSection, "SelectBrd.TranslucentLevel");
-	this->SelectBrd_ShowEnemy.Read(exINI, pSection, "SelectBrd.ShowEnemy");
+	this->UseCustomSelectBox.Read(exINI, pSection, "UseCustomSelectBox");
+	this->SelectBox_SHP.Read(pINI, pSection, "SelectBox.SHP");
+	this->SelectBox_PAL.Read(pINI, pSection, "SelectBox.PAL");
+	this->SelectBox_Frame.Read(exINI, pSection, "SelectBox.Frame");
+	this->SelectBox_DrawOffset.Read(exINI, pSection, "SelectBox.DrawOffset");
+	this->SelectBox_TranslucentLevel.Read(exINI, pSection, "SelectBox.TranslucentLevel");
+	this->SelectBox_ShowEnemy.Read(exINI, pSection, "SelectBox.ShowEnemy");
 }
 
 template <typename T>
@@ -315,13 +315,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
 		.Process(this->SelfHealGainType)
-		.Process(this->UseCustomSelectBrd)
-		.Process(this->SelectBrd_SHP)
-		.Process(this->SelectBrd_PAL)
-		.Process(this->SelectBrd_Frame)
-		.Process(this->SelectBrd_DrawOffset)
-		.Process(this->SelectBrd_TranslucentLevel)
-		.Process(this->SelectBrd_ShowEnemy)
+		.Process(this->UseCustomSelectBox)
+		.Process(this->SelectBox_SHP)
+		.Process(this->SelectBox_PAL)
+		.Process(this->SelectBox_Frame)
+		.Process(this->SelectBox_DrawOffset)
+		.Process(this->SelectBox_TranslucentLevel)
+		.Process(this->SelectBox_ShowEnemy)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
