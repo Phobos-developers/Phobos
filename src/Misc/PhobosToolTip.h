@@ -35,7 +35,7 @@ public:
 // Properties
 private:
 	std::wstring TextBuffer {};
-	
+
 public:
 	bool IsCameo { false };
 	bool SlaveDraw { false };

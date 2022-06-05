@@ -60,7 +60,7 @@ inline int PhobosToolTip::GetBuildTime(TechnoTypeClass* pType) const
 		break;
 	}
 
-	// TechnoTypeClass only has 4 final classes : 
+	// TechnoTypeClass only has 4 final classes :
 	// BuildingTypeClass, AircraftTypeClass, InfantryTypeClass and UnitTypeClass
 	// It has to be these four classes, otherwise pType will just be nullptr
 	reinterpret_cast<TechnoClass*>(pTrick)->Owner = HouseClass::Player;
@@ -111,7 +111,7 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 
 	std::wostringstream oss;
 	oss << pType->UIName << L"\n"
-		<< (cost < 0 ? L"+" : L"") 
+		<< (cost < 0 ? L"+" : L"")
 		<< Phobos::UI::CostLabel << std::abs(cost) << L" "
 		<< Phobos::UI::TimeLabel
 		// << std::setw(2) << std::setfill(L'0') << nHour << L":"
@@ -150,7 +150,7 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 		oss << Phobos::UI::CostLabel << nCost;
 		showCost = true;
 	}
-		
+
 	if (pType->RechargeTime > 0)
 	{
 		if (!showCost)
@@ -161,7 +161,7 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 		// int nHour = pType->RechargeTime / 15 / 60 / 60;
 
 		oss << (showCost ? L" " : L"") << Phobos::UI::TimeLabel
-			// << std::setw(2) << std::setfill(L'0') << nHour << L":" 
+			// << std::setw(2) << std::setfill(L'0') << nHour << L":"
 			<< std::setw(2) << std::setfill(L'0') << nMin << L":"
 			<< std::setw(2) << std::setfill(L'0') << nSec;
 	}
@@ -182,7 +182,7 @@ DEFINE_HOOK(0x6A9316, SidebarClass_StripClass_HelpText, 0x6)
 	{
 		PhobosToolTip::Instance.IsCameo = true;
 		R->EAX(L"X");
-		return 0x6A93DE;	
+		return 0x6A93DE;
 	}
 
 	return 0;
@@ -203,7 +203,7 @@ DEFINE_HOOK(0x478E10, CCToolTip_Draw1, 0x0)
 	GET_STACK(bool, bFullRedraw, 0x4);
 
 	// !onSidebar or (onSidebar && ExtToolTip::IsCameo)
-	if (!bFullRedraw || PhobosToolTip::Instance.IsCameo) 
+	if (!bFullRedraw || PhobosToolTip::Instance.IsCameo)
 	{
 		PhobosToolTip::Instance.IsCameo = false;
 		PhobosToolTip::Instance.SlaveDraw = false;
