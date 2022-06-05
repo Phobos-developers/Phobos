@@ -82,17 +82,12 @@ inline const wchar_t* PhobosToolTip::GetBuffer() const
 	return this->TextBuffer.c_str();
 }
 
-bool PhobosToolTip::HelpText(BuildType& cameo)
+void PhobosToolTip::HelpText(BuildType& cameo)
 {
-	if (!this->IsEnabled())
-		return false;
-
 	if (cameo.ItemType == AbstractType::Special)
 		this->HelpText(SuperWeaponTypeClass::Array->GetItem(cameo.ItemIndex));
 	else
 		this->HelpText(ObjectTypeClass::GetTechnoType(cameo.ItemType, cameo.ItemIndex));
-
-	return true;
 }
 
 void PhobosToolTip::HelpText(TechnoTypeClass* pType)
@@ -176,23 +171,24 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 
 DEFINE_HOOK(0x6A9316, SidebarClass_StripClass_HelpText, 0x6)
 {
+	PhobosToolTip::Instance.IsCameo = true;
+
+	if (!PhobosToolTip::Instance.IsEnabled())
+		return 0;
+
 	GET(StripClass*, pThis, EAX);
+	PhobosToolTip::Instance.HelpText(pThis->Cameos[0]); // pStrip->Cameos[nID] in fact
 
-	if (PhobosToolTip::Instance.HelpText(pThis->Cameos[0])) // pStrip->Cameos[nID] in fact
-	{
-		PhobosToolTip::Instance.IsCameo = true;
-		R->EAX(L"X");
-		return 0x6A93DE;
-	}
-
-	return 0;
+	PhobosToolTip::Instance.UsesBuffer = true;
+	R->EAX(L"X");
+	return 0x6A93DE;
 }
 
 // TODO: reimplement CCToolTip::Draw2 completely
 
 DEFINE_HOOK(0x478EE1, CCToolTip_Draw2_SetBuffer, 0x6)
 {
-	if (PhobosToolTip::Instance.IsCameo)
+	if (PhobosToolTip::Instance.UsesBuffer)
 		R->EDI(PhobosToolTip::Instance.GetBuffer());
 	return 0;
 }
@@ -207,6 +203,7 @@ DEFINE_HOOK(0x478E10, CCToolTip_Draw1, 0x0)
 	{
 		PhobosToolTip::Instance.IsCameo = false;
 		PhobosToolTip::Instance.SlaveDraw = false;
+		PhobosToolTip::Instance.UsesBuffer = false;
 
 		pThis->ToolTipManager::Process();	//this function re-create CCToolTip
 	}
