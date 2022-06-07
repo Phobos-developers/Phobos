@@ -109,7 +109,7 @@ void BulletExt::InterceptBullet(BulletClass* pThis, TechnoClass* pSource, Weapon
 		auto const pWeaponOverride = pTechnoTypeExt->Interceptor_WeaponOverride.Get(pTypeExt->Interceptable_WeaponOverride.Get(nullptr));
 		bool detonate = !pTechnoTypeExt->Interceptor_DeleteOnIntercept.Get(pTypeExt->Interceptable_DeleteOnIntercept);
 
-		pExt->Intercepted_Detonate = detonate;
+		pExt->DetonateOnInterception = detonate;
 
 		if (pWeaponOverride)
 		{
@@ -136,8 +136,8 @@ void BulletExt::InterceptBullet(BulletClass* pThis, TechnoClass* pSource, Weapon
 			}
 		}
 
-		if (!pTechnoTypeExt->Interceptor_KeepIntact)
-			pExt->Intercepted = isIntercepted;
+		if (isIntercepted && !pTechnoTypeExt->Interceptor_KeepIntact)
+			pExt->InterceptedStatus = InterceptedStatus::Intercepted;
 	}
 }
 
@@ -151,8 +151,8 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->FirerHouse)
 		.Process(this->CurrentStrength)
 		.Process(this->IsInterceptor)
-		.Process(this->Intercepted)
-		.Process(this->Intercepted_Detonate)
+		.Process(this->InterceptedStatus)
+		.Process(this->DetonateOnInterception)
 		.Process(this->LaserTrails)
 		;
 

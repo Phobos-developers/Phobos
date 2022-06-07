@@ -86,6 +86,8 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 	if (pData && pTypeData && pTypeData->Interceptor && !pThis->Target &&
 		!(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
 	{
+		BulletClass* pTargetBullet = nullptr;
+
 		for (auto const& pBullet : *BulletClass::Array)
 		{
 			auto pExt = BulletExt::ExtMap.Find(pBullet);
@@ -104,8 +106,8 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 					continue;
 			}
 
-			const auto &guardRange = pTypeData->Interceptor_GuardRange.Get(pThis);
-			const auto &minguardRange = pTypeData->Interceptor_MinimumGuardRange.Get(pThis);
+			const auto& guardRange = pTypeData->Interceptor_GuardRange.Get(pThis);
+			const auto& minguardRange = pTypeData->Interceptor_MinimumGuardRange.Get(pThis);
 
 			auto distance = pBullet->Location.DistanceFrom(pThis->Location);
 
@@ -116,10 +118,17 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 
 			if (EnumFunctions::CanTargetHouse(pTypeData->Interceptor_CanTargetHouses, pThis->Owner, bulletOwner))
 			{
-				pThis->SetTarget(pBullet);
+				pTargetBullet = pBullet;
+
+				if (pExt->InterceptedStatus == InterceptedStatus::Targeted)
+					continue;
+
 				break;
 			}
 		}
+
+		if (pTargetBullet)
+			pThis->SetTarget(pTargetBullet);
 	}
 }
 
@@ -290,11 +299,11 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 
 	if (!pThis || weaponIndex < 0)
 		return FLH;
-	
+
 	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	
+
 	auto pInf = abstract_cast<InfantryClass*>(pThis);
-	auto &pickedFLHs = pExt->WeaponBurstFLHs;
+	auto& pickedFLHs = pExt->WeaponBurstFLHs;
 
 	if (pThis->Veterancy.IsElite())
 	{

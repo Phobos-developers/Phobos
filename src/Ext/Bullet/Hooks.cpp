@@ -32,9 +32,9 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	if (!pBulletExt)
 		return 0;
 
-	if (pBulletExt->Intercepted)
+	if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 	{
-		if (pBulletExt->Intercepted_Detonate)
+		if (pBulletExt->DetonateOnInterception)
 			pThis->Detonate(pThis->GetCoords());
 
 		pThis->Limbo();

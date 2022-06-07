@@ -20,8 +20,8 @@ public:
 		HouseClass* FirerHouse;
 		int CurrentStrength;
 		bool IsInterceptor;
-		bool Intercepted;
-		bool Intercepted_Detonate;
+		InterceptedStatus InterceptedStatus;
+		bool DetonateOnInterception;
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		
 		PhobosTrajectory* Trajectory;
@@ -30,8 +30,8 @@ public:
 			, FirerHouse { nullptr }
 			, CurrentStrength { 0 }
 			, IsInterceptor { false }
-			, Intercepted { false }
-			, Intercepted_Detonate { true }
+			, InterceptedStatus { InterceptedStatus::None }
+			, DetonateOnInterception { true }
 			, LaserTrails {}
 			, Trajectory { nullptr }
 		{ }
