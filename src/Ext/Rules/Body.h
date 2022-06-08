@@ -69,7 +69,6 @@ public:
 			, BuildingPlacementPreview_TranslucentLevel { 3 }
 			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { -1,-1,-1 } }
-			, Pips_Shield_Building_Empty { }
 			, Pips_SelfHeal_Infantry {{ 13, 20 }}
 			, Pips_SelfHeal_Units {{ 13, 20 }}
 			, Pips_SelfHeal_Buildings {{ 13, 20 }}
