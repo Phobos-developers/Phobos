@@ -2727,6 +2727,40 @@ msgid ""
 "sequences from `Die1` to `Die5`."
 msgstr "弹头可以触发指定的`NotHuman=yes`的步兵的死亡动画序列，值代表`Die1`到`Die5`。"
 
+#: ../New-or-Enhanced-Logics.md:1198
+msgid ""
+"Launch superweapons on impact"
+msgstr "发射超武"
+
+#: ../New-or-Enhanced-Logics.md:1199
+msgid ""
+"Superweapons can now be launched when a warhead is detonated."
+msgstr "超武在对应常规弹头所引爆的格子上发射"
+
+#: ../New-or-Enhanced-Logics.md:1200
+msgid ""
+"`LaunchSW` specifies the superweapons to launch when the warhead is detonated."
+msgstr "`LaunchSW` 指定所要发射的超武"
+
+#: ../New-or-Enhanced-Logics.md:1201
+msgid ""
+"`LaunchSW.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons "
+"and sufficient fund to support `Money.Amout`. Otherwise they will be launched out of nowhere."
+msgstr "`LaunchSW.RealLaunch` 真实发射指仅使用弹头所属方目前拥有的超武。否则超武将无条件发射到指定格子，即无视是否拥有，是否够钱，是否充能"
+
+#: ../New-or-Enhanced-Logics.md:1202
+msgid ""
+"`LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of the superweapon,"
+" otherwise only non-inhibited superweapons are launched. "
+msgstr "`LaunchSW.IgnoreInhibitors` 是否忽略`SW.Inhibitors`"
+
+#: ../New-or-Enhanced-Logics.md:1203
+msgid ""
+"Animation weapons from Ares are _not_ supported yet."
+"Nevertheless, animation warheads may work under certain circumstances."
+" Also, due to the nature of some superweapon types, not all superweapons are suitable for launch."
+"目前Ares中的动画武器无法生效，动画弹头不全生效。自行探索，谨慎使用，后果自负。"
+
 #: ../New-or-Enhanced-Logics.md:1205
 msgid "Weapons"
 msgstr "武器"

@@ -7,6 +7,7 @@
 #include <HouseClass.h>
 #include <ScenarioClass.h>
 
+#include <Ext/Bullet/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/Anim/Body.h>
@@ -164,9 +165,14 @@ DEFINE_HOOK(0x469C98, BulletClass_DetonateAt_DamageAnimSelected, 0x0)
 			pVictim = Target->Owner;
 
 		if (auto unit = pTypeExt->CreateUnit.Get())
+		{
 			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
+		}
 		else if (!pAnim->Owner && pThis->Owner)
-			pAnim->Owner = pThis->Owner->Owner;
+		{
+			auto const pExt = BulletExt::ExtMap.Find(pThis);
+			pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
+		}
 	}
 	else if (pThis->WH == RulesClass::Instance->NukeWarhead)
 	{

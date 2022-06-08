@@ -291,23 +291,72 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 
 	if (!pThis || weaponIndex < 0)
 		return FLH;
-
+	
 	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	
+	auto pInf = abstract_cast<InfantryClass*>(pThis);
+	auto &pickedFLHs = pExt->WeaponBurstFLHs;
 
 	if (pThis->Veterancy.IsElite())
 	{
-		if (pExt->EliteWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
-		{
-			FLHFound = true;
-			FLH = pExt->EliteWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
-		}
+		if (pInf && pInf->IsDeployed())
+			pickedFLHs = pExt->EliteDeployedWeaponBurstFLHs;
+		else if (pInf && pInf->Crawling)
+			pickedFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
+		else
+			pickedFLHs = pExt->EliteWeaponBurstFLHs;
 	}
 	else
 	{
-		if (pExt->WeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+		if (pInf && pInf->IsDeployed())
+			pickedFLHs = pExt->DeployedWeaponBurstFLHs;
+		else if (pInf && pInf->Crawling)
+			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
+	}
+
+	if (pickedFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+	{
+		FLHFound = true;
+		FLH = pickedFLHs[weaponIndex][pThis->CurrentBurstIndex];
+	}
+
+	return FLH;
+}
+
+CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound)
+{
+	FLHFound = false;
+	CoordStruct FLH = CoordStruct::Empty;
+
+	if (!pThis || weaponIndex < 0)
+		return FLH;
+
+	if (auto pTechnoType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	{
+		Nullable<CoordStruct> pickedFLH;
+
+		if (pThis->IsDeployed())
 		{
+			if (weaponIndex == 0)
+				pickedFLH = pTechnoType->DeployedPrimaryFireFLH;
+			else if (weaponIndex == 1)
+				pickedFLH = pTechnoType->DeployedSecondaryFireFLH;
+		}
+		else
+		{
+			if (pThis->Crawling)
+			{
+				if (weaponIndex == 0)
+					pickedFLH = pTechnoType->PronePrimaryFireFLH;
+				else if (weaponIndex == 1)
+					pickedFLH = pTechnoType->ProneSecondaryFireFLH;
+			}
+		}
+
+		if (pickedFLH.isset())
+		{
+			FLH = pickedFLH.Get();
 			FLHFound = true;
-			FLH = pExt->WeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
 		}
 	}
 

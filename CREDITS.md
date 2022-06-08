@@ -110,6 +110,7 @@ This page lists all the individual contributions to the project by their author.
   - Override Uncloaked Underwater attack behavior
   - AI Aircraft docks fix
   - Shared Ammo logic
+  - Customizable FLH When Infantry Is Prone Or Deployed
 - **Starkku**:
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
@@ -157,7 +158,9 @@ This page lists all the individual contributions to the project by their author.
    - Interceptor logic prototype
    - LaserTrails prototype
    - Laser fixes prototype
-- **Trsdy** - Jumpjet facing fix
+- **Trsdy**
+   - Jumpjet facing fix
+   - Warhead superweapon launch logic
 - **ststl** - Digital Display
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix

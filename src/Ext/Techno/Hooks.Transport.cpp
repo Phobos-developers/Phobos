@@ -30,9 +30,7 @@ DEFINE_HOOK(0x6F8FD7, TechnoClass_ThreatEvals_OpenToppedOwner, 0x5)       // Tec
 		return 0;
 	}
 
-	auto pTransport = pThis->Transporter;
-
-	if (pTransport)
+	if (auto pTransport = pThis->Transporter)
 	{
 		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
 		{
@@ -59,7 +57,7 @@ DEFINE_HOOK(0x701881, TechnoClass_ChangeHouse_Passenger_SyncOwner, 0x5)
 
 			while (pPassenger->NextObject)
 			{
-				pPassenger = static_cast<FootClass*>(pPassenger->NextObject);
+				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 
 				if (pPassenger)
 					pPassenger->SetOwningHouse(pThis->Owner, false);
@@ -127,7 +125,7 @@ DEFINE_HOOK(0x737F80, TechnoClass_ReceiveDamage_Cargo_SyncOwner, 0x6)
 
 			while (pPassenger->NextObject)
 			{
-				pPassenger = static_cast<FootClass*>(pPassenger->NextObject);
+				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 				pExt = TechnoExt::ExtMap.Find(pPassenger);
 
 				if (pExt->OriginalPassengerOwner)
