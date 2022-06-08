@@ -232,8 +232,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
 	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 
-	this->DigitalDisplayType.Read(exINI, pSection, "DigitalDisplayType");
-	this->DigitalDisplayType_Shield.Read(exINI, pSection, "DigitalDisplayType.Shield");
+	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 }
 
 template <typename T>
@@ -315,8 +314,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelfHealGainType)
 		.Process(this->Passengers_SyncOwner)
 		.Process(this->Passengers_SyncOwner_RevertOnExit)
-		.Process(this->DigitalDisplayType)
-		.Process(this->DigitalDisplayType_Shield)
+		.Process(this->DigitalDisplayTypes)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

@@ -181,11 +181,7 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 			pShieldData->DrawShieldBar(iLength, pLocation, pBound);
 	}
 
-	if (Phobos::Config::DigitalDisplay_Enable)
-	{
-		DigitalDisplayTypeClass::DigitalDisplay(pThis, pLocation, true);
-		DigitalDisplayTypeClass::DigitalDisplay(pThis, pLocation, false);
-	}
+	DigitalDisplayTypeClass::RunDigitalDisplay(pThis, pLocation);
 
 	return 0;
 }
@@ -206,11 +202,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 		}
 	}
 
-	if (Phobos::Config::DigitalDisplay_Enable)
-	{
-		DigitalDisplayTypeClass::DigitalDisplay(pThis, pLocation, true);
-		DigitalDisplayTypeClass::DigitalDisplay(pThis, pLocation, false);
-	}
+	DigitalDisplayTypeClass::RunDigitalDisplay(pThis, pLocation);
 
 	return 0;
 }

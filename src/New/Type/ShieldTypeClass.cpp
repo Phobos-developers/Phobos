@@ -89,7 +89,6 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Pips_Background)
 		.Process(this->Pips_Building)
 		.Process(this->Pips_Building_Empty)
-		.Process(this->DigitalDisplayType)
 		;
 }
 

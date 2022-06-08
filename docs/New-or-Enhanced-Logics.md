@@ -50,6 +50,17 @@ Offset and interval: Positive integer are to the right(x) and down(y), negative 
 
 All will not be displayed if not written or if the corresponding type does not exist.
 
+InfoTypes:
+- Health
+- Shield
+- Ammo
+- MindControl
+- Spawns
+- Passengers
+- Tiberium
+- Experience
+- Occupants
+
 In `Ra2MD.ini`:
 
 ```ini
@@ -62,16 +73,13 @@ In `rulesmd.ini`:
 [DigitalDisplayTypes] ;New registry for registering digital display types
 
 [AudioVisual]
-Buildings.DefaultDigitalDisplayTypeHP=  ; DigitalDisplayType, the default digital display type used for building health
-Buildings.DefaultDigitalDisplayTypeSP=  ; DigitalDisplayType, the default digital display type used for building shield
-Infantrys.DefaultDigitalDisplayTypeHP=  ; DigitalDisplayType, the default digital display type used for infantry health
-Infantrys.DefaultDigitalDisplayTypeSP=  ; DigitalDisplayType, the default digital display type used for infantry shield
-Units.DefaultDigitalDisplayTypeHP=      ; DigitalDisplayType, the default digital display type used for vehicle health
-Units.DefaultDigitalDisplayTypeSP=      ; DigitalDisplayType, the default digital display type used for vehicle shield
-Aircrafts.DefaultDigitalDisplayTypeHP=  ; DigitalDisplayType, the default digital display type used for aircraft health
-Aircrafts.DefaultDigitalDisplayTypeSP=  ; DigitalDisplayType, the default digital display type used for aircraft shield
+Buildings.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayType, the default digital display type used for building health
+Infantrys.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayType, the default digital display type used for infantry health
+Units.DefaultDigitalDisplayTypes=       ; list of DigitalDisplayType, the default digital display type used for vehicle health
+Aircrafts.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayType, the default digital display type used for aircraft health
 
 [SomeDigitalDisplayType]
+InfoType=                               ; InfoType, which value should this display
 Text.ColorHigh=                         ; RGB, the color of the Text digital display when green HP, default 0,255,0
 Text.ColorMid=                          ; RGB, the color of the Text digital display when yellow HP,  default 255,255,0
 Text.ColorLow=                          ; RGB, the color of the Text digital display when red HP, default 255,0,0
@@ -86,14 +94,10 @@ Offset.WithoutShield=                   ; integer - x,y , the offset of HP when 
 Align=                                  ; Left/Right/Center/Default, Alignment mode, default Default
 Anchor=                                 ; Left/Right/TopLeft/TopRight, start drawing digitals point anchor the healthbar, default TopLeft
 Percentage=                             ; boolean, whether use percentage style, default no
-HideStrength=                           ; boolean, whether don't display strength, default no
+HideStrength=                           ; boolean, whether don't display upper limit, default no
 
 [SomeTechnoType]
-DigitalDisplayType=                     ; DigitalDisplayType, the type of digital display used for this unit HP, the default [AudioVisual] in the corresponding type
-DigitalDisplayType.Shield=              ; DigitalDisplayType, override [ShieldType] > DigitalDisplayType, default don't override
-
-[SomeShieldType]
-DigitalDisplayType=                     ; DigitalDisplayType, the digital display type used for the shield, defaulted to the corresponding type in [AudioVisual] of the unit to which it is attached
+DigitalDisplayTypes=                     ; list of DigitalDisplayType, default to [AudioVisual]
 
 ```
 

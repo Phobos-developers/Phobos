@@ -39,8 +39,6 @@ public:
 	Valueable<Vector3D<int>> Pips_Building;
 	Nullable<int> Pips_Building_Empty;
 
-	Nullable<DigitalDisplayTypeClass*> DigitalDisplayType;
-
 private:
 	Valueable<double> Respawn_Rate__InMinutes;
 	Valueable<double> SelfHealing_Rate__InMinutes;
@@ -73,7 +71,6 @@ public:
 		, Pips_Background { }
 		, Pips_Building { { -1,-1,-1 } }
 		, Pips_Building_Empty { }
-		, DigitalDisplayType()
 	{ };
 
 	virtual ~ShieldTypeClass() override = default;

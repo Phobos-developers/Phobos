@@ -7,10 +7,6 @@
 class DigitalDisplayTypeClass final : public Enumerable<DigitalDisplayTypeClass>
 {
 public:
-	//static DigitalDisplayTypeClass BuildingsDefaultHP;
-	//static DigitalDisplayTypeClass BuildingsDefaultSP;
-	//static DigitalDisplayTypeClass UnitsDefaultHP;
-	//static DigitalDisplayTypeClass UnitsDefaultSP;
 	Valueable<ColorStruct> Text_ColorHigh;
 	Valueable<ColorStruct> Text_ColorMid;
 	Valueable<ColorStruct> Text_ColorLow;
@@ -26,7 +22,8 @@ public:
 	Valueable<Vector2D<int>> SHP_Interval_Building;
 	Valueable<bool> Percentage;
 	Valueable<bool> HideStrength;
-	
+	PhobosFixedString<0x20> InfoType;
+
 	enum class AlignType : int
 	{
 		Default = 0,
@@ -43,11 +40,25 @@ public:
 		TopLeft = 2,
 		TopRight = 3
 	};
-	
+
+	enum class Info : int
+	{
+		Health = 0,
+		Shield = 1,
+		Ammo = 2,
+		MindControl = 3,
+		Spawns = 4,
+		Passengers = 5,
+		Tiberium = 6,
+		Experience = 7,
+		Occupants = 8
+	};
+
 	SHPStruct* SHPFile;
 	ConvertClass* PALFile;
 	AlignType Alignment;
 	AnchorType Anchoring;
+	Info InfoClass;
 
 	DigitalDisplayTypeClass(const char* pTitle = NONE_STR) : Enumerable<DigitalDisplayTypeClass>(pTitle)
 		, Text_ColorHigh({ 0, 255, 0 })
@@ -67,17 +78,22 @@ public:
 		, Anchoring(AnchorType::TopLeft)
 		, Percentage(false)
 		, HideStrength(false)
-	{ }
-	
+		, InfoType("Health")
+		, InfoClass(Info::Health)
+	{
+	}
+
 	virtual ~DigitalDisplayTypeClass() override = default;
 
 	virtual void LoadFromINI(CCINIClass* pINI) override;
 	virtual void LoadFromStream(PhobosStreamReader& Stm);
 	virtual void SaveToStream(PhobosStreamWriter& Stm);
 
-	static void DigitalDisplay(TechnoClass* pThis, Point2D* pLocation, bool Shield);
-	static void DigitalDisplayText(TechnoClass* pThis, DigitalDisplayTypeClass* pDisplayType, Point2D Pos, bool Shield);
-	static void DigitalDisplaySHP(TechnoClass* pThis, DigitalDisplayTypeClass* pDisplayType, Point2D Pos, bool Shield);
+	void SetDisplayInfo();
+	static void RunDigitalDisplay(TechnoClass* pThis, Point2D* pLocation);
+	void DigitalDisplay(TechnoClass* pThis, Point2D* pLocation);
+	void DigitalDisplayText(TechnoClass* pThis, Point2D Pos, int ValueA, int ValueB);
+	void DigitalDisplaySHP(TechnoClass* pThis, Point2D Pos, int ValueA, int ValueB);
 
 private:
 	template <typename T>

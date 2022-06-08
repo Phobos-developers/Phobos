@@ -1,6 +1,7 @@
 #include "DigitalDisplayTypeClass.h"
 
 #include <TacticalClass.h>
+#include <SpawnManagerClass.h>
 
 #include <PhobosHelper/Helper.h>
 #include <Utilities/TemplateDef.h>
@@ -14,7 +15,7 @@ const char* Enumerable<DigitalDisplayTypeClass>::GetMainSection()
 	return "DigitalDisplayTypes";
 }
 
-void DigitalDisplayTypeClass::LoadFromINI(CCINIClass * pINI)
+void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* section = this->Name;
 
@@ -35,6 +36,8 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass * pINI)
 	this->Anchor.Read(pINI, section, "Anchor");
 	this->Percentage.Read(exINI, section, "Percentage");
 	this->HideStrength.Read(exINI, section, "HideStrength");
+	this->InfoType.Read(pINI, section, "InfoType");
+	this->SetDisplayInfo();
 
 	if (strcmp(Align.data(), "Left") == 0)
 		Alignment = AlignType::Left;
@@ -58,7 +61,7 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass * pINI)
 	{
 		if (strcmp(SHP_SHPFile.data(), "") != 0)
 			SHPFile = FileSystem::LoadSHPFile(SHP_SHPFile.data());
-		
+
 		if (strcmp(SHP_PALFile.data(), "") != 0)
 			PALFile = FileSystem::LoadPALFile(SHP_PALFile.data(), DSurface::Composite);
 		else
@@ -66,152 +69,258 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass * pINI)
 	}
 }
 
+void DigitalDisplayTypeClass::SetDisplayInfo()
+{
+	if (strcmp(InfoType.data(), "Health") == 0)
+		InfoClass = Info::Health;
+	else if (strcmp(InfoType.data(), "Shield") == 0)
+		InfoClass = Info::Shield;
+	else if (strcmp(InfoType.data(), "Ammo") == 0)
+		InfoClass = Info::Ammo;
+	else if (strcmp(InfoType.data(), "MindControl") == 0)
+		InfoClass = Info::MindControl;
+	else if (strcmp(InfoType.data(), "Spawns") == 0)
+		InfoClass = Info::Spawns;
+	else if (strcmp(InfoType.data(), "Passengers") == 0)
+		InfoClass = Info::Passengers;
+	else if (strcmp(InfoType.data(), "Tiberium") == 0)
+		InfoClass = Info::Tiberium;
+	else if (strcmp(InfoType.data(), "Experience") == 0)
+		InfoClass = Info::Experience;
+	else if (strcmp(InfoType.data(), "Occupants") == 0)
+		InfoClass = Info::Occupants;
+}
+
 int operator & (DigitalDisplayTypeClass::AnchorType a, DigitalDisplayTypeClass::AnchorType b)
 {
 	return static_cast<int>(a) & static_cast<int>(b);
 }
 
-void DigitalDisplayTypeClass::DigitalDisplay(TechnoClass* pThis, Point2D* pLocation, bool Shield)
-{//pos use for reference ShieldClass::DrawShieldBar_Building
-	TechnoTypeClass* pType = pThis->GetTechnoType();
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	Point2D Loc = *pLocation;
-
-	if (Shield && (pExt->Shield == nullptr || pExt->Shield->IsBrokenAndNonRespawning()))
+void DigitalDisplayTypeClass::RunDigitalDisplay(TechnoClass* pThis, Point2D* pLocation)
+{
+	if (!Phobos::Config::DigitalDisplay_Enable)
 		return;
 
-	DigitalDisplayTypeClass* pDisplayType = nullptr;
-	AbstractType ThisAbstractType = pThis->WhatAmI();
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	ValueableVector<DigitalDisplayTypeClass*>* pDefaultTypes = nullptr;
 
-	switch (ThisAbstractType)
+	switch (pThis->WhatAmI())
 	{
 	case AbstractType::Building:
-		pDisplayType = Shield ?
-			pTypeExt->DigitalDisplayType_Shield.Get(pExt->Shield->GetType()->DigitalDisplayType.Get(RulesExt::Global()->Buildings_DefaultDigitalDisplayTypeSP.Get()))
-			: pTypeExt->DigitalDisplayType.Get(RulesExt::Global()->Buildings_DefaultDigitalDisplayTypeHP.Get());
+		pDefaultTypes = &RulesExt::Global()->Buildings_DefaultDigitalDisplayTypes;
 		break;
 	case AbstractType::Infantry:
-		pDisplayType = Shield ?
-			pTypeExt->DigitalDisplayType_Shield.Get(pExt->Shield->GetType()->DigitalDisplayType.Get(RulesExt::Global()->Infantrys_DefaultDigitalDisplayTypeSP.Get()))
-			: pTypeExt->DigitalDisplayType.Get(RulesExt::Global()->Infantrys_DefaultDigitalDisplayTypeHP.Get());
+		pDefaultTypes = &RulesExt::Global()->Infantrys_DefaultDigitalDisplayTypes;
 		break;
 	case AbstractType::Unit:
-		pDisplayType = Shield ?
-			pTypeExt->DigitalDisplayType_Shield.Get(pExt->Shield->GetType()->DigitalDisplayType.Get(RulesExt::Global()->Units_DefaultDigitalDisplayTypeSP.Get()))
-			: pTypeExt->DigitalDisplayType.Get(RulesExt::Global()->Units_DefaultDigitalDisplayTypeHP.Get());
+		pDefaultTypes = &RulesExt::Global()->Units_DefaultDigitalDisplayTypes;
 		break;
 	case AbstractType::Aircraft:
-		pDisplayType = Shield ?
-			pTypeExt->DigitalDisplayType_Shield.Get(pExt->Shield->GetType()->DigitalDisplayType.Get(RulesExt::Global()->Aircrafts_DefaultDigitalDisplayTypeSP.Get()))
-			: pTypeExt->DigitalDisplayType.Get(RulesExt::Global()->Aircrafts_DefaultDigitalDisplayTypeHP.Get());
+		pDefaultTypes = &RulesExt::Global()->Aircrafts_DefaultDigitalDisplayTypes;
 		break;
 	default:
-		break;
+		return;
 	}
 
-	if (pDisplayType == nullptr)
-		return;
+	if (pTypeExt->DigitalDisplayTypes.empty())
+	{
+		for (DigitalDisplayTypeClass*& pDisplayType : *pDefaultTypes)
+		{
+			pDisplayType->DigitalDisplay(pThis, pLocation);
+		}
+	}
+	else
+	{
+		for (DigitalDisplayTypeClass*& pDisplayType : pTypeExt->DigitalDisplayTypes)
+		{
+			pDisplayType->DigitalDisplay(pThis, pLocation);
+		}
+	}
+}
 
-	HealthBarAnchors Anchor = (pDisplayType->Anchoring & DigitalDisplayTypeClass::AnchorType::Right
+void DigitalDisplayTypeClass::DigitalDisplay(TechnoClass* pThis, Point2D* pLocation)
+{//pos use for reference ShieldClass::DrawShieldBar_Building
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	Point2D Loc = *pLocation;
+	int ValueA = 0;
+	int ValueB = 0;
+	AbstractType ThisAbstractType = pThis->WhatAmI();
+	bool isBuilding = ThisAbstractType == AbstractType::Building;
+	bool Shield = InfoClass == Info::Shield;
+
+	switch (InfoClass)
+	{
+	case Info::Health:
+	{
+		ValueA = pThis->Health;
+		ValueB = pType->Strength;
+		break;
+	}
+	case Info::Shield:
+	{
+		if (pExt->Shield == nullptr || pExt->Shield->IsBrokenAndNonRespawning())
+			return;
+		ValueA = pExt->Shield->GetHP();
+		ValueB = pExt->Shield->GetType()->Strength.Get();
+		break;
+	}
+	case Info::Ammo:
+	{
+		if (pType->Ammo <= 0)
+			return;
+		ValueA = pThis->Ammo;
+		ValueB = pType->Ammo;
+		break;
+	}
+	case Info::MindControl:
+	{
+		if (pThis->CaptureManager == nullptr)
+			return;
+		ValueA = pThis->CaptureManager->ControlNodes.Count;
+		ValueB = pThis->CaptureManager->MaxControlNodes;
+		break;
+	}
+	case Info::Spawns:
+	{
+		if (pThis->SpawnManager == nullptr || pType->Spawns == nullptr || pType->SpawnsNumber <= 0)
+			return;
+		ValueA = pThis->SpawnManager->SpawnCount;
+		ValueB = pType->SpawnsNumber;
+		break;
+	}
+	case Info::Passengers:
+	{
+		if (pType->Passengers <= 0)
+			return;
+		ValueA = pThis->Passengers.NumPassengers;
+		ValueB = pType->Passengers;
+		break;
+	}
+	case Info::Tiberium:
+	{
+		if (pType->Storage <= 0)
+			return;
+		ValueA = static_cast<int>(pThis->Tiberium.GetTotalAmount());
+		ValueB = pType->Storage;
+		break;
+	}
+	case Info::Experience:
+	{
+		ValueA = static_cast<int>(pThis->Veterancy.Veterancy * RulesClass::Instance->VeteranRatio * pType->GetCost());
+		ValueB = static_cast<int>(2.0 * RulesClass::Instance->VeteranRatio * pType->GetCost());
+		break;
+	}
+	case Info::Occupants:
+	{
+		if (!isBuilding)
+			return;
+		BuildingTypeClass* pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
+		BuildingClass* pBuilding = abstract_cast<BuildingClass*>(pThis);
+		if (!pBuildingType->CanBeOccupied)
+			return;
+		ValueA = pBuilding->Occupants.Count;
+		ValueB = pBuildingType->MaxNumberOccupants;
+		break;
+	}
+	default:
+	{
+		ValueA = pThis->Health;
+		ValueB = pType->Strength;
+		break;
+	}
+	}
+
+	HealthBarAnchors Anchor = (this->Anchoring & DigitalDisplayTypeClass::AnchorType::Right
 		? HealthBarAnchors::TopRight : HealthBarAnchors::TopLeft);
 	Point2D Pos = TechnoExt::GetHealthBarPosition(pThis, Shield, Anchor);
-		
+
 	if (pExt->Shield == nullptr ||
 		pExt->Shield->IsBrokenAndNonRespawning())
 	{
-		Pos.X += pDisplayType->Offset_WithoutShield.Get(pDisplayType->Offset.Get()).X;
-		Pos.Y += pDisplayType->Offset_WithoutShield.Get(pDisplayType->Offset.Get()).Y;
+		Pos.X += Offset_WithoutShield.Get(Offset.Get()).X;
+		Pos.Y += Offset_WithoutShield.Get(Offset.Get()).Y;
 	}
 	else
 	{
-		Pos.X += pDisplayType->Offset.Get().X;
-		Pos.Y += pDisplayType->Offset.Get().Y;
+		Pos.X += Offset.Get().X;
+		Pos.Y += Offset.Get().Y;
 	}
 
-	bool UseSHP = pDisplayType->UseSHP;
-
 	if (UseSHP)
-		DigitalDisplaySHP(pThis, pDisplayType, Pos, Shield);
+	{
+		if (isBuilding)
+			Pos.X -= 4 + (!Shield ? 6 : 0);
+
+		if (Shield)
+			Pos.Y -= SHPFile->Height - 3;
+
+		DigitalDisplaySHP(pThis, Pos, ValueA, ValueB);
+	}
 	else
-		DigitalDisplayText(pThis, pDisplayType, Pos, Shield);
+	{
+		if (Shield)
+			Pos.Y -= 10;
+
+		if (isBuilding)
+			Pos.X -= 4 + (!Shield ? 6 : 0);
+
+		DigitalDisplayText(pThis, Pos, ValueA, ValueB);
+	}
 }
 
-void DigitalDisplayTypeClass::DigitalDisplayText(TechnoClass* pThis, DigitalDisplayTypeClass* pDisplayType, Point2D Pos, bool Shield)
+void DigitalDisplayTypeClass::DigitalDisplayText(TechnoClass* pThis, Point2D Pos, int ValueA, int ValueB)
 {
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
 	wchar_t Healthpoint[0x20];
 
-	if (pDisplayType->Percentage.Get())
+	if (Percentage.Get())
 	{
-		if (Shield)
-			swprintf_s(Healthpoint, L"%d", int(pExt->Shield->GetHealthRatio() * 100));
-		else
-			swprintf_s(Healthpoint, L"%d", int(pThis->GetHealthPercentage() * 100));
+		swprintf_s(Healthpoint, L"%d", static_cast<int>((static_cast<double>(ValueA) / ValueB) * 100));
 		wcscat_s(Healthpoint, L"%%");
 	}
-	else if (pDisplayType->HideStrength.Get())
+	else if (HideStrength.Get())
 	{
-		if (Shield)
-			swprintf_s(Healthpoint, L"%d", pExt->Shield->GetHP());
-		else
-			swprintf_s(Healthpoint, L"%d", pThis->Health);
+		swprintf_s(Healthpoint, L"%d", ValueA);
 	}
 	else
 	{
-		if (Shield)
-			swprintf_s(Healthpoint, L"%d/%d", pExt->Shield->GetHP(), pExt->Shield->GetType()->Strength.Get());
-		else
-			swprintf_s(Healthpoint, L"%d/%d", pThis->Health, pThis->GetTechnoType()->Strength);
+		swprintf_s(Healthpoint, L"%d/%d", ValueA, ValueB);
 	}
+
 	COLORREF Color;
+	double ratio = static_cast<double>(ValueA) / ValueB;
 
-	if (Shield)
-	{
-		if (pExt->Shield->IsGreenSP())
-			Color = Drawing::RGB2DWORD(pDisplayType->Text_ColorHigh.Get());
-		else if (pExt->Shield->IsYellowSP())
-			Color = Drawing::RGB2DWORD(pDisplayType->Text_ColorMid.Get());
-		else
-			Color = Drawing::RGB2DWORD(pDisplayType->Text_ColorLow.Get());
-	}
+	if (ratio > RulesClass::Instance->ConditionYellow)
+		Color = Drawing::RGB2DWORD(Text_ColorHigh.Get());
+	else if (ratio > RulesClass::Instance->ConditionRed)
+		Color = Drawing::RGB2DWORD(Text_ColorMid.Get());
 	else
-	{
-		if (pThis->IsRedHP() || pThis->Health == 0)
-			Color = Drawing::RGB2DWORD(pDisplayType->Text_ColorLow.Get());
-		else if (pThis->IsYellowHP())
-			Color = Drawing::RGB2DWORD(pDisplayType->Text_ColorMid.Get());
-		else
-			Color = Drawing::RGB2DWORD(pDisplayType->Text_ColorHigh.Get());
-	}
+		Color = Drawing::RGB2DWORD(Text_ColorLow.Get());
 
-	bool ShowBackground = pDisplayType->Text_Background;
+	bool ShowBackground = Text_Background;
 	RectangleStruct rect = { 0,0,0,0 };
 	DSurface::Temp->GetRect(&rect);
 	COLORREF BackColor = 0;
 	TextPrintType PrintType;
 	int TextLength = wcslen(Healthpoint);
 
-	if (pDisplayType->Anchoring & DigitalDisplayTypeClass::AnchorType::Top)
+	if (Anchoring & DigitalDisplayTypeClass::AnchorType::Top)
 		Pos.Y -= 20;
 
-	if (Shield)
-		Pos.Y -= 10;
-
-	switch (pDisplayType->Alignment)
+	switch (Alignment)
 	{
 	case DigitalDisplayTypeClass::AlignType::Left:
 	{
 		PrintType = TextPrintType::FullShadow;
-		if (pDisplayType->Anchoring == DigitalDisplayTypeClass::AnchorType::Left)
+		if (Anchoring == DigitalDisplayTypeClass::AnchorType::Left)
 			Pos.X -= TextLength * 6;
 	}
 	break;
 	case DigitalDisplayTypeClass::AlignType::Right:
 	{
 		PrintType = TextPrintType(int(TextPrintType::Right) + int(TextPrintType::FullShadow));
-		if (pDisplayType->Anchoring == DigitalDisplayTypeClass::AnchorType::Right)
+		if (Anchoring == DigitalDisplayTypeClass::AnchorType::Right)
 			Pos.X += TextLength * 6;
 		if (pThis->WhatAmI() == AbstractType::Building)
 			Pos.X += 6;
@@ -244,11 +353,8 @@ void DigitalDisplayTypeClass::DigitalDisplayText(TechnoClass* pThis, DigitalDisp
 		break;
 	}
 
-	if (pDisplayType->Anchoring & DigitalDisplayTypeClass::AnchorType::Top)
+	if (Anchoring & DigitalDisplayTypeClass::AnchorType::Top)
 		Pos.Y -= 4;
-
-	if (isBuilding)
-		Pos.X -= 4 + (!Shield ? 6 : 0);
 
 	//0x400 is TextPrintType::Background pr#563 YRpp
 	PrintType = TextPrintType(int(PrintType) + (ShowBackground ? 0x400 : 0));
@@ -257,81 +363,57 @@ void DigitalDisplayTypeClass::DigitalDisplayText(TechnoClass* pThis, DigitalDisp
 	DSurface::Temp->DrawTextA(Healthpoint, &rect, &Pos, Color, BackColor, PrintType);
 }
 
-void DigitalDisplayTypeClass::DigitalDisplaySHP(TechnoClass* pThis, DigitalDisplayTypeClass* pDisplayType, Point2D Pos, bool Shield)
+void DigitalDisplayTypeClass::DigitalDisplaySHP(TechnoClass* pThis, Point2D Pos, int ValueA, int ValueB)
 {
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	DynamicVectorClass<char>vStrength;
-	DynamicVectorClass<char>vHealth;
+	DynamicVectorClass<char>vA;
+	DynamicVectorClass<char>vB;
 	bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
-	const Vector2D<int> Interval = (isBuilding ? pDisplayType->SHP_Interval_Building.Get() : pDisplayType->SHP_Interval.Get());
-	SHPStruct* SHPFile = pDisplayType->SHPFile;
-	ConvertClass* PALFile = pDisplayType->PALFile;
-	bool Percentage = pDisplayType->Percentage.Get();
-	bool HideStrength = pDisplayType->HideStrength.Get();
+	const Vector2D<int> Interval = (isBuilding ? SHP_Interval_Building.Get() : SHP_Interval.Get());
 	int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
 
 	if (isBuilding)
 	{
-		BuildingTypeClass* pBuilding = abstract_cast<BuildingTypeClass*>(pThis->GetTechnoType());
-		int Height = pBuilding->GetFoundationHeight(true);
+		BuildingTypeClass* pBuildingType = abstract_cast<BuildingTypeClass*>(pThis->GetTechnoType());
+		int Height = pBuildingType->GetFoundationHeight(true);
 		iLength = Height * 7 + Height / 2;
 	}
 
 	if (SHPFile == nullptr || PALFile == nullptr)
 		return;
 
-	if (pDisplayType->Anchoring & DigitalDisplayTypeClass::AnchorType::Top)
+	if (Anchoring & DigitalDisplayTypeClass::AnchorType::Top)
 	{
 		Pos.Y -= isBuilding ? 14 : 8;
 		Pos.Y -= SHPFile->Height;
 	}
 
-	if (isBuilding)
-		Pos.X -= 4 + (!Shield ? 6 : 0);
-
-	if (Shield)
-		Pos.Y -= SHPFile->Height - 3;
-
-	if (Percentage)
+	if (Percentage.Get())
 	{
-		if (Shield)
-			vHealth = IntToVector(int(pExt->Shield->GetHealthRatio() * 100));
-		else
-			vHealth = IntToVector(int(pThis->GetHealthPercentage() * 100));
+		vA = IntToVector(static_cast<int>(static_cast<double>(ValueA) / ValueB * 100));
 	}
 	else
 	{
-		if (Shield)
-		{
-			vHealth = IntToVector(pExt->Shield->GetHP());
+		vA = IntToVector(ValueA);
 
-			if (!HideStrength)
-				vStrength = IntToVector(pExt->Shield->GetType()->Strength.Get());
-		}
-		else
-		{
-			vHealth = IntToVector(pThis->Health);
-
-			if (!HideStrength)
-				vStrength = IntToVector(pThis->GetTechnoType()->Strength);
-		}
+		if (!HideStrength.Get())
+			vB = IntToVector(ValueB);
 	}
 
 	bool LeftToRight = true;
 
-	switch (pDisplayType->Alignment)
+	switch (Alignment)
 	{
 	case DigitalDisplayTypeClass::AlignType::Left:
 	{
-		if (pDisplayType->Anchoring == DigitalDisplayTypeClass::AnchorType::Left)
-			Pos.X -= (vHealth.Count + vStrength.Count + (Percentage || !HideStrength)) * Interval.X + 2;
+		if (Anchoring == DigitalDisplayTypeClass::AnchorType::Left)
+			Pos.X -= (vA.Count + vB.Count + (Percentage || !HideStrength)) * Interval.X + 2;
 	}
 	break;
 	case DigitalDisplayTypeClass::AlignType::Right:
 	{
 		LeftToRight = false;
-		if (pDisplayType->Anchoring == DigitalDisplayTypeClass::AnchorType::Right)
-			Pos.X += (vHealth.Count + vStrength.Count + (Percentage || !HideStrength)) * Interval.X + 2;
+		if (Anchoring == DigitalDisplayTypeClass::AnchorType::Right)
+			Pos.X += (vA.Count + vB.Count + (Percentage || !HideStrength)) * Interval.X + 2;
 	}
 	break;
 	case DigitalDisplayTypeClass::AlignType::Center:
@@ -351,21 +433,21 @@ void DigitalDisplayTypeClass::DigitalDisplaySHP(TechnoClass* pThis, DigitalDispl
 
 		if (Percentage)
 		{
-			FixValueX = (vHealth.Count + 1) * Interval.X / 2;
-			FixValueY = (vHealth.Count + 1) * Interval.Y / 2;
+			FixValueX = (vA.Count + 1) * Interval.X / 2;
+			FixValueY = (vA.Count + 1) * Interval.Y / 2;
 		}
 		else if (HideStrength)
 		{
-			FixValueX = vHealth.Count * Interval.X / 2;
-			FixValueY = vHealth.Count * Interval.Y / 2;
+			FixValueX = vA.Count * Interval.X / 2;
+			FixValueY = vA.Count * Interval.Y / 2;
 		}
 		else
 		{
-			FixValueX = (vHealth.Count + vStrength.Count + 1) * Interval.X / 2;
-			FixValueY = (vHealth.Count + vStrength.Count + 1) * Interval.Y / 2;
+			FixValueX = (vA.Count + vB.Count + 1) * Interval.X / 2;
+			FixValueY = (vA.Count + vB.Count + 1) * Interval.Y / 2;
 		}
-		
-		if (pDisplayType->Anchoring & DigitalDisplayTypeClass::AnchorType::Right)
+
+		if (Anchoring & DigitalDisplayTypeClass::AnchorType::Right)
 			Pos.X += FixValueX;
 		else
 			Pos.X -= FixValueX;
@@ -376,7 +458,7 @@ void DigitalDisplayTypeClass::DigitalDisplaySHP(TechnoClass* pThis, DigitalDispl
 	default:
 	{
 		if (!isBuilding)
-		{		
+		{
 			int FixValueX = 0;
 			int FixValueY = 0;
 
@@ -384,21 +466,21 @@ void DigitalDisplayTypeClass::DigitalDisplaySHP(TechnoClass* pThis, DigitalDispl
 
 			if (Percentage)
 			{
-				FixValueX = (vHealth.Count + 1) * Interval.X / 2;
-				FixValueY = (vHealth.Count + 1) * Interval.Y / 2;
+				FixValueX = (vA.Count + 1) * Interval.X / 2;
+				FixValueY = (vA.Count + 1) * Interval.Y / 2;
 			}
 			else if (HideStrength)
 			{
-				FixValueX = vHealth.Count * Interval.X / 2;
-				FixValueY = vHealth.Count * Interval.Y / 2;
+				FixValueX = vA.Count * Interval.X / 2;
+				FixValueY = vA.Count * Interval.Y / 2;
 			}
 			else
 			{
-				FixValueX = (vHealth.Count + vStrength.Count + 1) * Interval.X / 2;
-				FixValueY = (vHealth.Count + vStrength.Count + 1) * Interval.Y / 2;
+				FixValueX = (vA.Count + vB.Count + 1) * Interval.X / 2;
+				FixValueY = (vA.Count + vB.Count + 1) * Interval.Y / 2;
 			}
 
-			if (int(pDisplayType->Anchoring) & int(DigitalDisplayTypeClass::AnchorType::Right))
+			if (int(Anchoring) & int(DigitalDisplayTypeClass::AnchorType::Right))
 				Pos.X += FixValueX;
 			else
 				Pos.X -= FixValueX;
@@ -411,10 +493,13 @@ void DigitalDisplayTypeClass::DigitalDisplaySHP(TechnoClass* pThis, DigitalDispl
 
 	int base = 0;
 	int signframe = 30;
+	double ratio = static_cast<double>(ValueA) / ValueB;
 
-	if (!Shield && pThis->IsYellowHP() || Shield && pExt->Shield->IsYellowSP())
+	if (ratio > RulesClass::Instance->ConditionYellow)
+		base = 0;
+	else if (ratio > RulesClass::Instance->ConditionRed)
 		base = 10;
-	else if (!Shield && (pThis->IsRedHP() || pThis->Health == 0) || Shield && pExt->Shield->IsRedSP())
+	else
 		base = 20;
 
 	if (base == 10)
@@ -427,9 +512,9 @@ void DigitalDisplayTypeClass::DigitalDisplaySHP(TechnoClass* pThis, DigitalDispl
 
 	if (LeftToRight)
 	{
-		for (int i = vHealth.Count - 1; i >= 0; i--)
+		for (int i = vA.Count - 1; i >= 0; i--)
 		{
-			int num = base + vHealth.GetItem(i);
+			int num = base + vA.GetItem(i);
 
 			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
 				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
@@ -448,9 +533,9 @@ void DigitalDisplayTypeClass::DigitalDisplaySHP(TechnoClass* pThis, DigitalDispl
 		if (Percentage)
 			return;
 
-		for (int i = vStrength.Count - 1; i >= 0; i--)
+		for (int i = vB.Count - 1; i >= 0; i--)
 		{
-			int num = base + vStrength.GetItem(i);
+			int num = base + vB.GetItem(i);
 
 			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
 				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
@@ -470,9 +555,9 @@ void DigitalDisplayTypeClass::DigitalDisplaySHP(TechnoClass* pThis, DigitalDispl
 				Pos.Y += Interval.Y;
 			}
 
-			for (int i = 0; i < vHealth.Count; i++)
+			for (int i = 0; i < vA.Count; i++)
 			{
-				int num = base + vHealth.GetItem(i);
+				int num = base + vA.GetItem(i);
 
 				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
 					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
@@ -482,9 +567,9 @@ void DigitalDisplayTypeClass::DigitalDisplaySHP(TechnoClass* pThis, DigitalDispl
 		}
 		else
 		{
-			for (int i = 0; i < vStrength.Count; i++)
+			for (int i = 0; i < vB.Count; i++)
 			{
-				int num = base + vStrength.GetItem(i);
+				int num = base + vB.GetItem(i);
 
 				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
 					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
@@ -497,9 +582,9 @@ void DigitalDisplayTypeClass::DigitalDisplaySHP(TechnoClass* pThis, DigitalDispl
 			Pos.X -= Interval.X;
 			Pos.Y += Interval.Y;
 
-			for (int i = 0; i < vHealth.Count; i++)
+			for (int i = 0; i < vA.Count; i++)
 			{
-				int num = base + vHealth.GetItem(i);
+				int num = base + vA.GetItem(i);
 
 				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
 					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
@@ -532,6 +617,8 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->Anchoring)
 		.Process(this->Percentage)
 		.Process(this->HideStrength)
+		.Process(this->InfoType)
+		.Process(this->InfoClass)
 		;
 }
 

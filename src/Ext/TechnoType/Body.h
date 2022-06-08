@@ -109,9 +109,8 @@ public:
 		Valueable<bool> Passengers_SyncOwner;
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
-		Nullable<DigitalDisplayTypeClass*> DigitalDisplayType;
-		Nullable<DigitalDisplayTypeClass*> DigitalDisplayType_Shield;
-
+		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
+		
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -203,8 +202,7 @@ public:
 			, SelfHealGainType()
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
-			, DigitalDisplayType {}
-			, DigitalDisplayType_Shield {}
+			, DigitalDisplayTypes {}
 		{ }
 
 		virtual ~ExtData() = default;
