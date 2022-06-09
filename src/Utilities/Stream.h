@@ -6,6 +6,18 @@
 
 struct IStream;
 
+class PhobosStreamReader;
+class PhobosStreamWriter;
+
+namespace Savegame
+{
+	template <typename T>
+	bool ReadPhobosStream(PhobosStreamReader& Stm, T& Value, bool RegisterForChange);
+
+	template <typename T>
+	bool WritePhobosStream(PhobosStreamWriter& Stm, const T& Value);
+}
+
 class PhobosByteStream
 {
 public:

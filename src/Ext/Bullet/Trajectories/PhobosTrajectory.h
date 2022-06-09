@@ -6,6 +6,8 @@
 
 #include <BulletClass.h>
 
+class BulletTypeExt;
+
 enum class TrajectoryFlag : int
 {
 	Invalid = -1,

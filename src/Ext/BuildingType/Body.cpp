@@ -13,13 +13,13 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-	for (const auto pair : pHouseExt->BuildingCounter)
+	for (const auto& pair : pHouseExt->BuildingCounter)
 	{
 		const auto& pExt = pair.first;
 		const auto& nCount = pair.second;
 		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{
-			fFactor *= std::pow(pExt->PowerPlantEnhancer_Factor.Get(1.0f), nCount);
+			fFactor *= std::powf(pExt->PowerPlantEnhancer_Factor.Get(1.0f), static_cast<float>(nCount));
 			nAmount += pExt->PowerPlantEnhancer_Amount.Get(0) * nCount;
 		}
 	}
