@@ -142,6 +142,13 @@ enum class AreaFireTarget
 	Random = 2
 };
 
+enum class SelfHealGainType
+{
+	None = 0,
+	Infantry = 1,
+	Units = 2
+};
+
 enum class PhobosAction {
 	None = 0,
 	Hijack = 1,

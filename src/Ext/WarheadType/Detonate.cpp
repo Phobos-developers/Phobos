@@ -6,10 +6,14 @@
 #include <ScenarioClass.h>
 #include <AnimTypeClass.h>
 #include <AnimClass.h>
+#include <BitFont.h>
+#include <SuperClass.h>
 
 #include <Utilities/Helpers.Alex.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
+#include <Ext/SWType/Body.h>
+#include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
@@ -35,7 +39,46 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			MapClass::Instance->Reveal(pHouse);
 
 		if (this->TransactMoney)
+		{
 			pHouse->TransactMoney(this->TransactMoney);
+
+			if (this->TransactMoney_Display &&
+				(this->TransactMoney_Display_Houses == AffectedHouse::All ||
+					EnumFunctions::CanTargetHouse(this->TransactMoney_Display_Houses, pHouse, HouseClass::Player)))
+			{
+				bool isPositive = this->TransactMoney > 0;
+				auto color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
+				wchar_t moneyStr[0x20];
+				swprintf_s(moneyStr, L"%ls%ls%d", isPositive ? L"+" : L"-", Phobos::UI::CostLabel, std::abs(this->TransactMoney));
+				auto displayCoord = this->TransactMoney_Display_AtFirer ? (pOwner ? pOwner->Location : coords) : coords;
+
+				int width = 0, height = 0;
+				BitFont::Instance->GetTextDimension(moneyStr, &width, &height, 120);
+				Point2D pixelOffset = Point2D::Empty;
+				pixelOffset += this->TransactMoney_Display_Offset;
+				pixelOffset.X -= (width / 2);
+
+				FlyingStrings::Add(moneyStr, displayCoord, color, pixelOffset);
+			}
+		}
+
+		for (const auto pSWType : this->LaunchSW)
+		{
+			if (const auto pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType)))
+			{
+				const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
+				const auto cell = CellClass::Coord2Cell(coords);
+				if ((pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)) || !this->LaunchSW_RealLaunch)
+				{
+					if (this->LaunchSW_IgnoreInhibitors || !SWTypeExt::HasInhibitor(pSWExt, pHouse, cell))
+					{
+						pSuper->SetReadiness(true);
+						pSuper->Launch(cell, true);
+						pSuper->Reset();
+					}
+				}
+			}
+		}
 	}
 
 	this->HasCrit = false;
@@ -126,7 +169,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 
 			if (shieldType)
 			{
-				if (shieldType->Strength && (!pExt->Shield || (this->Shield_ReplaceNonRespawning && pExt->Shield->IsBrokenAndNonRespawning() && 
+				if (shieldType->Strength && (!pExt->Shield || (this->Shield_ReplaceNonRespawning && pExt->Shield->IsBrokenAndNonRespawning() &&
 					pExt->Shield->GetFramesSinceLastBroken() >= this->Shield_MinimumReplaceDelay)))
 				{
 					pExt->CurrentShieldType = shieldType;

@@ -341,3 +341,72 @@ class NullableIdxVector : public NullableVector<int> {
 public:
 	inline void Read(INI_EX& parser, const char* pSection, const char* pKey);
 };
+
+/*
+ * This template is for something that varies depending on Technos damage state (or arbitrary 'health' ratio provided).
+ * Damageable<AnimClass*> TestAnims; // class def
+ * TestAnims(); // ctor init-list
+ * TestAnims->Read(..., "Base%s"); // load from ini
+ * TestAnims->Get(Techno); // usage
+ * TestAnims->Get(healthRatio); // alternate usage
+ * 
+ * Use %s format specifier, exactly once. If pSingleFlag is null, pBaseFlag will
+ * be used. For the single flag name, a trailing dot (after replacing %s) will
+ * be removed. I.e. "Test.%s" will be converted to "Test".
+ */
+template<typename T>
+class Damageable
+{
+public:
+	Valueable<T> BaseValue {};
+	Nullable<T> ConditionYellow {};
+	Nullable<T> ConditionRed {};
+
+	Damageable() = default;
+	explicit Damageable(T const& all)
+		noexcept(noexcept(T { all }))
+		: BaseValue { all }
+	{
+	}
+
+	explicit Damageable(T const& undamaged, T const& damaged)
+		noexcept(noexcept(T { undamaged }) && noexcept(T { damaged }))
+		: BaseValue { undamaged }, ConditionYellow { damaged }
+	{ }
+
+	explicit Damageable(T const& green, T const& yellow, T const& red)
+		noexcept(noexcept(T { green }) && noexcept(T { yellow }) && noexcept(T { red }))
+		: BaseValue { green }, ConditionYellow { yellow }, ConditionRed { red }
+	{ }
+
+	inline void Read(INI_EX& parser, const char* pSection, const char* pBaseFlag, const char* pSingleFlag = nullptr);
+
+	const T* GetEx(TechnoClass* pTechno) const noexcept
+	{
+		return &this->Get(pTechno);
+	}
+
+	const T& Get(TechnoClass* pTechno) const noexcept
+	{
+		return Get(pTechno->GetHealthPercentage());
+	}
+
+	const T* GetEx(double ratio) const noexcept
+	{
+		return &this->Get(ratio);
+	}
+
+	const T& Get(double ratio) const noexcept
+	{
+		if (this->ConditionRed.isset() && ratio <= RulesClass::Instance->ConditionRed)
+			return this->ConditionRed;
+		else if (this->ConditionYellow.isset() && ratio <= RulesClass::Instance->ConditionYellow)
+			return this->ConditionYellow;
+
+		return this->BaseValue;
+	}
+
+	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
+
+	inline bool Save(PhobosStreamWriter& Stm) const;
+};

@@ -100,7 +100,7 @@ This page lists all the individual contributions to the project by their author.
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
   - `Spawner.LimitRange`
-  - ScriptType Actions 71 to 113
+  - ScriptType Actions 71 to 113, 124 to 126
   - MC deployer fixes
   - Help with docs
   - Automatic Passenger Deletion logic
@@ -110,6 +110,7 @@ This page lists all the individual contributions to the project by their author.
   - Override Uncloaked Underwater attack behavior
   - AI Aircraft docks fix
   - Shared Ammo logic
+  - Customizable FLH When Infantry Is Prone Or Deployed
 - **Starkku**:
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
@@ -139,6 +140,12 @@ This page lists all the individual contributions to the project by their author.
   - Mind control indicator animation cloak fix
   - Warhead / Play animation trigger animation owner fix
   - Nuke carrier & payload Bright fix
+  - Display damage numbers hotkey command
+  - TransactMoney.Display
+  - Building-provided self-heal customization
+  - AI deploy script DeploysInto fix
+  - Passable & buildable-upon TerrainTypes
+  - Automatic passenger owner change toggle
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
@@ -151,6 +158,9 @@ This page lists all the individual contributions to the project by their author.
    - Interceptor logic prototype
    - LaserTrails prototype
    - Laser fixes prototype
+- **Trsdy**
+   - Jumpjet facing fix
+   - Warhead superweapon launch logic
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
@@ -158,6 +168,8 @@ This page lists all the individual contributions to the project by their author.
 - **Ares developers** - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code, prototype deployer fixes
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
+- **AlexB** - Original FlyingStrings implementation
+- **Joshy** - Original FlyingStrings implementation
 - **ZΞPHYɌUS** - win/lose themes code
 - **ayylmao** - help with docs, extensive and thorough testing
 - **SMxReaver** - help with docs, extensive and thorough testing
