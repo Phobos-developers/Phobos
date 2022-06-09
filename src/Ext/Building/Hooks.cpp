@@ -97,7 +97,7 @@ DEFINE_HOOK(0x43FE73, BuildingClass_AI_FlyingStrings, 0x6)
 			bool isPositive = refundAmount > 0;
 			auto color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
 			wchar_t moneyStr[0x20];
-			swprintf_s(moneyStr, L"%s$%d", isPositive ? L"+" : L"-", std::abs(refundAmount));
+			swprintf_s(moneyStr, L"%ls%ls%d", isPositive ? L"+" : L"-", Phobos::UI::CostLabel, std::abs(refundAmount));
 
 			auto coords = CoordStruct::Empty;
 			coords = *pThis->GetCenterCoord(&coords);

@@ -468,3 +468,44 @@ DEFINE_HOOK(0x46B3E6, BulletClass_NukeMaker_BulletParams, 0x8)
 	R->EDI(pThis);
 	return SkipGameCode;
 }
+
+DEFINE_HOOK(0x6FA781, TechnoClass_AI_SelfHealing_BuildingGraphics, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
+	{
+		pBuilding->UpdatePlacement(PlacementType::Redraw);
+		pBuilding->ToggleDamagedAnims(false);
+	}
+
+	return 0;
+}
+
+// Mitigate DeploysInto vehicles getting stuck trying to deploy while using deploy AI script action
+DEFINE_HOOK(0x6ED6E5, TeamClass_TMission_Deploy_DeploysInto, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+
+	// Handle searching for free space in Hunt mission handler
+	pThis->ForceMission(Mission::Hunt);
+	pThis->MissionStatus = 2; // Tells UnitClass::Mission_Hunt to omit certain checks.
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73EFD8, UnitClass_Mission_Hunt_DeploysInto, 0x6)
+{
+	enum { SkipToDeploy = 0x73F015 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	// Skip MCV-specific & player control checks if coming from deploy script action.
+	if (pThis->MissionStatus == 2)
+	{
+		pThis->MissionStatus = 0;
+		return SkipToDeploy;
+	}
+
+	return 0;
+}

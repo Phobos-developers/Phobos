@@ -1,11 +1,7 @@
-name: Nightly Build
+name: Pull Request Nightly Build
 
 on:
-  push:
-    branches:
-    - master
-    - main
-    - develop
+  pull_request:
 
 env:
   # Path to the solution file relative to the root of the project.
@@ -26,9 +22,10 @@ jobs:
     - uses: actions/checkout@v3
       with:
         submodules: recursive
+        # ref: ${{ github.event.pull_request.head.sha }}
 
     - name: Build Phobos
-      uses: ./.github/actions/build-phobos  # Build steps are reused
+      uses: ./.github/actions/build-phobos  # Setup steps are reused
       with:
         sln-path: ${{env.SOLUTION_FILE_PATH}}
         build-config: ${{env.BUILD_CONFIGURATION}}
