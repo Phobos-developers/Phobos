@@ -32,6 +32,10 @@ public:
 		AnimTypeClass* MindControlRingAnimType;
 		int DamageNumberOffset;
 
+		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
+		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
+		HouseClass* OriginalPassengerOwner;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet { nullptr }
 			, Shield {}
@@ -45,6 +49,7 @@ public:
 			, Death_Countdown(-1)
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset { INT32_MIN }
+			, OriginalPassengerOwner {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -54,7 +59,7 @@ public:
 			if (auto const pShield = this->Shield.get())
 				pShield->InvalidatePointer(ptr);
 
-				this->InterceptedBullet = nullptr;
+			AnnounceInvalidPointer(InterceptedBullet, ptr);
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
@@ -102,6 +107,7 @@ public:
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
 
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
+	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
 

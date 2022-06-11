@@ -8,9 +8,12 @@
 #include <TacticalClass.h>
 
 // has everything inited except SpawnNextAnim at this point
-DEFINE_HOOK(0x466556, BulletClass_Init_SetLaserTrail, 0x6)
+DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 {
 	GET(BulletClass*, pThis, ECX);
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+		pExt->FirerHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
 
 	if (!pThis->Type->Inviso)
 		BulletExt::InitializeLaserTrails(pThis);
@@ -195,13 +198,27 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_ScreenShake, 0x6)
 DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetachFromOwner, 0x8)
 {
 	GET(BulletClass*, pThis, ESI);
-	
+
 	if (pThis->Owner && pThis->WeaponType)
 	{
 		auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
 
 		if (pWeaponExt->DetachedFromOwner)
 			pThis->Owner = nullptr;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x469A75, BulletClass_Logics_DamageHouse, 0x7)
+{
+	GET(BulletClass*, pThis, ESI);
+	GET(HouseClass*, pHouse, ECX);
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (!pHouse)
+			R->ECX(pExt->FirerHouse);
 	}
 
 	return 0;

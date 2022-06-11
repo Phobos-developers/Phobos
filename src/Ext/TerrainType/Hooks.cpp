@@ -153,3 +153,16 @@ DEFINE_HOOK(0x47C065, CellClass_CellColor_TerrainRadarColor, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x568432, MapClass_PlaceDown_0x0TerrainTypes, 0x8)
+{
+	GET(ObjectClass*, pObject, EDI);
+
+	if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject))
+	{
+		if (pTerrain->Type->Foundation == 21)
+			return 0x5687DF;
+	}
+
+	return 0;
+}

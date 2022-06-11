@@ -109,7 +109,15 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_Transform_6F3AD0_BurstFLH_1, 0x7)
 	GET(TechnoClass*, pThis, EBX);
 	GET_STACK(int, weaponIndex, STACK_OFFS(0xD8, -0x8));
 	bool FLHFound = false;
-	CoordStruct FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
+	CoordStruct FLH = CoordStruct::Empty;
+
+	FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
+
+	if (!FLHFound)
+	{
+		if (auto pInf = abstract_cast<InfantryClass*>(pThis))
+			FLH = TechnoExt::GetSimpleFLH(pInf, weaponIndex, FLHFound);
+	}
 
 	if (FLHFound)
 	{
@@ -175,6 +183,14 @@ DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
 		return 0x52194E;
 
 	return 0;
+}
+
+// Author: Otamaa
+DEFINE_HOOK(0x5223B3, InfantryClass_DeployFire_DeployFireWeapon_Add, 0x6)
+{
+  GET(InfantryClass*, pThis, ESI);
+  R->EDI(pThis->Type->DeployFireWeapon == -1  ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
+  return 0x5223B9;
 }
 
 // Customizable OpenTopped Properties

@@ -303,6 +303,11 @@ New:
 - Toggleable display of TransactMoney amounts (by Starkku)
 - Building-provided self-healing customization (by Starkku)
 - Building placement preview (by Otamaa)
+- Passable & buildable-upon TerrainTypes (by Starkku)
+- Toggle for passengers to automatically change owner if transport owner changes (by Starkku)
+- Superweapon launch on warhead detonation (by Trsdy)
+- Correct owner house for Warhead Anim/SplashList & Play Animation trigger animations (by Starkku)
+- Customizable FLH When Infantry Is Crouched Or Deployed (by FS-21)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -323,6 +328,9 @@ Vanilla fixes:
 - Fixed buildings not reverting to undamaged graphics when HP was restored above `[AudioVisual]`->`ConditionYellow` via `SelfHealing` (by Starkku)
 - Fixed jumpjet units being unable to turn to the target when firing from a different direction (by trsdy)
 - Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations (by Starkku)
+- Fixed AI script action Deploy getting stuck with vehicles with `DeploysInto` if there was no space to deploy at initial location (by Starkku)
+- Fixed `Foundation=0x0` causing crashes if used on TerrainTypes.
+- Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to Ares-introduced Warhead effects (by Starkku)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)

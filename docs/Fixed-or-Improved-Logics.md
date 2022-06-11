@@ -63,6 +63,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Self-healing pips from `InfantryGainSelfHeal` & `UnitsGainSelfHeal` now respect unit's `PixelSelectionBracketDelta` like health bar pips do.
 - Buildings using `SelfHealing` will now correctly revert to undamaged graphics if their health is restored back by self-healing.
 - Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations.
+- Allow use of `Foundation=0x0` on TerrainTypes without crashing for similar results as for buildings.
+- Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to some Ares-introduced Warhead effects like EMP.
 
 ## Animations
 
@@ -315,6 +317,19 @@ In `rulesmd.ini`:
 ```ini
 [SOMETERRAINTYPE]  ; TerrainType
 MinimapColor=      ; integer - Red,Green,Blue
+```
+
+### Passable & buildable-upon TerrainTypes
+
+- TerrainTypes can now be made passable or buildable upon by setting `IsPassable` or `CanBeBuiltOn`, respectively.
+  - Movement cursor is displayed on `IsPassable` TerrainTypes unless force-firing.
+  - `CanBeBuiltOn=true` terrain objects are removed when building is placed on them.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]   ; TerrainType
+IsPassable=false    ; boolean
+CanBeBuiltOn=false  ; boolean
 ```
 
 ## Tiberiums (ores)

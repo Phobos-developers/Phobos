@@ -79,6 +79,7 @@ template <typename T>
 void BulletExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->FirerHouse)
 		.Process(this->Intercepted)
 		.Process(this->ShouldIntercept)
 		.Process(this->LaserTrails)
