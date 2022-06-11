@@ -86,44 +86,35 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode = -1)
 {
 	if (!pThis)
-	{
 		return;
-	}
 
 	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+
 	if (!pHouseExt)
-	{
 		return;
-	}
 
 	if (mode < 0 || mode > 2)
 		mode = -1;
+	
+	enum { ForceFalse = 0, ForceTrue = 1, ForceRandom = 2, UseDefault = -1 };
 
 	pHouseExt->ForceOnlyTargetHouseEnemyMode = mode;
-	/*
-	Modes:
-		0  -> Force "False"
-		1  -> Force "True"
-		2  -> Force "Random boolean"
-		-1 -> Use default value in Team->OnlyTargetHouseEnemy tag
-		Note: only works for new Actions that use Team->OnlyTargetHouseEnemyMode, not vanilla YR actions
-	*/
+
 	switch (mode)
 	{
-	case 0:
+	case ForceFalse:
 		pHouseExt->ForceOnlyTargetHouseEnemy = false;
 		break;
 
-	case 1:
+	case ForceTrue:
 		pHouseExt->ForceOnlyTargetHouseEnemy = true;
 		break;
 
-	case 2:
+	case ForceRandom:
 		pHouseExt->ForceOnlyTargetHouseEnemy = (bool)ScenarioClass::Instance->Random.RandomRanged(0, 1);;
 		break;
 
 	default:
-		pHouseExt->ForceOnlyTargetHouseEnemyMode = -1;
 		pHouseExt->ForceOnlyTargetHouseEnemy = false;
 		break;
 	}

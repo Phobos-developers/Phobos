@@ -784,9 +784,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	bool onlyTargetHouseEnemy = pTeam->Type->OnlyTargetHouseEnemy;
 
 	if (pHouseExt->ForceOnlyTargetHouseEnemyMode != -1)
-	{
 		onlyTargetHouseEnemy = pHouseExt->ForceOnlyTargetHouseEnemy;
-	}
 
 	if (!pFocus && !bAircraftsWithoutAmmo)
 	{
@@ -2288,15 +2286,10 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 			auto pHouseExt = HouseExt::ExtMap.Find(pFoot->Team->Owner);
 
 			if (pHouseExt && pHouseExt->ForceOnlyTargetHouseEnemyMode != -1)
-			{
 				onlyTargetHouseEnemy = pHouseExt->ForceOnlyTargetHouseEnemy;
-			}
 
-			if (onlyTargetHouseEnemy
-				&& enemyHouseIndex >= 0)
-			{
+			if (onlyTargetHouseEnemy && enemyHouseIndex >= 0)
 				enemyHouse = HouseClass::Array->GetItem(enemyHouseIndex);
-			}
 		}
 	}
 
@@ -3116,11 +3109,7 @@ void ScriptExt::Stop_ForceJump_Countdown(TeamClass *pTeam)
 void ScriptExt::ForceGlobalOnlyTargetHouseEnemy(TeamClass* pTeam, int mode = -1)
 {
 	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
 		return;
-	}
 
 	auto pHouseExt = HouseExt::ExtMap.Find(pTeam->Owner);
 	if (!pHouseExt)
@@ -3136,14 +3125,6 @@ void ScriptExt::ForceGlobalOnlyTargetHouseEnemy(TeamClass* pTeam, int mode = -1)
 	if (mode < -1 || mode > 2)
 		mode = -1;
 
-	/*
-	Modes:
-		0  -> Force "False"
-		1  -> Force "True"
-		2  -> Force "Random boolean"
-		-1 -> Use default value in OnlyTargetHouseEnemy tag
-		Note: only works for new Actions, not vanilla YR actions
-	*/
 	HouseExt::ForceOnlyTargetHouseEnemy(pTeam->Owner, mode);
 
 	// This action finished
