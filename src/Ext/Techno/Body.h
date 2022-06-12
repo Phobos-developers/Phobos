@@ -31,7 +31,7 @@ public:
 		int Death_Countdown;
 		AnimTypeClass* MindControlRingAnimType;
 		int DamageNumberOffset;
-		Valueable<bool> IsLeggedCyborg;
+		bool IsLeggedCyborg;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
