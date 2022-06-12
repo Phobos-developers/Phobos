@@ -23,7 +23,7 @@ public:
 		Valueable<bool> LowSelectionPriority;
 		PhobosFixedString<0x20> GroupAs;
 		Valueable<int> RadarJamRadius;
-		Valueable<int> InhibitorRange;
+		Nullable<int> InhibitorRange;
 		Valueable<Leptons> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
 		Valueable<Leptons> Interceptor_GuardRange;
@@ -49,6 +49,7 @@ public:
 		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
 		Valueable<bool> Death_NoAmmo;
 		Valueable<int> Death_Countdown;
+		Valueable<bool> Death_Peaceful;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -97,10 +98,16 @@ public:
 		Valueable<bool> DeployingAnim_ReverseForUndeploy;
 		Valueable<bool> DeployingAnim_UseUnitDrawer;
 
+		Valueable<CSFText> EnemyUIName;
 		Valueable<int> ForceWeapon_Naval_Decloaked;
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
+		Nullable<bool> JumpjetTurnToTarget;
+
+		Nullable<SelfHealGainType> SelfHealGainType;
+		Valueable<bool> Passengers_SyncOwner;
+		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
 		struct LaserTrailDataEntry
 		{
@@ -117,7 +124,15 @@ public:
 		};
 
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
-		Valueable<CSFText> EnemyUIName;
+
+		Nullable<CoordStruct> PronePrimaryFireFLH;
+		Nullable<CoordStruct> ProneSecondaryFireFLH;
+		Nullable<CoordStruct> DeployedPrimaryFireFLH;
+		Nullable<CoordStruct> DeployedSecondaryFireFLH;
+		std::vector<DynamicVectorClass<CoordStruct>> CrouchedWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
 		Valueable<bool> CanRepairCyborgLegs;
 
@@ -127,7 +142,7 @@ public:
 			, LowSelectionPriority { false }
 			, GroupAs { NONE_STR }
 			, RadarJamRadius { 0 }
-			, InhibitorRange { 0 }
+			, InhibitorRange { }
 			, MindControlRangeLimit {}
 			, Interceptor { false }
 			, Interceptor_GuardRange {}
@@ -180,16 +195,25 @@ public:
 			, NoAmmoWeapon { -1 }
 			, NoAmmoAmount { 0 }
 			, JumpjetAllowLayerDeviation {}
+			, JumpjetTurnToTarget {}
 			, DeployingAnim_AllowAnyDirection { false }
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
-			, EnemyUIName {}
 			, Death_NoAmmo { false }
 			, Death_Countdown { 0 }
+			, Death_Peaceful { false }
+			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
+			, SelfHealGainType()
+			, Passengers_SyncOwner { false }
+			, Passengers_SyncOwner_RevertOnExit { true }
+			, PronePrimaryFireFLH { }
+			, ProneSecondaryFireFLH { }
+			, DeployedPrimaryFireFLH { }
+			, DeployedSecondaryFireFLH { }
 			, CanRepairCyborgLegs { false }
 		{ }
 
@@ -223,6 +247,7 @@ public:
 	static ExtContainer ExtMap;
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
+	static void GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);

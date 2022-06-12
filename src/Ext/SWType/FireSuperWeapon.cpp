@@ -107,7 +107,7 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 			if (!rollOnce && this->RandomBuffer > this->LimboDelivery_RollChances[i])
 				continue;
 
-			j = rolls > weights ? weights: i;
+			j = rolls > weights ? weights : i;
 			index = GeneralUtils::ChooseOneWeighted(this->RandomBuffer, &this->LimboDelivery_RandomWeightsData[j]);
 
 			// extra weights are bound to automatically fail
@@ -190,4 +190,60 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 			}
 		}
 	}
+}
+
+//Ares 0.A helpers
+bool SWTypeExt::IsInhibitor(SWTypeExt::ExtData* pSWType, HouseClass* pOwner, TechnoClass* pTechno)
+{
+	if (pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
+	{
+		if (!pOwner->IsAlliedWith(pTechno))
+		{
+			if (auto pBld = abstract_cast<BuildingClass*>(pTechno))
+			{
+				if (!pBld->IsPowerOnline())
+					return false;
+			}
+
+			return pSWType->SW_AnyInhibitor
+				|| pSWType->SW_Inhibitors.Contains(pTechno->GetTechnoType());
+		}
+	}
+	return false;
+}
+
+bool SWTypeExt::IsInhibitorEligible(SWTypeExt::ExtData* pSWType, HouseClass* pOwner, const CellStruct& Coords, TechnoClass* pTechno)
+{
+	if (IsInhibitor(pSWType, pOwner, pTechno))
+	{
+		const auto pType = pTechno->GetTechnoType();
+		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		// get the inhibitor's center
+		auto center = pTechno->GetCoords();
+		if (auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
+		{
+			center = pBuilding->GetCoords();
+			center.X += pBuilding->Type->GetFoundationWidth() / 2;
+			center.Y += pBuilding->Type->GetFoundationHeight(false) / 2;
+		}
+
+		// has to be closer than the inhibitor range (which defaults to Sight)
+		return Coords.DistanceFrom(CellClass::Coord2Cell(center)) <= pExt->InhibitorRange.Get(pType->Sight);
+	}
+
+	return false;
+}
+
+bool SWTypeExt::HasInhibitor(SWTypeExt::ExtData* pSWType, HouseClass* pOwner, const CellStruct& Coords)
+{
+	// does not allow inhibitors
+	if (pSWType->SW_Inhibitors.empty() && !pSWType->SW_AnyInhibitor)
+		return false;
+
+	// a single inhibitor in range suffices
+	return std::any_of(TechnoClass::Array->begin(), TechnoClass::Array->end(),
+		[=, &Coords](TechnoClass* pTechno)
+		{ return IsInhibitorEligible(pSWType, pOwner, Coords, pTechno); }
+	);
 }

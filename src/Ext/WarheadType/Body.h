@@ -1,6 +1,6 @@
 #pragma once
 #include <WarheadTypeClass.h>
-
+#include <SuperWeaponTypeClass.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -18,6 +18,10 @@ public:
 		Valueable<bool> SpySat;
 		Valueable<bool> BigGap;
 		Valueable<int> TransactMoney;
+		Valueable<bool> TransactMoney_Display;
+		Valueable<AffectedHouse> TransactMoney_Display_Houses;
+		Valueable<bool> TransactMoney_Display_AtFirer;
+		Valueable<Point2D> TransactMoney_Display_Offset;
 		ValueableVector<AnimTypeClass*> SplashList;
 		Valueable<bool> SplashList_PickRandom;
 		Valueable<bool> RemoveDisguise;
@@ -37,11 +41,6 @@ public:
 		Valueable<double> Crit_AffectBelowPercent;
 
 		Nullable<AnimTypeClass*> MindControl_Anim;
-
-		// Ares tags
-		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
-		Valueable<bool> AffectsEnemies;
-		Nullable<bool> AffectsOwner;
 
 		Valueable<bool> Shield_Penetrate;
 		Valueable<bool> Shield_Break;
@@ -74,6 +73,15 @@ public:
 		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
+		ValueableVector<SuperWeaponTypeClass*> LaunchSW;
+		Valueable<bool> LaunchSW_RealLaunch;
+		Valueable<bool> LaunchSW_IgnoreInhibitors;
+
+		// Ares tags
+		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
+		Valueable<bool> AffectsEnemies;
+		Nullable<bool> AffectsOwner;
+
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
 		Valueable<double> Shield_SelfHealing_Rate_InMinutes;
@@ -83,6 +91,10 @@ public:
 			, SpySat { false }
 			, BigGap { false }
 			, TransactMoney { 0 }
+			, TransactMoney_Display { false }
+			, TransactMoney_Display_Houses { AffectedHouse::All }
+			, TransactMoney_Display_AtFirer { false }
+			, TransactMoney_Display_Offset {{ 0, 0 }}
 			, SplashList {}
 			, SplashList_PickRandom { false }
 			, RemoveDisguise { false }
@@ -104,9 +116,6 @@ public:
 			, HasCrit { false }
 
 			, MindControl_Anim {}
-
-			, AffectsEnemies { true }
-			, AffectsOwner {}
 
 			, Shield_Penetrate { false }
 			, Shield_Break { false }
@@ -135,6 +144,12 @@ public:
 			, Shield_AffectTypes {}
 
 			, NotHuman_DeathSequence { -1 }
+
+			, AffectsEnemies { true }
+			, AffectsOwner {}
+			, LaunchSW {}
+			, LaunchSW_RealLaunch { true }
+			, LaunchSW_IgnoreInhibitors { false }
 		{ }
 
 	private:

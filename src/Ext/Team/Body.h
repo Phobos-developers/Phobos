@@ -23,6 +23,9 @@ public:
 		int MoveMissionEndMode;
 		int WaitNoTargetCounter;
 		TimerStruct WaitNoTargetTimer;
+		TimerStruct ForceJump_Countdown;
+		int ForceJump_InitialCountdown;
+		bool ForceJump_RepeatMode;
 		FootClass* TeamLeader;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject)
@@ -34,11 +37,18 @@ public:
 			, MoveMissionEndMode { 0 }
 			, WaitNoTargetCounter { 0 }
 			, WaitNoTargetTimer { 0 }
+			, ForceJump_Countdown { -1 }
+			, ForceJump_InitialCountdown { -1 }
+			, ForceJump_RepeatMode { false }
 			, TeamLeader { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+		{
+			if (this->TeamLeader == ptr)
+				this->TeamLeader = nullptr;
+		}
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
@@ -52,6 +62,20 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+			switch (abs)
+			{
+			case AbstractType::Infantry:
+			case AbstractType::Unit:
+			case AbstractType::Aircraft:
+				return false;
+			default:
+				return true;
+			}
+		}
 	};
 
 	static ExtContainer ExtMap;

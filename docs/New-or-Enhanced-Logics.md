@@ -73,7 +73,7 @@ LaserTrailN.IsOnTurret=no   ; boolean, whether the trail origin is turret
 ; where N = 0, 1, 2, ...
 ```
 
-in `rulesmd.ini`:
+In `rulesmd.ini`:
 ```ini
 [SOMEVOXELANIM]             ; VoxelAnim
 LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
@@ -87,8 +87,10 @@ LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-Pips.Shield=-1,-1,-1           ; int, frames of pips.shp for Green, Yellow, Red
-Pips.Shield.Building=-1,-1,-1  ; int, frames of pips.shp for Green, Yellow, Red
+Pips.Shield=-1,-1,-1               ; int, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Shield.Building=-1,-1,-1      ; int, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Shield.Background=PIPBRD.SHP  ; filename - including the .shp/.pcx extension
+Pips.Shield.Building.Empty=0       ; int, frame of pips.shp (zero-based) for empty building pip
 
 [ShieldTypes]
 0=SOMESHIELDTYPE
@@ -104,7 +106,16 @@ SelfHealing.Rate=0.0                 ; double, ingame minutes
 Respawn=0.0                          ; double, percents or absolute
 Respawn.Rate=0.0                     ; double, ingame minutes
 BracketDelta=0                       ; integer - pixels
+Pips=-1,-1,-1                        ; int, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Building=-1,-1,-1               ; int, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Background=                     ; filename - including the .shp/.pcx extension
+Pips.Building.Empty=                 ; int, frame of pips.shp (zero-based) for empty building pip
 IdleAnim=                            ; animation
+IdleAnim.ConditionYellow=            ; animation
+IdleAnim.ConditionRed=               ; animation
+IdleAnimDamaged=                     ; animation
+IdleAnimDamaged.ConditionYellow=     ; animation
+IdleAnimDamaged.ConditionRed=        ; animation
 IdleAnim.OfflineAction=Hides         ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 IdleAnim.TemporalAction=Hides        ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 BreakAnim=                           ; animation
@@ -143,7 +154,7 @@ Shield.InheritStateOnReplace=false   ; boolean
 ```
 - Now you can have a shield for any TechnoType. It serves as a second health pool with independent `Armor` and `Strength` values.
   - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed by shield.
-  - When the TechnoType with a unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for game calculation.
+  - When a TechnoType has an unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for game calculation.
   - `InitialStrength` can be used to set a different initial strength value from maximum.
 - When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoTypes have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
   - This also works with Ares' `Convert.*`.
@@ -154,7 +165,9 @@ Shield.InheritStateOnReplace=false   ; boolean
   - If you want shield recovers/respawns 1 HP per time, currently you need to set tag value to any number between 1 and 2, like `1.1`.
 - `SelfHealing.Rate` and `Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
 - `IdleAnim`, if set, will be played while the shield is intact. This animation is automatically set to loop indefinitely.
-  - `Bouncer=yes` animations are not supported at the moment.
+  - `IdleAnim.ConditionYellow` and `IdleAnim.ConditionRed` can be used to set different animations for when shield health is at or below the percentage defined in `[AudioVisual]`->`ConditionYellow`/`ConditionRed`, respectively. If `IdleAnim.ConditionRed` is not set it falls back to `IdleAnim.ConditionYellow`, which in turn falls back to `IdleAnim`.
+  - `IdleAnimDamaged`, `IdleAnimDamaged.ConditionYellow` and `IdleAnimDamaged.ConditionRed` are used in an identical manner, but only when health of the object the shield is attached to is at or below `[AudioVisual]`->`ConditionYellow`. Follows similar fallback sequence to regular `IdleAnim` variants and if none are set, falls back to the regular `IdleAnim` or variants thereof.
+  - `Bouncer=true` and `IsMeteor=true` animations can exhibit irregular behaviour when used as `IdleAnim` and should be avoided.
 - `IdleAnim.OfflineAction` indicates what happens to the animation when the shield is in a low power state.
 - `IdleAnim.TemporalAction` indicates what happens to the animation when the shield is attacked by temporal weapons.
 - `BreakAnim`, if set, will be played when the shield has been broken.
@@ -163,10 +176,13 @@ Shield.InheritStateOnReplace=false   ; boolean
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
 - `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
-- A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable.
-  - Buildings now use the 5th frame of `pips.shp` to display the shield strength while other units uses the 16th frame by default.
-  - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit set, then it will always display it, or if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. `Pips.Shield.Building` is used for BuildingTypes.
-  - `pipbrd.shp` will use its 4th frame to display an infantry's shield strength and the 3th frame for other units if `pipbrd.shp` has extra 2 frames. And `BracketDelta` can be used as additional `PixelSelectionBracketDelta` for shield strength.
+- A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable. Several customizations are available for the shield strength pips.
+  - By default, buildings use the 6th frame of `pips.shp` to display the shield strength while others use the 17th frame.
+  - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit is set, then it will always display that frame, or if 3 digits are set, it will use those if shield's current strength is at or below `ConditionYellow` and `ConditionRed`, respectively. `Pips.Shield.Building` is used for BuildingTypes. -1 as value will use the default frame, whether it is fallback to first value or the aforementioned hardcoded defaults.
+  - `Pips.Shield.Background` can be used to set the background or 'frame' for non-building pips, which defaults to `pipbrd.shp`. 4th frame is used to display an infantry's shield strength and the 3th frame for other units, or 2nd and 1st respectively if not enough frames are available.
+  - `Pips.Shield.Building.Empty` can be used to set the frame of `pips.shp` displayed for empty building strength pips, defaults to 1st frame of `pips.shp`.
+  - The above customizations are also available on per ShieldType basis, e.g `[ShieldType]`->`Pips` instead of `[AudioVisual]`->`Pips.Shield` and so on. ShieldType settings take precedence over the global ones, but will fall back to them if not set.
+  - `BracketDelta` can be used as additional vertical offset (negative shifts it up) for shield strength bar. Much like `PixelSelectionBracketDelta`, it is not applied on buildings.
 - Warheads have new options that interact with shields.
   - `Shield.Penetrate` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield doesn't exist.
   - `Shield.Break` allows the warhead to always break shields of TechnoTypes. This is done before damage is dealt.
@@ -246,6 +262,19 @@ PowerPlantEnhancer.Factor=1.0      ; float
 
 ## Infantry
 
+### Customizable FLH When Infantry Is Prone Or Deployed
+
+- Now infantry can override `PrimaryFireFLH` and `SecondaryFireFLH` if is prone (crawling) or deployed. Also works in conjunction with [burst-index specific firing offsets](#firing-offsets-for-specific-burst-shots).
+
+In `artmd.ini`:
+```ini
+[SOMEINFANTRY]             ; InfantryType
+PronePrimaryFireFLH=       ; integer - Forward,Lateral,Height
+ProneSecondaryFireFLH=     ; integer - Forward,Lateral,Height
+DeployedPrimaryFireFLH=    ; integer - Forward,Lateral,Height
+DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
+```
+
 ### Default disguise for individual InfantryTypes
 
 - Infantry can now have its `DefaultDisguise` overridden per-type.
@@ -288,6 +317,7 @@ Ammo.Shared.Group=-1                    ; integer
 
 ## Projectiles
 
+
 ### Projectile interception logic
 
 ![image](_static/images/projectile-interception-01.gif)  
@@ -322,7 +352,7 @@ Interceptable=no ; boolean
 - Self-explanatory, is a straight-shot trajectory.
   - Initial speed is determined by weapon's `Trajectory.Speed`.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]     ; Projectile
 Trajectory=Straight  ; Trajectory type
@@ -333,7 +363,7 @@ Trajectory=Straight  ; Trajectory type
 - Similar trajectory to `Straight`, but targets a coordinate above the intended target (height determined by `Trajectory.Bombard.Height`). When the projectile approaches that coordinate, it will free fall and explodes when it hits the target or ground.
   - Initial speed is determined by weapon's `Trajectory.Speed`.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]               ; Projectile
 Trajectory=Bombard             ; Trajectory type
@@ -348,309 +378,6 @@ In `rulesmd.ini`:
 [SOMEPROJECTILE]              ; Projectile
 Shrapnel.AffectsGround=no     ; boolean
 Shrapnel.AffectsBuildings=no  ; boolean
-```
-
-## Script actions
-
-### `71` Timed Area Guard
-
-- Puts the TaskForce into Area Guard Mode for the given units of time. Unlike the original timed Guard script (`5,n`) that just stays in place doing a basic guard operation the "Area Guard" action has a more active role attacking nearby invaders or defending units that needs protection.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=71,n            ; integer, time in ingame seconds
-```
-
-### `72` Load Onto Transports
-
-- If the TaskForce contains unit(s) that can be carried by the transports of the same TaskForce then this action will make the units enter the transports. In Single player missions the next action must be "Wait until fully loaded" (`43,0`) or the script will not continue.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=72,0
-```
-
-### `73` Wait until ammo is full
-
-- If the TaskForce contains unit(s) that use ammo then the the script will not continue until all these units have fully refilled the ammo.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=73,0
-```
-
-### `74-81` Generic Target Type Attack Action
-
-- These Actions instruct the TeamType to use the TaskForce to approach and attack the target specified by the second parameter which is an index of a generic pre-defined group. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
-  - For threat-based attack actions `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from `rulesmd.ini` are accounted.
-  - All Aircrafts that attack other air units will end the script. This behavior is intentional because without it aircrafts had some bugs that weren't fixable at the time of developing the feature.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=i,n             ; where 74 <= i <= 81
-```
-
-| *Action* | *Argument*   | *Repeats* | *Target Priority* | *Description*                                 |
-| :------: | :----------: | :-------: | :---------------: | :-------------------------------------------: |
-74         | Target Type# | Yes | Closer, higher threat |  |
-75         | Target Type# | Yes | Farther, higher threat |  |
-76         | Target Type# | Yes | Closer |  |
-77         | Target Type# | Yes | Farther |  |
-78         | Target Type# | No | Closer, higher threat | Ends when a team member kill the designated target |
-79         | Target Type# | No | Farther, higher threat | Ends when a team member kill the designated target |
-80         | Target Type# | No | Closer | Ends when a team member kill the designated target |
-81         | Target Type# | No | Farther | Ends when a team member kill the designated target |
-
-- The following values are the *Target Type#* which can be used as second parameter of the new attack script actions:
-
-| *Value* | *Target Type*     | *Description*                                 |
-| :-----: | :---------------: | :-------------------------------------------: |
-1         | Anything          |	Any enemy `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` |
-2         | Structures        |	Any enemy `BuildingTypes` without `Artillary=yes`, `TickTank=yes`, `ICBMLauncher=yes` or `SensorArray=yes` |
-3         | Ore Miners        |	Any enemy `VehicleTypes` with `Harvester=yes` or `ResourceGatherer=yes`, `BuildingTypes` with `ResourceGatherer=yes` |
-4         | Infantry          |	Any enemy `InfantryTypes` |
-5         | Vehicles          |	Any enemy `VehicleTypes`, `AircraftTypes`, `BuildingTypes` with `Artillary=yes`, `TickTank=yes`, `ICBMLauncher=yes` & `SensorArray=yes` |
-6         | Factories         |	Any enemy `BuildingTypes` with a Factory= setting |
-7         | Base Defenses     |	Any enemy `BuildingTypes` with `IsBaseDefense=yes` |
-8         | House Threats     |	Any object that targets anything of the Team's House or any enemy that is near to the Team Leader |
-9         | Power Plants      |	Any enemy `BuildingTypes` with positive `Power=` values |
-10        | Occupied          |	Any `BuildingTypes` with garrisoned infantry |
-11        | Tech Buildings    |	Any `BuildingTypes` with `Unsellable=yes`, `Capturable=yes`, negative `TechLevel=` values or appears in `[AI]>NeutralTechBuildings=` list |
-12        |	Refinery          |	Any enemy `BuildingTypes` with `Refinery=yes` or `ResourceGatherer=yes`, `VehicleTypes` with `ResourceGatherer=yes` & `Harvester=no` (i.e. Slave Miner) |
-13        |	Mind Controller   |	Anything `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` with `MindControl=yes` in the weapons Warheads |
-14        |	Air Units         |	Any enemy `AircraftTypes`, flying `VehicleTypes` or `InfantryTypes` |
-15        |	Naval             |	Any enemy `BuildingTypes` and `VehicleTypes` with a `Naval=yes`, any enemy `VehicleTypes`, `AircraftTypes`, `InfantryTypes` in a water cell |
-16        |	Disruptors        |	Any enemy objects with positive `InhibitorRange=` values, positive `RadarJamRadius=` values, `CloakGenerator=yes` or `GapGenerator=yes` |
-17        |	Ground Vehicles   |	Any enemy `VehicleTypes` without `Naval=yes`, landed `AircraftTypes`, Deployed vehicles into `BuildingTypes` |
-18        |	Economy           |	Any enemy `VehicleTypes` with `Harvester=yes` or `ResourceGatherer=yes`, `BuildingTypes` with `Refinery=yes`, `ResourceGatherer=yes` or `OrePurifier=yes` |
-19        |	Infantry Factory  |	Any enemy `BuildingTypes` with `Factory=InfantryType` |
-20        |	Vehicle Factory   |	Any enemy `BuildingTypes` with `Factory=UnitType` |
-21        |	Aircraft Factory  |	Any enemy `BuildingTypes` with `Factory=AircraftType` |
-22        |	Radar             |	Any enemy `BuildingTypes` with `Radar=yes` or `SpySat=yes` |
-23        |	Tech Lab          |	Any enemy `BuildingTypes` in `[AI]>BuildTech=` list |
-24        |	Naval Factory     |	Any enemy `BuildingTypes` with `Naval=yes` and `Factory=UnitType` |
-25        |	Super Weapon      |	Any enemy `BuildingTypes` with `SuperWeapon=`, `SuperWeapon2=` or `SuperWeapons=` |
-26        |	Construction Yard |	Any enemy `BuildingTypes` with `ConstructionYard=yes` and `Factory=BuildingType` |
-27        |	Neutrals          |	Any neutral object (Civilian) |
-28        |	Generators        |	Any enemy `BuildingTypes` with `CloakGenerator=yes` or `GapGenerator=yes` |
-29        |	Radar Jammer      |	Any enemy objects with positive `RadarJamRadius=` values |
-30        |	Inhibitors        |	Any enemy objects with positive `InhibitorRange=` values |
-31        |	Naval Units       |	Any enemy `VehicleTypes` with a `Naval=yes` or any enemy `VehicleTypes`, `AircraftTypes`, `InfantryTypes` in a water cell |
-32        | Mobile Units      |	Anything `VehicleTypes`, `AircraftTypes` and `InfantryTypes` |
-33        |	Capturable        |	Any `BuildingTypes` with `Capturable=yes` or any `BuildingTypes` with `BridgeRepairHut=yes` and `Repairable=yes` |
-34         | Area Threats     |	Any enemy object that is inside of the Team Leader's Guard Area |
-
-### `82` Decrease AI Trigger Current Weight
-
-- When executed this decreases the current Weight of the AI Trigger.The current Weight will never surprass the Minimum Weight and Maximum Weight limits of the AI Trigger. Take note that all TeamTypes of the same AI Trigger will update sooner or later the AI Trigger Current Weight. The second parameter is a positive value. Take note that the original game only uses the first of the two Teams for calculating the AI Trigger Current Weight at the end of the Trigger life, this action ignores if the Team is the first or the second of the AI Trigger and the Current Weight is calculated when is executed the action.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=82,n
-```
-
-### `83` Increase AI Trigger Current Weight
-
-- When executed this increases the current Weight of the AI Trigger.The current Weight will never surprass the Minimum Weight and Maximum Weight limits of the AI Trigger. Take note that all TeamTypes of the same AI Trigger will update sooner or later the AI Trigger Current Weight. The second parameter is a positive value. Take note that the original game only uses the first of the two Teams for calculating the AI Trigger Current Weight at the end of the Trigger life, this action ignores if the Team is the first or the second of the AI Trigger and the Current Weight is calculated when is executed the action.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=83,n
-```
-
-### `84-91`, `104-105` `AITargetTypes` Attack Action
-
-- These Actions instruct the TeamType to use the TaskForce to approach and attack the target specified by the second parameter which is an index of a modder-defined group from `AITargetTypess`. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
-  - For threat-based attack actions `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from `rulesmd.ini` are accounted.
-  - All Aircrafts that attack other air units will end the script. This behavior is intentional because without it aircrafts had some bugs that weren't fixable at the time of developing the feature.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=i,n             ; where 84 <= i <= 91 or 104 <= i <= 105
-```
-
-| *Action* | *Argument*   | *Repeats* | *Target Priority* | *Description*                                 |
-| :------: | :----------: | :-------: | :---------------: | :-------------------------------------------: |
-84         | `AITargetTypes` index# | Yes | Closer, higher threat |  |
-85         | `AITargetTypes` index# | Yes | Farther, higher threat |  |
-86         | `AITargetTypes` index# | Yes | Closer |  |
-87         | `AITargetTypes` index# | Yes | Farther |  |
-88         | `AITargetTypes` index# | No | Closer, higher threat | Ends when a team member kill the designated target |
-89         | `AITargetTypes` index# | No | Farther, higher threat | Ends when a team member kill the designated target |
-90         | `AITargetTypes` index# | No | Closer | Ends when a team member kill the designated target |
-91         | `AITargetTypes` index# | No | Farther | Ends when a team member kill the designated target |
-104        | `AITargetTypes` index# | Yes | Closer | Picks 1 random target from the list |
-105        | `AITargetTypes` index# | Yes | Farther | Picks 1 random target from the list |
-
-- The second parameter with a 0-based index for the `AITargetTypes` section specifies the list of possible `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` that can be evaluated. The new `AITargetTypes` section must be declared in `rulesmd.ini` for making this script work:
-
-In `rulesmd.ini`:
-```ini
-[AITargetTypes]  ; List of TechnoType lists
-0=SOMETECHNOTYPE,SOMEOTHERTECHNOTYPE,SAMPLETECHNOTYPE
-1=ANOTHERTECHNOTYPE,YETANOTHERTECHNOTYPE
-; ...
-```
-
-### Weapons fired on warping in / out
-
-- When executed before a new Attack ScriptType Actions like `74-81` and `84-91` the TeamType will remember that must wait 1 second if no target was selected. The second parameter is a positive value that specifies how much retries the Attack will do when no target was found before new Attack ScriptType Action is discarded & the script execution jumps to the next line. The value `0` means infinite retries.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=92,n            ; integer n=0
-```
-
-### `93` Team's Trigger Weight Reward
-
-- When executed before a new Attack ScriptType Actions like `74-81` and `84-91` the TeamType will remember that must be rewarded increasing the current Weight of the AI Trigger when the TeamType Target was killed by any of the Team members. The current Weight will never surprass the Minimum Weight and Maximum Weight limits of the AI Trigger. The second parameter is a positive value.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=93,n            ; integer n=0
-```
-
-### `94` Pick A Random Script
-
-- When executed this action picks a random Script Type and replaces the current script by the new picked. The second parameter is a 0-based index from the new section `AIScriptsList` explained below.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=94,n
-```
-
-The second parameter is a 0-based index for the `AIScriptsList` section that specifies the list of possible `ScriptTypes` that can be evaluated. The new `AIScriptsList` section must be declared in `rulesmd.ini` for making this script work:
-
-In `rulesmd.ini`:
-```ini
-[AIScriptsList]  ; List of ScriptType lists
-0=SOMESCRIPTTYPE,SOMEOTHERSCRIPTTYPE,SAMPLESCRIPTTYPE
-1=ANOTHERSCRIPTTYPE,YETANOTHERSCRIPTTYPE
-; ...
-```
-
-### `95-98`, `106-109` Moving Team to techno location
-
-- These Actions instructs the TeamType to use the TaskForce to approach the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value).
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=i,n             ; where 95 <= i <= 98 or 106 <= i <= 109
-```
-
-| *Action* | *Argument*    | Target Owner | *Target Priority* | *Description*                                 |
-| :------: | :-----------: | :----------: | :---------------: | :-------------------------------------------: |
-95         | Target Type# | Enemy | Closer, higher threat |  |
-96         | Target Type# | Enemy | Farther, higher threat |  |
-97         | Target Type# | Friendly | Closer |  |
-98         | Target Type# | Friendly | Farther |  |
-99         | [AITargetType] index# | Enemy | Closer, higher threat |  |
-100        | [AITargetType] index# | Enemy | Farther, higher threat |  |
-101        | [AITargetType] index# | Friendly | Closer |  |
-102        | [AITargetType] index# | Friendly | Farther |  |
-106        | [AITargetType] index# | Enemy | Closer | Picks 1 random target from the selected list |
-107        | [AITargetType] index# | Enemy | Farther | Picks 1 random target from the selected list |
-108        | [AITargetType] index# | Friendly | Closer | Picks 1 random target from the selected list |
-109        | [AITargetType] index# | Friendly | Farther | Picks 1 random target from the selected list |
-
-### `103` Modify Target Distance
-
-- By default Movement actions `95-102` & `106-109` ends when the Team Leader reaches a distance declared in rulesmd.ini called CloseEnough. When this action is  executed before the Movement actions `95-102` overwrites CloseEnough value. This action works only the first time and CloseEnough will be used again the next Movement action.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=103,n
-```
-
-### `110` Set Move Action End Mode
-
-- Sets how the Movement actions ends and jumps to the next line. This action works only the first time and CloseEnough will be used again the next Movement action. 
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=110,n
-```
-
-- The possible argument values are:
-
-| *Argument* | *Action ends when...*                       |
-| :------: | :-------------------------------------------: |
-0         | Team Leader reaches the minimum distance |
-1         | One unit reaches the minimum distance |
-2         | All team members reached the minimum distance |
-
-### `111` Un-register Team success
-
-- Is just the opposite effect of the script action `49,0`. Like if the Team failed.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=111,0
-```
-
-### `112` Regroup temporarily around the Team Leader
-
-- Puts the TaskForce into Area Guard Mode for the given amount of time around the Team Leader (this unit remains almost immobile until the action ends). The default radius around the Leader is `[General] > CloseEnough` and the units will not leave that area.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=112,n
-```
-
-### `113` Randomly Skip Next Action
-
-- When executed this action picks a random value between 1 and 100. If the value is equal or below the second parameter then the next action will be skipped. If the second parameter is 0 means that the next action will never be skipped and 100 means thay always will be skipped.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=113,n           ; where 0 > n <= 100
-```
-
-### `500 - 523` Edit Variable
-- Operate a variable's value
-    - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
-        - Any numbers exceeding this limit will lead to unexpected results!
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=i,n             ; where 500 <= i <= 523, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the param value.
-```
-
-### `524 - 547` Edit Variable by Local Variable
-- Operate a variable's value by a local variable's value
-    - Similar to 500-523, but the number to operate the value is being read from a local variable
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=i,n             ; where 524 <= i <= 547, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the local variable index.
-```
-
-### `548 - 571` Edit Variable by Global Variable
-- Operate a variable's value by a global variable's value
-    - Similar to 500-523, but the number to operate the value is being read from a global variable
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=i,n             ; where 548 <= i <= 571, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the global variable index.
 ```
 
 ## Super Weapons
@@ -695,7 +422,7 @@ LimboKill.IDs=                  ; List of numeric IDs.
 
 ## Technos
 
-### Automatic Passenger Deletion
+### Automatic passenger deletion
 
 - Transports with these tags will erase the passengers overtime. Bigger units takes more time. Optionally this logic can work like a grinder.
  - Good combination with Ares Abductor logic.
@@ -709,6 +436,20 @@ PassengerDeletion.Soylent=no            ; boolean
 PassengerDeletion.SoylentFriendlies=no  ; boolean
 PassengerDeletion.ReportSound=          ; sound
 PassengerDeletion.Anim=                 ; animation
+```
+
+### Automatic passenger owner change to match transport owner
+
+- Transports with `Passengers.SyncOwner` set to true will have the owner of their passengers changed to match the transport if transport's owner changes.
+  - On `OpenTopped=true` transports this will also disable checks that prevent target acquisition by passengers when the transport is temporarily mind controlled.
+  - `Passengers.SyncOwner.RevertOnExit`, if set to true (which is the default), changes the passengers' owner back to whatever it was originally when they entered the transport when they are ejected.
+  - Does not work on passengers acquired through use of `Abductor=true` weapon *(Ares feature)*.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                             ; TechnoType
+Passengers.SyncOwner=false               ; boolean
+Passengers.SyncOwner.RevertOnExit=true   ; boolean
 ```
 
 ### Automatically firing weapons
@@ -753,18 +494,13 @@ NoSecondaryWeaponFallback=false   ; boolean
 
 ### Firing offsets for specific Burst shots
 
-- You can now specify separate firing offsets for each of the shots fired by weapon with `Burst` via using `(Elite)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on which weapons your TechnoType makes use of. *N* in `BurstN` is zero-based burst shot index, and the values are parsed sequentially until no value for either regular or elite weapon is present, with elite weapon defaulting to regular weapon FLH if only it is missing. If no burst-index specific value is available, value from the base key (f.ex `PrimaryFireFLH`) is used.
+- You can now specify separate firing offsets for each of the shots fired by weapon with `Burst` via using `(Elite)(Prone/Deployed)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on which weapons your TechnoType makes use of. *N* in `BurstN` is zero-based burst shot index, and the values are parsed sequentially until no value for either regular or elite weapon is present, with elite weapon defaulting to regular weapon FLH if only it is missing. If no burst-index specific value is available, value from the base key (f.ex `PrimaryFireFLH`) is used.
 - Burst-index specific firing offsets are absolute firing offsets and the lateral shifting based on burst index that occurs with the base firing offsets is not applied.
 
 In `artmd.ini`:
 ```ini
-[SOMETECHNO]                   ; TechnoType Image
-PrimaryFireFLH.BurstN=         ; int - forward, lateral, height
-ElitePrimaryFireFLH.BurstN=    ; int - forward, lateral, height
-SecondaryFireFLH.BurstN=       ; int - forward, lateral, height
-EliteSecondaryFireFLH.BurstN=  ; int - forward, lateral, height
-WeaponXFLH.BurstN=             ; int - forward, lateral, height
-EliteWeaponXFLH.BurstN=        ; int - forward, lateral, height
+[SOMETECHNO]    ; TechnoType Image
+FLHKEY.BurstN=  ; int - forward, lateral, height. FLHKey refers to weapon-specific FLH key name and N is zero-based burst shot index.
 ```
 
 ### Initial Strength
@@ -782,12 +518,14 @@ InitialStrength=    ; int
 - Objects can be destroyed automatically under certaing cases:
   - No Ammo: The object will die if the remaining ammo reaches 0.
   - Countdown: The object will die if the countdown reaches 0.
+  - Peaceful: If `NoAmmo` or `Countdown` is set, the object will be directly removed from the game peacefully, without triggering deathweapon or "Unit lost" EVA.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                       ; TechnoType
 Death.NoAmmo=no                    ; boolean
 Death.Countdown=0                  ; integer
+Death.Peaceful=no                  ; boolean, whether to not trigger DeathWeapon and EVA
 ```
 
 ### Mind Control enhancement
@@ -887,7 +625,7 @@ In `rulesmd.ini`:
 CanRepairCyborgLegs=false         ; boolean
 ```
 
-## Terrains
+## Terrain
 
 ### Destroy animation & sound
 
@@ -899,201 +637,6 @@ In `rulesmd.ini`:
 DestroyAnim=       ; Animation
 DestroySound=      ; Sound
 ```
-
-## Trigger actions
-
-### `500` Save Game
-- Save the current game immediately (singleplayer game only).
-    - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
-    - The save's description will look like `MapDescName - CSFText`.
-        - For example: `Allied Mission 25: Esther's Money - Money Stolen`.
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],500,4,[CSFKey],0,0,0,0,A,[ActionX]
-...
-```
-
-### `501` Edit Variable
-- Operate a variable's value
-    - The variable's value type is int32, which means it ranges from -2^31 to 2^31-1.
-        - Any numbers exceeding this limit will lead to unexpected results!
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVariable],0,A,[ActionX]
-...
-```
-
-| *Operation*  | *Description*                                 |
-| :------: | :-------------------------------------------: |
-0         | CurrentValue = Number |
-1         | CurrentValue = CurrentValue + Number |
-2         | CurrentValue = CurrentValue - Number |
-3         | CurrentValue = CurrentValue * Number |
-4         | CurrentValue = CurrentValue / Number |
-5         | CurrentValue = CurrentValue % Number |
-6         | CurrentValue = CurrentValue leftshift Number |
-7         | CurrentValue = CurrentValue rightshift Number |
-8         | CurrentValue = ~CurrentValue |
-9         | CurrentValue = CurrentValue xor Number |
-10         | CurrentValue = CurrentValue or Number |
-11         | CurrentValue = CurrentValue and Number |
-
-### `502` Generate random number
-- Generate a random integer ranged in [Min, Max] and store it in a given variable
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],502,0,[VariableIndex],[Min],[Max],[IsGlobalVariable],0,A,[ActionX]
-...
-```
-
-### `503` Print variable value
-- Print a variable value to the message list
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[ActionX]
-...
-```
-
-### `504` Binary Operation
-- Operate a variable's value with another variable's value
-    - Similar to 501, but the operation number is read from another variable
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperationIndex],[IsGlobalVariable],[IsOperationGlobalVariable],A,[ActionX]
-...
-```
-
-`Operation` can be looked up at action `501`
-
-### `505` Fire Super Weapon at specified location
-
-- Launch a Super Weapon from [SuperWeaponTypes] list at a specified location.
-- `HouseIndex` can take various values:
-
-| *House Index* | *Description*                                 |
-| :-------: | :-------------------------------------------: |
-| >= 0      | The index of the current House in the map |
-| 4475-4482 | Like in the index range 0-7 |
-| -1        | Pick a random House that isn't Neutral |
-| -2        | Pick the first Neutral House |
-| -3        | Pick a random Human Player |
-
-- Coordinates X & Y can take possitive values or -1, in which case these values can take a random value from the visible map area.
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],505,0,0,[SuperWeaponTypesIndex],[HouseIndex],[CoordinateX],[CoordinateY],A,[ActionX]
-...
-```
-
-### `506` Fire Super Weapon at specified Waypoint
-
-- Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint.
-
-In `mycampaign.map`:
-```ini
-[Actions]
-...
-ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointIndex],0,A,[ActionX]
-...
-```
-
-## Trigger events
-
-### `500-511` Variable comparation
-- Compares the variable's value with given number
-
-In `mycampaign.map`:
-```ini
-[Events]
-...
-ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[Param],[EventX]
-...
-```
-
-| *Event ID*  | *Description*                                 | *Global* |
-| :------: | :-------------------------------------------: | :-------: |
-500         | CurrentValue > Number | No |
-501         | CurrentValue < Number | No |
-502         | CurrentValue = Number | No |
-503         | CurrentValue >= Number | No |
-504         | CurrentValue <= Number | No |
-505         | CurrentValue & Number | No |
-506         | CurrentValue > Number | Yes |
-507         | CurrentValue < Number | Yes |
-508         | CurrentValue = Number | Yes |
-509         | CurrentValue >= Number | Yes |
-510         | CurrentValue <= Number | Yes |
-511         | CurrentValue & Number | Yes |
-
-### `512-523` Variable comparation with local variable
-- Compares the variable's value with given local variable value
-
-In `mycampaign.map`:
-```ini
-[Events]
-...
-ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[LocalVariableIndex],[EventX]
-...
-```
-
-| *Event ID*  | *Description*                                 | *Global* |
-| :------: | :-------------------------------------------: | :-------: |
-512         | CurrentValue > LocalVariableValue | No |
-513         | CurrentValue < LocalVariableValue | No |
-514         | CurrentValue = LocalVariableValue | No |
-515         | CurrentValue >= LocalVariableValue | No |
-516         | CurrentValue <= LocalVariableValue | No |
-517         | CurrentValue & LocalVariableValue | No |
-518         | CurrentValue > LocalVariableValue | Yes |
-519         | CurrentValue < LocalVariableValue | Yes |
-520         | CurrentValue = LocalVariableValue | Yes |
-521         | CurrentValue >= LocalVariableValue | Yes |
-522         | CurrentValue <= LocalVariableValue | Yes |
-523         | CurrentValue & LocalVariableValue | Yes |
-
-### `524-535` Variable comparation with global variable
-- Compares the variable's value with given global variable value
-
-In `mycampaign.map`:
-```ini
-[Events]
-...
-ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX]
-...
-```
-
-| *Event ID*  | *Description*                                 | *Global* |
-| :------: | :-------------------------------------------: | :-------: |
-524         | CurrentValue > GlobalVariableValue | No |
-525         | CurrentValue < GlobalVariableValue | No |
-526         | CurrentValue = GlobalVariableValue | No |
-527         | CurrentValue >= GlobalVariableValue | No |
-528         | CurrentValue <= GlobalVariableValue | No |
-529         | CurrentValue & GlobalVariableValue | No |
-530         | CurrentValue > GlobalVariableValue | Yes |
-531         | CurrentValue < GlobalVariableValue | Yes |
-532         | CurrentValue = GlobalVariableValue | Yes |
-533         | CurrentValue >= GlobalVariableValue | Yes |
-534         | CurrentValue <= GlobalVariableValue | Yes |
-535         | CurrentValue & GlobalVariableValue | Yes |
 
 ## Warheads
 
@@ -1161,11 +704,19 @@ SplashList.PickRandom=no ; play a random animation from the list? boolean, defau
 *`TransactMoney` used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
 
 - Warheads can now give credits to its owner at impact.
+  - `TransactMoney.Display` can be set to display the amount of credits given or deducted. The number is displayed in green if given, red if deducted and will move upwards after appearing.
+    - `TransactMoney.Display.AtFirer` if set, makes the credits display appear on firer instead of target. If set and firer is not known, it will display at target regardless.
+    - `TransactMoney.Display.Houses` determines which houses can see the credits display.
+    - `TransactMoney.Display.Offset` is additional pixel offset for the center of the credits display, by default (0,0) at target's/firer's center.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]   ; Warhead
-TransactMoney=0 ; integer - credits added or subtracted
+[SOMEWARHEAD]                        ; Warhead
+TransactMoney=0                      ; integer - credits added or subtracted
+TransactMoney.Display=false          ; boolean
+TransactMoney.Display.AtFirer=false  ; boolean
+TransactMoney.Display.Houses=All     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 ```
 
 ### Remove disguise on impact
@@ -1210,6 +761,24 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]            ; Warhead
 NotHuman.DeathSequence=  ; integer (1 to 5)
+```
+### Launch superweapons on impact
+
+- Superweapons can now be launched when a warhead is detonated.
+  - `LaunchSW` specifies the superweapons to launch when the warhead is detonated.
+  - `LaunchSW.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons and sufficient fund to support `Money.Amout`. Otherwise they will be launched out of nowhere.
+  - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of the superweapon, otherwise only non-inhibited superweapons are launched.
+
+```{note}
+Animation weapons from _Ares_ are **not** supported. Nevertheless, animation warheads may work in certain circumstances. Also, due to the nature of some superweapon types, not all superweapons are suitable for launch.
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                 ; Warhead
+LaunchSW=                     ; list of superweapons
+LaunchSW.RealLaunch=no        ; bool
+LaunchSW.IgnoreInhibitors=no  ; bool
 ```
 
 ## Weapons

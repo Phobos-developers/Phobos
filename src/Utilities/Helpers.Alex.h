@@ -200,7 +200,7 @@ namespace Helpers {
 				for (auto const& pTechno : *TechnoClass::Array) {
 					if (pTechno->GetHeight() > 0) {
 						// rough estimation
-						if (pTechno->Location.DistanceFrom(coords) <= spread * 256) {
+						if (pTechno->Location.DistanceFrom(coords) <= spread * Unsorted::LeptonsPerCell) {
 							set.insert(pTechno);
 						}
 					}
@@ -232,7 +232,7 @@ namespace Helpers {
 				}
 
 				// this is good
-				if (dist <= spread * 256) {
+				if (dist <= spread * Unsorted::LeptonsPerCell) {
 					ret.push_back(pTechno);
 				}
 			}
