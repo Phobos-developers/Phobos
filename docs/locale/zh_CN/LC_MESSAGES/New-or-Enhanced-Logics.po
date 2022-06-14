@@ -1439,3 +1439,13 @@ msgid ""
 "listed for the weapon to be able to fire at cells containing no "
 "TechnoTypes."
 msgstr "请注意，`CanTarget`需要`all`或`empty`以使武器能向没有单位的格子开火。"
+
+#: ../New-or-Enhanced-Logics.md:1300
+msgid ""
+"Launch superweapons on impact"
+msgstr "发射超武"
+
+#: ../New-or-Enhanced-Logics.md:1301
+msgid ""
+"Superweapons can now be launched when a warhead is detonated."
+msgstr "超武在对应常规弹头所引爆的格子上发射"
