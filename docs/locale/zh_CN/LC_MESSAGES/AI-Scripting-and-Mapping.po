@@ -1,3 +1,6 @@
+#: ../New-or-Enhanced-Logics.md:1
+msgid "AI Scripting and Mapping"
+msgstr "触发和动作脚本"
 
 #: ../New-or-Enhanced-Logics.md:353
 msgid "Script actions"
