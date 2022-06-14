@@ -1456,3 +1456,16 @@ msgid ""
 " when the warhead is detonated."
 msgstr "`LaunchSW` 指定所要发射的超武"
 
+#: ../New-or-Enhanced-Logics.md:1304
+msgid ""
+"`LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of each superweapon,"
+" otherwise only non-inhibited superweapons are launched."
+msgstr "`LaunchSW.IgnoreInhibitors` 是否忽略`SW.Inhibitors`"
+
+#: ../New-or-Enhanced-Logics.md:1305
+msgid ""
+"Animation weapons from _Ares_ are **not** supported. "
+"Nevertheless, animation warheads may work under certain circumstances."
+" Also, due to the nature of some superweapon types,"
+" not all superweapons are suitable for launch."
+"目前Ares中的动画武器无法生效，动画弹头不全生效。自行探索，谨慎使用，后果自负。"

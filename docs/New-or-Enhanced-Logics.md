@@ -767,7 +767,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                 ; Warhead
 LaunchSW=                     ; list of superweapons
-LaunchSW.RealLaunch=yes        ; bool
+LaunchSW.RealLaunch=yes       ; bool
 LaunchSW.IgnoreInhibitors=no  ; bool
 ```
 
