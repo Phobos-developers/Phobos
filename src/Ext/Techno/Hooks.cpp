@@ -385,9 +385,7 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 			InfantryTypeClass* pInfType = abstract_cast<InfantryTypeClass*>(pTechno->GetTechnoType());
 
 			if (pInfType->Cyborg && pInf->Crawling == true)
-			{
 				pTechnoExt->IsLeggedCyborg = true;
-			}
 		}
 
 		if (pTechno->Transporter)
@@ -414,12 +412,8 @@ DEFINE_HOOK(0x518047, TechnoClass_Destroyed_IsCyborg, 0x5)
 		{
 			auto pTechnoExt = TechnoExt::ExtMap.Find(pInf);
 
-			if (pTechnoExt && pInf->Type->Cyborg 
-				&& pInf->Crawling == true 
-				&& !pTechnoExt->IsLeggedCyborg)
-			{
+			if (pTechnoExt && pInf->Type->Cyborg && pInf->Crawling == true && !pTechnoExt->IsLeggedCyborg)
 				pTechnoExt->IsLeggedCyborg = true;
-			}
 		}
 	}
 
