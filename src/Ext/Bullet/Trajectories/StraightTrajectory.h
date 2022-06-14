@@ -19,6 +19,7 @@ public:
 
 	Valueable<bool> SnapOnTarget;
 	Valueable<Leptons> SnapThreshold;
+	Valueable<bool> PassThrough;
 };
 
 class StraightTrajectory final : public PhobosTrajectory
@@ -43,4 +44,5 @@ public:
 
 	bool SnapOnTarget;
 	Leptons SnapThreshold;
+	bool PassThrough;
 };

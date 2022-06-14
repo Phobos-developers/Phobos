@@ -9,6 +9,7 @@ bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChang
 	Stm
 		.Process(this->SnapOnTarget, false)
 		.Process(this->SnapThreshold, false)
+		.Process(this->PassThrough, false)
 		;
 
 	return true;
@@ -21,6 +22,7 @@ bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
 	Stm
 		.Process(this->SnapOnTarget)
 		.Process(this->SnapThreshold)
+		.Process(this->PassThrough)
 		;
 
 	return true;
@@ -38,6 +40,7 @@ void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 
 	this->SnapOnTarget.Read(exINI, pSection, "Trajectory.Straight.SnapOnTarget");
 	this->SnapThreshold.Read(exINI, pSection, "Trajectory.Straight.SnapThreshold");
+	this->PassThrough.Read(exINI, pSection, "Trajectory.Straight.PassThrough");
 }
 
 bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -47,6 +50,7 @@ bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 	Stm
 		.Process(this->SnapOnTarget, false)
 		.Process(this->SnapThreshold, false)
+		.Process(this->PassThrough, false)
 		;
 
 	return true;
@@ -59,6 +63,7 @@ bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 	Stm
 		.Process(this->SnapOnTarget)
 		.Process(this->SnapThreshold)
+		.Process(this->PassThrough)
 		;
 
 	return true;
@@ -69,23 +74,45 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	auto type = this->GetTrajectoryType<StraightTrajectoryType>(pBullet);
 	this->SnapOnTarget = type->SnapOnTarget;
 	this->SnapThreshold = type->SnapThreshold;
-	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
-	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
-	pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z - pBullet->SourceCoords.Z);
+	this->PassThrough = type->PassThrough;
+
+	if (this->PassThrough)
+	{
+		pBullet->TargetCoords.X = INT_MAX;
+		pBullet->TargetCoords.Y = INT_MAX;
+		pBullet->TargetCoords.Z = INT_MAX;
+	}
+	else
+	{
+		pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
+		pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
+		pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z - pBullet->SourceCoords.Z);
+	}
+
 	pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
 }
 
 bool StraightTrajectory::OnAI(BulletClass* pBullet)
 {
-	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < this->DetonationDistance)
+	if (this->PassThrough)
+	{
+		pBullet->Data.Distance = INT_MAX;
+		int maxTravelDistance = this->DetonationDistance > 0 ? this->DetonationDistance : INT_MAX;
+
+		if (pBullet->SourceCoords.DistanceFrom(pBullet->Location) >= maxTravelDistance)
+			return true;
+	}
+	else if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < this->DetonationDistance)
+	{
 		return true;
+	}
 
 	return false;
 }
 
 void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 {
-	if (this->SnapOnTarget)
+	if (this->SnapOnTarget && !this->PassThrough)
 	{
 		auto pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
 		auto pCoords = pTarget ? pTarget->GetCoords() : pBullet->Data.Location;

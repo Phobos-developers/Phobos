@@ -371,6 +371,7 @@ Armor=                                 ; ArmorType
 
 - Self-explanatory, is a straight-shot trajectory.
   - `Trajectory.Straight.SnapOnTarget` determines whether or not the projectile snaps on intended target upon detonation or if it will detonates on its current location. It will only snap if it is within distance defined by `Trajectory.Straight.SnapThreshold` from the intended target, however.
+  - `Trajectory.Straight.PassThrough`, if set, will ignore the projectile's target (and any snapping settings) and pass through it and travels until has traveled `Trajectory.DetonationDistance` cells (or indefinitely if it is 0) until it detonates. It will not pass through objects blocked by, for an example `SubjectToWalls`, however.
   - Initial speed is determined by weapon's `Trajectory.Speed`.
 
 In `rulesmd.ini`:
@@ -380,6 +381,7 @@ Trajectory=Straight                    ; Trajectory type
 Trajectory.DetonationDistance=0.0      ; double, distance in cells
 Trajectory.Straight.SnapOnTarget=true  ; boolean
 Trajectory.Straight.SnapThreshold=1.0  ; double, distance in cells
+Trajectory.Straight.PassThrough=true   ; boolean
 ```
 
 #### Bombard trajectory
