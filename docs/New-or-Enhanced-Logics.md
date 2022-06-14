@@ -370,6 +370,22 @@ Trajectory=Bombard             ; Trajectory type
 Trajectory.Bombard.Height=0.0  ; double
 ```
 
+#### Full Line trajectory
+
+- Is a straight-shot trajectory that doesn't end in the target.
+- The weapon tag `ProjectileRange` must be set.
+- Initial speed is determined by weapon's `Trajectory.Speed`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]          ; Projectile
+Trajectory=FullLine       ; Trajectory type
+
+[SOMEWEAPON]              ; Weapon
+ProjectileRange=          ; double
+Projectile=SOMEPROJECTILE ; Projectile
+```
+
 ### Shrapnel enhancement
 - Shrapnel behavior can be triggered on the ground and buildings.
 

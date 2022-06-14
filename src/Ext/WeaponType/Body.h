@@ -34,6 +34,7 @@ public:
 		Nullable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
 		Valueable<double> Trajectory_Speed;
+		Valueable<double> ProjectileRange;
 		
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
@@ -53,6 +54,7 @@ public:
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
 			, Trajectory_Speed { 100.0 }
+			, ProjectileRange{ 0.0 }
 		{ }
 
 		virtual ~ExtData() = default;
