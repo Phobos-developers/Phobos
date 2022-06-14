@@ -30,7 +30,7 @@ public:
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	virtual bool Save(PhobosStreamWriter& Stm) const;
 
-	virtual void Read(CCINIClass* const pINI, const char* pSection) = 0;
+	virtual void Read(CCINIClass* const pINI, const char* pSection);
 
 	static void CreateType(PhobosTrajectoryType*& pType, CCINIClass* const pINI, const char* pSection, const char* pKey);
 
@@ -40,6 +40,7 @@ public:
 	static PhobosTrajectoryType* ProcessFromStream(PhobosStreamWriter& Stm, PhobosTrajectoryType* pType);
 
 	TrajectoryFlag Flag;
+	Valueable<Leptons> DetonationDistance;
 };
 
 class PhobosTrajectory
@@ -73,6 +74,7 @@ public:
 	static PhobosTrajectory* ProcessFromStream(PhobosStreamWriter& Stm, PhobosTrajectory* pTraj);
 
 	TrajectoryFlag Flag { TrajectoryFlag::Invalid };
+	Leptons DetonationDistance;
 };
 
 /*

@@ -7,16 +7,18 @@ class StraightTrajectoryType final : public PhobosTrajectoryType
 public:
 	StraightTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Straight)
 		, SnapOnTarget { true }
-		, SnapThreshold {}
-	{}
+	{
+		SnapThreshold = Leptons(Unsorted::LeptonsPerCell);
+		DetonationDistance = Leptons(0);
+	}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 
-	bool SnapOnTarget;
-	Leptons SnapThreshold;
+	Valueable<bool> SnapOnTarget;
+	Valueable<Leptons> SnapThreshold;
 };
 
 class StraightTrajectory final : public PhobosTrajectory
@@ -24,7 +26,6 @@ class StraightTrajectory final : public PhobosTrajectory
 public:
 	StraightTrajectory() : PhobosTrajectory(TrajectoryFlag::Straight)
 		, SnapOnTarget { true }
-		, SnapThreshold {}
 	{}
 
 	StraightTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Straight)

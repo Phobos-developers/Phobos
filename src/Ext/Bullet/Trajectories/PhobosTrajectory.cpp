@@ -12,14 +12,32 @@
 
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
-	Stm.Process(this->Flag, false);
+	Stm
+		.Process(this->Flag, false)
+		.Process(this->DetonationDistance, false)
+		;
+
 	return true;
 }
 
 bool PhobosTrajectoryType::Save(PhobosStreamWriter& Stm) const
 {
-	Stm.Process(this->Flag);
+	Stm
+		.Process(this->Flag)
+		.Process(this->DetonationDistance)
+		;
+
 	return true;
+}
+
+void PhobosTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
+{
+	if (!pINI->GetSection(pSection))
+		return;
+
+	INI_EX exINI(pINI);
+
+	this->DetonationDistance.Read(exINI, pSection, "Trajectory.DetonationDistance");
 }
 
 void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* const pINI, const char* pSection, const char* pKey)
@@ -77,7 +95,11 @@ void PhobosTrajectoryType::WriteToStream(PhobosStreamWriter& Stm, PhobosTrajecto
 	Stm.Process(pType);
 	if (pType)
 	{
-		Stm.Process(pType->Flag);
+		Stm
+			.Process(pType->Flag)
+			.Process(pType->DetonationDistance)
+			;
+
 		pType->Save(Stm);
 	}
 }
@@ -96,13 +118,21 @@ PhobosTrajectoryType* PhobosTrajectoryType::ProcessFromStream(PhobosStreamWriter
 
 bool PhobosTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
-	Stm.Process(this->Flag, false);
+	Stm
+		.Process(this->Flag, false)
+		.Process(this->DetonationDistance, false)
+		;
+
 	return true;
 }
 
 bool PhobosTrajectory::Save(PhobosStreamWriter& Stm) const
 {
-	Stm.Process(this->Flag);
+	Stm
+		.Process(this->Flag)
+		.Process(this->DetonationDistance)
+		;
+
 	return true;
 }
 
@@ -130,7 +160,10 @@ PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, 
 	}
 
 	if (pRet)
+	{
+		pRet->DetonationDistance = pType->DetonationDistance;
 		pRet->OnUnlimbo(pBullet, pCoord, pVelocity);
+	}
 
 	return pRet;
 }

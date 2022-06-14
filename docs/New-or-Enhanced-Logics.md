@@ -365,6 +365,7 @@ Armor=                                 ; ArmorType
 
 - Projectiles can now have customizable trajectories.
   - `Trajectory` should not be combined with original game's projectile trajectory logics (`Arcing`, `ROT` or `Inviso`).
+  - `Trajectory.DetonationDistance` can be used to customize the minimum distance the projectile must be from target for it to automatically detonate. Default value depends on trajectory type.
 
 #### Straight trajectory
 
@@ -376,6 +377,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]                       ; Projectile
 Trajectory=Straight                    ; Trajectory type
+Trajectory.DetonationDistance=0.0      ; double, distance in cells
 Trajectory.Straight.SnapOnTarget=true  ; boolean
 Trajectory.Straight.SnapThreshold=1.0  ; double, distance in cells
 ```
@@ -387,9 +389,10 @@ Trajectory.Straight.SnapThreshold=1.0  ; double, distance in cells
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]               ; Projectile
-Trajectory=Bombard             ; Trajectory type
-Trajectory.Bombard.Height=0.0  ; double
+[SOMEPROJECTILE]                   ; Projectile
+Trajectory=Bombard                 ; Trajectory type
+Trajectory.DetonationDistance=0.4  ; double, distance in cells
+Trajectory.Bombard.Height=0.0      ; double
 ```
 
 ### Shrapnel enhancement

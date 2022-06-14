@@ -29,8 +29,15 @@ bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
 
 void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
-	this->SnapOnTarget = pINI->ReadBool(pSection, "Trajectory.Straight.SnapOnTarget", this->SnapOnTarget);
-	this->SnapThreshold = Leptons((int)(pINI->ReadDouble(pSection, "Trajectory.Straight.SnapThreshold", 1.0) * Unsorted::LeptonsPerCell));
+	if (!pINI->GetSection(pSection))
+		return;
+
+	this->PhobosTrajectoryType::Read(pINI, pSection);
+
+	INI_EX exINI(pINI);
+
+	this->SnapOnTarget.Read(exINI, pSection, "Trajectory.Straight.SnapOnTarget");
+	this->SnapThreshold.Read(exINI, pSection, "Trajectory.Straight.SnapThreshold");
 }
 
 bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -38,8 +45,8 @@ bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 	this->PhobosTrajectory::Load(Stm, false);
 
 	Stm
-		.Process(this->SnapOnTarget)
-		.Process(this->SnapThreshold)
+		.Process(this->SnapOnTarget, false)
+		.Process(this->SnapThreshold, false)
 		;
 
 	return true;
@@ -70,7 +77,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 
 bool StraightTrajectory::OnAI(BulletClass* pBullet)
 {
-	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < 100)
+	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < this->DetonationDistance)
 		return true;
 
 	return false;

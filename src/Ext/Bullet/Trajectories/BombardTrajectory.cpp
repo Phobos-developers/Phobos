@@ -18,7 +18,14 @@ bool BombardTrajectoryType::Save(PhobosStreamWriter& Stm) const
 
 void BombardTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
-	this->Height = pINI->ReadDouble(pSection, "Trajectory.Bombard.Height", 0.0);
+	if (!pINI->GetSection(pSection))
+		return;
+
+	this->PhobosTrajectoryType::Read(pINI, pSection);
+
+	INI_EX exINI(pINI);
+
+	this->Height.Read(exINI, pSection, "Trajectory.Bombard.Height");
 }
 
 bool BombardTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -26,8 +33,8 @@ bool BombardTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 	this->PhobosTrajectory::Load(Stm, false);
 	
 	Stm
-		.Process(this->IsFalling)
-		.Process(this->Height)
+		.Process(this->IsFalling, false)
+		.Process(this->Height, false)
 		;
 
 	return true;
@@ -57,8 +64,7 @@ void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 
 bool BombardTrajectory::OnAI(BulletClass* pBullet)
 {
-	// Close enough
-	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < 100) // This value maybe adjusted?
+	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < this->DetonationDistance)
 		return true;
 
 	return false;

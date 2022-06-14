@@ -7,14 +7,16 @@ class BombardTrajectoryType final : public PhobosTrajectoryType
 public:
 	BombardTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Bombard)
 		, Height { 0.0 }
-	{ }
+	{ 
+		DetonationDistance = Leptons(102);
+	}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 
-	double Height;
+	Valueable<double> Height;
 };
 
 class BombardTrajectory final : public PhobosTrajectory
