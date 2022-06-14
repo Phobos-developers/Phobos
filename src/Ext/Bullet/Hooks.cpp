@@ -3,7 +3,6 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Misc/CaptureManager.h>
-#include <Ext/Bullet/Trajectories/StraightTrajectory.h>
 
 #include <TechnoClass.h>
 #include <TacticalClass.h>
@@ -237,13 +236,11 @@ DEFINE_HOOK(0x468E9F, BulletClass_Logics_SnapOnTarget, 0x6)
 	if (pThis->Type->Inviso)
 		return ForceSnap;
 
-	if (auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pTypeExt->TrajectoryType)
+		if (pExt->Trajectory)
 		{
-			auto type = static_cast<StraightTrajectoryType*>(pTypeExt->TrajectoryType);
-
-			if (type && !type->SnapOnTarget)
+			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight && !pExt->SnappedToTarget)
 				return NoSnap;
 		}
 	}

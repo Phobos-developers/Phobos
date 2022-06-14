@@ -22,8 +22,8 @@ public:
 		bool IsInterceptor;
 		InterceptedStatus InterceptedStatus;
 		bool DetonateOnInterception;
+		bool SnappedToTarget;
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
-		
 		PhobosTrajectory* Trajectory;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
@@ -32,6 +32,7 @@ public:
 			, IsInterceptor { false }
 			, InterceptedStatus { InterceptedStatus::None }
 			, DetonateOnInterception { true }
+			, SnappedToTarget { false }
 			, LaserTrails {}
 			, Trajectory { nullptr }
 		{ }

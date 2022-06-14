@@ -7,7 +7,7 @@ class StraightTrajectoryType final : public PhobosTrajectoryType
 public:
 	StraightTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Straight)
 		, SnapOnTarget { true }
-		, DetonationDistance { 100 }
+		, SnapThreshold {}
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -16,7 +16,7 @@ public:
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 
 	bool SnapOnTarget;
-	Leptons DetonationDistance;
+	Leptons SnapThreshold;
 };
 
 class StraightTrajectory final : public PhobosTrajectory
@@ -24,7 +24,7 @@ class StraightTrajectory final : public PhobosTrajectory
 public:
 	StraightTrajectory() : PhobosTrajectory(TrajectoryFlag::Straight)
 		, SnapOnTarget { true }
-		, DetonationDistance { 100 }
+		, SnapThreshold {}
 	{}
 
 	StraightTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Straight)
@@ -37,9 +37,9 @@ public:
 	virtual bool OnAI(BulletClass* pBullet) override;
 	virtual void OnAIPreDetonate(BulletClass* pBullet) override;
 	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) override;
-	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet, CoordStruct coords) override;
+	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
 	bool SnapOnTarget;
-	Leptons DetonationDistance;
+	Leptons SnapThreshold;
 };

@@ -368,15 +368,16 @@ Armor=                                 ; ArmorType
 
 #### Straight trajectory
 
-- Self-explanatory, is a straight-shot trajectory. `Trajectory.Straight.SnapOnTarget` determines whether or not the projectile snaps on intended target upon detonation or if it will detonates on its current location. `Trajectory.Straight.DetonationDistance` can be used to customize the distance (in leptons) from the intended target the projectile will attempt to detonate at, regardless of other conditions.
+- Self-explanatory, is a straight-shot trajectory.
+  - `Trajectory.Straight.SnapOnTarget` determines whether or not the projectile snaps on intended target upon detonation or if it will detonates on its current location. It will only snap if it is within distance defined by `Trajectory.Straight.SnapThreshold` from the intended target, however.
   - Initial speed is determined by weapon's `Trajectory.Speed`.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]                            ; Projectile
-Trajectory=Straight                         ; Trajectory type
-Trajectory.Straight.SnapOnTarget=true       ; boolean
-Trajectory.Straight.DetonationDistance=100  ; integer, distance in leptons
+[SOMEPROJECTILE]                       ; Projectile
+Trajectory=Straight                    ; Trajectory type
+Trajectory.Straight.SnapOnTarget=true  ; boolean
+Trajectory.Straight.SnapThreshold=1.0  ; double, distance in cells
 ```
 
 #### Bombard trajectory

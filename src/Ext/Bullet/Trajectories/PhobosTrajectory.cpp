@@ -234,13 +234,12 @@ DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
 	enum { SkipCheck = 0x4678F8, ContinueAfterCheck = 0x467879, Detonate = 0x467E53 };
 
 	GET(BulletClass*, pThis, EBP);
-	REF_STACK(CoordStruct, coords, STACK_OFFS(0x1A8, 0x184));
 
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
 	if (auto pTraj = pExt->Trajectory)
 	{
-		auto flag = pTraj->OnAITargetCoordCheck(pThis, coords);
+		auto flag = pTraj->OnAITargetCoordCheck(pThis);
 
 		if (flag == TrajectoryCheckReturnType::SkipGameCheck)
 			return SkipCheck;

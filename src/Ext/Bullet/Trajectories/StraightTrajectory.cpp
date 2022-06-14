@@ -1,4 +1,5 @@
 #include "StraightTrajectory.h"
+#include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 
 bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -7,7 +8,7 @@ bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChang
 
 	Stm
 		.Process(this->SnapOnTarget, false)
-		.Process(this->DetonationDistance, false)
+		.Process(this->SnapThreshold, false)
 		;
 
 	return true;
@@ -19,7 +20,7 @@ bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
 
 	Stm
 		.Process(this->SnapOnTarget)
-		.Process(this->DetonationDistance)
+		.Process(this->SnapThreshold)
 		;
 
 	return true;
@@ -29,7 +30,7 @@ bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
 void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
 	this->SnapOnTarget = pINI->ReadBool(pSection, "Trajectory.Straight.SnapOnTarget", this->SnapOnTarget);
-	this->DetonationDistance = Leptons(pINI->ReadInteger(pSection, "Trajectory.Straight.DetonationDistance", DetonationDistance));
+	this->SnapThreshold = Leptons((int)(pINI->ReadDouble(pSection, "Trajectory.Straight.SnapThreshold", 1.0) * Unsorted::LeptonsPerCell));
 }
 
 bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -38,7 +39,7 @@ bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 
 	Stm
 		.Process(this->SnapOnTarget)
-		.Process(this->DetonationDistance)
+		.Process(this->SnapThreshold)
 		;
 
 	return true;
@@ -50,7 +51,7 @@ bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 
 	Stm
 		.Process(this->SnapOnTarget)
-		.Process(this->DetonationDistance)
+		.Process(this->SnapThreshold)
 		;
 
 	return true;
@@ -60,7 +61,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 {
 	auto type = this->GetTrajectoryType<StraightTrajectoryType>(pBullet);
 	this->SnapOnTarget = type->SnapOnTarget;
-	this->DetonationDistance = type->DetonationDistance;
+	this->SnapThreshold = type->SnapThreshold;
 	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
 	pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z - pBullet->SourceCoords.Z);
@@ -69,7 +70,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 
 bool StraightTrajectory::OnAI(BulletClass* pBullet)
 {
-	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < this->DetonationDistance)
+	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < 100)
 		return true;
 
 	return false;
@@ -81,7 +82,13 @@ void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 	{
 		auto pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
 		auto pCoords = pTarget ? pTarget->GetCoords() : pBullet->Data.Location;
-		pBullet->SetLocation(pCoords);
+
+		if (pCoords.DistanceFrom(pBullet->Location) <= this->SnapThreshold)
+		{
+			auto const pExt = BulletExt::ExtMap.Find(pBullet);
+			pExt->SnappedToTarget = true;
+			pBullet->SetLocation(pCoords);
+		}
 	}
 }
 
@@ -90,10 +97,10 @@ void StraightTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpe
 	pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type); // We don't want to take the gravity into account
 }
 
-TrajectoryCheckReturnType StraightTrajectory::OnAITargetCoordCheck(BulletClass* pBullet, CoordStruct coords)
+TrajectoryCheckReturnType StraightTrajectory::OnAITargetCoordCheck(BulletClass* pBullet)
 {
-	int bulletX = coords.X / Unsorted::LeptonsPerCell;
-	int bulletY = coords.Y / Unsorted::LeptonsPerCell;
+	int bulletX = pBullet->Location.X / Unsorted::LeptonsPerCell;
+	int bulletY = pBullet->Location.Y / Unsorted::LeptonsPerCell;
 	int targetX = pBullet->TargetCoords.X / Unsorted::LeptonsPerCell;
 	int targetY = pBullet->TargetCoords.Y / Unsorted::LeptonsPerCell;
 

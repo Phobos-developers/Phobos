@@ -153,6 +153,7 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsInterceptor)
 		.Process(this->InterceptedStatus)
 		.Process(this->DetonateOnInterception)
+		.Process(this->SnappedToTarget)
 		.Process(this->LaserTrails)
 		;
 
