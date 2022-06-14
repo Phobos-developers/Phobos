@@ -297,7 +297,7 @@ New:
 - Feedback weapon (by Starkku)
 - TerrainType & ore minimap color customization (by Starkku)
 - Single-color weapon lasers (by Starkku)
--  Repair Legless Cyborgs In Transports (by FS-21)
+- Repair Legless Cyborgs In Transports (by FS-21)
 - Customizable projectile trajectory (by secsome)
 - Display damage numbers debug hotkey command (by Starkku)
 - Toggleable display of TransactMoney amounts (by Starkku)
