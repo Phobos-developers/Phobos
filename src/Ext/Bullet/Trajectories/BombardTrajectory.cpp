@@ -55,15 +55,17 @@ void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
 }
 
-void BombardTrajectory::OnAI(BulletClass* pBullet)
+bool BombardTrajectory::OnAI(BulletClass* pBullet)
 {
 	// Close enough
 	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < 100) // This value maybe adjusted?
-	{
-		pBullet->Explode(true);
-		pBullet->UnInit();
-		pBullet->LastMapCoords = CellClass::Coord2Cell(pBullet->Location);
-	}
+		return true;
+
+	return false;
+}
+
+void BombardTrajectory::OnAIPreDetonate(BulletClass* pBullet)
+{
 }
 
 void BombardTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
@@ -84,7 +86,7 @@ void BombardTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpee
 
 }
 
-TrajectoryCheckReturnType BombardTrajectory::OnAITargetCoordCheck(BulletClass* pBullet)
+TrajectoryCheckReturnType BombardTrajectory::OnAITargetCoordCheck(BulletClass* pBullet, CoordStruct coords)
 {
 	return TrajectoryCheckReturnType::ExecuteGameCheck; // Execute game checks.
 }

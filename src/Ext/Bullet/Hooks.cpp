@@ -3,9 +3,11 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Misc/CaptureManager.h>
+#include <Ext/Bullet/Trajectories/StraightTrajectory.h>
 
 #include <TechnoClass.h>
 #include <TacticalClass.h>
+
 
 // has everything inited except SpawnNextAnim at this point
 DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
@@ -220,6 +222,30 @@ DEFINE_HOOK(0x469A75, BulletClass_Logics_DamageHouse, 0x7)
 	{
 		if (!pHouse)
 			R->ECX(pExt->FirerHouse);
+	}
+
+	return 0;
+}
+
+
+DEFINE_HOOK(0x468E9F, BulletClass_Logics_SnapOnTarget, 0x6)
+{
+	enum { NoSnap = 0x468FF4, ForceSnap = 0x468EC7 };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (pThis->Type->Inviso)
+		return ForceSnap;
+
+	if (auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
+	{
+		if (pTypeExt->TrajectoryType)
+		{
+			auto type = static_cast<StraightTrajectoryType*>(pTypeExt->TrajectoryType);
+
+			if (type && !type->SnapOnTarget)
+				return NoSnap;
+		}
 	}
 
 	return 0;

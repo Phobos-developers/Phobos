@@ -18,6 +18,7 @@ enum class TrajectoryCheckReturnType : int
 	ExecuteGameCheck = 0,
 	SkipGameCheck = 1,
 	SatisfyGameCheck = 2,
+	Detonate = 3,
 };
 
 class PhobosTrajectoryType
@@ -51,9 +52,10 @@ public:
 	virtual bool Save(PhobosStreamWriter& Stm) const;
 
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) = 0;
-	virtual void OnAI(BulletClass* pBullet) = 0;
+	virtual bool OnAI(BulletClass* pBullet) = 0;
+	virtual void OnAIPreDetonate(BulletClass* pBullet) = 0;
 	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) = 0;
-	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) = 0;
+	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet, CoordStruct coords) = 0;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) = 0;
 
 	template<typename T = PhobosTrajectoryType>

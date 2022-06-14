@@ -48,16 +48,21 @@ void SampleTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bull
 	pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
 }
 
-// Some early checks here
-void SampleTrajectory::OnAI(BulletClass* pBullet)
+// Some early checks on each game frame here.
+// Return true to detonate the bullet immediately afterwards.
+bool SampleTrajectory::OnAI(BulletClass* pBullet)
 {
 	// Close enough
 	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < 100)
-	{
-		pBullet->Detonate(pBullet->Location);
-		pBullet->UnInit();
-		pBullet->LastMapCoords = CellClass::Coord2Cell(pBullet->Location);
-	}
+		return true;
+
+	return false;
+}
+
+// Checks done before some coordinate adjustments and then detonating the bullet.
+void SampleTrajectory::OnAIPreDetonate(BulletClass* pBullet)
+{
+	return false;
 }
 
 // Where you update the speed and position
@@ -86,7 +91,7 @@ void SampleTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed
 // Where additional checks based on bullet reaching its target coordinate can be done.
 // Vanilla code will do additional checks regarding buildings on target coordinate and Vertical projectiles and will detonate the projectile if they pass.
 // Return value determines what is done regards to the game checks: they can be skipped, executed as normal or treated as if the condition is already satisfied.
-TrajectoryCheckReturnType SampleTrajectory::OnAITargetCoordCheck(BulletClass* pBullet)
+TrajectoryCheckReturnType SampleTrajectory::OnAITargetCoordCheck(BulletClass* pBullet, CoordStruct coords)
 {
 	return TrajectoryCheckReturnType::ExecuteGameCheck; // Execute game checks.
 }

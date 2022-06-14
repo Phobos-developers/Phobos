@@ -34,9 +34,10 @@ public:
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) override;
-	virtual void OnAI(BulletClass* pBullet) override;
+	virtual bool OnAI(BulletClass* pBullet) override;
+	virtual void OnAIPreDetonate(BulletClass* pBullet) override;
 	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) override;
-	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
+	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet, CoordStruct coords) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
 	bool IsFalling;

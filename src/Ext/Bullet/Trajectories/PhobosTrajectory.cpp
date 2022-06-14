@@ -185,12 +185,32 @@ PhobosTrajectory* PhobosTrajectory::ProcessFromStream(PhobosStreamWriter& Stm, P
 
 DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 {
+	enum { Detonate = 0x467E53 };
+
+	GET(BulletClass*, pThis, EBP);
+
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+	bool detonate = false;
+
+	if (auto pTraj = pExt->Trajectory)
+		detonate = pTraj->OnAI(pThis);
+
+	if (detonate && !pThis->SpawnNextAnim)
+	{
+		return Detonate;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x467E53, BulletClass_AI_PreDetonation_Trajectories, 0x6)
+{
 	GET(BulletClass*, pThis, EBP);
 
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
 	if (auto pTraj = pExt->Trajectory)
-		pTraj->OnAI(pThis);
+		pTraj->OnAIPreDetonate(pThis);
 
 	return 0;
 }
@@ -211,20 +231,23 @@ DEFINE_HOOK(0x46745C, BulletClass_AI_Position_Trajectories, 0x7)
 
 DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
 {
-	enum { SkipCheck = 0x4678F8, ContinueAfterCheck = 0x467879 };
+	enum { SkipCheck = 0x4678F8, ContinueAfterCheck = 0x467879, Detonate = 0x467E53 };
 
 	GET(BulletClass*, pThis, EBP);
+	REF_STACK(CoordStruct, coords, STACK_OFFS(0x1A8, 0x184));
 
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
 	if (auto pTraj = pExt->Trajectory)
 	{
-		auto flag = pTraj->OnAITargetCoordCheck(pThis);
+		auto flag = pTraj->OnAITargetCoordCheck(pThis, coords);
 
 		if (flag == TrajectoryCheckReturnType::SkipGameCheck)
 			return SkipCheck;
-		if (flag == TrajectoryCheckReturnType::SatisfyGameCheck)
+		else if (flag == TrajectoryCheckReturnType::SatisfyGameCheck)
 			return ContinueAfterCheck;
+		else if (flag == TrajectoryCheckReturnType::Detonate)
+			return Detonate;
 	}
 
 	return 0;
@@ -232,7 +255,7 @@ DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
 
 DEFINE_HOOK(0x467927, BulletClass_AI_TechnoCheck_Trajectories, 0x5)
 {
-	enum { SkipCheck = 0x467A26, ContinueAfterCheck = 0x467514 };
+	enum { SkipCheck = 0x467A2B, ContinueAfterCheck = 0x4679EB, Detonate = 0x467E53 };
 
 	GET(BulletClass*, pThis, EBP);
 	GET(TechnoClass*, pTechno, ESI);
@@ -245,8 +268,10 @@ DEFINE_HOOK(0x467927, BulletClass_AI_TechnoCheck_Trajectories, 0x5)
 
 		if (flag == TrajectoryCheckReturnType::SkipGameCheck)
 			return SkipCheck;
-		if (flag == TrajectoryCheckReturnType::SatisfyGameCheck)
+		else if (flag == TrajectoryCheckReturnType::SatisfyGameCheck)
 			return ContinueAfterCheck;
+		else if (flag == TrajectoryCheckReturnType::Detonate)
+			return Detonate;
 	}
 
 	return 0;
