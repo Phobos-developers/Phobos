@@ -758,17 +758,17 @@ NotHuman.DeathSequence=  ; integer (1 to 5)
 - Superweapons can now be launched when a warhead is detonated.
   - `LaunchSW` specifies the superweapons to launch when the warhead is detonated.
   - `LaunchSW.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons and sufficient fund to support `Money.Amout`. Otherwise they will be launched out of nowhere.
-  - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of the superweapon, otherwise only non-inhibited superweapons are launched.
+  - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of each superweapon, otherwise only non-inhibited superweapons are launched.
 
 ```{note}
-Animation weapons from _Ares_ are **not** supported. Nevertheless, animation warheads may work in certain circumstances. Also, due to the nature of some superweapon types, not all superweapons are suitable for launch.
+Animation weapons from _Ares_ are **not** supported. Nevertheless, animation warheads may work under certain circumstances. Also, due to the nature of some superweapon types, not all superweapons are suitable for launch.
 ```
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                 ; Warhead
 LaunchSW=                     ; list of superweapons
-LaunchSW.RealLaunch=no        ; bool
+LaunchSW.RealLaunch=yes       ; bool
 LaunchSW.IgnoreInhibitors=no  ; bool
 ```
 
