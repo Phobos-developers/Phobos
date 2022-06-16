@@ -10,7 +10,6 @@
 #include <ParticleSystemClass.h>
 #include <Unsorted.h>
 #include <BitFont.h>
-#include <JumpjetLocomotionClass.h>
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -191,7 +190,9 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 	if (TechnoExt::HasAvailableDock(pThis))
 	{
 		if (mission == Mission::Harvest || mission == Mission::Unload || mission == Mission::Enter)
+		{
 			return true;
+		}
 		else if (pThis->WhatAmI() == AbstractType::Unit && mission == Mission::Guard
 			&& !pThis->IsSelected)
 		{
