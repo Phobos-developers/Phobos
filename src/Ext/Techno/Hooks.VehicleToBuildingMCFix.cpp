@@ -97,7 +97,6 @@ DEFINE_HOOK(0x448460, BuildingClass_Captured_MuteSound, 0x6)
 		0x44848F : 0;
 }
 
-
 DEFINE_HOOK(0x54AEC0, JumpjetLocomotion_Process, 0x8)
 {
 	GET_STACK(ILocomotion*, iLoco, 0x4);
