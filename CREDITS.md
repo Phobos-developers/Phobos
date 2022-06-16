@@ -161,6 +161,8 @@ This page lists all the individual contributions to the project by their author.
 - **Trsdy**
    - Jumpjet facing fix
    - Warhead superweapon launch logic
+   - Unit self-destroy condition extension
+   - Misc CN doc fix
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic

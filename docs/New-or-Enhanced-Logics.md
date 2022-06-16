@@ -517,16 +517,19 @@ InitialStrength=    ; int
 
 - Objects can be destroyed automatically under certaing cases:
   - `NoAmmo`: The object will die if the remaining ammo reaches 0.
-  - `Countdown`: The object will die if the countdown reaches 0.
+  - `Countdown`: The object will die if the countdown (in frames) reaches 0.
   - `WithSlaveOwner`: `Slaved=yes` infantry will die simultaneously with its slave owner.
-  - `Peaceful`: In all above cases, the object will be directly removed from the game peacefully, without triggering deathweapon or "Unit lost" EVA for example.
+
+  - `Peaceful`: In all cases above, the object will be directly removed from the game peacefully instead of actually getting killed.  For example, `DeathWeapon` and "Unit lost" EVA will not be triggered.
+
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                       ; TechnoType
-Death.NoAmmo=no                    ; boolean
-Death.Countdown=0                  ; integer
-Death.WithSlaveOwner=no            ; boolean
-Death.Peaceful=no                  ; boolean
+[SOMETECHNO]             ; TechnoType
+Death.NoAmmo=no          ; boolean
+Death.Countdown=0        ; integer
+Death.WithSlaveOwner=no  ; boolean
+
+Death.Peaceful=no        ; boolean
 ```
 
 ### Mind Control enhancement
