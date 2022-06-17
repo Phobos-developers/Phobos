@@ -124,8 +124,16 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 					}
 				}
 
-				pTarget->QueueMission(Mission::Move, false);
-				pTarget->SetDestination(pTarget->GetCell(), true);
+				if (pManager->Owner->IsHumanControlled && pTarget->Target)
+				{
+					if (auto pTargetFoot = abstract_cast<FootClass*>(pTarget))
+					{
+						pTargetFoot->SetTarget(nullptr);
+						pTargetFoot->QueueMission(Mission::Guard, false);
+						pTargetFoot->SetDestination(pTarget->GetCell(), true);
+						pTargetFoot->NextMission();
+					}
+				}
 
 				return true;
 			}
