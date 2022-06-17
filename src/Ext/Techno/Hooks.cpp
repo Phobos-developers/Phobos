@@ -513,3 +513,26 @@ DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
 
 	return SkipGameDrawing;
 }
+
+DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
+{
+	GET(FootClass*, pThis, ECX);
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (!RulesExt::Global()->IronCurtainKillOrganic || pTypeExt->CanBeIronCurtain)
+		return 0x4DEB38;
+	return 0;
+}
+
+DEFINE_HOOK(0x522600, InfantryClass_IronCurtain, 0x6)
+{
+	GET(InfantryClass*, pThis, ECX);
+	GET_STACK(int, nDuration, 0x8);
+	GET_STACK(HouseClass*, pSource, 0xC);
+	GET_STACK(BOOL, ForceShield, 0x10);
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (!RulesExt::Global()->IronCurtainKillOrganic || pTypeExt->CanBeIronCurtain)
+		pThis->FootClass::IronCurtain(nDuration, pSource, ForceShield);
+	else
+		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pSource);
+	return 0x522639;
+}

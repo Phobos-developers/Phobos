@@ -234,6 +234,17 @@ In `rulesmd.ini`:
 Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
 ```
 
+### IronCurtain Kill Organic=yes and Infantry
+
+In `rulesmd.ini`
+```ini
+[CombatDamage]
+IronCurtainKillOrganic=  ;boolean, whether IronCurtain Kill Infantry or Techno with Organic=yes, default yes
+
+[SOMETECHNO]
+CanBeIronCurtain=        ;boolean, whether this Techno will not be killed by ironcurtain if it is Infantry or Organic=yes, default no
+```
+
 ### Jumpjet unit layer deviation customization
 
 - Allows turning on or off jumpjet unit behaviour where they fluctuate between `air` and `top` layers based on whether or not their current altitude is equal / below or above `JumpjetHeight` or `[JumpjetControls] -> CruiseHeight` if former is not set on TechnoType. If disabled, airborne jumpjet units exist only in `air` layer. `JumpjetAllowLayerDeviation` defaults to value of `[JumpjetControls] -> AllowLayerDeviation` if not specified.
