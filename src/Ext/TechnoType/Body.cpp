@@ -128,7 +128,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Interceptor_MinimumGuardRange.Read(exINI, pSection, "Interceptor.%sMinimumGuardRange");
 	this->Interceptor_Weapon.Read(exINI, pSection, "Interceptor.Weapon");
 	this->Interceptor_DeleteOnIntercept.Read(exINI, pSection, "Interceptor.DeleteOnIntercept");
-	this->Interceptor_WeaponOverride.Read(exINI, pSection, "Interceptor.WeaponOverride");
+	this->Interceptor_WeaponOverride.Read(exINI, pSection, "Interceptor.WeaponOverride", true);
 	this->Interceptor_WeaponReplaceProjectile.Read(exINI, pSection, "Interceptor.WeaponReplaceProjectile");
 	this->Interceptor_WeaponCumulativeDamage.Read(exINI, pSection, "Interceptor.WeaponCumulativeDamage");
 	this->Interceptor_KeepIntact.Read(exINI, pSection, "Interceptor.KeepIntact");
