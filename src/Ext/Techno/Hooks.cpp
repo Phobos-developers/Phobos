@@ -526,9 +526,9 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 DEFINE_HOOK(0x522600, InfantryClass_IronCurtain, 0x6)
 {
 	GET(InfantryClass*, pThis, ECX);
-	GET_STACK(int, nDuration, 0x8);
-	GET_STACK(HouseClass*, pSource, 0xC);
-	GET_STACK(BOOL, ForceShield, 0x10);
+	GET_STACK(int, nDuration, 0x4);
+	GET_STACK(HouseClass*, pSource, 0x8);
+	GET_STACK(BOOL, ForceShield, 0xC);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	if (!RulesExt::Global()->IronCurtainKillOrganic || pTypeExt->CanBeIronCurtain)
 		pThis->FootClass::IronCurtain(nDuration, pSource, ForceShield);
