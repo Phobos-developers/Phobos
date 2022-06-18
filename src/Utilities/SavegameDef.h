@@ -441,6 +441,30 @@ namespace Savegame
 		}
 	};
 
+	template <typename _Ty1, typename _Ty2>
+	struct Savegame::PhobosStreamObject<std::pair<_Ty1, _Ty2>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::pair<_Ty1, _Ty2>& Value, bool RegisterForChange) const
+		{
+			if (!Savegame::ReadPhobosStream(Stm, Value.first, RegisterForChange)
+				|| !Savegame::ReadPhobosStream(Stm, Value.second, RegisterForChange))
+			{
+				return false;
+			}
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::pair<_Ty1, _Ty2>& Value) const
+		{
+			if (!Savegame::WritePhobosStream(Stm, Value.first)
+				|| !Savegame::WritePhobosStream(Stm, Value.second))
+			{
+				return false;
+			}
+			return true;
+		}
+	};
+
 	template <typename TKey, typename TValue>
 	struct Savegame::PhobosStreamObject<std::map<TKey, TValue>>
 	{
