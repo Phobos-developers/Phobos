@@ -234,7 +234,10 @@ DEFINE_HOOK(0x468E9F, BulletClass_Logics_SnapOnTarget, 0x6)
 	GET(BulletClass*, pThis, ESI);
 
 	if (pThis->Type->Inviso)
+	{
+		R->EAX(pThis->Type);
 		return ForceSnap;
+	}
 
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
