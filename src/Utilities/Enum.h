@@ -150,6 +150,13 @@ enum class SelfHealGainType
 	Units = 2
 };
 
+enum class InterceptedStatus
+{
+	None = 0,
+	Targeted = 1,
+	Intercepted = 2
+};
+
 enum class PhobosAction {
 	None = 0,
 	Hijack = 1,

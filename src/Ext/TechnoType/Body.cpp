@@ -123,10 +123,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
 	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
 	this->Interceptor.Read(exINI, pSection, "Interceptor");
-	this->Interceptor_GuardRange.Read(exINI, pSection, "Interceptor.GuardRange");
-	this->Interceptor_MinimumGuardRange.Read(exINI, pSection, "Interceptor.MinimumGuardRange");
-	this->Interceptor_EliteGuardRange.Read(exINI, pSection, "Interceptor.EliteGuardRange");
-	this->Interceptor_EliteMinimumGuardRange.Read(exINI, pSection, "Interceptor.EliteMinimumGuardRange");
+	this->Interceptor_CanTargetHouses.Read(exINI, pSection, "Interceptor.CanTargetHouses");
+	this->Interceptor_GuardRange.Read(exINI, pSection, "Interceptor.%sGuardRange");
+	this->Interceptor_MinimumGuardRange.Read(exINI, pSection, "Interceptor.%sMinimumGuardRange");
+	this->Interceptor_Weapon.Read(exINI, pSection, "Interceptor.Weapon");
+	this->Interceptor_DeleteOnIntercept.Read(exINI, pSection, "Interceptor.DeleteOnIntercept");
+	this->Interceptor_WeaponOverride.Read(exINI, pSection, "Interceptor.WeaponOverride", true);
+	this->Interceptor_WeaponReplaceProjectile.Read(exINI, pSection, "Interceptor.WeaponReplaceProjectile");
+	this->Interceptor_WeaponCumulativeDamage.Read(exINI, pSection, "Interceptor.WeaponCumulativeDamage");
+	this->Interceptor_KeepIntact.Read(exINI, pSection, "Interceptor.KeepIntact");
 	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
 	this->Spawn_LimitedRange.Read(exINI, pSection, "Spawner.LimitRange");
 	this->Spawn_LimitedExtraRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
@@ -262,10 +267,15 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LowSelectionPriority)
 		.Process(this->MindControlRangeLimit)
 		.Process(this->Interceptor)
+		.Process(this->Interceptor_CanTargetHouses)
 		.Process(this->Interceptor_GuardRange)
 		.Process(this->Interceptor_MinimumGuardRange)
-		.Process(this->Interceptor_EliteGuardRange)
-		.Process(this->Interceptor_EliteMinimumGuardRange)
+		.Process(this->Interceptor_Weapon)
+		.Process(this->Interceptor_DeleteOnIntercept)
+		.Process(this->Interceptor_WeaponOverride)
+		.Process(this->Interceptor_WeaponReplaceProjectile)
+		.Process(this->Interceptor_WeaponCumulativeDamage)
+		.Process(this->Interceptor_KeepIntact)
 		.Process(this->GroupAs)
 		.Process(this->RadarJamRadius)
 		.Process(this->InhibitorRange)
