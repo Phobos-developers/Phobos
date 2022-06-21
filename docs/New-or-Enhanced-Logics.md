@@ -831,15 +831,16 @@ FeedbackWeapon=  ; WeaponType
 
 ### Radiation enhancements
 
-- Radiation now has owner by default, so any rad-kills will be scored. This behavior can be reverted by a corresponding tag.
+- Radiation now able to gain ownerhip , so any rad-kills will be scored. This behavior can be change by a corresponding tag.
   - `AffectsAllies`, `AffectsOwner` and `AffectsEnemies` on `RadSiteWarhead` are respected.
   - Currently the rad maker doesn't gain experience from kills, this may change in future.
+  - `Warning :` Enabling this will break Trigger Events `#48` `#7` and `#29`
 - Radiation is now able to deal damage to Buildings. To enable set `RadApplicationDelay.Building` value more than 0.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]    ; WeaponType
-Rad.NoOwner=no  ; boolean
+Rad.NoOwner=yes  ; boolean
 ```
 
 ### Strafing aircraft weapon customization
