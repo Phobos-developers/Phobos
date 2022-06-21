@@ -723,6 +723,36 @@ namespace detail
 		return false;
 	}
 
+
+	template <>
+	inline bool read<IronCurtainAffects>(IronCurtainAffects& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = IronCurtainAffects::Kill;
+			auto str = parser.value();
+			if (_strcmpi(str, "kill") == 0)
+			{
+				parsed = IronCurtainAffects::Kill;
+			}
+			else if (_strcmpi(str, "noaffect") == 0)
+			{
+				parsed = IronCurtainAffects::NoAffect;
+			}
+			else if (_strcmpi(str, "affect") == 0)
+			{
+				parsed = IronCurtainAffects::Affect;
+			}
+			else
+			{
+				return false;
+			}
+			value = parsed;
+			return true;
+		}
+		return false;
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{

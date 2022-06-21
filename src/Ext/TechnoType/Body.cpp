@@ -251,7 +251,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
 	
-	this->CanBeIronCurtain.Read(exINI, pSection, "CanBeIronCurtain");
+	this->IronCurtain_Affect.Read(exINI, pSection, "IronCurtain.Affect");
 }
 
 template <typename T>
@@ -341,7 +341,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteCrouchedWeaponBurstFLHs)
 		.Process(this->DeployedWeaponBurstFLHs)
 		.Process(this->EliteDeployedWeaponBurstFLHs)
-		.Process(this->CanBeIronCurtain)
+		.Process(this->IronCurtain_Affect)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

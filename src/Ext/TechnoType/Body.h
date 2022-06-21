@@ -134,7 +134,7 @@ public:
 		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
-		Valueable<bool> CanBeIronCurtain;
+		Nullable<IronCurtainAffects> IronCurtain_Affect;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -214,7 +214,7 @@ public:
 			, ProneSecondaryFireFLH { }
 			, DeployedPrimaryFireFLH { }
 			, DeployedSecondaryFireFLH { }
-			, CanBeIronCurtain { false }
+			, IronCurtain_Affect {}
 		{ }
 
 		virtual ~ExtData() = default;

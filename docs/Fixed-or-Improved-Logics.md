@@ -234,15 +234,20 @@ In `rulesmd.ini`:
 Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
 ```
 
-### IronCurtain Kill Organic=yes and Infantry
+### IronCurtain Can Set `Kill/NoAffect/Affect`
+
+`Kill/NoAffect/Affect`
+ - `Kill`: this TechnoType will killed by iron curtain
+ - `NoAffect`: iron curtain can't affects this TechnoType
+ - `Affect`: iron curtain can work on this TechnoType
 
 In `rulesmd.ini`
 ```ini
 [CombatDamage]
-IronCurtainKillOrganic=  ;boolean, whether IronCurtain Kill Infantry or Techno with Organic=yes, default yes
+IronCurtainToOrganic=  ; IronCurtain to Infantry and Foot with Organic=yes, default Kill
 
 [SOMETECHNO]
-CanBeIronCurtain=        ;boolean, whether this Techno will not be killed by ironcurtain if it is Infantry or Organic=yes, default no
+IronCurtain.Affect=    ; IronCurtain to this TechnoType, override [CombatDamage]>IronCurtainToOrganic
 ```
 
 ### Jumpjet unit layer deviation customization
