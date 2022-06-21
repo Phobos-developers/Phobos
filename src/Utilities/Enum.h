@@ -33,6 +33,7 @@
 #pragma once
 
 #include <Phobos.h>
+#include <GeneralDefinitions.h>
 
 enum class AttachedAnimFlag {
 	None = 0x0,
@@ -180,6 +181,20 @@ enum class HealthBarAnchors
 };
 
 MAKE_ENUM_FLAGS(HealthBarAnchors);
+
+enum class HorizontalPosition : BYTE
+{
+	Left = 0,
+	Center = 1,
+	Right = 2
+};
+
+enum class VerticalPosition : BYTE
+{
+	Top = 0,
+	Center = 1,
+	Bottom = 2
+};
 
 class MouseCursorHotSpotX {
 public:

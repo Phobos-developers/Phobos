@@ -723,6 +723,62 @@ namespace detail
 		return false;
 	}
 
+	template <>
+	inline bool read<HorizontalPosition>(HorizontalPosition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "left") == 0)
+			{
+				value = HorizontalPosition::Left;
+			}
+			else if (_strcmpi(str, "center") == 0 || _strcmpi(str, "centre") == 0)
+			{
+				value = HorizontalPosition::Center;
+			}
+			else if (_strcmpi(str, "right") == 0)
+			{
+				value = HorizontalPosition::Right;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Horizontal Position can be either Left, Center/Centre or Right");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<VerticalPosition>(VerticalPosition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "top") == 0)
+			{
+				value = VerticalPosition::Top;
+			}
+			else if (_strcmpi(str, "center") == 0 || _strcmpi(str, "centre") == 0)
+			{
+				value = VerticalPosition::Center;
+			}
+			else if (_strcmpi(str, "bottom") == 0)
+			{
+				value = VerticalPosition::Bottom;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Vertical Position can be either Top, Center/Centre or Bottom");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{

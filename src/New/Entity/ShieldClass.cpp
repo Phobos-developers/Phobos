@@ -12,10 +12,6 @@
 #include <RadarEventClass.h>
 #include <TacticalClass.h>
 
-#include <New/Type/DigitalDisplayTypeClass.h>
-
-#include<PhobosHelper/Helper.h>
-
 ShieldClass::ShieldClass() : Techno { nullptr }
 	, HP { 0 }
 	, Timers { }

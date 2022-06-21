@@ -182,7 +182,7 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 			pShieldData->DrawShieldBar(iLength, pLocation, pBound);
 	}
 
-	DigitalDisplayTypeClass::RunDigitalDisplay(pThis, pLocation);
+	TechnoExt::ProcessDigitalDisplays(pThis);
 
 	return 0;
 }
@@ -203,7 +203,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 		}
 	}
 
-	DigitalDisplayTypeClass::RunDigitalDisplay(pThis, pLocation);
+	TechnoExt::ProcessDigitalDisplays(pThis);
 
 	return 0;
 }

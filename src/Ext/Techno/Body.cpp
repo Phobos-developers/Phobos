@@ -13,8 +13,6 @@
 #include <BitFont.h>
 #include <JumpjetLocomotionClass.h>
 
-#include <PhobosHelper/Helper.h>
-
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Misc/FlyingStrings.h>
@@ -862,84 +860,240 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 
 Point2D TechnoExt::GetScreenLocation(TechnoClass* pThis)
 {
-	CoordStruct Loc = pThis->GetCoords();
-	Point2D res = { 0,0 };
-	TacticalClass::Instance->CoordsToScreen(&res, &Loc);
-	res -= TacticalClass::Instance->TacticalPos;
-	return res;
+	CoordStruct crdAbs = pThis->GetCoords();
+	Point2D  posScreen = { 0,0 };
+	TacticalClass::Instance->CoordsToScreen(&posScreen, &crdAbs);
+	posScreen -= TacticalClass::Instance->TacticalPos;
+	return posScreen;
 }
 
 Point2D TechnoExt::GetHealthBarPosition(TechnoClass* pThis, bool Shield, HealthBarAnchors Anchor)
 {
-	Point2D Loc = GetScreenLocation(pThis);
-	Point2D Pos = { 0, 0 };
-	AbstractType thisAbstractType = pThis->WhatAmI();
-	int iLength = thisAbstractType == AbstractType::Infantry ? 8 : 17;
+	Point2D posScreen = GetScreenLocation(pThis);
+	Point2D posResult = { 0, 0 };
+	int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
 	TechnoTypeClass* pType = pThis->GetTechnoType();
-	if (thisAbstractType == AbstractType::Building)
+	if (pThis->WhatAmI() == AbstractType::Building)
 	{
 		BuildingTypeClass* pBuildingType = abstract_cast<BuildingTypeClass*>(pThis->GetTechnoType());
-		CoordStruct Coords = { 0, 0, 0 };
-		pBuildingType->Dimension2(&Coords);
-		Point2D Pos2 = { 0, 0 };
-		CoordStruct Coords2 = { -Coords.X / 2, Coords.Y / 2, Coords.Z };
-		TacticalClass::Instance->CoordsToScreen(&Pos2, &Coords2);
-		int FoundationHeight = pBuildingType->GetFoundationHeight(false);
-		iLength = FoundationHeight * 7 + FoundationHeight / 2;
-		Pos.X = Pos2.X + Loc.X + 4 * iLength + 3 - (Shield ? 6 : 0);
-		Pos.Y = Pos2.Y + Loc.Y - 2 * iLength + 4 - (Shield ? 3 : 0);
+		CoordStruct crdDim2 = { 0, 0, 0 };
+		pBuildingType->Dimension2(&crdDim2);
+		Point2D posFix = { 0, 0 };
+		CoordStruct crdTmp = { -crdDim2.X / 2, crdDim2.Y / 2, crdDim2.Z };
+		TacticalClass::Instance->CoordsToScreen(&posFix, &crdTmp);
+		int iFoundationHeight = pBuildingType->GetFoundationHeight(false);
+		iLength = iFoundationHeight * 7 + iFoundationHeight / 2;
+		posResult.X = posFix.X + posScreen.X + 4 * iLength + 3 - (Shield ? 6 : 0);
+		posResult.Y = posFix.Y + posScreen.Y - 2 * iLength + 4 - (Shield ? 3 : 0);
 
 		if (Anchor & HealthBarAnchors::Center)
 		{
-			Pos.X -= iLength * 2 + 2;
-			Pos.Y += iLength + 1;
+			posResult.X -= iLength * 2 + 2;
+			posResult.Y += iLength + 1;
 		}
 		else
 		{
 			if (!(Anchor & HealthBarAnchors::Right))
 			{
-				Pos.X -= (iLength + 1) * 4;
-				Pos.Y += (iLength + 1) * 2;
+				posResult.X -= (iLength + 1) * 4;
+				posResult.Y += (iLength + 1) * 2;
 			}
 		}
 
 		if (!(Anchor & HealthBarAnchors::Bottom))
 		{
-			Pos.Y += 4;
-			Pos.X += 4;
+			posResult.Y += 4;
+			posResult.X += 4;
 		}
 	}
 	else
 	{
-		Pos.X = Loc.X - iLength + (iLength == 8);
-		Pos.Y = Loc.Y - 28 + (iLength == 8);
-		Pos.Y += pType->PixelSelectionBracketDelta;
+		posResult.X = posScreen.X - iLength + (iLength == 8);
+		posResult.Y = posScreen.Y - 28 + (iLength == 8);
+		posResult.Y += pType->PixelSelectionBracketDelta;
 
 		if (Shield)
 		{
-			Pos.Y -= 5;
+			posResult.Y -= 5;
 
 			auto pExt = ExtMap.Find(pThis);
 
 			if (pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning())
-				Pos.Y += pExt->Shield->GetType()->BracketDelta.Get();
+				posResult.Y += pExt->Shield->GetType()->BracketDelta.Get();
 		}
 
 		if (Anchor & HealthBarAnchors::Center)
 		{
-			Pos.X += iLength;
+			posResult.X += iLength;
 		}
 		else
 		{
 			if (Anchor & HealthBarAnchors::Right)
-				Pos.X += iLength * 2;
+				posResult.X += iLength * 2;
 		}
 
 		if (Anchor & HealthBarAnchors::Bottom)
-			Pos.Y += 4;
+			posResult.Y += 4;
 	}
 
-	return Pos;
+	return posResult;
+}
+
+void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
+{
+	if (!Phobos::Config::DigitalDisplay_Enable)
+		return;
+
+	Point2D posLoc = GetScreenLocation(pThis);
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	ValueableVector<DigitalDisplayTypeClass*>* pDefaultTypes = nullptr;
+	AbstractType thisAbsType = pThis->WhatAmI();
+	int iLength = 17;
+
+	switch (thisAbsType)
+	{
+	case AbstractType::Building:
+	{
+		pDefaultTypes = &RulesExt::Global()->Buildings_DefaultDigitalDisplayTypes;
+		BuildingTypeClass* pBuildingType = static_cast<BuildingTypeClass*>(pThis->GetTechnoType());
+		int iFoundationHeight = pBuildingType->GetFoundationHeight(false);
+		iLength = iFoundationHeight * 7 + iFoundationHeight / 2;
+	}break;
+	case AbstractType::Infantry:
+	{
+		pDefaultTypes = &RulesExt::Global()->Infantrys_DefaultDigitalDisplayTypes;
+		iLength = 8;
+	}break;
+	case AbstractType::Unit:
+	{
+		pDefaultTypes = &RulesExt::Global()->Units_DefaultDigitalDisplayTypes;
+	}break;
+	case AbstractType::Aircraft:
+	{
+		pDefaultTypes = &RulesExt::Global()->Aircrafts_DefaultDigitalDisplayTypes;
+	}break;
+	default:
+		return;
+	}
+
+	ValueableVector<DigitalDisplayTypeClass*>* pDisplayTypes = pTypeExt->DigitalDisplayTypes.empty() ? pDefaultTypes : &pTypeExt->DigitalDisplayTypes;
+
+	for (DigitalDisplayTypeClass*& pDisplayType : *pDisplayTypes)
+	{
+		int iCur = -1;
+		int iMax = -1;
+		bool isBuilding = thisAbsType == AbstractType::Building;
+		bool bHasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
+		bool bDiplayShield = pDisplayType->InfoClass == DigitalDisplayTypeClass::Info::Shield;
+		HealthBarAnchors Anchor = 
+			pDisplayType->Anchoring == DigitalDisplayTypeClass::AnchorType::Right
+			|| pDisplayType->Anchoring == DigitalDisplayTypeClass::AnchorType::TopRight
+			? HealthBarAnchors::TopRight : HealthBarAnchors::TopLeft;
+		Point2D posDraw = TechnoExt::GetHealthBarPosition(pThis, bDiplayShield, Anchor);
+
+		GetValuesForDisplay(pThis, pDisplayType->InfoClass, iCur, iMax);
+
+		if (iCur == -1 || iMax == -1)
+			continue;
+
+		pDisplayType->Draw(posDraw, iLength, iCur, iMax, isBuilding, bHasShield);
+	}
+}
+
+void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DigitalDisplayTypeClass::Info infoType, int& iCur, int& iMax)
+{
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+
+	switch (infoType)
+	{
+	case DigitalDisplayTypeClass::Info::Health:
+	{
+		iCur = pThis->Health;
+		iMax = pType->Strength;
+		break;
+	}
+	case DigitalDisplayTypeClass::Info::Shield:
+	{
+		if (pExt->Shield == nullptr || pExt->Shield->IsBrokenAndNonRespawning())
+			return;
+		iCur = pExt->Shield->GetHP();
+		iMax = pExt->Shield->GetType()->Strength.Get();
+		break;
+	}
+	case DigitalDisplayTypeClass::Info::Ammo:
+	{
+		if (pType->Ammo <= 0)
+			return;
+		iCur = pThis->Ammo;
+		iMax = pType->Ammo;
+		break;
+	}
+	case DigitalDisplayTypeClass::Info::MindControl:
+	{
+		if (pThis->CaptureManager == nullptr)
+			return;
+		iCur = pThis->CaptureManager->ControlNodes.Count;
+		iMax = pThis->CaptureManager->MaxControlNodes;
+		break;
+	}
+	case DigitalDisplayTypeClass::Info::Spawns:
+	{
+		if (pThis->SpawnManager == nullptr || pType->Spawns == nullptr || pType->SpawnsNumber <= 0)
+			return;
+		iCur = pThis->SpawnManager->SpawnCount;
+		iMax = pType->SpawnsNumber;
+		break;
+	}
+	case DigitalDisplayTypeClass::Info::Passengers:
+	{
+		if (pType->Passengers <= 0)
+			return;
+		iCur = pThis->Passengers.NumPassengers;
+		iMax = pType->Passengers;
+		break;
+	}
+	case DigitalDisplayTypeClass::Info::Tiberium:
+	{
+		if (pType->Storage <= 0)
+			return;
+		iCur = static_cast<int>(pThis->Tiberium.GetTotalAmount());
+		iMax = pType->Storage;
+		break;
+	}
+	case DigitalDisplayTypeClass::Info::Experience:
+	{
+		iCur = static_cast<int>(pThis->Veterancy.Veterancy * RulesClass::Instance->VeteranRatio * pType->GetCost());
+		iMax = static_cast<int>(2.0 * RulesClass::Instance->VeteranRatio * pType->GetCost());
+		break;
+	}
+	case DigitalDisplayTypeClass::Info::Occupants:
+	{
+		if (pThis->WhatAmI() != AbstractType::Building)
+			return;
+		BuildingTypeClass* pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
+		BuildingClass* pBuilding = abstract_cast<BuildingClass*>(pThis);
+		if (!pBuildingType->CanBeOccupied)
+			return;
+		iCur = pBuilding->Occupants.Count;
+		iMax = pBuildingType->MaxNumberOccupants;
+		break;
+	}
+	case DigitalDisplayTypeClass::Info::GattlingStage:
+	{
+		if (!pType->IsGattling)
+			return;
+		iCur = pThis->CurrentGattlingStage;
+		iMax = pType->WeaponStages;
+	}
+	default:
+	{
+		iCur = pThis->Health;
+		iMax = pType->Strength;
+		break;
+	}
+	}
 }
 
 // =============================

@@ -51,7 +51,8 @@ public:
 		Passengers = 5,
 		Tiberium = 6,
 		Experience = 7,
-		Occupants = 8
+		Occupants = 8,
+		GattlingStage = 9
 	};
 
 	SHPStruct* SHPFile;
@@ -90,12 +91,13 @@ public:
 	virtual void SaveToStream(PhobosStreamWriter& Stm);
 
 	void SetDisplayInfo();
-	static void RunDigitalDisplay(TechnoClass* pThis, Point2D* pLocation);
-	void DigitalDisplay(TechnoClass* pThis, Point2D* pLocation);
-	void DigitalDisplayText(TechnoClass* pThis, Point2D Pos, int ValueA, int ValueB);
-	void DigitalDisplaySHP(TechnoClass* pThis, Point2D Pos, int ValueA, int ValueB);
+	void Draw(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool hasShield);
 
 private:
+
+	void DisplayText(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool hasShield);
+	void DisplayShape(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool hasShield);
+
 	template <typename T>
 	void Serialize(T& Stm);
 };
