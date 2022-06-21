@@ -9,7 +9,6 @@ public:
 		, SnapOnTarget { true }
 	{
 		SnapThreshold = Leptons(Unsorted::LeptonsPerCell);
-		DetonationDistance = Leptons(0);
 	}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;

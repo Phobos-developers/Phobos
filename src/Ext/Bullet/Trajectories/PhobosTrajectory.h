@@ -25,7 +25,10 @@ class PhobosTrajectoryType
 {
 public:
 	PhobosTrajectoryType(noinit_t) { }
-	PhobosTrajectoryType(TrajectoryFlag flag) : Flag { flag } { }
+	PhobosTrajectoryType(TrajectoryFlag flag) : Flag { flag } 
+	{ 
+		DetonationDistance = Leptons(102);
+	}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	virtual bool Save(PhobosStreamWriter& Stm) const;
