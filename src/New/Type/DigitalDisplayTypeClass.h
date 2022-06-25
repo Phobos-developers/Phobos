@@ -13,24 +13,16 @@ public:
 	Valueable<bool> Text_Background;
 	Valueable<Vector2D<int>> Offset;
 	Nullable<Vector2D<int>> Offset_WithoutShield;
-	PhobosFixedString<0x10> Align;
+	Valueable<TextAlign> Align;
 	PhobosFixedString<0x10> Anchor;
-	Valueable<bool> UseSHP;
-	PhobosFixedString<0x20> SHP_SHPFile;
-	PhobosFixedString<0x20> SHP_PALFile;
-	Valueable<Vector2D<int>> SHP_Interval;
-	Valueable<Vector2D<int>> SHP_Interval_Building;
+	Valueable<bool> UseShape;
+	Valueable<SHPStruct*> Shape;
+	PhobosFixedString<0x20> Palette;
+	Valueable<Vector2D<int>> Shape_Interval;
+	Valueable<Vector2D<int>> Shape_Interval_Building;
 	Valueable<bool> Percentage;
 	Valueable<bool> HideStrength;
-	PhobosFixedString<0x20> InfoType;
-
-	enum class AlignType : int
-	{
-		Default = 0,
-		Left = 1,
-		Center = 2,
-		Right = 3
-	};
+	Valueable<DisplayInfoType> InfoType;
 
 	enum class AnchorType : int
 	{
@@ -41,25 +33,9 @@ public:
 		TopRight = 3
 	};
 
-	enum class Info : int
-	{
-		Health = 0,
-		Shield = 1,
-		Ammo = 2,
-		MindControl = 3,
-		Spawns = 4,
-		Passengers = 5,
-		Tiberium = 6,
-		Experience = 7,
-		Occupants = 8,
-		GattlingStage = 9
-	};
-
 	SHPStruct* SHPFile;
 	ConvertClass* PALFile;
-	AlignType Alignment;
 	AnchorType Anchoring;
-	Info InfoClass;
 
 	DigitalDisplayTypeClass(const char* pTitle = NONE_STR) : Enumerable<DigitalDisplayTypeClass>(pTitle)
 		, Text_ColorHigh({ 0, 255, 0 })
@@ -68,21 +44,18 @@ public:
 		, Text_Background(false)
 		, Offset({ 0, 0 })
 		, Offset_WithoutShield()
-		, Align("")
+		, Align(TextAlign::None)
 		, Anchor("")
-		, UseSHP(false)
-		, SHP_SHPFile("number.shp")
-		, SHP_PALFile("")
-		, SHP_Interval({ 8, 0 })
-		, SHP_Interval_Building({ 8, 4 })
-		, Alignment(AlignType::Default)
+		, UseShape(false)
+		, Shape(nullptr)
+		, Palette("")
+		, Shape_Interval({ 8, 0 })
+		, Shape_Interval_Building({ 8, 4 })
 		, Anchoring(AnchorType::TopLeft)
 		, Percentage(false)
 		, HideStrength(false)
-		, InfoType("Health")
-		, InfoClass(Info::Health)
-	{
-	}
+		, InfoType(DisplayInfoType::Health)
+	{ }
 
 	virtual ~DigitalDisplayTypeClass() override = default;
 
@@ -90,7 +63,6 @@ public:
 	virtual void LoadFromStream(PhobosStreamReader& Stm);
 	virtual void SaveToStream(PhobosStreamWriter& Stm);
 
-	void SetDisplayInfo();
 	void Draw(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool hasShield);
 
 private:

@@ -26,26 +26,16 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Text_Background.Read(exINI, section, "Text.Background");
 	this->Offset.Read(exINI, section, "Offset");
 	this->Offset_WithoutShield.Read(exINI, section, "Offset.WithoutShield");
-	this->UseSHP.Read(exINI, section, "UseSHP");
-	this->SHP_SHPFile.Read(pINI, section, "SHP.SHPFile");
-	this->SHP_PALFile.Read(pINI, section, "SHP.PALFile");
-	this->SHP_Interval.Read(exINI, section, "SHP.Interval");
-	this->SHP_Interval_Building.Read(exINI, section, "SHP.Interval.Building");
-	this->Align.Read(pINI, section, "Align");
+	this->UseShape.Read(exINI, section, "UseShape");
+	this->Shape.Read(exINI, section, "Shape");
+	this->Palette.Read(pINI, section, "Palette");
+	this->Shape_Interval.Read(exINI, section, "Shape.Interval");
+	this->Shape_Interval_Building.Read(exINI, section, "Shape.Interval.Building");
+	this->Align.Read(exINI, section, "Align");
 	this->Anchor.Read(pINI, section, "Anchor");
 	this->Percentage.Read(exINI, section, "Percentage");
 	this->HideStrength.Read(exINI, section, "HideStrength");
-	this->InfoType.Read(pINI, section, "InfoType");
-	this->SetDisplayInfo();
-
-	if (strcmp(Align.data(), "Left") == 0)
-		Alignment = AlignType::Left;
-	else if (strcmp(Align.data(), "Right") == 0)
-		Alignment = AlignType::Right;
-	else if (strcmp(Align.data(), "Center") == 0)
-		Alignment = AlignType::Center;
-	else
-		Alignment = AlignType::Default;
+	this->InfoType.Read(exINI, section, "InfoType");
 
 	if (strcmp(Anchor.data(), "Left") == 0)
 		Anchoring = AnchorType::Left;
@@ -56,38 +46,16 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	else
 		Anchoring = AnchorType::TopLeft;
 
-	if (UseSHP.Get())
+	if (UseShape)
 	{
-		if (strcmp(SHP_SHPFile.data(), "") != 0)
-			SHPFile = FileSystem::LoadSHPFile(SHP_SHPFile.data());
+		if (Shape.Get() == nullptr)
+			Shape = FileSystem::LoadSHPFile("number.shp");
 
-		if (strcmp(SHP_PALFile.data(), "") != 0)
-			PALFile = FileSystem::LoadPALFile(SHP_PALFile.data(), DSurface::Composite);
+		if (strcmp(Palette.data(), "") != 0)
+			PALFile = FileSystem::LoadPALFile(Palette.data(), DSurface::Composite);
 		else
 			PALFile = FileSystem::PALETTE_PAL;
 	}
-}
-
-void DigitalDisplayTypeClass::SetDisplayInfo()
-{
-	if (strcmp(InfoType.data(), "Health") == 0)
-		InfoClass = Info::Health;
-	else if (strcmp(InfoType.data(), "Shield") == 0)
-		InfoClass = Info::Shield;
-	else if (strcmp(InfoType.data(), "Ammo") == 0)
-		InfoClass = Info::Ammo;
-	else if (strcmp(InfoType.data(), "MindControl") == 0)
-		InfoClass = Info::MindControl;
-	else if (strcmp(InfoType.data(), "Spawns") == 0)
-		InfoClass = Info::Spawns;
-	else if (strcmp(InfoType.data(), "Passengers") == 0)
-		InfoClass = Info::Passengers;
-	else if (strcmp(InfoType.data(), "Tiberium") == 0)
-		InfoClass = Info::Tiberium;
-	else if (strcmp(InfoType.data(), "Experience") == 0)
-		InfoClass = Info::Experience;
-	else if (strcmp(InfoType.data(), "Occupants") == 0)
-		InfoClass = Info::Occupants;
 }
 
 DynamicVectorClass<char> IntToVector(int num)
@@ -113,7 +81,7 @@ int operator & (DigitalDisplayTypeClass::AnchorType a, DigitalDisplayTypeClass::
 
 void DigitalDisplayTypeClass::Draw(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool hasShield)
 {
-	bool Shield = InfoClass == Info::Shield;
+	bool Shield = InfoType == DisplayInfoType::Shield;
 
 	if (!hasShield)
 	{
@@ -126,7 +94,7 @@ void DigitalDisplayTypeClass::Draw(Point2D posDraw, int iLength, int iCur, int i
 		posDraw.Y += Offset.Get().Y;
 	}
 
-	if (UseSHP)
+	if (UseShape)
 	{
 		if (isBuilding)
 			posDraw.X -= 4 + (!Shield ? 6 : 0);
@@ -185,16 +153,16 @@ void DigitalDisplayTypeClass::DisplayText(Point2D posDraw, int iLength, int iCur
 	if (Anchoring & DigitalDisplayTypeClass::AnchorType::Top)
 		posDraw.Y -= 20;
 
-	switch (Alignment)
+	switch (Align)
 	{
-	case DigitalDisplayTypeClass::AlignType::Left:
+	case TextAlign::Left:
 	{
 		PrintType = TextPrintType::FullShadow;
 		if (Anchoring == DigitalDisplayTypeClass::AnchorType::Left)
 			posDraw.X -= textLength * 6;
 	}
 	break;
-	case DigitalDisplayTypeClass::AlignType::Right:
+	case TextAlign::Right:
 	{
 		PrintType = TextPrintType(int(TextPrintType::Right) + int(TextPrintType::FullShadow));
 		if (Anchoring == DigitalDisplayTypeClass::AnchorType::Right)
@@ -203,7 +171,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D posDraw, int iLength, int iCur
 			posDraw.X += 6;
 	}
 	break;
-	case DigitalDisplayTypeClass::AlignType::Center:
+	case TextAlign::Center:
 	{
 		PrintType = TextPrintType::Center;
 
@@ -240,7 +208,7 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D posDraw, int iLength, int iCu
 {
 	DynamicVectorClass<char>vA;
 	DynamicVectorClass<char>vB;
-	const Vector2D<int> Interval = (isBuilding ? SHP_Interval_Building.Get() : SHP_Interval.Get());
+	const Vector2D<int> Interval = (isBuilding ? Shape_Interval_Building.Get() : Shape_Interval.Get());
 
 	if (SHPFile == nullptr || PALFile == nullptr)
 		return;
@@ -265,22 +233,22 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D posDraw, int iLength, int iCu
 
 	bool LeftToRight = true;
 
-	switch (Alignment)
+	switch (Align)
 	{
-	case DigitalDisplayTypeClass::AlignType::Left:
+	case TextAlign::Left:
 	{
 		if (Anchoring == DigitalDisplayTypeClass::AnchorType::Left)
 			posDraw.X -= (vA.Count + vB.Count + (Percentage || !HideStrength)) * Interval.X + 2;
 	}
 	break;
-	case DigitalDisplayTypeClass::AlignType::Right:
+	case TextAlign::Right:
 	{
 		LeftToRight = false;
 		if (Anchoring == DigitalDisplayTypeClass::AnchorType::Right)
 			posDraw.X += (vA.Count + vB.Count + (Percentage || !HideStrength)) * Interval.X + 2;
 	}
 	break;
-	case DigitalDisplayTypeClass::AlignType::Center:
+	case TextAlign::Center:
 	{
 		int FixValueX = 0;
 		int FixValueY = 0;
@@ -470,19 +438,17 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->Text_Background)
 		.Process(this->Offset)
 		.Process(this->Offset_WithoutShield)
-		.Process(this->UseSHP)
-		.Process(this->SHP_SHPFile)
-		.Process(this->SHP_PALFile)
-		.Process(this->SHP_Interval)
-		.Process(this->SHP_Interval_Building)
+		.Process(this->UseShape)
+		.Process(this->Shape)
+		.Process(this->Palette)
+		.Process(this->Shape_Interval)
+		.Process(this->Shape_Interval_Building)
 		.Process(this->Align)
-		.Process(this->Alignment)
 		.Process(this->Anchor)
 		.Process(this->Anchoring)
 		.Process(this->Percentage)
 		.Process(this->HideStrength)
 		.Process(this->InfoType)
-		.Process(this->InfoClass)
 		;
 }
 
@@ -490,13 +456,10 @@ void DigitalDisplayTypeClass::LoadFromStream(PhobosStreamReader& Stm)
 {
 	this->Serialize(Stm);
 
-	if (UseSHP.Get())
+	if (UseShape)
 	{
-		if (strcmp(SHP_SHPFile.data(), "") != 0)
-			SHPFile = FileSystem::LoadSHPFile(SHP_SHPFile.data());
-
-		if (strcmp(SHP_PALFile.data(), "") != 0)
-			PALFile = FileSystem::LoadPALFile(SHP_PALFile.data(), DSurface::Composite);
+		if (strcmp(Palette.data(), "") != 0)
+			PALFile = FileSystem::LoadPALFile(Palette.data(), DSurface::Composite);
 		else
 			PALFile = FileSystem::PALETTE_PAL;
 	}

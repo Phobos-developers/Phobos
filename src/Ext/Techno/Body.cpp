@@ -952,14 +952,14 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		int iMax = -1;
 		bool isBuilding = thisAbsType == AbstractType::Building;
 		bool bHasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
-		bool bDiplayShield = pDisplayType->InfoClass == DigitalDisplayTypeClass::Info::Shield;
+		bool bDiplayShield = pDisplayType->InfoType == DisplayInfoType::Shield;
 		HealthBarAnchors Anchor = 
 			pDisplayType->Anchoring == DigitalDisplayTypeClass::AnchorType::Right
 			|| pDisplayType->Anchoring == DigitalDisplayTypeClass::AnchorType::TopRight
 			? HealthBarAnchors::TopRight : HealthBarAnchors::TopLeft;
 		Point2D posDraw = TechnoExt::GetHealthBarPosition(pThis, bDiplayShield, Anchor);
 
-		GetValuesForDisplay(pThis, pDisplayType->InfoClass, iCur, iMax);
+		GetValuesForDisplay(pThis, pDisplayType->InfoType, iCur, iMax);
 
 		if (iCur == -1 || iMax == -1)
 			continue;
@@ -968,20 +968,20 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DigitalDisplayTypeClass::Info infoType, int& iCur, int& iMax)
+void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& iCur, int& iMax)
 {
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 
 	switch (infoType)
 	{
-	case DigitalDisplayTypeClass::Info::Health:
+	case DisplayInfoType::Health:
 	{
 		iCur = pThis->Health;
 		iMax = pType->Strength;
 		break;
 	}
-	case DigitalDisplayTypeClass::Info::Shield:
+	case DisplayInfoType::Shield:
 	{
 		if (pExt->Shield == nullptr || pExt->Shield->IsBrokenAndNonRespawning())
 			return;
@@ -989,7 +989,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DigitalDisplayTypeClass:
 		iMax = pExt->Shield->GetType()->Strength.Get();
 		break;
 	}
-	case DigitalDisplayTypeClass::Info::Ammo:
+	case DisplayInfoType::Ammo:
 	{
 		if (pType->Ammo <= 0)
 			return;
@@ -997,7 +997,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DigitalDisplayTypeClass:
 		iMax = pType->Ammo;
 		break;
 	}
-	case DigitalDisplayTypeClass::Info::MindControl:
+	case DisplayInfoType::MindControl:
 	{
 		if (pThis->CaptureManager == nullptr)
 			return;
@@ -1005,7 +1005,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DigitalDisplayTypeClass:
 		iMax = pThis->CaptureManager->MaxControlNodes;
 		break;
 	}
-	case DigitalDisplayTypeClass::Info::Spawns:
+	case DisplayInfoType::Spawns:
 	{
 		if (pThis->SpawnManager == nullptr || pType->Spawns == nullptr || pType->SpawnsNumber <= 0)
 			return;
@@ -1013,7 +1013,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DigitalDisplayTypeClass:
 		iMax = pType->SpawnsNumber;
 		break;
 	}
-	case DigitalDisplayTypeClass::Info::Passengers:
+	case DisplayInfoType::Passengers:
 	{
 		if (pType->Passengers <= 0)
 			return;
@@ -1021,7 +1021,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DigitalDisplayTypeClass:
 		iMax = pType->Passengers;
 		break;
 	}
-	case DigitalDisplayTypeClass::Info::Tiberium:
+	case DisplayInfoType::Tiberium:
 	{
 		if (pType->Storage <= 0)
 			return;
@@ -1029,13 +1029,13 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DigitalDisplayTypeClass:
 		iMax = pType->Storage;
 		break;
 	}
-	case DigitalDisplayTypeClass::Info::Experience:
+	case DisplayInfoType::Experience:
 	{
 		iCur = static_cast<int>(pThis->Veterancy.Veterancy * RulesClass::Instance->VeteranRatio * pType->GetCost());
 		iMax = static_cast<int>(2.0 * RulesClass::Instance->VeteranRatio * pType->GetCost());
 		break;
 	}
-	case DigitalDisplayTypeClass::Info::Occupants:
+	case DisplayInfoType::Occupants:
 	{
 		if (pThis->WhatAmI() != AbstractType::Building)
 			return;
@@ -1047,7 +1047,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DigitalDisplayTypeClass:
 		iMax = pBuildingType->MaxNumberOccupants;
 		break;
 	}
-	case DigitalDisplayTypeClass::Info::GattlingStage:
+	case DisplayInfoType::GattlingStage:
 	{
 		if (!pType->IsGattling)
 			return;

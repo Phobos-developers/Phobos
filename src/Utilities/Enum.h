@@ -203,6 +203,20 @@ enum class VerticalPosition : BYTE
 	Bottom = 2
 };
 
+enum class DisplayInfoType : BYTE
+{
+	Health = 0,
+	Shield = 1,
+	Ammo = 2,
+	MindControl = 3,
+	Spawns = 4,
+	Passengers = 5,
+	Tiberium = 6,
+	Experience = 7,
+	Occupants = 8,
+	GattlingStage = 9
+};
+
 class MouseCursorHotSpotX {
 public:
 	typedef MouseHotSpotX Value;

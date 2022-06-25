@@ -779,6 +779,56 @@ namespace detail
 		return false;
 	}
 
+	template <>
+	inline bool read<DisplayInfoType>(DisplayInfoType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "health") == 0)
+			{
+				value = DisplayInfoType::Health;
+			}
+			else if (_strcmpi(str, "shield") == 0)
+			{
+				value = DisplayInfoType::Shield;
+			}
+			else if (_strcmpi(str, "ammo") == 0)
+			{
+				value = DisplayInfoType::Ammo;
+			}
+			else if (_strcmpi(str, "mindcontrol") == 0)
+			{
+				value = DisplayInfoType::MindControl;
+			}
+			else if (_strcmpi(str, "spawns") == 0)
+			{
+				value = DisplayInfoType::Spawns;
+			}
+			else if (_strcmpi(str, "passengers") == 0)
+			{
+				value = DisplayInfoType::Passengers;
+			}
+			else if (_strcmpi(str, "experience") == 0)
+			{
+				value = DisplayInfoType::Experience;
+			}
+			else if (_strcmpi(str, "occupants") == 0)
+			{
+				value = DisplayInfoType::Occupants;
+			}
+			else if (_strcmpi(str, "gattlingstage") == 0)
+			{
+				value = DisplayInfoType::GattlingStage;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Display info type is illegal");
+				return false;
+			}
+		}
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{
