@@ -142,12 +142,6 @@ enum class AreaFireTarget
 	Random = 2
 };
 
-enum class SelfHealGainType
-{
-	None = 0,
-	Infantry = 1,
-	Units = 2
-};
 
 enum class SlavesGiveTo
 {
@@ -167,6 +161,13 @@ enum class HowToDie
 };
 
 MAKE_ENUM_FLAGS(HowToDie);
+
+enum class SelfHealGainType
+{
+	None = 0,
+	Infantry = 1,
+	Units = 2
+};
 
 enum class PhobosAction {
 	None = 0,

@@ -513,6 +513,7 @@ DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
 	return SkipGameDrawing;
 }
 
+
 DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 {
 	enum { KillTheSlave = 0x6B0BDF, SkipToLABEL_18 = 0x6B0BB4};
