@@ -136,10 +136,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
 	this->NoManualMove.Read(exINI, pSection, "NoManualMove");
 	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
+
+	this->Death.Read(exINI, pSection, "Death");
 	this->Death_NoAmmo.Read(exINI, pSection, "Death.NoAmmo");
 	this->Death_Countdown.Read(exINI, pSection, "Death.Countdown");
-	this->Death_Peaceful.Read(exINI, pSection, "Death.Peaceful");
-	this->Death_WithSlaveOwner.Read(exINI, pSection, "Death.WithSlaveOwner");
+	this->Slaved_OwnerWhenMasterDead.Read(exINI, pSection, "Slaved.OwnerWhenMasterDead");
+
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
@@ -280,10 +282,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CameoPriority)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
+		.Process(this->Death)
 		.Process(this->Death_NoAmmo)
 		.Process(this->Death_Countdown)
-		.Process(this->Death_Peaceful)
-		.Process(this->Death_WithSlaveOwner)
+		.Process(this->Slaved_OwnerWhenMasterDead)
 		.Process(this->ShieldType)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)

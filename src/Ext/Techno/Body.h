@@ -110,7 +110,7 @@ public:
 	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
-	static void inline KillSelf(TechnoClass* pThis, bool isPeaceful);
+	static void KillSelf(TechnoClass* pThis, HowToDie deathOption);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);

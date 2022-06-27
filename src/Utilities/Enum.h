@@ -149,6 +149,25 @@ enum class SelfHealGainType
 	Units = 2
 };
 
+enum class SlavesGiveTo
+{
+	Killer = 0, //default
+	Master = 1,
+	Suicide = 2
+};
+
+MAKE_ENUM_FLAGS(SlavesGiveTo);
+
+enum class HowToDie
+{
+	Disabled = 0, //default
+	Killed = 1, //default death option
+	Vanish = 2,
+	Sold = 8
+};
+
+MAKE_ENUM_FLAGS(HowToDie);
+
 enum class PhobosAction {
 	None = 0,
 	Hijack = 1,

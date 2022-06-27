@@ -161,7 +161,8 @@ This page lists all the individual contributions to the project by their author.
 - **Trsdy**
    - Jumpjet facing fix
    - Warhead superweapon launch logic
-   - Unit self-destroy condition extension
+   - Kill Object Automatically logic
+   - Slaves' house customization when owner is killed
    - Misc CN doc fix
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix

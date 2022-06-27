@@ -47,10 +47,11 @@ public:
 		NullableIdx<VocClass> PassengerDeletion_ReportSound;
 		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
 		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
+
 		Valueable<bool> Death_NoAmmo;
 		Valueable<int> Death_Countdown;
-		Valueable<bool> Death_WithSlaveOwner;
-		Valueable<bool> Death_Peaceful;
+		Nullable<HowToDie> Death;
+		Nullable<SlavesGiveTo> Slaved_OwnerWhenMasterDead;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -199,10 +200,10 @@ public:
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
+			, Death { }
 			, Death_NoAmmo { false }
 			, Death_Countdown { 0 }
-			, Death_WithSlaveOwner { false }
-			, Death_Peaceful { false }
+			, Slaved_OwnerWhenMasterDead { }
 			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }

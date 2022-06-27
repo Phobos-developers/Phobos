@@ -470,16 +470,36 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 }
 
 // Feature: Kill Object Automatically
-void inline TechnoExt::KillSelf(TechnoClass* pThis, bool isPeaceful)
+void TechnoExt::KillSelf(TechnoClass* pThis, HowToDie deathOption)
 {
-	if (isPeaceful)
+	switch (deathOption)
 	{
-		pThis->Limbo();
+
+	case HowToDie::Vanish:
+	{
+
+		if (!pThis->InLimbo)
+			pThis->Limbo();
+		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
+		return;
 	}
-	else
+
+	case HowToDie::Sold:
 	{
+		if (auto pBld = abstract_cast<BuildingClass*>(pThis))
+		{
+			if (!pBld->Type->Unsellable && pBld->Type->LoadBuildup())
+			{
+				pBld->Sell(true);
+				return;
+			}
+		}
+	}
+
+	default:
 		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+
 	}
 }
 
@@ -488,47 +508,43 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 	auto pType = pThis->GetTechnoType();
 	if (auto pTypeData = TechnoTypeExt::ExtMap.Find(pType))
 	{
-		const bool isPeaceful = pTypeData->Death_Peaceful;
-
-		// Death if no ammo
-		if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeData->Death_NoAmmo)
+		const auto howToDie = pTypeData->Death.Get(HowToDie::Disabled);
+		if (howToDie != HowToDie::Disabled)
 		{
-			TechnoExt::KillSelf(pThis, isPeaceful);
-			return;
-		}
-
-		auto pData = TechnoExt::ExtMap.Find(pThis);
-		// Death if countdown ends
-		if (pData && pTypeData->Death_Countdown > 0)
-		{
-			if (pData->Death_Countdown >= 0)
+			// Death if no ammo
+			if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeData->Death_NoAmmo)
 			{
-				if (pData->Death_Countdown > 0)
+				TechnoExt::KillSelf(pThis, howToDie);
+				return;
+			}
+
+			auto pData = TechnoExt::ExtMap.Find(pThis);
+			// Death if countdown ends
+			if (pData && pTypeData->Death_Countdown > 0)
+			{
+				if (pData->Death_Countdown >= 0)
 				{
-					pData->Death_Countdown--; // Update countdown
+					if (pData->Death_Countdown > 0)
+					{
+						pData->Death_Countdown--; // Update countdown
+					}
+					else
+					{
+						// Countdown ended. Kill the unit
+						pData->Death_Countdown = -1;
+						TechnoExt::KillSelf(pThis, howToDie);
+
+						return;
+					}
 				}
 				else
 				{
-					// Countdown ended. Kill the unit
-					pData->Death_Countdown = -1;
-					TechnoExt::KillSelf(pThis, isPeaceful);
-
-					return;
+					pData->Death_Countdown = pTypeData->Death_Countdown; // Start countdown
 				}
 			}
-			else
-			{
-				pData->Death_Countdown = pTypeData->Death_Countdown; // Start countdown
-			}
+
 		}
 
-		// Death if slave owner dead
-		if (pType->Slaved && pTypeData->Death_WithSlaveOwner
-			&& (!pThis->SlaveOwner || !pThis->SlaveOwner->IsAlive || pThis->SlaveOwner->Health <= 0))
-		{
-			TechnoExt::KillSelf(pThis, isPeaceful);
-			return;
-		}
 	}
 }
 

@@ -515,22 +515,38 @@ InitialStrength=    ; int
 
 ### Kill Unit Automatically
 
-- Objects can be destroyed automatically under certaing cases:
+- Objects can be destroyed automatically under these circumstances:
   - `NoAmmo`: The object will die if the remaining ammo reaches 0.
   - `Countdown`: The object will die if the countdown (in frames) reaches 0.
-  - `WithSlaveOwner`: `Slaved=yes` infantry will die simultaneously with its slave owner.
 
-  - `Peaceful`: In all cases above, the object will be directly removed from the game peacefully instead of actually getting killed.  For example, `DeathWeapon` and "Unit lost" EVA will not be triggered.
+- The auto-death behavior can be chosen from the following:
+  - `disabled`: (*Default option*) This logic is not enabled, the object shall not be killed automatically.
+  - `killed`: The object will be destroyed normally.
+  - `vanish`: The unit will be directly removed from the game peacefully instead of actually getting killed. For example, `DeathWeapon` and "Unit lost" EVA will not be triggered.
+  - `sold`: If the object is a sellable building, it will be sold instead of killed.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]             ; TechnoType
+Death=disabled           ; enumeration (disabled | killed | vanish | sold)
+
 Death.NoAmmo=no          ; boolean
 Death.Countdown=0        ; integer
-Death.WithSlaveOwner=no  ; boolean
-
-Death.Peaceful=no        ; boolean
 ```
+
+### Slaves' house decision customization when owner is killed
+
+- You can now decide the slaves' house when the corresponding slave miner is killed using `Slaved.OwnerWhenMasterDead`:
+  - `suicide`: Kill each slave if the slave miner is killed.
+  - `master`: Free the slaves but keep the house of the slave unchanged.
+  - `killer`: Free the slaves and give them to the house of the slave miner's killer. (Default option)
+
+In `rulesmd.ini`
+```ini
+[SOMETECHNO]
+Slaved=yes
+Slaved.OwnerWhenMasterDead=killer  ;slaves' owner decision enumeration (suicide | master | killer), default to killer
+
 
 ### Mind Control enhancement
 

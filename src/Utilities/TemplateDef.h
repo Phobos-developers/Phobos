@@ -689,6 +689,54 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<SlavesGiveTo>(SlavesGiveTo& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "suicide") == 0)
+			{
+				value = SlavesGiveTo::Suicide;
+			}
+			else if (_strcmpi(parser.value(), "master") == 0)
+			{
+				value = SlavesGiveTo::Master;
+			}
+			else
+			{
+				value = SlavesGiveTo::Killer;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<HowToDie>(HowToDie& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "sold") == 0)
+			{
+				value = HowToDie::Sold;
+			}
+			else if (_strcmpi(parser.value(), "vanish") == 0)
+			{
+				value = HowToDie::Vanish;
+			}
+			else if (_strcmpi(parser.value(), "killed") == 0)
+			{
+				value = HowToDie::Killed;
+			}
+			else
+			{
+				value = HowToDie::Disabled;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<TextAlign>(TextAlign& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))

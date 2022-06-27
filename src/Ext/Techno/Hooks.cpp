@@ -512,3 +512,30 @@ DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
 
 	return SkipGameDrawing;
 }
+
+DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
+{
+	enum { KillTheSlave = 0x6B0BDF, SkipToLABEL_18 = 0x6B0BB4};
+
+	GET(InfantryClass*, pSlave, ESI);
+
+	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->GetTechnoType()))
+	{
+		
+		switch (pTypeExt->Slaved_OwnerWhenMasterDead.Get(SlavesGiveTo::Killer))
+		{
+		case SlavesGiveTo::Suicide:
+			return KillTheSlave;
+
+		case SlavesGiveTo::Master:
+		{
+			R->EAX(pSlave->Owner);
+			return SkipToLABEL_18;
+		}
+
+		default: return 0x0;
+		}
+	}
+	
+	return 0x0;
+}
