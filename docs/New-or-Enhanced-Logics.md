@@ -515,7 +515,7 @@ InitialStrength=    ; int
 
 ### Kill Unit Automatically
 
-- Objects can be destroyed automatically under these circumstances:
+- Objects can be destroyed automatically if *any* of these conditions is met:
   - `NoAmmo`: The object will die if the remaining ammo reaches 0.
   - `Countdown`: The object will die if the countdown (in frames) reaches 0.
 
@@ -543,10 +543,10 @@ Death.Countdown=0        ; integer
 
 In `rulesmd.ini`
 ```ini
-[SOMETECHNO]
+[SOMETECHNO]                       ;Slave type
 Slaved=yes
 Slaved.OwnerWhenMasterDead=killer  ;slaves' owner decision enumeration (suicide | master | killer), default to killer
-
+```
 
 ### Mind Control enhancement
 

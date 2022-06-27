@@ -142,15 +142,12 @@ enum class AreaFireTarget
 	Random = 2
 };
 
-
 enum class SlavesGiveTo
 {
 	Killer = 0, //default
 	Master = 1,
 	Suicide = 2
 };
-
-MAKE_ENUM_FLAGS(SlavesGiveTo);
 
 enum class HowToDie
 {
@@ -159,8 +156,6 @@ enum class HowToDie
 	Vanish = 2,
 	Sold = 8
 };
-
-MAKE_ENUM_FLAGS(HowToDie);
 
 enum class SelfHealGainType
 {

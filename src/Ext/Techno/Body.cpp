@@ -474,17 +474,15 @@ void TechnoExt::KillSelf(TechnoClass* pThis, HowToDie deathOption)
 {
 	switch (deathOption)
 	{
-
 	case HowToDie::Vanish:
 	{
-
 		if (!pThis->InLimbo)
 			pThis->Limbo();
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
+
 		return;
 	}
-
 	case HowToDie::Sold:
 	{
 		if (auto pBld = abstract_cast<BuildingClass*>(pThis))
@@ -492,14 +490,14 @@ void TechnoExt::KillSelf(TechnoClass* pThis, HowToDie deathOption)
 			if (!pBld->Type->Unsellable && pBld->Type->LoadBuildup())
 			{
 				pBld->Sell(true);
+
 				return;
 			}
 		}
 	}
-
 	default:
 		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
-
+		return;
 	}
 }
 
@@ -507,7 +505,7 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 {
 	auto pType = pThis->GetTechnoType();
 	if (auto pTypeData = TechnoTypeExt::ExtMap.Find(pType))
-	{
+	{	
 		const auto howToDie = pTypeData->Death.Get(HowToDie::Disabled);
 		if (howToDie != HowToDie::Disabled)
 		{
