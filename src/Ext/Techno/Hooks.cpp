@@ -499,30 +499,15 @@ DEFINE_HOOK(0x6FA793, TechnoClass_AI_SelfHealGain, 0x5)
 	return SkipGameSelfHeal;
 }
 
-
-DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
-{
-	enum { SkipGameDrawing = 0x70A6C0 };
-
-	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x74, -0x4));
-	GET_STACK(RectangleStruct*, pBounds, STACK_OFFS(0x74, -0xC));
-
-	TechnoExt::DrawSelfHealPips(pThis, pLocation, pBounds);
-
-	return SkipGameDrawing;
-}
-
-
 DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 {
-	enum { KillTheSlave = 0x6B0BDF, SkipToLABEL_18 = 0x6B0BB4};
+	enum { KillTheSlave = 0x6B0BDF, SkipToLABEL_18 = 0x6B0BB4 };
 
 	GET(InfantryClass*, pSlave, ESI);
 
 	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->GetTechnoType()))
 	{
-		
+
 		switch (pTypeExt->Slaved_OwnerWhenMasterDead.Get(SlavesGiveTo::Killer))
 		{
 		case SlavesGiveTo::Suicide:
@@ -537,6 +522,19 @@ DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 		default: return 0x0;
 		}
 	}
-	
+
 	return 0x0;
+}
+
+DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
+{
+	enum { SkipGameDrawing = 0x70A6C0 };
+
+	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x74, -0x4));
+	GET_STACK(RectangleStruct*, pBounds, STACK_OFFS(0x74, -0xC));
+
+	TechnoExt::DrawSelfHealPips(pThis, pLocation, pBounds);
+
+	return SkipGameDrawing;
 }
