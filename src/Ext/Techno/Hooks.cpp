@@ -338,6 +338,47 @@ DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pUnit);
 	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType());
 
+	if (pTechnoTypeExt && pTechnoTypeExt->UniversalConvert_Deploy.size() > 0)
+	{
+		TechnoClass* pTechno = static_cast<TechnoClass*>(pUnit);
+
+		/*if (pUnit->Deploying || pUnit->Undeploying)
+			return 0;*/
+		//if (pUnit->Type->DeployToLand && !pUnit->IsInAir() && !pTechno->DeployAnim)
+			//TechnoExt::UniversalConvert(static_cast<TechnoClass*>(pUnit), nullptr);
+
+		/*if (pUnit->Deployed || (!pUnit->Deploying && pUnit->DeployAnim))
+			pUnit->DeployAnim = nullptr;
+
+		if (pUnit->Type->DeployingAnim && 
+			!pUnit->DeployAnim && 
+			!pUnit->Deploying && 
+			((pUnit->Type->DeployToLand && !pUnit->IsInAir()) || !pUnit->Type->DeployToLand)
+			)
+		{
+			if (auto const pAnim = GameCreate<AnimClass>(pUnit->Type->DeployingAnim,
+				pUnit->Location, 0, 1, 0x600, 0, true)) // This last is "true == Reverse deploy anim"
+			{
+				pUnit->DeployAnim = pAnim;
+				pAnim->SetOwnerObject(pUnit);
+			}
+			else
+			{
+				pUnit->DeployAnim = nullptr;
+			}
+
+			pUnit->Deploying = true;
+		}*/
+
+		//if (pUnit->Type->DeployToLand && !pUnit->IsInAir() && pTechno->DeployAnim && !pUnit->Deploying)
+		if (pUnit->Type->DeployToLand && !pUnit->Deploying && !pUnit->Undeploying && pUnit->Deployed)
+			TechnoExt::UniversalConvert(static_cast<TechnoClass*>(pUnit), nullptr);
+		else if (!pUnit->Type->DeployToLand && !pUnit->Deploying)
+			TechnoExt::UniversalConvert(static_cast<TechnoClass*>(pUnit), nullptr);
+
+		return 0;
+	}
+	
 	if (pTechnoExt && pTechnoTypeExt)
 	{
 		if (pTechnoExt->LaserTrails.size())
@@ -527,113 +568,7 @@ DEFINE_HOOK(0x522510, InfantryClass_DoingDeploy, 0x6)
 	{
 		if (auto pOldTechno = static_cast<TechnoClass*>(pThis))
 		{
-			if (auto pOldTechnoType = pOldTechno->GetTechnoType())
-			{
-				if (auto pOldTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pOldTechnoType))
-				{
-					TechnoTypeClass* pNewTechnoType = nullptr;
-
-					if (pOldTechnoTypeExt->UniversalConvert_Deploy.size() > 0)
-						pNewTechnoType = pOldTechnoTypeExt->UniversalConvert_Deploy.at(0);
-					else
-						return 0;
-
-					// For a "infantry into vehicle" case we need to check if the cell is free of extra soldiers
-					if (pOldTechnoType->WhatAmI() == AbstractType::InfantryType && pNewTechnoType->WhatAmI() != AbstractType::InfantryType)
-					{
-						int nInfantry = 0;
-						for (auto pObject = pOldTechno->GetCell()->FirstObject; pObject; pObject = pObject->NextObject)
-						{
-							nInfantry++;
-						}
-
-						if (nInfantry > 1)
-							return 0;
-					}
-					
-					auto pOwner = pOldTechno->Owner;
-					auto pNewTechno = static_cast<TechnoClass*>(pNewTechnoType->CreateObject(pOwner));
-
-					// Transfer some stats from the old object to the new:
-					// Health update
-					double nHealthPercent = (double)(1.0 * pOldTechno->Health / pOldTechnoType->Strength);
-					pNewTechno->Health = (int)round(pNewTechno->GetTechnoType()->Strength * nHealthPercent);
-					pNewTechno->EstimatedHealth = pNewTechno->Health;
-
-					// Veterancy update
-					VeterancyStruct nVeterancy = pOldTechno->Veterancy;
-					pNewTechno->Veterancy = nVeterancy;
-
-					// Team update
-					if (pOldTechno->BelongsToATeam())
-					{
-						auto pOldFoot = static_cast<FootClass*>(pOldTechno);
-						auto pNewFoot = static_cast<FootClass*>(pNewTechno);
-
-						if (pNewFoot)
-							pNewFoot->Team = pOldFoot->Team;
-					}
-
-					// Ammo Update
-					auto nAmmo = pNewTechno->Ammo;
-
-					if (nAmmo >= pOldTechno->Ammo)
-						nAmmo = pOldTechno->Ammo;
-
-					pNewTechno->Ammo = nAmmo;
-
-					// If the object was selected it should remain selected
-					bool selected = false;
-					if (pOldTechno->IsSelected)
-						selected = true;
-
-					// Mind Control update
-					if (pOldTechno->IsMindControlled())
-						TechnoExt::TransferMindControlOnDeploy(pOldTechno, pNewTechno);
-
-					// Initial Mission update
-					pNewTechno->QueueMission(Mission::Guard, true);
-
-					// Facing update
-					short newPrimaryFacing = pOldTechno->PrimaryFacing.current().value256();
-					
-					// Some vodoo magic
-					pOldTechno->Limbo();
-					pNewTechno->Unlimbo(newLocation, newPrimaryFacing);
-
-					if (pOldTechno->InLimbo)
-						pOwner->RegisterLoss(pOldTechno, false);
-
-					if (!pNewTechno->InLimbo)
-						pOwner->RegisterGain(pNewTechno, true);
-
-					pNewTechno->Owner->RecheckTechTree = true;
-
-					// Jumpjet tricks
-					if (pNewTechno->GetTechnoType()->JumpJet || pNewTechno->GetTechnoType()->BalloonHover)
-					{
-						CoordStruct loc = CoordStruct::Empty;
-
-						if (pNewTechno->IsInAir())
-							loc = newLocation; //pNewTechno->Location;
-
-						pNewTechno->SetDestination(pOldTechno, true);
-						pNewTechno->Scatter(loc, true, false);
-					}
-					else
-					{
-						pNewTechno->IsFallingDown = false;
-
-						if (pNewTechno->IsInAir())
-							pNewTechno->IsFallingDown = true;
-					}
-
-					if (selected)
-						pNewTechno->Select();
-
-					pOldTechno->UnInit();
-				}
-			}
+			TechnoExt::UniversalConvert(pOldTechno, nullptr);
 		}
 	}
 	

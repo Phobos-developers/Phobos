@@ -232,94 +232,10 @@ public:
 			auto MyCell = MapClass::Instance->GetCellAt(pFoot->Location);
 			if (pFoot->IsCellOccupied(MyCell, -1, -1, nullptr, false) == Move::OK)
 			{
-				auto pOwner = pFoot->Owner;
-				auto newLoc = pFoot->Location;
-				//pType = GameCreate<TechnoTypeClass>("SHK");
-				auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-				TechnoTypeClass* pNewType = nullptr;
-				if (pTechnoTypeExt->UniversalConvert_Deploy.size() > 0)
-					pNewType = pTechnoTypeExt->UniversalConvert_Deploy.at(0);
-				else
-					pNewType = TechnoTypeClass::Find("ENGINEER");  // ONLY FOR THIS TEST
-				//pFoot = GameCreate<FootClass>("SHK");
-				auto pNewFoot = static_cast<FootClass*>(pNewType->CreateObject(pOwner));
-
-				double nHealthPercent = (double)(1.0 * pFoot->Health / pType->Strength);
-				pNewFoot->Health = (int)round(pNewFoot->GetTechnoType()->Strength * nHealthPercent);
-				pNewFoot->EstimatedHealth = pNewFoot->Health;
-
-				if (pFoot->BelongsToATeam())
-					pNewFoot->Team = pFoot->Team;
-
-				// Ammo Update
-				auto nAmmo = pNewFoot->Ammo;
-
-				if (nAmmo >= pFoot->Ammo)
-					nAmmo = pFoot->Ammo;
-
-				pNewFoot->Ammo = nAmmo;
-
-				// If the unit was selected it should remain selected
-				bool selected = false;
-				if (pFoot->IsSelected)
-					selected = true;
-
-				pNewFoot->QueueMission(Mission::Guard, true);
-
-				/*if ((!pNewFoot->GetTechnoType()->JumpJet || !pNewFoot->GetTechnoType()->BalloonHover) && pNewFoot->IsInAir())
+				if (auto pOldTechno = static_cast<TechnoClass*>(pFoot))
 				{
-					pNewFoot->SetDestination(pFoot, true);
-					pNewFoot->Scatter(pNewFoot->Location, true, false);
-				}*/
-				//pNewFoot->IsFallingDown = true;
-
-				/*if (pNewFoot->GetTechnoType()->JumpJet && pNewFoot->GetTechnoType()->BalloonHover && !pNewFoot->IsInAir())
-					pNewFoot->Scatter(pNewFoot->Location, true, false);
-				*/
-
-				pFoot->Limbo();
-				pNewFoot->Unlimbo(newLoc, pFoot->PrimaryFacing.current().value256());
-
-				if (!pFoot->InLimbo)
-					pOwner->RegisterLoss(pFoot, false);
-
-				if (!pNewFoot->InLimbo)
-					pOwner->RegisterGain(pNewFoot, true);
-
-				pNewFoot->Owner->RecheckTechTree = true;
-
-				if (selected)
-					pNewFoot->Select();
-
-				/*if (pNewFoot->GetTechnoType()->BalloonHover || pNewFoot->GetTechnoType()->JumpJet && !pNewFoot->IsInAir())
-				{
-					pNewFoot->SetDestination(pFoot, true);
-					pNewFoot->Scatter(CoordStruct::Empty, true, false);
+					TechnoExt::UniversalConvert(pOldTechno, nullptr);
 				}
-				if ((!pNewFoot->GetTechnoType()->JumpJet || !pNewFoot->GetTechnoType()->BalloonHover) && pNewFoot->IsInAir())
-				{
-					pNewFoot->SetDestination(pFoot, true);
-					pNewFoot->Scatter(pNewFoot->Location, true, false);
-				}*/
-				if (pNewFoot->GetTechnoType()->JumpJet || pNewFoot->GetTechnoType()->BalloonHover)
-				{
-					CoordStruct loc = CoordStruct::Empty;
-
-					if (pNewFoot->IsInAir())
-						loc = pNewFoot->Location;
-
-					pNewFoot->SetDestination(pFoot, true);
-					pNewFoot->Scatter(loc, true, false);
-				}
-				else
-				{
-					pNewFoot->IsFallingDown = false;
-
-					if (pNewFoot->IsInAir())
-						pNewFoot->IsFallingDown = true;
-				}
-
-				pFoot->UnInit();
 			}
 		};
 

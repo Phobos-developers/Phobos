@@ -808,6 +808,132 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 	pExt->DamageNumberOffset = pExt->DamageNumberOffset + width;
 }
 
+void TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pNewTechnoType = nullptr)
+{
+	if (!pThis)
+		return;
+
+	auto newLocation = pThis->Location;
+	auto pOldTechno = pThis;
+
+	if (auto pOldTechnoType = pOldTechno->GetTechnoType())
+	{
+		if (auto pOldTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pOldTechnoType))
+		{
+			//TechnoTypeClass* pNewTechnoType = nullptr;
+			if (!pNewTechnoType)
+			{
+				if (pOldTechnoTypeExt->UniversalConvert_Deploy.size() > 0)
+				{
+					int index = ScenarioClass::Instance->Random.RandomRanged(0, pOldTechnoTypeExt->UniversalConvert_Deploy.size() - 1);
+
+					pNewTechnoType = pOldTechnoTypeExt->UniversalConvert_Deploy.at(index);
+				}
+				else
+					return;
+			}
+
+			// For a "infantry into vehicle" case we need to check if the cell is free of extra soldiers
+			if (pOldTechnoType->WhatAmI() == AbstractType::InfantryType && pNewTechnoType->WhatAmI() != AbstractType::InfantryType)
+			{
+				int nInfantry = 0;
+				for (auto pObject = pOldTechno->GetCell()->FirstObject; pObject; pObject = pObject->NextObject)
+				{
+					nInfantry++;
+				}
+
+				if (nInfantry > 1)
+					return;
+			}
+
+			auto pOwner = pOldTechno->Owner;
+			auto pNewTechno = static_cast<TechnoClass*>(pNewTechnoType->CreateObject(pOwner));
+
+			// Transfer some stats from the old object to the new:
+			// Health update
+			double nHealthPercent = (double)(1.0 * pOldTechno->Health / pOldTechnoType->Strength);
+			pNewTechno->Health = (int)round(pNewTechno->GetTechnoType()->Strength * nHealthPercent);
+			pNewTechno->EstimatedHealth = pNewTechno->Health;
+
+			// Veterancy update
+			VeterancyStruct nVeterancy = pOldTechno->Veterancy;
+			pNewTechno->Veterancy = nVeterancy;
+
+			// Team update
+			if (pOldTechno->BelongsToATeam())
+			{
+				auto pOldFoot = static_cast<FootClass*>(pOldTechno);
+				auto pNewFoot = static_cast<FootClass*>(pNewTechno);
+
+				if (pNewFoot)
+					pNewFoot->Team = pOldFoot->Team;
+			}
+
+			// Ammo Update
+			auto nAmmo = pNewTechno->Ammo;
+
+			if (nAmmo >= pOldTechno->Ammo)
+				nAmmo = pOldTechno->Ammo;
+
+			pNewTechno->Ammo = nAmmo;
+
+			// If the object was selected it should remain selected
+			bool selected = false;
+			if (pOldTechno->IsSelected)
+				selected = true;
+
+			// Mind Control update
+			if (pOldTechno->IsMindControlled())
+				TechnoExt::TransferMindControlOnDeploy(pOldTechno, pNewTechno);
+
+			// Transfer passengers/garrisoned units
+			// TO-DO
+
+			// Initial Mission update
+			pNewTechno->QueueMission(Mission::Guard, true);
+
+			// Facing update
+			short newPrimaryFacing = pOldTechno->PrimaryFacing.current().value256();
+
+			// Some vodoo magic
+			pOldTechno->Limbo();
+			pNewTechno->Unlimbo(newLocation, newPrimaryFacing);
+
+			if (pOldTechno->InLimbo)
+				pOwner->RegisterLoss(pOldTechno, false);
+
+			if (!pNewTechno->InLimbo)
+				pOwner->RegisterGain(pNewTechno, true);
+
+			pNewTechno->Owner->RecheckTechTree = true;
+
+			// Jumpjet tricks
+			if (pNewTechno->GetTechnoType()->JumpJet || pNewTechno->GetTechnoType()->BalloonHover)
+			{
+				CoordStruct loc = CoordStruct::Empty;
+
+				if (pNewTechno->IsInAir())
+					loc = newLocation; //pNewTechno->Location;
+
+				pNewTechno->SetDestination(pOldTechno, true);
+				pNewTechno->Scatter(loc, true, false);
+			}
+			else
+			{
+				pNewTechno->IsFallingDown = false;
+
+				if (pNewTechno->IsInAir())
+					pNewTechno->IsFallingDown = true;
+			}
+
+			if (selected)
+				pNewTechno->Select();
+
+			pOldTechno->UnInit();
+		}
+	}
+}
+
 // =============================
 // load / save
 
