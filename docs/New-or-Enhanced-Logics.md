@@ -260,14 +260,14 @@ PowerPlantEnhancer.Amount=0        ; integer
 PowerPlantEnhancer.Factor=1.0      ; float
 ```
 
-### Disable `EVA_StructureSold`
+### Customize building specific `EVA_StructureSold`
 
-- Disbale `EVA_StructureSold` from being played when selling a building
+- `EVA_StructureSold` can be customized or even disabled for specific building types.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEBUILDING]       ; BuildingType
-EVA.Sold.Disable=no  ; boolean
+[SOMEBUILDING]              ; BuildingType
+EVA.Sold=EVA_StructureSold  ; EVA entry
 ```
 
 ## Infantry

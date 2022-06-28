@@ -68,15 +68,15 @@ DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Destruction_EVA_Sold, 0x6)
+DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Destruction_EVA_Sold_1, 0x6)
 {
 	GET(BuildingClass*, pThis, EBP);
 	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pTypeExt->EVA_Sold_Disabled.Get())
-		return 0x449CEA;
-	else
-		return 0;
+	if (pThis->IsHumanControlled && !pThis->Type->UndeploysInto)
+		VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
+
+	return 0x449CEA;
 }
 
 DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Destruction_EVA_Sold_2, 0x6)
@@ -84,10 +84,10 @@ DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Destruction_EVA_Sold_2, 0x6)
 	GET(BuildingClass*, pThis, EBP);
 	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pTypeExt->EVA_Sold_Disabled.Get())
-		return 0x44AB3B;
-	else
-		return 0;
+	if (pThis->IsHumanControlled)
+		VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
+
+	return 0x44AB3B;
 }
 
 DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)

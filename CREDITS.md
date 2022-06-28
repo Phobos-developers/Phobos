@@ -162,6 +162,7 @@ This page lists all the individual contributions to the project by their author.
    - Jumpjet facing fix
    - Warhead superweapon launch logic
    - Kill Object Automatically logic
+   - Building specific EVA_StructureSold
    - Slaves' house customization when owner is killed
    - Misc CN doc fix
 - **SukaHati (Erzoid)** - Minimum interceptor guard range

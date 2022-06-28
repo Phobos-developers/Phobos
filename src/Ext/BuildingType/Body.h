@@ -44,7 +44,7 @@ public:
 		CustomPalette PlacementPreview_Palette;
 		Nullable<int> PlacementPreview_TranslucentLevel;
 
-		Valueable<bool> EVA_Sold_Disabled;
+		ValueableIdx<VoxClass> EVA_Sold;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
@@ -70,7 +70,7 @@ public:
 			, PlacementPreview_Shape {}
 			, PlacementPreview_ShapeFrame {}
 			, PlacementPreview_TranslucentLevel {}
-			, EVA_Sold_Disabled { false }
+			, EVA_Sold { -1 }
 		{ }
 
 		virtual ~ExtData() = default;
