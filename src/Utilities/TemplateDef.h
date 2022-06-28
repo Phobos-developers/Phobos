@@ -703,6 +703,8 @@ namespace detail
 			}
 			else
 			{
+				if (_strcmpi(parser.value(), "killer") != 0)
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a free-slave option, default killer");
 				value = SlavesGiveTo::Killer;
 			}
 			return true;

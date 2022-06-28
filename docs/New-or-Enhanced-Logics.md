@@ -335,9 +335,9 @@ Ammo.Shared.Group=-1                    ; integer
 
 In `rulesmd.ini`
 ```ini
-[SOMEINFANTRY]                       ;Slave type
+[SOMEINFANTRY]                     ; Slave type
 Slaved=yes
-Slaved.OwnerWhenMasterDead=killer  ;slaves' owner decision enumeration (suicide | master | killer), default to killer
+Slaved.OwnerWhenMasterDead=killer  ; slaves' owner decision enumeration (suicide | master | killer), default to killer
 ```
 
 

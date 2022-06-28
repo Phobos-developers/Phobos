@@ -494,6 +494,8 @@ void TechnoExt::KillSelf(TechnoClass* pThis, HowToSuicide deathOption)
 				return;
 			}
 		}
+
+		Debug::Log("[%s] can't be sold, killing it instead\n", pThis->get_ID());
 	}
 	default:
 		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
