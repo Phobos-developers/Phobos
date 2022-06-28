@@ -50,7 +50,7 @@ public:
 
 		Valueable<bool> Death_NoAmmo;
 		Valueable<int> Death_Countdown;
-		Nullable<HowToDie> Death;
+		Nullable<HowToSuicide> Death;
 		Nullable<SlavesGiveTo> Slaved_OwnerWhenMasterDead;
 
 		Valueable<ShieldTypeClass*> ShieldType;

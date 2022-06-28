@@ -149,12 +149,12 @@ enum class SlavesGiveTo
 	Suicide = 2
 };
 
-enum class HowToDie
+enum class HowToSuicide
 {
 	Disabled = 0, //default
-	Killed = 1, //default death option
+	Kill = 1,     //default death option
 	Vanish = 2,
-	Sold = 8
+	Sell = 4,     // buildings only
 };
 
 enum class SelfHealGainType

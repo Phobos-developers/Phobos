@@ -104,6 +104,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Grinding_DisplayRefund_Houses.Read(exINI, pSection, "Grinding.DisplayRefund.Houses");
 	this->Grinding_DisplayRefund_Offset.Read(exINI, pSection, "Grinding.DisplayRefund.Offset");
 
+	this->EVA_Sold_Disabled.Read(exINI, pSection, "EVA.Sold.Disabled");
+
 	// Ares SuperWeapons tag
 	pINI->ReadString(pSection, "SuperWeapons", "", Phobos::readBuffer);
 	//char* super_weapons_list = Phobos::readBuffer;
@@ -193,14 +195,14 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Grinding_DisplayRefund)
 		.Process(this->Grinding_DisplayRefund_Houses)
 		.Process(this->Grinding_DisplayRefund_Offset)
-		.Process(PlacementPreview_Remap)
-		.Process(PlacementPreview_Palette)
-		.Process(PlacementPreview_Offset)
-		.Process(PlacementPreview_Show)
-		.Process(PlacementPreview_Shape)
-		.Process(PlacementPreview_ShapeFrame)
-		.Process(PlacementPreview_TranslucentLevel)
-
+		.Process(this->PlacementPreview_Remap)
+		.Process(this->PlacementPreview_Palette)
+		.Process(this->PlacementPreview_Offset)
+		.Process(this->PlacementPreview_Show)
+		.Process(this->PlacementPreview_Shape)
+		.Process(this->PlacementPreview_ShapeFrame)
+		.Process(this->PlacementPreview_TranslucentLevel)
+		.Process(this->EVA_Sold_Disabled)
 		;
 }
 

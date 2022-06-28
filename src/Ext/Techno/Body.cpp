@@ -470,11 +470,11 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 }
 
 // Feature: Kill Object Automatically
-void TechnoExt::KillSelf(TechnoClass* pThis, HowToDie deathOption)
+void TechnoExt::KillSelf(TechnoClass* pThis, HowToSuicide deathOption)
 {
 	switch (deathOption)
 	{
-	case HowToDie::Vanish:
+	case HowToSuicide::Vanish:
 	{
 		if (!pThis->InLimbo)
 			pThis->Limbo();
@@ -483,11 +483,11 @@ void TechnoExt::KillSelf(TechnoClass* pThis, HowToDie deathOption)
 
 		return;
 	}
-	case HowToDie::Sold:
+	case HowToSuicide::Sell:
 	{
 		if (auto pBld = abstract_cast<BuildingClass*>(pThis))
 		{
-			if (!pBld->Type->Unsellable && pBld->Type->LoadBuildup())
+			if (pBld->Type->LoadBuildup())
 			{
 				pBld->Sell(true);
 
@@ -506,8 +506,8 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 	auto pType = pThis->GetTechnoType();
 	if (auto pTypeData = TechnoTypeExt::ExtMap.Find(pType))
 	{	
-		const auto howToDie = pTypeData->Death.Get(HowToDie::Disabled);
-		if (howToDie != HowToDie::Disabled)
+		const auto howToDie = pTypeData->Death.Get(HowToSuicide::Disabled);
+		if (howToDie != HowToSuicide::Disabled)
 		{
 			// Death if no ammo
 			if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeData->Death_NoAmmo)

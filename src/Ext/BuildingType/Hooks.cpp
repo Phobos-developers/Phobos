@@ -68,6 +68,28 @@ DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Destruction_EVA_Sold, 0x6)
+{
+	GET(BuildingClass*, pThis, EBP);
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->EVA_Sold_Disabled.Get())
+		return 0x449CEA;
+	else
+		return 0;
+}
+
+DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Destruction_EVA_Sold_2, 0x6)
+{
+	GET(BuildingClass*, pThis, EBP);
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->EVA_Sold_Disabled.Get())
+		return 0x44AB3B;
+	else
+		return 0;
+}
+
 DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 {
 	if (auto const pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance->CurrentBuilding))

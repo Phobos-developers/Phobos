@@ -260,6 +260,16 @@ PowerPlantEnhancer.Amount=0        ; integer
 PowerPlantEnhancer.Factor=1.0      ; float
 ```
 
+### Disable `EVA_StructureSold`
+
+- Disbale `EVA_StructureSold` from being played when selling a building
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]       ; BuildingType
+EVA.Sold.Disable=no  ; boolean
+```
+
 ## Infantry
 
 ### Customizable FLH When Infantry Is Prone Or Deployed
@@ -314,6 +324,22 @@ Ammo.Shared.Group=-1                    ; integer
 Ammo.Shared=no                          ; boolean
 Ammo.Shared.Group=-1                    ; integer
 ```
+
+
+### Slaves' house decision customization when owner is killed
+
+- You can now decide the slaves' house when the corresponding slave miner is killed using `Slaved.OwnerWhenMasterDead`:
+  - `suicide`: Kill each slave if the slave miner is killed.
+  - `master`: Free the slaves but keep the house of the slave unchanged.
+  - `killer`: Free the slaves and give them to the house of the slave miner's killer. (Default option)
+
+In `rulesmd.ini`
+```ini
+[SOMEINFANTRY]                       ;Slave type
+Slaved=yes
+Slaved.OwnerWhenMasterDead=killer  ;slaves' owner decision enumeration (suicide | master | killer), default to killer
+```
+
 
 ## Projectiles
 
@@ -521,31 +547,17 @@ InitialStrength=    ; int
 
 - The auto-death behavior can be chosen from the following:
   - `disabled`: (*Default option*) This logic is not enabled, the object shall not be killed automatically.
-  - `killed`: The object will be destroyed normally.
+  - `kill`: The object will be destroyed normally.
   - `vanish`: The unit will be directly removed from the game peacefully instead of actually getting killed. For example, `DeathWeapon` and "Unit lost" EVA will not be triggered.
-  - `sold`: If the object is a sellable building, it will be sold instead of killed.
+  - `sell`: If the object is a sellable building, it will be sold instead of killed.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]             ; TechnoType
-Death=disabled           ; enumeration (disabled | killed | vanish | sold)
+Death=disabled           ; enumeration (disabled | kill | vanish | sell)
 
 Death.NoAmmo=no          ; boolean
 Death.Countdown=0        ; integer
-```
-
-### Slaves' house decision customization when owner is killed
-
-- You can now decide the slaves' house when the corresponding slave miner is killed using `Slaved.OwnerWhenMasterDead`:
-  - `suicide`: Kill each slave if the slave miner is killed.
-  - `master`: Free the slaves but keep the house of the slave unchanged.
-  - `killer`: Free the slaves and give them to the house of the slave miner's killer. (Default option)
-
-In `rulesmd.ini`
-```ini
-[SOMETECHNO]                       ;Slave type
-Slaved=yes
-Slaved.OwnerWhenMasterDead=killer  ;slaves' owner decision enumeration (suicide | master | killer), default to killer
 ```
 
 ### Mind Control enhancement

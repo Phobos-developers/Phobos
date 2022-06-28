@@ -711,25 +711,27 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<HowToDie>(HowToDie& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	inline bool read<HowToSuicide>(HowToSuicide& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
-			if (_strcmpi(parser.value(), "sold") == 0)
+			if (_strcmpi(parser.value(), "sell") == 0)
 			{
-				value = HowToDie::Sold;
+				value = HowToSuicide::Sell;
 			}
 			else if (_strcmpi(parser.value(), "vanish") == 0)
 			{
-				value = HowToDie::Vanish;
+				value = HowToSuicide::Vanish;
 			}
-			else if (_strcmpi(parser.value(), "killed") == 0)
+			else if (_strcmpi(parser.value(), "kill") == 0)
 			{
-				value = HowToDie::Killed;
+				value = HowToSuicide::Kill;
 			}
 			else
 			{
-				value = HowToDie::Disabled;
+				if(_strcmpi(parser.value(), "disabled") != 0)
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a suicide option, default disabled");
+				value = HowToSuicide::Disabled;
 			}
 			return true;
 		}

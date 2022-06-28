@@ -507,7 +507,6 @@ DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 
 	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->GetTechnoType()))
 	{
-
 		switch (pTypeExt->Slaved_OwnerWhenMasterDead.Get(SlavesGiveTo::Killer))
 		{
 		case SlavesGiveTo::Suicide:
