@@ -270,6 +270,16 @@ In `rulesmd.ini`:
 EVA.Sold=EVA_StructureSold  ; EVA entry
 ```
 
+### Customize building specific `SellSound`
+
+- When a building is sold, the sell sound is played to the owner. This global sound has been deglobalized. Defaults to `[AudioVisual]->SellSound`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]  ; TechnoType
+SellSound=    ; sound entry
+```
+
 ## Infantry
 
 ### Customizable FLH When Infantry Is Prone Or Deployed

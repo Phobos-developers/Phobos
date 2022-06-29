@@ -15,6 +15,7 @@ TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 void TechnoTypeExt::ExtData::Initialize()
 {
 	this->ShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
+	this->SellSound = RulesClass::Instance->SellSound;
 }
 
 void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
@@ -141,6 +142,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Death_NoAmmo.Read(exINI, pSection, "Death.NoAmmo");
 	this->Death_Countdown.Read(exINI, pSection, "Death.Countdown");
 	this->Slaved_OwnerWhenMasterDead.Read(exINI, pSection, "Slaved.OwnerWhenMasterDead");
+	this->SellSound.Read(exINI, pSection, "SellSound");
 
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
@@ -286,6 +288,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Death_NoAmmo)
 		.Process(this->Death_Countdown)
 		.Process(this->Slaved_OwnerWhenMasterDead)
+		.Process(this->SellSound)
 		.Process(this->ShieldType)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)

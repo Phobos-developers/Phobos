@@ -501,13 +501,13 @@ DEFINE_HOOK(0x6FA793, TechnoClass_AI_SelfHealGain, 0x5)
 
 DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 {
-	enum { KillTheSlave = 0x6B0BDF, SkipToLABEL_18 = 0x6B0BB4 };
+	enum { KillTheSlave = 0x6B0BDF, GoToLABEL_18 = 0x6B0BB4 };
 
 	GET(InfantryClass*, pSlave, ESI);
 
-	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->GetTechnoType()))
+	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->Type))
 	{
-		switch (pTypeExt->Slaved_OwnerWhenMasterDead.Get(SlavesGiveTo::Killer))
+		switch (pTypeExt->Slaved_OwnerWhenMasterDead.Get())
 		{
 		case SlavesGiveTo::Suicide:
 			return KillTheSlave;
@@ -515,7 +515,7 @@ DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 		case SlavesGiveTo::Master:
 		{
 			R->EAX(pSlave->Owner);
-			return SkipToLABEL_18;
+			return GoToLABEL_18;
 		}
 
 		default: return 0x0;
@@ -523,6 +523,26 @@ DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 	}
 
 	return 0x0;
+}
+
+DEFINE_HOOK(0x44A850, BuildingClass_Mission_Deconstruction_Sellsound, 0x6)
+{
+	GET(BuildingClass*, pThis, EBP);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	R->ECX(pTypeExt->SellSound.Get());
+
+	return 0x44A856;
+}
+
+DEFINE_HOOK(0x4D9FAA, FootClass_Sell_Sellsound, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	R->ECX(pTypeExt->SellSound.Get());
+
+	return 0x4D9FB0;
 }
 
 DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)

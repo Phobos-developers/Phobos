@@ -144,15 +144,15 @@ enum class AreaFireTarget
 
 enum class SlavesGiveTo
 {
-	Killer = 0, //default
+	Killer = 0, // default
 	Master = 1,
 	Suicide = 2
 };
 
 enum class HowToSuicide
 {
-	Disabled = 0, //default
-	Kill = 1,     //default death option
+	Disabled = 0, // default
+	Kill = 1,     // default death option
 	Vanish = 2,
 	Sell = 4,     // buildings only
 };

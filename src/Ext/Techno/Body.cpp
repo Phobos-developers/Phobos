@@ -495,10 +495,11 @@ void TechnoExt::KillSelf(TechnoClass* pThis, HowToSuicide deathOption)
 			}
 		}
 
-		Debug::Log("[%s] can't be sold, killing it instead\n", pThis->get_ID());
+		Debug::Log("[Runtime Warning] %s can't be sold, killing it instead\n", pThis->get_ID());
 	}
 	default:
 		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+		
 		return;
 	}
 }
@@ -508,7 +509,7 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 	auto pType = pThis->GetTechnoType();
 	if (auto pTypeData = TechnoTypeExt::ExtMap.Find(pType))
 	{	
-		const auto howToDie = pTypeData->Death.Get(HowToSuicide::Disabled);
+		const auto howToDie = pTypeData->Death.Get();
 		if (howToDie != HowToSuicide::Disabled)
 		{
 			// Death if no ammo

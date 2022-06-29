@@ -50,8 +50,9 @@ public:
 
 		Valueable<bool> Death_NoAmmo;
 		Valueable<int> Death_Countdown;
-		Nullable<HowToSuicide> Death;
-		Nullable<SlavesGiveTo> Slaved_OwnerWhenMasterDead;
+		Valueable<HowToSuicide> Death;
+		Valueable<SlavesGiveTo> Slaved_OwnerWhenMasterDead;
+		ValueableIdx<VocClass> SellSound;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -200,10 +201,11 @@ public:
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
-			, Death { }
+			, Death { HowToSuicide::Disabled }
 			, Death_NoAmmo { false }
 			, Death_Countdown { 0 }
-			, Slaved_OwnerWhenMasterDead { }
+			, Slaved_OwnerWhenMasterDead { SlavesGiveTo::Killer }
+			, SellSound{ }
 			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }

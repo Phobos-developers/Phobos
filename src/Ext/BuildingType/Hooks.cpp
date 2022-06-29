@@ -68,7 +68,7 @@ DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Destruction_EVA_Sold_1, 0x6)
+DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Deconstruction_EVA_Sold_1, 0x6)
 {
 	GET(BuildingClass*, pThis, EBP);
 	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
@@ -79,7 +79,7 @@ DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Destruction_EVA_Sold_1, 0x6)
 	return 0x449CEA;
 }
 
-DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Destruction_EVA_Sold_2, 0x6)
+DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Deconstruction_EVA_Sold_2, 0x6)
 {
 	GET(BuildingClass*, pThis, EBP);
 	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
