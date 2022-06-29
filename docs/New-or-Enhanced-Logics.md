@@ -568,7 +568,7 @@ In `rulesmd.ini`:
 InitialStrength=    ; int
 ```
 
-### Kill Unit Automatically
+### Kill Object Automatically
 
 - Objects can be destroyed automatically if *any* of these conditions is met:
   - `NoAmmo`: The object will die if the remaining ammo reaches 0.
@@ -578,7 +578,7 @@ InitialStrength=    ; int
   - `disabled`: (*Default option*) This logic is not enabled, the object shall not be killed automatically.
   - `kill`: The object will be destroyed normally.
   - `vanish`: The unit will be directly removed from the game peacefully instead of actually getting killed. For example, `DeathWeapon` and "Unit lost" EVA will not be triggered.
-  - `sell`: If the object is a sellable building, it will be sold instead of killed.
+  - `sell`: If the object is a sellable **building**, it will be sold instead of killed.
 
 In `rulesmd.ini`:
 ```ini

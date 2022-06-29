@@ -164,6 +164,7 @@ This page lists all the individual contributions to the project by their author.
    - Warhead superweapon launch logic
    - Kill Object Automatically logic
    - Building specific EVA_StructureSold
+   - Building specific SellSound
    - Slaves' house customization when owner is killed
    - Misc CN doc fix
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
