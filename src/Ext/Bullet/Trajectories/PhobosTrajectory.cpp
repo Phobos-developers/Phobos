@@ -9,6 +9,7 @@
 
 #include "BombardTrajectory.h"
 #include "StraightTrajectory.h"
+#include "ArtilleryTrajectory.h"
 
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -34,6 +35,8 @@ void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* 
 		pNewType = GameCreate<StraightTrajectoryType>();
 	else if (_stricmp(Phobos::readBuffer, "Bombard") == 0)
 		pNewType = GameCreate<BombardTrajectoryType>();
+	else if (_stricmp(Phobos::readBuffer, "Artillery") == 0)
+		pNewType = GameCreate<ArtilleryTrajectoryType>();
 	else
 		bUpdateType = false;
 
@@ -62,6 +65,10 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 
 		case TrajectoryFlag::Bombard:
 			pType = GameCreate<BombardTrajectoryType>();
+			break;
+
+		case TrajectoryFlag::Artillery:
+			pType = GameCreate<ArtilleryTrajectoryType>();
 			break;
 
 		default:
@@ -127,6 +134,10 @@ PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, 
 	case TrajectoryFlag::Bombard:
 		pRet = GameCreate<BombardTrajectory>(pType);
 		break;
+
+	case TrajectoryFlag::Artillery:
+		pRet = GameCreate<ArtilleryTrajectory>(pType);
+		break;
 	}
 
 	if (pRet)
@@ -150,6 +161,10 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 
 		case TrajectoryFlag::Bombard:
 			pTraj = GameCreate<BombardTrajectory>();
+			break;
+
+		case TrajectoryFlag::Artillery:
+			pTraj = GameCreate<ArtilleryTrajectory>();
 			break;
 
 		default:
