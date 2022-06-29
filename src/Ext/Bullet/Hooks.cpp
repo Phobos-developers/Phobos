@@ -5,6 +5,10 @@
 #include <Ext/BulletType/Body.h>
 #include <Misc/CaptureManager.h>
 
+#include <AircraftClass.h>
+#include <BuildingClass.h>
+#include <InfantryClass.h>
+#include <UnitClass.h>
 #include <TechnoClass.h>
 #include <TacticalClass.h>
 
@@ -223,6 +227,66 @@ DEFINE_HOOK(0x469A75, BulletClass_Logics_DamageHouse, 0x7)
 	{
 		if (!pHouse)
 			R->ECX(pExt->FirerHouse);
+	}
+
+	return 0;
+}
+
+
+
+DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
+{
+	enum { ReturnFromFunction = 0x46A2FB };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH))
+	{
+		if (pWHExt->DetonateOnAllMapObjects && !pWHExt->WasDetonatedOnAllMapObjects)
+		{
+			pWHExt->WasDetonatedOnAllMapObjects = true;
+			auto const pExt = BulletExt::ExtMap.Find(pThis);
+			auto pOwner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
+
+			auto tryDetonate = [pThis, pWHExt, pOwner](TechnoClass* pTechno)
+			{
+				if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
+				{
+					pThis->Target = pTechno;
+					auto coords = CoordStruct::Empty;
+					coords = *pTechno->GetCoords(&coords);
+					pThis->Detonate(coords);
+				}
+			};
+
+			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Aircraft) != AffectedTarget::None)
+			{
+				for (int i = 0; i < AircraftClass::Array->Count; i++)
+					tryDetonate(AircraftClass::Array->GetItem(i));
+			}
+
+			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Building) != AffectedTarget::None)
+			{
+				for (int i = 0; i < BuildingClass::Array->Count; i++)
+					tryDetonate(BuildingClass::Array->GetItem(i));
+			}
+
+			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Infantry) != AffectedTarget::None)
+			{
+				for (int i = 0; i < InfantryClass::Array->Count; i++)
+					tryDetonate(InfantryClass::Array->GetItem(i));
+			}
+
+			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Unit) != AffectedTarget::None)
+			{
+				for (int i = 0; i < UnitClass::Array->Count; i++)
+					tryDetonate(UnitClass::Array->GetItem(i));
+			}
+
+			pWHExt->WasDetonatedOnAllMapObjects = false;
+
+			return ReturnFromFunction;
+		}
 	}
 
 	return 0;

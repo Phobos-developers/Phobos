@@ -28,7 +28,7 @@ bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowe
 	return allowed != AffectedTarget::None ? true : false;
 }
 
-bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget allowed)
+bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget allowed, bool considerAircraftSeparately)
 {
 	if (allowed & AffectedTarget::AllContents)
 	{
@@ -39,8 +39,12 @@ bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget 
 			case AbstractType::Infantry:
 				return (allowed & AffectedTarget::Infantry) != AffectedTarget::None;
 			case AbstractType::Unit:
-			case AbstractType::Aircraft:
 				return (allowed & AffectedTarget::Unit) != AffectedTarget::None;
+			case AbstractType::Aircraft:
+				if (!considerAircraftSeparately)
+					return (allowed & AffectedTarget::Unit) != AffectedTarget::None;
+				else
+					return (allowed & AffectedTarget::Aircraft) != AffectedTarget::None;
 			case AbstractType::Building:
 				return (allowed & AffectedTarget::Building) != AffectedTarget::None;
 			}
@@ -55,7 +59,7 @@ bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget 
 	return allowed != AffectedTarget::None ? true : false;
 }
 
-bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTarget allowed, AffectedHouse allowedHouses, HouseClass* owner, bool explicitEmptyCells)
+bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTarget allowed, AffectedHouse allowedHouses, HouseClass* owner, bool explicitEmptyCells, bool considerAircraftSeparately)
 {
 	if (!pCell)
 		return false;
@@ -78,7 +82,7 @@ bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTa
 					break;
 			}
 
-			eligible = EnumFunctions::IsTechnoEligible(pTechno, allowed);
+			eligible = EnumFunctions::IsTechnoEligible(pTechno, allowed, considerAircraftSeparately);
 		}
 
 		object = object->NextObject;

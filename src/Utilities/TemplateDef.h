@@ -545,6 +545,10 @@ namespace detail
 				{
 					parsed |= AffectedTarget::Building;
 				}
+				else if (!_strcmpi(cur, "aircraft"))
+				{
+					parsed |= AffectedTarget::Aircraft;
+				}
 				else if (!_strcmpi(cur, "all"))
 				{
 					parsed |= AffectedTarget::All;

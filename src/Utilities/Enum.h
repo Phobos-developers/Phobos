@@ -86,10 +86,11 @@ enum class AffectedTarget : unsigned char {
 	Infantry = 0x8,
 	Unit = 0x10,
 	Building = 0x20,
+	Aircraft = 0x40,
 
 	All = 0xFF,
 	AllCells = Land | Water,
-	AllTechnos = Infantry | Unit | Building,
+	AllTechnos = Infantry | Unit | Building | Aircraft,
 	AllContents = NoContent | AllTechnos
 };
 
