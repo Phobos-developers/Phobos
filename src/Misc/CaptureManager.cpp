@@ -101,7 +101,7 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 			{
 				pTarget->MindControlledBy = pManager->Owner;
 
-				CaptureManager::DecideUnitFate(pManager, pTarget);
+				pManager->DecideUnitFate(pTarget);
 
 				auto const pBld = abstract_cast<BuildingClass*>(pTarget);
 				auto const pType = pTarget->GetTechnoType();
@@ -123,6 +123,10 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 							pAnim->ZAdjust = -1024;
 					}
 				}
+
+				//The stupiest thing goes here
+				if (pManager->Owner->IsHumanControlled)
+					pTarget->ClickedMission(Mission::Guard, nullptr, nullptr, nullptr);
 
 				return true;
 			}
@@ -149,24 +153,13 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTe
 	return false;
 }
 
-void CaptureManager::DecideUnitFate(CaptureManagerClass* pManager, TechnoClass* pTarget)
+void CaptureManager::DecideUnitFate(CaptureManagerClass* pManager, FootClass* pTarget)
 {
 	// to be extended (if needed). - secsome
 	// is the argument FootClass* or TechnoClass*? 0x4723B0 tells FootClass, but buildings still need to be dealt with? - Question from Trsdy
 	
-	pManager->DecideUnitFate(pTarget);
-
-	if (pManager->Owner->IsHumanControlled)
-	{
-		if (auto pTargetFoot = abstract_cast<FootClass*>(pTarget))
-		{
-			if (pTargetFoot->Target)
-				pTargetFoot->SetTarget(nullptr);
-			pTargetFoot->QueueMission(Mission::Guard, false);
-			pTargetFoot->SetDestination(pTarget->GetCell(), true);
-			pTargetFoot->NextMission();
-		}
-	}
+	//pManager->DecideUnitFate(pTarget);
+	
 }
 
 DEFINE_HOOK(0x471D40, CaptureManagerClass_CaptureUnit, 0x7)
