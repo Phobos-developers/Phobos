@@ -146,6 +146,7 @@ This page lists all the individual contributions to the project by their author.
   - AI deploy script DeploysInto fix
   - Passable & buildable-upon TerrainTypes
   - Automatic passenger owner change toggle
+  - Interceptor improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
