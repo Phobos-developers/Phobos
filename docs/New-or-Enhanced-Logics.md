@@ -477,22 +477,24 @@ Passengers.SyncOwner.RevertOnExit=true   ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]            ; TechnoType
-AutoFire=no             ; boolean
-AutoFire.TargetSelf=no  ; boolean
+[SOMETECHNO]               ; TechnoType
+AutoFire=false             ; boolean
+AutoFire.TargetSelf=false  ; boolean
 ```
 
 ### Customizable OpenTopped properties
 
 - You can now override global `OpenTopped` transport properties per TechnoType.
 - `OpenTopped.IgnoreRangefinding` can be set to true to ignore range of passengers' weapons and only use transport's own weapon range for threat scan and approaching targets.
+- `OpenTopped.AllowFiringIfDeactivated` can be used to customize whether or not passengers can fire out when the transport is deactivated (EMP, powered unit etc).
 
 ```ini
-[SOMETECHNO]                         ; TechnoType
-OpenTopped.RangeBonus=1              ; integer
-OpenTopped.DamageMultiplier=1.3      ; float
-OpenTopped.WarpDistance=8            ; integer
-OpenTopped.IgnoreRangefinding=false  ; boolean
+[SOMETECHNO]                              ; TechnoType
+OpenTopped.RangeBonus=1                   ; integer
+OpenTopped.DamageMultiplier=1.3           ; float
+OpenTopped.WarpDistance=8                 ; integer
+OpenTopped.IgnoreRangefinding=false       ; boolean
+OpenTopped.AllowFiringIfDeactivated=true  ; boolean
 ```
 
 ### Disabling fallback to (Elite)Secondary weapon
