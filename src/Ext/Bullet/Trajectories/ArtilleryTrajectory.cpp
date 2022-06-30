@@ -1,7 +1,7 @@
 #include "ArtilleryTrajectory.h"
 #include <Ext/BulletType/Body.h>
 #include <Ext/Bullet/Body.h>
-
+#include <ScenarioClass.h>
 
 bool ArtilleryTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -20,7 +20,7 @@ bool ArtilleryTrajectoryType::Save(PhobosStreamWriter& Stm) const
 
 void ArtilleryTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
-	this->MaxHeight = pINI->ReadDouble(pSection, "Trajectory.Artillery.MaxHeight", 1500);
+	this->MaxHeight = pINI->ReadDouble(pSection, "Trajectory.Artillery.MaxHeight", 2000);
 }
 
 bool ArtilleryTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -47,12 +47,32 @@ bool ArtilleryTrajectory::Save(PhobosStreamWriter& Stm) const
 
 void ArtilleryTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
-	//this->Height = this->GetTrajectoryType<ArtilleryTrajectoryType>(pBullet)->Height;
+	this->InitialTargetLocation = pBullet->TargetCoords;
 
-	this->InitialTargetLocation = pBullet->TargetCoords; // YYY0
-	this->InitialSourceLocation = pBullet->SourceCoords; // Y0
-	CoordStruct initialSourceLocation = this->InitialSourceLocation;
+	if (pBullet->Type->Inaccurate)
+	{
+		auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type); // To-Do
+
+		int scatterMin = Leptons(0.5);
+		int scatterMax = Leptons(RulesClass::Instance()->BallisticScatter);
+
+		double random = ScenarioClass::Instance()->Random.RandomRanged(scatterMin, scatterMax);
+		double theta = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
+
+		CoordStruct offset
+		{
+			static_cast<int>(random * Math::cos(theta)),
+			static_cast<int>(random * Math::sin(theta)),
+			0
+		};
+		this->InitialTargetLocation += offset;
+	}
+
+	this->InitialSourceLocation = pBullet->SourceCoords;
+
+	CoordStruct initialSourceLocation = this->InitialSourceLocation; // Obsolete
 	initialSourceLocation.Z = 0;
+
 	//pBullet->GetTargetCoords()     //<--- Current Target
 	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
@@ -62,9 +82,9 @@ void ArtilleryTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, B
 
 void ArtilleryTrajectory::OnAI(BulletClass* pBullet)
 {
-	double maxHeight = this->GetTrajectoryType<ArtilleryTrajectoryType>(pBullet)->MaxHeight;
+	int zDelta = this->InitialTargetLocation.Z - this->InitialSourceLocation.Z;
+	double maxHeight = this->GetTrajectoryType<ArtilleryTrajectoryType>(pBullet)->MaxHeight + (double)zDelta;
 
-	CoordStruct currentTargetCoords = pBullet->TargetCoords; // ¿Se usa esto?
 	CoordStruct bulletCoords = pBullet->Location;
 	bulletCoords.Z = 0;
 
@@ -85,19 +105,19 @@ void ArtilleryTrajectory::OnAI(BulletClass* pBullet)
 
 	double currHeight = (sinAngle * maxHeight) / sinRadTrajectoryAngle;
 
-	int fallAcceleration = 0;
+	//int fallAcceleration = 0;
 
 	// Needed for increasing the bullet aim when the target is in lower locations compared to the source
-	if (angle >= 90 && this->InitialSourceLocation.Z > pBullet->TargetCoords.Z)
-		fallAcceleration = ((int)angle - 90) * 21;
+	//if (angle >= 90 && this->InitialSourceLocation.Z > pBullet->TargetCoords.Z)
+		//fallAcceleration = ((int)angle - 90) * 21;
 
 	if (currHeight != 0)
-		pBullet->Location.Z = this->InitialSourceLocation.Z + (int)currHeight - fallAcceleration;
+		pBullet->Location.Z = this->InitialSourceLocation.Z + (int)currHeight;// - fallAcceleration;
 
 	// Close enough
 	double closeEnough = pBullet->TargetCoords.DistanceFrom(pBullet->Location);
 	//closeEnough < 150 || 
-	if (closeEnough < 100 || fallAcceleration > 0 && pBullet->Location.Z < pBullet->Target->GetCoords().Z)// || (closeEnough < 550.0 && currHeight < 0)) // This value maybe adjusted?
+	if (closeEnough < 100)// || fallAcceleration > 0 && pBullet->Location.Z < pBullet->Target->GetCoords().Z)// || (closeEnough < 550.0 && currHeight < 0)) // This value maybe adjusted?
 	{
 		auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
@@ -109,7 +129,7 @@ void ArtilleryTrajectory::OnAI(BulletClass* pBullet)
 			pBullet->Target->WhatAmI() == AbstractType::Infantry ||
 			pBullet->Target->WhatAmI() == AbstractType::Aircraft)
 		{
-			pBullet->Location = pBullet->TargetCoords;
+			//pBullet->Location = pBullet->TargetCoords;
 		}
 
 		pBullet->Explode(true);
