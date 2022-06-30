@@ -20,7 +20,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::CheckDeathConditions(pThis);
 	TechnoExt::EatPassengers(pThis);
 	TechnoExt::UpdateMindControlAnim(pThis);
-	TechnoExt::ForceJumpjetTurnToTarget(pThis);//TODO: move to locomotor processing
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
@@ -207,18 +206,8 @@ DEFINE_HOOK(0x518505, InfantryClass_TakeDamage_NotHuman, 0x4)
 	return 0x518515;
 }
 
-DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
-{
-	GET(TechnoTypeClass*, pType, ECX);
-
-	if (pType->DeployFireWeapon == -1)
-		return 0x52194E;
-
-	return 0;
-}
-
 // Author: Otamaa
-DEFINE_HOOK(0x5223B3, InfantryClass_DeployFire_DeployFireWeapon_Add, 0x6)
+DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 {
   GET(InfantryClass*, pThis, ESI);
   R->EDI(pThis->Type->DeployFireWeapon == -1  ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
@@ -242,34 +231,6 @@ DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0
 	}
 
 	return 0;
-}
-
-DEFINE_HOOK(0x6FE43B, TechnoClass_Fire_OpenTopped_DmgMult, 0x8)
-{
-	enum { ApplyDamageMult = 0x6FE45A, ContinueCheck = 0x6FE460 };
-
-	GET(TechnoClass* const, pThis, ESI);
-
-	//replacing whole check due to `fild`
-	if (pThis->InOpenToppedTransport)
-	{
-		GET_STACK(int, nDamage, STACK_OFFS(0xB0, 0x84));
-		float nDamageMult = static_cast<float>(RulesClass::Instance->OpenToppedDamageMultiplier);
-
-		if (auto pTransport = pThis->Transporter)
-		{
-			if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
-			{
-				//it is float isnt it YRPP ? , check tomson26 YR-IDB !
-				nDamageMult = pExt->OpenTopped_DamageMultiplier.Get(nDamageMult);
-			}
-		}
-
-		R->EAX(Game::F2I(nDamage * nDamageMult));
-		return ApplyDamageMult;
-	}
-
-	return ContinueCheck;
 }
 
 DEFINE_HOOK(0x71A82C, TemporalClass_AI_Opentopped_WarpDistance, 0xC)
@@ -303,55 +264,6 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 
 			return 0x7099B8;
 		}
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
-{
-	enum { DoNotFire = 0x6FE4E7, SkipSetTarget = 0x6FE1D5 };
-
-	GET(TechnoClass* const, pThis, ESI);
-	GET(CellClass* const, pCell, EAX);
-	GET_STACK(WeaponTypeClass*, pWeaponType, STACK_OFFS(0xB0, 0x70));
-
-	if (auto pExt = WeaponTypeExt::ExtMap.Find(pWeaponType))
-	{
-		if (pExt->AreaFire_Target == AreaFireTarget::Random)
-		{
-			auto const range = pWeaponType->Range / static_cast<double>(Unsorted::LeptonsPerCell);
-
-			std::vector<CellStruct> adjacentCells = GeneralUtils::AdjacentCellsInRange(static_cast<size_t>(range + 0.99));
-			size_t size = adjacentCells.size();
-
-			for (unsigned int i = 0; i < size; i++)
-			{
-				int rand = ScenarioClass::Instance->Random.RandomRanged(0, size - 1);
-				unsigned int cellIndex = (i + rand) % size;
-				CellStruct tgtPos = pCell->MapCoords + adjacentCells[cellIndex];
-				CellClass* tgtCell = MapClass::Instance->GetCellAt(tgtPos);
-
-				if (EnumFunctions::AreCellAndObjectsEligible(tgtCell, pExt->CanTarget, pExt->CanTargetHouses, pThis->Owner, true))
-				{
-					R->EAX(tgtCell);
-					return 0;
-				}
-			}
-
-			return DoNotFire;
-		}
-		else if (pExt->AreaFire_Target == AreaFireTarget::Self)
-		{
-			if (!EnumFunctions::AreCellAndObjectsEligible(pThis->GetCell(), pExt->CanTarget, pExt->CanTargetHouses, nullptr, false))
-				return DoNotFire;
-
-			R->EAX(pThis);
-			return SkipSetTarget;
-		}
-
-		if (!EnumFunctions::AreCellAndObjectsEligible(pCell, pExt->CanTarget, pExt->CanTargetHouses, nullptr, false))
-			return DoNotFire;
 	}
 
 	return 0;
@@ -432,39 +344,6 @@ DEFINE_HOOK(0x5F4F4E, ObjectClass_Unlimbo_LaserTrails, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x6F3428, TechnoClass_GetWeapon_ForceWeapon, 0x6)
-{
-	GET(TechnoClass*, pTechno, ECX);
-
-	if (pTechno && pTechno->Target)
-	{
-		auto pTechnoType = pTechno->GetTechnoType();
-		if (!pTechnoType)
-			return 0;
-
-		auto pTarget = abstract_cast<TechnoClass*>(pTechno->Target);
-		if (!pTarget)
-			return 0;
-
-		auto pTargetType = pTarget->GetTechnoType();
-		if (!pTargetType)
-			return 0;
-
-		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType))
-		{
-			if (pTechnoTypeExt->ForceWeapon_Naval_Decloaked >= 0
-				&& pTargetType->Cloakable && pTargetType->Naval
-				&& pTarget->CloakState == CloakState::Uncloaked)
-			{
-				R->EAX(pTechnoTypeExt->ForceWeapon_Naval_Decloaked);
-				return 0x6F37AF;
-			}
-		}
-	}
-
-	return 0;
-}
-
 // Update ammo rounds
 DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
 {
@@ -475,28 +354,7 @@ DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-	GET(WeaponTypeClass*, pWeapon, EBX);
-
-	if (auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
-	{
-		if (pWeaponExt->FeedbackWeapon.isset())
-		{
-			auto fbWeapon = pWeaponExt->FeedbackWeapon.Get();
-
-			if (pThis->InOpenToppedTransport && !fbWeapon->FireInTransport)
-				return 0;
-
-			WeaponTypeExt::DetonateAt(fbWeapon, pThis, pThis);
-		}
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6FD446, TechnoClass_FireLaser_IsSingleColor, 0x7)
+DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_IsSingleColor, 0x7)
 {
 	GET(WeaponTypeClass* const, pWeapon, ECX);
 	GET(LaserDrawClass* const, pLaser, EAX);

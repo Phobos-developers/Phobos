@@ -39,6 +39,7 @@ public:
 		Nullable<bool> Crit_AnimList_PickRandom;
 		Valueable<bool> Crit_AnimOnAffectedTargets;
 		Valueable<double> Crit_AffectBelowPercent;
+		Valueable<bool> Crit_SuppressWhenIntercepted;
 
 		Nullable<AnimTypeClass*> MindControl_Anim;
 
@@ -112,6 +113,7 @@ public:
 			, Crit_AnimList_PickRandom {}
 			, Crit_AnimOnAffectedTargets { false }
 			, Crit_AffectBelowPercent { 1.0 }
+			, Crit_SuppressWhenIntercepted { false }
 			, RandomBuffer { 0.0 }
 			, HasCrit { false }
 
@@ -153,7 +155,7 @@ public:
 		{ }
 
 	private:
-		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr);
+		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
 
 		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
@@ -163,6 +165,7 @@ public:
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
+		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
