@@ -22,13 +22,11 @@ public:
 	ArtilleryTrajectory() : PhobosTrajectory(TrajectoryFlag::Artillery)
 		, InitialTargetLocation{ CoordStruct::Empty }
 		, InitialSourceLocation{ CoordStruct::Empty }
-		, MaxHeight{ 0.0 }
 	{}
 
 	ArtilleryTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Artillery)
 		, InitialTargetLocation{ CoordStruct::Empty }
 		, InitialSourceLocation{ CoordStruct::Empty }
-		, MaxHeight{ 0.0 }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -42,5 +40,4 @@ public:
 
 	CoordStruct InitialTargetLocation;
 	CoordStruct InitialSourceLocation;
-	double MaxHeight;
 };

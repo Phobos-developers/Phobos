@@ -45,6 +45,9 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shrapnel_AffectsGround.Read(exINI, pSection, "Shrapnel.AffectsGround");
 	this->Shrapnel_AffectsBuildings.Read(exINI, pSection, "Shrapnel.AffectsBuildings");
 
+	this->BallisticScatter_Min.Read(exINI, pSection, "BallisticScatter.Min");
+	this->BallisticScatter_Max.Read(exINI, pSection, "BallisticScatter.Max");
+
 	INI_EX exArtINI(CCINIClass::INI_Art);
 
 	if (strlen(pThis->ImageFile))
@@ -66,6 +69,8 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Gravity)
 		.Process(this->Shrapnel_AffectsGround)
 		.Process(this->Shrapnel_AffectsBuildings)
+		.Process(this->BallisticScatter_Min)
+		.Process(this->BallisticScatter_Max)
 		;
 
 	this->TrajectoryType = PhobosTrajectoryType::ProcessFromStream(Stm, this->TrajectoryType);

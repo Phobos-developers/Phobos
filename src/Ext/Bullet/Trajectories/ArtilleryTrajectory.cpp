@@ -28,7 +28,6 @@ bool ArtilleryTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 	this->PhobosTrajectory::Load(Stm, false);
 
 	Stm
-		.Process(this->MaxHeight) // Creo que esto no hace falta aquí porque no se actualiza....
 		;
 
 	return true;
@@ -39,7 +38,6 @@ bool ArtilleryTrajectory::Save(PhobosStreamWriter& Stm) const
 	this->PhobosTrajectory::Save(Stm);
 
 	Stm
-		.Process(this->MaxHeight) // Creo que esto no hace falta aquí porque no se actualiza....
 		;
 
 	return true;
@@ -51,10 +49,11 @@ void ArtilleryTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, B
 
 	if (pBullet->Type->Inaccurate)
 	{
-		auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type); // To-Do
+		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
 
-		int scatterMin = Leptons(0.5);
-		int scatterMax = Leptons(RulesClass::Instance()->BallisticScatter);
+		int ballisticScatter = RulesClass::Instance()->BallisticScatter;
+		int scatterMax = pTypeExt->BallisticScatter_Max.isset() ? (int)(pTypeExt->BallisticScatter_Max.Get() * 256.0) : ballisticScatter;
+		int scatterMin = pTypeExt->BallisticScatter_Min.isset() ? (int)(pTypeExt->BallisticScatter_Min.Get() * 256.0) : (scatterMax / 2);
 
 		double random = ScenarioClass::Instance()->Random.RandomRanged(scatterMin, scatterMax);
 		double theta = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
@@ -73,7 +72,6 @@ void ArtilleryTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, B
 	CoordStruct initialSourceLocation = this->InitialSourceLocation; // Obsolete
 	initialSourceLocation.Z = 0;
 
-	//pBullet->GetTargetCoords()     //<--- Current Target
 	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
 	pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z - pBullet->SourceCoords.Z);
@@ -87,7 +85,6 @@ void ArtilleryTrajectory::OnAI(BulletClass* pBullet)
 
 	CoordStruct bulletCoords = pBullet->Location;
 	bulletCoords.Z = 0;
-
 	CoordStruct initialTargetLocation = this->InitialTargetLocation;
 	initialTargetLocation.Z = 0;
 	CoordStruct initialSourceLocation = this->InitialSourceLocation;
@@ -97,40 +94,28 @@ void ArtilleryTrajectory::OnAI(BulletClass* pBullet)
 	double halfInitialDistance = fullInitialDistance / 2;
 	double currentBulletDistance = initialSourceLocation.DistanceFrom(bulletCoords);
 
+	// Trajectory angle
 	int sinDecimalTrajectoryAngle = 90;
 	double sinRadTrajectoryAngle = Math::sin(Math::deg2rad(sinDecimalTrajectoryAngle));
 
+	// Angle of the projectile in the current location
 	double angle = (currentBulletDistance * sinDecimalTrajectoryAngle) / halfInitialDistance;
 	double sinAngle = Math::sin(Math::deg2rad(angle));
 
+	// Height of the flying projectile in the current location
 	double currHeight = (sinAngle * maxHeight) / sinRadTrajectoryAngle;
 
-	//int fallAcceleration = 0;
-
-	// Needed for increasing the bullet aim when the target is in lower locations compared to the source
-	//if (angle >= 90 && this->InitialSourceLocation.Z > pBullet->TargetCoords.Z)
-		//fallAcceleration = ((int)angle - 90) * 21;
-
 	if (currHeight != 0)
-		pBullet->Location.Z = this->InitialSourceLocation.Z + (int)currHeight;// - fallAcceleration;
+		pBullet->Location.Z = this->InitialSourceLocation.Z + (int)currHeight;
 
-	// Close enough
+	// If the projectile is close enough to the target then explode it
 	double closeEnough = pBullet->TargetCoords.DistanceFrom(pBullet->Location);
-	//closeEnough < 150 || 
-	if (closeEnough < 100)// || fallAcceleration > 0 && pBullet->Location.Z < pBullet->Target->GetCoords().Z)// || (closeEnough < 550.0 && currHeight < 0)) // This value maybe adjusted?
+	if (closeEnough < 100)
 	{
 		auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
 		if (pBulletExt && pBulletExt->LaserTrails.size())
 			pBulletExt->LaserTrails.clear();
-
-		if (pBullet->Target->WhatAmI() == AbstractType::Unit ||
-			pBullet->Target->WhatAmI() == AbstractType::Building ||
-			pBullet->Target->WhatAmI() == AbstractType::Infantry ||
-			pBullet->Target->WhatAmI() == AbstractType::Aircraft)
-		{
-			//pBullet->Location = pBullet->TargetCoords;
-		}
 
 		pBullet->Explode(true);
 		pBullet->UnInit();

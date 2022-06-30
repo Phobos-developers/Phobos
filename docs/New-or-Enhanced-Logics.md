@@ -389,6 +389,19 @@ Trajectory=Bombard             ; Trajectory type
 Trajectory.Bombard.Height=0.0  ; double
 ```
 
+#### Artillery trajectory
+
+- High altitude projctile capable to hit targets in high places.
+- Height determined by `Trajectory.Artillery.MaxHeight`.
+- Supported `Inaccurate=yes` and Ares costumization tags `BallisticScatter.Max` and `BallisticScatter.Min`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]                     ; Projectile
+Trajectory=Artillery                 ; Trajectory type
+Trajectory.Artillery.MaxHeight=2000  ; integer
+```
+
 ### Shrapnel enhancement
 - Shrapnel behavior can be triggered on the ground and buildings.
 

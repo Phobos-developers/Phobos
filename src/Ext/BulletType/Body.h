@@ -30,6 +30,9 @@ public:
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
 
+		Nullable<double> BallisticScatter_Min;
+		Nullable<double> BallisticScatter_Max;
+
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
 			, Strength { 0 }
 			, Armor { -1 }
@@ -41,6 +44,9 @@ public:
 			, TrajectoryType { nullptr }
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
+			, BallisticScatter_Min {}
+			, BallisticScatter_Max {}
+
 		{ }
 
 		virtual ~ExtData() = default;
