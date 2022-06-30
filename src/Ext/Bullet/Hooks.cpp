@@ -226,7 +226,6 @@ DEFINE_HOOK(0x469A75, BulletClass_Logics_DamageHouse, 0x7)
 	return 0;
 }
 
-
 DEFINE_HOOK(0x468E9F, BulletClass_Logics_SnapOnTarget, 0x6)
 {
 	enum { NoSnap = 0x468FF4, ForceSnap = 0x468EC7 };
@@ -245,6 +244,25 @@ DEFINE_HOOK(0x468E9F, BulletClass_Logics_SnapOnTarget, 0x6)
 		{
 			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight && !pExt->SnappedToTarget)
 				return NoSnap;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x468D3F, BulletClass_IsForcedToExplode_AirTarget, 0x6)
+{
+	enum { DontExplode = 0x468D73 };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (pExt->Trajectory)
+		{
+			// Straight trajectory has its own proximity checks.
+			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
+				return DontExplode;
 		}
 	}
 
