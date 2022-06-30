@@ -485,7 +485,7 @@ AutoFire.TargetSelf=false  ; boolean
 ### Customizable OpenTopped properties
 
 - You can now override global `OpenTopped` transport properties per TechnoType.
-- `OpenTopped.IgnoreRangefinding` can be set to true to ignore range of passengers' weapons and only use transport's own weapon range for threat scan and approaching targets.
+- `OpenTopped.IgnoreRangefinding` can be used to disable `OpenTopped` transport rangefinding behaviour where smallest weapon range between transport and all passengers is used when approaching targets that are out of range and when scanning for potential targets.
 - `OpenTopped.AllowFiringIfDeactivated` can be used to customize whether or not passengers can fire out when the transport is deactivated (EMP, powered unit etc).
 
 ```ini
