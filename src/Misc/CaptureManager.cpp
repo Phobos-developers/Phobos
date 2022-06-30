@@ -124,8 +124,8 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 					}
 				}
 
-				//The stupiest thing goes here
-				if (pManager->Owner->IsHumanControlled)
+				//This is a stupid idea
+				if (pManager->Owner->Owner->ControlledByPlayer())
 					pTarget->ClickedMission(Mission::Guard, nullptr, nullptr, nullptr);
 
 				return true;
@@ -153,13 +153,9 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTe
 	return false;
 }
 
-void CaptureManager::DecideUnitFate(CaptureManagerClass* pManager, FootClass* pTarget)
+void CaptureManager::DecideUnitFate(CaptureManagerClass* pManager, FootClass* pFoot)
 {
-	// to be extended (if needed). - secsome
-	// is the argument FootClass* or TechnoClass*? 0x4723B0 tells FootClass, but buildings still need to be dealt with? - Question from Trsdy
-	
-	//pManager->DecideUnitFate(pTarget);
-	
+	// to be implemented (if needed). - secsome
 }
 
 DEFINE_HOOK(0x471D40, CaptureManagerClass_CaptureUnit, 0x7)
