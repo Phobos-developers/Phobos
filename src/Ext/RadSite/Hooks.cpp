@@ -10,6 +10,7 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 #include <Utilities/Macro.h>
 /*
@@ -146,13 +147,25 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI, 0x5)
 				continue;
 
 			auto pWarhead = pType->GetWarhead();
-			auto absolute = pWarhead->WallAbsoluteDestroyer;
-			bool ignore = pBuilding->Type->Wall && absolute;
 			auto damage = Game::F2I((RadSiteExt::GetRadLevelAt(pRadSite, nCurrentCoord) / 2) * pType->GetLevelFactor());
 
 			if (pBuilding->IsAlive) // simple fix for previous issues
-				if (pBuilding->ReceiveDamage(&damage, Game::F2I(orDistance), pWarhead, nullptr, ignore, absolute, pRadExt->RadHouse) == DamageState::NowDead)
-					break; //dont continue , meaningless
+			{
+				if (!pType->GetWarheadDetonate())
+				{
+					if (pBuilding->ReceiveDamage(&damage, Game::F2I(orDistance), pWarhead, pRadExt->RadInvoker, false, true, pRadExt->RadHouse) == DamageState::NowDead)
+						break; //dont continue , meaningless
+				}
+				else
+				{
+					auto coords = CoordStruct::Empty;
+					coords = *pBuilding->GetCoords(&coords);
+					WarheadTypeExt::DetonateAt(pWarhead, coords, pRadExt->RadInvoker, damage);
+
+					if (!pBuilding->IsAlive)
+						break;
+				}
+			}
 		}
 	}
 
@@ -194,12 +207,24 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 			int damage = Game::F2I(nRadLevel * pType->GetLevelFactor());
 			int distance = Game::F2I(orDistance);
 			auto pWarhead = pType->GetWarhead();
-			auto absolute = pWarhead->WallAbsoluteDestroyer;
 
 			if (pFoot->IsAlive || !pFoot->IsSinking)
 			{
-				if (pFoot->ReceiveDamage(&damage, distance, pWarhead, nullptr, false, absolute, pRadExt->RadHouse) == DamageState::NowDead)
-					break; //dont continue , meaningless
+				if (!pType->GetWarheadDetonate())
+				{
+
+					if (pFoot->ReceiveDamage(&damage, distance, pWarhead, pRadExt->RadInvoker, false, true, pRadExt->RadHouse) == DamageState::NowDead)
+						break; //dont continue , meaningless
+				}
+				else
+				{
+					auto coords = CoordStruct::Empty;
+					coords = *pFoot->GetCoords(&coords);
+					WarheadTypeExt::DetonateAt(pWarhead, coords, pRadExt->RadInvoker, damage);
+
+					if (!pFoot->IsAlive)
+						break;
+				}
 			}
 		}
 	}

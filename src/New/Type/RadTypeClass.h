@@ -18,9 +18,12 @@ private:
 	Nullable<int> LevelDelay;
 	Nullable<int> LightDelay;
 	Nullable<WarheadTypeClass*> RadWarhead;
+	Nullable<bool> RadWarhead_Detonate;
 	Nullable<ColorStruct> RadSiteColor;
 	Nullable<double> LightFactor;
 	Nullable<double> TintFactor;
+	Nullable<bool> RadHasOwner;
+	Nullable<bool> RadHasInvoker;
 
 public:
 
@@ -33,9 +36,12 @@ public:
 		, LightFactor()
 		, TintFactor()
 		, RadWarhead()
+		, RadWarhead_Detonate()
 		, DurationMultiple()
 		, ApplicationDelay()
 		, BuildingApplicationDelay()
+		, RadHasOwner()
+		, RadHasInvoker()
 	{ }
 
 	virtual ~RadTypeClass() override = default;
@@ -45,6 +51,11 @@ public:
 	WarheadTypeClass* GetWarhead() const
 	{
 		return this->RadWarhead.Get(RulesClass::Instance->RadSiteWarhead);
+	}
+
+	bool GetWarheadDetonate() const
+	{
+		return this->RadWarhead_Detonate.Get(RulesExt::Global()->RadWarhead_Detonate);
 	}
 
 	const ColorStruct& GetColor() const
@@ -95,6 +106,16 @@ public:
 	double GetTintFactor() const
 	{
 		return this->TintFactor.Get(RulesClass::Instance->RadTintFactor);
+	}
+
+	bool GetHasOwner() const
+	{
+		return this->RadHasOwner.Get(RulesExt::Global()->RadHasOwner);
+	}
+
+	bool GetHasInvoker() const
+	{
+		return this->RadHasInvoker.Get(RulesExt::Global()->RadHasInvoker);
 	}
 
 	virtual void LoadFromINI(CCINIClass* pINI) override;

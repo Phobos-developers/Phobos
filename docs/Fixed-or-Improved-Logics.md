@@ -65,6 +65,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations.
 - Allow use of `Foundation=0x0` on TerrainTypes without crashing for similar results as for buildings.
 - Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to some Ares-introduced Warhead effects like EMP.
+- Fixed an issue that caused vehicles killed by damage dealt by a known house but without a known source TechnoType (f.ex animation warhead damage) to not be recorded as killed correctly and thus not spring map trigger events etc.
 
 ## Animations
 

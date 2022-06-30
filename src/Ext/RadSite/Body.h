@@ -21,9 +21,11 @@ public:
 		WeaponTypeClass* Weapon;
 		RadTypeClass* Type;
 		HouseClass* RadHouse;
+		TechnoClass* RadInvoker;
 
 		ExtData(RadSiteClass* OwnerObject) : Extension<RadSiteClass>(OwnerObject)
 			, RadHouse { nullptr }
+			, RadInvoker { nullptr }
 			, Type {}
 			, Weapon { nullptr }
 		{ }
@@ -38,6 +40,7 @@ public:
 		virtual void InvalidatePointer(void* ptr, bool bRemoved)
 		{
 			AnnounceInvalidPointer(RadHouse, ptr);
+			AnnounceInvalidPointer(RadInvoker, ptr);
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
@@ -51,7 +54,7 @@ public:
 
 	static DynamicVectorClass<RadSiteExt::ExtData*> Array;
 
-	static void CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner);
+	static void CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker);
 	static void CreateLight(RadSiteClass* pThis);
 	static void Add(RadSiteClass* pThis,int amount);
 	static void SetRadLevel(RadSiteClass* pThis,int amount);

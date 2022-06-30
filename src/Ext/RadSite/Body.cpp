@@ -13,15 +13,18 @@ void RadSiteExt::ExtData::Initialize()
 	this->Type = RadTypeClass::FindOrAllocate("Radiation");
 }
 
-void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner)
+void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker)
 {
 	// use real ctor
 	auto const pRadSite = GameCreate<RadSiteClass>();
 	auto pRadExt = RadSiteExt::ExtMap.FindOrAllocate(pRadSite);
 
 	//Adding Owner to RadSite, from bullet
-	if (!pWeaponExt->Rad_NoOwner && pRadExt->RadHouse != pOwner)
+	if (pWeaponExt->RadType->GetHasOwner() && pRadExt->RadHouse != pOwner)
 		pRadExt->RadHouse = pOwner;
+
+	if (pWeaponExt->RadType->GetHasInvoker() && pRadExt->RadInvoker != pInvoker)
+		pRadExt->RadInvoker = pInvoker;
 
 	pRadExt->Weapon = pWeaponExt->OwnerObject();
 	pRadExt->Type = pWeaponExt->RadType;
@@ -129,6 +132,7 @@ void RadSiteExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->Weapon)
 		.Process(this->RadHouse)
+		.Process(this->RadInvoker)
 		.Process(this->Type)
 		;
 }
