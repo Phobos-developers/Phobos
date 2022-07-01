@@ -67,6 +67,44 @@ bool TechnoTypeExt::ExtData::IsCountedAsHarvester()
 	return false;
 }
 
+void TechnoTypeExt::GetBurstFLHs(TechnoTypeClass* pThis, INI_EX &exArtINI, const char* pArtSection,
+	std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag)
+{
+	char tempBuffer[32];
+	char tempBufferFLH[48];
+
+	bool parseMultiWeapons = pThis->TurretCount > 0 && pThis->WeaponCount > 0;
+	auto weaponCount = parseMultiWeapons ? pThis->WeaponCount : 2;
+	nFLH.resize(weaponCount);
+	nEFlh.resize(weaponCount);
+
+	for (int i = 0; i < weaponCount; i++)
+	{
+		for (int j = 0; j < INT_MAX; j++)
+		{
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%sWeapon%d", pPrefixTag, i + 1);
+			auto prefix = parseMultiWeapons ? tempBuffer : i > 0 ? "%sSecondaryFire" : "%sPrimaryFire";
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), prefix, pPrefixTag);
+
+			_snprintf_s(tempBufferFLH, sizeof(tempBufferFLH), "%sFLH.Burst%d", tempBuffer, j);
+			Nullable<CoordStruct> FLH;
+			FLH.Read(exArtINI, pArtSection, tempBufferFLH);
+
+			_snprintf_s(tempBufferFLH, sizeof(tempBufferFLH), "Elite%sFLH.Burst%d", tempBuffer, j);
+			Nullable<CoordStruct> eliteFLH;
+			eliteFLH.Read(exArtINI, pArtSection, tempBufferFLH);
+
+			if (FLH.isset() && !eliteFLH.isset())
+				eliteFLH = FLH;
+			else if (!FLH.isset() && !eliteFLH.isset())
+				break;
+
+			nFLH[i].AddItem(FLH.Get());
+			nEFlh[i].AddItem(eliteFLH.Get());
+		}
+	}
+};
+
 // =============================
 // load / save
 
@@ -85,10 +123,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
 	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
 	this->Interceptor.Read(exINI, pSection, "Interceptor");
-	this->Interceptor_GuardRange.Read(exINI, pSection, "Interceptor.GuardRange");
-	this->Interceptor_MinimumGuardRange.Read(exINI, pSection, "Interceptor.MinimumGuardRange");
-	this->Interceptor_EliteGuardRange.Read(exINI, pSection, "Interceptor.EliteGuardRange");
-	this->Interceptor_EliteMinimumGuardRange.Read(exINI, pSection, "Interceptor.EliteMinimumGuardRange");
+	this->Interceptor_CanTargetHouses.Read(exINI, pSection, "Interceptor.CanTargetHouses");
+	this->Interceptor_GuardRange.Read(exINI, pSection, "Interceptor.%sGuardRange");
+	this->Interceptor_MinimumGuardRange.Read(exINI, pSection, "Interceptor.%sMinimumGuardRange");
+	this->Interceptor_Weapon.Read(exINI, pSection, "Interceptor.Weapon");
+	this->Interceptor_DeleteOnIntercept.Read(exINI, pSection, "Interceptor.DeleteOnIntercept");
+	this->Interceptor_WeaponOverride.Read(exINI, pSection, "Interceptor.WeaponOverride", true);
+	this->Interceptor_WeaponReplaceProjectile.Read(exINI, pSection, "Interceptor.WeaponReplaceProjectile");
+	this->Interceptor_WeaponCumulativeDamage.Read(exINI, pSection, "Interceptor.WeaponCumulativeDamage");
+	this->Interceptor_KeepIntact.Read(exINI, pSection, "Interceptor.KeepIntact");
 	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
 	this->Spawn_LimitedRange.Read(exINI, pSection, "Spawner.LimitRange");
 	this->Spawn_LimitedExtraRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
@@ -158,6 +201,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Passengers_SyncOwner.Read(exINI, pSection, "Passengers.SyncOwner");
 	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
 
+	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -198,36 +243,20 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->LaserTrailData.push_back({ ValueableIdx<LaserTrailTypeClass>(trail), flh, isOnTurret });
 	}
 
-	bool parseMultiWeapons = pThis->TurretCount > 0 && pThis->WeaponCount > 0;
-	auto weaponCount = parseMultiWeapons ? pThis->WeaponCount : 2;
-	this->WeaponBurstFLHs.resize(weaponCount);
-	this->EliteWeaponBurstFLHs.resize(weaponCount);
-	char tempBufferFLH[48];
+	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, WeaponBurstFLHs, EliteWeaponBurstFLHs, "");
+	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, DeployedWeaponBurstFLHs, EliteDeployedWeaponBurstFLHs, "Deployed");
+	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, CrouchedWeaponBurstFLHs, EliteCrouchedWeaponBurstFLHs, "Prone");
 
-	for (int i = 0; i < weaponCount; i++)
-	{
-		for (int j = 0; j < INT_MAX; j++)
-		{
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "Weapon%d", i + 1);
-			auto prefix = parseMultiWeapons ? tempBuffer : i > 0 ? "SecondaryFire" : "PrimaryFire";
+	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
 
-			_snprintf_s(tempBufferFLH, sizeof(tempBufferFLH), "%sFLH.Burst%d", prefix, j);
-			Nullable<CoordStruct> FLH;
-			FLH.Read(exArtINI, pArtSection, tempBufferFLH);
-
-			_snprintf_s(tempBufferFLH, sizeof(tempBufferFLH), "Elite%sFLH.Burst%d", prefix, j);
-			Nullable<CoordStruct> eliteFLH;
-			eliteFLH.Read(exArtINI, pArtSection, tempBufferFLH);
-
-			if (FLH.isset() && !eliteFLH.isset())
-				eliteFLH = FLH;
-			else if (!FLH.isset() && !eliteFLH.isset())
-				break;
-
-			WeaponBurstFLHs[i].AddItem(FLH.Get());
-			EliteWeaponBurstFLHs[i].AddItem(eliteFLH.Get());
-		}
-	}
+	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
+	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
+	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
+	
+	this->PronePrimaryFireFLH.Read(exArtINI, pArtSection, "PronePrimaryFireFLH");
+	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
+	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
+	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
 }
 
 template <typename T>
@@ -239,10 +268,15 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LowSelectionPriority)
 		.Process(this->MindControlRangeLimit)
 		.Process(this->Interceptor)
+		.Process(this->Interceptor_CanTargetHouses)
 		.Process(this->Interceptor_GuardRange)
 		.Process(this->Interceptor_MinimumGuardRange)
-		.Process(this->Interceptor_EliteGuardRange)
-		.Process(this->Interceptor_EliteMinimumGuardRange)
+		.Process(this->Interceptor_Weapon)
+		.Process(this->Interceptor_DeleteOnIntercept)
+		.Process(this->Interceptor_WeaponOverride)
+		.Process(this->Interceptor_WeaponReplaceProjectile)
+		.Process(this->Interceptor_WeaponCumulativeDamage)
+		.Process(this->Interceptor_KeepIntact)
 		.Process(this->GroupAs)
 		.Process(this->RadarJamRadius)
 		.Process(this->InhibitorRange)
@@ -309,6 +343,15 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelfHealGainType)
 		.Process(this->Passengers_SyncOwner)
 		.Process(this->Passengers_SyncOwner_RevertOnExit)
+		.Process(this->PronePrimaryFireFLH)
+		.Process(this->ProneSecondaryFireFLH)
+		.Process(this->DeployedPrimaryFireFLH)
+		.Process(this->DeployedSecondaryFireFLH)
+		.Process(this->CrouchedWeaponBurstFLHs)
+		.Process(this->EliteCrouchedWeaponBurstFLHs)
+		.Process(this->DeployedWeaponBurstFLHs)
+		.Process(this->EliteDeployedWeaponBurstFLHs)
+		.Process(this->InitialStrength_Cloning)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

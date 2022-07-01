@@ -19,7 +19,6 @@ public:
 	class ExtData final : public Extension<TechnoClass>
 	{
 	public:
-		BulletClass* InterceptedBullet;
 		std::unique_ptr<ShieldClass> Shield;
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		bool ReceiveDamage;
@@ -37,7 +36,6 @@ public:
 		HouseClass* OriginalPassengerOwner;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
-			, InterceptedBullet { nullptr }
 			, Shield {}
 			, LaserTrails {}
 			, ReceiveDamage { false }
@@ -58,8 +56,6 @@ public:
 		{
 			if (auto const pShield = this->Shield.get())
 				pShield->InvalidatePointer(ptr);
-
-			AnnounceInvalidPointer(InterceptedBullet, ptr);
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
@@ -107,6 +103,7 @@ public:
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
 
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
+	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
 
@@ -123,8 +120,6 @@ public:
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 	static void UpdateMindControlAnim(TechnoClass* pThis);
-	static bool CheckIfCanFireAt(TechnoClass* pThis, AbstractClass* pTarget);
-	static void ForceJumpjetTurnToTarget(TechnoClass* pThis);
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
