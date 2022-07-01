@@ -327,7 +327,7 @@ Vanilla fixes:
 - Fixed AI script action Deploy getting stuck with vehicles with `DeploysInto` if there was no space to deploy at initial location (by Starkku)
 - Fixed `Foundation=0x0` causing crashes if used on TerrainTypes.
 - Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to Ares-introduced Warhead effects (by Starkku)
-- Translucent Compression 3 SHPs are now drawn using a more precise (has no green tint in particular) and performant algorithm (by Apollo)
+- Translucent RLE SHPs can now be drawn using a more precise and performant algorithm that has no green tint and banding (only applies to Z-aware drawing mode for now) (by Apollo)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
@@ -338,6 +338,7 @@ Phobos fixes:
 - Fixed `RemoveDisguise` not working on `PermaDisguise` infantry (by Starkku)
 - Fixed single-color laser (IsHouseColor, IsSingleColor, LaserTrails) glow falloff to match the vanilla appearance (by Starkku)
 - Fixed a potential cause of crashes concerning shield animations (such in conjunction with cloaking) (by Starkku)
+- Fixed some possible configuration reading issues when using Phobos with patches that rename `uimd.ini` (by Belonit)
 </details>
 
 
