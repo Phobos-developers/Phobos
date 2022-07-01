@@ -261,26 +261,26 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Aircraft) != AffectedTarget::None)
 			{
-				for (int i = 0; i < AircraftClass::Array->Count; i++)
-					tryDetonate(AircraftClass::Array->GetItem(i));
+				for (auto pTechno : *AircraftClass::Array)
+					tryDetonate(pTechno);
 			}
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Building) != AffectedTarget::None)
 			{
-				for (int i = 0; i < BuildingClass::Array->Count; i++)
-					tryDetonate(BuildingClass::Array->GetItem(i));
+				for (auto pTechno : *BuildingClass::Array)
+					tryDetonate(pTechno);
 			}
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Infantry) != AffectedTarget::None)
 			{
-				for (int i = 0; i < InfantryClass::Array->Count; i++)
-					tryDetonate(InfantryClass::Array->GetItem(i));
+				for (auto pTechno : *InfantryClass::Array)
+					tryDetonate(pTechno);
 			}
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Unit) != AffectedTarget::None)
 			{
-				for (int i = 0; i < UnitClass::Array->Count; i++)
-					tryDetonate(UnitClass::Array->GetItem(i));
+				for (auto pTechno : *UnitClass::Array)
+					tryDetonate(pTechno);
 			}
 
 			pWHExt->WasDetonatedOnAllMapObjects = false;
