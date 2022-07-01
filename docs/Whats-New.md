@@ -309,6 +309,7 @@ New:
 - Customizable FLH When Infantry Is Crouched Or Deployed (by FS-21)
 - Enhanced projectile interception logic, including projectile strength & armor types (by Starkku)
 - Initial Strength for Cloned Infantry (by FS-21)
+- OpenTopped transport rangefinding & deactivated state customizations (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)

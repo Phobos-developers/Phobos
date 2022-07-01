@@ -148,6 +148,7 @@ This page lists all the individual contributions to the project by their author.
   - Passable & buildable-upon TerrainTypes
   - Automatic passenger owner change toggle
   - Interceptor improvements
+  - OpenTopped transport rangefinding & deactivated state customizations
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
