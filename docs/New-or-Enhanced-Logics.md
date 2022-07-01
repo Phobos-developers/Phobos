@@ -589,6 +589,15 @@ Death.NoAmmo=no          ; boolean
 Death.Countdown=0        ; integer
 ```
 
+For resolving conflict temp
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]          ; TechnoType
+Death.NoAmmo=false    ; boolean
+Death.Countdown=0     ; integer
+Death.Peaceful=false  ; boolean, whether to not trigger DeathWeapon and EVA
+```
+
 ### Mind Control enhancement
 
 ![image](_static/images/mindcontrol-max-range-01.gif)  

@@ -510,7 +510,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, HowToSuicide deathOption)
 	}
 	default:
 		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr,
-			false,// ignoreDefenses = false, why?
+			false,// ignoreDefenses = false to let passengers escape, why?
 			false, pThis->Owner
 		);
 		

@@ -73,7 +73,8 @@ DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Deconstruction_EVA_Sold_1, 0x6)
 	GET(BuildingClass*, pThis, EBP);
 	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pThis->IsHumanControlled && !pThis->Type->UndeploysInto)
+	//It was pThis->IsHumanControlled from YR, I don't understand why
+	if (pThis->Owner->ControlledByPlayer() && !pThis->Type->UndeploysInto)
 		VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
 
 	return 0x449CEA;
@@ -84,7 +85,7 @@ DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Deconstruction_EVA_Sold_2, 0x6)
 	GET(BuildingClass*, pThis, EBP);
 	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pThis->IsHumanControlled)
+	if (pThis->Owner->ControlledByPlayer())
 		VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
 
 	return 0x44AB3B;
