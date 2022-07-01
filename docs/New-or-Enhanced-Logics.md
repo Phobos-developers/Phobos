@@ -21,16 +21,16 @@ RadType=Radiation               ; RadType to use instead
                                 ; of default [Radiation]
 
 [SOMERADTYPE]                   ; custom RadType name
-RadDurationMultiple=1           ; int
-RadApplicationDelay=16          ; int
-RadApplicationDelay.Building=0  ; int
-RadLevelMax=500                 ; int
-RadLevelDelay=90                ; int
-RadLightDelay=90                ; int
-RadLevelFactor=0.2              ; double
-RadLightFactor=0.1              ; double
-RadTintFactor=1.0               ; double
-RadColor=0,255,0                ; RGB
+RadDurationMultiple=1           ; integer
+RadApplicationDelay=16          ; integer
+RadApplicationDelay.Building=0  ; integer
+RadLevelMax=500                 ; integer
+RadLevelDelay=90                ; integer
+RadLightDelay=90                ; integer
+RadLevelFactor=0.2              ; floating point value
+RadLightFactor=0.1              ; floating point value
+RadTintFactor=1.0               ; floating point value
+RadColor=0,255,0                ; integer - Red,Green,Blue
 RadSiteWarhead=RadSite          ; WarheadType
 ```
 
@@ -54,22 +54,22 @@ In `artmd.ini`:
 [LaserTrailTypes]
 0=SOMETRAIL
 
-[SOMETRAIL]                 ; LaserTrailType name
-IsHouseColor=no             ; boolean
-Color=255,0,0               ; integer - Red,Green,Blue
-FadeDuration=64             ; integer
-Thickness=4                 ; integer
-SegmentLength=128           ; integer, minimal length of each trail segment
-IgnoreVertical=no           ; boolean, whether the trail won't be drawn on vertical movement
-IsIntense=no                ; boolean, whether the laser is "supported" (AKA prism forwarding)
-
-[SOMEPROJECTILE]            ; BulletType Image
-LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
-
-[SOMETECHNO]                ; TechnoType Image
-LaserTrailN.Type=SOMETRAIL  ; LaserTrailType
-LaserTrailN.FLH=0,0,0       ; integer - Forward,Lateral,Height
-LaserTrailN.IsOnTurret=no   ; boolean, whether the trail origin is turret
+[SOMETRAIL]                   ; LaserTrailType name
+IsHouseColor=false            ; boolean
+Color=255,0,0                 ; integer - Red,Green,Blue
+FadeDuration=64               ; integer
+Thickness=4                   ; integer
+SegmentLength=128             ; integer, minimal length of each trail segment
+IgnoreVertical=false          ; boolean, whether the trail won't be drawn on vertical movement
+IsIntense=false               ; boolean, whether the laser is "supported" (AKA prism forwarding)
+                              
+[SOMEPROJECTILE]              ; BulletType Image
+LaserTrail.Types=SOMETRAIL    ; list of LaserTrailTypes
+                              
+[SOMETECHNO]                  ; TechnoType Image
+LaserTrailN.Type=SOMETRAIL    ; LaserTrailType
+LaserTrailN.FLH=0,0,0         ; integer - Forward,Lateral,Height
+LaserTrailN.IsOnTurret=false  ; boolean, whether the trail origin is turret
 ; where N = 0, 1, 2, ...
 ```
 
@@ -87,10 +87,10 @@ LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-Pips.Shield=-1,-1,-1               ; int, frames of pips.shp (zero-based) for Green, Yellow, Red
-Pips.Shield.Building=-1,-1,-1      ; int, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Shield=-1,-1,-1               ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Shield.Building=-1,-1,-1      ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
 Pips.Shield.Background=PIPBRD.SHP  ; filename - including the .shp/.pcx extension
-Pips.Shield.Building.Empty=0       ; int, frame of pips.shp (zero-based) for empty building pip
+Pips.Shield.Building.Empty=0       ; integer, frame of pips.shp (zero-based) for empty building pip
 
 [ShieldTypes]
 0=SOMESHIELDTYPE
@@ -106,23 +106,23 @@ SelfHealing.Rate=0.0                 ; double, ingame minutes
 Respawn=0.0                          ; double, percents or absolute
 Respawn.Rate=0.0                     ; double, ingame minutes
 BracketDelta=0                       ; integer - pixels
-Pips=-1,-1,-1                        ; int, frames of pips.shp (zero-based) for Green, Yellow, Red
-Pips.Building=-1,-1,-1               ; int, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips=-1,-1,-1                        ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Building=-1,-1,-1               ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
 Pips.Background=                     ; filename - including the .shp/.pcx extension
-Pips.Building.Empty=                 ; int, frame of pips.shp (zero-based) for empty building pip
-IdleAnim=                            ; animation
-IdleAnim.ConditionYellow=            ; animation
-IdleAnim.ConditionRed=               ; animation
-IdleAnimDamaged=                     ; animation
-IdleAnimDamaged.ConditionYellow=     ; animation
-IdleAnimDamaged.ConditionRed=        ; animation
+Pips.Building.Empty=                 ; integer, frame of pips.shp (zero-based) for empty building pip
+IdleAnim=                            ; Animation
+IdleAnim.ConditionYellow=            ; Animation
+IdleAnim.ConditionRed=               ; Animation
+IdleAnimDamaged=                     ; Animation
+IdleAnimDamaged.ConditionYellow=     ; Animation
+IdleAnimDamaged.ConditionRed=        ; Animation
 IdleAnim.OfflineAction=Hides         ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 IdleAnim.TemporalAction=Hides        ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
-BreakAnim=                           ; animation
-HitAnim=                             ; animation
+BreakAnim=                           ; Animation
+HitAnim=                             ; Animation
 BreakWeapon=                         ; WeaponType
-AbsorbPercent=1.0                    ; double, percents
-PassPercent=0.0                      ; double, percents
+AbsorbPercent=1.0                    ; floating point value
+PassPercent=0.0                      ; floating point value
 AllowTransfer=                       ; boolean
 
 [SOMETECHNO]                         ; TechnoType
@@ -131,18 +131,18 @@ ShieldType=SOMESHIELDTYPE            ; ShieldType; none by default
 [SOMEWARHEAD]                        ; WarheadType
 Shield.Penetrate=false               ; boolean
 Shield.Break=false                   ; boolean
-Shield.BreakAnim=                    ; animation
-Shield.HitAnim=                      ; animation
+Shield.BreakAnim=                    ; Animation
+Shield.HitAnim=                      ; Animation
 Shield.BreakWeapon=                  ; WeaponType
-Shield.AbsorbPercent=                ; double, percents
-Shield.PassPercent=                  ; double, percents
+Shield.AbsorbPercent=                ; floating point value
+Shield.PassPercent=                  ; floating point value
 Shield.Respawn.Duration=0            ; integer, game frames
-Shield.Respawn.Amount=0.0            ; double, percents or absolute
-Shield.Respawn.Rate=-1.0             ; double, ingame minutes
+Shield.Respawn.Amount=0.0            ; floating point value, percents or absolute
+Shield.Respawn.Rate=-1.0             ; floating point value, ingame minutes
 Shield.Respawn.ResetTimer=false      ; boolean
 Shield.SelfHealing.Duration=0        ; integer, game frames
-Shield.SelfHealing.Amount=0.0        ; double, percents or absolute
-Shield.SelfHealing.Rate=-1.0         ; double, ingame minutes
+Shield.SelfHealing.Amount=0.0        ; floating point value, percents or absolute
+Shield.SelfHealing.Rate=-1.0         ; floating point value, ingame minutes
 Shield.SelfHealing.ResetTimer=false  ; boolean
 Shield.AffectTypes=                  ; List of ShieldType names
 Shield.AttachTypes=                  ; List of ShieldType names
@@ -211,22 +211,22 @@ Shield.InheritStateOnReplace=false   ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEUNIT]                  ; UnitType
-DestroyAnim.Random=yes      ; boolean, whether to randomize DestroyAnim
-```
-
-In `artmd.ini`:
-```ini
-[SOMEANIM]                          ; AnimationType
-CreateUnit=                         ; UnitType
-CreateUnit.Facing=0                 ; unsigned short, `CreateUnit` facings in range of 0-255
-CreateUnit.RandomFacing=yes         ; boolean, `CreateUnit` use random facings
-CreateUnit.InheritFacings=no        ; boolean, inherit facing from destroyed unit
-CreateUnit.InheritTurretFacings=no  ; boolean, inherit facing from destroyed unit
-CreateUnit.RemapAnim=no             ; boolean, whether to remap anim to owner color
-CreateUnit.Mission=Guard            ; MissionType
-CreateUnit.Owner=Victim             ; owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
-CreateUnit.ConsiderPathfinding=no   ; boolean, whether to consider if the created unit can move in the cell and look for eligible cells nearby instead.
+[SOMEUNIT]                             ; UnitType
+DestroyAnim.Random=true                ; boolean, whether to randomize DestroyAnim
+```                                    
+                                       
+In `artmd.ini`:                        
+```ini                                 
+[SOMEANIM]                             ; AnimationType
+CreateUnit=                            ; UnitType
+CreateUnit.Facing=0                    ; integer, `CreateUnit` facings in range of 0-255
+CreateUnit.RandomFacing=true           ; boolean, `CreateUnit` use random facings
+CreateUnit.InheritFacings=false        ; boolean, inherit facing from destroyed unit
+CreateUnit.InheritTurretFacings=false  ; boolean, inherit facing from destroyed unit
+CreateUnit.RemapAnim=false             ; boolean, whether to remap anim to owner color
+CreateUnit.Mission=Guard               ; MissionType
+CreateUnit.Owner=Victim                ; Owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
+CreateUnit.ConsiderPathfinding=false   ; boolean, whether to consider if the created unit can move in the cell and look for eligible cells nearby instead.
 ```
 
 ## Buildings
@@ -257,7 +257,7 @@ In `rulesmd.ini`:
 [SOMEBUILDING]                     ; BuildingType
 PowerPlantEnhancer.PowerPlants=    ; list of BuildingTypes
 PowerPlantEnhancer.Amount=0        ; integer
-PowerPlantEnhancer.Factor=1.0      ; float
+PowerPlantEnhancer.Factor=1.0      ; floating point value
 ```
 
 ## Infantry
@@ -306,13 +306,13 @@ In addition, a transport can filter who will receive ammo if passengers have the
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO1]                           ; TechnoType, transport with OpenTopped=yes
-Ammo.Shared=no                          ; boolean
-Ammo.Shared.Group=-1                    ; integer
-
-[SOMETECHNO2]                           ; TechnoType, passenger
-Ammo.Shared=no                          ; boolean
-Ammo.Shared.Group=-1                    ; integer
+[SOMETECHNO1]         ; TechnoType, transport with OpenTopped=yes
+Ammo.Shared=no        ; boolean
+Ammo.Shared.Group=-1  ; integer
+                      
+[SOMETECHNO2]         ; TechnoType, passenger
+Ammo.Shared=no        ; boolean
+Ammo.Shared.Group=-1  ; integer
 ```
 
 ## Projectiles
@@ -338,15 +338,15 @@ Ammo.Shared.Group=-1                    ; integer
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                               ; TechnoType
-Interceptor=no                             ; boolean
+Interceptor=false                          ; boolean
 Interceptor.Weapon=0                       ; integer, weapon slot index (0 or 1)
 Interceptor.CanTargetHouses=enemies        ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Interceptor.GuardRange=0.0                 ; double
-Interceptor.VeteranGuardRange=             ; double
-Interceptor.EliteGuardRange=               ; double
-Interceptor.MinimumGuardRange=0.0          ; double
-Interceptor.VeteranMinimumGuardRange=      ; double
-Interceptor.EliteMinimumGuardRange=        ; double
+Interceptor.GuardRange=0.0                 ; floating point value
+Interceptor.VeteranGuardRange=             ; floating point value
+Interceptor.EliteGuardRange=               ; floating point value
+Interceptor.MinimumGuardRange=0.0          ; floating point value
+Interceptor.VeteranMinimumGuardRange=      ; floating point value
+Interceptor.EliteMinimumGuardRange=        ; floating point value
 Interceptor.DeleteOnIntercept=false        ; boolean
 Interceptor.WeaponOverride=                ; WeaponType
 Interceptor.WeaponReplaceProjectile=false  ; boolean
@@ -394,9 +394,9 @@ Trajectory.Bombard.Height=0.0  ; double
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]              ; Projectile
-Shrapnel.AffectsGround=no     ; boolean
-Shrapnel.AffectsBuildings=no  ; boolean
+[SOMEPROJECTILE]                 ; Projectile
+Shrapnel.AffectsGround=false     ; boolean
+Shrapnel.AffectsBuildings=false  ; boolean
 ```
 
 ## Super Weapons
@@ -448,13 +448,13 @@ LimboKill.IDs=                  ; List of numeric IDs.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                            ; TechnoType
-PassengerDeletion.Rate=0                ; integer, game frames
-PassengerDeletion.Rate.SizeMultiply=yes ; boolean, whether to multiply frames amount by size
-PassengerDeletion.Soylent=no            ; boolean
-PassengerDeletion.SoylentFriendlies=no  ; boolean
-PassengerDeletion.ReportSound=          ; sound
-PassengerDeletion.Anim=                 ; animation
+[SOMETECHNO]                               ; TechnoType
+PassengerDeletion.Rate=0                   ; integer, game frames
+PassengerDeletion.Rate.SizeMultiply=true   ; boolean, whether to multiply frames amount by size
+PassengerDeletion.Soylent=no               ; boolean
+PassengerDeletion.SoylentFriendlies=false  ; boolean
+PassengerDeletion.ReportSound=             ; Sound
+PassengerDeletion.Anim=                    ; Animation
 ```
 
 ### Automatic passenger owner change to match transport owner
@@ -466,9 +466,9 @@ PassengerDeletion.Anim=                 ; animation
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                             ; TechnoType
-Passengers.SyncOwner=false               ; boolean
-Passengers.SyncOwner.RevertOnExit=true   ; boolean
+[SOMETECHNO]                            ; TechnoType
+Passengers.SyncOwner=false              ; boolean
+Passengers.SyncOwner.RevertOnExit=true  ; boolean
 ```
 
 ### Automatically firing weapons
@@ -477,9 +477,9 @@ Passengers.SyncOwner.RevertOnExit=true   ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]            ; TechnoType
-AutoFire=no             ; boolean
-AutoFire.TargetSelf=no  ; boolean
+[SOMETECHNO]               ; TechnoType
+AutoFire=false             ; boolean
+AutoFire.TargetSelf=false  ; boolean
 ```
 
 ### Customizable OpenTopped Properties
@@ -487,10 +487,10 @@ AutoFire.TargetSelf=no  ; boolean
 - You can now override settings of `OpenTopped` transport properties per TechnoType.
 
 ```ini
-[SOMETECHNO]                       ; TechnoType
-OpenTopped.RangeBonus=1            ; integer
-OpenTopped.DamageMultiplier=1.3    ; float
-OpenTopped.WarpDistance=8          ; integer
+[SOMETECHNO]                     ; TechnoType
+OpenTopped.RangeBonus=1          ; integer
+OpenTopped.DamageMultiplier=1.3  ; floating point value
+OpenTopped.WarpDistance=8        ; integer
 ```
 
 ### Disabling fallback to (Elite)Secondary weapon
@@ -507,8 +507,8 @@ OpenTopped.WarpDistance=8          ; integer
   
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                      ; TechnoType
-NoSecondaryWeaponFallback=false   ; boolean
+[SOMETECHNO]                     ; TechnoType
+NoSecondaryWeaponFallback=false  ; boolean
 ```
 
 ### Firing offsets for specific Burst shots
@@ -519,7 +519,7 @@ NoSecondaryWeaponFallback=false   ; boolean
 In `artmd.ini`:
 ```ini
 [SOMETECHNO]    ; TechnoType Image
-FLHKEY.BurstN=  ; int - forward, lateral, height. FLHKey refers to weapon-specific FLH key name and N is zero-based burst shot index.
+FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-specific FLH key name and N is zero-based burst shot index.
 ```
 
 ### Initial Strength
@@ -528,8 +528,8 @@ FLHKEY.BurstN=  ; int - forward, lateral, height. FLHKey refers to weapon-specif
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]        ; TechnoType
-InitialStrength=    ; int
+[SOMETECHNO]      ; TechnoType
+InitialStrength=  ; integer
 ```
 
 ### Initial Strength For Cloned Infantry
@@ -541,8 +541,8 @@ InitialStrength=    ; int
 
 In `rulesmd.ini`:
 ```ini
-[SOMEBUILDING]                  ; BuildingType
-InitialStrength.Cloning=        ; single double/percentage or comma-sep. range
+[SOMEBUILDING]            ; BuildingType
+InitialStrength.Cloning=  ; single double/percentage or comma-sep. range
 ```
 
 ### Kill Unit Automatically
@@ -554,10 +554,10 @@ InitialStrength.Cloning=        ; single double/percentage or comma-sep. range
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                       ; TechnoType
-Death.NoAmmo=no                    ; boolean
-Death.Countdown=0                  ; integer
-Death.Peaceful=no                  ; boolean, whether to not trigger DeathWeapon and EVA
+[SOMETECHNO]          ; TechnoType
+Death.NoAmmo=false    ; boolean
+Death.Countdown=0     ; integer
+Death.Peaceful=false  ; boolean, whether to not trigger DeathWeapon and EVA
 ```
 
 ### Mind Control enhancement
@@ -573,12 +573,12 @@ Death.Peaceful=no                  ; boolean, whether to not trigger DeathWeapon
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                       ; TechnoType
-MindControlRangeLimit=-1.0         ; double
-MultiMindControl.ReleaseVictim=no  ; boolean
-
-[SOMEWARHEAD]                            ; Warhead
-MindControl.Anim=ControlledAnimationType ; AnimType
+[SOMETECHNO]                          ; TechnoType
+MindControlRangeLimit=-1.0            ; floating point value
+MultiMindControl.ReleaseVictim=false  ; boolean
+                                      
+[SOMEWARHEAD]                         ; Warhead
+MindControl.Anim=                     ; Animation, defaults to ControlledAnimationType
 ```
 
 ### No Manual Move
@@ -586,8 +586,8 @@ MindControl.Anim=ControlledAnimationType ; AnimType
 - You can now specify whether a TechnoType is unable to receive move command.
 
 ```ini
-[SOMETECHNO]           ; TechnoType
-NoManualMove=no        ; boolean
+[SOMETECHNO]        ; TechnoType
+NoManualMove=false  ; boolean
 ```
 
 ### Override Uncloaked Underwater attack behavior
@@ -600,8 +600,8 @@ NoManualMove=no        ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                      ; TechnoType
-ForceWeapon.Naval.Decloaked=-1    ; Integer. 0 for primary weapon, 1 for secondary weapon
+[SOMETECHNO]                    ; TechnoType
+ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ```
 
 ### Promoted Spawns
@@ -613,8 +613,8 @@ ForceWeapon.Naval.Decloaked=-1    ; Integer. 0 for primary weapon, 1 for seconda
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]              ; TechnoType
-Promote.IncludeSpawns=no  ; boolean
+[SOMETECHNO]                 ; TechnoType
+Promote.IncludeSpawns=false  ; boolean
 ```
 
 ### Spawn range limit
@@ -627,9 +627,9 @@ Promote.IncludeSpawns=no  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]              ; TechnoType
-Spawner.LimitRange=no     ; boolean
-Spawner.ExtraLimitRange=0 ; integer
+[SOMETECHNO]               ; TechnoType
+Spawner.LimitRange=false   ; boolean
+Spawner.ExtraLimitRange=0  ; integer
 ```
 
 ### Weapons fired on warping in / out
@@ -672,8 +672,8 @@ All new warheads can be used with CellSpread and Ares' GenericWarhead superweapo
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                        ; Warhead
-RemoveMindControl=no                 ; boolean
+[SOMEWARHEAD]            ; Warhead
+RemoveMindControl=false  ; boolean
 ```
 
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
@@ -691,19 +691,19 @@ RemoveMindControl=no                 ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                       ; Warhead
-Crit.Chance=0.0                     ; float, percents or absolute (0.0-1.0)
+Crit.Chance=0.0                     ; floating point value, percents or absolute (0.0-1.0)
 Crit.ApplyChancePerTarget=false     ; boolean
 Crit.ExtraDamage=0                  ; integer
 Crit.Warhead=                       ; Warhead
 Crit.Affects=all                    ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-Crit.AffectBelowPercent=1.0         ; float, percents or absolute (0.0-1.0)
+Crit.AffectBelowPercent=1.0         ; floating point value, percents or absolute (0.0-1.0)
 Crit.AnimList=                      ; list of animations
 Crit.AnimList.PickRandom=           ; boolean
 Crit.AnimOnAffectedTargets=false    ; boolean
 Crit.SuppressWhenIntercepted=false  ; boolean
 
-[SOMETECHNO]                      ; TechnoType
-ImmuneToCrit=no                   ; boolean
+[SOMETECHNO]                        ; TechnoType
+ImmuneToCrit=no                     ; boolean
 ```
 
 ```{warning}
@@ -713,14 +713,13 @@ If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chai
 ### Custom 'SplashList' on Warheads
 
 ![image](_static/images/splashlist-01.gif)  
-- Allows Warheads to play custom water splash animations. See vanilla's [Conventional](https://www.modenc.renegadeprojects.com/Conventional) system here.
+- Allows Warheads to play custom water splash animations. See vanilla's [Conventional](https://www.modenc.renegadeprojects.com/Conventional) system here. `SplashList.PickRandom` can be set to true to pick a random animation to play from the list.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]            ; Warhead
-SplashList=<none>        ; list of animations to play
-SplashList.PickRandom=no ; play a random animation from the list? boolean, defaults to no
-```
+[SOMEWARHEAD]                ; Warhead
+SplashList=<none>            ; list of animations
+SplashList.PickRandom=false  ; boolean
 
 ### Generate credits on impact
 
@@ -743,49 +742,6 @@ TransactMoney.Display.Houses=All     ; Affected House Enumeration (none|owner/se
 TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 ```
 
-### Remove disguise on impact
-
-- Warheads can now remove disguise from disguised infantry such as spies. This will work even if the disguised was acquired by default through `PermaDisguise`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD]                      ; Warhead
-RemoveDisguise=no                  ; boolean
-```
-
-### Reveal map for owner on impact
-
-![image](_static/images/revealwarhead-01.gif)  
-*`SpySat=yes` on `[NUKE]` warhead reveals the map when nuclear missile detonates*
-
-- Warheads can now reveal the entire map on impact.
-- Reveal only applies to the owner of the warhead.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD] ; Warhead
-SpySat=no     ; boolean
-```
-
-### Shroud map for enemies on impact
-
-- Warheads can now shroud the entire map on impact.
-- Shroud only applies to enemies of the warhead owner.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD] ; Warhead
-BigGap=no     ; boolean
-```
-
-### Trigger specific NotHuman infantry Death anim sequence
-- Warheads are now able to trigger specific `NotHuman=yes` infantry `Death` anim sequence using the corresponding tag. It's value represents sequences from `Die1` to `Die5`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD]            ; Warhead
-NotHuman.DeathSequence=  ; integer (1 to 5)
-```
 ### Launch superweapons on impact
 
 - Superweapons can now be launched when a warhead is detonated.
@@ -799,10 +755,54 @@ Animation weapons from _Ares_ are **not** supported. Nevertheless, animation war
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                 ; Warhead
-LaunchSW=                     ; list of superweapons
-LaunchSW.RealLaunch=yes       ; bool
-LaunchSW.IgnoreInhibitors=no  ; bool
+[SOMEWARHEAD]                    ; Warhead
+LaunchSW=                        ; list of superweapons
+LaunchSW.RealLaunch=true         ; boolean
+LaunchSW.IgnoreInhibitors=false  ; boolean
+```
+
+### Remove disguise on impact
+
+- Warheads can now remove disguise from disguised infantry such as spies. This will work even if the disguised was acquired by default through `PermaDisguise`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]         ; Warhead
+RemoveDisguise=false  ; boolean
+```
+
+### Reveal map for owner on impact
+
+![image](_static/images/revealwarhead-01.gif)  
+*`SpySat=yes` on `[NUKE]` warhead reveals the map when nuclear missile detonates*
+
+- Warheads can now reveal the entire map on impact.
+- Reveal only applies to the owner of the warhead.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]  ; Warhead
+SpySat=false   ; boolean
+```
+
+### Shroud map for enemies on impact
+
+- Warheads can now shroud the entire map on impact.
+- Shroud only applies to enemies of the warhead owner.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]  ; Warhead
+BigGap=false   ; boolean
+```
+
+### Trigger specific NotHuman infantry Death anim sequence
+- Warheads are now able to trigger specific `NotHuman=yes` infantry `Death` anim sequence using the corresponding tag. It's value represents sequences from `Die1` to `Die5`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]            ; Warhead
+NotHuman.DeathSequence=  ; integer (1 to 5)
 ```
 
 ## Weapons
@@ -827,8 +827,8 @@ AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                 ; WeaponType
-Burst.Delays=-1              ; int - burst delays (comma-separated) for shots in order from first to last.
+[SOMEWEAPON]     ; WeaponType
+Burst.Delays=-1  ; integer - burst delays (comma-separated) for shots in order from first to last.
 ```
 
 ### Feedback weapon
@@ -851,8 +851,8 @@ FeedbackWeapon=  ; WeaponType
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]    ; WeaponType
-Rad.NoOwner=no  ; boolean
+[SOMEWEAPON]       ; WeaponType
+Rad.NoOwner=false  ; boolean
 ```
 
 ### Strafing aircraft weapon customization
@@ -866,9 +866,9 @@ Rad.NoOwner=no  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                 ; WeaponType
-Strafing.Shots=5             ; integer
-Strafing.SimulateBurst=false ; bool
+[SOMEWEAPON]                  ; WeaponType
+Strafing.Shots=5              ; integer
+Strafing.SimulateBurst=false  ; boolean
 ```
 
 ### Trajectory speed
@@ -878,7 +878,7 @@ Strafing.SimulateBurst=false ; bool
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]            ; WeaponType
-Trajectory.Speed=100.0  ; double
+Trajectory.Speed=100.0  ; floating point value
 ```
 
 ### Weapon targeting filter
