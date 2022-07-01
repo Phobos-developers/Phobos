@@ -65,7 +65,11 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations.
 - Allow use of `Foundation=0x0` on TerrainTypes without crashing for similar results as for buildings.
 - Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to some Ares-introduced Warhead effects like EMP.
-- Translucent RLE SHPs can now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
+
+![image](_static/images/translucency-fix.png)  
+*Example gradient SHP drawing with 75% translucency, before and after*
+
+- Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
   - Only applies to Z-aware drawing mode for now.
 
 ## Animations

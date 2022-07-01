@@ -1,7 +1,7 @@
 #include <Utilities/Macro.h>
 // Author: Apollo
 
-#pragma region C3 SHP translucency fixes
+#pragma region C3 Z-aware SHP translucency fixes
 
 // 50% translucency blitter pt. 1
 DEFINE_VARIABLE_PATCH(0x4987F7, Blit50TranslucencyFix1,
