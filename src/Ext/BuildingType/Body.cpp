@@ -66,7 +66,7 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 
 void BuildingTypeExt::ExtData::Initialize()
 {
-	this->EVA_Sold = VoxClass::FindIndex("EVA_StructureSold");
+	this->EVA_Sold = VoxClass::FindIndex((const char*)0x819030);	//EVA_StructureSold
 }
 
 // =============================

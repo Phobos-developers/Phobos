@@ -217,7 +217,7 @@ public:
 			, Death_NoAmmo { false }
 			, Death_Countdown { 0 }
 			, Slaved_OwnerWhenMasterDead { SlavesGiveTo::Killer }
-			, SellSound{ }
+			, SellSound{ -1 }
 			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
