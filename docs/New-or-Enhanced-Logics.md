@@ -595,11 +595,13 @@ InitialStrength.Cloning=  ; single double/percentage or comma-sep. range
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]          ; TechnoType
-Death.NoAmmo=false    ; boolean
-Death.Countdown=0     ; integer
-Death.Peaceful=false  ; boolean, whether to not trigger DeathWeapon and EVA
+[SOMETECHNO]             ; TechnoType
+Death=disabled           ; enumeration (disabled | kill | vanish | sell)
+
+Death.NoAmmo=no          ; boolean
+Death.Countdown=0        ; integer
 ```
+
 
 ### Mind Control enhancement
 
