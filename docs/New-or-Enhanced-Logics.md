@@ -582,16 +582,6 @@ InitialStrength=    ; int
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]             ; TechnoType
-Death=disabled           ; enumeration (disabled | kill | vanish | sell)
-
-Death.NoAmmo=no          ; boolean
-Death.Countdown=0        ; integer
-```
-
-For resolving conflict temp
-In `rulesmd.ini`:
-```ini
 [SOMETECHNO]          ; TechnoType
 Death.NoAmmo=false    ; boolean
 Death.Countdown=0     ; integer
