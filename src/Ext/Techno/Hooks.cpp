@@ -78,6 +78,40 @@ DEFINE_HOOK(0x414057, TechnoClass_Init_InitialStrength, 0x6)       // AircraftCl
 	return 0;
 }
 
+DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
+{
+	GET(BuildingClass*, pBuilding, ESI);
+	GET(FootClass*, pFoot, EDI);
+
+	bool isCloner = false;
+
+	if (pBuilding && pBuilding->Type->Cloning)
+		isCloner = true;
+
+	if (isCloner && pFoot)
+	{
+		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType()))
+		{
+			if (auto pTypeUnit = pFoot->GetTechnoType())
+			{
+				Vector2D<double> range = pTypeExt->InitialStrength_Cloning.Get();
+				int min = static_cast<int>(range.X * 100);
+				int max = static_cast<int>(range.Y * 100);
+				double percentage = range.X >= range.Y ? range.X : (ScenarioClass::Instance->Random.RandomRanged(min, max) / 100.0);
+				int strength = static_cast<int>(pTypeUnit->Strength * percentage);
+
+				if (strength <= 0)
+					strength = 1;
+				
+				pFoot->Health = strength;
+				pFoot->EstimatedHealth = strength;
+			}
+		}
+	}
+
+	return 0;
+}
+
 // Issue #271: Separate burst delay for weapon type
 // Author: Starkku
 DEFINE_HOOK(0x6FD05E, TechnoClass_Rearm_Delay_BurstDelays, 0x7)

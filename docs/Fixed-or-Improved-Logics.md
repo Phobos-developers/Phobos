@@ -138,7 +138,7 @@ Grinding.DisplayRefund.Offset=0,0  ; X,Y, pixels relative to default
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]        ; Projectile
-Gravity=6.0             ; double
+Gravity=6.0             ; floating point value
 ```
 
 ## Technos
@@ -154,13 +154,13 @@ Gravity=6.0             ; double
 In `rulesmd.ini`:
 ```ini
 [General]
-InfantryGainSelfHealCap=               ; int, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
-UnitsGainSelfHealCap=                  ; int, maximum amount of UnitsGainSelfHeal that can be in effect at once, must be 1 or higher
+InfantryGainSelfHealCap=               ; integer, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
+UnitsGainSelfHealCap=                  ; integer, maximum amount of UnitsGainSelfHeal that can be in effect at once, must be 1 or higher
                                        
 [AudioVisual]                          
-Pips.SelfHeal.Infantry=13,20           ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
-Pips.SelfHeal.Units=13,20              ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
-Pips.SelfHeal.Buildings=13,20          ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Infantry=13,20           ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Units=13,20              ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Buildings=13,20          ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
 Pips.SelfHeal.Infantry.Offset=25,-35   ; X,Y, pixels relative to default
 Pips.SelfHeal.Units.Offset=33,-32      ; X,Y, pixels relative to default
 Pips.SelfHeal.Buildings.Offset=15,10   ; X,Y, pixels relative to default
@@ -242,10 +242,10 @@ Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
 In `rulesmd.ini`:
 ```ini
 [JumpjetControls]
-AllowLayerDeviation=yes         ; boolean
+AllowLayerDeviation=true         ; boolean
 
-[SOMETECHNO]                    ; TechnoType
-JumpjetAllowLayerDeviation=yes  ; boolean
+[SOMETECHNO]                     ; TechnoType
+JumpjetAllowLayerDeviation=true  ; boolean
 ```
 
 ### Jumpjet facing target customization 
@@ -256,7 +256,7 @@ JumpjetAllowLayerDeviation=yes  ; boolean
 In `rulesmd.ini`:
 ```ini
 [JumpjetControls]
-TurnToTarget=no        ; boolean
+TurnToTarget=false     ; boolean
 
 [SOMEUNITTYPE]         ; UnitType with jumpjet locomotor
 JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
@@ -270,8 +270,8 @@ JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
 
 In `rulesmd.ini`:
 ```ini
-[SOMESTRUCTURE]       ; BuildingType
-Powered.KillSpawns=no ; boolean
+[SOMESTRUCTURE]          ; BuildingType
+Powered.KillSpawns=false ; boolean
 ```
 
 ### Re-enable obsolete [JumpjetControls] 
@@ -282,8 +282,8 @@ Powered.KillSpawns=no ; boolean
 In `rulesmd.ini`:
 ```ini
 [JumpjetControls]
-Crash=5.0       ; float
-NoWobbles=no    ; boolean
+Crash=5.0        ; floating point value
+NoWobbles=false  ; boolean
 ```
 
 ```{note}

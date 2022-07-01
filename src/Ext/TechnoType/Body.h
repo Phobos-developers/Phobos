@@ -116,6 +116,8 @@ public:
 		Valueable<bool> Passengers_SyncOwner;
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
+		Valueable<Vector2D<double>> InitialStrength_Cloning;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -226,6 +228,7 @@ public:
 			, ProneSecondaryFireFLH { }
 			, DeployedPrimaryFireFLH { }
 			, DeployedSecondaryFireFLH { }
+			, InitialStrength_Cloning{ { 1.0, 0.0 } }
 		{ }
 
 		virtual ~ExtData() = default;
