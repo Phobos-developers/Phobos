@@ -396,13 +396,10 @@ DEFINE_HOOK(0x457C90, BuildingClass_IronCuratin, 0x6)
 DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 {
 	GET(FootClass*, pThis, ECX);
-	GET_STACK(HouseClass*, pSource, 0x0);
+	GET_STACK(HouseClass*, pSource, STACK_OFFS(0x10, -0x8));
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	IronCurtainAffects ironAffect = IronCurtainAffects::Affect;
-
-	if (pThis->WhatAmI() != AbstractType::Infantry)
-		pSource = R->Stack<HouseClass*>(0x18);
 
 	if (pType->Organic || pThis->WhatAmI() == AbstractType::Infantry)
 	{
