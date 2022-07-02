@@ -10,6 +10,8 @@
 #include <SuperClass.h>
 
 #include <Utilities/Helpers.Alex.h>
+#include <Ext/Bullet/Body.h>
+#include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/SWType/Body.h>
@@ -18,6 +20,17 @@
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
 {
+	if (pOwner)
+	{
+		if (auto const pBulletExt = BulletExt::ExtMap.Find(pBullet))
+		{
+			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
+
+			if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
+				this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
+		}
+	}
+
 	if (pHouse)
 	{
 		if (this->BigGap)
@@ -91,24 +104,27 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Crit_Chance ||
 		this->Shield_Break ||
 		this->Shield_Respawn_Duration > 0 ||
-		this->Shield_SelfHealing_Duration > 0 ||
+		this->Shield_SelfHealing_Duration > 0 || 
 		this->Shield_AttachTypes.size() > 0 ||
 		this->Shield_RemoveTypes.size() > 0;
 
-	const float cellSpread = this->OwnerObject()->CellSpread;
+	auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
+
+	const float cellSpread = this->OwnerObject()->CellSpread; 
 	if (cellSpread && isCellSpreadWarhead)
 	{
 		for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
-			this->DetonateOnOneUnit(pHouse, pTarget, pOwner);
+			this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
 	}
 	else if (pBullet && isCellSpreadWarhead)
 	{
 		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
-			this->DetonateOnOneUnit(pHouse, pTarget, pOwner);
+			this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
 	}
 }
 
-void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
+void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, bool bulletWasIntercepted)
 {
 	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health)
 		return;
@@ -124,7 +140,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->RemoveMindControl)
 		this->ApplyRemoveMindControl(pHouse, pTarget);
 
-	if (this->Crit_Chance)
+	if (this->Crit_Chance && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner);
 }
 
@@ -266,4 +282,35 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 		WarheadTypeExt::DetonateAt(this->Crit_Warhead.Get(), pTarget, pOwner, damage);
 	else
 		pTarget->ReceiveDamage(&damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
+}
+
+void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords)
+{
+	if (!pOwner || !pWeapon)
+		return;
+
+	float cellSpread = this->OwnerObject()->CellSpread;
+
+	if (cellSpread == 0.0)
+	{
+		if (auto const pBullet = specific_cast<BulletClass*>(pOwner->Target))
+		{
+			auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+
+			// 1/8th of a cell as a margin of error.
+			if (pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= Unsorted::LeptonsPerCell / 8.0)
+				BulletExt::InterceptBullet(pBullet, pOwner, pWeapon);
+		}
+	}
+	else
+	{
+		for (auto const& pBullet : *BulletClass::Array)
+		{
+			auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+
+			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
+			if (pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= cellSpread * Unsorted::LeptonsPerCell)
+				BulletExt::InterceptBullet(pBullet, pOwner, pWeapon);
+		}
+	}
 }

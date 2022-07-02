@@ -19,23 +19,23 @@ public:
 	static PhobosToolTip Instance;
 
 private:
-	inline bool IsEnabled() const;
 	inline const wchar_t* GetUIDescription(TechnoTypeExt::ExtData* pData) const;
 	inline const wchar_t* GetUIDescription(SWTypeExt::ExtData* pData) const;
 	inline int GetBuildTime(TechnoTypeClass* pType) const;
 	inline int GetPower(TechnoTypeClass* pType) const;
 
 public:
+	inline bool IsEnabled() const;
 	inline const wchar_t* GetBuffer() const;
 
-	bool HelpText(BuildType& cameo);
+	void HelpText(BuildType& cameo);
 	void HelpText(TechnoTypeClass* pType);
 	void HelpText(SuperWeaponTypeClass* pType);
 
 // Properties
 private:
 	std::wstring TextBuffer {};
-	
+
 public:
 	bool IsCameo { false };
 	bool SlaveDraw { false };
