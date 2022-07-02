@@ -817,3 +817,15 @@ In `rulesmd.ini`:
 CanTarget=all        ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
+
+### Extend parallel AI queues
+
+- In the vanilla game, you could make the AI construct multiple factories by using cloned BuildingTypes whit TechLevel=-1 and AIBuildThis=yes. Ares can alter the vanilla game behaviour so that this cloning issue no longer occurs when the AI owns more than one of any factory. But we still can't set it for some type of factory.
+ -Now we can set it on specified types of factories do not occurs cloning issue and others will not be affected.
+ -To prevent conflict with Ares, this only work when AllowParallelAIQueues=yes.
+
+In `rulesmd.ini`
+```ini
+[GlobalControls]
+ExtendParallelAIQueues=yes,yes,yes,yes,yes      ; list of boolean, corresponding to Infantry, Vehicle without Naval, Vehicle with Naval, Aircraft, Building
+```

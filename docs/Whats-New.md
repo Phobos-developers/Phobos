@@ -302,6 +302,7 @@ New:
 - Display damage numbers debug hotkey command (by Starkku)
 - Toggleable display of TransactMoney amounts (by Starkku)
 - Building-provided self-healing customization (by Starkku)
+- Extend parallel AI queues (by NetsuNegi)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)

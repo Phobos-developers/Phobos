@@ -155,6 +155,7 @@ This page lists all the individual contributions to the project by their author.
    - LaserTrails prototype
    - Laser fixes prototype
 - **Trsdy** - Jumpjet facing fix
+- **NetsuNegi* - Extend parallel AI queues
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
