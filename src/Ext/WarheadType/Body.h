@@ -1,6 +1,6 @@
 #pragma once
 #include <WarheadTypeClass.h>
-
+#include <SuperWeaponTypeClass.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -39,6 +39,7 @@ public:
 		Nullable<bool> Crit_AnimList_PickRandom;
 		Valueable<bool> Crit_AnimOnAffectedTargets;
 		Valueable<double> Crit_AffectBelowPercent;
+		Valueable<bool> Crit_SuppressWhenIntercepted;
 
 		Nullable<AnimTypeClass*> MindControl_Anim;
 
@@ -72,6 +73,10 @@ public:
 		Valueable<bool> Shield_InheritStateOnReplace;
 		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
+
+		ValueableVector<SuperWeaponTypeClass*> LaunchSW;
+		Valueable<bool> LaunchSW_RealLaunch;
+		Valueable<bool> LaunchSW_IgnoreInhibitors;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -108,6 +113,7 @@ public:
 			, Crit_AnimList_PickRandom {}
 			, Crit_AnimOnAffectedTargets { false }
 			, Crit_AffectBelowPercent { 1.0 }
+			, Crit_SuppressWhenIntercepted { false }
 			, RandomBuffer { 0.0 }
 			, HasCrit { false }
 
@@ -143,10 +149,13 @@ public:
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
+			, LaunchSW {}
+			, LaunchSW_RealLaunch { true }
+			, LaunchSW_IgnoreInhibitors { false }
 		{ }
 
 	private:
-		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr);
+		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
 
 		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
@@ -156,6 +165,7 @@ public:
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
+		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;

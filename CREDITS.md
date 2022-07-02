@@ -110,6 +110,8 @@ This page lists all the individual contributions to the project by their author.
   - Override Uncloaked Underwater attack behavior
   - AI Aircraft docks fix
   - Shared Ammo logic
+  - Customizable FLH When Infantry Is Prone Or Deployed
+  - Initial Strength for Cloned Infantry
 - **Starkku**:
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
@@ -142,6 +144,11 @@ This page lists all the individual contributions to the project by their author.
   - Display damage numbers hotkey command
   - TransactMoney.Display
   - Building-provided self-heal customization
+  - AI deploy script DeploysInto fix
+  - Passable & buildable-upon TerrainTypes
+  - Automatic passenger owner change toggle
+  - Interceptor improvements
+  - OpenTopped transport rangefinding & deactivated state customizations
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
@@ -154,7 +161,9 @@ This page lists all the individual contributions to the project by their author.
    - Interceptor logic prototype
    - LaserTrails prototype
    - Laser fixes prototype
-- **Trsdy** - Jumpjet facing fix
+- **Trsdy**
+   - Jumpjet facing fix
+   - Warhead superweapon launch logic
 - **NetsuNegi* - Extend parallel AI queues
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix

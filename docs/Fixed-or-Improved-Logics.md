@@ -20,7 +20,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Some settings are still ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
-- Fixed jumpjet units cannot turn its facing to the target when firing from a different direction.
+- Fixed jumpjet units being unable to turn to the target when firing from a different direction.
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
 - Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
@@ -62,6 +62,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Nuke carrier & payload weapons now respect `Bright` setting on the weapons always when appropriate (previously only payload did and only if Superweapon had `Nuke.SiloLaunch=false` *(Ares feature)*).
 - Self-healing pips from `InfantryGainSelfHeal` & `UnitsGainSelfHeal` now respect unit's `PixelSelectionBracketDelta` like health bar pips do.
 - Buildings using `SelfHealing` will now correctly revert to undamaged graphics if their health is restored back by self-healing.
+- Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations.
+- Allow use of `Foundation=0x0` on TerrainTypes without crashing for similar results as for buildings.
+- Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to some Ares-introduced Warhead effects like EMP.
+- `OpenTopped` transports now take `OpenTransportWeapon` setting of passengers into consideration when determining weapon range used for threat scanning and approaching targets.
 
 ## Animations
 
@@ -134,7 +138,7 @@ Grinding.DisplayRefund.Offset=0,0  ; X,Y, pixels relative to default
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]        ; Projectile
-Gravity=6.0             ; double
+Gravity=6.0             ; floating point value
 ```
 
 ## Technos
@@ -150,13 +154,13 @@ Gravity=6.0             ; double
 In `rulesmd.ini`:
 ```ini
 [General]
-InfantryGainSelfHealCap=               ; int, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
-UnitsGainSelfHealCap=                  ; int, maximum amount of UnitsGainSelfHeal that can be in effect at once, must be 1 or higher
+InfantryGainSelfHealCap=               ; integer, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
+UnitsGainSelfHealCap=                  ; integer, maximum amount of UnitsGainSelfHeal that can be in effect at once, must be 1 or higher
                                        
 [AudioVisual]                          
-Pips.SelfHeal.Infantry=13,20           ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
-Pips.SelfHeal.Units=13,20              ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
-Pips.SelfHeal.Buildings=13,20          ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Infantry=13,20           ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Units=13,20              ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Buildings=13,20          ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
 Pips.SelfHeal.Infantry.Offset=25,-35   ; X,Y, pixels relative to default
 Pips.SelfHeal.Units.Offset=33,-32      ; X,Y, pixels relative to default
 Pips.SelfHeal.Buildings.Offset=15,10   ; X,Y, pixels relative to default
@@ -238,10 +242,10 @@ Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
 In `rulesmd.ini`:
 ```ini
 [JumpjetControls]
-AllowLayerDeviation=yes         ; boolean
+AllowLayerDeviation=true         ; boolean
 
-[SOMETECHNO]                    ; TechnoType
-JumpjetAllowLayerDeviation=yes  ; boolean
+[SOMETECHNO]                     ; TechnoType
+JumpjetAllowLayerDeviation=true  ; boolean
 ```
 
 ### Jumpjet facing target customization 
@@ -252,7 +256,7 @@ JumpjetAllowLayerDeviation=yes  ; boolean
 In `rulesmd.ini`:
 ```ini
 [JumpjetControls]
-TurnToTarget=no        ; boolean
+TurnToTarget=false     ; boolean
 
 [SOMEUNITTYPE]         ; UnitType with jumpjet locomotor
 JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
@@ -266,8 +270,8 @@ JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
 
 In `rulesmd.ini`:
 ```ini
-[SOMESTRUCTURE]       ; BuildingType
-Powered.KillSpawns=no ; boolean
+[SOMESTRUCTURE]          ; BuildingType
+Powered.KillSpawns=false ; boolean
 ```
 
 ### Re-enable obsolete [JumpjetControls] 
@@ -278,8 +282,8 @@ Powered.KillSpawns=no ; boolean
 In `rulesmd.ini`:
 ```ini
 [JumpjetControls]
-Crash=5.0       ; float
-NoWobbles=no    ; boolean
+Crash=5.0        ; floating point value
+NoWobbles=false  ; boolean
 ```
 
 ```{note}
@@ -314,6 +318,19 @@ In `rulesmd.ini`:
 ```ini
 [SOMETERRAINTYPE]  ; TerrainType
 MinimapColor=      ; integer - Red,Green,Blue
+```
+
+### Passable & buildable-upon TerrainTypes
+
+- TerrainTypes can now be made passable or buildable upon by setting `IsPassable` or `CanBeBuiltOn`, respectively.
+  - Movement cursor is displayed on `IsPassable` TerrainTypes unless force-firing.
+  - `CanBeBuiltOn=true` terrain objects are removed when building is placed on them.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]   ; TerrainType
+IsPassable=false    ; boolean
+CanBeBuiltOn=false  ; boolean
 ```
 
 ## Tiberiums (ores)

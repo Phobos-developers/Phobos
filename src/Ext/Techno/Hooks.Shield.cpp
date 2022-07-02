@@ -40,7 +40,8 @@ DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 			return 0x7019E3;
 	}
 
-	return *Damage >= 0 ? 0x7019E3 : 0x7019DD;
+	// Restore overridden instructions
+	return *Damage >= 1 ? 0x7019E3 : 0x7019DD;
 }
 
 DEFINE_HOOK_AGAIN(0x70CF39, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_EvalThreatRating_Shield

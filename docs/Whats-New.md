@@ -298,10 +298,18 @@ New:
 - TerrainType & ore minimap color customization (by Starkku)
 - Single-color weapon lasers (by Starkku)
 - Customizable projectile trajectory (by secsome)
-- Correct owner house for Warhead Anim/SplashList & Play Animation trigger animations (by Starkku)
 - Display damage numbers debug hotkey command (by Starkku)
 - Toggleable display of TransactMoney amounts (by Starkku)
 - Building-provided self-healing customization (by Starkku)
+- Building placement preview (by Otamaa)
+- Passable & buildable-upon TerrainTypes (by Starkku)
+- Toggle for passengers to automatically change owner if transport owner changes (by Starkku)
+- Superweapon launch on warhead detonation (by Trsdy)
+- Correct owner house for Warhead Anim/SplashList & Play Animation trigger animations (by Starkku)
+- Customizable FLH When Infantry Is Crouched Or Deployed (by FS-21)
+- Enhanced projectile interception logic, including projectile strength & armor types (by Starkku)
+- Initial Strength for Cloned Infantry (by FS-21)
+- OpenTopped transport rangefinding & deactivated state customizations (by Starkku)
 - Extend parallel AI queues (by NetsuNegi)
 
 Vanilla fixes:
@@ -321,6 +329,11 @@ Vanilla fixes:
 - Fixed mind control indicator animations not reappearing on mind controlled objects that are cloaked and then uncloaked (by Starkku)
 - Fixed Nuke carrier and payload weapons not respecting `Bright` setting on weapon (by Starkku)
 - Fixed buildings not reverting to undamaged graphics when HP was restored above `[AudioVisual]`->`ConditionYellow` via `SelfHealing` (by Starkku)
+- Fixed jumpjet units being unable to turn to the target when firing from a different direction (by trsdy)
+- Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations (by Starkku)
+- Fixed AI script action Deploy getting stuck with vehicles with `DeploysInto` if there was no space to deploy at initial location (by Starkku)
+- Fixed `Foundation=0x0` causing crashes if used on TerrainTypes.
+- Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to Ares-introduced Warhead effects (by Starkku)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
@@ -331,6 +344,8 @@ Phobos fixes:
 - Fixed `RemoveDisguise` not working on `PermaDisguise` infantry (by Starkku)
 - Fixed single-color laser (IsHouseColor, IsSingleColor, LaserTrails) glow falloff to match the vanilla appearance (by Starkku)
 - Fixed a potential cause of crashes concerning shield animations (such in conjunction with cloaking) (by Starkku)
+- Fixed interceptors intercepting projectiles fired by friendly objects if the said object died after firing the projectile (by Starkku)
+- Fixed interceptor weapons with `Inviso=true` projectiles detonating the projectile at wrong coordinates (by Starkku)
 </details>
 
 
