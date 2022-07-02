@@ -622,23 +622,23 @@ WarpOutWeapon=                          ; WeaponType
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-UseSelectBox=                               ; boolean
-SelectBox.SHP.Infantry=                 ; filename, includingthe .shp extension
-SelectBox.PAL.Infantry=                  ; filename, includingthe .pal extension
-SelectBox.Frame.Infantry=              ; frame, green hp, yellow hp, red hp
-SelectBox.DrawOffset.Infantry=       ; X, Y, positive value is right and down
-SelectBox.SHP.Unit=                      ; filename, includingthe .shp extension
-SelectBox.PAL.Unit=                       ; filename, includingthe .pal extension
-SelectBox.Frame.Unit=                   ; frame, green hp, yellow hp, red hp
-SelectBox.DrawOffset.Unit=            ; X, Y, positive value is right and down
-SelectBox.DefaultTranslucentLevel= ; integer 0 ~ 3
-SelectBox.DefaultCanSee=              ; AffectedHouse, not include the observer
-SelectBox.DefaultCanObserverSee   ; boolean
+UseSelectBox=no                                     ; boolean
+SelectBox.Shape.Infantry=select.shp         ; filename, includingthe .shp extension
+SelectBox.Palette.Infantry=palette.pal        ; filename, includingthe .pal extension
+SelectBox.Frame.Infantry=0,0,0                ; frame, green hp, yellow hp, red hp
+SelectBox.DrawOffset.Infantry=0,0           ; X, Y, positive value is right and down
+SelectBox.Shape.Unit=select.shp              ; filename, includingthe .shp extension
+SelectBox.Palette.Unit=palette.pal             ; filename, includingthe .pal extension
+SelectBox.Frame.Unit=3,3,3                     ; frame, green hp, yellow hp, red hp
+SelectBox.DrawOffset.Unit=0,0                ; X, Y, positive value is right and down
+SelectBox.DefaultTranslucentLevel=0        ; integer 0 ~ 3
+SelectBox.DefaultCanSee=Owner              ; AffectedHouse, not include the observer
+SelectBox.DefaultCanObserverSee=true     ; boolean
 
 [SOMETECHNO]                              ; TechnoType
 UseSelectBox=                               ; boolean
-SelectBox.SHP=                             ; filename, includingthe .shp extension
-SelectBox.PAL=                              ; filename, includingthe .pal extension
+SelectBox.Shape=                          ; filename, includingthe .shp extension
+SelectBox.Palette=                         ; filename, includingthe .pal extension
 SelectBox.Frame=                          ; frame, green hp, yellow hp, red hp
 SelectBox.DrawOffset=                   ; X, Y, positive value is right and down
 SelectBox.TranslucentLevel=           ; integer 0 ~ 3
