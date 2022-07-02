@@ -17,17 +17,22 @@ public:
 		DirStruct DeathUnitTurretFacing;
 		bool FromDeathUnit;
 		bool DeathUnitHasTurret;
+		TechnoClass* Invoker;
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
 			, DeathUnitFacing { 0 }
 			, DeathUnitTurretFacing {}
 			, FromDeathUnit { false }
 			, DeathUnitHasTurret { false }
+			, Invoker {}
 		{ }
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override 
+		{ 
+			AnnounceInvalidPointer(Invoker, ptr);
+		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -42,6 +47,21 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+			switch (abs)
+			{
+			case AbstractType::Aircraft:
+			case AbstractType::Building:
+			case AbstractType::Infantry:
+			case AbstractType::Unit:
+				return false;
+			default:
+				return true;
+			}
+		}
 	};
 
 	static ExtContainer ExtMap;

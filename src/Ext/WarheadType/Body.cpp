@@ -132,6 +132,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->LaunchSW.Read(exINI, pSection, "LaunchSW");
 	this->LaunchSW_RealLaunch.Read(exINI, pSection, "LaunchSW.RealLaunch");
 	this->LaunchSW_IgnoreInhibitors.Read(exINI, pSection, "LaunchSW.IgnoreInhibitors");
+	this->AllowDamageOnSelf.Read(exINI, pSection, "AllowDamageOnSelf");
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
@@ -198,6 +200,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaunchSW)
 		.Process(this->LaunchSW_RealLaunch)
 		.Process(this->LaunchSW_IgnoreInhibitors)
+		.Process(this->AllowDamageOnSelf)
+		
 		// Ares tags
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
