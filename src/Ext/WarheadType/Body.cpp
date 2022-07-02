@@ -75,6 +75,12 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 		return false;
 	}
 
+	if (this->DetonateOnAllMapObjects_RequireVerses &&
+		GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTechno->GetTechnoType()->Armor) == 0.0)
+	{
+		return false;
+	}
+
 	if (pTechno->IsOnMap && pTechno->IsAlive && !pTechno->InLimbo)
 		return true;
 }
@@ -155,6 +161,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AllowDamageOnSelf.Read(exINI, pSection, "AllowDamageOnSelf");
 	
 	this->DetonateOnAllMapObjects.Read(exINI, pSection, "DetonateOnAllMapObjects");
+	this->DetonateOnAllMapObjects_RequireVerses.Read(exINI, pSection, "DetonateOnAllMapObjects.RequireVerses");
 	this->DetonateOnAllMapObjects_AffectTargets.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTargets");
 	this->DetonateOnAllMapObjects_AffectHouses.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectHouses");
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
@@ -229,6 +236,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AllowDamageOnSelf)
 		
 		.Process(this->DetonateOnAllMapObjects)
+		.Process(this->DetonateOnAllMapObjects_RequireVerses)
 		.Process(this->DetonateOnAllMapObjects_AffectTargets)
 		.Process(this->DetonateOnAllMapObjects_AffectHouses)
 		.Process(this->DetonateOnAllMapObjects_AffectTypes)

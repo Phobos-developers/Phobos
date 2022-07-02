@@ -76,6 +76,7 @@ public:
 		Valueable<bool> AllowDamageOnSelf;
 
 		Valueable<bool> DetonateOnAllMapObjects;
+		Valueable<bool> DetonateOnAllMapObjects_RequireVerses;
 		Valueable<AffectedTarget> DetonateOnAllMapObjects_AffectTargets;
 		Valueable<AffectedHouse> DetonateOnAllMapObjects_AffectHouses;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
@@ -157,6 +158,7 @@ public:
 			, AllowDamageOnSelf { false }
 
 			, DetonateOnAllMapObjects { false }
+			, DetonateOnAllMapObjects_RequireVerses { false }
 			, DetonateOnAllMapObjects_AffectTargets { AffectedTarget::All }
 			, DetonateOnAllMapObjects_AffectHouses { AffectedHouse::All }
 			, DetonateOnAllMapObjects_AffectTypes {}
