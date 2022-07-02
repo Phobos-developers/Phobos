@@ -193,11 +193,10 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 		{
 			return true;
 		}
-		else if (pThis->WhatAmI() == AbstractType::Unit && mission == Mission::Guard
-			&& !pThis->IsSelected)
+		else if (mission == Mission::Guard	&& !pThis->IsSelected)
 		{
-			if (auto pFoot = abstract_cast<UnitClass*>(pThis))
-				return pFoot->Locomotor->Is_Really_Moving_Now();
+			if (auto pUnit = abstract_cast<UnitClass*>(pThis))
+				return pUnit->Locomotor->Is_Really_Moving_Now();
 		}
 	}
 
