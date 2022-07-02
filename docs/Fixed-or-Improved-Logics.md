@@ -66,7 +66,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allow use of `Foundation=0x0` on TerrainTypes without crashing for similar results as for buildings.
 - Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to some Ares-introduced Warhead effects like EMP.
 - `OpenTopped` transports now take `OpenTransportWeapon` setting of passengers into consideration when determining weapon range used for threat scanning and approaching targets.
-- Trailer animations now inherit the owner of the object they are attached to.
+- Trailer animations now inherit the owner of the object (animation, projectile or aircraft) they are attached to.
 
 ## Animations
 
@@ -75,15 +75,15 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `Weapon` can be set to a WeaponType, to create a projectile and immediately detonate it instead of simply dealing `Damage` by `Warhead`. This allows weapon effects to be applied.
 - `Damage.Delay` determines delay between two applications of `Damage`. Requires `Damage` to be set to 1.0 or above. Value of 0 disables the delay. Keep in mind that this is measured in animation frames, not game frames. Depending on `Rate`, animation may or may not advance animation frames on every game frame.
 - `Damage.DealtByInvoker`, if set to true, makes any `Damage` dealt to be considered as coming from the animation's invoker (f.ex, firer of the weapon if it is Warhead `AnimList/SplashList` animation, the destroyed vehicle if it is `DestroyAnim` animation or the object the animation is attached to). Does not affect which house the `Damage` dealt by `Warhead` is dealt by.
-- `Damage.ApplyOnce`, if set to true, makes `Damage` be dealt only once per animation loop instead of on every frame or intervals defined by `Damage.Delay`. The frame on which it is dealt is determined by `Damage.Delay`, defaulting to after the first animation frame.
+- `Damage.ApplyOncePerLoop`, if set to true, makes `Damage` be dealt only once per animation loop (on single loop animations, only once, period) instead of on every frame or intervals defined by `Damage.Delay`. The frame on which it is dealt is determined by `Damage.Delay`, defaulting to after the first animation frame.
 
 In `artmd.ini`:
 ```ini
-[SOMEANIM]                   ; AnimationType
-Weapon=                      ; WeaponType
-Damage.Delay=0               ; integer, animation frames
-Damage.DealtByInvoker=false  ; boolean
-Damage.ApplyOnce=false       ; boolean
+[SOMEANIM]                     ; AnimationType
+Weapon=                        ; WeaponType
+Damage.Delay=0                 ; integer, animation frames
+Damage.DealtByInvoker=false    ; boolean
+Damage.ApplyOncePerLoop=false  ; boolean
 ```
 
 ```{note}

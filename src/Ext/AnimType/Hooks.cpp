@@ -93,7 +93,7 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 	double damage = 0;
 	int appliedDamage = 0;
 
-	if (pTypeExt->Damage_ApplyOnce) // If damage is to be applied only once per animation loop
+	if (pTypeExt->Damage_ApplyOncePerLoop) // If damage is to be applied only once per animation loop
 	{
 		if (pThis->Animation.Value == std::max(delay - 1, 1))
 			appliedDamage = static_cast<int>(std::round(pThis->Type->Damage)) * damageMultiplier;
