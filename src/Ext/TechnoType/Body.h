@@ -4,6 +4,7 @@
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
+#include <Utilities/Enum.h>
 
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
@@ -134,16 +135,14 @@ public:
 		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
-		SHPStruct* SHP_SelectBoxSHP;
-		ConvertClass* SHP_SelectBoxPAL;
-
-		Nullable<bool> UseCustomSelectBox;
-		PhobosFixedString<32U> SelectBox_SHP;
-		PhobosFixedString<32U> SelectBox_PAL;
+		Nullable<bool> UseSelectBox;
+		PhobosFixedString<32U> SelectBox_Shape;
+		PhobosFixedString<32U> SelectBox_Palette;
 		Nullable<Vector3D<int>> SelectBox_Frame;
 		Nullable<Vector2D<int>> SelectBox_DrawOffset;
 		Nullable<int> SelectBox_TranslucentLevel;
-		Nullable<bool> SelectBox_ShowEnemy;
+		Nullable<AffectedHouse> SelectBox_CanSee;
+		Nullable<bool> SelectBox_CanObserverSee;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -217,15 +216,14 @@ public:
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 			, SelfHealGainType()
-			, SHP_SelectBoxSHP { nullptr }
-			, SHP_SelectBoxPAL { nullptr }
-			, UseCustomSelectBox {}
-			, SelectBox_SHP {}
-			, SelectBox_PAL {}
-			, SelectBox_Frame { {-1,-1,-1} }
+			, UseSelectBox {}
+			, SelectBox_Shape {}
+			, SelectBox_Palette {}
+			, SelectBox_Frame { { -1,-1,-1 } }
 			, SelectBox_DrawOffset {}
 			, SelectBox_TranslucentLevel {}
-			, SelectBox_ShowEnemy {}
+			, SelectBox_CanSee {}
+			, SelectBox_CanObserverSee {}
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
 			, PronePrimaryFireFLH { }

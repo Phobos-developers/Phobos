@@ -6,6 +6,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
+#include <Utilities/Enum.h>
 
 #include <Utilities/Debug.h>
 
@@ -49,22 +50,18 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
 
-		SHPStruct* SHP_SelectBoxSHP_INF;
-		ConvertClass* SHP_SelectBoxPAL_INF;
-		SHPStruct* SHP_SelectBoxSHP_UNIT;
-		ConvertClass* SHP_SelectBoxPAL_UNIT;
-
 		Valueable<bool> UseSelectBox;
-		PhobosFixedString<32U> SelectBox_SHP_Infantry;
-		PhobosFixedString<32U> SelectBox_PAL_Infantry;
+		PhobosFixedString<32U> SelectBox_Shape_Infantry;
+		PhobosFixedString<32U> SelectBox_Palette_Infantry;
 		Nullable<Vector3D<int>> SelectBox_Frame_Infantry;
 		Nullable<Vector2D<int>> SelectBox_DrawOffset_Infantry;
-		PhobosFixedString<32U> SelectBox_SHP_Unit;
-		PhobosFixedString<32U> SelectBox_PAL_Unit;
+		PhobosFixedString<32U> SelectBox_Shape_Unit;
+		PhobosFixedString<32U> SelectBox_Palette_Unit;
 		Nullable<Vector3D<int>> SelectBox_Frame_Unit;
 		Nullable<Vector2D<int>> SelectBox_DrawOffset_Unit;
 		Nullable<int> SelectBox_DefaultTranslucentLevel;
-		Valueable<bool> SelectBox_DefaultShowEnemy;
+		Valueable<AffectedHouse> SelectBox_DefaultCanSee;
+		Valueable<bool> SelectBox_DefaultCanObserverSee;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -87,21 +84,18 @@ public:
 			, Pips_SelfHeal_Infantry_Offset {{ 25, -35 }}
 			, Pips_SelfHeal_Units_Offset {{ 33, -32 }}
 			, Pips_SelfHeal_Buildings_Offset {{ 15, 10 }}
-			, SHP_SelectBoxSHP_INF { nullptr }
-			, SHP_SelectBoxPAL_INF { nullptr }
-			, SHP_SelectBoxSHP_UNIT { nullptr }
-			, SHP_SelectBoxPAL_UNIT { nullptr }
 			, UseSelectBox { false }
-			, SelectBox_SHP_Infantry { "select.shp" }
-			, SelectBox_PAL_Infantry { "palette.pal" }
-			, SelectBox_Frame_Infantry { {0,0,0} }
-			, SelectBox_DrawOffset_Infantry { {0,0} }
-			, SelectBox_SHP_Unit { "select.shp" }
-			, SelectBox_PAL_Unit { "palette.pal" }
-			, SelectBox_Frame_Unit { {3,3,3} }
-			, SelectBox_DrawOffset_Unit { {0,0} }
+			, SelectBox_Shape_Infantry { "select.shp" }
+			, SelectBox_Palette_Infantry { "palette.pal" }
+			, SelectBox_Frame_Infantry { { 0,0,0 } }
+			, SelectBox_DrawOffset_Infantry { { 0,0 } }
+			, SelectBox_Shape_Unit { "select.shp" }
+			, SelectBox_Palette_Unit { "palette.pal" }
+			, SelectBox_Frame_Unit { { 3,3,3 } }
+			, SelectBox_DrawOffset_Unit { { 0,0 } }
 			, SelectBox_DefaultTranslucentLevel { 0 }
-			, SelectBox_DefaultShowEnemy { true }
+			, SelectBox_DefaultCanSee { AffectedHouse::Owner }
+			, SelectBox_DefaultCanObserverSee { true }
 		{ }
 
 		virtual ~ExtData() = default;

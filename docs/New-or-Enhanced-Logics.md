@@ -615,6 +615,38 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
+### Enable and custom selectbox
+
+- Now you can use and custom a select box for infantry, vehicle and aircraft. Not support on buildings.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+UseSelectBox=                               ; boolean
+SelectBox.SHP.Infantry=                 ; filename, includingthe .shp extension
+SelectBox.PAL.Infantry=                  ; filename, includingthe .pal extension
+SelectBox.Frame.Infantry=              ; frame, green hp, yellow hp, red hp
+SelectBox.DrawOffset.Infantry=       ; X, Y, positive value is right and down
+SelectBox.SHP.Unit=                      ; filename, includingthe .shp extension
+SelectBox.PAL.Unit=                       ; filename, includingthe .pal extension
+SelectBox.Frame.Unit=                   ; frame, green hp, yellow hp, red hp
+SelectBox.DrawOffset.Unit=            ; X, Y, positive value is right and down
+SelectBox.DefaultTranslucentLevel= ; integer 0 ~ 3
+SelectBox.DefaultCanSee=              ; AffectedHouse, not include the observer
+SelectBox.DefaultCanObserverSee   ; boolean
+
+[SOMETECHNO]                              ; TechnoType
+UseSelectBox=                               ; boolean
+SelectBox.SHP=                             ; filename, includingthe .shp extension
+SelectBox.PAL=                              ; filename, includingthe .pal extension
+SelectBox.Frame=                          ; frame, green hp, yellow hp, red hp
+SelectBox.DrawOffset=                   ; X, Y, positive value is right and down
+SelectBox.TranslucentLevel=           ; integer 0 ~ 3
+SelectBox.ShowEnemy=                 ; AffectedHouse, not include the observer
+SelectBox.CanObserverSee=           ; boolean
+```
+
+
 ## Terrain
 
 ### Destroy animation & sound

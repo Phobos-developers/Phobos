@@ -63,6 +63,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	const char* sectionAITargetTypes = "AITargetTypes";
 	const char* sectionAIScriptsList = "AIScriptsList";
+	const char* sectionAudioVisual = "AudioVisual";
 
 	INI_EX exINI(pINI);
 
@@ -71,32 +72,33 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->UnitsGainSelfHealCap.Read(exINI, GENERAL_SECTION, "UnitsGainSelfHealCap");
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
-	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
+	this->MissingCameo.Read(pINI, sectionAudioVisual, "MissingCameo");
 	this->JumpjetTurnToTarget.Read(exINI, "JumpjetControls", "TurnToTarget");
-	this->PlacementGrid_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementGrid.TranslucentLevel");
-	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementPreview.DefaultTranslucentLevel");
-	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
-	this->Pips_Shield_Background.Read(exINI, "AudioVisual", "Pips.Shield.Background");
-	this->Pips_Shield_Building.Read(exINI, "AudioVisual", "Pips.Shield.Building");
-	this->Pips_Shield_Building_Empty.Read(exINI, "AudioVisual", "Pips.Shield.Building.Empty");
-	this->Pips_SelfHeal_Infantry.Read(exINI, "AudioVisual", "Pips.SelfHeal.Infantry");
-	this->Pips_SelfHeal_Units.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units");
-	this->Pips_SelfHeal_Buildings.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings");
-	this->Pips_SelfHeal_Infantry_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Infantry.Offset");
-	this->Pips_SelfHeal_Units_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units.Offset");
-	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings.Offset");
+	this->PlacementGrid_TranslucentLevel.Read(exINI, sectionAudioVisual, "BuildingPlacementGrid.TranslucentLevel");
+	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, sectionAudioVisual, "BuildingPlacementPreview.DefaultTranslucentLevel");
+	this->Pips_Shield.Read(exINI, sectionAudioVisual, "Pips.Shield");
+	this->Pips_Shield_Background.Read(exINI, sectionAudioVisual, "Pips.Shield.Background");
+	this->Pips_Shield_Building.Read(exINI, sectionAudioVisual, "Pips.Shield.Building");
+	this->Pips_Shield_Building_Empty.Read(exINI, sectionAudioVisual, "Pips.Shield.Building.Empty");
+	this->Pips_SelfHeal_Infantry.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Infantry");
+	this->Pips_SelfHeal_Units.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Units");
+	this->Pips_SelfHeal_Buildings.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Buildings");
+	this->Pips_SelfHeal_Infantry_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Infantry.Offset");
+	this->Pips_SelfHeal_Units_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Units.Offset");
+	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Buildings.Offset");
 
-	this->UseSelectBox.Read(exINI, "AudioVisual", "UseSelectBox");
-	this->SelectBox_SHP_Infantry.Read(pINI, "AudioVisual", "SelectBox.SHP.Infantry");
-	this->SelectBox_PAL_Infantry.Read(pINI, "AudioVisual", "SelectBox.PAL.Infantry");
-	this->SelectBox_Frame_Infantry.Read(exINI, "AudioVisual", "SelectBox.Frame.Infantry");
-	this->SelectBox_DrawOffset_Infantry.Read(exINI, "AudioVisual", "SelectBox.DrawOffset.Infantry");
-	this->SelectBox_SHP_Unit.Read(pINI, "AudioVisual", "SelectBox.SHP.Unit");
-	this->SelectBox_PAL_Unit.Read(pINI, "AudioVisual", "SelectBox.PAL.Unit");
-	this->SelectBox_Frame_Unit.Read(exINI, "AudioVisual", "SelectBox.Frame.Unit");
-	this->SelectBox_DrawOffset_Unit.Read(exINI, "AudioVisual", "SelectBox.DrawOffset.Unit");
-	this->SelectBox_DefaultTranslucentLevel.Read(exINI, "AudioVisual", "SelectBox.DefaultTranslucentLevel");
-	this->SelectBox_DefaultShowEnemy.Read(exINI, "AudioVisual", "SelectBox.DefaultShowEnemy");
+	this->UseSelectBox.Read(exINI, sectionAudioVisual, "UseSelectBox");
+	this->SelectBox_Shape_Infantry.Read(pINI, sectionAudioVisual, "SelectBox.Shape.Infantry");
+	this->SelectBox_Palette_Infantry.Read(pINI, sectionAudioVisual, "SelectBox.Palette.Infantry");
+	this->SelectBox_Frame_Infantry.Read(exINI, sectionAudioVisual, "SelectBox.Frame.Infantry");
+	this->SelectBox_DrawOffset_Infantry.Read(exINI, sectionAudioVisual, "SelectBox.DrawOffset.Infantry");
+	this->SelectBox_Shape_Unit.Read(pINI, sectionAudioVisual, "SelectBox.Shape.Unit");
+	this->SelectBox_Palette_Unit.Read(pINI, sectionAudioVisual, "SelectBox.Palette.Unit");
+	this->SelectBox_Frame_Unit.Read(exINI, sectionAudioVisual, "SelectBox.Frame.Unit");
+	this->SelectBox_DrawOffset_Unit.Read(exINI, sectionAudioVisual, "SelectBox.DrawOffset.Unit");
+	this->SelectBox_DefaultTranslucentLevel.Read(exINI, sectionAudioVisual, "SelectBox.DefaultTranslucentLevel");
+	this->SelectBox_DefaultCanSee.Read(exINI, sectionAudioVisual, "SelectBox.DefaultCanSee");
+	this->SelectBox_DefaultCanObserverSee.Read(exINI, sectionAudioVisual, "SelectBox.DefaultCanObserverSee");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -205,16 +207,17 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_SelfHeal_Units_Offset)
 		.Process(this->Pips_SelfHeal_Buildings_Offset)
 		.Process(this->UseSelectBox)
-		.Process(this->SelectBox_SHP_Infantry)
-		.Process(this->SelectBox_PAL_Infantry)
+		.Process(this->SelectBox_Shape_Infantry)
+		.Process(this->SelectBox_Palette_Infantry)
 		.Process(this->SelectBox_Frame_Infantry)
 		.Process(this->SelectBox_DrawOffset_Infantry)
-		.Process(this->SelectBox_SHP_Unit)
-		.Process(this->SelectBox_PAL_Unit)
+		.Process(this->SelectBox_Shape_Unit)
+		.Process(this->SelectBox_Palette_Unit)
 		.Process(this->SelectBox_Frame_Unit)
 		.Process(this->SelectBox_DrawOffset_Unit)
 		.Process(this->SelectBox_DefaultTranslucentLevel)
-		.Process(this->SelectBox_DefaultShowEnemy)
+		.Process(this->SelectBox_DefaultCanSee)
+		.Process(this->SelectBox_DefaultCanObserverSee)
 		;
 }
 

@@ -798,9 +798,6 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 		RulesExt::Global()->SelectBox_Frame_Unit.Get();
 	Vector3D<int> selectboxFrame = pTypeExt->SelectBox_Frame.Get();
 	auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->SelectBox_TranslucentLevel.Get(RulesExt::Global()->SelectBox_DefaultTranslucentLevel.Get()));
-	auto const canSee = pThis->Owner->IsAlliedWith(HouseClass::Player)
-		|| HouseClass::IsPlayerObserver()
-		|| pTypeExt->SelectBox_ShowEnemy.Get(RulesExt::Global()->SelectBox_DefaultShowEnemy.Get());
 
 	if (selectboxFrame.X == -1)
 		selectboxFrame = glbSelectboxFrame;
@@ -822,17 +819,13 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 		vPos.Y = vLoc.Y + 6 + YOffset;
 	}
 
-	SHPStruct* SelectBoxSHP = pTypeExt->SHP_SelectBoxSHP;
+	SHPStruct* SelectBoxSHP = nullptr;
 	SHPStruct* GlbSelectBoxSHP = nullptr;
 
-	if (isInfantry)
-		GlbSelectBoxSHP = RulesExt::Global()->SHP_SelectBoxSHP_INF;
-	else
-		GlbSelectBoxSHP = RulesExt::Global()->SHP_SelectBoxSHP_UNIT;
 	if (SelectBoxSHP == nullptr)
 	{
 		char FilenameSHP[0x20];
-		strcpy_s(FilenameSHP, pTypeExt->SelectBox_SHP.data());
+		strcpy_s(FilenameSHP, pTypeExt->SelectBox_Shape.data());
 
 		if (strcmp(FilenameSHP, "") == 0)
 		{
@@ -840,34 +833,30 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 			{
 				char GlbFilenameSHP[0x20];
 				if (isInfantry)
-					strcpy_s(GlbFilenameSHP, RulesExt::Global()->SelectBox_SHP_Infantry.data());
+					strcpy_s(GlbFilenameSHP, RulesExt::Global()->SelectBox_Shape_Infantry.data());
 				else
-					strcpy_s(GlbFilenameSHP, RulesExt::Global()->SelectBox_SHP_Unit.data());
+					strcpy_s(GlbFilenameSHP, RulesExt::Global()->SelectBox_Shape_Unit.data());
 
 				if (strcmp(GlbFilenameSHP, "") == 0)
 					return;
 				else
-					SelectBoxSHP = pTypeExt->SHP_SelectBoxSHP = FileSystem::LoadSHPFile(GlbFilenameSHP);
+					SelectBoxSHP = FileSystem::LoadSHPFile(GlbFilenameSHP);
 			}
 			else
 				SelectBoxSHP = GlbSelectBoxSHP;
 		}
 		else
-			SelectBoxSHP = pTypeExt->SHP_SelectBoxSHP = FileSystem::LoadSHPFile(FilenameSHP);
+			SelectBoxSHP = FileSystem::LoadSHPFile(FilenameSHP);
 	}
 	if (SelectBoxSHP == nullptr) return;
 
-	ConvertClass* SelectBoxPAL = pTypeExt->SHP_SelectBoxPAL;
+	ConvertClass* SelectBoxPAL = nullptr;
 	ConvertClass* GlbSelectBoxPAL = nullptr;
 
-	if (isInfantry)
-		GlbSelectBoxPAL = RulesExt::Global()->SHP_SelectBoxPAL_INF;
-	else
-		GlbSelectBoxPAL = RulesExt::Global()->SHP_SelectBoxPAL_UNIT;
 	if (SelectBoxPAL == nullptr)
 	{
 		char FilenamePAL[0x20];
-		strcpy_s(FilenamePAL, pTypeExt->SelectBox_PAL.data());
+		strcpy_s(FilenamePAL, pTypeExt->SelectBox_Palette.data());
 
 		if (strcmp(FilenamePAL, "") == 0)
 		{
@@ -875,24 +864,24 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 			{
 				char GlbFilenamePAL[0x20];
 				if (isInfantry)
-					strcpy_s(GlbFilenamePAL, RulesExt::Global()->SelectBox_PAL_Infantry.data());
+					strcpy_s(GlbFilenamePAL, RulesExt::Global()->SelectBox_Palette_Infantry.data());
 				else
-					strcpy_s(GlbFilenamePAL, RulesExt::Global()->SelectBox_PAL_Unit.data());
+					strcpy_s(GlbFilenamePAL, RulesExt::Global()->SelectBox_Palette_Unit.data());
 
 				if (strcmp(GlbFilenamePAL, "") == 0)
 					return;
 				else
-					SelectBoxPAL = pTypeExt->SHP_SelectBoxPAL = FileSystem::LoadPALFile(GlbFilenamePAL, DSurface::Temp);
+					SelectBoxPAL = FileSystem::LoadPALFile(GlbFilenamePAL, DSurface::Temp);
 			}
 			else
 				SelectBoxPAL = GlbSelectBoxPAL;
 		}
 		else
-			SelectBoxPAL = pTypeExt->SHP_SelectBoxPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
+			SelectBoxPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
 	}
 	if (SelectBoxPAL == nullptr) return;
 
-	if (pThis->IsSelected && canSee)
+	if (pThis->IsSelected)
 	{
 		if (pThis->IsGreenHP())
 			frame = selectboxFrame.X;
