@@ -123,10 +123,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
 	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
 	this->Interceptor.Read(exINI, pSection, "Interceptor");
-	this->Interceptor_GuardRange.Read(exINI, pSection, "Interceptor.GuardRange");
-	this->Interceptor_MinimumGuardRange.Read(exINI, pSection, "Interceptor.MinimumGuardRange");
-	this->Interceptor_EliteGuardRange.Read(exINI, pSection, "Interceptor.EliteGuardRange");
-	this->Interceptor_EliteMinimumGuardRange.Read(exINI, pSection, "Interceptor.EliteMinimumGuardRange");
+	this->Interceptor_CanTargetHouses.Read(exINI, pSection, "Interceptor.CanTargetHouses");
+	this->Interceptor_GuardRange.Read(exINI, pSection, "Interceptor.%sGuardRange");
+	this->Interceptor_MinimumGuardRange.Read(exINI, pSection, "Interceptor.%sMinimumGuardRange");
+	this->Interceptor_Weapon.Read(exINI, pSection, "Interceptor.Weapon");
+	this->Interceptor_DeleteOnIntercept.Read(exINI, pSection, "Interceptor.DeleteOnIntercept");
+	this->Interceptor_WeaponOverride.Read(exINI, pSection, "Interceptor.WeaponOverride", true);
+	this->Interceptor_WeaponReplaceProjectile.Read(exINI, pSection, "Interceptor.WeaponReplaceProjectile");
+	this->Interceptor_WeaponCumulativeDamage.Read(exINI, pSection, "Interceptor.WeaponCumulativeDamage");
+	this->Interceptor_KeepIntact.Read(exINI, pSection, "Interceptor.KeepIntact");
 	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
 	this->Spawn_LimitedRange.Read(exINI, pSection, "Spawner.LimitRange");
 	this->Spawn_LimitedExtraRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
@@ -175,6 +180,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OpenTopped_RangeBonus.Read(exINI, pSection, "OpenTopped.RangeBonus");
 	this->OpenTopped_DamageMultiplier.Read(exINI, pSection, "OpenTopped.DamageMultiplier");
 	this->OpenTopped_WarpDistance.Read(exINI, pSection, "OpenTopped.WarpDistance");
+	this->OpenTopped_IgnoreRangefinding.Read(exINI, pSection, "OpenTopped.IgnoreRangefinding");
+	this->OpenTopped_AllowFiringIfDeactivated.Read(exINI, pSection, "OpenTopped.AllowFiringIfDeactivated");
 
 	this->AutoFire.Read(exINI, pSection, "AutoFire");
 	this->AutoFire_TargetSelf.Read(exINI, pSection, "AutoFire.TargetSelf");
@@ -195,6 +202,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SelfHealGainType.Read(exINI, pSection, "SelfHealGainType");
 	this->Passengers_SyncOwner.Read(exINI, pSection, "Passengers.SyncOwner");
 	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
+
+	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -261,10 +270,15 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LowSelectionPriority)
 		.Process(this->MindControlRangeLimit)
 		.Process(this->Interceptor)
+		.Process(this->Interceptor_CanTargetHouses)
 		.Process(this->Interceptor_GuardRange)
 		.Process(this->Interceptor_MinimumGuardRange)
-		.Process(this->Interceptor_EliteGuardRange)
-		.Process(this->Interceptor_EliteMinimumGuardRange)
+		.Process(this->Interceptor_Weapon)
+		.Process(this->Interceptor_DeleteOnIntercept)
+		.Process(this->Interceptor_WeaponOverride)
+		.Process(this->Interceptor_WeaponReplaceProjectile)
+		.Process(this->Interceptor_WeaponCumulativeDamage)
+		.Process(this->Interceptor_KeepIntact)
 		.Process(this->GroupAs)
 		.Process(this->RadarJamRadius)
 		.Process(this->InhibitorRange)
@@ -313,6 +327,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OpenTopped_RangeBonus)
 		.Process(this->OpenTopped_DamageMultiplier)
 		.Process(this->OpenTopped_WarpDistance)
+		.Process(this->OpenTopped_IgnoreRangefinding)
+		.Process(this->OpenTopped_AllowFiringIfDeactivated)
 		.Process(this->AutoFire)
 		.Process(this->AutoFire_TargetSelf)
 		.Process(this->NoSecondaryWeaponFallback)
@@ -339,6 +355,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteCrouchedWeaponBurstFLHs)
 		.Process(this->DeployedWeaponBurstFLHs)
 		.Process(this->EliteDeployedWeaponBurstFLHs)
+		.Process(this->InitialStrength_Cloning)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

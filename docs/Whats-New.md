@@ -307,6 +307,9 @@ New:
 - Superweapon launch on warhead detonation (by Trsdy)
 - Correct owner house for Warhead Anim/SplashList & Play Animation trigger animations (by Starkku)
 - Customizable FLH When Infantry Is Crouched Or Deployed (by FS-21)
+- Enhanced projectile interception logic, including projectile strength & armor types (by Starkku)
+- Initial Strength for Cloned Infantry (by FS-21)
+- OpenTopped transport rangefinding & deactivated state customizations (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -340,6 +343,8 @@ Phobos fixes:
 - Fixed `RemoveDisguise` not working on `PermaDisguise` infantry (by Starkku)
 - Fixed single-color laser (IsHouseColor, IsSingleColor, LaserTrails) glow falloff to match the vanilla appearance (by Starkku)
 - Fixed a potential cause of crashes concerning shield animations (such in conjunction with cloaking) (by Starkku)
+- Fixed interceptors intercepting projectiles fired by friendly objects if the said object died after firing the projectile (by Starkku)
+- Fixed interceptor weapons with `Inviso=true` projectiles detonating the projectile at wrong coordinates (by Starkku)
 </details>
 
 

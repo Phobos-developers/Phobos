@@ -111,6 +111,7 @@ This page lists all the individual contributions to the project by their author.
   - AI Aircraft docks fix
   - Shared Ammo logic
   - Customizable FLH When Infantry Is Prone Or Deployed
+  - Initial Strength for Cloned Infantry
 - **Starkku**:
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
@@ -146,6 +147,8 @@ This page lists all the individual contributions to the project by their author.
   - AI deploy script DeploysInto fix
   - Passable & buildable-upon TerrainTypes
   - Automatic passenger owner change toggle
+  - Interceptor improvements
+  - OpenTopped transport rangefinding & deactivated state customizations
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
