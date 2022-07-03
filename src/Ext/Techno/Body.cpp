@@ -799,6 +799,55 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 
 void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry)
 {
+	const auto canHouse = pTypeExt->SelectBox_CanSee.Get(RulesExt::Global()->SelectBox_DefaultCanSee);
+	bool canSee = false;
+
+	if (HouseClass::IsPlayerObserver())
+	{
+		if (pTypeExt->SelectBox_CanObserverSee.Get(RulesExt::Global()->SelectBox_DefaultCanObserverSee))
+		{
+			canSee = true;
+		}
+	}
+	else
+	{
+		switch (canHouse)
+		{
+		case AffectedHouse::All:
+			canSee = true;
+			break;
+
+		case AffectedHouse::Owner:
+			if (pThis->Owner->ControlledByPlayer())
+				canSee = true;
+			break;
+
+		case AffectedHouse::NotOwner:
+			if (!pThis->Owner->ControlledByPlayer())
+				canSee = true;
+			break;
+
+		case AffectedHouse::Allies:
+		case AffectedHouse::Team:
+			if (pThis->Owner->IsAlliedWith(HouseClass::Player))
+				canSee = true;
+			break;
+
+		case AffectedHouse::Enemies:
+		case AffectedHouse::NotAllies:
+			if (!pThis->Owner->IsAlliedWith(HouseClass::Player))
+				canSee = true;
+			break;
+
+		case AffectedHouse::None:
+		default:
+			break;
+		}
+	}
+
+	if (!canSee)
+		return;
+
 	Point2D vPos = { 0, 0 };
 	Point2D vLoc = *pLocation;
 	Point2D vOfs = { 0, 0 };
@@ -829,67 +878,13 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 		vPos.Y = vLoc.Y + 6 + YOffset;
 	}
 
-	SHPStruct* SelectBoxSHP = nullptr;
-	SHPStruct* GlbSelectBoxSHP = nullptr;
+	SHPStruct* SelectBoxShape = pTypeExt->Shape_SelectBox;
+	if (!SelectBoxShape)
+		return;
 
-	if (SelectBoxSHP == nullptr)
-	{
-		char FilenameSHP[0x20];
-		strcpy_s(FilenameSHP, pTypeExt->SelectBox_Shape.data());
-
-		if (strcmp(FilenameSHP, "") == 0)
-		{
-			if (GlbSelectBoxSHP == nullptr)
-			{
-				char GlbFilenameSHP[0x20];
-				if (isInfantry)
-					strcpy_s(GlbFilenameSHP, RulesExt::Global()->SelectBox_Shape_Infantry.data());
-				else
-					strcpy_s(GlbFilenameSHP, RulesExt::Global()->SelectBox_Shape_Unit.data());
-
-				if (strcmp(GlbFilenameSHP, "") == 0)
-					return;
-				else
-					SelectBoxSHP = FileSystem::LoadSHPFile(GlbFilenameSHP);
-			}
-			else
-				SelectBoxSHP = GlbSelectBoxSHP;
-		}
-		else
-			SelectBoxSHP = FileSystem::LoadSHPFile(FilenameSHP);
-	}
-	if (SelectBoxSHP == nullptr) return;
-
-	ConvertClass* SelectBoxPAL = nullptr;
-	ConvertClass* GlbSelectBoxPAL = nullptr;
-
-	if (SelectBoxPAL == nullptr)
-	{
-		char FilenamePAL[0x20];
-		strcpy_s(FilenamePAL, pTypeExt->SelectBox_Palette.data());
-
-		if (strcmp(FilenamePAL, "") == 0)
-		{
-			if (GlbSelectBoxPAL == nullptr)
-			{
-				char GlbFilenamePAL[0x20];
-				if (isInfantry)
-					strcpy_s(GlbFilenamePAL, RulesExt::Global()->SelectBox_Palette_Infantry.data());
-				else
-					strcpy_s(GlbFilenamePAL, RulesExt::Global()->SelectBox_Palette_Unit.data());
-
-				if (strcmp(GlbFilenamePAL, "") == 0)
-					return;
-				else
-					SelectBoxPAL = FileSystem::LoadPALFile(GlbFilenamePAL, DSurface::Temp);
-			}
-			else
-				SelectBoxPAL = GlbSelectBoxPAL;
-		}
-		else
-			SelectBoxPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
-	}
-	if (SelectBoxPAL == nullptr) return;
+	ConvertClass* SelectBoxPalette = pTypeExt->Palette_SelectBox;
+	if (!SelectBoxPalette)
+		return;
 
 	if (pThis->IsSelected)
 	{
@@ -900,52 +895,8 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 		else
 			frame = selectboxFrame.Z;
 
-		DSurface::Temp->DrawSHP(SelectBoxPAL, SelectBoxSHP,
+		DSurface::Temp->DrawSHP(SelectBoxPalette, SelectBoxShape,
 			frame, &vPos, pBound, nFlag, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-	}
-}
-
-bool TechnoExt::CheckIfCanFireAt(TechnoClass* pThis, AbstractClass* pTarget)
-{
-	const int wpnIdx = pThis->SelectWeapon(pTarget);
-	const FireError fErr = pThis->GetFireError(pTarget, wpnIdx, true);
-	if (   fErr != FireError::ILLEGAL
-		&& fErr != FireError::CANT
-		&& fErr != FireError::MOVING
-		&& fErr != FireError::RANGE)
-	{
-		return pThis->IsCloseEnough(pTarget, wpnIdx);
-	}
-	else
-		return false;
-}
-
-void TechnoExt::ForceJumpjetTurnToTarget(TechnoClass* pThis)
-{
-	const auto pType = pThis->GetTechnoType();
-	if (pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet && pThis->IsInAir()
-		&& pThis->WhatAmI() == AbstractType::Unit && !pType->TurretSpins)
-	{
-		const auto pFoot = abstract_cast<UnitClass*>(pThis);
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-		if (pTypeExt && pTypeExt->JumpjetTurnToTarget.Get(RulesExt::Global()->JumpjetTurnToTarget)
-			&& pFoot && pFoot->GetCurrentSpeed() == 0)
-		{
-			if (const auto pTarget = pThis->Target)
-			{
-				const auto pLoco = static_cast<JumpjetLocomotionClass*>(pFoot->Locomotor.get());
-				if (pLoco && !pLoco->LocomotionFacing.in_motion() && TechnoExt::CheckIfCanFireAt(pThis, pTarget))
-				{
-					const CoordStruct source = pThis->Location;
-					const CoordStruct target = pTarget->GetCoords();
-					const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
-					
-					if (pThis->GetRealFacing().value32() != tgtDir.value32())
-						pLoco->LocomotionFacing.turn(tgtDir);
-				}
-			}
-		}
 	}
 }
 

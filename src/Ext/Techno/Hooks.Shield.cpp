@@ -203,54 +203,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	if (Phobos::Config::EnableSelectBox)
 	{
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		const auto useSelectBox = pTypeExt->UseSelectBox.Get(RulesExt::Global()->UseSelectBox);
-		const auto canHouse = pTypeExt->SelectBox_CanSee.Get(RulesExt::Global()->SelectBox_DefaultCanSee);
-		bool canSee = false;
-
-		if (HouseClass::IsPlayerObserver())
-		{
-			if (pTypeExt->SelectBox_CanObserverSee.Get(RulesExt::Global()->SelectBox_DefaultCanObserverSee))
-			{
-				canSee = true;
-			}
-		}
-		else
-		{
-			switch (canHouse)
-			{
-			case AffectedHouse::All:
-				canSee = true;
-				break;
-
-			case AffectedHouse::Owner:
-				if (pThis->Owner->ControlledByPlayer())
-					canSee = true;
-				break;
-
-			case AffectedHouse::NotOwner:
-				if (!pThis->Owner->ControlledByPlayer())
-					canSee = true;
-				break;
-
-			case AffectedHouse::Allies:
-			case AffectedHouse::Team:
-				if (pThis->Owner->IsAlliedWith(HouseClass::Player))
-					canSee = true;
-				break;
-
-			case AffectedHouse::Enemies:
-			case AffectedHouse::NotAllies:
-				if (!pThis->Owner->IsAlliedWith(HouseClass::Player))
-					canSee = true;
-				break;
-
-			case AffectedHouse::None:
-			default:
-				break;
-			}
-		}
-
-		if (useSelectBox && canSee)
+		if (pTypeExt->UseSelectBox.Get(RulesExt::Global()->UseSelectBox))
 		{
 			const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
 			if (pThis->WhatAmI() == AbstractType::Infantry)

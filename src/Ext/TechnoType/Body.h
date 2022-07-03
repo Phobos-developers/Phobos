@@ -144,6 +144,9 @@ public:
 		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
+		SHPStruct* Shape_SelectBox;
+		ConvertClass* Palette_SelectBox;
+
 		Nullable<bool> UseSelectBox;
 		PhobosFixedString<32U> SelectBox_Shape;
 		PhobosFixedString<32U> SelectBox_Palette;
@@ -231,7 +234,9 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
-			, SelfHealGainType()
+			, SelfHealGainType {}
+			, Shape_SelectBox { nullptr }
+			, Palette_SelectBox { nullptr }
 			, UseSelectBox {}
 			, SelectBox_Shape {}
 			, SelectBox_Palette {}

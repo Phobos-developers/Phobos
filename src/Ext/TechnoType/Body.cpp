@@ -263,7 +263,22 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SelectBox_TranslucentLevel.Read(exINI, pSection, "SelectBox.TranslucentLevel");
 	this->SelectBox_CanSee.Read(exINI, pSection, "SelectBox.CanSee");
 	this->SelectBox_CanObserverSee.Read(exINI, pSection, "SelectBox.CanObserverSee");
-	
+
+	{
+		char shapeName[0x20];
+		strcpy(shapeName, strcmp(this->SelectBox_Shape, "") ? this->SelectBox_Shape : (pThis->WhatAmI() == AbstractType::InfantryType ?
+			RulesExt::Global()->SelectBox_Shape_Infantry : RulesExt::Global()->SelectBox_Shape_Unit));
+		_strlwr_s(shapeName);
+		this->Shape_SelectBox = FileSystem::LoadSHPFile(shapeName);
+	}
+	{
+		char paletteName[0x20];
+		strcpy(paletteName, strcmp(this->SelectBox_Palette, "") ? this->SelectBox_Palette : (pThis->WhatAmI() == AbstractType::InfantryType ?
+			RulesExt::Global()->SelectBox_Palette_Infantry : RulesExt::Global()->SelectBox_Palette_Unit));
+		_strlwr_s(paletteName);
+		this->Palette_SelectBox = FileSystem::LoadPALFile(paletteName, DSurface::Temp);
+	}
+
 	this->PronePrimaryFireFLH.Read(exArtINI, pArtSection, "PronePrimaryFireFLH");
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
