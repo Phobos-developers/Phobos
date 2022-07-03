@@ -18,9 +18,9 @@
 	and rewriting some in order to make this working perfecly
 	Credit : Ares Team , for unused/uncommented source of Hook.RadSite
 						,RulesData_LoadBeforeTypeData Hook
-			 Alex-B : GetRadSiteAt ,Helper that used at FootClass_AI & BuildingClass_AI
-					  Radiate , Uncommented
-			 me(Otamaa) adding some more stuffs and rewriting hook that cause crash
+			Alex-B : GetRadSiteAt ,Helper that used at FootClass_AI & BuildingClass_AI
+					Radiate , Uncommented
+			me(Otamaa) adding some more stuffs and rewriting hook that cause crash
 
 */
 
@@ -51,7 +51,7 @@ DEFINE_HOOK(0x46ADE0, BulletClass_ApplyRadiation_UnUsed, 0x5)
 	return 0x46AE5E;
 }
 
-// Fix for desolator 
+// Fix for desolator
 DEFINE_HOOK(0x5213E3, InfantryClass_AIDeployment_CheckRad, 0x4)
 {
 	GET(InfantryClass*, pInf, ESI);
@@ -89,7 +89,7 @@ DEFINE_HOOK(0x5213E3, InfantryClass_AIDeployment_CheckRad, 0x4)
 		0x5213F4 : 0x521484;
 }
 
-// Fix for desolator unable to fire his deploy weapon when cloaked 
+// Fix for desolator unable to fire his deploy weapon when cloaked
 DEFINE_HOOK(0x521478, InfantryClass_AIDeployment_FireNotOKCloakFix, 0x4)
 {
 	GET(InfantryClass* const, pThis, ESI);
@@ -102,7 +102,7 @@ DEFINE_HOOK(0x521478, InfantryClass_AIDeployment_FireNotOKCloakFix, 0x4)
 		&& (pThis->CloakState == CloakState::Cloaked || pThis->CloakState == CloakState::Cloaking))
 	{
 		// FYI this are hack to immedietely stop the Cloaking
-		// since this function is always failing to decloak and set target when cell is occupied 
+		// since this function is always failing to decloak and set target when cell is occupied
 		// something is wrong somewhere  # Otamaa
 		auto nDeployFrame = pThis->Type->Sequence->GetSequence(Sequence::DeployedFire).CountFrames;
 		pThis->CloakDelayTimer.Start(nDeployFrame);
@@ -294,7 +294,7 @@ DEFINE_HOOK(0x65B8B9, RadSiteClass_AI_LightDelay, 0x6)
 	return 0x65B8BF;
 }
 
-// Additional Hook below 
+// Additional Hook below
 DEFINE_HOOK(0x65BB67, RadSite_Deactivate, 0x6)
 {
 	GET_RADSITE(ECX, GetLevelDelay());

@@ -209,7 +209,7 @@ This page lists the history of changes across stable Phobos releases and also al
   570=Global variable or by global variable,27,0,1,[LONG DESC]
   571=Global variable and by global variable,27,0,1,[LONG DESC]
 
-  [ScriptParams] 
+  [ScriptParams]
   22=Local variables,-1
   23=Global variables,-2
   24=Local variables,-3
@@ -510,4 +510,3 @@ Vanilla fixes:
 - Sidebar tooltips now can go over sidebar bounds (by Belonit)
 - Lifted stupidly small limit for tooltip character amount (by Belonit)
 </details>
-
