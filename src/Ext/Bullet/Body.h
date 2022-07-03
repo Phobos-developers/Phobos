@@ -23,7 +23,7 @@ public:
 		InterceptedStatus InterceptedStatus;
 		bool DetonateOnInterception;
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
-		
+
 		PhobosTrajectory* Trajectory;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
