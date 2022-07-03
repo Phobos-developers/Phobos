@@ -66,8 +66,29 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allow use of `Foundation=0x0` on TerrainTypes without crashing for similar results as for buildings.
 - Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to some Ares-introduced Warhead effects like EMP.
 - `OpenTopped` transports now take `OpenTransportWeapon` setting of passengers into consideration when determining weapon range used for threat scanning and approaching targets.
+- Trailer animations now inherit the owner of the object (animation, projectile or aircraft) they are attached to.
 
 ## Animations
+
+### Animation weapon and damage settings
+
+- `Weapon` can be set to a WeaponType, to create a projectile and immediately detonate it instead of simply dealing `Damage` by `Warhead`. This allows weapon effects to be applied.
+- `Damage.Delay` determines delay between two applications of `Damage`. Requires `Damage` to be set to 1.0 or above. Value of 0 disables the delay. Keep in mind that this is measured in animation frames, not game frames. Depending on `Rate`, animation may or may not advance animation frames on every game frame.
+- `Damage.DealtByInvoker`, if set to true, makes any `Damage` dealt to be considered as coming from the animation's invoker (f.ex, firer of the weapon if it is Warhead `AnimList/SplashList` animation, the destroyed vehicle if it is `DestroyAnim` animation or the object the animation is attached to). Does not affect which house the `Damage` dealt by `Warhead` is dealt by.
+- `Damage.ApplyOncePerLoop`, if set to true, makes `Damage` be dealt only once per animation loop (on single loop animations, only once, period) instead of on every frame or intervals defined by `Damage.Delay`. The frame on which it is dealt is determined by `Damage.Delay`, defaulting to after the first animation frame.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                     ; AnimationType
+Weapon=                        ; WeaponType
+Damage.Delay=0                 ; integer, animation frames
+Damage.DealtByInvoker=false    ; boolean
+Damage.ApplyOncePerLoop=false  ; boolean
+```
+
+```{note}
+`Weapon` and `Damage.Delay`, beyond the other additions, should function similarly to the equivalent features introduced by Ares and take precedence over them if Phobos is used together with Ares.
+```
 
 ### Attached animation position customization
 
@@ -369,6 +390,17 @@ DeployingAnim.UseUnitDrawer=true       ; boolean
 
 ## Warheads
 
+### Allowing damage dealt to firer
+
+- You can now allow warhead to deal damage (and apply damage-adjacent effects such as `KillDriver` and `DisableWeapons/Sonar/Flash.Duration` *(Ares features)*) on the object that is considered as the firer of the Warhead even if it does not have `DamageSelf=true`.
+  - Note that effect of `Psychedelic=true`, despite being tied to damage will still fail to apply on the firer as it does not affect any objects belonging to same house as the firer, including itself.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]            ; WarheadType
+AllowDamageOnSelf=false  ; boolean
+```
+
 ### Customizing decloak on damaging targets
 
 - You can now specify whether or not the warhead decloaks objects that are damaged by the warhead.
@@ -401,18 +433,6 @@ In `rulesmd.ini`:
 [SOMEWEAPON]          ; WeaponType
 DiskLaser.Radius=38.2 ; floating point value
                       ; 38.2 is roughly the default saucer disk radius
-```
-
-### Detaching weapon from owner TechnoType
-
-- You can now control if weapon is detached from the TechnoType that fired it. This results in the weapon / warhead being able to damage the TechnoType itself even if it does not have `DamageSelf=true` set, but also treats it as if owned by no house or object, meaning any ownership-based checks like `AffectsAllies` do not function as expected and no experience is awarded.
-  - The effect of this is inherited through `AirburstWeapon` and `ShrapnelWeapon`.
-  - This does not affect projectile image or functionality or `FirersPalette` on initially fired weapon, but `FirersPalette` will not function for any weapons inheriting the effect.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPONTYPE]         ; WeaponType
-DetachedFromOwner=false  ; boolean
 ```
 
 ### Single-color lasers
