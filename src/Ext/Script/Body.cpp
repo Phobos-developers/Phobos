@@ -298,7 +298,7 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 	// This action finished
 	if (pTeam->CurrentScript->HasNextMission())
 		++pTeam->CurrentScript->CurrentMission;
-	
+
 	pTeam->StepCompleted = true;
 }
 
@@ -1278,9 +1278,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		if (!pTechno->Owner->IsNeutral()
 			&& (pTechnoType->WhatAmI() == AbstractType::BuildingType
 				|| (pTypeBuilding
-					&& !(pTypeBuilding->Artillary 
-						|| pTypeBuilding->TickTank 
-						|| pTypeBuilding->ICBMLauncher 
+					&& !(pTypeBuilding->Artillary
+						|| pTypeBuilding->TickTank
+						|| pTypeBuilding->ICBMLauncher
 						|| pTypeBuilding->SensorArray))))
 		{
 			return true;
@@ -1509,8 +1509,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	case 14:
 		// Aircraft and Air Unit
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTechnoType->WhatAmI() == AbstractType::AircraftType 
-				|| pTechnoType->JumpJet 
+			&& (pTechnoType->WhatAmI() == AbstractType::AircraftType
+				|| pTechnoType->JumpJet
 				|| pTechno->IsInAir()))
 		{
 			return true;
@@ -1521,7 +1521,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	case 15:
 		// Naval Unit & Structure
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTechnoType->Naval 
+			&& (pTechnoType->Naval
 				|| pTechno->GetCell()->LandType == LandType::Water))
 		{
 			return true;
@@ -1615,7 +1615,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		// is Aircraft Factory
 		if (!pTechno->Owner->IsNeutral()
 			&& (pTechnoType->WhatAmI() == AbstractType::BuildingType
-				&& (pTypeBuilding->Factory == AbstractType::AircraftType 
+				&& (pTypeBuilding->Factory == AbstractType::AircraftType
 					|| pTypeBuilding->Helipad)))
 		{
 			return true;
@@ -1723,7 +1723,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		pTypeBuilding = abstract_cast<BuildingTypeClass*>(pTechnoType);
 
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTypeBuilding && (pTypeBuilding->GapGenerator 
+			&& (pTypeBuilding && (pTypeBuilding->GapGenerator
 				|| pTypeBuilding->CloakGenerator)))
 		{
 			return true;
@@ -1735,8 +1735,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		// Radar Jammer
 		pTypeTechnoExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
-		if (!pTechno->Owner->IsNeutral() 
-			&& (pTypeTechnoExt 
+		if (!pTechno->Owner->IsNeutral()
+			&& (pTypeTechnoExt
 				&& (pTypeTechnoExt->RadarJamRadius > 0)))
 			return true;
 
@@ -1747,7 +1747,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		pTypeTechnoExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTypeTechnoExt 
+			&& (pTypeTechnoExt
 				&& pTypeTechnoExt->InhibitorRange.isset()))
 		{
 			return true;
@@ -1836,7 +1836,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		if (!pTechno->Owner->IsNeutral()
 			&& pTypeBuilding
 			&& !pTypeBuilding->IsBaseDefense
-			&& !(pTypeBuilding->Artillary 
+			&& !(pTypeBuilding->Artillary
 				|| pTypeBuilding->TickTank
 				|| pTypeBuilding->ICBMLauncher
 				|| pTypeBuilding->SensorArray))
