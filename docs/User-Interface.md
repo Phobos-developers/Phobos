@@ -27,7 +27,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 
 ### Hide health bars
 
-![image](_static/images/healthbar.hide-01.png)  
+![image](_static/images/healthbar.hide-01.png)
 *Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
 
 - Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
@@ -40,7 +40,7 @@ HealthBar.Hide=false  ; boolean
 
 ### Low priority for box selection
 
-![smartvesters](_static/images/lowpriority-01.gif)  
+![smartvesters](_static/images/lowpriority-01.gif)
 *Harvesters not selected together with battle units in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
 
 - You can now set lower priority for an ingame object (currently has effect on units mostly), which means it will be excluded from box selection if there's at least one normal priority unit in the box. Otherwise it would be selected as normal. Works with box+type selecting (type select hotkey + drag) and regular box selecting. Box shift-selection adds low-priority units to the group if there are no normal priority units among the appended ones.
@@ -61,7 +61,7 @@ PrioritySelectionFiltering=true  ; boolean
 
 ### Placement preview
 
-![placepreview](_static/images/placepreview.png)  
+![placepreview](_static/images/placepreview.png)
 *Building placement preview using 50% translucency in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
 - Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `BuildingPlacementPreview.DefaultTranslucentLevel` and then further customized for each building with `PlacementPreview.TranslucentLevel`.
@@ -80,7 +80,7 @@ PlacementPreview.Show=                              ; boolean, defaults to [Phob
 PlacementPreview.Shape=                             ; filename - including the .shp extension. If not set uses building's artmd.ini Buildup SHP (based on Building's Image)
 PlacementPreview.ShapeFrame=                        ; integer, zero-based frame index used for displaying the preview
 PlacementPreview.Offset=0,-15,1                     ; integer, expressed in X,Y,Z used to alter position preview
-PlacementPreview.Remap=true                         ; boolean, does this preview use player remap colors 
+PlacementPreview.Remap=true                         ; boolean, does this preview use player remap colors
 PlacementPreview.Palette=                           ; filename - including the .pal extension. This option is not used if PlacementPreview.Remap is set to true
 PlacementPreview.TranslucentLevel=                  ; integer, defaults to [AudioVisual]->BuildingPlacementPreview.DefaultTranslucentLevel
 ```
@@ -147,12 +147,12 @@ CameoPriority=0        ; integer
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension 
+MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 ```
 
 ### Harvester counter
 
-![image](_static/images/harvestercounter-01.gif)  
+![image](_static/images/harvestercounter-01.gif)
 *Harvester Counter in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - An additional counter for your active/total harvesters can be added near the credits indicator.
@@ -175,7 +175,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                    ; TechnoType
 Harvester.Counted=                              ; boolean
-                                                
+
 [SOMESIDE]                                      ; Side
 Sidebar.HarvesterCounter.Offset=0,0             ; X,Y, pixels relative to default
 Sidebar.HarvesterCounter.ColorYellow=255,255,0  ; integer - R,G,B
@@ -188,7 +188,7 @@ If you use the vanilla font in your mod, you can use {download}`the improved fon
 
 ### Power delta counter
 
-![image](_static/images/powerdelta-01.gif)  
+![image](_static/images/powerdelta-01.gif)
 *Power delta Counter in [Assault Amerika](https://www.moddb.com/mods/assault-amerika)*
 
 - An additional counter for your power delta (surplus) can be added near the credits indicator.
@@ -222,7 +222,7 @@ If you use the vanilla font in your mod, you can use {download}`the improved fon
 
 ### Producing Progress
 
-![image](_static/images/producing-progress-01.gif)  
+![image](_static/images/producing-progress-01.gif)
 *Producing Progress bars in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - You can now know your factories' status via sidebar!
@@ -252,7 +252,7 @@ Sidebar.GDIPositions=  ; boolean
 
 ## Tooltips
 
-![image](_static/images/tooltips-01.png)  
+![image](_static/images/tooltips-01.png)
 *Extended tooltips used in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
 
 - Sidebar tooltips can now display extended information about the TechnoType/SWType when hovered over it's cameo. In addition the low character limit is lifted when the feature is enabled via the corresponding tag, allowing for 1024 character long tooltips.

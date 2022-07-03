@@ -102,7 +102,7 @@ DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
 
 				if (strength <= 0)
 					strength = 1;
-				
+
 				pFoot->Health = strength;
 				pFoot->EstimatedHealth = strength;
 			}
@@ -211,9 +211,9 @@ DEFINE_HOOK(0x518505, InfantryClass_TakeDamage_NotHuman, 0x4)
 // Author: Otamaa
 DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 {
-  GET(InfantryClass*, pThis, ESI);
-  R->EDI(pThis->Type->DeployFireWeapon == -1  ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
-  return 0x5223B9;
+	GET(InfantryClass*, pThis, ESI);
+	R->EDI(pThis->Type->DeployFireWeapon == -1  ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
+	return 0x5223B9;
 }
 
 // Customizable OpenTopped Properties
