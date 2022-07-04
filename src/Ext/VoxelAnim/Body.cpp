@@ -12,7 +12,7 @@ void VoxelAnimExt::InitializeLaserTrails(VoxelAnimClass* pThis)
 
 	if (pThisExt->LaserTrails.size())
 		return;
-	
+
 	for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
 	{
 		if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())

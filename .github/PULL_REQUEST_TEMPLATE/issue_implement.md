@@ -5,7 +5,7 @@ title: "[Issue implementation] Your Pull Request title here"
 assignees: ''
 ---
 <!--
-  Fill in the placeholders below. Delete any headings and placeholders that you do not fill in. 
+  Fill in the placeholders below. Delete any headings and placeholders that you do not fill in.
 -->
 ### Issue
 <!-- Your Pull Request will close/resolve which issue -->
