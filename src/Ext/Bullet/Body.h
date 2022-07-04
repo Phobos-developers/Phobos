@@ -18,16 +18,20 @@ public:
 	{
 	public:
 		HouseClass* FirerHouse;
-		bool Intercepted;
-		bool ShouldIntercept;
+		int CurrentStrength;
+		bool IsInterceptor;
+		InterceptedStatus InterceptedStatus;
+		bool DetonateOnInterception;
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
-		
+
 		PhobosTrajectory* Trajectory;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
 			, FirerHouse { nullptr }
-			, Intercepted { false }
-			, ShouldIntercept { false }
+			, CurrentStrength { 0 }
+			, IsInterceptor { false }
+			, InterceptedStatus { InterceptedStatus::None }
+			, DetonateOnInterception { true }
 			, LaserTrails {}
 			, Trajectory { nullptr }
 		{ }
@@ -53,6 +57,7 @@ public:
 	};
 
 	static void InitializeLaserTrails(BulletClass* pThis);
+	static void InterceptBullet(BulletClass* pThis, TechnoClass* pSource, WeaponTypeClass* pWeapon);
 
 	static ExtContainer ExtMap;
 };

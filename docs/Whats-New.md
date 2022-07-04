@@ -209,7 +209,7 @@ This page lists the history of changes across stable Phobos releases and also al
   570=Global variable or by global variable,27,0,1,[LONG DESC]
   571=Global variable and by global variable,27,0,1,[LONG DESC]
 
-  [ScriptParams] 
+  [ScriptParams]
   22=Local variables,-1
   23=Global variables,-2
   24=Local variables,-3
@@ -293,7 +293,6 @@ New:
 - Additional critical hit logic customizations (by Starkku)
 - Laser trails for VoxelAnims (by Otamaa)
 - Local warhead screen shaking (by Starkku)
-- Weapon owner detachment (by Starkku)
 - Feedback weapon (by Starkku)
 - TerrainType & ore minimap color customization (by Starkku)
 - Single-color weapon lasers (by Starkku)
@@ -308,6 +307,12 @@ New:
 - Superweapon launch on warhead detonation (by Trsdy)
 - Correct owner house for Warhead Anim/SplashList & Play Animation trigger animations (by Starkku)
 - Customizable FLH When Infantry Is Crouched Or Deployed (by FS-21)
+- Enhanced projectile interception logic, including projectile strength & armor types (by Starkku)
+- Initial Strength for Cloned Infantry (by FS-21)
+- OpenTopped transport rangefinding & deactivated state customizations (by Starkku)
+- Animation damage / weapon improvements (by Starkku)
+- Warhead self-damaging toggle (by Starkku)
+- Trailer animations inheriting owner (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -342,6 +347,8 @@ Phobos fixes:
 - Fixed `RemoveDisguise` not working on `PermaDisguise` infantry (by Starkku)
 - Fixed single-color laser (IsHouseColor, IsSingleColor, LaserTrails) glow falloff to match the vanilla appearance (by Starkku)
 - Fixed a potential cause of crashes concerning shield animations (such in conjunction with cloaking) (by Starkku)
+- Fixed interceptors intercepting projectiles fired by friendly objects if the said object died after firing the projectile (by Starkku)
+- Fixed interceptor weapons with `Inviso=true` projectiles detonating the projectile at wrong coordinates (by Starkku)
 </details>
 
 
@@ -505,4 +512,3 @@ Vanilla fixes:
 - Sidebar tooltips now can go over sidebar bounds (by Belonit)
 - Lifted stupidly small limit for tooltip character amount (by Belonit)
 </details>
-
