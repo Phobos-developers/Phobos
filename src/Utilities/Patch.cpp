@@ -25,12 +25,12 @@ int GetSection(char* sectionName, void** pVirtualAddress)
 void Patch::Apply()
 {
 	void* buffer;
-	const int len = GetSection(PATCH_SECTION_NAME, &buffer);
-	int offset = 0;
+	int len = GetSection(PATCH_SECTION_NAME, &buffer);
 
+	int offset = 0;
 	while(offset < len)
 	{
-		const auto pItem = (patch_decl*)((DWORD)buffer + offset);
+		auto pItem = (patch_decl*)((DWORD)buffer + offset);
 		if (pItem->offset == 0)
 			return;
 
@@ -41,7 +41,7 @@ void Patch::Apply()
 
 void Patch::Apply(const patch_decl* pItem)
 {
-	void* pAddress = (void*)pItem->offset;
+	auto pAddress = (void*)pItem->offset;
 
 	DWORD protect_flag;
 	VirtualProtect(pAddress, pItem->size, PAGE_EXECUTE_READWRITE, &protect_flag);

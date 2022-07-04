@@ -67,6 +67,14 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		{
 			Phobos::AppIconPath = ppArgs[++i];
 		}
+		// BlitTranslucencyFix
+		if (_stricmp(pArg, "-BlittersFix") == 0)
+		{
+			Patch::Apply(VARIABLE_PATCH::Blit25TranslucencyFix);
+			Patch::Apply(VARIABLE_PATCH::Blit50TranslucencyFix1);
+			Patch::Apply(VARIABLE_PATCH::Blit50TranslucencyFix2);
+			Patch::Apply(VARIABLE_PATCH::Blit75TranslucencyFix);
+	}
 
 #ifndef IS_RELEASE_VER
 		if (_stricmp(pArg, "-b=" _STR(BUILD_NUMBER)) == 0)
@@ -170,7 +178,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
 	Phobos::Config::EnableBuildingPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowBuildingPlacementPreview",false);
 
-	CCINIClass* pINI_UIMD = Phobos::OpenConfig((const char*)0x827DC8);    // UIMD.INI
+	CCINIClass* pINI_UIMD = Phobos::OpenConfig("uimd.ini");
 
 	// LoadingScreen
 	{
@@ -225,19 +233,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	Phobos::CloseConfig(pINI_UIMD);
 
-	CCINIClass* pINI_RULESMD = Phobos::OpenConfig((const char*)0x826260);    // RULESMD.INI
-	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool("General", "ArtImageSwap", false);
-
-	// BlitTranslucencyFix
-	if (pINI_RULESMD->ReadBool("General", "FixTransparencyBlitters", true))
-	{
-		Patch::Apply(VARIABLE_PATCH::Blit25TranslucencyFix);
-		Patch::Apply(VARIABLE_PATCH::Blit50TranslucencyFix1);
-		Patch::Apply(VARIABLE_PATCH::Blit50TranslucencyFix2);
-		Patch::Apply(VARIABLE_PATCH::Blit75TranslucencyFix);
-	}
-
-	Phobos::CloseConfig(pINI_RULESMD);
+	CCINIClass* pINI = Phobos::OpenConfig((const char*)0x826260);
+	Phobos::Config::ArtImageSwap = pINI->ReadBool("General", "ArtImageSwap", false);
+	Phobos::CloseConfig(pINI);
 
 	return 0;
 }
