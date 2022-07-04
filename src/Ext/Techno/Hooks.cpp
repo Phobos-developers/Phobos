@@ -381,16 +381,16 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 
 		if (pTechno->WhatAmI() == AbstractType::Infantry)
 		{
-			InfantryClass* pInf = abstract_cast<InfantryClass*>(pTechno);
-			InfantryTypeClass* pInfType = abstract_cast<InfantryTypeClass*>(pTechno->GetTechnoType());
+			auto const pInf = abstract_cast<InfantryClass*>(pTechno);
+			auto const pInfType = abstract_cast<InfantryTypeClass*>(pTechno->GetTechnoType());
 
-			if (pInfType->Cyborg && pInf->Crawling == true)
+			if (pInfType->Cyborg && pInf->Crawling)
 				pTechnoExt->IsLeggedCyborg = true;
 		}
 
 		if (pTechno->Transporter)
 		{
-			if (auto pTransportTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->Transporter->GetTechnoType()))
+			if (auto const pTransportTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->Transporter->GetTechnoType()))
 			{
 				if (pTransportTypeExt->CanRepairCyborgLegs)
 					pTechnoExt->IsLeggedCyborg = false;
@@ -404,9 +404,9 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 DEFINE_HOOK(0x518047, TechnoClass_Destroyed_IsCyborg, 0x5)
 {
 	GET(InfantryClass*, pInf, ESI);
-	GET(DamageState, ds, EAX);
+	GET(DamageState, eDamageState, EAX);
 
-	if (pInf && ds != DamageState::PostMortem)
+	if (pInf && eDamageState != DamageState::PostMortem)
 	{
 		if (pInf->Type->Cyborg)
 		{
