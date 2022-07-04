@@ -58,6 +58,7 @@ enum class PhobosScripts : unsigned int
 	GatherAroundLeader = 10102,
 	LoadIntoTransports = 10103,
 	ChronoshiftToEnemyBase = 10104,
+	JumpBackToPreviousScript = 134,
 
 	// Range 12000-12999 are suplementary/setup pre-actions
 	WaitIfNoTarget = 12000,
@@ -206,6 +207,7 @@ public:
 	static FootClass* FindTheTeamLeader(TeamClass* pTeam);
 	static void Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine, int count);
 	static void Stop_ForceJump_Countdown(TeamClass* pTeam);
+	static void JumpBackToPreviousScript(TeamClass* pTeam);
 	static void ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance);
 
 	static bool IsExtVariableAction(int action);
@@ -216,7 +218,6 @@ public:
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
 	static bool IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed);
 	static void Log(const char* pFormat, ...);
-
 	// Mission.Attack.cpp
 	static void Mission_Attack(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType, int IdxAITargetTypeItem);
 	static TechnoClass* GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy, int attackAITargetType, int idxAITargetTypeItem, bool agentMode);
