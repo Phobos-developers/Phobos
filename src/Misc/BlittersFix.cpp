@@ -1,14 +1,15 @@
+#include "BlittersFix.h"
 #include <Utilities/Macro.h>
 // Author: Apollo
 
 #pragma region C3 Z-aware SHP translucency fixes
 
 // 50% translucency blitter pt. 1
-DEFINE_PATCH(0x4987F7,
+DEFINE_DYNAMIC_PATCH(Blit50TranslucencyFix1, 0x4987F7,
 	0x66, 0xBA, 0xDE, 0xF7)		// mov	dx, 0xF7DE
 
 // 50% translucency blitter pt. 2
-DEFINE_PATCH(0x498817,
+DEFINE_DYNAMIC_PATCH(Blit50TranslucencyFix2, 0x498817,
 	0x8B, 0x04, 0x41,			// mov    eax, DWORD PTR [ecx+eax*2]
 	0x89, 0xC1,					// mov    ecx, eax
 	0x33, 0x0B,					// xor    ecx, DWORD PTR [ebx]
@@ -19,7 +20,7 @@ DEFINE_PATCH(0x498817,
 	0x90, 0x90, 0x90, 0x90)		// nop nop nop nop
 
 // 75% translucency blitter
-DEFINE_PATCH(0x4985FE,
+DEFINE_DYNAMIC_PATCH(Blit75TranslucencyFix, 0x4985FE,
 	0x66, 0xBE, 0xDE, 0xF7,					// mov    si, 0xF7DE
 	0x66, 0x8B, 0x0A,						// mov    cx, WORD PTR [edx]
 	0x31, 0xC0,								// xor    eax, eax
@@ -49,7 +50,7 @@ DEFINE_PATCH(0x4985FE,
 	0x47)									// inc    edi
 
 // 25% translucency blitter
-DEFINE_PATCH(0x4989EE,
+DEFINE_DYNAMIC_PATCH(Blit25TranslucencyFix, 0x4989EE,
 	0x66, 0xBE, 0xDE, 0xF7,					// mov    si, 0xF7DE
 	0x66, 0x8B, 0x0A,						// mov    cx, WORD PTR [edx]
 	0x31, 0xC0,								// xor    eax, eax
@@ -78,4 +79,11 @@ DEFINE_PATCH(0x4989EE,
 	0x47,									// inc    edi
 	0x47)									// inc    edi
 
+void BlittersFix::Apply()
+{
+	Blit25TranslucencyFix->Apply();
+	Blit50TranslucencyFix1->Apply();
+	Blit50TranslucencyFix2->Apply();
+	Blit75TranslucencyFix->Apply();
+}
 #pragma endregion
