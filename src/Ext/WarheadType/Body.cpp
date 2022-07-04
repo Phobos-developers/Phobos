@@ -76,6 +76,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpySat.Read(exINI, pSection, "SpySat");
 	this->BigGap.Read(exINI, pSection, "BigGap");
 	this->TransactMoney.Read(exINI, pSection, "TransactMoney");
+	this->TransactMoney_Display.Read(exINI, pSection, "TransactMoney.Display");
+	this->TransactMoney_Display_Houses.Read(exINI, pSection, "TransactMoney.Display.Houses");
+	this->TransactMoney_Display_AtFirer.Read(exINI, pSection, "TransactMoney.Display.AtFirer");
+	this->TransactMoney_Display_Offset.Read(exINI, pSection, "TransactMoney.Display.Offset");
 	this->SplashList.Read(exINI, pSection, "SplashList");
 	this->SplashList_PickRandom.Read(exINI, pSection, "SplashList.PickRandom");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
@@ -94,13 +98,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_AnimList_PickRandom.Read(exINI, pSection, "Crit.AnimList.PickRandom");
 	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
 	this->Crit_AffectBelowPercent.Read(exINI, pSection, "Crit.AffectBelowPercent");
+	this->Crit_SuppressWhenIntercepted.Read(exINI, pSection, "Crit.SuppressWhenIntercepted");
 
 	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
-
-	// Ares tags
-	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
-	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
-	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
 
 	// Shields
 	this->Shield_Penetrate.Read(exINI, pSection, "Shield.Penetrate");
@@ -129,6 +129,15 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_AffectTypes.Read(exINI, pSection, "Shield.AffectTypes");
 
 	this->NotHuman_DeathSequence.Read(exINI, pSection, "NotHuman.DeathSequence");
+	this->LaunchSW.Read(exINI, pSection, "LaunchSW");
+	this->LaunchSW_RealLaunch.Read(exINI, pSection, "LaunchSW.RealLaunch");
+	this->LaunchSW_IgnoreInhibitors.Read(exINI, pSection, "LaunchSW.IgnoreInhibitors");
+	this->AllowDamageOnSelf.Read(exINI, pSection, "AllowDamageOnSelf");
+
+	// Ares tags
+	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
+	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
+	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
 }
 
 template <typename T>
@@ -138,6 +147,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpySat)
 		.Process(this->BigGap)
 		.Process(this->TransactMoney)
+		.Process(this->TransactMoney_Display)
+		.Process(this->TransactMoney_Display_Houses)
+		.Process(this->TransactMoney_Display_AtFirer)
+		.Process(this->TransactMoney_Display_Offset)
 		.Process(this->SplashList)
 		.Process(this->SplashList_PickRandom)
 		.Process(this->RemoveDisguise)
@@ -155,12 +168,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_AnimList_PickRandom)
 		.Process(this->Crit_AnimOnAffectedTargets)
 		.Process(this->Crit_AffectBelowPercent)
+		.Process(this->Crit_SuppressWhenIntercepted)
 
 		.Process(this->MindControl_Anim)
-
-		// Ares tags
-		.Process(this->AffectsEnemies)
-		.Process(this->AffectsOwner)
 
 		.Process(this->Shield_Penetrate)
 		.Process(this->Shield_Break)
@@ -187,6 +197,14 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_AffectTypes)
 
 		.Process(this->NotHuman_DeathSequence)
+		.Process(this->LaunchSW)
+		.Process(this->LaunchSW_RealLaunch)
+		.Process(this->LaunchSW_IgnoreInhibitors)
+		.Process(this->AllowDamageOnSelf)
+
+		// Ares tags
+		.Process(this->AffectsEnemies)
+		.Process(this->AffectsOwner)
 		;
 }
 

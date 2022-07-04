@@ -22,6 +22,8 @@ const char Phobos::readDelims[4] = ",";
 
 const char* Phobos::AppIconPath = nullptr;
 
+bool Phobos::Debug_DisplayDamageNumbers = false;
+
 #ifdef STR_GIT_COMMIT
 const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
 #elif !defined(IS_RELEASE_VER)
@@ -50,6 +52,7 @@ bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::DevelopmentCommands = true;
 bool Phobos::Config::ArtImageSwap = false;
 bool Phobos::Config::AllowParallelAIQueues = true;
+bool Phobos::Config::EnableBuildingPlacementPreview = false;
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
@@ -62,7 +65,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		{
 			Phobos::AppIconPath = ppArgs[++i];
 		}
-#ifndef IS_RELEASE_VER 
+#ifndef IS_RELEASE_VER
 		if (_stricmp(pArg, "-b=" _STR(BUILD_NUMBER)) == 0)
 		{
 			HideWarning = true;
@@ -117,7 +120,7 @@ bool __stdcall DllMain(HANDLE hInstance, DWORD dwReason, LPVOID v)
 
 DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 {
-	Patch::Apply();
+	Patch::ApplyStatic();
 
 #ifdef DEBUG
 
@@ -162,8 +165,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 {
 	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
+	Phobos::Config::EnableBuildingPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowBuildingPlacementPreview", false);
 
-	CCINIClass* pINI_UIMD = Phobos::OpenConfig("uimd.ini");
+	CCINIClass* pINI_UIMD = Phobos::OpenConfig((const char*)0x827DC8 /*"UIMD.INI"*/);
 
 	// LoadingScreen
 	{
@@ -218,9 +222,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	Phobos::CloseConfig(pINI_UIMD);
 
-	CCINIClass* pINI = Phobos::OpenConfig((const char*)0x826260);
-	Phobos::Config::ArtImageSwap = pINI->ReadBool("General", "ArtImageSwap", false);
-	Phobos::CloseConfig(pINI);
+	CCINIClass* pINI_RULESMD = Phobos::OpenConfig((const char*)0x826260 /*"RULESMD.INI"*/);
+	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool("General", "ArtImageSwap", false);
+	Phobos::CloseConfig(pINI_RULESMD);
 
 	return 0;
 }

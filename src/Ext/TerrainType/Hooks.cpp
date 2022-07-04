@@ -33,7 +33,7 @@ void __fastcall TerrainClass_AI_CellsPerAnim(CellClass* pThis, void*, bool force
 		pThis->SpreadTiberium(forced);
 }
 
-DEFINE_POINTER_CALL(0x71C8D0, TerrainClass_AI_CellsPerAnim)
+DEFINE_JUMP(CALL, 0x71C8D0, GET_OFFSET(TerrainClass_AI_CellsPerAnim))
 
 DEFINE_HOOK(0x483811, CellClass_SpreadTiberium_TiberiumType, 0x8)
 {
@@ -149,6 +149,19 @@ DEFINE_HOOK(0x47C065, CellClass_CellColor_TerrainRadarColor, 0x6)
 				return ReturnFromFunction;
 			}
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x568432, MapClass_PlaceDown_0x0TerrainTypes, 0x8)
+{
+	GET(ObjectClass*, pObject, EDI);
+
+	if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject))
+	{
+		if (pTerrain->Type->Foundation == 21)
+			return 0x5687DF;
 	}
 
 	return 0;

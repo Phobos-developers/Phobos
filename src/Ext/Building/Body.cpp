@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<BuildingClass>::Canary = 0x87654321;
 BuildingExt::ExtContainer BuildingExt::ExtMap;
@@ -190,16 +191,21 @@ bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 
 bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno)
 {
-	if (const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
+	if (const auto pExt = BuildingExt::ExtMap.Find(pBuilding))
 	{
-		if (const auto pExt = BuildingExt::ExtMap.Find(pBuilding))
+		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+
+		if (pTypeExt->Grinding_DisplayRefund && (pTypeExt->Grinding_DisplayRefund_Houses == AffectedHouse::All ||
+			EnumFunctions::CanTargetHouse(pTypeExt->Grinding_DisplayRefund_Houses, pBuilding->Owner, HouseClass::Player)))
 		{
-			if (pTypeExt->Grinding_Weapon.isset()
-				&& Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon.Get()->ROF)
-			{
-				TechnoExt::FireWeaponAtSelf(pBuilding, pTypeExt->Grinding_Weapon.Get());
-				pExt->GrindingWeapon_LastFiredFrame = Unsorted::CurrentFrame;
-			}
+			pExt->AccumulatedGrindingRefund += pTechno->GetRefund();
+		}
+
+		if (pTypeExt->Grinding_Weapon.isset()
+			&& Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon.Get()->ROF)
+		{
+			TechnoExt::FireWeaponAtSelf(pBuilding, pTypeExt->Grinding_Weapon.Get());
+			pExt->GrindingWeapon_LastFiredFrame = Unsorted::CurrentFrame;
 		}
 
 		if (pTypeExt->Grinding_Sound.isset())
@@ -222,6 +228,8 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployedTechno)
 		.Process(this->LimboID)
 		.Process(this->GrindingWeapon_LastFiredFrame)
+		.Process(this->CurrentAirFactory)
+		.Process(this->AccumulatedGrindingRefund)
 		;
 }
 

@@ -229,6 +229,18 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case PhobosScripts::AggroHouse:
 		ScriptExt::AggroHouse(pTeam, -1);
 		break;
+	case PhobosScripts::StopForceJumpCountdown:
+		// Stop Timed Jump
+		ScriptExt::Stop_ForceJump_Countdown(pTeam);
+		break;
+	case PhobosScripts::NextLineForceJumpCountdown:
+		// Start Timed Jump that jumps to the next line when the countdown finish (in frames)
+		ScriptExt::Set_ForceJump_Countdown(pTeam, false, -1);
+		break;
+	case PhobosScripts::SameLineForceJumpCountdown:
+		// Start Timed Jump that jumps to the same line when the countdown finish (in frames)
+		ScriptExt::Set_ForceJump_Countdown(pTeam, true, -1);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		if (action > 70 && !IsExtVariableAction(action))
@@ -319,7 +331,7 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 	// This action finished
 	if (pTeam->CurrentScript->HasNextMission())
 		++pTeam->CurrentScript->CurrentMission;
-	
+
 	pTeam->StepCompleted = true;
 }
 
@@ -860,7 +872,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 							if (pUnitType->WhatAmI() != AbstractType::AircraftType)
 							{
 								pUnit->QueueMission(Mission::Attack, true);
-								pUnit->ClickedAction(Action::Attack, selectedTarget, false);
+								pUnit->ObjectClickedAction(Action::Attack, selectedTarget, false);
 
 								if (pUnit->GetCurrentMission() != Mission::Attack)
 									pUnit->Mission_Attack();
@@ -893,7 +905,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 					else
 					{
 						pUnit->QueueMission(Mission::Attack, true);
-						pUnit->ClickedAction(Action::Attack, selectedTarget, false);
+						pUnit->ObjectClickedAction(Action::Attack, selectedTarget, false);
 						pUnit->Mission_Attack();
 					}
 				}
@@ -995,7 +1007,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 								pUnit->QueueMission(Mission::Attack, true);
 
 								if (pFocus)
-									pUnit->ClickedAction(Action::Attack, pFocus, false);
+									pUnit->ObjectClickedAction(Action::Attack, pFocus, false);
 
 								pUnit->Mission_Attack();
 							}
@@ -1015,7 +1027,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 								pUnit->QueueMission(Mission::Attack, true);
 
 								if (pFocus)
-									pUnit->ClickedAction(Action::Attack, pFocus, false);
+									pUnit->ObjectClickedAction(Action::Attack, pFocus, false);
 
 								pUnit->Mission_Attack();
 							}
@@ -1306,9 +1318,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		if (!pTechno->Owner->IsNeutral()
 			&& (pTechnoType->WhatAmI() == AbstractType::BuildingType
 				|| (pTypeBuilding
-					&& !(pTypeBuilding->Artillary 
-						|| pTypeBuilding->TickTank 
-						|| pTypeBuilding->ICBMLauncher 
+					&& !(pTypeBuilding->Artillary
+						|| pTypeBuilding->TickTank
+						|| pTypeBuilding->ICBMLauncher
 						|| pTypeBuilding->SensorArray))))
 		{
 			return true;
@@ -1537,8 +1549,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	case 14:
 		// Aircraft and Air Unit
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTechnoType->WhatAmI() == AbstractType::AircraftType 
-				|| pTechnoType->JumpJet 
+			&& (pTechnoType->WhatAmI() == AbstractType::AircraftType
+				|| pTechnoType->JumpJet
 				|| pTechno->IsInAir()))
 		{
 			return true;
@@ -1549,7 +1561,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	case 15:
 		// Naval Unit & Structure
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTechnoType->Naval 
+			&& (pTechnoType->Naval
 				|| pTechno->GetCell()->LandType == LandType::Water))
 		{
 			return true;
@@ -1565,7 +1577,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		if (!pTechno->Owner->IsNeutral()
 			&& ((pTypeTechnoExt
 				&& (pTypeTechnoExt->RadarJamRadius > 0
-					|| pTypeTechnoExt->InhibitorRange > 0))
+					|| pTypeTechnoExt->InhibitorRange.isset()))
 				|| (pTypeBuilding && (pTypeBuilding->GapGenerator
 					|| pTypeBuilding->CloakGenerator))))
 		{
@@ -1643,7 +1655,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		// is Aircraft Factory
 		if (!pTechno->Owner->IsNeutral()
 			&& (pTechnoType->WhatAmI() == AbstractType::BuildingType
-				&& (pTypeBuilding->Factory == AbstractType::AircraftType 
+				&& (pTypeBuilding->Factory == AbstractType::AircraftType
 					|| pTypeBuilding->Helipad)))
 		{
 			return true;
@@ -1751,7 +1763,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		pTypeBuilding = abstract_cast<BuildingTypeClass*>(pTechnoType);
 
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTypeBuilding && (pTypeBuilding->GapGenerator 
+			&& (pTypeBuilding && (pTypeBuilding->GapGenerator
 				|| pTypeBuilding->CloakGenerator)))
 		{
 			return true;
@@ -1763,8 +1775,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		// Radar Jammer
 		pTypeTechnoExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
-		if (!pTechno->Owner->IsNeutral() 
-			&& (pTypeTechnoExt 
+		if (!pTechno->Owner->IsNeutral()
+			&& (pTypeTechnoExt
 				&& (pTypeTechnoExt->RadarJamRadius > 0)))
 			return true;
 
@@ -1775,8 +1787,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		pTypeTechnoExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTypeTechnoExt 
-				&& pTypeTechnoExt->InhibitorRange > 0))
+			&& (pTypeTechnoExt
+				&& pTypeTechnoExt->InhibitorRange.isset()))
 		{
 			return true;
 		}
@@ -1851,6 +1863,23 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		if (!pTechno->Owner->IsNeutral()
 			&& pTechnoType->WhatAmI() == AbstractType::BuildingType
 			&& pTypeBuilding->Factory == AbstractType::UnitType)
+		{
+			return true;
+		}
+
+		break;
+
+	case 36:
+		// Building that isn't a defense
+		pTypeBuilding = abstract_cast<BuildingTypeClass*>(pTechnoType);
+
+		if (!pTechno->Owner->IsNeutral()
+			&& pTypeBuilding
+			&& !pTypeBuilding->IsBaseDefense
+			&& !(pTypeBuilding->Artillary
+				|| pTypeBuilding->TickTank
+				|| pTypeBuilding->ICBMLauncher
+				|| pTypeBuilding->SensorArray))
 		{
 			return true;
 		}
@@ -2198,7 +2227,7 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 						if (pUnitType->WhatAmI() != AbstractType::AircraftType)
 						{
 							pUnit->QueueMission(Mission::Move, false);
-							pUnit->ClickedAction(Action::Move, selectedTarget, false);
+							pUnit->ObjectClickedAction(Action::Move, selectedTarget, false);
 
 							if (pUnit->GetCurrentMission() != Mission::Move)
 								pUnit->Mission_Move();
@@ -4018,4 +4047,58 @@ void ScriptExt::DebugAngerNodesData()
 		else
 			Debug::Log("\n");
 	}
+}
+
+void ScriptExt::Set_ForceJump_Countdown(TeamClass *pTeam, bool repeatLine = false, int count = 0)
+{
+	if (!pTeam)
+		return;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+		return;
+
+	if (count <= 0)
+		count = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
+
+	if (count > 0)
+	{
+		pTeamData->ForceJump_InitialCountdown = count;
+		pTeamData->ForceJump_Countdown.Start(count);
+		pTeamData->ForceJump_RepeatMode = repeatLine;
+	}
+	else
+	{
+		pTeamData->ForceJump_InitialCountdown = -1;
+		pTeamData->ForceJump_Countdown.Stop();
+		pTeamData->ForceJump_Countdown = -1;
+		pTeamData->ForceJump_RepeatMode = false;
+	}
+
+	auto pScript = pTeam->CurrentScript;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+	Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d) Set Timed Jump -> (Countdown: %d, repeat action: %d)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, count, repeatLine);
+}
+
+void ScriptExt::Stop_ForceJump_Countdown(TeamClass *pTeam)
+{
+	if (!pTeam)
+		return;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+		return;
+
+	pTeamData->ForceJump_InitialCountdown = -1;
+	pTeamData->ForceJump_Countdown.Stop();
+	pTeamData->ForceJump_Countdown = -1;
+	pTeamData->ForceJump_RepeatMode = false;
+
+	auto pScript = pTeam->CurrentScript;
+
+	// This action finished
+	pTeam->StepCompleted = true;
+	Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d): Stopped Timed Jump\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
 }

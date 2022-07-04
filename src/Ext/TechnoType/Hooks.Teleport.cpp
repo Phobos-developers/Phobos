@@ -38,7 +38,7 @@ DEFINE_HOOK(0x719788, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x
 
 	if (weaponType)
 	{
-		int damage = pExt->WarpInWeapon_UseDistanceAsDamage ? pTechnoExt->LastWarpDistance / 256 : weaponType->Damage;
+		int damage = pExt->WarpInWeapon_UseDistanceAsDamage ? pTechnoExt->LastWarpDistance / Unsorted::LeptonsPerCell : weaponType->Damage;
 		WeaponTypeExt::DetonateAt(weaponType, pLocomotor->LinkedTo, pLocomotor->LinkedTo, damage);
 	}
 

@@ -72,6 +72,9 @@ enum class PhobosScripts : unsigned int
 	SetTheMostHatedHouseRandom = 121,
 	ResetAngerAgainstHouses = 122,
 	AggroHouse = 123,
+	StopForceJumpCountdown = 124,
+	NextLineForceJumpCountdown = 125,
+	SameLineForceJumpCountdown = 126,
 
 	// Variables
 	LocalVariableSet = 500,
@@ -203,6 +206,8 @@ public:
 	static void SetMoveMissionEndMode(TeamClass* pTeam, int mode);
 	static void SkipNextAction(TeamClass* pTeam, int successPercentage);
 	static FootClass* FindTheTeamLeader(TeamClass* pTeam);
+	static void Set_ForceJump_Countdown(TeamClass *pTeam, bool repeatLine, int count);
+	static void Stop_ForceJump_Countdown(TeamClass *pTeam);
 
 	static void ResetAngerAgainstHouses(TeamClass* pTeam);
 	static void SetHouseAngerModifier(TeamClass* pTeam, int modifier);
@@ -221,7 +226,7 @@ public:
 	static void VariableOperationHandler(TeamClass* pTeam, int nVariable, int Number);
 	template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
-	
+
 
 	static ExtContainer ExtMap;
 
