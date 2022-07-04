@@ -199,6 +199,16 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<Vector2D<double>>(Vector2D<double>& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.Read2Doubles(pSection, pKey, (double*)&value))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<CoordStruct>(CoordStruct& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.Read3Integers(pSection, pKey, (int*)&value))
@@ -660,7 +670,7 @@ namespace detail
 		}
 		return false;
 	}
-	
+
 	template <>
 	inline bool read<SelfHealGainType>(SelfHealGainType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
@@ -1050,14 +1060,14 @@ void __declspec(noinline) Damageable<T>::Read(INI_EX& parser, const char* const 
 
 	if (res > 0 && flagName[res - 1] == '.')
 		flagName[res - 1] = '\0';
-	
-	detail::read(this->BaseValue, parser, pSection, flagName);
+
+	this->BaseValue.Read(parser, pSection, flagName);
 
 	_snprintf_s(flagName, _TRUNCATE, pBaseFlag, "ConditionYellow");
-	conditionYellowAvailable = detail::read(this->ConditionYellow, parser, pSection, flagName) || conditionYellowAvailable;
+	this->ConditionYellow.Read(parser, pSection, flagName);
 
 	_snprintf_s(flagName, _TRUNCATE, pBaseFlag, "ConditionRed");
-	conditionRedAvailable = detail::read(this->ConditionRed, parser, pSection, flagName) || conditionRedAvailable;
+	this->ConditionRed.Read(parser, pSection, flagName);
 };
 
 template <typename T>

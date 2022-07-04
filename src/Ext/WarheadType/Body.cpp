@@ -98,6 +98,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_AnimList_PickRandom.Read(exINI, pSection, "Crit.AnimList.PickRandom");
 	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
 	this->Crit_AffectBelowPercent.Read(exINI, pSection, "Crit.AffectBelowPercent");
+	this->Crit_SuppressWhenIntercepted.Read(exINI, pSection, "Crit.SuppressWhenIntercepted");
 
 	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
 
@@ -128,6 +129,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_AffectTypes.Read(exINI, pSection, "Shield.AffectTypes");
 
 	this->NotHuman_DeathSequence.Read(exINI, pSection, "NotHuman.DeathSequence");
+	this->LaunchSW.Read(exINI, pSection, "LaunchSW");
+	this->LaunchSW_RealLaunch.Read(exINI, pSection, "LaunchSW.RealLaunch");
+	this->LaunchSW_IgnoreInhibitors.Read(exINI, pSection, "LaunchSW.IgnoreInhibitors");
+	this->AllowDamageOnSelf.Read(exINI, pSection, "AllowDamageOnSelf");
 
 	this->MindControl_Threshold.Read(exINI, pSection, "MindControl.Threshold");
 	this->MindControl_Threshold_Inverse.Read(exINI, pSection, "MindControl.Threshold.Inverse");
@@ -169,6 +174,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_AnimList_PickRandom)
 		.Process(this->Crit_AnimOnAffectedTargets)
 		.Process(this->Crit_AffectBelowPercent)
+		.Process(this->Crit_SuppressWhenIntercepted)
 
 		.Process(this->MindControl_Anim)
 
@@ -197,6 +203,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_AffectTypes)
 
 		.Process(this->NotHuman_DeathSequence)
+		.Process(this->LaunchSW)
+		.Process(this->LaunchSW_RealLaunch)
+		.Process(this->LaunchSW_IgnoreInhibitors)
+		.Process(this->AllowDamageOnSelf)
 
 		.Process(this->MindControl_Threshold)
 		.Process(this->MindControl_Threshold_Inverse)

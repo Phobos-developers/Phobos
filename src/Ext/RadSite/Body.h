@@ -18,9 +18,9 @@ public:
 	class ExtData final : public Extension<RadSiteClass>
 	{
 	public:
-		Valueable<WeaponTypeClass*> Weapon;
-		Valueable<RadTypeClass*> Type;
-		Valueable<HouseClass*> RadHouse;
+		WeaponTypeClass* Weapon;
+		RadTypeClass* Type;
+		HouseClass* RadHouse;
 
 		ExtData(RadSiteClass* OwnerObject) : Extension<RadSiteClass>(OwnerObject)
 			, RadHouse { nullptr }
