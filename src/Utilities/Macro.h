@@ -19,7 +19,6 @@ __forceinline T *Make_Pointer(const uintptr_t address)
 
 #pragma section(PATCH_SECTION_NAME, read, write	)
 namespace definePatch {};
-namespace VARIABLE_PATCH {};
 
 // Just an example patch that allows you to disable the _YR_CmdLineParse HOOK for Syringe
 // DEFINE_PATCH(
@@ -42,19 +41,6 @@ namespace _dp_ ## offset { \
 	byte _pd[] = {__VA_ARGS__};\
 	declpatch(offset, sizeof(_pd), _pd);\
 }};
-
-#define DEFINE_VARIABLE_PATCH(offset, name, ...)                     \
-namespace VARIABLE_PATCH##offset                                     \
-{                                                                    \
-	const byte data[] = {__VA_ARGS__};                               \
-	const patch_decl patch = { offset, sizeof(data), (byte*)data };  \
-};                                                                   \
-namespace VARIABLE_PATCH                                             \
-{                                                                    \
-	const patch_decl* name = &VARIABLE_PATCH##offset::patch;         \
-};
-
-
 
 #define DEFINE_VTABLE_PATCH(offset, to) \
 namespace definePatch { \
