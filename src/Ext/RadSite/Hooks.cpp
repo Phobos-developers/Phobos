@@ -160,7 +160,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI, 0x5)
 }
 
 // skip Frame % RadApplicationDelay
-DEFINE_LJMP(0x4DA554, 0x4DA56E);
+DEFINE_JUMP(LJMP, 0x4DA554, 0x4DA56E);
 
 // Hook Adjusted to support Ares RadImmune Ability check
 DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)

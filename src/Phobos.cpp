@@ -120,7 +120,7 @@ bool __stdcall DllMain(HANDLE hInstance, DWORD dwReason, LPVOID v)
 
 DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 {
-	Patch::Apply();
+	Patch::ApplyStatic();
 
 #ifdef DEBUG
 
