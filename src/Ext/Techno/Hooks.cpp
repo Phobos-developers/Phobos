@@ -78,6 +78,40 @@ DEFINE_HOOK(0x414057, TechnoClass_Init_InitialStrength, 0x6)       // AircraftCl
 	return 0;
 }
 
+DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
+{
+	GET(BuildingClass*, pBuilding, ESI);
+	GET(FootClass*, pFoot, EDI);
+
+	bool isCloner = false;
+
+	if (pBuilding && pBuilding->Type->Cloning)
+		isCloner = true;
+
+	if (isCloner && pFoot)
+	{
+		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType()))
+		{
+			if (auto pTypeUnit = pFoot->GetTechnoType())
+			{
+				Vector2D<double> range = pTypeExt->InitialStrength_Cloning.Get();
+				int min = static_cast<int>(range.X * 100);
+				int max = static_cast<int>(range.Y * 100);
+				double percentage = range.X >= range.Y ? range.X : (ScenarioClass::Instance->Random.RandomRanged(min, max) / 100.0);
+				int strength = static_cast<int>(pTypeUnit->Strength * percentage);
+
+				if (strength <= 0)
+					strength = 1;
+
+				pFoot->Health = strength;
+				pFoot->EstimatedHealth = strength;
+			}
+		}
+	}
+
+	return 0;
+}
+
 // Issue #271: Separate burst delay for weapon type
 // Author: Starkku
 DEFINE_HOOK(0x6FD05E, TechnoClass_Rearm_Delay_BurstDelays, 0x7)
@@ -177,9 +211,9 @@ DEFINE_HOOK(0x518505, InfantryClass_TakeDamage_NotHuman, 0x4)
 // Author: Otamaa
 DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 {
-  GET(InfantryClass*, pThis, ESI);
-  R->EDI(pThis->Type->DeployFireWeapon == -1  ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
-  return 0x5223B9;
+	GET(InfantryClass*, pThis, ESI);
+	R->EDI(pThis->Type->DeployFireWeapon == -1  ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
+	return 0x5223B9;
 }
 
 // Customizable OpenTopped Properties
@@ -372,6 +406,56 @@ DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
 	return SkipGameDrawing;
 }
 
+// Reimplements the game function with few changes / optimizations
+DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
+{
+	enum { ReturnResult = 0x70138F };
+
+	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(int, weaponIndex, STACK_OFFS(0x8, -0x4));
+
+	int result = 0;
+	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+	if (pWeapon)
+	{
+		result = pWeapon->Range;
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+		if (pThis->GetTechnoType()->OpenTopped && !pTypeExt->OpenTopped_IgnoreRangefinding)
+		{
+			int smallestRange = INT32_MAX;
+			auto pPassenger = pThis->Passengers.FirstPassenger;
+
+			while (pPassenger && (pPassenger->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
+			{
+				int openTWeaponIndex = pPassenger->GetTechnoType()->OpenTransportWeapon;
+				int tWeaponIndex = 0;
+
+				if (openTWeaponIndex != -1)
+					tWeaponIndex = openTWeaponIndex;
+				else if (pPassenger->GetTechnoType()->TurretCount > 0)
+					tWeaponIndex = pPassenger->CurrentWeaponNumber;
+
+				WeaponTypeClass* pTWeapon = pPassenger->GetWeapon(tWeaponIndex)->WeaponType;
+
+				if (pTWeapon)
+				{
+					if (pTWeapon->Range < smallestRange)
+						smallestRange = pTWeapon->Range;
+				}
+
+				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+			}
+
+			if (result > smallestRange)
+				result = smallestRange;
+		}
+	}
+
+	R->EBX(result);
+	return ReturnResult;
+}
 
 DEFINE_HOOK(0x457C90, BuildingClass_IronCuratin, 0x6)
 {

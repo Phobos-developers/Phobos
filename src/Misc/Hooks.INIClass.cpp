@@ -12,7 +12,7 @@ DEFINE_HOOK(0x527B0A, INIClass__Get_UUID, 0x8)
 		}
 
 		if (_wcsicmp(buffer, L"Jumpjet") == 0) {
-		   wcscpy(buffer, L"{92612C46-F71F-11d1-AC9F-006008055BB5}");
+			wcscpy(buffer, L"{92612C46-F71F-11d1-AC9F-006008055BB5}");
 			return 0;
 		}
 
