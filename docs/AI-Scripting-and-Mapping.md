@@ -8,6 +8,7 @@ This page describes all AI scripting and mapping related additions and changes i
 - The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])
 - Map trigger action `125 Build At...` can now play buildup anim optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2).
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
+- Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
 
 ## Script actions
 
@@ -237,7 +238,7 @@ x=103,n
 
 ### `110` Set Move Action End Mode
 
-- Sets how the Movement actions ends and jumps to the next line. This action works only the first time and CloseEnough will be used again the next Movement action. 
+- Sets how the Movement actions ends and jumps to the next line. This action works only the first time and CloseEnough will be used again the next Movement action.
 
 In `aimd.ini`:
 ```ini

@@ -1,6 +1,6 @@
 #pragma once
 #include <WarheadTypeClass.h>
-
+#include <SuperWeaponTypeClass.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -39,6 +39,7 @@ public:
 		Nullable<bool> Crit_AnimList_PickRandom;
 		Valueable<bool> Crit_AnimOnAffectedTargets;
 		Valueable<double> Crit_AffectBelowPercent;
+		Valueable<bool> Crit_SuppressWhenIntercepted;
 
 		Nullable<AnimTypeClass*> MindControl_Anim;
 
@@ -47,11 +48,6 @@ public:
 		Nullable<AnimTypeClass*> Shield_BreakAnim;
 		Nullable<AnimTypeClass*> Shield_HitAnim;
 		Nullable<WeaponTypeClass*> Shield_BreakWeapon;
-
-		double RandomBuffer;
-		bool HasCrit;
-
-		Valueable<int> NotHuman_DeathSequence;
 
 		Nullable<double> Shield_AbsorbPercent;
 		Nullable<double> Shield_PassPercent;
@@ -73,10 +69,19 @@ public:
 		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
+		Valueable<int> NotHuman_DeathSequence;
+		ValueableVector<SuperWeaponTypeClass*> LaunchSW;
+		Valueable<bool> LaunchSW_RealLaunch;
+		Valueable<bool> LaunchSW_IgnoreInhibitors;
+		Valueable<bool> AllowDamageOnSelf;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
+
+		double RandomBuffer;
+		bool HasCrit;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -108,6 +113,7 @@ public:
 			, Crit_AnimList_PickRandom {}
 			, Crit_AnimOnAffectedTargets { false }
 			, Crit_AffectBelowPercent { 1.0 }
+			, Crit_SuppressWhenIntercepted { false }
 			, RandomBuffer { 0.0 }
 			, HasCrit { false }
 
@@ -140,13 +146,17 @@ public:
 			, Shield_AffectTypes {}
 
 			, NotHuman_DeathSequence { -1 }
+			, LaunchSW {}
+			, LaunchSW_RealLaunch { true }
+			, LaunchSW_IgnoreInhibitors { false }
+			, AllowDamageOnSelf { false }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
 		{ }
 
 	private:
-		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr);
+		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
 
 		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
@@ -156,6 +166,7 @@ public:
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
+		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;

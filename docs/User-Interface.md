@@ -19,36 +19,36 @@ You can use {download}`the improved vanilla font <_static/files/ImprovedFont-v4.
 In `rulesmd.ini`:
 ```ini
 [SOMESIDE]             ; Side
-IngameScore.WinTheme=  ; soundtrack theme ID
-IngameScore.LoseTheme= ; soundtrack theme ID
+IngameScore.WinTheme=  ; Soundtrack theme ID
+IngameScore.LoseTheme= ; Soundtrack theme ID
 ```
 
 ## Battle screen UI/UX
 
 ### Hide health bars
 
-![image](_static/images/healthbar.hide-01.png)  
+![image](_static/images/healthbar.hide-01.png)
 *Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
 
 - Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
 
 In `rulesmd.ini`:
 ```ini
-[SOMENAME]         ; TechnoType
-HealthBar.Hide=no  ; boolean
+[SOMENAME]            ; TechnoType
+HealthBar.Hide=false  ; boolean
 ```
 
 ### Low priority for box selection
 
-![smartvesters](_static/images/lowpriority-01.gif)  
+![smartvesters](_static/images/lowpriority-01.gif)
 *Harvesters not selected together with battle units in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
 
 - You can now set lower priority for an ingame object (currently has effect on units mostly), which means it will be excluded from box selection if there's at least one normal priority unit in the box. Otherwise it would be selected as normal. Works with box+type selecting (type select hotkey + drag) and regular box selecting. Box shift-selection adds low-priority units to the group if there are no normal priority units among the appended ones.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]            ; TechnoType
-LowSelectionPriority=no ; boolean
+[SOMETECHNO]                ; TechnoType
+LowSelectionPriority=false  ; boolean
 ```
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
@@ -56,12 +56,12 @@ LowSelectionPriority=no ; boolean
 In `RA2MD.ini`:
 ```ini
 [Phobos]
-PrioritySelectionFiltering=yes ; boolean
+PrioritySelectionFiltering=true  ; boolean
 ```
 
 ### Placement preview
 
-![placepreview](_static/images/placepreview.png)  
+![placepreview](_static/images/placepreview.png)
 *Building placement preview using 50% translucency in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
 - Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `BuildingPlacementPreview.DefaultTranslucentLevel` and then further customized for each building with `PlacementPreview.TranslucentLevel`.
@@ -72,17 +72,17 @@ PrioritySelectionFiltering=yes ; boolean
 In `rulesmd.ini`:
 ```ini
 [AUDIOVISUAL]
-BuildingPlacementGrid.TranslucentLevel=0            ;integer, 0=0% 1=25% 2=50% 3=75%
-BuildingPlacementPreview.DefaultTranslucentLevel=3  ;integer, 0=0% 1=25% 2=50% 3=75%
+BuildingPlacementGrid.TranslucentLevel=0            ; integer, 0=0% 1=25% 2=50% 3=75%
+BuildingPlacementPreview.DefaultTranslucentLevel=3  ; integer, 0=0% 1=25% 2=50% 3=75%
 
 [BUILDINGTYPE]
-PlacementPreview.Show=              ; boolean, defaults to [Phobos]->ShowBuildingPlacementPreview
-PlacementPreview.Shape=             ; filename - including the .shp extension. If not set uses building's artmd.ini Buildup SHP (based on Building's Image)
-PlacementPreview.ShapeFrame=        ; integer, zero-based frame index used for displaying the preview
-PlacementPreview.Offset=0,-15,1     ; integers, expressed in X,Y,Z used to alter position preview
-PlacementPreview.Remap=true         ; boolean, does this preview use player remap colors 
-PlacementPreview.Palette=           ; filename - including the .pal extension. This option is not used if PlacementPreview.Remap is set to true
-PlacementPreview.TranslucentLevel=  ; integer, defaults to [AudioVisual]->BuildingPlacementPreview.DefaultTranslucentLevel
+PlacementPreview.Show=                              ; boolean, defaults to [Phobos]->ShowBuildingPlacementPreview
+PlacementPreview.Shape=                             ; filename - including the .shp extension. If not set uses building's artmd.ini Buildup SHP (based on Building's Image)
+PlacementPreview.ShapeFrame=                        ; integer, zero-based frame index used for displaying the preview
+PlacementPreview.Offset=0,-15,1                     ; integer, expressed in X,Y,Z used to alter position preview
+PlacementPreview.Remap=true                         ; boolean, does this preview use player remap colors
+PlacementPreview.Palette=                           ; filename - including the .pal extension. This option is not used if PlacementPreview.Remap is set to true
+PlacementPreview.TranslucentLevel=                  ; integer, defaults to [AudioVisual]->BuildingPlacementPreview.DefaultTranslucentLevel
 ```
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
@@ -90,7 +90,7 @@ PlacementPreview.TranslucentLevel=  ; integer, defaults to [AudioVisual]->Buildi
 In `ra2md.ini`:
 ```ini
 [Phobos]
-ShowBuildingPlacementPreview=no  ; boolean
+ShowBuildingPlacementPreview=false  ; boolean
 ```
 
 ## Hotkey Commands
@@ -108,7 +108,7 @@ ShowBuildingPlacementPreview=no  ; boolean
 ### `[ ]` Quicksave
 
 - Save the current singleplayer game.
-- If need localization, just add `TXT_QUICKGAME`, `TXT_QUICKGAME_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
+- If need localization, just add `TXT_QUICKSAVE`, `TXT_QUICKSAVE_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
     - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
     - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`
 
@@ -124,7 +124,7 @@ ShowBuildingPlacementPreview=no  ; boolean
 In `uimd.ini`:
 ```ini
 [LoadingScreen]
-DisableEmptySpawnPositions=no ; boolean
+DisableEmptySpawnPositions=false  ; boolean
 ```
 
 ## Sidebar / Battle UI
@@ -136,7 +136,7 @@ DisableEmptySpawnPositions=no ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMENAME]             ; TechnoType/SuperWeaponType
+[SOMENAME]             ; TechnoType / SuperWeaponType
 CameoPriority=0        ; integer
 ```
 
@@ -147,16 +147,17 @@ CameoPriority=0        ; integer
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-MissingCameo=XXICON.SHP    ; filename - including the .shp/.pcx extension 
+MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 ```
 
 ### Harvester counter
 
-![image](_static/images/harvestercounter-01.gif)  
+![image](_static/images/harvestercounter-01.gif)
 *Harvester Counter in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - An additional counter for your active/total harvesters can be added near the credits indicator.
-- You can specify which TechnoType should be counted as a Harvester. If not set, the techno with `Harvester=yes` or `Enslaves=SOMESLAVE` will be counted.
+- You can specify which TechnoType should be counted as a Harvester with `Harvester.Counted`. If not set, the techno with `Harvester=yes` or `Enslaves=SOMESLAVE` will be counted.
+  - Can be set to true on buildings with `ProduceCashAmount` to count them as active 'harvesters' while generating credits.
 - The counter is displayed with the format of `Label(Active Harvesters)/(Total Harvesters)`. The label is `⛏ U+26CF` by default.
 - You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, negative means left/up, positive means right/down.
 - By setting `HarvesterCounter.ConditionYellow` and `HarvesterCounter.ConditionRed`, the game will warn player by changing the color of counter whenever the active percentage of harvesters less than or equals to them, like HP changing with `ConditionYellow` and `ConditionRed`.
@@ -164,23 +165,21 @@ MissingCameo=XXICON.SHP    ; filename - including the .shp/.pcx extension
 In `uimd.ini`:
 ```ini
 [Sidebar]
-HarvesterCounter.Show=no                 ; boolean
-HarvesterCounter.Label=<none>            ; CSF entry key
-HarvesterCounter.ConditionYellow=99%     ; double, percentage
-HarvesterCounter.ConditionRed=50%        ; double, percentage
+HarvesterCounter.Show=false           ; boolean
+HarvesterCounter.Label=<none>         ; CSF entry key
+HarvesterCounter.ConditionYellow=99%  ; floating point value, percents
+HarvesterCounter.ConditionRed=50%     ; floating point value, percents
 ```
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]        ; TechnoType
-Harvester.Counted=  ; boolean
-                    ; if set yes to a BuildingType like Oil Derricks
-                    ; when producing cash, it will be counted as active
+[SOMETECHNO]                                    ; TechnoType
+Harvester.Counted=                              ; boolean
 
-[SOMESIDE]                                     ; Side
-Sidebar.HarvesterCounter.Offset=0,0            ; X,Y, pixels relative to default
-Sidebar.HarvesterCounter.ColorYellow=255,255,0 ; R,G,B
-Sidebar.HarvesterCounter.ColorRed=255,0,0      ; R,G,B
+[SOMESIDE]                                      ; Side
+Sidebar.HarvesterCounter.Offset=0,0             ; X,Y, pixels relative to default
+Sidebar.HarvesterCounter.ColorYellow=255,255,0  ; integer - R,G,B
+Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - R,G,B
 ```
 
 ```{note}
@@ -189,7 +188,7 @@ If you use the vanilla font in your mod, you can use {download}`the improved fon
 
 ### Power delta counter
 
-![image](_static/images/powerdelta-01.gif)  
+![image](_static/images/powerdelta-01.gif)
 *Power delta Counter in [Assault Amerika](https://www.moddb.com/mods/assault-amerika)*
 
 - An additional counter for your power delta (surplus) can be added near the credits indicator.
@@ -202,19 +201,19 @@ If you use the vanilla font in your mod, you can use {download}`the improved fon
 In `uimd.ini`:
 ```ini
 [Sidebar]
-PowerDelta.Show=no                  ; boolean
-PowerDelta.ConditionYellow=75%      ; double, percentage
-PowerDelta.ConditionRed=100%        ; double, percentage
+PowerDelta.Show=false           ; boolean
+PowerDelta.ConditionYellow=75%  ; floating point value, percents
+PowerDelta.ConditionRed=100%    ; floating point value, percents
 ```
 
 In `rulesmd.ini`:
 ```ini
-[SOMESIDE]                               ; Side
-Sidebar.PowerDelta.Offset=0,0            ; X,Y, pixels relative to default
-Sidebar.PowerDelta.ColorGreen=0,255,0    ; R,G,B
-Sidebar.PowerDelta.ColorYellow=255,255,0 ; R,G,B
-Sidebar.PowerDelta.ColorRed=255,0,0      ; R,G,B
-Sidebar.PowerDelta.Align=left            ; left|center|centre|right
+[SOMESIDE]                                ; Side
+Sidebar.PowerDelta.Offset=0,0             ; X,Y, pixels relative to default
+Sidebar.PowerDelta.ColorGreen=0,255,0     ; integer - R,G,B
+Sidebar.PowerDelta.ColorYellow=255,255,0  ; integer - R,G,B
+Sidebar.PowerDelta.ColorRed=255,0,0       ; integer - R,G,B
+Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left|center|centre|right
 ```
 
 ```{note}
@@ -223,7 +222,7 @@ If you use the vanilla font in your mod, you can use {download}`the improved fon
 
 ### Producing Progress
 
-![image](_static/images/producing-progress-01.gif)  
+![image](_static/images/producing-progress-01.gif)
 *Producing Progress bars in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - You can now know your factories' status via sidebar!
@@ -232,31 +231,28 @@ If you use the vanilla font in your mod, you can use {download}`the improved fon
 In `uimd.ini`:
 ```ini
 [Sidebar]
-ProducingProgress.Show=no            ; boolean
+ProducingProgress.Show=false  ; boolean
 ```
 
 In `rulesmd.ini`:
 ```ini
-[SOMESIDE]                           ; Side
-Sidebar.ProducingProgress.Offset=0,0 ; X,Y, pixels relative to default
+[SOMESIDE]                            ; Side
+Sidebar.ProducingProgress.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
 ### Specify Sidebar style
 
-- It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords.
+- It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords by setting `Sidebar.GDIPosition`. Defaults to true for first side, false for all others.
 
 In `rulesmd.ini`:
 ```ini
-[SOMESIDE]            ; Side
-Sidebar.GDIPositions= ; boolean
-                      ; default values are:
-                      ; yes for the first side
-                      ; no for others
+[SOMESIDE]             ; Side
+Sidebar.GDIPositions=  ; boolean
 ```
 
 ## Tooltips
 
-![image](_static/images/tooltips-01.png)  
+![image](_static/images/tooltips-01.png)
 *Extended tooltips used in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
 
 - Sidebar tooltips can now display extended information about the TechnoType/SWType when hovered over it's cameo. In addition the low character limit is lifted when the feature is enabled via the corresponding tag, allowing for 1024 character long tooltips.
@@ -273,16 +269,16 @@ Same as with harvester counter, you can download {download}`the improved font <_
 In `uimd.ini`:
 ```ini
 [ToolTips]
-ExtendedToolTips=no ; boolean
-CostLabel=<none>    ; CSF entry key
-PowerLabel=<none>   ; CSF entry key
-TimeLabel=<none>    ; CSF entry key
-MaxWidth=0          ; integer, pixels
+ExtendedToolTips=false  ; boolean
+CostLabel=<none>        ; CSF entry key
+PowerLabel=<none>       ; CSF entry key
+TimeLabel=<none>        ; CSF entry key
+MaxWidth=0              ; integer, pixels
 ```
 In `rulesmd.ini`:
 ```ini
-[SOMENAME]           ; TechnoType or SWType
-UIDescription=<none> ; CSF entry key
+[SOMENAME]            ; TechnoType or SWType
+UIDescription=<none>  ; CSF entry key
 ```
 
 - The descriptions are designed to be toggleable by users. For now you can only do that externally via client or manually.
@@ -290,5 +286,5 @@ UIDescription=<none> ; CSF entry key
 In `RA2MD.ini`:
 ```ini
 [Phobos]
-ToolTipDescriptions=yes ; bool
+ToolTipDescriptions=true  ; boolean
 ```

@@ -21,9 +21,9 @@ public:
 	class ExtData final : public Extension<BuildingClass>
 	{
 	public:
-		Valueable<bool> DeployedTechno;
-		Valueable<int> LimboID;
-		Valueable<int> GrindingWeapon_LastFiredFrame;
+		bool DeployedTechno;
+		int LimboID;
+		int GrindingWeapon_LastFiredFrame;
 		BuildingClass* CurrentAirFactory;
 		int AccumulatedGrindingRefund;
 
@@ -39,7 +39,7 @@ public:
 
 		// virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override 
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
 			if (this->CurrentAirFactory == ptr)
 				this->CurrentAirFactory = nullptr;
