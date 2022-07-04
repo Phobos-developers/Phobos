@@ -219,12 +219,10 @@ public:
 			append("Current HP = (%d / %d)", pFoot->Health, pType->Strength);
 
 			auto pTechnoExt = TechnoExt::ExtMap.Find(pFoot);
-			if (auto pShieldData = pTechnoExt->Shield.get())
-			{
-				auto pTypeShieldData = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType());
+			auto pShieldData = pTechnoExt->Shield.get();
 
-				append(", Current Shield HP = (%d / %d)", pShieldData->GetHP(), pTypeShieldData->ShieldType->Strength);
-			}
+			if (pTechnoExt->CurrentShieldType && pShieldData)
+				append(", Current Shield HP = (%d / %d)", pShieldData->GetHP(), pTechnoExt->CurrentShieldType->Strength);
 
 			if (pType->Ammo > 0)
 				append(", Ammo = (%d / %d)", pFoot->Ammo, pType->Ammo);
@@ -273,12 +271,11 @@ public:
 			append("Current HP = (%d / %d)\n", pBuilding->Health, pBuilding->Type->Strength);
 
 			auto pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
-			if (auto pShieldData = pTechnoExt->Shield.get())
-			{
-				auto pTypeShieldData = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType());
+			auto pShieldData = pTechnoExt->Shield.get();
 
-				append("Current Shield HP = (%d / %d)\n", pShieldData->GetHP(), pTypeShieldData->ShieldType->Strength);
-			}
+			if (pTechnoExt->CurrentShieldType && pShieldData)
+				append("Current Shield HP = (%d / %d)\n", pShieldData->GetHP(), pTechnoExt->CurrentShieldType->Strength);
+
 			//DEBUG: DELETE THESE LINES BEFORE A FUTURE MERGE INTO DEVELOP !!!
 			//ScriptExt::ManageTriggersFromList(nullptr, 0, true);
 			Debug::Log("List of available Triggers:\n");

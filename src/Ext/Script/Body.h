@@ -220,6 +220,7 @@ public:
 	static void ManageAITriggers(TeamClass* pTeam, int enabled);
 	static void ManageTriggersWithObjects(TeamClass* pTeam, int idxAITargetType, bool isEnabled);
 
+
 	static ExtContainer ExtMap;
 
 private:
