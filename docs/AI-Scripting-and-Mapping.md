@@ -314,6 +314,29 @@ In `aimd.ini`:
 x=126,n           ; integer n=0, in frames
 ```
 
+### `135` Unload from Transports
+
+- A new unload action similar to x=8,n, but can avoid treating `VehicleTypes` with `OpenTopped=yes` and `Gunner=yes` as transports.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=135,n
+```
+
+- The possible argument values are:
+
+| *Argument* | *Description*                       |
+| :------: | :-------------------------------------------: |
+0         | Keep transports and units. |
+1         | Keep transports and lose units. |
+2         | Lose transports and keep units. |
+3         | Lose transports and units. |
+4         | Only `VehicleTypes` with largest `SizeLimit` will be regarded as transports. Keep transports and units. |
+5         | Only `VehicleTypes` with largest `SizeLimit` will be regarded as transports. Keep transports and lose units. |
+6         | Only `VehicleTypes` with largest `SizeLimit` will be regarded as transports. Lose transports and keep units. |
+7         | Only `VehicleTypes` with largest `SizeLimit` will be regarded as transports. Lose transports and units. |
+
 ### `500 - 523` Edit Variable
 - Operate a variable's value
     - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.

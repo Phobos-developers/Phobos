@@ -65,6 +65,7 @@ enum class PhobosScripts : unsigned int
 	StopForceJumpCountdown = 124,
 	NextLineForceJumpCountdown = 125,
 	SameLineForceJumpCountdown = 126,
+	UnloadFromTransports = 135,
 
 	// Variables
 	LocalVariableSet = 500,
@@ -206,6 +207,7 @@ public:
 	template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
 
+	static void UnloadFromTransports(TeamClass* pTeam);
 
 	static ExtContainer ExtMap;
 

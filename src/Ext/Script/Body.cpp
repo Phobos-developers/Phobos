@@ -208,6 +208,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Start Timed Jump that jumps to the same line when the countdown finish (in frames)
 		ScriptExt::Set_ForceJump_Countdown(pTeam, true, -1);
 		break;
+	case PhobosScripts::UnloadFromTransports:
+		ScriptExt::UnloadFromTransports(pTeam);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		if (action > 70 && !IsExtVariableAction(action))
@@ -3085,4 +3088,173 @@ void ScriptExt::Stop_ForceJump_Countdown(TeamClass *pTeam)
 	// This action finished
 	pTeam->StepCompleted = true;
 	Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d): Stopped Timed Jump\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
+}
+
+void TransportsReturn(TeamClass* pTeam, FootClass* pTransport)
+{
+	if (pTeam->Type->TransportsReturnOnUnload)
+	{
+		if (!pTransport->GetTechnoType()->HasPrimary)
+		{
+			auto pScript = pTeam->CurrentScript;
+			Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d): Transport [%s] (UID: %lu) has no weapon and thus cannot return.\n",
+				pTeam->Type->ID,
+				pScript->Type->ID,
+				pScript->CurrentMission,
+				pScript->Type->ScriptActions[pScript->CurrentMission].Action,
+				pScript->Type->ScriptActions[pScript->CurrentMission].Argument,
+				pTransport->GetTechnoType()->get_ID(),
+				pTransport->UniqueID);
+		}
+		pTransport->SetDestination(pTeam->SpawnCell, false);
+		pTransport->QueueMission(Mission::Move, false);
+	}
+	return;
+}
+
+void ScriptExt::UnloadFromTransports(TeamClass* pTeam)
+{
+	if (!pTeam)
+		return;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+		return;
+
+	double maxSizeLimit = 0;
+	DynamicVectorClass<FootClass*> transports;
+	DynamicVectorClass<FootClass*> passengers;
+	int argument = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
+
+	if (argument > 3)
+	{
+		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+		{
+			maxSizeLimit = std::max(maxSizeLimit, pUnit->GetTechnoType()->SizeLimit);
+		}
+		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+		{
+			if (!pUnit->GetTechnoType()->OpenTopped
+				&& !pUnit->GetTechnoType()->Gunner
+				&& pUnit->Passengers.NumPassengers > 0
+				&& pUnit->GetTechnoType()->SizeLimit == maxSizeLimit) //Battle Fortress and IFV are not transports.
+			{
+				pUnit->QueueMission(Mission::Unload, true);
+			}
+		}
+	}
+	else
+	{
+		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+		{
+			if (!pUnit->GetTechnoType()->OpenTopped && !pUnit->GetTechnoType()->Gunner && pUnit->Passengers.NumPassengers > 0) //Battle Fortress and IFV are not transports.
+			{
+				pUnit->QueueMission(Mission::Unload, true);
+			}
+		}
+	}
+
+	//unload in progress
+	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+		if (pUnit->GetCurrentMission() == Mission::Unload)
+			return;
+
+	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+	{
+		if (!pUnit->GetTechnoType()->OpenTopped && !pUnit->GetTechnoType()->Gunner && pUnit->GetTechnoType()->Passengers > 0) //Battle Fortress and IFV are not transports.
+		{
+			transports.AddItem(pUnit);
+		}
+		else
+		{
+			passengers.AddItem(pUnit);
+		}
+	}
+
+	//no valid transports
+	if (transports.Count == 0)
+	{
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	//Liberate passengers
+	if (argument == 1)
+	{
+		for (auto pPassengers : passengers)
+		{
+			pTeam->LiberateMember(pPassengers);
+		}
+	}
+	//Liberate transports
+	else if (argument == 2)
+	{
+		for (auto pTransport : transports)
+		{
+			TransportsReturn(pTeam, pTransport);
+			pTeam->LiberateMember(pTransport);
+		}
+	}
+	//Liberate whole team
+	else if (argument == 3)
+	{
+		for (auto pTransport : transports)
+		{
+			TransportsReturn(pTeam, pTransport);
+		}
+		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+		{
+			pTeam->LiberateMember(pUnit);
+			//this team is over :)
+			pTeam->CurrentScript->ClearMission();
+		}
+	}
+	//Liberate passengers and transports that don't have a maxSizeLimit.
+	else if (argument == 5)
+	{
+		for (auto pTransport : transports)
+		{
+			if (!pTransport->GetTechnoType()->SizeLimit == maxSizeLimit)
+			{
+				pTeam->LiberateMember(pTransport);
+			}
+		}
+		for (auto pPassengers : passengers)
+		{
+			pTeam->LiberateMember(pPassengers);
+		}
+	}
+	//Liberate transports that have a maxSizeLimit.
+	else if (argument == 6)
+	{
+		for (auto pTransport : transports)
+		{
+			if (pTransport->GetTechnoType()->SizeLimit == maxSizeLimit)
+			{
+				TransportsReturn(pTeam, pTransport);
+				pTeam->LiberateMember(pTransport);
+			}
+		}
+	}
+	//Liberate whole team. Only transports with maxSizeLimit will return.
+	else if (argument == 7)
+	{
+		for (auto pTransport : transports)
+		{
+			if (pTransport->GetTechnoType()->SizeLimit == maxSizeLimit)
+			{
+				TransportsReturn(pTeam, pTransport);
+			}
+		}
+		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+		{
+			pTeam->LiberateMember(pUnit);
+			//this team is over :)
+			pTeam->CurrentScript->ClearMission();
+		}
+	}
+
+	// This action finished
+	pTeam->StepCompleted = true;
+	return;
 }
