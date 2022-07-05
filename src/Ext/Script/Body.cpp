@@ -1175,7 +1175,8 @@ void ScriptExt::JumpBackToPreviousScript(TeamClass* pTeam)
 	}
 	else
 	{
-		Debug::Log("DEBUG: Can't find the previous script! This script action must be used after PickRandomScript.\n");
+		auto pScript = pTeam->CurrentScript;
+		Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d): Can't find the previous script! This script action must be used after PickRandomScript.\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
 		pTeam->StepCompleted = true;
 	}
 }
