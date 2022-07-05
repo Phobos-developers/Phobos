@@ -23,13 +23,18 @@ public:
 		Valueable<bool> LowSelectionPriority;
 		PhobosFixedString<0x20> GroupAs;
 		Valueable<int> RadarJamRadius;
-		Valueable<int> InhibitorRange;
+		Nullable<int> InhibitorRange;
 		Valueable<Leptons> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
-		Valueable<Leptons> Interceptor_GuardRange;
-		Valueable<Leptons> Interceptor_MinimumGuardRange;
-		Valueable<Leptons> Interceptor_EliteGuardRange;
-		Valueable<Leptons> Interceptor_EliteMinimumGuardRange;
+		Valueable<AffectedHouse> Interceptor_CanTargetHouses;
+		Promotable<Leptons> Interceptor_GuardRange;
+		Promotable<Leptons> Interceptor_MinimumGuardRange;
+		Valueable<int> Interceptor_Weapon;
+		Nullable<bool> Interceptor_DeleteOnIntercept;
+		Nullable<WeaponTypeClass*> Interceptor_WeaponOverride;
+		Valueable<bool> Interceptor_WeaponReplaceProjectile;
+		Valueable<bool> Interceptor_WeaponCumulativeDamage;
+		Valueable<bool> Interceptor_KeepIntact;
 		Valueable<CoordStruct> TurretOffset;
 		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Spawn_LimitedRange;
@@ -82,6 +87,8 @@ public:
 		Nullable<int> OpenTopped_RangeBonus;
 		Nullable<float> OpenTopped_DamageMultiplier;
 		Nullable<int> OpenTopped_WarpDistance;
+		Valueable<bool> OpenTopped_IgnoreRangefinding;
+		Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
 
 		Valueable<bool> AutoFire;
 		Valueable<bool> AutoFire_TargetSelf;
@@ -109,6 +116,8 @@ public:
 		Valueable<bool> Passengers_SyncOwner;
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
+		Valueable<Vector2D<double>> InitialStrength_Cloning;
+
 		ValueableVector<TechnoTypeClass*> UniversalConvert_Deploy;
 
 		struct LaserTrailDataEntry
@@ -127,19 +136,33 @@ public:
 
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
 
+		Nullable<CoordStruct> PronePrimaryFireFLH;
+		Nullable<CoordStruct> ProneSecondaryFireFLH;
+		Nullable<CoordStruct> DeployedPrimaryFireFLH;
+		Nullable<CoordStruct> DeployedSecondaryFireFLH;
+		std::vector<DynamicVectorClass<CoordStruct>> CrouchedWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
 			, LowSelectionPriority { false }
 			, GroupAs { NONE_STR }
 			, RadarJamRadius { 0 }
-			, InhibitorRange { 0 }
+			, InhibitorRange { }
 			, MindControlRangeLimit {}
 			, Interceptor { false }
+			, Interceptor_CanTargetHouses { AffectedHouse::Enemies }
 			, Interceptor_GuardRange {}
 			, Interceptor_MinimumGuardRange {}
-			, Interceptor_EliteGuardRange {}
-			, Interceptor_EliteMinimumGuardRange {}
+			, Interceptor_Weapon { 0 }
+			, Interceptor_DeleteOnIntercept {}
+			, Interceptor_WeaponOverride {}
+			, Interceptor_WeaponReplaceProjectile { false }
+			, Interceptor_WeaponCumulativeDamage { false }
+			, Interceptor_KeepIntact { false }
 			, TurretOffset { { 0, 0, 0 } }
 			, Powered_KillSpawns { false }
 			, Spawn_LimitedRange { false }
@@ -180,6 +203,8 @@ public:
 			, OpenTopped_RangeBonus {}
 			, OpenTopped_DamageMultiplier {}
 			, OpenTopped_WarpDistance {}
+			, OpenTopped_IgnoreRangefinding { false }
+			, OpenTopped_AllowFiringIfDeactivated { true }
 			, AutoFire { false }
 			, AutoFire_TargetSelf { false }
 			, NoSecondaryWeaponFallback { false }
@@ -201,6 +226,11 @@ public:
 			, SelfHealGainType()
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
+			, PronePrimaryFireFLH { }
+			, ProneSecondaryFireFLH { }
+			, DeployedPrimaryFireFLH { }
+			, DeployedSecondaryFireFLH { }
+			, InitialStrength_Cloning{ { 1.0, 0.0 } }
 			, UniversalConvert_Deploy {}
 		{ }
 
@@ -234,6 +264,7 @@ public:
 	static ExtContainer ExtMap;
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
+	static void GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
