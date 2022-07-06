@@ -42,6 +42,8 @@ RadSiteWarhead=RadSite          ; WarheadType
 
 The Shape display uses frames 0-9 of the SHP file for green(percentange > ConditionYellow), 10-19 for yellow(ConditionYellow >= percentange > ConditionRed), and 20-29 for red(ConditionRed >= percentage), 30-32 frames as separator. In percentage style use 33-35 frams as percent sign.
 
+Shape canvas should as bigger as number, or will difficult to adjustment
+
 Default Alignment:
   Text: building right-aligned, others centered.
   Shape: building left-aligned, others centered.
