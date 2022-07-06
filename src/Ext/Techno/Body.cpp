@@ -841,6 +841,7 @@ Point2D TechnoExt::GetFootSelectBracketPosition(TechnoClass* pThis, Anchor ancho
 
 	if (pThis->WhatAmI() == AbstractType::Infantry)
 		iLength = 8;
+
 	RectangleStruct rBracket =
 	{
 		posScreen.X - iLength + (iLength == 8),
