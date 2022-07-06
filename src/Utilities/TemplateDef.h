@@ -780,6 +780,79 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<BuildingSelectBracketPosition>(BuildingSelectBracketPosition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "top") == 0)
+			{
+				value = BuildingSelectBracketPosition::Top;
+			}
+			else if (_strcmpi(str, "lefttop") == 0)
+			{
+				value = BuildingSelectBracketPosition::LeftTop;
+			}
+			else if (_strcmpi(str, "leftbottom") == 0)
+			{
+				value = BuildingSelectBracketPosition::LeftBottom;
+			}
+			else if (_strcmpi(str, "bottom") == 0)
+			{
+				value = BuildingSelectBracketPosition::Bottom;
+			}
+			else if (_strcmpi(str, "rightbottom") == 0)
+			{
+				value = BuildingSelectBracketPosition::RightBottom;
+			}
+			else if (_strcmpi(str, "righttop") == 0)
+			{
+				value = BuildingSelectBracketPosition::RightTop;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "BuildingPosition is invalid");
+				return false;
+			}
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<BorderPosition>(BorderPosition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "top") == 0)
+			{
+				value = BorderPosition::Top;
+			}
+			else if(_strcmpi(str, "left") == 0)
+			{
+				value = BorderPosition::Left;
+			}
+			else if (_strcmpi(str, "bottom") == 0)
+			{
+				value = BorderPosition::Bottom;
+			}
+			else if (_strcmpi(str, "right") == 0)
+			{
+				value = BorderPosition::Right;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "BorderPosition is invalid");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<DisplayInfoType>(DisplayInfoType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))
@@ -809,6 +882,10 @@ namespace detail
 			{
 				value = DisplayInfoType::Passengers;
 			}
+			else if (_strcmpi(str, "tiberium") == 0)
+			{
+				value = DisplayInfoType::Tiberium;
+			}
 			else if (_strcmpi(str, "experience") == 0)
 			{
 				value = DisplayInfoType::Experience;
@@ -823,10 +900,12 @@ namespace detail
 			}
 			else
 			{
-				Debug::INIParseFailed(pSection, pKey, str, "Display info type is illegal");
+				Debug::INIParseFailed(pSection, pKey, str, "Display info type is invalid");
 				return false;
 			}
+			return true;
 		}
+		return false;
 	}
 
 	template <typename T>

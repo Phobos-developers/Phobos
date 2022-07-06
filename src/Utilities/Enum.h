@@ -173,22 +173,6 @@ enum class TextAlign : int
 
 MAKE_ENUM_FLAGS(TextAlign);
 
-enum class HealthBarAnchors
-{
-	Left = 0,
-	TopLeft = 0,
-	Right = 1,
-	TopRight = 1,
-	Bottom = 2,
-	BottomLeft = 2,
-	BottomRight = 3,
-	Center = 4,
-	TopCenter = 4,
-	BottomCenter = 6,
-};
-
-MAKE_ENUM_FLAGS(HealthBarAnchors);
-
 enum class HorizontalPosition : BYTE
 {
 	Left = 0,
@@ -201,6 +185,25 @@ enum class VerticalPosition : BYTE
 	Top = 0,
 	Center = 1,
 	Bottom = 2
+};
+
+//hexagon
+enum class BuildingSelectBracketPosition :BYTE
+{
+	Top = 0,
+	LeftTop = 1,
+	LeftBottom = 2,
+	Bottom = 3,
+	RightBottom = 4,
+	RightTop = 5
+};
+
+enum class BorderPosition :BYTE
+{
+	Top = 0,
+	Left = 1,
+	Bottom = 2,
+	Right = 3
 };
 
 enum class DisplayInfoType : BYTE

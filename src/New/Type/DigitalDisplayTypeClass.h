@@ -3,6 +3,7 @@
 #include <Utilities/Template.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/TemplateDef.h>
+#include <Utilities/Anchor.h>
 
 class DigitalDisplayTypeClass final : public Enumerable<DigitalDisplayTypeClass>
 {
@@ -14,28 +15,19 @@ public:
 	Valueable<Vector2D<int>> Offset;
 	Nullable<Vector2D<int>> Offset_WithoutShield;
 	Valueable<TextAlign> Align;
-	PhobosFixedString<0x10> Anchor;
+	Anchor AnchorType;
+	Valueable<BuildingSelectBracketPosition> AnchorType_Building;
+	Valueable<BorderPosition> Border;
 	Valueable<bool> UseShape;
 	Valueable<SHPStruct*> Shape;
 	PhobosFixedString<0x20> Palette;
 	Valueable<Vector2D<int>> Shape_Interval;
 	Valueable<Vector2D<int>> Shape_Interval_Building;
 	Valueable<bool> Percentage;
-	Valueable<bool> HideStrength;
+	Valueable<bool> HideMaxValue;
 	Valueable<DisplayInfoType> InfoType;
 
-	enum class AnchorType : int
-	{
-		Left = 0,
-		Right = 1,
-		Top = 2,
-		TopLeft = 2,
-		TopRight = 3
-	};
-
-	SHPStruct* SHPFile;
 	ConvertClass* PALFile;
-	AnchorType Anchoring;
 
 	DigitalDisplayTypeClass(const char* pTitle = NONE_STR) : Enumerable<DigitalDisplayTypeClass>(pTitle)
 		, Text_ColorHigh({ 0, 255, 0 })
@@ -45,15 +37,16 @@ public:
 		, Offset({ 0, 0 })
 		, Offset_WithoutShield()
 		, Align(TextAlign::None)
-		, Anchor("")
+		, AnchorType(HorizontalPosition::Left, VerticalPosition::Top)
+		, AnchorType_Building(BuildingSelectBracketPosition::LeftTop)
+		, Border(BorderPosition::Top)
 		, UseShape(false)
 		, Shape(nullptr)
 		, Palette("")
 		, Shape_Interval({ 8, 0 })
-		, Shape_Interval_Building({ 8, 4 })
-		, Anchoring(AnchorType::TopLeft)
+		, Shape_Interval_Building({ 8, -4 })
 		, Percentage(false)
-		, HideStrength(false)
+		, HideMaxValue(false)
 		, InfoType(DisplayInfoType::Health)
 	{ }
 
@@ -67,8 +60,8 @@ public:
 
 private:
 
-	void DisplayText(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool hasShield);
-	void DisplayShape(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool hasShield);
+	void DisplayText(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding);
+	void DisplayShape(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding);
 
 	template <typename T>
 	void Serialize(T& Stm);

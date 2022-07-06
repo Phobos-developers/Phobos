@@ -22,11 +22,13 @@ public:
 
 	// Get an anchor point for a freeform parallelogram
 	Point2D OffsetPosition(
-		Point2D& const topLeft, Point2D& const topRight,
-		Point2D& const bottomLeft) const;
+		const Point2D& topLeft,
+		const Point2D& topRight,
+		const Point2D& bottomLeft
+	) const;
 
-	Point2D OffsetPosition(RectangleStruct& const rect) const;
-	Point2D OffsetPosition(LTRBStruct& const ltrb) const;
+	Point2D OffsetPosition(const RectangleStruct& rect) const;
+	Point2D OffsetPosition(const LTRBStruct& ltrb) const;
 
 	void Read(INI_EX& parser, const char* pSection, const char* pBaseFlag);
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);

@@ -26,25 +26,18 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Text_Background.Read(exINI, section, "Text.Background");
 	this->Offset.Read(exINI, section, "Offset");
 	this->Offset_WithoutShield.Read(exINI, section, "Offset.WithoutShield");
+	this->Align.Read(exINI, section, "Align");
+	this->AnchorType.Read(exINI, section, "Anchor.%s");
+	this->AnchorType_Building.Read(exINI, section, "Anchor.Building");
+	this->Border.Read(exINI, section, "Border");
 	this->UseShape.Read(exINI, section, "UseShape");
 	this->Shape.Read(exINI, section, "Shape");
 	this->Palette.Read(pINI, section, "Palette");
 	this->Shape_Interval.Read(exINI, section, "Shape.Interval");
 	this->Shape_Interval_Building.Read(exINI, section, "Shape.Interval.Building");
-	this->Align.Read(exINI, section, "Align");
-	this->Anchor.Read(pINI, section, "Anchor");
 	this->Percentage.Read(exINI, section, "Percentage");
-	this->HideStrength.Read(exINI, section, "HideStrength");
+	this->HideMaxValue.Read(exINI, section, "HideMaxValue");
 	this->InfoType.Read(exINI, section, "InfoType");
-
-	if (strcmp(Anchor.data(), "Left") == 0)
-		Anchoring = AnchorType::Left;
-	else if (strcmp(Anchor.data(), "Right") == 0)
-		Anchoring = AnchorType::Right;
-	else if (strcmp(Anchor.data(), "TopRight") == 0)
-		Anchoring = AnchorType::TopRight;
-	else
-		Anchoring = AnchorType::TopLeft;
 
 	if (UseShape)
 	{
@@ -58,30 +51,36 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	}
 }
 
-DynamicVectorClass<char> IntToVector(int num)
+DynamicVectorClass<__int8> IntToDigits(int num)
 {
-	DynamicVectorClass<char>res;
+	DynamicVectorClass<__int8>res;
+	
 	if (num == 0)
 	{
-		res.AddItem(0);
+		res.AddItem(static_cast<__int8>(0));
 		return res;
 	}
+
 	while (num)
 	{
-		res.AddItem(num % 10);
+		res.AddItem(static_cast<__int8>(num % 10));
 		num /= 10;
 	}
+	
 	return res;
-}
-
-int operator & (DigitalDisplayTypeClass::AnchorType a, DigitalDisplayTypeClass::AnchorType b)
-{
-	return static_cast<int>(a) & static_cast<int>(b);
 }
 
 void DigitalDisplayTypeClass::Draw(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool hasShield)
 {
-	bool Shield = InfoType == DisplayInfoType::Shield;
+	bool bShield = InfoType == DisplayInfoType::Shield;
+
+	if (bShield)
+	{
+		posDraw.Y -= 6;
+
+		if (isBuilding)
+			posDraw.X -= 6;
+	}
 
 	if (!hasShield)
 	{
@@ -97,26 +96,33 @@ void DigitalDisplayTypeClass::Draw(Point2D posDraw, int iLength, int iCur, int i
 	if (UseShape)
 	{
 		if (isBuilding)
-			posDraw.X -= 4 + (!Shield ? 6 : 0);
+		{
+			posDraw.X -= 4 + (bShield ? 0 : 6);
+			posDraw.Y += 4;
+		}
+		else
+		{
+			posDraw.X += 1;
+		}
 
-		if (Shield)
-			posDraw.Y -= SHPFile->Height - 3;
+		if (bShield)
+			posDraw.Y -= Shape->Height - 4;
 
-		DisplayShape(posDraw, iLength, iCur, iMax, isBuilding, hasShield);
+		DisplayShape(posDraw, iLength, iCur, iMax, isBuilding);
 	}
 	else
 	{
-		if (Shield)
+		if (bShield)
 			posDraw.Y -= 10;
 
 		if (isBuilding)
-			posDraw.X -= 4 + (!Shield ? 6 : 0);
+			posDraw.X -= 4 + (bShield ? 0 : 6);
 
-		DisplayText(posDraw, iLength, iCur, iMax, isBuilding, hasShield);
+		DisplayText(posDraw, iLength, iCur, iMax, isBuilding);
 	}
 }
 
-void DigitalDisplayTypeClass::DisplayText(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool hasShield)
+void DigitalDisplayTypeClass::DisplayText(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding)
 {
 	wchar_t Healthpoint[0x20];
 
@@ -125,7 +131,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D posDraw, int iLength, int iCur
 		swprintf_s(Healthpoint, L"%d", static_cast<int>((static_cast<double>(iCur) / iMax) * 100));
 		wcscat_s(Healthpoint, L"%%");
 	}
-	else if (HideStrength.Get())
+	else if (HideMaxValue.Get())
 	{
 		swprintf_s(Healthpoint, L"%d", iCur);
 	}
@@ -150,23 +156,26 @@ void DigitalDisplayTypeClass::DisplayText(Point2D posDraw, int iLength, int iCur
 	TextPrintType PrintType;
 	int textLength = wcslen(Healthpoint);
 
-	if (Anchoring & DigitalDisplayTypeClass::AnchorType::Top)
-		posDraw.Y -= 20;
+	if (Border == BorderPosition::Top)
+		posDraw.Y -= 16;
 
 	switch (Align)
 	{
 	case TextAlign::Left:
 	{
 		PrintType = TextPrintType::FullShadow;
-		if (Anchoring == DigitalDisplayTypeClass::AnchorType::Left)
+
+		if (Border == BorderPosition::Left)
 			posDraw.X -= textLength * 6;
 	}
 	break;
 	case TextAlign::Right:
 	{
-		PrintType = TextPrintType(int(TextPrintType::Right) + int(TextPrintType::FullShadow));
-		if (Anchoring == DigitalDisplayTypeClass::AnchorType::Right)
+		PrintType = TextPrintType::Right & TextPrintType::FullShadow;
+
+		if (Border == BorderPosition::Right)
 			posDraw.X += textLength * 6;
+		
 		if (isBuilding)
 			posDraw.X += 6;
 	}
@@ -194,41 +203,44 @@ void DigitalDisplayTypeClass::DisplayText(Point2D posDraw, int iLength, int iCur
 		break;
 	}
 
-	if (Anchoring & DigitalDisplayTypeClass::AnchorType::Top)
-		posDraw.Y -= 4;
-
-	//0x400 is TextPrintType::Background pr#563 YRpp
 	PrintType = PrintType | (ShowBackground ? TextPrintType::Background : TextPrintType::LASTPOINT);
 
-	//DSurface::Temp->DrawText(Healthpoint, vPosH.X, vPosH.Y, ShowHPColor);
-	DSurface::Temp->DrawTextA(Healthpoint, &rect, &posDraw, Color, 0, PrintType);
+	DSurface::Temp->DrawText(Healthpoint, &rect, &posDraw, Color, 0, PrintType);
 }
 
-void DigitalDisplayTypeClass::DisplayShape(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool hasShield)
+void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding)
 {
-	DynamicVectorClass<char>vA;
-	DynamicVectorClass<char>vB;
+	DynamicVectorClass<__int8> vCur;
+	DynamicVectorClass<__int8> vMax;
 	const Vector2D<int> Interval = (isBuilding ? Shape_Interval_Building.Get() : Shape_Interval.Get());
-
-	if (SHPFile == nullptr || PALFile == nullptr)
+	
+	if (Shape == nullptr || PALFile == nullptr)
 		return;
 
-	if (Anchoring & DigitalDisplayTypeClass::AnchorType::Top)
+	if (Border == BorderPosition::Top)
 	{
 		posDraw.Y -= isBuilding ? 14 : 8;
-		posDraw.Y -= SHPFile->Height;
+		posDraw.Y -= Shape->Height;
+	}
+	else if (Border == BorderPosition::Bottom)
+	{
+		posDraw.Y += isBuilding ? 0 : Shape->Height;
+	}
+	else if (!isBuilding && Border == BorderPosition::Left)
+	{
+		posDraw.X -= Interval.X;
 	}
 
 	if (Percentage.Get())
 	{
-		vA = IntToVector(static_cast<int>(static_cast<double>(iCur) / iMax * 100));
+		vCur = IntToDigits(static_cast<int>(static_cast<double>(iCur) / iMax * 100));
 	}
 	else
 	{
-		vA = IntToVector(iCur);
+		vCur = IntToDigits(iCur);
 
-		if (!HideStrength.Get())
-			vB = IntToVector(iMax);
+		if (!HideMaxValue)
+			vMax = IntToDigits(iMax);
 	}
 
 	bool LeftToRight = true;
@@ -237,15 +249,16 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D posDraw, int iLength, int iCu
 	{
 	case TextAlign::Left:
 	{
-		if (Anchoring == DigitalDisplayTypeClass::AnchorType::Left)
-			posDraw.X -= (vA.Count + vB.Count + (Percentage || !HideStrength)) * Interval.X + 2;
+		if (Border == BorderPosition::Left)
+			posDraw.X -= (vCur.Count + vMax.Count + (Percentage || !HideMaxValue) + 1) * Interval.X + 2;
 	}
 	break;
 	case TextAlign::Right:
 	{
 		LeftToRight = false;
-		if (Anchoring == DigitalDisplayTypeClass::AnchorType::Right)
-			posDraw.X += (vA.Count + vB.Count + (Percentage || !HideStrength)) * Interval.X + 2;
+
+		if (Border == BorderPosition::Right)
+			posDraw.X += (vCur.Count + vMax.Count + (Percentage || !HideMaxValue)) * Interval.X + 2;
 	}
 	break;
 	case TextAlign::Center:
@@ -265,23 +278,23 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D posDraw, int iLength, int iCu
 
 		if (Percentage)
 		{
-			FixValueX = (vA.Count + 1) * Interval.X / 2;
-			FixValueY = (vA.Count + 1) * Interval.Y / 2;
+			FixValueX = (vCur.Count + 1) * Interval.X / 2;
+			FixValueY = (vCur.Count + 1) * Interval.Y / 2;
 		}
-		else if (HideStrength)
+		else if (HideMaxValue)
 		{
-			FixValueX = vA.Count * Interval.X / 2;
-			FixValueY = vA.Count * Interval.Y / 2;
+			FixValueX = vCur.Count * Interval.X / 2;
+			FixValueY = vCur.Count * Interval.Y / 2;
 		}
 		else
 		{
-			FixValueX = (vA.Count + vB.Count + 1) * Interval.X / 2;
-			FixValueY = (vA.Count + vB.Count + 1) * Interval.Y / 2;
+			FixValueX = (vCur.Count + vMax.Count + 1) * Interval.X / 2;
+			FixValueY = (vCur.Count + vMax.Count + 1) * Interval.Y / 2;
 		}
 
-		if (Anchoring & DigitalDisplayTypeClass::AnchorType::Right)
+		if (AnchorType.Horizontal == HorizontalPosition::Right)
 			posDraw.X += FixValueX;
-		else
+		else if (AnchorType.Horizontal == HorizontalPosition::Left)
 			posDraw.X -= FixValueX;
 
 		posDraw.Y -= FixValueY;
@@ -298,23 +311,23 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D posDraw, int iLength, int iCu
 
 			if (Percentage)
 			{
-				FixValueX = (vA.Count + 1) * Interval.X / 2;
-				FixValueY = (vA.Count + 1) * Interval.Y / 2;
+				FixValueX = (vCur.Count + 1) * Interval.X / 2;
+				FixValueY = (vCur.Count + 1) * Interval.Y / 2;
 			}
-			else if (HideStrength)
+			else if (HideMaxValue)
 			{
-				FixValueX = vA.Count * Interval.X / 2;
-				FixValueY = vA.Count * Interval.Y / 2;
+				FixValueX = vCur.Count * Interval.X / 2;
+				FixValueY = vCur.Count * Interval.Y / 2;
 			}
 			else
 			{
-				FixValueX = (vA.Count + vB.Count + 1) * Interval.X / 2;
-				FixValueY = (vA.Count + vB.Count + 1) * Interval.Y / 2;
+				FixValueX = (vCur.Count + vMax.Count + 1) * Interval.X / 2;
+				FixValueY = (vCur.Count + vMax.Count + 1) * Interval.Y / 2;
 			}
 
-			if (Anchoring & DigitalDisplayTypeClass::AnchorType::Right)
+			if (AnchorType.Horizontal == HorizontalPosition::Right)
 				posDraw.X += FixValueX;
-			else
+			else if (AnchorType.Horizontal == HorizontalPosition::Left)
 				posDraw.X -= FixValueX;
 
 			posDraw.Y -= FixValueY;
@@ -344,84 +357,84 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D posDraw, int iLength, int iCu
 
 	if (LeftToRight)
 	{
-		for (int i = vA.Count - 1; i >= 0; i--)
+		for (int i = vCur.Count - 1; i >= 0; i--)
 		{
-			int num = base + vA.GetItem(i);
+			int num = base + vCur.GetItem(i);
 
-			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &posDraw, &DSurface::ViewBounds,
+			DSurface::Composite->DrawSHP(PALFile, Shape, num, &posDraw, &DSurface::ViewBounds,
 				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 			posDraw.X += Interval.X;
-			posDraw.Y -= Interval.Y;
+			posDraw.Y += Interval.Y;
 		}
 
-		if (!Percentage && HideStrength)
+		if (!Percentage && HideMaxValue)
 			return;
 
-		DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &posDraw, &DSurface::ViewBounds,
+		DSurface::Composite->DrawSHP(PALFile, Shape, signframe, &posDraw, &DSurface::ViewBounds,
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 		posDraw.X += Interval.X;
-		posDraw.Y -= Interval.Y;
+		posDraw.Y += Interval.Y;
 
 		if (Percentage)
 			return;
 
-		for (int i = vB.Count - 1; i >= 0; i--)
+		for (int i = vMax.Count - 1; i >= 0; i--)
 		{
-			int num = base + vB.GetItem(i);
+			int num = base + vMax.GetItem(i);
 
-			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &posDraw, &DSurface::ViewBounds,
+			DSurface::Composite->DrawSHP(PALFile, Shape, num, &posDraw, &DSurface::ViewBounds,
 				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 			posDraw.X += Interval.X;
-			posDraw.Y -= Interval.Y;
+			posDraw.Y += Interval.Y;
 		}
 	}
 	else
 	{
-		if (Percentage || HideStrength)
+		if (Percentage || HideMaxValue)
 		{
 			if (Percentage)
 			{
-				DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &posDraw, &DSurface::ViewBounds,
+				DSurface::Composite->DrawSHP(PALFile, Shape, signframe, &posDraw, &DSurface::ViewBounds,
 					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 				posDraw.X -= Interval.X;
-				posDraw.Y += Interval.Y;
+				posDraw.Y -= Interval.Y;
 			}
 
-			for (int i = 0; i < vA.Count; i++)
+			for (int i = 0; i < vCur.Count; i++)
 			{
-				int num = base + vA.GetItem(i);
+				int num = base + vCur.GetItem(i);
 
-				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &posDraw, &DSurface::ViewBounds,
+				DSurface::Composite->DrawSHP(PALFile, Shape, num, &posDraw, &DSurface::ViewBounds,
 					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 				posDraw.X -= Interval.X;
-				posDraw.Y += Interval.Y;
+				posDraw.Y -= Interval.Y;
 			}
 		}
 		else
 		{
-			for (int i = 0; i < vB.Count; i++)
+			for (int i = 0; i < vMax.Count; i++)
 			{
-				int num = base + vB.GetItem(i);
+				int num = base + vMax.GetItem(i);
 
-				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &posDraw, &DSurface::ViewBounds,
+				DSurface::Composite->DrawSHP(PALFile, Shape, num, &posDraw, &DSurface::ViewBounds,
 					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 				posDraw.X -= Interval.X;
-				posDraw.Y += Interval.Y;
+				posDraw.Y -= Interval.Y;
 			}
 
-			DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &posDraw, &DSurface::ViewBounds,
+			DSurface::Composite->DrawSHP(PALFile, Shape, signframe, &posDraw, &DSurface::ViewBounds,
 					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 			posDraw.X -= Interval.X;
-			posDraw.Y += Interval.Y;
+			posDraw.Y -= Interval.Y;
 
-			for (int i = 0; i < vA.Count; i++)
+			for (int i = 0; i < vCur.Count; i++)
 			{
-				int num = base + vA.GetItem(i);
+				int num = base + vCur.GetItem(i);
 
-				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &posDraw, &DSurface::ViewBounds,
+				DSurface::Composite->DrawSHP(PALFile, Shape, num, &posDraw, &DSurface::ViewBounds,
 					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 				posDraw.X -= Interval.X;
-				posDraw.Y += Interval.Y;
+				posDraw.Y -= Interval.Y;
 			}
 		}
 	}
@@ -438,16 +451,17 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->Text_Background)
 		.Process(this->Offset)
 		.Process(this->Offset_WithoutShield)
+		.Process(this->Align)
+		.Process(this->AnchorType)
+		.Process(this->AnchorType_Building)
+		.Process(this->Border)
 		.Process(this->UseShape)
 		.Process(this->Shape)
 		.Process(this->Palette)
 		.Process(this->Shape_Interval)
 		.Process(this->Shape_Interval_Building)
-		.Process(this->Align)
-		.Process(this->Anchor)
-		.Process(this->Anchoring)
 		.Process(this->Percentage)
-		.Process(this->HideStrength)
+		.Process(this->HideMaxValue)
 		.Process(this->InfoType)
 		;
 }
