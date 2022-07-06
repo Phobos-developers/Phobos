@@ -44,6 +44,14 @@ public:
 		CustomPalette PlacementPreview_Palette;
 		Nullable<int> PlacementPreview_TranslucentLevel;
 
+		//functions
+
+		int GetSWCount();
+
+		//return -1 if unavaliable
+		int GetSWidx(int idx, HouseClass* pHouse);
+		int GetSWidx(int idx);
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}

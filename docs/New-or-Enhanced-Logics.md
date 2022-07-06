@@ -401,6 +401,20 @@ Shrapnel.AffectsBuildings=false  ; boolean
 
 ## Super Weapons
 
+### `AuxTechno` and `NegTechno`
+
+Like Ares entry `SW.AuxBuildings` and `SW.NegBuildings`, for all technotype.
+
+In `rulesmd.ini`:
+```ini
+
+SW.AuxTechno=      ; TechnoTypes, like SW.AuxBuildings
+SW.AuxTechno.Any=  ; boolean, one of or all of, default yes(one of)
+SW.NegTechno=      ; TechnoTypes, like SW.NegBuildings
+SW.NegTechno.Any=  ; boolean, one of or all of, default yes(one of)
+
+```
+
 ### LimboDelivery
 
 - Super Weapons can now deliver off-map buildings that act as if they were on the field.

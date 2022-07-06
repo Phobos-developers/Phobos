@@ -27,9 +27,25 @@ public:
 		Valueable<AffectedHouse> LimboKill_Affected;
 		ValueableVector<int> LimboKill_IDs;
 		Valueable<double> RandomBuffer;
-
-
 		ValueableVector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
+
+		ValueableVector<TechnoTypeClass*> SW_AuxTechno;
+		ValueableVector<TechnoTypeClass*> SW_NegTechno;
+		Valueable<bool> SW_AuxTechno_Any;
+		Valueable<bool> SW_NegTechno_Any;
+
+		//Ares
+		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
+		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
+		DWORD SW_RequiredHouses;
+		DWORD SW_ForbiddenHouses;
+		Valueable<bool> SW_AlwaysGranted;
+		Valueable<bool> SW_AllowPlayer;
+		Valueable<bool> SW_AllowAI;
+		Valueable<bool> SW_ShowCameo;
+		Valueable<bool> SW_AutoFire;
+
+		bool IsAvailable(HouseClass* pHouse);
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }

@@ -1,10 +1,75 @@
 #include "Body.h"
 
+#include <HouseClass.h>
 #include <SuperWeaponTypeClass.h>
 #include <StringTable.h>
 
 template<> const DWORD Extension<SuperWeaponTypeClass>::Canary = 0x11111111;
 SWTypeExt::ExtContainer SWTypeExt::ExtMap;
+
+
+// Ares 0.A
+// I don't know Ares 3.0 has add some new things in this 
+bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse)
+{
+	//what the hell? you send nullptr?
+	if (pHouse == nullptr)
+		return false;
+
+	const auto pThis = this->OwnerObject();
+
+	if (pHouse->ControlledByHuman() && !SW_AllowPlayer)
+		return false;
+
+	if (!pHouse->ControlledByHuman() && !SW_AllowAI)
+		return false;
+
+	// check whether the optional aux building exists
+	if (pThis->AuxBuilding && pHouse->CountOwnedAndPresent(pThis->AuxBuilding) <= 0)
+		return false;
+
+	// allow only certain houses, disallow forbidden houses
+	const DWORD OwnerBits = 1UL << pHouse->Type->ArrayIndex;
+	if (!(this->SW_RequiredHouses & OwnerBits) || (this->SW_ForbiddenHouses & OwnerBits))
+		return false;
+
+	// check that any aux building exist and no neg building
+	auto IsTechnoPresent = [pHouse](TechnoTypeClass* pType)
+	{
+		return pType && pHouse->CountOwnedAndPresent(pType) > 0;
+	};
+
+	if (!SW_AuxBuildings.empty() && std::none_of(SW_AuxBuildings.begin(), SW_AuxBuildings.end(), IsTechnoPresent))
+		return false;
+
+	if (std::any_of(SW_NegBuildings.begin(), SW_NegBuildings.end(), IsTechnoPresent))
+		return false;
+
+	if (SW_AuxTechno_Any)
+	{
+
+		if (!SW_AuxTechno.empty() && std::none_of(SW_AuxTechno.begin(), SW_AuxTechno.end(), IsTechnoPresent))
+			return false;
+	}
+	else
+	{
+		if (!SW_AuxTechno.empty() && !std::all_of(SW_AuxTechno.begin(), SW_AuxTechno.end(), IsTechnoPresent))
+			return false;
+	}
+
+	if (SW_NegTechno_Any)
+	{
+		if (std::any_of(SW_NegTechno.begin(), SW_NegTechno.end(), IsTechnoPresent))
+			return false;
+	}
+	else
+	{
+		if (std::all_of(SW_NegTechno.begin(), SW_NegTechno.end(), IsTechnoPresent))
+			return false;
+	}
+
+	return true;
+}
 
 // =============================
 // load / save
@@ -24,6 +89,19 @@ void SWTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->LimboKill_Affected)
 		.Process(this->LimboKill_IDs)
 		.Process(this->RandomBuffer)
+		.Process(this->SW_AuxTechno)
+		.Process(this->SW_NegTechno)
+		.Process(this->SW_AuxTechno_Any)
+		.Process(this->SW_NegTechno_Any)
+		.Process(this->SW_AuxBuildings)
+		.Process(this->SW_NegBuildings)
+		.Process(this->SW_RequiredHouses)
+		.Process(this->SW_ForbiddenHouses)
+		.Process(this->SW_AlwaysGranted)
+		.Process(this->SW_AllowPlayer)
+		.Process(this->SW_AllowAI)
+		.Process(this->SW_ShowCameo)
+		.Process(this->SW_AutoFire)
 		;
 }
 
@@ -68,6 +146,19 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->LimboKill_Affected.Read(exINI, pSection, "LimboKill.Affected");
 	this->LimboKill_IDs.Read(exINI, pSection, "LimboKill.IDs");
 
+	this->SW_AuxTechno.Read(exINI, pSection, "SW.AuxTechno");
+	this->SW_NegTechno.Read(exINI, pSection, "SW.NegTechno");
+	this->SW_AuxTechno_Any.Read(exINI, pSection, "SW.AuxTechno.Any");
+	this->SW_NegTechno_Any.Read(exINI, pSection, "SW.NegTechno.Any");
+	this->SW_AuxBuildings.Read(exINI, pSection, "SW.AuxBuildings");
+	this->SW_NegBuildings.Read(exINI, pSection, "SW.NegBuildings");
+	this->SW_RequiredHouses = pINI->ReadHouseTypesList(pSection, "SW.RequiredHouses", this->SW_RequiredHouses);
+	this->SW_ForbiddenHouses = pINI->ReadHouseTypesList(pSection, "SW.ForbiddenHouses", this->SW_ForbiddenHouses);
+	this->SW_AlwaysGranted.Read(exINI, pSection, "SW.AlwaysGranted");
+	this->SW_AllowPlayer.Read(exINI, pSection, "SW.AllowPlayer");
+	this->SW_AllowAI.Read(exINI, pSection, "SW.AllowAI");
+	this->SW_ShowCameo.Read(exINI, pSection, "SW.ShowCameo");
+	this->SW_AutoFire.Read(exINI, pSection, "SW.AutoFire");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {

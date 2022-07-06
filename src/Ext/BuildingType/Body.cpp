@@ -1,6 +1,10 @@
 #include "Body.h"
 
+#include <SuperClass.h>
+
 #include <Ext/House/Body.h>
+#include <Ext/SWType/Body.h>
+
 #include <Utilities/GeneralUtils.h>
 
 template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
@@ -67,6 +71,60 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 void BuildingTypeExt::ExtData::Initialize()
 {
 
+}
+
+
+int BuildingTypeExt::ExtData::GetSWCount()
+{
+	return SuperWeapons.Count + (OwnerObject()->SuperWeapon != -1) + (OwnerObject()->SuperWeapon2 != -1);
+}
+
+int BuildingTypeExt::ExtData::GetSWidx(int idx)
+{
+	BuildingTypeClass* pType = OwnerObject();
+
+	if (pType->SuperWeapon >= 0)
+	{
+		if (idx == 0)
+		{
+			return pType->SuperWeapon;
+		}
+
+		--idx;
+	}
+
+	if (pType->SuperWeapon2 >= 0)
+	{
+		if (idx == 0)
+		{
+			return pType->SuperWeapon2;
+		}
+
+		--idx;
+	}
+
+	if (idx >= SuperWeapons.Count)
+		return -1;
+
+	return SuperWeapons.GetItem(idx)->ArrayIndex;
+}
+
+int BuildingTypeExt::ExtData::GetSWidx(int idx, HouseClass* pHouse)
+{
+	if (idx < 0)
+		return -1;
+
+	int idxSW = this->GetSWidx(idx);
+	SuperClass* pSuper = pHouse->Supers.GetItemOrDefault(idxSW);
+
+	if (pSuper != nullptr)
+	{
+		SWTypeExt::ExtData* pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+
+		return pSWTypeExt->IsAvailable(pHouse) ? idxSW : -1;
+	}
+
+	return idxSW;
 }
 
 // =============================
