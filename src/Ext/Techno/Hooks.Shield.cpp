@@ -230,7 +230,7 @@ double __fastcall HealthRatio_Wrapper(TechnoClass* pTechno)
 	return result;
 }
 
-DEFINE_POINTER_CALL(0x6F7F51, HealthRatio_Wrapper);
+DEFINE_JUMP(CALL, 0x6F7F51, GET_OFFSET(HealthRatio_Wrapper))
 
 #pragma endregion TechnoClass__Evaluate_Object
 
@@ -288,7 +288,7 @@ FireError __fastcall UnitClass__GetFireError_Wrapper(UnitClass* pThis, void*_, O
 	AresScheme::Suffix();
 	return result;
 }
-DEFINE_VTABLE_PATCH(0x7F6030, UnitClass__GetFireError_Wrapper);
+DEFINE_JUMP(VTABLE, 0x7F6030, GET_OFFSET(UnitClass__GetFireError_Wrapper))
 #pragma endregion UnitClass_GetFireError_Heal
 
 #pragma region InfantryClass_GetFireError_Heal
@@ -303,7 +303,7 @@ FireError __fastcall InfantryClass__GetFireError_Wrapper(InfantryClass* pThis, v
 	AresScheme::Suffix();
 	return result;
 }
-DEFINE_VTABLE_PATCH(0x7EB418, InfantryClass__GetFireError_Wrapper);
+DEFINE_JUMP(VTABLE, 0x7EB418, GET_OFFSET(InfantryClass__GetFireError_Wrapper))
 #pragma endregion InfantryClass_GetFireError_Heal
 
 #pragma region UnitClass__WhatAction
@@ -319,7 +319,7 @@ Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void*_, Object
 	AresScheme::Suffix();
 	return result;
 }
-DEFINE_VTABLE_PATCH(0x7F5CE4, UnitClass__WhatAction_Wrapper);
+DEFINE_JUMP(VTABLE, 0x7F5CE4, GET_OFFSET(UnitClass__WhatAction_Wrapper))
 #pragma endregion UnitClass__WhatAction
 
 #pragma region InfantryClass__WhatAction
@@ -335,6 +335,6 @@ Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void*_
 	AresScheme::Suffix();
 	return result;
 }
-DEFINE_VTABLE_PATCH(0x7EB0CC, InfantryClass__WhatAction_Wrapper);
+DEFINE_JUMP(VTABLE, 0x7EB0CC, GET_OFFSET(InfantryClass__WhatAction_Wrapper))
 #pragma endregion InfantryClass__WhatAction
 #pragma endregion HealingWeapons

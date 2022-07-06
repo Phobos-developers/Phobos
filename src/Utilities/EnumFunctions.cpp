@@ -103,14 +103,3 @@ BlitterFlags EnumFunctions::GetTranslucentLevel(int nInt)
 
 	return BlitterFlags::None;
 }
-
-TextPrintType EnumFunctions::CastAlignToFlags(HorizontalPosition pos)
-{
-	if (pos == HorizontalPosition::Center)
-		return TextPrintType::Center;
-	if (pos == HorizontalPosition::Right)
-		return TextPrintType::Right;
-
-	// TextPrintType::Left that doesn't exist and is assumed by default
-	return (TextPrintType)0x0;
-}
