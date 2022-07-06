@@ -34,19 +34,21 @@ RadColor=0,255,0                ; RGB
 RadSiteWarhead=RadSite          ; WarheadType
 ```
 
-### Digital display of HP and SP
+### Digital display
 
 ![image](_static/images/DigitalDisplay1.png)
 
 ![image](_static/images/DigitalDisplay2.png)
 
-The SHP display uses frames 0-9 of the SHP file for green HP, 10-19 for yellow HP, and 20-29 for red HP, 30-32 frames are the separator for green, yellow and red HP respectively. In percentage style use 33-35 frams as percent sign.
+The Shape display uses frames 0-9 of the SHP file for green(percentange > ConditionYellow), 10-19 for yellow(ConditionYellow >= percentange > ConditionRed), and 20-29 for red(ConditionRed >= percentage), 30-32 frames as separator. In percentage style use 33-35 frams as percent sign.
 
 Default Alignment:
   Text: building right-aligned, others centered.
-  SHP: building left-aligned, others centered.
+  Shape: building left-aligned, others centered.
 
-Offset and interval: Positive integer are to the right(x) and down(y), negative numbers are to the left(x) and up(y)
+Offset and interval: Positive integer are to the right(x) and down(y), negative numbers are to the left(x) and up(y).
+
+`Anchor.Building`: hexagonal projection of a selection border on the screen.
 
 All will not be displayed if not written or if the corresponding type does not exist.
 
@@ -60,6 +62,7 @@ InfoTypes:
 - Tiberium
 - Experience
 - Occupants
+- GattlingStage
 
 In `Ra2MD.ini`:
 
@@ -84,17 +87,19 @@ Text.ColorHigh=                         ; RGB, the color of the Text digital dis
 Text.ColorMid=                          ; RGB, the color of the Text digital display when yellow HP,  default 255,255,0
 Text.ColorLow=                          ; RGB, the color of the Text digital display when red HP, default 255,0,0
 Text.Background=                        ; boolean, whether the Text display has a black background, default no
-UseSHP=                                 ; boolean, whether to use SHP digital display, default no
-SHP.SHPFile=                            ; filename, with extend name, the name of the SHP file used by the SHP number display, default number.shp
-SHP.PALFile=                            ; filename, with extend name, the palette file used by SHP, default palette.pal
-SHP.Interval=                           ; integer - x,y , can be negative, horizontal and vertical spacing between two SHP digitals except building, default 8,0
-SHP.Interval.Building=                  ; integer - x,y , can be negative, horizontal and vertical spacing between two SHP digitals of building, default 8,4
+UseShape=                               ; boolean, whether to use shape digital display, default no
+Shape=                                  ; filename, with extend name, the name of the shape file used by the shape display, default number.shp
+Palette=                                ; filename, with extend name, the palette file used by shape, default palette.pal
+Shape.Interval=                         ; integer - x,y , can be negative, horizontal and vertical spacing between two SHP digitals except building, default 8,0
+Shape.Interval.Building=                ; integer - x,y , can be negative, horizontal and vertical spacing between two SHP digitals of building, default 8,-4
 Offset=                                 ; integer - x,y , can be negative, horizontal and vertical offset of the position 
-Offset.WithoutShield=                   ; integer - x,y , the offset of HP when the shield fails
-Align=                                  ; Left/Right/Center/Default, Alignment mode, default Default
-Anchor=                                 ; Left/Right/TopLeft/TopRight, start drawing digitals point anchor the healthbar, default TopLeft
+Offset.WithoutShield=                   ; integer - x,y , the offset when the shield fails or not exist
+Align=                                  ; Left/Right/Center/None, Alignment mode, default None
+Anchor.Horizontal=                      ; Left/Center/Right, start drawing digitals point anchor the select bracket, default Left
+Anchor.Vertical=                        ; Top/Center/Bottom, start drawing digitals point anchor the select bracket, default Top
+Anchor.Building=                        ; Top/LeftTop/LeftRight/Bottom/RightBottom/RightTop, default LeftTop
 Percentage=                             ; boolean, whether use percentage style, default no
-HideStrength=                           ; boolean, whether don't display upper limit, default no
+HideMaxValue=                           ; boolean, whether don't display upper limit, default no
 
 [SomeTechnoType]
 DigitalDisplayTypes=                     ; list of DigitalDisplayType, default to [AudioVisual]
