@@ -33,7 +33,6 @@ public:
 	Valueable<double> PassPercent;
 
 	Nullable<bool> AllowTransfer;
-  
 	Valueable<Vector3D<int>> Pips;
 	Nullable<SHPStruct*> Pips_Background;
 	Valueable<Vector3D<int>> Pips_Building;
