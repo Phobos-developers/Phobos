@@ -31,7 +31,7 @@ void BombardTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 bool BombardTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	this->PhobosTrajectory::Load(Stm, false);
-	
+
 	Stm
 		.Process(this->IsFalling, false)
 		.Process(this->Height, false)
@@ -43,12 +43,12 @@ bool BombardTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 bool BombardTrajectory::Save(PhobosStreamWriter& Stm) const
 {
 	this->PhobosTrajectory::Save(Stm);
-	
+
 	Stm
 		.Process(this->IsFalling)
 		.Process(this->Height)
 		;
-	
+
 	return true;
 }
 

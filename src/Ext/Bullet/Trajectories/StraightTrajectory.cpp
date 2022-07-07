@@ -146,4 +146,3 @@ TrajectoryCheckReturnType StraightTrajectory::OnAITechnoCheck(BulletClass* pBull
 {
 	return TrajectoryCheckReturnType::SkipGameCheck; // Bypass game checks entirely.
 }
-

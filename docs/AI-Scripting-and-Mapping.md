@@ -238,7 +238,7 @@ x=103,n
 
 ### `110` Set Move Action End Mode
 
-- Sets how the Movement actions ends and jumps to the next line. This action works only the first time and CloseEnough will be used again the next Movement action. 
+- Sets how the Movement actions ends and jumps to the next line. This action works only the first time and CloseEnough will be used again the next Movement action.
 
 In `aimd.ini`:
 ```ini

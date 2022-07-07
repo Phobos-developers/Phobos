@@ -104,14 +104,14 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Crit_Chance ||
 		this->Shield_Break ||
 		this->Shield_Respawn_Duration > 0 ||
-		this->Shield_SelfHealing_Duration > 0 || 
+		this->Shield_SelfHealing_Duration > 0 ||
 		this->Shield_AttachTypes.size() > 0 ||
 		this->Shield_RemoveTypes.size() > 0;
 
 	auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 
-	const float cellSpread = this->OwnerObject()->CellSpread; 
+	const float cellSpread = this->OwnerObject()->CellSpread;
 	if (cellSpread && isCellSpreadWarhead)
 	{
 		for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
