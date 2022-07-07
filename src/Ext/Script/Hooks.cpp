@@ -13,7 +13,7 @@ DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8) {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
 		return 0;
-	
+
 	// Force a line jump. This should support vanilla YR Actions
 	if (pTeamData->ForceJump_InitialCountdown > 0 && pTeamData->ForceJump_Countdown.Expired())
 	{
@@ -41,9 +41,9 @@ DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8) {
 
 		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 		{
-			if (pUnit 
-				&& pUnit->IsAlive 
-				&& pUnit->Health > 0 
+			if (pUnit
+				&& pUnit->IsAlive
+				&& pUnit->Health > 0
 				&& !pUnit->InLimbo)
 			{
 				pUnit->SetTarget(nullptr);

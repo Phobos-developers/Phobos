@@ -40,8 +40,8 @@ DEFINE_HOOK(0x423365, Phobos_BugFixes_SHPShadowCheck, 0x8)
 
 	Author : E1 Elite
 */
-DEFINE_LJMP(0x545CE2, 0x545CE9) //Phobos_BugFixes_Tileset255_RemoveNonMMArrayFill
-DEFINE_LJMP(0x546C23, 0x546C8B) //Phobos_BugFixes_Tileset255_RefNonMMArray
+DEFINE_JUMP(LJMP, 0x545CE2, 0x545CE9) //Phobos_BugFixes_Tileset255_RemoveNonMMArrayFill
+DEFINE_JUMP(LJMP, 0x546C23, 0x546C8B) //Phobos_BugFixes_Tileset255_RefNonMMArray
 
 
 // WWP's shit code! Wrong check.
@@ -168,7 +168,7 @@ DEFINE_HOOK(0x73DD12, UnitClass_Mission_Unload_DeployFire, 0x6)
 
 // issue #250: Building placement hotkey not responding
 // Author: Uranusian
-DEFINE_LJMP(0x4ABBD5, 0x4ABBD5 + 7); // DisplayClass_MouseLeftRelease_HotkeyFix
+DEFINE_JUMP(LJMP, 0x4ABBD5, 0x4ABBD5 + 7); // DisplayClass_MouseLeftRelease_HotkeyFix
 
 DEFINE_HOOK(0x4FB2DE, HouseClass_PlaceObject_HotkeyFix, 0x6)
 {
@@ -218,7 +218,7 @@ DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
 
 // issue #232: Naval=yes overrides WaterBound=no and prevents move orders onto Land cells
 // Author: Uranusian
-DEFINE_LJMP(0x47CA05, 0x47CA33); // CellClass_IsClearToBuild_SkipNaval
+DEFINE_JUMP(LJMP, 0x47CA05, 0x47CA33); // CellClass_IsClearToBuild_SkipNaval
 
 // bugfix: DeathWeapon not properly detonates
 // Author: Uranusian
@@ -255,7 +255,7 @@ DEFINE_HOOK(0x7115AE, TechnoTypeClass_CTOR_JumpjetControls, 0xA)
 }
 
 // skip vanilla JumpjetControls and make it earlier load
-DEFINE_LJMP(0x668EB5, 0x668EBD); // RulesClass_Process_SkipJumpjetControls
+DEFINE_JUMP(LJMP, 0x668EB5, 0x668EBD); // RulesClass_Process_SkipJumpjetControls
 
 DEFINE_HOOK(0x52D0F9, InitRules_EarlyLoadJumpjetControls, 0x6)
 {

@@ -60,6 +60,6 @@ DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 		BuildingExt::StoreTiberium(pBuilding, amount, idxTiberium, storageTiberiumIndex);
 		amount = 0.0f;
 	}
-	
+
 	return 0;
 }
