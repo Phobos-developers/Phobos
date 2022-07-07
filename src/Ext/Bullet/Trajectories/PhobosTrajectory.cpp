@@ -69,24 +69,27 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 {
 	PhobosTrajectoryType* pType = nullptr;
 	Stm.Process(pType, false);
+
 	if (pType)
 	{
 		Stm.Process(pType->Flag, false);
+
 		switch (pType->Flag)
 		{
 		case TrajectoryFlag::Straight:
 			pType = GameCreate<StraightTrajectoryType>();
 			break;
-
 		case TrajectoryFlag::Bombard:
 			pType = GameCreate<BombardTrajectoryType>();
 			break;
-
 		default:
 			return nullptr;
 		}
+
+		Stm.Process(pType->DetonationDistance);
 		pType->Load(Stm, false);
 	}
+
 	return pType;
 }
 
