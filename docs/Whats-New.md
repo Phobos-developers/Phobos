@@ -7,6 +7,7 @@ This page lists the history of changes across stable Phobos releases and also al
 ### From vanilla
 
 - SHP debris hardcoded shadows now respect `Shadow=no` tag value, and due to it being the default value they wouldn't have hardcoded shadows anymore by default. Override this by specifying `Shadow=yes` for SHP debris.
+- Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
 
 ### From older Phobos versions
 
@@ -337,6 +338,7 @@ Vanilla fixes:
 - Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to Ares-introduced Warhead effects (by Starkku)
 - Buildings now correctly use laser parameters set for Secondary weapons instead of reading them from Primary weapon (by Starkku)
 - Fixed an issue that caused vehicles killed by damage dealt by a known house but without a known source TechnoType (f.ex animation warhead damage) to not be recorded as killed correctly and thus not spring map trigger events etc. (by Starkku)
+- Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding (only applies to Z-aware drawing mode for now) (by Apollo)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
@@ -349,6 +351,7 @@ Phobos fixes:
 - Fixed a potential cause of crashes concerning shield animations (such in conjunction with cloaking) (by Starkku)
 - Fixed interceptors intercepting projectiles fired by friendly objects if the said object died after firing the projectile (by Starkku)
 - Fixed interceptor weapons with `Inviso=true` projectiles detonating the projectile at wrong coordinates (by Starkku)
+- Fixed some possible configuration reading issues when using Phobos with patches that rename `uimd.ini` (by Belonit)
 </details>
 
 

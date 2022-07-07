@@ -91,6 +91,7 @@
     <ClCompile Include="src\Ext\WeaponType\Hook.EBolt.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
+    <ClCompile Include="src\Misc\BlittersFix.cpp" />
     <ClCompile Include="src\Misc\Hooks.Blowfish.cpp" />
     <ClCompile Include="src\Misc\Hooks.INIClass.cpp" />
     <ClCompile Include="src\Misc\Hooks.Savegame.cpp" />
