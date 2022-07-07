@@ -2,6 +2,7 @@
 #include <PCX.h>
 #include <FileFormats/SHP.h>
 #include <Ext/Rules/Body.h>
+#include <LoadProgressManager.h>
 
 DEFINE_HOOK(0x6B9D9C, RGB_PCX_Loader, 0x7)
 {
@@ -37,6 +38,44 @@ DEFINE_HOOK(0x5535D0, PCX_LoadScreen, 0x6)
 		}
 		return 0x553603;
 	}
+	return 0;
+}
+
+DEFINE_HOOK(0x552F81, PCX_LoadingScreen_Campaign, 0x5)
+{
+	GET(LoadProgressManager*, pThis, EBP);
+
+	DSurface* pSurface = static_cast<DSurface*>(pThis->ProgressSurface);
+	std::string fileName = ScenarioClass::Instance->LS800BkgdName;
+
+	//Debug::Log("[LS800Bkgd] file[%s]\n", fileName.c_str());
+
+	if (fileName.length() < 4U)
+		Debug::FatalErrorAndExit("[LS800BkgdName] illegal filename [%s]\n", fileName.c_str());
+
+	if (_strcmpi(fileName.substr(fileName.length() - 4).c_str(), ".pcx") == 0)
+	{
+		PCX::Instance->LoadFile(fileName.c_str());
+		BSurface* pcx = PCX::Instance->GetSurface(fileName.c_str());
+
+		if (pcx)
+		{
+			RectangleStruct surfBounds = { 0, 0, pSurface->Width, pSurface->Height };
+			RectangleStruct pcxBounds = { 0, 0, pcx->Width, pcx->Height };
+
+			RectangleStruct destClip = { 0, 0, pcx->Width, pcx->Height };
+			destClip.X = (pSurface->Width - pcx->Width) / 2;
+			destClip.Y = (pSurface->Height - pcx->Height) / 2;
+
+			PCX::Instance->BlitToSurface(&destClip, pSurface, pcx);
+			//pSurface->CopyFrom(&surfBounds, &destClip, pcx, &pcxBounds, &pcxBounds, true, true);
+			
+		}
+
+		R->EBX(R->EDI());
+		return 0x552FC6;
+	}
+
 	return 0;
 }
 
