@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <New/Type/RadTypeClass.h>
+#include <Ext/WarheadType/Body.h>
 #include <LightSourceClass.h>
 
 template<> const DWORD Extension<RadSiteClass>::Canary = 0x87654321;
@@ -12,6 +13,29 @@ void RadSiteExt::ExtData::Initialize()
 {
 	this->Type = RadTypeClass::FindOrAllocate("Radiation");
 }
+
+bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance)
+{
+	auto pWarhead = this->Type->GetWarhead();
+
+	if (!this->Type->GetWarheadDetonate())
+	{
+		if (pTarget->ReceiveDamage(&damage, distance, pWarhead, this->RadInvoker, false, true, this->RadHouse) == DamageState::NowDead)
+			return false;
+	}
+	else
+	{
+		auto coords = CoordStruct::Empty;
+		coords = *pTarget->GetCoords(&coords);
+		WarheadTypeExt::DetonateAt(pWarhead, coords, this->RadInvoker, damage);
+
+		if (!pTarget->IsAlive)
+			return false;
+	}
+
+	return true;
+}
+
 
 void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker)
 {

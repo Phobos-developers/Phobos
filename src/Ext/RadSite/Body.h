@@ -43,6 +43,8 @@ public:
 			AnnounceInvalidPointer(RadInvoker, ptr);
 		}
 
+		bool ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance);
+
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 		virtual void Initialize() override;
