@@ -97,8 +97,8 @@ public:
 			, SelectBox_DrawOffset_Infantry { { 0,0 } }
 			, SelectBox_Shape_Unit { "select.shp" }
 			, SelectBox_Palette_Unit { "palette.pal" }
-			, SelectBox_Frame_Unit { { 3,3,3 } }
-			, SelectBox_DrawOffset_Unit { { 0,0 } }
+			, SelectBox_Frame_Unit {{ 3,3,3 }}
+			, SelectBox_DrawOffset_Unit {{ 0,0 }}
 			, SelectBox_DefaultTranslucentLevel { 0 }
 			, SelectBox_DefaultCanSee { AffectedHouse::Owner }
 			, SelectBox_DefaultCanObserverSee { true }

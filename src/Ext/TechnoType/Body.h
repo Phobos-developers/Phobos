@@ -240,7 +240,7 @@ public:
 			, UseSelectBox {}
 			, SelectBox_Shape {}
 			, SelectBox_Palette {}
-			, SelectBox_Frame { { -1,-1,-1 } }
+			, SelectBox_Frame {{ -1,-1,-1 }}
 			, SelectBox_DrawOffset {}
 			, SelectBox_TranslucentLevel {}
 			, SelectBox_CanSee {}
