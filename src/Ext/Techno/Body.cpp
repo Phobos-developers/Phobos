@@ -827,10 +827,11 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 
 Point2D TechnoExt::GetScreenLocation(TechnoClass* pThis)
 {
-	CoordStruct crdAbs = pThis->GetCoords();
+	CoordStruct crdAbsolute = pThis->GetCoords();
 	Point2D  posScreen = { 0,0 };
-	TacticalClass::Instance->CoordsToScreen(&posScreen, &crdAbs);
+	TacticalClass::Instance->CoordsToScreen(&posScreen, &crdAbsolute);
 	posScreen -= TacticalClass::Instance->TacticalPos;
+
 	return posScreen;
 }
 
@@ -905,41 +906,48 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 	if (!Phobos::Config::DigitalDisplay_Enable)
 		return;
 
-	Point2D posLoc = GetScreenLocation(pThis);
-	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	ValueableVector<DigitalDisplayTypeClass*>* pDefaultTypes = nullptr;
-	AbstractType thisAbsType = pThis->WhatAmI();
-	int iLength = 17;
 
-	switch (thisAbsType)
-	{
-	case AbstractType::Building:
-	{
-		pDefaultTypes = &RulesExt::Global()->Buildings_DefaultDigitalDisplayTypes;
-		BuildingTypeClass* pBuildingType = static_cast<BuildingTypeClass*>(pThis->GetTechnoType());
-		int iFoundationHeight = pBuildingType->GetFoundationHeight(false);
-		iLength = iFoundationHeight * 7 + iFoundationHeight / 2;
-	}break;
-	case AbstractType::Infantry:
-	{
-		pDefaultTypes = &RulesExt::Global()->Infantrys_DefaultDigitalDisplayTypes;
-		iLength = 8;
-	}break;
-	case AbstractType::Unit:
-	{
-		pDefaultTypes = &RulesExt::Global()->Units_DefaultDigitalDisplayTypes;
-	}break;
-	case AbstractType::Aircraft:
-	{
-		pDefaultTypes = &RulesExt::Global()->Aircrafts_DefaultDigitalDisplayTypes;
-	}break;
-	default:
+	if (pTypeExt->DigitalDisplay_Disable)
 		return;
-	}
 
-	ValueableVector<DigitalDisplayTypeClass*>* pDisplayTypes = pTypeExt->DigitalDisplayTypes.empty() ? pDefaultTypes : &pTypeExt->DigitalDisplayTypes;
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+	int iLength = 17;
+	ValueableVector<DigitalDisplayTypeClass*>* pDisplayTypes = nullptr;
+
+	if (!pTypeExt->DigitalDisplayTypes.empty())
+	{
+		pDisplayTypes = &pTypeExt->DigitalDisplayTypes;
+	}
+	else
+	{
+		switch (pThis->WhatAmI())
+		{
+		case AbstractType::Building:
+		{
+			pDisplayTypes = &RulesExt::Global()->Buildings_DefaultDigitalDisplayTypes;
+			BuildingTypeClass* pBuildingType = static_cast<BuildingTypeClass*>(pThis->GetTechnoType());
+			int iFoundationHeight = pBuildingType->GetFoundationHeight(false);
+			iLength = iFoundationHeight * 7 + iFoundationHeight / 2;
+		}break;
+		case AbstractType::Infantry:
+		{
+			pDisplayTypes = &RulesExt::Global()->Infantry_DefaultDigitalDisplayTypes;
+			iLength = 8;
+		}break;
+		case AbstractType::Unit:
+		{
+			pDisplayTypes = &RulesExt::Global()->Vehicles_DefaultDigitalDisplayTypes;
+		}break;
+		case AbstractType::Aircraft:
+		{
+			pDisplayTypes = &RulesExt::Global()->Aircraft_DefaultDigitalDisplayTypes;
+		}break;
+		default:
+			return;
+		}
+	}
 
 	for (DigitalDisplayTypeClass*& pDisplayType : *pDisplayTypes)
 	{
@@ -951,8 +959,8 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		if (iCur == -1 || iMax == -1)
 			continue;
 
-		bool isBuilding = thisAbsType == AbstractType::Building;
-		bool bHasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
+		bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
+		bool hasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
 		Point2D posDraw = pThis->WhatAmI() == AbstractType::Building ?
 			GetBuildingSelectBracketPosition(pThis, pDisplayType->AnchorType_Building)
 			: GetFootSelectBracketPosition(pThis, pDisplayType->AnchorType);
@@ -961,7 +969,7 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		if (pDisplayType->InfoType == DisplayInfoType::Shield)
 			posDraw.Y += pExt->Shield->GetType()->BracketDelta;
 
-		pDisplayType->Draw(posDraw, iLength, iCur, iMax, isBuilding, bHasShield);
+		pDisplayType->Draw(posDraw, iLength, iCur, iMax, isBuilding, hasShield);
 	}
 }
 

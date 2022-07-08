@@ -90,9 +90,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings.Offset");
 
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypes");
-	this->Infantrys_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Infantrys.DefaultDigitalDisplayTypes");
-	this->Units_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Units.DefaultDigitalDisplayTypes");
-	this->Aircrafts_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Aircrafts.DefaultDigitalDisplayTypes");
+	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Infantry.DefaultDigitalDisplayTypes");
+	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
+	this->Aircraft_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Aircraft.DefaultDigitalDisplayTypes");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -201,9 +201,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_SelfHeal_Units_Offset)
 		.Process(this->Pips_SelfHeal_Buildings_Offset)
 		.Process(this->Buildings_DefaultDigitalDisplayTypes)
-		.Process(this->Infantrys_DefaultDigitalDisplayTypes)
-		.Process(this->Units_DefaultDigitalDisplayTypes)
-		.Process(this->Aircrafts_DefaultDigitalDisplayTypes)
+		.Process(this->Infantry_DefaultDigitalDisplayTypes)
+		.Process(this->Vehicles_DefaultDigitalDisplayTypes)
+		.Process(this->Aircraft_DefaultDigitalDisplayTypes)
 		;
 }
 

@@ -51,9 +51,9 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
 
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
-		ValueableVector<DigitalDisplayTypeClass*> Infantrys_DefaultDigitalDisplayTypes;
-		ValueableVector<DigitalDisplayTypeClass*> Units_DefaultDigitalDisplayTypes;
-		ValueableVector<DigitalDisplayTypeClass*> Aircrafts_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -77,9 +77,9 @@ public:
 			, Pips_SelfHeal_Buildings_Offset {{ 15, 10 }}
 			, Pips_Shield_Building_Empty {}
 			, Buildings_DefaultDigitalDisplayTypes {}
-			, Infantrys_DefaultDigitalDisplayTypes {}
-			, Units_DefaultDigitalDisplayTypes {}
-			, Aircrafts_DefaultDigitalDisplayTypes {}
+			, Infantry_DefaultDigitalDisplayTypes {}
+			, Vehicles_DefaultDigitalDisplayTypes {}
+			, Aircraft_DefaultDigitalDisplayTypes {}
 		{ }
 
 		virtual ~ExtData() = default;

@@ -117,9 +117,10 @@ public:
 		Valueable<bool> Passengers_SyncOwner;
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 		
-    Valueable<Vector2D<double>> InitialStrength_Cloning;
-		
-    ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
+		Valueable<Vector2D<double>> InitialStrength_Cloning;
+
+		Valueable<bool> DigitalDisplay_Disable;
+		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 		
 		struct LaserTrailDataEntry
 		{
@@ -232,6 +233,7 @@ public:
 			, DeployedPrimaryFireFLH { }
 			, DeployedSecondaryFireFLH { }
 			, InitialStrength_Cloning{ { 1.0, 0.0 } }
+			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
 		{ }
 
