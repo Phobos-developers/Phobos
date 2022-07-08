@@ -29,7 +29,8 @@ public:
 		int LastWarpDistance;
 		int Death_Countdown;
 		AnimTypeClass* MindControlRingAnimType;
-		int DamageNumberOffset;
+		OptionalStruct<int, false> DamageNumberOffset;
+		OptionalStruct<int, true> CurrentLaserWeaponIndex;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -46,8 +47,9 @@ public:
 			, LastWarpDistance {}
 			, Death_Countdown(-1)
 			, MindControlRingAnimType { nullptr }
-			, DamageNumberOffset { INT32_MIN }
+			, DamageNumberOffset {}
 			, OriginalPassengerOwner {}
+			, CurrentLaserWeaponIndex {}
 		{ }
 
 		virtual ~ExtData() = default;

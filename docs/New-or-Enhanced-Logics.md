@@ -9,7 +9,12 @@ This page describes all the engine features that are either new and introduced b
 ![image](_static/images/radtype-01.png)
 *Mixing different radiation types*
 
-- Allows to have custom radiation type for any weapon now. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
+- Any weapon can now have a custom radiation type. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
+- There are several new properties available to all radiation types.
+  - `RadApplicationDelay.Building` can be set to value higher than 0 to allow radiation to damage buildings.
+  - `RadSiteWarhead.Detonate` can be set to make `RadSiteWarhead` detonate on affected objects rather than only be used to dealt direct damage. This enables most Warhead effects, display of animations etc.
+  - `RadHasOwner`, if set to true, makes damage dealt by the radiation count as having been dealt by the house that fired the projectile that created the radiation field. This means that Warhead controls such as `AffectsAllies` will be respected and any units killed will count towards that player's destroyed units count.
+  - `RadHasInvoker`, if set to true, makes the damage dealt by the radiation count as having been dealt by the TechnoType (the 'invoker') that fired the projectile that created the radiation field. In addition to the effects of `RadHasOwner`, this will also grant experience from units killed by the radiation to the invoker.
 
 In `rulesmd.ini`:
 ```ini
@@ -17,10 +22,9 @@ In `rulesmd.ini`:
 0=SOMERADTYPE
 
 [SOMEWEAPON]                    ; WeaponType
-RadType=Radiation               ; RadType to use instead
-                                ; of default [Radiation]
+RadType=Radiation               ; RadType to use instead of default of [Radiation]
 
-[SOMERADTYPE]                   ; custom RadType name
+[SOMERADTYPE]                   ; RadType
 RadDurationMultiple=1           ; integer
 RadApplicationDelay=16          ; integer
 RadApplicationDelay.Building=0  ; integer
@@ -32,6 +36,9 @@ RadLightFactor=0.1              ; floating point value
 RadTintFactor=1.0               ; floating point value
 RadColor=0,255,0                ; integer - Red,Green,Blue
 RadSiteWarhead=RadSite          ; WarheadType
+RadSiteWarhead.Detonate=false   ; boolean
+RadHasOwner=false               ; boolean
+RadHasInvoker=false             ; boolean
 ```
 
 ### Digital display
@@ -922,16 +929,7 @@ FeedbackWeapon=  ; WeaponType
 
 ### Radiation enhancements
 
-- Radiation now has owner by default, so any rad-kills will be scored. This behavior can be reverted by a corresponding tag.
-  - `AffectsAllies`, `AffectsOwner` and `AffectsEnemies` on `RadSiteWarhead` are respected.
-  - Currently the rad maker doesn't gain experience from kills, this may change in future.
-- Radiation is now able to deal damage to Buildings. To enable set `RadApplicationDelay.Building` value more than 0.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]       ; WeaponType
-Rad.NoOwner=false  ; boolean
-```
+- In addition to allowing custom radiation types, several enhancements are also available to the default radiation type defined in `[Radiation]`, such as ability to set owner & invoker or deal damage against buildings. See [Custom Radiation Types](#custom-radiation-types) for more details.
 
 ### Strafing aircraft weapon customization
 

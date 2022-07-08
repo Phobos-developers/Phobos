@@ -166,6 +166,7 @@ This page lists all the individual contributions to the project by their author.
 - **Trsdy**
    - Jumpjet facing fix
    - Warhead superweapon launch logic
+- **Apollo** - Translucent SHP drawing patches
 - **ststl, FlyStar, Saigyouji, JunJacobYoung** - Digital Display
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
