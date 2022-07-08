@@ -24,9 +24,9 @@ public:
 		Nullable<WeaponTypeClass*> Interceptable_WeaponOverride;
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
 		Nullable<double> Gravity;
-		
+
 		PhobosTrajectoryType* TrajectoryType;
-		
+
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
 

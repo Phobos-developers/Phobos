@@ -102,7 +102,7 @@ DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
 
 				if (strength <= 0)
 					strength = 1;
-				
+
 				pFoot->Health = strength;
 				pFoot->EstimatedHealth = strength;
 			}
@@ -211,9 +211,9 @@ DEFINE_HOOK(0x518505, InfantryClass_TakeDamage_NotHuman, 0x4)
 // Author: Otamaa
 DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 {
-  GET(InfantryClass*, pThis, ESI);
-  R->EDI(pThis->Type->DeployFireWeapon == -1  ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
-  return 0x5223B9;
+	GET(InfantryClass*, pThis, ESI);
+	R->EDI(pThis->Type->DeployFireWeapon == -1  ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
+	return 0x5223B9;
 }
 
 // Customizable OpenTopped Properties
@@ -455,4 +455,29 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 
 	R->EBX(result);
 	return ReturnResult;
+}
+
+// Basically a hack to make game and Ares pick laser properties from non-Primary weapons.
+DEFINE_HOOK(0x70E1A5, TechnoClass_GetTurretWeapon_LaserWeapon, 0x6)
+{
+	enum { ReturnResult = 0x70E1C7, Continue = 0x70E1AB };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (pThis->WhatAmI() == AbstractType::Building)
+	{
+		if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+		{
+			if (!pExt->CurrentLaserWeaponIndex.empty())
+			{
+				auto weaponStruct = pThis->GetWeapon(pExt->CurrentLaserWeaponIndex.get());
+				R->EAX(weaponStruct);
+				return ReturnResult;
+			}
+		}
+	}
+
+	// Restore overridden instructions.
+	R->EAX(pThis->GetTechnoType());
+	return Continue;
 }

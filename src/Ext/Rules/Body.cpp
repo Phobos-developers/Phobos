@@ -73,6 +73,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
 	this->MissingCameo.Read(pINI, sectionAudioVisual, "MissingCameo");
+	this->RadWarhead_Detonate.Read(exINI, "Radiation", "RadSiteWarhead.Detonate");
+	this->RadHasOwner.Read(exINI, "Radiation", "RadHasOwner");
+	this->RadHasInvoker.Read(exINI, "Radiation", "RadHasInvoker");
 	this->JumpjetTurnToTarget.Read(exINI, "JumpjetControls", "TurnToTarget");
 	this->PlacementGrid_TranslucentLevel.Read(exINI, sectionAudioVisual, "BuildingPlacementGrid.TranslucentLevel");
 	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, sectionAudioVisual, "BuildingPlacementPreview.DefaultTranslucentLevel");
@@ -190,6 +193,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->InfantryGainSelfHealCap)
 		.Process(this->UnitsGainSelfHealCap)
 		.Process(this->RadApplicationDelay_Building)
+		.Process(this->RadWarhead_Detonate)
+		.Process(this->RadHasOwner)
+		.Process(this->RadHasInvoker)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
 		.Process(this->JumpjetAllowLayerDeviation)

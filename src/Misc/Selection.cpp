@@ -129,7 +129,7 @@ public:
 };
 
 // Replace single call
-DEFINE_POINTER_CALL(0x4ABCEB, ExtSelection::Tactical_MakeFilteredSelection);
+DEFINE_JUMP(CALL, 0x4ABCEB, GET_OFFSET(ExtSelection::Tactical_MakeFilteredSelection))
 
 // Replace vanilla function. For in case another module tries to call the vanilla function at offset
-DEFINE_POINTER_LJMP(0x6D9FF0, ExtSelection::Tactical_MakeFilteredSelection)
+DEFINE_JUMP(LJMP, 0x6D9FF0, GET_OFFSET(ExtSelection::Tactical_MakeFilteredSelection))

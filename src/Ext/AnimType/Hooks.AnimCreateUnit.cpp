@@ -168,7 +168,7 @@ DEFINE_HOOK(0x469C98, BulletClass_DetonateAt_DamageAnimSelected, 0x0)
 		{
 			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
 		}
-		else if (!pAnim->Owner) 
+		else if (!pAnim->Owner)
 		{
 			auto const pExt = BulletExt::ExtMap.Find(pThis);
 			pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
