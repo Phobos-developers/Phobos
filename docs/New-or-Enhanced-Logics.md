@@ -215,7 +215,7 @@ In `aimd.ini`:
 ExampleAITrigger=Name,Team1,OwnerHouse,TechLevel,-1,<none>,00000000000000000000000000000000000000000000000000000000xxxxyyyy,StartingWeight,MinimumWeight,MaximumWeight,IsForSkirmish,unused,Side,IsBaseDefense,Team2,EnabledInE,EnabledInM,EnabledInH
 ```
 
-- An `AICondition` has multiple sections, and they are divided by `/`. The first part are two integers, defining  the number of essential requirements and optional requirements. The rest parts have the same format: `PickMode,CompareMode,Number,TechnoType`. They define each requirement.
+- An `AICondition` has multiple sections, and they are divided by `/`. The first part are two integers, defining  the number of essential requirements and optional requirements. The rest parts have the same format: `PickMode,CompareMode,Number,TechnoType`. They define each requirement. The first few parts covered by the number of essential requirements are regarded as essential requirements, and the rest of them are regarded as optional requirements.
 
 In `rulesmd.ini`:
 ```ini
