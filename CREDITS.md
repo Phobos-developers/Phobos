@@ -165,12 +165,12 @@ This page lists all the individual contributions to the project by their author.
    - Laser fixes prototype
 - **Trsdy**
    - Jumpjet facing fix
-   - Warhead superweapon launch logic
    - Kill Object Automatically logic
    - Building specific EVA_StructureSold
    - Building specific SellSound
    - Slaves' house customization when owner is killed
    - Misc CN doc fix
+   - Warhead superweapon launch logic
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
