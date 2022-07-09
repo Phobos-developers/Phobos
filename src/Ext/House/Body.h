@@ -30,7 +30,7 @@ public:
 			, Factory_BuildingType { nullptr }
 			, Factory_InfantryType { nullptr }
 			, Factory_VehicleType { nullptr }
-			, Factory_NavyType {nullptr }
+			, Factory_NavyType { nullptr }
 			, Factory_AircraftType { nullptr }
 		{ }
 

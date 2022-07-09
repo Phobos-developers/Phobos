@@ -69,6 +69,10 @@ public:
 		static bool ArtImageSwap;
 		static bool AllowParallelAIQueues;
 		static bool EnableBuildingPlacementPreview;
-		static bool ExtendParallelAIQueues[5];
+		static bool ExtendParallelAIQueues_Infantry;
+		static bool ExtendParallelAIQueues_Vehicle;
+		static bool ExtendParallelAIQueues_Navy;
+		static bool ExtendParallelAIQueues_Aircraft;
+		static bool ExtendParallelAIQueues_Building;
 	};
 };

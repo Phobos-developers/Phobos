@@ -899,12 +899,15 @@ CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allie
 
 ### Extend parallel AI queues
 
-- In the vanilla game, you could make the AI construct multiple factories by using cloned BuildingTypes whit TechLevel=-1 and AIBuildThis=yes. Ares can alter the vanilla game behaviour so that this cloning issue no longer occurs when the AI owns more than one of any factory. But we still can't set it for some type of factory.
- -Now we can set it on specified types of factories do not occurs cloning issue and others will not be affected.
- -To prevent conflict with Ares, this only work when AllowParallelAIQueues=yes.
+- Now we can set it on specified types of factories do not occurs cloning issue and others will not be affected.
+ -To prevent conflict with Ares, this only work when AllowParallelAIQueues=yes or you don't use Ares.
 
 In `rulesmd.ini`
 ```ini
 [GlobalControls]
-ExtendParallelAIQueues=yes,yes,yes,yes,yes      ; list of boolean, corresponding to Infantry, Vehicle without Naval, Vehicle with Naval, Aircraft, Building
+ExtendParallelAIQueues.Infantry=yes      ; boolean
+ExtendParallelAIQueues.Vehicle=yes      ; boolean
+ExtendParallelAIQueues.Navy=yes      ; boolean
+ExtendParallelAIQueues.Aircraft=yes      ; boolean
+ExtendParallelAIQueues.Building=yes      ; boolean
 ```
