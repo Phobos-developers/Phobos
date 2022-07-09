@@ -764,6 +764,30 @@ In `rulesmd.ini`:
 SplashList=<none>            ; list of animations
 SplashList.PickRandom=false  ; boolean
 
+### Detonate Warhead on all objects on map
+
+- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is fully detonated (and not just used to deal damage) and consequently any `Airburst/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
+  - `DetonateOnAllMapObjects.AffectTargets` can be used to filter which types of targets (TechnoTypes) are considered valid. Only `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values.
+  - `DetonateOnAllMapObjects.AffectHouses` can be used to filter which houses targets can belong to be considered valid. Only applicable if the house that fired the projectile is known.
+  - `DetonateOnAllMapObjects.AffectTypes` can be used to list specific TechnoTypes to be considered as valid targets. If any valid TechnoTypes are listed, then only matching objects will be targeted. Note that `DetonateOnAllMapObjects.AffectTargets` and `DetonateOnAllMapObjects.AffectHouses` take priority over this setting.
+  - `DetonateOnAllMapObjects.IgnoreTypes` can be used to list specific TechnoTypes to be never considered as valid targets.
+  - `DetonateOnAllMapObjects.RequireVerses`, if set to true, only considers targets whose armor type the warhead has non-zero `Verses` value against as valid. This is checked after all other filters listed above.
+ 
+ In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                                ; Warhead
+DetonateOnAllMapObjects=false                ; boolean
+DetonateOnAllMapObjects.AffectTargets=all    ; list of Affected Target Enumeration (aircraft|buildings|infantry|units|all)
+DetonateOnAllMapObjects.AffectHouses=all     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DetonateOnAllMapObjects.AffectTypes=         ; list of TechnoType names
+DetonateOnAllMapObjects.IgnoreTypes=         ; list of TechnoType names
+DetonateOnAllMapObjects.RequireVerses=false  ; boolean
+```
+
+```{warning}
+While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys is advised.
+```
+
 ### Generate credits on impact
 
 ![image](_static/images/hackerfinallyworks-01.gif)

@@ -313,6 +313,7 @@ New:
 - Animation damage / weapon improvements (by Starkku)
 - Warhead self-damaging toggle (by Starkku)
 - Trailer animations inheriting owner (by Starkku)
+- Warhead detonation on all objects on map (by Starkku)
 - Enable and custom selectbox (by NetsuNegi)
 
 Vanilla fixes:
