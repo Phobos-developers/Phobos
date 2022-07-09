@@ -70,7 +70,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Buildings now correctly use laser parameters set for Secondary weapons instead of reading them from Primary weapon.
 - Fixed an issue that caused vehicles killed by damage dealt by a known house but without a known source TechnoType (f.ex animation warhead damage) to not be recorded as killed correctly and thus not spring map trigger events etc.
 
-![image](_static/images/translucency-fix.png)  
+![image](_static/images/translucency-fix.png)
 *Example gradient SHP drawing with 75% translucency, before and after*
 
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
