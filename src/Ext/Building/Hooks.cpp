@@ -6,6 +6,8 @@
 #include <Misc/FlyingStrings.h>
 #include <Ext/House/Body.h>
 
+#include <Ext/WarheadType/Body.h>
+
 DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
 {
 	GET(UnitClass*, pUnit, EBP);
@@ -120,6 +122,19 @@ DEFINE_HOOK(0x43FE73, BuildingClass_AI_FlyingStrings, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x44224F, BuildingClass_ReceiveDamage_DamageSelf, 0x5)
+{
+	enum { SkipCheck = 0x442268 };
+
+	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFS(0x9C, -0x4));
+
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(receiveDamageArgs.WH))
+	{
+		if (pWHExt->AllowDamageOnSelf)
+			return SkipCheck;
+  }
+}
+
 DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory, 0x6)
 {
 	GET(BuildingClass*, pBuilding, ESI);
@@ -220,7 +235,7 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction, 0x8)
 		if (!Phobos::Config::ExtendParallelAIQueues_Aircraft)
 			pData->Factory_AircraftType = nullptr;
 		break;
-	}
+    }
 
 	return 0;
 }

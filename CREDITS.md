@@ -134,7 +134,6 @@ This page lists all the individual contributions to the project by their author.
   - Aircraft & jumpjet speed modifiers fix
   - Local warhead screen shaking
   - Vehicle custom palette fix
-  - Weapon owner detachment
   - Feedback weapon
   - TerrainType & ore minimap color customization
   - Laser fixes & improvements
@@ -149,6 +148,10 @@ This page lists all the individual contributions to the project by their author.
   - Automatic passenger owner change toggle
   - Interceptor improvements
   - OpenTopped transport rangefinding & deactivated state customizations
+  - Animation damage / weapon improvements
+  - Warhead self-damaging toggle
+  - Trailer animation owner inheritance
+  - Warhead detonation on all objects on map
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
@@ -165,6 +168,7 @@ This page lists all the individual contributions to the project by their author.
    - Jumpjet facing fix
    - Warhead superweapon launch logic
 - **NetsuNegi* - Extend parallel AI queues
+- **Apollo** - Translucent SHP drawing patches
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
