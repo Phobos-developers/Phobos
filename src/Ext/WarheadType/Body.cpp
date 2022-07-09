@@ -159,7 +159,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->LaunchSW_RealLaunch.Read(exINI, pSection, "LaunchSW.RealLaunch");
 	this->LaunchSW_IgnoreInhibitors.Read(exINI, pSection, "LaunchSW.IgnoreInhibitors");
 	this->AllowDamageOnSelf.Read(exINI, pSection, "AllowDamageOnSelf");
-	
+
 	this->DetonateOnAllMapObjects.Read(exINI, pSection, "DetonateOnAllMapObjects");
 	this->DetonateOnAllMapObjects_RequireVerses.Read(exINI, pSection, "DetonateOnAllMapObjects.RequireVerses");
 	this->DetonateOnAllMapObjects_AffectTargets.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTargets");
@@ -234,7 +234,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaunchSW_RealLaunch)
 		.Process(this->LaunchSW_IgnoreInhibitors)
 		.Process(this->AllowDamageOnSelf)
-		
+
 		.Process(this->DetonateOnAllMapObjects)
 		.Process(this->DetonateOnAllMapObjects_RequireVerses)
 		.Process(this->DetonateOnAllMapObjects_AffectTargets)

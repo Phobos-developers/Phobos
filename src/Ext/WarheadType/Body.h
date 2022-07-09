@@ -103,7 +103,7 @@ public:
 			, TransactMoney_Display { false }
 			, TransactMoney_Display_Houses { AffectedHouse::All }
 			, TransactMoney_Display_AtFirer { false }
-			, TransactMoney_Display_Offset {{ 0, 0 }}
+			, TransactMoney_Display_Offset { { 0, 0 } }
 			, SplashList {}
 			, SplashList_PickRandom { false }
 			, RemoveDisguise { false }
@@ -163,7 +163,7 @@ public:
 			, DetonateOnAllMapObjects_AffectHouses { AffectedHouse::All }
 			, DetonateOnAllMapObjects_AffectTypes {}
 			, DetonateOnAllMapObjects_IgnoreTypes {}
-					
+
 			, AffectsEnemies { true }
 			, AffectsOwner {}
 
