@@ -63,6 +63,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	const char* sectionAITargetTypes = "AITargetTypes";
 	const char* sectionAIScriptsList = "AIScriptsList";
+	const char* sectionAIConditionsList = "AIConditionsList";
 
 	INI_EX exINI(pINI);
 
@@ -125,6 +126,24 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		AIScriptsLists.AddItem(objectsList);
 		objectsList.Clear();
 	}
+
+	// Section AIConditionsList
+	int AIConditionsitemsCount = pINI->GetKeyCount(sectionAIConditionsList);
+	for (int i = 0; i < AIConditionsitemsCount; ++i)
+	{
+		DynamicVectorClass<std::string> objectsList;
+
+		char* context = nullptr;
+		pINI->ReadString(sectionAIConditionsList, pINI->GetKeyName(sectionAIConditionsList, i), "", Phobos::readBuffer);
+
+		for (char* cur = strtok_s(Phobos::readBuffer, "/", &context); cur; cur = strtok_s(nullptr, "/", &context))
+		{
+			objectsList.AddItem(cur);
+		}
+
+		AIConditionsLists.AddItem(objectsList);
+		objectsList.Clear();
+	}
 }
 
 // this runs between the before and after type data loading methods for rules ini
@@ -172,6 +191,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
+		.Process(this->AIConditionsLists)
 		.Process(this->Storage_TiberiumIndex)
 		.Process(this->InfantryGainSelfHealCap)
 		.Process(this->UnitsGainSelfHealCap)

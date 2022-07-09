@@ -1,6 +1,7 @@
 #include <Phobos.h>
 
 #include <Ext/Aircraft/Body.h>
+#include <Ext/AITriggerType/Body.h>
 #include <Ext/AnimType/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
@@ -29,6 +30,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 
 #include <utility>
+
 
 #pragma region Implementation details
 
@@ -225,6 +227,7 @@ private:
 auto MassActions = MassAction <
 	// Ext classes
 	AircraftExt,
+	AITriggerTypeExt,
 	AnimTypeExt,
 	AnimExt,
 	BuildingExt,
