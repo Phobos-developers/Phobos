@@ -33,7 +33,7 @@ void __fastcall TerrainClass_AI_CellsPerAnim(CellClass* pThis, void*, bool force
 		pThis->SpreadTiberium(forced);
 }
 
-DEFINE_POINTER_CALL(0x71C8D0, TerrainClass_AI_CellsPerAnim)
+DEFINE_JUMP(CALL, 0x71C8D0, GET_OFFSET(TerrainClass_AI_CellsPerAnim))
 
 DEFINE_HOOK(0x483811, CellClass_SpreadTiberium_TiberiumType, 0x8)
 {
