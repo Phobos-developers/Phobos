@@ -674,9 +674,9 @@ SelectBox.Shape.Unit=select.shp              ; filename, includingthe .shp exten
 SelectBox.Palette.Unit=palette.pal             ; filename, includingthe .pal extension
 SelectBox.Frame.Unit=3,3,3                     ; frame, green hp, yellow hp, red hp
 SelectBox.DrawOffset.Unit=0,0                ; X, Y, positive value is right and down
-SelectBox.DefaultTranslucentLevel=0        ; integer 0 ~ 3
-SelectBox.DefaultCanSee=Owner              ; AffectedHouse, not include the observer
-SelectBox.DefaultCanObserverSee=true     ; boolean
+SelectBox.TranslucentLevel=0        ; integer 0 ~ 3
+SelectBox.CanSee=Owner              ; AffectedHouse, not include the observer
+SelectBox.CanObserverSee=true     ; boolean
 
 [SOMETECHNO]                              ; TechnoType
 UseSelectBox=                               ; boolean
@@ -685,7 +685,7 @@ SelectBox.Palette=                         ; filename, includingthe .pal extensi
 SelectBox.Frame=                          ; frame, green hp, yellow hp, red hp
 SelectBox.DrawOffset=                   ; X, Y, positive value is right and down
 SelectBox.TranslucentLevel=           ; integer 0 ~ 3
-SelectBox.ShowEnemy=                 ; AffectedHouse, not include the observer
+SelectBox.CanSee=                        ; AffectedHouse, not include the observer
 SelectBox.CanObserverSee=           ; boolean
 ```
 
