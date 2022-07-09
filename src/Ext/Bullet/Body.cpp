@@ -4,6 +4,8 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/TechnoType/Body.h>
+#include <Ext/WarheadType/Body.h>
+#include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<BulletClass>::Canary = 0x2A2A2A2A;
 BulletExt::ExtContainer BulletExt::ExtMap;
