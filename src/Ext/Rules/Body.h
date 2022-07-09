@@ -31,6 +31,9 @@ public:
 		Nullable<int> InfantryGainSelfHealCap;
 		Nullable<int> UnitsGainSelfHealCap;
 		Valueable<int> RadApplicationDelay_Building;
+		Valueable<bool> RadWarhead_Detonate;
+		Valueable<bool> RadHasOwner;
+		Valueable<bool> RadHasInvoker;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 		Valueable<bool> JumpjetAllowLayerDeviation;
@@ -54,6 +57,9 @@ public:
 			, InfantryGainSelfHealCap {}
 			, UnitsGainSelfHealCap {}
 			, RadApplicationDelay_Building { 0 }
+			, RadWarhead_Detonate { false }
+			, RadHasOwner { false }
+			, RadHasInvoker { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, JumpjetAllowLayerDeviation { true }

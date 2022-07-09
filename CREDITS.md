@@ -151,6 +151,7 @@ This page lists all the individual contributions to the project by their author.
   - Animation damage / weapon improvements
   - Warhead self-damaging toggle
   - Trailer animation owner inheritance
+  - Warhead detonation on all objects on map
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
@@ -166,6 +167,7 @@ This page lists all the individual contributions to the project by their author.
 - **Trsdy**
    - Jumpjet facing fix
    - Warhead superweapon launch logic
+- **Apollo** - Translucent SHP drawing patches
 - **FlyStar** - PCX load screen of campaign
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
