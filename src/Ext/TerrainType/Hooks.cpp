@@ -22,6 +22,7 @@ DEFINE_HOOK(0x71C853, TerrainTypeClass_Context_Set, 0x6)
 	return 0;
 }
 
+/* Replaced by a hook TerrainClass_AI_Animated.
 // thiscall is being emulated here, ECX = pThis, EDX is discarded, second arg is passed thru stack - Kerbiter
 void __fastcall TerrainClass_AI_CellsPerAnim(CellClass* pThis, void*, bool forced)
 {
@@ -34,6 +35,7 @@ void __fastcall TerrainClass_AI_CellsPerAnim(CellClass* pThis, void*, bool force
 }
 
 DEFINE_JUMP(CALL, 0x71C8D0, GET_OFFSET(TerrainClass_AI_CellsPerAnim))
+*/
 
 DEFINE_HOOK(0x483811, CellClass_SpreadTiberium_TiberiumType, 0x8)
 {
@@ -166,3 +168,34 @@ DEFINE_HOOK(0x568432, MapClass_PlaceDown_0x0TerrainTypes, 0x8)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x71C84D, TerrainClass_AI_Animated, 0x6)
+{
+	enum { SkipGameCode = 0x71C8D5 };
+
+	GET(TerrainClass*, pThis, ESI);
+
+	if (pThis->Type->IsAnimated)
+	{
+		if (pThis->Animation.Value == pThis->Type->GetImage()->Frames / 2)
+		{
+			pThis->Animation.Value = 0;
+			pThis->Animation.Start(0);
+
+			if (pThis->Type->SpawnsTiberium)
+			{
+				auto pCell = pThis->GetCell();
+				int cellCount = 1;
+
+				if (auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type))
+					cellCount = pTypeExt->GetCellsPerAnim();
+
+				for (int i = 0; i < cellCount; i++)
+					pCell->SpreadTiberium(true);
+			}
+		}
+	}
+
+	return SkipGameCode;
+}
+
