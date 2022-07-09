@@ -99,9 +99,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->SelectBox_Palette_Unit.Read(pINI, sectionAudioVisual, "SelectBox.Palette.Unit");
 	this->SelectBox_Frame_Unit.Read(exINI, sectionAudioVisual, "SelectBox.Frame.Unit");
 	this->SelectBox_DrawOffset_Unit.Read(exINI, sectionAudioVisual, "SelectBox.DrawOffset.Unit");
-	this->SelectBox_DefaultTranslucentLevel.Read(exINI, sectionAudioVisual, "SelectBox.DefaultTranslucentLevel");
-	this->SelectBox_DefaultCanSee.Read(exINI, sectionAudioVisual, "SelectBox.DefaultCanSee");
-	this->SelectBox_DefaultCanObserverSee.Read(exINI, sectionAudioVisual, "SelectBox.DefaultCanObserverSee");
+	this->SelectBox_TranslucentLevel.Read(exINI, sectionAudioVisual, "SelectBox.TranslucentLevel");
+	this->SelectBox_CanSee.Read(exINI, sectionAudioVisual, "SelectBox.CanSee");
+	this->SelectBox_CanObserverSee.Read(exINI, sectionAudioVisual, "SelectBox.CanObserverSee");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -221,9 +221,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelectBox_Palette_Unit)
 		.Process(this->SelectBox_Frame_Unit)
 		.Process(this->SelectBox_DrawOffset_Unit)
-		.Process(this->SelectBox_DefaultTranslucentLevel)
-		.Process(this->SelectBox_DefaultCanSee)
-		.Process(this->SelectBox_DefaultCanObserverSee)
+		.Process(this->SelectBox_TranslucentLevel)
+		.Process(this->SelectBox_CanSee)
+		.Process(this->SelectBox_CanObserverSee)
 		;
 }
 

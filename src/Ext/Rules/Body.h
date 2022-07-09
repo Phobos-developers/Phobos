@@ -62,9 +62,9 @@ public:
 		PhobosFixedString<32U> SelectBox_Palette_Unit;
 		Nullable<Vector3D<int>> SelectBox_Frame_Unit;
 		Nullable<Vector2D<int>> SelectBox_DrawOffset_Unit;
-		Nullable<int> SelectBox_DefaultTranslucentLevel;
-		Valueable<AffectedHouse> SelectBox_DefaultCanSee;
-		Valueable<bool> SelectBox_DefaultCanObserverSee;
+		Nullable<int> SelectBox_TranslucentLevel;
+		Valueable<AffectedHouse> SelectBox_CanSee;
+		Valueable<bool> SelectBox_CanObserverSee;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -99,9 +99,9 @@ public:
 			, SelectBox_Palette_Unit { "palette.pal" }
 			, SelectBox_Frame_Unit {{ 3,3,3 }}
 			, SelectBox_DrawOffset_Unit {{ 0,0 }}
-			, SelectBox_DefaultTranslucentLevel { 0 }
-			, SelectBox_DefaultCanSee { AffectedHouse::Owner }
-			, SelectBox_DefaultCanObserverSee { true }
+			, SelectBox_TranslucentLevel { 0 }
+			, SelectBox_CanSee { AffectedHouse::Owner }
+			, SelectBox_CanObserverSee { true }
 		{ }
 
 		virtual ~ExtData() = default;
