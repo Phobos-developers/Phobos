@@ -125,7 +125,7 @@ void AITriggerTypeExt::CustomizableAICondition(AITriggerTypeClass* pAITriggerTyp
 		if (thisAICondition.Count < 2)
 		{
 			pAITriggerType->IsEnabled = false;
-			Debug::Log("DEBUG: [AIConditionsLists]: Error parsing line [%d].\n", condition);
+			Debug::Log("DEBUG: [AIConditionsList]: Error parsing line [%d].\n", condition);
 			return;
 		}
 
@@ -170,8 +170,8 @@ void AITriggerTypeExt::CustomizableAICondition(AITriggerTypeClass* pAITriggerTyp
 			}
 			else
 			{
-				Debug::Log("DEBUG: [AIConditionsLists][%d]: Error parsing [%s]\n", condition, cur2[3]);
-				Debug::Log("DEBUG: [AIConditionsLists]: Error parsing line [%d].\n", condition);
+				Debug::Log("DEBUG: [AIConditionsList][%d]: Error parsing [%s]\n", condition, cur2[3]);
+				Debug::Log("DEBUG: [AIConditionsList]: Error parsing line [%d].\n", condition);
 				pAITriggerType->IsEnabled = false;
 				return;
 			}
@@ -198,7 +198,7 @@ void AITriggerTypeExt::CustomizableAICondition(AITriggerTypeClass* pAITriggerTyp
 			}
 			else
 			{
-				Debug::Log("DEBUG: [AIConditionsLists]: Error parsing line [%d].\n", condition);
+				Debug::Log("DEBUG: [AIConditionsList]: Error parsing line [%d].\n", condition);
 				pAITriggerType->IsEnabled = false;
 				return;
 			}
@@ -208,7 +208,7 @@ void AITriggerTypeExt::CustomizableAICondition(AITriggerTypeClass* pAITriggerTyp
 	{
 		//thoroughly disable it
 		pAITriggerType->IsEnabled = false;
-		Debug::Log("DEBUG: [AIConditionsLists]: Conditin number overflew!.\n");
+		Debug::Log("DEBUG: [AIConditionsList]: Conditin number overflew!.\n");
 		return;
 	}
 	if (essentialRequirementsCount == essentialRequirementsMetCount && leastOptionalRequirementsCount <= optionalRequirementsMetCount)

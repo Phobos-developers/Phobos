@@ -200,6 +200,61 @@ Shield.InheritStateOnReplace=false   ; boolean
       - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
+## AI Triggers
+
+### Customizable Multiple AI Conditions
+
+- AI Triggers can now have multiple conditions.
+  - The conditions are divided into 2 parts, essential requirements and optional requirements. All the essential requirements are required to be achieved, while only a given number of optional requirements are needed.
+
+- In an `AITriggerType` in `aimd.ini`, its ConditionType must be set to `-1`, and ComparisonObject must be set to `<none>`. Comparator should be filled with 0 except for last 8 characters. Eighth to fifth from the bottom(xxxx) should be 0001 to enable this feature, and last 4 characters(yyyy) should be an index number from `AIConditionsList` in `rulesmd.ini`. Notice: xxxx and yyyy are both decimal integers.
+
+In `aimd.ini`:
+```ini
+[AITriggerTypes]
+ExampleAITrigger=Name,Team1,OwnerHouse,TechLevel,-1,<none>,00000000000000000000000000000000000000000000000000000000xxxxyyyy,StartingWeight,MinimumWeight,MaximumWeight,IsForSkirmish,unused,Side,IsBaseDefense,Team2,EnabledInE,EnabledInM,EnabledInH
+```
+
+- An `AICondition` has multiple sections, and they are divided by `/`. The first part are two integers, defining  the number of essential requirements and optional requirements. The rest parts have the same format: `PickMode,CompareMode,Number,TechnoType`. They define each requirement.
+
+In `rulesmd.ini`:
+```ini
+[AIConditionsList] ;zero-based index
+0=NumberOfEssentialRequirements,NumberOfOptionalRequirements/PickMode,CompareMode,Number,TechnoType/PickMode,CompareMode,Number,TechnoType......
+;...
+```
+Available Pick Modes are:
+| *Mode*  | *Description*                                 |
+| :------: | :-------------------------------------------: |
+0         | pick enemies(except for neutral) |
+1         | pick allies(except for neutral) |
+2         | pick self |
+3         | pick all(except for neutral) |
+4         | pick enemy human players |
+5         | pick allied human players |
+6         | pick all human players |
+7         | pick enemy computer players(except for neutral) |
+8         | pick allied computer players(except for neutral) |
+9         | pick all computer players(except for neutral) |
+10         | pick neutral |
+11         | pick all(including neutral) |
+
+Available Compare Modes are:
+| *Mode*  | *Description*                                 |
+| :------: | :-------------------------------------------: |
+0         | < |
+1         | <= |
+2         | == |
+3         | >= |
+4         | > |
+5         | != |
+
+Here is an example
+```
+1=1,2/2,3,1,NATECH/0,3,5,SREF/0,3,3,BFRT/0,3,8,MGTK/0,3,12,MTNK
+```
+- This means AI itself must has 1 or more NATECH, and least 2 of 4 optional requirements are needed: its enemies have more than 5 SREFs, 3 BFRTs, 8 MGTKs, 12 MTNKs.
+
 ## Animations
 
 ### Anim-to-Unit
