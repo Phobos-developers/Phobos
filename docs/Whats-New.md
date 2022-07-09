@@ -313,6 +313,7 @@ New:
 - Animation damage / weapon improvements (by Starkku)
 - Warhead self-damaging toggle (by Starkku)
 - Trailer animations inheriting owner (by Starkku)
+- Warhead detonation on all objects on map (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)

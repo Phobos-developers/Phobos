@@ -151,6 +151,7 @@ This page lists all the individual contributions to the project by their author.
   - Animation damage / weapon improvements
   - Warhead self-damaging toggle
   - Trailer animation owner inheritance
+  - Warhead detonation on all objects on map
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption

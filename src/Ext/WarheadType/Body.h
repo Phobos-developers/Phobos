@@ -75,6 +75,13 @@ public:
 		Valueable<bool> LaunchSW_IgnoreInhibitors;
 		Valueable<bool> AllowDamageOnSelf;
 
+		Valueable<bool> DetonateOnAllMapObjects;
+		Valueable<bool> DetonateOnAllMapObjects_RequireVerses;
+		Valueable<AffectedTarget> DetonateOnAllMapObjects_AffectTargets;
+		Valueable<AffectedHouse> DetonateOnAllMapObjects_AffectHouses;
+		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
+		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -82,6 +89,7 @@ public:
 
 		double RandomBuffer;
 		bool HasCrit;
+		bool WasDetonatedOnAllMapObjects;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -95,7 +103,7 @@ public:
 			, TransactMoney_Display { false }
 			, TransactMoney_Display_Houses { AffectedHouse::All }
 			, TransactMoney_Display_AtFirer { false }
-			, TransactMoney_Display_Offset {{ 0, 0 }}
+			, TransactMoney_Display_Offset { { 0, 0 } }
 			, SplashList {}
 			, SplashList_PickRandom { false }
 			, RemoveDisguise { false }
@@ -114,8 +122,6 @@ public:
 			, Crit_AnimOnAffectedTargets { false }
 			, Crit_AffectBelowPercent { 1.0 }
 			, Crit_SuppressWhenIntercepted { false }
-			, RandomBuffer { 0.0 }
-			, HasCrit { false }
 
 			, MindControl_Anim {}
 
@@ -151,8 +157,19 @@ public:
 			, LaunchSW_IgnoreInhibitors { false }
 			, AllowDamageOnSelf { false }
 
+			, DetonateOnAllMapObjects { false }
+			, DetonateOnAllMapObjects_RequireVerses { false }
+			, DetonateOnAllMapObjects_AffectTargets { AffectedTarget::All }
+			, DetonateOnAllMapObjects_AffectHouses { AffectedHouse::All }
+			, DetonateOnAllMapObjects_AffectTypes {}
+			, DetonateOnAllMapObjects_IgnoreTypes {}
+
 			, AffectsEnemies { true }
 			, AffectsOwner {}
+
+			, RandomBuffer { 0.0 }
+			, HasCrit { false }
+			, WasDetonatedOnAllMapObjects { false }
 		{ }
 
 	private:
@@ -167,6 +184,7 @@ public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
 		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
+		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner);
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
