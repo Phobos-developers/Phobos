@@ -47,36 +47,29 @@ RadHasInvoker=false             ; boolean
 
 ![image](_static/images/DigitalDisplay2.png)
 
-The Shape display uses frames 0-9 of the SHP file for green(percentange > ConditionYellow), 10-19 for yellow(ConditionYellow >= percentange > ConditionRed), and 20-29 for red(ConditionRed >= percentage), 30-32 frames as separator. In percentage style use 33-35 frams as percent sign.
+- `Acnhor`: Start drawing position anchor to the select bracket.
+- `Anchor.Building`: hexagon projection of a selection border on the screen.
 
-Shape canvas should as bigger as number, if not, it will be difficult to adjustment.
+- InfoType Enumeration: `health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|Occupants|GattlingStage`
 
-Default Alignment:
-  Text: building right-aligned, others centered.
-  Shape: building left-aligned, others centered.
+- Default `Align`:
+  - Text: Buildings `right`, others `center`.
+  - Shape: Buildings `left`, others `center`.
 
-Offset and interval: Positive integer are to the right(x) and down(y), negative numbers are to the left(x) and up(y).
+- Default `Offset.ShieldDelta`
+  - `InfoType=shield`: `0,-10`
+  - Others: `0,0`
 
-`Anchor.Building`: hexagonal projection of a selection border on the screen.
+- Default `Shape.Interval`
+  - Buildings: 8,-4
+  - Others: 8,0
 
-All will not be displayed if not written or if the corresponding type does not exist.
-
-InfoTypes:
-- Health
-- Shield
-- Ammo
-- MindControl
-- Spawns
-- Passengers
-- Tiberium
-- Experience
-- Occupants
-- GattlingStage
+- `Shape`: Use 0-9 frames of the SHP file as the number used when the ratio is greater than `[AudioVisual]>ConditionYellow`, 10-19 frames as greater than `[AudioVisual]>ConditionRed` and less than or equal to `[AudioVisual]>ConditionYellow`, 20-29 frames as less than or equal `[AudioVisual]>ConditionRed`, 31,32 frames as `/` and `%` when the ratio is greater than `[AudioVisual]>ConditionYellow`, 33,34 frames as greater than `[AudioVisual]>ConditionRed` and less than or equal to `[AudioVisual]>ConditionYellow`, 35,36 frames as less than or equal to `[AudioVisual]>ConditionRed`.
 
 In `Ra2MD.ini`:
 
 ```ini
-DigitalDisplay.Enable=                  ; boolean, whether to enable digital display, all digital displays will not be displayed if no
+DigitalDisplay.Enable=  ; boolean
 ```
 
 In `rulesmd.ini`:
@@ -85,33 +78,38 @@ In `rulesmd.ini`:
 [DigitalDisplayTypes] ;New registry for registering digital display types
 
 [AudioVisual]
-Buildings.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayType, the default digital display type used for building health
-Infantrys.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayType, the default digital display type used for infantry health
-Units.DefaultDigitalDisplayTypes=       ; list of DigitalDisplayType, the default digital display type used for vehicle health
-Aircrafts.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayType, the default digital display type used for aircraft health
+Buildings.DefaultDigitalDisplayTypes=  ; list of DigitalDisplayTypes
+Infantry.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayTypes
+Vehicles.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayTypes
+Aircraft.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayTypes
 
 [SomeDigitalDisplayType]
-InfoType=                               ; InfoType, which value should this display
-Text.ColorHigh=                         ; RGB, the color of the Text digital display when green HP, default 0,255,0
-Text.ColorMid=                          ; RGB, the color of the Text digital display when yellow HP,  default 255,255,0
-Text.ColorLow=                          ; RGB, the color of the Text digital display when red HP, default 255,0,0
-Text.Background=                        ; boolean, whether the Text display has a black background, default no
-UseShape=                               ; boolean, whether to use shape digital display, default no
-Shape=                                  ; filename, with extend name, the name of the shape file used by the shape display, default number.shp
-Palette=                                ; filename, with extend name, the palette file used by shape, default palette.pal
-Shape.Interval=                         ; integer - x,y , can be negative, horizontal and vertical spacing between two SHP digitals except building, default 8,0
-Shape.Interval.Building=                ; integer - x,y , can be negative, horizontal and vertical spacing between two SHP digitals of building, default 8,-4
-Offset=                                 ; integer - x,y , can be negative, horizontal and vertical offset of the position 
-Offset.WithoutShield=                   ; integer - x,y , the offset when the shield fails or not exist
-Align=                                  ; Left/Right/Center/None, Alignment mode, default None
-Anchor.Horizontal=                      ; Left/Center/Right, start drawing digitals point anchor the select bracket, default Left
-Anchor.Vertical=                        ; Top/Center/Bottom, start drawing digitals point anchor the select bracket, default Top
-Anchor.Building=                        ; Top/LeftTop/LeftRight/Bottom/RightBottom/RightTop, default LeftTop
-Percentage=                             ; boolean, whether use percentage style, default no
-HideMaxValue=                           ; boolean, whether don't display upper limit, default no
+; Generic
+InfoType=Health                        ; InfoType Enumeration
+Offset=0,0                             ; integer - horizontal, vertical
+Offset.ShieldDelta=                    ; integer - horizontal, vertical
+Align=None                             ; TextAlign Enumeration, - left|right|center/centre|none
+Anchor.Horizontal=Left                 ; Horizontal Position Enumeration, - left|center/centre|right, start drawing point anchor the select bracket
+Anchor.Vertical=top                    ; Vertical Position Enumeration, - top|center/centre|bottom
+Anchor.Building=lefttop                ; Hexagon Vertex Enumeration, top|lefttop|leftright|bottom|rightbottom|rightTop
+Border=Top                             ; Border Position Enumeration, - top|left|right|bottom, Position relative to select bracket's border
+Percentage=no                          ; boolean 
+HideMaxValue=no                        ; boolean
+
+; Text
+Text.Color=0,255,0                     ; RGB 
+Text.Color.ConditionYellow=255,255,0   ; RGB
+Text.Color.ConditionRed=255,0,0        ; RGB
+Text.Background=no                     ; boolean
+
+; Shape
+Shape=                                 ; filename - including the .shp, use shape display if exist
+Palette=palette.pal                    ; filename - including the .pal
+Shape.Interval=                        ; integer - x,y , can be negative, horizontal and vertical spacing between two SHP digitals
 
 [SomeTechnoType]
-DigitalDisplayTypes=                     ; list of DigitalDisplayType, default to [AudioVisual]
+DigitalDisplay.Disable=no              ; boolean
+DigitalDisplayTypes=                   ; list of DigitalDisplayType
 
 ```
 

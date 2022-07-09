@@ -20,7 +20,7 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	INI_EX exINI(pINI);
 
-	this->Text_Color.Read(exINI, section, "Text.Color.%s", "ConditionGreen");
+	this->Text_Color.Read(exINI, section, "Text.Color.%s");
 	this->Text_Background.Read(exINI, section, "Text.Background");
 	this->Offset.Read(exINI, section, "Offset");
 	this->Offset_ShieldDelta.Read(exINI, section, "Offset.ShieldDelta");
