@@ -24,6 +24,7 @@ void RadTypeClass::LoadFromINI(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->RadWarhead.Read(exINI, section, "RadSiteWarhead", true);
+	this->RadWarhead_Detonate.Read(exINI, section, "RadSiteWarhead.Detonate");
 	this->RadSiteColor.Read(exINI, section, "RadColor");
 	this->DurationMultiple.Read(exINI, section, "RadDurationMultiple");
 	this->ApplicationDelay.Read(exINI, section, "RadApplicationDelay");
@@ -34,6 +35,8 @@ void RadTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->LevelFactor.Read(exINI, section, "RadLevelFactor");
 	this->LightFactor.Read(exINI, section, "RadLightFactor");
 	this->TintFactor.Read(exINI, section, "RadTintFactor");
+	this->RadHasOwner.Read(exINI, section, "RadHasOwner");
+	this->RadHasInvoker.Read(exINI, section, "RadHasInvoker");
 }
 
 template <typename T>
@@ -51,6 +54,9 @@ void RadTypeClass::Serialize(T& Stm)
 		.Process(this->TintFactor)
 		.Process(this->RadSiteColor)
 		.Process(this->RadWarhead)
+		.Process(this->RadWarhead_Detonate)
+		.Process(this->RadHasOwner)
+		.Process(this->RadHasInvoker)
 		;
 };
 

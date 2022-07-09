@@ -6,10 +6,15 @@ This page describes all the engine features that are either new and introduced b
 
 ### Custom Radiation Types
 
-![image](_static/images/radtype-01.png)  
+![image](_static/images/radtype-01.png)
 *Mixing different radiation types*
 
-- Allows to have custom radiation type for any weapon now. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
+- Any weapon can now have a custom radiation type. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
+- There are several new properties available to all radiation types.
+  - `RadApplicationDelay.Building` can be set to value higher than 0 to allow radiation to damage buildings.
+  - `RadSiteWarhead.Detonate` can be set to make `RadSiteWarhead` detonate on affected objects rather than only be used to dealt direct damage. This enables most Warhead effects, display of animations etc.
+  - `RadHasOwner`, if set to true, makes damage dealt by the radiation count as having been dealt by the house that fired the projectile that created the radiation field. This means that Warhead controls such as `AffectsAllies` will be respected and any units killed will count towards that player's destroyed units count.
+  - `RadHasInvoker`, if set to true, makes the damage dealt by the radiation count as having been dealt by the TechnoType (the 'invoker') that fired the projectile that created the radiation field. In addition to the effects of `RadHasOwner`, this will also grant experience from units killed by the radiation to the invoker.
 
 In `rulesmd.ini`:
 ```ini
@@ -17,10 +22,9 @@ In `rulesmd.ini`:
 0=SOMERADTYPE
 
 [SOMEWEAPON]                    ; WeaponType
-RadType=Radiation               ; RadType to use instead
-                                ; of default [Radiation]
+RadType=Radiation               ; RadType to use instead of default of [Radiation]
 
-[SOMERADTYPE]                   ; custom RadType name
+[SOMERADTYPE]                   ; RadType
 RadDurationMultiple=1           ; integer
 RadApplicationDelay=16          ; integer
 RadApplicationDelay.Building=0  ; integer
@@ -32,11 +36,14 @@ RadLightFactor=0.1              ; floating point value
 RadTintFactor=1.0               ; floating point value
 RadColor=0,255,0                ; integer - Red,Green,Blue
 RadSiteWarhead=RadSite          ; WarheadType
+RadSiteWarhead.Detonate=false   ; boolean
+RadHasOwner=false               ; boolean
+RadHasInvoker=false             ; boolean
 ```
 
 ### Laser Trails
 
-![Laser Trails](_static/images/lasertrails.gif)  
+![Laser Trails](_static/images/lasertrails.gif)
 *Laser trails used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
 - Technos, Projectiles, and VoxelAnims can now have colorful trails of different transparency, thickness and color, which are drawn via laser drawing code.
@@ -62,10 +69,10 @@ Thickness=4                   ; integer
 SegmentLength=128             ; integer, minimal length of each trail segment
 IgnoreVertical=false          ; boolean, whether the trail won't be drawn on vertical movement
 IsIntense=false               ; boolean, whether the laser is "supported" (AKA prism forwarding)
-                              
+
 [SOMEPROJECTILE]              ; BulletType Image
 LaserTrail.Types=SOMETRAIL    ; list of LaserTrailTypes
-                              
+
 [SOMETECHNO]                  ; TechnoType Image
 LaserTrailN.Type=SOMETRAIL    ; LaserTrailType
 LaserTrailN.FLH=0,0,0         ; integer - Forward,Lateral,Height
@@ -81,7 +88,7 @@ LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
 
 ### Shields
 
-![image](_static/images/technoshield-01.gif)  
+![image](_static/images/technoshield-01.gif)
 *Buildings, Infantries and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 In `rulesmd.ini`:
@@ -159,7 +166,7 @@ Shield.InheritStateOnReplace=false   ; boolean
 - When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoTypes have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
   - This also works with Ares' `Convert.*`.
 - `Powered` controls whether or not the shield is active when a unit is running low on power or it is affected by EMP.
-  - Attention, if TechnoType itself is not `Powered`, then the shield won't be offline when low power. 
+  - Attention, if TechnoType itself is not `Powered`, then the shield won't be offline when low power.
 - `AbsorbOverDamage` controls whether or not the shield absorbs damage dealt beyond shield's current strength when the shield breaks.
 - `SelfHealing` and `Respawn` respect the following settings: 0.0 disables the feature, 1%-100% recovers/respawns the shield strength in percentage, other number recovers/respawns the shield strength directly. Specially, `SelfHealing` with a negative number deducts the shield strength.
   - If you want shield recovers/respawns 1 HP per time, currently you need to set tag value to any number between 1 and 2, like `1.1`.
@@ -204,7 +211,7 @@ Shield.InheritStateOnReplace=false   ; boolean
 
 ### Anim-to-Unit
 
-![image](_static/images/animToUnit.gif)  
+![image](_static/images/animToUnit.gif)
 
 - Animations can now create (or "convert" to) units when they end.
   - Because in most cases animations do not have owner, the unit will be created with civilian owner unless you use `DestroyAnim` which was modified to store owner and facing information from the destroyed unit, or animation from Warhead `AnimList` or one created through map trigger action `41 Play Anim At`.
@@ -213,10 +220,10 @@ In `rulesmd.ini`:
 ```ini
 [SOMEUNIT]                             ; UnitType
 DestroyAnim.Random=true                ; boolean, whether to randomize DestroyAnim
-```                                    
-                                       
-In `artmd.ini`:                        
-```ini                                 
+```
+
+In `artmd.ini`:
+```ini
 [SOMEANIM]                             ; AnimationType
 CreateUnit=                            ; UnitType
 CreateUnit.Facing=0                    ; integer, `CreateUnit` facings in range of 0-255
@@ -233,12 +240,12 @@ CreateUnit.ConsiderPathfinding=false   ; boolean, whether to consider if the cre
 
 ### Extended building upgrades
 
-![image](_static/images/powersup.owner-01.png)  
+![image](_static/images/powersup.owner-01.png)
 *Upgrading own and allied Power Plants in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
 
 - Building upgrades now can be placed on own buildings, on allied buildings and/or on enemy buildings. These three owners can be specified via a new tag, comma-separated. When upgrade is placed on building, it automatically changes it's owner to match the building's owner.
 - One upgrade can now be applied to multiple buildings via a new tag, comma-separated.
-  - Ares-introduced build limit for building upgrades works with this feature. 
+  - Ares-introduced build limit for building upgrades works with this feature.
 
 In `rulesmd.ini`:
 ```ini
@@ -249,7 +256,7 @@ PowersUp.Buildings= ; list of BuildingTypes
 
 ### Power plant enhancer
 
-- When it exists, it can increase the power amount generated by the power plants. 
+- When it exists, it can increase the power amount generated by the power plants.
   - When enchancing structures are sold or destroyed, the power amount returns to normal.
 
 In `rulesmd.ini`:
@@ -283,7 +290,7 @@ DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
 In `rulesmd.ini`:
 ```ini
 [SOMEINFANTRY]      ; InfantryType
-DefaultDisguise=E2  ; InfantryType              
+DefaultDisguise=E2  ; InfantryType
 ```
 
 ### Random death animaton for NotHuman Infantry
@@ -309,7 +316,7 @@ In `rulesmd.ini`:
 [SOMETECHNO1]         ; TechnoType, transport with OpenTopped=yes
 Ammo.Shared=no        ; boolean
 Ammo.Shared.Group=-1  ; integer
-                      
+
 [SOMETECHNO2]         ; TechnoType, passenger
 Ammo.Shared=no        ; boolean
 Ammo.Shared.Group=-1  ; integer
@@ -320,13 +327,13 @@ Ammo.Shared.Group=-1  ; integer
 
 ### Projectile interception logic
 
-![image](_static/images/projectile-interception-01.gif)  
+![image](_static/images/projectile-interception-01.gif)
 *Interception logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberium-crisis) mod*
 
 - Projectiles can now be made interceptable by certain TechnoTypes by setting `Interceptable=true` on them. The TechnoType scans for interceptable projectiles within a range if it has no other target and will use one of its weapons to shoot at them. Projectiles can define `Armor` and `Strength`. Weapons that cannot target the projectile's armor type will not attempt to intercept it. On interception, if the projectile has `Armor` set, an amount equaling to the intercepting weapon's `Damage` adjusted by Warhead `Verses` and the TechnoType's firepower multipliers is deducted from the projectile's current strength. Regardless of if the current projectile strength was reduced or not, if it sits at 0 or below after interception, the projectile is detonated.
   - `Interceptor.Weapon` determines the weapon (0 = `Primary`, 1 = `Secondary`) to be used for intercepting projectiles.
     - The interceptor weapon may need `AG` and/or `AA` set to true on its projectile to be able to target projectiles depending on their elevation from ground. If you don't set those then the weapon won't be able to target low-flying or high-flying projectiles respectively.
-  - `Interceptor.CanTargetHouses` controls which houses the projectiles (or rather their firers) can belong to be eligible for interception. 
+  - `Interceptor.CanTargetHouses` controls which houses the projectiles (or rather their firers) can belong to be eligible for interception.
   - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
   - `Interceptor.MinimumGuardRange` (and `Interceptor.(Rookie|Veteran|EliteMinimumGuardRange`) is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
   - `Interceptable.DeleteOnIntercept` determines whether or not the projectile will simply be deleted on detonation upon interception, or if it will properly detonate. Will be overridden by `Interceptor.DeleteOnIntercept` setting on the interceptor.
@@ -508,7 +515,7 @@ OpenTopped.AllowFiringIfDeactivated=true  ; boolean
   - Weapons with `ElectricAssault=true` set on `Warhead` against `Overpowerable=true` buildings belonging to owner or allies.
   - `Overpowerable=true` buildings that are currently overpowered.
   - Any system using `(Elite)WeaponX`, f.ex `Gunner=true` or `IsGattling=true` is also wholly exempt.
-  
+
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                     ; TechnoType
@@ -538,8 +545,8 @@ InitialStrength=  ; integer
 
 ### Initial Strength For Cloned Infantry
 
-![image](_static/images/initialstrength.cloning-01.png)  
-*Initial strength for cloned infantry example in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*  
+![image](_static/images/initialstrength.cloning-01.png)
+*Initial strength for cloned infantry example in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
 
 - You can now specify how many hitpoints an Infantry Type starts with when leaves a Cloning Structure with `Cloning=yes`.
 
@@ -566,9 +573,9 @@ Death.Peaceful=false  ; boolean, whether to not trigger DeathWeapon and EVA
 
 ### Mind Control enhancement
 
-![image](_static/images/mindcontrol-max-range-01.gif)  
-*Mind Control Range Limit used in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*  
-![image](_static/images/mindcontrol-multiple-01.gif)  
+![image](_static/images/mindcontrol-max-range-01.gif)
+*Mind Control Range Limit used in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+![image](_static/images/mindcontrol-multiple-01.gif)
 *Multiple Mind Control unit auto-releases the first victim in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
@@ -580,7 +587,7 @@ In `rulesmd.ini`:
 [SOMETECHNO]                          ; TechnoType
 MindControlRangeLimit=-1.0            ; floating point value
 MultiMindControl.ReleaseVictim=false  ; boolean
-                                      
+
 [SOMEWARHEAD]                         ; Warhead
 MindControl.Anim=                     ; Animation, defaults to ControlledAnimationType
 ```
@@ -596,8 +603,8 @@ NoManualMove=false  ; boolean
 
 ### Override Uncloaked Underwater attack behavior
 
-![image](_static/images/underwater-new-attack-tag.gif)  
-*Naval underwater behavior in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*  
+![image](_static/images/underwater-new-attack-tag.gif)
+*Naval underwater behavior in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
 
 - Overrides a part of the vanilla YR logic for allowing naval units to use a different weapon if the naval unit is uncloaked.
 - Useful if your naval unit have 1 weapon only for underwater and another weapon for surface objects.
@@ -610,7 +617,7 @@ ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary
 
 ### Promoted Spawns
 
-![image](_static/images/promotedspawns-01.gif)  
+![image](_static/images/promotedspawns-01.gif)
 *Promoted Spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - The spawned units will promote as their owner's veterancy.
@@ -623,7 +630,7 @@ Promote.IncludeSpawns=false  ; boolean
 
 ### Spawn range limit
 
-![image](_static/images/spawnrange-01.gif)  
+![image](_static/images/spawnrange-01.gif)
 *Limited pursue range for spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - The spawned units will abort the infinite pursuit if the enemy is out of range.
@@ -691,7 +698,7 @@ RemoveMindControl=false  ; boolean
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
   - `Crit.SuppressWhenIntercepted`, if set, prevents critical hits from occuring at all if the warhead was detonated from a [projectile that was intercepted](#projectile-interception-logic).
   - `ImmuneToCrit` can be set on TechnoTypes to make them immune to critical hits.
-  
+
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                       ; Warhead
@@ -716,7 +723,7 @@ If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chai
 
 ### Custom 'SplashList' on Warheads
 
-![image](_static/images/splashlist-01.gif)  
+![image](_static/images/splashlist-01.gif)
 - Allows Warheads to play custom water splash animations. See vanilla's [Conventional](https://www.modenc.renegadeprojects.com/Conventional) system here. `SplashList.PickRandom` can be set to true to pick a random animation to play from the list.
 
 In `rulesmd.ini`:
@@ -751,7 +758,7 @@ While this feature can provide better performance than a large `CellSpread` valu
 
 ### Generate credits on impact
 
-![image](_static/images/hackerfinallyworks-01.gif)  
+![image](_static/images/hackerfinallyworks-01.gif)
 *`TransactMoney` used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
 
 - Warheads can now give credits to its owner at impact.
@@ -801,7 +808,7 @@ RemoveDisguise=false  ; boolean
 
 ### Reveal map for owner on impact
 
-![image](_static/images/revealwarhead-01.gif)  
+![image](_static/images/revealwarhead-01.gif)
 *`SpySat=yes` on `[NUKE]` warhead reveals the map when nuclear missile detonates*
 
 - Warheads can now reveal the entire map on impact.
@@ -872,20 +879,11 @@ FeedbackWeapon=  ; WeaponType
 
 ### Radiation enhancements
 
-- Radiation now has owner by default, so any rad-kills will be scored. This behavior can be reverted by a corresponding tag.
-  - `AffectsAllies`, `AffectsOwner` and `AffectsEnemies` on `RadSiteWarhead` are respected.
-  - Currently the rad maker doesn't gain experience from kills, this may change in future.
-- Radiation is now able to deal damage to Buildings. To enable set `RadApplicationDelay.Building` value more than 0.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]       ; WeaponType
-Rad.NoOwner=false  ; boolean
-```
+- In addition to allowing custom radiation types, several enhancements are also available to the default radiation type defined in `[Radiation]`, such as ability to set owner & invoker or deal damage against buildings. See [Custom Radiation Types](#custom-radiation-types) for more details.
 
 ### Strafing aircraft weapon customization
 
-![image](_static/images/strafing-01.gif)  
+![image](_static/images/strafing-01.gif)
 *Strafing aircraft weapon customization in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - Some of the behavior of strafing aircraft weapons (weapon projectile has `ROT` below 2) can now be customized.

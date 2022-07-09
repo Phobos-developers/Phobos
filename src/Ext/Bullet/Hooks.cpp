@@ -109,7 +109,7 @@ DEFINE_HOOK(0x4668BD, BulletClass_AI_TrailerInheritOwner, 0x6)
 	return 0;
 }
 
-// Inviso bullets behave differently in BulletClass::AI when their target is bullet and 
+// Inviso bullets behave differently in BulletClass::AI when their target is bullet and
 // seemingly (at least partially) adopt characteristics of a vertical projectile.
 // This is a potentially slightly hacky solution to that, as proper solution
 // would likely require making sense of BulletClass::AI and ain't nobody got time for that.
@@ -231,8 +231,6 @@ DEFINE_HOOK(0x469A75, BulletClass_Logics_DamageHouse, 0x7)
 
 	return 0;
 }
-
-
 
 DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 {

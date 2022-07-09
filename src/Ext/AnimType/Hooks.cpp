@@ -157,7 +157,7 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 			pWarhead = strcmp(pThis->Type->get_ID(), "INVISO") ? RulesClass::Instance->FlameDamage2 : RulesClass::Instance->C4Warhead;
 
 		auto pOwner = pInvoker ? pInvoker->Owner : nullptr;
-		
+
 		if (!pOwner)
 			pOwner = pThis->OwnerObject ? pThis->OwnerObject->GetOwningHouse() : nullptr;
 

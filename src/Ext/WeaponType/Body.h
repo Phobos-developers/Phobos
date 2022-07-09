@@ -20,7 +20,6 @@ public:
 		Valueable<double> DiskLaser_Radius;
 		Valueable<int> DiskLaser_Circumference;
 		Valueable<RadTypeClass*> RadType;
-		Valueable<bool> Rad_NoOwner;
 		Valueable<bool> Bolt_Disable1;
 		Valueable<bool> Bolt_Disable2;
 		Valueable<bool> Bolt_Disable3;
@@ -33,12 +32,11 @@ public:
 		Nullable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
 		Valueable<double> Trajectory_Speed;
-		
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
 			, DiskLaser_Circumference { 240 }
 			, RadType {}
-			, Rad_NoOwner { false }
 			, Bolt_Disable1 { false }
 			, Bolt_Disable2 { false }
 			, Bolt_Disable3 { false }

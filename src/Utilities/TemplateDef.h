@@ -674,7 +674,7 @@ namespace detail
 		}
 		return false;
 	}
-	
+
 	template <>
 	inline bool read<SelfHealGainType>(SelfHealGainType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
