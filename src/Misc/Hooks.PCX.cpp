@@ -54,7 +54,7 @@ DEFINE_HOOK(0x552F81, PCX_LoadingScreen_Campaign, 0x5)
 	{
 		PCX::Instance->LoadFile(filename);
 
-		if (auto pPCX = PCX::Instance->GetSurface(filename))
+		if (auto const pPCX = PCX::Instance->GetSurface(filename))
 		{
 			RectangleStruct pSurfBounds = { 0, 0, pSurface->Width, pSurface->Height };
 			RectangleStruct pcxBounds = { 0, 0, pPCX->Width, pPCX->Height };
