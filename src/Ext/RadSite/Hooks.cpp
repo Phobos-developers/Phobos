@@ -18,9 +18,9 @@
 	and rewriting some in order to make this working perfecly
 	Credit : Ares Team , for unused/uncommented source of Hook.RadSite
 						,RulesData_LoadBeforeTypeData Hook
-			 Alex-B : GetRadSiteAt ,Helper that used at FootClass_AI & BuildingClass_AI
-					  Radiate , Uncommented
-			 me(Otamaa) adding some more stuffs and rewriting hook that cause crash
+			Alex-B : GetRadSiteAt ,Helper that used at FootClass_AI & BuildingClass_AI
+					Radiate , Uncommented
+			me(Otamaa) adding some more stuffs and rewriting hook that cause crash
 
 */
 
@@ -51,7 +51,7 @@ DEFINE_HOOK(0x46ADE0, BulletClass_ApplyRadiation_UnUsed, 0x5)
 	return 0x46AE5E;
 }
 
-// Fix for desolator 
+// Fix for desolator
 DEFINE_HOOK(0x5213E3, InfantryClass_AIDeployment_CheckRad, 0x4)
 {
 	GET(InfantryClass*, pInf, ESI);
@@ -89,7 +89,7 @@ DEFINE_HOOK(0x5213E3, InfantryClass_AIDeployment_CheckRad, 0x4)
 		0x5213F4 : 0x521484;
 }
 
-// Fix for desolator unable to fire his deploy weapon when cloaked 
+// Fix for desolator unable to fire his deploy weapon when cloaked
 DEFINE_HOOK(0x521478, InfantryClass_AIDeployment_FireNotOKCloakFix, 0x4)
 {
 	GET(InfantryClass* const, pThis, ESI);
@@ -102,7 +102,7 @@ DEFINE_HOOK(0x521478, InfantryClass_AIDeployment_FireNotOKCloakFix, 0x4)
 		&& (pThis->CloakState == CloakState::Cloaked || pThis->CloakState == CloakState::Cloaking))
 	{
 		// FYI this are hack to immedietely stop the Cloaking
-		// since this function is always failing to decloak and set target when cell is occupied 
+		// since this function is always failing to decloak and set target when cell is occupied
 		// something is wrong somewhere  # Otamaa
 		auto nDeployFrame = pThis->Type->Sequence->GetSequence(Sequence::DeployedFire).CountFrames;
 		pThis->CloakDelayTimer.Start(nDeployFrame);
@@ -124,7 +124,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI, 0x5)
 		return 0;
 
 	auto const buildingCoords = pBuilding->GetMapCoords();
-	for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct{ 0x7FFF, 0x7FFF }; ++pFoundation)
+	for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
 		CellStruct nCurrentCoord = buildingCoords + *pFoundation;
 
@@ -135,24 +135,25 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI, 0x5)
 
 			// Check the distance, if not in range, just skip this one
 			double orDistance = pRadSite->BaseCell.DistanceFrom(nCurrentCoord);
+
 			if (pRadSite->Spread < orDistance - 0.5)
 				continue;
 
 			int delay = pType->GetBuildingApplicationDelay();
+
 			if ((delay == 0) || (Unsorted::CurrentFrame % delay != 0))
 				continue;
 
 			if (RadSiteExt::GetRadLevelAt(pRadSite, nCurrentCoord) <= 0.0 || !pType->GetWarhead())
 				continue;
 
-			auto pWarhead = pType->GetWarhead();
-			auto absolute = pWarhead->WallAbsoluteDestroyer;
-			bool ignore = pBuilding->Type->Wall && absolute;
 			auto damage = Game::F2I((RadSiteExt::GetRadLevelAt(pRadSite, nCurrentCoord) / 2) * pType->GetLevelFactor());
 
 			if (pBuilding->IsAlive) // simple fix for previous issues
-				if (pBuilding->ReceiveDamage(&damage, Game::F2I(orDistance), pWarhead, nullptr, ignore, absolute, pRadExt->RadHouse.Get()) == DamageState::NowDead)
-					break; //dont continue , meaningless
+			{
+				if (!pRadExt->ApplyRadiationDamage(pBuilding, damage, Game::F2I(orDistance)))
+					break;
+			}
 		}
 	}
 
@@ -160,7 +161,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI, 0x5)
 }
 
 // skip Frame % RadApplicationDelay
-DEFINE_LJMP(0x4DA554, 0x4DA56E);
+DEFINE_JUMP(LJMP, 0x4DA554, 0x4DA56E);
 
 // Hook Adjusted to support Ares RadImmune Ability check
 DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
@@ -178,28 +179,28 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 
 			// Check the distance, if not in range, just skip this one
 			double orDistance = pRadSite->BaseCell.DistanceFrom(CurrentCoord);
+
 			if (pRadSite->Spread < orDistance - 0.7)
 				continue;
 
 			RadTypeClass* pType = pRadExt->Type;
 			int RadApplicationDelay = pType->GetApplicationDelay();
+
 			if ((RadApplicationDelay == 0) || (Unsorted::CurrentFrame % RadApplicationDelay != 0))
 				continue;
 
 			// for more precise dmg calculation
 			double nRadLevel = RadSiteExt::GetRadLevelAt(pRadSite, CurrentCoord);
+
 			if (nRadLevel <= 0.0 || !pType->GetWarhead())
 				continue;
 
 			int damage = Game::F2I(nRadLevel * pType->GetLevelFactor());
-			int distance = Game::F2I(orDistance);
-			auto pWarhead = pType->GetWarhead();
-			auto absolute = pWarhead->WallAbsoluteDestroyer;
 
 			if (pFoot->IsAlive || !pFoot->IsSinking)
 			{
-				if (pFoot->ReceiveDamage(&damage, distance, pWarhead, nullptr, false, absolute, pRadExt->RadHouse.Get()) == DamageState::NowDead)
-					break; //dont continue , meaningless
+				if (!pRadExt->ApplyRadiationDamage(pFoot, damage, Game::F2I(orDistance)))
+					break;
 			}
 		}
 	}
@@ -294,7 +295,7 @@ DEFINE_HOOK(0x65B8B9, RadSiteClass_AI_LightDelay, 0x6)
 	return 0x65B8BF;
 }
 
-// Additional Hook below 
+// Additional Hook below
 DEFINE_HOOK(0x65BB67, RadSite_Deactivate, 0x6)
 {
 	GET_RADSITE(ECX, GetLevelDelay());

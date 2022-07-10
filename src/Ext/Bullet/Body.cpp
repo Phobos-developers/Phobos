@@ -3,6 +3,9 @@
 #include <Ext/RadSite/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <Ext/TechnoType/Body.h>
+#include <Ext/WarheadType/Body.h>
+#include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<BulletClass>::Canary = 0x2A2A2A2A;
 BulletExt::ExtContainer BulletExt::ExtMap;
@@ -14,7 +17,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	auto const pWeapon = pThis->GetWeaponType();
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.FindOrAllocate(pWeapon);
 	auto const pRadType = pWeaponExt->RadType;
-	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
+	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : this->FirerHouse;
 
 	if (Instances.Count > 0)
 	{
@@ -28,7 +31,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 
 		if (it == Instances.end())
 		{
-			RadSiteExt::CreateInstance(Cell, Spread, RadLevel, pWeaponExt, pThisHouse);
+			RadSiteExt::CreateInstance(Cell, Spread, RadLevel, pWeaponExt, pThisHouse, pThis->Owner);
 		}
 		else
 		{
@@ -46,7 +49,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	}
 	else
 	{
-		RadSiteExt::CreateInstance(Cell, Spread, RadLevel, pWeaponExt, pThisHouse);
+		RadSiteExt::CreateInstance(Cell, Spread, RadLevel, pWeaponExt, pThisHouse, pThis->Owner);
 	}
 }
 
@@ -61,7 +64,7 @@ void BulletExt::InitializeLaserTrails(BulletClass* pThis)
 	{
 		auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
 
-		for (auto const& idxTrail: pTypeExt->LaserTrail_Types)
+		for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
 		{
 			if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
 			{
@@ -72,6 +75,74 @@ void BulletExt::InitializeLaserTrails(BulletClass* pThis)
 	}
 }
 
+void BulletExt::InterceptBullet(BulletClass* pThis, TechnoClass* pSource, WeaponTypeClass* pWeapon)
+{
+	if (!pThis || !pSource || !pWeapon)
+		return;
+
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+	bool canAffect = false;
+	bool isIntercepted = false;
+
+	if (pTypeExt->Armor >= 0)
+	{
+		double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor);
+
+		if (versus != 0.0)
+		{
+			canAffect = true;
+			pExt->CurrentStrength -= static_cast<int>(pWeapon->Damage * versus * pSource->FirepowerMultiplier);
+
+			if (pExt->CurrentStrength <= 0)
+				isIntercepted = true;
+		}
+	}
+	else
+	{
+		canAffect = true;
+		isIntercepted = true;
+	}
+
+	if (canAffect)
+	{
+		auto const pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
+		auto const pWeaponOverride = pTechnoTypeExt->Interceptor_WeaponOverride.Get(pTypeExt->Interceptable_WeaponOverride.Get(nullptr));
+		bool detonate = !pTechnoTypeExt->Interceptor_DeleteOnIntercept.Get(pTypeExt->Interceptable_DeleteOnIntercept);
+
+		pExt->DetonateOnInterception = detonate;
+
+		if (pWeaponOverride)
+		{
+			bool replaceType = pTechnoTypeExt->Interceptor_WeaponReplaceProjectile;
+			bool cumulative = pTechnoTypeExt->Interceptor_WeaponCumulativeDamage;
+
+			pThis->WeaponType = pWeaponOverride;
+			pThis->Health = cumulative ? pThis->Health + pWeaponOverride->Damage : pWeaponOverride->Damage;
+			pThis->WH = pWeaponOverride->Warhead;
+			pThis->Bright = pWeaponOverride->Bright;
+
+			if (replaceType && pWeaponOverride->Projectile != pThis->Type)
+			{
+				pThis->Speed = pWeaponOverride->Speed;
+				pThis->Type = pWeaponOverride->Projectile;
+
+				if (pExt->LaserTrails.size())
+				{
+					pExt->LaserTrails.clear();
+
+					if (!pThis->Type->Inviso)
+						BulletExt::InitializeLaserTrails(pThis);
+				}
+			}
+		}
+
+		if (isIntercepted && !pTechnoTypeExt->Interceptor_KeepIntact)
+			pExt->InterceptedStatus = InterceptedStatus::Intercepted;
+	}
+}
+
 // =============================
 // load / save
 
@@ -79,8 +150,11 @@ template <typename T>
 void BulletExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->Intercepted)
-		.Process(this->ShouldIntercept)
+		.Process(this->FirerHouse)
+		.Process(this->CurrentStrength)
+		.Process(this->IsInterceptor)
+		.Process(this->InterceptedStatus)
+		.Process(this->DetonateOnInterception)
 		.Process(this->LaserTrails)
 		;
 

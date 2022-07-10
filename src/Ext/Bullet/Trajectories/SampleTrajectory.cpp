@@ -62,12 +62,12 @@ void SampleTrajectory::OnAI(BulletClass* pBullet)
 
 // Where you update the speed and position
 // pSpeed: The speed of this proj in the next frame
-// pPosition: Current position of the proj, and in the next frame it will be *pSpeed + *pPosition 
+// pPosition: Current position of the proj, and in the next frame it will be *pSpeed + *pPosition
 void SampleTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
 {
 	if (!this->IsFalling)
 	{
-		pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type); 
+		pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type);
 		double dx = pBullet->TargetCoords.X - pBullet->Location.X;
 		double dy = pBullet->TargetCoords.Y - pBullet->Location.Y;
 		if (dx * dx + dy * dy < pBullet->Velocity.X * pBullet->Velocity.X + pBullet->Velocity.Y * pBullet->Velocity.Y)
@@ -80,7 +80,7 @@ void SampleTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed
 			pPosition->Y = pBullet->TargetCoords.Y;
 		}
 	}
-	
+
 }
 
 // Where additional checks based on bullet reaching its target coordinate can be done.

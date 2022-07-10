@@ -15,7 +15,7 @@ bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
 
 
 void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
-{	
+{
 }
 
 bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -44,7 +44,7 @@ void StraightTrajectory::OnAI(BulletClass* pBullet)
 		pBullet->UnInit();
 		pBullet->LastMapCoords = CellClass::Coord2Cell(pBullet->Location);
 	}
-	
+
 }
 
 void StraightTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
@@ -61,4 +61,3 @@ TrajectoryCheckReturnType StraightTrajectory::OnAITechnoCheck(BulletClass* pBull
 {
 	return TrajectoryCheckReturnType::SkipGameCheck; // Bypass game checks entirely.
 }
-

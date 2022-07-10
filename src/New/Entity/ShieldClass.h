@@ -57,6 +57,8 @@ private:
 	void RespawnShield();
 
 	void CreateAnim();
+	void UpdateIdleAnim();
+	AnimTypeClass* GetIdleAnimType();
 
 	void WeaponNullifyAnim(AnimTypeClass* pHitAnim = nullptr);
 	void ResponseAttack();
@@ -88,6 +90,7 @@ private:
 	int Respawn_Rate_Warhead;
 
 	int LastBreakFrame;
+	double LastTechnoHealthRatio;
 
 	ShieldTypeClass* Type;
 
@@ -100,10 +103,10 @@ private:
 			, Respawn_Warhead { }
 		{ }
 
-		TimerStruct SelfHealing;
-		TimerStruct SelfHealing_Warhead;
-		TimerStruct Respawn;
-		TimerStruct Respawn_Warhead;
+		CDTimerClass SelfHealing;
+		CDTimerClass SelfHealing_Warhead;
+		CDTimerClass Respawn;
+		CDTimerClass Respawn_Warhead;
 
 	} Timers;
 };
