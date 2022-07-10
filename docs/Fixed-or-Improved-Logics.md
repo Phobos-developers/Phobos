@@ -397,19 +397,20 @@ DeployingAnim.UseUnitDrawer=true       ; boolean
 
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
 
-### IronCurtain status inheritance on DeploysInto/UndeploysInto
-
-- When an iron-curtained vehicle is deployed into a building and vice versa, the iron-curtain effect will be removed. This behavior now can be customized. The iron-curtain effect can be preserved.
+### Preserve Iron Curtain status on type conversion
 
 ![image](_static/images/preserve-ic.gif)
+
+- Iron Curtain status can now preserved when converting between TechnoTypes.
+  - This behavior can be customized on per-TechnoType *and* global basis.
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-IronCurtain.SyncDeploysInto=no  ; boolean
+IronCurtain.SyncOnDeploy=no  ; boolean
 
-[SOMETECHNO]                    ; BuildingType or VehicleType
-IronCurtain.SyncDeploysInto=    ; boolean, default to [CombatDamage]->IronCurtain.SyncDeploysInto
+[SOMETECHNO]                 ; VehicleType with DeploysInto or BuildingType with UndeploysInto
+IronCurtain.SyncOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.SyncOnDeploy
 
 ```
 
