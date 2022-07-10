@@ -15,7 +15,7 @@ This page lists the history of changes across stable Phobos releases and also al
 
 - `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 - `Rad.NoOwner` on weapons is deprecated. This has been replaced by `RadHasOwner` key on radiation types itself. It also defaults to no, so radiation once again has no owner house by default.
-- `Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` on technos are deprecated. Automatic self-destruction logic has been reimplemented. Use `AutoDeath` related tags instead.
+- Automatic self-destruction logic logic has been reimplemented, `Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been remade/renamed and require adjustments to function.
 
 #### From 0.2.2.2
 
