@@ -267,26 +267,6 @@ PowerPlantEnhancer.Amount=0        ; integer
 PowerPlantEnhancer.Factor=1.0      ; floating point value
 ```
 
-### Customize building specific `EVA_StructureSold`
-
-- `EVA_StructureSold` can be customized or even disabled for specific building types.
-
-In `rulesmd.ini`:
-```ini
-[SOMEBUILDING]              ; BuildingType
-EVA.Sold=EVA_StructureSold  ; EVA entry
-```
-
-### Customize building specific `SellSound`
-
-- When a building is sold, the sell sound is played to the owner. This global sound has been deglobalized. Defaults to `[AudioVisual]->SellSound`.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]  ; TechnoType
-SellSound=    ; sound entry
-```
-
 ## Infantry
 
 ### Customizable FLH When Infantry Is Prone Or Deployed
@@ -708,6 +688,22 @@ WarpInMinRangeWeapon=                   ; WeaponType
 WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
+
+
+### Customize EVA voice and `SellSound` when selling units
+
+- When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
+
+  -`EVA.Sold` is used to customize the EVA voice when selling, default to `EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles.
+  -`SellSound` is used to customize the report sound when selling, default to `[AudioVisual]->SellSound`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]    ; BuildingType or UnitType
+EVA.Sold=       ; EVA entry 
+SellSound=      ; sound entry
+```
+
 
 ## Terrain
 

@@ -517,14 +517,15 @@ DEFINE_HOOK(0x70E1A5, TechnoClass_GetTurretWeapon_LaserWeapon, 0x6)
 DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Deconstruction_EVA_Sold_1, 0x6)
 {
 	GET(BuildingClass*, pThis, EBP);
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	enum { SkipVoxPlay = 0x449CEA };
 
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	if (pTypeExt->EVA_Sold.isset())
 	{
 		if (pThis->IsHumanControlled && !pThis->Type->UndeploysInto)
 			VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
 
-		return 0x449CEA;
+		return SkipVoxPlay;
 	}
 
 	return 0x0;
@@ -533,14 +534,15 @@ DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Deconstruction_EVA_Sold_1, 0x6)
 DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Deconstruction_EVA_Sold_2, 0x6)
 {
 	GET(BuildingClass*, pThis, EBP);
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	enum { SkipVoxPlay = 0x44AB3B };
 
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	if (pTypeExt->EVA_Sold.isset())
 	{
 		if (pThis->IsHumanControlled)
 			VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
 
-		return 0x44AB3B;
+		return SkipVoxPlay;
 	}
 
 	return 0x0;
@@ -550,13 +552,13 @@ DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Deconstruction_EVA_Sold_2, 0x6)
 DEFINE_HOOK(0x44A850, BuildingClass_Mission_Deconstruction_Sellsound, 0x6)
 {
 	GET(BuildingClass*, pThis, EBP);
+	enum { PlayVocGlobal = 0x44A856 };
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-
 	if (pTypeExt->SellSound.isset())
 	{
 		R->ECX(pTypeExt->SellSound.Get());
-		return 0x44A856;
+		return PlayVocGlobal;
 	}
 
 	return 0x0;
@@ -565,11 +567,12 @@ DEFINE_HOOK(0x44A850, BuildingClass_Mission_Deconstruction_Sellsound, 0x6)
 DEFINE_HOOK(0x4D9F8A, FootClass_Sell_Sellsound, 0x5)
 {
 	GET(FootClass*, pThis, ESI);
+	enum { EVA_UnitSold = 0x822630, SkipVoxVocPlay = 0x4D9FB5 };
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex((const char*)0x882630))); //EVA_UnitSold
+	VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex((const char*)EVA_UnitSold)));
 	VocClass::PlayGlobal(pTypeExt->SellSound.Get(RulesClass::Instance->SellSound), 0x2000, 1.0, nullptr);
 
-	return 0x4D9FB5;
+	return SkipVoxVocPlay;
 }
