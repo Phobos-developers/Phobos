@@ -56,12 +56,14 @@ DEFINE_HOOK(0x552F81, PCX_LoadingScreen_Campaign, 0x5)
 		
 		if (auto pPCX = PCX::Instance->GetSurface(filename))
 		{
+			RectangleStruct pSurfBounds = { 0, 0, pSurface->Width, pSurface->Height };
 			RectangleStruct pcxBounds = { 0, 0, pPCX->Width, pPCX->Height };
 			RectangleStruct destClip = { 0, 0, pPCX->Width, pPCX->Height };
 
 			destClip.X = (pSurface->Width - pPCX->Width) / 2;
 			destClip.Y = (pSurface->Height - pPCX->Height) / 2;
-			PCX::Instance->BlitToSurface(&destClip, pSurface, pPCX);
+
+			pSurface->CopyFrom(&pSurfBounds, &destClip, pPCX, &pcxBounds, &pcxBounds, true, true);
 		}
 
 		R->EBX(R->EDI());
