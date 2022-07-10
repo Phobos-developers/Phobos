@@ -314,6 +314,7 @@ New:
 - Warhead self-damaging toggle (by Starkku)
 - Trailer animations inheriting owner (by Starkku)
 - Warhead detonation on all objects on map (by Starkku)
+- Implemented support for PCX images for campaign load screen (by FlyStar)
 - Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 
 Vanilla fixes:
