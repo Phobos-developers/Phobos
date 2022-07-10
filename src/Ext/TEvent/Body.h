@@ -73,7 +73,7 @@ public:
 	};
 
 	static bool Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, ObjectClass* pObject,
-					TimerStruct* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled);
+					CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled);
 
 	template<bool IsGlobal, typename _Pr>
 	static bool VariableCheck(TEventClass* pThis);
