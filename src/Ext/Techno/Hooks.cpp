@@ -424,38 +424,6 @@ DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 	return 0x0;
 }
 
-DEFINE_HOOK(0x44A850, BuildingClass_Mission_Deconstruction_Sellsound, 0x6)
-{
-	GET(BuildingClass*, pThis, EBP);
-
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-
-	if (pTypeExt->SellSound.isset())
-	{
-		R->ECX(pTypeExt->SellSound.Get());
-		return 0x44A856;
-	}
-
-	//Default to R->ECX(RulesClass::Instance->SellSound)
-	return 0x0;
-}
-
-DEFINE_HOOK(0x4D9FAA, FootClass_Sell_Sellsound, 0x6)
-{
-	GET(FootClass*, pThis, ESI);
-
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if (pTypeExt->SellSound.isset())
-	{
-		R->ECX(pTypeExt->SellSound.Get());
-		return 0x4D9FB0;
-	}
-
-	//Default to R->ECX(RulesClass::Instance->SellSound) for units too
-	return 0x0;
-}
-
 DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
 {
 	enum { SkipGameDrawing = 0x70A6C0 };
@@ -543,4 +511,65 @@ DEFINE_HOOK(0x70E1A5, TechnoClass_GetTurretWeapon_LaserWeapon, 0x6)
 	// Restore overridden instructions.
 	R->EAX(pThis->GetTechnoType());
 	return Continue;
+}
+
+// SellSound and EVA dehardcode
+DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Deconstruction_EVA_Sold_1, 0x6)
+{
+	GET(BuildingClass*, pThis, EBP);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->EVA_Sold.isset())
+	{
+		if (pThis->IsOwnedByPlayer && !pThis->Type->UndeploysInto)
+			VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
+
+		return 0x449CEA;
+	}
+
+	return 0x0;
+}
+
+DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Deconstruction_EVA_Sold_2, 0x6)
+{
+	GET(BuildingClass*, pThis, EBP);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->EVA_Sold.isset())
+	{
+		if (pThis->IsOwnedByPlayer)
+			VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
+
+		return 0x44AB3B;
+	}
+
+	return 0x0;
+}
+
+
+DEFINE_HOOK(0x44A850, BuildingClass_Mission_Deconstruction_Sellsound, 0x6)
+{
+	GET(BuildingClass*, pThis, EBP);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->SellSound.isset())
+	{
+		R->ECX(pTypeExt->SellSound.Get());
+		return 0x44A856;
+	}
+
+	return 0x0;
+}
+
+DEFINE_HOOK(0x4D9F8A, FootClass_Sell_Sellsound, 0x5)
+{
+	GET(FootClass*, pThis, ESI);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex((const char*)0x882630))); //EVA_UnitSold
+	VocClass::PlayGlobal(pTypeExt->SellSound.Get(RulesClass::Instance->SellSound), 0x2000, 1.0, nullptr);
+
+	return 0x4D9FB5;
 }

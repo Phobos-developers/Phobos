@@ -58,6 +58,7 @@ public:
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
 		NullableIdx<VocClass> SellSound;
+		NullableIdx<VoxClass> EVA_Sold;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -221,7 +222,8 @@ public:
 			, AutoDeath_OnAmmoDepletion { false }
 			, AutoDeath_AfterDelay { 0 }
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
-			, SellSound{ }
+			, SellSound { }
+			, EVA_Sold { }
 			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
@@ -233,7 +235,7 @@ public:
 			, ProneSecondaryFireFLH { }
 			, DeployedPrimaryFireFLH { }
 			, DeployedSecondaryFireFLH { }
-			, InitialStrength_Cloning{ { 1.0, 0.0 } }
+			, InitialStrength_Cloning { { 1.0, 0.0 } }
 		{ }
 
 		virtual ~ExtData() = default;
