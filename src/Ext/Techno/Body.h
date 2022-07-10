@@ -45,7 +45,7 @@ public:
 			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
-			, AutoDeathTimer{ }
+			, AutoDeathTimer()
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset {}
 			, OriginalPassengerOwner {}
