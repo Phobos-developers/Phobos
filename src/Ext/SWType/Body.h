@@ -30,7 +30,9 @@ public:
 		ValueableVector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 
 		ValueableVector<TechnoTypeClass*> SW_AuxTechno;
+		Valueable<AffectedHouse> SW_AuxTechno_Owner;
 		ValueableVector<TechnoTypeClass*> SW_NegTechno;
+		Valueable<AffectedHouse> SW_NegTechno_Owner;
 		Valueable<bool> SW_AuxTechno_Any;
 		Valueable<bool> SW_NegTechno_Any;
 
@@ -44,6 +46,7 @@ public:
 		Valueable<bool> SW_AllowAI;
 		Valueable<bool> SW_ShowCameo;
 		Valueable<bool> SW_AutoFire;
+		Valueable<int> SW_Shots;
 
 		bool IsAvailable(HouseClass* pHouse);
 
@@ -60,6 +63,22 @@ public:
 			, LimboKill_Affected { AffectedHouse::Owner }
 			, LimboKill_IDs {}
 			, RandomBuffer { 0.0 }
+			, SW_AuxTechno {}
+			, SW_NegTechno {}
+			, SW_AuxTechno_Owner { AffectedHouse::Owner }
+			, SW_NegTechno_Owner { AffectedHouse::Owner }
+			, SW_AuxTechno_Any { true }
+			, SW_NegTechno_Any { true }
+			, SW_AuxBuildings {}
+			, SW_NegBuildings {}
+			, SW_RequiredHouses { ULONG_MAX }
+			, SW_ForbiddenHouses { 0UL }
+			, SW_AlwaysGranted { false }
+			, SW_AllowAI { true }
+			, SW_AllowPlayer { true }
+			, SW_ShowCameo { true }
+			, SW_AutoFire { false }
+			, SW_Shots { -1 }
 		{ }
 
 

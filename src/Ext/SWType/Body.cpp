@@ -1,12 +1,14 @@
 #include "Body.h"
 
-#include <HouseClass.h>
 #include <SuperWeaponTypeClass.h>
 #include <StringTable.h>
 
+#include <Utilities/EnumFunctions.h>
+
+#include <Ext/House/Body.h>
+
 template<> const DWORD Extension<SuperWeaponTypeClass>::Canary = 0x11111111;
 SWTypeExt::ExtContainer SWTypeExt::ExtMap;
-
 
 // Ares 0.A
 // I don't know Ares 3.0 has add some new things in this 
@@ -24,6 +26,11 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse)
 	if (!pHouse->ControlledByHuman() && !SW_AllowAI)
 		return false;
 
+	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+	if (SW_Shots >= 0 && pHouseExt->SW_FireTimes[pThis->ArrayIndex] >= SW_Shots)
+		return false;
+
 	// check whether the optional aux building exists
 	if (pThis->AuxBuilding && pHouse->CountOwnedAndPresent(pThis->AuxBuilding) <= 0)
 		return false;
@@ -36,7 +43,7 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse)
 	// check that any aux building exist and no neg building
 	auto IsTechnoPresent = [pHouse](TechnoTypeClass* pType)
 	{
-		return pType && pHouse->CountOwnedAndPresent(pType) > 0;
+		return pHouse->CountOwnedAndPresent(pType) > 0;
 	};
 
 	if (!SW_AuxBuildings.empty() && std::none_of(SW_AuxBuildings.begin(), SW_AuxBuildings.end(), IsTechnoPresent))
@@ -45,27 +52,42 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse)
 	if (std::any_of(SW_NegBuildings.begin(), SW_NegBuildings.end(), IsTechnoPresent))
 		return false;
 
-	if (SW_AuxTechno_Any)
+	for (HouseClass* pTmpHouse : *HouseClass::Array)
 	{
+		auto IsHouseTechnoPresent = [pTmpHouse](TechnoTypeClass* pType)
+		{
+			return pTmpHouse->CountOwnedAndPresent(pType) > 0;
+		};
 
-		if (!SW_AuxTechno.empty() && std::none_of(SW_AuxTechno.begin(), SW_AuxTechno.end(), IsTechnoPresent))
-			return false;
-	}
-	else
-	{
-		if (!SW_AuxTechno.empty() && !std::all_of(SW_AuxTechno.begin(), SW_AuxTechno.end(), IsTechnoPresent))
-			return false;
-	}
+		if (EnumFunctions::CanTargetHouse(SW_AuxTechno_Owner, pHouse, pTmpHouse))
+		{
 
-	if (SW_NegTechno_Any)
-	{
-		if (std::any_of(SW_NegTechno.begin(), SW_NegTechno.end(), IsTechnoPresent))
-			return false;
-	}
-	else
-	{
-		if (std::all_of(SW_NegTechno.begin(), SW_NegTechno.end(), IsTechnoPresent))
-			return false;
+			if (SW_AuxTechno_Any)
+			{
+
+				if (!SW_AuxTechno.empty() && std::none_of(SW_AuxTechno.begin(), SW_AuxTechno.end(), IsHouseTechnoPresent))
+					return false;
+			}
+			else
+			{
+				if (!SW_AuxTechno.empty() && !std::all_of(SW_AuxTechno.begin(), SW_AuxTechno.end(), IsHouseTechnoPresent))
+					return false;
+			}
+		}
+
+		if (EnumFunctions::CanTargetHouse(SW_NegTechno_Owner, pHouse, pTmpHouse))
+		{
+			if (SW_NegTechno_Any)
+			{
+				if (std::any_of(SW_NegTechno.begin(), SW_NegTechno.end(), IsHouseTechnoPresent))
+					return false;
+			}
+			else
+			{
+				if (std::all_of(SW_NegTechno.begin(), SW_NegTechno.end(), IsHouseTechnoPresent))
+					return false;
+			}
+		}
 	}
 
 	return true;
@@ -91,6 +113,8 @@ void SWTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->RandomBuffer)
 		.Process(this->SW_AuxTechno)
 		.Process(this->SW_NegTechno)
+		.Process(this->SW_AuxTechno_Owner)
+		.Process(this->SW_NegTechno_Owner)
 		.Process(this->SW_AuxTechno_Any)
 		.Process(this->SW_NegTechno_Any)
 		.Process(this->SW_AuxBuildings)
@@ -102,6 +126,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->SW_AllowAI)
 		.Process(this->SW_ShowCameo)
 		.Process(this->SW_AutoFire)
+		.Process(this->SW_Shots)
 		;
 }
 
@@ -148,6 +173,8 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 
 	this->SW_AuxTechno.Read(exINI, pSection, "SW.AuxTechno");
 	this->SW_NegTechno.Read(exINI, pSection, "SW.NegTechno");
+	this->SW_AuxTechno_Owner.Read(exINI, pSection, "SW.AuxTechno.Owner");
+	this->SW_NegTechno_Owner.Read(exINI, pSection, "SW.NegTechno.Owner");
 	this->SW_AuxTechno_Any.Read(exINI, pSection, "SW.AuxTechno.Any");
 	this->SW_NegTechno_Any.Read(exINI, pSection, "SW.NegTechno.Any");
 	this->SW_AuxBuildings.Read(exINI, pSection, "SW.AuxBuildings");
@@ -159,6 +186,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->SW_AllowAI.Read(exINI, pSection, "SW.AllowAI");
 	this->SW_ShowCameo.Read(exINI, pSection, "SW.ShowCameo");
 	this->SW_AutoFire.Read(exINI, pSection, "SW.AutoFire");
+	this->SW_Shots.Read(exINI, pSection, "SW.Shots");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {

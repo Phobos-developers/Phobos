@@ -18,9 +18,11 @@ public:
 	public:
 		std::map<BuildingTypeExt::ExtData*, int> BuildingCounter;
 		CounterClass OwnedLimboBuildingTypes;
+		std::unordered_map<int, int> SW_FireTimes;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
+			, SW_FireTimes {}
 		{ }
 
 		virtual ~ExtData() = default;

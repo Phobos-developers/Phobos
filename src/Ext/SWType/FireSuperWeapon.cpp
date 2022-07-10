@@ -74,6 +74,9 @@ void LimboDeliver(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 
 void SWTypeExt::ExtData::FireSuperWeapon(SuperClass* pSW, HouseClass* pHouse, CoordStruct coords)
 {
+	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	++pHouseExt->SW_FireTimes[OwnerObject()->ArrayIndex];
+
 	if (this->LimboDelivery_Types.size())
 		ApplyLimboDelivery(pHouse);
 
