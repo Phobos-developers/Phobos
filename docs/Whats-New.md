@@ -315,6 +315,8 @@ New:
 - Warhead self-damaging toggle (by Starkku)
 - Trailer animations inheriting owner (by Starkku)
 - Warhead detonation on all objects on map (by Starkku)
+- Implemented support for PCX images for campaign load screen (by FlyStar)
+- Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)

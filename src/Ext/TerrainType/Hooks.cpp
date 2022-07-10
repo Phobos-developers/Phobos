@@ -14,26 +14,42 @@ namespace TerrainTypeTemp
 	TerrainTypeExt::ExtData* pCurrentExt = nullptr;
 }
 
-DEFINE_HOOK(0x71C853, TerrainTypeClass_Context_Set, 0x6)
+DEFINE_HOOK(0x71C84D, TerrainClass_AI_Animated, 0x6)
 {
-	TerrainTypeTemp::pCurrentType = R->ECX<TerrainTypeClass*>();
-	TerrainTypeTemp::pCurrentExt = TerrainTypeExt::ExtMap.Find(TerrainTypeTemp::pCurrentType);
+	enum { SkipGameCode = 0x71C8D5 };
 
-	return 0;
+	GET(TerrainClass*, pThis, ESI);
+
+	if (pThis->Type->IsAnimated)
+	{
+		if (pThis->Animation.Value == pThis->Type->GetImage()->Frames / 2)
+		{
+			pThis->Animation.Value = 0;
+			pThis->Animation.Start(0);
+
+			// Spawn tiberium if enabled.
+			if (pThis->Type->SpawnsTiberium)
+			{
+				auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
+				auto pCell = pThis->GetCell();
+				int cellCount = pTypeExt->GetCellsPerAnim();
+
+				// Set context for CellClass hooks.
+				TerrainTypeTemp::pCurrentType = pThis->Type;
+				TerrainTypeTemp::pCurrentExt = pTypeExt;
+
+				for (int i = 0; i < cellCount; i++)
+					pCell->SpreadTiberium(true);
+
+				// Unset context for CellClass hooks.
+				TerrainTypeTemp::pCurrentType = nullptr;
+				TerrainTypeTemp::pCurrentExt = nullptr;
+			}
+		}
+	}
+
+	return SkipGameCode;
 }
-
-// thiscall is being emulated here, ECX = pThis, EDX is discarded, second arg is passed thru stack - Kerbiter
-void __fastcall TerrainClass_AI_CellsPerAnim(CellClass* pThis, void*, bool forced)
-{
-	int cellCount = 1;
-	if (TerrainTypeTemp::pCurrentExt)
-		cellCount = TerrainTypeTemp::pCurrentExt->GetCellsPerAnim();
-
-	for (int i = 0; i < cellCount; i++)
-		pThis->SpreadTiberium(forced);
-}
-
-DEFINE_JUMP(CALL, 0x71C8D0, GET_OFFSET(TerrainClass_AI_CellsPerAnim))
 
 DEFINE_HOOK(0x483811, CellClass_SpreadTiberium_TiberiumType, 0x8)
 {
@@ -81,14 +97,6 @@ DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 
 		return NoSpreadReturn;
 	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x71C8D7, TerrainTypeClass_Context_Unset, 0x5)
-{
-	TerrainTypeTemp::pCurrentType = nullptr;
-	TerrainTypeTemp::pCurrentExt = nullptr;
 
 	return 0;
 }
@@ -166,3 +174,4 @@ DEFINE_HOOK(0x568432, MapClass_PlaceDown_0x0TerrainTypes, 0x8)
 
 	return 0;
 }
+
