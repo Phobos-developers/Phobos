@@ -521,7 +521,7 @@ DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Deconstruction_EVA_Sold_1, 0x6)
 
 	if (pTypeExt->EVA_Sold.isset())
 	{
-		if (pThis->IsOwnedByPlayer && !pThis->Type->UndeploysInto)
+		if (pThis->IsHumanControlled && !pThis->Type->UndeploysInto)
 			VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
 
 		return 0x449CEA;
@@ -537,7 +537,7 @@ DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Deconstruction_EVA_Sold_2, 0x6)
 
 	if (pTypeExt->EVA_Sold.isset())
 	{
-		if (pThis->IsOwnedByPlayer)
+		if (pThis->IsHumanControlled)
 			VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
 
 		return 0x44AB3B;
