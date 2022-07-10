@@ -289,6 +289,8 @@ New:
 - Trigger Action 505 for Firing SW at specified location (by FS-21)
 - Trigger Action 506 for Firing SW at waypoint (by FS-21)
 - New behaviors for objects' self-destruction under certain conditions (by Trsdy & FS-21)
+- Slaves' ownership decision when corresponding slave miner is destroyed (by Trsdy)
+- Customize buildings' selling sound and EVA voice (by Trsdy) 
 - `ForceWeapon.Naval.Decloacked` for overriding uncloaked underwater attack behavior (by FS-21)
 - Shrapnel enhancement (by secsome)
 - Shared Ammo for transports to passengers (by FS-21)

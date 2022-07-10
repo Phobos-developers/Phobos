@@ -552,13 +552,13 @@ DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Deconstruction_EVA_Sold_2, 0x6)
 DEFINE_HOOK(0x44A850, BuildingClass_Mission_Deconstruction_Sellsound, 0x6)
 {
 	GET(BuildingClass*, pThis, EBP);
-	enum { PlayVocGlobal = 0x44A856 };
+	enum { PlayVocLocally = 0x44A856 };
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	if (pTypeExt->SellSound.isset())
 	{
 		R->ECX(pTypeExt->SellSound.Get());
-		return PlayVocGlobal;
+		return PlayVocLocally;
 	}
 
 	return 0x0;
@@ -572,7 +572,8 @@ DEFINE_HOOK(0x4D9F8A, FootClass_Sell_Sellsound, 0x5)
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex((const char*)EVA_UnitSold)));
-	VocClass::PlayGlobal(pTypeExt->SellSound.Get(RulesClass::Instance->SellSound), 0x2000, 1.0, nullptr);
+	//WW used VocClass::PlayGlobal to play the SellSound, why did they do that?
+	VocClass::PlayAt(pTypeExt->SellSound.Get(RulesClass::Instance->SellSound), pThis->Location);
 
 	return SkipVoxVocPlay;
 }

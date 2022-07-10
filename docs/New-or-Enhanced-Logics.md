@@ -335,7 +335,7 @@ In `rulesmd.ini`
 ```ini
 [SOMEINFANTRY]                       ; Slave type
 Slaved=yes
-Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | neutral), default to killer
+Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | neutral)
 ```
 
 
@@ -582,7 +582,7 @@ InitialStrength.Cloning=  ; single double/percentage or comma-sep. range
 - The auto-death behavior can be chosen from the following:
   - `kill`: The object will be destroyed normally. 
   - `vanish`: The object will be directly removed from the game peacefully instead of actually getting killed.
-  - `sell`: If the object is a **building** with buildup, it will be sold instead of killed.
+  - `sell`: If the object is a **building** with buildup, it will be sold instead of destroyed.
 
 If this option is not set, the self-destruction logic will not be enabled.
 ```{note}
@@ -694,8 +694,8 @@ WarpOutWeapon=                          ; WeaponType
 
 - When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
 
-  -`EVA.Sold` is used to customize the EVA voice when selling, default to `EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles.
-  -`SellSound` is used to customize the report sound when selling, default to `[AudioVisual]->SellSound`.
+  - `EVA.Sold` is used to customize the EVA voice when selling, default to `EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles.
+  - `SellSound` is used to customize the report sound when selling, default to `[AudioVisual]->SellSound`. Note that vanilla game played vehicles' SellSound globally. This has been changed in consistency with buildings' SellSound.
 
 In `rulesmd.ini`:
 ```ini

@@ -926,22 +926,6 @@ msgstr "初始生命值"
 msgid "You can now specify how many hitpoints a TechnoType starts with."
 msgstr "现在可以指定单位的初始生命值了。"
 
-#: ../New-or-Enhanced-Logics.md:780
-msgid "Kill Unit Automatically"
-msgstr "自动击杀单位"
-
-#: ../New-or-Enhanced-Logics.md:782
-msgid "Objects can be destroyed automatically under certaing cases:"
-msgstr "单位可以在以下情况下被自动摧毁："
-
-#: ../New-or-Enhanced-Logics.md:783
-msgid "No Ammo: The object will die if the remaining ammo reaches 0."
-msgstr "无弹药：当弹药数为0后自动死亡。"
-
-#: ../New-or-Enhanced-Logics.md:784
-msgid "Countdown: The object will die if the countdown reaches 0."
-msgstr "倒计时：当计时为0后自动死亡。"
-
 #: ../New-or-Enhanced-Logics.md:793
 msgid "Mind Control enhancement"
 msgstr "心灵控制增强"
@@ -1363,12 +1347,6 @@ msgid ""
 "`AffectsAllies`, `AffectsOwner` and `AffectsEnemies` on `RadSiteWarhead` "
 "are respected."
 msgstr "`AffectsAllies`，`AffectsOwner`和`AffectsEnemies`也会被遵守。"
-
-#: ../New-or-Enhanced-Logics.md:1246
-msgid ""
-"Currently the rad maker doesn't gain experience from kills, this may "
-"change in future."
-msgstr "目前辐射的产生者无法通过击杀获取经验，未来可能会改。"
 
 #: ../New-or-Enhanced-Logics.md:1247
 msgid ""
