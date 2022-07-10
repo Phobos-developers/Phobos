@@ -18,10 +18,6 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 {
 	auto pWarhead = this->Type->GetWarhead();
 
-	// Sanity check at last possible moment before using this to prevent weird stuff from occuring if the invoker died after creating the rad field.
-	if (this->RadInvoker && !this->RadInvoker->IsAlive)
-		this->RadInvoker = nullptr;
-
 	if (!this->Type->GetWarheadDetonate())
 	{
 		if (pTarget->ReceiveDamage(&damage, distance, pWarhead, this->RadInvoker, false, true, this->RadHouse) == DamageState::NowDead)

@@ -80,7 +80,6 @@ public:
 			switch (abs)
 			{
 			case AbstractType::Anim:
-			case AbstractType::Bullet:
 				return false;
 			default:
 				return true;
