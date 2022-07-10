@@ -27,7 +27,7 @@ public:
 		int PassengerDeletionCountDown;
 		ShieldTypeClass* CurrentShieldType;
 		int LastWarpDistance;
-		TimerStruct AutoDeathTimer;
+		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
 		OptionalStruct<int, false> DamageNumberOffset;
 		OptionalStruct<int, true> CurrentLaserWeaponIndex;
@@ -45,7 +45,7 @@ public:
 			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
-			, AutoDeathTimer()
+			, AutoDeathTimer { }
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset {}
 			, OriginalPassengerOwner {}
