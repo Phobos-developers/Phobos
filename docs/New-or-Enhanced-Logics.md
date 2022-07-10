@@ -353,7 +353,7 @@ Ammo.Shared.Group=-1  ; integer
 
 In `rulesmd.ini`
 ```ini
-[SOMEINFANTRY]                     ; Slave type
+[SOMEINFANTRY]                       ; Slave type
 Slaved=yes
 Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | neutral), default to killer
 ```
@@ -600,11 +600,17 @@ InitialStrength.Cloning=  ; single double/percentage or comma-sep. range
   - `AfterDelay`: The object will die if the countdown (in frames) reaches 0.
 
 - The auto-death behavior can be chosen from the following:
-  - `kill`: The object will be destroyed normally. Please notice that if the unit carries passengers, they will not be released. This might change in the future.
+  - `kill`: The object will be destroyed normally. 
   - `vanish`: The object will be directly removed from the game peacefully instead of actually getting killed.
   - `sell`: If the object is a **building** with buildup, it will be sold instead of killed.
 
 If this option is not set, the self-destruction logic will not be enabled.
+```{note}
+Please notice that if the object is a unit which carries passengers, they will not be released even with the kill option. This might change in the future if necessary.
+
+If the object enters transport, the countdown will continue, but it will not self-destruct inside the transport.
+```
+
 
 In `rulesmd.ini`:
 ```ini

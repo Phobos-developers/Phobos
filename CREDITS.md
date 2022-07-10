@@ -105,7 +105,7 @@ This page lists all the individual contributions to the project by their author.
   - Help with docs
   - Automatic Passenger Deletion logic
   - `Fire SW At Location/Waypoint` Trigger Action
-  - Kill Object Automatically logic
+  - Kill Object Automatically logic prototype
   - Customizable resource storage
   - Override Uncloaked Underwater attack behavior
   - AI Aircraft docks fix

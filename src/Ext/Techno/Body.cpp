@@ -10,7 +10,6 @@
 #include <ParticleSystemClass.h>
 #include <Unsorted.h>
 #include <BitFont.h>
-#include <JumpjetLocomotionClass.h>
 
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
@@ -450,6 +449,7 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 							}
 						}
 
+						pPassenger->RegisterKill(pThis->Owner);
 						pPassenger->UnInit();
 					}
 
@@ -480,7 +480,6 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 	return false;
 }
 
-// Feature: Kill Object Automatically
 void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 {
 	switch (deathOption)
@@ -488,9 +487,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 
 	case AutoDeathBehavior::Vanish:
 	{
-		if (!pThis->InLimbo)
-			pThis->Limbo();
-
+		pThis->Limbo();
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
 
@@ -517,7 +514,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 			true,// ignoreDefenses = false to let passengers escape, why?
 			false, pThis->Owner
 		);
-		
+
 		return;
 	}
 }
@@ -526,48 +523,40 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 {
 	auto pType = pThis->GetTechnoType();
 	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType))
-	{	
-		
-		if (pTypeExt->AutoDeath_Behavior.isset())
-		{
-			// Self-destruction must be enabled
-			const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
+	{
 
-			// Death if no ammo
-			if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
+		if (!pTypeExt->AutoDeath_Behavior.isset())
+			return;
+
+		// Self-destruction must be enabled
+		const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
+
+		// Death if no ammo
+		if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
+		{
+			TechnoExt::KillSelf(pThis, howToDie);
+			return;
+		}
+
+		auto pData = TechnoExt::ExtMap.Find(pThis);
+		// Death if countdown ends
+		if (pData && pTypeExt->AutoDeath_AfterDelay > 0)
+		{
+			//using Expired() may be confusing
+			if (pData->AutoDeathTimer.StartTime == -1 && pData->AutoDeathTimer.TimeLeft == 0)
+			{
+				pData->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
+			}
+			else if (!pThis->Transporter && pData->AutoDeathTimer.Completed())
 			{
 				TechnoExt::KillSelf(pThis, howToDie);
 				return;
 			}
 
-			auto pData = TechnoExt::ExtMap.Find(pThis);
-			// Death if countdown ends
-			if (pData && pTypeExt->AutoDeath_AfterDelay > 0)
-			{
-				if (pData->AutoDeathCountDown >= 0)
-				{
-					if (pData->AutoDeathCountDown > 0)
-					{
-						pData->AutoDeathCountDown--; // Update countdown
-					}
-					else
-					{
-						// Countdown ended. Kill the unit
-						pData->AutoDeathCountDown = -1;
-						TechnoExt::KillSelf(pThis, howToDie);
-
-						return;
-					}
-				}
-				else
-				{
-					pData->AutoDeathCountDown = pTypeExt->AutoDeath_AfterDelay; // Start countdown
-				}
-			}
-
 		}
-
 	}
+
+
 }
 
 void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
@@ -872,7 +861,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletionCountDown)
 		.Process(this->CurrentShieldType)
 		.Process(this->LastWarpDistance)
-		.Process(this->AutoDeathCountDown)
+		.Process(this->AutoDeathTimer)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->CurrentLaserWeaponIndex)
