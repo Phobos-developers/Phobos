@@ -51,6 +51,7 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Infantry_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
+		Valueable<bool> IronCurtain_SyncDeploysInto;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -76,6 +77,7 @@ public:
 			, Pips_SelfHeal_Infantry_Offset {{ 25, -35 }}
 			, Pips_SelfHeal_Units_Offset {{ 33, -32 }}
 			, Pips_SelfHeal_Buildings_Offset {{ 15, 10 }}
+			, IronCurtain_SyncDeploysInto { false }
 		{ }
 
 		virtual ~ExtData() = default;

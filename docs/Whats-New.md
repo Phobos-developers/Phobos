@@ -305,6 +305,7 @@ New:
 - Passable & buildable-upon TerrainTypes (by Starkku)
 - Toggle for passengers to automatically change owner if transport owner changes (by Starkku)
 - Superweapon launch on warhead detonation (by Trsdy)
+- Preserve IronCurtain status upon DeploysInto/UndeploysInto (by Trsdy)
 - Correct owner house for Warhead Anim/SplashList & Play Animation trigger animations (by Starkku)
 - Customizable FLH When Infantry Is Crouched Or Deployed (by FS-21)
 - Enhanced projectile interception logic, including projectile strength & armor types (by Starkku)
