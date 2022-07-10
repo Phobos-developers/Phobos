@@ -703,23 +703,27 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<SlavesGiveTo>(SlavesGiveTo& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	inline bool read<SlaveChangeOwnerType>(SlaveChangeOwnerType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
 			if (_strcmpi(parser.value(), "suicide") == 0)
 			{
-				value = SlavesGiveTo::Suicide;
+				value = SlaveChangeOwnerType::Suicide;
 			}
 			else if (_strcmpi(parser.value(), "master") == 0)
 			{
-				value = SlavesGiveTo::Master;
+				value = SlaveChangeOwnerType::Master;
+			}
+			else if (_strcmpi(parser.value(), "neutral") == 0)
+			{
+				value = SlaveChangeOwnerType::Neutral;
 			}
 			else
 			{
 				if (_strcmpi(parser.value(), "killer") != 0)
-					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a free-slave option, default killer");
-				value = SlavesGiveTo::Killer;
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a slave ownership option, default killer");
+				value = SlaveChangeOwnerType::Killer;
 			}
 			return true;
 		}
@@ -727,28 +731,25 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<HowToSuicide>(HowToSuicide& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	inline bool read<AutoDeathBehavior>(AutoDeathBehavior& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
 			if (_strcmpi(parser.value(), "sell") == 0)
 			{
-				value = HowToSuicide::Sell;
+				value = AutoDeathBehavior::Sell;
 			}
 			else if (_strcmpi(parser.value(), "vanish") == 0)
 			{
-				value = HowToSuicide::Vanish;
-			}
-			else if (_strcmpi(parser.value(), "kill") == 0)
-			{
-				value = HowToSuicide::Kill;
+				value = AutoDeathBehavior::Vanish;
 			}
 			else
 			{
-				if(_strcmpi(parser.value(), "disabled") != 0)
-					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a suicide option, default disabled");
-				value = HowToSuicide::Disabled;
+				if(_strcmpi(parser.value(), "kill") != 0)
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a self-destruction behavior, default to kill if set");
+				value = AutoDeathBehavior::Kill;
 			}
+
 			return true;
 		}
 		return false;

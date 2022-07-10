@@ -66,7 +66,7 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 
 void BuildingTypeExt::ExtData::Initialize()
 {
-	this->EVA_Sold = VoxClass::FindIndex((const char*)0x819030);	//EVA_StructureSold
+	this->EVA_Sold = VoxClass::FindIndex((const char*)0x819030);	// "EVA_StructureSold"
 }
 
 // =============================
@@ -157,7 +157,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			if (_strcmpi(Phobos::readBuffer, pSection) || _strcmpi(Phobos::readBuffer, pArtSection))
 				this->PlacementPreview_Shape.Read(exINI, pSection, "PlacementPreview.Shape");
 			else
-				Debug::Log("Cannot Load PlacementPreview.Shape for [%s]Art[%s] ! \n",pSection , pArtSection);
+				Debug::Log("Cannot Load PlacementPreview.Shape for [%s]Art[%s] ! \n", pSection, pArtSection);
 		}
 	}
 

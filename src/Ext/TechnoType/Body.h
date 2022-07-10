@@ -53,11 +53,11 @@ public:
 		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
 		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
 
-		Valueable<bool> Death_NoAmmo;
-		Valueable<int> Death_Countdown;
-		Valueable<HowToSuicide> Death;
-		Valueable<SlavesGiveTo> Slaved_OwnerWhenMasterDead;
-		ValueableIdx<VocClass> SellSound;
+		Valueable<bool> AutoDeath_OnAmmoDepletion;
+		Valueable<int> AutoDeath_AfterDelay;
+		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
+		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
+		NullableIdx<VocClass> SellSound;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -217,11 +217,11 @@ public:
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
-			, Death { HowToSuicide::Disabled }
-			, Death_NoAmmo { false }
-			, Death_Countdown { 0 }
-			, Slaved_OwnerWhenMasterDead { SlavesGiveTo::Killer }
-			, SellSound{ -1 }
+			, AutoDeath_Behavior { }
+			, AutoDeath_OnAmmoDepletion { false }
+			, AutoDeath_AfterDelay { 0 }
+			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
+			, SellSound{ }
 			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }

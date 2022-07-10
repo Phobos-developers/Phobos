@@ -481,20 +481,23 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 }
 
 // Feature: Kill Object Automatically
-void TechnoExt::KillSelf(TechnoClass* pThis, HowToSuicide deathOption)
+void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 {
 	switch (deathOption)
 	{
-	case HowToSuicide::Vanish:
+
+	case AutoDeathBehavior::Vanish:
 	{
 		if (!pThis->InLimbo)
 			pThis->Limbo();
+
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
 
 		return;
 	}
-	case HowToSuicide::Sell:
+
+	case AutoDeathBehavior::Sell:
 	{
 		if (auto pBld = abstract_cast<BuildingClass*>(pThis))
 		{
@@ -508,9 +511,10 @@ void TechnoExt::KillSelf(TechnoClass* pThis, HowToSuicide deathOption)
 
 		Debug::Log("[Runtime Warning] %s can't be sold, killing it instead\n", pThis->get_ID());
 	}
-	default:
+
+	default: //must be AutoDeathBehavior::Kill
 		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr,
-			false,// ignoreDefenses = false to let passengers escape, why?
+			true,// ignoreDefenses = false to let passengers escape, why?
 			false, pThis->Owner
 		);
 		
@@ -521,13 +525,16 @@ void TechnoExt::KillSelf(TechnoClass* pThis, HowToSuicide deathOption)
 void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 {
 	auto pType = pThis->GetTechnoType();
-	if (auto pTypeData = TechnoTypeExt::ExtMap.Find(pType))
+	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType))
 	{	
-		const auto howToDie = pTypeData->Death.Get();
-		if (howToDie != HowToSuicide::Disabled)
+		
+		if (pTypeExt->AutoDeath_Behavior.isset())
 		{
+			// Self-destruction must be enabled
+			const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
+
 			// Death if no ammo
-			if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeData->Death_NoAmmo)
+			if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
 			{
 				TechnoExt::KillSelf(pThis, howToDie);
 				return;
@@ -535,18 +542,18 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 
 			auto pData = TechnoExt::ExtMap.Find(pThis);
 			// Death if countdown ends
-			if (pData && pTypeData->Death_Countdown > 0)
+			if (pData && pTypeExt->AutoDeath_AfterDelay > 0)
 			{
-				if (pData->Death_Countdown >= 0)
+				if (pData->AutoDeathCountDown >= 0)
 				{
-					if (pData->Death_Countdown > 0)
+					if (pData->AutoDeathCountDown > 0)
 					{
-						pData->Death_Countdown--; // Update countdown
+						pData->AutoDeathCountDown--; // Update countdown
 					}
 					else
 					{
 						// Countdown ended. Kill the unit
-						pData->Death_Countdown = -1;
+						pData->AutoDeathCountDown = -1;
 						TechnoExt::KillSelf(pThis, howToDie);
 
 						return;
@@ -554,7 +561,7 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 				}
 				else
 				{
-					pData->Death_Countdown = pTypeData->Death_Countdown; // Start countdown
+					pData->AutoDeathCountDown = pTypeExt->AutoDeath_AfterDelay; // Start countdown
 				}
 			}
 
@@ -865,7 +872,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletionCountDown)
 		.Process(this->CurrentShieldType)
 		.Process(this->LastWarpDistance)
-		.Process(this->Death_Countdown)
+		.Process(this->AutoDeathCountDown)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->CurrentLaserWeaponIndex)

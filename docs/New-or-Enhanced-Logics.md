@@ -345,16 +345,17 @@ Ammo.Shared.Group=-1  ; integer
 
 ### Slaves' house decision customization when owner is killed
 
-- You can now decide the slaves' house when the corresponding slave miner is killed using `Slaved.OwnerWhenMasterDead`:
+- You can now decide the slaves' house when the corresponding slave miner is killed using `Slaved.OwnerWhenMasterKilled`:
   - `suicide`: Kill each slave if the slave miner is killed.
   - `master`: Free the slaves but keep the house of the slave unchanged.
-  - `killer`: Free the slaves and give them to the house of the slave miner's killer. (Default option)
+  - `neutral`: The slaves belong to civilian house.
+  - `killer`: Free the slaves and give them to the house of the slave miner's killer. (vanilla behavior)
 
 In `rulesmd.ini`
 ```ini
 [SOMEINFANTRY]                     ; Slave type
 Slaved=yes
-Slaved.OwnerWhenMasterDead=killer  ; slaves' owner decision enumeration (suicide | master | killer), default to killer
+Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | neutral), default to killer
 ```
 
 
@@ -595,22 +596,23 @@ InitialStrength.Cloning=  ; single double/percentage or comma-sep. range
 ### Kill Object Automatically
 
 - Objects can be destroyed automatically if *any* of these conditions is met:
-  - `NoAmmo`: The object will die if the remaining ammo reaches 0.
-  - `Countdown`: The object will die if the countdown (in frames) reaches 0.
+  - `OnAmmoDepletion`: The object will die if the remaining ammo reaches 0.
+  - `AfterDelay`: The object will die if the countdown (in frames) reaches 0.
 
 - The auto-death behavior can be chosen from the following:
-  - `disabled`: (*Default option*) This logic is not enabled, the object shall not be killed automatically.
-  - `kill`: The object will be destroyed normally.
-  - `vanish`: The unit will be directly removed from the game peacefully instead of actually getting killed. For example, `DeathWeapon` and "Unit lost" EVA will not be triggered.
-  - `sell`: If the object is a sellable **building**, it will be sold instead of killed.
+  - `kill`: The object will be destroyed normally. Please notice that if the unit carries passengers, they will not be released. This might change in the future.
+  - `vanish`: The object will be directly removed from the game peacefully instead of actually getting killed.
+  - `sell`: If the object is a **building** with buildup, it will be sold instead of killed.
+
+If this option is not set, the self-destruction logic will not be enabled.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]             ; TechnoType
-Death=disabled           ; enumeration (disabled | kill | vanish | sell)
+[SOMETECHNO]                  ; TechnoType
+AutoDeath.Behavior=           ; enumeration (kill | vanish | sell), default not set
 
-Death.NoAmmo=no          ; boolean
-Death.Countdown=0        ; integer
+AutoDeath.OnAmmoDepletion=no  ; boolean
+AutoDeath.AfterDelay=0        ; positive integer
 ```
 
 

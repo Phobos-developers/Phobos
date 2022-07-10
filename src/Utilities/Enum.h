@@ -149,19 +149,19 @@ enum class AreaFireTarget
 	Random = 2
 };
 
-enum class SlavesGiveTo
+enum class SlaveChangeOwnerType
 {
 	Killer = 0, // default
 	Master = 1,
-	Suicide = 2
+	Suicide = 2,
+	Neutral = 4,
 };
 
-enum class HowToSuicide
+enum class AutoDeathBehavior
 {
-	Disabled = 0, // default
-	Kill = 1,     // default death option
-	Vanish = 2,
-	Sell = 4,     // buildings only
+	Kill = 0,     // default death option
+	Vanish = 1,
+	Sell = 2,     // buildings only
 };
 
 enum class SelfHealGainType

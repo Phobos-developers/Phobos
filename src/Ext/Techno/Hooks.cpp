@@ -212,7 +212,7 @@ DEFINE_HOOK(0x518505, InfantryClass_TakeDamage_NotHuman, 0x4)
 DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
-	R->EDI(pThis->Type->DeployFireWeapon == -1  ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
+	R->EDI(pThis->Type->DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
 	return 0x5223B9;
 }
 
@@ -394,24 +394,30 @@ DEFINE_HOOK(0x6FA793, TechnoClass_AI_SelfHealGain, 0x5)
 
 DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 {
-	enum { KillTheSlave = 0x6B0BDF, GoToLABEL_18 = 0x6B0BB4 };
+	enum { KillTheSlave = 0x6B0BDF, ChangeSlaveOwner = 0x6B0BB4 };
 
 	GET(InfantryClass*, pSlave, ESI);
 
 	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->Type))
 	{
-		switch (pTypeExt->Slaved_OwnerWhenMasterDead.Get())
+		switch (pTypeExt->Slaved_OwnerWhenMasterKilled.Get())
 		{
-		case SlavesGiveTo::Suicide:
+		case SlaveChangeOwnerType::Suicide:
 			return KillTheSlave;
 
-		case SlavesGiveTo::Master:
-		{
+		case SlaveChangeOwnerType::Master:
 			R->EAX(pSlave->Owner);
-			return GoToLABEL_18;
-		}
+			return ChangeSlaveOwner;
 
-		default: return 0x0;
+		case SlaveChangeOwnerType::Neutral:
+			if (auto pNeutral = HouseClass::FindNeutral())
+			{
+				R->EAX(pNeutral);
+				return ChangeSlaveOwner;
+			}
+
+		default: // SlaveChangeOwnerType::Killer
+			return 0x0;
 		}
 	}
 
@@ -423,9 +429,15 @@ DEFINE_HOOK(0x44A850, BuildingClass_Mission_Deconstruction_Sellsound, 0x6)
 	GET(BuildingClass*, pThis, EBP);
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-	R->ECX(pTypeExt->SellSound.Get());
 
-	return 0x44A856;
+	if (pTypeExt->SellSound.isset())
+	{
+		R->ECX(pTypeExt->SellSound.Get());
+		return 0x44A856;
+	}
+
+	//Default to R->ECX(RulesClass::Instance->SellSound)
+	return 0x0;
 }
 
 DEFINE_HOOK(0x4D9FAA, FootClass_Sell_Sellsound, 0x6)
@@ -433,9 +445,15 @@ DEFINE_HOOK(0x4D9FAA, FootClass_Sell_Sellsound, 0x6)
 	GET(FootClass*, pThis, ESI);
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	R->ECX(pTypeExt->SellSound.Get());
 
-	return 0x4D9FB0;
+	if (pTypeExt->SellSound.isset())
+	{
+		R->ECX(pTypeExt->SellSound.Get());
+		return 0x4D9FB0;
+	}
+
+	//Default to R->ECX(RulesClass::Instance->SellSound) for units too
+	return 0x0;
 }
 
 DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
