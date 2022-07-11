@@ -116,7 +116,7 @@ public:
 		Valueable<bool> Passengers_SyncOwner;
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
-		Nullable<bool> IronCurtain_SyncOnDeploy;
+		Nullable<bool> IronCurtain_KeptOnDeploy;
 
 		Valueable<Vector2D<double>> InitialStrength_Cloning;
 
@@ -230,7 +230,7 @@ public:
 			, ProneSecondaryFireFLH { }
 			, DeployedPrimaryFireFLH { }
 			, DeployedSecondaryFireFLH { }
-			, IronCurtain_SyncOnDeploy{ }
+			, IronCurtain_KeptOnDeploy{ }
 			, InitialStrength_Cloning{ { 1.0, 0.0 } }
 		{ }
 

@@ -401,17 +401,16 @@ DeployingAnim.UseUnitDrawer=true       ; boolean
 
 ![image](_static/images/preserve-ic.gif)
 
-- Iron Curtain status can now preserved when converting between TechnoTypes.
-  - This behavior can be customized on per-TechnoType *and* global basis.
+- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`.
+  - This behavior can be turned off per-TechnoType and global basis.
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-IronCurtain.SyncOnDeploy=no  ; boolean
+IronCurtain.KeptOnDeploy=no  ; boolean
 
 [SOMETECHNO]                 ; VehicleType with DeploysInto or BuildingType with UndeploysInto
-IronCurtain.SyncOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.SyncOnDeploy
-
+IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
 ```
 
 ## Warheads
