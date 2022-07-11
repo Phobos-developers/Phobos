@@ -545,6 +545,10 @@ namespace detail
 				{
 					parsed |= AffectedTarget::Building;
 				}
+				else if (!_strcmpi(cur, "aircraft"))
+				{
+					parsed |= AffectedTarget::Aircraft;
+				}
 				else if (!_strcmpi(cur, "all"))
 				{
 					parsed |= AffectedTarget::All;
@@ -670,7 +674,7 @@ namespace detail
 		}
 		return false;
 	}
-	
+
 	template <>
 	inline bool read<SelfHealGainType>(SelfHealGainType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{

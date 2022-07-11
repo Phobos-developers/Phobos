@@ -1,9 +1,14 @@
 #include "Body.h"
+#include <Ext/Anim/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Misc/CaptureManager.h>
 
+#include <AircraftClass.h>
+#include <BuildingClass.h>
+#include <InfantryClass.h>
+#include <UnitClass.h>
 #include <TechnoClass.h>
 #include <TacticalClass.h>
 
@@ -87,7 +92,24 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	return 0;
 }
 
-// Inviso bullets behave differently in BulletClass::AI when their target is bullet and 
+DEFINE_HOOK(0x4668BD, BulletClass_AI_TrailerInheritOwner, 0x6)
+{
+	GET(BulletClass*, pThis, EBP);
+	GET(AnimClass*, pAnim, EAX);
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
+		{
+			pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
+			pAnimExt->Invoker = pThis->Owner;
+		}
+	}
+
+	return 0;
+}
+
+// Inviso bullets behave differently in BulletClass::AI when their target is bullet and
 // seemingly (at least partially) adopt characteristics of a vertical projectile.
 // This is a potentially slightly hacky solution to that, as proper solution
 // would likely require making sense of BulletClass::AI and ain't nobody got time for that.
@@ -196,21 +218,6 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_ScreenShake, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetachFromOwner, 0x8)
-{
-	GET(BulletClass*, pThis, ESI);
-
-	if (pThis->Owner && pThis->WeaponType)
-	{
-		auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
-
-		if (pWeaponExt->DetachedFromOwner)
-			pThis->Owner = nullptr;
-	}
-
-	return 0;
-}
-
 DEFINE_HOOK(0x469A75, BulletClass_Logics_DamageHouse, 0x7)
 {
 	GET(BulletClass*, pThis, ESI);
@@ -220,6 +227,64 @@ DEFINE_HOOK(0x469A75, BulletClass_Logics_DamageHouse, 0x7)
 	{
 		if (!pHouse)
 			R->ECX(pExt->FirerHouse);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
+{
+	enum { ReturnFromFunction = 0x46A2FB };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH))
+	{
+		if (pWHExt->DetonateOnAllMapObjects && !pWHExt->WasDetonatedOnAllMapObjects)
+		{
+			pWHExt->WasDetonatedOnAllMapObjects = true;
+			auto const pExt = BulletExt::ExtMap.Find(pThis);
+			auto pOwner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
+
+			auto tryDetonate = [pThis, pWHExt, pOwner](TechnoClass* pTechno)
+			{
+				if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
+				{
+					pThis->Target = pTechno;
+					auto coords = CoordStruct::Empty;
+					coords = *pTechno->GetCoords(&coords);
+					pThis->Detonate(coords);
+				}
+			};
+
+			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Aircraft) != AffectedTarget::None)
+			{
+				for (auto pTechno : *AircraftClass::Array)
+					tryDetonate(pTechno);
+			}
+
+			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Building) != AffectedTarget::None)
+			{
+				for (auto pTechno : *BuildingClass::Array)
+					tryDetonate(pTechno);
+			}
+
+			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Infantry) != AffectedTarget::None)
+			{
+				for (auto pTechno : *InfantryClass::Array)
+					tryDetonate(pTechno);
+			}
+
+			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Unit) != AffectedTarget::None)
+			{
+				for (auto pTechno : *UnitClass::Array)
+					tryDetonate(pTechno);
+			}
+
+			pWHExt->WasDetonatedOnAllMapObjects = false;
+
+			return ReturnFromFunction;
+		}
 	}
 
 	return 0;
