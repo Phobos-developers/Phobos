@@ -31,6 +31,7 @@ This page lists all the individual contributions to the project by their author.
   - Zero size map previews fix
   - LaserTrails port and rework
   - Laser graphics fixes
+  - Recursive transport killer fix
   - GitHub Actions setup
   - Overhauled Unicode font
   - Official docs
