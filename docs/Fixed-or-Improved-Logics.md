@@ -409,7 +409,7 @@ DeployingAnim.UseUnitDrawer=true       ; boolean
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-IronCurtain.KeptOnDeploy=no  ; boolean
+IronCurtain.KeptOnDeploy=yes ; boolean
 
 [SOMETECHNO]                 ; VehicleType with DeploysInto or BuildingType with UndeploysInto
 IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
