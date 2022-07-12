@@ -103,6 +103,7 @@ public:
 		Valueable<int> NoAmmoAmount;
 
 		Nullable<bool> JumpjetAllowLayerDeviation;
+		Nullable<bool> JumpjetTurnToTarget;
 
 		Valueable<bool> DeployingAnim_AllowAnyDirection;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
@@ -114,11 +115,12 @@ public:
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
-		Nullable<bool> JumpjetTurnToTarget;
 
 		Nullable<SelfHealGainType> SelfHealGainType;
 		Valueable<bool> Passengers_SyncOwner;
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
+
+		Nullable<bool> IronCurtain_KeptOnDeploy;
 
 		Valueable<Vector2D<double>> InitialStrength_Cloning;
 
@@ -236,6 +238,7 @@ public:
 			, DeployedPrimaryFireFLH { }
 			, DeployedSecondaryFireFLH { }
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
+			, IronCurtain_KeptOnDeploy{ }
 		{ }
 
 		virtual ~ExtData() = default;
