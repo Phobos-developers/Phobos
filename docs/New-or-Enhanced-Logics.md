@@ -580,7 +580,7 @@ InitialStrength.Cloning=  ; single double/percentage or comma-sep. range
   - `AfterDelay`: The object will die if the countdown (in frames) reaches 0.
 
 - The auto-death behavior can be chosen from the following:
-  - `kill`: The object will be destroyed normally. 
+  - `kill`: The object will be destroyed normally.
   - `vanish`: The object will be directly removed from the game peacefully instead of actually getting killed.
   - `sell`: If the object is a **building** with buildup, it will be sold instead of destroyed.
 
@@ -700,7 +700,7 @@ WarpOutWeapon=                          ; WeaponType
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]    ; BuildingType or UnitType
-EVA.Sold=       ; EVA entry 
+EVA.Sold=       ; EVA entry
 SellSound=      ; sound entry
 ```
 
@@ -832,7 +832,7 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
   - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of each superweapon, otherwise only non-inhibited superweapons are launched. `SW.Designators` are always ignored.
 
 ```{note}
-For animation warheads/weapons to take effect, the invoker must be set.
+For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
 Also, due to the nature of some superweapon types, not all superweapons are suitable for launch.
 ```
 

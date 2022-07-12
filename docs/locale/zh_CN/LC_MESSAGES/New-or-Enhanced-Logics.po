@@ -1445,13 +1445,11 @@ msgstr "`LaunchSW.RealLaunch` 真实发射指仅使用弹头所属方目前真�
 #: ../New-or-Enhanced-Logics.md:1304
 msgid ""
 "`LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of each superweapon,"
-" otherwise only non-inhibited superweapons are launched."
+" otherwise only non-inhibited superweapons are launched. `SW.Designators` are always ignored."
 msgstr "`LaunchSW.IgnoreInhibitors` 是否忽略`SW.Inhibitors`"
 
 #: ../New-or-Enhanced-Logics.md:1305
 msgid ""
-"Animation weapons from _Ares_ are **not** supported. "
-"Nevertheless, animation warheads may work under certain circumstances."
-" Also, due to the nature of some superweapon types,"
-" not all superweapons are suitable for launch."
-msgstr "目前Ares中的动画武器无法生效，动画弹头不全生效。自行探索，谨慎使用，后果自负。"
+"For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set."
+"Also, due to the nature of some superweapon types, not all superweapons are suitable for launch."
+msgstr "若在动画伤害上使用该逻辑则必须设置Invoker，否则超武将不会发射"

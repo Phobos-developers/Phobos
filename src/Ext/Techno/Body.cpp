@@ -449,7 +449,6 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 							}
 						}
 
-
 						pPassenger->KillPassengers(pThis);
 						pPassenger->RegisterDestruction(pThis);
 						pPassenger->UnInit();
@@ -489,6 +488,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 
 	case AutoDeathBehavior::Vanish:
 	{
+		pThis->KillPassengers(pThis);
 		pThis->Limbo();
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
@@ -512,10 +512,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	}
 
 	default: //must be AutoDeathBehavior::Kill
-		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr,
-			true,// ignoreDefenses = false to let passengers escape, why?
-			false, pThis->Owner
-		);
+		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
 
 		return;
 	}
