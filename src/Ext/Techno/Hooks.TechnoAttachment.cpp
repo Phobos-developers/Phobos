@@ -271,26 +271,33 @@ DEFINE_HOOK(0x6FFCAE, TechnoClass_PlayerAssignMission_HandleChildren, 0x5)
 // 0x457C90 IC (forceshield) for buildings
 // 0x6CCCCA Chrono Warp
 // 0x4694BB Temporal warhead
-// 0x4696FB Locomotor warhead
 // ...
 
-DEFINE_HOOK(0x6F3280, TechnoClass_CanScatter_CheckIfAttached, 0x5)
+DEFINE_HOOK(0x469672, BulletClass_Logics_Locomotor_CheckIfAttached, 0x6)
 {
-	enum { Return = 0x6F32C4, ContinueCheck = 0x0 };
+	enum { SkipInfliction = 0x469AA4, ContinueCheck = 0x0 };
+
+	GET(FootClass*, pThis, EDI);
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+
+	return pExt->ParentAttachment
+		? SkipInfliction
+		: ContinueCheck;
+}
+
+DEFINE_HOOK(0x6F3283, TechnoClass_CanScatter_CheckIfAttached, 0x8)
+{
+	enum { EpilogFalse = 0x6F32C5, ContinueCheck = 0x0 };
 
 	GET(TechnoClass*, pThis, ECX);
 	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->ParentAttachment)
-	{
-		R->EAX(0);
-		return Return;
-	}
-
-	return ContinueCheck;
+	return pExt->ParentAttachment
+		? EpilogFalse
+		: ContinueCheck;
 }
 
-// TODO handle scatter for InfantryClass and possibly AircraftClass
+// TODO maybe? handle scatter for InfantryClass and possibly AircraftClass
 
 DEFINE_HOOK(0x736FB6, UnitClass_FiringAI_ForbidAttachmentRotation, 0x6)
 {
