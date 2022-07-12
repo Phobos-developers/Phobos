@@ -44,11 +44,12 @@ public:
 		{ }
 
 		virtual ~ExtData() = default;
+
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
-			if (this->TeamLeader == ptr)
-				this->TeamLeader = nullptr;
+			AnnounceInvalidPointer(TeamLeader, ptr);
 		}
+
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 

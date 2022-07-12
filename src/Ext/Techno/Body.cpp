@@ -450,6 +450,8 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 							}
 						}
 
+						pPassenger->KillPassengers(pThis);
+						pPassenger->RegisterDestruction(pThis);
 						pPassenger->UnInit();
 					}
 
@@ -496,6 +498,8 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 			if (peacefulDeath)
 			{
 				pThis->Limbo();
+				pThis->KillPassengers(pThis);
+				pThis->RegisterDestruction(pThis);
 				pThis->UnInit();
 			}
 			else
@@ -521,6 +525,8 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 				if (peacefulDeath)
 				{
 					pThis->Limbo();
+					pThis->KillPassengers(pThis);
+					pThis->RegisterDestruction(pThis);
 					pThis->UnInit();
 				}
 				else
@@ -651,6 +657,19 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 	}
 
 	return;
+}
+
+void TechnoExt::SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo)
+{
+	if (pFrom->IsIronCurtained() && !pFrom->ForceShielded)
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFrom->GetTechnoType());
+		if (pTypeExt->IronCurtain_KeptOnDeploy.Get(RulesExt::Global()->IronCurtain_KeptOnDeploy))
+		{
+			pTo->IronCurtain(pFrom->IronCurtainTimer.GetTimeLeft(), pFrom->Owner, false);
+			pTo->IronTintStage = pFrom->IronTintStage;
+		}
+	}
 }
 
 void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
