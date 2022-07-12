@@ -2,6 +2,8 @@
 
 #include <Ext/TechnoType/Body.h>
 
+#include <Utilities/Macro.h>
+
 DEFINE_HOOK(0x4DA86E, FootClass_AI_UpdateAttachedLocomotion, 0x0)
 {
 	GET(FootClass* const, pThis, ESI);
@@ -13,20 +15,17 @@ DEFINE_HOOK(0x4DA86E, FootClass_AI_UpdateAttachedLocomotion, 0x0)
 	return 0x4DA87A;
 }
 
-DEFINE_HOOK(0x710460, TechnoClass_Destroy_HandleAttachments, 0x6)
+DEFINE_HOOK(0x707CB3, TechnoClass_KillCargo_HandleAttachments, 0x6)
 {
-	GET(TechnoClass*, pThis, ECX);
+	GET(TechnoClass*, pThis, EBX);
+	GET_STACK(TechnoClass*, pSource, STACK_OFFS(0x4, -0x4));
 
-	TechnoExt::HandleHostDestruction(pThis);
-
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	if (pExt->ParentAttachment)
-		pExt->ParentAttachment->ChildDestroyed();
-
-	pExt->ParentAttachment = nullptr;
+	TechnoExt::DestroyAttachments(pThis, pSource);
 
 	return 0;
 }
+
+// TODO HandleDestructionAsChild at 0x5F65F0 possibly
 
 DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo_UnlimboAttachments, 0x6)
 {
@@ -274,3 +273,75 @@ DEFINE_HOOK(0x6FFCAE, TechnoClass_PlayerAssignMission_HandleChildren, 0x5)
 // 0x4694BB Temporal warhead
 // 0x4696FB Locomotor warhead
 // ...
+
+DEFINE_HOOK(0x6F3280, TechnoClass_CanScatter_CheckIfAttached, 0x5)
+{
+	enum { Return = 0x6F32C4, ContinueCheck = 0x0 };
+
+	GET(TechnoClass*, pThis, ECX);
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->ParentAttachment)
+	{
+		R->EAX(0);
+		return Return;
+	}
+
+	return ContinueCheck;
+}
+
+// TODO handle scatter for InfantryClass and possibly AircraftClass
+
+DEFINE_HOOK(0x736FB6, UnitClass_FiringAI_ForbidAttachmentRotation, 0x6)
+{
+	enum { SkipBodyRotation = 0x737063, ContinueCheck = 0x0 };
+
+	GET(UnitClass*, pThis, ESI);
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+
+	return pExt->ParentAttachment
+		? SkipBodyRotation
+		: ContinueCheck;
+}
+
+DEFINE_HOOK(0x736A2F, UnitClass_RotationAI_ForbidAttachmentRotation, 0x7)
+{
+	enum { SkipBodyRotation = 0x736A8E, ContinueCheck = 0x0 };
+
+	GET(UnitClass*, pThis, ESI);
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+
+	return pExt->ParentAttachment
+		? SkipBodyRotation
+		: ContinueCheck;
+}
+
+Action __fastcall UnitClass_MouseOverCell(UnitClass* pThis, void* _, CellStruct const* pCell, bool checkFog, bool ignoreForce)
+{
+	JMP_THIS(0x7404B0);
+}
+
+// The following two functions represenet
+Action __fastcall UnitClass_MouseOverCell_Wrapper(UnitClass* pThis, void* _, CellStruct const* pCell, bool checkFog, bool ignoreForce)
+{
+	Action result = UnitClass_MouseOverCell(pThis, _, pCell, checkFog, ignoreForce);
+
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt->ParentAttachment)
+		return result;
+
+	switch (result)
+	{
+		case Action::GuardArea:
+		case Action::AttackMoveNav:
+		case Action::PatrolWaypoint:
+		case Action::Harvest:
+		case Action::Move:
+			result = Action::NoMove;
+			break;
+	}
+
+	return result;
+}
+
+DEFINE_JUMP(VTABLE, 0x7F5CE0, GET_OFFSET(UnitClass_MouseOverCell_Wrapper))

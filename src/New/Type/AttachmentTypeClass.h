@@ -15,6 +15,7 @@ public:
 	Valueable<bool> InheritCommands;
 	Valueable<bool> InheritOwner; //aka mind control inheritance
 	Valueable<bool> InheritStateEffects; // phasing out, stealth etc.
+	Valueable<bool> InheritDestruction;
 	// Explanation: 200 damage to 400 HP host with 200 HP part will...
 	// - ...kill the part (200 - 200 = 0) if the mode is absolute
 	// - ...leave the part alive (200 - 200*(200/400) = 100) if the mode is relative
@@ -33,13 +34,13 @@ public:
 	// Targeting, verses, attachment health max/initial, immunities, possibility
 	// to command are to be done on TechnoType itself
 
-
 	AttachmentTypeClass(const char* pTitle = NONE_STR) : Enumerable<AttachmentTypeClass>(pTitle)
 		, RestoreAtCreation(true)
 		, InheritTilt(true)
-		, InheritCommands(false)
-		, InheritOwner(false)
+		, InheritCommands(true)
+		, InheritOwner(true)
 		, InheritStateEffects(true)
+		, InheritDestruction(true)
 		// , SyncDamage(false)
 		// , SyncDamage_IsRelative(false)
 		// , SyncExperienceGain(false)

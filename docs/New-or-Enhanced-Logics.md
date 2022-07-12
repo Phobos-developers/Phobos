@@ -14,6 +14,7 @@ This feature is not final and is under development. Currently unit-to-unit attac
 ```
 
 - Technos now can be attached one to another in a tree like way. The attached units won't process any locomotion code and act like a part of a parent unit in a configurable.
+  - For now the attached techno may only be a vehicle.
 
 In `rulesmd.ini`:
 ```ini
@@ -21,17 +22,22 @@ In `rulesmd.ini`:
 0=MNT                                 ; (example)
 
 [MNT]
+<!--
 RestoreAtCreation=yes                 ; boolean, whether to spawn the unit when it's created
+-->
 InheritTilt=yes                       ; boolean, whether the child tilts with the parent
-InheritOwner=no                       ; boolean, whether the child inherits owner of the parent while it's attached
+InheritOwner=yes                      ; boolean, whether the child inherits owner of the parent while it's attached
 InheritStateEffects=yes               ; boolean (state effects = chaos, iron curtain etc.)
 InheritCommands=yes                   ; boolean
+<!--
+InheritDestruction=yes                ; boolean
 DestructionWeapon.Child=              ; WeaponType, detonated on child when parent is destroyed
 DestructionWeapon.Parent=             ; WeaponType, detonated on parent when child is destroyed
 ForceDetachWeapon.Child=              ; WeaponType, detonated on child when it is force detached
 ForceDetachWeapon.Parent=             ; WeaponType, detonated on parent when a child is force detached from it
 ParentDestructionMission=             ; MissionType, queued to child when parent is destroyed
 ParentDetachmentMission=              ; MissionType, queued to child when parent is destroyed
+-->
 
 [SUMTECHNO]
 AttachmentX.Type=MNT                  ; AttachmentType (example)

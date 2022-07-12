@@ -872,11 +872,22 @@ void TechnoExt::InitializeAttachments(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::HandleHostDestruction(TechnoClass* pThis)
+void TechnoExt::DestroyAttachments(TechnoClass* pThis, TechnoClass* pSource)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+
 	for (auto const& pAttachment: pExt->ChildAttachments)
-		pAttachment->Uninitialize();
+		pAttachment->Destroy(pSource);
+}
+
+void TechnoExt::HandleDestructionAsChild(TechnoClass* pThis)
+{
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->ParentAttachment)
+		pExt->ParentAttachment->ChildDestroyed();
+
+	pExt->ParentAttachment = nullptr;
 }
 
 void TechnoExt::UnlimboAttachments(TechnoClass* pThis)

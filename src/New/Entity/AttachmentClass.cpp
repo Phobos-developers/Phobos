@@ -23,6 +23,20 @@ TechnoTypeClass* AttachmentClass::GetChildType()
 		: nullptr;
 }
 
+AttachmentClass::~AttachmentClass()
+{
+	// clear up non-owning references
+	if (this->Child)
+	{
+		auto const& pChildExt = TechnoExt::ExtMap.Find(Child);
+		pChildExt->ParentAttachment = nullptr;
+	}
+
+	auto position = std::find(Array.begin(), Array.end(), this);
+	if (position != Array.end())
+		Array.erase(position);
+}
+
 void AttachmentClass::Initialize()
 {
 	if (this->Child)
@@ -36,6 +50,9 @@ void AttachmentClass::CreateChild()
 {
 	if (auto const pChildType = this->GetChildType())
 	{
+		if (pChildType->WhatAmI() != AbstractType::UnitType)
+			return;
+
 		if (this->Child = static_cast<TechnoClass*>(pChildType->CreateObject(this->Parent->Owner)))
 		{
 			auto const pChildExt = TechnoExt::ExtMap.Find(this->Child);
@@ -116,20 +133,28 @@ void AttachmentClass::AI()
 	}
 }
 
-// Doesn't call destructor (to be managed by smart pointers)
-void AttachmentClass::Uninitialize()
+void AttachmentClass::Destroy(TechnoClass* pSource)
 {
 	if (this->Child)
 	{
-		auto pType = this->GetType();
-		if (pType->DestructionWeapon_Child.isset())
-			TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Child);
-
-		if (!this->Child->InLimbo && pType->ParentDestructionMission.isset())
-			this->Child->QueueMission(pType->ParentDestructionMission.Get(), false);
-
 		auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 		pChildExt->ParentAttachment = nullptr;
+
+		auto pType = this->GetType();
+
+		// if (pType->DestructionWeapon_Child.isset())
+		// 	TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Child);
+
+		if (pType->InheritDestruction && this->Child)
+		{
+			this->Child->KillPassengers(pSource);
+			this->Child->RegisterDestruction(pSource);
+			this->Child->UnInit();
+		}
+
+		// if (!this->Child->InLimbo && pType->ParentDestructionMission.isset())
+		// 	this->Child->QueueMission(pType->ParentDestructionMission.Get(), false);
+
 		this->Child = nullptr;
 	}
 }
@@ -217,6 +242,13 @@ bool AttachmentClass::DetachChild(bool isForceDetachment)
 	return false;
 }
 
+
+void AttachmentClass::InvalidatePointer(void* ptr)
+{
+	AnnounceInvalidPointer(this->Parent, ptr);
+	AnnounceInvalidPointer(this->Child, ptr);
+}
+
 #pragma region Save/Load
 
 template <typename T>
@@ -227,7 +259,7 @@ bool AttachmentClass::Serialize(T& stm)
 		.Process(this->Parent)
 		.Process(this->Child)
 		.Success();
-};
+}
 
 bool AttachmentClass::Load(PhobosStreamReader& stm, bool RegisterForChange)
 {

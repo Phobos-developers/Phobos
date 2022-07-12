@@ -4,27 +4,43 @@
 #include "UnitClass.h"
 
 #include <Utilities/GeneralUtils.h>
+#include <Utilities/Macro.h>
+
 #include <Ext/TechnoType/Body.h>
+#include <Ext/Techno/Body.h>
 
 DEFINE_HOOK(0x740A93, UnitClass_Mission_Move_DisallowMoving, 0x6)
 {
-	GET(UnitClass*, pThis, ESI);
+	enum { QueueGuardInstead = 0x740AEF, ContinueCheck = 0x0 };
 
-	return pThis->Type->Speed == 0 ? 0x740AEF : 0;
+	GET(UnitClass*, pThis, ESI);
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+
+	// skips this->IsHarvesting = 0, may backfire somewhere - Kerbiter
+	return pThis->Type->Speed == 0 || pExt->ParentAttachment
+		? QueueGuardInstead
+		: ContinueCheck;
 }
 
 DEFINE_HOOK(0x741AA7, UnitClass_Assign_Destination_DisallowMoving, 0x6)
 {
-	GET(UnitClass*, pThis, EBP);
+	enum { ClearNavComsAndReturn = 0x743173, ContinueCheck = 0x0 };
 
-	return pThis->Type->Speed == 0 ? 0x743173 : 0;
+	GET(UnitClass*, pThis, EBP);
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+
+	return pThis->Type->Speed == 0 || pExt->ParentAttachment
+		? ClearNavComsAndReturn
+		: ContinueCheck;
 }
 
 DEFINE_HOOK(0x743B4B, UnitClass_Scatter_DisallowMoving, 0x6)
 {
+	enum { ReleaseReturn = 0x74408E, ContinueCheck = 0x0 };
+
 	GET(UnitClass*, pThis, EBP);
 
-	return pThis->Type->Speed == 0 ? 0x74408E : 0;
+	return pThis->Type->Speed == 0 ? ReleaseReturn : ContinueCheck;
 }
 
 DEFINE_HOOK(0x74038F, UnitClass_What_Action_ObjectClass_DisallowMoving_1, 0x6)

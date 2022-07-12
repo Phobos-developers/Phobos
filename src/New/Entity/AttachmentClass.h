@@ -7,6 +7,8 @@
 #include <New/Type/AttachmentTypeClass.h>
 #include <Ext/TechnoType/Body.h>
 
+class TechnoClass;
+
 class AttachmentClass
 {
 public:
@@ -33,12 +35,7 @@ public:
 		Array.push_back(this);
 	}
 
-	~AttachmentClass()
-	{
-		auto position = std::find(Array.begin(), Array.end(), this);
-		if (position != Array.end())
-			Array.erase(position);
-	}
+	~AttachmentClass();
 
 	AttachmentTypeClass* GetType();
 	TechnoTypeClass* GetChildType();
@@ -46,7 +43,7 @@ public:
 	void Initialize();
 	void CreateChild();
 	void AI();
-	void Uninitialize();
+	void Destroy(TechnoClass* pSource);
 	void ChildDestroyed();
 
 	void Unlimbo();
@@ -54,6 +51,8 @@ public:
 
 	bool AttachChild(TechnoClass* pChild);
 	bool DetachChild(bool force = false);
+
+	void InvalidatePointer(void* ptr);
 
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;

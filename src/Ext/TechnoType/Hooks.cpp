@@ -155,10 +155,10 @@ DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 DEFINE_HOOK(0x700C58, TechnoClass_CanPlayerMove_NoManualMove, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+	// auto const& pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const& pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	bool noMove = (pExt && pExt->ParentAttachment) || (pTypeExt && pTypeExt->NoManualMove);
+	bool noMove = pTypeExt && pTypeExt->NoManualMove;
 
 	return noMove ? 0x700C62 : 0;
 }

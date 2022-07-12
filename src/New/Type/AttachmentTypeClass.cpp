@@ -15,11 +15,12 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	INI_EX exINI(pINI);
 
-	this->RestoreAtCreation.Read(exINI, section, "RestoreAtCreation");
+	// this->RestoreAtCreation.Read(exINI, section, "RestoreAtCreation");
 	this->InheritTilt.Read(exINI, section, "InheritTilt");
 	this->InheritCommands.Read(exINI, section, "InheritCommands");
 	this->InheritOwner.Read(exINI, section, "InheritOwner");
 	this->InheritStateEffects.Read(exINI, section, "InheritStateEffects");
+	// this->InheritDestruction.Read(exINI, section, "InheritDestruction");
 
 	// this->SyncDamage.Read(exINI, section, "SyncDamage");
 	// this->SyncDamage_IsRelative.Read(exINI, section, "SyncDamage.IsRelative");
@@ -29,13 +30,13 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 	// this->CanBeForceDetached.Read(exINI, section, "CanBeForceDetached");
 	// this->RestoreAtHealth.Read(exINI, section, "RestoreAtHealth");
 
-	this->ForceDetachWeapon_Child.Read(exINI, section, "ForceDetachWeapon.Child");
-	this->ForceDetachWeapon_Parent.Read(exINI, section, "ForceDetachWeapon.Parent");
-	this->DestructionWeapon_Child.Read(exINI, section, "DestructionWeapon.Child");
-	this->DestructionWeapon_Parent.Read(exINI, section, "DestructionWeapon.Parent");
+	// this->ForceDetachWeapon_Child.Read(exINI, section, "ForceDetachWeapon.Child");
+	// this->ForceDetachWeapon_Parent.Read(exINI, section, "ForceDetachWeapon.Parent");
+	// this->DestructionWeapon_Child.Read(exINI, section, "DestructionWeapon.Child");
+	// this->DestructionWeapon_Parent.Read(exINI, section, "DestructionWeapon.Parent");
 
-	this->ParentDestructionMission.Read(exINI, section, "ParentDestructionMission");
-	this->ParentDetachmentMission.Read(exINI, section, "ParentDetachmentMission");
+	// this->ParentDestructionMission.Read(exINI, section, "ParentDestructionMission");
+	// this->ParentDetachmentMission.Read(exINI, section, "ParentDetachmentMission");
 }
 
 template <typename T>
@@ -47,6 +48,7 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->InheritCommands)
 		.Process(this->InheritOwner)
 		.Process(this->InheritStateEffects)
+		.Process(this->InheritDestruction)
 		// .Process(this->SyncDamage)
 		// .Process(this->SyncDamage_IsRelative)
 		// .Process(this->SyncExperienceGain)

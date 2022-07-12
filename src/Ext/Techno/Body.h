@@ -64,6 +64,8 @@ public:
 		{
 			if (auto const pShield = this->Shield.get())
 				pShield->InvalidatePointer(ptr);
+			for (auto const& pAttachment : ChildAttachments)
+				pAttachment->InvalidatePointer(ptr);
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
@@ -118,7 +120,8 @@ public:
 	static bool DetachFromParent(TechnoClass* pThis, bool force = false);
 
 	static void InitializeAttachments(TechnoClass* pThis);
-	static void HandleHostDestruction(TechnoClass* pThis);
+	static void DestroyAttachments(TechnoClass* pThis, TechnoClass* pSource);
+	static void HandleDestructionAsChild(TechnoClass* pThis);
 	static void UnlimboAttachments(TechnoClass* pThis);
 	static void LimboAttachments(TechnoClass* pThis);
 
