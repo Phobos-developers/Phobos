@@ -403,6 +403,7 @@ DeployingAnim.UseUnitDrawer=true       ; boolean
 
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`.
   - This behavior can be turned off per-TechnoType and global basis.
+  - `IronCurtain.Modifier` is re-applied upon type conversion.
 
 In `rulesmd.ini`:
 ```ini
