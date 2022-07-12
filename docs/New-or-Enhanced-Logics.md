@@ -782,10 +782,11 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 - Superweapons can now be launched when a warhead is detonated.
   - `LaunchSW` specifies the superweapons to launch when the warhead is detonated.
   - `LaunchSW.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons and sufficient fund to support `Money.Amout`. Otherwise they will be launched out of nowhere.
-  - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of each superweapon, otherwise only non-inhibited superweapons are launched.
+  - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of each superweapon, otherwise only non-inhibited superweapons are launched. `SW.Designators` are always ignored.
 
 ```{note}
-Animation weapons from _Ares_ are **not** supported. Nevertheless, animation warheads may work under certain circumstances. Also, due to the nature of some superweapon types, not all superweapons are suitable for launch.
+For animation warheads/weapons to take effect, the invoker must be set.
+Also, due to the nature of some superweapon types, not all superweapons are suitable for launch.
 ```
 
 In `rulesmd.ini`:

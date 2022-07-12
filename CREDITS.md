@@ -167,6 +167,7 @@ This page lists all the individual contributions to the project by their author.
    - LaserTrails prototype
    - Laser fixes prototype
 - **Trsdy**
+   - Preserve IronCurtain status upon DeploysInto/UndeploysInto
    - Jumpjet facing fix
    - Warhead superweapon launch logic
 - **Apollo** - Translucent SHP drawing patches

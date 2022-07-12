@@ -398,6 +398,23 @@ DeployingAnim.UseUnitDrawer=true       ; boolean
 
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
 
+### Preserve Iron Curtain status on type conversion
+
+![image](_static/images/preserve-ic.gif)
+
+- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`.
+  - This behavior can be turned off per-TechnoType and global basis.
+  - `IronCurtain.Modifier` is re-applied upon type conversion.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+IronCurtain.KeptOnDeploy=yes ; boolean
+
+[SOMETECHNO]                 ; VehicleType with DeploysInto or BuildingType with UndeploysInto
+IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
+```
+
 ## Warheads
 
 ### Allowing damage dealt to firer
