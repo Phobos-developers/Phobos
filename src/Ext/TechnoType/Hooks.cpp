@@ -13,6 +13,8 @@
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
 
+#include <Utilities/Macro.h>
+
 DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
@@ -322,3 +324,9 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 	R->EAX(pDecidedUIName);
 	return SetUIName;
 }
+
+
+// Patches TechnoClass::Kill_Cargo/KillPassengers (push ESI -> push EBP)
+// Fixes recursive passenger kills not being accredited
+// to proper techno but to their transports
+DEFINE_PATCH(0x707CF2, 0x55);

@@ -450,6 +450,8 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 							}
 						}
 
+						pPassenger->KillPassengers(pThis);
+						pPassenger->RegisterDestruction(pThis);
 						pPassenger->UnInit();
 					}
 
@@ -496,6 +498,8 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 			if (peacefulDeath)
 			{
 				pThis->Limbo();
+				pThis->KillPassengers(pThis);
+				pThis->RegisterDestruction(pThis);
 				pThis->UnInit();
 			}
 			else
@@ -521,6 +525,8 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 				if (peacefulDeath)
 				{
 					pThis->Limbo();
+					pThis->KillPassengers(pThis);
+					pThis->RegisterDestruction(pThis);
 					pThis->UnInit();
 				}
 				else

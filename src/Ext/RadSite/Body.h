@@ -39,7 +39,6 @@ public:
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved)
 		{
-			AnnounceInvalidPointer(RadHouse, ptr);
 			AnnounceInvalidPointer(RadInvoker, ptr);
 		}
 
@@ -67,6 +66,21 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+			switch (abs)
+			{
+			case AbstractType::Aircraft:
+			case AbstractType::Building:
+			case AbstractType::Infantry:
+			case AbstractType::Unit:
+				return false;
+			default:
+				return true;
+			}
+		}
 	};
 
 	static ExtContainer ExtMap;
