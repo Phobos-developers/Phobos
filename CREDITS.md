@@ -106,7 +106,7 @@ This page lists all the individual contributions to the project by their author.
   - Help with docs
   - Automatic Passenger Deletion logic
   - `Fire SW At Location/Waypoint` Trigger Action
-  - Kill Object Automatically logic
+  - Kill Object Automatically logic prototype
   - Customizable resource storage
   - Override Uncloaked Underwater attack behavior
   - AI Aircraft docks fix
@@ -169,6 +169,10 @@ This page lists all the individual contributions to the project by their author.
 - **Trsdy**
    - Preserve IronCurtain status upon DeploysInto/UndeploysInto
    - Jumpjet facing fix
+   - Object Self-destruction logic
+   - Building EVA_StructureSold and SellSound dehardcode
+   - Slaves' house customization when owner is killed
+   - Misc CN doc fix
    - Warhead superweapon launch logic
 - **Apollo** - Translucent SHP drawing patches
 - **FlyStar** - Campaign load screen PCX support

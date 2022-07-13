@@ -60,10 +60,10 @@ public:
 			, Grinding_Weapon {}
 			, Grinding_DisplayRefund { false }
 			, Grinding_DisplayRefund_Houses { AffectedHouse::All }
-			, Grinding_DisplayRefund_Offset {{ 0,0 }}
+			, Grinding_DisplayRefund_Offset { { 0,0 } }
 			, PlacementPreview_Remap { true }
 			, PlacementPreview_Palette {}
-			, PlacementPreview_Offset{ {0,-15,1} }
+			, PlacementPreview_Offset { {0,-15,1} }
 			, PlacementPreview_Show {}
 			, PlacementPreview_Shape {}
 			, PlacementPreview_ShapeFrame {}
@@ -72,22 +72,24 @@ public:
 
 		virtual ~ExtData() = default;
 
-		virtual void LoadFromINIFile(CCINIClass * pINI) override;
+		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual void Initialize() override;
 		virtual void CompleteInitialization();
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+		{
 		}
 
-		virtual void LoadFromStream(PhobosStreamReader & Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter & Stm) override;
+		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
 	};
 
-	class ExtContainer final : public Container<BuildingTypeExt> {
+	class ExtContainer final : public Container<BuildingTypeExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();
