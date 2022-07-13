@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <WarheadTypeClass.h>
+
 #include <Ext/TechnoType/Body.h>
 
 #include <Utilities/Macro.h>
@@ -25,7 +27,16 @@ DEFINE_HOOK(0x707CB3, TechnoClass_KillCargo_HandleAttachments, 0x6)
 	return 0;
 }
 
-// TODO HandleDestructionAsChild at 0x5F65F0 possibly
+DEFINE_HOOK(0x5F6609, ObjectClass_RemoveThis_TechnoClass, 0x9)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	pThis->KillPassengers(nullptr);  // restored code
+	TechnoExt::HandleDestructionAsChild(pThis);
+
+	return 0x5F6612;
+}
+
 
 DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo_UnlimboAttachments, 0x6)
 {
@@ -52,7 +63,7 @@ DEFINE_HOOK(0x73F528, UnitClass_CanEnterCell_SkipChildren, 0x0)
 	GET(UnitClass*, pThis, EBX);
 	GET(TechnoClass*, pOccupier, ESI);
 
-	if (pThis == pOccupier || TechnoExt::IsParentOf(pThis, pOccupier))
+	if (pThis == pOccupier || TechnoExt::IsChildOf(pOccupier, pThis))
 		return IgnoreOccupier;
 
 	return Continue;
@@ -65,7 +76,7 @@ DEFINE_HOOK(0x51C251, InfantryClass_CanEnterCell_SkipChildren, 0x0)
 	GET(InfantryClass*, pThis, EBP);
 	GET(TechnoClass*, pOccupier, ESI);
 
-	if ((TechnoClass*)pThis == pOccupier || TechnoExt::IsParentOf((TechnoClass*)pThis, pOccupier))
+	if ((TechnoClass*)pThis == pOccupier || TechnoExt::IsChildOf(pOccupier, (TechnoClass*)pThis))
 		return IgnoreOccupier;
 
 	return Continue;
@@ -285,15 +296,37 @@ DEFINE_HOOK(0x469672, BulletClass_Logics_Locomotor_CheckIfAttached, 0x6)
 		: ContinueCheck;
 }
 
+DEFINE_HOOK(0x6FC3F4, TechnoClass_CanFire_HandleAttachmentLogics, 0x6)
+{
+	enum { ReturnFireErrorIllegal = 0x6FC86A, ContinueCheck = 0x0 };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass*, pTarget, EBP);
+	GET(WeaponTypeClass*, pWeapon, EDI);
+
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const& pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+	bool illegalParentTargetWarhead = pWeapon->Warhead
+		&& pWeapon->Warhead->IsLocomotor;
+
+	if (illegalParentTargetWarhead && TechnoExt::IsChildOf(pThis, pTarget))
+		return ReturnFireErrorIllegal;
+
+	return ContinueCheck;
+}
+
+// TODO WhatWeaponShouldIUse
+
 DEFINE_HOOK(0x6F3283, TechnoClass_CanScatter_CheckIfAttached, 0x8)
 {
-	enum { EpilogFalse = 0x6F32C5, ContinueCheck = 0x0 };
+	enum { ReturnFalse = 0x6F32C5, ContinueCheck = 0x0 };
 
 	GET(TechnoClass*, pThis, ECX);
 	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
 
 	return pExt->ParentAttachment
-		? EpilogFalse
+		? ReturnFalse
 		: ContinueCheck;
 }
 
@@ -328,7 +361,6 @@ Action __fastcall UnitClass_MouseOverCell(UnitClass* pThis, void* _, CellStruct 
 	JMP_THIS(0x7404B0);
 }
 
-// The following two functions represenet
 Action __fastcall UnitClass_MouseOverCell_Wrapper(UnitClass* pThis, void* _, CellStruct const* pCell, bool checkFog, bool ignoreForce)
 {
 	Action result = UnitClass_MouseOverCell(pThis, _, pCell, checkFog, ignoreForce);
@@ -346,9 +378,71 @@ Action __fastcall UnitClass_MouseOverCell_Wrapper(UnitClass* pThis, void* _, Cel
 		case Action::Move:
 			result = Action::NoMove;
 			break;
+		case Action::EnterTunnel:
+			result = Action::NoEnterTunnel;
+			break;
 	}
 
 	return result;
 }
 
 DEFINE_JUMP(VTABLE, 0x7F5CE0, GET_OFFSET(UnitClass_MouseOverCell_Wrapper))
+
+DEFINE_HOOK(0x4D74EC, FootClass_ObjectClickedAction_HandleAttachment, 0x6)
+{
+	enum { ReturnFalse = 0x4D77EC, Continue = 0x0 };
+
+	GET(FootClass*, pThis, ESI);
+	GET_STACK(Action, action, STACK_OFFS(0x108, -0x4));
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (!pExt->ParentAttachment)
+		return Continue;
+
+	switch (action)
+	{
+		case Action::Move:
+		case Action::AttackMoveNav:
+		case Action::NoMove:
+		case Action::Enter:
+		case Action::NoEnter:
+		case Action::Capture:
+		case Action::Repair:
+		case Action::Sabotage:
+		case Action::GuardArea:
+			return ReturnFalse;
+		default:
+			return Continue;
+	}
+}
+
+DEFINE_HOOK(0x4D7D58, FootClass_CellClickedAction_HandleAttachment, 0x6)
+{
+	enum { ReturnFalse = 0x4D7D62, Continue = 0x0 };
+
+	GET(FootClass*, pThis, ESI);
+	GET_STACK(Action, action, STACK_OFFS(0x24, -0x4));
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (!pExt->ParentAttachment)
+		return Continue;
+
+	switch (action)
+	{
+		case Action::Move:
+		case Action::AttackMoveNav:
+		case Action::NoMove:
+		case Action::Enter:
+		case Action::NoEnter:
+		case Action::Harvest:
+		case Action::Capture:
+		case Action::Sabotage:
+		case Action::GuardArea:
+		case Action::EnterTunnel:
+		case Action::NoEnterTunnel:
+		case Action::PatrolWaypoint:
+			return ReturnFalse;
+		default:
+			return Continue;
+	}
+}

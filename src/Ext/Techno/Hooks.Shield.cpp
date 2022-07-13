@@ -314,8 +314,37 @@ Action __fastcall UnitClass__WhatAction(UnitClass* pThis, void*_, ObjectClass* p
 Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void*_, ObjectClass* pObj, bool ignoreForce)
 {
 	AresScheme::Prefix(pObj);
-	auto const result = UnitClass__WhatAction(pThis, _, pObj, ignoreForce);
+	Action result = UnitClass__WhatAction(pThis, _, pObj, ignoreForce);
 	AresScheme::Suffix();
+
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt->ParentAttachment)
+		return result;
+
+	switch (result)
+	{
+	case Action::Repair:
+		result = Action::NoRepair;
+		break;
+
+	case Action::Self_Deploy:
+		if (pThis->Type->DeploysInto)
+			result = Action::NoDeploy;
+		break;
+
+	case Action::Sabotage:
+	case Action::Capture:
+	case Action::Enter:
+		result = Action::NoEnter;
+		break;
+
+	case Action::GuardArea:
+	case Action::AttackMoveNav:
+	case Action::Move:
+		result = Action::NoMove;
+		break;
+	}
+
 	return result;
 }
 DEFINE_JUMP(VTABLE, 0x7F5CE4, GET_OFFSET(UnitClass__WhatAction_Wrapper))
@@ -330,8 +359,9 @@ Action __fastcall InfantryClass__WhatAction(InfantryClass* pThis, void*_, Object
 Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void*_, ObjectClass* pObj, bool ignoreForce)
 {
 	AresScheme::Prefix(pObj);
-	auto const result = InfantryClass__WhatAction(pThis, _, pObj, ignoreForce);
+	Action result = InfantryClass__WhatAction(pThis, _, pObj, ignoreForce);
 	AresScheme::Suffix();
+
 	return result;
 }
 DEFINE_JUMP(VTABLE, 0x7EB0CC, GET_OFFSET(InfantryClass__WhatAction_Wrapper))

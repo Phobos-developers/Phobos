@@ -923,24 +923,19 @@ void TechnoExt::LimboAttachments(TechnoClass* pThis)
 		pAttachment->Limbo();
 }
 
-bool TechnoExt::IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno)
+bool TechnoExt::IsAttached(TechnoClass* pThis)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	return TechnoExt::ExtMap.Find(pThis)->ParentAttachment;
+}
 
-	if (!pOtherTechno)
-		return false;
+bool TechnoExt::IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep)
+{
+	auto const pThisExt = TechnoExt::ExtMap.Find(pThis);
 
-	for (auto const& pAttachment: pExt->ChildAttachments)
-	{
-		if (pAttachment->Child &&
-			(pAttachment->Child == pOtherTechno ||
-			TechnoExt::IsParentOf(pAttachment->Child, pOtherTechno)))
-		{
-			return true;
-		}
-	}
-
-	return false;
+	return pParent
+		&& pThisExt->ParentAttachment
+		&& (pThisExt->ParentAttachment->Parent == pParent
+			|| (deep && TechnoExt::IsChildOf(pThisExt->ParentAttachment->Parent, pParent)));
 }
 
 // =============================

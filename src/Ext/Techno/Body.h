@@ -124,7 +124,8 @@ public:
 	static void UnlimboAttachments(TechnoClass* pThis);
 	static void LimboAttachments(TechnoClass* pThis);
 
-	static bool IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno);
+	static bool IsAttached(TechnoClass* pThis);
+	static bool IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep = true);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
 
