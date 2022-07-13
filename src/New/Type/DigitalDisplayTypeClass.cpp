@@ -298,6 +298,7 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 	);
 	RectangleStruct rBound;
 	DSurface::Temp->GetRect(&rBound);
+	rBound.Height -= 32;
 	ShapeTextPrinter::PrintShape(text.c_str(), shapeTextPrintData, posDraw, rBound, DSurface::Temp);
 }
 
