@@ -932,7 +932,7 @@ bool TechnoExt::IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep)
 {
 	auto const pThisExt = TechnoExt::ExtMap.Find(pThis);
 
-	return pParent
+	return pThis && pThisExt && pParent  // sanity check, sometimes crashes because ext is null - Kerbiter
 		&& pThisExt->ParentAttachment
 		&& (pThisExt->ParentAttachment->Parent == pParent
 			|| (deep && TechnoExt::IsChildOf(pThisExt->ParentAttachment->Parent, pParent)));
