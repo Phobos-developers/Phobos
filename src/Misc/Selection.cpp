@@ -67,7 +67,8 @@ public:
 				auto const& pTypeExt = TechnoTypeExt::ExtMap.Find(selected.Techno->GetTechnoType());
 
 				bool isLowPriorityByAttachment = pExt->ParentAttachment && pExt->ParentAttachment->GetType()->LowSelectionPriority;
-				return !pTypeExt->LowSelectionPriority && !isLowPriorityByAttachment;
+				if (!pTypeExt->LowSelectionPriority && !isLowPriorityByAttachment)
+					return true;
 			}
 		}
 
