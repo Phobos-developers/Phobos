@@ -298,7 +298,7 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 	);
 	RectangleStruct rBound;
 	DSurface::Temp->GetRect(&rBound);
-	rBound.Height -= 32;
+	rBound.Height -= 32;	// bottom bar fix like building placement preview
 	ShapeTextPrinter::PrintShape(text.c_str(), shapeTextPrintData, posDraw, rBound, DSurface::Temp);
 }
 
