@@ -64,7 +64,7 @@ RadHasInvoker=false             ; boolean
   - Buildings: 8,-4
   - Others: 8,0
 
-- `Shape`: Use 0-9 frames of the SHP file as the number used when the ratio is greater than `[AudioVisual]>ConditionYellow`, 10-19 frames as greater than `[AudioVisual]>ConditionRed` and less than or equal to `[AudioVisual]>ConditionYellow`, 20-29 frames as less than or equal `[AudioVisual]>ConditionRed`, 31,32 frames as `/` and `%` when the ratio is greater than `[AudioVisual]>ConditionYellow`, 33,34 frames as greater than `[AudioVisual]>ConditionRed` and less than or equal to `[AudioVisual]>ConditionYellow`, 35,36 frames as less than or equal to `[AudioVisual]>ConditionRed`.
+- `Shape`: Use 0-9 frames of the SHP file as the number used when the ratio is greater than `[AudioVisual]>ConditionYellow`, 10-19 frames as greater than `[AudioVisual]>ConditionRed` and less than or equal to `[AudioVisual]>ConditionYellow`, 20-29 frames as less than or equal `[AudioVisual]>ConditionRed`, 30,31 frames as `/` and `%` when the ratio is greater than `[AudioVisual]>ConditionYellow`, 32,33 frames as greater than `[AudioVisual]>ConditionRed` and less than or equal to `[AudioVisual]>ConditionYellow`, 34,35 frames as less than or equal to `[AudioVisual]>ConditionRed`.
 
 In `Ra2MD.ini`:
 

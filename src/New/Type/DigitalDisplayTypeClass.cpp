@@ -255,9 +255,9 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 	const int iGreenNumberBaseFrame = 0;
 	const int iYellowNumberBaseFrame = 10;
 	const int iRedNumberBaseFrame = 20;
-	const int iGreenSignBaseFrame = 31;
-	const int iYellowSignBaseFrame = 33;
-	const int iRedSignBaseFrame = 35;
+	const int iGreenSignBaseFrame = 30;
+	const int iYellowSignBaseFrame = 32;
+	const int iRedSignBaseFrame = 34;
 
 	int iNumberBaseFrame = iGreenNumberBaseFrame;
 	int iSignBaseFrame = iGreenSignBaseFrame;
@@ -278,7 +278,7 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 	std::string text = sCur;
 
 	if (Percentage)
-		sCur.push_back('%');
+		text.push_back('%');
 	else if (!HideMaxValue)
 		text += '/' + sMax;
 
