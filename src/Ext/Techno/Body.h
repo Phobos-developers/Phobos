@@ -19,20 +19,24 @@ public:
 	class ExtData final : public Extension<TechnoClass>
 	{
 	public:
-		Valueable<BulletClass*> InterceptedBullet;
 		std::unique_ptr<ShieldClass> Shield;
-		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
-		Valueable<bool> ReceiveDamage;
-		Valueable<bool> LastKillWasTeamTarget;
-		TimerStruct	PassengerDeletionTimer;
-		Valueable<int> PassengerDeletionCountDown;
-		Valueable<ShieldTypeClass*> CurrentShieldType;
-		Valueable<int> LastWarpDistance;
+		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
+		bool ReceiveDamage;
+		bool LastKillWasTeamTarget;
+		CDTimerClass PassengerDeletionTimer;
+		int PassengerDeletionCountDown;
+		ShieldTypeClass* CurrentShieldType;
+		int LastWarpDistance;
 		int Death_Countdown;
-		Valueable<AnimTypeClass*> MindControlRingAnimType;
+		AnimTypeClass* MindControlRingAnimType;
+		OptionalStruct<int, false> DamageNumberOffset;
+		OptionalStruct<int, true> CurrentLaserWeaponIndex;
+
+		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
+		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
+		HouseClass* OriginalPassengerOwner;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
-			, InterceptedBullet { nullptr }
 			, Shield {}
 			, LaserTrails {}
 			, ReceiveDamage { false }
@@ -43,13 +47,17 @@ public:
 			, LastWarpDistance {}
 			, Death_Countdown(-1)
 			, MindControlRingAnimType { nullptr }
+			, DamageNumberOffset {}
+			, OriginalPassengerOwner {}
+			, CurrentLaserWeaponIndex {}
 		{ }
 
 		virtual ~ExtData() = default;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
-			this->Shield->InvalidatePointer(ptr);
+			if (auto const pShield = this->Shield.get())
+				pShield->InvalidatePointer(ptr);
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
@@ -65,6 +73,18 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+			switch (abs)
+			{
+			case AbstractType::Anim:
+				return false;
+			default:
+				return true;
+			}
+		}
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 	};
@@ -84,6 +104,7 @@ public:
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
 
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
+	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
 
@@ -100,6 +121,8 @@ public:
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 	static void UpdateMindControlAnim(TechnoClass* pThis);
-	static void MCVFindBetterPlace(TechnoClass* pThis);
-	static void HarvesterLocoFix(TechnoClass* pThis);
+	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
+	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
+	static void ApplyGainedSelfHeal(TechnoClass* pThis);
+	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
 };

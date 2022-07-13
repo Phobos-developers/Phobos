@@ -31,6 +31,7 @@ This page lists all the individual contributions to the project by their author.
   - Zero size map previews fix
   - LaserTrails port and rework
   - Laser graphics fixes
+  - Recursive transport killer fix
   - GitHub Actions setup
   - Overhauled Unicode font
   - Official docs
@@ -100,7 +101,7 @@ This page lists all the individual contributions to the project by their author.
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
   - `Spawner.LimitRange`
-  - ScriptType Actions 71 to 113
+  - ScriptType Actions 71 to 113, 124 to 126
   - MC deployer fixes
   - Help with docs
   - Automatic Passenger Deletion logic
@@ -110,6 +111,8 @@ This page lists all the individual contributions to the project by their author.
   - Override Uncloaked Underwater attack behavior
   - AI Aircraft docks fix
   - Shared Ammo logic
+  - Customizable FLH When Infantry Is Prone Or Deployed
+  - Initial Strength for Cloned Infantry
 - **Starkku**:
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
@@ -132,13 +135,25 @@ This page lists all the individual contributions to the project by their author.
   - Aircraft & jumpjet speed modifiers fix
   - Local warhead screen shaking
   - Vehicle custom palette fix
-  - Weapon owner detachment
   - Feedback weapon
   - TerrainType & ore minimap color customization
   - Laser fixes & improvements
   - Mind control indicator animation cloak fix
   - Warhead / Play animation trigger animation owner fix
   - Nuke carrier & payload Bright fix
+  - Display damage numbers hotkey command
+  - TransactMoney.Display
+  - Building-provided self-heal customization
+  - AI deploy script DeploysInto fix
+  - Passable & buildable-upon TerrainTypes
+  - Automatic passenger owner change toggle
+  - Interceptor improvements
+  - OpenTopped transport rangefinding & deactivated state customizations
+  - Animation damage / weapon improvements
+  - Warhead self-damaging toggle
+  - Trailer animation owner inheritance
+  - Warhead detonation on all objects on map
+  - Animated TerrainTypes extension
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
@@ -151,6 +166,12 @@ This page lists all the individual contributions to the project by their author.
    - Interceptor logic prototype
    - LaserTrails prototype
    - Laser fixes prototype
+- **Trsdy**
+   - Preserve IronCurtain status upon DeploysInto/UndeploysInto
+   - Jumpjet facing fix
+   - Warhead superweapon launch logic
+- **Apollo** - Translucent SHP drawing patches
+- **FlyStar** - Campaign load screen PCX support
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
@@ -158,6 +179,8 @@ This page lists all the individual contributions to the project by their author.
 - **Ares developers** - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code, prototype deployer fixes
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
+- **AlexB** - Original FlyingStrings implementation
+- **Joshy** - Original FlyingStrings implementation
 - **ZΞPHYɌUS** - win/lose themes code
 - **ayylmao** - help with docs, extensive and thorough testing
 - **SMxReaver** - help with docs, extensive and thorough testing

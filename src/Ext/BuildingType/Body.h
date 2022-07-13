@@ -32,6 +32,9 @@ public:
 		ValueableVector<TechnoTypeClass*> Grinding_DisallowTypes;
 		NullableIdx<VocClass> Grinding_Sound;
 		Nullable<WeaponTypeClass*> Grinding_Weapon;
+		Valueable<bool> Grinding_DisplayRefund;
+		Valueable<AffectedHouse> Grinding_DisplayRefund_Houses;
+		Valueable<Point2D> Grinding_DisplayRefund_Offset;
 
 		Nullable<bool> PlacementPreview_Show;
 		Nullable<SHPStruct*> PlacementPreview_Shape;
@@ -55,7 +58,9 @@ public:
 			, Grinding_DisallowTypes {}
 			, Grinding_Sound {}
 			, Grinding_Weapon {}
-
+			, Grinding_DisplayRefund { false }
+			, Grinding_DisplayRefund_Houses { AffectedHouse::All }
+			, Grinding_DisplayRefund_Offset {{ 0,0 }}
 			, PlacementPreview_Remap { true }
 			, PlacementPreview_Palette {}
 			, PlacementPreview_Offset{ {0,-15,1} }

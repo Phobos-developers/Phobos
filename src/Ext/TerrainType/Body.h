@@ -21,6 +21,8 @@ public:
 		Nullable<AnimTypeClass*> DestroyAnim;
 		NullableIdx<VocClass> DestroySound;
 		Nullable<ColorStruct> MinimapColor;
+		Valueable<bool> IsPassable;
+		Valueable<bool> CanBeBuiltOn;
 
 		ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
 			, SpawnsTiberium_Type { 0 }
@@ -30,6 +32,8 @@ public:
 			, DestroyAnim {}
 			, DestroySound {}
 			, MinimapColor {}
+			, IsPassable { false }
+			, CanBeBuiltOn { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -59,4 +63,6 @@ public:
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static void Remove(TerrainClass* pTerrain);
 };

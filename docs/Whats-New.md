@@ -7,9 +7,14 @@ This page lists the history of changes across stable Phobos releases and also al
 ### From vanilla
 
 - SHP debris hardcoded shadows now respect `Shadow=no` tag value, and due to it being the default value they wouldn't have hardcoded shadows anymore by default. Override this by specifying `Shadow=yes` for SHP debris.
-- Radiation now has owner by default, which means that radiation kills will affect score and radiation field will respect `Affects...` entries. You can override that with `rulesmd.ini->[SOMEWEAPONTYPE]->Rad.NoOwner=yes` entry.
+- Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
 
 ### From older Phobos versions
+
+#### From pre-0.3 devbuilds
+
+- `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
+- `Rad.NoOwner` on weapons is deprecated. This has been replaced by `RadHasOwner` key on radiation types itself. It also defaults to no, so radiation once again has no owner house by default.
 
 #### From 0.2.2.2
 
@@ -205,7 +210,7 @@ This page lists the history of changes across stable Phobos releases and also al
   570=Global variable or by global variable,27,0,1,[LONG DESC]
   571=Global variable and by global variable,27,0,1,[LONG DESC]
 
-  [ScriptParams] 
+  [ScriptParams]
   22=Local variables,-1
   23=Global variables,-2
   24=Local variables,-3
@@ -259,6 +264,7 @@ New:
 - Script Action 111 that un-register Team success, is just the opposite effect of Action 49 (by FS-21)
 - Script Action 112 to regroup temporarily around the Team Leader (by FS-21)
 - Script Action 113 to Randomly Skip Next Action (by FS-21)
+- Script Action 124 to 126 for timed Script Action jumps (by FS-21)
 - ObjectInfo now shows current Target and AI Trigger data (by FS-21)
 - Shield absorption and passthrough customization (by Morton)
 - Limbo Delivery of buildings (by Morton)
@@ -279,8 +285,8 @@ New:
 - `Storage.TiberiumIndex` for customizing resource storage in structures (by FS-21)
 - Grinder improvements & customizations (by Starkku)
 - Attached animation position customization (by Starkku)
-- Trigger Action 505 for Firing at specified location (by FS-21)
-- Trigger Action 506 for Firing at waypoint (by FS-21)
+- Trigger Action 505 for Firing SW at specified location (by FS-21)
+- Trigger Action 506 for Firing SW at waypoint (by FS-21)
 - New ways for self-killing objects under certaing cases (by FS-21)
 - `ForceWeapon.Naval.Decloacked` for overriding uncloaked underwater attack behavior (by FS-21)
 - Shrapnel enhancement (by secsome)
@@ -288,12 +294,29 @@ New:
 - Additional critical hit logic customizations (by Starkku)
 - Laser trails for VoxelAnims (by Otamaa)
 - Local warhead screen shaking (by Starkku)
-- Weapon owner detachment (by Starkku)
 - Feedback weapon (by Starkku)
 - TerrainType & ore minimap color customization (by Starkku)
 - Single-color weapon lasers (by Starkku)
 - Customizable projectile trajectory (by secsome)
+- Display damage numbers debug hotkey command (by Starkku)
+- Toggleable display of TransactMoney amounts (by Starkku)
+- Building-provided self-healing customization (by Starkku)
+- Building placement preview (by Otamaa)
+- Passable & buildable-upon TerrainTypes (by Starkku)
+- Toggle for passengers to automatically change owner if transport owner changes (by Starkku)
+- Superweapon launch on warhead detonation (by Trsdy)
+- Preserve IronCurtain status upon DeploysInto/UndeploysInto (by Trsdy)
 - Correct owner house for Warhead Anim/SplashList & Play Animation trigger animations (by Starkku)
+- Customizable FLH When Infantry Is Crouched Or Deployed (by FS-21)
+- Enhanced projectile interception logic, including projectile strength & armor types (by Starkku)
+- Initial Strength for Cloned Infantry (by FS-21)
+- OpenTopped transport rangefinding & deactivated state customizations (by Starkku)
+- Animation damage / weapon improvements (by Starkku)
+- Warhead self-damaging toggle (by Starkku)
+- Trailer animations inheriting owner (by Starkku)
+- Warhead detonation on all objects on map (by Starkku)
+- Implemented support for PCX images for campaign load screen (by FlyStar)
+- Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -311,6 +334,16 @@ Vanilla fixes:
 - Fixed vehicles (both voxel & SHP) to fully respect `Palette` (by Starkku)
 - Fixed mind control indicator animations not reappearing on mind controlled objects that are cloaked and then uncloaked (by Starkku)
 - Fixed Nuke carrier and payload weapons not respecting `Bright` setting on weapon (by Starkku)
+- Fixed buildings not reverting to undamaged graphics when HP was restored above `[AudioVisual]`->`ConditionYellow` via `SelfHealing` (by Starkku)
+- Fixed jumpjet units being unable to turn to the target when firing from a different direction (by trsdy)
+- Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations (by Starkku)
+- Fixed AI script action Deploy getting stuck with vehicles with `DeploysInto` if there was no space to deploy at initial location (by Starkku)
+- Fixed `Foundation=0x0` causing crashes if used on TerrainTypes.
+- Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to Ares-introduced Warhead effects (by Starkku)
+- Buildings now correctly use laser parameters set for Secondary weapons instead of reading them from Primary weapon (by Starkku)
+- Fixed an issue that caused vehicles killed by damage dealt by a known house but without a known source TechnoType (f.ex animation warhead damage) to not be recorded as killed correctly and thus not spring map trigger events etc. (by Starkku)
+- Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding (only applies to Z-aware drawing mode for now) (by Apollo)
+- Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something (by Kerbiter)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
@@ -320,6 +353,10 @@ Phobos fixes:
 - Fixed critical hit animation playing even if no critical hits were dealt due to `Crit.Affects` or `ImmuneToCrit` settings (by Starkku)
 - Fixed `RemoveDisguise` not working on `PermaDisguise` infantry (by Starkku)
 - Fixed single-color laser (IsHouseColor, IsSingleColor, LaserTrails) glow falloff to match the vanilla appearance (by Starkku)
+- Fixed a potential cause of crashes concerning shield animations (such in conjunction with cloaking) (by Starkku)
+- Fixed interceptors intercepting projectiles fired by friendly objects if the said object died after firing the projectile (by Starkku)
+- Fixed interceptor weapons with `Inviso=true` projectiles detonating the projectile at wrong coordinates (by Starkku)
+- Fixed some possible configuration reading issues when using Phobos with patches that rename `uimd.ini` (by Belonit)
 </details>
 
 
@@ -483,4 +520,3 @@ Vanilla fixes:
 - Sidebar tooltips now can go over sidebar bounds (by Belonit)
 - Lifted stupidly small limit for tooltip character amount (by Belonit)
 </details>
-
