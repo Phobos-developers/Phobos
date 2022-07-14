@@ -213,7 +213,7 @@ DEFINE_HOOK(0x518505, InfantryClass_TakeDamage_NotHuman, 0x4)
 DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
-	R->EDI(pThis->Type->DeployFireWeapon == -1  ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
+	R->EDI(pThis->Type->DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
 	return 0x5223B9;
 }
 
@@ -393,6 +393,37 @@ DEFINE_HOOK(0x6FA793, TechnoClass_AI_SelfHealGain, 0x5)
 	return SkipGameSelfHeal;
 }
 
+DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
+{
+	enum { KillTheSlave = 0x6B0BDF, ChangeSlaveOwner = 0x6B0BB4 };
+
+	GET(InfantryClass*, pSlave, ESI);
+
+	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->Type))
+	{
+		switch (pTypeExt->Slaved_OwnerWhenMasterKilled.Get())
+		{
+		case SlaveChangeOwnerType::Suicide:
+			return KillTheSlave;
+
+		case SlaveChangeOwnerType::Master:
+			R->EAX(pSlave->Owner);
+			return ChangeSlaveOwner;
+
+		case SlaveChangeOwnerType::Neutral:
+			if (auto pNeutral = HouseClass::FindNeutral())
+			{
+				R->EAX(pNeutral);
+				return ChangeSlaveOwner;
+			}
+
+		default: // SlaveChangeOwnerType::Killer
+			return 0x0;
+		}
+	}
+
+	return 0x0;
+}
 
 DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
 {
@@ -481,4 +512,68 @@ DEFINE_HOOK(0x70E1A5, TechnoClass_GetTurretWeapon_LaserWeapon, 0x6)
 	// Restore overridden instructions.
 	R->EAX(pThis->GetTechnoType());
 	return Continue;
+}
+
+// SellSound and EVA dehardcode
+DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Deconstruction_EVA_Sold_1, 0x6)
+{
+	enum { SkipVoxPlay = 0x449CEA };
+	GET(BuildingClass*, pThis, EBP);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	if (pTypeExt->EVA_Sold.isset())
+	{
+		if (pThis->IsHumanControlled && !pThis->Type->UndeploysInto)
+			VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
+
+		return SkipVoxPlay;
+	}
+
+	return 0x0;
+}
+
+DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Deconstruction_EVA_Sold_2, 0x6)
+{
+	enum { SkipVoxPlay = 0x44AB3B };
+	GET(BuildingClass*, pThis, EBP);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	if (pTypeExt->EVA_Sold.isset())
+	{
+		if (pThis->IsHumanControlled)
+			VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
+
+		return SkipVoxPlay;
+	}
+
+	return 0x0;
+}
+
+DEFINE_HOOK(0x44A850, BuildingClass_Mission_Deconstruction_Sellsound, 0x6)
+{
+	enum { PlayVocLocally = 0x44A856 };
+	GET(BuildingClass*, pThis, EBP);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	if (pTypeExt->SellSound.isset())
+	{
+		R->ECX(pTypeExt->SellSound.Get());
+		return PlayVocLocally;
+	}
+
+	return 0x0;
+}
+
+DEFINE_HOOK(0x4D9F8A, FootClass_Sell_Sellsound, 0x5)
+{
+	enum { EVA_UnitSold = 0x822630, SkipVoxVocPlay = 0x4D9FB5 };
+	GET(FootClass*, pThis, ESI);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex((const char*)EVA_UnitSold)));
+	//WW used VocClass::PlayGlobal to play the SellSound, why did they do that?
+	VocClass::PlayAt(pTypeExt->SellSound.Get(RulesClass::Instance->SellSound), pThis->Location);
+
+	return SkipVoxVocPlay;
 }

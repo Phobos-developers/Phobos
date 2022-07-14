@@ -15,6 +15,7 @@ This page lists the history of changes across stable Phobos releases and also al
 
 - `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 - `Rad.NoOwner` on weapons is deprecated. This has been replaced by `RadHasOwner` key on radiation types itself. It also defaults to no, so radiation once again has no owner house by default.
+- Automatic self-destruction logic logic has been reimplemented, `Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been remade/renamed and require adjustments to function.
 
 #### From 0.2.2.2
 
@@ -297,7 +298,9 @@ New:
 - Attached animation position customization (by Starkku)
 - Trigger Action 505 for Firing SW at specified location (by FS-21)
 - Trigger Action 506 for Firing SW at waypoint (by FS-21)
-- New ways for self-killing objects under certaing cases (by FS-21)
+- New behaviors for objects' self-destruction under certain conditions (by Trsdy & FS-21)
+- Slaves' ownership decision when corresponding slave miner is destroyed (by Trsdy)
+- Customize buildings' selling sound and EVA voice (by Trsdy) 
 - `ForceWeapon.Naval.Decloacked` for overriding uncloaked underwater attack behavior (by FS-21)
 - Shrapnel enhancement (by secsome)
 - Shared Ammo for transports to passengers (by FS-21)
@@ -345,7 +348,7 @@ Vanilla fixes:
 - Fixed mind control indicator animations not reappearing on mind controlled objects that are cloaked and then uncloaked (by Starkku)
 - Fixed Nuke carrier and payload weapons not respecting `Bright` setting on weapon (by Starkku)
 - Fixed buildings not reverting to undamaged graphics when HP was restored above `[AudioVisual]`->`ConditionYellow` via `SelfHealing` (by Starkku)
-- Fixed jumpjet units being unable to turn to the target when firing from a different direction (by trsdy)
+- Fixed jumpjet units being unable to turn to the target when firing from a different direction (by Trsdy)
 - Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations (by Starkku)
 - Fixed AI script action Deploy getting stuck with vehicles with `DeploysInto` if there was no space to deploy at initial location (by Starkku)
 - Fixed `Foundation=0x0` causing crashes if used on TerrainTypes.

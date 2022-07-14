@@ -53,9 +53,13 @@ public:
 		NullableIdx<VocClass> PassengerDeletion_ReportSound;
 		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
 		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
-		Valueable<bool> Death_NoAmmo;
-		Valueable<int> Death_Countdown;
-		Valueable<bool> Death_Peaceful;
+
+		Valueable<bool> AutoDeath_OnAmmoDepletion;
+		Valueable<int> AutoDeath_AfterDelay;
+		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
+		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
+		NullableIdx<VocClass> SellSound;
+		NullableIdx<VoxClass> EVA_Sold;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -234,9 +238,12 @@ public:
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
-			, Death_NoAmmo { false }
-			, Death_Countdown { 0 }
-			, Death_Peaceful { false }
+			, AutoDeath_Behavior { }
+			, AutoDeath_OnAmmoDepletion { false }
+			, AutoDeath_AfterDelay { 0 }
+			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
+			, SellSound { }
+			, EVA_Sold { }
 			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
@@ -248,8 +255,8 @@ public:
 			, ProneSecondaryFireFLH { }
 			, DeployedPrimaryFireFLH { }
 			, DeployedSecondaryFireFLH { }
+			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, IronCurtain_KeptOnDeploy{ }
-			, InitialStrength_Cloning{ { 1.0, 0.0 } }
 			, AttachmentData {}
 		{ }
 

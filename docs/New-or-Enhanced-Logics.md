@@ -365,6 +365,23 @@ Ammo.Shared=no        ; boolean
 Ammo.Shared.Group=-1  ; integer
 ```
 
+
+### Slaves' house decision customization when owner is killed
+
+- You can now decide the slaves' house when the corresponding slave miner is killed using `Slaved.OwnerWhenMasterKilled`:
+  - `suicide`: Kill each slave if the slave miner is killed.
+  - `master`: Free the slaves but keep the house of the slave unchanged.
+  - `neutral`: The slaves belong to civilian house.
+  - `killer`: Free the slaves and give them to the house of the slave miner's killer. (vanilla behavior)
+
+In `rulesmd.ini`
+```ini
+[SOMEINFANTRY]                       ; Slave type
+Slaved=yes
+Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | neutral)
+```
+
+
 ## Projectiles
 
 
@@ -599,20 +616,34 @@ In `rulesmd.ini`:
 InitialStrength.Cloning=  ; single double/percentage or comma-sep. range
 ```
 
-### Kill Unit Automatically
+### Kill Object Automatically
 
-- Objects can be destroyed automatically under certaing cases:
-  - No Ammo: The object will die if the remaining ammo reaches 0.
-  - Countdown: The object will die if the countdown reaches 0.
-  - Peaceful: If `NoAmmo` or `Countdown` is set, the object will be directly removed from the game peacefully, without triggering deathweapon or "Unit lost" EVA.
+- Objects can be destroyed automatically if *any* of these conditions is met:
+  - `OnAmmoDepletion`: The object will die if the remaining ammo reaches 0.
+  - `AfterDelay`: The object will die if the countdown (in frames) reaches 0.
+
+- The auto-death behavior can be chosen from the following:
+  - `kill`: The object will be destroyed normally.
+  - `vanish`: The object will be directly removed from the game peacefully instead of actually getting killed.
+  - `sell`: If the object is a **building** with buildup, it will be sold instead of destroyed.
+
+If this option is not set, the self-destruction logic will not be enabled.
+```{note}
+Please notice that if the object is a unit which carries passengers, they will not be released even with the kill option. This might change in the future if necessary.
+
+If the object enters transport, the countdown will continue, but it will not self-destruct inside the transport.
+```
+
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]          ; TechnoType
-Death.NoAmmo=false    ; boolean
-Death.Countdown=0     ; integer
-Death.Peaceful=false  ; boolean, whether to not trigger DeathWeapon and EVA
+[SOMETECHNO]                  ; TechnoType
+AutoDeath.Behavior=           ; enumeration (kill | vanish | sell), default not set
+
+AutoDeath.OnAmmoDepletion=no  ; boolean
+AutoDeath.AfterDelay=0        ; positive integer
 ```
+
 
 ### Mind Control enhancement
 
@@ -700,6 +731,22 @@ WarpInMinRangeWeapon=                   ; WeaponType
 WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
+
+
+### Customize EVA voice and `SellSound` when selling units
+
+- When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
+
+  - `EVA.Sold` is used to customize the EVA voice when selling, default to `EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles.
+  - `SellSound` is used to customize the report sound when selling, default to `[AudioVisual]->SellSound`. Note that vanilla game played vehicles' SellSound globally. This has been changed in consistency with buildings' SellSound.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]    ; BuildingType or UnitType
+EVA.Sold=       ; EVA entry
+SellSound=      ; sound entry
+```
+
 
 ## Terrain
 
@@ -828,7 +875,7 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
   - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of each superweapon, otherwise only non-inhibited superweapons are launched. `SW.Designators` are always ignored.
 
 ```{note}
-For animation warheads/weapons to take effect, the invoker must be set.
+For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
 Also, due to the nature of some superweapon types, not all superweapons are suitable for launch.
 ```
 
