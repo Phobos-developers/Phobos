@@ -778,6 +778,7 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]                ; Warhead
 SplashList=<none>            ; list of animations
 SplashList.PickRandom=false  ; boolean
+```
 
 ### Detonate Warhead on all objects on map
 
