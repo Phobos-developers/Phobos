@@ -80,9 +80,6 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// auto pThis = this->OwnerObject();
 
 	// INI_EX exINI(pINI);
-
-
-
 }
 
 template <typename T>
@@ -92,6 +89,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->Waypoints)
 		.Process(this->Variables[0])
 		.Process(this->Variables[1])
+		.Process(this->CustomTheaterID)
 		;
 }
 
