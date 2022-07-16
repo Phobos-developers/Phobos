@@ -20,6 +20,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::CheckDeathConditions(pThis);
 	TechnoExt::EatPassengers(pThis);
 	TechnoExt::UpdateMindControlAnim(pThis);
+	TechnoExt::UpdateInfantryDeploytoLand(pThis);
+	TechnoExt::UpdateUniversalDeploy(pThis);
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
@@ -290,49 +292,32 @@ DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
 	GET(UnitClass*, pUnit, ESI);
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pUnit);
-	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType());
-
-	if (pTechnoTypeExt && pTechnoTypeExt->UniversalConvert_Deploy.size() > 0)
-	{
-		TechnoClass* pTechno = static_cast<TechnoClass*>(pUnit);
-
-		/*if (pUnit->Deploying || pUnit->Undeploying)
-			return 0;*/
-		//if (pUnit->Type->DeployToLand && !pUnit->IsInAir() && !pTechno->DeployAnim)
-			//TechnoExt::UniversalConvert(static_cast<TechnoClass*>(pUnit), nullptr);
-
-		/*if (pUnit->Deployed || (!pUnit->Deploying && pUnit->DeployAnim))
-			pUnit->DeployAnim = nullptr;
-
-		if (pUnit->Type->DeployingAnim && 
-			!pUnit->DeployAnim && 
-			!pUnit->Deploying && 
-			((pUnit->Type->DeployToLand && !pUnit->IsInAir()) || !pUnit->Type->DeployToLand)
-			)
-		{
-			if (auto const pAnim = GameCreate<AnimClass>(pUnit->Type->DeployingAnim,
-				pUnit->Location, 0, 1, 0x600, 0, true)) // This last is "true == Reverse deploy anim"
-			{
-				pUnit->DeployAnim = pAnim;
-				pAnim->SetOwnerObject(pUnit);
-			}
-			else
-			{
-				pUnit->DeployAnim = nullptr;
-			}
-
-			pUnit->Deploying = true;
-		}*/
-
-		//if (pUnit->Type->DeployToLand && !pUnit->IsInAir() && pTechno->DeployAnim && !pUnit->Deploying)
-		if (pUnit->Type->DeployToLand && !pUnit->Deploying && !pUnit->Undeploying && pUnit->Deployed)
-			TechnoExt::UniversalConvert(static_cast<TechnoClass*>(pUnit), nullptr);
-		else if (!pUnit->Type->DeployToLand && !pUnit->Deploying)
-			TechnoExt::UniversalConvert(static_cast<TechnoClass*>(pUnit), nullptr);
-
+	if (!pTechnoExt)
 		return 0;
-	}
+
+	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType());
+	if (!pTechnoTypeExt)
+		return 0;
 	
+	// Universal Convert stuff
+	if (pTechnoTypeExt && pTechnoTypeExt->Convert_UniversalDeploy.size() > 0)
+	{
+		if (auto pOldTechno = static_cast<TechnoClass*>(pUnit))
+		{
+			if (pTechnoTypeExt->Convert_DeployToLand && !pUnit->Deploying && !pUnit->Undeploying && pUnit->Deployed)//pUnit->Type->DeployToLand
+			{
+				TechnoExt::UniversalConvert(pOldTechno, nullptr);
+			}
+			else if (!pTechnoTypeExt->Convert_DeployToLand && !pUnit->Deploying)//pUnit->Type->DeployToLand
+			{
+				TechnoExt::UniversalConvert(pOldTechno, nullptr);
+			}
+
+			return 0;
+		}
+	}
+
+	// LaserTrails transfer
 	if (pTechnoExt && pTechnoTypeExt)
 	{
 		if (pTechnoExt->LaserTrails.size())
@@ -498,150 +483,253 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 	return ReturnResult;
 }
 
+//DEFINE_HOOK(0x730B9C, DeployCommand_UniversalDeploy, 0x17)
+// ok DEFINE_HOOK(0x730B8F, DeployCommand_UniversalDeploy, 0x6)
+//DEFINE_HOOK(0x730BE8, DeployCommand_UniversalDeploy, 0x6)
+DEFINE_HOOK(0x730B8F, DeployCommand_UniversalDeploy, 0x6)
+{
+	//GET(TechnoClass*, pThis, ESI);
+	GET(int, index, EDI);
+
+	TechnoClass* pThis = static_cast<TechnoClass*>(ObjectClass::CurrentObjects->GetItem(index));
+
+	if (pThis->WhatAmI() == AbstractType::Building)
+	{
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		if (!pTypeExt)
+			return 0;
+		
+		if (pTypeExt->Convert_UniversalDeploy.size() > 0)
+		{
+			pThis->MissionStatus = 0;
+			pThis->CurrentMission = Mission::Selling;
+
+			return 0x730C10;
+		}
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x522510, InfantryClass_DoingDeploy, 0x6)
 {
 	GET(InfantryClass*, pThis, ECX);
 
 	if (!pThis)
 		return 0;
-	//UniversalConvert_Inprogress
 
-	if (pThis->IsFallingDown && pThis->GetHeight() > 0)
+	auto pOldTechno = static_cast<TechnoClass*>(pThis);
+	if (!pOldTechno)
 		return 0;
 
-	if (pThis->IsFallingDown && !pThis->GetHeight() > 0)
-		pThis->IsFallingDown = false;
+	auto const pOldTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pOldTechno->GetTechnoType());
+	if (!pOldTechnoTypeExt)
+		return 0;
+
+	if (!pOldTechnoTypeExt->Convert_DeployToLand)//pOldTechno->GetTechnoType()->DeployToLand
+	{
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOldTechno->GetTechnoType());
+		if (!pTypeExt)
+			return 0;
+
+		int deploySoundIndex = pTypeExt->DeploySound.isset() ? pTypeExt->DeploySound.Get() : -1;
+		CoordStruct deployLocation = pOldTechno->GetCoords();
+		auto deployed = TechnoExt::UniversalConvert(pOldTechno, nullptr);
+
+		if (deployed)
+		{
+			if (deploySoundIndex >= 0)
+				VocClass::PlayAt(deploySoundIndex, deployLocation);
+
+			if (pTypeExt->Convert_AnimFX.isset())
+			{
+				const auto pAnimType = pTypeExt->Convert_AnimFX.Get();
+				if (auto const pAnim = GameCreate<AnimClass>(pAnimType, deployLocation))
+				{
+					if (pTypeExt->Convert_AnimFX_FollowDeployer)
+						pAnim->SetOwnerObject(deployed);
+
+					pAnim->Owner = deployed->Owner;
+				}
+			}
+		}
+
+		return 0;
+	}
 
 	auto newLocation = pThis->Location;
 	auto newCell = MapClass::Instance->GetCellAt(newLocation);
+
+	if (pThis->IsFallingDown)
+	{
+		if (pThis->GetHeight() > 0)
+		{
+			if (pThis->IsCellOccupied(newCell, -1, -1, nullptr, false) != Move::OK)
+			{
+				// Another object is inside this cell so it can't continue with the process
+				pThis->IsFallingDown = false;
+
+				if (auto pExt = TechnoExt::ExtMap.Find(pThis))
+					pExt->IsDeployingInLand = false;
+			}
+
+			return 0;
+		}
+		else
+		{
+			pThis->IsFallingDown = false;
+		}
+	}
 	
 	if (pThis->IsCellOccupied(newCell, -1, -1, nullptr, false) == Move::OK)
 	{
-		if (auto pOldTechno = static_cast<TechnoClass*>(pThis))
+		if (auto pExt = TechnoExt::ExtMap.Find(pThis))
 		{
-			TechnoExt::UniversalConvert(pOldTechno, nullptr);
+			pExt->IsDeployingInLand = true;
 		}
 	}
 	
 	return 0;
 }
 
-//DEFINE_HOOK(0x521328, InfantryClass_UpdateDeploy, 0x6)
-DEFINE_HOOK(0x4DA9B7, InfantryClass_AI_JumpjetDeploy, 0xA)
+DEFINE_HOOK(0x449C38, BuildingClass_MissionDeconstruction_UniversalDeploy0, 0x6)
 {
-	//GET(TechnoClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, ECX);
 
-	//pThis->SequenceAnim = Sequence::Deploy;
-	//pThis->ShouldDeploy = true;
-	/*
-	if (auto pExt = TechnoExt::ExtMap.Find(pThis))
+	if (!pBuilding)
+		return 0;
+
+	if (!pBuilding->Type->UndeploysInto)
 	{
-		if (auto pInfantry = abstract_cast<InfantryClass*>(pThis))
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType());
+		if (!pTypeExt)
+			return 0;
+
+		if (pTypeExt && pTypeExt->Convert_UniversalDeploy.size() > 0)
 		{
-			if (pInfantry->Type->Deployer && pInfantry->Type->DeployToLand)
+			for (auto techno : *TechnoTypeClass::Array)
 			{
-				if (pThis->GetHeight() > 0)
+				if (techno->WhatAmI() == AbstractType::UnitType)
 				{
-					//pInfantry->SequenceAnim = Sequence::Deploy;
-					//pInfantry->ShouldDeploy = true;
-					//pThis->ForceMission(Mission::Guard);
-					//pThis->SetDestination(pThis->GetCell(), true);
-				//	pInfantry->ClickedEvent(NetworkEvents::Deploy);
-					
-				//	CellStruct currentCell = pThis->GetCell()->MapCoords;
-					CoordStruct coord = pThis->Location;
-				//	coord.X = currentCell.X;
-				//	coord.Y = currentCell.Y;
-					coord.Z = 0;
-					pInfantry->Locomotor->Destination(&coord);
-				}
-				else
-				{
-					pExt->DeployToLand_JumpjetLanding = false;
-				}
-				if (pExt->DeployToLand_JumpjetLanding)
-				{
-
-					if (pThis->GetHeight() > 0)
-					{
-						pExt->DeployToLand_JumpjetLanding = false;
-					}
-					else
-					{
-						auto pType = pInfantry->Type;
-						auto loco = pInfantry->Locomotor;
-						const auto pLoco = static_cast<JumpjetLocomotionClass*>(pInfantry->Locomotor.get());
-						JumpjetLocomotionClass *pLocomotor = static_cast<JumpjetLocomotionClass*>(pLoco);
-						pLocomotor->Climb = -1.0;
-						pLocomotor->CurrentSpeed = 5;
-						pLocomotor->CurrentHeight = pLocomotor->CurrentHeight - 1;
-						auto loc = pThis->Location;
-						loc.Z = 0;
-						pLocomotor->Destination(&loc);
-					}
-
-					
-				//JumpjetLocomotionClass::ChangeLocomotorTo(pInfantry, LocomotionClass::CLSIDs::Walk);
-				}
-				//LocomotionClass    ChangeLocomotorTo //if (pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet && pThis->IsInAir()
-					//const auto pLoco = static_cast<JumpjetLocomotionClass*>(pFoot->Locomotor.get());
-				/*if (pExt->DeployToLand_JumpjetLanding)
-				{
-					if (pThis->GetHeight() > 0 && pThis->IsInAir()) //pExt->LastJumpjetMapCoords == pThis->Location && 
-					{
-						Debug::Log("Lazy unit. Trying again to Force landing...\n");
-
-						//pThis->ForceMission(Mission::Guard);
-						//pThis->SetDestination(pThis->GetCell()->GetNeighbourCell(0), true);
-
-						pThis->SetDestination(pThis->GetCell(), true);
-						//pThis->ForceMission(Mission::Move);
-						pThis->SetHeight(pThis->GetHeight() - 128);
-						//pThis->MissionStatus
-						pThis->IsFallingDown = true;
-						pThis->FallRate = -1;
-					}
-					else
-					{
-						//pThis->IsFallingDown = false;
-						//pThis->FallRate = 0;
-						pExt->DeployToLand_JumpjetLanding = false;
-						//pInfantry->ClickedEvent(NetworkEvents::Deploy);pType = GameCreate<BombardTrajectoryType>();
-						//pInfantry->Locomotor->Stop_Moving();
-						//auto pType = GameCreate<TechnoTypeClass*>("E2");// (const char *id, eSpeedType speedtype)
-						auto unit = GameCreate<UnitTypeClass>("E2");
-						if (auto pTechno = static_cast<TechnoClass*>(unit->CreateObject(pThis->Owner)))
-						{
-							pThis->WasFallingDown = true;
-							CoordStruct loc = pThis->Location;
-							//	coord.X = currentCell.X;
-							//	coord.Y = currentCell.Y;
-							//loc.Z = 0;
-							pTechno->Location = loc;
-							pTechno->Health = 100;
-							pTechno->EstimatedHealth = 100;
-							pTechno->SetHeight(0);
-
-							
-							//auto infantry = GameCreate<InfantryTypeClass>("E2");
-							//pInfantry->Type = GameCreate<InfantryTypeClass>("E2");
-							//CoordStruct loc = pThis->Location;
-							//pThis = pTechno;
-							pThis->UnInit();
-							pTechno->Unlimbo(loc, 0);
-							//pThis->UnInit();
-						}
-					}
-
-				}
-
-				if (!pExt->DeployToLand_JumpjetLanding)
-				{
-					return 0x4DAAEE;
+					// In every mod exists vehicles so we use the first from the list for a dummy hack. This unit won't appear because will be replaced by the designated object.
+					pBuilding->Type->UndeploysInto = static_cast<UnitTypeClass*>(techno);
+					break;
 				}
 			}
 		}
-	}*/
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x449E6B, BuildingClass_MissionDeconstruction_UniversalDeploy1, 0x5)
+{
+	GET(UnitClass*, pUnit, EBX);
+	GET(BuildingClass*, pBuilding, ECX);
+
+	if (!pUnit || !pBuilding)
+		return 0;
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType());
+	if (!pTypeExt)
+		return 0;
+
+	if (pTypeExt && pTypeExt->Convert_UniversalDeploy.size() > 0)
+	{
+		pUnit->Limbo();
+
+		if (auto pOldTechno = static_cast<TechnoClass*>(pBuilding))
+		{
+			CoordStruct deployLocation = pOldTechno->GetCoords();
+			auto deployed = TechnoExt::UniversalConvert(pOldTechno, nullptr);
+
+			if (deployed)
+			{
+				if (pTypeExt->Convert_AnimFX.isset())
+				{
+					const auto pAnimType = pTypeExt->Convert_AnimFX.Get();
+					if (auto const pAnim = GameCreate<AnimClass>(pAnimType, deployLocation))
+					{
+						if (pTypeExt->Convert_AnimFX_FollowDeployer)
+							pAnim->SetOwnerObject(deployed);
+
+						pAnim->Owner = deployed->Owner;
+					}
+				}
+
+				pUnit->UnInit();
+
+				return 0x44A1D8;
+			}
+		}
+	}
+
+	// Restoring unit after a failed deploy attempt
+	pUnit->Unlimbo(pUnit->Location, Direction::North);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x44725F, BuildingClass_WhatAction_UniversalDeployEnableDeployIcon, 0x5)
+{
+	GET(BuildingClass*, pBuilding, ESI);
+	//GET_STACK(BuildingClass*, pBuilding, 0x4);
+	GET(Action, cursor, EAX);
+	GET_STACK(FootClass*, pFoot, 0x1C);
+
+	if (!pBuilding)
+		return 0;
+
+	if (!pFoot)
+		return 0;
+
+	if (auto pFootTechno = static_cast<TechnoClass*>(pFoot))
+	{
+		if (pFoot->Location == pBuilding->Location)
+		{
+			if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType()))
+			{
+				if (pTypeExt->Convert_UniversalDeploy.size() > 0)
+				{
+					R->EAX(Action::Self_Deploy);
+					return 0x447273;
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4ABEE9, BuildingClass_MouseLeftRelease_UniversalDeployExecuteDeploy, 0x7)
+{
+	GET(BuildingClass* const, pBuilding, ESI); //v17 ESI
+	GET(Action const, actionType, EBX);
+
+	if (!pBuilding)
+		return 0;
+
+	if (!pBuilding->IsSelected)
+		return 0;
+
+	if (actionType != Action::Self_Deploy)// && pBuilding->CurrentMission == Mission::Selling)
+		return 0;
+
+	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType()))
+	{
+		if (pTypeExt->Convert_UniversalDeploy.size() > 0)
+		{
+			if (auto pOldTechno = static_cast<TechnoClass*>(pBuilding))
+			{
+				R->EBX(Action::None);
+
+				pBuilding->MissionStatus = 0;
+				pBuilding->CurrentMission = Mission::Selling;
+				
+				return 0;
+			}
+		}
+	}
 
 	return 0;
 }

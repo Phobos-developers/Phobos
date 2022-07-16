@@ -824,10 +824,10 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 	pExt->DamageNumberOffset = pExt->DamageNumberOffset + width;
 }
 
-void TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pNewTechnoType = nullptr)
+TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pNewTechnoType = nullptr)
 {
 	if (!pThis)
-		return;
+		return nullptr;
 
 	auto newLocation = pThis->Location;
 	auto pOldTechno = pThis;
@@ -836,30 +836,31 @@ void TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pNewTechno
 	{
 		if (auto pOldTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pOldTechnoType))
 		{
-			//TechnoTypeClass* pNewTechnoType = nullptr;
 			if (!pNewTechnoType)
 			{
-				if (pOldTechnoTypeExt->UniversalConvert_Deploy.size() > 0)
+				if (pOldTechnoTypeExt->Convert_UniversalDeploy.size() > 0)
 				{
-					int index = ScenarioClass::Instance->Random.RandomRanged(0, pOldTechnoTypeExt->UniversalConvert_Deploy.size() - 1);
-
-					pNewTechnoType = pOldTechnoTypeExt->UniversalConvert_Deploy.at(index);
+					int index = ScenarioClass::Instance->Random.RandomRanged(0, pOldTechnoTypeExt->Convert_UniversalDeploy.size() - 1);
+					pNewTechnoType = pOldTechnoTypeExt->Convert_UniversalDeploy.at(index);
 				}
 				else
-					return;
+				{
+					return nullptr;
+				}
 			}
 
-			// For a "infantry into vehicle" case we need to check if the cell is free of extra soldiers
+			// For an "infantry into vehicle" case we need to check if the cell is free of soldiers
 			if (pOldTechnoType->WhatAmI() == AbstractType::InfantryType && pNewTechnoType->WhatAmI() != AbstractType::InfantryType)
 			{
 				int nInfantry = 0;
+
 				for (auto pObject = pOldTechno->GetCell()->FirstObject; pObject; pObject = pObject->NextObject)
 				{
 					nInfantry++;
 				}
 
 				if (nInfantry > 1)
-					return;
+					return nullptr;
 			}
 
 			auto pOwner = pOldTechno->Owner;
@@ -894,9 +895,9 @@ void TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pNewTechno
 			pNewTechno->Ammo = nAmmo;
 
 			// If the object was selected it should remain selected
-			bool selected = false;
+			bool isSelected = false;
 			if (pOldTechno->IsSelected)
-				selected = true;
+				isSelected = true;
 
 			// Mind Control update
 			if (pOldTechno->IsMindControlled())
@@ -913,7 +914,24 @@ void TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pNewTechno
 
 			// Some vodoo magic
 			pOldTechno->Limbo();
-			pNewTechno->Unlimbo(newLocation, newPrimaryFacing);
+
+			if (!pNewTechno->Unlimbo(newLocation, newPrimaryFacing))
+			{
+				// Abort operation, restoring old object
+				pOldTechno->Unlimbo(newLocation, newPrimaryFacing);
+				pNewTechno->UnInit();
+
+				if (isSelected)
+					pOldTechno->Select();
+
+				if (auto pExt = TechnoExt::ExtMap.Find(pOldTechno))
+				{
+					pExt->IsDeployingInLand = false;
+					pOldTechno->IsFallingDown = false;
+				}
+
+				return nullptr;
+			}
 
 			if (pOldTechno->InLimbo)
 				pOwner->RegisterLoss(pOldTechno, false);
@@ -930,9 +948,11 @@ void TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pNewTechno
 
 				if (pNewTechno->IsInAir())
 					loc = newLocation; //pNewTechno->Location;
-
-				pNewTechno->SetDestination(pOldTechno, true);
-				pNewTechno->Scatter(loc, true, false);
+				else
+				{
+					pNewTechno->SetDestination(pOldTechno, true);
+					pNewTechno->Scatter(loc, true, false);
+				}
 			}
 			else
 			{
@@ -942,10 +962,176 @@ void TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pNewTechno
 					pNewTechno->IsFallingDown = true;
 			}
 
-			if (selected)
+			// If the object was selected it should remain selected
+			if (isSelected)
 				pNewTechno->Select();
-
+			
 			pOldTechno->UnInit();
+
+			return pNewTechno;
+		}
+	}
+
+	return nullptr;
+}
+
+void TechnoExt::UpdateInfantryDeploytoLand(TechnoClass* pThis)
+{
+	if (!pThis)
+		return;
+
+	if (auto pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		if (pExt->IsDeployingInLand)
+		{
+			if (!pExt->Convert_Deployed && !pExt->Convert_Deploying)
+			{
+				pThis->IsFallingDown = true;
+
+				auto newLocation = pThis->Location;
+				auto newCell = MapClass::Instance->GetCellAt(newLocation);
+
+				if (pThis->IsCellOccupied(newCell, -1, -1, nullptr, false) != Move::OK)
+				{
+					// Another object is inside this cell so it can't continue with the process
+					pThis->IsFallingDown = false;
+
+					if (auto pExt = TechnoExt::ExtMap.Find(pThis))
+						pExt->IsDeployingInLand = false;
+
+					return;
+				}
+
+				if (pThis->GetHeight() > 20)
+					return;
+
+				pThis->SetHeight(0);
+
+				if (!pExt->Convert_Deploying)
+				{
+					pExt->Convert_Deploying = true;
+					return;
+				}
+			}
+
+			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+			if (!pTypeExt)
+				return;
+
+			int deploySoundIndex = pTypeExt->DeploySound.isset() ? pTypeExt->DeploySound.Get() : -1;
+			CoordStruct deployLocation = pThis->GetCoords();
+
+			AnimTypeClass* pAnimType = nullptr;
+			if (pTypeExt->Convert_AnimFX.isset())
+				pAnimType = pTypeExt->Convert_AnimFX.Get();
+
+			auto deployed = pExt->Convert_Deployed ? TechnoExt::UniversalConvert(pThis, nullptr) : nullptr;
+
+			if (deployed)
+			{
+				if (deploySoundIndex >= 0)
+					VocClass::PlayAt(deploySoundIndex, deployLocation);
+
+				if (pAnimType)
+				{
+					if (auto const pAnim = GameCreate<AnimClass>(pAnimType, deployLocation))
+					{
+						if (pTypeExt->Convert_AnimFX_FollowDeployer)
+							pAnim->SetOwnerObject(deployed);
+
+						pAnim->Owner = deployed->Owner;
+					}
+				}
+			}
+		}
+	}
+}
+
+void TechnoExt::StartUniversalDeploy(TechnoClass* pThis)
+{
+	if (!pThis)
+		return;
+	
+	if (auto pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		{
+			bool isDeployer = pTypeExt->Convert_UniversalDeploy.size() > 0 ? true : false;
+			AnimTypeClass* deployAnimType = pTypeExt->Convert_DeployingAnim;
+			bool deployToLand = pTypeExt->Convert_DeployToLand;
+			pThis->InAir = (pThis->GetHeight() > 0);
+
+			if (isDeployer &&
+				(!pThis->InAir || (pThis->InAir && !deployToLand)) &&
+				!pExt->Convert_Deployed)
+			{
+				bool startSound = false;
+
+				if (pExt->Convert_Deploying && pExt->DeployAnim)
+				{
+					if (pExt->DeployAnim->Animation.Value >= deployAnimType->End + deployAnimType->Start - 1)
+						pExt->Convert_Deployed = true;
+				}
+				else if (!pThis->InAir || (pThis->InAir && !deployToLand)) //(!pThis->InAir)
+				{
+					if (deployAnimType)
+					{
+						if (!pExt->DeployAnim)
+						{
+							if (auto pAnim = GameCreate<AnimClass>(deployAnimType, pThis->Location))
+								pExt->DeployAnim = pAnim;
+							else
+								pExt->DeployAnim = nullptr;
+
+							pExt->DeployAnim->SetOwnerObject(pThis);
+						}
+						
+						pExt->Convert_Deploying = true;
+						startSound = true;
+					}
+					else
+					{
+						pExt->Convert_Deployed = true;
+					}
+				}
+
+				if (startSound)
+				{
+					// Play deploy sound
+					int convert_DeploySoundIndex = pTypeExt->Convert_DeploySound.isset() ? pTypeExt->Convert_DeploySound.Get() : -1;
+					CoordStruct convert_DeployLocation = pThis->GetCoords();
+
+					if (convert_DeploySoundIndex >= 0)
+						VocClass::PlayAt(convert_DeploySoundIndex, convert_DeployLocation);
+				}
+			}
+		}
+	}
+}
+
+void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
+{
+	if (!pThis)
+		return;
+
+	//if (pThis->WhatAmI() == AbstractType::Building)
+		//return;
+
+	if (auto pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		if (pExt->Convert_Deploying)
+		{
+			if (pExt->Convert_Deployed)
+			{
+				if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+				{
+					TechnoExt::UniversalConvert(pThis, nullptr);
+				}
+			}
+			else
+			{
+				TechnoExt::StartUniversalDeploy(pThis);
+			}
 		}
 	}
 }
@@ -967,6 +1153,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Death_Countdown)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
+		.Process(this->IsDeployingInLand)
+		.Process(this->Convert_Deploying)
+		.Process(this->Convert_Deployed)
+		.Process(this->DeployAnim)
 		;
 }
 

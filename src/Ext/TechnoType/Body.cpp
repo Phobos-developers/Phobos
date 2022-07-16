@@ -224,8 +224,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->TurretOffset.Read(exArtINI, pArtSection, "TurretOffset");
 
-	this->UniversalConvert_Deploy.Read(exINI, pSection, "UniversalConvert.Deploy");
-
+	this->Convert_UniversalDeploy.Read(exINI, pSection, "Convert.UniversalDeploy");
+	this->Convert_DeployToLand.Read(exINI, pSection, "Convert.DeployToLand");
+	this->DeploySound.Read(exINI, pSection, "DeploySound");
+	this->Convert_AnimFX.Read(exINI, pSection, "Convert.AnimFX");
+	this->Convert_AnimFX_FollowDeployer.Read(exINI, pSection, "Convert.Anim.FollowDeployer");
+	this->Convert_DeployingAnim.Read(exINI, pSection, "Convert.DeployingAnim");
+	this->Convert_DeploySound.Read(exINI, pSection, "Convert.DeploySound");
+	
 	char tempBuffer[32];
 	for (size_t i = 0; ; ++i)
 	{
@@ -358,7 +364,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployedWeaponBurstFLHs)
 		.Process(this->EliteDeployedWeaponBurstFLHs)
 		.Process(this->InitialStrength_Cloning)
-		.Process(this->UniversalConvert_Deploy)
+		.Process(this->Convert_UniversalDeploy)
+		.Process(this->Convert_DeployToLand)
+		.Process(this->DeploySound)
+		.Process(this->Convert_AnimFX)
+		.Process(this->Convert_AnimFX_FollowDeployer)
+		.Process(this->Convert_DeployingAnim)
+		.Process(this->Convert_DeploySound)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

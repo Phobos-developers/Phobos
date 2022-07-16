@@ -30,10 +30,15 @@ public:
 		int Death_Countdown;
 		AnimTypeClass* MindControlRingAnimType;
 		int DamageNumberOffset;
+		bool Convert_Deploying;
+		bool Convert_Deployed;
+		AnimClass* DeployAnim;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
 		HouseClass* OriginalPassengerOwner;
+
+		bool IsDeployingInLand;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
@@ -48,6 +53,10 @@ public:
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset { INT32_MIN }
 			, OriginalPassengerOwner {}
+			, IsDeployingInLand { false }
+			, Convert_Deploying { false }
+			, Convert_Deployed { false }
+			, DeployAnim { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -123,5 +132,8 @@ public:
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
-	static void UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pNewTechnoType);
+	static TechnoClass* UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pNewTechnoType);
+	static void UpdateInfantryDeploytoLand(TechnoClass* pThis);
+	static void StartUniversalDeploy(TechnoClass* pThis);
+	static void UpdateUniversalDeploy(TechnoClass* pThis);
 };

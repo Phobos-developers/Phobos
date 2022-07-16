@@ -118,7 +118,13 @@ public:
 
 		Valueable<Vector2D<double>> InitialStrength_Cloning;
 
-		ValueableVector<TechnoTypeClass*> UniversalConvert_Deploy;
+		ValueableVector<TechnoTypeClass*> Convert_UniversalDeploy;
+		Valueable<bool> Convert_DeployToLand;
+		NullableIdx<VocClass> DeploySound;
+		Nullable<AnimTypeClass*> Convert_AnimFX;
+		Valueable<bool> Convert_AnimFX_FollowDeployer;
+		Nullable<AnimTypeClass*> Convert_DeployingAnim;
+		NullableIdx<VocClass> Convert_DeploySound;
 
 		struct LaserTrailDataEntry
 		{
@@ -231,7 +237,13 @@ public:
 			, DeployedPrimaryFireFLH { }
 			, DeployedSecondaryFireFLH { }
 			, InitialStrength_Cloning{ { 1.0, 0.0 } }
-			, UniversalConvert_Deploy {}
+			, Convert_UniversalDeploy {}
+			, Convert_DeployToLand { false }
+			, DeploySound {}
+			, Convert_AnimFX {}
+			, Convert_AnimFX_FollowDeployer { false }
+			, Convert_DeployingAnim {}
+			, Convert_DeploySound {}
 		{ }
 
 		virtual ~ExtData() = default;
