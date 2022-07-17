@@ -50,7 +50,7 @@ enum PhobosTriggerEvent
 
 	ShieldBroken = 600,
 
-	DummyMaximum = 114514,
+	DummyMaximum = 700,
 };
 
 class TEventExt

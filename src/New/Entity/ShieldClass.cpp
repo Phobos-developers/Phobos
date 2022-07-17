@@ -245,7 +245,7 @@ bool ShieldClass::CanBePenetrated(WarheadTypeClass* pWarhead)
 		return false;
 
 	if (pWarhead->Psychedelic)
-		return !this->Type->ImmuneToPsychedelic;
+		return !this->Type->PsychedelicProof;
 
 	return pWHExt->Shield_Penetrate;
 }
