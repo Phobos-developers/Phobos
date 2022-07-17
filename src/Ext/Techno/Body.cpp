@@ -10,12 +10,15 @@
 #include <ParticleSystemClass.h>
 #include <Unsorted.h>
 #include <BitFont.h>
-#include <JumpjetLocomotionClass.h>
 
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/PointerMapper.h>
+
+#include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
+
 #include <Misc/FlyingStrings.h>
-#include <Utilities/PointerMapper.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -85,40 +88,49 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 	if (pData && pTypeData && pTypeData->Interceptor && !pThis->Target &&
 		!(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
 	{
+		BulletClass* pTargetBullet = nullptr;
+
 		for (auto const& pBullet : *BulletClass::Array)
 		{
-			if (auto pBulletTypeData = BulletTypeExt::ExtMap.Find(pBullet->Type))
+			auto pExt = BulletExt::ExtMap.Find(pBullet);
+			auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+
+			if (!pTypeExt->Interceptable)
+				continue;
+
+			if (pTypeExt->Armor >= 0)
 			{
-				if (!pBulletTypeData->Interceptable)
+				int weaponIndex = pThis->SelectWeapon(pBullet);
+				auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+				double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor);
+
+				if (versus == 0.0)
 					continue;
 			}
 
-			const auto guardRange = pThis->Veterancy.IsElite() ?
-				pTypeData->Interceptor_EliteGuardRange :
-				pTypeData->Interceptor_GuardRange;
-			const auto minguardRange = pThis->Veterancy.IsElite() ?
-				pTypeData->Interceptor_EliteMinimumGuardRange :
-				pTypeData->Interceptor_MinimumGuardRange;
+			const auto& guardRange = pTypeData->Interceptor_GuardRange.Get(pThis);
+			const auto& minguardRange = pTypeData->Interceptor_MinimumGuardRange.Get(pThis);
 
 			auto distance = pBullet->Location.DistanceFrom(pThis->Location);
-			if (distance > guardRange.Get() || distance < minguardRange.Get())
+
+			if (distance > guardRange || distance < minguardRange)
 				continue;
 
-			/*
-			if (pBullet->Location.DistanceFrom(pBullet->TargetCoords) >
-				double(ScenarioClass::Instance->Random.RandomRanged(128, (int)guardRange / 10)) * 10)
-			{
-				continue;
-			}
-			*/
+			auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pExt->FirerHouse;
 
-			if (!pThis->Owner->IsAlliedWith(pBullet->Owner))
+			if (EnumFunctions::CanTargetHouse(pTypeData->Interceptor_CanTargetHouses, pThis->Owner, bulletOwner))
 			{
-				pThis->SetTarget(pBullet);
-				pData->InterceptedBullet = pBullet;
+				pTargetBullet = pBullet;
+
+				if (pExt->InterceptedStatus == InterceptedStatus::Targeted)
+					continue;
+
 				break;
 			}
 		}
+
+		if (pTargetBullet)
+			pThis->SetTarget(pTargetBullet);
 	}
 }
 
@@ -289,11 +301,11 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 
 	if (!pThis || weaponIndex < 0)
 		return FLH;
-	
+
 	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	
+
 	auto pInf = abstract_cast<InfantryClass*>(pThis);
-	auto &pickedFLHs = pExt->WeaponBurstFLHs;
+	auto& pickedFLHs = pExt->WeaponBurstFLHs;
 
 	if (pThis->Veterancy.IsElite())
 	{
@@ -440,6 +452,8 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 							}
 						}
 
+						pPassenger->KillPassengers(pThis);
+						pPassenger->RegisterDestruction(pThis);
 						pPassenger->UnInit();
 					}
 
@@ -470,60 +484,81 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 	return false;
 }
 
-// Feature: Kill Object Automatically
+void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
+{
+	switch (deathOption)
+	{
+
+	case AutoDeathBehavior::Vanish:
+	{
+		pThis->KillPassengers(pThis);
+		pThis->Limbo();
+		pThis->RegisterKill(pThis->Owner);
+		pThis->UnInit();
+
+		return;
+	}
+
+	case AutoDeathBehavior::Sell:
+	{
+		if (auto pBld = abstract_cast<BuildingClass*>(pThis))
+		{
+			if (pBld->Type->LoadBuildup())
+			{
+				pBld->Sell(true);
+
+				return;
+			}
+		}
+
+		Debug::Log("[Runtime Warning] %s can't be sold, killing it instead\n", pThis->get_ID());
+	}
+
+	default: //must be AutoDeathBehavior::Kill
+		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+
+		return;
+	}
+}
+
 void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 {
-	auto pTypeThis = pThis->GetTechnoType();
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pTypeThis);
-	auto pData = TechnoExt::ExtMap.Find(pThis);
-
-	const bool peacefulDeath = pTypeData->Death_Peaceful.Get();
-	// Death if no ammo
-	if (pTypeThis && pTypeData && pTypeData->Death_NoAmmo)
+	auto pType = pThis->GetTechnoType();
+	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType))
 	{
-		if (pTypeThis->Ammo > 0 && pThis->Ammo <= 0)
+
+		if (!pTypeExt->AutoDeath_Behavior.isset())
+			return;
+
+		// Self-destruction must be enabled
+		const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
+
+		// Death if no ammo
+		if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
 		{
-			if (peacefulDeath)
+			TechnoExt::KillSelf(pThis, howToDie);
+			return;
+		}
+
+		auto pData = TechnoExt::ExtMap.Find(pThis);
+		// Death if countdown ends
+		if (pData && pTypeExt->AutoDeath_AfterDelay > 0)
+		{
+			//using Expired() may be confusing
+			if (pData->AutoDeathTimer.StartTime == -1 && pData->AutoDeathTimer.TimeLeft == 0)
 			{
-				pThis->Limbo();
-				pThis->UnInit();
+				pData->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
 			}
-			else
+			else if (!pThis->Transporter && pData->AutoDeathTimer.Completed())
 			{
-				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+				TechnoExt::KillSelf(pThis, howToDie);
+				return;
 			}
+
 		}
 	}
 
-	// Death if countdown ends
-	if (pTypeThis && pData && pTypeData && pTypeData->Death_Countdown > 0)
-	{
-		if (pData->Death_Countdown >= 0)
-		{
-			if (pData->Death_Countdown > 0)
-			{
-				pData->Death_Countdown--; // Update countdown
-			}
-			else
-			{
-				// Countdown ended. Kill the unit
-				pData->Death_Countdown = -1;
-				if (peacefulDeath)
-				{
-					pThis->Limbo();
-					pThis->UnInit();
-				}
-				else
-				{
-					pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
-				}
-			}
-		}
-		else
-		{
-			pData->Death_Countdown = pTypeData->Death_Countdown; // Start countdown
-		}
-	}
+
 }
 
 void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
@@ -643,6 +678,19 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 	return;
 }
 
+void TechnoExt::SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo)
+{
+	if (pFrom->IsIronCurtained() && !pFrom->ForceShielded)
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFrom->GetTechnoType());
+		if (pTypeExt->IronCurtain_KeptOnDeploy.Get(RulesExt::Global()->IronCurtain_KeptOnDeploy))
+		{
+			pTo->IronCurtain(pFrom->IronCurtainTimer.GetTimeLeft(), pFrom->Owner, false);
+			pTo->IronTintStage = pFrom->IronTintStage;
+		}
+	}
+}
+
 void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
 {
 	bool drawPip = false;
@@ -658,7 +706,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 		bool hasUnitSelfHeal = pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Units;
 		bool isOrganic = false;
 
-		if (pThis->WhatAmI() == AbstractType::Infantry || 
+		if (pThis->WhatAmI() == AbstractType::Infantry ||
 			pThis->GetTechnoType()->Organic && pThis->WhatAmI() == AbstractType::Unit)
 		{
 			isOrganic = true;
@@ -787,50 +835,6 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 	}
 }
 
-bool TechnoExt::CheckIfCanFireAt(TechnoClass* pThis, AbstractClass* pTarget)
-{
-	const int wpnIdx = pThis->SelectWeapon(pTarget);
-	const FireError fErr = pThis->GetFireError(pTarget, wpnIdx, true);
-	if (   fErr != FireError::ILLEGAL
-		&& fErr != FireError::CANT
-		&& fErr != FireError::MOVING
-		&& fErr != FireError::RANGE)
-	{
-		return pThis->IsCloseEnough(pTarget, wpnIdx);
-	}
-	else
-		return false;
-}
-
-void TechnoExt::ForceJumpjetTurnToTarget(TechnoClass* pThis)
-{
-	const auto pType = pThis->GetTechnoType();
-	if (pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet && pThis->IsInAir()
-		&& pThis->WhatAmI() == AbstractType::Unit && !pType->TurretSpins)
-	{
-		const auto pFoot = abstract_cast<UnitClass*>(pThis);
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-		if (pTypeExt && pTypeExt->JumpjetTurnToTarget.Get(RulesExt::Global()->JumpjetTurnToTarget)
-			&& pFoot && pFoot->GetCurrentSpeed() == 0)
-		{
-			if (const auto pTarget = pThis->Target)
-			{
-				const auto pLoco = static_cast<JumpjetLocomotionClass*>(pFoot->Locomotor.get());
-				if (pLoco && !pLoco->LocomotionFacing.in_motion() && TechnoExt::CheckIfCanFireAt(pThis, pTarget))
-				{
-					const CoordStruct source = pThis->Location;
-					const CoordStruct target = pTarget->GetCoords();
-					const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
-					
-					if (pThis->GetRealFacing().value32() != tgtDir.value32())
-						pLoco->LocomotionFacing.turn(tgtDir);
-				}
-			}
-		}
-	}
-}
-
 void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage)
 {
 	if (!pThis || damage == 0)
@@ -850,7 +854,7 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 	int width = 0, height = 0;
 	BitFont::Instance->GetTextDimension(damageStr, &width, &height, 120);
 
-	if (pExt->DamageNumberOffset >= maxOffset || pExt->DamageNumberOffset < -maxOffset)
+	if (pExt->DamageNumberOffset >= maxOffset || pExt->DamageNumberOffset.empty())
 		pExt->DamageNumberOffset = -maxOffset;
 
 	FlyingStrings::Add(damageStr, coords, color, Point2D { pExt->DamageNumberOffset - (width / 2), 0 });
@@ -865,7 +869,6 @@ template <typename T>
 void TechnoExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->InterceptedBullet)
 		.Process(this->Shield)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)
@@ -873,9 +876,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletionCountDown)
 		.Process(this->CurrentShieldType)
 		.Process(this->LastWarpDistance)
-		.Process(this->Death_Countdown)
+		.Process(this->AutoDeathTimer)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
+		.Process(this->CurrentLaserWeaponIndex)
 		;
 }
 

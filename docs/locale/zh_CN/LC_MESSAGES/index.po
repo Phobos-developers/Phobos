@@ -49,6 +49,10 @@ msgstr "新增或增强的逻辑"
 msgid "Fixed / Improved Logics"
 msgstr "修复或改进的逻辑"
 
+#：../index.md:11
+msgid "AI Scripting and Mapping"
+msgstr "触发和动作脚本"
+
 #: ../index.md:11
 msgid "User Interface"
 msgstr "用户界面"

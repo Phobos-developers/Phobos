@@ -349,7 +349,7 @@ public:
  * TestAnims->Read(..., "Base%s"); // load from ini
  * TestAnims->Get(Techno); // usage
  * TestAnims->Get(healthRatio); // alternate usage
- * 
+ *
  * Use %s format specifier, exactly once. If pSingleFlag is null, pBaseFlag will
  * be used. For the single flag name, a trailing dot (after replacing %s) will
  * be removed. I.e. "Test.%s" will be converted to "Test".

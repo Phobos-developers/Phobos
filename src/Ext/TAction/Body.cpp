@@ -320,7 +320,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			if (Y < 0)
 				targetLocation.Y = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MapCoordBounds.Bottom);
 		} while (!MapClass::Instance->IsWithinUsableArea(targetLocation, false));
-		
+
 		// Only valid House indexes
 		if ((pThis->Param4 >= HouseClass::Array->Count
 			&& pThis->Param4 < HouseClass::PlayerAtA)
