@@ -71,7 +71,7 @@ public:
 		, Pips_Background { }
 		, Pips_Building { { -1,-1,-1 } }
 		, Pips_Building_Empty { }
-		, PsychedelicProof{ false }
+		, PsychedelicProof { false }
 	{ };
 
 	virtual ~ShieldTypeClass() override = default;
