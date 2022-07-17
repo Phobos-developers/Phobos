@@ -98,9 +98,7 @@ bool ShieldClass::TEventIsShieldBroken(ObjectClass* pAttached)
 	if (auto pThis = abstract_cast<TechnoClass*>(pAttached))
 	{
 		if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
-		{
 			return pExt->Shield->HP <= 0;
-		}
 	}
 	return false;
 }
