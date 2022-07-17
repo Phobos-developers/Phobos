@@ -10,7 +10,7 @@ This page lists all user interface additions, changes, fixes that are implemente
 - Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (font support required).
 
 ```{note}
-You can use {download}`the improved vanilla font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which has way more Unicode character coverage than the default one.
+You can use the improved vanilla font which can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries) which has way more Unicode character coverage than the default one.
 ```
 
 ## Audio
@@ -186,7 +186,7 @@ Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - R,G,B
 ```
 
 ```{note}
-If you use the vanilla font in your mod, you can use {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+If you use the vanilla font in your mod, you can use the improved font ((v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 ```
 
 ### Power delta counter
@@ -220,7 +220,7 @@ Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left|center|
 ```
 
 ```{note}
-If you use the vanilla font in your mod, you can use {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+If you use the vanilla font in your mod, you can use the improved font ((v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 ```
 
 ### Producing Progress

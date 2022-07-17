@@ -32,8 +32,8 @@ This page lists all the individual contributions to the project by their author.
   - LaserTrails port and rework
   - Laser graphics fixes
   - Recursive transport killer fix
+  - Migration utility
   - GitHub Actions setup
-  - Overhauled Unicode font
   - Official docs
   - VSCode configs
   - Code style
@@ -56,7 +56,6 @@ This page lists all the individual contributions to the project by their author.
   - `AITrigger` Building Upgrades support
   - Wall-Gate links
   - Ability for deployed infantry to use both weapons
-  - Font icon additions
   - Official CN docs
 - **secsome (SEC-SOME)**:
   - Debug info dump hotkey
@@ -189,7 +188,6 @@ This page lists all the individual contributions to the project by their author.
 - **ayylmao** - help with docs, extensive and thorough testing
 - **SMxReaver** - help with docs, extensive and thorough testing
 - **4SG** - help with docs
-- **wiktorderelf** - overhauled Unicode font
 - **thomassneddon** - general assistance
 - **Xkein** - general assistance, YRpp edits
 - **mevitar** - honorary shield tester *triple* award

@@ -35,6 +35,8 @@ Installation and Usage
 
 If you already use Ares in your mod, you just need to drop Phobos files mentioned above in your game folder, Syringe will load Phobos automatically. This also applies to mods using XNA client with Syringe; if your mod doesn't use Syringe and Ares (or you just haven't set up the client) yet we recommend to use [CnCNet client mod base by Starkku](https://github.com/Starkku/cncnet-client-mod-base) which is compatible with Ares and Phobos out of the box.
 
+Additional files and tools that you may need are located at [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries).
+
 By default Phobos doesn't do any very noticeable changes except a few bugfixes. To learn how to use Phobos features head over to official documentation.
 
 Documentation
