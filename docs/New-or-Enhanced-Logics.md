@@ -9,7 +9,12 @@ This page describes all the engine features that are either new and introduced b
 ![image](_static/images/radtype-01.png)
 *Mixing different radiation types*
 
-- Allows to have custom radiation type for any weapon now. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
+- Any weapon can now have a custom radiation type. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
+- There are several new properties available to all radiation types.
+  - `RadApplicationDelay.Building` can be set to value higher than 0 to allow radiation to damage buildings.
+  - `RadSiteWarhead.Detonate` can be set to make `RadSiteWarhead` detonate on affected objects rather than only be used to dealt direct damage. This enables most Warhead effects, display of animations etc.
+  - `RadHasOwner`, if set to true, makes damage dealt by the radiation count as having been dealt by the house that fired the projectile that created the radiation field. This means that Warhead controls such as `AffectsAllies` will be respected and any units killed will count towards that player's destroyed units count.
+  - `RadHasInvoker`, if set to true, makes the damage dealt by the radiation count as having been dealt by the TechnoType (the 'invoker') that fired the projectile that created the radiation field. In addition to the effects of `RadHasOwner`, this will also grant experience from units killed by the radiation to the invoker. Note that if the invoker dies at any point during the radiation's lifetime it continues to behave as if not having an invoker.
 
 In `rulesmd.ini`:
 ```ini
@@ -17,10 +22,9 @@ In `rulesmd.ini`:
 0=SOMERADTYPE
 
 [SOMEWEAPON]                    ; WeaponType
-RadType=Radiation               ; RadType to use instead
-                                ; of default [Radiation]
+RadType=Radiation               ; RadType to use instead of default of [Radiation]
 
-[SOMERADTYPE]                   ; custom RadType name
+[SOMERADTYPE]                   ; RadType
 RadDurationMultiple=1           ; integer
 RadApplicationDelay=16          ; integer
 RadApplicationDelay.Building=0  ; integer
@@ -32,6 +36,9 @@ RadLightFactor=0.1              ; floating point value
 RadTintFactor=1.0               ; floating point value
 RadColor=0,255,0                ; integer - Red,Green,Blue
 RadSiteWarhead=RadSite          ; WarheadType
+RadSiteWarhead.Detonate=false   ; boolean
+RadHasOwner=false               ; boolean
+RadHasInvoker=false             ; boolean
 ```
 
 ### Laser Trails
@@ -315,6 +322,23 @@ Ammo.Shared=no        ; boolean
 Ammo.Shared.Group=-1  ; integer
 ```
 
+
+### Slaves' house decision customization when owner is killed
+
+- You can now decide the slaves' house when the corresponding slave miner is killed using `Slaved.OwnerWhenMasterKilled`:
+  - `suicide`: Kill each slave if the slave miner is killed.
+  - `master`: Free the slaves but keep the house of the slave unchanged.
+  - `neutral`: The slaves belong to civilian house.
+  - `killer`: Free the slaves and give them to the house of the slave miner's killer. (vanilla behavior)
+
+In `rulesmd.ini`
+```ini
+[SOMEINFANTRY]                       ; Slave type
+Slaved=yes
+Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | neutral)
+```
+
+
 ## Projectiles
 
 
@@ -549,20 +573,34 @@ In `rulesmd.ini`:
 InitialStrength.Cloning=  ; single double/percentage or comma-sep. range
 ```
 
-### Kill Unit Automatically
+### Kill Object Automatically
 
-- Objects can be destroyed automatically under certaing cases:
-  - No Ammo: The object will die if the remaining ammo reaches 0.
-  - Countdown: The object will die if the countdown reaches 0.
-  - Peaceful: If `NoAmmo` or `Countdown` is set, the object will be directly removed from the game peacefully, without triggering deathweapon or "Unit lost" EVA.
+- Objects can be destroyed automatically if *any* of these conditions is met:
+  - `OnAmmoDepletion`: The object will die if the remaining ammo reaches 0.
+  - `AfterDelay`: The object will die if the countdown (in frames) reaches 0.
+
+- The auto-death behavior can be chosen from the following:
+  - `kill`: The object will be destroyed normally.
+  - `vanish`: The object will be directly removed from the game peacefully instead of actually getting killed.
+  - `sell`: If the object is a **building** with buildup, it will be sold instead of destroyed.
+
+If this option is not set, the self-destruction logic will not be enabled.
+```{note}
+Please notice that if the object is a unit which carries passengers, they will not be released even with the kill option. This might change in the future if necessary.
+
+If the object enters transport, the countdown will continue, but it will not self-destruct inside the transport.
+```
+
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]          ; TechnoType
-Death.NoAmmo=false    ; boolean
-Death.Countdown=0     ; integer
-Death.Peaceful=false  ; boolean, whether to not trigger DeathWeapon and EVA
+[SOMETECHNO]                  ; TechnoType
+AutoDeath.Behavior=           ; enumeration (kill | vanish | sell), default not set
+
+AutoDeath.OnAmmoDepletion=no  ; boolean
+AutoDeath.AfterDelay=0        ; positive integer
 ```
+
 
 ### Mind Control enhancement
 
@@ -651,6 +689,22 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
+
+### Customize EVA voice and `SellSound` when selling units
+
+- When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
+
+  - `EVA.Sold` is used to customize the EVA voice when selling, default to `EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles.
+  - `SellSound` is used to customize the report sound when selling, default to `[AudioVisual]->SellSound`. Note that vanilla game played vehicles' SellSound globally. This has been changed in consistency with buildings' SellSound.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]    ; BuildingType or UnitType
+EVA.Sold=       ; EVA entry
+SellSound=      ; sound entry
+```
+
+
 ## Terrain
 
 ### Destroy animation & sound
@@ -724,6 +778,31 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]                ; Warhead
 SplashList=<none>            ; list of animations
 SplashList.PickRandom=false  ; boolean
+```
+
+### Detonate Warhead on all objects on map
+
+- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is fully detonated (and not just used to deal damage) and consequently any `Airburst/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
+  - `DetonateOnAllMapObjects.AffectTargets` can be used to filter which types of targets (TechnoTypes) are considered valid. Only `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values.
+  - `DetonateOnAllMapObjects.AffectHouses` can be used to filter which houses targets can belong to be considered valid. Only applicable if the house that fired the projectile is known.
+  - `DetonateOnAllMapObjects.AffectTypes` can be used to list specific TechnoTypes to be considered as valid targets. If any valid TechnoTypes are listed, then only matching objects will be targeted. Note that `DetonateOnAllMapObjects.AffectTargets` and `DetonateOnAllMapObjects.AffectHouses` take priority over this setting.
+  - `DetonateOnAllMapObjects.IgnoreTypes` can be used to list specific TechnoTypes to be never considered as valid targets.
+  - `DetonateOnAllMapObjects.RequireVerses`, if set to true, only considers targets whose armor type the warhead has non-zero `Verses` value against as valid. This is checked after all other filters listed above.
+
+ In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                                ; Warhead
+DetonateOnAllMapObjects=false                ; boolean
+DetonateOnAllMapObjects.AffectTargets=all    ; list of Affected Target Enumeration (aircraft|buildings|infantry|units|all)
+DetonateOnAllMapObjects.AffectHouses=all     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DetonateOnAllMapObjects.AffectTypes=         ; list of TechnoType names
+DetonateOnAllMapObjects.IgnoreTypes=         ; list of TechnoType names
+DetonateOnAllMapObjects.RequireVerses=false  ; boolean
+```
+
+```{warning}
+While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys is advised.
+```
 
 ### Generate credits on impact
 
@@ -751,10 +830,11 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 - Superweapons can now be launched when a warhead is detonated.
   - `LaunchSW` specifies the superweapons to launch when the warhead is detonated.
   - `LaunchSW.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons and sufficient fund to support `Money.Amout`. Otherwise they will be launched out of nowhere.
-  - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of each superweapon, otherwise only non-inhibited superweapons are launched.
+  - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of each superweapon, otherwise only non-inhibited superweapons are launched. `SW.Designators` are always ignored.
 
 ```{note}
-Animation weapons from _Ares_ are **not** supported. Nevertheless, animation warheads may work under certain circumstances. Also, due to the nature of some superweapon types, not all superweapons are suitable for launch.
+For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
+Also, due to the nature of some superweapon types, not all superweapons are suitable for launch.
 ```
 
 In `rulesmd.ini`:
@@ -848,16 +928,7 @@ FeedbackWeapon=  ; WeaponType
 
 ### Radiation enhancements
 
-- Radiation now has owner by default, so any rad-kills will be scored. This behavior can be reverted by a corresponding tag.
-  - `AffectsAllies`, `AffectsOwner` and `AffectsEnemies` on `RadSiteWarhead` are respected.
-  - Currently the rad maker doesn't gain experience from kills, this may change in future.
-- Radiation is now able to deal damage to Buildings. To enable set `RadApplicationDelay.Building` value more than 0.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]       ; WeaponType
-Rad.NoOwner=false  ; boolean
-```
+- In addition to allowing custom radiation types, several enhancements are also available to the default radiation type defined in `[Radiation]`, such as ability to set owner & invoker or deal damage against buildings. See [Custom Radiation Types](#custom-radiation-types) for more details.
 
 ### Strafing aircraft weapon customization
 

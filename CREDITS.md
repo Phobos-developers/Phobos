@@ -31,6 +31,7 @@ This page lists all the individual contributions to the project by their author.
   - Zero size map previews fix
   - LaserTrails port and rework
   - Laser graphics fixes
+  - Recursive transport killer fix
   - GitHub Actions setup
   - Overhauled Unicode font
   - Official docs
@@ -105,7 +106,7 @@ This page lists all the individual contributions to the project by their author.
   - Help with docs
   - Automatic Passenger Deletion logic
   - `Fire SW At Location/Waypoint` Trigger Action
-  - Kill Object Automatically logic
+  - Kill Object Automatically logic prototype
   - Customizable resource storage
   - Override Uncloaked Underwater attack behavior
   - AI Aircraft docks fix
@@ -151,6 +152,8 @@ This page lists all the individual contributions to the project by their author.
   - Animation damage / weapon improvements
   - Warhead self-damaging toggle
   - Trailer animation owner inheritance
+  - Warhead detonation on all objects on map
+  - Animated TerrainTypes extension
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
@@ -164,8 +167,15 @@ This page lists all the individual contributions to the project by their author.
    - LaserTrails prototype
    - Laser fixes prototype
 - **Trsdy**
+   - Preserve IronCurtain status upon DeploysInto/UndeploysInto
    - Jumpjet facing fix
+   - Object Self-destruction logic
+   - Building EVA_StructureSold and SellSound dehardcode
+   - Slaves' house customization when owner is killed
+   - Misc CN doc fix
    - Warhead superweapon launch logic
+- **Apollo** - Translucent SHP drawing patches
+- **FlyStar** - Campaign load screen PCX support
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic

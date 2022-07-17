@@ -10,6 +10,8 @@
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
 
+#include "Misc/BlittersFix.h"
+
 #ifndef IS_RELEASE_VER
 bool HideWarning = false;
 #endif
@@ -120,7 +122,7 @@ bool __stdcall DllMain(HANDLE hInstance, DWORD dwReason, LPVOID v)
 
 DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 {
-	Patch::Apply();
+	Patch::ApplyStatic();
 
 #ifdef DEBUG
 
@@ -165,9 +167,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 {
 	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
-	Phobos::Config::EnableBuildingPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowBuildingPlacementPreview",false);
+	Phobos::Config::EnableBuildingPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowBuildingPlacementPreview", false);
 
-	CCINIClass* pINI_UIMD = Phobos::OpenConfig("uimd.ini");
+	CCINIClass* pINI_UIMD = Phobos::OpenConfig((const char*)0x827DC8 /*"UIMD.INI"*/);
 
 	// LoadingScreen
 	{
@@ -222,9 +224,14 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	Phobos::CloseConfig(pINI_UIMD);
 
-	CCINIClass* pINI = Phobos::OpenConfig((const char*)0x826260);
-	Phobos::Config::ArtImageSwap = pINI->ReadBool("General", "ArtImageSwap", false);
-	Phobos::CloseConfig(pINI);
+	CCINIClass* pINI_RULESMD = Phobos::OpenConfig((const char*)0x826260 /*"RULESMD.INI"*/);
+
+	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool("General", "ArtImageSwap", false);
+
+	if (pINI_RULESMD->ReadBool("General", "FixTransparencyBlitters", true))
+		BlittersFix::Apply();
+
+	Phobos::CloseConfig(pINI_RULESMD);
 
 	return 0;
 }

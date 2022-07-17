@@ -23,13 +23,14 @@ public:
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		bool ReceiveDamage;
 		bool LastKillWasTeamTarget;
-		TimerStruct	PassengerDeletionTimer;
+		CDTimerClass PassengerDeletionTimer;
 		int PassengerDeletionCountDown;
 		ShieldTypeClass* CurrentShieldType;
 		int LastWarpDistance;
-		int Death_Countdown;
+		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
-		int DamageNumberOffset;
+		OptionalStruct<int, false> DamageNumberOffset;
+		OptionalStruct<int, true> CurrentLaserWeaponIndex;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -44,10 +45,11 @@ public:
 			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
-			, Death_Countdown(-1)
+			, AutoDeathTimer { }
 			, MindControlRingAnimType { nullptr }
-			, DamageNumberOffset { INT32_MIN }
+			, DamageNumberOffset {}
 			, OriginalPassengerOwner {}
+			, CurrentLaserWeaponIndex {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -78,7 +80,6 @@ public:
 			switch (abs)
 			{
 			case AbstractType::Anim:
-			case AbstractType::Bullet:
 				return false;
 			default:
 				return true;
@@ -106,7 +107,7 @@ public:
 	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
-
+	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
@@ -123,4 +124,5 @@ public:
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
+	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
 };
