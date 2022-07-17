@@ -176,6 +176,7 @@ This page lists all the individual contributions to the project by their author.
    - Warhead superweapon launch logic
 - **Apollo** - Translucent SHP drawing patches
 - **FlyStar** - Campaign load screen PCX support
+- **ststl** - IronCuratin affects to all techno
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic

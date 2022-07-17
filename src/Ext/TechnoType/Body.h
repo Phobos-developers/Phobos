@@ -241,7 +241,6 @@ public:
 			, DeployedSecondaryFireFLH { }
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, IronCurtain_KeptOnDeploy{ }
-			, InitialStrength_Cloning{ { 1.0, 0.0 } }
 			, IronCurtain_Affect {}
 		{ }
 
