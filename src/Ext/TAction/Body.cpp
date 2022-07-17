@@ -69,6 +69,16 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::RunSuperWeaponAtLocation(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::RunSuperWeaponAtWaypoint:
 		return TActionExt::RunSuperWeaponAtWaypoint(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::RandomTriggerPut:
+		return TActionExt::RandomTriggerPut(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::RandomTriggerEnable:
+		return TActionExt::RandomTriggerEnable(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::RandomTriggerRemove:
+		return TActionExt::RandomTriggerRemove(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::ScoreCampaignText:
+		return TActionExt::ScoreCampaignText(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::ScoreCampaignTheme:
+		return TActionExt::ScoreCampaignTheme(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::SetNextMission:
 		return TActionExt::SetNextMission(pThis, pHouse, pObject, pTrigger, location);
 	default:
@@ -438,60 +448,65 @@ bool TActionExt::RandomTriggerPut(TActionClass* pThis, HouseClass* pHouse, Objec
 		return true;
 
 	TriggerClass* pTarget = TriggerClass::GetInstance(pTargetType);
-	int PoolID = pThis->Param3;
+	int iPoolID = pThis->Param3;
 
 	if (pTarget != nullptr)
-		PhobosGlobal::Global()->RandomTriggerPool[PoolID].emplace(pTarget);
+		PhobosGlobal::Global()->RandomTriggerPool[iPoolID].emplace(pTarget);
 
 	return true;
 }
 
 bool TActionExt::RandomTriggerEnable(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	int PoolID = pThis->Param3;
-	bool TakeOff = pThis->Param4;
+	int iPoolID = pThis->Param3;
+	bool bTakeOff = pThis->Param4;
 
-	if (!PhobosGlobal::Global()->RandomTriggerPool.count(PoolID))
+	if (!PhobosGlobal::Global()->RandomTriggerPool.count(iPoolID))
 		return true;
 
-	auto& Pool = PhobosGlobal::Global()->RandomTriggerPool[PoolID];
+	auto& sPool = PhobosGlobal::Global()->RandomTriggerPool[iPoolID];
 
-	if (Pool.empty())
+	if (sPool.empty())
 		return true;
 
-	int Pos = ScenarioClass::Instance->Random.RandomRanged(0, Pool.size() - 1);
-	auto it = Pool.begin();
+	int idx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(sPool.size()) - 1);
+	auto it = sPool.begin();
 
-	while (Pos > 0 && it != Pool.end())
+	while (idx > 0 && it != sPool.end())
 	{
 		it++;
-		Pos--;
+		idx--;
 	}
-	TriggerClass* pTarget = *it;
 
+	TriggerClass* pTarget = *it;
 	pTarget->Enable();
 
-	if (TakeOff)
+	if (bTakeOff)
 	{
-		Pool.erase(pTarget);
-		if (Pool.empty())
-			PhobosGlobal::Global()->RandomTriggerPool.erase(PoolID);
+		sPool.erase(pTarget);
+		if (sPool.empty())
+			PhobosGlobal::Global()->RandomTriggerPool.erase(iPoolID);
 	}
+
 	return true;
 }
 
 bool TActionExt::RandomTriggerRemove(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	int PoolID = pThis->Param3;
+	int iPoolID = pThis->Param3;
 	TriggerTypeClass* pTriggerType = pThis->TriggerType;
 	TriggerClass* pTarget = TriggerClass::GetInstance(pTriggerType);
-	auto& Poolmap = PhobosGlobal::Global()->RandomTriggerPool;
-	if (!Poolmap.count(PoolID))
+	auto& mPools = PhobosGlobal::Global()->RandomTriggerPool;
+	
+	if (!mPools.count(iPoolID))
 		return true;
-	auto& Pool = Poolmap[PoolID];
-	if (!Pool.count(pTarget))
+	
+	auto& sPool = mPools[iPoolID];
+	
+	if (!sPool.count(pTarget))
 		return true;
-	Pool.erase(pTarget);
+	
+	sPool.erase(pTarget);
 	return true;
 }
 
@@ -501,18 +516,21 @@ bool TActionExt::ScoreCampaignText(TActionClass* pThis, HouseClass* pHouse, Obje
 		ScenarioExt::Global()->ParMessage = pThis->Text;
 	else
 		ScenarioExt::Global()->ParTitle = pThis->Text;
+
 	return true;
 }
 
 bool TActionExt::ScoreCampaignTheme(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	ScenarioExt::Global()->ScoreCampaignTheme = pThis->Text;
+	
 	return true;
 }
 
 bool TActionExt::SetNextMission(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	ScenarioExt::Global()->NextMission = pThis->Text;
+	
 	return true;
 }
 

@@ -881,16 +881,12 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
-	TechnoClass* pOldThis = nullptr;
-	Stm.Load(pOldThis);
-	PointerMapper::AddMapping(pOldThis, this->OwnerObject());
 	Extension<TechnoClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
 void TechnoExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Stm.Save(this->OwnerObject());
 	Extension<TechnoClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }

@@ -257,10 +257,7 @@ auto MassActions = MassAction <
 	// other classes
 > ();
 
-//if you need entities pointer like TechnoClass* you'd
-//better put it here, else while get nullptr after loaded
 auto ProcessAfter = MassAction <
-	//AttachmentClass
 	PhobosGlobal
 >();
 
@@ -316,22 +313,22 @@ void Phobos::LoadGameData(IStream* pStm)
 
 HRESULT Phobos::SaveGameDataAfter(IStream* pStm)
 {
-	Debug::Log("Saveing after Phobos data\n");
+	Debug::Log("Saving Phobos data\n");
 
 	if (!ProcessAfter.Save(pStm))
 		return E_FAIL;
-	Debug::Log("Finish saving after data\n");
+	Debug::Log("Finish saving data\n");
 	return S_OK;
 }
 
 void Phobos::LoadGameDataAfter(IStream* pStm)
 {
-	Debug::Log("Loading after Phobos data\n");
+	Debug::Log("Loading Phobos data\n");
 
 	if (!ProcessAfter.Load(pStm))
-		Debug::Log("Error loading after data\n");
+		Debug::Log("Error loading data\n");
 	else
-		Debug::Log("Finished loading after data\n");
+		Debug::Log("Finished loading data\n");
 }
 
 #ifdef DEBUG
