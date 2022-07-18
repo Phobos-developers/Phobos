@@ -262,7 +262,7 @@ Available Compare Modes are:
 17         | Iron Curtain doesn't meet the percentage in `AIMinorSuperReadyPercent` |
 18         | Chrono Sphere doesn't meet the percentage in `AIMinorSuperReadyPercent` |
 
-- When `CompareMode` is between 6~18, `TechnoType` should be `<none>`. When `CompareMode` is between 6~8, 15~18, `Number` should be 0.
+- When `CompareMode` is between 6-18, `TechnoType` should be `<none>`. When `CompareMode` is between 6-8, 15-18, `Number` should be 0.
 
 Here is an example:
 ```
