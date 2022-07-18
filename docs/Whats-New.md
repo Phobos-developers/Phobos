@@ -318,6 +318,7 @@ New:
 - Enhanced projectile interception logic, including projectile strength & armor types (by Starkku)
 - Initial Strength for Cloned Infantry (by FS-21)
 - OpenTopped transport rangefinding & deactivated state customizations (by Starkku)
+- Forbidding parallel AI queues by type (by NetsuNegi)
 - Animation damage / weapon improvements (by Starkku)
 - Warhead self-damaging toggle (by Starkku)
 - Trailer animations inheriting owner (by Starkku)
