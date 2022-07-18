@@ -61,7 +61,7 @@ DEFINE_HOOK(0x4401BB, Factory_AI_PickWithFreeDocks, 0x6)
 		return 0;
 
 	if (pBuilding->Type->Factory == AbstractType::AircraftType
-		&& !Phobos::Config::ExtendParallelAIQueues_Aircraft)
+		&& Phobos::Config::ForbidParallelAIQueues_Aircraft)
 	{
 		if (pBuilding->Factory
 			&& !BuildingExt::HasFreeDocks(pBuilding))
@@ -176,22 +176,32 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory, 0x6)
 		{
 			enum { Skip = 0x4503CA };
 			if (pBuilding->Type->Factory == AbstractType::BuildingType
-				&& !Phobos::Config::ExtendParallelAIQueues_Building)
+				&& Phobos::Config::ForbidParallelAIQueues_Building)
+			{
 				return Skip;
+			}
 			else if (pBuilding->Type->Factory == AbstractType::UnitType
-				&& !Phobos::Config::ExtendParallelAIQueues_Vehicle
+				&& Phobos::Config::ForbidParallelAIQueues_Vehicle
 				&& !pBuilding->Type->Naval)
+			{
 				return Skip;
+			}
 			else if (pBuilding->Type->Factory == AbstractType::UnitType
-				&& !Phobos::Config::ExtendParallelAIQueues_Navy
+				&& Phobos::Config::ForbidParallelAIQueues_Navy
 				&& pBuilding->Type->Naval)
+			{
 				return Skip;
+			}
 			else if (pBuilding->Type->Factory == AbstractType::InfantryType
-				&& !Phobos::Config::ExtendParallelAIQueues_Infantry)
+				&& Phobos::Config::ForbidParallelAIQueues_Infantry)
+			{
 				return Skip;
+			}
 			else if (pBuilding->Type->Factory == AbstractType::AircraftType
-				&& !Phobos::Config::ExtendParallelAIQueues_Aircraft)
+				&& Phobos::Config::ForbidParallelAIQueues_Aircraft)
+			{
 				return Skip;
+			}
 		}
 	}
 
@@ -212,27 +222,27 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction, 0x8)
 	switch (pTechno->WhatAmI())
 	{
 	case AbstractType::Building:
-		if (!Phobos::Config::ExtendParallelAIQueues_Building)
+		if (Phobos::Config::ForbidParallelAIQueues_Building)
 			pData->Factory_BuildingType = nullptr;
 		break;
 	case AbstractType::Unit:
 		if (!pTechno->GetTechnoType()->Naval)
 		{
-			if (!Phobos::Config::ExtendParallelAIQueues_Vehicle)
+			if (Phobos::Config::ForbidParallelAIQueues_Vehicle)
 				pData->Factory_VehicleType = nullptr;
 		}
 		else
 		{
-			if (!Phobos::Config::ExtendParallelAIQueues_Navy)
+			if (Phobos::Config::ForbidParallelAIQueues_Navy)
 				pData->Factory_NavyType = nullptr;
 		}
 		break;
 	case AbstractType::Infantry:
-		if (!Phobos::Config::ExtendParallelAIQueues_Infantry)
+		if (Phobos::Config::ForbidParallelAIQueues_Infantry)
 			pData->Factory_InfantryType = nullptr;
 		break;
 	case AbstractType::Aircraft:
-		if (!Phobos::Config::ExtendParallelAIQueues_Aircraft)
+		if (Phobos::Config::ForbidParallelAIQueues_Aircraft)
 			pData->Factory_AircraftType = nullptr;
 		break;
     }
@@ -252,12 +262,12 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType, 0x6)
 
 	if (!pUnit->Type->Naval)
 	{
-		if (!Phobos::Config::ExtendParallelAIQueues_Vehicle)
+		if (Phobos::Config::ForbidParallelAIQueues_Vehicle)
 			pData->Factory_VehicleType = nullptr;
 	}
 	else
 	{
-		if (!Phobos::Config::ExtendParallelAIQueues_Navy)
+		if (Phobos::Config::ForbidParallelAIQueues_Navy)
 			pData->Factory_NavyType = nullptr;
 	}
 
@@ -268,7 +278,7 @@ DEFINE_HOOK(0x444131, BuildingClass_KickOutUnit_InfantryType, 0x6)
 {
 	GET(HouseClass*, pHouse, EAX);
 
-	if (!Phobos::Config::AllowParallelAIQueues || Phobos::Config::ExtendParallelAIQueues_Infantry)
+	if (Phobos::Config::AllowParallelAIQueues || Phobos::Config::ForbidParallelAIQueues_Infantry)
 		return 0;
 
 	HouseExt::ExtMap.Find(pHouse)->Factory_InfantryType = nullptr;
@@ -279,7 +289,7 @@ DEFINE_HOOK(0x44531F, BuildingClass_KickOutUnit_BuildingType, 0xA)
 {
 	GET(HouseClass*, pHouse, EAX);
 
-	if (!Phobos::Config::AllowParallelAIQueues || Phobos::Config::ExtendParallelAIQueues_Building)
+	if (Phobos::Config::AllowParallelAIQueues || Phobos::Config::ForbidParallelAIQueues_Building)
 		return 0;
 
 	HouseExt::ExtMap.Find(pHouse)->Factory_BuildingType = nullptr;
@@ -290,7 +300,7 @@ DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType, 0xA)
 {
 	GET(HouseClass*, pHouse, EDX);
 
-	if (!Phobos::Config::AllowParallelAIQueues || Phobos::Config::ExtendParallelAIQueues_Aircraft)
+	if (Phobos::Config::AllowParallelAIQueues || Phobos::Config::ForbidParallelAIQueues_Aircraft)
 		return 0;
 
 	HouseExt::ExtMap.Find(pHouse)->Factory_AircraftType = nullptr;

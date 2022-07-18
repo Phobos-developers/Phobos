@@ -927,9 +927,10 @@ CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allie
 In `rulesmd.ini`
 ```ini
 [GlobalControls]
-ExtendParallelAIQueues.Infantry=yes      ; boolean
-ExtendParallelAIQueues.Vehicle=yes      ; boolean
-ExtendParallelAIQueues.Navy=yes      ; boolean
-ExtendParallelAIQueues.Aircraft=yes      ; boolean
-ExtendParallelAIQueues.Building=yes      ; boolean
+AllowParallelAIQueues=yes                ; this key must set yes/true unless you dont use Ares
+ForbidParallelAIQueues.Infantry=no      ; boolean
+ForbidParallelAIQueues.Vehicle=no      ; boolean
+ForbidParallelAIQueues.Navy=no      ; boolean
+ForbidParallelAIQueues.Aircraft=no      ; boolean
+ForbidParallelAIQueues.Building=no      ; boolean
 ```
