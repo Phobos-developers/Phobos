@@ -132,7 +132,9 @@ DEFINE_HOOK(0x44224F, BuildingClass_ReceiveDamage_DamageSelf, 0x5)
 	{
 		if (pWHExt->AllowDamageOnSelf)
 			return SkipCheck;
-  }
+	}
+
+	return 0;
 }
 
 DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory, 0x6)
@@ -245,7 +247,7 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction, 0x8)
 		if (Phobos::Config::ForbidParallelAIQueues_Aircraft)
 			pData->Factory_AircraftType = nullptr;
 		break;
-    }
+	}
 
 	return 0;
 }
