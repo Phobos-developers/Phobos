@@ -242,18 +242,33 @@ Available Pick Modes are:
 Available Compare Modes are:
 | *Mode*  | *Description*                                 |
 | :------: | :-------------------------------------------: |
-0         | < |
-1         | <= |
-2         | == |
-3         | >= |
-4         | > |
-5         | != |
+0         | (count TechnoTypes)< |
+1         | (count TechnoTypes)<= |
+2         | (count TechnoTypes)== |
+3         | (count TechnoTypes)>= |
+4         | (count TechnoTypes)> |
+5         | (count TechnoTypes)!= |
+6         | Power Green |
+7         | Power Yellow |
+8         | Power Red |
+9         | (count Money)< |
+10         | (count Money)<= |
+11         | (count Money)== |
+12         | (count Money)>= |
+13         | (count Money)> |
+14         | (count Money)!= |
+15         | Iron Curtain meets the percentage in `AIMinorSuperReadyPercent` |
+16         | Chrono Sphere meets the percentage in `AIMinorSuperReadyPercent` |
+17         | Iron Curtain doesn't meet the percentage in `AIMinorSuperReadyPercent` |
+18         | Chrono Sphere doesn't meet the percentage in `AIMinorSuperReadyPercent` |
 
-Here is an example
+- When `CompareMode` is between 6~18, `TechnoType` should be `<none>`. When `CompareMode` is between 6~8, 15~18, `Number` should be 0.
+
+Here is an example:
 ```
-1=1,2/2,3,1,NATECH/0,3,5,SREF/0,3,3,BFRT/0,3,8,MGTK/0,3,12,MTNK
+1=2,2/2,3,1,NATECH/0,8,0,<none>/0,3,5,SREF/0,3,3,BFRT/0,3,8,MGTK/0,3,12,MTNK
 ```
-- This means AI itself must has 1 or more NATECH, and least 2 of 4 optional requirements are needed: its enemies have more than 5 SREFs, 3 BFRTs, 8 MGTKs, 12 MTNKs.
+- This means AI itself must has 1 or more NATECH, its enemy must has low power, and least 2 of 4 optional requirements are needed: its enemies have more than 5 SREFs, 3 BFRTs, 8 MGTKs, 12 MTNKs.
 
 ## Animations
 

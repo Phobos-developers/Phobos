@@ -41,8 +41,9 @@ public:
 
 	static void DisableAITrigger(AITriggerTypeClass* pAITriggerType);
 	static void EnableAITrigger(AITriggerTypeClass* pAITriggerType);
-	static bool ReadCustomizableAICondition(HouseClass* pHouse, int pickMode, int compareMode, int Number, TechnoTypeClass* TechnoType);
+	static bool ReadCustomizableAICondition(AITriggerTypeClass* pAITriggerType, HouseClass* pHouse, int pickMode, int compareMode, int Number, TechnoTypeClass* TechnoType);
 	static void CustomizableAICondition(AITriggerTypeClass* pAITriggerType, HouseClass* pHouse, int condition);
+	static bool PickValidHouse(HouseClass* pHouse, HouseClass* pThisHouse, int pickMode);
 
 	static ExtContainer ExtMap;
 
