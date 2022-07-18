@@ -921,8 +921,8 @@ CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allie
 
 ### Extend parallel AI queues
 
-- Now we can set it on specified types of factories do not occurs cloning issue and others will not be affected.
- -To prevent conflict with Ares, this only work when AllowParallelAIQueues=yes or you don't use Ares.
+- You can now set if specific types of factories do not have AI production cloning issue instead of Ares' indiscriminate behavior of `AllowParallelAIQueues=no`.
+ - If `AllowParallelAIQueues=no` (*Ares feature*) is set, the tags have no effect.
 
 In `rulesmd.ini`
 ```ini
