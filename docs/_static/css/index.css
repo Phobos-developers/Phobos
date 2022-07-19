@@ -18,7 +18,8 @@
 }
 
 .rst-versions {
-  left: auto;
+  width: 300px;
+  max-width: 85%;
 }
 
 .wy-grid-for-nav {
