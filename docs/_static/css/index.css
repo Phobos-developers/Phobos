@@ -1,0 +1,50 @@
+.rst-content a {
+  color: #58a6ff;
+}
+
+.wy-body-for-nav {
+  background: #1a1a1a;
+  max-width: 1400px;
+  margin: auto;
+}
+
+.wy-nav-content {
+  max-width: none;
+}
+
+.wy-nav-side {
+  left: auto;
+  max-width: 300px;
+}
+
+.rst-versions {
+  left: auto;
+}
+
+.wy-grid-for-nav {
+  position: unset;
+}
+
+@media screen and (max-width: 768px) {
+  .wy-nav-side {
+    left: -300px;
+  }
+  .wy-nav-top {
+    padding: unset;
+    width: 100%;
+    position: fixed;
+  }
+  .wy-nav-top i {
+    line-height: 50px;
+    padding-left: 10px;
+  }
+  .wy-nav-content-wrap.shift {
+    left: min(300px, 85%);
+  }
+  .icon.icon-home {
+    display: none;
+  }
+  .wy-side-nav-search {
+    background-color: unset;
+  }
+}
