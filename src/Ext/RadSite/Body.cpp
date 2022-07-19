@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <New/Type/RadTypeClass.h>
+#include <Ext/WarheadType/Body.h>
 #include <LightSourceClass.h>
 
 template<> const DWORD Extension<RadSiteClass>::Canary = 0x87654321;
@@ -13,15 +14,41 @@ void RadSiteExt::ExtData::Initialize()
 	this->Type = RadTypeClass::FindOrAllocate("Radiation");
 }
 
-void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner)
+bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance)
+{
+	auto pWarhead = this->Type->GetWarhead();
+
+	if (!this->Type->GetWarheadDetonate())
+	{
+		if (pTarget->ReceiveDamage(&damage, distance, pWarhead, this->RadInvoker, false, true, this->RadHouse) == DamageState::NowDead)
+			return false;
+	}
+	else
+	{
+		auto coords = CoordStruct::Empty;
+		coords = *pTarget->GetCoords(&coords);
+		WarheadTypeExt::DetonateAt(pWarhead, coords, this->RadInvoker, damage);
+
+		if (!pTarget->IsAlive)
+			return false;
+	}
+
+	return true;
+}
+
+
+void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker)
 {
 	// use real ctor
 	auto const pRadSite = GameCreate<RadSiteClass>();
 	auto pRadExt = RadSiteExt::ExtMap.FindOrAllocate(pRadSite);
 
 	//Adding Owner to RadSite, from bullet
-	if (!pWeaponExt->Rad_NoOwner && pRadExt->RadHouse != pOwner)
+	if (pWeaponExt->RadType->GetHasOwner() && pRadExt->RadHouse != pOwner)
 		pRadExt->RadHouse = pOwner;
+
+	if (pWeaponExt->RadType->GetHasInvoker() && pRadExt->RadInvoker != pInvoker)
+		pRadExt->RadInvoker = pInvoker;
 
 	pRadExt->Weapon = pWeaponExt->OwnerObject();
 	pRadExt->Type = pWeaponExt->RadType;
@@ -129,6 +156,7 @@ void RadSiteExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->Weapon)
 		.Process(this->RadHouse)
+		.Process(this->RadInvoker)
 		.Process(this->Type)
 		;
 }

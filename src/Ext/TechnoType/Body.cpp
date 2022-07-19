@@ -141,9 +141,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
 	this->NoManualMove.Read(exINI, pSection, "NoManualMove");
 	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
-	this->Death_NoAmmo.Read(exINI, pSection, "Death.NoAmmo");
-	this->Death_Countdown.Read(exINI, pSection, "Death.Countdown");
-	this->Death_Peaceful.Read(exINI, pSection, "Death.Peaceful");
+
+	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
+	this->AutoDeath_OnAmmoDepletion.Read(exINI, pSection, "AutoDeath.OnAmmoDepletion");
+	this->AutoDeath_AfterDelay.Read(exINI, pSection, "AutoDeath.AfterDelay");
+	this->Slaved_OwnerWhenMasterKilled.Read(exINI, pSection, "Slaved.OwnerWhenMasterKilled");
+	this->SellSound.Read(exINI, pSection, "SellSound");
+	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
+
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
@@ -202,6 +207,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SelfHealGainType.Read(exINI, pSection, "SelfHealGainType");
 	this->Passengers_SyncOwner.Read(exINI, pSection, "Passengers.SyncOwner");
 	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
+
+	this->IronCurtain_KeptOnDeploy.Read(exINI, pSection, "IronCurtain.KeptOnDeploy");
 
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
 
@@ -293,9 +300,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CameoPriority)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
-		.Process(this->Death_NoAmmo)
-		.Process(this->Death_Countdown)
-		.Process(this->Death_Peaceful)
+		.Process(this->AutoDeath_Behavior)
+		.Process(this->AutoDeath_OnAmmoDepletion)
+		.Process(this->AutoDeath_AfterDelay)
+		.Process(this->Slaved_OwnerWhenMasterKilled)
+		.Process(this->SellSound)
+		.Process(this->EVA_Sold)
 		.Process(this->ShieldType)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
@@ -355,6 +365,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteCrouchedWeaponBurstFLHs)
 		.Process(this->DeployedWeaponBurstFLHs)
 		.Process(this->EliteDeployedWeaponBurstFLHs)
+		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->InitialStrength_Cloning)
 		;
 }

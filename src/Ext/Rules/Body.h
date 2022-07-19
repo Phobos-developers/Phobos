@@ -31,6 +31,9 @@ public:
 		Nullable<int> InfantryGainSelfHealCap;
 		Nullable<int> UnitsGainSelfHealCap;
 		Valueable<int> RadApplicationDelay_Building;
+		Valueable<bool> RadWarhead_Detonate;
+		Valueable<bool> RadHasOwner;
+		Valueable<bool> RadHasInvoker;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 		Valueable<bool> JumpjetAllowLayerDeviation;
@@ -48,12 +51,16 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Infantry_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
+		Valueable<bool> IronCurtain_KeptOnDeploy;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
 			, UnitsGainSelfHealCap {}
 			, RadApplicationDelay_Building { 0 }
+			, RadWarhead_Detonate { false }
+			, RadHasOwner { false }
+			, RadHasInvoker { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, JumpjetAllowLayerDeviation { true }
@@ -70,6 +77,7 @@ public:
 			, Pips_SelfHeal_Infantry_Offset {{ 25, -35 }}
 			, Pips_SelfHeal_Units_Offset {{ 33, -32 }}
 			, Pips_SelfHeal_Buildings_Offset {{ 15, 10 }}
+			, IronCurtain_KeptOnDeploy { true }
 		{ }
 
 		virtual ~ExtData() = default;

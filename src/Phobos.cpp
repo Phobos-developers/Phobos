@@ -6,9 +6,12 @@
 #include <Unsorted.h>
 #include <Drawing.h>
 
+#include "Utilities/Parser.h"
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
+
+#include "Misc/BlittersFix.h"
 
 #ifndef IS_RELEASE_VER
 bool HideWarning = false;
@@ -53,6 +56,11 @@ bool Phobos::Config::DevelopmentCommands = true;
 bool Phobos::Config::ArtImageSwap = false;
 bool Phobos::Config::AllowParallelAIQueues = true;
 bool Phobos::Config::EnableBuildingPlacementPreview = false;
+bool Phobos::Config::ForbidParallelAIQueues_Infantry = false;
+bool Phobos::Config::ForbidParallelAIQueues_Vehicle = false;
+bool Phobos::Config::ForbidParallelAIQueues_Navy = false;
+bool Phobos::Config::ForbidParallelAIQueues_Aircraft = false;
+bool Phobos::Config::ForbidParallelAIQueues_Building = false;
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
@@ -120,7 +128,7 @@ bool __stdcall DllMain(HANDLE hInstance, DWORD dwReason, LPVOID v)
 
 DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 {
-	Patch::Apply();
+	Patch::ApplyStatic();
 
 #ifdef DEBUG
 
@@ -165,9 +173,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 {
 	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
-	Phobos::Config::EnableBuildingPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowBuildingPlacementPreview",false);
+	Phobos::Config::EnableBuildingPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowBuildingPlacementPreview", false);
 
-	CCINIClass* pINI_UIMD = Phobos::OpenConfig("uimd.ini");
+	CCINIClass* pINI_UIMD = Phobos::OpenConfig((const char*)0x827DC8 /*"UIMD.INI"*/);
 
 	// LoadingScreen
 	{
@@ -222,9 +230,14 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	Phobos::CloseConfig(pINI_UIMD);
 
-	CCINIClass* pINI = Phobos::OpenConfig((const char*)0x826260);
-	Phobos::Config::ArtImageSwap = pINI->ReadBool("General", "ArtImageSwap", false);
-	Phobos::CloseConfig(pINI);
+	CCINIClass* pINI_RULESMD = Phobos::OpenConfig((const char*)0x826260 /*"RULESMD.INI"*/);
+
+	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool("General", "ArtImageSwap", false);
+
+	if (pINI_RULESMD->ReadBool("General", "FixTransparencyBlitters", true))
+		BlittersFix::Apply();
+
+	Phobos::CloseConfig(pINI_RULESMD);
 
 	return 0;
 }
@@ -232,6 +245,12 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 {
 	GET(CCINIClass*, rulesINI, EDI);
+
+	Phobos::Config::ForbidParallelAIQueues_Infantry = rulesINI->ReadBool("GlobalControls", "ForbidParallelAIQueues.Infantry", Phobos::Config::AllowParallelAIQueues);
+	Phobos::Config::ForbidParallelAIQueues_Vehicle = rulesINI->ReadBool("GlobalControls", "ForbidParallelAIQueues.Vehicle", Phobos::Config::AllowParallelAIQueues);
+	Phobos::Config::ForbidParallelAIQueues_Navy = rulesINI->ReadBool("GlobalControls", "ForbidParallelAIQueues.Navy", Phobos::Config::AllowParallelAIQueues);
+	Phobos::Config::ForbidParallelAIQueues_Aircraft = rulesINI->ReadBool("GlobalControls", "ForbidParallelAIQueues.Aircraft", Phobos::Config::AllowParallelAIQueues);
+	Phobos::Config::ForbidParallelAIQueues_Building = rulesINI->ReadBool("GlobalControls", "ForbidParallelAIQueues.Building", Phobos::Config::AllowParallelAIQueues);
 
 	// Ares tags
 	Phobos::Config::DevelopmentCommands = rulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);

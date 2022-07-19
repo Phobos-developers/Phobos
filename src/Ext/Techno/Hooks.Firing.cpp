@@ -369,3 +369,24 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK_AGAIN(0x6FF660, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
+DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(WeaponTypeClass* const, pWeapon, EBX);
+	GET_BASE(int, weaponIndex, 0xC);
+
+	if (pThis->WhatAmI() == AbstractType::Building && pWeapon->IsLaser)
+	{
+		if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+		{
+			if (pExt->CurrentLaserWeaponIndex.empty())
+				pExt->CurrentLaserWeaponIndex = weaponIndex;
+			else
+				pExt->CurrentLaserWeaponIndex.clear();
+		}
+	}
+
+	return 0;
+}

@@ -22,8 +22,8 @@ public:
 		int Countdown_RegroupAtLeader;
 		int MoveMissionEndMode;
 		int WaitNoTargetCounter;
-		TimerStruct WaitNoTargetTimer;
-		TimerStruct ForceJump_Countdown;
+		CDTimerClass WaitNoTargetTimer;
+		CDTimerClass ForceJump_Countdown;
 		int ForceJump_InitialCountdown;
 		bool ForceJump_RepeatMode;
 		FootClass* TeamLeader;
@@ -44,11 +44,12 @@ public:
 		{ }
 
 		virtual ~ExtData() = default;
+
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
-			if (this->TeamLeader == ptr)
-				this->TeamLeader = nullptr;
+			AnnounceInvalidPointer(TeamLeader, ptr);
 		}
+
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 

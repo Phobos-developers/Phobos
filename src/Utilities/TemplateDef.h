@@ -545,6 +545,10 @@ namespace detail
 				{
 					parsed |= AffectedTarget::Building;
 				}
+				else if (!_strcmpi(cur, "aircraft"))
+				{
+					parsed |= AffectedTarget::Aircraft;
+				}
 				else if (!_strcmpi(cur, "all"))
 				{
 					parsed |= AffectedTarget::All;
@@ -693,6 +697,59 @@ namespace detail
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a self heal gain type");
 				return false;
 			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<SlaveChangeOwnerType>(SlaveChangeOwnerType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "suicide") == 0)
+			{
+				value = SlaveChangeOwnerType::Suicide;
+			}
+			else if (_strcmpi(parser.value(), "master") == 0)
+			{
+				value = SlaveChangeOwnerType::Master;
+			}
+			else if (_strcmpi(parser.value(), "neutral") == 0)
+			{
+				value = SlaveChangeOwnerType::Neutral;
+			}
+			else
+			{
+				if (_strcmpi(parser.value(), "killer") != 0)
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a slave ownership option, default killer");
+				value = SlaveChangeOwnerType::Killer;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<AutoDeathBehavior>(AutoDeathBehavior& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "sell") == 0)
+			{
+				value = AutoDeathBehavior::Sell;
+			}
+			else if (_strcmpi(parser.value(), "vanish") == 0)
+			{
+				value = AutoDeathBehavior::Vanish;
+			}
+			else
+			{
+				if(_strcmpi(parser.value(), "kill") != 0)
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a self-destruction behavior, default to kill if set");
+				value = AutoDeathBehavior::Kill;
+			}
+
 			return true;
 		}
 		return false;

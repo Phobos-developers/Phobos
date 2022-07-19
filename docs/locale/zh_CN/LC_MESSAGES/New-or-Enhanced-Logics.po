@@ -926,22 +926,6 @@ msgstr "初始生命值"
 msgid "You can now specify how many hitpoints a TechnoType starts with."
 msgstr "现在可以指定单位的初始生命值了。"
 
-#: ../New-or-Enhanced-Logics.md:780
-msgid "Kill Unit Automatically"
-msgstr "自动击杀单位"
-
-#: ../New-or-Enhanced-Logics.md:782
-msgid "Objects can be destroyed automatically under certaing cases:"
-msgstr "单位可以在以下情况下被自动摧毁："
-
-#: ../New-or-Enhanced-Logics.md:783
-msgid "No Ammo: The object will die if the remaining ammo reaches 0."
-msgstr "无弹药：当弹药数为0后自动死亡。"
-
-#: ../New-or-Enhanced-Logics.md:784
-msgid "Countdown: The object will die if the countdown reaches 0."
-msgstr "倒计时：当计时为0后自动死亡。"
-
 #: ../New-or-Enhanced-Logics.md:793
 msgid "Mind Control enhancement"
 msgstr "心灵控制增强"
@@ -1364,12 +1348,6 @@ msgid ""
 "are respected."
 msgstr "`AffectsAllies`，`AffectsOwner`和`AffectsEnemies`也会被遵守。"
 
-#: ../New-or-Enhanced-Logics.md:1246
-msgid ""
-"Currently the rad maker doesn't gain experience from kills, this may "
-"change in future."
-msgstr "目前辐射的产生者无法通过击杀获取经验，未来可能会改。"
-
 #: ../New-or-Enhanced-Logics.md:1247
 msgid ""
 "Radiation is now able to deal damage to Buildings. To enable set "
@@ -1467,13 +1445,11 @@ msgstr "`LaunchSW.RealLaunch` 真实发射指仅使用弹头所属方目前真�
 #: ../New-or-Enhanced-Logics.md:1304
 msgid ""
 "`LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of each superweapon,"
-" otherwise only non-inhibited superweapons are launched."
+" otherwise only non-inhibited superweapons are launched. `SW.Designators` are always ignored."
 msgstr "`LaunchSW.IgnoreInhibitors` 是否忽略`SW.Inhibitors`"
 
 #: ../New-or-Enhanced-Logics.md:1305
 msgid ""
-"Animation weapons from _Ares_ are **not** supported. "
-"Nevertheless, animation warheads may work under certain circumstances."
-" Also, due to the nature of some superweapon types,"
-" not all superweapons are suitable for launch."
-msgstr "目前Ares中的动画武器无法生效，动画弹头不全生效。自行探索，谨慎使用，后果自负。"
+"For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set."
+"Also, due to the nature of some superweapon types, not all superweapons are suitable for launch."
+msgstr "若在动画伤害上使用该逻辑则必须设置Invoker，否则超武将不会发射"
