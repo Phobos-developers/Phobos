@@ -186,7 +186,7 @@ Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - R,G,B
 ```
 
 ```{note}
-If you use the vanilla font in your mod, you can use the improved font ((v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+If you use the vanilla font in your mod, you can use the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 ```
 
 ### Power delta counter
@@ -220,7 +220,7 @@ Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left|center|
 ```
 
 ```{note}
-If you use the vanilla font in your mod, you can use the improved font ((v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+If you use the vanilla font in your mod, you can use the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 ```
 
 ### Producing Progress
@@ -266,7 +266,7 @@ Sidebar.GDIPositions=  ; boolean
 - The tooltips can now go over the sidebar bounds to accommodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
 
 ```{note}
-Same as with harvester counter, you can download {download}`the improved font <https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/ImprovedFont>` (v3 and higher) or draw your own icons.
+Same as with harvester counter, you can download the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) or draw your own icons.
 ```
 
 In `uimd.ini`:
