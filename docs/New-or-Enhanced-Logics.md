@@ -414,6 +414,10 @@ Trajectory.Bombard.Height=0.0  ; double
 ```
 
 ### Shrapnel enhancement
+
+![image](_static/images/shrapnel.gif)
+*Shrapnel appearing against ground & buildings* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
+
 - Shrapnel behavior can be triggered on the ground and buildings.
 
 In `rulesmd.ini`:
@@ -726,6 +730,9 @@ All new warheads can be used with CellSpread and Ares' GenericWarhead superweapo
 
 ### Break Mind Control on impact
 
+![image](_static/images/remove-mc.gif)
+*Mind control break warhead being utilized* ([RA2: Reboot](https://www.moddb.com/mods/reboot))
+
 - Warheads can now break mind control (doesn't apply to perma-MC-ed objects).
 
 In `rulesmd.ini`:
@@ -857,11 +864,8 @@ RemoveDisguise=false  ; boolean
 
 ### Reveal map for owner on impact
 
-![image](_static/images/revealwarhead-01.gif)
-*`SpySat=yes` on `[NUKE]` warhead reveals the map when nuclear missile detonates*
-
 - Warheads can now reveal the entire map on impact.
-- Reveal only applies to the owner of the warhead.
+  - Reveal only applies to the owner of the warhead.
 
 In `rulesmd.ini`:
 ```ini
@@ -917,6 +921,9 @@ Burst.Delays=-1  ; integer - burst delays (comma-separated) for shots in order f
 
 ### Feedback weapon
 
+![image](_static/images/feedbackweapon.gif)
+*`FeedbackWeapon` used to apply healing aura upon firing a weapon* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
+
 - You can now specify an auxiliary weapon to be fired on the firer itself when a weapon is fired.
   - `FireInTransport` setting of the feedback weapon is respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If feedback weapon is fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on feedback weapons.
 
@@ -957,6 +964,9 @@ Trajectory.Speed=100.0  ; floating point value
 ```
 
 ### Weapon targeting filter
+
+![image](_static/images/weaponfilter.gif)
+*`Weapon target filter - different weapon used against enemies & allies as well as units & buildings* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
 
 - You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
   - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
