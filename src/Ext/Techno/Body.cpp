@@ -1058,6 +1058,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 			return;
 		iCur = pThis->CurrentGattlingStage;
 		iMax = pType->WeaponStages;
+		break
 	}
 	default:
 	{
