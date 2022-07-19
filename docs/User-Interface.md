@@ -266,7 +266,7 @@ Sidebar.GDIPositions=  ; boolean
 - The tooltips can now go over the sidebar bounds to accommodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
 
 ```{note}
-Same as with harvester counter, you can download {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v3 and higher) or draw your own icons.
+Same as with harvester counter, you can download {download}`the improved font <https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/ImprovedFont>` (v3 and higher) or draw your own icons.
 ```
 
 In `uimd.ini`:
