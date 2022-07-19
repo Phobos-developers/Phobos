@@ -941,7 +941,8 @@ void TechnoExt::LimboAttachments(TechnoClass* pThis)
 
 bool TechnoExt::IsAttached(TechnoClass* pThis)
 {
-	return TechnoExt::ExtMap.Find(pThis)->ParentAttachment;
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+	return pExt && pExt->ParentAttachment;
 }
 
 bool TechnoExt::IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep)
