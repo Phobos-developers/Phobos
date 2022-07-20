@@ -93,11 +93,11 @@ Anchor.Horizontal=Left                 ; Horizontal Position Enumeration, - left
 Anchor.Vertical=top                    ; Vertical Position Enumeration, - top|center/centre|bottom
 Anchor.Building=lefttop                ; Hexagon Vertex Enumeration, top|lefttop|leftright|bottom|rightbottom|rightTop
 Border=Top                             ; Border Position Enumeration, - top|left|right|bottom, Position relative to select bracket's border
-Percentage=no                          ; boolean 
+Percentage=no                          ; boolean
 HideMaxValue=no                        ; boolean
 
 ; Text
-Text.Color=0,255,0                     ; RGB 
+Text.Color=0,255,0                     ; RGB
 Text.Color.ConditionYellow=255,255,0   ; RGB
 Text.Color.ConditionRed=255,0,0        ; RGB
 Text.Background=no                     ; boolean

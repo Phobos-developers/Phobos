@@ -137,14 +137,14 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 		Shape_Interval.Get() :
 		(isBuilding ? Vector2D<int> { 8, -4 } : Vector2D<int> { 8, 0 }) // default
 	);
-	
+
 	if (Border == BorderPosition::Top)
 		posDraw.Y -= Shape->Height * 2;	// upper of healthbar and shieldbar
 	else if (!isBuilding && Border == BorderPosition::Left)
 		posDraw.X -= vInterval.X;	// DrawSHP use pos for LeftTop of shape bounds
 
 	if (isBuilding)
-		posDraw.X -= 10; // aligned to healthbar left 
+		posDraw.X -= 10; // aligned to healthbar left
 
 	if (Percentage)
 	{

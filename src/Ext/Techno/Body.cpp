@@ -886,7 +886,7 @@ Point2D TechnoExt::GetFootSelectBracketPosition(TechnoClass* pThis, Anchor ancho
 		iLength * 3
 	};
 	Point2D posRes = anchor.OffsetPosition(rBracket);
-	
+
 	return posRes;
 }
 
@@ -1000,7 +1000,7 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 			GetBuildingSelectBracketPosition(pThis, pDisplayType->AnchorType_Building)
 			: GetFootSelectBracketPosition(pThis, pDisplayType->AnchorType);
 		posDraw.Y += pType->PixelSelectionBracketDelta;
-		
+
 		if (pDisplayType->InfoType == DisplayInfoType::Shield)
 			posDraw.Y += pExt->Shield->GetType()->BracketDelta;
 

@@ -243,7 +243,7 @@ enum class DisplayInfoType : BYTE
 	GattlingStage = 9
 };
 
-class MouseCursorHotSpotX 
+class MouseCursorHotSpotX
 {
 public:
 	typedef MouseHotSpotX Value;
