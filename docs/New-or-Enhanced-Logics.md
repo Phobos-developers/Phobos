@@ -389,11 +389,17 @@ Armor=                                 ; ArmorType
 
 - Projectiles can now have customizable trajectories.
   - `Trajectory` should not be combined with original game's projectile trajectory logics (`Arcing`, `ROT` or `Inviso`).
+  - Initial speed of the projectile is defined by `Trajectory.Speed`, which unlike `Speed` used by `ROT` > 0 projectiles is defined on projectile not weapon.
+
+  In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]        ; Projectile
+Trajectory.Speed=100.0  ; floating point value
+```
 
 #### Straight trajectory
 
 - Self-explanatory, is a straight-shot trajectory.
-  - Initial speed is determined by weapon's `Trajectory.Speed`.
 
 In `rulesmd.ini`:
 ```ini
@@ -404,7 +410,6 @@ Trajectory=Straight  ; Trajectory type
 #### Bombard trajectory
 
 - Similar trajectory to `Straight`, but targets a coordinate above the intended target (height determined by `Trajectory.Bombard.Height`). When the projectile approaches that coordinate, it will free fall and explodes when it hits the target or ground.
-  - Initial speed is determined by weapon's `Trajectory.Speed`.
 
 In `rulesmd.ini`:
 ```ini
@@ -951,16 +956,6 @@ In `rulesmd.ini`:
 [SOMEWEAPON]                  ; WeaponType
 Strafing.Shots=5              ; integer
 Strafing.SimulateBurst=false  ; boolean
-```
-
-### Trajectory speed
-
-- This sets projectile speed used by custom [projectile trajectories](#projectile-trajectories).
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]            ; WeaponType
-Trajectory.Speed=100.0  ; floating point value
 ```
 
 ### Weapon targeting filter
