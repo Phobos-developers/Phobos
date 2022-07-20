@@ -913,13 +913,22 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 		vPos.Y = vLoc.Y + 6 + YOffset;
 	}
 
-	SHPStruct* SelectBoxShape = pTypeExt->Shape_SelectBox;
-	if (!SelectBoxShape)
+	SHPStruct* pShape = nullptr;
+
+	if (isInfantry)
+		pShape = pTypeExt->SelectBox_Shape.Get(RulesExt::Global()->SelectBox_Shape_Infantry);
+	else
+		pShape = pTypeExt->SelectBox_Shape.Get(RulesExt::Global()->SelectBox_Shape_Unit);
+
+	if (pShape == nullptr)
 		return;
 
-	ConvertClass* SelectBoxPalette = pTypeExt->Palette_SelectBox;
-	if (!SelectBoxPalette)
-		return;
+	ConvertClass* pPalette = nullptr;
+
+	if (isInfantry)
+		pPalette = pTypeExt->SelectBox_Palette.GetOrDefaultConvert(RulesExt::Global()->SelectBox_Palette_Infantry.GetOrDefaultConvert(FileSystem::PALETTE_PAL));
+	else
+		pPalette = pTypeExt->SelectBox_Palette.GetOrDefaultConvert(RulesExt::Global()->SelectBox_Palette_Unit.GetOrDefaultConvert(FileSystem::PALETTE_PAL));
 
 	if (pThis->IsSelected)
 	{
@@ -930,8 +939,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 		else
 			frame = selectboxFrame.Z;
 
-		DSurface::Temp->DrawSHP(SelectBoxPalette, SelectBoxShape,
-			frame, &vPos, pBound, nFlag, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		DSurface::Temp->DrawSHP(pPalette, pShape, frame, &vPos, pBound, nFlag, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
 

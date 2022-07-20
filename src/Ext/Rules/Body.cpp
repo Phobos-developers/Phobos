@@ -91,12 +91,12 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Buildings.Offset");
 
 	this->UseSelectBox.Read(exINI, sectionAudioVisual, "UseSelectBox");
-	this->SelectBox_Shape_Infantry.Read(pINI, sectionAudioVisual, "SelectBox.Shape.Infantry");
-	this->SelectBox_Palette_Infantry.Read(pINI, sectionAudioVisual, "SelectBox.Palette.Infantry");
+	this->SelectBox_Shape_Infantry.Read(exINI, sectionAudioVisual, "SelectBox.Shape.Infantry");
+	this->SelectBox_Palette_Infantry.LoadFromINI(pINI, sectionAudioVisual, "SelectBox.Palette.Infantry");
 	this->SelectBox_Frame_Infantry.Read(exINI, sectionAudioVisual, "SelectBox.Frame.Infantry");
 	this->SelectBox_DrawOffset_Infantry.Read(exINI, sectionAudioVisual, "SelectBox.DrawOffset.Infantry");
-	this->SelectBox_Shape_Unit.Read(pINI, sectionAudioVisual, "SelectBox.Shape.Unit");
-	this->SelectBox_Palette_Unit.Read(pINI, sectionAudioVisual, "SelectBox.Palette.Unit");
+	this->SelectBox_Shape_Unit.Read(exINI, sectionAudioVisual, "SelectBox.Shape.Unit");
+	this->SelectBox_Palette_Unit.LoadFromINI(pINI, sectionAudioVisual, "SelectBox.Palette.Unit");
 	this->SelectBox_Frame_Unit.Read(exINI, sectionAudioVisual, "SelectBox.Frame.Unit");
 	this->SelectBox_DrawOffset_Unit.Read(exINI, sectionAudioVisual, "SelectBox.DrawOffset.Unit");
 	this->SelectBox_TranslucentLevel.Read(exINI, sectionAudioVisual, "SelectBox.TranslucentLevel");

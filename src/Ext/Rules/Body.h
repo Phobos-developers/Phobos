@@ -55,12 +55,12 @@ public:
 		Valueable<bool> IronCurtain_KeptOnDeploy;
 
 		Valueable<bool> UseSelectBox;
-		PhobosFixedString<32U> SelectBox_Shape_Infantry;
-		PhobosFixedString<32U> SelectBox_Palette_Infantry;
+		Valueable<SHPStruct*> SelectBox_Shape_Infantry;
+		CustomPalette SelectBox_Palette_Infantry;
 		Nullable<Vector3D<int>> SelectBox_Frame_Infantry;
 		Nullable<Vector2D<int>> SelectBox_DrawOffset_Infantry;
-		PhobosFixedString<32U> SelectBox_Shape_Unit;
-		PhobosFixedString<32U> SelectBox_Palette_Unit;
+		Valueable<SHPStruct*> SelectBox_Shape_Unit;
+		CustomPalette SelectBox_Palette_Unit;
 		Nullable<Vector3D<int>> SelectBox_Frame_Unit;
 		Nullable<Vector2D<int>> SelectBox_DrawOffset_Unit;
 		Nullable<int> SelectBox_TranslucentLevel;
@@ -93,14 +93,14 @@ public:
 			, Pips_SelfHeal_Buildings_Offset {{ 15, 10 }}
 			, IronCurtain_KeptOnDeploy { true }
 			, UseSelectBox { false }
-			, SelectBox_Shape_Infantry { "select.shp" }
-			, SelectBox_Palette_Infantry { "palette.pal" }
-			, SelectBox_Frame_Infantry { { 0,0,0 } }
-			, SelectBox_DrawOffset_Infantry { { 0,0 } }
-			, SelectBox_Shape_Unit { "select.shp" }
-			, SelectBox_Palette_Unit { "palette.pal" }
-			, SelectBox_Frame_Unit {{ 3,3,3 }}
-			, SelectBox_DrawOffset_Unit {{ 0,0 }}
+			, SelectBox_Shape_Infantry { FileSystem::LoadSHPFile("select.shp") }
+			, SelectBox_Palette_Infantry {}
+			, SelectBox_Frame_Infantry { { 0, 0, 0 } }
+			, SelectBox_DrawOffset_Infantry { { 0, 0 } }
+			, SelectBox_Shape_Unit { FileSystem::LoadSHPFile("select.shp") }
+			, SelectBox_Palette_Unit {}
+			, SelectBox_Frame_Unit { { 3, 3, 3 } }
+			, SelectBox_DrawOffset_Unit { { 0, 0 } }
 			, SelectBox_TranslucentLevel { 0 }
 			, SelectBox_CanSee { AffectedHouse::Owner }
 			, SelectBox_CanObserverSee { true }

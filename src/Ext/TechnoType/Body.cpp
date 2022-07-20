@@ -262,29 +262,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
 	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 
-	this->UseSelectBox.Read(exINI, pSection, "UseSelectBox");
-	this->SelectBox_Shape.Read(pINI, pSection, "SelectBox.Shape");
-	this->SelectBox_Palette.Read(pINI, pSection, "SelectBox.Palette");
+	this->SelectBox_Shape.Read(exINI, pSection, "SelectBox.Shape");
+	this->SelectBox_Palette.LoadFromINI(pINI, pSection, "SelectBox.Palette");
 	this->SelectBox_Frame.Read(exINI, pSection, "SelectBox.Frame");
 	this->SelectBox_DrawOffset.Read(exINI, pSection, "SelectBox.DrawOffset");
 	this->SelectBox_TranslucentLevel.Read(exINI, pSection, "SelectBox.TranslucentLevel");
 	this->SelectBox_CanSee.Read(exINI, pSection, "SelectBox.CanSee");
 	this->SelectBox_CanObserverSee.Read(exINI, pSection, "SelectBox.CanObserverSee");
-
-	{
-		char shapeName[0x20];
-		strcpy(shapeName, strcmp(this->SelectBox_Shape, "") ? this->SelectBox_Shape : (pThis->WhatAmI() == AbstractType::InfantryType ?
-			RulesExt::Global()->SelectBox_Shape_Infantry : RulesExt::Global()->SelectBox_Shape_Unit));
-		_strlwr_s(shapeName);
-		this->Shape_SelectBox = FileSystem::LoadSHPFile(shapeName);
-	}
-	{
-		char paletteName[0x20];
-		strcpy(paletteName, strcmp(this->SelectBox_Palette, "") ? this->SelectBox_Palette : (pThis->WhatAmI() == AbstractType::InfantryType ?
-			RulesExt::Global()->SelectBox_Palette_Infantry : RulesExt::Global()->SelectBox_Palette_Unit));
-		_strlwr_s(paletteName);
-		this->Palette_SelectBox = FileSystem::LoadPALFile(paletteName, DSurface::Temp);
-	}
 
 	this->PronePrimaryFireFLH.Read(exArtINI, pArtSection, "PronePrimaryFireFLH");
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
@@ -379,7 +363,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
 		.Process(this->SelfHealGainType)
-		.Process(this->UseSelectBox)
 		.Process(this->SelectBox_Shape)
 		.Process(this->SelectBox_Palette)
 		.Process(this->SelectBox_Frame)
