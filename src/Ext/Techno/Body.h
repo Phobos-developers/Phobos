@@ -23,11 +23,11 @@ public:
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		bool ReceiveDamage;
 		bool LastKillWasTeamTarget;
-		TimerStruct	PassengerDeletionTimer;
+		CDTimerClass PassengerDeletionTimer;
 		int PassengerDeletionCountDown;
 		ShieldTypeClass* CurrentShieldType;
 		int LastWarpDistance;
-		int Death_Countdown;
+		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
 		OptionalStruct<int, false> DamageNumberOffset;
 		OptionalStruct<int, true> CurrentLaserWeaponIndex;
@@ -45,7 +45,7 @@ public:
 			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
-			, Death_Countdown(-1)
+			, AutoDeathTimer { }
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset {}
 			, OriginalPassengerOwner {}
@@ -80,7 +80,6 @@ public:
 			switch (abs)
 			{
 			case AbstractType::Anim:
-			case AbstractType::Bullet:
 				return false;
 			default:
 				return true;
@@ -108,7 +107,7 @@ public:
 	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
-
+	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
@@ -125,6 +124,7 @@ public:
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
+	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
 	static Point2D GetScreenLocation(TechnoClass* pThis);
 	static Point2D GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor);
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition ePos);

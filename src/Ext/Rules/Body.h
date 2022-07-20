@@ -52,6 +52,7 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Infantry_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
+		Valueable<bool> IronCurtain_KeptOnDeploy;
 
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
@@ -81,6 +82,7 @@ public:
 			, Pips_SelfHeal_Infantry_Offset {{ 25, -35 }}
 			, Pips_SelfHeal_Units_Offset {{ 33, -32 }}
 			, Pips_SelfHeal_Buildings_Offset {{ 15, 10 }}
+			, IronCurtain_KeptOnDeploy { true }
 			, Pips_Shield_Building_Empty {}
 			, Buildings_DefaultDigitalDisplayTypes {}
 			, Infantry_DefaultDigitalDisplayTypes {}

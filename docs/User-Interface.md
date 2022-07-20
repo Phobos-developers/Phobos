@@ -8,8 +8,9 @@ This page lists all user interface additions, changes, fixes that are implemente
 - You can specify custom `gamemd.exe` icon via `-icon` command line argument followed by absolute or relative path to an `*.ico` file (f. ex. `gamemd.exe -icon Resources/clienticon.ico`).
 - Fixed `Blowfish.dll`-caused error `***FATAL*** String Manager failed to initialize properly`, which occurred if `Blowfish.dll` could not be registered in the OS, for example, it happened when the player did not have administrator rights. With Phobos, if the game did not find a registered file in the system, it will no longer try to register this file, but will load it bypassing registration.
 - Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (font support required).
+
 ```{note}
-You can use {download}`the improved vanilla font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which has way more Unicode character coverage than the default one.
+You can use the improved vanilla font which can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries) which has way more Unicode character coverage than the default one.
 ```
 
 ## Audio
@@ -117,8 +118,10 @@ ShowBuildingPlacementPreview=false  ; boolean
 
 - PCX files can now be used as loadscreen images.
   - You can specify custom loadscreen with Ares tag `File.LoadScreen`.
+  - Campaign loading screen (`missionmd.ini->[LS800BkgdName]`) can also use PCX image.
 - The loadscreen size can now be different from the default `800x600` one; if the image is bigger than the screen it's centered and cropped.
   - This feature works in conjunction with CnCNet5 spawner DLL which resizes loadscreen window to actual monitor size and places the image in center. If there's no CnCNet5 spawner loaded, the window resolution will be always `800x600`.
+  - Same applies to campaign loading screen (`missionmd.ini->[LS800BkgdName]`).
 - You can now disable hardcoded black dots that YR engine shows over empty spawn locations, which allows to use prettier and more correctly placed markers that are produced by Map Renderer instead.
 
 In `uimd.ini`:
@@ -183,7 +186,7 @@ Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - R,G,B
 ```
 
 ```{note}
-If you use the vanilla font in your mod, you can use {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+If you use the vanilla font in your mod, you can use the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 ```
 
 ### Power delta counter
@@ -217,7 +220,7 @@ Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left|center|
 ```
 
 ```{note}
-If you use the vanilla font in your mod, you can use {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+If you use the vanilla font in your mod, you can use the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 ```
 
 ### Producing Progress
@@ -263,7 +266,7 @@ Sidebar.GDIPositions=  ; boolean
 - The tooltips can now go over the sidebar bounds to accommodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
 
 ```{note}
-Same as with harvester counter, you can download {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v3 and higher) or draw your own icons.
+Same as with harvester counter, you can download the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) or draw your own icons.
 ```
 
 In `uimd.ini`:

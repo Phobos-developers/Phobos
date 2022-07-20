@@ -165,6 +165,8 @@ DEFINE_HOOK(0x739956, DeploysInto_UndeploysInto_SyncShieldStatus, 0x6) //UnitCla
 	GET(TechnoClass*, pTo, EBX);
 
 	ShieldClass::SyncShieldToAnother(pFrom, pTo);
+	TechnoExt::SyncIronCurtainStatus(pFrom, pTo);
+
 	return 0;
 }
 

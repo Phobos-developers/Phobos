@@ -1,4 +1,4 @@
-*            text=auto
+*            text eol=crlf
 
 *.vcproj     text eol=crlf
 *.c++        text eol=crlf
