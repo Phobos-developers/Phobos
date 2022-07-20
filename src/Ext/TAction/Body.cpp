@@ -311,15 +311,6 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			if (Y < 0)
 				targetLocation.Y = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MapCoordBounds.Bottom);
 		} while (!MapClass::Instance->IsWithinUsableArea(targetLocation, false));
-		
-		// Only valid House indexes
-		if ((pThis->Param4 >= HouseClass::Array->Count
-			&& pThis->Param4 < HouseClass::PlayerAtA)
-			|| pThis->Param4 > (HouseClass::PlayerAtA + HouseClass::Array->Count - 3))
-		{
-			return true;
-		}
-		while (!MapClass::Instance->IsWithinUsableArea(targetLocation, false));
 
 		HouseClass* pHouse = nullptr;
 
@@ -391,12 +382,12 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			break;
 		}
 
-		//HouseClass* pHouse = HouseClass::Array->GetItem(houseIdx);
 		if (pHouse == nullptr)
 			return true;
 
 		SuperClass* pSuper = GameCreate<SuperClass>(pSWType, pHouse);
 		auto const pSWExt = SWTypeExt::ExtMap.Find(pSWType);
+
 		if (pSWExt != nullptr)
 		{
 			pSuper->SetReadiness(true);
@@ -405,7 +396,6 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 	}
 	return true;
 }
-
 
 bool TActionExt::MessageForSpecifiedHouse(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {

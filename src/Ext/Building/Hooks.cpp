@@ -89,28 +89,6 @@ DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPPulseBulletWeapon, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType, 0x6)
-{
-	GET(UnitClass*, pUnit, EDI);
-	GET(BuildingClass*, pFactory, ESI);
-
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType());
-	if (!pTypeExt->RandomProduct.empty())
-	{
-		int iPos = ScenarioClass::Instance->Random(0, int(pTypeExt->RandomProduct.size()) - 1);
-		TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pTypeExt->RandomProduct[iPos]);
-		UnitClass* pNewUnit = static_cast<UnitClass*>(pType->CreateObject(pUnit->GetOwningHouse()));
-		pNewUnit->Limbo();
-		pNewUnit->Unlimbo(pUnit->Location, Direction::SouthEast);
-		pUnit->Limbo();
-		pUnit->UnInit();
-		R->EDI(pNewUnit);
-		pUnit = pNewUnit;
-	}
-
-	return 0;
-}
-
 DEFINE_HOOK(0x43FE73, BuildingClass_AI_FlyingStrings, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
@@ -280,8 +258,6 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType, 0x6)
 {
 	GET(UnitClass*, pUnit, EDI);
 	GET(BuildingClass*, pFactory, ESI);
-
-	HouseExt::ExtData* pData = HouseExt::ExtMap.Find(pFactory->Owner);
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType());
 	if (!pTypeExt->RandomProduct.empty())
