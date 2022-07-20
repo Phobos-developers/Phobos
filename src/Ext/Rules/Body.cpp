@@ -103,6 +103,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->SelectBox_CanSee.Read(exINI, sectionAudioVisual, "SelectBox.CanSee");
 	this->SelectBox_CanObserverSee.Read(exINI, sectionAudioVisual, "SelectBox.CanObserverSee");
 
+	this->IronCurtain_KeptOnDeploy.Read(exINI, "CombatDamage", "IronCurtain.KeptOnDeploy");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
 	for (int i = 0; i < itemsCount; ++i)
@@ -212,6 +214,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_SelfHeal_Infantry_Offset)
 		.Process(this->Pips_SelfHeal_Units_Offset)
 		.Process(this->Pips_SelfHeal_Buildings_Offset)
+		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->UseSelectBox)
 		.Process(this->SelectBox_Shape_Infantry)
 		.Process(this->SelectBox_Palette_Infantry)

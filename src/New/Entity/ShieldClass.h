@@ -103,10 +103,10 @@ private:
 			, Respawn_Warhead { }
 		{ }
 
-		TimerStruct SelfHealing;
-		TimerStruct SelfHealing_Warhead;
-		TimerStruct Respawn;
-		TimerStruct Respawn_Warhead;
+		CDTimerClass SelfHealing;
+		CDTimerClass SelfHealing_Warhead;
+		CDTimerClass Respawn;
+		CDTimerClass Respawn_Warhead;
 
 	} Timers;
 };

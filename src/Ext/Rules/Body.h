@@ -52,6 +52,7 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Infantry_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
+		Valueable<bool> IronCurtain_KeptOnDeploy;
 
 		Valueable<bool> UseSelectBox;
 		PhobosFixedString<32U> SelectBox_Shape_Infantry;
@@ -90,6 +91,7 @@ public:
 			, Pips_SelfHeal_Infantry_Offset {{ 25, -35 }}
 			, Pips_SelfHeal_Units_Offset {{ 33, -32 }}
 			, Pips_SelfHeal_Buildings_Offset {{ 15, 10 }}
+			, IronCurtain_KeptOnDeploy { true }
 			, UseSelectBox { false }
 			, SelectBox_Shape_Infantry { "select.shp" }
 			, SelectBox_Palette_Infantry { "palette.pal" }

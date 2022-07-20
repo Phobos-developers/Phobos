@@ -20,7 +20,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		return;
 
 	INI_EX exINI(pINI);
-	
+
 	this->DiskLaser_Radius.Read(exINI, pSection, "DiskLaser.Radius");
 	this->DiskLaser_Circumference = (int)(this->DiskLaser_Radius * Math::Pi * 2);
 

@@ -83,6 +83,8 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 
 	if (pTechno->IsOnMap && pTechno->IsAlive && !pTechno->InLimbo)
 		return true;
+
+	return false;
 }
 
 // =============================

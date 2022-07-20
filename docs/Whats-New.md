@@ -4,6 +4,10 @@ This page lists the history of changes across stable Phobos releases and also al
 
 ## Migrating
 
+```{hint}
+You can use the migration utility (can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) to apply most of the changes automatically using a corresponding sed script file.
+```
+
 ### From vanilla
 
 - SHP debris hardcoded shadows now respect `Shadow=no` tag value, and due to it being the default value they wouldn't have hardcoded shadows anymore by default. Override this by specifying `Shadow=yes` for SHP debris.
@@ -15,6 +19,7 @@ This page lists the history of changes across stable Phobos releases and also al
 
 - `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 - `Rad.NoOwner` on weapons is deprecated. This has been replaced by `RadHasOwner` key on radiation types itself. It also defaults to no, so radiation once again has no owner house by default.
+- Automatic self-destruction logic logic has been reimplemented, `Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been remade/renamed and require adjustments to function.
 
 #### From 0.2.2.2
 
@@ -287,7 +292,9 @@ New:
 - Attached animation position customization (by Starkku)
 - Trigger Action 505 for Firing SW at specified location (by FS-21)
 - Trigger Action 506 for Firing SW at waypoint (by FS-21)
-- New ways for self-killing objects under certaing cases (by FS-21)
+- New behaviors for objects' self-destruction under certain conditions (by Trsdy & FS-21)
+- Slaves' ownership decision when corresponding slave miner is destroyed (by Trsdy)
+- Customize buildings' selling sound and EVA voice (by Trsdy)
 - `ForceWeapon.Naval.Decloacked` for overriding uncloaked underwater attack behavior (by FS-21)
 - Shrapnel enhancement (by secsome)
 - Shared Ammo for transports to passengers (by FS-21)
@@ -305,15 +312,19 @@ New:
 - Passable & buildable-upon TerrainTypes (by Starkku)
 - Toggle for passengers to automatically change owner if transport owner changes (by Starkku)
 - Superweapon launch on warhead detonation (by Trsdy)
+- Preserve IronCurtain status upon DeploysInto/UndeploysInto (by Trsdy)
 - Correct owner house for Warhead Anim/SplashList & Play Animation trigger animations (by Starkku)
 - Customizable FLH When Infantry Is Crouched Or Deployed (by FS-21)
 - Enhanced projectile interception logic, including projectile strength & armor types (by Starkku)
 - Initial Strength for Cloned Infantry (by FS-21)
 - OpenTopped transport rangefinding & deactivated state customizations (by Starkku)
+- Forbidding parallel AI queues by type (by NetsuNegi)
 - Animation damage / weapon improvements (by Starkku)
 - Warhead self-damaging toggle (by Starkku)
 - Trailer animations inheriting owner (by Starkku)
 - Warhead detonation on all objects on map (by Starkku)
+- Implemented support for PCX images for campaign load screen (by FlyStar)
+- Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 - Enable and custom selectbox (by NetsuNegi)
 
 Vanilla fixes:
@@ -333,7 +344,7 @@ Vanilla fixes:
 - Fixed mind control indicator animations not reappearing on mind controlled objects that are cloaked and then uncloaked (by Starkku)
 - Fixed Nuke carrier and payload weapons not respecting `Bright` setting on weapon (by Starkku)
 - Fixed buildings not reverting to undamaged graphics when HP was restored above `[AudioVisual]`->`ConditionYellow` via `SelfHealing` (by Starkku)
-- Fixed jumpjet units being unable to turn to the target when firing from a different direction (by trsdy)
+- Fixed jumpjet units being unable to turn to the target when firing from a different direction (by Trsdy)
 - Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations (by Starkku)
 - Fixed AI script action Deploy getting stuck with vehicles with `DeploysInto` if there was no space to deploy at initial location (by Starkku)
 - Fixed `Foundation=0x0` causing crashes if used on TerrainTypes.
@@ -341,6 +352,7 @@ Vanilla fixes:
 - Buildings now correctly use laser parameters set for Secondary weapons instead of reading them from Primary weapon (by Starkku)
 - Fixed an issue that caused vehicles killed by damage dealt by a known house but without a known source TechnoType (f.ex animation warhead damage) to not be recorded as killed correctly and thus not spring map trigger events etc. (by Starkku)
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding (only applies to Z-aware drawing mode for now) (by Apollo)
+- Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something (by Kerbiter)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
@@ -354,6 +366,9 @@ Phobos fixes:
 - Fixed interceptors intercepting projectiles fired by friendly objects if the said object died after firing the projectile (by Starkku)
 - Fixed interceptor weapons with `Inviso=true` projectiles detonating the projectile at wrong coordinates (by Starkku)
 - Fixed some possible configuration reading issues when using Phobos with patches that rename `uimd.ini` (by Belonit)
+
+Non-DLL:
+- Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)
 </details>
 
 
