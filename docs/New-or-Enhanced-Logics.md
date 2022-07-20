@@ -661,9 +661,10 @@ Promote.IncludeSpawns=false  ; boolean
 
 ### Random Product
 
-- Producing this techno will become a random one in the `RandomProduct`, can include self
-- Must in same type, like `RandomProduct=E1,GGI` for `[HTNK]` is illegal
-- Building is not supported
+- Producing this techno will become a random one in the `RandomProduct`, can include self.
+- Must in same type, like `RandomProduct=E1,GGI` for `[HTNK]` is illegal.
+- Building is not supported.
+- TaskForces can't use this logic.
 
 In `rulesmd.ini`
 ```ini
