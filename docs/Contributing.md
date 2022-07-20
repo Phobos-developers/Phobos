@@ -178,6 +178,7 @@ Reverse-engineering is a complex task, but don't be discouraged, if you want to 
 
 When you found out how the engine works and where you need to extend the logic you'd need to develop the code to achieve what you want. This is done by declaring a *hook* - some code which would be executed after the program execution reaches the certain address in binary. All the development is done in C++ using [YRpp](https://github.com/Phobos-developers/YRpp) (which provides a way to interact with YR code and inject code using Syringe) and usually [Visual Studio 2017/2019](https://visualstudio.microsoft.com) or newer.
 
+(contributing-changes-to-the-project)=
 #### Contributing changes to the project
 
 To contribute a feature or some sort of a change you you would need a Git client (I recommend [GitKraken](https://www.gitkraken.com/) personally). Fork, clone the repo, preferably make a new branch, then edit/add the code or whatever you want to contribute. Commit, push, start a pull request, wait for it to get reviewed, or merged.
@@ -222,7 +223,7 @@ You don't need to install Python, Sphinx and modules to see changes - every pull
 ```
 
 There are two ways to edit the docs.
-- **Edit from your PC**. Pretty much the same like what's described in [contributing changes section](#contributing-changes-to-the-project); the docs are located in the `docs` folder.
+- **Edit from your PC**. Pretty much the same like what's described in [contributing changes section](contributing-changes-to-the-project); the docs are located in the `docs` folder.
 - **Edit via online editor**. Navigate to the doc piece that you want to edit, press the button on the top right - and it will take you to the file at GitHub which you would need to edit (look for the pencil icon to the top right). Press it - the fork will be created and you'll edit the docs in your version of the repo (fork). You can commit those changes (preferably to a new branch) and make them into a pull request to main repo.
 
 ```{note}

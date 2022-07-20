@@ -38,7 +38,7 @@ indent_size = 2
 [*.vcxproj]
 indent_style = space
 indent_size = 2
-insert_final_newline = unset
+insert_final_newline = false
 
 # Ignore scripts/vswhere.exe
 [vswhere.exe]

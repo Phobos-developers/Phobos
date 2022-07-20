@@ -4,6 +4,10 @@ This page lists the history of changes across stable Phobos releases and also al
 
 ## Migrating
 
+```{hint}
+You can use the migration utility (can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) to apply most of the changes automatically using a corresponding sed script file.
+```
+
 ### From vanilla
 
 - SHP debris hardcoded shadows now respect `Shadow=no` tag value, and due to it being the default value they wouldn't have hardcoded shadows anymore by default. Override this by specifying `Shadow=yes` for SHP debris.
@@ -314,6 +318,7 @@ New:
 - Enhanced projectile interception logic, including projectile strength & armor types (by Starkku)
 - Initial Strength for Cloned Infantry (by FS-21)
 - OpenTopped transport rangefinding & deactivated state customizations (by Starkku)
+- Forbidding parallel AI queues by type (by NetsuNegi)
 - Animation damage / weapon improvements (by Starkku)
 - Warhead self-damaging toggle (by Starkku)
 - Trailer animations inheriting owner (by Starkku)
@@ -361,6 +366,9 @@ Phobos fixes:
 - Fixed interceptors intercepting projectiles fired by friendly objects if the said object died after firing the projectile (by Starkku)
 - Fixed interceptor weapons with `Inviso=true` projectiles detonating the projectile at wrong coordinates (by Starkku)
 - Fixed some possible configuration reading issues when using Phobos with patches that rename `uimd.ini` (by Belonit)
+
+Non-DLL:
+- Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)
 </details>
 
 
