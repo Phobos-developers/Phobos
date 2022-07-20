@@ -57,7 +57,7 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 	{
 		Stm.Process(flag, false);
 
-		switch (pType->Flag)
+		switch (flag)
 		{
 		case TrajectoryFlag::Straight:
 			pType = GameCreate<StraightTrajectoryType>();
