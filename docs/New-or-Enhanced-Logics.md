@@ -304,17 +304,6 @@ In `rulesmd.ini`:
 NotHuman.RandomDeathSequence=yes  ; boolean
 ```
 
-### Random Product
-
-- Producing this infantry will become a random one in the `RandomProduct`, can include self
-- Taskforces can't use this, taskforces identifies units only by type
-
-In `rulesmd.ini`:
-```ini
-[SOMEINFANTRY]  ; InfantryType
-RandomProduct=  ; list of InfantryTypes
-```
-
 ### Shared Ammo
 
 - Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo to passengers that have `Ammo.Shared=yes`.
@@ -669,6 +658,19 @@ In `rulesmd.ini`:
 [SOMETECHNO]                 ; TechnoType
 Promote.IncludeSpawns=false  ; boolean
 ```
+
+### Random Product
+
+- Producing this techno will become a random one in the `RandomProduct`, can include self
+- Must in same type, like `RandomProduct=E1,GGI` for `[HTNK]` is illegal
+- Building is not supported
+
+In `rulesmd.ini`
+```ini
+[SOMETECHNO]
+RandomProduct=  ; TechnoType in same type
+```
+
 
 ### Spawn range limit
 
@@ -1104,19 +1106,6 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]            ; Warhead
 NotHuman.DeathSequence=  ; integer (1 to 5)
-```
-
-## Vehicles
-
-### Random Product
-
-- Producing this vehicle will become a random one in the `RandomProduct`, can include self
-- Taskforces can't use this, taskforces identifies units only by type
-
-In `rulesmd.ini`:
-```ini
-[SOMEVEHICLE]   ; VehicleType
-RandomProduct=  ; list of VehicleTypes
 ```
 
 ## Weapons
