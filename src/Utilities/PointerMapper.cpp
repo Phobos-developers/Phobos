@@ -33,6 +33,6 @@ DEFINE_HOOK(0x6CF316, SwizzleManagerClass_Here_I_Am, 0x4)
 	GET_STACK(void*, pNew, 0xC);
 
 	PointerMapper::AddMapping(pOld, pNew);
-	
+
 	return 0;
 }

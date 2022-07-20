@@ -497,16 +497,17 @@ bool TActionExt::RandomTriggerRemove(TActionClass* pThis, HouseClass* pHouse, Ob
 	TriggerTypeClass* pTriggerType = pThis->TriggerType;
 	TriggerClass* pTarget = TriggerClass::GetInstance(pTriggerType);
 	auto& mPools = PhobosGlobal::Global()->RandomTriggerPool;
-	
+
 	if (!mPools.count(iPoolID))
 		return true;
-	
+
 	auto& sPool = mPools[iPoolID];
-	
+
 	if (!sPool.count(pTarget))
 		return true;
-	
+
 	sPool.erase(pTarget);
+
 	return true;
 }
 
@@ -523,14 +524,14 @@ bool TActionExt::ScoreCampaignText(TActionClass* pThis, HouseClass* pHouse, Obje
 bool TActionExt::ScoreCampaignTheme(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	ScenarioExt::Global()->ScoreCampaignTheme = pThis->Text;
-	
+
 	return true;
 }
 
 bool TActionExt::SetNextMission(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	ScenarioExt::Global()->NextMission = pThis->Text;
-	
+
 	return true;
 }
 
