@@ -2,6 +2,7 @@
 #include <Utilities/Macro.h>
 #include <Utilities/Enum.h>
 #include <Ext/Aircraft/Body.h>
+#include <Ext/Anim/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
@@ -83,4 +84,21 @@ DEFINE_HOOK(0x418B1F, AircraftClass_Mission_Attack_FireAtTarget5Strafe_BurstFix,
 	AircraftExt::FireBurst(pThis, pThis->Target, 4);
 
 	return 0x418B40;
+}
+
+DEFINE_HOOK(0x414F47, AircraftClass_AI_TrailerInheritOwner, 0x6)
+{
+	GET(AircraftClass*, pThis, ESI);
+	GET(AnimClass*, pAnim, EAX);
+
+	if (pThis)
+	{
+		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
+		{
+			pAnim->Owner = pThis->Owner;
+			pAnimExt->Invoker = pThis;
+		}
+	}
+
+	return 0;
 }

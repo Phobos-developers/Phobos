@@ -66,7 +66,6 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 
 void BuildingTypeExt::ExtData::Initialize()
 {
-
 }
 
 // =============================
@@ -103,6 +102,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Grinding_DisplayRefund.Read(exINI, pSection, "Grinding.DisplayRefund");
 	this->Grinding_DisplayRefund_Houses.Read(exINI, pSection, "Grinding.DisplayRefund.Houses");
 	this->Grinding_DisplayRefund_Offset.Read(exINI, pSection, "Grinding.DisplayRefund.Offset");
+
 
 	// Ares SuperWeapons tag
 	pINI->ReadString(pSection, "SuperWeapons", "", Phobos::readBuffer);
@@ -155,7 +155,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			if (_strcmpi(Phobos::readBuffer, pSection) || _strcmpi(Phobos::readBuffer, pArtSection))
 				this->PlacementPreview_Shape.Read(exINI, pSection, "PlacementPreview.Shape");
 			else
-				Debug::Log("Cannot Load PlacementPreview.Shape for [%s]Art[%s] ! \n",pSection , pArtSection);
+				Debug::Log("Cannot Load PlacementPreview.Shape for [%s]Art[%s] ! \n", pSection, pArtSection);
 		}
 	}
 
@@ -193,14 +193,13 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Grinding_DisplayRefund)
 		.Process(this->Grinding_DisplayRefund_Houses)
 		.Process(this->Grinding_DisplayRefund_Offset)
-		.Process(PlacementPreview_Remap)
-		.Process(PlacementPreview_Palette)
-		.Process(PlacementPreview_Offset)
-		.Process(PlacementPreview_Show)
-		.Process(PlacementPreview_Shape)
-		.Process(PlacementPreview_ShapeFrame)
-		.Process(PlacementPreview_TranslucentLevel)
-
+		.Process(this->PlacementPreview_Remap)
+		.Process(this->PlacementPreview_Palette)
+		.Process(this->PlacementPreview_Offset)
+		.Process(this->PlacementPreview_Show)
+		.Process(this->PlacementPreview_Shape)
+		.Process(this->PlacementPreview_ShapeFrame)
+		.Process(this->PlacementPreview_TranslucentLevel)
 		;
 }
 

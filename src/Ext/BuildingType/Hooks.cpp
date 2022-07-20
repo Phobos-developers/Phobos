@@ -105,17 +105,18 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 					return 0x0;
 
 				auto const nFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get(bBuildupExist ? ((pImage->Frames / 2) - 1) : 0), 0, (int)pImage->Frames);
-				auto const nHeight = pCell->GetFloorHeight({ 0,0 });
+				auto const nHeight = pCell->GetFloorHeight({ 0, 0 });
 				auto const nOffset = pTypeExt->PlacementPreview_Offset.Get();
-				Point2D nPoint{ 0,0 };
+				Point2D nPoint { 0, 0 };
 				TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, nHeight + nOffset.Z), &nPoint);
 				nPoint.X += nOffset.X;
 				nPoint.Y += nOffset.Y;
 				auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->PlacementPreview_TranslucentLevel.Get(RulesExt::Global()->BuildingPlacementPreview_TranslucentLevel.Get()));
-				auto const nREct = DSurface::Temp()->GetRect();
+				auto nRect = DSurface::Temp()->GetRect();
+				nRect.Height -= 32; // account for bottom bar
 				auto const pPalette = pTypeExt->PlacementPreview_Remap.Get() ? pBuilding->GetDrawer() : pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
 
-				DSurface::Temp()->DrawSHP(pPalette, pImage, nFrame, &nPoint, &nREct, nFlag,
+				DSurface::Temp()->DrawSHP(pPalette, pImage, nFrame, &nPoint, &nRect, nFlag,
 					0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 			}
 		}
@@ -139,4 +140,4 @@ static void __fastcall CellClass_Draw_It_Shape(Surface* Surface, ConvertClass* P
 		ZGradientDescIndex, Brightness, TintColor, ZShape, ZShapeFrame, XOffset, YOffset);
 }
 
-DEFINE_POINTER_CALL(0x47EFB4, &CellClass_Draw_It_Shape);
+DEFINE_JUMP(CALL, 0x47EFB4, GET_OFFSET(CellClass_Draw_It_Shape));

@@ -23,13 +23,18 @@ public:
 		Valueable<bool> LowSelectionPriority;
 		PhobosFixedString<0x20> GroupAs;
 		Valueable<int> RadarJamRadius;
-		Valueable<int> InhibitorRange;
+		Nullable<int> InhibitorRange;
 		Valueable<Leptons> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
-		Valueable<Leptons> Interceptor_GuardRange;
-		Valueable<Leptons> Interceptor_MinimumGuardRange;
-		Valueable<Leptons> Interceptor_EliteGuardRange;
-		Valueable<Leptons> Interceptor_EliteMinimumGuardRange;
+		Valueable<AffectedHouse> Interceptor_CanTargetHouses;
+		Promotable<Leptons> Interceptor_GuardRange;
+		Promotable<Leptons> Interceptor_MinimumGuardRange;
+		Valueable<int> Interceptor_Weapon;
+		Nullable<bool> Interceptor_DeleteOnIntercept;
+		Nullable<WeaponTypeClass*> Interceptor_WeaponOverride;
+		Valueable<bool> Interceptor_WeaponReplaceProjectile;
+		Valueable<bool> Interceptor_WeaponCumulativeDamage;
+		Valueable<bool> Interceptor_KeepIntact;
 		Valueable<CoordStruct> TurretOffset;
 		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Spawn_LimitedRange;
@@ -47,9 +52,13 @@ public:
 		NullableIdx<VocClass> PassengerDeletion_ReportSound;
 		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
 		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
-		Valueable<bool> Death_NoAmmo;
-		Valueable<int> Death_Countdown;
-		Valueable<bool> Death_Peaceful;
+
+		Valueable<bool> AutoDeath_OnAmmoDepletion;
+		Valueable<int> AutoDeath_AfterDelay;
+		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
+		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
+		NullableIdx<VocClass> SellSound;
+		NullableIdx<VoxClass> EVA_Sold;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -82,6 +91,8 @@ public:
 		Nullable<int> OpenTopped_RangeBonus;
 		Nullable<float> OpenTopped_DamageMultiplier;
 		Nullable<int> OpenTopped_WarpDistance;
+		Valueable<bool> OpenTopped_IgnoreRangefinding;
+		Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
 
 		Valueable<bool> AutoFire;
 		Valueable<bool> AutoFire_TargetSelf;
@@ -92,6 +103,7 @@ public:
 		Valueable<int> NoAmmoAmount;
 
 		Nullable<bool> JumpjetAllowLayerDeviation;
+		Nullable<bool> JumpjetTurnToTarget;
 
 		Valueable<bool> DeployingAnim_AllowAnyDirection;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
@@ -103,11 +115,14 @@ public:
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
-		Nullable<bool> JumpjetTurnToTarget;
 
 		Nullable<SelfHealGainType> SelfHealGainType;
 		Valueable<bool> Passengers_SyncOwner;
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
+
+		Nullable<bool> IronCurtain_KeptOnDeploy;
+
+		Valueable<Vector2D<double>> InitialStrength_Cloning;
 
 		struct LaserTrailDataEntry
 		{
@@ -125,6 +140,15 @@ public:
 
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
 
+		Nullable<CoordStruct> PronePrimaryFireFLH;
+		Nullable<CoordStruct> ProneSecondaryFireFLH;
+		Nullable<CoordStruct> DeployedPrimaryFireFLH;
+		Nullable<CoordStruct> DeployedSecondaryFireFLH;
+		std::vector<DynamicVectorClass<CoordStruct>> CrouchedWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
+
 		ValueableIdxVector<TechnoTypeClass> RandomProduct;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
@@ -133,13 +157,18 @@ public:
 			, LowSelectionPriority { false }
 			, GroupAs { NONE_STR }
 			, RadarJamRadius { 0 }
-			, InhibitorRange { 0 }
+			, InhibitorRange { }
 			, MindControlRangeLimit {}
 			, Interceptor { false }
+			, Interceptor_CanTargetHouses { AffectedHouse::Enemies }
 			, Interceptor_GuardRange {}
 			, Interceptor_MinimumGuardRange {}
-			, Interceptor_EliteGuardRange {}
-			, Interceptor_EliteMinimumGuardRange {}
+			, Interceptor_Weapon { 0 }
+			, Interceptor_DeleteOnIntercept {}
+			, Interceptor_WeaponOverride {}
+			, Interceptor_WeaponReplaceProjectile { false }
+			, Interceptor_WeaponCumulativeDamage { false }
+			, Interceptor_KeepIntact { false }
 			, TurretOffset { { 0, 0, 0 } }
 			, Powered_KillSpawns { false }
 			, Spawn_LimitedRange { false }
@@ -180,6 +209,8 @@ public:
 			, OpenTopped_RangeBonus {}
 			, OpenTopped_DamageMultiplier {}
 			, OpenTopped_WarpDistance {}
+			, OpenTopped_IgnoreRangefinding { false }
+			, OpenTopped_AllowFiringIfDeactivated { true }
 			, AutoFire { false }
 			, AutoFire_TargetSelf { false }
 			, NoSecondaryWeaponFallback { false }
@@ -191,9 +222,12 @@ public:
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
-			, Death_NoAmmo { false }
-			, Death_Countdown { 0 }
-			, Death_Peaceful { false }
+			, AutoDeath_Behavior { }
+			, AutoDeath_OnAmmoDepletion { false }
+			, AutoDeath_AfterDelay { 0 }
+			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
+			, SellSound { }
+			, EVA_Sold { }
 			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
@@ -234,6 +268,7 @@ public:
 	static ExtContainer ExtMap;
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
+	static void GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);

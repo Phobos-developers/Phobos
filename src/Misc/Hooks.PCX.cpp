@@ -2,6 +2,7 @@
 #include <PCX.h>
 #include <FileFormats/SHP.h>
 #include <Ext/Rules/Body.h>
+#include <LoadProgressManager.h>
 
 DEFINE_HOOK(0x6B9D9C, RGB_PCX_Loader, 0x7)
 {
@@ -37,6 +38,38 @@ DEFINE_HOOK(0x5535D0, PCX_LoadScreen, 0x6)
 		}
 		return 0x553603;
 	}
+	return 0;
+}
+
+DEFINE_HOOK(0x552F81, PCX_LoadingScreen_Campaign, 0x5)
+{
+	GET(LoadProgressManager*, pThis, EBP);
+
+	DSurface* pSurface = static_cast<DSurface*>(pThis->ProgressSurface);
+	char filename[0x40];
+	strcpy_s(filename, ScenarioClass::Instance->LS800BkgdName);
+	_strlwr_s(filename);
+
+	if (strstr(filename, ".pcx"))
+	{
+		PCX::Instance->LoadFile(filename);
+
+		if (auto const pPCX = PCX::Instance->GetSurface(filename))
+		{
+			RectangleStruct pSurfBounds = { 0, 0, pSurface->Width, pSurface->Height };
+			RectangleStruct pcxBounds = { 0, 0, pPCX->Width, pPCX->Height };
+			RectangleStruct destClip = { 0, 0, pPCX->Width, pPCX->Height };
+
+			destClip.X = (pSurface->Width - pPCX->Width) / 2;
+			destClip.Y = (pSurface->Height - pPCX->Height) / 2;
+
+			pSurface->CopyFrom(&pSurfBounds, &destClip, pPCX, &pcxBounds, &pcxBounds, true, true);
+		}
+
+		R->EBX(R->EDI());
+		return 0x552FC6;
+	}
+
 	return 0;
 }
 
