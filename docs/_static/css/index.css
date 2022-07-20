@@ -17,6 +17,26 @@
   max-width: 300px;
 }
 
+.wy-side-nav-search input[type="text"] {
+  border-radius: 6px;
+  box-shadow: unset;
+}
+
+.wy-menu-vertical li.current > a,
+.wy-menu-vertical li.on a {
+  border-right: 1px solid #c9c9c9;
+}
+
+.wy-menu-vertical li.toctree-l2.current > a :hover,
+.wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a:hover {
+  background: #d6d6d6;
+}
+
+.wy-menu-vertical li.toctree-l1.current > a {
+  border-bottom: unset;
+  border-top: unset;
+}
+
 .rst-versions {
   left: auto;
   width: 300px;
