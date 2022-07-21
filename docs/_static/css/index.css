@@ -106,3 +106,108 @@ details[open] summary {
 details > *:last-child {
   margin-bottom: 0 !important;
 }
+
+/* =================================== */
+/* Switcher */
+
+.switcher {
+  position: absolute;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border: none;
+  z-index: 200;
+  outline: unset !important;
+
+  /* margin-left: -50px; */
+  padding: 2px;
+  top: 12px;
+  left: 12px;
+}
+
+@media screen and (max-width: 768px) {
+  .switcher {
+    top: 14px;
+  }
+}
+
+/* Switcher Legend */
+
+.switcher__legend {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Switcher Radio */
+
+.switcher__radio {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+  width: 22px;
+  height: 22px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  transition: filter 0.1s ease-in;
+
+  margin-right: unset !important;
+}
+
+.switcher__radio:focus {
+  outline: unset !important;
+}
+
+.switcher__radio--light {
+  background-image: url("../icons/light.svg");
+}
+
+.switcher__radio--auto {
+  background-image: url("../icons/auto.svg");
+  background-size: 32px;
+}
+
+.switcher__radio--dark {
+  background-image: url("../icons/dark.svg");
+}
+
+/* Switcher Status */
+
+.switcher__status {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  border-radius: 18px;
+  background-color: #fcfcfc;
+  background-repeat: no-repeat;
+  background-image: url("../icons/status.svg");
+  background-size: 22px;
+  background-position: center;
+  transition: background-position 0.1s ease-in;
+}
+
+.switcher__radio:focus-visible ~ .switcher__status {
+  box-shadow: 0 0 0 2px black;
+}
+
+.switcher__radio--light:checked ~ .switcher__status {
+  background-position: left 2px center;
+}
+
+.switcher__radio--auto:checked ~ .switcher__status {
+  background-position: center center;
+}
+
+.switcher__radio--dark:checked ~ .switcher__status {
+  background-position: right 2px center;
+}
+
+.switcher__radio--light:checked,
+.switcher__radio--auto:checked,
+.switcher__radio--dark:checked {
+  filter: invert(1);
+}

@@ -1,3 +1,21 @@
+.switcher__status {
+  background-color: #2b2c36;
+}
+
+.switcher__radio--light,
+.switcher__radio--auto,
+.switcher__radio--dark
+{
+  filter: invert(1);
+}
+
+.switcher__radio--light:checked,
+.switcher__radio--auto:checked,
+.switcher__radio--dark:checked
+{
+  filter: invert(0);
+}
+
 :root {
   color-scheme: dark;
 }
