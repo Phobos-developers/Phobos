@@ -712,7 +712,7 @@ SellSound=      ; sound entry
 - Techno can convert the ore under its feet into cash in real time, like GDI's EPIC unit MARV in Command & Conquer 3 Kane's Wrath.
   - This logic cannot work on buildings.
 
-In `rulesmd.ini`::
+In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]    ; InfantryType, UnitType or AircraftType
 MobileRefinery=no                     ; boolean
