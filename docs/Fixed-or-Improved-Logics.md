@@ -324,7 +324,7 @@ NoWobbles=false  ; boolean
 ### Forbid parallel AI queues
 
 - You can now set if specific types of factories do not have AI production cloning issue instead of Ares' indiscriminate behavior of `AllowParallelAIQueues=no`.
- - If `AllowParallelAIQueues=no` (*Ares feature*) is set, the tags have no effect.
+  - If `AllowParallelAIQueues=no` (*Ares feature*) is set, the tags have no effect.
 
 In `rulesmd.ini`
 ```ini
