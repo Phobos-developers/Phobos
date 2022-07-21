@@ -705,6 +705,26 @@ SellSound=      ; sound entry
 ```
 
 
+### Mobile Refinery Logic
+
+![image](_static/images/mobile-refinery.png)
+
+- Techno can convert the ore under its feet into cash in real time, like GDI's EPIC unit MARV in Command & Conquer 3 Kane's Wrath.
+  - This logic cannot work on buildings.
+
+In `rulesmd.ini`::
+```ini
+[SOMETECHNO]    ; InfantryType, UnitType or AircraftType
+MobileRefinery=no                     ; boolean
+MobileRefinery.TransRate=1.0     ; float
+MobileRefinery.MaxAmount=0    ; unsigned int
+MobileRefinery.FrontOffset=       ; list of int, multiple values mean that they are effective in multiple cells at the same time
+MobileRefinery.LeftOffset=         ; list of int, multiple values mean that they are effective in multiple cells at the same time
+MobileRefinery.Display=yes       ; boolean, should it display translated cash ?
+MobileRefinery.DisplayColor=57,197,187 ; RGB color
+```
+
+
 ## Terrain
 
 ### Destroy animation & sound

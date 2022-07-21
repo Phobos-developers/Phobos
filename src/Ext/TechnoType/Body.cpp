@@ -266,6 +266,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
+
+	this->MobileRefinery.Read(exINI, pSection, "MobileRefinery");
+	this->MobileRefinery_TransRate.Read(exINI, pSection, "MobileRefinery.TransRate");
+	this->MobileRefinery_MaxAmount.Read(exINI, pSection, "MobileRefinery.MaxAmount");
+	this->MobileRefinery_FrontOffset.Read(exINI, pSection, "MobileRefinery.FrontOffset");
+	this->MobileRefinery_LeftOffset.Read(exINI, pSection, "MobileRefinery.LeftOffset");
+	this->MobileRefinery_Display.Read(exINI, pSection, "MobileRefinery.Display");
+	this->MobileRefinery_DisplayColor.Read(exINI, pSection, "MobileRefinery.DisplayColor");
 }
 
 template <typename T>
@@ -367,6 +375,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteDeployedWeaponBurstFLHs)
 		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->InitialStrength_Cloning)
+		.Process(this->MobileRefinery)
+		.Process(this->MobileRefinery_TransRate)
+		.Process(this->MobileRefinery_MaxAmount)
+		.Process(this->MobileRefinery_FrontOffset)
+		.Process(this->MobileRefinery_LeftOffset)
+		.Process(this->MobileRefinery_Display)
+		.Process(this->MobileRefinery_DisplayColor)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

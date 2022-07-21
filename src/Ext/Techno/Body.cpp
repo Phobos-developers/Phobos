@@ -688,6 +688,58 @@ void TechnoExt::SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo)
 	}
 }
 
+void TechnoExt::ApplyMobileRefinery(TechnoClass* pThis)
+{
+	if (abstract_cast<FootClass*>(pThis) == nullptr)
+		return;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (!pTypeExt || !pTypeExt->MobileRefinery)
+		return;
+
+	int cellCount = Math::max(pTypeExt->MobileRefinery_FrontOffset.size(), pTypeExt->MobileRefinery_LeftOffset.size());
+
+	CoordStruct flh = { 0,0,0 };
+
+	for (int idx = 0; idx <= cellCount; idx++)
+	{
+		flh.X = pTypeExt->MobileRefinery_FrontOffset.size() > idx ? pTypeExt->MobileRefinery_FrontOffset[idx] : 0;
+		flh.Y = pTypeExt->MobileRefinery_LeftOffset.size() > idx ? pTypeExt->MobileRefinery_LeftOffset[idx] : 0;
+		CellClass* pCell = MapClass::Instance->TryGetCellAt(TechnoExt::GetFLHAbsoluteCoords(pThis, flh, false));
+
+		if (!pCell)
+			return;
+
+		auto pos = pCell->GetCoords();
+		pos.Z = pThis->Location.Z;
+		int tValue = pCell->GetContainedTiberiumValue();
+		int value = pTypeExt->MobileRefinery_MaxAmount ? Math::min(pTypeExt->MobileRefinery_MaxAmount, tValue) : tValue;
+
+		if (value)
+		{
+			pCell->ReduceTiberium(value);
+			value *= pTypeExt->MobileRefinery_TransRate;
+			pThis->Owner->TransactMoney(value);
+			Point2D location = { 0,0 };
+			TacticalClass::Instance->CoordsToScreen(&location, &pos);
+			location -= TacticalClass::Instance->TacticalPos;
+			RectangleStruct rect = DSurface::Temp->GetRect();
+			RectangleStruct bound = { location.X, location.Y, 10, 12 };
+
+			if (pTypeExt->MobileRefinery_Display &&
+				bound.X > 0 && bound.X + bound.Width < rect.Width &&
+				bound.Y > 0 && bound.Y + bound.Height < rect.Height - 32)
+			{
+				auto color = pTypeExt->MobileRefinery_DisplayColor.Get({ 57,197,187 });
+				wchar_t moneyStr[0x20];
+				swprintf_s(moneyStr, L"%ls%ls%d", L"+", Phobos::UI::CostLabel, value);
+				FlyingStrings::Add(moneyStr, pos, color);
+			}
+		}
+	}
+}
+
 void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
 {
 	bool drawPip = false;

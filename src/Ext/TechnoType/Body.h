@@ -149,6 +149,14 @@ public:
 		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
+		Valueable<bool> MobileRefinery;
+		Valueable<float> MobileRefinery_TransRate;
+		Valueable<int> MobileRefinery_MaxAmount;
+		ValueableVector<int> MobileRefinery_FrontOffset;
+		ValueableVector<int> MobileRefinery_LeftOffset;
+		Valueable<bool> MobileRefinery_Display;
+		Nullable<ColorStruct> MobileRefinery_DisplayColor;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -239,6 +247,13 @@ public:
 			, DeployedSecondaryFireFLH { }
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, IronCurtain_KeptOnDeploy{ }
+			, MobileRefinery { false }
+			, MobileRefinery_TransRate { 1.0 }
+			, MobileRefinery_MaxAmount { 0 }
+			, MobileRefinery_FrontOffset { }
+			, MobileRefinery_LeftOffset { }
+			, MobileRefinery_Display { true }
+			, MobileRefinery_DisplayColor { }
 		{ }
 
 		virtual ~ExtData() = default;
