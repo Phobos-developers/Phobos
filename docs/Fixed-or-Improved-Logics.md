@@ -327,6 +327,22 @@ NoWobbles=false  ; boolean
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
 ```
 
+### Forbid parallel AI queues
+
+- You can now set if specific types of factories do not have AI production cloning issue instead of Ares' indiscriminate behavior of `AllowParallelAIQueues=no`.
+  - If `AllowParallelAIQueues=no` (*Ares feature*) is set, the tags have no effect.
+
+In `rulesmd.ini`
+```ini
+[GlobalControls]
+AllowParallelAIQueues=yes           ; must be set yes/true unless you don't use Ares
+ForbidParallelAIQueues.Infantry=no  ; boolean
+ForbidParallelAIQueues.Vehicle=no   ; boolean
+ForbidParallelAIQueues.Navy=no      ; boolean
+ForbidParallelAIQueues.Aircraft=no  ; boolean
+ForbidParallelAIQueues.Building=no  ; boolean
+```
+
 ## Terrains
 
 ### Customizable ore spawners

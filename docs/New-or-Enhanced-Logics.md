@@ -972,19 +972,3 @@ In `rulesmd.ini`:
 CanTarget=all        ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
-
-### Extend parallel AI queues
-
-- You can now set if specific types of factories do not have AI production cloning issue instead of Ares' indiscriminate behavior of `AllowParallelAIQueues=no`.
- - If `AllowParallelAIQueues=no` (*Ares feature*) is set, the tags have no effect.
-
-In `rulesmd.ini`
-```ini
-[GlobalControls]
-AllowParallelAIQueues=yes           ; must be set yes/true unless you don't use Ares
-ForbidParallelAIQueues.Infantry=no  ; boolean
-ForbidParallelAIQueues.Vehicle=no   ; boolean
-ForbidParallelAIQueues.Navy=no      ; boolean
-ForbidParallelAIQueues.Aircraft=no  ; boolean
-ForbidParallelAIQueues.Building=no  ; boolean
-```
