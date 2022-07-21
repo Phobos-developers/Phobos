@@ -260,10 +260,11 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType, 0x6)
 	GET(BuildingClass*, pFactory, ESI);
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType());
+
 	if (!pTypeExt->RandomProduct.empty())
 	{
-		int idx = ScenarioClass::Instance->Random(0, int(pTypeExt->RandomProduct.size()) - 1);
-		TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pTypeExt->RandomProduct[idx]);
+		int idx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(pTypeExt->RandomProduct.size()) - 1);
+		TechnoTypeClass* pType = pTypeExt->RandomProduct[idx];
 		UnitClass* pNewUnit = static_cast<UnitClass*>(pType->CreateObject(pUnit->GetOwningHouse()));
 		pUnit->UnInit();
 		R->EDI(pNewUnit);
@@ -295,10 +296,11 @@ DEFINE_HOOK(0x444131, BuildingClass_KickOutUnit_InfantryType, 0x6)
 	GET(InfantryClass*, pInf, EDI);
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pInf->GetTechnoType());
+
 	if (!pTypeExt->RandomProduct.empty())
 	{
-		int idx = ScenarioClass::Instance->Random(0, int(pTypeExt->RandomProduct.size()) - 1);
-		TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pTypeExt->RandomProduct[idx]);
+		int idx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(pTypeExt->RandomProduct.size()) - 1);
+		TechnoTypeClass* pType = pTypeExt->RandomProduct[idx];
 		InfantryClass* pNewInf = static_cast<InfantryClass*>(pType->CreateObject(pHouse));
 		pInf->UnInit();
 		R->EDI(pNewInf);
@@ -329,10 +331,11 @@ DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType, 0xA)
 	GET(AircraftClass*, pAircraft, EBP);
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pAircraft->GetTechnoType());
+
 	if (!pTypeExt->RandomProduct.empty())
 	{
-		int idx = ScenarioClass::Instance->Random(0, int(pTypeExt->RandomProduct.size()) - 1);
-		TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pTypeExt->RandomProduct[idx]);
+		int idx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(pTypeExt->RandomProduct.size()) - 1);
+		TechnoTypeClass* pType = pTypeExt->RandomProduct[idx];
 		AircraftClass* pNewAircraft = static_cast<AircraftClass*>(pType->CreateObject(pHouse));
 		pAircraft->UnInit();
 		R->EBP(pNewAircraft);
