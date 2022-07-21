@@ -71,18 +71,6 @@
   .rst-content {
     padding-top: 50px;
   }
-
-  .wy-side-nav-search .icon-home {
-    display: none;
-  }
-
-  #rtd-search-form {
-    padding-left: 80px;
-  }
-
-  .wy-side-nav-search {
-    height: 50px;
-  }
 }
 
 details {
@@ -137,12 +125,6 @@ details > *:last-child {
   padding: 2px;
   top: 12px;
   left: 12px;
-}
-
-@media screen and (max-width: 768px) {
-  .switcher {
-    top: 14px;
-  }
 }
 
 /* Switcher Legend */
