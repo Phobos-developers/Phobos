@@ -51,23 +51,37 @@
   .wy-nav-side {
     left: -300px;
   }
+
   .wy-nav-top {
     padding: unset;
     width: 100%;
     position: fixed;
+    height: 50px;
   }
+
   .wy-nav-top i {
     line-height: 50px;
     padding-left: 10px;
   }
+
   .wy-nav-content-wrap.shift {
     left: min(300px, 85%);
   }
-  .icon.icon-home {
+
+  .rst-content {
+    padding-top: 50px;
+  }
+
+  .wy-side-nav-search .icon-home {
     display: none;
   }
+
+  #rtd-search-form {
+    padding-left: 80px;
+  }
+
   .wy-side-nav-search {
-    background-color: unset;
+    height: 50px;
   }
 }
 
