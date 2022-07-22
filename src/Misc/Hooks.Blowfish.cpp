@@ -35,7 +35,7 @@ HRESULT __stdcall Blowfish_Loader(
 	if (!SUCCEEDED(result)) {
 		FreeLibrary(hDll);
 
-		char* Message = "File Blowfish.dll was not found\n";
+		const char* Message = "File Blowfish.dll was not found\n";
 		MessageBox(0, Message, "Fatal error ", MB_ICONERROR);
 		Debug::FatalErrorAndExit(Message);
 	}

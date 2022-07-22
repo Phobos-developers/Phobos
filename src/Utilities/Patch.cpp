@@ -4,7 +4,7 @@
 
 #include <Phobos.h>
 
-int GetSection(char* sectionName, void** pVirtualAddress)
+int GetSection(const char* sectionName, void** pVirtualAddress)
 {
 	char buf[MAX_PATH + 1] = { 0 };
 	GetModuleFileName(NULL, buf, sizeof(buf));
