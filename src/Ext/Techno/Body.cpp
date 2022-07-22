@@ -700,9 +700,12 @@ void TechnoExt::ApplyMobileRefinery(TechnoClass* pThis)
 
 	int cellCount = Math::max(pTypeExt->MobileRefinery_FrontOffset.size(), pTypeExt->MobileRefinery_LeftOffset.size());
 
+	if (!cellCount)
+		cellCount = 1;
+
 	CoordStruct flh = { 0,0,0 };
 
-	for (int idx = 0; idx <= cellCount; idx++)
+	for (int idx = 0; idx < cellCount; idx++)
 	{
 		flh.X = pTypeExt->MobileRefinery_FrontOffset.size() > idx ? pTypeExt->MobileRefinery_FrontOffset[idx] : 0;
 		flh.Y = pTypeExt->MobileRefinery_LeftOffset.size() > idx ? pTypeExt->MobileRefinery_LeftOffset[idx] : 0;
