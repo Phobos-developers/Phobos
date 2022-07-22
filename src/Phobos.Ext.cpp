@@ -253,13 +253,10 @@ auto MassActions = MassAction <
 	// New classes
 	ShieldTypeClass,
 	LaserTrailTypeClass,
-	RadTypeClass
+	RadTypeClass,
 	// other classes
-> ();
-
-auto ProcessAfter = MassAction <
 	PhobosGlobal
->();
+> ();
 
 DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 {
@@ -280,13 +277,11 @@ DEFINE_HOOK(0x685659, Scenario_ClearClasses, 0xa)
 void Phobos::Clear()
 {
 	MassActions.Clear();
-	ProcessAfter.Clear();
 }
 
 void Phobos::PointerGotInvalid(AbstractClass* const pInvalid, bool const removed)
 {
 	MassActions.InvalidPointer(pInvalid, removed);
-	ProcessAfter.InvalidPointer(pInvalid, removed);
 }
 
 HRESULT Phobos::SaveGameData(IStream* pStm)
@@ -309,26 +304,6 @@ void Phobos::LoadGameData(IStream* pStm)
 		Debug::Log("Error loading the game\n");
 	else
 		Debug::Log("Finished loading the game\n");
-}
-
-HRESULT Phobos::SaveGameDataAfter(IStream* pStm)
-{
-	Debug::Log("Saving Phobos data\n");
-
-	if (!ProcessAfter.Save(pStm))
-		return E_FAIL;
-	Debug::Log("Finish saving data\n");
-	return S_OK;
-}
-
-void Phobos::LoadGameDataAfter(IStream* pStm)
-{
-	Debug::Log("Loading Phobos data\n");
-
-	if (!ProcessAfter.Load(pStm))
-		Debug::Log("Error loading data\n");
-	else
-		Debug::Log("Finished loading data\n");
 }
 
 #ifdef DEBUG

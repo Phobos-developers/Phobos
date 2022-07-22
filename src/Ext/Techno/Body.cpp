@@ -12,7 +12,6 @@
 #include <BitFont.h>
 
 #include <Utilities/EnumFunctions.h>
-#include <Utilities/PointerMapper.h>
 
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>

@@ -39,8 +39,6 @@ public:
 	static void PointerGotInvalid(AbstractClass* const pInvalid, bool const removed);
 	static HRESULT SaveGameData(IStream* pStm);
 	static void LoadGameData(IStream* pStm);
-	static HRESULT SaveGameDataAfter(IStream* pStm);
-	static void LoadGameDataAfter(IStream* pStm);
 
 	class UI
 	{

@@ -7,7 +7,7 @@
 class PhobosGlobal
 {
 public:
-	std::map<int, std::set<TriggerClass*>> RandomTriggerPool;
+	std::map<int, std::vector<TriggerClass*>> RandomTriggerPool;
 
 	bool Save(PhobosStreamWriter& stm);
 	bool Load(PhobosStreamReader& stm);
@@ -23,23 +23,14 @@ public:
 
 	~PhobosGlobal() = default;
 
-	void InvalidatePointer(void* ptr, bool bRemoved) { };
-
 	static void Clear();
+	static void PointerGotInvalid(void* ptr, bool bRemoved) { }
+
 	void Reset();
 
 private:
 	template <typename T>
 	bool Serialize(T& stm);
-
-	template <typename T>
-	static bool SerializeGlobal(T& stm);
-
-	template <typename T>
-	static bool ProcessTechnoType(T& stm);
-
-	template <typename T>
-	static bool ProcessTechno(T& stm);
 
 	static PhobosGlobal GlobalObject;
 };

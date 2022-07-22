@@ -89,7 +89,6 @@ template <typename T>
 void HouseExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->BuildingCounter)
 		.Process(this->Factory_BuildingType)
 		.Process(this->Factory_InfantryType)
 		.Process(this->Factory_VehicleType)

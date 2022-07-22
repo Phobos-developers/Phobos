@@ -8,7 +8,6 @@
 #include <Ext/Techno/Body.h>
 
 #include <Utilities/GeneralUtils.h>
-#include <Utilities/PointerMapper.h>
 
 template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;

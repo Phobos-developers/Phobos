@@ -449,9 +449,10 @@ bool TActionExt::RandomTriggerPut(TActionClass* pThis, HouseClass* pHouse, Objec
 
 	TriggerClass* pTarget = TriggerClass::GetInstance(pTargetType);
 	int iPoolID = pThis->Param3;
+	std::vector<TriggerClass*>& vPool = PhobosGlobal::Global()->RandomTriggerPool[iPoolID];
 
-	if (pTarget != nullptr)
-		PhobosGlobal::Global()->RandomTriggerPool[iPoolID].emplace(pTarget);
+	if (pTarget != nullptr && std::find(vPool.begin(), vPool.end(), pTarget) == vPool.end())
+		PhobosGlobal::Global()->RandomTriggerPool[iPoolID].emplace_back(pTarget);
 
 	return true;
 }
@@ -464,27 +465,20 @@ bool TActionExt::RandomTriggerEnable(TActionClass* pThis, HouseClass* pHouse, Ob
 	if (!PhobosGlobal::Global()->RandomTriggerPool.count(iPoolID))
 		return true;
 
-	auto& sPool = PhobosGlobal::Global()->RandomTriggerPool[iPoolID];
+	auto& vPool = PhobosGlobal::Global()->RandomTriggerPool[iPoolID];
 
-	if (sPool.empty())
+	if (vPool.empty())
 		return true;
 
-	int idx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(sPool.size()) - 1);
-	auto it = sPool.begin();
-
-	while (idx > 0 && it != sPool.end())
-	{
-		it++;
-		idx--;
-	}
-
-	TriggerClass* pTarget = *it;
+	int idx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(vPool.size()) - 1);
+	TriggerClass* pTarget = vPool[idx];
 	pTarget->Enable();
 
 	if (bTakeOff)
 	{
-		sPool.erase(pTarget);
-		if (sPool.empty())
+		vPool.erase(vPool.begin() + idx);
+
+		if (vPool.empty())
 			PhobosGlobal::Global()->RandomTriggerPool.erase(iPoolID);
 	}
 
@@ -501,15 +495,15 @@ bool TActionExt::RandomTriggerRemove(TActionClass* pThis, HouseClass* pHouse, Ob
 	if (!mPools.count(iPoolID))
 		return true;
 
-	auto& sPool = mPools[iPoolID];
+	auto& vPool = mPools[iPoolID];
+	auto it = std::find(vPool.begin(), vPool.end(), pTarget);
 
-	if (!sPool.count(pTarget))
-		return true;
-
-	sPool.erase(pTarget);
+	if (it != vPool.end())
+		vPool.erase(it);
 
 	return true;
 }
+
 
 bool TActionExt::ScoreCampaignText(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
