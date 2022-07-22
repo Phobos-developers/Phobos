@@ -18,12 +18,12 @@ enum class PhobosTriggerAction : unsigned int
 	BinaryOperation = 504,
 	RunSuperWeaponAtLocation = 505,
 	RunSuperWeaponAtWaypoint = 506,
-	RandomTriggerPut = 9932,
-	RandomTriggerEnable = 9933,
-	RandomTriggerRemove = 9934,
-	ScoreCampaignText = 9935,
-	ScoreCampaignTheme = 9936,
-	SetNextMission = 9937
+	RandomTriggerPut = 12000,
+	RandomTriggerRemove = 12001,
+	RandomTriggerEnable = 12002,
+	ScoreCampaignText = 19000,
+	ScoreCampaignTheme = 19001,
+	SetNextMission = 19002
 };
 
 class TActionExt

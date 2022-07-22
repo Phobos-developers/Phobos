@@ -98,12 +98,12 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   504=Binary operation,0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1
   505=Fire Super Weapon at specified location (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
   506=Fire Super Weapon at specified waypoint (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
-  9932=Put Trigger into specificed Pool,-2,14,61,0,0,0,0,0,0,Add trigger to specified random pool enable by action 9933,0,1,9932,1
-  9933=Enable a Trigger of specified Pool,0,0,61,62,0,0,0,0,0,Randomized enable a trigger of specified Random Pool,0,1,9933,1
-  9934=Remove a Trigger from specified Pool,-2,14,61,0,0,0,0,0,0,Remove trigger from specificed random pool,0,1,9934,1
-  9935=Set Text of Score Interface ,-4,13,63,0,0,0,0,0,0,Set text of score interface Title or Message as Text of CSFLabel,0,1,9935,1
-  9936=Set Theme of Score Interface,-4,17,0,0,0,0,0,0,0,Set theme of score interface,0,1,9936,1
-  9937=Set Next Mission,-4,64,0,0,0,0,0,0,0,Set next mission. Parm is ID in mapselmd.ini,0,1,9937,1
+  12000=Put Trigger into specificed Pool,-2,14,61,0,0,0,0,0,0,Add trigger to specified random pool enable by action 12002,0,1,12000,1
+  12001=Remove a Trigger from specified Pool,-2,14,61,0,0,0,0,0,0,Remove trigger from specificed random pool,0,1,12001,1
+  12002=Enable a Trigger of specified Pool,0,0,61,62,0,0,0,0,0,Randomized enable a trigger of specified Random Pool,0,1,12002,1
+  19000=Set Text of Score Interface ,-4,13,63,0,0,0,0,0,0,Set text of score interface Title or Message as Text of CSFLabel,0,1,19000,1
+  19001=Set Theme of Score Interface,-4,17,0,0,0,0,0,0,0,Set theme of score interface,0,1,19001,1
+  19002=Set Next Mission,-4,64,0,0,0,0,0,0,0,Set next mission. Parm is ID in mapselmd.ini,0,1,19002,1
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
   [ScriptTypeLists]
