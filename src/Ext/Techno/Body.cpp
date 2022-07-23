@@ -707,8 +707,8 @@ void TechnoExt::ApplyMobileRefinery(TechnoClass* pThis)
 
 	for (int idx = 0; idx < cellCount; idx++)
 	{
-		flh.X = pTypeExt->MobileRefinery_FrontOffset.size() > idx ? pTypeExt->MobileRefinery_FrontOffset[idx] : 0;
-		flh.Y = pTypeExt->MobileRefinery_LeftOffset.size() > idx ? pTypeExt->MobileRefinery_LeftOffset[idx] : 0;
+		flh.X = pTypeExt->MobileRefinery_FrontOffset.size() > idx ? pTypeExt->MobileRefinery_FrontOffset[idx] * Unsorted::LeptonsPerCell : 0;
+		flh.Y = pTypeExt->MobileRefinery_LeftOffset.size() > idx ? pTypeExt->MobileRefinery_LeftOffset[idx] * Unsorted::LeptonsPerCell : 0;
 		CellClass* pCell = MapClass::Instance->TryGetCellAt(TechnoExt::GetFLHAbsoluteCoords(pThis, flh, false));
 
 		if (!pCell)

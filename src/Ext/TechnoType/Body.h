@@ -152,8 +152,8 @@ public:
 		Valueable<bool> MobileRefinery;
 		Valueable<float> MobileRefinery_TransRate;
 		Valueable<int> MobileRefinery_MaxAmount;
-		ValueableVector<int> MobileRefinery_FrontOffset;
-		ValueableVector<int> MobileRefinery_LeftOffset;
+		ValueableVector<double> MobileRefinery_FrontOffset;
+		ValueableVector<double> MobileRefinery_LeftOffset;
 		Valueable<bool> MobileRefinery_Display;
 		Nullable<ColorStruct> MobileRefinery_DisplayColor;
 
