@@ -61,7 +61,7 @@ public:
 			, Grinding_DisplayRefund { false }
 			, Grinding_DisplayRefund_Houses { AffectedHouse::All }
 			, Grinding_DisplayRefund_Offset { { 0,0 } }
-			, PlacementPreview_Enabled { true } // Actually defaults to [AudioVisual]->PlacementPreview.Building
+			, PlacementPreview_Enabled { true }
 			, PlacementPreview_Shape {}
 			, PlacementPreview_ShapeFrame {}
 			, PlacementPreview_Remap { true }
