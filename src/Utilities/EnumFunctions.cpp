@@ -93,17 +93,16 @@ bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTa
 
 BlitterFlags EnumFunctions::GetTranslucentLevel(int nInt)
 {
-	auto const nFlag_ = Math::clamp(nInt, 0, 3);
-
-	switch (nFlag_)
+	switch (nInt)
 	{
-	case 1:
+	default:
+	case 0:
+		return BlitterFlags::None;
+	case 25:
 		return BlitterFlags::TransLucent25;
-	case 2:
+	case 50:
 		return BlitterFlags::TransLucent50;
-	case 3:
+	case 75:
 		return BlitterFlags::TransLucent75;
 	}
-
-	return BlitterFlags::None;
 }

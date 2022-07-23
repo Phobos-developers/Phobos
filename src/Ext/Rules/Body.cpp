@@ -76,8 +76,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->RadHasInvoker.Read(exINI, "Radiation", "RadHasInvoker");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 	this->JumpjetTurnToTarget.Read(exINI, "JumpjetControls", "TurnToTarget");
-	this->PlacementGrid_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementGrid.TranslucentLevel");
-	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementPreview.DefaultTranslucentLevel");
+	this->PlacementPreview_Building_Translucent.Read(exINI, "AudioVisual", "PlacementPreview.Building.Translucent");
+	this->PlacementPreview_Grid_Translucent.Read(exINI, "AudioVisual", "PlacementPreview.Grid.Translucent");
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
 	this->Pips_Shield_Background.Read(exINI, "AudioVisual", "Pips.Shield.Background");
 	this->Pips_Shield_Building.Read(exINI, "AudioVisual", "Pips.Shield.Building");
@@ -188,8 +188,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetNoWobbles)
 		.Process(this->JumpjetAllowLayerDeviation)
 		.Process(this->JumpjetTurnToTarget)
-		.Process(this->PlacementGrid_TranslucentLevel)
-		.Process(this->BuildingPlacementPreview_TranslucentLevel)
+		.Process(this->PlacementPreview_Grid_Translucent)
+		.Process(this->PlacementPreview_Building_Translucent)
 		.Process(this->Pips_Shield)
 		.Process(this->Pips_Shield_Background)
 		.Process(this->Pips_Shield_Building)

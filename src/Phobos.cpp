@@ -55,7 +55,8 @@ bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::DevelopmentCommands = true;
 bool Phobos::Config::ArtImageSwap = false;
 bool Phobos::Config::AllowParallelAIQueues = true;
-bool Phobos::Config::EnableBuildingPlacementPreview = false;
+bool Phobos::Config::PlacementPreview_Enabled = false;
+bool Phobos::Config::PlacementPreview_UserHasEnabled  = false;
 bool Phobos::Config::ForbidParallelAIQueues_Infantry = false;
 bool Phobos::Config::ForbidParallelAIQueues_Vehicle = false;
 bool Phobos::Config::ForbidParallelAIQueues_Navy = false;
@@ -173,7 +174,6 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 {
 	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
-	Phobos::Config::EnableBuildingPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowBuildingPlacementPreview", false);
 
 	CCINIClass* pINI_UIMD = Phobos::OpenConfig((const char*)0x827DC8 /*"UIMD.INI"*/);
 
@@ -236,6 +236,13 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	if (pINI_RULESMD->ReadBool("General", "FixTransparencyBlitters", true))
 		BlittersFix::Apply();
+
+	// PlacementPreview
+	{
+		Phobos::Config::PlacementPreview_Enabled = pINI_RULESMD->ReadBool("AudioVisual", "PlacementPreview.Building", false);
+		Phobos::Config::PlacementPreview_UserHasEnabled =
+			CCINIClass::INI_RA2MD->ReadBool("Phobos", "PlacementPreview.Building", Phobos::Config::PlacementPreview_Enabled);
+	}
 
 	Phobos::CloseConfig(pINI_RULESMD);
 
