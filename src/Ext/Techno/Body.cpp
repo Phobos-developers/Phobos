@@ -727,20 +727,23 @@ void TechnoExt::ApplyMobileRefinery(TechnoClass* pThis)
 			pCell->ReduceTiberium(amount);
 			int value = amount * tibValue * pTypeExt->MobileRefinery_CashMultiplier;
 			pThis->Owner->TransactMoney(value);
-			Point2D location = { 0,0 };
-			TacticalClass::Instance->CoordsToScreen(&location, &pos);
-			location -= TacticalClass::Instance->TacticalPos;
-			RectangleStruct rect = DSurface::Temp->GetRect();
-			RectangleStruct bound = { location.X, location.Y, 10, 12 };
 
-			if (pTypeExt->MobileRefinery_Display &&
-				bound.X > 0 && bound.X + bound.Width < rect.Width &&
-				bound.Y > 0 && bound.Y + bound.Height < rect.Height - 32)
+			if (pTypeExt->MobileRefinery_Display)
 			{
-				ColorStruct color = pTypeExt->MobileRefinery_DisplayColor;
-				wchar_t moneyStr[0x20];
-				swprintf_s(moneyStr, L"%ls%ls%d", L"+", Phobos::UI::CostLabel, value);
-				FlyingStrings::Add(moneyStr, pos, color);
+				Point2D location = { 0,0 };
+				TacticalClass::Instance->CoordsToScreen(&location, &pos);
+				location -= TacticalClass::Instance->TacticalPos;
+				RectangleStruct rect = DSurface::Temp->GetRect();
+				RectangleStruct bound = { location.X, location.Y, 10, 12 };
+
+				if (bound.X > 0 && bound.X + bound.Width < rect.Width &&
+					bound.Y > 0 && bound.Y + bound.Height < rect.Height - 32)
+				{
+					ColorStruct color = pTypeExt->MobileRefinery_DisplayColor;
+					wchar_t moneyStr[0x20];
+					swprintf_s(moneyStr, L"%ls%ls%d", L"+", Phobos::UI::CostLabel, value);
+					FlyingStrings::Add(moneyStr, pos, color);
+				}
 			}
 		}
 	}
