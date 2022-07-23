@@ -269,6 +269,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->MobileRefinery.Read(exINI, pSection, "MobileRefinery");
 	this->MobileRefinery_TransRate.Read(exINI, pSection, "MobileRefinery.TransRate");
+	this->MobileRefinery_CashMultiplier.Read(exINI, pSection, "MobileRefinery.CashMultiplier");
 	this->MobileRefinery_MaxAmount.Read(exINI, pSection, "MobileRefinery.MaxAmount");
 	this->MobileRefinery_FrontOffset.Read(exINI, pSection, "MobileRefinery.FrontOffset");
 	this->MobileRefinery_LeftOffset.Read(exINI, pSection, "MobileRefinery.LeftOffset");
@@ -377,6 +378,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InitialStrength_Cloning)
 		.Process(this->MobileRefinery)
 		.Process(this->MobileRefinery_TransRate)
+		.Process(this->MobileRefinery_CashMultiplier)
 		.Process(this->MobileRefinery_MaxAmount)
 		.Process(this->MobileRefinery_FrontOffset)
 		.Process(this->MobileRefinery_LeftOffset)

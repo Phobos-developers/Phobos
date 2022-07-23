@@ -695,7 +695,8 @@ void TechnoExt::ApplyMobileRefinery(TechnoClass* pThis)
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if (!pTypeExt || !pTypeExt->MobileRefinery)
+	if (!pTypeExt || !pTypeExt->MobileRefinery || (pTypeExt->MobileRefinery_TransRate > 0 &&
+		Unsorted::CurrentFrame % pTypeExt->MobileRefinery_TransRate))
 		return;
 
 	int cellCount = Math::max(pTypeExt->MobileRefinery_FrontOffset.size(), pTypeExt->MobileRefinery_LeftOffset.size());
@@ -717,12 +718,14 @@ void TechnoExt::ApplyMobileRefinery(TechnoClass* pThis)
 		auto pos = pCell->GetCoords();
 		pos.Z = pThis->Location.Z;
 		int tValue = pCell->GetContainedTiberiumValue();
-		int value = pTypeExt->MobileRefinery_MaxAmount ? Math::min(pTypeExt->MobileRefinery_MaxAmount, tValue) : tValue;
 
-		if (value)
+		if (tValue)
 		{
-			pCell->ReduceTiberium(value);
-			value *= pTypeExt->MobileRefinery_TransRate;
+			int tibValue = TiberiumClass::Array->GetItem(pCell->GetContainedTiberiumIndex())->Value;
+			int tAmount = static_cast<int>(tValue * 1.0 / tibValue);
+			int amount = pTypeExt->MobileRefinery_MaxAmount ? Math::min(pTypeExt->MobileRefinery_MaxAmount, tAmount) : tAmount;
+			pCell->ReduceTiberium(amount);
+			int value = amount * tibValue * pTypeExt->MobileRefinery_CashMultiplier;
 			pThis->Owner->TransactMoney(value);
 			Point2D location = { 0,0 };
 			TacticalClass::Instance->CoordsToScreen(&location, &pos);
@@ -734,7 +737,7 @@ void TechnoExt::ApplyMobileRefinery(TechnoClass* pThis)
 				bound.X > 0 && bound.X + bound.Width < rect.Width &&
 				bound.Y > 0 && bound.Y + bound.Height < rect.Height - 32)
 			{
-				auto color = pTypeExt->MobileRefinery_DisplayColor.Get({ 57,197,187 });
+				ColorStruct color = pTypeExt->MobileRefinery_DisplayColor;
 				wchar_t moneyStr[0x20];
 				swprintf_s(moneyStr, L"%ls%ls%d", L"+", Phobos::UI::CostLabel, value);
 				FlyingStrings::Add(moneyStr, pos, color);
