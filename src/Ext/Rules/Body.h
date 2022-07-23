@@ -67,7 +67,7 @@ public:
 			, JumpjetTurnToTarget { false }
 			, MissingCameo { "xxicon.shp" }
 			, PlacementPreview_Grid_Translucent { 0 }
-			, PlacementPreview_Building_Translucent { 3 }
+			, PlacementPreview_Building_Translucent { 75 }
 			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { -1,-1,-1 } }
 			, Pips_Shield_Building_Empty { }
