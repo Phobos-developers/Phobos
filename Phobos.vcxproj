@@ -78,6 +78,7 @@
     <ClCompile Include="src\Ext\TerrainType\Hooks.Passable.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.DisallowMoving.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Detonate.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.Firing.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Shield.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Grinding.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Transport.cpp" />
@@ -90,6 +91,7 @@
     <ClCompile Include="src\Ext\WeaponType\Hook.EBolt.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
+    <ClCompile Include="src\Misc\BlittersFix.cpp" />
     <ClCompile Include="src\Misc\Hooks.Blowfish.cpp" />
     <ClCompile Include="src\Misc\Hooks.INIClass.cpp" />
     <ClCompile Include="src\Misc\Hooks.Savegame.cpp" />
@@ -132,6 +134,7 @@
     <ClInclude Include="src\Ext\TAction\Body.h" />
     <ClInclude Include="src\Ext\Team\Body.h" />
     <ClInclude Include="src\Ext\TEvent\Body.h" />
+    <ClInclude Include="src\Misc\BlittersFix.h" />
     <ClInclude Include="src\Misc\CaptureManager.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />

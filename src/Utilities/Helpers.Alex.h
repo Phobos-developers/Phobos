@@ -251,7 +251,7 @@ namespace Helpers {
 			\param action The action to invoke for each object.
 
 			\returns Returns true if widthOrRange and height describe a valid rectangle,
-					 false otherwise.
+					false otherwise.
 
 			\author AlexB
 		*/
@@ -290,7 +290,7 @@ namespace Helpers {
 			\param action The action to invoke for each object.
 
 			\returns Returns true if widthOrRange and height describe a valid rectangle
-					 or circle, false otherwise.
+					or circle, false otherwise.
 
 			\author AlexB
 		*/
@@ -319,7 +319,7 @@ namespace Helpers {
 			\param action The action to invoke for each object.
 
 			\returns Returns true if widthOrRange and height describe a valid rectangle
-					 or CellSpread range, false otherwise.
+					or CellSpread range, false otherwise.
 
 			\author AlexB
 		*/

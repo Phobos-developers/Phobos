@@ -1,0 +1,25 @@
+*            text eol=crlf
+
+*.vcproj     text eol=crlf
+*.c++        text eol=crlf
+*.cc         text eol=crlf
+*.cpp        text eol=crlf
+*.cppm       text eol=crlf
+*.cxx        text eol=crlf
+*.h          text eol=crlf
+*.h++        text eol=crlf
+*.hh         text eol=crlf
+*.hpp        text eol=crlf
+*.hxx        text eol=crlf
+*.inl        text eol=crlf
+*.ipp        text eol=crlf
+*.ixx        text eol=crlf
+*.tlh        text eol=crlf
+*.tli        text eol=crlf
+
+*.sh         text eol=lf
+
+*.gif        -text
+*.jpg        -text
+*.png        -text
+*.exe        -text

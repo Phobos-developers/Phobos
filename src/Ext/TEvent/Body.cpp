@@ -34,7 +34,7 @@ void TEventExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 }
 
 bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, ObjectClass* pObject,
-	TimerStruct* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled)
+	CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled)
 {
 	bHandled = true;
 	switch (static_cast<PhobosTriggerEvent>(pThis->EventKind))

@@ -16,7 +16,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water.
 - Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` > `AllowParallelAIQueues=no` is set.
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode.
-- Fixed `DeathWeapon` not detonating properly. 
+- Fixed `DeathWeapon` not detonating properly.
   - Some settings are still ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
@@ -29,7 +29,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
 - Adds a "Load Game" button to the retry dialog on mission failure.
 
-![image](_static/images/turretoffset-01.png)  
+![image](_static/images/turretoffset-01.png)
 *Side offset voxel turret in Breaking Blue project*
 
 - `TurretOffset` tag for voxel turreted TechnoTypes now accepts FLH (forward, lateral, height) values like `TurretOffset=F,L` or `TurretOffset=F,L,H`, which means turret location can be adjusted in all three axes.
@@ -39,7 +39,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Vehicles using `DeployFire` will now explicitly use weapon specified by `DeployFireWeapon` for firing the deploy weapon and respect `FireOnce` setting on weapon and any stop commands issued during firing.
 - Infantry with `DeployFireWeapon=-1` can now fire both weapons (decided by its target), regardless of deployed or not.
 
-![image](_static/images/remember-target-after-deploying-01.gif)  
+![image](_static/images/remember-target-after-deploying-01.gif)
 *Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
 
 - Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
@@ -65,8 +65,40 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations.
 - Allow use of `Foundation=0x0` on TerrainTypes without crashing for similar results as for buildings.
 - Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to some Ares-introduced Warhead effects like EMP.
+- `OpenTopped` transports now take `OpenTransportWeapon` setting of passengers into consideration when determining weapon range used for threat scanning and approaching targets.
+- Trailer animations now inherit the owner of the object (animation, projectile or aircraft) they are attached to.
+- Buildings now correctly use laser parameters set for Secondary weapons instead of reading them from Primary weapon.
+- Fixed an issue that caused vehicles killed by damage dealt by a known house but without a known source TechnoType (f.ex animation warhead damage) to not be recorded as killed correctly and thus not spring map trigger events etc.
+- `IsAnimated`, `AnimationRate` and `AnimationProbability` now work on TerrainTypes without `SpawnsTiberium` set to true.
+- Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something.
+
+![image](_static/images/translucency-fix.png)
+*Example gradient SHP drawing with 75% translucency, before and after*
+
+- Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
+  - Only applies to Z-aware drawing mode for now.
 
 ## Animations
+
+### Animation weapon and damage settings
+
+- `Weapon` can be set to a WeaponType, to create a projectile and immediately detonate it instead of simply dealing `Damage` by `Warhead`. This allows weapon effects to be applied.
+- `Damage.Delay` determines delay between two applications of `Damage`. Requires `Damage` to be set to 1.0 or above. Value of 0 disables the delay. Keep in mind that this is measured in animation frames, not game frames. Depending on `Rate`, animation may or may not advance animation frames on every game frame.
+- `Damage.DealtByInvoker`, if set to true, makes any `Damage` dealt to be considered as coming from the animation's invoker (f.ex, firer of the weapon if it is Warhead `AnimList/SplashList` animation, the destroyed vehicle if it is `DestroyAnim` animation or the object the animation is attached to). Does not affect which house the `Damage` dealt by `Warhead` is dealt by.
+- `Damage.ApplyOncePerLoop`, if set to true, makes `Damage` be dealt only once per animation loop (on single loop animations, only once, period) instead of on every frame or intervals defined by `Damage.Delay`. The frame on which it is dealt is determined by `Damage.Delay`, defaulting to after the first animation frame.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                     ; AnimationType
+Weapon=                        ; WeaponType
+Damage.Delay=0                 ; integer, animation frames
+Damage.DealtByInvoker=false    ; boolean
+Damage.ApplyOncePerLoop=false  ; boolean
+```
+
+```{note}
+`Weapon` and `Damage.Delay`, beyond the other additions, should function similarly to the equivalent features introduced by Ares and take precedence over them if Phobos is used together with Ares.
+```
 
 ### Attached animation position customization
 
@@ -137,7 +169,7 @@ Grinding.DisplayRefund.Offset=0,0  ; X,Y, pixels relative to default
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]        ; Projectile
-Gravity=6.0             ; double
+Gravity=6.0             ; floating point value
 ```
 
 ## Technos
@@ -153,13 +185,13 @@ Gravity=6.0             ; double
 In `rulesmd.ini`:
 ```ini
 [General]
-InfantryGainSelfHealCap=               ; int, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
-UnitsGainSelfHealCap=                  ; int, maximum amount of UnitsGainSelfHeal that can be in effect at once, must be 1 or higher
-                                       
-[AudioVisual]                          
-Pips.SelfHeal.Infantry=13,20           ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
-Pips.SelfHeal.Units=13,20              ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
-Pips.SelfHeal.Buildings=13,20          ; int, frames of pips.shp for infantry & unit-self healing pips, respectively
+InfantryGainSelfHealCap=               ; integer, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
+UnitsGainSelfHealCap=                  ; integer, maximum amount of UnitsGainSelfHeal that can be in effect at once, must be 1 or higher
+
+[AudioVisual]
+Pips.SelfHeal.Infantry=13,20           ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Units=13,20              ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Buildings=13,20          ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
 Pips.SelfHeal.Infantry.Offset=25,-35   ; X,Y, pixels relative to default
 Pips.SelfHeal.Units.Offset=33,-32      ; X,Y, pixels relative to default
 Pips.SelfHeal.Buildings.Offset=15,10   ; X,Y, pixels relative to default
@@ -170,7 +202,7 @@ SelfHealGainType=                      ; Self-Heal Gain Type Enumeration (none|i
 
 ### Customizable harvester ore gathering animation
 
-![image](_static/images/oregath.gif)  
+![image](_static/images/oregath.gif)
 *Custom ore gathering anims in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - You can now specify which anim should be drawn when a harvester of specified type is gathering specified type of ore.
@@ -185,7 +217,7 @@ OreGathering.Tiberiums=0         ; list of Tiberium IDs
 
 ### Customizable Teleport/Chrono Locomotor settings per TechnoType
 
-![image](_static/images/cust-Chrono.gif)  
+![image](_static/images/cust-Chrono.gif)
 *Chrono Legionnaire and Ronco (hero) from [YR:New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
 
 - You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`.
@@ -241,13 +273,13 @@ Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
 In `rulesmd.ini`:
 ```ini
 [JumpjetControls]
-AllowLayerDeviation=yes         ; boolean
+AllowLayerDeviation=true         ; boolean
 
-[SOMETECHNO]                    ; TechnoType
-JumpjetAllowLayerDeviation=yes  ; boolean
+[SOMETECHNO]                     ; TechnoType
+JumpjetAllowLayerDeviation=true  ; boolean
 ```
 
-### Jumpjet facing target customization 
+### Jumpjet facing target customization
 
 - Allows jumpjet units to face towards the target when firing from different directions. Set `[JumpjetControls] -> TurnToTarget=yes` to enable it for all jumpjet locomotor units. This behavior can be overriden by setting `[UnitType] -> JumpjetTurnToTarget` for specific units.
 - This behavior does not apply to `TurretSpins=yes` units for obvious reasons.
@@ -255,7 +287,7 @@ JumpjetAllowLayerDeviation=yes  ; boolean
 In `rulesmd.ini`:
 ```ini
 [JumpjetControls]
-TurnToTarget=no        ; boolean
+TurnToTarget=false     ; boolean
 
 [SOMEUNITTYPE]         ; UnitType with jumpjet locomotor
 JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
@@ -269,11 +301,11 @@ JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
 
 In `rulesmd.ini`:
 ```ini
-[SOMESTRUCTURE]       ; BuildingType
-Powered.KillSpawns=no ; boolean
+[SOMESTRUCTURE]          ; BuildingType
+Powered.KillSpawns=false ; boolean
 ```
 
-### Re-enable obsolete [JumpjetControls] 
+### Re-enable obsolete [JumpjetControls]
 
 - Re-enable obsolete [JumpjetControls], the keys in it will be as the default value of jumpjet units.
   - Moreover, added two tags for missing ones.
@@ -281,8 +313,8 @@ Powered.KillSpawns=no ; boolean
 In `rulesmd.ini`:
 ```ini
 [JumpjetControls]
-Crash=5.0       ; float
-NoWobbles=no    ; boolean
+Crash=5.0        ; floating point value
+NoWobbles=false  ; boolean
 ```
 
 ```{note}
@@ -293,7 +325,7 @@ NoWobbles=no    ; boolean
 
 ### Customizable ore spawners
 
-![image](_static/images/ore-01.png)  
+![image](_static/images/ore-01.png)
 *Different ore spawners in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
 
 - You can now specify which type of ore certain TerrainType would generate.
@@ -366,7 +398,35 @@ DeployingAnim.UseUnitDrawer=true       ; boolean
 
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
 
+### Preserve Iron Curtain status on type conversion
+
+![image](_static/images/preserve-ic.gif)
+
+- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`.
+  - This behavior can be turned off per-TechnoType and global basis.
+  - `IronCurtain.Modifier` is re-applied upon type conversion.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+IronCurtain.KeptOnDeploy=yes ; boolean
+
+[SOMETECHNO]                 ; VehicleType with DeploysInto or BuildingType with UndeploysInto
+IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
+```
+
 ## Warheads
+
+### Allowing damage dealt to firer
+
+- You can now allow warhead to deal damage (and apply damage-adjacent effects such as `KillDriver` and `DisableWeapons/Sonar/Flash.Duration` *(Ares features)*) on the object that is considered as the firer of the Warhead even if it does not have `DamageSelf=true`.
+  - Note that effect of `Psychedelic=true`, despite being tied to damage will still fail to apply on the firer as it does not affect any objects belonging to same house as the firer, including itself.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]            ; WarheadType
+AllowDamageOnSelf=false  ; boolean
+```
 
 ### Customizing decloak on damaging targets
 
@@ -392,7 +452,7 @@ ShakeIsLocal=false  ; boolean
 
 ### Customizable disk laser radius
 
-![image](_static/images/disklaser-radius-values-01.gif)  
+![image](_static/images/disklaser-radius-values-01.gif)
 - You can now set disk laser animation radius using a new tag.
 
 In `rulesmd.ini`:
@@ -402,21 +462,9 @@ DiskLaser.Radius=38.2 ; floating point value
                       ; 38.2 is roughly the default saucer disk radius
 ```
 
-### Detaching weapon from owner TechnoType
-
-- You can now control if weapon is detached from the TechnoType that fired it. This results in the weapon / warhead being able to damage the TechnoType itself even if it does not have `DamageSelf=true` set, but also treats it as if owned by no house or object, meaning any ownership-based checks like `AffectsAllies` do not function as expected and no experience is awarded.
-  - The effect of this is inherited through `AirburstWeapon` and `ShrapnelWeapon`.
-  - This does not affect projectile image or functionality or `FirersPalette` on initially fired weapon, but `FirersPalette` will not function for any weapons inheriting the effect.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPONTYPE]         ; WeaponType
-DetachedFromOwner=false  ; boolean
-```
-
 ### Single-color lasers
 
-- You can now set laser to draw using only `LaserInnerColor` by setting `IsSingleColor`, in same manner as `IsHouseColor` lasers do using player's team color. These lasers respect laser thickness.
+- You can now set laser to draw using only `LaserInnerColor` by setting `IsSingleColor`, in same manner as `IsHouseColor` lasers do using player's team color. These lasers respect laser thickness. Note that this is not available on prism support weapons.
 
 In `rulesmd.ini`:
 ```ini
