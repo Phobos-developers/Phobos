@@ -2,6 +2,10 @@
   color: #58a6ff;
 }
 
+.rst-content p img ~ em {
+  display: block;
+}
+
 .wy-body-for-nav {
   background: #1a1a1a;
   max-width: 1400px;
