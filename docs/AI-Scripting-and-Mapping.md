@@ -316,7 +316,9 @@ x=126,n           ; integer n=0, in frames
 
 ### `135` Unload from Transports
 
-- A new unload action similar to x=8,n, but can avoid treating `VehicleTypes` with `OpenTopped=yes` and `Gunner=yes` as transports. If `TransportsReturnOnUnload` is set to `yes` in this TeamType, and transports are lost, they will return after unloading.
+- A new unload action similar to x=8,n, but can avoid treating `VehicleTypes` with `OpenTopped=yes` and `Gunner=yes` as transports.
+  - All `InitialPayload` will be regarded as passengers and added to team.
+  - If `TransportsReturnOnUnload` is set to `yes` in this TeamType, and transports are lost, they will return after unloading.
 
 In `aimd.ini`:
 ```ini
