@@ -1005,10 +1005,14 @@ void TechnoExt::StartUniversalDeployAnim(TechnoClass* pThis)
 					{
 						pExt->DeployAnim = pAnim;
 						pExt->DeployAnim->SetOwnerObject(pThis);
+
+						// Use the unit palette in the animation
+						auto lcc = pThis->GetDrawer();
+						pExt->DeployAnim->LightConvert = lcc;
 					}
 					else
 					{
-						Debug::Log("ERROR! UniversalDeploy animation [%s] -> Convert.DeployingAnim=%s can't be created.\n", pThis->GetTechnoType()->ID, deployAnimType->ID);
+						Debug::Log("ERROR! UniversalDeploy animation [%s] -> %s can't be created.\n", pThis->GetTechnoType()->ID, deployAnimType->ID);
 					}
 				}
 			}
@@ -1048,7 +1052,7 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 				// Turn the vehicle to the right deploy facing
 				if (!pExt->DeployAnim && pTypeExt->Convert_DeployDir >= 0)
 				{
-					auto pUnit = static_cast<UnitClass*>(pThis);
+					//auto pUnit = static_cast<UnitClass*>(pThis);
 					short deployDir = (short)pTypeExt->Convert_DeployDir;
 					short currentFacing = pThis->PrimaryFacing.current().value8();
 
