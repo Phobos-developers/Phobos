@@ -1,5 +1,7 @@
 #include <Phobos.h>
 
+#include <LoadOptionsClass.h>
+
 #include <Ext/Aircraft/Body.h>
 #include <Ext/AnimType/Body.h>
 #include <Ext/Anim/Body.h>
@@ -42,8 +44,8 @@ template <class T, template <class...> class Template>
 concept DerivedFromSpecializationOf =
 	requires(const T & t) { DerivedFromSpecialization<Template>(t); };
 
-template<typename T>
-concept HasExtMap = requires { { T::ExtMap } -> DerivedFromSpecializationOf<Container>; };
+template<typename TExt>
+concept HasExtMap = requires { { TExt::ExtMap } -> DerivedFromSpecializationOf<Container>; };
 
 template <typename T>
 concept Clearable = requires { T::Clear(); };
@@ -59,20 +61,16 @@ concept GlobalSaveLoadable = requires
 	T::SaveGlobals(std::declval<PhobosStreamWriter&>());
 };
 
-template <typename THelper, typename TProcessable, typename... TProcessArgs>
+template <typename TAction, typename TProcessed, typename... ArgTypes>
 concept DispatchesAction =
-	requires (TProcessArgs... args) { THelper::template Process<TProcessable>(args...); };
+	requires (ArgTypes... args) { TAction::template Process<TProcessed>(args...); };
 
 #pragma endregion
-
-// this is a typed nothing: a type list type
-template <typename...>
-struct PhobosTypeList { };
 
 // calls:
 // T::Clear()
 // T::ExtMap.Clear()
-struct ClearHelper
+struct ClearAction
 {
 	template <typename T>
 	static bool Process()
@@ -89,7 +87,7 @@ struct ClearHelper
 // calls:
 // T::PointerGotInvalid(void*, bool)
 // T::ExtMap.PointerGotInvalid(void*, bool)
-struct InvalidatePointerHelper
+struct InvalidatePointerAction
 {
 	template <typename T>
 	static bool Process(void* ptr, bool removed)
@@ -105,7 +103,7 @@ struct InvalidatePointerHelper
 
 // calls:
 // T::LoadGlobals(PhobosStreamReader&)
-struct LoadHelper
+struct LoadGlobalsAction
 {
 	template <typename T>
 	static bool Process(IStream* pStm)
@@ -127,7 +125,7 @@ struct LoadHelper
 
 // calls:
 // T::SaveGlobals(PhobosStreamWriter&)
-struct SaveHelper
+struct SaveGlobalsAction
 {
 	template <typename T>
 	static bool Process(IStream* pStm)
@@ -149,47 +147,46 @@ struct SaveHelper
 // this is a complicated thing that calls methods on classes. add types to the
 // instantiation of this type, and the most appropriate method for each type
 // will be called with no overhead of virtual functions.
-template <typename... Ts>
-struct MassAction
+template <typename... RegisteredTypes>
+struct TypeRegistry
 {
-	__forceinline void Clear()
+	__forceinline static void Clear()
 	{
-		process<ClearHelper>(PhobosTypeList<Ts...>());
+		dispatch_mass_action<ClearAction>();
 	}
 
-	__forceinline void InvalidPointer(void* ptr, bool removed)
+	__forceinline static void InvalidatePointer(void* ptr, bool removed)
 	{
-		process<InvalidatePointerHelper>(PhobosTypeList<Ts...>(), ptr, removed);
+		dispatch_mass_action<InvalidatePointerAction>(ptr, removed);
 	}
 
-	__forceinline bool Load(IStream* pStm)
+	__forceinline static bool LoadGlobals(IStream* pStm)
 	{
-		return process<LoadHelper>(PhobosTypeList<Ts...>(), pStm);
+		return dispatch_mass_action<LoadGlobalsAction>(pStm);
 	}
 
-	__forceinline bool Save(IStream* pStm)
+	__forceinline static bool SaveGlobals(IStream* pStm)
 	{
-		return process<SaveHelper>(PhobosTypeList<Ts...>(), pStm);
+		return dispatch_mass_action<SaveGlobalsAction>(pStm);
 	}
 
 private:
-	// THelper: the method dispatcher class to call with each type
-	// TArgs: the arguments to call the method dispatcher's Process() method
-	// TTypes: the classes to process.
-	template <typename THelper, typename... TArgs, typename... TTypes>
-	requires (DispatchesAction<THelper, TTypes, TArgs...> && ...)
-	__forceinline bool process(PhobosTypeList<TTypes...>, TArgs... args)
+	// TAction: the method dispatcher class to call with each type
+	// ArgTypes: the argument types to call the method dispatcher's Process() method
+	template <typename TAction, typename... ArgTypes>
+	requires (DispatchesAction<TAction, RegisteredTypes, ArgTypes...> && ...)
+	__forceinline static bool dispatch_mass_action(ArgTypes... args)
 	{
 		// (pack expression op ...) is a fold expression which
 		// unfolds the parameter pack into a full expression
-		return (THelper::template Process<TTypes>(args...) && ...);
+		return (TAction::template Process<RegisteredTypes>(args...) && ...);
 	}
 };
 
 #pragma endregion
 
 // Add more class names as you like
-using PhobosMassAction = MassAction<
+using PhobosTypeRegistry = TypeRegistry<
 	// Ext classes
 	AircraftExt,
 	AnimTypeExt,
@@ -222,54 +219,54 @@ using PhobosMassAction = MassAction<
 	// other classes
 >;
 
-auto MassActions = PhobosMassAction();
-
 DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 {
 	GET(AbstractClass* const, pInvalid, ECX);
 	GET(bool const, removed, EDX);
 
-	Phobos::PointerGotInvalid(pInvalid, removed);
+	PhobosTypeRegistry::InvalidatePointer(pInvalid, removed);
 
 	return 0;
 }
 
 DEFINE_HOOK(0x685659, Scenario_ClearClasses, 0xa)
 {
-	Phobos::Clear();
+	PhobosTypeRegistry::Clear();
 	return 0;
 }
 
-void Phobos::Clear()
+// Ares saves its things at the end of the save
+// Phobos will save the things at the beginning of the save
+// Considering how DTA gets the scenario name, I decided to save it after Rules - secsome
+
+DEFINE_HOOK(0x67D32C, SaveGame_Phobos, 0x5)
 {
-	MassActions.Clear();
+	GET(IStream*, pStm, ESI);
+	//UNREFERENCED_PARAMETER(pStm);
+	PhobosTypeRegistry::SaveGlobals(pStm);
+	return 0;
 }
 
-void Phobos::PointerGotInvalid(AbstractClass* const pInvalid, bool const removed)
+DEFINE_HOOK(0x67E826, LoadGame_Phobos, 0x6)
 {
-	MassActions.InvalidPointer(pInvalid, removed);
+	GET(IStream*, pStm, ESI);
+	//UNREFERENCED_PARAMETER(pStm);
+	PhobosTypeRegistry::LoadGlobals(pStm);
+	return 0;
 }
 
-HRESULT Phobos::SaveGameData(IStream* pStm)
+DEFINE_HOOK(0x67D04E, Game_Save_SavegameInformation, 0x7)
 {
-	Debug::Log("Saving global Phobos data\n");
-
-	if (!MassActions.Save(pStm))
-		return E_FAIL;
-
-	Debug::Log("Finished saving the game\n");
-
-	return S_OK;
+	REF_STACK(SavegameInformation, Info, STACK_OFFS(0x4A4, 0x3F4));
+	Info.Version = Info.Version + SAVEGAME_ID;
+	return 0;
 }
 
-void Phobos::LoadGameData(IStream* pStm)
+DEFINE_HOOK(0x559F27, LoadOptionsClass_GetFileInfo, 0xA)
 {
-	Debug::Log("Loading global Phobos data\n");
-
-	if (!MassActions.Load(pStm))
-		Debug::Log("Error loading the game\n");
-	else
-		Debug::Log("Finished loading the game\n");
+	REF_STACK(SavegameInformation, Info, STACK_OFFS(0x400, 0x3F4));
+	Info.Version = Info.Version - SAVEGAME_ID;
+	return 0;
 }
 
 #ifdef DEBUG

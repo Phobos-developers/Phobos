@@ -35,10 +35,6 @@ public:
 #ifdef DEBUG
 	static bool DetachFromDebugger();
 #endif
-	static void Clear();
-	static void PointerGotInvalid(AbstractClass* const pInvalid, bool const removed);
-	static HRESULT SaveGameData(IStream* pStm);
-	static void LoadGameData(IStream* pStm);
 
 	class UI
 	{
