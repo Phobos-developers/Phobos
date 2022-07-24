@@ -849,8 +849,8 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 				}
 			}
 
-			// For an "infantry into vehicle" case we need to check if the cell is free of soldiers
-			if (pOldTechnoType->WhatAmI() == AbstractType::InfantryType && pNewTechnoType->WhatAmI() != AbstractType::InfantryType)
+			// For the "infantry into vehicle" case we need to check if the cell is free of soldiers
+			if (pOldTechnoType->WhatAmI() != AbstractType::Building && pNewTechnoType->WhatAmI() != AbstractType::Building)
 			{
 				int nInfantry = 0;
 
@@ -903,15 +903,12 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 			if (pOldTechno->IsMindControlled())
 				TechnoExt::TransferMindControlOnDeploy(pOldTechno, pNewTechno);
 
-			// Transfer passengers/garrisoned units
-			// TO-DO
-
 			// Initial Mission update
 			pNewTechno->QueueMission(Mission::Guard, true);
 
 			// Facing update
 			short newPrimaryFacing = pOldTechno->PrimaryFacing.current().value256();
-
+			
 			// Some vodoo magic
 			pOldTechno->Limbo();
 
@@ -933,26 +930,19 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 				return nullptr;
 			}
 
-			if (pOldTechno->InLimbo)
-				pOwner->RegisterLoss(pOldTechno, false);
-
-			if (!pNewTechno->InLimbo)
-				pOwner->RegisterGain(pNewTechno, true);
-
-			pNewTechno->Owner->RecheckTechTree = true;
-
 			// Jumpjet tricks
 			if (pNewTechno->GetTechnoType()->JumpJet || pNewTechno->GetTechnoType()->BalloonHover)
 			{
+				short newPrimaryFacing = pOldTechno->PrimaryFacing.current().value8();
 				CoordStruct loc = CoordStruct::Empty;
 
 				if (pNewTechno->IsInAir())
-					loc = newLocation; //pNewTechno->Location;
+					loc = newLocation;
 				else
-				{
 					pNewTechno->SetDestination(pOldTechno, true);
+
+				if (pNewTechno->GetHeight() != pNewTechno->GetTechnoType()->JumpjetHeight)
 					pNewTechno->Scatter(loc, true, false);
-				}
 			}
 			else
 			{
@@ -962,10 +952,30 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 					pNewTechno->IsFallingDown = true;
 			}
 
+			// Transfer passengers/garrisoned units
+			// TO-DO
+
+			if (pOldTechno->InLimbo)
+				pOwner->RegisterLoss(pOldTechno, false);
+
+			if (!pNewTechno->InLimbo)
+				pOwner->RegisterGain(pNewTechno, true);
+
+			pNewTechno->Owner->RecheckTechTree = true;
+
 			// If the object was selected it should remain selected
 			if (isSelected)
 				pNewTechno->Select();
-			
+
+			if (auto pOldExt = TechnoExt::ExtMap.Find(pOldTechno))
+			{
+				if (pOldExt->DeployAnim)
+				{
+					pOldExt->DeployAnim->UnInit();
+					pOldExt->DeployAnim = nullptr;
+				}
+			}
+
 			pOldTechno->UnInit();
 
 			return pNewTechno;
@@ -975,134 +985,34 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 	return nullptr;
 }
 
-void TechnoExt::UpdateInfantryDeploytoLand(TechnoClass* pThis)
-{
-	if (!pThis)
-		return;
-
-	if (auto pExt = TechnoExt::ExtMap.Find(pThis))
-	{
-		if (pExt->IsDeployingInLand)
-		{
-			if (!pExt->Convert_Deployed && !pExt->Convert_Deploying)
-			{
-				pThis->IsFallingDown = true;
-
-				auto newLocation = pThis->Location;
-				auto newCell = MapClass::Instance->GetCellAt(newLocation);
-
-				if (pThis->IsCellOccupied(newCell, -1, -1, nullptr, false) != Move::OK)
-				{
-					// Another object is inside this cell so it can't continue with the process
-					pThis->IsFallingDown = false;
-
-					if (auto pExt = TechnoExt::ExtMap.Find(pThis))
-						pExt->IsDeployingInLand = false;
-
-					return;
-				}
-
-				if (pThis->GetHeight() > 20)
-					return;
-
-				pThis->SetHeight(0);
-
-				if (!pExt->Convert_Deploying)
-				{
-					pExt->Convert_Deploying = true;
-					return;
-				}
-			}
-
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-			if (!pTypeExt)
-				return;
-
-			int deploySoundIndex = pTypeExt->DeploySound.isset() ? pTypeExt->DeploySound.Get() : -1;
-			CoordStruct deployLocation = pThis->GetCoords();
-
-			AnimTypeClass* pAnimType = nullptr;
-			if (pTypeExt->Convert_AnimFX.isset())
-				pAnimType = pTypeExt->Convert_AnimFX.Get();
-
-			auto deployed = pExt->Convert_Deployed ? TechnoExt::UniversalConvert(pThis, nullptr) : nullptr;
-
-			if (deployed)
-			{
-				if (deploySoundIndex >= 0)
-					VocClass::PlayAt(deploySoundIndex, deployLocation);
-
-				if (pAnimType)
-				{
-					if (auto const pAnim = GameCreate<AnimClass>(pAnimType, deployLocation))
-					{
-						if (pTypeExt->Convert_AnimFX_FollowDeployer)
-							pAnim->SetOwnerObject(deployed);
-
-						pAnim->Owner = deployed->Owner;
-					}
-				}
-			}
-		}
-	}
-}
-
-void TechnoExt::StartUniversalDeploy(TechnoClass* pThis)
+void TechnoExt::StartUniversalDeployAnim(TechnoClass* pThis)
 {
 	if (!pThis)
 		return;
 	
 	if (auto pExt = TechnoExt::ExtMap.Find(pThis))
 	{
+		if (pExt->DeployAnim)
+		{
+			pExt->DeployAnim->UnInit();
+			pExt->DeployAnim = nullptr;
+		}
+
 		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 		{
-			bool isDeployer = pTypeExt->Convert_UniversalDeploy.size() > 0 ? true : false;
-			AnimTypeClass* deployAnimType = pTypeExt->Convert_DeployingAnim;
-			bool deployToLand = pTypeExt->Convert_DeployToLand;
-			pThis->InAir = (pThis->GetHeight() > 0);
-
-			if (isDeployer &&
-				(!pThis->InAir || (pThis->InAir && !deployToLand)) &&
-				!pExt->Convert_Deployed)
+			if (pTypeExt->Convert_DeployingAnim.isset())
 			{
-				bool startSound = false;
-
-				if (pExt->Convert_Deploying && pExt->DeployAnim)
+				if (auto deployAnimType = pTypeExt->Convert_DeployingAnim.Get())
 				{
-					if (pExt->DeployAnim->Animation.Value >= deployAnimType->End + deployAnimType->Start - 1)
-						pExt->Convert_Deployed = true;
-				}
-				else if (!pThis->InAir || (pThis->InAir && !deployToLand)) //(!pThis->InAir)
-				{
-					if (deployAnimType)
+					if (auto pAnim = GameCreate<AnimClass>(deployAnimType, pThis->Location))
 					{
-						if (!pExt->DeployAnim)
-						{
-							if (auto pAnim = GameCreate<AnimClass>(deployAnimType, pThis->Location))
-								pExt->DeployAnim = pAnim;
-							else
-								pExt->DeployAnim = nullptr;
-
-							pExt->DeployAnim->SetOwnerObject(pThis);
-						}
-						
-						pExt->Convert_Deploying = true;
-						startSound = true;
+						pExt->DeployAnim = pAnim;
+						pExt->DeployAnim->SetOwnerObject(pThis);
 					}
 					else
 					{
-						pExt->Convert_Deployed = true;
+						Debug::Log("ERROR! UniversalDeploy animation [%s] -> Convert.DeployingAnim=%s can't be created.\n", pThis->GetTechnoType()->ID, deployAnimType->ID);
 					}
-				}
-
-				if (startSound)
-				{
-					// Play deploy sound
-					int convert_DeploySoundIndex = pTypeExt->Convert_DeploySound.isset() ? pTypeExt->Convert_DeploySound.Get() : -1;
-					CoordStruct convert_DeployLocation = pThis->GetCoords();
-
-					if (convert_DeploySoundIndex >= 0)
-						VocClass::PlayAt(convert_DeploySoundIndex, convert_DeployLocation);
 				}
 			}
 		}
@@ -1114,24 +1024,116 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 	if (!pThis)
 		return;
 
-	//if (pThis->WhatAmI() == AbstractType::Building)
-		//return;
-
 	if (auto pExt = TechnoExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Convert_Deploying)
+		if (!pExt->Convert_UniversalDeploy_InProgress)
+			return;
+
+		if (pThis->WhatAmI() == AbstractType::Building)
+			return;
+
+		TechnoClass* deployed = nullptr;
+
+		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 		{
-			if (pExt->Convert_Deployed)
+			auto pFoot = static_cast<FootClass*>(pThis);
+
+			if (pFoot->Locomotor->Is_Moving_Now())
 			{
-				if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+				pFoot->SetDestination(nullptr, false);
+				pFoot->Locomotor->Stop_Moving();
+
+				return;
+			}
+
+			if (pThis->WhatAmI() != AbstractType::Infantry)
+			{
+				// Turn the vehicle to the right deploy facing
+				if (!pExt->DeployAnim && pTypeExt->Convert_DeployDir >= 0)
 				{
-					TechnoExt::UniversalConvert(pThis, nullptr);
+					auto pUnit = static_cast<UnitClass*>(pThis);
+					short deployDir = (short)pTypeExt->Convert_DeployDir;
+					short currentFacing = pThis->PrimaryFacing.current().value8();
+
+					if (currentFacing != deployDir)
+					{
+						DirStruct newDir = DirStruct(3, deployDir);
+
+						pThis->PrimaryFacing.turn(newDir);
+						pFoot->Locomotor->Move_To(CoordStruct::Empty);
+
+						return;
+					}
 				}
 			}
-			else
+
+			AnimTypeClass* pDeployAnimType = pTypeExt->Convert_DeployingAnim.isset() ? pTypeExt->Convert_DeployingAnim.Get() : nullptr;
+			bool hasValidDeployAnim = pDeployAnimType ? true : false;
+			bool isDeployAnimPlaying = pExt->DeployAnim ? true : false;
+			bool hasDeployAnimFinished = (isDeployAnimPlaying && (pExt->DeployAnim->Animation.Value >= pDeployAnimType->End + pDeployAnimType->Start - 1)) ? true : false;
+			bool deployToLand = pTypeExt->Convert_DeployToLand;
+			int convert_DeploySoundIndex = pTypeExt->Convert_DeploySound.isset() ? pTypeExt->Convert_DeploySound.Get() : -1;
+			AnimTypeClass* pAnimFXType = pTypeExt->Convert_AnimFX.isset() ? pTypeExt->Convert_AnimFX.Get() : nullptr;
+			bool animFX_FollowDeployer = pTypeExt->Convert_AnimFX_FollowDeployer;
+
+			// Update InAir information
+			if (deployToLand && pThis->GetHeight() <= 20)
+				pThis->SetHeight(0);
+
+			pThis->InAir = (pThis->GetHeight() > 0);
+
+			if (deployToLand)
 			{
-				TechnoExt::StartUniversalDeploy(pThis);
+				pThis->IsFallingDown = true;
+
+				if (pThis->InAir)
+					return;
+
+				pThis->ForceMission(Mission::Sticky);
 			}
+
+			CoordStruct deployLocation = pThis->GetCoords();
+
+			if (hasValidDeployAnim && !isDeployAnimPlaying)
+			{
+				TechnoExt::StartUniversalDeployAnim(pThis);
+
+				if (convert_DeploySoundIndex >= 0)
+					VocClass::PlayAt(convert_DeploySoundIndex, deployLocation);
+
+				return;
+			}
+
+			// The unit should remain paralyzed during a deploy animation
+			if (isDeployAnimPlaying)
+				pFoot->ParalysisTimer.Start(15);
+
+			if (hasValidDeployAnim && !hasDeployAnimFinished)
+				return;
+
+			// Time for the object conversion
+			deployed = TechnoExt::UniversalConvert(pThis, nullptr);
+
+			if (deployed)
+			{
+				if (pAnimFXType)
+				{
+					if (auto const pAnim = GameCreate<AnimClass>(pAnimFXType, deployLocation))
+					{
+						if (animFX_FollowDeployer)
+							pAnim->SetOwnerObject(deployed);
+
+						pAnim->Owner = deployed->Owner;
+					}
+				}
+			}
+		}
+
+		if (!deployed)
+		{
+			pThis->ForceMission(Mission::Guard);
+			pThis->IsFallingDown = false;
+			pExt->Convert_UniversalDeploy_InProgress = false;
 		}
 	}
 }
@@ -1157,6 +1159,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Convert_Deploying)
 		.Process(this->Convert_Deployed)
 		.Process(this->DeployAnim)
+		.Process(this->Convert_UniversalDeploy_InProgress)
 		;
 }
 

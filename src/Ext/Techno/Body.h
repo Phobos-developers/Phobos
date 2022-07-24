@@ -33,6 +33,7 @@ public:
 		bool Convert_Deploying;
 		bool Convert_Deployed;
 		AnimClass* DeployAnim;
+		bool Convert_UniversalDeploy_InProgress;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -57,6 +58,7 @@ public:
 			, Convert_Deploying { false }
 			, Convert_Deployed { false }
 			, DeployAnim { nullptr }
+			, Convert_UniversalDeploy_InProgress { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -133,7 +135,6 @@ public:
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
 	static TechnoClass* UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pNewTechnoType);
-	static void UpdateInfantryDeploytoLand(TechnoClass* pThis);
-	static void StartUniversalDeploy(TechnoClass* pThis);
+	static void StartUniversalDeployAnim(TechnoClass* pThis);
 	static void UpdateUniversalDeploy(TechnoClass* pThis);
 };

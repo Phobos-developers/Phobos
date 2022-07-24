@@ -125,6 +125,7 @@ public:
 		Valueable<bool> Convert_AnimFX_FollowDeployer;
 		Nullable<AnimTypeClass*> Convert_DeployingAnim;
 		NullableIdx<VocClass> Convert_DeploySound;
+		Valueable<int> Convert_DeployDir;
 
 		struct LaserTrailDataEntry
 		{
@@ -244,6 +245,7 @@ public:
 			, Convert_AnimFX_FollowDeployer { false }
 			, Convert_DeployingAnim {}
 			, Convert_DeploySound {}
+			, Convert_DeployDir { RulesClass::Instance->DeployDir }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -20,7 +20,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::CheckDeathConditions(pThis);
 	TechnoExt::EatPassengers(pThis);
 	TechnoExt::UpdateMindControlAnim(pThis);
-	TechnoExt::UpdateInfantryDeploytoLand(pThis);
 	TechnoExt::UpdateUniversalDeploy(pThis);
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
@@ -299,24 +298,6 @@ DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
 	if (!pTechnoTypeExt)
 		return 0;
 	
-	// Universal Convert stuff
-	if (pTechnoTypeExt && pTechnoTypeExt->Convert_UniversalDeploy.size() > 0)
-	{
-		if (auto pOldTechno = static_cast<TechnoClass*>(pUnit))
-		{
-			if (pTechnoTypeExt->Convert_DeployToLand && !pUnit->Deploying && !pUnit->Undeploying && pUnit->Deployed)//pUnit->Type->DeployToLand
-			{
-				TechnoExt::UniversalConvert(pOldTechno, nullptr);
-			}
-			else if (!pTechnoTypeExt->Convert_DeployToLand && !pUnit->Deploying)//pUnit->Type->DeployToLand
-			{
-				TechnoExt::UniversalConvert(pOldTechno, nullptr);
-			}
-
-			return 0;
-		}
-	}
-
 	// LaserTrails transfer
 	if (pTechnoExt && pTechnoTypeExt)
 	{
@@ -483,26 +464,49 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 	return ReturnResult;
 }
 
-//DEFINE_HOOK(0x730B9C, DeployCommand_UniversalDeploy, 0x17)
-// ok DEFINE_HOOK(0x730B8F, DeployCommand_UniversalDeploy, 0x6)
-//DEFINE_HOOK(0x730BE8, DeployCommand_UniversalDeploy, 0x6)
 DEFINE_HOOK(0x730B8F, DeployCommand_UniversalDeploy, 0x6)
 {
-	//GET(TechnoClass*, pThis, ESI);
 	GET(int, index, EDI);
 
 	TechnoClass* pThis = static_cast<TechnoClass*>(ObjectClass::CurrentObjects->GetItem(index));
 
-	if (pThis->WhatAmI() == AbstractType::Building)
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt)
+		return 0;
+
+	if (pExt->Convert_UniversalDeploy_InProgress)
+		return 0;
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (!pTypeExt)
+		return 0;
+
+	if (pTypeExt->Convert_UniversalDeploy.size() > 0)
 	{
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		if (!pTypeExt)
-			return 0;
-		
-		if (pTypeExt->Convert_UniversalDeploy.size() > 0)
+		if (pThis->WhatAmI() == AbstractType::Building)
 		{
+
 			pThis->MissionStatus = 0;
 			pThis->CurrentMission = Mission::Selling;
+			pExt->Convert_UniversalDeploy_InProgress = true;
+
+			return 0x730C10;
+		}
+		else if (pThis->WhatAmI() == AbstractType::Unit)
+		{
+			if (pTypeExt->Convert_DeployToLand)
+			{
+				auto newCell = MapClass::Instance->GetCellAt(pThis->Location);
+
+				// If the cell is occupied abort operation
+				if (pThis->GetHeight() > 0 &&
+					pThis->IsCellOccupied(newCell, -1, -1, nullptr, false) != Move::OK)
+					return 0;
+
+				pThis->IsFallingDown = true;
+			}
+
+			pExt->Convert_UniversalDeploy_InProgress = true;
 
 			return 0x730C10;
 		}
@@ -522,77 +526,36 @@ DEFINE_HOOK(0x522510, InfantryClass_DoingDeploy, 0x6)
 	if (!pOldTechno)
 		return 0;
 
+	auto const pOldTechnoExt = TechnoExt::ExtMap.Find(pOldTechno);
+	if (!pOldTechnoExt)
+		return 0;
+
+	if (pOldTechnoExt->Convert_UniversalDeploy_InProgress)
+		return 0;
+
+	// Preparing UniversalDeploy logic
 	auto const pOldTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pOldTechno->GetTechnoType());
 	if (!pOldTechnoTypeExt)
 		return 0;
 
-	if (!pOldTechnoTypeExt->Convert_DeployToLand)//pOldTechno->GetTechnoType()->DeployToLand
+	if (pOldTechnoTypeExt->Convert_DeployToLand)
 	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOldTechno->GetTechnoType());
-		if (!pTypeExt)
+		auto newCell = MapClass::Instance->GetCellAt(pThis->Location);
+
+		// If the cell is occupied abort operation
+		if (pThis->GetHeight() > 0 &&
+			pThis->IsCellOccupied(newCell, -1, -1, nullptr, false) != Move::OK)
 			return 0;
 
-		int deploySoundIndex = pTypeExt->DeploySound.isset() ? pTypeExt->DeploySound.Get() : -1;
-		CoordStruct deployLocation = pOldTechno->GetCoords();
-		auto deployed = TechnoExt::UniversalConvert(pOldTechno, nullptr);
-
-		if (deployed)
-		{
-			if (deploySoundIndex >= 0)
-				VocClass::PlayAt(deploySoundIndex, deployLocation);
-
-			if (pTypeExt->Convert_AnimFX.isset())
-			{
-				const auto pAnimType = pTypeExt->Convert_AnimFX.Get();
-				if (auto const pAnim = GameCreate<AnimClass>(pAnimType, deployLocation))
-				{
-					if (pTypeExt->Convert_AnimFX_FollowDeployer)
-						pAnim->SetOwnerObject(deployed);
-
-					pAnim->Owner = deployed->Owner;
-				}
-			}
-		}
-
-		return 0;
+		pThis->IsFallingDown = true;
 	}
 
-	auto newLocation = pThis->Location;
-	auto newCell = MapClass::Instance->GetCellAt(newLocation);
+	pOldTechnoExt->Convert_UniversalDeploy_InProgress = true;
 
-	if (pThis->IsFallingDown)
-	{
-		if (pThis->GetHeight() > 0)
-		{
-			if (pThis->IsCellOccupied(newCell, -1, -1, nullptr, false) != Move::OK)
-			{
-				// Another object is inside this cell so it can't continue with the process
-				pThis->IsFallingDown = false;
-
-				if (auto pExt = TechnoExt::ExtMap.Find(pThis))
-					pExt->IsDeployingInLand = false;
-			}
-
-			return 0;
-		}
-		else
-		{
-			pThis->IsFallingDown = false;
-		}
-	}
-	
-	if (pThis->IsCellOccupied(newCell, -1, -1, nullptr, false) == Move::OK)
-	{
-		if (auto pExt = TechnoExt::ExtMap.Find(pThis))
-		{
-			pExt->IsDeployingInLand = true;
-		}
-	}
-	
 	return 0;
 }
 
-DEFINE_HOOK(0x449C38, BuildingClass_MissionDeconstruction_UniversalDeploy0, 0x6)
+DEFINE_HOOK(0x449C38, BuildingClass_MissionDeconstruction_UniversalDeploy_1, 0x6)
 {
 	GET(BuildingClass*, pBuilding, ECX);
 
@@ -611,7 +574,8 @@ DEFINE_HOOK(0x449C38, BuildingClass_MissionDeconstruction_UniversalDeploy0, 0x6)
 			{
 				if (techno->WhatAmI() == AbstractType::UnitType)
 				{
-					// In every mod exists vehicles so we use the first from the list for a dummy hack. This unit won't appear because will be replaced by the designated object.
+					// Note: This hack is for deleting the need of a UndeploysInto tag in the "Building into Object" case.
+					// In every mod exist vehicles so we use the first vehicle in [VehicleTypes] for a dummy hack. This unit won't appear because will be replaced by the designated object.
 					pBuilding->Type->UndeploysInto = static_cast<UnitTypeClass*>(techno);
 					break;
 				}
@@ -622,7 +586,7 @@ DEFINE_HOOK(0x449C38, BuildingClass_MissionDeconstruction_UniversalDeploy0, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x449E6B, BuildingClass_MissionDeconstruction_UniversalDeploy1, 0x5)
+DEFINE_HOOK(0x449E6B, BuildingClass_MissionDeconstruction_UniversalDeploy_2, 0x5)
 {
 	GET(UnitClass*, pUnit, EBX);
 	GET(BuildingClass*, pBuilding, ECX);
@@ -658,7 +622,6 @@ DEFINE_HOOK(0x449E6B, BuildingClass_MissionDeconstruction_UniversalDeploy1, 0x5)
 				}
 
 				pUnit->UnInit();
-
 				return 0x44A1D8;
 			}
 		}
@@ -670,13 +633,11 @@ DEFINE_HOOK(0x449E6B, BuildingClass_MissionDeconstruction_UniversalDeploy1, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x44725F, BuildingClass_WhatAction_UniversalDeployEnableDeployIcon, 0x5)
+DEFINE_HOOK(0x44725F, BuildingClass_WhatAction_UniversalDeploy_EnableDeployIcon, 0x5)
 {
 	GET(BuildingClass*, pBuilding, ESI);
-	//GET_STACK(BuildingClass*, pBuilding, 0x4);
-	GET(Action, cursor, EAX);
 	GET_STACK(FootClass*, pFoot, 0x1C);
-
+	
 	if (!pBuilding)
 		return 0;
 
@@ -701,31 +662,56 @@ DEFINE_HOOK(0x44725F, BuildingClass_WhatAction_UniversalDeployEnableDeployIcon, 
 	return 0;
 }
 
-DEFINE_HOOK(0x4ABEE9, BuildingClass_MouseLeftRelease_UniversalDeployExecuteDeploy, 0x7)
+DEFINE_HOOK(0x4ABEE9, BuildingClass_MouseLeftRelease_UniversalDeploy_ExecuteDeploy, 0x7)
 {
-	GET(BuildingClass* const, pBuilding, ESI); //v17 ESI
+	GET(TechnoClass* const, pTechno, ESI);
 	GET(Action const, actionType, EBX);
 
-	if (!pBuilding)
+	if (!pTechno)
 		return 0;
 
-	if (!pBuilding->IsSelected)
+	if (!pTechno->IsSelected)
 		return 0;
 
-	if (actionType != Action::Self_Deploy)// && pBuilding->CurrentMission == Mission::Selling)
+	if (actionType != Action::Self_Deploy)
 		return 0;
 
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType()))
+	auto pExt = TechnoExt::ExtMap.Find(pTechno);
+	if (!pExt)
+		return 0;
+
+	if (pExt->Convert_UniversalDeploy_InProgress)
+		return 0;
+
+	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
 	{
 		if (pTypeExt->Convert_UniversalDeploy.size() > 0)
 		{
-			if (auto pOldTechno = static_cast<TechnoClass*>(pBuilding))
+			if (pTechno->WhatAmI() == AbstractType::Building)
 			{
 				R->EBX(Action::None);
-
-				pBuilding->MissionStatus = 0;
-				pBuilding->CurrentMission = Mission::Selling;
+				pTechno->MissionStatus = 0;
+				pTechno->CurrentMission = Mission::Selling;
+				pExt->Convert_UniversalDeploy_InProgress = true;
 				
+				return 0;
+			}
+			else if (pTechno->WhatAmI() == AbstractType::Unit)
+			{
+				auto newCell = MapClass::Instance->GetCellAt(pTechno->Location);
+
+				if (pTypeExt->Convert_DeployToLand)
+				{
+					// If the cell is occupied abort operation
+					if (pTechno->GetHeight() > 0 &&
+						pTechno->IsCellOccupied(newCell, -1, -1, nullptr, false) != Move::OK)
+						return 0;
+
+					pTechno->IsFallingDown = true;
+				}
+
+				pExt->Convert_UniversalDeploy_InProgress = true;
+
 				return 0;
 			}
 		}

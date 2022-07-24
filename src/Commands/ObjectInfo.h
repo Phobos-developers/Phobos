@@ -221,22 +221,6 @@ public:
 
 			append("\n");
 			display();
-			
-
-			if (pFoot->IsFallingDown && pFoot->GetHeight() > 0)
-				return 0;
-
-			if (pFoot->IsFallingDown && !pFoot->GetHeight() > 0)
-				pFoot->IsFallingDown = false;
-
-			auto MyCell = MapClass::Instance->GetCellAt(pFoot->Location);
-			if (pFoot->IsCellOccupied(MyCell, -1, -1, nullptr, false) == Move::OK)
-			{
-				if (auto pOldTechno = static_cast<TechnoClass*>(pFoot))
-				{
-					TechnoExt::UniversalConvert(pOldTechno, nullptr);
-				}
-			}
 		};
 
 		auto printBuilding = [&append, &display](BuildingClass* pBuilding)

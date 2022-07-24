@@ -231,6 +231,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Convert_AnimFX_FollowDeployer.Read(exINI, pSection, "Convert.Anim.FollowDeployer");
 	this->Convert_DeployingAnim.Read(exINI, pSection, "Convert.DeployingAnim");
 	this->Convert_DeploySound.Read(exINI, pSection, "Convert.DeploySound");
+	this->Convert_DeployDir.Read(exINI, pSection, "Convert.DeployDir");	
 	
 	char tempBuffer[32];
 	for (size_t i = 0; ; ++i)
@@ -371,6 +372,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Convert_AnimFX_FollowDeployer)
 		.Process(this->Convert_DeployingAnim)
 		.Process(this->Convert_DeploySound)
+		.Process(this->Convert_DeployDir)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
