@@ -32,18 +32,42 @@
 
 #pragma region Implementation details
 
-// this can be implicitly constructed from int,
-// which can make selecting an overload unattractive,
-// because it's a user-defined conversion. the more
-// conversions, the less attractive
-struct Dummy
+#pragma region Concepts
+
+// a hack to check if some type can be used as a specialization of a template
+template <template <class...> class Template, class... Args>
+void DerivedFromSpecialization(const Template<Args...>&);
+
+template <class T, template <class...> class Template>
+concept DerivedFromSpecializationOf =
+	requires(const T & t) { DerivedFromSpecialization<Template>(t); };
+
+template<typename T>
+concept HasExtMap = requires { { T::ExtMap } -> DerivedFromSpecializationOf<Container>; };
+
+template <typename T>
+concept Clearable = requires { T::Clear(); };
+
+template <typename T>
+concept PointerInvalidationSubscribable =
+	requires (void* ptr, bool removed) { T::PointerGotInvalid(ptr, removed); };
+
+template <typename T>
+concept GlobalSaveLoadable = requires
 {
-	Dummy(int a) { };
+	T::LoadGlobals(std::declval<PhobosStreamReader&>());
+	T::SaveGlobals(std::declval<PhobosStreamWriter&>());
 };
+
+template <typename THelper, typename TProcessable, typename... TProcessArgs>
+concept DispatchesAction =
+	requires (TProcessArgs... args) { THelper::template Process<TProcessable>(args...); };
+
+#pragma endregion
 
 // this is a typed nothing: a type list type
 template <typename...>
-struct DummyTypes { };
+struct PhobosTypeList { };
 
 // calls:
 // T::Clear()
@@ -53,28 +77,12 @@ struct ClearHelper
 	template <typename T>
 	static bool Process()
 	{
-		clear<T>(0, 0);
+		if constexpr (Clearable<T>)
+			T::Clear();
+		else if constexpr (HasExtMap<T>)
+			T::ExtMap.Clear();
 
 		return true;
-	}
-
-private:
-	template <typename T>
-	static auto clear(int, int) -> decltype(T::Clear())
-	{
-		T::Clear();
-	}
-
-	template <typename T>
-	static auto clear(Dummy, int) -> decltype(T::ExtMap.Clear())
-	{
-		T::ExtMap.Clear();
-	}
-
-	template <typename T>
-	static auto clear(Dummy, Dummy) -> void
-	{
-		// do nothing
 	}
 };
 
@@ -86,28 +94,12 @@ struct InvalidatePointerHelper
 	template <typename T>
 	static bool Process(void* ptr, bool removed)
 	{
-		invalidpointer<T>(0, 0, ptr, removed);
+		if constexpr (PointerInvalidationSubscribable<T>)
+			T::PointerGotInvalid(ptr, removed);
+		else if constexpr (HasExtMap<T>)
+			T::ExtMap.PointerGotInvalid(ptr, removed);
 
 		return true;
-	}
-
-private:
-	template <typename T>
-	static auto invalidpointer(int, int, void* ptr, bool removed) -> decltype(T::PointerGotInvalid(ptr, removed))
-	{
-		T::PointerGotInvalid(ptr, removed);
-	}
-
-	template <typename T>
-	static auto invalidpointer(Dummy, int, void* ptr, bool removed) -> decltype(T::ExtMap.PointerGotInvalid(ptr, removed))
-	{
-		T::ExtMap.PointerGotInvalid(ptr, removed);
-	}
-
-	template <typename T>
-	static auto invalidpointer(Dummy, Dummy, void* ptr, bool removed) -> void
-	{
-		// do nothing
 	}
 };
 
@@ -118,25 +110,18 @@ struct LoadHelper
 	template <typename T>
 	static bool Process(IStream* pStm)
 	{
-		return load<T>(0, pStm);
-	}
+		if constexpr (GlobalSaveLoadable<T>)
+		{
+			PhobosByteStream stm(0);
+			stm.ReadBlockFromStream(pStm);
+			PhobosStreamReader reader(stm);
 
-private:
-	template <typename T>
-	static auto load(int, IStream* pStm) -> decltype(T::LoadGlobals(std::declval<PhobosStreamReader&>()))
-	{
-		PhobosByteStream Stm(0);
-		Stm.ReadBlockFromStream(pStm);
-		PhobosStreamReader Reader(Stm);
-
-		return T::LoadGlobals(Reader) && Reader.ExpectEndOfBlock();
-	}
-
-	template <typename T>
-	static auto load(Dummy, IStream* pStm) -> bool
-	{
-		// do nothing
-		return true;
+			return T::LoadGlobals(reader) && reader.ExpectEndOfBlock();
+		}
+		else
+		{
+			return true;
+		}
 	}
 };
 
@@ -147,24 +132,17 @@ struct SaveHelper
 	template <typename T>
 	static bool Process(IStream* pStm)
 	{
-		return save<T>(0, pStm);
-	}
+		if constexpr (GlobalSaveLoadable<T>)
+		{
+			PhobosByteStream stm;
+			PhobosStreamWriter writer(stm);
 
-private:
-	template <typename T>
-	static auto save(int, IStream* pStm) -> decltype(T::SaveGlobals(std::declval<PhobosStreamWriter&>()))
-	{
-		PhobosByteStream Stm;
-		PhobosStreamWriter Writer(Stm);
-
-		return T::SaveGlobals(Writer) && Stm.WriteBlockToStream(pStm);
-	}
-
-	template <typename T>
-	static auto save(Dummy, IStream* pStm) -> bool
-	{
-		// do nothing
-		return true;
+			return T::SaveGlobals(writer) && stm.WriteBlockToStream(pStm);
+		}
+		else
+		{
+			return true;
+		}
 	}
 };
 
@@ -176,53 +154,42 @@ struct MassAction
 {
 	__forceinline void Clear()
 	{
-		process<ClearHelper>(DummyTypes<Ts...>());
+		process<ClearHelper>(PhobosTypeList<Ts...>());
 	}
 
 	__forceinline void InvalidPointer(void* ptr, bool removed)
 	{
-		process<InvalidatePointerHelper>(DummyTypes<Ts...>(), ptr, removed);
+		process<InvalidatePointerHelper>(PhobosTypeList<Ts...>(), ptr, removed);
 	}
 
 	__forceinline bool Load(IStream* pStm)
 	{
-		return process<LoadHelper>(DummyTypes<Ts...>(), pStm);
+		return process<LoadHelper>(PhobosTypeList<Ts...>(), pStm);
 	}
 
 	__forceinline bool Save(IStream* pStm)
 	{
-		return process<SaveHelper>(DummyTypes<Ts...>(), pStm);
+		return process<SaveHelper>(PhobosTypeList<Ts...>(), pStm);
 	}
 
 private:
-	// T: the method dispatcher class to call with each type
+	// THelper: the method dispatcher class to call with each type
 	// TArgs: the arguments to call the method dispatcher's Process() method
-	// TType and TTypes: setup for recursion. TType is the first type, the one
-	// to handle now. TTypes is the tail that is recursively went into.
-
-	// this is the base case, no more types, nothing to call
-	template <typename T, typename... TArgs>
-	bool process(DummyTypes<>, TArgs... args)
+	// TTypes: the classes to process.
+	template <typename THelper, typename... TArgs, typename... TTypes>
+	requires (DispatchesAction<THelper, TTypes, TArgs...> && ...)
+	__forceinline bool process(PhobosTypeList<TTypes...>, TArgs... args)
 	{
-		return true;
-	}
-
-	// this is the recursion part: invoke T:Process() for first type, then
-	// recurse with the remaining types
-	template <typename T, typename... TArgs, typename TType, typename... TTypes>
-	__forceinline bool process(DummyTypes<TType, TTypes...>, TArgs... args)
-	{
-		if (!T::template Process<TType>(args...))
-			return false;
-
-		return process<T>(DummyTypes<TTypes...>(), args...);
+		// (pack expression op ...) is a fold expression which
+		// unfolds the parameter pack into a full expression
+		return (THelper::template Process<TTypes>(args...) && ...);
 	}
 };
 
 #pragma endregion
 
 // Add more class names as you like
-auto MassActions = MassAction <
+using PhobosMassAction = MassAction<
 	// Ext classes
 	AircraftExt,
 	AnimTypeExt,
@@ -253,7 +220,9 @@ auto MassActions = MassAction <
 	LaserTrailTypeClass,
 	RadTypeClass
 	// other classes
-> ();
+>;
+
+auto MassActions = PhobosMassAction();
 
 DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 {
