@@ -922,10 +922,7 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 					pOldTechno->Select();
 
 				if (auto pExt = TechnoExt::ExtMap.Find(pOldTechno))
-				{
-					pExt->IsDeployingInLand = false;
 					pOldTechno->IsFallingDown = false;
-				}
 
 				return nullptr;
 			}
@@ -933,7 +930,7 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 			// Jumpjet tricks
 			if (pNewTechno->GetTechnoType()->JumpJet || pNewTechno->GetTechnoType()->BalloonHover)
 			{
-				short newPrimaryFacing = pOldTechno->PrimaryFacing.current().value8();
+				//short newPrimaryFacing = pOldTechno->PrimaryFacing.current().value8();
 				CoordStruct loc = CoordStruct::Empty;
 
 				if (pNewTechno->IsInAir())
@@ -1155,9 +1152,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Death_Countdown)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
-		.Process(this->IsDeployingInLand)
-		.Process(this->Convert_Deploying)
-		.Process(this->Convert_Deployed)
 		.Process(this->DeployAnim)
 		.Process(this->Convert_UniversalDeploy_InProgress)
 		;

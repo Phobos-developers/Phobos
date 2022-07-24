@@ -30,16 +30,12 @@ public:
 		int Death_Countdown;
 		AnimTypeClass* MindControlRingAnimType;
 		int DamageNumberOffset;
-		bool Convert_Deploying;
-		bool Convert_Deployed;
 		AnimClass* DeployAnim;
 		bool Convert_UniversalDeploy_InProgress;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
 		HouseClass* OriginalPassengerOwner;
-
-		bool IsDeployingInLand;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
@@ -54,9 +50,6 @@ public:
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset { INT32_MIN }
 			, OriginalPassengerOwner {}
-			, IsDeployingInLand { false }
-			, Convert_Deploying { false }
-			, Convert_Deployed { false }
 			, DeployAnim { nullptr }
 			, Convert_UniversalDeploy_InProgress { false }
 		{ }

@@ -120,7 +120,6 @@ public:
 
 		ValueableVector<TechnoTypeClass*> Convert_UniversalDeploy;
 		Valueable<bool> Convert_DeployToLand;
-		NullableIdx<VocClass> DeploySound;
 		Nullable<AnimTypeClass*> Convert_AnimFX;
 		Valueable<bool> Convert_AnimFX_FollowDeployer;
 		Nullable<AnimTypeClass*> Convert_DeployingAnim;
@@ -240,7 +239,6 @@ public:
 			, InitialStrength_Cloning{ { 1.0, 0.0 } }
 			, Convert_UniversalDeploy {}
 			, Convert_DeployToLand { false }
-			, DeploySound {}
 			, Convert_AnimFX {}
 			, Convert_AnimFX_FollowDeployer { false }
 			, Convert_DeployingAnim {}
