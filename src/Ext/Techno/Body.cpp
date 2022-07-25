@@ -1138,7 +1138,7 @@ void TechnoExt::DrawHugeBar(RulesExt::ExtData::HugeBarData* pConfig, int iCurren
 		if (rectWH.X < 0)
 		{
 			rectWH.X = static_cast<int>(pConfig->HugeBar_RectWidthPercentage * rBound.Width);
-			// make sure width is even 
+			// make sure width is even
 			rectWH.X += rectWH.X & 1;
 		}
 
