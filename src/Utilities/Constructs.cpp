@@ -34,8 +34,7 @@
 
 #include <ConvertClass.h>
 #include <FileSystem.h>
-#include <ScenarioClass.h>
-#include <GeneralUtils.h>
+#include <Utilities/GeneralUtils.h>
 
 bool CustomPalette::LoadFromINI(
 	CCINIClass* pINI, const char* pSection, const char* pKey,

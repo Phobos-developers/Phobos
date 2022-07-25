@@ -120,7 +120,7 @@ bool GeneralUtils::HasHealthRatioThresholdChanged(double oldRatio, double newRat
 	return false;
 }
 
-static bool ApplyTheaterSuffixToString(char* str)
+bool GeneralUtils::ApplyTheaterSuffixToString(char* str)
 {
 	if (auto pSuffix = strstr(str, "~~~"))
 	{
