@@ -95,10 +95,13 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 
 bool ShieldClass::TEventIsShieldBroken(ObjectClass* pAttached)
 {
-	if (auto pThis = abstract_cast<TechnoClass*>(pAttached))
+	if (auto pTechno = abstract_cast<TechnoClass*>(pAttached))
 	{
-		if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
-			return pExt->Shield->HP <= 0;
+		if (auto pExt = TechnoExt::ExtMap.Find(pTechno))
+		{
+			ShieldClass* pShield = pExt->Shield.get();
+			return !pShield || pShield->HP <= 0;
+		}
 	}
 	return false;
 }

@@ -539,3 +539,13 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX
 533         | CurrentValue >= GlobalVariableValue | Yes |
 534         | CurrentValue <= GlobalVariableValue | Yes |
 535         | CurrentValue & GlobalVariableValue | Yes |
+
+### `600` The shield of the attached object is broken
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,600,2,0,0,...
+...
+```
