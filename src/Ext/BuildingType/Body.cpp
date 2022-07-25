@@ -2,7 +2,6 @@
 
 #include <Ext/House/Body.h>
 #include <Utilities/GeneralUtils.h>
-#include <ScenarioClass.h>
 
 template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
