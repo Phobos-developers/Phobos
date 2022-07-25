@@ -118,3 +118,24 @@ bool GeneralUtils::HasHealthRatioThresholdChanged(double oldRatio, double newRat
 
 	return false;
 }
+
+std::string GeneralUtils::IntToDigits(int num)
+{
+	std::string sDigits;
+
+	if (num == 0)
+	{
+		sDigits.push_back('0');
+		return sDigits;
+	}
+
+	while (num)
+	{
+		sDigits.push_back(static_cast<char>(num % 10) + '0');
+		num /= 10;
+	}
+
+	std::reverse(sDigits.begin(), sDigits.end());
+
+	return sDigits;
+}

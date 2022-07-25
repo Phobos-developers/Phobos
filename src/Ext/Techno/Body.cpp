@@ -11,11 +11,15 @@
 #include <Unsorted.h>
 #include <BitFont.h>
 
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/ShapeTextPrinter.h>
+#include <Utilities/PhobosGlobal.h>
+
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
+
 #include <Misc/FlyingStrings.h>
-#include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -858,6 +862,449 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 
 	pExt->DamageNumberOffset = pExt->DamageNumberOffset + width;
 }
+
+void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& iCur, int& iMax)
+{
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+
+	switch (infoType)
+	{
+	case DisplayInfoType::Health:
+	{
+		iCur = pThis->Health;
+		iMax = pType->Strength;
+		break;
+	}
+	case DisplayInfoType::Shield:
+	{
+		if (pExt->Shield == nullptr || pExt->Shield->IsBrokenAndNonRespawning())
+			return;
+		iCur = pExt->Shield->GetHP();
+		iMax = pExt->Shield->GetType()->Strength.Get();
+		break;
+	}
+	case DisplayInfoType::Ammo:
+	{
+		if (pType->Ammo <= 0)
+			return;
+		iCur = pThis->Ammo;
+		iMax = pType->Ammo;
+		break;
+	}
+	case DisplayInfoType::MindControl:
+	{
+		if (pThis->CaptureManager == nullptr)
+			return;
+		iCur = pThis->CaptureManager->ControlNodes.Count;
+		iMax = pThis->CaptureManager->MaxControlNodes;
+		break;
+	}
+	case DisplayInfoType::Spawns:
+	{
+		if (pThis->SpawnManager == nullptr || pType->Spawns == nullptr || pType->SpawnsNumber <= 0)
+			return;
+		iCur = pThis->SpawnManager->SpawnCount;
+		iMax = pType->SpawnsNumber;
+		break;
+	}
+	case DisplayInfoType::Passengers:
+	{
+		if (pType->Passengers <= 0)
+			return;
+		iCur = pThis->Passengers.NumPassengers;
+		iMax = pType->Passengers;
+		break;
+	}
+	case DisplayInfoType::Tiberium:
+	{
+		if (pType->Storage <= 0)
+			return;
+		iCur = static_cast<int>(pThis->Tiberium.GetTotalAmount());
+		iMax = pType->Storage;
+		break;
+	}
+	case DisplayInfoType::Experience:
+	{
+		iCur = static_cast<int>(pThis->Veterancy.Veterancy * RulesClass::Instance->VeteranRatio * pType->GetCost());
+		iMax = static_cast<int>(2.0 * RulesClass::Instance->VeteranRatio * pType->GetCost());
+		break;
+	}
+	case DisplayInfoType::Occupants:
+	{
+		if (pThis->WhatAmI() != AbstractType::Building)
+			return;
+		BuildingTypeClass* pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
+		BuildingClass* pBuilding = abstract_cast<BuildingClass*>(pThis);
+		if (!pBuildingType->CanBeOccupied)
+			return;
+		iCur = pBuilding->Occupants.Count;
+		iMax = pBuildingType->MaxNumberOccupants;
+		break;
+	}
+	case DisplayInfoType::GattlingStage:
+	{
+		if (!pType->IsGattling)
+			return;
+		iCur = pThis->CurrentGattlingStage;
+		iMax = pType->WeaponStages;
+		break;
+	}
+	default:
+	{
+		iCur = pThis->Health;
+		iMax = pType->Strength;
+		break;
+	}
+	}
+}
+
+void TechnoExt::InitializeHugeBar(TechnoClass* pThis)
+{
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pTypeExt->HugeBar)
+	{
+		auto& mTechno = PhobosGlobal::Global()->Techno_HugeBar;
+		auto it = mTechno.find(pTypeExt->HugeBar_Priority);
+
+		while (it != mTechno.end() && it->first == pTypeExt->HugeBar_Priority)
+		{
+			if (it->second == pThis)
+				return;
+
+			++it;
+		}
+
+		mTechno.emplace(pTypeExt->HugeBar_Priority, pThis);
+	}
+}
+
+void TechnoExt::RemoveHugeBar(TechnoClass* pThis)
+{
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pTypeExt->HugeBar)
+	{
+		auto& mTechno = PhobosGlobal::Global()->Techno_HugeBar;
+		auto it = mTechno.find(pTypeExt->HugeBar_Priority);
+
+		while (it != mTechno.end() && it->first == pTypeExt->HugeBar_Priority)
+		{
+			if (it->second == pThis)
+			{
+				mTechno.erase(it);
+
+				return;
+			}
+
+			++it;
+		}
+	}
+}
+
+void TechnoExt::ProcessHugeBar()
+{
+	if (PhobosGlobal::Global()->Techno_HugeBar.empty())
+		return;
+
+	TechnoClass* pTechno = PhobosGlobal::Global()->Techno_HugeBar.begin()->second;
+
+	if (pTechno == nullptr)
+		return;
+
+	auto& configs = RulesExt::Global()->HugeBar_Config;
+
+	for (size_t i = 0; i < configs.size(); i++)
+	{
+		int iCurrent = -1;
+		int iMax = -1;
+		GetValuesForDisplay(pTechno, configs[i]->InfoType, iCurrent, iMax);
+
+		if (iCurrent != -1)
+			DrawHugeBar(configs[i].get(), iCurrent, iMax);
+	}
+}
+
+void TechnoExt::DrawHugeBar(RulesExt::ExtData::HugeBarData* pConfig, int iCurrent, int iMax)
+{
+	double ratio = static_cast<double>(iCurrent) / iMax;
+	int iPipNumber = std::max(static_cast<int>(ratio * pConfig->HugeBar_Pips_Num), (iCurrent == 0 ? 0 : 1));
+	Point2D posDraw = pConfig->HugeBar_Offset.Get() + pConfig->Anchor.OffsetPosition(DSurface::Composite->GetRect());
+	Point2D posDrawValue = posDraw;
+	RectangleStruct rBound = std::move(DSurface::Composite->GetRect());
+
+	if (pConfig->HugeBar_Shape != nullptr
+		&& pConfig->HugeBar_Pips_Shape != nullptr
+		&& pConfig->HugeBar_Frame.Get(ratio) >= 0
+		&& pConfig->HugeBar_Pips_Frame.Get(ratio) >= 0)
+	{
+		SHPStruct* pShp_Bar = pConfig->HugeBar_Shape;
+		ConvertClass* pPal_Bar = pConfig->HugeBar_Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+		SHPStruct* pShp_Pips = pConfig->HugeBar_Pips_Shape;
+		ConvertClass* pPal_Pips = pConfig->HugeBar_Pips_Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+		int iPipFrame = pConfig->HugeBar_Pips_Frame.Get(ratio);
+
+		switch (pConfig->Anchor.Horizontal)
+		{
+		case HorizontalPosition::Left:
+			posDrawValue.X += pShp_Bar->Width / 2;
+			break;
+
+		case HorizontalPosition::Center:
+			posDrawValue.X = posDraw.X;
+			posDraw.X -= pShp_Bar->Width / 2;
+			break;
+
+		case HorizontalPosition::Right:
+			posDraw.X -= pShp_Bar->Width;
+			posDrawValue.X -= pShp_Bar->Width / 2;
+			break;
+
+		default:
+			break;
+		}
+
+		switch (pConfig->Anchor.Vertical)
+		{
+		case VerticalPosition::Top:
+			posDrawValue.Y += pShp_Bar->Height;
+			break;
+
+		case VerticalPosition::Center:
+			posDraw.Y -= pShp_Bar->Height / 2;
+			posDrawValue.Y += pShp_Bar->Height;
+			break;
+
+		case VerticalPosition::Bottom:
+			posDraw.Y -= pShp_Bar->Height;
+			break;
+
+		default:
+			break;
+		}
+
+		DSurface::Composite->DrawSHP
+		(
+			pPal_Bar,
+			pShp_Bar,
+			pConfig->HugeBar_Frame.Get(ratio),
+			&posDraw,
+			&rBound,
+			BlitterFlags::None,
+			0,
+			0,
+			ZGradient::Ground,
+			1000,
+			0,
+			nullptr,
+			0,
+			0,
+			0
+		);
+
+		posDraw += pConfig->HugeBar_Pips_Offset.Get();
+
+		for (int i = 0; i < iPipNumber; i++)
+		{
+			DSurface::Composite->DrawSHP
+			(
+				pPal_Pips,
+				pShp_Pips,
+				iPipFrame,
+				&posDraw,
+				&rBound,
+				BlitterFlags::None,
+				0,
+				0,
+				ZGradient::Ground,
+				1000,
+				0,
+				nullptr,
+				0,
+				0,
+				0
+			);
+
+			posDraw.X += pConfig->HugeBar_Pips_Interval;
+		}
+	}
+	else
+	{
+		COLORREF color1 = Drawing::RGB2DWORD(pConfig->HugeBar_Pips_Color1.Get(ratio));
+		COLORREF color2 = Drawing::RGB2DWORD(pConfig->HugeBar_Pips_Color2.Get(ratio));
+		Vector2D<int> rectWH = pConfig->HugeBar_RectWH;
+
+		if (rectWH.X < 0)
+		{
+			rectWH.X = static_cast<int>(pConfig->HugeBar_RectWidthPercentage * rBound.Width);
+			// make sure width is even 
+			rectWH.X += rectWH.X & 1;
+		}
+
+		switch (pConfig->Anchor.Horizontal)
+		{
+		case HorizontalPosition::Left:
+			posDrawValue.X += rectWH.X / 2;
+			break;
+
+		case HorizontalPosition::Center:
+			posDrawValue.X = posDraw.X;
+			posDraw.X -= rectWH.X / 2;
+			break;
+
+		case HorizontalPosition::Right:
+			posDraw.X -= rectWH.X;
+			posDrawValue.X -= rectWH.X / 2;
+			break;
+
+		default:
+			break;
+		}
+
+		switch (pConfig->Anchor.Vertical)
+		{
+		case VerticalPosition::Top:
+			posDrawValue.Y += rectWH.Y;
+			break;
+
+		case VerticalPosition::Center:
+			posDraw.Y -= rectWH.Y / 2;
+			posDrawValue.Y += rectWH.Y;
+			break;
+
+		case VerticalPosition::Bottom:
+			posDraw.Y -= rectWH.Y;
+			break;
+
+		default:
+			break;
+		}
+
+		RectangleStruct rect = { posDraw.X, posDraw.Y, rectWH.X, rectWH.Y };
+		DSurface::Composite->DrawRect(&rect, color2);
+		int iPipWidth = 0;
+		int iPipHeight = 0;
+		int iPipTotal = pConfig->HugeBar_Pips_Num;
+
+		if (pConfig->HugeBar_Pips_Offset.isset())
+		{
+			Point2D offset = pConfig->HugeBar_Pips_Offset.Get();
+			posDraw += offset;
+			//center
+			iPipWidth = (rectWH.X - offset.X * 2) / iPipTotal;
+			iPipHeight = rectWH.Y - offset.Y * 2;
+		}
+		else
+		{
+			// default has 5 interval between border and pips at least
+			const int iInterval = 5;
+			iPipWidth = (rectWH.X - iInterval * 2) / iPipTotal;
+			iPipHeight = rectWH.Y - iInterval * 2;
+			posDraw.X += (rectWH.X - iPipTotal * iPipWidth) / 2;
+			posDraw.Y += (rectWH.Y - iPipHeight) / 2;
+		}
+
+		if (iPipWidth <= 0 || iPipHeight <= 0)
+			return;
+
+		// Color1 75% Color2 25%, simulated healthbar
+		int iPipColor1Width = std::max(static_cast<int>(iPipWidth * 0.75), std::min(3, iPipWidth));
+		int iPipColor2Width = iPipWidth - iPipColor1Width;
+		rect = { posDraw.X, posDraw.Y, iPipColor1Width , iPipHeight };
+
+		for (int i = 0; i < iPipNumber; i++)
+		{
+			DSurface::Composite->FillRect(&rect, color1);
+			rect.X += iPipColor1Width;
+			rect.Width = iPipColor2Width;
+			DSurface::Composite->FillRect(&rect, color2);
+			rect.X += iPipColor2Width;
+			rect.Width = iPipColor1Width;
+		}
+	}
+
+	HugeBar_DrawValue(pConfig, posDrawValue, iCurrent, iMax);
+}
+
+void TechnoExt::HugeBar_DrawValue(RulesExt::ExtData::HugeBarData* pConfig, Point2D& posDraw, int iCurrent, int iMax)
+{
+	RectangleStruct rBound = std::move(DSurface::Composite->GetRect());
+	double ratio = static_cast<double>(iCurrent) / iMax;
+	posDraw += pConfig->Value_Offset;
+
+	if (pConfig->Value_Shape != nullptr)
+	{
+		SHPStruct* pShp = pConfig->Value_Shape;
+		ConvertClass* pPal = pConfig->Value_Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+
+		if (pConfig->Anchor.Vertical == VerticalPosition::Bottom)
+			posDraw.Y -= pShp->Height * (static_cast<int>(pConfig->InfoType) + 1);
+		else
+			posDraw.Y += pShp->Height * static_cast<int>(pConfig->InfoType);
+
+		std::string text;
+
+		if (pConfig->Value_Percentage)
+			text = GeneralUtils::IntToDigits(static_cast<int>(ratio * 100));
+		else
+			text = GeneralUtils::IntToDigits(iCurrent) + "/" + GeneralUtils::IntToDigits(iMax);
+
+		int iNumBaseFrame = pConfig->Value_Num_BaseFrame;
+		int iSignBaseFrame = pConfig->Value_Sign_BaseFrame;
+
+		if (ratio <= RulesClass::Instance->ConditionYellow)
+		{
+			// number 0-9
+			iNumBaseFrame += 10;
+			// sign /%
+			iSignBaseFrame += 2;
+		}
+
+		if (ratio <= RulesClass::Instance->ConditionRed)
+		{
+			iNumBaseFrame += 10;
+			iSignBaseFrame += 2;
+		}
+
+		posDraw.X -= text.length() * pConfig->Value_Shape_Interval / 2;
+
+		ShapeTextPrintData printData
+		(
+			pShp,
+			pPal,
+			iNumBaseFrame,
+			iSignBaseFrame,
+			Point2D({ pConfig->Value_Shape_Interval, 0 })
+		);
+		ShapeTextPrinter::PrintShape(text.c_str(), printData, posDraw, rBound, DSurface::Composite);
+	}
+	else
+	{
+		const int iTextHeight = 15;
+
+		if (pConfig->Anchor.Vertical == VerticalPosition::Bottom)
+			posDraw.Y -= iTextHeight * (static_cast<int>(pConfig->InfoType) + 1);
+		else
+			posDraw.Y += iTextHeight * static_cast<int>(pConfig->InfoType);
+
+		wchar_t text[0x16] = L"";
+
+		if (pConfig->Value_Percentage)
+		{
+			swprintf_s(text, L"%d", static_cast<int>(ratio * 100));
+			wcscat_s(text, L"%%");
+		}
+		else
+		{
+			swprintf_s(text, L"%d/%d", iCurrent, iMax);
+		}
+
+		COLORREF color = Drawing::RGB2DWORD(pConfig->Value_Text_Color.Get(ratio));
+		DSurface::Composite->DrawTextA(text, &rBound, &posDraw, color, COLOR_BLACK, TextPrintType::Center);
+	}
+}
+
 
 // =============================
 // load / save

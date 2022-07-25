@@ -6,9 +6,8 @@
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
-
+#include <Utilities/Anchor.h>
 #include <Utilities/Debug.h>
-
 
 class AnimTypeClass;
 class MouseCursor;
@@ -52,6 +51,58 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
 		Valueable<bool> IronCurtain_KeptOnDeploy;
+
+
+		class HugeBarData
+		{
+		public:
+
+			Valueable<double> HugeBar_RectWidthPercentage;
+			Valueable<Point2D> HugeBar_RectWH;
+			Damageable<ColorStruct> HugeBar_Pips_Color1;
+			Damageable<ColorStruct> HugeBar_Pips_Color2;
+
+			Valueable<SHPStruct*> HugeBar_Shape;
+			Valueable<SHPStruct*> HugeBar_Pips_Shape;
+			CustomPalette HugeBar_Palette;
+			CustomPalette HugeBar_Pips_Palette;
+			Damageable<int> HugeBar_Frame;
+			Damageable<int> HugeBar_Pips_Frame;
+			Valueable<int> HugeBar_Pips_Interval;
+
+			Valueable<Point2D> HugeBar_Offset;
+			Nullable<Point2D> HugeBar_Pips_Offset;
+			Valueable<int> HugeBar_Pips_Num;
+
+			Damageable<ColorStruct> Value_Text_Color;
+
+			Valueable<SHPStruct*> Value_Shape;
+			CustomPalette Value_Palette;
+			Valueable<int> Value_Num_BaseFrame;
+			Valueable<int> Value_Sign_BaseFrame;
+			Valueable<int> Value_Shape_Interval;
+
+			Valueable<bool> DisplayValue;
+			Valueable<bool> Value_Percentage;
+			Valueable<Point2D> Value_Offset;
+			Anchor Anchor;
+			DisplayInfoType InfoType;
+
+			HugeBarData() = default;
+			HugeBarData(DisplayInfoType infoType);
+
+			void LoadFromINI(CCINIClass* pINI);
+
+			void Load(PhobosStreamReader& stm);
+			void Save(PhobosStreamWriter& stm);
+
+		private:
+
+			template <typename T>
+			void Serialize(T& stm);
+		};
+
+		std::vector<std::unique_ptr<HugeBarData>> HugeBar_Config;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }

@@ -91,6 +91,15 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->IronCurtain_KeptOnDeploy.Read(exINI, "CombatDamage", "IronCurtain.KeptOnDeploy");
 
+	if (HugeBar_Config.empty())
+	{
+		this->HugeBar_Config.emplace_back(new HugeBarData(DisplayInfoType::Health));
+		this->HugeBar_Config[0]->LoadFromINI(pINI);
+
+		this->HugeBar_Config.emplace_back(new HugeBarData(DisplayInfoType::Shield));
+		this->HugeBar_Config[1]->LoadFromINI(pINI);
+	}
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
 	for (int i = 0; i < itemsCount; ++i)
@@ -168,8 +177,39 @@ bool RulesExt::DetailsCurrentlyEnabled(int const minDetailLevel)
 		&& DetailsCurrentlyEnabled();
 }
 
+RulesExt::ExtData::HugeBarData::HugeBarData(DisplayInfoType infoType)
+	: HugeBar_RectWidthPercentage(0.82)
+	, HugeBar_RectWH({ -1, 30 })
+	, HugeBar_Frame(-1)
+	, HugeBar_Pips_Frame(-1)
+	, HugeBar_Pips_Num(100)
+	, Value_Shape_Interval(8)
+	, Value_Num_BaseFrame(0)
+	, Value_Sign_BaseFrame(30)
+	, DisplayValue(true)
+	, Anchor(HorizontalPosition::Center, VerticalPosition::Top)
+	, InfoType(infoType)
+{
+	switch (infoType)
+	{
+	case DisplayInfoType::Health:
+		HugeBar_Pips_Color1 = Damageable<ColorStruct>({ 0, 255, 0 }, { 255, 255, 0 }, { 255, 0, 0 });
+		HugeBar_Pips_Color2 = Damageable<ColorStruct>({ 0, 216, 0 }, { 255, 180, 0 }, { 216, 0, 0 });
+		Value_Text_Color = Damageable<ColorStruct>({ 0, 255, 0 }, { 255, 180, 0 }, { 255, 0, 0 });
+		break;
+	case DisplayInfoType::Shield:
+		HugeBar_Pips_Color1 = Damageable<ColorStruct>({ 0, 0, 255 });
+		HugeBar_Pips_Color2 = Damageable<ColorStruct>({ 0, 0, 216 });
+		Value_Text_Color = Damageable<ColorStruct>({ 0, 0, 216 });
+		break;
+	default:
+		break;
+	}
+}
+
 // =============================
 // load / save
+
 
 template <typename T>
 void RulesExt::ExtData::Serialize(T& Stm)
@@ -201,6 +241,44 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_SelfHeal_Units_Offset)
 		.Process(this->Pips_SelfHeal_Buildings_Offset)
 		.Process(this->IronCurtain_KeptOnDeploy)
+		.Process(this->HugeBar_Config)
+		;
+}
+
+template <typename T>
+void RulesExt::ExtData::HugeBarData::Serialize(T& stm)
+{
+	stm
+		.Process(this->HugeBar_RectWidthPercentage)
+		.Process(this->HugeBar_RectWH)
+		.Process(this->HugeBar_Pips_Color1)
+		.Process(this->HugeBar_Pips_Color2)
+
+		.Process(this->HugeBar_Shape)
+		.Process(this->HugeBar_Palette)
+		.Process(this->HugeBar_Frame)
+		.Process(this->HugeBar_Pips_Shape)
+		.Process(this->HugeBar_Pips_Palette)
+		.Process(this->HugeBar_Pips_Frame)
+		.Process(this->HugeBar_Pips_Interval)
+
+		.Process(this->HugeBar_Offset)
+		.Process(this->HugeBar_Pips_Offset)
+		.Process(this->HugeBar_Pips_Num)
+
+		.Process(this->Value_Text_Color)
+
+		.Process(this->Value_Shape)
+		.Process(this->Value_Palette)
+		.Process(this->Value_Num_BaseFrame)
+		.Process(this->Value_Sign_BaseFrame)
+		.Process(this->Value_Shape_Interval)
+
+		.Process(this->DisplayValue)
+		.Process(this->Value_Offset)
+		.Process(this->Value_Percentage)
+		.Process(this->Anchor)
+		.Process(this->InfoType)
 		;
 }
 
@@ -224,6 +302,67 @@ bool RulesExt::LoadGlobals(PhobosStreamReader& Stm)
 bool RulesExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
 	return Stm.Success();
+}
+
+void RulesExt::ExtData::HugeBarData::Load(PhobosStreamReader& stm)
+{
+	Serialize(stm);
+}
+
+void RulesExt::ExtData::HugeBarData::Save(PhobosStreamWriter& stm)
+{
+	Serialize(stm);
+}
+
+void RulesExt::ExtData::HugeBarData::LoadFromINI(CCINIClass* pINI)
+{
+	char typeName[0x20];
+
+	switch (InfoType)
+	{
+	case DisplayInfoType::Health:
+		strcpy_s(typeName, "Health");
+		break;
+	case DisplayInfoType::Shield:
+		strcpy_s(typeName, "Shield");
+		break;
+	default:
+		return;
+	}
+
+	char section[0x20];
+	sprintf_s(section, "HugeBar_%s", typeName);
+	INI_EX exINI(pINI);
+
+	this->HugeBar_RectWidthPercentage.Read(exINI, section, "HugeBar.RectWidthPercentage");
+	this->HugeBar_RectWH.Read(exINI, section, "HugeBar.RectWH");
+	this->HugeBar_Pips_Color1.Read(exINI, section, "HugeBar.Pips.Color1.%s");
+	this->HugeBar_Pips_Color2.Read(exINI, section, "HugeBar.Pips.Color2.%s");
+
+	this->HugeBar_Shape.Read(exINI, section, "HugeBar.Shape");
+	this->HugeBar_Palette.LoadFromINI(pINI, section, "HugeBar.Palette");
+	this->HugeBar_Frame.Read(exINI, section, "HugeBar.Frame.%s");
+	this->HugeBar_Pips_Shape.Read(exINI, section, "HugeBar.Pips.Shape");
+	this->HugeBar_Pips_Palette.LoadFromINI(pINI, section, "HugeBar.Pips.Palette");
+	this->HugeBar_Pips_Frame.Read(exINI, section, "HugeBar.Pips.Frame.%s");
+	this->HugeBar_Pips_Interval.Read(exINI, section, "HugeBar.Pips.Interval");
+
+	this->HugeBar_Offset.Read(exINI, section, "HugeBar.Offset");
+	this->HugeBar_Pips_Offset.Read(exINI, section, "HugeBar.Pips.Offset");
+	this->HugeBar_Pips_Num.Read(exINI, section, "HugeBar.Pips.Num");
+
+	this->Value_Text_Color.Read(exINI, section, "Value.Text.Color.%s");
+
+	this->Value_Shape.Read(exINI, section, "Value.Shape");
+	this->Value_Palette.LoadFromINI(pINI, section, "Value.Palette");
+	this->Value_Num_BaseFrame.Read(exINI, section, "Value.Num.BaseFrame");
+	this->Value_Sign_BaseFrame.Read(exINI, section, "Value.Sign.BaseFrame");
+	this->Value_Shape_Interval.Read(exINI, section, "Value.Shape.Interval");
+
+	this->DisplayValue.Read(exINI, section, "DisplayValue");
+	this->Value_Offset.Read(exINI, section, "Value.Offset");
+	this->Value_Percentage.Read(exINI, section, "Value.Percentage");
+	this->Anchor.Read(exINI, section, "Anchor.%s");
 }
 
 // =============================

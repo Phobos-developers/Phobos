@@ -29,13 +29,61 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	return 0;
 }
 
-
 DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
 
 	TechnoExt::InitializeShield(pThis);
 	TechnoExt::InitializeLaserTrails(pThis);
+	TechnoExt::InitializeHugeBar(pThis);
+
+	return 0;
+}
+
+// Techno removed permanently
+DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	TechnoExt::RemoveHugeBar(pThis);
+	
+	return 0;
+}
+
+// Techno removed permanently
+DEFINE_HOOK(0x5F65F0, ObjectClass_Uninit, 0x6)
+{
+	GET(ObjectClass*, pThis, ECX);
+
+	if (auto pTechno = abstract_cast<TechnoClass*>(pThis))
+	{
+		TechnoExt::RemoveHugeBar(pTechno);
+	}
+	
+	return 0;
+}
+
+DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	TechnoExt::RemoveHugeBar(pThis);
+	
+	return 0;
+}
+
+DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	TechnoExt::InitializeHugeBar(pThis);
+	
+	return 0;
+}
+
+DEFINE_HOOK(0x4F4583, Techno_HugeBar, 0x6)
+{
+	TechnoExt::ProcessHugeBar();
 
 	return 0;
 }

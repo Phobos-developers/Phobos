@@ -124,6 +124,9 @@ public:
 
 		Valueable<Vector2D<double>> InitialStrength_Cloning;
 
+		Valueable<bool> HugeBar;
+		Valueable<int> HugeBar_Priority;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -239,6 +242,8 @@ public:
 			, DeployedSecondaryFireFLH { }
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, IronCurtain_KeptOnDeploy{ }
+			, HugeBar { false }
+			, HugeBar_Priority { -1 }
 		{ }
 
 		virtual ~ExtData() = default;

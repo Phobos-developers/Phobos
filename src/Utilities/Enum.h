@@ -33,6 +33,7 @@
 #pragma once
 
 #include <Phobos.h>
+#include <GeneralDefinitions.h>
 
 enum class AttachedAnimFlag
 {
@@ -183,6 +184,34 @@ enum class PhobosAction
 	None = 0,
 	Hijack = 1,
 	Drive = 2
+};
+
+enum class HorizontalPosition : BYTE
+{
+	Left = 0,
+	Center = 1,
+	Right = 2
+};
+
+enum class VerticalPosition : BYTE
+{
+	Top = 0,
+	Center = 1,
+	Bottom = 2
+};
+
+enum class DisplayInfoType : BYTE
+{
+	Health = 0,
+	Shield = 1,
+	Ammo = 2,
+	MindControl = 3,
+	Spawns = 4,
+	Passengers = 5,
+	Tiberium = 6,
+	Experience = 7,
+	Occupants = 8,
+	GattlingStage = 9
 };
 
 enum class TextAlign : int

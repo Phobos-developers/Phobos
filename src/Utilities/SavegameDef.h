@@ -444,6 +444,54 @@ namespace Savegame
 		}
 	};
 
+
+	template <typename TKey, typename TValue, typename Cmp>
+	struct Savegame::PhobosStreamObject<std::multimap<TKey, TValue, Cmp>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::multimap<TKey, TValue, Cmp>& Value, bool RegisterForChange) const
+		{
+			Value.clear();
+
+			size_t Count = 0;
+			if (!Stm.Load(Count))
+			{
+				return false;
+			}
+
+			for (auto ix = 0u; ix < Count; ++ix)
+			{
+				TKey key = TKey();
+
+				if (!Savegame::ReadPhobosStream(Stm, key, false))
+					return false;
+
+				Value.emplace(key, TValue());
+				auto it = Value.end();
+				--it;
+
+				if (!Savegame::ReadPhobosStream(Stm, it->second, RegisterForChange))
+					return false;
+			}
+
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::multimap<TKey, TValue, Cmp>& Value) const
+		{
+			Stm.Save(Value.size());
+
+			for (const auto& item : Value)
+			{
+				if (!Savegame::WritePhobosStream(Stm, item.first)
+					|| !Savegame::WritePhobosStream(Stm, item.second))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+	};
+
 	template <>
 	struct Savegame::PhobosStreamObject<SHPStruct*>
 	{
