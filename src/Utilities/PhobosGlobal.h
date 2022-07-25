@@ -8,7 +8,6 @@ class PhobosGlobal
 {
 public:
 	std::multimap<int, TechnoClass*, std::greater<int>> Techno_HugeBar;
-	TechnoClass* GenericStand;
 
 	bool Save(PhobosStreamWriter& stm);
 	bool Load(PhobosStreamReader& stm);
