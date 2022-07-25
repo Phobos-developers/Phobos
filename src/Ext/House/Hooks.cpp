@@ -63,3 +63,21 @@ DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 
 	return 0;
 }
+
+
+DEFINE_HOOK(0x4506D4, BuildingClass_UpdateRepair_Campaign, 0x6)
+{
+	enum { GoRepair = 0x4506F5, SkipRepair = 0x450813 };
+	GET(BuildingClass*, pThis, ESI);
+	GET(HouseClass*, pHouse, ECX);
+
+	//Vanilla code
+	if (pThis->HasBeenCaptured || pThis->ShouldRebuild || pHouse->ControlledByHuman())
+		return GoRepair;
+
+	if (pThis->BeingProduced && SessionClass::Instance->GameMode == GameMode::Campaign)
+		if(RulesExt::Global()->AIRepairBaseNodes)
+			return GoRepair;
+
+	return SkipRepair;
+}
