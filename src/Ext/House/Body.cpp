@@ -89,7 +89,13 @@ template <typename T>
 void HouseExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->BuildingCounter);
+		.Process(this->BuildingCounter)
+		.Process(this->Factory_BuildingType)
+		.Process(this->Factory_InfantryType)
+		.Process(this->Factory_VehicleType)
+		.Process(this->Factory_NavyType)
+		.Process(this->Factory_AircraftType)
+		;
 }
 
 void HouseExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

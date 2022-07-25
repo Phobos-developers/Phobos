@@ -32,8 +32,8 @@ This page lists all the individual contributions to the project by their author.
   - LaserTrails port and rework
   - Laser graphics fixes
   - Recursive transport killer fix
+  - Migration utility
   - GitHub Actions setup
-  - Overhauled Unicode font
   - Official docs
   - VSCode configs
   - Code style
@@ -56,7 +56,6 @@ This page lists all the individual contributions to the project by their author.
   - `AITrigger` Building Upgrades support
   - Wall-Gate links
   - Ability for deployed infantry to use both weapons
-  - Font icon additions
   - Official CN docs
 - **secsome (SEC-SOME)**:
   - Debug info dump hotkey
@@ -161,7 +160,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix for `Image` in art rules
   - Power delta counter
   - Help with docs
-- **ChrisLv_CN** (work relicensed under [following permission](images/ChrisLv-relicense.png)):
+- **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
    - Interceptor logic prototype
    - LaserTrails prototype
@@ -175,6 +174,7 @@ This page lists all the individual contributions to the project by their author.
    - Misc CN doc fix
    - Warhead superweapon launch logic
    - "Shield is broken" trigger event
+- **NetsuNegi* - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
 - **FlyStar** - Campaign load screen PCX support
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
@@ -190,7 +190,6 @@ This page lists all the individual contributions to the project by their author.
 - **ayylmao** - help with docs, extensive and thorough testing
 - **SMxReaver** - help with docs, extensive and thorough testing
 - **4SG** - help with docs
-- **wiktorderelf** - overhauled Unicode font
 - **thomassneddon** - general assistance
 - **Xkein** - general assistance, YRpp edits
 - **mevitar** - honorary shield tester *triple* award

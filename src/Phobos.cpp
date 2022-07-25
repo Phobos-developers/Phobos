@@ -6,6 +6,7 @@
 #include <Unsorted.h>
 #include <Drawing.h>
 
+#include "Utilities/Parser.h"
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
@@ -55,6 +56,11 @@ bool Phobos::Config::DevelopmentCommands = true;
 bool Phobos::Config::ArtImageSwap = false;
 bool Phobos::Config::AllowParallelAIQueues = true;
 bool Phobos::Config::EnableBuildingPlacementPreview = false;
+bool Phobos::Config::ForbidParallelAIQueues_Infantry = false;
+bool Phobos::Config::ForbidParallelAIQueues_Vehicle = false;
+bool Phobos::Config::ForbidParallelAIQueues_Navy = false;
+bool Phobos::Config::ForbidParallelAIQueues_Aircraft = false;
+bool Phobos::Config::ForbidParallelAIQueues_Building = false;
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
@@ -239,6 +245,12 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 {
 	GET(CCINIClass*, rulesINI, EDI);
+
+	Phobos::Config::ForbidParallelAIQueues_Infantry = rulesINI->ReadBool("GlobalControls", "ForbidParallelAIQueues.Infantry", Phobos::Config::AllowParallelAIQueues);
+	Phobos::Config::ForbidParallelAIQueues_Vehicle = rulesINI->ReadBool("GlobalControls", "ForbidParallelAIQueues.Vehicle", Phobos::Config::AllowParallelAIQueues);
+	Phobos::Config::ForbidParallelAIQueues_Navy = rulesINI->ReadBool("GlobalControls", "ForbidParallelAIQueues.Navy", Phobos::Config::AllowParallelAIQueues);
+	Phobos::Config::ForbidParallelAIQueues_Aircraft = rulesINI->ReadBool("GlobalControls", "ForbidParallelAIQueues.Aircraft", Phobos::Config::AllowParallelAIQueues);
+	Phobos::Config::ForbidParallelAIQueues_Building = rulesINI->ReadBool("GlobalControls", "ForbidParallelAIQueues.Building", Phobos::Config::AllowParallelAIQueues);
 
 	// Ares tags
 	Phobos::Config::DevelopmentCommands = rulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);

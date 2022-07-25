@@ -4,16 +4,21 @@ This page lists the history of changes across stable Phobos releases and also al
 
 ## Migrating
 
+```{hint}
+You can use the migration utility (can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) to apply most of the changes automatically using a corresponding sed script file.
+```
+
 ### From vanilla
 
 - SHP debris hardcoded shadows now respect `Shadow=no` tag value, and due to it being the default value they wouldn't have hardcoded shadows anymore by default. Override this by specifying `Shadow=yes` for SHP debris.
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
-- The iron-curtain effect will be preserved upon `DeploysInto`/`UndeploysInto`. Can be disabled with `IronCurtain.KeptOnDeploy=no`
+- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`.
 
 ### From older Phobos versions
 
 #### From pre-0.3 devbuilds
 
+- `Trajectory.Speed` is now defined on projectile instead of weapon.
 - `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 - `Rad.NoOwner` on weapons is deprecated. This has been replaced by `RadHasOwner` key on radiation types itself. It also defaults to no, so radiation once again has no owner house by default.
 - Automatic self-destruction logic logic has been reimplemented, `Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been remade/renamed and require adjustments to function.
@@ -316,6 +321,7 @@ New:
 - Enhanced projectile interception logic, including projectile strength & armor types (by Starkku)
 - Initial Strength for Cloned Infantry (by FS-21)
 - OpenTopped transport rangefinding & deactivated state customizations (by Starkku)
+- Forbidding parallel AI queues by type (by NetsuNegi)
 - Animation damage / weapon improvements (by Starkku)
 - Warhead self-damaging toggle (by Starkku)
 - Trailer animations inheriting owner (by Starkku)
@@ -362,6 +368,9 @@ Phobos fixes:
 - Fixed interceptors intercepting projectiles fired by friendly objects if the said object died after firing the projectile (by Starkku)
 - Fixed interceptor weapons with `Inviso=true` projectiles detonating the projectile at wrong coordinates (by Starkku)
 - Fixed some possible configuration reading issues when using Phobos with patches that rename `uimd.ini` (by Belonit)
+
+Non-DLL:
+- Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)
 </details>
 
 

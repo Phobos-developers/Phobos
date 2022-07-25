@@ -289,3 +289,23 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 	return 0;
 }
+
+// Do not force straight trajectory projectiles to detonate at target coordinates under certain circumstances.
+// Fixes issues with walls etc.
+DEFINE_HOOK(0x468EC7, BulletClass_Explode_TargetCoord, 0x6)
+{
+	enum { SkipSetCoordinate = 0x468F23 };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (pExt->Trajectory)
+		{
+			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
+				return SkipSetCoordinate;
+		}
+	}
+
+	return 0;
+}

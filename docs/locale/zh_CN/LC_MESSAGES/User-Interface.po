@@ -69,11 +69,11 @@ msgstr "修复了非输入法键盘输入以使基础拉丁或拉丁-1以外的�
 #: ../User-Interface.md:1
 msgid ""
 "You can use {download}`the improved vanilla font "
-"<_static/files/ImprovedFont-v4.zip>` (v4 and higher) which has way more "
+"<https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/ImprovedFont>` (v4 and higher) which has way more "
 "Unicode character coverage than the default one."
 msgstr ""
 "你可以{download}`原版增强字库 "
-"<_static/files/ImprovedFont-v4.zip>`（v4或更高版本）来覆盖默认字库。此字库拥有更多的Unicode字符。"
+"<https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/ImprovedFont>`（v4或更高版本）来覆盖默认字库。此字库拥有更多的Unicode字符。"
 
 #: ../User-Interface.md:15
 msgid "Audio"
@@ -345,14 +345,14 @@ msgstr "当正在工作的矿车数量低于一定百分比时，矿车指示器
 #: ../User-Interface.md:1
 msgid ""
 "If you use the vanilla font in your mod, you can use {download}`the "
-"improved font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which "
+"improved font <https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/ImprovedFont>` (v4 and higher) which "
 "among everything already includes the mentioned icons. Otherwise you'd "
 "need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-"
 "design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for "
 "example."
 msgstr ""
 "如果你的mod使用原版字库，可以使用已经包含上文提到过的标志的{download}`增强字库 "
-"<_static/files/ImprovedFont-v4.zip>`（v4或更高版本）。否则你需要自行编辑字库，比如使用[WWFontEditor](http://nyerguds"
+"<https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/ImprovedFont>`（v4或更高版本）。否则你需要自行编辑字库，比如使用[WWFontEditor](http://nyerguds"
 ".arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D)。"
 
 #: ../User-Interface.md:168
@@ -486,15 +486,14 @@ msgstr "工具提示现在可以越过侧边栏边界以容纳更长的内容。
 #: ../User-Interface.md:1
 msgid ""
 "Same as with harvester counter, you can download {download}`the improved "
-"font <_static/files/ImprovedFont-v4.zip>` (v3 and higher) or draw your "
+"font <https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/ImprovedFont>` (v3 and higher) or draw your "
 "own icons."
 msgstr ""
 "类似矿车指示器，你可以使用{download}`增强字库 "
-"<_static/files/ImprovedFont-v4.zip>`（v3或更高版本）或自己绘制标志。"
+"<https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/ImprovedFont>`（v3或更高版本）或自己绘制标志。"
 
 #: ../User-Interface.md:253
 msgid ""
 "The descriptions are designed to be toggleable by users. For now you can "
 "only do that externally via client or manually."
 msgstr "描述信息可以由用户决定是否开启，但现在只能内置到客户端内或手动设置。"
-
