@@ -2,6 +2,7 @@
 
 #include <Ext/House/Body.h>
 #include <Utilities/GeneralUtils.h>
+#include <ScenarioClass.h>
 
 template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
@@ -149,15 +150,26 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	{
 		this->PlacementPreview_Enabled.Read(exINI, pSection, "PlacementPreview");
 
-		if (pINI->GetString(pSection, "PlacementPreview.Shape", Phobos::readBuffer))
+		auto pKey = "PlacementPreview.Shape";
+		if (pINI->GetString(pSection, pKey, Phobos::readBuffer))
 		{
-			if (GeneralUtils::IsValidString(Phobos::readBuffer))
+			auto pValue = Phobos::readBuffer;
+			if (GeneralUtils::IsValidString(pValue))
 			{
 				// we cannot load same SHP file twice it may produce artifact , prevent it !
-				if (_strcmpi(Phobos::readBuffer, pSection) || _strcmpi(Phobos::readBuffer, pArtSection))
-					this->PlacementPreview_Shape.Read(exINI, pSection, "PlacementPreview.Shape");
+				if (_strcmpi(pValue, pSection) || _strcmpi(pValue, pArtSection))
+				{
+					GeneralUtils::ApplyTheaterSuffixToString(pValue);
+
+					if (auto pImage = FileSystem::LoadSHPFile(pValue))
+						this->PlacementPreview_Shape = pImage;
+					else
+						Debug::Log("Failed to find file %s referenced by [%s]%s=%s\n", pValue, pSection, pKey, pValue);
+				}
 				else
+				{
 					Debug::Log("Cannot Load PlacementPreview.Shape for [%s]Art[%s] ! \n", pSection, pArtSection);
+				}
 			}
 		}
 

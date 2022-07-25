@@ -49,9 +49,6 @@
 #include <VocClass.h>
 #include <VoxClass.h>
 #include <ArmorType.h>
-#include <ScenarioClass.h>
-
-struct Theater_SHPStruct : SHPStruct {};
 
 namespace detail
 {
@@ -265,41 +262,6 @@ namespace detail
 			if (auto const pImage = FileSystem::LoadSHPFile(Result.c_str()))
 			{
 				value = pImage;
-				return true;
-			}
-			else
-			{
-				Debug::Log("Failed to find file %s referenced by [%s]%s=%s\n", Result.c_str(), pSection, pKey, pValue);
-			}
-		}
-		return false;
-	}
-
-	template <>
-	inline bool read<Theater_SHPStruct*>(Theater_SHPStruct*& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
-	{
-		if (parser.ReadString(pSection, pKey))
-		{
-			auto const pValue = parser.value();
-			if (auto const pSuffix = strstr(pValue, "~~~"))
-			{
-				auto const theater = ScenarioClass::Instance->Theater;
-				auto const pExtension = Theater::GetTheater(theater).Extension;
-				pSuffix[0] = pExtension[0];
-				pSuffix[1] = pExtension[1];
-				pSuffix[2] = pExtension[2];
-			}
-
-			std::string Result = pValue;
-
-			if (!strstr(pValue, ".shp"))
-			{
-				Result += ".shp";
-			}
-
-			if (auto const pImage = FileSystem::LoadSHPFile(Result.c_str()))
-			{
-				value = reinterpret_cast<Theater_SHPStruct*>(pImage);
 				return true;
 			}
 			else
