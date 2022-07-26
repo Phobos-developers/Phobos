@@ -699,39 +699,40 @@ void TechnoExt::ApplyMobileRefinery(TechnoClass* pThis)
 		Unsorted::CurrentFrame % pTypeExt->MobileRefinery_TransRate))
 		return;
 
-	int cellCount = Math::max(pTypeExt->MobileRefinery_FrontOffset.size(), pTypeExt->MobileRefinery_LeftOffset.size());
+	size_t cellCount = Math::max(pTypeExt->MobileRefinery_FrontOffset.size(), pTypeExt->MobileRefinery_LeftOffset.size());
 
 	if (!cellCount)
 		cellCount = 1;
 
 	CoordStruct flh = { 0,0,0 };
 
-	for (int idx = 0; idx < cellCount; idx++)
+	for (size_t idx = 0; idx < cellCount; idx++)
 	{
-		flh.X = pTypeExt->MobileRefinery_FrontOffset.size() > idx ? pTypeExt->MobileRefinery_FrontOffset[idx] * Unsorted::LeptonsPerCell : 0;
-		flh.Y = pTypeExt->MobileRefinery_LeftOffset.size() > idx ? pTypeExt->MobileRefinery_LeftOffset[idx] * Unsorted::LeptonsPerCell : 0;
-		CellClass* pCell = MapClass::Instance->TryGetCellAt(TechnoExt::GetFLHAbsoluteCoords(pThis, flh, false));
+		flh.X = static_cast<int>(pTypeExt->MobileRefinery_FrontOffset.size() > idx ? pTypeExt->MobileRefinery_FrontOffset[idx] * Unsorted::LeptonsPerCell : 0);
+		flh.Y = static_cast<int>(pTypeExt->MobileRefinery_LeftOffset.size() > idx ? pTypeExt->MobileRefinery_LeftOffset[idx] * Unsorted::LeptonsPerCell : 0);
+		CoordStruct pos = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, false);
+		CellClass* pCell = MapClass::Instance->TryGetCellAt(pos);
 
 		if (!pCell)
 			return;
 
-		auto pos = pCell->GetCoords();
-		pos.Z = pThis->Location.Z;
+		auto loc = pCell->GetCoords();
+		loc.Z = pThis->Location.Z;
 		int tValue = pCell->GetContainedTiberiumValue();
 
 		if (tValue)
 		{
 			int tibValue = TiberiumClass::Array->GetItem(pCell->GetContainedTiberiumIndex())->Value;
 			int tAmount = static_cast<int>(tValue * 1.0 / tibValue);
-			int amount = pTypeExt->MobileRefinery_MaxAmount ? Math::min(pTypeExt->MobileRefinery_MaxAmount, tAmount) : tAmount;
+			int amount = pTypeExt->MobileRefinery_AmountPerCell ? Math::min(pTypeExt->MobileRefinery_AmountPerCell, tAmount) : tAmount;
 			pCell->ReduceTiberium(amount);
-			int value = amount * tibValue * pTypeExt->MobileRefinery_CashMultiplier;
+			int value = static_cast<int>(amount * tibValue * pTypeExt->MobileRefinery_CashMultiplier);
 			pThis->Owner->TransactMoney(value);
 
 			if (pTypeExt->MobileRefinery_Display)
 			{
 				Point2D location = { 0,0 };
-				TacticalClass::Instance->CoordsToScreen(&location, &pos);
+				TacticalClass::Instance->CoordsToScreen(&location, &loc);
 				location -= TacticalClass::Instance->TacticalPos;
 				RectangleStruct rect = DSurface::Temp->GetRect();
 				RectangleStruct bound = { location.X, location.Y, 10, 12 };
@@ -742,7 +743,43 @@ void TechnoExt::ApplyMobileRefinery(TechnoClass* pThis)
 					ColorStruct color = pTypeExt->MobileRefinery_DisplayColor;
 					wchar_t moneyStr[0x20];
 					swprintf_s(moneyStr, L"%ls%ls%d", L"+", Phobos::UI::CostLabel, value);
-					FlyingStrings::Add(moneyStr, pos, color);
+					FlyingStrings::Add(moneyStr, loc, color);
+				}
+			}
+
+			if (!pTypeExt->MobileRefinery_Anims.empty())
+			{
+				AnimTypeClass* pAnimType = nullptr;
+				int facing = pThis->PrimaryFacing.current().value8();
+
+				if (facing >= 7)
+					facing = 0;
+				else
+					facing++;
+
+				switch (pTypeExt->MobileRefinery_Anims.size())
+				{
+				case 1:
+					pAnimType = pTypeExt->MobileRefinery_Anims[0];
+					break;
+				case 8:
+					pAnimType = pTypeExt->MobileRefinery_Anims[facing];
+					break;
+				default:
+					pAnimType = pTypeExt->MobileRefinery_Anims[
+						ScenarioClass::Instance->Random.RandomRanged(0, pTypeExt->MobileRefinery_Anims.size() - 1)];
+					break;
+				}
+
+				if (pAnimType)
+				{
+					if (auto pAnim = GameCreate<AnimClass>(pAnimType, pos))
+					{
+						pAnim->Owner = pThis->Owner;
+
+						if (pTypeExt->MobileRefinery_AnimMove)
+							pAnim->SetOwnerObject(pThis);
+					}
 				}
 			}
 		}

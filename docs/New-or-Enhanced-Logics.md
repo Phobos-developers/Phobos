@@ -723,6 +723,8 @@ MobileRefinery.FrontOffset=       ; list of double, use cell as unit, multiple v
 MobileRefinery.LeftOffset=         ; list of double, use cell as unit, multiple values mean that they are effective in multiple cells at the same time
 MobileRefinery.Display=yes       ; boolean, should it display translated cash ?
 MobileRefinery.DisplayColor=57,197,187 ; RGB color
+MobileRefinery.Anims=              ; list of animations, if set 8 animations, it will select by techno's body facing, other amount will random select
+MobileRefinery.AnimMove=yes   ; should the anim move as techno ?
 ```
 
 

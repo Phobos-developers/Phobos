@@ -152,11 +152,13 @@ public:
 		Valueable<bool> MobileRefinery;
 		Valueable<int> MobileRefinery_TransRate;
 		Valueable<float> MobileRefinery_CashMultiplier;
-		Valueable<int> MobileRefinery_MaxAmount;
+		Valueable<int> MobileRefinery_AmountPerCell;
 		ValueableVector<double> MobileRefinery_FrontOffset;
 		ValueableVector<double> MobileRefinery_LeftOffset;
 		Valueable<bool> MobileRefinery_Display;
 		Valueable<ColorStruct> MobileRefinery_DisplayColor;
+		ValueableVector<AnimTypeClass*> MobileRefinery_Anims;
+		Valueable<bool> MobileRefinery_AnimMove;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -251,11 +253,13 @@ public:
 			, MobileRefinery { false }
 			, MobileRefinery_TransRate { 30 }
 			, MobileRefinery_CashMultiplier { 1.0 }
-			, MobileRefinery_MaxAmount { 0 }
+			, MobileRefinery_AmountPerCell { 0 }
 			, MobileRefinery_FrontOffset { }
 			, MobileRefinery_LeftOffset { }
 			, MobileRefinery_Display { true }
 			, MobileRefinery_DisplayColor { { 57,197,187 } }
+			, MobileRefinery_Anims { }
+			, MobileRefinery_AnimMove { true }
 		{ }
 
 		virtual ~ExtData() = default;

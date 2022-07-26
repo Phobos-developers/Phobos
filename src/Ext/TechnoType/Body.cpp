@@ -270,11 +270,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->MobileRefinery.Read(exINI, pSection, "MobileRefinery");
 	this->MobileRefinery_TransRate.Read(exINI, pSection, "MobileRefinery.TransRate");
 	this->MobileRefinery_CashMultiplier.Read(exINI, pSection, "MobileRefinery.CashMultiplier");
-	this->MobileRefinery_MaxAmount.Read(exINI, pSection, "MobileRefinery.MaxAmount");
+	this->MobileRefinery_AmountPerCell.Read(exINI, pSection, "MobileRefinery.AmountPerCell");
 	this->MobileRefinery_FrontOffset.Read(exINI, pSection, "MobileRefinery.FrontOffset");
 	this->MobileRefinery_LeftOffset.Read(exINI, pSection, "MobileRefinery.LeftOffset");
 	this->MobileRefinery_Display.Read(exINI, pSection, "MobileRefinery.Display");
 	this->MobileRefinery_DisplayColor.Read(exINI, pSection, "MobileRefinery.DisplayColor");
+	this->MobileRefinery_Anims.Read(exINI, pSection, "MobileRefinery.Anims");
+	this->MobileRefinery_AnimMove.Read(exINI, pSection, "MobileRefinery.AnimMove");
 }
 
 template <typename T>
@@ -379,11 +381,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MobileRefinery)
 		.Process(this->MobileRefinery_TransRate)
 		.Process(this->MobileRefinery_CashMultiplier)
-		.Process(this->MobileRefinery_MaxAmount)
+		.Process(this->MobileRefinery_AmountPerCell)
 		.Process(this->MobileRefinery_FrontOffset)
 		.Process(this->MobileRefinery_LeftOffset)
 		.Process(this->MobileRefinery_Display)
 		.Process(this->MobileRefinery_DisplayColor)
+		.Process(this->MobileRefinery_Anims)
+		.Process(this->MobileRefinery_AnimMove)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
