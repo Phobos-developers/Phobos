@@ -26,6 +26,80 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 
 ## Battle screen UI/UX
 
+### Digital display
+
+- You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health point or shield point.
+
+![image](_static/images/DigitalDisplay1.png)
+
+![image](_static/images/DigitalDisplay2.png)
+
+- `Acnhor`: Start drawing position anchor to the select bracket.
+- `Anchor.Building`: hexagon projection of a selection border on the screen.
+
+- InfoType Enumeration: `health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|occupants|gattlingstage`
+
+- Default `Align`:
+  - Text: Buildings `right`, others `center`.
+  - Shape: Buildings `left`, others `center`.
+
+- Default `Offset.ShieldDelta`
+  - `InfoType=shield`: `0,-10`
+  - Others: `0,0`
+
+- Default `Shape.Interval`
+  - Buildings: 8,-4
+  - Others: 8,0
+
+- `Shape`: Use 0-9 frames of the SHP file as the number used when the ratio is greater than `[AudioVisual]>ConditionYellow`, 10-19 frames as greater than `[AudioVisual]>ConditionRed` and less than or equal to `[AudioVisual]>ConditionYellow`, 20-29 frames as less than or equal `[AudioVisual]>ConditionRed`, 30,31 frames as `/` and `%` when the ratio is greater than `[AudioVisual]>ConditionYellow`, 32,33 frames as greater than `[AudioVisual]>ConditionRed` and less than or equal to `[AudioVisual]>ConditionYellow`, 34,35 frames as less than or equal to `[AudioVisual]>ConditionRed`.
+
+In `Ra2MD.ini`:
+
+```ini
+DigitalDisplay.Enable=  ; boolean
+```
+
+In `rulesmd.ini`:
+
+```ini
+[DigitalDisplayTypes] ;New registry for registering digital display types
+
+[AudioVisual]
+Buildings.DefaultDigitalDisplayTypes=  ; list of DigitalDisplayTypes
+Infantry.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayTypes
+Vehicles.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayTypes
+Aircraft.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayTypes
+
+[SomeDigitalDisplayType]
+; Generic
+InfoType=Health                        ; InfoType Enumeration
+Offset=0,0                             ; integer - horizontal, vertical
+Offset.ShieldDelta=                    ; integer - horizontal, vertical
+Align=None                             ; TextAlign Enumeration, - left|right|center/centre|none
+Anchor.Horizontal=Left                 ; Horizontal Position Enumeration, - left|center/centre|right, start drawing point anchor the select bracket
+Anchor.Vertical=top                    ; Vertical Position Enumeration, - top|center/centre|bottom
+Anchor.Building=lefttop                ; Hexagon Vertex Enumeration, top|lefttop|leftright|bottom|rightbottom|rightTop
+Border=Top                             ; Border Position Enumeration, - top|left|right|bottom, Position relative to select bracket's border
+Percentage=no                          ; boolean
+HideMaxValue=no                        ; boolean
+
+; Text
+Text.Color=0,255,0                     ; RGB
+Text.Color.ConditionYellow=255,255,0   ; RGB
+Text.Color.ConditionRed=255,0,0        ; RGB
+Text.Background=no                     ; boolean
+
+; Shape
+Shape=                                 ; filename - including the .shp, use shape display if exist
+Palette=palette.pal                    ; filename - including the .pal
+Shape.Interval=                        ; integer - x,y , can be negative, horizontal and vertical spacing between two SHP digitals
+
+[SomeTechnoType]
+DigitalDisplay.Disable=no              ; boolean
+DigitalDisplayTypes=                   ; list of DigitalDisplayType
+
+```
+
 ### Hide health bars
 
 ![image](_static/images/healthbar.hide-01.png)
