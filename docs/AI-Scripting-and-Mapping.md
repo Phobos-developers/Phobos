@@ -10,6 +10,8 @@ This page describes all AI scripting and mapping related additions and changes i
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
 
+- In singleplayer campaigns, AI can now repair the base nodes by setting `[Basic]->AIRepairBaseNodes=yes`.
+
 ## Script actions
 
 ### `71` Timed Area Guard
