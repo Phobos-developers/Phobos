@@ -130,7 +130,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 
 		ConvertClass* pPalette = nullptr;
 		{
-			if(pTypeExt->PlacementPreview_Remap.Get())
+			if (pTypeExt->PlacementPreview_Remap.Get())
 				pPalette = pBuilding->GetDrawer();
 			else
 				pPalette = pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
