@@ -36,7 +36,7 @@ public:
 		Valueable<AffectedHouse> Grinding_DisplayRefund_Houses;
 		Valueable<Point2D> Grinding_DisplayRefund_Offset;
 
-		Valueable<bool> PlacementPreview_Enabled;
+		Valueable<bool> PlacementPreview;
 		Nullable<SHPStruct*> PlacementPreview_Shape;
 		Nullable<int> PlacementPreview_ShapeFrame;
 		Valueable<CoordStruct> PlacementPreview_Offset;
@@ -61,7 +61,7 @@ public:
 			, Grinding_DisplayRefund { false }
 			, Grinding_DisplayRefund_Houses { AffectedHouse::All }
 			, Grinding_DisplayRefund_Offset { { 0,0 } }
-			, PlacementPreview_Enabled { true }
+			, PlacementPreview { true }
 			, PlacementPreview_Shape {}
 			, PlacementPreview_ShapeFrame {}
 			, PlacementPreview_Remap { true }

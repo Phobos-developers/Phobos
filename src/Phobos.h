@@ -68,7 +68,6 @@ public:
 		static bool DevelopmentCommands;
 		static bool ArtImageSwap;
 		static bool AllowParallelAIQueues;
-		static bool PlacementPreview_Enabled;
 		static bool ShowPlacementPreview;
 		static bool ForbidParallelAIQueues_Infantry;
 		static bool ForbidParallelAIQueues_Vehicle;

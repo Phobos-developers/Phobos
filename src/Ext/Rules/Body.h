@@ -40,6 +40,7 @@ public:
 		Valueable<bool> JumpjetTurnToTarget;
 		PhobosFixedString<32u> MissingCameo;
 		Valueable<int> PlacementGrid_Translucency;
+		Valueable<bool> PlacementPreview;
 		Valueable<int> PlacementPreview_Translucency;
 		Valueable<Vector3D<int>> Pips_Shield;
 		Nullable<SHPStruct*> Pips_Shield_Background;
@@ -67,6 +68,7 @@ public:
 			, JumpjetTurnToTarget { false }
 			, MissingCameo { "xxicon.shp" }
 			, PlacementGrid_Translucency { 0 }
+			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
 			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { -1,-1,-1 } }

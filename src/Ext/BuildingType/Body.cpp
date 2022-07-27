@@ -147,7 +147,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// PlacementPreview
 	{
-		this->PlacementPreview_Enabled.Read(exINI, pSection, "PlacementPreview");
+		this->PlacementPreview.Read(exINI, pSection, "PlacementPreview");
 
 		auto pKey = "PlacementPreview.Shape";
 		if (pINI->GetString(pSection, pKey, Phobos::readBuffer))
@@ -207,7 +207,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Grinding_DisplayRefund)
 		.Process(this->Grinding_DisplayRefund_Houses)
 		.Process(this->Grinding_DisplayRefund_Offset)
-		.Process(this->PlacementPreview_Enabled)
+		.Process(this->PlacementPreview)
 		.Process(this->PlacementPreview_Shape)
 		.Process(this->PlacementPreview_ShapeFrame)
 		.Process(this->PlacementPreview_Offset)
