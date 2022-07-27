@@ -88,8 +88,7 @@ PlacementPreview.Palette=            ; filename - including the .pal extension.
 PlacementPreview.Translucency=       ; translucency level (0/25/50/75), defaults to [AudioVisual]->PlacementPreview.Translucency
 ```
 ```{note}
-The `PlacementPreview.Palett` option is not used if `PlacementPreview.Remap=yes`
-This may change in the future
+The `PlacementPreview.Palett` option is not used if `PlacementPreview.Remap=yes` This may change in the future
 ```
 
 
