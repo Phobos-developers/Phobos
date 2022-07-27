@@ -78,12 +78,12 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& posDraw, int iLength, int iCu
 	RectangleStruct rect = { 0, 0, 0, 0 };
 	DSurface::Temp->GetRect(&rect);
 	TextPrintType ePrintType;
-	int textLength = wcslen(text);
+	int iTextLength = wcslen(text);
 	const int iTextHeight = 12;
 	const int iPipHeight = 4;
 	const int iBuildingPipWidth = 4;
 	const int iBuildingPipHeight = 2;
-	const int iTextWidth = 6;
+	const int iTextWidth = 5;
 
 	if (Border == BorderPosition::Top)
 		posDraw.Y -= iTextHeight + iPipHeight;
@@ -95,32 +95,35 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& posDraw, int iLength, int iCu
 		ePrintType = TextPrintType::FullShadow;
 
 		if (Border == BorderPosition::Left)
-			posDraw.X -= textLength * iTextWidth;
+			posDraw.X -= iTextLength * iTextWidth;
 	}
 	break;
 	case TextAlign::Right:
 	{
 		ePrintType = TextPrintType::Right & TextPrintType::FullShadow;
 
-		if (Border == BorderPosition::Right)
-			posDraw.X += textLength * iTextWidth;
+		if (Border != BorderPosition::Right)
+			posDraw.X -= iTextLength * iTextWidth;
 	}
 	break;
 	case TextAlign::Center:
 	{
 		ePrintType = TextPrintType::Center;
 	}
+	break;
 	default:
+	{
 		if (isBuilding)
 		{
-			ePrintType = TextPrintType::Right;
+			ePrintType = TextPrintType::Right & TextPrintType::FullShadow;
 		}
 		else
 		{
 			ePrintType = TextPrintType::Center;
 			posDraw.X += iLength;
 		}
-		break;
+	}
+	break;
 	}
 
 	ePrintType = ePrintType | (ShowBackground ? TextPrintType::Background : TextPrintType::LASTPOINT);
