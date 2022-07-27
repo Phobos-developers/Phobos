@@ -122,8 +122,8 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 		BlitterFlags blitFlags = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
 		{
 			blitFlags |= EnumFunctions::GetTranslucentLevel(
-				pTypeExt->PlacementPreview_Translucent.Get(
-					RulesExt::Global()->PlacementPreview_Translucent
+				pTypeExt->PlacementPreview_Translucency.Get(
+					RulesExt::Global()->PlacementPreview_Translucency
 				)
 			);
 		}
@@ -151,6 +151,6 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 DEFINE_HOOK(0x47EFAE, CellClass_Draw_It_MakePlacementGridTranparent, 0x6)
 {
 	LEA_STACK(BlitterFlags*, blitFlags, STACK_OFFS(0x68, 0x58));
-	*blitFlags |= EnumFunctions::GetTranslucentLevel(RulesExt::Global()->PlacementPreview_Grid_Translucent);
+	*blitFlags |= EnumFunctions::GetTranslucentLevel(RulesExt::Global()->PlacementPreview_Grid_Translucency);
 	return 0;
 }

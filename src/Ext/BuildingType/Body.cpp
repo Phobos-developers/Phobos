@@ -176,7 +176,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->PlacementPreview_Offset.Read(exINI, pSection, "PlacementPreview.Offset");
 		this->PlacementPreview_Remap.Read(exINI, pSection, "PlacementPreview.Remap");
 		this->PlacementPreview_Palette.LoadFromINI(pINI, pSection, "PlacementPreview.Palette");
-		this->PlacementPreview_Translucent.Read(exINI, pSection, "PlacementPreview.Translucent");
+		this->PlacementPreview_Translucency.Read(exINI, pSection, "PlacementPreview.Translucency");
 	}
 }
 
@@ -213,7 +213,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlacementPreview_Offset)
 		.Process(this->PlacementPreview_Remap)
 		.Process(this->PlacementPreview_Palette)
-		.Process(this->PlacementPreview_Translucent)
+		.Process(this->PlacementPreview_Translucency)
 		;
 }
 

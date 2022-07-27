@@ -39,8 +39,8 @@ public:
 		Valueable<bool> JumpjetAllowLayerDeviation;
 		Valueable<bool> JumpjetTurnToTarget;
 		PhobosFixedString<32u> MissingCameo;
-		Valueable<int> PlacementPreview_Grid_Translucent;
-		Valueable<int> PlacementPreview_Translucent;
+		Valueable<int> PlacementPreview_Grid_Translucency;
+		Valueable<int> PlacementPreview_Translucency;
 		Valueable<Vector3D<int>> Pips_Shield;
 		Nullable<SHPStruct*> Pips_Shield_Background;
 		Valueable<Vector3D<int>> Pips_Shield_Building;
@@ -66,8 +66,8 @@ public:
 			, JumpjetAllowLayerDeviation { true }
 			, JumpjetTurnToTarget { false }
 			, MissingCameo { "xxicon.shp" }
-			, PlacementPreview_Grid_Translucent { 0 }
-			, PlacementPreview_Translucent { 75 }
+			, PlacementPreview_Grid_Translucency { 0 }
+			, PlacementPreview_Translucency { 75 }
 			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { -1,-1,-1 } }
 			, Pips_Shield_Building_Empty { }
