@@ -1,13 +1,10 @@
 #include "Body.h"
 
 #include <TacticalClass.h>
-
-#include <BuildingClass.h>
-#include <HouseClass.h>
 #include <Ext/Rules/Body.h>
+
 #include <Utilities/Macro.h>
 #include <Utilities/EnumFunctions.h>
-#include <Utilities/GeneralUtils.h>
 
 DEFINE_HOOK(0x460285, BuildingTypeClass_LoadFromINI_Muzzle, 0x6)
 {
@@ -90,13 +87,13 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 				return 0;
 		}
 
-		int nFrame = 0;
+		int nImageFrame = 0;
 		SHPStruct* pImage = pTypeExt->PlacementPreview_Shape;
 		{
 			if (!pImage)
 			{
 				if (pImage = pType->LoadBuildup())
-					nFrame = ((pImage->Frames / 2) - 1);
+					nImageFrame = ((pImage->Frames / 2) - 1);
 				else
 					pImage = pType->GetImage();
 
@@ -104,7 +101,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 					return 0;
 			}
 
-			nFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get(nFrame), 0, (int)pImage->Frames);
+			nImageFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get(nImageFrame), 0, (int)pImage->Frames);
 		}
 
 		Point2D nPoint = { 0, 0 };
@@ -136,12 +133,11 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 				pPalette = pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
 		}
 
-
 		DSurface* pSurface = DSurface::Temp;
 		RectangleStruct nRect = pSurface->GetRect();
 		nRect.Height -= 32; // account for bottom bar
 
-		CC_Draw_Shape(pSurface, pPalette, pImage, nFrame, &nPoint, &nRect, blitFlags,
+		CC_Draw_Shape(pSurface, pPalette, pImage, nImageFrame, &nPoint, &nRect, blitFlags,
 			0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
