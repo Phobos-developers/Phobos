@@ -77,7 +77,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 	this->JumpjetTurnToTarget.Read(exINI, "JumpjetControls", "TurnToTarget");
 	this->PlacementPreview_Translucency.Read(exINI, "AudioVisual", "PlacementPreview.Translucency");
-	this->PlacementPreview_Grid_Translucency.Read(exINI, "AudioVisual", "PlacementPreview.Grid.Translucency");
+	this->PlacementGrid_Translucency.Read(exINI, "AudioVisual", "PlacementGrid.Translucency");
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
 	this->Pips_Shield_Background.Read(exINI, "AudioVisual", "Pips.Shield.Background");
 	this->Pips_Shield_Building.Read(exINI, "AudioVisual", "Pips.Shield.Building");
@@ -188,7 +188,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetNoWobbles)
 		.Process(this->JumpjetAllowLayerDeviation)
 		.Process(this->JumpjetTurnToTarget)
-		.Process(this->PlacementPreview_Grid_Translucency)
+		.Process(this->PlacementGrid_Translucency)
 		.Process(this->PlacementPreview_Translucency)
 		.Process(this->Pips_Shield)
 		.Process(this->Pips_Shield_Background)
