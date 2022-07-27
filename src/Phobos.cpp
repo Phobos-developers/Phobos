@@ -239,9 +239,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	// PlacementPreview
 	{
-		Phobos::Config::PlacementPreview_Enabled = pINI_RULESMD->ReadBool("AudioVisual", "PlacementPreview.Building", false);
+		Phobos::Config::PlacementPreview_Enabled = pINI_RULESMD->ReadBool("AudioVisual", "PlacementPreview", false);
 		Phobos::Config::PlacementPreview_UserHasEnabled =
-			CCINIClass::INI_RA2MD->ReadBool("Phobos", "PlacementPreview.Building", Phobos::Config::PlacementPreview_Enabled);
+			CCINIClass::INI_RA2MD->ReadBool("Phobos", "PlacementPreview", Phobos::Config::PlacementPreview_Enabled);
 	}
 
 	Phobos::CloseConfig(pINI_RULESMD);

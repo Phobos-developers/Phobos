@@ -65,7 +65,7 @@ PrioritySelectionFiltering=true  ; boolean
 ![placepreview](_static/images/placepreview.png)
 *Building placement preview using 50% translucency in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
-- Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual]->PlacementPreview.Building` and then further customized for each building with `[SOMEBUILDING]->PlacementPreview`.
+- Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual]->PlacementPreview` and then further customized for each building with `[SOMEBUILDING]->PlacementPreview`.
 - The building placement grid *(place.shp)* translucency setting can be adjusted via `PlacementPreview.Grid.Translucent`.
 - If using the building's appropriate `Buildup` is not desired, customizations allow for you to choose the exact SHP and frame you'd prefer to show as preview through `PlacementPreview.Shape`, `PlacementPreview.ShapeFrame` and `PlacementPreview.Palette`
   - You can specify theater-specific palettes and shapes by putting three ~ marks to the theater specific part of the filename. ~~~ is replaced with the theater’s three-letter extension.
@@ -74,18 +74,18 @@ PrioritySelectionFiltering=true  ; boolean
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-PlacementPreview.Building=no               ; boolean
-PlacementPreview.Building.Translucent=75   ; integer, 0 25 50 75
-PlacementPreview.Grid.Translucent=0        ; integer, 0 25 50 75
+PlacementPreview=no                     ; boolean
+PlacementPreview.Translucent=75         ; integer, 0 25 50 75
+PlacementPreview.Grid.Translucent=0     ; integer, 0 25 50 75
 
 [SOMEBUILDING]
-PlacementPreview=yes                       ; boolean
-PlacementPreview.Shape=                    ; filename - including the .shp extension. If not set uses building's artmd.ini Buildup SHP (based on Building's Image)
-PlacementPreview.ShapeFrame=               ; integer, zero-based frame index used for displaying the preview
-PlacementPreview.Offset=0,-15,1            ; integer, expressed in X,Y,Z used to alter position preview
-PlacementPreview.Remap=yes                 ; boolean, does this preview use player remap colors
-PlacementPreview.Palette=                  ; filename - including the .pal extension.
-PlacementPreview.Translucent=              ; integer, defaults to [AudioVisual]->PlacementBuilding.Translucent
+PlacementPreview=yes                    ; boolean
+PlacementPreview.Shape=                 ; filename - including the .shp extension. If not set uses building's artmd.ini Buildup SHP (based on Building's Image)
+PlacementPreview.ShapeFrame=            ; integer, zero-based frame index used for displaying the preview
+PlacementPreview.Offset=0,-15,1         ; integer, expressed in X,Y,Z used to alter position preview
+PlacementPreview.Remap=yes              ; boolean, does this preview use player remap colors
+PlacementPreview.Palette=               ; filename - including the .pal extension.
+PlacementPreview.Translucent=           ; integer, defaults to [AudioVisual]->PlacementBuilding.Translucent
 ```
 ```{note}
 The `PlacementPreview.Palett` option is not used if `PlacementPreview.Remap=yes`
@@ -98,7 +98,7 @@ This may change in the future
 In `ra2md.ini`:
 ```ini
 [Phobos]
-PlacementPreview.Building=   ; boolean, defaults to rulesmd.ini->[AudioVisual]->PlacementPreview.Building
+PlacementPreview=   ; boolean, defaults to rulesmd.ini->[AudioVisual]->PlacementPreview
 ```
 
 ## Hotkey Commands

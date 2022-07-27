@@ -123,7 +123,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 		{
 			blitFlags |= EnumFunctions::GetTranslucentLevel(
 				pTypeExt->PlacementPreview_Translucent.Get(
-					RulesExt::Global()->PlacementPreview_Building_Translucent
+					RulesExt::Global()->PlacementPreview_Translucent
 				)
 			);
 		}
