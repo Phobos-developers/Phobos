@@ -69,7 +69,7 @@ public:
 		static bool ArtImageSwap;
 		static bool AllowParallelAIQueues;
 		static bool PlacementPreview_Enabled;
-		static bool PlacementPreview_UserHasEnabled;
+		static bool ShowPlacementPreview;
 		static bool ForbidParallelAIQueues_Infantry;
 		static bool ForbidParallelAIQueues_Vehicle;
 		static bool ForbidParallelAIQueues_Navy;

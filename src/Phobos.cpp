@@ -56,7 +56,7 @@ bool Phobos::Config::DevelopmentCommands = true;
 bool Phobos::Config::ArtImageSwap = false;
 bool Phobos::Config::AllowParallelAIQueues = true;
 bool Phobos::Config::PlacementPreview_Enabled = false;
-bool Phobos::Config::PlacementPreview_UserHasEnabled  = false;
+bool Phobos::Config::ShowPlacementPreview  = false;
 bool Phobos::Config::ForbidParallelAIQueues_Infantry = false;
 bool Phobos::Config::ForbidParallelAIQueues_Vehicle = false;
 bool Phobos::Config::ForbidParallelAIQueues_Navy = false;
@@ -240,8 +240,8 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	// PlacementPreview
 	{
 		Phobos::Config::PlacementPreview_Enabled = pINI_RULESMD->ReadBool("AudioVisual", "PlacementPreview", false);
-		Phobos::Config::PlacementPreview_UserHasEnabled =
-			CCINIClass::INI_RA2MD->ReadBool("Phobos", "PlacementPreview", Phobos::Config::PlacementPreview_Enabled);
+		Phobos::Config::ShowPlacementPreview =
+			CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowPlacementPreview", true);
 	}
 
 	Phobos::CloseConfig(pINI_RULESMD);

@@ -97,7 +97,7 @@ The `PlacementPreview.Palett` option is not used if `PlacementPreview.Remap=yes`
 In `ra2md.ini`:
 ```ini
 [Phobos]
-PlacementPreview=   ; boolean, defaults to rulesmd.ini->[AudioVisual]->PlacementPreview
+ShowPlacementPreview=   ; boolean, defaults to rulesmd.ini->[AudioVisual]->PlacementPreview
 ```
 
 ## Hotkey Commands
