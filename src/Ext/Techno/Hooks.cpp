@@ -494,6 +494,19 @@ DEFINE_HOOK(0x730B8F, DeployCommand_UniversalDeploy, 0x6)
 		}
 		else if (pThis->WhatAmI() == AbstractType::Unit)
 		{
+			int nObjects = 0;
+			for (auto pObject = pThis->GetCell()->FirstObject; pObject; pObject = pObject->NextObject)
+			{
+				nObjects++;
+			}
+
+			if (nObjects > 1)
+			{
+				CoordStruct loc = CoordStruct::Empty;
+				pThis->Scatter(loc, true, false);
+				return 0;
+			}
+
 			if (pTypeExt->Convert_DeployToLand)
 			{
 				auto newCell = MapClass::Instance->GetCellAt(pThis->Location);
@@ -504,6 +517,9 @@ DEFINE_HOOK(0x730B8F, DeployCommand_UniversalDeploy, 0x6)
 					return 0;
 
 				pThis->IsFallingDown = true;
+
+				if (auto pFoot = static_cast<FootClass*>(pThis))
+					pFoot->ParalysisTimer.Start(15);
 			}
 
 			pExt->Convert_UniversalDeploy_InProgress = true;
@@ -533,11 +549,11 @@ DEFINE_HOOK(0x522510, InfantryClass_DoingDeploy, 0x6)
 	if (pOldTechnoExt->Convert_UniversalDeploy_InProgress)
 		return 0;
 
-	// Preparing UniversalDeploy logic
 	auto const pOldTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pOldTechno->GetTechnoType());
 	if (!pOldTechnoTypeExt)
 		return 0;
 
+	// Preparing UniversalDeploy logic
 	if (pOldTechnoTypeExt->Convert_DeployToLand)
 	{
 		auto newCell = MapClass::Instance->GetCellAt(pThis->Location);
@@ -548,6 +564,7 @@ DEFINE_HOOK(0x522510, InfantryClass_DoingDeploy, 0x6)
 			return 0;
 
 		pThis->IsFallingDown = true;
+		pThis->ParalysisTimer.Start(15);
 	}
 
 	pOldTechnoExt->Convert_UniversalDeploy_InProgress = true;
@@ -555,7 +572,7 @@ DEFINE_HOOK(0x522510, InfantryClass_DoingDeploy, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x449C38, BuildingClass_MissionDeconstruction_UniversalDeploy_1, 0x6)
+/*DEFINE_HOOK(0x449C38, BuildingClass_MissionDeconstruction_UniversalDeploy_1, 0x6)
 {
 	GET(BuildingClass*, pBuilding, ECX);
 
@@ -584,7 +601,7 @@ DEFINE_HOOK(0x449C38, BuildingClass_MissionDeconstruction_UniversalDeploy_1, 0x6
 	}
 
 	return 0;
-}
+}*/
 
 DEFINE_HOOK(0x449E6B, BuildingClass_MissionDeconstruction_UniversalDeploy_2, 0x5)
 {
@@ -708,6 +725,9 @@ DEFINE_HOOK(0x4ABEE9, BuildingClass_MouseLeftRelease_UniversalDeploy_ExecuteDepl
 						return 0;
 
 					pTechno->IsFallingDown = true;
+
+					if (auto pFoot = static_cast<FootClass*>(pTechno))
+						pFoot->ParalysisTimer.Start(15);
 				}
 
 				pExt->Convert_UniversalDeploy_InProgress = true;

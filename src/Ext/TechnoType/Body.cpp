@@ -230,8 +230,22 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Convert_AnimFX_FollowDeployer.Read(exINI, pSection, "Convert.Anim.FollowDeployer");
 	this->Convert_DeployingAnim.Read(exINI, pSection, "Convert.DeployingAnim");
 	this->Convert_DeploySound.Read(exINI, pSection, "Convert.DeploySound");
-	this->Convert_DeployDir.Read(exINI, pSection, "Convert.DeployDir");	
-	
+	this->Convert_DeployDir.Read(exINI, pSection, "Convert.DeployDir");
+
+	if (this->Convert_UniversalDeploy.size() > 0 && !pThis->UndeploysInto)
+	{
+		for (auto techno : *TechnoTypeClass::Array)
+		{
+			if (techno->WhatAmI() == AbstractType::UnitType)
+			{
+				// This hack is for deleting the need of using the UndeploysInto tag in the "Building into Object" & also it enables the undeploy action when the mouse click in land.
+				// In every mod exist vehicles so we use the first vehicle in [VehicleTypes] for a dummy hack. This unit won't appear because will be replaced by the designated object.
+				pThis->UndeploysInto = static_cast<UnitTypeClass*>(techno);
+				break;
+			}
+		}
+	}
+
 	char tempBuffer[32];
 	for (size_t i = 0; ; ++i)
 	{

@@ -943,9 +943,11 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 			}
 			else
 			{
-				pNewTechno->IsFallingDown = false;
+				auto pNewTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pNewTechnoType);
 
-				if (pNewTechno->IsInAir())
+				if (!pNewTechnoTypeExt->Convert_DeployToLand)
+					pNewTechno->IsFallingDown = false;
+				else
 					pNewTechno->IsFallingDown = true;
 			}
 
@@ -963,15 +965,6 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 			// If the object was selected it should remain selected
 			if (isSelected)
 				pNewTechno->Select();
-
-			if (auto pOldExt = TechnoExt::ExtMap.Find(pOldTechno))
-			{
-				if (pOldExt->DeployAnim)
-				{
-					pOldExt->DeployAnim->UnInit();
-					pOldExt->DeployAnim = nullptr;
-				}
-			}
 
 			pOldTechno->UnInit();
 
@@ -1012,7 +1005,7 @@ void TechnoExt::StartUniversalDeployAnim(TechnoClass* pThis)
 					}
 					else
 					{
-						Debug::Log("ERROR! UniversalDeploy animation [%s] -> %s can't be created.\n", pThis->GetTechnoType()->ID, deployAnimType->ID);
+						Debug::Log("ERROR! Deploy animation [%s] -> %s can't be created.\n", pThis->GetTechnoType()->ID, deployAnimType->ID);
 					}
 				}
 			}
@@ -1033,13 +1026,24 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 		if (pThis->WhatAmI() == AbstractType::Building)
 			return;
 
+		auto pFoot = static_cast<FootClass*>(pThis);
+		if (!pFoot)
+			return;
+
 		TechnoClass* deployed = nullptr;
 
 		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 		{
-			auto pFoot = static_cast<FootClass*>(pThis);
+			bool deployToLand = pTypeExt->Convert_DeployToLand;
 
-			if (pFoot->Locomotor->Is_Moving_Now())
+			// The unit should remain paralyzed during a deploy to land action to prevent issues
+			if (pExt->Convert_UniversalDeploy_InProgress && deployToLand)
+			{
+				pThis->IsFallingDown = true;
+				pFoot->ParalysisTimer.Start(15);
+			}
+
+			if (!pThis->IsFallingDown && pFoot->Locomotor->Is_Moving_Now())
 			{
 				pFoot->SetDestination(nullptr, false);
 				pFoot->Locomotor->Stop_Moving();
@@ -1072,7 +1076,6 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 			bool hasValidDeployAnim = pDeployAnimType ? true : false;
 			bool isDeployAnimPlaying = pExt->DeployAnim ? true : false;
 			bool hasDeployAnimFinished = (isDeployAnimPlaying && (pExt->DeployAnim->Animation.Value >= pDeployAnimType->End + pDeployAnimType->Start - 1)) ? true : false;
-			bool deployToLand = pTypeExt->Convert_DeployToLand;
 			int convert_DeploySoundIndex = pTypeExt->Convert_DeploySound.isset() ? pTypeExt->Convert_DeploySound.Get() : -1;
 			AnimTypeClass* pAnimFXType = pTypeExt->Convert_AnimFX.isset() ? pTypeExt->Convert_AnimFX.Get() : nullptr;
 			bool animFX_FollowDeployer = pTypeExt->Convert_AnimFX_FollowDeployer;
@@ -1085,16 +1088,15 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 
 			if (deployToLand)
 			{
-				pThis->IsFallingDown = true;
-
 				if (pThis->InAir)
 					return;
 
-				pThis->ForceMission(Mission::Sticky);
+				pFoot->ParalysisTimer.Start(15);
 			}
 
 			CoordStruct deployLocation = pThis->GetCoords();
 
+			// Before the conversion we need to play the full deploy animation
 			if (hasValidDeployAnim && !isDeployAnimPlaying)
 			{
 				TechnoExt::StartUniversalDeployAnim(pThis);
@@ -1111,6 +1113,12 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 
 			if (hasValidDeployAnim && !hasDeployAnimFinished)
 				return;
+
+			if (pThis->DeployAnim)
+			{
+				pThis->DeployAnim->UnInit();
+				pThis->DeployAnim = nullptr;
+			}
 
 			// Time for the object conversion
 			deployed = TechnoExt::UniversalConvert(pThis, nullptr);
@@ -1132,8 +1140,9 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 
 		if (!deployed)
 		{
-			pThis->ForceMission(Mission::Guard);
+			pFoot->ParalysisTimer.Stop();
 			pThis->IsFallingDown = false;
+			pThis->ForceMission(Mission::Guard);
 			pExt->Convert_UniversalDeploy_InProgress = false;
 		}
 	}
