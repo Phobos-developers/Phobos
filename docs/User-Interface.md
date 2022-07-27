@@ -91,13 +91,12 @@ PlacementPreview.Translucency=       ; translucency level (0/25/50/75), defaults
 The `PlacementPreview.Palett` option is not used if `PlacementPreview.Remap=yes` This may change in the future
 ```
 
-
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
 In `ra2md.ini`:
 ```ini
 [Phobos]
-ShowPlacementPreview=   ; boolean, defaults to rulesmd.ini->[AudioVisual]->PlacementPreview
+ShowPlacementPreview=yes   ; boolean
 ```
 
 ## Hotkey Commands
