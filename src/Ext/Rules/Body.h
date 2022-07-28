@@ -39,9 +39,9 @@ public:
 		Valueable<bool> JumpjetAllowLayerDeviation;
 		Valueable<bool> JumpjetTurnToTarget;
 		PhobosFixedString<32u> MissingCameo;
-		Valueable<int> PlacementGrid_Translucency;
+		TranslucencyLevel PlacementGrid_Translucency;
 		Valueable<bool> PlacementPreview;
-		Valueable<int> PlacementPreview_Translucency;
+		TranslucencyLevel PlacementPreview_Translucency;
 		Valueable<Vector3D<int>> Pips_Shield;
 		Nullable<SHPStruct*> Pips_Shield_Background;
 		Valueable<Vector3D<int>> Pips_Shield_Building;

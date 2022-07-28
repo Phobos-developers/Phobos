@@ -67,7 +67,9 @@ DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 
 DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 {
-	if (!RulesExt::Global()->PlacementPreview || !Phobos::Config::ShowPlacementPreview)
+	auto pRules = RulesExt::Global();
+
+	if (!pRules->PlacementPreview || !Phobos::Config::ShowPlacementPreview)
 		return 0;
 
 	auto pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance->CurrentBuilding);
@@ -116,14 +118,8 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 			nPoint.Y += offset.Y;
 		}
 
-		BlitterFlags blitFlags = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
-		{
-			blitFlags |= EnumFunctions::GetTranslucentLevel(
-				pTypeExt->PlacementPreview_Translucency.Get(
-					RulesExt::Global()->PlacementPreview_Translucency
-				)
-			);
-		}
+		BlitterFlags blitFlags = pTypeExt->PlacementPreview_Translucency.Get(pRules->PlacementPreview_Translucency) |
+			BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
 
 		ConvertClass* pPalette = nullptr;
 		{
@@ -147,6 +143,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 DEFINE_HOOK(0x47EFAE, CellClass_Draw_It_MakePlacementGridTranparent, 0x6)
 {
 	LEA_STACK(BlitterFlags*, blitFlags, STACK_OFFS(0x68, 0x58));
-	*blitFlags |= EnumFunctions::GetTranslucentLevel(RulesExt::Global()->PlacementGrid_Translucency);
+
+	*blitFlags |= RulesExt::Global()->PlacementGrid_Translucency;
 	return 0;
 }

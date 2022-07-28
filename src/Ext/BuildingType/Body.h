@@ -42,7 +42,7 @@ public:
 		Valueable<CoordStruct> PlacementPreview_Offset;
 		Valueable<bool> PlacementPreview_Remap;
 		CustomPalette PlacementPreview_Palette;
-		Nullable<int> PlacementPreview_Translucency;
+		Nullable<TranslucencyLevel> PlacementPreview_Translucency;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
