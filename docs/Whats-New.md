@@ -48,6 +48,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   58=Upper bound,0
   59=Operate var is global,10
   60=Operate var index,0
+  61=Campaign AI Repairable,0
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -88,7 +89,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   535=Global variable and global variable is true,48,35,0,0,[LONG DESC],0,1,511,1
 
   [ActionsRA2]
-  125=Build at...,-10,47,53,0,0,0,1,0,0,[LONG DESC],0,1,125
+  125=Build at...,-10,47,53,61,0,0,1,0,0,[LONG DESC],0,1,125
   500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
   501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
   502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
