@@ -85,8 +85,7 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 
 void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
-	auto const pThis = this->OwnerObject();
-	auto const* const pSection = pThis->PlainName;
+	const char* pSection = this->OwnerObject()->PlainName;
 
 	INI_EX exINI(pINI);
 

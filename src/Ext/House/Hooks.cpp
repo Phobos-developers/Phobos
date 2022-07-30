@@ -69,7 +69,7 @@ DEFINE_HOOK(0x4506D4, BuildingClass_UpdateRepair_Campaign, 0x6)
 {
 	enum { JustRepair = 0x4506F5 };
 	GET(BuildingClass*, pThis, ESI);
-	
+
 	if (SessionClass::Instance->GameMode == GameMode::Campaign && !pThis->IsHumanControlled && pThis->BeingProduced)
 	{
 		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
