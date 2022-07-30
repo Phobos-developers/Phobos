@@ -9,8 +9,11 @@ This page describes all AI scripting and mapping related additions and changes i
 - Map trigger action `125 Build At...` can now play buildup anim and becomes singleplayer-AI-repairable optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2).
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
-
-- In singleplayer campaigns, AI can now repair the base nodes by setting `[Basic]->AIRepairBaseNodes=yes`.
+- In singleplayer campaigns, AI can now repair the base nodes by setting
+```ini
+[Country House]
+RepairBaseNodes=no,no,no ; 3 booleans indicating whether AI repair basenodes in Easy/ Normal/ Difficult game diffculty.
+```
 
 ## Script actions
 
