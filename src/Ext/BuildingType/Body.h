@@ -37,7 +37,7 @@ public:
 		Valueable<Point2D> Grinding_DisplayRefund_Offset;
 
 		Valueable<bool> PlacementPreview;
-		Nullable<SHPStruct*> PlacementPreview_Shape;
+		TheaterSpecificSHP PlacementPreview_Shape;
 		Nullable<int> PlacementPreview_ShapeFrame;
 		Valueable<CoordStruct> PlacementPreview_Offset;
 		Valueable<bool> PlacementPreview_Remap;

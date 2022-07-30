@@ -147,31 +147,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// PlacementPreview
 	{
-		this->PlacementPreview.Read(exINI, pSection, "PlacementPreview");
-
-		auto pKey = "PlacementPreview.Shape";
-		if (pINI->GetString(pSection, pKey, Phobos::readBuffer))
-		{
-			auto pValue = Phobos::readBuffer;
-			if (GeneralUtils::IsValidString(pValue))
-			{
-				// we cannot load same SHP file twice it may produce artifact , prevent it !
-				if (_strcmpi(pValue, pSection) || _strcmpi(pValue, pArtSection))
-				{
-					GeneralUtils::ApplyTheaterSuffixToString(pValue);
-
-					if (auto pImage = FileSystem::LoadSHPFile(pValue))
-						this->PlacementPreview_Shape = pImage;
-					else
-						Debug::Log("Failed to find file %s referenced by [%s]%s=%s\n", pValue, pSection, pKey, pValue);
-				}
-				else
-				{
-					Debug::Log("Cannot Load PlacementPreview.Shape for [%s]Art[%s] ! \n", pSection, pArtSection);
-				}
-			}
-		}
-
+		this->PlacementPreview_Shape.Read(exINI, pSection, "PlacementPreview.Shape");
 		this->PlacementPreview_ShapeFrame.Read(exINI, pSection, "PlacementPreview.ShapeFrame");
 		this->PlacementPreview_Offset.Read(exINI, pSection, "PlacementPreview.Offset");
 		this->PlacementPreview_Remap.Read(exINI, pSection, "PlacementPreview.Remap");

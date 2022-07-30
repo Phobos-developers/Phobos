@@ -39,6 +39,7 @@
 #include <Helpers/String.h>
 #include <PCX.h>
 #include <Utilities/INIParser.h>
+#include <Utilities/GeneralUtils.h>
 
 #include <algorithm>
 #include <cstring>
@@ -647,4 +648,67 @@ public:
 
 private:
 	BlitterFlags value { BlitterFlags::None };
+};
+
+class TheaterSpecificSHP
+{
+public:
+	constexpr TheaterSpecificSHP() noexcept = default;
+
+	TheaterSpecificSHP(SHPStruct* pSHP)
+	{
+		*this = pSHP;
+	}
+
+	TheaterSpecificSHP& operator = (SHPStruct* pSHP)
+	{
+		this->value = pSHP;
+	}
+
+	operator SHPStruct* ()
+	{
+		return this->value;
+	}
+
+	SHPStruct* GetSHP()
+	{
+		return *this;
+	}
+
+	bool Read(INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto pValue = parser.value();
+			GeneralUtils::ApplyTheaterSuffixToString(pValue);
+
+			std::string Result = pValue;
+			if (!strstr(pValue, ".shp"))
+				Result += ".shp";
+
+			if (auto const pImage = FileSystem::LoadSHPFile(Result.c_str()))
+			{
+				value = pImage;
+				return true;
+			}
+			else
+			{
+				Debug::Log("Failed to find file %s referenced by [%s]%s=%s\n", Result.c_str(), pSection, pKey, pValue);
+			}
+		}
+		return false;
+	}
+
+	bool Load(PhobosStreamReader& Stm, bool RegisterForChange)
+	{
+		return Savegame::ReadPhobosStream(Stm, this->value, RegisterForChange);
+	}
+
+	bool Save(PhobosStreamWriter& Stm) const
+	{
+		return Savegame::WritePhobosStream(Stm, this->value);
+	}
+
+private:
+	SHPStruct* value { nullptr };
 };
