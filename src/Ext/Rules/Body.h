@@ -57,13 +57,13 @@ public:
 		Valueable<bool> UseSelectBox;
 		Valueable<SHPStruct*> SelectBox_Shape_Infantry;
 		CustomPalette SelectBox_Palette_Infantry;
-		Nullable<Vector3D<int>> SelectBox_Frame_Infantry;
-		Nullable<Vector2D<int>> SelectBox_DrawOffset_Infantry;
+		Valueable<Vector3D<int>> SelectBox_Frame_Infantry;
+		Valueable<Vector2D<int>> SelectBox_DrawOffset_Infantry;
 		Valueable<SHPStruct*> SelectBox_Shape_Unit;
 		CustomPalette SelectBox_Palette_Unit;
-		Nullable<Vector3D<int>> SelectBox_Frame_Unit;
-		Nullable<Vector2D<int>> SelectBox_DrawOffset_Unit;
-		Nullable<int> SelectBox_TranslucentLevel;
+		Valueable<Vector3D<int>> SelectBox_Frame_Unit;
+		Valueable<Vector2D<int>> SelectBox_DrawOffset_Unit;
+		Valueable<int> SelectBox_TranslucentLevel;
 		Valueable<AffectedHouse> SelectBox_CanSee;
 		Valueable<bool> SelectBox_CanObserverSee;
 
