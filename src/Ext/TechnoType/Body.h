@@ -152,7 +152,7 @@ public:
 
 		Nullable<SHPStruct*> SelectBox_Shape;
 		CustomPalette SelectBox_Palette;
-		Nullable<Vector3D<int>> SelectBox_Frame;
+		Valueable<Vector3D<int>> SelectBox_Frame;
 		Nullable<Vector2D<int>> SelectBox_DrawOffset;
 		Nullable<int> SelectBox_TranslucentLevel;
 		Nullable<AffectedHouse> SelectBox_CanSee;
