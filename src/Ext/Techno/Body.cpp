@@ -883,10 +883,10 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 	if (!canSee)
 		return;
 
+	int frame;
 	Point2D vPos = { 0, 0 };
-	Point2D vLoc = *pLocation;
-	Point2D vOfs = { 0, 0 };
-	int frame, XOffset, YOffset;
+	Point2D vOffset = pTypeExt->SelectBox_DrawOffset.Get(isInfantry ?
+		RulesExt::Global()->SelectBox_DrawOffset_Infantry.Get() : RulesExt::Global()->SelectBox_DrawOffset_Unit.Get());
 	Vector3D<int> glbSelectboxFrame = isInfantry ?
 		RulesExt::Global()->SelectBox_Frame_Infantry.Get() :
 		RulesExt::Global()->SelectBox_Frame_Unit.Get();
@@ -896,21 +896,15 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 	if (selectboxFrame.X == -1)
 		selectboxFrame = glbSelectboxFrame;
 
-	vOfs = pTypeExt->SelectBox_DrawOffset.Get(isInfantry ?
-		RulesExt::Global()->SelectBox_DrawOffset_Infantry.Get() : RulesExt::Global()->SelectBox_DrawOffset_Unit.Get());
-	XOffset = vOfs.X;
-	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta + vOfs.Y;
-	vLoc.Y -= 5;
-
 	if (isInfantry)
 	{
-		vPos.X = vLoc.X + 1 + XOffset;
-		vPos.Y = vLoc.Y + 6 + YOffset;
+		vPos.X = pLocation->X + 1 + vOffset.X;
+		vPos.Y = pLocation->Y + 1 + pThis->GetTechnoType()->PixelSelectionBracketDelta + vOffset.Y;
 	}
 	else
 	{
-		vPos.X = vLoc.X + 2 + XOffset;
-		vPos.Y = vLoc.Y + 6 + YOffset;
+		vPos.X = pLocation->X + 2 + vOffset.X;
+		vPos.Y = pLocation->Y + 1 + pThis->GetTechnoType()->PixelSelectionBracketDelta + vOffset.Y;
 	}
 
 	SHPStruct* pShape = nullptr;
