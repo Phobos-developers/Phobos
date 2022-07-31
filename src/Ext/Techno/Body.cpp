@@ -834,6 +834,9 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 
 void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry)
 {
+	if (!pThis->IsSelected)
+		return;
+
 	const auto canHouse = pTypeExt->SelectBox_CanSee.Get(RulesExt::Global()->SelectBox_CanSee);
 	bool canSee = false;
 
@@ -886,12 +889,17 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 	int frame;
 	Point2D vPos = { 0, 0 };
 	Point2D vOffset = pTypeExt->SelectBox_DrawOffset.Get(isInfantry ?
-		RulesExt::Global()->SelectBox_DrawOffset_Infantry.Get() : RulesExt::Global()->SelectBox_DrawOffset_Unit.Get());
+		RulesExt::Global()->SelectBox_DrawOffset_Infantry.Get() :
+		RulesExt::Global()->SelectBox_DrawOffset_Unit.Get());
 	Vector3D<int> glbSelectboxFrame = isInfantry ?
 		RulesExt::Global()->SelectBox_Frame_Infantry.Get() :
 		RulesExt::Global()->SelectBox_Frame_Unit.Get();
 	Vector3D<int> selectboxFrame = pTypeExt->SelectBox_Frame.Get();
-	auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->SelectBox_TranslucentLevel.Get(RulesExt::Global()->SelectBox_TranslucentLevel.Get()));
+	auto const nFlag =
+		BlitterFlags::Centered |
+		BlitterFlags::Nonzero |
+		BlitterFlags::MultiPass |
+		EnumFunctions::GetTranslucentLevel(pTypeExt->SelectBox_TranslucentLevel.Get(RulesExt::Global()->SelectBox_TranslucentLevel.Get()));
 
 	if (selectboxFrame.X == -1)
 		selectboxFrame = glbSelectboxFrame;
@@ -924,17 +932,14 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 	else
 		pPalette = pTypeExt->SelectBox_Palette.GetOrDefaultConvert(RulesExt::Global()->SelectBox_Palette_Unit.GetOrDefaultConvert(FileSystem::PALETTE_PAL));
 
-	if (pThis->IsSelected)
-	{
-		if (pThis->IsGreenHP())
-			frame = selectboxFrame.X;
-		else if (pThis->IsYellowHP())
-			frame = selectboxFrame.Y;
-		else
-			frame = selectboxFrame.Z;
+	if (pThis->IsGreenHP())
+		frame = selectboxFrame.X;
+	else if (pThis->IsYellowHP())
+		frame = selectboxFrame.Y;
+	else
+		frame = selectboxFrame.Z;
 
-		DSurface::Temp->DrawSHP(pPalette, pShape, frame, &vPos, pBound, nFlag, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-	}
+	DSurface::Temp->DrawSHP(pPalette, pShape, frame, &vPos, pBound, nFlag, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 }
 
 void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage)
@@ -944,8 +949,9 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	auto color = isShieldDamage ? damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 } :
-		damage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
+	ColorStruct color = isShieldDamage ?
+		(damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 }) :
+		(damage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 });
 
 	wchar_t damageStr[0x20];
 	swprintf_s(damageStr, L"%d", damage);
