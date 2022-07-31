@@ -125,5 +125,5 @@ public:
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
 	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
-	static void DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry);
+	static void DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry);
 };
