@@ -832,7 +832,7 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry)
+void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry)
 {
 	const auto canHouse = pTypeExt->SelectBox_CanSee.Get(RulesExt::Global()->SelectBox_CanSee);
 	bool canSee = false;
@@ -896,13 +896,13 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 	if (selectboxFrame.X == -1)
 		selectboxFrame = glbSelectboxFrame;
 
-	vOfs = pTypeExt->SelectBox_DrawOffset.Get(pThis->WhatAmI() == AbstractType::Infantry ?
+	vOfs = pTypeExt->SelectBox_DrawOffset.Get(isInfantry ?
 		RulesExt::Global()->SelectBox_DrawOffset_Infantry.Get() : RulesExt::Global()->SelectBox_DrawOffset_Unit.Get());
 	XOffset = vOfs.X;
 	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta + vOfs.Y;
 	vLoc.Y -= 5;
 
-	if (iLength == 8)
+	if (isInfantry)
 	{
 		vPos.X = vLoc.X + 1 + XOffset;
 		vPos.Y = vLoc.Y + 6 + YOffset;
