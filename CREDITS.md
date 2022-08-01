@@ -56,6 +56,7 @@ This page lists all the individual contributions to the project by their author.
   - `AITrigger` Building Upgrades support
   - Wall-Gate links
   - Ability for deployed infantry to use both weapons
+  - Observer PCX loading screen
   - Official CN docs
 - **secsome (SEC-SOME)**:
   - Debug info dump hotkey

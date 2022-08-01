@@ -26,6 +26,7 @@ public:
 		Nullable<double> Gravity;
 
 		PhobosTrajectoryType* TrajectoryType;
+		Valueable<double> Trajectory_Speed;
 
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
@@ -39,6 +40,7 @@ public:
 			, LaserTrail_Types {}
 			, Gravity {}
 			, TrajectoryType { nullptr }
+			, Trajectory_Speed { 100.0 }
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
 		{ }

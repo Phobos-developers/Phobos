@@ -389,11 +389,17 @@ Armor=                                 ; ArmorType
 
 - Projectiles can now have customizable trajectories.
   - `Trajectory` should not be combined with original game's projectile trajectory logics (`Arcing`, `ROT` or `Inviso`).
+  - Initial speed of the projectile is defined by `Trajectory.Speed`, which unlike `Speed` used by `ROT` > 0 projectiles is defined on projectile not weapon.
+
+  In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]        ; Projectile
+Trajectory.Speed=100.0  ; floating point value
+```
 
 #### Straight trajectory
 
 - Self-explanatory, is a straight-shot trajectory.
-  - Initial speed is determined by weapon's `Trajectory.Speed`.
 
 In `rulesmd.ini`:
 ```ini
@@ -404,7 +410,6 @@ Trajectory=Straight  ; Trajectory type
 #### Bombard trajectory
 
 - Similar trajectory to `Straight`, but targets a coordinate above the intended target (height determined by `Trajectory.Bombard.Height`). When the projectile approaches that coordinate, it will free fall and explodes when it hits the target or ground.
-  - Initial speed is determined by weapon's `Trajectory.Speed`.
 
 In `rulesmd.ini`:
 ```ini
@@ -414,6 +419,10 @@ Trajectory.Bombard.Height=0.0  ; double
 ```
 
 ### Shrapnel enhancement
+
+![image](_static/images/shrapnel.gif)
+*Shrapnel appearing against ground & buildings* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
+
 - Shrapnel behavior can be triggered on the ground and buildings.
 
 In `rulesmd.ini`:
@@ -757,6 +766,9 @@ All new warheads can be used with CellSpread and Ares' GenericWarhead superweapo
 
 ### Break Mind Control on impact
 
+![image](_static/images/remove-mc.gif)
+*Mind control break warhead being utilized* ([RA2: Reboot](https://www.moddb.com/mods/reboot))
+
 - Warheads can now break mind control (doesn't apply to perma-MC-ed objects).
 
 In `rulesmd.ini`:
@@ -888,11 +900,8 @@ RemoveDisguise=false  ; boolean
 
 ### Reveal map for owner on impact
 
-![image](_static/images/revealwarhead-01.gif)
-*`SpySat=yes` on `[NUKE]` warhead reveals the map when nuclear missile detonates*
-
 - Warheads can now reveal the entire map on impact.
-- Reveal only applies to the owner of the warhead.
+  - Reveal only applies to the owner of the warhead.
 
 In `rulesmd.ini`:
 ```ini
@@ -948,6 +957,9 @@ Burst.Delays=-1  ; integer - burst delays (comma-separated) for shots in order f
 
 ### Feedback weapon
 
+![image](_static/images/feedbackweapon.gif)
+*`FeedbackWeapon` used to apply healing aura upon firing a weapon* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
+
 - You can now specify an auxiliary weapon to be fired on the firer itself when a weapon is fired.
   - `FireInTransport` setting of the feedback weapon is respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If feedback weapon is fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on feedback weapons.
 
@@ -977,17 +989,10 @@ Strafing.Shots=5              ; integer
 Strafing.SimulateBurst=false  ; boolean
 ```
 
-### Trajectory speed
-
-- This sets projectile speed used by custom [projectile trajectories](#projectile-trajectories).
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]            ; WeaponType
-Trajectory.Speed=100.0  ; floating point value
-```
-
 ### Weapon targeting filter
+
+![image](_static/images/weaponfilter.gif)
+*`Weapon target filter - different weapon used against enemies & allies as well as units & buildings* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
 
 - You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
   - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
@@ -997,20 +1002,4 @@ In `rulesmd.ini`:
 [SOMEWEAPON]         ; WeaponType
 CanTarget=all        ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-```
-
-### Extend parallel AI queues
-
-- You can now set if specific types of factories do not have AI production cloning issue instead of Ares' indiscriminate behavior of `AllowParallelAIQueues=no`.
- - If `AllowParallelAIQueues=no` (*Ares feature*) is set, the tags have no effect.
-
-In `rulesmd.ini`
-```ini
-[GlobalControls]
-AllowParallelAIQueues=yes           ; must be set yes/true unless you don't use Ares
-ForbidParallelAIQueues.Infantry=no  ; boolean
-ForbidParallelAIQueues.Vehicle=no   ; boolean
-ForbidParallelAIQueues.Navy=no      ; boolean
-ForbidParallelAIQueues.Aircraft=no  ; boolean
-ForbidParallelAIQueues.Building=no  ; boolean
 ```

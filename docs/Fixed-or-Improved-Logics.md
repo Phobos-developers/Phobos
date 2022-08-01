@@ -134,6 +134,9 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 
 ### Customizable & new grinder properties
 
+![image](_static/images/grinding.gif)
+*Using ally grinder, restricting to vehicles only and refund display* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
+
 - You can now customize which types of objects a building with `Grinding` set can grind as well as the grinding sound.
   - `Grinding.AllowAllies` changes whether or not to allow units to enter allies' buildings.
   - `Grinding.AllowOwner` changes whether or not to allow units to enter your own buildings.
@@ -279,7 +282,10 @@ AllowLayerDeviation=true         ; boolean
 JumpjetAllowLayerDeviation=true  ; boolean
 ```
 
-### Jumpjet facing target customization
+### Jumpjet turning to target
+
+![image](_static/images/jumpjet-turning.gif)
+*Jumpjet turning to target applied in [Robot Storm X](https://www.moddb.com/mods/cc-robot-storm-x)*
 
 - Allows jumpjet units to face towards the target when firing from different directions. Set `[JumpjetControls] -> TurnToTarget=yes` to enable it for all jumpjet locomotor units. This behavior can be overriden by setting `[UnitType] -> JumpjetTurnToTarget` for specific units.
 - This behavior does not apply to `TurretSpins=yes` units for obvious reasons.
@@ -319,6 +325,22 @@ NoWobbles=false  ; boolean
 
 ```{note}
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
+```
+
+### Forbid parallel AI queues
+
+- You can now set if specific types of factories do not have AI production cloning issue instead of Ares' indiscriminate behavior of `AllowParallelAIQueues=no`.
+  - If `AllowParallelAIQueues=no` (*Ares feature*) is set, the tags have no effect.
+
+In `rulesmd.ini`
+```ini
+[GlobalControls]
+AllowParallelAIQueues=yes           ; must be set yes/true unless you don't use Ares
+ForbidParallelAIQueues.Infantry=no  ; boolean
+ForbidParallelAIQueues.Vehicle=no   ; boolean
+ForbidParallelAIQueues.Navy=no      ; boolean
+ForbidParallelAIQueues.Aircraft=no  ; boolean
+ForbidParallelAIQueues.Building=no  ; boolean
 ```
 
 ## Terrains
@@ -401,6 +423,7 @@ DeployingAnim.UseUnitDrawer=true       ; boolean
 ### Preserve Iron Curtain status on type conversion
 
 ![image](_static/images/preserve-ic.gif)
+*Bugfix in action*
 
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`.
   - This behavior can be turned off per-TechnoType and global basis.
@@ -464,6 +487,9 @@ DiskLaser.Radius=38.2 ; floating point value
 
 ### Single-color lasers
 
+![image](_static/images/issinglecolor.gif)
+*Comparison of `IsSingleColor=yes` lasers with higher thickness to regular ones* ([RA2: Reboot](https://www.moddb.com/mods/reboot))
+
 - You can now set laser to draw using only `LaserInnerColor` by setting `IsSingleColor`, in same manner as `IsHouseColor` lasers do using player's team color. These lasers respect laser thickness. Note that this is not available on prism support weapons.
 
 In `rulesmd.ini`:
@@ -473,6 +499,10 @@ IsSingleColor=false  ; boolean
 ```
 
 ### Toggle-able ElectricBolt visuals
+
+![image](_static/images/ebolt.gif)
+*EBolt customization utilized for different Tesla bolt weapon usage* ([RA2: Reboot](https://www.moddb.com/mods/reboot))
+
 
 - You can now specify individual ElectricBolt bolts you want to disable. Note that this is only a visual change.
 
