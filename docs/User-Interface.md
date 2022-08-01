@@ -266,10 +266,6 @@ Sidebar.GDIPositions=  ; boolean
 - Fixed a bug when switching build queue tabs via QWER didn't make tooltips disappear as they should, resulting in stuck tooltips.
 - The tooltips can now go over the sidebar bounds to accommodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
 
-```{note}
-Same as with harvester counter, you can download the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) or draw your own icons.
-```
-
 In `uimd.ini`:
 ```ini
 [ToolTips]
@@ -291,4 +287,8 @@ In `RA2MD.ini`:
 ```ini
 [Phobos]
 ToolTipDescriptions=true  ; boolean
+```
+
+```{note}
+Same as with harvester counter, you can download the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) or draw your own icons.
 ```
