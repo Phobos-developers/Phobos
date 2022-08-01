@@ -193,11 +193,12 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFS(0x4C, -0x8));
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const bool isInfantry = pThis->WhatAmI() == AbstractType::Infantry;
 	if (const auto pShieldData = pExt->Shield.get())
 	{
 		if (pShieldData->IsAvailable())
 		{
-			const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+			const int iLength = isInfantry ? 8 : 17;
 			pShieldData->DrawShieldBar(iLength, pLocation, pBound);
 		}
 	}
@@ -207,10 +208,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 		if (RulesExt::Global()->UseSelectBox)
 		{
-			if (pThis->WhatAmI() == AbstractType::Infantry)
-				TechnoExt::DrawSelectBox(pThis, pTypeExt, pLocation, pBound, true);
-			else
-				TechnoExt::DrawSelectBox(pThis, pTypeExt, pLocation, pBound, false);
+			TechnoExt::DrawSelectBox(pThis, pLocation, pBound, isInfantry);
 		}
 	}
 
