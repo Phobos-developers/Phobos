@@ -119,6 +119,7 @@ ShowBuildingPlacementPreview=false  ; boolean
 - PCX files can now be used as loadscreen images.
   - You can specify custom loadscreen with Ares tag `File.LoadScreen`.
   - Campaign loading screen (`missionmd.ini->[LS800BkgdName]`) can also use PCX image.
+  - Observer loading screen can use `ls800obs.pcx` *(or `ls640obs.pcx` when screen width is 640)* for this feature.
 - The loadscreen size can now be different from the default `800x600` one; if the image is bigger than the screen it's centered and cropped.
   - This feature works in conjunction with CnCNet5 spawner DLL which resizes loadscreen window to actual monitor size and places the image in center. If there's no CnCNet5 spawner loaded, the window resolution will be always `800x600`.
   - Same applies to campaign loading screen (`missionmd.ini->[LS800BkgdName]`).
