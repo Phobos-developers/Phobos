@@ -31,12 +31,10 @@ DEFINE_HOOK(0x5D46C7, MessageListClass_Input, 5)
 	return 0;
 }
 
-DEFINE_HOOK(0x61526C, WWUI_NewEditCtrl, 5)
+DEFINE_HOOK(0x61510E, WWUI_NewEditCtrl, 0)
 {
-	if (!IMEBuffer[0])
-		R->EDI<wchar_t>(LocalizeCaracter(R->EDI<char>()));
-
-	return 0;
+	R->EDI<wchar_t>(LocalizeCaracter(R->EBX<char>()));
+	return 0x615226;
 }
 
 // It is required to add Imm32.lib to AdditionalDependencies
