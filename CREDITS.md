@@ -56,6 +56,7 @@ This page lists all the individual contributions to the project by their author.
   - `AITrigger` Building Upgrades support
   - Wall-Gate links
   - Ability for deployed infantry to use both weapons
+  - Observer PCX loading screen
   - Official CN docs
 - **secsome (SEC-SOME)**:
   - Debug info dump hotkey
@@ -173,7 +174,7 @@ This page lists all the individual contributions to the project by their author.
    - Slaves' house customization when owner is killed
    - Misc CN doc fix
    - Warhead superweapon launch logic
-- **NetsuNegi* - Forbidding parallel AI queues by type
+- **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
 - **FlyStar** - Campaign load screen PCX support
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
