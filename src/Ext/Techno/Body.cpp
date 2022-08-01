@@ -832,11 +832,12 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry)
+void TechnoExt::DrawSelectBox(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry)
 {
 	if (!pThis->IsSelected)
 		return;
 
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	const auto canHouse = pTypeExt->SelectBox_CanSee.Get(RulesExt::Global()->SelectBox_CanSee);
 	bool canSee = false;
 
