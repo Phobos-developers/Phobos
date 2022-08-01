@@ -2,6 +2,8 @@
 
 #include <BulletClass.h>
 #include <UnitClass.h>
+#include <InfantryClass.h>
+#include <ScenarioClass.h>
 #include <BitFont.h>
 #include <Misc/FlyingStrings.h>
 #include <Ext/House/Body.h>
@@ -257,6 +259,18 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType, 0x6)
 	GET(UnitClass*, pUnit, EDI);
 	GET(BuildingClass*, pFactory, ESI);
 
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType());
+
+	if (!pTypeExt->RandomProduct.empty())
+	{
+		int idx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(pTypeExt->RandomProduct.size()) - 1);
+		TechnoTypeClass* pType = pTypeExt->RandomProduct[idx];
+		UnitClass* pNewUnit = static_cast<UnitClass*>(pType->CreateObject(pUnit->GetOwningHouse()));
+		pUnit->UnInit();
+		R->EDI(pNewUnit);
+		pUnit = pNewUnit;
+	}
+
 	if (!Phobos::Config::AllowParallelAIQueues)
 		return 0;
 
@@ -279,6 +293,19 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType, 0x6)
 DEFINE_HOOK(0x444131, BuildingClass_KickOutUnit_InfantryType, 0x6)
 {
 	GET(HouseClass*, pHouse, EAX);
+	GET(InfantryClass*, pInf, EDI);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pInf->GetTechnoType());
+
+	if (!pTypeExt->RandomProduct.empty())
+	{
+		int idx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(pTypeExt->RandomProduct.size()) - 1);
+		TechnoTypeClass* pType = pTypeExt->RandomProduct[idx];
+		InfantryClass* pNewInf = static_cast<InfantryClass*>(pType->CreateObject(pHouse));
+		pInf->UnInit();
+		R->EDI(pNewInf);
+		pInf = pNewInf;
+	}
 
 	if (Phobos::Config::AllowParallelAIQueues || Phobos::Config::ForbidParallelAIQueues_Infantry)
 		return 0;
@@ -301,6 +328,19 @@ DEFINE_HOOK(0x44531F, BuildingClass_KickOutUnit_BuildingType, 0xA)
 DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType, 0xA)
 {
 	GET(HouseClass*, pHouse, EDX);
+	GET(AircraftClass*, pAircraft, EBP);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pAircraft->GetTechnoType());
+
+	if (!pTypeExt->RandomProduct.empty())
+	{
+		int idx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(pTypeExt->RandomProduct.size()) - 1);
+		TechnoTypeClass* pType = pTypeExt->RandomProduct[idx];
+		AircraftClass* pNewAircraft = static_cast<AircraftClass*>(pType->CreateObject(pHouse));
+		pAircraft->UnInit();
+		R->EBP(pNewAircraft);
+		pAircraft = pNewAircraft;
+	}
 
 	if (Phobos::Config::AllowParallelAIQueues || Phobos::Config::ForbidParallelAIQueues_Aircraft)
 		return 0;

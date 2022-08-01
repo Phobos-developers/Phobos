@@ -668,6 +668,20 @@ In `rulesmd.ini`:
 Promote.IncludeSpawns=false  ; boolean
 ```
 
+### Random Product
+
+- Producing this techno will become a random one in the `RandomProduct`, can include self.
+- Must in same type, like `RandomProduct=E1,GGI` for `[HTNK]` is illegal.
+- Building is not supported.
+- TaskForces can't use this logic.
+
+In `rulesmd.ini`
+```ini
+[SOMETECHNO]
+RandomProduct=  ; TechnoType in same type
+```
+
+
 ### Spawn range limit
 
 ![image](_static/images/spawnrange-01.gif)
@@ -726,6 +740,212 @@ In `rulesmd.ini`:
 DestroyAnim=       ; Animation
 DestroySound=      ; Sound
 ```
+
+## Trigger actions
+
+### `500` Save Game
+- Save the current game immediately (singleplayer game only).
+    - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
+    - The save's description will look like `MapDescName - CSFText`.
+        - For example: `Allied Mission 25: Esther's Money - Money Stolen`.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],500,4,[CSFKey],0,0,0,0,A,[ActionX]
+...
+```
+
+### `501` Edit Variable
+- Operate a variable's value
+    - The variable's value type is int32, which means it ranges from -2^31 to 2^31-1.
+        - Any numbers exceeding this limit will lead to unexpected results!
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVariable],0,A,[ActionX]
+...
+```
+
+| *Operation*  | *Description*                                 |
+| :------: | :-------------------------------------------: |
+0         | CurrentValue = Number |
+1         | CurrentValue = CurrentValue + Number |
+2         | CurrentValue = CurrentValue - Number |
+3         | CurrentValue = CurrentValue * Number |
+4         | CurrentValue = CurrentValue / Number |
+5         | CurrentValue = CurrentValue % Number |
+6         | CurrentValue = CurrentValue leftshift Number |
+7         | CurrentValue = CurrentValue rightshift Number |
+8         | CurrentValue = ~CurrentValue |
+9         | CurrentValue = CurrentValue xor Number |
+10         | CurrentValue = CurrentValue or Number |
+11         | CurrentValue = CurrentValue and Number |
+
+### `502` Generate random number
+- Generate a random integer ranged in [Min, Max] and store it in a given variable
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],502,0,[VariableIndex],[Min],[Max],[IsGlobalVariable],0,A,[ActionX]
+...
+```
+
+### `503` Print variable value
+- Print a variable value to the message list
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[ActionX]
+...
+```
+
+### `504` Binary Operation
+- Operate a variable's value with another variable's value
+    - Similar to 501, but the operation number is read from another variable
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperationIndex],[IsGlobalVariable],[IsOperationGlobalVariable],A,[ActionX]
+...
+```
+
+`Operation` can be looked up at action `501`
+
+### `505` Fire Super Weapon at specified location
+
+- Launch a Super Weapon from [SuperWeaponTypes] list at a specified location.
+- `HouseIndex` can take various values:
+
+| *House Index* | *Description*                                 |
+| :-------: | :-------------------------------------------: |
+| >= 0      | The index of the current House in the map |
+| 4475-4482 | Like in the index range 0-7 |
+| -1        | Pick a random House that isn't Neutral |
+| -2        | Pick the first Neutral House |
+| -3        | Pick a random Human Player |
+
+- Coordinates X & Y can take possitive values or -1, in which case these values can take a random value from the visible map area.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],505,4,[SuperWeaponType],0,[HouseIndex],[CoordinateX],[CoordinateY],A,[ActionX]
+...
+```
+
+### `506` Fire Super Weapon at specified Waypoint
+
+- Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],506,4,[SuperWeaponType],0,[HouseIndex],[WaypointIndex],0,A,[ActionX]
+...
+```
+
+### `9931` Message for specified house
+
+- Print message like action 11 for specified house
+
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],9931,4,[CSFkey],[HouseIndex],0,0,0,A,[ActionX]
+...
+```
+
+## Trigger events
+
+### `500-511` Variable comparation
+- Compares the variable's value with given number
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[Param],[EventX]
+...
+```
+
+| *Event ID*  | *Description*                                 | *Global* |
+| :------: | :-------------------------------------------: | :-------: |
+500         | CurrentValue > Number | No |
+501         | CurrentValue < Number | No |
+502         | CurrentValue = Number | No |
+503         | CurrentValue >= Number | No |
+504         | CurrentValue <= Number | No |
+505         | CurrentValue & Number | No |
+506         | CurrentValue > Number | Yes |
+507         | CurrentValue < Number | Yes |
+508         | CurrentValue = Number | Yes |
+509         | CurrentValue >= Number | Yes |
+510         | CurrentValue <= Number | Yes |
+511         | CurrentValue & Number | Yes |
+
+### `512-523` Variable comparation with local variable
+- Compares the variable's value with given local variable value
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[LocalVariableIndex],[EventX]
+...
+```
+
+| *Event ID*  | *Description*                                 | *Global* |
+| :------: | :-------------------------------------------: | :-------: |
+512         | CurrentValue > LocalVariableValue | No |
+513         | CurrentValue < LocalVariableValue | No |
+514         | CurrentValue = LocalVariableValue | No |
+515         | CurrentValue >= LocalVariableValue | No |
+516         | CurrentValue <= LocalVariableValue | No |
+517         | CurrentValue & LocalVariableValue | No |
+518         | CurrentValue > LocalVariableValue | Yes |
+519         | CurrentValue < LocalVariableValue | Yes |
+520         | CurrentValue = LocalVariableValue | Yes |
+521         | CurrentValue >= LocalVariableValue | Yes |
+522         | CurrentValue <= LocalVariableValue | Yes |
+523         | CurrentValue & LocalVariableValue | Yes |
+
+### `524-535` Variable comparation with global variable
+- Compares the variable's value with given global variable value
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX]
+...
+```
+
+| *Event ID*  | *Description*                                 | *Global* |
+| :------: | :-------------------------------------------: | :-------: |
+524         | CurrentValue > GlobalVariableValue | No |
+525         | CurrentValue < GlobalVariableValue | No |
+526         | CurrentValue = GlobalVariableValue | No |
+527         | CurrentValue >= GlobalVariableValue | No |
+528         | CurrentValue <= GlobalVariableValue | No |
+529         | CurrentValue & GlobalVariableValue | No |
+530         | CurrentValue > GlobalVariableValue | Yes |
+531         | CurrentValue < GlobalVariableValue | Yes |
+532         | CurrentValue = GlobalVariableValue | Yes |
+533         | CurrentValue >= GlobalVariableValue | Yes |
+534         | CurrentValue <= GlobalVariableValue | Yes |
+535         | CurrentValue & GlobalVariableValue | Yes |
 
 ## Warheads
 

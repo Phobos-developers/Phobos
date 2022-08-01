@@ -149,6 +149,8 @@ public:
 		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
+		ValueableVector<TechnoTypeClass*> RandomProduct;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -233,12 +235,7 @@ public:
 			, SelfHealGainType()
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
-			, PronePrimaryFireFLH { }
-			, ProneSecondaryFireFLH { }
-			, DeployedPrimaryFireFLH { }
-			, DeployedSecondaryFireFLH { }
-			, InitialStrength_Cloning { { 1.0, 0.0 } }
-			, IronCurtain_KeptOnDeploy{ }
+			, RandomProduct {}
 		{ }
 
 		virtual ~ExtData() = default;
