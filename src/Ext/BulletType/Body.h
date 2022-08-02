@@ -18,7 +18,7 @@ public:
 	{
 	public:
 		Valueable<int> Strength;
-		ArmorType Armor;
+		Nullable<ArmorType> Armor;
 		Valueable<bool> Interceptable;
 		Valueable<bool> Interceptable_DeleteOnIntercept;
 		Nullable<WeaponTypeClass*> Interceptable_WeaponOverride;
@@ -33,7 +33,7 @@ public:
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
 			, Strength { 0 }
-			, Armor { -1 }
+			, Armor {}
 			, Interceptable { false }
 			, Interceptable_DeleteOnIntercept { false }
 			, Interceptable_WeaponOverride {}

@@ -144,7 +144,6 @@
     <ClInclude Include="src\New\Type\LaserTrailTypeClass.h" />
     <ClInclude Include="src\New\Entity\LaserTrailClass.h" />
     <ClInclude Include="src\Utilities\Enumerable.h" />
-    <ClInclude Include="src\ExtraHeaders\ArmorType.h" />
     <ClInclude Include="src\Ext\Aircraft\Body.h" />
     <ClInclude Include="src\Ext\AnimType\Body.h" />
     <ClInclude Include="src\Ext\Building\Body.h" />

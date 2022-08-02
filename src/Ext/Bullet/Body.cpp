@@ -86,9 +86,9 @@ void BulletExt::InterceptBullet(BulletClass* pThis, TechnoClass* pSource, Weapon
 	bool canAffect = false;
 	bool isIntercepted = false;
 
-	if (pTypeExt->Armor >= 0)
+	if (pTypeExt->Armor.isset())
 	{
-		double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor);
+		double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor.Get());
 
 		if (versus != 0.0)
 		{
