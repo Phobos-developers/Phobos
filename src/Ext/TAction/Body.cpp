@@ -7,11 +7,13 @@
 #include <SuperWeaponTypeClass.h>
 #include <SuperClass.h>
 #include <TriggerClass.h>
-#include <Ext/SWType/Body.h>
+
 #include <Utilities/SavegameDef.h>
-#include <Utilities/PhobosGlobal.h>
 
 #include <Ext/Scenario/Body.h>
+#include <Ext/SWType/Body.h>
+
+#include <Misc/PhobosGlobal.h>
 
 //Static init
 template<> const DWORD Extension<TActionClass>::Canary = 0x91919191;

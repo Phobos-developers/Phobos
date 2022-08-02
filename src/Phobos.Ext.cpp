@@ -1,6 +1,6 @@
 #include <Phobos.h>
 
-#include <Utilities/PhobosGlobal.h>
+#include <utility>
 
 #include <Ext/Aircraft/Body.h>
 #include <Ext/AnimType/Body.h>
@@ -30,7 +30,7 @@
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 
-#include <utility>
+#include <Misc/PhobosGlobal.h>
 
 #pragma region Implementation details
 
