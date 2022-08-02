@@ -204,7 +204,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 		}
 	}
 
-	if (Phobos::Config::EnableSelectBox && RulesExt::Global()->UseSelectBox)
+	if (pThis->IsSelected && Phobos::Config::EnableSelectBox && RulesExt::Global()->UseSelectBox)
 	{
 		TechnoExt::DrawSelectBox(pThis, pLocation, pBound, isInfantry);
 	}

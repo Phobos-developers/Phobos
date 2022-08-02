@@ -834,9 +834,6 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 
 void TechnoExt::DrawSelectBox(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry)
 {
-	if (!pThis->IsSelected)
-		return;
-
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	SHPStruct* pShape = isInfantry ?
 		pTypeExt->SelectBox_Shape.Get(RulesExt::Global()->SelectBox_Shape_Infantry) :
