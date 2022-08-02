@@ -15,7 +15,7 @@ UINT GetCurentCodepage()
 	return atoi(szLCData);
 }
 
-wchar_t LocalizeCaracter(char character)
+wchar_t LocalizeCharacter(char character)
 {
 	wchar_t result;
 	UINT codepage = GetCurentCodepage();
@@ -26,14 +26,14 @@ wchar_t LocalizeCaracter(char character)
 DEFINE_HOOK(0x5D46C7, MessageListClass_Input, 5)
 {
 	if (!IMEBuffer[0])
-		R->EBX<wchar_t>(LocalizeCaracter(R->EBX<char>()));
+		R->EBX<wchar_t>(LocalizeCharacter(R->EBX<char>()));
 
 	return 0;
 }
 
 DEFINE_HOOK(0x61510E, WWUI_NewEditCtrl, 0)
 {
-	R->EDI<wchar_t>(LocalizeCaracter(R->EBX<char>()));
+	R->EDI<wchar_t>(LocalizeCharacter(R->EBX<char>()));
 	return 0x615226;
 }
 
