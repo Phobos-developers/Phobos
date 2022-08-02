@@ -152,7 +152,7 @@ public:
 
 		Nullable<SHPStruct*> SelectBox_Shape;
 		CustomPalette SelectBox_Palette;
-		Valueable<Vector3D<int>> SelectBox_Frame;
+		Nullable<Vector3D<int>> SelectBox_Frame;
 		Nullable<Vector2D<int>> SelectBox_DrawOffset;
 		Nullable<int> SelectBox_TranslucentLevel;
 		Nullable<AffectedHouse> SelectBox_CanSee;
@@ -242,7 +242,7 @@ public:
 			, SelfHealGainType {}
 			, SelectBox_Shape {}
 			, SelectBox_Palette {}
-			, SelectBox_Frame { { -1, -1, -1 } }
+			, SelectBox_Frame {}
 			, SelectBox_DrawOffset {}
 			, SelectBox_TranslucentLevel {}
 			, SelectBox_CanSee {}

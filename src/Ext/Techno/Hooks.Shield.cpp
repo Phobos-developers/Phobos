@@ -194,6 +194,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const bool isInfantry = pThis->WhatAmI() == AbstractType::Infantry;
+
 	if (const auto pShieldData = pExt->Shield.get())
 	{
 		if (pShieldData->IsAvailable())
@@ -203,13 +204,9 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 		}
 	}
 
-	if (Phobos::Config::EnableSelectBox)
+	if (Phobos::Config::EnableSelectBox && RulesExt::Global()->UseSelectBox)
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		if (RulesExt::Global()->UseSelectBox)
-		{
-			TechnoExt::DrawSelectBox(pThis, pLocation, pBound, isInfantry);
-		}
+		TechnoExt::DrawSelectBox(pThis, pLocation, pBound, isInfantry);
 	}
 
 	return 0;
