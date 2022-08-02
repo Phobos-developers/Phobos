@@ -1049,7 +1049,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	{
 		if (pThis->SpawnManager == nullptr || pType->Spawns == nullptr || pType->SpawnsNumber <= 0)
 			return;
-		iCur = pThis->SpawnManager->SpawnCount;
+		iCur = pThis->SpawnManager->CountAliveSpawns();
 		iMax = pType->SpawnsNumber;
 		break;
 	}
