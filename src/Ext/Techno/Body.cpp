@@ -95,11 +95,11 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 			if (!pTypeExt->Interceptable)
 				continue;
 
-			if (pTypeExt->Armor >= 0)
+			if (pTypeExt->Armor.isset())
 			{
 				int weaponIndex = pThis->SelectWeapon(pBullet);
 				auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-				double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor);
+				double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor.Get());
 
 				if (versus == 0.0)
 					continue;

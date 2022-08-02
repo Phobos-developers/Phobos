@@ -119,10 +119,10 @@ if (SomeCondition())
 - To have less Git merge conflicts member initializer lists and other list-like syntax structures used in frequently modified places should be split per-item with item separation characters (commas, for example) placed *after newline character*:
 ```cpp
 ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
-    ,SpawnsTiberium_Type(0)
-    ,SpawnsTiberium_Range(1)
-    ,SpawnsTiberium_GrowthStage({ 3, 0 })
-    ,SpawnsTiberium_CellsPerAnim({ 1, 0 })
+    , SpawnsTiberium_Type(0)
+    , SpawnsTiberium_Range(1)
+    , SpawnsTiberium_GrowthStage({ 3, 0 })
+    , SpawnsTiberium_CellsPerAnim({ 1, 0 })
 { }
 ```
 - Local variables and function/method args are named in the `camelCase` (using a `p` prefix to denote pointer type for every pointer nesting level) and a descriptive name, like `pTechnoType` for a local `TechnoTypeClass*` variable.
@@ -130,9 +130,9 @@ ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject
 - Class fields that can be set via INI tags should be named exactly like ini tags with dots replaced with underscores.
 - Pointer type declarations always have pointer sign `*` attached to the type declaration.
 - Non-static class extension methods faked by declaring a static method with `pThis` as a first argument are only to be placed in the extension class for the class instance of which `pThis` is.
-  - If it's crucial to fake `__thiscall` you may use `__fastcall` and use `void* _` as a second argument to discard value passed through `EDX` register. Such methods are to be used for call replacement.
+  - If it's crucial to fake `__thiscall` you may use `__fastcall` and use `void*` or `void* _` as a second argument to discard value passed through `EDX` register. Such methods are to be used for call replacement.
 - Hooks have to be named using a following scheme: `HookedFunction_HookPurpose`, or `ClassName_HookedMethod_HookPurpose`. Defined-again hooks are exempt from this scheme due to impossibility to define different names for the same hook.
-- Return addresses should use anonymous enums to make it clear what address means what, if applicable:
+- Return addresses should use anonymous enums to make it clear what address means what, if applicable. The enum has to be placed right at the function start and include all addresses that are used in this hook:
 ```cpp
 DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 {
@@ -141,6 +141,7 @@ DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
     ...
 }
 ```
+- Even if the hook doesn't use `return 0x0` to execute the overriden instructions, you still have to write correct hook size (last parameter of `DEFINE_HOOK` macro) to reduce potential issues if the person editing this hook decides to use `return 0x0`.
 - New ingame "entity" classes are to be named with `Class` postfix (like `RadTypeClass`). Extension classes are to be named with `Ext` postfix instead (like `RadTypeExt`).
 
 ```{note}
