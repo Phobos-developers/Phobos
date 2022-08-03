@@ -173,6 +173,7 @@ This page lists all the individual contributions to the project by their author.
    - Building EVA_StructureSold and SellSound dehardcode
    - Slaves' house customization when owner is killed
    - Misc CN doc fix
+   - Singleplayer AI base node/Trigger Action 125 structures' repairability fix
    - Warhead superweapon launch logic
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches

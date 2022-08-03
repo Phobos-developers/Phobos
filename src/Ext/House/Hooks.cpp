@@ -1,5 +1,5 @@
 #include "Body.h"
-
+#include <GameOptionsClass.h>
 #include "../Techno/Body.h"
 #include "../Building/Body.h"
 #include <unordered_map>
@@ -59,6 +59,22 @@ DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 	{
 		BuildingExt::StoreTiberium(pBuilding, amount, idxTiberium, storageTiberiumIndex);
 		amount = 0.0f;
+	}
+
+	return 0;
+}
+
+//Maybe in BuildingClass_CreateFromINIList but seems too dangerous for me
+DEFINE_HOOK(0x4506D4, BuildingClass_UpdateRepair_Campaign, 0x6)
+{
+	enum { JustRepair = 0x4506F5 };
+	GET(BuildingClass*, pThis, ESI);
+
+	if (SessionClass::Instance->GameMode == GameMode::Campaign && !pThis->IsHumanControlled && pThis->BeingProduced)
+	{
+		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
+		if (hExt->RepairBaseNodes[GameOptionsClass::Instance->Difficulty])
+			return JustRepair;
 	}
 
 	return 0;
