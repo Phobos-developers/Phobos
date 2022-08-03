@@ -1451,12 +1451,8 @@ msgstr "`LaunchSW.IgnoreInhibitors` 是否忽略`SW.Inhibitors`"
 #: ../New-or-Enhanced-Logics.md:1305
 msgid ""
 "For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set."
+" Also, due to the nature of some superweapon types, not all superweapons are suitable for launch."
 msgstr "若在动画伤害上使用该逻辑则必须设置Invoker"
-
-#: ../New-or-Enhanced-Logics.md:1306
-msgid ""
-"Also, due to the nature of some superweapon types, not all superweapons are suitable for launch."
-msgstr "。"
 
 #: ../New-or-Enhanced-Logics.md:1310
 msgid ""
@@ -1508,9 +1504,9 @@ msgid ""
 "Please notice that if the object is a unit which carries passengers,"
 " they will not be released even with the `kill` option."
 " This might change in the future if necessary."
-msgstr "若自毁的单位带乘客，则乘客不会逃逸。"
+msgstr "若自毁的单位带乘客，则乘客不会逃逸"
 
 #: ../New-or-Enhanced-Logics.md:1320
 msgid ""
 "If the object enters transport, the countdown will continue, but it will not self-destruct inside the transport."
-msgstr " "
+msgstr "。"
