@@ -47,7 +47,7 @@ public:
 		{ }
 
 
-		void FireSuperWeapon(SuperClass* pSW, HouseClass* pHouse, CoordStruct coords);
+		void FireSuperWeapon(SuperClass* pSW, const CellStruct& cell);
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;

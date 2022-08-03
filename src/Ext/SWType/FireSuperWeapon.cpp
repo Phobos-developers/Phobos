@@ -11,7 +11,7 @@
 #include "Ext/House/Body.h"
 
 // Too big to be kept in ApplyLimboDelivery
-void LimboDeliver(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
+void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 {
 	auto pOwnerExt = HouseExt::ExtMap.Find(pOwner);
 
@@ -72,13 +72,48 @@ void LimboDeliver(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		pBuildingExt->LimboID = ID;
 }
 
-void SWTypeExt::ExtData::FireSuperWeapon(SuperClass* pSW, HouseClass* pHouse, CoordStruct coords)
+void LimboDelete(BuildingClass* pBuilding, HouseClass* pTargetHouse)
+{
+	BuildingTypeClass* pType = static_cast<BuildingTypeClass*>(pBuilding->Type);
+
+	// Mandatory
+	pBuilding->InLimbo = true;
+	pBuilding->IsAlive = false;
+	pBuilding->IsOnMap = false;
+	pTargetHouse->RegisterLoss(pBuilding, false);
+	pTargetHouse->UpdatePower();
+	pTargetHouse->RecheckTechTree = true;
+	pTargetHouse->RecheckPower = true;
+	pTargetHouse->RecheckRadar = true;
+	pTargetHouse->Buildings.Remove(pBuilding);
+
+	// Building logics
+	if (pType->ConstructionYard)
+		pTargetHouse->ConYards.Remove(pBuilding);
+
+	if (pType->SecretLab)
+		pTargetHouse->SecretLabs.Remove(pBuilding);
+
+	if (pType->FactoryPlant)
+	{
+		pTargetHouse->FactoryPlants.Remove(pBuilding);
+		pTargetHouse->CalculateCostMultipliers();
+	}
+
+	if (pType->OrePurifier)
+		pTargetHouse->NumOrePurifiers--;
+
+	// Remove completely
+	pBuilding->UnInit();
+}
+
+void SWTypeExt::ExtData::FireSuperWeapon(SuperClass* pSW, const CellStruct& cell)
 {
 	if (this->LimboDelivery_Types.size())
-		ApplyLimboDelivery(pHouse);
+		ApplyLimboDelivery(pSW->Owner);
 
 	if (this->LimboKill_IDs.size())
-		ApplyLimboKill(pHouse);
+		ApplyLimboKill(pSW->Owner);
 }
 
 void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
@@ -91,8 +126,6 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 		size_t rolls = this->LimboDelivery_RollChances.size();
 		size_t weights = this->LimboDelivery_RandomWeightsData.size();
 		size_t ids = this->LimboDelivery_IDs.size();
-		size_t index;
-		size_t j;
 
 		// if no RollChances are supplied, do only one roll
 		if (rolls == 0)
@@ -107,19 +140,19 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 			if (!rollOnce && this->RandomBuffer > this->LimboDelivery_RollChances[i])
 				continue;
 
-			j = rolls > weights ? weights : i;
-			index = GeneralUtils::ChooseOneWeighted(this->RandomBuffer, &this->LimboDelivery_RandomWeightsData[j]);
+			size_t j = rolls > weights ? weights : i;
+			size_t index = GeneralUtils::ChooseOneWeighted(this->RandomBuffer, &this->LimboDelivery_RandomWeightsData[j]);
 
 			// extra weights are bound to automatically fail
 			if (index >= this->LimboDelivery_Types.size())
-				index = size_t(-1);
+				index = -1u;
 
 			if (index != -1)
 			{
 				if (index < ids)
 					id = this->LimboDelivery_IDs[index];
 
-				LimboDeliver(abstract_cast<BuildingTypeClass*>(this->LimboDelivery_Types[index]), pHouse, id);
+				LimboCreate(abstract_cast<BuildingTypeClass*>(this->LimboDelivery_Types[index]), pHouse, id);
 			}
 		}
 	}
@@ -134,58 +167,24 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 			if (i < ids)
 				id = this->LimboDelivery_IDs[i];
 
-			LimboDeliver(abstract_cast<BuildingTypeClass*>(this->LimboDelivery_Types[i]), pHouse, id);
+			LimboCreate(abstract_cast<BuildingTypeClass*>(this->LimboDelivery_Types[i]), pHouse, id);
 		}
 	}
 }
 
 void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 {
-	for (unsigned int i = 0; i < this->LimboKill_IDs.size(); i++)
+	for (int limboKillID : this->LimboKill_IDs)
 	{
-		for (int j = 0; j < HouseClass::Array->Count; j++)
+		for (HouseClass* pTargetHouse : *HouseClass::Array)
 		{
-			HouseClass* pTargetHouse = HouseClass::Array->Items[j];
 			if (EnumFunctions::CanTargetHouse(this->LimboKill_Affected, pHouse, pTargetHouse))
 			{
-				auto buildings = DynamicVectorClass(pTargetHouse->Buildings);
-				for (const auto pBuilding : buildings)
+				for (const auto pBuilding : pTargetHouse->Buildings)
 				{
 					const auto pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
-					if (pBuildingExt->LimboID == this->LimboKill_IDs[i])
-					{
-						BuildingTypeClass* pType = static_cast<BuildingTypeClass*>(pBuilding->Type);
-
-						// Mandatory
-						pBuilding->InLimbo = true;
-						pBuilding->IsAlive = false;
-						pBuilding->IsOnMap = false;
-						pTargetHouse->RegisterLoss(pBuilding, false);
-						pTargetHouse->UpdatePower();
-						pTargetHouse->RecheckTechTree = true;
-						pTargetHouse->RecheckPower = true;
-						pTargetHouse->RecheckRadar = true;
-						pTargetHouse->Buildings.Remove(pBuilding);
-
-						// Building logics
-						if (pType->ConstructionYard)
-							pTargetHouse->ConYards.Remove(pBuilding);
-
-						if (pType->SecretLab)
-							pTargetHouse->SecretLabs.Remove(pBuilding);
-
-						if (pType->FactoryPlant)
-						{
-							pTargetHouse->FactoryPlants.Remove(pBuilding);
-							pTargetHouse->CalculateCostMultipliers();
-						}
-
-						if (pType->OrePurifier)
-							pTargetHouse->NumOrePurifiers--;
-
-						// Remove completely
-						pBuilding->UnInit();
-					}
+					if (pBuildingExt->LimboID == limboKillID)
+						LimboDelete(pBuilding, pTargetHouse);
 				}
 			}
 		}
