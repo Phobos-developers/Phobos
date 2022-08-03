@@ -42,6 +42,8 @@ public:
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
 
+	static bool TEventIsShieldBroken(ObjectClass* pAttached);
+
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;
 
