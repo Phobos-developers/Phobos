@@ -824,157 +824,6 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 	pExt->DamageNumberOffset = pExt->DamageNumberOffset + width;
 }
 
-TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pNewTechnoType = nullptr)
-{
-	if (!pThis)
-		return nullptr;
-
-	auto newLocation = pThis->Location;
-	auto pOldTechno = pThis;
-
-	if (auto pOldTechnoType = pOldTechno->GetTechnoType())
-	{
-		if (auto pOldTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pOldTechnoType))
-		{
-			if (!pNewTechnoType)
-			{
-				if (pOldTechnoTypeExt->Convert_UniversalDeploy.size() > 0)
-				{
-					int index = ScenarioClass::Instance->Random.RandomRanged(0, pOldTechnoTypeExt->Convert_UniversalDeploy.size() - 1);
-					pNewTechnoType = pOldTechnoTypeExt->Convert_UniversalDeploy.at(index);
-				}
-				else
-				{
-					return nullptr;
-				}
-			}
-
-			// For the "infantry into vehicle" case we need to check if the cell is free of soldiers
-			if (pOldTechnoType->WhatAmI() != AbstractType::Building && pNewTechnoType->WhatAmI() != AbstractType::Building)
-			{
-				int nInfantry = 0;
-
-				for (auto pObject = pOldTechno->GetCell()->FirstObject; pObject; pObject = pObject->NextObject)
-				{
-					nInfantry++;
-				}
-
-				if (nInfantry > 1)
-					return nullptr;
-			}
-
-			auto pOwner = pOldTechno->Owner;
-			auto pNewTechno = static_cast<TechnoClass*>(pNewTechnoType->CreateObject(pOwner));
-
-			// Transfer some stats from the old object to the new:
-			// Health update
-			double nHealthPercent = (double)(1.0 * pOldTechno->Health / pOldTechnoType->Strength);
-			pNewTechno->Health = (int)round(pNewTechno->GetTechnoType()->Strength * nHealthPercent);
-			pNewTechno->EstimatedHealth = pNewTechno->Health;
-
-			// Veterancy update
-			VeterancyStruct nVeterancy = pOldTechno->Veterancy;
-			pNewTechno->Veterancy = nVeterancy;
-
-			// Team update
-			if (pOldTechno->BelongsToATeam())
-			{
-				auto pOldFoot = static_cast<FootClass*>(pOldTechno);
-				auto pNewFoot = static_cast<FootClass*>(pNewTechno);
-
-				if (pNewFoot)
-					pNewFoot->Team = pOldFoot->Team;
-			}
-
-			// Ammo Update
-			auto nAmmo = pNewTechno->Ammo;
-
-			if (nAmmo >= pOldTechno->Ammo)
-				nAmmo = pOldTechno->Ammo;
-
-			pNewTechno->Ammo = nAmmo;
-
-			// If the object was selected it should remain selected
-			bool isSelected = false;
-			if (pOldTechno->IsSelected)
-				isSelected = true;
-
-			// Mind Control update
-			if (pOldTechno->IsMindControlled())
-				TechnoExt::TransferMindControlOnDeploy(pOldTechno, pNewTechno);
-
-			// Initial Mission update
-			pNewTechno->QueueMission(Mission::Guard, true);
-
-			// Facing update
-			short newPrimaryFacing = pOldTechno->PrimaryFacing.current().value256();
-			
-			// Some vodoo magic
-			pOldTechno->Limbo();
-
-			if (!pNewTechno->Unlimbo(newLocation, newPrimaryFacing))
-			{
-				// Abort operation, restoring old object
-				pOldTechno->Unlimbo(newLocation, newPrimaryFacing);
-				pNewTechno->UnInit();
-
-				if (isSelected)
-					pOldTechno->Select();
-
-				if (auto pExt = TechnoExt::ExtMap.Find(pOldTechno))
-					pOldTechno->IsFallingDown = false;
-
-				return nullptr;
-			}
-
-			// Jumpjet tricks
-			if (pNewTechno->GetTechnoType()->JumpJet || pNewTechno->GetTechnoType()->BalloonHover)
-			{
-				//short newPrimaryFacing = pOldTechno->PrimaryFacing.current().value8();
-				CoordStruct loc = CoordStruct::Empty;
-
-				if (pNewTechno->IsInAir())
-					loc = newLocation;
-				else
-					pNewTechno->SetDestination(pOldTechno, true);
-
-				if (pNewTechno->GetHeight() != pNewTechno->GetTechnoType()->JumpjetHeight)
-					pNewTechno->Scatter(loc, true, false);
-			}
-			else
-			{
-				auto pNewTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pNewTechnoType);
-
-				if (!pNewTechnoTypeExt->Convert_DeployToLand)
-					pNewTechno->IsFallingDown = false;
-				else
-					pNewTechno->IsFallingDown = true;
-			}
-
-			// Transfer passengers/garrisoned units
-			// TO-DO
-
-			if (pOldTechno->InLimbo)
-				pOwner->RegisterLoss(pOldTechno, false);
-
-			if (!pNewTechno->InLimbo)
-				pOwner->RegisterGain(pNewTechno, true);
-
-			pNewTechno->Owner->RecheckTechTree = true;
-
-			// If the object was selected it should remain selected
-			if (isSelected)
-				pNewTechno->Select();
-
-			pOldTechno->UnInit();
-
-			return pNewTechno;
-		}
-	}
-
-	return nullptr;
-}
-
 void TechnoExt::StartUniversalDeployAnim(TechnoClass* pThis)
 {
 	if (!pThis)
@@ -1034,22 +883,57 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 
 		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 		{
+			//pFoot->ParalysisTimer.Start(15);
 			bool deployToLand = pTypeExt->Convert_DeployToLand;
 
 			// The unit should remain paralyzed during a deploy to land action to prevent issues
 			if (pExt->Convert_UniversalDeploy_InProgress && deployToLand)
-			{
 				pThis->IsFallingDown = true;
-				pFoot->ParalysisTimer.Start(15);
-			}
 
-			if (!pThis->IsFallingDown && pFoot->Locomotor->Is_Moving_Now())
+			// testing each call value... I have to remove it later
+			double speed = pFoot->Locomotor->Apparent_Speed();
+			int speedAccum = pFoot->Locomotor->Get_Speed_Accum();
+			bool ismovinghere = pFoot->Locomotor->Is_Moving_Here(pFoot->Location);
+			bool ismoving = pFoot->Locomotor->Is_Moving();
+			bool ismovingnow = pFoot->Locomotor->Is_Moving_Now();
+			bool isreallymovingnow = pFoot->Locomotor->Is_Really_Moving_Now();
+			int locomotorstatus = pFoot->Locomotor->Get_Status();
+
+			if (!pThis->IsFallingDown && isreallymovingnow)//pFoot->Locomotor->Is_Moving_Now())
 			{
-				pFoot->SetDestination(nullptr, false);
-				pFoot->Locomotor->Stop_Moving();
+				//pFoot->SetDestination(pThis, false);
+				//pFoot->Locomotor->Stop_Moving();
+				//pThis->QueueMission(Mission::Stop, false);
+				//pThis->QueueMission(Mission::Stop, false);
+				//pThis->Mission_Stop();
 
 				return;
 			}
+
+			/*if (pThis->WhatAmI() != AbstractType::Infantry)
+			{
+				// Turn the vehicle to the right deploy facing
+				if (!pExt->DeployAnim && pTypeExt->Convert_DeployDir >= 0)
+				{
+					//auto pUnit = static_cast<UnitClass*>(pThis);
+					short deployDir = (short)pTypeExt->Convert_DeployDir;
+					short currentFacing = pThis->PrimaryFacing.current().value8();
+
+					DirStruct newDir = DirStruct(3, deployDir);
+
+					if (currentFacing != deployDir)
+					{
+						DirStruct newDir = DirStruct(3, deployDir);
+
+						pFoot->Locomotor->Move_To(CoordStruct::Empty);
+						pThis->PrimaryFacing.turn(newDir);
+
+						return;
+					}
+
+					pThis->PrimaryFacing.turn(newDir);
+				}
+			}*/
 
 			if (pThis->WhatAmI() != AbstractType::Infantry)
 			{
@@ -1060,15 +944,19 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 					short deployDir = (short)pTypeExt->Convert_DeployDir;
 					short currentFacing = pThis->PrimaryFacing.current().value8();
 
+					DirStruct newDir = DirStruct(3, deployDir);
+
 					if (currentFacing != deployDir)
 					{
 						DirStruct newDir = DirStruct(3, deployDir);
 
-						pThis->PrimaryFacing.turn(newDir);
 						pFoot->Locomotor->Move_To(CoordStruct::Empty);
+						pThis->PrimaryFacing.turn(newDir);
 
 						return;
 					}
+
+					pThis->PrimaryFacing.turn(newDir);
 				}
 			}
 
@@ -1116,6 +1004,7 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 
 			if (pThis->DeployAnim)
 			{
+				pThis->DeployAnim->Limbo();
 				pThis->DeployAnim->UnInit();
 				pThis->DeployAnim = nullptr;
 			}
@@ -1146,6 +1035,172 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 			pExt->Convert_UniversalDeploy_InProgress = false;
 		}
 	}
+}
+
+TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pNewTechnoType = nullptr)
+{
+	if (!pThis)
+		return nullptr;
+
+	auto newLocation = pThis->Location;
+	auto pOldTechno = pThis;
+
+	if (auto pOldTechnoType = pOldTechno->GetTechnoType())
+	{
+		if (auto pOldTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pOldTechnoType))
+		{
+			if (!pNewTechnoType)
+			{
+				if (pOldTechnoTypeExt->Convert_UniversalDeploy.size() > 0)
+				{
+					int index = ScenarioClass::Instance->Random.RandomRanged(0, pOldTechnoTypeExt->Convert_UniversalDeploy.size() - 1);
+					pNewTechnoType = pOldTechnoTypeExt->Convert_UniversalDeploy.at(index);
+				}
+				else
+				{
+					return nullptr;
+				}
+			}
+
+			// For the "infantry into vehicle" case we need to check if the cell is free of soldiers
+			if (pOldTechnoType->WhatAmI() != AbstractType::Building && pNewTechnoType->WhatAmI() != AbstractType::Building)
+			{
+				int nObjects = 0;
+
+				for (auto pObject = pOldTechno->GetCell()->FirstObject; pObject; pObject = pObject->NextObject)
+				{
+					auto const pItem = static_cast<TechnoClass*>(pObject);
+
+					if (pItem && pItem != pOldTechno)
+						nObjects++;
+				}
+
+				if (nObjects > 0)
+				{
+					CoordStruct loc = CoordStruct::Empty;
+					pOldTechno->Scatter(loc, true, false);
+					return nullptr;
+				}
+			}
+
+			auto pOwner = pOldTechno->Owner;
+			auto pNewTechno = static_cast<TechnoClass*>(pNewTechnoType->CreateObject(pOwner));
+
+			if (!pNewTechno)
+				return nullptr;
+
+			auto pNewTechnoType = pNewTechno->GetTechnoType();
+
+			// Transfer some stats from the old object to the new:
+			// Health update
+			double nHealthPercent = (double)(1.0 * pOldTechno->Health / pOldTechnoType->Strength);
+			pNewTechno->Health = (int)round(pNewTechnoType->Strength * nHealthPercent);
+			pNewTechno->EstimatedHealth = pNewTechno->Health;
+
+			// Veterancy update
+			VeterancyStruct nVeterancy = pOldTechno->Veterancy;
+			pNewTechno->Veterancy = nVeterancy;
+
+			// Team update
+			if (pOldTechno->BelongsToATeam())
+			{
+				auto pOldFoot = static_cast<FootClass*>(pOldTechno);
+				auto pNewFoot = static_cast<FootClass*>(pNewTechno);
+
+				if (pNewFoot)
+					pNewFoot->Team = pOldFoot->Team;
+			}
+
+			// Ammo Update
+			auto nAmmo = pNewTechno->Ammo;
+
+			if (nAmmo >= pOldTechno->Ammo)
+				nAmmo = pOldTechno->Ammo;
+
+			pNewTechno->Ammo = nAmmo;
+
+			// If the object was selected it should remain selected
+			bool isSelected = false;
+			if (pOldTechno->IsSelected)
+				isSelected = true;
+
+			// Mind Control update
+			if (pOldTechno->IsMindControlled())
+				TechnoExt::TransferMindControlOnDeploy(pOldTechno, pNewTechno);
+
+			// Initial Mission update
+			pNewTechno->QueueMission(Mission::Guard, true);
+
+			// Facing update
+			short newPrimaryFacing = pOldTechno->PrimaryFacing.current().value256();
+
+			// Some vodoo magic
+			pOldTechno->Limbo();
+
+			if (!pNewTechno->Unlimbo(newLocation, newPrimaryFacing))
+			{
+				// Abort operation, restoring old object
+				pOldTechno->Unlimbo(newLocation, newPrimaryFacing);
+				pNewTechno->UnInit();
+
+				if (isSelected)
+					pOldTechno->Select();
+
+				if (auto pExt = TechnoExt::ExtMap.Find(pOldTechno))
+					pOldTechno->IsFallingDown = false;
+
+				return nullptr;
+			}
+
+			// Jumpjet tricks
+			if (pNewTechnoType->JumpJet || pNewTechnoType->BalloonHover)
+			{
+				//short newPrimaryFacing = pOldTechno->PrimaryFacing.current().value8();
+
+				CoordStruct loc = CoordStruct::Empty;
+
+				if (pNewTechno->IsInAir())
+					loc = newLocation;
+				else
+					pNewTechno->SetDestination(pOldTechno, true);
+
+				if (pNewTechno->GetHeight() != pNewTechnoType->JumpjetHeight)
+					pNewTechno->Scatter(loc, true, false);
+
+				pThis->PrimaryFacing.set(pOldTechno->PrimaryFacing.current());
+			}
+			else
+			{
+				auto pNewTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pNewTechnoType);
+
+				if (!pNewTechnoTypeExt->Convert_DeployToLand)
+					pNewTechno->IsFallingDown = false;
+				else
+					pNewTechno->IsFallingDown = true;
+			}
+
+			// Transfer passengers/garrisoned units
+			// TO-DO
+
+			if (pOldTechno->InLimbo)
+				pOwner->RegisterLoss(pOldTechno, false);
+
+			if (!pNewTechno->InLimbo)
+				pOwner->RegisterGain(pNewTechno, true);
+
+			pNewTechno->Owner->RecheckTechTree = true;
+
+			// If the object was selected it should remain selected
+			if (isSelected)
+				pNewTechno->Select();
+
+			//pOldTechno->UnInit();
+
+			return pNewTechno;
+		}
+	}
+
+	return nullptr;
 }
 
 // =============================

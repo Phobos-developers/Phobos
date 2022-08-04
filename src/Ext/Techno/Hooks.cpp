@@ -485,7 +485,6 @@ DEFINE_HOOK(0x730B8F, DeployCommand_UniversalDeploy, 0x6)
 	{
 		if (pThis->WhatAmI() == AbstractType::Building)
 		{
-
 			pThis->MissionStatus = 0;
 			pThis->CurrentMission = Mission::Selling;
 			pExt->Convert_UniversalDeploy_InProgress = true;
@@ -494,19 +493,59 @@ DEFINE_HOOK(0x730B8F, DeployCommand_UniversalDeploy, 0x6)
 		}
 		else if (pThis->WhatAmI() == AbstractType::Unit)
 		{
+			// Abort if the cell have units
 			int nObjects = 0;
+
 			for (auto pObject = pThis->GetCell()->FirstObject; pObject; pObject = pObject->NextObject)
 			{
-				nObjects++;
+				auto const pItem = static_cast<TechnoClass*>(pObject);
+
+				if (pItem && pItem != pThis)
+					nObjects++;
 			}
 
-			if (nObjects > 1)
+			if (nObjects > 0)
 			{
 				CoordStruct loc = CoordStruct::Empty;
 				pThis->Scatter(loc, true, false);
 				return 0;
 			}
 
+			// Stop and rotate if needed
+			auto const pFoot = static_cast<FootClass*>(pThis);
+			double speed = pFoot->Locomotor->Apparent_Speed();
+
+			if (!pThis->IsFallingDown && pThis->CurrentMission != Mission::Guard)//if (!pThis->IsFallingDown && speed > 0)
+			{
+				//pFoot->ParalysisTimer.Start(15);
+				//pFoot->SetDestination(nullptr, false);
+				//pFoot->Locomotor->Stop_Moving();
+				//pThis->QueueMission(Mission::Stop, false);
+				pFoot->SetDestination(pThis, false);
+				//pThis->Mission_Stop();
+				pFoot->Locomotor->Stop_Moving();
+			}
+
+			// Turn the vehicle to the right deploy facing
+			/*if (!pExt->DeployAnim && pTypeExt->Convert_DeployDir >= 0)
+			{
+				//auto pUnit = static_cast<UnitClass*>(pThis);
+				short deployDir = (short)pTypeExt->Convert_DeployDir;
+				short currentFacing = pThis->PrimaryFacing.current().value8();
+
+				if (currentFacing != deployDir)
+				{
+					DirStruct newDir = DirStruct(3, deployDir);
+
+					//pFoot->SetDestination(pThis, false);
+					//pFoot->Locomotor->Move_To(CoordStruct::Empty);
+					//CoordStruct loc = CoordStruct::Empty;
+					//pThis->Scatter(loc, true, false);
+					pThis->PrimaryFacing.turn(newDir);
+				}
+			}*/
+
+			// Initialize the conversion
 			if (pTypeExt->Convert_DeployToLand)
 			{
 				auto newCell = MapClass::Instance->GetCellAt(pThis->Location);
@@ -517,9 +556,7 @@ DEFINE_HOOK(0x730B8F, DeployCommand_UniversalDeploy, 0x6)
 					return 0;
 
 				pThis->IsFallingDown = true;
-
-				if (auto pFoot = static_cast<FootClass*>(pThis))
-					pFoot->ParalysisTimer.Start(15);
+				//pFoot->ParalysisTimer.Start(15);
 			}
 
 			pExt->Convert_UniversalDeploy_InProgress = true;
@@ -554,6 +591,23 @@ DEFINE_HOOK(0x522510, InfantryClass_DoingDeploy, 0x6)
 		return 0;
 
 	// Preparing UniversalDeploy logic
+	int nObjects = 0;
+
+	for (auto pObject = pOldTechno->GetCell()->FirstObject; pObject; pObject = pObject->NextObject)
+	{
+		auto const pItem = static_cast<TechnoClass*>(pObject);
+
+		if (pItem && pItem != pOldTechno)
+			nObjects++;
+	}
+
+	if (nObjects > 0)
+	{
+		CoordStruct loc = CoordStruct::Empty;
+		pOldTechno->Scatter(loc, true, false);
+		return 0;
+	}
+
 	if (pOldTechnoTypeExt->Convert_DeployToLand)
 	{
 		auto newCell = MapClass::Instance->GetCellAt(pThis->Location);
@@ -564,7 +618,7 @@ DEFINE_HOOK(0x522510, InfantryClass_DoingDeploy, 0x6)
 			return 0;
 
 		pThis->IsFallingDown = true;
-		pThis->ParalysisTimer.Start(15);
+		//pThis->ParalysisTimer.Start(15);
 	}
 
 	pOldTechnoExt->Convert_UniversalDeploy_InProgress = true;
@@ -715,6 +769,59 @@ DEFINE_HOOK(0x4ABEE9, BuildingClass_MouseLeftRelease_UniversalDeploy_ExecuteDepl
 			}
 			else if (pTechno->WhatAmI() == AbstractType::Unit)
 			{
+				int nObjects = 0;
+
+				for (auto pObject = pTechno->GetCell()->FirstObject; pObject; pObject = pObject->NextObject)
+				{
+					auto const pItem = static_cast<TechnoClass*>(pObject);
+
+					if (pItem && pItem != pTechno)
+						nObjects++;
+				}
+
+				if (nObjects > 0)
+				{
+					CoordStruct loc = CoordStruct::Empty;
+					pTechno->Scatter(loc, true, false);
+					return 0;
+				}
+
+				// Stop and rotate if needed
+				auto const pFoot = static_cast<FootClass*>(pTechno);
+				double speed = pFoot->Locomotor->Apparent_Speed();
+
+				if (!pTechno->IsFallingDown && pTechno->CurrentMission != Mission::Guard)//if (!pTechno->IsFallingDown && speed > 0)
+				{
+					//pFoot->ParalysisTimer.Start(15);
+					//pFoot->SetDestination(nullptr, false);
+					//pFoot->Locomotor->Stop_Moving();
+
+					//pTechno->QueueMission(Mission::Stop, false);
+					pFoot->SetDestination(pTechno, false);
+					//pTechno->Mission_Stop();
+					pFoot->Locomotor->Stop_Moving();
+				}
+
+				// Turn the vehicle to the right deploy facing
+				/*if (!pExt->DeployAnim && pTypeExt->Convert_DeployDir >= 0)
+				{
+					//auto pUnit = static_cast<UnitClass*>(pThis);
+					short deployDir = (short)pTypeExt->Convert_DeployDir;
+					short currentFacing = pTechno->PrimaryFacing.current().value8();
+
+					if (currentFacing != deployDir)
+					{
+						DirStruct newDir = DirStruct(3, deployDir);
+
+						//pFoot->SetDestination(pTechno, false);
+						//pFoot->Locomotor->Move_To(CoordStruct::Empty);
+						//CoordStruct loc = CoordStruct::Empty;
+						//pTechno->Scatter(loc, true, false);
+						pTechno->PrimaryFacing.turn(newDir);
+					}
+				}*/
+
+				// Start the conversion
 				auto newCell = MapClass::Instance->GetCellAt(pTechno->Location);
 
 				if (pTypeExt->Convert_DeployToLand)
@@ -725,9 +832,7 @@ DEFINE_HOOK(0x4ABEE9, BuildingClass_MouseLeftRelease_UniversalDeploy_ExecuteDepl
 						return 0;
 
 					pTechno->IsFallingDown = true;
-
-					if (auto pFoot = static_cast<FootClass*>(pTechno))
-						pFoot->ParalysisTimer.Start(15);
+					pFoot->ParalysisTimer.Start(15);
 				}
 
 				pExt->Convert_UniversalDeploy_InProgress = true;
@@ -739,3 +844,9 @@ DEFINE_HOOK(0x4ABEE9, BuildingClass_MouseLeftRelease_UniversalDeploy_ExecuteDepl
 
 	return 0;
 }
+
+// Disabling this block of code I stop an ocassional crash, how can be done in the good way?
+/*DEFINE_HOOK(0x406142, UniversalDeploy_Event_WorkaroundFix, 0x1C)
+{
+	return 0x406166;
+}*/
