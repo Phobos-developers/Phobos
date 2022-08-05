@@ -835,31 +835,29 @@ void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 void TechnoExt::DrawSelectBox(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry)
 {
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	SHPStruct* pShape = isInfantry ?
-		pTypeExt->SelectBox_Shape.Get(RulesExt::Global()->SelectBox_Shape_Infantry) :
-		pTypeExt->SelectBox_Shape.Get(RulesExt::Global()->SelectBox_Shape_Unit);
-
-	if (pShape == nullptr)
-		return;
-
-	bool canSee = false;
-
-	if (HouseClass::IsPlayerObserver())
-	{
-		canSee = pTypeExt->SelectBox_CanObserverSee.Get(RulesExt::Global()->SelectBox_CanObserverSee);
-	}
-	else
-	{
-		canSee = EnumFunctions::CanTargetHouse
-		(
-			pTypeExt->SelectBox_CanSee.Get(RulesExt::Global()->SelectBox_CanSee),
-			pThis->Owner,
-			HouseClass::Player
-		);
-	}
-
+	const auto canHouse = pTypeExt->SelectBox_CanSee.Get(RulesExt::Global()->SelectBox_CanSee);
+	bool canSee = HouseClass::IsPlayerObserver() ?
+		pTypeExt->SelectBox_CanObserverSee.Get(RulesExt::Global()->SelectBox_CanObserverSee)
+		: EnumFunctions::CanTargetHouse(canHouse, pThis->Owner, HouseClass::Player);
 	if (!canSee)
 		return;
+
+	SHPStruct* pShape = pTypeExt->SelectBox_Shape.Get(isInfantry ?
+		RulesExt::Global()->SelectBox_Shape_Infantry : 
+		RulesExt::Global()->SelectBox_Shape_Unit);
+	if (!pShape)
+		return;
+
+	ConvertClass* pPalette = pTypeExt->SelectBox_Palette.GetOrDefaultConvert(isInfantry ?
+		RulesExt::Global()->SelectBox_Palette_Infantry.GetOrDefaultConvert(FileSystem::PALETTE_PAL) :
+		RulesExt::Global()->SelectBox_Palette_Unit.GetOrDefaultConvert(FileSystem::PALETTE_PAL));
+	if (!pPalette)
+		return;
+
+	Vector3D<int> selectboxFrame = pTypeExt->SelectBox_Frame.Get(isInfantry ?
+		RulesExt::Global()->SelectBox_Frame_Infantry:
+		RulesExt::Global()->SelectBox_Frame_Unit);
+	int frame = pThis->IsGreenHP() ? selectboxFrame.X : (pThis->IsYellowHP() ? selectboxFrame.Y : selectboxFrame.Z);
 
 	Point2D vOffset = pTypeExt->SelectBox_DrawOffset.Get(isInfantry ?
 		RulesExt::Global()->SelectBox_DrawOffset_Infantry :
@@ -869,23 +867,12 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, Point2D* pLocation, RectangleS
 		pLocation->X + vOffset.X + (isInfantry ? 1 : 2),
 		pLocation->Y + pThis->GetTechnoType()->PixelSelectionBracketDelta + vOffset.Y + 1
 	};
-	Vector3D<int> selectboxFrame = pTypeExt->SelectBox_Frame.Get(isInfantry ?
-		RulesExt::Global()->SelectBox_Frame_Infantry:
-		RulesExt::Global()->SelectBox_Frame_Unit);
-	int frame = pThis->IsGreenHP() ? selectboxFrame.X : (pThis->IsYellowHP() ? selectboxFrame.Y : selectboxFrame.Z);
+	
 	auto const nFlag =
 		BlitterFlags::Centered |
 		BlitterFlags::Nonzero |
 		BlitterFlags::MultiPass |
 		EnumFunctions::GetTranslucentLevel(pTypeExt->SelectBox_TranslucentLevel.Get(RulesExt::Global()->SelectBox_TranslucentLevel));
-	ConvertClass* pPalette = pTypeExt->SelectBox_Palette.GetConvert();
-
-	if (pPalette == nullptr)
-	{
-		pPalette = isInfantry ?
-			RulesExt::Global()->SelectBox_Palette_Infantry.GetOrDefaultConvert(FileSystem::PALETTE_PAL) :
-			RulesExt::Global()->SelectBox_Palette_Unit.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
-	}
 
 	DSurface::Temp->DrawSHP(pPalette, pShape, frame, &vPos, pBound, nFlag, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 }
