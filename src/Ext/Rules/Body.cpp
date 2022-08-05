@@ -63,8 +63,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	const char* sectionAITargetTypes = "AITargetTypes";
 	const char* sectionAIScriptsList = "AIScriptsList";
-	const char* sectionAudioVisual = "AudioVisual";
-
+	
 	INI_EX exINI(pINI);
 
 	this->Storage_TiberiumIndex.Read(exINI, GENERAL_SECTION, "Storage.TiberiumIndex");
@@ -72,36 +71,36 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->UnitsGainSelfHealCap.Read(exINI, GENERAL_SECTION, "UnitsGainSelfHealCap");
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
-	this->MissingCameo.Read(pINI, sectionAudioVisual, "MissingCameo");
+	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 	this->RadWarhead_Detonate.Read(exINI, "Radiation", "RadSiteWarhead.Detonate");
 	this->RadHasOwner.Read(exINI, "Radiation", "RadHasOwner");
 	this->RadHasInvoker.Read(exINI, "Radiation", "RadHasInvoker");
 	this->JumpjetTurnToTarget.Read(exINI, "JumpjetControls", "TurnToTarget");
-	this->PlacementGrid_TranslucentLevel.Read(exINI, sectionAudioVisual, "BuildingPlacementGrid.TranslucentLevel");
-	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, sectionAudioVisual, "BuildingPlacementPreview.DefaultTranslucentLevel");
-	this->Pips_Shield.Read(exINI, sectionAudioVisual, "Pips.Shield");
-	this->Pips_Shield_Background.Read(exINI, sectionAudioVisual, "Pips.Shield.Background");
-	this->Pips_Shield_Building.Read(exINI, sectionAudioVisual, "Pips.Shield.Building");
-	this->Pips_Shield_Building_Empty.Read(exINI, sectionAudioVisual, "Pips.Shield.Building.Empty");
-	this->Pips_SelfHeal_Infantry.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Infantry");
-	this->Pips_SelfHeal_Units.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Units");
-	this->Pips_SelfHeal_Buildings.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Buildings");
-	this->Pips_SelfHeal_Infantry_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Infantry.Offset");
-	this->Pips_SelfHeal_Units_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Units.Offset");
-	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Buildings.Offset");
+	this->PlacementGrid_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementGrid.TranslucentLevel");
+	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementPreview.DefaultTranslucentLevel");
+	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
+	this->Pips_Shield_Background.Read(exINI, "AudioVisual", "Pips.Shield.Background");
+	this->Pips_Shield_Building.Read(exINI, "AudioVisual", "Pips.Shield.Building");
+	this->Pips_Shield_Building_Empty.Read(exINI, "AudioVisual", "Pips.Shield.Building.Empty");
+	this->Pips_SelfHeal_Infantry.Read(exINI, "AudioVisual", "Pips.SelfHeal.Infantry");
+	this->Pips_SelfHeal_Units.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units");
+	this->Pips_SelfHeal_Buildings.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings");
+	this->Pips_SelfHeal_Infantry_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Infantry.Offset");
+	this->Pips_SelfHeal_Units_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units.Offset");
+	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings.Offset");
 
-	this->UseSelectBox.Read(exINI, sectionAudioVisual, "UseSelectBox");
-	this->SelectBox_Shape_Infantry.Read(exINI, sectionAudioVisual, "SelectBox.Shape.Infantry");
-	this->SelectBox_Palette_Infantry.LoadFromINI(pINI, sectionAudioVisual, "SelectBox.Palette.Infantry");
-	this->SelectBox_Frame_Infantry.Read(exINI, sectionAudioVisual, "SelectBox.Frame.Infantry");
-	this->SelectBox_DrawOffset_Infantry.Read(exINI, sectionAudioVisual, "SelectBox.DrawOffset.Infantry");
-	this->SelectBox_Shape_Unit.Read(exINI, sectionAudioVisual, "SelectBox.Shape.Unit");
-	this->SelectBox_Palette_Unit.LoadFromINI(pINI, sectionAudioVisual, "SelectBox.Palette.Unit");
-	this->SelectBox_Frame_Unit.Read(exINI, sectionAudioVisual, "SelectBox.Frame.Unit");
-	this->SelectBox_DrawOffset_Unit.Read(exINI, sectionAudioVisual, "SelectBox.DrawOffset.Unit");
-	this->SelectBox_TranslucentLevel.Read(exINI, sectionAudioVisual, "SelectBox.TranslucentLevel");
-	this->SelectBox_CanSee.Read(exINI, sectionAudioVisual, "SelectBox.CanSee");
-	this->SelectBox_CanObserverSee.Read(exINI, sectionAudioVisual, "SelectBox.CanObserverSee");
+	this->UseSelectBox.Read(exINI, "AudioVisual", "UseSelectBox");
+	this->SelectBox_Shape_Infantry.Read(exINI, "AudioVisual", "SelectBox.Shape.Infantry");
+	this->SelectBox_Palette_Infantry.LoadFromINI(pINI, "AudioVisual", "SelectBox.Palette.Infantry");
+	this->SelectBox_Frame_Infantry.Read(exINI, "AudioVisual", "SelectBox.Frame.Infantry");
+	this->SelectBox_DrawOffset_Infantry.Read(exINI, "AudioVisual", "SelectBox.DrawOffset.Infantry");
+	this->SelectBox_Shape_Unit.Read(exINI, "AudioVisual", "SelectBox.Shape.Unit");
+	this->SelectBox_Palette_Unit.LoadFromINI(pINI, "AudioVisual", "SelectBox.Palette.Unit");
+	this->SelectBox_Frame_Unit.Read(exINI, "AudioVisual", "SelectBox.Frame.Unit");
+	this->SelectBox_DrawOffset_Unit.Read(exINI, "AudioVisual", "SelectBox.DrawOffset.Unit");
+	this->SelectBox_TranslucentLevel.Read(exINI, "AudioVisual", "SelectBox.TranslucentLevel");
+	this->SelectBox_CanSee.Read(exINI, "AudioVisual", "SelectBox.CanSee");
+	this->SelectBox_CanObserverSee.Read(exINI, "AudioVisual", "SelectBox.CanObserverSee");
 
 	this->IronCurtain_KeptOnDeploy.Read(exINI, "CombatDamage", "IronCurtain.KeptOnDeploy");
 
