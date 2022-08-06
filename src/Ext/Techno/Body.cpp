@@ -843,7 +843,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, Point2D* pLocation, RectangleS
 		return;
 
 	SHPStruct* pShape = pTypeExt->SelectBox_Shape.Get(isInfantry ?
-		RulesExt::Global()->SelectBox_Shape_Infantry : 
+		RulesExt::Global()->SelectBox_Shape_Infantry :
 		RulesExt::Global()->SelectBox_Shape_Unit);
 	if (!pShape)
 		return;
@@ -867,7 +867,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, Point2D* pLocation, RectangleS
 		pLocation->X + vOffset.X + (isInfantry ? 1 : 2),
 		pLocation->Y + pThis->GetTechnoType()->PixelSelectionBracketDelta + vOffset.Y + 1
 	};
-	
+
 	auto const nFlag =
 		BlitterFlags::Centered |
 		BlitterFlags::Nonzero |
