@@ -79,7 +79,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& posDraw, int iLength, int iCu
 	TextPrintType ePrintType;
 	const int iTextHeight = 12;
 	const int iPipHeight = 4;
-	
+
 	if (AnchorType.Vertical == VerticalPosition::Top)
 		posDraw.Y -= iTextHeight + iPipHeight * 2; // upper of healthbar and shieldbar
 
@@ -113,7 +113,7 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 
 	if (AnchorType.Vertical == VerticalPosition::Top)
 		posDraw.Y -= Shape->Height + iPipHeight * 2; // upper of healthbar and shieldbar
-	
+
 	if (isBuilding)
 		posDraw.X -= 10; // aligned to healthbar left
 
