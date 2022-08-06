@@ -15,7 +15,6 @@ public:
 	Valueable<TextAlign> Align;
 	Anchor AnchorType;
 	Valueable<BuildingSelectBracketPosition> AnchorType_Building;
-	Valueable<BorderPosition> Border;
 	Valueable<SHPStruct*> Shape;
 	CustomPalette Palette;
 	Nullable<Vector2D<int>> Shape_Interval;
@@ -31,7 +30,6 @@ public:
 		, Align(TextAlign::None)
 		, AnchorType(HorizontalPosition::Left, VerticalPosition::Top)
 		, AnchorType_Building(BuildingSelectBracketPosition::LeftTop)
-		, Border(BorderPosition::Top)
 		, Shape(nullptr)
 		, Palette()
 		, Shape_Interval()

@@ -888,38 +888,6 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<BorderPosition>(BorderPosition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
-	{
-		if (parser.ReadString(pSection, pKey))
-		{
-			auto str = parser.value();
-			if (_strcmpi(str, "top") == 0)
-			{
-				value = BorderPosition::Top;
-			}
-			else if(_strcmpi(str, "left") == 0)
-			{
-				value = BorderPosition::Left;
-			}
-			else if (_strcmpi(str, "bottom") == 0)
-			{
-				value = BorderPosition::Bottom;
-			}
-			else if (_strcmpi(str, "right") == 0)
-			{
-				value = BorderPosition::Right;
-			}
-			else
-			{
-				Debug::INIParseFailed(pSection, pKey, str, "BorderPosition is invalid");
-				return false;
-			}
-			return true;
-		}
-		return false;
-	}
-
-	template <>
 	inline bool read<DisplayInfoType>(DisplayInfoType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))

@@ -27,7 +27,6 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Align.Read(exINI, section, "Align");
 	this->AnchorType.Read(exINI, section, "Anchor.%s");
 	this->AnchorType_Building.Read(exINI, section, "Anchor.Building");
-	this->Border.Read(exINI, section, "Border");
 	this->Shape.Read(exINI, section, "Shape");
 	this->Palette.LoadFromINI(pINI, section, "Palette");
 	this->Shape_Interval.Read(exINI, section, "Shape.Interval");
@@ -78,190 +77,78 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& posDraw, int iLength, int iCu
 	RectangleStruct rect = { 0, 0, 0, 0 };
 	DSurface::Temp->GetRect(&rect);
 	TextPrintType ePrintType;
-	int iTextLength = wcslen(text);
 	const int iTextHeight = 12;
 	const int iPipHeight = 4;
-	const int iBuildingPipWidth = 4;
-	const int iBuildingPipHeight = 2;
-	const int iTextWidth = 5;
+	
+	if (AnchorType.Vertical == VerticalPosition::Top)
+		posDraw.Y -= iTextHeight + iPipHeight * 2; // upper of healthbar and shieldbar
 
-	if (Border == BorderPosition::Top)
-		posDraw.Y -= iTextHeight + iPipHeight;
-
-	switch (Align)
-	{
-	case TextAlign::Left:
-	{
-		ePrintType = TextPrintType::FullShadow;
-
-		if (Border == BorderPosition::Left)
-			posDraw.X -= iTextLength * iTextWidth;
-	}
-	break;
-	case TextAlign::Right:
-	{
-		ePrintType = TextPrintType::Right & TextPrintType::FullShadow;
-
-		if (Border != BorderPosition::Right)
-			posDraw.X -= iTextLength * iTextWidth;
-	}
-	break;
-	case TextAlign::Center:
-	{
-		ePrintType = TextPrintType::Center;
-	}
-	break;
-	default:
-	{
-		if (isBuilding)
-		{
-			ePrintType = TextPrintType::Right & TextPrintType::FullShadow;
-		}
-		else
-		{
-			ePrintType = TextPrintType::Center;
-			posDraw.X += iLength;
-		}
-	}
-	break;
-	}
-
-	ePrintType = ePrintType | (ShowBackground ? TextPrintType::Background : TextPrintType::LASTPOINT);
+	ePrintType = static_cast<TextPrintType>(Align.Get()) | TextPrintType::FullShadow | (ShowBackground ? TextPrintType::Background : TextPrintType::LASTPOINT);
 
 	DSurface::Temp->DrawTextA(text, &rect, &posDraw, color, 0, ePrintType);
 }
 
 void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding)
 {
-	std::string sCur;
-	std::string sMax;
+	std::string sCur(std::move(Percentage ?
+		GeneralUtils::IntToDigits(static_cast<int>(static_cast<double>(iCur) / iMax * 100)) :
+		GeneralUtils::IntToDigits(iCur)
+	));
+	std::string sMax(!Percentage && !HideMaxValue ?
+		std::move(GeneralUtils::IntToDigits(iMax)) :
+		""
+	);
 	Vector2D<int> vInterval = (
 		Shape_Interval.isset() ?
 		Shape_Interval.Get() :
 		(isBuilding ? Vector2D<int> { 8, -4 } : Vector2D<int> { 8, 0 }) // default
 	);
-
-	if (Border == BorderPosition::Top)
-		posDraw.Y -= Shape->Height * 2;	// upper of healthbar and shieldbar
-	else if (!isBuilding && Border == BorderPosition::Left)
-		posDraw.X -= vInterval.X;	// DrawSHP use pos for LeftTop of shape bounds
-
-	if (isBuilding)
-		posDraw.X -= 10; // aligned to healthbar left
+	std::string text = sCur;
+	const int iPipHeight = 4;
 
 	if (Percentage)
-	{
-		sCur = std::move(GeneralUtils::IntToDigits(static_cast<int>(static_cast<double>(iCur) / iMax * 100)));
-	}
-	else
-	{
-		sCur = std::move(GeneralUtils::IntToDigits(iCur));
+		text.push_back('%');
+	else if (!HideMaxValue)
+		text += '/' + sMax;
 
-		if (!HideMaxValue)
-			sMax = std::move(GeneralUtils::IntToDigits(iMax));
-	}
-
-	bool bLeftToRight = true;
+	if (AnchorType.Vertical == VerticalPosition::Top)
+		posDraw.Y -= Shape->Height + iPipHeight * 2; // upper of healthbar and shieldbar
+	
+	if (isBuilding)
+		posDraw.X -= 10; // aligned to healthbar left
 
 	switch (Align)
 	{
 	case TextAlign::Left:
 	{
-		if (Border == BorderPosition::Left)
-			posDraw.X -= (sCur.length() + sMax.length() + (Percentage || !HideMaxValue) + 1) * vInterval.X + 2;
-	}
-	break;
-	case TextAlign::Right:
-	{
-		bLeftToRight = false;
 
-		if (Border == BorderPosition::Right)
-			posDraw.X += (sCur.length() + sMax.length() + (Percentage || !HideMaxValue)) * vInterval.X + 2;
-	}
-	break;
+	}break;
 	case TextAlign::Center:
 	{
-		int iFixX = 0;
-		int iFixY = 0;
-
-		if (isBuilding)
-		{
-			posDraw.X += iLength * 2;
-			posDraw.Y += iLength;
-		}
-		else
-		{
-			posDraw.X += iLength;
-		}
-
-		if (Percentage)
-		{
-			iFixX = (sCur.length() + 1) * vInterval.X / 2;
-			iFixY = (sCur.length() + 1) * vInterval.Y / 2;
-		}
-		else if (HideMaxValue)
-		{
-			iFixX = sCur.length() * vInterval.X / 2;
-			iFixY = sCur.length() * vInterval.Y / 2;
-		}
-		else
-		{
-			iFixX = (sCur.length() + sMax.length() + 1) * vInterval.X / 2;
-			iFixY = (sCur.length() + sMax.length() + 1) * vInterval.Y / 2;
-		}
-
-		if (AnchorType.Horizontal == HorizontalPosition::Right)
-			posDraw.X += iFixX;
-		else if (AnchorType.Horizontal == HorizontalPosition::Left)
-			posDraw.X -= iFixX;
-
-		posDraw.Y -= iFixY;
-	}
-	break;
+		posDraw.X -= text.length() * vInterval.X / 2;
+		posDraw.Y += text.length() * vInterval.Y / 2;
+	}break;
+	case TextAlign::Right:
+	{
+		posDraw.X -= vInterval.X;
+	}break;
 	default:
 	{
 		if (!isBuilding)
 		{
-			posDraw.X += iLength;
-
-			int iFixX = 0;
-			int iFixY = 0;
-
-			// +1 for sign
-			if (Percentage)
-			{
-				iFixX = (sCur.length() + 1) * vInterval.X / 2;
-				iFixY = (sCur.length() + 1) * vInterval.Y / 2;
-			}
-			else if (HideMaxValue)
-			{
-				iFixX = sCur.length() * vInterval.X / 2;
-				iFixY = sCur.length() * vInterval.Y / 2;
-			}
-			else
-			{
-				iFixX = (sCur.length() + sMax.length() + 1) * vInterval.X / 2;
-				iFixY = (sCur.length() + sMax.length() + 1) * vInterval.Y / 2;
-			}
-
-			if (AnchorType.Horizontal == HorizontalPosition::Right)
-				posDraw.X += iFixX;
-			else if (AnchorType.Horizontal == HorizontalPosition::Left)
-				posDraw.X -= iFixX;
-
-			posDraw.Y -= iFixY;
+			posDraw.X -= text.length() * vInterval.X / 2;
+			posDraw.Y -= text.length() * vInterval.Y / 2;
 		}
-	}
-	break;
+	}break;
 	}
 
+	bool bLeftToRight = Align != TextAlign::Right;
 	const int iGreenNumberBaseFrame = 0;
 	const int iYellowNumberBaseFrame = 10;
 	const int iRedNumberBaseFrame = 20;
 	const int iGreenSignBaseFrame = 30;
 	const int iYellowSignBaseFrame = 32;
 	const int iRedSignBaseFrame = 34;
-
 	int iNumberBaseFrame = iGreenNumberBaseFrame;
 	int iSignBaseFrame = iGreenSignBaseFrame;
 	double ratio = static_cast<double>(iCur) / iMax;
@@ -277,13 +164,6 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 		iSignBaseFrame = iYellowSignBaseFrame;
 	else if (iNumberBaseFrame == iRedNumberBaseFrame)
 		iSignBaseFrame = iRedSignBaseFrame;
-
-	std::string text = sCur;
-
-	if (Percentage)
-		text.push_back('%');
-	else if (!HideMaxValue)
-		text += '/' + sMax;
 
 	if (!bLeftToRight)
 	{
@@ -317,7 +197,6 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->Align)
 		.Process(this->AnchorType)
 		.Process(this->AnchorType_Building)
-		.Process(this->Border)
 		.Process(this->Shape)
 		.Process(this->Palette)
 		.Process(this->Shape_Interval)
