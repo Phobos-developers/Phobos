@@ -27,6 +27,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 - Keys `rulesmd.ini->[SOMEWARHEAD]->PenetratesShield` and `rulesmd.ini->[SOMEWARHEAD]->BreaksShield` have been changed to `Shield.Penetrate` and `Shield.Break`, respectively.
 - `Rad.NoOwner` on weapons is deprecated. This has been replaced by `RadHasOwner` key on radiation types itself. It also defaults to no, so radiation once again has no owner house by default.
+- `RadApplicationDelay` and `RadApplicationDelay.Building` on custom radiation types are now only used if `[Radiation]` -> `UseGlobalRadApplicationDelay` is explicitly set to false, otherwise values from `[Radiation]` are used.
 
 #### From 0.1.1
 

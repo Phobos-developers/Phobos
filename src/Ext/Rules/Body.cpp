@@ -70,6 +70,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->InfantryGainSelfHealCap.Read(exINI, GENERAL_SECTION, "InfantryGainSelfHealCap");
 	this->UnitsGainSelfHealCap.Read(exINI, GENERAL_SECTION, "UnitsGainSelfHealCap");
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
+	this->UseGlobalRadApplicationDelay.Read(exINI, "Radiation", "UseGlobalRadApplicationDelay");
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
 	this->RadWarhead_Detonate.Read(exINI, "Radiation", "RadSiteWarhead.Detonate");
 	this->RadHasOwner.Read(exINI, "Radiation", "RadHasOwner");
@@ -180,6 +181,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Storage_TiberiumIndex)
 		.Process(this->InfantryGainSelfHealCap)
 		.Process(this->UnitsGainSelfHealCap)
+		.Process(this->UseGlobalRadApplicationDelay)
 		.Process(this->RadApplicationDelay_Building)
 		.Process(this->RadWarhead_Detonate)
 		.Process(this->RadHasOwner)

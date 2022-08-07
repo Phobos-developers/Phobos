@@ -116,12 +116,20 @@ DEFINE_HOOK(0x521478, InfantryClass_AIDeployment_FireNotOKCloakFix, 0x4)
 }
 
 // Too OP, be aware
-DEFINE_HOOK(0x43FB23, BuildingClass_AI, 0x5)
+DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 {
 	GET(BuildingClass* const, pBuilding, ECX);
 
 	if (pBuilding->IsIronCurtained() || pBuilding->Type->ImmuneToRadiation || pBuilding->InLimbo || pBuilding->BeingWarpedOut || pBuilding->TemporalTargetingMe)
 		return 0;
+
+	int radDelay = RulesExt::Global()->RadApplicationDelay_Building;
+
+	if (RulesExt::Global()->UseGlobalRadApplicationDelay &&
+		(radDelay == 0 || Unsorted::CurrentFrame % radDelay != 0))
+	{
+		return 0;
+	}
 
 	auto const buildingCoords = pBuilding->GetMapCoords();
 	for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
@@ -139,10 +147,13 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI, 0x5)
 			if (pRadSite->Spread < orDistance - 0.5)
 				continue;
 
-			int delay = pType->GetBuildingApplicationDelay();
+			if (!RulesExt::Global()->UseGlobalRadApplicationDelay)
+			{
+				int delay = pType->GetBuildingApplicationDelay();
 
-			if ((delay == 0) || (Unsorted::CurrentFrame % delay != 0))
-				continue;
+				if ((delay == 0) || (Unsorted::CurrentFrame % delay != 0))
+					continue;
+			}
 
 			if (RadSiteExt::GetRadLevelAt(pRadSite, nCurrentCoord) <= 0.0 || !pType->GetWarhead())
 				continue;
@@ -168,7 +179,10 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 {
 	GET(FootClass* const, pFoot, ESI);
 
-	if (!pFoot->IsIronCurtained() && pFoot->IsInPlayfield && !pFoot->TemporalTargetingMe)
+	int radDelay = RulesClass::Instance->RadApplicationDelay;
+
+	if (!pFoot->IsIronCurtained() && pFoot->IsInPlayfield && !pFoot->TemporalTargetingMe &&
+		(!RulesExt::Global()->UseGlobalRadApplicationDelay || Unsorted::CurrentFrame % radDelay == 0))
 	{
 		CellStruct CurrentCoord = pFoot->GetCell()->MapCoords;
 
@@ -184,10 +198,14 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 				continue;
 
 			RadTypeClass* pType = pRadExt->Type;
-			int RadApplicationDelay = pType->GetApplicationDelay();
 
-			if ((RadApplicationDelay == 0) || (Unsorted::CurrentFrame % RadApplicationDelay != 0))
-				continue;
+			if (!RulesExt::Global()->UseGlobalRadApplicationDelay)
+			{
+				int delay = pType->GetApplicationDelay();
+
+				if ((delay == 0) || (Unsorted::CurrentFrame % delay != 0))
+					continue;
+			}
 
 			// for more precise dmg calculation
 			double nRadLevel = RadSiteExt::GetRadLevelAt(pRadSite, CurrentCoord);
