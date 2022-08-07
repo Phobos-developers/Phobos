@@ -12,23 +12,22 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
 
-	// Do not search these up again in any functions called here,
-	// because it is costly for performance. Pass type as param if needed - Starkku
+	// Do not search this up again in any functions called here because it is costly for performance - Starkku
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto pType = pThis->GetTechnoType();
 
-	pExt->ApplyInterceptor(pTypeExt);
-	pExt->CheckDeathConditions(pTypeExt);
-	pExt->EatPassengers(pTypeExt);
-	pExt->UpdateShield(pTypeExt);
+	// Set only if unset or type has changed
+	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
+		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
+
+	pExt->ApplyInterceptor();
+	pExt->CheckDeathConditions();
+	pExt->EatPassengers();
+	pExt->UpdateShield();
+	pExt->ApplyPoweredKillSpawns();
+	pExt->ApplySpawnLimitRange();
 
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
-
-	if (pTypeExt->Powered_KillSpawns)
-		TechnoExt::ApplyPoweredKillSpawns(pThis);
-
-	if (pTypeExt->Spawn_LimitedRange)
-		TechnoExt::ApplySpawnLimitRange(pThis, pTypeExt->Spawn_LimitedExtraRange);
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
@@ -299,7 +298,7 @@ DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
 	GET(UnitClass*, pUnit, ESI);
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pUnit);
-	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType());
+	auto pTechnoTypeExt = pTechnoExt->TypeExtData;
 
 	if (pTechnoExt && pTechnoTypeExt)
 	{
@@ -324,7 +323,7 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 	GET(TechnoClass*, pTechno, EDI);
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
-	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+	auto pTechnoTypeExt = pTechnoExt->TypeExtData;
 
 	if (pTechnoExt && pTechnoTypeExt)
 	{
@@ -343,6 +342,7 @@ DEFINE_HOOK(0x5F4F4E, ObjectClass_Unlimbo_LaserTrails, 0x7)
 	GET(TechnoClass*, pTechno, ECX);
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
 	if (pTechnoExt)
 	{
 		for (auto& pLaserTrail : pTechnoExt->LaserTrails)

@@ -37,6 +37,12 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	if (!pBulletExt)
 		return 0;
 
+	auto pType = pThis->Type;
+
+	// Set only if unset or type has changed
+	if (!pBulletExt->TypeExtData || pBulletExt->TypeExtData->OwnerObject() != pType)
+		pBulletExt->TypeExtData = BulletTypeExt::ExtMap.Find(pType);
+
 	if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 	{
 		if (pBulletExt->DetonateOnInterception)

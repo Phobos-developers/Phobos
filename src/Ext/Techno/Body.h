@@ -19,6 +19,7 @@ public:
 	class ExtData final : public Extension<TechnoClass>
 	{
 	public:
+		TechnoTypeExt::ExtData* TypeExtData;
 		std::unique_ptr<ShieldClass> Shield;
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		bool ReceiveDamage;
@@ -37,6 +38,7 @@ public:
 		HouseClass* OriginalPassengerOwner;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
+			, TypeExtData { nullptr }
 			, Shield {}
 			, LaserTrails {}
 			, ReceiveDamage { false }
@@ -52,10 +54,12 @@ public:
 			, CurrentLaserWeaponIndex {}
 		{ }
 
-		void ApplyInterceptor(TechnoTypeExt::ExtData* pTypeExt);
-		void CheckDeathConditions(TechnoTypeExt::ExtData* pTypeExt);
-		void EatPassengers(TechnoTypeExt::ExtData* pTypeExt);
-		void UpdateShield(TechnoTypeExt::ExtData* pTypeExt);
+		void ApplyInterceptor();
+		void CheckDeathConditions();
+		void EatPassengers();
+		void UpdateShield();
+		void ApplyPoweredKillSpawns();
+		void ApplySpawnLimitRange();
 
 		virtual ~ExtData() = default;
 
@@ -115,8 +119,6 @@ public:
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
-	static void ApplyPoweredKillSpawns(TechnoClass* pThis);
-	static void ApplySpawnLimitRange(TechnoClass* pThis, int extraRange);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);

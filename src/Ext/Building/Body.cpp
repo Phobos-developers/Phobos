@@ -1,8 +1,38 @@
 #include "Body.h"
+
+#include <BitFont.h>
+
+#include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<BuildingClass>::Canary = 0x87654321;
 BuildingExt::ExtContainer BuildingExt::ExtMap;
+
+void BuildingExt::ExtData::DisplayGrinderRefund()
+{
+	if (this->AccumulatedGrindingRefund && Unsorted::CurrentFrame % 15 == 0)
+	{
+		int refundAmount = this->AccumulatedGrindingRefund;
+		bool isPositive = refundAmount > 0;
+		auto color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
+		wchar_t moneyStr[0x20];
+		swprintf_s(moneyStr, L"%ls%ls%d", isPositive ? L"+" : L"-", Phobos::UI::CostLabel, std::abs(refundAmount));
+
+		auto coords = CoordStruct::Empty;
+		coords = *this->OwnerObject()->GetCenterCoord(&coords);
+
+		int width = 0, height = 0;
+		BitFont::Instance->GetTextDimension(moneyStr, &width, &height, 120);
+
+		Point2D pixelOffset = Point2D::Empty;
+		pixelOffset += this->TypeExtData->Grinding_DisplayRefund_Offset;
+		pixelOffset.X -= width / 2;
+
+		FlyingStrings::Add(moneyStr, coords, color, pixelOffset);
+
+		this->AccumulatedGrindingRefund = 0;
+	}
+}
 
 void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType, int idxStorageTiberiumType)
 {
@@ -193,7 +223,7 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 {
 	if (const auto pExt = BuildingExt::ExtMap.Find(pBuilding))
 	{
-		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+		const auto pTypeExt = pExt->TypeExtData;
 
 		if (pTypeExt->Grinding_DisplayRefund && (pTypeExt->Grinding_DisplayRefund_Houses == AffectedHouse::All ||
 			EnumFunctions::CanTargetHouse(pTypeExt->Grinding_DisplayRefund_Houses, pBuilding->Owner, HouseClass::Player)))
@@ -225,6 +255,7 @@ template <typename T>
 void BuildingExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->TypeExtData)
 		.Process(this->DeployedTechno)
 		.Process(this->LimboID)
 		.Process(this->GrindingWeapon_LastFiredFrame)
@@ -271,7 +302,8 @@ DEFINE_HOOK(0x43BCBD, BuildingClass_CTOR, 0x6)
 {
 	GET(BuildingClass*, pItem, ESI);
 
-	BuildingExt::ExtMap.FindOrAllocate(pItem);
+	auto pExt = BuildingExt::ExtMap.FindOrAllocate(pItem);
+	pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pItem->Type);
 
 	return 0;
 }
