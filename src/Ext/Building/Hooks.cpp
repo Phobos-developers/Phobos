@@ -89,11 +89,14 @@ DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPPulseBulletWeapon, 0x8)
 
 DEFINE_HOOK(0x43FE73, BuildingClass_AI_FlyingStrings, 0x6)
 {
+	if (Unsorted::CurrentFrame % 15 != 0)
+		return 0;
+
 	GET(BuildingClass*, pThis, ESI);
 
 	if (auto const pExt = BuildingExt::ExtMap.Find(pThis))
 	{
-		if (Unsorted::CurrentFrame % 15 == 0 && pExt->AccumulatedGrindingRefund)
+		if (pExt->AccumulatedGrindingRefund)
 		{
 			auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 
