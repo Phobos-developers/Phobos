@@ -11,14 +11,24 @@
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
+
+	// Do not search these up again in any functions called here,
+	// because it is costly for performance. Pass type as param if needed - Starkku
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	pExt->ApplyInterceptor(pTypeExt);
+	pExt->CheckDeathConditions(pTypeExt);
+	pExt->EatPassengers(pTypeExt);
+	pExt->UpdateShield(pTypeExt);
 
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
-	TechnoExt::ApplyInterceptor(pThis);
-	TechnoExt::ApplyPowered_KillSpawns(pThis);
-	TechnoExt::ApplySpawn_LimitRange(pThis);
-	TechnoExt::CheckDeathConditions(pThis);
-	TechnoExt::EatPassengers(pThis);
+
+	if (pTypeExt->Powered_KillSpawns)
+		TechnoExt::ApplyPoweredKillSpawns(pThis);
+
+	if (pTypeExt->Spawn_LimitedRange)
+		TechnoExt::ApplySpawnLimitRange(pThis, pTypeExt->Spawn_LimitedExtraRange);
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter

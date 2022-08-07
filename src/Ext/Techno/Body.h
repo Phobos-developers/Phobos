@@ -52,6 +52,11 @@ public:
 			, CurrentLaserWeaponIndex {}
 		{ }
 
+		void ApplyInterceptor(TechnoTypeExt::ExtData* pTypeExt);
+		void CheckDeathConditions(TechnoTypeExt::ExtData* pTypeExt);
+		void EatPassengers(TechnoTypeExt::ExtData* pTypeExt);
+		void UpdateShield(TechnoTypeExt::ExtData* pTypeExt);
+
 		virtual ~ExtData() = default;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
@@ -109,14 +114,10 @@ public:
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
-
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
-	static void ApplyInterceptor(TechnoClass* pThis);
-	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
-	static void ApplySpawn_LimitRange(TechnoClass* pThis);
-	static void CheckDeathConditions(TechnoClass* pThis);
+	static void ApplyPoweredKillSpawns(TechnoClass* pThis);
+	static void ApplySpawnLimitRange(TechnoClass* pThis, int extraRange);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
-	static void EatPassengers(TechnoClass* pThis);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
