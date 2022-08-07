@@ -49,7 +49,7 @@ DEFINE_HOOK(0x4226F0, AnimClass_CTOR_CreateUnit_MarkOccupationBits, 0x6)
 	{
 		auto location = pThis->GetCoords();
 
-		if (auto pCell = pThis->GetCell()) 
+		if (auto pCell = pThis->GetCell())
 			location = pCell->GetCoordsWithBridge();
 		else
 			location.Z = MapClass::Instance->GetCellFloorHeight(location);
