@@ -986,6 +986,12 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 
 	for (DigitalDisplayTypeClass*& pDisplayType : *pDisplayTypes)
 	{
+		if (HouseClass::IsPlayerObserver() && !pDisplayType->CanSee_Observer)
+			continue;
+
+		if (!HouseClass::IsPlayerObserver() && !EnumFunctions::CanTargetHouse(pDisplayType->CanSee, pThis->Owner, HouseClass::Player))
+			continue;
+
 		int iCur = -1;
 		int iMax = -1;
 

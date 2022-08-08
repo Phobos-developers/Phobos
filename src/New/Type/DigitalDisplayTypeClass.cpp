@@ -32,6 +32,8 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Shape_Interval.Read(exINI, section, "Shape.Interval");
 	this->Percentage.Read(exINI, section, "Percentage");
 	this->HideMaxValue.Read(exINI, section, "HideMaxValue");
+	this->CanSee_Observer.Read(exINI, section, "CanSee.Observer");
+	this->CanSee.Read(exINI, section, "CanSee");
 	this->InfoType.Read(exINI, section, "InfoType");
 }
 
@@ -45,6 +47,14 @@ void DigitalDisplayTypeClass::Draw(Point2D posDraw, int iLength, int iCur, int i
 			posDraw += Offset_ShieldDelta;
 		else if (InfoType == DisplayInfoType::Shield)
 			posDraw.Y -= 10;	//default
+	}
+
+	if (isBuilding)
+	{
+		if (AnchorType_Building == BuildingSelectBracketPosition::Top)
+			posDraw.Y -= 4; //Building's pips height
+		else if (AnchorType_Building == BuildingSelectBracketPosition::LeftTop || AnchorType_Building == BuildingSelectBracketPosition::LeftBottom)
+			posDraw.X -= 8; //anchor to the left border of pips
 	}
 
 	if (Shape != nullptr)
@@ -73,17 +83,19 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& posDraw, int iLength, int iCu
 
 	double ratio = static_cast<double>(iCur) / iMax;
 	COLORREF color = Drawing::RGB2DWORD(Text_Color.Get(ratio));
-	bool ShowBackground = Text_Background;
 	RectangleStruct rect = { 0, 0, 0, 0 };
 	DSurface::Temp->GetRect(&rect);
 	TextPrintType ePrintType;
 	const int iTextHeight = 12;
 	const int iPipHeight = 4;
+	const int iBuildingPipHeight = 8;
 
 	if (AnchorType.Vertical == VerticalPosition::Top)
 		posDraw.Y -= iTextHeight + iPipHeight * 2; // upper of healthbar and shieldbar
 
-	ePrintType = static_cast<TextPrintType>(Align.Get()) | TextPrintType::FullShadow | (ShowBackground ? TextPrintType::Background : TextPrintType::LASTPOINT);
+	ePrintType = (Align == TextAlign::None ? (isBuilding ? TextPrintType::Right : TextPrintType::Center) : static_cast<TextPrintType>(Align.Get()))
+		| TextPrintType::FullShadow
+		| (Text_Background ? TextPrintType::Background : TextPrintType::LASTPOINT);
 
 	DSurface::Temp->DrawTextA(text, &rect, &posDraw, color, 0, ePrintType);
 }
@@ -105,6 +117,7 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 	);
 	std::string text = sCur;
 	const int iPipHeight = 4;
+	const int iBuildingPipHeight = 8;
 
 	if (Percentage)
 		text.push_back('%');
@@ -113,9 +126,6 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 
 	if (AnchorType.Vertical == VerticalPosition::Top)
 		posDraw.Y -= Shape->Height + iPipHeight * 2; // upper of healthbar and shieldbar
-
-	if (isBuilding)
-		posDraw.X -= 10; // aligned to healthbar left
 
 	switch (Align)
 	{
@@ -126,7 +136,7 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 	case TextAlign::Center:
 	{
 		posDraw.X -= text.length() * vInterval.X / 2;
-		posDraw.Y += text.length() * vInterval.Y / 2;
+		posDraw.Y -= text.length() * vInterval.Y / 2;
 	}break;
 	case TextAlign::Right:
 	{
@@ -180,9 +190,8 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 		vInterval
 	);
 	RectangleStruct rBound;
-	DSurface::Temp->GetRect(&rBound);
-	rBound.Height -= 32;	// bottom bar fix like building placement preview
-	ShapeTextPrinter::PrintShape(text.c_str(), shapeTextPrintData, posDraw, rBound, DSurface::Temp);
+	DSurface::Composite->GetRect(&rBound);
+	ShapeTextPrinter::PrintShape(text.c_str(), shapeTextPrintData, posDraw, rBound, DSurface::Composite);
 }
 
 
@@ -202,6 +211,8 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->Shape_Interval)
 		.Process(this->Percentage)
 		.Process(this->HideMaxValue)
+		.Process(this->CanSee_Observer)
+		.Process(this->CanSee)
 		.Process(this->InfoType)
 		;
 }
