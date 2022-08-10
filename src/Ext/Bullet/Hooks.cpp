@@ -21,6 +21,7 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 	{
 		pExt->FirerHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
 		pExt->CurrentStrength = pThis->Type->Strength;
+		pExt->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
 	}
 
 	if (!pThis->Type->Inviso)
@@ -36,6 +37,12 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 
 	if (!pBulletExt)
 		return 0;
+
+	auto pType = pThis->Type;
+
+	// Set only if unset or type has changed
+	if (!pBulletExt->TypeExtData || pBulletExt->TypeExtData->OwnerObject() != pType)
+		pBulletExt->TypeExtData = BulletTypeExt::ExtMap.Find(pType);
 
 	if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 	{
@@ -284,6 +291,26 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			pWHExt->WasDetonatedOnAllMapObjects = false;
 
 			return ReturnFromFunction;
+		}
+	}
+
+	return 0;
+}
+
+// Do not force straight trajectory projectiles to detonate at target coordinates under certain circumstances.
+// Fixes issues with walls etc.
+DEFINE_HOOK(0x468EC7, BulletClass_Explode_TargetCoord, 0x6)
+{
+	enum { SkipSetCoordinate = 0x468F23 };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (pExt->Trajectory)
+		{
+			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
+				return SkipSetCoordinate;
 		}
 	}
 

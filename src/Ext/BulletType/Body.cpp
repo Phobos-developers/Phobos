@@ -41,6 +41,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Gravity.Read(exINI, pSection, "Gravity");
 
 	PhobosTrajectoryType::CreateType(this->TrajectoryType, pINI, pSection, "Trajectory");
+	this->Trajectory_Speed.Read(exINI, pSection, "Trajectory.Speed");
 
 	this->Shrapnel_AffectsGround.Read(exINI, pSection, "Shrapnel.AffectsGround");
 	this->Shrapnel_AffectsBuildings.Read(exINI, pSection, "Shrapnel.AffectsBuildings");
@@ -64,6 +65,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Interceptable_WeaponOverride)
 		.Process(this->LaserTrail_Types)
 		.Process(this->Gravity)
+		.Process(this->Trajectory_Speed)
 		.Process(this->Shrapnel_AffectsGround)
 		.Process(this->Shrapnel_AffectsBuildings)
 		;

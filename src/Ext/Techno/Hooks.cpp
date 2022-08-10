@@ -11,15 +11,23 @@
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
+
+	// Do not search this up again in any functions called here because it is costly for performance - Starkku
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	auto pType = pThis->GetTechnoType();
+
+	// Set only if unset or type has changed
+	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
+		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
+
+	pExt->ApplyInterceptor();
+	pExt->CheckDeathConditions();
+	pExt->EatPassengers();
+	pExt->UpdateShield();
+	pExt->ApplyPoweredKillSpawns();
+	pExt->ApplySpawnLimitRange();
 
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
-	TechnoExt::ApplyInterceptor(pThis);
-	TechnoExt::ApplyPowered_KillSpawns(pThis);
-	TechnoExt::ApplySpawn_LimitRange(pThis);
-	TechnoExt::CheckDeathConditions(pThis);
-	TechnoExt::EatPassengers(pThis);
-	TechnoExt::UpdateMindControlAnim(pThis);
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
@@ -290,7 +298,7 @@ DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
 	GET(UnitClass*, pUnit, ESI);
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pUnit);
-	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType());
+	auto pTechnoTypeExt = pTechnoExt->TypeExtData;
 
 	if (pTechnoExt && pTechnoTypeExt)
 	{
@@ -315,9 +323,8 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 	GET(TechnoClass*, pTechno, EDI);
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
-	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
 
-	if (pTechnoExt && pTechnoTypeExt)
+	if (pTechnoExt)
 	{
 		for (auto& pLaserTrail : pTechnoExt->LaserTrails)
 		{
@@ -334,6 +341,7 @@ DEFINE_HOOK(0x5F4F4E, ObjectClass_Unlimbo_LaserTrails, 0x7)
 	GET(TechnoClass*, pTechno, ECX);
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
 	if (pTechnoExt)
 	{
 		for (auto& pLaserTrail : pTechnoExt->LaserTrails)
@@ -575,6 +583,16 @@ DEFINE_HOOK(0x4D9F8A, FootClass_Sell_Sellsound, 0x5)
 	VocClass::PlayAt(pTypeExt->SellSound.Get(RulesClass::Instance->SellSound), pThis->Location);
 
 	return SkipVoxVocPlay;
+}
+
+DEFINE_HOOK_AGAIN(0x703789, TechnoClass_CloakUpdateMCAnim, 0x6) // TechnoClass_Do_Cloak
+DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_Cloaking_AI
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	TechnoExt::UpdateMindControlAnim(pThis);
+
+	return 0;
 }
 
 DEFINE_HOOK(0x457C90, BuildingClass_IronCuratin, 0x6)

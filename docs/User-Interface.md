@@ -119,6 +119,7 @@ ShowBuildingPlacementPreview=false  ; boolean
 - PCX files can now be used as loadscreen images.
   - You can specify custom loadscreen with Ares tag `File.LoadScreen`.
   - Campaign loading screen (`missionmd.ini->[LS800BkgdName]`) can also use PCX image.
+  - Observer loading screen can use `ls800obs.pcx` *(or `ls640obs.pcx` when screen width is 640)* for this feature.
 - The loadscreen size can now be different from the default `800x600` one; if the image is bigger than the screen it's centered and cropped.
   - This feature works in conjunction with CnCNet5 spawner DLL which resizes loadscreen window to actual monitor size and places the image in center. If there's no CnCNet5 spawner loaded, the window resolution will be always `800x600`.
   - Same applies to campaign loading screen (`missionmd.ini->[LS800BkgdName]`).
@@ -265,10 +266,6 @@ Sidebar.GDIPositions=  ; boolean
 - Fixed a bug when switching build queue tabs via QWER didn't make tooltips disappear as they should, resulting in stuck tooltips.
 - The tooltips can now go over the sidebar bounds to accommodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
 
-```{note}
-Same as with harvester counter, you can download the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) or draw your own icons.
-```
-
 In `uimd.ini`:
 ```ini
 [ToolTips]
@@ -290,4 +287,8 @@ In `RA2MD.ini`:
 ```ini
 [Phobos]
 ToolTipDescriptions=true  ; boolean
+```
+
+```{note}
+Same as with harvester counter, you can download the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) or draw your own icons.
 ```

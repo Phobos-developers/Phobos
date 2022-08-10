@@ -12,18 +12,22 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 - SHP debris hardcoded shadows now respect `Shadow=no` tag value, and due to it being the default value they wouldn't have hardcoded shadows anymore by default. Override this by specifying `Shadow=yes` for SHP debris.
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
+- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`.
 
 ### From older Phobos versions
 
 #### From pre-0.3 devbuilds
 
+- `Trajectory.Speed` is now defined on projectile instead of weapon.
 - `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
-- `Rad.NoOwner` on weapons is deprecated. This has been replaced by `RadHasOwner` key on radiation types itself. It also defaults to no, so radiation once again has no owner house by default.
 - Automatic self-destruction logic logic has been reimplemented, `Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been remade/renamed and require adjustments to function.
+- Script actions 125 and 126 (timed jump) now take the time measured in ingame seconds instead of frames. Divide your value by 15 to accomodate to this change.
 
 #### From 0.2.2.2
 
 - Keys `rulesmd.ini->[SOMEWARHEAD]->PenetratesShield` and `rulesmd.ini->[SOMEWARHEAD]->BreaksShield` have been changed to `Shield.Penetrate` and `Shield.Break`, respectively.
+- `Rad.NoOwner` on weapons is deprecated. This has been replaced by `RadHasOwner` key on radiation types itself. It also defaults to no, so radiation once again has no owner house by default.
+- `RadApplicationDelay` and `RadApplicationDelay.Building` on custom radiation types are now only used if `[Radiation]` -> `UseGlobalRadApplicationDelay` is explicitly set to false, otherwise values from `[Radiation]` are used.
 
 #### From 0.1.1
 
@@ -323,7 +327,8 @@ New:
 - Warhead self-damaging toggle (by Starkku)
 - Trailer animations inheriting owner (by Starkku)
 - Warhead detonation on all objects on map (by Starkku)
-- Implemented support for PCX images for campaign load screen (by FlyStar)
+- Implemented support for PCX images for campaign loading screen (by FlyStar)
+- Implemented support for PCX images for observer loading screen (by Uranusian)
 - Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 - IronCurtain can set as `kill/Affect/NoAffect` to all Techno (by ststl)
 
@@ -366,6 +371,8 @@ Phobos fixes:
 - Fixed interceptors intercepting projectiles fired by friendly objects if the said object died after firing the projectile (by Starkku)
 - Fixed interceptor weapons with `Inviso=true` projectiles detonating the projectile at wrong coordinates (by Starkku)
 - Fixed some possible configuration reading issues when using Phobos with patches that rename `uimd.ini` (by Belonit)
+- Fixed a game crash when using the Map Snapshot command (by Otamaa)
+- Fixed issue with incorrect input in edit dialog element when using IME (by Belonit)
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)

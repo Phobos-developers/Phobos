@@ -72,58 +72,11 @@ DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_Sh
 
 			if (pShieldData->IsActive())
 			{
-				R->EAX(pShieldData->GetType()->Armor);
+				R->EAX(pShieldData->GetType()->Armor.Get());
 				return R->Origin() + 6;
 			}
 		}
 	}
-
-	return 0;
-}
-
-//Abandoned because of Ares!!!! - Uranusian
-/*
-DEFINE_HOOK_AGAIN(0x6F3725, TechnoClass_WhatWeaponShouldIUse_Shield, 0x6)
-DEFINE_HOOK(0x6F36F2, TechnoClass_WhatWeaponShouldIUse_Shield, 0x6)
-{
-	GET(TechnoClass*, pTarget, EBP);
-	if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
-	{
-		if (auto pShieldData = pExt->Shield.get())
-		{
-			if (pShieldData->GetHP())
-			{
-				auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
-
-				if (R->Origin() == 0x6F36F2)
-					R->ECX(pTypeExt->Shield_Armor);
-				else
-					R->EAX(pTypeExt->Shield_Armor);
-
-				return R->Origin() + 6;
-			}
-		}
-	}
-	return 0;
-}
-*/
-
-DEFINE_HOOK(0x6F9E50, TechnoClass_AI_Shield, 0x5)
-{
-	GET(TechnoClass*, pThis, ECX);
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	// Set current shield type if it is not set.
-	if (!pExt->CurrentShieldType->Strength && pTypeExt->ShieldType->Strength)
-		pExt->CurrentShieldType = pTypeExt->ShieldType;
-
-	// Create shield class instance if it does not exist.
-	if (pExt->CurrentShieldType && pExt->CurrentShieldType->Strength && !pExt->Shield)
-		pExt->Shield = std::make_unique<ShieldClass>(pThis);
-
-	if (const auto pShieldData = pExt->Shield.get())
-		pShieldData->AI();
 
 	return 0;
 }
@@ -273,12 +226,12 @@ public:
 
 #pragma region UnitClass_GetFireError_Heal
 
-FireError __fastcall UnitClass__GetFireError(UnitClass* pThis, void*_, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
+FireError __fastcall UnitClass__GetFireError(UnitClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
 	JMP_THIS(0x740FD0);
 }
 
-FireError __fastcall UnitClass__GetFireError_Wrapper(UnitClass* pThis, void*_, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
+FireError __fastcall UnitClass__GetFireError_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
 	AresScheme::Prefix(pObj);
 	auto const result = UnitClass__GetFireError(pThis, _, pObj, nWeaponIndex, ignoreRange);
@@ -289,11 +242,11 @@ DEFINE_JUMP(VTABLE, 0x7F6030, GET_OFFSET(UnitClass__GetFireError_Wrapper))
 #pragma endregion UnitClass_GetFireError_Heal
 
 #pragma region InfantryClass_GetFireError_Heal
-FireError __fastcall InfantryClass__GetFireError(InfantryClass* pThis, void*_, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
+FireError __fastcall InfantryClass__GetFireError(InfantryClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
 	JMP_THIS(0x51C8B0);
 }
-FireError __fastcall InfantryClass__GetFireError_Wrapper(InfantryClass* pThis, void*_, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
+FireError __fastcall InfantryClass__GetFireError_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
 	AresScheme::Prefix(pObj);
 	auto const result = InfantryClass__GetFireError(pThis, _, pObj, nWeaponIndex, ignoreRange);
@@ -304,12 +257,12 @@ DEFINE_JUMP(VTABLE, 0x7EB418, GET_OFFSET(InfantryClass__GetFireError_Wrapper))
 #pragma endregion InfantryClass_GetFireError_Heal
 
 #pragma region UnitClass__WhatAction
-Action __fastcall UnitClass__WhatAction(UnitClass* pThis, void*_, ObjectClass* pObj, bool ignoreForce)
+Action __fastcall UnitClass__WhatAction(UnitClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
 	JMP_THIS(0x73FD50);
 }
 
-Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void*_, ObjectClass* pObj, bool ignoreForce)
+Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
 	AresScheme::Prefix(pObj);
 	auto const result = UnitClass__WhatAction(pThis, _, pObj, ignoreForce);
@@ -320,12 +273,12 @@ DEFINE_JUMP(VTABLE, 0x7F5CE4, GET_OFFSET(UnitClass__WhatAction_Wrapper))
 #pragma endregion UnitClass__WhatAction
 
 #pragma region InfantryClass__WhatAction
-Action __fastcall InfantryClass__WhatAction(InfantryClass* pThis, void*_, ObjectClass* pObj, bool ignoreForce)
+Action __fastcall InfantryClass__WhatAction(InfantryClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
 	JMP_THIS(0x51E3B0);
 }
 
-Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void*_, ObjectClass* pObj, bool ignoreForce)
+Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
 	AresScheme::Prefix(pObj);
 	auto const result = InfantryClass__WhatAction(pThis, _, pObj, ignoreForce);

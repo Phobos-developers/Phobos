@@ -172,12 +172,16 @@ DEFINE_HOOK(0x424322, AnimClass_AI_TrailerInheritOwner, 0x6)
 	GET(AnimClass*, pThis, ESI);
 	GET(AnimClass*, pTrailerAnim, EAX);
 
-	if (auto const pExt = AnimExt::ExtMap.Find(pThis))
+	if (pThis->Type->TrailerAnim && pThis->Type->TrailerSeperation > 0 &&
+		Unsorted::CurrentFrame % pThis->Type->TrailerSeperation == 0)
 	{
-		if (auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim))
+		if (auto const pExt = AnimExt::ExtMap.Find(pThis))
 		{
-			pTrailerAnim->Owner = pThis->Owner;
-			pTrailerAnimExt->Invoker = pExt->Invoker;
+			if (auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim))
+			{
+				pTrailerAnim->Owner = pThis->Owner;
+				pTrailerAnimExt->Invoker = pExt->Invoker;
+			}
 		}
 	}
 

@@ -50,25 +50,29 @@ void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* 
 PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& Stm)
 {
 	PhobosTrajectoryType* pType = nullptr;
+	TrajectoryFlag flag = TrajectoryFlag::Invalid;
 	Stm.Process(pType, false);
+
 	if (pType)
 	{
-		Stm.Process(pType->Flag, false);
-		switch (pType->Flag)
+		Stm.Process(flag, false);
+
+		switch (flag)
 		{
 		case TrajectoryFlag::Straight:
 			pType = GameCreate<StraightTrajectoryType>();
 			break;
-
 		case TrajectoryFlag::Bombard:
 			pType = GameCreate<BombardTrajectoryType>();
 			break;
-
 		default:
 			return nullptr;
 		}
+
+		pType->Flag = flag;
 		pType->Load(Stm, false);
 	}
+
 	return pType;
 }
 
@@ -108,8 +112,8 @@ bool PhobosTrajectory::Save(PhobosStreamWriter& Stm) const
 
 double PhobosTrajectory::GetTrajectorySpeed(BulletClass* pBullet) const
 {
-	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pBullet->WeaponType))
-		return pWeaponExt->Trajectory_Speed;
+	if (auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
+		return pBulletTypeExt->Trajectory_Speed;
 	else
 		return 100.0;
 }
@@ -138,25 +142,29 @@ PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, 
 PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 {
 	PhobosTrajectory* pTraj = nullptr;
+	TrajectoryFlag flag = TrajectoryFlag::Invalid;
 	Stm.Process(pTraj, false);
+
 	if (pTraj)
 	{
-		Stm.Process(pTraj->Flag, false);
-		switch (pTraj->Flag)
+		Stm.Process(flag, false);
+
+		switch (flag)
 		{
 		case TrajectoryFlag::Straight:
 			pTraj = GameCreate<StraightTrajectory>();
 			break;
-
 		case TrajectoryFlag::Bombard:
 			pTraj = GameCreate<BombardTrajectory>();
 			break;
-
 		default:
 			return nullptr;
 		}
+
+		pTraj->Flag = flag;
 		pTraj->Load(Stm, false);
 	}
+
 	return pTraj;
 }
 
@@ -185,12 +193,18 @@ PhobosTrajectory* PhobosTrajectory::ProcessFromStream(PhobosStreamWriter& Stm, P
 
 DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 {
+	enum { Detonate = 0x467E53 };
+
 	GET(BulletClass*, pThis, EBP);
 
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
+	bool detonate = false;
 
 	if (auto pTraj = pExt->Trajectory)
-		pTraj->OnAI(pThis);
+		detonate = pTraj->OnAI(pThis);
+
+	if (detonate && !pThis->SpawnNextAnim)
+		return Detonate;
 
 	return 0;
 }
@@ -258,11 +272,11 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 	GET_STACK(CoordStruct*, pCoord, STACK_OFFS(0x54, -0x4));
 	GET_STACK(BulletVelocity*, pVelocity, STACK_OFFS(0x54, -0x8));
 
-	auto const pData = BulletTypeExt::ExtMap.Find(pThis->Type);
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
 
-	if (auto pType = pData->TrajectoryType)
-		pExt->Trajectory = PhobosTrajectory::CreateInstance(pType, pThis, pCoord, pVelocity);
+	if (pTypeExt && pTypeExt->TrajectoryType)
+		pExt->Trajectory = PhobosTrajectory::CreateInstance(pTypeExt->TrajectoryType, pThis, pCoord, pVelocity);
 
 	return 0;
 }
