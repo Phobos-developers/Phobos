@@ -187,8 +187,7 @@ DEFINE_HOOK(0x4664BA, BulletClass_CTOR, 0x5)
 {
 	GET(BulletClass*, pItem, ESI);
 
-	auto pExt = BulletExt::ExtMap.FindOrAllocate(pItem);
-	pExt->TypeExtData = BulletTypeExt::ExtMap.Find(pItem->Type);
+	BulletExt::ExtMap.FindOrAllocate(pItem);
 
 	return 0;
 }
