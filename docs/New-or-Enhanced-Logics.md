@@ -607,11 +607,15 @@ If the object enters transport, the countdown will continue, but it will not sel
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                  ; TechnoType
-AutoDeath.Behavior=           ; enumeration (kill | vanish | sell), default not set
+[SOMETECHNO]                    ; TechnoType
+AutoDeath.Behavior=             ; enumeration (kill | vanish | sell), default not set
 
-AutoDeath.OnAmmoDepletion=no  ; boolean
-AutoDeath.AfterDelay=0        ; positive integer
+AutoDeath.OnAmmoDepletion=no    ; boolean
+AutoDeath.AfterDelay=0          ; positive integer
+AutoDeath.Nonexist=             ; list of TechnoType names
+AutoDeath.Nonexist.House=owner  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+AutoDeath.Exist=                ; list of TechnoType names
+AutoDeath.Exist.House=owner     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 

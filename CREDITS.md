@@ -176,7 +176,9 @@ This page lists all the individual contributions to the project by their author.
    - Warhead superweapon launch logic
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
-- **FlyStar** - Campaign load screen PCX support
+- **FlyStar**
+   - Campaign load screen PCX support
+   - New condition when some technotypes exist/nonexist of automatic self-destruction logic
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
