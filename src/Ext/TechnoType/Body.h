@@ -56,6 +56,11 @@ public:
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
 		Valueable<int> AutoDeath_AfterDelay;
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
+		ValueableVector<TechnoTypeClass*> AutoDeath_Nonexist;
+		Valueable<AffectedHouse> AutoDeath_Nonexist_House;
+		ValueableVector<TechnoTypeClass*> AutoDeath_Exist;
+		Valueable<AffectedHouse> AutoDeath_Exist_House;
+
 		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
 		NullableIdx<VocClass> SellSound;
 		NullableIdx<VoxClass> EVA_Sold;
@@ -157,6 +162,7 @@ public:
 			, RadarJamRadius { 0 }
 			, InhibitorRange { }
 			, MindControlRangeLimit {}
+
 			, Interceptor { false }
 			, Interceptor_CanTargetHouses { AffectedHouse::Enemies }
 			, Interceptor_GuardRange {}
@@ -167,6 +173,7 @@ public:
 			, Interceptor_WeaponReplaceProjectile { false }
 			, Interceptor_WeaponCumulativeDamage { false }
 			, Interceptor_KeepIntact { false }
+
 			, TurretOffset { { 0, 0, 0 } }
 			, Powered_KillSpawns { false }
 			, Spawn_LimitedRange { false }
@@ -179,6 +186,7 @@ public:
 			, NoManualMove { false }
 			, InitialStrength {}
 			, ShieldType {}
+
 			, WarpOut {}
 			, WarpIn {}
 			, WarpAway {}
@@ -191,24 +199,29 @@ public:
 			, WarpInMinRangeWeapon {}
 			, WarpOutWeapon {}
 			, WarpInWeapon_UseDistanceAsDamage { false }
+
 			, OreGathering_Anims {}
 			, OreGathering_Tiberiums {}
 			, OreGathering_FramesPerDir {}
 			, LaserTrailData {}
 			, DestroyAnim_Random { true }
 			, NotHuman_RandomDeathSequence { false }
+
 			, PassengerDeletion_Soylent { false }
 			, PassengerDeletion_SoylentFriendlies { false }
 			, PassengerDeletion_Rate { 0 }
 			, PassengerDeletion_ReportSound {}
 			, PassengerDeletion_Rate_SizeMultiply { true }
 			, PassengerDeletion_Anim {}
+
 			, DefaultDisguise {}
+
 			, OpenTopped_RangeBonus {}
 			, OpenTopped_DamageMultiplier {}
 			, OpenTopped_WarpDistance {}
 			, OpenTopped_IgnoreRangefinding { false }
 			, OpenTopped_AllowFiringIfDeactivated { true }
+
 			, AutoFire { false }
 			, AutoFire_TargetSelf { false }
 			, NoSecondaryWeaponFallback { false }
@@ -216,13 +229,20 @@ public:
 			, NoAmmoAmount { 0 }
 			, JumpjetAllowLayerDeviation {}
 			, JumpjetTurnToTarget {}
+
 			, DeployingAnim_AllowAnyDirection { false }
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
+
 			, AutoDeath_Behavior { }
 			, AutoDeath_OnAmmoDepletion { false }
 			, AutoDeath_AfterDelay { 0 }
+			, AutoDeath_Nonexist {}
+			, AutoDeath_Nonexist_House { AffectedHouse::Owner }
+			, AutoDeath_Exist {}
+			, AutoDeath_Exist_House { AffectedHouse::Owner }
+
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
 			, SellSound { }
 			, EVA_Sold { }

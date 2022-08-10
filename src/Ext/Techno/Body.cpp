@@ -109,6 +109,58 @@ void TechnoExt::ExtData::CheckDeathConditions()
 				return;
 			}
 		}
+
+		// Death if nonexist
+		if (!TypeExtData->AutoDeath_Nonexist.empty())
+		{
+			auto it = std::find_if
+			(
+				TypeExtData->AutoDeath_Nonexist.begin(),
+				TypeExtData->AutoDeath_Nonexist.end(),
+				[this](TechnoTypeClass* const pType)
+				{
+						for (HouseClass* const pHouse : *HouseClass::Array)
+						{
+							if (EnumFunctions::CanTargetHouse(
+								this->TypeExtData->AutoDeath_Nonexist_House,
+								this->OwnerObject()->Owner, pHouse) &&
+								pHouse->CountOwnedAndPresent(pType))
+								return true;
+						}
+
+						return false;
+				}
+			);
+
+			if (it != TypeExtData->AutoDeath_Nonexist.end())
+				KillSelf(pThis, TypeExtData->AutoDeath_Behavior);
+		}
+
+		// Death if exist
+		if (!TypeExtData->AutoDeath_Exist.empty())
+		{
+			auto it = std::find_if
+			(
+				TypeExtData->AutoDeath_Exist.begin(),
+				TypeExtData->AutoDeath_Exist.end(),
+				[this](TechnoTypeClass* const pType)
+				{
+						for (HouseClass* const pHouse : *HouseClass::Array)
+						{
+							if (EnumFunctions::CanTargetHouse(
+								this->TypeExtData->AutoDeath_Exist_House,
+								this->OwnerObject()->Owner, pHouse) &&
+								pHouse->CountOwnedAndPresent(pType))
+								return true;
+						}
+
+						return false;
+				}
+			);
+
+			if (it != TypeExtData->AutoDeath_Exist.end())
+				KillSelf(pThis, TypeExtData->AutoDeath_Behavior);
+		}
 	}
 }
 
