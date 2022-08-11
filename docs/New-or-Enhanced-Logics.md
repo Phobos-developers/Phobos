@@ -589,7 +589,8 @@ Detonate.AtFirer=false  ; boolean
   - `PassengerDeletion.Rate` determines the interval in game frames that it takes to erase a single passenger.
     - If `PassengerDeletion.Rate.SizeMultiply` is set to true, this time interval is multiplied by the passenger's `Size`.
   - `PassengerDeletion.UseCostAsRate`, if set to true, changes the time interval for erasing a passenger to be based on the passenger's `Cost`. This does not factor in modifiers like `FactoryPlant`.
-    - `PassengerDeletion.CostMultiplier` can be used to modify the cost-based time interval. If `PassengerDeletion.Rate` is also set to a value higher than 0, it serves as a maximum cap for the time interval.
+    - `PassengerDeletion.CostMultiplier` can be used to modify the cost-based time interval.
+    - `PassengerDeletion.CostRateCap` can be used to set a cap to the cost-based time interval.
   - If `PassengerDeletion.Soylent` is set to true, an amount of credits is refunded to the owner of the transport. The exact amount refunded is determined by the passengers `Soylent`, or if not set, its `Cost` (this is affected by modifiers such as `FactoryPlant`).
     - `PassengerDeletion.SoylentMultiplier` is a direct multiplier applied to the refunded amount of credits.
     - `PassengerDeletion.SoylentFriendlies` can be set to true to allow refunding passengers that belong to the transport's owner or one of their allies.
@@ -603,6 +604,7 @@ PassengerDeletion.Rate=0                      ; integer, game frames
 PassengerDeletion.Rate.SizeMultiply=true      ; boolean
 PassengerDeletion.UseCostAsRate=false         ; boolean
 PassengerDeletion.CostMultiplier=1.0          ; floating point value, percents or absolute
+PassengerDeletion.CostRateCap=                ; integer, game frames
 PassengerDeletion.Soylent=false               ; boolean
 PassengerDeletion.SoylentMultiplier=1.0       ; float, percents or absolute
 PassengerDeletion.SoylentFriendlies=false     ; boolean

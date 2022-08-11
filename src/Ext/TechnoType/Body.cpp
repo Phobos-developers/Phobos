@@ -189,6 +189,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PassengerDeletion_Rate_SizeMultiply.Read(exINI, pSection, "PassengerDeletion.Rate.SizeMultiply");
 	this->PassengerDeletion_UseCostAsRate.Read(exINI, pSection, "PassengerDeletion.UseCostAsRate");
 	this->PassengerDeletion_CostMultiplier.Read(exINI, pSection, "PassengerDeletion.CostMultiplier");
+	this->PassengerDeletion_CostRateCap.Read(exINI, pSection, "PassengerDeletion.CostRateCap");
 	this->PassengerDeletion_Soylent.Read(exINI, pSection, "PassengerDeletion.Soylent");
 	this->PassengerDeletion_SoylentMultiplier.Read(exINI, pSection, "PassengerDeletion.SoylentMultiplier");
 	this->PassengerDeletion_SoylentFriendlies.Read(exINI, pSection, "PassengerDeletion.SoylentFriendlies");
@@ -359,6 +360,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletion_Rate_SizeMultiply)
 		.Process(this->PassengerDeletion_UseCostAsRate)
 		.Process(this->PassengerDeletion_CostMultiplier)
+		.Process(this->PassengerDeletion_CostRateCap)
 		.Process(this->PassengerDeletion_Soylent)
 		.Process(this->PassengerDeletion_SoylentMultiplier)
 		.Process(this->PassengerDeletion_SoylentFriendlies)

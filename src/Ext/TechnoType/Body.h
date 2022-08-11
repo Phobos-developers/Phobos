@@ -46,6 +46,7 @@ public:
 		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
 		Valueable<bool> PassengerDeletion_UseCostAsRate;
 		Valueable<double> PassengerDeletion_CostMultiplier;
+		Nullable<int> PassengerDeletion_CostRateCap;
 		Valueable<bool> PassengerDeletion_Soylent;
 		Valueable<double> PassengerDeletion_SoylentMultiplier;
 		Valueable<bool> PassengerDeletion_SoylentFriendlies;
@@ -214,6 +215,7 @@ public:
 			, PassengerDeletion_Rate_SizeMultiply { true }
 			, PassengerDeletion_UseCostAsRate { false }
 			, PassengerDeletion_CostMultiplier { 1.0 }
+			, PassengerDeletion_CostRateCap {}
 			, PassengerDeletion_Soylent { false }
 			, PassengerDeletion_SoylentMultiplier { 1.0 }
 			, PassengerDeletion_SoylentFriendlies { false }

@@ -176,7 +176,7 @@ void TechnoExt::ExtData::EatPassengers()
 	if (!TechnoExt::IsActive(pThis))
 		return;
 
-	if (pTypeExt && pTypeExt->PassengerDeletion_Rate > 0)
+	if (pTypeExt && (pTypeExt->PassengerDeletion_Rate > 0 || pTypeExt->PassengerDeletion_UseCostAsRate))
 	{
 		if (pThis->Passengers.NumPassengers > 0)
 		{
@@ -191,8 +191,8 @@ void TechnoExt::ExtData::EatPassengers()
 					// Use passenger cost as countdown.
 					timerLength = (int)(pPassenger->GetTechnoType()->Cost * pTypeExt->PassengerDeletion_CostMultiplier);
 
-					if (pTypeExt->PassengerDeletion_Rate > 0)
-						timerLength = std::min(timerLength, pTypeExt->PassengerDeletion_Rate.Get());
+					if (pTypeExt->PassengerDeletion_CostRateCap.isset())
+						timerLength = std::min(timerLength, pTypeExt->PassengerDeletion_CostRateCap.Get());
 				}
 				else
 				{
