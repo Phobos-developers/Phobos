@@ -37,7 +37,9 @@ DEFINE_HOOK(0x738807, UnitClass_Destroy_DestroyAnim, 0x8)
 	return 0x73887E;
 }
 
-DEFINE_HOOK(0x423BC8, AnimClass_Update_CreateUnit_MarkOccupationBits, 0x6)
+// Performance tweak, mark once instead of every frame.
+// DEFINE_HOOK(0x423BC8, AnimClass_AI_CreateUnit_MarkOccupationBits, 0x6)
+DEFINE_HOOK(0x4226F0, AnimClass_CTOR_CreateUnit_MarkOccupationBits, 0x6)
 {
 	GET(AnimClass* const, pThis, ESI);
 
@@ -45,20 +47,20 @@ DEFINE_HOOK(0x423BC8, AnimClass_Update_CreateUnit_MarkOccupationBits, 0x6)
 
 	if (pTypeExt->CreateUnit.Get())
 	{
-		auto Location = pThis->GetCoords();
+		auto location = pThis->GetCoords();
 
 		if (auto pCell = pThis->GetCell())
-			Location = pCell->GetCoordsWithBridge();
+			location = pCell->GetCoordsWithBridge();
 		else
-			Location.Z = MapClass::Instance->GetCellFloorHeight(Location);
+			location.Z = MapClass::Instance->GetCellFloorHeight(location);
 
-		pThis->MarkAllOccupationBits(Location);
+		pThis->MarkAllOccupationBits(location);
 	}
 
-	return (pThis->Type->MakeInfantry != -1) ? 0x423BD6 : 0x423C03;
+	return 0; //return (pThis->Type->MakeInfantry != -1) ? 0x423BD6 : 0x423C03;
 }
 
-DEFINE_HOOK(0x424932, AnimClass_Update_CreateUnit_ActualAffects, 0x6)
+DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 {
 	GET(AnimClass* const, pThis, ESI);
 

@@ -55,6 +55,32 @@ class ConvertClass;
 template <typename T>
 using UniqueGamePtr = std::unique_ptr<T, GameDeleter>;
 
+
+class ArmorType
+{
+public:
+	ArmorType() = default;
+
+	template <typename T>
+	ArmorType(T value)
+	{
+		this->value = (int)std::move(value);
+	}
+
+	template <typename T>
+	ArmorType& operator = (T value)
+	{
+		this->value = (int)std::move(value);
+		return *this;
+	}
+
+	operator Armor() const { return  (Armor)this->value; }
+	operator int() const { return this->value; }
+
+private:
+	int value { 0 };
+};
+
 struct Leptons {
 	Leptons() = default;
 	explicit Leptons(int value) noexcept : value(value) {}

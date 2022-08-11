@@ -3043,7 +3043,7 @@ void ScriptExt::Set_ForceJump_Countdown(TeamClass *pTeam, bool repeatLine = fals
 		return;
 
 	if (count <= 0)
-		count = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
+		count = 15 * pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
 	if (count > 0)
 	{

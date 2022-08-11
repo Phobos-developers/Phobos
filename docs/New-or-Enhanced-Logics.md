@@ -15,30 +15,34 @@ This page describes all the engine features that are either new and introduced b
   - `RadSiteWarhead.Detonate` can be set to make `RadSiteWarhead` detonate on affected objects rather than only be used to dealt direct damage. This enables most Warhead effects, display of animations etc.
   - `RadHasOwner`, if set to true, makes damage dealt by the radiation count as having been dealt by the house that fired the projectile that created the radiation field. This means that Warhead controls such as `AffectsAllies` will be respected and any units killed will count towards that player's destroyed units count.
   - `RadHasInvoker`, if set to true, makes the damage dealt by the radiation count as having been dealt by the TechnoType (the 'invoker') that fired the projectile that created the radiation field. In addition to the effects of `RadHasOwner`, this will also grant experience from units killed by the radiation to the invoker. Note that if the invoker dies at any point during the radiation's lifetime it continues to behave as if not having an invoker.
+- By default `UseGlobalRadApplicationDelay` is set to true. This makes game always use `RadApplicationDelay` and `RadApplicationDelay.Building` from `[Radiation]` rather than specific radiation types. This is a performance-optimizing measure that should be disabled if a radiation type declares different application delay.
 
 In `rulesmd.ini`:
 ```ini
 [RadiationTypes]
 0=SOMERADTYPE
 
-[SOMEWEAPON]                    ; WeaponType
-RadType=Radiation               ; RadType to use instead of default of [Radiation]
+[Radiation]
+UseGlobalRadApplicationDelay=true  ; boolean
 
-[SOMERADTYPE]                   ; RadType
-RadDurationMultiple=1           ; integer
-RadApplicationDelay=16          ; integer
-RadApplicationDelay.Building=0  ; integer
-RadLevelMax=500                 ; integer
-RadLevelDelay=90                ; integer
-RadLightDelay=90                ; integer
-RadLevelFactor=0.2              ; floating point value
-RadLightFactor=0.1              ; floating point value
-RadTintFactor=1.0               ; floating point value
-RadColor=0,255,0                ; integer - Red,Green,Blue
-RadSiteWarhead=RadSite          ; WarheadType
-RadSiteWarhead.Detonate=false   ; boolean
-RadHasOwner=false               ; boolean
-RadHasInvoker=false             ; boolean
+[SOMEWEAPON]                       ; WeaponType
+RadType=Radiation                  ; RadType to use instead of default of [Radiation]
+
+[SOMERADTYPE]                      ; RadType
+RadDurationMultiple=1              ; integer
+RadApplicationDelay=16             ; integer
+RadApplicationDelay.Building=0     ; integer
+RadLevelMax=500                    ; integer
+RadLevelDelay=90                   ; integer
+RadLightDelay=90                   ; integer
+RadLevelFactor=0.2                 ; floating point value
+RadLightFactor=0.1                 ; floating point value
+RadTintFactor=1.0                  ; floating point value
+RadColor=0,255,0                   ; integer - Red,Green,Blue
+RadSiteWarhead=RadSite             ; WarheadType
+RadSiteWarhead.Detonate=false      ; boolean
+RadHasOwner=false                  ; boolean
+RadHasInvoker=false                ; boolean
 ```
 
 ### Laser Trails

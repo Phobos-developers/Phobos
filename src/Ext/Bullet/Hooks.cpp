@@ -21,6 +21,7 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 	{
 		pExt->FirerHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
 		pExt->CurrentStrength = pThis->Type->Strength;
+		pExt->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
 	}
 
 	if (!pThis->Type->Inviso)
@@ -36,6 +37,12 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 
 	if (!pBulletExt)
 		return 0;
+
+	auto pType = pThis->Type;
+
+	// Set only if unset or type has changed
+	if (!pBulletExt->TypeExtData || pBulletExt->TypeExtData->OwnerObject() != pType)
+		pBulletExt->TypeExtData = BulletTypeExt::ExtMap.Find(pType);
 
 	if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 	{
