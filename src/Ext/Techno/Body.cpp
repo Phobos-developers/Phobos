@@ -130,7 +130,7 @@ void TechnoExt::ExtData::CheckDeathConditions()
 				}
 			);
 
-			if (it != pTypeExt->AutoDeath_Nonexist.end())
+			if (it == pTypeExt->AutoDeath_Nonexist.end())
 				KillSelf(pThis, howToDie);
 		}
 
