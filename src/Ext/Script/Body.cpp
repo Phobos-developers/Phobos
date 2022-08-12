@@ -33,6 +33,7 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 {
 	const int action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action;
 	const int argument = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
+
 	switch (static_cast<PhobosScripts>(action))
 	{
 	case PhobosScripts::TimedAreaGuard:
@@ -146,6 +147,7 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case PhobosScripts::MoveToTypeEnemyFarther:
 		// Move to the farther specific enemy target
 		ScriptExt::Mission_Move_List(pTeam, 3, false, -1);
+		break;
 	case PhobosScripts::MoveToTypeFriendlyCloser:
 		// Move to the closest specific friendly target
 		ScriptExt::Mission_Move_List(pTeam, 2, true, -1);
