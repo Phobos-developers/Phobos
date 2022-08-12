@@ -74,7 +74,7 @@ Aircraft.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayTypes
 ; Generic
 InfoType=Health                        ; InfoType Enumeration
 Offset=0,0                             ; integer - horizontal, vertical
-Offset.ShieldDelta=                    ; integer - horizontal, vertical
+Offset.ShieldDelta=                    ; integer - horizontal, vertical, offset when shield exist, last offset = Offset + Offset.ShieldDelta
 Align=None                             ; TextAlign Enumeration, - left|right|center/centre|none
 Anchor.Horizontal=Left                 ; Horizontal Position Enumeration, - left|center/centre|right, start drawing point anchor the select bracket
 Anchor.Vertical=top                    ; Vertical Position Enumeration, - top|center/centre|bottom
@@ -82,6 +82,8 @@ Anchor.Building=lefttop                ; Hexagon Vertex Enumeration, top|lefttop
 Border=Top                             ; Border Position Enumeration, - top|left|right|bottom, Position relative to select bracket's border
 Percentage=no                          ; boolean
 HideMaxValue=no                        ; boolean
+CanSee=owner                           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+CanSee.Observer=true                   ; boolean
 
 ; Text
 Text.Color=0,255,0                     ; RGB
