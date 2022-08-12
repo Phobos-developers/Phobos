@@ -1,6 +1,6 @@
 #include "Body.h"
 #include <SpecificStructures.h>
-#include<Ext/TEvent/Body.h>
+#include <Ext/TEvent/Body.h>
 #include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
 #include <Ext/TechnoType/Body.h>

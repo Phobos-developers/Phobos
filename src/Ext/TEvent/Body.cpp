@@ -119,7 +119,7 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 
 
 	case PhobosTriggerEvent::ShieldBroken:
-		return ShieldClass::TEventIsShieldBroken(pObject);
+		return ShieldClass::ShieldIsBrokenTEvent(pObject);
 
 	default:
 		bHandled = false;

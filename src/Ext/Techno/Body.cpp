@@ -351,11 +351,20 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 	if (pThis->WhatAmI() == AbstractType::Building && pThis->IsPowerOnline())
 		return true;
 
-	auto mission = pThis->GetCurrentMission();
-	if ((mission == Mission::Harvest || mission == Mission::Unload || mission == Mission::Enter)
-		&& TechnoExt::HasAvailableDock(pThis))
+	if (TechnoExt::HasAvailableDock(pThis))
 	{
-		return true;
+		switch (pThis->GetCurrentMission())
+		{
+		case Mission::Harvest:
+		case Mission::Unload:
+		case Mission::Enter:
+			return true;
+		case Mission::Guard: // issue#603: idk how to do better
+			if (auto pUnit = abstract_cast<UnitClass*>(pThis))
+				return !pUnit->IsSelected && pUnit->Locomotor->Is_Really_Moving_Now();
+
+		default:break;
+		}
 	}
 
 	return false;

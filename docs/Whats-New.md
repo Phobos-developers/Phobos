@@ -90,6 +90,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   533=Global variable is greater than or queals to global variable,48,35,0,0,[LONG DESC],0,1,509,1
   534=Global variable is less than or equals to global variable,48,35,0,0,[LONG DESC],0,1,510,1
   535=Global variable and global variable is true,48,35,0,0,[LONG DESC],0,1,511,1
+  600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1
 
   [ActionsRA2]
   125=Build at...,-10,47,53,0,0,0,1,0,0,[LONG DESC],0,1,125

@@ -93,7 +93,7 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 		pFromExt->Shield = nullptr;
 }
 
-bool ShieldClass::TEventIsShieldBroken(ObjectClass* pAttached)
+bool ShieldClass::ShieldIsBrokenTEvent(ObjectClass* pAttached)
 {
 	if (auto pTechno = abstract_cast<TechnoClass*>(pAttached))
 	{
@@ -103,6 +103,7 @@ bool ShieldClass::TEventIsShieldBroken(ObjectClass* pAttached)
 			return !pShield || pShield->HP <= 0;
 		}
 	}
+
 	return false;
 }
 
@@ -246,7 +247,7 @@ bool ShieldClass::CanBePenetrated(WarheadTypeClass* pWarhead)
 		return false;
 
 	if (pWarhead->Psychedelic)
-		return !this->Type->PsychedelicProof;
+		return !this->Type->ImmuneToBerserk;
 
 	return pWHExt->Shield_Penetrate;
 }
