@@ -21,7 +21,14 @@ TActionExt::ExtContainer TActionExt::ExtMap;
 template <typename T>
 void TActionExt::ExtData::Serialize(T& Stm)
 {
-	//Stm;
+	Stm
+		.Process(this->Value1)
+		.Process(this->Value2)
+		.Process(this->Parm3)
+		.Process(this->Parm4)
+		.Process(this->Parm5)
+		.Process(this->Parm6)
+		;
 }
 
 void TActionExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -67,6 +74,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::RunSuperWeaponAtLocation(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::RunSuperWeaponAtWaypoint:
 		return TActionExt::RunSuperWeaponAtWaypoint(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::DrawLaserBetweenWeaypoints:
+		return TActionExt::DrawLaserBetweenWaypoints(pThis, pHouse, pObject, pTrigger, location);
 	default:
 		bHandled = false;
 		return true;
@@ -426,6 +435,25 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 	return true;
 }
 
+bool TActionExt::DrawLaserBetweenWaypoints(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	TActionExt::ExtData* pExt = TActionExt::ExtMap.Find(pThis);
+	int duration = atoi(pExt->Value2.c_str());
+	int idx1 = pThis->Param3;
+	int idx2 = pThis->Param4;
+	ColorStruct innerColor = Drawing::RGB888_HEX(pExt->Parm5.c_str());
+	ColorStruct outerColor = Drawing::RGB888_HEX(pExt->Parm6.c_str());
+	CellStruct srcCell = ScenarioClass::Instance->GetWaypointCoords(idx1);
+	CellStruct destCell = ScenarioClass::Instance->GetWaypointCoords(idx2);
+	CoordStruct src = CellClass::Cell2Coord(srcCell, 100);
+	CoordStruct dest = CellClass::Cell2Coord(destCell, 100);
+	LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(src, dest, innerColor, outerColor, outerColor, duration);
+	pLaser->IsHouseColor = true;
+	pLaser->Thickness = 7;
+
+	return true;
+}
+
 // =============================
 // container
 
@@ -436,7 +464,6 @@ TActionExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
-#ifdef MAKE_GAME_SLOWER_FOR_NO_REASON
 DEFINE_HOOK(0x6DD176, TActionClass_CTOR, 0x5)
 {
 	GET(TActionClass*, pItem, ESI);
@@ -475,4 +502,3 @@ DEFINE_HOOK(0x6E3E4A, TActionClass_Save_Suffix, 0x3)
 	TActionExt::ExtMap.SaveStatic();
 	return 0;
 }
-#endif

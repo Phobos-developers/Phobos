@@ -18,6 +18,7 @@ enum class PhobosTriggerAction : unsigned int
 	BinaryOperation = 504,
 	RunSuperWeaponAtLocation = 505,
 	RunSuperWeaponAtWaypoint = 506,
+	DrawLaserBetweenWeaypoints = 9940
 };
 
 class TActionExt
@@ -28,6 +29,14 @@ public:
 	class ExtData final : public Extension<TActionClass>
 	{
 	public:
+
+		std::string Value1;
+		std::string Value2;
+		std::string Parm3;
+		std::string Parm4;
+		std::string Parm5;
+		std::string Parm6;
+
 		ExtData(TActionClass* const OwnerObject) : Extension<TActionClass>(OwnerObject)
 		{ }
 
@@ -59,6 +68,7 @@ public:
 	ACTION_FUNC(BinaryOperation);
 	ACTION_FUNC(RunSuperWeaponAtLocation);
 	ACTION_FUNC(RunSuperWeaponAtWaypoint);
+	ACTION_FUNC(DrawLaserBetweenWaypoints);
 
 	static bool RunSuperWeaponAt(TActionClass* pThis, int X, int Y);
 
