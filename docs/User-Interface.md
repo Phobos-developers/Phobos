@@ -87,8 +87,9 @@ PlacementPreview.Remap=yes           ; boolean, does this preview use player rem
 PlacementPreview.Palette=            ; filename - including the .pal extension.
 PlacementPreview.Translucency=       ; translucency level (0/25/50/75), defaults to [AudioVisual]->PlacementPreview.Translucency
 ```
+
 ```{note}
-The `PlacementPreview.Palett` option is not used if `PlacementPreview.Remap=yes` This may change in the future
+The `PlacementPreview.Palette` option is not used when `PlacementPreview.Remap=yes` is set to yes. This may change in future.
 ```
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
