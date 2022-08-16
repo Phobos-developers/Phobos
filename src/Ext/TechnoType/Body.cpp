@@ -190,9 +190,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PassengerDeletion_UseCostAsRate.Read(exINI, pSection, "PassengerDeletion.UseCostAsRate");
 	this->PassengerDeletion_CostMultiplier.Read(exINI, pSection, "PassengerDeletion.CostMultiplier");
 	this->PassengerDeletion_CostRateCap.Read(exINI, pSection, "PassengerDeletion.CostRateCap");
+	this->PassengerDeletion_AllowedHouses.Read(exINI, pSection, "PassengerDeletion.AllowedHouses");
+	this->PassengerDeletion_DontScore.Read(exINI, pSection, "PassengerDeletion.DontScore");
 	this->PassengerDeletion_Soylent.Read(exINI, pSection, "PassengerDeletion.Soylent");
 	this->PassengerDeletion_SoylentMultiplier.Read(exINI, pSection, "PassengerDeletion.SoylentMultiplier");
-	this->PassengerDeletion_SoylentFriendlies.Read(exINI, pSection, "PassengerDeletion.SoylentFriendlies");
+	this->PassengerDeletion_SoylentAllowedHouses.Read(exINI, pSection, "PassengerDeletion.SoylentAllowedHouses");
 	this->PassengerDeletion_DisplaySoylent.Read(exINI, pSection, "PassengerDeletion.DisplaySoylent");
 	this->PassengerDeletion_DisplaySoylentToHouses.Read(exINI, pSection, "PassengerDeletion.DisplaySoylentToHouses");
 	this->PassengerDeletion_DisplaySoylentOffset.Read(exINI, pSection, "PassengerDeletion.DisplaySoylentOffset");
@@ -361,9 +363,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletion_UseCostAsRate)
 		.Process(this->PassengerDeletion_CostMultiplier)
 		.Process(this->PassengerDeletion_CostRateCap)
+		.Process(this->PassengerDeletion_AllowedHouses)
+		.Process(this->PassengerDeletion_DontScore)
 		.Process(this->PassengerDeletion_Soylent)
 		.Process(this->PassengerDeletion_SoylentMultiplier)
-		.Process(this->PassengerDeletion_SoylentFriendlies)
+		.Process(this->PassengerDeletion_SoylentAllowedHouses)
 		.Process(this->PassengerDeletion_DisplaySoylent)
 		.Process(this->PassengerDeletion_DisplaySoylentToHouses)
 		.Process(this->PassengerDeletion_DisplaySoylentOffset)

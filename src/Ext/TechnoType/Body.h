@@ -47,9 +47,11 @@ public:
 		Valueable<bool> PassengerDeletion_UseCostAsRate;
 		Valueable<double> PassengerDeletion_CostMultiplier;
 		Nullable<int> PassengerDeletion_CostRateCap;
+		Valueable<AffectedHouse> PassengerDeletion_AllowedHouses;
+		Valueable<bool> PassengerDeletion_DontScore;
 		Valueable<bool> PassengerDeletion_Soylent;
 		Valueable<double> PassengerDeletion_SoylentMultiplier;
-		Valueable<bool> PassengerDeletion_SoylentFriendlies;
+		Valueable<AffectedHouse> PassengerDeletion_SoylentAllowedHouses;
 		Valueable<bool> PassengerDeletion_DisplaySoylent;
 		Valueable<AffectedHouse> PassengerDeletion_DisplaySoylentToHouses;
 		Valueable<Point2D> PassengerDeletion_DisplaySoylentOffset;
@@ -216,9 +218,11 @@ public:
 			, PassengerDeletion_UseCostAsRate { false }
 			, PassengerDeletion_CostMultiplier { 1.0 }
 			, PassengerDeletion_CostRateCap {}
+			, PassengerDeletion_AllowedHouses { AffectedHouse::All }
+			, PassengerDeletion_DontScore { false }
 			, PassengerDeletion_Soylent { false }
 			, PassengerDeletion_SoylentMultiplier { 1.0 }
-			, PassengerDeletion_SoylentFriendlies { false }
+			, PassengerDeletion_SoylentAllowedHouses { AffectedHouse::Enemies }
 			, PassengerDeletion_DisplaySoylent { false }
 			, PassengerDeletion_DisplaySoylentToHouses { AffectedHouse::All }
 			, PassengerDeletion_DisplaySoylentOffset {{ 0, 0 }}
