@@ -11,6 +11,7 @@
 
 template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
+std::vector<TechnoTypeClass*> TechnoTypeExt::HarvesterTypes;
 
 void TechnoTypeExt::ExtData::Initialize()
 {
@@ -140,6 +141,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Harvester_Counted.Read(exINI, pSection, "Harvester.Counted");
 	if (!this->Harvester_Counted.isset() && pThis->Enslaves)
 		this->Harvester_Counted = true;
+	if (this->Harvester_Counted.Get())
+		HarvesterTypes.push_back(pThis);
 
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
@@ -488,8 +491,11 @@ DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
 
 	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pItem))
 	{
-		if (!pTypeExt->Harvester_Counted.isset())
-			pTypeExt->Harvester_Counted = pItem->Harvester;
+		if (!pTypeExt->Harvester_Counted.isset() && pItem->Harvester)
+		{
+			pTypeExt->Harvester_Counted = true;
+			TechnoTypeExt::HarvesterTypes.push_back(pItem);
+		}
 	}
 
 	return 0;
