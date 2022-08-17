@@ -1,10 +1,10 @@
 #include "Body.h"
 #include <SpecificStructures.h>
-#include <Ext/TEvent/Body.h>
 #include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
+#include <Ext/TEvent/Body.h>
 
 // #issue 88 : shield logic
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
