@@ -63,6 +63,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	const char* sectionAITargetTypes = "AITargetTypes";
 	const char* sectionAIScriptsList = "AIScriptsList";
+	const char* sectionCombatDamage = "CombatDamage";
 
 	INI_EX exINI(pINI);
 
@@ -89,9 +90,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_SelfHeal_Infantry_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Infantry.Offset");
 	this->Pips_SelfHeal_Units_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units.Offset");
 	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings.Offset");
-	this->IronCurtainToOrganic.Read(exINI, "CombatDamage", "IronCurtainToOrganic");
 
-	this->IronCurtain_KeptOnDeploy.Read(exINI, "CombatDamage", "IronCurtain.KeptOnDeploy");
+	this->IronCurtain_ToOrganic.Read(exINI, sectionCombatDamage, "IronCurtain.ToOrganic");
+	this->IronCurtain_KillWarhead.Read(exINI, sectionCombatDamage, "IronCurtain.KillWarhead");
+	this->IronCurtain_KeptOnDeploy.Read(exINI, sectionCombatDamage, "IronCurtain.KeptOnDeploy");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -204,8 +206,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_SelfHeal_Infantry_Offset)
 		.Process(this->Pips_SelfHeal_Units_Offset)
 		.Process(this->Pips_SelfHeal_Buildings_Offset)
+		.Process(this->IronCurtain_ToOrganic)
+		.Process(this->IronCurtain_KillWarhead)
 		.Process(this->IronCurtain_KeptOnDeploy)
-		.Process(this->IronCurtainToOrganic)
 		;
 }
 

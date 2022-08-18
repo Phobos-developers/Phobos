@@ -208,11 +208,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Passengers_SyncOwner.Read(exINI, pSection, "Passengers.SyncOwner");
 	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
 
-	this->IronCurtain_KeptOnDeploy.Read(exINI, pSection, "IronCurtain.KeptOnDeploy");
-
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
 
+	this->IronCurtain_KeptOnDeploy.Read(exINI, pSection, "IronCurtain.KeptOnDeploy");
 	this->IronCurtain_Affect.Read(exINI, pSection, "IronCurtain.Affect");
+	this->IronCuratin_KillWarhead.Read(exINI, pSection, "IronCurtain.KillWarhead");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -369,7 +369,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteDeployedWeaponBurstFLHs)
 		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->InitialStrength_Cloning)
+		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->IronCurtain_Affect)
+		.Process(this->IronCuratin_KillWarhead)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

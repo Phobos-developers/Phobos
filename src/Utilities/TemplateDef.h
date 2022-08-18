@@ -45,6 +45,7 @@
 #include <AircraftTypeClass.h>
 #include <UnitTypeClass.h>
 #include <BuildingTypeClass.h>
+#include <WarheadTypeClass.h>
 #include <FootClass.h>
 #include <VocClass.h>
 #include <VoxClass.h>

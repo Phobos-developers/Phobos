@@ -599,19 +599,42 @@ DEFINE_HOOK(0x457C90, BuildingClass_IronCuratin, 0x6)
 {
 	GET(BuildingClass*, pThis, ECX);
 	GET_STACK(HouseClass*, pSource, 0x8);
+
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	if (pTypeExt->IronCurtain_Affect.isset())
 	{
-		if (pTypeExt->IronCurtain_Affect == IronCurtainAffects::Kill)
-			R->EAX(pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pSource));
-		else if (pTypeExt->IronCurtain_Affect == IronCurtainAffects::NoAffect)
-			R->EAX(DamageState::Unaffected);
-		else
-			return 0;
+		switch (pTypeExt->IronCurtain_Affect)
+		{
+		case IronCurtainAffects::Kill:
+		{
+			R->EAX
+			(
+				pThis->ReceiveDamage
+				(
+					&pThis->Health,
+					0,
+					pTypeExt->IronCuratin_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillWarhead.Get(RulesClass::Instance->C4Warhead)),
+					nullptr,
+					true,
+					false,
+					pSource
+				)
+			);
 
-		return 0x457CDB;
+			return 0x457CDB;
+		}break;
+		case IronCurtainAffects::NoAffect:
+		{
+			R->EAX(DamageState::Unaffected);
+
+			return 0x457CDB;
+		}break;
+		default:
+			break;
+		}
 	}
+
 	return 0;
 }
 
@@ -619,31 +642,52 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 {
 	GET(FootClass*, pThis, ECX);
 	GET_STACK(HouseClass*, pSource, STACK_OFFS(0x10, -0x8));
+
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	IronCurtainAffects ironAffect = IronCurtainAffects::Affect;
+	IronCurtainAffects ironAffect;
 
 	if (pType->Organic || pThis->WhatAmI() == AbstractType::Infantry)
 	{
-		if (pTypeExt->IronCurtain_Affect.isset())
-			ironAffect = pTypeExt->IronCurtain_Affect.Get();
-		else
-			ironAffect = RulesExt::Global()->IronCurtainToOrganic.Get();
+		ironAffect = pTypeExt->IronCurtain_Affect.Get(RulesExt::Global()->IronCurtain_ToOrganic);
 	}
 	else
 	{
-		if (pTypeExt->IronCurtain_Affect.isset())
-			ironAffect = pTypeExt->IronCurtain_Affect.Get();
+		ironAffect = pTypeExt->IronCurtain_Affect.Get(IronCurtainAffects::Affect);
 	}
 
-	if (ironAffect == IronCurtainAffects::Kill)
+	switch (ironAffect)
 	{
-		R->EAX(pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pSource));
-	}
-	else if (ironAffect == IronCurtainAffects::Affect)
+	case IronCurtainAffects::Kill:
+	{
+		R->EAX
+		(
+			pThis->ReceiveDamage
+			(
+				&pThis->Health,
+				0,
+				pTypeExt->IronCuratin_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillWarhead.Get(RulesClass::Instance->C4Warhead)),
+				nullptr,
+				true,
+				false,
+				pSource
+			)
+		);
+	}break;
+	case IronCurtainAffects::Affect:
 	{
 		R->ESI(pThis);
+
 		return 0x4DEB38;
+	}break;
+	case IronCurtainAffects::NoAffect:
+	{
+		R->EAX(DamageState::Unaffected);
+	}break;
+	default:
+	{
+		R->EAX(DamageState::Unaffected);
+	}break;
 	}
 
 	return 0x4DEBA2;
@@ -655,6 +699,8 @@ DEFINE_HOOK(0x522600, InfantryClass_IronCurtain, 0x6)
 	GET_STACK(int, nDuration, 0x4);
 	GET_STACK(HouseClass*, pSource, 0x8);
 	GET_STACK(bool, ForceShield, 0xC);
-	pThis->FootClass::IronCurtain(nDuration, pSource, ForceShield);
+
+	R->EAX(pThis->FootClass::IronCurtain(nDuration, pSource, ForceShield));
+
 	return 0x522639;
 }

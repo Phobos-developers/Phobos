@@ -274,10 +274,12 @@ Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
 In `rulesmd.ini`
 ```ini
 [CombatDamage]
-IronCurtainToOrganic=kill  ; IronCurtain affects Enumeration (kill|noaffect|affect), IronCurtain to Infantry and Techno with Organic=yes
+IronCurtain.ToOrganic=kill  ; IronCurtain affects Enumeration (kill|noaffect|affect), IronCurtain to Infantry and Techno with Organic=yes
+IronCurtain.KillWarhead=    ; IronCurtain use this warhead kill technos, default to [CombatDamage]->C4Warhead
 
 [SOMETECHNO]
-IronCurtain.Affect=        ; IronCurtain affects Enumeration (kill|noaffect|affect)
+IronCurtain.Affect=         ; IronCurtain affects Enumeration (kill|noaffect|affect)
+IronCurtain.KillWarhead=    ; IronCurtain use this warhead kill technos of this type, default to [CombatDamage]->IronCurtain.KillWarhead
 ```
 
 ### Jumpjet unit layer deviation customization

@@ -121,6 +121,8 @@ public:
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
 		Nullable<bool> IronCurtain_KeptOnDeploy;
+		Nullable<IronCurtainAffects> IronCurtain_Affect;
+		Nullable<WarheadTypeClass*> IronCuratin_KillWarhead;
 
 		Valueable<Vector2D<double>> InitialStrength_Cloning;
 
@@ -148,8 +150,6 @@ public:
 		std::vector<DynamicVectorClass<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
-
-		Nullable<IronCurtainAffects> IronCurtain_Affect;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -240,8 +240,9 @@ public:
 			, DeployedPrimaryFireFLH { }
 			, DeployedSecondaryFireFLH { }
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
-			, IronCurtain_KeptOnDeploy{ }
+			, IronCurtain_KeptOnDeploy {}
 			, IronCurtain_Affect {}
+			, IronCuratin_KillWarhead {}
 		{ }
 
 		virtual ~ExtData() = default;
