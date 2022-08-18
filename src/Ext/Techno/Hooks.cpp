@@ -608,19 +608,7 @@ DEFINE_HOOK(0x457C90, BuildingClass_IronCuratin, 0x6)
 		{
 		case IronCurtainAffects::Kill:
 		{
-			R->EAX
-			(
-				pThis->ReceiveDamage
-				(
-					&pThis->Health,
-					0,
-					pTypeExt->IronCuratin_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillWarhead.Get(RulesClass::Instance->C4Warhead)),
-					nullptr,
-					true,
-					false,
-					pSource
-				)
-			);
+			R->EAX(pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pSource));
 
 			return 0x457CDB;
 		}break;
@@ -646,8 +634,9 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	IronCurtainAffects ironAffect;
+	bool organic = pType->Organic || pThis->WhatAmI() == AbstractType::Infantry;
 
-	if (pType->Organic || pThis->WhatAmI() == AbstractType::Infantry)
+	if (organic)
 	{
 		ironAffect = pTypeExt->IronCurtain_Affect.Get(RulesExt::Global()->IronCurtain_ToOrganic);
 	}
@@ -666,7 +655,9 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 			(
 				&pThis->Health,
 				0,
-				pTypeExt->IronCuratin_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillWarhead.Get(RulesClass::Instance->C4Warhead)),
+				(organic ?
+					pTypeExt->IronCuratin_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillWarhead.Get(RulesClass::Instance->C4Warhead)) :
+					RulesClass::Instance->C4Warhead),
 				nullptr,
 				true,
 				false,
