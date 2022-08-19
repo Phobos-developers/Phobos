@@ -37,6 +37,7 @@ public:
 		Valueable<bool> Warhead_Detonate;
 		NullableVector<AnimTypeClass*> SplashAnims;
 		Valueable<bool> SplashAnims_PickRandom;
+		Valueable<ParticleSystemTypeClass*> AttachedSystem;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -61,6 +62,7 @@ public:
 			, Warhead_Detonate { false }
 			, SplashAnims {}
 			, SplashAnims_PickRandom { false }
+			, AttachedSystem {}
 		{ }
 
 		virtual ~ExtData() = default;
