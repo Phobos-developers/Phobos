@@ -1,15 +1,23 @@
 #include "Body.h"
 
-#include <Ext/Anim/Body.h>
+#include <Ext/AnimType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
-DEFINE_HOOK(0x422CAB, AnimClass_DrawIt_XDrawOffset, 0x5)
+// Set in AnimClass::AI and guaranteed to be valid within it.
+namespace AnimAITemp
 {
-	GET(AnimClass* const, pThis, ECX);
-	GET_STACK(Point2D*, pCoord, STACK_OFFS(0x100, -0x4));
+	AnimExt::ExtData* ExtData;
+	AnimTypeExt::ExtData* TypeExtData;
+}
 
-	if (auto const pThisTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type))
-		pCoord->X += pThisTypeExt->XDrawOffset;
+DEFINE_HOOK(0x423AD2, AnimClass_AI_SetContext, 0x6)
+{
+	GET(AnimClass* const, pThis, ESI);
+
+	auto const pExt = AnimExt::ExtMap.Find(pThis);
+
+	AnimAITemp::ExtData = pExt;
+	AnimAITemp::TypeExtData = pExt->TypeExtData;
 
 	return 0;
 }
@@ -21,54 +29,13 @@ DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
 
 	if (pType->HideIfNoOre)
 	{
-		auto nThreshold = abs(AnimTypeExt::ExtMap.Find(pType)->HideIfNoOre_Threshold.Get());
+		auto nThreshold = abs(AnimAITemp::TypeExtData->HideIfNoOre_Threshold.Get());
 		auto pCell = pThis->GetCell();
 
 		pThis->Invisible = !pCell || pCell->GetContainedTiberiumValue() <= nThreshold;
 	}
 
 	return 0x423BBF;
-}
-
-DEFINE_HOOK(0x424CB0, AnimClass_In_Which_Layer_AttachedObjectLayer, 0x6)
-{
-	enum { ReturnValue = 0x424CBF };
-
-	GET(AnimClass*, pThis, ECX);
-
-	auto pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
-
-	if (pThis->OwnerObject && pExt->Layer_UseObjectLayer.isset())
-	{
-		Layer layer = pThis->Type->Layer;
-
-		if (pExt->Layer_UseObjectLayer.Get())
-			layer = pThis->OwnerObject->InWhichLayer();
-
-		R->EAX(layer);
-
-		return ReturnValue;
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x424C49, AnimClass_AttachTo_BuildingCoords, 0x5)
-{
-	GET(AnimClass*, pThis, ESI);
-	GET(ObjectClass*, pObject, EDI);
-	GET(CoordStruct*, pCoords, EAX);
-
-	auto pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
-
-	if (pExt->UseCenterCoordsIfAttached)
-	{
-		pCoords = pObject->GetCenterCoord(pCoords);
-		pCoords->X += 128;
-		pCoords->Y += 128;
-	}
-
-	return 0;
 }
 
 // Goes before and replaces Ares animation damage / weapon hook at 0x424538.
@@ -81,7 +48,7 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 	if (pThis->Type->Damage <= 0.0 || pThis->HasExtras)
 		return SkipDamage;
 
-	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = AnimAITemp::TypeExtData;
 	int delay = pTypeExt->Damage_Delay.Get();
 
 	int damageMultiplier = 1;
@@ -134,7 +101,7 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 	else
 		pThis->Accum = 0.0;
 
-	auto const pExt = AnimExt::ExtMap.Find(pThis);
+	auto const pExt = AnimAITemp::ExtData;
 	TechnoClass* pInvoker = nullptr;
 
 	if (pTypeExt->Damage_DealtByInvoker)
@@ -175,14 +142,79 @@ DEFINE_HOOK(0x424322, AnimClass_AI_TrailerInheritOwner, 0x6)
 	if (pThis->Type->TrailerAnim && pThis->Type->TrailerSeperation > 0 &&
 		Unsorted::CurrentFrame % pThis->Type->TrailerSeperation == 0)
 	{
-		if (auto const pExt = AnimExt::ExtMap.Find(pThis))
+		if (auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim))
 		{
-			if (auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim))
-			{
-				pTrailerAnim->Owner = pThis->Owner;
-				pTrailerAnimExt->Invoker = pExt->Invoker;
-			}
+			pTrailerAnim->Owner = pThis->Owner;
+			pTrailerAnimExt->Invoker = AnimAITemp::ExtData->Invoker;
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x424807, AnimClass_AI_Next, 0x6)
+{
+	GET(AnimClass*, pThis, ESI);
+
+	const auto pExt = AnimAITemp::ExtData;
+
+	// Update type data after anim type changes
+	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pThis->Type)
+	{
+		pExt->TypeExtData = AnimTypeExt::ExtMap.Find(pThis->Type);
+		AnimAITemp::TypeExtData = pExt->TypeExtData;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x422CAB, AnimClass_DrawIt_XDrawOffset, 0x5)
+{
+	GET(AnimClass* const, pThis, ECX);
+	GET_STACK(Point2D*, pCoord, STACK_OFFS(0x100, -0x4));
+
+	if (auto const pThisTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type))
+		pCoord->X += pThisTypeExt->XDrawOffset;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x424CB0, AnimClass_InWhichLayer_AttachedObjectLayer, 0x6)
+{
+	enum { ReturnValue = 0x424CBF };
+
+	GET(AnimClass*, pThis, ECX);
+
+	auto pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pThis->OwnerObject && pExt->Layer_UseObjectLayer.isset())
+	{
+		Layer layer = pThis->Type->Layer;
+
+		if (pExt->Layer_UseObjectLayer.Get())
+			layer = pThis->OwnerObject->InWhichLayer();
+
+		R->EAX(layer);
+
+		return ReturnValue;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x424C49, AnimClass_AttachTo_BuildingCoords, 0x5)
+{
+	GET(AnimClass*, pThis, ESI);
+	GET(ObjectClass*, pObject, EDI);
+	GET(CoordStruct*, pCoords, EAX);
+
+	auto pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pExt->UseCenterCoordsIfAttached)
+	{
+		pCoords = pObject->GetCenterCoord(pCoords);
+		pCoords->X += 128;
+		pCoords->Y += 128;
 	}
 
 	return 0;

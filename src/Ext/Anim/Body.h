@@ -1,6 +1,7 @@
 #pragma once
 #include <AnimClass.h>
 
+#include <Ext/AnimType/Body.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -13,6 +14,7 @@ public:
 	class ExtData final : public Extension<AnimClass>
 	{
 	public:
+		AnimTypeExt::ExtData* TypeExtData;
 		short DeathUnitFacing;
 		DirStruct DeathUnitTurretFacing;
 		bool FromDeathUnit;
@@ -20,6 +22,7 @@ public:
 		TechnoClass* Invoker;
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
+			, TypeExtData { nullptr }
 			, DeathUnitFacing { 0 }
 			, DeathUnitTurretFacing {}
 			, FromDeathUnit { false }
