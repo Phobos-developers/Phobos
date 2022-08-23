@@ -113,9 +113,7 @@ namespace detail
 		// Hack cause armor type parser in Ares will return 0 (ArmorType 'none') if armor type is not found instead of -1.
 		if (parser.ReadString(pSection, pKey))
 		{
-			parser.ReadArmor(pSection, pKey, &buffer);
-
-			if (buffer < 0)
+			if (!parser.ReadArmor(pSection, pKey, &buffer) || buffer < 0)
 			{
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid ArmorType");
 				return false;
