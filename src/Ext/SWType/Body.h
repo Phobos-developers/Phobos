@@ -37,12 +37,16 @@ public:
 		Valueable<AffectedHouse> LimboKill_Affected;
 		ValueableVector<int> LimboKill_IDs;
 		Valueable<double> RandomBuffer;
+		ValueableVector<SuperWeaponTypeClass*> SW_Next;
+		Valueable<bool> SW_Next_IgnoreInhibitors;
+		ValueableVector<float> SW_Next_RollChances;
 
 		Nullable<WarheadTypeClass*> Detonate_Warhead;
 		Nullable<WeaponTypeClass*> Detonate_Weapon;
 		Nullable<int> Detonate_Damage;
 
 		ValueableVector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
+		ValueableVector<ValueableVector<int>> SW_Next_RandomWeightsData;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
@@ -68,6 +72,10 @@ public:
 			, Detonate_Warhead {}
 			, Detonate_Weapon {}
 			, Detonate_Damage {}
+			, SW_Next {}
+			, SW_Next_IgnoreInhibitors{ false }
+			, SW_Next_RollChances {}
+			, SW_Next_RandomWeightsData {}
 		{ }
 
 		// Ares 0.A functions
@@ -85,6 +93,7 @@ public:
 		void ApplyLimboDelivery(HouseClass* pHouse);
 		void ApplyLimboKill(HouseClass* pHouse);
 		void ApplyDetonation(HouseClass* pHouse, const CellStruct& cell);
+		void ApplySWNext(SuperClass* pSW, const CellStruct& cell);
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;
@@ -94,6 +103,8 @@ public:
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	private:
+		std::vector<int> WeightedRollsHandler(ValueableVector<float>* chances, ValueableVector<ValueableVector<int>>* weights, size_t size);
 
 		template <typename T>
 		void Serialize(T& Stm);

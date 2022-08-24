@@ -456,7 +456,7 @@ Shrapnel.AffectsBuildings=false  ; boolean
   - `LimboKill.IDs` lists IDs that will be targeted. Buildings with these IDs will be removed from the game instantly.
 
 - Delivery can be made random with these optional tags. The game will randomly choose only a single building from the list for each roll chance provided.
-  - `LimboDelivery.RollChance` lits chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
+  - `LimboDelivery.RollChances` lists chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
   - `LimboDelivery.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific building. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
 
 Note: This feature might not support every building flag. Flags that are confirmed to work correctly are listed below:
@@ -481,6 +481,18 @@ LimboDelivery.RollChances=      ; List of percentages.
 LimboDelivery.RandomWeightsN=   ; List of integers.
 LimboKill.Affects=self          ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 LimboKill.IDs=                  ; List of numeric IDs.
+```
+
+### Next
+
+Super Weapons can now launch other Super Weapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                        ; Super Weapon
+SW.Next=                        ; List of Super Weapons
+LimboDelivery.RollChances=      ; List of percentages.
+LimboDelivery.RandomWeightsN=   ; List of integers.
 ```
 
 ### Warhead or Weapon detonation at target cell
