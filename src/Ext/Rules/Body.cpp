@@ -204,6 +204,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_SelfHeal_Units_Offset)
 		.Process(this->Pips_SelfHeal_Buildings_Offset)
 		.Process(this->IronCurtain_KeptOnDeploy)
+		.Process(this->HarvesterTypes)
 		;
 }
 
