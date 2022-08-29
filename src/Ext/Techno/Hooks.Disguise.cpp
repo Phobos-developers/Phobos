@@ -92,7 +92,7 @@ DEFINE_HOOK(0x7060A9, TechnoClass_TechnoClass_DrawObject_DisguisePalette, 0x6)
 		convert = pType->Palette->GetItem(colorIndex)->LightConvert;
 	else
 		convert = ColorScheme::Array->GetItem(colorIndex)->LightConvert;
-	
+
 	R->EBX(convert);
 
 	return SkipGameCode;
