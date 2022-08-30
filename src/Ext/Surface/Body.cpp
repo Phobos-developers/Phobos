@@ -17,11 +17,11 @@ void SurfaceExt::BlurRect(const RectangleStruct& rect, int blurSize)
 
 	if (auto ptr = (WORD*)this->Lock(bound.X, bound.Y))
 	{
-		for (int yy = 0; yy < bound.Height; ++yy)
+		for (int yy = bound.Y; yy < bound.Height; ++yy)
 		{
 			const int line = yy * (this->GetPitch() / sizeof(WORD));
 			auto p = &ptr[line];
-			for (int xx = 0; xx < bound.Width; ++xx)
+			for (int xx = bound.X; xx < bound.Width; ++xx)
 			{
 				int avgR = 0, avgG = 0, avgB = 0;
 
