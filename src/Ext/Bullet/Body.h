@@ -46,6 +46,7 @@ public:
 
 		void InterceptBullet(TechnoClass* pSource, WeaponTypeClass* pWeapon);
 		void ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel);
+		void InitializeLaserTrails();
 
 	private:
 		template <typename T>
@@ -58,8 +59,6 @@ public:
 		ExtContainer();
 		~ExtContainer();
 	};
-
-	static void InitializeLaserTrails(BulletClass* pThis);
 
 	static ExtContainer ExtMap;
 };
