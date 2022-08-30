@@ -298,7 +298,7 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 		{
 			pThis->FillRectTrans(pRect,
 				&pData->ToolTip_Background_Color,
-				pData->ToolTip_Background_Transparency
+				pData->ToolTip_Background_Opacity
 			);
 
 			return (int)_CCToolTip_Draw2_FillRect_RET;
