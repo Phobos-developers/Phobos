@@ -300,4 +300,9 @@ In `rulesmd.ini`:
 [SOMESIDE]
 ToolTip.Background.Color=0,0,0      ; integer - R,G,B
 ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100]
+ToolTip.Background.BlurSize=0       ; integer
+```
+
+```{note}
+It's not a good idea to have a big BlurSize.
 ```

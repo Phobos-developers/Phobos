@@ -14,6 +14,7 @@
 #include <BitText.h>
 
 #include <Ext/Side/Body.h>
+#include <Ext/Surface/Body.h>
 
 #include <sstream>
 #include <iomanip>
@@ -286,7 +287,7 @@ void __declspec(naked) _CCToolTip_Draw2_FillRect_RET()
 }
 DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 {
-	GET(DSurface*, pThis, ESI);
+	GET(SurfaceExt*, pThis, ESI);
 	LEA_STACK(RectangleStruct*, pRect, STACK_OFFS(0x44, 0x10));
 
 	// Should we make some SideExt items as static to improve the effeciency?
@@ -300,6 +301,8 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 				&pData->ToolTip_Background_Color,
 				pData->ToolTip_Background_Opacity
 			);
+
+			pThis->BlurRect(*pRect, pData->ToolTip_Background_BlurSize);
 
 			return (int)_CCToolTip_Draw2_FillRect_RET;
 		}

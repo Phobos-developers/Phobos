@@ -28,23 +28,25 @@ public:
 		Valueable<TextAlign> Sidebar_PowerDelta_Align;
 		Valueable<ColorStruct> ToolTip_Background_Color;
 		Valueable<int> ToolTip_Background_Opacity;
+		Valueable<int> ToolTip_Background_BlurSize;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
 			, ArrayIndex { -1 }
 			, Sidebar_GDIPositions { false }
 			, IngameScore_WinTheme { -2 }
 			, IngameScore_LoseTheme { -2 }
-			, Sidebar_HarvesterCounter_Offset { { 0,0 } }
-			, Sidebar_HarvesterCounter_Yellow { { 255,255,0 } }
-			, Sidebar_HarvesterCounter_Red { { 255,0,0 } }
-			, Sidebar_ProducingProgress_Offset { { 0,0 } }
-			, Sidebar_PowerDelta_Offset { { 0,0 } }
-			, Sidebar_PowerDelta_Green { { 0,255,0 } }
-			, Sidebar_PowerDelta_Yellow { { 255,255,0 } }
-			, Sidebar_PowerDelta_Red { { 255,0,0 } }
+			, Sidebar_HarvesterCounter_Offset { { 0, 0 } }
+			, Sidebar_HarvesterCounter_Yellow { { 255, 255, 0 } }
+			, Sidebar_HarvesterCounter_Red { { 255, 0, 0 } }
+			, Sidebar_ProducingProgress_Offset { { 0, 0 } }
+			, Sidebar_PowerDelta_Offset { { 0, 0 } }
+			, Sidebar_PowerDelta_Green { { 0, 255, 0 } }
+			, Sidebar_PowerDelta_Yellow { { 255, 255, 0 } }
+			, Sidebar_PowerDelta_Red { { 255, 0, 0 } }
 			, Sidebar_PowerDelta_Align { TextAlign::Left }
-			, ToolTip_Background_Color { {0,0,0} }
+			, ToolTip_Background_Color { {0, 0, 0} }
 			, ToolTip_Background_Opacity { 100 }
+			, ToolTip_Background_BlurSize { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
