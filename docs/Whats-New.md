@@ -372,6 +372,7 @@ Phobos fixes:
 - Fixed some possible configuration reading issues when using Phobos with patches that rename `uimd.ini` (by Belonit)
 - Fixed a game crash when using the Map Snapshot command (by Otamaa)
 - Fixed issue with incorrect input in edit dialog element when using IME (by Belonit)
+- Fixed an issue where tooltip text could be clipped by tooltip rectangle border if using `MaxWidth` > 0 (by Starkku)
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)
