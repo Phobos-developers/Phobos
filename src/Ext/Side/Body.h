@@ -26,6 +26,8 @@ public:
 		Valueable<ColorStruct> Sidebar_PowerDelta_Yellow;
 		Valueable<ColorStruct> Sidebar_PowerDelta_Red;
 		Valueable<TextAlign> Sidebar_PowerDelta_Align;
+		Valueable<ColorStruct> ToolTip_Background_Color;
+		Valueable<int> ToolTip_Background_Transparency;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
 			, ArrayIndex { -1 }
@@ -41,6 +43,8 @@ public:
 			, Sidebar_PowerDelta_Yellow { { 255,255,0 } }
 			, Sidebar_PowerDelta_Red { { 255,0,0 } }
 			, Sidebar_PowerDelta_Align { TextAlign::Left }
+			, ToolTip_Background_Color { {0,0,0} }
+			, ToolTip_Background_Transparency { 100 }
 		{ }
 
 		virtual ~ExtData() = default;

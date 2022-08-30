@@ -292,3 +292,12 @@ ToolTipDescriptions=true  ; boolean
 ```{note}
 Same as with harvester counter, you can download the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) or draw your own icons.
 ```
+
+- Also, the background color and transparency of tooltips can be customized by player's side.
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]
+ToolTip.Background.Color=0,0,0      ; integer - R,G,B
+ToolTip.Background.Transparency=100 ; integer, ranged in [0, 100]
+```
