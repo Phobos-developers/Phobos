@@ -77,6 +77,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
   - Only applies to Z-aware drawing mode for now.
+- Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true`
 
 ## Animations
 
