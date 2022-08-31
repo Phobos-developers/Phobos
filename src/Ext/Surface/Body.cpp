@@ -4,7 +4,7 @@
 
 void SurfaceExt::BlurRect(const RectangleStruct& rect, int blurSize)
 {
-	if (blurSize <= 0)
+	if (blurSize <= 1)
 		return;
 	if (this->GetBytesPerPixel() < 2)
 		return;

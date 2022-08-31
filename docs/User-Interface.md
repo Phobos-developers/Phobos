@@ -298,9 +298,9 @@ Same as with harvester counter, you can download the improved font (v4 and highe
 In `rulesmd.ini`:
 ```ini
 [SOMESIDE]
-ToolTip.Background.Color=0,0,0      ; integer - R,G,B
-ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100]
-ToolTip.Background.BlurSize=0       ; integer
+ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to [AudioVisual]->ToolTip.Background.Color
+ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [AudioVisual]->ToolTip.Background.Opacity
+ToolTip.Background.BlurSize=0       ; integer, defaults to [AudioVisual]->ToolTip.Background.BlurSize
 ```
 
 ```{note}
