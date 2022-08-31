@@ -287,28 +287,32 @@ void __declspec(naked) _CCToolTip_Draw2_FillRect_RET()
 }
 DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 {
-	GET(SurfaceExt*, pThis, ESI);
-	LEA_STACK(RectangleStruct*, pRect, STACK_OFFS(0x44, 0x10));
-
-	// Should we make some SideExt items as static to improve the effeciency?
-	// Though it might not be a big improvement... - secsome
-	const int nPlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;
-	if (auto const pSide = SideClass::Array->GetItemOrDefault(nPlayerSideIndex))
+	if (PhobosToolTip::Instance.IsCameo)
 	{
-		if (auto const pData = SideExt::ExtMap.Find(pSide))
+		GET(SurfaceExt*, pThis, ESI);
+		LEA_STACK(RectangleStruct*, pRect, STACK_OFFS(0x44, 0x10));
+
+		// Should we make some SideExt items as static to improve the effeciency?
+		// Though it might not be a big improvement... - secsome
+		const int nPlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;
+		if (auto const pSide = SideClass::Array->GetItemOrDefault(nPlayerSideIndex))
 		{
-			pThis->FillRectTrans(pRect,
-				&pData->ToolTip_Background_Color,
-				pData->ToolTip_Background_Opacity
-			);
+			if (auto const pData = SideExt::ExtMap.Find(pSide))
+			{
+				SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
 
-			pThis->BlurRect(*pRect, pData->ToolTip_Background_BlurSize);
+				pThis->FillRectTrans(pRect,
+					&pData->ToolTip_Background_Color,
+					pData->ToolTip_Background_Opacity
+				);
 
-			return (int)_CCToolTip_Draw2_FillRect_RET;
+				pThis->BlurRect(*pRect, pData->ToolTip_Background_BlurSize);
+
+				return (int)_CCToolTip_Draw2_FillRect_RET;
+			}
 		}
 	}
 
-	// We shouldn't get here though...
 	return 0;
 }
 

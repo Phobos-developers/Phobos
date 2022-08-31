@@ -60,6 +60,7 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->Sidebar_PowerDelta_Align)
 		.Process(this->ToolTip_Background_Color)
 		.Process(this->ToolTip_Background_Opacity)
+		.Process(this->ToolTip_Background_BlurSize)
 		.Process(this->IngameScore_WinTheme)
 		.Process(this->IngameScore_LoseTheme)
 		;
