@@ -300,9 +300,5 @@ In `rulesmd.ini`:
 [SOMESIDE]
 ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to [AudioVisual]->ToolTip.Background.Color
 ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [AudioVisual]->ToolTip.Background.Opacity
-ToolTip.Background.BlurSize=0       ; integer, defaults to [AudioVisual]->ToolTip.Background.BlurSize
-```
-
-```{note}
-It's not a good idea to have a big BlurSize.
+ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual]->ToolTip.Background.BlurSize
 ```

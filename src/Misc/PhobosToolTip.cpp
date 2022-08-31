@@ -380,3 +380,4 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 //
 //	return 0x479048;
 //}
+

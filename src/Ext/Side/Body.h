@@ -28,7 +28,7 @@ public:
 		Valueable<TextAlign> Sidebar_PowerDelta_Align;
 		Nullable<ColorStruct> ToolTip_Background_Color;
 		Nullable<int> ToolTip_Background_Opacity;
-		Nullable<int> ToolTip_Background_BlurSize;
+		Nullable<float> ToolTip_Background_BlurSize;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
 			, ArrayIndex { -1 }
