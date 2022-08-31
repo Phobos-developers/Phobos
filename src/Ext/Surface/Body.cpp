@@ -3,6 +3,8 @@
 #include <Drawing.h>
 #include <Helpers/Macro.h>
 
+#define ENABLE_OMP 0
+
 // https://www.peterkovesi.com/papers/FastGaussianSmoothing.pdf
 void SurfaceExt::BlurRect(const RectangleStruct& rect, float blurSize)
 {
@@ -43,7 +45,9 @@ void SurfaceExt::BlurRect(const RectangleStruct& rect, float blurSize)
 		const int h = bound.Height;
 		{
 			float iarr = 1.f / (r + r + 1);
+#if ENABLE_OMP
 #pragma omp parallel for
+#endif
 			for (int i = 0; i < h; i++)
 			{
 				int ti = i * w;
@@ -95,7 +99,9 @@ void SurfaceExt::BlurRect(const RectangleStruct& rect, float blurSize)
 		std::swap(in, out);
 		{
 			float iarr = 1.f / (r + r + 1);
+#if ENABLE_OMP
 #pragma omp parallel for
+#endif
 			for (int i = 0; i < w; i++)
 			{
 				int ti = i;
