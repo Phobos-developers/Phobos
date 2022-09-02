@@ -19,7 +19,8 @@
 
 enum class PhobosScripts : unsigned int
 {
-	// 10000-10999 are team (aka ingame) actions
+	// Range 10000-10999 are team (aka ingame) actions
+	// Sub-range 10000-10049 is for "attack" actions
 	RepeatAttackCloser = 10000,
 	SingleAttackCloser = 10001,
 	RepeatAttackTypeCloser = 10002,
@@ -38,39 +39,44 @@ enum class PhobosScripts : unsigned int
 	SingleAttackFartherThreat = 10015,
 	RepeatAttackTypeFartherThreat = 10016,
 	SingleAttackTypeFartherThreat = 10017,
-	MoveToEnemyCloser = 10100,
-	MoveToTypeEnemyCloser = 10101,
-	RandomMoveToTypeEnemyCloser = 10102,
-	MoveToFriendlyCloser = 10103,
-	MoveToTypeFriendlyCloser = 10104,
-	RandomMoveToTypeFriendlyCloser = 10105,
-	MoveToEnemyFarther = 10106,
-	MoveToTypeEnemyFarther = 10107,
-	RandomMoveToTypeEnemyFarther = 10108,
-	MoveToFriendlyFarther = 10109,
-	MoveToTypeFriendlyFarther = 10110,
-	RandomMoveToTypeFriendlyFarther = 10111,
+	// Sub-range 10050-10099 is for "Move to" actions
+	MoveToEnemyCloser = 10050,
+	MoveToTypeEnemyCloser = 10051,
+	RandomMoveToTypeEnemyCloser = 10052,
+	MoveToFriendlyCloser = 10053,
+	MoveToTypeFriendlyCloser = 10054,
+	RandomMoveToTypeFriendlyCloser = 10055,
+	MoveToEnemyFarther = 10056,
+	MoveToTypeEnemyFarther = 10057,
+	RandomMoveToTypeEnemyFarther = 10058,
+	MoveToFriendlyFarther = 10059,
+	MoveToTypeFriendlyFarther = 10060,
+	RandomMoveToTypeFriendlyFarther = 10061,
+	// Sub-range 10100-10999 is for "general purpose" actions
+	TimedAreaGuard = 10100,
+	WaitUntilFullAmmo = 10101,
+	GatherAroundLeader = 10102,
+	LoadIntoTransports = 10103,
 
-	// 12000-12999 are suplementary/setup pre-actions
+	// Range 12000-12999 are suplementary/setup pre-actions
 	WaitIfNoTarget = 12000,
-	ModifyTargetDistance = 12004,
-	SetMoveMissionEndMode = 12005,
+	ModifyTargetDistance = 12001,
+	SetMoveMissionEndMode = 12002,
 
-	// 14000-14999 are utility actions (angernodes manipulation)
+	// Range 14000-14999 are utility actions (angernodes manipulation, Team manipulation, etc)
+	TeamWeightReward = 14000,
+	IncreaseCurrentAITriggerWeight = 14001,
+	DecreaseCurrentAITriggerWeight = 14002,
+	UnregisterGreatSuccess = 14003,
 
+	// Range 16000-16999 are flow control actions (jumps, change script, loops, breaks, etc)
+	SameLineForceJumpCountdown = 16000,
+	NextLineForceJumpCountdown = 16001,
+	StopForceJumpCountdown = 16002,
+	RandomSkipNextAction = 16003,
+	PickRandomScript = 16004,
 
-	//16000-16999 are flow control actions (jumps, change script, repeat, etc)
-	RandomSkipNextAction = 16005,
-	StopForceJumpCountdown = 16004,
-	NextLineForceJumpCountdown = 16002,
-	SameLineForceJumpCountdown = 16003,
-	DecreaseCurrentAITriggerWeight = 16103,
-	IncreaseCurrentAITriggerWeight = 16102,
-	TeamWeightReward = 16101,
-	PickRandomScript = 16100,
-	UnregisterGreatSuccess = 16109,
-
-	// 18000-18999 are variable actions
+	// Range 18000-18999 are variable actions
 	LocalVariableSet = 18000,
 	LocalVariableAdd = 18001,
 	LocalVariableMinus = 18002,
@@ -142,13 +148,10 @@ enum class PhobosScripts : unsigned int
 	GlobalVariableReverseByGlobal = 18068,
 	GlobalVariableXorByGlobal = 18069,
 	GlobalVariableOrByGlobal = 18070,
-	GlobalVariableAndByGlobal = 18071,
+	GlobalVariableAndByGlobal = 18071
 
-	//19000-19999 are miscellanous/uncategorized actions
-	TimedAreaGuard = 19000,
-	LoadIntoTransports = 19005,
-	WaitUntilFullAmmo = 19001,
-	GatherAroundLeader = 19002
+	// Range 19000-19999 are miscellanous/uncategorized actions
+	
 };
 
 class ScriptExt

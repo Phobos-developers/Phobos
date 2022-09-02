@@ -2142,7 +2142,6 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 	if (!pFocus && !bAircraftsWithoutAmmo)
 	{
 		// This part of the code is used for picking a new target.
-
 		int targetMask = scriptArgument;
 		selectedTarget = FindBestObject(pLeaderUnit, targetMask, calcThreatMode, pickAllies, attackAITargetType, idxAITargetTypeItem);
 
