@@ -1,10 +1,10 @@
 #include "Body.h"
 #include <SpecificStructures.h>
-
 #include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
+#include <Ext/TEvent/Body.h>
 
 // #issue 88 : shield logic
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
@@ -22,7 +22,12 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 			const int nDamageLeft = pShieldData->ReceiveDamage(args);
 			if (nDamageLeft >= 0)
+			{
 				*args->Damage = nDamageLeft;
+
+				if (auto pTag = pThis->AttachedTag)
+					pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
+			}
 		}
 	}
 	return 0;

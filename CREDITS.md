@@ -175,6 +175,7 @@ This page lists all the individual contributions to the project by their author.
    - Slaves' house customization when owner is killed
    - Misc CN doc fix
    - Warhead superweapon launch logic
+   - "Shield is broken" trigger event
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
 - **FlyStar** - Campaign load screen PCX support
