@@ -121,3 +121,17 @@ DEFINE_HOOK(0x54AEC0, JumpjetLocomotion_Process_TurnToTarget, 0x8)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x736BF3, UnitClass_UpdateRotation_TurretFacing, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+
+	if (pThis->IsInAir() && !pThis->Type->TurretSpins && !pThis->Target)
+	{
+		pThis->SecondaryFacing.turn(pThis->PrimaryFacing.current());
+		pThis->unknown_49C = pThis->PrimaryFacing.in_motion();
+		return 0x736C09;
+	}
+
+	return 0;
+}
