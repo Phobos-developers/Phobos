@@ -349,6 +349,7 @@ Vanilla fixes:
 - Fixed Nuke carrier and payload weapons not respecting `Bright` setting on weapon (by Starkku)
 - Fixed buildings not reverting to undamaged graphics when HP was restored above `[AudioVisual]`->`ConditionYellow` via `SelfHealing` (by Starkku)
 - Fixed jumpjet units being unable to turn to the target when firing from a different direction (by Trsdy)
+- Fixed turreted jumpjet units always facing bottom-right direction when stop moving (by Trsdy)
 - Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations (by Starkku)
 - Fixed AI script action Deploy getting stuck with vehicles with `DeploysInto` if there was no space to deploy at initial location (by Starkku)
 - Fixed `Foundation=0x0` causing crashes if used on TerrainTypes.

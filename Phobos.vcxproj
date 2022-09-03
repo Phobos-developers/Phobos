@@ -36,6 +36,7 @@
     <ClCompile Include="src\Ext\TEvent\Hooks.cpp" />
     <ClCompile Include="src\Ext\TEvent\Body.cpp" />
     <ClCompile Include="src\Ext\Trigger\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Unit\Hooks.Jumpjet.cpp" />
     <ClCompile Include="src\Misc\CaptureManager.cpp" />
     <ClCompile Include="src\Misc\Hooks.Image.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
