@@ -432,7 +432,7 @@ DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 	return 0x0;
 }
 
-//Fix slaves cannot always suicide due to armor multiplier or something
+// Fix slaves cannot always suicide due to armor multiplier or something
 DEFINE_PATCH(0x6B0BF7,
 	0x6A, 0x01  // push 1       // ignoreDefense=false->true
 	);
