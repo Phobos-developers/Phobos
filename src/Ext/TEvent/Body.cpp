@@ -117,7 +117,6 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 	case PhobosTriggerEvent::GlobalVariableAndIsTrueGlobalVariable:
 		return TEventExt::VariableCheckBinary<true, true, and_with>(pThis);
 
-
 	case PhobosTriggerEvent::ShieldBroken:
 		return ShieldClass::ShieldIsBrokenTEvent(pObject);
 

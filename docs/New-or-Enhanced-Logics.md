@@ -135,7 +135,7 @@ BreakWeapon=                         ; WeaponType
 AbsorbPercent=1.0                    ; floating point value
 PassPercent=0.0                      ; floating point value
 AllowTransfer=                       ; boolean
-ImmuneToBerserk=no                  ; boolean
+ImmuneToBerserk=no                   ; boolean
 
 [SOMETECHNO]                         ; TechnoType
 ShieldType=SOMESHIELDTYPE            ; ShieldType; none by default
