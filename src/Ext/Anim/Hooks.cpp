@@ -3,25 +3,6 @@
 #include <Ext/AnimType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
-// Set in AnimClass::AI and guaranteed to be valid within it.
-namespace AnimAITemp
-{
-	AnimExt::ExtData* ExtData;
-	AnimTypeExt::ExtData* TypeExtData;
-}
-
-DEFINE_HOOK(0x423AD2, AnimClass_AI_SetContext, 0x6)
-{
-	GET(AnimClass* const, pThis, ESI);
-
-	auto const pExt = AnimExt::ExtMap.Find(pThis);
-
-	AnimAITemp::ExtData = pExt;
-	AnimAITemp::TypeExtData = pExt->TypeExtData;
-
-	return 0;
-}
-
 DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
 {
 	GET(AnimClass* const, pThis, ESI);
@@ -29,7 +10,7 @@ DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
 
 	if (pType->HideIfNoOre)
 	{
-		auto nThreshold = abs(AnimAITemp::TypeExtData->HideIfNoOre_Threshold.Get());
+		auto nThreshold = abs(AnimTypeExt::ExtMap.Find(pThis->Type)->HideIfNoOre_Threshold.Get());
 		auto pCell = pThis->GetCell();
 
 		pThis->Invisible = !pCell || pCell->GetContainedTiberiumValue() <= nThreshold;
@@ -48,17 +29,15 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 	if (pThis->Type->Damage <= 0.0 || pThis->HasExtras)
 		return SkipDamage;
 
-	auto const pTypeExt = AnimAITemp::TypeExtData;
+	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 	int delay = pTypeExt->Damage_Delay.Get();
-
 	int damageMultiplier = 1;
-
-	if (pThis->OwnerObject && pThis->OwnerObject->WhatAmI() == AbstractType::Terrain)
-		damageMultiplier = 5;
-
 	bool adjustAccum = false;
 	double damage = 0;
 	int appliedDamage = 0;
+
+	if (pThis->OwnerObject && pThis->OwnerObject->WhatAmI() == AbstractType::Terrain)
+		damageMultiplier = 5;
 
 	if (pTypeExt->Damage_ApplyOncePerLoop) // If damage is to be applied only once per animation loop
 	{
@@ -101,7 +80,7 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 	else
 		pThis->Accum = 0.0;
 
-	auto const pExt = AnimAITemp::ExtData;
+	auto const pExt = AnimExt::ExtMap.Find(pThis);
 	TechnoClass* pInvoker = nullptr;
 
 	if (pTypeExt->Damage_DealtByInvoker)
@@ -144,8 +123,9 @@ DEFINE_HOOK(0x424322, AnimClass_AI_TrailerInheritOwner, 0x6)
 	{
 		if (auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim))
 		{
+			auto pExt = AnimExt::ExtMap.Find(pThis);
 			pTrailerAnim->Owner = pThis->Owner;
-			pTrailerAnimExt->Invoker = AnimAITemp::ExtData->Invoker;
+			pTrailerAnimExt->Invoker = pExt->Invoker;
 		}
 	}
 
@@ -156,14 +136,11 @@ DEFINE_HOOK(0x424807, AnimClass_AI_Next, 0x6)
 {
 	GET(AnimClass*, pThis, ESI);
 
-	const auto pExt = AnimAITemp::ExtData;
+	const auto pExt = AnimExt::ExtMap.Find(pThis);
 
 	// Update type data after anim type changes
 	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pThis->Type)
-	{
 		pExt->TypeExtData = AnimTypeExt::ExtMap.Find(pThis->Type);
-		AnimAITemp::TypeExtData = pExt->TypeExtData;
-	}
 
 	return 0;
 }
