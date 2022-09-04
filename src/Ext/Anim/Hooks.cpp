@@ -132,19 +132,6 @@ DEFINE_HOOK(0x424322, AnimClass_AI_TrailerInheritOwner, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x424807, AnimClass_AI_Next, 0x6)
-{
-	GET(AnimClass*, pThis, ESI);
-
-	const auto pExt = AnimExt::ExtMap.Find(pThis);
-
-	// Update type data after anim type changes
-	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pThis->Type)
-		pExt->TypeExtData = AnimTypeExt::ExtMap.Find(pThis->Type);
-
-	return 0;
-}
-
 DEFINE_HOOK(0x422CAB, AnimClass_DrawIt_XDrawOffset, 0x5)
 {
 	GET(AnimClass* const, pThis, ECX);
