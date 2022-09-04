@@ -53,20 +53,6 @@ bool TechnoTypeExt::HasSelectionGroupID(ObjectTypeClass* pType, const char* pID)
 	return (_strcmpi(id, pID) == 0);
 }
 
-bool TechnoTypeExt::ExtData::IsCountedAsHarvester()
-{
-	auto pThis = this->OwnerObject();
-	UnitTypeClass* pUnit = nullptr;
-
-	if (pThis->WhatAmI() == AbstractType::UnitType)
-		pUnit = abstract_cast<UnitTypeClass*>(pThis);
-
-	if (this->Harvester_Counted.Get(pThis->Enslaves || pUnit && (pUnit->Harvester || pUnit->Enslaves)))
-		return true;
-
-	return false;
-}
-
 void TechnoTypeExt::GetBurstFLHs(TechnoTypeClass* pThis, INI_EX &exArtINI, const char* pArtSection,
 	std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag)
 {
@@ -135,7 +121,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
 	this->Spawn_LimitedRange.Read(exINI, pSection, "Spawner.LimitRange");
 	this->Spawn_LimitedExtraRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
+
 	this->Harvester_Counted.Read(exINI, pSection, "Harvester.Counted");
+	if (!this->Harvester_Counted.isset() && pThis->Enslaves)
+		this->Harvester_Counted = true;
+	if (this->Harvester_Counted.Get())
+	{
+		auto& list = RulesExt::Global()->HarvesterTypes;
+		if (!list.Contains(pThis))
+			list.emplace_back(pThis);
+	}
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
@@ -472,6 +467,24 @@ DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 	{
 		auto const pExt = BuildingTypeExt::ExtMap.Find(pType);
 		pExt->CompleteInitialization();
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
+{
+	GET(UnitTypeClass*, pItem, ESI);
+
+	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pItem))
+	{
+		if (!pTypeExt->Harvester_Counted.isset() && pItem->Harvester)
+		{
+			pTypeExt->Harvester_Counted = true;
+			auto& list = RulesExt::Global()->HarvesterTypes;
+			if (!list.Contains(pItem))
+				list.emplace_back(pItem);
+		}
 	}
 
 	return 0;

@@ -13,34 +13,24 @@ HouseExt::ExtContainer HouseExt::ExtMap;
 
 int HouseExt::ActiveHarvesterCount(HouseClass* pThis)
 {
-	if (!pThis) return 0;
-
 	int result = 0;
-	for (auto techno : *TechnoClass::Array) {
-		if (auto pTechnoExt = TechnoTypeExt::ExtMap.Find(techno->GetTechnoType())) {
-			if (pTechnoExt->IsCountedAsHarvester() && techno->Owner == pThis) {
-				if (auto pTechno = TechnoExt::ExtMap.Find(techno)) {
-					result += TechnoExt::IsHarvesting(techno);
-				}
-			}
+	for (auto pTechno : *TechnoClass::Array)
+	{
+		if (pTechno->Owner == pThis)
+		{
+			auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+			result += pTypeExt->Harvester_Counted && TechnoExt::IsHarvesting(pTechno);
 		}
 	}
-
 	return result;
 }
 
 int HouseExt::TotalHarvesterCount(HouseClass* pThis)
 {
-	if (!pThis)	return 0;
-
 	int result = 0;
-	for (auto techno : *TechnoTypeClass::Array) {
-		if (auto pTechnoExt = TechnoTypeExt::ExtMap.Find(techno)) {
-			if (pTechnoExt->IsCountedAsHarvester()) {
-				result += pThis->CountOwnedAndPresent(techno);
-			}
-		}
-	}
+
+	for (auto pType : RulesExt::Global()->HarvesterTypes)
+		result += pThis->CountOwnedAndPresent(pType);
 
 	return result;
 }
