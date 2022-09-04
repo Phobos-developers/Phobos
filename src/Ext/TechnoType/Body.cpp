@@ -53,21 +53,6 @@ bool TechnoTypeExt::HasSelectionGroupID(ObjectTypeClass* pType, const char* pID)
 	return (_strcmpi(id, pID) == 0);
 }
 
-[[deprecated("Use Harvester_Counted directly.")]]
-bool TechnoTypeExt::ExtData::IsCountedAsHarvester()
-{
-	auto pThis = this->OwnerObject();
-
-	bool isHarvester = pThis->Enslaves;
-	if (!isHarvester)
-	{
-		if (auto pUnit = abstract_cast<UnitTypeClass*>(pThis))
-			isHarvester = pUnit->Harvester;
-	}
-
-	return this->Harvester_Counted.Get(isHarvester);
-}
-
 void TechnoTypeExt::GetBurstFLHs(TechnoTypeClass* pThis, INI_EX &exArtINI, const char* pArtSection,
 	std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag)
 {
@@ -497,7 +482,7 @@ DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
 		{
 			pTypeExt->Harvester_Counted = true;
 			auto& list = RulesExt::Global()->HarvesterTypes;
-			if(!list.Contains(pItem))
+			if (!list.Contains(pItem))
 				list.emplace_back(pItem);
 		}
 	}

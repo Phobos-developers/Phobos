@@ -173,7 +173,8 @@ This page lists all the individual contributions to the project by their author.
    - Object Self-destruction logic
    - Building EVA_StructureSold and SellSound dehardcode
    - Slaves' house customization when owner is killed
-   - Misc CN doc fix
+   - Misc CN doc fix, code refactor
+   - Harvester counter
    - Warhead superweapon launch logic
    - "Shield is broken" trigger event
 - **NetsuNegi** - Forbidding parallel AI queues by type

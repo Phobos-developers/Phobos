@@ -359,10 +359,11 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 		case Mission::Unload:
 		case Mission::Enter:
 			return true;
-		case Mission::Guard: // issue#603: idk how to do better
+		case Mission::Guard: // issue#603: not exactly correct, but idk how to do better
 			if (auto pUnit = abstract_cast<UnitClass*>(pThis))
 				return !pUnit->IsSelected && pUnit->Locomotor->Is_Really_Moving_Now();
-		default:break;
+		default:
+			return false;
 		}
 	}
 
