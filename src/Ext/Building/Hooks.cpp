@@ -15,9 +15,11 @@ DEFINE_HOOK(0x43FB29, BuildingClass_AI, 0x8)
 	auto pExt = BuildingExt::ExtMap.Find(pThis);
 	auto pType = pThis->Type;
 
-	// Set only if unset or type has changed
+	/*
+	// Set only if unset or type has changed - Not currently useful as building type does not change.
 	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
 		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pType);
+	*/
 
 	pExt->DisplayGrinderRefund();
 
