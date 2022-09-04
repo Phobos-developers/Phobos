@@ -13,7 +13,7 @@ public:
 	ShieldClass();
 	ShieldClass(TechnoClass* pTechno, bool isAttached);
 	ShieldClass(TechnoClass* pTechno) : ShieldClass(pTechno, false) {};
-	~ShieldClass() = default;
+	~ShieldClass();
 
 	int ReceiveDamage(args_ReceiveDamage* args);
 	bool CanBeTargeted(WeaponTypeClass* pWeapon);
@@ -29,7 +29,8 @@ public:
 	void AI();
 
 	void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
-	void InvalidatePointer(void* ptr);
+
+	static void PointerGotInvalid(void* ptr, bool removed);
 
 	double GetHealthRatio();
 	void SetHP(int amount);
@@ -41,9 +42,10 @@ public:
 	int GetFramesSinceLastBroken();
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
-
 	static bool ShieldIsBrokenTEvent(ObjectClass* pAttached);
 
+	static bool LoadGlobals(PhobosStreamReader& Stm);
+	static bool SaveGlobals(PhobosStreamWriter& Stm);
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;
 

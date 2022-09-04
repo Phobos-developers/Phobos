@@ -12,6 +12,11 @@
 #include <RadarEventClass.h>
 #include <TacticalClass.h>
 
+namespace NewEntities
+{
+	ValueableVector<ShieldClass*> Shields;
+}
+
 ShieldClass::ShieldClass() : Techno { nullptr }
 	, HP { 0 }
 	, Timers { }
@@ -31,12 +36,35 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTech
 	this->UpdateType();
 	SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
 	strcpy(this->TechnoID, this->Techno->get_ID());
+	NewEntities::Shields.emplace_back(this);
+}
+
+ShieldClass::~ShieldClass()
+{
+	auto it = std::find(NewEntities::Shields.begin(), NewEntities::Shields.end(), this);
+	if (it != NewEntities::Shields.end())
+		NewEntities::Shields.erase(it);
 }
 
 void ShieldClass::UpdateType()
 {
 	this->Type = TechnoExt::ExtMap.Find(this->Techno)->CurrentShieldType;
 }
+
+void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
+{
+	if (auto const pAnim = abstract_cast<AnimClass*>(static_cast<AbstractClass*>(ptr)))
+	{
+		for (auto pShield : NewEntities::Shields)
+		{
+			if (pAnim == pShield->IdleAnim)
+				pShield->KillAnim();
+		}
+	}
+}
+
+// =============================
+// load / save
 
 template <typename T>
 bool ShieldClass::Serialize(T& Stm)
@@ -74,6 +102,22 @@ bool ShieldClass::Save(PhobosStreamWriter& Stm) const
 	return const_cast<ShieldClass*>(this)->Serialize(Stm);
 }
 
+bool ShieldClass::LoadGlobals(PhobosStreamReader& Stm)
+{
+	return Stm
+		.Process(NewEntities::Shields)
+		.Success();
+}
+
+bool ShieldClass::SaveGlobals(PhobosStreamWriter& Stm)
+{
+	return Stm
+		.Process(NewEntities::Shields)
+		.Success();
+}
+
+// =============================
+//
 // Is used for DeploysInto/UndeploysInto
 void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 {
@@ -531,12 +575,6 @@ int ShieldClass::GetPercentageAmount(double iStatus)
 		return (int)round(this->Type->Strength * iStatus);
 
 	return (int)trunc(iStatus);
-}
-
-void ShieldClass::InvalidatePointer(void* ptr)
-{
-	if (this->IdleAnim == ptr)
-		this->KillAnim();
 }
 
 void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreakWeapon)
