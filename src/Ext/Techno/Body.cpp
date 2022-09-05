@@ -351,11 +351,20 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 	if (pThis->WhatAmI() == AbstractType::Building && pThis->IsPowerOnline())
 		return true;
 
-	auto mission = pThis->GetCurrentMission();
-	if ((mission == Mission::Harvest || mission == Mission::Unload || mission == Mission::Enter)
-		&& TechnoExt::HasAvailableDock(pThis))
+	if (TechnoExt::HasAvailableDock(pThis))
 	{
-		return true;
+		switch (pThis->GetCurrentMission())
+		{
+		case Mission::Harvest:
+		case Mission::Unload:
+		case Mission::Enter:
+			return true;
+		case Mission::Guard: // issue#603: not exactly correct, but idk how to do better
+			if (auto pUnit = abstract_cast<UnitClass*>(pThis))
+				return !pUnit->IsSelected && pUnit->Locomotor->Is_Really_Moving_Now();
+		default:
+			return false;
+		}
 	}
 
 	return false;
@@ -570,7 +579,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 
 	default: //must be AutoDeathBehavior::Kill
 		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
-
+		// Due to Ares, ignoreDefense=true will prevent passenger/crew/hijacker from escaping
 		return;
 	}
 }

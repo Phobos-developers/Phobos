@@ -22,27 +22,28 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 		pExt->FirerHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
 		pExt->CurrentStrength = pThis->Type->Strength;
 		pExt->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+		if (!pThis->Type->Inviso)
+			pExt->InitializeLaserTrails();
 	}
 
-	if (!pThis->Type->Inviso)
-		BulletExt::InitializeLaserTrails(pThis);
-
 	return 0;
+}
+
+// Set in BulletClass::AI and guaranteed to be valid within it.
+namespace BulletAITemp
+{
+	BulletExt::ExtData* ExtData;
+	BulletTypeExt::ExtData* TypeExtData;
 }
 
 DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 {
 	GET(BulletClass*, pThis, EBP);
+
 	auto pBulletExt = BulletExt::ExtMap.Find(pThis);
-
-	if (!pBulletExt)
-		return 0;
-
-	auto pType = pThis->Type;
-
-	// Set only if unset or type has changed
-	if (!pBulletExt->TypeExtData || pBulletExt->TypeExtData->OwnerObject() != pType)
-		pBulletExt->TypeExtData = BulletTypeExt::ExtMap.Find(pType);
+	BulletAITemp::ExtData = pBulletExt;
+	BulletAITemp::TypeExtData = pBulletExt->TypeExtData;
 
 	if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 	{
@@ -104,7 +105,7 @@ DEFINE_HOOK(0x4668BD, BulletClass_AI_TrailerInheritOwner, 0x6)
 	GET(BulletClass*, pThis, EBP);
 	GET(AnimClass*, pAnim, EAX);
 
-	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	if (auto const pExt = BulletAITemp::ExtData)
 	{
 		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
 		{
@@ -126,7 +127,7 @@ DEFINE_HOOK(0x4668BD, BulletClass_AI_Interceptor_InvisoSkip, 0x6)
 
 	GET(BulletClass*, pThis, EBP);
 
-	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	if (auto const pExt = BulletAITemp::ExtData)
 	{
 		if (pThis->Type->Inviso && pExt->IsInterceptor)
 			return DetonateBullet;
@@ -297,14 +298,83 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 	return 0;
 }
 
-// Do not force straight trajectory projectiles to detonate at target coordinates under certain circumstances.
-// Fixes issues with walls etc.
-DEFINE_HOOK(0x468EC7, BulletClass_Explode_TargetCoord, 0x6)
+DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
 {
-	enum { SkipSetCoordinate = 0x468F23 };
+	enum { SkipChecks = 0x467CDE };
+
+	GET(BulletClass*, pThis, EBP);
+
+	// Do not require Airburst=no to check target snapping for Inviso / Trajectory=Straight projectiles
+	if (pThis->Type->Inviso)
+	{
+		R->EAX(pThis->Type);
+		return SkipChecks;
+	}
+	else if (auto const pExt = BulletAITemp::ExtData)
+	{
+		if (pExt->Trajectory)
+		{
+			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
+			{
+				R->EAX(pThis->Type);
+				return SkipChecks;
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
+{
+	enum { SkipChecks = 0x468E7B };
 
 	GET(BulletClass*, pThis, ESI);
 
+	// Do not require Airburst=no to check target snapping for Inviso / Trajectory=Straight projectiles
+	if (pThis->Type->Inviso)
+	{
+		R->EAX(pThis->Type);
+		return SkipChecks;
+	}
+	else if (pThis->Type->Arcing || pThis->Type->ROT > 0)
+	{
+		return 0;
+	}
+	else if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (pExt->Trajectory)
+		{
+			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
+			{
+				R->EAX(pThis->Type);
+				return SkipChecks;
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
+{
+	enum { SkipInitialChecks = 0x468EC7, SkipSetCoordinate = 0x468F23 };
+
+	GET(BulletClass*, pThis, ESI);
+
+	// Do not require EMEffect=no & Airburst=no to check target coordinate snapping for Inviso projectiles.
+	if (pThis->Type->Inviso)
+	{
+		R->EAX(pThis->Type);
+		return SkipInitialChecks;
+	}
+	else if (pThis->Type->Arcing || pThis->Type->ROT > 0)
+	{
+		return 0;
+	}
+
+	// Do not force Trajectory=Straight projectiles to detonate at target coordinates under certain circumstances.
+	// Fixes issues with walls etc.
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
 		if (pExt->Trajectory)

@@ -13,11 +13,14 @@ DEFINE_HOOK(0x43FB29, BuildingClass_AI, 0x8)
 
 	// Do not search this up again in any functions called here because it is costly for performance - Starkku
 	auto pExt = BuildingExt::ExtMap.Find(pThis);
+
+	/*
+	// Set only if unset or type has changed - Not currently useful as building type does not change.
 	auto pType = pThis->Type;
 
-	// Set only if unset or type has changed
 	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
 		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pType);
+	*/
 
 	pExt->DisplayGrinderRefund();
 
