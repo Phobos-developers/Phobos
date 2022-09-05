@@ -56,7 +56,7 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
 
 		Valueable<bool> IronCurtain_KeptOnDeploy;
-		Valueable<IronCurtainAffects> IronCurtain_ToOrganic;
+		Valueable<IronCurtainEffect> IronCurtain_ToOrganic;
 		Nullable<WarheadTypeClass*> IronCurtain_KillWarhead;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
@@ -85,7 +85,7 @@ public:
 			, Pips_SelfHeal_Units_Offset {{ 33, -32 }}
 			, Pips_SelfHeal_Buildings_Offset {{ 15, 10 }}
 			, IronCurtain_KeptOnDeploy { true }
-			, IronCurtain_ToOrganic { IronCurtainAffects::Kill }
+			, IronCurtain_ToOrganic { IronCurtainEffect::Kill }
 			, IronCurtain_KillWarhead { }
 		{ }
 

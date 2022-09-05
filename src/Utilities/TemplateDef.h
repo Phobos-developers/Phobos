@@ -798,26 +798,23 @@ namespace detail
 
 
 	template <>
-	inline bool read<IronCurtainAffects>(IronCurtainAffects& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	inline bool read<IronCurtainEffect>(IronCurtainEffect& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
-			auto parsed = IronCurtainAffects::Kill;
+			auto parsed = IronCurtainEffect::Kill;
 			auto str = parser.value();
-			if (_strcmpi(str, "kill") == 0)
+			if (_strcmpi(str, "invulnerable") == 0)
 			{
-				parsed = IronCurtainAffects::Kill;
+				parsed = IronCurtainEffect::Invulnerable;
 			}
-			else if (_strcmpi(str, "noaffect") == 0)
+			else if (_strcmpi(str, "ignore") == 0)
 			{
-				parsed = IronCurtainAffects::NoAffect;
+				parsed = IronCurtainEffect::Ignore;
 			}
-			else if (_strcmpi(str, "affect") == 0)
+			else if (_strcmpi(str, "kill") != 0)
 			{
-				parsed = IronCurtainAffects::Affect;
-			}
-			else
-			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "IronCurtainEffect can be either kill, invulnerable or ignore");
 				return false;
 			}
 			value = parsed;

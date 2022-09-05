@@ -195,6 +195,13 @@ enum class TextAlign : int
 
 MAKE_ENUM_FLAGS(TextAlign);
 
+enum class IronCurtainEffect : BYTE
+{
+	Kill = 0,
+	Invulnerable = 1,
+	Ignore = 2
+};
+
 class MouseCursorHotSpotX
 {
 public:
@@ -255,11 +262,4 @@ public:
 		}
 		return false;
 	}
-};
-
-enum class IronCurtainAffects : char
-{
-	Kill = 0,
-	NoAffect = 1,
-	Affect
 };

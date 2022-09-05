@@ -121,7 +121,7 @@ public:
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
 		Nullable<bool> IronCurtain_KeptOnDeploy;
-		Nullable<IronCurtainAffects> IronCurtain_Affect;
+		Nullable<IronCurtainEffect> IronCurtain_Effect;
 		Nullable<WarheadTypeClass*> IronCuratin_KillWarhead;
 
 		Valueable<Vector2D<double>> InitialStrength_Cloning;
@@ -241,7 +241,7 @@ public:
 			, DeployedSecondaryFireFLH { }
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, IronCurtain_KeptOnDeploy {}
-			, IronCurtain_Affect {}
+			, IronCurtain_Effect {}
 			, IronCuratin_KillWarhead {}
 		{ }
 

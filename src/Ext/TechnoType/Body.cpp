@@ -203,7 +203,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
 
 	this->IronCurtain_KeptOnDeploy.Read(exINI, pSection, "IronCurtain.KeptOnDeploy");
-	this->IronCurtain_Affect.Read(exINI, pSection, "IronCurtain.Affect");
+	this->IronCurtain_Effect.Read(exINI, pSection, "IronCurtain.Effect");
 	this->IronCuratin_KillWarhead.Read(exINI, pSection, "IronCurtain.KillWarhead");
 
 	// Ares 0.2
@@ -362,7 +362,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->InitialStrength_Cloning)
 		.Process(this->IronCurtain_KeptOnDeploy)
-		.Process(this->IronCurtain_Affect)
+		.Process(this->IronCurtain_Effect)
 		.Process(this->IronCuratin_KillWarhead)
 		;
 }

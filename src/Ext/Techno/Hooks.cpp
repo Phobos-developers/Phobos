@@ -615,11 +615,21 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 	}
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	IronCurtainAffects ironAffect = pTypeExt->IronCurtain_Affect.Get(RulesExt::Global()->IronCurtain_ToOrganic);
+	IronCurtainEffect ironAffect = pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_ToOrganic);
 
 	switch (ironAffect)
 	{
-	case IronCurtainAffects::Kill:
+	case IronCurtainEffect::Ignore:
+	{
+		R->EAX(DamageState::Unaffected);
+	}break;
+	case IronCurtainEffect::Invulnerable:
+	{
+		R->ESI(pThis);
+
+		return 0x4DEB38;
+	}break;
+	default:
 	{
 		R->EAX
 		(
@@ -634,20 +644,6 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 				pSource
 			)
 		);
-	}break;
-	case IronCurtainAffects::Affect:
-	{
-		R->ESI(pThis);
-
-		return 0x4DEB38;
-	}break;
-	case IronCurtainAffects::NoAffect:
-	{
-		R->EAX(DamageState::Unaffected);
-	}break;
-	default:
-	{
-		R->EAX(DamageState::Unaffected);
 	}break;
 	}
 
