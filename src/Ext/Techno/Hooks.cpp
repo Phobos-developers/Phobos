@@ -595,55 +595,22 @@ DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_C
 	return 0;
 }
 
-DEFINE_HOOK(0x457C90, BuildingClass_IronCuratin, 0x6)
-{
-	GET(BuildingClass*, pThis, ECX);
-	GET_STACK(HouseClass*, pSource, 0x8);
-
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if (pTypeExt->IronCurtain_Affect.isset())
-	{
-		switch (pTypeExt->IronCurtain_Affect)
-		{
-		case IronCurtainAffects::Kill:
-		{
-			R->EAX(pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pSource));
-
-			return 0x457CDB;
-		}break;
-		case IronCurtainAffects::NoAffect:
-		{
-			R->EAX(DamageState::Unaffected);
-
-			return 0x457CDB;
-		}break;
-		default:
-			break;
-		}
-	}
-
-	return 0;
-}
-
 DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 {
 	GET(FootClass*, pThis, ECX);
 	GET_STACK(HouseClass*, pSource, STACK_OFFS(0x10, -0x8));
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	IronCurtainAffects ironAffect;
-	bool organic = pType->Organic || pThis->WhatAmI() == AbstractType::Infantry;
 
-	if (organic)
+	if (!pType->Organic && pThis->WhatAmI() != AbstractType::Infantry)
 	{
-		ironAffect = pTypeExt->IronCurtain_Affect.Get(RulesExt::Global()->IronCurtain_ToOrganic);
+		R->ESI(pThis);
+
+		return 0x4DEB38;
 	}
-	else
-	{
-		ironAffect = pTypeExt->IronCurtain_Affect.Get(IronCurtainAffects::Affect);
-	}
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	IronCurtainAffects ironAffect = pTypeExt->IronCurtain_Affect.Get(RulesExt::Global()->IronCurtain_ToOrganic);
 
 	switch (ironAffect)
 	{
@@ -655,9 +622,7 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 			(
 				&pThis->Health,
 				0,
-				(organic ?
-					pTypeExt->IronCuratin_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillWarhead.Get(RulesClass::Instance->C4Warhead)) :
-					RulesClass::Instance->C4Warhead),
+				pTypeExt->IronCuratin_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillWarhead.Get(RulesClass::Instance->C4Warhead)),
 				nullptr,
 				true,
 				false,
