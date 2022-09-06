@@ -602,16 +602,19 @@ DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_C
 
 DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 {
-	GET(FootClass*, pThis, ECX);
+	GET(FootClass*, pThis, ESI);
+	GET(TechnoTypeClass*, pType, EAX);
 	GET_STACK(HouseClass*, pSource, STACK_OFFS(0x10, -0x8));
 
-	TechnoTypeClass* pType = pThis->GetTechnoType();
+	enum
+	{
+		Invunlnerable = 0x4DEB38,
+		SkipGameCode = 0x4DEAEE
+	};
 
 	if (!pType->Organic && pThis->WhatAmI() != AbstractType::Infantry)
 	{
-		R->ESI(pThis);
-
-		return 0x4DEB38;
+		return Invunlnerable;
 	}
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
@@ -625,9 +628,7 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 	}break;
 	case IronCurtainEffect::Invulnerable:
 	{
-		R->ESI(pThis);
-
-		return 0x4DEB38;
+		return Invunlnerable;
 	}break;
 	default:
 	{
@@ -647,7 +648,7 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 	}break;
 	}
 
-	return 0x4DEBA2;
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x522600, InfantryClass_IronCurtain, 0x6)
