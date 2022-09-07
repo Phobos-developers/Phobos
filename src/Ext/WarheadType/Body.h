@@ -70,6 +70,11 @@ public:
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
 		Valueable<int> NotHuman_DeathSequence;
+		
+		Valueable<bool> Converts;
+		ValueableVector<TechnoTypeClass*> Converts_From;
+		ValueableVector<TechnoTypeClass*> Converts_To;
+		
 		ValueableVector<SuperWeaponTypeClass*> LaunchSW;
 		Valueable<bool> LaunchSW_RealLaunch;
 		Valueable<bool> LaunchSW_IgnoreInhibitors;
@@ -152,6 +157,11 @@ public:
 			, Shield_AffectTypes {}
 
 			, NotHuman_DeathSequence { -1 }
+		
+			, Converts{}
+			, Converts_From{}
+			, Converts_To{}
+		
 			, LaunchSW {}
 			, LaunchSW_RealLaunch { true }
 			, LaunchSW_IgnoreInhibitors { false }
@@ -178,6 +188,7 @@ public:
 		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
+		void ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
 
 	public:
