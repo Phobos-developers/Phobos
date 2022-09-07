@@ -11,11 +11,13 @@
 #include <Unsorted.h>
 #include <BitFont.h>
 
+#include <Utilities/EnumFunctions.h>
+
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
+
 #include <Misc/FlyingStrings.h>
-#include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;

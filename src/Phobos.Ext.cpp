@@ -1,5 +1,7 @@
 #include <Phobos.h>
 
+#include <utility>
+
 #include <Ext/Aircraft/Body.h>
 #include <Ext/AnimType/Body.h>
 #include <Ext/Anim/Body.h>
@@ -28,7 +30,7 @@
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 
-#include <utility>
+#include <Misc/PhobosGlobal.h>
 
 #pragma region Implementation details
 
@@ -251,8 +253,9 @@ auto MassActions = MassAction <
 	// New classes
 	ShieldTypeClass,
 	LaserTrailTypeClass,
-	RadTypeClass
+	RadTypeClass,
 	// other classes
+	PhobosGlobal
 > ();
 
 DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)

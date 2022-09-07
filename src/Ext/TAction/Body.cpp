@@ -6,10 +6,14 @@
 #include <CRT.h>
 #include <SuperWeaponTypeClass.h>
 #include <SuperClass.h>
-#include <Ext/SWType/Body.h>
+#include <TriggerClass.h>
+
 #include <Utilities/SavegameDef.h>
 
 #include <Ext/Scenario/Body.h>
+#include <Ext/SWType/Body.h>
+
+#include <Misc/PhobosGlobal.h>
 
 //Static init
 template<> const DWORD Extension<TActionClass>::Canary = 0x91919191;
@@ -67,6 +71,18 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::RunSuperWeaponAtLocation(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::RunSuperWeaponAtWaypoint:
 		return TActionExt::RunSuperWeaponAtWaypoint(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::RandomTriggerPut:
+		return TActionExt::RandomTriggerPut(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::RandomTriggerEnable:
+		return TActionExt::RandomTriggerEnable(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::RandomTriggerRemove:
+		return TActionExt::RandomTriggerRemove(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::ScoreCampaignText:
+		return TActionExt::ScoreCampaignText(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::ScoreCampaignTheme:
+		return TActionExt::ScoreCampaignTheme(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetNextMission:
+		return TActionExt::SetNextMission(pThis, pHouse, pObject, pTrigger, location);
 	default:
 		bHandled = false;
 		return true;
@@ -422,6 +438,95 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			pSuper->Launch(targetLocation, false);
 		}
 	}
+
+	return true;
+}
+
+bool TActionExt::RandomTriggerPut(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	TriggerTypeClass* pTargetType = pThis->TriggerType;
+
+	if (pTargetType == nullptr)
+		return true;
+
+	TriggerClass* pTarget = TriggerClass::GetInstance(pTargetType);
+	int iPoolID = pThis->Param3;
+	std::vector<TriggerClass*>& vPool = PhobosGlobal::Global()->RandomTriggerPool[iPoolID];
+
+	if (pTarget != nullptr && std::find(vPool.begin(), vPool.end(), pTarget) == vPool.end())
+		PhobosGlobal::Global()->RandomTriggerPool[iPoolID].emplace_back(pTarget);
+
+	return true;
+}
+
+bool TActionExt::RandomTriggerEnable(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	int iPoolID = pThis->Param3;
+	bool bTakeOff = pThis->Param4;
+
+	if (!PhobosGlobal::Global()->RandomTriggerPool.count(iPoolID))
+		return true;
+
+	auto& vPool = PhobosGlobal::Global()->RandomTriggerPool[iPoolID];
+
+	if (vPool.empty())
+		return true;
+
+	int idx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(vPool.size()) - 1);
+	TriggerClass* pTarget = vPool[idx];
+	pTarget->Enable();
+
+	if (bTakeOff)
+	{
+		vPool.erase(vPool.begin() + idx);
+
+		if (vPool.empty())
+			PhobosGlobal::Global()->RandomTriggerPool.erase(iPoolID);
+	}
+
+	return true;
+}
+
+bool TActionExt::RandomTriggerRemove(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	int iPoolID = pThis->Param3;
+	TriggerTypeClass* pTriggerType = pThis->TriggerType;
+	TriggerClass* pTarget = TriggerClass::GetInstance(pTriggerType);
+	auto& mPools = PhobosGlobal::Global()->RandomTriggerPool;
+
+	if (!mPools.count(iPoolID))
+		return true;
+
+	auto& vPool = mPools[iPoolID];
+	auto it = std::find(vPool.begin(), vPool.end(), pTarget);
+
+	if (it != vPool.end())
+		vPool.erase(it);
+
+	return true;
+}
+
+
+bool TActionExt::ScoreCampaignText(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (pThis->Param3 == 0)
+		ScenarioExt::Global()->ParMessage = pThis->Text;
+	else
+		ScenarioExt::Global()->ParTitle = pThis->Text;
+
+	return true;
+}
+
+bool TActionExt::ScoreCampaignTheme(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	ScenarioExt::Global()->ScoreCampaignTheme = pThis->Text;
+
+	return true;
+}
+
+bool TActionExt::SetNextMission(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	ScenarioExt::Global()->NextMission = pThis->Text;
 
 	return true;
 }

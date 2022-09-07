@@ -5,6 +5,7 @@
 #include "Savegame.h"
 
 #include <vector>
+#include <set>
 #include <map>
 #include <bitset>
 #include <memory>
@@ -403,10 +404,73 @@ namespace Savegame
 		}
 	};
 
-	template <typename TKey, typename TValue>
-	struct Savegame::PhobosStreamObject<std::map<TKey, TValue>>
+	template <typename _Kty, typename _Pr>
+	struct Savegame::PhobosStreamObject<std::set<_Kty, _Pr>>
 	{
-		bool ReadFromStream(PhobosStreamReader& Stm, std::map<TKey, TValue>& Value, bool RegisterForChange) const
+		bool ReadFromStream(PhobosStreamReader& Stm, std::set<_Kty, _Pr>& Value, bool RegisterForChange) const
+		{
+			Value.clear();
+
+			size_t Size = 0;
+
+			if (!Stm.Load(Size))
+				return false;
+
+			for (auto ix = 0u; ix < Size; ++ix)
+			{
+				_Kty buffer = _Kty();
+				if (!Savegame::ReadPhobosStream(Stm, buffer, false))
+				{
+					return false;
+				}
+				Value.emplace(buffer);
+			}
+
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::set<_Kty, _Pr>& Value) const
+		{
+			Stm.Save(Value.size());
+
+			for (const auto& item : Value)
+			{
+				if (!Savegame::WritePhobosStream(Stm, item))
+					return false;
+			}
+
+			return true;
+		}
+	};
+
+	template <typename _Ty1, typename _Ty2>
+	struct Savegame::PhobosStreamObject<std::pair<_Ty1, _Ty2>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::pair<_Ty1, _Ty2>& Value, bool RegisterForChange) const
+		{
+			if (!Savegame::ReadPhobosStream(Stm, Value.first, RegisterForChange)
+				|| !Savegame::ReadPhobosStream(Stm, Value.second, RegisterForChange))
+			{
+				return false;
+			}
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::pair<_Ty1, _Ty2>& Value) const
+		{
+			if (!Savegame::WritePhobosStream(Stm, Value.first)
+				|| !Savegame::WritePhobosStream(Stm, Value.second))
+			{
+				return false;
+			}
+			return true;
+		}
+	};
+
+	template <typename TKey, typename TValue, typename Cmp>
+	struct Savegame::PhobosStreamObject<std::map<TKey, TValue, Cmp>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::map<TKey, TValue, Cmp>& Value, bool RegisterForChange) const
 		{
 			Value.clear();
 
@@ -418,24 +482,80 @@ namespace Savegame
 
 			for (auto ix = 0u; ix < Count; ++ix)
 			{
-				std::pair<TKey, TValue> buffer;
-				if (!Savegame::ReadPhobosStream(Stm, buffer, RegisterForChange))
-				{
+				TKey key = TKey();
+
+				if (!Savegame::ReadPhobosStream(Stm, key, false))
 					return false;
-				}
-				Value.insert(buffer);
+
+				Value.emplace(key, TValue());
+				auto it = Value.end();
+				--it;
+
+				if (!Savegame::ReadPhobosStream(Stm, it->second, RegisterForChange))
+					return false;
 			}
 
 			return true;
 		}
 
-		bool WriteToStream(PhobosStreamWriter& Stm, const std::map<TKey, TValue>& Value) const
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::map<TKey, TValue, Cmp>& Value) const
 		{
 			Stm.Save(Value.size());
 
 			for (const auto& item : Value)
 			{
-				if (!Savegame::WritePhobosStream(Stm, item))
+				if (!Savegame::WritePhobosStream(Stm, item.first)
+					|| !Savegame::WritePhobosStream(Stm, item.second))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+	};
+
+	template <typename TKey, typename TValue, typename Cmp>
+	struct Savegame::PhobosStreamObject<std::multimap<TKey, TValue, Cmp>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::multimap<TKey, TValue, Cmp>& Value, bool RegisterForChange) const
+		{
+			Value.clear();
+
+			size_t Count = 0;
+			if (!Stm.Load(Count))
+			{
+				return false;
+			}
+
+			for (auto ix = 0u; ix < Count; ++ix)
+			{
+				TKey key = TKey();
+
+				if (!Savegame::ReadPhobosStream(Stm, key, false))
+					return false;
+
+				Value.emplace(key, TValue());
+				auto it = Value.end();
+				--it;
+
+				if (!Savegame::ReadPhobosStream(Stm, it->second, RegisterForChange))
+					return false;
+			}
+
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::multimap<TKey, TValue, Cmp>& Value) const
+		{
+			// use pointer as key of map is unswizzleable
+			is_pointer(typename std::is_pointer<TKey>::type());
+
+			Stm.Save(Value.size());
+
+			for (const auto& item : Value)
+			{
+				if (!Savegame::WritePhobosStream(Stm, item.first)
+					|| !Savegame::WritePhobosStream(Stm, item.second))
 				{
 					return false;
 				}
