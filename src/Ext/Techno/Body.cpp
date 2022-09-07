@@ -1045,6 +1045,58 @@ WeaponTypeClass* TechnoExt::GetDeployFireWeapon(TechnoClass* pThis, int& weaponI
 	return pWeapon;
 }
 
+// Compares two weapons and returns index of which one is eligible to fire against current target (0 = first, 1 = second), or -1 if neither works.
+int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback)
+{
+	CellClass* targetCell = nullptr;
+
+	// Ignore target cell for airborne target technos.
+	if (!pTargetTechno || !pTargetTechno->IsInAir())
+	{
+		if (const auto pCell = abstract_cast<CellClass*>(pTarget))
+			targetCell = pCell;
+		else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
+			targetCell = pObject->GetCell();
+	}
+
+	const auto pWeaponStructOne = pThis->GetWeapon(weaponIndexOne);
+	const auto pWeaponStructTwo = pThis->GetWeapon(weaponIndexTwo);
+
+	if (!pWeaponStructOne && !pWeaponStructTwo)
+		return -1;
+	else if (!pWeaponStructTwo)
+		return weaponIndexOne;
+	else if (!pWeaponStructOne)
+		return weaponIndexTwo;
+
+	const auto pWeaponOne = pWeaponStructOne->WeaponType;
+	const auto pWeaponTwo = pWeaponStructTwo->WeaponType;
+
+	if (const auto pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo))
+	{
+		if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pSecondExt->CanTarget, true)) ||
+			(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget) ||
+				!EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
+		{
+			return weaponIndexOne;
+		}
+		else if (const auto pFirstExt = WeaponTypeExt::ExtMap.Find(pWeaponOne))
+		{
+			if (!allowFallback && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1))
+				return weaponIndexOne;
+
+			if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pFirstExt->CanTarget, true)) ||
+				(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget) ||
+					!EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
+			{
+				return weaponIndexTwo;
+			}
+		}
+	}
+
+	return -1;
+}
+
 // =============================
 // load / save
 

@@ -107,50 +107,14 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, OriginalCheck = 0x6F36E3 };
 
-	CellClass* pTargetCell = nullptr;
-	TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
-
-	if (pTarget)
-	{
-		if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-		{
-			pTargetCell = pCell;
-		}
-		else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
-		{
-			// Ignore target cell for technos that are in air.
-			if ((pTargetTechno && !pTargetTechno->IsInAir()) || pObject != pTargetTechno)
-				pTargetCell = pObject->GetCell();
-		}
-	}
+	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
 
 	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
-		if (const auto pSecondary = pThis->GetWeapon(1))
-		{
-			if (const auto pSecondaryExt = WeaponTypeExt::ExtMap.Find(pSecondary->WeaponType))
-			{
-				if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondaryExt->CanTarget, true)) ||
-					(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondaryExt->CanTarget) ||
-						!EnumFunctions::CanTargetHouse(pSecondaryExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
-				{
-					return Primary;
-				}
+		int weaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, 0, 1, !pTypeExt->NoSecondaryWeaponFallback);
 
-				if (const auto pPrimaryExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(0)->WeaponType))
-				{
-					if (pTypeExt->NoSecondaryWeaponFallback && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1))
-						return Primary;
-
-					if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pPrimaryExt->CanTarget, true)) ||
-						(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pPrimaryExt->CanTarget) ||
-							!EnumFunctions::CanTargetHouse(pPrimaryExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
-					{
-						return Secondary;
-					}
-				}
-			}
-		}
+		if (weaponIndex != -1)
+			return weaponIndex == 1 ? Secondary : Primary;
 
 		if (!pTargetTechno)
 			return Primary;
@@ -176,6 +140,89 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 	}
 
 	return OriginalCheck;
+}
+
+DEFINE_HOOK(0x6F37EB, TechnoClass_WhatWeaponShouldIUse_AntiAir, 0x6)
+{
+	enum { ReturnValue = 0x6F37AF };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass*, pTargetTechno, EBP);
+
+	int returnValue = 0;
+
+	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	{
+		auto pWeapon = pThis->GetWeapon(0)->WeaponType;
+		auto pSecWeapon = pThis->GetWeapon(1)->WeaponType;
+
+		if (pWeapon->Projectile->AA && pTargetTechno && pTargetTechno->IsInAir())
+			returnValue = 0;
+		else if (pSecWeapon->Projectile->AA && pTargetTechno && pTargetTechno->IsInAir())
+			returnValue = 1;
+	}
+
+	R->EAX(returnValue);
+	return ReturnValue;
+}
+
+DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
+{
+	enum { ReturnValue = 0x6F37AF };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass*, pTargetTechno, EBP);
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFS(0x18, -0x4));
+
+	int stage = pThis->CurrentGattlingStage;
+	int primaryIndex = 2 * stage;
+	int secondaryIndex = primaryIndex + 1;
+	int weaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, primaryIndex, secondaryIndex, true);
+	int returnValue = primaryIndex;
+
+	if (weaponIndex != -1)
+	{
+		returnValue = weaponIndex;
+	}
+	else if (pTargetTechno)
+	{
+		auto const pWeapon = pThis->GetWeapon(primaryIndex)->WeaponType;
+		auto const pWeaponSec = pThis->GetWeapon(secondaryIndex)->WeaponType;
+
+		if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
+		{
+			if (const auto pShield = pTargetExt->Shield.get())
+			{
+				if (pShield->IsActive())
+				{
+					if (pWeaponSec)
+					{
+						if (!pShield->CanBeTargeted(pWeapon))
+							returnValue = secondaryIndex;
+					}
+					else
+					{
+						returnValue = primaryIndex;
+					}
+				}
+			}
+		}
+
+		if (pWeapon && GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTargetTechno->GetTechnoType()->Armor) == 0.0)
+		{
+			returnValue = secondaryIndex;
+		}
+		else if (pTargetTechno->IsInAir())
+		{
+			if (pWeapon && pWeapon->Projectile->AA)
+				returnValue = primaryIndex;
+			else if (pWeaponSec && pWeaponSec->Projectile->AA)
+				returnValue = secondaryIndex;
+		}
+	}
+
+	R->EAX(returnValue);
+	return ReturnValue;
 }
 
 DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
