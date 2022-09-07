@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <ScenarioClass.h>
+#include <TerrainClass.h>
 
 #include <Ext/Bullet/Body.h>
 #include <Ext/WarheadType/Body.h>
@@ -239,12 +240,13 @@ DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
 
 DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 {
+	enum { CannotFire = 0x6FCB7E };
+
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
-	enum { CannotFire = 0x6FCB7E };
 
 	if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
 	{
@@ -299,6 +301,37 @@ DEFINE_HOOK(0x6FC587, TechnoClass_CanFire_OpenTopped, 0x6)
 			if (pTransport->Deactivated && !pExt->OpenTopped_AllowFiringIfDeactivated)
 				return DisallowFiring;
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
+{
+	enum { DisallowFiring = 0x6FC86A };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFS(0x20, -0x4));
+
+	const auto pType = pThis->GetTechnoType();
+	auto pCell = abstract_cast<CellClass*>(pTarget);
+
+	if (pCell)
+	{
+		if (pType->NavalTargeting == 6 &&
+			(pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach))
+		{
+			return DisallowFiring;
+		}
+	}
+	else if (const auto pTerrain = abstract_cast<TerrainClass*>(pTarget))
+	{
+		pCell = pTerrain->GetCell();
+
+		if (pType->LandTargeting == 1 && pCell->LandType != LandType::Water && pCell->LandType != LandType::Beach)
+			return DisallowFiring;
+		else if (pType->NavalTargeting == 6 && (pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach))
+			return DisallowFiring;
 	}
 
 	return 0;
