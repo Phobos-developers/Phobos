@@ -302,3 +302,7 @@ ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to [AudioVisual]
 ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [AudioVisual]->ToolTip.Background.Opacity
 ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual]->ToolTip.Background.BlurSize
 ```
+
+```{note}
+The blur effect is resource intensive. Please make sure if you want to enable this effect. Leave it to 0.0 to disable this effect.
+```

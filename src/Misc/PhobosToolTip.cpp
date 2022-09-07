@@ -299,6 +299,7 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 		{
 			if (auto const pData = SideExt::ExtMap.Find(pSide))
 			{
+				// Could this flag be lazy?
 				SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
 
 				pThis->FillRectTrans(pRect,

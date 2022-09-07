@@ -96,9 +96,9 @@ public:
 			, ForbidParallelAIQueues_Navy { false }
 			, ForbidParallelAIQueues_Vehicle { false }
 			, IronCurtain_KeptOnDeploy { true }
-			, ToolTip_Background_Color { {0, 0, 0} }
+			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
-			, ToolTip_Background_BlurSize { 0.f }
+			, ToolTip_Background_BlurSize { 0.0f }
 		{ }
 
 		virtual ~ExtData() = default;
