@@ -400,6 +400,10 @@ In `rulesmd.ini`:
 MinimapColor=  ; integer - Red,Green,Blue
 ```
 
+## Trigger
+
+- In a multiplayer map, set trigger owner as '4475'-'4482' is player@A-player@G, if nonexist, trigger will be desotroyed. 
+
 ## Vehicles
 
 ### IsSimpleDeployer vehicle deploy animation / direction customization

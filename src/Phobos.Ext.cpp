@@ -28,6 +28,8 @@
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 
+#include <Misc/TriggerMPOwner.h>
+
 #include <utility>
 
 #pragma region Implementation details
@@ -251,8 +253,9 @@ auto MassActions = MassAction <
 	// New classes
 	ShieldTypeClass,
 	LaserTrailTypeClass,
-	RadTypeClass
+	RadTypeClass,
 	// other classes
+	TriggerMPOwner
 > ();
 
 DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
