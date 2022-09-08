@@ -23,3 +23,5 @@ public:
 			.Success();
 	}
 };
+
+std::map<int, int> TriggerMPOwner::TriggerType_Owner;
