@@ -618,7 +618,7 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 	}
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	IronCurtainEffect ironAffect = pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_ToOrganic);
+	IronCurtainEffect ironAffect = pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics);
 
 	switch (ironAffect)
 	{
@@ -638,7 +638,7 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 			(
 				&pThis->Health,
 				0,
-				pTypeExt->IronCuratin_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillWarhead.Get(RulesClass::Instance->C4Warhead)),
+				pTypeExt->IronCuratin_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillOrganicsWarhead.Get(RulesClass::Instance->C4Warhead)),
 				nullptr,
 				true,
 				false,

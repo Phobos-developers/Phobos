@@ -91,8 +91,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_SelfHeal_Units_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units.Offset");
 	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings.Offset");
 
-	this->IronCurtain_ToOrganic.Read(exINI, sectionCombatDamage, "IronCurtain.ToOrganic");
-	this->IronCurtain_KillWarhead.Read(exINI, sectionCombatDamage, "IronCurtain.KillWarhead");
+	this->IronCurtain_EffectOnOrganics.Read(exINI, sectionCombatDamage, "IronCurtain.EffectOnOrganics");
+	this->IronCurtain_KillOrganicsWarhead.Read(exINI, sectionCombatDamage, "IronCurtain.KillOrganicsWarhead");
 	this->IronCurtain_KeptOnDeploy.Read(exINI, sectionCombatDamage, "IronCurtain.KeptOnDeploy");
 
 	// Section AITargetTypes
@@ -207,8 +207,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_SelfHeal_Infantry_Offset)
 		.Process(this->Pips_SelfHeal_Units_Offset)
 		.Process(this->Pips_SelfHeal_Buildings_Offset)
-		.Process(this->IronCurtain_ToOrganic)
-		.Process(this->IronCurtain_KillWarhead)
+		.Process(this->IronCurtain_EffectOnOrganics)
+		.Process(this->IronCurtain_KillOrganicsWarhead)
 		.Process(this->IronCurtain_KeptOnDeploy)
 		;
 }
