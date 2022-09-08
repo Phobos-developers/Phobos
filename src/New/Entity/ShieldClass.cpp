@@ -12,10 +12,14 @@
 #include <RadarEventClass.h>
 #include <TacticalClass.h>
 
+std::vector<ShieldClass*> ShieldClass::Array;
+
 ShieldClass::ShieldClass() : Techno { nullptr }
 	, HP { 0 }
 	, Timers { }
-{ }
+{
+	ShieldClass::Array.emplace_back(this);
+}
 
 ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTechno }
 	, IdleAnim { nullptr }
@@ -31,12 +35,35 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTech
 	this->UpdateType();
 	SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
 	strcpy(this->TechnoID, this->Techno->get_ID());
+	ShieldClass::Array.emplace_back(this);
+}
+
+ShieldClass::~ShieldClass()
+{
+	auto it = std::find(ShieldClass::Array.begin(), ShieldClass::Array.end(), this);
+	if (it != ShieldClass::Array.end())
+		ShieldClass::Array.erase(it);
 }
 
 void ShieldClass::UpdateType()
 {
 	this->Type = TechnoExt::ExtMap.Find(this->Techno)->CurrentShieldType;
 }
+
+void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
+{
+	if (auto const pAnim = abstract_cast<AnimClass*>(static_cast<AbstractClass*>(ptr)))
+	{
+		for (auto pShield : ShieldClass::Array)
+		{
+			if (pAnim == pShield->IdleAnim)
+				pShield->KillAnim();
+		}
+	}
+}
+
+// =============================
+// load / save
 
 template <typename T>
 bool ShieldClass::Serialize(T& Stm)
@@ -74,6 +101,8 @@ bool ShieldClass::Save(PhobosStreamWriter& Stm) const
 	return const_cast<ShieldClass*>(this)->Serialize(Stm);
 }
 
+// =============================
+//
 // Is used for DeploysInto/UndeploysInto
 void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 {
@@ -214,9 +243,9 @@ void ShieldClass::ResponseAttack()
 		if (pUnit->Type->Harvester)
 		{
 			const auto pos = pUnit->GetDestination(pUnit);
-
+			enum { EVA_OreMinerUnderAttack = 0x824784 };
 			if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, CellClass::Coord2Cell(pos)))
-				VoxClass::Play("EVA_OreMinerUnderAttack");
+				VoxClass::Play((const char*)EVA_OreMinerUnderAttack);
 		}
 	}
 }
@@ -531,12 +560,6 @@ int ShieldClass::GetPercentageAmount(double iStatus)
 		return (int)round(this->Type->Strength * iStatus);
 
 	return (int)trunc(iStatus);
-}
-
-void ShieldClass::InvalidatePointer(void* ptr)
-{
-	if (this->IdleAnim == ptr)
-		this->KillAnim();
 }
 
 void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreakWeapon)
