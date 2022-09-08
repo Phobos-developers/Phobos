@@ -14,7 +14,6 @@ public:
 	class ExtData final : public Extension<AnimClass>
 	{
 	public:
-		AnimTypeExt::ExtData* TypeExtData;
 		short DeathUnitFacing;
 		DirStruct DeathUnitTurretFacing;
 		bool FromDeathUnit;
@@ -22,7 +21,6 @@ public:
 		TechnoClass* Invoker;
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
-			, TypeExtData { nullptr }
 			, DeathUnitFacing { 0 }
 			, DeathUnitTurretFacing {}
 			, FromDeathUnit { false }

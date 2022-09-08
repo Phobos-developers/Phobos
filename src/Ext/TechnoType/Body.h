@@ -251,7 +251,6 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
-		bool IsCountedAsHarvester();
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
