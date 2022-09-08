@@ -12,15 +12,14 @@
 #include <RadarEventClass.h>
 #include <TacticalClass.h>
 
-namespace NewEntities
-{
-	std::vector<ShieldClass*> Shields;
-}
+std::vector<ShieldClass*> ShieldClass::Array;
 
 ShieldClass::ShieldClass() : Techno { nullptr }
 	, HP { 0 }
 	, Timers { }
-{ }
+{
+	ShieldClass::Array.emplace_back(this);
+}
 
 ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTechno }
 	, IdleAnim { nullptr }
@@ -36,14 +35,14 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTech
 	this->UpdateType();
 	SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
 	strcpy(this->TechnoID, this->Techno->get_ID());
-	NewEntities::Shields.emplace_back(this);
+	ShieldClass::Array.emplace_back(this);
 }
 
 ShieldClass::~ShieldClass()
 {
-	auto it = std::find(NewEntities::Shields.begin(), NewEntities::Shields.end(), this);
-	if (it != NewEntities::Shields.end())
-		NewEntities::Shields.erase(it);
+	auto it = std::find(ShieldClass::Array.begin(), ShieldClass::Array.end(), this);
+	if (it != ShieldClass::Array.end())
+		ShieldClass::Array.erase(it);
 }
 
 void ShieldClass::UpdateType()
@@ -55,7 +54,7 @@ void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 {
 	if (auto const pAnim = abstract_cast<AnimClass*>(static_cast<AbstractClass*>(ptr)))
 	{
-		for (auto pShield : NewEntities::Shields)
+		for (auto pShield : ShieldClass::Array)
 		{
 			if (pAnim == pShield->IdleAnim)
 				pShield->KillAnim();
@@ -100,20 +99,6 @@ bool ShieldClass::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 bool ShieldClass::Save(PhobosStreamWriter& Stm) const
 {
 	return const_cast<ShieldClass*>(this)->Serialize(Stm);
-}
-
-bool ShieldClass::LoadGlobals(PhobosStreamReader& Stm)
-{
-	return Stm
-		.Process(NewEntities::Shields)
-		.Success();
-}
-
-bool ShieldClass::SaveGlobals(PhobosStreamWriter& Stm)
-{
-	return Stm
-		.Process(NewEntities::Shields)
-		.Success();
 }
 
 // =============================

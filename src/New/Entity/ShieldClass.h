@@ -15,6 +15,8 @@ public:
 	ShieldClass(TechnoClass* pTechno) : ShieldClass(pTechno, false) {};
 	~ShieldClass();
 
+	static std::vector<ShieldClass*> Array;
+
 	int ReceiveDamage(args_ReceiveDamage* args);
 	bool CanBeTargeted(WeaponTypeClass* pWeapon);
 	bool CanBePenetrated(WarheadTypeClass* pWarhead);
@@ -44,8 +46,6 @@ public:
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
 	static bool ShieldIsBrokenTEvent(ObjectClass* pAttached);
 
-	static bool LoadGlobals(PhobosStreamReader& Stm);
-	static bool SaveGlobals(PhobosStreamWriter& Stm);
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;
 
