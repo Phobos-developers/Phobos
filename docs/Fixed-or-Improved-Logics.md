@@ -402,7 +402,7 @@ MinimapColor=  ; integer - Red,Green,Blue
 
 ## Trigger
 
-- In a multiplayer map, set trigger owner as '4475'-'4482' is player@A-player@G, if nonexist, trigger will be desotroyed. 
+- In a multiplayer map, set trigger owner as '4475'-'4482' is player@A-player@G, if nonexist, trigger will be desotroyed.
 
 ## Vehicles
 
