@@ -1,10 +1,6 @@
 #include "Body.h"
 
-#include <Ext/TAction/Body.h>
-
-#include <HouseClass.h>
-
-DEFINE_HOOK(0x6851AC, LoadGame_Initialize_IonStormClass, 0x5)
+DEFINE_HOOK(0x6851AC, ScenarioClass_LoadGame_Initialize_IonStormClass, 0x5)
 {
 	auto swap_data = []()
 	{
@@ -54,7 +50,7 @@ DEFINE_HOOK(0x6851AC, LoadGame_Initialize_IonStormClass, 0x5)
 			false);
 	}
 
-	TActionExt::RecreateLightSources();
+	ScenarioExt::RecreateLightSources();
 	ScenarioClass::UpdateCellLighting();
 
 	HouseClass::Player->RecheckRadar = true;

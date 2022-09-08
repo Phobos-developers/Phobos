@@ -1,5 +1,7 @@
 #include "Body.h"
-
+#include <BuildingClass.h>
+#include <RadSiteClass.h>
+#include <LightSourceClass.h>
 #include <SessionClass.h>
 
 template<> const DWORD Extension<ScenarioClass>::Canary = 0xABCD1595;
@@ -55,6 +57,53 @@ void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
 				var.Value = atoi(pState);
 			else
 				var.Value = 0;
+		}
+	}
+}
+
+void ScenarioExt::RecreateLightSources()
+{
+	for (auto pBld : *BuildingClass::Array)
+	{
+		if (pBld->LightSource)
+		{
+			bool wasActivated = pBld->LightSource->Activated;
+
+			GameDelete(pBld->LightSource);
+			if (pBld->Type->LightIntensity)
+			{
+				TintStruct color { pBld->Type->LightRedTint, pBld->Type->LightGreenTint, pBld->Type->LightBlueTint };
+
+				pBld->LightSource = GameCreate<LightSourceClass>(pBld->GetCoords(),
+					pBld->Type->LightVisibility, pBld->Type->LightIntensity, color);
+
+				if (wasActivated)
+					pBld->LightSource->Activate();
+				else
+					pBld->LightSource->Deactivate();
+			}
+		}
+	}
+
+	for (auto pRadSite : *RadSiteClass::Array)
+	{
+		if (pRadSite->LightSource)
+		{
+			auto coord = pRadSite->LightSource->Location;
+			auto color = pRadSite->LightSource->LightTint;
+			auto intensity = pRadSite->LightSource->LightIntensity;
+			auto visibility = pRadSite->LightSource->LightVisibility;
+
+			bool wasActivated = pRadSite->LightSource->Activated;
+			GameDelete(pRadSite->LightSource);
+
+			pRadSite->LightSource = GameCreate<LightSourceClass>(coord,
+				visibility, intensity, color);
+
+			if (wasActivated)
+				pRadSite->LightSource->Activate();
+			else
+				pRadSite->LightSource->Deactivate();
 		}
 	}
 }

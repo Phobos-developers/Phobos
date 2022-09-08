@@ -40,53 +40,6 @@ void TActionExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-void TActionExt::RecreateLightSources()
-{
-	for (auto pBld : *BuildingClass::Array)
-	{
-		if (pBld->LightSource)
-		{
-			bool activated = pBld->LightSource->Activated;
-
-			GameDelete(pBld->LightSource);
-			if (pBld->Type->LightIntensity)
-			{
-				TintStruct color { pBld->Type->LightRedTint, pBld->Type->LightGreenTint, pBld->Type->LightBlueTint };
-
-				pBld->LightSource = GameCreate<LightSourceClass>(pBld->GetCoords(),
-					pBld->Type->LightVisibility, pBld->Type->LightIntensity, color);
-
-				if (activated)
-					pBld->LightSource->Activate();
-				else
-					pBld->LightSource->Deactivate();
-			}
-		}
-	}
-
-	for (auto pRadSite : *RadSiteClass::Array)
-	{
-		if (pRadSite->LightSource)
-		{
-			auto coord = pRadSite->LightSource->Location;
-			auto color = pRadSite->LightSource->LightTint;
-			auto intensity = pRadSite->LightSource->LightIntensity;
-			auto visibility = pRadSite->LightSource->LightVisibility;
-			bool activated = pRadSite->LightSource->Activated;
-
-			GameDelete(pRadSite->LightSource);
-
-			pRadSite->LightSource = GameCreate<LightSourceClass>(coord,
-				visibility, intensity, color);
-
-			if (activated)
-				pRadSite->LightSource->Activate();
-			else
-				pRadSite->LightSource->Deactivate();
-		}
-	}
-}
-
 bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject,
 	TriggerClass* pTrigger, CellStruct const& location, bool& bHandled)
 {
@@ -311,6 +264,48 @@ bool TActionExt::BinaryOperation(TActionClass* pThis, HouseClass* pHouse, Object
 		else
 			TagClass::NotifyGlobalChanged(pThis->Value);
 	}
+	return true;
+}
+
+bool TActionExt::AdjustLighting(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (pThis->Param3 != -1)
+		ScenarioClass::Instance->NormalLighting.Tint.Red = pThis->Param3;
+	if (pThis->Param4 != -1)
+		ScenarioClass::Instance->NormalLighting.Tint.Green = pThis->Param4;
+	if (pThis->Param5 != -1)
+		ScenarioClass::Instance->NormalLighting.Tint.Blue = pThis->Param5;
+
+	const int r = ScenarioClass::Instance->NormalLighting.Tint.Red * 10;
+	const int g = ScenarioClass::Instance->NormalLighting.Tint.Green * 10;
+	const int b = ScenarioClass::Instance->NormalLighting.Tint.Blue * 10;
+
+	if (pThis->Value & 0b001) // Update Tiles
+	{
+		for (auto& pLightConvert : *LightConvertClass::Array)
+			pLightConvert->UpdateColors(r, g, b, false);
+		ScenarioExt::Global()->CurrentTint_Tiles = ScenarioClass::Instance->NormalLighting.Tint;
+	}
+
+	if (pThis->Value & 0b010) // Update Units & Buildings
+	{
+		for (auto& pScheme : *ColorScheme::Array)
+			pScheme->LightConvert->UpdateColors(r, g, b, false);
+		ScenarioExt::Global()->CurrentTint_Schemes = ScenarioClass::Instance->NormalLighting.Tint;
+	}
+
+	if (pThis->Value & 0b100) // Update CustomPalettes (vanilla YR LightConvertClass one, not the Ares ConvertClass only one)
+	{
+		ScenarioClass::UpdateHashPalLighting(r, g, b, false);
+		ScenarioExt::Global()->CurrentTint_Hashes = ScenarioClass::Instance->NormalLighting.Tint;
+	}
+
+	ScenarioClass::UpdateCellLighting();
+	MapClass::Instance->RedrawSidebar(1); // GScreenClass::Flag_To_Redraw
+
+	// #issue 429
+	ScenarioExt::RecreateLightSources();
+
 	return true;
 }
 

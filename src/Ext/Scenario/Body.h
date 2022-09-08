@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ScenarioClass.h>
-
+#include <HouseClass.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -68,6 +68,8 @@ public:
 	static IStream* g_pStm;
 
 	static bool CellParsed;
+
+	static void RecreateLightSources();
 
 	static void Allocate(ScenarioClass* pThis);
 	static void Remove(ScenarioClass* pThis);
