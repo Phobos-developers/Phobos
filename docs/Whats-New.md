@@ -379,6 +379,7 @@ Phobos fixes:
 - Fixed issue with incorrect input in edit dialog element when using IME (by Belonit)
 - Fixed an issue where tooltip text could be clipped by tooltip rectangle border if using `MaxWidth` > 0 (by Starkku)
 - Fixed projectiles with `Trajectory=Straight` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true` (by Starkku)
+- Minor performance optimization related to shields (by Trsdy)
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)
