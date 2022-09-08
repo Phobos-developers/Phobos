@@ -147,23 +147,16 @@ DEFINE_HOOK(0x6F37EB, TechnoClass_WhatWeaponShouldIUse_AntiAir, 0x6)
 {
 	enum { ReturnValue = 0x6F37AF };
 
-	GET(TechnoClass*, pThis, ESI);
 	GET(TechnoClass*, pTargetTechno, EBP);
+	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFS(0x18, 0x4));
+	GET(WeaponTypeClass*, pSecWeapon, EAX);
 
-	int returnValue = 0;
+	int weaponIndex = 0;
 
-	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-	{
-		auto pWeapon = pThis->GetWeapon(0)->WeaponType;
-		auto pSecWeapon = pThis->GetWeapon(1)->WeaponType;
+	if (!pWeapon->Projectile->AA && pSecWeapon->Projectile->AA && pTargetTechno && pTargetTechno->IsInAir())
+		weaponIndex = 1;
 
-		if (pWeapon->Projectile->AA && pTargetTechno && pTargetTechno->IsInAir())
-			returnValue = 0;
-		else if (pSecWeapon->Projectile->AA && pTargetTechno && pTargetTechno->IsInAir())
-			returnValue = 1;
-	}
-
-	R->EAX(returnValue);
+	R->EAX(weaponIndex);
 	return ReturnValue;
 }
 
@@ -175,54 +168,43 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 	GET(TechnoClass*, pTargetTechno, EBP);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFS(0x18, -0x4));
 
-	int stage = pThis->CurrentGattlingStage;
-	int primaryIndex = 2 * stage;
+	int primaryIndex = 2 * pThis->CurrentGattlingStage;
 	int secondaryIndex = primaryIndex + 1;
-	int weaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, primaryIndex, secondaryIndex, true);
-	int returnValue = primaryIndex;
+	int pickedWeaponIdx = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, primaryIndex, secondaryIndex, true);
+	int weaponIndex = primaryIndex;
 
-	if (weaponIndex != -1)
+	if (pickedWeaponIdx != -1)
 	{
-		returnValue = weaponIndex;
+		weaponIndex = pickedWeaponIdx;
 	}
 	else if (pTargetTechno)
 	{
 		auto const pWeapon = pThis->GetWeapon(primaryIndex)->WeaponType;
 		auto const pWeaponSec = pThis->GetWeapon(secondaryIndex)->WeaponType;
+		bool skipRemainingChecks = false;
 
 		if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
 		{
 			if (const auto pShield = pTargetExt->Shield.get())
 			{
-				if (pShield->IsActive())
+				if (pShield->IsActive() && !pShield->CanBeTargeted(pWeapon))
 				{
-					if (pWeaponSec)
-					{
-						if (!pShield->CanBeTargeted(pWeapon))
-							returnValue = secondaryIndex;
-					}
-					else
-					{
-						returnValue = primaryIndex;
-					}
+					weaponIndex = secondaryIndex;
+					skipRemainingChecks = true;
 				}
 			}
 		}
 
-		if (pWeapon && GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTargetTechno->GetTechnoType()->Armor) == 0.0)
+		if (!skipRemainingChecks)
 		{
-			returnValue = secondaryIndex;
-		}
-		else if (pTargetTechno->IsInAir())
-		{
-			if (pWeapon && pWeapon->Projectile->AA)
-				returnValue = primaryIndex;
-			else if (pWeaponSec && pWeaponSec->Projectile->AA)
-				returnValue = secondaryIndex;
+			if (GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTargetTechno->GetTechnoType()->Armor) == 0.0)
+				weaponIndex = secondaryIndex;
+			else if (pTargetTechno->IsInAir() && !pWeapon->Projectile->AA && pWeaponSec->Projectile->AA)
+				weaponIndex = secondaryIndex;
 		}
 	}
 
-	R->EAX(returnValue);
+	R->EAX(weaponIndex);
 	return ReturnValue;
 }
 
