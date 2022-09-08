@@ -14,7 +14,7 @@
 
 namespace NewEntities
 {
-	ValueableVector<ShieldClass*> Shields;
+	std::vector<ShieldClass*> Shields;
 }
 
 ShieldClass::ShieldClass() : Techno { nullptr }
@@ -258,9 +258,9 @@ void ShieldClass::ResponseAttack()
 		if (pUnit->Type->Harvester)
 		{
 			const auto pos = pUnit->GetDestination(pUnit);
-
+			enum { EVA_OreMinerUnderAttack = 0x824784 };
 			if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, CellClass::Coord2Cell(pos)))
-				VoxClass::Play("EVA_OreMinerUnderAttack");
+				VoxClass::Play((const char*)EVA_OreMinerUnderAttack);
 		}
 	}
 }
