@@ -390,3 +390,66 @@ DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x6F858F, TechnoClass_CanAutoTarget_BuildingOut1, 0x6)
+{
+	GET(TechnoClass*, pThis, EDI);
+	GET(TechnoClass*, pTarget, ESI);
+
+	enum { CannotTarget = 0x6F85F8, NextIf = 0x6F860C, FarIf = 0x6F866D };
+
+	if (FootClass* pFoot = abstract_cast<FootClass*>(pThis))
+	{
+		if (pFoot->Team != nullptr
+			|| !pFoot->Owner->ControlledByHuman()
+			|| pTarget->IsStrange()
+			|| pTarget->WhatAmI() != AbstractType::Building
+			|| pTarget->GetTurretWeapon() && pTarget->GetTurretWeapon()->WeaponType != nullptr && pTarget->GetThreatValue())
+		{
+			//game code
+			if (!pThis->IsEngineer())
+				return FarIf;
+
+			return NextIf;
+		}
+		else
+		{
+			if (!pThis->IsEngineer())
+			{
+				//dehardcode
+				if (pTarget->WhatAmI() == AbstractType::Building && pTarget->GetThreatValue())
+				{
+					return FarIf;
+				}
+
+				return CannotTarget;
+			}
+
+			return NextIf;
+		}
+	}
+
+	return NextIf;
+}
+
+DEFINE_HOOK(0x6F889B, TechnoClass_CanAutoTarget_BuildingOut2, 0xA)
+{
+	GET(TechnoClass*, pTarget, ESI);
+
+	enum { CannotTarget = 0x6F894F, GameCode = 0x6F88BF };
+
+	if (pTarget->WhatAmI() != AbstractType::Building)
+		return CannotTarget;
+
+	WeaponStruct* pWeapon = pTarget->GetTurretWeapon();
+
+	if (pWeapon == nullptr || pWeapon->WeaponType == nullptr)
+	{
+		if (pTarget->GetThreatValue())
+			return GameCode;
+
+		return CannotTarget;
+	}
+
+	return GameCode;
+}
