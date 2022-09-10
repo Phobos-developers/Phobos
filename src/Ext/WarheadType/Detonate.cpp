@@ -295,22 +295,24 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 	{
 		if (auto const pBullet = specific_cast<BulletClass*>(pOwner->Target))
 		{
-			auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+			auto const pExt = BulletExt::ExtMap.Find(pBullet);
+			auto const pTypeExt = pExt->TypeExtData;
 
 			// 1/8th of a cell as a margin of error.
-			if (pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= Unsorted::LeptonsPerCell / 8.0)
-				BulletExt::InterceptBullet(pBullet, pOwner, pWeapon);
+			if (pTypeExt && pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= Unsorted::LeptonsPerCell / 8.0)
+				pExt->InterceptBullet(pOwner, pWeapon);
 		}
 	}
 	else
 	{
 		for (auto const& pBullet : *BulletClass::Array)
 		{
-			auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+			auto const pExt = BulletExt::ExtMap.Find(pBullet);
+			auto const pTypeExt = pExt->TypeExtData;
 
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
-			if (pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= cellSpread * Unsorted::LeptonsPerCell)
-				BulletExt::InterceptBullet(pBullet, pOwner, pWeapon);
+			if (pTypeExt && pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= cellSpread * Unsorted::LeptonsPerCell)
+				pExt->InterceptBullet(pOwner, pWeapon);
 		}
 	}
 }

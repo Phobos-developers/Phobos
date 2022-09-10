@@ -15,30 +15,34 @@ This page describes all the engine features that are either new and introduced b
   - `RadSiteWarhead.Detonate` can be set to make `RadSiteWarhead` detonate on affected objects rather than only be used to dealt direct damage. This enables most Warhead effects, display of animations etc.
   - `RadHasOwner`, if set to true, makes damage dealt by the radiation count as having been dealt by the house that fired the projectile that created the radiation field. This means that Warhead controls such as `AffectsAllies` will be respected and any units killed will count towards that player's destroyed units count.
   - `RadHasInvoker`, if set to true, makes the damage dealt by the radiation count as having been dealt by the TechnoType (the 'invoker') that fired the projectile that created the radiation field. In addition to the effects of `RadHasOwner`, this will also grant experience from units killed by the radiation to the invoker. Note that if the invoker dies at any point during the radiation's lifetime it continues to behave as if not having an invoker.
+- By default `UseGlobalRadApplicationDelay` is set to true. This makes game always use `RadApplicationDelay` and `RadApplicationDelay.Building` from `[Radiation]` rather than specific radiation types. This is a performance-optimizing measure that should be disabled if a radiation type declares different application delay.
 
 In `rulesmd.ini`:
 ```ini
 [RadiationTypes]
 0=SOMERADTYPE
 
-[SOMEWEAPON]                    ; WeaponType
-RadType=Radiation               ; RadType to use instead of default of [Radiation]
+[Radiation]
+UseGlobalRadApplicationDelay=true  ; boolean
 
-[SOMERADTYPE]                   ; RadType
-RadDurationMultiple=1           ; integer
-RadApplicationDelay=16          ; integer
-RadApplicationDelay.Building=0  ; integer
-RadLevelMax=500                 ; integer
-RadLevelDelay=90                ; integer
-RadLightDelay=90                ; integer
-RadLevelFactor=0.2              ; floating point value
-RadLightFactor=0.1              ; floating point value
-RadTintFactor=1.0               ; floating point value
-RadColor=0,255,0                ; integer - Red,Green,Blue
-RadSiteWarhead=RadSite          ; WarheadType
-RadSiteWarhead.Detonate=false   ; boolean
-RadHasOwner=false               ; boolean
-RadHasInvoker=false             ; boolean
+[SOMEWEAPON]                       ; WeaponType
+RadType=Radiation                  ; RadType to use instead of default of [Radiation]
+
+[SOMERADTYPE]                      ; RadType
+RadDurationMultiple=1              ; integer
+RadApplicationDelay=16             ; integer
+RadApplicationDelay.Building=0     ; integer
+RadLevelMax=500                    ; integer
+RadLevelDelay=90                   ; integer
+RadLightDelay=90                   ; integer
+RadLevelFactor=0.2                 ; floating point value
+RadLightFactor=0.1                 ; floating point value
+RadTintFactor=1.0                  ; floating point value
+RadColor=0,255,0                   ; integer - Red,Green,Blue
+RadSiteWarhead=RadSite             ; WarheadType
+RadSiteWarhead.Detonate=false      ; boolean
+RadHasOwner=false                  ; boolean
+RadHasInvoker=false                ; boolean
 ```
 
 ### Laser Trails
@@ -131,6 +135,7 @@ BreakWeapon=                         ; WeaponType
 AbsorbPercent=1.0                    ; floating point value
 PassPercent=0.0                      ; floating point value
 AllowTransfer=                       ; boolean
+ImmuneToBerserk=no                   ; boolean
 
 [SOMETECHNO]                         ; TechnoType
 ShieldType=SOMESHIELDTYPE            ; ShieldType; none by default
@@ -183,6 +188,7 @@ Shield.InheritStateOnReplace=false   ; boolean
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
 - `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
+- `ImmuneToBerserk` gives the immunity against `Psychedelic=yes` warhead. Otherwise the berserk effect penetrates shields by default. Note that this shouldn't prevent the unit from targeting at the shielded object. `Versus.shieldArmor=0%` is still required in this case.
 - A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable. Several customizations are available for the shield strength pips.
   - By default, buildings use the 6th frame of `pips.shp` to display the shield strength while others use the 17th frame.
   - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit is set, then it will always display that frame, or if 3 digits are set, it will use those if shield's current strength is at or below `ConditionYellow` and `ConditionRed`, respectively. `Pips.Shield.Building` is used for BuildingTypes. -1 as value will use the default frame, whether it is fallback to first value or the aforementioned hardcoded defaults.
@@ -595,7 +601,7 @@ InitialStrength.Cloning=  ; single double/percentage or comma-sep. range
 
 If this option is not set, the self-destruction logic will not be enabled.
 ```{note}
-Please notice that if the object is a unit which carries passengers, they will not be released even with the kill option. This might change in the future if necessary.
+Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option. This might change in the future if necessary.
 
 If the object enters transport, the countdown will continue, but it will not self-destruct inside the transport.
 ```
@@ -794,7 +800,7 @@ SplashList.PickRandom=false  ; boolean
 
 ### Detonate Warhead on all objects on map
 
-- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is fully detonated (and not just used to deal damage) and consequently any `Airburst/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
+- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `Airburst/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
   - `DetonateOnAllMapObjects.AffectTargets` can be used to filter which types of targets (TechnoTypes) are considered valid. Only `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values.
   - `DetonateOnAllMapObjects.AffectHouses` can be used to filter which houses targets can belong to be considered valid. Only applicable if the house that fired the projectile is known.
   - `DetonateOnAllMapObjects.AffectTypes` can be used to list specific TechnoTypes to be considered as valid targets. If any valid TechnoTypes are listed, then only matching objects will be targeted. Note that `DetonateOnAllMapObjects.AffectTargets` and `DetonateOnAllMapObjects.AffectHouses` take priority over this setting.

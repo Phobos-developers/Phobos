@@ -264,6 +264,19 @@ DEFINE_HOOK(0x478F77, CCToolTip_Draw2_SetY, 0x6)
 	return 0;
 }
 
+// If tooltip rectangle width is constrained, make sure
+// there is a padding zone so text isn't drawn into border
+DEFINE_HOOK(0x479029, CCToolTip_Draw2_SetPadding, 0x5)
+{
+	if (PhobosToolTip::Instance.IsCameo)
+	{
+		if (Phobos::UI::MaxToolTipWidth > 0)
+			R->EDX(R->EDX() - 5);
+	}
+
+	return 0;
+}
+
 // TODO in the future
 //
 //DEFINE_HOOK(0x478E30, CCToolTip_Draw2, 0x7)

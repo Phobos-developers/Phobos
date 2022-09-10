@@ -19,6 +19,7 @@ public:
 	class ExtData final : public Extension<TechnoClass>
 	{
 	public:
+		TechnoTypeExt::ExtData* TypeExtData;
 		std::unique_ptr<ShieldClass> Shield;
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		bool ReceiveDamage;
@@ -37,6 +38,7 @@ public:
 		HouseClass* OriginalPassengerOwner;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
+			, TypeExtData { nullptr }
 			, Shield {}
 			, LaserTrails {}
 			, ReceiveDamage { false }
@@ -52,13 +54,16 @@ public:
 			, CurrentLaserWeaponIndex {}
 		{ }
 
+		void ApplyInterceptor();
+		void CheckDeathConditions();
+		void EatPassengers();
+		void UpdateShield();
+		void ApplyPoweredKillSpawns();
+		void ApplySpawnLimitRange();
+
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-			if (auto const pShield = this->Shield.get())
-				pShield->InvalidatePointer(ptr);
-		}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -73,18 +78,6 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
-		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-			switch (abs)
-			{
-			case AbstractType::Anim:
-				return false;
-			default:
-				return true;
-			}
-		}
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 	};
@@ -109,14 +102,8 @@ public:
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
-
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
-	static void ApplyInterceptor(TechnoClass* pThis);
-	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
-	static void ApplySpawn_LimitRange(TechnoClass* pThis);
-	static void CheckDeathConditions(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
-	static void EatPassengers(TechnoClass* pThis);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);

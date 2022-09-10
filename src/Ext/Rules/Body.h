@@ -26,10 +26,12 @@ public:
 	public:
 		DynamicVectorClass<DynamicVectorClass<TechnoTypeClass*>> AITargetTypesLists;
 		DynamicVectorClass<DynamicVectorClass<ScriptTypeClass*>> AIScriptsLists;
+		DynamicVectorClass<TechnoTypeClass*> HarvesterTypes;
 
 		Valueable<int> Storage_TiberiumIndex;
 		Nullable<int> InfantryGainSelfHealCap;
 		Nullable<int> UnitsGainSelfHealCap;
+		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<bool> RadWarhead_Detonate;
 		Valueable<bool> RadHasOwner;
@@ -58,6 +60,7 @@ public:
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
 			, UnitsGainSelfHealCap {}
+			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
 			, RadWarhead_Detonate { false }
 			, RadHasOwner { false }

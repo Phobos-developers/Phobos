@@ -2,11 +2,30 @@
 
 #include <BulletClass.h>
 #include <UnitClass.h>
-#include <BitFont.h>
-#include <Misc/FlyingStrings.h>
-#include <Ext/House/Body.h>
 
+#include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
+
+
+DEFINE_HOOK(0x43FB29, BuildingClass_AI, 0x8)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	// Do not search this up again in any functions called here because it is costly for performance - Starkku
+	auto pExt = BuildingExt::ExtMap.Find(pThis);
+
+	/*
+	// Set only if unset or type has changed - Not currently useful as building type does not change.
+	auto pType = pThis->Type;
+
+	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
+		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pType);
+	*/
+
+	pExt->DisplayGrinderRefund();
+
+	return 0;
+}
 
 DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
 {
@@ -83,41 +102,6 @@ DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPPulseBulletWeapon, 0x8)
 	GET_STACK(BulletClass*, pBullet, STACK_OFFS(0xF0, 0xA4));
 
 	pBullet->SetWeaponType(pWeapon);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x43FE73, BuildingClass_AI_FlyingStrings, 0x6)
-{
-	GET(BuildingClass*, pThis, ESI);
-
-	if (auto const pExt = BuildingExt::ExtMap.Find(pThis))
-	{
-		if (Unsorted::CurrentFrame % 15 == 0 && pExt->AccumulatedGrindingRefund)
-		{
-			auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
-
-			int refundAmount = pExt->AccumulatedGrindingRefund;
-			bool isPositive = refundAmount > 0;
-			auto color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
-			wchar_t moneyStr[0x20];
-			swprintf_s(moneyStr, L"%ls%ls%d", isPositive ? L"+" : L"-", Phobos::UI::CostLabel, std::abs(refundAmount));
-
-			auto coords = CoordStruct::Empty;
-			coords = *pThis->GetCenterCoord(&coords);
-
-			int width = 0, height = 0;
-			BitFont::Instance->GetTextDimension(moneyStr, &width, &height, 120);
-
-			Point2D pixelOffset = Point2D::Empty;
-			pixelOffset += pTypeExt->Grinding_DisplayRefund_Offset;
-			pixelOffset.X -= width / 2;
-
-			FlyingStrings::Add(moneyStr, coords, color, pixelOffset);
-
-			pExt->AccumulatedGrindingRefund = 0;
-		}
-	}
 
 	return 0;
 }

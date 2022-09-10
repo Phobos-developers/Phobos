@@ -21,6 +21,7 @@ public:
 	class ExtData final : public Extension<BuildingClass>
 	{
 	public:
+		BuildingTypeExt::ExtData* TypeExtData;
 		bool DeployedTechno;
 		int LimboID;
 		int GrindingWeapon_LastFiredFrame;
@@ -28,12 +29,15 @@ public:
 		int AccumulatedGrindingRefund;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
+			, TypeExtData { nullptr }
 			, DeployedTechno { false }
 			, LimboID { -1 }
 			, GrindingWeapon_LastFiredFrame { 0 }
 			, CurrentAirFactory { nullptr }
 			, AccumulatedGrindingRefund { 0 }
 		{ }
+
+		void DisplayGrinderRefund();
 
 		virtual ~ExtData() = default;
 
