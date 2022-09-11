@@ -145,19 +145,16 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 DEFINE_HOOK(0x6F37EB, TechnoClass_WhatWeaponShouldIUse_AntiAir, 0x6)
 {
-	enum { ReturnValue = 0x6F37AF };
+	enum { Primary = 0x6F37AD, Secondary = 0x6F3807 };
 
 	GET(TechnoClass*, pTargetTechno, EBP);
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFS(0x18, 0x4));
 	GET(WeaponTypeClass*, pSecWeapon, EAX);
 
-	int weaponIndex = 0;
-
 	if (!pWeapon->Projectile->AA && pSecWeapon->Projectile->AA && pTargetTechno && pTargetTechno->IsInAir())
-		weaponIndex = 1;
+		return Secondary;
 
-	R->EAX(weaponIndex);
-	return ReturnValue;
+	return Primary;
 }
 
 DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
@@ -168,28 +165,28 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 	GET(TechnoClass*, pTargetTechno, EBP);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFS(0x18, -0x4));
 
-	int primaryIndex = 2 * pThis->CurrentGattlingStage;
-	int secondaryIndex = primaryIndex + 1;
-	int pickedWeaponIdx = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, primaryIndex, secondaryIndex, true);
-	int weaponIndex = primaryIndex;
+	int oddWeaponIndex = 2 * pThis->CurrentGattlingStage;
+	int evenWeaponIndex = oddWeaponIndex + 1;
+	int chosenWeaponIndex = oddWeaponIndex;
+	int eligibleWeaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, oddWeaponIndex, evenWeaponIndex, true);
 
-	if (pickedWeaponIdx != -1)
+	if (eligibleWeaponIndex != -1)
 	{
-		weaponIndex = pickedWeaponIdx;
+		chosenWeaponIndex = eligibleWeaponIndex;
 	}
 	else if (pTargetTechno)
 	{
-		auto const pWeapon = pThis->GetWeapon(primaryIndex)->WeaponType;
-		auto const pWeaponSec = pThis->GetWeapon(secondaryIndex)->WeaponType;
+		auto const pWeaponOdd = pThis->GetWeapon(oddWeaponIndex)->WeaponType;
+		auto const pWeaponEven = pThis->GetWeapon(evenWeaponIndex)->WeaponType;
 		bool skipRemainingChecks = false;
 
 		if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
 		{
 			if (const auto pShield = pTargetExt->Shield.get())
 			{
-				if (pShield->IsActive() && !pShield->CanBeTargeted(pWeapon))
+				if (pShield->IsActive() && !pShield->CanBeTargeted(pWeaponOdd))
 				{
-					weaponIndex = secondaryIndex;
+					chosenWeaponIndex = evenWeaponIndex;
 					skipRemainingChecks = true;
 				}
 			}
@@ -197,14 +194,32 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 
 		if (!skipRemainingChecks)
 		{
-			if (GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTargetTechno->GetTechnoType()->Armor) == 0.0)
-				weaponIndex = secondaryIndex;
-			else if (pTargetTechno->IsInAir() && !pWeapon->Projectile->AA && pWeaponSec->Projectile->AA)
-				weaponIndex = secondaryIndex;
+			if (GeneralUtils::GetWarheadVersusArmor(pWeaponOdd->Warhead, pTargetTechno->GetTechnoType()->Armor) == 0.0)
+			{
+				chosenWeaponIndex = evenWeaponIndex;
+			}
+			else
+			{
+				auto pCell = pTargetTechno->GetCell();
+				bool isOnWater = (pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach) && !pTargetTechno->IsInAir();
+
+				if (!pTargetTechno->OnBridge && isOnWater)
+				{
+					int navalTargetWeapon = pThis->SelectNavalTargeting(pTargetTechno);
+
+					if (navalTargetWeapon != -1)
+						chosenWeaponIndex = navalTargetWeapon;
+				}
+				else if ((pTargetTechno->IsInAir() && !pWeaponOdd->Projectile->AA && pWeaponEven->Projectile->AA) ||
+					!pTargetTechno->IsInAir() && pThis->GetTechnoType()->LandTargeting == LandTargetingType::Land_Secondary)
+				{
+					chosenWeaponIndex = evenWeaponIndex;
+				}
+			}
 		}
 	}
 
-	R->EAX(weaponIndex);
+	R->EAX(chosenWeaponIndex);
 	return ReturnValue;
 }
 
@@ -300,7 +315,7 @@ DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
 
 	if (pCell)
 	{
-		if (pType->NavalTargeting == 6 &&
+		if (pType->NavalTargeting == NavalTargetingType::Naval_None &&
 			(pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach))
 		{
 			return DisallowFiring;
@@ -310,10 +325,16 @@ DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
 	{
 		pCell = pTerrain->GetCell();
 
-		if (pType->LandTargeting == 1 && pCell->LandType != LandType::Water && pCell->LandType != LandType::Beach)
+		if (pType->LandTargeting == LandTargetingType::Land_Not_OK &&
+			pCell->LandType != LandType::Water && pCell->LandType != LandType::Beach)
+		{
 			return DisallowFiring;
-		else if (pType->NavalTargeting == 6 && (pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach))
+		}
+		else if (pType->NavalTargeting == NavalTargetingType::Naval_None &&
+			(pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach))
+		{
 			return DisallowFiring;
+		}
 	}
 
 	return 0;
