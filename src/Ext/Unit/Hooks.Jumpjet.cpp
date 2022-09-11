@@ -3,17 +3,49 @@
 
 #include <Ext/TechnoType/Body.h>
 
-DEFINE_HOOK(0x54AEC0, JumpjetLocomotion_Process_TurnToTarget, 0x8)
+DEFINE_HOOK(0x54B8E9, JumpjetLocomotionClass_In_Which_Layer_Deviation, 0x6)
 {
-	GET_STACK(ILocomotion*, iLoco, 0x4);
-	const auto pLoco = static_cast<JumpjetLocomotionClass*>(iLoco);
-	const auto pThis = pLoco->Owner;
-	const auto pType = pThis->GetTechnoType();
-	const auto pTarget = pThis->Target;
+	GET(FootClass* const, pThis, EAX);
 
-	if (pTarget && pThis->IsInAir() && !pType->TurretSpins && pThis->WhatAmI() == AbstractType::Unit)
+	if (pThis->IsInAir())
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		{
+			if (!pExt->JumpjetAllowLayerDeviation.Get(RulesExt::Global()->JumpjetAllowLayerDeviation.Get()))
+			{
+				R->EDX(INT32_MAX); // Override JumpjetHeight / CruiseHeight check so it always results in 3 / Layer::Air.
+				return 0x54B96B;
+			}
+		}
+	}
+
+	return 0;
+}
+
+// I think JumpjetLocomotionClass::State is probably an enum, where
+// 0 - On ground
+// 1 - Taking off from ground
+// 2 - Hovering in air
+// 3 - Moving in air
+// 4 - Deploying to land
+// 5 - Crashing
+// 6 - Invalid?
+
+// Bugfix: Jumpjet turn to target when attacking
+// Even though it's still not the best place to do this, given that 0x54BF5B has done the similar action, I'll do it here too
+DEFINE_HOOK(0x54BD93, JumpjetLocomotionClass_State2_54BD30_TurnToTarget, 0x6)
+{
+	enum { ContinueNoTarget = 0x54BDA1, EndFunction = 0x54BFDE };
+	GET(JumpjetLocomotionClass* const, pLoco, ESI);
+	GET(FootClass* const, pLinkedTo, EDI);
+
+	const auto pTarget = pLinkedTo->Target;
+	if (!pTarget)
+		return ContinueNoTarget;
+
+	if (const auto pThis = abstract_cast<UnitClass*>(pLinkedTo))
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 		if (pTypeExt->JumpjetTurnToTarget.Get(RulesExt::Global()->JumpjetTurnToTarget))
 		{
 			CoordStruct& source = pThis->Location;
@@ -25,14 +57,16 @@ DEFINE_HOOK(0x54AEC0, JumpjetLocomotion_Process_TurnToTarget, 0x8)
 		}
 	}
 
-	return 0;
+	R->EAX(pTarget);
+	return EndFunction;
 }
 
+// Bugfix: Align jumpjet turret's facing with body's
 DEFINE_HOOK(0x736BF3, UnitClass_UpdateRotation_TurretFacing, 0x6)
 {
-	GET(UnitClass*, pThis, ESI);
-
-	if (pThis->IsInAir() && !pThis->Type->TurretSpins && !pThis->Target)
+	GET(UnitClass* const, pThis, ESI);
+	// Not sure if jumpjet check is really needed
+	if (!pThis->Target && !pThis->Type->TurretSpins && pThis->Type->JumpJet)
 	{
 		pThis->SecondaryFacing.turn(pThis->PrimaryFacing.current());
 		pThis->unknown_49C = pThis->PrimaryFacing.in_motion();
@@ -41,3 +75,17 @@ DEFINE_HOOK(0x736BF3, UnitClass_UpdateRotation_TurretFacing, 0x6)
 
 	return 0;
 }
+
+// Bugfix: Jumpjet detect cloaked objects beneath
+DEFINE_HOOK(0x54C14B, JumpjetLocomotionClass_State3_54BFF0_UpdateSensors, 0x7)
+{
+	GET(FootClass* const, pLinkedTo, EDI);
+	// State4 did UpdatePosition(2), however if I do it here regardless of type the game speed drops a lot
+	auto const pType = pLinkedTo->GetTechnoType();
+	if (pType->Sensors || pType->SensorsSight > 0 || pLinkedTo->CloakState == CloakState::Cloaked)
+		pLinkedTo->UpdatePosition(2);
+
+	return 0;
+}
+
+//TODO : Issue #690 #655
