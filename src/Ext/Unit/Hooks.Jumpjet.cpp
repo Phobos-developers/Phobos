@@ -79,15 +79,18 @@ DEFINE_HOOK(0x736BF3, UnitClass_UpdateRotation_TurretFacing, 0x6)
 // Bugfix: Jumpjet detect cloaked objects beneath
 DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_54BFF0_UpdateSensors, 0x7)
 {
-
 	GET(FootClass* const, pLinkedTo, ECX);
 	GET(CellStruct const, currentCell, EAX);
 
 	// Copied from FootClass::UpdatePosition
 	if (pLinkedTo->GetTechnoType()->SensorsSight)
 	{
-		pLinkedTo->RemoveSensorsAt(pLinkedTo->LastJumpjetMapCoords);
-		pLinkedTo->AddSensorsAt(currentCell);
+		CellStruct const lastCell = pLinkedTo->LastJumpjetMapCoords;
+		if (lastCell != currentCell)
+		{
+			pLinkedTo->RemoveSensorsAt(lastCell);
+			pLinkedTo->AddSensorsAt(currentCell);
+		}
 	}
 	// Something more may be missing
 
