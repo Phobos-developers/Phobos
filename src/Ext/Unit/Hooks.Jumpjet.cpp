@@ -77,13 +77,19 @@ DEFINE_HOOK(0x736BF3, UnitClass_UpdateRotation_TurretFacing, 0x6)
 }
 
 // Bugfix: Jumpjet detect cloaked objects beneath
-DEFINE_HOOK(0x54C14B, JumpjetLocomotionClass_State3_54BFF0_UpdateSensors, 0x7)
+DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_54BFF0_UpdateSensors, 0x7)
 {
-	GET(FootClass* const, pLinkedTo, EDI);
-	// State4 did UpdatePosition(2), however if I do it here regardless of type the game speed drops a lot
-	auto const pType = pLinkedTo->GetTechnoType();
-	if (pType->Sensors || pType->SensorsSight > 0 || pLinkedTo->CloakState == CloakState::Cloaked)
-		pLinkedTo->UpdatePosition(2);
+
+	GET(FootClass* const, pLinkedTo, ECX);
+	GET(CellStruct const, currentCell, EAX);
+
+	// Copied from FootClass::UpdatePosition
+	if (pLinkedTo->GetTechnoType()->SensorsSight)
+	{
+		pLinkedTo->RemoveSensorsAt(pLinkedTo->LastJumpjetMapCoords);
+		pLinkedTo->AddSensorsAt(currentCell);
+	}
+	// Something more may be missing
 
 	return 0;
 }
