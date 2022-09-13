@@ -20,15 +20,14 @@
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
 {
-	if (pOwner)
-	{
-		if (auto const pBulletExt = BulletExt::ExtMap.Find(pBullet))
-		{
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
+	auto const pBulletExt = pBullet ? BulletExt::ExtMap.Find(pBullet) : nullptr;
 
-			if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
-				this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
-		}
+	if (pOwner && pBulletExt)
+	{
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
+
+		if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
+			this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
 	}
 
 	if (pHouse)
@@ -108,7 +107,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_AttachTypes.size() > 0 ||
 		this->Shield_RemoveTypes.size() > 0;
 
-	auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 
 	const float cellSpread = this->OwnerObject()->CellSpread;
