@@ -67,12 +67,12 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::PrintVariableValue(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::BinaryOperation:
 		return TActionExt::BinaryOperation(pThis, pHouse, pObject, pTrigger, location);
-	case PhobosTriggerAction::AdjustLighting:
-		return TActionExt::AdjustLighting(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::RunSuperWeaponAtLocation:
 		return TActionExt::RunSuperWeaponAtLocation(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::RunSuperWeaponAtWaypoint:
 		return TActionExt::RunSuperWeaponAtWaypoint(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::AdjustLighting:
+		return TActionExt::AdjustLighting(pThis, pHouse, pObject, pTrigger, location);
 	default:
 		bHandled = false;
 		return true;
@@ -475,48 +475,6 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			}
 		}
 	}
-
-	return true;
-}
-
-bool TActionExt::AdjustLighting(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
-{
-	if (pThis->Param3 != -1)
-		ScenarioClass::Instance->NormalLighting.Tint.Red = pThis->Param3;
-	if (pThis->Param4 != -1)
-		ScenarioClass::Instance->NormalLighting.Tint.Green = pThis->Param4;
-	if (pThis->Param5 != -1)
-		ScenarioClass::Instance->NormalLighting.Tint.Blue = pThis->Param5;
-
-	const int r = ScenarioClass::Instance->NormalLighting.Tint.Red * 10;
-	const int g = ScenarioClass::Instance->NormalLighting.Tint.Green * 10;
-	const int b = ScenarioClass::Instance->NormalLighting.Tint.Blue * 10;
-
-	if (pThis->Value & 0b001) // Update Tiles
-	{
-		for (auto& pLightConvert : *LightConvertClass::Array)
-			pLightConvert->UpdateColors(r, g, b, false);
-		ScenarioExt::Global()->CurrentTint_Tiles = ScenarioClass::Instance->NormalLighting.Tint;
-	}
-
-	if (pThis->Value & 0b010) // Update Units & Buildings
-	{
-		for (auto& pScheme : *ColorScheme::Array)
-			pScheme->LightConvert->UpdateColors(r, g, b, false);
-		ScenarioExt::Global()->CurrentTint_Schemes = ScenarioClass::Instance->NormalLighting.Tint;
-	}
-
-	if (pThis->Value & 0b100) // Update CustomPalettes (vanilla YR LightConvertClass one, not the Ares ConvertClass only one)
-	{
-		ScenarioClass::UpdateHashPalLighting(r, g, b, false);
-		ScenarioExt::Global()->CurrentTint_Hashes = ScenarioClass::Instance->NormalLighting.Tint;
-	}
-
-	ScenarioClass::UpdateCellLighting();
-	MapClass::Instance->RedrawSidebar(1); // GScreenClass::Flag_To_Redraw
-
-	// #issue 429
-	TActionExt::RecreateLightSources();
 
 	return true;
 }

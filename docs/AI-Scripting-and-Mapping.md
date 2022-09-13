@@ -470,6 +470,27 @@ ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointI
 ...
 ```
 
+### '507' Adjust Lighting
+
+- Advanced Lighting Adjustment
+    - Similar to action 142-144 but provides more customizable settings
+
+|*Flag*| *Update*                                 |
+| :-:  | :-------------------------------------------: |
+|  1   | Tiles |
+|  2   | Units and Buildings |
+|  3   | Tiles, Units and Buildings |
+|  4   | Custom Palettes(YR, not Ares) |
+|  5   | Tiles, Custom Palettes(YR, not Ares) |
+|  6   | Units and Buildings, Custom Palettes(YR, not Ares) |
+|  7   | Tiles, Units and Buildings, Custom Palettes(YR, not Ares) |
+
+In `mycampaign.map`:
+```ini
+[Actions]
+ID=ActionCount,[Action1],504,0,[Flag],[R],[G],[B],0,A,[ActionX]
+```
+
 ## Trigger events
 
 ### `500-511` Variable comparation
