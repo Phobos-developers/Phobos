@@ -74,6 +74,7 @@ public:
 		ValueableVector<SuperWeaponTypeClass*> LaunchSW;
 		Valueable<bool> LaunchSW_RealLaunch;
 		Valueable<bool> LaunchSW_IgnoreInhibitors;
+		Valueable<bool> LaunchSW_IgnoreDesignators;
 		Valueable<bool> AllowDamageOnSelf;
 
 		Valueable<bool> DetonateOnAllMapObjects;
@@ -156,6 +157,7 @@ public:
 			, LaunchSW {}
 			, LaunchSW_RealLaunch { true }
 			, LaunchSW_IgnoreInhibitors { false }
+			, LaunchSW_IgnoreDesignators { true }
 			, AllowDamageOnSelf { false }
 
 			, DetonateOnAllMapObjects { false }

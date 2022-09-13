@@ -177,6 +177,7 @@ This page lists all the individual contributions to the project by their author.
    - Harvester counter
    - Warhead superweapon launch logic
    - "Shield is broken" trigger event
+   - Forbidding parallel AI queues by type
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
 - **FlyStar** - Campaign load screen PCX support

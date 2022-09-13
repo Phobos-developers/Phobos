@@ -24,6 +24,7 @@ public:
 		PhobosFixedString<0x20> GroupAs;
 		Valueable<int> RadarJamRadius;
 		Nullable<int> InhibitorRange;
+		Nullable<int> DesignatorRange;
 		Valueable<Leptons> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
 		Valueable<AffectedHouse> Interceptor_CanTargetHouses;
@@ -156,6 +157,7 @@ public:
 			, GroupAs { NONE_STR }
 			, RadarJamRadius { 0 }
 			, InhibitorRange { }
+			, DesignatorRange { }
 			, MindControlRangeLimit {}
 			, Interceptor { false }
 			, Interceptor_CanTargetHouses { AffectedHouse::Enemies }
