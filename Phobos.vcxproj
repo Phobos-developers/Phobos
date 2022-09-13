@@ -137,7 +137,7 @@
     <ClInclude Include="src\Commands\Commands.h" />
     <ClInclude Include="src\Commands\DamageDisplay.h" />
     <ClInclude Include="src\Commands\QuickSave.h" />
-    <ClInclude Include="src\Commands\RevealAllCommand.h" />
+    <ClInclude Include="src\Commands\RevealAll.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\BombardTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\StraightTrajectory.h" />

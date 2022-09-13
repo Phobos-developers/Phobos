@@ -62,6 +62,7 @@ public:
 		Valueable<bool> ForbidParallelAIQueues_Building;
 
 		Valueable<bool> IronCurtain_KeptOnDeploy;
+		Valueable<bool> AdjustLightingFix;
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
 		Valueable<int> ToolTip_Background_Opacity;
@@ -101,6 +102,7 @@ public:
 			, ForbidParallelAIQueues_Navy { false }
 			, ForbidParallelAIQueues_Vehicle { false }
 			, IronCurtain_KeptOnDeploy { true }
+			, AdjustLightingFix { false }
 			, ROF_RandomDelay { { 0 ,2  } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }

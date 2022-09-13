@@ -13,6 +13,7 @@
 #include <Utilities/Macro.h>
 
 #include <Ext/Scenario/Body.h>
+#include <Ext/Rules/Body.h>
 
 DEFINE_HOOK(0x6DD8B0, TActionClass_Execute, 0x6)
 {
@@ -80,7 +81,8 @@ DEFINE_HOOK_AGAIN(0x6E2F47, TActionClass_Retint_LightSourceFix, 0x3) // Blue
 DEFINE_HOOK_AGAIN(0x6E2EF7, TActionClass_Retint_LightSourceFix, 0x3) // Green
 DEFINE_HOOK(0x6E2EA7, TActionClass_Retint_LightSourceFix, 0x3) // Red
 {
-	ScenarioExt::RecreateLightSources();
+	if (RulesExt::Global()->AdjustLightingFix)
+		ScenarioExt::RecreateLightSources();
 
 	TintStruct tint = ScenarioClass::Instance->NormalLighting.Tint;
 	ScenarioExt::Global()->CurrentTint_Tiles = tint;
