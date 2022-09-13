@@ -18,9 +18,9 @@
 #include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
-void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
+void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBulletExt, CoordStruct coords)
 {
-	auto const pBulletExt = pBullet ? BulletExt::ExtMap.Find(pBullet) : nullptr;
+	auto const pBullet = pBulletExt ? pBulletExt->OwnerObject() : nullptr;
 
 	if (pOwner && pBulletExt)
 	{
@@ -36,10 +36,10 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		{
 			for (auto pOtherHouse : *HouseClass::Array)
 			{
-				if (pOtherHouse->ControlledByHuman() &&	  // Not AI
-					!pOtherHouse->IsObserver() &&		  // Not Observer
-					!pOtherHouse->Defeated &&			  // Not Defeated
-					pOtherHouse != pHouse &&			  // Not pThisHouse
+				if (pOtherHouse->ControlledByHuman() &&   // Not AI
+					!pOtherHouse->IsObserver() &&         // Not Observer
+					!pOtherHouse->Defeated &&             // Not Defeated
+					pOtherHouse != pHouse &&              // Not pThisHouse
 					!pHouse->IsAlliedWith(pOtherHouse))   // Not Allied
 				{
 					pOtherHouse->ReshroudMap();

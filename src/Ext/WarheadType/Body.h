@@ -5,6 +5,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
+#include <Ext/Bullet/Body.h>
 
 class WarheadTypeExt
 {
@@ -181,7 +182,7 @@ public:
 		void ApplyShieldModifiers(TechnoClass* pTarget);
 
 	public:
-		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
+		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
 		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
 		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner);
