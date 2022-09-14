@@ -74,12 +74,12 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	}
 }
 
-void TechnoExt::ExtData::CheckDeathConditions()
+bool TechnoExt::ExtData::CheckDeathConditions()
 {
 	auto const pTypeExt = this->TypeExtData;
 
 	if (!pTypeExt->AutoDeath_Behavior.isset())
-		return;
+		return false;
 
 	auto const pThis = this->OwnerObject();
 	auto const pType = pThis->GetTechnoType();
@@ -91,7 +91,7 @@ void TechnoExt::ExtData::CheckDeathConditions()
 	if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
 	{
 		TechnoExt::KillSelf(pThis, howToDie);
-		return;
+		return true;
 	}
 
 	// Death if countdown ends
@@ -105,9 +105,10 @@ void TechnoExt::ExtData::CheckDeathConditions()
 		else if (!pThis->Transporter && this->AutoDeathTimer.Completed())
 		{
 			TechnoExt::KillSelf(pThis, howToDie);
-			return;
+			return true;
 		}
 	}
+	return false;
 }
 
 void TechnoExt::ExtData::EatPassengers()
@@ -240,7 +241,7 @@ void TechnoExt::ExtData::ApplyPoweredKillSpawns()
 					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
 					{
 						pItem->Unit->ReceiveDamage(&pItem->Unit->Health, 0,
-							RulesClass::Instance()->C4Warhead, nullptr, false, false, nullptr);
+							RulesClass::Instance()->C4Warhead, nullptr, true, false, nullptr);
 					}
 				}
 			}
@@ -553,7 +554,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	case AutoDeathBehavior::Vanish:
 	{
 		pThis->KillPassengers(pThis);
-		pThis->vt_entry_3A0();
+		pThis->vt_entry_3A0(); // Stun? what is this?
 		pThis->Limbo();
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();

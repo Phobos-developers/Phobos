@@ -127,21 +127,21 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 
 	if (pOwner->Production && Phobos::Config::AllowParallelAIQueues)
 	{
-		auto pHouseExt = HouseExt::ExtMap.Find(pOwner);
+		auto pOwnerExt = HouseExt::ExtMap.Find(pOwner);
 		BuildingClass** currFactory = nullptr;
 		switch (pThis->Type->Factory)
 		{
 		case AbstractType::BuildingType:
-			currFactory = &pHouseExt->Factory_BuildingType;
+			currFactory = &pOwnerExt->Factory_BuildingType;
 			break;
 		case AbstractType::UnitType:
-			currFactory = pThis->Type->Naval ? &pHouseExt->Factory_NavyType : &pHouseExt->Factory_VehicleType;
+			currFactory = pThis->Type->Naval ? &pOwnerExt->Factory_NavyType : &pOwnerExt->Factory_VehicleType;
 			break;
 		case AbstractType::InfantryType:
-			currFactory = &pHouseExt->Factory_InfantryType;
+			currFactory = &pOwnerExt->Factory_InfantryType;
 			break;
 		case AbstractType::AircraftType:
-			currFactory = &pHouseExt->Factory_AircraftType;
+			currFactory = &pOwnerExt->Factory_AircraftType;
 			break;
 		}
 
