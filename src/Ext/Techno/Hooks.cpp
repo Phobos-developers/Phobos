@@ -20,8 +20,10 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
 		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
 
+	if (pExt->CheckDeathConditions())
+		return 0;
+
 	pExt->ApplyInterceptor();
-	pExt->CheckDeathConditions();
 	pExt->EatPassengers();
 	pExt->UpdateShield();
 	pExt->ApplyPoweredKillSpawns();
