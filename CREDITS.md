@@ -168,12 +168,14 @@ This page lists all the individual contributions to the project by their author.
    - Laser fixes prototype
 - **Trsdy**
    - Preserve IronCurtain status upon DeploysInto/UndeploysInto
-   - Jumpjet facing towards target fix
-   - Turreted jumpjet idle direction fix
+   - Misc jumpjet fixes:
+      - Facing towards target fix
+      - Turret direction in idle state fix
+      - Sensor fix
    - Object Self-destruction logic
    - Building EVA_StructureSold and SellSound dehardcode
    - Slaves' house customization when owner is killed
-   - Misc doc fix & code refactor
+   - Misc CN doc fix, code refactor
    - Harvester counter
    - Warhead superweapon launch logic
    - "Shield is broken" trigger event
