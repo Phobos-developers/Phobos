@@ -3,19 +3,17 @@
 
 #include <YRPPCore.h>
 
+char Debug::StringBuffer[0x1000];
+
 void Debug::Log(const char* pFormat, ...)
 {
-#ifdef DEBUG
-	char buffer[0x400];
-	va_list args;
-	va_start(args, pFormat);
-	vsprintf_s(buffer, pFormat, args);
-	va_end(args);
-	Console::Write(buffer, strlen(buffer));
-	Debug::WriteLog("%s", buffer);
-#else
 	JMP_STD(0x4068E0);
-#endif
+}
+
+void Debug::LogWithVArgs(const char* pFormat, va_list args)
+{
+	vsprintf_s(StringBuffer, pFormat, args);
+	Log("%s", StringBuffer);
 }
 
 void Debug::INIParseFailed(const char* section, const char* flag, const char* value, const char* Message)
@@ -30,29 +28,20 @@ void Debug::INIParseFailed(const char* section, const char* flag, const char* va
 
 void Debug::FatalErrorAndExit(const char* pFormat, ...)
 {
-	char buffer[0x400];
 	va_list args;
 	va_start(args, pFormat);
-	vsprintf_s(buffer, pFormat, args);
+	LogWithVArgs(pFormat, args);
 	va_end(args);
-	Debug::Log(buffer);
 	FatalExit(static_cast<int>(ExitCode::Undefined));
 }
 
 void Debug::FatalErrorAndExit(ExitCode nExitCode, const char* pFormat, ...)
 {
-	char buffer[0x400];
 	va_list args;
 	va_start(args, pFormat);
-	vsprintf_s(buffer, pFormat, args);
+	LogWithVArgs(pFormat, args);
 	va_end(args);
-	Debug::Log(buffer);
 	FatalExit(static_cast<int>(nExitCode));
-}
-
-void __cdecl Debug::WriteLog(const char* pFormat, ...)
-{
-	JMP_STD(0x4068E0);
 }
 
 DEFINE_PATCH( // Add new line after "Init Secondary Mixfiles....."
@@ -64,6 +53,43 @@ DEFINE_PATCH( // Replace SUN.INI with RA2MD.INI in the debug.log
 	/* Offset */ 0x8332F4,
 	/*   Data */ "-------- Loading RA2MD.INI settings --------\n"
 );
+
+static DWORD AresLogPatchJmp1;
+void __declspec(naked) AresLogPatch1()
+{
+	static va_list args;
+	static const char* pFormat;
+
+	__asm { mov eax, [esp + 0x4] }
+	__asm { mov pFormat, eax }
+
+	__asm { lea eax, [esp + 0x8] };
+	__asm { mov args, eax }
+
+	Console::WriteWithVArgs(pFormat, args);
+
+	__asm { mov args, 0 }
+
+	JMP(AresLogPatchJmp1);
+}
+static DWORD AresLogPatchJmp2;
+void __declspec(naked) AresLogPatch2()
+{
+	static va_list args;
+	static const char* pFormat;
+
+	__asm { mov eax, [esp + 0x4] }
+	__asm { mov pFormat, eax}
+
+	__asm { lea eax, [esp + 0x8] };
+	__asm { mov args, eax }
+
+	Console::WriteWithVArgs(pFormat, args);
+
+	__asm { mov args, 0 }
+
+	JMP(AresLogPatchJmp2);
+}
 
 HANDLE Console::ConsoleHandle;
 
@@ -77,6 +103,9 @@ bool Console::Create()
 		return false;
 
 	SetConsoleTitle("Phobos Debug Console");
+
+	AresLogPatcher(0x4A4AC0, AresLogPatch1, AresLogPatchJmp1);
+	AresLogPatcher(0x4068E0, AresLogPatch2, AresLogPatchJmp2);
 
 	return true;
 }
@@ -99,12 +128,43 @@ void Console::WriteLine(const char* str, int len)
 	Write("\n");
 }
 
+void Console::WriteWithVArgs(const char* pFormat, va_list args)
+{
+	vsprintf_s(Debug::StringBuffer, pFormat, args);
+	Write(Debug::StringBuffer, strlen(Debug::StringBuffer));
+}
+
 void __cdecl Console::WriteFormat(const char* pFormat, ...)
 {
-	char buffer[0x400];
 	va_list args;
 	va_start(args, pFormat);
-	vsprintf_s(buffer, pFormat, args);
+	WriteWithVArgs(pFormat, args);
 	va_end(args);
-	Write(buffer, strlen(buffer));
+}
+
+void Console::AresLogPatcher(DWORD dwAddr, void* newFunc, DWORD& newFuncJmp)
+{
+#pragma pack(push, 1)
+	struct JMP_STRUCT
+	{
+		byte opcode;
+		DWORD offset;
+	} *pInst;
+#pragma pack(pop)
+
+	DWORD dwOldFlag;
+	VirtualProtect((LPVOID)dwAddr, 5, PAGE_EXECUTE_READWRITE, &dwOldFlag);
+
+	pInst = (JMP_STRUCT*)dwAddr;
+
+	DWORD dwActualAddr;
+	if (pInst->opcode == 0xE9) // If this function is hooked
+		dwActualAddr = pInst->offset + dwAddr + 5;
+	else
+		dwActualAddr = 0x4A4AF9; // From Ares
+
+	pInst->offset = reinterpret_cast<DWORD>(newFunc) - dwAddr - 5;
+	newFuncJmp = dwActualAddr;
+
+	VirtualProtect((LPVOID)dwAddr, 5, dwOldFlag, NULL);
 }
