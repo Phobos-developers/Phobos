@@ -2,6 +2,7 @@
 
 #include <BulletClass.h>
 #include <UnitClass.h>
+#include <SuperClass.h>
 
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
@@ -255,5 +256,34 @@ DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType_Phobos, 0xA)
 {
 	GET(HouseClass*, pHouse, EDX);
 	HouseExt::ExtMap.Find(pHouse)->Factory_AircraftType = nullptr;
+	return 0;
+}
+
+// Note: We need another hook for when Phobos is run w/o Ares (or with Ares but with SpyEffect.Custom=no),
+// that will handle our logic earlier and disable the next hook by writing a very specific number to a free register.
+DEFINE_HOOK(0x45759D, BuildingClass_Infiltrate_Vanilla, 0x5)
+{
+	GET_STACK(HouseClass*, pInfiltratorHouse, STACK_OFFS(0x14, 0x4));
+	GET(BuildingClass*, pBuilding, EBP);
+
+	BuildingExt::HandleInfiltrate(pBuilding, pInfiltratorHouse);
+	R->EAX<int>(0x77777777);
+	return 0;
+}
+
+// Note: Ares hooks at the start of the function and overwrites it entirely, so we have to do it here.
+DEFINE_HOOK(0x4575A2, BuildingClass_Infiltrate_Custom, 0xE)
+{
+	// Check if we've handled it already
+	if (R->EAX<int>() == 0x77777777)
+	{
+		R->EAX<int>(0);
+		return 0;
+	}
+
+	GET_STACK(HouseClass*, pInfiltratorHouse, -0x4);
+	GET(BuildingClass*, pBuilding, ECX);
+
+	BuildingExt::HandleInfiltrate(pBuilding, pInfiltratorHouse);
 	return 0;
 }

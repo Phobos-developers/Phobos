@@ -275,6 +275,42 @@ PowerPlantEnhancer.Amount=0        ; integer
 PowerPlantEnhancer.Factor=1.0      ; floating point value
 ```
 
+### Spy Effects
+
+- Additional espionage bonuses can be toggled with `SpyEffects.Custom`.
+  - `SpyEffects.VictimSuperWeapon` instantly launches a Super Weapon for the owner of the infiltrated building at building's coordinates.
+  - `SpyEffects.InfiltratorSuperWeapon` behaves the same as above, with the Super Weapon's owner being the owner of the spying unit.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+SpyEffects.Custom=false            ; boolean
+SpyEffects.VictimSuperWeapon=      ; SuperWeaponType
+SpyEffects.InfiltratorSuperWeapon= ; SuperWeaponType
+```
+
+```{warning}
+The following Super Weapon types are supported:
+`Type=LightningStorm`                     NO
+`Type=MultiMissile`                       NO
+`Type=PsychicDominator`                   NO
+`Type=ChronoSphere`                       NO
+`Type=ChronoWarp`                         NO
+`Type=IronCurtain` and `Type=ForceShield` YES
+`Type=GeneticConverter`                   YES
+`Type=ParaDrop` and `Type=AmerParaDrop`   NO
+`Type=SpyPlane`                           NO
+`Type=PsychicReveal`                      YES
+`Type=SonarPulse` (Ares)                  YES
+`Type=GenericWarhead` (Ares)              YES
+`Type=UnitDelivery` (Ares)                YES
+`Type=Firestorm` (Ares)                   YES
+`Type=HunterSeeker` (Ares)                YES
+`Type=DropPod` (Ares)                     YES
+`Type=EMPulse` (Ares)                     YES
+`Type=Battery` (Ares)                     YES
+```
+
 ## Infantry
 
 ### Customizable FLH When Infantry Is Prone Or Deployed
@@ -875,7 +911,28 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 
 ```{note}
 For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
-Also, due to the nature of some superweapon types, not all superweapons are suitable for launch.
+```
+
+```{warning}
+The following Super Weapon types are supported:
+`Type=LightningStorm`                     NO
+`Type=MultiMissile`                       NO
+`Type=PsychicDominator`                   NO
+`Type=ChronoSphere`                       NO
+`Type=ChronoWarp`                         NO
+`Type=IronCurtain` and `Type=ForceShield` YES
+`Type=GeneticConverter`                   YES
+`Type=ParaDrop` and `Type=AmerParaDrop`   NO
+`Type=SpyPlane`                           NO
+`Type=PsychicReveal`                      YES
+`Type=SonarPulse` (Ares)                  YES
+`Type=GenericWarhead` (Ares)              YES
+`Type=UnitDelivery` (Ares)                YES
+`Type=Firestorm` (Ares)                   YES
+`Type=HunterSeeker` (Ares)                YES
+`Type=DropPod` (Ares)                     YES
+`Type=EMPulse` (Ares)                     YES
+`Type=Battery` (Ares)                     YES
 ```
 
 In `rulesmd.ini`:

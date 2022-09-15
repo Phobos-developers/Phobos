@@ -167,6 +167,7 @@ This page lists all the individual contributions to the project by their author.
   - Building `LimboDelivery` logic
   - Fix for `Image` in art rules
   - Power delta counter
+  - SpyEffects expansion, launching Super Weapons on building infiltration
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
