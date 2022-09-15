@@ -270,6 +270,9 @@ bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon)
 
 bool ShieldClass::CanBePenetrated(WarheadTypeClass* pWarhead)
 {
+	if (!pWarhead)
+		return false;
+
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
 	if (pWHExt->Shield_AffectTypes.size() > 0 && !pWHExt->Shield_AffectTypes.Contains(this->Type))

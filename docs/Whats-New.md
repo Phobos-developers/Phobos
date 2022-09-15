@@ -381,7 +381,8 @@ Phobos fixes:
 - Fixed an issue where tooltip text could be clipped by tooltip rectangle border if using `MaxWidth` > 0 (by Starkku)
 - Fixed projectiles with `Trajectory=Straight` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true` (by Starkku)
 - Minor performance optimization related to shields (by Trsdy)
-- Fixed teleporting chronominer considered to be idle by harvester counter, improved related game performance (by Trsdy)
+- Fixed teleporting miners (Chrono Miner) considered to be idle by harvester counter, improved related game performance (by Trsdy)
+- Fixed negative damage weapons considering shield health when evaluating targets even if Warhead had `Shield.Penetrate` set to true (by Starkku)
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)
