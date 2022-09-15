@@ -91,6 +91,7 @@ void __declspec(naked) AresLogPatch2()
 	JMP(AresLogPatchJmp2);
 }
 
+Console::ConsoleTextAttribute Console::TextAttribute;
 HANDLE Console::ConsoleHandle;
 
 bool Console::Create()
@@ -104,6 +105,10 @@ bool Console::Create()
 
 	SetConsoleTitle("Phobos Debug Console");
 
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	GetConsoleScreenBufferInfo(ConsoleHandle, &csbi);
+	TextAttribute.AsWord = csbi.wAttributes;
+
 	AresLogPatcher(0x4A4AC0, AresLogPatch1, AresLogPatchJmp1);
 	AresLogPatcher(0x4068E0, AresLogPatch2, AresLogPatchJmp2);
 
@@ -114,6 +119,39 @@ void Console::Release()
 {
 	if (NULL != ConsoleHandle)
 		FreeConsole();
+}
+
+void Console::SetForeColor(ConsoleColor color)
+{
+	if (NULL == ConsoleHandle)
+		return;
+
+	if (TextAttribute.Foreground == color)
+		return;
+
+	TextAttribute.Foreground = color;
+	SetConsoleTextAttribute(ConsoleHandle, TextAttribute.AsWord);
+}
+
+void Console::SetBackColor(ConsoleColor color)
+{
+	if (NULL == ConsoleHandle)
+		return;
+
+	if (TextAttribute.Background == color)
+		return;
+
+	TextAttribute.Background = color;
+	SetConsoleTextAttribute(ConsoleHandle, TextAttribute.AsWord);
+}
+
+void Console::EnableUnderscore(bool enable)
+{
+	if (TextAttribute.Underscore == enable)
+		return;
+
+	TextAttribute.Underscore = enable;
+	SetConsoleTextAttribute(ConsoleHandle, TextAttribute.AsWord);
 }
 
 void Console::Write(const char* str, int len)
