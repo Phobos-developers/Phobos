@@ -19,6 +19,9 @@ public:
 	static CCINIClass* OpenConfig(const char*);
 	static void CloseConfig(CCINIClass*&);
 
+	static void ExeRun();
+	static void ExeTerminate();
+
 	//variables
 	static HANDLE hInstance;
 
