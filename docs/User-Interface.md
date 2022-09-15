@@ -310,5 +310,5 @@ The blur effect is resource intensive. Please make sure if you want to enable th
 In `RA2MD.ini`:
 ```ini
 [Phobos]
-ToolTipBlur=false ; boolean, whether the blur effect of tooltips will be enabled.
+ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.
 ```
