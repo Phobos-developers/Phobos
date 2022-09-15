@@ -307,7 +307,8 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 					pData->ToolTip_Background_Opacity.Get(RulesExt::Global()->ToolTip_Background_Opacity)
 				);
 
-				pThis->BlurRect(*pRect, pData->ToolTip_Background_BlurSize.Get(RulesExt::Global()->ToolTip_Background_BlurSize));
+				if (Phobos::Config::ToolTipBlur)
+					pThis->BlurRect(*pRect, pData->ToolTip_Background_BlurSize.Get(RulesExt::Global()->ToolTip_Background_BlurSize));
 
 				return (int)_CCToolTip_Draw2_FillRect_RET;
 			}

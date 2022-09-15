@@ -306,3 +306,9 @@ ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual]->ToolTip.
 ```{note}
 The blur effect is resource intensive. Please make sure if you want to enable this effect. Leave it to 0.0 to disable this effect.
 ```
+
+In `RA2MD.ini`:
+```ini
+[Phobos]
+ToolTipBlur=false ; boolean, whether the blur effect of tooltips will be enabled.
+```

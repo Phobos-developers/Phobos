@@ -52,6 +52,7 @@ double Phobos::UI::PowerDelta_ConditionYellow = 0.75;
 double Phobos::UI::PowerDelta_ConditionRed = 1.0;
 
 bool Phobos::Config::ToolTipDescriptions = true;
+bool Phobos::Config::ToolTipBlur = false;
 bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::DevelopmentCommands = true;
 bool Phobos::Config::ArtImageSwap = false;
@@ -200,6 +201,7 @@ DEFINE_HOOK(0x52F639, _YR_CmdLineParse, 0x5)
 DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 {
 	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
+	Phobos::Config::ToolTipBlur = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipBlur", false);
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
 	Phobos::Config::EnableBuildingPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowBuildingPlacementPreview", false);
 
