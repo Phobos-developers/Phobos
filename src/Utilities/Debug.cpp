@@ -54,41 +54,24 @@ DEFINE_PATCH( // Replace SUN.INI with RA2MD.INI in the debug.log
 	/*   Data */ "-------- Loading RA2MD.INI settings --------\n"
 );
 
-static DWORD AresLogPatchJmp1;
-void __declspec(naked) AresLogPatch1()
+static DWORD _Real_Debug_Log = 0x4A4AF9;
+void __declspec(naked) _Fake_Debug_Log()
 {
-	static va_list args;
-	static const char* pFormat;
+	// va_start(args, pFormat);
+	// Console::WriteWithVArgs(pFormat, args);
+	// // va_end(args);
+	// No need to use va_end here.
+	// 
+	// As Console::WriteWithVArgs uses __fastcall,
+	// ECX: pFormat, EDX: args
+	__asm { mov ecx, [esp + 0x4] }
+	__asm { lea edx, [esp + 0x8] }
+	__asm { call Console::WriteWithVArgs }
+	// __asm { mov edx, 0}
 
-	__asm { mov eax, [esp + 0x4] }
-	__asm { mov pFormat, eax }
-
-	__asm { lea eax, [esp + 0x8] };
-	__asm { mov args, eax }
-
-	Console::WriteWithVArgs(pFormat, args);
-
-	__asm { mov args, 0 }
-
-	JMP(AresLogPatchJmp1);
-}
-static DWORD AresLogPatchJmp2;
-void __declspec(naked) AresLogPatch2()
-{
-	static va_list args;
-	static const char* pFormat;
-
-	__asm { mov eax, [esp + 0x4] }
-	__asm { mov pFormat, eax}
-
-	__asm { lea eax, [esp + 0x8] };
-	__asm { mov args, eax }
-
-	Console::WriteWithVArgs(pFormat, args);
-
-	__asm { mov args, 0 }
-
-	JMP(AresLogPatchJmp2);
+	// goto original bytes
+	__asm { mov eax, _Real_Debug_Log }
+	__asm { jmp eax }
 }
 
 Console::ConsoleTextAttribute Console::TextAttribute;
@@ -109,8 +92,8 @@ bool Console::Create()
 	GetConsoleScreenBufferInfo(ConsoleHandle, &csbi);
 	TextAttribute.AsWord = csbi.wAttributes;
 
-	AresLogPatcher(0x4A4AC0, AresLogPatch1, AresLogPatchJmp1);
-	AresLogPatcher(0x4068E0, AresLogPatch2, AresLogPatchJmp2);
+	PatchLog(0x4A4AC0, _Fake_Debug_Log, &_Real_Debug_Log);
+	PatchLog(0x4068E0, _Fake_Debug_Log, nullptr);
 
 	return true;
 }
@@ -166,13 +149,13 @@ void Console::WriteLine(const char* str, int len)
 	Write("\n");
 }
 
-void Console::WriteWithVArgs(const char* pFormat, va_list args)
+void __fastcall Console::WriteWithVArgs(const char* pFormat, va_list args)
 {
 	vsprintf_s(Debug::StringBuffer, pFormat, args);
 	Write(Debug::StringBuffer, strlen(Debug::StringBuffer));
 }
 
-void __cdecl Console::WriteFormat(const char* pFormat, ...)
+void Console::WriteFormat(const char* pFormat, ...)
 {
 	va_list args;
 	va_start(args, pFormat);
@@ -180,7 +163,7 @@ void __cdecl Console::WriteFormat(const char* pFormat, ...)
 	va_end(args);
 }
 
-void Console::AresLogPatcher(DWORD dwAddr, void* newFunc, DWORD& newFuncJmp)
+void Console::PatchLog(DWORD dwAddr, void* fakeFunc, DWORD* pdwRealFunc)
 {
 #pragma pack(push, 1)
 	struct JMP_STRUCT
@@ -195,14 +178,10 @@ void Console::AresLogPatcher(DWORD dwAddr, void* newFunc, DWORD& newFuncJmp)
 
 	pInst = (JMP_STRUCT*)dwAddr;
 
-	DWORD dwActualAddr;
-	if (pInst->opcode == 0xE9) // If this function is hooked
-		dwActualAddr = pInst->offset + dwAddr + 5;
-	else
-		dwActualAddr = 0x4A4AF9; // From Ares
+	if (pdwRealFunc && pInst->opcode == 0xE9) // If this function is hooked by Ares
+		*pdwRealFunc = pInst->offset + dwAddr + 5;
 
-	pInst->offset = reinterpret_cast<DWORD>(newFunc) - dwAddr - 5;
-	newFuncJmp = dwActualAddr;
+	pInst->offset = reinterpret_cast<DWORD>(fakeFunc) - dwAddr - 5;
 
 	VirtualProtect((LPVOID)dwAddr, 5, dwOldFlag, NULL);
 }

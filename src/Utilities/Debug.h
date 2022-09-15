@@ -79,9 +79,9 @@ public:
 	static void EnableUnderscore(bool enable);
 	static void Write(const char* str, int len);
 	static void WriteLine(const char* str, int len);
-	static void WriteWithVArgs(const char* pFormat, va_list args);
-	static void __cdecl WriteFormat(const char* pFormat, ...);
+	static void __fastcall WriteWithVArgs(const char* pFormat, va_list args);
+	static void WriteFormat(const char* pFormat, ...);
 
 private:
-	static void AresLogPatcher(DWORD dwAddr, void* newFunc, DWORD& newFuncJmp);
+	static void PatchLog(DWORD dwAddr, void* realFunc, DWORD* pdwRealFunc);
 };
