@@ -61,7 +61,7 @@ void __declspec(naked) _Fake_Debug_Log()
 	// Console::WriteWithVArgs(pFormat, args);
 	// // va_end(args);
 	// No need to use va_end here.
-	// 
+	//
 	// As Console::WriteWithVArgs uses __fastcall,
 	// ECX: pFormat, EDX: args
 	__asm { mov ecx, [esp + 0x4] }
