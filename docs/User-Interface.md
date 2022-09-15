@@ -304,7 +304,7 @@ ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual]->ToolTip.
 ```
 
 ```{note}
-The blur effect is resource intensive. Please make sure if you want to enable this effect. Leave it to 0.0 to disable this effect.
+The blur effect is resource intensive. Please make sure you really want to enable this effect, otherwise leave it to 0.0 so it stays disabled.
 ```
 
 In `RA2MD.ini`:
