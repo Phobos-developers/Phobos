@@ -130,6 +130,9 @@ void Console::SetBackColor(ConsoleColor color)
 
 void Console::EnableUnderscore(bool enable)
 {
+	if (NULL == ConsoleHandle)
+		return;
+
 	if (TextAttribute.Underscore == enable)
 		return;
 
