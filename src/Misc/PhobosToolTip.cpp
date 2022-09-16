@@ -13,6 +13,9 @@
 #include <BitFont.h>
 #include <BitText.h>
 
+#include <Ext/Side/Body.h>
+#include <Ext/Surface/Body.h>
+
 #include <sstream>
 #include <iomanip>
 
@@ -277,6 +280,44 @@ DEFINE_HOOK(0x479029, CCToolTip_Draw2_SetPadding, 0x5)
 	return 0;
 }
 
+void __declspec(naked) _CCToolTip_Draw2_FillRect_RET()
+{
+	ADD_ESP(8); // We need to handle origin two push here...
+	JMP(0x478FE1);
+}
+DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
+{
+	if (PhobosToolTip::Instance.IsCameo)
+	{
+		GET(SurfaceExt*, pThis, ESI);
+		LEA_STACK(RectangleStruct*, pRect, STACK_OFFS(0x44, 0x10));
+
+		// Should we make some SideExt items as static to improve the effeciency?
+		// Though it might not be a big improvement... - secsome
+		const int nPlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;
+		if (auto const pSide = SideClass::Array->GetItemOrDefault(nPlayerSideIndex))
+		{
+			if (auto const pData = SideExt::ExtMap.Find(pSide))
+			{
+				// Could this flag be lazy?
+				SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
+
+				pThis->FillRectTrans(pRect,
+					pData->ToolTip_Background_Color.GetEx(&RulesExt::Global()->ToolTip_Background_Color),
+					pData->ToolTip_Background_Opacity.Get(RulesExt::Global()->ToolTip_Background_Opacity)
+				);
+
+				if (Phobos::Config::ToolTipBlur)
+					pThis->BlurRect(*pRect, pData->ToolTip_Background_BlurSize.Get(RulesExt::Global()->ToolTip_Background_BlurSize));
+
+				return (int)_CCToolTip_Draw2_FillRect_RET;
+			}
+		}
+	}
+
+	return 0;
+}
+
 // TODO in the future
 //
 //DEFINE_HOOK(0x478E30, CCToolTip_Draw2, 0x7)
@@ -341,3 +382,4 @@ DEFINE_HOOK(0x479029, CCToolTip_Draw2_SetPadding, 0x5)
 //
 //	return 0x479048;
 //}
+

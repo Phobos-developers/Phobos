@@ -82,6 +82,7 @@ This page lists all the individual contributions to the project by their author.
   - Retint map actions bugfix
   - Sharpnel enhancement
   - Vanilla map preview reading bugfix
+  - Customizable tooltip background
 - **Otamaa (Fahroni, BoredEXE)**:
   - Help with CellSpread
   - Ported and fixed custom RadType code

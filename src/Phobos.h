@@ -67,6 +67,7 @@ public:
 	{
 	public:
 		static bool ToolTipDescriptions;
+		static bool ToolTipBlur;
 		static bool PrioritySelectionFiltering;
 		static bool DevelopmentCommands;
 		static bool ArtImageSwap;
