@@ -370,6 +370,7 @@ namespace FetchBomb {
 	BombClass* pThisBomb;
 }
 
+// Fetch the BombClass context From earlier adress
 DEFINE_HOOK(0x438771, BombClass_Detonate_fetch, 0x6)
 {
 	GET(BombClass*, pThis, ESI);
@@ -380,9 +381,9 @@ DEFINE_HOOK(0x438771, BombClass_Detonate_fetch, 0x6)
 static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 (
 	CoordStruct* pCoord,
-	int nDamage,
+	int nDamage, //Ares Manipulate the push stack here for Custom bomb
 	TechnoClass* pSource,
-	WarheadTypeClass* pWarhead,
+	WarheadTypeClass* pWarhead, //Ares Manipulate the push stack here for Custom bomb
 	bool AffectTiberium, //true
 	HouseClass* pSourceHouse //nullptr
 )
@@ -404,12 +405,16 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 				pAnim->Owner = pThisBomb->OwnerHouse;
 		}
 	}
-	
-	FetchBomb::pThisBomb = nullptr;
+
 	return nDamageAreaResult;
 }
 
-// skip the Explosion Anim
-DEFINE_LJMP(0x4387A8, 0x438857);
-// it easier to replace __fastcall pointer call than __thiscall 
+// skip the Explosion Anim block and clean up the context
+DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
+{
+	FetchBomb::pThisBomb = nullptr;
+	return 0x438857;
+}
+
+// redirect MapClass::DamageArea call to our dll for additional functionality and checks
 DEFINE_POINTER_CALL(0x4387A3, _BombClass_Detonate_DamageArea);
