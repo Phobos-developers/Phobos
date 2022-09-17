@@ -519,13 +519,12 @@ DEFINE_HOOK(0x73EFD8, UnitClass_Mission_Hunt_DeploysInto, 0x6)
 // Author: Starkku
 DEFINE_JUMP(LJMP, 0x7032BA, 0x7032C6);
 
-
 namespace FetchBomb {
 	BombClass* pThisBomb;
 }
 
 // Fetch the BombClass context From earlier adress
-DEFINE_HOOK(0x438771, BombClass_Detonate_fetch, 0x6)
+DEFINE_HOOK(0x438771, BombClass_Detonate_SetContext, 0x6)
 {
 	GET(BombClass*, pThis, ESI);
 	FetchBomb::pThisBomb = pThis;
@@ -553,10 +552,17 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 		if (auto pAnim = GameCreate<AnimClass>(pAnimType, nCoord, 0, 1, 0x2600, -15, false))
 		{
 			if (AnimTypeExt::ExtMap.Find(pAnim->Type)->CreateUnit.Get())
+			{
 				AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse,
 					pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
+			}
 			else
+			{
 				pAnim->Owner = pThisBomb->OwnerHouse;
+			}
+
+			if (const auto pExt = AnimExt::ExtMap.Find(pAnim))
+				pExt->Invoker = pThisBomb->Owner;
 		}
 	}
 
@@ -571,4 +577,4 @@ DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 }
 
 // redirect MapClass::DamageArea call to our dll for additional functionality and checks
-DEFINE_POINTER_CALL(0x4387A3, _BombClass_Detonate_DamageArea);
+DEFINE_JUMP(CALL, 0x4387A3, GET_OFFSET(_BombClass_Detonate_DamageArea));
