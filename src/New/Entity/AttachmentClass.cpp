@@ -23,6 +23,11 @@ TechnoTypeClass* AttachmentClass::GetChildType()
 		: nullptr;
 }
 
+CoordStruct AttachmentClass::GetChildLocation()
+{
+	return TechnoExt::GetFLHAbsoluteCoords(this->Parent, this->Data->FLH, this->Data->IsOnTurret);
+}
+
 AttachmentClass::~AttachmentClass()
 {
 	// clear up non-owning references
@@ -72,8 +77,7 @@ void AttachmentClass::AI()
 
 	if (this->Child)
 	{
-		this->Child->SetLocation(TechnoExt::GetFLHAbsoluteCoords(
-			this->Parent, this->Data->FLH, this->Data->IsOnTurret));
+		this->Child->SetLocation(this->GetChildLocation());
 
 		this->Child->OnBridge = this->Parent->OnBridge;
 

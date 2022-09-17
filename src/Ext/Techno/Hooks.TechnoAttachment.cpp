@@ -446,3 +446,22 @@ DEFINE_HOOK(0x4D7D58, FootClass_CellClickedAction_HandleAttachment, 0x6)
 			return Continue;
 	}
 }
+
+// DEFINE_HOOK(0x41BE02, AbstractClass_RenderCoord_AttachedCoord, 0x7)
+// {
+// 	enum { Return = 0x41BE2A, Continue = 0x0 };
+
+// 	GET(AbstractClass* const, pThis, ECX);
+
+// 	if (auto const& pThisAsTechno = abstract_cast<TechnoClass*>(pThis))
+// 	{
+// 		auto const& pExt = TechnoExt::ExtMap.Find(pThisAsTechno);
+// 		if (pExt && pExt->ParentAttachment)
+// 		{
+// 			R->EAX<CoordStruct*>(&pExt->ParentAttachment->GetChildLocation());
+// 			return Return;
+// 		}
+// 	}
+
+// 	return Continue;
+// }
