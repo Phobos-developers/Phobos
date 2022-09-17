@@ -334,6 +334,7 @@ New:
 - Implemented support for PCX images for campaign loading screen (by FlyStar)
 - Implemented support for PCX images for observer loading screen (by Uranusian)
 - Animated (non-tiberium spawning) TerrainTypes (by Starkku)
+- Toggleable passenger killing for Explodes=true units (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
