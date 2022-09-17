@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include "../Techno/Body.h"
+#include "../Building/Body.h"
 #include <unordered_map>
 
 DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
@@ -36,4 +38,28 @@ DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
 	pThis->PowerOutput += BuildingTypeExt::GetEnhancedPower(pBld, pThis);
 
 	return 0x508D07;
+}
+
+DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
+{
+	GET(BuildingClass* const, pBuilding, EDI);
+	GET(int const, idxTiberium, EBP);
+	REF_STACK(float, amount, 0x1C);
+
+	auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+	if (!pTypeExt)
+		return 0;
+
+	if (!pBuilding->Owner)
+		return 0;
+
+	auto storageTiberiumIndex = RulesExt::Global()->Storage_TiberiumIndex;
+
+	if (pTypeExt->Refinery_UseStorage && storageTiberiumIndex >= 0)
+	{
+		BuildingExt::StoreTiberium(pBuilding, amount, idxTiberium, storageTiberiumIndex);
+		amount = 0.0f;
+	}
+
+	return 0;
 }

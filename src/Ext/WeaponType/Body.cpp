@@ -21,22 +21,14 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	INI_EX exINI(pINI);
 
-	{ // DiskLaser_Radius
-		this->DiskLaser_Radius.Read(exINI, pSection, "DiskLaser.Radius");
-		this->DiskLaser_Circumference = (int)(this->DiskLaser_Radius * Math::Pi * 2);
-	}
+	this->DiskLaser_Radius.Read(exINI, pSection, "DiskLaser.Radius");
+	this->DiskLaser_Circumference = (int)(this->DiskLaser_Radius * Math::Pi * 2);
 
 	this->Bolt_Disable1.Read(exINI, pSection, "Bolt.Disable1");
 	this->Bolt_Disable2.Read(exINI, pSection, "Bolt.Disable2");
 	this->Bolt_Disable3.Read(exINI, pSection, "Bolt.Disable3");
 
-	// RadTypeClass
-//	if (this->OwnerObject()->RadLevel > 0) 
-//	{
 	this->RadType.Read(exINI, pSection, "RadType", true);
-	//	Debug::Log("Weapon[%s] :: Has RadLevel[%d] Rad check [%s]  \n", pSection , this->OwnerObject()->RadLevel , this->RadType->Name.data());
-	this->Rad_NoOwner.Read(exINI, pSection, "Rad.NoOwner");
-	//	}
 
 	this->Strafing_Shots.Read(exINI, pSection, "Strafing.Shots");
 	this->Strafing_SimulateBurst.Read(exINI, pSection, "Strafing.SimulateBurst");
@@ -44,6 +36,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CanTargetHouses.Read(exINI, pSection, "CanTargetHouses");
 	this->Burst_Delays.Read(exINI, pSection, "Burst.Delays");
 	this->AreaFire_Target.Read(exINI, pSection, "AreaFire.Target");
+	this->FeedbackWeapon.Read(exINI, pSection, "FeedbackWeapon", true);
+	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
 }
 
 template <typename T>
@@ -52,7 +46,6 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->DiskLaser_Radius)
 		.Process(this->DiskLaser_Circumference)
-		.Process(this->Rad_NoOwner)
 		.Process(this->Bolt_Disable1)
 		.Process(this->Bolt_Disable2)
 		.Process(this->Bolt_Disable3)
@@ -63,6 +56,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RadType)
 		.Process(this->Burst_Delays)
 		.Process(this->AreaFire_Target)
+		.Process(this->FeedbackWeapon)
+		.Process(this->Laser_IsSingleColor)
 		;
 };
 
@@ -95,8 +90,13 @@ bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 
 void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner)
 {
+	WeaponTypeExt::DetonateAt(pThis, pTarget, pOwner, pThis->Damage);
+}
+
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage)
+{
 	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(pTarget, pOwner,
-		pThis->Damage, pThis->Warhead, 0, pThis->Bright))
+		damage, pThis->Warhead, 0, pThis->Bright))
 	{
 		const CoordStruct& coords = pTarget->GetCoords();
 
@@ -110,8 +110,13 @@ void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, Tec
 
 void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner)
 {
+	WeaponTypeExt::DetonateAt(pThis, coords, pOwner, pThis->Damage);
+}
+
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage)
+{
 	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(nullptr, pOwner,
-		pThis->Damage, pThis->Warhead, 0, pThis->Bright))
+		damage, pThis->Warhead, 0, pThis->Bright))
 	{
 		pBullet->SetWeaponType(pThis);
 		pBullet->Limbo();

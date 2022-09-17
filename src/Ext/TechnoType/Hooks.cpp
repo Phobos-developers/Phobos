@@ -13,6 +13,8 @@
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
 
+#include <Utilities/Macro.h>
+
 DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
@@ -184,25 +186,6 @@ DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDi
 	return 0;
 }
 
-DEFINE_HOOK(0x54B8E9, JumpjetLocomotionClass_In_Which_Layer_Deviation, 0x6)
-{
-	GET(TechnoClass*, pThis, EAX);
-
-	if (pThis->IsInAir())
-	{
-		if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		{
-			if (!pExt->JumpjetAllowLayerDeviation.Get(RulesExt::Global()->JumpjetAllowLayerDeviation.Get()))
-			{
-				R->EDX(INT32_MAX); // Override JumpjetHeight / CruiseHeight check so it always results in 3 / Layer::Air.
-				return 0x54B96B;
-			}
-		}
-	}
-
-	return 0;
-}
-
 DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
@@ -215,10 +198,10 @@ DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 	return 0;
 }
 
-// Ares hooks in at 739B8A, this goes before it and skips & basically reimplements Ares code with some changes.
+// Ares hooks in at 739B8A, this goes before it and skips it if needed.
 DEFINE_HOOK(0x739B7C, UnitClass_Deploy_DeployDir, 0x6)
 {
-	enum { Skip = 0x739C70, Continue = 0x739B9E };
+	enum { SkipAnim = 0x739C70, PlayAnim = 0x739B9E };
 
 	GET(UnitClass*, pThis, ESI);
 
@@ -226,36 +209,16 @@ DEFINE_HOOK(0x739B7C, UnitClass_Deploy_DeployDir, 0x6)
 	{
 		if (pThis->Type->DeployingAnim)
 		{
-			int deployDir = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->DeployDir.Get(RulesClass::Instance->DeployDir >> 5);
+			if (TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->DeployingAnim_AllowAnyDirection)
+				return PlayAnim;
 
-			if (deployDir >= 0)
-			{
-				auto targetFacing = DirStruct(deployDir << 13);
-
-				if (pThis->PrimaryFacing.current() != targetFacing)
-				{
-					auto locomotor = pThis->Locomotor.get();
-
-					if (locomotor)
-					{
-						if (locomotor->Is_Moving_Now())
-							return Skip;
-
-						locomotor->Do_Turn(targetFacing);
-
-						return Skip;
-					}
-				}
-			}
-
-			return Continue;
+			return 0;
 		}
 
 		pThis->Deployed = true;
-
 	}
 
-	return Skip;
+	return SkipAnim;
 }
 
 DEFINE_HOOK_AGAIN(0x739D8B, UnitClass_DeployUndeploy_DeployAnim, 0x5)
@@ -303,3 +266,48 @@ DEFINE_HOOK(0x739C86, UnitClass_DeployUndeploy_DeploySound, 0x6)
 
 	return isDeploying ? DeployReturn : UndeployReturn;
 }
+
+// Issue #503
+// Author : Otamaa
+DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
+{
+	enum { SetUIName = 0x4AE678 };
+
+	GET(ObjectClass* , pObject, ECX);
+
+	auto pDecidedUIName = pObject->GetUIName();
+	auto pFoot = generic_cast<FootClass*>(pObject);
+	auto pTechnoType = pObject->GetTechnoType();
+
+	if (pFoot && pTechnoType && !pObject->IsDisguised())
+	{
+		bool IsAlly = true;
+		bool IsCivilian = false;
+		bool IsObserver = HouseClass::Observer || HouseClass::IsPlayerObserver();
+
+		if (auto pOwnerHouse = pFoot->GetOwningHouse())
+		{
+			IsAlly = pOwnerHouse->IsAlliedWith(HouseClass::Player);
+			IsCivilian = (pOwnerHouse == HouseClass::FindCivilianSide()) || pOwnerHouse->IsNeutral();
+		}
+
+		if (!IsAlly && !IsCivilian && !IsObserver)
+		{
+			auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+
+			if (auto pEnemyUIName = pTechnoTypeExt->EnemyUIName.Get().Text)
+			{
+				pDecidedUIName = pEnemyUIName;
+			}
+		}
+	}
+
+	R->EAX(pDecidedUIName);
+	return SetUIName;
+}
+
+
+// Patches TechnoClass::Kill_Cargo/KillPassengers (push ESI -> push EBP)
+// Fixes recursive passenger kills not being accredited
+// to proper techno but to their transports
+DEFINE_PATCH(0x707CF2, 0x55);

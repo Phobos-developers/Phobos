@@ -30,7 +30,7 @@ public:
 		return GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_DESC", L"Save the current game (Singleplayer only).");
 	}
 
-	virtual void Execute(DWORD dwUnk) const override
+	virtual void Execute(WWKey eInput) const override
 	{
 		auto PrintMessage = [](const wchar_t* pMessage)
 		{
@@ -55,7 +55,10 @@ public:
 			PrintMessage(StringTable::LoadString("TXT_SAVING_GAME"));
 
 			wchar_t fDescription[0x80] = { 0 };
-			wcscpy_s(fDescription, ScenarioClass::Instance->UINameLoaded);
+			if (SessionClass::Instance->GameMode == GameMode::Campaign)
+				wcscpy_s(fDescription, ScenarioClass::Instance->UINameLoaded);
+			else
+				wcscpy_s(fDescription, ScenarioClass::Instance->Name);
 			wcscat_s(fDescription, L" - ");
 			wcscat_s(fDescription, GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_SUFFIX", L"Quicksaved"));
 

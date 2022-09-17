@@ -13,6 +13,10 @@ template <typename T>
 void SWTypeExt::ExtData::Serialize(T& Stm) {
 	Stm
 		.Process(this->Money_Amount)
+		.Process(this->SW_Inhibitors)
+		.Process(this->SW_AnyInhibitor)
+		.Process(this->SW_Designators)
+		.Process(this->SW_AnyDesignator)
 		.Process(this->UIDescription)
 		.Process(this->CameoPriority)
 		.Process(this->LimboDelivery_Types)
@@ -34,7 +38,14 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	}
 
 	INI_EX exINI(pINI);
+
+	// from ares
 	this->Money_Amount.Read(exINI, pSection, "Money.Amount");
+	this->SW_Inhibitors.Read(exINI, pSection, "SW.Inhibitors");
+	this->SW_AnyInhibitor.Read(exINI, pSection, "SW.AnyInhibitor");
+	this->SW_Designators.Read(exINI, pSection, "SW.Designators");
+	this->SW_AnyDesignator.Read(exINI, pSection, "SW.AnyDesignator");
+
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 	this->LimboDelivery_Types.Read(exINI, pSection, "LimboDelivery.Types");
@@ -60,6 +71,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 
 	this->LimboKill_Affected.Read(exINI, pSection, "LimboKill.Affected");
 	this->LimboKill_IDs.Read(exINI, pSection, "LimboKill.IDs");
+
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
@@ -141,4 +153,3 @@ DEFINE_HOOK(0x6CEE43, SuperWeaponTypeClass_LoadFromINI, 0xA)
 	SWTypeExt::ExtMap.LoadFromINI(pItem, pINI);
 	return 0;
 }
-

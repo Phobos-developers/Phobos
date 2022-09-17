@@ -7,6 +7,8 @@
 
 #include <New/Type/LaserTrailTypeClass.h>
 
+#include <Ext/Bullet/Trajectories/PhobosTrajectory.h>
+
 class BulletTypeExt
 {
 public:
@@ -15,16 +17,32 @@ public:
 	class ExtData final : public Extension<BulletTypeClass>
 	{
 	public:
+		Valueable<int> Strength;
+		Nullable<ArmorType> Armor;
 		Valueable<bool> Interceptable;
+		Valueable<bool> Interceptable_DeleteOnIntercept;
+		Nullable<WeaponTypeClass*> Interceptable_WeaponOverride;
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
 		Nullable<double> Gravity;
-		Valueable<bool> Gravity_HeightFix;
+
+		PhobosTrajectoryType* TrajectoryType;
+		Valueable<double> Trajectory_Speed;
+
+		Valueable<bool> Shrapnel_AffectsGround;
+		Valueable<bool> Shrapnel_AffectsBuildings;
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
+			, Strength { 0 }
+			, Armor {}
 			, Interceptable { false }
+			, Interceptable_DeleteOnIntercept { false }
+			, Interceptable_WeaponOverride {}
 			, LaserTrail_Types {}
 			, Gravity {}
-			, Gravity_HeightFix { false }
+			, TrajectoryType { nullptr }
+			, Trajectory_Speed { 100.0 }
+			, Shrapnel_AffectsGround { false }
+			, Shrapnel_AffectsBuildings { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -51,4 +69,5 @@ public:
 	static ExtContainer ExtMap;
 
 	static double GetAdjustedGravity(BulletTypeClass* pType);
+	static BulletTypeClass* GetDefaultBulletType();
 };

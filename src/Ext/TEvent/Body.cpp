@@ -1,7 +1,7 @@
 #include "Body.h"
 
 #include <Utilities/SavegameDef.h>
-
+#include <New/Entity/ShieldClass.h>
 #include <Ext/Scenario/Body.h>
 #include <BuildingClass.h>
 #include <InfantryClass.h>
@@ -34,7 +34,7 @@ void TEventExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 }
 
 bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, ObjectClass* pObject,
-	TimerStruct* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled)
+	CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled)
 {
 	bHandled = true;
 	switch (static_cast<PhobosTriggerEvent>(pThis->EventKind))
@@ -117,6 +117,9 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 	case PhobosTriggerEvent::GlobalVariableAndIsTrueGlobalVariable:
 		return TEventExt::VariableCheckBinary<true, true, and_with>(pThis);
 
+	case PhobosTriggerEvent::ShieldBroken:
+		return ShieldClass::ShieldIsBrokenTEvent(pObject);
+
 	default:
 		bHandled = false;
 		return true;
@@ -131,7 +134,7 @@ bool TEventExt::VariableCheck(TEventClass* pThis)
 	if (itr != ScenarioExt::Global()->Variables[IsGlobal].end())
 	{
 		// We uses TechnoName for our operator number
-		int nOpt = atoi(pThis->TechnoName);
+		int nOpt = atoi(pThis->String);
 		return _Pr()(itr->second.Value, nOpt);
 	}
 
@@ -146,9 +149,9 @@ bool TEventExt::VariableCheckBinary(TEventClass* pThis)
 	if (itr != ScenarioExt::Global()->Variables[IsGlobal].end())
 	{
 		// We uses TechnoName for our src variable index
-		int nSrcVariable = atoi(pThis->TechnoName);
+		int nSrcVariable = atoi(pThis->String);
 		auto itrsrc = ScenarioExt::Global()->Variables[IsSrcGlobal].find(nSrcVariable);
-		
+
 		if (itrsrc != ScenarioExt::Global()->Variables[IsSrcGlobal].end())
 			return _Pr()(itr->second.Value, itrsrc->second.Value);
 	}

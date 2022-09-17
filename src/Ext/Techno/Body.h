@@ -1,5 +1,6 @@
 #pragma once
 #include <TechnoClass.h>
+#include <AnimClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
@@ -18,30 +19,51 @@ public:
 	class ExtData final : public Extension<TechnoClass>
 	{
 	public:
-		Valueable<BulletClass*> InterceptedBullet;
+		TechnoTypeExt::ExtData* TypeExtData;
 		std::unique_ptr<ShieldClass> Shield;
-		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
-		Valueable<bool> ReceiveDamage;
-		Valueable<bool> LastKillWasTeamTarget;
-		TimerStruct	PassengerDeletionTimer;
-		Valueable<ShieldTypeClass*> CurrentShieldType;
+		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
+		bool ReceiveDamage;
+		bool LastKillWasTeamTarget;
+		CDTimerClass PassengerDeletionTimer;
+		int PassengerDeletionCountDown;
+		ShieldTypeClass* CurrentShieldType;
+		int LastWarpDistance;
+		CDTimerClass AutoDeathTimer;
+		AnimTypeClass* MindControlRingAnimType;
+		OptionalStruct<int, false> DamageNumberOffset;
+		OptionalStruct<int, true> CurrentLaserWeaponIndex;
+
+		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
+		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
+		HouseClass* OriginalPassengerOwner;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
-			, InterceptedBullet { nullptr }
+			, TypeExtData { nullptr }
 			, Shield {}
 			, LaserTrails {}
 			, ReceiveDamage { false }
 			, LastKillWasTeamTarget { false }
-			, PassengerDeletionTimer { -1 }
-			, CurrentShieldType {}
+			, PassengerDeletionTimer {}
+			, PassengerDeletionCountDown { -1 }
+			, CurrentShieldType { nullptr }
+			, LastWarpDistance {}
+			, AutoDeathTimer { }
+			, MindControlRingAnimType { nullptr }
+			, DamageNumberOffset {}
+			, OriginalPassengerOwner {}
+			, CurrentLaserWeaponIndex {}
 		{ }
+
+		void ApplyInterceptor();
+		bool CheckDeathConditions();
+		void EatPassengers();
+		void UpdateShield();
+		void ApplyPoweredKillSpawns();
+		void ApplySpawnLimitRange();
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-			this->Shield->InvalidatePointer(ptr);
-		}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -73,19 +95,21 @@ public:
 	static void InitializeLaserTrails(TechnoClass* pThis);
 	static void InitializeShield(TechnoClass* pThis);
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
-	
+
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
+	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
-
+	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
-
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
-	static void ApplyInterceptor(TechnoClass* pThis);
-	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
-	static void ApplySpawn_LimitRange(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
-	static void EatPassengers(TechnoClass* pThis);
-
+	static void UpdateSharedAmmo(TechnoClass* pThis);
+	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
+	static void UpdateMindControlAnim(TechnoClass* pThis);
+	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
+	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
+	static void ApplyGainedSelfHeal(TechnoClass* pThis);
+	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
 };

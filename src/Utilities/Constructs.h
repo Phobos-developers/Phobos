@@ -55,6 +55,32 @@ class ConvertClass;
 template <typename T>
 using UniqueGamePtr = std::unique_ptr<T, GameDeleter>;
 
+
+class ArmorType
+{
+public:
+	ArmorType() = default;
+
+	template <typename T>
+	ArmorType(T value)
+	{
+		this->value = (int)std::move(value);
+	}
+
+	template <typename T>
+	ArmorType& operator = (T value)
+	{
+		this->value = (int)std::move(value);
+		return *this;
+	}
+
+	operator Armor() const { return  (Armor)this->value; }
+	operator int() const { return this->value; }
+
+private:
+	int value { 0 };
+};
+
 struct Leptons {
 	Leptons() = default;
 	explicit Leptons(int value) noexcept : value(value) {}
@@ -82,6 +108,10 @@ public:
 
 	ConvertClass* GetConvert() const {
 		return this->Convert.get();
+	}
+
+	ConvertClass* GetOrDefaultConvert(ConvertClass* pDefault) const {
+		return this->Convert.get() ? this->Convert.get() : pDefault;
 	}
 
 	bool LoadFromINI(
@@ -422,6 +452,7 @@ public:
 
 	using FixedString::operator=;
 
+	// It's not obvious, but pDefault = "" means that by default initial string will not be changed
 	bool Read(INIClass* pINI, const char* pSection, const char* pKey, const char* pDefault = "") {
 		if (pINI->ReadString(pSection, pKey, pDefault, Phobos::readBuffer, FixedString::Size)) {
 			if (!INIClass::IsBlank(Phobos::readBuffer)) {

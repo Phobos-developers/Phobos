@@ -119,10 +119,10 @@ if (SomeCondition())
 - To have less Git merge conflicts member initializer lists and other list-like syntax structures used in frequently modified places should be split per-item with item separation characters (commas, for example) placed *after newline character*:
 ```cpp
 ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
-    ,SpawnsTiberium_Type(0)
-    ,SpawnsTiberium_Range(1)
-    ,SpawnsTiberium_GrowthStage({ 3, 0 })
-    ,SpawnsTiberium_CellsPerAnim({ 1, 0 })
+    , SpawnsTiberium_Type(0)
+    , SpawnsTiberium_Range(1)
+    , SpawnsTiberium_GrowthStage({ 3, 0 })
+    , SpawnsTiberium_CellsPerAnim({ 1, 0 })
 { }
 ```
 - Local variables and function/method args are named in the `camelCase` (using a `p` prefix to denote pointer type for every pointer nesting level) and a descriptive name, like `pTechnoType` for a local `TechnoTypeClass*` variable.
@@ -130,9 +130,9 @@ ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject
 - Class fields that can be set via INI tags should be named exactly like ini tags with dots replaced with underscores.
 - Pointer type declarations always have pointer sign `*` attached to the type declaration.
 - Non-static class extension methods faked by declaring a static method with `pThis` as a first argument are only to be placed in the extension class for the class instance of which `pThis` is.
-  - If it's crucial to fake `__thiscall` you may use `__fastcall` and use `void* _` as a second argument to discard value passed through `EDX` register. Such methods are to be used for call replacement.
+  - If it's crucial to fake `__thiscall` you may use `__fastcall` and use `void*` or `void* _` as a second argument to discard value passed through `EDX` register. Such methods are to be used for call replacement.
 - Hooks have to be named using a following scheme: `HookedFunction_HookPurpose`, or `ClassName_HookedMethod_HookPurpose`. Defined-again hooks are exempt from this scheme due to impossibility to define different names for the same hook.
-- Return addresses should use anonymous enums to make it clear what address means what, if applicable:
+- Return addresses should use anonymous enums to make it clear what address means what, if applicable. The enum has to be placed right at the function start and include all addresses that are used in this hook:
 ```cpp
 DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 {
@@ -141,6 +141,7 @@ DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
     ...
 }
 ```
+- Even if the hook doesn't use `return 0x0` to execute the overriden instructions, you still have to write correct hook size (last parameter of `DEFINE_HOOK` macro) to reduce potential issues if the person editing this hook decides to use `return 0x0`.
 - New ingame "entity" classes are to be named with `Class` postfix (like `RadTypeClass`). Extension classes are to be named with `Ext` postfix instead (like `RadTypeExt`).
 
 ```{note}
@@ -178,6 +179,7 @@ Reverse-engineering is a complex task, but don't be discouraged, if you want to 
 
 When you found out how the engine works and where you need to extend the logic you'd need to develop the code to achieve what you want. This is done by declaring a *hook* - some code which would be executed after the program execution reaches the certain address in binary. All the development is done in C++ using [YRpp](https://github.com/Phobos-developers/YRpp) (which provides a way to interact with YR code and inject code using Syringe) and usually [Visual Studio 2017/2019](https://visualstudio.microsoft.com) or newer.
 
+(contributing-changes-to-the-project)=
 #### Contributing changes to the project
 
 To contribute a feature or some sort of a change you you would need a Git client (I recommend [GitKraken](https://www.gitkraken.com/) personally). Fork, clone the repo, preferably make a new branch, then edit/add the code or whatever you want to contribute. Commit, push, start a pull request, wait for it to get reviewed, or merged.
@@ -222,7 +224,7 @@ You don't need to install Python, Sphinx and modules to see changes - every pull
 ```
 
 There are two ways to edit the docs.
-- **Edit from your PC**. Pretty much the same like what's described in [contributing changes section](#contributing-changes-to-the-project); the docs are located in the `docs` folder.
+- **Edit from your PC**. Pretty much the same like what's described in [contributing changes section](contributing-changes-to-the-project); the docs are located in the `docs` folder.
 - **Edit via online editor**. Navigate to the doc piece that you want to edit, press the button on the top right - and it will take you to the file at GitHub which you would need to edit (look for the pencil icon to the top right). Press it - the fork will be created and you'll edit the docs in your version of the repo (fork). You can commit those changes (preferably to a new branch) and make them into a pull request to main repo.
 
 ```{note}
@@ -239,4 +241,4 @@ Please, provide screenshots, GIFs and videos in their natural size and without e
 
 ### Promoting the work
 
-You can always help us by spreading the word about the project among people, whether you're an influential youtuber
+You can always help us by spreading the word about the project among people, whether you're an influential youtuber, a C&C related community leader or just an average player.

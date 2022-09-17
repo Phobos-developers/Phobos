@@ -16,7 +16,12 @@ void TeamExt::ExtData::Serialize(T& Stm)
 		.Process(this->CloseEnough)
 		.Process(this->Countdown_RegroupAtLeader)
 		.Process(this->MoveMissionEndMode)
-		.Process(this->SelectedTarget)
+		.Process(this->WaitNoTargetCounter)
+		.Process(this->WaitNoTargetTimer)
+		.Process(this->ForceJump_Countdown)
+		.Process(this->ForceJump_InitialCountdown)
+		.Process(this->ForceJump_RepeatMode)
+		.Process(this->TeamLeader)
 		;
 }
 

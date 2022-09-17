@@ -19,6 +19,9 @@ public:
 	static CCINIClass* OpenConfig(const char*);
 	static void CloseConfig(CCINIClass*&);
 
+	static void ExeRun();
+	static void ExeTerminate();
+
 	//variables
 	static HANDLE hInstance;
 
@@ -29,6 +32,8 @@ public:
 
 	static const char* AppIconPath;
 	static const wchar_t* VersionDescription;
+
+	static bool Debug_DisplayDamageNumbers;
 
 #ifdef DEBUG
 	static bool DetachFromDebugger();
@@ -62,8 +67,11 @@ public:
 	{
 	public:
 		static bool ToolTipDescriptions;
+		static bool ToolTipBlur;
 		static bool PrioritySelectionFiltering;
 		static bool DevelopmentCommands;
 		static bool ArtImageSwap;
+		static bool AllowParallelAIQueues;
+		static bool EnableBuildingPlacementPreview;
 	};
 };

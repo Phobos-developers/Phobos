@@ -27,6 +27,11 @@ public:
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;
 		Nullable<bool> Layer_UseObjectLayer;
+		Valueable<bool> UseCenterCoordsIfAttached;
+		Nullable<WeaponTypeClass*> Weapon;
+		Valueable<int> Damage_Delay;
+		Valueable<bool> Damage_DealtByInvoker;
+		Valueable<bool> Damage_ApplyOncePerLoop;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -41,6 +46,11 @@ public:
 			, XDrawOffset { 0 }
 			, HideIfNoOre_Threshold { 0 }
 			, Layer_UseObjectLayer {}
+			, UseCenterCoordsIfAttached { false }
+			, Weapon {}
+			, Damage_Delay { 0 }
+			, Damage_DealtByInvoker { false }
+			, Damage_ApplyOncePerLoop { false }
 		{ }
 
 		virtual ~ExtData() = default;

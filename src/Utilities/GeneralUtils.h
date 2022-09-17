@@ -24,6 +24,7 @@ public:
 	static std::vector<CellStruct> AdjacentCellsInRange(unsigned int range);
 	static const int GetRangedRandomOrSingleValue(Point2D range);
 	static const double GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor ArmorType);
-
 	static int ChooseOneWeighted(const double dice, const std::vector<int>* weights);
+	static double FastPow(double x, double n);
+	static bool HasHealthRatioThresholdChanged(double oldRatio, double newRatio);
 };

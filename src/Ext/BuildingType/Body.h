@@ -17,12 +17,32 @@ public:
 		Valueable<AffectedHouse> PowersUp_Owner;
 		ValueableVector<BuildingTypeClass*> PowersUp_Buildings;
 		DynamicVectorClass<SuperWeaponTypeClass*> SuperWeapons;
-		
+
 		ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
 		Nullable<int> PowerPlantEnhancer_Amount;
 		Nullable<float> PowerPlantEnhancer_Factor;
 
 		DynamicVectorClass<Point2D> OccupierMuzzleFlashes;
+
+		Valueable<bool> Refinery_UseStorage;
+
+		Valueable<bool> Grinding_AllowAllies;
+		Valueable<bool> Grinding_AllowOwner;
+		ValueableVector<TechnoTypeClass*> Grinding_AllowTypes;
+		ValueableVector<TechnoTypeClass*> Grinding_DisallowTypes;
+		NullableIdx<VocClass> Grinding_Sound;
+		Nullable<WeaponTypeClass*> Grinding_Weapon;
+		Valueable<bool> Grinding_DisplayRefund;
+		Valueable<AffectedHouse> Grinding_DisplayRefund_Houses;
+		Valueable<Point2D> Grinding_DisplayRefund_Offset;
+
+		Nullable<bool> PlacementPreview_Show;
+		Nullable<SHPStruct*> PlacementPreview_Shape;
+		Nullable<int> PlacementPreview_ShapeFrame;
+		Valueable<CoordStruct> PlacementPreview_Offset;
+		Valueable<bool> PlacementPreview_Remap;
+		CustomPalette PlacementPreview_Palette;
+		Nullable<int> PlacementPreview_TranslucentLevel;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
@@ -31,26 +51,45 @@ public:
 			, PowerPlantEnhancer_Amount {}
 			, PowerPlantEnhancer_Factor {}
 			, OccupierMuzzleFlashes()
+			, Refinery_UseStorage { false }
+			, Grinding_AllowAllies { false }
+			, Grinding_AllowOwner { true }
+			, Grinding_AllowTypes {}
+			, Grinding_DisallowTypes {}
+			, Grinding_Sound {}
+			, Grinding_Weapon {}
+			, Grinding_DisplayRefund { false }
+			, Grinding_DisplayRefund_Houses { AffectedHouse::All }
+			, Grinding_DisplayRefund_Offset { { 0,0 } }
+			, PlacementPreview_Remap { true }
+			, PlacementPreview_Palette {}
+			, PlacementPreview_Offset { {0,-15,1} }
+			, PlacementPreview_Show {}
+			, PlacementPreview_Shape {}
+			, PlacementPreview_ShapeFrame {}
+			, PlacementPreview_TranslucentLevel {}
 		{ }
 
 		virtual ~ExtData() = default;
 
-		virtual void LoadFromINIFile(CCINIClass * pINI) override;
+		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual void Initialize() override;
 		virtual void CompleteInitialization();
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+		{
 		}
 
-		virtual void LoadFromStream(PhobosStreamReader & Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter & Stm) override;
+		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
 	};
 
-	class ExtContainer final : public Container<BuildingTypeExt> {
+	class ExtContainer final : public Container<BuildingTypeExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();

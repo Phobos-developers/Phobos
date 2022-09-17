@@ -28,7 +28,7 @@ DEFINE_HOOK(0x6A5EA1, SidebarClass_UnloadShapes_AdditionalFiles, 0x5)
 			SidebarExt::TabProducingProgress[i] = nullptr;
 		}
 	}
-	
+
 	return 0;
 }
 

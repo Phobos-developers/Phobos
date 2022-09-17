@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/House/Body.h>
+#include <Utilities/GeneralUtils.h>
 
 template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
@@ -65,7 +66,6 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 
 void BuildingTypeExt::ExtData::Initialize()
 {
-
 }
 
 // =============================
@@ -92,6 +92,17 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
+
+	this->Grinding_AllowAllies.Read(exINI, pSection, "Grinding.AllowAllies");
+	this->Grinding_AllowOwner.Read(exINI, pSection, "Grinding.AllowOwner");
+	this->Grinding_AllowTypes.Read(exINI, pSection, "Grinding.AllowTypes");
+	this->Grinding_DisallowTypes.Read(exINI, pSection, "Grinding.DisallowTypes");
+	this->Grinding_Sound.Read(exINI, pSection, "Grinding.Sound");
+	this->Grinding_Weapon.Read(exINI, pSection, "Grinding.Weapon", true);
+	this->Grinding_DisplayRefund.Read(exINI, pSection, "Grinding.DisplayRefund");
+	this->Grinding_DisplayRefund_Houses.Read(exINI, pSection, "Grinding.DisplayRefund.Houses");
+	this->Grinding_DisplayRefund_Offset.Read(exINI, pSection, "Grinding.DisplayRefund.Offset");
+
 
 	// Ares SuperWeapons tag
 	pINI->ReadString(pSection, "SuperWeapons", "", Phobos::readBuffer);
@@ -132,6 +143,27 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		}
 	}
 
+	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
+
+	this->PlacementPreview_Show.Read(exINI, pSection, "PlacementPreview.Show");
+
+	if (pINI->GetString(pSection, "PlacementPreview.Shape", Phobos::readBuffer))
+	{
+		if (GeneralUtils::IsValidString(Phobos::readBuffer))
+		{
+			// we cannot load same SHP file twice it may produce artifact , prevent it !
+			if (_strcmpi(Phobos::readBuffer, pSection) || _strcmpi(Phobos::readBuffer, pArtSection))
+				this->PlacementPreview_Shape.Read(exINI, pSection, "PlacementPreview.Shape");
+			else
+				Debug::Log("Cannot Load PlacementPreview.Shape for [%s]Art[%s] ! \n", pSection, pArtSection);
+		}
+	}
+
+	this->PlacementPreview_ShapeFrame.Read(exINI, pSection, "PlacementPreview.ShapeFrame");
+	this->PlacementPreview_Offset.Read(exINI, pSection, "PlacementPreview.Offset");
+	this->PlacementPreview_Remap.Read(exINI, pSection, "PlacementPreview.Remap");
+	this->PlacementPreview_Palette.LoadFromINI(pINI, pSection, "PlacementPreview.Palette");
+	this->PlacementPreview_TranslucentLevel.Read(exINI, pSection, "PlacementPreview.Translucent");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -151,6 +183,23 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PowerPlantEnhancer_Factor)
 		.Process(this->SuperWeapons)
 		.Process(this->OccupierMuzzleFlashes)
+		.Process(this->Refinery_UseStorage)
+		.Process(this->Grinding_AllowAllies)
+		.Process(this->Grinding_AllowOwner)
+		.Process(this->Grinding_AllowTypes)
+		.Process(this->Grinding_DisallowTypes)
+		.Process(this->Grinding_Sound)
+		.Process(this->Grinding_Weapon)
+		.Process(this->Grinding_DisplayRefund)
+		.Process(this->Grinding_DisplayRefund_Houses)
+		.Process(this->Grinding_DisplayRefund_Offset)
+		.Process(this->PlacementPreview_Remap)
+		.Process(this->PlacementPreview_Palette)
+		.Process(this->PlacementPreview_Offset)
+		.Process(this->PlacementPreview_Show)
+		.Process(this->PlacementPreview_Shape)
+		.Process(this->PlacementPreview_ShapeFrame)
+		.Process(this->PlacementPreview_TranslucentLevel)
 		;
 }
 

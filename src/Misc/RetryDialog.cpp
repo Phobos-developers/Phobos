@@ -45,7 +45,7 @@ DEFINE_HOOK(0x686092, DoLose_RetryDialogForCampaigns, 0x7)
 
 			if (!bIsAboutToLoad)
 				continue;
-			
+
 			ThemeClass::Instance->Stop();
 			break;
 		}

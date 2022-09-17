@@ -1,6 +1,9 @@
 #include "Body.h"
 
+#include <TacticalClass.h>
+#include <TerrainClass.h>
 #include <TerrainTypeClass.h>
+
 #include <Utilities/GeneralUtils.h>
 
 template<> const DWORD Extension<TerrainTypeClass>::Canary = 0xBEE78007;
@@ -16,6 +19,18 @@ int TerrainTypeExt::ExtData::GetCellsPerAnim()
 	return GeneralUtils::GetRangedRandomOrSingleValue(this->SpawnsTiberium_CellsPerAnim.Get());
 }
 
+void TerrainTypeExt::Remove(TerrainClass* pTerrain)
+{
+	if (!pTerrain)
+		return;
+
+	RectangleStruct rect = RectangleStruct {};
+	rect = *pTerrain->GetRenderDimensions(&rect);
+	TacticalClass::Instance->RegisterDirtyArea(rect, false);
+	pTerrain->Disappear(true);
+	pTerrain->UnInit();
+}
+
 // =============================
 // load / save
 
@@ -27,6 +42,11 @@ void TerrainTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnsTiberium_Range)
 		.Process(this->SpawnsTiberium_GrowthStage)
 		.Process(this->SpawnsTiberium_CellsPerAnim)
+		.Process(this->DestroyAnim)
+		.Process(this->DestroySound)
+		.Process(this->MinimapColor)
+		.Process(this->IsPassable)
+		.Process(this->CanBeBuiltOn)
 		;
 }
 
@@ -43,6 +63,17 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnsTiberium_Range.Read(exINI, pSection, "SpawnsTiberium.Range");
 	this->SpawnsTiberium_GrowthStage.Read(exINI, pSection, "SpawnsTiberium.GrowthStage");
 	this->SpawnsTiberium_CellsPerAnim.Read(exINI, pSection, "SpawnsTiberium.CellsPerAnim");
+
+	this->DestroyAnim.Read(exINI, pSection, "DestroyAnim");
+	this->DestroySound.Read(exINI, pSection, "DestroySound");
+
+	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
+
+	this->IsPassable.Read(exINI, pSection, "IsPassable");
+	this->CanBeBuiltOn.Read(exINI, pSection, "CanBeBuiltOn");
+
+	//Strength is already part of ObjecTypeClass::ReadIni Duh!
+	//this->TerrainStrength.Read(exINI, pSection, "Strength");
 }
 
 void TerrainTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -73,7 +104,6 @@ bool TerrainTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 // container
 
 TerrainTypeExt::ExtContainer::ExtContainer() : Container("TerrainTypeClass") { }
-
 TerrainTypeExt::ExtContainer::~ExtContainer() = default;
 
 // =============================
@@ -84,6 +114,9 @@ DEFINE_HOOK(0x71DBC0, TerrainTypeClass_CTOR, 0x7)
 	GET(TerrainTypeClass*, pItem, ESI);
 
 	TerrainTypeExt::ExtMap.FindOrAllocate(pItem);
+
+	// Override the default value (true) from game constructor.
+	pItem->RadarInvisible = false;
 
 	return 0;
 }
