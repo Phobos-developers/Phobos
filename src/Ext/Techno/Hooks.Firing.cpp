@@ -207,8 +207,8 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 				{
 					int navalTargetWeapon = pThis->SelectNavalTargeting(pTargetTechno);
 
-					if (navalTargetWeapon != -1)
-						chosenWeaponIndex = navalTargetWeapon;
+					if (navalTargetWeapon == 2)
+						chosenWeaponIndex = evenWeaponIndex;
 				}
 				else if ((pTargetTechno->IsInAir() && !pWeaponOdd->Projectile->AA && pWeaponEven->Projectile->AA) ||
 					!pTargetTechno->IsInAir() && pThis->GetTechnoType()->LandTargeting == LandTargetingType::Land_Secondary)
