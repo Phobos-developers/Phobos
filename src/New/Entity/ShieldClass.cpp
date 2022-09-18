@@ -34,7 +34,7 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTech
 {
 	this->UpdateType();
 	SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
-	strcpy(this->TechnoID, this->Techno->get_ID());
+	strcpy_s(this->TechnoID, this->Techno->get_ID());
 	ShieldClass::Array.emplace_back(this);
 }
 
