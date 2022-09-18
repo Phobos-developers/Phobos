@@ -98,6 +98,7 @@ This page lists all the individual contributions to the project by their author.
   - `EnemyUIName=` for other TechnoTypes
   - TerrainType `DestroyAnim` & `DestroySound`
   - Laser trails for VoxelAnims
+  - MakeInfantry logic on BombClass bugfix
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
