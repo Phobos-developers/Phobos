@@ -58,6 +58,7 @@ bool Phobos::Config::DevelopmentCommands = true;
 bool Phobos::Config::ArtImageSwap = false;
 bool Phobos::Config::AllowParallelAIQueues = true;
 bool Phobos::Config::EnableBuildingPlacementPreview = false;
+bool Phobos::Config::DigitalDisplay_Enable = false;
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {

@@ -82,9 +82,9 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& posDraw, int iLength, int iCu
 	}
 
 	double ratio = static_cast<double>(iCur) / iMax;
-	COLORREF color = Drawing::RGB2DWORD(Text_Color.Get(ratio));
+	COLORREF color = Drawing::RGB_To_Int(Text_Color.Get(ratio));
 	RectangleStruct rect = { 0, 0, 0, 0 };
-	DSurface::Temp->GetRect(&rect);
+	DSurface::Composite->GetRect(&rect);
 	TextPrintType ePrintType;
 	const int iTextHeight = 12;
 	const int iPipHeight = 4;
@@ -97,7 +97,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& posDraw, int iLength, int iCu
 		| TextPrintType::FullShadow
 		| (Text_Background ? TextPrintType::Background : TextPrintType::LASTPOINT);
 
-	DSurface::Temp->DrawTextA(text, &rect, &posDraw, color, 0, ePrintType);
+	DSurface::Composite->DrawTextA(text, &rect, &posDraw, color, 0, ePrintType);
 }
 
 void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding)
@@ -189,10 +189,8 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 		iSignBaseFrame,
 		vInterval
 	);
-	RectangleStruct rBound;
-	DSurface::Temp->GetRect(&rBound);
-	rBound.Height -= 32;
-	ShapeTextPrinter::PrintShape(text.c_str(), shapeTextPrintData, posDraw, rBound, DSurface::Composite);
+	RectangleStruct rect = DSurface::Composite->GetRect();
+	ShapeTextPrinter::PrintShape(text.c_str(), shapeTextPrintData, posDraw, rect, DSurface::Composite);
 }
 
 
