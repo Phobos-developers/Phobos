@@ -16,13 +16,12 @@ Script actions are the commands used in AI Teams for realising tasks, like movem
 Due to the high number of new ScriptType actions offered by Phobos and for preventing future collissions with new Ares ScriptType actions we are classifing the scripts by the purpose they were designed.
 The number that they receive follows the next table:
 
-+-------------+-------------+------------------------------------------------------------------+
 | Range       | Sub-Range   | Actions Description                                              |
-+=============+=============+==================================================================+
+| :---------: | :---------: | :--------------------------------------------------------------: |
 |             | 10000-10049 | "Attack"                                                         |
-+             +-------------+------------------------------------------------------------------+
+|             +-------------+------------------------------------------------------------------+
 | 10000-10999 | 10050-10099 | "Move to"                                                        |
-+             +-------------+------------------------------------------------------------------+
+|             +-------------+------------------------------------------------------------------+
 |             | 10050-10099 | "General purpose"                                                |
 +-------------+-------------+------------------------------------------------------------------+
 | 12000-12999 |             | Suplementary/setup pre-actions                                   |
@@ -34,7 +33,6 @@ The number that they receive follows the next table:
 | 18000-18999 |             | For variables                                                    |
 +-------------+-------------+------------------------------------------------------------------+
 | 19000-19999 |             | Miscellanous/Uncategorized                                       |
-+-------------+-------------+------------------------------------------------------------------+
 
 
 ## Script actions
@@ -78,7 +76,7 @@ x=10101,0
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=i,n             ; For *i* values check the next table
+x=i,n             ; For i values check the next table
 ```
 
 | *Action* | *Argument*   | *Repeats* | *Target Priority*      | *Description*                                      |
@@ -162,7 +160,7 @@ x=14001,n
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=i,n             ; For *i* values check the next table
+x=i,n             ; For i values check the next table
 ```
 
 | *Action* | *Argument*             | *Repeats* | *Target Priority*      | *Description*                                      |
@@ -235,7 +233,7 @@ In `rulesmd.ini`:
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=i,n             ; For *i* values check the next table
+x=i,n             ; For i values check the next table
 ```
 
 | *Action* | *Argument*            | *Target Owner* | *Target Priority*      | *Description*                                |
