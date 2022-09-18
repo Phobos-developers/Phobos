@@ -34,7 +34,14 @@ The number that they receive follows the next table:
 +-------------+-------------+------------------------------------------------------------------+
 | 19000-19999 |             | Miscellanous/Uncategorized                                       |
 
-
+table = Table([6, 6])
+    table.add_cell(Cell("foo"))
+    table.add_cell(Cell("bar"))
+    table.set_separator()
+    table.add_row()
+    table.add_cell(Cell("FOO"))
+    table.add_cell(Cell("BAR"))
+    print(str(table))
 ## Script actions
 
 ### `10100` Timed Area Guard
