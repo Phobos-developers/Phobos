@@ -131,7 +131,7 @@ In `rulesmd.ini`:
 ; ...
 ```
 
-### Move Team to techno location
+### Move Team To Techno Location
 
 - These Actions instructs the TeamType to use the TaskForce to approach the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value).
 
@@ -165,7 +165,7 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=10100,n            ; integer, time in ingame seconds
 ```
-### `10101` Wait until ammo is full
+### `10101` Wait Until Ammo Is Full
 
 - If the TaskForce contains unit(s) that use ammo then the the script will not continue until all these units have fully refilled the ammo.
 
@@ -174,7 +174,7 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=10101,0
 ```
-### `10102` Regroup temporarily around the Team Leader
+### `10102` Regroup Temporarily Around The Team Leader
 
 - Puts the TaskForce into Area Guard Mode for the given amount of time around the Team Leader (this unit remains almost immobile until the action ends). The default radius around the Leader is `[General] > CloseEnough` and the units will not leave that area.
 
@@ -278,7 +278,7 @@ x=14003,0
 
 ## Range 16000-16999: Flow Control
 
-### `16000` Start a Timed Jump to the same line
+### `16000` Start A Timed Jump To The Same Line
 
 - When the timer ends the current script action ends and start again the same script action. The timer jump repeats again (infinite loop) until is stopped with action `16002` or the team is destroyed.
 
@@ -288,7 +288,7 @@ In `aimd.ini`:
 x=16000,n           ; integer n=0, in ingame seconds
 ```
 
-### `16001` Start a Timed Jump to the next line
+### `16001` Start A Timed Jump To The Next Line
 
 - When the timer ends the current script action ends and start the next one in the script type list.
 
@@ -298,7 +298,7 @@ In `aimd.ini`:
 x=16001,n           ; integer n=0, in ingame seconds
 ```
 
-### `16002` Stop the Timed Jumps
+### `16002` Stop The Timed Jumps
 
 - If the Timed Jumps were activated this action stop the process.
 
