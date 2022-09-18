@@ -1,8 +1,8 @@
-# AI Scripting and Mapping
+# AI Scripting And Mapping
 
 This page describes all AI scripting and mapping related additions and changes introduced by Phobos.
 
-## Bugfixes and miscellanous
+## Bugfixes And Miscellanous
 
 - Script action `Move to cell` now obeys YR cell calculation now. Using `1000 * Y + X` as its cell value. (was `128 * Y + X` as it's a RA1 leftover)
 - The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])
@@ -10,7 +10,7 @@ This page describes all AI scripting and mapping related additions and changes i
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
 
-## ScriptType actions classification
+## ScriptType Actions Classification
 
 Script actions are the commands used in AI Teams for realising tasks, like movement to specific locations/targets, attacks, patrol, guard area during some time, spy specific structures, load into transports, etc.
 Due to the high number of new ScriptType actions offered by Phobos and for preventing future collissions with new Ares ScriptType actions we are classifing the scripts by the purpose they were designed.
@@ -28,7 +28,7 @@ The number that they receive follows the next table:
 | *19000-19999* |             | Miscellanous/Uncategorized                                       |
 
 
-## Script actions
+## Script Actions
 
 ## Range 10000-10999: Attack Actions
 
@@ -374,7 +374,7 @@ x=i,n             ; where 18048 <= i <= 18071, n is made up of two parts, the lo
 ## Range 19000-19999: Miscellanous/Uncategorized
 
 
-## Trigger actions
+## Trigger Actions
 
 ### `500` Save Game
 - Save the current game immediately (singleplayer game only).
