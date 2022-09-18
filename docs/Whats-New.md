@@ -364,7 +364,7 @@ Vanilla fixes:
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding (only applies to Z-aware drawing mode for now) (by Apollo)
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something (by Kerbiter)
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true` (by Starkku)
-- Fixed the bug when MakeInfantry logic on BombClass resulted on `Neutral` side infantry (by Otamaa)
+- Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry (by Otamaa)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
