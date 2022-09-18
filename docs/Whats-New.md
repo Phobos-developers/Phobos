@@ -142,9 +142,9 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   BuiltInType=5
 
   [ScriptsRA2]
-  19000=Timed Area Guard,20,0,1,[LONG DESC]
-  19005=Load Onto Transports,0,0,1,[LONG DESC]
-  19001=Wait until ammo is full,0,0,1,[LONG DESC]
+  10100=Timed Area Guard,20,0,1,[LONG DESC]
+  10103=Load Onto Transports,0,0,1,[LONG DESC]
+  10101=Wait until ammo is full,0,0,1,[LONG DESC]
   18000=Local variable set,22,0,1,[LONG DESC]
   18001=Local variable add,22,0,1,[LONG DESC]
   18002=Local variable minus,22,0,1,[LONG DESC]
