@@ -23,7 +23,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - Automatic self-destruction logic logic has been reimplemented, `Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been remade/renamed and require adjustments to function.
 - `DetachedFromOwner` on weapons is deprecated. This has been replaced by `AllowDamageOnSelf` on warheads.
 - Script actions 125 and 126 (timed jump) now take the time measured in ingame seconds instead of frames. Divide your value by 15 to accomodate to this change.
-- [Placement Preview](User-Interface.md#placement-preview) logic has been reimplemented, `BuildingPlacementPreview.DefaultTranslucentLeve`, `BuildingPlacementGrid.TranslucentLevel`, `PlacementPreview.Show`, `PlacementPreview.TranslucentLevel` and `ShowBuildingPlacementPreview` tags have been remade/renamed and require adjustments to function.
+- [Placement Preview](User-Interface.md#placement-preview) logic has been reimplemented, `BuildingPlacementPreview.DefaultTranslucentLevel`, `BuildingPlacementGrid.TranslucentLevel`, `PlacementPreview.Show`, `PlacementPreview.TranslucentLevel` and `ShowBuildingPlacementPreview` tags have been remade/renamed and require adjustments to function.
 
 
 #### From 0.2.2.2
