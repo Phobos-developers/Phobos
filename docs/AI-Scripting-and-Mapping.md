@@ -24,7 +24,7 @@ The number that they receive follows the next table:
 | *12000-12999* |             | Suplementary/setup pre-actions                                   |
 | *14000-14999* |             | Utility like "Team manipulation", "angernodes manipulation", etc |
 | *16000-16999* |             | Flow Control (jumps, change script, loops, breaks, etc)          |
-| *18000-18999* |             | For variables                                                    |
+| *18000-18999* |             | Variables manimulation                                           |
 | *19000-19999* |             | Miscellanous/Uncategorized                                       |
 
 
