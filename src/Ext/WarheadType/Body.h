@@ -5,6 +5,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
+#include <Ext/Bullet/Body.h>
 
 class WarheadTypeExt
 {
@@ -73,6 +74,7 @@ public:
 		ValueableVector<SuperWeaponTypeClass*> LaunchSW;
 		Valueable<bool> LaunchSW_RealLaunch;
 		Valueable<bool> LaunchSW_IgnoreInhibitors;
+		Valueable<bool> LaunchSW_IgnoreDesignators;
 		Valueable<bool> AllowDamageOnSelf;
 
 		Valueable<bool> DetonateOnAllMapObjects;
@@ -155,6 +157,7 @@ public:
 			, LaunchSW {}
 			, LaunchSW_RealLaunch { true }
 			, LaunchSW_IgnoreInhibitors { false }
+			, LaunchSW_IgnoreDesignators { true }
 			, AllowDamageOnSelf { false }
 
 			, DetonateOnAllMapObjects { false }
@@ -181,7 +184,7 @@ public:
 		void ApplyShieldModifiers(TechnoClass* pTarget);
 
 	public:
-		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
+		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
 		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
 		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner);

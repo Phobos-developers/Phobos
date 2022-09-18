@@ -74,42 +74,41 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	}
 }
 
-void TechnoExt::ExtData::CheckDeathConditions()
+bool TechnoExt::ExtData::CheckDeathConditions()
 {
-	auto const pThis = this->OwnerObject();
-	auto const pType = pThis->GetTechnoType();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (pTypeExt)
+	if (!pTypeExt->AutoDeath_Behavior.isset())
+		return false;
+
+	auto const pThis = this->OwnerObject();
+	auto const pType = pThis->GetTechnoType();
+
+	// Self-destruction must be enabled
+	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
+
+	// Death if no ammo
+	if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
 	{
-		if (!pTypeExt->AutoDeath_Behavior.isset())
-			return;
+		TechnoExt::KillSelf(pThis, howToDie);
+		return true;
+	}
 
-		// Self-destruction must be enabled
-		const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
-
-		// Death if no ammo
-		if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
+	// Death if countdown ends
+	if (pTypeExt->AutoDeath_AfterDelay > 0)
+	{
+		//using Expired() may be confusing
+		if (this->AutoDeathTimer.StartTime == -1 && this->AutoDeathTimer.TimeLeft == 0)
+		{
+			this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
+		}
+		else if (!pThis->Transporter && this->AutoDeathTimer.Completed())
 		{
 			TechnoExt::KillSelf(pThis, howToDie);
-			return;
-		}
-
-		// Death if countdown ends
-		if (pTypeExt->AutoDeath_AfterDelay > 0)
-		{
-			//using Expired() may be confusing
-			if (this->AutoDeathTimer.StartTime == -1 && this->AutoDeathTimer.TimeLeft == 0)
-			{
-				this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
-			}
-			else if (!pThis->Transporter && this->AutoDeathTimer.Completed())
-			{
-				TechnoExt::KillSelf(pThis, howToDie);
-				return;
-			}
+			return true;
 		}
 	}
+	return false;
 }
 
 void TechnoExt::ExtData::EatPassengers()
@@ -242,7 +241,7 @@ void TechnoExt::ExtData::ApplyPoweredKillSpawns()
 					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
 					{
 						pItem->Unit->ReceiveDamage(&pItem->Unit->Health, 0,
-							RulesClass::Instance()->C4Warhead, nullptr, false, false, nullptr);
+							RulesClass::Instance()->C4Warhead, nullptr, true, false, nullptr);
 					}
 				}
 			}
@@ -555,6 +554,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	case AutoDeathBehavior::Vanish:
 	{
 		pThis->KillPassengers(pThis);
+		pThis->vt_entry_3A0(); // Stun? what is this?
 		pThis->Limbo();
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
@@ -578,7 +578,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	}
 
 	default: //must be AutoDeathBehavior::Kill
-		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pThis->Owner);
 		// Due to Ares, ignoreDefense=true will prevent passenger/crew/hijacker from escaping
 		return;
 	}

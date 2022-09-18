@@ -6,7 +6,7 @@
 
 // 50% translucency blitter pt. 1
 DEFINE_DYNAMIC_PATCH(Blit50TranslucencyFix1, 0x4987F7,
-	0x66, 0xBA, 0xDE, 0xF7)		// mov	dx, 0xF7DE
+	0x66, 0xBA, 0xDE, 0xF7);		// mov	dx, 0xF7DE
 
 // 50% translucency blitter pt. 2
 DEFINE_DYNAMIC_PATCH(Blit50TranslucencyFix2, 0x498817,
@@ -17,7 +17,7 @@ DEFINE_DYNAMIC_PATCH(Blit50TranslucencyFix2, 0x498817,
 	0xD1, 0xE9,					// shr    ecx, 1
 	0x0B, 0x03,					// or     eax, DWORD PTR [ebx]
 	0x29, 0xC8,					// sub    eax, ecx
-	0x90, 0x90, 0x90, 0x90)		// nop nop nop nop
+	0x90, 0x90, 0x90, 0x90);	// nop nop nop nop
 
 // 75% translucency blitter
 DEFINE_DYNAMIC_PATCH(Blit75TranslucencyFix, 0x4985FE,
@@ -47,7 +47,7 @@ DEFINE_DYNAMIC_PATCH(Blit75TranslucencyFix, 0x4985FE,
 	0x8B, 0x44, 0x24, 0x20,					// mov    eax, DWORD PTR [esp+0x20]
 	0x66, 0x89, 0x0F,						// mov    WORD PTR [edi], cx
 	0x47,									// inc    edi
-	0x47)									// inc    edi
+	0x47);									// inc    edi
 
 // 25% translucency blitter
 DEFINE_DYNAMIC_PATCH(Blit25TranslucencyFix, 0x4989EE,
@@ -77,7 +77,7 @@ DEFINE_DYNAMIC_PATCH(Blit25TranslucencyFix, 0x4989EE,
 	0x29, 0xC8,								// sub    eax, ecx
 	0x66, 0x89, 0x07,						// mov    WORD PTR [edi], ax
 	0x47,									// inc    edi
-	0x47)									// inc    edi
+	0x47);									// inc    edi
 
 void BlittersFix::Apply()
 {

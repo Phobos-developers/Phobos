@@ -2,13 +2,14 @@
 
 #include <SuperClass.h>
 
-DEFINE_HOOK(0x6CDE40, SuperClass_Place, 0x5)
+//Ares hooked from 0x6CC390 and jumped to this offset
+DEFINE_HOOK(0x6CDE40, SuperClass_Place_FireExt, 0x3)
 {
 	GET(SuperClass* const, pSuper, ECX);
-	GET_STACK(CoordStruct const, coords, 0x230); // I think?
+	GET_STACK(CellStruct const* const, pCell, 0x4);
+	// GET_STACK(bool const, isPlayer, 0x8);
 
-	if (auto const pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type))
-		pSWExt->FireSuperWeapon(pSuper, pSuper->Owner, coords);
+	SWTypeExt::FireSuperWeaponExt(pSuper, *pCell);
 
 	return 0;
 }
