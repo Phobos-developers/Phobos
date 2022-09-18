@@ -22,20 +22,21 @@ The number that they receive follows the next table:
 | :-----------: | :---------: | :--------------------------------------------------------------: |
 | *10000-10999* | 10000-10049 | Attack                                                           |
 |               | 10050-10099 | Move to                                                          |
-|               | 10100-10999 | General purpose                                                  |
+|               | 10100-10999 | General Purpose                                                  |
 | *12000-12999* |             | Suplementary/setup pre-actions                                   |
 | *14000-14999* |             | Utility like "Team manipulation", "angernodes manipulation", etc |
 | *16000-16999* |             | Flow Control (jumps, change script, loops, breaks, etc)          |
 | *18000-18999* |             | Variables manimulation                                           |
 | *19000-19999* |             | Miscellanous/Uncategorized                                       |
 
-### Range 10000-10999: Attack Actions
+### `10000-10999` In-Game Actions
 
-#### Generic Target Type Attack Actions
+#### `10000-10049` Attack Actions
 
 - These Actions instruct the TeamType to use the TaskForce to approach and attack the target specified by the second parameter which is an index of a generic pre-defined group. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
 - For threat-based attack actions `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from `rulesmd.ini` are accounted.
 - All Aircrafts that attack other air units will end the script. This behavior is intentional because without it aircrafts had some bugs that weren't fixable at the time of developing the feature.
+- `AITargetTypes` Actions instruct the TeamType to use the TaskForce to approach and attack the target specified by the second parameter which is an index of a modder-defined group from `AITargetTypess`. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
 
 In `aimd.ini`:
 ```ini
@@ -43,16 +44,26 @@ In `aimd.ini`:
 x=i,n             ; For i values check the next table
 ```
 
-| *Action* | *Argument*   | *Repeats* | *Target Priority*      | *Description*                                      |
-| :------: | :----------: | :-------: | :--------------------: | :------------------------------------------------: |
-| 10000    | Target Type# | Yes       | Closer                 |                                                    |
-| 10001    | Target Type# | No        | Closer                 | Ends when a team member kill the designated target |
-| 10005    | Target Type# | Yes       | Farther                |                                                    |
-| 10006    | Target Type# | No        | Farther                | Ends when a team member kill the designated target |
-| 10010    | Target Type# | Yes       | Closer, higher threat  |                                                    |
-| 10011    | Target Type# | No        | Closer, higher threat  | Ends when a team member kill the designated target |
-| 10014    | Target Type# | Yes       | Farther, higher threat |                                                    |
-| 10015    | Target Type# | No        | Farther, higher threat | Ends when a team member kill the designated target |
+| *Action* | *Argument*             | *Repeats* | *Target Priority*      | *Description*                                      |
+| :------: | :--------------------: | :-------: | :--------------------: | :------------------------------------------------: |
+| 10000    | Target Type#           | Yes       | Closer                 |                                                    |
+| 10001    | Target Type#           | No        | Closer                 | Ends when a team member kill the designated target |
+| 10002    | `AITargetTypes` index# | Yes       | Closer                 |                                                    |
+| 10003    | `AITargetTypes` index# | No        | Closer                 | Ends when a team member kill the designated target |
+| 10004    | `AITargetTypes` index# | Yes       | Closer                 | Picks 1 random target from the list                |
+| 10005    | Target Type#           | Yes       | Farther                |                                                    |
+| 10006    | Target Type#           | No        | Farther                | Ends when a team member kill the designated target |
+| 10007    | `AITargetTypes` index# | Yes       | Farther                |                                                    |
+| 10008    | `AITargetTypes` index# | No        | Farther                | Ends when a team member kill the designated target |
+| 10009    | `AITargetTypes` index# | Yes       | Farther                | Picks 1 random target from the list                |
+| 10010    | Target Type#           | Yes       | Closer, higher threat  |                                                    |
+| 10011    | Target Type#           | No        | Closer, higher threat  | Ends when a team member kill the designated target |
+| 10012    | `AITargetTypes` index# | Yes       | Closer, higher threat  |                                                    |
+| 10013    | `AITargetTypes` index# | No        | Closer, higher threat  | Ends when a team member kill the designated target |
+| 10014    | Target Type#           | Yes       | Farther, higher threat |                                                    |
+| 10015    | Target Type#           | No        | Farther, higher threat | Ends when a team member kill the designated target |
+| 10016    | `AITargetTypes` index# | Yes       | Farther, higher threat |                                                    |
+| 10017    | `AITargetTypes` index# | No        | Farther, higher threat | Ends when a team member kill the designated target |
 
 - The following values are the *Target Type#* which can be used as second parameter of the new attack script actions:
 
@@ -95,32 +106,8 @@ x=i,n             ; For i values check the next table
 | 35      | Vehicle & Naval Factory  | Any enemy `BuildingTypes` with `Factory=UnitType` |
 | 36      | Non-defensive Structures | Any enemy `BuildingTypes` with `IsBaseDefense=no` |
 
-#### AITargetTypes Attack Actions
-
-- These Actions instruct the TeamType to use the TaskForce to approach and attack the target specified by the second parameter which is an index of a modder-defined group from `AITargetTypess`. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
- - For threat-based attack actions `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from `rulesmd.ini` are accounted.
- - All Aircrafts that attack other air units will end the script. This behavior is intentional because without it aircrafts had some bugs that weren't fixable at the time of developing the feature.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=i,n             ; For i values check the next table
-```
-
-| *Action* | *Argument*             | *Repeats* | *Target Priority*      | *Description*                                      |
-| :------: | :--------------------: | :-------: | :--------------------: | :------------------------------------------------: |
-| 10002    | `AITargetTypes` index# | Yes       | Closer                 |                                                    |
-| 10003    | `AITargetTypes` index# | No        | Closer                 | Ends when a team member kill the designated target |
-| 10004    | `AITargetTypes` index# | Yes       | Closer                 | Picks 1 random target from the list                |
-| 10007    | `AITargetTypes` index# | Yes       | Farther                |                                                    |
-| 10008    | `AITargetTypes` index# | No        | Farther                | Ends when a team member kill the designated target |
-| 10009    | `AITargetTypes` index# | Yes       | Farther                | Picks 1 random target from the list                |
-| 10012    | `AITargetTypes` index# | Yes       | Closer, higher threat  |                                                    |
-| 10013    | `AITargetTypes` index# | No        | Closer, higher threat  | Ends when a team member kill the designated target |
-| 10016    | `AITargetTypes` index# | Yes       | Farther, higher threat |                                                    |
-| 10017    | `AITargetTypes` index# | No        | Farther, higher threat | Ends when a team member kill the designated target |
-
-- The second parameter with a 0-based index for the `AITargetTypes` section specifies the list of possible `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` that can be evaluated. The new `AITargetTypes` section must be declared in `rulesmd.ini` for making this script work:
+- The second parameter with a 0-based index for the `AITargetTypes` section specifies the list of possible `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` that can be evaluated. 
+- The *`AITargetTypes` index#* values are obtained in the new `AITargetTypes` section that must be declared in `rulesmd.ini`:
 
 In `rulesmd.ini`:
 ```ini
@@ -130,7 +117,7 @@ In `rulesmd.ini`:
 ; ...
 ```
 
-#### Move Team To Techno Location Actions
+#### `10050-10099` Move Team To Techno Location Actions
 
 - These Actions instructs the TeamType to use the TaskForce to approach the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value).
 
@@ -155,7 +142,9 @@ x=i,n             ; For i values check the next table
 | 10060    | [AITargetType] index# | Friendly       | Farther                |                                              |
 | 10061    | [AITargetType] index# | Friendly       | Farther                | Picks 1 random target from the selected list |
 
-#### `10100` Timed Area Guard
+#### `10000-10049` General Purpose
+
+##### `10100` Timed Area Guard
 
 - Puts the TaskForce into Area Guard Mode for the given units of time. Unlike the original timed Guard script (`5,n`) that just stays in place doing a basic guard operation the "Area Guard" action has a more active role attacking nearby invaders or defending units that needs protection.
 
@@ -164,7 +153,7 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=10100,n            ; integer, time in ingame seconds
 ```
-#### `10101` Wait Until Ammo Is Full
+##### `10101` Wait Until Ammo Is Full
 
 - If the TaskForce contains unit(s) that use ammo then the the script will not continue until all these units have fully refilled the ammo.
 
@@ -173,7 +162,7 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=10101,0
 ```
-#### `10102` Regroup Temporarily Around The Team Leader
+##### `10102` Regroup Temporarily Around The Team Leader
 
 - Puts the TaskForce into Area Guard Mode for the given amount of time around the Team Leader (this unit remains almost immobile until the action ends). The default radius around the Leader is `[General] > CloseEnough` and the units will not leave that area.
 
@@ -183,7 +172,7 @@ In `aimd.ini`:
 x=10102,n
 ```
 
-#### `10103` Load Onto Transports
+##### `10103` Load Onto Transports
 
 - If the TaskForce contains unit(s) that can be carried by the transports of the same TaskForce then this action will make the units enter the transports. In Single player missions the next action must be "Wait until fully loaded" (`43,0`) or the script will not continue.
 
@@ -193,7 +182,7 @@ In `aimd.ini`:
 x=10103,0
 ```
 
-### Range 12000-12999: Suplementary/Setup Pre-actions
+### 12000-12999 Suplementary/Setup Pre-actions
 
 #### `12000` Wait If No Target Found
 
@@ -233,7 +222,7 @@ x=12002,n
 | 1          | One unit reaches the minimum distance         |
 | 2          | All team members reached the minimum distance |
 
-### Range 14000-14999: Utility Actions
+### 14000-14999 Utility Actions
 
 #### `14000` Team's Trigger Weight Reward
 
@@ -275,7 +264,7 @@ In `aimd.ini`:
 x=14003,0
 ```
 
-### Range 16000-16999: Flow Control
+### 16000-16999 Flow Control
 
 #### `16000` Start A Timed Jump To The Same Line
 
@@ -337,7 +326,7 @@ In `rulesmd.ini`:
 ; ...
 ```
 
-### Range 18000-18999: Variables Manimulation
+### 18000-18999 Variables Manimulation
 
 #### `18000 - 18023` Edit Variable
 - Operate a variable's value
@@ -370,7 +359,7 @@ In `aimd.ini`:
 x=i,n             ; where 18048 <= i <= 18071, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the global variable index.
 ```
 
-### Range 19000-19999: Miscellanous/Uncategorized
+### 19000-19999 Miscellanous/Uncategorized
 
 
 ## Trigger Actions
