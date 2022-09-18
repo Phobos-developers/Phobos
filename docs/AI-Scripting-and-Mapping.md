@@ -130,7 +130,7 @@ In `rulesmd.ini`:
 ; ...
 ```
 
-#### Move Team To Techno Location
+#### Move Team To Techno Location Actions
 
 - These Actions instructs the TeamType to use the TaskForce to approach the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value).
 
