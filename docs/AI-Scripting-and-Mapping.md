@@ -20,7 +20,7 @@ The number that they receive follows the next table:
 | :-----------: | :---------: | :--------------------------------------------------------------: |
 | *10000-10999* | 10000-10049 | Attack                                                           |
 |               | 10050-10099 | Move to                                                          |
-|               | 10050-10099 | General purpose                                                  |
+|               | 10100-10999 | General purpose                                                  |
 | *12000-12999* |             | Suplementary/setup pre-actions                                   |
 | *14000-14999* |             | Utility like "Team manipulation", "angernodes manipulation", etc |
 | *16000-16999* |             | Flow Control (jumps, change script, loops, breaks, etc)          |
