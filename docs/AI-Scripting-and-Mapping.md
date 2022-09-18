@@ -12,23 +12,6 @@ This page describes all AI scripting and mapping related additions and changes i
 
 ## Script Actions
 
-### Action Ranges Explanation
-
-Script actions are the commands used in AI Teams for realising tasks, like movement to specific locations/targets, attacks, patrol, guard area during some time, spy specific structures, load into transports, etc.
-Due to the high number of new ScriptType actions offered by Phobos and for preventing future collissions with new Ares ScriptType actions we are classifing the scripts by the purpose they were designed.
-The number that they receive follows the next table:
-
-| *Range*       | *Sub-Range* | *Actions Description*                                            |
-| :-----------: | :---------: | :--------------------------------------------------------------: |
-| *10000-10999* | 10000-10049 | Attack                                                           |
-|               | 10050-10099 | Move to                                                          |
-|               | 10100-10999 | General Purpose                                                  |
-| *12000-12999* |             | Suplementary/setup pre-actions                                   |
-| *14000-14999* |             | Utility like "Team manipulation", "angernodes manipulation", etc |
-| *16000-16999* |             | Flow Control (jumps, change script, loops, breaks, etc)          |
-| *18000-18999* |             | Variables manimulation                                           |
-| *19000-19999* |             | Miscellanous/Uncategorized                                       |
-
 ### `10000-10999` In-Game Actions
 
 #### `10000-10049` Attack Actions
