@@ -86,6 +86,7 @@ struct _VTABLE
 
 #pragma warning(pop)
 #pragma pack(pop)
+#pragma endregion Patch Structs
 
 #pragma region Macros
 #define GET_OFFSET(pointer) reinterpret_cast<DWORD>(pointer)
