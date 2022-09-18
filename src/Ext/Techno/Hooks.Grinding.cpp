@@ -91,12 +91,9 @@ DEFINE_HOOK(0x51E63A, InfantryClass_WhatAction_Grinding_Engineer, 0x6)
 
 	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
-		if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
-		{
-			bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
-			R->EBP(canBeGrinded ? Action::Repair : Action::NoGRepair);
-			return ReturnValue;
-		}
+		bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
+		R->EBP(canBeGrinded ? Action::Repair : Action::NoGRepair);
+		return ReturnValue;
 	}
 
 	return 0;
@@ -115,22 +112,19 @@ DEFINE_HOOK(0x740134, UnitClass_WhatAction_Grinding, 0x0)
 
 	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
-		if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
+		if (pThis->Owner->IsPlayerControl() && !pBuilding->IsBeingWarpedOut() &&
+			pThis->Owner->IsAlliedWith(pTarget) && (pBuilding->Type->Grinding || action == Action::Select))
 		{
-			if (pThis->Owner->IsPlayerControl() && !pBuilding->IsBeingWarpedOut() &&
-				pThis->Owner->IsAlliedWith(pTarget) && (pBuilding->Type->Grinding || action == Action::Select))
+			if (pThis->SendCommand(RadioCommand::QueryCanEnter, pTarget) == RadioCommand::AnswerPositive)
 			{
-				if (pThis->SendCommand(RadioCommand::QueryCanEnter, pTarget) == RadioCommand::AnswerPositive)
-				{
-					bool isFlying = pThis->GetTechnoType()->MovementZone == MovementZone::Fly;
-					bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
-					action = pBuilding->Type->Grinding ? canBeGrinded && !isFlying ? Action::Repair : Action::NoEnter : !isFlying ? Action::Enter : Action::NoEnter;
-					R->EBX(action);
-				}
-				else if (pBuilding->Type->Grinding)
-				{
-					R->EBX(Action::NoEnter);
-				}
+				bool isFlying = pThis->GetTechnoType()->MovementZone == MovementZone::Fly;
+				bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
+				action = pBuilding->Type->Grinding ? canBeGrinded && !isFlying ? Action::Repair : Action::NoEnter : !isFlying ? Action::Enter : Action::NoEnter;
+				R->EBX(action);
+			}
+			else if (pBuilding->Type->Grinding)
+			{
+				R->EBX(Action::NoEnter);
 			}
 		}
 	}
@@ -163,7 +157,7 @@ DEFINE_HOOK(0x5198B3, InfantryClass_PerCellProcess_Grinding, 0x5)
 
 DEFINE_HOOK(0x73A1C3, UnitClass_PerCellProcess_Grinding, 0x5)
 {
-	enum { Continue = 0x73A1DE};
+	enum { Continue = 0x73A1DE };
 
 	GET(UnitClass*, pThis, EBP);
 	GET(BuildingClass*, pBuilding, EBX);

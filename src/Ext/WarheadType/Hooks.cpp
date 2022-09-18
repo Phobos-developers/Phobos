@@ -15,16 +15,19 @@ bool DetonationInDamageArea = true;
 
 DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 {
-	GET(BulletClass* const, pThis, ESI);
+	GET(BulletClass* const, pBullet, ESI);
 
-	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH))
+	auto const pBulletExt = pBullet ? BulletExt::ExtMap.Find(pBullet) : nullptr;
+	auto const pWH = pBullet ? pBullet->WH : nullptr;
+
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
 	{
 		GET_BASE(const CoordStruct*, pCoords, 0x8);
-		auto const pExt = BulletExt::ExtMap.Find(pThis);
-		auto const pTechno = pThis ? pThis->Owner : nullptr;
-		auto const pHouse = pTechno ? pTechno->Owner : pExt->FirerHouse;
+		auto const pOwner = pBullet->Owner;
+		auto const pHouse = pOwner ? pOwner->Owner : nullptr;
+		auto const pDecidedHouse = pHouse ? pHouse : pBulletExt->FirerHouse;
 
-		pWHExt->Detonate(pTechno, pHouse, pThis, *pCoords);
+		pWHExt->Detonate(pOwner, pDecidedHouse, pBulletExt, *pCoords);
 	}
 
 	DetonationInDamageArea = false;

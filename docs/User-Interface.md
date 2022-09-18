@@ -195,6 +195,7 @@ ShowBuildingPlacementPreview=false  ; boolean
 - PCX files can now be used as loadscreen images.
   - You can specify custom loadscreen with Ares tag `File.LoadScreen`.
   - Campaign loading screen (`missionmd.ini->[LS800BkgdName]`) can also use PCX image.
+  - Observer loading screen can use `ls800obs.pcx` *(or `ls640obs.pcx` when screen width is 640)* for this feature.
 - The loadscreen size can now be different from the default `800x600` one; if the image is bigger than the screen it's centered and cropped.
   - This feature works in conjunction with CnCNet5 spawner DLL which resizes loadscreen window to actual monitor size and places the image in center. If there's no CnCNet5 spawner loaded, the window resolution will be always `800x600`.
   - Same applies to campaign loading screen (`missionmd.ini->[LS800BkgdName]`).
@@ -341,10 +342,6 @@ Sidebar.GDIPositions=  ; boolean
 - Fixed a bug when switching build queue tabs via QWER didn't make tooltips disappear as they should, resulting in stuck tooltips.
 - The tooltips can now go over the sidebar bounds to accommodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
 
-```{note}
-Same as with harvester counter, you can download the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) or draw your own icons.
-```
-
 In `uimd.ini`:
 ```ini
 [ToolTips]
@@ -366,4 +363,28 @@ In `RA2MD.ini`:
 ```ini
 [Phobos]
 ToolTipDescriptions=true  ; boolean
+```
+
+```{note}
+Same as with harvester counter, you can download the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) or draw your own icons.
+```
+
+- The background color and opacity of tooltips can now be customized globally or per side.
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]
+ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to [AudioVisual]->ToolTip.Background.Color, which defaults to `0,0,0`
+ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [AudioVisual]->ToolTip.Background.Opacity, which defaults to `100`
+ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual]->ToolTip.Background.BlurSize, which defaults to `0.0`
+```
+
+```{note}
+The blur effect is resource intensive. Please make sure you really want to enable this effect, otherwise leave it to 0.0 so it stays disabled.
+```
+
+In `RA2MD.ini`:
+```ini
+[Phobos]
+ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.
 ```

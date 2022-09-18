@@ -301,7 +301,7 @@ x=124,0
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=125,n           ; integer n=0, in frames
+x=125,n           ; integer n=0, in ingame seconds
 ```
 
 ### `126` Start a Timed Jump to the same line
@@ -311,7 +311,7 @@ x=125,n           ; integer n=0, in frames
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=126,n           ; integer n=0, in frames
+x=126,n           ; integer n=0, in ingame seconds
 ```
 
 ### `500 - 523` Edit Variable
@@ -539,3 +539,13 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX
 533         | CurrentValue >= GlobalVariableValue | Yes |
 534         | CurrentValue <= GlobalVariableValue | Yes |
 535         | CurrentValue & GlobalVariableValue | Yes |
+
+### `600` The shield of the attached object is broken
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,600,2,0,0,...
+...
+```

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-16 14:17+0800\n"
+"POT-Creation-Date: 2022-07-31 14:34+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,11 +37,11 @@ msgstr "输出目标信息"
 
 #: ../Miscellanous.md:9
 msgid ""
-"![image](_static/images/objectinfo-01.png)   *Object info dump from [CnC:"
-" Reloaded](https://www.moddb.com/mods/cncreloaded/)*"
+"![image](_static/images/objectinfo-01.png) *Object info dump from [CnC: "
+"Reloaded](https://www.moddb.com/mods/cncreloaded/)*"
 msgstr ""
-"![image](_static/images/objectinfo-01.png)   \n*目标信息输出，来自[CnC:"
-" Reloaded](https://www.moddb.com/mods/cncreloaded/)*"
+"![image](_static/images/objectinfo-01.png)   \n"
+"*目标信息输出，来自[CnC: Reloaded](https://www.moddb.com/mods/cncreloaded/)*"
 
 #: ../Miscellanous.md:9
 msgid "image"
@@ -50,18 +50,29 @@ msgstr ""
 #: ../Miscellanous.md:12
 msgid ""
 "There's a new hotkey to dump selected/hovered object info on press. "
-"Available only when the debug tag is set."
+"Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to "
+"true in `rulesmd.ini`."
 msgstr "用以输出选择/悬浮目标信息的快捷键。仅当debug标签开启时启用。"
 
 #: ../Miscellanous.md:14
-msgid "In `rulesmd.ini`:"
-msgstr "在`rulesmd.ini`中："
+msgid "Display Damage Numbers"
+msgstr "显示伤害数字"
 
-#: ../Miscellanous.md:20
+#: ../Miscellanous.md:16
+msgid ""
+"There's a new hotkey to show exact numbers of damage dealt on units & "
+"buildings. The numbers are shown in red (blue against shields) for "
+"damage, and for healing damage in green (cyan against shields). They are "
+"shown on the affected units and will move upwards after appearing. "
+"Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to "
+"true in `rulesmd.ini`."
+msgstr "一个新的快捷键用以显示精确的伤害数字。伤害数字固定显示为红色（对护盾为蓝色），治疗数字显示为绿色（对护盾为青色）。数字将显示在单位上，然后缓慢向上移动。此功能仅当开发者功能启用时有效。"
+
+#: ../Miscellanous.md:18
 msgid "Semantic locomotor aliases"
 msgstr "运动模式别称"
 
-#: ../Miscellanous.md:22
+#: ../Miscellanous.md:20
 msgid ""
 "It's now possible to write locomotor aliases instead of their CLSIDs in "
 "the `Locomotor` tag value. Use the table below to find the needed alias "

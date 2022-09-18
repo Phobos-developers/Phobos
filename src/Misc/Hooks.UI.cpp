@@ -76,10 +76,13 @@ DEFINE_HOOK(0x641EE0, PreviewClass_ReadPreview, 0x6)
 
 DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 {
+	auto const pPlayer = HouseClass::Player();
+	if (!pPlayer || pPlayer->Defeated)
+		return 0;
+
 	if (Phobos::UI::ShowHarvesterCounter)
 	{
-		auto pPlayer = HouseClass::Player();
-		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::Player->SideIndex));
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
 		auto nActive = HouseExt::ActiveHarvesterCount(pPlayer);
 		auto nTotal = HouseExt::TotalHarvesterCount(pPlayer);
@@ -99,18 +102,18 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		RectangleStruct vRect = { 0, 0, 0, 0 };
 		DSurface::Sidebar->GetRect(&vRect);
 
-		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB2DWORD(clrToolTip), 0,
+		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0,
 			TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12);
 	}
 
 	if (Phobos::UI::ShowPowerDelta)
 	{
-		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::Player->SideIndex));
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
-		auto delta = HouseClass::Player->PowerOutput - HouseClass::Player->PowerDrain;
+		auto delta = pPlayer->PowerOutput - pPlayer->PowerDrain;
 
-		double percent = HouseClass::Player->PowerOutput != 0
-			? (double)HouseClass::Player->PowerDrain / (double)HouseClass::Player->PowerOutput : HouseClass::Player->PowerDrain != 0
+		double percent = pPlayer->PowerOutput != 0
+			? (double)pPlayer->PowerDrain / (double)pPlayer->PowerOutput : pPlayer->PowerDrain != 0
 			? Phobos::UI::PowerDelta_ConditionRed*2.f : Phobos::UI::PowerDelta_ConditionYellow;
 
 		ColorStruct clrToolTip = percent < Phobos::UI::PowerDelta_ConditionYellow
@@ -130,7 +133,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		RectangleStruct vRect = { 0, 0, 0, 0 };
 		DSurface::Sidebar->GetRect(&vRect);
 
-		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB2DWORD(clrToolTip), 0, TextFlags);
+		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
 	}
 
 	return 0;

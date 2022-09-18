@@ -27,10 +27,12 @@ public:
 	public:
 		DynamicVectorClass<DynamicVectorClass<TechnoTypeClass*>> AITargetTypesLists;
 		DynamicVectorClass<DynamicVectorClass<ScriptTypeClass*>> AIScriptsLists;
+		DynamicVectorClass<TechnoTypeClass*> HarvesterTypes;
 
 		Valueable<int> Storage_TiberiumIndex;
 		Nullable<int> InfantryGainSelfHealCap;
 		Nullable<int> UnitsGainSelfHealCap;
+		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<bool> RadWarhead_Detonate;
 		Valueable<bool> RadHasOwner;
@@ -52,7 +54,17 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Infantry_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
+
+		Valueable<bool> ForbidParallelAIQueues_Infantry;
+		Valueable<bool> ForbidParallelAIQueues_Vehicle;
+		Valueable<bool> ForbidParallelAIQueues_Navy;
+		Valueable<bool> ForbidParallelAIQueues_Aircraft;
+		Valueable<bool> ForbidParallelAIQueues_Building;
+
 		Valueable<bool> IronCurtain_KeptOnDeploy;
+		Valueable<ColorStruct> ToolTip_Background_Color;
+		Valueable<int> ToolTip_Background_Opacity;
+		Valueable<float> ToolTip_Background_BlurSize;
 
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
@@ -63,6 +75,7 @@ public:
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
 			, UnitsGainSelfHealCap {}
+			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
 			, RadWarhead_Detonate { false }
 			, RadHasOwner { false }
@@ -76,14 +89,19 @@ public:
 			, BuildingPlacementPreview_TranslucentLevel { 3 }
 			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { -1,-1,-1 } }
-			, Pips_SelfHeal_Infantry {{ 13, 20 }}
-			, Pips_SelfHeal_Units {{ 13, 20 }}
-			, Pips_SelfHeal_Buildings {{ 13, 20 }}
-			, Pips_SelfHeal_Infantry_Offset {{ 25, -35 }}
-			, Pips_SelfHeal_Units_Offset {{ 33, -32 }}
-			, Pips_SelfHeal_Buildings_Offset {{ 15, 10 }}
+			, Pips_Shield_Building_Empty { }
+			, Pips_SelfHeal_Infantry { { 13, 20 } }
+			, Pips_SelfHeal_Units { { 13, 20 } }
+			, Pips_SelfHeal_Buildings { { 13, 20 } }
+			, Pips_SelfHeal_Infantry_Offset { { 25, -35 } }
+			, Pips_SelfHeal_Units_Offset { { 33, -32 } }
+			, Pips_SelfHeal_Buildings_Offset { { 15, 10 } }
+			, ForbidParallelAIQueues_Aircraft { false }
+			, ForbidParallelAIQueues_Building { false }
+			, ForbidParallelAIQueues_Infantry { false }
+			, ForbidParallelAIQueues_Navy { false }
+			, ForbidParallelAIQueues_Vehicle { false }
 			, IronCurtain_KeptOnDeploy { true }
-			, Pips_Shield_Building_Empty {}
 			, Buildings_DefaultDigitalDisplayTypes {}
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}

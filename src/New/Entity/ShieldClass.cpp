@@ -12,10 +12,14 @@
 #include <RadarEventClass.h>
 #include <TacticalClass.h>
 
+std::vector<ShieldClass*> ShieldClass::Array;
+
 ShieldClass::ShieldClass() : Techno { nullptr }
 	, HP { 0 }
 	, Timers { }
-{ }
+{
+	ShieldClass::Array.emplace_back(this);
+}
 
 ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTechno }
 	, IdleAnim { nullptr }
@@ -31,12 +35,35 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTech
 	this->UpdateType();
 	SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
 	strcpy(this->TechnoID, this->Techno->get_ID());
+	ShieldClass::Array.emplace_back(this);
+}
+
+ShieldClass::~ShieldClass()
+{
+	auto it = std::find(ShieldClass::Array.begin(), ShieldClass::Array.end(), this);
+	if (it != ShieldClass::Array.end())
+		ShieldClass::Array.erase(it);
 }
 
 void ShieldClass::UpdateType()
 {
 	this->Type = TechnoExt::ExtMap.Find(this->Techno)->CurrentShieldType;
 }
+
+void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
+{
+	if (auto const pAnim = abstract_cast<AnimClass*>(static_cast<AbstractClass*>(ptr)))
+	{
+		for (auto pShield : ShieldClass::Array)
+		{
+			if (pAnim == pShield->IdleAnim)
+				pShield->KillAnim();
+		}
+	}
+}
+
+// =============================
+// load / save
 
 template <typename T>
 bool ShieldClass::Serialize(T& Stm)
@@ -74,6 +101,8 @@ bool ShieldClass::Save(PhobosStreamWriter& Stm) const
 	return const_cast<ShieldClass*>(this)->Serialize(Stm);
 }
 
+// =============================
+//
 // Is used for DeploysInto/UndeploysInto
 void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 {
@@ -93,6 +122,20 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 		pFromExt->Shield = nullptr;
 }
 
+bool ShieldClass::ShieldIsBrokenTEvent(ObjectClass* pAttached)
+{
+	if (auto pTechno = abstract_cast<TechnoClass*>(pAttached))
+	{
+		if (auto pExt = TechnoExt::ExtMap.Find(pTechno))
+		{
+			ShieldClass* pShield = pExt->Shield.get();
+			return !pShield || pShield->HP <= 0;
+		}
+	}
+
+	return false;
+}
+
 int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 {
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
@@ -110,9 +153,9 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	if (pWHExt->CanTargetHouse(args->SourceHouse, this->Techno) && !args->WH->Temporal)
 	{
 		if (*args->Damage > 0)
-			nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->Type->Armor, args->DistanceToEpicenter);
+			nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->Type->Armor.Get(), args->DistanceToEpicenter);
 		else
-			nDamage = -MapClass::GetTotalDamage(-*args->Damage, args->WH, this->Type->Armor, args->DistanceToEpicenter);
+			nDamage = -MapClass::GetTotalDamage(-*args->Damage, args->WH, this->Type->Armor.Get(), args->DistanceToEpicenter);
 
 		bool affectsShield = pWHExt->Shield_AffectTypes.size() <= 0 || pWHExt->Shield_AffectTypes.Contains(this->Type);
 		double absorbPercent = affectsShield ? pWHExt->Shield_AbsorbPercent.Get(this->Type->AbsorbPercent) : this->Type->AbsorbPercent;
@@ -140,7 +183,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		if (residueDamage >= 0)
 		{
 			residueDamage = int((double)(residueDamage) /
-				GeneralUtils::GetWarheadVersusArmor(args->WH, this->Type->Armor)); //only absord percentage damage
+				GeneralUtils::GetWarheadVersusArmor(args->WH, this->Type->Armor.Get())); //only absord percentage damage
 
 			this->BreakShield(pWHExt->Shield_BreakAnim.Get(nullptr), pWHExt->Shield_BreakWeapon.Get(nullptr));
 
@@ -200,9 +243,9 @@ void ShieldClass::ResponseAttack()
 		if (pUnit->Type->Harvester)
 		{
 			const auto pos = pUnit->GetDestination(pUnit);
-
+			enum { EVA_OreMinerUnderAttack = 0x824784 };
 			if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, CellClass::Coord2Cell(pos)))
-				VoxClass::Play("EVA_OreMinerUnderAttack");
+				VoxClass::Play((const char*)EVA_OreMinerUnderAttack);
 		}
 	}
 }
@@ -222,15 +265,21 @@ bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon)
 	if ((pWHExt && CanBePenetrated(pWHExt->OwnerObject())) || !this->HP)
 		return true;
 
-	return GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->Type->Armor) != 0.0;
+	return GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->Type->Armor.Get()) != 0.0;
 }
 
 bool ShieldClass::CanBePenetrated(WarheadTypeClass* pWarhead)
 {
+	if (!pWarhead)
+		return false;
+
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
 	if (pWHExt->Shield_AffectTypes.size() > 0 && !pWHExt->Shield_AffectTypes.Contains(this->Type))
 		return false;
+
+	if (pWarhead->Psychedelic)
+		return !this->Type->ImmuneToBerserk;
 
 	return pWHExt->Shield_Penetrate;
 }
@@ -514,12 +563,6 @@ int ShieldClass::GetPercentageAmount(double iStatus)
 		return (int)round(this->Type->Strength * iStatus);
 
 	return (int)trunc(iStatus);
-}
-
-void ShieldClass::InvalidatePointer(void* ptr)
-{
-	if (this->IdleAnim == ptr)
-		this->KillAnim();
 }
 
 void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreakWeapon)

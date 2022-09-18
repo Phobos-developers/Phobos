@@ -48,7 +48,6 @@
 #include <FootClass.h>
 #include <VocClass.h>
 #include <VoxClass.h>
-#include <ArmorType.h>
 
 namespace detail
 {
@@ -106,20 +105,26 @@ namespace detail
 		return false;
 	}
 
-	/*
 	template <>
-	inline bool read<ArmorType>(ArmorType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
-		int buffer;
-		if (parser.ReadArmor(pSection, pKey, &buffer)) {
+	inline bool read<ArmorType>(ArmorType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		int buffer = value;
+
+		// Hack cause armor type parser in Ares will return 0 (ArmorType 'none') if armor type is not found instead of -1.
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (!parser.ReadArmor(pSection, pKey, &buffer) || buffer < 0)
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid ArmorType");
+				return false;
+			}
+
 			value = buffer;
 			return true;
 		}
-		else if (!parser.empty()) {
-			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid ArmorType");
-		}
+
 		return false;
 	}
-	*/
 
 	template <>
 	inline bool read<unsigned short>(unsigned short& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)

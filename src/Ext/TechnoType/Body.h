@@ -25,6 +25,7 @@ public:
 		PhobosFixedString<0x20> GroupAs;
 		Valueable<int> RadarJamRadius;
 		Nullable<int> InhibitorRange;
+		Nullable<int> DesignatorRange;
 		Valueable<Leptons> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
 		Valueable<AffectedHouse> Interceptor_CanTargetHouses;
@@ -125,6 +126,8 @@ public:
 
 		Valueable<Vector2D<double>> InitialStrength_Cloning;
 
+		Valueable<bool> Explodes_KillPassengers;
+
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
@@ -160,6 +163,7 @@ public:
 			, GroupAs { NONE_STR }
 			, RadarJamRadius { 0 }
 			, InhibitorRange { }
+			, DesignatorRange { }
 			, MindControlRangeLimit {}
 			, Interceptor { false }
 			, Interceptor_CanTargetHouses { AffectedHouse::Enemies }
@@ -243,6 +247,7 @@ public:
 			, DeployedSecondaryFireFLH { }
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, IronCurtain_KeptOnDeploy{ }
+			, Explodes_KillPassengers { true }
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
 		{ }
@@ -257,7 +262,6 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
-		bool IsCountedAsHarvester();
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
