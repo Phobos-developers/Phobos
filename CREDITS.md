@@ -19,6 +19,7 @@ This page lists all the individual contributions to the project by their author.
   - Semantic locomotor aliases
   - Shield logic
   - Non-ASCII input fix
+  - Building Placement Preview Adjustment
 - **Kerbiter (Metadorius)**:
   - SHP debris respect `Shadow` fix
   - Building upgrades enhancement
@@ -88,6 +89,7 @@ This page lists all the individual contributions to the project by their author.
   - Ported and fixed custom RadType code
   - Togglable ElectricBolt bolts
   - Customizable Chrono Locomotor properties per TechnoClass
+  - Building Placement Preview
   - `DebrisMaximums` fixes
   - Anim-to-Unit
   - `NotHuman` anim sequences improvements
