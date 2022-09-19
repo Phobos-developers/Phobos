@@ -118,6 +118,8 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 						&& pHouse->CountOwnedAndPresent(pType) > 0)
 						return true;
 				}
+
+				return false;
 			};
 
 			return any
@@ -129,14 +131,22 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 		if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
 		{
 			if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any))
+			{
 				KillSelf(pThis, howToDie);
+
+				return true;
+			}
 		}
 
 		// death if exist
 		if (!pTypeExt->AutoDeath_TechnosExist.empty())
 		{
 			if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any))
+			{
 				KillSelf(pThis, howToDie);
+
+				return true;
+			}
 		}
 	}
 	return false;
