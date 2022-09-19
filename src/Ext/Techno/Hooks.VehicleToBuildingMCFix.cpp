@@ -1,7 +1,7 @@
 #include "Body.h"
 
 #include <Phobos.h>
-#include <JumpjetLocomotionClass.h>
+
 #include <HouseClass.h>
 #include <AnimClass.h>
 #include <BuildingClass.h>
@@ -95,29 +95,4 @@ DEFINE_HOOK(0x448460, BuildingClass_Captured_MuteSound, 0x6)
 {
 	return MindControlFixTemp::isMindControlBeingTransferred ?
 		0x44848F : 0;
-}
-
-DEFINE_HOOK(0x54AEC0, JumpjetLocomotion_Process_TurnToTarget, 0x8)
-{
-	GET_STACK(ILocomotion*, iLoco, 0x4);
-	const auto pLoco = static_cast<JumpjetLocomotionClass*>(iLoco);
-	const auto pThis = pLoco->Owner;
-	const auto pType = pThis->GetTechnoType();
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-	if (pTypeExt && pTypeExt->JumpjetTurnToTarget.Get(RulesExt::Global()->JumpjetTurnToTarget) &&
-		pThis->WhatAmI() == AbstractType::Unit && pThis->IsInAir() && !pType->TurretSpins && pLoco)
-	{
-		if (const auto pTarget = pThis->Target)
-		{
-			const CoordStruct source = pThis->Location;
-			const CoordStruct target = pTarget->GetCoords();
-			const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
-
-			if (pThis->GetRealFacing().value32() != tgtDir.value32())
-				pLoco->LocomotionFacing.turn(tgtDir);
-		}
-	}
-
-	return 0;
 }

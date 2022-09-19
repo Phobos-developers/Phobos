@@ -11,10 +11,14 @@
 #include <HouseClass.h>
 #include <FlyLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
+#include <BombClass.h>
+#include <WarheadTypeClass.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/Anim/Body.h>
+#include <Ext/AnimType/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -514,3 +518,63 @@ DEFINE_HOOK(0x73EFD8, UnitClass_Mission_Hunt_DeploysInto, 0x6)
 // correctly if killed by damage that has owner house but no owner techno (animation warhead damage, radiation with owner etc.
 // Author: Starkku
 DEFINE_JUMP(LJMP, 0x7032BA, 0x7032C6);
+
+namespace FetchBomb {
+	BombClass* pThisBomb;
+}
+
+// Fetch the BombClass context From earlier adress
+DEFINE_HOOK(0x438771, BombClass_Detonate_SetContext, 0x6)
+{
+	GET(BombClass*, pThis, ESI);
+	FetchBomb::pThisBomb = pThis;
+	return 0x0;
+}
+
+static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
+(
+	CoordStruct* pCoord,
+	int nDamage, //Ares Manipulate the push stack here for Custom bomb
+	TechnoClass* pSource,
+	WarheadTypeClass* pWarhead, //Ares Manipulate the push stack here for Custom bomb
+	bool AffectTiberium, //true
+	HouseClass* pSourceHouse //nullptr
+)
+{
+	auto const pThisBomb = FetchBomb::pThisBomb;
+	auto nCoord = *pCoord;
+	auto nDamageAreaResult = MapClass::Instance()->DamageArea
+	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse);
+	auto nLandType = MapClass::Instance()->GetCellAt(nCoord)->LandType;
+
+	if (auto pAnimType = MapClass::SelectDamageAnimation(nDamage, pWarhead, nLandType, nCoord))
+	{
+		if (auto pAnim = GameCreate<AnimClass>(pAnimType, nCoord, 0, 1, 0x2600, -15, false))
+		{
+			if (AnimTypeExt::ExtMap.Find(pAnim->Type)->CreateUnit.Get())
+			{
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse,
+					pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
+			}
+			else
+			{
+				pAnim->Owner = pThisBomb->OwnerHouse;
+			}
+
+			if (const auto pExt = AnimExt::ExtMap.Find(pAnim))
+				pExt->Invoker = pThisBomb->Owner;
+		}
+	}
+
+	return nDamageAreaResult;
+}
+
+// skip the Explosion Anim block and clean up the context
+DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
+{
+	FetchBomb::pThisBomb = nullptr;
+	return 0x438857;
+}
+
+// redirect MapClass::DamageArea call to our dll for additional functionality and checks
+DEFINE_JUMP(CALL, 0x4387A3, GET_OFFSET(_BombClass_Detonate_DamageArea));

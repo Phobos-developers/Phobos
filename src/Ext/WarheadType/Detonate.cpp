@@ -18,17 +18,16 @@
 #include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
-void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
+void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBulletExt, CoordStruct coords)
 {
-	if (pOwner)
-	{
-		if (auto const pBulletExt = BulletExt::ExtMap.Find(pBullet))
-		{
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
+	auto const pBullet = pBulletExt ? pBulletExt->OwnerObject() : nullptr;
 
-			if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
-				this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
-		}
+	if (pOwner && pBulletExt)
+	{
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
+
+		if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
+			this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
 	}
 
 	if (pHouse)
@@ -37,10 +36,10 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		{
 			for (auto pOtherHouse : *HouseClass::Array)
 			{
-				if (pOtherHouse->ControlledByHuman() &&	  // Not AI
-					!pOtherHouse->IsObserver() &&		  // Not Observer
-					!pOtherHouse->Defeated &&			  // Not Defeated
-					pOtherHouse != pHouse &&			  // Not pThisHouse
+				if (pOtherHouse->ControlledByHuman() &&   // Not AI
+					!pOtherHouse->IsObserver() &&         // Not Observer
+					!pOtherHouse->Defeated &&             // Not Defeated
+					pOtherHouse != pHouse &&              // Not pThisHouse
 					!pHouse->IsAlliedWith(pOtherHouse))   // Not Allied
 				{
 					pOtherHouse->ReshroudMap();
@@ -83,7 +82,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				const auto cell = CellClass::Coord2Cell(coords);
 				if ((pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)) || !this->LaunchSW_RealLaunch)
 				{
-					if (this->LaunchSW_IgnoreInhibitors || !SWTypeExt::HasInhibitor(pSWExt, pHouse, cell))
+					if (this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell)
+					&& (this->LaunchSW_IgnoreDesignators || pSWExt->HasDesignator(pHouse, cell)))
 					{
 						pSuper->SetReadiness(true);
 						pSuper->Launch(cell, true);
@@ -108,7 +108,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_AttachTypes.size() > 0 ||
 		this->Shield_RemoveTypes.size() > 0;
 
-	auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 
 	const float cellSpread = this->OwnerObject()->CellSpread;

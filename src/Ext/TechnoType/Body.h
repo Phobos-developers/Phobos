@@ -24,6 +24,7 @@ public:
 		PhobosFixedString<0x20> GroupAs;
 		Valueable<int> RadarJamRadius;
 		Nullable<int> InhibitorRange;
+		Nullable<int> DesignatorRange;
 		Valueable<Leptons> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
 		Valueable<AffectedHouse> Interceptor_CanTargetHouses;
@@ -131,6 +132,8 @@ public:
 
 		Valueable<Vector2D<double>> InitialStrength_Cloning;
 
+		Valueable<bool> Explodes_KillPassengers;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -163,6 +166,7 @@ public:
 			, GroupAs { NONE_STR }
 			, RadarJamRadius { 0 }
 			, InhibitorRange { }
+			, DesignatorRange { }
 			, MindControlRangeLimit {}
 
 			, Interceptor { false }
@@ -263,6 +267,7 @@ public:
 			, DeployedSecondaryFireFLH { }
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, IronCurtain_KeptOnDeploy{ }
+			, Explodes_KillPassengers { true }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -275,7 +280,6 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
-		bool IsCountedAsHarvester();
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;

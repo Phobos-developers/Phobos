@@ -82,6 +82,7 @@ This page lists all the individual contributions to the project by their author.
   - Retint map actions bugfix
   - Sharpnel enhancement
   - Vanilla map preview reading bugfix
+  - Customizable tooltip background
 - **Otamaa (Fahroni, BoredEXE)**:
   - Help with CellSpread
   - Ported and fixed custom RadType code
@@ -97,6 +98,7 @@ This page lists all the individual contributions to the project by their author.
   - `EnemyUIName=` for other TechnoTypes
   - TerrainType `DestroyAnim` & `DestroySound`
   - Laser trails for VoxelAnims
+  - MakeInfantry logic on BombClass bugfix
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
@@ -154,6 +156,7 @@ This page lists all the individual contributions to the project by their author.
   - Trailer animation owner inheritance
   - Warhead detonation on all objects on map
   - Animated TerrainTypes extension
+  - Exploding unit passenger killing customization
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
@@ -168,12 +171,18 @@ This page lists all the individual contributions to the project by their author.
    - Laser fixes prototype
 - **Trsdy**
    - Preserve IronCurtain status upon DeploysInto/UndeploysInto
-   - Jumpjet facing fix
+   - Misc jumpjet fixes:
+      - Facing towards target fix
+      - Turret direction in idle state fix
+      - Sensor fix
    - Object Self-destruction logic
    - Building EVA_StructureSold and SellSound dehardcode
    - Slaves' house customization when owner is killed
-   - Misc CN doc fix
+   - Misc CN doc fix, code refactor
+   - Harvester counter
    - Warhead superweapon launch logic
+   - "Shield is broken" trigger event
+   - Forbidding parallel AI queues by type
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
 - **FlyStar**

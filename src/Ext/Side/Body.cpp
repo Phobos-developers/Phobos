@@ -35,6 +35,9 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Sidebar_PowerDelta_Yellow.Read(exINI, pSection, "Sidebar.PowerDelta.ColorYellow");
 	this->Sidebar_PowerDelta_Red.Read(exINI, pSection, "Sidebar.PowerDelta.ColorRed");
 	this->Sidebar_PowerDelta_Align.Read(exINI, pSection, "Sidebar.PowerDelta.Align");
+	this->ToolTip_Background_Color.Read(exINI, pSection, "ToolTip.Background.Color");
+	this->ToolTip_Background_Opacity.Read(exINI, pSection, "ToolTip.Background.Opacity");
+	this->ToolTip_Background_BlurSize.Read(exINI, pSection, "ToolTip.Background.BlurSize");
 }
 
 // =============================
@@ -55,7 +58,9 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->Sidebar_PowerDelta_Yellow)
 		.Process(this->Sidebar_PowerDelta_Red)
 		.Process(this->Sidebar_PowerDelta_Align)
-
+		.Process(this->ToolTip_Background_Color)
+		.Process(this->ToolTip_Background_Opacity)
+		.Process(this->ToolTip_Background_BlurSize)
 		.Process(this->IngameScore_WinTheme)
 		.Process(this->IngameScore_LoseTheme)
 		;

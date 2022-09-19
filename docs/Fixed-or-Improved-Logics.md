@@ -21,13 +21,15 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
 - Fixed jumpjet units being unable to turn to the target when firing from a different direction.
+- Fixed turreted jumpjet units always facing bottom-right direction when motion stops.
+- Fixed jumpjet objects being unable to use `Sensors`.
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
 - Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
 
 - SHP debris shadows now respect the `Shadow` tag.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
-- Adds a "Load Game" button to the retry dialog on mission failure.
+- Added a "Load Game" button to the retry dialog on mission failure.
 
 ![image](_static/images/turretoffset-01.png)
 *Side offset voxel turret in Breaking Blue project*
@@ -77,6 +79,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
   - Only applies to Z-aware drawing mode for now.
+- Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true`.
+- Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry.
 
 ## Animations
 
@@ -267,6 +271,16 @@ In `rulesmd.ini`:
 ```ini
 [General]
 Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
+```
+
+### Exploding unit passenger killing customization
+
+- By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                 ; TechnoType
+Explodes.KillPassengers=true ; boolean
 ```
 
 ### Jumpjet unit layer deviation customization
