@@ -89,6 +89,15 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_SelfHeal_Infantry_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Infantry.Offset");
 	this->Pips_SelfHeal_Units_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units.Offset");
 	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings.Offset");
+	this->ToolTip_Background_Color.Read(exINI, "AudioVisual", "ToolTip.Background.Color");
+	this->ToolTip_Background_Opacity.Read(exINI, "AudioVisual", "ToolTip.Background.Opacity");
+	this->ToolTip_Background_BlurSize.Read(exINI, "AudioVisual", "ToolTip.Background.BlurSize");
+
+	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
+	this->ForbidParallelAIQueues_Building.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Building");
+	this->ForbidParallelAIQueues_Infantry.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
+	this->ForbidParallelAIQueues_Navy.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Navy");
+	this->ForbidParallelAIQueues_Vehicle.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Vehicle");
 
 	this->IronCurtain_KeptOnDeploy.Read(exINI, "CombatDamage", "IronCurtain.KeptOnDeploy");
 
@@ -204,7 +213,16 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_SelfHeal_Infantry_Offset)
 		.Process(this->Pips_SelfHeal_Units_Offset)
 		.Process(this->Pips_SelfHeal_Buildings_Offset)
+		.Process(Phobos::Config::AllowParallelAIQueues)
+		.Process(this->ForbidParallelAIQueues_Aircraft)
+		.Process(this->ForbidParallelAIQueues_Building)
+		.Process(this->ForbidParallelAIQueues_Infantry)
+		.Process(this->ForbidParallelAIQueues_Navy)
+		.Process(this->ForbidParallelAIQueues_Vehicle)
 		.Process(this->IronCurtain_KeptOnDeploy)
+		.Process(this->ToolTip_Background_Color)
+		.Process(this->ToolTip_Background_Opacity)
+		.Process(this->ToolTip_Background_BlurSize)
 		;
 }
 

@@ -20,8 +20,10 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
 		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
 
+	if (pExt->CheckDeathConditions())
+		return 0;
+
 	pExt->ApplyInterceptor();
-	pExt->CheckDeathConditions();
 	pExt->EatPassengers();
 	pExt->UpdateShield();
 	pExt->ApplyPoweredKillSpawns();
@@ -596,6 +598,20 @@ DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_C
 	GET(TechnoClass*, pThis, ESI);
 
 	TechnoExt::UpdateMindControlAnim(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x70265F, TechnoClass_ReceiveDamage_Explodes, 0x6)
+{
+	enum { SkipKillingPassengers = 0x702669 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (!pTypeExt->Explodes_KillPassengers)
+		return SkipKillingPassengers;
 
 	return 0;
 }

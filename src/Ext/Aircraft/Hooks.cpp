@@ -1,6 +1,5 @@
 #include <AircraftClass.h>
 #include <Utilities/Macro.h>
-#include <Utilities/Enum.h>
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/WeaponType/Body.h>

@@ -251,7 +251,8 @@ auto MassActions = MassAction <
 	// New classes
 	ShieldTypeClass,
 	LaserTrailTypeClass,
-	RadTypeClass
+	RadTypeClass,
+	ShieldClass
 	// other classes
 > ();
 
