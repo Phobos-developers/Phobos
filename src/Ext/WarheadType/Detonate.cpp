@@ -5,6 +5,7 @@
 #include <HouseClass.h>
 #include <ScenarioClass.h>
 #include <AnimTypeClass.h>
+#include <AircraftClass.h>
 #include <AnimClass.h>
 #include <BitFont.h>
 #include <SuperClass.h>
@@ -102,6 +103,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->RemoveDisguise ||
 		this->RemoveMindControl ||
 		this->Crit_Chance ||
+		this->Converts ||
 		this->Shield_Break ||
 		this->Shield_Respawn_Duration > 0 ||
 		this->Shield_SelfHealing_Duration > 0 ||
@@ -141,6 +143,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->Crit_Chance && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner);
+	
+	if (this->Converts)
+		this->ApplyUpgrade(pHouse, pTarget);
 }
 
 void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
@@ -312,6 +317,43 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
 			if (pTypeExt && pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= cellSpread * Unsorted::LeptonsPerCell)
 				pExt->InterceptBullet(pOwner, pWeapon);
+		}
+	}
+}
+
+void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTarget)
+{
+	if (this->Converts_From.size() && this->Converts_To.size())
+	{
+		// explicitly unsigned because the compiler wants it
+		for (unsigned int i = 0; i < this->Converts_From.size(); i++)
+		{
+			// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
+			if (this->Converts_To.size() >= i && this->Converts_From[i] == pTarget->GetTechnoType())
+			{
+				TechnoTypeClass* pResultType = this->Converts_To[i];
+
+				if (pTarget->WhatAmI() == AbstractType::Infantry &&
+					pResultType->WhatAmI() == AbstractType::InfantryType)
+				{
+					abstract_cast<InfantryClass*>(pTarget)->Type = static_cast<InfantryTypeClass*>(pResultType);
+				}
+				else if (pTarget->WhatAmI() == AbstractType::Unit &&
+					pResultType->WhatAmI() == AbstractType::UnitType)
+				{
+					abstract_cast<UnitClass*>(pTarget)->Type = static_cast<UnitTypeClass*>(pResultType);
+				}
+				else if (pTarget->WhatAmI() == AbstractType::Aircraft &&
+					pResultType->WhatAmI() == AbstractType::AircraftType)
+				{
+					abstract_cast<AircraftClass*>(pTarget)->Type =static_cast<AircraftTypeClass*>(pResultType);
+				}
+				else
+				{
+					Debug::Log("Attempting to convert units of different categories: %s and %s!", pTarget->GetTechnoType()->get_ID(), pResultType->get_ID());
+				}
+				break;
+			}
 		}
 	}
 }
