@@ -84,7 +84,7 @@ PlacementPreview.Shape=              ; filename - including the .shp extension. 
 PlacementPreview.ShapeFrame=         ; integer, zero-based frame index used for displaying the preview
 PlacementPreview.Offset=0,-15,1      ; integer, expressed in X,Y,Z used to alter position preview
 PlacementPreview.Remap=yes           ; boolean, does this preview use player remap colors
-PlacementPreview.Palette=            ; filename - including the .pal extension.
+PlacementPreview.Palette=            ; filename - including the .pal extension
 PlacementPreview.Translucency=       ; translucency level (0/25/50/75), defaults to [AudioVisual]->PlacementPreview.Translucency
 ```
 
