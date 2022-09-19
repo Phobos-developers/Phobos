@@ -54,12 +54,14 @@ public:
 		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
 
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
+		Valueable<bool> AutoDeath_TechnosDontExist_Any;
+		Valueable<bool> AutoDeath_TechnosExist_Any;
 		Valueable<int> AutoDeath_AfterDelay;
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
-		ValueableVector<TechnoTypeClass*> AutoDeath_Nonexist;
-		Valueable<AffectedHouse> AutoDeath_Nonexist_House;
-		ValueableVector<TechnoTypeClass*> AutoDeath_Exist;
-		Valueable<AffectedHouse> AutoDeath_Exist_House;
+		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
+		Valueable<AffectedHouse> AutoDeath_TechnosDontExist_Houses;
+		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosExist;
+		Valueable<AffectedHouse> AutoDeath_TechnosExist_Houses;
 
 		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
 		NullableIdx<VocClass> SellSound;
@@ -238,10 +240,12 @@ public:
 			, AutoDeath_Behavior { }
 			, AutoDeath_OnAmmoDepletion { false }
 			, AutoDeath_AfterDelay { 0 }
-			, AutoDeath_Nonexist {}
-			, AutoDeath_Nonexist_House { AffectedHouse::Owner }
-			, AutoDeath_Exist {}
-			, AutoDeath_Exist_House { AffectedHouse::Owner }
+			, AutoDeath_TechnosDontExist {}
+			, AutoDeath_TechnosDontExist_Any { false }
+			, AutoDeath_TechnosDontExist_Houses { AffectedHouse::Owner }
+			, AutoDeath_TechnosExist {}
+			, AutoDeath_TechnosExist_Any { true }
+			, AutoDeath_TechnosExist_Houses { AffectedHouse::Owner }
 
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
 			, SellSound { }
