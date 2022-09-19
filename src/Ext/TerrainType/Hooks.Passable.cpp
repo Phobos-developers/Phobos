@@ -34,7 +34,7 @@ DEFINE_HOOK(0x7002E9, TechnoClass_WhatAction_PassableTerrain, 0x5)
 	GET(ObjectClass*, pTarget, EDI);
 	GET_STACK(bool, isForceFire, STACK_OFFS(0x1C, -0x8));
 
-	if (!pThis->Owner->ControlledByPlayer() || !pThis->IsControllable())
+	if (!pThis->Owner->IsControlledByCurrentPlayer() || !pThis->IsControllable())
 		return 0;
 
 	if (pTarget->WhatAmI() == AbstractType::Terrain)

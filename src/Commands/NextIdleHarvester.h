@@ -74,7 +74,7 @@ public:
 		}
 		else
 		{
-			MessageListClass::Instance->PrintMessage(StringTable::LoadString("MSG:NothingSelected"), RulesClass::Instance->MessageDelay, HouseClass::Player->ColorSchemeIndex, true);
+			MessageListClass::Instance->PrintMessage(StringTable::LoadString("MSG:NothingSelected"), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 		}
 	}
 };

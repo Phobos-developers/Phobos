@@ -283,11 +283,11 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 	{
 		bool IsAlly = true;
 		bool IsCivilian = false;
-		bool IsObserver = HouseClass::Observer || HouseClass::IsPlayerObserver();
+		bool IsObserver = HouseClass::Observer || HouseClass::IsCurrentPlayerObserver();
 
 		if (auto pOwnerHouse = pFoot->GetOwningHouse())
 		{
-			IsAlly = pOwnerHouse->IsAlliedWith(HouseClass::Player);
+			IsAlly = pOwnerHouse->IsAlliedWith(HouseClass::CurrentPlayer);
 			IsCivilian = (pOwnerHouse == HouseClass::FindCivilianSide()) || pOwnerHouse->IsNeutral();
 		}
 

@@ -75,7 +75,7 @@ DEFINE_HOOK(0x4401BB, Factory_AI_PickWithFreeDocks, 0x6)
 		return 0;
 
 	if (pOwner->Type->MultiplayPassive
-		|| pOwner->IsPlayer()
+		|| pOwner->IsCurrentPlayer()
 		|| pOwner->IsNeutral())
 		return 0;
 

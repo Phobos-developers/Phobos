@@ -76,7 +76,7 @@ DEFINE_HOOK(0x641EE0, PreviewClass_ReadPreview, 0x6)
 
 DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 {
-	auto const pPlayer = HouseClass::Player();
+	auto const pPlayer = HouseClass::CurrentPlayer();
 	if (!pPlayer || pPlayer->Defeated)
 		return 0;
 

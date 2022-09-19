@@ -36,7 +36,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		{
 			for (auto pOtherHouse : *HouseClass::Array)
 			{
-				if (pOtherHouse->ControlledByHuman() &&   // Not AI
+				if (pOtherHouse->IsControlledByHuman() &&   // Not AI
 					!pOtherHouse->IsObserver() &&         // Not Observer
 					!pOtherHouse->Defeated &&             // Not Defeated
 					pOtherHouse != pHouse &&              // Not pThisHouse
@@ -56,7 +56,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 			if (this->TransactMoney_Display &&
 				(this->TransactMoney_Display_Houses == AffectedHouse::All ||
-					EnumFunctions::CanTargetHouse(this->TransactMoney_Display_Houses, pHouse, HouseClass::Player)))
+					EnumFunctions::CanTargetHouse(this->TransactMoney_Display_Houses, pHouse, HouseClass::CurrentPlayer)))
 			{
 				bool isPositive = this->TransactMoney > 0;
 				auto color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };

@@ -66,7 +66,7 @@ inline int PhobosToolTip::GetBuildTime(TechnoTypeClass* pType) const
 	// TechnoTypeClass only has 4 final classes :
 	// BuildingTypeClass, AircraftTypeClass, InfantryTypeClass and UnitTypeClass
 	// It has to be these four classes, otherwise pType will just be nullptr
-	reinterpret_cast<TechnoClass*>(pTrick)->Owner = HouseClass::Player;
+	reinterpret_cast<TechnoClass*>(pTrick)->Owner = HouseClass::CurrentPlayer;
 	int nTimeToBuild = reinterpret_cast<TechnoClass*>(pTrick)->TimeToBuild();
 	// 54 frames at least
 	return nTimeToBuild < 54 ? 54 : nTimeToBuild;
@@ -105,7 +105,7 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 	int nMin = nBuildTime / 15 / 60 /* % 60*/;
 	// int nHour = pType->RechargeTime / 15 / 60 / 60;
 
-	int cost = pType->GetActualCost(HouseClass::Player);
+	int cost = pType->GetActualCost(HouseClass::CurrentPlayer);
 
 	std::wostringstream oss;
 	oss << pType->UIName << L"\n"
