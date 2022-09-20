@@ -24,6 +24,10 @@
   display: block;
 }
 
+.rst-content .btn:focus {
+  outline: unset;
+}
+
 .rst-content .btn:focus-visible {
   outline: 2px solid;
 }
