@@ -921,21 +921,26 @@ BigGap=false   ; boolean
 
 ### Transact Warhead
 
-- It is now possible to increase, decrease or transfer specific "values" between Technos.
-  - To enable this feature, `Transact=true` must be set and at least one source or target value needs to be non-zero.
-  - Source is the Techno that fired the warhead, Target is a Techno (or group) that is affected by the warhead.
-  - Flat values are amounts that are directly added/substracted, while percent values are calculated relatively to the unit's state.
-    - In case of experience, value from percent is calculated by multiplying it by current unit cost.
-    - By default Source.Percent (percent of value that Source will receive) is calculated from Source unit cost, however it is possible to force calculation from Target cost with `CalcFromTarget` (Target and `CalcFtomSOurce` behaves analogically).
-  - When both Flat and Percent values are set, the one that yields higher value is used.
-  - Transfer occurs only when either the calculated experience to Source or to Target is negative. If both values are positive or negative, then all units gain or lose experience, respectively.
-  - In transfer, if Source and Target values are different, then the smaller of them is used.
-  - In transfer, if it is not possible to transfer the whole amount (i.e. a unit has not enough experience), then only the maximum possible transfer amount is transferred.
-  - Source values are ignored if the warhead is not created by a unit (i.e. via a super weapon or map action). Target values are ignored if the warhead doesn't affect any units (fired at empty ground).
-    - In both cases, transfer is impossible.
-  - `Transact.SpreadAmongTargets` has effect on warheads with CellSpread. When set, instead of applying the full value to each Target separately, the value will be divided among the victims.
+- It is now possible to increase, decrease or transfer specific "values" (referred to as Currency) between Technos.
+  - To enable this feature, `Transact=true` must be set and at least one `X.Source` or `X.Target` tag needs to be non-zero.
+  - Source is the Techno that fired the warhead, target is a Techno (or a group) that is affected by the warhead.
+  - `X.Flat` values grant absolute Currency, while `X.Percent` values grant Currency calculated relatively to the unit's state.
+    - In case of experience, value from `X.Percent` is calculated by multiplying it by current unit cost.
+    - By default `X.Source.Percent` (percent of value that Source will receive) is calculated from Source unit cost, however it is possible to force calculation from Target cost with `CalcFromTarget` (Target and `CalcFromSource` behaves analogically).
+    - When both `X.Flat` and `X.Percent` values are set, the one that yields more Currency is used.
+  - If final Currency amount is positive or negative for both Source and Target, then all affected units gain or lose Currency.
+  - When the final amount of Currency is negative only for either Source or Target, **Transfer** occurs.
+    - In transfer, if the absolute value of Currency for Source and Target are different, then the smaller of them is used.
+    - In transfer, if it is not possible to transfer the whole amount (i.e. a unit has not enough Currency), then only the possible amount is transferred.
+  - Source values are ignored if the warhead is not created by a unit (i.e. via a super weapon, animation weapon or map action).
+  - `Transact.SpreadAmongTargets` has effect on warheads with CellSpread. When set, instead of applying the full Currency amount to each Target separately, the value will be evenly distributed among the victims.
+  - `Transact.Experience.IgnoreNotTrainable=true` will allow to give experience to units with `Trainable=false` set.
+  - `Transact.RequiresValidTarget=false` will allow the source unit to lose/obtain Currency when the warhead doesn't detonate on a valid target (i.e. having 0% versus a unit). However, target remains unaffected and if Source was supposed to take part in a transfer, nothing will happen!
+  - `Transact.RequiresAnyTarget=false` will allow the source unit to lose/obtain Currency when the warhead doesn't detonate on any target (i.e. force firing on the ground). However, if Source was supposed to take part in a transfer, nothing will happen! This tag takes priority over `Transact.RequiresValidTarget`.
 
+```{warning}
 It is impossible to revert veterancy-caused unit type conversion from Ares by demoting a unit!
+```
 
 Currently supported "values" are:
 - Experience
@@ -944,7 +949,10 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                                           ; Warhead
 Transact=false                                          ; boolean
+Transact.RequiresAnyTarget=true                         ; boolean
+Transact.RequiresValidTarget=true                       ; boolean
 Transact.SpreadAmongTargets=false                       ; boolean
+Transact.Experience.IgnoreNotTrainable=false            ; boolean
 Transact.Experience.Source.Flat=0                       ; integer
 Transact.Experience.Source.Percent=0.0                  ; float, percents or absolute (-1.0 - 1.0)
 Transact.Experience.Source.Percent.CalcFromTarget=false ; boolean

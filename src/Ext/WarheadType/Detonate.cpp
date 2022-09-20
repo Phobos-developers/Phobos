@@ -116,18 +116,17 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	const float cellSpread = this->OwnerObject()->CellSpread;
 	if (cellSpread && isCellSpreadWarhead)
 	{
-		this->DetonateOnAllUnits(pHouse, coords, cellSpread, pOwner);
-		if (this->Transact)
+		this->DetonateOnAllUnits(pHouse, coords, cellSpread, pOwner, bulletWasIntercepted);
+		if (this->Transact && !bulletWasIntercepted)
 			this->TransactOnAllUnits(pHouse, coords, cellSpread, pOwner);
 	}
 	else if (pBullet && isCellSpreadWarhead)
 	{
-		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
-		{
-			this->DetonateOnOneUnit(pHouse, pTarget, pOwner);
-			if (this->Transact)
-				this->TransactOnOneUnit(pTarget, pOwner, 1);
-		}
+		auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target);
+		if (pTarget)
+			this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
+		if (this->Transact && !bulletWasIntercepted)
+			this->TransactOnOneUnit(pHouse, pTarget, pOwner, 1);
 	}
 }
 
@@ -137,6 +136,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		return;
 
 	if (!this->CanTargetHouse(pHouse, pTarget))
+		return;
+
+	if (CLOSE_ENOUGH(GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor), 0.0))
 		return;
 
 	this->ApplyShieldModifiers(pTarget);
@@ -151,11 +153,11 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		this->ApplyCrit(pHouse, pTarget, pOwner);
 }
 
-void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner)
+void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner, bool bulletWasIntercepted)
 {
 	for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
 	{
-		this->DetonateOnOneUnit(pHouse, pTarget, pOwner);
+		this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
 	}
 }
 
@@ -163,13 +165,11 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 {
 	if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
 	{
-		bool canAffectTarget = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor) != 0.0;
-
 		int shieldIndex = -1;
 		double ratio = 1.0;
 
 		// Remove shield.
-		if (pExt->Shield && canAffectTarget)
+		if (pExt->Shield)
 		{
 			const auto shieldType = pExt->Shield->GetType();
 			shieldIndex = this->Shield_RemoveTypes.IndexOf(shieldType);
@@ -184,7 +184,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 		}
 
 		// Attach shield.
-		if (canAffectTarget && Shield_AttachTypes.size() > 0)
+		if (Shield_AttachTypes.size() > 0)
 		{
 			ShieldTypeClass* shieldType = nullptr;
 
