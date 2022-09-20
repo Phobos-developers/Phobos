@@ -2,6 +2,10 @@
   background-color: #2b2c36;
 }
 
+.switcher__radio:focus-visible ~ .switcher__status {
+  outline: #fff solid 2px;
+}
+
 .switcher__radio--light,
 .switcher__radio--auto,
 .switcher__radio--dark {
