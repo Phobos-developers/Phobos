@@ -62,7 +62,7 @@ int WarheadTypeExt::ExtData::TransactGetValue(TechnoClass* pTarget, TechnoClass*
 			percentValue = (int)(ownerValue * percent);
 	}
 
-	return abs(percentValue) > abs(flat) ? percentValue : flat;
+	return flat + percentValue;
 }
 
 std::vector<std::vector<int>> WarheadTypeExt::ExtData::TransactGetSourceAndTarget(TechnoClass* pTarget, TechnoTypeClass* pTargetType, TechnoClass* pOwner, TechnoTypeClass* pOwnerType, int divider)
@@ -78,7 +78,8 @@ std::vector<std::vector<int>> WarheadTypeExt::ExtData::TransactGetSourceAndTarge
 	//		Experience
 	int sourceExp = pOwner ? this->TransactGetValue(pTarget, pOwner,
 		this->Transact_Experience_Source_Flat, this->Transact_Experience_Source_Percent,
-		this->Transact_Experience_Source_Percent_CalcFromTarget, targetCost, ownerCost) : 0;
+		this->Transact_Experience_Source_RelativeToTarget, targetCost, ownerCost) : 0;
+	sourceExp = Math::clamp(sourceExp, this->Transact_Experience_Source_Min, this->Transact_Experience_Source_Max);
 	sourceValues.push_back(sourceExp / divider);
 
 	allValues.push_back(sourceValues);
@@ -87,8 +88,9 @@ std::vector<std::vector<int>> WarheadTypeExt::ExtData::TransactGetSourceAndTarge
 	//		Experience
 	int targetExp = pTarget ? this->TransactGetValue(pOwner, pTarget,
 		this->Transact_Experience_Target_Flat, this->Transact_Experience_Target_Percent,
-		this->Transact_Experience_Target_Percent_CalcFromSource,
+		this->Transact_Experience_Target_RelativeToSource,
 		ownerCost, targetCost) : 0;
+	targetExp = Math::clamp(targetExp, this->Transact_Experience_Target_Min, this->Transact_Experience_Target_Max);
 	targetValues.push_back(targetExp / divider);
 
 	allValues.push_back(targetValues);

@@ -39,10 +39,14 @@ public:
 		Valueable<int> Transact_Experience_Value;
 		Valueable<int> Transact_Experience_Source_Flat;
 		Valueable<double> Transact_Experience_Source_Percent;
-		Valueable<bool> Transact_Experience_Source_Percent_CalcFromTarget;
+		Valueable<bool> Transact_Experience_Source_RelativeToTarget;
+		Valueable<int> Transact_Experience_Source_Min;
+		Valueable<int> Transact_Experience_Source_Max;
 		Valueable<int> Transact_Experience_Target_Flat;
 		Valueable<double> Transact_Experience_Target_Percent;
-		Valueable<bool> Transact_Experience_Target_Percent_CalcFromSource;
+		Valueable<bool> Transact_Experience_Target_RelativeToSource;
+		Valueable<int> Transact_Experience_Target_Min;
+		Valueable<int> Transact_Experience_Target_Max;
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
@@ -148,10 +152,14 @@ public:
 			, Transact_Experience_Value { 1 }
 			, Transact_Experience_Source_Flat { 0 }
 			, Transact_Experience_Source_Percent { 0.0 }
-			, Transact_Experience_Source_Percent_CalcFromTarget { false }
+			, Transact_Experience_Source_RelativeToTarget { false }
+			, Transact_Experience_Source_Min { -2147483647 }
+			, Transact_Experience_Source_Max { 2147483647 }
 			, Transact_Experience_Target_Flat { 0 }
 			, Transact_Experience_Target_Percent { 0.0 }
-			, Transact_Experience_Target_Percent_CalcFromSource { false }
+			, Transact_Experience_Target_RelativeToSource { false }
+			, Transact_Experience_Target_Min { -2147483647 }
+			, Transact_Experience_Target_Max { 2147483647 }
 
 			, MindControl_Anim {}
 

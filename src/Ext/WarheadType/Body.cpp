@@ -117,7 +117,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
 
 	// Transact
-	this->Transact.Read(exINI, pSection, "Transact");
 	this->Transact_RequiresAnyTarget.Read(exINI, pSection, "Transact.RequiresAnyTarget");
 	this->Transact_RequiresValidTarget.Read(exINI, pSection, "Transact.RequiresValidTarget");
 	this->Transact_SpreadAmongTargets.Read(exINI, pSection, "Transact.SpreadAmongTargets");
@@ -125,10 +124,21 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Transact_Experience_IgnoreNotTrainable.Read(exINI, pSection, "Transact.Experience.IgnoreNotTrainable");
 	this->Transact_Experience_Source_Flat.Read(exINI, pSection, "Transact.Experience.Source.Flat");
 	this->Transact_Experience_Source_Percent.Read(exINI, pSection, "Transact.Experience.Source.Percent");
-	this->Transact_Experience_Source_Percent_CalcFromTarget.Read(exINI, pSection, "Transact.Experience.Source.Percent.CalcFromTarget");
+	this->Transact_Experience_Source_RelativeToTarget.Read(exINI, pSection, "Transact.Experience.Source.RelativeToTarget");
+	this->Transact_Experience_Source_Min.Read(exINI, pSection, "Transact.Experience.Source.Min");
+	this->Transact_Experience_Source_Max.Read(exINI, pSection, "Transact.Experience.Source.Max");
 	this->Transact_Experience_Target_Flat.Read(exINI, pSection, "Transact.Experience.Target.Flat");
 	this->Transact_Experience_Target_Percent.Read(exINI, pSection, "Transact.Experience.Target.Percent");
-	this->Transact_Experience_Target_Percent_CalcFromSource.Read(exINI, pSection, "Transact.Experience.Target.Percent.CalcFromSource");
+	this->Transact_Experience_Target_RelativeToSource.Read(exINI, pSection, "Transact.Experience.Target.RelativeToSource");
+	this->Transact_Experience_Target_Min.Read(exINI, pSection, "Transact.Experience.Target.Min");
+	this->Transact_Experience_Target_Max.Read(exINI, pSection, "Transact.Experience.Target.Max");
+	if (this->Transact_Experience_Source_Flat != 0
+		|| this->Transact_Experience_Source_Percent != 0.0
+		|| this->Transact_Experience_Target_Flat != 0
+		|| this->Transact_Experience_Target_Percent != 0.0)
+	{
+		this->Transact = true;
+	}
 
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
@@ -230,10 +240,14 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Transact_Experience_Value)
 		.Process(this->Transact_Experience_Source_Flat)
 		.Process(this->Transact_Experience_Source_Percent)
-		.Process(this->Transact_Experience_Source_Percent_CalcFromTarget)
+		.Process(this->Transact_Experience_Source_RelativeToTarget)
+		.Process(this->Transact_Experience_Source_Min)
+		.Process(this->Transact_Experience_Source_Max)
 		.Process(this->Transact_Experience_Target_Flat)
 		.Process(this->Transact_Experience_Target_Percent)
-		.Process(this->Transact_Experience_Target_Percent_CalcFromSource)
+		.Process(this->Transact_Experience_Target_RelativeToSource)
+		.Process(this->Transact_Experience_Target_Min)
+		.Process(this->Transact_Experience_Target_Max)
 
 		.Process(this->MindControl_Anim)
 

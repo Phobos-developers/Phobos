@@ -922,12 +922,13 @@ BigGap=false   ; boolean
 ### Transact Warhead
 
 - It is now possible to increase, decrease or transfer specific "values" (referred to as Currency) between Technos.
-  - To enable this feature, `Transact=true` must be set and at least one `X.Source` or `X.Target` tag needs to be non-zero.
+  - To enable this feature, at least one `X.Source` or `X.Target` tag needs to be non-zero.
   - Source is the Techno that fired the warhead, target is a Techno (or a group) that is affected by the warhead.
   - `X.Flat` values grant absolute Currency, while `X.Percent` values grant Currency calculated relatively to the unit's state.
     - In case of experience, value from `X.Percent` is calculated by multiplying it by current unit cost.
-    - By default `X.Source.Percent` (percent of value that Source will receive) is calculated from Source unit cost, however it is possible to force calculation from Target cost with `CalcFromTarget` (Target and `CalcFromSource` behaves analogically).
-    - When both `X.Flat` and `X.Percent` values are set, the one that yields more Currency is used.
+    - By default `X.Source.Percent` (percent of value that Source will receive) is calculated from Source unit cost, however it is possible to force calculation from Target cost with `RelativeToTarget` (Target and `RelativeToSource` behaves analogically).
+    - When both `X.Flat` and `X.Percent` values are set, they are added together.
+    - The resulting Currency can be then limited with `X.Min` and `X.Max`.
   - If final Currency amount is positive or negative for both Source and Target, then all affected units gain or lose Currency.
   - When the final amount of Currency is negative only for either Source or Target, **Transfer** occurs.
     - In transfer, if the absolute value of Currency for Source and Target are different, then the smaller of them is used.
@@ -948,17 +949,20 @@ Currently supported "values" are:
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                                           ; Warhead
-Transact=false                                          ; boolean
 Transact.RequiresAnyTarget=true                         ; boolean
 Transact.RequiresValidTarget=true                       ; boolean
 Transact.SpreadAmongTargets=false                       ; boolean
 Transact.Experience.IgnoreNotTrainable=false            ; boolean
 Transact.Experience.Source.Flat=0                       ; integer
 Transact.Experience.Source.Percent=0.0                  ; float, percents or absolute (-1.0 - 1.0)
-Transact.Experience.Source.Percent.CalcFromTarget=false ; boolean
+Transact.Experience.Source.Min=-2147483647              ; integer
+Transact.Experience.Source.Max=2147483647               ; integer
+Transact.Experience.Source.RelativeToTarget=false       ; boolean
 Transact.Experience.Target.Flat=0                       ; integer
 Transact.Experience.Target.Percent=0.0                  ; float, percents or absolute (-1.0 - 1.0)
-Transact.Experience.Target.Percent.CalcFromSource=false ; boolean
+Transact.Experience.Target.Min=-2147483647              ; integer
+Transact.Experience.Target.Max=2147483647               ; integer
+Transact.Experience.Target.RelativeToSource=false       ; boolean
 ```
 
 ### Trigger specific NotHuman infantry Death anim sequence
