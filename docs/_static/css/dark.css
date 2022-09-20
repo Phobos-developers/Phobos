@@ -71,9 +71,11 @@
 
 .wy-menu-vertical a:hover,
 .wy-menu-vertical li.current a:hover,
+.wy-menu-vertical li.toctree-l2.current > a:hover,
 .wy-menu-vertical li.toctree-l3.current > a:hover,
+.wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a:hover,
 .wy-menu-vertical li.toctree-l3.current li.toctree-l4 > a:hover {
-  background: #5f5f6f;
+  background: #5f5f6f !important;
 }
 
 .wy-menu-vertical li.current > a,
@@ -91,11 +93,6 @@
 .wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a {
   background: #3d3e4a;
   color: #d9d9d9;
-}
-
-.wy-menu-vertical li.toctree-l2.current > a :hover,
-.wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a:hover {
-  background: #5f5f6f;
 }
 
 .wy-menu-vertical li.current a {
