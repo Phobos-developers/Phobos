@@ -615,3 +615,29 @@ DEFINE_HOOK(0x70265F, TechnoClass_ReceiveDamage_Explodes, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x4DACDD, FootClass_CrashingVoice, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+
+	if (pThis->IsCrashing != pThis->WasCrashingAlready)
+	{
+		if (pThis->IsCrashing && !pThis->IsAttackedByLocomotor)
+		{
+			pThis->Audio7.ShutUp();
+			const auto pType = pThis->GetTechnoType();
+
+			if (pType->VoiceCrashing != -1 && pThis->Owner->IsControlledByCurrentPlayer())
+				VocClass::PlayAt(pType->VoiceCrashing, pThis->GetCoords());
+
+			if (pType->CrashingSound != -1)
+				VocClass::PlayAt(pType->CrashingSound, pThis->GetCoords(), &pThis->Audio7);
+		}
+		else if (pThis->unknown_bool_53C)
+			pThis->Audio7.ShutUp();
+
+		pThis->WasCrashingAlready = pThis->IsCrashing;
+	}
+
+	return 0x4DADC8;
+}

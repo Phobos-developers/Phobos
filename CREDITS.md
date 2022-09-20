@@ -185,7 +185,9 @@ This page lists all the individual contributions to the project by their author.
    - Warhead superweapon launch logic
    - "Shield is broken" trigger event
    - Forbidding parallel AI queues by type
-- **NetsuNegi** - Forbidding parallel AI queues by type
+- **NetsuNegi**
+   - Forbidding parallel AI queues by type
+   - Fix unit will play crash voice when crashing after attacked by locomotor warhead
 - **Apollo** - Translucent SHP drawing patches
 - **FlyStar** - Campaign load screen PCX support
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
