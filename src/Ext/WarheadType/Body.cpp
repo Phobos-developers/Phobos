@@ -222,7 +222,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_AnimOnAffectedTargets)
 		.Process(this->Crit_AffectBelowPercent)
 		.Process(this->Crit_SuppressWhenIntercepted)
-		
+
 		.Process(this->Transact)
 		.Process(this->Transact_RequiresAnyTarget)
 		.Process(this->Transact_RequiresValidTarget)
