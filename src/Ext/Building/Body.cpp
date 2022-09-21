@@ -314,13 +314,13 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 		if (pTypeExt->SpyEffect_VictimSuperWeapon)
 		{
 			const auto pSuper = pVictimHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pTypeExt->SpyEffect_VictimSuperWeapon));
-			pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pVictimHouse->IsPlayerControl());
+			pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pVictimHouse->IsControlledByHuman());
 		}
 
 		if (pTypeExt->SpyEffect_InfiltratorSuperWeapon)
 		{
 			const auto pSuper = pInfiltratorHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pTypeExt->SpyEffect_InfiltratorSuperWeapon));
-			pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pInfiltratorHouse->IsPlayerControl());
+			pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pInfiltratorHouse->IsControlledByHuman());
 		}
 	}
 
