@@ -280,7 +280,7 @@ IronCurtain.EffectOnOrganics=kill  ; IronCurtain effect Enumeration (kill | invu
 IronCurtain.KillOrganicsWarhead=   ; IronCurtain use this warhead kill technos, default to [CombatDamage]->C4Warhead
 
 [SOMEINFANTRY]
-IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore)
+IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore), default to [CombatDamage]-> IronCurtain.EffectOnOrganics
 IronCurtain.KillWarhead=           ; IronCurtain use this warhead kill technos of this type, default to [CombatDamage]->IronCurtain.KillWarhead
 ```
 
