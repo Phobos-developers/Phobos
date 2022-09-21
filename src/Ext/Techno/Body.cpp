@@ -386,15 +386,16 @@ bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
 	return false;
 }
 
-void TechnoExt::InitializeLaserTrails(TechnoClass* pThis)
+void TechnoExt::InitializeLaserTrails(TechnoClass* pThis, TechnoTypeClass* pType, bool force)
 {
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->LaserTrails.size())
+	if (pExt->LaserTrails.size() && !force)
 		return;
 
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType))
 	{
+		pExt->LaserTrails.clear();
 		for (auto const& entry : pTypeExt->LaserTrailData)
 		{
 			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())

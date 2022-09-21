@@ -321,6 +321,33 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 			// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
 			if (this->Converts_To.size() >= i && this->Converts_From[i] == pTarget->GetTechnoType())
 			{
+				TechnoTypeClass* pResultType = this->Converts_To[i];
+
+				if (pTarget->WhatAmI() == AbstractType::Infantry &&
+					pResultType->WhatAmI() == AbstractType::InfantryType)
+				{
+					// InfantryClass only logic
+				}
+				else if (pTarget->WhatAmI() == AbstractType::Unit &&
+					pResultType->WhatAmI() == AbstractType::UnitType)
+				{
+					// UnitClass only logic
+				}
+				else if (pTarget->WhatAmI() == AbstractType::Aircraft &&
+					pResultType->WhatAmI() == AbstractType::AircraftType)
+				{
+					// AircraftClass only logic
+				}
+				else
+				{
+					Debug::Log("Attempting to convert units of different categories: %s and %s!", pTarget->GetTechnoType()->get_ID(), pResultType->get_ID());
+				}
+
+				// Shared logic
+				auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+				pTargetExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pResultType);
+				ShieldClass::ConvertShield(pTarget, pResultType);
+				TechnoExt::InitializeLaserTrails(pTarget, pResultType, true);
 				AresData::CallHandleConvert(pTarget, this->Converts_To[i]);
 				break;
 			}

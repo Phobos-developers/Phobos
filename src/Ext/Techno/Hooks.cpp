@@ -43,7 +43,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 	GET(TechnoClass*, pThis, ESI);
 
 	TechnoExt::InitializeShield(pThis);
-	TechnoExt::InitializeLaserTrails(pThis);
+	TechnoExt::InitializeLaserTrails(pThis, pThis->GetTechnoType());
 
 	return 0;
 }
