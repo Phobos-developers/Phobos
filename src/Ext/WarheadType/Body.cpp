@@ -172,13 +172,14 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
+	this->Converts_From.Read(exINI, pSection, "Converts.From");
+	this->Converts_To.Read(exINI, pSection, "Converts.To");
+	this->Converts = this->Converts_From.size() && this->Converts_To.size();
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
-	this->Converts.Read(exINI, pSection, "Converts");
-	this->Converts_From.Read(exINI, pSection, "Converts.From");
-	this->Converts_To.Read(exINI, pSection, "Converts.To");
 }
 
 template <typename T>
@@ -252,15 +253,15 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnAllMapObjects_AffectTypes)
 		.Process(this->DetonateOnAllMapObjects_IgnoreTypes)
 
+		.Process(this->Converts)
+		.Process(this->Converts_From)
+		.Process(this->Converts_To)
+
 		// Ares tags
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
-
-		.Process(this->Converts)
-		.Process(this->Converts_From)
-		.Process(this->Converts_To)
 		;
 }
 

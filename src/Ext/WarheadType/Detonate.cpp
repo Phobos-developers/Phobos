@@ -313,6 +313,9 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 
 void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
 {
+	if (!AresData::CanUseAres)
+		return;
+
 	if (this->Converts_From.size() && this->Converts_To.size())
 	{
 		// explicitly unsigned because the compiler wants it
@@ -345,9 +348,29 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 
 				// Shared logic
 				auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-				pTargetExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pResultType);
+				auto pResultTypeExt = TechnoTypeExt::ExtMap.Find(pResultType);
+
+				if (pTargetExt->TypeExtData->PassengerDeletion_Rate > 0)
+				{
+					if (pResultTypeExt->PassengerDeletion_Rate <= 0)
+					{
+						pTargetExt->PassengerDeletionCountDown = -1;
+						pTargetExt->PassengerDeletionTimer.Stop();
+					}
+				}
+
+				if (pTargetExt->TypeExtData->AutoDeath_AfterDelay > 0)
+				{
+					if (pResultTypeExt->AutoDeath_AfterDelay <= 0)
+					{
+						pTargetExt->AutoDeathTimer.Stop();
+					}
+				}
+
+				pTargetExt->TypeExtData = pResultTypeExt;
 				ShieldClass::ConvertShield(pTarget, pResultType);
 				TechnoExt::InitializeLaserTrails(pTarget, pResultType, true);
+
 				AresData::CallHandleConvert(pTarget, this->Converts_To[i]);
 				break;
 			}

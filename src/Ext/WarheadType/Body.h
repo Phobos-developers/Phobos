@@ -173,15 +173,16 @@ public:
 			, DetonateOnAllMapObjects_AffectTypes {}
 			, DetonateOnAllMapObjects_IgnoreTypes {}
 
+			, Converts { false }
+			, Converts_From {}
+			, Converts_To {}
+
 			, AffectsEnemies { true }
 			, AffectsOwner {}
 
 			, RandomBuffer { 0.0 }
 			, HasCrit { false }
 			, WasDetonatedOnAllMapObjects { false }
-			, Converts()
-			, Converts_From()
-			, Converts_To()
 		{ }
 
 	private:

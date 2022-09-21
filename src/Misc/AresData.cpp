@@ -62,7 +62,7 @@ void AresData::Init()
 		return;
 
 	auto crc = CRCEngine();
-	crc((void*)AresData::AresBaseAddress, 4096);
+	crc((void*)(AresData::AresBaseAddress + 0x1000), 2048);
 	switch (crc())
 	{
 		case AresData::Ares30CRC:

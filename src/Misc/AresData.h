@@ -9,9 +9,9 @@ struct AresData
 	static uintptr_t AresBaseAddress;
 
 	// precalculated CRC of Ares 3.0
-	static const int Ares30CRC = 1986896474;
+	static const int Ares30CRC = 1322412203;
 	// precalculated CRC of Ares 3.0p1
-	static const int Ares30p1CRC = -1520743529;
+	static const int Ares30p1CRC = 1534330502;
 	// number of Ares functions we use
 	static const int AresFunctionNumber = 1;
 	// number of Ares versions we support
