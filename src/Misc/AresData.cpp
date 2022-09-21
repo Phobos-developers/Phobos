@@ -3,8 +3,8 @@
 #include <ASMMacros.h>
 #include <Phobos.h>
 #include <Utilities/Debug.h>
+#include <CRC.h>
 
-//#include <filesystem>
 #include <tlhelp32.h>
 
 class TechnoClass;
@@ -20,12 +20,12 @@ int AresData::AresVersionId = -1;
 bool AresData::CanUseAres = false;
 
 // first is 3.0, second 3.0p1
-const DWORD AresData::AresFunctionOffsets[2] = {
+const DWORD AresData::AresFunctionOffsets[AresData::AresVersionsNumber * AresData::AresFunctionNumber] =
+{
 	0x43650, 0x44130,	// HandleConvert
 };
 
-// the absolute address calculated on runtime
-DWORD AresData::AresFunctionOffestsFinal[1];
+DWORD AresData::AresFunctionOffestsFinal[AresData::AresFunctionNumber];
 
 uintptr_t GetModuleBaseAddress(const char* modName)
 {
@@ -50,6 +50,7 @@ uintptr_t GetModuleBaseAddress(const char* modName)
 		}
 	}
 	CloseHandle(hSnap);
+
 	return modBaseAddr;
 }
 
@@ -60,26 +61,29 @@ void AresData::Init()
 	if (!AresData::AresBaseAddress)
 		return;
 
-	DWORD newCRC = 0;
-
-	switch (newCRC)
+	auto crc = CRCEngine();
+	crc((void*)AresData::AresBaseAddress, 4096);
+	switch (crc())
 	{
-		case AresData::Ares30Hash:
+		case AresData::Ares30CRC:
 			AresVersionId = 0;
 			CanUseAres = true;
+			Debug::Log("Detected Ares 3.0.\n");
 			break;
-		case AresData::Ares30p1Hash:
+		case AresData::Ares30p1CRC:
 			AresVersionId = 1;
 			CanUseAres = true;
+			Debug::Log("Detected Ares 3.0p1.\n");
 			break;
 		default:
-			Debug::Log("Detected a version of Ares that is not supported by Phobos. Disabling integration.");
+			Debug::Log("Detected a version of Ares that is not supported by Phobos. Disabling integration.\n");
 			break;
 	}
 
 	if (CanUseAres && GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN, ARES_DLL, &AresDllHmodule))
 	{
-		AresData::AresFunctionOffestsFinal[0] = AresData::AresBaseAddress + AresData::AresFunctionOffsets[0 + AresVersionId];
+		for (int i = 0; i < AresData::AresFunctionNumber; i++)
+			AresData::AresFunctionOffestsFinal[i] = AresData::AresBaseAddress + AresData::AresFunctionOffsets[i * AresData::AresVersionsNumber + AresVersionId];
 	}
 }
 

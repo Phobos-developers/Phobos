@@ -169,7 +169,6 @@ bool __stdcall DllMain(HANDLE hInstance, DWORD dwReason, LPVOID v)
 
 DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 {
-	
 	Phobos::ExeRun();
 	AresData::Init();
 
