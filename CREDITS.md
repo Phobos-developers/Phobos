@@ -102,6 +102,7 @@ This page lists all the individual contributions to the project by their author.
   - TerrainType `DestroyAnim` & `DestroySound`
   - Laser trails for VoxelAnims
   - MakeInfantry logic on BombClass bugfix
+  - Ares detection and integration
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
@@ -174,6 +175,8 @@ This page lists all the individual contributions to the project by their author.
   - Power delta counter
   - Super Weapons launching other Super Weapons
   - SpyEffects expansion, launching Super Weapons on building infiltration
+  - TechnoType conversion warhead
+  - Ares detection and integration
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
