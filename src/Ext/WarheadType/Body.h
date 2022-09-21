@@ -179,8 +179,6 @@ public:
 			, RandomBuffer { 0.0 }
 			, HasCrit { false }
 			, WasDetonatedOnAllMapObjects { false }
-			, Upgrades()
-			, Upgrade_From()
 			, Converts()
 			, Converts_From()
 			, Converts_To()
@@ -193,7 +191,7 @@ public:
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
-		void ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);

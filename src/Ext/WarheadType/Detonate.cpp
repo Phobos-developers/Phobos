@@ -18,6 +18,7 @@
 #include <Ext/SWType/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
+#include <Misc/AresData.h>
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBulletExt, CoordStruct coords)
 {
@@ -132,7 +133,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		this->ApplyCrit(pHouse, pTarget, pOwner);
 
 	if (this->Converts)
-		this->ApplyUpgrade(pHouse, pTarget);
+		this->ApplyConvert(pHouse, pTarget);
 }
 
 void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
@@ -310,7 +311,7 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 	}
 }
 
-void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTarget)
+void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
 {
 	if (this->Converts_From.size() && this->Converts_To.size())
 	{
@@ -320,27 +321,7 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 			// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
 			if (this->Converts_To.size() >= i && this->Converts_From[i] == pTarget->GetTechnoType())
 			{
-				TechnoTypeClass* pResultType = this->Converts_To[i];
-
-				if (pTarget->WhatAmI() == AbstractType::Infantry &&
-					pResultType->WhatAmI() == AbstractType::InfantryType)
-				{
-					abstract_cast<InfantryClass*>(pTarget)->Type = static_cast<InfantryTypeClass*>(pResultType);
-				}
-				else if (pTarget->WhatAmI() == AbstractType::Unit &&
-					pResultType->WhatAmI() == AbstractType::UnitType)
-				{
-					abstract_cast<UnitClass*>(pTarget)->Type = static_cast<UnitTypeClass*>(pResultType);
-				}
-				else if (pTarget->WhatAmI() == AbstractType::Aircraft &&
-					pResultType->WhatAmI() == AbstractType::AircraftType)
-				{
-					abstract_cast<AircraftClass*>(pTarget)->Type =static_cast<AircraftTypeClass*>(pResultType);
-				}
-				else
-				{
-					Debug::Log("Attempting to convert units of different categories: %s and %s!", pTarget->GetTechnoType()->get_ID(), pResultType->get_ID());
-				}
+				AresData::CallHandleConvert(pTarget, this->Converts_To[i]);
 				break;
 			}
 		}
