@@ -76,7 +76,7 @@ DEFINE_HOOK(0x641EE0, PreviewClass_ReadPreview, 0x6)
 
 DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 {
-	auto const pPlayer = HouseClass::Player();
+	auto const pPlayer = HouseClass::CurrentPlayer();
 	if (!pPlayer || pPlayer->Defeated)
 		return 0;
 
@@ -102,7 +102,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		RectangleStruct vRect = { 0, 0, 0, 0 };
 		DSurface::Sidebar->GetRect(&vRect);
 
-		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB2DWORD(clrToolTip), 0,
+		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0,
 			TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12);
 	}
 
@@ -133,7 +133,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		RectangleStruct vRect = { 0, 0, 0, 0 };
 		DSurface::Sidebar->GetRect(&vRect);
 
-		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB2DWORD(clrToolTip), 0, TextFlags);
+		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
 	}
 
 	return 0;

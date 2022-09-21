@@ -80,11 +80,11 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 	else
 		pThis->Accum = 0.0;
 
-	auto const pExt = AnimExt::ExtMap.Find(pThis);
 	TechnoClass* pInvoker = nullptr;
 
 	if (pTypeExt->Damage_DealtByInvoker)
 	{
+		auto const pExt = AnimExt::ExtMap.Find(pThis);
 		pInvoker = pExt->Invoker;
 
 		if (!pInvoker)

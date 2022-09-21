@@ -20,8 +20,10 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
 		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
 
+	if (pExt->CheckDeathConditions())
+		return 0;
+
 	pExt->ApplyInterceptor();
-	pExt->CheckDeathConditions();
 	pExt->EatPassengers();
 	pExt->UpdateShield();
 	pExt->ApplyPoweredKillSpawns();
@@ -535,7 +537,7 @@ DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Deconstruction_EVA_Sold_1, 0x6)
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	if (pTypeExt->EVA_Sold.isset())
 	{
-		if (pThis->IsHumanControlled && !pThis->Type->UndeploysInto)
+		if (pThis->IsOwnedByCurrentPlayer && !pThis->Type->UndeploysInto)
 			VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
 
 		return SkipVoxPlay;
@@ -552,7 +554,7 @@ DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Deconstruction_EVA_Sold_2, 0x6)
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	if (pTypeExt->EVA_Sold.isset())
 	{
-		if (pThis->IsHumanControlled)
+		if (pThis->IsOwnedByCurrentPlayer)
 			VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
 
 		return SkipVoxPlay;
@@ -596,6 +598,20 @@ DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_C
 	GET(TechnoClass*, pThis, ESI);
 
 	TechnoExt::UpdateMindControlAnim(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x70265F, TechnoClass_ReceiveDamage_Explodes, 0x6)
+{
+	enum { SkipKillingPassengers = 0x702669 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (!pTypeExt->Explodes_KillPassengers)
+		return SkipKillingPassengers;
 
 	return 0;
 }

@@ -24,6 +24,7 @@ public:
 		PhobosFixedString<0x20> GroupAs;
 		Valueable<int> RadarJamRadius;
 		Nullable<int> InhibitorRange;
+		Nullable<int> DesignatorRange;
 		Valueable<Leptons> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
 		Valueable<AffectedHouse> Interceptor_CanTargetHouses;
@@ -126,6 +127,8 @@ public:
 
 		Valueable<Vector2D<double>> InitialStrength_Cloning;
 
+		Valueable<bool> Explodes_KillPassengers;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -158,6 +161,7 @@ public:
 			, GroupAs { NONE_STR }
 			, RadarJamRadius { 0 }
 			, InhibitorRange { }
+			, DesignatorRange { }
 			, MindControlRangeLimit {}
 			, Interceptor { false }
 			, Interceptor_CanTargetHouses { AffectedHouse::Enemies }
@@ -243,6 +247,7 @@ public:
 			, IronCurtain_KeptOnDeploy {}
 			, IronCurtain_Effect {}
 			, IronCuratin_KillWarhead {}
+			, Explodes_KillPassengers { true }
 		{ }
 
 		virtual ~ExtData() = default;

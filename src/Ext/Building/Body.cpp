@@ -226,7 +226,7 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 		const auto pTypeExt = pExt->TypeExtData;
 
 		if (pTypeExt->Grinding_DisplayRefund && (pTypeExt->Grinding_DisplayRefund_Houses == AffectedHouse::All ||
-			EnumFunctions::CanTargetHouse(pTypeExt->Grinding_DisplayRefund_Houses, pBuilding->Owner, HouseClass::Player)))
+			EnumFunctions::CanTargetHouse(pTypeExt->Grinding_DisplayRefund_Houses, pBuilding->Owner, HouseClass::CurrentPlayer)))
 		{
 			pExt->AccumulatedGrindingRefund += pTechno->GetRefund();
 		}

@@ -42,8 +42,9 @@ public:
 		Valueable<bool> JumpjetAllowLayerDeviation;
 		Valueable<bool> JumpjetTurnToTarget;
 		PhobosFixedString<32u> MissingCameo;
-		Valueable<int> PlacementGrid_TranslucentLevel;
-		Valueable<int> BuildingPlacementPreview_TranslucentLevel;
+		TranslucencyLevel PlacementGrid_Translucency;
+		Valueable<bool> PlacementPreview;
+		TranslucencyLevel PlacementPreview_Translucency;
 		Valueable<Vector3D<int>> Pips_Shield;
 		Nullable<SHPStruct*> Pips_Shield_Background;
 		Valueable<Vector3D<int>> Pips_Shield_Building;
@@ -55,9 +56,19 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
 
+		Valueable<bool> ForbidParallelAIQueues_Infantry;
+		Valueable<bool> ForbidParallelAIQueues_Vehicle;
+		Valueable<bool> ForbidParallelAIQueues_Navy;
+		Valueable<bool> ForbidParallelAIQueues_Aircraft;
+		Valueable<bool> ForbidParallelAIQueues_Building;
+
 		Valueable<bool> IronCurtain_KeptOnDeploy;
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
+
+		Valueable<ColorStruct> ToolTip_Background_Color;
+		Valueable<int> ToolTip_Background_Opacity;
+		Valueable<float> ToolTip_Background_BlurSize;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -73,20 +84,29 @@ public:
 			, JumpjetAllowLayerDeviation { true }
 			, JumpjetTurnToTarget { false }
 			, MissingCameo { "xxicon.shp" }
-			, PlacementGrid_TranslucentLevel { 0 }
-			, BuildingPlacementPreview_TranslucentLevel { 3 }
+			, PlacementGrid_Translucency { 0 }
+			, PlacementPreview { false }
+			, PlacementPreview_Translucency { 75 }
 			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { -1,-1,-1 } }
 			, Pips_Shield_Building_Empty { }
-			, Pips_SelfHeal_Infantry {{ 13, 20 }}
-			, Pips_SelfHeal_Units {{ 13, 20 }}
-			, Pips_SelfHeal_Buildings {{ 13, 20 }}
-			, Pips_SelfHeal_Infantry_Offset {{ 25, -35 }}
-			, Pips_SelfHeal_Units_Offset {{ 33, -32 }}
-			, Pips_SelfHeal_Buildings_Offset {{ 15, 10 }}
+			, Pips_SelfHeal_Infantry { { 13, 20 } }
+			, Pips_SelfHeal_Units { { 13, 20 } }
+			, Pips_SelfHeal_Buildings { { 13, 20 } }
+			, Pips_SelfHeal_Infantry_Offset { { 25, -35 } }
+			, Pips_SelfHeal_Units_Offset { { 33, -32 } }
+			, Pips_SelfHeal_Buildings_Offset { { 15, 10 } }
+			, ForbidParallelAIQueues_Aircraft { false }
+			, ForbidParallelAIQueues_Building { false }
+			, ForbidParallelAIQueues_Infantry { false }
+			, ForbidParallelAIQueues_Navy { false }
+			, ForbidParallelAIQueues_Vehicle { false }
 			, IronCurtain_KeptOnDeploy { true }
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
 			, IronCurtain_KillOrganicsWarhead { }
+			, ToolTip_Background_Color { { 0, 0, 0 } }
+			, ToolTip_Background_Opacity { 100 }
+			, ToolTip_Background_BlurSize { 0.0f }
 		{ }
 
 		virtual ~ExtData() = default;

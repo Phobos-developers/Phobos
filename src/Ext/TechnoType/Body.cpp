@@ -206,11 +206,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->IronCurtain_Effect.Read(exINI, pSection, "IronCurtain.Effect");
 	this->IronCuratin_KillWarhead.Read(exINI, pSection, "IronCurtain.KillWarhead");
 
+	this->Explodes_KillPassengers.Read(exINI, pSection, "Explodes.KillPassengers");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
 	// Ares 0.9
 	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
+	this->DesignatorRange.Read(exINI, pSection, "DesignatorRange");
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
@@ -283,6 +286,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->GroupAs)
 		.Process(this->RadarJamRadius)
 		.Process(this->InhibitorRange)
+		.Process(this->DesignatorRange)
 		.Process(this->TurretOffset)
 		.Process(this->Powered_KillSpawns)
 		.Process(this->Spawn_LimitedRange)
@@ -361,6 +365,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteDeployedWeaponBurstFLHs)
 		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->InitialStrength_Cloning)
+		.Process(this->Explodes_KillPassengers)
 		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->IronCurtain_Effect)
 		.Process(this->IronCuratin_KillWarhead)

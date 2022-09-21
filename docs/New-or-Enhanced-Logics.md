@@ -166,6 +166,7 @@ Shield.InheritStateOnReplace=false   ; boolean
 ```
 - Now you can have a shield for any TechnoType. It serves as a second health pool with independent `Armor` and `Strength` values.
   - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed by shield.
+    - Negative damage weapons will consider targets with active, but not at full health shields in need of healing / repairing unless the Warhead has `Shield.Penetrate=true`, in which case only object health is considered.
   - When a TechnoType has an unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for game calculation.
   - `InitialStrength` can be used to set a different initial strength value from maximum.
 - When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoTypes have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
@@ -800,7 +801,7 @@ SplashList.PickRandom=false  ; boolean
 
 ### Detonate Warhead on all objects on map
 
-- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is fully detonated (and not just used to deal damage) and consequently any `Airburst/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
+- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `Airburst/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
   - `DetonateOnAllMapObjects.AffectTargets` can be used to filter which types of targets (TechnoTypes) are considered valid. Only `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values.
   - `DetonateOnAllMapObjects.AffectHouses` can be used to filter which houses targets can belong to be considered valid. Only applicable if the house that fired the projectile is known.
   - `DetonateOnAllMapObjects.AffectTypes` can be used to list specific TechnoTypes to be considered as valid targets. If any valid TechnoTypes are listed, then only matching objects will be targeted. Note that `DetonateOnAllMapObjects.AffectTargets` and `DetonateOnAllMapObjects.AffectHouses` take priority over this setting.
@@ -848,7 +849,8 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 - Superweapons can now be launched when a warhead is detonated.
   - `LaunchSW` specifies the superweapons to launch when the warhead is detonated.
   - `LaunchSW.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons and sufficient fund to support `Money.Amout`. Otherwise they will be launched out of nowhere.
-  - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of each superweapon, otherwise only non-inhibited superweapons are launched. `SW.Designators` are always ignored.
+  - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
+  - `LaunchSW.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
 
 ```{note}
 For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
@@ -861,6 +863,7 @@ In `rulesmd.ini`:
 LaunchSW=                        ; list of superweapons
 LaunchSW.RealLaunch=true         ; boolean
 LaunchSW.IgnoreInhibitors=false  ; boolean
+LaunchSW.IgnoreDesignators=true  ; boolean
 ```
 
 ### Remove disguise on impact
