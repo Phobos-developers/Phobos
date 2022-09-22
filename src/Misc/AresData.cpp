@@ -61,16 +61,20 @@ void AresData::Init()
 	if (!AresData::AresBaseAddress)
 		return;
 
-	auto crc = CRCEngine();
-	crc((void*)(AresData::AresBaseAddress + 0x1000), 2048);
-	switch (crc())
+	// find offset of PE header
+	int PEHeaderOffset = *(DWORD*)(AresData::AresBaseAddress + 0x3c);
+	// find absolute address of PE header
+	DWORD* PEHeaderPtr = (DWORD*)(AresData::AresBaseAddress + PEHeaderOffset);
+	// read the timedatestamp at 0x8 offset
+	DWORD TimeDateStamp = *(PEHeaderPtr + 2);
+	switch (TimeDateStamp)
 	{
-		case AresData::Ares30CRC:
+		case AresData::Ares30IdBytes:
 			AresVersionId = 0;
 			CanUseAres = true;
 			Debug::Log("Detected Ares 3.0.\n");
 			break;
-		case AresData::Ares30p1CRC:
+		case AresData::Ares30p1IdBytes:
 			AresVersionId = 1;
 			CanUseAres = true;
 			Debug::Log("Detected Ares 3.0p1.\n");

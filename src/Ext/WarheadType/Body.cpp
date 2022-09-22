@@ -172,9 +172,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
-	this->Converts_From.Read(exINI, pSection, "Converts.From");
-	this->Converts_To.Read(exINI, pSection, "Converts.To");
-	this->Converts = this->Converts_From.size() && this->Converts_To.size();
+	this->Convert_From.Read(exINI, pSection, "Convert.From");
+	this->Convert_To.Read(exINI, pSection, "Convert.To");
+	this->Converts = this->Convert_From.size() && this->Convert_To.size();
 
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -254,8 +254,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnAllMapObjects_IgnoreTypes)
 
 		.Process(this->Converts)
-		.Process(this->Converts_From)
-		.Process(this->Converts_To)
+		.Process(this->Convert_From)
+		.Process(this->Convert_To)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

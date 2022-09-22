@@ -316,15 +316,15 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 	if (!AresData::CanUseAres)
 		return;
 
-	if (this->Converts_From.size() && this->Converts_To.size())
+	if (this->Convert_From.size() && this->Convert_To.size())
 	{
 		// explicitly unsigned because the compiler wants it
-		for (unsigned int i = 0; i < this->Converts_From.size(); i++)
+		for (unsigned int i = 0; i < this->Convert_From.size(); i++)
 		{
 			// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
-			if (this->Converts_To.size() >= i && this->Converts_From[i] == pTarget->GetTechnoType())
+			if (this->Convert_To.size() >= i && this->Convert_From[i] == pTarget->GetTechnoType())
 			{
-				TechnoTypeClass* pResultType = this->Converts_To[i];
+				TechnoTypeClass* pResultType = this->Convert_To[i];
 
 				if (pTarget->WhatAmI() == AbstractType::Infantry &&
 					pResultType->WhatAmI() == AbstractType::InfantryType)
@@ -371,7 +371,7 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 				ShieldClass::ConvertShield(pTarget, pResultType);
 				TechnoExt::InitializeLaserTrails(pTarget, pResultType, true);
 
-				AresData::CallHandleConvert(pTarget, this->Converts_To[i]);
+				AresData::CallHandleConvert(pTarget, this->Convert_To[i]);
 				break;
 			}
 		}

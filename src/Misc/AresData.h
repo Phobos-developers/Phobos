@@ -8,10 +8,10 @@ struct AresData
 	static HMODULE AresDllHmodule;
 	static uintptr_t AresBaseAddress;
 
-	// precalculated CRC of Ares 3.0
-	static const int Ares30CRC = 1322412203;
-	// precalculated CRC of Ares 3.0p1
-	static const int Ares30p1CRC = 1534330502;
+	// timestamp bytes of Ares 3.0
+	static const DWORD Ares30IdBytes = 0x5fc37ef6;
+	// timestamp bytes of Ares 3.0p1
+	static const DWORD Ares30p1IdBytes = 0x61daa114;
 	// number of Ares functions we use
 	static const int AresFunctionNumber = 1;
 	// number of Ares versions we support

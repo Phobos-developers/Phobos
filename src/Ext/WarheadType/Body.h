@@ -95,8 +95,8 @@ public:
 		bool WasDetonatedOnAllMapObjects;
 
 		Valueable<bool> Converts;
-		ValueableVector<TechnoTypeClass*> Converts_From;
-		ValueableVector<TechnoTypeClass*> Converts_To;
+		ValueableVector<TechnoTypeClass*> Convert_From;
+		ValueableVector<TechnoTypeClass*> Convert_To;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -174,8 +174,8 @@ public:
 			, DetonateOnAllMapObjects_IgnoreTypes {}
 
 			, Converts { false }
-			, Converts_From {}
-			, Converts_To {}
+			, Convert_From {}
+			, Convert_To {}
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}

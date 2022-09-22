@@ -845,8 +845,8 @@ If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chai
 
 ### Convert TechnoType on impact
 - Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft). This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). ***This feature does not support BuildingTypes.***
-  - `Converts.From` specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once.
-  - `Converts.To` specifies which TechnoTypes are the result of converion. This entry should have the same length as `Converts.From`, as every listed type can convert separately.
+  - `Convert.From` specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once.
+  - `Convert.To` specifies which TechnoTypes are the result of converion. This entry should have the same length as `Convert.From`, as every listed type can convert separately.
 
 ```{warning}
 This feature requires Ares 3.0 or higher to function!
@@ -855,8 +855,8 @@ This feature requires Ares 3.0 or higher to function!
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]
-Converts.From=          ; list of tehnoTypes
-Converts.To=            ; list of TechnoTypes
+Convert.From=          ; list of tehnoTypes
+Convert.To=            ; list of TechnoTypes
 ```
 
 ### Custom 'SplashList' on Warheads
