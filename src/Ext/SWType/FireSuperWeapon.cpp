@@ -164,15 +164,24 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 // SW.Next proper launching mechanic
 void Launch(HouseClass* pHouse, SuperWeaponTypeClass* pLaunchedType, const CellStruct& cell)
 {
-	const auto pLaunched = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pLaunchedType));
-	if (!pLaunched)
-		return;
-	const auto pLaunchedTypeExt = SWTypeExt::ExtMap.Find(pLaunchedType);
+	const auto pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pLaunchedType));
 
-	if (pLaunchedTypeExt->SW_Next_IgnoreInhibitors || !pLaunchedTypeExt->HasInhibitor(pHouse, cell))
+	if (!pSuper)
+		return;
+
+	const auto pSuperTypeExt = SWTypeExt::ExtMap.Find(pLaunchedType);
+	if (!pSuperTypeExt->SW_Next_RealLaunch || (pSuperTypeExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSuperTypeExt->Money_Amount)))
 	{
-		// Forcibly fire
-		pLaunched->Launch(cell, true);
+
+		if (pSuperTypeExt->SW_Next_IgnoreInhibitors || !pSuperTypeExt->HasInhibitor(pHouse, cell)
+		&& (pSuperTypeExt->SW_Next_IgnoreDesignators || pSuperTypeExt->HasDesignator(pHouse, cell)))
+		{
+			// Forcibly fire
+			pSuper->Launch(cell, true);
+			if (pSuperTypeExt->SW_Next_RealLaunch)
+				pSuper->Reset();
+		}
+
 	}
 }
 

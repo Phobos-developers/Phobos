@@ -38,7 +38,9 @@ public:
 		ValueableVector<int> LimboKill_IDs;
 		Valueable<double> RandomBuffer;
 		ValueableVector<SuperWeaponTypeClass*> SW_Next;
+		Valueable<bool> SW_Next_RealLaunch;
 		Valueable<bool> SW_Next_IgnoreInhibitors;
+		Valueable<bool> SW_Next_IgnoreDesignators;
 		ValueableVector<float> SW_Next_RollChances;
 
 		Nullable<WarheadTypeClass*> Detonate_Warhead;
@@ -73,7 +75,9 @@ public:
 			, Detonate_Weapon {}
 			, Detonate_Damage {}
 			, SW_Next {}
-			, SW_Next_IgnoreInhibitors{ false }
+			, SW_Next_RealLaunch { true }
+			, SW_Next_IgnoreInhibitors { false }
+			, SW_Next_IgnoreDesignators { true }
 			, SW_Next_RollChances {}
 			, SW_Next_RandomWeightsData {}
 		{ }

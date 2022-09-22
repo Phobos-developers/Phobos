@@ -37,7 +37,9 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Detonate_Weapon)
 		.Process(this->Detonate_Damage)
 		.Process(this->SW_Next)
+		.Process(this->SW_Next_RealLaunch)
 		.Process(this->SW_Next_IgnoreInhibitors)
+		.Process(this->SW_Next_IgnoreDesignators)
 		.Process(this->SW_Next_RandomWeightsData)
 		.Process(this->SW_Next_RollChances)
 		;
@@ -76,7 +78,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->LimboKill_Affected.Read(exINI, pSection, "LimboKill.Affected");
 	this->LimboKill_IDs.Read(exINI, pSection, "LimboKill.IDs");
 	this->SW_Next.Read(exINI, pSection, "SW.Next");
+	this->SW_Next_RealLaunch.Read(exINI, pSection, "SW.Next.RealLaunch");
 	this->SW_Next_IgnoreInhibitors.Read(exINI, pSection, "SW.Next.IgnoreInhibitors");
+	this->SW_Next_IgnoreDesignators.Read(exINI, pSection, "SW.Next.IgnoreDesignators");
 	this->SW_Next_RollChances.Read(exINI, pSection, "SW.Next.RollChances");
 
 	char tempBuffer[32];

@@ -485,14 +485,20 @@ LimboKill.IDs=                  ; List of numeric IDs.
 
 ### Next
 
-Super Weapons can now launch other Super Weapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
+Super Weapons can now launch other superweapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
+  - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
+  - `SW.Next.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
+  - `SW.Next.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
 
 In `rulesmd.ini`:
 ```ini
 [SOMESW]                        ; Super Weapon
 SW.Next=                        ; List of Super Weapons
-LimboDelivery.RollChances=      ; List of percentages.
-LimboDelivery.RandomWeightsN=   ; List of integers.
+SW.Next.RealLaunch=true         ; boolean
+SW.Next.IgnoreInhibitors=false  ; boolean
+SW.Next.IgnoreDesignators=true  ; boolean
+SW.Next.RollChances=            ; List of percentages.
+SW.Next.RandomWeightsN=         ; List of integers.
 ```
 
 ### Warhead or Weapon detonation at target cell
