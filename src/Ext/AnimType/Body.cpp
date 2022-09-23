@@ -107,7 +107,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Warhead_Detonate.Read(exINI, pID, "Warhead.Detonate");
 	this->SplashAnims.Read(exINI, pID, "SplashAnims");
 	this->SplashAnims_PickRandom.Read(exINI, pID, "SplashAnims.PickRandom");
-	this->AttachedSystem.Read(exINI, pID, "AttachedSystem");
+	this->AttachedSystem.Read(exINI, pID, "AttachedSystem", true);
 }
 
 template <typename T>
