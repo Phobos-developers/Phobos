@@ -162,7 +162,7 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 }
 
 // SW.Next proper launching mechanic
-void Launch(HouseClass* pHouse, SuperWeaponTypeClass* pLaunchedType, const CellStruct& cell)
+void Launch(HouseClass* pHouse, SWTypeExt::ExtData* pLauncherTypeExt, SuperWeaponTypeClass* pLaunchedType, const CellStruct& cell)
 {
 	const auto pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pLaunchedType));
 
@@ -170,15 +170,15 @@ void Launch(HouseClass* pHouse, SuperWeaponTypeClass* pLaunchedType, const CellS
 		return;
 
 	const auto pSuperTypeExt = SWTypeExt::ExtMap.Find(pLaunchedType);
-	if (!pSuperTypeExt->SW_Next_RealLaunch || (pSuperTypeExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSuperTypeExt->Money_Amount)))
+	if (!pLauncherTypeExt->SW_Next_RealLaunch || (pSuperTypeExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSuperTypeExt->Money_Amount)))
 	{
 
-		if (pSuperTypeExt->SW_Next_IgnoreInhibitors || !pSuperTypeExt->HasInhibitor(pHouse, cell)
-		&& (pSuperTypeExt->SW_Next_IgnoreDesignators || pSuperTypeExt->HasDesignator(pHouse, cell)))
+		if (pLauncherTypeExt->SW_Next_IgnoreInhibitors || !pSuperTypeExt->HasInhibitor(pHouse, cell)
+		&& (pLauncherTypeExt->SW_Next_IgnoreDesignators || pSuperTypeExt->HasDesignator(pHouse, cell)))
 		{
 			// Forcibly fire
 			pSuper->Launch(cell, true);
-			if (pSuperTypeExt->SW_Next_RealLaunch)
+			if (pLauncherTypeExt->SW_Next_RealLaunch)
 				pSuper->Reset();
 		}
 
@@ -264,13 +264,13 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 	{
 		auto results = this->WeightedRollsHandler(&this->SW_Next_RollChances, &this->SW_Next_RandomWeightsData, this->SW_Next.size());
 		for each (int result in results)
-			Launch(pSW->Owner, this->SW_Next[result], cell);
+			Launch(pSW->Owner, this, this->SW_Next[result], cell);
 	}
 	// no randomness mode
 	else
 	{
 		for each (const auto pSWType in this->SW_Next)
-			Launch(pSW->Owner, pSWType, cell);
+			Launch(pSW->Owner, this, pSWType, cell);
 	}
 }
 
