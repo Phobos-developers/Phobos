@@ -254,7 +254,7 @@ DEFINE_HOOK(0x478F77, CCToolTip_Draw2_SetY, 0x6)
 {
 	if (PhobosToolTip::Instance.IsCameo)
 	{
-		LEA_STACK(RectangleStruct*, Rect, STACK_OFFS(0x3C, 0x20));
+		LEA_STACK(RectangleStruct*, Rect, STACK_OFFSET(0x3C, -0x20));
 
 		int const maxHeight = DSurface::ViewBounds->Height - 32;
 
@@ -290,7 +290,7 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 	if (PhobosToolTip::Instance.IsCameo)
 	{
 		GET(SurfaceExt*, pThis, ESI);
-		LEA_STACK(RectangleStruct*, pRect, STACK_OFFS(0x44, 0x10));
+		LEA_STACK(RectangleStruct*, pRect, STACK_OFFSET(0x44, -0x10));
 
 		// Should we make some SideExt items as static to improve the effeciency?
 		// Though it might not be a big improvement... - secsome
@@ -382,4 +382,3 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 //
 //	return 0x479048;
 //}
-

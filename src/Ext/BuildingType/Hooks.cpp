@@ -13,7 +13,7 @@ DEFINE_HOOK(0x460285, BuildingTypeClass_LoadFromINI_Muzzle, 0x6)
 	GET(BuildingTypeClass*, pThis, EBP);
 
 	// Restore overriden instructions
-	R->Stack(STACK_OFFS(0x368, 0x358), 0);
+	R->Stack(STACK_OFFSET(0x368, -0x358), 0);
 	R->EDX(0);
 
 	// Disable Vanilla Muzzle flash when MaxNumberOccupants is 0 or more than 10
@@ -142,7 +142,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 
 DEFINE_HOOK(0x47EFAE, CellClass_Draw_It_MakePlacementGridTranparent, 0x6)
 {
-	LEA_STACK(BlitterFlags*, blitFlags, STACK_OFFS(0x68, 0x58));
+	LEA_STACK(BlitterFlags*, blitFlags, STACK_OFFSET(0x68, -0x58));
 
 	*blitFlags |= RulesExt::Global()->PlacementGrid_Translucency;
 	return 0;

@@ -163,12 +163,12 @@ DEFINE_HOOK(0x715A4D, Replace_XXICON_With_New, 0x7)         //TechnoTypeClass::R
 
 DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 {
-	GET_STACK(TechnoTypeClass*, pLeft, STACK_OFFS(0x1C, 0x8));
-	GET_STACK(TechnoTypeClass*, pRight, STACK_OFFS(0x1C, 0x4));
-	GET_STACK(int, idxLeft, STACK_OFFS(0x1C, -0x8));
-	GET_STACK(int, idxRight, STACK_OFFS(0x1C, -0x10));
-	GET_STACK(AbstractType, rttiLeft, STACK_OFFS(0x1C, -0x4));
-	GET_STACK(AbstractType, rttiRight, STACK_OFFS(0x1C, -0xC));
+	GET_STACK(TechnoTypeClass*, pLeft, STACK_OFFSET(0x1C, -0x8));
+	GET_STACK(TechnoTypeClass*, pRight, STACK_OFFSET(0x1C, -0x4));
+	GET_STACK(int, idxLeft, STACK_OFFSET(0x1C, 0x8));
+	GET_STACK(int, idxRight, STACK_OFFSET(0x1C, 0x10));
+	GET_STACK(AbstractType, rttiLeft, STACK_OFFSET(0x1C, 0x4));
+	GET_STACK(AbstractType, rttiRight, STACK_OFFSET(0x1C, 0xC));
 	auto pLeftTechnoExt = TechnoTypeExt::ExtMap.Find(pLeft);
 	auto pRightTechnoExt = TechnoTypeExt::ExtMap.Find(pRight);
 	auto pLeftSWExt = (rttiLeft == AbstractType::Special || rttiLeft == AbstractType::Super || rttiLeft == AbstractType::SuperWeaponType)

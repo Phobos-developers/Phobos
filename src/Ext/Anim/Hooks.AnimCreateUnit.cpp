@@ -15,7 +15,7 @@
 DEFINE_HOOK(0x737F6D, UnitClass_TakeDamage_Destroy, 0x7)
 {
 	GET(UnitClass* const, pThis, ESI);
-	REF_STACK(args_ReceiveDamage const, Receivedamageargs, STACK_OFFS(0x44, -0x4));
+	REF_STACK(args_ReceiveDamage const, Receivedamageargs, STACK_OFFSET(0x44, 0x4));
 
 	R->ECX(R->ESI());
 	TechnoExt::ExtMap.Find(pThis)->ReceiveDamage = true;
@@ -193,7 +193,7 @@ DEFINE_HOOK(0x469C98, BulletClass_DetonateAt_DamageAnimSelected, 0x0)
 DEFINE_HOOK(0x6E2368, ActionClass_PlayAnimAt, 0x7)
 {
 	GET(AnimClass*, pAnim, EAX);
-	GET_STACK(HouseClass*, pHouse, STACK_OFFS(0x18, -0x4));
+	GET_STACK(HouseClass*, pHouse, STACK_OFFSET(0x18, 0x4));
 
 	if (pAnim)
 	{
