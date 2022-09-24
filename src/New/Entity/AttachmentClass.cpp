@@ -11,6 +11,30 @@
 
 std::vector<AttachmentClass*> AttachmentClass::Array;
 
+void AttachmentClass::InitCacheData()
+{
+	this->Cache.TopLevelParent = TechnoExt::GetTopLevelParent(this->Parent);
+}
+
+Matrix3D AttachmentClass::GetUpdatedTransform(int* pKey)
+{
+	if (Unsorted::CurrentFrame != this->Cache.LastUpdateFrame) {
+		auto const& flh = this->Data->FLH.Get();
+
+		Matrix3D mtx;
+		mtx.MakeIdentity();
+		mtx = TechnoExt::TransformFLHForTurret(this->Parent, mtx, this->Data->IsOnTurret);
+		mtx.Translate((float)flh.X, (float)flh.Y, (float)flh.Z);
+
+		this->Cache.ChildTransform = Matrix3D::MatrixMultiply(
+			mtx, TechnoExt::GetAttachmentTransform(this->Parent, pKey));
+
+		this->Cache.LastUpdateFrame = Unsorted::CurrentFrame;
+	}
+
+	return this->Cache.ChildTransform;
+}
+
 AttachmentTypeClass* AttachmentClass::GetType()
 {
 	return AttachmentTypeClass::Array[this->Data->Type].get();
@@ -93,31 +117,31 @@ void AttachmentClass::AI()
 
 			// DriveLocomotionClass doesn't tilt only with angles set, hence why we
 			// do this monstrosity in order to inherit timer and ramp data - Kerbiter
-			FootClass* pParentAsFoot = abstract_cast<FootClass*>(this->Parent);
-			FootClass* pChildAsFoot = abstract_cast<FootClass*>(this->Child);
-			if (pParentAsFoot && pChildAsFoot)
-			{
-				auto pParentLoco = static_cast<LocomotionClass*>(pParentAsFoot->Locomotor.get());
-				auto pChildLoco = static_cast<LocomotionClass*>(pChildAsFoot->Locomotor.get());
+			// FootClass* pParentAsFoot = abstract_cast<FootClass*>(this->Parent);
+			// FootClass* pChildAsFoot = abstract_cast<FootClass*>(this->Child);
+			// if (pParentAsFoot && pChildAsFoot)
+			// {
+			// 	auto pParentLoco = static_cast<LocomotionClass*>(pParentAsFoot->Locomotor.get());
+			// 	auto pChildLoco = static_cast<LocomotionClass*>(pChildAsFoot->Locomotor.get());
 
-				CLSID locoCLSID;
-				if (SUCCEEDED(pParentLoco->GetClassID(&locoCLSID))
-					&& (locoCLSID == LocomotionClass::CLSIDs::Drive
-						|| locoCLSID == LocomotionClass::CLSIDs::Ship) &&
-				    SUCCEEDED(pChildLoco->GetClassID(&locoCLSID))
-					&& (locoCLSID == LocomotionClass::CLSIDs::Drive
-						|| locoCLSID == LocomotionClass::CLSIDs::Ship))
-				{
-					// shh DriveLocomotionClass almost equates to ShipLocomotionClass
-					// for this particular case it's OK to cast to it - Kerbiter
-					auto pParentDriveLoco = static_cast<DriveLocomotionClass*>(pParentLoco);
-					auto pChildDriveLoco = static_cast<DriveLocomotionClass*>(pChildLoco);
+			// 	CLSID locoCLSID;
+			// 	if (SUCCEEDED(pParentLoco->GetClassID(&locoCLSID))
+			// 		&& (locoCLSID == LocomotionClass::CLSIDs::Drive
+			// 			|| locoCLSID == LocomotionClass::CLSIDs::Ship) &&
+			// 	    SUCCEEDED(pChildLoco->GetClassID(&locoCLSID))
+			// 		&& (locoCLSID == LocomotionClass::CLSIDs::Drive
+			// 			|| locoCLSID == LocomotionClass::CLSIDs::Ship))
+			// 	{
+			// 		// shh DriveLocomotionClass almost equates to ShipLocomotionClass
+			// 		// for this particular case it's OK to cast to it - Kerbiter
+			// 		auto pParentDriveLoco = static_cast<DriveLocomotionClass*>(pParentLoco);
+			// 		auto pChildDriveLoco = static_cast<DriveLocomotionClass*>(pChildLoco);
 
-					pChildDriveLoco->SlopeTimer = pParentDriveLoco->SlopeTimer;
-					pChildDriveLoco->Ramp1 = pParentDriveLoco->Ramp1;
-					pChildDriveLoco->Ramp2 = pParentDriveLoco->Ramp2;
-				}
-			}
+			// 		pChildDriveLoco->SlopeTimer = pParentDriveLoco->SlopeTimer;
+			// 		pChildDriveLoco->Ramp1 = pParentDriveLoco->Ramp1;
+			// 		pChildDriveLoco->Ramp2 = pParentDriveLoco->Ramp2;
+			// 	}
+			// }
 		}
 
 		if (pType->InheritStateEffects)
@@ -239,6 +263,7 @@ bool AttachmentClass::DetachChild(bool isForceDetachment)
 		if (!this->Child->InLimbo && pType->ParentDetachmentMission.isset())
 			this->Child->QueueMission(pType->ParentDetachmentMission.Get(), false);
 
+		// FIXME this won't work probably
 		if (pType->InheritOwner)
 			this->Child->SetOwningHouse(this->Parent->GetOriginalOwner(), false);
 
@@ -257,6 +282,7 @@ void AttachmentClass::InvalidatePointer(void* ptr)
 {
 	AnnounceInvalidPointer(this->Parent, ptr);
 	AnnounceInvalidPointer(this->Child, ptr);
+	AnnounceInvalidPointer(this->Cache.TopLevelParent, ptr);
 }
 
 #pragma region Save/Load

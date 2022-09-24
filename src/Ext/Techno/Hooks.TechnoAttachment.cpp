@@ -465,3 +465,86 @@ DEFINE_HOOK(0x4D7D58, FootClass_CellClickedAction_HandleAttachment, 0x6)
 
 // 	return Continue;
 // }
+
+CoordStruct __fastcall ObjectClass_GetRenderCoords(ObjectClass* pThis, void* _)
+{
+	JMP_THIS(0x41BE00);
+}
+
+CoordStruct __fastcall BuildingClass_GetRenderCoords(BuildingClass* pThis, void* _)
+{
+	JMP_THIS(0x459EF0);
+}
+
+CoordStruct __fastcall TechnoClass_GetRenderCoords(TechnoClass* pThis, void* _)
+{
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+	if (pExt && pExt->ParentAttachment)
+	{
+		// The parent origin is our origin, we will offset later in draw function
+		return pExt->ParentAttachment->Cache.TopLevelParent->GetRenderCoords();
+	}
+
+	return ObjectClass_GetRenderCoords(pThis, _);
+}
+
+// TODO hook matrix
+// 6F3B88 DONE
+// 6F3DA4 DONE
+// 73B5B5 DONE
+// 73C864 DONE
+
+DEFINE_HOOK(0x6F3B88, TechnoClass_FireCoord_AttachmentAdjust, 0x6)
+{
+	enum { Skip = 0x6F3B9E };
+
+	GET(TechnoClass*, pThis, EBX);
+
+	R->EAX(&TechnoExt::GetAttachmentTransform(pThis));
+	return Skip;
+}
+
+DEFINE_HOOK(0x6F3DA4, TechnoClass_firecoord_6F3D60_AttachmentAdjust, 0x6)
+{
+	enum { Skip = 0x6F3DBA };
+
+	GET(TechnoClass*, pThis, EBX);
+
+	R->EAX(&TechnoExt::GetAttachmentTransform(pThis));
+	return Skip;
+}
+
+DEFINE_HOOK(0x73B5B5, UnitClass_DrawVoxel_AttachmentAdjust, 0x6)
+{
+	enum { Skip = 0x73B5CE };
+
+	GET(UnitClass*, pThis, EBP);
+	LEA_STACK(int*, pKey, STACK_OFFS(0x1C8, 0xC4));
+
+	R->EAX(&TechnoExt::GetAttachmentTransform(pThis, pKey));
+	return Skip;
+}
+
+DEFINE_HOOK(0x73C864, UnitClass_drawcode_AttachmentAdjust, 0x6)
+{
+	enum { Skip = 0x73C87D };
+
+	GET(UnitClass*, pThis, EBP);
+	LEA_STACK(int*, pKey, STACK_OFFS(0x128, 0xC8));
+
+	R->EAX(&TechnoExt::GetAttachmentTransform(pThis, pKey));
+	return Skip;
+}
+// TODO merge hooks
+
+// TODO hook shadow matrix
+
+// BuildingClass::GetRenderCoords already has it's own override,
+// should hook it if you ever want to dip into that - Kerbiter
+
+// FIXME it's probably not a good idea to mix vtable replacements with manual hooks
+DEFINE_JUMP(VTABLE, 0x7F4A0C, GET_OFFSET(TechnoClass_GetRenderCoords)) // TechnoClass
+DEFINE_JUMP(VTABLE, 0x7E8D40, GET_OFFSET(TechnoClass_GetRenderCoords)) // FootClass
+DEFINE_JUMP(VTABLE, 0x7F5D1C, GET_OFFSET(TechnoClass_GetRenderCoords)) // UnitClass
+DEFINE_JUMP(VTABLE, 0x7EB104, GET_OFFSET(TechnoClass_GetRenderCoords)) // InfantryClass
+DEFINE_JUMP(VTABLE, 0x7E2350, GET_OFFSET(TechnoClass_GetRenderCoords)) // AircraftClass

@@ -253,20 +253,23 @@ void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponTyp
 	WeaponTypeExt::DetonateAt(pWeaponType, pThis, pThis);
 }
 
-// reversed from 6F3D60
-CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
+Matrix3D TechnoExt::GetTransform(TechnoClass* pThis, int* pKey)
 {
-	auto const pType = pThis->GetTechnoType();
-	auto const pFoot = abstract_cast<FootClass*>(pThis);
 	Matrix3D mtx;
 
-	// Step 1: get body transform matrix
-	if (pFoot && pFoot->Locomotor)
-		mtx = pFoot->Locomotor->Draw_Matrix(nullptr);
+	if ((pThis->AbstractFlags & AbstractFlags::Foot) && ((FootClass*)pThis)->Locomotor)
+		mtx = ((FootClass*)pThis)->Locomotor->Draw_Matrix(pKey);
 	else // no locomotor means no rotation or transform of any kind (f.ex. buildings) - Kerbiter
 		mtx.MakeIdentity();
 
-	// Steps 2-3: turret offset and rotation
+	return mtx;
+}
+
+Matrix3D TechnoExt::TransformFLHForTurret(TechnoClass* pThis, Matrix3D mtx, bool isOnTurret)
+{
+	auto const pType = pThis->GetTechnoType();
+
+	// turret offset and rotation
 	if (isOnTurret && pThis->HasTurret())
 	{
 		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
@@ -278,15 +281,29 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 		mtx.RotateZ(angle);
 	}
 
-	// Step 4: apply FLH offset
+	return mtx;
+}
+
+Matrix3D TechnoExt::GetFLHMatrix(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
+{
+	Matrix3D mtx = TechnoExt::TransformFLHForTurret(pThis, TechnoExt::GetTransform(pThis), isOnTurret);
+
+	// apply FLH offset
 	mtx.Translate((float)pCoord.X, (float)pCoord.Y, (float)pCoord.Z);
 
-	Vector3D<float> result = Matrix3D::MatrixMultiply(mtx, Vector3D<float>::Empty);
+	return mtx;
+}
+
+// reversed from 6F3D60
+CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
+{
+	Vector3D<float> result = Matrix3D::MatrixMultiply(
+		TechnoExt::GetFLHMatrix(pThis, pCoord, isOnTurret), Vector3D<float>::Empty);
 
 	// Resulting coords are mirrored along X axis, so we mirror it back
 	result.Y *= -1;
 
-	// Step 5: apply as an offset to global object coords
+	// apply as an offset to global object coords
 	CoordStruct location = pThis->GetCoords();
 	location += { std::lround(result.X), std::lround(result.Y), std::lround(result.Z) };
 
@@ -847,7 +864,7 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 	wchar_t damageStr[0x20];
 	swprintf_s(damageStr, L"%d", damage);
 	auto coords = CoordStruct::Empty;
-	coords = *pThis->GetCenterCoord(&coords);
+	coords = *pThis->GetRenderCoords(&coords);
 
 	int maxOffset = Unsorted::CellWidthInPixels / 2;
 	int width = 0, height = 0;
@@ -955,6 +972,27 @@ bool TechnoExt::IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep)
 		&& pThisExt->ParentAttachment
 		&& (pThisExt->ParentAttachment->Parent == pParent
 			|| (deep && TechnoExt::IsChildOf(pThisExt->ParentAttachment->Parent, pParent)));
+}
+
+// Returns this if no parent.
+TechnoClass* TechnoExt::GetTopLevelParent(TechnoClass* pThis)
+{
+	auto const pThisExt = TechnoExt::ExtMap.Find(pThis);
+
+	return pThis && pThisExt  // sanity check, sometimes crashes because ext is null - Kerbiter
+		&& pThisExt->ParentAttachment
+		? TechnoExt::GetTopLevelParent(pThisExt->ParentAttachment->Parent)
+		: pThis;
+}
+
+Matrix3D TechnoExt::GetAttachmentTransform(TechnoClass* pThis, int* pKey)
+{
+	auto const pThisExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pThis && pThisExt && pThisExt->ParentAttachment)
+		return pThisExt->ParentAttachment->GetUpdatedTransform(pKey);
+
+	return TechnoExt::GetTransform(pThis, pKey);
 }
 
 // =============================

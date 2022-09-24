@@ -18,12 +18,22 @@ public:
 	TechnoClass* Parent;
 	TechnoClass* Child;
 
+	// volatile, don't serialize
+	// if you ever change the tree structure, you need to call CacheTreeData()
+	struct Cache {
+		TechnoClass* TopLevelParent;
+
+		int LastUpdateFrame;
+		Matrix3D ChildTransform;
+	} Cache;
+
 	AttachmentClass(TechnoTypeExt::ExtData::AttachmentDataEntry* data,
 		TechnoClass* pParent, TechnoClass* pChild = nullptr) :
 		Data(data),
 		Parent(pParent),
 		Child(pChild)
 	{
+		this->InitCacheData();
 		Array.push_back(this);
 	}
 
@@ -36,6 +46,9 @@ public:
 	}
 
 	~AttachmentClass();
+
+	void InitCacheData();
+	Matrix3D GetUpdatedTransform(int* pKey = nullptr);
 
 	AttachmentTypeClass* GetType();
 	TechnoTypeClass* GetChildType();

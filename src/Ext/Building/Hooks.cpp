@@ -102,7 +102,7 @@ DEFINE_HOOK(0x43FE73, BuildingClass_AI_FlyingStrings, 0x6)
 			swprintf_s(moneyStr, L"%ls%ls%d", isPositive ? L"+" : L"-", Phobos::UI::CostLabel, std::abs(refundAmount));
 
 			auto coords = CoordStruct::Empty;
-			coords = *pThis->GetCenterCoord(&coords);
+			coords = *pThis->GetRenderCoords(&coords);
 
 			int width = 0, height = 0;
 			BitFont::Instance->GetTextDimension(moneyStr, &width, &height, 120);
