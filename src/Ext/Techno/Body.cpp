@@ -431,8 +431,8 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 	{
 		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
 
-		double turretRad = (pThis->TurretFacing().value32() - 8) * -(Math::Pi / 16);
-		double bodyRad = (pThis->PrimaryFacing.current().value32() - 8) * -(Math::Pi / 16);
+		double turretRad = (pThis->TurretFacing().GetFacing<32>() - 8) * -(Math::Pi / 16);
+		double bodyRad = (pThis->PrimaryFacing.Current().GetFacing<32>() - 8) * -(Math::Pi / 16);
 		float angle = (float)(turretRad - bodyRad);
 
 		mtx.RotateZ(angle);
