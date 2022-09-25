@@ -34,7 +34,13 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
 	for (auto const& trail : pExt->LaserTrails)
-		trail->Update(TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret));
+	{
+		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret);
+		if (pThis->CloakState == CloakState::Cloaked)
+			trail->LastLocation = trailLoc;
+		else
+			trail->Update(trailLoc);
+	}
 
 	return 0;
 }
@@ -300,7 +306,7 @@ DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
 	GET(UnitClass*, pUnit, ESI);
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pUnit);
-	auto pTechnoTypeExt = pTechnoExt->TypeExtData;
+	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->Type);
 
 	if (pTechnoExt && pTechnoTypeExt)
 	{
