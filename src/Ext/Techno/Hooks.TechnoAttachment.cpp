@@ -516,24 +516,28 @@ DEFINE_HOOK(0x6F3DA4, TechnoClass_firecoord_6F3D60_AttachmentAdjust, 0x6)
 
 DEFINE_HOOK(0x73B5B5, UnitClass_DrawVoxel_AttachmentAdjust, 0x6)
 {
-	enum { Skip = 0x73B5CE };
+    enum { Skip = 0x73B5CE };
 
-	GET(UnitClass*, pThis, EBP);
-	LEA_STACK(int*, pKey, STACK_OFFS(0x1C8, 0xC4));
-
-	R->EAX(&TechnoExt::GetAttachmentTransform(pThis, pKey));
-	return Skip;
+    GET(UnitClass*, pThis, EBP);
+    LEA_STACK(int*, pKey, STACK_OFFS(0x1C4, 0x1B0));
+    // LEA_STACK(Matrix3D* , pMtx ,STACK_OFFS(0x1C4, 0xC0));
+    //Use .get() to skip locomotor empty checking
+    //since it already done above
+    R->EAX(&TechnoExt::GetAttachmentTransform(pThis, pKey));
+    return Skip;
 }
 
 DEFINE_HOOK(0x73C864, UnitClass_drawcode_AttachmentAdjust, 0x6)
 {
-	enum { Skip = 0x73C87D };
+    enum { Skip = 0x73C87D };
 
-	GET(UnitClass*, pThis, EBP);
-	LEA_STACK(int*, pKey, STACK_OFFS(0x128, 0xC8));
-
-	R->EAX(&TechnoExt::GetAttachmentTransform(pThis, pKey));
-	return Skip;
+    GET(UnitClass*, pThis, EBP);
+    LEA_STACK(int*, pKey, STACK_OFFS(0x128, 0xC8));
+    // LEA_STACK(Matrix3D* , pMtx ,STACK_OFFS(0x128, 0x30));
+    //Use .get() to skip locomotor empty checking
+    //since it already done above
+    R->EAX(&TechnoExt::GetAttachmentTransform(pThis, pKey));
+    return Skip;
 }
 // TODO merge hooks
 
@@ -548,3 +552,14 @@ DEFINE_JUMP(VTABLE, 0x7E8D40, GET_OFFSET(TechnoClass_GetRenderCoords)) // FootCl
 DEFINE_JUMP(VTABLE, 0x7F5D1C, GET_OFFSET(TechnoClass_GetRenderCoords)) // UnitClass
 DEFINE_JUMP(VTABLE, 0x7EB104, GET_OFFSET(TechnoClass_GetRenderCoords)) // InfantryClass
 DEFINE_JUMP(VTABLE, 0x7E2350, GET_OFFSET(TechnoClass_GetRenderCoords)) // AircraftClass
+
+
+// // DEFINE_JUMP(VTABLE, 0x7F4A74, GET_OFFSET(TechnoClass_DrawIt))
+
+// // skip children before parent drawn
+// DEFINE_HOOK(0x73CEC0, UnitClass_DrawIt_HandleChildren , 0x5)
+// {
+// 	GET(UnitClass*, pThis, ECX);
+
+// 	if (TechnoExt::IsAttached(pThis))
+// }
