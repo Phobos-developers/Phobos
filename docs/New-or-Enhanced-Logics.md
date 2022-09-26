@@ -73,6 +73,7 @@ Thickness=4                   ; integer
 SegmentLength=128             ; integer, minimal length of each trail segment
 IgnoreVertical=false          ; boolean, whether the trail won't be drawn on vertical movement
 IsIntense=false               ; boolean, whether the laser is "supported" (AKA prism forwarding)
+CloakVisible=false            ; boolean, whether the laser is visible when the attached unit is cloaked
 
 [SOMEPROJECTILE]              ; BulletType Image
 LaserTrail.Types=SOMETRAIL    ; list of LaserTrailTypes
