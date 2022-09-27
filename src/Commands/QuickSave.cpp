@@ -17,7 +17,7 @@ const wchar_t* QuickSaveCommandClass::GetUIName() const
 
 const wchar_t* QuickSaveCommandClass::GetUICategory() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_INTERFACE", L"Interface");
+	return CATEGORY_INTERFACE;
 }
 
 const wchar_t* QuickSaveCommandClass::GetUIDescription() const

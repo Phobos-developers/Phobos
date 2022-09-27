@@ -26,7 +26,7 @@ const wchar_t* ObjectInfoCommandClass::GetUIName() const
 
 const wchar_t* ObjectInfoCommandClass::GetUICategory() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_DEVELOPMENT", L"Development");
+	return CATEGORY_DEVELOPMENT;
 }
 
 const wchar_t* ObjectInfoCommandClass::GetUIDescription() const

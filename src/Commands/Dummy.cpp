@@ -14,7 +14,7 @@ const wchar_t* DummyCommandClass::GetUIName() const
 
 const wchar_t* DummyCommandClass::GetUICategory() const
 {
-	return L"Development";
+	return CATEGORY_DEVELOPMENT
 }
 
 const wchar_t* DummyCommandClass::GetUIDescription() const

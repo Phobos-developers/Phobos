@@ -21,7 +21,7 @@ const wchar_t* NextIdleHarvesterCommandClass::GetUIName() const
 
 const wchar_t* NextIdleHarvesterCommandClass::GetUICategory() const
 {
-	return StringTable::LoadString("TXT_SELECTION");
+	return CATEGORY_SELECTION;
 }
 
 const wchar_t* NextIdleHarvesterCommandClass::GetUIDescription() const

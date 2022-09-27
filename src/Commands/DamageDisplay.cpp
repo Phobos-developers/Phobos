@@ -15,7 +15,7 @@ const wchar_t* DamageDisplayCommandClass::GetUIName() const
 
 const wchar_t* DamageDisplayCommandClass::GetUICategory() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_DEVELOPMENT", L"Development");
+	return CATEGORY_DEVELOPMENT;
 }
 
 const wchar_t* DamageDisplayCommandClass::GetUIDescription() const
