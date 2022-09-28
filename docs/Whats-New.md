@@ -262,6 +262,7 @@ New:
 - Numeric Variables (by secsome)
 - TechnoType's tooltip would display it's build time now (by secsome)
 - Customizable tooltip background color and opacity (by secsome)
+- FrameByFrame & FrameStep hotkey command (by secsome)
 - Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)
 - Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
 - XDrawOffset for animations (by Morton)

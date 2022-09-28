@@ -4,6 +4,7 @@
 #include "NextIdleHarvester.h"
 #include "QuickSave.h"
 #include "DamageDisplay.h"
+#include "FrameByFrame.h"
 #include "FrameStep.h"
 
 DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
