@@ -10,8 +10,7 @@
 #include "Ext/Building/Body.h"
 #include "Ext/House/Body.h"
 
-// Too big to be kept in ApplyLimboDelivery
-void LimboDeliver(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
+inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 {
 	auto pOwnerExt = HouseExt::ExtMap.Find(pOwner);
 
@@ -72,13 +71,51 @@ void LimboDeliver(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		pBuildingExt->LimboID = ID;
 }
 
-void SWTypeExt::ExtData::FireSuperWeapon(SuperClass* pSW, HouseClass* pHouse, CoordStruct coords)
+inline void LimboDelete(BuildingClass* pBuilding, HouseClass* pTargetHouse)
 {
-	if (this->LimboDelivery_Types.size())
-		ApplyLimboDelivery(pHouse);
+	BuildingTypeClass* pType = pBuilding->Type;
 
-	if (this->LimboKill_IDs.size())
-		ApplyLimboKill(pHouse);
+	// Mandatory
+	pBuilding->InLimbo = true;
+	pBuilding->IsAlive = false;
+	pBuilding->IsOnMap = false;
+	pTargetHouse->RegisterLoss(pBuilding, false);
+	pTargetHouse->UpdatePower();
+	pTargetHouse->RecheckTechTree = true;
+	pTargetHouse->RecheckPower = true;
+	pTargetHouse->RecheckRadar = true;
+	pTargetHouse->Buildings.Remove(pBuilding);
+
+	// Building logics
+	if (pType->ConstructionYard)
+		pTargetHouse->ConYards.Remove(pBuilding);
+
+	if (pType->SecretLab)
+		pTargetHouse->SecretLabs.Remove(pBuilding);
+
+	if (pType->FactoryPlant)
+	{
+		pTargetHouse->FactoryPlants.Remove(pBuilding);
+		pTargetHouse->CalculateCostMultipliers();
+	}
+
+	if (pType->OrePurifier)
+		pTargetHouse->NumOrePurifiers--;
+
+	// Remove completely
+	pBuilding->UnInit();
+}
+
+void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
+{
+	if (auto const pTypeExt = SWTypeExt::ExtMap.Find(pSW->Type))
+	{
+		if (pTypeExt->LimboDelivery_Types.size() > 0)
+			pTypeExt->ApplyLimboDelivery(pSW->Owner);
+
+		if (pTypeExt->LimboKill_IDs.size() > 0)
+			pTypeExt->ApplyLimboKill(pSW->Owner);
+	}
 }
 
 void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
@@ -90,9 +127,7 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 		int id = -1;
 		size_t rolls = this->LimboDelivery_RollChances.size();
 		size_t weights = this->LimboDelivery_RandomWeightsData.size();
-		size_t ids = this->LimboDelivery_IDs.size();
-		size_t index;
-		size_t j;
+		int ids = (int)this->LimboDelivery_IDs.size();
 
 		// if no RollChances are supplied, do only one roll
 		if (rolls == 0)
@@ -107,19 +142,21 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 			if (!rollOnce && this->RandomBuffer > this->LimboDelivery_RollChances[i])
 				continue;
 
-			j = rolls > weights ? weights : i;
-			index = GeneralUtils::ChooseOneWeighted(this->RandomBuffer, &this->LimboDelivery_RandomWeightsData[j]);
+			size_t j = rolls > weights ? weights : i;
+			int index = GeneralUtils::ChooseOneWeighted(this->RandomBuffer, &this->LimboDelivery_RandomWeightsData[j]);
 
 			// extra weights are bound to automatically fail
-			if (index >= this->LimboDelivery_Types.size())
-				index = size_t(-1);
+			if (index >= (int)this->LimboDelivery_Types.size())
+				index = -1;
 
 			if (index != -1)
 			{
 				if (index < ids)
 					id = this->LimboDelivery_IDs[index];
 
-				LimboDeliver(abstract_cast<BuildingTypeClass*>(this->LimboDelivery_Types[index]), pHouse, id);
+				// Morton, why not ValueableVector<BuildingTypeClass*> for your LimboDelivery_Types?
+				if (auto const deliverBldType = abstract_cast<BuildingTypeClass*>(this->LimboDelivery_Types[index]))
+					LimboCreate(deliverBldType, pHouse, id);
 			}
 		}
 	}
@@ -134,66 +171,34 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 			if (i < ids)
 				id = this->LimboDelivery_IDs[i];
 
-			LimboDeliver(abstract_cast<BuildingTypeClass*>(this->LimboDelivery_Types[i]), pHouse, id);
+			LimboCreate(abstract_cast<BuildingTypeClass*>(this->LimboDelivery_Types[i]), pHouse, id);
 		}
 	}
 }
 
 void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 {
-	for (unsigned int i = 0; i < this->LimboKill_IDs.size(); i++)
+	for (int limboKillID : this->LimboKill_IDs)
 	{
-		for (int j = 0; j < HouseClass::Array->Count; j++)
+		for (HouseClass* pTargetHouse : *HouseClass::Array)
 		{
-			HouseClass* pTargetHouse = HouseClass::Array->Items[j];
 			if (EnumFunctions::CanTargetHouse(this->LimboKill_Affected, pHouse, pTargetHouse))
 			{
-				auto buildings = DynamicVectorClass(pTargetHouse->Buildings);
-				for (const auto pBuilding : buildings)
+				for (const auto pBuilding : pTargetHouse->Buildings)
 				{
 					const auto pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
-					if (pBuildingExt->LimboID == this->LimboKill_IDs[i])
-					{
-						BuildingTypeClass* pType = static_cast<BuildingTypeClass*>(pBuilding->Type);
-
-						// Mandatory
-						pBuilding->InLimbo = true;
-						pBuilding->IsAlive = false;
-						pBuilding->IsOnMap = false;
-						pTargetHouse->RegisterLoss(pBuilding, false);
-						pTargetHouse->UpdatePower();
-						pTargetHouse->RecheckTechTree = true;
-						pTargetHouse->RecheckPower = true;
-						pTargetHouse->RecheckRadar = true;
-						pTargetHouse->Buildings.Remove(pBuilding);
-
-						// Building logics
-						if (pType->ConstructionYard)
-							pTargetHouse->ConYards.Remove(pBuilding);
-
-						if (pType->SecretLab)
-							pTargetHouse->SecretLabs.Remove(pBuilding);
-
-						if (pType->FactoryPlant)
-						{
-							pTargetHouse->FactoryPlants.Remove(pBuilding);
-							pTargetHouse->CalculateCostMultipliers();
-						}
-
-						if (pType->OrePurifier)
-							pTargetHouse->NumOrePurifiers--;
-
-						// Remove completely
-						pBuilding->UnInit();
-					}
+					if (pBuildingExt->LimboID == limboKillID)
+						LimboDelete(pBuilding, pTargetHouse);
 				}
 			}
 		}
 	}
 }
 
-//Ares 0.A helpers
-bool SWTypeExt::IsInhibitor(SWTypeExt::ExtData* pSWType, HouseClass* pOwner, TechnoClass* pTechno)
+// =============================
+// Ares 0.A helpers
+// Inhibitors check
+bool SWTypeExt::ExtData::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno) const
 {
 	if (pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
 	{
@@ -205,16 +210,15 @@ bool SWTypeExt::IsInhibitor(SWTypeExt::ExtData* pSWType, HouseClass* pOwner, Tec
 					return false;
 			}
 
-			return pSWType->SW_AnyInhibitor
-				|| pSWType->SW_Inhibitors.Contains(pTechno->GetTechnoType());
+			return this->SW_AnyInhibitor || this->SW_Inhibitors.Contains(pTechno->GetTechnoType());
 		}
 	}
 	return false;
 }
 
-bool SWTypeExt::IsInhibitorEligible(SWTypeExt::ExtData* pSWType, HouseClass* pOwner, const CellStruct& Coords, TechnoClass* pTechno)
+bool SWTypeExt::ExtData::IsInhibitorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno) const
 {
-	if (IsInhibitor(pSWType, pOwner, pTechno))
+	if (this->IsInhibitor(pOwner, pTechno))
 	{
 		const auto pType = pTechno->GetTechnoType();
 		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
@@ -229,21 +233,64 @@ bool SWTypeExt::IsInhibitorEligible(SWTypeExt::ExtData* pSWType, HouseClass* pOw
 		}
 
 		// has to be closer than the inhibitor range (which defaults to Sight)
-		return Coords.DistanceFrom(CellClass::Coord2Cell(center)) <= pExt->InhibitorRange.Get(pType->Sight);
+		return coords.DistanceFrom(CellClass::Coord2Cell(center)) <= pExt->InhibitorRange.Get(pType->Sight);
 	}
 
 	return false;
 }
 
-bool SWTypeExt::HasInhibitor(SWTypeExt::ExtData* pSWType, HouseClass* pOwner, const CellStruct& Coords)
+bool SWTypeExt::ExtData::HasInhibitor(HouseClass* pOwner, const CellStruct& coords) const
 {
 	// does not allow inhibitors
-	if (pSWType->SW_Inhibitors.empty() && !pSWType->SW_AnyInhibitor)
+	if (this->SW_Inhibitors.empty() && !this->SW_AnyInhibitor)
 		return false;
 
 	// a single inhibitor in range suffices
-	return std::any_of(TechnoClass::Array->begin(), TechnoClass::Array->end(),
-		[=, &Coords](TechnoClass* pTechno)
-		{ return IsInhibitorEligible(pSWType, pOwner, Coords, pTechno); }
+	return std::any_of(TechnoClass::Array->begin(), TechnoClass::Array->end(), [=, &coords](TechnoClass* pTechno)
+		{ return this->IsInhibitorEligible(pOwner, coords, pTechno); }
 	);
 }
+
+// Designators check
+bool SWTypeExt::ExtData::IsDesignator(HouseClass* pOwner, TechnoClass* pTechno) const
+{
+	if (pTechno->Owner == pOwner && pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
+		return this->SW_AnyDesignator || this->SW_Designators.Contains(pTechno->GetTechnoType());
+
+	return false;
+}
+
+bool SWTypeExt::ExtData::IsDesignatorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno) const
+{
+	if (this->IsDesignator(pOwner, pTechno))
+	{
+		const auto pType = pTechno->GetTechnoType();
+		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		// get the designator's center
+		auto center = pTechno->GetCoords();
+		if (auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
+		{
+			center = pBuilding->GetCoords();
+			center.X += pBuilding->Type->GetFoundationWidth() / 2;
+			center.Y += pBuilding->Type->GetFoundationHeight(false) / 2;
+		}
+
+		// has to be closer than the designator range (which defaults to Sight)
+		return coords.DistanceFrom(CellClass::Coord2Cell(center)) <= pExt->DesignatorRange.Get(pType->Sight);
+	}
+
+	return false;
+}
+
+bool SWTypeExt::ExtData::HasDesignator(HouseClass* pOwner, const CellStruct& coords) const
+{
+	// does not require designators
+	if (this->SW_Designators.empty() && !this->SW_AnyDesignator)
+		return true;
+
+	// a single designator in range suffices
+	return std::any_of(TechnoClass::Array->begin(), TechnoClass::Array->end(), [=, &coords](TechnoClass* pTechno)
+		{ return this->IsDesignatorEligible(pOwner, coords, pTechno); });
+}
+

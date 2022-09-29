@@ -77,8 +77,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->RadHasInvoker.Read(exINI, "Radiation", "RadHasInvoker");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 	this->JumpjetTurnToTarget.Read(exINI, "JumpjetControls", "TurnToTarget");
-	this->PlacementGrid_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementGrid.TranslucentLevel");
-	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementPreview.DefaultTranslucentLevel");
+	this->PlacementPreview.Read(exINI, "AudioVisual", "PlacementPreview");
+	this->PlacementPreview_Translucency.Read(exINI, "AudioVisual", "PlacementPreview.Translucency");
+	this->PlacementGrid_Translucency.Read(exINI, "AudioVisual", "PlacementGrid.Translucency");
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
 	this->Pips_Shield_Background.Read(exINI, "AudioVisual", "Pips.Shield.Background");
 	this->Pips_Shield_Building.Read(exINI, "AudioVisual", "Pips.Shield.Building");
@@ -89,6 +90,15 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_SelfHeal_Infantry_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Infantry.Offset");
 	this->Pips_SelfHeal_Units_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units.Offset");
 	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings.Offset");
+	this->ToolTip_Background_Color.Read(exINI, "AudioVisual", "ToolTip.Background.Color");
+	this->ToolTip_Background_Opacity.Read(exINI, "AudioVisual", "ToolTip.Background.Opacity");
+	this->ToolTip_Background_BlurSize.Read(exINI, "AudioVisual", "ToolTip.Background.BlurSize");
+
+	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
+	this->ForbidParallelAIQueues_Building.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Building");
+	this->ForbidParallelAIQueues_Infantry.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
+	this->ForbidParallelAIQueues_Navy.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Navy");
+	this->ForbidParallelAIQueues_Vehicle.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Vehicle");
 
 	this->IronCurtain_KeptOnDeploy.Read(exINI, "CombatDamage", "IronCurtain.KeptOnDeploy");
 
@@ -192,8 +202,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetAllowLayerDeviation)
 		.Process(this->JumpjetTurnToTarget)
 		.Process(this->MissingCameo)
-		.Process(this->PlacementGrid_TranslucentLevel)
-		.Process(this->BuildingPlacementPreview_TranslucentLevel)
+		.Process(this->PlacementGrid_Translucency)
+		.Process(this->PlacementPreview)
+		.Process(this->PlacementPreview_Translucency)
 		.Process(this->Pips_Shield)
 		.Process(this->Pips_Shield_Background)
 		.Process(this->Pips_Shield_Building)
@@ -204,7 +215,16 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_SelfHeal_Infantry_Offset)
 		.Process(this->Pips_SelfHeal_Units_Offset)
 		.Process(this->Pips_SelfHeal_Buildings_Offset)
+		.Process(Phobos::Config::AllowParallelAIQueues)
+		.Process(this->ForbidParallelAIQueues_Aircraft)
+		.Process(this->ForbidParallelAIQueues_Building)
+		.Process(this->ForbidParallelAIQueues_Infantry)
+		.Process(this->ForbidParallelAIQueues_Navy)
+		.Process(this->ForbidParallelAIQueues_Vehicle)
 		.Process(this->IronCurtain_KeptOnDeploy)
+		.Process(this->ToolTip_Background_Color)
+		.Process(this->ToolTip_Background_Opacity)
+		.Process(this->ToolTip_Background_BlurSize)
 		;
 }
 

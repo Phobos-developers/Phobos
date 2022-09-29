@@ -37,7 +37,14 @@ public:
 		virtual ~ExtData() = default;
 
 		//virtual void Initialize() override;
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+		{
+			AnnounceInvalidPointer(Factory_AircraftType, ptr);
+			AnnounceInvalidPointer(Factory_NavyType, ptr);
+			AnnounceInvalidPointer(Factory_InfantryType, ptr);
+			AnnounceInvalidPointer(Factory_VehicleType, ptr);
+			AnnounceInvalidPointer(Factory_BuildingType, ptr);
+		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;

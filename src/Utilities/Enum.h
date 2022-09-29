@@ -46,21 +46,6 @@ enum class AttachedAnimFlag
 
 MAKE_ENUM_FLAGS(AttachedAnimFlag);
 
-enum class AirAttackStatus
-{
-	ValidateAZ = 0,
-	PickAttackLocation = 1,
-	TakeOff = 2,
-	FlyToPosition = 3,
-	FireAtTarget = 4,
-	FireAtTarget2 = 5,
-	FireAtTarget2_Strafe = 6,
-	FireAtTarget3_Strafe = 7,
-	FireAtTarget4_Strafe = 8,
-	FireAtTarget5_Strafe = 9,
-	ReturnToBase = 10
-};
-
 enum class SuperWeaponAITargetingMode
 {
 	None = 0,

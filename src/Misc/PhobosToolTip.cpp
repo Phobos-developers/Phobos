@@ -13,6 +13,9 @@
 #include <BitFont.h>
 #include <BitText.h>
 
+#include <Ext/Side/Body.h>
+#include <Ext/Surface/Body.h>
+
 #include <sstream>
 #include <iomanip>
 
@@ -63,7 +66,7 @@ inline int PhobosToolTip::GetBuildTime(TechnoTypeClass* pType) const
 	// TechnoTypeClass only has 4 final classes :
 	// BuildingTypeClass, AircraftTypeClass, InfantryTypeClass and UnitTypeClass
 	// It has to be these four classes, otherwise pType will just be nullptr
-	reinterpret_cast<TechnoClass*>(pTrick)->Owner = HouseClass::Player;
+	reinterpret_cast<TechnoClass*>(pTrick)->Owner = HouseClass::CurrentPlayer;
 	int nTimeToBuild = reinterpret_cast<TechnoClass*>(pTrick)->TimeToBuild();
 	// 54 frames at least
 	return nTimeToBuild < 54 ? 54 : nTimeToBuild;
@@ -102,7 +105,7 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 	int nMin = nBuildTime / 15 / 60 /* % 60*/;
 	// int nHour = pType->RechargeTime / 15 / 60 / 60;
 
-	int cost = pType->GetActualCost(HouseClass::Player);
+	int cost = pType->GetActualCost(HouseClass::CurrentPlayer);
 
 	std::wostringstream oss;
 	oss << pType->UIName << L"\n"
@@ -251,7 +254,7 @@ DEFINE_HOOK(0x478F77, CCToolTip_Draw2_SetY, 0x6)
 {
 	if (PhobosToolTip::Instance.IsCameo)
 	{
-		LEA_STACK(RectangleStruct*, Rect, STACK_OFFS(0x3C, 0x20));
+		LEA_STACK(RectangleStruct*, Rect, STACK_OFFSET(0x3C, -0x20));
 
 		int const maxHeight = DSurface::ViewBounds->Height - 32;
 
@@ -272,6 +275,44 @@ DEFINE_HOOK(0x479029, CCToolTip_Draw2_SetPadding, 0x5)
 	{
 		if (Phobos::UI::MaxToolTipWidth > 0)
 			R->EDX(R->EDX() - 5);
+	}
+
+	return 0;
+}
+
+void __declspec(naked) _CCToolTip_Draw2_FillRect_RET()
+{
+	ADD_ESP(8); // We need to handle origin two push here...
+	JMP(0x478FE1);
+}
+DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
+{
+	if (PhobosToolTip::Instance.IsCameo)
+	{
+		GET(SurfaceExt*, pThis, ESI);
+		LEA_STACK(RectangleStruct*, pRect, STACK_OFFSET(0x44, -0x10));
+
+		// Should we make some SideExt items as static to improve the effeciency?
+		// Though it might not be a big improvement... - secsome
+		const int nPlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;
+		if (auto const pSide = SideClass::Array->GetItemOrDefault(nPlayerSideIndex))
+		{
+			if (auto const pData = SideExt::ExtMap.Find(pSide))
+			{
+				// Could this flag be lazy?
+				SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
+
+				pThis->FillRectTrans(pRect,
+					pData->ToolTip_Background_Color.GetEx(&RulesExt::Global()->ToolTip_Background_Color),
+					pData->ToolTip_Background_Opacity.Get(RulesExt::Global()->ToolTip_Background_Opacity)
+				);
+
+				if (Phobos::Config::ToolTipBlur)
+					pThis->BlurRect(*pRect, pData->ToolTip_Background_BlurSize.Get(RulesExt::Global()->ToolTip_Background_BlurSize));
+
+				return (int)_CCToolTip_Draw2_FillRect_RET;
+			}
+		}
 	}
 
 	return 0;
