@@ -864,17 +864,19 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 		return;
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	ColorStruct color;
 
-	auto color = isShieldDamage ? damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 } :
-		damage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
+	if (!isShieldDamage)
+		color = damage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
+	else
+		color = damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 };
 
-	wchar_t damageStr[0x20];
-	swprintf_s(damageStr, L"%d", damage);
-	auto coords = CoordStruct::Empty;
-	coords = *pThis->GetRenderCoords(&coords);
-
+	auto coords = pThis->GetRenderCoords();
 	int maxOffset = Unsorted::CellWidthInPixels / 2;
 	int width = 0, height = 0;
+	wchar_t damageStr[0x20];
+	swprintf_s(damageStr, L"%d", damage);
+
 	BitFont::Instance->GetTextDimension(damageStr, &width, &height, 120);
 
 	if (pExt->DamageNumberOffset >= maxOffset || pExt->DamageNumberOffset.empty())
