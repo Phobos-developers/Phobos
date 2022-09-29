@@ -45,8 +45,7 @@ DEFINE_HOOK(0x74A027, VoxelAnimClass_AI_Expired, 0x6)
 	if (!pThis || !pThis->Type)
 		return SkipGameCode;
 
-	CoordStruct nLocation;
-	pThis->GetCenterCoord(&nLocation);
+	CoordStruct nLocation = pThis->Location;
 	auto const pOwner = pThis->OwnerHouse;
 	auto const pTypeExt = VoxelAnimTypeExt::ExtMap.Find(pThis->Type);
 	AnimTypeClass* pSplashAnim = nullptr;

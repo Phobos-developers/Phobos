@@ -146,8 +146,7 @@ DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
 	if (!pThis || !pThis->Type)
 		return SkipGameCode;
 
-	CoordStruct nLocation;
-	pThis->GetCenterCoord(&nLocation);
+	CoordStruct nLocation = pThis->Location;
 	auto const pOwner = AnimExt::GetOwnerHouse(pThis);
 	auto const pAnimTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 	AnimTypeClass* pSplashAnim = nullptr;
