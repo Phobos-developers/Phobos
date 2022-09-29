@@ -19,7 +19,7 @@ void BuildingExt::ExtData::DisplayGrinderRefund()
 		swprintf_s(moneyStr, L"%ls%ls%d", isPositive ? L"+" : L"-", Phobos::UI::CostLabel, std::abs(refundAmount));
 
 		auto coords = CoordStruct::Empty;
-		coords = *this->OwnerObject()->GetCenterCoord(&coords);
+		coords = *this->OwnerObject()->GetRenderCoords(&coords);
 
 		int width = 0, height = 0;
 		BitFont::Instance->GetTextDimension(moneyStr, &width, &height, 120);

@@ -176,7 +176,7 @@ DEFINE_HOOK(0x424C49, AnimClass_AttachTo_BuildingCoords, 0x5)
 
 	if (pExt->UseCenterCoordsIfAttached)
 	{
-		pCoords = pObject->GetCenterCoord(pCoords);
+		pCoords = pObject->GetRenderCoords(pCoords);
 		pCoords->X += 128;
 		pCoords->Y += 128;
 	}
