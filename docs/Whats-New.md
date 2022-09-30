@@ -344,6 +344,7 @@ New:
 - Implemented support for PCX images for observer loading screen (by Uranusian)
 - Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 - Toggleable passenger killing for Explodes=true units (by Starkku)
+- Warhead or weapon detonation at superweapon target cell (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)

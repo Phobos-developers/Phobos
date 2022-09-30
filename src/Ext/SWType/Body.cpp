@@ -10,13 +10,20 @@ SWTypeExt::ExtContainer SWTypeExt::ExtMap;
 // load / save
 
 template <typename T>
-void SWTypeExt::ExtData::Serialize(T& Stm) {
+void SWTypeExt::ExtData::Serialize(T& Stm)
+{
 	Stm
 		.Process(this->Money_Amount)
 		.Process(this->SW_Inhibitors)
 		.Process(this->SW_AnyInhibitor)
 		.Process(this->SW_Designators)
 		.Process(this->SW_AnyDesignator)
+		.Process(this->SW_RangeMinimum)
+		.Process(this->SW_RangeMaximum)
+		.Process(this->SW_RequiredHouses)
+		.Process(this->SW_ForbiddenHouses)
+		.Process(this->SW_AuxBuildings)
+		.Process(this->SW_NegBuildings)
 		.Process(this->UIDescription)
 		.Process(this->CameoPriority)
 		.Process(this->LimboDelivery_Types)
@@ -26,14 +33,19 @@ void SWTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->LimboKill_Affected)
 		.Process(this->LimboKill_IDs)
 		.Process(this->RandomBuffer)
+		.Process(this->Detonate_Warhead)
+		.Process(this->Detonate_Weapon)
+		.Process(this->Detonate_Damage)
 		;
 }
 
-void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
+void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+{
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 
-	if (!pINI->GetSection(pSection)) {
+	if (!pINI->GetSection(pSection))
+	{
 		return;
 	}
 
@@ -45,6 +57,12 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->SW_AnyInhibitor.Read(exINI, pSection, "SW.AnyInhibitor");
 	this->SW_Designators.Read(exINI, pSection, "SW.Designators");
 	this->SW_AnyDesignator.Read(exINI, pSection, "SW.AnyDesignator");
+	this->SW_RangeMinimum.Read(exINI, pSection, "SW.RangeMinimum");
+	this->SW_RangeMaximum.Read(exINI, pSection, "SW.RangeMaximum");
+	this->SW_RequiredHouses = pINI->ReadHouseTypesList(pSection, "SW.RequiredHouses", this->SW_RequiredHouses);
+	this->SW_ForbiddenHouses = pINI->ReadHouseTypesList(pSection, "SW.ForbiddenHouses", this->SW_ForbiddenHouses);
+	this->SW_AuxBuildings.Read(exINI, pSection, "SW.AuxBuildings");
+	this->SW_NegBuildings.Read(exINI, pSection, "SW.NegBuildings");
 
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
@@ -72,24 +90,31 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->LimboKill_Affected.Read(exINI, pSection, "LimboKill.Affected");
 	this->LimboKill_IDs.Read(exINI, pSection, "LimboKill.IDs");
 
+	this->Detonate_Warhead.Read(exINI, pSection, "Detonate.Warhead");
+	this->Detonate_Weapon.Read(exINI, pSection, "Detonate.Weapon", true);
+	this->Detonate_Damage.Read(exINI, pSection, "Detonate.Damage");
 }
 
-void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+{
 	Extension<SuperWeaponTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void SWTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+void SWTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+{
 	Extension<SuperWeaponTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
-bool SWTypeExt::LoadGlobals(PhobosStreamReader& Stm) {
+bool SWTypeExt::LoadGlobals(PhobosStreamReader& Stm)
+{
 	return Stm
 		.Success();
 }
 
-bool SWTypeExt::SaveGlobals(PhobosStreamWriter& Stm) {
+bool SWTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
+{
 	return Stm
 		.Success();
 }
@@ -97,7 +122,8 @@ bool SWTypeExt::SaveGlobals(PhobosStreamWriter& Stm) {
 // =============================
 // container
 
-SWTypeExt::ExtContainer::ExtContainer() : Container("SuperWeaponTypeClass") {
+SWTypeExt::ExtContainer::ExtContainer() : Container("SuperWeaponTypeClass")
+{
 }
 
 SWTypeExt::ExtContainer::~ExtContainer() = default;

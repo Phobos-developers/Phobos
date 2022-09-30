@@ -160,6 +160,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead detonation on all objects on map
   - Animated TerrainTypes extension
   - Exploding unit passenger killing customization
+  - Warhead / weapon detonation at superweapon target cell
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
