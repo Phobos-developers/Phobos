@@ -1066,6 +1066,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->IsInTunnel)
 		.Process(this->DeployFireTimer)
+		.Process(this->ForceFullRearmDelay)
 		;
 }
 
