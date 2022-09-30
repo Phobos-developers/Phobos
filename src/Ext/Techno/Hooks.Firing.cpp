@@ -80,6 +80,17 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 				R->EAX(pTechnoTypeExt->ForceWeapon_Naval_Decloaked);
 				return 0x6F37AF;
 			}
+
+			if (pTechnoTypeExt->ForceWeapon_UnderEMP >= 0
+				&& (pTarget->IsUnderEMP()
+					|| (pTechnoTypeExt->ImmuneToEMP.isset() && pTechnoTypeExt->ImmuneToEMP.Get() == true)
+					|| (!pTechnoTypeExt->ImmuneToEMP.isset() &&
+						((pTarget->WhatAmI() == AbstractType::Infantry && !static_cast<InfantryTypeClass*>(pTargetType)->Cyborg) ||
+							((pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Aircraft) && pTargetType->Organic)))))
+			{
+				R->EAX(pTechnoTypeExt->ForceWeapon_UnderEMP);
+				return 0x6F37AF;
+			}
 		}
 	}
 

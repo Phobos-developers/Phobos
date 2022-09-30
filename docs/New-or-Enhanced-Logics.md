@@ -661,6 +661,16 @@ In `rulesmd.ini`:
 ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ```
 
+### Override Target Under EMP Attack Behavior
+
+- Overrides a part of the vanilla YR logic for allowing units to use a different weapon if the target is under EMP effect.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]             ; TechnoType
+ForceWeapon.UnderEMP=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+```
+
 ### Promoted Spawns
 
 ![image](_static/images/promotedspawns-01.gif)

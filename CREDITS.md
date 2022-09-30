@@ -109,6 +109,7 @@ This page lists all the individual contributions to the project by their author.
   - Kill Object Automatically logic prototype
   - Customizable resource storage
   - Override Uncloaked Underwater attack behavior
+  - Override Target Under EMP attack behavior
   - AI Aircraft docks fix
   - Shared Ammo logic
   - Customizable FLH When Infantry Is Prone Or Deployed

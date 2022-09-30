@@ -112,6 +112,8 @@ public:
 
 		Valueable<CSFText> EnemyUIName;
 		Valueable<int> ForceWeapon_Naval_Decloaked;
+		Valueable<int> ForceWeapon_UnderEMP;
+		Nullable<bool> ImmuneToEMP;
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
@@ -228,6 +230,8 @@ public:
 			, EVA_Sold { }
 			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
+			, ForceWeapon_UnderEMP { -1 }
+			, ImmuneToEMP { }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 			, SelfHealGainType()
