@@ -263,7 +263,7 @@ DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType_Phobos, 0xA)
 // that will handle our logic earlier and disable the next hook by writing a very specific number to a free register.
 DEFINE_HOOK(0x45759D, BuildingClass_Infiltrate_Vanilla, 0x5)
 {
-	GET_STACK(HouseClass*, pInfiltratorHouse, STACK_OFFS(0x14, 0x4));
+	GET_STACK(HouseClass*, pInfiltratorHouse, STACK_OFFSET(0x14, -0x4));
 	GET(BuildingClass*, pBuilding, EBP);
 
 	BuildingExt::HandleInfiltrate(pBuilding, pInfiltratorHouse);

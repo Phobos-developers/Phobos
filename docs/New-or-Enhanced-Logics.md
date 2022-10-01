@@ -290,25 +290,26 @@ SpyEffects.InfiltratorSuperWeapon= ; SuperWeaponType
 ```
 
 ```{warning}
-The following Super Weapon types are supported:
-`Type=LightningStorm`                     NO
-`Type=MultiMissile`                       NO
-`Type=PsychicDominator`                   NO
-`Type=ChronoSphere`                       NO
-`Type=ChronoWarp`                         NO
-`Type=IronCurtain` and `Type=ForceShield` YES
-`Type=GeneticConverter`                   YES
-`Type=ParaDrop` and `Type=AmerParaDrop`   NO
-`Type=SpyPlane`                           NO
-`Type=PsychicReveal`                      YES
-`Type=SonarPulse` (Ares)                  YES
-`Type=GenericWarhead` (Ares)              YES
-`Type=UnitDelivery` (Ares)                YES
-`Type=Firestorm` (Ares)                   YES
-`Type=HunterSeeker` (Ares)                YES
-`Type=DropPod` (Ares)                     YES
-`Type=EMPulse` (Ares)                     YES
-`Type=Battery` (Ares)                     YES
+The following Super Weapon types are supported:\
+`Type=IronCurtain` and `Type=ForceShield`\
+`Type=GeneticConverter`\
+`Type=PsychicReveal`\
+`Type=SonarPulse` (Ares)\
+`Type=GenericWarhead` (Ares)\
+`Type=UnitDelivery` (Ares)\
+`Type=Firestorm` (Ares)\
+`Type=HunterSeeker` (Ares)\
+`Type=DropPod` (Ares)\
+`Type=EMPulse` (Ares)\
+`Type=Battery` (Ares)\
+The following Super Weapon types are NOT supported:\
+`Type=LightningStorm`\
+`Type=MultiMissile`\
+`Type=PsychicDominator`\
+`Type=ChronoSphere`\
+`Type=ChronoWarp`\
+`Type=ParaDrop` and `Type=AmerParaDrop`\
+`Type=SpyPlane`
 ```
 
 ## Infantry
@@ -914,25 +915,26 @@ For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be s
 ```
 
 ```{warning}
-The following Super Weapon types are supported:
-`Type=LightningStorm`                     NO
-`Type=MultiMissile`                       NO
-`Type=PsychicDominator`                   NO
-`Type=ChronoSphere`                       NO
-`Type=ChronoWarp`                         NO
-`Type=IronCurtain` and `Type=ForceShield` YES
-`Type=GeneticConverter`                   YES
-`Type=ParaDrop` and `Type=AmerParaDrop`   NO
-`Type=SpyPlane`                           NO
-`Type=PsychicReveal`                      YES
-`Type=SonarPulse` (Ares)                  YES
-`Type=GenericWarhead` (Ares)              YES
-`Type=UnitDelivery` (Ares)                YES
-`Type=Firestorm` (Ares)                   YES
-`Type=HunterSeeker` (Ares)                YES
-`Type=DropPod` (Ares)                     YES
-`Type=EMPulse` (Ares)                     YES
-`Type=Battery` (Ares)                     YES
+The following Super Weapon types are supported:\
+`Type=IronCurtain` and `Type=ForceShield`\
+`Type=GeneticConverter`\
+`Type=PsychicReveal`\
+`Type=SonarPulse` (Ares)\
+`Type=GenericWarhead` (Ares)\
+`Type=UnitDelivery` (Ares)\
+`Type=Firestorm` (Ares)\
+`Type=HunterSeeker` (Ares)\
+`Type=DropPod` (Ares)\
+`Type=EMPulse` (Ares)\
+`Type=Battery` (Ares)\
+The following Super Weapon types are NOT supported:\
+`Type=LightningStorm`\
+`Type=MultiMissile`\
+`Type=PsychicDominator`\
+`Type=ChronoSphere`\
+`Type=ChronoWarp`\
+`Type=ParaDrop` and `Type=AmerParaDrop`\
+`Type=SpyPlane`
 ```
 
 In `rulesmd.ini`:
