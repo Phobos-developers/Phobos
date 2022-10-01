@@ -20,6 +20,7 @@ This page lists all the individual contributions to the project by their author.
   - Shield logic
   - Non-ASCII input fix
   - Building Placement Preview Adjustment
+  - Check for Changelog/Documentation/Credits in Pull Requests
 - **Kerbiter (Metadorius)**:
   - SHP debris respect `Shadow` fix
   - Building upgrades enhancement
