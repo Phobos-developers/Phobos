@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <WarheadTypeClass.h>
+#include <TacticalClass.h>
 
 #include <Ext/TechnoType/Body.h>
 
@@ -494,25 +495,25 @@ CoordStruct __fastcall TechnoClass_GetRenderCoords(TechnoClass* pThis, void* _)
 // 73B5B5 DONE
 // 73C864 DONE
 
-DEFINE_HOOK(0x6F3B88, TechnoClass_FireCoord_AttachmentAdjust, 0x6)
-{
-	enum { Skip = 0x6F3B9E };
+// DEFINE_HOOK(0x6F3B88, TechnoClass_FireCoord_AttachmentAdjust, 0x6)
+// {
+// 	enum { Skip = 0x6F3B9E };
 
-	GET(TechnoClass*, pThis, EBX);
+// 	GET(TechnoClass*, pThis, EBX);
 
-	R->EAX(&TechnoExt::GetAttachmentTransform(pThis));
-	return Skip;
-}
+// 	R->EAX(&TechnoExt::GetAttachmentTransform(pThis));
+// 	return Skip;
+// }
 
-DEFINE_HOOK(0x6F3DA4, TechnoClass_firecoord_6F3D60_AttachmentAdjust, 0x6)
-{
-	enum { Skip = 0x6F3DBA };
+// DEFINE_HOOK(0x6F3DA4, TechnoClass_firecoord_6F3D60_AttachmentAdjust, 0x6)
+// {
+// 	enum { Skip = 0x6F3DBA };
 
-	GET(TechnoClass*, pThis, EBX);
+// 	GET(TechnoClass*, pThis, EBX);
 
-	R->EAX(&TechnoExt::GetAttachmentTransform(pThis));
-	return Skip;
-}
+// 	R->EAX(&TechnoExt::GetAttachmentTransform(pThis));
+// 	return Skip;
+// }
 
 DEFINE_HOOK(0x73B5B5, UnitClass_DrawVoxel_AttachmentAdjust, 0x6)
 {
@@ -547,11 +548,11 @@ DEFINE_HOOK(0x73C864, UnitClass_drawcode_AttachmentAdjust, 0x6)
 // should hook it if you ever want to dip into that - Kerbiter
 
 // FIXME it's probably not a good idea to mix vtable replacements with manual hooks
-DEFINE_JUMP(VTABLE, 0x7F4A0C, GET_OFFSET(TechnoClass_GetRenderCoords)) // TechnoClass
-DEFINE_JUMP(VTABLE, 0x7E8D40, GET_OFFSET(TechnoClass_GetRenderCoords)) // FootClass
-DEFINE_JUMP(VTABLE, 0x7F5D1C, GET_OFFSET(TechnoClass_GetRenderCoords)) // UnitClass
-DEFINE_JUMP(VTABLE, 0x7EB104, GET_OFFSET(TechnoClass_GetRenderCoords)) // InfantryClass
-DEFINE_JUMP(VTABLE, 0x7E2350, GET_OFFSET(TechnoClass_GetRenderCoords)) // AircraftClass
+// DEFINE_JUMP(VTABLE, 0x7F4A0C, GET_OFFSET(TechnoClass_GetRenderCoords)) // TechnoClass
+// DEFINE_JUMP(VTABLE, 0x7E8D40, GET_OFFSET(TechnoClass_GetRenderCoords)) // FootClass
+// DEFINE_JUMP(VTABLE, 0x7F5D1C, GET_OFFSET(TechnoClass_GetRenderCoords)) // UnitClass
+// DEFINE_JUMP(VTABLE, 0x7EB104, GET_OFFSET(TechnoClass_GetRenderCoords)) // InfantryClass
+// DEFINE_JUMP(VTABLE, 0x7E2350, GET_OFFSET(TechnoClass_GetRenderCoords)) // AircraftClass
 
 
 // // DEFINE_JUMP(VTABLE, 0x7F4A74, GET_OFFSET(TechnoClass_DrawIt))
@@ -563,3 +564,29 @@ DEFINE_JUMP(VTABLE, 0x7E2350, GET_OFFSET(TechnoClass_GetRenderCoords)) // Aircra
 
 // 	if (TechnoExt::IsAttached(pThis))
 // }
+
+namespace TechnoAttachmentTemp
+{
+	ObjectClass* pThis;
+}
+
+DEFINE_HOOK(0x5F4B13, ObjectClass_Render_Context_Set, 0x5)
+{
+	GET(ObjectClass*, pThis, ECX);
+
+	TechnoAttachmentTemp::pThis = pThis;
+
+	return 0;
+}
+
+// Swap the render coord after the draw rect is calculated
+DEFINE_HOOK(0x5F4CC3, ObjectClass_Render_AttachmentAdjust, 0x6)
+{
+	LEA_STACK(Point2D*, drawPoint, STACK_OFFS(0x30, 0x18));
+	ObjectClass* pThis = TechnoAttachmentTemp::pThis;
+
+	if (pThis->AbstractFlags & AbstractFlags::Techno)
+		TacticalClass::Instance->CoordsToClient(TechnoExt::GetTopLevelParent((TechnoClass*)pThis)->GetRenderCoords(), drawPoint);
+
+	return 0;
+}

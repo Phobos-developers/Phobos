@@ -18,21 +18,31 @@ void AttachmentClass::InitCacheData()
 
 Matrix3D AttachmentClass::GetUpdatedTransform(int* pKey)
 {
+	auto const& flh = this->Data->FLH.Get();
+	Matrix3D attachmentMtx;
+	attachmentMtx.Translate((float)flh.X, (float)flh.Y, (float)flh.Z);
+	Matrix3D turretMtx;
+	turretMtx.MakeIdentity();
+	turretMtx = TechnoExt::TransformFLHForTurret(this->Parent, turretMtx, this->Data->IsOnTurret);
+
+	return attachmentMtx * turretMtx * TechnoExt::GetAttachmentTransform(this->Parent, pKey);
+	/*
 	if (Unsorted::CurrentFrame != this->Cache.LastUpdateFrame) {
 		auto const& flh = this->Data->FLH.Get();
 
-		Matrix3D mtx;
-		mtx.MakeIdentity();
-		mtx = TechnoExt::TransformFLHForTurret(this->Parent, mtx, this->Data->IsOnTurret);
-		mtx.Translate((float)flh.X, (float)flh.Y, (float)flh.Z);
+		Matrix3D attachmentMtx;
+		attachmentMtx.Translate((float)flh.X, (float)flh.Y, (float)flh.Z);
+		Matrix3D turretMtx;
+		turretMtx.MakeIdentity();
+		turretMtx = TechnoExt::TransformFLHForTurret(this->Parent, turretMtx, this->Data->IsOnTurret);
 
-		this->Cache.ChildTransform = Matrix3D::MatrixMultiply(
-			mtx, TechnoExt::GetAttachmentTransform(this->Parent, pKey));
+		this->Cache.ChildTransform = attachmentMtx * turretMtx * TechnoExt::GetAttachmentTransform(this->Parent, pKey);
 
 		this->Cache.LastUpdateFrame = Unsorted::CurrentFrame;
 	}
 
 	return this->Cache.ChildTransform;
+	*/
 }
 
 AttachmentTypeClass* AttachmentClass::GetType()
@@ -49,7 +59,8 @@ TechnoTypeClass* AttachmentClass::GetChildType()
 
 CoordStruct AttachmentClass::GetChildLocation()
 {
-	return TechnoExt::GetFLHAbsoluteCoords(this->Parent, this->Data->FLH, this->Data->IsOnTurret);
+	auto& flh = this->Data->FLH.Get();
+	return TechnoExt::GetFLHAbsoluteCoords(this->Parent, flh, this->Data->IsOnTurret);
 }
 
 AttachmentClass::~AttachmentClass()
