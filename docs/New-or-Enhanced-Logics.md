@@ -447,11 +447,11 @@ Shrapnel.AffectsBuildings=false  ; boolean
 
 ### LimboDelivery
 
-- Super Weapons can now deliver off-map buildings that act as if they were on the field.
-  - `LimboDelivery.Types` is the list of BuildingTypes that will be created when the Super Weapons fire. Super Weapon Type and coordinates do not matter.
+- Superweapons can now deliver off-map buildings that act as if they were on the field.
+  - `LimboDelivery.Types` is the list of BuildingTypes that will be created when the Superweapons fire. Superweapon `Type` and coordinates do not matter.
   - `LimboDelivery.IDs` is the list of numeric IDs that will be assigned to buildings. Necessary for LimboKill to work.
 
-- Created buildings are not affected by any on-map threats. The only way to remove them from the game is by using a Super Weapon with LimboKill set.
+- Created buildings are not affected by any on-map threats. The only way to remove them from the game is by using a Superweapon with `LimboKill.IDs` set.
   - `LimboKill.Affects` sets which houses are affected by this feature.
   - `LimboKill.IDs` lists IDs that will be targeted. Buildings with these IDs will be removed from the game instantly.
 
@@ -474,7 +474,7 @@ Remember that Limbo Delivered buildings don't exist physically! This means they 
 ```
 In `rulesmd.ini`:
 ```ini
-[SOMESW]                        ; Super Weapon
+[SOMESW]                        ; Superweapon
 LimboDelivery.Types=            ; List of BuildingTypes
 LimboDelivery.IDs=              ; List of numeric IDs. -1 cannot be used.
 LimboDelivery.RollChances=      ; List of percentages.
@@ -485,7 +485,7 @@ LimboKill.IDs=                  ; List of numeric IDs.
 
 ### Next
 
-Super Weapons can now launch other superweapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
+Superweapons can now launch other superweapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
   - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
   - `SW.Next.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
   - `SW.Next.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
@@ -493,7 +493,7 @@ Super Weapons can now launch other superweapons at the same target. Launched typ
 In `rulesmd.ini`:
 ```ini
 [SOMESW]                        ; Super Weapon
-SW.Next=                        ; List of Super Weapons
+SW.Next=                        ; List of Superweapons
 SW.Next.RealLaunch=true         ; boolean
 SW.Next.IgnoreInhibitors=false  ; boolean
 SW.Next.IgnoreDesignators=true  ; boolean
