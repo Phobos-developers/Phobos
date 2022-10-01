@@ -289,29 +289,6 @@ SpyEffects.VictimSuperWeapon=      ; SuperWeaponType
 SpyEffects.InfiltratorSuperWeapon= ; SuperWeaponType
 ```
 
-```{warning}
-The following Super Weapon types are supported:\
-`Type=IronCurtain` and `Type=ForceShield`\
-`Type=GeneticConverter`\
-`Type=PsychicReveal`\
-`Type=SonarPulse` (Ares)\
-`Type=GenericWarhead` (Ares)\
-`Type=UnitDelivery` (Ares)\
-`Type=Firestorm` (Ares)\
-`Type=HunterSeeker` (Ares)\
-`Type=DropPod` (Ares)\
-`Type=EMPulse` (Ares)\
-`Type=Battery` (Ares)\
-The following Super Weapon types are NOT supported:\
-`Type=LightningStorm`\
-`Type=MultiMissile`\
-`Type=PsychicDominator`\
-`Type=ChronoSphere`\
-`Type=ChronoWarp`\
-`Type=ParaDrop` and `Type=AmerParaDrop`\
-`Type=SpyPlane`
-```
-
 ## Infantry
 
 ### Customizable FLH When Infantry Is Prone Or Deployed
@@ -912,29 +889,7 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 
 ```{note}
 For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
-```
-
-```{warning}
-The following Super Weapon types are supported:\
-`Type=IronCurtain` and `Type=ForceShield`\
-`Type=GeneticConverter`\
-`Type=PsychicReveal`\
-`Type=SonarPulse` (Ares)\
-`Type=GenericWarhead` (Ares)\
-`Type=UnitDelivery` (Ares)\
-`Type=Firestorm` (Ares)\
-`Type=HunterSeeker` (Ares)\
-`Type=DropPod` (Ares)\
-`Type=EMPulse` (Ares)\
-`Type=Battery` (Ares)\
-The following Super Weapon types are NOT supported:\
-`Type=LightningStorm`\
-`Type=MultiMissile`\
-`Type=PsychicDominator`\
-`Type=ChronoSphere`\
-`Type=ChronoWarp`\
-`Type=ParaDrop` and `Type=AmerParaDrop`\
-`Type=SpyPlane`
+Also, due to the nature of some superweapon types, not all superweapons are suitable for launch.
 ```
 
 In `rulesmd.ini`:
