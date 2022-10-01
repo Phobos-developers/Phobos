@@ -20,6 +20,7 @@ Matrix3D AttachmentClass::GetUpdatedTransform(int* pKey)
 {
 	auto const& flh = this->Data->FLH.Get();
 	Matrix3D attachmentMtx;
+	attachmentMtx.MakeIdentity();
 	attachmentMtx.Translate((float)flh.X, (float)flh.Y, (float)flh.Z);
 	Matrix3D turretMtx;
 	turretMtx.MakeIdentity();
