@@ -1,5 +1,5 @@
 name: Labeler Action
-on: 
+on:
   pull_request_target:
     types: [opened, edited]
 
