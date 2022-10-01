@@ -89,7 +89,7 @@ x=i,n             ; For i values check the next table
 | 35      | Vehicle & Naval Factory  | Any enemy `BuildingTypes` with `Factory=UnitType` |
 | 36      | Non-defensive Structures | Any enemy `BuildingTypes` with `IsBaseDefense=no` |
 
-- The second parameter with a 0-based index for the `AITargetTypes` section specifies the list of possible `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` that can be evaluated. 
+- The second parameter with a 0-based index for the `AITargetTypes` section specifies the list of possible `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` that can be evaluated.
 - The *`AITargetTypes` index#* values are obtained in the new `AITargetTypes` section that must be declared in `rulesmd.ini`:
 
 In `rulesmd.ini`:
