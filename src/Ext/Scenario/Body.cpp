@@ -188,7 +188,7 @@ DEFINE_HOOK(0x68945B, ScenarioClass_Save_Suffix, 0x8)
 DEFINE_HOOK(0x68AD62, ScenarioClass_LoadFromINI, 0x6)
 {
 	GET(ScenarioClass*, pItem, ESI);
-	GET_STACK(CCINIClass*, pINI, STACK_OFFS(0x38, -0x8));
+	GET_STACK(CCINIClass*, pINI, STACK_OFFSET(0x38, 0x8));
 
 	ScenarioExt::LoadFromINIFile(pItem, pINI);
 	return 0;

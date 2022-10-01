@@ -796,6 +796,12 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<TranslucencyLevel>(TranslucencyLevel& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		return value.Read(parser, pSection, pKey);
+	}
+
+	template <>
 	inline bool read<HorizontalPosition>(HorizontalPosition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))

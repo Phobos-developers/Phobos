@@ -17,6 +17,7 @@ std::vector<ShieldClass*> ShieldClass::Array;
 ShieldClass::ShieldClass() : Techno { nullptr }
 	, HP { 0 }
 	, Timers { }
+	, AreAnimsHidden { false }
 {
 	ShieldClass::Array.emplace_back(this);
 }
@@ -28,19 +29,21 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTech
 	, Online { true }
 	, Temporal { false }
 	, Available { true }
+	, AreAnimsHidden { false }
 	, Attached { isAttached }
 	, SelfHealing_Rate_Warhead { -1 }
 	, Respawn_Rate_Warhead { -1 }
 {
 	this->UpdateType();
 	SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
-	strcpy(this->TechnoID, this->Techno->get_ID());
+	strcpy_s(this->TechnoID, this->Techno->get_ID());
 	ShieldClass::Array.emplace_back(this);
 }
 
 ShieldClass::~ShieldClass()
 {
 	auto it = std::find(ShieldClass::Array.begin(), ShieldClass::Array.end(), this);
+
 	if (it != ShieldClass::Array.end())
 		ShieldClass::Array.erase(it);
 }
@@ -81,6 +84,7 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->Temporal)
 		.Process(this->Available)
 		.Process(this->Attached)
+		.Process(this->AreAnimsHidden)
 		.Process(this->Type)
 		.Process(this->SelfHealing_Warhead)
 		.Process(this->SelfHealing_Rate_Warhead)
@@ -113,7 +117,7 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 	{
 		pToExt->CurrentShieldType = pFromExt->CurrentShieldType;
 		pToExt->Shield = std::make_unique<ShieldClass>(pTo);
-		strcpy(pToExt->Shield->TechnoID, pFromExt->Shield->TechnoID);
+		strcpy_s(pToExt->Shield->TechnoID, pFromExt->Shield->TechnoID);
 		pToExt->Shield->Available = pFromExt->Shield->Available;
 		pToExt->Shield->HP = pFromExt->Shield->HP;
 	}
@@ -229,7 +233,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 void ShieldClass::ResponseAttack()
 {
-	if (this->Techno->Owner != HouseClass::Player)
+	if (this->Techno->Owner != HouseClass::CurrentPlayer)
 		return;
 
 	if (this->Techno->WhatAmI() == AbstractType::Building)
@@ -252,6 +256,9 @@ void ShieldClass::ResponseAttack()
 
 void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim)
 {
+	if (this->AreAnimsHidden)
+		return;
+
 	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim.Get(nullptr);
 
 	if (pAnimType)
@@ -353,11 +360,14 @@ void ShieldClass::AI()
 
 	double ratio = this->Techno->GetHealthPercentage();
 
-	if (GeneralUtils::HasHealthRatioThresholdChanged(LastTechnoHealthRatio, ratio))
-		UpdateIdleAnim();
+	if (!this->AreAnimsHidden)
+	{
+		if (GeneralUtils::HasHealthRatioThresholdChanged(LastTechnoHealthRatio, ratio))
+			UpdateIdleAnim();
 
-	if (!this->Cloak && !this->Temporal && this->Online && (this->HP > 0 && this->Techno->Health > 0))
-		this->CreateAnim();
+		if (!this->Cloak && !this->Temporal && this->Online && (this->HP > 0 && this->Techno->Health > 0))
+			this->CreateAnim();
+	}
 
 	LastTechnoHealthRatio = ratio;
 }
@@ -507,7 +517,7 @@ bool ShieldClass::ConvertCheck()
 		}
 	}
 
-	strcpy(this->TechnoID, newID);
+	strcpy_s(this->TechnoID, newID);
 
 	return false;
 }
@@ -576,14 +586,17 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 
 	this->KillAnim();
 
-	const auto pAnimType = pBreakAnim ? pBreakAnim : this->Type->BreakAnim.Get(nullptr);
-
-	if (pAnimType)
+	if (!this->AreAnimsHidden)
 	{
-		if (auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location))
+		const auto pAnimType = pBreakAnim ? pBreakAnim : this->Type->BreakAnim.Get(nullptr);
+
+		if (pAnimType)
 		{
-			pAnim->SetOwnerObject(this->Techno);
-			pAnim->Owner = this->Techno->Owner;
+			if (auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location))
+			{
+				pAnim->SetOwnerObject(this->Techno);
+				pAnim->Owner = this->Techno->Owner;
+			}
 		}
 	}
 
@@ -885,4 +898,19 @@ bool ShieldClass::IsAvailable()
 bool ShieldClass::IsBrokenAndNonRespawning()
 {
 	return this->HP <= 0 && !this->Type->Respawn;
+}
+
+void ShieldClass::HideAnimations()
+{
+	this->AreAnimsHidden = true;
+}
+
+void ShieldClass::ShowAnimations()
+{
+	this->AreAnimsHidden = false;
+}
+
+bool ShieldClass::AreAnimationsHidden()
+{
+	return this->AreAnimsHidden;
 }

@@ -50,10 +50,10 @@ DEFINE_HOOK(0x54BD93, JumpjetLocomotionClass_State2_54BD30_TurnToTarget, 0x6)
 		{
 			CoordStruct& source = pThis->Location;
 			CoordStruct target = pTarget->GetCoords();
-			DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
+			DirStruct tgtDir = DirStruct { Math::atan2(source.Y - target.Y, target.X - source.X) };
 
-			if (pThis->GetRealFacing().value32() != tgtDir.value32())
-				pLoco->LocomotionFacing.turn(tgtDir);
+			if (pThis->GetRealFacing().GetFacing<32>() != tgtDir.GetFacing<32>())
+				pLoco->LocomotionFacing.Set_Desired(tgtDir);
 		}
 	}
 
@@ -68,8 +68,8 @@ DEFINE_HOOK(0x736BF3, UnitClass_UpdateRotation_TurretFacing, 0x6)
 	// Not sure if jumpjet check is really needed
 	if (!pThis->Target && !pThis->Type->TurretSpins && pThis->Type->JumpJet)
 	{
-		pThis->SecondaryFacing.turn(pThis->PrimaryFacing.current());
-		pThis->unknown_49C = pThis->PrimaryFacing.in_motion();
+		pThis->SecondaryFacing.Set_Desired(pThis->PrimaryFacing.Current());
+		pThis->unknown_49C = pThis->PrimaryFacing.Is_Rotating();
 		return 0x736C09;
 	}
 

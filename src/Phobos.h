@@ -72,6 +72,7 @@ public:
 		static bool DevelopmentCommands;
 		static bool ArtImageSwap;
 		static bool AllowParallelAIQueues;
+		static bool ShowPlacementPreview;
 		static bool EnableBuildingPlacementPreview;
 		static bool DigitalDisplay_Enable;
 	};

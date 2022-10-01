@@ -212,8 +212,8 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 DEFINE_HOOK(0x46745C, BulletClass_AI_Position_Trajectories, 0x7)
 {
 	GET(BulletClass*, pThis, EBP);
-	LEA_STACK(BulletVelocity*, pSpeed, STACK_OFFS(0x1AC, 0x11C));
-	LEA_STACK(BulletVelocity*, pPosition, STACK_OFFS(0x1AC, 0x144));
+	LEA_STACK(BulletVelocity*, pSpeed, STACK_OFFSET(0x1AC, -0x11C));
+	LEA_STACK(BulletVelocity*, pPosition, STACK_OFFSET(0x1AC, -0x144));
 
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
@@ -269,8 +269,8 @@ DEFINE_HOOK(0x467927, BulletClass_AI_TechnoCheck_Trajectories, 0x5)
 DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 {
 	GET(BulletClass*, pThis, EBX);
-	GET_STACK(CoordStruct*, pCoord, STACK_OFFS(0x54, -0x4));
-	GET_STACK(BulletVelocity*, pVelocity, STACK_OFFS(0x54, -0x8));
+	GET_STACK(CoordStruct*, pCoord, STACK_OFFSET(0x54, 0x4));
+	GET_STACK(BulletVelocity*, pVelocity, STACK_OFFSET(0x54, 0x8));
 
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 	auto const pTypeExt = pExt->TypeExtData;

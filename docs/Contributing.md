@@ -150,14 +150,23 @@ The styleguide is not exhaustive and may be adjusted in the future.
 
 ### Git branching model
 
-Couple of notes regarding the Git practices:
-- We use [git-flow](https://nvie.com/posts/a-successful-git-branching-model/)-like workflow:
-  - `master` is for stable releases, can have hotfixes pushed to it or branched off like a feature branch with the requirement of version increment and being merged into develop;
+Couple of notes regarding the Git practices. We use [git-flow](https://nvie.com/posts/a-successful-git-branching-model/)-like workflow:
+  - `master` is for stable releases, can have hotfixes pushed to it or branched off like a feature branch with the requirement of version increment and `master` being merged into `develop` after that;
   - `develop` is the main development branch;
-  - `feature/`-prefixed branches (sometimes the prefix may be different if appropriate, like for big fixes or changes) are so called "feature branches" - those are branched off `develop` for every new feature to be introduced into it and then merged back. We use squash merge to merge them back.
-  - `hotfix/`-prefixed branches may be used in a same manner with `master` branch if needed, with a requirement of `master` being merged into `develop` after `hotfix/` branch was squash merged into `master`.
-  - `release/`-prefixed branches are branched off `develop` when a new stable release is slated to allow working on features for a next release and stability improvements for this release. Those are merged with a merge commit into `master` and `develop` with a stable version increase, after which the stable version is released.
+  - `feature/`-prefixed branches (sometimes the prefix may be different if appropriate, like for big fixes or changes) are so called "feature branches" - those are branched off `develop` for every new feature to be introduced into it and then merged back. We use squash merge to merge them back in case of smaller branches and sometimes merge commit in case the branch is so big it would be viable to keep it as is.
+  - `hotfix/`-prefixed branches may be used in a same manner as `feature/`, but with `master` branch, with a requirement of `master` being merged into `develop` after `hotfix/` branch was squash merged into `master`.
+  - `release/`-prefixed branches are branched off `develop` when a new stable release is slated to allow working on features for a next release and stability improvements for this release. Those are merged with a merge commit into `master` and `develop` with a stable version number increase, after which the stable version is released.
 - When you're working with your local & remote branches use **fast-forward** pulls to get the changes from remote branch to local, **don't merge remote branch into local and vice versa**, this creates junk commits and makes things unsquashable.
+
+These commands will do the following for all repositories on your PC:
+1) remove the automatic merge upon pull and replace it with a rebase;
+2) highlight changes consisting of moving existing lines to another location with a different color.
+
+```bash
+git config --global pull.rebase true
+git config --global branch.autoSetupRebase always
+git config --global diff.colorMoved zebra
+```
 
 ## Ways to help
 

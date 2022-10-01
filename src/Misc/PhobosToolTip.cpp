@@ -66,7 +66,7 @@ inline int PhobosToolTip::GetBuildTime(TechnoTypeClass* pType) const
 	// TechnoTypeClass only has 4 final classes :
 	// BuildingTypeClass, AircraftTypeClass, InfantryTypeClass and UnitTypeClass
 	// It has to be these four classes, otherwise pType will just be nullptr
-	reinterpret_cast<TechnoClass*>(pTrick)->Owner = HouseClass::Player;
+	reinterpret_cast<TechnoClass*>(pTrick)->Owner = HouseClass::CurrentPlayer;
 	int nTimeToBuild = reinterpret_cast<TechnoClass*>(pTrick)->TimeToBuild();
 	// 54 frames at least
 	return nTimeToBuild < 54 ? 54 : nTimeToBuild;
@@ -105,7 +105,7 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 	int nMin = nBuildTime / 15 / 60 /* % 60*/;
 	// int nHour = pType->RechargeTime / 15 / 60 / 60;
 
-	int cost = pType->GetActualCost(HouseClass::Player);
+	int cost = pType->GetActualCost(HouseClass::CurrentPlayer);
 
 	std::wostringstream oss;
 	oss << pType->UIName << L"\n"
@@ -254,7 +254,7 @@ DEFINE_HOOK(0x478F77, CCToolTip_Draw2_SetY, 0x6)
 {
 	if (PhobosToolTip::Instance.IsCameo)
 	{
-		LEA_STACK(RectangleStruct*, Rect, STACK_OFFS(0x3C, 0x20));
+		LEA_STACK(RectangleStruct*, Rect, STACK_OFFSET(0x3C, -0x20));
 
 		int const maxHeight = DSurface::ViewBounds->Height - 32;
 
@@ -290,7 +290,7 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 	if (PhobosToolTip::Instance.IsCameo)
 	{
 		GET(SurfaceExt*, pThis, ESI);
-		LEA_STACK(RectangleStruct*, pRect, STACK_OFFS(0x44, 0x10));
+		LEA_STACK(RectangleStruct*, pRect, STACK_OFFSET(0x44, -0x10));
 
 		// Should we make some SideExt items as static to improve the effeciency?
 		// Though it might not be a big improvement... - secsome
@@ -382,4 +382,3 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 //
 //	return 0x479048;
 //}
-
