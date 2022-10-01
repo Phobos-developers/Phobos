@@ -24,7 +24,7 @@ void FlyingStrings::Add(const wchar_t* text, CoordStruct coords, ColorStruct col
 	item.Location = coords;
 	item.PixelOffset = pixelOffset;
 	item.CreationFrame = Unsorted::CurrentFrame;
-	item.Color = Drawing::RGB2DWORD(color);
+	item.Color = Drawing::RGB_To_Int(color);
 	PhobosCRT::wstrCopy(item.Text, text, 0x20);
 	Data.push_back(item);
 }

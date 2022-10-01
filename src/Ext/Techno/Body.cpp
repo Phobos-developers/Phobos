@@ -20,9 +20,10 @@
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 
-void TechnoExt::ExtData::ApplyInterceptor(TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::ExtData::ApplyInterceptor()
 {
 	auto const pThis = this->OwnerObject();
+	auto const pTypeExt = this->TypeExtData;
 
 	if (pTypeExt && pTypeExt->Interceptor && !pThis->Target &&
 		!(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
@@ -40,9 +41,9 @@ void TechnoExt::ExtData::ApplyInterceptor(TechnoTypeExt::ExtData* pTypeExt)
 				continue;
 
 			auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
-			auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+			auto pBulletTypeExt = pBulletExt->TypeExtData;
 
-			if (!pBulletTypeExt->Interceptable)
+			if (!pBulletTypeExt || !pBulletTypeExt->Interceptable)
 				continue;
 
 			if (pBulletTypeExt->Armor.isset())
@@ -73,46 +74,47 @@ void TechnoExt::ExtData::ApplyInterceptor(TechnoTypeExt::ExtData* pTypeExt)
 	}
 }
 
-void TechnoExt::ExtData::CheckDeathConditions(TechnoTypeExt::ExtData* pTypeExt)
+bool TechnoExt::ExtData::CheckDeathConditions()
 {
+	auto const pTypeExt = this->TypeExtData;
+
+	if (!pTypeExt->AutoDeath_Behavior.isset())
+		return false;
+
 	auto const pThis = this->OwnerObject();
 	auto const pType = pThis->GetTechnoType();
 
-	if (pTypeExt)
+	// Self-destruction must be enabled
+	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
+
+	// Death if no ammo
+	if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
 	{
-		if (!pTypeExt->AutoDeath_Behavior.isset())
-			return;
+		TechnoExt::KillSelf(pThis, howToDie);
+		return true;
+	}
 
-		// Self-destruction must be enabled
-		const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
-
-		// Death if no ammo
-		if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
+	// Death if countdown ends
+	if (pTypeExt->AutoDeath_AfterDelay > 0)
+	{
+		//using Expired() may be confusing
+		if (this->AutoDeathTimer.StartTime == -1 && this->AutoDeathTimer.TimeLeft == 0)
+		{
+			this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
+		}
+		else if (!pThis->Transporter && this->AutoDeathTimer.Completed())
 		{
 			TechnoExt::KillSelf(pThis, howToDie);
-			return;
-		}
-
-		// Death if countdown ends
-		if (pTypeExt->AutoDeath_AfterDelay > 0)
-		{
-			//using Expired() may be confusing
-			if (this->AutoDeathTimer.StartTime == -1 && this->AutoDeathTimer.TimeLeft == 0)
-			{
-				this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
-			}
-			else if (!pThis->Transporter && this->AutoDeathTimer.Completed())
-			{
-				TechnoExt::KillSelf(pThis, howToDie);
-				return;
-			}
+			return true;
 		}
 	}
+	return false;
 }
 
-void TechnoExt::ExtData::EatPassengers(TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::ExtData::EatPassengers()
 {
 	auto const pThis = this->OwnerObject();
+	auto const pTypeExt = this->TypeExtData;
 
 	if (!TechnoExt::IsActive(pThis))
 		return;
@@ -205,8 +207,10 @@ void TechnoExt::ExtData::EatPassengers(TechnoTypeExt::ExtData* pTypeExt)
 	}
 }
 
-void TechnoExt::ExtData::UpdateShield(TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::ExtData::UpdateShield()
 {
+	auto const pTypeExt = this->TypeExtData;
+
 	// Set current shield type if it is not set.
 	if (!this->CurrentShieldType->Strength && pTypeExt->ShieldType->Strength)
 		this->CurrentShieldType = pTypeExt->ShieldType;
@@ -217,6 +221,64 @@ void TechnoExt::ExtData::UpdateShield(TechnoTypeExt::ExtData* pTypeExt)
 
 	if (const auto pShieldData = this->Shield.get())
 		pShieldData->AI();
+}
+
+void TechnoExt::ExtData::ApplyPoweredKillSpawns()
+{
+	auto const pThis = this->OwnerObject();
+	auto const pTypeExt = this->TypeExtData;
+
+	if (pThis->WhatAmI() == AbstractType::Building && pTypeExt->Powered_KillSpawns)
+	{
+		auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
+		if (pBuilding->Type->Powered && !pBuilding->IsPowerOnline())
+		{
+			if (auto pManager = pBuilding->SpawnManager)
+			{
+				pManager->ResetTarget();
+				for (auto pItem : pManager->SpawnedNodes)
+				{
+					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
+					{
+						pItem->Unit->ReceiveDamage(&pItem->Unit->Health, 0,
+							RulesClass::Instance()->C4Warhead, nullptr, true, false, nullptr);
+					}
+				}
+			}
+		}
+	}
+}
+
+void TechnoExt::ExtData::ApplySpawnLimitRange()
+{
+	auto const pThis = this->OwnerObject();
+	auto const pTypeExt = this->TypeExtData;
+
+	if (pTypeExt->Spawn_LimitedRange)
+	{
+		if (auto const pManager = pThis->SpawnManager)
+		{
+			auto pTechnoType = pThis->GetTechnoType();
+			int weaponRange = 0;
+			int weaponRangeExtra = pTypeExt->Spawn_LimitedExtraRange * Unsorted::LeptonsPerCell;
+
+			auto setWeaponRange = [&weaponRange](WeaponTypeClass* pWeaponType)
+			{
+				if (pWeaponType && pWeaponType->Spawner && pWeaponType->Range > weaponRange)
+					weaponRange = pWeaponType->Range;
+			};
+
+			setWeaponRange(pTechnoType->Weapon[0].WeaponType);
+			setWeaponRange(pTechnoType->Weapon[1].WeaponType);
+			setWeaponRange(pTechnoType->EliteWeapon[0].WeaponType);
+			setWeaponRange(pTechnoType->EliteWeapon[1].WeaponType);
+
+			weaponRange += weaponRangeExtra;
+
+			if (pManager->Target && (pThis->DistanceFrom(pManager->Target) > weaponRange))
+				pManager->ResetTarget();
+		}
+	}
 }
 
 bool TechnoExt::IsActive(TechnoClass* pThis)
@@ -276,55 +338,6 @@ void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::ApplyPoweredKillSpawns(TechnoClass* pThis)
-{
-	if (pThis->WhatAmI() == AbstractType::Building)
-	{
-		auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
-		if (pBuilding->Type->Powered && !pBuilding->IsPowerOnline())
-		{
-			if (auto pManager = pBuilding->SpawnManager)
-			{
-				pManager->ResetTarget();
-				for (auto pItem : pManager->SpawnedNodes)
-				{
-					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
-					{
-						pItem->Unit->ReceiveDamage(&pItem->Unit->Health, 0,
-							RulesClass::Instance()->C4Warhead, nullptr, false, false, nullptr);
-					}
-				}
-			}
-		}
-	}
-}
-
-void TechnoExt::ApplySpawnLimitRange(TechnoClass* pThis, int extraRange)
-{
-	if (auto const pManager = pThis->SpawnManager)
-	{
-		auto pTechnoType = pThis->GetTechnoType();
-		int weaponRange = 0;
-		int weaponRangeExtra = extraRange * Unsorted::LeptonsPerCell;
-
-		auto setWeaponRange = [&weaponRange](WeaponTypeClass* pWeaponType)
-		{
-			if (pWeaponType && pWeaponType->Spawner && pWeaponType->Range > weaponRange)
-				weaponRange = pWeaponType->Range;
-		};
-
-		setWeaponRange(pTechnoType->Weapon[0].WeaponType);
-		setWeaponRange(pTechnoType->Weapon[1].WeaponType);
-		setWeaponRange(pTechnoType->EliteWeapon[0].WeaponType);
-		setWeaponRange(pTechnoType->EliteWeapon[1].WeaponType);
-
-		weaponRange += weaponRangeExtra;
-
-		if (pManager->Target && (pThis->DistanceFrom(pManager->Target) > weaponRange))
-			pManager->ResetTarget();
-	}
-}
-
 bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 {
 	if (!TechnoExt::IsActive(pThis))
@@ -337,11 +350,20 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 	if (pThis->WhatAmI() == AbstractType::Building && pThis->IsPowerOnline())
 		return true;
 
-	auto mission = pThis->GetCurrentMission();
-	if ((mission == Mission::Harvest || mission == Mission::Unload || mission == Mission::Enter)
-		&& TechnoExt::HasAvailableDock(pThis))
+	if (TechnoExt::HasAvailableDock(pThis))
 	{
-		return true;
+		switch (pThis->GetCurrentMission())
+		{
+		case Mission::Harvest:
+		case Mission::Unload:
+		case Mission::Enter:
+			return true;
+		case Mission::Guard: // issue#603: not exactly correct, but idk how to do better
+			if (auto pUnit = abstract_cast<UnitClass*>(pThis))
+				return !pUnit->IsSelected && pUnit->Locomotor->Is_Really_Moving_Now();
+		default:
+			return false;
+		}
 	}
 
 	return false;
@@ -409,8 +431,8 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 	{
 		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
 
-		double turretRad = (pThis->TurretFacing().value32() - 8) * -(Math::Pi / 16);
-		double bodyRad = (pThis->PrimaryFacing.current().value32() - 8) * -(Math::Pi / 16);
+		double turretRad = (pThis->TurretFacing().GetFacing<32>() - 8) * -(Math::Pi / 16);
+		double bodyRad = (pThis->PrimaryFacing.Current().GetFacing<32>() - 8) * -(Math::Pi / 16);
 		float angle = (float)(turretRad - bodyRad);
 
 		mtx.RotateZ(angle);
@@ -532,6 +554,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	case AutoDeathBehavior::Vanish:
 	{
 		pThis->KillPassengers(pThis);
+		pThis->vt_entry_3A0(); // Stun? what is this?
 		pThis->Limbo();
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
@@ -555,8 +578,8 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	}
 
 	default: //must be AutoDeathBehavior::Kill
-		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
-
+		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pThis->Owner);
+		// Due to Ares, ignoreDefense=true will prevent passenger/crew/hijacker from escaping
 		return;
 	}
 }
@@ -718,7 +741,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 			selfHealFrames = RulesClass::Instance->SelfHealInfantryFrames;
 			isInfantryHeal = true;
 		}
-		else if (pThis->Owner->UnitsSelfHeal > 0 && (hasUnitSelfHeal || pThis->WhatAmI() == AbstractType::Unit))
+		else if (pThis->Owner->UnitsSelfHeal > 0 && (hasUnitSelfHeal || (pThis->WhatAmI() == AbstractType::Unit && !isOrganic)))
 		{
 			drawPip = true;
 			selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
@@ -841,17 +864,19 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 		return;
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	ColorStruct color;
 
-	auto color = isShieldDamage ? damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 } :
-		damage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
+	if (!isShieldDamage)
+		color = damage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
+	else
+		color = damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 };
 
-	wchar_t damageStr[0x20];
-	swprintf_s(damageStr, L"%d", damage);
-	auto coords = CoordStruct::Empty;
-	coords = *pThis->GetCenterCoord(&coords);
-
+	auto coords = pThis->GetRenderCoords();
 	int maxOffset = Unsorted::CellWidthInPixels / 2;
 	int width = 0, height = 0;
+	wchar_t damageStr[0x20];
+	swprintf_s(damageStr, L"%d", damage);
+
 	BitFont::Instance->GetTextDimension(damageStr, &width, &height, 120);
 
 	if (pExt->DamageNumberOffset >= maxOffset || pExt->DamageNumberOffset.empty())
@@ -869,6 +894,7 @@ template <typename T>
 void TechnoExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->TypeExtData)
 		.Process(this->Shield)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)
@@ -923,7 +949,8 @@ DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 {
 	GET(TechnoClass*, pItem, ESI);
 
-	TechnoExt::ExtMap.FindOrAllocate(pItem);
+	auto pExt = TechnoExt::ExtMap.FindOrAllocate(pItem);
+	pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pItem->GetTechnoType());
 
 	return 0;
 }

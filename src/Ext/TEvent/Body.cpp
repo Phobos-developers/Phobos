@@ -1,7 +1,7 @@
 #include "Body.h"
 
 #include <Utilities/SavegameDef.h>
-
+#include <New/Entity/ShieldClass.h>
 #include <Ext/Scenario/Body.h>
 #include <BuildingClass.h>
 #include <InfantryClass.h>
@@ -116,6 +116,9 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 		return TEventExt::VariableCheckBinary<true, true, std::less_equal<int>>(pThis);
 	case PhobosTriggerEvent::GlobalVariableAndIsTrueGlobalVariable:
 		return TEventExt::VariableCheckBinary<true, true, and_with>(pThis);
+
+	case PhobosTriggerEvent::ShieldBroken:
+		return ShieldClass::ShieldIsBrokenTEvent(pObject);
 
 	default:
 		bHandled = false;

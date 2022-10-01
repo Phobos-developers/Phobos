@@ -55,7 +55,7 @@ DEFINE_HOOK(0x483811, CellClass_SpreadTiberium_TiberiumType, 0x8)
 {
 	if (TerrainTypeTemp::pCurrentExt)
 	{
-		LEA_STACK(int*, pTibType, STACK_OFFS(0x1C, -0x4));
+		LEA_STACK(int*, pTibType, STACK_OFFSET(0x1C, 0x4));
 
 		*pTibType = TerrainTypeTemp::pCurrentExt->SpawnsTiberium_Type;
 
@@ -106,7 +106,7 @@ DEFINE_HOOK(0x71BB2C, TerrainClass_TakeDamage_NowDead_Add, 0x6)
 {
 	GET(TerrainClass*, pThis, ESI);
 	//saved for later usage !
-	//REF_STACK(args_ReceiveDamage const, ReceiveDamageArgs, STACK_OFFS(0x3C, -0x4));
+	//REF_STACK(args_ReceiveDamage const, ReceiveDamageArgs, STACK_OFFSET(0x3C, 0x4));
 
 	if (auto const pTerrainExt = TerrainTypeExt::ExtMap.Find(pThis->Type))
 	{
@@ -125,8 +125,8 @@ DEFINE_HOOK(0x47C065, CellClass_CellColor_TerrainRadarColor, 0x6)
 	enum { SkipTerrainColor = 0x47C0AE, ReturnFromFunction = 0x47C0A3 };
 
 	GET(CellClass*, pThis, ECX);
-	GET_STACK(ColorStruct*, arg0, STACK_OFFS(0x14, -0x4));
-	GET_STACK(ColorStruct*, arg4, STACK_OFFS(0x14, -0x8));
+	GET_STACK(ColorStruct*, arg0, STACK_OFFSET(0x14, 0x4));
+	GET_STACK(ColorStruct*, arg4, STACK_OFFSET(0x14, 0x8));
 
 	auto pTerrain = pThis->GetTerrain(false);
 
@@ -174,4 +174,3 @@ DEFINE_HOOK(0x568432, MapClass_PlaceDown_0x0TerrainTypes, 0x8)
 
 	return 0;
 }
-

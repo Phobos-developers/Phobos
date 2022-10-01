@@ -15,30 +15,34 @@ This page describes all the engine features that are either new and introduced b
   - `RadSiteWarhead.Detonate` can be set to make `RadSiteWarhead` detonate on affected objects rather than only be used to dealt direct damage. This enables most Warhead effects, display of animations etc.
   - `RadHasOwner`, if set to true, makes damage dealt by the radiation count as having been dealt by the house that fired the projectile that created the radiation field. This means that Warhead controls such as `AffectsAllies` will be respected and any units killed will count towards that player's destroyed units count.
   - `RadHasInvoker`, if set to true, makes the damage dealt by the radiation count as having been dealt by the TechnoType (the 'invoker') that fired the projectile that created the radiation field. In addition to the effects of `RadHasOwner`, this will also grant experience from units killed by the radiation to the invoker. Note that if the invoker dies at any point during the radiation's lifetime it continues to behave as if not having an invoker.
+- By default `UseGlobalRadApplicationDelay` is set to true. This makes game always use `RadApplicationDelay` and `RadApplicationDelay.Building` from `[Radiation]` rather than specific radiation types. This is a performance-optimizing measure that should be disabled if a radiation type declares different application delay.
 
 In `rulesmd.ini`:
 ```ini
 [RadiationTypes]
 0=SOMERADTYPE
 
-[SOMEWEAPON]                    ; WeaponType
-RadType=Radiation               ; RadType to use instead of default of [Radiation]
+[Radiation]
+UseGlobalRadApplicationDelay=true  ; boolean
 
-[SOMERADTYPE]                   ; RadType
-RadDurationMultiple=1           ; integer
-RadApplicationDelay=16          ; integer
-RadApplicationDelay.Building=0  ; integer
-RadLevelMax=500                 ; integer
-RadLevelDelay=90                ; integer
-RadLightDelay=90                ; integer
-RadLevelFactor=0.2              ; floating point value
-RadLightFactor=0.1              ; floating point value
-RadTintFactor=1.0               ; floating point value
-RadColor=0,255,0                ; integer - Red,Green,Blue
-RadSiteWarhead=RadSite          ; WarheadType
-RadSiteWarhead.Detonate=false   ; boolean
-RadHasOwner=false               ; boolean
-RadHasInvoker=false             ; boolean
+[SOMEWEAPON]                       ; WeaponType
+RadType=Radiation                  ; RadType to use instead of default of [Radiation]
+
+[SOMERADTYPE]                      ; RadType
+RadDurationMultiple=1              ; integer
+RadApplicationDelay=16             ; integer
+RadApplicationDelay.Building=0     ; integer
+RadLevelMax=500                    ; integer
+RadLevelDelay=90                   ; integer
+RadLightDelay=90                   ; integer
+RadLevelFactor=0.2                 ; floating point value
+RadLightFactor=0.1                 ; floating point value
+RadTintFactor=1.0                  ; floating point value
+RadColor=0,255,0                   ; integer - Red,Green,Blue
+RadSiteWarhead=RadSite             ; WarheadType
+RadSiteWarhead.Detonate=false      ; boolean
+RadHasOwner=false                  ; boolean
+RadHasInvoker=false                ; boolean
 ```
 
 ### Laser Trails
@@ -69,6 +73,7 @@ Thickness=4                   ; integer
 SegmentLength=128             ; integer, minimal length of each trail segment
 IgnoreVertical=false          ; boolean, whether the trail won't be drawn on vertical movement
 IsIntense=false               ; boolean, whether the laser is "supported" (AKA prism forwarding)
+CloakVisible=false            ; boolean, whether the laser is visible when the attached unit is cloaked
 
 [SOMEPROJECTILE]              ; BulletType Image
 LaserTrail.Types=SOMETRAIL    ; list of LaserTrailTypes
@@ -131,6 +136,7 @@ BreakWeapon=                         ; WeaponType
 AbsorbPercent=1.0                    ; floating point value
 PassPercent=0.0                      ; floating point value
 AllowTransfer=                       ; boolean
+ImmuneToBerserk=no                   ; boolean
 
 [SOMETECHNO]                         ; TechnoType
 ShieldType=SOMESHIELDTYPE            ; ShieldType; none by default
@@ -161,6 +167,7 @@ Shield.InheritStateOnReplace=false   ; boolean
 ```
 - Now you can have a shield for any TechnoType. It serves as a second health pool with independent `Armor` and `Strength` values.
   - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed by shield.
+    - Negative damage weapons will consider targets with active, but not at full health shields in need of healing / repairing unless the Warhead has `Shield.Penetrate=true`, in which case only object health is considered.
   - When a TechnoType has an unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for game calculation.
   - `InitialStrength` can be used to set a different initial strength value from maximum.
 - When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoTypes have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
@@ -183,6 +190,7 @@ Shield.InheritStateOnReplace=false   ; boolean
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
 - `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
+- `ImmuneToBerserk` gives the immunity against `Psychedelic=yes` warhead. Otherwise the berserk effect penetrates shields by default. Note that this shouldn't prevent the unit from targeting at the shielded object. `Versus.shieldArmor=0%` is still required in this case.
 - A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable. Several customizations are available for the shield strength pips.
   - By default, buildings use the 6th frame of `pips.shp` to display the shield strength while others use the 17th frame.
   - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit is set, then it will always display that frame, or if 3 digits are set, it will use those if shield's current strength is at or below `ConditionYellow` and `ConditionRed`, respectively. `Pips.Shield.Building` is used for BuildingTypes. -1 as value will use the default frame, whether it is fallback to first value or the aforementioned hardcoded defaults.
@@ -595,7 +603,7 @@ InitialStrength.Cloning=  ; single double/percentage or comma-sep. range
 
 If this option is not set, the self-destruction logic will not be enabled.
 ```{note}
-Please notice that if the object is a unit which carries passengers, they will not be released even with the kill option. This might change in the future if necessary.
+Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option. This might change in the future if necessary.
 
 If the object enters transport, the countdown will continue, but it will not self-destruct inside the transport.
 ```
@@ -794,7 +802,7 @@ SplashList.PickRandom=false  ; boolean
 
 ### Detonate Warhead on all objects on map
 
-- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is fully detonated (and not just used to deal damage) and consequently any `Airburst/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
+- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `Airburst/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
   - `DetonateOnAllMapObjects.AffectTargets` can be used to filter which types of targets (TechnoTypes) are considered valid. Only `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values.
   - `DetonateOnAllMapObjects.AffectHouses` can be used to filter which houses targets can belong to be considered valid. Only applicable if the house that fired the projectile is known.
   - `DetonateOnAllMapObjects.AffectTypes` can be used to list specific TechnoTypes to be considered as valid targets. If any valid TechnoTypes are listed, then only matching objects will be targeted. Note that `DetonateOnAllMapObjects.AffectTargets` and `DetonateOnAllMapObjects.AffectHouses` take priority over this setting.
@@ -842,7 +850,8 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 - Superweapons can now be launched when a warhead is detonated.
   - `LaunchSW` specifies the superweapons to launch when the warhead is detonated.
   - `LaunchSW.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons and sufficient fund to support `Money.Amout`. Otherwise they will be launched out of nowhere.
-  - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of each superweapon, otherwise only non-inhibited superweapons are launched. `SW.Designators` are always ignored.
+  - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
+  - `LaunchSW.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
 
 ```{note}
 For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
@@ -855,6 +864,7 @@ In `rulesmd.ini`:
 LaunchSW=                        ; list of superweapons
 LaunchSW.RealLaunch=true         ; boolean
 LaunchSW.IgnoreInhibitors=false  ; boolean
+LaunchSW.IgnoreDesignators=true  ; boolean
 ```
 
 ### Remove disguise on impact
