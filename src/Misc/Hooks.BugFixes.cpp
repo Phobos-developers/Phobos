@@ -426,7 +426,7 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x4DACF3, FootClass_CrashingVoice, 0x6)
+DEFINE_HOOK(0x4DACF3, FootClass_AI_CrashingVoice, 0x6)
 {
 	enum { Continue = 0x4DACF9, Skip = 0x4DADA9 };
 

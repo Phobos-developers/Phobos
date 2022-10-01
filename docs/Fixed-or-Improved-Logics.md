@@ -73,7 +73,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that caused vehicles killed by damage dealt by a known house but without a known source TechnoType (f.ex animation warhead damage) to not be recorded as killed correctly and thus not spring map trigger events etc.
 - `IsAnimated`, `AnimationRate` and `AnimationProbability` now work on TerrainTypes without `SpawnsTiberium` set to true.
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something.
-- Fixed unit will play crash voice when crashing after attacked by locomotor warhead.
+- Fixed unit playing crashing voice when crashing after being attacked by locomotor warhead.
 
 ![image](_static/images/translucency-fix.png)
 *Example gradient SHP drawing with 75% translucency, before and after*
