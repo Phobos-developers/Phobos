@@ -22,8 +22,9 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 - Automatic self-destruction logic logic has been reimplemented, `Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been remade/renamed and require adjustments to function.
 - `DetachedFromOwner` on weapons is deprecated. This has been replaced by `AllowDamageOnSelf` on warheads.
-- Script actions 125 and 126 (timed jump) now take the time measured in ingame seconds instead of frames. Divide your value by 15 to accomodate to this change.
+- Timed jump script actions now take the time measured in ingame seconds instead of frames. Divide your value by 15 to accomodate to this change.
 - [Placement Preview](User-Interface.md#placement-preview) logic has been adjusted, `BuildingPlacementPreview.DefaultTranslucentLevel`, `BuildingPlacementGrid.TranslucentLevel`, `PlacementPreview.Show`, `PlacementPreview.TranslucentLevel` and `ShowBuildingPlacementPreview` tags have been remade/renamed and require adjustments to function. In addition, you must explicitly enable this feature by specifying `[AudioVisual]->PlacementPreview=yes`.
+- Existing script actions were renumbered, please use the migration utility to change the numbers to the correct ones.
 
 
 #### From 0.2.2.2
@@ -31,6 +32,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - Keys `rulesmd.ini->[SOMEWARHEAD]->PenetratesShield` and `rulesmd.ini->[SOMEWARHEAD]->BreaksShield` have been changed to `Shield.Penetrate` and `Shield.Break`, respectively.
 - `Rad.NoOwner` on weapons is deprecated. This has been replaced by `RadHasOwner` key on radiation types itself. It also defaults to no, so radiation once again has no owner house by default.
 - `RadApplicationDelay` and `RadApplicationDelay.Building` on custom radiation types are now only used if `[Radiation]` -> `UseGlobalRadApplicationDelay` is explicitly set to false, otherwise values from `[Radiation]` are used.
+- Existing script actions were renumbered, please use the migration utility to change the numbers to the correct ones.
 
 #### From 0.1.1
 
@@ -258,7 +260,7 @@ New:
 - Adds a "Load Game" button to the retry dialog on mission failure (by secsome)
 - Default disguise for individual InfantryTypes (by secsome)
 - Quicksave hotkey command (by secsome)
-- Save Game Trigger Action (by secsome)
+- Save Game trigger action (by secsome)
 - Numeric Variables (by secsome)
 - TechnoType's tooltip would display it's build time now (by secsome)
 - Customizable tooltip background color and opacity (by secsome)
@@ -268,18 +270,18 @@ New:
 - XDrawOffset for animations (by Morton)
 - Customizable OpenTopped properties (by Otamaa)
 - Automatic Passenger Deletion (by FS-21)
-- Script Action 74 to 81, 84 to 91 and 104 to 105 for new AI attacks (by FS-21)
-- Script Actions 82 & 83 for modifying AI Trigger Current Weight (by FS-21)
-- Script Action 92 for waiting & repeat the same new AI attack if no target was found (by FS-21)
-- Script Action 93 that modifies the Team's Trigger Weight when ends the new attack action (by FS-21)
-- Script Action 94 for picking a random script from a list (by FS-21)
-- Script Action 95 to 102 and 106 to 109 for new AI movements towards certain objects (by FS-21)
-- Script Action 103 that Modify Target Distance in the new move actions (by FS-21)
-- Script Action 110 that Modify how ends the new move actions (by FS-21)
-- Script Action 111 that un-register Team success, is just the opposite effect of Action 49 (by FS-21)
-- Script Action 112 to regroup temporarily around the Team Leader (by FS-21)
-- Script Action 113 to Randomly Skip Next Action (by FS-21)
-- Script Action 124 to 126 for timed Script Action jumps (by FS-21)
+- Script actions for new AI attacks (by FS-21)
+- Script actions for modifying AI Trigger Current Weight (by FS-21)
+- Script action for waiting & repeat the same new AI attack if no target was found (by FS-21)
+- Script action that modifies the Team's Trigger Weight when ends the new attack action (by FS-21)
+- Script action for picking a random script from a list (by FS-21)
+- Script action for new AI movements towards certain objects (by FS-21)
+- Script action that modify target distance in the new move actions (by FS-21)
+- Script action that modify how ends the new move actions (by FS-21)
+- Script action that un-register Team success (by FS-21)
+- Script action to regroup temporarily around the Team Leader (by FS-21)
+- Script action to randomly skip next action (by FS-21)
+- Script action for timed script action jumps (by FS-21)
 - ObjectInfo now shows current Target and AI Trigger data (by FS-21)
 - Shield absorption and passthrough customization (by Morton)
 - Limbo Delivery of buildings (by Morton)
