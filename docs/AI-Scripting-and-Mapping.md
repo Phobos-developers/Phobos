@@ -1,8 +1,8 @@
-# AI Scripting And Mapping
+# AI Scripting and Mapping
 
 This page describes all AI scripting and mapping related additions and changes introduced by Phobos.
 
-## Bugfixes And Miscellanous
+## Bugfixes and Miscellanous
 
 - Script action `Move to cell` now obeys YR cell calculation now. Using `1000 * Y + X` as its cell value. (was `128 * Y + X` as it's a RA1 leftover)
 - The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])
@@ -12,14 +12,14 @@ This page describes all AI scripting and mapping related additions and changes i
 
 ## Script Actions
 
-### `10000-10999` In-Game Actions
+### `10000-10999` Ingame Actions
 
 #### `10000-10049` Attack Actions
 
-- These Actions instruct the TeamType to use the TaskForce to approach and attack the target specified by the second parameter which is an index of a generic pre-defined group. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
+- These actions instruct the TeamType to use the TaskForce to approach and attack the target specified by the second parameter which is an index of a generic pre-defined group. Look at the tables below for the possible actions (first parameter value) and arguments (the second parameter value).
 - For threat-based attack actions `TargetSpecialThreatCoefficientDefault` and `EnemyHouseThreatBonus` tags from `rulesmd.ini` are accounted.
-- All Aircrafts that attack other air units will end the script. This behavior is intentional because without it aircrafts had some bugs that weren't fixable at the time of developing the feature.
-- `AITargetTypes` Actions instruct the TeamType to use the TaskForce to approach and attack the target specified by the second parameter which is an index of a modder-defined group from `AITargetTypess`. Look at the tables below for the possible Actions (first parameter value) and Arguments (the second parameter value).
+- All aircraft that attack other air units will end the script. This behavior is intentional because without it aircraft had some bugs that weren't fixable at the time of developing the feature.
+- `AITargetTypes` actions instruct the TeamType to use the TaskForce to approach and attack the target specified by the second parameter which is an index of a modder-defined group from `AITargetTypess`. Look at the tables below for the possible actions (first parameter value) and arguments (the second parameter value).
 
 In `aimd.ini`:
 ```ini
@@ -100,9 +100,9 @@ In `rulesmd.ini`:
 ; ...
 ```
 
-#### `10050-10099` Move Team To Techno Location Actions
+#### `10050-10099` Move Team to Techno Location actions
 
-- These Actions instructs the TeamType to use the TaskForce to approach the target specified by the second parameter. Look at the tables below for the possible Actions (first parameter value).
+- These actions instructs the TeamType to use the TaskForce to approach the target specified by the second parameter. Look at the tables below for the possible actions (first parameter value).
 
 In `aimd.ini`:
 ```ini
@@ -129,14 +129,14 @@ x=i,n             ; For i values check the next table
 
 ##### `10100` Timed Area Guard
 
-- Puts the TaskForce into Area Guard Mode for the given units of time. Unlike the original timed Guard script (`5,n`) that just stays in place doing a basic guard operation the "Area Guard" action has a more active role attacking nearby invaders or defending units that needs protection.
+- Puts the TaskForce into Area Guard mode for the given units of time. Unlike the original timed Guard script action (`5,n`) that just stays in place doing a basic guard operation this action has a more active role attacking nearby invaders or defending units that needs protection.
 
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
 x=10100,n            ; integer, time in ingame seconds
 ```
-##### `10101` Wait Until Ammo Is Full
+##### `10101` Wait Until Ammo is Full
 
 - If the TaskForce contains unit(s) that use ammo then the the script will not continue until all these units have fully refilled the ammo.
 
@@ -145,9 +145,9 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=10101,0
 ```
-##### `10102` Regroup Temporarily Around The Team Leader
+##### `10102` Regroup Temporarily Around the Team Leader
 
-- Puts the TaskForce into Area Guard Mode for the given amount of time around the Team Leader (this unit remains almost immobile until the action ends). The default radius around the Leader is `[General] > CloseEnough` and the units will not leave that area.
+- Puts the TaskForce into Area Guard mode for the given amount of time around the Team Leader (this unit remains almost immobile until the action ends). The default radius around the leader is `[General] > CloseEnough` and the units will not leave that area.
 
 In `aimd.ini`:
 ```ini
@@ -155,9 +155,9 @@ In `aimd.ini`:
 x=10102,n
 ```
 
-##### `10103` Load Onto Transports
+##### `10103` Load onto Transports
 
-- If the TaskForce contains unit(s) that can be carried by the transports of the same TaskForce then this action will make the units enter the transports. In Single player missions the next action must be "Wait until fully loaded" (`43,0`) or the script will not continue.
+- If the TaskForce contains unit(s) that can be carried by the transports of the same TaskForce then this action will make the units enter the transports. In single player missions the next action must be "Wait until fully loaded" (`43,0`) or the script will not continue.
 
 In `aimd.ini`:
 ```ini
@@ -165,11 +165,11 @@ In `aimd.ini`:
 x=10103,0
 ```
 
-### 12000-12999 Suplementary/Setup Pre-actions
+### `12000-12999` Suplementary/Setup Pre-actions
 
-#### `12000` Wait If No Target Found
+#### `12000` Wait if No Target Found
 
-- When executed before a new Attack ScriptType Actions like `Generic Target Type Attack Actions` and `AITargetTypes Attack Actions` the TeamType will remember that must wait 1 second if no target was selected. The second parameter is a positive value that specifies how much retries the Attack will do when no target was found before new Attack ScriptType Action is discarded & the script execution jumps to the next line. The value `0` means infinite retries.
+- When executed before a new Attack ScriptType actions like `Generic Target Type Attack` actions  and `AITargetTypes Attack` actions  the TeamType will remember that must wait 1 second if no target was selected. The second parameter is a positive value that specifies how much retries the Attack will do when no target was found before new Attack ScriptType Action is discarded & the script execution jumps to the next line. The value `0` means infinite retries.
 
 In `aimd.ini`:
 ```ini
@@ -205,21 +205,21 @@ x=12002,n
 | 1          | One unit reaches the minimum distance         |
 | 2          | All team members reached the minimum distance |
 
-### 14000-14999 Utility Actions
+### `14000-14999` Utility Actions
 
 #### `14000` Team's Trigger Weight Reward
 
-- When executed before a new Attack ScriptType Actions like `Generic Target Type Attack Actions` and `AITargetTypes Attack Actions` the TeamType will remember that must be rewarded increasing the current Weight of the AI Trigger when the TeamType Target was killed by any of the Team members. The current Weight will never surprass the Minimum Weight and Maximum Weight limits of the AI Trigger. The second parameter is a positive value.
+- When executed before a new Attack ScriptType actions like `Generic Target Type Attack` actions and `AITargetTypes Attack` actions the TeamType will remember that must be rewarded increasing the current weight of the AI Trigger when the TeamType Target was killed by any of the Team members. The current weight will never surprass the minimum weight and maximum weight limits of the AI Trigger. The second parameter is a positive value.
 
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=14000,n            ; integer n=0
+x=14000,n         ; integer n=0
 ```
 
 #### `14001` Increase AI Trigger Current Weight
 
-- When executed this increases the current Weight of the AI Trigger.The current Weight will never surprass the Minimum Weight and Maximum Weight limits of the AI Trigger. Take note that all TeamTypes of the same AI Trigger will update sooner or later the AI Trigger Current Weight. The second parameter is a positive value. Take note that the original game only uses the first of the two Teams for calculating the AI Trigger Current Weight at the end of the Trigger life, this action ignores if the Team is the first or the second of the AI Trigger and the Current Weight is calculated when is executed the action.
+- When executed this increases the current weight of the AI Trigger. The current weight will never surprass the minimum weight and maximum weight limits of the AI Trigger. Take note that all TeamTypes of the same AI Trigger will update the AI Trigger Current Weight sooner or later. The second parameter is a positive value. Take note that the original game only uses the first of the two Teams for calculating the AI Trigger Current weight at the end of the Trigger life, this action ignores if the Team is the first or the second of the AI Trigger and the Current weight is calculated when is executed the action.
 
 In `aimd.ini`:
 ```ini
@@ -229,7 +229,7 @@ x=14001,n
 
 #### `14002` Decrease AI Trigger Current Weight
 
-- When executed this decreases the current Weight of the AI Trigger.The current Weight will never surprass the Minimum Weight and Maximum Weight limits of the AI Trigger. Take note that all TeamTypes of the same AI Trigger will update sooner or later the AI Trigger Current Weight. The second parameter is a positive value. Take note that the original game only uses the first of the two Teams for calculating the AI Trigger Current Weight at the end of the Trigger life, this action ignores if the Team is the first or the second of the AI Trigger and the Current Weight is calculated when is executed the action.
+- When executed this decreases the current weight of the AI Trigger. Details same as above.
 
 In `aimd.ini`:
 ```ini
@@ -237,7 +237,7 @@ In `aimd.ini`:
 x=14002,n
 ```
 
-#### `14003` Un-register Team success
+#### `14003` Unregister Team Success
 
 - Is just the opposite effect of the script action `49,0`. Like if the Team failed.
 
@@ -247,9 +247,9 @@ In `aimd.ini`:
 x=14003,0
 ```
 
-### 16000-16999 Flow Control
+### `16000-16999` Flow Control
 
-#### `16000` Start A Timed Jump To The Same Line
+#### `16000` Start a Timed Jump to the Same Line
 
 - When the timer ends the current script action ends and start again the same script action. The timer jump repeats again (infinite loop) until is stopped with action `16002` or the team is destroyed.
 
@@ -259,7 +259,7 @@ In `aimd.ini`:
 x=16000,n           ; integer n=0, in ingame seconds
 ```
 
-#### `16001` Start A Timed Jump To The Next Line
+#### `16001` Start a Timed Jump to the Next Line
 
 - When the timer ends the current script action ends and start the next one in the script type list.
 
@@ -269,7 +269,7 @@ In `aimd.ini`:
 x=16001,n           ; integer n=0, in ingame seconds
 ```
 
-#### `16002` Stop The Timed Jumps
+#### `16002` Stop the Timed Jumps
 
 - If the Timed Jumps were activated this action stop the process.
 
@@ -289,9 +289,9 @@ In `aimd.ini`:
 x=16003,n           ; where 0 > n <= 100
 ```
 
-#### `16004` Pick A Random Script
+#### `16004` Pick a Random Script
 
-- When executed this action picks a random Script Type and replaces the current script by the new picked. The second parameter is a 0-based index from the new section `AIScriptsList` explained below.
+- When executed this action picks a random Script Type and replaces the current script by the new picked one. The second parameter is a 0-based index from the new section `AIScriptsList` explained below.
 
 In `aimd.ini`:
 ```ini
@@ -309,9 +309,9 @@ In `rulesmd.ini`:
 ; ...
 ```
 
-### 18000-18999 Variables Manimulation
+### `18000-18999` Variable Manipulation
 
-#### `18000 - 18023` Edit Variable
+#### `18000-18023` Edit Variable
 - Operate a variable's value
 - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
 - Any numbers exceeding this limit will lead to unexpected results!
@@ -322,8 +322,8 @@ In `aimd.ini`:
 x=i,n             ; where 18000 <= i <= 18023, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the param value.
 ```
 
-#### `18024 - 18047` Edit Variable by Local Variable
-- Operate a variable's value by a local variable's value
+#### `18024 - 18047` Edit Variable using Local Variable
+- Operate a variable's value using a local variable's value
 - Similar to 18000-18023, but the number to operate the value is being read from a local variable
 
 In `aimd.ini`:
@@ -332,8 +332,8 @@ In `aimd.ini`:
 x=i,n             ; where 18024 <= i <= 18047, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the local variable index.
 ```
 
-#### `18000 - 18071` Edit Variable by Global Variable
-- Operate a variable's value by a global variable's value
+#### `18000 - 18071` Edit Variable using Global Variable
+- Operate a variable's value using a global variable's value
 - Similar to 18000-18023, but the number to operate the value is being read from a global variable
 
 In `aimd.ini`:
@@ -342,8 +342,9 @@ In `aimd.ini`:
 x=i,n             ; where 18048 <= i <= 18071, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the global variable index.
 ```
 
-### 19000-19999 Miscellanous/Uncategorized
+### `19000-19999` Miscellanous/Uncategorized
 
+This category is empty for now.
 
 ## Trigger Actions
 
