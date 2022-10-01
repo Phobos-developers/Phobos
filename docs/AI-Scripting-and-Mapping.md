@@ -314,6 +314,16 @@ In `aimd.ini`:
 x=126,n           ; integer n=0, in ingame seconds
 ```
 
+### `134` Jump Back To Previous Script
+
+- Used in a Random Script picked by action 94. It can jump back to the previous script, and continue in the line after x=94,n.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=134,0
+```
+
 ### `500 - 523` Edit Variable
 - Operate a variable's value
     - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
