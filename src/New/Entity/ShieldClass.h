@@ -37,6 +37,9 @@ public:
 	bool IsBrokenAndNonRespawning();
 	ShieldTypeClass* GetType();
 	int GetFramesSinceLastBroken();
+	void HideAnimations();
+	void ShowAnimations();
+	bool AreAnimationsHidden();
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
 	static bool ShieldIsBrokenTEvent(ObjectClass* pAttached);
@@ -83,6 +86,7 @@ private:
 	bool Temporal;
 	bool Available;
 	bool Attached;
+	bool AreAnimsHidden;
 
 	double SelfHealing_Warhead;
 	int SelfHealing_Rate_Warhead;

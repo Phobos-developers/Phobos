@@ -262,6 +262,7 @@ New:
 - Numeric Variables (by secsome)
 - TechnoType's tooltip would display it's build time now (by secsome)
 - Customizable tooltip background color and opacity (by secsome)
+- FrameByFrame & FrameStep hotkey command (by secsome)
 - Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)
 - Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
 - XDrawOffset for animations (by Morton)
@@ -388,6 +389,7 @@ Phobos fixes:
 - Minor performance optimization related to shields (by Trsdy)
 - Fixed teleporting miners (Chrono Miner) considered to be idle by harvester counter, improved related game performance (by Trsdy)
 - Fixed negative damage weapons considering shield health when evaluating targets even if Warhead had `Shield.Penetrate` set to true (by Starkku)
+- Fixed shield animations (`IdleAnim`, `BreakAnim` and `HitAnim`) showing up even if the object shield is attached to is currently underground (by Starkku)
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)

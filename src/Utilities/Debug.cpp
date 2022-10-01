@@ -2,12 +2,26 @@
 #include "Macro.h"
 
 #include <YRPPCore.h>
+#include <MessageListClass.h>
+#include <CRT.h>
 
 char Debug::StringBuffer[0x1000];
 
 void Debug::Log(const char* pFormat, ...)
 {
 	JMP_STD(0x4068E0);
+}
+
+void Debug::LogAndMessage(const char* pFormat, ...)
+{
+	va_list args;
+	va_start(args, pFormat);
+	vsprintf_s(StringBuffer, pFormat, args);
+	Log("%s", StringBuffer);
+	va_end(args);
+	wchar_t buffer[0x1000];
+	CRT::mbstowcs(buffer, StringBuffer, 0x1000);
+	MessageListClass::Instance->PrintMessage(buffer);
 }
 
 void Debug::LogWithVArgs(const char* pFormat, va_list args)
