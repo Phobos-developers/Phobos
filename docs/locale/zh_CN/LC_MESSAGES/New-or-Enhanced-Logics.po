@@ -1451,5 +1451,62 @@ msgstr "`LaunchSW.IgnoreInhibitors` 是否忽略`SW.Inhibitors`"
 #: ../New-or-Enhanced-Logics.md:1305
 msgid ""
 "For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set."
-"Also, due to the nature of some superweapon types, not all superweapons are suitable for launch."
-msgstr "若在动画伤害上使用该逻辑则必须设置Invoker，否则超武将不会发射"
+" Also, due to the nature of some superweapon types, not all superweapons are suitable for launch."
+msgstr "若在动画伤害上使用该逻辑则必须设置Invoker"
+
+#: ../New-or-Enhanced-Logics.md:1310
+msgid ""
+"Kill Object Automatically"
+msgstr "自毁"
+
+#: ../New-or-Enhanced-Logics.md:1311
+msgid ""
+"Objects can be destroyed automatically if *any* of these conditions is met:"
+msgstr "任意如下条件满足则可自毁："
+
+#: ../New-or-Enhanced-Logics.md:1312
+msgid ""
+"`OnAmmoDepletion`: The object will die if the remaining ammo reaches 0."
+msgstr "`OnAmmoDepletion`:没弹药；"
+
+#: ../New-or-Enhanced-Logics.md:1313
+msgid ""
+"`AfterDelay`: The object will die if the countdown (in frames) reaches 0."
+msgstr "`AfterDelay`: 时间到；"
+
+#: ../New-or-Enhanced-Logics.md:1314
+msgid ""
+"The auto-death behavior can be chosen from the following:"
+msgstr "自毁可从如下方式中选择："
+
+#: ../New-or-Enhanced-Logics.md:1315
+msgid ""
+"`kill`: The object will be destroyed normally."
+msgstr "`kill`: 正常被击杀；"
+
+#: ../New-or-Enhanced-Logics.md:1316
+msgid ""
+"`vanish`: The object will be directly removed from the game peacefully instead of actually getting killed."
+msgstr "`vanish`: 凭空消失；"
+
+#: ../New-or-Enhanced-Logics.md:1317
+msgid ""
+"`sell`: If the object is a **building** with buildup, it will be sold instead of destroyed."
+msgstr "`sell`: 如果是建筑则被变卖；"
+
+#: ../New-or-Enhanced-Logics.md:1318
+msgid ""
+"If this option is not set, the self-destruction logic will not be enabled."
+msgstr "若不明确指定则自毁逻辑不会开启。"
+
+#: ../New-or-Enhanced-Logics.md:1319
+msgid ""
+"Please notice that if the object is a unit which carries passengers,"
+" they will not be released even with the `kill` option."
+" This might change in the future if necessary."
+msgstr "若自毁的单位带乘客，则乘客不会逃逸"
+
+#: ../New-or-Enhanced-Logics.md:1320
+msgid ""
+"If the object enters transport, the countdown will continue, but it will not self-destruct inside the transport."
+msgstr "。"
