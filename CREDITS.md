@@ -85,6 +85,8 @@ This page lists all the individual contributions to the project by their author.
   - Sharpnel enhancement
   - Vanilla map preview reading bugfix
   - Customizable tooltip background
+  - Map lighting corruption after S&L bugfix, Adjust Lighting trigger action
+  - BuildOffAlly reset after S&L bugfix
 - **Otamaa (Fahroni, BoredEXE)**:
   - Help with CellSpread
   - Ported and fixed custom RadType code

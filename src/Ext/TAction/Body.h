@@ -18,7 +18,7 @@ enum class PhobosTriggerAction : unsigned int
 	BinaryOperation = 504,
 	RunSuperWeaponAtLocation = 505,
 	RunSuperWeaponAtWaypoint = 506,
-    AdjustLighting = 507,
+	AdjustLighting = 507,
 };
 
 class TActionExt
