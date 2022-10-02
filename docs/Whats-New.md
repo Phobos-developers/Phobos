@@ -339,7 +339,7 @@ New:
 - Implemented support for PCX images for observer loading screen (by Uranusian)
 - Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 - Toggleable passenger killing for Explodes=true units (by Starkku)
-- New condition when some technotypes exist/nonexist of automatic self-destruction logic (by FlyStar)
+- New condition for automatic self-destruction logic when TechnoTypes exist/don't exist (by FlyStar)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
