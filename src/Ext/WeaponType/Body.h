@@ -31,6 +31,10 @@ public:
 		Valueable<AreaFireTarget> AreaFire_Target;
 		Nullable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
+		Nullable<AnimTypeClass*>DelayedFire_Anim;
+		Valueable<int> DelayedFire_Anim_LoopCount;
+		Valueable<bool> DelayedFire_Anim_UseFLH;
+		Valueable<int> DelayedFire_DurationTimer;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
@@ -47,6 +51,10 @@ public:
 			, AreaFire_Target { AreaFireTarget::Base }
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
+			, DelayedFire_Anim { }
+			, DelayedFire_Anim_LoopCount { 1 }
+			, DelayedFire_Anim_UseFLH { true }
+			, DelayedFire_DurationTimer { 0 }
 		{ }
 
 		virtual ~ExtData() = default;

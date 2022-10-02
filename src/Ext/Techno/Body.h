@@ -32,6 +32,9 @@ public:
 		AnimTypeClass* MindControlRingAnimType;
 		OptionalStruct<int, false> DamageNumberOffset;
 		OptionalStruct<int, true> CurrentLaserWeaponIndex;
+		AnimClass* DelayedFire_Anim;
+		int DelayedFire_Anim_LoopCount;
+		int DelayedFire_DurationTimer;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -52,6 +55,9 @@ public:
 			, DamageNumberOffset {}
 			, OriginalPassengerOwner {}
 			, CurrentLaserWeaponIndex {}
+			, DelayedFire_Anim { nullptr }
+			, DelayedFire_Anim_LoopCount { 0 }
+			, DelayedFire_DurationTimer { -1 }
 		{ }
 
 		void ApplyInterceptor();

@@ -906,6 +906,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->CurrentLaserWeaponIndex)
+		.Process(this->DelayedFire_Anim)
+		.Process(this->DelayedFire_Anim_LoopCount)
+		.Process(this->DelayedFire_DurationTimer)
 		;
 }
 
