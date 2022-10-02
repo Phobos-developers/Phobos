@@ -46,7 +46,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	}
 
-	if (pExt->DelayedFire_Anim && pThis->GetCurrentMission() != Mission::Attack)
+	if (pExt->DelayedFire_Anim && !pThis->Target && pThis->GetCurrentMission() != Mission::Attack)
 	{
 		CDTimerClass* weaponReadyness = (CDTimerClass*)pThis->__DiskLaserTimer;
 		weaponReadyness->Start(pThis->DiskLaserTimer.GetTimeLeft() + 5);
