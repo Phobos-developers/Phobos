@@ -75,7 +75,7 @@ DEFINE_HOOK(0x4401BB, Factory_AI_PickWithFreeDocks, 0x6)
 		return 0;
 
 	if (pOwner->Type->MultiplayPassive
-		|| pOwner->IsPlayer()
+		|| pOwner->IsCurrentPlayer()
 		|| pOwner->IsNeutral())
 		return 0;
 
@@ -98,7 +98,7 @@ DEFINE_HOOK(0x4401BB, Factory_AI_PickWithFreeDocks, 0x6)
 DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPPulseBulletWeapon, 0x8)
 {
 	GET(WeaponTypeClass*, pWeapon, EBP);
-	GET_STACK(BulletClass*, pBullet, STACK_OFFS(0xF0, 0xA4));
+	GET_STACK(BulletClass*, pBullet, STACK_OFFSET(0xF0, -0xA4));
 
 	pBullet->SetWeaponType(pWeapon);
 
@@ -109,7 +109,7 @@ DEFINE_HOOK(0x44224F, BuildingClass_ReceiveDamage_DamageSelf, 0x5)
 {
 	enum { SkipCheck = 0x442268 };
 
-	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFS(0x9C, -0x4));
+	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0x9C, 0x4));
 
 	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(receiveDamageArgs.WH))
 	{

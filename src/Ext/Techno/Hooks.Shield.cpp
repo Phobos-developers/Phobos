@@ -1,6 +1,7 @@
 #include "Body.h"
 #include <InfantryClass.h>
 #include <SpecificStructures.h>
+#include <TunnelLocomotionClass.h>
 #include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
 #include <Ext/TechnoType/Body.h>
@@ -16,6 +17,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	if (!args->IgnoreDefenses)
 	{
 		const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
 		if (const auto pShieldData = pExt->Shield.get())
 		{
 			if (!pShieldData->IsActive())
@@ -40,6 +42,7 @@ DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 	GET(int*, Damage, EBX);
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
 	if (const auto pShieldData = pExt->Shield.get())
 	{
 		if (pShieldData->IsActive())
@@ -94,6 +97,7 @@ DEFINE_HOOK(0x71A88D, TemporalClass_AI_Shield, 0x0)
 	if (auto const pTarget = pThis->Target)
 	{
 		const auto pExt = TechnoExt::ExtMap.Find(pTarget);
+
 		if (const auto pShieldData = pExt->Shield.get())
 		{
 			if (pShieldData->IsAvailable())
@@ -132,10 +136,11 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(int, iLength, EBX);
-	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x4C, -0x4));
-	GET_STACK(RectangleStruct*, pBound, STACK_OFFS(0x4C, -0x8));
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
 	if (const auto pShieldData = pExt->Shield.get())
 	{
 		if (pShieldData->IsAvailable())
@@ -148,10 +153,11 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x4C, -0x4));
-	GET_STACK(RectangleStruct*, pBound, STACK_OFFS(0x4C, -0x8));
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
 	if (const auto pShieldData = pExt->Shield.get())
 	{
 		if (pShieldData->IsAvailable())
@@ -159,6 +165,39 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 			const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
 			pShieldData->DrawShieldBar(iLength, pLocation, pBound);
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x728F74, TunnelLocomotionClass_Process_KillAnims, 0x5)
+{
+	GET(ILocomotion*, pThis, ESI);
+
+	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
+	const auto pExt = TechnoExt::ExtMap.Find(pLoco->LinkedTo);
+
+	if (const auto pShieldData = pExt->Shield.get())
+	{
+		pShieldData->HideAnimations();
+		pShieldData->KillAnim();
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x728E5F, TunnelLocomotionClass_Process_RestoreAnims, 0x7)
+{
+	GET(ILocomotion*, pThis, ESI);
+
+	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
+
+	if (pLoco->State == TunnelLocomotionClass::State::PreDigOut)
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pLoco->LinkedTo);
+
+		if (const auto pShieldData = pExt->Shield.get())
+			pShieldData->ShowAnimations();
 	}
 
 	return 0;

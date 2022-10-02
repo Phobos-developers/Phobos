@@ -210,7 +210,7 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_BurstOffsetFix_2, 0x6)
 DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
-	GET_STACK(CellStruct*, pCell, STACK_OFFS(0x84, -0x8));
+	GET_STACK(CellStruct*, pCell, STACK_OFFSET(0x84, 0x8));
 
 	if (pThis->GetTechnoType()->UndeploysInto)
 		pThis->SetRallypoint(pCell, false);
@@ -349,7 +349,7 @@ DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 {
 	GET(CellClass*, pThis, EBP);
 	GET(int, idxOverlay, EBX);
-	GET_STACK(int, state, STACK_OFFS(0x10, -0x8));
+	GET_STACK(int, state, STACK_OFFSET(0x10, 0x8));
 	bool isWall = idxOverlay != -1 && OverlayTypeClass::Array->GetItem(idxOverlay)->Wall;
 	enum { Attachable = 0x480549 };
 
@@ -462,8 +462,8 @@ DEFINE_HOOK(0x46B3E6, BulletClass_NukeMaker_BulletParams, 0x8)
 {
 	enum { SkipGameCode = 0x46B40D };
 
-	GET_STACK(BulletClass* const, pThis, STACK_OFFS(0x70, 0x60));
-	GET_STACK(TechnoClass* const, pOwner, STACK_OFFS(0x74, 0x50));
+	GET_STACK(BulletClass* const, pThis, STACK_OFFSET(0x70, -0x60));
+	GET_STACK(TechnoClass* const, pOwner, STACK_OFFSET(0x74, -0x50));
 	GET(WeaponTypeClass* const, pWeapon, ESI);
 	GET(AbstractClass* const, pTarget, EBX);
 

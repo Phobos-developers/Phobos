@@ -27,7 +27,7 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 
 DEFINE_HOOK(0x6F3C56, TechnoClass_Transform_6F3AD0_TurretMultiOffset, 0x0)
 {
-	LEA_STACK(Matrix3D*, mtx, STACK_OFFS(0xD8, 0x90));
+	LEA_STACK(Matrix3D*, mtx, STACK_OFFSET(0xD8, -0x90));
 	GET(TechnoTypeClass*, technoType, EDX);
 
 	TechnoTypeExt::ApplyTurretOffset(technoType, mtx);
@@ -37,7 +37,7 @@ DEFINE_HOOK(0x6F3C56, TechnoClass_Transform_6F3AD0_TurretMultiOffset, 0x0)
 
 DEFINE_HOOK(0x6F3E6E, FootClass_firecoord_6F3D60_TurretMultiOffset, 0x0)
 {
-	LEA_STACK(Matrix3D*, mtx, STACK_OFFS(0xCC, 0x90));
+	LEA_STACK(Matrix3D*, mtx, STACK_OFFSET(0xCC, -0x90));
 	GET(TechnoTypeClass*, technoType, EBP);
 
 	TechnoTypeExt::ApplyTurretOffset(technoType, mtx);
@@ -59,7 +59,7 @@ DEFINE_HOOK(0x73B780, UnitClass_DrawVXL_TurretMultiOffset, 0x0)
 
 DEFINE_HOOK(0x73BA4C, UnitClass_DrawVXL_TurretMultiOffset1, 0x0)
 {
-	LEA_STACK(Matrix3D*, mtx, STACK_OFFS(0x1D0, 0x13C));
+	LEA_STACK(Matrix3D*, mtx, STACK_OFFSET(0x1D0, -0x13C));
 	GET(TechnoTypeClass*, technoType, EBX);
 
 	double& factor = *reinterpret_cast<double*>(0xB1D008);
@@ -110,9 +110,9 @@ DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 	GET(int, nFacing, EDI);
-	GET_STACK(RectangleStruct*, pBounds, STACK_OFFS(0x50, -0x8));
-	LEA_STACK(Point2D*, pLocation, STACK_OFFS(0x50, 0x18));
-	GET_STACK(int, nBrightness, STACK_OFFS(0x50, -0x4));
+	GET_STACK(RectangleStruct*, pBounds, STACK_OFFSET(0x50, 0x8));
+	LEA_STACK(Point2D*, pLocation, STACK_OFFSET(0x50, -0x18));
+	GET_STACK(int, nBrightness, STACK_OFFSET(0x50, 0x4));
 
 	auto const pType = pThis->GetTechnoType();
 	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
@@ -283,11 +283,11 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 	{
 		bool IsAlly = true;
 		bool IsCivilian = false;
-		bool IsObserver = HouseClass::Observer || HouseClass::IsPlayerObserver();
+		bool IsObserver = HouseClass::Observer || HouseClass::IsCurrentPlayerObserver();
 
 		if (auto pOwnerHouse = pFoot->GetOwningHouse())
 		{
-			IsAlly = pOwnerHouse->IsAlliedWith(HouseClass::Player);
+			IsAlly = pOwnerHouse->IsAlliedWith(HouseClass::CurrentPlayer);
 			IsCivilian = (pOwnerHouse == HouseClass::FindCivilianSide()) || pOwnerHouse->IsNeutral();
 		}
 

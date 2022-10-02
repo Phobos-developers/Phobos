@@ -472,8 +472,8 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 	{
 		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
 
-		double turretRad = (pThis->TurretFacing().value32() - 8) * -(Math::Pi / 16);
-		double bodyRad = (pThis->PrimaryFacing.current().value32() - 8) * -(Math::Pi / 16);
+		double turretRad = (pThis->TurretFacing().GetFacing<32>() - 8) * -(Math::Pi / 16);
+		double bodyRad = (pThis->PrimaryFacing.Current().GetFacing<32>() - 8) * -(Math::Pi / 16);
 		float angle = (float)(turretRad - bodyRad);
 
 		mtx.RotateZ(angle);
@@ -782,7 +782,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 			selfHealFrames = RulesClass::Instance->SelfHealInfantryFrames;
 			isInfantryHeal = true;
 		}
-		else if (pThis->Owner->UnitsSelfHeal > 0 && (hasUnitSelfHeal || pThis->WhatAmI() == AbstractType::Unit))
+		else if (pThis->Owner->UnitsSelfHeal > 0 && (hasUnitSelfHeal || (pThis->WhatAmI() == AbstractType::Unit && !isOrganic)))
 		{
 			drawPip = true;
 			selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
@@ -905,17 +905,19 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 		return;
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	ColorStruct color;
 
-	auto color = isShieldDamage ? damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 } :
-		damage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
+	if (!isShieldDamage)
+		color = damage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
+	else
+		color = damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 };
 
-	wchar_t damageStr[0x20];
-	swprintf_s(damageStr, L"%d", damage);
-	auto coords = CoordStruct::Empty;
-	coords = *pThis->GetCenterCoord(&coords);
-
+	auto coords = pThis->GetRenderCoords();
 	int maxOffset = Unsorted::CellWidthInPixels / 2;
 	int width = 0, height = 0;
+	wchar_t damageStr[0x20];
+	swprintf_s(damageStr, L"%d", damage);
+
 	BitFont::Instance->GetTextDimension(damageStr, &width, &height, 120);
 
 	if (pExt->DamageNumberOffset >= maxOffset || pExt->DamageNumberOffset.empty())

@@ -72,6 +72,6 @@ public:
 		static bool DevelopmentCommands;
 		static bool ArtImageSwap;
 		static bool AllowParallelAIQueues;
-		static bool EnableBuildingPlacementPreview;
+		static bool ShowPlacementPreview;
 	};
 };

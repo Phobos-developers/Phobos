@@ -9,7 +9,7 @@ namespace BoltTemp
 
 DEFINE_HOOK(0x6FD494, TechnoClass_FireEBolt_SetExtMap_AfterAres, 0x7)
 {
-	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFS(0x30, -0x8));
+	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x30, 0x8));
 	GET(EBolt*, pBolt, EAX);
 
 	if (pWeapon)

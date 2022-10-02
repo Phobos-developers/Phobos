@@ -34,7 +34,7 @@ public:
 	static bool ObjectClass_IsSelectable(ObjectClass* pThis)
 	{
 		const auto pOwner = pThis->GetOwningHouse();
-		return pOwner && pOwner->ControlledByPlayer()
+		return pOwner && pOwner->IsControlledByCurrentPlayer()
 			&& pThis->CanBeSelected() && pThis->CanBeSelectedNow()
 			&& !pThis->InLimbo;
 	}
@@ -92,7 +92,7 @@ public:
 					const auto pBldType = abstract_cast<BuildingTypeClass*>(pTechnoType);
 					const auto pOwner = pTechno->GetOwningHouse();
 
-					if (pOwner && pOwner->ControlledByPlayer() && pTechno->CanBeSelected()
+					if (pOwner && pOwner->IsControlledByCurrentPlayer() && pTechno->CanBeSelected()
 						&& (!pBldType || (pBldType && pBldType->UndeploysInto && pBldType->IsUndeployable())))
 					{
 						Unsorted::MoveFeedback = !pTechno->Select();

@@ -15,7 +15,7 @@
 DEFINE_HOOK(0x737F6D, UnitClass_TakeDamage_Destroy, 0x7)
 {
 	GET(UnitClass* const, pThis, ESI);
-	REF_STACK(args_ReceiveDamage const, Receivedamageargs, STACK_OFFS(0x44, -0x4));
+	REF_STACK(args_ReceiveDamage const, Receivedamageargs, STACK_OFFSET(0x44, 0x4));
 
 	R->ECX(R->ESI());
 	TechnoExt::ExtMap.Find(pThis)->ReceiveDamage = true;
@@ -117,20 +117,20 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 			if (!pBuilding)
 			{
 				++Unsorted::IKnowWhatImDoing;
-				success = pTechno->Unlimbo(location, resultingFacing);
+				success = pTechno->Unlimbo(location, static_cast<DirType>(resultingFacing));
 				--Unsorted::IKnowWhatImDoing;
 			}
 			else
 			{
-				success = pTechno->Unlimbo(location, resultingFacing);
+				success = pTechno->Unlimbo(location, static_cast<DirType>(resultingFacing));
 			}
 
 			if (success)
 			{
 				if (pTechno->HasTurret() && pExt->FromDeathUnit && pExt->DeathUnitHasTurret && pTypeExt->CreateUnit_InheritTurretFacings.Get())
-					pTechno->SecondaryFacing.set(pExt->DeathUnitTurretFacing);
+					pTechno->SecondaryFacing.Set_Current(pExt->DeathUnitTurretFacing);
 
-				Debug::Log("[" __FUNCTION__ "] Stored Turret Facing %d \n", pExt->DeathUnitTurretFacing.value256());
+				Debug::Log("[" __FUNCTION__ "] Stored Turret Facing %d \n", pExt->DeathUnitTurretFacing.GetFacing<256>());
 
 				if (!pTechno->InLimbo)
 					pTechno->QueueMission(pTypeExt->CreateUnit_Mission.Get(), false);
@@ -193,7 +193,7 @@ DEFINE_HOOK(0x469C98, BulletClass_DetonateAt_DamageAnimSelected, 0x0)
 DEFINE_HOOK(0x6E2368, ActionClass_PlayAnimAt, 0x7)
 {
 	GET(AnimClass*, pAnim, EAX);
-	GET_STACK(HouseClass*, pHouse, STACK_OFFS(0x18, -0x4));
+	GET_STACK(HouseClass*, pHouse, STACK_OFFSET(0x18, 0x4));
 
 	if (pAnim)
 	{

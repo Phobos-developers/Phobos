@@ -34,7 +34,7 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 	GET(TActionClass*, pThis, ESI);
 	GET(BuildingTypeClass*, pBldType, ECX);
 	GET(HouseClass*, pHouse, EDI);
-	REF_STACK(CoordStruct, coord, STACK_OFFS(0x24, 0x18));
+	REF_STACK(CoordStruct, coord, STACK_OFFSET(0x24, -0x18));
 
 	bool bPlayBuildUp = pThis->Param3;
 
