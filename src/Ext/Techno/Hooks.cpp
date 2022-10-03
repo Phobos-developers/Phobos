@@ -650,7 +650,7 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 {
 	GET(FootClass*, pThis, ESI);
 	GET(TechnoTypeClass*, pType, EAX);
-	GET_STACK(HouseClass*, pSource, STACK_OFFS(0x10, -0x8));
+	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
 
 	enum
 	{

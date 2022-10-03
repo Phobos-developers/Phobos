@@ -92,18 +92,20 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 		int nImageFrame = 0;
 		SHPStruct* pImage = pTypeExt->PlacementPreview_Shape.GetSHP();
 		{
-			if (!pImage)
+			if (pImage == nullptr)
 			{
-				if (pImage = pType->LoadBuildup())
+				pImage = pType->LoadBuildup();
+
+				if (pImage != nullptr)
 					nImageFrame = ((pImage->Frames / 2) - 1);
 				else
 					pImage = pType->GetImage();
 
-				if (!pImage)
+				if (pImage == nullptr)
 					return 0;
 			}
 
-			nImageFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get(nImageFrame), 0, (int)pImage->Frames);
+			nImageFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get(nImageFrame), 0, static_cast<int>(pImage->Frames));
 		}
 
 		Point2D nPoint = { 0, 0 };
