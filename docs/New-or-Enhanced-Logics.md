@@ -663,6 +663,9 @@ ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary
 
 ### Override Target Under EMP Attack Behavior
 
+![image](_static/images/forceweapon_emp.gif)
+*Enemy behavior against EMP targets in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
+
 - Overrides a part of the vanilla YR logic for allowing units to use a different weapon if the target is under EMP effect.
 
 In `rulesmd.ini`:
