@@ -666,7 +666,7 @@ In `rulesmd.ini`:
 ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ```
 
-### Override Target Under EMP Attack Behavior
+### Override Target under EMP attack behavior
 
 ![image](_static/images/forceweapon_emp.gif)
 *Enemy behavior against EMP targets in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
