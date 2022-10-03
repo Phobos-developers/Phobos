@@ -55,7 +55,7 @@ public:
 		{ }
 
 		void ApplyInterceptor();
-		void CheckDeathConditions();
+		bool CheckDeathConditions();
 		void EatPassengers();
 		void UpdateShield();
 		void ApplyPoweredKillSpawns();
@@ -63,11 +63,7 @@ public:
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-			if (auto const pShield = this->Shield.get())
-				pShield->InvalidatePointer(ptr);
-		}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -82,18 +78,6 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
-		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-			switch (abs)
-			{
-			case AbstractType::Anim:
-				return false;
-			default:
-				return true;
-			}
-		}
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 	};

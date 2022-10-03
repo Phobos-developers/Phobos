@@ -22,13 +22,14 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
 - Fixed jumpjet units being unable to turn to the target when firing from a different direction.
 - Fixed turreted jumpjet units always facing bottom-right direction when motion stops.
+- Fixed jumpjet objects being unable to use `Sensors`.
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
 - Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
 
 - SHP debris shadows now respect the `Shadow` tag.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
-- Adds a "Load Game" button to the retry dialog on mission failure.
+- Added a "Load Game" button to the retry dialog on mission failure.
 
 ![image](_static/images/turretoffset-01.png)
 *Side offset voxel turret in Breaking Blue project*
@@ -70,6 +71,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Trailer animations now inherit the owner of the object (animation, projectile or aircraft) they are attached to.
 - Buildings now correctly use laser parameters set for Secondary weapons instead of reading them from Primary weapon.
 - Fixed an issue that caused vehicles killed by damage dealt by a known house but without a known source TechnoType (f.ex animation warhead damage) to not be recorded as killed correctly and thus not spring map trigger events etc.
+
+![Waving trees](_static/images/tree-shake.gif)
+*Animated trees used in [Ion Shock](https://www.moddb.com/mods/tiberian-war-ionshock)*
+
 - `IsAnimated`, `AnimationRate` and `AnimationProbability` now work on TerrainTypes without `SpawnsTiberium` set to true.
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something.
 
@@ -78,7 +83,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
   - Only applies to Z-aware drawing mode for now.
-- Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true`
+- Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true`.
+- Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry.
 
 ## Animations
 
@@ -137,7 +143,7 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 ### Customizable & new grinder properties
 
 ![image](_static/images/grinding.gif)
-*Using ally grinder, restricting to vehicles only and refund display* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
+*Using ally grinder, restricting to vehicles only and refund display ([Project Phantom](https://www.moddb.com/mods/project-phantom))*
 
 - You can now customize which types of objects a building with `Grinding` set can grind as well as the grinding sound.
   - `Grinding.AllowAllies` changes whether or not to allow units to enter allies' buildings.
@@ -223,7 +229,7 @@ OreGathering.Tiberiums=0         ; list of Tiberium IDs
 ### Customizable Teleport/Chrono Locomotor settings per TechnoType
 
 ![image](_static/images/cust-Chrono.gif)
-*Chrono Legionnaire and Ronco (hero) from [YR:New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
+*Chrono Legionnaire and Ronco using different teleportation settings in [YR: New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
 
 - You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`.
 - Only applicable to Techno that have Teleport/Chrono Locomotor attached.
@@ -269,6 +275,16 @@ In `rulesmd.ini`:
 ```ini
 [General]
 Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
+```
+
+### Exploding unit passenger killing customization
+
+- By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                 ; TechnoType
+Explodes.KillPassengers=true ; boolean
 ```
 
 ### Jumpjet unit layer deviation customization

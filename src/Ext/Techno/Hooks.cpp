@@ -20,8 +20,10 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
 		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
 
+	if (pExt->CheckDeathConditions())
+		return 0;
+
 	pExt->ApplyInterceptor();
-	pExt->CheckDeathConditions();
 	pExt->EatPassengers();
 	pExt->UpdateShield();
 	pExt->ApplyPoweredKillSpawns();
@@ -32,7 +34,17 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
 	for (auto const& trail : pExt->LaserTrails)
-		trail->Update(TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret));
+	{
+		if (pThis->CloakState == CloakState::Cloaked && !trail->Type->CloakVisible)
+			continue;
+
+		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret);
+		if (pThis->CloakState == CloakState::Uncloaking && !trail->Type->CloakVisible)
+			trail->LastLocation = trailLoc;
+		else
+			trail->Update(trailLoc);
+
+	}
 
 	return 0;
 }
@@ -148,7 +160,7 @@ DEFINE_HOOK(0x6FD05E, TechnoClass_Rearm_Delay_BurstDelays, 0x7)
 DEFINE_HOOK(0x6F3B37, TechnoClass_Transform_6F3AD0_BurstFLH_1, 0x7)
 {
 	GET(TechnoClass*, pThis, EBX);
-	GET_STACK(int, weaponIndex, STACK_OFFS(0xD8, -0x8));
+	GET_STACK(int, weaponIndex, STACK_OFFSET(0xD8, 0x8));
 	bool FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
 
@@ -173,7 +185,7 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_Transform_6F3AD0_BurstFLH_1, 0x7)
 DEFINE_HOOK(0x6F3C88, TechnoClass_Transform_6F3AD0_BurstFLH_2, 0x6)
 {
 	GET(TechnoClass*, pThis, EBX);
-	GET_STACK(int, weaponIndex, STACK_OFFS(0xD8, -0x8));
+	GET_STACK(int, weaponIndex, STACK_OFFSET(0xD8, 0x8));
 	bool FLHFound = false;
 
 	TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
@@ -189,7 +201,7 @@ DEFINE_HOOK(0x6F3C88, TechnoClass_Transform_6F3AD0_BurstFLH_2, 0x6)
 DEFINE_HOOK(0x518505, InfantryClass_TakeDamage_NotHuman, 0x4)
 {
 	GET(InfantryClass* const, pThis, ESI);
-	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFS(0xD0, -0x4));
+	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0xD0, 0x4));
 
 	// Die1-Die5 sequences are offset by 10
 	constexpr auto Die = [](int x) { return x + 10; };
@@ -282,7 +294,7 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 {
 	GET(TechnoClass* const, pThis, ESI);
-	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFS(0xC4, -0xC));
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
 	if (auto pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
 	{
@@ -293,12 +305,27 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 	return 0x702823;
 }
 
+namespace AresConvert
+{
+	UnitTypeClass* TypeBeforeDeploy = nullptr;
+}
+
+DEFINE_HOOK(0x73DE78, UnitClass_SimpleDeployer_BeforeDeploy, 0x6)
+{
+	GET(UnitTypeClass*, type, EAX);
+	AresConvert::TypeBeforeDeploy = type;
+	return 0;
+}
+
 DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
 {
 	GET(UnitClass*, pUnit, ESI);
 
+	if (pUnit->Type == AresConvert::TypeBeforeDeploy)
+		return 0;
+
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pUnit);
-	auto pTechnoTypeExt = pTechnoExt->TypeExtData;
+	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->Type);
 
 	if (pTechnoExt && pTechnoTypeExt)
 	{
@@ -314,6 +341,8 @@ DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
 			}
 		}
 	}
+
+	pTechnoExt->TypeExtData = pTechnoTypeExt;
 
 	return 0;
 }
@@ -374,6 +403,9 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_IsSingleColor, 0x7)
 		if (!pLaser->IsHouseColor && pWeaponExt->Laser_IsSingleColor)
 			pLaser->IsHouseColor = true;
 	}
+
+	// Fixes drawing thick lasers for non-PrismSupport building-fired lasers.
+	pLaser->IsSupported = pLaser->Thickness > 3;
 
 	return 0;
 }
@@ -442,8 +474,8 @@ DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
 	enum { SkipGameDrawing = 0x70A6C0 };
 
 	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x74, -0x4));
-	GET_STACK(RectangleStruct*, pBounds, STACK_OFFS(0x74, -0xC));
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x74, 0x4));
+	GET_STACK(RectangleStruct*, pBounds, STACK_OFFSET(0x74, 0xC));
 
 	TechnoExt::DrawSelfHealPips(pThis, pLocation, pBounds);
 
@@ -456,7 +488,7 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 	enum { ReturnResult = 0x70138F };
 
 	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(int, weaponIndex, STACK_OFFS(0x8, -0x4));
+	GET_STACK(int, weaponIndex, STACK_OFFSET(0x8, 0x4));
 
 	int result = 0;
 	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
@@ -535,7 +567,7 @@ DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Deconstruction_EVA_Sold_1, 0x6)
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	if (pTypeExt->EVA_Sold.isset())
 	{
-		if (pThis->IsHumanControlled && !pThis->Type->UndeploysInto)
+		if (pThis->IsOwnedByCurrentPlayer && !pThis->Type->UndeploysInto)
 			VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
 
 		return SkipVoxPlay;
@@ -552,7 +584,7 @@ DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Deconstruction_EVA_Sold_2, 0x6)
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	if (pTypeExt->EVA_Sold.isset())
 	{
-		if (pThis->IsHumanControlled)
+		if (pThis->IsOwnedByCurrentPlayer)
 			VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
 
 		return SkipVoxPlay;
@@ -596,6 +628,20 @@ DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_C
 	GET(TechnoClass*, pThis, ESI);
 
 	TechnoExt::UpdateMindControlAnim(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x70265F, TechnoClass_ReceiveDamage_Explodes, 0x6)
+{
+	enum { SkipKillingPassengers = 0x702669 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (!pTypeExt->Explodes_KillPassengers)
+		return SkipKillingPassengers;
 
 	return 0;
 }

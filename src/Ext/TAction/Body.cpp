@@ -105,7 +105,7 @@ bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* 
 			MessageListClass::Instance->PrintMessage(
 				pMessage,
 				RulesClass::Instance->MessageDelay,
-				HouseClass::Player->ColorSchemeIndex,
+				HouseClass::CurrentPlayer->ColorSchemeIndex,
 				true
 			);
 		};
@@ -388,7 +388,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			// Random Human Player
 			for (auto pHouse : *HouseClass::Array)
 			{
-				if (pHouse->ControlledByHuman()
+				if (pHouse->IsControlledByHuman()
 					&& !pHouse->Defeated
 					&& !pHouse->IsObserver())
 				{

@@ -19,7 +19,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Commands\Commands.cpp" />
-    <ClCompile Include="src\Commands\Dummy.h" />
+    <ClCompile Include="src\Commands\DamageDisplay.cpp" />
+    <ClCompile Include="src\Commands\FrameByFrame.cpp" />
+    <ClCompile Include="src\Commands\FrameStep.cpp" />
+    <ClCompile Include="src\Commands\NextIdleHarvester.cpp" />
+    <ClCompile Include="src\Commands\ObjectInfo.cpp" />
+    <ClCompile Include="src\Commands\QuickSave.cpp" />
     <ClCompile Include="src\Ext\Anim\Hooks.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\BombardTrajectory.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.cpp" />
@@ -28,6 +33,7 @@
     <ClCompile Include="src\Ext\Sidebar\Body.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Hooks.cpp" />
     <ClCompile Include="src\Ext\Anim\Body.cpp" />
+    <ClCompile Include="src\Ext\Surface\Body.cpp" />
     <ClCompile Include="src\Ext\SWType\FireSuperWeapon.cpp" />
     <ClCompile Include="src\Ext\SWType\Hooks.cpp" />
     <ClCompile Include="src\Ext\TAction\Body.cpp" />
@@ -121,6 +127,8 @@
     <ClCompile Include="src\Utilities\Patch.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Commands\FrameByFrame.h" />
+    <ClInclude Include="src\Commands\FrameStep.h" />
     <ClInclude Include="src\Commands\NextIdleHarvester.h" />
     <ClInclude Include="src\Commands\NextTeam.h" />
     <ClInclude Include="src\Commands\ObjectInfo.h" />
@@ -132,6 +140,7 @@
     <ClInclude Include="src\Ext\Bullet\Trajectories\StraightTrajectory.h" />
     <ClInclude Include="src\Ext\Sidebar\Body.h" />
     <ClInclude Include="src\Ext\Anim\Body.h" />
+    <ClInclude Include="src\Ext\Surface\Body.h" />
     <ClInclude Include="src\Ext\TAction\Body.h" />
     <ClInclude Include="src\Ext\Team\Body.h" />
     <ClInclude Include="src\Ext\TEvent\Body.h" />
@@ -282,8 +291,9 @@
       <ObjectFileName>$(IntDir)\%(RelativeDir)</ObjectFileName>
       <CallingConvention>StdCall</CallingConvention>
       <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
-      <DisableSpecificWarnings>4100;4530;4731;4740;4458;4819</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100;4201;4530;4731;4740;4458;4819</DisableSpecificWarnings>
       <EnableModules>true</EnableModules>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -325,9 +335,10 @@
       <ObjectFileName>$(IntDir)\%(RelativeDir)</ObjectFileName>
       <CallingConvention>StdCall</CallingConvention>
       <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
-      <DisableSpecificWarnings>4100;4530;4731;4740;4458;4819</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100;4201;4530;4731;4740;4458;4819</DisableSpecificWarnings>
       <EnableModules>true</EnableModules>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -367,9 +378,10 @@
       <ObjectFileName>$(IntDir)\%(RelativeDir)</ObjectFileName>
       <CallingConvention>StdCall</CallingConvention>
       <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
-      <DisableSpecificWarnings>4100;4530;4731;4740;4458;4819</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100;4201;4530;4731;4740;4458;4819</DisableSpecificWarnings>
       <EnableModules>true</EnableModules>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

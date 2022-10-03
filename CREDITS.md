@@ -19,6 +19,8 @@ This page lists all the individual contributions to the project by their author.
   - Semantic locomotor aliases
   - Shield logic
   - Non-ASCII input fix
+  - Building Placement Preview Adjustment
+  - Check for Changelog/Documentation/Credits in Pull Requests
 - **Kerbiter (Metadorius)**:
   - SHP debris respect `Shadow` fix
   - Building upgrades enhancement
@@ -82,11 +84,13 @@ This page lists all the individual contributions to the project by their author.
   - Retint map actions bugfix
   - Sharpnel enhancement
   - Vanilla map preview reading bugfix
+  - Customizable tooltip background
 - **Otamaa (Fahroni, BoredEXE)**:
   - Help with CellSpread
   - Ported and fixed custom RadType code
   - Togglable ElectricBolt bolts
   - Customizable Chrono Locomotor properties per TechnoClass
+  - Building Placement Preview
   - `DebrisMaximums` fixes
   - Anim-to-Unit
   - `NotHuman` anim sequences improvements
@@ -97,23 +101,24 @@ This page lists all the individual contributions to the project by their author.
   - `EnemyUIName=` for other TechnoTypes
   - TerrainType `DestroyAnim` & `DestroySound`
   - Laser trails for VoxelAnims
+  - MakeInfantry logic on BombClass bugfix
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
   - `Spawner.LimitRange`
-  - ScriptType Actions 71 to 113, 124 to 126
+  - Majority of ScriptType actions
   - MC deployer fixes
   - Help with docs
   - Automatic Passenger Deletion logic
   - `Fire SW At Location/Waypoint` Trigger Action
   - Kill Object Automatically logic prototype
   - Customizable resource storage
-  - Override Uncloaked Underwater attack behavior
+  - Override uncloaked underwater attack behavior
   - Override Target Under EMP attack behavior
   - AI Aircraft docks fix
-  - Shared Ammo logic
-  - Customizable FLH When Infantry Is Prone Or Deployed
-  - Initial Strength for Cloned Infantry
+  - Shared ammo logic
+  - Customizable FLH when infantry is prone or deployed
+  - Initial strength for cloned infantry
 - **Starkku**:
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
@@ -155,6 +160,7 @@ This page lists all the individual contributions to the project by their author.
   - Trailer animation owner inheritance
   - Warhead detonation on all objects on map
   - Animated TerrainTypes extension
+  - Exploding unit passenger killing customization
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
@@ -169,8 +175,10 @@ This page lists all the individual contributions to the project by their author.
    - Laser fixes prototype
 - **Trsdy**
    - Preserve IronCurtain status upon DeploysInto/UndeploysInto
-   - Jumpjet facing towards target fix
-   - Turreted jumpjet idle direction fix
+   - Misc jumpjet fixes:
+      - Facing towards target fix
+      - Turret direction in idle state fix
+      - Sensor fix
    - Object Self-destruction logic
    - Building EVA_StructureSold and SellSound dehardcode
    - Slaves' house customization when owner is killed
@@ -178,6 +186,7 @@ This page lists all the individual contributions to the project by their author.
    - Harvester counter
    - Warhead superweapon launch logic
    - "Shield is broken" trigger event
+   - Forbidding parallel AI queues by type
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
 - **FlyStar** - Campaign load screen PCX support

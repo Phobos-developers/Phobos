@@ -27,4 +27,5 @@ public:
 	static int ChooseOneWeighted(const double dice, const std::vector<int>* weights);
 	static double FastPow(double x, double n);
 	static bool HasHealthRatioThresholdChanged(double oldRatio, double newRatio);
+	static bool ApplyTheaterSuffixToString(char* str);
 };
