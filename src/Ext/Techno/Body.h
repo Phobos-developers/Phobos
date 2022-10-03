@@ -19,16 +19,19 @@ public:
 	class ExtData final : public Extension<TechnoClass>
 	{
 	public:
+		TechnoTypeExt::ExtData* TypeExtData;
 		std::unique_ptr<ShieldClass> Shield;
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		bool ReceiveDamage;
 		bool LastKillWasTeamTarget;
-		TimerStruct	PassengerDeletionTimer;
+		CDTimerClass PassengerDeletionTimer;
 		int PassengerDeletionCountDown;
 		ShieldTypeClass* CurrentShieldType;
 		int LastWarpDistance;
-		int Death_Countdown;
+		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
+		OptionalStruct<int, false> DamageNumberOffset;
+		OptionalStruct<int, true> CurrentLaserWeaponIndex;
 		int DamageNumberOffset;
 		AnimClass* DeployAnim;
 		bool Convert_UniversalDeploy_InProgress;
@@ -38,6 +41,7 @@ public:
 		HouseClass* OriginalPassengerOwner;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
+			, TypeExtData { nullptr }
 			, Shield {}
 			, LaserTrails {}
 			, ReceiveDamage { false }
@@ -46,21 +50,24 @@ public:
 			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
-			, Death_Countdown(-1)
+			, AutoDeathTimer { }
 			, MindControlRingAnimType { nullptr }
-			, DamageNumberOffset { INT32_MIN }
+			, DamageNumberOffset {}
 			, OriginalPassengerOwner {}
+			, CurrentLaserWeaponIndex {}
 			, DeployAnim { nullptr }
 			, Convert_UniversalDeploy_InProgress { false }
 		{ }
 
+		void ApplyInterceptor();
+		bool CheckDeathConditions();
+		void EatPassengers();
+		void UpdateShield();
+		void ApplySpawnLimitRange();
+
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-			if (auto const pShield = this->Shield.get())
-				pShield->InvalidatePointer(ptr);
-		}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -75,19 +82,6 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
-		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-			switch (abs)
-			{
-			case AbstractType::Anim:
-			case AbstractType::Bullet:
-				return false;
-			default:
-				return true;
-			}
-		}
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 	};
@@ -110,16 +104,10 @@ public:
 	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
-
+	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
-
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
-	static void ApplyInterceptor(TechnoClass* pThis);
-	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
-	static void ApplySpawn_LimitRange(TechnoClass* pThis);
-	static void CheckDeathConditions(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
-	static void EatPassengers(TechnoClass* pThis);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
@@ -127,6 +115,7 @@ public:
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
+	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
 	static TechnoClass* UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pNewTechnoType);
 	static void StartUniversalDeployAnim(TechnoClass* pThis);
 	static void UpdateUniversalDeploy(TechnoClass* pThis);

@@ -21,6 +21,7 @@ public:
 	class ExtData final : public Extension<BuildingClass>
 	{
 	public:
+		BuildingTypeExt::ExtData* TypeExtData;
 		bool DeployedTechno;
 		int LimboID;
 		int GrindingWeapon_LastFiredFrame;
@@ -28,6 +29,7 @@ public:
 		int AccumulatedGrindingRefund;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
+			, TypeExtData { nullptr }
 			, DeployedTechno { false }
 			, LimboID { -1 }
 			, GrindingWeapon_LastFiredFrame { 0 }
@@ -35,14 +37,16 @@ public:
 			, AccumulatedGrindingRefund { 0 }
 		{ }
 
+		void DisplayGrinderRefund();
+		void ApplyPoweredKillSpawns();
+
 		virtual ~ExtData() = default;
 
 		// virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
-			if (this->CurrentAirFactory == ptr)
-				this->CurrentAirFactory = nullptr;
+			AnnounceInvalidPointer(CurrentAirFactory, ptr);
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;

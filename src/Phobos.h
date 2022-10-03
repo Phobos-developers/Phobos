@@ -19,6 +19,9 @@ public:
 	static CCINIClass* OpenConfig(const char*);
 	static void CloseConfig(CCINIClass*&);
 
+	static void ExeRun();
+	static void ExeTerminate();
+
 	//variables
 	static HANDLE hInstance;
 
@@ -64,10 +67,11 @@ public:
 	{
 	public:
 		static bool ToolTipDescriptions;
+		static bool ToolTipBlur;
 		static bool PrioritySelectionFiltering;
 		static bool DevelopmentCommands;
 		static bool ArtImageSwap;
 		static bool AllowParallelAIQueues;
-		static bool EnableBuildingPlacementPreview;
+		static bool ShowPlacementPreview;
 	};
 };

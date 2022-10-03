@@ -18,17 +18,16 @@
 #include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
-void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
+void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBulletExt, CoordStruct coords)
 {
-	if (pOwner)
-	{
-		if (auto const pBulletExt = BulletExt::ExtMap.Find(pBullet))
-		{
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
+	auto const pBullet = pBulletExt ? pBulletExt->OwnerObject() : nullptr;
 
-			if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
-				this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
-		}
+	if (pOwner && pBulletExt)
+	{
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
+
+		if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
+			this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
 	}
 
 	if (pHouse)
@@ -37,10 +36,10 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		{
 			for (auto pOtherHouse : *HouseClass::Array)
 			{
-				if (pOtherHouse->ControlledByHuman() &&	  // Not AI
-					!pOtherHouse->IsObserver() &&		  // Not Observer
-					!pOtherHouse->Defeated &&			  // Not Defeated
-					pOtherHouse != pHouse &&			  // Not pThisHouse
+				if (pOtherHouse->IsControlledByHuman() &&   // Not AI
+					!pOtherHouse->IsObserver() &&         // Not Observer
+					!pOtherHouse->Defeated &&             // Not Defeated
+					pOtherHouse != pHouse &&              // Not pThisHouse
 					!pHouse->IsAlliedWith(pOtherHouse))   // Not Allied
 				{
 					pOtherHouse->ReshroudMap();
@@ -57,7 +56,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 			if (this->TransactMoney_Display &&
 				(this->TransactMoney_Display_Houses == AffectedHouse::All ||
-					EnumFunctions::CanTargetHouse(this->TransactMoney_Display_Houses, pHouse, HouseClass::Player)))
+					EnumFunctions::CanTargetHouse(this->TransactMoney_Display_Houses, pHouse, HouseClass::CurrentPlayer)))
 			{
 				bool isPositive = this->TransactMoney > 0;
 				auto color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
@@ -83,7 +82,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				const auto cell = CellClass::Coord2Cell(coords);
 				if ((pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)) || !this->LaunchSW_RealLaunch)
 				{
-					if (this->LaunchSW_IgnoreInhibitors || !SWTypeExt::HasInhibitor(pSWExt, pHouse, cell))
+					if (this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell)
+					&& (this->LaunchSW_IgnoreDesignators || pSWExt->HasDesignator(pHouse, cell)))
 					{
 						pSuper->SetReadiness(true);
 						pSuper->Launch(cell, true);
@@ -108,7 +108,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_AttachTypes.size() > 0 ||
 		this->Shield_RemoveTypes.size() > 0;
 
-	auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 
 	const float cellSpread = this->OwnerObject()->CellSpread;
@@ -231,9 +230,8 @@ void WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, TechnoC
 
 void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	if (pTarget->WhatAmI() == AbstractType::Infantry)
+	if (auto pInf = abstract_cast<InfantryClass*>(pTarget))
 	{
-		auto pInf = abstract_cast<InfantryClass*>(pTarget);
 		if (pInf->IsDisguised())
 			pInf->Disguised = false;
 	}
@@ -295,22 +293,24 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 	{
 		if (auto const pBullet = specific_cast<BulletClass*>(pOwner->Target))
 		{
-			auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+			auto const pExt = BulletExt::ExtMap.Find(pBullet);
+			auto const pTypeExt = pExt->TypeExtData;
 
 			// 1/8th of a cell as a margin of error.
-			if (pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= Unsorted::LeptonsPerCell / 8.0)
-				BulletExt::InterceptBullet(pBullet, pOwner, pWeapon);
+			if (pTypeExt && pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= Unsorted::LeptonsPerCell / 8.0)
+				pExt->InterceptBullet(pOwner, pWeapon);
 		}
 	}
 	else
 	{
 		for (auto const& pBullet : *BulletClass::Array)
 		{
-			auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+			auto const pExt = BulletExt::ExtMap.Find(pBullet);
+			auto const pTypeExt = pExt->TypeExtData;
 
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
-			if (pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= cellSpread * Unsorted::LeptonsPerCell)
-				BulletExt::InterceptBullet(pBullet, pOwner, pWeapon);
+			if (pTypeExt && pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= cellSpread * Unsorted::LeptonsPerCell)
+				pExt->InterceptBullet(pOwner, pWeapon);
 		}
 	}
 }

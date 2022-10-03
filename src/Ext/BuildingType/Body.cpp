@@ -66,7 +66,6 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 
 void BuildingTypeExt::ExtData::Initialize()
 {
-
 }
 
 // =============================
@@ -90,6 +89,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PowerPlantEnhancer_Buildings.Read(exINI, pSection, "PowerPlantEnhancer.PowerPlants");
 	this->PowerPlantEnhancer_Amount.Read(exINI, pSection, "PowerPlantEnhancer.Amount");
 	this->PowerPlantEnhancer_Factor.Read(exINI, pSection, "PowerPlantEnhancer.Factor");
+	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
 
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
@@ -103,6 +103,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Grinding_DisplayRefund.Read(exINI, pSection, "Grinding.DisplayRefund");
 	this->Grinding_DisplayRefund_Houses.Read(exINI, pSection, "Grinding.DisplayRefund.Houses");
 	this->Grinding_DisplayRefund_Offset.Read(exINI, pSection, "Grinding.DisplayRefund.Offset");
+
 
 	// Ares SuperWeapons tag
 	pINI->ReadString(pSection, "SuperWeapons", "", Phobos::readBuffer);
@@ -145,25 +146,15 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
 
-	this->PlacementPreview_Show.Read(exINI, pSection, "PlacementPreview.Show");
-
-	if (pINI->GetString(pSection, "PlacementPreview.Shape", Phobos::readBuffer))
+	// PlacementPreview
 	{
-		if (GeneralUtils::IsValidString(Phobos::readBuffer))
-		{
-			// we cannot load same SHP file twice it may produce artifact , prevent it !
-			if (_strcmpi(Phobos::readBuffer, pSection) || _strcmpi(Phobos::readBuffer, pArtSection))
-				this->PlacementPreview_Shape.Read(exINI, pSection, "PlacementPreview.Shape");
-			else
-				Debug::Log("Cannot Load PlacementPreview.Shape for [%s]Art[%s] ! \n",pSection , pArtSection);
-		}
+		this->PlacementPreview_Shape.Read(exINI, pSection, "PlacementPreview.Shape");
+		this->PlacementPreview_ShapeFrame.Read(exINI, pSection, "PlacementPreview.ShapeFrame");
+		this->PlacementPreview_Offset.Read(exINI, pSection, "PlacementPreview.Offset");
+		this->PlacementPreview_Remap.Read(exINI, pSection, "PlacementPreview.Remap");
+		this->PlacementPreview_Palette.LoadFromINI(pINI, pSection, "PlacementPreview.Palette");
+		this->PlacementPreview_Translucency.Read(exINI, pSection, "PlacementPreview.Translucency");
 	}
-
-	this->PlacementPreview_ShapeFrame.Read(exINI, pSection, "PlacementPreview.ShapeFrame");
-	this->PlacementPreview_Offset.Read(exINI, pSection, "PlacementPreview.Offset");
-	this->PlacementPreview_Remap.Read(exINI, pSection, "PlacementPreview.Remap");
-	this->PlacementPreview_Palette.LoadFromINI(pINI, pSection, "PlacementPreview.Palette");
-	this->PlacementPreview_TranslucentLevel.Read(exINI, pSection, "PlacementPreview.Translucent");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -183,6 +174,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PowerPlantEnhancer_Factor)
 		.Process(this->SuperWeapons)
 		.Process(this->OccupierMuzzleFlashes)
+		.Process(this->Powered_KillSpawns)
 		.Process(this->Refinery_UseStorage)
 		.Process(this->Grinding_AllowAllies)
 		.Process(this->Grinding_AllowOwner)
@@ -193,14 +185,13 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Grinding_DisplayRefund)
 		.Process(this->Grinding_DisplayRefund_Houses)
 		.Process(this->Grinding_DisplayRefund_Offset)
-		.Process(PlacementPreview_Remap)
-		.Process(PlacementPreview_Palette)
-		.Process(PlacementPreview_Offset)
-		.Process(PlacementPreview_Show)
-		.Process(PlacementPreview_Shape)
-		.Process(PlacementPreview_ShapeFrame)
-		.Process(PlacementPreview_TranslucentLevel)
-
+		.Process(this->PlacementPreview)
+		.Process(this->PlacementPreview_Shape)
+		.Process(this->PlacementPreview_ShapeFrame)
+		.Process(this->PlacementPreview_Offset)
+		.Process(this->PlacementPreview_Remap)
+		.Process(this->PlacementPreview_Palette)
+		.Process(this->PlacementPreview_Translucency)
 		;
 }
 

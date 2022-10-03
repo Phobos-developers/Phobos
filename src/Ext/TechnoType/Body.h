@@ -24,6 +24,7 @@ public:
 		PhobosFixedString<0x20> GroupAs;
 		Valueable<int> RadarJamRadius;
 		Nullable<int> InhibitorRange;
+		Nullable<int> DesignatorRange;
 		Valueable<Leptons> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
 		Valueable<AffectedHouse> Interceptor_CanTargetHouses;
@@ -36,7 +37,6 @@ public:
 		Valueable<bool> Interceptor_WeaponCumulativeDamage;
 		Valueable<bool> Interceptor_KeepIntact;
 		Valueable<CoordStruct> TurretOffset;
-		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Spawn_LimitedRange;
 		Valueable<int> Spawn_LimitedExtraRange;
 		Nullable<bool> Harvester_Counted;
@@ -52,9 +52,13 @@ public:
 		NullableIdx<VocClass> PassengerDeletion_ReportSound;
 		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
 		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
-		Valueable<bool> Death_NoAmmo;
-		Valueable<int> Death_Countdown;
-		Valueable<bool> Death_Peaceful;
+
+		Valueable<bool> AutoDeath_OnAmmoDepletion;
+		Valueable<int> AutoDeath_AfterDelay;
+		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
+		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
+		NullableIdx<VocClass> SellSound;
+		NullableIdx<VoxClass> EVA_Sold;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -99,6 +103,7 @@ public:
 		Valueable<int> NoAmmoAmount;
 
 		Nullable<bool> JumpjetAllowLayerDeviation;
+		Nullable<bool> JumpjetTurnToTarget;
 
 		Valueable<bool> DeployingAnim_AllowAnyDirection;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
@@ -110,13 +115,16 @@ public:
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
-		Nullable<bool> JumpjetTurnToTarget;
 
 		Nullable<SelfHealGainType> SelfHealGainType;
 		Valueable<bool> Passengers_SyncOwner;
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
+		Nullable<bool> IronCurtain_KeptOnDeploy;
+
 		Valueable<Vector2D<double>> InitialStrength_Cloning;
+
+		Valueable<bool> Explodes_KillPassengers;
 
 		ValueableVector<TechnoTypeClass*> Convert_UniversalDeploy;
 		Valueable<bool> Convert_DeployToLand;
@@ -158,6 +166,7 @@ public:
 			, GroupAs { NONE_STR }
 			, RadarJamRadius { 0 }
 			, InhibitorRange { }
+			, DesignatorRange { }
 			, MindControlRangeLimit {}
 			, Interceptor { false }
 			, Interceptor_CanTargetHouses { AffectedHouse::Enemies }
@@ -170,7 +179,6 @@ public:
 			, Interceptor_WeaponCumulativeDamage { false }
 			, Interceptor_KeepIntact { false }
 			, TurretOffset { { 0, 0, 0 } }
-			, Powered_KillSpawns { false }
 			, Spawn_LimitedRange { false }
 			, Spawn_LimitedExtraRange { 0 }
 			, Harvester_Counted {}
@@ -222,9 +230,12 @@ public:
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
-			, Death_NoAmmo { false }
-			, Death_Countdown { 0 }
-			, Death_Peaceful { false }
+			, AutoDeath_Behavior { }
+			, AutoDeath_OnAmmoDepletion { false }
+			, AutoDeath_AfterDelay { 0 }
+			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
+			, SellSound { }
+			, EVA_Sold { }
 			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
@@ -236,7 +247,9 @@ public:
 			, ProneSecondaryFireFLH { }
 			, DeployedPrimaryFireFLH { }
 			, DeployedSecondaryFireFLH { }
-			, InitialStrength_Cloning{ { 1.0, 0.0 } }
+			, InitialStrength_Cloning { { 1.0, 0.0 } }
+			, IronCurtain_KeptOnDeploy{ }
+			, Explodes_KillPassengers { true }
 			, Convert_UniversalDeploy {}
 			, Convert_DeployToLand { false }
 			, Convert_AnimFX {}
@@ -256,7 +269,6 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
-		bool IsCountedAsHarvester();
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;

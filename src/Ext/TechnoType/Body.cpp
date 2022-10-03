@@ -53,20 +53,6 @@ bool TechnoTypeExt::HasSelectionGroupID(ObjectTypeClass* pType, const char* pID)
 	return (_strcmpi(id, pID) == 0);
 }
 
-bool TechnoTypeExt::ExtData::IsCountedAsHarvester()
-{
-	auto pThis = this->OwnerObject();
-	UnitTypeClass* pUnit = nullptr;
-
-	if (pThis->WhatAmI() == AbstractType::UnitType)
-		pUnit = abstract_cast<UnitTypeClass*>(pThis);
-
-	if (this->Harvester_Counted.Get(pThis->Enslaves || pUnit && (pUnit->Harvester || pUnit->Enslaves)))
-		return true;
-
-	return false;
-}
-
 void TechnoTypeExt::GetBurstFLHs(TechnoTypeClass* pThis, INI_EX &exArtINI, const char* pArtSection,
 	std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag)
 {
@@ -132,18 +118,28 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Interceptor_WeaponReplaceProjectile.Read(exINI, pSection, "Interceptor.WeaponReplaceProjectile");
 	this->Interceptor_WeaponCumulativeDamage.Read(exINI, pSection, "Interceptor.WeaponCumulativeDamage");
 	this->Interceptor_KeepIntact.Read(exINI, pSection, "Interceptor.KeepIntact");
-	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
 	this->Spawn_LimitedRange.Read(exINI, pSection, "Spawner.LimitRange");
 	this->Spawn_LimitedExtraRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
+
 	this->Harvester_Counted.Read(exINI, pSection, "Harvester.Counted");
+	if (!this->Harvester_Counted.isset() && pThis->Enslaves)
+		this->Harvester_Counted = true;
+	if (this->Harvester_Counted.Get())
+		RulesExt::Global()->HarvesterTypes.AddUnique(pThis);
+
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
 	this->NoManualMove.Read(exINI, pSection, "NoManualMove");
 	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
-	this->Death_NoAmmo.Read(exINI, pSection, "Death.NoAmmo");
-	this->Death_Countdown.Read(exINI, pSection, "Death.Countdown");
-	this->Death_Peaceful.Read(exINI, pSection, "Death.Peaceful");
+
+	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
+	this->AutoDeath_OnAmmoDepletion.Read(exINI, pSection, "AutoDeath.OnAmmoDepletion");
+	this->AutoDeath_AfterDelay.Read(exINI, pSection, "AutoDeath.AfterDelay");
+	this->Slaved_OwnerWhenMasterKilled.Read(exINI, pSection, "Slaved.OwnerWhenMasterKilled");
+	this->SellSound.Read(exINI, pSection, "SellSound");
+	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
+
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
@@ -203,13 +199,18 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Passengers_SyncOwner.Read(exINI, pSection, "Passengers.SyncOwner");
 	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
 
+	this->IronCurtain_KeptOnDeploy.Read(exINI, pSection, "IronCurtain.KeptOnDeploy");
+
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
+
+	this->Explodes_KillPassengers.Read(exINI, pSection, "Explodes.KillPassengers");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
 	// Ares 0.9
 	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
+	this->DesignatorRange.Read(exINI, pSection, "DesignatorRange");
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
@@ -304,8 +305,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->GroupAs)
 		.Process(this->RadarJamRadius)
 		.Process(this->InhibitorRange)
+		.Process(this->DesignatorRange)
 		.Process(this->TurretOffset)
-		.Process(this->Powered_KillSpawns)
 		.Process(this->Spawn_LimitedRange)
 		.Process(this->Spawn_LimitedExtraRange)
 		.Process(this->Harvester_Counted)
@@ -315,9 +316,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CameoPriority)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
-		.Process(this->Death_NoAmmo)
-		.Process(this->Death_Countdown)
-		.Process(this->Death_Peaceful)
+		.Process(this->AutoDeath_Behavior)
+		.Process(this->AutoDeath_OnAmmoDepletion)
+		.Process(this->AutoDeath_AfterDelay)
+		.Process(this->Slaved_OwnerWhenMasterKilled)
+		.Process(this->SellSound)
+		.Process(this->EVA_Sold)
 		.Process(this->ShieldType)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
@@ -377,7 +381,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteCrouchedWeaponBurstFLHs)
 		.Process(this->DeployedWeaponBurstFLHs)
 		.Process(this->EliteDeployedWeaponBurstFLHs)
+		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->InitialStrength_Cloning)
+		.Process(this->Explodes_KillPassengers)
 		.Process(this->Convert_UniversalDeploy)
 		.Process(this->Convert_DeployToLand)
 		.Process(this->Convert_AnimFX)
@@ -490,6 +496,22 @@ DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 	{
 		auto const pExt = BuildingTypeExt::ExtMap.Find(pType);
 		pExt->CompleteInitialization();
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
+{
+	GET(UnitTypeClass*, pItem, ESI);
+
+	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pItem))
+	{
+		if (!pTypeExt->Harvester_Counted.isset() && pItem->Harvester)
+		{
+			pTypeExt->Harvester_Counted = true;
+			RulesExt::Global()->HarvesterTypes.AddUnique(pItem);
+		}
 	}
 
 	return 0;

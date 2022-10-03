@@ -108,10 +108,9 @@ DEFINE_HOOK_AGAIN(0x721CE9, TiberiumClass_LoadFromINI, 0xA)
 DEFINE_HOOK(0x721C7B, TiberiumClass_LoadFromINI, 0xA)
 {
 	GET(TiberiumClass*, pItem, ESI);
-	GET_STACK(CCINIClass*, pINI, STACK_OFFS(0xC4, -0x4));
+	GET_STACK(CCINIClass*, pINI, STACK_OFFSET(0xC4, 0x4));
 
 	TiberiumExt::ExtMap.LoadFromINI(pItem, pINI);
 
 	return 0;
 }
-

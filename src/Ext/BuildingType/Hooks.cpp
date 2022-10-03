@@ -1,13 +1,10 @@
 #include "Body.h"
 
 #include <TacticalClass.h>
-
-#include <BuildingClass.h>
-#include <HouseClass.h>
 #include <Ext/Rules/Body.h>
+
 #include <Utilities/Macro.h>
 #include <Utilities/EnumFunctions.h>
-#include <Utilities/GeneralUtils.h>
 
 DEFINE_HOOK(0x460285, BuildingTypeClass_LoadFromINI_Muzzle, 0x6)
 {
@@ -16,7 +13,7 @@ DEFINE_HOOK(0x460285, BuildingTypeClass_LoadFromINI_Muzzle, 0x6)
 	GET(BuildingTypeClass*, pThis, EBP);
 
 	// Restore overriden instructions
-	R->Stack(STACK_OFFS(0x368, 0x358), 0);
+	R->Stack(STACK_OFFSET(0x368, -0x358), 0);
 	R->EDX(0);
 
 	// Disable Vanilla Muzzle flash when MaxNumberOccupants is 0 or more than 10
@@ -70,74 +67,84 @@ DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 
 DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 {
-	if (auto const pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance->CurrentBuilding))
+	auto pRules = RulesExt::Global();
+
+	if (!pRules->PlacementPreview || !Phobos::Config::ShowPlacementPreview)
+		return 0;
+
+	auto pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance->CurrentBuilding);
+	auto pType = pBuilding ? pBuilding->Type : nullptr;
+	auto pTypeExt = pType ? BuildingTypeExt::ExtMap.Find(pType) : nullptr;
+	bool isShow = pTypeExt && pTypeExt->PlacementPreview;
+
+	if (isShow)
 	{
-		if (auto const pType = pBuilding->Type)
+		CellClass* pCell = nullptr;
 		{
-			auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+			CellStruct nDisplayCell = Make_Global<CellStruct>(0x88095C);
+			CellStruct nDisplayCell_Offset = Make_Global<CellStruct>(0x880960);
 
-			if (pTypeExt && pTypeExt->PlacementPreview_Show.Get(Phobos::Config::EnableBuildingPlacementPreview))
+			pCell = MapClass::Instance->TryGetCellAt(nDisplayCell + nDisplayCell_Offset);
+			if (!pCell)
+				return 0;
+		}
+
+		int nImageFrame = 0;
+		SHPStruct* pImage = pTypeExt->PlacementPreview_Shape.GetSHP();
+		{
+			if (!pImage)
 			{
-				SHPStruct* Selected = nullptr;
-				bool bBuildupExist = false;
-
-				if (pType->LoadBuildup())
-				{
-					bBuildupExist = true;
-					Selected = pType->LoadBuildup();
-				}
+				pImage = pType->LoadBuildup();
+				if (pImage)
+					nImageFrame = ((pImage->Frames / 2) - 1);
 				else
-				{
-					Selected = pType->GetImage();
-				}
-
-				//bool const isUpgrade = GeneralUtils::IsValidString(pType->PowersUpBuilding);
-				auto const pImage = pTypeExt->PlacementPreview_Shape.Get(Selected);
+					pImage = pType->GetImage();
 
 				if (!pImage)
-					return 0x0;
-
-				CellStruct const nDisplayCell = Make_Global<CellStruct>(0x88095C);
-				CellStruct const nDisplayCell_Offset = Make_Global<CellStruct>(0x880960);
-				auto const pCell = MapClass::Instance->TryGetCellAt(nDisplayCell + nDisplayCell_Offset);
-
-				if (!pCell)
-					return 0x0;
-
-				auto const nFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get(bBuildupExist ? ((pImage->Frames / 2) - 1) : 0), 0, (int)pImage->Frames);
-				auto const nHeight = pCell->GetFloorHeight({ 0, 0 });
-				auto const nOffset = pTypeExt->PlacementPreview_Offset.Get();
-				Point2D nPoint { 0, 0 };
-				TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, nHeight + nOffset.Z), &nPoint);
-				nPoint.X += nOffset.X;
-				nPoint.Y += nOffset.Y;
-				auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->PlacementPreview_TranslucentLevel.Get(RulesExt::Global()->BuildingPlacementPreview_TranslucentLevel.Get()));
-				auto nRect = DSurface::Temp()->GetRect();
-				nRect.Height -= 32; // account for bottom bar
-				auto const pPalette = pTypeExt->PlacementPreview_Remap.Get() ? pBuilding->GetDrawer() : pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
-
-				DSurface::Temp()->DrawSHP(pPalette, pImage, nFrame, &nPoint, &nRect, nFlag,
-					0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+					return 0;
 			}
+
+			nImageFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get(nImageFrame), 0, (int)pImage->Frames);
 		}
+
+		Point2D nPoint = { 0, 0 };
+		{
+			CoordStruct offset = pTypeExt->PlacementPreview_Offset;
+			int nHeight = offset.Z + pCell->GetFloorHeight({ 0, 0 });
+			TacticalClass::Instance->CoordsToClient(
+				CellClass::Cell2Coord(pCell->MapCoords, nHeight),
+				&nPoint
+			);
+			nPoint.X += offset.X;
+			nPoint.Y += offset.Y;
+		}
+
+		BlitterFlags blitFlags = pTypeExt->PlacementPreview_Translucency.Get(pRules->PlacementPreview_Translucency) |
+			BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
+
+		ConvertClass* pPalette = nullptr;
+		{
+			if (pTypeExt->PlacementPreview_Remap.Get())
+				pPalette = pBuilding->GetDrawer();
+			else
+				pPalette = pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
+		}
+
+		DSurface* pSurface = DSurface::Temp;
+		RectangleStruct nRect = pSurface->GetRect();
+		nRect.Height -= 32; // account for bottom bar
+
+		CC_Draw_Shape(pSurface, pPalette, pImage, nImageFrame, &nPoint, &nRect, blitFlags,
+			0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
-	return 0x0;
+	return 0;
 }
 
-//Make Building placement Grid tranparent
-static void __fastcall CellClass_Draw_It_Shape(Surface* Surface, ConvertClass* Palette, SHPStruct* SHP, int FrameIndex,
-	const Point2D* const Position, const RectangleStruct* const Bounds, BlitterFlags Flags,
-	int Remap,
-	int ZAdjust, // + 1 = sqrt(3.0) pixels away from screen
-	ZGradient ZGradientDescIndex,
-	int Brightness, // 0~2000. Final color = saturate(OriginalColor * Brightness / 1000.0f)
-	int TintColor, SHPStruct* ZShape, int ZShapeFrame, int XOffset, int YOffset)
+DEFINE_HOOK(0x47EFAE, CellClass_Draw_It_MakePlacementGridTranparent, 0x6)
 {
-	Flags = Flags | EnumFunctions::GetTranslucentLevel(RulesExt::Global()->PlacementGrid_TranslucentLevel.Get());
+	LEA_STACK(BlitterFlags*, blitFlags, STACK_OFFSET(0x68, -0x58));
 
-	CC_Draw_Shape(Surface, Palette, SHP, FrameIndex, Position, Bounds, Flags, Remap, ZAdjust,
-		ZGradientDescIndex, Brightness, TintColor, ZShape, ZShapeFrame, XOffset, YOffset);
+	*blitFlags |= RulesExt::Global()->PlacementGrid_Translucency;
+	return 0;
 }
-
-DEFINE_JUMP(CALL, 0x47EFB4, GET_OFFSET(CellClass_Draw_It_Shape));
