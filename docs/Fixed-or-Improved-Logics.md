@@ -283,7 +283,7 @@ In `rulesmd.ini`:
 Explodes.KillPassengers=true ; boolean
 ```
 
-### Infantry can set effect of ironcurtain 
+### Infantry can set effect of ironcurtain
 
 In `rulesmd.ini`
 ```ini
