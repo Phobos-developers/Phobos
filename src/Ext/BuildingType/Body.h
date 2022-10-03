@@ -23,7 +23,7 @@ public:
 		Nullable<float> PowerPlantEnhancer_Factor;
 
 		DynamicVectorClass<Point2D> OccupierMuzzleFlashes;
-
+		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Refinery_UseStorage;
 
 		Valueable<bool> Grinding_AllowAllies;
@@ -51,6 +51,7 @@ public:
 			, PowerPlantEnhancer_Amount {}
 			, PowerPlantEnhancer_Factor {}
 			, OccupierMuzzleFlashes()
+			, Powered_KillSpawns { false }
 			, Refinery_UseStorage { false }
 			, Grinding_AllowAllies { false }
 			, Grinding_AllowOwner { true }

@@ -26,7 +26,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->ApplyInterceptor();
 	pExt->EatPassengers();
 	pExt->UpdateShield();
-	pExt->ApplyPoweredKillSpawns();
 	pExt->ApplySpawnLimitRange();
 
 	TechnoExt::ApplyMindControlRangeLimit(pThis);

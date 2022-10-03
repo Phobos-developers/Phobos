@@ -230,9 +230,8 @@ void WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, TechnoC
 
 void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	if (pTarget->WhatAmI() == AbstractType::Infantry)
+	if (auto pInf = abstract_cast<InfantryClass*>(pTarget))
 	{
-		auto pInf = abstract_cast<InfantryClass*>(pTarget);
 		if (pInf->IsDisguised())
 			pInf->Disguised = false;
 	}

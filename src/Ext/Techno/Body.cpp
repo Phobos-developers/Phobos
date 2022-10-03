@@ -223,32 +223,6 @@ void TechnoExt::ExtData::UpdateShield()
 		pShieldData->AI();
 }
 
-void TechnoExt::ExtData::ApplyPoweredKillSpawns()
-{
-	auto const pThis = this->OwnerObject();
-	auto const pTypeExt = this->TypeExtData;
-
-	if (pThis->WhatAmI() == AbstractType::Building && pTypeExt->Powered_KillSpawns)
-	{
-		auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
-		if (pBuilding->Type->Powered && !pBuilding->IsPowerOnline())
-		{
-			if (auto pManager = pBuilding->SpawnManager)
-			{
-				pManager->ResetTarget();
-				for (auto pItem : pManager->SpawnedNodes)
-				{
-					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
-					{
-						pItem->Unit->ReceiveDamage(&pItem->Unit->Health, 0,
-							RulesClass::Instance()->C4Warhead, nullptr, true, false, nullptr);
-					}
-				}
-			}
-		}
-	}
-}
-
 void TechnoExt::ExtData::ApplySpawnLimitRange()
 {
 	auto const pThis = this->OwnerObject();
