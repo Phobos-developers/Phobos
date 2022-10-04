@@ -405,8 +405,8 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 	{
 		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
 
-		double turretRad = (pThis->TurretFacing().GetFacing<32>() - 8) * -(Math::Pi / 16);
-		double bodyRad = (pThis->PrimaryFacing.Current().GetFacing<32>() - 8) * -(Math::Pi / 16);
+		double turretRad = pThis->TurretFacing().GetRadian<32>();
+		double bodyRad = pThis->PrimaryFacing.Current().GetRadian<32>();
 		float angle = (float)(turretRad - bodyRad);
 
 		mtx.RotateZ(angle);
@@ -415,7 +415,7 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 	// Step 4: apply FLH offset
 	mtx.Translate((float)pCoord.X, (float)pCoord.Y, (float)pCoord.Z);
 
-	Vector3D<float> result = Matrix3D::MatrixMultiply(mtx, Vector3D<float>::Empty);
+	auto result = mtx * Vector3D<float>::Empty;
 
 	// Resulting coords are mirrored along X axis, so we mirror it back
 	result.Y *= -1;
