@@ -1,5 +1,5 @@
 #include "Body.h"
-
+#include <GameStrings.h>
 #include <New/Type/RadTypeClass.h>
 #include <Ext/WarheadType/Body.h>
 #include <LightSourceClass.h>
@@ -11,7 +11,7 @@ DynamicVectorClass<RadSiteExt::ExtData*> RadSiteExt::Array;
 
 void RadSiteExt::ExtData::Initialize()
 {
-	this->Type = RadTypeClass::FindOrAllocate("Radiation");
+	this->Type = RadTypeClass::FindOrAllocate(GameStrings::Radiation);
 }
 
 bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance)

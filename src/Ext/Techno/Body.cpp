@@ -321,8 +321,8 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 	if (slave && slave->State != SlaveManagerStatus::Ready)
 		return true;
 
-	if (pThis->WhatAmI() == AbstractType::Building && pThis->IsPowerOnline())
-		return true;
+	if (pThis->WhatAmI() == AbstractType::Building)
+		return pThis->IsPowerOnline();
 
 	if (TechnoExt::HasAvailableDock(pThis))
 	{
@@ -334,7 +334,7 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 			return true;
 		case Mission::Guard: // issue#603: not exactly correct, but idk how to do better
 			if (auto pUnit = abstract_cast<UnitClass*>(pThis))
-				return !pUnit->IsSelected && pUnit->Locomotor->Is_Really_Moving_Now();
+				return pUnit->IsHarvesting || pUnit->Locomotor->Is_Really_Moving_Now() || pUnit->HasAnyLink();
 		default:
 			return false;
 		}
@@ -547,8 +547,8 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 				return;
 			}
 		}
-
-		Debug::Log("[Runtime Warning] %s can't be sold, killing it instead\n", pThis->get_ID());
+		if (Phobos::Config::DevelopmentCommands)
+			Debug::Log("[Runtime Warning] %s can't be sold, killing it instead\n", pThis->get_ID());
 	}
 
 	default: //must be AutoDeathBehavior::Kill
