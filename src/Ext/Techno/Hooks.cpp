@@ -885,8 +885,17 @@ DEFINE_HOOK(0x449E6B, BuildingClass_MissionDeconstruction_UniversalDeploy_2, 0x5
 		}
 	}
 
-	// Restoring unit after a failed deploy attempt
-	pUnit->Unlimbo(pUnit->Location, Direction::North);
+	// Restoring unit after a failed deploy attempt. I don't know if this can happen.
+	if (pTypeExt->Convert_DeployDir >= 0)
+	{
+		DirStruct desiredFacing;
+		desiredFacing.SetDir(static_cast<DirType>(pTypeExt->Convert_DeployDir * 32));
+		pUnit->PrimaryFacing.Set_Current(desiredFacing);
+	}
+	else
+	{
+		pUnit->Unlimbo(pUnit->Location, DirType::North);
+	}
 
 	return 0;
 }

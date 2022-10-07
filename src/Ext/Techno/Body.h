@@ -32,7 +32,6 @@ public:
 		AnimTypeClass* MindControlRingAnimType;
 		OptionalStruct<int, false> DamageNumberOffset;
 		OptionalStruct<int, true> CurrentLaserWeaponIndex;
-		int DamageNumberOffset;
 		AnimClass* DeployAnim;
 		bool Convert_UniversalDeploy_InProgress;
 
