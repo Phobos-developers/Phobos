@@ -65,6 +65,9 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 	if (!pTechno)
 		return false;
 
+	if (!pTechno->IsOnMap || !pTechno->IsAlive || pTechno->InLimbo)
+		return false;
+
 	if (pOwner && !EnumFunctions::CanTargetHouse(this->DetonateOnAllMapObjects_AffectHouses, pOwner, pTechno->Owner))
 		return false;
 
@@ -81,10 +84,7 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 		return false;
 	}
 
-	if (pTechno->IsOnMap && pTechno->IsAlive && !pTechno->InLimbo)
-		return true;
-
-	return false;
+	return true;
 }
 
 // =============================
