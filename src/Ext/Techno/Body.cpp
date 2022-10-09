@@ -99,7 +99,7 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 	if (pTypeExt->AutoDeath_AfterDelay > 0)
 	{
 		//using Expired() may be confusing
-		if (this->AutoDeathTimer.StartTime == -1 && this->AutoDeathTimer.TimeLeft == 0)
+		if (!this->AutoDeathTimer.HasStarted())
 		{
 			this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
 		}
@@ -224,32 +224,6 @@ void TechnoExt::ExtData::UpdateShield()
 		pShieldData->AI();
 }
 
-void TechnoExt::ExtData::ApplyPoweredKillSpawns()
-{
-	auto const pThis = this->OwnerObject();
-	auto const pTypeExt = this->TypeExtData;
-
-	if (pThis->WhatAmI() == AbstractType::Building && pTypeExt->Powered_KillSpawns)
-	{
-		auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
-		if (pBuilding->Type->Powered && !pBuilding->IsPowerOnline())
-		{
-			if (auto pManager = pBuilding->SpawnManager)
-			{
-				pManager->ResetTarget();
-				for (auto pItem : pManager->SpawnedNodes)
-				{
-					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
-					{
-						pItem->Unit->ReceiveDamage(&pItem->Unit->Health, 0,
-							RulesClass::Instance()->C4Warhead, nullptr, true, false, nullptr);
-					}
-				}
-			}
-		}
-	}
-}
-
 void TechnoExt::ExtData::ApplySpawnLimitRange()
 {
 	auto const pThis = this->OwnerObject();
@@ -348,8 +322,8 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 	if (slave && slave->State != SlaveManagerStatus::Ready)
 		return true;
 
-	if (pThis->WhatAmI() == AbstractType::Building && pThis->IsPowerOnline())
-		return true;
+	if (pThis->WhatAmI() == AbstractType::Building)
+		return pThis->IsPowerOnline();
 
 	if (TechnoExt::HasAvailableDock(pThis))
 	{
@@ -361,7 +335,7 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 			return true;
 		case Mission::Guard: // issue#603: not exactly correct, but idk how to do better
 			if (auto pUnit = abstract_cast<UnitClass*>(pThis))
-				return !pUnit->IsSelected && pUnit->Locomotor->Is_Really_Moving_Now();
+				return pUnit->IsHarvesting || pUnit->Locomotor->Is_Really_Moving_Now() || pUnit->HasAnyLink();
 		default:
 			return false;
 		}
@@ -432,8 +406,8 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 	{
 		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
 
-		double turretRad = (pThis->TurretFacing().GetFacing<32>() - 8) * -(Math::Pi / 16);
-		double bodyRad = (pThis->PrimaryFacing.Current().GetFacing<32>() - 8) * -(Math::Pi / 16);
+		double turretRad = pThis->TurretFacing().GetRadian<32>();
+		double bodyRad = pThis->PrimaryFacing.Current().GetRadian<32>();
 		float angle = (float)(turretRad - bodyRad);
 
 		mtx.RotateZ(angle);
@@ -442,7 +416,7 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 	// Step 4: apply FLH offset
 	mtx.Translate((float)pCoord.X, (float)pCoord.Y, (float)pCoord.Z);
 
-	Vector3D<float> result = Matrix3D::MatrixMultiply(mtx, Vector3D<float>::Empty);
+	auto result = mtx * Vector3D<float>::Empty;
 
 	// Resulting coords are mirrored along X axis, so we mirror it back
 	result.Y *= -1;
@@ -574,8 +548,8 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 				return;
 			}
 		}
-
-		Debug::Log("[Runtime Warning] %s can't be sold, killing it instead\n", pThis->get_ID());
+		if (Phobos::Config::DevelopmentCommands)
+			Debug::Log("[Runtime Warning] %s can't be sold, killing it instead\n", pThis->get_ID());
 	}
 
 	default: //must be AutoDeathBehavior::Kill

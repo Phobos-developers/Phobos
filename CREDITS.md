@@ -20,6 +20,7 @@ This page lists all the individual contributions to the project by their author.
   - Shield logic
   - Non-ASCII input fix
   - Building Placement Preview Adjustment
+  - Check for Changelog/Documentation/Credits in Pull Requests
 - **Kerbiter (Metadorius)**:
   - SHP debris respect `Shadow` fix
   - Building upgrades enhancement
@@ -105,18 +106,18 @@ This page lists all the individual contributions to the project by their author.
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
   - `Spawner.LimitRange`
-  - ScriptType Actions 71 to 113, 124 to 126
+  - Majority of ScriptType actions
   - MC deployer fixes
   - Help with docs
   - Automatic Passenger Deletion logic
   - `Fire SW At Location/Waypoint` Trigger Action
   - Kill Object Automatically logic prototype
   - Customizable resource storage
-  - Override Uncloaked Underwater attack behavior
+  - Override uncloaked underwater attack behavior
   - AI Aircraft docks fix
-  - Shared Ammo logic
-  - Customizable FLH When Infantry Is Prone Or Deployed
-  - Initial Strength for Cloned Infantry
+  - Shared ammo logic
+  - Customizable FLH when infantry is prone or deployed
+  - Initial strength for cloned infantry
 - **Starkku**:
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization

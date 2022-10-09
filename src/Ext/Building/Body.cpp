@@ -244,6 +244,28 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 	return false;
 }
 
+// Building only or allow units too?
+void BuildingExt::ExtData::ApplyPoweredKillSpawns()
+{
+	auto const pThis = this->OwnerObject();
+
+	if (this->TypeExtData->Powered_KillSpawns && pThis->Type->Powered && !pThis->IsPowerOnline())
+	{
+		if (auto pManager = pThis->SpawnManager)
+		{
+			pManager->ResetTarget();
+			for (auto pItem : pManager->SpawnedNodes)
+			{
+				if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
+				{
+					pItem->Unit->ReceiveDamage(&pItem->Unit->Health, 0,
+						RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+				}
+			}
+		}
+	}
+}
+
 // =============================
 // load / save
 

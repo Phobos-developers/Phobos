@@ -94,7 +94,8 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 		{
 			if (!pImage)
 			{
-				if (pImage = pType->LoadBuildup())
+				pImage = pType->LoadBuildup();
+				if (pImage)
 					nImageFrame = ((pImage->Frames / 2) - 1);
 				else
 					pImage = pType->GetImage();
