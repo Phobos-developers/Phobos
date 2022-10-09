@@ -242,6 +242,11 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 New:
 - `Crit.AffectsHouses` for critical hit system (by Starkku)
 - Warhead or weapon detonation at superweapon target cell (by Starkku)
+- Customizable aircraft spawner spawn delay (by Starkku)
+- Customizable Cluster scatter distance (by Starkku)
+- Customizable FlakScatter distance (by Starkku)
+- Customizable debris & meteor impact and warhead detonation behaviour (by Starkku, Otamaa)
+- Custom warhead debris animations (by Starkku)
 
 ### 0.3
 
@@ -345,11 +350,6 @@ New:
 - Implemented support for PCX images for observer loading screen (by Uranusian)
 - Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 - Toggleable passenger killing for Explodes=true units (by Starkku)
-- Customizable aircraft spawner spawn delay (by Starkku)
-- Customizable Cluster scatter distance (by Starkku)
-- Customizable FlakScatter distance (by Starkku)
-- Customizable debris & meteor impact and warhead detonation behaviour (by Starkku, Otamaa)
-- Custom warhead debris animations (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
