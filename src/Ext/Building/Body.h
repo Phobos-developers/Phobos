@@ -89,5 +89,4 @@ public:
 	static bool HasFreeDocks(BuildingClass* pBuilding);
 	static bool CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno);
 	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno);
-	static CoordStruct GetCenterCoords(BuildingClass* pThis, bool includeBib = false);
 };

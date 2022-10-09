@@ -487,7 +487,7 @@ LimboKill.IDs=                  ; List of numeric IDs.
 
 - Any superweapon can now detonate a Warhead or a weapon at superweapon's target cell.
   - If both `Detonate.Warhead` and `Detonate.Weapon` are set, latter takes precedence.
-  - `Detonate.Damage`, if not set, defaults to weapon ´Damage` for `Detonate.Weapon` and 0 for `Detonate.Warhead`.
+  - `Detonate.Damage`, if not set, defaults to weapon `Damage` for `Detonate.Weapon` and 0 for `Detonate.Warhead`.
   - Both the weapon and Warhead behave as if fired by whatever building fired the Superweapon. This respects controls like `SW.RangeMinimum/Maximum` (similar to Ares' GenericWarhead superweapon in this regard).
 
 In `rulesmd.ini`:

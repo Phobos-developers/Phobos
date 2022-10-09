@@ -39,10 +39,9 @@ bool BuildingExt::ExtData::HasSuperWeapon(const int index, const bool withUpgrad
 	for (auto i = 0; i < count; ++i)
 	{
 		const auto idxSW = pExt->GetSuperWeaponIndex(i, pThis->Owner);
+
 		if (idxSW == index)
-		{
 			return true;
-		}
 	}
 
 	if (withUpgrades)
@@ -55,10 +54,9 @@ bool BuildingExt::ExtData::HasSuperWeapon(const int index, const bool withUpgrad
 				for (auto i = 0; i < countUpgrade; ++i)
 				{
 					const auto idxSW = pUpgradeExt->GetSuperWeaponIndex(i, pThis->Owner);
+
 					if (idxSW == index)
-					{
 						return true;
-					}
 				}
 			}
 		}
@@ -279,14 +277,6 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 	}
 
 	return false;
-}
-
-CoordStruct BuildingExt::GetCenterCoords(BuildingClass* pBuilding, bool includeBib)
-{
-	CoordStruct ret = pBuilding->GetCoords();
-	ret.X += pBuilding->Type->GetFoundationWidth() / 2;
-	ret.Y += pBuilding->Type->GetFoundationHeight(includeBib) / 2;
-	return ret;
 }
 
 // Building only or allow units too?

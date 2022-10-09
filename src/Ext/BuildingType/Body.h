@@ -72,6 +72,7 @@ public:
 			, PlacementPreview_Translucency {}
 		{ }
 
+		// Ares 0.A functions
 		int GetSuperWeaponCount() const;
 		int GetSuperWeaponIndex(int index, HouseClass* pHouse) const;
 		int GetSuperWeaponIndex(int index) const;

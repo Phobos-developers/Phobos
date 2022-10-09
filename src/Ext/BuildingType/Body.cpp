@@ -9,6 +9,7 @@ BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
 
 int BuildingTypeExt::ExtData::GetSuperWeaponCount() const
 {
+	// 2 = SuperWeapon & SuperWeapon2
 	return 2 + this->SuperWeapons.Count;
 }
 
@@ -19,10 +20,9 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index, HouseClass* p
 	if (auto pSuper = pHouse->Supers.GetItemOrDefault(idxSW))
 	{
 		auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+
 		if (!pExt->IsAvailable(pHouse))
-		{
 			return -1;
-		}
 	}
 
 	return idxSW;
@@ -32,14 +32,11 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
 {
 	const auto pThis = this->OwnerObject();
 
+	// 2 = SuperWeapon & SuperWeapon2
 	if (index < 2)
-	{
 		return !index ? pThis->SuperWeapon : pThis->SuperWeapon2;
-	}
 	else if (index - 2 < this->SuperWeapons.Count)
-	{
 		return this->SuperWeapons[index - 2]->ArrayIndex;
-	}
 
 	return -1;
 }

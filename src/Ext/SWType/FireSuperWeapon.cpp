@@ -120,9 +120,7 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 			pTypeExt->ApplyLimboKill(pSW->Owner);
 
 		if (pTypeExt->Detonate_Warhead.isset() || pTypeExt->Detonate_Weapon.isset())
-		{
 			pTypeExt->ApplyDetonation(pSW->Owner, cell);
-		}
 	}
 }
 
@@ -325,21 +323,21 @@ bool SWTypeExt::ExtData::HasDesignator(HouseClass* pOwner, const CellStruct& coo
 bool SWTypeExt::ExtData::IsLaunchSiteEligible(const CellStruct& Coords, BuildingClass* pBuilding, bool ignoreRange) const
 {
 	if (!this->IsLaunchSite(pBuilding))
-	{
 		return false;
-	}
 
 	if (ignoreRange)
-	{
 		return true;
-	}
 
 	// get the range for this building
 	auto range = this->GetLaunchSiteRange(pBuilding);
 	const auto& minRange = range.first;
 	const auto& maxRange = range.second;
 
-	const auto center = CellClass::Coord2Cell(BuildingExt::GetCenterCoords(pBuilding));
+	CoordStruct coords = pBuilding->GetCoords();
+	coords.X += pBuilding->Type->GetFoundationWidth() / 2;
+	coords.Y += pBuilding->Type->GetFoundationHeight(false) / 2;
+
+	const auto center = CellClass::Coord2Cell(coords);
 	const auto distance = Coords.DistanceFrom(center);
 
 	// negative range values just pass the test
@@ -369,16 +367,13 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 
 	// check whether the optional aux building exists
 	if (pThis->AuxBuilding && pHouse->CountOwnedAndPresent(pThis->AuxBuilding) <= 0)
-	{
 		return false;
-	}
 
 	// allow only certain houses, disallow forbidden houses
 	const auto OwnerBits = 1u << pHouse->Type->ArrayIndex;
+
 	if (!(this->SW_RequiredHouses & OwnerBits) || (this->SW_ForbiddenHouses & OwnerBits))
-	{
 		return false;
-	}
 
 	// check that any aux building exist and no neg building
 	auto IsBuildingPresent = [pHouse](BuildingTypeClass* pType)
@@ -387,16 +382,14 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 	};
 
 	const auto& Aux = this->SW_AuxBuildings;
+
 	if (!Aux.empty() && std::none_of(Aux.begin(), Aux.end(), IsBuildingPresent))
-	{
 		return false;
-	}
 
 	const auto& Neg = this->SW_NegBuildings;
+
 	if (std::any_of(Neg.begin(), Neg.end(), IsBuildingPresent))
-	{
 		return false;
-	}
 
 	return true;
 }
