@@ -2,9 +2,44 @@
 
 #include <Ext/House/Body.h>
 #include <Utilities/GeneralUtils.h>
+#include <Ext/SWType/Body.h>
 
 template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
+
+int BuildingTypeExt::ExtData::GetSuperWeaponCount() const
+{
+	// 2 = SuperWeapon & SuperWeapon2
+	return 2 + this->SuperWeapons.Count;
+}
+
+int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index, HouseClass* pHouse) const
+{
+	auto idxSW = this->GetSuperWeaponIndex(index);
+
+	if (auto pSuper = pHouse->Supers.GetItemOrDefault(idxSW))
+	{
+		auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+
+		if (!pExt->IsAvailable(pHouse))
+			return -1;
+	}
+
+	return idxSW;
+}
+
+int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
+{
+	const auto pThis = this->OwnerObject();
+
+	// 2 = SuperWeapon & SuperWeapon2
+	if (index < 2)
+		return !index ? pThis->SuperWeapon : pThis->SuperWeapon2;
+	else if (index - 2 < this->SuperWeapons.Count)
+		return this->SuperWeapons[index - 2]->ArrayIndex;
+
+	return -1;
+}
 
 int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse)
 {
@@ -89,6 +124,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PowerPlantEnhancer_Buildings.Read(exINI, pSection, "PowerPlantEnhancer.PowerPlants");
 	this->PowerPlantEnhancer_Amount.Read(exINI, pSection, "PowerPlantEnhancer.Amount");
 	this->PowerPlantEnhancer_Factor.Read(exINI, pSection, "PowerPlantEnhancer.Factor");
+	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
 
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
@@ -173,6 +209,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PowerPlantEnhancer_Factor)
 		.Process(this->SuperWeapons)
 		.Process(this->OccupierMuzzleFlashes)
+		.Process(this->Powered_KillSpawns)
 		.Process(this->Refinery_UseStorage)
 		.Process(this->Grinding_AllowAllies)
 		.Process(this->Grinding_AllowOwner)

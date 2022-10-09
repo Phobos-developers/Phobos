@@ -37,7 +37,6 @@ public:
 		Valueable<bool> Interceptor_WeaponCumulativeDamage;
 		Valueable<bool> Interceptor_KeepIntact;
 		Valueable<CoordStruct> TurretOffset;
-		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
 		Nullable<int> Spawner_DelayFrames;
@@ -173,7 +172,6 @@ public:
 			, Interceptor_WeaponCumulativeDamage { false }
 			, Interceptor_KeepIntact { false }
 			, TurretOffset { { 0, 0, 0 } }
-			, Powered_KillSpawns { false }
 			, Spawner_LimitRange { false }
 			, Spawner_ExtraLimitRange { 0 }
 			, Spawner_DelayFrames {}

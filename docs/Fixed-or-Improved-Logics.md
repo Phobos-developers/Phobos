@@ -71,6 +71,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Trailer animations now inherit the owner of the object (animation, projectile or aircraft) they are attached to.
 - Buildings now correctly use laser parameters set for Secondary weapons instead of reading them from Primary weapon.
 - Fixed an issue that caused vehicles killed by damage dealt by a known house but without a known source TechnoType (f.ex animation warhead damage) to not be recorded as killed correctly and thus not spring map trigger events etc.
+
+![Waving trees](_static/images/tree-shake.gif)
+*Animated trees used in [Ion Shock](https://www.moddb.com/mods/tiberian-war-ionshock)*
+
 - `IsAnimated`, `AnimationRate` and `AnimationProbability` now work on TerrainTypes without `SpawnsTiberium` set to true.
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something.
 
@@ -156,7 +160,7 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 ### Customizable & new grinder properties
 
 ![image](_static/images/grinding.gif)
-*Using ally grinder, restricting to vehicles only and refund display* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
+*Using ally grinder, restricting to vehicles only and refund display ([Project Phantom](https://www.moddb.com/mods/project-phantom))*
 
 - You can now customize which types of objects a building with `Grinding` set can grind as well as the grinding sound.
   - `Grinding.AllowAllies` changes whether or not to allow units to enter allies' buildings.
@@ -264,7 +268,7 @@ OreGathering.Tiberiums=0         ; list of Tiberium IDs
 ### Customizable Teleport/Chrono Locomotor settings per TechnoType
 
 ![image](_static/images/cust-Chrono.gif)
-*Chrono Legionnaire and Ronco (hero) from [YR:New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
+*Chrono Legionnaire and Ronco using different teleportation settings in [YR: New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
 
 - You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`.
 - Only applicable to Techno that have Teleport/Chrono Locomotor attached.

@@ -38,6 +38,8 @@ public:
 		{ }
 
 		void DisplayGrinderRefund();
+		void ApplyPoweredKillSpawns();
+		bool HasSuperWeapon(int index, bool withUpgrades) const;
 
 		virtual ~ExtData() = default;
 

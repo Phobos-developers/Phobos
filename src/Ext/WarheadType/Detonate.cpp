@@ -74,11 +74,11 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			}
 		}
 
-		for (const auto pSWType : this->LaunchSW)
+		for (const int swIdx : this->LaunchSW)
 		{
-			if (const auto pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType)))
+			if (const auto pSuper = pHouse->Supers.GetItem(swIdx))
 			{
-				const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
+				const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 				const auto cell = CellClass::Coord2Cell(coords);
 				if ((pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)) || !this->LaunchSW_RealLaunch)
 				{
@@ -230,9 +230,8 @@ void WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, TechnoC
 
 void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	if (pTarget->WhatAmI() == AbstractType::Infantry)
+	if (auto pInf = abstract_cast<InfantryClass*>(pTarget))
 	{
-		auto pInf = abstract_cast<InfantryClass*>(pTarget);
 		if (pInf->IsDisguised())
 			pInf->Disguised = false;
 	}
@@ -258,6 +257,9 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 		if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent)
 			return;
 	}
+
+	if (pHouse && !EnumFunctions::CanTargetHouse(this->Crit_AffectsHouses, pHouse, pTarget->Owner))
+		return;
 
 	if (!EnumFunctions::IsCellEligible(pTarget->GetCell(), this->Crit_Affects))
 		return;

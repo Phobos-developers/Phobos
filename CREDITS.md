@@ -20,6 +20,7 @@ This page lists all the individual contributions to the project by their author.
   - Shield logic
   - Non-ASCII input fix
   - Building Placement Preview Adjustment
+  - Check for Changelog/Documentation/Credits in Pull Requests
 - **Kerbiter (Metadorius)**:
   - SHP debris respect `Shadow` fix
   - Building upgrades enhancement
@@ -106,18 +107,18 @@ This page lists all the individual contributions to the project by their author.
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
   - `Spawner.LimitRange`
-  - ScriptType Actions 71 to 113, 124 to 126
+  - Majority of ScriptType actions
   - MC deployer fixes
   - Help with docs
   - Automatic Passenger Deletion logic
   - `Fire SW At Location/Waypoint` Trigger Action
   - Kill Object Automatically logic prototype
   - Customizable resource storage
-  - Override Uncloaked Underwater attack behavior
+  - Override uncloaked underwater attack behavior
   - AI Aircraft docks fix
-  - Shared Ammo logic
-  - Customizable FLH When Infantry Is Prone Or Deployed
-  - Initial Strength for Cloned Infantry
+  - Shared ammo logic
+  - Customizable FLH when infantry is prone or deployed
+  - Initial strength for cloned infantry
 - **Starkku**:
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
@@ -160,6 +161,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead detonation on all objects on map
   - Animated TerrainTypes extension
   - Exploding unit passenger killing customization
+  - Warhead / weapon detonation at superweapon target cell
   - Spawner spawn delay customization
   - Cluster scatter distance customization
   - FlakScatter distance customization
@@ -198,7 +200,7 @@ This page lists all the individual contributions to the project by their author.
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
 - **Chasheen (Chasheenburg)** - CN docs help
-- **Ares developers** - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code, prototype deployer fixes
+- **Ares developers** - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code, prototype deployer fixes, Superweapon launch site & availability code
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
 - **AlexB** - Original FlyingStrings implementation

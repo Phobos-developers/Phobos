@@ -1,5 +1,6 @@
 #pragma once
 #include <BuildingTypeClass.h>
+#include <SuperClass.h>
 #include <SuperWeaponTypeClass.h>
 
 #include <Helpers/Macro.h>
@@ -23,7 +24,7 @@ public:
 		Nullable<float> PowerPlantEnhancer_Factor;
 
 		DynamicVectorClass<Point2D> OccupierMuzzleFlashes;
-
+		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Refinery_UseStorage;
 
 		Valueable<bool> Grinding_AllowAllies;
@@ -51,6 +52,7 @@ public:
 			, PowerPlantEnhancer_Amount {}
 			, PowerPlantEnhancer_Factor {}
 			, OccupierMuzzleFlashes()
+			, Powered_KillSpawns { false }
 			, Refinery_UseStorage { false }
 			, Grinding_AllowAllies { false }
 			, Grinding_AllowOwner { true }
@@ -69,6 +71,11 @@ public:
 			, PlacementPreview_Palette {}
 			, PlacementPreview_Translucency {}
 		{ }
+
+		// Ares 0.A functions
+		int GetSuperWeaponCount() const;
+		int GetSuperWeaponIndex(int index, HouseClass* pHouse) const;
+		int GetSuperWeaponIndex(int index) const;
 
 		virtual ~ExtData() = default;
 

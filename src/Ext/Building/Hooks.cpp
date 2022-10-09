@@ -6,8 +6,8 @@
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
 
-
-DEFINE_HOOK(0x43FB29, BuildingClass_AI, 0x8)
+//After TechnoClass_AI?
+DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 {
 	GET(BuildingClass*, pThis, ESI);
 
@@ -23,6 +23,7 @@ DEFINE_HOOK(0x43FB29, BuildingClass_AI, 0x8)
 	*/
 
 	pExt->DisplayGrinderRefund();
+	pExt->ApplyPoweredKillSpawns();
 
 	return 0;
 }
