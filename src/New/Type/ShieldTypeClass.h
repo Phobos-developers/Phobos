@@ -6,8 +6,6 @@
 #include <Ext/Rules/Body.h>
 #include <Utilities/TemplateDef.h>
 
-#include <New/Type/DigitalDisplayTypeClass.h>
-
 class ShieldTypeClass final : public Enumerable<ShieldTypeClass>
 {
 public:
@@ -33,6 +31,7 @@ public:
 	Valueable<double> PassPercent;
 
 	Nullable<bool> AllowTransfer;
+
 	Valueable<Vector3D<int>> Pips;
 	Nullable<SHPStruct*> Pips_Background;
 	Valueable<Vector3D<int>> Pips_Building;
