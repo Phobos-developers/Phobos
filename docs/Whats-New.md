@@ -239,6 +239,9 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### 0.3.1
 
+<details>
+  <summary>Click to show</summary>
+
 New:
 - `Crit.AffectsHouses` for critical hit system (by Starkku)
 - Warhead or weapon detonation at superweapon target cell (by Starkku)
@@ -247,6 +250,8 @@ New:
 - Customizable FlakScatter distance (by Starkku)
 - Customizable debris & meteor impact and warhead detonation behaviour (by Starkku, Otamaa)
 - Custom warhead debris animations (by Starkku)
+</details>
+
 
 ### 0.3
 
