@@ -24,7 +24,7 @@ DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDi
 }
 
 #define CAN_BLINK_DISGUISE(pTechno) \
-RulesExt::Global()->ShowAllyDisguiseBlinking && (HouseClass::IsPlayerObserver() || pTechno->Owner->IsAlliedWith(HouseClass::Player))
+HouseClass::IsCurrentPlayerObserver() || (RulesExt::Global()->ShowAllyDisguiseBlinking && pTechno->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
 
 DEFINE_HOOK(0x70EE53, TechnoClass_IsClearlyVisibleTo_BlinkAllyDisguise1, 0xA)
 {
@@ -35,7 +35,7 @@ DEFINE_HOOK(0x70EE53, TechnoClass_IsClearlyVisibleTo_BlinkAllyDisguise1, 0xA)
 
 	if (CAN_BLINK_DISGUISE(pThis))
 		return SkipGameCode;
-	else if (accum && !pThis->Owner->ControlledByPlayer())
+	else if (accum && !pThis->Owner->IsControlledByCurrentPlayer())
 		return Return;
 
 	return SkipGameCode;

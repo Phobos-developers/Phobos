@@ -714,7 +714,7 @@ NoSecondaryWeaponFallback.AllowAA=false  ; boolean
 
 ### Disguise logic additions (disguise-based movement speed, ally disguise blinking)
 
-- `ShowAllyDisguiseBlinking`, if set to true, will allow players to see blinking disguises on disguised ally units. Additionally observer players can see blinking disguises of all players.
+- `ShowAllyDisguiseBlinking`, if set to true, will allow players to see blinking disguises on disguised ally units.
 - `UseDisguiseMovementSpeed`, if set, makes disguised unit adjust its movement speed to match that of the disguise, if applicable. Note that this applies even when the disguise is revealed, as long as it has not been removed.
 
 In `rulesmd.ini`:

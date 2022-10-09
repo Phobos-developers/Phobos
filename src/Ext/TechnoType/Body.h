@@ -270,7 +270,7 @@ public:
 			, DeployFireWeapon {}
 			, TargetZoneScanType { TargetZoneScanType::Same }
 			, Insignia {}
-			, InsigniaFrames {{ -1, -1, -1 }}
+			, InsigniaFrames { { -1, -1, -1 } }
 			, InsigniaFrame { -1 }
 			, Insignia_ShowEnemy {}
 		{ }

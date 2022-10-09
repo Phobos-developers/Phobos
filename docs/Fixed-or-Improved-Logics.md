@@ -121,6 +121,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Transports with `OpenTopped=true` and weapon that has `Burst` above 1 and passengers firing out no longer have the passenger firing offset shift lateral position based on burst index.
 - Fixed disguised infantry not using custom palette for drawing the disguise when needed.
 - Disguised infantry now show appropriate insignia when disguise is visible based on the disguise type and house.
+- Disguises will now blink for observers, allowing them to see if an unit is disguised.
 
 ## Animations
 
