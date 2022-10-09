@@ -23,7 +23,7 @@ public:
 
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
-		ValueableVector<TechnoTypeClass*> LimboDelivery_Types;
+		ValueableVector<BuildingTypeClass*> LimboDelivery_Types;
 		ValueableVector<int> LimboDelivery_IDs;
 		ValueableVector<float> LimboDelivery_RollChances;
 		Valueable<AffectedHouse> LimboKill_Affected;

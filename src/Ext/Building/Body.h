@@ -38,6 +38,7 @@ public:
 		{ }
 
 		void DisplayGrinderRefund();
+		void ApplyPoweredKillSpawns();
 
 		virtual ~ExtData() = default;
 

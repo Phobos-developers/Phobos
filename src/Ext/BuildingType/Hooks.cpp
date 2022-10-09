@@ -92,16 +92,15 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 		int nImageFrame = 0;
 		SHPStruct* pImage = pTypeExt->PlacementPreview_Shape.GetSHP();
 		{
-			if (pImage == nullptr)
+			if (!pImage)
 			{
 				pImage = pType->LoadBuildup();
-
-				if (pImage != nullptr)
+				if (pImage)
 					nImageFrame = ((pImage->Frames / 2) - 1);
 				else
 					pImage = pType->GetImage();
 
-				if (pImage == nullptr)
+				if (!pImage)
 					return 0;
 			}
 

@@ -22,8 +22,9 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 - Automatic self-destruction logic logic has been reimplemented, `Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been remade/renamed and require adjustments to function.
 - `DetachedFromOwner` on weapons is deprecated. This has been replaced by `AllowDamageOnSelf` on warheads.
-- Script actions 125 and 126 (timed jump) now take the time measured in ingame seconds instead of frames. Divide your value by 15 to accomodate to this change.
+- Timed jump script actions now take the time measured in ingame seconds instead of frames. Divide your value by 15 to accomodate to this change.
 - [Placement Preview](User-Interface.md#placement-preview) logic has been adjusted, `BuildingPlacementPreview.DefaultTranslucentLevel`, `BuildingPlacementGrid.TranslucentLevel`, `PlacementPreview.Show`, `PlacementPreview.TranslucentLevel` and `ShowBuildingPlacementPreview` tags have been remade/renamed and require adjustments to function. In addition, you must explicitly enable this feature by specifying `[AudioVisual]->PlacementPreview=yes`.
+- Existing script actions were renumbered, please use the migration utility to change the numbers to the correct ones.
 
 
 #### From 0.2.2.2
@@ -31,6 +32,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - Keys `rulesmd.ini->[SOMEWARHEAD]->PenetratesShield` and `rulesmd.ini->[SOMEWARHEAD]->BreaksShield` have been changed to `Shield.Penetrate` and `Shield.Break`, respectively.
 - `Rad.NoOwner` on weapons is deprecated. This has been replaced by `RadHasOwner` key on radiation types itself. It also defaults to no, so radiation once again has no owner house by default.
 - `RadApplicationDelay` and `RadApplicationDelay.Building` on custom radiation types are now only used if `[Radiation]` -> `UseGlobalRadApplicationDelay` is explicitly set to false, otherwise values from `[Radiation]` are used.
+- Existing script actions were renumbered, please use the migration utility to change the numbers to the correct ones.
 
 #### From 0.1.1
 
@@ -147,81 +149,81 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   BuiltInType=5
 
   [ScriptsRA2]
-  71=Timed Area Guard,20,0,1,[LONG DESC]
-  72=Load Onto Transports,0,0,1,[LONG DESC]
-  73=Wait until ammo is full,0,0,1,[LONG DESC]
-  500=Local variable set,22,0,1,[LONG DESC]
-  501=Local variable add,22,0,1,[LONG DESC]
-  502=Local variable minus,22,0,1,[LONG DESC]
-  503=Local variable multiply,22,0,1,[LONG DESC]
-  504=Local variable divide,22,0,1,[LONG DESC]
-  505=Local variable mod,22,0,1,[LONG DESC]
-  506=Local variable leftshift,22,0,1,[LONG DESC]
-  507=Local variable rightshift,22,0,1,[LONG DESC]
-  508=Local variable reverse,22,0,1,[LONG DESC]
-  509=Local variable xor,22,0,1,[LONG DESC]
-  510=Local variable or,22,0,1,[LONG DESC]
-  511=Local variable and,22,0,1,[LONG DESC]
-  512=Global variable set,23,0,1,[LONG DESC]
-  513=Global variable add,23,0,1,[LONG DESC]
-  514=Global variable minus,23,0,1,[LONG DESC]
-  515=Global variable multiply,23,0,1,[LONG DESC]
-  516=Global variable divide,23,0,1,[LONG DESC]
-  517=Global variable mod,23,0,1,[LONG DESC]
-  518=Global variable leftshift,23,0,1,[LONG DESC]
-  519=Global variable rightshift,23,0,1,[LONG DESC]
-  520=Global variable reverse,23,0,1,[LONG DESC]
-  521=Global variable xor,23,0,1,[LONG DESC]
-  522=Global variable or,23,0,1,[LONG DESC]
-  523=Global variable and,23,0,1,[LONG DESC]
-  524=Local variable set by local variable,24,0,1,[LONG DESC]
-  525=Local variable add by local variable,24,0,1,[LONG DESC]
-  526=Local variable minus by local variable,24,0,1,[LONG DESC]
-  527=Local variable multiply by local variable,24,0,1,[LONG DESC]
-  528=Local variable divide by local variable,24,0,1,[LONG DESC]
-  529=Local variable mod by local variable,24,0,1,[LONG DESC]
-  530=Local variable leftshift by local variable,24,0,1,[LONG DESC]
-  531=Local variable rightshift by local variable,24,0,1,[LONG DESC]
-  532=Local variable reverse by local variable,24,0,1,[LONG DESC]
-  533=Local variable xor by local variable,24,0,1,[LONG DESC]
-  534=Local variable or by local variable,24,0,1,[LONG DESC]
-  535=Local variable and by local variable,24,0,1,[LONG DESC]
-  536=Global variable set by local variable,25,0,1,[LONG DESC]
-  537=Global variable add by local variable,25,0,1,[LONG DESC]
-  538=Global variable minus by local variable,25,0,1,[LONG DESC]
-  539=Global variable multiply by local variable,25,0,1,[LONG DESC]
-  540=Global variable divide by local variable,25,0,1,[LONG DESC]
-  541=Global variable mod by local variable,25,0,1,[LONG DESC]
-  542=Global variable leftshift by local variable,25,0,1,[LONG DESC]
-  543=Global variable rightshift by local variable,25,0,1,[LONG DESC]
-  544=Global variable reverse by local variable,25,0,1,[LONG DESC]
-  545=Global variable xor by local variable,25,0,1,[LONG DESC]
-  546=Global variable or by local variable,25,0,1,[LONG DESC]
-  547=Global variable and by local variable,25,0,1,[LONG DESC]
-  548=Local variable set by global variable,26,0,1,[LONG DESC]
-  549=Local variable add by global variable,26,0,1,[LONG DESC]
-  550=Local variable minus by global variable,26,0,1,[LONG DESC]
-  551=Local variable multiply by global variable,26,0,1,[LONG DESC]
-  552=Local variable divide by global variable,26,0,1,[LONG DESC]
-  553=Local variable mod by global variable,26,0,1,[LONG DESC]
-  554=Local variable leftshift by global variable,26,0,1,[LONG DESC]
-  555=Local variable rightshift by global variable,26,0,1,[LONG DESC]
-  556=Local variable reverse by global variable,26,0,1,[LONG DESC]
-  557=Local variable xor by global variable,26,0,1,[LONG DESC]
-  558=Local variable or by global variable,26,0,1,[LONG DESC]
-  559=Local variable and by global variable,26,0,1,[LONG DESC]
-  560=Global variable set by global variable,27,0,1,[LONG DESC]
-  561=Global variable add by global variable,27,0,1,[LONG DESC]
-  562=Global variable minus by global variable,27,0,1,[LONG DESC]
-  563=Global variable multiply by global variable,27,0,1,[LONG DESC]
-  564=Global variable divide by global variable,27,0,1,[LONG DESC]
-  565=Global variable mod by global variable,27,0,1,[LONG DESC]
-  566=Global variable leftshift by global variable,27,0,1,[LONG DESC]
-  567=Global variable rightshift by global variable,27,0,1,[LONG DESC]
-  568=Global variable reverse by global variable,27,0,1,[LONG DESC]
-  569=Global variable xor by global variable,27,0,1,[LONG DESC]
-  570=Global variable or by global variable,27,0,1,[LONG DESC]
-  571=Global variable and by global variable,27,0,1,[LONG DESC]
+  10100=Timed Area Guard,20,0,1,[LONG DESC]
+  10103=Load Onto Transports,0,0,1,[LONG DESC]
+  10101=Wait until ammo is full,0,0,1,[LONG DESC]
+  18000=Local variable set,22,0,1,[LONG DESC]
+  18001=Local variable add,22,0,1,[LONG DESC]
+  18002=Local variable minus,22,0,1,[LONG DESC]
+  18003=Local variable multiply,22,0,1,[LONG DESC]
+  18004=Local variable divide,22,0,1,[LONG DESC]
+  18005=Local variable mod,22,0,1,[LONG DESC]
+  18006=Local variable leftshift,22,0,1,[LONG DESC]
+  18007=Local variable rightshift,22,0,1,[LONG DESC]
+  18008=Local variable reverse,22,0,1,[LONG DESC]
+  18009=Local variable xor,22,0,1,[LONG DESC]
+  18010=Local variable or,22,0,1,[LONG DESC]
+  18011=Local variable and,22,0,1,[LONG DESC]
+  18012=Global variable set,23,0,1,[LONG DESC]
+  18013=Global variable add,23,0,1,[LONG DESC]
+  18014=Global variable minus,23,0,1,[LONG DESC]
+  18015=Global variable multiply,23,0,1,[LONG DESC]
+  18016=Global variable divide,23,0,1,[LONG DESC]
+  18017=Global variable mod,23,0,1,[LONG DESC]
+  18018=Global variable leftshift,23,0,1,[LONG DESC]
+  18019=Global variable rightshift,23,0,1,[LONG DESC]
+  18020=Global variable reverse,23,0,1,[LONG DESC]
+  18021=Global variable xor,23,0,1,[LONG DESC]
+  18022=Global variable or,23,0,1,[LONG DESC]
+  18023=Global variable and,23,0,1,[LONG DESC]
+  18024=Local variable set by local variable,24,0,1,[LONG DESC]
+  18025=Local variable add by local variable,24,0,1,[LONG DESC]
+  18026=Local variable minus by local variable,24,0,1,[LONG DESC]
+  18027=Local variable multiply by local variable,24,0,1,[LONG DESC]
+  18028=Local variable divide by local variable,24,0,1,[LONG DESC]
+  18029=Local variable mod by local variable,24,0,1,[LONG DESC]
+  18030=Local variable leftshift by local variable,24,0,1,[LONG DESC]
+  18031=Local variable rightshift by local variable,24,0,1,[LONG DESC]
+  18032=Local variable reverse by local variable,24,0,1,[LONG DESC]
+  18033=Local variable xor by local variable,24,0,1,[LONG DESC]
+  18034=Local variable or by local variable,24,0,1,[LONG DESC]
+  18035=Local variable and by local variable,24,0,1,[LONG DESC]
+  18036=Global variable set by local variable,25,0,1,[LONG DESC]
+  18037=Global variable add by local variable,25,0,1,[LONG DESC]
+  18038=Global variable minus by local variable,25,0,1,[LONG DESC]
+  18039=Global variable multiply by local variable,25,0,1,[LONG DESC]
+  18040=Global variable divide by local variable,25,0,1,[LONG DESC]
+  18041=Global variable mod by local variable,25,0,1,[LONG DESC]
+  18042=Global variable leftshift by local variable,25,0,1,[LONG DESC]
+  18043=Global variable rightshift by local variable,25,0,1,[LONG DESC]
+  18044=Global variable reverse by local variable,25,0,1,[LONG DESC]
+  18045=Global variable xor by local variable,25,0,1,[LONG DESC]
+  18046=Global variable or by local variable,25,0,1,[LONG DESC]
+  18047=Global variable and by local variable,25,0,1,[LONG DESC]
+  18048=Local variable set by global variable,26,0,1,[LONG DESC]
+  18049=Local variable add by global variable,26,0,1,[LONG DESC]
+  18050=Local variable minus by global variable,26,0,1,[LONG DESC]
+  18051=Local variable multiply by global variable,26,0,1,[LONG DESC]
+  18052=Local variable divide by global variable,26,0,1,[LONG DESC]
+  18053=Local variable mod by global variable,26,0,1,[LONG DESC]
+  18054=Local variable leftshift by global variable,26,0,1,[LONG DESC]
+  18055=Local variable rightshift by global variable,26,0,1,[LONG DESC]
+  18056=Local variable reverse by global variable,26,0,1,[LONG DESC]
+  18057=Local variable xor by global variable,26,0,1,[LONG DESC]
+  18058=Local variable or by global variable,26,0,1,[LONG DESC]
+  18059=Local variable and by global variable,26,0,1,[LONG DESC]
+  18060=Global variable set by global variable,27,0,1,[LONG DESC]
+  18061=Global variable add by global variable,27,0,1,[LONG DESC]
+  18062=Global variable minus by global variable,27,0,1,[LONG DESC]
+  18063=Global variable multiply by global variable,27,0,1,[LONG DESC]
+  18064=Global variable divide by global variable,27,0,1,[LONG DESC]
+  18065=Global variable mod by global variable,27,0,1,[LONG DESC]
+  18066=Global variable leftshift by global variable,27,0,1,[LONG DESC]
+  18067=Global variable rightshift by global variable,27,0,1,[LONG DESC]
+  18068=Global variable reverse by global variable,27,0,1,[LONG DESC]
+  18069=Global variable xor by global variable,27,0,1,[LONG DESC]
+  18070=Global variable or by global variable,27,0,1,[LONG DESC]
+  18071=Global variable and by global variable,27,0,1,[LONG DESC]
 
   [ScriptParams]
   22=Local variables,-1
@@ -258,7 +260,7 @@ New:
 - Adds a "Load Game" button to the retry dialog on mission failure (by secsome)
 - Default disguise for individual InfantryTypes (by secsome)
 - Quicksave hotkey command (by secsome)
-- Save Game Trigger Action (by secsome)
+- Save Game trigger action (by secsome)
 - Numeric Variables (by secsome)
 - TechnoType's tooltip would display it's build time now (by secsome)
 - Customizable tooltip background color and opacity (by secsome)
@@ -268,18 +270,18 @@ New:
 - XDrawOffset for animations (by Morton)
 - Customizable OpenTopped properties (by Otamaa)
 - Automatic Passenger Deletion (by FS-21)
-- Script Action 74 to 81, 84 to 91 and 104 to 105 for new AI attacks (by FS-21)
-- Script Actions 82 & 83 for modifying AI Trigger Current Weight (by FS-21)
-- Script Action 92 for waiting & repeat the same new AI attack if no target was found (by FS-21)
-- Script Action 93 that modifies the Team's Trigger Weight when ends the new attack action (by FS-21)
-- Script Action 94 for picking a random script from a list (by FS-21)
-- Script Action 95 to 102 and 106 to 109 for new AI movements towards certain objects (by FS-21)
-- Script Action 103 that Modify Target Distance in the new move actions (by FS-21)
-- Script Action 110 that Modify how ends the new move actions (by FS-21)
-- Script Action 111 that un-register Team success, is just the opposite effect of Action 49 (by FS-21)
-- Script Action 112 to regroup temporarily around the Team Leader (by FS-21)
-- Script Action 113 to Randomly Skip Next Action (by FS-21)
-- Script Action 124 to 126 for timed Script Action jumps (by FS-21)
+- Script actions for new AI attacks (by FS-21)
+- Script actions for modifying AI Trigger Current Weight (by FS-21)
+- Script action for waiting & repeat the same new AI attack if no target was found (by FS-21)
+- Script action that modifies the Team's Trigger Weight when ends the new attack action (by FS-21)
+- Script action for picking a random script from a list (by FS-21)
+- Script action for new AI movements towards certain objects (by FS-21)
+- Script action that modify target distance in the new move actions (by FS-21)
+- Script action that modify how ends the new move actions (by FS-21)
+- Script action that un-register Team success (by FS-21)
+- Script action to regroup temporarily around the Team Leader (by FS-21)
+- Script action to randomly skip next action (by FS-21)
+- Script action for timed script action jumps (by FS-21)
 - ObjectInfo now shows current Target and AI Trigger data (by FS-21)
 - Shield absorption and passthrough customization (by Morton)
 - Limbo Delivery of buildings (by Morton)

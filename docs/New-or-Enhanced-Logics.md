@@ -407,6 +407,9 @@ Trajectory.Speed=100.0  ; floating point value
 
 #### Straight trajectory
 
+![Straigh trajectory blasters](_static/images/straight.gif)
+*Straight trajectory used to make blasters in a private mod by @brsajo#9745*
+
 - Self-explanatory, is a straight-shot trajectory.
 
 In `rulesmd.ini`:

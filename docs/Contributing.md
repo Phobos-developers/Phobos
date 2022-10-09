@@ -193,6 +193,13 @@ When you found out how the engine works and where you need to extend the logic y
 
 To contribute a feature or some sort of a change you you would need a Git client (I recommend [GitKraken](https://www.gitkraken.com/) personally). Fork, clone the repo, preferably make a new branch, then edit/add the code or whatever you want to contribute. Commit, push, start a pull request, wait for it to get reviewed, or merged.
 
+If you contribute something, please make sure:
+- you write documentation for the change;
+- you mention the change in the changelog and migration sections in the [what's new page](Whats-New.md);
+- you mention your contribution in the [credits page](CREDITS.md).
+
+If your change does not fit in standard criteria or too small that it doesn't need the above - add `[Minor]` to your pull request's title, so the CI won't yell at you for no reason.
+
 ```{hint}
 Every pull request push trigger a nightly build for the latest pushed commit, so you can check the build status at the bottom of PR page, press `Show all checks`, go to details of a build run and get the zip containing built DLL and PDB (for your testers, f. ex.), or download a build from an automatically posted comment.
 ```

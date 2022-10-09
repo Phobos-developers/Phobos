@@ -37,7 +37,6 @@ public:
 		Valueable<bool> Interceptor_WeaponCumulativeDamage;
 		Valueable<bool> Interceptor_KeepIntact;
 		Valueable<CoordStruct> TurretOffset;
-		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Spawn_LimitedRange;
 		Valueable<int> Spawn_LimitedExtraRange;
 		Nullable<bool> Harvester_Counted;
@@ -174,7 +173,6 @@ public:
 			, Interceptor_WeaponCumulativeDamage { false }
 			, Interceptor_KeepIntact { false }
 			, TurretOffset { { 0, 0, 0 } }
-			, Powered_KillSpawns { false }
 			, Spawn_LimitedRange { false }
 			, Spawn_LimitedExtraRange { 0 }
 			, Harvester_Counted {}

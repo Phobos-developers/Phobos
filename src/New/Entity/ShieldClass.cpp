@@ -6,7 +6,7 @@
 #include <Ext/WarheadType/Body.h>
 
 #include <Utilities/GeneralUtils.h>
-
+#include <GameStrings.h>
 #include <AnimClass.h>
 #include <HouseClass.h>
 #include <RadarEventClass.h>
@@ -236,20 +236,17 @@ void ShieldClass::ResponseAttack()
 	if (this->Techno->Owner != HouseClass::CurrentPlayer)
 		return;
 
-	if (this->Techno->WhatAmI() == AbstractType::Building)
+	if (const auto pBld = abstract_cast<BuildingClass*>(this->Techno))
 	{
-		const auto pBld = abstract_cast<BuildingClass*>(this->Techno);
 		this->Techno->Owner->BuildingUnderAttack(pBld);
 	}
-	else if (this->Techno->WhatAmI() == AbstractType::Unit)
+	else if (const auto pUnit = abstract_cast<UnitClass*>(this->Techno))
 	{
-		const auto pUnit = abstract_cast<UnitClass*>(this->Techno);
 		if (pUnit->Type->Harvester)
 		{
 			const auto pos = pUnit->GetDestination(pUnit);
-			enum { EVA_OreMinerUnderAttack = 0x824784 };
 			if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, CellClass::Coord2Cell(pos)))
-				VoxClass::Play((const char*)EVA_OreMinerUnderAttack);
+				VoxClass::Play(GameStrings::EVA_OreMinerUnderAttack);
 		}
 	}
 }

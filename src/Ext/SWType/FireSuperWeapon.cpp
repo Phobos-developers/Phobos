@@ -27,48 +27,49 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 			return;
 	}
 
-	BuildingClass* pBuilding = abstract_cast<BuildingClass*>(pType->CreateObject(pOwner));
-
-	// All of these are mandatory
-	pBuilding->InLimbo = false;
-	pBuilding->IsAlive = true;
-	pBuilding->IsOnMap = true;
-	pOwner->RegisterGain(pBuilding, false);
-	pOwner->UpdatePower();
-	pOwner->RecheckTechTree = true;
-	pOwner->RecheckPower = true;
-	pOwner->RecheckRadar = true;
-	pOwner->Buildings.AddItem(pBuilding);
-
-	// increment limbo build count
-	if (pOwnerExt)
-		pOwnerExt->OwnedLimboBuildingTypes.Increment(pType->ArrayIndex);
-
-	// Different types of building logics
-	if (pType->ConstructionYard)
-		pOwner->ConYards.AddItem(pBuilding); // why would you do that????
-
-	if (pType->SecretLab)
-		pOwner->SecretLabs.AddItem(pBuilding);
-
-	if (pType->FactoryPlant)
+	if (auto const pBuilding = static_cast<BuildingClass*>(pType->CreateObject(pOwner)))
 	{
-		pOwner->FactoryPlants.AddItem(pBuilding);
-		pOwner->CalculateCostMultipliers();
+		// All of these are mandatory
+		pBuilding->InLimbo = false;
+		pBuilding->IsAlive = true;
+		pBuilding->IsOnMap = true;
+		pOwner->RegisterGain(pBuilding, false);
+		pOwner->UpdatePower();
+		pOwner->RecheckTechTree = true;
+		pOwner->RecheckPower = true;
+		pOwner->RecheckRadar = true;
+		pOwner->Buildings.AddItem(pBuilding);
+
+		// increment limbo build count
+		if (pOwnerExt)
+			pOwnerExt->OwnedLimboBuildingTypes.Increment(pType->ArrayIndex);
+
+		// Different types of building logics
+		if (pType->ConstructionYard)
+			pOwner->ConYards.AddItem(pBuilding); // why would you do that????
+
+		if (pType->SecretLab)
+			pOwner->SecretLabs.AddItem(pBuilding);
+
+		if (pType->FactoryPlant)
+		{
+			pOwner->FactoryPlants.AddItem(pBuilding);
+			pOwner->CalculateCostMultipliers();
+		}
+
+		if (pType->OrePurifier)
+			pOwner->NumOrePurifiers++;
+
+		// BuildingClass::Place is where Ares hooks secret lab expansion
+		// pTechnoBuilding->Place(false);
+		// even with it no bueno yet, plus new issues
+		// probably should just port it from Ares 0.A and be done
+
+		// LimboKill init
+		auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
+		if (pBuildingExt && ID != -1)
+			pBuildingExt->LimboID = ID;
 	}
-
-	if (pType->OrePurifier)
-		pOwner->NumOrePurifiers++;
-
-	// BuildingClass::Place is where Ares hooks secret lab expansion
-	// pTechnoBuilding->Place(false);
-	// even with it no bueno yet, plus new issues
-	// probably should just port it from Ares 0.A and be done
-
-	// LimboKill init
-	auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
-	if (pBuildingExt && ID != -1)
-		pBuildingExt->LimboID = ID;
 }
 
 inline void LimboDelete(BuildingClass* pBuilding, HouseClass* pTargetHouse)
@@ -154,9 +155,7 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 				if (index < ids)
 					id = this->LimboDelivery_IDs[index];
 
-				// Morton, why not ValueableVector<BuildingTypeClass*> for your LimboDelivery_Types?
-				if (auto const deliverBldType = abstract_cast<BuildingTypeClass*>(this->LimboDelivery_Types[index]))
-					LimboCreate(deliverBldType, pHouse, id);
+				LimboCreate(this->LimboDelivery_Types[index], pHouse, id);
 			}
 		}
 	}
@@ -171,7 +170,7 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 			if (i < ids)
 				id = this->LimboDelivery_IDs[i];
 
-			LimboCreate(abstract_cast<BuildingTypeClass*>(this->LimboDelivery_Types[i]), pHouse, id);
+			LimboCreate(this->LimboDelivery_Types[i], pHouse, id);
 		}
 	}
 }
@@ -227,7 +226,7 @@ bool SWTypeExt::ExtData::IsInhibitorEligible(HouseClass* pOwner, const CellStruc
 		auto center = pTechno->GetCoords();
 		if (auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
 		{
-			center = pBuilding->GetCoords();
+			//center = pBuilding->GetCoords();
 			center.X += pBuilding->Type->GetFoundationWidth() / 2;
 			center.Y += pBuilding->Type->GetFoundationHeight(false) / 2;
 		}
@@ -271,7 +270,7 @@ bool SWTypeExt::ExtData::IsDesignatorEligible(HouseClass* pOwner, const CellStru
 		auto center = pTechno->GetCoords();
 		if (auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
 		{
-			center = pBuilding->GetCoords();
+			//center = pBuilding->GetCoords();
 			center.X += pBuilding->Type->GetFoundationWidth() / 2;
 			center.Y += pBuilding->Type->GetFoundationHeight(false) / 2;
 		}
