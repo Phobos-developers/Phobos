@@ -62,6 +62,7 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 
 	if (pTechno && pTechno->Target)
 	{
+
 		auto pTarget = abstract_cast<TechnoClass*>(pTechno->Target);
 
 		if (!pTarget)
@@ -72,6 +73,7 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
 		{
 			auto pTargetType = pTarget->GetTechnoType();
+
 
 			if (pTechnoTypeExt->ForceWeapon_Naval_Decloaked >= 0 &&
 				pTargetType->Cloakable && pTargetType->Naval &&
@@ -257,20 +259,25 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	{
 		const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
 
-		CellClass* targetCell = nullptr;
+		CellClass* pTargetCell = nullptr;
 
-		// Ignore target cell for airborne technos.
-		if (!pTechno || !pTechno->IsInAir())
+		if (pTarget)
 		{
 			if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-				targetCell = pCell;
+			{
+				pTargetCell = pCell;
+			}
 			else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
-				targetCell = pObject->GetCell();
+			{
+				// Ignore target cell for technos that are in air.
+				if ((pTechno && !pTechno->IsInAir()) || pObject != pTechno)
+					pTargetCell = pObject->GetCell();
+			}
 		}
 
-		if (targetCell)
+		if (pTargetCell)
 		{
-			if (!EnumFunctions::IsCellEligible(targetCell, pWeaponExt->CanTarget, true))
+			if (!EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true))
 				return CannotFire;
 		}
 

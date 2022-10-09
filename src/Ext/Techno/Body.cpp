@@ -1048,15 +1048,15 @@ WeaponTypeClass* TechnoExt::GetDeployFireWeapon(TechnoClass* pThis, int& weaponI
 // Compares two weapons and returns index of which one is eligible to fire against current target (0 = first, 1 = second), or -1 if neither works.
 int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback)
 {
-	CellClass* targetCell = nullptr;
+	CellClass* pTargetCell = nullptr;
 
 	// Ignore target cell for airborne target technos.
 	if (!pTargetTechno || !pTargetTechno->IsInAir())
 	{
 		if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-			targetCell = pCell;
+			pTargetCell = pCell;
 		else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
-			targetCell = pObject->GetCell();
+			pTargetCell = pObject->GetCell();
 	}
 
 	const auto pWeaponStructOne = pThis->GetWeapon(weaponIndexOne);
@@ -1074,7 +1074,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 
 	if (const auto pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo))
 	{
-		if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pSecondExt->CanTarget, true)) ||
+		if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true)) ||
 			(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget) ||
 				!EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
 		{
@@ -1085,13 +1085,23 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 			if (!allowFallback && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1))
 				return weaponIndexOne;
 
-			if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pFirstExt->CanTarget, true)) ||
+			if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pFirstExt->CanTarget, true)) ||
 				(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget) ||
 					!EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
 			{
 				return weaponIndexTwo;
 			}
 		}
+	}
+
+	const auto pType = pThis->GetTechnoType();
+
+	// Handle special case with NavalTargeting / LandTargeting.
+	if (!pTargetTechno && (pType->NavalTargeting == NavalTargetingType::Naval_Primary ||
+		pType->LandTargeting == LandTargetingType::Land_Secondary) &&
+		pTargetCell->LandType != LandType::Water && pTargetCell->LandType != LandType::Beach)
+	{
+		return weaponIndexTwo;
 	}
 
 	return -1;

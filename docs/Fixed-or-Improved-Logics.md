@@ -102,6 +102,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `IsGattling=true` can now fall back to secondary weapon slot (even-numbered `WeaponX` slots) if primary one (odd-numbered) cannot fire at current target (armor type, `CanTarget(Houses)`, shield etc).
 - Fixed `LandTargeting=1` not preventing from targeting TerrainTypes (trees etc.) on land.
 - Fixed `NavalTargeting=6` not preventing from targeting empty water cells or TerrainTypes (trees etc.) on water.
+- Fixed `NavalTargeting=7` and/or `LandTargeting=2` resulting in still targeting TerrainTypes (trees etc.) on land with `Primary` weapon.
 
 ## Animations
 
