@@ -174,7 +174,7 @@ void Launch(HouseClass* pHouse, SWTypeExt::ExtData* pLauncherTypeExt, SuperWeapo
 	{
 
 		if (pLauncherTypeExt->SW_Next_IgnoreInhibitors || !pSuperTypeExt->HasInhibitor(pHouse, cell)
-		&& (pLauncherTypeExt->SW_Next_IgnoreDesignators || pSuperTypeExt->HasDesignator(pHouse, cell)))
+			&& (pLauncherTypeExt->SW_Next_IgnoreDesignators || pSuperTypeExt->HasDesignator(pHouse, cell)))
 		{
 			// Forcibly fire
 			pSuper->Launch(cell, true);
@@ -193,10 +193,11 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 		int id = -1;
 		size_t idsSize = this->LimboDelivery_IDs.size();
 		auto results = this->WeightedRollsHandler(&this->LimboDelivery_RollChances, &this->LimboDelivery_RandomWeightsData, this->LimboDelivery_Types.size());
-		for each (size_t result in results)
+		for (size_t result : results)
 		{
 			if (result < idsSize)
 				id = this->LimboDelivery_IDs[result];
+
 			LimboCreate(this->LimboDelivery_Types[result], pHouse, id);
 		}
 	}
@@ -262,13 +263,13 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 	if (this->SW_Next_RandomWeightsData.size())
 	{
 		auto results = this->WeightedRollsHandler(&this->SW_Next_RollChances, &this->SW_Next_RandomWeightsData, this->SW_Next.size());
-		for each (int result in results)
+		for (int result : results)
 			Launch(pSW->Owner, this, this->SW_Next[result], cell);
 	}
 	// no randomness mode
 	else
 	{
-		for each (const auto pSWType in this->SW_Next)
+		for (const auto pSWType : this->SW_Next)
 			Launch(pSW->Owner, this, pSWType, cell);
 	}
 }
