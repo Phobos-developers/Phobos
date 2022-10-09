@@ -71,7 +71,7 @@ public:
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
 		Valueable<int> NotHuman_DeathSequence;
-		ValueableVector<SuperWeaponTypeClass*> LaunchSW;
+		ValueableIdxVector<SuperWeaponTypeClass> LaunchSW;
 		Valueable<bool> LaunchSW_RealLaunch;
 		Valueable<bool> LaunchSW_IgnoreInhibitors;
 		Valueable<bool> LaunchSW_IgnoreDesignators;
