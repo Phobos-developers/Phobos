@@ -237,6 +237,11 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ## Changelog
 
+### 0.3.1
+
+New:
+- `Crit.AffectsHouses` for critical hit system (by Starkku)
+
 ### 0.3
 
 <details>
