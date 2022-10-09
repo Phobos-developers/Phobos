@@ -30,6 +30,41 @@ void BuildingExt::ExtData::DisplayGrinderRefund()
 	}
 }
 
+bool BuildingExt::ExtData::HasSuperWeapon(const int index, const bool withUpgrades) const
+{
+	const auto pThis = this->OwnerObject();
+	const auto pExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	const auto count = pExt->GetSuperWeaponCount();
+	for (auto i = 0; i < count; ++i)
+	{
+		const auto idxSW = pExt->GetSuperWeaponIndex(i, pThis->Owner);
+
+		if (idxSW == index)
+			return true;
+	}
+
+	if (withUpgrades)
+	{
+		for (auto const& pUpgrade : pThis->Upgrades)
+		{
+			if (const auto pUpgradeExt = BuildingTypeExt::ExtMap.Find(pUpgrade))
+			{
+				const auto countUpgrade = pUpgradeExt->GetSuperWeaponCount();
+				for (auto i = 0; i < countUpgrade; ++i)
+				{
+					const auto idxSW = pUpgradeExt->GetSuperWeaponIndex(i, pThis->Owner);
+
+					if (idxSW == index)
+						return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
 void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType, int idxStorageTiberiumType)
 {
 	auto const pDepositableTiberium = TiberiumClass::Array->GetItem(idxStorageTiberiumType);

@@ -9,6 +9,8 @@
 #include <Utilities/GeneralUtils.h>
 #include "Ext/Building/Body.h"
 #include "Ext/House/Body.h"
+#include "Ext/WarheadType/Body.h"
+#include "Ext/WeaponType/Body.h"
 
 inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 {
@@ -116,6 +118,9 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 
 		if (pTypeExt->LimboKill_IDs.size() > 0)
 			pTypeExt->ApplyLimboKill(pSW->Owner);
+
+		if (pTypeExt->Detonate_Warhead.isset() || pTypeExt->Detonate_Weapon.isset())
+			pTypeExt->ApplyDetonation(pSW->Owner, cell);
 	}
 }
 
@@ -192,6 +197,28 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 			}
 		}
 	}
+}
+
+void SWTypeExt::ExtData::ApplyDetonation(HouseClass* pHouse, const CellStruct& cell)
+{
+	const auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
+	BuildingClass* pFirer = nullptr;
+
+	for (auto const& pBld : pHouse->Buildings)
+	{
+		if (this->IsLaunchSiteEligible(cell, pBld, false))
+		{
+			pFirer = pBld;
+			break;
+		}
+	}
+
+	const auto pWeapon = this->Detonate_Weapon.isset() ? this->Detonate_Weapon.Get() : nullptr;
+
+	if (pWeapon)
+		WeaponTypeExt::DetonateAt(pWeapon, coords, pFirer, this->Detonate_Damage.Get(pWeapon->Damage));
+	else
+		WarheadTypeExt::DetonateAt(this->Detonate_Warhead.Get(), coords, pFirer, this->Detonate_Damage.Get(0));
 }
 
 // =============================
@@ -293,3 +320,76 @@ bool SWTypeExt::ExtData::HasDesignator(HouseClass* pOwner, const CellStruct& coo
 		{ return this->IsDesignatorEligible(pOwner, coords, pTechno); });
 }
 
+bool SWTypeExt::ExtData::IsLaunchSiteEligible(const CellStruct& Coords, BuildingClass* pBuilding, bool ignoreRange) const
+{
+	if (!this->IsLaunchSite(pBuilding))
+		return false;
+
+	if (ignoreRange)
+		return true;
+
+	// get the range for this building
+	auto range = this->GetLaunchSiteRange(pBuilding);
+	const auto& minRange = range.first;
+	const auto& maxRange = range.second;
+
+	CoordStruct coords = pBuilding->GetCoords();
+	coords.X += pBuilding->Type->GetFoundationWidth() / 2;
+	coords.Y += pBuilding->Type->GetFoundationHeight(false) / 2;
+
+	const auto center = CellClass::Coord2Cell(coords);
+	const auto distance = Coords.DistanceFrom(center);
+
+	// negative range values just pass the test
+	return (minRange < 0.0 || distance >= minRange)
+		&& (maxRange < 0.0 || distance <= maxRange);
+}
+
+bool SWTypeExt::ExtData::IsLaunchSite(BuildingClass* pBuilding) const
+{
+	if (pBuilding->IsAlive && pBuilding->Health && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
+	{
+		auto const pExt = BuildingExt::ExtMap.Find(pBuilding);
+		return pExt->HasSuperWeapon(this->OwnerObject()->ArrayIndex, true);
+	}
+
+	return false;
+}
+
+std::pair<double, double> SWTypeExt::ExtData::GetLaunchSiteRange(BuildingClass* pBuilding) const
+{
+	return std::make_pair(this->SW_RangeMinimum.Get(), this->SW_RangeMaximum.Get());
+}
+
+bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
+{
+	const auto pThis = this->OwnerObject();
+
+	// check whether the optional aux building exists
+	if (pThis->AuxBuilding && pHouse->CountOwnedAndPresent(pThis->AuxBuilding) <= 0)
+		return false;
+
+	// allow only certain houses, disallow forbidden houses
+	const auto OwnerBits = 1u << pHouse->Type->ArrayIndex;
+
+	if (!(this->SW_RequiredHouses & OwnerBits) || (this->SW_ForbiddenHouses & OwnerBits))
+		return false;
+
+	// check that any aux building exist and no neg building
+	auto IsBuildingPresent = [pHouse](BuildingTypeClass* pType)
+	{
+		return pType && pHouse->CountOwnedAndPresent(pType) > 0;
+	};
+
+	const auto& Aux = this->SW_AuxBuildings;
+
+	if (!Aux.empty() && std::none_of(Aux.begin(), Aux.end(), IsBuildingPresent))
+		return false;
+
+	const auto& Neg = this->SW_NegBuildings;
+
+	if (std::any_of(Neg.begin(), Neg.end(), IsBuildingPresent))
+		return false;
+
+	return true;
+}

@@ -241,6 +241,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 New:
 - `Crit.AffectsHouses` for critical hit system (by Starkku)
+- Warhead or weapon detonation at superweapon target cell (by Starkku)
 
 ### 0.3
 
