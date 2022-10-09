@@ -197,8 +197,7 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 		{
 			if (result < idsSize)
 				id = this->LimboDelivery_IDs[result];
-			if (auto const deliverBldType = this->LimboDelivery_Types[result])
-				LimboCreate(deliverBldType, pHouse, id);
+			LimboCreate(this->LimboDelivery_Types[result], pHouse, id);
 		}
 	}
 	// no randomness mode
