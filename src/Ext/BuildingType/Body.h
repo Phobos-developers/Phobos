@@ -45,6 +45,10 @@ public:
 		CustomPalette PlacementPreview_Palette;
 		Nullable<TranslucencyLevel> PlacementPreview_Translucency;
 
+		Valueable<bool> SpyEffect_Custom;
+		Nullable<SuperWeaponTypeClass*> SpyEffect_VictimSuperWeapon;
+		Nullable<SuperWeaponTypeClass*> SpyEffect_InfiltratorSuperWeapon;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -70,6 +74,9 @@ public:
 			, PlacementPreview_Offset { {0,-15,1} }
 			, PlacementPreview_Palette {}
 			, PlacementPreview_Translucency {}
+			, SpyEffect_Custom { false }
+			, SpyEffect_VictimSuperWeapon {}
+			, SpyEffect_InfiltratorSuperWeapon {}
 		{ }
 
 		// Ares 0.A functions

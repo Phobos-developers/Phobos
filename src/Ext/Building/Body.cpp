@@ -301,6 +301,32 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 	}
 }
 
+bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse)
+{
+	BuildingTypeExt::ExtData* pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+
+	if (!pTypeExt->SpyEffect_Custom)
+		return false;
+
+	auto pVictimHouse = pBuilding->Owner;
+	if (pInfiltratorHouse != pVictimHouse)
+	{
+		if (pTypeExt->SpyEffect_VictimSuperWeapon)
+		{
+			const auto pSuper = pVictimHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pTypeExt->SpyEffect_VictimSuperWeapon));
+			pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pVictimHouse->IsControlledByHuman());
+		}
+
+		if (pTypeExt->SpyEffect_InfiltratorSuperWeapon)
+		{
+			const auto pSuper = pInfiltratorHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pTypeExt->SpyEffect_InfiltratorSuperWeapon));
+			pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pInfiltratorHouse->IsControlledByHuman());
+		}
+	}
+
+	return true;
+}
+
 // =============================
 // load / save
 
