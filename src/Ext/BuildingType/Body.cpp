@@ -7,10 +7,11 @@
 template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
 
+// Assuming SuperWeapon & SuperWeapon2 are used (for the moment)
 int BuildingTypeExt::ExtData::GetSuperWeaponCount() const
 {
-	// 2 = SuperWeapon & SuperWeapon2
-	return 2 + this->SuperWeapons.Count;
+	// The user should only use SuperWeapon and SuperWeapon2 if the attached sw count isn't bigger than 2
+	return 2 + this->SuperWeapons.size();
 }
 
 int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index, HouseClass* pHouse) const
@@ -35,8 +36,8 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
 	// 2 = SuperWeapon & SuperWeapon2
 	if (index < 2)
 		return !index ? pThis->SuperWeapon : pThis->SuperWeapon2;
-	else if (index - 2 < this->SuperWeapons.Count)
-		return this->SuperWeapons[index - 2]->ArrayIndex;
+	else if (index - 2 < (int)this->SuperWeapons.size())
+		return this->SuperWeapons[index - 2];
 
 	return -1;
 }
@@ -48,10 +49,8 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-	for (const auto pair : pHouseExt->BuildingCounter)
+	for (const auto& [pExt, nCount] : pHouseExt->BuildingCounter)
 	{
-		const auto& pExt = pair.first;
-		const auto& nCount = pair.second;
 		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{
 			fFactor *= std::pow(pExt->PowerPlantEnhancer_Factor.Get(1.0f), nCount);
@@ -141,28 +140,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 
 	// Ares SuperWeapons tag
-	pINI->ReadString(pSection, "SuperWeapons", "", Phobos::readBuffer);
-	//char* super_weapons_list = Phobos::readBuffer;
-	if (strlen(Phobos::readBuffer) > 0 && SuperWeaponTypeClass::Array->Count > 0)
-	{
-		//DynamicVectorClass<SuperWeaponTypeClass*> objectsList;
-		char* context = nullptr;
-
-		//pINI->ReadString(pSection, pINI->GetKeyName(pSection, i), "", Phobos::readBuffer);
-		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
-		{
-			SuperWeaponTypeClass* buffer;
-			if (Parser<SuperWeaponTypeClass*>::TryParse(cur, &buffer))
-			{
-				//Debug::Log("DEBUG: [%s]: Parsed SW [%s]\n", pSection, cur);
-				this->SuperWeapons.AddItem(buffer);
-			}
-			else
-			{
-				Debug::Log("DEBUG: [%s]: Error parsing SuperWeapons= [%s]\n", pSection, cur);
-			}
-		}
-	}
+	this->SuperWeapons.Read(exINI, pSection, "SuperWeapons");
 
 	if (pThis->MaxNumberOccupants > 10)
 	{

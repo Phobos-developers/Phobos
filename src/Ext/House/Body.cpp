@@ -72,6 +72,25 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 		return pDefault;
 	}
 }
+
+void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+{
+	const char* pSection = this->OwnerObject()->PlainName;
+
+	INI_EX exINI(pINI);
+
+	ValueableVector<bool> readBaseNodeRepairInfo;
+	readBaseNodeRepairInfo.Read(exINI, pSection, "RepairBaseNodes");
+	size_t nWritten = readBaseNodeRepairInfo.size();
+	if (nWritten > 0)
+	{
+		for (size_t i = 0; i < 3; i++)
+			this->RepairBaseNodes[i] = readBaseNodeRepairInfo[i < nWritten ? i : nWritten - 1];
+	}
+
+}
+
+
 // =============================
 // load / save
 
@@ -85,6 +104,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->Factory_VehicleType)
 		.Process(this->Factory_NavyType)
 		.Process(this->Factory_AircraftType)
+		.Process(this->RepairBaseNodes)
 		;
 }
 
