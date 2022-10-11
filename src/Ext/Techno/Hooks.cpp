@@ -419,7 +419,7 @@ DEFINE_HOOK(0x6F534E, TechnoClass_DrawExtras_Insignia, 0x5)
 	enum { SkipGameCode = 0x6F5388 };
 
 	GET(TechnoClass*, pThis, EBP);
-	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x98, -0x4));
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x98, 0x4));
 	GET(RectangleStruct*, pBounds, ESI);
 
 	if (pThis->VisualCharacter(false, nullptr) != VisualType::Hidden)
