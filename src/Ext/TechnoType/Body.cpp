@@ -95,10 +95,10 @@ void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX &exArtINI, const char* pArtSe
 
 TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 {
-	if (pType->AbsID == AbstractType::AircraftType ||
-		pType->AbsID == AbstractType::BuildingType ||
-		pType->AbsID == AbstractType::InfantryType ||
-		pType->AbsID == AbstractType::UnitType)
+	if (pType->WhatAmI() == AbstractType::AircraftType ||
+		pType->WhatAmI() == AbstractType::BuildingType ||
+		pType->WhatAmI() == AbstractType::InfantryType ||
+		pType->WhatAmI() == AbstractType::UnitType)
 	{
 		return static_cast<TechnoTypeClass*>(pType);
 	}
