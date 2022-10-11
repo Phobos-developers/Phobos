@@ -80,14 +80,14 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			{
 				const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 				const auto cell = CellClass::Coord2Cell(coords);
-				if ((pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)) || !this->LaunchSW_RealLaunch)
+				if (!this->LaunchSW_RealLaunch || (pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)))
 				{
 					if (this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell)
 					&& (this->LaunchSW_IgnoreDesignators || pSWExt->HasDesignator(pHouse, cell)))
 					{
-						pSuper->SetReadiness(true);
 						pSuper->Launch(cell, true);
-						pSuper->Reset();
+						if (this->LaunchSW_RealLaunch)
+							pSuper->Reset();
 					}
 				}
 			}
