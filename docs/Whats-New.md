@@ -250,6 +250,9 @@ New:
 - Customizable FlakScatter distance (by Starkku)
 - Customizable debris & meteor impact and warhead detonation behaviour (by Starkku, Otamaa)
 - Custom warhead debris animations (by Starkku)
+
+Vanilla fixes:
+- Fixed the range for number of debris spawned by Warhead to use MaxDebris instead of MaxDebris - 1 (by Starkku)
 </details>
 
 
@@ -386,7 +389,6 @@ Vanilla fixes:
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something (by Kerbiter)
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true` (by Starkku)
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry (by Otamaa)
-- Fixed the range for number of debris spawned by Warhead to use MaxDebris instead of MaxDebris - 1 (by Starkku)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)

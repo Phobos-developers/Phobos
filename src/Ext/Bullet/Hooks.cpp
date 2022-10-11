@@ -247,7 +247,7 @@ DEFINE_HOOK(0x469008, BulletClass_Explode_Cluster, 0x8)
 	enum { SkipGameCode = 0x469091 };
 
 	GET(BulletClass*, pThis, ESI);
-	GET_STACK(CoordStruct, origCoords, STACK_OFFS(0x3C, 0x30));
+	GET_STACK(CoordStruct, origCoords, STACK_OFFSET(0x3C, -0x30));
 
 	if (pThis->Type->Cluster > 0)
 	{
@@ -423,7 +423,7 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
 {
 	GET(BulletClass*, pThis, EBX);
-	GET_STACK(float, mult, STACK_OFFS(0x5C, 0x44));
+	GET_STACK(float, mult, STACK_OFFSET(0x5C, -0x44));
 
 	if (pThis->WeaponType)
 	{
