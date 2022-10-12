@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK_AGAIN(0x522790, TechnoClass_DefaultDisguise, 0x6) // InfantryClass_SetDisguise_DefaultDisguise
 DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDisguise
@@ -24,7 +25,7 @@ DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDi
 }
 
 #define CAN_BLINK_DISGUISE(pTechno) \
-HouseClass::IsCurrentPlayerObserver() || (RulesExt::Global()->ShowAllyDisguiseBlinking && pTechno->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
+HouseClass::IsCurrentPlayerObserver() || EnumFunctions::CanTargetHouse(RulesExt::Global()->DisguiseBlinkingVisibility, HouseClass::CurrentPlayer, pTechno->Owner)
 
 DEFINE_HOOK(0x70EE53, TechnoClass_IsClearlyVisibleTo_BlinkAllyDisguise1, 0xA)
 {
@@ -43,38 +44,38 @@ DEFINE_HOOK(0x70EE53, TechnoClass_IsClearlyVisibleTo_BlinkAllyDisguise1, 0xA)
 
 DEFINE_HOOK(0x70EE6A, TechnoClass_IsClearlyVisibleTo_BlinkAllyDisguise2, 0x6)
 {
-	enum { SkipCheck = 0x70EE79 };
+	enum { ContinueChecks = 0x70EE79, DisallowBlinking = 0x70EEB6 };
 
 	GET(TechnoClass*, pThis, ESI);
 
 	if (CAN_BLINK_DISGUISE(pThis))
-		return SkipCheck;
+		return ContinueChecks;
 
-	return 0;
+	return DisallowBlinking;
 }
 
 DEFINE_HOOK(0x7062F5, TechnoClass_TechnoClass_DrawObject_BlinkAllyDisguise, 0x6)
 {
-	enum { SkipCheck = 0x706304 };
+	enum { ContinueChecks = 0x706304, DisallowBlinking = 0x70631F };
 
 	GET(TechnoClass*, pThis, ESI);
 
 	if (CAN_BLINK_DISGUISE(pThis))
-		return SkipCheck;
+		return ContinueChecks;
 
-	return 0;
+	return DisallowBlinking;
 }
 
 DEFINE_HOOK(0x70EDAD, TechnoClass_DisguiseBlitFlags_BlinkAllyDisguise, 0x6)
 {
-	enum { SkipCheck = 0x70EDBC };
+	enum { AllowBlinking = 0x70EDBC, DisallowBlinking = 0x70EDB8 };
 
 	GET(TechnoClass*, pThis, EDI);
 
 	if (CAN_BLINK_DISGUISE(pThis))
-		return SkipCheck;
+		return AllowBlinking;
 
-	return 0;
+	return DisallowBlinking;
 }
 
 DEFINE_HOOK(0x7060A9, TechnoClass_TechnoClass_DrawObject_DisguisePalette, 0x6)

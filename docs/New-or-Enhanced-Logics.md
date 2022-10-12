@@ -712,18 +712,18 @@ NoSecondaryWeaponFallback=false          ; boolean
 NoSecondaryWeaponFallback.AllowAA=false  ; boolean
 ```
 
-### Disguise logic additions (disguise-based movement speed, ally disguise blinking)
+### Disguise logic additions (disguise-based movement speed, disguise blinking visibility)
 
-- `ShowAllyDisguiseBlinking`, if set to true, will allow players to see blinking disguises on disguised ally units.
+- `DisguiseBlinkingVisibility` can be used to customize which players can see disguises blinking on units.
 - `UseDisguiseMovementSpeed`, if set, makes disguised unit adjust its movement speed to match that of the disguise, if applicable. Note that this applies even when the disguise is revealed, as long as it has not been removed.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-ShowAllyDisguiseBlinking=false   ; boolean
-
-[SOMETECHNO]                     ; TechnoType
-UseDisguiseMovementSpeed=false   ; boolean
+DisguiseBlinkingVisibility=owner  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+                                  
+[SOMETECHNO]                      ; TechnoType
+UseDisguiseMovementSpeed=false    ; boolean
 ```
 
 ### Firing offsets for specific Burst shots

@@ -33,7 +33,7 @@ public:
 		Nullable<int> InfantryGainSelfHealCap;
 		Nullable<int> UnitsGainSelfHealCap;
 		Valueable<bool> EnemyInsignia;
-		Valueable<bool> ShowAllyDisguiseBlinking;
+		Valueable<AffectedHouse> DisguiseBlinkingVisibility;
 		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<bool> RadWarhead_Detonate;
@@ -85,7 +85,7 @@ public:
 			, InfantryGainSelfHealCap {}
 			, UnitsGainSelfHealCap {}
 			, EnemyInsignia { true }
-			, ShowAllyDisguiseBlinking { false }
+			, DisguiseBlinkingVisibility { AffectedHouse::Owner }
 			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
 			, RadWarhead_Detonate { false }
