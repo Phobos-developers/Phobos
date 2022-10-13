@@ -125,7 +125,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, bool bulletWasIntercepted)
 {
-	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health)
+	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking)
 		return;
 
 	if (!this->CanTargetHouse(pHouse, pTarget))

@@ -28,6 +28,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->UpdateShield();
 	pExt->ApplySpawnLimitRange();
 
+	pExt->IsInTunnel = false; // TechnoClass::AI is only called when not in tunnel.
+
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
@@ -36,6 +38,9 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	{
 		if (pThis->CloakState == CloakState::Cloaked && !trail->Type->CloakVisible)
 			continue;
+
+		if (!pExt->IsInTunnel)
+			trail->Visible = true;
 
 		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret);
 		if (pThis->CloakState == CloakState::Uncloaking && !trail->Type->CloakVisible)
@@ -48,6 +53,25 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x51BAC7, InfantryClass_AI_Tunnel, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->UpdateOnTunnelEnter();
+
+	return 0;
+}
+
+DEFINE_HOOK(0x7363B5, UnitClass_AI_Tunnel, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->UpdateOnTunnelEnter();
+
+	return 0;
+}
 
 DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 {

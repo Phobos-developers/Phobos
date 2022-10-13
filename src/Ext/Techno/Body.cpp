@@ -223,6 +223,23 @@ void TechnoExt::ExtData::UpdateShield()
 		pShieldData->AI();
 }
 
+void TechnoExt::ExtData::UpdateOnTunnelEnter()
+{
+	if (!this->IsInTunnel)
+	{
+		if (const auto pShieldData = this->Shield.get())
+			pShieldData->SetAnimationVisibility(false);
+
+		for (auto& pLaserTrail : this->LaserTrails)
+		{
+			pLaserTrail->Visible = false;
+			pLaserTrail->LastLocation = { };
+		}
+
+		this->IsInTunnel = true;
+	}
+}
+
 void TechnoExt::ExtData::ApplySpawnLimitRange()
 {
 	auto const pThis = this->OwnerObject();
@@ -880,6 +897,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->CurrentLaserWeaponIndex)
+		.Process(this->IsInTunnel)
 		;
 }
 

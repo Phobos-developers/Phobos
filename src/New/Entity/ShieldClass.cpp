@@ -329,7 +329,7 @@ void ShieldClass::AI()
 	if (!this->Techno || this->Techno->InLimbo || this->Techno->IsImmobilized || this->Techno->Transporter)
 		return;
 
-	if (this->Techno->Health <= 0 || !this->Techno->IsAlive)
+	if (this->Techno->Health <= 0 || !this->Techno->IsAlive || this->Techno->IsSinking)
 	{
 		if (auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno))
 		{
@@ -893,17 +893,10 @@ bool ShieldClass::IsBrokenAndNonRespawning()
 	return this->HP <= 0 && !this->Type->Respawn;
 }
 
-void ShieldClass::HideAnimations()
+void ShieldClass::SetAnimationVisibility(bool visible)
 {
-	this->AreAnimsHidden = true;
-}
+	if (!this->AreAnimsHidden && !visible)
+		this->KillAnim();
 
-void ShieldClass::ShowAnimations()
-{
-	this->AreAnimsHidden = false;
-}
-
-bool ShieldClass::AreAnimationsHidden()
-{
-	return this->AreAnimsHidden;
+	this->AreAnimsHidden = visible;
 }
