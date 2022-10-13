@@ -141,6 +141,16 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 
 ## Buildings
 
+### Airstrike target eligibility
+
+- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]   ; BuildingType
+AllowAirstrike=  ; boolean
+```
+
 ### Customizable & new grinder properties
 
 ![image](_static/images/grinding.gif)

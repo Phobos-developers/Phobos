@@ -25,6 +25,7 @@ public:
 
 		DynamicVectorClass<Point2D> OccupierMuzzleFlashes;
 		Valueable<bool> Powered_KillSpawns;
+		Nullable<bool> AllowAirstrike;
 		Valueable<bool> Refinery_UseStorage;
 
 		Valueable<bool> Grinding_AllowAllies;
@@ -57,6 +58,7 @@ public:
 			, PowerPlantEnhancer_Factor {}
 			, OccupierMuzzleFlashes()
 			, Powered_KillSpawns { false }
+			, AllowAirstrike {}
 			, Refinery_UseStorage { false }
 			, Grinding_AllowAllies { false }
 			, Grinding_AllowOwner { true }

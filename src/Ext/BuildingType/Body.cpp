@@ -128,6 +128,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
 
+	this->AllowAirstrike.Read(exINI, pSection, "AllowAirstrike");
+
 	this->Grinding_AllowAllies.Read(exINI, pSection, "Grinding.AllowAllies");
 	this->Grinding_AllowOwner.Read(exINI, pSection, "Grinding.AllowOwner");
 	this->Grinding_AllowTypes.Read(exINI, pSection, "Grinding.AllowTypes");
@@ -191,6 +193,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuperWeapons)
 		.Process(this->OccupierMuzzleFlashes)
 		.Process(this->Powered_KillSpawns)
+		.Process(this->AllowAirstrike)
 		.Process(this->Refinery_UseStorage)
 		.Process(this->Grinding_AllowAllies)
 		.Process(this->Grinding_AllowOwner)

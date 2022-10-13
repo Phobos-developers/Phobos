@@ -162,6 +162,7 @@ This page lists all the individual contributions to the project by their author.
   - Exploding unit passenger killing customization
   - Warhead / weapon detonation at superweapon target cell
   - Cloaked objects displaying to observers
+  - Building airstrike target eligibility customization
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
