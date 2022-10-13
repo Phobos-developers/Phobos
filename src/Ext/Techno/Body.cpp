@@ -927,7 +927,7 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 			if (pExt->Convert_UniversalDeploy_InProgress && deployToLand)
 				pThis->IsFallingDown = true;
 
-			// testing each call value... I have to remove it later
+			// testing each call value... I have to remove it later, before the PR
 			double speed = pFoot->Locomotor->Apparent_Speed();
 			int speedAccum = pFoot->Locomotor->Get_Speed_Accum();
 			bool ismovinghere = pFoot->Locomotor->Is_Moving_Here(pFoot->Location);
@@ -988,11 +988,11 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 					auto d20 = d16.GetFacing<256>(); // Devuelve 2. Pertenece a DeployDir
 					DirStruct d17; d17.SetDir(d15); // Devuelve 1862680576. Pertenece a DeployDir
 					auto d23 = d17.GetFacing<256>(); // Devuelve 64. Pertenece a DeployDir
-					DirType d4 = pThis->PrimaryFacing.Current().GetDir(); // Devuelve la posici髇 actual [0 - 7] x 32
-					auto d8 = (short)d4; // Devuelve la posici髇 actual [0 - 7] x 32
-					auto d5 = pThis->PrimaryFacing.Current().GetFacing<8>(); // Devuelve la posici髇 actual [0 - 7]
-					auto d7 = pThis->PrimaryFacing.Current().GetFacing<256>(); // Devuelve la posici髇 actual [0 - 7] x 32
-					auto d9 = pThis->PrimaryFacing.Current().GetValue<8>(); // Devuelve la posici髇 actual [0 - 7] x 32
+					DirType d4 = pThis->PrimaryFacing.Current().GetDir(); // Devuelve la posici贸n actual [0 - 7] x 32
+					auto d8 = (short)d4; // Devuelve la posici贸n actual [0 - 7] x 32
+					auto d5 = pThis->PrimaryFacing.Current().GetFacing<8>(); // Devuelve la posici贸n actual [0 - 7]
+					auto d7 = pThis->PrimaryFacing.Current().GetFacing<256>(); // Devuelve la posici贸n actual [0 - 7] x 32
+					auto d9 = pThis->PrimaryFacing.Current().GetValue<8>(); // Devuelve la posici贸n actual [0 - 7] x 32
 
 					Debug::Log("-----\n");
 					Debug::Log("d1: %d, d2: %d, d13: %d, d14: %d, d15: %d\n", d1, d2, d13, d14, d15);
@@ -1019,18 +1019,22 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 					//Debug::Log("----- currentFacing: %d, z: %d, deployDir: %d\n", currentFacing, z, deployDir);
 					*/
 
-					DirType currentDir = pThis->PrimaryFacing.Current().GetDir(); // Devuelve la posici髇 actual [0 - 7] x 32
+					DirType currentDir = pThis->PrimaryFacing.Current().GetDir(); // Devuelve la posici贸n actual [0 - 7] x 32
 					DirType desiredDir = (static_cast<DirType>(pTypeExt->Convert_DeployDir * 32)); // Devuelve 64. Pertenece a DeployDir x 32
-					DirStruct desiredFacing; desiredFacing.SetDir(desiredDir); // Devuelve 1862680576. Pertenece a DeployDir
-
+					DirStruct desiredFacing;
+					desiredFacing.SetDir(desiredDir); // Devuelve 1862680576. Pertenece a DeployDir
+					//Debug::Log("-> currentDir: %d == desiredDir: %d ? ", currentDir, desiredDir);
 					if (currentDir != desiredDir)
 					{
 						pFoot->Locomotor->Move_To(CoordStruct::Empty);
 						pThis->PrimaryFacing.Set_Desired(desiredFacing);
-
+						//Debug::Log("... must rotate body!\n");
 						return;
 					}
-
+					/*else
+					{
+						Debug::Log("... in sync!\n");
+					}*/
 					//pThis->PrimaryFacing.Set_Desired(newDir);
 				}
 			}
@@ -1209,18 +1213,19 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 	pNewTechno->QueueMission(Mission::Guard, true);
 	
 	DirStruct oldPrimaryFacing = pOldTechno->PrimaryFacing.Current();
-	Debug::Log("1---->>>> pOldTechno->PrimaryFacing.Current().GetDir(): %d\n", oldPrimaryFacing.GetDir());
+	DirStruct oldSecondaryFacing = pOldTechno->SecondaryFacing.Current();
 
 	// Facing update
-	DirType newPrimaryFacing = pOldTechno->PrimaryFacing.Current().GetDir(); // Devuelve la posici髇 actual [0 - 7] x 32
+	DirType newPrimaryFacingDir = pOldTechno->PrimaryFacing.Current().GetDir(); // Devuelve la posici贸n actual [0 - 7] x 32
+	DirType newSecondaryFacingDir = pOldTechno->SecondaryFacing.Current().GetDir(); // Devuelve la posici贸n actual [0 - 7] x 32
 
 	// Some vodoo magic
 	pOldTechno->Limbo();
 
-	if (!pNewTechno->Unlimbo(newLocation, newPrimaryFacing))
+	if (!pNewTechno->Unlimbo(newLocation, newPrimaryFacingDir))
 	{
 		// Abort operation, restoring old object
-		pOldTechno->Unlimbo(newLocation, newPrimaryFacing);
+		pOldTechno->Unlimbo(newLocation, newPrimaryFacingDir);
 		pNewTechno->UnInit();
 
 		if (isSelected)
@@ -1231,14 +1236,19 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 
 		return nullptr;
 	}
-	Debug::Log("2---->>>> pNewTechno->PrimaryFacing.Current().GetDir(): %d\n", pNewTechno->PrimaryFacing.Current().GetDir());
+
+	// Recover Turret direction
+	if (pNewTechnoType->Turret && !pNewTechnoType->TurretSpins)
+		pNewTechno->SecondaryFacing.Set_Current(oldSecondaryFacing);
+
 	// Jumpjet tricks
 	if (pNewTechnoType->JumpJet || pNewTechnoType->BalloonHover)
 	{
 		auto pFoot = static_cast<FootClass*>(pNewTechno);
-		pFoot->SetDestination(pThis, false);
+		//pFoot->SetDestination(pThis, false);
 		//pThis->Mission_Stop();
-		pFoot->Locomotor->Stop_Moving();
+		//pFoot->Locomotor->Stop_Moving();
+		pFoot->Scatter(CoordStruct::Empty, true, false);
 		/*
 		auto pNewTechnoCell = MapClass::Instance->GetCellAt(newLocation);
 		pNewTechno->SetHeight(2000);
@@ -1252,7 +1262,6 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 
 		pNewTechno->PrimaryFacing.Set_Current(oldPrimaryFacing);
 		pNewTechno->PrimaryFacing.Set_ROT(0);*/
-		Debug::Log("3----->>>> pNewTechno->PrimaryFacing.Current().GetDir(): %d\n", pNewTechno->PrimaryFacing.Current().GetDir());
 		/*
 		//short newPrimaryFacing = pOldTechno->PrimaryFacing.current().value8();
 
@@ -1279,8 +1288,11 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 			pNewTechno->IsFallingDown = true;
 	}
 
-	// Transfer passengers/garrisoned units
-	// TO-DO
+	// Transfer passengers/garrisoned units, if possible
+	TechnoExt::PassengersTransfer(pOldTechno, pNewTechno);
+
+	// Transfer Iron Courtain effect, if applied
+	TechnoExt::SyncIronCurtainStatus(pOldTechno, pNewTechno);
 
 	if (pOldTechno->InLimbo)
 		pOwner->RegisterLoss(pOldTechno, false);
@@ -1297,6 +1309,149 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 	//pOldTechno->UnInit();
 
 	return pNewTechno;
+}
+
+CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger)
+{
+	if (!pThis || !pPassenger)
+		return CoordStruct::Empty;
+
+	auto pTypePassenger = pPassenger->GetTechnoType();
+	CoordStruct finalLocation = CoordStruct::Empty;
+	short extraDistanceX = 1;
+	short extraDistanceY = 1;
+	SpeedType speedType = pTypePassenger->SpeedType;
+	MovementZone movementZone = pTypePassenger->MovementZone;
+
+	if (pTypePassenger->WhatAmI() == AbstractType::AircraftType)
+	{
+		speedType = SpeedType::Track;
+		movementZone = MovementZone::Normal;
+	}
+
+	CellStruct placeCoords = pThis->GetCell()->MapCoords - CellStruct { (short)(extraDistanceX/2), (short)(extraDistanceY/2) };
+	placeCoords = MapClass::Instance->NearByLocation(placeCoords, speedType, -1, movementZone, false, extraDistanceX, extraDistanceY, true, false, false, false, CellStruct::Empty, false, false);
+
+	if (auto pCell = MapClass::Instance->TryGetCellAt(placeCoords))
+	{
+		pPassenger->OnBridge = pCell->ContainsBridge();
+		finalLocation = pCell->GetCoordsWithBridge();
+	}
+
+	return finalLocation;
+}
+
+// Currently is a vehicle to vehicle. TO-DO: Building2Building and vehicle->Building & vice-versa
+void TechnoExt::PassengersTransfer(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo = nullptr)
+{
+	if (!pTechnoFrom || (pTechnoFrom == pTechnoTo))
+		return;
+
+	// Without a target transport this method becomes an "eject passengers from transport"
+	auto pTechnoTypeTo = pTechnoTo ? pTechnoTo->GetTechnoType() : nullptr;
+	if (!pTechnoTypeTo && pTechnoTo)
+		return;
+	bool bTechnoToIsBuilding = (pTechnoTo && pTechnoTo->WhatAmI() == AbstractType::Building) ? true : false;
+	DynamicVectorClass<FootClass*> passengersList;
+
+	// From bunkered infantry
+	if (auto pBuildingFrom = static_cast<BuildingClass*>(pTechnoFrom))
+	{
+		for (int i = 0; i < pBuildingFrom->Occupants.Count; i++)
+		{
+			InfantryClass* pPassenger = pBuildingFrom->Occupants.GetItem(i);
+			auto pFooter = static_cast<FootClass*>(pPassenger);
+			passengersList.AddItem(pFooter);
+		}
+	}
+
+	// We'll get the passengers list in a more easy data structure
+	while (pTechnoFrom->Passengers.NumPassengers > 0)
+	{
+		FootClass* pPassenger = pTechnoFrom->Passengers.RemoveFirstPassenger();
+
+		pPassenger->Transporter = nullptr;
+		pPassenger->ShouldEnterOccupiable = false;
+		pPassenger->ShouldGarrisonStructure = false;
+		pPassenger->InOpenToppedTransport = false;
+		pPassenger->QueueMission(Mission::Guard, false);
+		passengersList.AddItem(pPassenger);
+	}
+
+	if (passengersList.Count > 0)
+	{
+		double passengersSizeLimit = pTechnoTo ? pTechnoTypeTo->SizeLimit : 0;
+		int passengersLimit = pTechnoTo ? pTechnoTypeTo->Passengers : 0;
+		int numPassengers = pTechnoTo ? pTechnoTo->Passengers.NumPassengers : 0;
+		TechnoClass* transportReference = pTechnoTo ? pTechnoTo : pTechnoFrom;
+
+		while (passengersList.Count > 0)
+		{
+			bool forceEject = false;
+			FootClass* pPassenger = nullptr;
+
+			// The insertion order is different in buildings
+			int passengerIndex = bTechnoToIsBuilding ? 0 : passengersList.Count - 1;
+
+			pPassenger = passengersList.GetItem(passengerIndex);
+			passengersList.RemoveItem(passengerIndex);
+
+			auto pFromTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoFrom->GetTechnoType());
+			
+			if (!pTechnoTo || (pFromTypeExt && pFromTypeExt->Convert_EjectPassengers))
+				forceEject = true;
+
+			// To bunkered infantry
+			if (pTechnoTo->WhatAmI() == AbstractType::Building)
+			{
+				auto pBuildingTo = static_cast<BuildingClass*>(pTechnoTo);
+				int nOccupants = pBuildingTo->Occupants.Count;
+				int maxNumberOccupants = pTechnoTo ? pBuildingTo->Type->MaxNumberOccupants : 0;
+
+				InfantryClass* infantry = static_cast<InfantryClass*>(pPassenger);
+				bool isOccupier = infantry && infantry->Type->Occupier ? true : false;
+
+				if (!forceEject && isOccupier && maxNumberOccupants > 0 && nOccupants < maxNumberOccupants)
+				{
+					InfantryClass* infantry = static_cast<InfantryClass*>(pPassenger);
+					pBuildingTo->Occupants.AddItem(infantry);
+				}
+				else
+				{
+					// Not enough space inside the new Bunker, eject the passenger
+					CoordStruct passengerLoc = PassengerKickOutLocation(transportReference, pPassenger);
+					CellClass* pCell = MapClass::Instance->TryGetCellAt(passengerLoc);
+					pPassenger->LastMapCoords = pCell->MapCoords;
+					pPassenger->Unlimbo(passengerLoc, DirType::North);
+				}
+			}
+			else
+			{
+				double passengerSize = pPassenger->GetTechnoType()->Size;
+				CoordStruct passengerLoc = PassengerKickOutLocation(transportReference, pPassenger);
+
+				if (!forceEject && passengerSize > 0 && (passengersLimit - numPassengers - passengerSize >= 0) && passengerSize <= passengersSizeLimit)
+				{
+					if (pTechnoTo->GetTechnoType()->OpenTopped)
+					{
+						pPassenger->SetLocation(pTechnoTo->Location);
+						pTechnoTo->EnteredOpenTopped(pPassenger);
+					}
+
+					pPassenger->Transporter = pTechnoTo;
+					pTechnoTo->AddPassenger(pPassenger);
+					numPassengers += passengerSize;
+				}
+				else
+				{
+					// Not enough space inside the new transport, eject the passenger
+					CellClass* pCell = MapClass::Instance->TryGetCellAt(passengerLoc);
+					pPassenger->LastMapCoords = pCell->MapCoords;
+					pPassenger->Unlimbo(passengerLoc, DirType::North);
+				}
+			}
+		}
+	}
 }
 
 // =============================

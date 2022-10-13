@@ -133,6 +133,7 @@ public:
 		Nullable<AnimTypeClass*> Convert_DeployingAnim;
 		NullableIdx<VocClass> Convert_DeploySound;
 		Valueable<int> Convert_DeployDir;
+		Valueable<bool> Convert_EjectPassengers;
 
 		struct LaserTrailDataEntry
 		{
@@ -257,6 +258,7 @@ public:
 			, Convert_DeployingAnim {}
 			, Convert_DeploySound {}
 			, Convert_DeployDir { RulesClass::Instance->DeployDir }
+			, Convert_EjectPassengers { false }
 		{ }
 
 		virtual ~ExtData() = default;

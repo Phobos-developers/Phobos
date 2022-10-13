@@ -118,4 +118,6 @@ public:
 	static TechnoClass* UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pNewTechnoType);
 	static void StartUniversalDeployAnim(TechnoClass* pThis);
 	static void UpdateUniversalDeploy(TechnoClass* pThis);
+	static CoordStruct PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger);
+	static void TechnoExt::PassengersTransfer(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 };

@@ -232,6 +232,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Convert_DeployingAnim.Read(exINI, pSection, "Convert.DeployingAnim");
 	this->Convert_DeploySound.Read(exINI, pSection, "Convert.DeploySound");
 	this->Convert_DeployDir.Read(exINI, pSection, "Convert.DeployDir");
+	this->Convert_EjectPassengers.Read(exINI, pSection, "Convert.EjectPassengers");
 
 	if (this->Convert_UniversalDeploy.size() > 0 && !pThis->UndeploysInto)
 	{
