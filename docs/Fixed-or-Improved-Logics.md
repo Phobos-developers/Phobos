@@ -86,6 +86,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true`.
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry.
 - Observers can now see cloaked objects owned by non-allied houses.
+- IvanBomb images now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation.
 
 ## Animations
 

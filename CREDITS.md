@@ -163,6 +163,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead / weapon detonation at superweapon target cell
   - Cloaked objects displaying to observers
   - Building airstrike target eligibility customization
+  - IvanBomb detonation & image display centered on buildings
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption

@@ -250,6 +250,7 @@ New:
 - Launching Super Weapons on building infiltration (by Morton)
 - Cloaked objects displaying to observers (by Starkku)
 - Building airstrike target eligibility customization (by Starkku)
+- IvanBomb detonation & image display centered on buildings (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
