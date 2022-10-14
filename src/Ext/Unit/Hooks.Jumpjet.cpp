@@ -53,7 +53,7 @@ DEFINE_HOOK(0x54BD93, JumpjetLocomotionClass_State2_54BD30_TurnToTarget, 0x6)
 			DirStruct tgtDir = DirStruct { Math::atan2(source.Y - target.Y, target.X - source.X) };
 
 			if (pThis->GetRealFacing().GetFacing<32>() != tgtDir.GetFacing<32>())
-				pLoco->LocomotionFacing.Set_Desired(tgtDir);
+				pLoco->LocomotionFacing.SetDesired(tgtDir);
 		}
 	}
 
@@ -69,8 +69,8 @@ DEFINE_HOOK(0x736BF3, UnitClass_UpdateRotation_TurretFacing, 0x6)
 	// so I don't check jumpjet loco or InAir here, feel free to change if it doesn't break performance.
 	if (!pThis->Target && !pThis->Type->TurretSpins && (pThis->Type->JumpJet || pThis->Type->BalloonHover))
 	{
-		pThis->SecondaryFacing.Set_Desired(pThis->PrimaryFacing.Current());
-		pThis->TurretIsRotating = pThis->SecondaryFacing.Is_Rotating();
+		pThis->SecondaryFacing.SetDesired(pThis->PrimaryFacing.Current());
+		pThis->TurretIsRotating = pThis->SecondaryFacing.IsRotating();
 		return 0x736C09;
 	}
 
