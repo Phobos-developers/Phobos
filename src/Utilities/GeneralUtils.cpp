@@ -83,20 +83,6 @@ int GeneralUtils::ChooseOneWeighted(const double dice, const std::vector<int>* w
 	return -1;
 }
 
-// Direct multiplication pow
-double GeneralUtils::FastPow(double x, double n)
-{
-	double r = 1.0;
-
-	while (n > 0)
-	{
-		r *= x;
-		--n;
-	}
-
-	return r;
-}
-
 // Checks if health ratio has changed threshold (Healthy/ConditionYellow/Red).
 bool GeneralUtils::HasHealthRatioThresholdChanged(double oldRatio, double newRatio)
 {
