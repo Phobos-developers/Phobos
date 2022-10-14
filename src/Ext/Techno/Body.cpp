@@ -884,6 +884,59 @@ void TechnoExt::StartUniversalDeployAnim(TechnoClass* pThis)
 					{
 						pExt->DeployAnim = pAnim;
 						pExt->DeployAnim->SetOwnerObject(pThis);
+						//IndexClass
+						
+						//
+
+						/*
+						virtual void DrawVoxel(const VoxelStruct& Voxel, DWORD dwUnk2, short Facing,
+							const IndexClass<int, int>& VoxelIndex, const RectangleStruct& Rect, const Point2D& Location,
+							const Matrix3D& Matrix, int Intensity, DWORD dwUnk9, DWORD dwUnk10) RX;
+						*/
+						short facing = pThis->PrimaryFacing.Current().GetFacing<8>();
+						VoxelStruct voxel = pThis->GetTechnoType()->MainVoxel;
+						//pThis->DrawVoxel(voxel, 0, facing, pThis->GetTechnoType()->VoxelMainCache.Clear());
+						auto voxelMainCache = pThis->GetTechnoType()->VoxelMainCache;
+						//RectangleStruct nRect = pSurface->GetRect();
+
+						/*
+						RectangleStruct rect = RectangleStruct {};
+						rect = *pTerrain->GetRenderDimensions(&rect);
+						TacticalClass::Instance->RegisterDirtyArea(rect, false);
+						pTerrain->Disappear(true);
+						pTerrain->UnInit();
+						*/
+						/*
+						//UnitClass
+						// main drawing functions - Draw() calles one of these, they call parent's Draw_A_smth
+						virtual void DrawAsVXL(Point2D Coords, RectangleStruct BoundingRect, int Brightness, int Tint)
+							{ JMP_THIS(0x73B470); }
+
+						virtual void DrawAsSHP(Point2D Coords, RectangleStruct BoundingRect, int Brightness, int Tint)
+							{ JMP_THIS(0x73C5F0); }
+
+						virtual void DrawObject(Surface* pSurface, Point2D Coords, RectangleStruct CacheRect, int Brightness, int Tint)
+							{ JMP_THIS(0x73B140); }
+						*/
+						auto pCell = pThis->GetCell();
+						auto const pTerrain = pCell->GetTerrain(false);
+						//RectangleStruct rect = RectangleStruct {};
+						//rect = *pThis->GetRenderDimensions(&rect);
+						//TacticalClass::Instance->RegisterDirtyArea(rect, false);
+						//pTerrain->Disappear(true);
+						//
+						if (pThis->GetTechnoType()->Voxel)
+						{
+							Point2D point2d = Point2D::Empty;
+							point2d.X = 1;
+							point2d.Y = 1;
+							RectangleStruct rect = RectangleStruct {};
+							rect.Width = 25;
+							rect.Height = 25;
+							auto pUnit = abstract_cast<UnitClass*>(pThis);
+							pUnit->DrawAsVXL(Point2D::Empty, rect, 1, 1);
+							pUnit->MarkForRedraw();
+						}
 
 						// Use the unit palette in the animation
 						auto lcc = pThis->GetDrawer();
