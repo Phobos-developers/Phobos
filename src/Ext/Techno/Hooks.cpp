@@ -1028,3 +1028,19 @@ DEFINE_HOOK(0x4ABEE9, BuildingClass_MouseLeftRelease_UniversalDeploy_ExecuteDepl
 
 	return 0;
 }
+
+DEFINE_HOOK(0x73B5B5, UnitClass_DrawVoxel_AttachmentAdjust, 0x6)
+{
+	enum { Skip = 0x73B5CE };
+
+	GET(UnitClass*, pThis, EBP);
+	LEA_STACK(int*, pKey, STACK_OFFS(0x1C4, 0x1B0));
+	// LEA_STACK(Matrix3D* , pMtx ,STACK_OFFS(0x1C4, 0xC0));
+	//Use .get() to skip locomotor empty checking
+	//since it already done above
+
+	Matrix3D UnitVXL;
+
+	R->EAX(&TechnoExt::GetAttachmentTransform(pThis, pKey));
+	return Skip;
+}
