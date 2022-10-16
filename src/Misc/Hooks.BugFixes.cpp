@@ -139,35 +139,68 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, 0xA)
 
 // issue #112 Make FireOnce=yes work on other TechnoTypes
 // Author: Starkku
-DEFINE_HOOK(0x4C7518, EventClass_Execute_StopUnitDeployFire, 0x9)
+DEFINE_HOOK(0x4C7512, EventClass_Execute_StopUnitDeployFire, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
 	auto const pUnit = abstract_cast<UnitClass*>(pThis);
 	if (pUnit && pUnit->CurrentMission == Mission::Unload && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
-		pUnit->QueueMission(Mission::Guard, true);
+	{
+		pUnit->SetTarget(nullptr);
+		pThis->QueueMission(Mission::Guard, true);
+	}
 
-	// Restore overridden instructions
-	GET(Mission, eax, EAX);
-	return eax == Mission::Construction ? 0x4C8109 : 0x4C7521;
+	return 0;
 }
 
-DEFINE_HOOK(0x73DD12, UnitClass_Mission_Unload_DeployFire, 0x6)
+DEFINE_HOOK(0x4C77E4, EventClass_Execute_UnitDeployFire, 0x6)
 {
+	enum { DoNotExecute = 0x4C8109 };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto const pUnit = abstract_cast<UnitClass*>(pThis);
+
+	// Do not execute deploy command for deploy fire if the unit is idle and reloading.
+	if (pUnit && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer && pUnit->CurrentMission == Mission::Guard)
+	{
+		if (const auto pWeapon = pUnit->GetWeapon(pUnit->GetTechnoType()->DeployFireWeapon))
+		{
+			if (pWeapon->WeaponType->FireOnce && pUnit->DiskLaserTimer.HasTimeLeft())
+				return DoNotExecute;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73DCEF, UnitClass_Mission_Unload_DeployFire, 0x6)
+{
+	enum { SkipGameCode = 0x73DD3C };
+
 	GET(UnitClass*, pThis, ESI);
 
 	int weaponIndex = pThis->GetTechnoType()->DeployFireWeapon;
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 
-	if (pThis->GetFireError(pThis->Target, weaponIndex, true) == FireError::OK)
+	if (weaponIndex <= 0 || !pWeapon)
+		return SkipGameCode;
+
+	auto pCell = MapClass::Instance->GetCellAt(pThis->GetMapCoords());
+
+	if (pThis->GetFireError(pCell, weaponIndex, true) == FireError::OK)
 	{
+		pThis->SetTarget(pCell);
 		pThis->Fire(pThis->Target, weaponIndex);
-		auto const pWeapon = pThis->GetWeapon(weaponIndex);
 
-		if (pWeapon && pWeapon->WeaponType->FireOnce)
+		if (pWeapon->FireOnce)
+		{
+			pThis->SetTarget(nullptr);
 			pThis->QueueMission(Mission::Guard, true);
+		}
 	}
 
-	return 0x73DD3C;
+	return SkipGameCode;
 }
 
 // issue #250: Building placement hotkey not responding
@@ -519,7 +552,8 @@ DEFINE_HOOK(0x73EFD8, UnitClass_Mission_Hunt_DeploysInto, 0x6)
 // Author: Starkku
 DEFINE_JUMP(LJMP, 0x7032BA, 0x7032C6);
 
-namespace FetchBomb {
+namespace FetchBomb
+{
 	BombClass* pThisBomb;
 }
 
