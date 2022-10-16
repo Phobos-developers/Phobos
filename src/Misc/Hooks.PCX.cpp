@@ -3,6 +3,7 @@
 #include <FileFormats/SHP.h>
 #include <Ext/Rules/Body.h>
 #include <LoadProgressManager.h>
+#include <GameStrings.h>
 
 DEFINE_HOOK(0x6B9D9C, RGB_PCX_Loader, 0x7)
 {
@@ -96,7 +97,7 @@ DEFINE_HOOK(0x6A99F3, StripClass_Draw_DrawMissing, 0x6)
 		strcpy_s(pFilename, RulesExt::Global()->MissingCameo.data());
 		_strlwr_s(pFilename);
 
-		if (!_stricmp(pCameoRef->Filename, "xxicon.shp")
+		if (!_stricmp(pCameoRef->Filename, GameStrings::XXICON_SHP)
 			&& strstr(pFilename, ".pcx"))
 		{
 			PCX::Instance->LoadFile(pFilename);

@@ -1,11 +1,12 @@
 #include "Body.h"
+#include <GameStrings.h>
 
 template<> const DWORD Extension<WeaponTypeClass>::Canary = 0x22222222;
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
 void WeaponTypeExt::ExtData::Initialize()
 {
-	this->RadType = RadTypeClass::FindOrAllocate("Radiation");
+	this->RadType = RadTypeClass::FindOrAllocate(GameStrings::Radiation);
 }
 
 // =============================

@@ -64,7 +64,6 @@ public:
 		bool CheckDeathConditions();
 		void EatPassengers();
 		void UpdateShield();
-		void ApplyPoweredKillSpawns();
 		void ApplySpawnLimitRange();
 
 		virtual ~ExtData() = default;

@@ -1,7 +1,7 @@
 #include <Phobos.h>
 
 #include <Helpers/Macro.h>
-
+#include <GameStrings.h>
 #include <CCINIClass.h>
 #include <Unsorted.h>
 #include <Drawing.h>
@@ -205,7 +205,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
 	Phobos::Config::ShowPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowPlacementPreview", true);
 
-	CCINIClass* pINI_UIMD = Phobos::OpenConfig((const char*)0x827DC8 /*"UIMD.INI"*/);
+	CCINIClass* pINI_UIMD = Phobos::OpenConfig(GameStrings::UIMD_INI);
 
 	// LoadingScreen
 	{
@@ -260,11 +260,11 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	Phobos::CloseConfig(pINI_UIMD);
 
-	CCINIClass* pINI_RULESMD = Phobos::OpenConfig((const char*)0x826260 /*"RULESMD.INI"*/);
+	CCINIClass* pINI_RULESMD = Phobos::OpenConfig(GameStrings::RULESMD_INI);
 
-	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool("General", "ArtImageSwap", false);
+	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool(GameStrings::General, "ArtImageSwap", false);
 
-	if (pINI_RULESMD->ReadBool("General", "FixTransparencyBlitters", true))
+	if (pINI_RULESMD->ReadBool(GameStrings::General, "FixTransparencyBlitters", true))
 		BlittersFix::Apply();
 
 	Phobos::CloseConfig(pINI_RULESMD);

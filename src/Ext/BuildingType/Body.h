@@ -1,5 +1,6 @@
 #pragma once
 #include <BuildingTypeClass.h>
+#include <SuperClass.h>
 #include <SuperWeaponTypeClass.h>
 
 #include <Helpers/Macro.h>
@@ -16,14 +17,15 @@ public:
 	public:
 		Valueable<AffectedHouse> PowersUp_Owner;
 		ValueableVector<BuildingTypeClass*> PowersUp_Buildings;
-		DynamicVectorClass<SuperWeaponTypeClass*> SuperWeapons;
+		ValueableIdxVector<SuperWeaponTypeClass> SuperWeapons;
 
 		ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
 		Nullable<int> PowerPlantEnhancer_Amount;
 		Nullable<float> PowerPlantEnhancer_Factor;
 
 		DynamicVectorClass<Point2D> OccupierMuzzleFlashes;
-
+		Valueable<bool> Powered_KillSpawns;
+		Nullable<bool> AllowAirstrike;
 		Valueable<bool> Refinery_UseStorage;
 
 		Valueable<bool> Grinding_AllowAllies;
@@ -44,6 +46,10 @@ public:
 		CustomPalette PlacementPreview_Palette;
 		Nullable<TranslucencyLevel> PlacementPreview_Translucency;
 
+		Valueable<bool> SpyEffect_Custom;
+		Nullable<SuperWeaponTypeClass*> SpyEffect_VictimSuperWeapon;
+		Nullable<SuperWeaponTypeClass*> SpyEffect_InfiltratorSuperWeapon;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -51,6 +57,8 @@ public:
 			, PowerPlantEnhancer_Amount {}
 			, PowerPlantEnhancer_Factor {}
 			, OccupierMuzzleFlashes()
+			, Powered_KillSpawns { false }
+			, AllowAirstrike {}
 			, Refinery_UseStorage { false }
 			, Grinding_AllowAllies { false }
 			, Grinding_AllowOwner { true }
@@ -68,7 +76,15 @@ public:
 			, PlacementPreview_Offset { {0,-15,1} }
 			, PlacementPreview_Palette {}
 			, PlacementPreview_Translucency {}
+			, SpyEffect_Custom { false }
+			, SpyEffect_VictimSuperWeapon {}
+			, SpyEffect_InfiltratorSuperWeapon {}
 		{ }
+
+		// Ares 0.A functions
+		int GetSuperWeaponCount() const;
+		int GetSuperWeaponIndex(int index, HouseClass* pHouse) const;
+		int GetSuperWeaponIndex(int index) const;
 
 		virtual ~ExtData() = default;
 

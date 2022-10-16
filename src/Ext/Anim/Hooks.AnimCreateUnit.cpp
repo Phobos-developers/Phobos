@@ -128,7 +128,7 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 			if (success)
 			{
 				if (pTechno->HasTurret() && pExt->FromDeathUnit && pExt->DeathUnitHasTurret && pTypeExt->CreateUnit_InheritTurretFacings.Get())
-					pTechno->SecondaryFacing.Set_Current(pExt->DeathUnitTurretFacing);
+					pTechno->SecondaryFacing.SetCurrent(pExt->DeathUnitTurretFacing);
 
 				Debug::Log("[" __FUNCTION__ "] Stored Turret Facing %d \n", pExt->DeathUnitTurretFacing.GetFacing<256>());
 

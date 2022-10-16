@@ -275,6 +275,20 @@ PowerPlantEnhancer.Amount=0        ; integer
 PowerPlantEnhancer.Factor=1.0      ; floating point value
 ```
 
+### Spy Effects
+
+- Additional espionage bonuses can be toggled with `SpyEffects.Custom`.
+  - `SpyEffects.VictimSuperWeapon` instantly launches a Super Weapon for the owner of the infiltrated building at building's coordinates.
+  - `SpyEffects.InfiltratorSuperWeapon` behaves the same as above, with the Super Weapon's owner being the owner of the spying unit.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+SpyEffects.Custom=false            ; boolean
+SpyEffects.VictimSuperWeapon=      ; SuperWeaponType
+SpyEffects.InfiltratorSuperWeapon= ; SuperWeaponType
+```
+
 ## Infantry
 
 ### Customizable FLH When Infantry Is Prone Or Deployed
@@ -407,6 +421,9 @@ Trajectory.Speed=100.0  ; floating point value
 
 #### Straight trajectory
 
+![Straigh trajectory blasters](_static/images/straight.gif)
+*Straight trajectory used to make blasters in a private mod by @brsajo#9745*
+
 - Self-explanatory, is a straight-shot trajectory.
 
 In `rulesmd.ini`:
@@ -444,16 +461,16 @@ Shrapnel.AffectsBuildings=false  ; boolean
 
 ### LimboDelivery
 
-- Super Weapons can now deliver off-map buildings that act as if they were on the field.
-  - `LimboDelivery.Types` is the list of BuildingTypes that will be created when the Super Weapons fire. Super Weapon Type and coordinates do not matter.
+- Superweapons can now deliver off-map buildings that act as if they were on the field.
+  - `LimboDelivery.Types` is the list of BuildingTypes that will be created when the Superweapons fire. Superweapon `Type` and coordinates do not matter.
   - `LimboDelivery.IDs` is the list of numeric IDs that will be assigned to buildings. Necessary for LimboKill to work.
 
-- Created buildings are not affected by any on-map threats. The only way to remove them from the game is by using a Super Weapon with LimboKill set.
+- Created buildings are not affected by any on-map threats. The only way to remove them from the game is by using a Superweapon with `LimboKill.IDs` set.
   - `LimboKill.Affects` sets which houses are affected by this feature.
   - `LimboKill.IDs` lists IDs that will be targeted. Buildings with these IDs will be removed from the game instantly.
 
 - Delivery can be made random with these optional tags. The game will randomly choose only a single building from the list for each roll chance provided.
-  - `LimboDelivery.RollChance` lits chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
+  - `LimboDelivery.RollChances` lists chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
   - `LimboDelivery.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific building. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
 
 Note: This feature might not support every building flag. Flags that are confirmed to work correctly are listed below:
@@ -471,13 +488,46 @@ Remember that Limbo Delivered buildings don't exist physically! This means they 
 ```
 In `rulesmd.ini`:
 ```ini
-[SOMESW]                        ; Super Weapon
+[SOMESW]                        ; Superweapon
 LimboDelivery.Types=            ; List of BuildingTypes
 LimboDelivery.IDs=              ; List of numeric IDs. -1 cannot be used.
 LimboDelivery.RollChances=      ; List of percentages.
 LimboDelivery.RandomWeightsN=   ; List of integers.
 LimboKill.Affects=self          ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 LimboKill.IDs=                  ; List of numeric IDs.
+```
+
+### Next
+
+Superweapons can now launch other superweapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
+  - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
+  - `SW.Next.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
+  - `SW.Next.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                        ; Super Weapon
+SW.Next=                        ; List of Superweapons
+SW.Next.RealLaunch=true         ; boolean
+SW.Next.IgnoreInhibitors=false  ; boolean
+SW.Next.IgnoreDesignators=true  ; boolean
+SW.Next.RollChances=            ; List of percentages.
+SW.Next.RandomWeightsN=         ; List of integers.
+```
+
+### Warhead or Weapon detonation at target cell
+
+- Any superweapon can now detonate a Warhead or a weapon at superweapon's target cell.
+  - If both `Detonate.Warhead` and `Detonate.Weapon` are set, latter takes precedence.
+  - `Detonate.Damage`, if not set, defaults to weapon `Damage` for `Detonate.Weapon` and 0 for `Detonate.Warhead`.
+  - Both the weapon and Warhead behave as if fired by whatever building fired the Superweapon. This respects controls like `SW.RangeMinimum/Maximum` (similar to Ares' GenericWarhead superweapon in this regard).
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]           ; Super Weapon
+Detonate.Warhead=  ; Warhead
+Detonate.Weapon=   ; WeaponType
+Detonate.Damage=   ; integer
 ```
 
 ## Technos
@@ -567,6 +617,24 @@ In `artmd.ini`:
 FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-specific FLH key name and N is zero-based burst shot index.
 ```
 
+### Forcing specific weapon against certain targets
+
+![image](_static/images/underwater-new-attack-tag.gif)
+*Naval underwater target behavior with `ForceWeapon.Naval.Decloaked` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
+
+- Can be used to override normal weapon selection logic to force specific weapons to use against certain targets. If multiple are set and target satisfies the conditions, the first one in listed order satisfied takes effect.
+  - `ForceWeapon.Naval.Decloaked` forces specified weapon to be used against uncloaked naval targets. Useful if your naval unit has one weapon only for underwater and another weapon for surface targets.
+  - `ForceWeapon.Cloaked` forces specified weapon to be used against any cloaked targets.
+  - `ForceWeapon.Disguised` forces specified weapon to be used against any disguised targets.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                    ; TechnoType
+ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.Cloaked=-1          ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+```
+
 ### Initial Strength
 
 - You can now specify how many hitpoints a TechnoType starts with.
@@ -618,7 +686,6 @@ AutoDeath.OnAmmoDepletion=no  ; boolean
 AutoDeath.AfterDelay=0        ; positive integer
 ```
 
-
 ### Mind Control enhancement
 
 ![image](_static/images/mindcontrol-max-range-01.gif)
@@ -647,20 +714,6 @@ MindControl.Anim=                     ; Animation, defaults to ControlledAnimati
 ```ini
 [SOMETECHNO]        ; TechnoType
 NoManualMove=false  ; boolean
-```
-
-### Override Uncloaked Underwater attack behavior
-
-![image](_static/images/underwater-new-attack-tag.gif)
-*Naval underwater behavior in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
-
-- Overrides a part of the vanilla YR logic for allowing naval units to use a different weapon if the naval unit is uncloaked.
-- Useful if your naval unit have 1 weapon only for underwater and another weapon for surface objects.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                    ; TechnoType
-ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ```
 
 ### Promoted Spawns
@@ -760,6 +813,7 @@ RemoveMindControl=false  ; boolean
   - `Crit.Chance` determines chance for a critical hit to occur. By default this is checked once when the Warhead is detonated and every target that is susceptible to critical hits will be affected. If `Crit.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
   - `Crit.ExtraDamage` determines the damage dealt by the critical hit. If `Crit.Warhead` is set, the damage is used to detonate the specified Warhead on each affected target, otherwise the damage is directly dealt based on current Warhead's `Verses` settings.
   - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against.
+  - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
   - `Crit.AffectsBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
   - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list.
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
@@ -774,6 +828,7 @@ Crit.ApplyChancePerTarget=false     ; boolean
 Crit.ExtraDamage=0                  ; integer
 Crit.Warhead=                       ; Warhead
 Crit.Affects=all                    ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+Crit.AffectsHouses=all              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 Crit.AffectBelowPercent=1.0         ; floating point value, percents or absolute (0.0-1.0)
 Crit.AnimList=                      ; list of animations
 Crit.AnimList.PickRandom=           ; boolean
