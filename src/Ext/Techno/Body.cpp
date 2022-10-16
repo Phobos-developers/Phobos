@@ -884,59 +884,8 @@ void TechnoExt::StartUniversalDeployAnim(TechnoClass* pThis)
 					{
 						pExt->DeployAnim = pAnim;
 						pExt->DeployAnim->SetOwnerObject(pThis);
-						//IndexClass
-						
-						//
 
-						/*
-						virtual void DrawVoxel(const VoxelStruct& Voxel, DWORD dwUnk2, short Facing,
-							const IndexClass<int, int>& VoxelIndex, const RectangleStruct& Rect, const Point2D& Location,
-							const Matrix3D& Matrix, int Intensity, DWORD dwUnk9, DWORD dwUnk10) RX;
-						*/
-						short facing = pThis->PrimaryFacing.Current().GetFacing<8>();
-						VoxelStruct voxel = pThis->GetTechnoType()->MainVoxel;
-						//pThis->DrawVoxel(voxel, 0, facing, pThis->GetTechnoType()->VoxelMainCache.Clear());
-						auto voxelMainCache = pThis->GetTechnoType()->VoxelMainCache;
-						//RectangleStruct nRect = pSurface->GetRect();
-
-						/*
-						RectangleStruct rect = RectangleStruct {};
-						rect = *pTerrain->GetRenderDimensions(&rect);
-						TacticalClass::Instance->RegisterDirtyArea(rect, false);
-						pTerrain->Disappear(true);
-						pTerrain->UnInit();
-						*/
-						/*
-						//UnitClass
-						// main drawing functions - Draw() calles one of these, they call parent's Draw_A_smth
-						virtual void DrawAsVXL(Point2D Coords, RectangleStruct BoundingRect, int Brightness, int Tint)
-							{ JMP_THIS(0x73B470); }
-
-						virtual void DrawAsSHP(Point2D Coords, RectangleStruct BoundingRect, int Brightness, int Tint)
-							{ JMP_THIS(0x73C5F0); }
-
-						virtual void DrawObject(Surface* pSurface, Point2D Coords, RectangleStruct CacheRect, int Brightness, int Tint)
-							{ JMP_THIS(0x73B140); }
-						*/
-						auto pCell = pThis->GetCell();
-						auto const pTerrain = pCell->GetTerrain(false);
-						//RectangleStruct rect = RectangleStruct {};
-						//rect = *pThis->GetRenderDimensions(&rect);
-						//TacticalClass::Instance->RegisterDirtyArea(rect, false);
-						//pTerrain->Disappear(true);
-						//
-						if (pThis->GetTechnoType()->Voxel)
-						{
-							Point2D point2d = Point2D::Empty;
-							point2d.X = 1;
-							point2d.Y = 1;
-							RectangleStruct rect = RectangleStruct {};
-							rect.Width = 25;
-							rect.Height = 25;
-							auto pUnit = abstract_cast<UnitClass*>(pThis);
-							pUnit->DrawAsVXL(Point2D::Empty, rect, 1, 1);
-							pUnit->MarkForRedraw();
-						}
+						pExt->Convert_UniversalDeploy_MakeInvisible = true;
 
 						// Use the unit palette in the animation
 						auto lcc = pThis->GetDrawer();
@@ -1095,7 +1044,7 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 			AnimTypeClass* pDeployAnimType = pTypeExt->Convert_DeployingAnim.isset() ? pTypeExt->Convert_DeployingAnim.Get() : nullptr;
 			bool hasValidDeployAnim = pDeployAnimType ? true : false;
 			bool isDeployAnimPlaying = pExt->DeployAnim ? true : false;
-			bool hasDeployAnimFinished = (isDeployAnimPlaying && (pExt->DeployAnim->Animation.Value >= pDeployAnimType->End + pDeployAnimType->Start - 1)) ? true : false;
+			bool hasDeployAnimFinished = (isDeployAnimPlaying && (pExt->DeployAnim->Animation.Value >= (pDeployAnimType->End + pDeployAnimType->Start - 1))) ? true : false;
 			int convert_DeploySoundIndex = pTypeExt->Convert_DeploySound.isset() ? pTypeExt->Convert_DeploySound.Get() : -1;
 			AnimTypeClass* pAnimFXType = pTypeExt->Convert_AnimFX.isset() ? pTypeExt->Convert_AnimFX.Get() : nullptr;
 			bool animFX_FollowDeployer = pTypeExt->Convert_AnimFX_FollowDeployer;
@@ -1127,6 +1076,10 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 				return;
 			}
 
+			// Hack for making the Voxel invisible during a deploy
+			if (hasValidDeployAnim)
+				pExt->Convert_UniversalDeploy_MakeInvisible = true;
+
 			// The unit should remain paralyzed during a deploy animation
 			if (isDeployAnimPlaying)
 				pFoot->ParalysisTimer.Start(15);
@@ -1134,12 +1087,12 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 			if (hasValidDeployAnim && !hasDeployAnimFinished)
 				return;
 
-			if (pThis->DeployAnim)
+			/*if (pThis->DeployAnim)
 			{
 				pThis->DeployAnim->Limbo();
 				pThis->DeployAnim->UnInit();
 				pThis->DeployAnim = nullptr;
-			}
+			}*/
 
 			// Time for the object conversion
 			deployed = TechnoExt::UniversalConvert(pThis, nullptr);
@@ -1165,6 +1118,7 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 			pThis->IsFallingDown = false;
 			pThis->ForceMission(Mission::Guard);
 			pExt->Convert_UniversalDeploy_InProgress = false;
+			pExt->Convert_UniversalDeploy_MakeInvisible = false;
 		}
 	}
 }
@@ -1291,7 +1245,7 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 	}
 
 	// Recover Turret direction
-	if (pNewTechnoType->Turret && !pNewTechnoType->TurretSpins)
+	if (pOldTechnoType->Turret && pNewTechnoType->Turret && !pNewTechnoType->TurretSpins)
 		pNewTechno->SecondaryFacing.Set_Current(oldSecondaryFacing);
 
 	// Jumpjet tricks
@@ -1528,6 +1482,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->DeployAnim)
 		.Process(this->Convert_UniversalDeploy_InProgress)
+		.Process(this->Convert_UniversalDeploy_MakeInvisible)
 		;
 }
 

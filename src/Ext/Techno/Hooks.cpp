@@ -1029,18 +1029,144 @@ DEFINE_HOOK(0x4ABEE9, BuildingClass_MouseLeftRelease_UniversalDeploy_ExecuteDepl
 	return 0;
 }
 
+// Yes, same hook from Techno Attachment PR
 DEFINE_HOOK(0x73B5B5, UnitClass_DrawVoxel_AttachmentAdjust, 0x6)
 {
 	enum { Skip = 0x73B5CE };
 
 	GET(UnitClass*, pThis, EBP);
-	LEA_STACK(int*, pKey, STACK_OFFS(0x1C4, 0x1B0));
+	LEA_STACK(VoxelIndexKey*, pKey, STACK_OFFS(0x1C4, 0x1B0));
+	/////////////LEA_STACK(int*, pKey, STACK_OFFS(0x1C4, 0x1B0));
 	// LEA_STACK(Matrix3D* , pMtx ,STACK_OFFS(0x1C4, 0xC0));
 	//Use .get() to skip locomotor empty checking
 	//since it already done above
 
-	Matrix3D UnitVXL;
+	if (!pThis)
+		return 0;
 
-	R->EAX(&TechnoExt::GetAttachmentTransform(pThis, pKey));
-	return Skip;
+	auto pTechno = static_cast<TechnoClass*>(pThis);
+	if (!pTechno)
+		return 0;
+
+	auto pExt = TechnoExt::ExtMap.Find(pTechno);
+	if (!pExt)
+		return 0;
+
+	if (pExt->Convert_UniversalDeploy_InProgress && pExt->Convert_UniversalDeploy_MakeInvisible)
+	{
+		pKey->Reserved.ReservedIndex = 10; // I don't know what I'm doing but works (except the shadow).
+
+		Matrix3D mtx;
+
+		if ((pThis->AbstractFlags & AbstractFlags::Foot) && ((FootClass*)pThis)->Locomotor)
+			mtx = ((FootClass*)pThis)->Locomotor->Draw_Matrix(pKey); //(VoxelIndexKey*)pKey);
+		else // no locomotor means no rotation or transform of any kind (f.ex. buildings) - Kerbiter
+			mtx.MakeIdentity();
+
+		mtx.Scale(0.0000001F); // Let's make the unit so little that now is invisible
+
+		R->EAX(&mtx);
+
+		return Skip;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4DB0D4, FootClass_FootClassVoxelShadow_UniversalDeploy_DontDrawShadow, 0x8)
+{
+	enum { Skip = 0x4DB196 };
+
+	GET(FootClass*, pThis, ECX);
+
+	if (!pThis)
+		return 0;
+
+	auto pTechno = static_cast<TechnoClass*>(pThis);
+	if (!pTechno)
+		return 0;
+
+	auto pExt = TechnoExt::ExtMap.Find(pTechno);
+	if (!pExt)
+		return 0;
+
+	// Voxels need this for hiding the shadow when deploy
+	if (pExt->Convert_UniversalDeploy_InProgress && pExt->Convert_UniversalDeploy_MakeInvisible)
+		return Skip;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x5F4CF1, ObjectClass_Render_UniversalDeploy_DontRenderObject, 0x9)
+{
+	enum { Skip = 0x5F4D09 };
+
+	GET(ObjectClass*, pThis, ECX);
+
+	if (!pThis)
+		return 0;
+
+	auto pTechno = static_cast<TechnoClass*>(pThis);
+	if (!pTechno)
+		return 0;
+
+	auto pExt = TechnoExt::ExtMap.Find(pTechno);
+	if (!pExt)
+		return 0;
+
+	// Some objects won't draw graphics when deploy
+	if (pExt->Convert_UniversalDeploy_MakeInvisible)
+	{
+		//R->AL(1);
+		return Skip;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73C602, TechnoClass_DrawObject_UniversalDeploy_DontRenderObject, 0x6)
+{
+	enum { Skip = 0x73CE00 };
+
+	GET(TechnoClass*, pThis, ECX);
+
+	if (!pThis)
+		return 0;
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt)
+		return 0;
+
+	// SHP units won't draw graphics when deploy
+	if (pExt->Convert_UniversalDeploy_MakeInvisible)
+		return Skip;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x518FBC, InfantryClass_DrawIt_UniversalDeploy_DontRenderObject, 0x6)
+{
+	enum { Skip = 0x5192B5 };
+
+	GET(InfantryClass*, pThis, EBP);
+
+	if (!pThis)
+		return 0;
+
+	auto pTechno = static_cast<TechnoClass*>(pThis);
+	if (!pTechno)
+		return 0;
+
+	auto pExt = TechnoExt::ExtMap.Find(pTechno);
+	if (!pExt)
+		return 0;
+
+	// Here enters SHP units when deploy
+	if (pExt->Convert_UniversalDeploy_MakeInvisible)
+	{
+		//R->EAX(1);
+		return Skip;
+	}
+
+	return 0;
 }

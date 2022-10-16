@@ -34,6 +34,7 @@ public:
 		OptionalStruct<int, true> CurrentLaserWeaponIndex;
 		AnimClass* DeployAnim;
 		bool Convert_UniversalDeploy_InProgress;
+		bool Convert_UniversalDeploy_MakeInvisible;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -56,6 +57,7 @@ public:
 			, CurrentLaserWeaponIndex {}
 			, DeployAnim { nullptr }
 			, Convert_UniversalDeploy_InProgress { false }
+			, Convert_UniversalDeploy_MakeInvisible { false }
 		{ }
 
 		void ApplyInterceptor();
