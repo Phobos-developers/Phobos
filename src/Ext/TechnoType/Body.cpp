@@ -230,7 +230,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Convert_UniversalDeploy.Read(exINI, pSection, "Convert.UniversalDeploy");
 	this->Convert_DeployToLand.Read(exINI, pSection, "Convert.DeployToLand");
 	this->Convert_AnimFX.Read(exINI, pSection, "Convert.AnimFX");
-	this->Convert_AnimFX_FollowDeployer.Read(exINI, pSection, "Convert.Anim.FollowDeployer");
+	this->Convert_AnimFX_FollowDeployer.Read(exINI, pSection, "Convert.AnimFX.FollowDeployer");
 	this->Convert_DeployingAnim.Read(exINI, pSection, "Convert.DeployingAnim");
 	this->Convert_DeploySound.Read(exINI, pSection, "Convert.DeploySound");
 	this->Convert_DeployDir.Read(exINI, pSection, "Convert.DeployDir");
