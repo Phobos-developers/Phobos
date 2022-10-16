@@ -898,6 +898,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->IsInTunnel)
+		.Process(this->DeployFireTimer)
 		;
 }
 

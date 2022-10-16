@@ -161,13 +161,18 @@ DEFINE_HOOK(0x4C77E4, EventClass_Execute_UnitDeployFire, 0x6)
 
 	auto const pUnit = abstract_cast<UnitClass*>(pThis);
 
-	// Do not execute deploy command for deploy fire if the unit is idle and reloading.
-	if (pUnit && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer && pUnit->CurrentMission == Mission::Guard)
+	// Do not execute deploy command if the vehicle is still reloading from firing its once-firing deploy weapon.
+	if (pUnit && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
 	{
 		if (const auto pWeapon = pUnit->GetWeapon(pUnit->GetTechnoType()->DeployFireWeapon))
 		{
-			if (pWeapon->WeaponType->FireOnce && pUnit->DiskLaserTimer.HasTimeLeft())
-				return DoNotExecute;
+			if (pWeapon->WeaponType->FireOnce)
+			{
+				const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+				if (pExt->DeployFireTimer.HasTimeLeft())
+					return DoNotExecute;
+			}
 		}
 	}
 
@@ -192,6 +197,9 @@ DEFINE_HOOK(0x73DCEF, UnitClass_Mission_Unload_DeployFire, 0x6)
 	{
 		pThis->SetTarget(pCell);
 		pThis->Fire(pThis->Target, weaponIndex);
+
+		const auto pExt = TechnoExt::ExtMap.Find(pThis);
+		pExt->DeployFireTimer.Start(pWeapon->ROF);
 
 		if (pWeapon->FireOnce)
 		{

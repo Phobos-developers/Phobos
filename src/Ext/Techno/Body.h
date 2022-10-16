@@ -33,6 +33,7 @@ public:
 		OptionalStruct<int, false> DamageNumberOffset;
 		OptionalStruct<int, true> CurrentLaserWeaponIndex;
 		bool IsInTunnel;
+		CDTimerClass DeployFireTimer;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -48,12 +49,13 @@ public:
 			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
-			, AutoDeathTimer { }
+			, AutoDeathTimer {}
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset {}
 			, OriginalPassengerOwner {}
 			, CurrentLaserWeaponIndex {}
 			, IsInTunnel { false }
+			, DeployFireTimer {}
 		{ }
 
 		void ApplyInterceptor();
