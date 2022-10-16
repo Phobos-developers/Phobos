@@ -846,7 +846,7 @@ DEFINE_HOOK(0x449E6B, BuildingClass_MissionDeconstruction_UniversalDeploy, 0x5)
 	{
 		DirStruct desiredFacing;
 		desiredFacing.SetDir(static_cast<DirType>(pTypeExt->Convert_DeployDir * 32));
-		pUnit->PrimaryFacing.Set_Current(desiredFacing);
+		pUnit->PrimaryFacing.SetCurrent(desiredFacing);
 	}
 	else
 	{

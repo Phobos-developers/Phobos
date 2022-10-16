@@ -947,7 +947,7 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 				if (currentDir != desiredDir)
 				{
 					pFoot->Locomotor->Move_To(CoordStruct::Empty);
-					pThis->PrimaryFacing.Set_Desired(desiredFacing);
+					pThis->PrimaryFacing.SetDesired(desiredFacing);
 
 					return;
 				}
@@ -1164,7 +1164,7 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 
 	// Recover turret direction
 	if (pOldTechnoType->Turret && pNewTechnoType->Turret && !pNewTechnoType->TurretSpins)
-		pNewTechno->SecondaryFacing.Set_Current(oldSecondaryFacing);
+		pNewTechno->SecondaryFacing.SetCurrent(oldSecondaryFacing);
 
 	// Jumpjet tricks
 	if (pNewTechnoType->JumpJet || pNewTechnoType->BalloonHover)
@@ -1305,7 +1305,6 @@ void TechnoExt::PassengersTransfer(TechnoClass* pTechnoFrom, TechnoClass* pTechn
 
 				if (!forceEject && isOccupier && maxNumberOccupants > 0 && nOccupants < maxNumberOccupants)
 				{
-					InfantryClass* infantry = static_cast<InfantryClass*>(pPassenger);
 					pBuildingTo->Occupants.AddItem(infantry);
 				}
 				else
@@ -1332,7 +1331,7 @@ void TechnoExt::PassengersTransfer(TechnoClass* pTechnoFrom, TechnoClass* pTechn
 
 					pPassenger->Transporter = pTechnoTo;
 					pTechnoTo->AddPassenger(pPassenger);
-					numPassengers += passengerSize;
+					numPassengers += (int)passengerSize;
 				}
 				else
 				{
