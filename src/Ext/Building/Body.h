@@ -39,6 +39,7 @@ public:
 
 		void DisplayGrinderRefund();
 		void ApplyPoweredKillSpawns();
+		bool HasSuperWeapon(int index, bool withUpgrades) const;
 
 		virtual ~ExtData() = default;
 
@@ -88,4 +89,5 @@ public:
 	static bool HasFreeDocks(BuildingClass* pBuilding);
 	static bool CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno);
 	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno);
+	static bool HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse);
 };

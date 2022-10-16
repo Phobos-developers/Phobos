@@ -9,6 +9,8 @@
 #include <Utilities/GeneralUtils.h>
 #include "Ext/Building/Body.h"
 #include "Ext/House/Body.h"
+#include "Ext/WarheadType/Body.h"
+#include "Ext/WeaponType/Body.h"
 
 inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 {
@@ -116,6 +118,70 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 
 		if (pTypeExt->LimboKill_IDs.size() > 0)
 			pTypeExt->ApplyLimboKill(pSW->Owner);
+
+		if (pTypeExt->Detonate_Warhead.isset() || pTypeExt->Detonate_Weapon.isset())
+			pTypeExt->ApplyDetonation(pSW->Owner, cell);
+
+		if (pTypeExt->SW_Next.size() > 0)
+			pTypeExt->ApplySWNext(pSW, cell);
+	}
+}
+
+// Universal handler of the rolls-weights system
+std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>* rolls, ValueableVector<ValueableVector<int>>* weights, size_t size)
+{
+	bool rollOnce = false;
+	size_t rollsSize = rolls->size();
+	size_t weightsSize = weights->size();
+	int index;
+	std::vector<int> indices;
+
+	// if no RollChances are supplied, do only one roll
+	if (rollsSize == 0)
+	{
+		rollsSize = 1;
+		rollOnce = true;
+	}
+
+	for (size_t i = 0; i < rollsSize; i++)
+	{
+		this->RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
+		if (!rollOnce && this->RandomBuffer > (*rolls)[i])
+			continue;
+
+		// If there are more rolls than weight lists, use the last weight list
+		size_t j = std::min(weightsSize - 1, i);
+		index = GeneralUtils::ChooseOneWeighted(this->RandomBuffer, &(*weights)[j]);
+
+		// If modder provides more weights than there are objects and we hit one of these, ignore it
+		// otherwise add
+		if (size_t(index) < size)
+			indices.push_back(index);
+	}
+	return indices;
+}
+
+// SW.Next proper launching mechanic
+void Launch(HouseClass* pHouse, SWTypeExt::ExtData* pLauncherTypeExt, SuperWeaponTypeClass* pLaunchedType, const CellStruct& cell)
+{
+	const auto pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pLaunchedType));
+
+	if (!pSuper)
+		return;
+
+	const auto pSuperTypeExt = SWTypeExt::ExtMap.Find(pLaunchedType);
+	if (!pLauncherTypeExt->SW_Next_RealLaunch || (pSuperTypeExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSuperTypeExt->Money_Amount)))
+	{
+
+		if (pLauncherTypeExt->SW_Next_IgnoreInhibitors || !pSuperTypeExt->HasInhibitor(pHouse, cell)
+			&& (pLauncherTypeExt->SW_Next_IgnoreDesignators || pSuperTypeExt->HasDesignator(pHouse, cell)))
+		{
+			// Forcibly fire
+			pSuper->Launch(cell, true);
+			if (pLauncherTypeExt->SW_Next_RealLaunch)
+				pSuper->Reset();
+		}
+
 	}
 }
 
@@ -124,50 +190,25 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 	// random mode
 	if (this->LimboDelivery_RandomWeightsData.size())
 	{
-		bool rollOnce = false;
 		int id = -1;
-		size_t rolls = this->LimboDelivery_RollChances.size();
-		size_t weights = this->LimboDelivery_RandomWeightsData.size();
-		int ids = (int)this->LimboDelivery_IDs.size();
-
-		// if no RollChances are supplied, do only one roll
-		if (rolls == 0)
+		size_t idsSize = this->LimboDelivery_IDs.size();
+		auto results = this->WeightedRollsHandler(&this->LimboDelivery_RollChances, &this->LimboDelivery_RandomWeightsData, this->LimboDelivery_Types.size());
+		for (size_t result : results)
 		{
-			rolls = 1;
-			rollOnce = true;
-		}
+			if (result < idsSize)
+				id = this->LimboDelivery_IDs[result];
 
-		for (size_t i = 0; i < rolls; i++)
-		{
-			this->RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
-			if (!rollOnce && this->RandomBuffer > this->LimboDelivery_RollChances[i])
-				continue;
-
-			size_t j = rolls > weights ? weights : i;
-			int index = GeneralUtils::ChooseOneWeighted(this->RandomBuffer, &this->LimboDelivery_RandomWeightsData[j]);
-
-			// extra weights are bound to automatically fail
-			if (index >= (int)this->LimboDelivery_Types.size())
-				index = -1;
-
-			if (index != -1)
-			{
-				if (index < ids)
-					id = this->LimboDelivery_IDs[index];
-
-				LimboCreate(this->LimboDelivery_Types[index], pHouse, id);
-			}
+			LimboCreate(this->LimboDelivery_Types[result], pHouse, id);
 		}
 	}
 	// no randomness mode
 	else
 	{
 		int id = -1;
-		size_t ids = this->LimboDelivery_IDs.size();
-
+		size_t idsSize = this->LimboDelivery_IDs.size();
 		for (size_t i = 0; i < this->LimboDelivery_Types.size(); i++)
 		{
-			if (i < ids)
+			if (i < idsSize)
 				id = this->LimboDelivery_IDs[i];
 
 			LimboCreate(this->LimboDelivery_Types[i], pHouse, id);
@@ -191,6 +232,45 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 				}
 			}
 		}
+	}
+}
+
+void SWTypeExt::ExtData::ApplyDetonation(HouseClass* pHouse, const CellStruct& cell)
+{
+	const auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
+	BuildingClass* pFirer = nullptr;
+
+	for (auto const& pBld : pHouse->Buildings)
+	{
+		if (this->IsLaunchSiteEligible(cell, pBld, false))
+		{
+			pFirer = pBld;
+			break;
+		}
+	}
+
+	const auto pWeapon = this->Detonate_Weapon.isset() ? this->Detonate_Weapon.Get() : nullptr;
+
+	if (pWeapon)
+		WeaponTypeExt::DetonateAt(pWeapon, coords, pFirer, this->Detonate_Damage.Get(pWeapon->Damage));
+	else
+		WarheadTypeExt::DetonateAt(this->Detonate_Warhead.Get(), coords, pFirer, this->Detonate_Damage.Get(0));
+}
+
+void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
+{
+	// random mode
+	if (this->SW_Next_RandomWeightsData.size())
+	{
+		auto results = this->WeightedRollsHandler(&this->SW_Next_RollChances, &this->SW_Next_RandomWeightsData, this->SW_Next.size());
+		for (int result : results)
+			Launch(pSW->Owner, this, this->SW_Next[result], cell);
+	}
+	// no randomness mode
+	else
+	{
+		for (const auto pSWType : this->SW_Next)
+			Launch(pSW->Owner, this, pSWType, cell);
 	}
 }
 
@@ -223,13 +303,7 @@ bool SWTypeExt::ExtData::IsInhibitorEligible(HouseClass* pOwner, const CellStruc
 		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		// get the inhibitor's center
-		auto center = pTechno->GetCoords();
-		if (auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
-		{
-			//center = pBuilding->GetCoords();
-			center.X += pBuilding->Type->GetFoundationWidth() / 2;
-			center.Y += pBuilding->Type->GetFoundationHeight(false) / 2;
-		}
+		auto center = pTechno->GetCenterCoords();
 
 		// has to be closer than the inhibitor range (which defaults to Sight)
 		return coords.DistanceFrom(CellClass::Coord2Cell(center)) <= pExt->InhibitorRange.Get(pType->Sight);
@@ -267,13 +341,7 @@ bool SWTypeExt::ExtData::IsDesignatorEligible(HouseClass* pOwner, const CellStru
 		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		// get the designator's center
-		auto center = pTechno->GetCoords();
-		if (auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
-		{
-			//center = pBuilding->GetCoords();
-			center.X += pBuilding->Type->GetFoundationWidth() / 2;
-			center.Y += pBuilding->Type->GetFoundationHeight(false) / 2;
-		}
+		auto center = pTechno->GetCenterCoords();
 
 		// has to be closer than the designator range (which defaults to Sight)
 		return coords.DistanceFrom(CellClass::Coord2Cell(center)) <= pExt->DesignatorRange.Get(pType->Sight);
@@ -293,3 +361,73 @@ bool SWTypeExt::ExtData::HasDesignator(HouseClass* pOwner, const CellStruct& coo
 		{ return this->IsDesignatorEligible(pOwner, coords, pTechno); });
 }
 
+bool SWTypeExt::ExtData::IsLaunchSiteEligible(const CellStruct& Coords, BuildingClass* pBuilding, bool ignoreRange) const
+{
+	if (!this->IsLaunchSite(pBuilding))
+		return false;
+
+	if (ignoreRange)
+		return true;
+
+	// get the range for this building
+	auto range = this->GetLaunchSiteRange(pBuilding);
+	const auto& minRange = range.first;
+	const auto& maxRange = range.second;
+
+	CoordStruct coords = pBuilding->GetCenterCoords();
+	const auto center = CellClass::Coord2Cell(coords);
+	const auto distance = Coords.DistanceFrom(center);
+
+	// negative range values just pass the test
+	return (minRange < 0.0 || distance >= minRange)
+		&& (maxRange < 0.0 || distance <= maxRange);
+}
+
+bool SWTypeExt::ExtData::IsLaunchSite(BuildingClass* pBuilding) const
+{
+	if (pBuilding->IsAlive && pBuilding->Health && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
+	{
+		auto const pExt = BuildingExt::ExtMap.Find(pBuilding);
+		return pExt->HasSuperWeapon(this->OwnerObject()->ArrayIndex, true);
+	}
+
+	return false;
+}
+
+std::pair<double, double> SWTypeExt::ExtData::GetLaunchSiteRange(BuildingClass* pBuilding) const
+{
+	return std::make_pair(this->SW_RangeMinimum.Get(), this->SW_RangeMaximum.Get());
+}
+
+bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
+{
+	const auto pThis = this->OwnerObject();
+
+	// check whether the optional aux building exists
+	if (pThis->AuxBuilding && pHouse->CountOwnedAndPresent(pThis->AuxBuilding) <= 0)
+		return false;
+
+	// allow only certain houses, disallow forbidden houses
+	const auto OwnerBits = 1u << pHouse->Type->ArrayIndex;
+
+	if (!(this->SW_RequiredHouses & OwnerBits) || (this->SW_ForbiddenHouses & OwnerBits))
+		return false;
+
+	// check that any aux building exist and no neg building
+	auto IsBuildingPresent = [pHouse](BuildingTypeClass* pType)
+	{
+		return pType && pHouse->CountOwnedAndPresent(pType) > 0;
+	};
+
+	const auto& Aux = this->SW_AuxBuildings;
+
+	if (!Aux.empty() && std::none_of(Aux.begin(), Aux.end(), IsBuildingPresent))
+		return false;
+
+	const auto& Neg = this->SW_NegBuildings;
+
+	if (std::any_of(Neg.begin(), Neg.end(), IsBuildingPresent))
+		return false;
+
+	return true;
+}

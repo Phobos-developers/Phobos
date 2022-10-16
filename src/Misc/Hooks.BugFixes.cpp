@@ -527,8 +527,14 @@ namespace FetchBomb {
 DEFINE_HOOK(0x438771, BombClass_Detonate_SetContext, 0x6)
 {
 	GET(BombClass*, pThis, ESI);
+
 	FetchBomb::pThisBomb = pThis;
-	return 0x0;
+
+	// Also adjust detonation coordinate.
+	CoordStruct coords = pThis->Target->GetCenterCoords();
+
+	R->EDX(&coords);
+	return 0;
 }
 
 static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
@@ -567,6 +573,16 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 	}
 
 	return nDamageAreaResult;
+}
+
+DEFINE_HOOK(0x6F5201, TechnoClass_DrawExtras_IvanBombImage, 0x6)
+{
+	GET(TechnoClass*, pThis, EBP);
+
+	auto coords = pThis->GetCenterCoords();
+
+	R->EAX(&coords);
+	return 0;
 }
 
 // skip the Explosion Anim block and clean up the context

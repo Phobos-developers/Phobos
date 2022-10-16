@@ -1,6 +1,6 @@
 #include <InfantryClass.h>
 #include <ScenarioClass.h>
-
+#include <GameStrings.h>
 #include "Body.h"
 #include <Utilities/Macro.h>
 #include <Ext/TechnoType/Body.h>
@@ -370,13 +370,11 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x5F4F4E, ObjectClass_Unlimbo_LaserTrails, 0x7)
+DEFINE_HOOK(0x6F6CFE, TechnoClass_Unlimbo_LaserTrails, 0x6)
 {
-	GET(TechnoClass*, pTechno, ECX);
+	GET(TechnoClass*, pTechno, ESI);
 
-	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
-
-	if (pTechnoExt)
+	if (auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno))
 	{
 		for (auto& pLaserTrail : pTechnoExt->LaserTrails)
 		{
@@ -615,12 +613,12 @@ DEFINE_HOOK(0x44A850, BuildingClass_Mission_Deconstruction_Sellsound, 0x6)
 
 DEFINE_HOOK(0x4D9F8A, FootClass_Sell_Sellsound, 0x5)
 {
-	enum { EVA_UnitSold = 0x822630, SkipVoxVocPlay = 0x4D9FB5 };
+	enum { SkipVoxVocPlay = 0x4D9FB5 };
 	GET(FootClass*, pThis, ESI);
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex((const char*)EVA_UnitSold)));
+	VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex(GameStrings::EVA_UnitSold)));
 	//WW used VocClass::PlayGlobal to play the SellSound, why did they do that?
 	VocClass::PlayAt(pTypeExt->SellSound.Get(RulesClass::Instance->SellSound), pThis->Location);
 
@@ -647,6 +645,19 @@ DEFINE_HOOK(0x70265F, TechnoClass_ReceiveDamage_Explodes, 0x6)
 
 	if (!pTypeExt->Explodes_KillPassengers)
 		return SkipKillingPassengers;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_ObserverCloak, 0x7)
+{
+	enum { UseShadowyVisual = 0x703A5A };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	// Allow observers to always see cloaked objects.
+	if (HouseClass::IsCurrentPlayerObserver() && pThis->CloakState == CloakState::Cloaked)
+		return UseShadowyVisual;
 
 	return 0;
 }
