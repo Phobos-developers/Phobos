@@ -1230,6 +1230,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 	return bestObject;
 }
 
+// TODO: Too many redundant abstract_cast here
 bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attackAITargetType = -1, int idxAITargetTypeItem = -1, TechnoClass *pTeamLeader = nullptr)
 {
 	if (!pTechno)
@@ -1674,7 +1675,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		pBuildingExt = BuildingTypeExt::ExtMap.Find(static_cast<BuildingTypeClass*>(pTypeBuilding));
 
 		if (pBuildingExt)
-			nSuperWeapons = pBuildingExt->SuperWeapons.Count;
+			nSuperWeapons = pBuildingExt->SuperWeapons.size();
 
 		if (!pTechno->Owner->IsNeutral()
 			&& pTechnoType->WhatAmI() == AbstractType::BuildingType
