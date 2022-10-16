@@ -953,7 +953,7 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 				}
 			}
 		}
-			
+		
 		AnimTypeClass* pDeployAnimType = pTypeExt->Convert_DeployingAnim.isset() ? pTypeExt->Convert_DeployingAnim.Get() : nullptr;
 		bool hasValidDeployAnim = pDeployAnimType ? true : false;
 		bool isDeployAnimPlaying = pExt->DeployAnim ? true : false;
@@ -1136,7 +1136,6 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 
 	// Initial mission update
 	pNewTechno->QueueMission(Mission::Guard, true);
-	
 	DirStruct oldPrimaryFacing = pOldTechno->PrimaryFacing.Current();
 	DirStruct oldSecondaryFacing = pOldTechno->SecondaryFacing.Current();
 
@@ -1287,7 +1286,6 @@ void TechnoExt::PassengersTransfer(TechnoClass* pTechnoFrom, TechnoClass* pTechn
 
 			pPassenger = passengersList.GetItem(passengerIndex);
 			passengersList.RemoveItem(passengerIndex);
-
 			auto pFromTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoFrom->GetTechnoType());
 			
 			if (!pTechnoTo || (pFromTypeExt && !pFromTypeExt->Convert_TransferPassengers))
