@@ -54,23 +54,10 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		{
 			pHouse->TransactMoney(this->TransactMoney);
 
-			if (this->TransactMoney_Display &&
-				(this->TransactMoney_Display_Houses == AffectedHouse::All ||
-					EnumFunctions::CanTargetHouse(this->TransactMoney_Display_Houses, pHouse, HouseClass::CurrentPlayer)))
+			if (this->TransactMoney_Display)
 			{
-				bool isPositive = this->TransactMoney > 0;
-				auto color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
-				wchar_t moneyStr[0x20];
-				swprintf_s(moneyStr, L"%ls%ls%d", isPositive ? L"+" : L"-", Phobos::UI::CostLabel, std::abs(this->TransactMoney));
-				auto displayCoord = this->TransactMoney_Display_AtFirer ? (pOwner ? pOwner->Location : coords) : coords;
-
-				int width = 0, height = 0;
-				BitFont::Instance->GetTextDimension(moneyStr, &width, &height, 120);
-				Point2D pixelOffset = Point2D::Empty;
-				pixelOffset += this->TransactMoney_Display_Offset;
-				pixelOffset.X -= (width / 2);
-
-				FlyingStrings::Add(moneyStr, displayCoord, color, pixelOffset);
+				auto displayCoords = this->TransactMoney_Display_AtFirer ? (pOwner ? pOwner->Location : coords) : coords;
+				FlyingStrings::AddMoneyString(this->TransactMoney, pHouse, this->TransactMoney_Display_Houses, displayCoords, this->TransactMoney_Display_Offset);
 			}
 		}
 
