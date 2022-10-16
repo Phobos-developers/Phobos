@@ -232,7 +232,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Convert_DeployingAnim.Read(exINI, pSection, "Convert.DeployingAnim");
 	this->Convert_DeploySound.Read(exINI, pSection, "Convert.DeploySound");
 	this->Convert_DeployDir.Read(exINI, pSection, "Convert.DeployDir");
-	this->Convert_EjectPassengers.Read(exINI, pSection, "Convert.EjectPassengers");
+	this->Convert_TransferPassengers.Read(exINI, pSection, "Convert.TransferPassengers");
+	this->Convert_TransferPassengers_IgnoreInvalidOccupiers.Read(exINI, pSection, "Convert.TransferPassengers.IgnoreInvalidOccupiers");
+	this->Convert_TransferVeterancy.Read(exINI, pSection, "Convert.TransferVeterancy");
 
 	if (this->Convert_UniversalDeploy.size() > 0 && !pThis->UndeploysInto)
 	{
@@ -392,6 +394,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Convert_DeployingAnim)
 		.Process(this->Convert_DeploySound)
 		.Process(this->Convert_DeployDir)
+		.Process(this->Convert_TransferPassengers)
+		.Process(this->Convert_TransferPassengers_IgnoreInvalidOccupiers)
+		.Process(this->Convert_TransferVeterancy)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

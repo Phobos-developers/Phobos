@@ -1084,6 +1084,9 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 			if (isDeployAnimPlaying)
 				pFoot->ParalysisTimer.Start(15);
 
+			// Necessary for skipping the passengers ejection
+			pFoot->CurrentMission = Mission::None;
+
 			if (hasValidDeployAnim && !hasDeployAnimFinished)
 				return;
 
@@ -1186,8 +1189,11 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 	pNewTechno->EstimatedHealth = pNewTechno->Health;
 
 	// Veterancy update
-	VeterancyStruct nVeterancy = pOldTechno->Veterancy;
-	pNewTechno->Veterancy = nVeterancy;
+	if (pOldTechnoTypeExt->Convert_TransferVeterancy)
+	{
+		VeterancyStruct nVeterancy = pOldTechno->Veterancy;
+		pNewTechno->Veterancy = nVeterancy;
+	}
 
 	// AI team update
 	if (pOldTechno->BelongsToATeam())
@@ -1244,7 +1250,7 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 		return nullptr;
 	}
 
-	// Recover Turret direction
+	// Recover turret direction
 	if (pOldTechnoType->Turret && pNewTechnoType->Turret && !pNewTechnoType->TurretSpins)
 		pNewTechno->SecondaryFacing.Set_Current(oldSecondaryFacing);
 
@@ -1405,7 +1411,7 @@ void TechnoExt::PassengersTransfer(TechnoClass* pTechnoFrom, TechnoClass* pTechn
 
 			auto pFromTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoFrom->GetTechnoType());
 			
-			if (!pTechnoTo || (pFromTypeExt && pFromTypeExt->Convert_EjectPassengers))
+			if (!pTechnoTo || (pFromTypeExt && !pFromTypeExt->Convert_TransferPassengers))
 				forceEject = true;
 
 			// To bunkered infantry
@@ -1416,7 +1422,7 @@ void TechnoExt::PassengersTransfer(TechnoClass* pTechnoFrom, TechnoClass* pTechn
 				int maxNumberOccupants = pTechnoTo ? pBuildingTo->Type->MaxNumberOccupants : 0;
 
 				InfantryClass* infantry = static_cast<InfantryClass*>(pPassenger);
-				bool isOccupier = infantry && infantry->Type->Occupier ? true : false;
+				bool isOccupier = infantry && (infantry->Type->Occupier || pFromTypeExt->Convert_TransferPassengers_IgnoreInvalidOccupiers) ? true : false;
 
 				if (!forceEject && isOccupier && maxNumberOccupants > 0 && nOccupants < maxNumberOccupants)
 				{
