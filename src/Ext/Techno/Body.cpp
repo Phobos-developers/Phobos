@@ -865,37 +865,39 @@ void TechnoExt::StartUniversalDeployAnim(TechnoClass* pThis)
 {
 	if (!pThis)
 		return;
-	
-	if (auto pExt = TechnoExt::ExtMap.Find(pThis))
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt)
+		return;
+
+	if (pExt->DeployAnim)
 	{
-		if (pExt->DeployAnim)
-		{
-			pExt->DeployAnim->UnInit();
-			pExt->DeployAnim = nullptr;
-		}
+		pExt->DeployAnim->UnInit();
+		pExt->DeployAnim = nullptr;
+	}
 
-		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (!pTypeExt)
+		return;
+
+	if (pTypeExt->Convert_DeployingAnim.isset())
+	{
+		if (auto deployAnimType = pTypeExt->Convert_DeployingAnim.Get())
 		{
-			if (pTypeExt->Convert_DeployingAnim.isset())
+			if (auto pAnim = GameCreate<AnimClass>(deployAnimType, pThis->Location))
 			{
-				if (auto deployAnimType = pTypeExt->Convert_DeployingAnim.Get())
-				{
-					if (auto pAnim = GameCreate<AnimClass>(deployAnimType, pThis->Location))
-					{
-						pExt->DeployAnim = pAnim;
-						pExt->DeployAnim->SetOwnerObject(pThis);
+				pExt->DeployAnim = pAnim;
+				pExt->DeployAnim->SetOwnerObject(pThis);
 
-						pExt->Convert_UniversalDeploy_MakeInvisible = true;
+				pExt->Convert_UniversalDeploy_MakeInvisible = true;
 
-						// Use the unit palette in the animation
-						auto lcc = pThis->GetDrawer();
-						pExt->DeployAnim->LightConvert = lcc;
-					}
-					else
-					{
-						Debug::Log("ERROR! Deploy animation [%s] -> %s can't be created.\n", pThis->GetTechnoType()->ID, deployAnimType->ID);
-					}
-				}
+				// Use the unit palette in the animation
+				auto lcc = pThis->GetDrawer();
+				pExt->DeployAnim->LightConvert = lcc;
+			}
+			else
+			{
+				Debug::Log("ERROR! [%s] Deploy animation %s can't be created.\n", pThis->GetTechnoType()->ID, deployAnimType->ID);
 			}
 		}
 	}
@@ -920,202 +922,111 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 
 		TechnoClass* deployed = nullptr;
 
-		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		if (!pTypeExt)
+			return;
+
+		bool deployToLand = pTypeExt->Convert_DeployToLand;
+
+		if (pExt->Convert_UniversalDeploy_InProgress && deployToLand)
+			pThis->IsFallingDown = true;
+
+		if (!pThis->IsFallingDown && pFoot->Locomotor->Is_Really_Moving_Now())
+			return;
+
+		if (pThis->WhatAmI() != AbstractType::Infantry)
 		{
-			//pFoot->ParalysisTimer.Start(15);
-			bool deployToLand = pTypeExt->Convert_DeployToLand;
-
-			// The unit should remain paralyzed during a deploy to land action to prevent issues
-			if (pExt->Convert_UniversalDeploy_InProgress && deployToLand)
-				pThis->IsFallingDown = true;
-
-			// testing each call value... I have to remove it later, before the PR
-			double speed = pFoot->Locomotor->Apparent_Speed();
-			int speedAccum = pFoot->Locomotor->Get_Speed_Accum();
-			bool ismovinghere = pFoot->Locomotor->Is_Moving_Here(pFoot->Location);
-			bool ismoving = pFoot->Locomotor->Is_Moving();
-			bool ismovingnow = pFoot->Locomotor->Is_Moving_Now();
-			bool isreallymovingnow = pFoot->Locomotor->Is_Really_Moving_Now();
-			int locomotorstatus = pFoot->Locomotor->Get_Status();
-
-			if (!pThis->IsFallingDown && isreallymovingnow)//pFoot->Locomotor->Is_Moving_Now())
+			// Turn the unit to the right deploy facing
+			if (!pExt->DeployAnim && pTypeExt->Convert_DeployDir >= 0)
 			{
-				//pFoot->SetDestination(pThis, false);
-				//pFoot->Locomotor->Stop_Moving();
-				//pThis->QueueMission(Mission::Stop, false);
-				//pThis->QueueMission(Mission::Stop, false);
-				//pThis->Mission_Stop();
+				DirType currentDir = pThis->PrimaryFacing.Current().GetDir(); // Returns current position in format [0 - 7] x 32
+				DirType desiredDir = (static_cast<DirType>(pTypeExt->Convert_DeployDir * 32));
+				DirStruct desiredFacing;
+				desiredFacing.SetDir(desiredDir);
 
-				return;
-			}
-
-			/*if (pThis->WhatAmI() != AbstractType::Infantry)
-			{
-				// Turn the vehicle to the right deploy facing
-				if (!pExt->DeployAnim && pTypeExt->Convert_DeployDir >= 0)
+				if (currentDir != desiredDir)
 				{
-					//auto pUnit = static_cast<UnitClass*>(pThis);
-					short deployDir = (short)pTypeExt->Convert_DeployDir;
-					short currentFacing = pThis->PrimaryFacing.current().value8();
+					pFoot->Locomotor->Move_To(CoordStruct::Empty);
+					pThis->PrimaryFacing.Set_Desired(desiredFacing);
 
-					DirStruct newDir = DirStruct(3, deployDir);
-
-					if (currentFacing != deployDir)
-					{
-						DirStruct newDir = DirStruct(3, deployDir);
-
-						pFoot->Locomotor->Move_To(CoordStruct::Empty);
-						pThis->PrimaryFacing.turn(newDir);
-
-						return;
-					}
-
-					pThis->PrimaryFacing.turn(newDir);
-				}
-			}*/
-
-			if (pThis->WhatAmI() != AbstractType::Infantry)
-			{
-				// Turn the vehicle to the right deploy facing
-				if (!pExt->DeployAnim && pTypeExt->Convert_DeployDir >= 0)
-				{
-					/*
-					////////////// Para DeployDir = 2
-					int d1 = pTypeExt->Convert_DeployDir; // Devuelve 2. Pertenece a DeployDir
-					int d2 = pTypeExt->Convert_DeployDir * 32; // Devuelve 64. Pertenece a DeployDir x 32
-					auto d13 = (static_cast<DirType>((short)pTypeExt->Convert_DeployDir)); // Devuelve 2. Pertenece a DeployDir
-					auto d14 = (static_cast<DirType>(d1)); // Devuelve 2. Pertenece a DeployDir
-					auto d15 = (static_cast<DirType>(d2)); // Devuelve 64. Pertenece a DeployDir x 32
-					DirStruct d16; d16.SetDir(d14); // Devuelve  1573376. Pertenece a DeployDir
-					auto d20 = d16.GetFacing<256>(); // Devuelve 2. Pertenece a DeployDir
-					DirStruct d17; d17.SetDir(d15); // Devuelve 1862680576. Pertenece a DeployDir
-					auto d23 = d17.GetFacing<256>(); // Devuelve 64. Pertenece a DeployDir
-					DirType d4 = pThis->PrimaryFacing.Current().GetDir(); // Devuelve la posición actual [0 - 7] x 32
-					auto d8 = (short)d4; // Devuelve la posición actual [0 - 7] x 32
-					auto d5 = pThis->PrimaryFacing.Current().GetFacing<8>(); // Devuelve la posición actual [0 - 7]
-					auto d7 = pThis->PrimaryFacing.Current().GetFacing<256>(); // Devuelve la posición actual [0 - 7] x 32
-					auto d9 = pThis->PrimaryFacing.Current().GetValue<8>(); // Devuelve la posición actual [0 - 7] x 32
-
-					Debug::Log("-----\n");
-					Debug::Log("d1: %d, d2: %d, d13: %d, d14: %d, d15: %d\n", d1, d2, d13, d14, d15);
-					Debug::Log("d16: %d, d20: %d, d17: %d, d23: %d\n", d16, d20, d17, d23);
-					Debug::Log("d4: %d, d8: %d, d5: %d, d7: %d, d9: %d\n", d4, d8, d5, d7, d9);
-					Debug::Log("-----\n");
-					//////////////
-					//auto pUnit = static_cast<UnitClass*>(pThis);
-					//int deployDir = pTypeExt->Convert_DeployDir * 32;
-					//auto currentFacing = pThis->PrimaryFacing.Current();
-					//DirType c;
-					////c = DirType((short)pTypeExt->Convert_DeployDir);
-					//DirStruct b;
-					//b.Raw = pTypeExt->Convert_DeployDir;
-					//DirStruct a;
-					//a.SetDir(c);//pTypeExt->Convert_DeployDir;
-					//DirStruct newDir = a;//DirStruct::SetDir(c); //DirStruct(deployDir);
-
-					//Debug::Log("currentFacing: %d, newDir: %d, deployDir: %d\n", currentFacing.GetDir(), newDir.GetDir(), deployDir);
-
-
-					//DirStruct z; z.SetDir(static_cast<DirType>((short)pTypeExt->Convert_DeployDir));
-
-					//Debug::Log("----- currentFacing: %d, z: %d, deployDir: %d\n", currentFacing, z, deployDir);
-					*/
-
-					DirType currentDir = pThis->PrimaryFacing.Current().GetDir(); // Devuelve la posición actual [0 - 7] x 32
-					DirType desiredDir = (static_cast<DirType>(pTypeExt->Convert_DeployDir * 32)); // Devuelve 64. Pertenece a DeployDir x 32
-					DirStruct desiredFacing;
-					desiredFacing.SetDir(desiredDir); // Devuelve 1862680576. Pertenece a DeployDir
-					//Debug::Log("-> currentDir: %d == desiredDir: %d ? ", currentDir, desiredDir);
-					if (currentDir != desiredDir)
-					{
-						pFoot->Locomotor->Move_To(CoordStruct::Empty);
-						pThis->PrimaryFacing.Set_Desired(desiredFacing);
-						//Debug::Log("... must rotate body!\n");
-						return;
-					}
-					/*else
-					{
-						Debug::Log("... in sync!\n");
-					}*/
-					//pThis->PrimaryFacing.Set_Desired(newDir);
-				}
-			}
-			
-			AnimTypeClass* pDeployAnimType = pTypeExt->Convert_DeployingAnim.isset() ? pTypeExt->Convert_DeployingAnim.Get() : nullptr;
-			bool hasValidDeployAnim = pDeployAnimType ? true : false;
-			bool isDeployAnimPlaying = pExt->DeployAnim ? true : false;
-			bool hasDeployAnimFinished = (isDeployAnimPlaying && (pExt->DeployAnim->Animation.Value >= (pDeployAnimType->End + pDeployAnimType->Start - 1))) ? true : false;
-			int convert_DeploySoundIndex = pTypeExt->Convert_DeploySound.isset() ? pTypeExt->Convert_DeploySound.Get() : -1;
-			AnimTypeClass* pAnimFXType = pTypeExt->Convert_AnimFX.isset() ? pTypeExt->Convert_AnimFX.Get() : nullptr;
-			bool animFX_FollowDeployer = pTypeExt->Convert_AnimFX_FollowDeployer;
-
-			// Update InAir information
-			if (deployToLand && pThis->GetHeight() <= 20)
-				pThis->SetHeight(0);
-
-			pThis->InAir = (pThis->GetHeight() > 0);
-
-			if (deployToLand)
-			{
-				if (pThis->InAir)
 					return;
-
-				pFoot->ParalysisTimer.Start(15);
-			}
-
-			CoordStruct deployLocation = pThis->GetCoords();
-
-			// Before the conversion we need to play the full deploy animation
-			if (hasValidDeployAnim && !isDeployAnimPlaying)
-			{
-				TechnoExt::StartUniversalDeployAnim(pThis);
-
-				if (convert_DeploySoundIndex >= 0)
-					VocClass::PlayAt(convert_DeploySoundIndex, deployLocation);
-
-				return;
-			}
-
-			// Hack for making the Voxel invisible during a deploy
-			if (hasValidDeployAnim)
-				pExt->Convert_UniversalDeploy_MakeInvisible = true;
-
-			// The unit should remain paralyzed during a deploy animation
-			if (isDeployAnimPlaying)
-				pFoot->ParalysisTimer.Start(15);
-
-			// Necessary for skipping the passengers ejection
-			pFoot->CurrentMission = Mission::None;
-
-			if (hasValidDeployAnim && !hasDeployAnimFinished)
-				return;
-
-			/*if (pThis->DeployAnim)
-			{
-				pThis->DeployAnim->Limbo();
-				pThis->DeployAnim->UnInit();
-				pThis->DeployAnim = nullptr;
-			}*/
-
-			// Time for the object conversion
-			deployed = TechnoExt::UniversalConvert(pThis, nullptr);
-
-			if (deployed)
-			{
-				if (pAnimFXType)
-				{
-					if (auto const pAnim = GameCreate<AnimClass>(pAnimFXType, deployLocation))
-					{
-						if (animFX_FollowDeployer)
-							pAnim->SetOwnerObject(deployed);
-
-						pAnim->Owner = deployed->Owner;
-					}
 				}
 			}
 		}
+			
+		AnimTypeClass* pDeployAnimType = pTypeExt->Convert_DeployingAnim.isset() ? pTypeExt->Convert_DeployingAnim.Get() : nullptr;
+		bool hasValidDeployAnim = pDeployAnimType ? true : false;
+		bool isDeployAnimPlaying = pExt->DeployAnim ? true : false;
+		bool hasDeployAnimFinished = (isDeployAnimPlaying && (pExt->DeployAnim->Animation.Value >= (pDeployAnimType->End + pDeployAnimType->Start - 1))) ? true : false;
+		int convert_DeploySoundIndex = pTypeExt->Convert_DeploySound.isset() ? pTypeExt->Convert_DeploySound.Get() : -1;
+		AnimTypeClass* pAnimFXType = pTypeExt->Convert_AnimFX.isset() ? pTypeExt->Convert_AnimFX.Get() : nullptr;
+		bool animFX_FollowDeployer = pTypeExt->Convert_AnimFX_FollowDeployer;
 
-		if (!deployed)
+		// Update InAir information
+		if (deployToLand && pThis->GetHeight() <= 20)
+			pThis->SetHeight(0);
+
+		pThis->InAir = (pThis->GetHeight() > 0);
+
+		if (deployToLand)
+		{
+			if (pThis->InAir)
+				return;
+
+			pFoot->ParalysisTimer.Start(15);
+		}
+
+		CoordStruct deployLocation = pThis->GetCoords();
+
+		// Before the conversion we need to play the full deploy animation
+		if (hasValidDeployAnim && !isDeployAnimPlaying)
+		{
+			TechnoExt::StartUniversalDeployAnim(pThis);
+
+			if (convert_DeploySoundIndex >= 0)
+				VocClass::PlayAt(convert_DeploySoundIndex, deployLocation);
+
+			return;
+		}
+
+		// Hack for making the Voxel invisible during a deploy
+		if (hasValidDeployAnim)
+			pExt->Convert_UniversalDeploy_MakeInvisible = true;
+
+		// The unit should remain paralyzed during a deploy animation
+		if (isDeployAnimPlaying)
+			pFoot->ParalysisTimer.Start(15);
+
+		// Necessary for skipping the passengers ejection
+		pFoot->CurrentMission = Mission::None;
+
+		if (hasValidDeployAnim && !hasDeployAnimFinished)
+			return;
+
+		/*if (pThis->DeployAnim)
+		{
+			pThis->DeployAnim->Limbo();
+			pThis->DeployAnim->UnInit();
+			pThis->DeployAnim = nullptr;
+		}*/
+
+		// Time for the object conversion
+		deployed = TechnoExt::UniversalConvert(pThis, nullptr);
+
+		if (deployed)
+		{
+			if (pAnimFXType)
+			{
+				if (auto const pAnim = GameCreate<AnimClass>(pAnimFXType, deployLocation))
+				{
+					if (animFX_FollowDeployer)
+						pAnim->SetOwnerObject(deployed);
+
+					pAnim->Owner = deployed->Owner;
+				}
+			}
+		}
+		else
 		{
 			pFoot->ParalysisTimer.Stop();
 			pThis->IsFallingDown = false;
@@ -1146,6 +1057,7 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 	{
 		if (pOldTechnoTypeExt->Convert_UniversalDeploy.size() > 0)
 		{
+			// TO-DO: having multiple deploy candidate IDs it should pick randomly from the list
 			int index = ScenarioClass::Instance->Random.RandomRanged(0, pOldTechnoTypeExt->Convert_UniversalDeploy.size() - 1);
 			pNewTechnoType = pOldTechnoTypeExt->Convert_UniversalDeploy.at(index);
 		}
@@ -1229,16 +1141,16 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 	DirStruct oldSecondaryFacing = pOldTechno->SecondaryFacing.Current();
 
 	// Facing update
-	DirType newPrimaryFacingDir = pOldTechno->PrimaryFacing.Current().GetDir(); // Devuelve la posición actual [0 - 7] x 32
-	DirType newSecondaryFacingDir = pOldTechno->SecondaryFacing.Current().GetDir(); // Devuelve la posición actual [0 - 7] x 32
+	DirType oldPrimaryFacingDir = oldPrimaryFacing.GetDir(); // Returns current position in format [0 - 7] x 32
+	//DirType oldSecondaryFacingDir = oldSecondaryFacing.GetDir(); // Returns current position in format [0 - 7] x 32
 
 	// Some vodoo magic
 	pOldTechno->Limbo();
 
-	if (!pNewTechno->Unlimbo(newLocation, newPrimaryFacingDir))
+	if (!pNewTechno->Unlimbo(newLocation, oldPrimaryFacingDir))
 	{
 		// Abort operation, restoring old object
-		pOldTechno->Unlimbo(newLocation, newPrimaryFacingDir);
+		pOldTechno->Unlimbo(newLocation, oldPrimaryFacingDir);
 		pNewTechno->UnInit();
 
 		if (isSelected)
@@ -1258,38 +1170,7 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 	if (pNewTechnoType->JumpJet || pNewTechnoType->BalloonHover)
 	{
 		auto pFoot = static_cast<FootClass*>(pNewTechno);
-		//pFoot->SetDestination(pThis, false);
-		//pThis->Mission_Stop();
-		//pFoot->Locomotor->Stop_Moving();
 		pFoot->Scatter(CoordStruct::Empty, true, false);
-		/*
-		auto pNewTechnoCell = MapClass::Instance->GetCellAt(newLocation);
-		pNewTechno->SetHeight(2000);
-		pNewTechno->SetDestination(pNewTechnoCell, true);
-		*/
-		/*
-		auto pFoot = static_cast<FootClass*>(pNewTechno);
-		auto pNewTechnoCell = MapClass::Instance->GetCellAt(newLocation);
-		pNewTechno->SetDestination(pNewTechnoCell, false); // teleporta directamente en el destino
-		pFoot->Locomotor->Move_To(newLocation);
-
-		pNewTechno->PrimaryFacing.Set_Current(oldPrimaryFacing);
-		pNewTechno->PrimaryFacing.Set_ROT(0);*/
-		/*
-		//short newPrimaryFacing = pOldTechno->PrimaryFacing.current().value8();
-
-		CoordStruct loc = CoordStruct::Empty;
-
-		if (pNewTechno->IsInAir())
-			loc = newLocation;
-		else
-			pNewTechno->SetDestination(pOldTechno, true);
-
-		if (pNewTechno->GetHeight() != pNewTechnoType->JumpjetHeight)
-			pNewTechno->Scatter(loc, true, false);
-
-		pThis->PrimaryFacing.Set_Desired(pOldTechno->PrimaryFacing.Current());
-		*/
 	}
 	else
 	{
@@ -1318,8 +1199,6 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 	// If the object was selected it should remain selected
 	if (isSelected)
 		pNewTechno->Select();
-
-	//pOldTechno->UnInit();
 
 	return pNewTechno;
 }

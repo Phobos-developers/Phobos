@@ -242,8 +242,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		{
 			if (techno->WhatAmI() == AbstractType::UnitType)
 			{
-				// This hack is for deleting the need of using the UndeploysInto tag in the "Building into Object" & also it enables the undeploy action when the mouse click in land.
-				// In every mod exist vehicles so we use the first vehicle in [VehicleTypes] for a dummy hack. This unit won't appear because will be replaced by the designated object.
+				/* Note:
+				"Building into vehicle" logic uses UndeploysInto for creating a new unit at the end.
+				Every mod have units in [VehicleTypes], so this hack uses the first object of
+				that vehicles list for making this possible.
+				Now we can undeploy the structure clicking in any valid part of the map.
+				*/
 				pThis->UndeploysInto = static_cast<UnitTypeClass*>(techno);
 				break;
 			}

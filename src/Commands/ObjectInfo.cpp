@@ -203,34 +203,6 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		if (pType->Ammo > 0)
 			append(", Ammo = (%d / %d)", pFoot->Ammo, pType->Ammo);
 
-		append("\n");
-
-		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType()))
-		{
-			////////////// Para DeployDir = 2
-			int d1 = pTypeExt->Convert_DeployDir; // Devuelve 2. Pertenece a DeployDir
-			int d2 = pTypeExt->Convert_DeployDir * 32; // Devuelve 64. Pertenece a DeployDir x 32
-			auto d13 = (static_cast<DirType>((short)pTypeExt->Convert_DeployDir)); // Devuelve 2. Pertenece a DeployDir
-			auto d14 = (static_cast<DirType>(d1)); // Devuelve 2. Pertenece a DeployDir
-			auto d15 = (static_cast<DirType>(d2)); // Devuelve 64. Pertenece a DeployDir x 32
-			DirStruct d16; d16.SetDir(d14); // Devuelve  1573376. Pertenece a DeployDir
-			auto d20 = d16.GetFacing<256>(); // Devuelve 2. Pertenece a DeployDir
-			DirStruct d17; d17.SetDir(d15); // Devuelve 1862680576. Pertenece a DeployDir
-			auto d23 = d17.GetFacing<256>(); // Devuelve 64. Pertenece a DeployDir
-			DirType d4 = pFoot->PrimaryFacing.Current().GetDir(); // Devuelve la posición actual [0 - 7] x 32
-			auto d8 = (short)d4; // Devuelve la posición actual [0 - 7] x 32
-			auto d5 = pFoot->PrimaryFacing.Current().GetFacing<8>(); // Devuelve la posición actual [0 - 7]
-			auto d7 = pFoot->PrimaryFacing.Current().GetFacing<256>(); // Devuelve la posición actual [0 - 7] x 32
-			auto d9 = pFoot->PrimaryFacing.Current().GetValue<8>(); // Devuelve la posición actual [0 - 7] x 32
-
-			Debug::Log("-----\n");
-			Debug::Log("d1: %d, d2: %d, d13: %d, d14: %d, d15: %d\n", d1, d2, d13, d14, d15);
-			Debug::Log("d16: %d, d20: %d, d17: %d, d23: %d\n", d16, d20, d17, d23);
-			Debug::Log("d4: %d, d8: %d, d5: %d, d7: %d, d9: %d\n", d4, d8, d5, d7, d9);
-			Debug::Log("-----\n");
-			//////////////
-		}
-
 		display();
 	};
 
