@@ -116,15 +116,23 @@ DEFINE_HOOK(0x521478, InfantryClass_AIDeployment_FireNotOKCloakFix, 0x4)
 }
 
 // Too OP, be aware
-DEFINE_HOOK(0x43FB23, BuildingClass_AI, 0x5)
+DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 {
 	GET(BuildingClass* const, pBuilding, ECX);
 
 	if (pBuilding->IsIronCurtained() || pBuilding->Type->ImmuneToRadiation || pBuilding->InLimbo || pBuilding->BeingWarpedOut || pBuilding->TemporalTargetingMe)
 		return 0;
 
+	int radDelay = RulesExt::Global()->RadApplicationDelay_Building;
+
+	if (RulesExt::Global()->UseGlobalRadApplicationDelay &&
+		(radDelay == 0 || Unsorted::CurrentFrame % radDelay != 0))
+	{
+		return 0;
+	}
+
 	auto const buildingCoords = pBuilding->GetMapCoords();
-	for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct{ 0x7FFF, 0x7FFF }; ++pFoundation)
+	for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
 		CellStruct nCurrentCoord = buildingCoords + *pFoundation;
 
@@ -135,24 +143,28 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI, 0x5)
 
 			// Check the distance, if not in range, just skip this one
 			double orDistance = pRadSite->BaseCell.DistanceFrom(nCurrentCoord);
+
 			if (pRadSite->Spread < orDistance - 0.5)
 				continue;
 
-			int delay = pType->GetBuildingApplicationDelay();
-			if ((delay == 0) || (Unsorted::CurrentFrame % delay != 0))
-				continue;
+			if (!RulesExt::Global()->UseGlobalRadApplicationDelay)
+			{
+				int delay = pType->GetBuildingApplicationDelay();
+
+				if ((delay == 0) || (Unsorted::CurrentFrame % delay != 0))
+					continue;
+			}
 
 			if (RadSiteExt::GetRadLevelAt(pRadSite, nCurrentCoord) <= 0.0 || !pType->GetWarhead())
 				continue;
 
-			auto pWarhead = pType->GetWarhead();
-			auto absolute = pWarhead->WallAbsoluteDestroyer;
-			bool ignore = pBuilding->Type->Wall && absolute;
 			auto damage = Game::F2I((RadSiteExt::GetRadLevelAt(pRadSite, nCurrentCoord) / 2) * pType->GetLevelFactor());
 
 			if (pBuilding->IsAlive) // simple fix for previous issues
-				if (pBuilding->ReceiveDamage(&damage, Game::F2I(orDistance), pWarhead, nullptr, ignore, absolute, pRadExt->RadHouse) == DamageState::NowDead)
-					break; //dont continue , meaningless
+			{
+				if (!pRadExt->ApplyRadiationDamage(pBuilding, damage, Game::F2I(orDistance)))
+					break;
+			}
 		}
 	}
 
@@ -167,7 +179,10 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 {
 	GET(FootClass* const, pFoot, ESI);
 
-	if (!pFoot->IsIronCurtained() && pFoot->IsInPlayfield && !pFoot->TemporalTargetingMe)
+	int radDelay = RulesClass::Instance->RadApplicationDelay;
+
+	if (!pFoot->IsIronCurtained() && pFoot->IsInPlayfield && !pFoot->TemporalTargetingMe &&
+		(!RulesExt::Global()->UseGlobalRadApplicationDelay || Unsorted::CurrentFrame % radDelay == 0))
 	{
 		CellStruct CurrentCoord = pFoot->GetCell()->MapCoords;
 
@@ -178,28 +193,32 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 
 			// Check the distance, if not in range, just skip this one
 			double orDistance = pRadSite->BaseCell.DistanceFrom(CurrentCoord);
+
 			if (pRadSite->Spread < orDistance - 0.7)
 				continue;
 
 			RadTypeClass* pType = pRadExt->Type;
-			int RadApplicationDelay = pType->GetApplicationDelay();
-			if ((RadApplicationDelay == 0) || (Unsorted::CurrentFrame % RadApplicationDelay != 0))
-				continue;
+
+			if (!RulesExt::Global()->UseGlobalRadApplicationDelay)
+			{
+				int delay = pType->GetApplicationDelay();
+
+				if ((delay == 0) || (Unsorted::CurrentFrame % delay != 0))
+					continue;
+			}
 
 			// for more precise dmg calculation
 			double nRadLevel = RadSiteExt::GetRadLevelAt(pRadSite, CurrentCoord);
+
 			if (nRadLevel <= 0.0 || !pType->GetWarhead())
 				continue;
 
 			int damage = Game::F2I(nRadLevel * pType->GetLevelFactor());
-			int distance = Game::F2I(orDistance);
-			auto pWarhead = pType->GetWarhead();
-			auto absolute = pWarhead->WallAbsoluteDestroyer;
 
 			if (pFoot->IsAlive || !pFoot->IsSinking)
 			{
-				if (pFoot->ReceiveDamage(&damage, distance, pWarhead, nullptr, false, absolute, pRadExt->RadHouse) == DamageState::NowDead)
-					break; //dont continue , meaningless
+				if (!pRadExt->ApplyRadiationDamage(pFoot, damage, Game::F2I(orDistance)))
+					break;
 			}
 		}
 	}

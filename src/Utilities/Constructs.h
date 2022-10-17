@@ -38,6 +38,8 @@
 #include <StringTable.h>
 #include <Helpers/String.h>
 #include <PCX.h>
+#include <Utilities/INIParser.h>
+#include <Utilities/GeneralUtils.h>
 
 #include <algorithm>
 #include <cstring>
@@ -54,6 +56,32 @@ class ConvertClass;
 
 template <typename T>
 using UniqueGamePtr = std::unique_ptr<T, GameDeleter>;
+
+
+class ArmorType
+{
+public:
+	ArmorType() = default;
+
+	template <typename T>
+	ArmorType(T value)
+	{
+		this->value = (int)std::move(value);
+	}
+
+	template <typename T>
+	ArmorType& operator = (T value)
+	{
+		this->value = (int)std::move(value);
+		return *this;
+	}
+
+	operator Armor() const { return  (Armor)this->value; }
+	operator int() const { return this->value; }
+
+private:
+	int value { 0 };
+};
 
 struct Leptons {
 	Leptons() = default;
@@ -426,6 +454,7 @@ public:
 
 	using FixedString::operator=;
 
+	// It's not obvious, but pDefault = "" means that by default initial string will not be changed
 	bool Read(INIClass* pINI, const char* pSection, const char* pKey, const char* pDefault = "") {
 		if (pINI->ReadString(pSection, pKey, pDefault, Phobos::readBuffer, FixedString::Size)) {
 			if (!INIClass::IsBlank(Phobos::readBuffer)) {
@@ -575,4 +604,137 @@ struct Handle {
 
 private:
 	T Value{ Default };
+};
+
+class TranslucencyLevel
+{
+public:
+	constexpr TranslucencyLevel() noexcept = default;
+
+	TranslucencyLevel(int nInt)
+	{
+		*this = nInt;
+	}
+
+	TranslucencyLevel& operator = (int nInt)
+	{
+		switch (nInt)
+		{
+		default:
+		case 0:
+			this->value = BlitterFlags::None;
+			break;
+		case 25:
+			this->value = BlitterFlags::TransLucent25;
+			break;
+		case 50:
+			this->value = BlitterFlags::TransLucent50;
+			break;
+		case 75:
+			this->value = BlitterFlags::TransLucent75;
+			break;
+		}
+
+		return *this;
+	}
+
+	operator BlitterFlags()
+	{
+		return this->value;
+	}
+
+	BlitterFlags GetBlitterFlags()
+	{
+		return *this;
+	}
+
+	bool Read(INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		int buf;
+		if (parser.ReadInteger(pSection, pKey, &buf))
+		{
+			*this = buf;
+			return true;
+		}
+
+		return false;
+	}
+
+	bool Load(PhobosStreamReader& Stm, bool RegisterForChange)
+	{
+		Stm.Load(this->value);
+		return true;
+	}
+
+	bool Save(PhobosStreamWriter& Stm) const
+	{
+		Stm.Save(this->value);
+		return true;
+	}
+
+private:
+	BlitterFlags value { BlitterFlags::None };
+};
+
+class TheaterSpecificSHP
+{
+public:
+	constexpr TheaterSpecificSHP() noexcept = default;
+
+	TheaterSpecificSHP(SHPStruct* pSHP)
+	{
+		*this = pSHP;
+	}
+
+	TheaterSpecificSHP& operator = (SHPStruct* pSHP)
+	{
+		this->value = pSHP;
+	}
+
+	operator SHPStruct* ()
+	{
+		return this->value;
+	}
+
+	SHPStruct* GetSHP()
+	{
+		return *this;
+	}
+
+	bool Read(INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto pValue = parser.value();
+			GeneralUtils::ApplyTheaterSuffixToString(pValue);
+
+			std::string Result = pValue;
+			if (!strstr(pValue, ".shp"))
+				Result += ".shp";
+
+			if (auto const pImage = FileSystem::LoadSHPFile(Result.c_str()))
+			{
+				value = pImage;
+				return true;
+			}
+			else
+			{
+				Debug::Log("Failed to find file %s referenced by [%s]%s=%s\n", Result.c_str(), pSection, pKey, pValue);
+			}
+		}
+		return false;
+	}
+
+	bool Load(PhobosStreamReader& Stm, bool RegisterForChange)
+	{
+		return Savegame::ReadPhobosStream(Stm, this->value, RegisterForChange);
+	}
+
+	bool Save(PhobosStreamWriter& Stm) const
+	{
+		return Savegame::WritePhobosStream(Stm, this->value);
+	}
+
+private:
+	SHPStruct* value { nullptr };
 };

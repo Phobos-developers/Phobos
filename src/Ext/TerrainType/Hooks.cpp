@@ -14,32 +14,48 @@ namespace TerrainTypeTemp
 	TerrainTypeExt::ExtData* pCurrentExt = nullptr;
 }
 
-DEFINE_HOOK(0x71C853, TerrainTypeClass_Context_Set, 0x6)
+DEFINE_HOOK(0x71C84D, TerrainClass_AI_Animated, 0x6)
 {
-	TerrainTypeTemp::pCurrentType = R->ECX<TerrainTypeClass*>();
-	TerrainTypeTemp::pCurrentExt = TerrainTypeExt::ExtMap.Find(TerrainTypeTemp::pCurrentType);
+	enum { SkipGameCode = 0x71C8D5 };
 
-	return 0;
+	GET(TerrainClass*, pThis, ESI);
+
+	if (pThis->Type->IsAnimated)
+	{
+		if (pThis->Animation.Value == pThis->Type->GetImage()->Frames / 2)
+		{
+			pThis->Animation.Value = 0;
+			pThis->Animation.Start(0);
+
+			// Spawn tiberium if enabled.
+			if (pThis->Type->SpawnsTiberium)
+			{
+				auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
+				auto pCell = pThis->GetCell();
+				int cellCount = pTypeExt->GetCellsPerAnim();
+
+				// Set context for CellClass hooks.
+				TerrainTypeTemp::pCurrentType = pThis->Type;
+				TerrainTypeTemp::pCurrentExt = pTypeExt;
+
+				for (int i = 0; i < cellCount; i++)
+					pCell->SpreadTiberium(true);
+
+				// Unset context for CellClass hooks.
+				TerrainTypeTemp::pCurrentType = nullptr;
+				TerrainTypeTemp::pCurrentExt = nullptr;
+			}
+		}
+	}
+
+	return SkipGameCode;
 }
-
-// thiscall is being emulated here, ECX = pThis, EDX is discarded, second arg is passed thru stack - Kerbiter
-void __fastcall TerrainClass_AI_CellsPerAnim(CellClass* pThis, void*, bool forced)
-{
-	int cellCount = 1;
-	if (TerrainTypeTemp::pCurrentExt)
-		cellCount = TerrainTypeTemp::pCurrentExt->GetCellsPerAnim();
-
-	for (int i = 0; i < cellCount; i++)
-		pThis->SpreadTiberium(forced);
-}
-
-DEFINE_JUMP(CALL, 0x71C8D0, GET_OFFSET(TerrainClass_AI_CellsPerAnim))
 
 DEFINE_HOOK(0x483811, CellClass_SpreadTiberium_TiberiumType, 0x8)
 {
 	if (TerrainTypeTemp::pCurrentExt)
 	{
-		LEA_STACK(int*, pTibType, STACK_OFFS(0x1C, -0x4));
+		LEA_STACK(int*, pTibType, STACK_OFFSET(0x1C, 0x4));
 
 		*pTibType = TerrainTypeTemp::pCurrentExt->SpawnsTiberium_Type;
 
@@ -85,20 +101,12 @@ DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x71C8D7, TerrainTypeClass_Context_Unset, 0x5)
-{
-	TerrainTypeTemp::pCurrentType = nullptr;
-	TerrainTypeTemp::pCurrentExt = nullptr;
-
-	return 0;
-}
-
 //This one on Very end of it , let everything play first
 DEFINE_HOOK(0x71BB2C, TerrainClass_TakeDamage_NowDead_Add, 0x6)
 {
 	GET(TerrainClass*, pThis, ESI);
 	//saved for later usage !
-	//REF_STACK(args_ReceiveDamage const, ReceiveDamageArgs, STACK_OFFS(0x3C, -0x4));
+	//REF_STACK(args_ReceiveDamage const, ReceiveDamageArgs, STACK_OFFSET(0x3C, 0x4));
 
 	if (auto const pTerrainExt = TerrainTypeExt::ExtMap.Find(pThis->Type))
 	{
@@ -117,8 +125,8 @@ DEFINE_HOOK(0x47C065, CellClass_CellColor_TerrainRadarColor, 0x6)
 	enum { SkipTerrainColor = 0x47C0AE, ReturnFromFunction = 0x47C0A3 };
 
 	GET(CellClass*, pThis, ECX);
-	GET_STACK(ColorStruct*, arg0, STACK_OFFS(0x14, -0x4));
-	GET_STACK(ColorStruct*, arg4, STACK_OFFS(0x14, -0x8));
+	GET_STACK(ColorStruct*, arg0, STACK_OFFSET(0x14, 0x4));
+	GET_STACK(ColorStruct*, arg4, STACK_OFFSET(0x14, 0x8));
 
 	auto pTerrain = pThis->GetTerrain(false);
 

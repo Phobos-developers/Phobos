@@ -34,20 +34,14 @@
 
 #include <ConvertClass.h>
 #include <FileSystem.h>
-#include <ScenarioClass.h>
+#include <Utilities/GeneralUtils.h>
 
 bool CustomPalette::LoadFromINI(
 	CCINIClass* pINI, const char* pSection, const char* pKey,
 	const char* pDefault)
 {
 	if (pINI->ReadString(pSection, pKey, pDefault, Phobos::readBuffer)) {
-		if (auto const pSuffix = strstr(Phobos::readBuffer, "~~~")) {
-			auto const theater = ScenarioClass::Instance->Theater;
-			auto const pExtension = Theater::GetTheater(theater).Extension;
-			pSuffix[0] = pExtension[0];
-			pSuffix[1] = pExtension[1];
-			pSuffix[2] = pExtension[2];
-		}
+		GeneralUtils::ApplyTheaterSuffixToString(Phobos::readBuffer);
 
 		this->Clear();
 

@@ -14,7 +14,7 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 	enum { SkipGameCode = 0x6F3341, ReturnValue = 0x6F3406 };
 
 	GET(TechnoClass*, pThis, ESI);
-	GET_STACK(AbstractClass*, pTarget, STACK_OFFS(0x18, -0x4));
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
 	if (pThis && pTarget && pTarget->WhatAmI() == AbstractType::Bullet)
 	{
@@ -39,7 +39,7 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 	enum { Secondary = 0x6F3745 };
 
 	GET(TechnoClass*, pThis, ESI);
-	GET_STACK(AbstractClass*, pTarget, STACK_OFFS(0x18, -0x4));
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
 	if (const auto pCell = abstract_cast<CellClass*>(pTarget))
 	{
@@ -55,31 +55,45 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 
 DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 {
+	enum { UseWeaponIndex = 0x6F37AF };
+
 	GET(TechnoClass*, pTechno, ECX);
 
 	if (pTechno && pTechno->Target)
 	{
-		auto pTechnoType = pTechno->GetTechnoType();
-		if (!pTechnoType)
-			return 0;
-
 		auto pTarget = abstract_cast<TechnoClass*>(pTechno->Target);
+
 		if (!pTarget)
 			return 0;
 
-		auto pTargetType = pTarget->GetTechnoType();
-		if (!pTargetType)
-			return 0;
+		int forceWeaponIndex = -1;
 
-		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType))
+		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
 		{
-			if (pTechnoTypeExt->ForceWeapon_Naval_Decloaked >= 0
-				&& pTargetType->Cloakable && pTargetType->Naval
-				&& pTarget->CloakState == CloakState::Uncloaked)
+			auto pTargetType = pTarget->GetTechnoType();
+
+			if (pTechnoTypeExt->ForceWeapon_Naval_Decloaked >= 0 &&
+				pTargetType->Cloakable && pTargetType->Naval &&
+				pTarget->CloakState == CloakState::Uncloaked)
 			{
-				R->EAX(pTechnoTypeExt->ForceWeapon_Naval_Decloaked);
-				return 0x6F37AF;
+				forceWeaponIndex = pTechnoTypeExt->ForceWeapon_Naval_Decloaked;
 			}
+			else if (pTechnoTypeExt->ForceWeapon_Cloaked >= 0 &&
+				pTarget->CloakState == CloakState::Cloaked)
+			{
+				forceWeaponIndex = pTechnoTypeExt->ForceWeapon_Cloaked;
+			}
+			else if (pTechnoTypeExt->ForceWeapon_Disguised >= 0 &&
+				pTarget->IsDisguised())
+			{
+				forceWeaponIndex = pTechnoTypeExt->ForceWeapon_Disguised;
+			}
+		}
+
+		if (forceWeaponIndex >= 0)
+		{
+			R->EAX(forceWeaponIndex);
+			return UseWeaponIndex;
 		}
 	}
 
@@ -89,20 +103,25 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET(TechnoClass*, pTargetTechno, EBP);
-	GET_STACK(AbstractClass*, pTarget, STACK_OFFS(0x18, -0x4));
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
 	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, FurtherCheck = 0x6F3754, OriginalCheck = 0x6F36E3 };
 
-	CellClass* targetCell = nullptr;
+	CellClass* pTargetCell = nullptr;
+	TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
 
-	// Ignore target cell for airborne technos.
-	if (!pTargetTechno || !pTargetTechno->IsInAir())
+	if (pTarget)
 	{
 		if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-			targetCell = pCell;
+		{
+			pTargetCell = pCell;
+		}
 		else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
-			targetCell = pObject->GetCell();
+		{
+			// Ignore target cell for technos that are in air.
+			if ((pTargetTechno && !pTargetTechno->IsInAir()) || pObject != pTargetTechno)
+				pTargetCell = pObject->GetCell();
+		}
 	}
 
 	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
@@ -111,7 +130,7 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 		{
 			if (const auto pSecondaryExt = WeaponTypeExt::ExtMap.Find(pSecondary->WeaponType))
 			{
-				if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pSecondaryExt->CanTarget, true)) ||
+				if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondaryExt->CanTarget, true)) ||
 					(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondaryExt->CanTarget) ||
 						!EnumFunctions::CanTargetHouse(pSecondaryExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
 				{
@@ -123,7 +142,7 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 					if (pTypeExt->NoSecondaryWeaponFallback && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1))
 						return Primary;
 
-					if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pPrimaryExt->CanTarget, true)) ||
+					if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pPrimaryExt->CanTarget, true)) ||
 						(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pPrimaryExt->CanTarget) ||
 							!EnumFunctions::CanTargetHouse(pPrimaryExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
 					{
@@ -175,7 +194,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
-	GET_STACK(AbstractClass*, pTarget, STACK_OFFS(0x20, -0x4));
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
 	enum { CannotFire = 0x6FCB7E };
@@ -249,7 +268,7 @@ DEFINE_HOOK(0x6FE43B, TechnoClass_FireAt_OpenToppedDmgMult, 0x8)
 	//replacing whole check due to `fild`
 	if (pThis->InOpenToppedTransport)
 	{
-		GET_STACK(int, nDamage, STACK_OFFS(0xB0, 0x84));
+		GET_STACK(int, nDamage, STACK_OFFSET(0xB0, -0x84));
 		float nDamageMult = static_cast<float>(RulesClass::Instance->OpenToppedDamageMultiplier);
 
 		if (auto pTransport = pThis->Transporter)
@@ -274,7 +293,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 
 	GET(TechnoClass* const, pThis, ESI);
 	GET(CellClass* const, pCell, EAX);
-	GET_STACK(WeaponTypeClass*, pWeaponType, STACK_OFFS(0xB0, 0x70));
+	GET_STACK(WeaponTypeClass*, pWeaponType, STACK_OFFSET(0xB0, -0x70));
 
 	if (auto pExt = WeaponTypeExt::ExtMap.Find(pWeaponType))
 	{
@@ -344,7 +363,7 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 	GET(TechnoClass* const, pSource, ESI);
 	GET_BASE(AbstractClass* const, pTarget, 0x8);
 	GET(WeaponTypeClass* const, pWeaponType, EBX);
-	GET_STACK(BulletClass* const, pBullet, STACK_OFFS(0xB0, 0x74));
+	GET_STACK(BulletClass* const, pBullet, STACK_OFFSET(0xB0, -0x74));
 
 	auto const pSourceTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
 
@@ -364,6 +383,27 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 				if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeaponType->Warhead))
 					pWHExt->InterceptBullets(pSource, pWeaponType, pTargetObject->Location);
 			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x6FF660, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
+DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(WeaponTypeClass* const, pWeapon, EBX);
+	GET_BASE(int, weaponIndex, 0xC);
+
+	if (pThis->WhatAmI() == AbstractType::Building && pWeapon->IsLaser)
+	{
+		if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+		{
+			if (pExt->CurrentLaserWeaponIndex.empty())
+				pExt->CurrentLaserWeaponIndex = weaponIndex;
+			else
+				pExt->CurrentLaserWeaponIndex.clear();
 		}
 	}
 
