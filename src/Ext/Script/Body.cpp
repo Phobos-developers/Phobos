@@ -3176,7 +3176,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 		for (auto& pHouse : *HouseClass::Array)
 		{
 			if (pLeaderUnit->Owner == pHouse
-				|| !pHouse->ControlledByHuman()
+				|| !pHouse->IsControlledByHuman()
 				|| pHouse->Defeated
 				|| pHouse->Type->MultiplayPassive
 				|| pLeaderUnit->Owner->IsAlliedWith(pHouse))
@@ -3662,7 +3662,7 @@ void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 		if (!pTeam->Owner->Defeated 
 			&& !pTeam->Owner->Type->MultiplayPassive
 			&& !pTeam->Owner->IsObserver()
-			&& !pTeam->Owner->ControlledByHuman())
+			&& !pTeam->Owner->IsControlledByHuman())
 		{
 			objectsList.AddItem(pTeam->Owner);
 		}
@@ -3714,7 +3714,7 @@ void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 			{
 				if (index == -3)
 				{
-					if (angerNode.House->ControlledByHuman())
+					if (angerNode.House->IsControlledByHuman())
 					{
 						angerNode.AngerLevel = highestHateLevel + newHateLevel;
 					}
