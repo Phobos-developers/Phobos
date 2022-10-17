@@ -252,6 +252,7 @@ New:
 - Building airstrike target eligibility customization (by Starkku)
 - IvanBomb detonation & image display centered on buildings (by Starkku)
 - Forcing specific weapon against cloaked or disguised targets (by Starkku)
+- Mind Control Threshold (by FS-21)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -355,7 +356,6 @@ New:
 - Animation damage / weapon improvements (by Starkku)
 - Warhead self-damaging toggle (by Starkku)
 - Trailer animations inheriting owner (by Starkku)
-- Mind Control Threshold (by FS-21)
 - Warhead detonation on all objects on map (by Starkku)
 - Implemented support for PCX images for campaign loading screen (by FlyStar)
 - Implemented support for PCX images for observer loading screen (by Uranusian)
