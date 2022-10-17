@@ -741,26 +741,6 @@ msgstr ""
 msgid "You can now set disk laser animation radius using a new tag."
 msgstr "现在可以通过一个新标签来设置飞碟激光半径"
 
-#: ../Fixed-or-Improved-Logics.md:343
-msgid "Detaching weapon from owner TechnoType"
-msgstr "分离武器与开火者"
-
-#: ../Fixed-or-Improved-Logics.md:345
-msgid ""
-"You can now control if weapon is detached from the TechnoType that fired "
-"it. This results in the weapon / warhead being able to damage the "
-"TechnoType itself even if it does not have `DamageSelf=true` set, but "
-"also treats it as if owned by no house or object, meaning any ownership-"
-"based checks like `AffectsAllies` do not function as expected and no "
-"experience is awarded."
-msgstr "现在可以控制武器是否与其开火者分离。其结果为武器/弹头可以在没有`DamageSelf=true`的情况下伤害开火者，但也视其为无所属，意味着所有所属方相关逻辑不生效，且开火者无法获得经验。"
-
-#: ../Fixed-or-Improved-Logics.md:346
-msgid ""
-"The effect of this is inherited through `AirburstWeapon` and "
-"`ShrapnelWeapon`."
-msgstr "这个效果也会被`AirburstWeapon`和`ShrapnelWeapon`继承。"
-
 #: ../Fixed-or-Improved-Logics.md:347
 msgid ""
 "This does not affect projectile image or functionality or `FirersPalette`"

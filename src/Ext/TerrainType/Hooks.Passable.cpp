@@ -1,9 +1,13 @@
 #include "Body.h"
 
+#include <HouseClass.h>
 #include <OverlayClass.h>
 #include <TerrainClass.h>
 
 #include <Utilities/GeneralUtils.h>
+
+#define IS_CELL_OCCUPIED(pCell)\
+pCell->OccupationFlags & 0x20 || pCell->OccupationFlags & 0x40 || pCell->OccupationFlags & 0x80 || pCell->GetInfantry(false) \
 
 // Passable TerrainTypes Hook #1 - Do not set occupy bits.
 DEFINE_HOOK(0x71C110, TerrainClass_SetOccupyBit_PassableTerrain, 0x6)
@@ -24,10 +28,14 @@ DEFINE_HOOK(0x71C110, TerrainClass_SetOccupyBit_PassableTerrain, 0x6)
 // Passable TerrainTypes Hook #2 - Do not display attack cursor unless force-firing.
 DEFINE_HOOK(0x7002E9, TechnoClass_WhatAction_PassableTerrain, 0x5)
 {
-	enum { Skip = 0x70020E };
+	enum { ReturnAction = 0x70020E };
 
+	GET(TechnoClass*, pThis, ESI);
 	GET(ObjectClass*, pTarget, EDI);
-	GET_STACK(bool, isForceFire, STACK_OFFS(0x1C, -0x8));
+	GET_STACK(bool, isForceFire, STACK_OFFSET(0x1C, 0x8));
+
+	if (!pThis->Owner->IsControlledByCurrentPlayer() || !pThis->IsControllable())
+		return 0;
 
 	if (pTarget->WhatAmI() == AbstractType::Terrain)
 	{
@@ -35,8 +43,8 @@ DEFINE_HOOK(0x7002E9, TechnoClass_WhatAction_PassableTerrain, 0x5)
 		{
 			if (pTypeExt->IsPassable && !isForceFire)
 			{
-				R->EBP(1);
-				return Skip;
+				R->EBP(Action::Move);
+				return ReturnAction;
 			}
 		}
 	}
@@ -70,7 +78,7 @@ DEFINE_HOOK(0x483D87, CellClass_CheckPassability_PassableTerrain, 0x5)
 // Passable TerrainTypes Hook #4 - Make passable for vehicles.
 DEFINE_HOOK(0x73FB71, UnitClass_CanEnterCell_PassableTerrain, 0x6)
 {
-	enum { Return = 0x73FD37 };
+	enum { ReturnPassable = 0x73FD37, SkipTerrainChecks = 0x73FA7C };
 
 	GET(AbstractClass*, pTarget, ESI);
 
@@ -80,8 +88,11 @@ DEFINE_HOOK(0x73FB71, UnitClass_CanEnterCell_PassableTerrain, 0x6)
 
 		if (pTypeExt->IsPassable)
 		{
+			if (IS_CELL_OCCUPIED(pTerrain->GetCell()))
+				return SkipTerrainChecks;
+
 			R->EBP(0);
-			return Return;
+			return ReturnPassable;
 		}
 	}
 
@@ -104,7 +115,7 @@ DEFINE_HOOK(0x47C745, CellClass_IsClearTo_Build_BuildableTerrain, 0x5)
 		{
 			if (pTypeExt->CanBeBuiltOn)
 			{
-				if (pThis->OccupationFlags & 0x20 || pThis->OccupationFlags & 0x40 || pThis->OccupationFlags & 0x80 || pThis->GetInfantry(false))
+				if (IS_CELL_OCCUPIED(pThis))
 					return Skip;
 				else
 					return SkipFlags;

@@ -13,34 +13,24 @@ HouseExt::ExtContainer HouseExt::ExtMap;
 
 int HouseExt::ActiveHarvesterCount(HouseClass* pThis)
 {
-	if (!pThis) return 0;
-
 	int result = 0;
-	for (auto techno : *TechnoClass::Array) {
-		if (auto pTechnoExt = TechnoTypeExt::ExtMap.Find(techno->GetTechnoType())) {
-			if (pTechnoExt->IsCountedAsHarvester() && techno->Owner == pThis) {
-				if (auto pTechno = TechnoExt::ExtMap.Find(techno)) {
-					result += TechnoExt::IsHarvesting(techno);
-				}
-			}
+	for (auto pTechno : *TechnoClass::Array)
+	{
+		if (pTechno->Owner == pThis)
+		{
+			auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+			result += pTypeExt->Harvester_Counted && TechnoExt::IsHarvesting(pTechno);
 		}
 	}
-
 	return result;
 }
 
 int HouseExt::TotalHarvesterCount(HouseClass* pThis)
 {
-	if (!pThis)	return 0;
-
 	int result = 0;
-	for (auto techno : *TechnoTypeClass::Array) {
-		if (auto pTechnoExt = TechnoTypeExt::ExtMap.Find(techno)) {
-			if (pTechnoExt->IsCountedAsHarvester()) {
-				result += pThis->CountOwnedAndPresent(techno);
-			}
-		}
-	}
+
+	for (auto pType : RulesExt::Global()->HarvesterTypes)
+		result += pThis->CountOwnedAndPresent(pType);
 
 	return result;
 }
@@ -231,6 +221,24 @@ int HouseExt::GetHouseIndex(int param, TeamClass* pTeam = nullptr, TActionClass*
 	return houseIdx;
 }
 
+void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+{
+	const char* pSection = this->OwnerObject()->PlainName;
+
+	INI_EX exINI(pINI);
+
+	ValueableVector<bool> readBaseNodeRepairInfo;
+	readBaseNodeRepairInfo.Read(exINI, pSection, "RepairBaseNodes");
+	size_t nWritten = readBaseNodeRepairInfo.size();
+	if (nWritten > 0)
+	{
+		for (size_t i = 0; i < 3; i++)
+			this->RepairBaseNodes[i] = readBaseNodeRepairInfo[i < nWritten ? i : nWritten - 1];
+	}
+
+}
+
+
 // =============================
 // load / save
 
@@ -238,7 +246,14 @@ template <typename T>
 void HouseExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->BuildingCounter);
+		.Process(this->BuildingCounter)
+		.Process(this->Factory_BuildingType)
+		.Process(this->Factory_InfantryType)
+		.Process(this->Factory_VehicleType)
+		.Process(this->Factory_NavyType)
+		.Process(this->Factory_AircraftType)
+		.Process(this->RepairBaseNodes)
+		;
 }
 
 void HouseExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

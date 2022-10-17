@@ -18,7 +18,7 @@ public:
 	{
 	public:
 		Valueable<int> Strength;
-		ArmorType Armor;
+		Nullable<ArmorType> Armor;
 		Valueable<bool> Interceptable;
 		Valueable<bool> Interceptable_DeleteOnIntercept;
 		Nullable<WeaponTypeClass*> Interceptable_WeaponOverride;
@@ -26,19 +26,21 @@ public:
 		Nullable<double> Gravity;
 
 		PhobosTrajectoryType* TrajectoryType;
+		Valueable<double> Trajectory_Speed;
 
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
 			, Strength { 0 }
-			, Armor { -1 }
+			, Armor {}
 			, Interceptable { false }
 			, Interceptable_DeleteOnIntercept { false }
 			, Interceptable_WeaponOverride {}
 			, LaserTrail_Types {}
 			, Gravity {}
 			, TrajectoryType { nullptr }
+			, Trajectory_Speed { 100.0 }
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
 		{ }

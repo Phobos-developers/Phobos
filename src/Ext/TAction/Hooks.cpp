@@ -27,14 +27,14 @@ DEFINE_HOOK(0x6DD8B0, TActionClass_Execute, 0x6)
 	return handled ? 0x6DD910 : 0;
 }
 
-// Bugfix: TAction 125 Build At do not display the buildups
-// Author: secsome
+// TODO: Sometimes Buildup anims plays while the building image is already there in faster gamespeed.
+// Bugfix: TAction 125 Build At could neither display the buildups nor be AI-repairable in singleplayer mode
 DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 {
 	GET(TActionClass*, pThis, ESI);
 	GET(BuildingTypeClass*, pBldType, ECX);
 	GET(HouseClass*, pHouse, EDI);
-	REF_STACK(CoordStruct, coord, STACK_OFFS(0x24, 0x18));
+	REF_STACK(CoordStruct, coord, STACK_OFFSET(0x24, -0x18));
 
 	bool bPlayBuildUp = pThis->Param3;
 
@@ -62,6 +62,10 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 				pBld->Place(false);
 
 			pBld->IsReadyToCommence = true;
+
+			if (SessionClass::IsCampaign() && !pHouse->IsControlledByHuman())
+				pBld->ShouldRebuild = pThis->Param4 > 0;
+
 			bCreated = true;
 		}
 	}

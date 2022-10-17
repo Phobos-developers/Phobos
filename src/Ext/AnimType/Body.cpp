@@ -48,7 +48,7 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 
 	if (pThis->Type->DestroyAnim.Count > 0)
 	{
-		auto const facing = pThis->PrimaryFacing.current().value256();
+		auto const facing = pThis->PrimaryFacing.Current().GetFacing<256>();
 		AnimTypeClass* pAnimType = nullptr;
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
@@ -89,14 +89,14 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 				pAnimExt->FromDeathUnit = true;
 
 				if (pAnimTypeExt->CreateUnit_InheritDeathFacings.Get())
-					pAnimExt->DeathUnitFacing = facing;
+					pAnimExt->DeathUnitFacing = static_cast<short>(facing);
 
 				if (pAnimTypeExt->CreateUnit_InheritTurretFacings.Get())
 				{
 					if (pThis->HasTurret())
 					{
 						pAnimExt->DeathUnitHasTurret = true;
-						pAnimExt->DeathUnitTurretFacing = pThis->SecondaryFacing.current();
+						pAnimExt->DeathUnitTurretFacing = pThis->SecondaryFacing.Current();
 					}
 				}
 			}
