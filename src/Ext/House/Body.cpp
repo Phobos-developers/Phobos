@@ -85,7 +85,7 @@ void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode = -1)
 
 	if (mode < 0 || mode > 2)
 		mode = -1;
-	
+
 	enum { ForceFalse = 0, ForceTrue = 1, ForceRandom = 2, UseDefault = -1 };
 
 	pHouseExt->ForceOnlyTargetHouseEnemyMode = mode;
