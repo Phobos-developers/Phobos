@@ -252,6 +252,7 @@ New:
 - Building airstrike target eligibility customization (by Starkku)
 - IvanBomb detonation & image display centered on buildings (by Starkku)
 - Forcing specific weapon against cloaked or disguised targets (by Starkku)
+- Script Action 14004 for forcing all new actions to target only the main owner's enemy (by FS-21)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -303,7 +304,6 @@ New:
 - Script action to regroup temporarily around the Team Leader (by FS-21)
 - Script action to randomly skip next action (by FS-21)
 - Script action for timed script action jumps (by FS-21)
-- Script Action 150 for forcing all new actions only to target the main Enemy (by FS-21)
 - ObjectInfo now shows current Target and AI Trigger data (by FS-21)
 - Shield absorption and passthrough customization (by Morton)
 - Limbo Delivery of buildings (by Morton)

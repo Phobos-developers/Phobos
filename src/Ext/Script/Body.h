@@ -69,6 +69,8 @@ enum class PhobosScripts : unsigned int
 	IncreaseCurrentAITriggerWeight = 14001,
 	DecreaseCurrentAITriggerWeight = 14002,
 	UnregisterGreatSuccess = 14003,
+	ForceGlobalOnlyTargetHouseEnemy = 14004,
+
 
 	// Range 16000-16999 are flow control actions (jumps, change script, loops, breaks, etc)
 	SameLineForceJumpCountdown = 16000,
