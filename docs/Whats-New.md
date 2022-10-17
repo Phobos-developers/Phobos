@@ -4,20 +4,35 @@ This page lists the history of changes across stable Phobos releases and also al
 
 ## Migrating
 
+```{hint}
+You can use the migration utility (can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) to apply most of the changes automatically using a corresponding sed script file.
+```
+
 ### From vanilla
 
 - SHP debris hardcoded shadows now respect `Shadow=no` tag value, and due to it being the default value they wouldn't have hardcoded shadows anymore by default. Override this by specifying `Shadow=yes` for SHP debris.
-- Radiation now has owner by default, which means that radiation kills will affect score and radiation field will respect `Affects...` entries. You can override that with `rulesmd.ini->[SOMEWEAPONTYPE]->Rad.NoOwner=yes` entry.
+- Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
+- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`.
 
 ### From older Phobos versions
 
 #### From pre-0.3 devbuilds
 
+- `Trajectory.Speed` is now defined on projectile instead of weapon.
 - `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
+- Automatic self-destruction logic logic has been reimplemented, `Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been remade/renamed and require adjustments to function.
+- `DetachedFromOwner` on weapons is deprecated. This has been replaced by `AllowDamageOnSelf` on warheads.
+- Timed jump script actions now take the time measured in ingame seconds instead of frames. Divide your value by 15 to accomodate to this change.
+- [Placement Preview](User-Interface.md#placement-preview) logic has been adjusted, `BuildingPlacementPreview.DefaultTranslucentLevel`, `BuildingPlacementGrid.TranslucentLevel`, `PlacementPreview.Show`, `PlacementPreview.TranslucentLevel` and `ShowBuildingPlacementPreview` tags have been remade/renamed and require adjustments to function. In addition, you must explicitly enable this feature by specifying `[AudioVisual]->PlacementPreview=yes`.
+- Existing script actions were renumbered, please use the migration utility to change the numbers to the correct ones.
+
 
 #### From 0.2.2.2
 
 - Keys `rulesmd.ini->[SOMEWARHEAD]->PenetratesShield` and `rulesmd.ini->[SOMEWARHEAD]->BreaksShield` have been changed to `Shield.Penetrate` and `Shield.Break`, respectively.
+- `Rad.NoOwner` on weapons is deprecated. This has been replaced by `RadHasOwner` key on radiation types itself. It also defaults to no, so radiation once again has no owner house by default.
+- `RadApplicationDelay` and `RadApplicationDelay.Building` on custom radiation types are now only used if `[Radiation]` -> `UseGlobalRadApplicationDelay` is explicitly set to false, otherwise values from `[Radiation]` are used.
+- Existing script actions were renumbered, please use the migration utility to change the numbers to the correct ones.
 
 #### From 0.1.1
 
@@ -40,6 +55,7 @@ This page lists the history of changes across stable Phobos releases and also al
   58=Upper bound,0
   59=Operate var is global,10
   60=Operate var index,0
+  65=Campaign AI Repairable,0
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -78,9 +94,10 @@ This page lists the history of changes across stable Phobos releases and also al
   533=Global variable is greater than or queals to global variable,48,35,0,0,[LONG DESC],0,1,509,1
   534=Global variable is less than or equals to global variable,48,35,0,0,[LONG DESC],0,1,510,1
   535=Global variable and global variable is true,48,35,0,0,[LONG DESC],0,1,511,1
+  600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1
 
   [ActionsRA2]
-  125=Build at...,-10,47,53,0,0,0,1,0,0,[LONG DESC],0,1,125
+  125=Build at...,-10,47,53,65,0,0,1,0,0,[LONG DESC],0,1,125
   500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
   501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
   502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
@@ -133,81 +150,81 @@ This page lists the history of changes across stable Phobos releases and also al
   BuiltInType=5
 
   [ScriptsRA2]
-  71=Timed Area Guard,20,0,1,[LONG DESC]
-  72=Load Onto Transports,0,0,1,[LONG DESC]
-  73=Wait until ammo is full,0,0,1,[LONG DESC]
-  500=Local variable set,22,0,1,[LONG DESC]
-  501=Local variable add,22,0,1,[LONG DESC]
-  502=Local variable minus,22,0,1,[LONG DESC]
-  503=Local variable multiply,22,0,1,[LONG DESC]
-  504=Local variable divide,22,0,1,[LONG DESC]
-  505=Local variable mod,22,0,1,[LONG DESC]
-  506=Local variable leftshift,22,0,1,[LONG DESC]
-  507=Local variable rightshift,22,0,1,[LONG DESC]
-  508=Local variable reverse,22,0,1,[LONG DESC]
-  509=Local variable xor,22,0,1,[LONG DESC]
-  510=Local variable or,22,0,1,[LONG DESC]
-  511=Local variable and,22,0,1,[LONG DESC]
-  512=Global variable set,23,0,1,[LONG DESC]
-  513=Global variable add,23,0,1,[LONG DESC]
-  514=Global variable minus,23,0,1,[LONG DESC]
-  515=Global variable multiply,23,0,1,[LONG DESC]
-  516=Global variable divide,23,0,1,[LONG DESC]
-  517=Global variable mod,23,0,1,[LONG DESC]
-  518=Global variable leftshift,23,0,1,[LONG DESC]
-  519=Global variable rightshift,23,0,1,[LONG DESC]
-  520=Global variable reverse,23,0,1,[LONG DESC]
-  521=Global variable xor,23,0,1,[LONG DESC]
-  522=Global variable or,23,0,1,[LONG DESC]
-  523=Global variable and,23,0,1,[LONG DESC]
-  524=Local variable set by local variable,24,0,1,[LONG DESC]
-  525=Local variable add by local variable,24,0,1,[LONG DESC]
-  526=Local variable minus by local variable,24,0,1,[LONG DESC]
-  527=Local variable multiply by local variable,24,0,1,[LONG DESC]
-  528=Local variable divide by local variable,24,0,1,[LONG DESC]
-  529=Local variable mod by local variable,24,0,1,[LONG DESC]
-  530=Local variable leftshift by local variable,24,0,1,[LONG DESC]
-  531=Local variable rightshift by local variable,24,0,1,[LONG DESC]
-  532=Local variable reverse by local variable,24,0,1,[LONG DESC]
-  533=Local variable xor by local variable,24,0,1,[LONG DESC]
-  534=Local variable or by local variable,24,0,1,[LONG DESC]
-  535=Local variable and by local variable,24,0,1,[LONG DESC]
-  536=Global variable set by local variable,25,0,1,[LONG DESC]
-  537=Global variable add by local variable,25,0,1,[LONG DESC]
-  538=Global variable minus by local variable,25,0,1,[LONG DESC]
-  539=Global variable multiply by local variable,25,0,1,[LONG DESC]
-  540=Global variable divide by local variable,25,0,1,[LONG DESC]
-  541=Global variable mod by local variable,25,0,1,[LONG DESC]
-  542=Global variable leftshift by local variable,25,0,1,[LONG DESC]
-  543=Global variable rightshift by local variable,25,0,1,[LONG DESC]
-  544=Global variable reverse by local variable,25,0,1,[LONG DESC]
-  545=Global variable xor by local variable,25,0,1,[LONG DESC]
-  546=Global variable or by local variable,25,0,1,[LONG DESC]
-  547=Global variable and by local variable,25,0,1,[LONG DESC]
-  548=Local variable set by global variable,26,0,1,[LONG DESC]
-  549=Local variable add by global variable,26,0,1,[LONG DESC]
-  550=Local variable minus by global variable,26,0,1,[LONG DESC]
-  551=Local variable multiply by global variable,26,0,1,[LONG DESC]
-  552=Local variable divide by global variable,26,0,1,[LONG DESC]
-  553=Local variable mod by global variable,26,0,1,[LONG DESC]
-  554=Local variable leftshift by global variable,26,0,1,[LONG DESC]
-  555=Local variable rightshift by global variable,26,0,1,[LONG DESC]
-  556=Local variable reverse by global variable,26,0,1,[LONG DESC]
-  557=Local variable xor by global variable,26,0,1,[LONG DESC]
-  558=Local variable or by global variable,26,0,1,[LONG DESC]
-  559=Local variable and by global variable,26,0,1,[LONG DESC]
-  560=Global variable set by global variable,27,0,1,[LONG DESC]
-  561=Global variable add by global variable,27,0,1,[LONG DESC]
-  562=Global variable minus by global variable,27,0,1,[LONG DESC]
-  563=Global variable multiply by global variable,27,0,1,[LONG DESC]
-  564=Global variable divide by global variable,27,0,1,[LONG DESC]
-  565=Global variable mod by global variable,27,0,1,[LONG DESC]
-  566=Global variable leftshift by global variable,27,0,1,[LONG DESC]
-  567=Global variable rightshift by global variable,27,0,1,[LONG DESC]
-  568=Global variable reverse by global variable,27,0,1,[LONG DESC]
-  569=Global variable xor by global variable,27,0,1,[LONG DESC]
-  570=Global variable or by global variable,27,0,1,[LONG DESC]
-  571=Global variable and by global variable,27,0,1,[LONG DESC]
+  10100=Timed Area Guard,20,0,1,[LONG DESC]
+  10103=Load Onto Transports,0,0,1,[LONG DESC]
+  10101=Wait until ammo is full,0,0,1,[LONG DESC]
+  18000=Local variable set,22,0,1,[LONG DESC]
+  18001=Local variable add,22,0,1,[LONG DESC]
+  18002=Local variable minus,22,0,1,[LONG DESC]
+  18003=Local variable multiply,22,0,1,[LONG DESC]
+  18004=Local variable divide,22,0,1,[LONG DESC]
+  18005=Local variable mod,22,0,1,[LONG DESC]
+  18006=Local variable leftshift,22,0,1,[LONG DESC]
+  18007=Local variable rightshift,22,0,1,[LONG DESC]
+  18008=Local variable reverse,22,0,1,[LONG DESC]
+  18009=Local variable xor,22,0,1,[LONG DESC]
+  18010=Local variable or,22,0,1,[LONG DESC]
+  18011=Local variable and,22,0,1,[LONG DESC]
+  18012=Global variable set,23,0,1,[LONG DESC]
+  18013=Global variable add,23,0,1,[LONG DESC]
+  18014=Global variable minus,23,0,1,[LONG DESC]
+  18015=Global variable multiply,23,0,1,[LONG DESC]
+  18016=Global variable divide,23,0,1,[LONG DESC]
+  18017=Global variable mod,23,0,1,[LONG DESC]
+  18018=Global variable leftshift,23,0,1,[LONG DESC]
+  18019=Global variable rightshift,23,0,1,[LONG DESC]
+  18020=Global variable reverse,23,0,1,[LONG DESC]
+  18021=Global variable xor,23,0,1,[LONG DESC]
+  18022=Global variable or,23,0,1,[LONG DESC]
+  18023=Global variable and,23,0,1,[LONG DESC]
+  18024=Local variable set by local variable,24,0,1,[LONG DESC]
+  18025=Local variable add by local variable,24,0,1,[LONG DESC]
+  18026=Local variable minus by local variable,24,0,1,[LONG DESC]
+  18027=Local variable multiply by local variable,24,0,1,[LONG DESC]
+  18028=Local variable divide by local variable,24,0,1,[LONG DESC]
+  18029=Local variable mod by local variable,24,0,1,[LONG DESC]
+  18030=Local variable leftshift by local variable,24,0,1,[LONG DESC]
+  18031=Local variable rightshift by local variable,24,0,1,[LONG DESC]
+  18032=Local variable reverse by local variable,24,0,1,[LONG DESC]
+  18033=Local variable xor by local variable,24,0,1,[LONG DESC]
+  18034=Local variable or by local variable,24,0,1,[LONG DESC]
+  18035=Local variable and by local variable,24,0,1,[LONG DESC]
+  18036=Global variable set by local variable,25,0,1,[LONG DESC]
+  18037=Global variable add by local variable,25,0,1,[LONG DESC]
+  18038=Global variable minus by local variable,25,0,1,[LONG DESC]
+  18039=Global variable multiply by local variable,25,0,1,[LONG DESC]
+  18040=Global variable divide by local variable,25,0,1,[LONG DESC]
+  18041=Global variable mod by local variable,25,0,1,[LONG DESC]
+  18042=Global variable leftshift by local variable,25,0,1,[LONG DESC]
+  18043=Global variable rightshift by local variable,25,0,1,[LONG DESC]
+  18044=Global variable reverse by local variable,25,0,1,[LONG DESC]
+  18045=Global variable xor by local variable,25,0,1,[LONG DESC]
+  18046=Global variable or by local variable,25,0,1,[LONG DESC]
+  18047=Global variable and by local variable,25,0,1,[LONG DESC]
+  18048=Local variable set by global variable,26,0,1,[LONG DESC]
+  18049=Local variable add by global variable,26,0,1,[LONG DESC]
+  18050=Local variable minus by global variable,26,0,1,[LONG DESC]
+  18051=Local variable multiply by global variable,26,0,1,[LONG DESC]
+  18052=Local variable divide by global variable,26,0,1,[LONG DESC]
+  18053=Local variable mod by global variable,26,0,1,[LONG DESC]
+  18054=Local variable leftshift by global variable,26,0,1,[LONG DESC]
+  18055=Local variable rightshift by global variable,26,0,1,[LONG DESC]
+  18056=Local variable reverse by global variable,26,0,1,[LONG DESC]
+  18057=Local variable xor by global variable,26,0,1,[LONG DESC]
+  18058=Local variable or by global variable,26,0,1,[LONG DESC]
+  18059=Local variable and by global variable,26,0,1,[LONG DESC]
+  18060=Global variable set by global variable,27,0,1,[LONG DESC]
+  18061=Global variable add by global variable,27,0,1,[LONG DESC]
+  18062=Global variable minus by global variable,27,0,1,[LONG DESC]
+  18063=Global variable multiply by global variable,27,0,1,[LONG DESC]
+  18064=Global variable divide by global variable,27,0,1,[LONG DESC]
+  18065=Global variable mod by global variable,27,0,1,[LONG DESC]
+  18066=Global variable leftshift by global variable,27,0,1,[LONG DESC]
+  18067=Global variable rightshift by global variable,27,0,1,[LONG DESC]
+  18068=Global variable reverse by global variable,27,0,1,[LONG DESC]
+  18069=Global variable xor by global variable,27,0,1,[LONG DESC]
+  18070=Global variable or by global variable,27,0,1,[LONG DESC]
+  18071=Global variable and by global variable,27,0,1,[LONG DESC]
 
   [ScriptParams]
   22=Local variables,-1
@@ -220,6 +237,26 @@ This page lists the history of changes across stable Phobos releases and also al
 </details>
 
 ## Changelog
+
+### 0.3.1
+
+<details>
+  <summary>Click to show</summary>
+
+New:
+- `Crit.AffectsHouses` for critical hit system (by Starkku)
+- Warhead or weapon detonation at superweapon target cell (by Starkku)
+- Super Weapons launching other Super Weapons (by Morton)
+- Launching Super Weapons on building infiltration (by Morton)
+- Cloaked objects displaying to observers (by Starkku)
+- Building airstrike target eligibility customization (by Starkku)
+- IvanBomb detonation & image display centered on buildings (by Starkku)
+- Forcing specific weapon against cloaked or disguised targets (by Starkku)
+
+Vanilla fixes:
+- Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
+</details>
+
 
 ### 0.3
 
@@ -244,27 +281,28 @@ New:
 - Adds a "Load Game" button to the retry dialog on mission failure (by secsome)
 - Default disguise for individual InfantryTypes (by secsome)
 - Quicksave hotkey command (by secsome)
-- Save Game Trigger Action (by secsome)
+- Save Game trigger action (by secsome)
 - Numeric Variables (by secsome)
 - TechnoType's tooltip would display it's build time now (by secsome)
+- Customizable tooltip background color and opacity (by secsome)
+- FrameByFrame & FrameStep hotkey command (by secsome)
 - Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by Otamaa)
 - Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` anim sequence (by Otamaa)
 - XDrawOffset for animations (by Morton)
 - Customizable OpenTopped properties (by Otamaa)
 - Automatic Passenger Deletion (by FS-21)
-- Script Action 74 to 81, 84 to 91 and 104 to 105 for new AI attacks (by FS-21)
-- Script Actions 82 & 83 for modifying AI Trigger Current Weight (by FS-21)
-- Script Action 92 for waiting & repeat the same new AI attack if no target was found (by FS-21)
-- Script Action 93 that modifies the Team's Trigger Weight when ends the new attack action (by FS-21)
-- Script Action 94 for picking a random script from a list (by FS-21)
-- Script Action 95 to 102 and 106 to 109 for new AI movements towards certain objects (by FS-21)
-- Script Action 103 that Modify Target Distance in the new move actions (by FS-21)
-- Script Action 110 that Modify how ends the new move actions (by FS-21)
-- Script Action 111 that un-register Team success, is just the opposite effect of Action 49 (by FS-21)
-- Script Action 112 to regroup temporarily around the Team Leader (by FS-21)
-- Script Action 113 to Randomly Skip Next Action (by FS-21)
-- Script Action 114 to 123 that modifies the anger values of Houses (by FS-21)
-- Script Action 124 to 126 for timed Script Action jumps (by FS-21)
+- Script actions for new AI attacks (by FS-21)
+- Script actions for modifying AI Trigger Current Weight (by FS-21)
+- Script action for waiting & repeat the same new AI attack if no target was found (by FS-21)
+- Script action that modifies the Team's Trigger Weight when ends the new attack action (by FS-21)
+- Script action for picking a random script from a list (by FS-21)
+- Script action for new AI movements towards certain objects (by FS-21)
+- Script action that modify target distance in the new move actions (by FS-21)
+- Script action that modify how ends the new move actions (by FS-21)
+- Script action that un-register Team success (by FS-21)
+- Script action to regroup temporarily around the Team Leader (by FS-21)
+- Script action to randomly skip next action (by FS-21)
+- Script action for timed script action jumps (by FS-21)
 - ObjectInfo now shows current Target and AI Trigger data (by FS-21)
 - Shield absorption and passthrough customization (by Morton)
 - Limbo Delivery of buildings (by Morton)
@@ -287,7 +325,9 @@ New:
 - Attached animation position customization (by Starkku)
 - Trigger Action 505 for Firing SW at specified location (by FS-21)
 - Trigger Action 506 for Firing SW at waypoint (by FS-21)
-- New ways for self-killing objects under certaing cases (by FS-21)
+- New behaviors for objects' self-destruction under certain conditions (by Trsdy & FS-21)
+- Slaves' ownership decision when corresponding slave miner is destroyed (by Trsdy)
+- Customize buildings' selling sound and EVA voice (by Trsdy)
 - `ForceWeapon.Naval.Decloacked` for overriding uncloaked underwater attack behavior (by FS-21)
 - Shrapnel enhancement (by secsome)
 - Shared Ammo for transports to passengers (by FS-21)
@@ -301,18 +341,25 @@ New:
 - Display damage numbers debug hotkey command (by Starkku)
 - Toggleable display of TransactMoney amounts (by Starkku)
 - Building-provided self-healing customization (by Starkku)
-- Building placement preview (by Otamaa)
+- Building placement preview (by Otamaa & Belonit)
 - Passable & buildable-upon TerrainTypes (by Starkku)
 - Toggle for passengers to automatically change owner if transport owner changes (by Starkku)
 - Superweapon launch on warhead detonation (by Trsdy)
+- Preserve IronCurtain status upon DeploysInto/UndeploysInto (by Trsdy)
 - Correct owner house for Warhead Anim/SplashList & Play Animation trigger animations (by Starkku)
 - Customizable FLH When Infantry Is Crouched Or Deployed (by FS-21)
 - Enhanced projectile interception logic, including projectile strength & armor types (by Starkku)
 - Initial Strength for Cloned Infantry (by FS-21)
 - OpenTopped transport rangefinding & deactivated state customizations (by Starkku)
+- Forbidding parallel AI queues by type (by NetsuNegi & Trsdy)
 - Animation damage / weapon improvements (by Starkku)
 - Warhead self-damaging toggle (by Starkku)
 - Trailer animations inheriting owner (by Starkku)
+- Warhead detonation on all objects on map (by Starkku)
+- Implemented support for PCX images for campaign loading screen (by FlyStar)
+- Implemented support for PCX images for observer loading screen (by Uranusian)
+- Animated (non-tiberium spawning) TerrainTypes (by Starkku)
+- Toggleable passenger killing for Explodes=true units (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -331,11 +378,19 @@ Vanilla fixes:
 - Fixed mind control indicator animations not reappearing on mind controlled objects that are cloaked and then uncloaked (by Starkku)
 - Fixed Nuke carrier and payload weapons not respecting `Bright` setting on weapon (by Starkku)
 - Fixed buildings not reverting to undamaged graphics when HP was restored above `[AudioVisual]`->`ConditionYellow` via `SelfHealing` (by Starkku)
-- Fixed jumpjet units being unable to turn to the target when firing from a different direction (by trsdy)
+- Fixed jumpjet units being unable to turn to the target when firing from a different direction (by Trsdy)
+- Fixed turreted jumpjet units always facing bottom-right direction when stop moving (by Trsdy)
+- Fixed jumpjet objects being unable to detect cloaked objects beneath (by Trsdy)
 - Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations (by Starkku)
 - Fixed AI script action Deploy getting stuck with vehicles with `DeploysInto` if there was no space to deploy at initial location (by Starkku)
 - Fixed `Foundation=0x0` causing crashes if used on TerrainTypes.
 - Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to Ares-introduced Warhead effects (by Starkku)
+- Buildings now correctly use laser parameters set for Secondary weapons instead of reading them from Primary weapon (by Starkku)
+- Fixed an issue that caused vehicles killed by damage dealt by a known house but without a known source TechnoType (f.ex animation warhead damage) to not be recorded as killed correctly and thus not spring map trigger events etc. (by Starkku)
+- Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding (only applies to Z-aware drawing mode for now) (by Apollo)
+- Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something (by Kerbiter)
+- Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true` (by Starkku)
+- Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry (by Otamaa)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
@@ -348,6 +403,18 @@ Phobos fixes:
 - Fixed a potential cause of crashes concerning shield animations (such in conjunction with cloaking) (by Starkku)
 - Fixed interceptors intercepting projectiles fired by friendly objects if the said object died after firing the projectile (by Starkku)
 - Fixed interceptor weapons with `Inviso=true` projectiles detonating the projectile at wrong coordinates (by Starkku)
+- Fixed some possible configuration reading issues when using Phobos with patches that rename `uimd.ini` (by Belonit)
+- Fixed a game crash when using the Map Snapshot command (by Otamaa)
+- Fixed issue with incorrect input in edit dialog element when using IME (by Belonit)
+- Fixed an issue where tooltip text could be clipped by tooltip rectangle border if using `MaxWidth` > 0 (by Starkku)
+- Fixed projectiles with `Trajectory=Straight` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true` (by Starkku)
+- Minor performance optimization related to shields (by Trsdy)
+- Fixed teleporting miners (Chrono Miner) considered to be idle by harvester counter, improved related game performance (by Trsdy)
+- Fixed negative damage weapons considering shield health when evaluating targets even if Warhead had `Shield.Penetrate` set to true (by Starkku)
+- Fixed shield animations (`IdleAnim`, `BreakAnim` and `HitAnim`) showing up even if the object shield is attached to is currently underground (by Starkku)
+
+Non-DLL:
+- Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)
 </details>
 
 

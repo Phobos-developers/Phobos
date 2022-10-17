@@ -36,15 +36,13 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
 }
 
-void StraightTrajectory::OnAI(BulletClass* pBullet)
+bool StraightTrajectory::OnAI(BulletClass* pBullet)
 {
+	// Close enough
 	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < 100)
-	{
-		pBullet->Explode(true);
-		pBullet->UnInit();
-		pBullet->LastMapCoords = CellClass::Coord2Cell(pBullet->Location);
-	}
+		return true;
 
+	return false;
 }
 
 void StraightTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)

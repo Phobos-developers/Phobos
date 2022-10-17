@@ -1,7 +1,7 @@
 #include "Body.h"
 
 #include <Utilities/SavegameDef.h>
-
+#include <New/Entity/ShieldClass.h>
 #include <Ext/Scenario/Body.h>
 #include <BuildingClass.h>
 #include <InfantryClass.h>
@@ -34,7 +34,7 @@ void TEventExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 }
 
 bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, ObjectClass* pObject,
-	TimerStruct* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled)
+	CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled)
 {
 	bHandled = true;
 	switch (static_cast<PhobosTriggerEvent>(pThis->EventKind))
@@ -116,6 +116,9 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 		return TEventExt::VariableCheckBinary<true, true, std::less_equal<int>>(pThis);
 	case PhobosTriggerEvent::GlobalVariableAndIsTrueGlobalVariable:
 		return TEventExt::VariableCheckBinary<true, true, and_with>(pThis);
+
+	case PhobosTriggerEvent::ShieldBroken:
+		return ShieldClass::ShieldIsBrokenTEvent(pObject);
 
 	default:
 		bHandled = false;

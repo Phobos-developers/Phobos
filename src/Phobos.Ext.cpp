@@ -251,7 +251,8 @@ auto MassActions = MassAction <
 	// New classes
 	ShieldTypeClass,
 	LaserTrailTypeClass,
-	RadTypeClass
+	RadTypeClass,
+	ShieldClass
 	// other classes
 > ();
 
@@ -364,9 +365,13 @@ bool Phobos::DetachFromDebugger()
 				status = NtRemoveProcessDebug(hCurrentProcess, hDebug);
 				if (0 <= status)
 				{
-					sprintf_s(Phobos::readBuffer, "taskkill /F /PID %d", pid);
-					WinExec(Phobos::readBuffer, SW_HIDE);
-					return true;
+					HANDLE hDbgProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+					if (INVALID_HANDLE_VALUE != hDbgProcess)
+					{
+						BOOL ret = TerminateProcess(hDbgProcess, EXIT_SUCCESS);
+						CloseHandle(hDbgProcess);
+						return ret;
+					}
 				}
 			}
 			NtClose(hDebug);

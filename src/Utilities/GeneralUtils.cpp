@@ -1,5 +1,6 @@
 #include "GeneralUtils.h"
 #include "Debug.h"
+#include <Theater.h>
 #include <ScenarioClass.h>
 
 bool GeneralUtils::IsValidString(const char* str)
@@ -82,20 +83,6 @@ int GeneralUtils::ChooseOneWeighted(const double dice, const std::vector<int>* w
 	return -1;
 }
 
-// Direct multiplication pow
-double GeneralUtils::FastPow(double x, double n)
-{
-	double r = 1.0;
-
-	while (n > 0)
-	{
-		r *= x;
-		--n;
-	}
-
-	return r;
-}
-
 // Checks if health ratio has changed threshold (Healthy/ConditionYellow/Red).
 bool GeneralUtils::HasHealthRatioThresholdChanged(double oldRatio, double newRatio)
 {
@@ -113,6 +100,21 @@ bool GeneralUtils::HasHealthRatioThresholdChanged(double oldRatio, double newRat
 	}
 	else if (oldRatio <= RulesClass::Instance->ConditionRed && newRatio > RulesClass::Instance->ConditionRed)
 	{
+		return true;
+	}
+
+	return false;
+}
+
+bool GeneralUtils::ApplyTheaterSuffixToString(char* str)
+{
+	if (auto pSuffix = strstr(str, "~~~"))
+	{
+		auto theater = ScenarioClass::Instance->Theater;
+		auto pExtension = Theater::GetTheater(theater).Extension;
+		pSuffix[0] = pExtension[0];
+		pSuffix[1] = pExtension[1];
+		pSuffix[2] = pExtension[2];
 		return true;
 	}
 
