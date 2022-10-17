@@ -252,9 +252,11 @@ New:
 - Building airstrike target eligibility customization (by Starkku)
 - IvanBomb detonation & image display centered on buildings (by Starkku)
 - Forcing specific weapon against cloaked or disguised targets (by Starkku)
+- Repair Legless Cyborgs In Transports (by FS-21)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
+- Fixed bug that restored cyborg legs when the soldier leave transports (by FS-21)
 </details>
 
 
@@ -337,7 +339,6 @@ New:
 - Feedback weapon (by Starkku)
 - TerrainType & ore minimap color customization (by Starkku)
 - Single-color weapon lasers (by Starkku)
-- Repair Legless Cyborgs In Transports (by FS-21)
 - Customizable projectile trajectory (by secsome)
 - Display damage numbers debug hotkey command (by Starkku)
 - Toggleable display of TransactMoney amounts (by Starkku)
@@ -377,7 +378,6 @@ Vanilla fixes:
 - Fixed aircraft & jumpjet units not being affected by speed modifiers (by Starkku)
 - Fixed vehicles (both voxel & SHP) to fully respect `Palette` (by Starkku)
 - Fixed mind control indicator animations not reappearing on mind controlled objects that are cloaked and then uncloaked (by Starkku)
-- Fixed bug that restored cyborg legs when the soldier leave transports (by FS-21)
 - Fixed Nuke carrier and payload weapons not respecting `Bright` setting on weapon (by Starkku)
 - Fixed buildings not reverting to undamaged graphics when HP was restored above `[AudioVisual]`->`ConditionYellow` via `SelfHealing` (by Starkku)
 - Fixed jumpjet units being unable to turn to the target when firing from a different direction (by Trsdy)
