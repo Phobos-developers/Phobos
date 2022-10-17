@@ -36,8 +36,8 @@ DEFINE_HOOK(0x6A6EB1, SidebarClass_DrawIt_ProducingProgress, 0x6)
 {
 	if (Phobos::UI::ShowProducingProgress)
 	{
-		auto pPlayer = HouseClass::Player();
-		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::Player->SideIndex));
+		auto pPlayer = HouseClass::CurrentPlayer();
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::CurrentPlayer->SideIndex));
 		int XOffset = pSideExt->Sidebar_GDIPositions ? 29 : 32;
 		int XBase = (pSideExt->Sidebar_GDIPositions ? 26 : 20) + pSideExt->Sidebar_ProducingProgress_Offset.Get().X;
 		int YBase = 197 + pSideExt->Sidebar_ProducingProgress_Offset.Get().Y;

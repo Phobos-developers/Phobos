@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-23 12:50+0800\n"
+"POT-Creation-Date: 2022-07-31 14:34+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -442,11 +442,11 @@ msgstr ""
 "developers/YRpp)（它提供了一种与YR代码进行交互并使用Syringe注入代码的方法）完整的，以及通常使用[Visual "
 "Studio 2017/2019](https://visualstudio.microsoft.com)或更高版本。"
 
-#: ../Contributing.md:181
+#: ../Contributing.md:182
 msgid "Contributing changes to the project"
 msgstr "为项目做贡献"
 
-#: ../Contributing.md:183
+#: ../Contributing.md:184
 msgid ""
 "To contribute a feature or some sort of a change you you would need a Git"
 " client (I recommend [GitKraken](https://www.gitkraken.com/) personally)."
@@ -477,11 +477,11 @@ msgstr ""
 "你会从C++的经验，编程模式的知识，常用技术等中受益。[基本的汇编知识](https://www.cs.virginia.edu/~evans/cs216/guides/x86.html)将有助于你正确地编写与依赖内存的交互。"
 " 此外，还需要对Git和GitHub有基本的了解。"
 
-#: ../Contributing.md:193
+#: ../Contributing.md:194
 msgid "Testing"
 msgstr "测试"
 
-#: ../Contributing.md:195
+#: ../Contributing.md:196
 msgid ""
 "This is a job that any modder (and even sometimes player) can do. Look at"
 " a new feature or a change, try to think of all possible cases when it "
@@ -500,18 +500,18 @@ msgid ""
 "list below can help you identify issues quicker."
 msgstr "只有通过大量离线和在线的测试，才能实现**总体稳定性**。大多数modder都有Beta测试团队，所以，如果你希望引擎稳定，请通过让测试人员使用新功能来为引擎做出贡献！另外，下面的清单也可以帮助你更快地确定问题。"
 
-#: ../Contributing.md:201
+#: ../Contributing.md:202
 msgid "Testing check-list"
 msgstr "测试清单"
 
-#: ../Contributing.md:203
+#: ../Contributing.md:204
 msgid ""
 "**All possible valid use cases covered**. Try to check all of the valid "
 "feature use cases you can think of and verify that they work as intended "
 "with the feature."
 msgstr "**涵盖了所有可能的有效用例**。尝试检查你可以想到的所有有效功能用法，并验证它们是否可以与功能一起正常使用。"
 
-#: ../Contributing.md:204
+#: ../Contributing.md:205
 msgid ""
 "**Correct saving and loading**. Most of the additions like new INI tags "
 "require storing them in saved object info. Sometimes this is not done "
@@ -520,7 +520,7 @@ msgid ""
 "saved and loaded (on the same version of Phobos, of course)."
 msgstr "**正确存档和读档**。大多数附加功能（比如新的功能标签）都需要将其存储在已保存的对象信息中。有时这不能正确完成，尤其是在复杂的物体上（比如辐射类型）。请确保所有改进在存档和读档之前和之后均能正常工作（当然，是指在相同版本的火卫一上）。"
 
-#: ../Contributing.md:205
+#: ../Contributing.md:206
 msgid ""
 "**Interaction with other features**. Try to use the feature chained or "
 "interacting with other features from vanilla or other libs (for example, "
@@ -528,7 +528,7 @@ msgid ""
 " mind control from a permanently mind-controlled unit)."
 msgstr "**与其他功能的交互**。尝试使用功能与原版或其他库中的其他功能进行链接或交互（例如，一开始尝试从永久心控单位移除心灵控制时，心灵控制移除弹头崩溃了）。"
 
-#: ../Contributing.md:206
+#: ../Contributing.md:207
 msgid ""
 "**Overlapping features not working correctly** (including those from "
 "third-party libs like Ares, HAres, CnCNet spawner DLL). Think of what "
@@ -540,7 +540,7 @@ msgid ""
 "it weren't being type selected properly)."
 msgstr "**重叠功能无法正常工作**（包括来自第三方库（如Ares，HAres，CnCNet生成器DLL）的功能）。考虑一下哪些功能的代码可能与你当前正在测试的代码重叠（从技术上讲，意味着它们修改了相同的代码）。由于该项目的性质，如果其他库的某些功能重叠，则可能碰巧无法正常工作（例如，在实现单位选择权重时，一开始Ares的`GroupAs`被破坏，使用它的单位不能被正确地同类选择）。"
 
-#: ../Contributing.md:207
+#: ../Contributing.md:208
 msgid ""
 "**Edge cases**. Those are the cases of some specific cases usually "
 "induced by some extreme  parameter values (for example, vanilla game "
@@ -549,7 +549,7 @@ msgstr ""
 "**边缘情况**。这些是某些特定情况下的情况，通常是由一些极端参数值引起的（例如，原版游戏在Size=0,0,0,0的 PreviewPack "
 "上崩溃而不是不画）。"
 
-#: ../Contributing.md:208
+#: ../Contributing.md:209
 msgid ""
 "**Corner cases**. Those are similar to edge cases but are hard to "
 "reproduce and are usually induced by a combination of extreme parameter "
@@ -562,11 +562,11 @@ msgid ""
 "attentive to details would help."
 msgstr "拥有制作YRmod的知识，好奇心与对细节的敏感性将会有所帮助。"
 
-#: ../Contributing.md:214
+#: ../Contributing.md:215
 msgid "Writing docs"
 msgstr "书写说明书"
 
-#: ../Contributing.md:216
+#: ../Contributing.md:217
 msgid ""
 "No explanation needed. If you fully understand how some stuff in Phobos "
 "works you can help by writing a detailed description in these docs, or "
@@ -576,7 +576,7 @@ msgstr ""
 "无需任何解释。 "
 "如果你完全了解了火卫一中的某些东西是如何工作的，则可以通过在这些文档中写一个详细的描述来提供帮助，或者你可以改进你认为不够详细的文档。"
 
-#: ../Contributing.md:218
+#: ../Contributing.md:219
 msgid ""
 "The docs are written in Markdown (which is dead simple, [learn MD in 60 "
 "seconds](https://commonmark.org/help/); if you need help on extended "
@@ -599,20 +599,20 @@ msgstr ""
 "你无需安装Python，Sphinx和模块即可查看更改——你创建的每个拉取请求均由Read the Docs自动生成并提供。 "
 "就像每日生成一样，在页面底部，按`Show all checks`，然后在生成运行的详细信息中查看生成的文档。"
 
-#: ../Contributing.md:224
+#: ../Contributing.md:225
 msgid "There are two ways to edit the docs."
 msgstr "有两种方式可以编辑文档"
 
-#: ../Contributing.md:225
+#: ../Contributing.md:226
 msgid ""
 "**Edit from your PC**. Pretty much the same like what's described in "
-"[contributing changes section](#contributing-changes-to-the-project); the"
-" docs are located in the `docs` folder."
+"[contributing changes section](contributing-changes-to-the-project); the "
+"docs are located in the `docs` folder."
 msgstr ""
 "**通过你的电脑编辑**。与[贡献更改](#contributing-changes-to-the-"
 "project)中说的差不多；文档位于`docs`文件夹中。"
 
-#: ../Contributing.md:226
+#: ../Contributing.md:227
 msgid ""
 "**Edit via online editor**. Navigate to the doc piece that you want to "
 "edit, press the button on the top right - and it will take you to the "
@@ -629,11 +629,11 @@ msgid ""
 "You would also need a GitHub account."
 msgstr "好的英语语法和对文档结构的理解就足够了。此外，你还需要一个GitHub帐户。"
 
-#: ../Contributing.md:232
+#: ../Contributing.md:233
 msgid "Providing media to showcase features"
 msgstr "提供展示功能用的媒体文件"
 
-#: ../Contributing.md:234
+#: ../Contributing.md:235
 msgid ""
 "Those would be used in docs and with a link to the respective mod as a "
 "bonus for the mod author. To record GIFs you can use such apps as, for "
@@ -646,11 +646,11 @@ msgid ""
 "without excess stuff or length."
 msgstr "请提供适当尺寸的屏幕截图，GIF和视频，并且不应有多余或过长的内容。"
 
-#: ../Contributing.md:240
+#: ../Contributing.md:241
 msgid "Promoting the work"
 msgstr "促进工作"
 
-#: ../Contributing.md:242
+#: ../Contributing.md:243
 msgid ""
 "You can always help us by spreading the word about the project among "
 "people, whether you're an influential youtuber, a C&C related community "

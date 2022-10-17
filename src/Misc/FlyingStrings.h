@@ -7,6 +7,8 @@ By AlexB and Joshy
 #pragma once
 #include <vector>
 #include <ColorScheme.h>
+#include <HouseClass.h>
+#include <Utilities/Enum.h>
 
 class FlyingStrings
 {
@@ -25,9 +27,10 @@ private:
 	static const int Duration = 75;
 	static std::vector<Item> Data;
 
-	static bool DrawAllowed(CoordStruct &nCoords);
+	static bool DrawAllowed(CoordStruct& nCoords);
 
 public:
-	static void Add(const wchar_t *text, CoordStruct coords, ColorStruct color, Point2D pixelOffset = Point2D::Empty);
+	static void Add(const wchar_t* text, CoordStruct coords, ColorStruct color, Point2D pixelOffset = Point2D::Empty);
+	static void AddMoneyString(int amount, HouseClass* owner, AffectedHouse displayToHouses, CoordStruct coords, Point2D pixelOffset = Point2D::Empty);
 	static void UpdateAll();
 };

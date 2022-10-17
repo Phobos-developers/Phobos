@@ -21,13 +21,15 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
 - Fixed jumpjet units being unable to turn to the target when firing from a different direction.
+- Fixed turreted jumpjet units always facing bottom-right direction when motion stops.
+- Fixed jumpjet objects being unable to use `Sensors`.
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
 - Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
 
 - SHP debris shadows now respect the `Shadow` tag.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
-- Adds a "Load Game" button to the retry dialog on mission failure.
+- Added a "Load Game" button to the retry dialog on mission failure.
 
 ![image](_static/images/turretoffset-01.png)
 *Side offset voxel turret in Breaking Blue project*
@@ -68,6 +70,24 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to some Ares-introduced Warhead effects like EMP.
 - `OpenTopped` transports now take `OpenTransportWeapon` setting of passengers into consideration when determining weapon range used for threat scanning and approaching targets.
 - Trailer animations now inherit the owner of the object (animation, projectile or aircraft) they are attached to.
+- Buildings now correctly use laser parameters set for Secondary weapons instead of reading them from Primary weapon.
+- Fixed an issue that caused vehicles killed by damage dealt by a known house but without a known source TechnoType (f.ex animation warhead damage) to not be recorded as killed correctly and thus not spring map trigger events etc.
+
+![Waving trees](_static/images/tree-shake.gif)
+*Animated trees used in [Ion Shock](https://www.moddb.com/mods/tiberian-war-ionshock)*
+
+- `IsAnimated`, `AnimationRate` and `AnimationProbability` now work on TerrainTypes without `SpawnsTiberium` set to true.
+- Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something.
+
+![image](_static/images/translucency-fix.png)
+*Example gradient SHP drawing with 75% translucency, before and after*
+
+- Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
+  - Only applies to Z-aware drawing mode for now.
+- Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true`.
+- Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry.
+- Observers can now see cloaked objects owned by non-allied houses.
+- IvanBomb images now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation.
 
 ## Animations
 
@@ -123,7 +143,20 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 
 ## Buildings
 
+### Airstrike target eligibility
+
+- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]   ; BuildingType
+AllowAirstrike=  ; boolean
+```
+
 ### Customizable & new grinder properties
+
+![image](_static/images/grinding.gif)
+*Using ally grinder, restricting to vehicles only and refund display ([Project Phantom](https://www.moddb.com/mods/project-phantom))*
 
 - You can now customize which types of objects a building with `Grinding` set can grind as well as the grinding sound.
   - `Grinding.AllowAllies` changes whether or not to allow units to enter allies' buildings.
@@ -209,7 +242,7 @@ OreGathering.Tiberiums=0         ; list of Tiberium IDs
 ### Customizable Teleport/Chrono Locomotor settings per TechnoType
 
 ![image](_static/images/cust-Chrono.gif)
-*Chrono Legionnaire and Ronco (hero) from [YR:New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
+*Chrono Legionnaire and Ronco using different teleportation settings in [YR: New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
 
 - You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`.
 - Only applicable to Techno that have Teleport/Chrono Locomotor attached.
@@ -257,6 +290,16 @@ In `rulesmd.ini`:
 Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
 ```
 
+### Exploding unit passenger killing customization
+
+- By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                 ; TechnoType
+Explodes.KillPassengers=true ; boolean
+```
+
 ### Jumpjet unit layer deviation customization
 
 - Allows turning on or off jumpjet unit behaviour where they fluctuate between `air` and `top` layers based on whether or not their current altitude is equal / below or above `JumpjetHeight` or `[JumpjetControls] -> CruiseHeight` if former is not set on TechnoType. If disabled, airborne jumpjet units exist only in `air` layer. `JumpjetAllowLayerDeviation` defaults to value of `[JumpjetControls] -> AllowLayerDeviation` if not specified.
@@ -270,7 +313,10 @@ AllowLayerDeviation=true         ; boolean
 JumpjetAllowLayerDeviation=true  ; boolean
 ```
 
-### Jumpjet facing target customization
+### Jumpjet turning to target
+
+![image](_static/images/jumpjet-turning.gif)
+*Jumpjet turning to target applied in [Robot Storm X](https://www.moddb.com/mods/cc-robot-storm-x)*
 
 - Allows jumpjet units to face towards the target when firing from different directions. Set `[JumpjetControls] -> TurnToTarget=yes` to enable it for all jumpjet locomotor units. This behavior can be overriden by setting `[UnitType] -> JumpjetTurnToTarget` for specific units.
 - This behavior does not apply to `TurretSpins=yes` units for obvious reasons.
@@ -310,6 +356,22 @@ NoWobbles=false  ; boolean
 
 ```{note}
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
+```
+
+### Forbid parallel AI queues
+
+- You can now set if specific types of factories do not have AI production cloning issue instead of Ares' indiscriminate behavior of `AllowParallelAIQueues=no`.
+  - If `AllowParallelAIQueues=no` (*Ares feature*) is set, the tags have no effect.
+
+In `rulesmd.ini`
+```ini
+[GlobalControls]
+AllowParallelAIQueues=yes           ; must be set yes/true unless you don't use Ares
+ForbidParallelAIQueues.Infantry=no  ; boolean
+ForbidParallelAIQueues.Vehicle=no   ; boolean
+ForbidParallelAIQueues.Navy=no      ; boolean
+ForbidParallelAIQueues.Aircraft=no  ; boolean
+ForbidParallelAIQueues.Building=no  ; boolean
 ```
 
 ## Terrains
@@ -389,6 +451,24 @@ DeployingAnim.UseUnitDrawer=true       ; boolean
 
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
 
+### Preserve Iron Curtain status on type conversion
+
+![image](_static/images/preserve-ic.gif)
+*Bugfix in action*
+
+- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`.
+  - This behavior can be turned off per-TechnoType and global basis.
+  - `IronCurtain.Modifier` is re-applied upon type conversion.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+IronCurtain.KeptOnDeploy=yes ; boolean
+
+[SOMETECHNO]                 ; VehicleType with DeploysInto or BuildingType with UndeploysInto
+IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
+```
+
 ## Warheads
 
 ### Allowing damage dealt to firer
@@ -438,7 +518,10 @@ DiskLaser.Radius=38.2 ; floating point value
 
 ### Single-color lasers
 
-- You can now set laser to draw using only `LaserInnerColor` by setting `IsSingleColor`, in same manner as `IsHouseColor` lasers do using player's team color. These lasers respect laser thickness.
+![image](_static/images/issinglecolor.gif)
+*Comparison of `IsSingleColor=yes` lasers with higher thickness to regular ones* ([RA2: Reboot](https://www.moddb.com/mods/reboot))
+
+- You can now set laser to draw using only `LaserInnerColor` by setting `IsSingleColor`, in same manner as `IsHouseColor` lasers do using player's team color. These lasers respect laser thickness. Note that this is not available on prism support weapons.
 
 In `rulesmd.ini`:
 ```ini
@@ -447,6 +530,10 @@ IsSingleColor=false  ; boolean
 ```
 
 ### Toggle-able ElectricBolt visuals
+
+![image](_static/images/ebolt.gif)
+*EBolt customization utilized for different Tesla bolt weapon usage* ([RA2: Reboot](https://www.moddb.com/mods/reboot))
+
 
 - You can now specify individual ElectricBolt bolts you want to disable. Note that this is only a visual change.
 
