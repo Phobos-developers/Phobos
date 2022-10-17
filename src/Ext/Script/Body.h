@@ -58,13 +58,6 @@ enum class PhobosScripts : unsigned int
 	WaitUntilFullAmmo = 10101,
 	GatherAroundLeader = 10102,
 	LoadIntoTransports = 10103,
-	SetSideIdxForManagingTriggers = 127,
-	SetHouseIdxForManagingTriggers = 128,
-	ManageAllAITriggers = 129,
-	EnableTriggersFromList = 130,
-	DisableTriggersFromList = 131,
-	EnableTriggersWithObjects = 132,
-	DisableTriggersWithObjects = 133,
 
 	// Range 12000-12999 are suplementary/setup pre-actions
 	WaitIfNoTarget = 12000,
@@ -83,6 +76,13 @@ enum class PhobosScripts : unsigned int
 	StopForceJumpCountdown = 16002,
 	RandomSkipNextAction = 16003,
 	PickRandomScript = 16004,
+	SetSideIdxForManagingTriggers = 16005,
+	SetHouseIdxForManagingTriggers = 16006,
+	ManageAllAITriggers = 16007,
+	EnableTriggersFromList = 16008,
+	DisableTriggersFromList = 16009,
+	DisableTriggersWithObjects = 16010,
+	EnableTriggersWithObjects = 16011,
 
 	// Range 18000-18999 are variable actions
 	LocalVariableSet = 18000,
