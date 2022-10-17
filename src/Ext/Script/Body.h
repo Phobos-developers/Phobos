@@ -245,6 +245,6 @@ public:
 private:
 	static void ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
 	static bool MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, FootClass* pLeader, int mode);
-	
+
 	static void UpdateEnemyHouseIndex(HouseClass* pHouse);
 };

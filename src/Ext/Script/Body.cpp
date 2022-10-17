@@ -3135,7 +3135,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 		// Based on House economy
 		for (auto& pHouse : *HouseClass::Array)
 		{
-			if (pLeaderUnit->Owner == pHouse 
+			if (pLeaderUnit->Owner == pHouse
 				|| pHouse->IsObserver()
 				|| pHouse->Defeated
 				|| pHouse->Type->MultiplayPassive
@@ -3659,7 +3659,7 @@ void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 	// Include the own House if we are looking for ANY Human player
 	if (index == -3)
 	{
-		if (!pTeam->Owner->Defeated 
+		if (!pTeam->Owner->Defeated
 			&& !pTeam->Owner->Type->MultiplayPassive
 			&& !pTeam->Owner->IsObserver()
 			&& !pTeam->Owner->IsControlledByHuman())
@@ -3749,8 +3749,8 @@ void ScriptExt::UpdateEnemyHouseIndex(HouseClass* pHouse)
 
 	for (auto& angerNode : pHouse->AngerNodes)
 	{
-		if (!angerNode.House->Defeated 
-			&& !pHouse->IsAlliedWith(angerNode.House) 
+		if (!angerNode.House->Defeated
+			&& !pHouse->IsAlliedWith(angerNode.House)
 			&& angerNode.AngerLevel > angerLevel)
 		{
 			angerLevel = angerNode.AngerLevel;

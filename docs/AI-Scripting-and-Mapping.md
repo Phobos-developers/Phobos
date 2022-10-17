@@ -255,7 +255,7 @@ x=14003,0
 ### `14005` Override OnlyTargetHouseEnemy Value
 
 - The value of the tag `OnlyTargetHouseEnemy` in AI triggers can be modified for the new attack & move actions. Only affects the next new attack or move action script.
-- These anger values are applied only in the house owner of the team. 
+- These anger values are applied only in the house owner of the team.
 - Only works for new Phobos actions, not vanilla YR or Ares actions.
 
 In `aimd.ini`:
