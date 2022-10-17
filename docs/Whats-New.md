@@ -303,6 +303,7 @@ New:
 - Script action to regroup temporarily around the Team Leader (by FS-21)
 - Script action to randomly skip next action (by FS-21)
 - Script action for timed script action jumps (by FS-21)
+- Script action for modifying AI anger against other houses (by FS-21)
 - ObjectInfo now shows current Target and AI Trigger data (by FS-21)
 - Shield absorption and passthrough customization (by Morton)
 - Limbo Delivery of buildings (by Morton)

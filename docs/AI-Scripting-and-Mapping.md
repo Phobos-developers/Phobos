@@ -252,6 +252,172 @@ In `aimd.ini`:
 x=14003,0
 ```
 
+### `14005` Override OnlyTargetHouseEnemy Value
+
+- The value of the tag `OnlyTargetHouseEnemy` in AI triggers can be modified for the new attack & move actions. Only affects the next new attack or move action script.
+- These anger values are applied only in the house owner of the team. 
+- Only works for new Phobos actions, not vanilla YR or Ares actions.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=14005,n         ; integer n=-1
+```
+
+- The possible argument values are:
+
+| *Argument* | *Description*                                 |
+| :--------: | :-------------------------------------------: |
+| -1         | Use default value specified in `OnlyTargetHouseEnemy` |
+| 0          | Force `OnlyTargetHouseEnemy` value to `FALSE` |
+| 1          | Force `OnlyTargetHouseEnemy` value to `TRUE`  |
+| 2          | Force `OnlyTargetHouseEnemy` value to `TRUE` or `FALSE` randomly |
+
+### `14006` Set House Hate Value Modifier
+
+- Affects how much hate applies to a selected house (depends of the script action).
+- Positive values increase hate and negative values decrease hate.
+- Affects script actions: `14007`, `14008`, `14009`, `14010`, `14011` & `14012`.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=14006,n         ; integer n=0
+```
+
+### `14007` Modify House Hate Using House Index
+
+- Modifies the team's hate towards a specific house using its house index.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=14007,n         ; integer n >= 0
+```
+
+### `14008` Modify Hate Values From A List Of Countries
+
+- The house team picks a list of countries from the `rulesmd.ini` section called `[AIHousesList]`.
+- The house team modify the hate towards all houses in the map that use the countries in that list.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=14008,n         ; integer n >= 0
+```
+
+The second parameter is a 0-based index for the `AIHousesList` section that specifies the list of possible `Countries` that can be evaluated. The new `AIHousesList` section must be declared in `rulesmd.ini` for making this script work:
+
+In `rulesmd.ini`:
+```ini
+[AIHousesList]  ; List of Countries lists
+0=SOMECOUNTRY,SOMEOTHERCOUNTRY,SAMPLECOUNTRY
+1=ANOTHERCOUNTRY,YETANOTHERCOUNTRY
+; ...
+```
+
+### `14009` Modify Hate Value Against A Random Country From A List Of Countries
+
+- Like action `14008` but the house owner of the Team only picks 1 house randomly from the specified list of countries.
+- The house team modify the hate towards all houses in the map that use the selected country.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=14009,n         ; integer n >= 0
+```
+
+### `14010` Set The Most Hated House ("<" Comparison)
+
+- Increases the team house hate against an enemy house making that enemy house as the main target.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=14010,n         ; integer
+```
+
+The possible argument values are:
+
+| *Argument* | *Description*                        |
+| :------: | :-------------------------------------------: |
+| -10      | The house with less factories is selected (excluded the aircraft factories) |
+| -9       | The house with less aircraft docks is selected |
+| -8       | The house with less naval units is selected |
+| -7       | The house with less house kills is selected |
+| -6       | The house with less free power (free = production - consumption) is selected |
+| -5       | The house with less power production is selected |
+| -4       | The house with less power consumption is selected |
+| -3       | The nearest enemy Human base is selected |
+| -2       | The poorest house is selected |
+| -1       | The enemy house with nearest unit to the Team Leader is selected |
+| > 0      | *Target Type#* index. The house with less threat of the selected *Target Type#* (sum of all the units of the same checked type * threat value) |
+
+### `14011` Set The Most Hated House (">" Comparison)
+
+- Increases the team house hate against an enemy house making that enemy house as the main target.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=14011,n         ; integer
+```
+
+The possible argument values are:
+
+| *Argument* | *Description*                        |
+| :--------: | :-------------------------------------------: |
+| -10        | The house with more factories is selected (excluded the aircraft factories) |
+| -9         | The house with more aircraft docks is selected |
+| -8         | The house with more naval units is selected |
+| -7         | The house with more kills is selected |
+| -6         | The house with more free power (free = production - consumption) is selected |
+| -5         | The house with more power production is selected |
+| -4         | The house with more power consumption is selected |
+| -3         | The farthest enemy Human base is selected |
+| -2         | The richest house is selected |
+| -1         | The enemy house with farthest unit to the Team Leader is selected |
+| > 0        | *Target Type#* index. The house with more threat of the selected *Target Type#* (sum of all the units of the same checked type * threat value) |
+
+### `14012` Set The Most Hated House Randomly
+
+- Increases the Team house hate against an enemy house picked randomly.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=14012,0
+```
+
+### `14013` Reset Hate Against Other Houses
+
+- All hate levels in the team house against every House are set to 0.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=14013,0
+```
+
+### `14014` Set A House As The Most Hated House Of The Map
+
+- A House will become the most hated House of the map (the effects are only visible if the other houses are enemies of the selected house)
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=14014,n         ; integer
+```
+
+The possible argument values are:
+
+| *Argument* | *Description*                                 |
+| :--------: | :-------------------------------------------: |
+| -3         | All Human players will be hated by everyone   |
+| -2         | The Team House will be the most hated by everyone (allies remain allies) |
+| -1         | Selects a random House. The own House is excluded in the selection of the most hated by everyone |
+| >= 0       | House index that will be hated by everyone    |
+
 ### `16000-16999` Flow Control
 
 #### `16000` Start a Timed Jump to the Same Line

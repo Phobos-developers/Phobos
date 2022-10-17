@@ -68,6 +68,16 @@ enum class PhobosScripts : unsigned int
 	IncreaseCurrentAITriggerWeight = 14001,
 	DecreaseCurrentAITriggerWeight = 14002,
 	UnregisterGreatSuccess = 14003,
+	OverrideOnlyTargetHouseEnemy = 14005,
+	SetHouseAngerModifier = 14006,
+	ModifyHateHouseIndex = 14007,
+	ModifyHateHousesList = 14008,
+	ModifyHateHousesList1Random = 14009,
+	SetTheMostHatedHouseMinorNoRandom = 14010,
+	SetTheMostHatedHouseMajorNoRandom = 14011,
+	SetTheMostHatedHouseRandom = 14012,
+	ResetAngerAgainstHouses = 14013,
+	AggroHouse = 14014,
 
 	// Range 16000-16999 are flow control actions (jumps, change script, loops, breaks, etc)
 	SameLineForceJumpCountdown = 16000,
