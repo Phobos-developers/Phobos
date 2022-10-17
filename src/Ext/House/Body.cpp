@@ -79,7 +79,6 @@ void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode = -1)
 		return;
 
 	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
-
 	if (!pHouseExt)
 		return;
 
