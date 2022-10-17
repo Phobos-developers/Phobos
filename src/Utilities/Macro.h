@@ -3,6 +3,8 @@
 #include <ASMMacros.h>
 #include "Patch.h"
 
+#define GET_REGISTER_STATIC_TYPE(type, dst, reg) static type dst; _asm { mov dst, reg }
+
 template<typename T>
 __forceinline T& Make_Global(const uintptr_t address)
 {

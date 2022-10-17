@@ -41,7 +41,7 @@ public:
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) override;
-	virtual void OnAI(BulletClass* pBullet) override;
+	virtual bool OnAI(BulletClass* pBullet) override;
 	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) override;
 
 	// Your properties
