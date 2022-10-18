@@ -3163,7 +3163,7 @@ void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam, int newScriptLine = -1)
 	// if by mistake you put as first line=0 this corrects it because for WW/EALA this script argument is 1-based
 	if (scriptArgument < 1)
 		scriptArgument = 1;
-	
+
 	if (pTeamData->ConditionalJump_Evaluation)
 	{
 		Debug::Log("DEBUG: [%s] [%s] %d = %d,%d - Conditional Jump was a success! - New Line: %d = %d,%d\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, scriptArgument - 1, pScript->Type->ScriptActions[scriptArgument - 1].Action, pScript->Type->ScriptActions[scriptArgument - 1].Argument);
@@ -3285,7 +3285,7 @@ void ScriptExt::ConditionalJump_ManageKillsCounter(TeamClass* pTeam, int enable 
 
 		return;
 	}
-	
+
 	auto pScript = pTeam->CurrentScript;
 	int scriptArgument = enable;
 
@@ -3732,11 +3732,11 @@ void ScriptExt::ConditionalJump_CheckHumanIsMostHated(TeamClass* pTeam)
 
 		for (auto pNode : pHouse->AngerNodes)
 		{
-			if (!pNode.House->Type->MultiplayPassive 
-				&& !pNode.House->Defeated 
-				&& !pNode.House->IsObserver() 
-				&& ((pNode.AngerLevel > angerLevel 
-					&& !pHouse->IsAlliedWith(pNode.House)) 
+			if (!pNode.House->Type->MultiplayPassive
+				&& !pNode.House->Defeated
+				&& !pNode.House->IsObserver()
+				&& ((pNode.AngerLevel > angerLevel
+					&& !pHouse->IsAlliedWith(pNode.House))
 					|| angerLevel < 0))
 			{
 				angerLevel = pNode.AngerLevel;
