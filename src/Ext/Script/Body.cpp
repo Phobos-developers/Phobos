@@ -3744,7 +3744,7 @@ void ScriptExt::ConditionalJump_CheckHumanIsMostHated(TeamClass* pTeam)
 			}
 		}
 
-		if (pEnemyHouse && pEnemyHouse->ControlledByHuman())
+		if (pEnemyHouse && pEnemyHouse->IsControlledByHuman())
 		{
 			isHumanHouse = true;
 		}
@@ -3791,7 +3791,7 @@ void ScriptExt::ConditionalJump_CheckAliveHumans(TeamClass* pTeam, int mode = 0)
 			if (!pNode.House->Type->MultiplayPassive
 				&& !pNode.House->Defeated
 				&& !pNode.House->IsObserver()
-				&& pNode.House->ControlledByHuman())
+				&& pNode.House->IsControlledByHuman())
 			{
 				if (mode == 1 && !pHouse->IsAlliedWith(pNode.House)) // Mode 1: Enemy humans
 				{
@@ -3811,7 +3811,7 @@ void ScriptExt::ConditionalJump_CheckAliveHumans(TeamClass* pTeam, int mode = 0)
 		}
 
 		// If we are looking for any human the own House should be checked
-		if (mode == 0 && pHouse->ControlledByHuman())
+		if (mode == 0 && pHouse->IsControlledByHuman())
 			pTeamData->ConditionalJump_Evaluation = true;
 	}
 
