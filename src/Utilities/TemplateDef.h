@@ -48,7 +48,6 @@
 #include <FootClass.h>
 #include <VocClass.h>
 #include <VoxClass.h>
-#include <ArmorType.h>
 
 namespace detail
 {
@@ -106,20 +105,26 @@ namespace detail
 		return false;
 	}
 
-	/*
 	template <>
-	inline bool read<ArmorType>(ArmorType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) {
-		int buffer;
-		if (parser.ReadArmor(pSection, pKey, &buffer)) {
+	inline bool read<ArmorType>(ArmorType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		int buffer = value;
+
+		// Hack cause armor type parser in Ares will return 0 (ArmorType 'none') if armor type is not found instead of -1.
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (!parser.ReadArmor(pSection, pKey, &buffer) || buffer < 0)
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid ArmorType");
+				return false;
+			}
+
 			value = buffer;
 			return true;
 		}
-		else if (!parser.empty()) {
-			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid ArmorType");
-		}
+
 		return false;
 	}
-	*/
 
 	template <>
 	inline bool read<unsigned short>(unsigned short& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
@@ -545,6 +550,10 @@ namespace detail
 				{
 					parsed |= AffectedTarget::Building;
 				}
+				else if (!_strcmpi(cur, "aircraft"))
+				{
+					parsed |= AffectedTarget::Aircraft;
+				}
 				else if (!_strcmpi(cur, "all"))
 				{
 					parsed |= AffectedTarget::All;
@@ -699,6 +708,59 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<SlaveChangeOwnerType>(SlaveChangeOwnerType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "suicide") == 0)
+			{
+				value = SlaveChangeOwnerType::Suicide;
+			}
+			else if (_strcmpi(parser.value(), "master") == 0)
+			{
+				value = SlaveChangeOwnerType::Master;
+			}
+			else if (_strcmpi(parser.value(), "neutral") == 0)
+			{
+				value = SlaveChangeOwnerType::Neutral;
+			}
+			else
+			{
+				if (_strcmpi(parser.value(), "killer") != 0)
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a slave ownership option, default killer");
+				value = SlaveChangeOwnerType::Killer;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<AutoDeathBehavior>(AutoDeathBehavior& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "sell") == 0)
+			{
+				value = AutoDeathBehavior::Sell;
+			}
+			else if (_strcmpi(parser.value(), "vanish") == 0)
+			{
+				value = AutoDeathBehavior::Vanish;
+			}
+			else
+			{
+				if(_strcmpi(parser.value(), "kill") != 0)
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a self-destruction behavior, default to kill if set");
+				value = AutoDeathBehavior::Kill;
+			}
+
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<TextAlign>(TextAlign& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))
@@ -731,6 +793,12 @@ namespace detail
 			return true;
 		}
 		return false;
+	}
+
+	template <>
+	inline bool read<TranslucencyLevel>(TranslucencyLevel& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		return value.Read(parser, pSection, pKey);
 	}
 
 	template <typename T>

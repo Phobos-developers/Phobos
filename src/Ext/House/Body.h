@@ -19,14 +19,37 @@ public:
 		std::map<BuildingTypeExt::ExtData*, int> BuildingCounter;
 		CounterClass OwnedLimboBuildingTypes;
 
+		BuildingClass* Factory_BuildingType;
+		BuildingClass* Factory_InfantryType;
+		BuildingClass* Factory_VehicleType;
+		BuildingClass* Factory_NavyType;
+		BuildingClass* Factory_AircraftType;
+
+		//Read from INI
+		bool RepairBaseNodes[3];
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
+			, Factory_BuildingType { nullptr }
+			, Factory_InfantryType { nullptr }
+			, Factory_VehicleType { nullptr }
+			, Factory_NavyType { nullptr }
+			, Factory_AircraftType { nullptr }
+			, RepairBaseNodes { false,false,false }
 		{ }
 
 		virtual ~ExtData() = default;
 
+		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		//virtual void Initialize() override;
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+		{
+			AnnounceInvalidPointer(Factory_AircraftType, ptr);
+			AnnounceInvalidPointer(Factory_NavyType, ptr);
+			AnnounceInvalidPointer(Factory_InfantryType, ptr);
+			AnnounceInvalidPointer(Factory_VehicleType, ptr);
+			AnnounceInvalidPointer(Factory_BuildingType, ptr);
+		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;

@@ -25,9 +25,10 @@ DEFINE_HOOK(0x550F47, LaserDrawClass_DrawInHouseColor_BetterDrawing, 0x0)
 	R->ESI(noQuickDraw ? 8u : 64u);
 
 	GET(LaserDrawClass*, pThis, EBX);
-	GET_STACK(int, currentThickness, 0x5C)
+	GET_STACK(int, currentThickness, 0x5C);
 
 	double mult = 1.0;
+
 	if (pThis->Thickness > 1)
 	{
 		double falloffStep = 1.0 / pThis->Thickness;

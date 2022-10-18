@@ -21,9 +21,11 @@ public:
 		WeaponTypeClass* Weapon;
 		RadTypeClass* Type;
 		HouseClass* RadHouse;
+		TechnoClass* RadInvoker;
 
 		ExtData(RadSiteClass* OwnerObject) : Extension<RadSiteClass>(OwnerObject)
 			, RadHouse { nullptr }
+			, RadInvoker { nullptr }
 			, Type {}
 			, Weapon { nullptr }
 		{ }
@@ -37,8 +39,10 @@ public:
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved)
 		{
-			AnnounceInvalidPointer(RadHouse, ptr);
+			AnnounceInvalidPointer(RadInvoker, ptr);
 		}
+
+		bool ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance);
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -51,7 +55,7 @@ public:
 
 	static DynamicVectorClass<RadSiteExt::ExtData*> Array;
 
-	static void CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner);
+	static void CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker);
 	static void CreateLight(RadSiteClass* pThis);
 	static void Add(RadSiteClass* pThis,int amount);
 	static void SetRadLevel(RadSiteClass* pThis,int amount);
@@ -62,6 +66,21 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+			switch (abs)
+			{
+			case AbstractType::Aircraft:
+			case AbstractType::Building:
+			case AbstractType::Infantry:
+			case AbstractType::Unit:
+				return false;
+			default:
+				return true;
+			}
+		}
 	};
 
 	static ExtContainer ExtMap;
