@@ -473,13 +473,13 @@ In `rulesmd.ini`:
 ; ...
 ```
 
-### `16025` Conditional Jump, Check If The Most Hated Enemy Is Human
+### `16026` Conditional Jump, Check If The Most Hated Enemy Is Human
 - Checks if the major team's enemy is human player and saves the result for the conditional jump evaluation.
 
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=16025,0
+x=16026,0
 ```
 
 ### `18000-18999` Variable Manipulation
