@@ -66,10 +66,10 @@ DEFINE_HOOK(0x736BF3, UnitClass_UpdateRotation_TurretFacing, 0x6)
 {
 	GET(UnitClass* const, pThis, ESI);
 	// Not sure if jumpjet check is really needed
-	if (!pThis->Target && !pThis->Type->TurretSpins && pThis->Type->JumpJet)
+	if (!pThis->Target && !pThis->Type->TurretSpins && (pThis->Type->JumpJet || pThis->Type->BalloonHover))
 	{
 		pThis->SecondaryFacing.Set_Desired(pThis->PrimaryFacing.Current());
-		pThis->unknown_49C = pThis->PrimaryFacing.Is_Rotating();
+		pThis->unknown_4A0 = pThis->SecondaryFacing.Is_Rotating();
 		return 0x736C09;
 	}
 
