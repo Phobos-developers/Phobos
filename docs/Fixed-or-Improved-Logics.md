@@ -523,7 +523,7 @@ In `rulesmd.ini`:
 ```ini
 [CombatDamage]
 ROF.RandomDelay=0,2  ; integer - single or comma-sep. range (game frames)
-                     
+
 [SOMEWEAPON]         ; WeaponType
 ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames)
 ```
