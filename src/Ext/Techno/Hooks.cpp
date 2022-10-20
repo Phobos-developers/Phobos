@@ -887,9 +887,9 @@ DEFINE_HOOK(0x44725F, BuildingClass_WhatAction_UniversalDeploy_EnableDeployIcon,
 	return 0;
 }
 
-DEFINE_HOOK(0x44A5B5, BuildingClass_MissionDeconstruction_DontEjectOccupiers, 0x6)
+DEFINE_HOOK(0x457DE9, BuildingClass_EvictOccupiers_UniversalDeploy_DontEjectOccupiers, 0xC)
 {
-	GET(BuildingClass* const, pBuilding, ECX);
+	GET(BuildingClass*, pBuilding, ECX);
 
 	if (!pBuilding)
 		return 0;
@@ -900,28 +900,7 @@ DEFINE_HOOK(0x44A5B5, BuildingClass_MissionDeconstruction_DontEjectOccupiers, 0x
 
 	// Don't eject the infantry if the UniversalDeploy is being used. UniversalDeploy Manages that operation
 	if (pTypeExt->Convert_UniversalDeploy.size() > 0)
-		return 0x44A5CF;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x44D889, BuildingClass_MissionUnload_DontEjectOccupiers, 0xF)
-{
-	GET(BuildingClass* const, pBuilding, ECX);
-
-	if (!pBuilding)
-		return 0;
-
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->Type);
-	if (!pTypeExt)
-		return 0;
-
-	// Don't eject the infantry if the UniversalDeploy is being used. UniversalDeploy Manages that operation
-	if (pTypeExt->Convert_UniversalDeploy.size() > 0)
-	{
-		pBuilding->QueueMission(Mission::Selling, true);
-		return 0x44E37F;
-	}
+		return 0x4581DB;
 
 	return 0;
 }
