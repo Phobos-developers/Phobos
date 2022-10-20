@@ -91,7 +91,7 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
-	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, FurtherCheck = 0x6F3754, OriginalCheck = 0x6F36E3 };
+	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, OriginalCheck = 0x6F36E3 };
 
 	CellClass* pTargetCell = nullptr;
 	TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
@@ -151,11 +151,11 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 					{
 						if (!pShield->CanBeTargeted(pThis->GetWeapon(0)->WeaponType))
 							return Secondary;
-						else
-							return FurtherCheck;
 					}
-
-					return Primary;
+					else
+					{
+						return Primary;
+					}
 				}
 			}
 		}
