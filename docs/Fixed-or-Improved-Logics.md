@@ -382,15 +382,15 @@ ForbidParallelAIQueues.Building=no  ; boolean
 
 - You can now specify which type of ore certain TerrainType would generate.
 - It's also now possible to specify a range value for an ore generation area different compared to standard 3x3 rectangle. Ore will be uniformly distributed across all affected cells in a spread range.
-- You can specify which ore growth stage will be spawned and how much cells will be filled with ore per ore generation animation. Corresponding tags accept either a single integer value or two comma-separated values to allow randomized growth stages from the range (inclusive).
+- You can specify which ore growth stage will be spawned and how many cells will be filled with ore per ore generation animation. Corresponding tags accept either a single integer value or two comma-separated values to allow randomized growth stages from the range (inclusive).
 
 In `rulesmd.ini`:
 ```ini
 [SOMETERRAINTYPE]             ; TerrainType
 SpawnsTiberium.Type=0         ; tiberium/ore type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
-SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
-SpawnsTiberium.CellsPerAnim=1 ; single int / comma-sep. range
+SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
+SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
 ```
 
 ### Minimap color customization
@@ -513,6 +513,19 @@ In `rulesmd.ini`:
 [SOMEWEAPON]          ; WeaponType
 DiskLaser.Radius=38.2 ; floating point value
                       ; 38.2 is roughly the default saucer disk radius
+```
+
+### Customizable ROF random delay
+
+- By default weapon `ROF` has a random delay of 0 to 2 frames added to it. This random delay is now customizable, globally and on per-WeaponType basis.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+ROF.RandomDelay=0,2  ; integer - single or comma-sep. range (game frames)
+                     
+[SOMEWEAPON]         ; WeaponType
+ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames)
 ```
 
 ### Single-color lasers

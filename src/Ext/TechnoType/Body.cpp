@@ -19,9 +19,11 @@ void TechnoTypeExt::ExtData::Initialize()
 
 void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 {
-	float x = static_cast<float>(this->TurretOffset.GetEx()->X * factor);
-	float y = static_cast<float>(this->TurretOffset.GetEx()->Y * factor);
-	float z = static_cast<float>(this->TurretOffset.GetEx()->Z * factor);
+	// Does not verify if the offset actually has all values parsed as it makes no difference, it will be 0 for the unparsed ones either way.
+	auto offset = this->TurretOffset.GetEx();
+	float x = static_cast<float>(offset->X * factor);
+	float y = static_cast<float>(offset->Y * factor);
+	float z = static_cast<float>(offset->Z * factor);
 
 	mtx->Translate(x, y, z);
 }

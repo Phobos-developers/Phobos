@@ -36,7 +36,7 @@ public:
 		Valueable<bool> Interceptor_WeaponReplaceProjectile;
 		Valueable<bool> Interceptor_WeaponCumulativeDamage;
 		Valueable<bool> Interceptor_KeepIntact;
-		Valueable<CoordStruct> TurretOffset;
+		Valueable<PartialVector3D<int>> TurretOffset;
 		Valueable<bool> Spawn_LimitedRange;
 		Valueable<int> Spawn_LimitedExtraRange;
 		Nullable<bool> Harvester_Counted;
@@ -124,7 +124,7 @@ public:
 
 		Nullable<bool> IronCurtain_KeptOnDeploy;
 
-		Valueable<Vector2D<double>> InitialStrength_Cloning;
+		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
 
 		Valueable<bool> Explodes_KillPassengers;
 
