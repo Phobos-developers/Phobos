@@ -250,9 +250,12 @@ class AresScheme
 {
 	static inline ObjectClass* LinkedObj = nullptr;
 public:
-	static void __cdecl Prefix(TechnoClass* pThis, ObjectClass* pObj, int nWeaponIndex)
+	static void __cdecl Prefix(TechnoClass* pThis, ObjectClass* pObj, int nWeaponIndex, bool considerEngineers)
 	{
 		if (LinkedObj)
+			return;
+
+		if (considerEngineers && CanApplyEngineerActions(pThis, pObj))
 			return;
 
 		if (nWeaponIndex < 0)
@@ -293,6 +296,28 @@ public:
 		}
 	}
 
+private:
+	static bool CanApplyEngineerActions(TechnoClass* pThis, ObjectClass* pTarget)
+	{
+		const auto pInf = abstract_cast<InfantryClass*>(pThis);
+		const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
+
+		if (!pInf || !pBuilding)
+			return false;
+
+		bool allied = HouseClass::CurrentPlayer->IsAlliedWith(pBuilding);
+
+		if (allied && pBuilding->Type->Repairable)
+			return true;
+
+		if (!allied && pBuilding->Type->Capturable &&
+			(!pBuilding->Owner->Type->MultiplayPassive || !pBuilding->Type->CanBeOccupied || pBuilding->IsBeingWarpedOut()))
+		{
+			return true;
+		}
+
+		return false;
+	}
 };
 
 #pragma region UnitClass_GetFireError_Heal
@@ -304,7 +329,7 @@ FireError __fastcall UnitClass__GetFireError(UnitClass* pThis, void* _, ObjectCl
 
 FireError __fastcall UnitClass__GetFireError_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
-	AresScheme::Prefix(pThis, pObj, nWeaponIndex);
+	AresScheme::Prefix(pThis, pObj, nWeaponIndex, false);
 	auto const result = UnitClass__GetFireError(pThis, _, pObj, nWeaponIndex, ignoreRange);
 	AresScheme::Suffix();
 	return result;
@@ -319,7 +344,7 @@ FireError __fastcall InfantryClass__GetFireError(InfantryClass* pThis, void* _, 
 }
 FireError __fastcall InfantryClass__GetFireError_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
-	AresScheme::Prefix(pThis, pObj, nWeaponIndex);
+	AresScheme::Prefix(pThis, pObj, nWeaponIndex, false);
 	auto const result = InfantryClass__GetFireError(pThis, _, pObj, nWeaponIndex, ignoreRange);
 	AresScheme::Suffix();
 	return result;
@@ -335,7 +360,7 @@ Action __fastcall UnitClass__WhatAction(UnitClass* pThis, void* _, ObjectClass* 
 
 Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
-	AresScheme::Prefix(pThis, pObj, -1);
+	AresScheme::Prefix(pThis, pObj, -1, false);
 	auto const result = UnitClass__WhatAction(pThis, _, pObj, ignoreForce);
 	AresScheme::Suffix();
 	return result;
@@ -351,7 +376,7 @@ Action __fastcall InfantryClass__WhatAction(InfantryClass* pThis, void* _, Objec
 
 Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
-	AresScheme::Prefix(pThis, pObj, -1);
+	AresScheme::Prefix(pThis, pObj, -1, pThis->Type->Engineer);
 	auto const result = InfantryClass__WhatAction(pThis, _, pObj, ignoreForce);
 	AresScheme::Suffix();
 	return result;
