@@ -165,6 +165,7 @@ This page lists all the individual contributions to the project by their author.
   - Building airstrike target eligibility customization
   - IvanBomb detonation & image display centered on buildings
   - Customizable ROF random delay
+  - BibShape drawing during buildup fix
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption

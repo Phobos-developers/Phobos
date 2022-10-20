@@ -256,6 +256,7 @@ New:
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
+- Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations (by Starkku)
 </details>
 
 
