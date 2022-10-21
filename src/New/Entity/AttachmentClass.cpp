@@ -18,32 +18,22 @@ void AttachmentClass::InitCacheData()
 
 Matrix3D AttachmentClass::GetUpdatedTransform(int* pKey)
 {
-	auto const& flh = this->Data->FLH.Get();
-	Matrix3D attachmentMtx;
-	attachmentMtx.MakeIdentity();
-	attachmentMtx.Translate((float)flh.X, (float)flh.Y, (float)flh.Z);
-	Matrix3D turretMtx;
-	turretMtx.MakeIdentity();
-	turretMtx = TechnoExt::TransformFLHForTurret(this->Parent, turretMtx, this->Data->IsOnTurret);
+	if (Unsorted::CurrentFrame != this->Cache.LastUpdateFrame)
+	{
+		double& factor = *reinterpret_cast<double*>(0xB1D008);
+		auto const flh = this->Data->FLH.Get() * factor;
 
-	return attachmentMtx * turretMtx * TechnoExt::GetAttachmentTransform(this->Parent, pKey);
-	/*
-	if (Unsorted::CurrentFrame != this->Cache.LastUpdateFrame) {
-		auto const& flh = this->Data->FLH.Get();
+		Matrix3D mtx = TechnoExt::GetAttachmentTransform(this->Parent, pKey);
+		mtx = TechnoExt::TransformFLHForTurret(this->Parent, mtx, this->Data->IsOnTurret, factor);
+		mtx.Translate(flh.X, flh.Y, flh.Z);
 
-		Matrix3D attachmentMtx;
-		attachmentMtx.Translate((float)flh.X, (float)flh.Y, (float)flh.Z);
-		Matrix3D turretMtx;
-		turretMtx.MakeIdentity();
-		turretMtx = TechnoExt::TransformFLHForTurret(this->Parent, turretMtx, this->Data->IsOnTurret);
-
-		this->Cache.ChildTransform = attachmentMtx * turretMtx * TechnoExt::GetAttachmentTransform(this->Parent, pKey);
+		this->Cache.ChildTransform = mtx;
 
 		this->Cache.LastUpdateFrame = Unsorted::CurrentFrame;
 	}
 
 	return this->Cache.ChildTransform;
-	*/
+
 }
 
 AttachmentTypeClass* AttachmentClass::GetType()
@@ -98,6 +88,9 @@ void AttachmentClass::CreateChild()
 		{
 			auto const pChildExt = TechnoExt::ExtMap.Find(this->Child);
 			pChildExt->ParentAttachment = this;
+
+			this->Child->GetTechnoType()->DisableVoxelCache = true;
+			this->Child->GetTechnoType()->DisableShadowCache = true;
 		}
 		else
 		{
@@ -140,7 +133,7 @@ void AttachmentClass::AI()
 			// 	if (SUCCEEDED(pParentLoco->GetClassID(&locoCLSID))
 			// 		&& (locoCLSID == LocomotionClass::CLSIDs::Drive
 			// 			|| locoCLSID == LocomotionClass::CLSIDs::Ship) &&
-			// 	    SUCCEEDED(pChildLoco->GetClassID(&locoCLSID))
+			// 		SUCCEEDED(pChildLoco->GetClassID(&locoCLSID))
 			// 		&& (locoCLSID == LocomotionClass::CLSIDs::Drive
 			// 			|| locoCLSID == LocomotionClass::CLSIDs::Ship))
 			// 	{

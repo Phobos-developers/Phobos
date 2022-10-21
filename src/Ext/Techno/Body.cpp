@@ -265,14 +265,14 @@ Matrix3D TechnoExt::GetTransform(TechnoClass* pThis, int* pKey)
 	return mtx;
 }
 
-Matrix3D TechnoExt::TransformFLHForTurret(TechnoClass* pThis, Matrix3D mtx, bool isOnTurret)
+Matrix3D TechnoExt::TransformFLHForTurret(TechnoClass* pThis, Matrix3D mtx, bool isOnTurret, double factor)
 {
 	auto const pType = pThis->GetTechnoType();
 
 	// turret offset and rotation
 	if (isOnTurret && pThis->HasTurret())
 	{
-		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
+		TechnoTypeExt::ApplyTurretOffset(pType, &mtx, factor);
 
 		double turretRad = (pThis->TurretFacing().value32() - 8) * -(Math::Pi / 16);
 		double bodyRad = (pThis->PrimaryFacing.current().value32() - 8) * -(Math::Pi / 16);
@@ -284,12 +284,13 @@ Matrix3D TechnoExt::TransformFLHForTurret(TechnoClass* pThis, Matrix3D mtx, bool
 	return mtx;
 }
 
-Matrix3D TechnoExt::GetFLHMatrix(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
+Matrix3D TechnoExt::GetFLHMatrix(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret, double factor)
 {
-	Matrix3D mtx = TechnoExt::TransformFLHForTurret(pThis, TechnoExt::GetTransform(pThis), isOnTurret);
+	Matrix3D mtx = TechnoExt::TransformFLHForTurret(pThis, TechnoExt::GetTransform(pThis), isOnTurret, factor);
 
+	CoordStruct scaledCoord = pCoord * factor;
 	// apply FLH offset
-	mtx.Translate((float)pCoord.X, (float)pCoord.Y, (float)pCoord.Z);
+	mtx.Translate((float)scaledCoord.X, (float)scaledCoord.Y, (float)scaledCoord.Z);
 
 	return mtx;
 }
