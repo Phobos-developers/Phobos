@@ -51,9 +51,27 @@ TechnoTypeClass* AttachmentClass::GetChildType()
 		: nullptr;
 }
 
+Matrix3D AttachmentClass::GetChildTransformForLocation()
+{
+	auto const flh = this->Data->FLH.Get();
+
+	auto const pParentExt = TechnoExt::ExtMap.Find(this->Parent);
+
+	Matrix3D mtx;
+	if (pParentExt && pParentExt->ParentAttachment)
+		mtx = pParentExt->ParentAttachment->GetChildTransformForLocation();
+	else
+		mtx = TechnoExt::GetTransform(this->Parent);
+
+	mtx = TechnoExt::TransformFLHForTurret(this->Parent, mtx, this->Data->IsOnTurret);
+	mtx.Translate((float)flh.X, (float)flh.Y, (float)flh.Z);
+
+	return mtx;
+}
+
 CoordStruct AttachmentClass::GetChildLocation()
 {
-	auto result = this->GetUpdatedTransform() * Vector3D<float>::Empty;
+	auto result = this->GetChildTransformForLocation() * Vector3D<float>::Empty;
 
 	// Resulting coords are mirrored along X axis, so we mirror it back
 	result.Y *= -1;

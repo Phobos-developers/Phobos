@@ -55,6 +55,7 @@ public:
 
 	AttachmentTypeClass* GetType();
 	TechnoTypeClass* GetChildType();
+	Matrix3D GetChildTransformForLocation();
 	CoordStruct GetChildLocation();
 
 	void Initialize();
