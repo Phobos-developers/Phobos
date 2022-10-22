@@ -253,12 +253,12 @@ void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponTyp
 	WeaponTypeExt::DetonateAt(pWeaponType, pThis, pThis);
 }
 
-Matrix3D TechnoExt::GetTransform(TechnoClass* pThis, int* pKey)
+Matrix3D TechnoExt::GetTransform(TechnoClass* pThis, int* pKey, bool isShadow)
 {
 	Matrix3D mtx;
 
 	if ((pThis->AbstractFlags & AbstractFlags::Foot) && ((FootClass*)pThis)->Locomotor)
-		mtx = ((FootClass*)pThis)->Locomotor->Draw_Matrix(pKey);
+		mtx = isShadow ? ((FootClass*)pThis)->Locomotor->Shadow_Matrix(pKey) : ((FootClass*)pThis)->Locomotor->Draw_Matrix(pKey);
 	else // no locomotor means no rotation or transform of any kind (f.ex. buildings) - Kerbiter
 		mtx.MakeIdentity();
 
@@ -284,9 +284,9 @@ Matrix3D TechnoExt::TransformFLHForTurret(TechnoClass* pThis, Matrix3D mtx, bool
 	return mtx;
 }
 
-Matrix3D TechnoExt::GetFLHMatrix(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret, double factor)
+Matrix3D TechnoExt::GetFLHMatrix(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret, double factor, bool isShadow)
 {
-	Matrix3D transform = TechnoExt::GetTransform(pThis);
+	Matrix3D transform = TechnoExt::GetTransform(pThis, nullptr, isShadow);
 	Matrix3D mtx = TechnoExt::TransformFLHForTurret(pThis, transform, isOnTurret, factor);
 
 	CoordStruct scaledCoord = pCoord * factor;
@@ -987,14 +987,14 @@ TechnoClass* TechnoExt::GetTopLevelParent(TechnoClass* pThis)
 		: pThis;
 }
 
-Matrix3D TechnoExt::GetAttachmentTransform(TechnoClass* pThis, int* pKey)
+Matrix3D TechnoExt::GetAttachmentTransform(TechnoClass* pThis, int* pKey, bool isShadow)
 {
 	auto const pThisExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pThis && pThisExt && pThisExt->ParentAttachment)
-		return pThisExt->ParentAttachment->GetUpdatedTransform(pKey);
+		return pThisExt->ParentAttachment->GetUpdatedTransform(pKey, isShadow);
 
-	return TechnoExt::GetTransform(pThis, pKey);
+	return TechnoExt::GetTransform(pThis, pKey, isShadow);
 }
 
 // =============================

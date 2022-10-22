@@ -26,6 +26,8 @@ public:
 
 		int LastUpdateFrame;
 		Matrix3D ChildTransform;
+		int ShadowLastUpdateFrame;
+		Matrix3D ChildShadowTransform;
 	} Cache;
 
 	AttachmentClass(TechnoTypeExt::ExtData::AttachmentDataEntry* data,
@@ -49,7 +51,7 @@ public:
 	~AttachmentClass();
 
 	void InitCacheData();
-	Matrix3D GetUpdatedTransform(int* pKey = nullptr);
+	Matrix3D GetUpdatedTransform(int* pKey = nullptr, bool shadow = false);
 
 	AttachmentTypeClass* GetType();
 	TechnoTypeClass* GetChildType();

@@ -16,24 +16,26 @@ void AttachmentClass::InitCacheData()
 	this->Cache.TopLevelParent = TechnoExt::GetTopLevelParent(this->Parent);
 }
 
-Matrix3D AttachmentClass::GetUpdatedTransform(int* pKey)
+Matrix3D AttachmentClass::GetUpdatedTransform(int* pKey, bool isShadow)
 {
-	if (Unsorted::CurrentFrame != this->Cache.LastUpdateFrame)
+	Matrix3D& transform = isShadow ? this->Cache.ChildShadowTransform : this->Cache.ChildTransform;
+	int& lastUpdateFrame = isShadow ? this->Cache.ShadowLastUpdateFrame : this->Cache.LastUpdateFrame;
+
+	if (Unsorted::CurrentFrame != lastUpdateFrame)
 	{
 		double& factor = *reinterpret_cast<double*>(0xB1D008);
 		auto const flh = this->Data->FLH.Get() * factor;
 
-		Matrix3D mtx = TechnoExt::GetAttachmentTransform(this->Parent, pKey);
+		Matrix3D mtx = TechnoExt::GetAttachmentTransform(this->Parent, pKey, isShadow);
 		mtx = TechnoExt::TransformFLHForTurret(this->Parent, mtx, this->Data->IsOnTurret, factor);
 		mtx.Translate((float)flh.X, (float)flh.Y, (float)flh.Z);
 
-		this->Cache.ChildTransform = mtx;
+		transform = mtx;
 
-		this->Cache.LastUpdateFrame = Unsorted::CurrentFrame;
+		lastUpdateFrame = Unsorted::CurrentFrame;
 	}
 
-	return this->Cache.ChildTransform;
-
+	return transform;
 }
 
 AttachmentTypeClass* AttachmentClass::GetType()
@@ -115,38 +117,34 @@ void AttachmentClass::AI()
 			? this->Parent->SecondaryFacing.current() : this->Parent->PrimaryFacing.current();
 
 		this->Child->PrimaryFacing.set(childDir);
+		// TODO handle secondary facing in case the turret is idle
 
-		if (pType->InheritTilt)
+		FootClass* pParentAsFoot = abstract_cast<FootClass*>(this->Parent);
+		FootClass* pChildAsFoot = abstract_cast<FootClass*>(this->Child);
+		if (pParentAsFoot && pChildAsFoot)
 		{
-			this->Child->AngleRotatedForwards = this->Parent->AngleRotatedForwards;
-			this->Child->AngleRotatedSideways = this->Parent->AngleRotatedSideways;
+			pChildAsFoot->TubeIndex = pParentAsFoot->TubeIndex;
 
-			// DriveLocomotionClass doesn't tilt only with angles set, hence why we
-			// do this monstrosity in order to inherit timer and ramp data - Kerbiter
-			// FootClass* pParentAsFoot = abstract_cast<FootClass*>(this->Parent);
-			// FootClass* pChildAsFoot = abstract_cast<FootClass*>(this->Child);
-			// if (pParentAsFoot && pChildAsFoot)
+			// TODO handle tunnelloco and similar
+			// auto pParentLoco = static_cast<LocomotionClass*>(pParentAsFoot->Locomotor.get());
+			// auto pChildLoco = static_cast<LocomotionClass*>(pChildAsFoot->Locomotor.get());
+
+			// CLSID locoCLSID;
+			// if (SUCCEEDED(pParentLoco->GetClassID(&locoCLSID))
+			// 	&& (locoCLSID == LocomotionClass::CLSIDs::Drive
+			// 		|| locoCLSID == LocomotionClass::CLSIDs::Ship) &&
+			// 	SUCCEEDED(pChildLoco->GetClassID(&locoCLSID))
+			// 	&& (locoCLSID == LocomotionClass::CLSIDs::Drive
+			// 		|| locoCLSID == LocomotionClass::CLSIDs::Ship))
 			// {
-			// 	auto pParentLoco = static_cast<LocomotionClass*>(pParentAsFoot->Locomotor.get());
-			// 	auto pChildLoco = static_cast<LocomotionClass*>(pChildAsFoot->Locomotor.get());
+			// 	// shh DriveLocomotionClass almost equates to ShipLocomotionClass
+			// 	// for this particular case it's OK to cast to it - Kerbiter
+			// 	auto pParentDriveLoco = static_cast<DriveLocomotionClass*>(pParentLoco);
+			// 	auto pChildDriveLoco = static_cast<DriveLocomotionClass*>(pChildLoco);
 
-			// 	CLSID locoCLSID;
-			// 	if (SUCCEEDED(pParentLoco->GetClassID(&locoCLSID))
-			// 		&& (locoCLSID == LocomotionClass::CLSIDs::Drive
-			// 			|| locoCLSID == LocomotionClass::CLSIDs::Ship) &&
-			// 		SUCCEEDED(pChildLoco->GetClassID(&locoCLSID))
-			// 		&& (locoCLSID == LocomotionClass::CLSIDs::Drive
-			// 			|| locoCLSID == LocomotionClass::CLSIDs::Ship))
-			// 	{
-			// 		// shh DriveLocomotionClass almost equates to ShipLocomotionClass
-			// 		// for this particular case it's OK to cast to it - Kerbiter
-			// 		auto pParentDriveLoco = static_cast<DriveLocomotionClass*>(pParentLoco);
-			// 		auto pChildDriveLoco = static_cast<DriveLocomotionClass*>(pChildLoco);
-
-			// 		pChildDriveLoco->SlopeTimer = pParentDriveLoco->SlopeTimer;
-			// 		pChildDriveLoco->Ramp1 = pParentDriveLoco->Ramp1;
-			// 		pChildDriveLoco->Ramp2 = pParentDriveLoco->Ramp2;
-			// 	}
+			// 	pChildDriveLoco->SlopeTimer = pParentDriveLoco->SlopeTimer;
+			// 	pChildDriveLoco->Ramp1 = pParentDriveLoco->Ramp1;
+			// 	pChildDriveLoco->Ramp2 = pParentDriveLoco->Ramp2;
 			// }
 		}
 
