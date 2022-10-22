@@ -55,6 +55,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   58=Upper bound,0
   59=Operate var is global,10
   60=Operate var index,0
+  65=Campaign AI Repairable,0
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -96,7 +97,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1
 
   [ActionsRA2]
-  125=Build at...,-10,47,53,0,0,0,1,0,0,[LONG DESC],0,1,125
+  125=Build at...,-10,47,53,65,0,0,1,0,0,[LONG DESC],0,1,125
   500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
   501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
   502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
@@ -236,6 +237,29 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 </details>
 
 ## Changelog
+
+### 0.3.1
+
+<details>
+  <summary>Click to show</summary>
+
+New:
+- `Crit.AffectsHouses` for critical hit system (by Starkku)
+- Warhead or weapon detonation at superweapon target cell (by Starkku)
+- Super Weapons launching other Super Weapons (by Morton)
+- Launching Super Weapons on building infiltration (by Morton)
+- Cloaked objects displaying to observers (by Starkku)
+- Building airstrike target eligibility customization (by Starkku)
+- IvanBomb detonation & image display centered on buildings (by Starkku)
+- Forcing specific weapon against cloaked or disguised targets (by Starkku)
+- Customizable ROF random delay (by Starkku)
+- Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)
+
+Vanilla fixes:
+- Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
+- Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations (by Starkku)
+</details>
+
 
 ### 0.3
 

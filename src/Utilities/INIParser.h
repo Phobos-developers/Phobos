@@ -99,6 +99,14 @@ public:
 		return Read<int, 4>(pSection, pKey, nBuffer);
 	}
 
+	size_t ReadMultipleIntegers(const char* pSection, const char* pKey, int* nBuffer, size_t maxCount = UINT32_MAX)
+	{
+		if (this->ReadString(pSection, pKey))
+			return MultiParser<int>::Parse(this->value(), nBuffer, maxCount);
+
+		return 0;
+	}
+
 	bool Read3Bytes(const char* pSection, const char* pKey, byte* nBuffer) {
 		return Read<byte, 3>(pSection, pKey, nBuffer);
 	}
@@ -109,6 +117,14 @@ public:
 
 	bool Read2Doubles(const char* pSection, const char* pKey, double* nBuffer) {
 		return Read<double, 2>(pSection, pKey, nBuffer);
+	}
+
+	size_t ReadMultipleDoubles(const char* pSection, const char* pKey, double* nBuffer, size_t maxCount = UINT32_MAX)
+	{
+		if (this->ReadString(pSection, pKey))
+			return MultiParser<double>::Parse(this->value(), nBuffer, maxCount);
+
+		return 0;
 	}
 
 	bool ReadArmor(const char* pSection, const char* pKey, int *nBuffer) {

@@ -183,3 +183,14 @@ DEFINE_HOOK(0x424C49, AnimClass_AttachTo_BuildingCoords, 0x5)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x4236F0, AnimClass_DrawIt_Tiled_Palette, 0x6)
+{
+	GET(AnimClass*, pThis, ESI);
+
+	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+	R->EDX(pTypeExt->Palette.GetOrDefaultConvert(FileSystem::ANIM_PAL));
+
+	return 0x4236F6;
+}

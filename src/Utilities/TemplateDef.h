@@ -220,6 +220,7 @@ namespace detail
 		{
 			return true;
 		}
+
 		return false;
 	}
 
@@ -236,6 +237,50 @@ namespace detail
 		{
 			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid R,G,B color");
 		}
+		return false;
+	}
+
+	template <>
+	inline bool read<PartialVector2D<int>>(PartialVector2D<int>& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		value.ValueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 2);
+
+		if (value.ValueCount > 0)
+			return true;
+
+		return false;
+	}
+
+	template <>
+	inline bool read<PartialVector2D<double>>(PartialVector2D<double>& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		value.ValueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 2);
+
+		if (value.ValueCount > 0)
+			return true;
+
+		return false;
+	}
+
+	template <>
+	inline bool read<PartialVector3D<int>>(PartialVector3D<int>& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		value.ValueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 3);
+
+		if (value.ValueCount > 0)
+			return true;
+
+		return false;
+	}
+
+	template <>
+	inline bool read<PartialVector3D<double>>(PartialVector3D<double>& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		value.ValueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 3);
+
+		if (value.ValueCount > 0)
+			return true;
+
 		return false;
 	}
 
