@@ -53,8 +53,16 @@ TechnoTypeClass* AttachmentClass::GetChildType()
 
 CoordStruct AttachmentClass::GetChildLocation()
 {
-	auto& flh = this->Data->FLH.Get();
-	return TechnoExt::GetFLHAbsoluteCoords(this->Parent, flh, this->Data->IsOnTurret);
+	auto result = this->GetUpdatedTransform() * Vector3D<float>::Empty;
+
+	// Resulting coords are mirrored along X axis, so we mirror it back
+	result.Y *= -1;
+
+	// apply as an offset to global object coords
+	CoordStruct location = this->Cache.TopLevelParent->GetCoords();
+	location += { std::lround(result.X), std::lround(result.Y), std::lround(result.Z) };
+
+	return location;
 }
 
 AttachmentClass::~AttachmentClass()
