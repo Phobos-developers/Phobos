@@ -28,79 +28,68 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 
 ### Digital display
 
-- You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health point or shield point.
-
 ![image](_static/images/DigitalDisplay1.png)
 
 ![image](_static/images/DigitalDisplay2.png)
 
-- `Acnhor`: Start drawing position anchor to the select bracket.
-- `Anchor.Building`: hexagon projection of a selection border on the screen.
-
-- InfoType Enumeration: `health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|occupants|gattlingstage`
-
-- Default `Align`:
-  - Text: Buildings `right`, others `center`.
-  - Shape: Buildings `left`, others `center`.
-
-- Default `Offset.ShieldDelta`
-  - `InfoType=shield`: `0,-10`
-  - Others: `0,0`
-
-- Default `Shape.Interval`
-  - Buildings: 8,-4
-  - Others: 8,0
-
-- `Shape`: Use 0-9 frames of the SHP file as the number used when the ratio is greater than `[AudioVisual]>ConditionYellow`, 10-19 frames as greater than `[AudioVisual]>ConditionRed` and less than or equal to `[AudioVisual]>ConditionYellow`, 20-29 frames as less than or equal `[AudioVisual]>ConditionRed`, 30,31 frames as `/` and `%` when the ratio is greater than `[AudioVisual]>ConditionYellow`, 32,33 frames as greater than `[AudioVisual]>ConditionRed` and less than or equal to `[AudioVisual]>ConditionYellow`, 34,35 frames as less than or equal to `[AudioVisual]>ConditionRed`.
-
-In `Ra2MD.ini`:
-
-```ini
-DigitalDisplay.Enable=  ; boolean
-```
+- You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health points or shield points.
+ - `Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead.
+    - `Offset` and `Offset.ShieldDelta` (the latter applied when a shield is active) can be used to further modify the position.
+  - By default, values are displayed in `current/maximum` format (i.e. 20/40). `HideMaxValue=yes` will make the counter show only the current value (i.e. 20). `Percentage=yes` changes the format to `percent%` (i.e. 50%).
+  - `CanSee` and `CanSee.Observer` can limit visibility to specific players.
+  - The digits can be either a custom shape (.shp) or text drawn using the game font. This depends on whether `Shape` is set.
+    - `Text.Color`, `Text.Color.ConditionYellow` and `Text.Color.ConditionRed` allow customization of the font color. `Text.Background=yes` will additionally draw a black rectangle background.
+    - When using shapes, a custom palette can be specified with `Palette`. `Shape.Spacing` controls pixel buffer between characters.
+    - Frames 0-9 will be used as digits when the owner's health bar is green, 10-19 when yellow, 20-29 when red. For `/` and `%` characters, frame numbers are 30-31, 32-33, 34-35, respectively.
+  - Default `Align` for texts is `right` for BuildingTypes, `center` for others.
+  - Default `Align` for shapes is `left` for BuildingTypes, `center` for others.
 
 In `rulesmd.ini`:
 
 ```ini
-[DigitalDisplayTypes] ;New registry for registering digital display types
+[DigitalDisplayTypes]
+0=SOMEDIGITALDISPLAYTYPE
 
 [AudioVisual]
-Buildings.DefaultDigitalDisplayTypes=  ; list of DigitalDisplayTypes
-Infantry.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayTypes
-Vehicles.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayTypes
-Aircraft.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayTypes
+Buildings.DefaultDigitalDisplayTypes=  	; list of DigitalDisplayTypes
+Infantry.DefaultDigitalDisplayTypes=   	; list of DigitalDisplayTypes
+Vehicles.DefaultDigitalDisplayTypes=   	; list of DigitalDisplayTypes
+Aircraft.DefaultDigitalDisplayTypes=   	; list of DigitalDisplayTypes
 
-[SomeDigitalDisplayType]
+[SOMEDIGITALDISPLAYTYPE]				; DigitalDisplayType
 ; Generic
-InfoType=Health                        ; InfoType Enumeration
-Offset=0,0                             ; integer - horizontal, vertical
-Offset.ShieldDelta=                    ; integer - horizontal, vertical, offset when shield exist, last offset = Offset + Offset.ShieldDelta
-Align=None                             ; TextAlign Enumeration, - left|right|center/centre|none
-Anchor.Horizontal=Left                 ; Horizontal Position Enumeration, - left|center/centre|right, start drawing point anchor the select bracket
-Anchor.Vertical=top                    ; Vertical Position Enumeration, - top|center/centre|bottom
-Anchor.Building=lefttop                ; Hexagon Vertex Enumeration, top|lefttop|leftright|bottom|rightbottom|rightTop
-Border=Top                             ; Border Position Enumeration, - top|left|right|bottom, Position relative to select bracket's border
-Percentage=no                          ; boolean
-HideMaxValue=no                        ; boolean
-CanSee=owner                           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-CanSee.Observer=true                   ; boolean
-
+InfoType=Health                        	; Displayed value enumeration (health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|occupants|gattlingstage)
+Offset=0,0                             	; integer - horizontal, vertical
+Offset.ShieldDelta=0,0                  ; integer - horizontal, vertical, added to Offset when a techno is shielded, defaults to 0,-10 when InfoType=shield
+Align=None                             	; Text alignment enumeration, - left|right|center/centre|none
+Anchor.Horizontal=Left                 	; Horizontal position enumeration (left|center/centre|right)
+Anchor.Vertical=top                    	; Vertical position enumeration (top|center/centre|bottom)
+Anchor.Building=lefttop                	; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
+Percentage=no                          	; boolean
+HideMaxValue=no                        	; boolean
+CanSee=owner                           	; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+CanSee.Observer=true                   	; boolean
 ; Text
-Text.Color=0,255,0                     ; RGB
-Text.Color.ConditionYellow=255,255,0   ; RGB
-Text.Color.ConditionRed=255,0,0        ; RGB
-Text.Background=no                     ; boolean
-
+Text.Color=0,255,0                     	; integer - Red,Green,Blue
+Text.Color.ConditionYellow=255,255,0   	; integer - Red,Green,Blue
+Text.Color.ConditionRed=255,0,0        	; integer - Red,Green,Blue
+Text.Background=no                     	; boolean
 ; Shape
-Shape=                                 ; filename - including the .shp, use shape display if exist
-Palette=palette.pal                    ; filename - including the .pal
-Shape.Interval=                        ; integer - x,y , can be negative, horizontal and vertical spacing between two SHP digitals
+Shape=                                 	; filename with .shp extension, if not present, game-drawn text will be used instead
+Palette=palette.pal                    	; filename with .pal extension
+Shape.Spacing=8,0                     	; integer - horizontal and vertical spacing between digits, can be negative, defaults to 8,-4 for buildings
 
-[SomeTechnoType]
-DigitalDisplay.Disable=no              ; boolean
-DigitalDisplayTypes=                   ; list of DigitalDisplayType
+[SOMETECHNOTYPE]
+DigitalDisplay.Disable=no              	; boolean
+DigitalDisplayTypes=                   	; list of DigitalDisplayTypes
+# (<--Remove) ```
 
-```
+In `Ra2MD.ini`:
+
+```ini
+[Phobos]
+DigitalDisplay.Enable=false  ; boolean
+# (<--Remove) ```
 
 ### Hide health bars
 
