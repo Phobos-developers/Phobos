@@ -61,7 +61,7 @@ Aircraft.DefaultDigitalDisplayTypes=   	; list of DigitalDisplayTypes
 InfoType=Health                        	; Displayed value enumeration (health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|occupants|gattlingstage)
 Offset=0,0                             	; integer - horizontal, vertical
 Offset.ShieldDelta=0,0                  ; integer - horizontal, vertical, added to Offset when a techno is shielded, defaults to 0,-10 when InfoType=shield
-Align=None                             	; Text alignment enumeration, - left|right|center/centre|none
+Align=                                 	; Text alignment enumeration, - left|right|center/centre
 Anchor.Horizontal=Left                 	; Horizontal position enumeration (left|center/centre|right)
 Anchor.Vertical=top                    	; Vertical position enumeration (top|center/centre|bottom)
 Anchor.Building=lefttop                	; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
