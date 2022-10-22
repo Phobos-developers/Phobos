@@ -198,7 +198,7 @@ This page lists all the individual contributions to the project by their author.
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
 - **FlyStar** - Campaign load screen PCX support
-- **ststl** - Use `CustomPalette` for animation with `Tiled=yes`
+- **ststl** - Use `CustomPalette` for animations with `Tiled=yes`
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
