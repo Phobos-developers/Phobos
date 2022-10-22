@@ -255,6 +255,38 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 	}
 }
 
+void TechnoExt::ExtData::UpdateTypeAndLaserTrails(const TechnoTypeClass* currentType)
+{
+	auto const pThis = this->OwnerObject();
+
+	if (this->LaserTrails.size())
+		this->LaserTrails.clear();
+
+	this->TypeExtData = TechnoTypeExt::ExtMap.Find(currentType);
+
+	for (auto const& entry : this->TypeExtData->LaserTrailData)
+	{
+		if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
+		{
+			this->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
+				pLaserType, pThis->Owner, entry.FLH, entry.IsOnTurret));
+		}
+	}
+	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
+	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
+	for (auto const& trail : this->LaserTrails)
+	{
+		if (pThis->CloakState == CloakState::Cloaked && !trail->Type->CloakVisible)
+			continue;
+
+		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret);
+		if (pThis->CloakState == CloakState::Uncloaking && !trail->Type->CloakVisible)
+			trail->LastLocation = trailLoc;
+		else
+			trail->Update(trailLoc);
+	}
+}
+
 bool TechnoExt::IsActive(TechnoClass* pThis)
 {
 	return
