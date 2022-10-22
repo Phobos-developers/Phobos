@@ -2,9 +2,45 @@
 
 #include <Ext/House/Body.h>
 #include <Utilities/GeneralUtils.h>
+#include <Ext/SWType/Body.h>
 
 template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
+
+// Assuming SuperWeapon & SuperWeapon2 are used (for the moment)
+int BuildingTypeExt::ExtData::GetSuperWeaponCount() const
+{
+	// The user should only use SuperWeapon and SuperWeapon2 if the attached sw count isn't bigger than 2
+	return 2 + this->SuperWeapons.size();
+}
+
+int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index, HouseClass* pHouse) const
+{
+	auto idxSW = this->GetSuperWeaponIndex(index);
+
+	if (auto pSuper = pHouse->Supers.GetItemOrDefault(idxSW))
+	{
+		auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+
+		if (!pExt->IsAvailable(pHouse))
+			return -1;
+	}
+
+	return idxSW;
+}
+
+int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
+{
+	const auto pThis = this->OwnerObject();
+
+	// 2 = SuperWeapon & SuperWeapon2
+	if (index < 2)
+		return !index ? pThis->SuperWeapon : pThis->SuperWeapon2;
+	else if (index - 2 < (int)this->SuperWeapons.size())
+		return this->SuperWeapons[index - 2];
+
+	return -1;
+}
 
 int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse)
 {
@@ -13,10 +49,8 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-	for (const auto pair : pHouseExt->BuildingCounter)
+	for (const auto& [pExt, nCount] : pHouseExt->BuildingCounter)
 	{
-		const auto& pExt = pair.first;
-		const auto& nCount = pair.second;
 		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{
 			fFactor *= std::pow(pExt->PowerPlantEnhancer_Factor.Get(1.0f), nCount);
@@ -89,9 +123,12 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PowerPlantEnhancer_Buildings.Read(exINI, pSection, "PowerPlantEnhancer.PowerPlants");
 	this->PowerPlantEnhancer_Amount.Read(exINI, pSection, "PowerPlantEnhancer.Amount");
 	this->PowerPlantEnhancer_Factor.Read(exINI, pSection, "PowerPlantEnhancer.Factor");
+	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
 
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
+
+	this->AllowAirstrike.Read(exINI, pSection, "AllowAirstrike");
 
 	this->Grinding_AllowAllies.Read(exINI, pSection, "Grinding.AllowAllies");
 	this->Grinding_AllowOwner.Read(exINI, pSection, "Grinding.AllowOwner");
@@ -103,30 +140,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Grinding_DisplayRefund_Houses.Read(exINI, pSection, "Grinding.DisplayRefund.Houses");
 	this->Grinding_DisplayRefund_Offset.Read(exINI, pSection, "Grinding.DisplayRefund.Offset");
 
-
 	// Ares SuperWeapons tag
-	pINI->ReadString(pSection, "SuperWeapons", "", Phobos::readBuffer);
-	//char* super_weapons_list = Phobos::readBuffer;
-	if (strlen(Phobos::readBuffer) > 0 && SuperWeaponTypeClass::Array->Count > 0)
-	{
-		//DynamicVectorClass<SuperWeaponTypeClass*> objectsList;
-		char* context = nullptr;
-
-		//pINI->ReadString(pSection, pINI->GetKeyName(pSection, i), "", Phobos::readBuffer);
-		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
-		{
-			SuperWeaponTypeClass* buffer;
-			if (Parser<SuperWeaponTypeClass*>::TryParse(cur, &buffer))
-			{
-				//Debug::Log("DEBUG: [%s]: Parsed SW [%s]\n", pSection, cur);
-				this->SuperWeapons.AddItem(buffer);
-			}
-			else
-			{
-				Debug::Log("DEBUG: [%s]: Error parsing SuperWeapons= [%s]\n", pSection, cur);
-			}
-		}
-	}
+	if (SuperWeaponTypeClass::Array->Count > 0)
+		this->SuperWeapons.Read(exINI, pSection, "SuperWeapons");
 
 	if (pThis->MaxNumberOccupants > 10)
 	{
@@ -154,6 +170,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->PlacementPreview_Palette.LoadFromINI(pINI, pSection, "PlacementPreview.Palette");
 		this->PlacementPreview_Translucency.Read(exINI, pSection, "PlacementPreview.Translucency");
 	}
+	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
+	this->SpyEffect_VictimSuperWeapon.Read(exINI, pSection, "SpyEffect.VictimSuperWeapon");
+	this->SpyEffect_InfiltratorSuperWeapon.Read(exINI, pSection, "SpyEffect.InfiltratorSuperWeapon");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -173,6 +192,8 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PowerPlantEnhancer_Factor)
 		.Process(this->SuperWeapons)
 		.Process(this->OccupierMuzzleFlashes)
+		.Process(this->Powered_KillSpawns)
+		.Process(this->AllowAirstrike)
 		.Process(this->Refinery_UseStorage)
 		.Process(this->Grinding_AllowAllies)
 		.Process(this->Grinding_AllowOwner)
@@ -190,6 +211,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlacementPreview_Remap)
 		.Process(this->PlacementPreview_Palette)
 		.Process(this->PlacementPreview_Translucency)
+		.Process(this->SpyEffect_Custom)
+		.Process(this->SpyEffect_VictimSuperWeapon)
+		.Process(this->SpyEffect_InfiltratorSuperWeapon)
 		;
 }
 

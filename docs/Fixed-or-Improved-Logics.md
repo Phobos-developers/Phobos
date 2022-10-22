@@ -71,6 +71,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Trailer animations now inherit the owner of the object (animation, projectile or aircraft) they are attached to.
 - Buildings now correctly use laser parameters set for Secondary weapons instead of reading them from Primary weapon.
 - Fixed an issue that caused vehicles killed by damage dealt by a known house but without a known source TechnoType (f.ex animation warhead damage) to not be recorded as killed correctly and thus not spring map trigger events etc.
+
+![Waving trees](_static/images/tree-shake.gif)
+*Animated trees used in [Ion Shock](https://www.moddb.com/mods/tiberian-war-ionshock)*
+
 - `IsAnimated`, `AnimationRate` and `AnimationProbability` now work on TerrainTypes without `SpawnsTiberium` set to true.
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something.
 
@@ -81,6 +85,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Only applies to Z-aware drawing mode for now.
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true`.
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry.
+- Observers can now see cloaked objects owned by non-allied houses.
+- IvanBomb images now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation.
+- Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations.
+- Animation with `Tiled=yes` now supports `CustomPalette`.
 
 ## Animations
 
@@ -136,10 +144,20 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 
 ## Buildings
 
+### Airstrike target eligibility
+
+- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]   ; BuildingType
+AllowAirstrike=  ; boolean
+```
+
 ### Customizable & new grinder properties
 
 ![image](_static/images/grinding.gif)
-*Using ally grinder, restricting to vehicles only and refund display* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
+*Using ally grinder, restricting to vehicles only and refund display ([Project Phantom](https://www.moddb.com/mods/project-phantom))*
 
 - You can now customize which types of objects a building with `Grinding` set can grind as well as the grinding sound.
   - `Grinding.AllowAllies` changes whether or not to allow units to enter allies' buildings.
@@ -225,7 +243,7 @@ OreGathering.Tiberiums=0         ; list of Tiberium IDs
 ### Customizable Teleport/Chrono Locomotor settings per TechnoType
 
 ![image](_static/images/cust-Chrono.gif)
-*Chrono Legionnaire and Ronco (hero) from [YR:New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
+*Chrono Legionnaire and Ronco using different teleportation settings in [YR: New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
 
 - You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`.
 - Only applicable to Techno that have Teleport/Chrono Locomotor attached.
@@ -366,15 +384,15 @@ ForbidParallelAIQueues.Building=no  ; boolean
 
 - You can now specify which type of ore certain TerrainType would generate.
 - It's also now possible to specify a range value for an ore generation area different compared to standard 3x3 rectangle. Ore will be uniformly distributed across all affected cells in a spread range.
-- You can specify which ore growth stage will be spawned and how much cells will be filled with ore per ore generation animation. Corresponding tags accept either a single integer value or two comma-separated values to allow randomized growth stages from the range (inclusive).
+- You can specify which ore growth stage will be spawned and how many cells will be filled with ore per ore generation animation. Corresponding tags accept either a single integer value or two comma-separated values to allow randomized growth stages from the range (inclusive).
 
 In `rulesmd.ini`:
 ```ini
 [SOMETERRAINTYPE]             ; TerrainType
 SpawnsTiberium.Type=0         ; tiberium/ore type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
-SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
-SpawnsTiberium.CellsPerAnim=1 ; single int / comma-sep. range
+SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
+SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
 ```
 
 ### Minimap color customization
@@ -497,6 +515,19 @@ In `rulesmd.ini`:
 [SOMEWEAPON]          ; WeaponType
 DiskLaser.Radius=38.2 ; floating point value
                       ; 38.2 is roughly the default saucer disk radius
+```
+
+### Customizable ROF random delay
+
+- By default weapon `ROF` has a random delay of 0 to 2 frames added to it. This random delay is now customizable, globally and on per-WeaponType basis.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+ROF.RandomDelay=0,2  ; integer - single or comma-sep. range (game frames)
+
+[SOMEWEAPON]         ; WeaponType
+ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames)
 ```
 
 ### Single-color lasers

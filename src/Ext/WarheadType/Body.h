@@ -36,6 +36,7 @@ public:
 		Valueable<int> Crit_ExtraDamage;
 		Nullable<WarheadTypeClass*> Crit_Warhead;
 		Valueable<AffectedTarget> Crit_Affects;
+		Valueable<AffectedHouse> Crit_AffectsHouses;
 		ValueableVector<AnimTypeClass*> Crit_AnimList;
 		Nullable<bool> Crit_AnimList_PickRandom;
 		Valueable<bool> Crit_AnimOnAffectedTargets;
@@ -71,7 +72,7 @@ public:
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
 		Valueable<int> NotHuman_DeathSequence;
-		ValueableVector<SuperWeaponTypeClass*> LaunchSW;
+		ValueableIdxVector<SuperWeaponTypeClass> LaunchSW;
 		Valueable<bool> LaunchSW_RealLaunch;
 		Valueable<bool> LaunchSW_IgnoreInhibitors;
 		Valueable<bool> LaunchSW_IgnoreDesignators;
@@ -119,6 +120,7 @@ public:
 			, Crit_ExtraDamage { 0 }
 			, Crit_Warhead {}
 			, Crit_Affects { AffectedTarget::All }
+			, Crit_AffectsHouses { AffectedHouse::All }
 			, Crit_AnimList {}
 			, Crit_AnimList_PickRandom {}
 			, Crit_AnimOnAffectedTargets { false }
