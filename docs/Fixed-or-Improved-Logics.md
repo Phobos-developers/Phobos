@@ -311,7 +311,7 @@ IronCurtain.KillOrganicsWarhead=   ; IronCurtain uses this warhead to kill organ
 
 [SOMEINFANTRY]
 IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore), default to [CombatDamage]-> IronCurtain.EffectOnOrganics
-IronCurtain.KillWarhead=           ; IronCurtain use this warhead kill technos of this type, default to [CombatDamage]->IronCurtain.KillWarhead
+IronCurtain.KillWarhead=           ; IronCurtain uses this warhead to kill this organic, default to [CombatDamage]->IronCurtain.KillWarhead
 ```
 
 ### Jumpjet unit layer deviation customization
