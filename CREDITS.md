@@ -195,10 +195,12 @@ This page lists all the individual contributions to the project by their author.
    - Warhead superweapon launch logic
    - "Shield is broken" trigger event
    - Forbidding parallel AI queues by type
+- **ststl**
+   - Infantry can set effect of ironcurtain
+   - Use `CustomPalette` for animations with `Tiled=yes`
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
 - **FlyStar** - Campaign load screen PCX support
-- **ststl** - Infantry can set effect of ironcurtain
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
