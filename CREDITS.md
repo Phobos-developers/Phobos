@@ -195,6 +195,7 @@ This page lists all the individual contributions to the project by their author.
    - Warhead superweapon launch logic
    - "Shield is broken" trigger event
    - Forbidding parallel AI queues by type
+   - Iron Curtain effect on infantries
 - **ststl**
    - Iron Curtain effect customization on organics
    - Use `CustomPalette` for animations with `Tiled=yes`

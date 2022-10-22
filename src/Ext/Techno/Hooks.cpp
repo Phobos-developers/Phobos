@@ -710,14 +710,4 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x522600, InfantryClass_IronCurtain, 0x6)
-{
-	GET(InfantryClass*, pThis, ECX);
-	GET_STACK(int, nDuration, 0x4);
-	GET_STACK(HouseClass*, pSource, 0x8);
-	GET_STACK(bool, ForceShield, 0xC);
-
-	R->EAX(pThis->FootClass::IronCurtain(nDuration, pSource, ForceShield));
-
-	return 0x522639;
-}
+DEFINE_JUMP(VTABLE, 0x7EB1AC, 0x4DEAE0); // Redirect InfantryClass::IronCurtain to FootClass::IronCurtain
