@@ -4,7 +4,7 @@
 #include <BulletClass.h>
 #include <BulletTypeClass.h>
 #include <WarheadTypeClass.h>
-#include <DriveLocomotionClass.h>
+#include <TunnelLocomotionClass.h>
 
 #include <ObjBase.h>
 
@@ -126,27 +126,26 @@ void AttachmentClass::AI()
 		{
 			pChildAsFoot->TubeIndex = pParentAsFoot->TubeIndex;
 
-			// TODO handle tunnelloco and similar
-			// auto pParentLoco = static_cast<LocomotionClass*>(pParentAsFoot->Locomotor.get());
-			// auto pChildLoco = static_cast<LocomotionClass*>(pChildAsFoot->Locomotor.get());
+			auto pParentLoco = static_cast<LocomotionClass*>(pParentAsFoot->Locomotor.get());
+			auto pChildLoco = static_cast<LocomotionClass*>(pChildAsFoot->Locomotor.get());
 
-			// CLSID locoCLSID;
-			// if (SUCCEEDED(pParentLoco->GetClassID(&locoCLSID))
-			// 	&& (locoCLSID == LocomotionClass::CLSIDs::Drive
-			// 		|| locoCLSID == LocomotionClass::CLSIDs::Ship) &&
-			// 	SUCCEEDED(pChildLoco->GetClassID(&locoCLSID))
-			// 	&& (locoCLSID == LocomotionClass::CLSIDs::Drive
-			// 		|| locoCLSID == LocomotionClass::CLSIDs::Ship))
-			// {
-			// 	// shh DriveLocomotionClass almost equates to ShipLocomotionClass
-			// 	// for this particular case it's OK to cast to it - Kerbiter
-			// 	auto pParentDriveLoco = static_cast<DriveLocomotionClass*>(pParentLoco);
-			// 	auto pChildDriveLoco = static_cast<DriveLocomotionClass*>(pChildLoco);
+			CLSID locoCLSID;
+			if (SUCCEEDED(pParentLoco->GetClassID(&locoCLSID))
+				&& (locoCLSID == LocomotionClass::CLSIDs::Tunnel) &&
+				SUCCEEDED(pChildLoco->GetClassID(&locoCLSID))
+				&& (locoCLSID == LocomotionClass::CLSIDs::Tunnel))
+			{
+				auto pParentTunnelLoco = static_cast<TunnelLocomotionClass*>(pParentLoco);
+				auto pChildTunnelLoco = static_cast<TunnelLocomotionClass*>(pChildLoco);
 
-			// 	pChildDriveLoco->SlopeTimer = pParentDriveLoco->SlopeTimer;
-			// 	pChildDriveLoco->Ramp1 = pParentDriveLoco->Ramp1;
-			// 	pChildDriveLoco->Ramp2 = pParentDriveLoco->Ramp2;
-			// }
+				// FIXME I am not sure if fucking with RefCount is a good idea but it's used in TunnelLoco code
+				pChildTunnelLoco->RefCount = pParentTunnelLoco->RefCount;
+
+				pChildTunnelLoco->State = pParentTunnelLoco->State;
+				pChildTunnelLoco->Coords = pParentTunnelLoco->Coords;
+				pChildTunnelLoco->DigTimer = pParentTunnelLoco->DigTimer;
+				pChildTunnelLoco->bool38 = pParentTunnelLoco->bool38;
+			}
 		}
 
 		if (pType->InheritStateEffects)
