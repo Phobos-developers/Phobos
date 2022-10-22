@@ -77,7 +77,7 @@ Text.Background=no                     	; boolean
 ; Shape
 Shape=                                 	; filename with .shp extension, if not present, game-drawn text will be used instead
 Palette=palette.pal                    	; filename with .pal extension
-Shape.Spacing=8,0                     	; integer - horizontal and vertical spacing between digits, can be negative, defaults to 8,-4 for buildings
+Shape.Interval=8,0                     	; integer - horizontal and vertical spacing between digits, can be negative, defaults to 8,-4 for buildings
 
 [SOMETECHNOTYPE]
 DigitalDisplay.Disable=no              	; boolean
