@@ -520,7 +520,7 @@ DEFINE_HOOK(0x73B5B5, UnitClass_DrawVoxel_AttachmentAdjust, 0x6)
 	enum { Skip = 0x73B5CE };
 
 	GET(UnitClass*, pThis, EBP);
-	LEA_STACK(int*, pKey, STACK_OFFS(0x1C4, 0x1B0));
+	LEA_STACK(VoxelIndexKey*, pKey, STACK_OFFS(0x1C4, 0x1B0));
 
 	Matrix3D transform = TechnoExt::GetAttachmentTransform(pThis, pKey);
 	R->EAX(&transform);
@@ -533,7 +533,7 @@ DEFINE_HOOK(0x73C864, UnitClass_drawcode_AttachmentAdjust, 0x6)
 	enum { Skip = 0x73C87D };
 
 	GET(UnitClass*, pThis, EBP);
-	LEA_STACK(int*, pKey, STACK_OFFS(0x128, 0xC8));
+	LEA_STACK(VoxelIndexKey*, pKey, STACK_OFFS(0x128, 0xC8));
 
 	Matrix3D transform = TechnoExt::GetAttachmentTransform(pThis, pKey);
 	R->EAX(&transform);
@@ -546,7 +546,7 @@ DEFINE_HOOK(0x73C29F, UnitClass_DrawVoxel_AttachmentAdjustShadow, 0x6)
 	enum { Skip = 0x73C2B8 };
 
 	GET(UnitClass*, pThis, EBP);
-	LEA_STACK(int*, pKey, STACK_OFFS(0x1F0, 0x1DC));
+	LEA_STACK(VoxelIndexKey*, pKey, STACK_OFFS(0x1F0, 0x1DC));
 
 	Matrix3D transform = TechnoExt::GetAttachmentTransform(pThis, pKey, true);
 	R->EAX(&transform);
@@ -559,7 +559,7 @@ DEFINE_HOOK(0x414953, AircraftClass_DrawIt_AttachmentAdjust, 0x6)
 	enum { Skip = 0x41496C };
 
 	GET(AircraftClass*, pThis, EBP);
-	LEA_STACK(int*, pKey, STACK_OFFS(0xD8, 0xC8));
+	LEA_STACK(VoxelIndexKey*, pKey, STACK_OFFS(0xD8, 0xC8));
 
 	Matrix3D transform = TechnoExt::GetAttachmentTransform((TechnoClass*)pThis, pKey);
 	R->EAX(&transform);
@@ -572,7 +572,7 @@ DEFINE_HOOK(0x41480D, AircraftClass_DrawIt_AttachmentAdjustShadow, 0x6)
 	enum { Skip = 0x414826 };
 
 	GET(AircraftClass*, pThis, EBP);
-	LEA_STACK(int*, pKey, STACK_OFFS(0xD4, 0xC4));
+	LEA_STACK(VoxelIndexKey*, pKey, STACK_OFFS(0xD4, 0xC4));
 
 	Matrix3D transform = TechnoExt::GetAttachmentTransform((TechnoClass*)pThis, pKey, true);
 	R->EAX(&transform);

@@ -104,7 +104,7 @@ public:
 	static void InitializeLaserTrails(TechnoClass* pThis);
 	static void InitializeShield(TechnoClass* pThis);
 
-	static Matrix3D GetTransform(TechnoClass* pThis, int* pKey = nullptr, bool isShadow = false);
+	static Matrix3D GetTransform(TechnoClass* pThis, VoxelIndexKey* pKey = nullptr, bool isShadow = false);
 	static Matrix3D GetFLHMatrix(TechnoClass* pThis, CoordStruct flh, bool isOnTurret, double factor = 1.0, bool isShadow = false);
 	static Matrix3D TransformFLHForTurret(TechnoClass* pThis, Matrix3D mtx, bool isOnTurret, double factor = 1.0);
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool isOnTurret = false);
@@ -125,7 +125,7 @@ public:
 	static bool IsAttached(TechnoClass* pThis);
 	static bool IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep = true);
 	static TechnoClass* GetTopLevelParent(TechnoClass* pThis);
-	static Matrix3D GetAttachmentTransform(TechnoClass* pThis, int* pKey = nullptr, bool isShadow = false);
+	static Matrix3D GetAttachmentTransform(TechnoClass* pThis, VoxelIndexKey* pKey = nullptr, bool isShadow = false);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption);

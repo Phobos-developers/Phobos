@@ -1,5 +1,6 @@
 #include "AttachmentClass.h"
 
+#include <Dir.h>
 #include <BulletClass.h>
 #include <BulletTypeClass.h>
 #include <WarheadTypeClass.h>
@@ -16,7 +17,7 @@ void AttachmentClass::InitCacheData()
 	this->Cache.TopLevelParent = TechnoExt::GetTopLevelParent(this->Parent);
 }
 
-Matrix3D AttachmentClass::GetUpdatedTransform(int* pKey, bool isShadow)
+Matrix3D AttachmentClass::GetUpdatedTransform(VoxelIndexKey* pKey, bool isShadow)
 {
 	Matrix3D& transform = isShadow ? this->Cache.ChildShadowTransform : this->Cache.ChildTransform;
 	int& lastUpdateFrame = isShadow ? this->Cache.ShadowLastUpdateFrame : this->Cache.LastUpdateFrame;
@@ -114,9 +115,9 @@ void AttachmentClass::AI()
 		this->Child->OnBridge = this->Parent->OnBridge;
 
 		DirStruct childDir = this->Data->IsOnTurret
-			? this->Parent->SecondaryFacing.current() : this->Parent->PrimaryFacing.current();
+			? this->Parent->SecondaryFacing.Current() : this->Parent->PrimaryFacing.Current();
 
-		this->Child->PrimaryFacing.set(childDir);
+		this->Child->PrimaryFacing.SetCurrent(childDir);
 		// TODO handle secondary facing in case the turret is idle
 
 		FootClass* pParentAsFoot = abstract_cast<FootClass*>(this->Parent);
@@ -213,8 +214,8 @@ void AttachmentClass::Unlimbo()
 		CoordStruct childCoord = TechnoExt::GetFLHAbsoluteCoords(
 			this->Parent, this->Data->FLH, this->Data->IsOnTurret);
 
-		Direction::Value childDir = this->Data->IsOnTurret
-			? this->Parent->SecondaryFacing.current().value256() : this->Parent->PrimaryFacing.current().value256();
+		DirType childDir = this->Data->IsOnTurret
+			? this->Parent->SecondaryFacing.Current().GetDir() : this->Parent->PrimaryFacing.Current().GetDir();
 
 		++Unsorted::IKnowWhatImDoing;
 		this->Child->Unlimbo(childCoord, childDir);

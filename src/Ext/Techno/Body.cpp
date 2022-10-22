@@ -389,7 +389,7 @@ void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponTyp
 	WeaponTypeExt::DetonateAt(pWeaponType, pThis, pThis);
 }
 
-Matrix3D TechnoExt::GetTransform(TechnoClass* pThis, int* pKey, bool isShadow)
+Matrix3D TechnoExt::GetTransform(TechnoClass* pThis, VoxelIndexKey* pKey, bool isShadow)
 {
 	Matrix3D mtx;
 
@@ -435,7 +435,7 @@ Matrix3D TechnoExt::GetFLHMatrix(TechnoClass* pThis, CoordStruct pCoord, bool is
 // reversed from 6F3D60
 CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
 {
-	auto result = mtx * Vector3D<float>::Empty;
+	auto result = TechnoExt::GetFLHMatrix(pThis, pCoord, isOnTurret) * Vector3D<float>::Empty;
 
 	// Resulting coords are mirrored along X axis, so we mirror it back
 	result.Y *= -1;
@@ -988,7 +988,7 @@ TechnoClass* TechnoExt::GetTopLevelParent(TechnoClass* pThis)
 		: pThis;
 }
 
-Matrix3D TechnoExt::GetAttachmentTransform(TechnoClass* pThis, int* pKey, bool isShadow)
+Matrix3D TechnoExt::GetAttachmentTransform(TechnoClass* pThis, VoxelIndexKey* pKey, bool isShadow)
 {
 	auto const pThisExt = TechnoExt::ExtMap.Find(pThis);
 

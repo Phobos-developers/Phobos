@@ -51,7 +51,7 @@ public:
 	~AttachmentClass();
 
 	void InitCacheData();
-	Matrix3D GetUpdatedTransform(int* pKey = nullptr, bool shadow = false);
+	Matrix3D GetUpdatedTransform(VoxelIndexKey* pKey = nullptr, bool shadow = false);
 
 	AttachmentTypeClass* GetType();
 	TechnoTypeClass* GetChildType();
