@@ -305,8 +305,8 @@ DEFINE_HOOK(0x6FC3F4, TechnoClass_CanFire_HandleAttachmentLogics, 0x6)
 	GET(TechnoClass*, pTarget, EBP);
 	GET(WeaponTypeClass*, pWeapon, EDI);
 
-	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
-	auto const& pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	//auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+	//auto const& pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 
 	bool illegalParentTargetWarhead = pWeapon->Warhead
 		&& pWeapon->Warhead->IsLocomotor;
@@ -517,28 +517,30 @@ CoordStruct __fastcall TechnoClass_GetRenderCoords(TechnoClass* pThis, void* _)
 
 DEFINE_HOOK(0x73B5B5, UnitClass_DrawVoxel_AttachmentAdjust, 0x6)
 {
-    enum { Skip = 0x73B5CE };
+	enum { Skip = 0x73B5CE };
 
-    GET(UnitClass*, pThis, EBP);
-    LEA_STACK(int*, pKey, STACK_OFFS(0x1C4, 0x1B0));
-    // LEA_STACK(Matrix3D* , pMtx ,STACK_OFFS(0x1C4, 0xC0));
-    //Use .get() to skip locomotor empty checking
-    //since it already done above
-    R->EAX(&TechnoExt::GetAttachmentTransform(pThis, pKey));
-    return Skip;
+	GET(UnitClass*, pThis, EBP);
+	LEA_STACK(int*, pKey, STACK_OFFS(0x1C4, 0x1B0));
+	// LEA_STACK(Matrix3D* , pMtx ,STACK_OFFS(0x1C4, 0xC0));
+	//Use .get() to skip locomotor empty checking
+	//since it already done above
+	Matrix3D transform = TechnoExt::GetAttachmentTransform(pThis, pKey);
+	R->EAX(&transform);
+	return Skip;
 }
 
 DEFINE_HOOK(0x73C864, UnitClass_drawcode_AttachmentAdjust, 0x6)
 {
-    enum { Skip = 0x73C87D };
+	enum { Skip = 0x73C87D };
 
-    GET(UnitClass*, pThis, EBP);
-    LEA_STACK(int*, pKey, STACK_OFFS(0x128, 0xC8));
-    // LEA_STACK(Matrix3D* , pMtx ,STACK_OFFS(0x128, 0x30));
-    //Use .get() to skip locomotor empty checking
-    //since it already done above
-    R->EAX(&TechnoExt::GetAttachmentTransform(pThis, pKey));
-    return Skip;
+	GET(UnitClass*, pThis, EBP);
+	LEA_STACK(int*, pKey, STACK_OFFS(0x128, 0xC8));
+	// LEA_STACK(Matrix3D* , pMtx ,STACK_OFFS(0x128, 0x30));
+	//Use .get() to skip locomotor empty checking
+	//since it already done above
+	Matrix3D transform = TechnoExt::GetAttachmentTransform(pThis, pKey);
+	R->EAX(&transform);
+	return Skip;
 }
 // TODO merge hooks
 
@@ -590,3 +592,34 @@ DEFINE_HOOK(0x5F4CC3, ObjectClass_Render_AttachmentAdjust, 0x6)
 
 	return 0;
 }
+
+// YSort for attachments
+int __fastcall TechnoClass_SortY_Wrapper(ObjectClass* pThis)
+{
+	auto const pTechno = abstract_cast<TechnoClass*>(pThis);
+
+	if (pTechno)
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pTechno);
+
+		if (pExt->ParentAttachment)
+		{
+			const auto ySortPosition = pExt->ParentAttachment->GetType()->YSortPosition.Get();
+			const auto pParentTechno = pExt->ParentAttachment->Parent;
+
+			if (ySortPosition != AttachmentYSortPosition::Default && pParentTechno)
+			{
+				int parentYSort = pParentTechno->GetYSort();
+
+				return parentYSort + (ySortPosition == AttachmentYSortPosition::OverParent ? 1 : -1);
+			}
+		}
+	}
+
+	return pThis->Get_YSort();
+}
+
+DEFINE_JUMP(CALL, 0x449413, GET_OFFSET(TechnoClass_SortY_Wrapper))   // BuildingClass
+DEFINE_JUMP(VTABLE, 0x7E235C, GET_OFFSET(TechnoClass_SortY_Wrapper)) // AircraftClass
+DEFINE_JUMP(VTABLE, 0x7EB110, GET_OFFSET(TechnoClass_SortY_Wrapper)) // InfantryClass
+DEFINE_JUMP(VTABLE, 0x7F5D28, GET_OFFSET(TechnoClass_SortY_Wrapper)) // UnitClass

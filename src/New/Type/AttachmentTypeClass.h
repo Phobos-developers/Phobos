@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Utilities/Enum.h>
 #include <Utilities/Enumerable.h>
 #include <Utilities/Template.h>
 
@@ -15,6 +16,7 @@ public:
 	Valueable<bool> InheritStateEffects; // phasing out, stealth etc.
 	Valueable<bool> InheritDestruction;
 	Valueable<bool> LowSelectionPriority;
+	Valueable<AttachmentYSortPosition> YSortPosition;
 	// Valueable<bool> CanBeForceDetached;
 	Nullable<WeaponTypeClass*> ForceDetachWeapon_Child;
 	Nullable<WeaponTypeClass*> ForceDetachWeapon_Parent;
@@ -31,6 +33,7 @@ public:
 		, InheritStateEffects { true }
 		, InheritDestruction { true }
 		, LowSelectionPriority { true }
+		, YSortPosition { AttachmentYSortPosition::Default }
 		// , CanBeForceDetached { false }
 		, ForceDetachWeapon_Child { }
 		, ForceDetachWeapon_Parent { }

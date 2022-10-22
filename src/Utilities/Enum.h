@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include <GeneralDefinitions.h>
 #include <Phobos.h>
 
 enum class AttachedAnimFlag
@@ -194,6 +195,13 @@ enum class TextAlign : int
 };
 
 MAKE_ENUM_FLAGS(TextAlign);
+
+enum class AttachmentYSortPosition
+{
+	Default = 0,
+	UnderParent = 1,
+	OverParent = 2
+};
 
 class MouseCursorHotSpotX
 {

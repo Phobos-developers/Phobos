@@ -25,7 +25,7 @@ Matrix3D AttachmentClass::GetUpdatedTransform(int* pKey)
 
 		Matrix3D mtx = TechnoExt::GetAttachmentTransform(this->Parent, pKey);
 		mtx = TechnoExt::TransformFLHForTurret(this->Parent, mtx, this->Data->IsOnTurret, factor);
-		mtx.Translate(flh.X, flh.Y, flh.Z);
+		mtx.Translate((float)flh.X, (float)flh.Y, (float)flh.Z);
 
 		this->Cache.ChildTransform = mtx;
 
@@ -84,8 +84,9 @@ void AttachmentClass::CreateChild()
 		if (pChildType->WhatAmI() != AbstractType::UnitType)
 			return;
 
-		if (this->Child = static_cast<TechnoClass*>(pChildType->CreateObject(this->Parent->Owner)))
+		if (const auto pTechno = static_cast<TechnoClass*>(pChildType->CreateObject(this->Parent->Owner)))
 		{
+			this->Child = pTechno;
 			auto const pChildExt = TechnoExt::ExtMap.Find(this->Child);
 			pChildExt->ParentAttachment = this;
 

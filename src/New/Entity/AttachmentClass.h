@@ -20,7 +20,8 @@ public:
 
 	// volatile, don't serialize
 	// if you ever change the tree structure, you need to call CacheTreeData()
-	struct Cache {
+	struct Cache
+	{
 		TechnoClass* TopLevelParent;
 
 		int LastUpdateFrame;

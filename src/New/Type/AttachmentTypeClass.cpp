@@ -22,6 +22,7 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->InheritStateEffects.Read(exINI, section, "InheritStateEffects");
 	// this->InheritDestruction.Read(exINI, section, "InheritDestruction");
 	this->LowSelectionPriority.Read(exINI, section, "LowSelectionPriority");
+	this->YSortPosition.Read(exINI, section, "YSortPosition");
 
 	// this->CanBeForceDetached.Read(exINI, section, "CanBeForceDetached");
 
@@ -45,6 +46,7 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->InheritStateEffects)
 		.Process(this->InheritDestruction)
 		.Process(this->LowSelectionPriority)
+		.Process(this->YSortPosition)
 		// .Process(this->CanBeForceDetached)
 		.Process(this->ForceDetachWeapon_Child)
 		.Process(this->ForceDetachWeapon_Parent)

@@ -286,7 +286,8 @@ Matrix3D TechnoExt::TransformFLHForTurret(TechnoClass* pThis, Matrix3D mtx, bool
 
 Matrix3D TechnoExt::GetFLHMatrix(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret, double factor)
 {
-	Matrix3D mtx = TechnoExt::TransformFLHForTurret(pThis, TechnoExt::GetTransform(pThis), isOnTurret, factor);
+	Matrix3D transform = TechnoExt::GetTransform(pThis);
+	Matrix3D mtx = TechnoExt::TransformFLHForTurret(pThis, transform, isOnTurret, factor);
 
 	CoordStruct scaledCoord = pCoord * factor;
 	// apply FLH offset
@@ -899,7 +900,7 @@ bool TechnoExt::AttachTo(TechnoClass* pThis, TechnoClass* pParent)
 {
 	auto const pParentExt = TechnoExt::ExtMap.Find(pParent);
 
-	for (auto const& pAttachment: pParentExt->ChildAttachments)
+	for (auto const& pAttachment : pParentExt->ChildAttachments)
 	{
 		if (pAttachment->AttachChild(pThis))
 			return true;
@@ -931,7 +932,7 @@ void TechnoExt::DestroyAttachments(TechnoClass* pThis, TechnoClass* pSource)
 {
 	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
 
-	for (auto const& pAttachment: pExt->ChildAttachments)
+	for (auto const& pAttachment : pExt->ChildAttachments)
 		pAttachment->Destroy(pSource);
 }
 
@@ -948,14 +949,14 @@ void TechnoExt::HandleDestructionAsChild(TechnoClass* pThis)
 void TechnoExt::UnlimboAttachments(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	for (auto const& pAttachment: pExt->ChildAttachments)
+	for (auto const& pAttachment : pExt->ChildAttachments)
 		pAttachment->Unlimbo();
 }
 
 void TechnoExt::LimboAttachments(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	for (auto const& pAttachment: pExt->ChildAttachments)
+	for (auto const& pAttachment : pExt->ChildAttachments)
 		pAttachment->Limbo();
 }
 

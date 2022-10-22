@@ -790,6 +790,33 @@ namespace detail
 		return false;
 	}
 
+	template <>
+	inline bool read<AttachmentYSortPosition>(AttachmentYSortPosition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "default") == 0)
+			{
+				value = AttachmentYSortPosition::Default;
+			}
+			else if (_strcmpi(parser.value(), "underparent") == 0)
+			{
+				value = AttachmentYSortPosition::UnderParent;
+			}
+			else if (_strcmpi(parser.value(), "overparent") == 0)
+			{
+				value = AttachmentYSortPosition::OverParent;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an attachment YSort position");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{

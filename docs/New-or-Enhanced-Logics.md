@@ -25,10 +25,12 @@ In `rulesmd.ini`:
 <!--
 RestoreAtCreation=yes                 ; boolean, whether to spawn the unit when it's created
 -->
-InheritTilt=yes                       ; boolean, whether the child tilts with the parent
-InheritOwner=yes                      ; boolean, whether the child inherits owner of the parent while it's attached
-InheritStateEffects=yes               ; boolean (state effects = chaos, iron curtain etc.)
-InheritCommands=yes                   ; boolean
+InheritTilt=true                      ; boolean, whether the child tilts with the parent
+InheritOwner=true                     ; boolean, whether the child inherits owner of the parent while it's attached
+InheritStateEffects=true              ; boolean (state effects = chaos, iron curtain etc.)
+InheritCommands=true                  ; boolean
+LowSelectionPriority=true             ; boolean
+YSortPosition=default                 ; Attachment YSort position enumeration - default|underparent|overparent
 <!--
 InheritDestruction=yes                ; boolean
 DestructionWeapon.Child=              ; WeaponType, detonated on child when parent is destroyed
@@ -43,7 +45,7 @@ ParentDetachmentMission=              ; MissionType, queued to child when parent
 AttachmentX.Type=MNT                  ; AttachmentType (example)
 AttachmentX.TechnoType=               ; TechnoType that can be attached
 AttachmentX.FLH=0,0,0                 ; integer - Forward, Lateral, Height
-AttachmentX.IsOnTurret=no
+AttachmentX.IsOnTurret=false
 
 ```
 
