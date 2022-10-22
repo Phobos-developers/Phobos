@@ -527,8 +527,14 @@ namespace FetchBomb {
 DEFINE_HOOK(0x438771, BombClass_Detonate_SetContext, 0x6)
 {
 	GET(BombClass*, pThis, ESI);
+
 	FetchBomb::pThisBomb = pThis;
-	return 0x0;
+
+	// Also adjust detonation coordinate.
+	CoordStruct coords = pThis->Target->GetCenterCoords();
+
+	R->EDX(&coords);
+	return 0;
 }
 
 static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
@@ -569,6 +575,16 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 	return nDamageAreaResult;
 }
 
+DEFINE_HOOK(0x6F5201, TechnoClass_DrawExtras_IvanBombImage, 0x6)
+{
+	GET(TechnoClass*, pThis, EBP);
+
+	auto coords = pThis->GetCenterCoords();
+
+	R->EAX(&coords);
+	return 0;
+}
+
 // skip the Explosion Anim block and clean up the context
 DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 {
@@ -578,3 +594,18 @@ DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 
 // redirect MapClass::DamageArea call to our dll for additional functionality and checks
 DEFINE_JUMP(CALL, 0x4387A3, GET_OFFSET(_BombClass_Detonate_DamageArea));
+
+// BibShape checks for BuildingClass::BState which needs to not be 0 (constructing) for bib to draw.
+// It is possible for BState to be 1 early during construction for frame or two which can result in BibShape being drawn during buildup, which somehow depends on length of buildup.
+// Trying to fix this issue at its root is problematic and most of the time causes buildup to play twice, it is simpler to simply fix the BibShape to not draw until the buildup is done - Starkku
+DEFINE_HOOK(0x43D874, BuildingClass_Draw_BuildupBibShape, 0x6)
+{
+	enum { DontDrawBib = 0x43D8EE };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (!pThis->ActuallyPlacedOnMap)
+		return DontDrawBib;
+
+	return 0;
+}

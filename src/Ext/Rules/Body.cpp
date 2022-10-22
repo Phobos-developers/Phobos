@@ -105,6 +105,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->IronCurtain_KillOrganicsWarhead.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KillOrganicsWarhead");
 	this->IronCurtain_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KeptOnDeploy");
 
+	this->ROF_RandomDelay.Read(exINI, GameStrings::CombatDamage, "ROF.RandomDelay");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
 	for (int i = 0; i < itemsCount; ++i)
@@ -227,6 +229,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->IronCurtain_EffectOnOrganics)
 		.Process(this->IronCurtain_KillOrganicsWarhead)
 		.Process(this->IronCurtain_KeptOnDeploy)
+		.Process(this->ROF_RandomDelay)
 		.Process(this->ToolTip_Background_Color)
 		.Process(this->ToolTip_Background_Opacity)
 		.Process(this->ToolTip_Background_BlurSize)

@@ -7,6 +7,7 @@
 #include <Drawing.h>
 #include <ScenarioClass.h>
 #include <BitFont.h>
+#include <Utilities/EnumFunctions.h>
 
 std::vector<FlyingStrings::Item> FlyingStrings::Data;
 
@@ -27,6 +28,24 @@ void FlyingStrings::Add(const wchar_t* text, CoordStruct coords, ColorStruct col
 	item.Color = Drawing::RGB_To_Int(color);
 	PhobosCRT::wstrCopy(item.Text, text, 0x20);
 	Data.push_back(item);
+}
+
+void FlyingStrings::AddMoneyString(int amount, HouseClass* owner, AffectedHouse displayToHouses, CoordStruct coords, Point2D pixelOffset)
+{
+	if (displayToHouses == AffectedHouse::All ||
+		owner && EnumFunctions::CanTargetHouse(displayToHouses, owner, HouseClass::CurrentPlayer))
+	{
+		bool isPositive = amount > 0;
+		ColorStruct color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
+		wchar_t moneyStr[0x20];
+		swprintf_s(moneyStr, L"%ls%ls%d", isPositive ? L"+" : L"-", Phobos::UI::CostLabel, std::abs(amount));
+
+		int width = 0, height = 0;
+		BitFont::Instance->GetTextDimension(moneyStr, &width, &height, 120);
+		pixelOffset.X -= (width / 2);
+
+		FlyingStrings::Add(moneyStr, coords, color, pixelOffset);
+	}
 }
 
 void FlyingStrings::UpdateAll()

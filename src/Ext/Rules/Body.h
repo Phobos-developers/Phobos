@@ -66,6 +66,7 @@ public:
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
 
+		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
 		Valueable<int> ToolTip_Background_Opacity;
 		Valueable<float> ToolTip_Background_BlurSize;
@@ -104,6 +105,7 @@ public:
 			, IronCurtain_KeptOnDeploy { true }
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
 			, IronCurtain_KillOrganicsWarhead { }
+			, ROF_RandomDelay { { 0 ,2  } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
 			, ToolTip_Background_BlurSize { 0.0f }
