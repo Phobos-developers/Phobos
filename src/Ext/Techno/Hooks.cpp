@@ -665,21 +665,21 @@ DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_ObserverCloak, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
+DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 {
 	GET(FootClass*, pThis, ESI);
 	GET(TechnoTypeClass*, pType, EAX);
 	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
 
-	enum { Invunlnerable = 0x4DEB38, SkipGameCode = 0x4DEBA2 };
+	enum { MakeInvunlnerable = 0x4DEB38, SkipGameCode = 0x4DEBA2 };
 
 	if (!pType->Organic && pThis->WhatAmI() != AbstractType::Infantry)
 		return Invunlnerable;
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	IronCurtainEffect ironAffect = pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics);
+	IronCurtainEffect icEffect = pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics);
 
-	switch (ironAffect)
+	switch (icEffect)
 	{
 	case IronCurtainEffect::Ignore:
 	{
@@ -687,7 +687,7 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 	}break;
 	case IronCurtainEffect::Invulnerable:
 	{
-		return Invunlnerable;
+		return MakeInvunlnerable;
 	}break;
 	default:
 	{

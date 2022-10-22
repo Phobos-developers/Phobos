@@ -196,7 +196,7 @@ This page lists all the individual contributions to the project by their author.
    - "Shield is broken" trigger event
    - Forbidding parallel AI queues by type
 - **ststl**
-   - Infantry can set effect of ironcurtain
+   - Iron Curtain effect customization on organics
    - Use `CustomPalette` for animations with `Tiled=yes`
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches

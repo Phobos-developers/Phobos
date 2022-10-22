@@ -301,7 +301,12 @@ In `rulesmd.ini`:
 Explodes.KillPassengers=true ; boolean
 ```
 
-### Infantry can set effect of ironcurtain
+
+### IronCurtain effect on organics customization
+- In vanilla game, when iron-curtain is applied on organic units like infantries and squids, they can only get directly killed by C4Warhead. The effect can now be chosen among
+  - `kill` : IronCurtain kills the organic object with a specifc warhead.
+  - `invulnerable` : IronCurtain makes the organic object invulnerable like buildings and vehicles.
+  - `ignore` : IronCurtain gives no effect on the organic object.
 
 In `rulesmd.ini`
 ```ini
@@ -309,7 +314,7 @@ In `rulesmd.ini`
 IronCurtain.EffectOnOrganics=kill  ; IronCurtain effect Enumeration (kill | invulnerable | ignore), IronCurtain to Infantry and Techno with Organic=yes
 IronCurtain.KillOrganicsWarhead=   ; IronCurtain uses this warhead to kill organics, default to [CombatDamage]->C4Warhead
 
-[SOMEINFANTRY]
+[SOMETECHNO]                       ; InfantryType or Organic TechnoType 
 IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore), default to [CombatDamage]-> IronCurtain.EffectOnOrganics
 IronCurtain.KillWarhead=           ; IronCurtain uses this warhead to kill this organic, default to [CombatDamage]->IronCurtain.KillWarhead
 ```
