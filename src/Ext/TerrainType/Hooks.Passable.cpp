@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <HouseClass.h>
 #include <OverlayClass.h>
 #include <TerrainClass.h>
 
@@ -27,10 +28,14 @@ DEFINE_HOOK(0x71C110, TerrainClass_SetOccupyBit_PassableTerrain, 0x6)
 // Passable TerrainTypes Hook #2 - Do not display attack cursor unless force-firing.
 DEFINE_HOOK(0x7002E9, TechnoClass_WhatAction_PassableTerrain, 0x5)
 {
-	enum { Skip = 0x70020E };
+	enum { ReturnAction = 0x70020E };
 
+	GET(TechnoClass*, pThis, ESI);
 	GET(ObjectClass*, pTarget, EDI);
-	GET_STACK(bool, isForceFire, STACK_OFFS(0x1C, -0x8));
+	GET_STACK(bool, isForceFire, STACK_OFFSET(0x1C, 0x8));
+
+	if (!pThis->Owner->IsControlledByCurrentPlayer() || !pThis->IsControllable())
+		return 0;
 
 	if (pTarget->WhatAmI() == AbstractType::Terrain)
 	{
@@ -38,8 +43,8 @@ DEFINE_HOOK(0x7002E9, TechnoClass_WhatAction_PassableTerrain, 0x5)
 		{
 			if (pTypeExt->IsPassable && !isForceFire)
 			{
-				R->EBP(1);
-				return Skip;
+				R->EBP(Action::Move);
+				return ReturnAction;
 			}
 		}
 	}

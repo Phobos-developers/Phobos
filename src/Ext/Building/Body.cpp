@@ -1,8 +1,69 @@
 #include "Body.h"
+
+#include <BitFont.h>
+
+#include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<BuildingClass>::Canary = 0x87654321;
 BuildingExt::ExtContainer BuildingExt::ExtMap;
+
+void BuildingExt::ExtData::DisplayGrinderRefund()
+{
+	if (this->AccumulatedGrindingRefund && Unsorted::CurrentFrame % 15 == 0)
+	{
+		int refundAmount = this->AccumulatedGrindingRefund;
+		bool isPositive = refundAmount > 0;
+		auto color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
+		auto coords = this->OwnerObject()->GetRenderCoords();
+		int width = 0, height = 0;
+		wchar_t moneyStr[0x20];
+		swprintf_s(moneyStr, L"%ls%ls%d", isPositive ? L"+" : L"-", Phobos::UI::CostLabel, std::abs(refundAmount));
+		BitFont::Instance->GetTextDimension(moneyStr, &width, &height, 120);
+		Point2D pixelOffset = Point2D::Empty;
+		pixelOffset += this->TypeExtData->Grinding_DisplayRefund_Offset;
+		pixelOffset.X -= width / 2;
+
+		FlyingStrings::Add(moneyStr, coords, color, pixelOffset);
+
+		this->AccumulatedGrindingRefund = 0;
+	}
+}
+
+bool BuildingExt::ExtData::HasSuperWeapon(const int index, const bool withUpgrades) const
+{
+	const auto pThis = this->OwnerObject();
+	const auto pExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	const auto count = pExt->GetSuperWeaponCount();
+	for (auto i = 0; i < count; ++i)
+	{
+		const auto idxSW = pExt->GetSuperWeaponIndex(i, pThis->Owner);
+
+		if (idxSW == index)
+			return true;
+	}
+
+	if (withUpgrades)
+	{
+		for (auto const& pUpgrade : pThis->Upgrades)
+		{
+			if (const auto pUpgradeExt = BuildingTypeExt::ExtMap.Find(pUpgrade))
+			{
+				const auto countUpgrade = pUpgradeExt->GetSuperWeaponCount();
+				for (auto i = 0; i < countUpgrade; ++i)
+				{
+					const auto idxSW = pUpgradeExt->GetSuperWeaponIndex(i, pThis->Owner);
+
+					if (idxSW == index)
+						return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
 
 void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType, int idxStorageTiberiumType)
 {
@@ -193,10 +254,10 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 {
 	if (const auto pExt = BuildingExt::ExtMap.Find(pBuilding))
 	{
-		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+		const auto pTypeExt = pExt->TypeExtData;
 
 		if (pTypeExt->Grinding_DisplayRefund && (pTypeExt->Grinding_DisplayRefund_Houses == AffectedHouse::All ||
-			EnumFunctions::CanTargetHouse(pTypeExt->Grinding_DisplayRefund_Houses, pBuilding->Owner, HouseClass::Player)))
+			EnumFunctions::CanTargetHouse(pTypeExt->Grinding_DisplayRefund_Houses, pBuilding->Owner, HouseClass::CurrentPlayer)))
 		{
 			pExt->AccumulatedGrindingRefund += pTechno->GetRefund();
 		}
@@ -218,6 +279,54 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 	return false;
 }
 
+// Building only or allow units too?
+void BuildingExt::ExtData::ApplyPoweredKillSpawns()
+{
+	auto const pThis = this->OwnerObject();
+
+	if (this->TypeExtData->Powered_KillSpawns && pThis->Type->Powered && !pThis->IsPowerOnline())
+	{
+		if (auto pManager = pThis->SpawnManager)
+		{
+			pManager->ResetTarget();
+			for (auto pItem : pManager->SpawnedNodes)
+			{
+				if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
+				{
+					pItem->Unit->ReceiveDamage(&pItem->Unit->Health, 0,
+						RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+				}
+			}
+		}
+	}
+}
+
+bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse)
+{
+	BuildingTypeExt::ExtData* pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+
+	if (!pTypeExt->SpyEffect_Custom)
+		return false;
+
+	auto pVictimHouse = pBuilding->Owner;
+	if (pInfiltratorHouse != pVictimHouse)
+	{
+		if (pTypeExt->SpyEffect_VictimSuperWeapon)
+		{
+			const auto pSuper = pVictimHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pTypeExt->SpyEffect_VictimSuperWeapon));
+			pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pVictimHouse->IsControlledByHuman());
+		}
+
+		if (pTypeExt->SpyEffect_InfiltratorSuperWeapon)
+		{
+			const auto pSuper = pInfiltratorHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pTypeExt->SpyEffect_InfiltratorSuperWeapon));
+			pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pInfiltratorHouse->IsControlledByHuman());
+		}
+	}
+
+	return true;
+}
+
 // =============================
 // load / save
 
@@ -225,6 +334,7 @@ template <typename T>
 void BuildingExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->TypeExtData)
 		.Process(this->DeployedTechno)
 		.Process(this->LimboID)
 		.Process(this->GrindingWeapon_LastFiredFrame)
@@ -271,7 +381,8 @@ DEFINE_HOOK(0x43BCBD, BuildingClass_CTOR, 0x6)
 {
 	GET(BuildingClass*, pItem, ESI);
 
-	BuildingExt::ExtMap.FindOrAllocate(pItem);
+	auto pExt = BuildingExt::ExtMap.FindOrAllocate(pItem);
+	pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pItem->Type);
 
 	return 0;
 }

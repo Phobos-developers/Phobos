@@ -10,27 +10,25 @@ class WarheadTypeClass;
 class ShieldClass
 {
 public:
+	static std::vector<ShieldClass*> Array;
+
 	ShieldClass();
 	ShieldClass(TechnoClass* pTechno, bool isAttached);
-	ShieldClass(TechnoClass* pTechno) : ShieldClass(pTechno, false) {};
-	~ShieldClass() = default;
+	ShieldClass(TechnoClass* pTechno) : ShieldClass(pTechno, false) { };
+	~ShieldClass();
 
 	int ReceiveDamage(args_ReceiveDamage* args);
 	bool CanBeTargeted(WeaponTypeClass* pWeapon);
 	bool CanBePenetrated(WarheadTypeClass* pWarhead);
-
 	void BreakShield(AnimTypeClass* pBreakAnim = nullptr, WeaponTypeClass* pBreakWeapon = nullptr);
+
 	void SetRespawn(int duration, double amount, int rate, bool resetTimer);
 	void SetSelfHealing(int duration, double amount, int rate, bool resetTimer);
-
 	void KillAnim();
-
 	void AI_Temporal();
 	void AI();
 
 	void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
-	void InvalidatePointer(void* ptr);
-
 	double GetHealthRatio();
 	void SetHP(int amount);
 	int GetHP();
@@ -39,9 +37,14 @@ public:
 	bool IsBrokenAndNonRespawning();
 	ShieldTypeClass* GetType();
 	int GetFramesSinceLastBroken();
+	void HideAnimations();
+	void ShowAnimations();
+	bool AreAnimationsHidden();
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
+	static bool ShieldIsBrokenTEvent(ObjectClass* pAttached);
 
+	static void PointerGotInvalid(void* ptr, bool removed);
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;
 
@@ -83,6 +86,7 @@ private:
 	bool Temporal;
 	bool Available;
 	bool Attached;
+	bool AreAnimsHidden;
 
 	double SelfHealing_Warhead;
 	int SelfHealing_Rate_Warhead;
@@ -97,9 +101,9 @@ private:
 	struct Timers
 	{
 		Timers() :
-			SelfHealing{ }
+			SelfHealing { }
 			, SelfHealing_Warhead { }
-			, Respawn{ }
+			, Respawn { }
 			, Respawn_Warhead { }
 		{ }
 

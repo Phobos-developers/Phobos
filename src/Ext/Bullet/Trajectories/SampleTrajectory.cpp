@@ -48,8 +48,8 @@ void SampleTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bull
 	pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
 }
 
-// Some early checks here
-void SampleTrajectory::OnAI(BulletClass* pBullet)
+// Some early checks here, returns whether or not to detonate the bullet
+bool SampleTrajectory::OnAI(BulletClass* pBullet)
 {
 	// Close enough
 	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < 100)

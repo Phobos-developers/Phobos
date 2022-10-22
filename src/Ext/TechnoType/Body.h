@@ -25,6 +25,7 @@ public:
 		PhobosFixedString<0x20> GroupAs;
 		Valueable<int> RadarJamRadius;
 		Nullable<int> InhibitorRange;
+		Nullable<int> DesignatorRange;
 		Valueable<Leptons> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
 		Valueable<AffectedHouse> Interceptor_CanTargetHouses;
@@ -37,7 +38,6 @@ public:
 		Valueable<bool> Interceptor_WeaponCumulativeDamage;
 		Valueable<bool> Interceptor_KeepIntact;
 		Valueable<CoordStruct> TurretOffset;
-		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Spawn_LimitedRange;
 		Valueable<int> Spawn_LimitedExtraRange;
 		Nullable<bool> Harvester_Counted;
@@ -125,6 +125,8 @@ public:
 
 		Valueable<Vector2D<double>> InitialStrength_Cloning;
 
+		Valueable<bool> Explodes_KillPassengers;
+
 		struct AttachmentDataEntry
 		{
 			ValueableIdx<AttachmentTypeClass> Type;
@@ -174,6 +176,7 @@ public:
 			, GroupAs { NONE_STR }
 			, RadarJamRadius { 0 }
 			, InhibitorRange { }
+			, DesignatorRange { }
 			, MindControlRangeLimit {}
 			, Interceptor { false }
 			, Interceptor_CanTargetHouses { AffectedHouse::Enemies }
@@ -186,7 +189,6 @@ public:
 			, Interceptor_WeaponCumulativeDamage { false }
 			, Interceptor_KeepIntact { false }
 			, TurretOffset { { 0, 0, 0 } }
-			, Powered_KillSpawns { false }
 			, Spawn_LimitedRange { false }
 			, Spawn_LimitedExtraRange { 0 }
 			, Harvester_Counted {}
@@ -257,6 +259,7 @@ public:
 			, DeployedSecondaryFireFLH { }
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, IronCurtain_KeptOnDeploy{ }
+			, Explodes_KillPassengers { true }
 			, AttachmentData {}
 		{ }
 
@@ -270,7 +273,6 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
-		bool IsCountedAsHarvester();
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;

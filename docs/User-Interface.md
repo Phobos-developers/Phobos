@@ -10,7 +10,7 @@ This page lists all user interface additions, changes, fixes that are implemente
 - Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (font support required).
 
 ```{note}
-You can use {download}`the improved vanilla font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which has way more Unicode character coverage than the default one.
+You can use the improved vanilla font which can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries) which has way more Unicode character coverage than the default one.
 ```
 
 ## Audio
@@ -65,25 +65,31 @@ PrioritySelectionFiltering=true  ; boolean
 ![placepreview](_static/images/placepreview.png)
 *Building placement preview using 50% translucency in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
-- Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `BuildingPlacementPreview.DefaultTranslucentLevel` and then further customized for each building with `PlacementPreview.TranslucentLevel`.
-- The building placement grid *(place.shp)* translucency setting can be adjusted via `BuildingPlacementGrid.TranslucentLevel`.
-- If using the building's appropriate `Buildup` is not desired, customizations allow for you to choose the exact SHP and frame you'd prefer to show as preview instead through `PlacementPreview.Shape` and `PlacementPreview.ShapeFrame`
+- Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual]->PlacementPreview` and then further customized for each building with `[SOMEBUILDING]->PlacementPreview`.
+- The building placement grid (`place.shp`) translucency setting can be adjusted via `PlacementGrid.Translucency`.
+- If using the building's appropriate `Buildup` is not desired, customizations allow for you to choose the exact SHP and frame you'd prefer to show as preview through `PlacementPreview.Shape`, `PlacementPreview.ShapeFrame` and `PlacementPreview.Palette`.
+  - You can specify theater-specific palettes and shapes by putting three `~` marks to the theater specific part of the filename. `~~~` is replaced with the theater’s three-letter extension.
 - `PlacementPreview.ShapeFrame=` tag defaults to building's artmd.ini `Buildup` entry's last non-shadow frame. If there is no 'Buildup' specified it will instead attempt to default to the building's normal first frame (animation frames and bibs are not included in this preview).
 
 In `rulesmd.ini`:
 ```ini
-[AUDIOVISUAL]
-BuildingPlacementGrid.TranslucentLevel=0            ; integer, 0=0% 1=25% 2=50% 3=75%
-BuildingPlacementPreview.DefaultTranslucentLevel=3  ; integer, 0=0% 1=25% 2=50% 3=75%
+[AudioVisual]
+PlacementPreview=no                  ; boolean
+PlacementPreview.Translucency=75     ; translucency level (0/25/50/75)
+PlacementGrid.Translucency=0         ; translucency level (0/25/50/75)
 
-[BUILDINGTYPE]
-PlacementPreview.Show=                              ; boolean, defaults to [Phobos]->ShowBuildingPlacementPreview
-PlacementPreview.Shape=                             ; filename - including the .shp extension. If not set uses building's artmd.ini Buildup SHP (based on Building's Image)
-PlacementPreview.ShapeFrame=                        ; integer, zero-based frame index used for displaying the preview
-PlacementPreview.Offset=0,-15,1                     ; integer, expressed in X,Y,Z used to alter position preview
-PlacementPreview.Remap=true                         ; boolean, does this preview use player remap colors
-PlacementPreview.Palette=                           ; filename - including the .pal extension. This option is not used if PlacementPreview.Remap is set to true
-PlacementPreview.TranslucentLevel=                  ; integer, defaults to [AudioVisual]->BuildingPlacementPreview.DefaultTranslucentLevel
+[SOMEBUILDING]
+PlacementPreview=yes                 ; boolean
+PlacementPreview.Shape=              ; filename - including the .shp extension. If not set uses building's artmd.ini Buildup SHP (based on Building's Image)
+PlacementPreview.ShapeFrame=         ; integer, zero-based frame index used for displaying the preview
+PlacementPreview.Offset=0,-15,1      ; integer, expressed in X,Y,Z used to alter position preview
+PlacementPreview.Remap=yes           ; boolean, does this preview use player remap colors
+PlacementPreview.Palette=            ; filename - including the .pal extension
+PlacementPreview.Translucency=       ; translucency level (0/25/50/75), defaults to [AudioVisual]->PlacementPreview.Translucency
+```
+
+```{note}
+The `PlacementPreview.Palette` option is not used when `PlacementPreview.Remap=yes` is set to yes. This may change in future.
 ```
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
@@ -91,7 +97,7 @@ PlacementPreview.TranslucentLevel=                  ; integer, defaults to [Audi
 In `ra2md.ini`:
 ```ini
 [Phobos]
-ShowBuildingPlacementPreview=false  ; boolean
+ShowPlacementPreview=yes   ; boolean
 ```
 
 ## Hotkey Commands
@@ -119,6 +125,7 @@ ShowBuildingPlacementPreview=false  ; boolean
 - PCX files can now be used as loadscreen images.
   - You can specify custom loadscreen with Ares tag `File.LoadScreen`.
   - Campaign loading screen (`missionmd.ini->[LS800BkgdName]`) can also use PCX image.
+  - Observer loading screen can use `ls800obs.pcx` *(or `ls640obs.pcx` when screen width is 640)* for this feature.
 - The loadscreen size can now be different from the default `800x600` one; if the image is bigger than the screen it's centered and cropped.
   - This feature works in conjunction with CnCNet5 spawner DLL which resizes loadscreen window to actual monitor size and places the image in center. If there's no CnCNet5 spawner loaded, the window resolution will be always `800x600`.
   - Same applies to campaign loading screen (`missionmd.ini->[LS800BkgdName]`).
@@ -186,7 +193,7 @@ Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - R,G,B
 ```
 
 ```{note}
-If you use the vanilla font in your mod, you can use {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+If you use the vanilla font in your mod, you can use the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 ```
 
 ### Power delta counter
@@ -220,7 +227,7 @@ Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left|center|
 ```
 
 ```{note}
-If you use the vanilla font in your mod, you can use {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v4 and higher) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+If you use the vanilla font in your mod, you can use the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 ```
 
 ### Producing Progress
@@ -265,10 +272,6 @@ Sidebar.GDIPositions=  ; boolean
 - Fixed a bug when switching build queue tabs via QWER didn't make tooltips disappear as they should, resulting in stuck tooltips.
 - The tooltips can now go over the sidebar bounds to accommodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
 
-```{note}
-Same as with harvester counter, you can download {download}`the improved font <_static/files/ImprovedFont-v4.zip>` (v3 and higher) or draw your own icons.
-```
-
 In `uimd.ini`:
 ```ini
 [ToolTips]
@@ -290,4 +293,28 @@ In `RA2MD.ini`:
 ```ini
 [Phobos]
 ToolTipDescriptions=true  ; boolean
+```
+
+```{note}
+Same as with harvester counter, you can download the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) or draw your own icons.
+```
+
+- The background color and opacity of tooltips can now be customized globally or per side.
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]
+ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to [AudioVisual]->ToolTip.Background.Color, which defaults to `0,0,0`
+ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [AudioVisual]->ToolTip.Background.Opacity, which defaults to `100`
+ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual]->ToolTip.Background.BlurSize, which defaults to `0.0`
+```
+
+```{note}
+The blur effect is resource intensive. Please make sure you really want to enable this effect, otherwise leave it to 0.0 so it stays disabled.
+```
+
+In `RA2MD.ini`:
+```ini
+[Phobos]
+ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.
 ```

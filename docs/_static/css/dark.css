@@ -1,0 +1,187 @@
+.switcher__status {
+  background-color: #2b2c36;
+}
+
+.switcher__radio:focus-visible ~ .switcher__status {
+  outline: #fff solid 2px;
+}
+
+.switcher__radio--light,
+.switcher__radio--auto,
+.switcher__radio--dark {
+  filter: invert(1);
+}
+
+.switcher__radio--light:checked,
+.switcher__radio--auto:checked,
+.switcher__radio--dark:checked {
+  filter: invert(0);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+.rst-content table.docutils thead,
+.wy-side-nav-search input[type="text"],
+.wy-side-nav-search input[type="text"]::placeholder,
+.wy-nav-content {
+  color: #d9d9d9 !important;
+  background: #2b2c36 !important;
+}
+
+.wy-body-for-nav {
+  background: #161b22 !important;
+}
+
+.rst-content table.docutils:not(.field-list) tr:nth-child(2n-1) td,
+.rst-versions,
+.wy-nav-side {
+  background-color: #23242b !important;
+}
+
+.wy-menu-vertical li.current > a button.toctree-expand {
+  color: #d9d9d9;
+}
+
+.wy-menu-vertical li.current > a,
+.wy-menu-vertical a {
+  color: #d9d9d9;
+  background-color: #23242b;
+}
+
+.wy-menu-vertical li.current > a:hover {
+  background-color: #3e3e4a;
+}
+
+.wy-menu-vertical li.toctree-l2 a {
+  color: #d9d9d9;
+  background-color: #2f3039;
+}
+
+.wy-menu-vertical li.toctree-l3 a {
+  color: #d9d9d9;
+  background-color: #3d3e4a;
+}
+
+.wy-menu-vertical li.toctree-l3.current > a,
+.wy-menu-vertical li.toctree-l3.current li.toctree-l4 > a {
+  background: #565766;
+}
+
+.wy-menu-vertical a:hover,
+.wy-menu-vertical li.current a:hover,
+.wy-menu-vertical li.toctree-l2.current > a:hover,
+.wy-menu-vertical li.toctree-l3.current > a:hover,
+.wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a:hover,
+.wy-menu-vertical li.toctree-l3.current li.toctree-l4 > a:hover {
+  background: #5f5f6f !important;
+}
+
+.wy-menu-vertical li.current > a,
+.wy-menu-vertical li.on a {
+  background-color: #3d3e4a;
+}
+
+.wy-menu-vertical li.current > a:hover button.toctree-expand,
+.wy-menu-vertical li.toctree-l2 a:hover button.toctree-expand {
+  color: #d9d9d9;
+}
+
+.wy-menu-vertical li.toctree-l2.current > a,
+.wy-menu-vertical li.toctree-l2.current > a > button:hover,
+.wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a {
+  background: #3d3e4a;
+  color: #d9d9d9;
+}
+
+.wy-menu-vertical li.current a {
+  border: unset;
+}
+
+.admonition,
+.admonition-title,
+.rst-content img {
+  border-radius: 6px !important;
+}
+
+.highlight {
+  border-radius: 6px !important;
+  color: unset !important;
+  background-color: #161b22 !important;
+}
+
+.highlight-cpp,
+.highlight-ini {
+  border-style: none !important;
+}
+
+.highlight-ini .highlight pre {
+  line-height: 1.5 !important;
+}
+
+.highlight-ini .c1,
+.s {
+  color: unset !important;
+  font-style: inherit !important;
+}
+
+.highlight-ini .na,
+.k {
+  color: rgb(39, 174, 96) !important;
+  font-weight: unset !important;
+}
+
+.highlight-ini .o {
+  color: #7b8d80 !important;
+}
+
+.literal {
+  padding: 0.2em 0.4em !important;
+  margin: 1px !important;
+  color: unset !important;
+  background-color: rgb(240, 240, 250, 0.15) !important;
+  border-radius: 6px !important;
+  border-style: none !important;
+}
+
+.admonition .literal {
+  background-color: rgba(0, 0, 0, 0.25) !important;
+}
+
+.admonition-title {
+  border-radius: 6px 6px 0 0 !important;
+  background: rgb(0, 0, 0, 0.25) !important;
+}
+
+.hint {
+  background: rgb(90, 180, 90, 0.5) !important;
+}
+
+.warning {
+  background: rgba(190, 90, 90, 0.5) !important;
+}
+
+.note {
+  background: rgba(140, 140, 140, 0.5) !important;
+}
+
+.btn {
+  border-radius: 6px !important;
+  box-shadow: inset 0 -2px 0 0 rgba(0, 0, 0, 0.15) !important;
+  background-color: rgb(255, 255, 255, 0.15) !important;
+}
+
+a.btn.btn-neutral {
+  color: #d9d9d9 !important;
+}
+
+.btn:hover {
+  background-color: #2980b9 !important;
+}
+
+details {
+  color: #d9d9d9;
+  background-color: #24252d;
+  box-shadow: unset;
+}

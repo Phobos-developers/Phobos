@@ -65,6 +65,9 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 	if (!pTechno)
 		return false;
 
+	if (!pTechno->IsOnMap || !pTechno->IsAlive || pTechno->InLimbo)
+		return false;
+
 	if (pOwner && !EnumFunctions::CanTargetHouse(this->DetonateOnAllMapObjects_AffectHouses, pOwner, pTechno->Owner))
 		return false;
 
@@ -81,10 +84,7 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 		return false;
 	}
 
-	if (pTechno->IsOnMap && pTechno->IsAlive && !pTechno->InLimbo)
-		return true;
-
-	return false;
+	return true;
 }
 
 // =============================
@@ -122,6 +122,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_ExtraDamage.Read(exINI, pSection, "Crit.ExtraDamage");
 	this->Crit_Warhead.Read(exINI, pSection, "Crit.Warhead");
 	this->Crit_Affects.Read(exINI, pSection, "Crit.Affects");
+	this->Crit_AffectsHouses.Read(exINI, pSection, "Crit.AffectsHouses");
 	this->Crit_AnimList.Read(exINI, pSection, "Crit.AnimList");
 	this->Crit_AnimList_PickRandom.Read(exINI, pSection, "Crit.AnimList.PickRandom");
 	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
@@ -160,6 +161,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->LaunchSW.Read(exINI, pSection, "LaunchSW");
 	this->LaunchSW_RealLaunch.Read(exINI, pSection, "LaunchSW.RealLaunch");
 	this->LaunchSW_IgnoreInhibitors.Read(exINI, pSection, "LaunchSW.IgnoreInhibitors");
+	this->LaunchSW_IgnoreDesignators.Read(exINI, pSection, "LaunchSW.IgnoreDesignators");
+
 	this->AllowDamageOnSelf.Read(exINI, pSection, "AllowDamageOnSelf");
 
 	this->DetonateOnAllMapObjects.Read(exINI, pSection, "DetonateOnAllMapObjects");
@@ -199,6 +202,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_ExtraDamage)
 		.Process(this->Crit_Warhead)
 		.Process(this->Crit_Affects)
+		.Process(this->Crit_AffectsHouses)
 		.Process(this->Crit_AnimList)
 		.Process(this->Crit_AnimList_PickRandom)
 		.Process(this->Crit_AnimOnAffectedTargets)
@@ -235,6 +239,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaunchSW)
 		.Process(this->LaunchSW_RealLaunch)
 		.Process(this->LaunchSW_IgnoreInhibitors)
+		.Process(this->LaunchSW_IgnoreDesignators)
 		.Process(this->AllowDamageOnSelf)
 
 		.Process(this->DetonateOnAllMapObjects)

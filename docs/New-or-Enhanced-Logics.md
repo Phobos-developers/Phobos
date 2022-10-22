@@ -60,30 +60,34 @@ AttachmentX.IsOnTurret=false
   - `RadSiteWarhead.Detonate` can be set to make `RadSiteWarhead` detonate on affected objects rather than only be used to dealt direct damage. This enables most Warhead effects, display of animations etc.
   - `RadHasOwner`, if set to true, makes damage dealt by the radiation count as having been dealt by the house that fired the projectile that created the radiation field. This means that Warhead controls such as `AffectsAllies` will be respected and any units killed will count towards that player's destroyed units count.
   - `RadHasInvoker`, if set to true, makes the damage dealt by the radiation count as having been dealt by the TechnoType (the 'invoker') that fired the projectile that created the radiation field. In addition to the effects of `RadHasOwner`, this will also grant experience from units killed by the radiation to the invoker. Note that if the invoker dies at any point during the radiation's lifetime it continues to behave as if not having an invoker.
+- By default `UseGlobalRadApplicationDelay` is set to true. This makes game always use `RadApplicationDelay` and `RadApplicationDelay.Building` from `[Radiation]` rather than specific radiation types. This is a performance-optimizing measure that should be disabled if a radiation type declares different application delay.
 
 In `rulesmd.ini`:
 ```ini
 [RadiationTypes]
 0=SOMERADTYPE
 
-[SOMEWEAPON]                    ; WeaponType
-RadType=Radiation               ; RadType to use instead of default of [Radiation]
+[Radiation]
+UseGlobalRadApplicationDelay=true  ; boolean
 
-[SOMERADTYPE]                   ; RadType
-RadDurationMultiple=1           ; integer
-RadApplicationDelay=16          ; integer
-RadApplicationDelay.Building=0  ; integer
-RadLevelMax=500                 ; integer
-RadLevelDelay=90                ; integer
-RadLightDelay=90                ; integer
-RadLevelFactor=0.2              ; floating point value
-RadLightFactor=0.1              ; floating point value
-RadTintFactor=1.0               ; floating point value
-RadColor=0,255,0                ; integer - Red,Green,Blue
-RadSiteWarhead=RadSite          ; WarheadType
-RadSiteWarhead.Detonate=false   ; boolean
-RadHasOwner=false               ; boolean
-RadHasInvoker=false             ; boolean
+[SOMEWEAPON]                       ; WeaponType
+RadType=Radiation                  ; RadType to use instead of default of [Radiation]
+
+[SOMERADTYPE]                      ; RadType
+RadDurationMultiple=1              ; integer
+RadApplicationDelay=16             ; integer
+RadApplicationDelay.Building=0     ; integer
+RadLevelMax=500                    ; integer
+RadLevelDelay=90                   ; integer
+RadLightDelay=90                   ; integer
+RadLevelFactor=0.2                 ; floating point value
+RadLightFactor=0.1                 ; floating point value
+RadTintFactor=1.0                  ; floating point value
+RadColor=0,255,0                   ; integer - Red,Green,Blue
+RadSiteWarhead=RadSite             ; WarheadType
+RadSiteWarhead.Detonate=false      ; boolean
+RadHasOwner=false                  ; boolean
+RadHasInvoker=false                ; boolean
 ```
 
 ### Laser Trails
@@ -114,6 +118,7 @@ Thickness=4                   ; integer
 SegmentLength=128             ; integer, minimal length of each trail segment
 IgnoreVertical=false          ; boolean, whether the trail won't be drawn on vertical movement
 IsIntense=false               ; boolean, whether the laser is "supported" (AKA prism forwarding)
+CloakVisible=false            ; boolean, whether the laser is visible when the attached unit is cloaked
 
 [SOMEPROJECTILE]              ; BulletType Image
 LaserTrail.Types=SOMETRAIL    ; list of LaserTrailTypes
@@ -176,6 +181,7 @@ BreakWeapon=                         ; WeaponType
 AbsorbPercent=1.0                    ; floating point value
 PassPercent=0.0                      ; floating point value
 AllowTransfer=                       ; boolean
+ImmuneToBerserk=no                   ; boolean
 
 [SOMETECHNO]                         ; TechnoType
 ShieldType=SOMESHIELDTYPE            ; ShieldType; none by default
@@ -206,6 +212,7 @@ Shield.InheritStateOnReplace=false   ; boolean
 ```
 - Now you can have a shield for any TechnoType. It serves as a second health pool with independent `Armor` and `Strength` values.
   - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed by shield.
+    - Negative damage weapons will consider targets with active, but not at full health shields in need of healing / repairing unless the Warhead has `Shield.Penetrate=true`, in which case only object health is considered.
   - When a TechnoType has an unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for game calculation.
   - `InitialStrength` can be used to set a different initial strength value from maximum.
 - When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoTypes have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
@@ -228,6 +235,7 @@ Shield.InheritStateOnReplace=false   ; boolean
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
 - `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
+- `ImmuneToBerserk` gives the immunity against `Psychedelic=yes` warhead. Otherwise the berserk effect penetrates shields by default. Note that this shouldn't prevent the unit from targeting at the shielded object. `Versus.shieldArmor=0%` is still required in this case.
 - A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable. Several customizations are available for the shield strength pips.
   - By default, buildings use the 6th frame of `pips.shp` to display the shield strength while others use the 17th frame.
   - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit is set, then it will always display that frame, or if 3 digits are set, it will use those if shield's current strength is at or below `ConditionYellow` and `ConditionRed`, respectively. `Pips.Shield.Building` is used for BuildingTypes. -1 as value will use the default frame, whether it is fallback to first value or the aforementioned hardcoded defaults.
@@ -310,6 +318,20 @@ In `rulesmd.ini`:
 PowerPlantEnhancer.PowerPlants=    ; list of BuildingTypes
 PowerPlantEnhancer.Amount=0        ; integer
 PowerPlantEnhancer.Factor=1.0      ; floating point value
+```
+
+### Spy Effects
+
+- Additional espionage bonuses can be toggled with `SpyEffects.Custom`.
+  - `SpyEffects.VictimSuperWeapon` instantly launches a Super Weapon for the owner of the infiltrated building at building's coordinates.
+  - `SpyEffects.InfiltratorSuperWeapon` behaves the same as above, with the Super Weapon's owner being the owner of the spying unit.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+SpyEffects.Custom=false            ; boolean
+SpyEffects.VictimSuperWeapon=      ; SuperWeaponType
+SpyEffects.InfiltratorSuperWeapon= ; SuperWeaponType
 ```
 
 ## Infantry
@@ -434,11 +456,20 @@ Armor=                                 ; ArmorType
 
 - Projectiles can now have customizable trajectories.
   - `Trajectory` should not be combined with original game's projectile trajectory logics (`Arcing`, `ROT` or `Inviso`).
+  - Initial speed of the projectile is defined by `Trajectory.Speed`, which unlike `Speed` used by `ROT` > 0 projectiles is defined on projectile not weapon.
+
+  In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]        ; Projectile
+Trajectory.Speed=100.0  ; floating point value
+```
 
 #### Straight trajectory
 
+![Straigh trajectory blasters](_static/images/straight.gif)
+*Straight trajectory used to make blasters in a private mod by @brsajo#9745*
+
 - Self-explanatory, is a straight-shot trajectory.
-  - Initial speed is determined by weapon's `Trajectory.Speed`.
 
 In `rulesmd.ini`:
 ```ini
@@ -449,7 +480,6 @@ Trajectory=Straight  ; Trajectory type
 #### Bombard trajectory
 
 - Similar trajectory to `Straight`, but targets a coordinate above the intended target (height determined by `Trajectory.Bombard.Height`). When the projectile approaches that coordinate, it will free fall and explodes when it hits the target or ground.
-  - Initial speed is determined by weapon's `Trajectory.Speed`.
 
 In `rulesmd.ini`:
 ```ini
@@ -459,6 +489,10 @@ Trajectory.Bombard.Height=0.0  ; double
 ```
 
 ### Shrapnel enhancement
+
+![image](_static/images/shrapnel.gif)
+*Shrapnel appearing against ground & buildings* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
+
 - Shrapnel behavior can be triggered on the ground and buildings.
 
 In `rulesmd.ini`:
@@ -472,16 +506,16 @@ Shrapnel.AffectsBuildings=false  ; boolean
 
 ### LimboDelivery
 
-- Super Weapons can now deliver off-map buildings that act as if they were on the field.
-  - `LimboDelivery.Types` is the list of BuildingTypes that will be created when the Super Weapons fire. Super Weapon Type and coordinates do not matter.
+- Superweapons can now deliver off-map buildings that act as if they were on the field.
+  - `LimboDelivery.Types` is the list of BuildingTypes that will be created when the Superweapons fire. Superweapon `Type` and coordinates do not matter.
   - `LimboDelivery.IDs` is the list of numeric IDs that will be assigned to buildings. Necessary for LimboKill to work.
 
-- Created buildings are not affected by any on-map threats. The only way to remove them from the game is by using a Super Weapon with LimboKill set.
+- Created buildings are not affected by any on-map threats. The only way to remove them from the game is by using a Superweapon with `LimboKill.IDs` set.
   - `LimboKill.Affects` sets which houses are affected by this feature.
   - `LimboKill.IDs` lists IDs that will be targeted. Buildings with these IDs will be removed from the game instantly.
 
 - Delivery can be made random with these optional tags. The game will randomly choose only a single building from the list for each roll chance provided.
-  - `LimboDelivery.RollChance` lits chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
+  - `LimboDelivery.RollChances` lists chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
   - `LimboDelivery.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific building. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
 
 Note: This feature might not support every building flag. Flags that are confirmed to work correctly are listed below:
@@ -499,13 +533,46 @@ Remember that Limbo Delivered buildings don't exist physically! This means they 
 ```
 In `rulesmd.ini`:
 ```ini
-[SOMESW]                        ; Super Weapon
+[SOMESW]                        ; Superweapon
 LimboDelivery.Types=            ; List of BuildingTypes
 LimboDelivery.IDs=              ; List of numeric IDs. -1 cannot be used.
 LimboDelivery.RollChances=      ; List of percentages.
 LimboDelivery.RandomWeightsN=   ; List of integers.
 LimboKill.Affects=self          ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 LimboKill.IDs=                  ; List of numeric IDs.
+```
+
+### Next
+
+Superweapons can now launch other superweapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
+  - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
+  - `SW.Next.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
+  - `SW.Next.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                        ; Super Weapon
+SW.Next=                        ; List of Superweapons
+SW.Next.RealLaunch=true         ; boolean
+SW.Next.IgnoreInhibitors=false  ; boolean
+SW.Next.IgnoreDesignators=true  ; boolean
+SW.Next.RollChances=            ; List of percentages.
+SW.Next.RandomWeightsN=         ; List of integers.
+```
+
+### Warhead or Weapon detonation at target cell
+
+- Any superweapon can now detonate a Warhead or a weapon at superweapon's target cell.
+  - If both `Detonate.Warhead` and `Detonate.Weapon` are set, latter takes precedence.
+  - `Detonate.Damage`, if not set, defaults to weapon `Damage` for `Detonate.Weapon` and 0 for `Detonate.Warhead`.
+  - Both the weapon and Warhead behave as if fired by whatever building fired the Superweapon. This respects controls like `SW.RangeMinimum/Maximum` (similar to Ares' GenericWarhead superweapon in this regard).
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]           ; Super Weapon
+Detonate.Warhead=  ; Warhead
+Detonate.Weapon=   ; WeaponType
+Detonate.Damage=   ; integer
 ```
 
 ## Technos
@@ -631,7 +698,7 @@ InitialStrength.Cloning=  ; single double/percentage or comma-sep. range
 
 If this option is not set, the self-destruction logic will not be enabled.
 ```{note}
-Please notice that if the object is a unit which carries passengers, they will not be released even with the kill option. This might change in the future if necessary.
+Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option. This might change in the future if necessary.
 
 If the object enters transport, the countdown will continue, but it will not self-destruct inside the transport.
 ```
@@ -771,6 +838,9 @@ All new warheads can be used with CellSpread and Ares' GenericWarhead superweapo
 
 ### Break Mind Control on impact
 
+![image](_static/images/remove-mc.gif)
+*Mind control break warhead being utilized* ([RA2: Reboot](https://www.moddb.com/mods/reboot))
+
 - Warheads can now break mind control (doesn't apply to perma-MC-ed objects).
 
 In `rulesmd.ini`:
@@ -785,6 +855,7 @@ RemoveMindControl=false  ; boolean
   - `Crit.Chance` determines chance for a critical hit to occur. By default this is checked once when the Warhead is detonated and every target that is susceptible to critical hits will be affected. If `Crit.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
   - `Crit.ExtraDamage` determines the damage dealt by the critical hit. If `Crit.Warhead` is set, the damage is used to detonate the specified Warhead on each affected target, otherwise the damage is directly dealt based on current Warhead's `Verses` settings.
   - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against.
+  - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
   - `Crit.AffectsBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
   - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list.
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
@@ -799,6 +870,7 @@ Crit.ApplyChancePerTarget=false     ; boolean
 Crit.ExtraDamage=0                  ; integer
 Crit.Warhead=                       ; Warhead
 Crit.Affects=all                    ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+Crit.AffectsHouses=all              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 Crit.AffectBelowPercent=1.0         ; floating point value, percents or absolute (0.0-1.0)
 Crit.AnimList=                      ; list of animations
 Crit.AnimList.PickRandom=           ; boolean
@@ -823,10 +895,11 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]                ; Warhead
 SplashList=<none>            ; list of animations
 SplashList.PickRandom=false  ; boolean
+```
 
 ### Detonate Warhead on all objects on map
 
-- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is fully detonated (and not just used to deal damage) and consequently any `Airburst/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
+- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `Airburst/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
   - `DetonateOnAllMapObjects.AffectTargets` can be used to filter which types of targets (TechnoTypes) are considered valid. Only `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values.
   - `DetonateOnAllMapObjects.AffectHouses` can be used to filter which houses targets can belong to be considered valid. Only applicable if the house that fired the projectile is known.
   - `DetonateOnAllMapObjects.AffectTypes` can be used to list specific TechnoTypes to be considered as valid targets. If any valid TechnoTypes are listed, then only matching objects will be targeted. Note that `DetonateOnAllMapObjects.AffectTargets` and `DetonateOnAllMapObjects.AffectHouses` take priority over this setting.
@@ -874,7 +947,8 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 - Superweapons can now be launched when a warhead is detonated.
   - `LaunchSW` specifies the superweapons to launch when the warhead is detonated.
   - `LaunchSW.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons and sufficient fund to support `Money.Amout`. Otherwise they will be launched out of nowhere.
-  - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of each superweapon, otherwise only non-inhibited superweapons are launched. `SW.Designators` are always ignored.
+  - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
+  - `LaunchSW.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
 
 ```{note}
 For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
@@ -887,6 +961,7 @@ In `rulesmd.ini`:
 LaunchSW=                        ; list of superweapons
 LaunchSW.RealLaunch=true         ; boolean
 LaunchSW.IgnoreInhibitors=false  ; boolean
+LaunchSW.IgnoreDesignators=true  ; boolean
 ```
 
 ### Remove disguise on impact
@@ -901,11 +976,8 @@ RemoveDisguise=false  ; boolean
 
 ### Reveal map for owner on impact
 
-![image](_static/images/revealwarhead-01.gif)
-*`SpySat=yes` on `[NUKE]` warhead reveals the map when nuclear missile detonates*
-
 - Warheads can now reveal the entire map on impact.
-- Reveal only applies to the owner of the warhead.
+  - Reveal only applies to the owner of the warhead.
 
 In `rulesmd.ini`:
 ```ini
@@ -961,6 +1033,9 @@ Burst.Delays=-1  ; integer - burst delays (comma-separated) for shots in order f
 
 ### Feedback weapon
 
+![image](_static/images/feedbackweapon.gif)
+*`FeedbackWeapon` used to apply healing aura upon firing a weapon* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
+
 - You can now specify an auxiliary weapon to be fired on the firer itself when a weapon is fired.
   - `FireInTransport` setting of the feedback weapon is respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If feedback weapon is fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on feedback weapons.
 
@@ -990,17 +1065,10 @@ Strafing.Shots=5              ; integer
 Strafing.SimulateBurst=false  ; boolean
 ```
 
-### Trajectory speed
-
-- This sets projectile speed used by custom [projectile trajectories](#projectile-trajectories).
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]            ; WeaponType
-Trajectory.Speed=100.0  ; floating point value
-```
-
 ### Weapon targeting filter
+
+![image](_static/images/weaponfilter.gif)
+*`Weapon target filter - different weapon used against enemies & allies as well as units & buildings* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
 
 - You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
   - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.

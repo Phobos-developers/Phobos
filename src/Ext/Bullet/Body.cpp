@@ -2,13 +2,80 @@
 
 #include <Ext/RadSite/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Ext/BulletType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<BulletClass>::Canary = 0x2A2A2A2A;
 BulletExt::ExtContainer BulletExt::ExtMap;
+
+void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* pWeapon)
+{
+	if (!pSource || !pWeapon)
+		return;
+
+	auto pThis = this->OwnerObject();
+	auto pTypeExt = this->TypeExtData;
+	bool canAffect = false;
+	bool isIntercepted = false;
+
+	if (pTypeExt->Armor.isset())
+	{
+		double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor.Get());
+
+		if (versus != 0.0)
+		{
+			canAffect = true;
+			this->CurrentStrength -= static_cast<int>(pWeapon->Damage * versus * pSource->FirepowerMultiplier);
+
+			if (this->CurrentStrength <= 0)
+				isIntercepted = true;
+		}
+	}
+	else
+	{
+		canAffect = true;
+		isIntercepted = true;
+	}
+
+	if (canAffect)
+	{
+		auto const pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
+		auto const pWeaponOverride = pTechnoTypeExt->Interceptor_WeaponOverride.Get(pTypeExt->Interceptable_WeaponOverride.Get(nullptr));
+		bool detonate = !pTechnoTypeExt->Interceptor_DeleteOnIntercept.Get(pTypeExt->Interceptable_DeleteOnIntercept);
+
+		this->DetonateOnInterception = detonate;
+
+		if (pWeaponOverride)
+		{
+			bool replaceType = pTechnoTypeExt->Interceptor_WeaponReplaceProjectile;
+			bool cumulative = pTechnoTypeExt->Interceptor_WeaponCumulativeDamage;
+
+			pThis->WeaponType = pWeaponOverride;
+			pThis->Health = cumulative ? pThis->Health + pWeaponOverride->Damage : pWeaponOverride->Damage;
+			pThis->WH = pWeaponOverride->Warhead;
+			pThis->Bright = pWeaponOverride->Bright;
+
+			if (replaceType && pWeaponOverride->Projectile != pThis->Type && pWeaponOverride->Projectile)
+			{
+				pThis->Speed = pWeaponOverride->Speed;
+				pThis->Type = pWeaponOverride->Projectile;
+				this->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+				if (this->LaserTrails.size())
+				{
+					this->LaserTrails.clear();
+
+					if (!pThis->Type->Inviso)
+						this->InitializeLaserTrails();
+				}
+			}
+		}
+
+		if (isIntercepted && !pTechnoTypeExt->Interceptor_KeepIntact)
+			this->InterceptedStatus = InterceptedStatus::Intercepted;
+	}
+}
 
 void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel)
 {
@@ -53,93 +120,24 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	}
 }
 
-void BulletExt::InitializeLaserTrails(BulletClass* pThis)
+void BulletExt::ExtData::InitializeLaserTrails()
 {
-	auto pExt = BulletExt::ExtMap.Find(pThis);
-
-	if (pExt->LaserTrails.size())
+	if (this->LaserTrails.size())
 		return;
 
-	if (auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
+	if (auto pTypeExt = this->TypeExtData)
 	{
+		auto pThis = this->OwnerObject();
 		auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
 
 		for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
 		{
 			if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
 			{
-				pExt->LaserTrails.push_back(
+				this->LaserTrails.push_back(
 					std::make_unique<LaserTrailClass>(pLaserType, pOwner));
 			}
 		}
-	}
-}
-
-void BulletExt::InterceptBullet(BulletClass* pThis, TechnoClass* pSource, WeaponTypeClass* pWeapon)
-{
-	if (!pThis || !pSource || !pWeapon)
-		return;
-
-	auto const pExt = BulletExt::ExtMap.Find(pThis);
-	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
-
-	bool canAffect = false;
-	bool isIntercepted = false;
-
-	if (pTypeExt->Armor >= 0)
-	{
-		double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor);
-
-		if (versus != 0.0)
-		{
-			canAffect = true;
-			pExt->CurrentStrength -= static_cast<int>(pWeapon->Damage * versus * pSource->FirepowerMultiplier);
-
-			if (pExt->CurrentStrength <= 0)
-				isIntercepted = true;
-		}
-	}
-	else
-	{
-		canAffect = true;
-		isIntercepted = true;
-	}
-
-	if (canAffect)
-	{
-		auto const pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
-		auto const pWeaponOverride = pTechnoTypeExt->Interceptor_WeaponOverride.Get(pTypeExt->Interceptable_WeaponOverride.Get(nullptr));
-		bool detonate = !pTechnoTypeExt->Interceptor_DeleteOnIntercept.Get(pTypeExt->Interceptable_DeleteOnIntercept);
-
-		pExt->DetonateOnInterception = detonate;
-
-		if (pWeaponOverride)
-		{
-			bool replaceType = pTechnoTypeExt->Interceptor_WeaponReplaceProjectile;
-			bool cumulative = pTechnoTypeExt->Interceptor_WeaponCumulativeDamage;
-
-			pThis->WeaponType = pWeaponOverride;
-			pThis->Health = cumulative ? pThis->Health + pWeaponOverride->Damage : pWeaponOverride->Damage;
-			pThis->WH = pWeaponOverride->Warhead;
-			pThis->Bright = pWeaponOverride->Bright;
-
-			if (replaceType && pWeaponOverride->Projectile != pThis->Type)
-			{
-				pThis->Speed = pWeaponOverride->Speed;
-				pThis->Type = pWeaponOverride->Projectile;
-
-				if (pExt->LaserTrails.size())
-				{
-					pExt->LaserTrails.clear();
-
-					if (!pThis->Type->Inviso)
-						BulletExt::InitializeLaserTrails(pThis);
-				}
-			}
-		}
-
-		if (isIntercepted && !pTechnoTypeExt->Interceptor_KeepIntact)
-			pExt->InterceptedStatus = InterceptedStatus::Intercepted;
 	}
 }
 
@@ -150,6 +148,7 @@ template <typename T>
 void BulletExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->TypeExtData)
 		.Process(this->FirerHouse)
 		.Process(this->CurrentStrength)
 		.Process(this->IsInterceptor)
@@ -188,6 +187,7 @@ DEFINE_HOOK(0x4664BA, BulletClass_CTOR, 0x5)
 	GET(BulletClass*, pItem, ESI);
 
 	BulletExt::ExtMap.FindOrAllocate(pItem);
+
 	return 0;
 }
 
