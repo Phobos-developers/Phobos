@@ -36,7 +36,7 @@ public:
 		Valueable<bool> Interceptor_WeaponReplaceProjectile;
 		Valueable<bool> Interceptor_WeaponCumulativeDamage;
 		Valueable<bool> Interceptor_KeepIntact;
-		Valueable<CoordStruct> TurretOffset;
+		Valueable<PartialVector3D<int>> TurretOffset;
 		Valueable<bool> Spawn_LimitedRange;
 		Valueable<int> Spawn_LimitedExtraRange;
 		Nullable<bool> Harvester_Counted;
@@ -112,6 +112,8 @@ public:
 
 		Valueable<CSFText> EnemyUIName;
 		Valueable<int> ForceWeapon_Naval_Decloaked;
+		Valueable<int> ForceWeapon_Cloaked;
+		Valueable<int> ForceWeapon_Disguised;
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
@@ -122,7 +124,7 @@ public:
 
 		Nullable<bool> IronCurtain_KeptOnDeploy;
 
-		Valueable<Vector2D<double>> InitialStrength_Cloning;
+		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
 
 		Valueable<bool> Explodes_KillPassengers;
 
@@ -230,6 +232,8 @@ public:
 			, EVA_Sold { }
 			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
+			, ForceWeapon_Cloaked { -1 }
+			, ForceWeapon_Disguised { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 			, SelfHealGainType()

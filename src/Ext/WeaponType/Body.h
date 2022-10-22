@@ -31,6 +31,7 @@ public:
 		Valueable<AreaFireTarget> AreaFire_Target;
 		Nullable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
+		Nullable<PartialVector2D<int>> ROF_RandomDelay;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
@@ -47,6 +48,7 @@ public:
 			, AreaFire_Target { AreaFireTarget::Base }
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
+			, ROF_RandomDelay {}
 		{ }
 
 		virtual ~ExtData() = default;

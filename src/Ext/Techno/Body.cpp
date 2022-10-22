@@ -98,7 +98,7 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 	if (pTypeExt->AutoDeath_AfterDelay > 0)
 	{
 		//using Expired() may be confusing
-		if (this->AutoDeathTimer.StartTime == -1 && this->AutoDeathTimer.TimeLeft == 0)
+		if (!this->AutoDeathTimer.HasStarted())
 		{
 			this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
 		}

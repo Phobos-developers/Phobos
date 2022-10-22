@@ -19,9 +19,11 @@ void TechnoTypeExt::ExtData::Initialize()
 
 void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 {
-	float x = static_cast<float>(this->TurretOffset.GetEx()->X * factor);
-	float y = static_cast<float>(this->TurretOffset.GetEx()->Y * factor);
-	float z = static_cast<float>(this->TurretOffset.GetEx()->Z * factor);
+	// Does not verify if the offset actually has all values parsed as it makes no difference, it will be 0 for the unparsed ones either way.
+	auto offset = this->TurretOffset.GetEx();
+	float x = static_cast<float>(offset->X * factor);
+	float y = static_cast<float>(offset->Y * factor);
+	float z = static_cast<float>(offset->Z * factor);
 
 	mtx->Translate(x, y, z);
 }
@@ -193,6 +195,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
 	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
+	this->ForceWeapon_Cloaked.Read(exINI, pSection, "ForceWeapon.Cloaked");
+	this->ForceWeapon_Disguised.Read(exINI, pSection, "ForceWeapon.Disguised");
 	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
 	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 	this->SelfHealGainType.Read(exINI, pSection, "SelfHealGainType");
@@ -346,6 +350,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployingAnim_UseUnitDrawer)
 		.Process(this->EnemyUIName)
 		.Process(this->ForceWeapon_Naval_Decloaked)
+		.Process(this->ForceWeapon_Cloaked)
+		.Process(this->ForceWeapon_Disguised)
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
 		.Process(this->SelfHealGainType)
