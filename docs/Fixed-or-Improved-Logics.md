@@ -307,7 +307,7 @@ In `rulesmd.ini`
 ```ini
 [CombatDamage]
 IronCurtain.EffectOnOrganics=kill  ; IronCurtain effect Enumeration (kill | invulnerable | ignore), IronCurtain to Infantry and Techno with Organic=yes
-IronCurtain.KillOrganicsWarhead=   ; IronCurtain use this warhead kill technos, default to [CombatDamage]->C4Warhead
+IronCurtain.KillOrganicsWarhead=   ; IronCurtain uses this warhead to kill organics, default to [CombatDamage]->C4Warhead
 
 [SOMEINFANTRY]
 IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore), default to [CombatDamage]-> IronCurtain.EffectOnOrganics
