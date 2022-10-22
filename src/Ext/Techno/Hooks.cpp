@@ -16,9 +16,13 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	auto pType = pThis->GetTechnoType();
 
-	// Set only if unset or type has changed
-	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
+	// Set only if unset
+	if (!pExt->TypeExtData)
 		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
+	// or type is changed, and if it does
+	// it should be done by Ares in the same hook here, which is executed right before this one thankfully
+	else if (pExt->TypeExtData->OwnerObject() != pType)
+		pExt->UpdateTypeAndLaserTrails(pType);
 
 	if (pExt->CheckDeathConditions())
 		return 0;
@@ -29,21 +33,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->ApplySpawnLimitRange();
 
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
-
-	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
-	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
-	for (auto const& trail : pExt->LaserTrails)
-	{
-		if (pThis->CloakState == CloakState::Cloaked && !trail->Type->CloakVisible)
-			continue;
-
-		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret);
-		if (pThis->CloakState == CloakState::Uncloaking && !trail->Type->CloakVisible)
-			trail->LastLocation = trailLoc;
-		else
-			trail->Update(trailLoc);
-
-	}
 
 	return 0;
 }
@@ -114,10 +103,7 @@ DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
 		{
 			if (auto pTypeUnit = pFoot->GetTechnoType())
 			{
-				Vector2D<double> range = pTypeExt->InitialStrength_Cloning.Get();
-				int min = static_cast<int>(range.X * 100);
-				int max = static_cast<int>(range.Y * 100);
-				double percentage = range.X >= range.Y ? range.X : (ScenarioClass::Instance->Random.RandomRanged(min, max) / 100.0);
+				double percentage = GeneralUtils::GetRangedRandomOrSingleValue(pTypeExt->InitialStrength_Cloning);
 				int strength = static_cast<int>(pTypeUnit->Strength * percentage);
 
 				if (strength <= 0)
@@ -132,13 +118,25 @@ DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x6FD0B5, TechnoClass_RearmDelay_RandomDelay, 0x6)
+{
+	GET(WeaponTypeClass*, pWeapon, EDI);
+
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	auto range = pWeaponExt->ROF_RandomDelay.Get(RulesExt::Global()->ROF_RandomDelay);
+
+	R->EAX(GeneralUtils::GetRangedRandomOrSingleValue(range));
+	return 0;
+}
+
 // Issue #271: Separate burst delay for weapon type
 // Author: Starkku
-DEFINE_HOOK(0x6FD05E, TechnoClass_Rearm_Delay_BurstDelays, 0x7)
+DEFINE_HOOK(0x6FD05E, TechnoClass_RearmDelay_BurstDelays, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
-	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	int burstDelay = -1;
 
 	if (pWeaponExt->Burst_Delays.size() > (unsigned)pThis->CurrentBurstIndex)
@@ -303,48 +301,6 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 	}
 
 	return 0x702823;
-}
-
-namespace AresConvert
-{
-	UnitTypeClass* TypeBeforeDeploy = nullptr;
-}
-
-DEFINE_HOOK(0x73DE78, UnitClass_SimpleDeployer_BeforeDeploy, 0x6)
-{
-	GET(UnitTypeClass*, type, EAX);
-	AresConvert::TypeBeforeDeploy = type;
-	return 0;
-}
-
-DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
-{
-	GET(UnitClass*, pUnit, ESI);
-
-	if (pUnit->Type == AresConvert::TypeBeforeDeploy)
-		return 0;
-
-	auto pTechnoExt = TechnoExt::ExtMap.Find(pUnit);
-	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->Type);
-
-	if (pTechnoExt && pTechnoTypeExt)
-	{
-		if (pTechnoExt->LaserTrails.size())
-			pTechnoExt->LaserTrails.clear();
-
-		for (auto const& entry : pTechnoTypeExt->LaserTrailData)
-		{
-			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.Type].get())
-			{
-				pTechnoExt->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
-					pLaserType, pUnit->Owner, entry.FLH, entry.IsOnTurret));
-			}
-		}
-	}
-
-	pTechnoExt->TypeExtData = pTechnoTypeExt;
-
-	return 0;
 }
 
 DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)

@@ -662,6 +662,24 @@ In `artmd.ini`:
 FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-specific FLH key name and N is zero-based burst shot index.
 ```
 
+### Forcing specific weapon against certain targets
+
+![image](_static/images/underwater-new-attack-tag.gif)
+*Naval underwater target behavior with `ForceWeapon.Naval.Decloaked` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
+
+- Can be used to override normal weapon selection logic to force specific weapons to use against certain targets. If multiple are set and target satisfies the conditions, the first one in listed order satisfied takes effect.
+  - `ForceWeapon.Naval.Decloaked` forces specified weapon to be used against uncloaked naval targets. Useful if your naval unit has one weapon only for underwater and another weapon for surface targets.
+  - `ForceWeapon.Cloaked` forces specified weapon to be used against any cloaked targets.
+  - `ForceWeapon.Disguised` forces specified weapon to be used against any disguised targets.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                    ; TechnoType
+ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.Cloaked=-1          ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+```
+
 ### Initial Strength
 
 - You can now specify how many hitpoints a TechnoType starts with.
@@ -682,7 +700,7 @@ InitialStrength=  ; integer
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]            ; BuildingType
-InitialStrength.Cloning=  ; single double/percentage or comma-sep. range
+InitialStrength.Cloning=  ; floating point value - single or comma-sep. range (percentages)
 ```
 
 ### Kill Object Automatically
@@ -713,7 +731,6 @@ AutoDeath.OnAmmoDepletion=no  ; boolean
 AutoDeath.AfterDelay=0        ; positive integer
 ```
 
-
 ### Mind Control enhancement
 
 ![image](_static/images/mindcontrol-max-range-01.gif)
@@ -742,20 +759,6 @@ MindControl.Anim=                     ; Animation, defaults to ControlledAnimati
 ```ini
 [SOMETECHNO]        ; TechnoType
 NoManualMove=false  ; boolean
-```
-
-### Override Uncloaked Underwater attack behavior
-
-![image](_static/images/underwater-new-attack-tag.gif)
-*Naval underwater behavior in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
-
-- Overrides a part of the vanilla YR logic for allowing naval units to use a different weapon if the naval unit is uncloaked.
-- Useful if your naval unit have 1 weapon only for underwater and another weapon for surface objects.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                    ; TechnoType
-ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ```
 
 ### Promoted Spawns

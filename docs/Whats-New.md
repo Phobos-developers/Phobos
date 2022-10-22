@@ -260,9 +260,13 @@ New:
 - Cloaked objects displaying to observers (by Starkku)
 - Building airstrike target eligibility customization (by Starkku)
 - IvanBomb detonation & image display centered on buildings (by Starkku)
+- Forcing specific weapon against cloaked or disguised targets (by Starkku)
+- Customizable ROF random delay (by Starkku)
+- Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
+- Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations (by Starkku)
 </details>
 
 ### 0.3
