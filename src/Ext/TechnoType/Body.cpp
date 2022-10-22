@@ -427,7 +427,7 @@ template <typename T>
 bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Serialize(T& stm)
 {
 	return stm
-		.Process(this->Type)
+		.Process(this->idxType)
 		.Process(this->FLH)
 		.Process(this->IsOnTurret)
 		.Success();

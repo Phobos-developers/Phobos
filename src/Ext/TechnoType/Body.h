@@ -148,7 +148,7 @@ public:
 
 		struct LaserTrailDataEntry
 		{
-			ValueableIdx<LaserTrailTypeClass> Type;
+			ValueableIdx<LaserTrailTypeClass> idxType;
 			Valueable<CoordStruct> FLH;
 			Valueable<bool> IsOnTurret;
 

@@ -399,7 +399,7 @@ void TechnoExt::InitializeLaserTrails(TechnoClass* pThis)
 	{
 		for (auto const& entry : pTypeExt->LaserTrailData)
 		{
-			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.Type].get())
+			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
 			{
 				pExt->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
 					pLaserType, pThis->Owner, entry.FLH, entry.IsOnTurret));
