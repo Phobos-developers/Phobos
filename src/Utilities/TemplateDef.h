@@ -1084,7 +1084,7 @@ bool ValueableVector<bool>::Load(PhobosStreamReader& stm, bool registerForChange
 			if (!Savegame::ReadPhobosStream(stm, value, false))
 				return false;
 
-			this->emplace_back(i);
+			this->emplace_back(value);
 		}
 		return true;
 	}
