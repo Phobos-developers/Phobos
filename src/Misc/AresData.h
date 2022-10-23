@@ -26,7 +26,7 @@ struct AresData
 	static bool CanUseAres;
 
 	// Here be known Ares functions
-	static void __stdcall CallHandleConvert(TechnoClass* pTechno, TechnoTypeClass* pConvertTo);
+	static bool __stdcall CallHandleConvert(TechnoClass* pTechno, TechnoTypeClass* pConvertTo);
 
 	static void Init();
 	static void UnInit();

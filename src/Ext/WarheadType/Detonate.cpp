@@ -96,7 +96,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_SelfHealing_Duration > 0 ||
 		this->Shield_AttachTypes.size() > 0 ||
 		this->Shield_RemoveTypes.size() > 0 ||
-		this->Converts;
+		this->Convert_To.size() > 0;
 
 	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 
@@ -132,7 +132,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->Crit_Chance && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner);
 
-	if (this->Converts)
+	if (this->Convert_To.size() > 0)
 		this->ApplyConvert(pHouse, pTarget);
 }
 
@@ -316,64 +316,75 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 	if (!AresData::CanUseAres)
 		return;
 
-	if (this->Convert_From.size() && this->Convert_To.size())
+	if (this->Convert_To.size())
 	{
-		// explicitly unsigned because the compiler wants it
-		for (unsigned int i = 0; i < this->Convert_From.size(); i++)
+		auto Conversion = [this, pTarget](TechnoTypeClass* pResultType)
 		{
-			// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
-			if (this->Convert_To.size() >= i && this->Convert_From[i] == pTarget->GetTechnoType())
+			if (!AresData::CallHandleConvert(pTarget, pResultType))
+				return;
+
+			if (pTarget->WhatAmI() == AbstractType::Infantry &&
+				pResultType->WhatAmI() == AbstractType::InfantryType)
 			{
-				TechnoTypeClass* pResultType = this->Convert_To[i];
-
-				if (pTarget->WhatAmI() == AbstractType::Infantry &&
-					pResultType->WhatAmI() == AbstractType::InfantryType)
-				{
-					// InfantryClass only logic
-				}
-				else if (pTarget->WhatAmI() == AbstractType::Unit &&
-					pResultType->WhatAmI() == AbstractType::UnitType)
-				{
-					// UnitClass only logic
-				}
-				else if (pTarget->WhatAmI() == AbstractType::Aircraft &&
-					pResultType->WhatAmI() == AbstractType::AircraftType)
-				{
-					// AircraftClass only logic
-				}
-				else
-				{
-					Debug::Log("Attempting to convert units of different categories: %s and %s!", pTarget->GetTechnoType()->get_ID(), pResultType->get_ID());
-				}
-
-				// Shared logic
-				auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-				auto pResultTypeExt = TechnoTypeExt::ExtMap.Find(pResultType);
-
-				if (pTargetExt->TypeExtData->PassengerDeletion_Rate > 0)
-				{
-					if (pResultTypeExt->PassengerDeletion_Rate <= 0)
-					{
-						pTargetExt->PassengerDeletionCountDown = -1;
-						pTargetExt->PassengerDeletionTimer.Stop();
-					}
-				}
-
-				if (pTargetExt->TypeExtData->AutoDeath_AfterDelay > 0)
-				{
-					if (pResultTypeExt->AutoDeath_AfterDelay <= 0)
-					{
-						pTargetExt->AutoDeathTimer.Stop();
-					}
-				}
-
-				pTargetExt->TypeExtData = pResultTypeExt;
-				ShieldClass::ConvertShield(pTarget, pResultType);
-				TechnoExt::InitializeLaserTrails(pTarget, pResultType, true);
-
-				AresData::CallHandleConvert(pTarget, this->Convert_To[i]);
-				break;
+				// InfantryClass only logic
 			}
+			else if (pTarget->WhatAmI() == AbstractType::Unit &&
+				pResultType->WhatAmI() == AbstractType::UnitType)
+			{
+				// UnitClass only logic
+			}
+			else if (pTarget->WhatAmI() == AbstractType::Aircraft &&
+				pResultType->WhatAmI() == AbstractType::AircraftType)
+			{
+				// AircraftClass only logic
+			}
+			else
+			{
+				Debug::Log("Attempting to convert units of different categories: %s and %s!", pTarget->GetTechnoType()->get_ID(), pResultType->get_ID());
+			}
+
+			// Shared logic
+			auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+			auto pResultTypeExt = TechnoTypeExt::ExtMap.Find(pResultType);
+
+			if (pTargetExt->TypeExtData->PassengerDeletion_Rate > 0)
+			{
+				if (pResultTypeExt->PassengerDeletion_Rate <= 0)
+				{
+					pTargetExt->PassengerDeletionCountDown = -1;
+					pTargetExt->PassengerDeletionTimer.Stop();
+				}
+			}
+
+			if (pTargetExt->TypeExtData->AutoDeath_AfterDelay > 0)
+			{
+				if (pResultTypeExt->AutoDeath_AfterDelay <= 0)
+				{
+					pTargetExt->AutoDeathTimer.Stop();
+				}
+			}
+
+			pTargetExt->TypeExtData = pResultTypeExt;
+			ShieldClass::ConvertShield(pTarget, pResultType);
+			TechnoExt::InitializeLaserTrails(pTarget, pResultType, true);
+		};
+
+		if (this->Convert_From.size())
+		{
+			// explicitly unsigned because the compiler wants it
+			for (unsigned int i = 0; i < this->Convert_From.size(); i++)
+			{
+				// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
+				if (this->Convert_To.size() >= i && this->Convert_From[i] == pTarget->GetTechnoType())
+				{
+					Conversion(this->Convert_To[i]);
+					break;
+				}
+			}
+		}
+		else
+		{
+			Conversion(this->Convert_To[0]);
 		}
 	}
 }

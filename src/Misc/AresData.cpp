@@ -100,7 +100,7 @@ void AresData::UnInit()
 		FreeLibrary(AresDllHmodule);
 }
 
-void __stdcall AresData::CallHandleConvert(TechnoClass* pTechno, TechnoTypeClass* pConvertTo)
+bool  __stdcall AresData::CallHandleConvert(TechnoClass* pTechno, TechnoTypeClass* pConvertTo)
 {
 	if (!CanUseAres)
 		return;

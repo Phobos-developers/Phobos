@@ -94,7 +94,6 @@ public:
 		bool HasCrit;
 		bool WasDetonatedOnAllMapObjects;
 
-		Valueable<bool> Converts;
 		ValueableVector<TechnoTypeClass*> Convert_From;
 		ValueableVector<TechnoTypeClass*> Convert_To;
 
@@ -173,7 +172,6 @@ public:
 			, DetonateOnAllMapObjects_AffectTypes {}
 			, DetonateOnAllMapObjects_IgnoreTypes {}
 
-			, Converts { false }
 			, Convert_From {}
 			, Convert_To {}
 

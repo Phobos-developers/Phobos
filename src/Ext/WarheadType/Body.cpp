@@ -174,7 +174,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Convert_From.Read(exINI, pSection, "Convert.From");
 	this->Convert_To.Read(exINI, pSection, "Convert.To");
-	this->Converts = this->Convert_From.size() && this->Convert_To.size();
 
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -253,7 +252,6 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnAllMapObjects_AffectTypes)
 		.Process(this->DetonateOnAllMapObjects_IgnoreTypes)
 
-		.Process(this->Converts)
 		.Process(this->Convert_From)
 		.Process(this->Convert_To)
 

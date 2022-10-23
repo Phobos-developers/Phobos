@@ -50,6 +50,10 @@ public:
 		ValueableVector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		ValueableVector<ValueableVector<int>> SW_Next_RandomWeightsData;
 
+		ValueableVector<TechnoTypeClass*> Convert_From;
+		ValueableVector<TechnoTypeClass*> Convert_To;
+		Valueable<AffectedHouse> Convert_AffectedHouses;
+
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
 			, SW_Inhibitors {}
@@ -80,6 +84,9 @@ public:
 			, SW_Next_IgnoreDesignators { true }
 			, SW_Next_RollChances {}
 			, SW_Next_RandomWeightsData {}
+			, Convert_From {}
+			, Convert_To {}
+			, Convert_AffectedHouses {}
 		{ }
 
 		// Ares 0.A functions
@@ -98,6 +105,7 @@ public:
 		void ApplyLimboKill(HouseClass* pHouse);
 		void ApplyDetonation(HouseClass* pHouse, const CellStruct& cell);
 		void ApplySWNext(SuperClass* pSW, const CellStruct& cell);
+		void ApplyTypeConversion(SuperClass* pSW);
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;

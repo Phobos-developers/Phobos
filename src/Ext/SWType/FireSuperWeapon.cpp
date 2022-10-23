@@ -11,6 +11,7 @@
 #include "Ext/House/Body.h"
 #include "Ext/WarheadType/Body.h"
 #include "Ext/WeaponType/Body.h"
+#include <Misc/AresData.h>
 
 inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 {
@@ -124,6 +125,9 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 
 		if (pTypeExt->SW_Next.size() > 0)
 			pTypeExt->ApplySWNext(pSW, cell);
+
+		if (pTypeExt->Convert_To.size() > 0)
+			pTypeExt->ApplyTypeConversion(pSW);
 	}
 }
 
@@ -430,4 +434,93 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 		return false;
 
 	return true;
+}
+
+
+void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
+{
+	if (!AresData::CanUseAres)
+		return;
+
+	if (this->Convert_To.size())
+	{
+		auto Conversion = [this](TechnoClass* pTarget, TechnoTypeClass* pResultType)
+		{
+			if (!AresData::CallHandleConvert(pTarget, pResultType))
+				return;
+
+			if (pTarget->WhatAmI() == AbstractType::Infantry &&
+				pResultType->WhatAmI() == AbstractType::InfantryType)
+			{
+				// InfantryClass only logic
+			}
+			else if (pTarget->WhatAmI() == AbstractType::Unit &&
+				pResultType->WhatAmI() == AbstractType::UnitType)
+			{
+				// UnitClass only logic
+			}
+			else if (pTarget->WhatAmI() == AbstractType::Aircraft &&
+				pResultType->WhatAmI() == AbstractType::AircraftType)
+			{
+				// AircraftClass only logic
+			}
+			else
+			{
+				Debug::Log("Attempting to convert units of different categories: %s and %s!", pTarget->GetTechnoType()->get_ID(), pResultType->get_ID());
+			}
+
+			// Shared logic
+			auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+			auto pResultTypeExt = TechnoTypeExt::ExtMap.Find(pResultType);
+
+			if (pTargetExt->TypeExtData->PassengerDeletion_Rate > 0)
+			{
+				if (pResultTypeExt->PassengerDeletion_Rate <= 0)
+				{
+					pTargetExt->PassengerDeletionCountDown = -1;
+					pTargetExt->PassengerDeletionTimer.Stop();
+				}
+			}
+
+			if (pTargetExt->TypeExtData->AutoDeath_AfterDelay > 0)
+			{
+				if (pResultTypeExt->AutoDeath_AfterDelay <= 0)
+				{
+					pTargetExt->AutoDeathTimer.Stop();
+				}
+			}
+
+			pTargetExt->TypeExtData = pResultTypeExt;
+			ShieldClass::ConvertShield(pTarget, pResultType);
+			TechnoExt::InitializeLaserTrails(pTarget, pResultType, true);
+		};
+
+		if (this->Convert_From.size())
+		{
+			for (auto pTarget : *TechnoClass::Array)
+			{
+				if (!EnumFunctions::CanTargetHouse(this->Convert_AffectedHouses, pSW->Owner, pTarget->Owner))
+					continue;
+				// explicitly unsigned because the compiler wants it
+				for (unsigned int i = 0; i < this->Convert_From.size(); i++)
+				{
+					// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
+					if (this->Convert_To.size() >= i && this->Convert_From[i] == pTarget->GetTechnoType())
+					{
+						Conversion(pTarget, this->Convert_To[i]);
+						break;
+					}
+				}
+			}
+		}
+		else
+		{
+			for (auto pTarget : *TechnoClass::Array)
+			{
+				if (!EnumFunctions::CanTargetHouse(this->Convert_AffectedHouses, pSW->Owner, pTarget->Owner))
+					continue;
+				Conversion(pTarget, this->Convert_To[0]);
+			}
+		}
+	}
 }
