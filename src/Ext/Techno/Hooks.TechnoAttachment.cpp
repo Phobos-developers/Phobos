@@ -21,7 +21,7 @@ DEFINE_HOOK(0x4DA86E, FootClass_AI_UpdateAttachedLocomotion, 0x0)
 DEFINE_HOOK(0x707CB3, TechnoClass_KillCargo_HandleAttachments, 0x6)
 {
 	GET(TechnoClass*, pThis, EBX);
-	GET_STACK(TechnoClass*, pSource, STACK_OFFS(0x4, -0x4));
+	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0x4, 0x4));
 
 	TechnoExt::DestroyAttachments(pThis, pSource);
 
@@ -141,8 +141,8 @@ void ParentClickedAction(TechnoClass* pThis, ObjectClass* pTarget, CellStruct* p
 
 DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 {
-	GET_STACK(int, idxPath, STACK_OFFS(0x18, +0x8));
-	GET_STACK(unsigned char, idxWP, STACK_OFFS(0x18, +0xC));
+	GET_STACK(int, idxPath, STACK_OFFSET(0x18, -0x8));
+	GET_STACK(unsigned char, idxWP, STACK_OFFSET(0x18, -0xC));
 
 	for (auto const& pObject : ObjectClass::CurrentObjects.get())
 	{
@@ -150,9 +150,9 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 			ParentClickedWaypoint(pTechno, idxPath, idxWP);
 	}
 
-	GET_STACK(ObjectClass* const, pTarget, STACK_OFFS(0x18, -0x4));
-	LEA_STACK(CellStruct* const, pCell, STACK_OFFS(0x18, -0x8));
-	GET_STACK(Action const, action, STACK_OFFS(0x18, -0xC));
+	GET_STACK(ObjectClass* const, pTarget, STACK_OFFSET(0x18, +0x4));
+	LEA_STACK(CellStruct* const, pCell, STACK_OFFSET(0x18, +0x8));
+	GET_STACK(Action const, action, STACK_OFFSET(0x18, +0xC));
 
 	CellStruct invalidCell { -1, -1 };
 	CellStruct* pSecondCell = &invalidCell;
@@ -233,7 +233,7 @@ DEFINE_HOOK(0x6FFBE0, TechnoClass_PlayerAssignMission_Context_Set, 0x6)
 DEFINE_HOOK_AGAIN(0x6FFDEB, TechnoClass_PlayerAssignMission_HandleChildren, 0x5)
 DEFINE_HOOK(0x6FFCAE, TechnoClass_PlayerAssignMission_HandleChildren, 0x5)
 {
-	GET_STACK(Mission, mission, STACK_OFFS(0x98, -0x4));
+	GET_STACK(Mission, mission, STACK_OFFSET(0x98, +0x4));
 
 	switch (mission)
 	{
@@ -244,9 +244,9 @@ DEFINE_HOOK(0x6FFCAE, TechnoClass_PlayerAssignMission_HandleChildren, 0x5)
 		return 0;
 	}
 
-	GET_STACK(ObjectClass* const, pTarget, STACK_OFFS(0x98, -0x8));
-	GET_STACK(CellClass* const, pTargetCell, STACK_OFFS(0x98, -0xC));
-	GET_STACK(CellClass* const, pCellNearTarget, STACK_OFFS(0x98, -0x10));
+	GET_STACK(ObjectClass* const, pTarget, STACK_OFFSET(0x98, +0x8));
+	GET_STACK(CellClass* const, pTargetCell, STACK_OFFSET(0x98, +0xC));
+	GET_STACK(CellClass* const, pCellNearTarget, STACK_OFFSET(0x98, +0x10));
 	auto const& pExt = TechnoExt::ExtMap.Find(TechnoAttachmentTemp::pParent);
 
 	bool oldFeedback = Unsorted::MoveFeedback;
@@ -394,7 +394,7 @@ DEFINE_HOOK(0x4D74EC, FootClass_ObjectClickedAction_HandleAttachment, 0x6)
 	enum { ReturnFalse = 0x4D77EC, Continue = 0x0 };
 
 	GET(FootClass*, pThis, ESI);
-	GET_STACK(Action, action, STACK_OFFS(0x108, -0x4));
+	GET_STACK(Action, action, STACK_OFFSET(0x108, +0x4));
 	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (!pExt->ParentAttachment)
@@ -422,7 +422,7 @@ DEFINE_HOOK(0x4D7D58, FootClass_CellClickedAction_HandleAttachment, 0x6)
 	enum { ReturnFalse = 0x4D7D62, Continue = 0x0 };
 
 	GET(FootClass*, pThis, ESI);
-	GET_STACK(Action, action, STACK_OFFS(0x24, -0x4));
+	GET_STACK(Action, action, STACK_OFFSET(0x24, +0x4));
 	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (!pExt->ParentAttachment)
@@ -520,7 +520,7 @@ DEFINE_HOOK(0x73B5B5, UnitClass_DrawVoxel_AttachmentAdjust, 0x6)
 	enum { Skip = 0x73B5CE };
 
 	GET(UnitClass*, pThis, EBP);
-	LEA_STACK(VoxelIndexKey*, pKey, STACK_OFFS(0x1C4, 0x1B0));
+	LEA_STACK(VoxelIndexKey*, pKey, STACK_OFFSET(0x1C4, -0x1B0));
 
 	Matrix3D transform = TechnoExt::GetAttachmentTransform(pThis, pKey);
 	R->EAX(&transform);
@@ -533,7 +533,7 @@ DEFINE_HOOK(0x73C864, UnitClass_drawcode_AttachmentAdjust, 0x6)
 	enum { Skip = 0x73C87D };
 
 	GET(UnitClass*, pThis, EBP);
-	LEA_STACK(VoxelIndexKey*, pKey, STACK_OFFS(0x128, 0xC8));
+	LEA_STACK(VoxelIndexKey*, pKey, STACK_OFFSET(0x128, -0xC8));
 
 	Matrix3D transform = TechnoExt::GetAttachmentTransform(pThis, pKey);
 	R->EAX(&transform);
@@ -546,7 +546,7 @@ DEFINE_HOOK(0x73C29F, UnitClass_DrawVoxel_AttachmentAdjustShadow, 0x6)
 	enum { Skip = 0x73C2B8 };
 
 	GET(UnitClass*, pThis, EBP);
-	LEA_STACK(VoxelIndexKey*, pKey, STACK_OFFS(0x1F0, 0x1DC));
+	LEA_STACK(VoxelIndexKey*, pKey, STACK_OFFSET(0x1F0, -0x1DC));
 
 	Matrix3D transform = TechnoExt::GetAttachmentTransform(pThis, pKey, true);
 	R->EAX(&transform);
@@ -559,7 +559,7 @@ DEFINE_HOOK(0x414953, AircraftClass_DrawIt_AttachmentAdjust, 0x6)
 	enum { Skip = 0x41496C };
 
 	GET(AircraftClass*, pThis, EBP);
-	LEA_STACK(VoxelIndexKey*, pKey, STACK_OFFS(0xD8, 0xC8));
+	LEA_STACK(VoxelIndexKey*, pKey, STACK_OFFSET(0xD8, -0xC8));
 
 	Matrix3D transform = TechnoExt::GetAttachmentTransform((TechnoClass*)pThis, pKey);
 	R->EAX(&transform);
@@ -572,7 +572,7 @@ DEFINE_HOOK(0x41480D, AircraftClass_DrawIt_AttachmentAdjustShadow, 0x6)
 	enum { Skip = 0x414826 };
 
 	GET(AircraftClass*, pThis, EBP);
-	LEA_STACK(VoxelIndexKey*, pKey, STACK_OFFS(0xD4, 0xC4));
+	LEA_STACK(VoxelIndexKey*, pKey, STACK_OFFSET(0xD4, -0xC4));
 
 	Matrix3D transform = TechnoExt::GetAttachmentTransform((TechnoClass*)pThis, pKey, true);
 	R->EAX(&transform);
@@ -612,6 +612,7 @@ DEFINE_HOOK(0x41480D, AircraftClass_DrawIt_AttachmentAdjustShadow, 0x6)
 namespace TechnoAttachmentTemp
 {
 	ObjectClass* pThis;
+	Point2D realDrawPoint = Point2D::Empty;
 }
 
 DEFINE_HOOK(0x5F4B13, ObjectClass_Render_Context_Set, 0x5)
@@ -626,11 +627,27 @@ DEFINE_HOOK(0x5F4B13, ObjectClass_Render_Context_Set, 0x5)
 // Swap the render coord after the draw rect is calculated
 DEFINE_HOOK(0x5F4CC3, ObjectClass_Render_AttachmentAdjust, 0x6)
 {
-	LEA_STACK(Point2D*, drawPoint, STACK_OFFS(0x30, 0x18));
-	ObjectClass* pThis = TechnoAttachmentTemp::pThis;
+	LEA_STACK(Point2D*, drawPoint, STACK_OFFSET(0x30, -0x18));
+	TechnoAttachmentTemp::realDrawPoint = *drawPoint;
 
+	ObjectClass* pThis = TechnoAttachmentTemp::pThis;
 	if (pThis->AbstractFlags & AbstractFlags::Techno)
 		TacticalClass::Instance->CoordsToClient(TechnoExt::GetTopLevelParent((TechnoClass*)pThis)->GetRenderCoords(), drawPoint);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6D9EF0, TacticalClass_AddSelectable_SwapCoord, 0x6)
+{
+	REF_STACK(TechnoClass*, pTechno, STACK_OFFSET(0x0, 0x4));
+	REF_STACK(int, x, STACK_OFFSET(0x0, 0x8));
+	REF_STACK(int, y, STACK_OFFSET(0x0, 0xC));
+
+	if (pTechno == TechnoAttachmentTemp::pThis)
+	{
+		x = TechnoAttachmentTemp::realDrawPoint.X;
+		y = TechnoAttachmentTemp::realDrawPoint.Y;
+	}
 
 	return 0;
 }
