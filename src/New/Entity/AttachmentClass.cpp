@@ -71,6 +71,11 @@ Matrix3D AttachmentClass::GetChildTransformForLocation()
 
 CoordStruct AttachmentClass::GetChildLocation()
 {
+	auto& flh = this->Data->FLH.Get();
+	return TechnoExt::GetFLHAbsoluteCoords(this->Parent, flh, this->Data->IsOnTurret);
+
+	/*
+	// TODO it doesn't work correctly for some unexplicable reason
 	auto result = this->GetChildTransformForLocation() * Vector3D<float>::Empty;
 
 	// Resulting coords are mirrored along X axis, so we mirror it back
@@ -81,6 +86,7 @@ CoordStruct AttachmentClass::GetChildLocation()
 	location += { std::lround(result.X), std::lround(result.Y), std::lround(result.Z) };
 
 	return location;
+	*/
 }
 
 AttachmentClass::~AttachmentClass()
