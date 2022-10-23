@@ -91,7 +91,7 @@ CoordStruct AttachmentClass::GetChildLocation()
 
 AttachmentClass::~AttachmentClass()
 {
-	// clear up non-owning references
+	// clean up non-owning references
 	if (this->Child)
 	{
 		auto const& pChildExt = TechnoExt::ExtMap.Find(Child);
@@ -257,7 +257,7 @@ void AttachmentClass::Limbo()
 
 bool AttachmentClass::AttachChild(TechnoClass* pChild)
 {
-	if (this->Child || this->Data->TechnoType.isset())
+	if (this->Child)
 		return false;
 
 	this->Child = pChild;
