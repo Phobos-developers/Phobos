@@ -103,6 +103,9 @@ void AresData::UnInit()
 bool  __stdcall AresData::CallHandleConvert(TechnoClass* pTechno, TechnoTypeClass* pConvertTo)
 {
 	if (!CanUseAres)
-		return;
+		return false;
+	DWORD returnValue;
 	JMP_STD(AresData::AresFunctionOffestsFinal[0]);
+	GET_REG32(returnValue, eax);
+	return (bool)returnValue;
 }

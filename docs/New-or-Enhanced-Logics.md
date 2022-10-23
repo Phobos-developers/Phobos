@@ -459,6 +459,34 @@ Shrapnel.AffectsBuildings=false  ; boolean
 
 ## Super Weapons
 
+### Convert TechnoType
+
+- Superweapons can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft). This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). ***This feature does not support BuildingTypes.***
+  - `Convert.From` specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
+  - `Convert.To` specifies which TechnoTypes are the result of converion. This entry should have the same length as `Convert.From` (when the latter is not empty), because entries are grouped in pairs.
+  - `Convert.AffectedHouses` specifies whose units can be converted.
+  - Conversion affects *all* existing units of set TechnoTypes, this includes units in: transports, occupied buildings, buildings with `InfantryAbsorb=yes` or `UnitAbsorb=yes`, buildings with `Bunker=yes`.
+
+In example, this warhead would convert all owned and friendly SOLDIERA to SOLDIERB and TANKA to TANKB.
+```ini
+[SOMESW]
+Convert.From=SOLDIERA,TANKA
+Convert.To=SOLDIERB,TANKB
+Convert.AffectedHouses=team
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, nothing will happen.
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]
+Convert.From=                   ; list of tehnoTypes
+Convert.To=                     ; list of TechnoTypes
+Convert.AffectedHouses=owner    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
 ### LimboDelivery
 
 - Superweapons can now deliver off-map buildings that act as if they were on the field.
@@ -844,12 +872,20 @@ If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chai
 ```
 
 ### Convert TechnoType on impact
+
 - Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft). This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). ***This feature does not support BuildingTypes.***
-  - `Convert.From` specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once.
-  - `Convert.To` specifies which TechnoTypes are the result of converion. This entry should have the same length as `Convert.From`, as every listed type can convert separately.
+  - `Convert.From` specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
+  - `Convert.To` specifies which TechnoTypes are the result of converion. This entry should have the same length as `Convert.From` (when the latter is not empty), because entries are grouped in pairs.
+
+In example, this warhead would convert all affected SOLDIERA to SOLDIERB and TANKA to TANKB.
+```ini
+[SOMEWARHEAD]
+Convert.From=SOLDIERA,TANKA
+Convert.To=SOLDIERB,TANKB
+```
 
 ```{warning}
-This feature requires Ares 3.0 or higher to function!
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, nothing will happen.
 ```
 
 In `rulesmd.ini`:

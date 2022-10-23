@@ -86,7 +86,7 @@ public:
 			, SW_Next_RandomWeightsData {}
 			, Convert_From {}
 			, Convert_To {}
-			, Convert_AffectedHouses {}
+			, Convert_AffectedHouses { AffectedHouse::Owner }
 		{ }
 
 		// Ares 0.A functions
