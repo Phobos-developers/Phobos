@@ -320,7 +320,7 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 	{
 		auto Conversion = [this, pTarget](TechnoTypeClass* pResultType)
 		{
-			if (!AresData::CallHandleConvert(pTarget, pResultType))
+			if (!AresData::ConvertTypeTo((FootClass*)pTarget, pResultType))
 				return;
 
 			if (pTarget->WhatAmI() == AbstractType::Infantry &&
@@ -337,10 +337,6 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 				pResultType->WhatAmI() == AbstractType::AircraftType)
 			{
 				// AircraftClass only logic
-			}
-			else
-			{
-				Debug::Log("Attempting to convert units of different categories: %s and %s!", pTarget->GetTechnoType()->get_ID(), pResultType->get_ID());
 			}
 
 			// Shared logic

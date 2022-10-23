@@ -10,22 +10,11 @@
 class TechnoClass;
 class TechnoTypeClass;
 
-constexpr const wchar_t* ARES_DLL = L"Ares.dll";
-constexpr const char* ARES_DLL_S = "Ares.dll";
-
 uintptr_t AresData::AresBaseAddress = 0x0;
 HMODULE AresData::AresDllHmodule = nullptr;
-
-int AresData::AresVersionId = -1;
+int AresData::AresVersionId = AresData::Version::Unknown;
 bool AresData::CanUseAres = false;
-
-// first is 3.0, second 3.0p1
-const DWORD AresData::AresFunctionOffsets[AresData::AresVersionsNumber * AresData::AresFunctionNumber] =
-{
-	0x43650, 0x44130,	// HandleConvert
-};
-
-DWORD AresData::AresFunctionOffestsFinal[AresData::AresFunctionNumber];
+DWORD AresData::AresFunctionOffsetsFinal[AresData::AresFunctionCount];
 
 uintptr_t GetModuleBaseAddress(const char* modName)
 {
@@ -56,56 +45,63 @@ uintptr_t GetModuleBaseAddress(const char* modName)
 
 void AresData::Init()
 {
-	AresData::AresBaseAddress = GetModuleBaseAddress(ARES_DLL_S);
+	constexpr const char* ARES_DLL_S = "Ares.dll";
+	AresBaseAddress = GetModuleBaseAddress(ARES_DLL_S);
 
-	if (!AresData::AresBaseAddress)
+	if (!AresBaseAddress)
+	{
+		Debug::Log("[Phobos] Failed to detect Ares. Disabling integration.\n");
 		return;
+	}
 
 	// find offset of PE header
-	int PEHeaderOffset = *(DWORD*)(AresData::AresBaseAddress + 0x3c);
+	const int PEHeaderOffset = *(DWORD*)(AresBaseAddress + 0x3c);
 	// find absolute address of PE header
-	DWORD* PEHeaderPtr = (DWORD*)(AresData::AresBaseAddress + PEHeaderOffset);
+	const DWORD* PEHeaderPtr = (DWORD*)(AresBaseAddress + PEHeaderOffset);
 	// read the timedatestamp at 0x8 offset
-	DWORD TimeDateStamp = *(PEHeaderPtr + 2);
+	const DWORD TimeDateStamp = *(PEHeaderPtr + 2);
 	switch (TimeDateStamp)
 	{
-		case AresData::Ares30IdBytes:
-			AresVersionId = 0;
+		case AresTimestampBytes[Version::Ares30]:
+			AresVersionId = Version::Ares30;
 			CanUseAres = true;
-			Debug::Log("Detected Ares 3.0.\n");
+			Debug::Log("[Phobos] Detected Ares 3.0.\n");
 			break;
-		case AresData::Ares30p1IdBytes:
-			AresVersionId = 1;
+		case AresTimestampBytes[Version::Ares30p]:
+			AresVersionId = Version::Ares30p;
 			CanUseAres = true;
-			Debug::Log("Detected Ares 3.0p1.\n");
+			Debug::Log("[Phobos] Detected Ares 3.0p1.\n");
 			break;
 		default:
-			Debug::Log("Detected a version of Ares that is not supported by Phobos. Disabling integration.\n");
+			Debug::Log("[Phobos] Detected a version of Ares that is not supported by Phobos. Disabling integration.\n");
 			break;
 	}
 
+	constexpr const wchar_t* ARES_DLL = L"Ares.dll";
 	if (CanUseAres && GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN, ARES_DLL, &AresDllHmodule))
 	{
-		for (int i = 0; i < AresData::AresFunctionNumber; i++)
-			AresData::AresFunctionOffestsFinal[i] = AresData::AresBaseAddress + AresData::AresFunctionOffsets[i * AresData::AresVersionsNumber + AresVersionId];
+		for (int i = 0; i < AresData::AresFunctionCount; i++)
+			AresData::AresFunctionOffsetsFinal[i] = AresData::AresBaseAddress + AresData::AresFunctionOffsets[i * AresData::AresVersionCount + AresVersionId];
 	}
 }
 
 void AresData::UnInit()
 {
-	if (!AresData::AresBaseAddress)
+	if (!AresBaseAddress)
 		return;
 
 	if (CanUseAres)
 		FreeLibrary(AresDllHmodule);
 }
 
-bool  __stdcall AresData::CallHandleConvert(TechnoClass* pTechno, TechnoTypeClass* pConvertTo)
+bool  __stdcall AresData::ConvertTypeTo(TechnoClass* pFoot, TechnoTypeClass* pConvertTo)
 {
 	if (!CanUseAres)
 		return false;
-	DWORD returnValue;
-	JMP_STD(AresData::AresFunctionOffestsFinal[0]);
-	GET_REG32(returnValue, eax);
-	return (bool)returnValue;
+
+	const DWORD address = AresFunctionOffsetsFinal[FunctionIndices::ConvertTypeToID];
+	_asm {mov ebx, address};	// VERY IMPORTANT, stdcall epilogue restores old stack, so we have to save our variable somewhere
+	JMP_STD(ebx);				// point of no return, whatever you include after this won't be reached, ever
+
+	return true;
 }

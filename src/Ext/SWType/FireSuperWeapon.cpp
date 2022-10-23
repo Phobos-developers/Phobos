@@ -446,7 +446,7 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 	{
 		auto Conversion = [this](TechnoClass* pTarget, TechnoTypeClass* pResultType)
 		{
-			if (!AresData::CallHandleConvert(pTarget, pResultType))
+			if (!AresData::ConvertTypeTo(pTarget, pResultType))
 				return;
 
 			if (pTarget->WhatAmI() == AbstractType::Infantry &&
@@ -463,10 +463,6 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 				pResultType->WhatAmI() == AbstractType::AircraftType)
 			{
 				// AircraftClass only logic
-			}
-			else
-			{
-				Debug::Log("Attempting to convert units of different categories: %s and %s!", pTarget->GetTechnoType()->get_ID(), pResultType->get_ID());
 			}
 
 			// Shared logic
@@ -515,7 +511,7 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 		}
 		else
 		{
-			for (auto pTarget : *TechnoClass::Array)
+			for (auto pTarget : *FootClass::Array)
 			{
 				if (!EnumFunctions::CanTargetHouse(this->Convert_AffectedHouses, pSW->Owner, pTarget->Owner))
 					continue;
