@@ -10,6 +10,7 @@
 class TechnoClass;
 class TechnoTypeClass;
 
+uintptr_t AresData::PhobosBaseAddress = 0x0;
 uintptr_t AresData::AresBaseAddress = 0x0;
 HMODULE AresData::AresDllHmodule = nullptr;
 int AresData::AresVersionId = AresData::Version::Unknown;
@@ -47,11 +48,18 @@ void AresData::Init()
 {
 	constexpr const char* ARES_DLL_S = "Ares.dll";
 	AresBaseAddress = GetModuleBaseAddress(ARES_DLL_S);
+	constexpr const char* PHOBOS_DLL_S = "Phobos.dll";
+	PhobosBaseAddress = GetModuleBaseAddress(PHOBOS_DLL_S);
+	Debug::LogDeferred("[Phobos] Phobos base address: 0x%X.\n", PhobosBaseAddress);
 
 	if (!AresBaseAddress)
 	{
-		Debug::Log("[Phobos] Failed to detect Ares. Disabling integration.\n");
+		Debug::LogDeferred("[Phobos] Failed to detect Ares. Disabling integration.\n");
 		return;
+	}
+	else
+	{
+		Debug::LogDeferred("[Phobos] Ares base address: 0x%X.\n", AresBaseAddress);
 	}
 
 	// find offset of PE header
@@ -65,15 +73,15 @@ void AresData::Init()
 		case AresTimestampBytes[Version::Ares30]:
 			AresVersionId = Version::Ares30;
 			CanUseAres = true;
-			Debug::Log("[Phobos] Detected Ares 3.0.\n");
+			Debug::LogDeferred("[Phobos] Detected Ares 3.0.\n");
 			break;
 		case AresTimestampBytes[Version::Ares30p]:
 			AresVersionId = Version::Ares30p;
 			CanUseAres = true;
-			Debug::Log("[Phobos] Detected Ares 3.0p1.\n");
+			Debug::LogDeferred("[Phobos] Detected Ares 3.0p1.\n");
 			break;
 		default:
-			Debug::Log("[Phobos] Detected a version of Ares that is not supported by Phobos. Disabling integration.\n");
+			Debug::LogDeferred("[Phobos] Detected a version of Ares that is not supported by Phobos. Disabling integration.\n");
 			break;
 	}
 

@@ -198,6 +198,7 @@ DEFINE_HOOK(0x52F639, _YR_CmdLineParse, 0x5)
 	GET(int, nNumArgs, EDI);
 
 	Phobos::CmdLineParse(ppArgs, nNumArgs);
+	Debug::LogDeferredFinalize();
 	return 0;
 }
 

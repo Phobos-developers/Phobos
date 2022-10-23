@@ -21,6 +21,7 @@ struct AresData
 
 	static HMODULE AresDllHmodule;
 	static uintptr_t AresBaseAddress;
+	static uintptr_t PhobosBaseAddress;
 
 	// number of Ares functions we use
 	static constexpr int AresFunctionCount = 1;
