@@ -121,12 +121,7 @@ void AttachmentClass::CreateChild()
 
 		if (const auto pTechno = static_cast<TechnoClass*>(pChildType->CreateObject(this->Parent->Owner)))
 		{
-			this->Child = pTechno;
-			auto const pChildExt = TechnoExt::ExtMap.Find(this->Child);
-			pChildExt->ParentAttachment = this;
-
-			this->Child->GetTechnoType()->DisableVoxelCache = true;
-			this->Child->GetTechnoType()->DisableShadowCache = true;
+			this->AttachChild(pTechno);
 		}
 		else
 		{
@@ -269,6 +264,10 @@ bool AttachmentClass::AttachChild(TechnoClass* pChild)
 
 	auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 	pChildExt->ParentAttachment = this;
+
+	// TODO fix properly
+	this->Child->GetTechnoType()->DisableVoxelCache = true;
+	this->Child->GetTechnoType()->DisableShadowCache = true;
 
 	AttachmentTypeClass* pType = this->GetType();
 
