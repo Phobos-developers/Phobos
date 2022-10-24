@@ -16,6 +16,7 @@ HMODULE AresData::AresDllHmodule = nullptr;
 int AresData::AresVersionId = AresData::Version::Unknown;
 bool AresData::CanUseAres = false;
 DWORD AresData::AresFunctionOffsetsFinal[AresData::AresFunctionCount];
+int AresData::FunctionIndex = -1;
 
 uintptr_t GetModuleBaseAddress(const char* modName)
 {
@@ -102,14 +103,27 @@ void AresData::UnInit()
 		FreeLibrary(AresDllHmodule);
 }
 
-bool  __stdcall AresData::ConvertTypeTo(TechnoClass* pFoot, TechnoTypeClass* pConvertTo)
+void __stdcall AresData::CallAres(...)
 {
 	if (!CanUseAres)
-		return false;
+	{
+		_asm {mov eax, 0};
+		return;
+	}
 
-	const DWORD address = AresFunctionOffsetsFinal[FunctionIndices::ConvertTypeToID];
+	const DWORD address = AresFunctionOffsetsFinal[AresData::FunctionIndex];
 	_asm {mov ebx, address};	// VERY IMPORTANT, stdcall epilogue restores old stack, so we have to save our variable somewhere
-	JMP_STD(ebx);				// point of no return, whatever you include after this won't be reached, ever
+	JMP_STD(ebx);
+}
 
-	return true;
+#define ARES_STDCALL(id, ...) \
+	AresData::FunctionIndex = AresData::FunctionIndices::id; \
+	AresData::CallAres(__VA_ARGS__); \
+	DWORD returnValue; \
+	_asm {mov returnValue, eax}; \
+	return returnValue;
+
+bool AresData::ConvertTypeTo(TechnoClass* pFoot, TechnoTypeClass* pConvertTo)
+{
+	ARES_STDCALL(ConvertTypeToID, pFoot, pConvertTo);
 }

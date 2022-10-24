@@ -47,9 +47,13 @@ struct AresData
 	static int AresVersionId;
 	// is Ares detected and version known?
 	static bool CanUseAres;
+	// todo: explain this
+	static int FunctionIndex;
+
+	static void __stdcall CallAres(...);
 
 	// Here be known Ares functions
-	static bool __stdcall ConvertTypeTo(TechnoClass* pFoot, TechnoTypeClass* pConvertTo);
+	static bool ConvertTypeTo(TechnoClass* pFoot, TechnoTypeClass* pConvertTo);
 
 	static void Init();
 	static void UnInit();
