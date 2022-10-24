@@ -878,6 +878,36 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 	pExt->DamageNumberOffset = pExt->DamageNumberOffset + width;
 }
 
+CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger)
+{
+	if (!pThis || !pPassenger)
+		return CoordStruct::Empty;
+
+	auto pTypePassenger = pPassenger->GetTechnoType();
+	CoordStruct finalLocation = CoordStruct::Empty;
+	short extraDistanceX = 1;
+	short extraDistanceY = 1;
+	SpeedType speedType = pTypePassenger->SpeedType;
+	MovementZone movementZone = pTypePassenger->MovementZone;
+
+	if (pTypePassenger->WhatAmI() == AbstractType::AircraftType)
+	{
+		speedType = SpeedType::Track;
+		movementZone = MovementZone::Normal;
+	}
+
+	CellStruct placeCoords = pThis->GetCell()->MapCoords - CellStruct { (short)(extraDistanceX / 2), (short)(extraDistanceY / 2) };
+	placeCoords = MapClass::Instance->NearByLocation(placeCoords, speedType, -1, movementZone, false, extraDistanceX, extraDistanceY, true, false, false, false, CellStruct::Empty, false, false);
+
+	if (auto pCell = MapClass::Instance->TryGetCellAt(placeCoords))
+	{
+		pPassenger->OnBridge = pCell->ContainsBridge();
+		finalLocation = pCell->GetCoordsWithBridge();
+	}
+
+	return finalLocation;
+}
+
 // =============================
 // load / save
 
