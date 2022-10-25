@@ -1,6 +1,7 @@
 #include "Body.h"
 #include <LocomotionClass.h>
 #include <TeleportLocomotionClass.h>
+#include <Conversions.h>
 
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -11,11 +12,39 @@
 	TechnoTypeClass *pType = pLocomotor->LinkedTo->GetTechnoType(); \
 	TechnoTypeExt::ExtData *pExt = TechnoTypeExt::ExtMap.Find(pType);
 
+namespace TempHelper
+{
+	AnimTypeClass* GetAnimTypeFromFacing(FootClass* pFoot,std::vector<AnimTypeClass*>& nAnimVec, AnimTypeClass* pDefault = nullptr)
+	{
+		if (!pFoot)
+			return pDefault;
+
+		if (nAnimVec.size() > 0)
+		{
+			auto highest = Conversions::Int2Highest((int)nAnimVec.size());
+
+			// 2^highest is the frame count, 3 means 8 frames
+			if (highest >= 3)
+			{
+				auto offset = 1u << (highest - 3);
+				auto index = TranslateFixedPoint(16, highest, static_cast<WORD>(pFoot->GetRealFacing().value()), offset);
+				pDefault = nAnimVec.at(index);
+			}
+			else
+			{
+				pDefault = nAnimVec.at(0);
+			}
+		}
+	
+		return pDefault;
+	}
+}
+
 DEFINE_HOOK(0x719439, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0x6)
 {
 	GET_LOCO(ESI);
 
-	R->EDX<AnimTypeClass*>(pExt->WarpOut.Get(RulesClass::Instance->WarpOut));
+	R->EDX<AnimTypeClass*>(TempHelper::GetAnimTypeFromFacing(pLocomotor->LinkedTo, pExt->WarpOut, RulesClass::Instance->WarpOut));
 
 	if (pExt->WarpOutWeapon.isset())
 		WeaponTypeExt::DetonateAt(pExt->WarpOutWeapon.Get(), pLocomotor->LinkedTo, pLocomotor->LinkedTo);
@@ -27,7 +56,7 @@ DEFINE_HOOK(0x719788, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x
 {
 	GET_LOCO(ESI);
 
-	R->EDX<AnimTypeClass*>(pExt->WarpIn.Get(RulesClass::Instance->WarpOut));
+	R->EDX<AnimTypeClass*>(TempHelper::GetAnimTypeFromFacing(pLocomotor->LinkedTo, pExt->WarpIn, RulesClass::Instance->WarpOut));
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pLocomotor->LinkedTo);
 
@@ -49,7 +78,7 @@ DEFINE_HOOK(0x71986A, TeleportLocomotionClass_ILocomotion_Process_WarpAway, 0x6)
 {
 	GET_LOCO(ESI);
 
-	R->ECX<AnimTypeClass*>(pExt->WarpAway.Get(RulesClass::Instance->WarpOut));
+	R->ECX<AnimTypeClass*>(TempHelper::GetAnimTypeFromFacing(pLocomotor->LinkedTo, pExt->WarpAway, RulesClass::Instance->WarpOut));
 
 	return 0x719870;
 }
@@ -69,7 +98,7 @@ DEFINE_HOOK(0x7194E3, TeleportLocomotionClass_ILocomotion_Process_ChronoDistance
 	GET(int, val, EAX);
 
 	auto factor = pExt->ChronoDistanceFactor.Get(RulesClass::Instance->ChronoDistanceFactor);
-	factor = factor == 0 ? 1 : factor; //fix factor 0 crash by force it to 1 (Vanilla bug)
+	factor = Math::min(1, factor); //fix factor 0 crash by force it to 1 (Vanilla bug)
 
 	//IDIV
 	R->EAX(val / factor);
