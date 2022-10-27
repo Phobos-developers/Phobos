@@ -124,8 +124,6 @@ public:
 
 		Nullable<bool> IronCurtain_KeptOnDeploy;
 
-		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
-
 		Valueable<bool> Explodes_KillPassengers;
 
 		struct LaserTrailDataEntry
@@ -243,7 +241,6 @@ public:
 			, ProneSecondaryFireFLH { }
 			, DeployedPrimaryFireFLH { }
 			, DeployedSecondaryFireFLH { }
-			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, IronCurtain_KeptOnDeploy{ }
 			, Explodes_KillPassengers { true }
 		{ }
