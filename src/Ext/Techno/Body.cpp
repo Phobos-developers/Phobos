@@ -97,7 +97,6 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 	// Death if countdown ends
 	if (pTypeExt->AutoDeath_AfterDelay > 0)
 	{
-		//using Expired() may be confusing
 		if (!this->AutoDeathTimer.HasStarted())
 		{
 			this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
@@ -212,7 +211,7 @@ void TechnoExt::ExtData::UpdateShield()
 	auto const pTypeExt = this->TypeExtData;
 
 	// Set current shield type if it is not set.
-	if (!this->CurrentShieldType->Strength && pTypeExt->ShieldType->Strength)
+	if (!this->CurrentShieldType->Strength && pTypeExt->ShieldType->Strength) // wtf?
 		this->CurrentShieldType = pTypeExt->ShieldType;
 
 	// Create shield class instance if it does not exist.
@@ -255,6 +254,43 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 	}
 }
 
+void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
+{
+	auto const pThis = this->OwnerObject();
+
+	if (this->LaserTrails.size())
+		this->LaserTrails.clear();
+
+	this->TypeExtData = TechnoTypeExt::ExtMap.Find(currentType);
+
+	// Recreate Laser Trails
+	for (auto const& entry : this->TypeExtData->LaserTrailData)
+	{
+		if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
+		{
+			this->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
+				pLaserType, pThis->Owner, entry.FLH, entry.IsOnTurret));
+		}
+	}
+
+	// Reset Shield - TODO : should it inherit shield HP percentage?
+	this->CurrentShieldType = this->TypeExtData->ShieldType.Get();
+	if (this->Shield.get())
+		this->Shield->KillAnim();
+	this->Shield.reset();
+
+	// Reset AutoDeath Timer - TODO : should it use the max of the old delay and new one?
+	if (this->AutoDeathTimer.HasStarted())
+		this->AutoDeathTimer.Stop();
+
+	// Reset PassengerDeletion Timer - TODO : unchecked
+	if (this->PassengerDeletionTimer.IsTicking() && this->TypeExtData->PassengerDeletion_Rate <= 0)
+	{
+		this->PassengerDeletionCountDown = -1;
+		this->PassengerDeletionTimer.Stop();
+	}
+}
+
 bool TechnoExt::IsActive(TechnoClass* pThis)
 {
 	return
@@ -267,6 +303,7 @@ bool TechnoExt::IsActive(TechnoClass* pThis)
 		!pThis->InLimbo;
 }
 
+// FS-21 FIX THIS
 void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 {
 	if (auto pVictimTechno = static_cast<TechnoClass*>(pVictim))

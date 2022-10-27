@@ -187,6 +187,8 @@ This page lists all the individual contributions to the project by their author.
       - Turret direction in idle state fix
       - Sensor fix
    - Object Self-destruction logic
+      - Misc vanilla suicidal behavior fix
+   - Post-type-conversion update
    - Building EVA_StructureSold and SellSound dehardcode
    - Slaves' house customization when owner is killed
    - Campaign AI's base node/SW-delivered/trigger action 125-delivered structures' auto-repairability dehardcode

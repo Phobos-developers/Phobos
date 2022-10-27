@@ -134,6 +134,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
 	this->NoManualMove.Read(exINI, pSection, "NoManualMove");
 	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
+	if (this->InitialStrength.isset())
+		this->InitialStrength = Math::clamp(this->InitialStrength, 1, pThis->Strength);
 
 	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
 	this->AutoDeath_OnAmmoDepletion.Read(exINI, pSection, "AutoDeath.OnAmmoDepletion");
@@ -202,8 +204,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SelfHealGainType.Read(exINI, pSection, "SelfHealGainType");
 	this->Passengers_SyncOwner.Read(exINI, pSection, "Passengers.SyncOwner");
 	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
-
-	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
 
 	this->IronCurtain_KeptOnDeploy.Read(exINI, pSection, "IronCurtain.KeptOnDeploy");
 	this->IronCurtain_Effect.Read(exINI, pSection, "IronCurtain.Effect");
@@ -367,7 +367,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteCrouchedWeaponBurstFLHs)
 		.Process(this->DeployedWeaponBurstFLHs)
 		.Process(this->EliteDeployedWeaponBurstFLHs)
-		.Process(this->InitialStrength_Cloning)
 		.Process(this->Explodes_KillPassengers)
 		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->IronCurtain_Effect)
