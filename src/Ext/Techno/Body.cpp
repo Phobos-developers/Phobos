@@ -211,7 +211,7 @@ void TechnoExt::ExtData::UpdateShield()
 	auto const pTypeExt = this->TypeExtData;
 
 	// Set current shield type if it is not set.
-	if (!this->CurrentShieldType->Strength && pTypeExt->ShieldType->Strength) // wtf?
+	if (!this->CurrentShieldType->Strength && pTypeExt->ShieldType->Strength)
 		this->CurrentShieldType = pTypeExt->ShieldType;
 
 	// Create shield class instance if it does not exist.
@@ -290,13 +290,10 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
 		}
 	}
 
-	// Reset Shield - TODO : should it inherit shield HP percentage?
-	this->CurrentShieldType = this->TypeExtData->ShieldType.Get();
-	if (this->Shield.get())
-		this->Shield->KillAnim();
-	this->Shield.reset();
+	// Reset Shield
+	// This part should have been done by UpdateShield
 
-	// Reset AutoDeath Timer - TODO : should it use the max of the old delay and new one?
+	// Reset AutoDeath Timer
 	if (this->AutoDeathTimer.HasStarted())
 		this->AutoDeathTimer.Stop();
 

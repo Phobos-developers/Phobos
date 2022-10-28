@@ -373,6 +373,7 @@ Vanilla fixes:
 - Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges (by Starkku)
 - Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines (by Starkku)
 - Made sure that `Suicide=yes` weapon does kill the firer (by Trsdy)
+- Made sure that vxl units being flipped over get killed instead of rotating up and down (by Trsdy)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
