@@ -655,7 +655,13 @@ InitialStrength=  ; integer
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]            ; BuildingType
-InitialStrength.Cloning=  ; single double/percentage or comma-sep. range
+InitialStrength.Cloning=  ; floating point value - single or comma-sep. range (percentages)
+```
+
+```{note}
+
+Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `Strength`, even if your values are bigger than it.
+
 ```
 
 ### Kill Object Automatically

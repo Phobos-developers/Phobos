@@ -36,7 +36,7 @@ public:
 		Valueable<bool> Interceptor_WeaponReplaceProjectile;
 		Valueable<bool> Interceptor_WeaponCumulativeDamage;
 		Valueable<bool> Interceptor_KeepIntact;
-		Valueable<CoordStruct> TurretOffset;
+		Valueable<PartialVector3D<int>> TurretOffset;
 		Valueable<bool> Spawn_LimitedRange;
 		Valueable<int> Spawn_LimitedExtraRange;
 		Nullable<bool> Harvester_Counted;
@@ -123,8 +123,6 @@ public:
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
 		Nullable<bool> IronCurtain_KeptOnDeploy;
-
-		Valueable<Vector2D<double>> InitialStrength_Cloning;
 
 		Valueable<bool> Explodes_KillPassengers;
 
@@ -243,7 +241,6 @@ public:
 			, ProneSecondaryFireFLH { }
 			, DeployedPrimaryFireFLH { }
 			, DeployedSecondaryFireFLH { }
-			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, IronCurtain_KeptOnDeploy{ }
 			, Explodes_KillPassengers { true }
 		{ }

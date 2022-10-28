@@ -97,7 +97,6 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 	// Death if countdown ends
 	if (pTypeExt->AutoDeath_AfterDelay > 0)
 	{
-		//using Expired() may be confusing
 		if (!this->AutoDeathTimer.HasStarted())
 		{
 			this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
@@ -255,6 +254,40 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 	}
 }
 
+void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
+{
+	auto const pThis = this->OwnerObject();
+
+	if (this->LaserTrails.size())
+		this->LaserTrails.clear();
+
+	this->TypeExtData = TechnoTypeExt::ExtMap.Find(currentType);
+
+	// Recreate Laser Trails
+	for (auto const& entry : this->TypeExtData->LaserTrailData)
+	{
+		if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
+		{
+			this->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
+				pLaserType, pThis->Owner, entry.FLH, entry.IsOnTurret));
+		}
+	}
+
+	// Reset Shield
+	// This part should have been done by UpdateShield
+
+	// Reset AutoDeath Timer
+	if (this->AutoDeathTimer.HasStarted())
+		this->AutoDeathTimer.Stop();
+
+	// Reset PassengerDeletion Timer - TODO : unchecked
+	if (this->PassengerDeletionTimer.IsTicking() && this->TypeExtData->PassengerDeletion_Rate <= 0)
+	{
+		this->PassengerDeletionCountDown = -1;
+		this->PassengerDeletionTimer.Stop();
+	}
+}
+
 bool TechnoExt::IsActive(TechnoClass* pThis)
 {
 	return
@@ -267,6 +300,7 @@ bool TechnoExt::IsActive(TechnoClass* pThis)
 		!pThis->InLimbo;
 }
 
+// FS-21 FIX THIS
 void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 {
 	if (auto pVictimTechno = static_cast<TechnoClass*>(pVictim))
