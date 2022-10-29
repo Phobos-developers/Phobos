@@ -620,3 +620,20 @@ DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 
 // redirect MapClass::DamageArea call to our dll for additional functionality and checks
 DEFINE_JUMP(CALL, 0x4387A3, GET_OFFSET(_BombClass_Detonate_DamageArea));
+
+
+// Fix railgun target coordinates potentially differing from actual target coords.
+DEFINE_HOOK(0x70C6B5, TechnoClass_Railgun_TargetCoords, 0x5)
+{
+	GET(AbstractClass*, pTarget, EBX);
+
+	auto coords = pTarget->GetCenterCoords();
+
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
+		coords = pBuilding->GetTargetCoords();
+	else if (const auto pCell = abstract_cast<CellClass*>(pTarget))
+		coords = pCell->GetCoordsWithBridge();
+
+	R->EAX(&coords);
+	return 0;
+}
