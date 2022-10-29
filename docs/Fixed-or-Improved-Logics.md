@@ -85,6 +85,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true`.
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry.
 - Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges.
+- Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines.
 
 ## Animations
 

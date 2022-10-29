@@ -637,3 +637,18 @@ DEFINE_HOOK(0x70C6B5, TechnoClass_Railgun_TargetCoords, 0x5)
 	R->EAX(&coords);
 	return 0;
 }
+
+// Fix techno target coordinates (used for fire angle calculations, target lines etc) to take building target coordinate offsets into accord.
+// This, for an example, fixes a vanilla bug where Destroyer has trouble targeting Naval Yards with its cannon weapon from certain angles.
+DEFINE_HOOK(0x70BCE6, TechnoClass_GetTargetCoords_BuildingFix, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pThis->Target))
+	{
+		const auto coords = pBuilding->GetTargetCoords();
+		R->EAX(&coords);
+	}
+
+	return 0;
+}

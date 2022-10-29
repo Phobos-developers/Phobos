@@ -161,6 +161,7 @@ This page lists all the individual contributions to the project by their author.
   - Animated TerrainTypes extension
   - Exploding unit passenger killing customization
   - Railgun particle target coordinate fix
+  - Building target coordinate offset fix
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
