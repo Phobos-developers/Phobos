@@ -3,6 +3,27 @@
 template<> const DWORD Extension<BulletTypeClass>::Canary = 0xF00DF00D;
 BulletTypeExt::ExtContainer BulletTypeExt::ExtMap;
 
+bool BulletTypeExt::ExtData::ShouldLevelBulletDetonateOnCell(CellClass* pCell)
+{
+	switch (this->Level_ForceDetonationOn)
+	{
+	case LevelBulletBehavior::NonWaterTileset:
+		// For some damn reason this is overriden on CellClass by a function that checks if it belongs on non-water tileset rather than anything to do with height.
+		return pCell->IsOnFloor();
+		break;
+	case LevelBulletBehavior::Water:
+		return pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach;
+		break;
+	case LevelBulletBehavior::Ground:
+		return pCell->LandType != LandType::Water && pCell->LandType != LandType::Beach;
+		break;
+	default:
+		break;
+	}
+
+	return false;
+}
+
 double BulletTypeExt::GetAdjustedGravity(BulletTypeClass* pType)
 {
 	auto const pData = BulletTypeExt::ExtMap.Find(pType);
@@ -45,6 +66,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Shrapnel_AffectsGround.Read(exINI, pSection, "Shrapnel.AffectsGround");
 	this->Shrapnel_AffectsBuildings.Read(exINI, pSection, "Shrapnel.AffectsBuildings");
+	this->Level_ForceDetonationOn.Read(exINI, pSection, "Level.ForceDetonationOn");
 
 	INI_EX exArtINI(CCINIClass::INI_Art);
 
@@ -68,6 +90,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Trajectory_Speed)
 		.Process(this->Shrapnel_AffectsGround)
 		.Process(this->Shrapnel_AffectsBuildings)
+		.Process(this->Level_ForceDetonationOn)
 		;
 
 	this->TrajectoryType = PhobosTrajectoryType::ProcessFromStream(Stm, this->TrajectoryType);

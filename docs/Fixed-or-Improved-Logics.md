@@ -89,6 +89,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - IvanBomb images now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation.
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations.
 - Animation with `Tiled=yes` now supports `CustomPalette`.
+- Weapons with `Level=true` projectile now prompt the firer to move in range if there is an obstacle in between the firer and target where the projectile would be forced to detonate.
 
 ## Animations
 
@@ -185,6 +186,16 @@ Grinding.DisplayRefund.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
 ## Projectiles
+
+### Customizable level projectile force detonation condition
+
+- By default `Level=true` projectiles are forced to detonate when entering cells that belong to a non-water tileset. This condition is now customizable, including options to force detonation on water or ground (which is not exactly same as the default behaviour) or disabling it entirely.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]                        ; Projectile
+Level.ForceDetonationOn=nonwatertileset ; Level projectile behavior enumeration (nothing|nonwatertileset|water|ground)
+```
 
 ### Customizable projectile gravity
 

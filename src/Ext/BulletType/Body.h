@@ -30,6 +30,7 @@ public:
 
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
+		Valueable<LevelBulletBehavior> Level_ForceDetonationOn;
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
 			, Strength { 0 }
@@ -43,9 +44,11 @@ public:
 			, Trajectory_Speed { 100.0 }
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
+			, Level_ForceDetonationOn { LevelBulletBehavior::NonWaterTileset }
 		{ }
 
 		virtual ~ExtData() = default;
+		bool ShouldLevelBulletDetonateOnCell(CellClass* pCell);
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		// virtual void Initialize() override;

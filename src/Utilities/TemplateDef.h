@@ -806,6 +806,38 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<LevelBulletBehavior>(LevelBulletBehavior& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "none") == 0 || _strcmpi(parser.value(), "nothing") == 0)
+			{
+				value = LevelBulletBehavior::Nothing;
+			}
+			else if (_strcmpi(parser.value(), "nonwatertileset") == 0)
+			{
+				value = LevelBulletBehavior::NonWaterTileset;
+			}
+			else if (_strcmpi(parser.value(), "water") == 0)
+			{
+				value = LevelBulletBehavior::Water;
+			}
+			else if (_strcmpi(parser.value(), "ground") == 0)
+			{
+				value = LevelBulletBehavior::Ground;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a level bullet detonation behavior type");
+				return false;
+			}
+
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<TextAlign>(TextAlign& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))

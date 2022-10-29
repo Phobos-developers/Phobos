@@ -149,6 +149,14 @@ enum class AutoDeathBehavior
 	Sell = 2,     // buildings only
 };
 
+enum class LevelBulletBehavior
+{
+	Nothing = 0,
+	NonWaterTileset = 1,
+	Water = 2,
+	Ground = 3
+};
+
 enum class SelfHealGainType
 {
 	None = 0,
