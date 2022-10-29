@@ -982,10 +982,6 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 		if (hasValidDeployAnim && !isDeployAnimPlaying)
 		{
 			TechnoExt::StartUniversalDeployAnim(pThis);
-
-			if (convert_DeploySoundIndex >= 0)
-				VocClass::PlayAt(convert_DeploySoundIndex, deployLocation);
-
 			return;
 		}
 
@@ -1015,6 +1011,9 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 
 		if (deployed)
 		{
+			if (convert_DeploySoundIndex >= 0)
+				VocClass::PlayAt(convert_DeploySoundIndex, deployLocation);
+
 			if (pAnimFXType)
 			{
 				if (auto const pAnim = GameCreate<AnimClass>(pAnimFXType, deployLocation))
@@ -1058,7 +1057,7 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 		if (pOldTechnoTypeExt->Convert_UniversalDeploy.size() > 0)
 		{
 			// TO-DO: having multiple deploy candidate IDs it should pick randomly from the list
-			int index = ScenarioClass::Instance->Random.RandomRanged(0, pOldTechnoTypeExt->Convert_UniversalDeploy.size() - 1);
+			int index = 0; //ScenarioClass::Instance->Random.RandomRanged(0, pOldTechnoTypeExt->Convert_UniversalDeploy.size() - 1);
 			pNewTechnoType = pOldTechnoTypeExt->Convert_UniversalDeploy.at(index);
 		}
 		else
@@ -1094,11 +1093,42 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 	if (!pNewTechno)
 		return nullptr;
 
+	// Transfer enemies target (part 1/2)
+	DynamicVectorClass<TechnoClass*> enemiesTargetingMeList;
+	for (auto pEnemy : *TechnoClass::Array)
+	{
+		if (pEnemy->Target == pOldTechno)
+			enemiesTargetingMeList.AddItem(pEnemy);
+	}
+
 	// Transfer some stats from the old object to the new:
 	// Health update
 	double nHealthPercent = (double)(1.0 * pOldTechno->Health / pOldTechnoType->Strength);
 	pNewTechno->Health = (int)round(pNewTechnoType->Strength * nHealthPercent);
 	pNewTechno->EstimatedHealth = pNewTechno->Health;
+
+	// Shield update
+	auto pOldTechnoExt = TechnoExt::ExtMap.Find(pOldTechno);
+	auto pNewTechnoExt = TechnoExt::ExtMap.Find(pNewTechno);
+
+	if (pOldTechnoExt && pNewTechnoExt)
+	{
+		if (auto pOldShieldData = pOldTechnoExt->Shield.get())
+		{
+			if (auto pNewShieldData = pNewTechnoExt->Shield.get())
+			{
+				if (pOldTechnoExt->CurrentShieldType
+					&& pOldShieldData
+					&& pNewTechnoExt->CurrentShieldType
+					&& pNewShieldData)
+				{
+					double nOldShieldHealthPercent = (double)(1.0 * pOldShieldData->GetHP() / pOldTechnoExt->CurrentShieldType->Strength);
+
+					pNewShieldData->SetHP((int)(nOldShieldHealthPercent * pNewTechnoExt->CurrentShieldType->Strength));
+				}
+			}
+		}
+	}
 
 	// Veterancy update
 	if (pOldTechnoTypeExt->Convert_TransferVeterancy)
@@ -1187,6 +1217,19 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 	// Transfer Iron Courtain effect, if applied
 	TechnoExt::SyncIronCurtainStatus(pOldTechno, pNewTechno);
 
+	// Transfer enemies target (part 2/2)
+	for (auto pEnemy : enemiesTargetingMeList)
+	{
+		pEnemy->Target = pNewTechno;
+	}
+
+	// Remember target if it was Autodeployed
+	if (pOldTechnoExt->Convert_Autodeploy_RememberTarget)
+	{
+		pNewTechno->Target = pOldTechnoExt->Convert_Autodeploy_RememberTarget;
+		pNewTechno->QueueMission(Mission::Attack, true);
+	}
+
 	if (pOldTechno->InLimbo)
 		pOwner->RegisterLoss(pOldTechno, false);
 
@@ -1242,6 +1285,7 @@ void TechnoExt::PassengersTransfer(TechnoClass* pTechnoFrom, TechnoClass* pTechn
 	auto pTechnoTypeTo = pTechnoTo ? pTechnoTo->GetTechnoType() : nullptr;
 	if (!pTechnoTypeTo && pTechnoTo)
 		return;
+
 	bool bTechnoToIsBuilding = (pTechnoTo && pTechnoTo->WhatAmI() == AbstractType::Building) ? true : false;
 	DynamicVectorClass<FootClass*> passengersList;
 
@@ -1343,6 +1387,309 @@ void TechnoExt::PassengersTransfer(TechnoClass* pTechnoFrom, TechnoClass* pTechn
 	}
 }
 
+bool TechnoExt::AutoDeploy(TechnoClass* pTechnoFrom)
+{
+	if (!pTechnoFrom->Target)
+		return false;
+	
+	auto pTechnoTypeFrom = pTechnoFrom->GetTechnoType();
+	if (!pTechnoTypeFrom)
+		return false;
+	
+	auto pTechnoTypeFromExt = TechnoTypeExt::ExtMap.Find(pTechnoTypeFrom);
+	if (!pTechnoTypeFromExt)
+		return false;
+
+	
+	if (pTechnoTypeFromExt->Convert_UniversalDeploy.size() == 0)
+		return false;
+
+	auto pNewTechnoType = pTechnoTypeFromExt->Convert_UniversalDeploy.at(0); // TO-DO
+
+	auto pTechnoFromExt = TechnoExt::ExtMap.Find(pTechnoFrom);
+	if (!pTechnoFromExt)
+		return false;	
+
+	if (pTechnoFromExt->Convert_AutodeployTimerCountDown <= 0)
+	{
+		// Prepare the timer
+		int startTimer = (pTechnoTypeFromExt->Convert_Autodeploy_Rate.Get() > 0 ? pTechnoTypeFromExt->Convert_Autodeploy_Rate.Get() : 5) * 15;
+		pTechnoFromExt->Convert_AutodeployTimerCountDown = startTimer;
+		pTechnoFromExt->Convert_AutodeployTimer.Start(startTimer);
+
+		return false;
+	}
+	else
+	{
+		// Check if the timer finished
+		if (pTechnoFromExt->Convert_AutodeployTimer.Completed())
+			pTechnoFromExt->Convert_AutodeployTimerCountDown = -1;
+		else
+			return false;
+	}
+
+	bool forceDeploy = false;
+	int targetDistance = pTechnoFrom->DistanceFrom(pTechnoFrom->Target); // Remember: this and weapon ranges in leptons
+
+	// Load weapons data from original techno and deployed techno.
+	int weaponIndexFrom = pTechnoFrom->SelectWeapon(pTechnoFrom->Target);
+	auto pTechnoToTmp = static_cast<TechnoClass*>(pNewTechnoType->CreateObject(pTechnoFrom->Owner)); // Dummy object
+	int weaponIndexTo = pTechnoToTmp->SelectWeapon(pTechnoFrom->Target);
+
+	WeaponTypeClass* weaponTypeFrom = nullptr;
+	int weaponMinimumRangeFrom = 0;
+	int weaponRangeFrom = 0;
+
+	if (weaponIndexFrom >= 0)
+	{
+		weaponTypeFrom = pTechnoFrom->GetWeapon(weaponIndexFrom)->WeaponType;
+		weaponMinimumRangeFrom = weaponTypeFrom->MinimumRange;
+		weaponRangeFrom = weaponTypeFrom->Range;
+	}
+
+	WeaponTypeClass* weaponTypeTo = nullptr;
+	int weaponMinimumRangeTo = 0;
+	int weaponRangeTo = 0;
+
+	if (weaponIndexTo >= 0)
+	{
+		weaponTypeTo = pTechnoToTmp->GetWeapon(weaponIndexTo)->WeaponType;
+		weaponMinimumRangeTo = weaponTypeTo->MinimumRange;
+		weaponRangeTo = weaponTypeTo->Range;
+	}
+
+	// Load warheads data
+	WarheadTypeClass* weaponWarheadFrom = nullptr;
+
+	if (weaponTypeFrom && weaponTypeFrom->Warhead)
+		weaponWarheadFrom = weaponTypeFrom->Warhead;
+
+	WarheadTypeClass* weaponWarheadTo = nullptr;
+
+	if (weaponTypeTo && weaponTypeTo->Warhead)
+		weaponWarheadTo = weaponTypeTo->Warhead;
+
+	// Check if weapons are in range (if this is a requisite)
+	bool checkRangeFrom = pTechnoTypeFromExt->Convert_Autodeploy_InNondeployedRange.Get();
+	bool checkRangeTo = pTechnoTypeFromExt->Convert_Autodeploy_InDeployedRange.Get();
+	bool isInRangeTo = targetDistance <= weaponRangeTo && targetDistance >= weaponMinimumRangeTo;
+	bool isInRangeFrom = targetDistance <= weaponRangeFrom && targetDistance >= weaponMinimumRangeFrom;
+	bool isInValidRange = false;
+
+	if ((!checkRangeFrom && !checkRangeTo) || (checkRangeFrom && isInRangeFrom && checkRangeTo && isInRangeTo))
+	{
+		// Feature deactivated or all checks are valid
+		isInValidRange = true;
+	}
+	else
+	{
+		if ((checkRangeFrom && isInRangeFrom) || (checkRangeTo && isInRangeTo))
+			isInValidRange = true;
+	}
+
+	// If the unit is below of the HP threshold and the Autodeploy setting is set then the object must deploy
+	if (!forceDeploy && isInValidRange && pTechnoTypeFromExt->Convert_Autodeploy_HP_Threshold.isset())
+	{
+		bool canBeEvaluated = false;
+		double nHealthPercent = (double)(1.0 * pTechnoFrom->Health / pTechnoTypeFrom->Strength);
+		double HPThreshold = pTechnoTypeFromExt->Convert_Autodeploy_HP_Threshold.Get();
+		HPThreshold = HPThreshold < 0.0 ? 0.0 : HPThreshold;
+		HPThreshold = HPThreshold > 1.0 ? 1.0 : HPThreshold;
+
+		if (pTechnoTypeFromExt->Convert_Autodeploy_HP_Threshold_Inverted.Get())
+			canBeEvaluated = nHealthPercent >= HPThreshold;
+		else
+			canBeEvaluated = nHealthPercent < HPThreshold;
+
+		if (canBeEvaluated)
+		{
+			// Throw the dice and see if there is a valid chance
+			int thresholdChance = (int)(pTechnoTypeFromExt->Convert_Autodeploy_HP_Threshold_Chance.Get() * 100);
+			thresholdChance = thresholdChance > 100 ? 100 : thresholdChance;
+			thresholdChance = thresholdChance < 0 ? 0 : thresholdChance;
+			int dice = ScenarioClass::Instance->Random.RandomRanged(0, 99);
+			forceDeploy = dice < thresholdChance;
+		}
+	}
+
+	// If the unit is below of the Shield HP threshold and the Autodeploy setting is set then the object must deploy
+	if (!forceDeploy && isInValidRange && pTechnoTypeFromExt->Convert_Autodeploy_SHP_Threshold.isset())
+	{
+		bool canBeEvaluated = false;
+		double SHPThreshold = pTechnoTypeFromExt->Convert_Autodeploy_SHP_Threshold.Get();
+		SHPThreshold = SHPThreshold < 0.0 ? 0.0 : SHPThreshold;
+		SHPThreshold = SHPThreshold > 1.0 ? 1.0 : SHPThreshold;
+		
+		if (auto pShieldData = pTechnoFromExt->Shield.get())
+		{
+			if (pTechnoFromExt->CurrentShieldType && pShieldData)
+			{
+				double nShieldHealthPercent = (double)(pShieldData->GetHP() / (pTechnoFromExt->CurrentShieldType->Strength.Get() * 1.0));
+
+				if (pTechnoTypeFromExt->Convert_Autodeploy_SHP_Threshold_Inverted.Get())
+					canBeEvaluated = nShieldHealthPercent >= SHPThreshold;
+				else
+					canBeEvaluated = nShieldHealthPercent < SHPThreshold;
+
+				if (canBeEvaluated)
+				{
+					// Throw the dice and see if there is a valid chance
+					int thresholdChance = (int)(pTechnoTypeFromExt->Convert_Autodeploy_SHP_Threshold_Chance.Get() * 100);
+					thresholdChance = thresholdChance > 100 ? 100 : thresholdChance;
+					thresholdChance = thresholdChance < 0 ? 0 : thresholdChance;
+					int dice = ScenarioClass::Instance->Random.RandomRanged(0, 99);
+					forceDeploy = dice < thresholdChance ? true : forceDeploy;
+				}
+			}
+		}
+	}
+
+	// Special case when the target is out of the weapon range of the deployed object
+	if (!forceDeploy && !isInRangeFrom && isInRangeTo && pTechnoTypeFromExt->Convert_Autodeploy_TargetOutOfRange_Chance.Get() > 0.0)
+	{
+		int chance = pTechnoTypeFromExt->Convert_Autodeploy_TargetOutOfRange_Chance.Get() > 1.0 ? 100 : (int)(pTechnoTypeFromExt->Convert_Autodeploy_TargetOutOfRange_Chance.Get() * 100);
+		int dice = ScenarioClass::Instance->Random.RandomRanged(0, 99);
+
+		if (dice < chance)
+			forceDeploy = true;
+	}
+
+	// Throw the dice and see if there is a chance for deploy automatically and end here
+	if (!forceDeploy && isInValidRange && pTechnoTypeFromExt->Convert_Autodeploy_WhileTargeting_Chance.Get() > 0.0)
+	{
+		int chance = pTechnoTypeFromExt->Convert_Autodeploy_WhileTargeting_Chance.Get() > 1.0 ? 100 : (int)(pTechnoTypeFromExt->Convert_Autodeploy_WhileTargeting_Chance.Get() * 100);
+		int dice = ScenarioClass::Instance->Random.RandomRanged(0, 99);
+
+		if (dice < chance)
+		{
+			if (checkRangeFrom && isInRangeFrom && targetDistance >= weaponMinimumRangeFrom)
+				forceDeploy = true;
+
+			if (checkRangeTo && isInRangeTo && targetDistance >= weaponMinimumRangeTo)
+				forceDeploy = true;
+		}
+	}
+
+	// If the deployed object has better weapon range the object must deploy
+	if (!forceDeploy && isInValidRange && pTechnoTypeFromExt->Convert_Autodeploy_ByWeaponRange_Chance.Get() > 0.0)
+	{
+		int chance = pTechnoTypeFromExt->Convert_Autodeploy_ByWeaponRange_Chance.Get() > 1.0 ? 100 : (int)(pTechnoTypeFromExt->Convert_Autodeploy_ByWeaponRange_Chance.Get() * 100);
+		int dice = ScenarioClass::Instance->Random.RandomRanged(0, 99);
+		
+		if (dice < chance)
+		{
+			// If the objective is inside the MinimumRange of the current object. Is better if the object deploys
+			if (weaponMinimumRangeFrom > 0 && targetDistance < weaponMinimumRangeFrom && targetDistance > weaponMinimumRangeTo)
+				forceDeploy = true;
+
+			// Useful for structures that can undeploy?
+			if (!forceDeploy && (pTechnoTypeFrom->Speed == 0 && targetDistance > weaponRangeFrom && pTechnoToTmp->GetTechnoType()->Speed != 0))
+				forceDeploy = true;
+
+			if (!forceDeploy && (isInRangeFrom || isInRangeTo))
+			{
+				if (pTechnoTypeFromExt->Convert_Autodeploy_ByWeaponRange_Inverted.Get())
+				{
+					// Range from nondeployed state takes priority in range checks
+					if (weaponRangeFrom >= weaponRangeTo && targetDistance <= weaponRangeFrom)
+						forceDeploy = true;
+				}
+				else
+				{
+					// Range from deployed state takes priority in range checks
+					if (weaponRangeTo >= weaponRangeFrom && targetDistance <= weaponRangeTo)
+						forceDeploy = true;
+				}
+			}
+		}
+	}
+	
+	auto pTarget = static_cast<TechnoClass*>(pTechnoFrom->Target);
+	bool isValidTarget = pTarget->WhatAmI() == AbstractType::Unit
+		|| pTarget->WhatAmI() == AbstractType::Building
+		|| pTarget->WhatAmI() == AbstractType::Infantry
+		|| pTarget->WhatAmI() == AbstractType::Aircraft;
+
+	// If the deployed object has better weapon damage the object must deploy
+	if (!forceDeploy && isInValidRange && isValidTarget && pTechnoTypeFromExt->Convert_Autodeploy_ByWeaponDamage_Chance.Get() > 0.0)
+	{
+		int chance = pTechnoTypeFromExt->Convert_Autodeploy_ByWeaponDamage_Chance.Get() > 1.0 ? 100 : (int)(pTechnoTypeFromExt->Convert_Autodeploy_ByWeaponDamage_Chance.Get() * 100);
+		int dice = ScenarioClass::Instance->Random.RandomRanged(0, 99);
+
+		if (dice < chance)
+		{
+			int weaponDamageFrom = 0;
+			int weaponDamageTo = 0;
+
+			if (weaponTypeFrom && weaponWarheadFrom)
+			{
+				if (weaponTypeFrom->AmbientDamage > 0)
+				{
+					weaponDamageFrom = MapClass::GetTotalDamage(weaponTypeFrom->AmbientDamage, weaponTypeFrom->Warhead, pTarget->GetTechnoType()->Armor, 0) + MapClass::GetTotalDamage(weaponTypeFrom->Damage, weaponWarheadFrom, pTarget->GetTechnoType()->Armor, 0);
+				}
+				else
+				{
+					weaponDamageFrom = MapClass::GetTotalDamage(weaponTypeFrom->Damage, weaponWarheadFrom, pTarget->GetTechnoType()->Armor, 0);
+				}
+			}
+
+			if (weaponTypeTo && weaponWarheadTo)
+			{
+				if (weaponTypeTo->AmbientDamage > 0)
+				{
+					weaponDamageTo = MapClass::GetTotalDamage(weaponTypeTo->AmbientDamage, weaponTypeTo->Warhead, pTarget->GetTechnoType()->Armor, 0) + MapClass::GetTotalDamage(weaponTypeTo->Damage, weaponTypeTo->Warhead, pTarget->GetTechnoType()->Armor, 0);
+				}
+				else
+				{
+					weaponDamageTo = MapClass::GetTotalDamage(weaponTypeTo->Damage, weaponTypeTo->Warhead, pTarget->GetTechnoType()->Armor, 0);
+				}
+			}
+
+			if (pTechnoTypeFromExt->Convert_Autodeploy_ByWeaponDamage_CompareDPS.Get())
+			{
+				// Damage Per Second
+
+				double dpsFrom = (weaponDamageFrom / (weaponTypeFrom->ROF / 15.0));
+				double dpsTo = (weaponDamageTo / (weaponTypeTo->ROF / 15.0));
+
+				if (dpsTo > dpsFrom)
+					forceDeploy = true;
+			}
+			else
+			{
+				// RAW Damage
+				if (weaponDamageTo > weaponDamageFrom)
+					forceDeploy = true;
+			}
+		}
+	}
+
+	// We got the weapons data. Not necessary anymore
+	if (pTechnoToTmp)
+	{
+		pTechnoToTmp->Limbo();
+		pTechnoToTmp->UnInit();
+	}
+
+	if (!forceDeploy)
+	{
+		// Unit not ready for autodeploying
+		int startTimer = (pTechnoTypeFromExt->Convert_Autodeploy_Rate > 0 ? pTechnoTypeFromExt->Convert_Autodeploy_Rate.Get() : 5) * 15;
+		pTechnoFromExt->Convert_AutodeployTimerCountDown = startTimer;
+		pTechnoFromExt->Convert_AutodeployTimer.Start(startTimer);
+
+		return false;
+	}
+
+	pTechnoFromExt->Convert_Autodeploy_RememberTarget = pTechnoFrom->Target;
+	pTechnoFromExt->Convert_UniversalDeploy_InProgress = true;
+	//Action::Self_Deploy
+	//pTechnoFrom->ObjectClickedAction(Action::Self_Deploy, pTechnoFrom, false);
+	pTechnoFrom->QueueMission(Mission::Unload, true);
+
+	return false;
+}
+
 // =============================
 // load / save
 
@@ -1365,6 +1712,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployAnim)
 		.Process(this->Convert_UniversalDeploy_InProgress)
 		.Process(this->Convert_UniversalDeploy_MakeInvisible)
+		.Process(this->Convert_AutodeployTimerCountDown)
+		.Process(this->Convert_AutodeployTimer)
+		.Process(this->Convert_AutodeployInProgress)
+		.Process(this->Convert_Autodeploy_RememberTarget)
 		;
 }
 

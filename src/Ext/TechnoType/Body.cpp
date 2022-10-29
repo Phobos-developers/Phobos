@@ -237,6 +237,23 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Convert_TransferPassengers.Read(exINI, pSection, "Convert.TransferPassengers");
 	this->Convert_TransferPassengers_IgnoreInvalidOccupiers.Read(exINI, pSection, "Convert.TransferPassengers.IgnoreInvalidOccupiers");
 	this->Convert_TransferVeterancy.Read(exINI, pSection, "Convert.TransferVeterancy");
+	this->Convert_Autodeploy.Read(exINI, pSection, "Convert.Autodeploy");
+	this->Convert_AI_Autodeploy.Read(exINI, pSection, "Convert.AI.Autodeploy");
+	this->Convert_Autodeploy_Rate.Read(exINI, pSection, "Convert.Autodeploy.Rate");
+	this->Convert_Autodeploy_InDeployedRange.Read(exINI, pSection, "Convert.Autodeploy.InDeployedRange");
+	this->Convert_Autodeploy_InNondeployedRange.Read(exINI, pSection, "Convert.Autodeploy.InNondeployedRange");
+	this->Convert_Autodeploy_TargetOutOfRange_Chance.Read(exINI, pSection, "Convert.Autodeploy.TargetOutOfRange.Chance");
+	this->Convert_Autodeploy_WhileTargeting_Chance.Read(exINI, pSection, "Convert.Autodeploy.WhileTargeting.Chance");
+	this->Convert_Autodeploy_ByWeaponRange_Chance.Read(exINI, pSection, "Convert.Autodeploy.ByWeaponRange.Chance");
+	this->Convert_Autodeploy_ByWeaponRange_Inverted.Read(exINI, pSection, "Convert.Autodeploy.ByWeaponRange.Inverted");
+	this->Convert_Autodeploy_ByWeaponDamage_Chance.Read(exINI, pSection, "Convert.Autodeploy.ByWeaponDamage.Chance");
+	this->Convert_Autodeploy_ByWeaponDamage_CompareDPS.Read(exINI, pSection, "Convert.Autodeploy.ByWeaponDamage.CompareDPS");
+	this->Convert_Autodeploy_HP_Threshold.Read(exINI, pSection, "Convert.Autodeploy.HP.Threshold");
+	this->Convert_Autodeploy_HP_Threshold_Chance.Read(exINI, pSection, "Convert.Autodeploy.HP.Threshold.Chance");
+	this->Convert_Autodeploy_HP_Threshold_Inverted.Read(exINI, pSection, "Convert.Autodeploy.HP.Threshold.Inverted");
+	this->Convert_Autodeploy_SHP_Threshold.Read(exINI, pSection, "Convert.Autodeploy.SHP.Threshold");
+	this->Convert_Autodeploy_SHP_Threshold_Chance.Read(exINI, pSection, "Convert.Autodeploy.SHP.Threshold.Chance");
+	this->Convert_Autodeploy_SHP_Threshold_Inverted.Read(exINI, pSection, "Convert.Autodeploy.SHP.Threshold.Inverted");
 
 	if (this->Convert_UniversalDeploy.size() > 0 && !pThis->UndeploysInto)
 	{
@@ -405,6 +422,23 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Convert_TransferPassengers)
 		.Process(this->Convert_TransferPassengers_IgnoreInvalidOccupiers)
 		.Process(this->Convert_TransferVeterancy)
+		.Process(this->Convert_Autodeploy)
+		.Process(this->Convert_AI_Autodeploy)
+		.Process(this->Convert_Autodeploy_Rate)
+		.Process(this->Convert_Autodeploy_InNondeployedRange)
+		.Process(this->Convert_Autodeploy_InDeployedRange)
+		.Process(this->Convert_Autodeploy_TargetOutOfRange_Chance)
+		.Process(this->Convert_Autodeploy_WhileTargeting_Chance)
+		.Process(this->Convert_Autodeploy_ByWeaponRange_Chance)
+		.Process(this->Convert_Autodeploy_ByWeaponRange_Inverted)
+		.Process(this->Convert_Autodeploy_ByWeaponDamage_Chance)
+		.Process(this->Convert_Autodeploy_ByWeaponDamage_CompareDPS)
+		.Process(this->Convert_Autodeploy_HP_Threshold)
+		.Process(this->Convert_Autodeploy_HP_Threshold_Chance)
+		.Process(this->Convert_Autodeploy_HP_Threshold_Inverted)
+		.Process(this->Convert_Autodeploy_SHP_Threshold)
+		.Process(this->Convert_Autodeploy_SHP_Threshold_Chance)
+		.Process(this->Convert_Autodeploy_SHP_Threshold_Inverted)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

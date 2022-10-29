@@ -138,6 +138,23 @@ public:
 		Valueable<bool> Convert_TransferPassengers;
 		Valueable<bool> Convert_TransferPassengers_IgnoreInvalidOccupiers;
 		Valueable<bool> Convert_TransferVeterancy;
+		Valueable<bool> Convert_Autodeploy;
+		Nullable<bool> Convert_AI_Autodeploy;
+		Valueable<int> Convert_Autodeploy_Rate;
+		Valueable<bool> Convert_Autodeploy_InNondeployedRange;
+		Valueable<bool> Convert_Autodeploy_InDeployedRange;
+		Valueable<double> Convert_Autodeploy_TargetOutOfRange_Chance;
+		Valueable<double> Convert_Autodeploy_WhileTargeting_Chance;
+		Valueable<double> Convert_Autodeploy_ByWeaponRange_Chance;
+		Valueable<bool> Convert_Autodeploy_ByWeaponRange_Inverted;
+		Valueable<double> Convert_Autodeploy_ByWeaponDamage_Chance;
+		Valueable<bool> Convert_Autodeploy_ByWeaponDamage_CompareDPS;
+		Nullable<double> Convert_Autodeploy_HP_Threshold;
+		Valueable<double> Convert_Autodeploy_HP_Threshold_Chance;
+		Valueable<bool> Convert_Autodeploy_HP_Threshold_Inverted;
+		Nullable<double> Convert_Autodeploy_SHP_Threshold;
+		Valueable<double> Convert_Autodeploy_SHP_Threshold_Chance;
+		Valueable<bool> Convert_Autodeploy_SHP_Threshold_Inverted;
 
 		struct LaserTrailDataEntry
 		{
@@ -267,6 +284,23 @@ public:
 			, Convert_TransferPassengers { true }
 			, Convert_TransferPassengers_IgnoreInvalidOccupiers { false }
 			, Convert_TransferVeterancy { true }
+			, Convert_Autodeploy { false }
+			, Convert_AI_Autodeploy { }
+			, Convert_Autodeploy_Rate { 5 }
+			, Convert_Autodeploy_InNondeployedRange { false }
+			, Convert_Autodeploy_InDeployedRange { false }
+			, Convert_Autodeploy_TargetOutOfRange_Chance { 0.0 }
+			, Convert_Autodeploy_WhileTargeting_Chance { 0.0 }
+			, Convert_Autodeploy_ByWeaponRange_Chance { 0.0 }
+			, Convert_Autodeploy_ByWeaponRange_Inverted { false }
+			, Convert_Autodeploy_ByWeaponDamage_Chance { 0.0 }
+			, Convert_Autodeploy_ByWeaponDamage_CompareDPS { false }
+			, Convert_Autodeploy_HP_Threshold { }
+			, Convert_Autodeploy_HP_Threshold_Chance { 1.0 }
+			, Convert_Autodeploy_HP_Threshold_Inverted { false }
+			, Convert_Autodeploy_SHP_Threshold { }
+			, Convert_Autodeploy_SHP_Threshold_Chance { 1.0 }
+			, Convert_Autodeploy_SHP_Threshold_Inverted { false }
 		{ }
 
 		virtual ~ExtData() = default;

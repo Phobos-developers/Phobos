@@ -46,6 +46,38 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	}
 
+	// Autodeploy logic for Universal Deploy
+	if (pThis->Target || pThis->HasBeenAttacked)
+	{
+		bool enableAutodeploy = false;
+
+		if (pExt->TypeExtData->Convert_Autodeploy
+			&& !pExt->Convert_UniversalDeploy_InProgress
+			&& pExt->TypeExtData->Convert_UniversalDeploy.size() > 0)
+		{
+			if (pThis->Owner->IsControlledByHuman())
+			{
+				enableAutodeploy = true;
+			}
+			else
+			{
+				// AI doesn't have it's own tag enabled: AI will use this tag value instead
+				if (!pExt->TypeExtData->Convert_AI_Autodeploy.isset())
+					enableAutodeploy = true;
+			}
+		}
+
+		if (!enableAutodeploy
+			&& pExt->TypeExtData->Convert_AI_Autodeploy.isset()
+			&& !pThis->Owner->IsControlledByHuman())
+		{
+			enableAutodeploy = pExt->TypeExtData->Convert_AI_Autodeploy.Get();
+		}
+
+		if (enableAutodeploy)
+			TechnoExt::AutoDeploy(pThis);
+	}
+
 	return 0;
 }
 

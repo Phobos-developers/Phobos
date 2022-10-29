@@ -35,6 +35,10 @@ public:
 		AnimClass* DeployAnim;
 		bool Convert_UniversalDeploy_InProgress;
 		bool Convert_UniversalDeploy_MakeInvisible;
+		int Convert_AutodeployTimerCountDown;
+		CDTimerClass Convert_AutodeployTimer;
+		bool Convert_AutodeployInProgress;
+		AbstractClass* Convert_Autodeploy_RememberTarget;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -58,6 +62,10 @@ public:
 			, DeployAnim { nullptr }
 			, Convert_UniversalDeploy_InProgress { false }
 			, Convert_UniversalDeploy_MakeInvisible { false }
+			, Convert_AutodeployTimerCountDown { -1 }
+			, Convert_AutodeployTimer {}
+			, Convert_AutodeployInProgress { false }
+			, Convert_Autodeploy_RememberTarget { nullptr }
 		{ }
 
 		void ApplyInterceptor();
@@ -121,5 +129,6 @@ public:
 	static void StartUniversalDeployAnim(TechnoClass* pThis);
 	static void UpdateUniversalDeploy(TechnoClass* pThis);
 	static CoordStruct PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger);
-	static void TechnoExt::PassengersTransfer(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
+	static void PassengersTransfer(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
+	static bool AutoDeploy(TechnoClass* pTechnoFrom);
 };
