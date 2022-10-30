@@ -363,6 +363,7 @@ New:
 - Implemented support for PCX images for observer loading screen (by Uranusian)
 - Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 - Toggleable passenger killing for Explodes=true units (by Starkku)
+- New condition for automatic self-destruction logic when TechnoTypes exist/don't exist (by FlyStar)
 - Digital display of HP and SP (by ststl, FlyStar, Saigyouji, JunJacobYoung)
 
 Vanilla fixes:
@@ -395,6 +396,8 @@ Vanilla fixes:
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something (by Kerbiter)
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true` (by Starkku)
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry (by Otamaa)
+- Made sure that `Suicide=yes` weapon does kill the firer (by Trsdy)
+- Made sure that vxl units being flipped over get killed instead of rotating up and down (by Trsdy)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
@@ -416,6 +419,7 @@ Phobos fixes:
 - Fixed teleporting miners (Chrono Miner) considered to be idle by harvester counter, improved related game performance (by Trsdy)
 - Fixed negative damage weapons considering shield health when evaluating targets even if Warhead had `Shield.Penetrate` set to true (by Starkku)
 - Fixed shield animations (`IdleAnim`, `BreakAnim` and `HitAnim`) showing up even if the object shield is attached to is currently underground (by Starkku)
+- Fixed shield and laser trails update after type conversion (by Trsdy)
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)
