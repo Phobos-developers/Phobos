@@ -54,8 +54,15 @@ public:
 		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
 
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
+		Valueable<bool> AutoDeath_TechnosDontExist_Any;
+		Valueable<bool> AutoDeath_TechnosExist_Any;
 		Valueable<int> AutoDeath_AfterDelay;
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
+		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
+		Valueable<AffectedHouse> AutoDeath_TechnosDontExist_Houses;
+		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosExist;
+		Valueable<AffectedHouse> AutoDeath_TechnosExist_Houses;
+
 		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
 		NullableIdx<VocClass> SellSound;
 		NullableIdx<VoxClass> EVA_Sold;
@@ -162,6 +169,7 @@ public:
 			, InhibitorRange { }
 			, DesignatorRange { }
 			, MindControlRangeLimit {}
+
 			, Interceptor { false }
 			, Interceptor_CanTargetHouses { AffectedHouse::Enemies }
 			, Interceptor_GuardRange {}
@@ -172,6 +180,7 @@ public:
 			, Interceptor_WeaponReplaceProjectile { false }
 			, Interceptor_WeaponCumulativeDamage { false }
 			, Interceptor_KeepIntact { false }
+
 			, TurretOffset { { 0, 0, 0 } }
 			, Spawn_LimitedRange { false }
 			, Spawn_LimitedExtraRange { 0 }
@@ -183,6 +192,7 @@ public:
 			, NoManualMove { false }
 			, InitialStrength {}
 			, ShieldType {}
+
 			, WarpOut {}
 			, WarpIn {}
 			, WarpAway {}
@@ -195,24 +205,29 @@ public:
 			, WarpInMinRangeWeapon {}
 			, WarpOutWeapon {}
 			, WarpInWeapon_UseDistanceAsDamage { false }
+
 			, OreGathering_Anims {}
 			, OreGathering_Tiberiums {}
 			, OreGathering_FramesPerDir {}
 			, LaserTrailData {}
 			, DestroyAnim_Random { true }
 			, NotHuman_RandomDeathSequence { false }
+
 			, PassengerDeletion_Soylent { false }
 			, PassengerDeletion_SoylentFriendlies { false }
 			, PassengerDeletion_Rate { 0 }
 			, PassengerDeletion_ReportSound {}
 			, PassengerDeletion_Rate_SizeMultiply { true }
 			, PassengerDeletion_Anim {}
+
 			, DefaultDisguise {}
+
 			, OpenTopped_RangeBonus {}
 			, OpenTopped_DamageMultiplier {}
 			, OpenTopped_WarpDistance {}
 			, OpenTopped_IgnoreRangefinding { false }
 			, OpenTopped_AllowFiringIfDeactivated { true }
+
 			, AutoFire { false }
 			, AutoFire_TargetSelf { false }
 			, NoSecondaryWeaponFallback { false }
@@ -220,13 +235,22 @@ public:
 			, NoAmmoAmount { 0 }
 			, JumpjetAllowLayerDeviation {}
 			, JumpjetTurnToTarget {}
+
 			, DeployingAnim_AllowAnyDirection { false }
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
+
 			, AutoDeath_Behavior { }
 			, AutoDeath_OnAmmoDepletion { false }
 			, AutoDeath_AfterDelay { 0 }
+			, AutoDeath_TechnosDontExist {}
+			, AutoDeath_TechnosDontExist_Any { false }
+			, AutoDeath_TechnosDontExist_Houses { AffectedHouse::Owner }
+			, AutoDeath_TechnosExist {}
+			, AutoDeath_TechnosExist_Any { true }
+			, AutoDeath_TechnosExist_Houses { AffectedHouse::Owner }
+
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
 			, SellSound { }
 			, EVA_Sold { }

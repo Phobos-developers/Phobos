@@ -165,7 +165,7 @@ DEFINE_HOOK(0x51EAF2, TechnoClass_WhatAction_AllowAirstrike, 0x6)
 {
 	enum { SkipGameCode = 0x51EAF8 };
 
-	GET(BuildingTypeClass*, pThis, EDI);
+	GET(BuildingTypeClass*, pThis, ESI);
 
 	const auto pExt = BuildingTypeExt::ExtMap.Find(pThis);
 	R->EAX(pExt->AllowAirstrike.Get(pThis->CanC4));

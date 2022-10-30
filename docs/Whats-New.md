@@ -364,6 +364,7 @@ New:
 - Implemented support for PCX images for observer loading screen (by Uranusian)
 - Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 - Toggleable passenger killing for Explodes=true units (by Starkku)
+- New condition for automatic self-destruction logic when TechnoTypes exist/don't exist (by FlyStar)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -396,6 +397,7 @@ Vanilla fixes:
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true` (by Starkku)
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry (by Otamaa)
 - Made sure that `Suicide=yes` weapon does kill the firer (by Trsdy)
+- Made sure that vxl units being flipped over get killed instead of rotating up and down (by Trsdy)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)

@@ -198,12 +198,14 @@ This page lists all the individual contributions to the project by their author.
    - "Shield is broken" trigger event
    - Forbidding parallel AI queues by type
    - Allow iron-curtain effects on infantries
+- **FlyStar**
+   - Campaign load screen PCX support
+   - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
+- **NetsuNegi** - Forbidding parallel AI queues by type
+- **Apollo** - Translucent SHP drawing patches
 - **ststl**
    - Iron Curtain effects customization on infantries and organic units
    - Use `CustomPalette` for animations with `Tiled=yes`
-- **NetsuNegi** - Forbidding parallel AI queues by type
-- **Apollo** - Translucent SHP drawing patches
-- **FlyStar** - Campaign load screen PCX support
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
