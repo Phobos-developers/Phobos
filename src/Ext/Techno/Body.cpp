@@ -1545,7 +1545,7 @@ bool TechnoExt::AutoDeploy(TechnoClass* pTechnoFrom)
 	}
 
 	// Special case when the target is out of the weapon range of the deployed object
-	if (!forceDeploy && !isInRangeFrom && isInRangeTo && pTechnoTypeFromExt->Convert_Autodeploy_TargetOutOfRange_Chance.Get() > 0.0)
+	if (!forceDeploy && !isInRangeFrom && targetDistance >= weaponMinimumRangeTo && pTechnoTypeFromExt->Convert_Autodeploy_TargetOutOfRange_Chance.Get() > 0.0)
 	{
 		int chance = pTechnoTypeFromExt->Convert_Autodeploy_TargetOutOfRange_Chance.Get() > 1.0 ? 100 : (int)(pTechnoTypeFromExt->Convert_Autodeploy_TargetOutOfRange_Chance.Get() * 100);
 		int dice = ScenarioClass::Instance->Random.RandomRanged(0, 99);
