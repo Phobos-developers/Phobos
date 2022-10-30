@@ -106,6 +106,47 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 			TechnoExt::KillSelf(pThis, howToDie);
 			return true;
 		}
+
+		auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any)
+		{
+			auto existSingleType = [pThis, affectedHouse](const TechnoTypeClass* pType)
+			{
+				for (HouseClass* pHouse : *HouseClass::Array)
+				{
+					if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
+						&& pHouse->CountOwnedAndPresent(pType) > 0)
+						return true;
+				}
+
+				return false;
+			};
+
+			return any
+				? std::any_of(vTypes.begin(), vTypes.end(), existSingleType)
+				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
+		};
+
+		// death if don't exist
+		if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
+		{
+			if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any))
+			{
+				KillSelf(pThis, howToDie);
+
+				return true;
+			}
+		}
+
+		// death if exist
+		if (!pTypeExt->AutoDeath_TechnosExist.empty())
+		{
+			if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any))
+			{
+				KillSelf(pThis, howToDie);
+
+				return true;
+			}
+		}
 	}
 	return false;
 }
@@ -211,7 +252,7 @@ void TechnoExt::ExtData::UpdateShield()
 	auto const pTypeExt = this->TypeExtData;
 
 	// Set current shield type if it is not set.
-	if (!this->CurrentShieldType->Strength && pTypeExt->ShieldType->Strength) // wtf?
+	if (!this->CurrentShieldType->Strength && pTypeExt->ShieldType->Strength)
 		this->CurrentShieldType = pTypeExt->ShieldType;
 
 	// Create shield class instance if it does not exist.
@@ -273,13 +314,10 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
 		}
 	}
 
-	// Reset Shield - TODO : should it inherit shield HP percentage?
-	this->CurrentShieldType = this->TypeExtData->ShieldType.Get();
-	if (this->Shield.get())
-		this->Shield->KillAnim();
-	this->Shield.reset();
+	// Reset Shield
+	// This part should have been done by UpdateShield
 
-	// Reset AutoDeath Timer - TODO : should it use the max of the old delay and new one?
+	// Reset AutoDeath Timer
 	if (this->AutoDeathTimer.HasStarted())
 		this->AutoDeathTimer.Stop();
 

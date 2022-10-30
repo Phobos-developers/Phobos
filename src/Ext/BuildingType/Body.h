@@ -27,6 +27,7 @@ public:
 		Valueable<bool> Powered_KillSpawns;
 		Nullable<bool> AllowAirstrike;
 		Valueable<bool> Refinery_UseStorage;
+		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
 
 		Valueable<bool> Grinding_AllowAllies;
 		Valueable<bool> Grinding_AllowOwner;
@@ -59,6 +60,7 @@ public:
 			, OccupierMuzzleFlashes()
 			, Powered_KillSpawns { false }
 			, AllowAirstrike {}
+			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, Refinery_UseStorage { false }
 			, Grinding_AllowAllies { false }
 			, Grinding_AllowOwner { true }
