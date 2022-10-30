@@ -396,6 +396,7 @@ Vanilla fixes:
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something (by Kerbiter)
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true` (by Starkku)
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry (by Otamaa)
+- Allowed observers to see a selected building's radial indicator (by Trsdy)
 - Made sure that `Suicide=yes` weapon does kill the firer (by Trsdy)
 - Made sure that vxl units being flipped over get killed instead of rotating up and down (by Trsdy)
 

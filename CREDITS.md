@@ -194,9 +194,11 @@ This page lists all the individual contributions to the project by their author.
    - Trigger Action spawned team IFV/Opentopped logic fix
    - Campaign AI's base node/SW-delivered/trigger action 125-delivered structures' auto-repairability dehardcode
    - Misc CN doc fix, code refactor
+   - Power delta counter : blackout indication mark
    - Harvester counter
    - Warhead superweapon launch logic
    - "Shield is broken" trigger event
+   - RadialIndicator observer visibility
    - Forbidding parallel AI queues by type
 - **FlyStar**
    - Campaign load screen PCX support
