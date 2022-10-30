@@ -420,7 +420,7 @@ Phobos fixes:
 - Fixed teleporting miners (Chrono Miner) considered to be idle by harvester counter, improved related game performance (by Trsdy)
 - Fixed negative damage weapons considering shield health when evaluating targets even if Warhead had `Shield.Penetrate` set to true (by Starkku)
 - Fixed shield animations (`IdleAnim`, `BreakAnim` and `HitAnim`) showing up even if the object shield is attached to is currently underground (by Starkku)
-- Fixed shield and laser trails update after type conversion (by Trsdy)
+- Fixed techno-extdata update after type conversion (by Trsdy)
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)
