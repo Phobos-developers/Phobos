@@ -150,7 +150,7 @@ DEFINE_HOOK(0x70BC6F, TechnoClass_UpdateRigidBodyKinematics_KillFlipped, 0xA)
 	return 0x70BCA4;
 }
 
-// TODO: 
+// TODO:
 // 0x4425C0, BuildingClass_ReceiveDamage_MaybeKillRadioLinks, 0x6
 // 0x501477, HouseClass_IHouse_AllToHunt_KillMCInsignificant, 0xA
 // 0x7187D2, TeleportLocomotionClass_7187A0_IronCurtainFuckMeUp, 0x8
