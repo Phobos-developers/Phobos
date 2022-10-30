@@ -191,6 +191,7 @@ This page lists all the individual contributions to the project by their author.
    - Post-type-conversion update
    - Building EVA_StructureSold and SellSound dehardcode
    - Slaves' house customization when owner is killed
+   - Trigger Action spawned team IFV/Opentopped logic fix
    - Campaign AI's base node/SW-delivered/trigger action 125-delivered structures' auto-repairability dehardcode
    - Misc CN doc fix, code refactor
    - Power delta counter : blackout indication mark
@@ -199,9 +200,11 @@ This page lists all the individual contributions to the project by their author.
    - "Shield is broken" trigger event
    - RadialIndicator observer visibility
    - Forbidding parallel AI queues by type
+- **FlyStar**
+   - Campaign load screen PCX support
+   - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
-- **FlyStar** - Campaign load screen PCX support
 - **ststl** - Use `CustomPalette` for animations with `Tiled=yes`
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix

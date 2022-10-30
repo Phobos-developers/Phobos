@@ -106,6 +106,47 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 			TechnoExt::KillSelf(pThis, howToDie);
 			return true;
 		}
+
+		auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any)
+		{
+			auto existSingleType = [pThis, affectedHouse](const TechnoTypeClass* pType)
+			{
+				for (HouseClass* pHouse : *HouseClass::Array)
+				{
+					if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
+						&& pHouse->CountOwnedAndPresent(pType) > 0)
+						return true;
+				}
+
+				return false;
+			};
+
+			return any
+				? std::any_of(vTypes.begin(), vTypes.end(), existSingleType)
+				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
+		};
+
+		// death if don't exist
+		if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
+		{
+			if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any))
+			{
+				KillSelf(pThis, howToDie);
+
+				return true;
+			}
+		}
+
+		// death if exist
+		if (!pTypeExt->AutoDeath_TechnosExist.empty())
+		{
+			if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any))
+			{
+				KillSelf(pThis, howToDie);
+
+				return true;
+			}
+		}
 	}
 	return false;
 }
