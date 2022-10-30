@@ -1166,10 +1166,23 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 
 	// Initial mission update
 	pNewTechno->QueueMission(Mission::Guard, true);
-	DirStruct oldPrimaryFacing = pOldTechno->PrimaryFacing.Current();
-	DirStruct oldSecondaryFacing = pOldTechno->SecondaryFacing.Current();
 
 	// Facing update
+	DirStruct oldPrimaryFacing;
+	DirStruct oldSecondaryFacing;
+
+	if (pOldTechnoTypeExt->Convert_DeployDir >= 0)
+	{
+		DirType desiredDir = (static_cast<DirType>(pOldTechnoTypeExt->Convert_DeployDir * 32));
+		oldPrimaryFacing.SetDir(desiredDir);
+		oldSecondaryFacing.SetDir(desiredDir);
+	}
+	else
+	{
+		oldPrimaryFacing = pOldTechno->PrimaryFacing.Current();
+		oldSecondaryFacing = pOldTechno->SecondaryFacing.Current();
+	}
+
 	DirType oldPrimaryFacingDir = oldPrimaryFacing.GetDir(); // Returns current position in format [0 - 7] x 32
 	//DirType oldSecondaryFacingDir = oldSecondaryFacing.GetDir(); // Returns current position in format [0 - 7] x 32
 
@@ -1200,6 +1213,9 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 	{
 		auto pFoot = static_cast<FootClass*>(pNewTechno);
 		pFoot->Scatter(CoordStruct::Empty, true, false);
+		//pFoot->Locomotor->Move_To(CoordStruct::Empty);
+		//pFoot->Locomotor->Do_Turn(oldPrimaryFacing);
+		//pNewTechno->PrimaryFacing.SetDesired(oldPrimaryFacing);
 	}
 	else
 	{

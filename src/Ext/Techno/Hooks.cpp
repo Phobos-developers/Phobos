@@ -716,6 +716,7 @@ DEFINE_HOOK(0x730B8F, DeployCommand_UniversalDeploy, 0x6)
 		
 	if (pThis->WhatAmI() == AbstractType::Building)
 	{
+		pExt->Convert_Autodeploy_RememberTarget = pThis->Target;
 		pThis->MissionStatus = 0;
 		pThis->CurrentMission = Mission::Selling;
 		pExt->Convert_UniversalDeploy_InProgress = true;
@@ -748,6 +749,7 @@ DEFINE_HOOK(0x730B8F, DeployCommand_UniversalDeploy, 0x6)
 
 		if (!pThis->IsFallingDown && pThis->CurrentMission != Mission::Guard)
 		{
+			pExt->Convert_Autodeploy_RememberTarget = pThis->Target;
 			pFoot->SetDestination(pThis, false);
 			pFoot->Locomotor->Stop_Moving();
 		}
@@ -760,7 +762,10 @@ DEFINE_HOOK(0x730B8F, DeployCommand_UniversalDeploy, 0x6)
 			// If the cell is occupied abort operation
 			if (pThis->GetHeight() > 0 &&
 				pThis->IsCellOccupied(newCell, -1, -1, nullptr, false) != Move::OK)
+			{
+				pExt->Convert_Autodeploy_RememberTarget = nullptr;
 				return 0;
+			}
 
 			pThis->IsFallingDown = true;
 		}
@@ -821,11 +826,15 @@ DEFINE_HOOK(0x522510, InfantryClass_UniversalDeploy_DoingDeploy, 0x6)
 		// If the cell is occupied abort operation
 		if (pThis->GetHeight() > 0 &&
 			pThis->IsCellOccupied(newCell, -1, -1, nullptr, false) != Move::OK)
+		{
+			pOldTechnoExt->Convert_Autodeploy_RememberTarget = nullptr;
 			return 0;
+		}
 
 		pThis->IsFallingDown = true;
 	}
 
+	pOldTechnoExt->Convert_Autodeploy_RememberTarget = pOldTechno->Target;
 	pOldTechnoExt->Convert_UniversalDeploy_InProgress = true;
 
 	return 0;
@@ -968,6 +977,7 @@ DEFINE_HOOK(0x4ABEE9, BuildingClass_MouseLeftRelease_UniversalDeploy_ExecuteDepl
 
 	if (pTechno->WhatAmI() == AbstractType::Building)
 	{
+		pExt->Convert_Autodeploy_RememberTarget = pTechno->Target;
 		R->EBX(Action::None);
 		pTechno->MissionStatus = 0;
 		pTechno->CurrentMission = Mission::Selling;
@@ -998,6 +1008,7 @@ DEFINE_HOOK(0x4ABEE9, BuildingClass_MouseLeftRelease_UniversalDeploy_ExecuteDepl
 
 		if (!pTechno->IsFallingDown && pTechno->CurrentMission != Mission::Guard)
 		{
+			pExt->Convert_Autodeploy_RememberTarget = pTechno->Target;
 			// Can not be converted if the object is moving
 			pFoot->SetDestination(pTechno, false);
 			pFoot->Locomotor->Stop_Moving();
@@ -1011,7 +1022,10 @@ DEFINE_HOOK(0x4ABEE9, BuildingClass_MouseLeftRelease_UniversalDeploy_ExecuteDepl
 			// If the cell is occupied abort operation
 			if (pTechno->GetHeight() > 0 &&
 				pTechno->IsCellOccupied(newCell, -1, -1, nullptr, false) != Move::OK)
+			{
+				pExt->Convert_Autodeploy_RememberTarget = nullptr;
 				return 0;
+			}
 
 			pTechno->IsFallingDown = true;
 			pFoot->ParalysisTimer.Start(15);
