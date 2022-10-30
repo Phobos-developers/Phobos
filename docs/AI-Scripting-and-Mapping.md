@@ -14,7 +14,9 @@ This page describes all AI scripting and mapping related additions and changes i
 [Country House]
 RepairBaseNodes=no,no,no ; 3 booleans indicating whether AI repair basenodes in Easy/ Normal/ Difficult game diffculty.
 ```
-- Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally. `InitialPayload` logic from Ares is not supported yet.
+- Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
+  - `InitialPayload` logic from Ares is not supported yet.
+
 ## Script Actions
 
 ### `10000-10999` Ingame Actions

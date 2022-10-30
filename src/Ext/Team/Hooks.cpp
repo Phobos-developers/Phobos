@@ -1,8 +1,8 @@
 #include "Body.h"
 
 
-// Bugfix: TAction 7,80,107. Is rewrite needed?
-DEFINE_HOOK(0x65DF81, TeamTypeClass_CreateMembers_LeMeGetInMyGoddamnIFV, 0x7)
+// Bugfix: TAction 7,80,107.
+DEFINE_HOOK(0x65DF81, TeamTypeClass_CreateMembers_WhereTheHellIsIFV, 0x7)
 {
 	GET(FootClass* const, pPayload, EAX);
 	GET(FootClass* const, pTransport, ESI);
@@ -28,5 +28,8 @@ DEFINE_HOOK(0x65DF81, TeamTypeClass_CreateMembers_LeMeGetInMyGoddamnIFV, 0x7)
 
 DEFINE_HOOK(0x4DE652, FootClass_AddPassenger_NumPassengerGeq0, 0x7)
 {
-	return R->ESI<FootClass*>()->Passengers.NumPassengers > 0 ? 0x4DE65B : 0x4DE666;
+	enum { GunnerReception = 0x4DE65B, EndFuntion = 0x4DE666 };
+	GET(FootClass* const, pThis, ESI);
+	// Replace NumPassengers==1 check to allow multipassenger IFV using the fix above
+	return pThis->Passengers.NumPassengers > 0 ? GunnerReception : EndFuntion;
 }
