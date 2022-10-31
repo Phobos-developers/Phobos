@@ -18,6 +18,9 @@ bool AresData::CanUseAres = false;
 DWORD AresData::AresFunctionOffsetsFinal[AresData::AresFunctionCount];
 int AresData::FunctionIndex = -1;
 
+#ifndef DEBUG
+#pragma optimize( "", off )
+#endif
 uintptr_t GetModuleBaseAddress(const char* modName)
 {
 	HANDLE hCurrentProcess = GetCurrentProcess();
@@ -127,3 +130,7 @@ bool AresData::ConvertTypeTo(TechnoClass* pFoot, TechnoTypeClass* pConvertTo)
 {
 	ARES_STDCALL(ConvertTypeToID, pFoot, pConvertTo);
 }
+
+#ifndef DEBUG
+#pragma optimize( "", on )
+#endif
