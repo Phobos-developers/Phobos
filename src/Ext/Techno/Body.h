@@ -73,6 +73,7 @@ public:
 		void EatPassengers();
 		void UpdateShield();
 		void ApplySpawnLimitRange();
+		void UpdateTypeData(TechnoTypeClass* currentType);
 
 		virtual ~ExtData() = default;
 
