@@ -1167,6 +1167,9 @@ TechnoClass* TechnoExt::UniversalConvert(TechnoClass* pThis, TechnoTypeClass* pN
 	// Initial mission update
 	pNewTechno->QueueMission(Mission::Guard, true);
 
+	// Cloak update
+	pNewTechno->CloakState = pOldTechno->CloakState;
+
 	// Facing update
 	DirStruct oldPrimaryFacing;
 	DirStruct oldSecondaryFacing;
