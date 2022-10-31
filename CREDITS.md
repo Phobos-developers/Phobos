@@ -200,6 +200,7 @@ This page lists all the individual contributions to the project by their author.
    - Power delta counter : blackout indication mark
    - Harvester counter
    - Warhead superweapon launch logic
+   - TechnoType conversion placeholder
    - "Shield is broken" trigger event
    - RadialIndicator observer visibility
    - Forbidding parallel AI queues by type

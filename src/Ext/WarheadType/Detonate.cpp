@@ -358,7 +358,7 @@ bool UnusedConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 
 	HouseClass* const pOwner = pThis->Owner;
 
-	// Remove tracking of old techno 
+	// Remove tracking of old techno
 	if (!pThis->InLimbo)
 		pOwner->RegisterLoss(pThis, false);
 	pOwner->RemoveTracking(pThis);
