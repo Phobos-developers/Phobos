@@ -448,47 +448,6 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 		{
 			if (!AresData::ConvertTypeTo(pTarget, pResultType))
 				return;
-
-			if (pTarget->WhatAmI() == AbstractType::Infantry &&
-				pResultType->WhatAmI() == AbstractType::InfantryType)
-			{
-				// InfantryClass only logic
-			}
-			else if (pTarget->WhatAmI() == AbstractType::Unit &&
-				pResultType->WhatAmI() == AbstractType::UnitType)
-			{
-				// UnitClass only logic
-			}
-			else if (pTarget->WhatAmI() == AbstractType::Aircraft &&
-				pResultType->WhatAmI() == AbstractType::AircraftType)
-			{
-				// AircraftClass only logic
-			}
-
-			// Shared logic
-			auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-			auto pResultTypeExt = TechnoTypeExt::ExtMap.Find(pResultType);
-
-			if (pTargetExt->TypeExtData->PassengerDeletion_Rate > 0)
-			{
-				if (pResultTypeExt->PassengerDeletion_Rate <= 0)
-				{
-					pTargetExt->PassengerDeletionCountDown = -1;
-					pTargetExt->PassengerDeletionTimer.Stop();
-				}
-			}
-
-			if (pTargetExt->TypeExtData->AutoDeath_AfterDelay > 0)
-			{
-				if (pResultTypeExt->AutoDeath_AfterDelay <= 0)
-				{
-					pTargetExt->AutoDeathTimer.Stop();
-				}
-			}
-
-			pTargetExt->TypeExtData = pResultTypeExt;
-			ShieldClass::ConvertShield(pTarget, pResultType);
-			TechnoExt::InitializeLaserTrails(pTarget, pResultType, true);
 		};
 
 		if (this->Convert_From.size())
@@ -497,8 +456,8 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 			{
 				if (!EnumFunctions::CanTargetHouse(this->Convert_AffectedHouses, pSW->Owner, pTarget->Owner))
 					continue;
-				// explicitly unsigned because the compiler wants it
-				for (unsigned int i = 0; i < this->Convert_From.size(); i++)
+
+				for (size_t i = 0; i < this->Convert_From.size(); i++)
 				{
 					// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
 					if (this->Convert_To.size() >= i && this->Convert_From[i] == pTarget->GetTechnoType())
