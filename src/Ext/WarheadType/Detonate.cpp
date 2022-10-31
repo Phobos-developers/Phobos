@@ -311,76 +311,173 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 	}
 }
 
+// Placeholder, in case shit happens or Ares isn't used -- Trsdy
+bool UnusedConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
+{
+	AbstractType rtti;
+	TechnoTypeClass** nowTypePtr;
+
+	// Different types not allowed
+	switch (pThis->WhatAmI())
+	{
+	case AbstractType::Infantry:
+		nowTypePtr = reinterpret_cast<TechnoTypeClass**>(&(static_cast<InfantryClass*>(pThis)->Type));
+		rtti = AbstractType::InfantryType;
+		break;
+	case AbstractType::Unit:
+		nowTypePtr = reinterpret_cast<TechnoTypeClass**>(&(static_cast<UnitClass*>(pThis)->Type));
+		rtti = AbstractType::UnitType;
+		break;
+	case AbstractType::Aircraft:
+		nowTypePtr = reinterpret_cast<TechnoTypeClass**>(&(static_cast<AircraftClass*>(pThis)->Type));
+		rtti = AbstractType::AircraftType;
+		break;
+	default:
+		Debug::Log("%s is a building, type-conversion not allowed\n", pToType->get_ID());
+		return false;
+	}
+	if (pToType->WhatAmI() != rtti)
+	{
+		Debug::Log("Incompatible type between %s and %s\n", pThis->get_ID(), pToType->get_ID());
+		return false;
+	}
+
+	// TODO : Locomotor change (piggyback?) I don't know how to do this atm, so skip this type of conversion for now
+	CLSID nowLocoID;
+	ILocomotion* iloco = pThis->Locomotor.get();
+	if (!(SUCCEEDED(static_cast<LocomotionClass*>(iloco)->GetClassID(&nowLocoID)) && nowLocoID == pToType->Locomotor))
+	{
+		Debug::Log("Different locomotors not supported atm, will do it later\n");
+		return false;
+	}
+
+	// Detach CLEG targeting
+	auto tempUsing = pThis->TemporalImUsing;
+	if (tempUsing && tempUsing->Target)
+		tempUsing->Detach();
+
+	HouseClass* const pOwner = pThis->Owner;
+
+	// Remove tracking of old techno 
+	if (!pThis->InLimbo)
+		pOwner->RegisterLoss(pThis, false);
+	pOwner->RemoveTracking(pThis);
+
+	int oldHealth = pThis->Health;
+
+	// Generic type-conversion
+	TechnoTypeClass* prevType = *nowTypePtr;
+	*nowTypePtr = pToType;
+
+	// Readjust health according to percentage
+	pThis->SetHealthPercentage((double)(oldHealth) / (double)prevType->Strength);
+	pThis->EstimatedHealth = pThis->Health;
+
+	// Add tracking of new techno
+	pOwner->AddTracking(pThis);
+	if (!pThis->InLimbo)
+		pOwner->RegisterGain(pThis, false);
+	pOwner->RecheckTechTree = true;
+
+	//UpdateAttachEffectTypes -- skipped
+	//TechnoExt::RecalculateStats -- skipped
+
+	// Adjust ammo
+	pThis->Ammo = Math::min(pThis->Ammo, pToType->Ammo);
+	//TechnoExt::ResetSpotlights -- skipped
+
+	// Adjust ROT
+	pThis->PrimaryFacing.SetROT(pToType->ROT);
+	// TurretROT -- skipped
+
+	return true;
+	// TODO : Locomotor change, need help
+}
+
 void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	if (!AresData::CanUseAres)
-		return;
-
-	if (this->Convert_To.size())
+	if (auto pTargetFoot = abstract_cast<FootClass*>(pTarget))
 	{
-		auto Conversion = [this, pTarget](TechnoTypeClass* pResultType)
+		auto Conversion = [this, pTargetFoot](TechnoTypeClass* pResultType)
 		{
-			if (!AresData::ConvertTypeTo((FootClass*)pTarget, pResultType))
-				return;
+			if (AresData::CanUseAres)
+			{
+				if (!AresData::ConvertTypeTo(pTargetFoot, pResultType))
+					return;
+/*
+				// To Morton: ExtData Update should have been done in TechnoClass_AI hook
+				// even if the current code may seems incomplete, it should be dealt with there --by Trsdy
 
-			if (pTarget->WhatAmI() == AbstractType::Infantry &&
-				pResultType->WhatAmI() == AbstractType::InfantryType)
-			{
-				// InfantryClass only logic
-			}
-			else if (pTarget->WhatAmI() == AbstractType::Unit &&
-				pResultType->WhatAmI() == AbstractType::UnitType)
-			{
-				// UnitClass only logic
-			}
-			else if (pTarget->WhatAmI() == AbstractType::Aircraft &&
-				pResultType->WhatAmI() == AbstractType::AircraftType)
-			{
-				// AircraftClass only logic
-			}
-
-			// Shared logic
-			auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-			auto pResultTypeExt = TechnoTypeExt::ExtMap.Find(pResultType);
-
-			if (pTargetExt->TypeExtData->PassengerDeletion_Rate > 0)
-			{
-				if (pResultTypeExt->PassengerDeletion_Rate <= 0)
+				// These are already checked in Ares' convert type function
+				if (pTargetFoot->WhatAmI() == AbstractType::Infantry &&
+					pResultType->WhatAmI() == AbstractType::InfantryType)
 				{
-					pTargetExt->PassengerDeletionCountDown = -1;
-					pTargetExt->PassengerDeletionTimer.Stop();
+					// InfantryClass only logic
 				}
-			}
-
-			if (pTargetExt->TypeExtData->AutoDeath_AfterDelay > 0)
-			{
-				if (pResultTypeExt->AutoDeath_AfterDelay <= 0)
+				else if (pTargetFoot->WhatAmI() == AbstractType::Unit &&
+					pResultType->WhatAmI() == AbstractType::UnitType)
 				{
-					pTargetExt->AutoDeathTimer.Stop();
+					// UnitClass only logic
 				}
-			}
+				else if (pTargetFoot->WhatAmI() == AbstractType::Aircraft &&
+					pResultType->WhatAmI() == AbstractType::AircraftType)
+				{
+					// AircraftClass only logic
+				}
 
-			pTargetExt->TypeExtData = pResultTypeExt;
-			ShieldClass::ConvertShield(pTarget, pResultType);
-			TechnoExt::InitializeLaserTrails(pTarget, pResultType, true);
+				// Shared logic
+				auto pTargetExt = TechnoExt::ExtMap.Find(pTargetFoot);
+				auto pResultTypeExt = TechnoTypeExt::ExtMap.Find(pResultType);
+
+				if (pTargetExt->TypeExtData->PassengerDeletion_Rate > 0)
+				{
+					if (pResultTypeExt->PassengerDeletion_Rate <= 0)
+					{
+						pTargetExt->PassengerDeletionCountDown = -1;
+						pTargetExt->PassengerDeletionTimer.Stop();
+					}
+				}
+
+				if (pTargetExt->TypeExtData->AutoDeath_AfterDelay > 0)
+				{
+					if (pResultTypeExt->AutoDeath_AfterDelay <= 0)
+					{
+						pTargetExt->AutoDeathTimer.Stop();
+					}
+				}
+
+				pTargetExt->TypeExtData = pResultTypeExt;
+				ShieldClass::ConvertShield(pTargetFoot, pResultType);
+				TechnoExt::InitializeLaserTrails(pTargetFoot, pResultType, true);
+*/
+			}
+			else
+			{
+				if (!UnusedConvertToType(pTargetFoot, pResultType))
+					return;
+			}
 		};
 
-		if (this->Convert_From.size())
+		if (this->Convert_To.size())
 		{
-			// explicitly unsigned because the compiler wants it
-			for (unsigned int i = 0; i < this->Convert_From.size(); i++)
+
+			if (this->Convert_From.size())
 			{
-				// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
-				if (this->Convert_To.size() >= i && this->Convert_From[i] == pTarget->GetTechnoType())
+				// explicitly unsigned because the compiler wants it
+				for (size_t i = 0; i < this->Convert_From.size(); i++)
 				{
-					Conversion(this->Convert_To[i]);
-					break;
+					// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
+					if (this->Convert_To.size() >= i && this->Convert_From[i] == pTarget->GetTechnoType())
+					{
+						Conversion(this->Convert_To[i]);
+						break;
+					}
 				}
 			}
-		}
-		else
-		{
-			Conversion(this->Convert_To[0]);
+			else
+			{
+				Conversion(this->Convert_To[0]);
+			}
 		}
 	}
 }

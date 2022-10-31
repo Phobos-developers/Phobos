@@ -21,7 +21,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	// Notice that Ares may handle type conversion in the same hook here, which is executed right before this one thankfully
 	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
 		pExt->UpdateTypeData(pType);
-   
+
 	if (pExt->CheckDeathConditions())
 		return 0;
 
