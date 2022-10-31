@@ -130,6 +130,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AllowAirstrike.Read(exINI, pSection, "AllowAirstrike");
 
+	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
+
 	this->Grinding_AllowAllies.Read(exINI, pSection, "Grinding.AllowAllies");
 	this->Grinding_AllowOwner.Read(exINI, pSection, "Grinding.AllowOwner");
 	this->Grinding_AllowTypes.Read(exINI, pSection, "Grinding.AllowTypes");
@@ -194,6 +196,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OccupierMuzzleFlashes)
 		.Process(this->Powered_KillSpawns)
 		.Process(this->AllowAirstrike)
+		.Process(this->InitialStrength_Cloning)
 		.Process(this->Refinery_UseStorage)
 		.Process(this->Grinding_AllowAllies)
 		.Process(this->Grinding_AllowOwner)

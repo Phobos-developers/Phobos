@@ -6,6 +6,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/BuildingType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
@@ -16,14 +17,11 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	auto pType = pThis->GetTechnoType();
 
-	// Set only if unset
-	if (!pExt->TypeExtData)
-		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
-	// or type is changed, and if it does
-	// it should be done by Ares in the same hook here, which is executed right before this one thankfully
-	else if (pExt->TypeExtData->OwnerObject() != pType)
-		pExt->UpdateTypeAndLaserTrails(pType);
-
+	// Set only if unset or type is changed
+	// Notice that Ares may handle type conversion in the same hook here, which is executed right before this one thankfully
+	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
+		pExt->UpdateTypeData(pType);
+   
 	if (pExt->CheckDeathConditions())
 		return 0;
 
@@ -33,6 +31,20 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->ApplySpawnLimitRange();
 
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
+
+	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
+	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
+	for (auto const& trail : pExt->LaserTrails)
+	{
+		if (pThis->CloakState == CloakState::Cloaked && !trail->Type->CloakVisible)
+			continue;
+
+		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret);
+		if (pThis->CloakState == CloakState::Uncloaking && !trail->Type->CloakVisible)
+			trail->LastLocation = trailLoc;
+		else
+			trail->Update(trailLoc);
+	}
 
 	return 0;
 }
@@ -48,7 +60,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 	return 0;
 }
 
-DEFINE_HOOK(0x702E4E, TechnoClass_Save_Killer_Techno, 0x6)
+DEFINE_HOOK(0x702E4E, TechnoClass_RegisterDestruction_SaveKillerInfo, 0x6)
 {
 	GET(TechnoClass*, pKiller, EDI);
 	GET(TechnoClass*, pVictim, ECX);
@@ -89,27 +101,18 @@ DEFINE_HOOK(0x414057, TechnoClass_Init_InitialStrength, 0x6)       // AircraftCl
 DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
 {
 	GET(BuildingClass*, pBuilding, ESI);
-	GET(FootClass*, pFoot, EDI);
 
-	bool isCloner = false;
-
-	if (pBuilding && pBuilding->Type->Cloning)
-		isCloner = true;
-
-	if (isCloner && pFoot)
+	if (auto const pInf = abstract_cast<InfantryClass*>(R->EDI<FootClass*>()))
 	{
-		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType()))
+		if (pBuilding && pBuilding->Type->Cloning)
 		{
-			if (auto pTypeUnit = pFoot->GetTechnoType())
+			if (auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
 			{
 				double percentage = GeneralUtils::GetRangedRandomOrSingleValue(pTypeExt->InitialStrength_Cloning);
-				int strength = static_cast<int>(pTypeUnit->Strength * percentage);
+				int strength = Math::clamp(static_cast<int>(pInf->Type->Strength * percentage), 1, pInf->Type->Strength);
 
-				if (strength <= 0)
-					strength = 1;
-
-				pFoot->Health = strength;
-				pFoot->EstimatedHealth = strength;
+				pInf->Health = strength;
+				pInf->EstimatedHealth = strength;
 			}
 		}
 	}

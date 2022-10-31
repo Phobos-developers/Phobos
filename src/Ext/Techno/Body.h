@@ -59,7 +59,7 @@ public:
 		void EatPassengers();
 		void UpdateShield();
 		void ApplySpawnLimitRange();
-		void UpdateTypeAndLaserTrails(const TechnoTypeClass* currentType);
+		void UpdateTypeData(TechnoTypeClass* currentType);
 
 		virtual ~ExtData() = default;
 
