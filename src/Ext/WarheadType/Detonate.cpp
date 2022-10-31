@@ -311,13 +311,15 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 	}
 }
 
-// Placeholder, in case shit happens or Ares isn't used -- Trsdy
+
+// TODO: Unfinished placeholder, in case shit happens or Ares isn't used -- Trsdy
+// So who said it was merely a Type pointer replacement and he could make a better one than Ares?
 bool UnusedConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 {
 	AbstractType rtti;
 	TechnoTypeClass** nowTypePtr;
 
-	// Different types not allowed
+	// Different types prohibited
 	switch (pThis->WhatAmI())
 	{
 	case AbstractType::Infantry:
@@ -333,12 +335,12 @@ bool UnusedConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 		rtti = AbstractType::AircraftType;
 		break;
 	default:
-		Debug::Log("%s is a building, type-conversion not allowed\n", pToType->get_ID());
+		Debug::Log("%s is not a moveable type, conversion not allowed\n", pToType->get_ID());
 		return false;
 	}
 	if (pToType->WhatAmI() != rtti)
 	{
-		Debug::Log("Incompatible type between %s and %s\n", pThis->get_ID(), pToType->get_ID());
+		Debug::Log("Incompatible types between %s and %s\n", pThis->get_ID(), pToType->get_ID());
 		return false;
 	}
 
@@ -347,7 +349,7 @@ bool UnusedConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	ILocomotion* iloco = pThis->Locomotor.get();
 	if (!(SUCCEEDED(static_cast<LocomotionClass*>(iloco)->GetClassID(&nowLocoID)) && nowLocoID == pToType->Locomotor))
 	{
-		Debug::Log("Different locomotors not supported atm, will do it later\n");
+		Debug::Log("Different locomotors not supported atm\n");
 		return false;
 	}
 
@@ -379,16 +381,16 @@ bool UnusedConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 		pOwner->RegisterGain(pThis, false);
 	pOwner->RecheckTechTree = true;
 
-	//UpdateAttachEffectTypes -- skipped
-	//TechnoExt::RecalculateStats -- skipped
+	// Update AttachEffects -- skipped
+	// RecalculateStats -- skipped
 
 	// Adjust ammo
 	pThis->Ammo = Math::min(pThis->Ammo, pToType->Ammo);
-	//TechnoExt::ResetSpotlights -- skipped
+	// ResetSpotlights -- skipped
 
 	// Adjust ROT
 	pThis->PrimaryFacing.SetROT(pToType->ROT);
-	// TurretROT -- skipped
+	// Adjust TurretROT -- skipped
 
 	return true;
 	// TODO : Locomotor change, need help

@@ -452,7 +452,7 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 
 		if (this->Convert_From.size())
 		{
-			for (auto pTarget : *TechnoClass::Array)
+			for (auto pTarget : *FootClass::Array)
 			{
 				if (!EnumFunctions::CanTargetHouse(this->Convert_AffectedHouses, pSW->Owner, pTarget->Owner))
 					continue;
