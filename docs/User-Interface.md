@@ -202,7 +202,8 @@ If you use the vanilla font in your mod, you can use the improved font (v4 and h
 *Power delta Counter in [Assault Amerika](https://www.moddb.com/mods/assault-amerika)*
 
 - An additional counter for your power delta (surplus) can be added near the credits indicator.
-- The counter is displayed with the format of `Label(sign)(Power Delta)`. The label is PowerLabel used in tooltips (by default `⚡ U+26A1`).
+- The counter is displayed with the format of `Label(sign)(Power Delta)`. The label is `PowerLabel` used in `ToolTips` (by default `⚡ U+26A1`).
+- When the power of the player is blacked-out by a spy or force-shield, `PowerBlackoutLabel` in `ToolTips` is displayed instead (by default ⚡❌ `U+26A1 U+274C`), the text color is `Sidebar.PowerDelta.ColorGrey`.
 - You can adjust counter position by `Sidebar.PowerDelta.Offset`, negative means left/up, positive means right/down.
 - You can adjust counter text alignment by `Sidebar.PowerDelta.Align`, acceptable values are left, right, center/centre.
 - By setting `PowerDelta.ConditionYellow` and `PowerDelta.ConditionRed`, the game will warn player by changing the color of counter whenever the percentage of used power exceeds the value (i.e. when drain to output ratio is above 100%, the counter will turn red).
@@ -223,7 +224,8 @@ Sidebar.PowerDelta.Offset=0,0             ; X,Y, pixels relative to default
 Sidebar.PowerDelta.ColorGreen=0,255,0     ; integer - R,G,B
 Sidebar.PowerDelta.ColorYellow=255,255,0  ; integer - R,G,B
 Sidebar.PowerDelta.ColorRed=255,0,0       ; integer - R,G,B
-Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left|center|centre|right
+Sidebar.PowerDelta.ColorGrey=128,128,128  ; integer - R,G,B
+Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left | center/centre | right
 ```
 
 ```{note}
@@ -275,11 +277,12 @@ Sidebar.GDIPositions=  ; boolean
 In `uimd.ini`:
 ```ini
 [ToolTips]
-ExtendedToolTips=false  ; boolean
-CostLabel=<none>        ; CSF entry key
-PowerLabel=<none>       ; CSF entry key
-TimeLabel=<none>        ; CSF entry key
-MaxWidth=0              ; integer, pixels
+ExtendedToolTips=false     ; boolean
+CostLabel=<none>           ; CSF entry key
+PowerLabel=<none>          ; CSF entry key
+PowerBlackoutLabel=<none>  ; CSF entry key
+TimeLabel=<none>           ; CSF entry key
+MaxWidth=0                 ; integer, pixels
 ```
 In `rulesmd.ini`:
 ```ini

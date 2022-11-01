@@ -39,6 +39,7 @@
     <ClCompile Include="src\Ext\TAction\Body.cpp" />
     <ClCompile Include="src\Ext\TAction\Hooks.cpp" />
     <ClCompile Include="src\Ext\Team\Body.cpp" />
+    <ClCompile Include="src\Ext\Team\Hooks.cpp" />
     <ClCompile Include="src\Ext\TEvent\Hooks.cpp" />
     <ClCompile Include="src\Ext\TEvent\Body.cpp" />
     <ClCompile Include="src\Ext\Trigger\Hooks.cpp" />
