@@ -559,3 +559,14 @@ Bolt.Disable1=false    ; boolean
 Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
 ```
+
+### RadialIndicator visibility
+
+In vanilla game, a structure's radial indicator can be drawn only when it belongs to the player. Now it can also be visible to observer.
+On top of that, you can specify its visibility from other houses.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+RadialIndicatorVisibility=allies  ; list of Affected House Enumeration (owner/self | allies/ally | enemies/enemy | all)
+```

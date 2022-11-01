@@ -75,6 +75,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	}
 }
 
+// TODO : Wrap into a new entity
 bool TechnoExt::ExtData::CheckDeathConditions()
 {
 	auto const pTypeExt = this->TypeExtData;
@@ -108,47 +109,49 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 			return true;
 		}
 
-		auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any)
+	}
+
+	auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any)
+	{
+		auto existSingleType = [pThis, affectedHouse](const TechnoTypeClass* pType)
 		{
-			auto existSingleType = [pThis, affectedHouse](const TechnoTypeClass* pType)
+			for (HouseClass* pHouse : *HouseClass::Array)
 			{
-				for (HouseClass* pHouse : *HouseClass::Array)
-				{
-					if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
-						&& pHouse->CountOwnedAndPresent(pType) > 0)
-						return true;
-				}
+				if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
+					&& pHouse->CountOwnedAndPresent(pType) > 0)
+					return true;
+			}
 
-				return false;
-			};
-
-			return any
-				? std::any_of(vTypes.begin(), vTypes.end(), existSingleType)
-				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
+			return false;
 		};
 
-		// death if don't exist
-		if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
+		return any
+			? std::any_of(vTypes.begin(), vTypes.end(), existSingleType)
+			: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
+	};
+
+	// death if listed technos don't exist
+	if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
+	{
+		if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any))
 		{
-			if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any))
-			{
-				KillSelf(pThis, howToDie);
+			TechnoExt::KillSelf(pThis, howToDie);
 
-				return true;
-			}
-		}
-
-		// death if exist
-		if (!pTypeExt->AutoDeath_TechnosExist.empty())
-		{
-			if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any))
-			{
-				KillSelf(pThis, howToDie);
-
-				return true;
-			}
+			return true;
 		}
 	}
+
+	// death if listed technos exist
+	if (!pTypeExt->AutoDeath_TechnosExist.empty())
+	{
+		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any))
+		{
+			TechnoExt::KillSelf(pThis, howToDie);
+
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -342,7 +345,7 @@ bool TechnoExt::IsActive(TechnoClass* pThis)
 		!pThis->InLimbo;
 }
 
-// FS-21 FIX THIS
+// TODO: FS-21 FIX THIS
 void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 {
 	if (auto pVictimTechno = static_cast<TechnoClass*>(pVictim))
@@ -604,7 +607,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	case AutoDeathBehavior::Vanish:
 	{
 		pThis->KillPassengers(pThis);
-		pThis->vt_entry_3A0(); // Stun? what is this?
+		pThis->vt_entry_3A0();
 		pThis->Limbo();
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
