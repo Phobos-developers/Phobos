@@ -400,6 +400,7 @@ Phobos fixes:
 - Fixed shields not being removed from sinking units until they have fully finished sinking (by Starkku)
 - Fixed Phobos Warhead effects (crits, new shield modifiers etc.) considering sinking units valid targets (by Starkku)
 - Fixed an issue where `FireOnce=yes` deploy weapons on vehicles would still fire multiple times if deploy command is issued repeatedly or when not idle (by Starkku)
+- Fixed techno-extdata update after type conversion (by Trsdy)
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)
