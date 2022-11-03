@@ -25,6 +25,7 @@ public:
 		Valueable<ColorStruct> Sidebar_PowerDelta_Green;
 		Valueable<ColorStruct> Sidebar_PowerDelta_Yellow;
 		Valueable<ColorStruct> Sidebar_PowerDelta_Red;
+		Valueable<ColorStruct> Sidebar_PowerDelta_Grey;
 		Valueable<TextAlign> Sidebar_PowerDelta_Align;
 		Nullable<ColorStruct> ToolTip_Background_Color;
 		Nullable<int> ToolTip_Background_Opacity;
@@ -43,6 +44,7 @@ public:
 			, Sidebar_PowerDelta_Green { { 0, 255, 0 } }
 			, Sidebar_PowerDelta_Yellow { { 255, 255, 0 } }
 			, Sidebar_PowerDelta_Red { { 255, 0, 0 } }
+			, Sidebar_PowerDelta_Grey { { 0x80,0x80,0x80 } }
 			, Sidebar_PowerDelta_Align { TextAlign::Left }
 			, ToolTip_Background_Color { }
 			, ToolTip_Background_Opacity { }

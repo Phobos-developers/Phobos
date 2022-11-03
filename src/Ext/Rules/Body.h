@@ -6,7 +6,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
-
+#include <Utilities/TemplateDef.h>
 #include <Utilities/Debug.h>
 
 
@@ -67,6 +67,8 @@ public:
 		Valueable<int> ToolTip_Background_Opacity;
 		Valueable<float> ToolTip_Background_BlurSize;
 
+		Valueable<AffectedHouse> RadialIndicatorVisibility;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -103,6 +105,7 @@ public:
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
 			, ToolTip_Background_BlurSize { 0.0f }
+			, RadialIndicatorVisibility { AffectedHouse::Allies }
 		{ }
 
 		virtual ~ExtData() = default;
