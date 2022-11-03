@@ -64,6 +64,7 @@ public:
 		void UpdateShield();
 		void UpdateOnTunnelEnter();
 		void ApplySpawnLimitRange();
+		void UpdateTypeData(TechnoTypeClass* currentType);
 
 		virtual ~ExtData() = default;
 

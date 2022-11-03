@@ -181,6 +181,7 @@ This page lists all the individual contributions to the project by their author.
       - Turret direction in idle state fix
       - Sensor fix
    - Object Self-destruction logic
+   - Post-type-conversion update
    - Building EVA_StructureSold and SellSound dehardcode
    - Slaves' house customization when owner is killed
    - Misc CN doc fix, code refactor
