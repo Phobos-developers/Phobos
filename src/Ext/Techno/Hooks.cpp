@@ -132,7 +132,10 @@ DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
 		{
 			if (auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
 			{
-				double percentage = GeneralUtils::GetRangedRandomOrSingleValue(pTypeExt->InitialStrength_Cloning);
+				Vector2D<double> range = pTypeExt->InitialStrength_Cloning.Get();
+				int min = static_cast<int>(range.X * 100);
+				int max = static_cast<int>(range.Y * 100);
+				double percentage = range.X >= range.Y ? range.X : (ScenarioClass::Instance->Random.RandomRanged(min, max) / 100.0);
 				int strength = Math::clamp(static_cast<int>(pInf->Type->Strength * percentage), 1, pInf->Type->Strength);
 
 				pInf->Health = strength;

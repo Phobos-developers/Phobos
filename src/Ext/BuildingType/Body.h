@@ -25,7 +25,7 @@ public:
 		DynamicVectorClass<Point2D> OccupierMuzzleFlashes;
 		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Refinery_UseStorage;
-		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
+		Valueable<Vector2D<double>> InitialStrength_Cloning;
 
 		Valueable<bool> Grinding_AllowAllies;
 		Valueable<bool> Grinding_AllowOwner;
