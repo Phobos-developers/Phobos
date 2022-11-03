@@ -6,6 +6,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/BuildingType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
@@ -124,30 +125,18 @@ DEFINE_HOOK(0x414057, TechnoClass_Init_InitialStrength, 0x6)       // AircraftCl
 DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
 {
 	GET(BuildingClass*, pBuilding, ESI);
-	GET(FootClass*, pFoot, EDI);
 
-	bool isCloner = false;
-
-	if (pBuilding && pBuilding->Type->Cloning)
-		isCloner = true;
-
-	if (isCloner && pFoot)
+	if (auto const pInf = abstract_cast<InfantryClass*>(R->EDI<FootClass*>()))
 	{
-		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType()))
+		if (pBuilding && pBuilding->Type->Cloning)
 		{
-			if (auto pTypeUnit = pFoot->GetTechnoType())
+			if (auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
 			{
-				Vector2D<double> range = pTypeExt->InitialStrength_Cloning.Get();
-				int min = static_cast<int>(range.X * 100);
-				int max = static_cast<int>(range.Y * 100);
-				double percentage = range.X >= range.Y ? range.X : (ScenarioClass::Instance->Random.RandomRanged(min, max) / 100.0);
-				int strength = static_cast<int>(pTypeUnit->Strength * percentage);
+				double percentage = GeneralUtils::GetRangedRandomOrSingleValue(pTypeExt->InitialStrength_Cloning);
+				int strength = Math::clamp(static_cast<int>(pInf->Type->Strength * percentage), 1, pInf->Type->Strength);
 
-				if (strength <= 0)
-					strength = 1;
-
-				pFoot->Health = strength;
-				pFoot->EstimatedHealth = strength;
+				pInf->Health = strength;
+				pInf->EstimatedHealth = strength;
 			}
 		}
 	}

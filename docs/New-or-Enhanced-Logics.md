@@ -593,6 +593,12 @@ In `rulesmd.ini`:
 InitialStrength.Cloning=  ; single double/percentage or comma-sep. range
 ```
 
+```{note}
+
+Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `Strength`, even if your values are bigger than it.
+
+```
+
 ### Kill Object Automatically
 
 - Objects can be destroyed automatically if *any* of these conditions is met:
