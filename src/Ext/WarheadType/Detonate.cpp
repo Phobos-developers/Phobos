@@ -72,7 +72,9 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					if (this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell)
 					&& (this->LaunchSW_IgnoreDesignators || pSWExt->HasDesignator(pHouse, cell)))
 					{
-						pSuper->SetReadiness(true); // If you don't set it ready NewSWType::Active gives false 
+						// If you don't set it ready, NewSWType::Active will give false in Ares if RealLaunch=false
+						// and therefore it will reuse the vanilla routine, which will crash inside of it
+						pSuper->SetReadiness(true);
 						pSuper->Launch(cell, true);
 						pSuper->Reset();
 					}
