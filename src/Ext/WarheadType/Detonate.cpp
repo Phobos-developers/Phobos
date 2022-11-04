@@ -72,9 +72,9 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					if (this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell)
 					&& (this->LaunchSW_IgnoreDesignators || pSWExt->HasDesignator(pHouse, cell)))
 					{
+						pSuper->SetReadiness(true); // If you don't set it ready NewSWType::Active gives false 
 						pSuper->Launch(cell, true);
-						if (this->LaunchSW_RealLaunch)
-							pSuper->Reset();
+						pSuper->Reset();
 					}
 				}
 			}

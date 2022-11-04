@@ -32,7 +32,8 @@ DEFINE_HOOK(0x54B8E9, JumpjetLocomotionClass_In_Which_Layer_Deviation, 0x6)
 // 6 - Invalid?
 
 // Bugfix: Jumpjet turn to target when attacking
-// Even though it's still not the best place to do this, given that 0x54BF5B has done the similar action, I'll do it here too
+// The way vanilla game handles facing turning is a total mess, so even though this is not the most correct place to do it, given that 0x54BF5B has something similar, I just do it here too
+// TODO : The correct fix : 0x736FC4 for stucking at FireError::FACING, 0x736EE9 for something else like OmniFire etc.
 DEFINE_HOOK(0x54BD93, JumpjetLocomotionClass_State2_54BD30_TurnToTarget, 0x6)
 {
 	enum { ContinueNoTarget = 0x54BDA1, EndFunction = 0x54BFDE };
