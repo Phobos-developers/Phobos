@@ -305,7 +305,8 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 			if (Y < 0)
 				targetLocation.Y = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MapCoordBounds.Bottom);
-		} while (!MapClass::Instance->IsWithinUsableArea(targetLocation, false));
+		}
+		while (!MapClass::Instance->IsWithinUsableArea(targetLocation, false));
 
 		// Only valid House indexes
 		if ((pThis->Param4 >= HouseClass::Array->Count
@@ -412,14 +413,18 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			break;
 		}
 
-		HouseClass* pHouse = HouseClass::Array->GetItem(houseIdx);
-		SuperWeaponTypeClass* pSuperType = SuperWeaponTypeClass::Array->GetItem(swIdx);
-		SuperClass* pSuper = GameCreate<SuperClass>(pSuperType, pHouse);
-
-		if (auto const pSWExt = SWTypeExt::ExtMap.Find(pSuperType))
+		if (HouseClass* pHouse = HouseClass::Array->GetItem(houseIdx))
 		{
-			pSuper->SetReadiness(true);
-			pSuper->Launch(targetLocation, false);
+			if (auto const pSuper = pHouse->Supers.GetItem(swIdx))
+			{
+				int oldstart = pSuper->RechargeTimer.StartTime;
+				int oldleft = pSuper->RechargeTimer.TimeLeft;
+				pSuper->SetReadiness(true);
+				pSuper->Launch(targetLocation, false);
+				pSuper->Reset();
+				pSuper->RechargeTimer.StartTime = oldstart;
+				pSuper->RechargeTimer.TimeLeft = oldleft;
+			}
 		}
 	}
 

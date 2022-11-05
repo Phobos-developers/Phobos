@@ -162,7 +162,7 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 }
 
 // SW.Next proper launching mechanic
-void Launch(HouseClass* pHouse, SWTypeExt::ExtData* pLauncherTypeExt, SuperWeaponTypeClass* pLaunchedType, const CellStruct& cell)
+inline void LaunchTheSW(HouseClass* pHouse, SWTypeExt::ExtData* pLauncherTypeExt, SuperWeaponTypeClass* pLaunchedType, const CellStruct& cell)
 {
 	const auto pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pLaunchedType));
 
@@ -176,10 +176,9 @@ void Launch(HouseClass* pHouse, SWTypeExt::ExtData* pLauncherTypeExt, SuperWeapo
 		if (pLauncherTypeExt->SW_Next_IgnoreInhibitors || !pSuperTypeExt->HasInhibitor(pHouse, cell)
 			&& (pLauncherTypeExt->SW_Next_IgnoreDesignators || pSuperTypeExt->HasDesignator(pHouse, cell)))
 		{
-			// Forcibly fire
+			pSuper->SetReadiness(true);
 			pSuper->Launch(cell, true);
-			if (pLauncherTypeExt->SW_Next_RealLaunch)
-				pSuper->Reset();
+			pSuper->Reset();
 		}
 
 	}
@@ -264,13 +263,13 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 	{
 		auto results = this->WeightedRollsHandler(&this->SW_Next_RollChances, &this->SW_Next_RandomWeightsData, this->SW_Next.size());
 		for (int result : results)
-			Launch(pSW->Owner, this, this->SW_Next[result], cell);
+			LaunchTheSW(pSW->Owner, this, this->SW_Next[result], cell);
 	}
 	// no randomness mode
 	else
 	{
 		for (const auto pSWType : this->SW_Next)
-			Launch(pSW->Owner, this, pSWType, cell);
+			LaunchTheSW(pSW->Owner, this, pSWType, cell);
 	}
 }
 
