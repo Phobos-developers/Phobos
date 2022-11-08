@@ -210,9 +210,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Start Timed Jump that jumps to the same line when the countdown finish (in frames)
 		ScriptExt::Set_ForceJump_Countdown(pTeam, true, -1);
 		break;
-	case PhobosScripts::CaptureDestroyedBridge:
+	case PhobosScripts::RepairDestroyedBridge:
 		// Start Timed Jump that jumps to the same line when the countdown finish (in frames)
-		ScriptExt::CaptureDestroyedBridge(pTeam, -1);
+		ScriptExt::RepairDestroyedBridge(pTeam, -1);
 		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
@@ -3093,7 +3093,7 @@ void ScriptExt::Stop_ForceJump_Countdown(TeamClass *pTeam)
 	Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d): Stopped Timed Jump\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
 }
 
-void ScriptExt::CaptureDestroyedBridge(TeamClass* pTeam, int mode = -1)
+void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 {
 	if (!pTeam)
 		return;
