@@ -260,6 +260,10 @@ Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
 - Teams spawned by trigger action 7,80,107 can use IFV and `OpenTopped` logic normally (by Trsdy)
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations (by Starkku)
+
+Phobos fixes:
+- Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
+
 </details>
 
 

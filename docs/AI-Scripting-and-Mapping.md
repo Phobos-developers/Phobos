@@ -452,6 +452,7 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 
 ### `505` Fire Super Weapon at specified location
 
+- **Use with caution**
 - Launch a Super Weapon from [SuperWeaponTypes] list at a specified location.
 - `HouseIndex` can take various values:
 
@@ -475,6 +476,7 @@ ID=ActionCount,[Action1],505,0,0,[SuperWeaponTypesIndex],[HouseIndex],[Coordinat
 
 ### `506` Fire Super Weapon at specified Waypoint
 
+- **Use with caution**
 - Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint.
 
 In `mycampaign.map`:
