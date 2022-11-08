@@ -210,6 +210,10 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Start Timed Jump that jumps to the same line when the countdown finish (in frames)
 		ScriptExt::Set_ForceJump_Countdown(pTeam, true, -1);
 		break;
+	case PhobosScripts::CaptureDestroyedBridge:
+		// Start Timed Jump that jumps to the same line when the countdown finish (in frames)
+		ScriptExt::CaptureDestroyedBridge(pTeam, -1);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		if (action > 70 && !IsExtVariableAction(action))
@@ -3087,4 +3091,466 @@ void ScriptExt::Stop_ForceJump_Countdown(TeamClass *pTeam)
 	// This action finished
 	pTeam->StepCompleted = true;
 	Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d): Stopped Timed Jump\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
+}
+
+void ScriptExt::CaptureDestroyedBridge(TeamClass* pTeam, int mode = -1)
+{
+	if (!pTeam)
+		return;
+
+	auto pScript = pTeam->CurrentScript;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		pTeam->StepCompleted = true;
+		Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: ExtData found)\n",
+			pTeam->Type->ID,
+			pScript->Type->ID,
+			pScript->CurrentMission,
+			pScript->Type->ScriptActions[pScript->CurrentMission].Action,
+			pScript->Type->ScriptActions[pScript->CurrentMission].Argument,
+			pScript->CurrentMission + 1,
+			pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action,
+			pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
+
+		return;
+	}
+
+	// Save all Bridge Repair Hut Structures for saving time in the team actions. The worst case-scenario is if the map doesn't have bridges
+	if (pTeamData->MapPath_BridgeRepairHuts.Count == 0)
+	{
+		for (auto pTechno : *TechnoClass::Array)
+		{
+			if (pTechno->WhatAmI() == AbstractType::Building)
+			{
+				auto pBuilding = static_cast<BuildingClass*>(pTechno);
+				if (!pBuilding)
+					continue;
+
+				if (pBuilding->Type->BridgeRepairHut)
+					pTeamData->MapPath_BridgeRepairHuts.AddItem(pTechno);
+			}
+		}
+	}
+
+	//DynamicVectorClass<TechnoClass*> bridgeRepairHuts;
+	bool isReachable = false;
+
+	if (pTeamData->MapPath_InProgress
+		&& pTeamData->MapPath_StartTechno
+		&& pTeamData->MapPath_EndTechno)
+	{
+		// Continue the search process
+		isReachable = ScriptExt::FindLinkedPath(pTeam, pTeamData->MapPath_StartTechno, pTeamData->MapPath_EndTechno);
+
+		// The operation didn't end, it will continue in the next game frame
+		if (pTeamData->MapPath_InProgress)
+			return;
+
+		if (isReachable)
+		{
+			CellStruct cell = pTeamData->MapPath_EndTechno->GetCell()->MapCoords;
+			bool isLinkedBridgeDestroyed = MapClass::Instance->IsLinkedBridgeDestroyed(cell);
+
+			if (isLinkedBridgeDestroyed)
+				pTeamData->MapPath_ValidBridgeRepairHuts.AddItem(pTeamData->MapPath_EndTechno);
+		}
+
+		if (pTeamData->MapPath_CheckedBridgeRepairHuts.FindItemIndex(pTeamData->MapPath_EndTechno) < 0)
+			pTeamData->MapPath_CheckedBridgeRepairHuts.AddItem(pTeamData->MapPath_EndTechno);
+	}
+	else
+	{
+		// Or is the first run or someone in the operation died so it should start again
+		pTeamData->MapPath_InProgress = false;
+		pTeamData->MapPath_StartTechno = nullptr;
+		pTeamData->MapPath_EndTechno = nullptr;
+		pTeamData->MapPath_ValidBridgeRepairHuts.Clear();
+		pTeamData->MapPath_CheckedBridgeRepairHuts.Clear();
+	}
+
+	if (pTeam->Focus)
+	{
+		if (pTeam->Focus->WhatAmI() != AbstractType::Building)
+		{
+			pTeam->Focus = nullptr;
+		}
+		else
+		{
+			auto pBuilding = static_cast<BuildingClass*>(pTeam->Focus);
+
+			if (!pBuilding->Type->BridgeRepairHut)
+			{
+				pTeam->Focus = nullptr;
+			}
+			else
+			{
+				CellStruct cell = pBuilding->GetCell()->MapCoords;
+
+				// If the Bridge was repaired then isn't valid anymore
+				if (!MapClass::Instance->IsLinkedBridgeDestroyed(cell))
+					pTeam->Focus = nullptr;
+			}
+		}
+	}
+
+	TechnoClass* selectedTarget = pTeam->Focus ? static_cast<TechnoClass*>(pTeam->Focus) : nullptr;
+	DynamicVectorClass<InfantryClass*> engineers;
+	DynamicVectorClass<FootClass*> otherTeamMembers;
+
+	// If there are no engineers end this script action
+	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+	{
+		if (pUnit
+			&& pUnit->IsAlive
+			&& !pUnit->InLimbo
+			&& !pUnit->Transporter
+			&& !pUnit->TemporalTargetingMe
+			&& !pUnit->BeingWarpedOut)
+		{
+			if (pUnit->WhatAmI() == AbstractType::Infantry)
+			{
+				auto pInf = static_cast<InfantryClass*>(pUnit);
+
+				if (pInf->IsEngineer())
+				{
+					engineers.AddItem(pInf);
+					continue;
+				}
+			}
+
+			// These units will receive a different command
+			otherTeamMembers.AddItem(pUnit);
+		}
+	}
+
+	if (engineers.Count == 0)
+	{
+		pTeam->StepCompleted = true;
+		Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: Team has no engineers)\n",
+			pTeam->Type->ID,
+			pScript->Type->ID,
+			pScript->CurrentMission,
+			pScript->Type->ScriptActions[pScript->CurrentMission].Action,
+			pScript->Type->ScriptActions[pScript->CurrentMission].Argument,
+			pScript->CurrentMission + 1,
+			pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action,
+			pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
+		pTeamData->MapPath_ValidBridgeRepairHuts.Clear();
+		pTeamData->MapPath_CheckedBridgeRepairHuts.Clear();
+
+		return;
+	}
+
+	if (!selectedTarget)
+	{
+		// Looking for BridgeRepairHut=yes structures
+		//auto anyEngineer = engineers.GetItem(0);
+		for (auto pTechno : pTeamData->MapPath_BridgeRepairHuts)
+		{
+			// If it was previously inserted we will ignore it
+			if (pTeamData->MapPath_ValidBridgeRepairHuts.FindItemIndex(pTechno) >= 0)
+				continue;
+
+			// If it was previously checked we will ignore it
+			if (pTeamData->MapPath_CheckedBridgeRepairHuts.FindItemIndex(pTechno) >= 0)
+				continue;
+
+			auto engineer = static_cast<TechnoClass*>(engineers.GetItem(0));
+			isReachable = ScriptExt::FindLinkedPath(pTeam, engineer, pTechno);
+
+			// This process didn't end. It will continue in the next game frame
+			if (pTeamData->MapPath_InProgress)
+				return;
+
+			if (isReachable)
+			{
+				CellStruct cell = pTechno->GetCell()->MapCoords;
+				bool isLinkedBridgeDestroyed = MapClass::Instance->IsLinkedBridgeDestroyed(cell);
+
+				if (isLinkedBridgeDestroyed)
+					pTeamData->MapPath_ValidBridgeRepairHuts.AddItem(pTechno);
+			}
+
+			pTeamData->MapPath_CheckedBridgeRepairHuts.AddItem(pTechno);
+		}
+
+		if (pTeamData->MapPath_ValidBridgeRepairHuts.Count == 0)
+		{
+			pTeam->StepCompleted = true;
+			Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: This map has no Bridge Repair Huts)\n",
+				pTeam->Type->ID,
+				pScript->Type->ID,
+				pScript->CurrentMission,
+				pScript->Type->ScriptActions[pScript->CurrentMission].Action,
+				pScript->Type->ScriptActions[pScript->CurrentMission].Argument,
+				pScript->CurrentMission + 1,
+				pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action,
+				pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
+			pTeamData->MapPath_ValidBridgeRepairHuts.Clear();
+			pTeamData->MapPath_CheckedBridgeRepairHuts.Clear();
+
+			return;
+		}
+
+		if (mode < 0)
+			mode = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
+
+		// Pick the nearest destroyed bridge
+		int bestVal = -1;
+
+		if (mode < 0)
+		{
+			// Pick a random bridge
+			selectedTarget = pTeamData->MapPath_ValidBridgeRepairHuts.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, pTeamData->MapPath_ValidBridgeRepairHuts.Count - 1));
+		}
+		else
+		{
+			for (auto pHut : pTeamData->MapPath_ValidBridgeRepairHuts)
+			{
+				if (mode > 0)
+				{
+					// Pick the farthest target
+					int value = engineers.GetItem(0)->DistanceFrom(pHut); // Note: distance is in leptons (*256)
+
+					if (value >= bestVal || bestVal < 0)
+					{
+						bestVal = value;
+						selectedTarget = pHut;
+					}
+				}
+				else
+				{
+					// Pick the closest target
+					int value = engineers.GetItem(0)->DistanceFrom(pHut); // Note: distance is in leptons (*256)
+
+					if (value < bestVal || bestVal < 0)
+					{
+						bestVal = value;
+						selectedTarget = pHut;
+					}
+				}
+			}
+		}
+	}
+
+	if (!selectedTarget)
+	{
+		pTeam->StepCompleted = true;
+		Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: Can not select a Bridge Repair Hut)\n",
+			pTeam->Type->ID,
+			pScript->Type->ID,
+			pScript->CurrentMission,
+			pScript->Type->ScriptActions[pScript->CurrentMission].Action,
+			pScript->Type->ScriptActions[pScript->CurrentMission].Argument,
+			pScript->CurrentMission + 1,
+			pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action,
+			pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
+		pTeamData->MapPath_ValidBridgeRepairHuts.Clear();
+		pTeamData->MapPath_CheckedBridgeRepairHuts.Clear();
+
+		return;
+	}
+
+	pTeam->Focus = selectedTarget;
+	pTeamData->MapPath_ValidBridgeRepairHuts.Clear();
+	pTeamData->MapPath_CheckedBridgeRepairHuts.Clear();
+
+	for (auto engineer : engineers)
+	{
+		if (engineer->Destination != selectedTarget)
+		{
+			engineer->SetTarget(selectedTarget);
+			engineer->QueueMission(Mission::Capture, true);
+		}
+	}
+
+	if (otherTeamMembers.Count > 0)
+	{
+		double closeEnough = RulesClass::Instance->CloseEnough; // Note: this value is in leptons (*256)
+
+		for (auto pFoot : otherTeamMembers)
+		{
+			if (pTeamData && pTeamData->CloseEnough > 0)
+				closeEnough = pTeamData->CloseEnough * 256.0;
+
+			if (!pFoot->Destination
+				|| (selectedTarget->DistanceFrom(pFoot->Destination) > closeEnough))
+			{
+				// Reset previous command
+				pFoot->SetTarget(nullptr);
+				pFoot->SetFocus(nullptr);
+				pFoot->SetDestination(nullptr, false);
+				pFoot->ForceMission(Mission::Guard);
+
+				// Get a cell near the target
+				pFoot->QueueMission(Mission::Move, false);
+				CoordStruct coord = TechnoExt::PassengerKickOutLocation(selectedTarget, pFoot);
+				CellClass* pCellDestination = MapClass::Instance->TryGetCellAt(coord);
+				pFoot->SetDestination(pCellDestination, true);
+			}
+
+			// Reached destination, stay in guard until next action
+			if (pFoot->DistanceFrom(pFoot->Destination) < closeEnough)
+				pFoot->QueueMission(Mission::Area_Guard, false);
+		}
+	}
+}
+
+// Find the shortest valid path to the destination, if possible
+bool ScriptExt::FindLinkedPath(TeamClass* pTeam, TechnoClass* pThis = nullptr, TechnoClass* pTarget = nullptr)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+		return false;
+
+	CellStruct startCell = CellStruct::Empty;
+	CellStruct endCell = CellStruct::Empty;
+
+	if (!pTeamData->MapPath_InProgress)
+	{
+		// First time that is execued this process
+		if (pThis == nullptr || pTarget == nullptr)
+			return false;
+
+		pTeamData->MapPath_StartTechno = pThis;
+		pTeamData->MapPath_EndTechno = pTarget;
+
+		pTeamData->MapPath_InProgress = true;
+		pTeamData->MapPath_Grid.clear();
+		pTeamData->MapPath_Queue.clear();
+
+		// Creates a "map" with the same size of the original and each "cell" is a boolean value that means if the cell was evaluated or not. Evaluated "cells" get ignored in posterior checks
+		int matrixX = MapClass::Instance->MapCoordBounds.Right;
+		int matrixY = MapClass::Instance->MapCoordBounds.Bottom;
+
+		pTeamData->MapPath_Grid = std::vector<std::vector<bool>>(matrixX, std::vector<bool>(matrixY, false));
+
+		startCell = pThis->GetCell()->MapCoords;
+		endCell = pTarget->GetCell()->MapCoords;
+
+		// The first element of this path is the unit's location
+		MapPathCellElement startElement;
+		startElement.X = startCell.X;
+		startElement.Y = startCell.Y;
+		startElement.Distance = pThis->DistanceFrom(pTarget); // Note: distance is in leptons (*256)
+		pTeamData->MapPath_Queue.push_back(startElement);
+	}
+	else
+	{
+		// We'll resume the previous unfinished analysis that was so time expensible that was splitted in multiple parts
+		if (pThis == nullptr || pTarget == nullptr)
+		{
+			pTeamData->MapPath_InProgress = false;
+			pTeamData->MapPath_Grid.clear();
+			pTeamData->MapPath_Queue.clear();
+			pTeamData->MapPath_StartTechno = nullptr;
+			pTeamData->MapPath_EndTechno = nullptr;
+
+			return false;
+		}
+
+		endCell = pTarget->GetCell()->MapCoords;
+	}
+
+	bool found = false;
+
+	// If we don't split this operation in multiple frames the game will stop half a second in the worst case scenarios for finding the destination (or if directly there is no valid path) and that's unaceptable.
+	// We'll use a number of checks limiter and when it reaches 0 we will stop the process and continue it in the next frame.
+	// Lower value == more frames required for calculating a valid path (if exists).
+	// Higher value == less game frames required for calculating a valid path but noticeable FPS drops.
+	int nChecksLeft = 512;
+
+	while ((pTeamData->MapPath_Queue.size() > 0) && !found)
+	{
+		// If counter reached the limit we will stop the process and continue it in the next frame.
+		if (nChecksLeft <= 0)
+			return false;
+
+		nChecksLeft--;
+
+		// Extract the first element of MapPath_Queue for analyzing it
+		MapPathCellElement element = pTeamData->MapPath_Queue.at(0);
+		pTeamData->MapPath_Queue.erase(pTeamData->MapPath_Queue.begin());
+		
+		// Check cells around the selected cell, it only stops if we reach the destination of the queue is empty
+		for (int i = element.X - 1; (i <= element.X + 1) && !found; i++)
+		{
+			for (int j = element.Y - 1; (j <= element.Y + 1) && !found; j++)
+			{
+				CellStruct nCell;
+				nCell.X = (short)i;
+				nCell.Y = (short)j;
+
+				// If reached the destination end the process or the target moved into an evaluated area the process finished
+				if ((nCell.X == endCell.X && nCell.Y == endCell.Y)
+					|| (pTeamData->MapPath_Grid[endCell.X][endCell.Y]))
+				{
+					found = true;
+					break;
+				}
+
+				// Only check nonvisited cells
+				if (!pTeamData->MapPath_Grid[i][j])
+				{
+					if (MapClass::Instance->IsWithinUsableArea(nCell, false))
+					{
+						auto pCell = MapClass::Instance->TryGetCellAt(nCell);
+						if (pThis->IsCellOccupied(pCell, -1, -1, nullptr, false) != Move::OK)
+							pTeamData->MapPath_Grid[i][j] = true;
+
+						if (!pTeamData->MapPath_Grid[i][j])
+						{
+							// If is a valid cell we'll queue it for future checks
+							MapPathCellElement newElement;
+							newElement.X = (short)i;
+							newElement.Y = (short)j;
+							newElement.Distance = pTarget->DistanceFrom(pCell); // Note: distance is in leptons (*256)
+							pTeamData->MapPath_Grid[i][j] = true;
+
+							// Find the right position in the vector. Sorted by ascendent distance;
+							if (pTeamData->MapPath_Queue.size() == 0)
+							{
+								pTeamData->MapPath_Queue.push_back(newElement);
+							}
+							else
+							{
+								auto index = pTeamData->MapPath_Queue.begin();
+								bool inserted = false;
+
+								for (unsigned int k = 0; k < pTeamData->MapPath_Queue.size(); k++)
+								{
+									if (newElement < pTeamData->MapPath_Queue.at(k))
+									{
+										pTeamData->MapPath_Queue.insert(index, newElement);
+										inserted = true;
+
+										break;
+									}
+
+									++index;
+								}
+
+								if (!inserted)
+									pTeamData->MapPath_Queue.push_back(newElement);
+							}
+						}
+					}
+					else
+					{
+						// Mark the unusable cells as visited
+						pTeamData->MapPath_Grid[i][j] = true;
+					}
+				}
+			}
+		}
+	}
+
+	// Ended. Cleanning the mess
+	pTeamData->MapPath_InProgress = false;
+	pTeamData->MapPath_Grid.clear();
+	pTeamData->MapPath_Queue.clear();
+
+	return found;
 }

@@ -57,6 +57,7 @@ enum class PhobosScripts : unsigned int
 	WaitUntilFullAmmo = 10101,
 	GatherAroundLeader = 10102,
 	LoadIntoTransports = 10103,
+	CaptureDestroyedBridge = 99999,
 
 	// Range 12000-12999 are suplementary/setup pre-actions
 	WaitIfNoTarget = 12000,
@@ -217,6 +218,8 @@ public:
 	static void VariableOperationHandler(TeamClass* pTeam, int nVariable, int Number);
 	template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
+	static void CaptureDestroyedBridge(TeamClass* pTeam, int mode);
+	static bool FindLinkedPath(TeamClass* pTeam, TechnoClass* pThis, TechnoClass* pTarget);
 
 
 	static ExtContainer ExtMap;
