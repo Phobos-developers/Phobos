@@ -604,13 +604,12 @@ DEFINE_HOOK(0x70265F, TechnoClass_ReceiveDamage_Explodes, 0x6)
 
 DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_ObserverCloak, 0x7)
 {
-	enum { UseShadowyVisual = 0x703A5A };
-
-	GET(TechnoClass*, pThis, ESI);
+	enum { UseShadowyVisual = 0x703A5A, CheckIsAlliedWith = 0x703A24 };
 
 	// Allow observers to always see cloaked objects.
-	if (HouseClass::IsCurrentPlayerObserver() && pThis->CloakState == CloakState::Cloaked)
+	if (HouseClass::IsCurrentPlayerObserver())
 		return UseShadowyVisual;
-
-	return 0;
+	// Skip IsCampaign check (confirmed being useless from Mental Omega mappers)
+	return CheckIsAlliedWith;
+	// Question: Is one of these IsAlliedWith checks redundant?
 }
