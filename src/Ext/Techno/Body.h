@@ -117,5 +117,5 @@ public:
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
 	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
-	static CoordStruct PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger);
+	static CoordStruct PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger, int maxAttempts);
 };
