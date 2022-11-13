@@ -74,9 +74,19 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					if (this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell)
 					&& (this->LaunchSW_IgnoreDesignators || pSWExt->HasDesignator(pHouse, cell)))
 					{
+						int oldstart = pSuper->RechargeTimer.StartTime;
+						int oldleft = pSuper->RechargeTimer.TimeLeft;
+						// If you don't set it ready, NewSWType::Active will give false in Ares if RealLaunch=false
+						// and therefore it will reuse the vanilla routine, which will crash inside of it
+						pSuper->SetReadiness(true);
+						// TODO: Can we use ClickFire instead of Launch?
 						pSuper->Launch(cell, true);
-						if (this->LaunchSW_RealLaunch)
-							pSuper->Reset();
+						pSuper->Reset();
+						if (!this->LaunchSW_RealLaunch)
+						{
+							pSuper->RechargeTimer.StartTime = oldstart;
+							pSuper->RechargeTimer.TimeLeft = oldleft;
+						}
 					}
 				}
 			}

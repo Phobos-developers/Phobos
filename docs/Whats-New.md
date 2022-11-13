@@ -248,7 +248,6 @@ New:
 - Warhead or weapon detonation at superweapon target cell (by Starkku)
 - Super Weapons launching other Super Weapons (by Morton)
 - Launching Super Weapons on building infiltration (by Morton)
-- Cloaked objects displaying to observers (by Starkku)
 - Building airstrike target eligibility customization (by Starkku)
 - IvanBomb detonation & image display centered on buildings (by Starkku)
 - Forcing specific weapon against cloaked or disguised targets (by Starkku)
@@ -260,6 +259,12 @@ Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
 - Teams spawned by trigger action 7,80,107 can use IFV and `OpenTopped` logic normally (by Trsdy)
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations (by Starkku)
+- Cloaked objects displaying to observers (by Starkku)
+- Cloaked objects from allies displaying to player in single player missions (by Trsdy)
+
+Phobos fixes:
+- Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
+
 </details>
 
 

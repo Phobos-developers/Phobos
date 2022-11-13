@@ -48,8 +48,8 @@ public:
 		Nullable<TranslucencyLevel> PlacementPreview_Translucency;
 
 		Valueable<bool> SpyEffect_Custom;
-		Nullable<SuperWeaponTypeClass*> SpyEffect_VictimSuperWeapon;
-		Nullable<SuperWeaponTypeClass*> SpyEffect_InfiltratorSuperWeapon;
+		NullableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
+		NullableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
