@@ -16,7 +16,6 @@ HMODULE AresData::AresDllHmodule = nullptr;
 int AresData::AresVersionId = AresData::Version::Unknown;
 bool AresData::CanUseAres = false;
 DWORD AresData::AresFunctionOffsetsFinal[AresData::AresFunctionCount];
-int AresData::FunctionIndex = -1;
 
 uintptr_t GetModuleBaseAddress(const char* modName)
 {
