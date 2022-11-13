@@ -18,9 +18,6 @@ bool AresData::CanUseAres = false;
 DWORD AresData::AresFunctionOffsetsFinal[AresData::AresFunctionCount];
 int AresData::FunctionIndex = -1;
 
-#ifndef DEBUG
-#pragma optimize( "", off )
-#endif
 uintptr_t GetModuleBaseAddress(const char* modName)
 {
 	HANDLE hCurrentProcess = GetCurrentProcess();
@@ -106,31 +103,7 @@ void AresData::UnInit()
 		FreeLibrary(AresDllHmodule);
 }
 
-void __stdcall AresData::CallAres(...)
-{
-	if (!CanUseAres)
-	{
-		_asm {mov eax, 0};
-		return;
-	}
-
-	const DWORD address = AresFunctionOffsetsFinal[AresData::FunctionIndex];
-	_asm {mov ebx, address};	// VERY IMPORTANT, stdcall epilogue restores old stack, so we have to save our variable somewhere
-	JMP_STD(ebx);
-}
-
-#define ARES_STDCALL(id, ...) \
-	AresData::FunctionIndex = AresData::FunctionIndices::id; \
-	AresData::CallAres(__VA_ARGS__); \
-	DWORD returnValue; \
-	_asm {mov returnValue, eax}; \
-	return returnValue;
-
 bool AresData::ConvertTypeTo(TechnoClass* pFoot, TechnoTypeClass* pConvertTo)
 {
-	ARES_STDCALL(ConvertTypeToID, pFoot, pConvertTo);
+	return AresStdcall<ConvertTypeToID, bool, TechnoClass*, TechnoTypeClass*>()(pFoot, pConvertTo);
 }
-
-#ifndef DEBUG
-#pragma optimize( "", on )
-#endif

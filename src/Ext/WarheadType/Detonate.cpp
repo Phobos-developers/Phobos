@@ -462,7 +462,6 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 
 		if (this->Convert_To.size())
 		{
-
 			if (this->Convert_From.size())
 			{
 				// explicitly unsigned because the compiler wants it

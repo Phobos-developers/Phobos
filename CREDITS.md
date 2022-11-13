@@ -85,6 +85,7 @@ This page lists all the individual contributions to the project by their author.
   - Sharpnel enhancement
   - Vanilla map preview reading bugfix
   - Customizable tooltip background
+  - Parts of Ares calling code
 - **Otamaa (Fahroni, BoredEXE)**:
   - Help with CellSpread
   - Ported and fixed custom RadType code
