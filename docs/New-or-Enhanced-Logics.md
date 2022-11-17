@@ -921,8 +921,11 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
   - `LaunchSW.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
 
 ```{note}
-For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
-Also, due to the nature of some superweapon types, not all superweapons are suitable for launch.
+- For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
+
+- Due to the nature of some superweapon types, not all superweapons are suitable for launch. **Please use with caution!**
+
+- The superweapons are launched on the *cell* where the warhead is detonated, instead of being click-fired.
 ```
 
 In `rulesmd.ini`:

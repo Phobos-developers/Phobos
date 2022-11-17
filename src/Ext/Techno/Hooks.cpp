@@ -602,14 +602,17 @@ DEFINE_HOOK(0x70265F, TechnoClass_ReceiveDamage_Explodes, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_ObserverCloak, 0x7)
+DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_CloakVisibility, 0x7)
 {
-	enum { UseShadowyVisual = 0x703A5A, CheckIsAlliedWith = 0x703A24 };
-
+	enum { UseShadowyVisual = 0x703A5A, CheckIsAlliedWith = 0x703A24, UseHiddenVisual = 0x7038AE };
+	GET(TechnoClass* const, pThis, ESI);
 	// Allow observers to always see cloaked objects.
-	if (HouseClass::IsCurrentPlayerObserver())
-		return UseShadowyVisual;
+	// Allow allies to see cloaked objects (vanilla instructions, skipped 2 sanity checks and 1 redundant IsAlliedWith check)
 	// Skip IsCampaign check (confirmed being useless from Mental Omega mappers)
-	return CheckIsAlliedWith;
-	// Question: Is one of these IsAlliedWith checks redundant?
+	if (HouseClass::IsCurrentPlayerObserver() || pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer()))
+		return UseShadowyVisual;
+
+	return UseHiddenVisual;
 }
+
+DEFINE_JUMP(LJMP, 0x45455B, 0x454582) // BuildingClass_VisualCharacter, skip same checks
