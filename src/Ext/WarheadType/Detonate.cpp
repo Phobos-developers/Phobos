@@ -412,62 +412,10 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 	{
 		auto Conversion = [this, pTargetFoot](TechnoTypeClass* pResultType)
 		{
-			if (AresData::CanUseAres)
-			{
-				if (!AresData::ConvertTypeTo(pTargetFoot, pResultType))
-					return;
-/*
-				// To Morton: ExtData Update should have been done in TechnoClass_AI hook
-				// even if the current code may seems incomplete, it should be dealt with there --by Trsdy
-
-				// These are already checked in Ares' convert type function
-				if (pTargetFoot->WhatAmI() == AbstractType::Infantry &&
-					pResultType->WhatAmI() == AbstractType::InfantryType)
-				{
-					// InfantryClass only logic
-				}
-				else if (pTargetFoot->WhatAmI() == AbstractType::Unit &&
-					pResultType->WhatAmI() == AbstractType::UnitType)
-				{
-					// UnitClass only logic
-				}
-				else if (pTargetFoot->WhatAmI() == AbstractType::Aircraft &&
-					pResultType->WhatAmI() == AbstractType::AircraftType)
-				{
-					// AircraftClass only logic
-				}
-
-				// Shared logic
-				auto pTargetExt = TechnoExt::ExtMap.Find(pTargetFoot);
-				auto pResultTypeExt = TechnoTypeExt::ExtMap.Find(pResultType);
-
-				if (pTargetExt->TypeExtData->PassengerDeletion_Rate > 0)
-				{
-					if (pResultTypeExt->PassengerDeletion_Rate <= 0)
-					{
-						pTargetExt->PassengerDeletionCountDown = -1;
-						pTargetExt->PassengerDeletionTimer.Stop();
-					}
-				}
-
-				if (pTargetExt->TypeExtData->AutoDeath_AfterDelay > 0)
-				{
-					if (pResultTypeExt->AutoDeath_AfterDelay <= 0)
-					{
-						pTargetExt->AutoDeathTimer.Stop();
-					}
-				}
-
-				pTargetExt->TypeExtData = pResultTypeExt;
-				ShieldClass::ConvertShield(pTargetFoot, pResultType);
-				TechnoExt::InitializeLaserTrails(pTargetFoot, pResultType, true);
-*/
-			}
-			else
-			{
-				if (!UnusedConvertToType(pTargetFoot, pResultType))
-					return;
-			}
+			if (AresData::CanUseAres)			
+				return AresData::ConvertTypeTo(pTargetFoot, pResultType);			
+			else		
+				return UnusedConvertToType(pTargetFoot, pResultType);			
 		};
 
 		if (this->Convert_To.size())

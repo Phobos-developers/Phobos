@@ -482,7 +482,7 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]
-Convert.From=                   ; list of tehnoTypes
+Convert.From=                   ; list of TehnoTypes
 Convert.To=                     ; list of TechnoTypes
 Convert.AffectedHouses=owner    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
@@ -705,7 +705,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 
 If this option is not set, the self-destruction logic will not be enabled.
 ```{note}
-Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option. This might change in the future if necessary.
+Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option **if you are not using Ares 3.0+**.
 
 If the object enters transport, the countdown will continue, but it will not self-destruct inside the transport.
 ```
@@ -897,13 +897,13 @@ Convert.To=SOLDIERB,TANKB
 ```
 
 ```{warning}
-This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, nothing will happen.
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, the outcome may be undesirable.
 ```
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]
-Convert.From=          ; list of tehnoTypes
+Convert.From=          ; list of TehnoTypes
 Convert.To=            ; list of TechnoTypes
 ```
 

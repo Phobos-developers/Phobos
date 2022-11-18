@@ -10,6 +10,7 @@ struct AresData
 	enum FunctionIndices
 	{
 		ConvertTypeToID = 0,
+		SpawnSurvivorsID = 1,
 	};
 
 	enum Version
@@ -24,7 +25,7 @@ struct AresData
 	static uintptr_t PhobosBaseAddress;
 
 	// number of Ares functions we use
-	static constexpr int AresFunctionCount = 1;
+	static constexpr int AresFunctionCount = 2;
 	// number of Ares versions we support
 	static constexpr int AresVersionCount = 2;
 
@@ -39,6 +40,7 @@ struct AresData
 	static constexpr DWORD AresFunctionOffsets[AresData::AresVersionCount * AresData::AresFunctionCount] =
 	{
 		0x043650, 0x044130,	// ConvertTypeTo
+		0x0464C0, 0x047030, // TechnoExt::SpawnSurvivors
 	};
 
 	// storage for absolute addresses of functions (module base + offset)
@@ -53,7 +55,7 @@ struct AresData
 
 	// here be known Ares functions
 	static bool ConvertTypeTo(TechnoClass* pFoot, TechnoTypeClass* pConvertTo);
-
+	static void SpawnSurvivors(FootClass* const pThis, TechnoClass* const pKiller, const bool Select, const bool IgnoreDefenses);
 
 	template<int idx, typename Tret, typename... TArgs>
 	struct AresStdcall

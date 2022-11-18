@@ -126,30 +126,6 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 		pFromExt->Shield = nullptr;
 }
 
-void ShieldClass::ConvertShield(TechnoClass* pTechno, TechnoTypeClass* pNewType)
-{
-	const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
-	const auto pNewTypeExt = TechnoTypeExt::ExtMap.Find(pNewType);
-
-	if (pNewTypeExt->ShieldType)
-	{
-		pTechnoExt->CurrentShieldType = pNewTypeExt->ShieldType;
-		if (pTechnoExt->Shield)
-			pTechnoExt->Shield->KillAnim();
-		pTechnoExt->Shield.reset();
-		pTechnoExt->Shield = std::make_unique<ShieldClass>(pTechno, true);
-	}
-	else
-	{
-		if (pTechnoExt->Shield)
-		{
-			pTechnoExt->Shield->KillAnim();
-			pTechnoExt->Shield.reset();
-			pTechnoExt->CurrentShieldType = nullptr;
-		}
-	}
-}
-
 bool ShieldClass::ShieldIsBrokenTEvent(ObjectClass* pAttached)
 {
 	if (auto pTechno = abstract_cast<TechnoClass*>(pAttached))

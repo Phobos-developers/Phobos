@@ -15,6 +15,7 @@
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Misc/FlyingStrings.h>
+#include <Misc/AresData.h>
 #include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
@@ -631,6 +632,14 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	}
 
 	default: //must be AutoDeathBehavior::Kill
+		if(AresData::CanUseAres)
+			switch (pThis->WhatAmI())
+			{
+			case AbstractType::Unit:
+			case AbstractType::Aircraft:
+				AresData::SpawnSurvivors(static_cast<FootClass*>(pThis), nullptr, false, false);
+			default:break;
+			}
 		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pThis->Owner);
 		// Due to Ares, ignoreDefense=true will prevent passenger/crew/hijacker from escaping
 		return;
