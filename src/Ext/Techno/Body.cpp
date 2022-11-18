@@ -632,7 +632,8 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	}
 
 	default: //must be AutoDeathBehavior::Kill
-		if(AresData::CanUseAres)
+		if (AresData::CanUseAres)
+		{
 			switch (pThis->WhatAmI())
 			{
 			case AbstractType::Unit:
@@ -640,8 +641,8 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 				AresData::SpawnSurvivors(static_cast<FootClass*>(pThis), nullptr, false, false);
 			default:break;
 			}
+		}
 		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pThis->Owner);
-		// Due to Ares, ignoreDefense=true will prevent passenger/crew/hijacker from escaping
 		return;
 	}
 }

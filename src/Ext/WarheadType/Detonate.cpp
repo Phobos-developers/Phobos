@@ -412,10 +412,10 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 	{
 		auto Conversion = [this, pTargetFoot](TechnoTypeClass* pResultType)
 		{
-			if (AresData::CanUseAres)			
-				return AresData::ConvertTypeTo(pTargetFoot, pResultType);			
-			else		
-				return UnusedConvertToType(pTargetFoot, pResultType);			
+			if (AresData::CanUseAres)
+				return AresData::ConvertTypeTo(pTargetFoot, pResultType);
+			else
+				return UnusedConvertToType(pTargetFoot, pResultType);
 		};
 
 		if (this->Convert_To.size())
