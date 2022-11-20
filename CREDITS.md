@@ -186,6 +186,7 @@ This page lists all the individual contributions to the project by their author.
   - Super Weapons launching other Super Weapons
   - SpyEffects expansion, launching Super Weapons on building infiltration
   - Real time timers
+  - Defualt campaign game speed override and custom campaign game speed FPS
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance

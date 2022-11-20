@@ -37,3 +37,25 @@ Fly      | `{4A582746-9839-11d1-B709-00A024DDAFD1}` |
 Teleport | `{4A582747-9839-11d1-B709-00A024DDAFD1}` |
 Mech     | `{55D141B8-DB94-11d1-AC98-006008055BB5}` |
 Ship     | `{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}` |
+
+## Game Speed
+
+### Single player game speed
+
+- It is now possible to change the default (GS4/Fast/30FPS) campaign game speed with `CampaignDefaultGameSpeed`.
+- It is now possible to change the *values* of single player game speed, by inputing a pair of values. This feature must be enabled with `CustomGS=true`. **Not every number of FPS is possible**.
+  - Custom game speed is achieved by temporarily manipulating the delay between game frames.
+  - `CustomGSN.ChangeInterval` describes the frame interval between applying the effect. I.e. a value of 2 means "every other frame" and 7 means "every 7 frames".
+  - `CustomGSN.ChangeDelay` and `CustomGSN.DefaultDelay` set the delay to use on...
+
+In `rulesmd.ini`:
+```ini
+[General]
+CampaignDefaultGameSpeed=2	; integer
+
+CustomGS=false				; boolean
+CustomGSN.ChangeInterval=-1	; integer >= 1
+CustomGSN.ChangeDelay=N		; integer between 0 and 6
+CustomGSN.DefaultDelay=N	; integer between 0 and 6
+; where N = 0, 1, 2, 3, 4, 5, 6
+```
