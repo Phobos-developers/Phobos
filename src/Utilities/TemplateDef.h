@@ -1069,6 +1069,28 @@ bool ValueableVector<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 	return false;
 }
 
+template <>
+bool ValueableVector<bool>::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	size_t size = 0;
+	if (Savegame::ReadPhobosStream(stm, size, registerForChange))
+	{
+		this->clear();
+
+		for (size_t i = 0; i < size; ++i)
+		{
+			bool value;
+
+			if (!Savegame::ReadPhobosStream(stm, value, false))
+				return false;
+
+			this->emplace_back(value);
+		}
+		return true;
+	}
+	return false;
+}
+
 template <typename T>
 bool ValueableVector<T>::Save(PhobosStreamWriter& Stm) const
 {
@@ -1087,6 +1109,21 @@ bool ValueableVector<T>::Save(PhobosStreamWriter& Stm) const
 	return false;
 }
 
+template <>
+bool ValueableVector<bool>::Save(PhobosStreamWriter& stm) const
+{
+	auto size = this->size();
+	if (Savegame::WritePhobosStream(stm, size))
+	{
+		for (bool item : *this)
+		{
+			if (!Savegame::WritePhobosStream(stm, item))
+				return false;
+		}
+		return true;
+	}
+	return false;
+}
 
 // NullableVector
 
