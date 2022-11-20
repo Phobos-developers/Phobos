@@ -3,29 +3,6 @@
 #include <SessionClass.h>
 #include <GameOptionsClass.h>
 
-DEFINE_HOOK(0x55D774, MainLoop_CampaignGameSpeed_NotSpeedControl, 0xA)
-{
-	GameOptionsClass::Instance->GameSpeed = Phobos::Misc::CampaignDefaultGameSpeed;
-	return 0x55D77E;
-}
-
-DEFINE_HOOK(0x55D78C, MainLoop_CampaignGameSpeed_NotSpeedControl2, 0x5)
-{
-	R->ECX(Phobos::Misc::CampaignDefaultGameSpeed);
-	return 0x55D791;
-}
-
-// todo just write to memory there once, this is executed every frame
-DEFINE_HOOK(0x55D79E, MainLoop_CampaignGameSpeed_SpeedControl, 0x6)
-{
-	if (SessionClass::IsCampaign())
-	{
-		R->ESI(Phobos::Misc::CampaignDefaultGameSpeed);
-		return 0x55D7A4;
-	}
-	return 0;
-}
-
 DEFINE_HOOK(0x69BAE7, SessionClass_Resume_CampaignGameSpeed, 0xA)
 {
 	GameOptionsClass::Instance->GameSpeed = Phobos::Misc::CampaignDefaultGameSpeed;

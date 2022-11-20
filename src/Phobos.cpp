@@ -281,6 +281,8 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Misc::CampaignDefaultGameSpeed = 6 - pINI_RULESMD->ReadInteger(GameStrings::General, "CampaignDefaultGameSpeed", 4);
 	if (Phobos::Misc::CampaignDefaultGameSpeed > 5 || Phobos::Misc::CampaignDefaultGameSpeed < 0)
 		Phobos::Misc::CampaignDefaultGameSpeed = 2;
+	*(BYTE*)(0x55D77A) = (BYTE)Phobos::Misc::CampaignDefaultGameSpeed; // We overwrite the instructions that force GameSpeed to 2 (GS4)
+	*(BYTE*)(0x55D78D) = (BYTE)Phobos::Misc::CampaignDefaultGameSpeed; // when speed control is off. Doesn't need a hook.
 
 	Phobos::Misc::CustomGS = pINI_RULESMD->ReadBool(GameStrings::General, "CustomGS", false);
 
