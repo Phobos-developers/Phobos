@@ -132,8 +132,9 @@ DEFINE_HOOK(0x6FDDCA, TechnoClass_Fire_Suicide, 0xA)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
-	pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead,
-		nullptr, true, false, pThis->Owner);
+	int dmg = pThis->Health + pThis->GetTechnoType()->Strength;
+	R->EAX(pThis->ReceiveDamage(&dmg, 0, RulesClass::Instance->C4Warhead,
+		nullptr, true, false, pThis->Owner));
 
 	return 0x6FDE03;
 }
@@ -144,8 +145,9 @@ DEFINE_HOOK(0x70BC6F, TechnoClass_UpdateRigidBodyKinematics_KillFlipped, 0xA)
 	GET(TechnoClass* const, pThis, ESI);
 
 	auto const pFlipper = pThis->DirectRockerLinkedUnit;
-	pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead,
-		nullptr, true, false, pFlipper ? pFlipper->Owner : nullptr);
+	int dmg = pThis->Health + pThis->GetTechnoType()->Strength;
+	R->EAX(pThis->ReceiveDamage(&dmg, 0, RulesClass::Instance->C4Warhead,
+		pFlipper, true, false, pFlipper ? pFlipper->Owner : nullptr));
 
 	return 0x70BCA4;
 }
