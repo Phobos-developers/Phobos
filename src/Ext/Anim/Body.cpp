@@ -105,9 +105,12 @@ DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 {
 	GET(AnimClass*, pItem, ESI);
 
-	auto const pExt = AnimExt::ExtMap.FindOrAllocate(pItem);
-	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pItem->Type);
-	pExt->CreateAttachedSystem(pTypeExt->AttachedSystem);
+	if (pItem->Type)
+	{
+		auto const pExt = AnimExt::ExtMap.FindOrAllocate(pItem);
+		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pItem->Type);
+		pExt->CreateAttachedSystem(pTypeExt->AttachedSystem);
+	}
 
 	return 0;
 }
