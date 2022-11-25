@@ -934,7 +934,7 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 		speedType = SpeedType::Track;
 		movementZone = MovementZone::Normal;
 	}
-	
+
 	do
 	{
 		placeCoords = pThis->GetCell()->MapCoords - CellStruct { (short)(extraDistanceX / 2), (short)(extraDistanceY / 2) };
