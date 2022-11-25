@@ -165,8 +165,7 @@ DEFINE_HOOK(0x469211, BulletClass_Logics_MindControlAlternative1, 0x6)
 	if (!pBulletWH)
 		return 0;
 
-	if (pBullet->Owner 
-		&& pBulletWH->MindControl)
+	if (pBullet->Owner && pBulletWH->MindControl)
 	{
 		auto pTargetType = pTarget->GetTechnoType();
 		if (!pTargetType)
