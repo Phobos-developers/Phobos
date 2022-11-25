@@ -267,6 +267,7 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 		{
 			auto const pTransportType = pTransport->GetTechnoType();
 			auto const pUnitType = pUnit->GetTechnoType();
+
 			if (pTransport != pUnit
 				&& pUnitType->WhatAmI() != AbstractType::AircraftType
 				&& !pUnit->InLimbo
@@ -277,6 +278,10 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 					&& pUnitType->Size <= pTransportType->SizeLimit
 					&& pUnitType->Size <= pTransportType->Passengers - pTransport->Passengers.GetTotalSize())
 				{
+					// If is still flying wait a bit more
+					if (pTransport->IsInAir())
+						return;
+
 					// All fine
 					if (pUnit->GetCurrentMission() != Mission::Enter)
 					{
@@ -885,7 +890,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		else
 		{
 			// No target was found with the specific criteria.
-			if (!noWaitLoop)
+			if (!noWaitLoop && pTeamData->WaitNoTargetTimer.Completed())
 			{
 				pTeamData->WaitNoTargetCounter = 30;
 				pTeamData->WaitNoTargetTimer.Start(30);
@@ -894,7 +899,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 			if (pTeamData->IdxSelectedObjectFromAIList >= 0)
 				pTeamData->IdxSelectedObjectFromAIList = -1;
 
-			if (pTeamData->WaitNoTargetAttempts != 0)
+			if (pTeamData->WaitNoTargetAttempts != 0 && pTeamData->WaitNoTargetTimer.Completed())
 			{
 				// No target? let's wait some frames
 				pTeamData->WaitNoTargetCounter = 30;
@@ -2167,45 +2172,45 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 
 			for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 			{
+				auto pUnitType = pUnit ? pUnit->GetTechnoType() : nullptr;
+				if (!pUnitType)
+					continue;
+
 				if (pUnit->IsAlive
-					&& (pUnit->IsOnMap || (pUnit->GetTechnoType()->IsSubterranean))
+					&& (pUnit->IsOnMap || (pUnitType->IsSubterranean))
 					&& !pUnit->InLimbo
 					&& !pUnit->Transporter)
 				{
-					auto pUnitType = pUnit->GetTechnoType();
+					pUnit->CurrentTargets.Clear();
 
-					if (pUnit && pUnitType)
+					if (pUnitType->Underwater && pUnitType->LandTargeting == LandTargetingType::Land_Not_OK && selectedTarget->GetCell()->LandType != LandType::Water) // Land not OK for the Naval unit
 					{
+						// Naval units like Submarines are unable to target ground targets except if they have anti-ground weapons. Ignore the attack
 						pUnit->CurrentTargets.Clear();
-
-						if (pUnitType->Underwater && pUnitType->LandTargeting == LandTargetingType::Land_Not_OK && selectedTarget->GetCell()->LandType != LandType::Water) // Land not OK for the Naval unit
-						{
-							// Naval units like Submarines are unable to target ground targets except if they have anti-ground weapons. Ignore the attack
-							pUnit->CurrentTargets.Clear();
-							pUnit->SetTarget(nullptr);
-							pUnit->SetFocus(nullptr);
-							pUnit->SetDestination(nullptr, false);
-							pUnit->QueueMission(Mission::Area_Guard, true);
-
-							continue;
-						}
-
-						// Reset previous command
 						pUnit->SetTarget(nullptr);
 						pUnit->SetFocus(nullptr);
 						pUnit->SetDestination(nullptr, false);
-						pUnit->ForceMission(Mission::Guard);
+						pUnit->QueueMission(Mission::Area_Guard, true);
 
-						// Get a cell near the target
-						pUnit->QueueMission(Mission::Move, false);
-						CoordStruct coord = TechnoExt::PassengerKickOutLocation(selectedTarget, pUnit);
-						CellClass* pCellDestination = MapClass::Instance->TryGetCellAt(coord);
-						pUnit->SetDestination(pCellDestination, true);
-
-						// Aircraft hack. I hate how this game auto-manages the aircraft missions.
-						if (pUnitType->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0 && pUnit->GetHeight() <= 0)
-							pUnit->QueueMission(Mission::Move, false);
+						continue;
 					}
+
+					// Reset previous command
+					pUnit->SetTarget(nullptr);
+					pUnit->SetFocus(nullptr);
+					pUnit->SetDestination(nullptr, false);
+					pUnit->ForceMission(Mission::Guard);
+
+					// Get a cell near the target
+					pUnit->QueueMission(Mission::Move, false);
+					CoordStruct coord = TechnoExt::PassengerKickOutLocation(selectedTarget, pUnit, 10);
+					coord = coord != CoordStruct::Empty ? coord : selectedTarget->Location;
+					CellClass* pCellDestination = MapClass::Instance->TryGetCellAt(coord);
+					pUnit->SetDestination(pCellDestination, true);
+
+					// Aircraft hack. I hate how this game auto-manages the aircraft missions.
+					if (pUnitType->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0 && pUnit->GetHeight() <= 0)
+						pUnit->QueueMission(Mission::Move, false);
 				}
 			}
 		}
@@ -2213,7 +2218,7 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 		{
 			// No target was found with the specific criteria.
 
-			if (!noWaitLoop)
+			if (!noWaitLoop && pTeamData->WaitNoTargetTimer.Completed())
 			{
 				pTeamData->WaitNoTargetCounter = 30;
 				pTeamData->WaitNoTargetTimer.Start(30);
@@ -2222,7 +2227,7 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 			if (pTeamData->IdxSelectedObjectFromAIList >= 0)
 				pTeamData->IdxSelectedObjectFromAIList = -1;
 
-			if (pTeamData->WaitNoTargetAttempts != 0)
+			if (pTeamData->WaitNoTargetAttempts != 0 && pTeamData->WaitNoTargetTimer.Completed())
 			{
 				pTeamData->WaitNoTargetCounter = 30;
 				pTeamData->WaitNoTargetTimer.Start(30); // No target? let's wait some frames
