@@ -3473,7 +3473,7 @@ bool ScriptExt::FindLinkedPath(TeamClass* pTeam, TechnoClass* pThis = nullptr, T
 		// Extract the first element of MapPath_Queue for analyzing it
 		MapPathCellElement element = pTeamData->MapPath_Queue.at(0);
 		pTeamData->MapPath_Queue.erase(pTeamData->MapPath_Queue.begin());
-		
+
 		// Check cells around the selected cell, it only stops if we reach the destination of the queue is empty
 		for (int i = element.X - 1; (i <= element.X + 1) && !found; i++)
 		{
