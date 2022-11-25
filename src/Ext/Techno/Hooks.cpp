@@ -417,7 +417,7 @@ DEFINE_HOOK(0x6F6CFE, TechnoClass_Unlimbo_LaserTrails, 0x6)
 		if (pTechnoExt->IsLeggedCyborg)
 		{
 			InfantryClass* soldier = abstract_cast<InfantryClass*>(pTechno);
-			
+
 			soldier->SequenceAnim = Sequence::Prone;
 			soldier->Crawling = true;
 		}
