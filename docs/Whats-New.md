@@ -260,6 +260,8 @@ Vanilla fixes:
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations (by Starkku)
 - Cloaked objects displaying to observers (by Starkku)
 - Cloaked objects from allies displaying to player in single player missions (by Trsdy)
+- Made sure that `Suicide=yes` weapon does kill the firer (by Trsdy)
+- Made sure that vxl units being flipped over get killed instead of rotating up and down (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -402,8 +404,6 @@ Vanilla fixes:
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true` (by Starkku)
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry (by Otamaa)
 - Allowed observers to see a selected building's radial indicator (by Trsdy)
-- Made sure that `Suicide=yes` weapon does kill the firer (by Trsdy)
-- Made sure that vxl units being flipped over get killed instead of rotating up and down (by Trsdy)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
