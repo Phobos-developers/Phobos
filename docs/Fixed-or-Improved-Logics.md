@@ -90,6 +90,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - IvanBomb images now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation.
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations.
 - Animation with `Tiled=yes` now supports `CustomPalette`.
+- Fixed buildings' `NaturalParticleSystem` being created for in-map pre-placed structures.
+
 
 ## Animations
 

@@ -200,6 +200,7 @@ This page lists all the individual contributions to the project by their author.
    - "Shield is broken" trigger event
    - RadialIndicator observer visibility
    - Cloaked objects from allies displaying to player in singleplayer campaigns
+   - Skip `NaturalParticleSystem` displaying from in-map pre-placed structures.
    - Forbidding parallel AI queues by type
 - **FlyStar**
    - Campaign load screen PCX support
