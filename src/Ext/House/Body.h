@@ -25,6 +25,12 @@ public:
 		BuildingClass* Factory_NavyType;
 		BuildingClass* Factory_AircraftType;
 
+		int NewTeamsSelector_MergeUnclassifiedCategoryWith;
+		double NewTeamsSelector_UnclassifiedCategoryPercentage;
+		double NewTeamsSelector_GroundCategoryPercentage;
+		double NewTeamsSelector_NavalCategoryPercentage;
+		double NewTeamsSelector_AirCategoryPercentage;
+
 		//Read from INI
 		bool RepairBaseNodes[3];
 
@@ -36,6 +42,11 @@ public:
 			, Factory_NavyType { nullptr }
 			, Factory_AircraftType { nullptr }
 			, RepairBaseNodes { false,false,false }
+			, NewTeamsSelector_MergeUnclassifiedCategoryWith { -1 }
+			, NewTeamsSelector_UnclassifiedCategoryPercentage { 0.25 }
+			, NewTeamsSelector_GroundCategoryPercentage { 0.25 }
+			, NewTeamsSelector_NavalCategoryPercentage { 0.25 }
+			, NewTeamsSelector_AirCategoryPercentage { 0.25 }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -74,4 +85,7 @@ public:
 	static int ActiveHarvesterCount(HouseClass* pThis);
 	static int TotalHarvesterCount(HouseClass* pThis);
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
+	static bool PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const pItem, const DynamicVectorClass<BuildingTypeClass*> ownedBuildingTypes);
+	static bool HasGenericPrerequisite(int idx, const DynamicVectorClass<BuildingTypeClass*> ownedBuildingTypes);
+	static int FindGenericPrerequisite(const char* id);
 };

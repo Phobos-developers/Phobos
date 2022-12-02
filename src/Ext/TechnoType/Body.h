@@ -158,6 +158,13 @@ public:
 		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
+		// Ares 0.1
+		ValueableVector<int> Prerequisite_RequiredTheaters;
+		ValueableVector<int> Prerequisite;
+		ValueableVector<int> Prerequisite_Negative;
+		Valueable<int> Prerequisite_Lists;
+		std::vector<DynamicVectorClass<int>> Prerequisite_ListVector;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -267,6 +274,9 @@ public:
 			, DeployedSecondaryFireFLH { }
 			, IronCurtain_KeptOnDeploy{ }
 			, Explodes_KillPassengers { true }
+			, Prerequisite { }
+			, Prerequisite_Negative { }
+			, Prerequisite_Lists { 0 }
 		{ }
 
 		virtual ~ExtData() = default;

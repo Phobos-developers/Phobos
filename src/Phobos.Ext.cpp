@@ -8,6 +8,7 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/HouseType/Body.h>
 #include <Ext/RadSite/Body.h>
 #include <Ext/Rules/Body.h>
 #include <Ext/Scenario/Body.h>
@@ -232,6 +233,7 @@ auto MassActions = MassAction <
 	BulletExt,
 	BulletTypeExt,
 	HouseExt,
+	HouseTypeExt,
 	RadSiteExt,
 	RulesExt,
 	ScenarioExt,
