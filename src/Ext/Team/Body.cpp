@@ -142,6 +142,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		bool splitTriggersByCategory = RulesExt::Global()->NewTeamsSelector_SplitTriggersByCategory;
 		bool isFallbackEnabled = RulesExt::Global()->NewTeamsSelector_EnableFallback;
 		teamCategory validCategory = teamCategory::None;
+		int mergeUnclassifiedCategoryWith = -1;
 
 		double percentageUnclassifiedTriggers = 0.0;
 		double percentageGroundTriggers = 0.0;
@@ -179,8 +180,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 				percentageUnclassifiedTriggers = 0.0;
 			}
-
-			// TO-DO: HERE load new values from Rulesmd.ini, if set
 
 			percentageUnclassifiedTriggers = percentageUnclassifiedTriggers < 0.0 || percentageUnclassifiedTriggers > 1.0 ? 0.0 : percentageUnclassifiedTriggers;
 			percentageGroundTriggers = percentageGroundTriggers < 0.0 || percentageGroundTriggers > 1.0 ? 0.0 : percentageGroundTriggers;
@@ -585,8 +584,14 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						for (auto entry : pTriggerTeam1Type->TaskForce->Entries)
 						{
 							// If they team has mixed members there is no need to continue
+							// Also, if the category was merged into another one
 							if (teamIsCategory == teamCategory::Unclassified)
+							{
+								if (mergeUnclassifiedCategoryWith >= 0)
+									teamIsCategory = (teamCategory)mergeUnclassifiedCategoryWith;
+
 								break;
+							}
 
 							if (entry.Amount > 0)
 							{
