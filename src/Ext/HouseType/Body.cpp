@@ -74,6 +74,7 @@ bool HouseTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
 	return Stm.Success();
 }
+
 // =============================
 // container
 

@@ -103,8 +103,12 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 
 	for (auto pTechno : *TechnoClass::Array)
 	{
-		if (pTechno->Owner == pThis && pTechno->GetTechnoType() == pItem && pTechno->IsAlive && pTechno->Health > 0)
+		if (pTechno->Owner == pThis
+			&& pTechno->GetTechnoType() == pItem
+			&& pTechno->IsAlive && pTechno->Health > 0)
+		{
 			nInstances++;
+		}
 	}
 
 	if (nInstances >= pItem->BuildLimit)
@@ -112,7 +116,7 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 
 	bool prerequisiteNegativeMet = false; // Only one coincidence is needed
 
-	// Ares Prerequisite.Negative list.
+	// Ares Prerequisite.Negative list
 	if (pItemExt->Prerequisite_Negative.size() > 0)
 	{
 		for (int idx : pItemExt->Prerequisite_Negative)
@@ -120,7 +124,7 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 			if (prerequisiteNegativeMet)
 				return false;
 
-			if (idx < 0) // Is even possible this case? I have to check it
+			if (idx < 0) // Can be used generic prerequisites in this Ares tag? I have to investigate it but for now we support it...
 			{
 				// Default prerequisites like POWER, PROC, BARRACKS, FACTORY, ...
 				prerequisiteNegativeMet = HouseExt::HasGenericPrerequisite(idx, ownedBuildingTypes);
@@ -139,13 +143,10 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 		}
 	}
 
-	//ValueableVector<int> prerequisite = pItemExt->Prerequisite;
 	DynamicVectorClass<int> prerequisiteOverride = pItem->PrerequisiteOverride;
 
-	//UnitTypeClass* prerequisiteProcAlternate = RulesClass::Instance->PrerequisiteProcAlternate;
-
-	bool prerequisiteMet = false; // All in this list must appear in ownedBuildingTypes
-	bool prerequisiteOverrideMet = false; // Only one coincidence is needed
+	bool prerequisiteMet = false; // All buildings must appear in the buildings list owner by the house
+	bool prerequisiteOverrideMet = false; // This tag uses an OR comparator: Only one coincidence is needed
 
 	if (prerequisiteOverride.Count > 0)
 	{
@@ -176,11 +177,11 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 	if (pItemExt->Prerequisite.size() > 0)
 	{
 		bool found = false;
-		//if (pItem) Debug::Log("[%s] prereq check????\n", pItem->ID);
+
 		for (int idx : pItemExt->Prerequisite)
 		{
 			found = false;
-			//Debug::Log("\tidx: %d:\n",idx);
+
 			if (idx < 0)
 			{
 				// Default prerequisites like POWER, PROC, BARRACKS, FACTORY, ...
@@ -188,7 +189,6 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 			}
 			else
 			{
-				//Debug::Log("\t[%s] (idx: %d):\n", TechnoTypeClass::Array->GetItem(idx)->ID, idx);
 				for (auto pObject : ownedBuildingTypes)
 				{
 					if (found)
@@ -196,8 +196,6 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 
 					if (idx == pObject->ArrayIndex)
 						found = true;
-
-					//Debug::Log("\t\t[%s] (idx: %d) Found? %d\n", pObject->ID, pObject->ArrayIndex, found);
 				}
 			}
 
@@ -209,6 +207,7 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 	}
 	else
 	{
+		// No prerequisites list means that always is buildable
 		prerequisiteMet = true;
 	}
 
@@ -253,7 +252,6 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 		prerequisiteListsMet = found;
 	}
 
-	//Debug::Log("prerequisiteMet: %d, prerequisiteListsMet: %d, prerequisiteOverrideMet: %d\n", prerequisiteMet, prerequisiteListsMet, prerequisiteOverrideMet);
 	return prerequisiteMet || prerequisiteListsMet || prerequisiteOverrideMet;
 }
 
@@ -264,14 +262,6 @@ bool HouseExt::HasGenericPrerequisite(int idx, const DynamicVectorClass<Building
 
 	DynamicVectorClass<int> selectedPrerequisite = RulesExt::Global()->GenericPrerequisites.GetItem(std::abs(idx));
 
-	/*Debug::Log("DEBUG: SELECTED DEFAULT PREREQUISITES: %s [%d]\n", RulesExt::Global()->GenericPrerequisitesNames.GetItem(std::abs(idx)), idx);
-	for (int i : selectedPrerequisite)
-	{
-		auto aaa = TechnoTypeClass::Array->GetItem(i);
-		Debug::Log("[%s] -> %d\n", aaa->ID, i);
-	}
-	Debug::Log("\n");
-	*/
 	if (selectedPrerequisite.Count == 0)
 		return false;
 
@@ -291,7 +281,6 @@ bool HouseExt::HasGenericPrerequisite(int idx, const DynamicVectorClass<Building
 				found = true;
 		}
 	}
-	//Debug::Log("idx: %d -> found: %d\n", idx, found);
 
 	return found;
 }
@@ -302,7 +291,7 @@ int HouseExt::FindGenericPrerequisite(const char* id)
 		return 0;
 
 	if (RulesExt::Global()->GenericPrerequisitesNames.Count == 0)
-		RulesExt::FillDefaultPrerequisites();
+		RulesExt::FillDefaultPrerequisites(); // needed!
 
 	int i = 0;
 	for (auto str : RulesExt::Global()->GenericPrerequisitesNames)
@@ -330,26 +319,6 @@ void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		for (size_t i = 0; i < 3; i++)
 			this->RepairBaseNodes[i] = readBaseNodeRepairInfo[i < nWritten ? i : nWritten - 1];
 	}
-
-	Valueable<int> readNewTeamsSelector_MergeUnclassifiedCategoryWith;
-	readNewTeamsSelector_MergeUnclassifiedCategoryWith.Read(exINI, pSection, "NewTeamsSelector.MergeUnclassifiedCategoryWith");
-	this->NewTeamsSelector_MergeUnclassifiedCategoryWith = readNewTeamsSelector_MergeUnclassifiedCategoryWith.Get();
-
-	Valueable<double> readNewTeamsSelector_UnclassifiedCategoryPercentage;
-	readNewTeamsSelector_UnclassifiedCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.UnclassifiedCategoryPercentage");
-	this->NewTeamsSelector_UnclassifiedCategoryPercentage = readNewTeamsSelector_UnclassifiedCategoryPercentage.Get();
-
-	Valueable<double> readNewTeamsSelector_GroundCategoryPercentage;
-	readNewTeamsSelector_GroundCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.GroundCategoryPercentage");
-	this->NewTeamsSelector_GroundCategoryPercentage = readNewTeamsSelector_GroundCategoryPercentage.Get();
-
-	Valueable<double> readNewTeamsSelector_NavalCategoryPercentage;
-	readNewTeamsSelector_NavalCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.NavalCategoryPercentage");
-	this->NewTeamsSelector_NavalCategoryPercentage = readNewTeamsSelector_NavalCategoryPercentage.Get();
-
-	Valueable<double> readNewTeamsSelector_AirCategoryPercentage;
-	readNewTeamsSelector_AirCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.AirCategoryPercentage");
-	this->NewTeamsSelector_AirCategoryPercentage = readNewTeamsSelector_AirCategoryPercentage.Get();
 }
 
 
@@ -367,11 +336,6 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->Factory_NavyType)
 		.Process(this->Factory_AircraftType)
 		.Process(this->RepairBaseNodes)
-		.Process(this->NewTeamsSelector_MergeUnclassifiedCategoryWith)
-		.Process(this->NewTeamsSelector_UnclassifiedCategoryPercentage)
-		.Process(this->NewTeamsSelector_GroundCategoryPercentage)
-		.Process(this->NewTeamsSelector_NavalCategoryPercentage)
-		.Process(this->NewTeamsSelector_AirCategoryPercentage)
 		;
 }
 

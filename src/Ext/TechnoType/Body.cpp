@@ -274,8 +274,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
 
 	// Prerequisite.RequiredTheaters contains a list of theader names
-	this->Prerequisite_RequiredTheaters.Read(exINI, pSection, "Prerequisite.RequiredTheaters");
-
 	char* key = "Prerequisite.RequiredTheaters";
 	char* context = nullptr;
 	pINI->ReadString(pSection, key, "", Phobos::readBuffer);
@@ -290,7 +288,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	key = nullptr;
 
 	// Prerequisite with Generic Prerequistes support.
-	// Note: I have no idea of what could happen in the game engine if I push the negative indexes directly into the original Prerequisite tag... for that reason I duplicate this tag
+	// Note: I have no idea of what could happen in all the game engine logics if I push the negative indexes of the Ares generic prerequisites directly into the original Prerequisite tag... for that reason this tag is duplicated for working with it
 	key = "Prerequisite";
 	context = nullptr;
 	pINI->ReadString(pSection, key, "", Phobos::readBuffer);

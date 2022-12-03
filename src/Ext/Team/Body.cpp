@@ -97,14 +97,11 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	GET(HouseClass*, pHouse, ESI);
 
 	bool houseIsHuman = pHouse->IsHumanPlayer;
+
 	if (SessionClass::IsCampaign())
 		houseIsHuman = pHouse->IsHumanPlayer || pHouse->IsInPlayerControl;
 
 	if (houseIsHuman || pHouse->Type->MultiplayPassive)
-		return SkipCode;
-
-	auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
-	if (!pHouseExt)
 		return SkipCode;
 
 	auto pHouseTypeExt = HouseTypeExt::ExtMap.Find(pHouse->Type);
@@ -131,12 +128,10 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	DynamicVectorClass<TriggerElementWeight> validTriggerCandidatesNavalOnly;
 	DynamicVectorClass<TriggerElementWeight> validTriggerCandidatesAirOnly;
 	DynamicVectorClass<TriggerElementWeight> validTriggerCandidatesUnclassifiedOnly;
+
 	int dice = ScenarioClass::Instance->Random.RandomRanged(1, 100);
 
-	//if (pHouse->IsHumanPlayer || pHouse->IsInPlayerControl)
-		//return ContinueFlow;
-
-	//This house must have enabled the triggers
+	// This house must have the triggers enabled
 	if (dice <= pHouse->RatioAITriggerTeam && pHouse->AITriggersActive)
 	{
 		bool splitTriggersByCategory = RulesExt::Global()->NewTeamsSelector_SplitTriggersByCategory;
@@ -151,7 +146,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		if (splitTriggersByCategory)
 		{
-			int mergeUnclassifiedCategoryWith = pHouseTypeExt->NewTeamsSelector_MergeUnclassifiedCategoryWith.isset() ? pHouseTypeExt->NewTeamsSelector_MergeUnclassifiedCategoryWith.Get() : RulesExt::Global()->NewTeamsSelector_MergeUnclassifiedCategoryWith;
+			mergeUnclassifiedCategoryWith = pHouseTypeExt->NewTeamsSelector_MergeUnclassifiedCategoryWith.isset() ? pHouseTypeExt->NewTeamsSelector_MergeUnclassifiedCategoryWith.Get() : RulesExt::Global()->NewTeamsSelector_MergeUnclassifiedCategoryWith;  // Should mixed teams be merged into another category?
 			percentageUnclassifiedTriggers = pHouseTypeExt->NewTeamsSelector_UnclassifiedCategoryPercentage.isset() ? pHouseTypeExt->NewTeamsSelector_UnclassifiedCategoryPercentage.Get() : RulesExt::Global()->NewTeamsSelector_UnclassifiedCategoryPercentage; // Mixed teams
 			percentageGroundTriggers = pHouseTypeExt->NewTeamsSelector_GroundCategoryPercentage.isset() ? pHouseTypeExt->NewTeamsSelector_GroundCategoryPercentage.Get() : RulesExt::Global()->NewTeamsSelector_GroundCategoryPercentage; // Only ground
 			percentageNavalTriggers = pHouseTypeExt->NewTeamsSelector_NavalCategoryPercentage.isset() ? pHouseTypeExt->NewTeamsSelector_NavalCategoryPercentage.Get() : RulesExt::Global()->NewTeamsSelector_NavalCategoryPercentage; // Only Naval=yes
@@ -187,6 +182,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			percentageAirTriggers = percentageAirTriggers < 0.0 || percentageAirTriggers > 1.0 ? 0.0 : percentageAirTriggers;
 
 			double totalPercengates = percentageUnclassifiedTriggers + percentageGroundTriggers + percentageNavalTriggers + percentageAirTriggers;
+
 			if (totalPercengates > 1.0 || totalPercengates <= 0.0)
 				splitTriggersByCategory = false;
 			// Note: if the sum of all percentages is less than 100% then that empty space will work like "no categories"
@@ -222,13 +218,9 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			}
 		}
 
-		// PREPARING...
-
 		int houseIdx = pHouse->ArrayIndex;
 		int sideIdx = pHouse->SideIndex + 1;
-		//int enemyHouseIndex = pHouse->EnemyHouseIndex >= 0 ? pHouse->EnemyHouseIndex : -1;
 		auto houseDifficulty = pHouse->AIDifficulty;
-		//int minBaseDefenseTeams = RulesClass::Instance->MinimumAIDefensiveTeams.GetItem((int)houseDifficulty);
 		int maxBaseDefenseTeams = RulesClass::Instance->MaximumAIDefensiveTeams.GetItem((int)houseDifficulty);
 		int activeDefenseTeamsCount = 0;
 		int maxTeamsLimit = RulesClass::Instance->TotalAITeamCap.GetItem((int)houseDifficulty);
@@ -256,20 +248,21 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		}
 
 		activeTeams = activeTeamsList.Count;
-		// We will use these for discarding triggers
+
+		// We will use these values for discarding triggers
 		bool hasReachedMaxTeamsLimit = activeTeams < maxTeamsLimit ? false : true;
 		bool hasReachedMaxDefensiveTeamsLimit = activeDefenseTeamsCount < maxBaseDefenseTeams ? false : true;
 
 		if (hasReachedMaxDefensiveTeamsLimit)
-			Debug::Log("DEBUG: House [%s] (Idx: %d) reached the MaximumAIDefensiveTeams value!\n", pHouse->Type->ID, pHouse->ArrayIndex);
+			Debug::Log("DEBUG: House [%s] (idx: %d) reached the MaximumAIDefensiveTeams value!\n", pHouse->Type->ID, pHouse->ArrayIndex);
 
 		if (hasReachedMaxTeamsLimit)
 		{
-			Debug::Log("DEBUG: House [%s] (Idx: %d) reached the TotalAITeamCap value!\n", pHouse->Type->ID, pHouse->ArrayIndex);
+			Debug::Log("DEBUG: House [%s] (idx: %d) reached the TotalAITeamCap value!\n", pHouse->Type->ID, pHouse->ArrayIndex);
 			return SkipCode;
 		}
 
-		// Build a list of built structures by the house
+		// Obtain the real list of structures the house have
 		DynamicVectorClass<BuildingTypeClass*> ownedBuildingTypes;
 		for (auto building : pHouse->Buildings)
 		{
@@ -334,14 +327,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			}
 		}
 
-		//Debug::Log("List of recruitable units of this house:\n");
-		//for (auto item : recruitableUnits)
-		//{
-			//if (item.object)
-				//Debug::Log("[%s] = %d\n", item.object->ID, item.count);
-		//}
-		//Debug::Log("AAA\n");
-
 		HouseClass* targetHouse = nullptr;
 		if (pHouse->EnemyHouseIndex >= 0)
 			targetHouse = HouseClass::Array->GetItem(pHouse->EnemyHouseIndex);
@@ -363,7 +348,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 				// The trigger must be compatible with the owner
 				if ((triggerHouse == -1 || houseIdx == triggerHouse) && (triggerSide == 0 || sideIdx == triggerSide))
 				{
-					// "ConditionType=-1" will be skipped, is always valid (and save CPU)
+					// "ConditionType=-1" will be skipped, always is valid
 					if ((int)pTrigger->ConditionType >= 0)
 					{
 						if ((int)pTrigger->ConditionType == 0)
@@ -407,7 +392,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 8)
 						{
-							// Simulate case 0: "enemy owns" but without restrict it against only 1 enemy house
+							// Simulate case 0: "enemy owns" but instead of restrict it against the main enemy house it is done against all enemies
 							if (!pTrigger->ConditionObject)
 								continue;
 
@@ -423,7 +408,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
 							{
 								// New case 9: Like in case 0 but instead of 1 unit for comparisons there is a full list from [AITargetTypes] owned by the enemy.
-								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF and 256 is 0x0001
+								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
 								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::EnemyOwns(pTrigger, pHouse, targetHouse, false, list);
 
@@ -436,7 +421,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
 							{
 								// New case 10: Like in case 1 but instead of 1 unit for comparisons there is a full list from [AITargetTypes] owned by the house.
-								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF and 256 is 0x0001
+								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
 								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::HouseOwns(pTrigger, pHouse, false, list);
 
@@ -449,7 +434,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
 							{
 								// New case 11: Like in case 7 but instead of 1 unit for comparisons there is a full list from [AITargetTypes] owned by the Civilians.
-								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF and 256 is 0x0001
+								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
 								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::NeutralOwns(pTrigger, list);
 
@@ -462,7 +447,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
 							{
 								// New case 12: Like in case 0 & 9 but instead of a specific enemy this checks in all enemies.
-								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF and 256 is 0x0001
+								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
 								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::EnemyOwns(pTrigger, pHouse, nullptr, false, list);
 
@@ -475,7 +460,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
 							{
 								// New case 13: Like in case 1 & 10 but instead checking the house now checks the allies.
-								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF and 256 is 0x0001
+								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
 								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::HouseOwns(pTrigger, pHouse, true, list);
 
@@ -488,7 +473,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
 							{
 								// New case 14: Like in case 9 but instead of meet any comparison now is required all.
-								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF and 256 is 0x0001
+								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
 								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::EnemyOwnsAll(pTrigger, pHouse, targetHouse, list);
 
@@ -501,7 +486,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
 							{
 								// New case 15: Like in case 10 but instead of meet any comparison now is required all.
-								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF and 256 is 0x0001
+								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
 								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::HouseOwnsAll(pTrigger, pHouse, list);
 
@@ -514,7 +499,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
 							{
 								// New case 16: Like in case 11 but instead of meet any comparison now is required all.
-								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF and 256 is 0x0001
+								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
 								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::NeutralOwnsAll(pTrigger, list);
 
@@ -527,7 +512,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
 							{
 								// New case 17: Like in case 14 but instead of meet any comparison now is required all. Check all enemies
-								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF and 256 is 0x0001
+								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
 								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::EnemyOwnsAll(pTrigger, pHouse, nullptr, list);
 
@@ -538,18 +523,12 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						else
 						{
 							// Other cases from vanilla game
-							//bool cm = pTrigger->ConditionMet(pHouse, targetHouse, hasReachedMaxDefensiveTeamsLimit);
-							//Debug::Log("[%s], \"%s\"\nOld ConditionMet section (%d, %s): %d [-, %d, %d]\n\n", pTrigger->ID, pTrigger->Team1->Name, (int)pTrigger->ConditionType, (pTrigger->ConditionObject ? pTrigger->ConditionObject->ID : "<none>"), cm, pTrigger->Conditions->ComparatorOperand, pTrigger->Conditions->ComparatorType);
-
 							if (!pTrigger->ConditionMet(pHouse, targetHouse, hasReachedMaxDefensiveTeamsLimit))
 								continue;
 						}
 					}
-					/*else
-					{
-						bool cm = false;
-					}*/
 
+					// All triggers below 5000 in current weight will get discarded if this mode is enabled
 					if (onlyCheckImportantTriggers)
 					{
 						if (pTrigger->Weight_Current < 5000)
@@ -595,39 +574,24 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 							if (entry.Amount > 0)
 							{
-								/*
-								What category goes each unit? there is the table:
-
-								- Air category magic words:
-									ConsideredAircraft=yes
-									JumpJet=yes
-									BalloonHover=yes
-
-								- Maval category magic words:
-									Naval=yes
-									MovementRestrictedTo=Water
-
-								- Mixed category
-									MovementZone=Amphibious
-									<when multiple units are from different categories>
-
-								- Ground category magic words:
-									Anyone that doesn't meet the previous magic words
-								*/
-
 								if (entry.Type)
 								{
-									if (entry.Type->WhatAmI() == AbstractType::AircraftType || entry.Type->ConsideredAircraft)
+									if (entry.Type->WhatAmI() == AbstractType::AircraftType
+										|| entry.Type->ConsideredAircraft)
 									{
 										// For now the team is from air category
 										teamIsCategory = teamIsCategory == teamCategory::None || teamIsCategory == teamCategory::Air ? teamCategory::Air : teamCategory::Unclassified;
 									}
-									else if (entry.Type->Naval && (entry.Type->MovementZone != MovementZone::Amphibious && entry.Type->MovementZone != MovementZone::AmphibiousDestroyer || entry.Type->MovementZone != MovementZone::AmphibiousCrusher))
+									else if (entry.Type->Naval
+										&& (entry.Type->MovementZone != MovementZone::Amphibious
+											&& entry.Type->MovementZone != MovementZone::AmphibiousDestroyer
+											&& entry.Type->MovementZone != MovementZone::AmphibiousCrusher))
 									{
 										// For now the team is from naval category
 										teamIsCategory = teamIsCategory == teamCategory::None || teamIsCategory == teamCategory::Naval ? teamCategory::Naval : teamCategory::Unclassified;
 									}
-									else if (teamIsCategory != teamCategory::Naval && teamIsCategory != teamCategory::Air)
+									else if (teamIsCategory != teamCategory::Naval
+										&& teamIsCategory != teamCategory::Air)
 									{
 										// For now the team doesn't belong to the previous categories
 										teamIsCategory = teamIsCategory != teamCategory::Unclassified ? teamCategory::Ground : teamCategory::Unclassified;

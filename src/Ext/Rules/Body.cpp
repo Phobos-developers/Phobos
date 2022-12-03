@@ -198,11 +198,11 @@ void RulesExt::FillDefaultPrerequisites()
 {
 	if (RulesExt::Global()->GenericPrerequisitesNames.Count != 0)
 		return;
-	//RulesExt::Global()->GenericPrerequisitesNames.Clear();
 
 	CCINIClass::INI_Rules;
 	DynamicVectorClass<int> empty;
-	RulesExt::Global()->GenericPrerequisitesNames.AddItem("POWER"); // -1
+
+	RulesExt::Global()->GenericPrerequisitesNames.AddItem("POWER"); // Official index: -1
 	RulesExt::Global()->GenericPrerequisites.AddItem(RulesClass::Instance->PrerequisitePower);
 	RulesExt::Global()->GenericPrerequisitesNames.AddItem("FACTORY"); // -2
 	RulesExt::Global()->GenericPrerequisites.AddItem(RulesClass::Instance->PrerequisiteFactory);
@@ -218,6 +218,7 @@ void RulesExt::FillDefaultPrerequisites()
 	// If [GenericPrerequisites] is present will be added after these.
 	// Also the originals can be replaced by new ones
 	int genericPreqsCount = CCINIClass::INI_Rules->GetKeyCount("GenericPrerequisites");
+
 	for (int i = 0; i < genericPreqsCount; ++i)
 	{
 		DynamicVectorClass<int> objectsList;
@@ -240,7 +241,7 @@ void RulesExt::FillDefaultPrerequisites()
 		}
 		else
 		{
-			// New
+			// New generic prerequisite
 			RulesExt::Global()->GenericPrerequisitesNames.AddItem(name);
 			RulesExt::Global()->GenericPrerequisites.AddItem(objectsList);
 		}
