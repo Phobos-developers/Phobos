@@ -764,8 +764,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		if (splitTriggersByCategory)
 		{
-			//Debug::Log("DEBUG: Category percentages:\nMixed teams: %f\nGround teams: %f\nNaval teams: %f\nAir teams: %f\n", percentageUnclassifiedTriggers, percentageGroundTriggers, percentageNavalTriggers, percentageAirTriggers);
-
 			switch (validCategory)
 			{
 			case teamCategory::Ground:
