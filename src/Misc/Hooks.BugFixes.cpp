@@ -626,7 +626,7 @@ DEFINE_HOOK(0x56BD8B, MapClass_PlaceCrate_InMapFix, 0x5)
 
 	if (auto pCell = MapClass::Instance->TryGetCellAt(MapLocation))
 	{
-		REF_STACK(CellStruct, cell, STACK_OFFSET(0x28, 0x18));
+		REF_STACK(CellStruct, cell, STACK_OFFSET(0x28, -0x18));
 
 		auto SpeedType = pCell->LandType == LandType::Water ? SpeedType::Float : SpeedType::Track;
 		cell = MapClass::Instance->NearByLocation(pCell->MapCoords, SpeedType, -1, MovementZone::Normal, false, 1, 1, false,
