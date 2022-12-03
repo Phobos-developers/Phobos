@@ -20,7 +20,7 @@ RepairBaseNodes=no,no,no ; 3 booleans indicating whether AI repair basenodes in 
 ## New AI Teams Selector
 
 - New AI system for selecting valid triggers in multiplayer randomly. Unlike the original method this one checks prerequisites and take care of other details.
-- It can split the valid triggers into 4 categories: ground, air, naval & mixed categories. If set, AI picks a random trigger in a random category. 
+- It can split the valid triggers into 4 categories: ground, air, naval & mixed categories. If set, AI picks a random trigger in a random category.
 - Categories can have different chance probabilities. It can be set globally or customized per house. by default each category has a 25% chance to be selected.
 - `NewTeamsSelector.MergeUnclassifiedCategoryWith` can be used for merging the mixed category (units are from different categories) into one of the main categories.
 - In case of picking a category without valid triggers exist a fallback mode that allow picking a trigger from all valid triggers like if categories were disabled.
