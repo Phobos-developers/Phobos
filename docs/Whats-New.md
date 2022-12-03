@@ -262,6 +262,7 @@ Vanilla fixes:
 - Cloaked objects from allies displaying to player in single player missions (by Trsdy)
 - Made sure that `Suicide=yes` weapon does kill the firer (by Trsdy)
 - Made sure that vxl units being flipped over get killed instead of rotating up and down (by Trsdy)
+- Crates are now fixed to the map range to avoid the issue of too many crates on the map edge caused by the vanilla algorithm (by TwinkleStar)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

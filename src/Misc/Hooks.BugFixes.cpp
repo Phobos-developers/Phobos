@@ -2,6 +2,7 @@
 #include <AnimClass.h>
 #include <BuildingClass.h>
 #include <TechnoClass.h>
+#include <TacticalClass.h>
 #include <FootClass.h>
 #include <UnitClass.h>
 #include <OverlayTypeClass.h>
@@ -608,4 +609,32 @@ DEFINE_HOOK(0x43D874, BuildingClass_Draw_BuildupBibShape, 0x6)
 		return DontDrawBib;
 
 	return 0;
+}
+
+DEFINE_HOOK(0x56BD8B, MapClass_PlaceCrate_InMapFix, 0x5)
+{
+	enum { CreateCrate = 0x56BE7B, DontCreate = 0x56BE91 };
+
+	int MapX = MapClass::Instance->MapRect.Width * 60;
+	int MapY = MapClass::Instance->MapRect.Height * 30;
+	int X = ScenarioClass::Instance->Random.RandomRanged(0, MapX) - MapX / 2;
+	int Y = ScenarioClass::Instance->Random.RandomRanged(0, MapY) + MapY / 2;
+	Vector3D<float> Location = { (float)X,(float)Y,0.0f };
+
+	auto result = Matrix3D::MatrixMultiply(TacticalClass::Instance->IsoTransformMatrix, Location);
+	CoordStruct MapLocation { (int)result.X,(int)result.Y,0 };
+
+	if (auto pCell = MapClass::Instance->TryGetCellAt(MapLocation))
+	{
+		REF_STACK(CellStruct, cell, STACK_OFFSET(0x28, 0x18));
+
+		auto SpeedType = pCell->LandType == LandType::Water ? SpeedType::Float : SpeedType::Track;
+		cell = MapClass::Instance->NearByLocation(pCell->MapCoords, SpeedType, -1, MovementZone::Normal, false, 1, 1, false,
+			false, false, true, CellStruct::Empty, false, false);
+
+		R->EAX(&cell);
+		return CreateCrate;
+	}
+
+	return DontCreate;
 }
