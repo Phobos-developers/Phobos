@@ -219,9 +219,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		int houseIdx = pHouse->ArrayIndex;
 		int sideIdx = pHouse->SideIndex + 1;
-		//int enemyHouseIndex = pHouse->EnemyHouseIndex >= 0 ? pHouse->EnemyHouseIndex : -1;
 		auto houseDifficulty = pHouse->AIDifficulty;
-		//int minBaseDefenseTeams = RulesClass::Instance->MinimumAIDefensiveTeams.GetItem((int)houseDifficulty);
 		int maxBaseDefenseTeams = RulesClass::Instance->MaximumAIDefensiveTeams.GetItem((int)houseDifficulty);
 		int activeDefenseTeamsCount = 0;
 		int maxTeamsLimit = RulesClass::Instance->TotalAITeamCap.GetItem((int)houseDifficulty);
@@ -523,6 +521,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else
 						{
+						// Other cases from vanilla game
 							if (!pTrigger->ConditionMet(pHouse, targetHouse, hasReachedMaxDefensiveTeamsLimit))
 								continue;
 						}
@@ -672,7 +671,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						continue;
 
 					// Special case: triggers become very important if they reach the max priority (value 5000).
-					// They get stored in a elitist list and all previous triggers are discarded.
+					// They get stored in a elitist list and all previous triggers are discarded
 					if (pTrigger->Weight_Current >= 5000 && !onlyCheckImportantTriggers)
 					{
 						// First time only
@@ -683,7 +682,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							validTriggerCandidatesNavalOnly.Clear();
 							validTriggerCandidatesAirOnly.Clear();
 							validTriggerCandidatesUnclassifiedOnly.Clear();
-
 							validCategory = teamCategory::None;
 						}
 
