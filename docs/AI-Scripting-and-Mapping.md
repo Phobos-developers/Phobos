@@ -17,6 +17,67 @@ RepairBaseNodes=no,no,no ; 3 booleans indicating whether AI repair basenodes in 
 - Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
   - `InitialPayload` logic from Ares is not supported yet.
 
+## New AI Teams Selector
+
+- New AI system for selecting valid triggers in multiplayer randomly. Unlike the original method this one checks prerequisites and take care of other details.
+- It can split the valid triggers into 4 categories: ground, air, naval & mixed categories. If set, AI picks a random trigger in a random category. 
+- Categories can have different chance probabilities. It can be set globally or customized per house. by default each category has a 25% chance to be selected.
+- `NewTeamsSelector.MergeUnclassifiedCategoryWith` can be used for merging the mixed category (units are from different categories) into one of the main categories.
+- In case of picking a category without valid triggers exist a fallback mode that allow picking a trigger from all valid triggers like if categories were disabled.
+- if `Autocreate=yes` AI will care about all units prerequisites so if the house's tech tree is incomplete for the trigger it gets discarded. It understand Ares tags like  `Prerequisite.RequiredTheaters`, `Prerequisite.Negative`, `Prerequisite.Lists` & `Generic prerequisites` section.
+- If it finds a trigger with 5000 current probability weight then discard valid triggers all and start searching all valid triggers with weight 5000. AI will pick 1 randomly and decrease by 1 the current weight of the selected trigger (so if nothing happens in the next teams selection loop it won't appear in this special list). Under this scenario categories are disabled.
+
+In `rulesmd.ini`:
+```ini
+[AI]
+NewTeamsSelector=false                               ; boolean
+NewTeamsSelector.SplitTriggersByCategory=true        ; boolean
+NewTeamsSelector.EnableFallback=false                ; boolean
+NewTeamsSelector.GroundCategoryPercentage=0.25       ; floating point value, percents or absolute
+NewTeamsSelector.NavalCategoryPercentage=0.25        ; floating point value, percents or absolute
+NewTeamsSelector.AirCategoryPercentage=0.25          ; floating point value, percents or absolute
+NewTeamsSelector.UnclassifiedCategoryPercentage=0.25 ; floating point value, percents or absolute
+NewTeamsSelector.MergeUnclassifiedCategoryWith=-1    ; Integer - Ground: 1, Air: 2, Naval: 3
+
+[SOMEHOUSE]                                       ; HouseType
+NewTeamsSelector.MergeUnclassifiedCategoryWith=   ; boolean
+NewTeamsSelector.UnclassifiedCategoryPercentage=  ; floating point value, percents or absolute
+NewTeamsSelector.GroundCategoryPercentage=        ; floating point value, percents or absolute
+NewTeamsSelector.AirCategoryPercentage            ; floating point value, percents or absolute
+NewTeamsSelector.NavalCategoryPercentage          ; floating point value, percents or absolute
+```
+
+- Modified slightly AI Trigger conditions 0 (enemy owns ...), 1 (house owns ...) and 7 (civilian owns ...) and added 10 new conditions (from 8 to 17) that check lists of objects instead of only 1 unit. The first 3 were modified because the objects counters weren't updated in real-time. The possible modified and new cases are:
+
+| *Condition* | *List of objects* | *Description*                                   |
+| :---------: | :---------------: | :---------------------------------------------: |
+| 0 (changed) | No                | Count objects of the main enemy. If AI house doesn't have a main enemy It will search in all enemies. In vanilla YR if house doesn't have a main enemy this condition fail |
+| 1 (changed) | No                | Count own objects |
+| 7 (changed) | No                | Count civilian objects |
+| 8           | No                | Count enemy objects. It will search in all enemies |
+| 9           | Yes               | Count enemy objects. If AI house doesn't have a main enemy It will search in all enemies. |
+| 10          | Yes               | Count own objects |
+| 11          | Yes               | Count civilian objects |
+| 12          | Yes               | Count enemy objects. It will search in all enemies |
+| 13          | Yes               | Count objects from allies |
+| 14          | Yes               | Count enemy objects. If AI house doesn't have a main enemy It will search in all enemies. It uses `AND` comparator so each object must obey the same comparations |
+| 15          | Yes               | Count own objects. It uses `AND` comparator so each object must obey the same comparations |
+| 16          | Yes               | Count civilian objects. It uses `AND` comparator so each object must obey the same comparations |
+| 17          | Yes               | Count enemy objects. It will search in all enemies. It uses `AND` comparator so each object must obey the same comparations |
+
+- Some trigger conditions need to specify a 0-based list from `[AITargetTypes]`. The index of the list is written in hexadecimal and in little endian format. The value must be written at the end of the trigger:
+`00000000000000000000000000000000000000000000000000000000AABBCCDD`
+For example: list 0 is written 00 (put it in AA), list 1 is written 01 (put it in AA), list 10 is written 0A (put it in AA), 255 is 0xFF (put it in AA) and 256 is 0x0001 (put it in AABB), etc.
+- The *`AITargetTypes` index#* values are obtained in the new `AITargetTypes` section that must be declared in `rulesmd.ini`:
+
+In `rulesmd.ini`:
+```ini
+[AITargetTypes]  ; List of TechnoType lists
+0=SOMETECHNOTYPE,SOMEOTHERTECHNOTYPE,SAMPLETECHNOTYPE
+1=ANOTHERTECHNOTYPE,YETANOTHERTECHNOTYPE
+; ...
+```
+
 ## Script Actions
 
 ### `10000-10999` Ingame Actions
