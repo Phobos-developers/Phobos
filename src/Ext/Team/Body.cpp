@@ -182,11 +182,10 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			percentageAirTriggers = percentageAirTriggers < 0.0 || percentageAirTriggers > 1.0 ? 0.0 : percentageAirTriggers;
 
 			double totalPercengates = percentageUnclassifiedTriggers + percentageGroundTriggers + percentageNavalTriggers + percentageAirTriggers;
-
 			if (totalPercengates > 1.0 || totalPercengates <= 0.0)
 				splitTriggersByCategory = false;
-			// Note: if the sum of all percentages is less than 100% then that empty space will work like "no categories"
 
+			// Note: if the sum of all percentages is less than 100% then that empty space will work like "no categories"
 			if (splitTriggersByCategory)
 			{
 				int categoryDice = ScenarioClass::Instance->Random.RandomRanged(1, 100);
@@ -220,7 +219,9 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		int houseIdx = pHouse->ArrayIndex;
 		int sideIdx = pHouse->SideIndex + 1;
+		//int enemyHouseIndex = pHouse->EnemyHouseIndex >= 0 ? pHouse->EnemyHouseIndex : -1;
 		auto houseDifficulty = pHouse->AIDifficulty;
+		//int minBaseDefenseTeams = RulesClass::Instance->MinimumAIDefensiveTeams.GetItem((int)houseDifficulty);
 		int maxBaseDefenseTeams = RulesClass::Instance->MaximumAIDefensiveTeams.GetItem((int)houseDifficulty);
 		int activeDefenseTeamsCount = 0;
 		int maxTeamsLimit = RulesClass::Instance->TotalAITeamCap.GetItem((int)houseDifficulty);
@@ -522,7 +523,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else
 						{
-							// Other cases from vanilla game
 							if (!pTrigger->ConditionMet(pHouse, targetHouse, hasReachedMaxDefensiveTeamsLimit))
 								continue;
 						}
@@ -562,8 +562,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 					{
 						for (auto entry : pTriggerTeam1Type->TaskForce->Entries)
 						{
-							// If they team has mixed members there is no need to continue
-							// Also, if the category was merged into another one
+							// If the team have mixed members there is no need to continue
 							if (teamIsCategory == teamCategory::Unclassified)
 							{
 								if (mergeUnclassifiedCategoryWith >= 0)
@@ -606,7 +605,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 					}
 
 					bool allObjectsCanBeBuiltOrRecruited = true;
-					//Debug::Log("[%s] [%s] is evaluating unit prerequisites...\n", pTrigger->ID, pTriggerTeam1Type->ID);
 
 					if (pTriggerTeam1Type->Autocreate)
 					{
@@ -619,20 +617,12 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 									continue;
 
 								TechnoTypeClass* object = entry.Type;
-								//bool canBeBuilt = pHouse->AllPrerequisitesAvailable(object, ownedBuildingTypes, ownedBuildingTypes.Count); // Old
-
-								// Experimental
 								bool canBeBuilt = HouseExt::PrerequisitesMet(pHouse, object, ownedBuildingTypes);
 
 								if (!canBeBuilt)
 								{
-									//Debug::Log("[%s] not ok...\n", object->ID);
 									allObjectsCanBeBuiltOrRecruited = false;
 									break;
-								}
-								else
-								{
-									//Debug::Log("[%s] build prerequisites met!\n", object->ID);
 								}
 							}
 							else
@@ -646,20 +636,16 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						allObjectsCanBeBuiltOrRecruited = false;
 					}
 
-					//if (allObjectsCanBeBuiltOrRecruited)
-						//Debug::Log("[%s] [%s] can build units!...\n", pTrigger->ID, pTriggerTeam1Type->ID);
-
 					if (!allObjectsCanBeBuiltOrRecruited && pTriggerTeam1Type->Recruiter)
 					{
 						allObjectsCanBeBuiltOrRecruited = true;
-						//Debug::Log("[%s] [%s] checking if it can recruit...\n", pTrigger->ID, pTriggerTeam1Type->ID);
+
 						for (auto entry : pTriggerTeam1Type->TaskForce->Entries)
 						{
 							// Check if each unit in the taskforce has the available recruitable units in the map
 							if (allObjectsCanBeBuiltOrRecruited && entry.Amount > 0)
 							{
 								bool canBeRecruited = false;
-								//Debug::Log("[%s] checking if there are recruitable...\n", entry.Type->ID);
 
 								for (auto item : recruitableUnits)
 								{
@@ -674,13 +660,8 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 								if (!canBeRecruited)
 								{
-									//Debug::Log("[%s] %d can not be recruited!\n", entry.Type->ID, entry.Amount);
 									allObjectsCanBeBuiltOrRecruited = false;
 									break;
-								}
-								else
-								{
-									//Debug::Log("[%s] can recruit %d units!\n", entry.Type->ID, entry.Amount);
 								}
 							}
 						}
@@ -690,8 +671,8 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 					if (!allObjectsCanBeBuiltOrRecruited)
 						continue;
 
-					// Special case: triggers become very important if they reach the max priority (value 5000)
-					// They get stored in a different list and all previous triggers are discarded.
+					// Special case: triggers become very important if they reach the max priority (value 5000).
+					// They get stored in a elitist list and all previous triggers are discarded.
 					if (pTrigger->Weight_Current >= 5000 && !onlyCheckImportantTriggers)
 					{
 						// First time only
@@ -706,14 +687,14 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							validCategory = teamCategory::None;
 						}
 
-						// Reset and now only add important triggers to the list
+						// Reset the current ones and now only will be added important triggers to the list
 						onlyCheckImportantTriggers = true;
 						totalWeight = 0.0;
 						splitTriggersByCategory = false; // VIP teams breaks the categories logic (on purpose)
 					}
 
 					// Passed all checks, save this trigger for later.
-					// The idea behind this is to simulate an ordered list of weights and once we throw the dice we'll know the winner trigger: The more weight means more possibilities to be selected.
+					// The idea behind this is to simulate an ordered list of weights and once we throw the dice we'll know the winner trigger: More weight means more possibilities to be selected.
 					totalWeight += pTrigger->Weight_Current < 1.0 ? 1.0 : pTrigger->Weight_Current;
 					TriggerElementWeight item;
 					item.Trigger = pTrigger;
@@ -785,7 +766,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		if (splitTriggersByCategory)
 		{
-			Debug::Log("DEBUG: Category percentages:\nMixed teams: %f\nGround teams: %f\nNaval teams: %f\nAir teams: %f\n", percentageUnclassifiedTriggers, percentageGroundTriggers, percentageNavalTriggers, percentageAirTriggers);
+			//Debug::Log("DEBUG: Category percentages:\nMixed teams: %f\nGround teams: %f\nNaval teams: %f\nAir teams: %f\n", percentageUnclassifiedTriggers, percentageGroundTriggers, percentageNavalTriggers, percentageAirTriggers);
 
 			switch (validCategory)
 			{
@@ -817,17 +798,17 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			return SkipCode;
 		}
 
-		if ((validCategory == teamCategory::Ground && totalGroundCategoryTriggers == 0) ||
-			(validCategory == teamCategory::Unclassified && totalUnclassifiedCategoryTriggers == 0) ||
-			(validCategory == teamCategory::Air && totalAirCategoryTriggers == 0) ||
-			(validCategory == teamCategory::Naval && totalNavalCategoryTriggers == 0))
+		if ((validCategory == teamCategory::Ground && totalGroundCategoryTriggers == 0)
+			|| (validCategory == teamCategory::Unclassified && totalUnclassifiedCategoryTriggers == 0)
+			|| (validCategory == teamCategory::Air && totalAirCategoryTriggers == 0)
+			|| (validCategory == teamCategory::Naval && totalNavalCategoryTriggers == 0))
 		{
-			Debug::Log("DEBUG: [%s] (Idx: %d) No valid triggers of this category. A new attempt should be done later...\n", pHouse->Type->ID, pHouse->ArrayIndex);
+			Debug::Log("DEBUG: [%s] (idx: %d) No valid triggers of this category. A new attempt should be done later...\n", pHouse->Type->ID, pHouse->ArrayIndex);
 
 			if (!isFallbackEnabled)
 				return SkipCode;
 
-			Debug::Log("... BUT fallback mode is enabled so now it will check all triggers available.\n");
+			Debug::Log("... BUT fallback mode is enabled so now will be checked all available triggers.\n");
 			validCategory = teamCategory::None;
 		}
 
@@ -840,115 +821,75 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		{
 		case teamCategory::None:
 			weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeight) * 1.0;
-			//				Debug::Log("Possible values of the dice [0 - %f]. Dice says: %f:\n", totalWeight, weightDice);
-			//				Debug::Log("Picking the trigger with highest weight from the list (No category set):\n");
 
 			for (auto element : validTriggerCandidates)
 			{
-				//					Debug::Log("[%s] Lottery range values: %f - %f", element.Trigger->ID, lastWeight, element.Weight);
 				lastWeight = element.Weight;
 
 				if (weightDice < element.Weight && !found)
 				{
-					//						Debug::Log(" ... CANDIDATE!\n");
 					selectedTrigger = element.Trigger;
 					found = true;
-				}
-				else
-				{
-					//						Debug::Log(" ... \n");
 				}
 			}
 			break;
 
 		case teamCategory::Ground:
 			weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightGroundOnly) * 1.0;
-			//				Debug::Log("Possible values of the dice [0 - %f]. Dice says: %f:\n", totalWeightGroundOnly, weightDice);
-			//				Debug::Log("Picking the trigger with highest weight from the list (Ground category):\n");
 
 			for (auto element : validTriggerCandidatesGroundOnly)
 			{
-				//					Debug::Log("[%s] Lottery range values: %f - %f", element.Trigger->ID, lastWeight, element.Weight);
 				lastWeight = element.Weight;
 
 				if (weightDice < element.Weight && !found)
 				{
-					//						Debug::Log(" ... CANDIDATE!\n");
 					selectedTrigger = element.Trigger;
 					found = true;
-				}
-				else
-				{
-					//						Debug::Log(" ... \n");
 				}
 			}
 			break;
 
 		case teamCategory::Unclassified:
 			weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightUnclassifiedOnly) * 1.0;
-			//				Debug::Log("Possible values of the dice [0 - %f]. Dice says: %f:\n", totalWeightUnclassifiedOnly, weightDice);
-			//				Debug::Log("Picking the trigger with highest weight from the list (Mixed category):\n");
 
 			for (auto element : validTriggerCandidatesUnclassifiedOnly)
 			{
-				//					Debug::Log("[%s] Lottery range values: %f - %f", element.Trigger->ID, lastWeight, element.Weight);
 				lastWeight = element.Weight;
 
 				if (weightDice < element.Weight && !found)
 				{
-					//						Debug::Log(" ... CANDIDATE!\n");
 					selectedTrigger = element.Trigger;
 					found = true;
-				}
-				else
-				{
-					//						Debug::Log(" ... \n");
 				}
 			}
 			break;
 
 		case teamCategory::Naval:
 			weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightNavalOnly) * 1.0;
-			//				Debug::Log("Possible values of the dice [0 - %f]. Dice says: %f:\n", totalWeightNavalOnly, weightDice);
-			//				Debug::Log("Picking the trigger with highest weight from the list (Naval category):\n");
 
 			for (auto element : validTriggerCandidatesNavalOnly)
 			{
-				//					Debug::Log("[%s] Lottery range values: %f - %f", element.Trigger->ID, lastWeight, element.Weight);
 				lastWeight = element.Weight;
 
 				if (weightDice < element.Weight && !found)
 				{
-					//						Debug::Log(" ... CANDIDATE!\n");
 					selectedTrigger = element.Trigger;
 					found = true;
-				}
-				else
-				{
-					//						Debug::Log(" ... \n");
 				}
 			}
 			break;
 
 		case teamCategory::Air:
 			weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightAirOnly) * 1.0;
-			//				Debug::Log("Possible values of the dice [0 - %f]. Dice says: %f:\n", totalWeightAirOnly, weightDice);
-			//				Debug::Log("Picking the trigger with highest weight from the list (Air category):\n");
 
 			for (auto element : validTriggerCandidatesAirOnly)
 			{
-				//					Debug::Log("[%s] Lottery range values: %f - %f", element.Trigger->ID, lastWeight, element.Weight);
 				lastWeight = element.Weight;
 
 				if (weightDice < element.Weight && !found)
 				{
-					//						Debug::Log(" ... CANDIDATE!\n");
 					selectedTrigger = element.Trigger;
 					found = true;
-				}
-				else
-				{
-					//						Debug::Log(" ... \n");
 				}
 			}
 			break;
@@ -956,47 +897,24 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		default:
 			break;
 		}
-		/*
-		Debug::Log("[%s] Lottery range values: %f - %f", element.Trigger->ID, lastWeight, element.Weight);
-		lastWeight = element.Weight;
-
-		if (weightDice < element.WeightOnlyNaval && !found)
-		{
-			Debug::Log(" ... CANDIDATE!\n");
-			selectedTrigger = element.Trigger;
-			found = true;
-		}
-		else
-		{
-			Debug::Log(" ... \n");
-		}
-		*/
 
 		if (!selectedTrigger)
 		{
-			Debug::Log("DEBUG: House [%s] (Idx: %d) failed to select Trigger. A new attempt Will be done later...\n", pHouse->Type->ID, pHouse->ArrayIndex);
+			Debug::Log("DEBUG: House [%s] (idx: %d) failed to select Trigger. A new attempt Will be done later...\n", pHouse->Type->ID, pHouse->ArrayIndex);
 			return SkipCode;
 		}
 
 		if (selectedTrigger->Weight_Current >= 5000.0
 			&& selectedTrigger->Weight_Minimum <= 4999.0)
 		{
-			// Next time this trigger will be out of the important triggers list
+			// Next time this trigger will be out of the elitist triggers list
 			selectedTrigger->Weight_Current = 4999.0;
 		}
 
-		// We have a winner
-		Debug::Log("DEBUG: House [%s] (Idx: %d) selected trigger [%s].\n", pHouse->Type->ID, pHouse->ArrayIndex, selectedTrigger->ID);
+		// We have a winner trigger here
+		Debug::Log("DEBUG: House [%s] (idx: %d) selected trigger [%s].\n", pHouse->Type->ID, pHouse->ArrayIndex, selectedTrigger->ID);
 
-		//for (auto entry : selectedTrigger->Team1->TaskForce->Entries)
-		//{
-			//if (entry.Amount > 0)
-				//Debug::Log("[%s] = %d\n", entry.Type->ID, entry.Amount);
-			//else
-				//break;
-		//}
-		//Debug::Log("\n");
-
+		// Team 1 creation
 		auto pTriggerTeam1Type = selectedTrigger->Team1;
 		if (pTriggerTeam1Type)
 		{
@@ -1015,6 +933,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			}
 		}
 
+		// Team 2 creation (if set)
 		auto pTriggerTeam2Type = selectedTrigger->Team2;
 		if (pTriggerTeam2Type)
 		{
@@ -1032,12 +951,8 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 					newTeam->NeedsToDisappear = false;
 			}
 		}
-
-		//Debug::Log("TeamClass::Array->Count: %d\n", TeamClass::Array->Count);
 	}
 
-
-	//selectedTeams46 = newTeamsList;
 	return SkipCode;
 }
 
