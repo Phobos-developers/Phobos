@@ -27,6 +27,7 @@ public:
 		Valueable<bool> Powered_KillSpawns;
 		Nullable<bool> AllowAirstrike;
 		Valueable<bool> Refinery_UseStorage;
+		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
 
 		Valueable<bool> Grinding_AllowAllies;
 		Valueable<bool> Grinding_AllowOwner;
@@ -47,8 +48,8 @@ public:
 		Nullable<TranslucencyLevel> PlacementPreview_Translucency;
 
 		Valueable<bool> SpyEffect_Custom;
-		Nullable<SuperWeaponTypeClass*> SpyEffect_VictimSuperWeapon;
-		Nullable<SuperWeaponTypeClass*> SpyEffect_InfiltratorSuperWeapon;
+		NullableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
+		NullableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
@@ -59,6 +60,7 @@ public:
 			, OccupierMuzzleFlashes()
 			, Powered_KillSpawns { false }
 			, AllowAirstrike {}
+			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, Refinery_UseStorage { false }
 			, Grinding_AllowAllies { false }
 			, Grinding_AllowOwner { true }

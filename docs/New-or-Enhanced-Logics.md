@@ -655,7 +655,13 @@ InitialStrength=  ; integer
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]            ; BuildingType
-InitialStrength.Cloning=  ; single double/percentage or comma-sep. range
+InitialStrength.Cloning=  ; floating point value - single or comma-sep. range (percentages)
+```
+
+```{note}
+
+Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `Strength`, even if your values are bigger than it.
+
 ```
 
 ### Kill Object Automatically
@@ -679,11 +685,17 @@ If the object enters transport, the countdown will continue, but it will not sel
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                  ; TechnoType
-AutoDeath.Behavior=           ; enumeration (kill | vanish | sell), default not set
+[SOMETECHNO]                             ; TechnoType
+AutoDeath.Behavior=                      ; enumeration (kill | vanish | sell), default not set
 
-AutoDeath.OnAmmoDepletion=no  ; boolean
-AutoDeath.AfterDelay=0        ; positive integer
+AutoDeath.OnAmmoDepletion=no             ; boolean
+AutoDeath.AfterDelay=0                   ; positive integer
+AutoDeath.TechnosDontExist=              ; list of TechnoType names
+AutoDeath.TechnosDontExist.Any=false     ; boolean
+AutoDeath.TechnosDontExist.Houses=owner  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+AutoDeath.TechnosExist=                  ; list of TechnoType names
+AutoDeath.TechnosExist.Any=true          ; boolean
+AutoDeath.TechnosExist.Houses=owner      ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ### Mind Control enhancement
@@ -909,8 +921,11 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
   - `LaunchSW.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
 
 ```{note}
-For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
-Also, due to the nature of some superweapon types, not all superweapons are suitable for launch.
+- For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
+
+- Due to the nature of some superweapon types, not all superweapons are suitable for launch. **Please use with caution!**
+
+- The superweapons are launched on the *cell* where the warhead is detonated, instead of being click-fired.
 ```
 
 In `rulesmd.ini`:

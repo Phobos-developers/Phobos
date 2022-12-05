@@ -248,13 +248,24 @@ New:
 - Warhead or weapon detonation at superweapon target cell (by Starkku)
 - Super Weapons launching other Super Weapons (by Morton)
 - Launching Super Weapons on building infiltration (by Morton)
-- Cloaked objects displaying to observers (by Starkku)
 - Building airstrike target eligibility customization (by Starkku)
 - IvanBomb detonation & image display centered on buildings (by Starkku)
 - Forcing specific weapon against cloaked or disguised targets (by Starkku)
+- Customizable ROF random delay (by Starkku)
+- Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
+- Teams spawned by trigger action 7,80,107 can use IFV and `OpenTopped` logic normally (by Trsdy)
+- Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations (by Starkku)
+- Cloaked objects displaying to observers (by Starkku)
+- Cloaked objects from allies displaying to player in single player missions (by Trsdy)
+- Made sure that `Suicide=yes` weapon does kill the firer (by Trsdy)
+- Made sure that vxl units being flipped over get killed instead of rotating up and down (by Trsdy)
+
+Phobos fixes:
+- Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
+
 </details>
 
 
@@ -361,6 +372,7 @@ New:
 - Implemented support for PCX images for observer loading screen (by Uranusian)
 - Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 - Toggleable passenger killing for Explodes=true units (by Starkku)
+- New condition for automatic self-destruction logic when TechnoTypes exist/don't exist (by FlyStar)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -392,6 +404,7 @@ Vanilla fixes:
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something (by Kerbiter)
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true` (by Starkku)
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry (by Otamaa)
+- Allowed observers to see a selected building's radial indicator (by Trsdy)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
@@ -413,6 +426,7 @@ Phobos fixes:
 - Fixed teleporting miners (Chrono Miner) considered to be idle by harvester counter, improved related game performance (by Trsdy)
 - Fixed negative damage weapons considering shield health when evaluating targets even if Warhead had `Shield.Penetrate` set to true (by Starkku)
 - Fixed shield animations (`IdleAnim`, `BreakAnim` and `HitAnim`) showing up even if the object shield is attached to is currently underground (by Starkku)
+- Fixed techno-extdata update after type conversion (by Trsdy)
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)

@@ -66,13 +66,14 @@ DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 
 DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
 {
-	enum { ContinueCheck = 0x440B58, SetShouldRebuild = 0x440B7A, SkipCheck = 0x440B81 };
+	enum { ContinueCheck = 0x440B58, SkipCheck = 0x440B81 };
+
 	GET(BuildingClass* const, pThis, ESI);
 
 	if (SessionClass::IsCampaign())
 	{
-		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
-		if (!hExt->RepairBaseNodes[GameOptionsClass::Instance->Difficulty])
+		if (!pThis->BeingProduced ||
+			!HouseExt::ExtMap.Find(pThis->Owner)->RepairBaseNodes[GameOptionsClass::Instance->Difficulty])
 			return SkipCheck;
 	}
 
