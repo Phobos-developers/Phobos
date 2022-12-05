@@ -155,8 +155,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
-			HouseTypeClass* pNewHouse = GameCreate<HouseTypeClass>(cur);
-			objectsList.AddItem(pNewHouse);
+			HouseTypeClass* pNewHouse = HouseTypeClass::Find(cur);//GameCreate<HouseTypeClass>(cur);
+			if (pNewHouse)
+				objectsList.AddItem(pNewHouse);
 		}
 
 		AIHousesLists.AddItem(objectsList);
