@@ -8,6 +8,8 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/TEvent/Body.h>
 
+bool bSkipLowDamageCheck = false;
+
 // #issue 88 : shield logic
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 {
@@ -31,26 +33,23 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 				if (auto pTag = pThis->AttachedTag)
 					pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
 			}
+
+			if (nDamageLeft < 1)
+				bSkipLowDamageCheck = true;
 		}
 	}
 	return 0;
 }
 
-DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
+DEFINE_HOOK(0x7019DD, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x6)
 {
-	GET(TechnoClass*, pThis, ESI);
-	GET(int*, Damage, EBX);
-
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (const auto pShieldData = pExt->Shield.get())
+	if (bSkipLowDamageCheck)
 	{
-		if (pShieldData->IsActive())
-			return 0x7019E3;
+		bSkipLowDamageCheck = false;
+		return 0x7019DD + 0x6;
 	}
 
-	// Restore overridden instructions
-	return *Damage >= 1 ? 0x7019E3 : 0x7019DD;
+	return 0;
 }
 
 DEFINE_HOOK_AGAIN(0x70CF39, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_EvalThreatRating_Shield
