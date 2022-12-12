@@ -5,7 +5,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 ## Bugfixes and miscellaneous
 
 - Fixed the bug when reading a map which puts `Preview(Pack)` after `Map` lead to the game fail to draw the preview.
-- Fixed the bug when retinting map lighting with a map action corrupted light sources. You need to manually enable it by setting `[Map]>AdjustLightingFix` to **true**.
+- Fixed the bug when retinting map lighting with a map action corrupted light sources. You need to manually enable it by setting `[Basic]>AdjustLightingFix` to **true**.
+- Fixed the bug that `GameModeOptions` are not being saved. For example, `BuildOffAlly` will be corrupted when loading the game.
 - Fixed the bug when deploying mindcontrolled vehicle into a building permanently transferred the control to the house which mindcontrolled it.
 - Fixed the bug when units are already dead but still in map (for sinking, crashing, dying animation, etc.), they could die again.
 - Fixed the bug when cloaked Desolator was unable to fire his deploy weapon.

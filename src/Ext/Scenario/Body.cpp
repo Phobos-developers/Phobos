@@ -130,8 +130,6 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	// auto pThis = this->OwnerObject();
 
-	// INI_EX exINI(pINI);
-
 	// Initialize
 	DefaultAmbientOriginal = ScenarioClass::Instance->AmbientOriginal;
 	DefaultAmbientCurrent = ScenarioClass::Instance->AmbientCurrent;
@@ -140,6 +138,7 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	CurrentTint_Tiles = ScenarioClass::Instance->NormalLighting.Tint;
 
+	AdjustLightingFix = pINI->ReadBool("Basic", "AdjustLightingFix", AdjustLightingFix);
 }
 
 template <typename T>
@@ -156,6 +155,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentTint_Tiles)
 		.Process(this->CurrentTint_Schemes)
 		.Process(this->CurrentTint_Hashes)
+		.Process(this->AdjustLightingFix)
 
 		// Extra datas
 		.Process(SessionClass::Instance->Config)

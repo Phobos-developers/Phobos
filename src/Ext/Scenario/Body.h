@@ -32,6 +32,7 @@ public:
 		TintStruct CurrentTint_Tiles;
 		TintStruct CurrentTint_Schemes;
 		TintStruct CurrentTint_Hashes;
+		bool AdjustLightingFix;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, Waypoints { }
@@ -43,6 +44,7 @@ public:
 			, CurrentTint_Tiles { -1,-1,-1 }
 			, CurrentTint_Schemes { -1,-1,-1 }
 			, CurrentTint_Hashes { -1,-1,-1 }
+			, AdjustLightingFix { false }
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

@@ -81,7 +81,7 @@ DEFINE_HOOK_AGAIN(0x6E2F47, TActionClass_Retint_LightSourceFix, 0x3) // Blue
 DEFINE_HOOK_AGAIN(0x6E2EF7, TActionClass_Retint_LightSourceFix, 0x3) // Green
 DEFINE_HOOK(0x6E2EA7, TActionClass_Retint_LightSourceFix, 0x3) // Red
 {
-	if (RulesExt::Global()->AdjustLightingFix)
+	if (ScenarioExt::Global()->AdjustLightingFix)
 		ScenarioExt::RecreateLightSources();
 
 	TintStruct tint = ScenarioClass::Instance->NormalLighting.Tint;

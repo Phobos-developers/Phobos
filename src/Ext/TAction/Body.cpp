@@ -14,6 +14,7 @@
 #include <Utilities/SavegameDef.h>
 
 #include <Ext/Scenario/Body.h>
+#include <Ext/Rules/Body.h>
 
 //Static init
 template<> const DWORD Extension<TActionClass>::Canary = 0x91919191;
@@ -304,7 +305,8 @@ bool TActionExt::AdjustLighting(TActionClass* pThis, HouseClass* pHouse, ObjectC
 	MapClass::Instance->RedrawSidebar(1); // GScreenClass::Flag_To_Redraw
 
 	// #issue 429
-	ScenarioExt::RecreateLightSources();
+	if (ScenarioExt::Global()->AdjustLightingFix)
+		ScenarioExt::RecreateLightSources();
 
 	return true;
 }
