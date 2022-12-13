@@ -161,18 +161,18 @@ DEFINE_HOOK(0x4C77E4, EventClass_Execute_UnitDeployFire, 0x6)
 
 	auto const pUnit = abstract_cast<UnitClass*>(pThis);
 
-	// Do not execute deploy command if the vehicle is still reloading from firing its once-firing deploy weapon.
+	// Do not execute deploy command if the vehicle has only just fired its once-firing deploy weapon.
 	if (pUnit && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
 	{
-		if (const auto pWeapon = pUnit->GetWeapon(pUnit->GetTechnoType()->DeployFireWeapon))
-		{
-			if (pWeapon->WeaponType->FireOnce)
-			{
-				const auto pExt = TechnoExt::ExtMap.Find(pThis);
+		int weaponIndex = -1;
+		auto const pWeapon = TechnoExt::GetDeployFireWeapon(pThis, weaponIndex);
 
-				if (pExt->DeployFireTimer.HasTimeLeft())
-					return DoNotExecute;
-			}
+		if (pWeapon && pWeapon->FireOnce)
+		{
+			const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+			if (pExt->DeployFireTimer.HasTimeLeft())
+				return DoNotExecute;
 		}
 	}
 
@@ -185,11 +185,14 @@ DEFINE_HOOK(0x73DCEF, UnitClass_Mission_Unload_DeployFire, 0x6)
 
 	GET(UnitClass*, pThis, ESI);
 
-	int weaponIndex = pThis->GetTechnoType()->DeployFireWeapon;
-	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	int weaponIndex = -1;
+	auto const pWeapon = TechnoExt::GetDeployFireWeapon(pThis, weaponIndex);
 
-	if (weaponIndex <= 0 || !pWeapon)
+	if (weaponIndex < 0 || !pWeapon)
+	{
+		pThis->QueueMission(Mission::Guard, true);
 		return SkipGameCode;
+	}
 
 	auto pCell = MapClass::Instance->GetCellAt(pThis->GetMapCoords());
 
@@ -198,13 +201,14 @@ DEFINE_HOOK(0x73DCEF, UnitClass_Mission_Unload_DeployFire, 0x6)
 		pThis->SetTarget(pCell);
 		pThis->Fire(pThis->Target, weaponIndex);
 
-		const auto pExt = TechnoExt::ExtMap.Find(pThis);
-		pExt->DeployFireTimer.Start(pWeapon->ROF);
-
 		if (pWeapon->FireOnce)
 		{
 			pThis->SetTarget(nullptr);
 			pThis->QueueMission(Mission::Guard, true);
+			const auto pExt = TechnoExt::ExtMap.Find(pThis);
+			auto missionControl = MissionControlClass::Array() + (int)Mission::Unload;
+			int delay = missionControl->Rate * 900 + ScenarioClass::Instance->Random(0, 2);
+			pExt->DeployFireTimer.Start(Math::min(pWeapon->ROF, delay));
 		}
 	}
 

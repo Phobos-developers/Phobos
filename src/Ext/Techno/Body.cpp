@@ -952,6 +952,27 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	return finalLocation;
 }
 
+WeaponTypeClass* TechnoExt::GetDeployFireWeapon(TechnoClass* pThis, int& weaponIndex)
+{
+	weaponIndex = pThis->GetTechnoType()->DeployFireWeapon;
+
+	if (weaponIndex < 0)
+		return nullptr;
+
+	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+	if (!pWeapon)
+	{
+		weaponIndex = 0;
+		pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+		if (!pWeapon)
+			weaponIndex = -1;
+	}
+
+	return pWeapon;
+}
+
 // =============================
 // load / save
 
