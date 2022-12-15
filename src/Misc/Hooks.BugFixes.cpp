@@ -615,8 +615,8 @@ DEFINE_HOOK(0x56BD8B, MapClass_PlaceCrate_InMapFix, 0x5)
 {
 	enum { CreateCrate = 0x56BE7B, DontCreate = 0x56BE91 };
 
-	int MapX = MapClass::Instance->MapRect.Width * 60;
-	int MapY = MapClass::Instance->MapRect.Height * 30;
+	int MapX = MapClass::Instance->VisibleRect.Width * 60;
+	int MapY = MapClass::Instance->VisibleRect.Height * 30;
 	int X = ScenarioClass::Instance->Random.RandomRanged(0, MapX) - MapX / 2;
 	int Y = ScenarioClass::Instance->Random.RandomRanged(0, MapY) + MapY / 2;
 	Vector3D<float> Location = { (float)X,(float)Y,0.0f };
