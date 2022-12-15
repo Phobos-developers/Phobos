@@ -348,6 +348,7 @@ Vanilla fixes:
 - Fixed temporal weapon crash under certain conditions where stack dump starts with 0051BB7D (by secsome)
 - Fixed the bug when retinting map lighting with a map action corrupted light sources (by secsome)
 - Fixed the bug when reading a map which puts `Preview(Pack)` after `Map` lead to the game fail to draw the preview (by secsome)
+- Fixed the bug that GameModeOptions are not correctly saved (by secsome)
 - Fixed the bug that AITriggerTypes do not recognize building upgrades (by Uranusian)
 - Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` > `AllowParallelAIQueues=no` is set (by FS-21)
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10 (by Otamaa)
