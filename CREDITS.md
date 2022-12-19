@@ -162,6 +162,11 @@ This page lists all the individual contributions to the project by their author.
   - Animated TerrainTypes extension
   - Exploding unit passenger killing customization
   - Warhead / weapon detonation at superweapon target cell
+  - Cloaked objects displaying to observers
+  - Building airstrike target eligibility customization
+  - IvanBomb detonation & image display centered on buildings
+  - Customizable ROF random delay
+  - BibShape drawing during buildup fix
   - Spawner spawn delay customization
   - Cluster scatter distance customization
   - FlakScatter distance customization
@@ -173,6 +178,8 @@ This page lists all the individual contributions to the project by their author.
   - Building `LimboDelivery` logic
   - Fix for `Image` in art rules
   - Power delta counter
+  - Super Weapons launching other Super Weapons
+  - SpyEffects expansion, launching Super Weapons on building infiltration
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
@@ -186,16 +193,26 @@ This page lists all the individual contributions to the project by their author.
       - Turret direction in idle state fix
       - Sensor fix
    - Object Self-destruction logic
+      - Misc vanilla suicidal behavior fix
+   - Post-type-conversion update
    - Building EVA_StructureSold and SellSound dehardcode
    - Slaves' house customization when owner is killed
+   - Trigger Action spawned team IFV/Opentopped logic fix
+   - Singleplayer Campaign AI's base node/SW-delivered/trigger action 125-delivered structures' auto-repairability dehardcode
    - Misc CN doc fix, code refactor
+   - Power delta counter : blackout indication mark
    - Harvester counter
    - Warhead superweapon launch logic
    - "Shield is broken" trigger event
+   - RadialIndicator observer visibility
+   - Cloaked objects from allies displaying to player in singleplayer campaigns
    - Forbidding parallel AI queues by type
+- **FlyStar**
+   - Campaign load screen PCX support
+   - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
-- **FlyStar** - Campaign load screen PCX support
+- **ststl** - Use `CustomPalette` for animations with `Tiled=yes`
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic

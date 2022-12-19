@@ -17,7 +17,7 @@ public:
 	public:
 		Valueable<AffectedHouse> PowersUp_Owner;
 		ValueableVector<BuildingTypeClass*> PowersUp_Buildings;
-		DynamicVectorClass<SuperWeaponTypeClass*> SuperWeapons;
+		ValueableIdxVector<SuperWeaponTypeClass> SuperWeapons;
 
 		ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
 		Nullable<int> PowerPlantEnhancer_Amount;
@@ -25,7 +25,9 @@ public:
 
 		DynamicVectorClass<Point2D> OccupierMuzzleFlashes;
 		Valueable<bool> Powered_KillSpawns;
+		Nullable<bool> AllowAirstrike;
 		Valueable<bool> Refinery_UseStorage;
+		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
 
 		Valueable<bool> Grinding_AllowAllies;
 		Valueable<bool> Grinding_AllowOwner;
@@ -45,6 +47,10 @@ public:
 		CustomPalette PlacementPreview_Palette;
 		Nullable<TranslucencyLevel> PlacementPreview_Translucency;
 
+		Valueable<bool> SpyEffect_Custom;
+		NullableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
+		NullableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -53,6 +59,8 @@ public:
 			, PowerPlantEnhancer_Factor {}
 			, OccupierMuzzleFlashes()
 			, Powered_KillSpawns { false }
+			, AllowAirstrike {}
+			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, Refinery_UseStorage { false }
 			, Grinding_AllowAllies { false }
 			, Grinding_AllowOwner { true }
@@ -70,6 +78,9 @@ public:
 			, PlacementPreview_Offset { {0,-15,1} }
 			, PlacementPreview_Palette {}
 			, PlacementPreview_Translucency {}
+			, SpyEffect_Custom { false }
+			, SpyEffect_VictimSuperWeapon {}
+			, SpyEffect_InfiltratorSuperWeapon {}
 		{ }
 
 		// Ares 0.A functions

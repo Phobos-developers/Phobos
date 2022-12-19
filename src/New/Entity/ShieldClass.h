@@ -36,6 +36,7 @@ public:
 	bool IsAvailable();
 	bool IsBrokenAndNonRespawning();
 	ShieldTypeClass* GetType();
+	ArmorType GetArmorType();
 	int GetFramesSinceLastBroken();
 	void HideAnimations();
 	void ShowAnimations();

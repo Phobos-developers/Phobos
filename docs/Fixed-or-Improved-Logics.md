@@ -85,6 +85,11 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Only applies to Z-aware drawing mode for now.
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true`.
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry.
+- Observers can now see cloaked objects owned by non-allied houses.
+- In singleplayer missions, the player can now see cloaked objects owned by allied houses.
+- IvanBomb images now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation.
+- Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations.
+- Animation with `Tiled=yes` now supports `CustomPalette`.
 - Warheads spawning debris now use `MaxDebris` as an actual cap for number of debris to spawn instead of `MaxDebris` - 1.
 
 ## Animations
@@ -156,6 +161,16 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 ```
 
 ## Buildings
+
+### Airstrike target eligibility
+
+- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]   ; BuildingType
+AllowAirstrike=  ; boolean
+```
 
 ### Customizable & new grinder properties
 
@@ -345,7 +360,6 @@ JumpjetAllowLayerDeviation=true  ; boolean
 *Jumpjet turning to target applied in [Robot Storm X](https://www.moddb.com/mods/cc-robot-storm-x)*
 
 - Allows jumpjet units to face towards the target when firing from different directions. Set `[JumpjetControls] -> TurnToTarget=yes` to enable it for all jumpjet locomotor units. This behavior can be overriden by setting `[UnitType] -> JumpjetTurnToTarget` for specific units.
-- This behavior does not apply to `TurretSpins=yes` units for obvious reasons.
 
 In `rulesmd.ini`:
 ```ini
@@ -409,15 +423,15 @@ ForbidParallelAIQueues.Building=no  ; boolean
 
 - You can now specify which type of ore certain TerrainType would generate.
 - It's also now possible to specify a range value for an ore generation area different compared to standard 3x3 rectangle. Ore will be uniformly distributed across all affected cells in a spread range.
-- You can specify which ore growth stage will be spawned and how much cells will be filled with ore per ore generation animation. Corresponding tags accept either a single integer value or two comma-separated values to allow randomized growth stages from the range (inclusive).
+- You can specify which ore growth stage will be spawned and how many cells will be filled with ore per ore generation animation. Corresponding tags accept either a single integer value or two comma-separated values to allow randomized growth stages from the range (inclusive).
 
 In `rulesmd.ini`:
 ```ini
 [SOMETERRAINTYPE]             ; TerrainType
 SpawnsTiberium.Type=0         ; tiberium/ore type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
-SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
-SpawnsTiberium.CellsPerAnim=1 ; single int / comma-sep. range
+SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
+SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
 ```
 
 ### Minimap color customization
@@ -560,6 +574,19 @@ DiskLaser.Radius=38.2 ; floating point value
                       ; 38.2 is roughly the default saucer disk radius
 ```
 
+### Customizable ROF random delay
+
+- By default weapon `ROF` has a random delay of 0 to 2 frames added to it. This random delay is now customizable, globally and on per-WeaponType basis.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+ROF.RandomDelay=0,2  ; integer - single or comma-sep. range (game frames)
+
+[SOMEWEAPON]         ; WeaponType
+ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames)
+```
+
 ### Single-color lasers
 
 ![image](_static/images/issinglecolor.gif)
@@ -588,4 +615,15 @@ IsElectricBolt=true    ; an ElectricBolt Weapon, vanilla tag
 Bolt.Disable1=false    ; boolean
 Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
+```
+
+### RadialIndicator visibility
+
+In vanilla game, a structure's radial indicator can be drawn only when it belongs to the player. Now it can also be visible to observer.
+On top of that, you can specify its visibility from other houses.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+RadialIndicatorVisibility=allies  ; list of Affected House Enumeration (owner/self | allies/ally | enemies/enemy | all)
 ```

@@ -1,5 +1,6 @@
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
+#include <GameStrings.h>
 
 HRESULT __stdcall Blowfish_Loader(
 	REFCLSID  rclsid,
@@ -18,7 +19,7 @@ HRESULT __stdcall Blowfish_Loader(
 	if (SUCCEEDED(result))
 		return result;
 
-	HMODULE hDll = LoadLibrary((const char*)0x840A78 /*"Blowfish.dll"*/);
+	HMODULE hDll = LoadLibrary(GameStrings::BLOWFISH_DLL);
 	if (hDll)
 	{
 		auto GetClassObject = (pDllGetClassObject)GetProcAddress(hDll, "DllGetClassObject");
