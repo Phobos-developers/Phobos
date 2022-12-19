@@ -157,9 +157,9 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	if (pWHExt->CanTargetHouse(args->SourceHouse, this->Techno) && !args->WH->Temporal)
 	{
 		if (*args->Damage > 0)
-			nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->Type->Armor.Get(), args->DistanceToEpicenter);
+			nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->GetArmorType(), args->DistanceToEpicenter);
 		else
-			nDamage = -MapClass::GetTotalDamage(-*args->Damage, args->WH, this->Type->Armor.Get(), args->DistanceToEpicenter);
+			nDamage = -MapClass::GetTotalDamage(-*args->Damage, args->WH, this->GetArmorType(), args->DistanceToEpicenter);
 
 		bool affectsShield = pWHExt->Shield_AffectTypes.size() <= 0 || pWHExt->Shield_AffectTypes.Contains(this->Type);
 		double absorbPercent = affectsShield ? pWHExt->Shield_AbsorbPercent.Get(this->Type->AbsorbPercent) : this->Type->AbsorbPercent;
@@ -187,7 +187,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		if (residueDamage >= 0)
 		{
 			residueDamage = int((double)(residueDamage) /
-				GeneralUtils::GetWarheadVersusArmor(args->WH, this->Type->Armor.Get())); //only absord percentage damage
+				GeneralUtils::GetWarheadVersusArmor(args->WH, this->GetArmorType())); //only absord percentage damage
 
 			this->BreakShield(pWHExt->Shield_BreakAnim.Get(nullptr), pWHExt->Shield_BreakWeapon.Get(nullptr));
 
@@ -269,7 +269,7 @@ bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon)
 	if ((pWHExt && CanBePenetrated(pWHExt->OwnerObject())) || !this->HP)
 		return true;
 
-	return GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->Type->Armor.Get()) != 0.0;
+	return GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->GetArmorType()) != 0.0;
 }
 
 bool ShieldClass::CanBePenetrated(WarheadTypeClass* pWarhead)
@@ -868,6 +868,14 @@ void ShieldClass::SetHP(int amount)
 ShieldTypeClass* ShieldClass::GetType()
 {
 	return this->Type;
+}
+
+ArmorType ShieldClass::GetArmorType()
+{
+	if (this->Techno && this->Type->InheritArmorFromTechno)
+		return this->Techno->GetTechnoType()->Armor;
+
+	return this->Type->Armor.Get();
 }
 
 int ShieldClass::GetFramesSinceLastBroken()

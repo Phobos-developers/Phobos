@@ -12,6 +12,7 @@ public:
 	Valueable<int> Strength;
 	Nullable<int> InitialStrength;
 	Valueable<ArmorType> Armor;
+	Valueable<bool> InheritArmorFromTechno;
 	Valueable<bool> Powered;
 	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
@@ -48,6 +49,7 @@ public:
 		, Strength(0)
 		, InitialStrength()
 		, Armor(Armor::None)
+		, InheritArmorFromTechno(false)
 		, Powered(false)
 		, Respawn(0.0)
 		, Respawn_Rate(0)
