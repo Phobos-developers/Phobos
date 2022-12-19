@@ -207,7 +207,7 @@ DEFINE_HOOK(0x73DCEF, UnitClass_Mission_Unload_DeployFire, 0x6)
 			pThis->QueueMission(Mission::Guard, true);
 			const auto pExt = TechnoExt::ExtMap.Find(pThis);
 			auto missionControl = MissionControlClass::Array() + (int)Mission::Unload;
-			int delay = missionControl->Rate * 900 + ScenarioClass::Instance->Random(0, 2);
+			int delay = static_cast<int>(missionControl->Rate * 900) + ScenarioClass::Instance->Random(0, 2);
 			pExt->DeployFireTimer.Start(Math::min(pWeapon->ROF, delay));
 		}
 	}
