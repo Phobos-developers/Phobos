@@ -144,6 +144,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (this->InitialStrength.isset())
 		this->InitialStrength = Math::clamp(this->InitialStrength, 1, pThis->Strength);
 
+	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
+
 	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
 	this->AutoDeath_OnAmmoDepletion.Read(exINI, pSection, "AutoDeath.OnAmmoDepletion");
 	this->AutoDeath_AfterDelay.Read(exINI, pSection, "AutoDeath.AfterDelay");
@@ -161,7 +163,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SellSound.Read(exINI, pSection, "SellSound");
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
-	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
 	this->WarpOut.Read(exINI, pSection, "WarpOut");
@@ -184,22 +185,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
 	this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
-
-	this->PassengerDeletion_Rate.Read(exINI, pSection, "PassengerDeletion.Rate");
-	this->PassengerDeletion_Rate_SizeMultiply.Read(exINI, pSection, "PassengerDeletion.Rate.SizeMultiply");
-	this->PassengerDeletion_UseCostAsRate.Read(exINI, pSection, "PassengerDeletion.UseCostAsRate");
-	this->PassengerDeletion_CostMultiplier.Read(exINI, pSection, "PassengerDeletion.CostMultiplier");
-	this->PassengerDeletion_CostRateCap.Read(exINI, pSection, "PassengerDeletion.CostRateCap");
-	this->PassengerDeletion_AllowedHouses.Read(exINI, pSection, "PassengerDeletion.AllowedHouses");
-	this->PassengerDeletion_DontScore.Read(exINI, pSection, "PassengerDeletion.DontScore");
-	this->PassengerDeletion_Soylent.Read(exINI, pSection, "PassengerDeletion.Soylent");
-	this->PassengerDeletion_SoylentMultiplier.Read(exINI, pSection, "PassengerDeletion.SoylentMultiplier");
-	this->PassengerDeletion_SoylentAllowedHouses.Read(exINI, pSection, "PassengerDeletion.SoylentAllowedHouses");
-	this->PassengerDeletion_DisplaySoylent.Read(exINI, pSection, "PassengerDeletion.DisplaySoylent");
-	this->PassengerDeletion_DisplaySoylentToHouses.Read(exINI, pSection, "PassengerDeletion.DisplaySoylentToHouses");
-	this->PassengerDeletion_DisplaySoylentOffset.Read(exINI, pSection, "PassengerDeletion.DisplaySoylentOffset");
-	this->PassengerDeletion_ReportSound.Read(exINI, pSection, "PassengerDeletion.ReportSound");
-	this->PassengerDeletion_Anim.Read(exINI, pSection, "PassengerDeletion.Anim");
 
 	this->DefaultDisguise.Read(exINI, pSection, "DefaultDisguise");
 
@@ -288,6 +273,24 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
+
+	// Anonymous types
+
+	bool resetValue = false;
+	bool canParse = PassengerDeletionTypeClass::CanParse(exINI, pSection, resetValue);
+
+	if (canParse)
+	{
+		if (this->PassengerDeletionType == nullptr)
+			this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(this->OwnerObject());
+
+		this->PassengerDeletionType->LoadFromINI(pINI, pSection);
+	}
+	else if (resetValue)
+	{
+		this->PassengerDeletionType.reset();
+	}
+
 }
 
 template <typename T>
@@ -316,6 +319,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CameoPriority)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
+		.Process(this->ShieldType)
+		.Process(this->PassengerDeletionType)
 
 		.Process(this->AutoDeath_Behavior)
 		.Process(this->AutoDeath_OnAmmoDepletion)
@@ -333,7 +338,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SlavesFreeSound)
 		.Process(this->SellSound)
 		.Process(this->EVA_Sold)
-		.Process(this->ShieldType)
 
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
@@ -357,22 +361,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefaultDisguise)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
-		
-		.Process(this->PassengerDeletion_Rate)
-		.Process(this->PassengerDeletion_Rate_SizeMultiply)
-		.Process(this->PassengerDeletion_UseCostAsRate)
-		.Process(this->PassengerDeletion_CostMultiplier)
-		.Process(this->PassengerDeletion_CostRateCap)
-		.Process(this->PassengerDeletion_AllowedHouses)
-		.Process(this->PassengerDeletion_DontScore)
-		.Process(this->PassengerDeletion_Soylent)
-		.Process(this->PassengerDeletion_SoylentMultiplier)
-		.Process(this->PassengerDeletion_SoylentAllowedHouses)
-		.Process(this->PassengerDeletion_DisplaySoylent)
-		.Process(this->PassengerDeletion_DisplaySoylentToHouses)
-		.Process(this->PassengerDeletion_DisplaySoylentOffset)
-		.Process(this->PassengerDeletion_ReportSound)
-		.Process(this->PassengerDeletion_Anim)
 
 		.Process(this->OpenTopped_RangeBonus)
 		.Process(this->OpenTopped_DamageMultiplier)

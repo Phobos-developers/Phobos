@@ -5,6 +5,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
+#include <New/AnonymousType/PassengerDeletionTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
@@ -41,22 +42,9 @@ public:
 		Valueable<int> CameoPriority;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
-		
-		Valueable<int> PassengerDeletion_Rate;
-		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
-		Valueable<bool> PassengerDeletion_UseCostAsRate;
-		Valueable<double> PassengerDeletion_CostMultiplier;
-		Nullable<int> PassengerDeletion_CostRateCap;
-		Valueable<AffectedHouse> PassengerDeletion_AllowedHouses;
-		Valueable<bool> PassengerDeletion_DontScore;
-		Valueable<bool> PassengerDeletion_Soylent;
-		Valueable<double> PassengerDeletion_SoylentMultiplier;
-		Valueable<AffectedHouse> PassengerDeletion_SoylentAllowedHouses;
-		Valueable<bool> PassengerDeletion_DisplaySoylent;
-		Valueable<AffectedHouse> PassengerDeletion_DisplaySoylentToHouses;
-		Valueable<Point2D> PassengerDeletion_DisplaySoylentOffset;
-		NullableIdx<VocClass> PassengerDeletion_ReportSound;
-		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
+
+		Valueable<ShieldTypeClass*> ShieldType;
+		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
 
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
 		Valueable<int> AutoDeath_AfterDelay;
@@ -74,8 +62,6 @@ public:
 		NullableIdx<VocClass> SlavesFreeSound;
 		NullableIdx<VocClass> SellSound;
 		NullableIdx<VoxClass> EVA_Sold;
-
-		Valueable<ShieldTypeClass*> ShieldType;
 
 		Nullable<AnimTypeClass*> WarpOut;
 		Nullable<AnimTypeClass*> WarpIn;
@@ -192,6 +178,7 @@ public:
 			, NoManualMove { false }
 			, InitialStrength {}
 			, ShieldType {}
+			, PassengerDeletionType { nullptr}
 
 			, WarpOut {}
 			, WarpIn {}
@@ -212,22 +199,6 @@ public:
 			, LaserTrailData {}
 			, DestroyAnim_Random { true }
 			, NotHuman_RandomDeathSequence { false }
-
-			, PassengerDeletion_Rate { 0 }
-			, PassengerDeletion_Rate_SizeMultiply { true }
-			, PassengerDeletion_UseCostAsRate { false }
-			, PassengerDeletion_CostMultiplier { 1.0 }
-			, PassengerDeletion_CostRateCap {}
-			, PassengerDeletion_AllowedHouses { AffectedHouse::All }
-			, PassengerDeletion_DontScore { false }
-			, PassengerDeletion_Soylent { false }
-			, PassengerDeletion_SoylentMultiplier { 1.0 }
-			, PassengerDeletion_SoylentAllowedHouses { AffectedHouse::Enemies }
-			, PassengerDeletion_DisplaySoylent { false }
-			, PassengerDeletion_DisplaySoylentToHouses { AffectedHouse::All }
-			, PassengerDeletion_DisplaySoylentOffset {{ 0, 0 }}
-			, PassengerDeletion_ReportSound {}
-			, PassengerDeletion_Anim {}
 
 			, DefaultDisguise {}
 

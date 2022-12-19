@@ -173,10 +173,12 @@ void TechnoExt::ExtData::EatPassengers()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (!TechnoExt::IsActive(pThis))
+	if (!TechnoExt::IsActive(pThis) || !pTypeExt->PassengerDeletionType)
 		return;
 
-	if (pTypeExt && (pTypeExt->PassengerDeletion_Rate > 0 || pTypeExt->PassengerDeletion_UseCostAsRate))
+	auto pDelType = pTypeExt->PassengerDeletionType.get();
+
+	if (pTypeExt && (pDelType->Rate > 0 || pDelType->UseCostAsRate))
 	{
 		if (pThis->Passengers.NumPassengers > 0)
 		{
@@ -189,7 +191,7 @@ void TechnoExt::ExtData::EatPassengers()
 			// Find the first entered passenger that is eligible for deletion.
 			while (pCurrentPassenger)
 			{
-				if (EnumFunctions::CanTargetHouse(pTypeExt->PassengerDeletion_AllowedHouses, pThis->Owner, pCurrentPassenger->Owner))
+				if (EnumFunctions::CanTargetHouse(pDelType->AllowedHouses, pThis->Owner, pCurrentPassenger->Owner))
 				{
 					pPreviousPassenger = abstract_cast<FootClass*>(pLastPassenger);;
 					pPassenger = pCurrentPassenger;
@@ -209,20 +211,20 @@ void TechnoExt::ExtData::EatPassengers()
 			{
 				int timerLength = 0;
 
-				if (pTypeExt->PassengerDeletion_UseCostAsRate)
+				if (pDelType->UseCostAsRate)
 				{
 					// Use passenger cost as countdown.
-					timerLength = (int)(pPassenger->GetTechnoType()->Cost * pTypeExt->PassengerDeletion_CostMultiplier);
+					timerLength = (int)(pPassenger->GetTechnoType()->Cost * pDelType->CostMultiplier);
 
-					if (pTypeExt->PassengerDeletion_CostRateCap.isset())
-						timerLength = std::min(timerLength, pTypeExt->PassengerDeletion_CostRateCap.Get());
+					if (pDelType->CostRateCap.isset())
+						timerLength = std::min(timerLength, pDelType->CostRateCap.Get());
 				}
 				else
 				{
 					// Use explicit rate optionally multiplied by unit size as countdown.
-					timerLength = pTypeExt->PassengerDeletion_Rate;
+					timerLength = pDelType->Rate;
 
-					if (pTypeExt->PassengerDeletion_Rate_SizeMultiply && pPassenger->GetTechnoType()->Size > 1.0)
+					if (pDelType->Rate_SizeMultiply && pPassenger->GetTechnoType()->Size > 1.0)
 						timerLength *= (int)(pPassenger->GetTechnoType()->Size + 0.5);
 				}
 
@@ -243,12 +245,12 @@ void TechnoExt::ExtData::EatPassengers()
 
 				if (auto const pPassengerType = pPassenger->GetTechnoType())
 				{
-					if (pTypeExt->PassengerDeletion_ReportSound.isset())
-						VocClass::PlayAt(pTypeExt->PassengerDeletion_ReportSound.Get(), pThis->GetCoords(), nullptr);
+					if (pDelType->ReportSound.isset())
+						VocClass::PlayAt(pDelType->ReportSound.Get(), pThis->GetCoords(), nullptr);
 
-					if (pTypeExt->PassengerDeletion_Anim.isset())
+					if (pDelType->Anim.isset())
 					{
-						const auto pAnimType = pTypeExt->PassengerDeletion_Anim.Get();
+						const auto pAnimType = pDelType->Anim.Get();
 						if (auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location))
 						{
 							pAnim->SetOwnerObject(pThis);
@@ -257,18 +259,18 @@ void TechnoExt::ExtData::EatPassengers()
 					}
 
 					// Check if there is money refund
-					if (pTypeExt->PassengerDeletion_Soylent &&
-						EnumFunctions::CanTargetHouse(pTypeExt->PassengerDeletion_SoylentAllowedHouses, pThis->Owner, pPassenger->Owner))
+					if (pDelType->Soylent &&
+						EnumFunctions::CanTargetHouse(pDelType->SoylentAllowedHouses, pThis->Owner, pPassenger->Owner))
 					{
-						int nMoneyToGive = (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * pTypeExt->PassengerDeletion_SoylentMultiplier);
+						int nMoneyToGive = (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * pDelType->SoylentMultiplier);
 
 						if (nMoneyToGive > 0)
 						{
 							pThis->Owner->GiveMoney(nMoneyToGive);
-							if (pTypeExt->PassengerDeletion_DisplaySoylent)
+							if (pDelType->DisplaySoylent)
 							{
 								FlyingStrings::AddMoneyString(nMoneyToGive, pThis->Owner,
-									pTypeExt->PassengerDeletion_DisplaySoylentToHouses, pThis->Location, pTypeExt->PassengerDeletion_DisplaySoylentOffset);
+									pDelType->DisplaySoylentToHouses, pThis->Location, pDelType->DisplaySoylentOffset);
 							}
 						}
 					}
@@ -285,7 +287,7 @@ void TechnoExt::ExtData::EatPassengers()
 						}
 					}
 
-					auto pSource = pTypeExt->PassengerDeletion_DontScore ? nullptr : pThis;
+					auto pSource = pDelType->DontScore ? nullptr : pThis;
 					pPassenger->KillPassengers(pSource);
 					pPassenger->RegisterDestruction(pSource);
 					pPassenger->UnInit();
@@ -401,11 +403,8 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
 	}
 
 	// Reset PassengerDeletion Timer - TODO : unchecked
-	if (this->PassengerDeletionTimer.IsTicking() && this->TypeExtData->PassengerDeletion_Rate <= 0)
-	{
-		this->PassengerDeletionCountDown = -1;
+	if (this->PassengerDeletionTimer.IsTicking() && this->TypeExtData->PassengerDeletionType && this->TypeExtData->PassengerDeletionType->Rate <= 0)
 		this->PassengerDeletionTimer.Stop();
-	}
 }
 
 void TechnoExt::ExtData::UpdateLaserTrails()
