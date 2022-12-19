@@ -721,7 +721,7 @@ In `rulesmd.ini`:
 ```ini
 [General]
 DisguiseBlinkingVisibility=owner  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-                                  
+
 [SOMETECHNO]                      ; TechnoType
 UseDisguiseMovementSpeed=false    ; boolean
 ```

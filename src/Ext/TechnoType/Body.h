@@ -212,7 +212,7 @@ public:
 
 			, DefaultDisguise {}
 			, UseDisguiseMovementSpeed {}
-			
+
 			, OpenTopped_RangeBonus {}
 			, OpenTopped_DamageMultiplier {}
 			, OpenTopped_WarpDistance {}
