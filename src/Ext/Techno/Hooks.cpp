@@ -2,7 +2,7 @@
 #include <ScenarioClass.h>
 #include <GameStrings.h>
 #include "Body.h"
-#include <Utilities/Macro.h>
+
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>

@@ -409,3 +409,10 @@ DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 
 	return 0;
 }
+
+
+// Feature: Allow Units using AlternateFLHs - by Trsdy
+// I don't want to rewrite something new, so I use the Infantry one directly
+// afaik it has no check for infantry-specific stuff here so far
+// and neither Ares nor Phobos has touched it, even that crawling flh one was in TechnoClass
+DEFINE_JUMP(VTABLE, 0x7F5D20, 0x523250);// Redirect UnitClass::GetFLH to InfantryClass::GetFLH (used to be TechnoClass::GetFLH)
