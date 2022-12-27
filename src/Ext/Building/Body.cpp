@@ -335,6 +335,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->TypeExtData)
 		.Process(this->DeployedTechno)
+		.Process(this->IsCreatedFromMapFile)
 		.Process(this->LimboID)
 		.Process(this->GrindingWeapon_LastFiredFrame)
 		.Process(this->CurrentAirFactory)

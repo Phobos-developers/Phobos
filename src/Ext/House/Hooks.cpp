@@ -1,5 +1,4 @@
 #include "Body.h"
-#include <GameOptionsClass.h>
 #include "../Techno/Body.h"
 #include "../Building/Body.h"
 #include <unordered_map>
@@ -62,20 +61,4 @@ DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 	}
 
 	return 0;
-}
-
-DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
-{
-	enum { ContinueCheck = 0x440B58, SkipCheck = 0x440B81 };
-
-	GET(BuildingClass* const, pThis, ESI);
-
-	if (SessionClass::IsCampaign())
-	{
-		if (!pThis->BeingProduced ||
-			!HouseExt::ExtMap.Find(pThis->Owner)->RepairBaseNodes[GameOptionsClass::Instance->Difficulty])
-			return SkipCheck;
-	}
-
-	return ContinueCheck;
 }

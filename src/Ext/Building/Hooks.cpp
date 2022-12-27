@@ -3,7 +3,7 @@
 #include <BulletClass.h>
 #include <UnitClass.h>
 #include <SuperClass.h>
-
+#include <GameOptionsClass.h>
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
 
@@ -257,6 +257,43 @@ DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType_Phobos, 0xA)
 	GET(HouseClass*, pHouse, EDX);
 	HouseExt::ExtMap.Find(pHouse)->Factory_AircraftType = nullptr;
 	return 0;
+}
+
+// Ares didn't have something like 0x7397E4 in its UnitDelivery code
+DEFINE_HOOK(0x44FBBF, CreateBuildingFromINIFile_AfterCTOR_BeforeUnlimbo, 0x8)
+{
+	GET(BuildingClass* const, pBld, ESI);
+
+	if (auto pExt = BuildingExt::ExtMap.Find(pBld))
+		pExt->IsCreatedFromMapFile = true;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
+{
+	enum { ContinueCheck = 0x440B58, SkipSetShouldRebuild = 0x440B81 };
+	GET(BuildingClass* const, pThis, ESI);
+
+	if (SessionClass::IsCampaign())
+	{
+		// Preplaced structures are already managed before
+		if (BuildingExt::ExtMap.Find(pThis)->IsCreatedFromMapFile)
+			return SkipSetShouldRebuild;
+
+		// Per-house dehardcoding: BaseNodes + SW-Delivery
+		if (!HouseExt::ExtMap.Find(pThis->Owner)->RepairBaseNodes[GameOptionsClass::Instance->Difficulty])
+			return SkipSetShouldRebuild;
+	}
+	// Vanilla instruction: always repairable in other game modes
+	return ContinueCheck;
+}
+
+DEFINE_HOOK(0x440E99, BuildingClass_Unlimbo_NaturalParticleSystem_CampaignSkip, 0x6)
+{
+	enum { DoNotCreateParticle = 0x440F61 };
+	GET(BuildingClass* const, pThis, ESI);
+	return BuildingExt::ExtMap.Find(pThis)->IsCreatedFromMapFile ? DoNotCreateParticle : 0;
 }
 
 // Note:
