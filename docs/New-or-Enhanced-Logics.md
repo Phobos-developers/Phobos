@@ -638,39 +638,25 @@ ForceWeapon.Cloaked=-1          ; integer. 0 for primary weapon, 1 for secondary
 ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ```
 
-### Initial Strength
-
-- You can now specify how many hitpoints a TechnoType starts with.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]      ; TechnoType
-InitialStrength=  ; integer
-```
-
-### Initial Strength For Cloned Infantry
+### Initial strength for TechnoTypes and cloned infantry
 
 ![image](_static/images/initialstrength.cloning-01.png)
 *Initial strength for cloned infantry example in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
 
-- You can now specify how many hitpoints an Infantry Type starts with when leaves a Cloning Structure with `Cloning=yes`.
+- `InitialStrength` can be used to set how many hitpoints a TechnoType starts with.
+- `InitialStrength.Cloning` can be used to specify a percentage of hitpoints (single value or a range from which a random value is picked) cloned infantry produced by `Cloning=true` building start with.
 
 In `rulesmd.ini`:
 ```ini
+[SOMETECHNO]              ; TechnoType
+InitialStrength=          ; integer
+
 [SOMEBUILDING]            ; BuildingType
 InitialStrength.Cloning=  ; floating point value - single or comma-sep. range (percentages)
 ```
 
 ```{note}
-
 Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `Strength`, even if your values are bigger than it.
-
-```
-
-```{note}
-
-Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `Strength`, even if your values are bigger than it.
-
 ```
 
 ### Kill Object Automatically
