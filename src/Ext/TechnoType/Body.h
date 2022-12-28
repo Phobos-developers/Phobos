@@ -131,7 +131,7 @@ public:
 
 		Nullable<bool> IronCurtain_KeptOnDeploy;
 		Nullable<IronCurtainEffect> IronCurtain_Effect;
-		Nullable<WarheadTypeClass*> IronCuratin_KillWarhead;
+		Nullable<WarheadTypeClass*> IronCurtain_KillWarhead;
 		Valueable<bool> Explodes_KillPassengers;
 
 		struct LaserTrailDataEntry
@@ -268,7 +268,7 @@ public:
 			, DeployedSecondaryFireFLH { }
 			, IronCurtain_KeptOnDeploy {}
 			, IronCurtain_Effect {}
-			, IronCuratin_KillWarhead {}
+			, IronCurtain_KillWarhead {}
 			
 			, Explodes_KillPassengers { true }
 		{ }
