@@ -61,24 +61,8 @@ DEFINE_HOOK(0x54BD93, JumpjetLocomotionClass_State2_54BD30_TurnToTarget, 0x6)
 	R->EAX(pTarget);
 	return EndFunction;
 }
-#ifdef REMOVE_THIS_AFTER_V03_RELEASE
+
 // Bugfix: Align jumpjet turret's facing with body's
-DEFINE_HOOK(0x736BF3, UnitClass_UpdateRotation_TurretFacing, 0x6)
-{
-	GET(UnitClass* const, pThis, ESI);
-	// I still don't know why jumpjet loco behaves differently for the moment
-	// so I don't check jumpjet loco or InAir here, feel free to change if it doesn't break performance.
-	if (!pThis->Target && !pThis->Type->TurretSpins && (pThis->Type->JumpJet || pThis->Type->BalloonHover))
-	{
-		pThis->SecondaryFacing.SetDesired(pThis->PrimaryFacing.Current());
-		pThis->TurretIsRotating = pThis->SecondaryFacing.IsRotating();
-		return 0x736C09;
-	}
-
-	return 0;
-}
-#else
-
 DEFINE_HOOK(0x736BA3, UnitClass_UpdateRotation_TurretFacing_TemporaryFix, 0x6)
 {
 	GET(UnitClass* const, pThis, ESI);
@@ -95,7 +79,6 @@ DEFINE_HOOK(0x736BA3, UnitClass_UpdateRotation_TurretFacing_TemporaryFix, 0x6)
 	return 0;
 }
 
-#endif
 // Bugfix: Jumpjet detect cloaked objects beneath
 DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_54BFF0_UpdateSensors, 0x7)
 {

@@ -635,7 +635,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	{
 		if (auto pBld = abstract_cast<BuildingClass*>(pThis))
 		{
-			if (pBld->Type->LoadBuildup())
+			if (pBld->HasBuildUp)
 			{
 				pBld->Sell(true);
 
@@ -990,7 +990,8 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	}
 	while (extraDistanceX < maxAttempts && (pThis->IsCellOccupied(pCell, -1, -1, nullptr, false) != Move::OK) && pCell->MapCoords != CellStruct::Empty);
 
-	if (pCell = MapClass::Instance->TryGetCellAt(placeCoords))
+	pCell = MapClass::Instance->TryGetCellAt(placeCoords);
+	if (pCell)
 		finalLocation = pCell->GetCoordsWithBridge();
 
 	return finalLocation;
