@@ -190,15 +190,18 @@ This page lists all the individual contributions to the project by their author.
       - Misc vanilla suicidal behavior fix
    - Post-type-conversion update
    - Building EVA_StructureSold and SellSound dehardcode
+   - `AlternateFLH` of vehicles in `OpenTopped` transport.
    - Slaves' house customization when owner is killed
    - Trigger Action spawned team IFV/Opentopped logic fix
-   - Campaign AI's base node/SW-delivered/trigger action 125-delivered structures' auto-repairability dehardcode
+   - Singleplayer Campaign AI's base node/SW-delivered/trigger action 125-delivered structures' auto-repairability dehardcode
    - Misc CN doc fix, code refactor
    - Power delta counter : blackout indication mark
    - Harvester counter
    - Warhead superweapon launch logic
    - "Shield is broken" trigger event
    - RadialIndicator observer visibility
+   - Cloaked objects from allies displaying to player in singleplayer campaigns
+   - Skip `NaturalParticleSystem` displaying from in-map pre-placed structures.
    - Forbidding parallel AI queues by type
    - Allow iron-curtain effects on infantries
 - **FlyStar**

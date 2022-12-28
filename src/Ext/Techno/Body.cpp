@@ -630,7 +630,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	}
 
 	default: //must be AutoDeathBehavior::Kill
-		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pThis->Owner);
+		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 		// Due to Ares, ignoreDefense=true will prevent passenger/crew/hijacker from escaping
 		return;
 	}

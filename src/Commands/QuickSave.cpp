@@ -37,7 +37,7 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 		);
 	};
 
-	if (SessionClass::Instance->GameMode == GameMode::Campaign || SessionClass::Instance->GameMode == GameMode::Skirmish)
+	if (SessionClass::IsSingleplayer())
 	{
 		char fName[0x80];
 
@@ -50,7 +50,7 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 		PrintMessage(StringTable::LoadString("TXT_SAVING_GAME"));
 
 		wchar_t fDescription[0x80] = { 0 };
-		if (SessionClass::Instance->GameMode == GameMode::Campaign)
+		if (SessionClass::IsCampaign())
 			wcscpy_s(fDescription, ScenarioClass::Instance->UINameLoaded);
 		else
 			wcscpy_s(fDescription, ScenarioClass::Instance->Name);

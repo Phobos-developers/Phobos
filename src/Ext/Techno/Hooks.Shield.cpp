@@ -81,7 +81,7 @@ DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_Sh
 
 			if (pShieldData->IsActive())
 			{
-				R->EAX(pShieldData->GetType()->Armor.Get());
+				R->EAX(pShieldData->GetArmorType());
 				return R->Origin() + 6;
 			}
 		}

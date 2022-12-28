@@ -248,18 +248,28 @@ New:
 - Warhead or weapon detonation at superweapon target cell (by Starkku)
 - Super Weapons launching other Super Weapons (by Morton)
 - Launching Super Weapons on building infiltration (by Morton)
-- Cloaked objects displaying to observers (by Starkku)
 - Building airstrike target eligibility customization (by Starkku)
 - IvanBomb detonation & image display centered on buildings (by Starkku)
 - Forcing specific weapon against cloaked or disguised targets (by Starkku)
 - Customizable ROF random delay (by Starkku)
 - Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)
+- Shields can inherit Techno ArmorType (by Starkku)
 - Iron-curtain effects on infantries and organic units (by ststl)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
+- Allowed usage of `AlternateFLH%d` of vehicles in `OpenTopped` transport. (by Trsdy)
 - Teams spawned by trigger action 7,80,107 can use IFV and `OpenTopped` logic normally (by Trsdy)
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations (by Starkku)
+- Cloaked objects displaying to observers (by Starkku)
+- Cloaked objects from allies displaying to player in single player missions (by Trsdy)
+- Skip `NaturalParticleSystem` displaying from in-map pre-placed structures (by Trsdy)
+- Made sure that `Suicide=yes` weapon does kill the firer (by Trsdy)
+- Made sure that vxl units being flipped over get killed instead of rotating up and down (by Trsdy)
+
+Phobos fixes:
+- Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
+
 </details>
 
 
@@ -398,8 +408,6 @@ Vanilla fixes:
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true` (by Starkku)
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry (by Otamaa)
 - Allowed observers to see a selected building's radial indicator (by Trsdy)
-- Made sure that `Suicide=yes` weapon does kill the firer (by Trsdy)
-- Made sure that vxl units being flipped over get killed instead of rotating up and down (by Trsdy)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)

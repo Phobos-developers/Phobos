@@ -26,7 +26,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
 - Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
-
+- Allowed usage of `AlternateFLH` of vehicles in `OpenTopped` transport.
 - SHP debris shadows now respect the `Shadow` tag.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
 - Added a "Load Game" button to the retry dialog on mission failure.
@@ -86,9 +86,12 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true`.
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry.
 - Observers can now see cloaked objects owned by non-allied houses.
+- In singleplayer missions, the player can now see cloaked objects owned by allied houses.
 - IvanBomb images now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation.
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations.
 - Animation with `Tiled=yes` now supports `CustomPalette`.
+- Fixed buildings' `NaturalParticleSystem` being created for in-map pre-placed structures.
+
 
 ## Animations
 
@@ -338,7 +341,6 @@ JumpjetAllowLayerDeviation=true  ; boolean
 *Jumpjet turning to target applied in [Robot Storm X](https://www.moddb.com/mods/cc-robot-storm-x)*
 
 - Allows jumpjet units to face towards the target when firing from different directions. Set `[JumpjetControls] -> TurnToTarget=yes` to enable it for all jumpjet locomotor units. This behavior can be overriden by setting `[UnitType] -> JumpjetTurnToTarget` for specific units.
-- This behavior does not apply to `TurretSpins=yes` units for obvious reasons.
 
 In `rulesmd.ini`:
 ```ini

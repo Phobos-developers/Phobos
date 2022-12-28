@@ -40,4 +40,4 @@ void MakeCommand()
 #define CATEGORY_CONTROL StringTable::LoadString("TXT_CONTROL")
 #define CATEGORY_DEBUG L"Debug"
 #define CATEGORY_GUIDEBUG StringTable::LoadString("GUI:Debug")
-#define CATEGORY_DEVELOPMENT StringTable::TryFetchString("TXT_DEVELOPMENT")
+#define CATEGORY_DEVELOPMENT StringTable::LoadString("TXT_DEVELOPMENT")

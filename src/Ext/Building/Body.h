@@ -23,6 +23,7 @@ public:
 	public:
 		BuildingTypeExt::ExtData* TypeExtData;
 		bool DeployedTechno;
+		bool IsCreatedFromMapFile;
 		int LimboID;
 		int GrindingWeapon_LastFiredFrame;
 		BuildingClass* CurrentAirFactory;
@@ -31,6 +32,7 @@ public:
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, DeployedTechno { false }
+			, IsCreatedFromMapFile { false }
 			, LimboID { -1 }
 			, GrindingWeapon_LastFiredFrame { 0 }
 			, CurrentAirFactory { nullptr }

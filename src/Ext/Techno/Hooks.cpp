@@ -2,7 +2,7 @@
 #include <ScenarioClass.h>
 #include <GameStrings.h>
 #include "Body.h"
-#include <Utilities/Macro.h>
+
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -602,17 +602,26 @@ DEFINE_HOOK(0x70265F, TechnoClass_ReceiveDamage_Explodes, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_ObserverCloak, 0x7)
+DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_CloakVisibility, 0x7)
 {
-	enum { UseShadowyVisual = 0x703A5A };
-
-	GET(TechnoClass*, pThis, ESI);
+	enum { UseShadowyVisual = 0x703A5A, CheckMutualAlliance = 0x703A16 };
 
 	// Allow observers to always see cloaked objects.
-	if (HouseClass::IsCurrentPlayerObserver() && pThis->CloakState == CloakState::Cloaked)
+	// Skip IsCampaign check (confirmed being useless from Mental Omega mappers)
+	if (HouseClass::IsCurrentPlayerObserver())
 		return UseShadowyVisual;
 
-	return 0;
+	return CheckMutualAlliance;
+}
+
+DEFINE_HOOK(0x45455B, BuildingClass_VisualCharacter_CloakVisibility, 0x5)
+{
+	enum { UseShadowyVisual = 0x45452D, CheckMutualAlliance = 0x454564 };
+
+	if (HouseClass::IsCurrentPlayerObserver())
+		return UseShadowyVisual;
+
+	return CheckMutualAlliance;
 }
 
 DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
