@@ -269,7 +269,7 @@ public:
 			, IronCurtain_KeptOnDeploy {}
 			, IronCurtain_Effect {}
 			, IronCurtain_KillWarhead {}
-			
+
 			, Explodes_KillPassengers { true }
 		{ }
 
