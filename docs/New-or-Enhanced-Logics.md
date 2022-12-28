@@ -247,6 +247,10 @@ CreateUnit.Owner=Victim                ; Owner house kind, Invoker/Killer/Victim
 CreateUnit.ConsiderPathfinding=false   ; boolean, whether to consider if the created unit can move in the cell and look for eligible cells nearby instead.
 ```
 
+```{note}
+Due to technical constraints, infantry death animations including Ares' `InfDeathAnim` cannot have `CreateUnit.Owner` correctly applied to them. You can use Ares' `MakeInfantryOwner` as a workaround instead, which should function for this use-case even without `MakeInfantry` set.
+```
+
 ## Buildings
 
 ### Extended building upgrades
