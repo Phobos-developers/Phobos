@@ -37,7 +37,7 @@ public:
 	Nullable<SHPStruct*> Pips_Background;
 	Valueable<Vector3D<int>> Pips_Building;
 	Nullable<int> Pips_Building_Empty;
-
+	Valueable<bool> ImmuneToCrit;
 	Valueable<bool> ImmuneToBerserk;
 
 private:
@@ -74,6 +74,7 @@ public:
 		, Pips_Building { { -1,-1,-1 } }
 		, Pips_Building_Empty { }
 		, ImmuneToBerserk { false }
+		, ImmuneToCrit { false }
 	{ };
 
 	virtual ~ShieldTypeClass() override = default;

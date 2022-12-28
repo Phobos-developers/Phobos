@@ -246,9 +246,13 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (this->Crit_Chance < dice)
 		return;
 
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType()))
+	if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
 	{
-		if (pTypeExt->ImmuneToCrit)
+		if (pExt->TypeExtData->ImmuneToCrit)
+			return;
+
+		auto pSld = pExt->Shield.get();
+		if (pSld && pSld->IsActive() && pSld->GetType()->ImmuneToCrit)
 			return;
 
 		if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent)

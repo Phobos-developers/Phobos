@@ -138,6 +138,7 @@ AbsorbPercent=1.0                    ; floating point value
 PassPercent=0.0                      ; floating point value
 AllowTransfer=                       ; boolean
 ImmuneToBerserk=no                   ; boolean
+ImmuneToCrit=no                      ; boolean
 
 [SOMETECHNO]                         ; TechnoType
 ShieldType=SOMESHIELDTYPE            ; ShieldType; none by default
@@ -834,7 +835,7 @@ RemoveMindControl=false  ; boolean
   - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list.
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
   - `Crit.SuppressWhenIntercepted`, if set, prevents critical hits from occuring at all if the warhead was detonated from a [projectile that was intercepted](#projectile-interception-logic).
-  - `ImmuneToCrit` can be set on TechnoTypes to make them immune to critical hits.
+  - `ImmuneToCrit` can be set on TechnoTypes and ShieldTypes to make them immune to critical hits.
 
 In `rulesmd.ini`:
 ```ini
