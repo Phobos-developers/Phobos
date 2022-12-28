@@ -397,6 +397,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->IronCurtain_Effect)
 		.Process(this->IronCuratin_KillWarhead)
+		
+		.Process(this->Explodes_KillPassengers)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

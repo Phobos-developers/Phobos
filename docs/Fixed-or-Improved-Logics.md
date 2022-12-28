@@ -4,6 +4,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 ## Bugfixes and miscellaneous
 
+- Fixed the bug that GameModeOptions are not correctly saved. For example, `BuildOffAlly` is corrupted after load a save.
 - Fixed the bug when reading a map which puts `Preview(Pack)` after `Map` lead to the game fail to draw the preview
 - Fixed the bug when retinting map lighting with a map action corrupted light sources.
 - Fixed the bug when deploying mindcontrolled vehicle into a building permanently transferred the control to the house which mindcontrolled it.
@@ -38,7 +39,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `InfiniteMindControl` with `Damage=1` can now control more than 1 unit.
 - Aircraft with `Fighter` set to false or those using strafing pattern (weapon projectile `ROT` is below 2) now take weapon's `Burst` into accord for all shots instead of just the first one.
 - `EMEffect` used for random AnimList pick is now replaced by a new tag `AnimList.PickRandom` with no side effect. (EMEffect=yes on AA inviso projectile deals no damage to units in movement)
-- Vehicles using `DeployFire` will now explicitly use weapon specified by `DeployFireWeapon` for firing the deploy weapon and respect `FireOnce` setting on weapon and any stop commands issued during firing.
+- Vehicles using `DeployFire` will now explicitly use weapon specified by `DeployFireWeapon` (unless the weapon does not exist, in which case it will fall back to `Primary` weapon) for firing the deploy weapon and respect `FireOnce` setting on weapon and any stop commands issued during firing. If `FireOnce` is set to true the unit won't accept further deploy commands until the weapon's `ROF` amount of frames have passed.
 - Infantry with `DeployFireWeapon=-1` can now fire both weapons (decided by its target), regardless of deployed or not.
 
 ![image](_static/images/remember-target-after-deploying-01.gif)
@@ -64,7 +65,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Nuke carrier & payload weapons now respect `Bright` setting on the weapons always when appropriate (previously only payload did and only if Superweapon had `Nuke.SiloLaunch=false` *(Ares feature)*).
 - Self-healing pips from `InfantryGainSelfHeal` & `UnitsGainSelfHeal` now respect unit's `PixelSelectionBracketDelta` like health bar pips do.
 - Buildings using `SelfHealing` will now correctly revert to undamaged graphics if their health is restored back by self-healing.
-- Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations.
 - Allow use of `Foundation=0x0` on TerrainTypes without crashing for similar results as for buildings.
 - Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to some Ares-introduced Warhead effects like EMP.
 - `OpenTopped` transports now take `OpenTransportWeapon` setting of passengers into consideration when determining weapon range used for threat scanning and approaching targets.
@@ -85,6 +85,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Only applies to Z-aware drawing mode for now.
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true`.
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry.
+- Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges.
+- Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines.
 - Observers can now see cloaked objects owned by non-allied houses.
 - In singleplayer missions, the player can now see cloaked objects owned by allied houses.
 - IvanBomb images now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation.

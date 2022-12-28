@@ -160,6 +160,8 @@ This page lists all the individual contributions to the project by their author.
   - Warhead detonation on all objects on map
   - Animated TerrainTypes extension
   - Exploding unit passenger killing customization
+  - Railgun particle target coordinate fix
+  - Building target coordinate offset fix
   - Warhead / weapon detonation at superweapon target cell
   - Cloaked objects displaying to observers
   - Building airstrike target eligibility customization

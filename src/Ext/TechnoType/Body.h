@@ -132,7 +132,6 @@ public:
 		Nullable<bool> IronCurtain_KeptOnDeploy;
 		Nullable<IronCurtainEffect> IronCurtain_Effect;
 		Nullable<WarheadTypeClass*> IronCuratin_KillWarhead;
-
 		Valueable<bool> Explodes_KillPassengers;
 
 		struct LaserTrailDataEntry
@@ -270,6 +269,7 @@ public:
 			, IronCurtain_KeptOnDeploy {}
 			, IronCurtain_Effect {}
 			, IronCuratin_KillWarhead {}
+			
 			, Explodes_KillPassengers { true }
 		{ }
 
