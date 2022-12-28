@@ -45,6 +45,7 @@
 #include <AircraftTypeClass.h>
 #include <UnitTypeClass.h>
 #include <BuildingTypeClass.h>
+#include <WarheadTypeClass.h>
 #include <FootClass.h>
 #include <VocClass.h>
 #include <VoxClass.h>
@@ -844,6 +845,33 @@ namespace detail
 	inline bool read<TranslucencyLevel>(TranslucencyLevel& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		return value.Read(parser, pSection, pKey);
+	}
+
+
+	template <>
+	inline bool read<IronCurtainEffect>(IronCurtainEffect& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = IronCurtainEffect::Kill;
+			auto str = parser.value();
+			if (_strcmpi(str, "invulnerable") == 0)
+			{
+				parsed = IronCurtainEffect::Invulnerable;
+			}
+			else if (_strcmpi(str, "ignore") == 0)
+			{
+				parsed = IronCurtainEffect::Ignore;
+			}
+			else if (_strcmpi(str, "kill") != 0)
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "IronCurtainEffect can be either kill, invulnerable or ignore");
+				return false;
+			}
+			value = parsed;
+			return true;
+		}
+		return false;
 	}
 
 	template <typename T>

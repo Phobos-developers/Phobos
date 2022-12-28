@@ -6,6 +6,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
+#include <Utilities/Enum.h>
 #include <Utilities/TemplateDef.h>
 #include <Utilities/Debug.h>
 
@@ -62,6 +63,9 @@ public:
 		Valueable<bool> ForbidParallelAIQueues_Building;
 
 		Valueable<bool> IronCurtain_KeptOnDeploy;
+		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
+		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
+
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
 		Valueable<int> ToolTip_Background_Opacity;
@@ -101,6 +105,8 @@ public:
 			, ForbidParallelAIQueues_Navy { false }
 			, ForbidParallelAIQueues_Vehicle { false }
 			, IronCurtain_KeptOnDeploy { true }
+			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
+			, IronCurtain_KillOrganicsWarhead { }
 			, ROF_RandomDelay { { 0 ,2  } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }

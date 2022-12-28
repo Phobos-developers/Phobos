@@ -304,6 +304,24 @@ In `rulesmd.ini`:
 Explodes.KillPassengers=true ; boolean
 ```
 
+
+### IronCurtain effects on organics customization
+- In vanilla game, when iron-curtain is applied on organic units like infantries and squids, they could only get killed instantly by C4Warhead. This behavior is now dehardcoded, and the effect under iron-curtain can now be chosen among
+  - `kill` : Iron-Curtain kills the organic object with a specifc warhead.
+  - `invulnerable` : Iron-Curtain makes the organic object invulnerable like buildings and vehicles.
+  - `ignore` : Iron-Curtain doesn't give any effect on the organic object.
+
+In `rulesmd.ini`
+```ini
+[CombatDamage]
+IronCurtain.EffectOnOrganics=kill  ; IronCurtain effect Enumeration (kill | invulnerable | ignore), IronCurtain to Infantry and Techno with Organic=yes
+IronCurtain.KillOrganicsWarhead=   ; IronCurtain uses this warhead to kill organics, default to [CombatDamage]->C4Warhead
+
+[SOMETECHNO]                       ; InfantryType or Organic TechnoType
+IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore), default to [CombatDamage]-> IronCurtain.EffectOnOrganics
+IronCurtain.KillWarhead=           ; IronCurtain uses this warhead to kill this organic, default to [CombatDamage]->IronCurtain.KillWarhead
+```
+
 ### Jumpjet unit layer deviation customization
 
 - Allows turning on or off jumpjet unit behaviour where they fluctuate between `air` and `top` layers based on whether or not their current altitude is equal / below or above `JumpjetHeight` or `[JumpjetControls] -> CruiseHeight` if former is not set on TechnoType. If disabled, airborne jumpjet units exist only in `air` layer. `JumpjetAllowLayerDeviation` defaults to value of `[JumpjetControls] -> AllowLayerDeviation` if not specified.

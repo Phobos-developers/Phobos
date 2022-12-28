@@ -254,6 +254,7 @@ New:
 - Customizable ROF random delay (by Starkku)
 - Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)
 - Shields can inherit Techno ArmorType (by Starkku)
+- Iron-curtain effects on infantries and organic units (by ststl)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

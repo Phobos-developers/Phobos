@@ -203,12 +203,15 @@ This page lists all the individual contributions to the project by their author.
    - Cloaked objects from allies displaying to player in singleplayer campaigns
    - Skip `NaturalParticleSystem` displaying from in-map pre-placed structures.
    - Forbidding parallel AI queues by type
+   - Allow iron-curtain effects on infantries
 - **FlyStar**
    - Campaign load screen PCX support
    - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
-- **ststl** - Use `CustomPalette` for animations with `Tiled=yes`
+- **ststl**
+   - Iron Curtain effects customization on infantries and organic units
+   - Use `CustomPalette` for animations with `Tiled=yes`
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
