@@ -805,7 +805,9 @@ DestroySound=      ; Sound
 ## Warheads
 
 ```{hint}
-All new warheads can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
+All new warhead effects
+- can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
+- cannot be used with `MindControl.Permanent=yes` of Ares.
 ```
 
 ### Break Mind Control on impact
