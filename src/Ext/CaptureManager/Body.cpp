@@ -1,13 +1,6 @@
-#include "CaptureManager.h"
+#include "Body.h"
 
-#include <Helpers/Macro.h>
-#include <HouseClass.h>
-#include <BuildingClass.h>
-#include <AnimClass.h>
-
-#include <Ext/TechnoType/Body.h>
-
-bool CaptureManager::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTarget)
+bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTarget)
 {
 	if (pManager->MaxControlNodes == 1)
 		return pManager->CanCapture(pTarget);
@@ -25,7 +18,7 @@ bool CaptureManager::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTar
 	return pManager->CanCapture(pTarget);
 }
 
-bool CaptureManager::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarget, bool bSilent)
+bool CaptureManagerExt::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarget, bool bSilent)
 {
 	if (pTarget)
 	{
@@ -71,10 +64,10 @@ bool CaptureManager::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarge
 	return false;
 }
 
-bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTarget,
+bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTarget,
 	bool bRemoveFirst, AnimTypeClass* pControlledAnimType)
 {
-	if (CaptureManager::CanCapture(pManager, pTarget))
+	if (CaptureManagerExt::CanCapture(pManager, pTarget))
 	{
 		if (pManager->MaxControlNodes <= 0)
 			return false;
@@ -82,10 +75,10 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 		if (!pManager->InfiniteMindControl)
 		{
 			if (pManager->MaxControlNodes == 1 && pManager->ControlNodes.Count == 1)
-				CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
+				CaptureManagerExt::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
 			else if (pManager->ControlNodes.Count == pManager->MaxControlNodes)
 				if (bRemoveFirst)
-					CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
+					CaptureManagerExt::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
 		}
 
 		auto pControlNode = GameCreate<ControlNode>();
@@ -124,18 +117,6 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 					}
 				}
 
-				pTarget->SetTarget(nullptr);
-
-				if (pManager->Owner->Owner->IsControlledByHuman())
-				{
-					if (auto pTargetFoot = abstract_cast<FootClass*>(pTarget))
-					{
-						pTargetFoot->QueueMission(Mission::Guard, false);
-						pTargetFoot->SetDestination(pTarget->GetCell(), true);
-						pTargetFoot->NextMission();
-					}
-				}
-
 				return true;
 			}
 
@@ -145,7 +126,7 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 	return false;
 }
 
-bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTechno, AnimTypeClass* pControlledAnimType)
+bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, AbstractClass* pTechno, AnimTypeClass* pControlledAnimType)
 {
 	if (const auto pTarget = abstract_cast<TechnoClass*>(pTechno))
 	{
@@ -153,43 +134,13 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTe
 		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
 			bRemoveFirst = pTechnoTypeExt->MultiMindControl_ReleaseVictim;
 
-		return CaptureManager::CaptureUnit(pManager, pTarget, bRemoveFirst, pControlledAnimType);
+		return CaptureManagerExt::CaptureUnit(pManager, pTarget, bRemoveFirst, pControlledAnimType);
 	}
 
 	return false;
 }
 
-void CaptureManager::DecideUnitFate(CaptureManagerClass* pManager, FootClass* pFoot)
+void CaptureManagerExt::DecideUnitFate(CaptureManagerClass* pManager, FootClass* pFoot)
 {
 	// to be implemented (if needed). - secsome
-}
-
-DEFINE_HOOK(0x471D40, CaptureManagerClass_CaptureUnit, 0x7)
-{
-	GET(CaptureManagerClass*, pThis, ECX);
-	GET_STACK(TechnoClass*, pTechno, 0x4);
-
-	R->AL(CaptureManager::CaptureUnit(pThis, pTechno));
-
-	return 0x471D5A;
-}
-
-DEFINE_HOOK(0x471FF0, CaptureManagerClass_FreeUnit, 0x8)
-{
-	GET(CaptureManagerClass*, pThis, ECX);
-	GET_STACK(TechnoClass*, pTechno, 0x4);
-
-	R->AL(CaptureManager::FreeUnit(pThis, pTechno));
-
-	return 0x472006;
-}
-
-DEFINE_HOOK(0x6FCB34, TechnoClass_CanFire_CanCapture, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-	GET(TechnoClass*, pTarget, EBP);
-
-	R->AL(CaptureManager::CanCapture(pThis->CaptureManager, pTarget));
-
-	return 0x6FCB40;
 }

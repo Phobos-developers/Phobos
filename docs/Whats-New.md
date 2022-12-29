@@ -260,6 +260,7 @@ Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
 - Allow usage of `AlternateFLH%d` of vehicles in `OpenTopped` transport. (by Trsdy)
 - Teams spawned by trigger action 7,80,107 can use IFV and `OpenTopped` logic normally (by Trsdy)
+- Prevented units from retaining previous order after ownership change (by Trsdy)
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations (by Starkku)
 - Cloaked objects displaying to observers (by Starkku)
 - Cloaked objects from allies displaying to player in single player missions (by Trsdy)

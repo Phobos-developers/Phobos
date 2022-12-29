@@ -191,6 +191,7 @@ This page lists all the individual contributions to the project by their author.
    - Object Self-destruction logic
       - Misc vanilla suicidal behavior fix
    - Post-type-conversion update
+   - Units retaining orders after changing ownership bugfix
    - Building EVA_StructureSold and SellSound dehardcode
    - `AlternateFLH` of vehicles in `OpenTopped` transport.
    - Slaves' house customization when owner is killed
