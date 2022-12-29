@@ -298,48 +298,50 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 	if (pInfiltratorHouse != pVictimHouse)
 	{
 		// I assume you were not launching for real, Morton
-
-		auto launchTheSWHere = [pBuilding](SuperClass* const pSuper, HouseClass* const pHouse)
+		auto launchTheSWHere = [pBuilding](int const idx, HouseClass* const pHouse)
 		{
-			int oldstart = pSuper->RechargeTimer.StartTime;
-			int oldleft = pSuper->RechargeTimer.TimeLeft;
-			pSuper->SetReadiness(true);
-			pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pHouse->IsCurrentPlayer());
-			pSuper->Reset();
-			pSuper->RechargeTimer.StartTime = oldstart;
-			pSuper->RechargeTimer.TimeLeft = oldleft;
+			if (const auto pSuper = pHouse->Supers.GetItem(idx))
+			{
+				int oldstart = pSuper->RechargeTimer.StartTime;
+				int oldleft = pSuper->RechargeTimer.TimeLeft;
+				pSuper->SetReadiness(true);
+				pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pHouse->IsCurrentPlayer());
+				pSuper->Reset();
+				pSuper->RechargeTimer.StartTime = oldstart;
+				pSuper->RechargeTimer.TimeLeft = oldleft;
+			}
 		};
 
-		auto justGrantTheSW = [](SuperClass* const pSuper, HouseClass* const pHouse)
+		auto justGrantTheSW = [](int const idx, HouseClass* const pHouse)
 		{
-			if (pSuper->Granted)
-				pSuper->SetReadiness(true);
-			else
+			if (const auto pSuper = pHouse->Supers.GetItem(idx))
 			{
-				pSuper->Grant(true, false, false);
-				if (pHouse->IsCurrentPlayer())
+				if (pSuper->Granted)
+					pSuper->SetReadiness(true);
+				else
 				{
-					SidebarClass::Instance->AddCameo(AbstractType::Special, pSuper->Type->ArrayIndex);
-					SidebarClass::Instance->RepaintSidebar(1);
+					pSuper->Grant(true, false, false);
+					if (pHouse->IsCurrentPlayer())
+					{
+						SidebarClass::Instance->AddCameo(AbstractType::Special, idx);
+						SidebarClass::Instance->RepaintSidebar(1);
+					}
 				}
 			}
 		};
 
 		if (pTypeExt->SpyEffect_VictimSuperWeapon.isset() && !pVictimHouse->IsNeutral())
 		{
-			if (const auto pSuper = pVictimHouse->Supers.GetItem(pTypeExt->SpyEffect_VictimSuperWeapon.Get()))
-				launchTheSWHere(pSuper, pVictimHouse);
+			launchTheSWHere(pTypeExt->SpyEffect_VictimSuperWeapon.Get(), pVictimHouse);
 		}
 
 		if (pTypeExt->SpyEffect_InfiltratorSuperWeapon.isset())
 		{
-			if (const auto pSuper = pInfiltratorHouse->Supers.GetItem(pTypeExt->SpyEffect_InfiltratorSuperWeapon.Get()))
-			{
-				if (pTypeExt->SpyEffect_InfiltratorSW_JustGrant.Get())
-					justGrantTheSW(pSuper, pInfiltratorHouse);
-				else
-					launchTheSWHere(pSuper, pInfiltratorHouse);
-			}
+			const int swidx = pTypeExt->SpyEffect_InfiltratorSuperWeapon.Get();
+			if (pTypeExt->SpyEffect_InfiltratorSW_JustGrant.Get())
+				justGrantTheSW(swidx, pInfiltratorHouse);
+			else
+				launchTheSWHere(swidx, pInfiltratorHouse);
 		}
 	}
 
