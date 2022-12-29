@@ -322,11 +322,9 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 				{
 					pSuper->Grant(true, false, false);
 					if (pHouse->IsCurrentPlayer())
-					{
 						SidebarClass::Instance->AddCameo(AbstractType::Special, idx);
-						SidebarClass::Instance->RepaintSidebar(1);
-					}
 				}
+				SidebarClass::Instance->RepaintSidebar(1);
 			}
 		};
 
