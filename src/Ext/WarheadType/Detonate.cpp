@@ -326,9 +326,9 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 }
 
 
-// TODO: Unfinished placeholder, in case shit happens or Ares isn't used -- Trsdy
+// TODO: Unfinished placeholder, in case Ares 3.0+ isn't used -- Trsdy
 // So who said it was merely a Type pointer replacement and he could make a better one than Ares?
-bool UnusedConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
+bool DummyConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 {
 	AbstractType rtti;
 	TechnoTypeClass** nowTypePtr;
@@ -355,15 +355,6 @@ bool UnusedConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	if (pToType->WhatAmI() != rtti)
 	{
 		Debug::Log("Incompatible types between %s and %s\n", pThis->get_ID(), pToType->get_ID());
-		return false;
-	}
-
-	// TODO : Locomotor change (piggyback?) I don't know how to do this atm, so skip this type of conversion for now
-	CLSID nowLocoID;
-	ILocomotion* iloco = pThis->Locomotor.get();
-	if (!(SUCCEEDED(static_cast<LocomotionClass*>(iloco)->GetClassID(&nowLocoID)) && nowLocoID == pToType->Locomotor))
-	{
-		Debug::Log("Different locomotors not supported atm\n");
 		return false;
 	}
 
@@ -406,8 +397,27 @@ bool UnusedConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	pThis->PrimaryFacing.SetROT(pToType->ROT);
 	// Adjust TurretROT -- skipped
 
+
+	// Locomotor change, referenced from Otamaa's comment, not sure if correct, untested
+	CLSID nowLocoID;
+	ILocomotion* iloco = pThis->Locomotor.get();
+	const auto& toLoco = pToType->Locomotor;
+	if ((SUCCEEDED(static_cast<LocomotionClass*>(iloco)->GetClassID(&nowLocoID)) && nowLocoID != toLoco))
+	{
+		// because we are throwing away the locomotor in a split second, piggybacking
+		// has to be stopped. otherwise the object might remain in a weird state.
+		while (LocomotionClass::End_Piggyback(pThis->Locomotor));
+		// throw away the current locomotor and instantiate
+		// a new one of the default type for this unit.
+		if (auto NewLoco = LocomotionClass::CreateInstance(toLoco))
+		{
+			pThis->Locomotor.reset(NewLoco.release());
+			pThis->Locomotor->Link_To_Object(pThis);
+		}
+	}
+
+	// TODO : Jumpjet locomotor special treatement
 	return true;
-	// TODO : Locomotor change, need help
 }
 
 void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
@@ -419,7 +429,7 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 			if (AresData::CanUseAres)
 				return AresData::ConvertTypeTo(pTargetFoot, pResultType);
 			else
-				return UnusedConvertToType(pTargetFoot, pResultType);
+				return DummyConvertToType(pTargetFoot, pResultType);
 		};
 
 		if (this->Convert_To.size())
