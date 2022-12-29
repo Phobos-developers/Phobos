@@ -535,8 +535,8 @@ ShakeIsLocal=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]          ; WeaponType
-DiskLaser.Radius=38.2 ; floating point value
-                      ; 38.2 is roughly the default saucer disk radius
+DiskLaser.Radius=240  ; floating point value
+                      ; 240 is the default saucer disk radius
 ```
 
 ### Customizable ROF random delay

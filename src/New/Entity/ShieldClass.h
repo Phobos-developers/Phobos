@@ -77,7 +77,7 @@ private:
 
 	/// Properties ///
 	TechnoClass* Techno;
-	char TechnoID[0x18];
+	TechnoTypeClass* TechnoID;
 	int HP;
 	AnimClass* IdleAnim;
 	bool Cloak;

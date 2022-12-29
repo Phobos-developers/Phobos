@@ -36,7 +36,7 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTech
 {
 	this->UpdateType();
 	SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
-	strcpy_s(this->TechnoID, this->Techno->get_ID());
+	this->TechnoID= this->Techno->GetTechnoType();
 	ShieldClass::Array.emplace_back(this);
 }
 
@@ -117,7 +117,7 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 	{
 		pToExt->CurrentShieldType = pFromExt->CurrentShieldType;
 		pToExt->Shield = std::make_unique<ShieldClass>(pTo);
-		strcpy_s(pToExt->Shield->TechnoID, pFromExt->Shield->TechnoID);
+		pToExt->Shield->TechnoID = pFromExt->Shield->TechnoID;
 		pToExt->Shield->Available = pFromExt->Shield->Available;
 		pToExt->Shield->HP = pFromExt->Shield->HP;
 	}
@@ -458,9 +458,9 @@ void ShieldClass::TemporalCheck()
 // Is used for DeploysInto/UndeploysInto and DeploysInto/UndeploysInto
 bool ShieldClass::ConvertCheck()
 {
-	const auto newID = this->Techno->get_ID();
+	const auto newID = this->Techno->GetTechnoType();
 
-	if (strcmp(this->TechnoID, newID) == 0)
+	if (this->TechnoID == newID)
 		return false;
 
 	const auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
@@ -515,7 +515,7 @@ bool ShieldClass::ConvertCheck()
 		}
 	}
 
-	strcpy_s(this->TechnoID, newID);
+	this->TechnoID = newID;
 
 	return false;
 }
