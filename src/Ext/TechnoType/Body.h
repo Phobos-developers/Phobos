@@ -130,7 +130,8 @@ public:
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
 		Nullable<bool> IronCurtain_KeptOnDeploy;
-
+		Nullable<IronCurtainEffect> IronCurtain_Effect;
+		Nullable<WarheadTypeClass*> IronCurtain_KillWarhead;
 		Valueable<bool> Explodes_KillPassengers;
 
 		struct LaserTrailDataEntry
@@ -265,7 +266,10 @@ public:
 			, ProneSecondaryFireFLH { }
 			, DeployedPrimaryFireFLH { }
 			, DeployedSecondaryFireFLH { }
-			, IronCurtain_KeptOnDeploy{ }
+			, IronCurtain_KeptOnDeploy {}
+			, IronCurtain_Effect {}
+			, IronCurtain_KillWarhead {}
+
 			, Explodes_KillPassengers { true }
 		{ }
 

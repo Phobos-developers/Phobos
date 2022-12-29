@@ -147,10 +147,8 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 
 bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTechno, AnimTypeClass* pControlledAnimType)
 {
-	if (pTechno)
+	if (const auto pTarget = abstract_cast<TechnoClass*>(pTechno))
 	{
-		const auto pTarget = pTechno->AbsDerivateID & AbstractFlags::Techno ? pTechno : nullptr;
-
 		bool bRemoveFirst = false;
 		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
 			bRemoveFirst = pTechnoTypeExt->MultiMindControl_ReleaseVictim;

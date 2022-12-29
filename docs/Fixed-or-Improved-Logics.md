@@ -4,6 +4,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 ## Bugfixes and miscellaneous
 
+- Fixed the bug that GameModeOptions are not correctly saved. For example, `BuildOffAlly` is corrupted after load a save.
 - Fixed the bug when reading a map which puts `Preview(Pack)` after `Map` lead to the game fail to draw the preview
 - Fixed the bug when retinting map lighting with a map action corrupted light sources.
 - Fixed the bug when deploying mindcontrolled vehicle into a building permanently transferred the control to the house which mindcontrolled it.
@@ -26,7 +27,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
 - Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
-
+- Allowed usage of `AlternateFLH` of vehicles in `OpenTopped` transport.
 - SHP debris shadows now respect the `Shadow` tag.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
 - Added a "Load Game" button to the retry dialog on mission failure.
@@ -38,7 +39,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `InfiniteMindControl` with `Damage=1` can now control more than 1 unit.
 - Aircraft with `Fighter` set to false or those using strafing pattern (weapon projectile `ROT` is below 2) now take weapon's `Burst` into accord for all shots instead of just the first one.
 - `EMEffect` used for random AnimList pick is now replaced by a new tag `AnimList.PickRandom` with no side effect. (EMEffect=yes on AA inviso projectile deals no damage to units in movement)
-- Vehicles using `DeployFire` will now explicitly use weapon specified by `DeployFireWeapon` for firing the deploy weapon and respect `FireOnce` setting on weapon and any stop commands issued during firing.
+- Vehicles using `DeployFire` will now explicitly use weapon specified by `DeployFireWeapon` (unless the weapon does not exist, in which case it will fall back to `Primary` weapon) for firing the deploy weapon and respect `FireOnce` setting on weapon and any stop commands issued during firing. If `FireOnce` is set to true the unit won't accept further deploy commands until the weapon's `ROF` amount of frames have passed.
 - Infantry with `DeployFireWeapon=-1` can now fire both weapons (decided by its target), regardless of deployed or not.
 
 ![image](_static/images/remember-target-after-deploying-01.gif)
@@ -64,7 +65,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Nuke carrier & payload weapons now respect `Bright` setting on the weapons always when appropriate (previously only payload did and only if Superweapon had `Nuke.SiloLaunch=false` *(Ares feature)*).
 - Self-healing pips from `InfantryGainSelfHeal` & `UnitsGainSelfHeal` now respect unit's `PixelSelectionBracketDelta` like health bar pips do.
 - Buildings using `SelfHealing` will now correctly revert to undamaged graphics if their health is restored back by self-healing.
-- Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations.
 - Allow use of `Foundation=0x0` on TerrainTypes without crashing for similar results as for buildings.
 - Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to some Ares-introduced Warhead effects like EMP.
 - `OpenTopped` transports now take `OpenTransportWeapon` setting of passengers into consideration when determining weapon range used for threat scanning and approaching targets.
@@ -85,11 +85,15 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Only applies to Z-aware drawing mode for now.
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true`.
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry.
+- Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges.
+- Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines.
 - Observers can now see cloaked objects owned by non-allied houses.
 - In singleplayer missions, the player can now see cloaked objects owned by allied houses.
 - IvanBomb images now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation.
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations.
 - Animation with `Tiled=yes` now supports `CustomPalette`.
+- Fixed buildings' `NaturalParticleSystem` being created for in-map pre-placed structures.
+
 
 ## Animations
 
@@ -302,6 +306,24 @@ In `rulesmd.ini`:
 Explodes.KillPassengers=true ; boolean
 ```
 
+
+### IronCurtain effects on organics customization
+- In vanilla game, when iron-curtain is applied on organic units like infantries and squids, they could only get killed instantly by C4Warhead. This behavior is now dehardcoded, and the effect under iron-curtain can now be chosen among
+  - `kill` : Iron-Curtain kills the organic object with a specifc warhead.
+  - `invulnerable` : Iron-Curtain makes the organic object invulnerable like buildings and vehicles.
+  - `ignore` : Iron-Curtain doesn't give any effect on the organic object.
+
+In `rulesmd.ini`
+```ini
+[CombatDamage]
+IronCurtain.EffectOnOrganics=kill  ; IronCurtain effect Enumeration (kill | invulnerable | ignore), IronCurtain to Infantry and Techno with Organic=yes
+IronCurtain.KillOrganicsWarhead=   ; IronCurtain uses this warhead to kill organics, default to [CombatDamage]->C4Warhead
+
+[SOMETECHNO]                       ; InfantryType or Organic TechnoType
+IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore), default to [CombatDamage]-> IronCurtain.EffectOnOrganics
+IronCurtain.KillWarhead=           ; IronCurtain uses this warhead to kill this organic, default to [CombatDamage]->IronCurtain.KillWarhead
+```
+
 ### Jumpjet unit layer deviation customization
 
 - Allows turning on or off jumpjet unit behaviour where they fluctuate between `air` and `top` layers based on whether or not their current altitude is equal / below or above `JumpjetHeight` or `[JumpjetControls] -> CruiseHeight` if former is not set on TechnoType. If disabled, airborne jumpjet units exist only in `air` layer. `JumpjetAllowLayerDeviation` defaults to value of `[JumpjetControls] -> AllowLayerDeviation` if not specified.
@@ -321,7 +343,6 @@ JumpjetAllowLayerDeviation=true  ; boolean
 *Jumpjet turning to target applied in [Robot Storm X](https://www.moddb.com/mods/cc-robot-storm-x)*
 
 - Allows jumpjet units to face towards the target when firing from different directions. Set `[JumpjetControls] -> TurnToTarget=yes` to enable it for all jumpjet locomotor units. This behavior can be overriden by setting `[UnitType] -> JumpjetTurnToTarget` for specific units.
-- This behavior does not apply to `TurretSpins=yes` units for obvious reasons.
 
 In `rulesmd.ini`:
 ```ini
@@ -514,8 +535,8 @@ ShakeIsLocal=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]          ; WeaponType
-DiskLaser.Radius=38.2 ; floating point value
-                      ; 38.2 is roughly the default saucer disk radius
+DiskLaser.Radius=240  ; floating point value
+                      ; 240 is the default saucer disk radius
 ```
 
 ### Customizable ROF random delay

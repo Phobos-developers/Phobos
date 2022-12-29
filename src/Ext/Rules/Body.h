@@ -6,6 +6,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
+#include <Utilities/Enum.h>
 #include <Utilities/TemplateDef.h>
 #include <Utilities/Debug.h>
 
@@ -55,13 +56,17 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
 
-		Valueable<bool> ForbidParallelAIQueues_Infantry;
-		Valueable<bool> ForbidParallelAIQueues_Vehicle;
-		Valueable<bool> ForbidParallelAIQueues_Navy;
+		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
 		Valueable<bool> ForbidParallelAIQueues_Building;
+		Valueable<bool> ForbidParallelAIQueues_Infantry;
+		Valueable<bool> ForbidParallelAIQueues_Navy;
+		Valueable<bool> ForbidParallelAIQueues_Vehicle;
 
 		Valueable<bool> IronCurtain_KeptOnDeploy;
+		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
+		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
+
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
 		Valueable<int> ToolTip_Background_Opacity;
@@ -95,12 +100,15 @@ public:
 			, Pips_SelfHeal_Infantry_Offset { { 25, -35 } }
 			, Pips_SelfHeal_Units_Offset { { 33, -32 } }
 			, Pips_SelfHeal_Buildings_Offset { { 15, 10 } }
+			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
 			, ForbidParallelAIQueues_Building { false }
 			, ForbidParallelAIQueues_Infantry { false }
 			, ForbidParallelAIQueues_Navy { false }
 			, ForbidParallelAIQueues_Vehicle { false }
 			, IronCurtain_KeptOnDeploy { true }
+			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
+			, IronCurtain_KillOrganicsWarhead { }
 			, ROF_RandomDelay { { 0 ,2  } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }

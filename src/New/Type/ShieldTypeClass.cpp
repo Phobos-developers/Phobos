@@ -28,6 +28,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Strength.Read(exINI, pSection, "Strength");
 	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
 	this->Armor.Read(exINI, pSection, "Armor");
+	this->InheritArmorFromTechno.Read(exINI, pSection, "InheritArmorFromTechno");
 	this->Powered.Read(exINI, pSection, "Powered");
 
 	this->Respawn.Read(exINI, pSection, "Respawn");
@@ -62,6 +63,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Pips_Building_Empty.Read(exINI, pSection, "Pips.Building.Empty");
 
 	this->ImmuneToBerserk.Read(exINI, pSection, "ImmuneToBerserk");
+	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 }
 
 template <typename T>
@@ -71,6 +73,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Strength)
 		.Process(this->InitialStrength)
 		.Process(this->Armor)
+		.Process(this->InheritArmorFromTechno)
 		.Process(this->Powered)
 		.Process(this->Respawn)
 		.Process(this->Respawn_Rate)
@@ -92,6 +95,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Pips_Building)
 		.Process(this->Pips_Building_Empty)
 		.Process(this->ImmuneToBerserk)
+		.Process(this->ImmuneToCrit)
 		;
 }
 

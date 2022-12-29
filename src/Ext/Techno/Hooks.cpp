@@ -2,7 +2,7 @@
 #include <ScenarioClass.h>
 #include <GameStrings.h>
 #include "Body.h"
-#include <Utilities/Macro.h>
+
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -30,6 +30,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->UpdateShield();
 	pExt->ApplySpawnLimitRange();
 
+	pExt->IsInTunnel = false; // TechnoClass::AI is only called when not in tunnel.
+
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
@@ -39,16 +41,37 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		if (pThis->CloakState == CloakState::Cloaked && !trail->Type->CloakVisible)
 			continue;
 
+		if (!pExt->IsInTunnel)
+			trail->Visible = true;
+
 		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret);
 		if (pThis->CloakState == CloakState::Uncloaking && !trail->Type->CloakVisible)
 			trail->LastLocation = trailLoc;
 		else
 			trail->Update(trailLoc);
 	}
+	return 0;
+}
+
+DEFINE_HOOK(0x51BAC7, InfantryClass_AI_Tunnel, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->UpdateOnTunnelEnter();
 
 	return 0;
 }
 
+DEFINE_HOOK(0x7363B5, UnitClass_AI_Tunnel, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->UpdateOnTunnelEnter();
+
+	return 0;
+}
 
 DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 {
@@ -101,7 +124,6 @@ DEFINE_HOOK(0x414057, TechnoClass_Init_InitialStrength, 0x6)       // AircraftCl
 DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
 {
 	GET(BuildingClass*, pBuilding, ESI);
-
 	if (auto const pInf = abstract_cast<InfantryClass*>(R->EDI<FootClass*>()))
 	{
 		if (pBuilding && pBuilding->Type->Cloning)
@@ -602,14 +624,71 @@ DEFINE_HOOK(0x70265F, TechnoClass_ReceiveDamage_Explodes, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_ObserverCloak, 0x7)
+DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_CloakVisibility, 0x7)
 {
-	enum { UseShadowyVisual = 0x703A5A, CheckIsAlliedWith = 0x703A24 };
+	enum { UseShadowyVisual = 0x703A5A, CheckMutualAlliance = 0x703A16 };
 
 	// Allow observers to always see cloaked objects.
+	// Skip IsCampaign check (confirmed being useless from Mental Omega mappers)
 	if (HouseClass::IsCurrentPlayerObserver())
 		return UseShadowyVisual;
-	// Skip IsCampaign check (confirmed being useless from Mental Omega mappers)
-	return CheckIsAlliedWith;
-	// Question: Is one of these IsAlliedWith checks redundant?
+
+	return CheckMutualAlliance;
 }
+
+DEFINE_HOOK(0x45455B, BuildingClass_VisualCharacter_CloakVisibility, 0x5)
+{
+	enum { UseShadowyVisual = 0x45452D, CheckMutualAlliance = 0x454564 };
+
+	if (HouseClass::IsCurrentPlayerObserver())
+		return UseShadowyVisual;
+
+	return CheckMutualAlliance;
+}
+
+DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+	GET(TechnoTypeClass*, pType, EAX);
+	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
+
+	enum { MakeInvunlnerable = 0x4DEB38, SkipGameCode = 0x4DEBA2 };
+
+	if (!pType->Organic && pThis->WhatAmI() != AbstractType::Infantry)
+		return MakeInvunlnerable;
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	IronCurtainEffect icEffect = pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics);
+
+	switch (icEffect)
+	{
+	case IronCurtainEffect::Ignore:
+	{
+		R->EAX(DamageState::Unaffected);
+	}break;
+	case IronCurtainEffect::Invulnerable:
+	{
+		return MakeInvunlnerable;
+	}break;
+	default:
+	{
+		R->EAX
+		(
+			pThis->ReceiveDamage
+			(
+				&pThis->Health,
+				0,
+				pTypeExt->IronCurtain_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillOrganicsWarhead.Get(RulesClass::Instance->C4Warhead)),
+				nullptr,
+				true,
+				false,
+				pSource
+			)
+		);
+	}break;
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_JUMP(VTABLE, 0x7EB1AC, 0x4DEAE0); // Redirect InfantryClass::IronCurtain to FootClass::IronCurtain

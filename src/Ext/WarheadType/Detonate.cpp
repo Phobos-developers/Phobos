@@ -69,7 +69,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			{
 				const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 				const auto cell = CellClass::Coord2Cell(coords);
-				if (!this->LaunchSW_RealLaunch || (pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)))
+				if (!this->LaunchSW_RealLaunch || (pSuper->Granted && pSuper->IsCharged && !pSuper->IsOnHold && pHouse->CanTransactMoney(pSWExt->Money_Amount)))
 				{
 					if (this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell)
 					&& (this->LaunchSW_IgnoreDesignators || pSWExt->HasDesignator(pHouse, cell)))
@@ -125,7 +125,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, bool bulletWasIntercepted)
 {
-	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health)
+	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking)
 		return;
 
 	if (!this->CanTargetHouse(pHouse, pTarget))
@@ -252,9 +252,13 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (this->Crit_Chance < dice)
 		return;
 
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType()))
+	if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
 	{
-		if (pTypeExt->ImmuneToCrit)
+		if (pExt->TypeExtData->ImmuneToCrit)
+			return;
+
+		auto pSld = pExt->Shield.get();
+		if (pSld && pSld->IsActive() && pSld->GetType()->ImmuneToCrit)
 			return;
 
 		if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent)

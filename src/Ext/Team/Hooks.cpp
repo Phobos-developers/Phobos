@@ -10,14 +10,13 @@ DEFINE_HOOK(0x65DF81, TeamTypeClass_CreateMembers_WhereTheHellIsIFV, 0x7)
 
 	const bool isTransportOpenTopped = pTransport->GetTechnoType()->OpenTopped;
 
-	for (auto pNext = pPayload; pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
+	for (auto pNext = pPayload;
+		pNext && pNext != pTransport && pNext->Team == pTeam;
+		pNext = abstract_cast<FootClass*>(pNext->NextObject))
 	{
-		if (pNext && pNext != pTransport && pNext->Team == pTeam)
-		{
-			pNext->Transporter = pTransport;
-			if (isTransportOpenTopped)
-				pTransport->EnteredOpenTopped(pNext);
-		}
+		pNext->Transporter = pTransport;
+		if (isTransportOpenTopped)
+			pTransport->EnteredOpenTopped(pNext);
 	}
 
 	pPayload->SetLocation(pTransport->Location);
