@@ -340,6 +340,7 @@ Vanilla fixes:
 - Fixed disguised infantry not using custom palette for drawing the disguise when needed (by Starkku)
 - Reenabled the obsolete `[General] WarpIn` as default anim type when units are warping in (by Trsdy)
 - Fixed permanent health bar display for units targeted by temporal weapons upon mouse hover (by Trsdy)
+- AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
