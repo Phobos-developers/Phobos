@@ -310,7 +310,22 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 			pSuper->RechargeTimer.TimeLeft = oldleft;
 		};
 
-		if (pTypeExt->SpyEffect_VictimSuperWeapon.isset())
+		auto justGrantTheSW = [](SuperClass* const pSuper, HouseClass* const pHouse)
+		{
+			if (pSuper->Granted)
+				pSuper->SetReadiness(true);
+			else
+			{
+				pSuper->Grant(true, false, false);
+				if (pHouse->IsCurrentPlayer())
+				{
+					SidebarClass::Instance->AddCameo(AbstractType::Special, pSuper->Type->ArrayIndex);
+					SidebarClass::Instance->RepaintSidebar(1);
+				}
+			}
+		};
+
+		if (pTypeExt->SpyEffect_VictimSuperWeapon.isset() && !pVictimHouse->IsNeutral())
 		{
 			if (const auto pSuper = pVictimHouse->Supers.GetItem(pTypeExt->SpyEffect_VictimSuperWeapon.Get()))
 				launchTheSWHere(pSuper, pVictimHouse);
@@ -319,7 +334,12 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 		if (pTypeExt->SpyEffect_InfiltratorSuperWeapon.isset())
 		{
 			if (const auto pSuper = pInfiltratorHouse->Supers.GetItem(pTypeExt->SpyEffect_InfiltratorSuperWeapon.Get()))
-				launchTheSWHere(pSuper, pInfiltratorHouse);
+			{
+				if (pTypeExt->SpyEffect_InfiltratorSW_JustGrant.Get())
+					justGrantTheSW(pSuper, pInfiltratorHouse);
+				else
+					launchTheSWHere(pSuper, pInfiltratorHouse);
+			}
 		}
 	}
 

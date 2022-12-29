@@ -205,6 +205,7 @@ This page lists all the individual contributions to the project by their author.
    - Cloaked objects from allies displaying to player in singleplayer campaigns
    - Skip `NaturalParticleSystem` displaying from in-map pre-placed structures.
    - `ImmuneToCrit` for shields
+   - SpyEffects expansion: launching SuperWeapon on building infiltration
    - Forbidding parallel AI queues by type
    - Allow iron-curtain effects on infantries
 - **FlyStar**

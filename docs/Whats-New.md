@@ -247,7 +247,7 @@ New:
 - `Crit.AffectsHouses` for critical hit system (by Starkku)
 - Warhead or weapon detonation at superweapon target cell (by Starkku)
 - Super Weapons launching other Super Weapons (by Morton)
-- Launching Super Weapons on building infiltration (by Morton)
+- Launching Super Weapons on building infiltration (by Morton & Trsdy)
 - Building airstrike target eligibility customization (by Starkku)
 - IvanBomb detonation & image display centered on buildings (by Starkku)
 - Forcing specific weapon against cloaked or disguised targets (by Starkku)

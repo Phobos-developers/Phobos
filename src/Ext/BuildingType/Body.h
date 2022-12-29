@@ -48,6 +48,7 @@ public:
 		Nullable<TranslucencyLevel> PlacementPreview_Translucency;
 
 		Valueable<bool> SpyEffect_Custom;
+		Valueable<bool> SpyEffect_InfiltratorSW_JustGrant;
 		NullableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
 		NullableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
 
@@ -81,6 +82,7 @@ public:
 			, SpyEffect_Custom { false }
 			, SpyEffect_VictimSuperWeapon {}
 			, SpyEffect_InfiltratorSuperWeapon {}
+			, SpyEffect_InfiltratorSW_JustGrant{ false }
 		{ }
 
 		// Ares 0.A functions
