@@ -252,8 +252,12 @@ CreateUnit.ConsiderPathfinding=false   ; boolean
 ![image](_static/images/powersup.owner-01.png)
 *Upgrading own and allied Power Plants in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
 
-- Building upgrades now can be placed on own buildings, on allied buildings and/or on enemy buildings. These three owners can be specified via a new tag, comma-separated. When upgrade is placed on building, it automatically changes it's owner to match the building's owner.
-- One upgrade can now be applied to multiple buildings via a new tag, comma-separated.
+```{note}
+Due to technical limitations, upgrades placed through `PowersUp.Buildings` **DO NOT** satisfy prerequisites.
+```
+
+- Building upgrades now can be placed on own buildings, on allied buildings and/or on enemy buildings. These three owners can be specified by `PowersUp.Owner`. When upgrade is placed on building, it automatically changes it's owner to match the building's owner.
+- One upgrade can now be applied to multiple different types of buildings specified by `PowersUp.Buildings`.
   - Ares-introduced build limit for building upgrades works with this feature.
 
 In `rulesmd.ini`:
@@ -812,8 +816,12 @@ SplashList.PickRandom=false  ; boolean
 
 ### Detonate Warhead on all objects on map
 
+```{warning}
+While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys (`AffectTargets/Houses/Types` etc.) is advised.
+```
+
 - Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `Airburst/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
-  - `DetonateOnAllMapObjects.AffectTargets` can be used to filter which types of targets (TechnoTypes) are considered valid. Only `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values.
+  - `DetonateOnAllMapObjects.AffectTargets` is used to filter which types of targets (TechnoTypes) are considered valid and must be set to a valid value other than `none` for this feature to work. Only `none`, `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values. This is set to `none` by default as inclusion of all object types can be performance-heavy.
   - `DetonateOnAllMapObjects.AffectHouses` can be used to filter which houses targets can belong to be considered valid. Only applicable if the house that fired the projectile is known.
   - `DetonateOnAllMapObjects.AffectTypes` can be used to list specific TechnoTypes to be considered as valid targets. If any valid TechnoTypes are listed, then only matching objects will be targeted. Note that `DetonateOnAllMapObjects.AffectTargets` and `DetonateOnAllMapObjects.AffectHouses` take priority over this setting.
   - `DetonateOnAllMapObjects.IgnoreTypes` can be used to list specific TechnoTypes to be never considered as valid targets.
@@ -823,15 +831,11 @@ SplashList.PickRandom=false  ; boolean
 ```ini
 [SOMEWARHEAD]                                ; Warhead
 DetonateOnAllMapObjects=false                ; boolean
-DetonateOnAllMapObjects.AffectTargets=all    ; list of Affected Target Enumeration (aircraft|buildings|infantry|units|all)
+DetonateOnAllMapObjects.AffectTargets=none   ; list of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
 DetonateOnAllMapObjects.AffectHouses=all     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 DetonateOnAllMapObjects.AffectTypes=         ; list of TechnoType names
 DetonateOnAllMapObjects.IgnoreTypes=         ; list of TechnoType names
 DetonateOnAllMapObjects.RequireVerses=false  ; boolean
-```
-
-```{warning}
-While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys is advised.
 ```
 
 ### Generate credits on impact
