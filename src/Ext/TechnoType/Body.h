@@ -133,6 +133,7 @@ public:
 		Nullable<IronCurtainEffect> IronCurtain_Effect;
 		Nullable<WarheadTypeClass*> IronCurtain_KillWarhead;
 		Valueable<bool> Explodes_KillPassengers;
+		Nullable<int> DeployFireWeapon;
 
 		struct LaserTrailDataEntry
 		{
@@ -271,6 +272,7 @@ public:
 			, IronCurtain_KillWarhead {}
 
 			, Explodes_KillPassengers { true }
+			, DeployFireWeapon { }
 		{ }
 
 		virtual ~ExtData() = default;

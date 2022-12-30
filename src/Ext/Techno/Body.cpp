@@ -1001,6 +1001,22 @@ WeaponTypeClass* TechnoExt::GetDeployFireWeapon(TechnoClass* pThis, int& weaponI
 {
 	weaponIndex = pThis->GetTechnoType()->DeployFireWeapon;
 
+	if (pThis->WhatAmI() == AbstractType::Unit)
+	{
+		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		{
+			// Only apply DeployFireWeapon on vehicles if explicitly set.
+			if (!pTypeExt->DeployFireWeapon.isset())
+			{
+				weaponIndex = 0;
+				auto pCell = MapClass::Instance->GetCellAt(pThis->GetMapCoords());
+
+				if (pThis->GetFireError(pCell, 0, true) != FireError::OK)
+					weaponIndex = 1;
+			}
+		}
+	}
+
 	if (weaponIndex < 0)
 		return nullptr;
 
