@@ -51,6 +51,7 @@ public:
 		Valueable<bool> SpyEffect_InfiltratorSW_JustGrant;
 		NullableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
 		NullableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
+		Valueable<bool> SpyEffect_VictimSW_RealLaunch;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
@@ -81,6 +82,7 @@ public:
 			, PlacementPreview_Translucency {}
 			, SpyEffect_Custom { false }
 			, SpyEffect_VictimSuperWeapon {}
+			, SpyEffect_VictimSW_RealLaunch { false }
 			, SpyEffect_InfiltratorSuperWeapon {}
 			, SpyEffect_InfiltratorSW_JustGrant{ false }
 		{ }

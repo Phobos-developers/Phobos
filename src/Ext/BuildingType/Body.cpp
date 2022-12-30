@@ -148,10 +148,16 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	{
 		this->SuperWeapons.Read(exINI, pSection, "SuperWeapons");
 
-		this->SpyEffect_VictimSuperWeapon.Read(exINI, pSection, "SpyEffect.VictimSuperWeapon");
-		this->SpyEffect_InfiltratorSuperWeapon.Read(exINI, pSection, "SpyEffect.InfiltratorSuperWeapon");
-		if (this->SpyEffect_InfiltratorSuperWeapon.isset())
-			this->SpyEffect_InfiltratorSW_JustGrant.Read(exINI, pSection, "SpyEffect.InfiltratorSuperWeapon.JustGrant");
+		if (this->SpyEffect_Custom.Get())
+		{
+			this->SpyEffect_VictimSuperWeapon.Read(exINI, pSection, "SpyEffect.VictimSuperWeapon");
+			if (this->SpyEffect_VictimSuperWeapon.isset())
+				this->SpyEffect_VictimSW_RealLaunch.Read(exINI, pSection, "SpyEffect.VictimSuperWeapon.RealLaunch");
+
+			this->SpyEffect_InfiltratorSuperWeapon.Read(exINI, pSection, "SpyEffect.InfiltratorSuperWeapon");
+			if (this->SpyEffect_InfiltratorSuperWeapon.isset())
+				this->SpyEffect_InfiltratorSW_JustGrant.Read(exINI, pSection, "SpyEffect.InfiltratorSuperWeapon.JustGrant");
+		}
 	}
 
 	if (pThis->MaxNumberOccupants > 10)
@@ -220,6 +226,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlacementPreview_Palette)
 		.Process(this->PlacementPreview_Translucency)
 		.Process(this->SpyEffect_Custom)
+		.Process(this->SpyEffect_VictimSW_RealLaunch)
 		.Process(this->SpyEffect_VictimSuperWeapon)
 		.Process(this->SpyEffect_InfiltratorSW_JustGrant)
 		.Process(this->SpyEffect_InfiltratorSuperWeapon)

@@ -297,18 +297,21 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 	auto pVictimHouse = pBuilding->Owner;
 	if (pInfiltratorHouse != pVictimHouse)
 	{
-		// I assume you were not launching for real, Morton
-		auto launchTheSWHere = [pBuilding](int const idx, HouseClass* const pHouse)
+		// Did you mean for not launching for real or not, Morton?
+		auto launchTheSWHere = [pBuilding](int const idx, HouseClass* const pHouse, bool realLaunch = false)
 		{
 			if (const auto pSuper = pHouse->Supers.GetItem(idx))
 			{
-				int oldstart = pSuper->RechargeTimer.StartTime;
-				int oldleft = pSuper->RechargeTimer.TimeLeft;
-				pSuper->SetReadiness(true);
-				pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pHouse->IsCurrentPlayer());
-				pSuper->Reset();
-				pSuper->RechargeTimer.StartTime = oldstart;
-				pSuper->RechargeTimer.TimeLeft = oldleft;
+				if (!realLaunch || (pSuper->Granted && pSuper->IsCharged && !pSuper->IsOnHold))
+				{
+					int oldstart = pSuper->RechargeTimer.StartTime;
+					int oldleft = pSuper->RechargeTimer.TimeLeft;
+					pSuper->SetReadiness(true);
+					pSuper->Launch(CellClass::Coord2Cell(pBuilding->GetCenterCoords()), pHouse->IsCurrentPlayer());
+					pSuper->Reset();
+					pSuper->RechargeTimer.StartTime = oldstart;
+					pSuper->RechargeTimer.TimeLeft = oldleft;
+				}
 			}
 		};
 
@@ -317,7 +320,7 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 			if (const auto pSuper = pHouse->Supers.GetItem(idx))
 			{
 				if (pSuper->Granted)
-					pSuper->SetReadiness(true);
+					pSuper->SetCharge(100);
 				else
 				{
 					pSuper->Grant(true, false, false);
@@ -329,9 +332,8 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 		};
 
 		if (pTypeExt->SpyEffect_VictimSuperWeapon.isset() && !pVictimHouse->IsNeutral())
-		{
-			launchTheSWHere(pTypeExt->SpyEffect_VictimSuperWeapon.Get(), pVictimHouse);
-		}
+			launchTheSWHere(pTypeExt->SpyEffect_VictimSuperWeapon.Get(), pVictimHouse, pTypeExt->SpyEffect_VictimSW_RealLaunch.Get());
+
 
 		if (pTypeExt->SpyEffect_InfiltratorSuperWeapon.isset())
 		{
