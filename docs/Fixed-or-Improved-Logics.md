@@ -169,6 +169,7 @@ AllowAirstrike=  ; boolean
   - `Grinding.AllowOwner` changes whether or not to allow units to enter your own buildings.
   - `Grinding.AllowTypes` can be used to define InfantryTypes and VehicleTypes that can be grinded by the building. Listing any will disable grinding for all types except those listed.
   - `Grinding.DisallowTypes` can be used to exclude InfantryTypes or VehicleTypes from being able to enter the grinder building.
+  - `Grinding.PlayDieSound` controls if the units' `DieSound` and `VoiceDie` are played when entering the grinder. Default to `yes`.
   - `Grinding.Sound` is a sound played by when object is grinded by the building. If not set, defaults to `[AudioVisual]`->`EnterGrinderSound`.
   - `Grinding.Weapon` is a weapon fired at the building & by the building when it grinds an object. Will only be fired if at least weapon's `ROF` amount of frames have passed since it was last fired.
   - `Grinding.DisplayRefund` can be set to display the amount of credits acquired upon grinding on the building. Multiple refunded objects within a short period of time have their refund amounts coalesced into single display.
@@ -182,6 +183,7 @@ Grinding.AllowAllies=false         ; boolean
 Grinding.AllowOwner=true           ; boolean
 Grinding.AllowTypes=               ; List of InfantryTypes / VehicleTypes
 Grinding.DisallowTypes=            ; List of InfantryTypes / VehicleTypes
+Grinding.PlayDieSound=true         ; boolean
 Grinding.Sound=                    ; Sound
 Grinding.Weapon=                   ; WeaponType
 Grinding.DisplayRefund=false       ; boolean

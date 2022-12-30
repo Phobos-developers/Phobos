@@ -147,10 +147,21 @@ DEFINE_HOOK(0x4DFABD, FootClass_Try_Grinding_CheckIfAllowed, 0x8)
 
 namespace GrinderRefundTemp
 {
-	long BalanceBefore;
+	int BalanceBefore;
 }
 
-DEFINE_HOOK(0x5198B3, InfantryClass_PerCellProcess_GrindingDoExtras, 0x5)
+DEFINE_HOOK(0x519790, InfantryClass_PerCellProcess_SkipDieSoundBeforeGrinding, 0xA)
+{
+	enum { SkipVoiceDie = 0x51986A };
+	GET(BuildingClass*, pBuilding, EBX);
+
+	if (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->Grinding_PlayDieSound.Get())
+		return 0;
+
+	return SkipVoiceDie;
+}
+
+DEFINE_HOOK(0x5198B3, InfantryClass_PerCellProcess_DoGrindingExtras, 0x5)
 {
 	enum { Continue = 0x5198CE };
 
@@ -160,16 +171,20 @@ DEFINE_HOOK(0x5198B3, InfantryClass_PerCellProcess_GrindingDoExtras, 0x5)
 	return BuildingExt::DoGrindingExtras(pBuilding, pThis, pThis->GetRefund()) ? Continue : 0;
 }
 
-DEFINE_HOOK(0x73A0A5, UnitClass_PerCellProcess_GrindingSetBalance, 0x5)
+DEFINE_HOOK(0x739FBC, UnitClass_PerCellProcess_BeforeGrinding, 0x5)
 {
+	enum { SkipDieSound = 0x73A0A5 };
 	GET(BuildingClass*, pBuilding, EBX);
 
-	GrinderRefundTemp::BalanceBefore = pBuilding->Owner->Available_Money();
+	GrinderRefundTemp::BalanceBefore = pBuilding->Owner->Balance;
 
-	return 0;
+	if (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->Grinding_PlayDieSound.Get())
+		return 0;
+
+	return SkipDieSound;
 }
 
-DEFINE_HOOK(0x73A1C3, UnitClass_PerCellProcess_GrindingDoExtras, 0x5)
+DEFINE_HOOK(0x73A1C3, UnitClass_PerCellProcess_DoGrindingExtras, 0x5)
 {
 	enum { Continue = 0x73A1DE };
 
@@ -177,7 +192,7 @@ DEFINE_HOOK(0x73A1C3, UnitClass_PerCellProcess_GrindingDoExtras, 0x5)
 	GET(BuildingClass*, pBuilding, EBX);
 
 	// Calculated like this because it is easier than tallying up individual refunds for passengers and parasites.
-	int totalRefund = pBuilding->Owner->Available_Money() - GrinderRefundTemp::BalanceBefore;
+	int totalRefund = pBuilding->Owner->Balance - GrinderRefundTemp::BalanceBefore;
 
 	return BuildingExt::DoGrindingExtras(pBuilding, pThis, totalRefund) ? Continue : 0;
 }
