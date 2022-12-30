@@ -420,6 +420,17 @@ MinimapColor=  ; integer - Red,Green,Blue
 
 ## Vehicles
 
+### Destroy animations
+
+- `DestroyAnim` has been extended to work with VehicleTypes, with option to pick random animation if `DestroyAnim.Random` is set to true. These animations store owner and facing information for use with [CreateUnit logic](New-or-Enhanced-Logics.md#anim-to-unit).
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                          ; VehicleType
+DestroyAnim=                           ; list of animations
+DestroyAnim.Random=true                ; boolean
+```
+
 ### IsSimpleDeployer vehicle deploy animation / direction customization
 
 - `DeployingAnim.AllowAnyDirection` if set, disables any direction constraints for deployers with `DeployingAnim` set. Only works for ground units.
