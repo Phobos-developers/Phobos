@@ -123,6 +123,7 @@ public:
 		Nullable<bool> IronCurtain_KeptOnDeploy;
 
 		Valueable<bool> Explodes_KillPassengers;
+		Nullable<int> DeployFireWeapon;
 
 		struct LaserTrailDataEntry
 		{
@@ -239,6 +240,7 @@ public:
 			, DeployedSecondaryFireFLH { }
 			, IronCurtain_KeptOnDeploy{ }
 			, Explodes_KillPassengers { true }
+			, DeployFireWeapon { }
 		{ }
 
 		virtual ~ExtData() = default;
