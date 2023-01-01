@@ -8,7 +8,7 @@
 #include <InfantryClass.h>
 #include <UnitClass.h>
 
-#include <Misc/CaptureManager.h>
+#include <Ext/CaptureManager/Body.h>
 
 namespace MindControlFixTemp
 {
@@ -23,8 +23,8 @@ void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClas
 		{
 			MindControlFixTemp::isMindControlBeingTransferred = true;
 
-			CaptureManager::FreeUnit(Manager, pTechnoFrom, true);
-			CaptureManager::CaptureUnit(Manager, pTechnoTo, true);
+			CaptureManagerExt::FreeUnit(Manager, pTechnoFrom, true);
+			CaptureManagerExt::CaptureUnit(Manager, pTechnoTo, true);
 
 			if (pTechnoTo->WhatAmI() == AbstractType::Building)
 			{
