@@ -224,27 +224,28 @@ Shield.InheritStateOnReplace=false   ; boolean
 
 ![image](_static/images/animToUnit.gif)
 
-- Animations can now create (or "convert" to) units when they end.
-  - Because in most cases animations do not have owner, the unit will be created with civilian owner unless you use `DestroyAnim` which was modified to store owner and facing information from the destroyed unit, or animation from Warhead `AnimList` or one created through map trigger action `41 Play Anim At`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEUNIT]                             ; UnitType
-DestroyAnim.Random=true                ; boolean, whether to randomize DestroyAnim
-```
+- Animations can now create (or "convert" to) vehicles when they end via `CreateUnit`.
+  - `CreateUnit.Owner` determines which house will own the created VehicleType. This only works as expected if the animation has owner set.
+    - Vehicle [destroy animations](Fixed-or-Improved-Logics.md#destroy-animations), animations from Warhead `AnimList/SplashList` and map trigger action `41 Play Anim At` will have the owner set correctly.
+    - `CreateUnit.RemapAnim`, if set to true, will cause the animation to be drawn in unit palette and remappable to owner's team color.
+  - `CreateUnit.Mission` determines the initial mission of the created VehicleType.
+  - `CreateUnit.Facing` determines the initial facing of created VehicleType.
+    - `CreateUnit.RandomFacing`, if set to true makes it so that a random facing is picked instead.
+    - `CreateUnit.InheritFacings` and `CreateUnit.InheritTurretFacings` inherit facings for vehicle body and turret respectively from the destroyed vehicle if the animation is a vehicle destroy animation.
+  - `CreateUnit.ConsiderPathfinding`, if set to true, will consider whether or not the cell where the animation is located is occupied by other objects or impassable to the vehicle being created and will attempt to find a nearby cell that is not. Otherwise the vehicle will be created at the animation's location despite these obstacles.
 
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                             ; AnimationType
-CreateUnit=                            ; UnitType
-CreateUnit.Facing=0                    ; integer, `CreateUnit` facings in range of 0-255
-CreateUnit.RandomFacing=true           ; boolean, `CreateUnit` use random facings
-CreateUnit.InheritFacings=false        ; boolean, inherit facing from destroyed unit
-CreateUnit.InheritTurretFacings=false  ; boolean, inherit facing from destroyed unit
-CreateUnit.RemapAnim=false             ; boolean, whether to remap anim to owner color
-CreateUnit.Mission=Guard               ; MissionType
+CreateUnit=                            ; VehicleType
 CreateUnit.Owner=Victim                ; Owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
-CreateUnit.ConsiderPathfinding=false   ; boolean, whether to consider if the created unit can move in the cell and look for eligible cells nearby instead.
+CreateUnit.RemapAnim=false             ; boolean
+CreateUnit.Mission=Guard               ; MissionType
+CreateUnit.Facing=0                    ; integer, facings in range of 0-255
+CreateUnit.RandomFacing=true           ; boolean
+CreateUnit.InheritFacings=false        ; boolean
+CreateUnit.InheritTurretFacings=false  ; boolean
+CreateUnit.ConsiderPathfinding=false   ; boolean
 ```
 
 ```{note}

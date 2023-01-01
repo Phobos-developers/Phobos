@@ -207,6 +207,7 @@ This page lists all the individual contributions to the project by their author.
    - Skip `NaturalParticleSystem` displaying from in-map pre-placed structures.
    - `ImmuneToCrit` for shields
    - Forbidding parallel AI queues by type
+   - The option to allow DieSound/VoiceDie being played when grinding
    - Allow iron-curtain effects on infantries
 - **FlyStar**
    - Campaign load screen PCX support
