@@ -12,6 +12,7 @@ public:
 	Valueable<int> Strength;
 	Nullable<int> InitialStrength;
 	Valueable<ArmorType> Armor;
+	Valueable<bool> InheritArmorFromTechno;
 	Valueable<bool> Powered;
 	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
@@ -36,7 +37,7 @@ public:
 	Nullable<SHPStruct*> Pips_Background;
 	Valueable<Vector3D<int>> Pips_Building;
 	Nullable<int> Pips_Building_Empty;
-
+	Valueable<bool> ImmuneToCrit;
 	Valueable<bool> ImmuneToBerserk;
 
 private:
@@ -48,6 +49,7 @@ public:
 		, Strength(0)
 		, InitialStrength()
 		, Armor(Armor::None)
+		, InheritArmorFromTechno(false)
 		, Powered(false)
 		, Respawn(0.0)
 		, Respawn_Rate(0)
@@ -72,6 +74,7 @@ public:
 		, Pips_Building { { -1,-1,-1 } }
 		, Pips_Building_Empty { }
 		, ImmuneToBerserk { false }
+		, ImmuneToCrit { false }
 	{ };
 
 	virtual ~ShieldTypeClass() override = default;

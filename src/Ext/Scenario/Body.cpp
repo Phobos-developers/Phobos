@@ -4,6 +4,8 @@
 #include <LightSourceClass.h>
 #include <SessionClass.h>
 
+#include <SessionClass.h>
+
 template<> const DWORD Extension<ScenarioClass>::Canary = 0xABCD1595;
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
@@ -156,8 +158,6 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentTint_Schemes)
 		.Process(this->CurrentTint_Hashes)
 		.Process(this->AdjustLightingFix)
-
-		// Extra datas
 		.Process(SessionClass::Instance->Config)
 		;
 }

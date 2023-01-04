@@ -6,6 +6,9 @@
 [![EditorConfig](https://github.com/Phobos-developers/Phobos/workflows/EditorConfig/badge.svg)](https://github.com/Phobos-developers/Phobos/actions?query=workflow%3AEditorConfig)
 [![license](https://img.shields.io/github/license/Phobos-developers/Phobos.svg)](https://www.gnu.org/licenses/lgpl-3.0.en.html)
 
+> **Warning**
+> The project is currently not maintained actively enough and thus we are looking for active maintainers at the moment. Please message us [in Discord channel](https://discord.gg/sZeMzz6qVg) (or PM Kerbiter directly).
+
 # Phobos
 ...is a community engine extension project providing a set of new features and fixes for Yuri's Revenge based on [modified YRpp](https://github.com/Metadorius/YRpp) and [Syringe](https://github.com/Ares-Developers/Syringe) to allow injecting code. It's meant to accompany [Ares](https://github.com/Ares-Developers/Ares) rather than replace it, thus it won't introduce incompatibilities.
 
@@ -77,8 +80,8 @@ Credits
 -------
 
 ### Developers
-- **Belonit (Gluk-v48)** - project author (retired)
-- **Kerbiter (Metadorius)** - project co-author, current maintainer ([Patreon](https://patreon.com/kerbiter))
+- **Belonit (Gluk-v48)** - project author
+- **Kerbiter (Metadorius)** - project co-author & BDFL (retired for the time being)
 - **Starkku** - co-maintainer, developer ([Patreon](https://www.patreon.com/Starkku))
 - **Uranusian (Thrifinesma)** - developer, CN community ambassador ([Patreon](https://www.patreon.com/uranusian), [AliPay](http://tiebapic.baidu.com/forum/w%3D580/sign=4b04b953307f9e2f70351d002f31e962/b3f89909b3de9c823bd7f23a7b81800a18d84371.jpg))
 - **secsome (SEC-SOME)** - developer

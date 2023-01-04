@@ -162,6 +162,8 @@ This page lists all the individual contributions to the project by their author.
   - Warhead detonation on all objects on map
   - Animated TerrainTypes extension
   - Exploding unit passenger killing customization
+  - Railgun particle target coordinate fix
+  - Building target coordinate offset fix
   - Warhead / weapon detonation at superweapon target cell
   - Cloaked objects displaying to observers
   - Building airstrike target eligibility customization
@@ -191,7 +193,9 @@ This page lists all the individual contributions to the project by their author.
    - Object Self-destruction logic
       - Misc vanilla suicidal behavior fix
    - Post-type-conversion update
+   - Units retaining orders after changing ownership bugfix
    - Building EVA_StructureSold and SellSound dehardcode
+   - `AlternateFLH` of vehicles in `OpenTopped` transport.
    - Slaves' house customization when owner is killed
    - Trigger Action spawned team IFV/Opentopped logic fix
    - Singleplayer Campaign AI's base node/SW-delivered/trigger action 125-delivered structures' auto-repairability dehardcode
@@ -202,13 +206,19 @@ This page lists all the individual contributions to the project by their author.
    - "Shield is broken" trigger event
    - RadialIndicator observer visibility
    - Cloaked objects from allies displaying to player in singleplayer campaigns
+   - Skip `NaturalParticleSystem` displaying from in-map pre-placed structures.
+   - `ImmuneToCrit` for shields
    - Forbidding parallel AI queues by type
+   - The option to allow DieSound/VoiceDie being played when grinding
+   - Allow iron-curtain effects on infantries
 - **FlyStar**
    - Campaign load screen PCX support
    - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
-- **ststl** - Use `CustomPalette` for animations with `Tiled=yes`
+- **ststl**
+   - Iron Curtain effects customization on infantries and organic units
+   - Use `CustomPalette` for animations with `Tiled=yes`
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic

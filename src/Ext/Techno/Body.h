@@ -5,7 +5,7 @@
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
-
+#include <Utilities/Macro.h>
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
 
@@ -32,6 +32,8 @@ public:
 		AnimTypeClass* MindControlRingAnimType;
 		OptionalStruct<int, false> DamageNumberOffset;
 		OptionalStruct<int, true> CurrentLaserWeaponIndex;
+		bool IsInTunnel;
+		CDTimerClass DeployFireTimer;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -47,17 +49,20 @@ public:
 			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
-			, AutoDeathTimer { }
+			, AutoDeathTimer {}
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset {}
 			, OriginalPassengerOwner {}
 			, CurrentLaserWeaponIndex {}
+			, IsInTunnel { false }
+			, DeployFireTimer {}
 		{ }
 
 		void ApplyInterceptor();
 		bool CheckDeathConditions();
 		void EatPassengers();
 		void UpdateShield();
+		void UpdateOnTunnelEnter();
 		void ApplySpawnLimitRange();
 		void UpdateTypeData(TechnoTypeClass* currentType);
 
@@ -112,4 +117,6 @@ public:
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
 	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
+	static CoordStruct PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger, int maxAttempts);
+	static WeaponTypeClass* GetDeployFireWeapon(TechnoClass* pThis, int& weaponIndex);
 };

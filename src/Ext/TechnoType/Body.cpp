@@ -213,8 +213,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
 
 	this->IronCurtain_KeptOnDeploy.Read(exINI, pSection, "IronCurtain.KeptOnDeploy");
+	this->IronCurtain_Effect.Read(exINI, pSection, "IronCurtain.Effect");
+	this->IronCurtain_KillWarhead.Read(exINI, pSection, "IronCurtain.KillWarhead");
 
 	this->Explodes_KillPassengers.Read(exINI, pSection, "Explodes.KillPassengers");
+	this->DeployFireWeapon.Read(exINI, pSection, "DeployFireWeapon");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -381,6 +384,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelfHealGainType)
 		.Process(this->Passengers_SyncOwner)
 		.Process(this->Passengers_SyncOwner_RevertOnExit)
+		.Process(this->Explodes_KillPassengers)
 
 		.Process(this->PronePrimaryFireFLH)
 		.Process(this->ProneSecondaryFireFLH)
@@ -392,7 +396,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteDeployedWeaponBurstFLHs)
 
 		.Process(this->IronCurtain_KeptOnDeploy)
+		.Process(this->IronCurtain_Effect)
+		.Process(this->IronCurtain_KillWarhead)
+
 		.Process(this->Explodes_KillPassengers)
+		.Process(this->DeployFireWeapon)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

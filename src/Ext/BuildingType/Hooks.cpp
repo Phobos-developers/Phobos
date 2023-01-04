@@ -172,4 +172,3 @@ DEFINE_HOOK(0x51EAF2, TechnoClass_WhatAction_AllowAirstrike, 0x6)
 
 	return SkipGameCode;
 }
-
