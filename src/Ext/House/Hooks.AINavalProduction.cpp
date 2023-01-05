@@ -136,7 +136,7 @@ DEFINE_HOOK(0x4F91A4, HouseClass_AI_BuildingProductionCheck, 0x6)
 		cantBuild = true;
 
 	index = pThis->ProducingAircraftTypeIndex;
-	if ((index != -1 && !InfantryTypeClass::Array->GetItem(index)->FindFactory(true, true, true, pThis)) || cantBuild)
+	if ((index != -1 && !AircraftTypeClass::Array->GetItem(index)->FindFactory(true, true, true, pThis)) || cantBuild)
 		return CheckBuildingProduction;
 
 	return SkipGameCode;
