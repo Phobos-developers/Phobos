@@ -40,7 +40,6 @@ DEFINE_HOOK(0x4DBF23, FootClass_ChangeOwner_IAmNowHuman, 0x6)
 	pThis->ShouldEnterAbsorber = false;
 	pThis->ShouldEnterOccupiable = false;
 	pThis->ShouldGarrisonStructure = false;
-	pThis->CurrentTargets.Clear();
 
 	if (pThis->HasAnyLink() || pThis->GetTechnoType()->ResourceGatherer) // Don't want miners to stop
 		return 0;

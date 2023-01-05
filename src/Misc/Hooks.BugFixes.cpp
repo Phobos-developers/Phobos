@@ -13,7 +13,7 @@
 #include <JumpjetLocomotionClass.h>
 #include <BombClass.h>
 #include <WarheadTypeClass.h>
-
+#include <GameStrings.h>
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/Body.h>
@@ -247,8 +247,8 @@ DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
 	GET(CCINIClass*, pINI, EDI);
 	INI_EX exINI(pINI);
 
-	pRulesExt->JumpjetCrash.Read(exINI, "JumpjetControls", "Crash");
-	pRulesExt->JumpjetNoWobbles.Read(exINI, "JumpjetControls", "NoWobbles");
+	pRulesExt->JumpjetCrash.Read(exINI, GameStrings::JumpjetControls, "Crash");
+	pRulesExt->JumpjetNoWobbles.Read(exINI, GameStrings::JumpjetControls, "NoWobbles");
 
 	return 0;
 }

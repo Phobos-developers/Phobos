@@ -58,42 +58,99 @@ DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 	return 0x7019E3;
 }
 
-DEFINE_HOOK_AGAIN(0x70CF39, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_EvalThreatRating_Shield
-DEFINE_HOOK_AGAIN(0x6F7D31, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_CanAutoTargetObject_Shield
-DEFINE_HOOK_AGAIN(0x6FCB64, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_CanFire_Shield
-DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_ShouldRetaliate_Shield
+#pragma region TechnoClass_ReplaceArmorWithShields
+DEFINE_HOOK(0x708AEB, TechnoClass_ShouldRetaliate_Shield, 0x6)
 {
-	WeaponTypeClass* pWeapon = nullptr;
-	if (R->Origin() == 0x708AEB)
-		pWeapon = R->ESI<WeaponTypeClass*>();
-	else if (R->Origin() == 0x6F7D31)
-		pWeapon = R->EBP<WeaponTypeClass*>();
-	else
-		pWeapon = R->EBX<WeaponTypeClass*>();
-
-	TechnoClass* pTarget = nullptr;
-	if (R->Origin() == 0x6F7D31 || R->Origin() == 0x70CF39)
-		pTarget = R->ESI<TechnoClass*>();
-	else
-		pTarget = R->EBP<TechnoClass*>();
+	GET(TechnoClass* const, pTarget, EBP);
 
 	if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
 	{
 		if (const auto pShieldData = pExt->Shield.get())
 		{
+			GET(WeaponTypeClass* const, pWeapon, ESI);
 			if (pShieldData->CanBePenetrated(pWeapon->Warhead))
 				return 0;
 
 			if (pShieldData->IsActive())
 			{
 				R->EAX(pShieldData->GetArmorType());
-				return R->Origin() + 6;
+				return 0x708AEB + 6;
 			}
 		}
 	}
 
 	return 0;
 }
+
+DEFINE_HOOK(0x6FCB64, TechnoClass_CanFire_Shield, 0x6)
+{
+	GET(TechnoClass* const, pTarget, EBP);
+
+	if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
+	{
+		if (const auto pShieldData = pExt->Shield.get())
+		{
+			GET(WarheadTypeClass* const, pWarhead, EDI);
+			if (pShieldData->CanBePenetrated(pWarhead))
+				return 0;
+
+			if (pShieldData->IsActive())
+			{
+				R->EAX(pShieldData->GetArmorType());
+				return 0x6FCB64 + 6;
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F7D31, TechnoClass_CanAutoTargetObject_Shield, 0x6)
+{
+	GET(TechnoClass* const, pTarget, ESI);
+
+	if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
+	{
+		if (const auto pShieldData = pExt->Shield.get())
+		{
+			GET(WeaponTypeClass* const, pWeapon, EBP);
+			if (pShieldData->CanBePenetrated(pWeapon->Warhead))
+				return 0;
+
+			if (pShieldData->IsActive())
+			{
+				R->EAX(pShieldData->GetArmorType());
+				return 0x6F7D31 + 6;
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x70CF39, TechnoClass_EvalThreatRating_Shield, 0x6)
+{
+	GET(TechnoClass* const, pTarget, ESI);
+
+	if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
+	{
+		if (const auto pShieldData = pExt->Shield.get())
+		{
+			GET(WeaponTypeClass* const, pWeapon, EBX);
+			if (pShieldData->CanBePenetrated(pWeapon->Warhead))
+				return 0;
+
+			if (pShieldData->IsActive())
+			{
+				R->EAX(pShieldData->GetArmorType());
+				return 0x70CF39 + 6;
+			}
+		}
+	}
+
+	return 0;
+}
+#pragma endregion
 
 // Ares-hook jmp to this offset
 DEFINE_HOOK(0x71A88D, TemporalClass_AI_Shield, 0x0)

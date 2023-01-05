@@ -345,9 +345,10 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x6F6CFE, TechnoClass_Unlimbo_LaserTrails, 0x6)
+// I don't think buildings should have laser-trails
+DEFINE_HOOK(0x4D7221, FootClass_Unlimbo_LaserTrails, 0x6)
 {
-	GET(TechnoClass*, pTechno, ESI);
+	GET(FootClass*, pTechno, ESI);
 
 	if (auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno))
 	{

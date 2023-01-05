@@ -39,5 +39,5 @@ void MakeCommand()
 #define CATEGORY_SELECTION StringTable::LoadString(GameStrings::TXT_SELECTION)
 #define CATEGORY_CONTROL StringTable::LoadString(GameStrings::TXT_CONTROL)
 #define CATEGORY_DEBUG L"Debug"
-#define CATEGORY_GUIDEBUG StringTable::LoadString("GUI:Debug")
+#define CATEGORY_GUIDEBUG StringTable::LoadString(GameStrings::GUI_DEBUG)
 #define CATEGORY_DEVELOPMENT StringTable::LoadString("TXT_DEVELOPMENT")
