@@ -319,7 +319,7 @@ DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
 	GET(TechnoClass*, pSlave, EDI);
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->GetTechnoType());
-	auto sound = pTypeExt->SlavesFreeSound.Get(RulesClass::Instance()->SlavesFreeSound);
+	int sound = pTypeExt->SlavesFreeSound.Get(RulesClass::Instance()->SlavesFreeSound);
 	if (sound != -1)
 		VocClass::PlayAt(sound, pSlave->GetCoords());
 
