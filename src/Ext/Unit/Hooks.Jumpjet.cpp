@@ -100,4 +100,12 @@ DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_54BFF0_UpdateSensors, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x54CB0E, JumpjetLocomotionClass_State5_CrashRotation, 0x7)
+{
+	GET(ILocomotion*, pLoco, ESI);
+	auto pThis = static_cast<JumpjetLocomotionClass*>(pLoco);
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
+	return pTypeExt->CrashRotation ? 0 : 0x54CB3E;
+}
+
 //TODO : Issue #690 #655
