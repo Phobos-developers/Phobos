@@ -356,6 +356,17 @@ TurnToTarget=false     ; boolean
 JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
 ```
 
+### Jumpjet crash rotation control
+
+- Allows jumpjet to crash without rotation.
+
+In `rulesmd.ini`:
+
+```ini
+[SOMETECHNO]        ; TechnoType
+CrashRotation=true  ; boolean
+```
+
 
 ### Kill spawns on low power
 

@@ -111,6 +111,7 @@ public:
 
 		Nullable<bool> JumpjetAllowLayerDeviation;
 		Nullable<bool> JumpjetTurnToTarget;
+		Valueable<bool> CrashRotation;
 
 		Valueable<bool> DeployingAnim_AllowAnyDirection;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
@@ -235,6 +236,7 @@ public:
 			, NoAmmoAmount { 0 }
 			, JumpjetAllowLayerDeviation {}
 			, JumpjetTurnToTarget {}
+			, CrashRotation { true }
 
 			, DeployingAnim_AllowAnyDirection { false }
 			, DeployingAnim_KeepUnitVisible { false }
