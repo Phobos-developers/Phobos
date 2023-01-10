@@ -292,7 +292,7 @@ DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
 	return ContinueCheck;
 }
 
-DEFINE_HOOK(0x440E99, BuildingClass_Unlimbo_NaturalParticleSystem_CampaignSkip, 0x6)
+DEFINE_HOOK(0x440EBB, BuildingClass_Unlimbo_NaturalParticleSystem_CampaignSkip, 0x5)
 {
 	enum { DoNotCreateParticle = 0x440F61 };
 	GET(BuildingClass* const, pThis, ESI);
