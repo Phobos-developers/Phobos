@@ -356,6 +356,17 @@ TurnToTarget=false     ; boolean
 JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
 ```
 
+### Jumpjet crash rotation control
+
+- Allows jumpjet to crash without rotation.
+
+In `rulesmd.ini`:
+
+```ini
+[SOMETECHNO]        ; TechnoType
+CrashRotation=true  ; boolean
+```
+
 
 ### Kill spawns on low power
 
@@ -607,7 +618,7 @@ Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
 ```
 
-### RadialIndicator visibility
+## RadialIndicator visibility
 
 In vanilla game, a structure's radial indicator can be drawn only when it belongs to the player. Now it can also be visible to observer.
 On top of that, you can specify its visibility from other houses.
