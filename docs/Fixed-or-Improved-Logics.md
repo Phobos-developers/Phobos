@@ -402,7 +402,7 @@ ForbidParallelAIQueues.Building=no  ; boolean
 
 ### Custom slaves free sound
 
-- `SlavesFreeSound` is now dehardcoded from `AudioVisual` and can be set to each slave.
+- `SlavesFreeSound` is now dehardcoded from `AudioVisual` and can be set individually for each enslaved unit type.
 
 In `rulesmd.ini`
 
