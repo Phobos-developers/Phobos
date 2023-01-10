@@ -256,6 +256,7 @@ New:
 - Toggleable DieSound when grinding (by Trsdy)
 - Shields can inherit Techno ArmorType (by Starkku)
 - Iron-curtain effects on infantries and organic units (by ststl)
+- Custom `SlavesFreeSound` (by TwinkleStar)
 - Allows jumpjet to crash without rotation (by TwinkleStar)
 
 Vanilla fixes:

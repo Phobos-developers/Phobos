@@ -64,6 +64,7 @@ public:
 		Valueable<AffectedHouse> AutoDeath_TechnosExist_Houses;
 
 		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
+		NullableIdx<VocClass> SlavesFreeSound;
 		NullableIdx<VocClass> SellSound;
 		NullableIdx<VoxClass> EVA_Sold;
 
@@ -254,6 +255,7 @@ public:
 			, AutoDeath_TechnosExist_Houses { AffectedHouse::Owner }
 
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
+			, SlavesFreeSound { }
 			, SellSound { }
 			, EVA_Sold { }
 			, EnemyUIName {}

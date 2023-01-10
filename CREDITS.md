@@ -217,6 +217,9 @@ This page lists all the individual contributions to the project by their author.
 - **ststl**
    - Iron Curtain effects customization on infantries and organic units
    - Use `CustomPalette` for animations with `Tiled=yes`
+- **TwinkleStar**
+  - Custom slaves free sound
+  - Jumpjet crash rotation control
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
@@ -236,4 +239,3 @@ This page lists all the individual contributions to the project by their author.
 - **Damfoos** - extensive and thorough testing
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
-- **TwinkleStar** - jumpjet crash rotation control
