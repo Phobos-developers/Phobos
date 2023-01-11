@@ -9,6 +9,7 @@
 #include <Ext/HouseType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Rules/Body.h>
+#include <Ext/TechnoType/Body.h>
 #include <Phobos.h>
 
 enum teamCategory

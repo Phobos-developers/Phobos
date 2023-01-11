@@ -158,6 +158,9 @@ public:
 		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
+		Nullable<bool> ConsideredNaval;
+		Nullable<bool> ConsideredVehicle;
+
 		// Ares 0.1
 		ValueableVector<int> Prerequisite_RequiredTheaters;
 		ValueableVector<int> Prerequisite;
@@ -277,6 +280,8 @@ public:
 			, Prerequisite { }
 			, Prerequisite_Negative { }
 			, Prerequisite_Lists { 0 }
+			, ConsideredNaval { }
+			, ConsideredVehicle { }
 		{ }
 
 		virtual ~ExtData() = default;

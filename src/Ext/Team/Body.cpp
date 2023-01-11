@@ -248,6 +248,26 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		activeTeams = activeTeamsList.Count;
 
+		/*Debug::Log("=====================\n[%s] ACTIVE TEAMS: %d / %d\n", pHouse->Type->ID, activeTeams, maxTeamsLimit);
+		for (auto team : activeTeamsList)
+		{
+			Debug::Log("[%s](%d) : %s\n", team->Type->ID, team->TotalObjects, team->Type->Name);
+			Debug::Log("  IsMoving: %d, IsFullStrength: %d, IsUnderStrength: %d\n", team->IsMoving, team->IsFullStrength, team->IsUnderStrength);
+			int i = 0;
+
+			for (auto entry : team->Type->TaskForce->Entries)
+			{
+				if (entry.Amount > 0)
+				{
+					if (entry.Type)
+						Debug::Log("\t[%s]: %d / %d\n", entry.Type->ID, team->CountObjects[i], entry.Amount);
+				}
+
+				i++;
+			}
+		}
+		Debug::Log("=====================\n");*/
+
 		// We will use these values for discarding triggers
 		bool hasReachedMaxTeamsLimit = activeTeams < maxTeamsLimit ? false : true;
 		bool hasReachedMaxDefensiveTeamsLimit = activeDefenseTeamsCount < maxBaseDefenseTeams ? false : true;
@@ -365,7 +385,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 1)
 						{
-							// Simulate case 0: "house owns"
+							// Simulate case 1: "house owns"
 							if (!pTrigger->ConditionObject)
 								continue;
 
@@ -521,7 +541,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else
 						{
-						// Other cases from vanilla game
+							// Other cases from vanilla game
 							if (!pTrigger->ConditionMet(pHouse, targetHouse, hasReachedMaxDefensiveTeamsLimit))
 								continue;
 						}
@@ -559,47 +579,68 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 					// Analyze what kind of category is this main team if the feature is enabled
 					if (splitTriggersByCategory)
 					{
-						for (auto entry : pTriggerTeam1Type->TaskForce->Entries)
+						//Debug::Log("DEBUG: TaskForce [%s] members:\n", pTriggerTeam1Type->TaskForce->ID);
+						// TaskForces are limited to 6 entries
+						for (int i = 0; i < 6; i++)
 						{
-							// If the team have mixed members there is no need to continue
-							if (teamIsCategory == teamCategory::Unclassified)
-							{
-								if (mergeUnclassifiedCategoryWith >= 0)
-									teamIsCategory = (teamCategory)mergeUnclassifiedCategoryWith;
-
-								break;
-							}
+							auto entry = pTriggerTeam1Type->TaskForce->Entries[i];
+							teamCategory entryIsCategory = teamCategory::Ground;
 
 							if (entry.Amount > 0)
 							{
-								if (entry.Type)
+								if (entry.Type->WhatAmI() == AbstractType::AircraftType
+									|| entry.Type->ConsideredAircraft)
 								{
-									if (entry.Type->WhatAmI() == AbstractType::AircraftType
-										|| entry.Type->ConsideredAircraft)
+									// This unit is from air category
+									entryIsCategory = teamCategory::Air;
+									//Debug::Log("\t[%s](%d) is in AIR category.\n", entry.Type->ID, entry.Amount);
+								}
+								else
+								{
+									auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(entry.Type);
+									if (!pTechnoTypeExt)
+										continue;
+
+									if (pTechnoTypeExt->ConsideredNaval
+										|| (entry.Type->Naval
+											&& (entry.Type->MovementZone != MovementZone::Amphibious
+												&& entry.Type->MovementZone != MovementZone::AmphibiousDestroyer
+												&& entry.Type->MovementZone != MovementZone::AmphibiousCrusher)))
 									{
-										// For now the team is from air category
-										teamIsCategory = teamIsCategory == teamCategory::None || teamIsCategory == teamCategory::Air ? teamCategory::Air : teamCategory::Unclassified;
+										// This unit is from naval category
+										entryIsCategory = teamCategory::Naval;
+										//Debug::Log("\t[%s](%d) is in NAVAL category.\n", entry.Type->ID, entry.Amount);
 									}
-									else if (entry.Type->Naval
-										&& (entry.Type->MovementZone != MovementZone::Amphibious
-											&& entry.Type->MovementZone != MovementZone::AmphibiousDestroyer
-											&& entry.Type->MovementZone != MovementZone::AmphibiousCrusher))
+
+									if (pTechnoTypeExt->ConsideredVehicle
+										|| (entryIsCategory != teamCategory::Naval
+											&& entryIsCategory != teamCategory::Air))
 									{
-										// For now the team is from naval category
-										teamIsCategory = teamIsCategory == teamCategory::None || teamIsCategory == teamCategory::Naval ? teamCategory::Naval : teamCategory::Unclassified;
-									}
-									else if (teamIsCategory != teamCategory::Naval
-										&& teamIsCategory != teamCategory::Air)
-									{
-										// For now the team doesn't belong to the previous categories
-										teamIsCategory = teamIsCategory != teamCategory::Unclassified ? teamCategory::Ground : teamCategory::Unclassified;
+										// This unit is from ground category
+										entryIsCategory = teamCategory::Ground;
+										//Debug::Log("\t[%s](%d) is in GROUND category.\n", entry.Type->ID, entry.Amount);
 									}
 								}
+
+								// if a team have multiple categories it will be a mixed category
+								teamIsCategory = teamIsCategory == teamCategory::None || teamIsCategory == entryIsCategory ? entryIsCategory : teamCategory::Unclassified;
+
+								if (teamIsCategory == teamCategory::Unclassified)
+									break;
 							}
 							else
 							{
 								break;
 							}
+						}
+
+						//Debug::Log("DEBUG: This team is a category %d (1:Ground, 2:Air, 3:Naval, 4:Mixed).\n", teamIsCategory);
+						// Si existe este valor y el team es MIXTO se sobreescribe el tipo de categoría
+						if (teamIsCategory == teamCategory::Unclassified
+							&& mergeUnclassifiedCategoryWith >= 0)
+						{
+							//Debug::Log("DEBUG: MIXED category forced to work as category %d.\n", mergeUnclassifiedCategoryWith);
+							teamIsCategory = (teamCategory)mergeUnclassifiedCategoryWith;
 						}
 					}
 
@@ -817,6 +858,14 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		{
 		case teamCategory::None:
 			weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeight) * 1.0;
+			/*Debug::Log("Weight Dice: %f\n", weightDice);
+
+			// Debug
+			Debug::Log("DEBUG: Candidate AI triggers list:\n");
+			for (TriggerElementWeight element : validTriggerCandidates)
+			{
+				Debug::Log("Weight: %f, [%s][%s]: %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Team1->Name);
+			}*/
 
 			for (auto element : validTriggerCandidates)
 			{
@@ -832,6 +881,14 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		case teamCategory::Ground:
 			weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightGroundOnly) * 1.0;
+			/*Debug::Log("Weight Dice: %f\n", weightDice);
+
+			// Debug
+			Debug::Log("DEBUG: Candidate AI triggers list:\n");
+			for (TriggerElementWeight element : validTriggerCandidatesGroundOnly)
+			{
+				Debug::Log("Weight: %f, [%s][%s]: %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Team1->Name);
+			}*/
 
 			for (auto element : validTriggerCandidatesGroundOnly)
 			{
@@ -847,6 +904,14 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		case teamCategory::Unclassified:
 			weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightUnclassifiedOnly) * 1.0;
+			/*Debug::Log("Weight Dice: %f\n", weightDice);
+
+			// Debug
+			Debug::Log("DEBUG: Candidate AI triggers list:\n");
+			for (TriggerElementWeight element : validTriggerCandidatesUnclassifiedOnly)
+			{
+				Debug::Log("Weight: %f, [%s][%s]: %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Team1->Name);
+			}*/
 
 			for (auto element : validTriggerCandidatesUnclassifiedOnly)
 			{
@@ -862,6 +927,14 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		case teamCategory::Naval:
 			weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightNavalOnly) * 1.0;
+			/*Debug::Log("Weight Dice: %f\n", weightDice);
+
+			// Debug
+			Debug::Log("DEBUG: Candidate AI triggers list:\n");
+			for (TriggerElementWeight element : validTriggerCandidatesNavalOnly)
+			{
+				Debug::Log("Weight: %f, [%s][%s]: %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Team1->Name);
+			}*/
 
 			for (auto element : validTriggerCandidatesNavalOnly)
 			{
@@ -877,6 +950,14 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		case teamCategory::Air:
 			weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightAirOnly) * 1.0;
+			/*Debug::Log("Weight Dice: %f\n", weightDice);
+
+			// Debug
+			Debug::Log("DEBUG: Candidate AI triggers list:\n");
+			for (TriggerElementWeight element : validTriggerCandidatesAirOnly)
+			{
+				Debug::Log("Weight: %f, [%s][%s]: %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Team1->Name);
+			}*/
 
 			for (auto element : validTriggerCandidatesAirOnly)
 			{

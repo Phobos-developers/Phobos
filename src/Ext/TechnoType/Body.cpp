@@ -273,6 +273,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
 
+	this->ConsideredNaval.Read(exINI, pSection, "ConsideredNaval");
+	this->ConsideredVehicle.Read(exINI, pSection, "ConsideredVehicle");
+
 	// Prerequisite.RequiredTheaters contains a list of theader names
 	char* key = "Prerequisite.RequiredTheaters";
 	char* context = nullptr;
@@ -493,6 +496,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Prerequisite_Negative)
 		.Process(this->Prerequisite_Lists)
 		.Process(this->Prerequisite_ListVector)
+		.Process(this->ConsideredNaval)
+		.Process(this->ConsideredVehicle)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
