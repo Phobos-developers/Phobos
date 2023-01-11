@@ -26,6 +26,7 @@ RepairBaseNodes=no,no,no ; 3 booleans indicating whether AI repair basenodes in 
 - In case of picking a category without valid triggers exist a fallback mode that allow picking a trigger from all valid triggers like if categories were disabled.
 - if `Autocreate=yes` AI will care about all units prerequisites so if the house's tech tree is incomplete for the trigger it gets discarded. It understand Ares tags like  `Prerequisite.RequiredTheaters`, `Prerequisite.Negative`, `Prerequisite.Lists` & `Generic prerequisites` section.
 - If it finds a trigger with 5000 current probability weight then discard valid triggers all and start searching all valid triggers with weight 5000. AI will pick 1 randomly and decrease by 1 the current weight of the selected trigger (so if nothing happens in the next teams selection loop it won't appear in this special list). Under this scenario categories are disabled.
+- Units can override the category using `ConsideredVehicle` and `ConsideredNaval` boolean tags
 
 In `rulesmd.ini`:
 ```ini
@@ -45,6 +46,10 @@ NewTeamsSelector.UnclassifiedCategoryPercentage=  ; floating point value, percen
 NewTeamsSelector.GroundCategoryPercentage=        ; floating point value, percents or absolute
 NewTeamsSelector.AirCategoryPercentage            ; floating point value, percents or absolute
 NewTeamsSelector.NavalCategoryPercentage          ; floating point value, percents or absolute
+
+[SOMETECHNO]        ; TechnoType
+ConsideredNaval=    ; boolean
+ConsideredVehicle=  ; boolean
 ```
 
 - Modified slightly AI Trigger conditions 0 (enemy owns ...), 1 (house owns ...) and 7 (civilian owns ...) and added 10 new conditions (from 8 to 17) that check lists of objects instead of only 1 unit. The first 3 were modified because the objects counters weren't updated in real-time. The possible modified and new cases are:
