@@ -356,15 +356,15 @@ TurnToTarget=false     ; boolean
 JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
 ```
 
-### Jumpjet crash rotation control
+### Jumpjet spinning on crashing control
 
-- Allows jumpjet to crash without rotation.
+- Jmpjet that is going to crash starts to spin uncontrollably. This option complements [Ares](https://ares-developers.github.io/Ares-docs/new/crashableaircraft.html) to turn it off.
 
 In `rulesmd.ini`:
 
 ```ini
-[SOMETECHNO]        ; TechnoType
-CrashRotation=true  ; boolean
+[SOMETECHNO]    ; TechnoType
+CrashSpin=true  ; boolean
 ```
 
 

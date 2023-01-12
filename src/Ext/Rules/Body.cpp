@@ -169,23 +169,6 @@ void RulesExt::ExtData::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 	INI_EX exINI(pINI);
 }
 
-bool RulesExt::DetailsCurrentlyEnabled()
-{
-	// not only checks for the min frame rate from the rules, but also whether
-	// the low frame rate is actually desired. in that case, don't reduce.
-	auto const current = FPSCounter::CurrentFrameRate();
-	auto const wanted = static_cast<unsigned int>(
-		60 / Math::clamp(GameOptionsClass::Instance->GameSpeed, 1, 6));
-
-	return current >= wanted || current >= Detail::GetMinFrameRate();
-}
-
-bool RulesExt::DetailsCurrentlyEnabled(int const minDetailLevel)
-{
-	return GameOptionsClass::Instance->DetailLevel >= minDetailLevel
-		&& DetailsCurrentlyEnabled();
-}
-
 // =============================
 // load / save
 

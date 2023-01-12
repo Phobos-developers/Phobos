@@ -165,6 +165,4 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
-	static bool DetailsCurrentlyEnabled();
-	static bool DetailsCurrentlyEnabled(int minDetailLevel);
 };

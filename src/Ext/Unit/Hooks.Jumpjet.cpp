@@ -22,19 +22,10 @@ DEFINE_HOOK(0x54B8E9, JumpjetLocomotionClass_In_Which_Layer_Deviation, 0x6)
 	return 0;
 }
 
-// I think JumpjetLocomotionClass::State is probably an enum, where
-// 0 - On ground
-// 1 - Taking off from ground
-// 2 - Hovering in air
-// 3 - Moving in air
-// 4 - Deploying to land
-// 5 - Crashing
-// 6 - Invalid?
-
 // Bugfix: Jumpjet turn to target when attacking
 // The way vanilla game handles facing turning is a total mess, so even though this is not the most correct place to do it, given that 0x54BF5B has something similar, I just do it here too
 // TODO : The correct fix : 0x736FC4 for stucking at FireError::FACING, 0x736EE9 for something else like OmniFire etc.
-DEFINE_HOOK(0x54BD93, JumpjetLocomotionClass_State2_54BD30_TurnToTarget, 0x6)
+DEFINE_HOOK(0x54BD93, JumpjetLocomotionClass_State2_TurnToTarget, 0x6)
 {
 	enum { ContinueNoTarget = 0x54BDA1, EndFunction = 0x54BFDE };
 	GET(JumpjetLocomotionClass* const, pLoco, ESI);
@@ -51,9 +42,9 @@ DEFINE_HOOK(0x54BD93, JumpjetLocomotionClass_State2_54BD30_TurnToTarget, 0x6)
 		{
 			CoordStruct& source = pThis->Location;
 			CoordStruct target = pTarget->GetCoords();
-			DirStruct tgtDir = DirStruct { Math::atan2(source.Y - target.Y, target.X - source.X) };
+			DirStruct tgtDir { Math::atan2(source.Y - target.Y, target.X - source.X) };
 
-			if (pThis->GetRealFacing().GetFacing<32>() != tgtDir.GetFacing<32>())
+			if (pThis->GetRealFacing() != tgtDir)
 				pLoco->LocomotionFacing.SetDesired(tgtDir);
 		}
 	}
@@ -80,7 +71,7 @@ DEFINE_HOOK(0x736BA3, UnitClass_UpdateRotation_TurretFacing_TemporaryFix, 0x6)
 }
 
 // Bugfix: Jumpjet detect cloaked objects beneath
-DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_54BFF0_UpdateSensors, 0x7)
+DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_UpdateSensors, 0x7)
 {
 	GET(FootClass* const, pLinkedTo, ECX);
 	GET(CellStruct const, currentCell, EAX);
@@ -100,11 +91,11 @@ DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_54BFF0_UpdateSensors, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x54CB0E, JumpjetLocomotionClass_State5_CrashRotation, 0x7)
+DEFINE_HOOK(0x54CB0E, JumpjetLocomotionClass_State5_CrashSpin, 0x7)
 {
 	GET(JumpjetLocomotionClass*, pThis, EDI);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
-	return pTypeExt->CrashRotation ? 0 : 0x54CB3E;
+	return pTypeExt->CrashSpin ? 0 : 0x54CB3E;
 }
 
 //TODO : Issue #690 #655
