@@ -113,7 +113,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
 	for (int i = 0; i < itemsCount; ++i)
 	{
-		DynamicVectorClass<TechnoTypeClass*> objectsList;
+		std::vector<TechnoTypeClass*> objectsList;
 		char* context = nullptr;
 		pINI->ReadString(sectionAITargetTypes, pINI->GetKeyName(sectionAITargetTypes, i), "", Phobos::readBuffer);
 
@@ -121,32 +121,30 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		{
 			TechnoTypeClass* buffer;
 			if (Parser<TechnoTypeClass*>::TryParse(cur, &buffer))
-				objectsList.AddItem(buffer);
+				objectsList.emplace_back(buffer);
 			else
-				Debug::Log("DEBUG: [AITargetTypes][%d]: Error parsing [%s]\n", AITargetTypesLists.Count, cur);
+				Debug::Log("DEBUG: [AITargetTypes][%d]: Error parsing [%s]\n", this->AITargetTypesLists.size(), cur);
 		}
 
-		AITargetTypesLists.AddItem(objectsList);
-		objectsList.Clear();
+		this->AITargetTypesLists.emplace_back(objectsList);
 	}
 
 	// Section AIScriptsList
 	int scriptitemsCount = pINI->GetKeyCount(sectionAIScriptsList);
 	for (int i = 0; i < scriptitemsCount; ++i)
 	{
-		DynamicVectorClass<ScriptTypeClass*> objectsList;
+		std::vector<ScriptTypeClass*> objectsList;
 
 		char* context = nullptr;
 		pINI->ReadString(sectionAIScriptsList, pINI->GetKeyName(sectionAIScriptsList, i), "", Phobos::readBuffer);
 
 		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
-			ScriptTypeClass* pNewScript = GameCreate<ScriptTypeClass>(cur);
-			objectsList.AddItem(pNewScript);
+			ScriptTypeClass* pNewScript = ScriptTypeClass::FindOrAllocate(cur);
+			objectsList.emplace_back(pNewScript);
 		}
 
-		AIScriptsLists.AddItem(objectsList);
-		objectsList.Clear();
+		this->AIScriptsLists.emplace_back(objectsList);
 	}
 }
 

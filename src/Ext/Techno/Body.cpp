@@ -552,7 +552,7 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
 	}
 
-	if (pickedFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+	if ((int)pickedFLHs[weaponIndex].size() > pThis->CurrentBurstIndex)
 	{
 		FLHFound = true;
 		FLH = pickedFLHs[weaponIndex][pThis->CurrentBurstIndex];
@@ -569,25 +569,25 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	if (!pThis || weaponIndex < 0)
 		return FLH;
 
-	if (auto pTechnoType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
 		Nullable<CoordStruct> pickedFLH;
 
 		if (pThis->IsDeployed())
 		{
 			if (weaponIndex == 0)
-				pickedFLH = pTechnoType->DeployedPrimaryFireFLH;
+				pickedFLH = pTypeExt->DeployedPrimaryFireFLH;
 			else if (weaponIndex == 1)
-				pickedFLH = pTechnoType->DeployedSecondaryFireFLH;
+				pickedFLH = pTypeExt->DeployedSecondaryFireFLH;
 		}
 		else
 		{
 			if (pThis->Crawling)
 			{
 				if (weaponIndex == 0)
-					pickedFLH = pTechnoType->PronePrimaryFireFLH;
+					pickedFLH = pTypeExt->PronePrimaryFireFLH;
 				else if (weaponIndex == 1)
-					pickedFLH = pTechnoType->ProneSecondaryFireFLH;
+					pickedFLH = pTypeExt->ProneSecondaryFireFLH;
 			}
 		}
 

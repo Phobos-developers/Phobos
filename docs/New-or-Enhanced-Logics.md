@@ -368,6 +368,16 @@ Slaved=yes
 Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | neutral)
 ```
 
+### Customizable `SlavesFreeSound`
+
+- `SlavesFreeSound` is now dehardcoded from `AudioVisual` and can be set individually for each enslavable infantry type.
+
+In `rulesmd.ini`
+
+```ini
+[SOMEINFANTRY]  ; Slave type
+SlavesFreeSound=      ; sound entry
+```
 
 ## Projectiles
 

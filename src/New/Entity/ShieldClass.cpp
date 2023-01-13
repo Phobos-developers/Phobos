@@ -35,8 +35,8 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTech
 	, Respawn_Rate_Warhead { -1 }
 {
 	this->UpdateType();
-	SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
-	this->TechnoID= this->Techno->GetTechnoType();
+	this->SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
+	this->TechnoID = this->Techno->GetTechnoType();
 	ShieldClass::Array.emplace_back(this);
 }
 

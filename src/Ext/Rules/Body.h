@@ -25,9 +25,9 @@ public:
 	class ExtData final : public Extension<RulesClass>
 	{
 	public:
-		DynamicVectorClass<DynamicVectorClass<TechnoTypeClass*>> AITargetTypesLists;
-		DynamicVectorClass<DynamicVectorClass<ScriptTypeClass*>> AIScriptsLists;
-		DynamicVectorClass<TechnoTypeClass*> HarvesterTypes;
+		std::vector<std::vector<TechnoTypeClass*>> AITargetTypesLists;
+		std::vector<std::vector<ScriptTypeClass*>> AIScriptsLists;
+		ValueableVector<TechnoTypeClass*> HarvesterTypes;
 
 		Valueable<int> Storage_TiberiumIndex;
 		Nullable<int> InfantryGainSelfHealCap;

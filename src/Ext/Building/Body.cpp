@@ -90,7 +90,7 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 
 	AircraftTypeClass* pAircraft = AircraftTypeClass::Array->GetItem(pOwner->ProducingAircraftTypeIndex);
 	FactoryClass* currFactory = pOwner->GetFactoryProducing(pAircraft);
-	DynamicVectorClass<BuildingClass*> airFactoryBuilding;
+	std::vector<BuildingClass*> airFactoryBuilding;
 	BuildingClass* newBuilding = nullptr;
 
 	// Update what is the current air factory for future comparisons
@@ -116,7 +116,7 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 			if (!currFactory && pBuilding->Factory)
 				currFactory = pBuilding->Factory;
 
-			airFactoryBuilding.AddItem(pBuilding);
+			airFactoryBuilding.emplace_back(pBuilding);
 		}
 	}
 

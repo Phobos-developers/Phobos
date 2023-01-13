@@ -321,7 +321,7 @@ DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->GetTechnoType());
 	int sound = pTypeExt->SlavesFreeSound.Get(RulesClass::Instance()->SlavesFreeSound);
 	if (sound != -1)
-		VocClass::PlayAt(sound, pSlave->GetCoords());
+		VocClass::PlayAt(sound, pSlave->Location);
 
 	return 0x6B0C65;
 }

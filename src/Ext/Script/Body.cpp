@@ -247,7 +247,7 @@ void ScriptExt::ExecuteTimedAreaGuardAction(TeamClass* pTeam)
 
 void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 {
-	DynamicVectorClass<FootClass*> transports;
+	std::vector<FootClass*> transports;
 
 	// Collect available transports
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
@@ -257,7 +257,7 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 		if (pType->Passengers > 0)
 			if (pUnit->Passengers.NumPassengers < pType->Passengers)
 				if (pUnit->Passengers.GetTotalSize() < pType->Passengers)
-					transports.AddItem(pUnit);
+					transports.emplace_back(pUnit);
 	}
 
 	// Now load units into transports
@@ -1266,13 +1266,11 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	TechnoClass* pTarget = nullptr;
 
 	// Special case: validate target if is part of a technos list in [AITargetTypes] section
-	if (attackAITargetType >= 0 && RulesExt::Global()->AITargetTypesLists.Count > 0)
+	if (attackAITargetType >= 0 && RulesExt::Global()->AITargetTypesLists.size() > 0)
 	{
-		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType);
-
-		for (int i = 0; i < objectsList.Count; i++)
+		for (auto item : RulesExt::Global()->AITargetTypesLists[attackAITargetType])
 		{
-			if (objectsList.GetItem(i) == pTechnoType)
+			if (pTechnoType == item)
 				return true;
 		}
 
@@ -1992,15 +1990,15 @@ void ScriptExt::PickRandomScript(TeamClass* pTeam, int idxScriptsList = -1)
 
 	if (idxScriptsList >= 0)
 	{
-		if (idxScriptsList < RulesExt::Global()->AIScriptsLists.Count)
+		if ((size_t)idxScriptsList < RulesExt::Global()->AIScriptsLists.size())
 		{
-			DynamicVectorClass<ScriptTypeClass*> objectsList = RulesExt::Global()->AIScriptsLists.GetItem(idxScriptsList);
+			auto& objectsList = RulesExt::Global()->AIScriptsLists[idxScriptsList];
 
-			if (objectsList.Count > 0)
+			if (objectsList.size() > 0)
 			{
-				int IdxSelectedObject = ScenarioClass::Instance->Random.RandomRanged(0, objectsList.Count - 1);
+				int IdxSelectedObject = ScenarioClass::Instance->Random.RandomRanged(0, objectsList.size() - 1);
 
-				ScriptTypeClass* pNewScript = objectsList.GetItem(IdxSelectedObject);
+				ScriptTypeClass* pNewScript = objectsList[IdxSelectedObject];
 				if (pNewScript->ActionsCount > 0)
 				{
 					changeFailed = false;
@@ -2041,8 +2039,8 @@ void ScriptExt::Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int cal
 	if (attackAITargetType < 0)
 		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
-	if (RulesExt::Global()->AITargetTypesLists.Count > 0
-		&& RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType).Count > 0)
+	if (RulesExt::Global()->AITargetTypesLists.size() > 0
+		&& RulesExt::Global()->AITargetTypesLists[attackAITargetType].size() > 0)
 	{
 		ScriptExt::Mission_Attack(pTeam, repeatAction, calcThreatMode, attackAITargetType, -1);
 	}
@@ -2426,7 +2424,7 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, 
 	auto pScript = pTeam->CurrentScript;
 	bool selected = false;
 	int idxSelectedObject = -1;
-	DynamicVectorClass<int> validIndexes;
+	std::vector<int> validIndexes;
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (pTeamData && pTeamData->IdxSelectedObjectFromAIList >= 0)
@@ -2439,11 +2437,11 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, 
 		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
 	if (attackAITargetType >= 0
-		&& attackAITargetType < RulesExt::Global()->AITargetTypesLists.Count)
+		&& (size_t)attackAITargetType < RulesExt::Global()->AITargetTypesLists.size())
 	{
-		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType);
+		auto& objectsList = RulesExt::Global()->AITargetTypesLists[attackAITargetType];
 
-		if (idxSelectedObject < 0 && objectsList.Count > 0 && !selected)
+		if (idxSelectedObject < 0 && objectsList.size() > 0 && !selected)
 		{
 			// Finding the objects from the list that actually exists in the map
 			for (int i = 0; i < TechnoClass::Array->Count; i++)
@@ -2452,9 +2450,9 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, 
 				auto pTechnoType = TechnoClass::Array->GetItem(i)->GetTechnoType();
 				bool found = false;
 
-				for (int j = 0; j < objectsList.Count && !found; j++)
+				for (auto j = 0u; j < objectsList.size() && !found; j++)
 				{
-					auto objectFromList = objectsList.GetItem(j);
+					auto objectFromList = objectsList[j];
 
 					if (pTechnoType == objectFromList
 						&& pTechno->IsAlive
@@ -2466,17 +2464,18 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, 
 								&& pTechno->IsMindControlled()
 								&& !pTeam->FirstUnit->Owner->IsAlliedWith(pTechno->MindControlledBy))))
 					{
-						validIndexes.AddItem(j);
+						validIndexes.push_back(j);
 						found = true;
 					}
 				}
 			}
 
-			if (validIndexes.Count > 0)
+			if (validIndexes.size() > 0)
 			{
-				idxSelectedObject = validIndexes.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, validIndexes.Count - 1));
+				idxSelectedObject = validIndexes[ScenarioClass::Instance->Random.RandomRanged(0, validIndexes.size() - 1)];
 				selected = true;
-				Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Picked a random Techno from the list index [AITargetTypes][%d][%d] = %s\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, attackAITargetType, idxSelectedObject, objectsList.GetItem(idxSelectedObject)->ID);
+				Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Picked a random Techno from the list index [AITargetTypes][%d][%d] = %s\n",
+					pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, attackAITargetType, idxSelectedObject, objectsList[idxSelectedObject]->ID);
 			}
 		}
 
@@ -2490,7 +2489,7 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, 
 	if (!selected)
 	{
 		pTeam->StepCompleted = true;
-		Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Failed to pick a random Techno from the list index [AITargetTypes][%d]! Valid Technos in the list: %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, attackAITargetType, validIndexes.Count);
+		Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Failed to pick a random Techno from the list index [AITargetTypes][%d]! Valid Technos in the list: %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, attackAITargetType, validIndexes.size());
 	}
 }
 
@@ -2503,8 +2502,8 @@ void ScriptExt::Mission_Move_List(TeamClass *pTeam, int calcThreatMode, bool pic
 	if (attackAITargetType < 0)
 		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
-	if (RulesExt::Global()->AITargetTypesLists.Count > 0
-		&& RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType).Count > 0)
+	if (RulesExt::Global()->AITargetTypesLists.size() > 0
+		&& RulesExt::Global()->AITargetTypesLists[attackAITargetType].size() > 0)
 	{
 		Mission_Move(pTeam, calcThreatMode, pickAllies, attackAITargetType, -1);
 	}
@@ -2515,7 +2514,7 @@ void ScriptExt::Mission_Move_List1Random(TeamClass *pTeam, int calcThreatMode, b
 	auto pScript = pTeam->CurrentScript;
 	bool selected = false;
 	int idxSelectedObject = -1;
-	DynamicVectorClass<int> validIndexes;
+	std::vector<int> validIndexes;
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (pTeamData && pTeamData->IdxSelectedObjectFromAIList >= 0)
@@ -2528,12 +2527,12 @@ void ScriptExt::Mission_Move_List1Random(TeamClass *pTeam, int calcThreatMode, b
 		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
 	if (attackAITargetType >= 0
-		&& attackAITargetType < RulesExt::Global()->AITargetTypesLists.Count)
+		&& (size_t)attackAITargetType < RulesExt::Global()->AITargetTypesLists.size())
 	{
-		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypesLists.GetItem(attackAITargetType);
+		auto& objectsList = RulesExt::Global()->AITargetTypesLists[attackAITargetType];
 
 		// Still no random target selected
-		if (idxSelectedObject < 0 && objectsList.Count > 0 && !selected)
+		if (idxSelectedObject < 0 && objectsList.size() > 0 && !selected)
 		{
 			// Finding the objects from the list that actually exists in the map
 			for (int i = 0; i < TechnoClass::Array->Count; i++)
@@ -2542,9 +2541,9 @@ void ScriptExt::Mission_Move_List1Random(TeamClass *pTeam, int calcThreatMode, b
 				auto pTechnoType = TechnoClass::Array->GetItem(i)->GetTechnoType();
 				bool found = false;
 
-				for (int j = 0; j < objectsList.Count && !found; j++)
+				for (auto j = 0u; j < objectsList.size() && !found; j++)
 				{
-					auto objectFromList = objectsList.GetItem(j);
+					auto objectFromList = objectsList[j];
 
 					if (pTechnoType == objectFromList
 						&& pTechno->IsAlive
@@ -2556,17 +2555,17 @@ void ScriptExt::Mission_Move_List1Random(TeamClass *pTeam, int calcThreatMode, b
 							|| (!pickAllies
 								&& !pTeam->FirstUnit->Owner->IsAlliedWith(pTechno))))
 					{
-						validIndexes.AddItem(j);
+						validIndexes.push_back(j);
 						found = true;
 					}
 				}
 			}
 
-			if (validIndexes.Count > 0)
+			if (validIndexes.size() > 0)
 			{
-				idxSelectedObject = validIndexes.GetItem(ScenarioClass::Instance->Random.RandomRanged(0, validIndexes.Count - 1));
+				idxSelectedObject = validIndexes[ScenarioClass::Instance->Random.RandomRanged(0, validIndexes.size() - 1)];
 				selected = true;
-				Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Picked a random Techno from the list index [AITargetTypes][%d][%d] = %s\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, attackAITargetType, idxSelectedObject, objectsList.GetItem(idxSelectedObject)->ID);
+				Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Picked a random Techno from the list index [AITargetTypes][%d][%d] = %s\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, attackAITargetType, idxSelectedObject, objectsList[idxSelectedObject]->ID);
 			}
 		}
 
@@ -2580,7 +2579,7 @@ void ScriptExt::Mission_Move_List1Random(TeamClass *pTeam, int calcThreatMode, b
 	if (!selected)
 	{
 		pTeam->StepCompleted = true;
-		Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Failed to pick a random Techno from the list index [AITargetTypes][%d]! Valid Technos in the list: %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, attackAITargetType, validIndexes.Count);
+		Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Failed to pick a random Techno from the list index [AITargetTypes][%d]! Valid Technos in the list: %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, attackAITargetType, validIndexes.size());
 	}
 }
 

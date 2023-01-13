@@ -88,8 +88,8 @@ public:
 		ValueableVector<int> OreGathering_Tiberiums;
 		ValueableVector<int> OreGathering_FramesPerDir;
 
-		std::vector<DynamicVectorClass<CoordStruct>> WeaponBurstFLHs;
-		std::vector<DynamicVectorClass<CoordStruct>> EliteWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> WeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> EliteWeaponBurstFLHs;
 
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
@@ -157,10 +157,10 @@ public:
 		Nullable<CoordStruct> ProneSecondaryFireFLH;
 		Nullable<CoordStruct> DeployedPrimaryFireFLH;
 		Nullable<CoordStruct> DeployedSecondaryFireFLH;
-		std::vector<DynamicVectorClass<CoordStruct>> CrouchedWeaponBurstFLHs;
-		std::vector<DynamicVectorClass<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
-		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
-		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> CrouchedWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -296,6 +296,9 @@ public:
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
+
+		void ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection, std::vector<std::vector<CoordStruct>>& nFLH, std::vector<std::vector<CoordStruct>>& nEFlh, const char* pPrefixTag);
+
 	};
 
 	class ExtContainer final : public Container<TechnoTypeExt>
@@ -308,7 +311,6 @@ public:
 	static ExtContainer ExtMap;
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
-	static void GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
