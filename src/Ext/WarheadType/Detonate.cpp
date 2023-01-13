@@ -307,9 +307,8 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 	}
 	else
 	{
-		for (auto const& pBullet : *BulletClass::Array)
+		for (auto const& [pBullet,pExt] : BulletExt::ExtMap)
 		{
-			auto const pExt = BulletExt::ExtMap.Find(pBullet);
 			auto const pTypeExt = pExt->TypeExtData;
 
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.

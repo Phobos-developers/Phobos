@@ -413,6 +413,21 @@ public:
 		this->SavingStream = nullptr;
 	}
 
+	decltype(auto) begin()
+	{
+		return this->Items.begin();
+	}
+
+	decltype(auto) end()
+	{
+		return this->Items.end();
+	}
+
+	size_t size()
+	{
+		return this->Items.size();
+	}
+
 protected:
 	// override this method to do type-specific stuff
 	virtual bool Save(key_type key, IStream* pStm)
