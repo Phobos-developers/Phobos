@@ -100,15 +100,15 @@ private:
 	{
 		Timers() :
 			SelfHealing { }
-			, SelfHealing_Warhead { }
+			, SelfHealing_WHModifier { }
 			, Respawn { }
-			, Respawn_Warhead { }
+			, Respawn_WHModifier { }
 		{ }
 
 		CDTimerClass SelfHealing;
-		CDTimerClass SelfHealing_Warhead;
+		CDTimerClass SelfHealing_WHModifier;
 		CDTimerClass Respawn;
-		CDTimerClass Respawn_Warhead;
+		CDTimerClass Respawn_WHModifier;
 
 	} Timers;
 };
