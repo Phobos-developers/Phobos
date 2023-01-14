@@ -80,30 +80,30 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel)
 {
 	auto const pThis = this->OwnerObject();
-	auto const& Instances = RadSiteExt::Array;
+
 	auto const pWeapon = pThis->GetWeaponType();
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.FindOrAllocate(pWeapon);
 	auto const pRadType = pWeaponExt->RadType;
 	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : this->FirerHouse;
 
-	if (Instances.Count > 0)
+	if (RadSiteExt::ExtMap.size() > 0)
 	{
-		auto const it = std::find_if(Instances.begin(), Instances.end(),
-			[=](RadSiteExt::ExtData* const pSite) // Lambda
+		auto const it = std::find_if(RadSiteExt::ExtMap.begin(), RadSiteExt::ExtMap.end(),
+			[=](std::pair<RadSiteClass*, RadSiteExt::ExtData*> const& pair) // Lambda
 			{// find
-				return pSite->Type == pRadType &&
-					pSite->OwnerObject()->BaseCell == Cell &&
-					Spread == pSite->OwnerObject()->Spread;
+				return pair.second->Type == pRadType &&
+					pair.first->BaseCell == Cell &&
+					Spread == pair.first->Spread;
 			});
 
-		if (it == Instances.end())
+		if (it == RadSiteExt::ExtMap.end())
 		{
 			RadSiteExt::CreateInstance(Cell, Spread, RadLevel, pWeaponExt, pThisHouse, pThis->Owner);
 		}
 		else
 		{
-			auto const pRadExt = *it;
-			auto const pRadSite = pRadExt->OwnerObject();
+			//auto const pRadExt = it->second;
+			auto const pRadSite = it->first;
 
 			if (pRadSite->GetRadLevel() + RadLevel > pRadType->GetLevelMax())
 			{

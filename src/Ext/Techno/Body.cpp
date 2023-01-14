@@ -30,7 +30,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	{
 		BulletClass* pTargetBullet = nullptr;
 
-		for (auto const& pBullet : *BulletClass::Array)
+		for (auto const& [pBullet,pBulletExt] : BulletExt::ExtMap)
 		{
 			const auto& guardRange = pTypeExt->Interceptor_GuardRange.Get(pThis);
 			const auto& minguardRange = pTypeExt->Interceptor_MinimumGuardRange.Get(pThis);
@@ -40,7 +40,6 @@ void TechnoExt::ExtData::ApplyInterceptor()
 			if (distance > guardRange || distance < minguardRange)
 				continue;
 
-			auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 			auto pBulletTypeExt = pBulletExt->TypeExtData;
 
 			if (!pBulletTypeExt || !pBulletTypeExt->Interceptable)

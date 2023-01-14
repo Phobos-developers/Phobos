@@ -506,9 +506,8 @@ DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 {
 	//GET(CCINIClass*, pINI, ESI);
 
-	for (auto const& pType : *BuildingTypeClass::Array)
+	for (auto const& [pType,pExt] : BuildingTypeExt::ExtMap)
 	{
-		auto const pExt = BuildingTypeExt::ExtMap.Find(pType);
 		pExt->CompleteInitialization();
 	}
 
