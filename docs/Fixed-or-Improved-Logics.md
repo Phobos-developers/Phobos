@@ -355,6 +355,9 @@ TurnToTarget=false     ; boolean
 [SOMEUNITTYPE]         ; UnitType with jumpjet locomotor
 JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
 ```
+```{warning}
+This option will be deprecated in future versions.
+```
 
 ### Jumpjet spinning on crashing control
 

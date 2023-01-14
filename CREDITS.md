@@ -189,7 +189,7 @@ This page lists all the individual contributions to the project by their author.
       - Turret direction in idle state fix
       - Sensor fix
    - Object Self-destruction logic
-      - Misc vanilla suicidal behavior fix
+   - Misc vanilla suicidal behavior fix
    - Post-type-conversion update
    - Units retaining orders after changing ownership bugfix
    - Building EVA_StructureSold and SellSound dehardcode
@@ -197,7 +197,6 @@ This page lists all the individual contributions to the project by their author.
    - Slaves' house customization when owner is killed
    - Trigger Action spawned team IFV/Opentopped logic fix
    - Singleplayer Campaign AI's base node/SW-delivered/trigger action 125-delivered structures' auto-repairability dehardcode
-   - Misc CN doc fix, code refactor
    - Power delta counter : blackout indication mark
    - Harvester counter
    - Warhead superweapon launch logic
@@ -209,6 +208,7 @@ This page lists all the individual contributions to the project by their author.
    - Forbidding parallel AI queues by type
    - The option to allow DieSound/VoiceDie being played when grinding
    - Allow iron-curtain effects on infantries
+   - Misc code refactor & maintenance, CN doc fix
 - **FlyStar**
    - Campaign load screen PCX support
    - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
