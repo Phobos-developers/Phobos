@@ -127,7 +127,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 			if (Parser<TechnoTypeClass*>::TryParse(cur, &buffer))
 				objectsList.emplace_back(buffer);
 			else
-				Debug::Log("DEBUG: [AITargetTypes][%d]: Error parsing [%s]\n", this->AITargetTypesLists.size(), cur);
+				Debug::Log("[Developer warning] AITargetTypes (Count: %d): Error parsing [%s]\n", this->AITargetTypesLists.size(), cur);
 		}
 
 		this->AITargetTypesLists.emplace_back(objectsList);

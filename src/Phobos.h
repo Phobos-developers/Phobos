@@ -31,8 +31,7 @@ public:
 
 	static const char* AppIconPath;
 	static const wchar_t* VersionDescription;
-
-	static bool Debug_DisplayDamageNumbers;
+	static bool DisplayDamageNumbers;
 
 #ifdef DEBUG
 	static bool DetachFromDebugger();

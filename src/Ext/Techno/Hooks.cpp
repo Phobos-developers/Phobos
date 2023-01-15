@@ -497,7 +497,7 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 	GET(TechnoClass* const, pThis, ESI);
 	GET(int* const, pDamage, EBX);
 
-	if (Phobos::Debug_DisplayDamageNumbers && *pDamage)
+	if (Phobos::DisplayDamageNumbers && *pDamage)
 		TechnoExt::DisplayDamageNumberString(pThis, *pDamage, false);
 
 	return 0;

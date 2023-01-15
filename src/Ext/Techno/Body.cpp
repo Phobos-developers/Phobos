@@ -694,7 +694,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 			}
 		}
 		if (Phobos::Config::DevelopmentCommands)
-			Debug::Log("[Runtime Warning] %s can't be sold, killing it instead\n", pThis->get_ID());
+			Debug::Log("[Developer warning] AutoDeath: [%s] can't be sold, killing it instead\n", pThis->get_ID());
 	}
 
 	default: //must be AutoDeathBehavior::Kill

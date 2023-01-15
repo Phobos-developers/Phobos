@@ -45,9 +45,9 @@ DEFINE_HOOK(0x469150, BulletClass_Detonate_ApplyRadiation, 0x5)
 }
 
 //unused function , safeguard
-DEFINE_HOOK(0x46ADE0, BulletClass_ApplyRadiation_UnUsed, 0x5)
+DEFINE_HOOK(0x46ADE0, BulletClass_ApplyRadiation_Unused, 0x5)
 {
-	Debug::Log("[" __FUNCTION__ "] Called ! , You are not suppose to be here ! \n");
+	Debug::Log(__FUNCTION__ " called ! , You are not supposed to be here!\n");
 	return 0x46AE5E;
 }
 
