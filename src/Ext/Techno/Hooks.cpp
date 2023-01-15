@@ -489,12 +489,12 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 
 				if (openTWeaponIndex != -1)
 					tWeaponIndex = openTWeaponIndex;
-				else if (pPassenger->GetTechnoType()->TurretCount > 0)
-					tWeaponIndex = pPassenger->CurrentWeaponNumber;
+				else
+					tWeaponIndex = pPassenger->SelectWeapon(pThis->Target);
 
 				WeaponTypeClass* pTWeapon = pPassenger->GetWeapon(tWeaponIndex)->WeaponType;
 
-				if (pTWeapon)
+				if (pTWeapon && pTWeapon->FireInTransport)
 				{
 					if (pTWeapon->Range < smallestRange)
 						smallestRange = pTWeapon->Range;
