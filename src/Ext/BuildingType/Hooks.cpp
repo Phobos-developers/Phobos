@@ -172,3 +172,20 @@ DEFINE_HOOK(0x51EAF2, TechnoClass_WhatAction_AllowAirstrike, 0x6)
 
 	return SkipGameCode;
 }
+
+DEFINE_HOOK(0x465D40, BuildingTypeClass_IsUndeployable_ConsideredVehicle, 0x6)
+{
+	enum { ReturnFromFunction = 0x465D6A };
+
+	GET(BuildingTypeClass*, pThis, ECX);
+
+	const auto pExt = BuildingTypeExt::ExtMap.Find(pThis);
+
+	if (pExt->ConsideredVehicle.isset() && pExt->ConsideredVehicle.Get())
+	{
+		R->EAX(true);
+		return ReturnFromFunction;
+	}
+
+	return 0;
+}

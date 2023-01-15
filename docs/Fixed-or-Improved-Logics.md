@@ -193,6 +193,16 @@ In `rulesmd.ini`:
 AllowAirstrike=  ; boolean
 ```
 
+### Buildings considered as vehicles
+
+- By default game considers buildings with both `UndeploysInto` set and `Foundation` equaling `1x1` as vehicles, in a manner of speaking. This behaviour can now be toggled individually of these conditions by setting `ConsideredVehicle`. These buildings are counted as vehicles for unit count tracking, are not considered as base under attack when damaged and can be mass selected by default, for an example.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]      ; BuildingType
+ConsideredVehicle=  ; boolean
+```
+
 ### Customizable & new grinder properties
 
 ![image](_static/images/grinding.gif)

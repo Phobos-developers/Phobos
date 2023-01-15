@@ -26,6 +26,7 @@ const char Phobos::readDelims[4] = ",";
 
 const char* Phobos::AppIconPath = nullptr;
 
+bool Phobos::AIScriptLoggingEnabled = false;
 bool Phobos::DisplayDamageNumbers = false;
 
 #ifdef STR_GIT_COMMIT
@@ -84,6 +85,10 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 			HideWarning = true;
 		}
 #endif
+		if (_stricmp(pArg, "-ai-logging") == 0)
+		{
+			Phobos::AIScriptLoggingEnabled = true;
+		}
 	}
 
 	Debug::Log("Initialized version: " PRODUCT_VERSION "\n");
