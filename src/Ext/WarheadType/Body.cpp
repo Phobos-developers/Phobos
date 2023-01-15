@@ -30,6 +30,33 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	return true;
 }
 
+bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget)
+{
+	if (!pTarget)
+		return false;
+
+	if (!this->EffectsRequireVerses)
+		return true;
+
+	auto armorType = pTarget->GetTechnoType()->Armor;
+
+	if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
+	{
+		if (const auto pShieldData = pExt->Shield.get())
+		{
+			if (pShieldData->IsActive())
+			{
+				if (pShieldData->CanBePenetrated(this->OwnerObject()))
+					return true;
+
+				armorType = pShieldData->GetArmorType();
+			}
+		}
+	}
+
+	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) != 0.0;
+}
+
 namespace DetonateTemp
 {
 	AbstractClass* pTarget = nullptr;
@@ -227,6 +254,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
+	this->EffectsRequireVerses.Read(exINI, pSection, "EffectsRequireVerses");
 
 	// List all Warheads here that respect CellSpread
 	// Used in WarheadTypeExt::ExtData::Detonate
@@ -385,6 +413,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		// Ares tags
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
+		.Process(this->EffectsRequireVerses)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
 		.Process(this->RemainingAnimCreationInterval)

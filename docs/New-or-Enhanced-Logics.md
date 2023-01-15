@@ -221,7 +221,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `Pips.Shield.Building.Empty` can be used to set the frame of `pips.shp` displayed for empty building strength pips, defaults to 1st frame of `pips.shp`.
   - The above customizations are also available on per ShieldType basis, e.g `[ShieldType]`->`Pips` instead of `[AudioVisual]`->`Pips.Shield` and so on. ShieldType settings take precedence over the global ones, but will fall back to them if not set.
   - `BracketDelta` can be used as additional vertical offset (negative shifts it up) for shield strength bar. Much like `PixelSelectionBracketDelta`, it is not applied on buildings.
-- Warheads have new options that interact with shields.
+- Warheads have new options that interact with shields. Note that all of these that do not by their very nature require ability to target the shield (such as modifiers like `Shield.Break` or removing / attaching) still require Warhead `Verses` to affect the target unless `EffectsRequireVerses` is set to false on the Warhead.
   - `Shield.Penetrate` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield doesn't exist.
   - `Shield.Break` allows the warhead to always break shields of TechnoTypes. This is done before damage is dealt.
   - `Shield.BreakAnim` will be displayed instead of ShieldType `BreakAnim` if the shield is broken by the Warhead, either through damage or `Shield.Break`.
@@ -1024,9 +1024,10 @@ DestroySound=      ; Sound
 ## Warheads
 
 ```{hint}
-All new warhead effects
-- can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
-- cannot be used with `MindControl.Permanent=yes` of Ares.
+All new Warhead effects
+- Can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
+- Cannot be used with `MindControl.Permanent=yes` of Ares.
+- Respect `Verses` where applicable unless `EffectsRequireVerses` is set to false. If target has an active shield, its armor type is used instead unless warhead can penetrate the shield.
 ```
 
 ### Break Mind Control on impact

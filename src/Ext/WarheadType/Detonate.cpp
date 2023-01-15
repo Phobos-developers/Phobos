@@ -8,7 +8,6 @@
 #include <AnimClass.h>
 #include <BitFont.h>
 #include <SuperClass.h>
-#include <AircraftClass.h>
 
 #include <Utilities/Helpers.Alex.h>
 #include <Ext/Bullet/Body.h>
@@ -132,7 +131,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking)
 		return;
 
-	if (!this->CanTargetHouse(pHouse, pTarget))
+	if (!this->CanTargetHouse(pHouse, pTarget) || !this->CanAffectTarget(pTarget))
 		return;
 
 	this->ApplyShieldModifiers(pTarget);
@@ -162,13 +161,11 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 {
 	if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
 	{
-		bool canAffectTarget = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor) != 0.0;
-
 		int shieldIndex = -1;
 		double ratio = 1.0;
 
 		// Remove shield.
-		if (pExt->Shield && canAffectTarget)
+		if (pExt->Shield)
 		{
 			const auto shieldType = pExt->Shield->GetType();
 			shieldIndex = this->Shield_RemoveTypes.IndexOf(shieldType);
@@ -183,7 +180,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 		}
 
 		// Attach shield.
-		if (canAffectTarget && Shield_AttachTypes.size() > 0)
+		if (Shield_AttachTypes.size() > 0)
 		{
 			ShieldTypeClass* shieldType = nullptr;
 
