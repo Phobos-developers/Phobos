@@ -67,18 +67,20 @@ DEFINE_HOOK(0x7363B5, UnitClass_AI_Tunnel, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	pExt->UpdateOnTunnelEnter();
 
 	return 0;
 }
 
-DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
+DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	TechnoExt::InitializeShield(pThis);
-	TechnoExt::InitializeLaserTrails(pThis);
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
+	pExt->InitializeLaserTrails();
 
 	return 0;
 }

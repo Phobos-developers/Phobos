@@ -65,6 +65,7 @@ public:
 		void UpdateOnTunnelEnter();
 		void ApplySpawnLimitRange();
 		void UpdateTypeData(TechnoTypeClass* currentType);
+		void InitializeLaserTrails();
 
 		virtual ~ExtData() = default;
 
@@ -97,8 +98,6 @@ public:
 	static bool IsHarvesting(TechnoClass* pThis);
 	static bool HasAvailableDock(TechnoClass* pThis);
 
-	static void InitializeLaserTrails(TechnoClass* pThis);
-	static void InitializeShield(TechnoClass* pThis);
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
 
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
