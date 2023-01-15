@@ -320,7 +320,7 @@ DEFINE_HOOK(0x43BCBD, BuildingClass_CTOR, 0x6)
 {
 	GET(BuildingClass*, pItem, ESI);
 
-	auto pExt = BuildingExt::ExtMap.FindOrAllocate(pItem);
+	auto const pExt = BuildingExt::ExtMap.FindOrAllocate(pItem);
 	pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pItem->Type);
 
 	return 0;

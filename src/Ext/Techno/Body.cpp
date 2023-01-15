@@ -305,6 +305,24 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
 	}
 }
 
+void TechnoExt::ExtData::InitializeLaserTrails()
+{
+	if (this->LaserTrails.size())
+		return;
+
+	if (auto pTypeExt = this->TypeExtData)
+	{
+		for (auto const& entry : pTypeExt->LaserTrailData)
+		{
+			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
+			{
+				this->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
+					pLaserType, this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret));
+			}
+		}
+	}
+}
+
 bool TechnoExt::IsActive(TechnoClass* pThis)
 {
 	return
@@ -403,34 +421,6 @@ bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
 	}
 
 	return false;
-}
-
-void TechnoExt::InitializeLaserTrails(TechnoClass* pThis)
-{
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pExt->LaserTrails.size())
-		return;
-
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-	{
-		for (auto const& entry : pTypeExt->LaserTrailData)
-		{
-			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
-			{
-				pExt->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
-					pLaserType, pThis->Owner, entry.FLH, entry.IsOnTurret));
-			}
-		}
-	}
-}
-
-void TechnoExt::InitializeShield(TechnoClass* pThis)
-{
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		pExt->CurrentShieldType = pTypeExt->ShieldType;
 }
 
 void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType)
@@ -1053,8 +1043,7 @@ DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 {
 	GET(TechnoClass*, pItem, ESI);
 
-	auto pExt = TechnoExt::ExtMap.FindOrAllocate(pItem);
-	pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pItem->GetTechnoType());
+	TechnoExt::ExtMap.FindOrAllocate(pItem);
 
 	return 0;
 }
