@@ -94,9 +94,9 @@ DEFINE_HOOK(0x450319, BuildingClass_AI_Factory_NavalProductionFix, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x4CA08B, FactoryClass_Abandon_NavalProductionFix, 0x5)
+DEFINE_HOOK(0x4CA0A1, FactoryClass_Abandon_NavalProductionFix, 0x5)
 {
-	enum { SkipOtherChecks = 0x4CA0E3 };
+	enum { SkipUnitTypeCheck = 0x4CA0B7 };
 
 	GET(FactoryClass* const, pThis, ESI);
 
@@ -105,7 +105,7 @@ DEFINE_HOOK(0x4CA08B, FactoryClass_Abandon_NavalProductionFix, 0x5)
 		if (auto const pHouseExt = HouseExt::ExtMap.Find(pThis->Owner))
 		{
 			pHouseExt->ProducingNavalUnitTypeIndex = -1;
-			return SkipOtherChecks;
+			return SkipUnitTypeCheck;
 		}
 	}
 
