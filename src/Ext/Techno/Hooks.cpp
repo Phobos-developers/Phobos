@@ -78,8 +78,13 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	GET(TechnoClass*, pThis, ESI);
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
+
+	if (!pExt->TypeExtData)
+		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pExt->TypeExtData)
+		pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
+
 	pExt->InitializeLaserTrails();
 
 	return 0;
@@ -448,7 +453,7 @@ DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 // Fix slaves cannot always suicide due to armor multiplier or something
 DEFINE_PATCH(0x6B0BF7,
 	0x6A, 0x01  // push 1       // ignoreDefense=false->true
-	);
+);
 
 DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
 {
