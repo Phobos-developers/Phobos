@@ -114,7 +114,7 @@ DEFINE_HOOK(0x4CA0A1, FactoryClass_Abandon_NavalProductionFix, 0x5)
 
 DEFINE_HOOK(0x4F91A4, HouseClass_AI_BuildingProductionCheck, 0x6)
 {
-	enum { SkipGameCode = 0x4CA0E3, CheckBuildingProduction = 0x4F9240 };
+	enum { SkipGameCode = 0x4F9265, CheckBuildingProduction = 0x4F9240 };
 
 	GET(HouseClass* const, pThis, ESI);
 
