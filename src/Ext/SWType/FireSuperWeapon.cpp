@@ -40,10 +40,6 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		pOwner->RecheckRadar = true;
 		pOwner->Buildings.AddItem(pBuilding);
 
-		// increment limbo build count
-		if (pOwnerExt)
-			pOwnerExt->OwnedLimboBuildingTypes.Increment(pType->ArrayIndex);
-
 		// Different types of building logics
 		if (pType->ConstructionYard)
 			pOwner->ConYards.AddItem(pBuilding); // why would you do that????
@@ -65,16 +61,29 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		// even with it no bueno yet, plus new issues
 		// probably should just port it from Ares 0.A and be done
 
-		// LimboKill init
 		auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
-		if (pBuildingExt && ID != -1)
+
+		if (pBuildingExt)
+		{
+			// LimboKill ID
 			pBuildingExt->LimboID = ID;
+
+			// Add building to list of owned limbo buildings
+			if (pOwnerExt)
+				pOwnerExt->OwnedLimboDeliveredBuildings.insert({ pBuilding->UniqueID, pBuildingExt });
+		}
 	}
 }
 
 inline void LimboDelete(BuildingClass* pBuilding, HouseClass* pTargetHouse)
 {
 	BuildingTypeClass* pType = pBuilding->Type;
+
+	auto pOwnerExt = HouseExt::ExtMap.Find(pTargetHouse);
+
+	// Remove building from list of owned limbo buildings
+	if (pOwnerExt)
+		pOwnerExt->OwnedLimboDeliveredBuildings.erase(pBuilding->UniqueID);
 
 	// Mandatory
 	pBuilding->InLimbo = true;
@@ -183,11 +192,13 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 		{
 			if (EnumFunctions::CanTargetHouse(this->LimboKill_Affected, pHouse, pTargetHouse))
 			{
-				for (const auto pBuilding : pTargetHouse->Buildings)
+				if (auto const pHouseExt = HouseExt::ExtMap.Find(pTargetHouse))
 				{
-					const auto pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
-					if (pBuildingExt->LimboID == limboKillID)
-						LimboDelete(pBuilding, pTargetHouse);
+					for (const auto& [buildingUniqueID, pBuildingExt] : pHouseExt->OwnedLimboDeliveredBuildings)
+					{
+						if (pBuildingExt->LimboID == limboKillID)
+							LimboDelete(pBuildingExt->OwnerObject(), pTargetHouse);
+					}
 				}
 			}
 		}
