@@ -10,6 +10,13 @@
 template<> const DWORD Extension<HouseClass>::Canary = 0x11111111;
 HouseExt::ExtContainer HouseExt::ExtMap;
 
+bool HouseExt::ExtData::OwnsLimboDeliveredBuilding(BuildingClass const* pBuilding)
+{
+	if (!pBuilding)
+		return false;
+
+	return this->OwnedLimboDeliveredBuildings.count(pBuilding->UniqueID);
+}
 
 int HouseExt::ActiveHarvesterCount(HouseClass* pThis)
 {
@@ -33,12 +40,6 @@ int HouseExt::TotalHarvesterCount(HouseClass* pThis)
 		result += pThis->CountOwnedAndPresent(pType);
 
 	return result;
-}
-
-int HouseExt::CountOwnedLimbo(HouseClass* pThis, BuildingTypeClass const* const pItem)
-{
-	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
-	return pHouseExt->OwnedLimboBuildingTypes.GetItemCount(pItem->ArrayIndex);
 }
 
 // Ares
@@ -99,6 +100,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->BuildingCounter)
+		.Process(this->OwnedLimboDeliveredBuildings)
 		.Process(this->Factory_BuildingType)
 		.Process(this->Factory_InfantryType)
 		.Process(this->Factory_VehicleType)
