@@ -270,6 +270,7 @@ Vanilla fixes:
 - Skip `NaturalParticleSystem` displaying from in-map pre-placed structures (by Trsdy)
 - Made sure that `Suicide=yes` weapon does kill the firer (by Trsdy)
 - Made sure that vxl units being flipped over get killed instead of rotating up and down (by Trsdy)
+- Allow jumpjet units to visually tilt or be flipped over on the ground even if `TiltCrashJumpjet=no` (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

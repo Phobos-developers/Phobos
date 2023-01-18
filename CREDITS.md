@@ -188,6 +188,7 @@ This page lists all the individual contributions to the project by their author.
       - Facing towards target fix
       - Turret direction in idle state fix
       - Sensor fix
+      - Allow to tilt on ground
    - Object Self-destruction logic
    - Misc vanilla suicidal behavior fix
    - Post-type-conversion update

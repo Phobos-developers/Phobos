@@ -95,6 +95,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Attempted to avoid units from retaining previous orders (attack,grind,garrison,etc) after changing ownership (mind-control,abduction,etc).
 - Fixed buildings' `NaturalParticleSystem` being created for in-map pre-placed structures.
 
+- Fixed jumpjet units being unable to visually tilt or be flipped over on the ground if `TiltCrashJumpjet=no`.
 
 ## Animations
 
@@ -359,17 +360,19 @@ JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
 This option will be deprecated in future versions.
 ```
 
-### Jumpjet spinning on crashing control
+### Jumpjet rotating on crashing toggle
 
-- Jmpjet that is going to crash starts to spin uncontrollably. This option complements [Ares](https://ares-developers.github.io/Ares-docs/new/crashableaircraft.html) to turn it off.
+- Jumpjet that is going to crash starts to change its facing uncontrollably, this can now be turned off.
 
 In `rulesmd.ini`:
 
 ```ini
 [SOMETECHNO]    ; TechnoType
-CrashSpin=true  ; boolean
+JumpjetRotateOnCrash=true  ; boolean
 ```
-
+```{warning}
+This may subject to further changes.
+```
 
 ### Kill spawns on low power
 

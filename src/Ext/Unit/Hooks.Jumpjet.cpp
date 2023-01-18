@@ -95,7 +95,29 @@ DEFINE_HOOK(0x54CB0E, JumpjetLocomotionClass_State5_CrashSpin, 0x7)
 {
 	GET(JumpjetLocomotionClass*, pThis, EDI);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
-	return pTypeExt->CrashSpin ? 0 : 0x54CB3E;
+	return pTypeExt->JumpjetRotateOnCrash ? 0 : 0x54CB3E;
 }
 
+
+// These are subject to changes if someone wants to properly implement jumpjet tilting
+DEFINE_HOOK(0x54DCCF, JumpjetLocomotionClass_DrawMatrix_TiltCrashJumpjet, 0x5)
+{
+	GET(ILocomotion*, iloco, ESI);
+	//if (static_cast<JumpjetLocomotionClass*>(iloco)->State < JumpjetLocomotionClass::State::Crashing)
+	if (static_cast<JumpjetLocomotionClass*>(iloco)->State == JumpjetLocomotionClass::State::Grounded)
+		return 0x54DCE8;
+
+	return 0;
+}
+
+/*
+DEFINE_HOOK(0x54DD3D, JumpjetLocomotionClass_DrawMatrix_AxisCenterInAir, 0x5)
+{
+	GET(ILocomotion*, iloco, ESI);
+	auto state = static_cast<JumpjetLocomotionClass*>(iloco)->State;
+	if (state && state < JumpjetLocomotionClass::State::Crashing)
+		return  0x54DE88;
+	return 0;
+}
+*/
 //TODO : Issue #690 #655
