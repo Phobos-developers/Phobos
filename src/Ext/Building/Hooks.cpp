@@ -128,10 +128,12 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 	HouseClass* pOwner = pThis->Owner;
 
 	auto pRulesExt = RulesExt::Global();
+
 	if (pOwner->Production && pRulesExt->AllowParallelAIQueues)
 	{
 		auto pOwnerExt = HouseExt::ExtMap.Find(pOwner);
 		BuildingClass** currFactory = nullptr;
+
 		switch (pThis->Type->Factory)
 		{
 		case AbstractType::BuildingType:
@@ -145,6 +147,8 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 			break;
 		case AbstractType::AircraftType:
 			currFactory = &pOwnerExt->Factory_AircraftType;
+			break;
+		default:
 			break;
 		}
 
@@ -166,16 +170,21 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 			case AbstractType::BuildingType:
 				if (pRulesExt->ForbidParallelAIQueues_Building)
 					return Skip;
+				break;
 			case AbstractType::InfantryType:
 				if (pRulesExt->ForbidParallelAIQueues_Infantry)
 					return Skip;
+				break;
 			case AbstractType::AircraftType:
 				if (pRulesExt->ForbidParallelAIQueues_Aircraft)
 					return Skip;
+				break;
 			case AbstractType::UnitType:
 				if (pThis->Type->Naval ? pRulesExt->ForbidParallelAIQueues_Navy : pRulesExt->ForbidParallelAIQueues_Vehicle)
 					return Skip;
-
+				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -188,6 +197,7 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 	GET(FactoryClass*, pFactory, ESI);
 
 	auto pRulesExt = RulesExt::Global();
+
 	if (!pRulesExt->AllowParallelAIQueues)
 		return 0;
 
@@ -220,6 +230,8 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 		if (pRulesExt->ForbidParallelAIQueues_Aircraft)
 			pOwnerExt->Factory_AircraftType = nullptr;
 		break;
+	default:
+		break;
 	}
 
 	return 0;
@@ -243,20 +255,26 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType_Phobos, 0x6)
 DEFINE_HOOK(0x444131, BuildingClass_KickOutUnit_InfantryType_Phobos, 0x6)
 {
 	GET(HouseClass*, pHouse, EAX);
+
 	HouseExt::ExtMap.Find(pHouse)->Factory_InfantryType = nullptr;
+
 	return 0;
 }
 
 DEFINE_HOOK(0x44531F, BuildingClass_KickOutUnit_BuildingType_Phobos, 0xA)
 {
 	GET(HouseClass*, pHouse, EAX);
+
 	HouseExt::ExtMap.Find(pHouse)->Factory_BuildingType = nullptr;
+
 	return 0;
 }
 
 DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType_Phobos, 0xA)
 {
 	GET(HouseClass*, pHouse, EDX);
+
 	HouseExt::ExtMap.Find(pHouse)->Factory_AircraftType = nullptr;
+
 	return 0;
 }
