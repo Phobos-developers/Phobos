@@ -1,7 +1,6 @@
 #include "Body.h"
 #include <InfantryClass.h>
 #include <SpecificStructures.h>
-#include <TunnelLocomotionClass.h>
 #include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
 #include <Ext/TechnoType/Body.h>
@@ -97,26 +96,6 @@ DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_Sh
 	return 0;
 }
 
-// Ares-hook jmp to this offset
-DEFINE_HOOK(0x71A88D, TemporalClass_AI_Shield, 0x0)
-{
-	GET(TemporalClass*, pThis, ESI);
-	if (auto const pTarget = pThis->Target)
-	{
-		pTarget->IsMouseHovering = false;
-		const auto pExt = TechnoExt::ExtMap.Find(pTarget);
-
-		if (const auto pShieldData = pExt->Shield.get())
-		{
-			if (pShieldData->IsAvailable())
-				pShieldData->AI_Temporal();
-		}
-	}
-
-	// Recovering vanilla instructions that were broken by a hook call
-	return R->EAX<int>() <= 0 ? 0x71A895 : 0x71AB08;
-}
-
 DEFINE_HOOK(0x6F6AC4, TechnoClass_Remove_Shield, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
@@ -167,36 +146,6 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	}
 
 	TechnoExt::ProcessDigitalDisplays(pThis);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x728F74, TunnelLocomotionClass_Process_KillAnims, 0x5)
-{
-	GET(ILocomotion*, pThis, ESI);
-
-	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
-	const auto pExt = TechnoExt::ExtMap.Find(pLoco->LinkedTo);
-
-	if (const auto pShieldData = pExt->Shield.get())
-		pShieldData->SetAnimationVisibility(false);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x728E5F, TunnelLocomotionClass_Process_RestoreAnims, 0x7)
-{
-	GET(ILocomotion*, pThis, ESI);
-
-	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
-
-	if (pLoco->State == TunnelLocomotionClass::State::PreDigOut)
-	{
-		const auto pExt = TechnoExt::ExtMap.Find(pLoco->LinkedTo);
-
-		if (const auto pShieldData = pExt->Shield.get())
-			pShieldData->SetAnimationVisibility(true);
-	}
 
 	return 0;
 }

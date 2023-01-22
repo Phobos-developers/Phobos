@@ -7,6 +7,7 @@
 #include <Utilities/TemplateDef.h>
 
 #include <New/Type/RadTypeClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
 
 class WeaponTypeExt
 {
@@ -41,6 +42,8 @@ public:
 		ValueableVector<int> ExtraWarheads_DamageOverrides;
 		Nullable<WarheadTypeClass*> AmbientDamage_Warhead;
 		Valueable<bool> AmbientDamage_IgnoreTarget;
+		ValueableVector<AttachEffectTypeClass*> AttachEffect_RequiredTypes;
+		ValueableVector<AttachEffectTypeClass*> AttachEffect_DisallowedTypes;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
@@ -64,9 +67,13 @@ public:
 			, ExtraWarheads_DamageOverrides {}
 			, AmbientDamage_Warhead {}
 			, AmbientDamage_IgnoreTarget { false }
+			, AttachEffect_RequiredTypes {}
+			, AttachEffect_DisallowedTypes {}
 		{ }
 
 		int GetBurstDelay(int burstIndex);
+
+		bool HasRequiredAttachedEffects(TechnoClass* pTechno);
 
 		virtual ~ExtData() = default;
 
@@ -102,4 +109,5 @@ public:
 	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr);
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
+	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer);
 };

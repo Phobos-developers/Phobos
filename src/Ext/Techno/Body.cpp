@@ -362,6 +362,39 @@ bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 	return false;
 }
 
+bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll)
+{
+	unsigned int foundCount = 0;
+	unsigned int typeCounter = 1;
+
+	for (auto const& type : attachEffectTypes)
+	{
+		for (auto const& attachEffect : this->AttachedEffects)
+		{
+			if (attachEffect->GetType() == type)
+			{
+				// Only need to find one match, can stop here.
+				if (!requireAll)
+					return true;
+
+				foundCount++;
+				break;
+			}
+		}
+
+		// One of the required types was not found, can stop here.
+		if (requireAll && foundCount < typeCounter)
+			return false;
+
+		typeCounter++;
+	}
+
+	if (requireAll && foundCount == attachEffectTypes.size())
+		return true;
+
+	return false;
+}
+
 // =============================
 // load / save
 
@@ -380,6 +413,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->IsInTunnel)
+		.Process(this->IsBurrowed)
 		.Process(this->HasBeenPlacedOnMap)
 		.Process(this->DeployFireTimer)
 		.Process(this->ForceFullRearmDelay)
