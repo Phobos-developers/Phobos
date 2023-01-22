@@ -4,6 +4,7 @@
 #include <ParticleSystemClass.h>
 #include <FootClass.h>
 
+#include <Ext/WeaponType/Body.h>
 #include <Utilities/Macro.h>
 
 // Contains hooks that fix weapon graphical effects like lasers, railguns, electric bolts, beams and waves not interacting
@@ -131,6 +132,24 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_ObstacleCellUnset, 0x6)
 	FireAtTemp::pOriginalTarget = nullptr;
 
 	R->EDI(target);
+
+	return 0;
+}
+
+// Allow drawing single color lasers with thickness.
+DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_IsSingleColor, 0x7)
+{
+	GET(WeaponTypeClass* const, pWeapon, ECX);
+	GET(LaserDrawClass* const, pLaser, EAX);
+
+	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
+	{
+		if (!pLaser->IsHouseColor && pWeaponExt->Laser_IsSingleColor)
+			pLaser->IsHouseColor = true;
+	}
+
+	// Fixes drawing thick lasers for non-PrismSupport building-fired lasers.
+	pLaser->IsSupported = pLaser->Thickness > 3;
 
 	return 0;
 }
