@@ -30,7 +30,7 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	return true;
 }
 
-bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget)
+bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt = nullptr)
 {
 	if (!pTarget)
 		return false;
@@ -40,9 +40,12 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget)
 
 	auto armorType = pTarget->GetTechnoType()->Armor;
 
-	if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
+	if (!pTargetExt)
+		pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+	if (pTargetExt)
 	{
-		if (const auto pShieldData = pExt->Shield.get())
+		if (const auto pShieldData = pTargetExt->Shield.get())
 		{
 			if (pShieldData->IsActive())
 			{
@@ -224,6 +227,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
+	this->AttachEffect_AttachTypes.Read(exINI, pSection, "AttachEffect.AttachTypes");
+	this->AttachEffect_RemoveTypes.Read(exINI, pSection, "AttachEffect.RemoveTypes");
+	this->AttachEffect_DurationOverrides.Read(exINI, pSection, "AttachEffect.DurationOverrides");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -270,6 +277,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->Convert_Pairs.size() > 0
 		|| this->InflictLocomotor
 		|| this->RemoveInflictedLocomotor
+		|| this->AttachEffect_AttachTypes.size() > 0
+		|| this->AttachEffect_RemoveTypes.size() > 0
 	);
 
 	char tempBuffer[32];
@@ -406,6 +415,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnAllMapObjects_IgnoreTypes)
 
 		.Process(this->Convert_Pairs)
+
+		.Process(this->AttachEffect_AttachTypes)
+		.Process(this->AttachEffect_RemoveTypes)
+		.Process(this->AttachEffect_DurationOverrides)
 
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)

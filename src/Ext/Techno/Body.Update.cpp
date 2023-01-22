@@ -759,3 +759,85 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 		}
 	}
 }
+
+void TechnoExt::ExtData::UpdateTemporal()
+{
+	if (const auto pShieldData = this->Shield.get())
+	{
+		if (pShieldData->IsAvailable())
+			pShieldData->AI_Temporal();
+	}
+
+	for (auto const& ae : this->AttachedEffects)
+		ae->AI_Temporal();
+}
+
+void TechnoExt::ExtData::UpdateAttachEffects()
+{
+	bool markForRedraw = false;
+	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
+
+	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
+	{
+		auto const attachEffect = it->get();
+
+		if (!this->IsInTunnel && !this->IsBurrowed)
+			attachEffect->SetAnimationVisibility(true);
+
+		attachEffect->AI();
+
+		if (attachEffect->HasExpired())
+		{
+			if (attachEffect->GetType()->HasTint())
+				markForRedraw = true;
+
+			it = this->AttachedEffects.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+
+	this->RecalculateStatMultipliers();
+
+	if (markForRedraw)
+		this->OwnerObject()->MarkForRedraw();
+}
+
+void TechnoExt::ExtData::RecalculateStatMultipliers()
+{
+	auto const pThis = this->OwnerObject();
+
+	double firepower = 1.0;
+	double armor = 1.0;
+	double speed = 1.0;
+	double ROF = 1.0;
+	bool cloak = pThis->Cloakable;
+	bool forceDecloak = false;
+
+	for (const auto& attachEffect : this->AttachedEffects)
+	{
+		if (!attachEffect->IsActive())
+			continue;
+
+		auto const type = attachEffect->GetType();
+		firepower *= type->FirepowerMultiplier;
+		speed *= type->SpeedMultiplier;
+		armor *= type->ArmorMultiplier;
+		ROF *= type->ROFMultiplier;
+		cloak |= type->Cloakable;
+		forceDecloak |= type->ForceDecloak;
+	}
+
+	this->AE_FirepowerMultiplier = firepower;
+	this->AE_ArmorMultiplier = armor;
+	this->AE_SpeedMultiplier = speed;
+	this->AE_ROFMultiplier = ROF;
+	pThis->Cloakable = cloak;
+	this->AE_ForceDecloak = forceDecloak;
+
+	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
+		pThis->Uncloak(true);
+}
+

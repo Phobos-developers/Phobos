@@ -399,7 +399,10 @@ New:
 - Restore functionality of `[CrateRules]` -> `FreeMCV` with customizable credits threshold (by Starkku)
 - Allow customizing the number of vehicles required for unit crates to turn into money crates (by Starkku)
 - Per-VehicleType reroll chance for `CrateGoodie=true` (by Starkku)
-- Warheads spawning powerup crates (by Starkku)
+- Warheads spawning powerup crates (by Starkku)- Custom tint on TechnoTypes (by Starkku)
+- Custom tint on TechnoTypes (by Starkku)
+- Revenge weapon (by Starkku)
+- AttachEffect types with new features like custom tint and weapon range modifier (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -461,6 +464,8 @@ Vanilla fixes:
 - Fixed jumpjet crash speed when crashing onto buildings (by NetsuNegi)
 - Fixed a desync potentially caused by displaying of cursor over selected `DeploysInto` units (by Starkku)
 - Skipped drawing the rally point line when undeploying a factory (by Trsdy)
+- Tint effects are now correctly applied to SHP vehicles and all types of aircraft as well as building animations regardless of their position (by Starkku)
+- Iron Curtained / Force Shielded objects now always use the correct tint color (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

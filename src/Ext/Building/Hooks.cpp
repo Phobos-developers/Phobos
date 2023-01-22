@@ -4,6 +4,7 @@
 #include <UnitClass.h>
 #include <SuperClass.h>
 #include <GameOptionsClass.h>
+#include <Ext/Anim/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <TacticalClass.h>
@@ -391,6 +392,22 @@ DEFINE_HOOK(0x4575A2, BuildingClass_Infiltrate_AfterAres, 0xE)
 	GET(BuildingClass*, pBuilding, ECX);
 
 	BuildingExt::HandleInfiltrate(pBuilding, pInfiltratorHouse);
+	return 0;
+}
+
+DEFINE_HOOK(0x4519A2, BuildingClass_UpdateAnim_SetParentBuilding, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	GET(AnimClass*, pAnim , EBP);
+
+	auto const pCell = MapClass::Instance->GetCellAt(pAnim->GetCenterCoords());
+
+	if (pCell && pCell->GetBuilding() != pThis)
+	{
+		auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+		pAnimExt->ParentBuilding = pThis;
+	}
+
 	return 0;
 }
 

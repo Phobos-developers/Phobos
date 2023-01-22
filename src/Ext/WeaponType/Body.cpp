@@ -1,8 +1,28 @@
 #include "Body.h"
 #include <GameStrings.h>
 #include <Ext/Bullet/Body.h>
+#include <Ext/Techno/Body.h>
 
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
+
+bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTechno)
+{
+	bool required = this->AttachEffect_RequiredTypes.size() > 0;
+	bool disallowed = this->AttachEffect_DisallowedTypes.size() > 0;
+
+	if (required || disallowed)
+	{
+		auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
+		if (disallowed && pTechnoExt->HasAttachedEffects(this->AttachEffect_DisallowedTypes, false))
+			return false;
+
+		if (required && !pTechnoExt->HasAttachedEffects(this->AttachEffect_RequiredTypes, true))
+			return false;
+	}
+
+	return true;
+}
 
 void WeaponTypeExt::ExtData::Initialize()
 {
@@ -62,6 +82,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExtraWarheads_DetonationChances.Read(exINI, pSection, "ExtraWarheads.DetonationChances");
 	this->AmbientDamage_Warhead.Read(exINI, pSection, "AmbientDamage.Warhead");
 	this->AmbientDamage_IgnoreTarget.Read(exINI, pSection, "AmbientDamage.IgnoreTarget");
+	this->AttachEffect_RequiredTypes.Read(exINI, pSection, "AttachEffect.RequiredTypes");
+	this->AttachEffect_DisallowedTypes.Read(exINI, pSection, "AttachEffect.DisallowedTypes");
 }
 
 template <typename T>
@@ -90,6 +112,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraWarheads_DetonationChances)
 		.Process(this->AmbientDamage_Warhead)
 		.Process(this->AmbientDamage_IgnoreTarget)
+		.Process(this->AttachEffect_RequiredTypes)
+		.Process(this->AttachEffect_DisallowedTypes)
 		;
 };
 
@@ -168,6 +192,57 @@ void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords
 		pBullet->Explode(true);
 		pBullet->UnInit();
 	}
+}
+
+int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer)
+{
+	int range = 0;
+
+	if (!pThis && !pFirer)
+		return range;
+	else if (pFirer && pFirer->CanOccupyFire())
+		range = RulesClass::Instance->OccupyWeaponRange * Unsorted::LeptonsPerCell;
+	else if (pThis && pFirer)
+		range = pThis->Range;
+	else
+		return range;
+
+	if (range == -512)
+		return range;
+
+	auto pTechno = pFirer;
+
+	if (pTechno->Transporter && pTechno->Transporter->GetTechnoType()->OpenTopped)
+	{
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->Transporter->GetTechnoType());
+
+		if (pTypeExt->OpenTopped_UseTransportRangeModifiers)
+			pTechno = pTechno->Transporter;
+	}
+
+	if (auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno))
+	{
+		for (auto const& attachEffect : pTechnoExt->AttachedEffects)
+		{
+			if (!attachEffect->IsActive())
+				continue;
+
+			auto const type = attachEffect->GetType();
+
+			if (type->WeaponRangeBonus == 0.0)
+				continue;
+
+			if (type->WeaponRangeBonus_AllowWeapons.size() > 0 && !type->WeaponRangeBonus_AllowWeapons.Contains(pThis))
+				continue;
+
+			if (type->WeaponRangeBonus_DisallowWeapons.size() > 0 && type->WeaponRangeBonus_DisallowWeapons.Contains(pThis))
+				continue;
+
+			range += static_cast<int>(type->WeaponRangeBonus * Unsorted::LeptonsPerCell);
+		}
+	}
+
+	return Math::max(range, 0);
 }
 
 // =============================

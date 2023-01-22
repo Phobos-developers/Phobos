@@ -308,6 +308,9 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 			{
 				return CannotFire;
 			}
+
+			if (!pWeaponExt->HasRequiredAttachedEffects(pTechno))
+				return CannotFire;
 		}
 	}
 
@@ -412,7 +415,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 	{
 		if (pExt->AreaFire_Target == AreaFireTarget::Random)
 		{
-			auto const range = pWeaponType->Range / static_cast<double>(Unsorted::LeptonsPerCell);
+			auto const range = WeaponTypeExt::GetRangeWithModifiers(pWeaponType, pThis) / static_cast<double>(Unsorted::LeptonsPerCell);
 
 			std::vector<CellStruct> adjacentCells = GeneralUtils::AdjacentCellsInRange(static_cast<size_t>(range + 0.99));
 			size_t size = adjacentCells.size();
@@ -593,57 +596,6 @@ DEFINE_HOOK(0x6F3C88, TechnoClass_GetFLH_BurstFLH_2, 0x6)
 	return 0;
 }
 #pragma endregion
-
-// Reimplements the game function with few changes / optimizations
-DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
-{
-	enum { ReturnResult = 0x70138F };
-
-	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(int, weaponIndex, STACK_OFFSET(0x8, 0x4));
-
-	int result = 0;
-	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-
-	if (pWeapon)
-	{
-		result = pWeapon->Range;
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-		if (pThis->GetTechnoType()->OpenTopped && !pTypeExt->OpenTopped_IgnoreRangefinding)
-		{
-			int smallestRange = INT32_MAX;
-			auto pPassenger = pThis->Passengers.FirstPassenger;
-
-			while (pPassenger && (pPassenger->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
-			{
-				int openTWeaponIndex = pPassenger->GetTechnoType()->OpenTransportWeapon;
-				int tWeaponIndex = 0;
-
-				if (openTWeaponIndex != -1)
-					tWeaponIndex = openTWeaponIndex;
-				else
-					tWeaponIndex = pPassenger->SelectWeapon(pThis->Target);
-
-				WeaponTypeClass* pTWeapon = pPassenger->GetWeapon(tWeaponIndex)->WeaponType;
-
-				if (pTWeapon && pTWeapon->FireInTransport)
-				{
-					if (pTWeapon->Range < smallestRange)
-						smallestRange = pTWeapon->Range;
-				}
-
-				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
-			}
-
-			if (result > smallestRange)
-				result = smallestRange;
-		}
-	}
-
-	R->EBX(result);
-	return ReturnResult;
-}
 
 // Basically a hack to make game and Ares pick laser properties from non-Primary weapons.
 DEFINE_HOOK(0x70E1A0, TechnoClass_GetTurretWeapon_LaserWeapon, 0x5)

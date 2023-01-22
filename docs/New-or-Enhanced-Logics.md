@@ -4,6 +4,96 @@ This page describes all the engine features that are either new and introduced b
 
 ## New types / ingame entities
 
+### Attached effects
+
+- Similar (but not identical) to Ares' AttachEffect, but with some differences and new features. The largest difference is that here attached effects are explicitly defined types.
+  - `Duration` determines how long the effect lasts for. It can be overriden by `DurationOverrides` on TechnoTypes and Warheads.
+  - `Cumulative`, if set to true, allows the same type of effect to be applied on same object multiple times, up to `Cumulative.MaxCount` number or with no limit if `Cumulative.MaxCount` is a negative number.
+  - `Powered` controls whether or not the effect is rendered inactive if the object it is attached to is deactivated (`PoweredUnit` or affected by EMP) or on low power. What happens to animation is controlled by `Animation.OfflineAction`.
+  - If `DiscardOnEntry` is set to true, the effect is removed when the object it is attached to exits map (enters transport or a building, etc).
+  - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects (Iron Curtain / Force Shield).
+  - `Animation` defines animation to play in an indefinite loop for as long as the effect is active on the object it is attached to.
+    - If `Animation.ResetOnReapply` is set to true, the animation playback is reset every time the effect is applied if `Cumulative=false`.
+    - `Animation.OfflineAction` determines what happens to the animation when the attached object is deactivated or not powered. Only applies if `Powered=true`.
+    - `Animation.TemporalAction` determines what happens to the animation when the attached object is under effect of `Temporal=true` Warhead.
+    - `Animation.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the animation's owner & invoker instead of the object the effect is attached to.
+  - `Tint.Color` & `Tint.Intensity` can be used to set a color tint effect and additive lighting increase/decrease on the object the effect is attached to, respectively.
+    - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
+  - `FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and `ROFMultiplier` can be used to modify the object's firepower, armor strength, movement speed and weapon reload rate, respectively.
+    - If `ROFMultiplier.ApplyOnCurrentTimer` is set to true, `ROFMultiplier` is applied on currently running reload timer (if any) when the effect is first applied.
+  - If `Cloakable` is set to true, the object the effect is attached to is granted ability to cloak itself for duration of the effect.
+  - `ForceDecloak`, if set to true, will uncloak and make the object the effect is attached to unable to cloak itself for duration of the effect.
+  - `WeaponRangeBonus` can be used to give the object the effect is attached an increase or decrease to weapon range, defined in cells.
+    - `WeaponRangeBonus.AllowWeapons` can be used to list only weapons that can benefit from this range bonus and `WeaponRangeBonus.DisallowWeapons` weapons that are not allowed to, respectively.
+    - On TechnoTypes with `OpenTopped=true`, `OpenTopped.UseTransportRangeModifiers` can be set to true to make passengers firing out use the transport's active range bonuses instead.
+  - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
+    - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
+
+- AttachEffectTypes can be attached to TechnoTypes using `AttachEffect.AttachTypes`.
+  - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
+  - `AttachEffect.Delays` can be used to set the delays for recreating the effects on the TechnoType after they expire. Defaults to 0 (immediately), negative values mean the effects are not recreated. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
+  - `AttachEffect.InitialDelays` can be used to set the delays before first creating the effects on TechnoType. Defaults to 0 (immediately). Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
+  - `AttachEffect.RecreationDelays` is used to determine if the effect can be recreated if it is removed completely (e.g `AttachEffect.RemoveTypes`), and if yes, how long this takes. Defaults to -1, meaning no recreation. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
+
+- AttachEffectTypes can be attached to objects via Warheads using `AttachEffect.AttachTypes`.
+  - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
+  - Attached effects can be removed from objects by Warheads using `AttachEffect.RemoveTypes`.
+
+- Weapons can require attached effects on target to fire, or be prevented by firing if specific attached effects are applied.
+  - `AttachEffect.RequiredTypes` can be used to list attached effects required to be on target to fire, all listed effect types must be present to allow firing.
+  - `AttachEffect.DisallowedTypes` can be used to list attached effects that when present prevent the weapon from firing, any of the listed effect types will prevent firing if present.
+
+In `rulesmd.ini`:
+```ini
+[AttachEffectTypes]
+0=SOMEATTACHEFFECT
+
+[SOMEATTACHEFFECT]                           ; AttachEffectType
+Duration=0                                   ; integer - game frames or negative value for indefinite duration
+Cumulative=false                             ; boolean
+Cumulative.MaxCount=-1                       ; integer
+Powered=false                                ; boolean
+DiscardOnEntry=false                         ; boolean
+PenetratesIronCurtain=false                  ; boolean
+Animation=                                   ; Animation
+Animation.ResetOnReapply=false               ; boolean
+Animation.OfflineAction=Hides                ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+Animation.TemporalAction=None                ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+Animation.UseInvokerAsOwner=false            ; boolean
+Tint.Color=                                  ; integer - R,G,B
+Tint.Intensity=                              ; floating point value
+Tint.VisibleToHouses=all                     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+FirepowerMultiplier=1.0                      ; floating point value
+ArmorMultiplier=1.0                          ; floating point value
+SpeedMultiplier=1.0                          ; floating point value
+ROFMultiplier=1.0                            ; floating point value
+ROFMultiplier.ApplyOnCurrentTimer=true       ; boolean
+Cloakable=false                              ; boolean
+ForceDecloak=false                           ; boolean
+WeaponRangeBonus=0.0                         ; floating point value
+WeaponRangeBonus.AllowWeapons=               ; list of WeaponTypes
+WeaponRangeBonus.DisallowWeapons=            ; list of WeaponTypes
+RevengeWeapon=                               ; WeaponType
+RevengeWeapon.AffectsHouses=all              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+
+[SOMETECHNO]                                 ; TechnoType
+AttachEffect.AttachTypes=                    ; List of AttachEffectTypes
+AttachEffect.DurationOverrides=              ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.Delays=                         ; integer - delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.InitialDelays=                  ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.RecreationDelays=               ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
+OpenTopped.UseTransportRangeModifiers=false  ; boolean
+
+[SOMEWEAPON]                                 ; WeaponType
+AttachEffect.RequiredTypes=                  ; List of AttachEffectTypes
+AttachEffect.DisallowedTypes=                ; List of AttachEffectTypes
+
+[SOMEWARHEAD]
+AttachEffect.AttachTypes=                    ; List of AttachEffectTypes
+AttachEffect.RemoveTypes=                    ; List of AttachEffectTypes
+AttachEffect.DurationOverrides=              ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
+```
+
 ### Custom Radiation Types
 
 ![image](_static/images/radtype-01.png)
@@ -38,7 +128,7 @@ RadLightDelay=90                   ; integer
 RadLevelFactor=0.2                 ; floating point value
 RadLightFactor=0.1                 ; floating point value
 RadTintFactor=1.0                  ; floating point value
-RadColor=0,255,0                   ; integer - Red,Green,Blue
+RadColor=0,255,0                   ; integer - R,G,B
 RadSiteWarhead=RadSite             ; WarheadType
 RadSiteWarhead.Detonate=false      ; boolean
 RadHasOwner=false                  ; boolean
@@ -67,7 +157,7 @@ In `artmd.ini`:
 
 [SOMETRAIL]                   ; LaserTrailType name
 IsHouseColor=false            ; boolean
-Color=255,0,0                 ; integer - Red,Green,Blue
+Color=255,0,0                 ; integer - R,G,B
 FadeDuration=64               ; integer
 Thickness=4                   ; integer
 SegmentLength=128             ; integer, minimal length of each trail segment
@@ -938,6 +1028,19 @@ In `rulesmd.ini`:
 Promote.IncludeSpawns=false  ; boolean
 ```
 
+### Revenge weapon
+
+- Similar to `DeathWeapon` in that it is fired after a TechnoType is killed, but with the difference that it will be fired on whoever dealt the damage that killed the TechnoType. If TechnoType died of sources other than direct damage dealt by another TechnoType, `RevengeWeapon` will not be fired.
+  - `RevengeWeapon.AffectsHouses` can be used to filter which houses the damage that killed the TechnoType is allowed to come from to fire the weapon.
+  - It is possible to grant revenge weapons through [attached effects](#attached-effects) as well.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                    ; TechnoType
+RevengeWeapon=                  ; WeaponType
+RevengeWeapon.AffectsHouses=all ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
 ### Spawner pursuit range & spawn delay customization
 
 ![image](_static/images/spawnrange-01.gif)
@@ -970,10 +1073,23 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
+### Custom tint on TechnoTypes
+
+- A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to TechnoTypes naturally by setting `Tint.Color` and/or `Tint Intensity`.
+  - `Tint.Intensity` is additive lighting increase/decrease - 1.0 is the default object lighting.
+  - `Tint.VisibleToHouses` can be used to customize which houses can see the tint effect.
+  - Tint effects can also be applied by [attached effects](#attached-effects).
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]              ; TechnoType
+Tint.Color=               ; integer - R,G,B
+Tint.Intensity=0.0        ; floating point value
+Tint.VisibleToHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
 ### Customize EVA voice and `SellSound` when selling units
 
 - When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
-
   - `EVA.Sold` is used to customize the EVA voice when selling, default to `EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles.
   - `SellSound` is used to customize the report sound when selling, default to `[AudioVisual]->SellSound`. Note that vanilla game played vehicles' SellSound globally. This has been changed in consistency with buildings' SellSound.
 

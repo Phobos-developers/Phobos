@@ -1,6 +1,8 @@
 #include <AircraftClass.h>
-#include <ScenarioClass.h>
 #include "Body.h"
+
+#include <ScenarioClass.h>
+#include <TunnelLocomotionClass.h>
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
@@ -15,10 +17,27 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	// Do not search this up again in any functions called here because it is costly for performance - Starkku
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	pExt->OnEarlyUpdate();
-
+	pExt->UpdateAttachEffects();
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
 
 	return 0;
+}
+
+// Ares-hook jmp to this offset
+DEFINE_HOOK(0x71A88D, TemporalClass_AI, 0x0)
+{
+	GET(TemporalClass*, pThis, ESI);
+
+	if (auto const pTarget = pThis->Target)
+	{
+		pTarget->IsMouseHovering = false;
+
+		const auto pExt = TechnoExt::ExtMap.Find(pTarget);
+		pExt->UpdateTemporal();
+	}
+
+	// Recovering vanilla instructions that were broken by a hook call
+	return R->EAX<int>() <= 0 ? 0x71A895 : 0x71AB08;
 }
 
 DEFINE_HOOK_AGAIN(0x51BAC7, FootClass_AI_Tunnel, 0x6)//InfantryClass_AI_Tunnel
@@ -57,6 +76,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 
 	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
 	pExt->InitializeLaserTrails();
+	pExt->InitializeAttachEffects();
 
 	return 0;
 }
@@ -415,6 +435,49 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 
 	R->EAX(maxSpeed);
 	return SkipGameCode;
+}
+
+
+DEFINE_HOOK(0x728F74, TunnelLocomotionClass_Process_KillAnims, 0x5)
+{
+	GET(ILocomotion*, pThis, ESI);
+
+	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
+	const auto pExt = TechnoExt::ExtMap.Find(pLoco->LinkedTo);
+	pExt->IsBurrowed = true;
+
+	if (const auto pShieldData = pExt->Shield.get())
+		pShieldData->SetAnimationVisibility(false);
+
+	for (auto const& attachEffect : pExt->AttachedEffects)
+	{
+		attachEffect->SetAnimationVisibility(false);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x728E5F, TunnelLocomotionClass_Process_RestoreAnims, 0x7)
+{
+	GET(ILocomotion*, pThis, ESI);
+
+	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
+
+	if (pLoco->State == TunnelLocomotionClass::State::PreDigOut)
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pLoco->LinkedTo);
+		pExt->IsBurrowed = false;
+
+		if (const auto pShieldData = pExt->Shield.get())
+			pShieldData->SetAnimationVisibility(true);
+
+		for (auto const& attachEffect : pExt->AttachedEffects)
+		{
+			attachEffect->SetAnimationVisibility(true);
+		}
+	}
+
+	return 0;
 }
 
 #pragma region Fly Layer Update
