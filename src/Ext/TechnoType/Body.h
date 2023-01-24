@@ -168,7 +168,7 @@ public:
 			, LowSelectionPriority { false }
 			, GroupAs { NONE_STR }
 			, RadarJamRadius { 0 }
-			, InhibitorRange { }
+			, InhibitorRange {}
 			, DesignatorRange { }
 			, MindControlRangeLimit {}
 
@@ -255,28 +255,28 @@ public:
 			, AutoDeath_TechnosExist_Houses { AffectedHouse::Owner }
 
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
-			, SlavesFreeSound { }
-			, SellSound { }
-			, EVA_Sold { }
+			, SlavesFreeSound {}
+			, SellSound {}
+			, EVA_Sold {}
 			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, ForceWeapon_Cloaked { -1 }
 			, ForceWeapon_Disguised { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
-			, SelfHealGainType()
+			, SelfHealGainType {}
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
-			, PronePrimaryFireFLH { }
-			, ProneSecondaryFireFLH { }
-			, DeployedPrimaryFireFLH { }
-			, DeployedSecondaryFireFLH { }
+			, PronePrimaryFireFLH {}
+			, ProneSecondaryFireFLH {}
+			, DeployedPrimaryFireFLH {}
+			, DeployedSecondaryFireFLH {}
 			, IronCurtain_KeptOnDeploy {}
 			, IronCurtain_Effect {}
 			, IronCurtain_KillWarhead {}
 
 			, Explodes_KillPassengers { true }
-			, DeployFireWeapon { }
+			, DeployFireWeapon {}
 		{ }
 
 		virtual ~ExtData() = default;
