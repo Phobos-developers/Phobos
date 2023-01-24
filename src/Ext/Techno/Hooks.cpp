@@ -22,6 +22,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
 		pExt->UpdateTypeData(pType);
 
+	pExt->IsInTunnel = false; // TechnoClass::AI is only called when not in tunnel.
+
 	if (pExt->CheckDeathConditions())
 		return 0;
 
@@ -29,27 +31,10 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->EatPassengers();
 	pExt->UpdateShield();
 	pExt->ApplySpawnLimitRange();
-
-	pExt->IsInTunnel = false; // TechnoClass::AI is only called when not in tunnel.
+	pExt->UpdateLaserTrails();
 
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
 
-	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
-	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
-	for (auto const& trail : pExt->LaserTrails)
-	{
-		if (pThis->CloakState == CloakState::Cloaked && !trail->Type->CloakVisible)
-			continue;
-
-		if (!pExt->IsInTunnel)
-			trail->Visible = true;
-
-		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret);
-		if (pThis->CloakState == CloakState::Uncloaking && !trail->Type->CloakVisible)
-			trail->LastLocation = trailLoc;
-		else
-			trail->Update(trailLoc);
-	}
 	return 0;
 }
 

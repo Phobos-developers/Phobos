@@ -65,6 +65,7 @@ public:
 		void UpdateOnTunnelEnter();
 		void ApplySpawnLimitRange();
 		void UpdateTypeData(TechnoTypeClass* currentType);
+		void UpdateLaserTrails();
 		void InitializeLaserTrails();
 
 		virtual ~ExtData() = default;
