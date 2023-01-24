@@ -233,6 +233,7 @@ Shield.InheritStateOnReplace=false   ; boolean
     - `CreateUnit.RandomFacing`, if set to true makes it so that a random facing is picked instead.
     - `CreateUnit.InheritFacings` and `CreateUnit.InheritTurretFacings` inherit facings for vehicle body and turret respectively from the destroyed vehicle if the animation is a vehicle destroy animation.
   - `CreateUnit.ConsiderPathfinding`, if set to true, will consider whether or not the cell where the animation is located is occupied by other objects or impassable to the vehicle being created and will attempt to find a nearby cell that is not. Otherwise the vehicle will be created at the animation's location despite these obstacles.
+  - `CreateUnit.SpawnAnim` can be used to play another animation at created unit's location after it has appeared. This animation has same owner and invoker as the parent animation.
 
 In `artmd.ini`:
 ```ini
@@ -246,6 +247,7 @@ CreateUnit.RandomFacing=true           ; boolean
 CreateUnit.InheritFacings=false        ; boolean
 CreateUnit.InheritTurretFacings=false  ; boolean
 CreateUnit.ConsiderPathfinding=false   ; boolean
+CreateUnit.SpawnAnim=                  ; Animation
 ```
 
 ```{note}
