@@ -277,9 +277,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 {
+#ifndef DEBUG
 	GET(CCINIClass*, rulesINI, EDI);
 
-#ifndef DEBUG
 	Phobos::Config::DevelopmentCommands = rulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
 #endif
 
