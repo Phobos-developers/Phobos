@@ -332,7 +332,8 @@ to prevent spy effects from happening twice.
 
 The value itself doesn't matter, it just needs to be unique enough to not be accidentally produced by the game there.
 */
-#define INFILTRATE_HOOK_MAGIC 0x77777777
+constexpr int INFILTRATE_HOOK_MAGIC = 0x77777777;
+
 DEFINE_HOOK(0x45759D, BuildingClass_Infiltrate_NoAres, 0x5)
 {
 	GET_STACK(HouseClass*, pInfiltratorHouse, STACK_OFFSET(0x14, -0x4));
@@ -358,4 +359,3 @@ DEFINE_HOOK(0x4575A2, BuildingClass_Infiltrate_AfterAres, 0xE)
 	BuildingExt::HandleInfiltrate(pBuilding, pInfiltratorHouse);
 	return 0;
 }
-#undef INFILTRATE_HOOK_MAGIC
