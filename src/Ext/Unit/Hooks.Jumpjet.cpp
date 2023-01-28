@@ -22,18 +22,10 @@ DEFINE_HOOK(0x54B8E9, JumpjetLocomotionClass_In_Which_Layer_Deviation, 0x6)
 	return 0;
 }
 
-// I think JumpjetLocomotionClass::State is probably an enum, where
-// 0 - On ground
-// 1 - Taking off from ground
-// 2 - Hovering in air
-// 3 - Moving in air
-// 4 - Deploying to land
-// 5 - Crashing
-// 6 - Invalid?
-
 // Bugfix: Jumpjet turn to target when attacking
-// Even though it's still not the best place to do this, given that 0x54BF5B has done the similar action, I'll do it here too
-DEFINE_HOOK(0x54BD93, JumpjetLocomotionClass_State2_54BD30_TurnToTarget, 0x6)
+// The way vanilla game handles facing turning is a total mess, so even though this is not the most correct place to do it, given that 0x54BF5B has something similar, I just do it here too
+// TODO : The correct fix : 0x736FC4 for stucking at FireError::FACING, 0x736EE9 for something else like OmniFire etc.
+DEFINE_HOOK(0x54BD93, JumpjetLocomotionClass_State2_TurnToTarget, 0x6)
 {
 	enum { ContinueNoTarget = 0x54BDA1, EndFunction = 0x54BFDE };
 	GET(JumpjetLocomotionClass* const, pLoco, ESI);
@@ -50,10 +42,10 @@ DEFINE_HOOK(0x54BD93, JumpjetLocomotionClass_State2_54BD30_TurnToTarget, 0x6)
 		{
 			CoordStruct& source = pThis->Location;
 			CoordStruct target = pTarget->GetCoords();
-			DirStruct tgtDir = DirStruct { Math::atan2(source.Y - target.Y, target.X - source.X) };
+			DirStruct tgtDir { Math::atan2(source.Y - target.Y, target.X - source.X) };
 
-			if (pThis->GetRealFacing().GetFacing<32>() != tgtDir.GetFacing<32>())
-				pLoco->LocomotionFacing.Set_Desired(tgtDir);
+			if (pThis->GetRealFacing() != tgtDir)
+				pLoco->LocomotionFacing.SetDesired(tgtDir);
 		}
 	}
 
@@ -62,22 +54,24 @@ DEFINE_HOOK(0x54BD93, JumpjetLocomotionClass_State2_54BD30_TurnToTarget, 0x6)
 }
 
 // Bugfix: Align jumpjet turret's facing with body's
-DEFINE_HOOK(0x736BF3, UnitClass_UpdateRotation_TurretFacing, 0x6)
+DEFINE_HOOK(0x736BA3, UnitClass_UpdateRotation_TurretFacing_TemporaryFix, 0x6)
 {
 	GET(UnitClass* const, pThis, ESI);
-	// Not sure if jumpjet check is really needed
-	if (!pThis->Target && !pThis->Type->TurretSpins && pThis->Type->JumpJet)
-	{
-		pThis->SecondaryFacing.Set_Desired(pThis->PrimaryFacing.Current());
-		pThis->unknown_49C = pThis->PrimaryFacing.Is_Rotating();
-		return 0x736C09;
-	}
+	enum { SkipCheckDestination = 0x736BCA, GetDirectionTowardsDestination = 0x736BBB };
+	// When jumpjets arrived at their FootClass::Destination, they seems stuck at the Move mission
+	// and therefore the turret facing was set to DirStruct{atan2(0,0)}==DirType::East at 0x736BBB
+	// that's why they will come back to normal when giving stop command explicitly
+	auto pType = pThis->Type;
+	// so the best way is to fix the Mission if necessary, but I don't know how to do it
+	// so I skipped jumpjets check temporarily, and in most cases Jumpjet/BallonHover should cover most of it
+	if (!pType->TurretSpins && (pType->JumpJet || pType->BalloonHover))
+		return SkipCheckDestination;
 
 	return 0;
 }
 
 // Bugfix: Jumpjet detect cloaked objects beneath
-DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_54BFF0_UpdateSensors, 0x7)
+DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_UpdateSensors, 0x7)
 {
 	GET(FootClass* const, pLinkedTo, ECX);
 	GET(CellStruct const, currentCell, EAX);
@@ -97,4 +91,33 @@ DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_54BFF0_UpdateSensors, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x54CB0E, JumpjetLocomotionClass_State5_CrashSpin, 0x7)
+{
+	GET(JumpjetLocomotionClass*, pThis, EDI);
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->LinkedTo->GetTechnoType());
+	return pTypeExt->JumpjetRotateOnCrash ? 0 : 0x54CB3E;
+}
+
+
+// These are subject to changes if someone wants to properly implement jumpjet tilting
+DEFINE_HOOK(0x54DCCF, JumpjetLocomotionClass_DrawMatrix_TiltCrashJumpjet, 0x5)
+{
+	GET(ILocomotion*, iloco, ESI);
+	//if (static_cast<JumpjetLocomotionClass*>(iloco)->State < JumpjetLocomotionClass::State::Crashing)
+	if (static_cast<JumpjetLocomotionClass*>(iloco)->State == JumpjetLocomotionClass::State::Grounded)
+		return 0x54DCE8;
+
+	return 0;
+}
+
+/*
+DEFINE_HOOK(0x54DD3D, JumpjetLocomotionClass_DrawMatrix_AxisCenterInAir, 0x5)
+{
+	GET(ILocomotion*, iloco, ESI);
+	auto state = static_cast<JumpjetLocomotionClass*>(iloco)->State;
+	if (state && state < JumpjetLocomotionClass::State::Crashing)
+		return  0x54DE88;
+	return 0;
+}
+*/
 //TODO : Issue #690 #655

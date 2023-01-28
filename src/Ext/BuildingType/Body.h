@@ -1,5 +1,6 @@
 #pragma once
 #include <BuildingTypeClass.h>
+#include <SuperClass.h>
 #include <SuperWeaponTypeClass.h>
 
 #include <Helpers/Macro.h>
@@ -16,15 +17,17 @@ public:
 	public:
 		Valueable<AffectedHouse> PowersUp_Owner;
 		ValueableVector<BuildingTypeClass*> PowersUp_Buildings;
-		DynamicVectorClass<SuperWeaponTypeClass*> SuperWeapons;
+		ValueableIdxVector<SuperWeaponTypeClass> SuperWeapons;
 
 		ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
 		Nullable<int> PowerPlantEnhancer_Amount;
 		Nullable<float> PowerPlantEnhancer_Factor;
 
 		DynamicVectorClass<Point2D> OccupierMuzzleFlashes;
-
+		Valueable<bool> Powered_KillSpawns;
+		Nullable<bool> AllowAirstrike;
 		Valueable<bool> Refinery_UseStorage;
+		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
 
 		Valueable<bool> Grinding_AllowAllies;
 		Valueable<bool> Grinding_AllowOwner;
@@ -32,6 +35,7 @@ public:
 		ValueableVector<TechnoTypeClass*> Grinding_DisallowTypes;
 		NullableIdx<VocClass> Grinding_Sound;
 		Nullable<WeaponTypeClass*> Grinding_Weapon;
+		Valueable<bool> Grinding_PlayDieSound;
 		Valueable<bool> Grinding_DisplayRefund;
 		Valueable<AffectedHouse> Grinding_DisplayRefund_Houses;
 		Valueable<Point2D> Grinding_DisplayRefund_Offset;
@@ -44,6 +48,10 @@ public:
 		CustomPalette PlacementPreview_Palette;
 		Nullable<TranslucencyLevel> PlacementPreview_Translucency;
 
+		Valueable<bool> SpyEffect_Custom;
+		NullableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
+		NullableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -51,12 +59,16 @@ public:
 			, PowerPlantEnhancer_Amount {}
 			, PowerPlantEnhancer_Factor {}
 			, OccupierMuzzleFlashes()
+			, Powered_KillSpawns { false }
+			, AllowAirstrike {}
+			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, Refinery_UseStorage { false }
 			, Grinding_AllowAllies { false }
 			, Grinding_AllowOwner { true }
 			, Grinding_AllowTypes {}
 			, Grinding_DisallowTypes {}
 			, Grinding_Sound {}
+			, Grinding_PlayDieSound { true }
 			, Grinding_Weapon {}
 			, Grinding_DisplayRefund { false }
 			, Grinding_DisplayRefund_Houses { AffectedHouse::All }
@@ -68,7 +80,15 @@ public:
 			, PlacementPreview_Offset { {0,-15,1} }
 			, PlacementPreview_Palette {}
 			, PlacementPreview_Translucency {}
+			, SpyEffect_Custom { false }
+			, SpyEffect_VictimSuperWeapon {}
+			, SpyEffect_InfiltratorSuperWeapon {}
 		{ }
+
+		// Ares 0.A functions
+		int GetSuperWeaponCount() const;
+		int GetSuperWeaponIndex(int index, HouseClass* pHouse) const;
+		int GetSuperWeaponIndex(int index) const;
 
 		virtual ~ExtData() = default;
 

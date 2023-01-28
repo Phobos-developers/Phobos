@@ -1,7 +1,7 @@
 #pragma once
 #include <BulletClass.h>
 #include <WeaponTypeClass.h>
-
+#include <DiskLaserClass.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -18,7 +18,6 @@ public:
 	public:
 
 		Valueable<double> DiskLaser_Radius;
-		Valueable<int> DiskLaser_Circumference;
 		Valueable<RadTypeClass*> RadType;
 		Valueable<bool> Bolt_Disable1;
 		Valueable<bool> Bolt_Disable2;
@@ -31,10 +30,10 @@ public:
 		Valueable<AreaFireTarget> AreaFire_Target;
 		Nullable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
+		Nullable<PartialVector2D<int>> ROF_RandomDelay;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
-			, DiskLaser_Radius { 38.2 }
-			, DiskLaser_Circumference { 240 }
+			, DiskLaser_Radius { DiskLaserClass::Radius }
 			, RadType {}
 			, Bolt_Disable1 { false }
 			, Bolt_Disable2 { false }
@@ -47,6 +46,7 @@ public:
 			, AreaFire_Target { AreaFireTarget::Base }
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
+			, ROF_RandomDelay {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -77,7 +77,7 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
-	static int nOldCircumference;
+	static double OldRadius;
 
 	static void DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner);
 	static void DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage);

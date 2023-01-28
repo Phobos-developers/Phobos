@@ -13,7 +13,7 @@
 #include <JumpjetLocomotionClass.h>
 #include <BombClass.h>
 #include <WarheadTypeClass.h>
-
+#include <GameStrings.h>
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/Body.h>
@@ -137,39 +137,6 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, 0xA)
 	return 0x7023E5;
 }
 
-// issue #112 Make FireOnce=yes work on other TechnoTypes
-// Author: Starkku
-DEFINE_HOOK(0x4C7518, EventClass_Execute_StopUnitDeployFire, 0x9)
-{
-	GET(TechnoClass* const, pThis, ESI);
-
-	auto const pUnit = abstract_cast<UnitClass*>(pThis);
-	if (pUnit && pUnit->CurrentMission == Mission::Unload && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
-		pUnit->QueueMission(Mission::Guard, true);
-
-	// Restore overridden instructions
-	GET(Mission, eax, EAX);
-	return eax == Mission::Construction ? 0x4C8109 : 0x4C7521;
-}
-
-DEFINE_HOOK(0x73DD12, UnitClass_Mission_Unload_DeployFire, 0x6)
-{
-	GET(UnitClass*, pThis, ESI);
-
-	int weaponIndex = pThis->GetTechnoType()->DeployFireWeapon;
-
-	if (pThis->GetFireError(pThis->Target, weaponIndex, true) == FireError::OK)
-	{
-		pThis->Fire(pThis->Target, weaponIndex);
-		auto const pWeapon = pThis->GetWeapon(weaponIndex);
-
-		if (pWeapon && pWeapon->WeaponType->FireOnce)
-			pThis->QueueMission(Mission::Guard, true);
-	}
-
-	return 0x73DD3C;
-}
-
 // issue #250: Building placement hotkey not responding
 // Author: Uranusian
 DEFINE_JUMP(LJMP, 0x4ABBD5, 0x4ABBD5 + 7); // DisplayClass_MouseLeftRelease_HotkeyFix
@@ -280,8 +247,8 @@ DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
 	GET(CCINIClass*, pINI, EDI);
 	INI_EX exINI(pINI);
 
-	pRulesExt->JumpjetCrash.Read(exINI, "JumpjetControls", "Crash");
-	pRulesExt->JumpjetNoWobbles.Read(exINI, "JumpjetControls", "NoWobbles");
+	pRulesExt->JumpjetCrash.Read(exINI, GameStrings::JumpjetControls, "Crash");
+	pRulesExt->JumpjetNoWobbles.Read(exINI, GameStrings::JumpjetControls, "NoWobbles");
 
 	return 0;
 }
@@ -519,7 +486,8 @@ DEFINE_HOOK(0x73EFD8, UnitClass_Mission_Hunt_DeploysInto, 0x6)
 // Author: Starkku
 DEFINE_JUMP(LJMP, 0x7032BA, 0x7032C6);
 
-namespace FetchBomb {
+namespace FetchBomb
+{
 	BombClass* pThisBomb;
 }
 
@@ -527,8 +495,14 @@ namespace FetchBomb {
 DEFINE_HOOK(0x438771, BombClass_Detonate_SetContext, 0x6)
 {
 	GET(BombClass*, pThis, ESI);
+
 	FetchBomb::pThisBomb = pThis;
-	return 0x0;
+
+	// Also adjust detonation coordinate.
+	CoordStruct coords = pThis->Target->GetCenterCoords();
+
+	R->EDX(&coords);
+	return 0;
 }
 
 static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
@@ -569,6 +543,16 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 	return nDamageAreaResult;
 }
 
+DEFINE_HOOK(0x6F5201, TechnoClass_DrawExtras_IvanBombImage, 0x6)
+{
+	GET(TechnoClass*, pThis, EBP);
+
+	auto coords = pThis->GetCenterCoords();
+
+	R->EAX(&coords);
+	return 0;
+}
+
 // skip the Explosion Anim block and clean up the context
 DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 {
@@ -578,3 +562,49 @@ DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 
 // redirect MapClass::DamageArea call to our dll for additional functionality and checks
 DEFINE_JUMP(CALL, 0x4387A3, GET_OFFSET(_BombClass_Detonate_DamageArea));
+
+// BibShape checks for BuildingClass::BState which needs to not be 0 (constructing) for bib to draw.
+// It is possible for BState to be 1 early during construction for frame or two which can result in BibShape being drawn during buildup, which somehow depends on length of buildup.
+// Trying to fix this issue at its root is problematic and most of the time causes buildup to play twice, it is simpler to simply fix the BibShape to not draw until the buildup is done - Starkku
+DEFINE_HOOK(0x43D874, BuildingClass_Draw_BuildupBibShape, 0x6)
+{
+	enum { DontDrawBib = 0x43D8EE };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (!pThis->ActuallyPlacedOnMap)
+		return DontDrawBib;
+
+	return 0;
+}
+
+// Fix railgun target coordinates potentially differing from actual target coords.
+DEFINE_HOOK(0x70C6B5, TechnoClass_Railgun_TargetCoords, 0x5)
+{
+	GET(AbstractClass*, pTarget, EBX);
+
+	auto coords = pTarget->GetCenterCoords();
+
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
+		coords = pBuilding->GetTargetCoords();
+	else if (const auto pCell = abstract_cast<CellClass*>(pTarget))
+		coords = pCell->GetCoordsWithBridge();
+
+	R->EAX(&coords);
+	return 0;
+}
+
+// Fix techno target coordinates (used for fire angle calculations, target lines etc) to take building target coordinate offsets into accord.
+// This, for an example, fixes a vanilla bug where Destroyer has trouble targeting Naval Yards with its cannon weapon from certain angles.
+DEFINE_HOOK(0x70BCE6, TechnoClass_GetTargetCoords_BuildingFix, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pThis->Target))
+	{
+		const auto coords = pBuilding->GetTargetCoords();
+		R->EAX(&coords);
+	}
+
+	return 0;
+}

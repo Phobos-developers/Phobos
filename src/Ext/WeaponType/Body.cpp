@@ -1,11 +1,12 @@
 #include "Body.h"
+#include <GameStrings.h>
 
 template<> const DWORD Extension<WeaponTypeClass>::Canary = 0x22222222;
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
 void WeaponTypeExt::ExtData::Initialize()
 {
-	this->RadType = RadTypeClass::FindOrAllocate("Radiation");
+	this->RadType = RadTypeClass::FindOrAllocate(GameStrings::Radiation);
 }
 
 // =============================
@@ -22,7 +23,6 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	this->DiskLaser_Radius.Read(exINI, pSection, "DiskLaser.Radius");
-	this->DiskLaser_Circumference = (int)(this->DiskLaser_Radius * Math::Pi * 2);
 
 	this->Bolt_Disable1.Read(exINI, pSection, "Bolt.Disable1");
 	this->Bolt_Disable2.Read(exINI, pSection, "Bolt.Disable2");
@@ -38,6 +38,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AreaFire_Target.Read(exINI, pSection, "AreaFire.Target");
 	this->FeedbackWeapon.Read(exINI, pSection, "FeedbackWeapon", true);
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
+	this->ROF_RandomDelay.Read(exINI, pSection, "ROF.RandomDelay");
 }
 
 template <typename T>
@@ -45,7 +46,6 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->DiskLaser_Radius)
-		.Process(this->DiskLaser_Circumference)
 		.Process(this->Bolt_Disable1)
 		.Process(this->Bolt_Disable2)
 		.Process(this->Bolt_Disable3)
@@ -58,6 +58,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AreaFire_Target)
 		.Process(this->FeedbackWeapon)
 		.Process(this->Laser_IsSingleColor)
+		.Process(this->ROF_RandomDelay)
 		;
 };
 
@@ -77,14 +78,14 @@ void WeaponTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 bool WeaponTypeExt::LoadGlobals(PhobosStreamReader& Stm)
 {
 	return Stm
-		.Process(nOldCircumference)
+		.Process(OldRadius)
 		.Success();
 }
 
 bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
 	return Stm
-		.Process(nOldCircumference)
+		.Process(OldRadius)
 		.Success();
 }
 

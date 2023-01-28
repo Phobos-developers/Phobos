@@ -4,6 +4,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 ## Bugfixes and miscellaneous
 
+- Fixed the bug that GameModeOptions are not correctly saved. For example, `BuildOffAlly` is corrupted after load a save.
 - Fixed the bug when reading a map which puts `Preview(Pack)` after `Map` lead to the game fail to draw the preview
 - Fixed the bug when retinting map lighting with a map action corrupted light sources.
 - Fixed the bug when deploying mindcontrolled vehicle into a building permanently transferred the control to the house which mindcontrolled it.
@@ -26,7 +27,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
 - Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
-
+- Allowed usage of `AlternateFLH` of vehicles in `OpenTopped` transport.
 - SHP debris shadows now respect the `Shadow` tag.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
 - Added a "Load Game" button to the retry dialog on mission failure.
@@ -38,7 +39,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `InfiniteMindControl` with `Damage=1` can now control more than 1 unit.
 - Aircraft with `Fighter` set to false or those using strafing pattern (weapon projectile `ROT` is below 2) now take weapon's `Burst` into accord for all shots instead of just the first one.
 - `EMEffect` used for random AnimList pick is now replaced by a new tag `AnimList.PickRandom` with no side effect. (EMEffect=yes on AA inviso projectile deals no damage to units in movement)
-- Vehicles using `DeployFire` will now explicitly use weapon specified by `DeployFireWeapon` for firing the deploy weapon and respect `FireOnce` setting on weapon and any stop commands issued during firing.
+- Vehicles using `DeployFire` will now use `DeployFireWeapon` for firing the deploy weapon if explicitly set, if not it behaves like previously (`Primary` if can fire, `Secondary` if not) and respect `FireOnce` setting on weapon and any stop commands issued during firing. If `FireOnce` is set to true the unit won't accept further deploy commands for number of frames that is equal to whichever is smaller between weapon `ROF` and `[Unload]` -> `Rate` times 900.
 - Infantry with `DeployFireWeapon=-1` can now fire both weapons (decided by its target), regardless of deployed or not.
 
 ![image](_static/images/remember-target-after-deploying-01.gif)
@@ -64,7 +65,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Nuke carrier & payload weapons now respect `Bright` setting on the weapons always when appropriate (previously only payload did and only if Superweapon had `Nuke.SiloLaunch=false` *(Ares feature)*).
 - Self-healing pips from `InfantryGainSelfHeal` & `UnitsGainSelfHeal` now respect unit's `PixelSelectionBracketDelta` like health bar pips do.
 - Buildings using `SelfHealing` will now correctly revert to undamaged graphics if their health is restored back by self-healing.
-- Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations.
 - Allow use of `Foundation=0x0` on TerrainTypes without crashing for similar results as for buildings.
 - Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to some Ares-introduced Warhead effects like EMP.
 - `OpenTopped` transports now take `OpenTransportWeapon` setting of passengers into consideration when determining weapon range used for threat scanning and approaching targets.
@@ -85,6 +85,17 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Only applies to Z-aware drawing mode for now.
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true`.
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry.
+- Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges.
+- Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines.
+- Observers can now see cloaked objects owned by non-allied houses.
+- In singleplayer missions, the player can now see cloaked objects owned by allied houses.
+- IvanBomb images now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation.
+- Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations.
+- Animation with `Tiled=yes` now supports `CustomPalette`.
+- Attempted to avoid units from retaining previous orders (attack,grind,garrison,etc) after changing ownership (mind-control,abduction,etc).
+- Fixed buildings' `NaturalParticleSystem` being created for in-map pre-placed structures.
+
+- Fixed jumpjet units being unable to visually tilt or be flipped over on the ground if `TiltCrashJumpjet=no`.
 
 ## Animations
 
@@ -140,6 +151,16 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 
 ## Buildings
 
+### Airstrike target eligibility
+
+- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]   ; BuildingType
+AllowAirstrike=  ; boolean
+```
+
 ### Customizable & new grinder properties
 
 ![image](_static/images/grinding.gif)
@@ -150,6 +171,7 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
   - `Grinding.AllowOwner` changes whether or not to allow units to enter your own buildings.
   - `Grinding.AllowTypes` can be used to define InfantryTypes and VehicleTypes that can be grinded by the building. Listing any will disable grinding for all types except those listed.
   - `Grinding.DisallowTypes` can be used to exclude InfantryTypes or VehicleTypes from being able to enter the grinder building.
+  - `Grinding.PlayDieSound` controls if the units' `DieSound` and `VoiceDie` are played when entering the grinder. Default to `yes`.
   - `Grinding.Sound` is a sound played by when object is grinded by the building. If not set, defaults to `[AudioVisual]`->`EnterGrinderSound`.
   - `Grinding.Weapon` is a weapon fired at the building & by the building when it grinds an object. Will only be fired if at least weapon's `ROF` amount of frames have passed since it was last fired.
   - `Grinding.DisplayRefund` can be set to display the amount of credits acquired upon grinding on the building. Multiple refunded objects within a short period of time have their refund amounts coalesced into single display.
@@ -163,6 +185,7 @@ Grinding.AllowAllies=false         ; boolean
 Grinding.AllowOwner=true           ; boolean
 Grinding.AllowTypes=               ; List of InfantryTypes / VehicleTypes
 Grinding.DisallowTypes=            ; List of InfantryTypes / VehicleTypes
+Grinding.PlayDieSound=true         ; boolean
 Grinding.Sound=                    ; Sound
 Grinding.Weapon=                   ; WeaponType
 Grinding.DisplayRefund=false       ; boolean
@@ -287,6 +310,24 @@ In `rulesmd.ini`:
 Explodes.KillPassengers=true ; boolean
 ```
 
+
+### IronCurtain effects on organics customization
+- In vanilla game, when iron-curtain is applied on organic units like infantries and squids, they could only get killed instantly by C4Warhead. This behavior is now dehardcoded, and the effect under iron-curtain can now be chosen among
+  - `kill` : Iron-Curtain kills the organic object with a specifc warhead.
+  - `invulnerable` : Iron-Curtain makes the organic object invulnerable like buildings and vehicles.
+  - `ignore` : Iron-Curtain doesn't give any effect on the organic object.
+
+In `rulesmd.ini`
+```ini
+[CombatDamage]
+IronCurtain.EffectOnOrganics=kill  ; IronCurtain effect Enumeration (kill | invulnerable | ignore), IronCurtain to Infantry and Techno with Organic=yes
+IronCurtain.KillOrganicsWarhead=   ; IronCurtain uses this warhead to kill organics, default to [CombatDamage]->C4Warhead
+
+[SOMETECHNO]                       ; InfantryType or Organic TechnoType
+IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore), default to [CombatDamage]-> IronCurtain.EffectOnOrganics
+IronCurtain.KillWarhead=           ; IronCurtain uses this warhead to kill this organic, default to [CombatDamage]->IronCurtain.KillWarhead
+```
+
 ### Jumpjet unit layer deviation customization
 
 - Allows turning on or off jumpjet unit behaviour where they fluctuate between `air` and `top` layers based on whether or not their current altitude is equal / below or above `JumpjetHeight` or `[JumpjetControls] -> CruiseHeight` if former is not set on TechnoType. If disabled, airborne jumpjet units exist only in `air` layer. `JumpjetAllowLayerDeviation` defaults to value of `[JumpjetControls] -> AllowLayerDeviation` if not specified.
@@ -306,7 +347,6 @@ JumpjetAllowLayerDeviation=true  ; boolean
 *Jumpjet turning to target applied in [Robot Storm X](https://www.moddb.com/mods/cc-robot-storm-x)*
 
 - Allows jumpjet units to face towards the target when firing from different directions. Set `[JumpjetControls] -> TurnToTarget=yes` to enable it for all jumpjet locomotor units. This behavior can be overriden by setting `[UnitType] -> JumpjetTurnToTarget` for specific units.
-- This behavior does not apply to `TurretSpins=yes` units for obvious reasons.
 
 In `rulesmd.ini`:
 ```ini
@@ -316,7 +356,23 @@ TurnToTarget=false     ; boolean
 [SOMEUNITTYPE]         ; UnitType with jumpjet locomotor
 JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
 ```
+```{warning}
+This option will be deprecated in future versions.
+```
 
+### Jumpjet rotating on crashing toggle
+
+- Jumpjet that is going to crash starts to change its facing uncontrollably, this can now be turned off.
+
+In `rulesmd.ini`:
+
+```ini
+[SOMETECHNO]    ; TechnoType
+JumpjetRotateOnCrash=true  ; boolean
+```
+```{warning}
+This may subject to further changes.
+```
 
 ### Kill spawns on low power
 
@@ -370,15 +426,15 @@ ForbidParallelAIQueues.Building=no  ; boolean
 
 - You can now specify which type of ore certain TerrainType would generate.
 - It's also now possible to specify a range value for an ore generation area different compared to standard 3x3 rectangle. Ore will be uniformly distributed across all affected cells in a spread range.
-- You can specify which ore growth stage will be spawned and how much cells will be filled with ore per ore generation animation. Corresponding tags accept either a single integer value or two comma-separated values to allow randomized growth stages from the range (inclusive).
+- You can specify which ore growth stage will be spawned and how many cells will be filled with ore per ore generation animation. Corresponding tags accept either a single integer value or two comma-separated values to allow randomized growth stages from the range (inclusive).
 
 In `rulesmd.ini`:
 ```ini
 [SOMETERRAINTYPE]             ; TerrainType
 SpawnsTiberium.Type=0         ; tiberium/ore type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
-SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
-SpawnsTiberium.CellsPerAnim=1 ; single int / comma-sep. range
+SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
+SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
 ```
 
 ### Minimap color customization
@@ -417,6 +473,17 @@ MinimapColor=  ; integer - Red,Green,Blue
 ```
 
 ## Vehicles
+
+### Destroy animations
+
+- `DestroyAnim` has been extended to work with VehicleTypes, with option to pick random animation if `DestroyAnim.Random` is set to true. These animations store owner and facing information for use with [CreateUnit logic](New-or-Enhanced-Logics.md#anim-to-unit).
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                          ; VehicleType
+DestroyAnim=                           ; list of animations
+DestroyAnim.Random=true                ; boolean
+```
 
 ### IsSimpleDeployer vehicle deploy animation / direction customization
 
@@ -499,8 +566,21 @@ ShakeIsLocal=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]          ; WeaponType
-DiskLaser.Radius=38.2 ; floating point value
-                      ; 38.2 is roughly the default saucer disk radius
+DiskLaser.Radius=240  ; floating point value
+                      ; 240 is the default saucer disk radius
+```
+
+### Customizable ROF random delay
+
+- By default weapon `ROF` has a random delay of 0 to 2 frames added to it. This random delay is now customizable, globally and on per-WeaponType basis.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+ROF.RandomDelay=0,2  ; integer - single or comma-sep. range (game frames)
+
+[SOMEWEAPON]         ; WeaponType
+ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames)
 ```
 
 ### Single-color lasers
@@ -531,4 +611,15 @@ IsElectricBolt=true    ; an ElectricBolt Weapon, vanilla tag
 Bolt.Disable1=false    ; boolean
 Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
+```
+
+## RadialIndicator visibility
+
+In vanilla game, a structure's radial indicator can be drawn only when it belongs to the player. Now it can also be visible to observer.
+On top of that, you can specify its visibility from other houses.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+RadialIndicatorVisibility=allies  ; list of Affected House Enumeration (owner/self | allies/ally | enemies/enemy | all)
 ```

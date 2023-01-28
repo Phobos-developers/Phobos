@@ -55,31 +55,45 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 
 DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 {
+	enum { UseWeaponIndex = 0x6F37AF };
+
 	GET(TechnoClass*, pTechno, ECX);
 
 	if (pTechno && pTechno->Target)
 	{
-		auto pTechnoType = pTechno->GetTechnoType();
-		if (!pTechnoType)
-			return 0;
-
 		auto pTarget = abstract_cast<TechnoClass*>(pTechno->Target);
+
 		if (!pTarget)
 			return 0;
 
-		auto pTargetType = pTarget->GetTechnoType();
-		if (!pTargetType)
-			return 0;
+		int forceWeaponIndex = -1;
 
-		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType))
+		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
 		{
-			if (pTechnoTypeExt->ForceWeapon_Naval_Decloaked >= 0
-				&& pTargetType->Cloakable && pTargetType->Naval
-				&& pTarget->CloakState == CloakState::Uncloaked)
+			auto pTargetType = pTarget->GetTechnoType();
+
+			if (pTechnoTypeExt->ForceWeapon_Naval_Decloaked >= 0 &&
+				pTargetType->Cloakable && pTargetType->Naval &&
+				pTarget->CloakState == CloakState::Uncloaked)
 			{
-				R->EAX(pTechnoTypeExt->ForceWeapon_Naval_Decloaked);
-				return 0x6F37AF;
+				forceWeaponIndex = pTechnoTypeExt->ForceWeapon_Naval_Decloaked;
 			}
+			else if (pTechnoTypeExt->ForceWeapon_Cloaked >= 0 &&
+				pTarget->CloakState == CloakState::Cloaked)
+			{
+				forceWeaponIndex = pTechnoTypeExt->ForceWeapon_Cloaked;
+			}
+			else if (pTechnoTypeExt->ForceWeapon_Disguised >= 0 &&
+				pTarget->IsDisguised())
+			{
+				forceWeaponIndex = pTechnoTypeExt->ForceWeapon_Disguised;
+			}
+		}
+
+		if (forceWeaponIndex >= 0)
+		{
+			R->EAX(forceWeaponIndex);
+			return UseWeaponIndex;
 		}
 	}
 
@@ -91,7 +105,7 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
-	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, FurtherCheck = 0x6F3754, OriginalCheck = 0x6F36E3 };
+	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, OriginalCheck = 0x6F36E3 };
 
 	CellClass* pTargetCell = nullptr;
 	TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
@@ -151,11 +165,11 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 					{
 						if (!pShield->CanBeTargeted(pThis->GetWeapon(0)->WeaponType))
 							return Secondary;
-						else
-							return FurtherCheck;
 					}
-
-					return Primary;
+					else
+					{
+						return Primary;
+					}
 				}
 			}
 		}
@@ -395,3 +409,9 @@ DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 
 	return 0;
 }
+
+// Feature: Allow Units using AlternateFLHs - by Trsdy
+// I don't want to rewrite something new, so I use the Infantry one directly
+// afaik it has no check for infantry-specific stuff here so far
+// and neither Ares nor Phobos has touched it, even that crawling flh one was in TechnoClass
+DEFINE_JUMP(VTABLE, 0x7F5D20, 0x523250);// Redirect UnitClass::GetFLH to InfantryClass::GetFLH (used to be TechnoClass::GetFLH)

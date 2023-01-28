@@ -10,6 +10,13 @@
 template<> const DWORD Extension<HouseClass>::Canary = 0x11111111;
 HouseExt::ExtContainer HouseExt::ExtMap;
 
+bool HouseExt::ExtData::OwnsLimboDeliveredBuilding(BuildingClass const* pBuilding)
+{
+	if (!pBuilding)
+		return false;
+
+	return this->OwnedLimboDeliveredBuildings.count(pBuilding->UniqueID);
+}
 
 int HouseExt::ActiveHarvesterCount(HouseClass* pThis)
 {
@@ -33,12 +40,6 @@ int HouseExt::TotalHarvesterCount(HouseClass* pThis)
 		result += pThis->CountOwnedAndPresent(pType);
 
 	return result;
-}
-
-int HouseExt::CountOwnedLimbo(HouseClass* pThis, BuildingTypeClass const* const pItem)
-{
-	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
-	return pHouseExt->OwnedLimboBuildingTypes.GetItemCount(pItem->ArrayIndex);
 }
 
 // Ares
@@ -72,6 +73,25 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 		return pDefault;
 	}
 }
+
+void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+{
+	const char* pSection = this->OwnerObject()->PlainName;
+
+	INI_EX exINI(pINI);
+
+	ValueableVector<bool> readBaseNodeRepairInfo;
+	readBaseNodeRepairInfo.Read(exINI, pSection, "RepairBaseNodes");
+	size_t nWritten = readBaseNodeRepairInfo.size();
+	if (nWritten > 0)
+	{
+		for (size_t i = 0; i < 3; i++)
+			this->RepairBaseNodes[i] = readBaseNodeRepairInfo[i < nWritten ? i : nWritten - 1];
+	}
+
+}
+
+
 // =============================
 // load / save
 
@@ -80,11 +100,13 @@ void HouseExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->BuildingCounter)
+		.Process(this->OwnedLimboDeliveredBuildings)
 		.Process(this->Factory_BuildingType)
 		.Process(this->Factory_InfantryType)
 		.Process(this->Factory_VehicleType)
 		.Process(this->Factory_NavyType)
 		.Process(this->Factory_AircraftType)
+		.Process(this->RepairBaseNodes)
 		;
 }
 

@@ -111,6 +111,7 @@ Pips.Shield.Building.Empty=0       ; integer, frame of pips.shp (zero-based) for
 Strength=0                           ; integer
 InitialStrength=0                    ; integer
 Armor=none                           ; ArmorType
+InheritArmorFromTechno=false         ; boolean
 Powered=false                        ; boolean
 AbsorbOverDamage=false               ; boolean
 SelfHealing=0.0                      ; double, percents or absolute
@@ -137,6 +138,7 @@ AbsorbPercent=1.0                    ; floating point value
 PassPercent=0.0                      ; floating point value
 AllowTransfer=                       ; boolean
 ImmuneToBerserk=no                   ; boolean
+ImmuneToCrit=no                      ; boolean
 
 [SOMETECHNO]                         ; TechnoType
 ShieldType=SOMESHIELDTYPE            ; ShieldType; none by default
@@ -168,7 +170,8 @@ Shield.InheritStateOnReplace=false   ; boolean
 - Now you can have a shield for any TechnoType. It serves as a second health pool with independent `Armor` and `Strength` values.
   - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed by shield.
     - Negative damage weapons will consider targets with active, but not at full health shields in need of healing / repairing unless the Warhead has `Shield.Penetrate=true`, in which case only object health is considered.
-  - When a TechnoType has an unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for game calculation.
+  - When a TechnoType has an unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for targeting and damage calculation purposes.
+    - `InheritArmorFromTechno` can be set to true to override this so that `[TechnoType]->Armor` is used even if shield is active and `[ShieldType]->Armor` is ignored.
   - `InitialStrength` can be used to set a different initial strength value from maximum.
 - When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoTypes have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
   - This also works with Ares' `Convert.*`.
@@ -221,27 +224,34 @@ Shield.InheritStateOnReplace=false   ; boolean
 
 ![image](_static/images/animToUnit.gif)
 
-- Animations can now create (or "convert" to) units when they end.
-  - Because in most cases animations do not have owner, the unit will be created with civilian owner unless you use `DestroyAnim` which was modified to store owner and facing information from the destroyed unit, or animation from Warhead `AnimList` or one created through map trigger action `41 Play Anim At`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEUNIT]                             ; UnitType
-DestroyAnim.Random=true                ; boolean, whether to randomize DestroyAnim
-```
+- Animations can now create (or "convert" to) vehicles when they end via `CreateUnit`.
+  - `CreateUnit.Owner` determines which house will own the created VehicleType. This only works as expected if the animation has owner set.
+    - Vehicle [destroy animations](Fixed-or-Improved-Logics.md#destroy-animations), animations from Warhead `AnimList/SplashList` and map trigger action `41 Play Anim At` will have the owner set correctly.
+    - `CreateUnit.RemapAnim`, if set to true, will cause the animation to be drawn in unit palette and remappable to owner's team color.
+  - `CreateUnit.Mission` determines the initial mission of the created VehicleType.
+  - `CreateUnit.Facing` determines the initial facing of created VehicleType.
+    - `CreateUnit.RandomFacing`, if set to true makes it so that a random facing is picked instead.
+    - `CreateUnit.InheritFacings` and `CreateUnit.InheritTurretFacings` inherit facings for vehicle body and turret respectively from the destroyed vehicle if the animation is a vehicle destroy animation.
+  - `CreateUnit.ConsiderPathfinding`, if set to true, will consider whether or not the cell where the animation is located is occupied by other objects or impassable to the vehicle being created and will attempt to find a nearby cell that is not. Otherwise the vehicle will be created at the animation's location despite these obstacles.
+  - `CreateUnit.SpawnAnim` can be used to play another animation at created unit's location after it has appeared. This animation has same owner and invoker as the parent animation.
 
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                             ; AnimationType
-CreateUnit=                            ; UnitType
-CreateUnit.Facing=0                    ; integer, `CreateUnit` facings in range of 0-255
-CreateUnit.RandomFacing=true           ; boolean, `CreateUnit` use random facings
-CreateUnit.InheritFacings=false        ; boolean, inherit facing from destroyed unit
-CreateUnit.InheritTurretFacings=false  ; boolean, inherit facing from destroyed unit
-CreateUnit.RemapAnim=false             ; boolean, whether to remap anim to owner color
-CreateUnit.Mission=Guard               ; MissionType
+CreateUnit=                            ; VehicleType
 CreateUnit.Owner=Victim                ; Owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
-CreateUnit.ConsiderPathfinding=false   ; boolean, whether to consider if the created unit can move in the cell and look for eligible cells nearby instead.
+CreateUnit.RemapAnim=false             ; boolean
+CreateUnit.Mission=Guard               ; MissionType
+CreateUnit.Facing=0                    ; integer, facings in range of 0-255
+CreateUnit.RandomFacing=true           ; boolean
+CreateUnit.InheritFacings=false        ; boolean
+CreateUnit.InheritTurretFacings=false  ; boolean
+CreateUnit.ConsiderPathfinding=false   ; boolean
+CreateUnit.SpawnAnim=                  ; Animation
+```
+
+```{note}
+Due to technical constraints, infantry death animations including Ares' `InfDeathAnim` cannot have `CreateUnit.Owner` correctly applied to them. You can use Ares' `MakeInfantryOwner` as a workaround instead, which should function for this use-case even without `MakeInfantry` set.
 ```
 
 ## Buildings
@@ -251,8 +261,12 @@ CreateUnit.ConsiderPathfinding=false   ; boolean, whether to consider if the cre
 ![image](_static/images/powersup.owner-01.png)
 *Upgrading own and allied Power Plants in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
 
-- Building upgrades now can be placed on own buildings, on allied buildings and/or on enemy buildings. These three owners can be specified via a new tag, comma-separated. When upgrade is placed on building, it automatically changes it's owner to match the building's owner.
-- One upgrade can now be applied to multiple buildings via a new tag, comma-separated.
+```{note}
+Due to technical limitations, with Ares, upgrades placed through `PowersUp.Buildings` instead of `PowersUpBuilding` (note that internally `PowersUpBuilding` is set to first entry of `PowersUp.Buildings` if former is not set but latter is) **DO NOT** satisfy prerequisites. Suggested workaround is to use the upgrades to provide Superweapons that spawn in buildings via [LimboDelivery](#limbodelivery) logic to function as prerequisites, which are destroyed by another SW that becomes available if parent building is gone and so on.
+```
+
+- Building upgrades now can be placed on own buildings, on allied buildings and/or on enemy buildings. These three owners can be specified by `PowersUp.Owner`. When upgrade is placed on building, it automatically changes it's owner to match the building's owner.
+- One upgrade can now be applied to multiple different types of buildings specified by `PowersUp.Buildings`.
   - Ares-introduced build limit for building upgrades works with this feature.
 
 In `rulesmd.ini`:
@@ -273,6 +287,20 @@ In `rulesmd.ini`:
 PowerPlantEnhancer.PowerPlants=    ; list of BuildingTypes
 PowerPlantEnhancer.Amount=0        ; integer
 PowerPlantEnhancer.Factor=1.0      ; floating point value
+```
+
+### Spy Effects
+
+- Additional espionage bonuses can be toggled with `SpyEffects.Custom`.
+  - `SpyEffects.VictimSuperWeapon` instantly launches a Super Weapon for the owner of the infiltrated building at building's coordinates.
+  - `SpyEffects.InfiltratorSuperWeapon` behaves the same as above, with the Super Weapon's owner being the owner of the spying unit.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+SpyEffects.Custom=false            ; boolean
+SpyEffects.VictimSuperWeapon=      ; SuperWeaponType
+SpyEffects.InfiltratorSuperWeapon= ; SuperWeaponType
 ```
 
 ## Infantry
@@ -346,6 +374,16 @@ Slaved=yes
 Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | neutral)
 ```
 
+### Customizable `SlavesFreeSound`
+
+- `SlavesFreeSound` is now dehardcoded from `AudioVisual` and can be set individually for each enslavable infantry type.
+
+In `rulesmd.ini`
+
+```ini
+[SOMEINFANTRY]  ; Slave type
+SlavesFreeSound=      ; sound entry
+```
 
 ## Projectiles
 
@@ -447,16 +485,16 @@ Shrapnel.AffectsBuildings=false  ; boolean
 
 ### LimboDelivery
 
-- Super Weapons can now deliver off-map buildings that act as if they were on the field.
-  - `LimboDelivery.Types` is the list of BuildingTypes that will be created when the Super Weapons fire. Super Weapon Type and coordinates do not matter.
+- Superweapons can now deliver off-map buildings that act as if they were on the field.
+  - `LimboDelivery.Types` is the list of BuildingTypes that will be created when the Superweapons fire. Superweapon `Type` and coordinates do not matter.
   - `LimboDelivery.IDs` is the list of numeric IDs that will be assigned to buildings. Necessary for LimboKill to work.
 
-- Created buildings are not affected by any on-map threats. The only way to remove them from the game is by using a Super Weapon with LimboKill set.
+- Created buildings are not affected by any on-map threats. The only way to remove them from the game is by using a Superweapon with `LimboKill.IDs` set.
   - `LimboKill.Affects` sets which houses are affected by this feature.
   - `LimboKill.IDs` lists IDs that will be targeted. Buildings with these IDs will be removed from the game instantly.
 
 - Delivery can be made random with these optional tags. The game will randomly choose only a single building from the list for each roll chance provided.
-  - `LimboDelivery.RollChance` lits chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
+  - `LimboDelivery.RollChances` lists chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
   - `LimboDelivery.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific building. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
 
 Note: This feature might not support every building flag. Flags that are confirmed to work correctly are listed below:
@@ -474,13 +512,46 @@ Remember that Limbo Delivered buildings don't exist physically! This means they 
 ```
 In `rulesmd.ini`:
 ```ini
-[SOMESW]                        ; Super Weapon
+[SOMESW]                        ; Superweapon
 LimboDelivery.Types=            ; List of BuildingTypes
 LimboDelivery.IDs=              ; List of numeric IDs. -1 cannot be used.
 LimboDelivery.RollChances=      ; List of percentages.
 LimboDelivery.RandomWeightsN=   ; List of integers.
 LimboKill.Affects=self          ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 LimboKill.IDs=                  ; List of numeric IDs.
+```
+
+### Next
+
+Superweapons can now launch other superweapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
+  - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
+  - `SW.Next.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
+  - `SW.Next.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                        ; Super Weapon
+SW.Next=                        ; List of Superweapons
+SW.Next.RealLaunch=true         ; boolean
+SW.Next.IgnoreInhibitors=false  ; boolean
+SW.Next.IgnoreDesignators=true  ; boolean
+SW.Next.RollChances=            ; List of percentages.
+SW.Next.RandomWeightsN=         ; List of integers.
+```
+
+### Warhead or Weapon detonation at target cell
+
+- Any superweapon can now detonate a Warhead or a weapon at superweapon's target cell.
+  - If both `Detonate.Warhead` and `Detonate.Weapon` are set, latter takes precedence.
+  - `Detonate.Damage`, if not set, defaults to weapon `Damage` for `Detonate.Weapon` and 0 for `Detonate.Warhead`.
+  - Both the weapon and Warhead behave as if fired by whatever building fired the Superweapon. This respects controls like `SW.RangeMinimum/Maximum` (similar to Ares' GenericWarhead superweapon in this regard).
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]           ; Super Weapon
+Detonate.Warhead=  ; Warhead
+Detonate.Weapon=   ; WeaponType
+Detonate.Damage=   ; integer
 ```
 
 ## Technos
@@ -570,27 +641,43 @@ In `artmd.ini`:
 FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-specific FLH key name and N is zero-based burst shot index.
 ```
 
-### Initial Strength
+### Forcing specific weapon against certain targets
 
-- You can now specify how many hitpoints a TechnoType starts with.
+![image](_static/images/underwater-new-attack-tag.gif)
+*Naval underwater target behavior with `ForceWeapon.Naval.Decloaked` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
+
+- Can be used to override normal weapon selection logic to force specific weapons to use against certain targets. If multiple are set and target satisfies the conditions, the first one in listed order satisfied takes effect.
+  - `ForceWeapon.Naval.Decloaked` forces specified weapon to be used against uncloaked naval targets. Useful if your naval unit has one weapon only for underwater and another weapon for surface targets.
+  - `ForceWeapon.Cloaked` forces specified weapon to be used against any cloaked targets.
+  - `ForceWeapon.Disguised` forces specified weapon to be used against any disguised targets.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]      ; TechnoType
-InitialStrength=  ; integer
+[SOMETECHNO]                    ; TechnoType
+ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.Cloaked=-1          ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ```
 
-### Initial Strength For Cloned Infantry
+### Initial strength for TechnoTypes and cloned infantry
 
 ![image](_static/images/initialstrength.cloning-01.png)
 *Initial strength for cloned infantry example in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
 
-- You can now specify how many hitpoints an Infantry Type starts with when leaves a Cloning Structure with `Cloning=yes`.
+- `InitialStrength` can be used to set how many hitpoints a TechnoType starts with.
+- `InitialStrength.Cloning` can be used to specify a percentage of hitpoints (single value or a range from which a random value is picked) cloned infantry produced by `Cloning=true` building start with.
 
 In `rulesmd.ini`:
 ```ini
+[SOMETECHNO]              ; TechnoType
+InitialStrength=          ; integer
+
 [SOMEBUILDING]            ; BuildingType
-InitialStrength.Cloning=  ; single double/percentage or comma-sep. range
+InitialStrength.Cloning=  ; floating point value - single or comma-sep. range (percentages)
+```
+
+```{note}
+Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `Strength`, even if your values are bigger than it.
 ```
 
 ### Kill Object Automatically
@@ -614,13 +701,18 @@ If the object enters transport, the countdown will continue, but it will not sel
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                  ; TechnoType
-AutoDeath.Behavior=           ; enumeration (kill | vanish | sell), default not set
+[SOMETECHNO]                             ; TechnoType
+AutoDeath.Behavior=                      ; enumeration (kill | vanish | sell), default not set
 
-AutoDeath.OnAmmoDepletion=no  ; boolean
-AutoDeath.AfterDelay=0        ; positive integer
+AutoDeath.OnAmmoDepletion=no             ; boolean
+AutoDeath.AfterDelay=0                   ; positive integer
+AutoDeath.TechnosDontExist=              ; list of TechnoType names
+AutoDeath.TechnosDontExist.Any=false     ; boolean
+AutoDeath.TechnosDontExist.Houses=owner  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+AutoDeath.TechnosExist=                  ; list of TechnoType names
+AutoDeath.TechnosExist.Any=true          ; boolean
+AutoDeath.TechnosExist.Houses=owner      ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
-
 
 ### Mind Control enhancement
 
@@ -650,20 +742,6 @@ MindControl.Anim=                     ; Animation, defaults to ControlledAnimati
 ```ini
 [SOMETECHNO]        ; TechnoType
 NoManualMove=false  ; boolean
-```
-
-### Override Uncloaked Underwater attack behavior
-
-![image](_static/images/underwater-new-attack-tag.gif)
-*Naval underwater behavior in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
-
-- Overrides a part of the vanilla YR logic for allowing naval units to use a different weapon if the naval unit is uncloaked.
-- Useful if your naval unit have 1 weapon only for underwater and another weapon for surface objects.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                    ; TechnoType
-ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ```
 
 ### Promoted Spawns
@@ -741,7 +819,9 @@ DestroySound=      ; Sound
 ## Warheads
 
 ```{hint}
-All new warheads can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
+All new warhead effects
+- can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
+- cannot be used with `MindControl.Permanent=yes` of Ares.
 ```
 
 ### Break Mind Control on impact
@@ -763,11 +843,12 @@ RemoveMindControl=false  ; boolean
   - `Crit.Chance` determines chance for a critical hit to occur. By default this is checked once when the Warhead is detonated and every target that is susceptible to critical hits will be affected. If `Crit.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
   - `Crit.ExtraDamage` determines the damage dealt by the critical hit. If `Crit.Warhead` is set, the damage is used to detonate the specified Warhead on each affected target, otherwise the damage is directly dealt based on current Warhead's `Verses` settings.
   - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against.
-  - `Crit.AffectsBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
+  - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
+  - `Crit.AffectBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
   - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list.
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
   - `Crit.SuppressWhenIntercepted`, if set, prevents critical hits from occuring at all if the warhead was detonated from a [projectile that was intercepted](#projectile-interception-logic).
-  - `ImmuneToCrit` can be set on TechnoTypes to make them immune to critical hits.
+  - `ImmuneToCrit` can be set on TechnoTypes and ShieldTypes to make them immune to critical hits.
 
 In `rulesmd.ini`:
 ```ini
@@ -777,6 +858,7 @@ Crit.ApplyChancePerTarget=false     ; boolean
 Crit.ExtraDamage=0                  ; integer
 Crit.Warhead=                       ; Warhead
 Crit.Affects=all                    ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+Crit.AffectsHouses=all              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 Crit.AffectBelowPercent=1.0         ; floating point value, percents or absolute (0.0-1.0)
 Crit.AnimList=                      ; list of animations
 Crit.AnimList.PickRandom=           ; boolean
@@ -805,9 +887,13 @@ SplashList.PickRandom=false  ; boolean
 
 ### Detonate Warhead on all objects on map
 
+```{warning}
+While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys (`AffectTargets/Houses/Types` etc.) is advised.
+```
+
 - Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `Airburst/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
-  - `DetonateOnAllMapObjects.AffectTargets` can be used to filter which types of targets (TechnoTypes) are considered valid. Only `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values.
-  - `DetonateOnAllMapObjects.AffectHouses` can be used to filter which houses targets can belong to be considered valid. Only applicable if the house that fired the projectile is known.
+  - `DetonateOnAllMapObjects.AffectTargets` is used to filter which types of targets (TechnoTypes) are considered valid and must be set to a valid value other than `none` for this feature to work. Only `none`, `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values. This is set to `none` by default as inclusion of all object types can be performance-heavy.
+  - `DetonateOnAllMapObjects.AffectHouses` is used to filter which houses targets can belong to be considered valid and must be set to a valid value other than `none` for this feature to work. Only applicable if the house that fired the projectile is known. This is set to `none` by default as inclusion of all houses can be performance-heavy.
   - `DetonateOnAllMapObjects.AffectTypes` can be used to list specific TechnoTypes to be considered as valid targets. If any valid TechnoTypes are listed, then only matching objects will be targeted. Note that `DetonateOnAllMapObjects.AffectTargets` and `DetonateOnAllMapObjects.AffectHouses` take priority over this setting.
   - `DetonateOnAllMapObjects.IgnoreTypes` can be used to list specific TechnoTypes to be never considered as valid targets.
   - `DetonateOnAllMapObjects.RequireVerses`, if set to true, only considers targets whose armor type the warhead has non-zero `Verses` value against as valid. This is checked after all other filters listed above.
@@ -816,15 +902,11 @@ SplashList.PickRandom=false  ; boolean
 ```ini
 [SOMEWARHEAD]                                ; Warhead
 DetonateOnAllMapObjects=false                ; boolean
-DetonateOnAllMapObjects.AffectTargets=all    ; list of Affected Target Enumeration (aircraft|buildings|infantry|units|all)
-DetonateOnAllMapObjects.AffectHouses=all     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DetonateOnAllMapObjects.AffectTargets=none   ; list of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
+DetonateOnAllMapObjects.AffectHouses=none    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 DetonateOnAllMapObjects.AffectTypes=         ; list of TechnoType names
 DetonateOnAllMapObjects.IgnoreTypes=         ; list of TechnoType names
 DetonateOnAllMapObjects.RequireVerses=false  ; boolean
-```
-
-```{warning}
-While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys is advised.
 ```
 
 ### Generate credits on impact
@@ -857,8 +939,11 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
   - `LaunchSW.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
 
 ```{note}
-For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
-Also, due to the nature of some superweapon types, not all superweapons are suitable for launch.
+- For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
+
+- Due to the nature of some superweapon types, not all superweapons are suitable for launch. **Please use with caution!**
+
+- The superweapons are launched on the *cell* where the warhead is detonated, instead of being click-fired.
 ```
 
 In `rulesmd.ini`:

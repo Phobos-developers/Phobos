@@ -23,6 +23,7 @@ public:
 	public:
 		BuildingTypeExt::ExtData* TypeExtData;
 		bool DeployedTechno;
+		bool IsCreatedFromMapFile;
 		int LimboID;
 		int GrindingWeapon_LastFiredFrame;
 		BuildingClass* CurrentAirFactory;
@@ -31,6 +32,7 @@ public:
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, DeployedTechno { false }
+			, IsCreatedFromMapFile { false }
 			, LimboID { -1 }
 			, GrindingWeapon_LastFiredFrame { 0 }
 			, CurrentAirFactory { nullptr }
@@ -38,6 +40,8 @@ public:
 		{ }
 
 		void DisplayGrinderRefund();
+		void ApplyPoweredKillSpawns();
+		bool HasSuperWeapon(int index, bool withUpgrades) const;
 
 		virtual ~ExtData() = default;
 
@@ -86,5 +90,6 @@ public:
 	static int CountOccupiedDocks(BuildingClass* pBuilding);
 	static bool HasFreeDocks(BuildingClass* pBuilding);
 	static bool CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno);
-	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno);
+	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund);
+	static bool HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse);
 };

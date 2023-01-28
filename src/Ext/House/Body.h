@@ -5,7 +5,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
-#include <Ext/BuildingType/Body.h>
+#include <Ext/Building/Body.h>
 
 #include <map>
 
@@ -17,7 +17,7 @@ public:
 	{
 	public:
 		std::map<BuildingTypeExt::ExtData*, int> BuildingCounter;
-		CounterClass OwnedLimboBuildingTypes;
+		std::map<DWORD, BuildingExt::ExtData*> OwnedLimboDeliveredBuildings;
 
 		BuildingClass* Factory_BuildingType;
 		BuildingClass* Factory_InfantryType;
@@ -25,17 +25,25 @@ public:
 		BuildingClass* Factory_NavyType;
 		BuildingClass* Factory_AircraftType;
 
+		//Read from INI
+		bool RepairBaseNodes[3];
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
-			, OwnedLimboBuildingTypes {}
+			, BuildingCounter {}
+			, OwnedLimboDeliveredBuildings {}
 			, Factory_BuildingType { nullptr }
 			, Factory_InfantryType { nullptr }
 			, Factory_VehicleType { nullptr }
 			, Factory_NavyType { nullptr }
 			, Factory_AircraftType { nullptr }
+			, RepairBaseNodes { false,false,false }
 		{ }
+
+		bool OwnsLimboDeliveredBuilding(BuildingClass const* pBuilding);
 
 		virtual ~ExtData() = default;
 
+		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		//virtual void Initialize() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
@@ -63,8 +71,6 @@ public:
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
-
-	static int CountOwnedLimbo(HouseClass* pThis, BuildingTypeClass const* const pItem);
 
 	static int ActiveHarvesterCount(HouseClass* pThis);
 	static int TotalHarvesterCount(HouseClass* pThis);
