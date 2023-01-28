@@ -57,7 +57,6 @@ bool Phobos::Config::ToolTipBlur = false;
 bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::DevelopmentCommands = true;
 bool Phobos::Config::ArtImageSwap = false;
-bool Phobos::Config::AllowParallelAIQueues = true;
 bool Phobos::Config::ShowPlacementPreview = false;
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
@@ -278,14 +277,11 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 {
+#ifndef DEBUG
 	GET(CCINIClass*, rulesINI, EDI);
 
-	// Ares tags
-
-#ifndef DEBUG
 	Phobos::Config::DevelopmentCommands = rulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
 #endif
-	Phobos::Config::AllowParallelAIQueues = rulesINI->ReadBool("GlobalControls", "AllowParallelAIQueues", Phobos::Config::AllowParallelAIQueues);
 
 	return 0;
 }

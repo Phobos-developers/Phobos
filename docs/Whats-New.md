@@ -25,7 +25,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - Timed jump script actions now take the time measured in ingame seconds instead of frames. Divide your value by 15 to accomodate to this change.
 - [Placement Preview](User-Interface.md#placement-preview) logic has been adjusted, `BuildingPlacementPreview.DefaultTranslucentLevel`, `BuildingPlacementGrid.TranslucentLevel`, `PlacementPreview.Show`, `PlacementPreview.TranslucentLevel` and `ShowBuildingPlacementPreview` tags have been remade/renamed and require adjustments to function. In addition, you must explicitly enable this feature by specifying `[AudioVisual]->PlacementPreview=yes`.
 - Existing script actions were renumbered, please use the migration utility to change the numbers to the correct ones.
-
+- `DiskLaser.Radius` values were misinterpreted by a factor of 1/2π. The default radius is now 240, please multiply your customized radii by 2π.
 
 #### From 0.2.2.2
 
@@ -253,7 +253,12 @@ New:
 - Forcing specific weapon against cloaked or disguised targets (by Starkku)
 - Customizable ROF random delay (by Starkku)
 - Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)
+- Toggleable DieSound when grinding (by Trsdy)
 - Shields can inherit Techno ArmorType (by Starkku)
+- Iron-curtain effects on infantries and organic units (by ststl)
+- Custom `SlavesFreeSound` (by TwinkleStar)
+- Allows jumpjet to crash without rotation (by TwinkleStar)
+- Spawn animation for `CreateUnit` (by Starkku)
 - Customizable aircraft spawner spawn delay (by Starkku)
 - Customizable Cluster scatter distance (by Starkku)
 - Customizable FlakScatter distance (by Starkku)
@@ -262,16 +267,21 @@ New:
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
+- Allow usage of `AlternateFLH%d` of vehicles in `OpenTopped` transport. (by Trsdy)
 - Teams spawned by trigger action 7,80,107 can use IFV and `OpenTopped` logic normally (by Trsdy)
+- Prevented units from retaining previous order after ownership change (by Trsdy)
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations (by Starkku)
 - Cloaked objects displaying to observers (by Starkku)
 - Cloaked objects from allies displaying to player in single player missions (by Trsdy)
+- Skip `NaturalParticleSystem` displaying from in-map pre-placed structures (by Trsdy)
 - Made sure that `Suicide=yes` weapon does kill the firer (by Trsdy)
 - Made sure that vxl units being flipped over get killed instead of rotating up and down (by Trsdy)
+- Allow jumpjet units to visually tilt or be flipped over on the ground even if `TiltCrashJumpjet=no` (by Trsdy)
 - Fixed the range for number of debris spawned by Warhead to use MaxDebris instead of MaxDebris - 1 (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
+- Add `ImmuneToCrit` for shields (by Trsdy)
 
 </details>
 
@@ -388,6 +398,7 @@ Vanilla fixes:
 - Fixed temporal weapon crash under certain conditions where stack dump starts with 0051BB7D (by secsome)
 - Fixed the bug when retinting map lighting with a map action corrupted light sources (by secsome)
 - Fixed the bug when reading a map which puts `Preview(Pack)` after `Map` lead to the game fail to draw the preview (by secsome)
+- Fixed the bug that GameModeOptions are not correctly saved (by secsome)
 - Fixed the bug that AITriggerTypes do not recognize building upgrades (by Uranusian)
 - Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` > `AllowParallelAIQueues=no` is set (by FS-21)
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10 (by Otamaa)
@@ -410,6 +421,8 @@ Vanilla fixes:
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something (by Kerbiter)
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true` (by Starkku)
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry (by Otamaa)
+- Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges (by Starkku)
+- Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines (by Starkku)
 - Allowed observers to see a selected building's radial indicator (by Trsdy)
 
 Phobos fixes:
@@ -431,8 +444,15 @@ Phobos fixes:
 - Minor performance optimization related to shields (by Trsdy)
 - Fixed teleporting miners (Chrono Miner) considered to be idle by harvester counter, improved related game performance (by Trsdy)
 - Fixed negative damage weapons considering shield health when evaluating targets even if Warhead had `Shield.Penetrate` set to true (by Starkku)
+- Fixed engineers considering shield health instead of building health when determining if they can repair or capture a building (by Starkku)
 - Fixed shield animations (`IdleAnim`, `BreakAnim` and `HitAnim`) showing up even if the object shield is attached to is currently underground (by Starkku)
+- Fixed shields not being removed from sinking units until they have fully finished sinking (by Starkku)
 - Fixed techno-extdata update after type conversion (by Trsdy)
+- Fixed Phobos Warhead effects (crits, new shield modifiers etc.) considering sinking units valid targets (by Starkku)
+- Fixed an issue where `FireOnce=yes` deploy weapons on vehicles would still fire multiple times if deploy command is issued repeatedly or when not idle (by Starkku)
+- Fixed techno-extdata update after type conversion (by Trsdy)
+- Fixed a game crash when checking BuildLimit if Phobos is running without Ares (by Belonit)
+- Corrected the misinterpretation in the definition of `DiskLaser.Radius` (by Trsdy)
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)

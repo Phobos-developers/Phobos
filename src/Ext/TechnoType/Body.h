@@ -65,6 +65,7 @@ public:
 		Valueable<AffectedHouse> AutoDeath_TechnosExist_Houses;
 
 		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
+		NullableIdx<VocClass> SlavesFreeSound;
 		NullableIdx<VocClass> SellSound;
 		NullableIdx<VoxClass> EVA_Sold;
 
@@ -88,8 +89,8 @@ public:
 		ValueableVector<int> OreGathering_Tiberiums;
 		ValueableVector<int> OreGathering_FramesPerDir;
 
-		std::vector<DynamicVectorClass<CoordStruct>> WeaponBurstFLHs;
-		std::vector<DynamicVectorClass<CoordStruct>> EliteWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> WeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> EliteWeaponBurstFLHs;
 
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
@@ -112,6 +113,7 @@ public:
 
 		Nullable<bool> JumpjetAllowLayerDeviation;
 		Nullable<bool> JumpjetTurnToTarget;
+		Valueable<bool> JumpjetRotateOnCrash;
 
 		Valueable<bool> DeployingAnim_AllowAnyDirection;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
@@ -131,8 +133,10 @@ public:
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
 		Nullable<bool> IronCurtain_KeptOnDeploy;
-
+		Nullable<IronCurtainEffect> IronCurtain_Effect;
+		Nullable<WarheadTypeClass*> IronCurtain_KillWarhead;
 		Valueable<bool> Explodes_KillPassengers;
+		Nullable<int> DeployFireWeapon;
 
 		struct LaserTrailDataEntry
 		{
@@ -154,10 +158,10 @@ public:
 		Nullable<CoordStruct> ProneSecondaryFireFLH;
 		Nullable<CoordStruct> DeployedPrimaryFireFLH;
 		Nullable<CoordStruct> DeployedSecondaryFireFLH;
-		std::vector<DynamicVectorClass<CoordStruct>> CrouchedWeaponBurstFLHs;
-		std::vector<DynamicVectorClass<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
-		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
-		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> CrouchedWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -165,7 +169,7 @@ public:
 			, LowSelectionPriority { false }
 			, GroupAs { NONE_STR }
 			, RadarJamRadius { 0 }
-			, InhibitorRange { }
+			, InhibitorRange {}
 			, DesignatorRange { }
 			, MindControlRangeLimit {}
 
@@ -235,6 +239,7 @@ public:
 			, NoAmmoAmount { 0 }
 			, JumpjetAllowLayerDeviation {}
 			, JumpjetTurnToTarget {}
+			, JumpjetRotateOnCrash { true }
 
 			, DeployingAnim_AllowAnyDirection { false }
 			, DeployingAnim_KeepUnitVisible { false }
@@ -252,23 +257,28 @@ public:
 			, AutoDeath_TechnosExist_Houses { AffectedHouse::Owner }
 
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
-			, SellSound { }
-			, EVA_Sold { }
+			, SlavesFreeSound {}
+			, SellSound {}
+			, EVA_Sold {}
 			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, ForceWeapon_Cloaked { -1 }
 			, ForceWeapon_Disguised { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
-			, SelfHealGainType()
+			, SelfHealGainType {}
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
-			, PronePrimaryFireFLH { }
-			, ProneSecondaryFireFLH { }
-			, DeployedPrimaryFireFLH { }
-			, DeployedSecondaryFireFLH { }
-			, IronCurtain_KeptOnDeploy { }
+			, PronePrimaryFireFLH {}
+			, ProneSecondaryFireFLH {}
+			, DeployedPrimaryFireFLH {}
+			, DeployedSecondaryFireFLH {}
+			, IronCurtain_KeptOnDeploy {}
+			, IronCurtain_Effect {}
+			, IronCurtain_KillWarhead {}
+
 			, Explodes_KillPassengers { true }
+			, DeployFireWeapon {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -288,6 +298,9 @@ public:
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
+
+		void ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection, std::vector<std::vector<CoordStruct>>& nFLH, std::vector<std::vector<CoordStruct>>& nEFlh, const char* pPrefixTag);
+
 	};
 
 	class ExtContainer final : public Container<TechnoTypeExt>
@@ -300,7 +313,6 @@ public:
 	static ExtContainer ExtMap;
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
-	static void GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);

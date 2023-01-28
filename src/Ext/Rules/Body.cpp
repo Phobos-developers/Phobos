@@ -69,14 +69,14 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Storage_TiberiumIndex.Read(exINI, GameStrings::General, "Storage.TiberiumIndex");
 	this->InfantryGainSelfHealCap.Read(exINI, GameStrings::General, "InfantryGainSelfHealCap");
 	this->UnitsGainSelfHealCap.Read(exINI, GameStrings::General, "UnitsGainSelfHealCap");
-	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
 	this->UseGlobalRadApplicationDelay.Read(exINI, GameStrings::Radiation, "UseGlobalRadApplicationDelay");
 	this->RadApplicationDelay_Building.Read(exINI, GameStrings::Radiation, "RadApplicationDelay.Building");
 	this->RadWarhead_Detonate.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate");
 	this->RadHasOwner.Read(exINI, GameStrings::Radiation, "RadHasOwner");
 	this->RadHasInvoker.Read(exINI, GameStrings::Radiation, "RadHasInvoker");
 	this->MissingCameo.Read(pINI, GameStrings::AudioVisual, "MissingCameo");
-	this->JumpjetTurnToTarget.Read(exINI, "JumpjetControls", "TurnToTarget");
+	this->JumpjetAllowLayerDeviation.Read(exINI, GameStrings::JumpjetControls, "AllowLayerDeviation");
+	this->JumpjetTurnToTarget.Read(exINI, GameStrings::JumpjetControls, "TurnToTarget");
 
 	this->PlacementPreview.Read(exINI, GameStrings::AudioVisual, "PlacementPreview");
 	this->PlacementPreview_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementPreview.Translucency");
@@ -96,6 +96,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ToolTip_Background_BlurSize.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.BlurSize");
 	this->RadialIndicatorVisibility.Read(exINI, GameStrings::AudioVisual, "RadialIndicatorVisibility");
 
+	this->AllowParallelAIQueues.Read(exINI, "GlobalControls", "AllowParallelAIQueues");
 	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
 	this->ForbidParallelAIQueues_Building.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Building");
 	this->ForbidParallelAIQueues_Infantry.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
@@ -103,13 +104,16 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ForbidParallelAIQueues_Vehicle.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Vehicle");
 
 	this->IronCurtain_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KeptOnDeploy");
+	this->IronCurtain_EffectOnOrganics.Read(exINI, GameStrings::CombatDamage, "IronCurtain.EffectOnOrganics");
+	this->IronCurtain_KillOrganicsWarhead.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KillOrganicsWarhead");
+
 	this->ROF_RandomDelay.Read(exINI, GameStrings::CombatDamage, "ROF.RandomDelay");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
 	for (int i = 0; i < itemsCount; ++i)
 	{
-		DynamicVectorClass<TechnoTypeClass*> objectsList;
+		std::vector<TechnoTypeClass*> objectsList;
 		char* context = nullptr;
 		pINI->ReadString(sectionAITargetTypes, pINI->GetKeyName(sectionAITargetTypes, i), "", Phobos::readBuffer);
 
@@ -117,32 +121,30 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		{
 			TechnoTypeClass* buffer;
 			if (Parser<TechnoTypeClass*>::TryParse(cur, &buffer))
-				objectsList.AddItem(buffer);
+				objectsList.emplace_back(buffer);
 			else
-				Debug::Log("DEBUG: [AITargetTypes][%d]: Error parsing [%s]\n", AITargetTypesLists.Count, cur);
+				Debug::Log("DEBUG: [AITargetTypes][%d]: Error parsing [%s]\n", this->AITargetTypesLists.size(), cur);
 		}
 
-		AITargetTypesLists.AddItem(objectsList);
-		objectsList.Clear();
+		this->AITargetTypesLists.emplace_back(objectsList);
 	}
 
 	// Section AIScriptsList
 	int scriptitemsCount = pINI->GetKeyCount(sectionAIScriptsList);
 	for (int i = 0; i < scriptitemsCount; ++i)
 	{
-		DynamicVectorClass<ScriptTypeClass*> objectsList;
+		std::vector<ScriptTypeClass*> objectsList;
 
 		char* context = nullptr;
 		pINI->ReadString(sectionAIScriptsList, pINI->GetKeyName(sectionAIScriptsList, i), "", Phobos::readBuffer);
 
 		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
-			ScriptTypeClass* pNewScript = GameCreate<ScriptTypeClass>(cur);
-			objectsList.AddItem(pNewScript);
+			ScriptTypeClass* pNewScript = ScriptTypeClass::FindOrAllocate(cur);
+			objectsList.emplace_back(pNewScript);
 		}
 
-		AIScriptsLists.AddItem(objectsList);
-		objectsList.Clear();
+		this->AIScriptsLists.emplace_back(objectsList);
 	}
 }
 
@@ -163,23 +165,6 @@ void RulesExt::ExtData::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 		return;
 
 	INI_EX exINI(pINI);
-}
-
-bool RulesExt::DetailsCurrentlyEnabled()
-{
-	// not only checks for the min frame rate from the rules, but also whether
-	// the low frame rate is actually desired. in that case, don't reduce.
-	auto const current = FPSCounter::CurrentFrameRate();
-	auto const wanted = static_cast<unsigned int>(
-		60 / Math::clamp(GameOptionsClass::Instance->GameSpeed, 1, 6));
-
-	return current >= wanted || current >= Detail::GetMinFrameRate();
-}
-
-bool RulesExt::DetailsCurrentlyEnabled(int const minDetailLevel)
-{
-	return GameOptionsClass::Instance->DetailLevel >= minDetailLevel
-		&& DetailsCurrentlyEnabled();
 }
 
 // =============================
@@ -218,12 +203,14 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_SelfHeal_Infantry_Offset)
 		.Process(this->Pips_SelfHeal_Units_Offset)
 		.Process(this->Pips_SelfHeal_Buildings_Offset)
-		.Process(Phobos::Config::AllowParallelAIQueues)
+		.Process(this->AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)
 		.Process(this->ForbidParallelAIQueues_Building)
 		.Process(this->ForbidParallelAIQueues_Infantry)
 		.Process(this->ForbidParallelAIQueues_Navy)
 		.Process(this->ForbidParallelAIQueues_Vehicle)
+		.Process(this->IronCurtain_EffectOnOrganics)
+		.Process(this->IronCurtain_KillOrganicsWarhead)
 		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->ROF_RandomDelay)
 		.Process(this->ToolTip_Background_Color)

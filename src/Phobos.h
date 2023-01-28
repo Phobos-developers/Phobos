@@ -71,7 +71,6 @@ public:
 		static bool PrioritySelectionFiltering;
 		static bool DevelopmentCommands;
 		static bool ArtImageSwap;
-		static bool AllowParallelAIQueues;
 		static bool ShowPlacementPreview;
 	};
 };

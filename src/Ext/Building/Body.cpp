@@ -90,7 +90,7 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 
 	AircraftTypeClass* pAircraft = AircraftTypeClass::Array->GetItem(pOwner->ProducingAircraftTypeIndex);
 	FactoryClass* currFactory = pOwner->GetFactoryProducing(pAircraft);
-	DynamicVectorClass<BuildingClass*> airFactoryBuilding;
+	std::vector<BuildingClass*> airFactoryBuilding;
 	BuildingClass* newBuilding = nullptr;
 
 	// Update what is the current air factory for future comparisons
@@ -116,7 +116,7 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 			if (!currFactory && pBuilding->Factory)
 				currFactory = pBuilding->Factory;
 
-			airFactoryBuilding.AddItem(pBuilding);
+			airFactoryBuilding.emplace_back(pBuilding);
 		}
 	}
 
@@ -239,14 +239,14 @@ bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 	return true;
 }
 
-bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno)
+bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund)
 {
 	if (const auto pExt = BuildingExt::ExtMap.Find(pBuilding))
 	{
 		const auto pTypeExt = pExt->TypeExtData;
 
 		if (pTypeExt->Grinding_DisplayRefund)
-			pExt->AccumulatedGrindingRefund += pTechno->GetRefund();
+			pExt->AccumulatedGrindingRefund += refund;
 
 		if (pTypeExt->Grinding_Weapon.isset()
 			&& Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon.Get()->ROF)
@@ -335,6 +335,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->TypeExtData)
 		.Process(this->DeployedTechno)
+		.Process(this->IsCreatedFromMapFile)
 		.Process(this->LimboID)
 		.Process(this->GrindingWeapon_LastFiredFrame)
 		.Process(this->CurrentAirFactory)
@@ -380,7 +381,7 @@ DEFINE_HOOK(0x43BCBD, BuildingClass_CTOR, 0x6)
 {
 	GET(BuildingClass*, pItem, ESI);
 
-	auto pExt = BuildingExt::ExtMap.FindOrAllocate(pItem);
+	auto const pExt = BuildingExt::ExtMap.FindOrAllocate(pItem);
 	pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pItem->Type);
 
 	return 0;

@@ -317,6 +317,12 @@ public:
 		return std::find(this->begin(), this->end(), other) != this->end();
 	}
 
+	void AddUnique(const T& item)
+	{
+		if (!this->Contains(item))
+			this->emplace_back(item);
+	}
+
 	int IndexOf(const T& other) const
 	{
 		auto it = std::find(this->begin(), this->end(), other);

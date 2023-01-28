@@ -30,7 +30,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	{
 		BulletClass* pTargetBullet = nullptr;
 
-		for (auto const& pBullet : *BulletClass::Array)
+		for (auto const& [pBullet,pBulletExt] : BulletExt::ExtMap)
 		{
 			const auto& guardRange = pTypeExt->Interceptor_GuardRange.Get(pThis);
 			const auto& minguardRange = pTypeExt->Interceptor_MinimumGuardRange.Get(pThis);
@@ -40,7 +40,6 @@ void TechnoExt::ExtData::ApplyInterceptor()
 			if (distance > guardRange || distance < minguardRange)
 				continue;
 
-			auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 			auto pBulletTypeExt = pBulletExt->TypeExtData;
 
 			if (!pBulletTypeExt || !pBulletTypeExt->Interceptable)
@@ -266,6 +265,23 @@ void TechnoExt::ExtData::UpdateShield()
 		pShieldData->AI();
 }
 
+void TechnoExt::ExtData::UpdateOnTunnelEnter()
+{
+	if (!this->IsInTunnel)
+	{
+		if (const auto pShieldData = this->Shield.get())
+			pShieldData->SetAnimationVisibility(false);
+
+		for (auto& pLaserTrail : this->LaserTrails)
+		{
+			pLaserTrail->Visible = false;
+			pLaserTrail->LastLocation = { };
+		}
+
+		this->IsInTunnel = true;
+	}
+}
+
 void TechnoExt::ExtData::ApplySpawnLimitRange()
 {
 	auto const pThis = this->OwnerObject();
@@ -329,6 +345,46 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
 	{
 		this->PassengerDeletionCountDown = -1;
 		this->PassengerDeletionTimer.Stop();
+	}
+}
+
+void TechnoExt::ExtData::UpdateLaserTrails()
+{
+	auto const pThis = this->OwnerObject();
+
+	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
+	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
+	for (auto const& trail : this->LaserTrails)
+	{
+		if (pThis->CloakState == CloakState::Cloaked && !trail->Type->CloakVisible)
+			continue;
+
+		if (!this->IsInTunnel)
+			trail->Visible = true;
+
+		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret);
+		if (pThis->CloakState == CloakState::Uncloaking && !trail->Type->CloakVisible)
+			trail->LastLocation = trailLoc;
+		else
+			trail->Update(trailLoc);
+	}
+}
+
+void TechnoExt::ExtData::InitializeLaserTrails()
+{
+	if (this->LaserTrails.size())
+		return;
+
+	if (auto pTypeExt = this->TypeExtData)
+	{
+		for (auto const& entry : pTypeExt->LaserTrailData)
+		{
+			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
+			{
+				this->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
+					pLaserType, this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret));
+			}
+		}
 	}
 }
 
@@ -432,34 +488,6 @@ bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
 	return false;
 }
 
-void TechnoExt::InitializeLaserTrails(TechnoClass* pThis)
-{
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pExt->LaserTrails.size())
-		return;
-
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-	{
-		for (auto const& entry : pTypeExt->LaserTrailData)
-		{
-			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
-			{
-				pExt->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
-					pLaserType, pThis->Owner, entry.FLH, entry.IsOnTurret));
-			}
-		}
-	}
-}
-
-void TechnoExt::InitializeShield(TechnoClass* pThis)
-{
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		pExt->CurrentShieldType = pTypeExt->ShieldType;
-}
-
 void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType)
 {
 	WeaponTypeExt::DetonateAt(pWeaponType, pThis, pThis);
@@ -535,7 +563,7 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
 	}
 
-	if (pickedFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+	if ((int)pickedFLHs[weaponIndex].size() > pThis->CurrentBurstIndex)
 	{
 		FLHFound = true;
 		FLH = pickedFLHs[weaponIndex][pThis->CurrentBurstIndex];
@@ -552,25 +580,25 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	if (!pThis || weaponIndex < 0)
 		return FLH;
 
-	if (auto pTechnoType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
 		Nullable<CoordStruct> pickedFLH;
 
 		if (pThis->IsDeployed())
 		{
 			if (weaponIndex == 0)
-				pickedFLH = pTechnoType->DeployedPrimaryFireFLH;
+				pickedFLH = pTypeExt->DeployedPrimaryFireFLH;
 			else if (weaponIndex == 1)
-				pickedFLH = pTechnoType->DeployedSecondaryFireFLH;
+				pickedFLH = pTypeExt->DeployedSecondaryFireFLH;
 		}
 		else
 		{
 			if (pThis->Crawling)
 			{
 				if (weaponIndex == 0)
-					pickedFLH = pTechnoType->PronePrimaryFireFLH;
+					pickedFLH = pTypeExt->PronePrimaryFireFLH;
 				else if (weaponIndex == 1)
-					pickedFLH = pTechnoType->ProneSecondaryFireFLH;
+					pickedFLH = pTypeExt->ProneSecondaryFireFLH;
 			}
 		}
 
@@ -618,7 +646,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	{
 		if (auto pBld = abstract_cast<BuildingClass*>(pThis))
 		{
-			if (pBld->Type->LoadBuildup())
+			if (pBld->HasBuildUp)
 			{
 				pBld->Sell(true);
 
@@ -939,6 +967,84 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 	pExt->DamageNumberOffset = pExt->DamageNumberOffset + width;
 }
 
+CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger, int maxAttempts = 1)
+{
+	if (!pThis || !pPassenger)
+		return CoordStruct::Empty;
+
+	if (maxAttempts < 1)
+		maxAttempts = 1;
+
+	CellClass* pCell;
+	CellStruct placeCoords = CellStruct::Empty;
+	auto pTypePassenger = pPassenger->GetTechnoType();
+	CoordStruct finalLocation = CoordStruct::Empty;
+	short extraDistanceX = 1;
+	short extraDistanceY = 1;
+	SpeedType speedType = pTypePassenger->SpeedType;
+	MovementZone movementZone = pTypePassenger->MovementZone;
+
+	if (pTypePassenger->WhatAmI() == AbstractType::AircraftType)
+	{
+		speedType = SpeedType::Track;
+		movementZone = MovementZone::Normal;
+	}
+
+	do
+	{
+		placeCoords = pThis->GetCell()->MapCoords - CellStruct { (short)(extraDistanceX / 2), (short)(extraDistanceY / 2) };
+		placeCoords = MapClass::Instance->NearByLocation(placeCoords, speedType, -1, movementZone, false, extraDistanceX, extraDistanceY, true, false, false, false, CellStruct::Empty, false, false);
+
+		pCell = MapClass::Instance->GetCellAt(placeCoords);
+		extraDistanceX += 1;
+		extraDistanceY += 1;
+	}
+	while (extraDistanceX < maxAttempts && (pThis->IsCellOccupied(pCell, -1, -1, nullptr, false) != Move::OK) && pCell->MapCoords != CellStruct::Empty);
+
+	pCell = MapClass::Instance->TryGetCellAt(placeCoords);
+	if (pCell)
+		finalLocation = pCell->GetCoordsWithBridge();
+
+	return finalLocation;
+}
+
+WeaponTypeClass* TechnoExt::GetDeployFireWeapon(TechnoClass* pThis, int& weaponIndex)
+{
+	weaponIndex = pThis->GetTechnoType()->DeployFireWeapon;
+
+	if (pThis->WhatAmI() == AbstractType::Unit)
+	{
+		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		{
+			// Only apply DeployFireWeapon on vehicles if explicitly set.
+			if (!pTypeExt->DeployFireWeapon.isset())
+			{
+				weaponIndex = 0;
+				auto pCell = MapClass::Instance->GetCellAt(pThis->GetMapCoords());
+
+				if (pThis->GetFireError(pCell, 0, true) != FireError::OK)
+					weaponIndex = 1;
+			}
+		}
+	}
+
+	if (weaponIndex < 0)
+		return nullptr;
+
+	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+	if (!pWeapon)
+	{
+		weaponIndex = 0;
+		pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+		if (!pWeapon)
+			weaponIndex = -1;
+	}
+
+	return pWeapon;
+}
+
 // =============================
 // load / save
 
@@ -958,6 +1064,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->CurrentLaserWeaponIndex)
+		.Process(this->IsInTunnel)
+		.Process(this->DeployFireTimer)
 		;
 }
 
@@ -1001,8 +1109,7 @@ DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 {
 	GET(TechnoClass*, pItem, ESI);
 
-	auto pExt = TechnoExt::ExtMap.FindOrAllocate(pItem);
-	pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pItem->GetTechnoType());
+	TechnoExt::ExtMap.FindOrAllocate(pItem);
 
 	return 0;
 }

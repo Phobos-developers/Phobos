@@ -168,8 +168,8 @@ public:
 
 			, DetonateOnAllMapObjects { false }
 			, DetonateOnAllMapObjects_RequireVerses { false }
-			, DetonateOnAllMapObjects_AffectTargets { AffectedTarget::All }
-			, DetonateOnAllMapObjects_AffectHouses { AffectedHouse::All }
+			, DetonateOnAllMapObjects_AffectTargets { AffectedTarget::None }
+			, DetonateOnAllMapObjects_AffectHouses { AffectedHouse::None }
 			, DetonateOnAllMapObjects_AffectTypes {}
 			, DetonateOnAllMapObjects_IgnoreTypes {}
 

@@ -122,7 +122,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, bool bulletWasIntercepted)
 {
-	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health)
+	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking)
 		return;
 
 	if (!this->CanTargetHouse(pHouse, pTarget))
@@ -246,9 +246,13 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (this->Crit_Chance < dice)
 		return;
 
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType()))
+	if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
 	{
-		if (pTypeExt->ImmuneToCrit)
+		if (pExt->TypeExtData->ImmuneToCrit)
+			return;
+
+		auto pSld = pExt->Shield.get();
+		if (pSld && pSld->IsActive() && pSld->GetType()->ImmuneToCrit)
 			return;
 
 		if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent)
@@ -303,9 +307,8 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 	}
 	else
 	{
-		for (auto const& pBullet : *BulletClass::Array)
+		for (auto const& [pBullet,pExt] : BulletExt::ExtMap)
 		{
-			auto const pExt = BulletExt::ExtMap.Find(pBullet);
 			auto const pTypeExt = pExt->TypeExtData;
 
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
