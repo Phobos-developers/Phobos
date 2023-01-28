@@ -69,13 +69,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Storage_TiberiumIndex.Read(exINI, GameStrings::General, "Storage.TiberiumIndex");
 	this->InfantryGainSelfHealCap.Read(exINI, GameStrings::General, "InfantryGainSelfHealCap");
 	this->UnitsGainSelfHealCap.Read(exINI, GameStrings::General, "UnitsGainSelfHealCap");
-	this->JumpjetAllowLayerDeviation.Read(exINI, GameStrings::JumpjetControls, "AllowLayerDeviation");
 	this->UseGlobalRadApplicationDelay.Read(exINI, GameStrings::Radiation, "UseGlobalRadApplicationDelay");
 	this->RadApplicationDelay_Building.Read(exINI, GameStrings::Radiation, "RadApplicationDelay.Building");
 	this->RadWarhead_Detonate.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate");
 	this->RadHasOwner.Read(exINI, GameStrings::Radiation, "RadHasOwner");
 	this->RadHasInvoker.Read(exINI, GameStrings::Radiation, "RadHasInvoker");
 	this->MissingCameo.Read(pINI, GameStrings::AudioVisual, "MissingCameo");
+	this->JumpjetAllowLayerDeviation.Read(exINI, GameStrings::JumpjetControls, "AllowLayerDeviation");
 	this->JumpjetTurnToTarget.Read(exINI, GameStrings::JumpjetControls, "TurnToTarget");
 
 	this->PlacementPreview.Read(exINI, GameStrings::AudioVisual, "PlacementPreview");
