@@ -28,23 +28,23 @@ enum class InitState
  * ==========================
 
  * Extension<T> is the parent class for the data you want to link with this instance of T
-   ( for example, [Warhead]MindControl.Permanent= should be stored in WarheadClassExt::ExtData
-	 which itself should be a derivate of Extension<WarheadTypeClass> )
+	( for example, [Warhead]MindControl.Permanent= should be stored in WarheadClassExt::ExtData
+	which itself should be a derivate of Extension<WarheadTypeClass> )
 
  * ==========================
 
-   Container<TX> is the storage for all the Extension<T> which share the same T,
+	Container<TX> is the storage for all the Extension<T> which share the same T,
 	where TX is the containing class of the relevant derivate of Extension<T>. // complex, huh?
-   ( for example, there is Container<WarheadTypeExt>
-	 which contains all the custom data for all WarheadTypeClass instances,
-	 and WarheadTypeExt itself contains just statics like the Container itself )
+	( for example, there is Container<WarheadTypeExt>
+	which contains all the custom data for all WarheadTypeClass instances,
+	and WarheadTypeExt itself contains just statics like the Container itself )
 
-   Requires:
+	Requires:
 	using base_type = T;
 	const DWORD Extension<T>::Canary = (any dword value easily identifiable in a byte stream)
 	class TX::ExtData : public Extension<T> { custom_data; }
 
-   Complex? Yes. That's partially why you should be happy these are premade for you.
+	Complex? Yes. That's partially why you should be happy these are premade for you.
  *
  */
 
@@ -57,7 +57,7 @@ class Extension
 public:
 	static const DWORD Canary;
 
-	Extension(T* const OwnerObject) : 
+	Extension(T* const OwnerObject) :
 		AttachedToObject(OwnerObject),
 		Initialized(InitState::Blank)
 	{ }
@@ -163,7 +163,7 @@ public:
 		auto const it = this->Items.find(key);
 		if (it != this->Items.end())
 			return it->second;
-		
+
 		return nullptr;
 	}
 
@@ -257,13 +257,13 @@ public:
 	iterator begin() const
 	{
 		auto ret = this->Items.begin();
-		return reinterpret_cast<iterator& >(ret);
+		return reinterpret_cast<iterator&>(ret);
 	}
 
 	iterator end() const
 	{
 		auto ret = this->Items.end();
-		return reinterpret_cast<iterator& >(ret);
+		return reinterpret_cast<iterator&>(ret);
 	}
 
 private:
@@ -329,7 +329,7 @@ public:
 
 		if (auto const ptr = this->Items.find(key))
 			return ptr;
-		
+
 		auto val = new extension_type(key);
 		val->EnsureConstanted();
 

@@ -34,7 +34,7 @@ public:
 	static bool ObjectClass_IsSelectable(ObjectClass* pThis)
 	{
 		const auto pOwner = pThis->GetOwningHouse();
-		return pOwner && pOwner->ControlledByPlayer()
+		return pOwner && pOwner->IsControlledByCurrentPlayer()
 			&& pThis->CanBeSelected() && pThis->CanBeSelectedNow()
 			&& !pThis->InLimbo;
 	}
@@ -92,7 +92,7 @@ public:
 					const auto pBldType = abstract_cast<BuildingTypeClass*>(pTechnoType);
 					const auto pOwner = pTechno->GetOwningHouse();
 
-					if (pOwner && pOwner->ControlledByPlayer() && pTechno->CanBeSelected()
+					if (pOwner && pOwner->IsControlledByCurrentPlayer() && pTechno->CanBeSelected()
 						&& (!pBldType || (pBldType && pBldType->UndeploysInto && pBldType->IsUndeployable())))
 					{
 						Unsorted::MoveFeedback = !pTechno->Select();
@@ -129,7 +129,7 @@ public:
 };
 
 // Replace single call
-DEFINE_POINTER_CALL(0x4ABCEB, ExtSelection::Tactical_MakeFilteredSelection);
+DEFINE_JUMP(CALL, 0x4ABCEB, GET_OFFSET(ExtSelection::Tactical_MakeFilteredSelection))
 
 // Replace vanilla function. For in case another module tries to call the vanilla function at offset
-DEFINE_POINTER_LJMP(0x6D9FF0, ExtSelection::Tactical_MakeFilteredSelection)
+DEFINE_JUMP(LJMP, 0x6D9FF0, GET_OFFSET(ExtSelection::Tactical_MakeFilteredSelection))

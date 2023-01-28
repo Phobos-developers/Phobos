@@ -4,6 +4,7 @@
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
+#include <Utilities/Macro.h>
 
 class TerrainTypeExt
 {
@@ -17,12 +18,22 @@ public:
 		Valueable<int> SpawnsTiberium_Range;
 		Valueable<Point2D> SpawnsTiberium_GrowthStage;
 		Valueable<Point2D> SpawnsTiberium_CellsPerAnim;
+		Nullable<AnimTypeClass*> DestroyAnim;
+		NullableIdx<VocClass> DestroySound;
+		Nullable<ColorStruct> MinimapColor;
+		Valueable<bool> IsPassable;
+		Valueable<bool> CanBeBuiltOn;
 
 		ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
-			, SpawnsTiberium_Type(0)
-			, SpawnsTiberium_Range(1)
-			, SpawnsTiberium_GrowthStage({ 3, 0 })
-			, SpawnsTiberium_CellsPerAnim({ 1, 0 })
+			, SpawnsTiberium_Type { 0 }
+			, SpawnsTiberium_Range { 1 }
+			, SpawnsTiberium_GrowthStage { { 3, 0 } }
+			, SpawnsTiberium_CellsPerAnim { { 1, 0 } }
+			, DestroyAnim {}
+			, DestroySound {}
+			, MinimapColor {}
+			, IsPassable { false }
+			, CanBeBuiltOn { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -36,7 +47,7 @@ public:
 
 		int GetTiberiumGrowthStage();
 		int GetCellsPerAnim();
-	
+
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
@@ -52,4 +63,6 @@ public:
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static void Remove(TerrainClass* pTerrain);
 };

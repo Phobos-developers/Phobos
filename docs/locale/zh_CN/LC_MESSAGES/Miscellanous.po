@@ -1,0 +1,177 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, The Phobos Contributors
+# This file is distributed under the same license as the Phobos package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Phobos \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-07-31 14:34+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../Miscellanous.md:1
+msgid "Miscellanous"
+msgstr "杂项"
+
+#: ../Miscellanous.md:3
+msgid ""
+"This page describes every change in Phobos that wasn't categorized into a"
+" proper category yet."
+msgstr "此页面列出了未分类的杂项内容。"
+
+#: ../Miscellanous.md:5
+msgid "Developer tools"
+msgstr "开发者工具"
+
+#: ../Miscellanous.md:7
+msgid "Dump Object Info"
+msgstr "输出目标信息"
+
+#: ../Miscellanous.md:9
+msgid ""
+"![image](_static/images/objectinfo-01.png) *Object info dump from [CnC: "
+"Reloaded](https://www.moddb.com/mods/cncreloaded/)*"
+msgstr ""
+"![image](_static/images/objectinfo-01.png)   \n"
+"*目标信息输出，来自[CnC: Reloaded](https://www.moddb.com/mods/cncreloaded/)*"
+
+#: ../Miscellanous.md:9
+msgid "image"
+msgstr ""
+
+#: ../Miscellanous.md:12
+msgid ""
+"There's a new hotkey to dump selected/hovered object info on press. "
+"Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to "
+"true in `rulesmd.ini`."
+msgstr "用以输出选择/悬浮目标信息的快捷键。仅当debug标签开启时启用。"
+
+#: ../Miscellanous.md:14
+msgid "Display Damage Numbers"
+msgstr "显示伤害数字"
+
+#: ../Miscellanous.md:16
+msgid ""
+"There's a new hotkey to show exact numbers of damage dealt on units & "
+"buildings. The numbers are shown in red (blue against shields) for "
+"damage, and for healing damage in green (cyan against shields). They are "
+"shown on the affected units and will move upwards after appearing. "
+"Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to "
+"true in `rulesmd.ini`."
+msgstr "一个新的快捷键用以显示精确的伤害数字。伤害数字固定显示为红色（对护盾为蓝色），治疗数字显示为绿色（对护盾为青色）。数字将显示在单位上，然后缓慢向上移动。此功能仅当开发者功能启用时有效。"
+
+#: ../Miscellanous.md:18
+msgid "Semantic locomotor aliases"
+msgstr "运动模式别称"
+
+#: ../Miscellanous.md:20
+msgid ""
+"It's now possible to write locomotor aliases instead of their CLSIDs in "
+"the `Locomotor` tag value. Use the table below to find the needed alias "
+"for a locomotor."
+msgstr "现在可以用指定的文字代替原本的CLSID，可以更加一目了然的编辑`Locomotor`。"
+
+#: ../Miscellanous.md
+msgid "*Alias*"
+msgstr "*别称*"
+
+#: ../Miscellanous.md
+msgid "*CLSID*"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "Drive"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "`{4A582741-9839-11d1-B709-00A024DDAFD1}`"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "Jumpjet"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "`{92612C46-F71F-11d1-AC9F-006008055BB5}`"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "Hover"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "`{4A582742-9839-11d1-B709-00A024DDAFD1}`"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "Rocket"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "`{B7B49766-E576-11d3-9BD9-00104B972FE8}`"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "Tunnel"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "`{4A582743-9839-11d1-B709-00A024DDAFD1}`"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "Walk"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "`{4A582744-9839-11d1-B709-00A024DDAFD1}`"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "DropPod"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "`{4A582745-9839-11d1-B709-00A024DDAFD1}`"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "Fly"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "`{4A582746-9839-11d1-B709-00A024DDAFD1}`"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "Teleport"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "`{4A582747-9839-11d1-B709-00A024DDAFD1}`"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "Mech"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "`{55D141B8-DB94-11d1-AC98-006008055BB5}`"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "Ship"
+msgstr ""
+
+#: ../Miscellanous.md
+msgid "`{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}`"
+msgstr ""
+

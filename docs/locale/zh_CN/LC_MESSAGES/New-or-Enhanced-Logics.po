@@ -1,0 +1,1512 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, The Phobos Contributors
+# This file is distributed under the same license as the Phobos package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Phobos \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-04-24 14:08+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../New-or-Enhanced-Logics.md:1
+msgid "New / Enhanced Logics"
+msgstr "新增或增强的逻辑"
+
+#: ../New-or-Enhanced-Logics.md:3
+msgid ""
+"This page describes all the engine features that are either new and "
+"introduced by Phobos or significantly extended or expanded."
+msgstr "此页面列出了所有火卫一引入的新逻辑或扩展逻辑。"
+
+#: ../New-or-Enhanced-Logics.md:5
+msgid "New types / ingame entities"
+msgstr "新类型/游戏内实体"
+
+#: ../New-or-Enhanced-Logics.md:7
+msgid "Custom Radiation Types"
+msgstr "自定义辐射类型"
+
+#: ../New-or-Enhanced-Logics.md:9
+msgid ""
+"![image](_static/images/radtype-01.png)   *Mixing different radiation "
+"types*"
+msgstr ""
+"![image](_static/images/radtype-01.png)   \n"
+"*不同种类的辐射正在混合*"
+
+#: ../New-or-Enhanced-Logics.md:191 ../New-or-Enhanced-Logics.md:825
+#: ../New-or-Enhanced-Logics.md:1138
+#: ../New-or-Enhanced-Logics.md:1150:<translated>:1
+#: ../New-or-Enhanced-Logics.md:1173:<translated>:1
+#: ../New-or-Enhanced-Logics.md:1257:<translated>:1
+#: ../New-or-Enhanced-Logics.md:220:<translated>:1
+#: ../New-or-Enhanced-Logics.md:293:<translated>:1
+#: ../New-or-Enhanced-Logics.md:795:<translated>:1
+#: ../New-or-Enhanced-Logics.md:839:<translated>:1
+#: ../New-or-Enhanced-Logics.md:84:<translated>:1
+#: ../New-or-Enhanced-Logics.md:852:<translated>:1
+#: ../New-or-Enhanced-Logics.md:9:<translated>:1
+msgid "image"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:12
+msgid ""
+"Allows to have custom radiation type for any weapon now. More details on "
+"radiation [here](https://www.modenc.renegadeprojects.com/Radiation)."
+msgstr "现在允许为武器自定义辐射的类型，且自定义辐射需要使用注册表，关于辐射的详情请见[这里](https://www.modenc.renegadeprojects.com/Radiation)。"
+
+#: ../New-or-Enhanced-Logics.md:14 ../New-or-Enhanced-Logics.md:76
+#: ../New-or-Enhanced-Logics.md:87 ../New-or-Enhanced-Logics.md:196
+#: ../New-or-Enhanced-Logics.md:227 ../New-or-Enhanced-Logics.md:239
+#: ../New-or-Enhanced-Logics.md:254 ../New-or-Enhanced-Logics.md:265
+#: ../New-or-Enhanced-Logics.md:278 ../New-or-Enhanced-Logics.md:302
+#: ../New-or-Enhanced-Logics.md:325 ../New-or-Enhanced-Logics.md:336
+#: ../New-or-Enhanced-Logics.md:346 ../New-or-Enhanced-Logics.md:494
+#: ../New-or-Enhanced-Logics.md:534 ../New-or-Enhanced-Logics.md:685
+#: ../New-or-Enhanced-Logics.md:703 ../New-or-Enhanced-Logics.md:718
+#: ../New-or-Enhanced-Logics.md:748 ../New-or-Enhanced-Logics.md:774
+#: ../New-or-Enhanced-Logics.md:786 ../New-or-Enhanced-Logics.md:804
+#: ../New-or-Enhanced-Logics.md:831 ../New-or-Enhanced-Logics.md:844
+#: ../New-or-Enhanced-Logics.md:858 ../New-or-Enhanced-Logics.md:871
+#: ../New-or-Enhanced-Logics.md:886 ../New-or-Enhanced-Logics.md:1098
+#: ../New-or-Enhanced-Logics.md:1115 ../New-or-Enhanced-Logics.md:1141
+#: ../New-or-Enhanced-Logics.md:1155 ../New-or-Enhanced-Logics.md:1165
+#: ../New-or-Enhanced-Logics.md:1179 ../New-or-Enhanced-Logics.md:1190
+#: ../New-or-Enhanced-Logics.md:1199 ../New-or-Enhanced-Logics.md:1213
+#: ../New-or-Enhanced-Logics.md:1225 ../New-or-Enhanced-Logics.md:1236
+#: ../New-or-Enhanced-Logics.md:1249 ../New-or-Enhanced-Logics.md:1264
+#: ../New-or-Enhanced-Logics.md:1275 ../New-or-Enhanced-Logics.md:1286
+msgid "In `rulesmd.ini`:"
+msgstr "在`rulesmd.ini`中："
+
+#: ../New-or-Enhanced-Logics.md:37
+msgid "Laser Trails"
+msgstr "激光尾迹"
+
+#: ../New-or-Enhanced-Logics.md:39
+msgid ""
+"![Laser Trails](_static/images/lasertrails.gif)   *Laser trails used in "
+"[Rise of the East](https://www.moddb.com/mods/riseoftheeast)*"
+msgstr ""
+"![Laser Trails](_static/images/lasertrails.gif)  \n"
+"*激光尾迹在[Rise of the East](https://www.moddb.com/mods/riseoftheeast)中*"
+
+#: ../New-or-Enhanced-Logics.md:39:<translated>:1
+msgid "激光尾迹"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:42
+msgid ""
+"Technos, Projectiles, and VoxelAnims can now have colorful trails of "
+"different transparency, thickness and color, which are drawn via laser "
+"drawing code."
+msgstr "单位，抛射体和VXL碎片现在可以拥有多条不同透明度、厚度和颜色的彩色尾迹，这些尾迹是由引擎绘制的。"
+
+#: ../New-or-Enhanced-Logics.md:43
+msgid ""
+"Technos, Projectiles, and VoxelAnims can have multiple laser trails. For "
+"technos each trail can have custom laser trail type and FLH offset "
+"relative to turret and body."
+msgstr "单位，抛射体和VXL碎片的尾迹可以设置其每一条尾迹的类型，以及相对车体或炮塔的FHL偏移。"
+
+#: ../New-or-Enhanced-Logics.md:1
+msgid ""
+"Laser trails are very resource intensive! Due to the game not utilizing "
+"GPU having a lot of trails can quickly drop the FPS on even good "
+"machines. To reduce that effect:"
+msgstr "激光尾迹非常消耗资源！由于游戏不使用GPU，因此如果设置了大量激光尾迹，即使在很好的电脑上也会迅速降低FPS。你可以通过以下方式减少这种影响："
+
+#: ../New-or-Enhanced-Logics.md:2
+msgid "don't put too many laser trails on units and projectiles;"
+msgstr "不要在单位和抛射体上放置太多激光尾迹；"
+
+#: ../New-or-Enhanced-Logics.md:3
+msgid ""
+"make sure you set as high `SegmentLength` value as possible without "
+"trails being too jagged;"
+msgstr "在尾迹不过于参差不齐的情况下设置尽可能高的`SegmentLength`值。"
+
+#: ../New-or-Enhanced-Logics.md:4
+msgid ""
+"try to keep the length of the trail minimal (can be achieved with smaller"
+" `FadeDuration` durations)."
+msgstr "尽量使尾迹长度最小（可以通过设置较小的`FadeDuration`值实现）。"
+
+#: ../New-or-Enhanced-Logics.md:52 ../New-or-Enhanced-Logics.md:202
+#: ../New-or-Enhanced-Logics.md:759
+msgid "In `artmd.ini`:"
+msgstr "在`artmd.ini`中："
+
+#: ../New-or-Enhanced-Logics.md:82
+msgid "Shields"
+msgstr "护盾"
+
+#: ../New-or-Enhanced-Logics.md:84
+msgid ""
+"![image](_static/images/technoshield-01.gif)   *Buildings, Infantries and"
+" Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods"
+"/fantasy-adventure)*"
+msgstr ""
+"![image](_static/images/technoshield-01.gif)  \n"
+"*具有护盾的建筑，步兵和载具在[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-"
+"adventure)中*"
+
+#: ../New-or-Enhanced-Logics.md:144
+msgid ""
+"Now you can have a shield for any TechnoType. It serves as a second "
+"health pool with independent `Armor` and `Strength` values."
+msgstr "所有建筑与单位现在都可以拥有护盾作为独立的（即可指定单独的`Armor`与`Strength`的）第二血条。"
+
+#: ../New-or-Enhanced-Logics.md:145
+msgid ""
+"Negative damage will recover shield, unless shield has been broken. If "
+"shield isn't full, all negative damage will be absorbed by shield."
+msgstr "负伤害将恢复护盾，除非护盾已经被击碎。如果护盾不满，全部的负伤害都会被护盾吸收。"
+
+#: ../New-or-Enhanced-Logics.md:146
+msgid ""
+"When the TechnoType with a unbroken shield, `[ShieldType]->Armor` will "
+"replace `[TechnoType]->Armor` for game calculation."
+msgstr "当某TechnoType拥有未击碎的护盾时，`[ShieldType]->Armor`将会替代`[TechnoType]->Armor`参与游戏计算。"
+
+#: ../New-or-Enhanced-Logics.md:147
+msgid ""
+"`InitialStrength` can be used to set a different initial strength value "
+"from maximum."
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:148
+msgid ""
+"When executing `DeploysInto` or `UndeploysInto`, if both of the "
+"TechnoTypes have shields, the transformed unit/building would keep "
+"relative shield health (in percents), same as with `Strength`. If one of "
+"the TechnoTypes doesn't have shields, it's shield's state on conversion "
+"will be preserved until converted back."
+msgstr "当通过`DeploysInto`，`UndeploysInto`模式转换时，护盾会按剩余百分比进行传递。如果目标单位不具备护盾，那么原始单位的护盾数据将会保存，直到变回来再恢复。"
+
+#: ../New-or-Enhanced-Logics.md:149
+msgid "This also works with Ares' `Convert.*`."
+msgstr "也兼容Ares的`Convert.*`。"
+
+#: ../New-or-Enhanced-Logics.md:150
+msgid ""
+"`Powered` controls whether or not the shield is active when a unit is "
+"running low on power or it is affected by EMP."
+msgstr "`Powered`控制护盾是否在单位无电力支持或被EMP时仍旧生效。"
+
+#: ../New-or-Enhanced-Logics.md:151
+msgid ""
+"Attention, if TechnoType itself is not `Powered`, then the shield won't "
+"be offline when low power."
+msgstr "注意，如果单位本身`Powered=false`，那么护盾也不会因断电而失效。"
+
+#: ../New-or-Enhanced-Logics.md:152
+msgid ""
+"`AbsorbOverDamage` controls whether or not the shield absorbs damage "
+"dealt beyond shield's current strength when the shield breaks."
+msgstr "`AbsorbOverDamage`决定护盾是否会吸收超量伤害。"
+
+#: ../New-or-Enhanced-Logics.md:153
+#, python-format
+msgid ""
+"`SelfHealing` and `Respawn` respect the following settings: 0.0 disables "
+"the feature, 1%-100% recovers/respawns the shield strength in percentage,"
+" other number recovers/respawns the shield strength directly. Specially, "
+"`SelfHealing` with a negative number deducts the shield strength."
+msgstr "`SelfHealing`与`Respawn`遵循以下设定：0.0将关闭功能，1%到100%为以百分比恢复/重生护盾，其他数字为以固定值直接恢复/重生护盾。此外，`SelfHealing`支持负数以扣除护盾。"
+
+#: ../New-or-Enhanced-Logics.md:154
+msgid ""
+"If you want shield recovers/respawns 1 HP per time, currently you need to"
+" set tag value to any number between 1 and 2, like `1.1`."
+msgstr "如果你想让护盾每次只恢复1HP，目前需要将该标签的值设置在1到2之间的数，如`1.1`。"
+
+#: ../New-or-Enhanced-Logics.md:155
+msgid ""
+"`SelfHealing.Rate` and `Respawn.Rate` respect the following settings: 0.0"
+" instantly recovers the shield, other values determine the frequency of "
+"shield recovers/respawns in ingame minutes."
+msgstr "`SelfHealing.Rate`与`Respawn.Rate`遵循以下设定：0.0立即恢复护盾，其他值以游戏内分钟为单位恢复/重生护盾。"
+
+#: ../New-or-Enhanced-Logics.md:156
+msgid ""
+"`IdleAnim`, if set, will be played while the shield is intact. This "
+"animation is automatically set to loop indefinitely."
+msgstr "如果设置了`IdleAnim`，那么护盾存在的时候就会自动重复播放此动画。"
+
+#: ../New-or-Enhanced-Logics.md:157
+msgid "`Bouncer=yes` animations are not supported at the moment."
+msgstr "目前暂不支持使用`Bouncer=yes`的动画。"
+
+#: ../New-or-Enhanced-Logics.md:158
+msgid ""
+"`IdleAnim.OfflineAction` indicates what happens to the animation when the"
+" shield is in a low power state."
+msgstr "`IdleAnim.OfflineAction`决定在断电时空闲动画的动作。"
+
+#: ../New-or-Enhanced-Logics.md:159
+msgid ""
+"`IdleAnim.TemporalAction` indicates what happens to the animation when "
+"the shield is attacked by temporal weapons."
+msgstr "`IdleAnim.TemporalAction`决定在被超时空时空闲动画的动作。"
+
+#: ../New-or-Enhanced-Logics.md:160
+msgid "`BreakAnim`, if set, will be played when the shield has been broken."
+msgstr "如果设置了`BreakAnim`，那么护盾被击碎时将播放此动画。"
+
+#: ../New-or-Enhanced-Logics.md:161
+msgid ""
+"`HitAnim`, if set, will be played when the shield is attacked, similar to"
+" `WeaponNullifyAnim` for Iron Curtain."
+msgstr "如果设置了`HitAnim`，那么护盾被攻击时将播放此动画，类似铁幕的`WeaponNullifyAnim`。"
+
+#: ../New-or-Enhanced-Logics.md:162
+msgid ""
+"`BreakWeapon`, if set, will be fired at the TechnoType once the shield "
+"breaks."
+msgstr "如果设置了`BreakkWeapon`，那么护盾被击碎时将释放此武器。"
+
+#: ../New-or-Enhanced-Logics.md:163
+msgid ""
+"`AbsorbPercent` controls the percentage of damage that will be absorbed "
+"by the shield. Defaults to 1.0, meaning full damage absorption."
+msgstr "`AbsorbPercent`决定此护盾吸收伤害的比例，默认1.0，即吸收全部伤害。"
+
+#: ../New-or-Enhanced-Logics.md:164
+msgid ""
+"`PassPercent` controls the percentage of damage that will *not* be "
+"absorbed by the shield, and will be dealt to the unit directly even if "
+"the shield is active. Defaults to 0.0 - no penetration."
+msgstr "`PassPercent`决定此护盾的穿透比例（即不会被吸收的伤害），穿透伤害将直接作用在单位身上。默认0.0，即不穿透。"
+
+#: ../New-or-Enhanced-Logics.md:165
+msgid ""
+"`AllowTransfer` controls whether or not the shield can be transferred if "
+"the TechnoType changes (such as `(Un)DeploysInto` or Ares type "
+"conversion). If not set, defaults to true if shield was attached via "
+"`Shield.AttachTypes`, otherwise false."
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:166
+msgid ""
+"A TechnoType with a shield will show its shield Strength. An empty shield"
+" strength bar will be left after destroyed if it is respawnable."
+msgstr "拥有护盾的单位可以展示其护盾的HP条，如果护盾可重生，那么在被击碎后会保留一个空的护盾条。"
+
+#: ../New-or-Enhanced-Logics.md:167
+msgid ""
+"Buildings now use the 5th frame of `pips.shp` to display the shield "
+"strength while other units uses the 16th frame by default."
+msgstr "建筑默认使用`pips.shp`中的5号帧为护盾HP条，其他单位默认使用16号帧。"
+
+#: ../New-or-Enhanced-Logics.md:168
+msgid ""
+"`Pips.Shield` can be used to specify which pip frame should be used as "
+"shield strength. If only 1 digit set, then it will always display it, or "
+"if 3 digits set, it will respect `ConditionYellow` and `ConditionRed`. "
+"`Pips.Shield.Building` is used for BuildingTypes."
+msgstr "`Pips.Shield`可被用于指定护盾HP条用哪一帧。如果指定了1个数，那么就一直显示这一帧；如果指定了3个数，那么将遵循`ConditionYellow`和`ConditionRed`显示。建筑使用`Pips.Shield.Building`。"
+
+#: ../New-or-Enhanced-Logics.md:169
+msgid ""
+"`pipbrd.shp` will use its 4th frame to display an infantry's shield "
+"strength and the 3th frame for other units if `pipbrd.shp` has extra 2 "
+"frames. And `BracketDelta` can be used as additional "
+"`PixelSelectionBracketDelta` for shield strength."
+msgstr "如果`pipbrd.shp`有额外的两帧，那么第4帧将用于步兵护盾条框，第3帧用于其他单位。`BracketDelta`可作为护盾HP条的额外`PixelSelectionBracketDelta`。"
+
+#: ../New-or-Enhanced-Logics.md:170
+msgid "Warheads have new options that interact with shields."
+msgstr "弹头与护盾的新交互选项。"
+
+#: ../New-or-Enhanced-Logics.md:171
+msgid ""
+"`Shield.Penetrate` allows the warhead ignore the shield and always deal "
+"full damage to the TechnoType itself. It also allows targeting the "
+"TechnoType as if shield doesn't exist."
+msgstr "`Shield.Penetrate`允许弹头无视护盾，将直接伤害单位本身。并且在瞄准时也会无视护盾。"
+
+#: ../New-or-Enhanced-Logics.md:172
+msgid ""
+"`Shield.Break` allows the warhead to always break shields of TechnoTypes."
+" This is done before damage is dealt."
+msgstr "`Shield.Break`允许弹头在伤害结算前一击击碎护盾。"
+
+#: ../New-or-Enhanced-Logics.md:173
+msgid ""
+"`Shield.BreakAnim` will be displayed instead of ShieldType `BreakAnim` if"
+" the shield is broken by the Warhead, either through damage or "
+"`Shield.Break`."
+msgstr "`Shield.BreakAnim`将会代替被此弹头击碎的护盾本身的`BreakAnim`播放。"
+
+#: ../New-or-Enhanced-Logics.md:174
+msgid ""
+"`Shield.HitAnim` will be displayed instead of ShieldType `HitAnim` if set"
+" when Warhead hits the shield."
+msgstr "`Shield.HitAnim`将会代替被此弹头击中的护盾本身的`HitAnim`播放。"
+
+#: ../New-or-Enhanced-Logics.md:175
+msgid ""
+"`Shield.BreakWeapon` will be fired instead of ShieldType `BreakWeapon` if"
+" the shield is broken by the Warhead, either through damage or "
+"`Shield.Break`."
+msgstr "`Shield.BreakWeapon`将会代替被此弹头击碎的护盾本身的`BreakWeapon`引爆。"
+
+#: ../New-or-Enhanced-Logics.md:176
+msgid ""
+"`Shield.AbsorbPercent` overrides the `AbsorbPercent` value set in the "
+"ShieldType that is being damaged."
+msgstr "`Shield.AbsorbPercent`将会代替被此弹头击中的护盾的`AbsorbPercent`。"
+
+#: ../New-or-Enhanced-Logics.md:177
+msgid ""
+"`Shield.PassPercent` overrides the `PassPercent` value set in the "
+"ShieldType that is being damaged."
+msgstr "`Shield.PassPercent`将会代替被此弹头击中的护盾的`PassPercent`。"
+
+#: ../New-or-Enhanced-Logics.md:178
+msgid ""
+"`Shield.Respawn.Rate` & `Shield.Respawn.Amount` override ShieldType "
+"`Respawn.Rate` and `Respawn.Amount` for duration of "
+"`Shield.Respawn.Duration` amount of frames. Negative rate & zero or lower"
+" amount default to ShieldType values. If `Shield.Respawn.ResetTimer` is "
+"set, currently running shield respawn timer is reset, otherwise the "
+"timer's duration is adjusted to match `Shield.Respawn.Rate` without "
+"restarting the timer.  If the effect expires while respawn timer is "
+"running, remaining time is adjusted to match ShieldType `Respawn.Rate`. "
+"Re-applying the effect resets the duration to `Shield.Respawn.Duration`"
+msgstr "`Shield.Respawn.Rate`与`Shield.Respawn.Amount`覆盖被此弹头击中的护盾重生效果，持续`Shield.Respawn.Duration`，负数或0则默认为护盾本身的值。如果设置了`Shield.Respawn.ResetTimer`，当前护盾的重生时间将会重置，否则按照新的时间进行比例缩放。如果覆盖效果在重生完成前结束了，剩余时间会按照护盾本身的`Respawn.Rate`进行缩放。"
+
+#: ../New-or-Enhanced-Logics.md:179
+msgid ""
+"`Shield.SelfHealing.Rate` & `Shield.SelfHealing.Amount` override "
+"ShieldType `SelfHealing.Rate` and `SelfHealing.Amount` for duration of "
+"`Shield.SelfHealing.Duration` amount of frames. Negative rate & zero or "
+"lower amount default to ShieldType values. If "
+"`Shield.SelfHealing.ResetTimer` is set, currently running self-healing "
+"timer is restarted, otherwise timer's duration 'is adjusted to match "
+"`Shield.SelfHealing.Rate` without restarting the timer. If the effect "
+"expires while self-healing timer is running, remaining time is adjusted "
+"to match ShieldType `SelfHealing.Rate`. Re-applying the effect resets the"
+" duration to `Shield.SelfHealing.Duration`."
+msgstr "`Shield.SelfHealing.Rate`与`Shield.SelfHealing.Amount`覆盖被此弹头击中的护盾自愈效果，持续`Shield.SelfHealing.Duration`，负数或0则默认为护盾本身的值。如果设置了`Shield.SelfHealing.ResetTimer`，当前护盾的自愈时间将会重置，否则按照新的时间进行比例缩放。如果覆盖效果在一次自愈完成前结束了，剩余时间会按照护盾本身的`SelfHealing.Rate`进行缩放。"
+
+#: ../New-or-Enhanced-Logics.md:180
+msgid ""
+"`Shield.AffectsTypes` allows listing which ShieldTypes can be affected by"
+" any of the effects listed above. If none are listed, all ShieldTypes are"
+" affected."
+msgstr "`Shield.AffectsTypes`允许列出哪些护盾会被上述效果影响。如果不设置，所有的护盾都会被影响。"
+
+#: ../New-or-Enhanced-Logics.md:181
+msgid ""
+"`Shield.AttachTypes` & `Shield.RemoveTypes` allows listing ShieldTypes "
+"that are attached or removed, respectively from any targets affected by "
+"the warhead (positive `Verses` values). Normally only first listed "
+"ShieldType in `Shield.AttachTypes` is applied."
+msgstr "`Shield.AttachTypes`和`Shield.RemoveTypes`允许分别列出被此弹头影响的单位附加或移除的护盾。通常只有第一个`Shield.AttachTypes`被应用。"
+
+#: ../New-or-Enhanced-Logics.md:182
+msgid ""
+"If `Shield.ReplaceOnly` is set, shields from `Shield.AttachTypes` are "
+"only applied to affected targets from which shields were simultaneously "
+"removed, matching the order listed in `Shield.RemoveTypes`. If "
+"`Shield.AttachTypes` contains less items than `Shield.RemoveTypes`, last "
+"item from the former is used for any remaining removed shields."
+msgstr "如果设置了`Shield.ReplaceOnly`，`Shield.AttachTypes`中的护盾会按位置替换中`Shield.RemoveTypes`的护盾。如果前者少于后者，那么多余的被移除的护盾被前者的最后一个护盾替换。"
+
+#: ../New-or-Enhanced-Logics.md:183
+msgid ""
+"If `Shield.ReplaceNonRespawning` is set, shield from `Shield.AttachTypes`"
+" replaces existing shields that have been broken and cannot respawn on "
+"their own."
+msgstr "如果设置了`Shield.ReplaceNonRespawning`，`Shield.AttachTypes`中的护盾会替换已被击破且不可再生的护盾。"
+
+#: ../New-or-Enhanced-Logics.md:184
+msgid ""
+"`Shield.MinimumReplaceDelay` can be used to control how long after the "
+"shield has been broken (in game frames) can it be replaced. If not enough"
+" frames have passed, it won't be replaced."
+msgstr "`Shield.MinimumReplaceDelay`可被用来控制护盾在被击破后多久才能被替换。如果已过帧数不足，就不会被替换。"
+
+#: ../New-or-Enhanced-Logics.md:185
+msgid ""
+"If `Shield.InheritStateOnReplace` is set, shields replaced via "
+"`Shield.ReplaceOnly` inherit the current strength (relative to ShieldType"
+" `Strength`) of the previous shield and whether or not the shield was "
+"currently broken. Self-healing and respawn timers are always reset."
+msgstr "如果设置了`Shield.InheritStateOnReplace`，替换护盾后诸如血量，是否被击破等属性将会继承。自我恢复和重生时间不会继承，总是重设。"
+
+#: ../New-or-Enhanced-Logics.md:187
+msgid "Animations"
+msgstr "动画"
+
+#: ../New-or-Enhanced-Logics.md:189
+msgid "Anim-to-Unit"
+msgstr "动画生成单位"
+
+#: ../New-or-Enhanced-Logics.md:191
+msgid "![image](_static/images/animToUnit.gif)"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:193
+msgid "Animations can now create (or \"convert\" to) units when they end."
+msgstr "动画现在可以在结束时生成或“转换成”单位"
+
+#: ../New-or-Enhanced-Logics.md:194
+msgid ""
+"Because in most cases animations do not have owner, the unit will be "
+"created with civilian owner unless you use `DestroyAnim` which was "
+"modified to store owner and facing information from the destroyed unit, "
+"or animation from Warhead `AnimList` or one created through map trigger "
+"action `41 Play Anim At`."
+msgstr ""
+"因为多数情况下动画并没有所属方，单位将以中立方出生，除非你使用`DestroyAnim`（因为其已经可以存储被摧毁单位的所属方和方向信息）或弹头`AnimList`或触发事件`41"
+" 播放动画在...`。"
+
+#: ../New-or-Enhanced-Logics.md:216
+msgid "Buildings"
+msgstr "建筑"
+
+#: ../New-or-Enhanced-Logics.md:218
+msgid "Extended building upgrades"
+msgstr "扩展建筑升级逻辑"
+
+#: ../New-or-Enhanced-Logics.md:220
+msgid ""
+"![image](_static/images/powersup.owner-01.png)   *Upgrading own and "
+"allied Power Plants in [CnC: Final "
+"War](https://www.moddb.com/mods/cncfinalwar)*"
+msgstr ""
+"![image](_static/images/powersup.owner-01.png)  \n"
+"*为自己和盟友的电厂升级在[CnC: Final War](https://www.moddb.com/mods/cncfinalwar)中*"
+
+#: ../New-or-Enhanced-Logics.md:223
+msgid ""
+"Building upgrades now can be placed on own buildings, on allied buildings"
+" and/or on enemy buildings. These three owners can be specified via a new"
+" tag, comma-separated. When upgrade is placed on building, it "
+"automatically changes it's owner to match the building's owner."
+msgstr "建筑升级现在可以放置在自己，盟友和/或敌人的建筑上。通过一个逗号分隔的新标签控制。当升级放在建筑上后，它将自动转换为建筑的所属方。"
+
+#: ../New-or-Enhanced-Logics.md:224
+msgid ""
+"One upgrade can now be applied to multiple buildings via a new tag, "
+"comma-separated."
+msgstr "建筑升级也可以被放置在多种建筑上。"
+
+#: ../New-or-Enhanced-Logics.md:225
+msgid "Ares-introduced build limit for building upgrades works with this feature."
+msgstr "Ares引入的建造限制检查对此逻辑兼容。"
+
+#: ../New-or-Enhanced-Logics.md:234
+msgid "Power plant enhancer"
+msgstr "电厂增幅逻辑"
+
+#: ../New-or-Enhanced-Logics.md:236
+msgid ""
+"When it exists, it can increase the power amount generated by the power "
+"plants."
+msgstr "存在的时候会增幅电厂产生的电力。"
+
+#: ../New-or-Enhanced-Logics.md:237
+msgid ""
+"When enchancing structures are sold or destroyed, the power amount "
+"returns to normal."
+msgstr "增幅建筑变卖或摧毁后，增幅电量就会消失。"
+
+#: ../New-or-Enhanced-Logics.md:45 ../New-or-Enhanced-Logics.md:247
+msgid "Infantry"
+msgstr "步兵"
+
+#: ../New-or-Enhanced-Logics.md:249
+msgid "Default disguise for individual InfantryTypes"
+msgstr "步兵类型拥有独立的默认伪装"
+
+#: ../New-or-Enhanced-Logics.md:251
+msgid "Infantry can now have its `DefaultDisguise` overridden per-type."
+msgstr "每种步兵单位现在都可以有它自己的“DefaultDisguise”(默认伪装)。"
+
+#: ../New-or-Enhanced-Logics.md:252
+msgid "This tag's priority is higher than Ares' per-side `DefaultDisguise`."
+msgstr "此标签的优先级高于Ares中为Side设定的“DefaultDisguise”。"
+
+#: ../New-or-Enhanced-Logics.md:260
+msgid "Random death animaton for NotHuman Infantry"
+msgstr "NotHuman步兵随机死亡动画"
+
+#: ../New-or-Enhanced-Logics.md:262
+msgid ""
+"Infantry with `NotHuman=yes` can now play random death anim sequence "
+"between `Die1` to `Die5` instead of the hardcoded `Die1`."
+msgstr "有`NotHuman=yes`的步兵现在可以播放在`Die1`到`Die5`中随机播放死亡动画序列，而非只有硬编码的`Die1`。"
+
+#: ../New-or-Enhanced-Logics.md:263
+msgid ""
+"Do not forget to tweak infantry anim sequences before enabling this "
+"feature, otherwise it will play invisible anim sequence."
+msgstr "在启用此功能之前不要忘记调整步兵动画序列，否则它会播放不可见的动画序列。"
+
+#: ../New-or-Enhanced-Logics.md:271
+msgid "Shared Ammo"
+msgstr "分享弹药"
+
+#: ../New-or-Enhanced-Logics.md:273
+msgid ""
+"Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo"
+" to passengers that have `Ammo.Shared=yes`. In addition, a transport can "
+"filter who will receive ammo if passengers have the same value in "
+"`Ammo.Shared.Group=<integer>` of the transport, ignoring other passengers"
+" with different groups values."
+msgstr "有`OpenTopped=yes`和`Ammo.Shared=yes`的运输载具将会将其弹药分享给有`Ammo.Shared=yes`的乘客。此外，载具也可以筛选仅和自身拥有相同的`Ammo.Shared.Group=<integer>`的单位才可以分享弹药，忽略不同组的单位。"
+
+#: ../New-or-Enhanced-Logics.md:275
+msgid ""
+"Transports with `Ammo.Shared.Group=-1` will transfer ammo to any "
+"passenger with `Ammo.Shared=yes` ignoring the group."
+msgstr "拥有`Ammo.Shared.Group=-1`的载具会分享其弹药给所有`Ammo.Shared=yes`的乘客，无视组别设置。"
+
+#: ../New-or-Enhanced-Logics.md:276
+msgid "Transports must have ammo and should be able to reload ammo."
+msgstr "载具必须拥有弹药且可以恢复弹药。"
+
+#: ../New-or-Enhanced-Logics.md:289
+msgid "Projectiles"
+msgstr "抛射体"
+
+#: ../New-or-Enhanced-Logics.md:291
+msgid "Projectile interception logic"
+msgstr "拦截抛射体"
+
+#: ../New-or-Enhanced-Logics.md:293
+msgid ""
+"![image](_static/images/projectile-interception-01.gif)   *Interception "
+"logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberium-"
+"crisis) mod*"
+msgstr ""
+"![image](_static/images/projectile-interception-01.gif)  \n"
+"*拦截逻辑在[Tiberium Crisis](https://www.moddb.com/mods/tiberium-crisis)中*"
+
+#: ../New-or-Enhanced-Logics.md:296
+msgid ""
+"Projectiles can now be made targetable by certain TechnoTypes. "
+"Interceptor TechnoType's projectile must be `Inviso=yes` and `AA=yes` in "
+"order for it to work properly and the projectile must be used in a "
+"primary Weapon."
+msgstr "抛射体现在可以被单位拦截，拦截者的抛射体必须设置`Inviso=yes`和`AA=yes`以确保拦截可以正常工作。此抛射体必须被用于主武器。"
+
+#: ../New-or-Enhanced-Logics.md:297
+msgid ""
+"`Interceptor.GuardRange` is maximum range of the unit to intercept "
+"projectile. The unit weapon range will limit the unit interception range "
+"though."
+msgstr "`Interceptor.GuardRange`决定拦截抛射体的最大距离。而单位的武器距离将限制拦截的实际距离。"
+
+#: ../New-or-Enhanced-Logics.md:298
+msgid ""
+"`Interceptor.EliteGuardRange` value is used if the unit veterancy is "
+"Elite."
+msgstr "精英级时使用`Interceptor.EliteGuardRange`。"
+
+#: ../New-or-Enhanced-Logics.md:299
+msgid ""
+"`Interceptor.MinimumGuardRange` is the minimum range of the unit to "
+"intercept projectile. Any projectile under this range will not be "
+"intercepted."
+msgstr "`Interceptor.MinimumGuardRange`决定拦截抛射体的最小距离。小于此距离的抛射体不会被拦截。"
+
+#: ../New-or-Enhanced-Logics.md:300
+msgid ""
+"`Interceptor.EliteMinimumGuardRange` value is used if the unit veterancy "
+"is Elite."
+msgstr "精英级时使用`Interceptor.EliteMinimumGuardRange`。"
+
+#: ../New-or-Enhanced-Logics.md:315
+msgid "Projectile trajectories"
+msgstr "抛射体轨迹"
+
+#: ../New-or-Enhanced-Logics.md:317
+msgid "Projectiles can now have customizable trajectories."
+msgstr "抛射体现在可以用几种自定义轨迹。"
+
+#: ../New-or-Enhanced-Logics.md:318
+msgid ""
+"`Trajectory` should not be combined with original game's projectile "
+"trajectory logics (`Arcing`, `ROT` or `Inviso`)."
+msgstr "`Trajectory`不允许与原版的抛射体轨迹（`Arcing`，`ROT`或`Inviso`）混合使用。"
+
+#: ../New-or-Enhanced-Logics.md:320
+msgid "Straight trajectory"
+msgstr "直线轨迹"
+
+#: ../New-or-Enhanced-Logics.md:322
+msgid "Self-explanatory, is a straight-shot trajectory."
+msgstr "不言自明，是直线射击的轨迹。"
+
+#: ../New-or-Enhanced-Logics.md:323 ../New-or-Enhanced-Logics.md:334
+msgid "Initial speed is determined by weapon's `Trajectory.Speed`."
+msgstr "初始速度由武器的`Trajectory.Speed`决定。"
+
+#: ../New-or-Enhanced-Logics.md:331
+msgid "Bombard trajectory"
+msgstr "轰击弹道"
+
+#: ../New-or-Enhanced-Logics.md:333
+msgid ""
+"Similar trajectory to `Straight`, but targets a coordinate above the "
+"intended target (height determined by `Trajectory.Bombard.Height`). When "
+"the projectile approaches that coordinate, it will free fall and explodes"
+" when it hits the target or ground."
+msgstr "类似直线弹道，但是攻击目标上方的坐标点（高度由`Trajectory.Bombard.Height`决定）。当抛射体接近坐标点后会自由落体，并在接触到地面或目标后爆炸。"
+
+#: ../New-or-Enhanced-Logics.md:343
+msgid "Shrapnel enhancement"
+msgstr "溅射增强"
+
+#: ../New-or-Enhanced-Logics.md:344
+msgid "Shrapnel behavior can be triggered on the ground and buildings."
+msgstr "溅射行为现在可以被地面或建筑触发。"
+
+#: ../New-or-Enhanced-Logics.md:656
+msgid "Super Weapons"
+msgstr "超级武器"
+
+#: ../New-or-Enhanced-Logics.md:658
+msgid "LimboDelivery"
+msgstr "虚拟投放"
+
+#: ../New-or-Enhanced-Logics.md:660
+msgid ""
+"Super Weapons can now deliver off-map buildings that act as if they were "
+"on the field."
+msgstr "超级武器现在可以投放不在地图上的建筑，好似他们在地图上一样。"
+
+#: ../New-or-Enhanced-Logics.md:661
+msgid ""
+"`LimboDelivery.Types` is the list of BuildingTypes that will be created "
+"when the Super Weapons fire. Super Weapon Type and coordinates do not "
+"matter."
+msgstr "`LimboDelivery.Types`列出此超武生效后创建的建筑列表。超武类型和发射位置并不重要。"
+
+#: ../New-or-Enhanced-Logics.md:662
+msgid ""
+"`LimboDelivery.IDs` is the list of numeric IDs that will be assigned to "
+"buildings. Necessary for LimboKill to work."
+msgstr "`LimboDelivery.IDs`列出数字ID用以绑定建筑。要使虚拟击杀生效就必须设置。"
+
+#: ../New-or-Enhanced-Logics.md:664
+msgid ""
+"Created buildings are not affected by any on-map threats. The only way to"
+" remove them from the game is by using a Super Weapon with LimboKill set."
+msgstr "被创建的建筑不会被任何地图内威胁影响到。只有虚拟击杀的超武才能移除这些建筑。"
+
+#: ../New-or-Enhanced-Logics.md:665
+msgid "`LimboKill.Affects` sets which houses are affected by this feature."
+msgstr "`LimboKill.Affects`指定哪些所属方会被此功能影响"
+
+#: ../New-or-Enhanced-Logics.md:666
+msgid ""
+"`LimboKill.IDs` lists IDs that will be targeted. Buildings with these IDs"
+" will be removed from the game instantly."
+msgstr "`LimboKill.IDs`列出目标ID。拥有此ID的虚拟投放建筑会被立刻移除。"
+
+#: ../New-or-Enhanced-Logics.md:668
+msgid ""
+"Delivery can be made random with these optional tags. The game will "
+"randomly choose only a single building from the list for each roll chance"
+" provided."
+msgstr "投放可以通过一些可选的标签随机化。此时游戏会随机选择其中一种建筑投放。"
+
+#: ../New-or-Enhanced-Logics.md:669
+msgid ""
+"`LimboDelivery.RollChance` lits chances of each \"dice roll\" happening. "
+"Valid values range from 0% (never happens) to 100% (always happens). "
+"Defaults to a single sure roll."
+msgstr "`LimboDelivery.RollChance`指定虚拟投放的概率，值域为[0%,100%]（从不发生，总是发生），默认为一次成功的投放。"
+
+#: ../New-or-Enhanced-Logics.md:670
+msgid ""
+"`LimboDelivery.RandomWeightsN` lists the weights for each \"dice roll\" "
+"that increase the probability of picking a specific building. Valid "
+"values are 0 (don't pick) and above (the higher value, the bigger the "
+"likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a"
+" roll attempt doesn't have weights specified, the last weights will be "
+"used."
+msgstr "`LimboDelivery.RandomWeightsN`指定虚拟投放的权重，RandomWeights相当于RandomWeights0。每次虚拟投放时都会给对应的建筑增加这些权重，若对应次投放没有指定权重，则使用指定的最后一次权重。"
+
+#: ../New-or-Enhanced-Logics.md:672
+msgid ""
+"Note: This feature might not support every building flag. Flags that are "
+"confirmed to work correctly are listed below:"
+msgstr "注意：被虚拟投放的建筑不一定会使所有标签生效，以下标签是确定生效的："
+
+#: ../New-or-Enhanced-Logics.md:673
+msgid "FactoryPlant"
+msgstr "工业工厂"
+
+#: ../New-or-Enhanced-Logics.md:674
+msgid "OrePurifier"
+msgstr "矿石精炼器"
+
+#: ../New-or-Enhanced-Logics.md:675
+msgid "SpySat"
+msgstr "间谍卫星"
+
+#: ../New-or-Enhanced-Logics.md:676
+msgid "KeepAlive (Ares 3.0)"
+msgstr "续命（KeepAlive, Ares 3.0）"
+
+#: ../New-or-Enhanced-Logics.md:677
+msgid ""
+"Prerequisite, PrerequisiteOverride, Prerequisite.List# (Ares 0.1), "
+"Prerequisite.Negative (Ares 0.1), GenericPrerequisites (Ares 0.1)"
+msgstr "建造前提（含Ares扩展）"
+
+#: ../New-or-Enhanced-Logics.md:678
+msgid ""
+"SuperWeapon, SuperWeapon2, SuperWeapons (Ares 0.9), SW.AuxBuildings (Ares"
+" 0.9), SW.NegBuildings (Ares 0.9)"
+msgstr ""
+"SuperWeapon、SuperWeapon2，SuperWeapons、SW.AuxBuildings、SW.NegBuildings（Ares"
+" 0.9）"
+
+#: ../New-or-Enhanced-Logics.md:680
+msgid ""
+"Note: In order for this feature to work with AITriggerTypes conditions "
+"(\"Owning house owns ???\" and \"Enemy house owns ???\"), `LegalTarget` "
+"must be set to true."
+msgstr "注意，为了使此逻辑与`AITriggerTypes`条件共同运作，`LegalTarget`必须为yes。"
+
+#: ../New-or-Enhanced-Logics.md:1
+msgid ""
+"Remember that Limbo Delivered buildings don't exist physically! This "
+"means they should never have enabled machanics that require interaction "
+"with the game world (i.e. factories, cloning vats, service depots, "
+"helipads). They also **should have either `KeepAlive=no` set or be "
+"killable with LimboKill** - otherwise the game might never end."
+msgstr "记住，虚拟投放的建筑并不实际存在，一切与其实际交互的机制都不能正常生效（比如工厂，克隆，维修厂，直升机平台等）。此外此建筑必须要么`KeepAlive=no`，要么可以被虚拟击杀，否则游戏将无法结束。"
+
+#: ../New-or-Enhanced-Logics.md:696
+msgid "Technos"
+msgstr "通用"
+
+#: ../New-or-Enhanced-Logics.md:698
+msgid "Automatic Passenger Deletion"
+msgstr "自动删除乘客"
+
+#: ../New-or-Enhanced-Logics.md:700
+msgid ""
+"Transports with these tags will erase the passengers overtime. Bigger "
+"units takes more time. Optionally this logic can work like a grinder."
+msgstr "有该标签的载具将随着时间移除其中乘客。大型单位将需要更多时间。该逻辑也可以像部队回收站一样工作。"
+
+#: ../New-or-Enhanced-Logics.md:701
+msgid "Good combination with Ares Abductor logic."
+msgstr "与Ares的劫持犯逻辑是很好的组合。"
+
+#: ../New-or-Enhanced-Logics.md:714
+msgid "Automatically firing weapons"
+msgstr "自动开火武器"
+
+#: ../New-or-Enhanced-Logics.md:716
+msgid ""
+"You can now make TechnoType automatically fire its weapon(s) without "
+"having to scan for suitable targets by setting `AutoFire`, on either its "
+"base cell (in which case the weapon that is used for force-firing is "
+"used) or itself (in which case normal targeting and weapon selection "
+"rules and are respected) depending on if `AutoFire.TargetSelf` is set or "
+"not."
+msgstr "通过`AutoFire`，现在可以使单位自动开火，而不需要搜索目标。开火要么在单位脚下（此时使用强制攻击的武器），要么是单位本身（此时根据武器选择规则选择对单位自身有效的武器），由`AutoFire.TargetSelf`决定。"
+
+#: ../New-or-Enhanced-Logics.md:725
+msgid "Customizable OpenTopped Properties"
+msgstr "自定义可对外射击载具的属性"
+
+#: ../New-or-Enhanced-Logics.md:727
+msgid ""
+"You can now override settings of `OpenTopped` transport properties per "
+"TechnoType."
+msgstr "现在可以微观定义每种可对外射击载具各自的增益参数。"
+
+#: ../New-or-Enhanced-Logics.md:736
+msgid "Disabling fallback to (Elite)Secondary weapon"
+msgstr "关闭副武器自动推算"
+
+#: ../New-or-Enhanced-Logics.md:738
+msgid ""
+"It is now possible to disable the fallback to `(Elite)Secondary` weapon "
+"from `(Elite)Primary` weapon if it cannot fire at the chosen target by "
+"setting `NoSecondaryWeaponFallback` to true (defaults to false). This "
+"does not apply to special cases where `(Elite)Secondary` weapon is always"
+" chosen, including but not necessarily limited to the following:"
+msgstr "现在当一个单位有`NoSecondaryWeaponFallback=true`（默认为false）时，如果它的主武器不能攻击一个目标，那副武器也可以不再对其有效了；同时有若干情况，这些情况下副武器总会被调用："
+
+#: ../New-or-Enhanced-Logics.md:739
+msgid ""
+"`OpenTransportWeapon=1` on an unit firing from inside `OpenTopped=true` "
+"transport."
+msgstr "`OpenTransportWeapon=1`的单位在`OpenTopped=true`的载具内开火。"
+
+#: ../New-or-Enhanced-Logics.md:740
+msgid ""
+"`NoAmmoWeapon=1` on an unit with  `Ammo` value higher than 0 and current "
+"ammo count lower or  equal to `NoAmmoAmount`."
+msgstr "`NoAmmoWeapon=1`的单位，`Ammo`大于0且当前弹药数小于等于`NoAmmoAmount`。"
+
+#: ../New-or-Enhanced-Logics.md:741
+msgid ""
+"Deployed `IsSimpleDeployer=true` units with`DeployFireWeapon=1` set or "
+"omitted."
+msgstr "部署的`IsSimpleDeployer=true`的`DeployFireWeapon=1`的单位。"
+
+#: ../New-or-Enhanced-Logics.md:742
+msgid "`DrainWeapon=true` weapons against enemy `Drainable=yes` buildings."
+msgstr "`DrainWeapon=true`的武器对`Drainable=yes`的建筑。"
+
+#: ../New-or-Enhanced-Logics.md:743
+msgid ""
+"Units with `IsLocomotor=true` set on `Warhead` of `(Elite)Primary` weapon"
+" against buildings."
+msgstr "主武器的弹头有`IsLocomotor=true`时对建筑。"
+
+#: ../New-or-Enhanced-Logics.md:744
+msgid ""
+"Weapons with `ElectricAssault=true` set on `Warhead` against "
+"`Overpowerable=true` buildings belonging to owner or allies."
+msgstr "弹头`ElectricAssault=true`对友军的`Overpowerable=true`的建筑。"
+
+#: ../New-or-Enhanced-Logics.md:745
+msgid "`Overpowerable=true` buildings that are currently overpowered."
+msgstr "`Overpowerable=true`的建筑被过载。"
+
+#: ../New-or-Enhanced-Logics.md:746
+msgid ""
+"Any system using `(Elite)WeaponX`, f.ex `Gunner=true` or "
+"`IsGattling=true` is also wholly exempt."
+msgstr "`(Elite)WeaponX`系统整个排除在外（即`Gunner=true`或`IsGattling=true`）。"
+
+#: ../New-or-Enhanced-Logics.md:754
+msgid "Firing offsets for specific Burst shots"
+msgstr "Burst开火坐标"
+
+#: ../New-or-Enhanced-Logics.md:756
+msgid ""
+"You can now specify separate firing offsets for each of the shots fired "
+"by weapon with `Burst` via using "
+"`(Elite)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on "
+"which weapons your TechnoType makes use of. *N* in `BurstN` is zero-based"
+" burst shot index, and the values are parsed sequentially until no value "
+"for either regular or elite weapon is present, with elite weapon "
+"defaulting to regular weapon FLH if only it is missing. If no burst-index"
+" specific value is available, value from the base key (f.ex "
+"`PrimaryFireFLH`) is used."
+msgstr "现在可以为Burst指定独立的开火坐标，N从0开始，如果未指定则遵循原版设定。"
+
+#: ../New-or-Enhanced-Logics.md:757
+msgid ""
+"Burst-index specific firing offsets are absolute firing offsets and the "
+"lateral shifting based on burst index that occurs with the base firing "
+"offsets is not applied."
+msgstr "应用此逻辑的开火坐标不受因Burst数导致的水平对称影响。"
+
+#: ../New-or-Enhanced-Logics.md:770
+msgid "Initial Strength"
+msgstr "初始生命值"
+
+#: ../New-or-Enhanced-Logics.md:772
+msgid "You can now specify how many hitpoints a TechnoType starts with."
+msgstr "现在可以指定单位的初始生命值了。"
+
+#: ../New-or-Enhanced-Logics.md:793
+msgid "Mind Control enhancement"
+msgstr "心灵控制增强"
+
+#: ../New-or-Enhanced-Logics.md:795
+msgid ""
+"![image](_static/images/mindcontrol-max-range-01.gif)   *Mind Control "
+"Range Limit used in [Fantasy ADVENTURE](https://www.moddb.com/mods"
+"/fantasy-adventure)*   ![image](_static/images/mindcontrol-"
+"multiple-01.gif)   *Multiple Mind Control unit auto-releases the first "
+"victim in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-"
+"adventure)*"
+msgstr ""
+"![image](_static/images/mindcontrol-max-range-01.gif)  \n"
+"*心灵控制距离限制在[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-"
+"adventure)中*  \n"
+"![image](_static/images/mindcontrol-multiple-01.gif)  \n"
+"*多心控自动释放首个目标在[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-"
+"adventure)中*"
+
+#: ../New-or-Enhanced-Logics.md:800
+msgid ""
+"Mind controllers now can have the upper limit of the control distance. "
+"Tag values greater than 0 will activate this feature."
+msgstr "拥有心灵控制武器的单位现在可以拥有最大控制距离。大于0将激活此逻辑。"
+
+#: ../New-or-Enhanced-Logics.md:801
+msgid ""
+"Mind controllers with multiple controlling slots can now release the "
+"first controlled unit when they have reached the control limit and are "
+"ordered to control a new target."
+msgstr "多重心控单位可以在过载前释放被控制的单位。"
+
+#: ../New-or-Enhanced-Logics.md:802
+msgid ""
+"Allows Warheads to play custom `MindControl.Anim` which defaults to "
+"`ControlledAnimationType`."
+msgstr "心灵控制的动画现在可以用`MindControl.Anim`自定义了。"
+
+#: ../New-or-Enhanced-Logics.md:814
+msgid "No Manual Move"
+msgstr "禁止手动移动"
+
+#: ../New-or-Enhanced-Logics.md:816
+msgid ""
+"You can now specify whether a TechnoType is unable to receive move "
+"command."
+msgstr "可以控制某单位是否无视移动指令。"
+
+#: ../New-or-Enhanced-Logics.md:823
+msgid "Override Uncloaked Underwater attack behavior"
+msgstr "覆盖隐形水下攻击行为"
+
+#: ../New-or-Enhanced-Logics.md:825
+msgid ""
+"![image](_static/images/underwater-new-attack-tag.gif)   *Naval "
+"underwater behavior in [C&C: "
+"Reloaded](https://www.moddb.com/mods/cncreloaded)*"
+msgstr ""
+"![image](_static/images/underwater-new-attack-tag.gif)  \n"
+"*海军水下行为在[CnC: Reloaded](https://www.moddb.com/mods/cncreloaded)中*"
+
+#: ../New-or-Enhanced-Logics.md:828
+msgid ""
+"Overrides a part of the vanilla YR logic for allowing naval units to use "
+"a different weapon if the naval unit is uncloaked."
+msgstr "覆盖了一部分原版YR中的逻辑，使海军单位在海军单位未隐形时可以使用不同的武器。"
+
+#: ../New-or-Enhanced-Logics.md:829
+msgid ""
+"Useful if your naval unit have 1 weapon only for underwater and another "
+"weapon for surface objects."
+msgstr "在你的海军单位有一个武器对水下另一个武器对水面时很有用。"
+
+#: ../New-or-Enhanced-Logics.md:837
+msgid "Promoted Spawns"
+msgstr "升级子机"
+
+#: ../New-or-Enhanced-Logics.md:839
+msgid ""
+"![image](_static/images/promotedspawns-01.gif)   *Promoted Spawns in "
+"[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*"
+msgstr ""
+"![image](_static/images/promotedspawns-01.gif)  \n"
+"*升级子机在[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)中*"
+
+#: ../New-or-Enhanced-Logics.md:842
+msgid "The spawned units will promote as their owner's veterancy."
+msgstr "子机现在可以以发射者的等级出现。"
+
+#: ../New-or-Enhanced-Logics.md:850
+msgid "Spawn range limit"
+msgstr "子机最大航程"
+
+#: ../New-or-Enhanced-Logics.md:852
+msgid ""
+"![image](_static/images/spawnrange-01.gif)   *Limited pursue range for "
+"spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-"
+"adventure)*"
+msgstr ""
+"![image](_static/images/spawnrange-01.gif)  \n"
+"*子机限制追击距离在[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-"
+"adventure)中*"
+
+#: ../New-or-Enhanced-Logics.md:855
+msgid ""
+"The spawned units will abort the infinite pursuit if the enemy is out of "
+"range. `Spawner.ExtraLimitRange` adds extra pursuit range to the spawned "
+"units."
+msgstr "子机现在可以停止追击超出攻击距离的敌人。`Spawner.ExtraLimitRange`是额外追击距离。"
+
+#: ../New-or-Enhanced-Logics.md:865
+msgid "Weapons fired on warping in / out"
+msgstr "武器在传送时开火"
+
+#: ../New-or-Enhanced-Logics.md:867
+msgid ""
+"It is now possible to add weapons that are fired on a teleporting "
+"TechnoType when it warps in or out. They are at the same time as the "
+"appropriate animations (`WarpIn` / `WarpOut`) are displayed."
+msgstr "现在可以让武器在单位传送后开火，会在传送动画（`WarpIn` / `WarpOut`）播放的同时开火。"
+
+#: ../New-or-Enhanced-Logics.md:868
+msgid ""
+"`WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance "
+"traveled (in leptons) was less than `ChronoRangeMinimum`. This works "
+"regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon`"
+" is not set, it defaults to `WarpInWeapon`."
+msgstr "`WarpInMinRangeWeapon`用来在传送距离小于`ChronoRangeMinimum`时代替`WarpInWeapon`。它会无视`ChronoTrigger`设置与否而触发。如果未设置，默认为`WarpInWeapon`。"
+
+#: ../New-or-Enhanced-Logics.md:869
+msgid ""
+"If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of "
+"`WarpIn(MinRange)Weapon` is overriden by the number of whole cells "
+"teleported across."
+msgstr "如果设置了`WarpInWeapon.UseDistanceAsDamage`，`WarpIn(MinRange)Weapon`的`Damage`会被传送穿过的单元数替代。"
+
+#: ../New-or-Enhanced-Logics.md:880
+msgid "Terrains"
+msgstr "地形对象"
+
+#: ../New-or-Enhanced-Logics.md:882
+msgid "Destroy animation & sound"
+msgstr "摧毁动画与音效"
+
+#: ../New-or-Enhanced-Logics.md:884
+msgid ""
+"You can now specify a destroy animation and sound for a TerrainType that "
+"are played when it is destroyed."
+msgstr "现在可以设定地形对象的摧毁动画和音效。"
+
+#: ../New-or-Enhanced-Logics.md:1088
+msgid "Warheads"
+msgstr "弹头"
+
+#: ../New-or-Enhanced-Logics.md:1
+msgid ""
+"All new warheads can be used with CellSpread and Ares' GenericWarhead "
+"superweapon where applicable."
+msgstr "所有的新弹头对溅射范围和Ares的通用弹头超武都是支持的。"
+
+#: ../New-or-Enhanced-Logics.md:1094
+msgid "Break Mind Control on impact"
+msgstr "解除心控"
+
+#: ../New-or-Enhanced-Logics.md:1096
+msgid ""
+"Warheads can now break mind control (doesn't apply to perma-MC-ed "
+"objects)."
+msgstr "弹头现在可以破坏心控链接 (对永久心控无效) 。"
+
+#: ../New-or-Enhanced-Logics.md:1104
+msgid "Chance-based extra damage or Warhead detonation / 'critical hits'"
+msgstr "基于几率的额外伤害 / 弹头`暴击`"
+
+#: ../New-or-Enhanced-Logics.md:1106
+msgid ""
+"Warheads can now apply additional chance-based damage or Warhead "
+"detonation ('critical hits') with the ability to customize chance, "
+"damage, affected targets, affected target HP threshold and animations of "
+"critical hit."
+msgstr "现在可以设定某弹头是否会在爆炸时造成暴击伤害。可以设定暴击的几率，伤害，作用目标，HP上限，动画等。"
+
+#: ../New-or-Enhanced-Logics.md:1107
+msgid ""
+"`Crit.Chance` determines chance for a critical hit to occur. By default "
+"this is checked once when the Warhead is detonated and every target that "
+"is susceptible to critical hits will be affected. If "
+"`Crit.ApplyChancePerTarget` is set, then whether or not the chance roll "
+"is successful is determined individually for each target."
+msgstr "`Crit.Chance`决定暴击几率。正常情况下仅检测一次暴击，若`Crit.ApplyChancePerTarget=yes`，则每个目标的暴击单独决定。"
+
+#: ../New-or-Enhanced-Logics.md:1108
+msgid ""
+"`Crit.ExtraDamage` determines the damage dealt by the critical hit. If "
+"`Crit.Warhead` is set, the damage is used to detonate the specified "
+"Warhead on each affected target, otherwise the damage is directly dealt "
+"based on current Warhead's `Verses` settings."
+msgstr "`Crit.ExtraDamage`决定暴击额外伤害。若设置`Crit.Warhead`，则暴击的伤害使用此弹头，否则仍遵循当前弹头的`Verses`设定。"
+
+#: ../New-or-Enhanced-Logics.md:1109
+msgid ""
+"`Crit.Affects` can be used to customize types of targets that this "
+"Warhead can deal critical hits against."
+msgstr "`Crit.Affects`决定何种目标可以被暴击。"
+
+#: ../New-or-Enhanced-Logics.md:1110
+msgid ""
+"`Crit.AffectsBelowPercent` can be used to set minimum percentage of their"
+" maximum `Strength` that targets must have left to be affected by a "
+"critical hit."
+msgstr "`Crit.AffectsBelowPercent`决定低于多少百分比血量的目标不会被暴击。"
+
+#: ../New-or-Enhanced-Logics.md:1111
+msgid ""
+"`Crit.AnimList` can be used to set a list of animations used instead of "
+"Warhead's `AnimList` if Warhead deals a critical hit to even one target. "
+"If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) "
+"then the animation is chosen randomly from the list."
+msgstr "`Crit.AnimList`决定暴击后的弹头动画，替代弹头原本的动画。若设置`Crit.AnimList.PickRandom=yes`（默认为`AnimList.PickRandom`），则随机此动画。"
+
+#: ../New-or-Enhanced-Logics.md:1112
+msgid ""
+"`Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from "
+"`Crit.AnimList` play on each affected target *in addition* to animation "
+"from Warhead's `AnimList` playing as normal instead of replacing "
+"`AnimList` animation."
+msgstr "若设置`Crit.AnimOnAffectedTargets`，则暴击动画不再替代原本的动画，而是给每一个被暴击目标播放。"
+
+#: ../New-or-Enhanced-Logics.md:1113
+msgid ""
+"`ImmuneToCrit` can be set on TechnoTypes to make them immune to critical "
+"hits."
+msgstr "`ImmuneToCrit`决定单位是否免疫暴击。"
+
+#: ../New-or-Enhanced-Logics.md:1
+msgid ""
+"If you set `Crit.Warhead` to the same Warhead it is defined on, or create"
+" a chain of Warheads with it that loops back to the first one there is a "
+"possibility for the game to get stuck in a loop and freeze or crash "
+"afterwards."
+msgstr "如果暴击弹头与原弹头为同一个弹头，或创建了一个链式循环暴击，那么游戏有可能卡死或崩溃。"
+
+#: ../New-or-Enhanced-Logics.md:1136
+msgid "Custom 'SplashList' on Warheads"
+msgstr "微观定义水花"
+
+#: ../New-or-Enhanced-Logics.md:1138
+msgid "![image](_static/images/splashlist-01.gif)"
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:1139
+msgid ""
+"Allows Warheads to play custom water splash animations. See vanilla's "
+"[Conventional](https://www.modenc.renegadeprojects.com/Conventional) "
+"system here."
+msgstr "允许弹头自定义水花动画，详情请见[Conventional](https://www.modenc.renegadeprojects.com/Conventional)。"
+
+#: ../New-or-Enhanced-Logics.md:1148
+msgid "Generate credits on impact"
+msgstr "金币弹"
+
+#: ../New-or-Enhanced-Logics.md:1150
+msgid ""
+"![image](_static/images/hackerfinallyworks-01.gif)   *`TransactMoney` "
+"used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*"
+msgstr ""
+"![image](_static/images/hackerfinallyworks-01.gif)  \n"
+"*`TransactMoney`使用在[Rise of the "
+"East](https://www.moddb.com/mods/riseoftheeast)中*"
+
+#: ../New-or-Enhanced-Logics.md:1153
+msgid "Warheads can now give credits to its owner at impact."
+msgstr "弹头引爆时可以指定获得或失去资金。"
+
+#: ../New-or-Enhanced-Logics.md:1161
+msgid "Remove disguise on impact"
+msgstr "识破伪装"
+
+#: ../New-or-Enhanced-Logics.md:1163
+msgid ""
+"Warheads can now remove disguise from disguised infantry such as spies. "
+"This will work even if the disguised was acquired by default through "
+"`PermaDisguise`."
+msgstr "弹头现在可以移除间谍的伪装。此逻辑也会生效在通过`PermaDisguise`获得的默认伪装上。"
+
+#: ../New-or-Enhanced-Logics.md:1171
+msgid "Reveal map for owner on impact"
+msgstr "揭示弹"
+
+#: ../New-or-Enhanced-Logics.md:1173
+msgid ""
+"![image](_static/images/revealwarhead-01.gif)   *`SpySat=yes` on `[NUKE]`"
+" warhead reveals the map when nuclear missile detonates*"
+msgstr ""
+"![image](_static/images/revealwarhead-01.gif)  \n"
+"*`SpySat=yes`在`[NUKE]`上，使核弹爆炸时开启全图视野*"
+
+#: ../New-or-Enhanced-Logics.md:1176
+msgid "Warheads can now reveal the entire map on impact."
+msgstr "弹头可以引爆时揭示全部视野。"
+
+#: ../New-or-Enhanced-Logics.md:1177
+msgid "Reveal only applies to the owner of the warhead."
+msgstr "仅对所属方有效。"
+
+#: ../New-or-Enhanced-Logics.md:1185
+msgid "Shroud map for enemies on impact"
+msgstr "迷雾弹"
+
+#: ../New-or-Enhanced-Logics.md:1187
+msgid "Warheads can now shroud the entire map on impact."
+msgstr "弹头可以引爆时覆盖全部视野。"
+
+#: ../New-or-Enhanced-Logics.md:1188
+msgid "Shroud only applies to enemies of the warhead owner."
+msgstr "仅对敌人有效。"
+
+#: ../New-or-Enhanced-Logics.md:1196
+msgid "Trigger specific NotHuman infantry Death anim sequence"
+msgstr "触发特定的NotHuman步兵死亡动画序列"
+
+#: ../New-or-Enhanced-Logics.md:1197
+msgid ""
+"Warheads are now able to trigger specific `NotHuman=yes` infantry `Death`"
+" anim sequence using the corresponding tag. It's value represents "
+"sequences from `Die1` to `Die5`."
+msgstr "弹头可以触发指定的`NotHuman=yes`的步兵的死亡动画序列，值代表`Die1`到`Die5`。"
+
+#: ../New-or-Enhanced-Logics.md:1205
+msgid "Weapons"
+msgstr "武器"
+
+#: ../New-or-Enhanced-Logics.md:1207
+msgid "AreaFire target customization"
+msgstr "自定义AreaFire目标"
+
+#: ../New-or-Enhanced-Logics.md:1209
+msgid ""
+"You can now specify how AreaFire weapon picks its target. By default it "
+"targets the base cell the firer is currently on, but this can now be "
+"changed to fire on the firer itself or at a random cell within the radius"
+" of the weapon's `Range` by setting `AreaFire.Target` to `self` or "
+"`random` respectively."
+msgstr "现在可以指定区域开火的目标了。默认目标是开火者所在单元格，现在也可以通过设置`AreaFire.Target`为`self`或`random`将其修改为开火者本身或武器攻击范围内的随机某格。"
+
+#: ../New-or-Enhanced-Logics.md:1210
+msgid ""
+"`AreaFire.Target=self` respects normal targeting rules (Warhead Verses "
+"etc.) against the firer itself."
+msgstr "`AreaFire.Target=self`遵循一般瞄准规则（如弹头比例等）对开火者自身。"
+
+#: ../New-or-Enhanced-Logics.md:1211
+msgid ""
+"`AreaFire.Target=random` ignores cells that are ineligible or contain "
+"ineligible objects based on listed values in weapon's `CanTarget` & "
+"`CanTargetHouses`."
+msgstr "`AreaFire.Target=random`会遵循武器的`CanTarget`和`CanTargetHouses`忽略不合格或包含不合格对象的单元格。"
+
+#: ../New-or-Enhanced-Logics.md:1219
+msgid "Burst.Delays"
+msgstr "武器定义BurstDelay"
+
+#: ../New-or-Enhanced-Logics.md:1221
+msgid ""
+"Allows specifying weapon-specific burst shot delays. Takes precedence "
+"over the old `BurstDelayX` logic available on VehicleTypes, functions "
+"with Infantry & BuildingType weapons (AircraftTypes are not supported due"
+" to their weapon firing system being completely different) and allows "
+"every shot of `Burst` to have a separate delay instead of only first four"
+" shots."
+msgstr "现在支持为武器设定BurstDelay取代原本的`BurstDelayX`系统。对步兵，载具，建筑类型生效（飞机类型因开火系统完全不同无法支持）。并且允许为每一击都设定间隔，而非仅前四个。"
+
+#: ../New-or-Enhanced-Logics.md:1222
+msgid ""
+"If no delay is defined for a shot, it falls back to last delay value "
+"defined (f.ex `Burst=3` and `Burst.Delays=10` would use 10 as delay for "
+"all shots)."
+msgstr "如果没有设置对应的间隔，那么就会使用最后设置的间隔。（比如`Burst=3`和`Burst.Delays=10`将每一击都使用10作为间隔。）"
+
+#: ../New-or-Enhanced-Logics.md:1223
+msgid ""
+"Using `-1` as delay reverts back to old logic (`BurstDelay0-3` for "
+"VehicleTypes if available or random value between 3-5 otherwise) for that"
+" shot."
+msgstr "使用`-1`来取消此逻辑，应用原始的`BurstDelay0-3`。"
+
+#: ../New-or-Enhanced-Logics.md:1231
+msgid "Feedback weapon"
+msgstr "反馈武器"
+
+#: ../New-or-Enhanced-Logics.md:1233
+msgid ""
+"You can now specify an auxiliary weapon to be fired on the firer itself "
+"when a weapon is fired."
+msgstr "现在可以设定当开火者开火时发射向开火者自身的额外武器。"
+
+#: ../New-or-Enhanced-Logics.md:1234
+msgid ""
+"`FireInTransport` setting of the feedback weapon is respected to "
+"determine if it can be fired when the original weapon is fired from "
+"inside `OpenTopped=true` transport. If feedback weapon is fired, it is "
+"fired on the transport. `OpenToppedDamageMultiplier` is not applied on "
+"feedback weapons."
+msgstr ""
+
+#: ../New-or-Enhanced-Logics.md:1242
+msgid "Radiation enhancements"
+msgstr "辐射增强"
+
+#: ../New-or-Enhanced-Logics.md:1244
+msgid ""
+"Radiation now has owner by default, so any rad-kills will be scored. This"
+" behavior can be reverted by a corresponding tag."
+msgstr "辐射现在默认拥有所属方，辐射击杀可以被正常记录。此表现可被指定的标签关闭。"
+
+#: ../New-or-Enhanced-Logics.md:1245
+msgid ""
+"`AffectsAllies`, `AffectsOwner` and `AffectsEnemies` on `RadSiteWarhead` "
+"are respected."
+msgstr "`AffectsAllies`，`AffectsOwner`和`AffectsEnemies`也会被遵守。"
+
+#: ../New-or-Enhanced-Logics.md:1247
+msgid ""
+"Radiation is now able to deal damage to Buildings. To enable set "
+"`RadApplicationDelay.Building` value more than 0."
+msgstr "辐射也可以对建筑产生伤害了，将`RadApplicationDelay.Building`设置大于0即可。"
+
+#: ../New-or-Enhanced-Logics.md:1255
+msgid "Strafing aircraft weapon customization"
+msgstr "自定义飞机扫射"
+
+#: ../New-or-Enhanced-Logics.md:1257
+msgid ""
+"![image](_static/images/strafing-01.gif)   *Strafing aircraft weapon "
+"customization in [Project Phantom](https://www.moddb.com/mods/project-"
+"phantom)*"
+msgstr ""
+"![image](_static/images/strafing-01.gif)  \n"
+"*自定义飞机扫射在[Project Phantom](https://www.moddb.com/mods/project-phantom)中*"
+
+#: ../New-or-Enhanced-Logics.md:1260
+msgid ""
+"Some of the behavior of strafing aircraft weapons (weapon projectile has "
+"`ROT` below 2) can now be customized."
+msgstr "扫射（武器抛射体ROT小于2）现在可以被自定义了。"
+
+#: ../New-or-Enhanced-Logics.md:1261
+msgid ""
+"`Strafing.Shots` controls the number of times the weapon is fired during "
+"a single strafe run. `Ammo` is only deducted at the end of the strafe "
+"run, regardless of the number of shots fired. Valid values range from 1 "
+"to 5, any values smaller or larger are effectively treated same as either"
+" 1 or 5, respectively. Defaults to 5."
+msgstr "`Strafing.Shots`决定单轮扫射中武器发射几次。`Ammo`仅在本轮扫射结束后扣除，无论本轮开火几次。有效值为1到5之前，超出则被重置为1或5。默认为5。"
+
+#: ../New-or-Enhanced-Logics.md:1262
+msgid ""
+"`Strafing.SimulateBurst` controls whether or not the shots fired during "
+"strafing simulate behavior of `Burst`, allowing for alternating firing "
+"offset. Only takes effect if weapon has `Burst` set to 1 or undefined. "
+"Defaults to false."
+msgstr "`Strafing.SimulateBurst`决定发射过程中是否模拟`Burst`的表现，允许偏移开火坐标。仅当`Burst=1`或未指定时生效。默认否。"
+
+#: ../New-or-Enhanced-Logics.md:1271
+msgid "Trajectory speed"
+msgstr "弹道速度"
+
+#: ../New-or-Enhanced-Logics.md:1273
+msgid ""
+"This sets projectile speed used by custom [projectile trajectories"
+"](#projectile-trajectories)."
+msgstr "用来设定自定义[抛射体轨迹](#projectile-trajectories)的速度。"
+
+#: ../New-or-Enhanced-Logics.md:1281
+msgid "Weapon targeting filter"
+msgstr "武器瞄准筛选"
+
+#: ../New-or-Enhanced-Logics.md:1283
+msgid ""
+"You can now specify which targets or houses a weapon can fire at. This "
+"also affects weapon selection, other than certain special cases where the"
+" selection is fixed."
+msgstr "现在可以指定武器可以攻击什么目标或所属方。这也会影响武器选择，除了某些固定情况。"
+
+#: ../New-or-Enhanced-Logics.md:1284
+msgid ""
+"Note that `CanTarget` explicitly requires either `all` or `empty` to be "
+"listed for the weapon to be able to fire at cells containing no "
+"TechnoTypes."
+msgstr "请注意，`CanTarget`需要`all`或`empty`以使武器能向没有单位的格子开火。"
+
+#: ../New-or-Enhanced-Logics.md:1300
+msgid ""
+"Launch superweapons on impact"
+msgstr "发射超武"
+
+#: ../New-or-Enhanced-Logics.md:1301
+msgid ""
+"Superweapons can now be launched when a warhead is detonated."
+msgstr "超武在对应常规弹头所引爆的格子上发射"
+
+#: ../New-or-Enhanced-Logics.md:1302
+msgid ""
+"`LaunchSW` specifies the superweapons to launch"
+" when the warhead is detonated."
+msgstr "`LaunchSW` 指定所要发射的超武"
+
+#: ../New-or-Enhanced-Logics.md:1303
+msgid ""
+"`LaunchSW.RealLaunch` controls whether the owner who fired "
+"the warhead must own all listed superweapons "
+"and sufficient fund to support `Money.Amout`. "
+"Otherwise they will be launched out of nowhere."
+msgstr "`LaunchSW.RealLaunch` 真实发射指仅使用弹头所属方目前真正拥有的超武。否则超武将无条件发射到指定格子，即无视是否拥有，是否够钱，是否充能"
+
+#: ../New-or-Enhanced-Logics.md:1304
+msgid ""
+"`LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors` of each superweapon,"
+" otherwise only non-inhibited superweapons are launched. `SW.Designators` are always ignored."
+msgstr "`LaunchSW.IgnoreInhibitors` 是否忽略`SW.Inhibitors`"
+
+#: ../New-or-Enhanced-Logics.md:1305
+msgid ""
+"For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set."
+" Also, due to the nature of some superweapon types, not all superweapons are suitable for launch."
+msgstr "若在动画伤害上使用该逻辑则必须设置Invoker"
+
+#: ../New-or-Enhanced-Logics.md:1310
+msgid ""
+"Kill Object Automatically"
+msgstr "自毁"
+
+#: ../New-or-Enhanced-Logics.md:1311
+msgid ""
+"Objects can be destroyed automatically if *any* of these conditions is met:"
+msgstr "任意如下条件满足则可自毁："
+
+#: ../New-or-Enhanced-Logics.md:1312
+msgid ""
+"`OnAmmoDepletion`: The object will die if the remaining ammo reaches 0."
+msgstr "`OnAmmoDepletion`:没弹药；"
+
+#: ../New-or-Enhanced-Logics.md:1313
+msgid ""
+"`AfterDelay`: The object will die if the countdown (in frames) reaches 0."
+msgstr "`AfterDelay`: 时间到；"
+
+#: ../New-or-Enhanced-Logics.md:1314
+msgid ""
+"The auto-death behavior can be chosen from the following:"
+msgstr "自毁可从如下方式中选择："
+
+#: ../New-or-Enhanced-Logics.md:1315
+msgid ""
+"`kill`: The object will be destroyed normally."
+msgstr "`kill`: 正常被击杀；"
+
+#: ../New-or-Enhanced-Logics.md:1316
+msgid ""
+"`vanish`: The object will be directly removed from the game peacefully instead of actually getting killed."
+msgstr "`vanish`: 凭空消失；"
+
+#: ../New-or-Enhanced-Logics.md:1317
+msgid ""
+"`sell`: If the object is a **building** with buildup, it will be sold instead of destroyed."
+msgstr "`sell`: 如果是建筑则被变卖；"
+
+#: ../New-or-Enhanced-Logics.md:1318
+msgid ""
+"If this option is not set, the self-destruction logic will not be enabled."
+msgstr "若不明确指定则自毁逻辑不会开启。"
+
+#: ../New-or-Enhanced-Logics.md:1319
+msgid ""
+"Please notice that if the object is a unit which carries passengers,"
+" they will not be released even with the `kill` option."
+" This might change in the future if necessary."
+msgstr "若自毁的单位带乘客，则乘客不会逃逸"
+
+#: ../New-or-Enhanced-Logics.md:1320
+msgid ""
+"If the object enters transport, the countdown will continue, but it will not self-destruct inside the transport."
+msgstr "。"

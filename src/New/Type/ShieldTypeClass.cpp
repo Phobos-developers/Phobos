@@ -7,6 +7,16 @@ const char* Enumerable<ShieldTypeClass>::GetMainSection()
 	return "ShieldTypes";
 }
 
+AnimTypeClass* ShieldTypeClass::GetIdleAnimType(bool isDamaged, double healthRatio)
+{
+	auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio);
+
+	if (isDamaged && damagedAnim)
+		return damagedAnim;
+	else
+		return this->IdleAnim.Get(healthRatio);
+}
+
 void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = this->Name;
@@ -16,6 +26,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->Strength.Read(exINI, pSection, "Strength");
+	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
 	this->Armor.Read(exINI, pSection, "Armor");
 	this->Powered.Read(exINI, pSection, "Powered");
 
@@ -33,15 +44,24 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->IdleAnim_OfflineAction.Read(exINI, pSection, "IdleAnim.OfflineAction");
 	this->IdleAnim_TemporalAction.Read(exINI, pSection, "IdleAnim.TemporalAction");
 
-	this->IdleAnim.Read(exINI, pSection, "IdleAnim");
-	if (this->IdleAnim.Get() && this->IdleAnim->Bouncer)
-	{
-		Debug::Log("[Developer Warning]ShieldTypes don't support Bouncer=yes anims: [%s]IdleAnim=%s\r\n", pSection, this->IdleAnim->get_ID());
-		this->IdleAnim.Reset();
-	}
+	this->IdleAnim.Read(exINI, pSection, "IdleAnim.%s");
+	this->IdleAnimDamaged.Read(exINI, pSection, "IdleAnimDamaged.%s");
 
 	this->BreakAnim.Read(exINI, pSection, "BreakAnim");
 	this->HitAnim.Read(exINI, pSection, "HitAnim");
+	this->BreakWeapon.Read(exINI, pSection, "BreakWeapon", true);
+
+	this->AbsorbPercent.Read(exINI, pSection, "AbsorbPercent");
+	this->PassPercent.Read(exINI, pSection, "PassPercent");
+
+	this->AllowTransfer.Read(exINI, pSection, "AllowTransfer");
+
+	this->Pips.Read(exINI, pSection, "Pips");
+	this->Pips_Background.Read(exINI, pSection, "Pips.Background");
+	this->Pips_Building.Read(exINI, pSection, "Pips.Building");
+	this->Pips_Building_Empty.Read(exINI, pSection, "Pips.Building.Empty");
+
+	this->ImmuneToBerserk.Read(exINI, pSection, "ImmuneToBerserk");
 }
 
 template <typename T>
@@ -49,6 +69,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Strength)
+		.Process(this->InitialStrength)
 		.Process(this->Armor)
 		.Process(this->Powered)
 		.Process(this->Respawn)
@@ -62,6 +83,15 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->IdleAnim)
 		.Process(this->BreakAnim)
 		.Process(this->HitAnim)
+		.Process(this->BreakWeapon)
+		.Process(this->AbsorbPercent)
+		.Process(this->PassPercent)
+		.Process(this->AllowTransfer)
+		.Process(this->Pips)
+		.Process(this->Pips_Background)
+		.Process(this->Pips_Building)
+		.Process(this->Pips_Building_Empty)
+		.Process(this->ImmuneToBerserk)
 		;
 }
 

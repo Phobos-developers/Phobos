@@ -6,16 +6,19 @@ This page describes every change in Phobos that wasn't categorized into a proper
 
 ### Dump Object Info
 
-![image](_static/images/objectinfo-01.png)  
+![image](_static/images/objectinfo-01.png)
 *Object info dump from [CnC: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
 
-- There's a new hotkey to dump selected/hovered object info on press. Available only when the debug tag is set.
+- There's a new hotkey to dump selected/hovered object info on press. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
 
-In `rulesmd.ini`:
-```ini
-[GlobalControls]
-DebugKeysEnabled=yes ; boolean
-```
+### Display Damage Numbers
+
+- There's a new hotkey to show exact numbers of damage dealt on units & buildings. The numbers are shown in red (blue against shields) for damage, and for healing damage in green (cyan against shields). They are shown on the affected units and will move upwards after appearing. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
+
+### Frame Step In
+
+- There's a new hotkey to execute the game frame by frame for development usage.
+	- You can switch to frame by frame mode and then use frame step in command to forward 1, 5, 10, 15, 30 or 60 frames by one hit.
 
 ### Semantic locomotor aliases
 

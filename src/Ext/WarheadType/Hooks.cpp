@@ -4,21 +4,30 @@
 #include <ScenarioClass.h>
 #include <HouseClass.h>
 
+#include <Ext/Bullet/Body.h>
+#include <Ext/Techno/Body.h>
+#include <Ext/WeaponType/Body.h>
+#include <Utilities/EnumFunctions.h>
+
 #pragma region DETONATION
 
 bool DetonationInDamageArea = true;
 
 DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 {
-	GET(BulletClass* const, pThis, ESI);
+	GET(BulletClass* const, pBullet, ESI);
 
-	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH))
+	auto const pBulletExt = pBullet ? BulletExt::ExtMap.Find(pBullet) : nullptr;
+	auto const pWH = pBullet ? pBullet->WH : nullptr;
+
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
 	{
 		GET_BASE(const CoordStruct*, pCoords, 0x8);
-		auto const pTechno = pThis ? pThis->Owner : nullptr;
-		auto const pHouse = pTechno ? pTechno->Owner : nullptr;
+		auto const pOwner = pBullet->Owner;
+		auto const pHouse = pOwner ? pOwner->Owner : nullptr;
+		auto const pDecidedHouse = pHouse ? pHouse : pBulletExt->FirerHouse;
 
-		pWHExt->Detonate(pTechno, pHouse, pThis, *pCoords);
+		pWHExt->Detonate(pOwner, pDecidedHouse, pBulletExt, *pCoords);
 	}
 
 	DetonationInDamageArea = false;
@@ -40,7 +49,7 @@ DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 		// GET_BASE(const bool, AffectsTiberium, 0x10);
 
 		GET_BASE(const WarheadTypeClass*, pWH, 0x0C);
-		
+
 		if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
 		{
 			GET(const CoordStruct*, pCoords, ECX);
@@ -50,19 +59,19 @@ DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 			auto const pDecidedHouse = !pHouse && pOwner ? pOwner->Owner : pHouse;
 
 			pWHExt->Detonate(pOwner, pDecidedHouse, nullptr, *pCoords);
-		}	
+		}
 	}
 
 	return 0;
 }
 #pragma endregion
 
-DEFINE_HOOK(0x48A512, WarheadTypeClass_AnimList_SplashList, 0x6)
+DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-	if (pWHExt && pThis->Conventional && pWHExt->SplashList.size())
+	if (pWHExt && pWHExt->SplashList.size())
 	{
 		GET(int, nDamage, ECX);
 		int idx = pWHExt->SplashList_PickRandom ?
@@ -88,10 +97,10 @@ DEFINE_HOOK(0x48A5B3, WarheadTypeClass_AnimList_CritAnim, 0x6)
 	GET(WarheadTypeClass* const, pThis, ESI);
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-	if (pWHExt && !(pWHExt->Crit_Chance < pWHExt->RandomBuffer) && pWHExt->Crit_AnimList.size())
+	if (pWHExt && pWHExt->HasCrit && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
 	{
 		GET(int, nDamage, ECX);
-		int idx = pThis->EMEffect || pWHExt->AnimList_PickRandom ?
+		int idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom) ?
 			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_AnimList.size() - 1) :
 			std::min(pWHExt->Crit_AnimList.size() * 25 - 1, (size_t)nDamage) / 25;
 		R->EAX(pWHExt->Crit_AnimList[idx]);
@@ -101,19 +110,16 @@ DEFINE_HOOK(0x48A5B3, WarheadTypeClass_AnimList_CritAnim, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6FC339, TechnoClass_CanFire_InsufficientFunds, 0x6)
+DEFINE_HOOK(0x4896EC, Explosion_Damage_DamageSelf, 0x6)
 {
-	GET(TechnoClass*, pThis, ESI);
-	GET(WeaponTypeClass*, pWeapon, EDI);
+	enum { SkipCheck = 0x489702 };
 
-	// Checking for nulptr is not required here, since the game has already executed them before calling the hook
-	const auto pWH = pWeapon->Warhead;
+	GET_BASE(WarheadTypeClass*, pWarhead, 0xC);
 
-	if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead))
 	{
-		const int nMoney = pWHExt->TransactMoney;
-		if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
-			return 0x6FCB7E;
+		if (pWHExt->AllowDamageOnSelf)
+			return SkipCheck;
 	}
 
 	return 0;

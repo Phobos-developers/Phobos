@@ -1,9 +1,63 @@
 #include "Body.h"
 
+#include <SessionClass.h>
+
 template<> const DWORD Extension<ScenarioClass>::Canary = 0xABCD1595;
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
 bool ScenarioExt::CellParsed = false;
+
+void ScenarioExt::ExtData::SetVariableToByID(bool bIsGlobal, int nIndex, char bState)
+{
+	auto& dict = Global()->Variables[bIsGlobal];
+
+	auto itr = dict.find(nIndex);
+
+	if (itr != dict.end() && itr->second.Value != bState)
+	{
+		itr->second.Value = bState;
+		ScenarioClass::Instance->VariablesChanged = true;
+		if (!bIsGlobal)
+			TagClass::NotifyLocalChanged(nIndex);
+		else
+			TagClass::NotifyGlobalChanged(nIndex);
+	}
+}
+
+void ScenarioExt::ExtData::GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut)
+{
+	auto& dict = Global()->Variables[bIsGlobal];
+
+	auto itr = dict.find(nIndex);
+	if (itr != dict.end())
+		*pOut = static_cast<char>(itr->second.Value);
+}
+
+void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
+{
+	if (!bIsGlobal) // Local variables need to be read again
+		Global()->Variables[false].clear();
+	else if (Global()->Variables[true].size() != 0) // Global variables had been loaded, DO NOT CHANGE THEM
+		return;
+
+	int nCount = pINI->GetKeyCount("VariableNames");
+	for (int i = 0; i < nCount; ++i)
+	{
+		auto pKey = pINI->GetKeyName("VariableNames", i);
+		int nIndex;
+		if (sscanf_s(pKey, "%d", &nIndex) == 1)
+		{
+			auto& var = Global()->Variables[bIsGlobal][nIndex];
+			pINI->ReadString("VariableNames", pKey, pKey, Phobos::readBuffer);
+			char* buffer;
+			strcpy_s(var.Name, strtok_s(Phobos::readBuffer, ",", &buffer));
+			if (auto pState = strtok_s(nullptr, ",", &buffer))
+				var.Value = atoi(pState);
+			else
+				var.Value = 0;
+		}
+	}
+}
 
 void ScenarioExt::Allocate(ScenarioClass* pThis)
 {
@@ -29,7 +83,7 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// INI_EX exINI(pINI);
 
-	
+
 
 }
 
@@ -38,6 +92,9 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Waypoints)
+		.Process(this->Variables[0])
+		.Process(this->Variables[1])
+		.Process(SessionClass::Instance->Config)
 		;
 }
 
@@ -72,6 +129,10 @@ DEFINE_HOOK(0x683549, ScenarioClass_CTOR, 0x9)
 	GET(ScenarioClass*, pItem, EAX);
 
 	ScenarioExt::Allocate(pItem);
+
+	ScenarioExt::Global()->Waypoints.clear();
+	ScenarioExt::Global()->Variables[0].clear();
+	ScenarioExt::Global()->Variables[1].clear();
 
 	return 0;
 }
@@ -130,7 +191,7 @@ DEFINE_HOOK(0x68945B, ScenarioClass_Save_Suffix, 0x8)
 DEFINE_HOOK(0x68AD62, ScenarioClass_LoadFromINI, 0x6)
 {
 	GET(ScenarioClass*, pItem, ESI);
-	GET_STACK(CCINIClass*, pINI, STACK_OFFS(0x38, -0x8));
+	GET_STACK(CCINIClass*, pINI, STACK_OFFSET(0x38, 0x8));
 
 	ScenarioExt::LoadFromINIFile(pItem, pINI);
 	return 0;

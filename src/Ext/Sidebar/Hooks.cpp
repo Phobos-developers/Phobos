@@ -28,7 +28,7 @@ DEFINE_HOOK(0x6A5EA1, SidebarClass_UnloadShapes_AdditionalFiles, 0x5)
 			SidebarExt::TabProducingProgress[i] = nullptr;
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -36,8 +36,8 @@ DEFINE_HOOK(0x6A6EB1, SidebarClass_DrawIt_ProducingProgress, 0x6)
 {
 	if (Phobos::UI::ShowProducingProgress)
 	{
-		auto pPlayer = HouseClass::Player();
-		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::Player->SideIndex));
+		auto pPlayer = HouseClass::CurrentPlayer();
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::CurrentPlayer->SideIndex));
 		int XOffset = pSideExt->Sidebar_GDIPositions ? 29 : 32;
 		int XBase = (pSideExt->Sidebar_GDIPositions ? 26 : 20) + pSideExt->Sidebar_ProducingProgress_Offset.Get().X;
 		int YBase = 197 + pSideExt->Sidebar_ProducingProgress_Offset.Get().Y;
@@ -72,7 +72,7 @@ DEFINE_HOOK(0x6A6EB1, SidebarClass_DrawIt_ProducingProgress, 0x6)
 				if (idxFrame != -1)
 				{
 					DSurface::Sidebar()->DrawSHP(FileSystem::SIDEBAR_PAL, pSHP, idxFrame, &vPos,
-						&sidebarRect, BlitterFlags::bf_400, 0, 0, ZGradientDescIndex::Flat, 1000, 0, 0, 0, 0, 0);
+						&sidebarRect, BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 				}
 			}
 		}

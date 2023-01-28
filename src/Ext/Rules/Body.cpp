@@ -3,9 +3,10 @@
 #include <Utilities/TemplateDef.h>
 #include <FPSCounter.h>
 #include <GameOptionsClass.h>
-
+#include <GameStrings.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
+#include <New/Type/LaserTrailTypeClass.h>
 
 template<> const DWORD Extension<RulesClass>::Canary = 0x12341234;
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
@@ -29,6 +30,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
 	RadTypeClass::LoadFromINIList(pINI);
 	ShieldTypeClass::LoadFromINIList(pINI);
+	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
 
 	Data->LoadBeforeTypeData(pThis, pINI);
 }
@@ -46,9 +48,10 @@ void RulesExt::ExtData::InitializeConstants()
 
 }
 
+// earliest loader - can't really do much because nothing else is initialized yet, so lookups won't work
 void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 {
-	// earliest loader - can't really do much because nothing else is initialized yet, so lookups won't work
+
 }
 
 void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
@@ -58,12 +61,89 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	if (!pData)
 		return;
 
+	const char* sectionAITargetTypes = "AITargetTypes";
+	const char* sectionAIScriptsList = "AIScriptsList";
+
 	INI_EX exINI(pINI);
 
-	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
-	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
-	this->Pips_Shield_Buildings.Read(exINI, "AudioVisual", "Pips.Shield.Building");
-	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
+	this->Storage_TiberiumIndex.Read(exINI, GameStrings::General, "Storage.TiberiumIndex");
+	this->InfantryGainSelfHealCap.Read(exINI, GameStrings::General, "InfantryGainSelfHealCap");
+	this->UnitsGainSelfHealCap.Read(exINI, GameStrings::General, "UnitsGainSelfHealCap");
+	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
+	this->UseGlobalRadApplicationDelay.Read(exINI, GameStrings::Radiation, "UseGlobalRadApplicationDelay");
+	this->RadApplicationDelay_Building.Read(exINI, GameStrings::Radiation, "RadApplicationDelay.Building");
+	this->RadWarhead_Detonate.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate");
+	this->RadHasOwner.Read(exINI, GameStrings::Radiation, "RadHasOwner");
+	this->RadHasInvoker.Read(exINI, GameStrings::Radiation, "RadHasInvoker");
+	this->MissingCameo.Read(pINI, GameStrings::AudioVisual, "MissingCameo");
+	this->JumpjetTurnToTarget.Read(exINI, "JumpjetControls", "TurnToTarget");
+
+	this->PlacementPreview.Read(exINI, GameStrings::AudioVisual, "PlacementPreview");
+	this->PlacementPreview_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementPreview.Translucency");
+	this->PlacementGrid_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.Translucency");
+	this->Pips_Shield.Read(exINI, GameStrings::AudioVisual, "Pips.Shield");
+	this->Pips_Shield_Background.Read(exINI, GameStrings::AudioVisual, "Pips.Shield.Background");
+	this->Pips_Shield_Building.Read(exINI, GameStrings::AudioVisual, "Pips.Shield.Building");
+	this->Pips_Shield_Building_Empty.Read(exINI, GameStrings::AudioVisual, "Pips.Shield.Building.Empty");
+	this->Pips_SelfHeal_Infantry.Read(exINI, GameStrings::AudioVisual, "Pips.SelfHeal.Infantry");
+	this->Pips_SelfHeal_Units.Read(exINI, GameStrings::AudioVisual, "Pips.SelfHeal.Units");
+	this->Pips_SelfHeal_Buildings.Read(exINI, GameStrings::AudioVisual, "Pips.SelfHeal.Buildings");
+	this->Pips_SelfHeal_Infantry_Offset.Read(exINI, GameStrings::AudioVisual, "Pips.SelfHeal.Infantry.Offset");
+	this->Pips_SelfHeal_Units_Offset.Read(exINI, GameStrings::AudioVisual, "Pips.SelfHeal.Units.Offset");
+	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, GameStrings::AudioVisual, "Pips.SelfHeal.Buildings.Offset");
+	this->ToolTip_Background_Color.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.Color");
+	this->ToolTip_Background_Opacity.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.Opacity");
+	this->ToolTip_Background_BlurSize.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.BlurSize");
+	this->RadialIndicatorVisibility.Read(exINI, GameStrings::AudioVisual, "RadialIndicatorVisibility");
+
+	this->AllowParallelAIQueues.Read(exINI, "GlobalControls", "AllowParallelAIQueues");
+	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
+	this->ForbidParallelAIQueues_Building.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Building");
+	this->ForbidParallelAIQueues_Infantry.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
+	this->ForbidParallelAIQueues_Navy.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Navy");
+	this->ForbidParallelAIQueues_Vehicle.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Vehicle");
+
+	this->IronCurtain_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KeptOnDeploy");
+
+	// Section AITargetTypes
+	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
+	for (int i = 0; i < itemsCount; ++i)
+	{
+		DynamicVectorClass<TechnoTypeClass*> objectsList;
+		char* context = nullptr;
+		pINI->ReadString(sectionAITargetTypes, pINI->GetKeyName(sectionAITargetTypes, i), "", Phobos::readBuffer);
+
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			TechnoTypeClass* buffer;
+			if (Parser<TechnoTypeClass*>::TryParse(cur, &buffer))
+				objectsList.AddItem(buffer);
+			else
+				Debug::Log("DEBUG: [AITargetTypes][%d]: Error parsing [%s]\n", AITargetTypesLists.Count, cur);
+		}
+
+		AITargetTypesLists.AddItem(objectsList);
+		objectsList.Clear();
+	}
+
+	// Section AIScriptsList
+	int scriptitemsCount = pINI->GetKeyCount(sectionAIScriptsList);
+	for (int i = 0; i < scriptitemsCount; ++i)
+	{
+		DynamicVectorClass<ScriptTypeClass*> objectsList;
+
+		char* context = nullptr;
+		pINI->ReadString(sectionAIScriptsList, pINI->GetKeyName(sectionAIScriptsList, i), "", Phobos::readBuffer);
+
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			ScriptTypeClass* pNewScript = GameCreate<ScriptTypeClass>(cur);
+			objectsList.AddItem(pNewScript);
+		}
+
+		AIScriptsLists.AddItem(objectsList);
+		objectsList.Clear();
+	}
 }
 
 // this runs between the before and after type data loading methods for rules ini
@@ -109,10 +189,46 @@ template <typename T>
 void RulesExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->Pips_Shield)
-		.Process(this->Pips_Shield_Buildings)
+		.Process(this->AITargetTypesLists)
+		.Process(this->AIScriptsLists)
+		.Process(this->HarvesterTypes)
+		.Process(this->Storage_TiberiumIndex)
+		.Process(this->InfantryGainSelfHealCap)
+		.Process(this->UnitsGainSelfHealCap)
+		.Process(this->UseGlobalRadApplicationDelay)
 		.Process(this->RadApplicationDelay_Building)
+		.Process(this->RadWarhead_Detonate)
+		.Process(this->RadHasOwner)
+		.Process(this->RadHasInvoker)
+		.Process(this->JumpjetCrash)
+		.Process(this->JumpjetNoWobbles)
+		.Process(this->JumpjetAllowLayerDeviation)
+		.Process(this->JumpjetTurnToTarget)
 		.Process(this->MissingCameo)
+		.Process(this->PlacementGrid_Translucency)
+		.Process(this->PlacementPreview)
+		.Process(this->PlacementPreview_Translucency)
+		.Process(this->Pips_Shield)
+		.Process(this->Pips_Shield_Background)
+		.Process(this->Pips_Shield_Building)
+		.Process(this->Pips_Shield_Building_Empty)
+		.Process(this->Pips_SelfHeal_Infantry)
+		.Process(this->Pips_SelfHeal_Units)
+		.Process(this->Pips_SelfHeal_Buildings)
+		.Process(this->Pips_SelfHeal_Infantry_Offset)
+		.Process(this->Pips_SelfHeal_Units_Offset)
+		.Process(this->Pips_SelfHeal_Buildings_Offset)
+		.Process(this->AllowParallelAIQueues)
+		.Process(this->ForbidParallelAIQueues_Aircraft)
+		.Process(this->ForbidParallelAIQueues_Building)
+		.Process(this->ForbidParallelAIQueues_Infantry)
+		.Process(this->ForbidParallelAIQueues_Navy)
+		.Process(this->ForbidParallelAIQueues_Vehicle)
+		.Process(this->IronCurtain_KeptOnDeploy)
+		.Process(this->ToolTip_Background_Color)
+		.Process(this->ToolTip_Background_Opacity)
+		.Process(this->ToolTip_Background_BlurSize)
+		.Process(this->RadialIndicatorVisibility)
 		;
 }
 
@@ -202,6 +318,12 @@ DEFINE_HOOK(0x675205, RulesClass_Save_Suffix, 0x8)
 
 	return 0;
 }
+
+// DEFINE_HOOK(0x52D149, InitRules_PostInit, 0x5)
+// {
+// 	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
+// 	return 0;
+// }
 
 DEFINE_HOOK(0x668BF0, RulesClass_Addition, 0x5)
 {

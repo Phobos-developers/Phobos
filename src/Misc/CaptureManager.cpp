@@ -71,7 +71,7 @@ bool CaptureManager::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarge
 	return false;
 }
 
-bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTarget, 
+bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTarget,
 	bool bRemoveFirst, AnimTypeClass* pControlledAnimType)
 {
 	if (CaptureManager::CanCapture(pManager, pTarget))
@@ -106,7 +106,7 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 				auto const pBld = abstract_cast<BuildingClass*>(pTarget);
 				auto const pType = pTarget->GetTechnoType();
 				CoordStruct location = pTarget->GetCoords();
-				
+
 				if (pBld)
 					location.Z += pBld->Type->Height * Unsorted::LevelHeight;
 				else
@@ -118,9 +118,21 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 					{
 						pTarget->MindControlRingAnim = pAnim;
 						pAnim->SetOwnerObject(pTarget);
-						
+
 						if (pBld)
 							pAnim->ZAdjust = -1024;
+					}
+				}
+
+				pTarget->SetTarget(nullptr);
+
+				if (pManager->Owner->Owner->IsControlledByHuman())
+				{
+					if (auto pTargetFoot = abstract_cast<FootClass*>(pTarget))
+					{
+						pTargetFoot->QueueMission(Mission::Guard, false);
+						pTargetFoot->SetDestination(pTarget->GetCell(), true);
+						pTargetFoot->NextMission();
 					}
 				}
 
@@ -135,17 +147,15 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 
 bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTechno, AnimTypeClass* pControlledAnimType)
 {
-	if (pTechno)
+	if (const auto pTarget = abstract_cast<TechnoClass*>(pTechno))
 	{
-		const auto pTarget = pTechno->AbsDerivateID & AbstractFlags::Techno ? pTechno : nullptr;
-
 		bool bRemoveFirst = false;
 		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
 			bRemoveFirst = pTechnoTypeExt->MultiMindControl_ReleaseVictim;
 
 		return CaptureManager::CaptureUnit(pManager, pTarget, bRemoveFirst, pControlledAnimType);
 	}
-	
+
 	return false;
 }
 

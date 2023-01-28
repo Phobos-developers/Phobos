@@ -1,0 +1,459 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, The Phobos Contributors
+# This file is distributed under the same license as the Phobos package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Phobos \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-08-01 11:42+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../index.md:1
+msgid "General Info"
+msgstr "概况"
+
+#: ../index.md:1
+msgid "What's New"
+msgstr "新东西"
+
+#: ../index.md:1
+msgid "Contributing"
+msgstr "贡献"
+
+#: ../../README.md:76 ../index.md:1
+msgid "Credits"
+msgstr "工作人员名单表"
+
+#: ../index.md:1
+msgid "License"
+msgstr "许可证"
+
+#: ../index.md:1
+msgid "Project Info"
+msgstr "项目信息"
+
+#: ../index.md:11
+msgid "New / Enhanced Logics"
+msgstr "新增或增强的逻辑"
+
+#: ../index.md:11
+msgid "Fixed / Improved Logics"
+msgstr "修复或改进的逻辑"
+
+# ：../index.md:11
+#: ../index.md:11
+msgid "AI Scripting and Mapping"
+msgstr "触发和动作脚本"
+
+#: ../index.md:11
+msgid "User Interface"
+msgstr "用户界面"
+
+#: ../index.md:11
+msgid "Miscellanous"
+msgstr "杂项"
+
+#: ../index.md:11
+msgid "Extension Documentation"
+msgstr "扩展说明书"
+
+#: ../../README.md:1
+msgid "![Phobos YR Engine Extension](logo.png)"
+msgstr ""
+
+#: ../../README.md:1
+msgid "Phobos YR Engine Extension"
+msgstr "火卫一尤里的复仇引擎扩展"
+
+#: ../../README.md:3
+msgid ""
+"[![Github All Releases](https://img.shields.io/github/downloads/Phobos-"
+"developers/Phobos/total.svg)](https://github.com/Phobos-"
+"developers/Phobos/releases) [![Docs "
+"status](https://readthedocs.org/projects/phobos/badge/?version=latest)](https://phobos.readthedocs.io/en/latest/?badge=latest)"
+" [![Workflow](https://img.shields.io/github/workflow/status/Phobos-"
+"developers/Phobos/Nightly%20Build.svg)](https://github.com/Phobos-"
+"developers/Phobos/actions) [![EditorConfig](https://github.com/Phobos-"
+"developers/Phobos/workflows/EditorConfig/badge.svg)](https://github.com"
+"/Phobos-developers/Phobos/actions?query=workflow%3AEditorConfig) "
+"[![license](https://img.shields.io/github/license/Phobos-"
+"developers/Phobos.svg)](https://www.gnu.org/licenses/lgpl-3.0.en.html)"
+msgstr ""
+
+#: ../../README.md:3
+msgid "Github All Releases"
+msgstr ""
+
+#: ../../README.md:3
+msgid "Docs status"
+msgstr ""
+
+#: ../../README.md:3
+msgid "Workflow"
+msgstr ""
+
+#: ../../README.md:3
+msgid "EditorConfig"
+msgstr ""
+
+#: ../../README.md:3
+msgid "license"
+msgstr ""
+
+#: ../../README.md:9
+msgid "Phobos"
+msgstr "火卫一"
+
+#: ../../README.md:10
+msgid ""
+"...is a community engine extension project providing a set of new "
+"features and fixes for Yuri's Revenge based on [modified "
+"YRpp](https://github.com/Metadorius/YRpp) and "
+"[Syringe](https://github.com/Ares-Developers/Syringe) to allow injecting "
+"code. It's meant to accompany [Ares](https://github.com/Ares-"
+"Developers/Ares) rather than replace it, thus it won't introduce "
+"incompatibilities."
+msgstr ""
+"...（Phobos，福波斯）是一个还在开发中的基于[自定义 "
+"YRpp](https://github.com/Metadorius/YRpp)与[注射器](https://github.com/Ares-"
+"Developers/Syringe)的社区项目，旨在为尤里的复仇提供一些新功能或修复bug。这意味着它可以与[战神 "
+"(Ares，火星，阿瑞斯)](https://github.com/Ares-"
+"Developers/Ares)平台共同使用，而非替代，也因此并不会产生不兼容性。"
+
+#: ../../README.md:12
+msgid ""
+"While Phobos is independent of Ares and does NOT require Ares "
+"specifically to function, Phobos complements some of the features found "
+"in Ares and vice versa."
+msgstr "尽管火卫一独立于/不需要Ares平台即可生效，火卫一仍完善了一些Ares中的功能，反之亦然。"
+
+#: ../../README.md:14
+msgid ""
+"You can discuss the project at a dedicated [channel on C&C Mod "
+"Haven](https://discord.gg/sZeMzz6qVg)."
+msgstr "你可以在Discord的[C&C Mod Haven](https://discord.gg/sZeMzz6qVg)服务器中的特定频道讨论此平台。"
+
+#: ../../README.md:16
+msgid "Downloads"
+msgstr "下载"
+
+#: ../../README.md:19
+msgid "You can choose one of the following:"
+msgstr "你可以选择以下方式："
+
+#: ../../README.md:20
+msgid ""
+"[Latest stable branch build](https://github.com/Phobos-"
+"developers/Phobos/releases/latest) (most bug-free release but very slow "
+"on new features)"
+msgstr ""
+"[最新的稳定分支版本](https://github.com/Phobos-developers/Phobos/releases/latest) "
+"（Bug最少的发布版，但新功能缓慢）"
+
+#: ../../README.md:21
+msgid ""
+"[Latest development branch builds](https://github.com/Phobos-"
+"developers/Phobos/releases) (a bit less bug-free releases, devbuilds get "
+"new features when they are finished)"
+msgstr ""
+"[最新的开发分支版本](https://github.com/Phobos-developers/Phobos/releases) "
+"（Bug较少的开发版本，拥有完成后的新功能）"
+
+#: ../../README.md:22
+msgid ""
+"[Latest development branch nightly](https://nightly.link/Phobos-"
+"developers/Phobos/blob/develop/.github/workflows/nightly.yml) (added "
+"unreleased features that will be in next devbuild)"
+msgstr ""
+"[最新的开发分支生成](https://nightly.link/Phobos-"
+"developers/Phobos/blob/develop/.github/workflows/nightly.yml) "
+"（有许多会在下一个开发版本中加入的未发布功能）"
+
+#: ../../README.md:23
+msgid ""
+"Individual new feature nightly builds for testing can be found in [pull "
+"requests](https://github.com/Phobos-developers/Phobos/pulls)"
+msgstr "独立的新逻辑可以在其对应的[拉取请求](https://github.com/Phobos-developers/Phobos/pulls)中找到"
+
+#: ../../README.md:25
+msgid "Note on nightly builds"
+msgstr "每日生成须知"
+
+#: ../../README.md:27
+msgid ""
+"Last two listed versions are bleeding edge (don't redistribute them "
+"outside of testing!) and have build information (commit and branch/tag) "
+"in them which is displayed ingame and can't be turned off. You can get a "
+"build for development branch (link above) any up-to-date pull request via"
+" an automatic bot comment that would appear in it and would contain the "
+"most recent successfully compiled version of Phobos for that feature "
+"branch. Please note that the build is  produced *only if the PR has no "
+"merge conflicts*. Alternatively, you can get an artifact manually from "
+"GitHub Actions runs. You can get an artifact for a specific commit which "
+"is built automatically with a GitHub Actions workflow, just press on a "
+"green tick, open the workflow, find and download the build artifact. This"
+" is limited to authorized users only."
+msgstr ""
+"上列后两个版本是最最前沿的（因此不要在测试之外使用它们！）并且其中包含生成信息（提交和分支/标签），这些信息在游戏中常驻显示并且无法关闭。你可以通过任何最新的拉取请求中的自动注释获取其开发分支生成（上面的链接），该注释将包含该功能分支的最新成功编译的火卫一版本。此外，你也可以从"
+" GitHub Actions 运行手动获取工件。你可以获得通过 GitHub Actions "
+"工作流自动生成的特定提交的工件，只需点击绿色勾，打开工作流，找到并下载生成工件，仅限注册用户。"
+
+#: ../../README.md:29
+msgid "Installation and Usage"
+msgstr "安装与使用"
+
+#: ../../README.md:32
+msgid ""
+"If you don't have Syringe installed into your mod already, you can "
+"download it together with the [latest Ares "
+"package](https://launchpad.net/ares/+download). To install simply drop "
+"`Syringe.exe` into your game folder (where your `gamemd.exe` is located)."
+" It's highly recommended to **install Ares** too to get full Phobos "
+"feature set, just drop all the files from the archive except "
+"documentation folder into your game folder."
+msgstr "如果你的mod尚未安装注射器，可以与[最新版的Ares包](https://launchpad.net/ares/+download)一同下载。只需将`Syringe.exe`拖入游戏根目录（即`gamemd.exe`所在的目录）。十分推荐**安装Ares**以得到完整的火卫一功能集，只需要把刚刚下载的文件中除了说明书以外的所有东西拖入游戏根目录即可。"
+
+#: ../../README.md:33
+msgid ""
+"Obtain a Phobos \"package\" (official builds can be found on [releases "
+"page](https://github.com/Phobos-developers/Phobos/releases); read below "
+"to learn how to get nightly builds). You should end up with two files: "
+"`Phobos.dll` and `Phobos.pdb`."
+msgstr "获得一个火卫一“包”（官方版本可以在发布页面上找到；阅读下面的内容以了解如何获得每日生成）。你应该会得到两个文件：`Phobos.dll`和`Phobos.pdb`。"
+
+#: ../../README.md:34
+msgid "Place those files in the game folder (where your `gamemd.exe` is located)."
+msgstr "将这些文件放置在游戏根目录中。"
+
+#: ../../README.md:35
+msgid ""
+"To launch the game with Phobos (and all other installed Syringe-"
+"compatible engine extensions including Ares) you need to execute "
+"`Syringe.exe \"gamemd.exe\" [command line arguments for gamemd.exe]` in "
+"command line (omit arguments if you don't need any). `RunAres.bat` from "
+"Ares package does the same so you may use that as well."
+msgstr ""
+"要使用火卫一（及所有其他已安装的Syringe兼容引擎扩展，包括 Ares）启动游戏，您需要在命令行中执行`Syringe.exe "
+"\"gamemd.exe\" "
+"[gamemd.exe的命令行参数]`（如果不需要，请省略参数）。Ares包中的`RunAres.bat`执行相同的操作，因此也可以直接使用它。"
+
+#: ../../README.md:37
+msgid ""
+"If you already use Ares in your mod, you just need to drop Phobos files "
+"mentioned above in your game folder, Syringe will load Phobos "
+"automatically. This also applies to mods using XNA client with Syringe; "
+"if your mod doesn't use Syringe and Ares (or you just haven't set up the "
+"client) yet we recommend to use [CnCNet client mod base by "
+"Starkku](https://github.com/Starkku/cncnet-client-mod-base) which is "
+"compatible with Ares and Phobos out of the box."
+msgstr ""
+"如果你的mod已经使用了Ares，那么直接将上文提到的火卫一文件拖入游戏根目录即可，注射器会自动载入火卫一。这也适用于使用XNA客户端和注射器的mod；如果你的mod没有使用注射器和Ares（或者只是尚未设置客户端），我们建议您使用"
+" [Starkku的CnCNet客户端mod基础](https://github.com/Starkku/cncnet-client-mod-"
+"base)，它开箱即用且与Ares和火卫一兼容。"
+
+#: ../../README.md:39
+msgid ""
+"Additional files and tools that you may need are located at [Phobos "
+"supplementaries repo](https://github.com/Phobos-"
+"developers/PhobosSupplementaries)."
+msgstr ""
+"可能会用到的其他的文件与工具在[火卫一组件库](https://github.com/Phobos-"
+"developers/PhobosSupplementaries)中。"
+
+#: ../../README.md:41
+msgid ""
+"By default Phobos doesn't do any very noticeable changes except a few "
+"bugfixes. To learn how to use Phobos features head over to official "
+"documentation."
+msgstr "默认情况下，除了一些错误修正外，火卫一不会做任何非常明显的变化。要了解如何使用火卫一功能，请访问官方说明书。"
+
+#: ../../README.md:43
+msgid "Documentation"
+msgstr "说明书"
+
+#: ../../README.md:46
+msgid ""
+"[Official docs](https://phobos.readthedocs.io) (also available in "
+"[Chinese](https://phobos.readthedocs.io/zh_CN/latest))"
+msgstr ""
+"[官方说明书](https://phobos.readthedocs.io/zh_CN/latest) "
+"（也支持[英文](https://phobos.readthedocs.io)）"
+
+#: ../../README.md:48
+msgid ""
+"You can switch between versions (displays latest develop nightly version "
+"by default) in the bottom left corner, as well as download a PDF version."
+msgstr "您可以在左下角进行版本间（默认显示最新的开发分支生成）的切换，也可以下载PDF版本。"
+
+#: ../../README.md:50
+msgid ""
+"The documentation is split by a few major categories, each represented "
+"with a page on the sidebar. Each page has its contents grouped into "
+"multiple subcategories, be it buildings, technotypes, infantries, "
+"superweapons or something else."
+msgstr "本说明书分为几个主要大类，分别列在侧边栏上，每类一页。每页中的内容分为一些子类，如建筑，科技类型，步兵，超级武器等等。"
+
+#: ../../README.md:52
+msgid "How to read code snippets"
+msgstr "如何阅读代码片段"
+
+#: ../../README.md:65
+msgid "Building manually"
+msgstr "手动生成"
+
+#: ../../README.md:68
+msgid ""
+"Install **Visual Studio** (2019 is recommended, 2017 is minimum) with the"
+" dependencies listed in `.vsconfig` (it will prompt you to install "
+"missing dependences when you open the project, or you can run VS "
+"installer and import the config). If you prefer to use **Visual Studio "
+"Code** you may install **VS Build Tools** with the dependencies from "
+"`.vsconfig` instead. Not using a code editor or IDE and building via "
+"**command line scripts** included with the project is also an option."
+msgstr ""
+"使用`.vsconfig`中列出的依赖项安装**Visual "
+"Studio**（建议2019，最低为2017）（打开项目时会提示安装缺少的依赖项，也可以运行VS安装程序并导入配置）。如果你更喜欢使用**Visual"
+" Studio Code**，也可以使用`.vsconfig`中的内容安装**VS Build "
+"Tools**。你也可以不使用任何代码编辑器或IDE，并通过项目中包含的命令行脚本进行构建。"
+
+#: ../../README.md:69
+msgid ""
+"Clone this repo recursively via your favorite git client (that will also "
+"clone YRpp)."
+msgstr "通过你最喜欢的git客户端递归克隆此库（这也将自动克隆YRpp）。"
+
+#: ../../README.md:70
+msgid "To build the extension:"
+msgstr "生成扩展："
+
+#: ../../README.md:71
+msgid ""
+"in Visual Studio: open the solution file in VS and build it (`Debug` "
+"build config is recommended);"
+msgstr "在Visual Studio中：打开解决方案然后生成（推荐使用`Debug`生成配置）；"
+
+#: ../../README.md:72
+msgid ""
+"in VSCode: open the project folder and hit `Run Build Task...` (`Ctrl + "
+"Shift + B`);"
+msgstr "在VSCode中：打开项目文件夹然后点击`运行生成任务`（`Ctrl + Shift + B`）；"
+
+#: ../../README.md:73
+msgid "barebones: run `scripts/build_debug.bat`."
+msgstr "其他：运行`scripts/build_debug.bat`。"
+
+#: ../../README.md:74
+msgid ""
+"Upon build completion the resulting `Phobos.dll` and `Phobos.pdb` would "
+"be placed in the subfolder identical to the name of the buildconfig "
+"executed."
+msgstr "生成完成后，生成的`Phobos.dll`和`Phobos.pdb`将放置在与执行的构建配置名称相同的子文件夹中。"
+
+#: ../../README.md:79
+msgid "Developers"
+msgstr "开发者"
+
+#: ../../README.md:80
+msgid "**Belonit (Gluk-v48)** - project author (retired)"
+msgstr "**Belonit (Gluk-v48)** - 项目作者（已退出）"
+
+#: ../../README.md:81
+msgid ""
+"**Kerbiter (Metadorius)** - project co-author, current maintainer "
+"([Patreon](http://patreon.com/kerbiter))"
+msgstr ""
+"**Kerbiter (Metadorius)** - "
+"项目合作作者，当前维护人员([Patreon](http://patreon.com/kerbiter))"
+
+#: ../../README.md:82
+msgid ""
+"**Uranusian (Thrifinesma)** - developer, CN community ambassador "
+"([Patreon](https://www.patreon.com/uranusian), "
+"[AliPay](http://tiebapic.baidu.com/forum/w%3D580/sign=4b04b953307f9e2f70351d002f31e962/b3f89909b3de9c823bd7f23a7b81800a18d84371.jpg))"
+msgstr ""
+"**Uranusian (Thrifinesma)** - "
+"开发者，中国社区大使([Patreon](https://www.patreon.com/uranusian), "
+"[AliPay](http://tiebapic.baidu.com/forum/w%3D580/sign=4b04b953307f9e2f70351d002f31e962/b3f89909b3de9c823bd7f23a7b81800a18d84371.jpg))"
+
+#: ../../README.md:83
+msgid "**secsome (SEC-SOME)** - developer"
+msgstr "**secsome (SEC-SOME)** - 开发者"
+
+#: ../../README.md:84
+msgid ""
+"**Otamaa (Fahroni, BoredEXE)** - developer "
+"([PayPal](https://paypal.me/GeneralOtama))"
+msgstr ""
+"**Otamaa (Fahroni, BoredEXE)** - 开发者 "
+"([PayPal](https://paypal.me/GeneralOtama))"
+
+#: ../../README.md:85
+msgid "**FS-21** - developer"
+msgstr "**FS-21** - 开发者"
+
+#: ../../README.md:86
+msgid "**Starkku** - developer"
+msgstr "**Starkku** - 开发者"
+
+#: ../../README.md:87
+msgid "**Morton (MortonPL)** - developer"
+msgstr "**Morton (MortonPL)** - 开发者"
+
+#: ../../README.md:89
+msgid "For all contributions see [full credits list](CREDITS.md)."
+msgstr "对于全部的贡献请见[完整的工作人员名单表](CREDITS.md)。"
+
+#: ../../README.md:91
+msgid ""
+"Thanks to everyone who uses Phobos, tests changes and reports bugs! You "
+"can show your appreciation and help project by displaying the logo "
+"(monochrome version can be found [here](https://github.com/Phobos-"
+"developers/Phobos/blob/develop/logo-mono.png)) in your client/launcher "
+"(make it open Phobos GitHub page for extra fanciness), linking to Phobos "
+"repository, contributing or donating to us via the links above."
+msgstr ""
+"感谢每一个使用火卫一，测试更新与反馈bug的人！你可以通过在客户端/启动器中显示logo（可以在[此处](https://github.com"
+"/Phobos-developers/Phobos/blob/develop/logo-"
+"mono.png))找到单色版本），链接火卫一库，以及通过上述链接贡献或对我们捐款来表达你对我们的赞赏和帮助。"
+
+#: ../../README.md:93
+msgid "Legal and License"
+msgstr "法律许可证"
+
+#: ../../README.md:96
+msgid ""
+"[![LGPL "
+"v3](https://www.gnu.org/graphics/lgplv3-147x51.png)](https://opensource.org/licenses/LGPL-3.0)"
+msgstr ""
+
+#: ../../README.md:96
+msgid "LGPL v3"
+msgstr ""
+
+#: ../../README.md:98
+msgid ""
+"The Phobos project is an unofficial open-source community collaboration "
+"project to extend the Red Alert 2 Yuri's Revenge engine for modding and "
+"compatibility purposes."
+msgstr "火卫一项目是一个非官方的开源社区合作项目，为了扩展红色警戒2尤里的复仇引擎以制作模组或兼容。"
+
+#: ../../README.md:100
+msgid ""
+"This project has no direct affiliation with Electronic Arts Inc. Command "
+"& Conquer, Command & Conquer Red Alert 2, Command & Conquer Yuri's "
+"Revenge are registered trademarks of Electronic Arts Inc. All Rights "
+"Reserved."
+msgstr "本项目与美国艺电公司没有直接隶属关系，命令与征服，命令与征服：红色警戒2，命令与征服：尤里的复仇是美国艺电公司的注册商标，美国艺电公司保有所有权利。"
+
+#~ msgid "Phobos YR Engine Extension"
+#~ msgstr "火卫一尤里的复仇引擎扩展"
+

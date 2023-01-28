@@ -14,6 +14,7 @@
 #include <FileFormats/SHP.h>
 #include <RulesClass.h>
 #include <SidebarClass.h>
+#include <Utilities/Constructs.h>
 
 #include "Swizzle.h"
 #include "Debug.h"
@@ -517,9 +518,9 @@ namespace Savegame
 	};
 
 	template <>
-	struct Savegame::PhobosStreamObject<CameoDataStruct>
+	struct Savegame::PhobosStreamObject<BuildType>
 	{
-		bool ReadFromStream(PhobosStreamReader& Stm, CameoDataStruct& Value, bool RegisterForChange) const
+		bool ReadFromStream(PhobosStreamReader& Stm, BuildType& Value, bool RegisterForChange) const
 		{
 			if (!Stm.Load(Value))
 				return false;
@@ -530,10 +531,24 @@ namespace Savegame
 			return true;
 		}
 
-		bool WriteToStream(PhobosStreamWriter& Stm, const CameoDataStruct& Value) const
+		bool WriteToStream(PhobosStreamWriter& Stm, const BuildType& Value) const
 		{
 			Stm.Save(Value);
 			return true;
+		}
+	};
+
+	template <>
+	struct Savegame::PhobosStreamObject<TranslucencyLevel>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, TranslucencyLevel*& Value, bool RegisterForChange) const
+		{
+			return Value->Load(Stm, RegisterForChange);
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, TranslucencyLevel* const& Value) const
+		{
+			return Value->Save(Stm);
 		}
 	};
 }
