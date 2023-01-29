@@ -503,7 +503,7 @@ namespace Savegame
 	};
 
 	template <>
-	struct Savegame::PhobosStreamObject<TranslucencyLevel>
+	struct Savegame::PhobosStreamObject<TranslucencyLevel*>
 	{
 		bool ReadFromStream(PhobosStreamReader& Stm, TranslucencyLevel*& Value, bool RegisterForChange) const
 		{
