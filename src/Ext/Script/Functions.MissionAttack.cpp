@@ -120,10 +120,10 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 
 			if (pTechnoType)
 			{
-				if (pTechnoType->WhatAmI() == AbstractType::AircraftType &&
-					!pFoot->IsInAir() &&
-					abstract_cast<AircraftTypeClass*>(pTechnoType)->AirportBound &&
-					pFoot->Ammo < pTechnoType->Ammo)
+				if (pTechnoType->WhatAmI() == AbstractType::AircraftType
+					&& !pFoot->IsInAir()
+					&& abstract_cast<AircraftTypeClass*>(pTechnoType)->AirportBound
+					&& pFoot->Ammo < pTechnoType->Ammo)
 				{
 					bAircraftsWithoutAmmo = true;
 				}
@@ -216,8 +216,8 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 
 					if (pFoot != selectedTarget && pFoot->Target != selectedTarget)
 					{
-						if (pTechnoType->Underwater && pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK &&
-							selectedTarget->GetCell()->LandType != LandType::Water) // Land not OK for the Naval unit
+						if (pTechnoType->Underwater && pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK
+							&& selectedTarget->GetCell()->LandType != LandType::Water) // Land not OK for the Naval unit
 						{
 							// Naval units like Submarines are unable to target ground targets
 							// except if they have anti-ground weapons. Ignore the attack
@@ -251,10 +251,10 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 						}
 
 						// Tanya / Commando C4 case
-						if ((pTechnoType->WhatAmI() == AbstractType::InfantryType &&
-							(abstract_cast<InfantryTypeClass*>(pTechnoType)->C4 ||
-								pFoot->HasAbility(Ability::C4))) &&
-							pFoot->GetCurrentMission() != Mission::Sabotage)
+						if ((pTechnoType->WhatAmI() == AbstractType::InfantryType
+							&& (abstract_cast<InfantryTypeClass*>(pTechnoType)->C4
+								|| pFoot->HasAbility(Ability::C4)))
+							&& pFoot->GetCurrentMission() != Mission::Sabotage)
 						{
 							pFoot->QueueMission(Mission::Sabotage, true);
 						}
@@ -301,10 +301,10 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 		bool isAirOK = pFocus->IsInAir() && leaderWeaponsHaveAA;
 		bool isGroundOK = !pFocus->IsInAir() && leaderWeaponsHaveAG;
 
-		if (IsUnitAvailable(pFocus, true, true) &&
-			!pFocus->GetTechnoType()->Immune &&
-			(isAirOK || isGroundOK) &&
-			(!pLeaderUnit->Owner->IsAlliedWith(pFocus) || IsUnitMindControlledFriendly(pLeaderUnit->Owner, pFocus)))
+		if (IsUnitAvailable(pFocus, true, true)
+			&& !pFocus->GetTechnoType()->Immune
+			&& (isAirOK || isGroundOK)
+			&& (!pLeaderUnit->Owner->IsAlliedWith(pFocus) || IsUnitMindControlledFriendly(pLeaderUnit->Owner, pFocus)))
 		{
 			bool bForceNextAction = false;
 
@@ -315,10 +315,10 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 				if (pTechnoType && IsUnitAvailable(pFoot, true, true))
 				{
 					// Aircraft case 1
-					if ((pTechnoType->WhatAmI() == AbstractType::AircraftType &&
-						static_cast<AircraftTypeClass*>(pTechnoType)->AirportBound) &&
-						pFoot->Ammo > 0 &&
-						(pFoot->Target != pFocus && !pFoot->InAir))
+					if ((pTechnoType->WhatAmI() == AbstractType::AircraftType
+						&& static_cast<AircraftTypeClass*>(pTechnoType)->AirportBound)
+						&& pFoot->Ammo > 0
+						&& (pFoot->Target != pFocus && !pFoot->InAir))
 					{
 						pFoot->SetTarget(pFocus);
 
@@ -326,9 +326,9 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 					}
 
 					// Naval units like Submarines are unable to target ground targets except if they have nti-ground weapons. Ignore the attack
-					if (pTechnoType->Underwater &&
-						pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK &&
-						pFocus->GetCell()->LandType != LandType::Water) // Land not OK for the Naval unit
+					if (pTechnoType->Underwater
+						&& pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK
+						&& pFocus->GetCell()->LandType != LandType::Water) // Land not OK for the Naval unit
 					{
 						pFoot->SetTarget(nullptr);
 						pFoot->SetDestination(nullptr, false);
@@ -339,9 +339,9 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 					}
 
 					// Aircraft case 2
-					if (pTechnoType->WhatAmI() == AbstractType::AircraftType &&
-						pFoot->GetCurrentMission() != Mission::Attack &&
-						pFoot->GetCurrentMission() != Mission::Enter)
+					if (pTechnoType->WhatAmI() == AbstractType::AircraftType
+						&& pFoot->GetCurrentMission() != Mission::Attack
+						&& pFoot->GetCurrentMission() != Mission::Enter)
 					{
 						if (pFoot->Ammo > 0)
 						{
@@ -359,9 +359,9 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 					}
 
 					// Tanya / Commando C4 case
-					if ((pTechnoType->WhatAmI() == AbstractType::InfantryType &&
-						abstract_cast<InfantryTypeClass*>(pTechnoType)->C4 ||
-						pFoot->HasAbility(Ability::C4)) && pFoot->GetCurrentMission() != Mission::Sabotage)
+					if ((pTechnoType->WhatAmI() == AbstractType::InfantryType
+						&& abstract_cast<InfantryTypeClass*>(pTechnoType)->C4
+						|| pFoot->HasAbility(Ability::C4)) && pFoot->GetCurrentMission() != Mission::Sabotage)
 					{
 						pFoot->QueueMission(Mission::Sabotage, true);
 
@@ -461,18 +461,18 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 			continue;
 
 		// Submarines aren't a valid target
-		if (object->CloakState == CloakState::Cloaked &&
-			objectType->Underwater &&
-			(pTechnoType->NavalTargeting == NavalTargetingType::Underwater_Never ||
-				pTechnoType->NavalTargeting == NavalTargetingType::Naval_None))
+		if (object->CloakState == CloakState::Cloaked
+			&& objectType->Underwater
+			&& (pTechnoType->NavalTargeting == NavalTargetingType::Underwater_Never
+				|| pTechnoType->NavalTargeting == NavalTargetingType::Naval_None))
 		{
 			continue;
 		}
 
 		// Land not OK for the Naval unit
-		if (objectType->Naval &&
-			pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK &&
-			(object->GetCell()->LandType != LandType::Water))
+		if (objectType->Naval
+			&& pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK
+			&& (object->GetCell()->LandType != LandType::Water))
 		{
 			continue;
 		}
@@ -485,13 +485,13 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 		if (!TechnoExt::AllowedTargetByZone(pTechno, object, pTypeExt->TargetZoneScanType, weaponType))
 			continue;
 
-		if (object != pTechno &&
-			IsUnitAvailable(object, true, true) &&
-			!objectType->Immune &&
-			!object->TemporalTargetingMe &&
-			!object->BeingWarpedOut &&
-			object->Owner != pTechno->Owner &&
-			(!pTechno->Owner->IsAlliedWith(object) || IsUnitMindControlledFriendly(pTechno->Owner, object)))
+		if (object != pTechno
+			&& IsUnitAvailable(object, true, true)
+			&& !objectType->Immune
+			&& !object->TemporalTargetingMe
+			&& !object->BeingWarpedOut
+			&& object->Owner != pTechno->Owner
+			&& (!pTechno->Owner->IsAlliedWith(object) || IsUnitMindControlledFriendly(pTechno->Owner, object)))
 		{
 			double value = 0;
 
@@ -634,9 +634,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 3:
 		// Harvester
 
-		if (!pTechno->Owner->IsNeutral() &&
-			((pTypeUnit && (pTypeUnit->Harvester || pTypeUnit->ResourceGatherer)) ||
-				(pTypeBuilding && pTypeBuilding->ResourceGatherer)))
+		if (!pTechno->Owner->IsNeutral()
+			&& ((pTypeUnit && (pTypeUnit->Harvester || pTypeUnit->ResourceGatherer))
+				|| (pTypeBuilding && pTypeBuilding->ResourceGatherer)))
 		{
 			return true;
 		}
@@ -654,10 +654,10 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 5:
 		// Vehicle, Aircraft, Deployed vehicle into structure
 
-		if (!pTechno->Owner->IsNeutral() &&
-			(buildingIsConsideredVehicle ||
-				pTechnoType->WhatAmI() == AbstractType::AircraftType ||
-				pTypeUnit))
+		if (!pTechno->Owner->IsNeutral()
+			&& (buildingIsConsideredVehicle
+				|| pTechnoType->WhatAmI() == AbstractType::AircraftType
+				|| pTypeUnit))
 		{
 			return true;
 		}
@@ -667,9 +667,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 6:
 		// Factory
 
-		if (!pTechno->Owner->IsNeutral() &&
-			pTypeBuilding &&
-			pTypeBuilding->Factory != AbstractType::None)
+		if (!pTechno->Owner->IsNeutral()
+			&& pTypeBuilding
+			&& pTypeBuilding->Factory != AbstractType::None)
 		{
 			return true;
 		}
@@ -679,9 +679,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 7:
 		// Defense
 
-		if (!pTechno->Owner->IsNeutral() &&
-			pTypeBuilding &&
-			pTypeBuilding->IsBaseDefense)
+		if (!pTechno->Owner->IsNeutral()
+			&& pTypeBuilding
+			&& pTypeBuilding->IsBaseDefense)
 		{
 			return true;
 		}
@@ -718,9 +718,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 9:
 		// Power Plant
 
-		if (!pTechno->Owner->IsNeutral() &&
-			pTypeBuilding &&
-			pTypeBuilding->PowerBonus > 0)
+		if (!pTechno->Owner->IsNeutral()
+			&& pTypeBuilding
+			&& pTypeBuilding->PowerBonus > 0)
 		{
 			return true;
 		}
@@ -755,12 +755,12 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 		}
 
 		// Other cases of civilian Tech Structures
-		if (pTypeBuilding &&
-			pTypeBuilding->Unsellable &&
-			pTypeBuilding->Capturable &&
-			pTypeBuilding->TechLevel < 0 &&
-			pTypeBuilding->NeedsEngineer &&
-			!pTypeBuilding->BridgeRepairHut)
+		if (pTypeBuilding
+			&& pTypeBuilding->Unsellable
+			&& pTypeBuilding->Capturable
+			&& pTypeBuilding->TechLevel < 0
+			&& pTypeBuilding->NeedsEngineer
+			&& !pTypeBuilding->BridgeRepairHut)
 		{
 			return true;
 		}
@@ -770,9 +770,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 12:
 		// Refinery
 
-		if (!pTechno->Owner->IsNeutral() &&
-			((pTypeUnit && !pTypeUnit->Harvester && pTypeUnit->ResourceGatherer) ||
-				(pTypeBuilding && (pTypeBuilding->Refinery || pTypeBuilding->ResourceGatherer))))
+		if (!pTechno->Owner->IsNeutral()
+			&& ((pTypeUnit && !pTypeUnit->Harvester && pTypeUnit->ResourceGatherer)
+				|| (pTypeBuilding && (pTypeBuilding->Refinery || pTypeBuilding->ResourceGatherer))))
 		{
 			return true;
 		}
@@ -784,9 +784,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 		pWeaponPrimary = TechnoExt::GetCurrentWeapon(pTechno);
 		pWeaponSecondary = TechnoExt::GetCurrentWeapon(pTechno, true);
 
-		if (!pTechno->Owner->IsNeutral() &&
-			((pWeaponPrimary && pWeaponPrimary->Warhead->MindControl) ||
-				(pWeaponSecondary && pWeaponSecondary->Warhead->MindControl)))
+		if (!pTechno->Owner->IsNeutral()
+			&& ((pWeaponPrimary && pWeaponPrimary->Warhead->MindControl)
+				|| (pWeaponSecondary && pWeaponSecondary->Warhead->MindControl)))
 		{
 			return true;
 		}
@@ -795,9 +795,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 	case 14:
 		// Aircraft and Air Unit
-		if (!pTechno->Owner->IsNeutral() &&
-			(pTechnoType->WhatAmI() == AbstractType::AircraftType ||
-				pTechnoType->JumpJet || pTechno->IsInAir()))
+		if (!pTechno->Owner->IsNeutral()
+			&& (pTechnoType->WhatAmI() == AbstractType::AircraftType
+				|| pTechnoType->JumpJet || pTechno->IsInAir()))
 		{
 			return true;
 		}
@@ -807,9 +807,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 15:
 		// Naval Unit & Structure
 
-		if (!pTechno->Owner->IsNeutral() &&
-			(pTechnoType->Naval ||
-				pTechno->GetCell()->LandType == LandType::Water))
+		if (!pTechno->Owner->IsNeutral()
+			&& (pTechnoType->Naval
+				|| pTechno->GetCell()->LandType == LandType::Water))
 		{
 			return true;
 		}
@@ -820,9 +820,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 		// Cloak Generator, Gap Generator, Radar Jammer or Inhibitor
 		pTypeTechnoExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
-		if (!pTechno->Owner->IsNeutral() && (pTypeTechnoExt &&
-			(pTypeTechnoExt->RadarJamRadius > 0 || pTypeTechnoExt->InhibitorRange.isset() ||
-				pTypeBuilding->GapGenerator || pTypeBuilding->CloakGenerator)))
+		if (!pTechno->Owner->IsNeutral() && (pTypeTechnoExt
+			&& (pTypeTechnoExt->RadarJamRadius > 0 || pTypeTechnoExt->InhibitorRange.isset()
+				|| pTypeBuilding->GapGenerator || pTypeBuilding->CloakGenerator)))
 		{
 			return true;
 		}
@@ -832,8 +832,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 17:
 		// Ground Vehicle
 
-		if (!pTechno->Owner->IsNeutral() &&
-			(pTypeUnit || buildingIsConsideredVehicle && !pTechno->IsInAir() && !pTechnoType->Naval))
+		if (!pTechno->Owner->IsNeutral()
+			&& (pTypeUnit || buildingIsConsideredVehicle && !pTechno->IsInAir() && !pTechnoType->Naval))
 		{
 			return true;
 		}
@@ -843,14 +843,14 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 18:
 		// Economy: Harvester, Refinery or Resource helper
 
-		if (!pTechno->Owner->IsNeutral() &&
-			((pTypeUnit &&
-				(pTypeUnit->Harvester ||
-					pTypeUnit->ResourceGatherer)) ||
-				(pTypeBuilding &&
-					(pTypeBuilding->Refinery ||
-						pTypeBuilding->OrePurifier ||
-						pTypeBuilding->ResourceGatherer))))
+		if (!pTechno->Owner->IsNeutral()
+			&& ((pTypeUnit
+				&& (pTypeUnit->Harvester
+					|| pTypeUnit->ResourceGatherer))
+				|| (pTypeBuilding
+					&& (pTypeBuilding->Refinery
+						|| pTypeBuilding->OrePurifier
+						|| pTypeBuilding->ResourceGatherer))))
 		{
 			return true;
 		}
@@ -860,9 +860,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 19:
 		// Infantry Factory
 
-		if (!pTechno->Owner->IsNeutral() &&
-			pTypeBuilding &&
-			pTypeBuilding->Factory == AbstractType::InfantryType)
+		if (!pTechno->Owner->IsNeutral()
+			&& pTypeBuilding
+			&& pTypeBuilding->Factory == AbstractType::InfantryType)
 		{
 			return true;
 		}
@@ -872,10 +872,10 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 20:
 		// Land Vehicle Factory
 
-		if (!pTechno->Owner->IsNeutral() &&
-			pTypeBuilding &&
-			pTypeBuilding->Factory == AbstractType::UnitType &&
-			!pTypeBuilding->Naval)
+		if (!pTechno->Owner->IsNeutral()
+			&& pTypeBuilding
+			&& pTypeBuilding->Factory == AbstractType::UnitType
+			&& !pTypeBuilding->Naval)
 		{
 			return true;
 		}
@@ -885,10 +885,10 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 21:
 		// Aircraft Factory
 
-		if (!pTechno->Owner->IsNeutral() &&
-			(pTypeBuilding &&
-				(pTypeBuilding->Factory == AbstractType::AircraftType ||
-					pTypeBuilding->Helipad)))
+		if (!pTechno->Owner->IsNeutral()
+			&& (pTypeBuilding
+				&& (pTypeBuilding->Factory == AbstractType::AircraftType
+					|| pTypeBuilding->Helipad)))
 		{
 			return true;
 		}
@@ -898,10 +898,10 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 22:
 		// Radar & SpySat
 
-		if (!pTechno->Owner->IsNeutral() &&
-			(pTechnoType->WhatAmI() == AbstractType::BuildingType &&
-				(pTypeBuilding->Radar ||
-					pTypeBuilding->SpySat)))
+		if (!pTechno->Owner->IsNeutral()
+			&& (pTechnoType->WhatAmI() == AbstractType::BuildingType
+				&& (pTypeBuilding->Radar
+					|| pTypeBuilding->SpySat)))
 		{
 			return true;
 		}
@@ -911,9 +911,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 23:
 		// Buildable Tech
 
-		if (!pTechno->Owner->IsNeutral() &&
-			pTechnoType->WhatAmI() == AbstractType::BuildingType &&
-			buildTech.Items)
+		if (!pTechno->Owner->IsNeutral()
+			&& pTechnoType->WhatAmI() == AbstractType::BuildingType
+			&& buildTech.Items)
 		{
 			for (int i = 0; i < buildTech.Count; i++)
 			{
@@ -928,10 +928,10 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 24:
 		// Naval Factory
 
-		if (!pTechno->Owner->IsNeutral() &&
-			pTypeBuilding &&
-			pTypeBuilding->Factory == AbstractType::UnitType &&
-			pTypeBuilding->Naval)
+		if (!pTechno->Owner->IsNeutral()
+			&& pTypeBuilding
+			&& pTypeBuilding->Factory == AbstractType::UnitType
+			&& pTypeBuilding->Naval)
 		{
 			return true;
 		}
@@ -949,11 +949,11 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 		if (pBuildingTypeExt)
 			nSuperWeapons = pBuildingTypeExt->SuperWeapons.size();
 
-		if (!pTechno->Owner->IsNeutral() &&
-			pTypeBuilding &&
-			(pTypeBuilding->SuperWeapon >= 0 ||
-				pTypeBuilding->SuperWeapon2 >= 0 ||
-				nSuperWeapons > 0))
+		if (!pTechno->Owner->IsNeutral()
+			&& pTypeBuilding
+			&& (pTypeBuilding->SuperWeapon >= 0
+				|| pTypeBuilding->SuperWeapon2 >= 0
+				|| nSuperWeapons > 0))
 		{
 			return true;
 		}
@@ -963,10 +963,10 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 26:
 		// Construction Yard
 
-		if (!pTechno->Owner->IsNeutral() &&
-			pTypeBuilding &&
-			pTypeBuilding->Factory == AbstractType::BuildingType &&
-			pTypeBuilding->ConstructionYard)
+		if (!pTechno->Owner->IsNeutral()
+			&& pTypeBuilding
+			&& pTypeBuilding->Factory == AbstractType::BuildingType
+			&& pTypeBuilding->ConstructionYard)
 		{
 			return true;
 		}
@@ -996,9 +996,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 28:
 		// Cloak Generator & Gap Generator
 
-		if (!pTechno->Owner->IsNeutral() &&
-			(pTypeBuilding && (pTypeBuilding->GapGenerator ||
-				pTypeBuilding->CloakGenerator)))
+		if (!pTechno->Owner->IsNeutral()
+			&& (pTypeBuilding && (pTypeBuilding->GapGenerator
+				|| pTypeBuilding->CloakGenerator)))
 		{
 			return true;
 		}
@@ -1009,9 +1009,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 		// Radar Jammer
 		pTypeTechnoExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
-		if (!pTechno->Owner->IsNeutral() &&
-			(pTypeTechnoExt &&
-				(pTypeTechnoExt->RadarJamRadius > 0)))
+		if (!pTechno->Owner->IsNeutral()
+			&& (pTypeTechnoExt
+				&& (pTypeTechnoExt->RadarJamRadius > 0)))
 			return true;
 
 		break;
@@ -1020,9 +1020,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 		// Inhibitor
 		pTypeTechnoExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
-		if (!pTechno->Owner->IsNeutral() &&
-			(pTypeTechnoExt &&
-				pTypeTechnoExt->InhibitorRange.isset()))
+		if (!pTechno->Owner->IsNeutral()
+			&& (pTypeTechnoExt
+				&& pTypeTechnoExt->InhibitorRange.isset()))
 		{
 			return true;
 		}
@@ -1032,10 +1032,10 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 31:
 		// Naval Unit
 
-		if (!pTechno->Owner->IsNeutral() &&
-			!pTypeBuilding &&
-			(pTechnoType->Naval ||
-				pTechno->GetCell()->LandType == LandType::Water))
+		if (!pTechno->Owner->IsNeutral()
+			&& !pTypeBuilding
+			&& (pTechnoType->Naval
+				|| pTechno->GetCell()->LandType == LandType::Water))
 		{
 			return true;
 		}
@@ -1045,9 +1045,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 32:
 		// Any non-building unit
 
-		if (!pTechno->Owner->IsNeutral() &&
-			(!pTypeBuilding || (pTypeBuilding &&
-				(buildingIsConsideredVehicle || pTypeBuilding->ResourceGatherer))))
+		if (!pTechno->Owner->IsNeutral()
+			&& (!pTypeBuilding || (pTypeBuilding
+				&& (buildingIsConsideredVehicle || pTypeBuilding->ResourceGatherer))))
 		{
 			return true;
 		}
@@ -1057,10 +1057,10 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 33:
 		// Capturable Structure or Repair Hut
 
-		if (pTypeBuilding &&
-			(pTypeBuilding->Capturable ||
-				(pTypeBuilding->BridgeRepairHut &&
-					pTypeBuilding->Repairable)))
+		if (pTypeBuilding
+			&& (pTypeBuilding->Capturable
+				|| (pTypeBuilding->BridgeRepairHut
+					&& pTypeBuilding->Repairable)))
 		{
 			return true;
 		}
@@ -1074,9 +1074,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 		{
 			distanceToTarget = pTeamLeader->DistanceFrom(pTechno) / 256.0; // Caution, DistanceFrom() return leptons
 
-			if (!pTechno->Owner->IsNeutral() &&
-				(pTeamLeader->GetTechnoType()->GuardRange > 0 &&
-					distanceToTarget <= ((pTeamLeader->GetTechnoType()->GuardRange / 256.0) * 2.0)))
+			if (!pTechno->Owner->IsNeutral()
+				&& (pTeamLeader->GetTechnoType()->GuardRange > 0
+					&& distanceToTarget <= ((pTeamLeader->GetTechnoType()->GuardRange / 256.0) * 2.0)))
 			{
 				return true;
 			}
@@ -1087,9 +1087,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 35:
 		// Land Vehicle Factory & Naval Factory
 
-		if (!pTechno->Owner->IsNeutral() &&
-			pTypeBuilding &&
-			pTypeBuilding->Factory == AbstractType::UnitType)
+		if (!pTechno->Owner->IsNeutral()
+			&& pTypeBuilding
+			&& pTypeBuilding->Factory == AbstractType::UnitType)
 		{
 			return true;
 		}
@@ -1099,10 +1099,10 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 36:
 		// Building that isn't a defense
 
-		if (!pTechno->Owner->IsNeutral() &&
-			pTypeBuilding &&
-			!pTypeBuilding->IsBaseDefense &&
-			!buildingIsConsideredVehicle)
+		if (!pTechno->Owner->IsNeutral()
+			&& pTypeBuilding
+			&& !pTypeBuilding->IsBaseDefense
+			&& !buildingIsConsideredVehicle)
 		{
 			return true;
 		}
@@ -1169,9 +1169,9 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass* pTeam, bool repeatAction, 
 					auto objectFromList = objectsList[j];
 					auto const pFirstUnit = pTeam->FirstUnit;
 
-					if (pTechnoType == objectFromList &&
-						IsUnitAvailable(pTechno, true, true) &&
-						(!pFirstUnit->Owner->IsAlliedWith(pTechno) || IsUnitMindControlledFriendly(pFirstUnit->Owner, pTechno)))
+					if (pTechnoType == objectFromList
+						&& IsUnitAvailable(pTechno, true, true)
+						&& (!pFirstUnit->Owner->IsAlliedWith(pTechno) || IsUnitMindControlledFriendly(pFirstUnit->Owner, pTechno)))
 					{
 						validIndexes.push_back(j);
 						found = true;

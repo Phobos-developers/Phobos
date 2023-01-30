@@ -253,9 +253,9 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 	{
 		auto const pType = pUnit->GetTechnoType();
 
-		if (pType->Passengers > 0 &&
-			pUnit->Passengers.NumPassengers < pType->Passengers &&
-			pUnit->Passengers.GetTotalSize() < pType->Passengers)
+		if (pType->Passengers > 0
+			&& pUnit->Passengers.NumPassengers < pType->Passengers
+			&& pUnit->Passengers.GetTotalSize() < pType->Passengers)
 		{
 			transports.emplace_back(pUnit);
 		}
@@ -276,11 +276,10 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 			auto const pTransportType = pTransport->GetTechnoType();
 			auto const pUnitType = pUnit->GetTechnoType();
 
-			if (pTransport != pUnit &&
-				pUnitType->WhatAmI() != AbstractType::AircraftType &&
-				!pUnit->InLimbo &&
-				!pUnitType->ConsideredAircraft &&
-				pUnit->Health > 0)
+			if (pTransport != pUnit
+				&& pUnitType->WhatAmI() != AbstractType::AircraftType
+				&& !pUnit->InLimbo && !pUnitType->ConsideredAircraft
+				&& pUnit->Health > 0)
 			{
 				if (pUnit->GetTechnoType()->Size > 0 &&
 					pUnitType->Size <= pTransportType->SizeLimit &&
@@ -586,7 +585,7 @@ void ScriptExt::ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine 
 	}
 }
 
-void ScriptExt::WaitIfNoTarget(TeamClass *pTeam, int attempts = 0)
+void ScriptExt::WaitIfNoTarget(TeamClass* pTeam, int attempts = 0)
 {
 	// This method modifies the new attack actions preventing Team's Trigger to jump to next script action
 	// attempts == number of times the Team will wait if Mission_Attack(...) can't find a new target.
@@ -608,7 +607,7 @@ void ScriptExt::WaitIfNoTarget(TeamClass *pTeam, int attempts = 0)
 	return;
 }
 
-void ScriptExt::TeamWeightReward(TeamClass *pTeam, double award = 0)
+void ScriptExt::TeamWeightReward(TeamClass* pTeam, double award = 0)
 {
 	if (award <= 0)
 		award = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
@@ -675,13 +674,14 @@ void ScriptExt::PickRandomScript(TeamClass* pTeam, int idxScriptsList = -1)
 	}
 }
 
-void ScriptExt::SetCloseEnoughDistance(TeamClass *pTeam, double distance = -1)
+void ScriptExt::SetCloseEnoughDistance(TeamClass* pTeam, double distance = -1)
 {
 	// This passive method replaces the CloseEnough value from rulesmd.ini by a custom one. Used by Mission_Move()
 	if (distance <= 0)
 		distance = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+
 	if (pTeamData)
 	{
 		if (distance > 0)
@@ -709,7 +709,8 @@ void ScriptExt::SetMoveMissionEndMode(TeamClass* pTeam, int mode = 0)
 	if (mode < 0 || mode > 2)
 		mode = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+
 	if (pTeamData)
 	{
 		if (mode >= 0 && mode <= 2)
@@ -732,7 +733,8 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 
 	double closeEnough = RulesClass::Instance->CloseEnough / 256.0;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+
 	if (pTeamData && pTeamData->CloseEnough > 0)
 		closeEnough = pTeamData->CloseEnough;
 
@@ -744,9 +746,9 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 	// Team already have a focused target
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (IsUnitAvailable(pUnit, true, true) &&
-			!pUnit->TemporalTargetingMe &&
-			!pUnit->BeingWarpedOut)
+		if (IsUnitAvailable(pUnit, true, true)
+			&& !pUnit->TemporalTargetingMe
+			&& !pUnit->BeingWarpedOut)
 		{
 			if (mode == 2)
 			{
@@ -1050,6 +1052,7 @@ void ScriptExt::VariableOperationHandler(TeamClass* pTeam, int nVariable, int Nu
 		else
 			TagClass::NotifyLocalChanged(nVariable);
 	}
+
 	pTeam->StepCompleted = true;
 }
 
@@ -1118,7 +1121,7 @@ bool ScriptExt::IsExtVariableAction(int action)
 	return eAction >= PhobosScripts::LocalVariableAdd && eAction <= PhobosScripts::GlobalVariableAndByGlobal;
 }
 
-void ScriptExt::Set_ForceJump_Countdown(TeamClass *pTeam, bool repeatLine = false, int count = 0)
+void ScriptExt::Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine = false, int count = 0)
 {
 	if (!pTeam)
 		return;
@@ -1152,7 +1155,7 @@ void ScriptExt::Set_ForceJump_Countdown(TeamClass *pTeam, bool repeatLine = fals
 	ScriptExt::Log("AI Scripts - SetForceJumpCountdown: [%s] [%s](line: %d = %d,%d) Set Timed Jump -> (Countdown: %d, repeat action: %d)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, count, repeatLine);
 }
 
-void ScriptExt::Stop_ForceJump_Countdown(TeamClass *pTeam)
+void ScriptExt::Stop_ForceJump_Countdown(TeamClass* pTeam)
 {
 	if (!pTeam)
 		return;

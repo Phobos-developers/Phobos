@@ -62,10 +62,10 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 
 			if (pTechnoType)
 			{
-				if (pTechnoType->WhatAmI() == AbstractType::AircraftType &&
-					!pFoot->IsInAir() &&
-					abstract_cast<AircraftTypeClass*>(pTechnoType)->AirportBound &&
-					pFoot->Ammo < pTechnoType->Ammo)
+				if (pTechnoType->WhatAmI() == AbstractType::AircraftType
+					&& !pFoot->IsInAir()
+					&& abstract_cast<AircraftTypeClass*>(pTechnoType)->AirportBound
+					&& pFoot->Ammo < pTechnoType->Ammo)
 				{
 					bAircraftsWithoutAmmo = true;
 				}
@@ -254,26 +254,26 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 			continue;
 
 		// Submarines aren't a valid target
-		if (object->CloakState == CloakState::Cloaked &&
-			objectType->Underwater &&
-			(pTechnoType->NavalTargeting == NavalTargetingType::Underwater_Never ||
-				pTechnoType->NavalTargeting == NavalTargetingType::Naval_None))
+		if (object->CloakState == CloakState::Cloaked
+			&& objectType->Underwater
+			&& (pTechnoType->NavalTargeting == NavalTargetingType::Underwater_Never
+				|| pTechnoType->NavalTargeting == NavalTargetingType::Naval_None))
 		{
 			continue;
 		}
 
 		// Land not OK for the Naval unit
-		if (objectType->Naval &&
-			pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK &&
-			object->GetCell()->LandType != LandType::Water)
+		if (objectType->Naval
+			&& pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK
+			&& object->GetCell()->LandType != LandType::Water)
 		{
 			continue;
 		}
 
-		if (object != pTechno &&
-			IsUnitAvailable(object, true, false) &&
-			((pickAllies && pTechno->Owner->IsAlliedWith(object)) ||
-				(!pickAllies && !pTechno->Owner->IsAlliedWith(object))))
+		if (object != pTechno
+			&& IsUnitAvailable(object, true, false)
+			&& ((pickAllies && pTechno->Owner->IsAlliedWith(object))
+				|| (!pickAllies && !pTechno->Owner->IsAlliedWith(object))))
 		{
 			double value = 0;
 
@@ -370,8 +370,8 @@ void ScriptExt::Mission_Move_List(TeamClass* pTeam, int calcThreatMode, bool pic
 	if (attackAITargetType < 0)
 		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
-	if (RulesExt::Global()->AITargetTypesLists.size() > 0 &&
-		RulesExt::Global()->AITargetTypesLists[attackAITargetType].size() > 0)
+	if (RulesExt::Global()->AITargetTypesLists.size() > 0
+		&& RulesExt::Global()->AITargetTypesLists[attackAITargetType].size() > 0)
 	{
 		Mission_Move(pTeam, calcThreatMode, pickAllies, attackAITargetType, -1);
 	}
@@ -394,8 +394,8 @@ void ScriptExt::Mission_Move_List1Random(TeamClass* pTeam, int calcThreatMode, b
 	if (attackAITargetType < 0)
 		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
-	if (attackAITargetType >= 0 &&
-		(size_t)attackAITargetType < RulesExt::Global()->AITargetTypesLists.size())
+	if (attackAITargetType >= 0
+		&& (size_t)attackAITargetType < RulesExt::Global()->AITargetTypesLists.size())
 	{
 		auto& objectsList = RulesExt::Global()->AITargetTypesLists[attackAITargetType];
 
@@ -413,12 +413,12 @@ void ScriptExt::Mission_Move_List1Random(TeamClass* pTeam, int calcThreatMode, b
 				{
 					auto objectFromList = objectsList[j];
 
-					if (pTechnoType == objectFromList &&
-						IsUnitAvailable(pTechno, true, false) &&
-						((pickAllies &&
-							pTeam->FirstUnit->Owner->IsAlliedWith(pTechno)) ||
-							(!pickAllies &&
-								!pTeam->FirstUnit->Owner->IsAlliedWith(pTechno))))
+					if (pTechnoType == objectFromList
+						&& IsUnitAvailable(pTechno, true, false)
+						&& ((pickAllies
+							&& pTeam->FirstUnit->Owner->IsAlliedWith(pTechno))
+							|| (!pickAllies
+								&& !pTeam->FirstUnit->Owner->IsAlliedWith(pTechno))))
 					{
 						validIndexes.push_back(j);
 						found = true;
