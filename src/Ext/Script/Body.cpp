@@ -413,7 +413,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 		// Find the Leader
 		pLeaderUnit = pExt->TeamLeader;
 
-		if (!IsUnitAvailable(pLeaderUnit, true, false))
+		if (!IsUnitAvailable(pLeaderUnit, true, true))
 		{
 			pLeaderUnit = FindTheTeamLeader(pTeam);
 			pExt->TeamLeader = pLeaderUnit;
@@ -448,7 +448,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 		// Check if units are around the leader
 		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 		{
-			if (!IsUnitAvailable(pUnit, true, false))
+			if (!IsUnitAvailable(pUnit, true, true))
 			{
 				auto pTypeUnit = pUnit->GetTechnoType();
 
@@ -1082,7 +1082,7 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 		if (!pUnit)
 			continue;
 
-		bool isValidUnit = IsUnitAvailable(pUnit, true, false);
+		bool isValidUnit = IsUnitAvailable(pUnit, true, true);
 
 		// Preventing >1 leaders in teams
 		if (teamLeaderFound || !isValidUnit)
@@ -1185,7 +1185,7 @@ bool ScriptExt::IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrA
 	bool isAvailable = pTechno->IsAlive && pTechno->Health > 0 &&
 		!pTechno->InLimbo && !pTechno->Transporter && !pTechno->Absorbed;
 
-	bool isSubterranean = allowSubterranean && (pTechno->InWhichLayer() == Layer::Underground || pTechno->GetTechnoType()->IsSubterranean);
+	bool isSubterranean = allowSubterranean && pTechno->InWhichLayer() == Layer::Underground;
 	isAvailable &= pTechno->IsOnMap || isSubterranean;
 
 	if (checkIfInTransportOrAbsorbed)
