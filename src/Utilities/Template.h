@@ -194,21 +194,21 @@ public:
 
 	using Valueable<T>::Get;
 
-	T Get(const T& default) const
+	T Get(const T& defaultValue) const
 	{
-		return this->isset() ? this->Get() : default;
+		return this->isset() ? this->Get() : defaultValue;
 	}
 
 	using Valueable<T>::GetEx;
 
-	T* GetEx(T* default) & noexcept
+	T* GetEx(T* defaultValue) & noexcept
 	{
-		return this->isset() ? this->GetEx() : default;
+		return this->isset() ? this->GetEx() : defaultValue;
 	}
 
-	const T* GetEx(const T* default) const noexcept
+	const T* GetEx(const T* defaultValue) const noexcept
 	{
-		return this->isset() ? this->GetEx() : default;
+		return this->isset() ? this->GetEx() : defaultValue;
 	}
 
 	void Reset()
@@ -360,11 +360,11 @@ public:
 
 	using ValueableVector<T>::GetElements;
 
-	Iterator<T> GetElements(Iterator<T> default) const noexcept
+	Iterator<T> GetElements(Iterator<T> defaultValue) const noexcept
 	{
 		if (!this->hasValue)
 		{
-			return default;
+			return defaultValue;
 		}
 
 		return this->GetElements();

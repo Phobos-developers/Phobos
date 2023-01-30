@@ -450,13 +450,13 @@ class PhobosFixedString : public FixedString<Capacity> {
 public:
 	PhobosFixedString() = default;
 	explicit PhobosFixedString(nullptr_t) noexcept {};
-	explicit PhobosFixedString(const char* value) noexcept : FixedString(value) {}
+	explicit PhobosFixedString(const char* value) noexcept : FixedString<Capacity>(value) {}
 
-	using FixedString::operator=;
+	using FixedString<Capacity>::operator=;
 
 	// It's not obvious, but pDefault = "" means that by default initial string will not be changed
 	bool Read(INIClass* pINI, const char* pSection, const char* pKey, const char* pDefault = "") {
-		if (pINI->ReadString(pSection, pKey, pDefault, Phobos::readBuffer, FixedString::Size)) {
+		if (pINI->ReadString(pSection, pKey, pDefault, Phobos::readBuffer, FixedString<Capacity>::Size)) {
 			if (!INIClass::IsBlank(Phobos::readBuffer)) {
 				*this = Phobos::readBuffer;
 			}

@@ -138,8 +138,8 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 					{
 						pAnim->Owner = pThis->Owner;
 
-						if (auto const pExt = AnimExt::ExtMap.Find(pAnim))
-							pExt->Invoker = pInvoker;
+						if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
+							pAnimExt->Invoker = pInvoker;
 					}
 				}
 
