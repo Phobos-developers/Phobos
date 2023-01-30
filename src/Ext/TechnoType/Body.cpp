@@ -178,7 +178,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->PassengerDeletion_Soylent.Read(exINI, pSection, "PassengerDeletion.Soylent");
 	this->PassengerDeletion_SoylentFriendlies.Read(exINI, pSection, "PassengerDeletion.SoylentFriendlies");
+	this->PassengerDeletion_Experience.Read(exINI, pSection, "PassengerDeletion.Experience");
+	this->PassengerDeletion_ExperienceFriendlies.Read(exINI, pSection, "PassengerDeletion.ExperienceFriendlies");
 	this->PassengerDeletion_ReportSound.Read(exINI, pSection, "PassengerDeletion.ReportSound");
+	this->PassengerDeletion_Rate_AffectedByVeterancy.Read(exINI, pSection, "PassengerDeletion.Rate.AffectedByVeterancy");
 	this->PassengerDeletion_Rate_SizeMultiply.Read(exINI, pSection, "PassengerDeletion.Rate.SizeMultiply");
 	this->PassengerDeletion_Rate.Read(exINI, pSection, "PassengerDeletion.Rate");
 	this->PassengerDeletion_Anim.Read(exINI, pSection, "PassengerDeletion.Anim");
@@ -354,8 +357,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->PassengerDeletion_Soylent)
 		.Process(this->PassengerDeletion_SoylentFriendlies)
+		.Process(this->PassengerDeletion_Experience)
+		.Process(this->PassengerDeletion_ExperienceFriendlies)
 		.Process(this->PassengerDeletion_Rate)
 		.Process(this->PassengerDeletion_ReportSound)
+		.Process(this->PassengerDeletion_Rate_AffectedByVeterancy)
 		.Process(this->PassengerDeletion_Rate_SizeMultiply)
 		.Process(this->PassengerDeletion_Anim)
 

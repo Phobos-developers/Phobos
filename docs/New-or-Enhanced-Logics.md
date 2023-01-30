@@ -558,18 +558,25 @@ Detonate.Damage=   ; integer
 
 ### Automatic passenger deletion
 
-- Transports with these tags will erase the passengers overtime. Bigger units takes more time. Optionally this logic can work like a grinder.
- - Good combination with Ares Abductor logic.
+![image](_static/images/eatpassengers.gif)
+
+- Transports with `PassengerDeletion.Rate` greater than 0 will erase passengers inside as time passes. Erasure rate is increased for passengers with higher `Size` if `PassengerDeletion.Rate.SizeMultiply` is set. On the other hand, it can also decrease by veterancy ROF bonuses if `PassengerDeletion.Rate.AffectedByVeterancy` is set.
+- By enabling `PassengerDeletion.Soylent`, erased passengers give money equal to their `Soylent`, unless `PassengerDeletion.SoylentFriendlies` is on and the passenger was friendly unit.
+- `PassengerDeletion.Experience` and `PassengerDeletion.ExperienceFriendlies` work the same way, but instead they decide whether the transport gains experience as if it killed passengers.
+- Good combination with Ares Abductor logic.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                               ; TechnoType
-PassengerDeletion.Rate=0                   ; integer, game frames
-PassengerDeletion.Rate.SizeMultiply=true   ; boolean, whether to multiply frames amount by size
-PassengerDeletion.Soylent=no               ; boolean
-PassengerDeletion.SoylentFriendlies=false  ; boolean
-PassengerDeletion.ReportSound=             ; Sound
-PassengerDeletion.Anim=                    ; Animation
+[SOMETECHNO]                                  ; TechnoType
+PassengerDeletion.Rate=0                      ; integer, game frames between erasures
+PassengerDeletion.Rate.SizeMultiply=yes       ; boolean, whether to multiply frames amount by size
+PassengerDeletion.Rate.AffectedByVeterancy=no ; boolean, whether to multiply frames amount by veterancy ROF bonus
+PassengerDeletion.Soylent=no                  ; boolean, whether erased passenger gives refund
+PassengerDeletion.SoylentFriendlies=no        ; boolean, whether friendly passengers give refund on erasure
+PassengerDeletion.Experience=no               ; boolean, whether transport gains experience from erasing passengers
+PassengerDeletion.ExperienceFriendlies=no     ; boolean, whether transport gains experience from erasing friendly passengers
+PassengerDeletion.ReportSound=                ; Sound, plays when passenger is erased
+PassengerDeletion.Anim=                       ; Animation, plays when passenger is erased
 ```
 
 ### Automatic passenger owner change to match transport owner

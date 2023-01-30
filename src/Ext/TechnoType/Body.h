@@ -48,9 +48,12 @@ public:
 		Nullable<int> InitialStrength;
 		Valueable<bool> PassengerDeletion_Soylent;
 		Valueable<bool> PassengerDeletion_SoylentFriendlies;
+		Valueable<bool> PassengerDeletion_Experience;
+		Valueable<bool> PassengerDeletion_ExperienceFriendlies;
 		Valueable<int> PassengerDeletion_Rate;
 		NullableIdx<VocClass> PassengerDeletion_ReportSound;
 		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
+		Valueable<bool> PassengerDeletion_Rate_AffectedByVeterancy;
 		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
 
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
@@ -217,9 +220,12 @@ public:
 
 			, PassengerDeletion_Soylent { false }
 			, PassengerDeletion_SoylentFriendlies { false }
+			, PassengerDeletion_Experience { false }
+			, PassengerDeletion_ExperienceFriendlies { false }
 			, PassengerDeletion_Rate { 0 }
 			, PassengerDeletion_ReportSound {}
 			, PassengerDeletion_Rate_SizeMultiply { true }
+			, PassengerDeletion_Rate_AffectedByVeterancy { false }
 			, PassengerDeletion_Anim {}
 
 			, DefaultDisguise {}

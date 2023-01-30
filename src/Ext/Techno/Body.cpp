@@ -171,8 +171,25 @@ void TechnoExt::ExtData::EatPassengers()
 			{
 				// Setting & start countdown. Bigger units needs more time
 				int passengerSize = pTypeExt->PassengerDeletion_Rate;
-				if (pTypeExt->PassengerDeletion_Rate_SizeMultiply && pPassenger->GetTechnoType()->Size > 1.0)
+				if (pTypeExt->PassengerDeletion_Rate_SizeMultiply &&
+					pPassenger->GetTechnoType()->Size > 1.0)
+				{
 					passengerSize *= (int)(pPassenger->GetTechnoType()->Size + 0.5);
+				}
+
+				if (pTypeExt->PassengerDeletion_Rate_AffectedByVeterancy
+					&& RulesClass::Instance->VeteranROF != 1.0f)
+				{
+					auto pType = pThis->GetTechnoType();
+
+					if (pThis->Veterancy.Veterancy >= 1.0f && pType->VeteranAbilities.ROF)
+					{
+						passengerSize = (int)((double)passengerSize * RulesClass::Instance->VeteranROF);
+
+						if (pThis->Veterancy.Veterancy >= 2.0f && pType->EliteAbilities.ROF)
+							passengerSize = (int)((double)passengerSize * RulesClass::Instance->VeteranROF);
+					}
+				}
 
 				this->PassengerDeletionCountDown = passengerSize;
 				this->PassengerDeletionTimer.Start(passengerSize);
@@ -228,6 +245,26 @@ void TechnoExt::ExtData::EatPassengers()
 
 								if (nMoneyToGive > 0)
 									pThis->Owner->GiveMoney(nMoneyToGive);
+							}
+
+							// Check if there is experience gain
+							if (pTypeExt->PassengerDeletion_Experience)
+							{
+								int nExperienceToGain = 0;
+
+								// Gain experience from "eating" passenger
+								if (pPassengerType && pPassengerType->Cost > 0)
+									nExperienceToGain = pPassengerType->Cost;
+
+								// Is allowed to gain experience for friendly units?
+								if (!pTypeExt->PassengerDeletion_ExperienceFriendlies
+									&& pPassenger->Owner->IsAlliedWith(pThis))
+								{
+									nExperienceToGain = 0;
+								}
+
+								if (nExperienceToGain > 0)
+									pThis->Veterancy.Add(pThis->GetTechnoType()->Cost, nExperienceToGain);
 							}
 						}
 
