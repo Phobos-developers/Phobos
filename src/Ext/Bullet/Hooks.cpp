@@ -430,9 +430,9 @@ DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
 	{
 		if (auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
 		{
-			int default = RulesClass::Instance->BallisticScatter;
+			int defaultValue = RulesClass::Instance->BallisticScatter;
 			int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
-			int max = pTypeExt->BallisticScatter_Max.Get(Leptons(default));
+			int max = pTypeExt->BallisticScatter_Max.Get(Leptons(defaultValue));
 
 			int result = (int)((mult * ScenarioClass::Instance->Random.RandomRanged(2 * min, 2 * max)) / pThis->WeaponType->Range);
 			R->EAX(result);
