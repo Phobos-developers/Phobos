@@ -60,7 +60,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 
 	pFocus = abstract_cast<TechnoClass*>(pTeam->Focus);
 
-	if (!IsUnitAvailable(pFocus))
+	if (!IsUnitAvailable(pFocus, true, false))
 	{
 		pTeam->Focus = nullptr;
 		pFocus = nullptr;
@@ -97,8 +97,6 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 					{
 						pFootTeam->SetTarget(nullptr);
 						pFootTeam->LastTarget = nullptr;
-						pFootTeam->SetFocus(nullptr); // Lets see if this works or bug my little aircrafts
-						pFootTeam->CurrentTargets.Clear(); // Lets see if this works or bug my little aircrafts
 						pFootTeam->QueueMission(Mission::Guard, true);
 					}
 				}
@@ -128,7 +126,6 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 					pFoot->Ammo < pTechnoType->Ammo)
 				{
 					bAircraftsWithoutAmmo = true;
-					pFoot->CurrentTargets.Clear();
 				}
 
 				bool pacifistUnit = !IsUnitArmed(pFoot);
@@ -148,7 +145,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 	// Find the Leader
 	pLeaderUnit = pTeamData->TeamLeader;
 
-	if (!IsUnitAvailable(pLeaderUnit, true, true))
+	if (!IsUnitAvailable(pLeaderUnit, true, false))
 	{
 		pLeaderUnit = FindTheTeamLeader(pTeam);
 		pTeamData->TeamLeader = pLeaderUnit;
@@ -216,17 +213,15 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 				if (pFoot->IsAlive && !pFoot->InLimbo)
 				{
 					auto pTechnoType = pFoot->GetTechnoType();
-					if (pTechnoType && pFoot != selectedTarget && pFoot->Target != selectedTarget)
+
+					if (pFoot != selectedTarget && pFoot->Target != selectedTarget)
 					{
-						pFoot->CurrentTargets.Clear();
 						if (pTechnoType->Underwater && pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK &&
 							selectedTarget->GetCell()->LandType != LandType::Water) // Land not OK for the Naval unit
 						{
 							// Naval units like Submarines are unable to target ground targets
 							// except if they have anti-ground weapons. Ignore the attack
-							pFoot->CurrentTargets.Clear();
 							pFoot->SetTarget(nullptr);
-							pFoot->SetFocus(nullptr);
 							pFoot->SetDestination(nullptr, false);
 							pFoot->QueueMission(Mission::Area_Guard, true);
 
@@ -244,36 +239,15 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 						pFoot->SetTarget(selectedTarget);
 
 						if (pFoot->IsEngineer())
-						{
 							pFoot->QueueMission(Mission::Capture, true);
-						}
-						else
-						{
-							// Aircraft hack. I hate how this game auto-manages the aircraft missions.
-							if (pTechnoType->WhatAmI() != AbstractType::AircraftType)
-							{
-								pFoot->QueueMission(Mission::Attack, true);
-								pFoot->ObjectClickedAction(Action::Attack, selectedTarget, false);
-
-								if (pFoot->GetCurrentMission() != Mission::Attack)
-									pFoot->Mission_Attack();
-
-								if (pFoot->GetCurrentMission() == Mission::Move && pTechnoType->JumpJet)
-									pFoot->Mission_Attack();
-							}
-						}
+						else if (pTechnoType->WhatAmI() != AbstractType::AircraftType) // Aircraft hack. I hate how this game auto-manages the aircraft missions.
+							pFoot->QueueMission(Mission::Attack, true);
 
 						// Spy case
-						if (pTechnoType->WhatAmI() == AbstractType::InfantryType)
+						if (auto const pInfantryType = static_cast<InfantryTypeClass*>(pTechnoType))
 						{
-							auto pInfantryType = abstract_cast<InfantryTypeClass*>(pTechnoType);
-
-							if (pInfantryType && pInfantryType->Infiltrate && pInfantryType->Agent)
-							{
-								// Check if target is an structure and see if spiable
-								if (pFoot->GetCurrentMission() != Mission::Enter)
-									pFoot->Mission_Enter();
-							}
+							if (pInfantryType && pInfantryType->Infiltrate && pInfantryType->Agent && pFoot->GetCurrentMission() != Mission::Enter)
+								pFoot->QueueMission(Mission::Enter, true); // Check if target is an structure and see if spiable
 						}
 
 						// Tanya / Commando C4 case
@@ -282,15 +256,12 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 								pFoot->HasAbility(Ability::C4))) &&
 							pFoot->GetCurrentMission() != Mission::Sabotage)
 						{
-							pFoot->Mission_Attack();
 							pFoot->QueueMission(Mission::Sabotage, true);
 						}
 					}
 					else
 					{
 						pFoot->QueueMission(Mission::Attack, true);
-						pFoot->ObjectClickedAction(Action::Attack, selectedTarget, false);
-						pFoot->Mission_Attack();
 					}
 				}
 			}
@@ -330,7 +301,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 		bool isAirOK = pFocus->IsInAir() && leaderWeaponsHaveAA;
 		bool isGroundOK = !pFocus->IsInAir() && leaderWeaponsHaveAG;
 
-		if (IsUnitAvailable(pFocus) &&
+		if (IsUnitAvailable(pFocus, true, true) &&
 			!pFocus->GetTechnoType()->Immune &&
 			(isAirOK || isGroundOK) &&
 			(!pLeaderUnit->Owner->IsAlliedWith(pFocus) || IsUnitMindControlledFriendly(pLeaderUnit->Owner, pFocus)))
@@ -341,16 +312,16 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 			{
 				auto pTechnoType = pFoot->GetTechnoType();
 
-				if (pTechnoType &&
-					IsUnitAvailable(pFoot, false, false))
+				if (pTechnoType && IsUnitAvailable(pFoot, true, true))
 				{
 					// Aircraft case 1
-					if ((pTechnoType->WhatAmI() == AbstractType::AircraftType
-						&& abstract_cast<AircraftTypeClass*>(pTechnoType)->AirportBound)
-						&& pFoot->Ammo > 0
-						&& (pFoot->Target != pFocus && !pFoot->InAir))
+					if ((pTechnoType->WhatAmI() == AbstractType::AircraftType &&
+						static_cast<AircraftTypeClass*>(pTechnoType)->AirportBound) &&
+						pFoot->Ammo > 0 &&
+						(pFoot->Target != pFocus && !pFoot->InAir))
 					{
 						pFoot->SetTarget(pFocus);
+
 						continue;
 					}
 
@@ -359,9 +330,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 						pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK &&
 						pFocus->GetCell()->LandType != LandType::Water) // Land not OK for the Naval unit
 					{
-						pFoot->CurrentTargets.Clear();
 						pFoot->SetTarget(nullptr);
-						pFoot->SetFocus(nullptr);
 						pFoot->SetDestination(nullptr, false);
 						pFoot->QueueMission(Mission::Area_Guard, true);
 						bForceNextAction = true;
@@ -374,45 +343,16 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 						pFoot->GetCurrentMission() != Mission::Attack &&
 						pFoot->GetCurrentMission() != Mission::Enter)
 					{
-						if (pFoot->InAir)
+						if (pFoot->Ammo > 0)
 						{
-							if (pFoot->Ammo > 0)
-							{
-								pFoot->QueueMission(Mission::Attack, true);
+							if (pFoot->Target != pFocus)
+								pFoot->SetTarget(pFocus);
 
-								if (pFocus)
-									pFoot->ObjectClickedAction(Action::Attack, pFocus, false);
-
-								pFoot->Mission_Attack();
-							}
-							else
-							{
-								pFoot->ForceMission(Mission::Enter);
-								pFoot->Mission_Enter();
-								pFoot->SetFocus(pFoot);
-								pFoot->LastTarget = nullptr;
-								pFoot->SetTarget(pFoot);
-							}
+							pFoot->QueueMission(Mission::Attack, true);
 						}
 						else
 						{
-							if (pFoot->Ammo > 0)
-							{
-								pFoot->QueueMission(Mission::Attack, true);
-
-								if (pFocus)
-									pFoot->ObjectClickedAction(Action::Attack, pFocus, false);
-
-								pFoot->Mission_Attack();
-							}
-							else
-							{
-								pFoot->ForceMission(Mission::Enter);
-								pFoot->Mission_Enter();
-								pFoot->SetFocus(pFoot);
-								pFoot->LastTarget = nullptr;
-								pFoot->SetTarget(pFoot);
-							}
+							pFoot->vt_entry_484(false, true);
 						}
 
 						continue;
@@ -423,7 +363,6 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 						abstract_cast<InfantryTypeClass*>(pTechnoType)->C4 ||
 						pFoot->HasAbility(Ability::C4)) && pFoot->GetCurrentMission() != Mission::Sabotage)
 					{
-						pFoot->Mission_Attack();
 						pFoot->QueueMission(Mission::Sabotage, true);
 
 						continue;
@@ -470,6 +409,9 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 	bool unitWeaponsHaveAA = false;
 	bool unitWeaponsHaveAG = false;
 
+	if (!pTechno)
+		return nullptr;
+
 	// Generic method for targeting
 	for (int i = 0; i < TechnoClass::Array->Count; i++)
 	{
@@ -477,7 +419,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 		auto objectType = object->GetTechnoType();
 		auto pTechnoType = pTechno->GetTechnoType();
 
-		if (!object || !objectType || !pTechnoType)
+		if (!object)
 			continue;
 
 		// Note: the TEAM LEADER is picked for this task, be careful with leadership values in your mod
@@ -538,7 +480,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 			continue;
 
 		if (object != pTechno &&
-			IsUnitAvailable(object) &&
+			IsUnitAvailable(object, true, true) &&
 			!objectType->Immune &&
 			!object->TemporalTargetingMe &&
 			!object->BeingWarpedOut &&
@@ -750,12 +692,6 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 			// The possible Target is aiming against me? Revenge!
 			if (pTarget->Owner == pTeamLeader->Owner)
 				return true;
-
-			for (int i = 0; i < pTechno->CurrentTargets.Count; i++)
-			{
-				if (abstract_cast<TechnoClass*>(pTechno->CurrentTargets.GetItem(i))->Owner == pTeamLeader->Owner)
-					return true;
-			}
 
 			pWeaponPrimary = TechnoExt::GetCurrentWeapon(pTechno);
 			pWeaponSecondary = TechnoExt::GetCurrentWeapon(pTechno, true);
@@ -1228,7 +1164,7 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass* pTeam, bool repeatAction, 
 					auto const pFirstUnit = pTeam->FirstUnit;
 
 					if (pTechnoType == objectFromList &&
-						IsUnitAvailable(pTechno) &&
+						IsUnitAvailable(pTechno, true, true) &&
 						(!pFirstUnit->Owner->IsAlliedWith(pTechno) || IsUnitMindControlledFriendly(pFirstUnit->Owner, pTechno)))
 					{
 						validIndexes.push_back(j);

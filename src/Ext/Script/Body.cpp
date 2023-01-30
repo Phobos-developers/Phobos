@@ -226,8 +226,8 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 
 void ScriptExt::ExecuteTimedAreaGuardAction(TeamClass* pTeam)
 {
-	auto pScript = pTeam->CurrentScript;
-	auto pScriptType = pScript->Type;
+	auto const pScript = pTeam->CurrentScript;
+	auto const pScriptType = pScript->Type;
 
 	if (pTeam->GuardAreaTimer.TimeLeft == 0 && !pTeam->GuardAreaTimer.InProgress())
 	{
@@ -253,10 +253,12 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 	{
 		auto const pType = pUnit->GetTechnoType();
 
-		if (pType->Passengers > 0)
-			if (pUnit->Passengers.NumPassengers < pType->Passengers)
-				if (pUnit->Passengers.GetTotalSize() < pType->Passengers)
-					transports.emplace_back(pUnit);
+		if (pType->Passengers > 0 &&
+			pUnit->Passengers.NumPassengers < pType->Passengers &&
+			pUnit->Passengers.GetTotalSize() < pType->Passengers)
+		{
+			transports.emplace_back(pUnit);
+		}
 	}
 
 	if (transports.size() == 0)
@@ -274,15 +276,15 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 			auto const pTransportType = pTransport->GetTechnoType();
 			auto const pUnitType = pUnit->GetTechnoType();
 
-			if (pTransport != pUnit
-				&& pUnitType->WhatAmI() != AbstractType::AircraftType
-				&& !pUnit->InLimbo
-				&& !pUnitType->ConsideredAircraft
-				&& pUnit->Health > 0)
+			if (pTransport != pUnit &&
+				pUnitType->WhatAmI() != AbstractType::AircraftType &&
+				!pUnit->InLimbo &&
+				!pUnitType->ConsideredAircraft &&
+				pUnit->Health > 0)
 			{
-				if (pUnit->GetTechnoType()->Size > 0
-					&& pUnitType->Size <= pTransportType->SizeLimit
-					&& pUnitType->Size <= pTransportType->Passengers - pTransport->Passengers.GetTotalSize())
+				if (pUnit->GetTechnoType()->Size > 0 &&
+					pUnitType->Size <= pTransportType->SizeLimit &&
+					pUnitType->Size <= pTransportType->Passengers - pTransport->Passengers.GetTotalSize())
 				{
 					// If is still flying wait a bit more
 					if (pTransport->IsInAir())
@@ -304,10 +306,13 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 
 	// Is loading
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
+	{
 		if (pUnit->GetCurrentMission() == Mission::Enter)
 			return;
+	}
 
-	auto pExt = TeamExt::ExtMap.Find(pTeam);
+	auto const pExt = TeamExt::ExtMap.Find(pTeam);
+
 	if (pExt)
 	{
 		FootClass* pLeaderUnit = FindTheTeamLeader(pTeam);
@@ -327,7 +332,7 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 			if (pUnit->GetTechnoType()->Ammo > 0 && pUnit->Ammo < pUnit->GetTechnoType()->Ammo)
 			{
 				// If an aircraft object have AirportBound it must be evaluated
-				if (auto pAircraft = abstract_cast<AircraftClass*>(pUnit))
+				if (auto const pAircraft = abstract_cast<AircraftClass*>(pUnit))
 				{
 					if (pAircraft->Type->AirportBound)
 					{
@@ -355,7 +360,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 	FootClass* pLeaderUnit = nullptr;
 	int initialCountdown = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 	bool gatherUnits = false;
-	auto pExt = TeamExt::ExtMap.Find(pTeam);
+	auto const pExt = TeamExt::ExtMap.Find(pTeam);
 
 	// This team has no units! END
 	if (!pTeam)
@@ -408,13 +413,8 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 
 		// Find the Leader
 		pLeaderUnit = pExt->TeamLeader;
-		if (!pLeaderUnit
-			|| !pLeaderUnit->IsAlive
-			|| pLeaderUnit->Health <= 0
-			|| pLeaderUnit->InLimbo
-			|| !(pLeaderUnit->IsOnMap || (pLeaderUnit->GetTechnoType()->IsSubterranean))
-			|| pLeaderUnit->Transporter
-			|| pLeaderUnit->Absorbed)
+
+		if (!IsUnitAvailable(pLeaderUnit, true, false))
 		{
 			pLeaderUnit = FindTheTeamLeader(pTeam);
 			pExt->TeamLeader = pLeaderUnit;
@@ -449,12 +449,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 		// Check if units are around the leader
 		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 		{
-			if (pUnit
-				&& pUnit->IsAlive
-				&& pUnit->Health > 0
-				&& !pUnit->InLimbo
-				&& pUnit->IsOnMap
-				&& !pUnit->Absorbed)
+			if (!IsUnitAvailable(pUnit, true, false))
 			{
 				auto pTypeUnit = pUnit->GetTechnoType();
 
@@ -475,8 +470,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 					if (pAircraft->AirportBound)
 					{
 						// This aircraft won't count for the script action
-						pUnit->QueueMission(Mission::Return, false);
-						pUnit->Mission_Enter();
+						pUnit->vt_entry_484(false, true);
 
 						continue;
 					}
@@ -750,13 +744,9 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 	// Team already have a focused target
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (pUnit
-			&& pUnit->IsAlive
-			&& pUnit->Health > 0
-			&& !pUnit->InLimbo
-			&& !pUnit->TemporalTargetingMe
-			&& !pUnit->BeingWarpedOut
-			&& !pUnit->Transporter)
+		if (IsUnitAvailable(pUnit, true, true) &&
+			!pUnit->TemporalTargetingMe &&
+			!pUnit->BeingWarpedOut)
 		{
 			if (mode == 2)
 			{
@@ -774,8 +764,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 				{
 					if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
 					{
-						pUnit->QueueMission(Mission::Return, false);
-						pUnit->Mission_Enter();
+						pUnit->vt_entry_484(false, true);
 
 						continue;
 					}
@@ -799,8 +788,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 
 						if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
 						{
-							pUnit->QueueMission(Mission::Return, false);
-							pUnit->Mission_Enter();
+							pUnit->vt_entry_484(false, true);
 
 							continue;
 						}
@@ -825,8 +813,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 
 							if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
 							{
-								pUnit->QueueMission(Mission::Return, false);
-								pUnit->Mission_Enter();
+								pUnit->vt_entry_484(false, true);
 
 								continue;
 							}
@@ -875,6 +862,7 @@ void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage = 0)
 		ScriptExt::Log("AI Scripts - SkipNextAction: [%s] [%s] (line: %d = %d,%d) Next script line skipped successfuly. Next line will be: %d = %d,%d\n",
 			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->CurrentMission, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument, pTeam->CurrentScript->CurrentMission + 2,
 			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission + 2].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission + 2].Argument);
+
 		pTeam->CurrentScript->CurrentMission++;
 	}
 
@@ -1053,6 +1041,7 @@ template<bool IsGlobal, class _Pr>
 void ScriptExt::VariableOperationHandler(TeamClass* pTeam, int nVariable, int Number)
 {
 	auto itr = ScenarioExt::Global()->Variables[IsGlobal].find(nVariable);
+
 	if (itr != ScenarioExt::Global()->Variables[IsGlobal].end())
 	{
 		itr->second.Value = _Pr()(itr->second.Value, Number);
@@ -1068,6 +1057,7 @@ template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
 void ScriptExt::VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate)
 {
 	auto itr = ScenarioExt::Global()->Variables[IsSrcGlobal].find(nVarToOperate);
+
 	if (itr != ScenarioExt::Global()->Variables[IsSrcGlobal].end())
 		VariableOperationHandler<IsGlobal, _Pr>(pTeam, nVariable, itr->second.Value);
 
@@ -1089,12 +1079,7 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 		if (!pUnit)
 			continue;
 
-		bool isValidUnit = pUnit->IsAlive
-			&& pUnit->Health > 0
-			&& !pUnit->InLimbo
-			&& (pUnit->IsOnMap || (pUnit->GetTechnoType()->IsSubterranean))
-			&& !pUnit->Transporter
-			&& !pUnit->Absorbed;
+		bool isValidUnit = IsUnitAvailable(pUnit, true, false);
 
 		// Preventing >1 leaders in teams
 		if (teamLeaderFound || !isValidUnit)
@@ -1111,12 +1096,9 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 			continue;
 		}
 
-		auto pUnitType = pUnit->GetTechnoType();
-		if (!pUnitType)
-			continue;
-
 		// The team Leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
-		int unitLeadershipRating = pUnitType->LeadershipRating;
+		int unitLeadershipRating = pUnit->GetTechnoType()->LeadershipRating;
+
 		if (unitLeadershipRating > bestUnitLeadershipValue)
 		{
 			pLeaderUnit = pUnit;
@@ -1141,7 +1123,8 @@ void ScriptExt::Set_ForceJump_Countdown(TeamClass *pTeam, bool repeatLine = fals
 	if (!pTeam)
 		return;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+
 	if (!pTeamData)
 		return;
 
@@ -1174,7 +1157,8 @@ void ScriptExt::Stop_ForceJump_Countdown(TeamClass *pTeam)
 	if (!pTeam)
 		return;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+
 	if (!pTeamData)
 		return;
 
@@ -1190,13 +1174,19 @@ void ScriptExt::Stop_ForceJump_Countdown(TeamClass *pTeam)
 	ScriptExt::Log("AI Scripts - StopForceJumpCountdown: [%s] [%s](line: %d = %d,%d): Stopped Timed Jump\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
 }
 
-bool ScriptExt::IsUnitAvailable(TechnoClass* pTechno, bool checkIfOnMap, bool checkIfSubterranean)
+bool ScriptExt::IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed, bool allowSubterranean)
 {
-	bool isAvailable = pTechno && pTechno->IsAlive && pTechno->Health > 0 &&
+	if (!pTechno)
+		return false;
+
+	bool isAvailable = pTechno->IsAlive && pTechno->Health > 0 &&
 		!pTechno->InLimbo && !pTechno->Transporter && !pTechno->Absorbed;
 
-	isAvailable &= checkIfOnMap ? pTechno->IsOnMap : true;
-	isAvailable &= checkIfSubterranean ? !(pTechno->InWhichLayer() == Layer::Underground || pTechno->GetTechnoType()->IsSubterranean) : true;
+	bool isSubterranean = allowSubterranean && (pTechno->InWhichLayer() == Layer::Underground || pTechno->GetTechnoType()->IsSubterranean);
+	isAvailable &= pTechno->IsOnMap || isSubterranean;
+
+	if (checkIfInTransportOrAbsorbed)
+		isAvailable &= !pTechno->Absorbed && !pTechno->Transporter;
 
 	return isAvailable;
 }
@@ -1208,7 +1198,6 @@ void ScriptExt::Log(const char* pFormat, ...)
 		va_list args;
 		va_start(args, pFormat);
 		Debug::LogWithVArgs(pFormat, args);
-		va_end(args);
 		va_end(args);
 	}
 }

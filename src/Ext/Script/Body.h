@@ -208,7 +208,7 @@ public:
 	static void VariableOperationHandler(TeamClass* pTeam, int nVariable, int Number);
 	template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
-	static bool IsUnitAvailable(TechnoClass* pTechno, bool checkIfOnMap = true, bool checkIfSubterranean = false);
+	static bool IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed, bool allowSubterranean);
 	static void Log(const char* pFormat, ...);
 
 	// Functions.MissionAttack.cpp
