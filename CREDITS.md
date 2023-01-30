@@ -179,6 +179,8 @@ This page lists all the individual contributions to the project by their author.
   - Projectile obstacle logic additions
   - `AnimList` on zero damage Warheads toggle
   - Additions to automatic passenger deletion
+  - Buildings considered as vehicles
+  - TechnoType target evaluation map zone check behaviour customization
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

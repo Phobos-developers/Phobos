@@ -329,6 +329,16 @@ ChronoRangeMinimum=     ; integer, can be used to set a small range within which
 ChronoDelay=            ; integer, delay after teleport for chronosphere
 ```
 
+### Customizable target evaluation map zone check behaviour
+
+- By default, any units seeking targets via ScriptType team mission (action) `0 Attack Target Type` or any [attack team missions introduced in Phobos](AI-Scripting-and-Mapping.md#10000-10049-attack-actions) check if the potential target is in same map zone as the attacking unit to be able to pick it as a target. This can now be customized to allow objects from any map zone with no constraints (`TargetZoneScanType=any`) or only if they are within weapon range (`TargetZoneScanType=inrange`).
+
+In `rulesmd.ini`:
+```ini
+[General]
+TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
+```
+
 ### Customizable unit image in art
 
 - `Image` tag in art INI is no longer limited to AnimationTypes and BuildingTypes, and can be applied to all TechnoTypes (InfantryTypes, VehicleTypes, AircraftTypes, BuildingTypes).
@@ -368,7 +378,6 @@ In `rulesmd.ini`:
 [SOMETECHNO]                 ; TechnoType
 Explodes.KillPassengers=true ; boolean
 ```
-
 
 ### IronCurtain effects on organics customization
 - In vanilla game, when iron-curtain is applied on organic units like infantries and squids, they could only get killed instantly by C4Warhead. This behavior is now dehardcoded, and the effect under iron-curtain can now be chosen among

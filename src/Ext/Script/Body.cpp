@@ -470,7 +470,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 					if (pAircraft->AirportBound)
 					{
 						// This aircraft won't count for the script action
-						pUnit->vt_entry_484(false, true);
+						pUnit->EnterIdleMode(false, true);
 
 						continue;
 					}
@@ -764,7 +764,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 				{
 					if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
 					{
-						pUnit->vt_entry_484(false, true);
+						pUnit->EnterIdleMode(false, true);
 
 						continue;
 					}
@@ -788,7 +788,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 
 						if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
 						{
-							pUnit->vt_entry_484(false, true);
+							pUnit->EnterIdleMode(false, true);
 
 							continue;
 						}
@@ -813,7 +813,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 
 							if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
 							{
-								pUnit->vt_entry_484(false, true);
+								pUnit->EnterIdleMode(false, true);
 
 								continue;
 							}

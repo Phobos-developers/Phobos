@@ -1049,6 +1049,60 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 }
 
 
+bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, TargetZoneScanType zoneScanType, WeaponTypeClass* pWeapon, bool useZone, ZoneType zone)
+{
+	if (!pThis || !pTarget)
+		return false;
+
+	if (pThis->WhatAmI() == AbstractType::Aircraft)
+		return true;
+
+	MovementZone mZone = pThis->GetTechnoType()->MovementZone;
+	ZoneType currentZone = useZone ? zone : MapClass::Instance->GetMapZone(pThis->GetMapCoords(), mZone, pThis->IsOnBridge());
+
+	if (currentZone != ZoneType::None)
+	{
+		if (zoneScanType == TargetZoneScanType::Any)
+			return true;
+
+		ZoneType targetZone = MapClass::Instance->GetMapZone(pTarget->GetMapCoords(), mZone, pTarget->IsOnBridge());
+
+		if (zoneScanType == TargetZoneScanType::Same)
+		{
+			if (currentZone != targetZone)
+				return false;
+		}
+		else
+		{
+			auto const speedType = pThis->GetTechnoType()->SpeedType;
+			auto cellStruct = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(pTarget->Location),
+				speedType, -1, mZone, false, 1, 1, true,
+				false, false, speedType != SpeedType::Float, CellStruct::Empty, false, false);
+			auto const pCell = MapClass::Instance->GetCellAt(cellStruct);
+
+			if (!pCell)
+				return false;
+
+			double distance = pCell->GetCoordsWithBridge().DistanceFrom(pTarget->GetCenterCoords());
+
+			if (!pWeapon)
+			{
+				int weaponIndex = pThis->SelectWeapon(pTarget);
+
+				if (weaponIndex < 0)
+					return false;
+
+				pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+			}
+
+			if (distance > pWeapon->Range)
+				return false;
+		}
+	}
+
+	return true;
+}
+
 // =============================
 // load / save
 

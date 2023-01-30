@@ -352,7 +352,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 						}
 						else
 						{
-							pFoot->vt_entry_484(false, true);
+							pFoot->EnterIdleMode(false, true);
 						}
 
 						continue;
@@ -411,6 +411,8 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 
 	if (!pTechno)
 		return nullptr;
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
 
 	// Generic method for targeting
 	for (int i = 0; i < TechnoClass::Array->Count; i++)
@@ -477,6 +479,10 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 
 		// OnlyTargetHouseEnemy forces targets of a specific (hated) house
 		if (onlyTargetThisHouseEnemy && object->Owner != onlyTargetThisHouseEnemy)
+			continue;
+
+		// Check map zone
+		if (!TechnoExt::AllowedTargetByZone(pTechno, object, pTypeExt->TargetZoneScanType, weaponType))
 			continue;
 
 		if (object != pTechno &&

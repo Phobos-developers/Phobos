@@ -874,6 +874,33 @@ namespace detail
 		return false;
 	}
 
+	template <>
+	inline bool read<TargetZoneScanType>(TargetZoneScanType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "same") == 0)
+			{
+				value = TargetZoneScanType::Same;
+			}
+			else if (_strcmpi(parser.value(), "any") == 0)
+			{
+				value = TargetZoneScanType::Any;
+			}
+			else if (_strcmpi(parser.value(), "inrange") == 0)
+			{
+				value = TargetZoneScanType::InRange;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a target zone scan type");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{
