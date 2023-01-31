@@ -28,6 +28,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
 - Allowed usage of `AlternateFLH` of vehicles in `OpenTopped` transport.
+- Improved the statistic distribution of the spawned crates over the visible area of the map so that they will no longer have a higher chance to show up near the edges.
 - SHP debris shadows now respect the `Shadow` tag.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
 - Added a "Load Game" button to the retry dialog on mission failure.
@@ -621,4 +622,15 @@ In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 RadialIndicatorVisibility=allies  ; list of Affected House Enumeration (owner/self | allies/ally | enemies/enemy | all)
+```
+
+## Crate generation
+
+The statistic distribution of the randomly generated crates is now more uniform within the visible map region by using an optimized sampling procedure.
+- You can now limit the crates' spawn region to land only.
+
+In `rulesmd.ini`:
+```ini
+[CrateRules]
+CrateOnlyOnLand=no  ; boolean
 ```

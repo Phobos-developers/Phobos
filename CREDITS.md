@@ -204,7 +204,8 @@ This page lists all the individual contributions to the project by their author.
    - "Shield is broken" trigger event
    - RadialIndicator observer visibility
    - Cloaked objects from allies displaying to player in singleplayer campaigns
-   - Skip `NaturalParticleSystem` displaying from in-map pre-placed structures.
+   - Skip `NaturalParticleSystem` displaying from in-map pre-placed structures
+   - Random crate generation limited to land option, optimization for crates' random sampling
    - `ImmuneToCrit` for shields
    - Forbidding parallel AI queues by type
    - The option to allow DieSound/VoiceDie being played when grinding
