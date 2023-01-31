@@ -42,6 +42,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Next_IgnoreDesignators)
 		.Process(this->SW_Next_RandomWeightsData)
 		.Process(this->SW_Next_RollChances)
+		.Process(this->ShowTimer_Priority)
 		;
 }
 
@@ -82,6 +83,8 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_Next_IgnoreInhibitors.Read(exINI, pSection, "SW.Next.IgnoreInhibitors");
 	this->SW_Next_IgnoreDesignators.Read(exINI, pSection, "SW.Next.IgnoreDesignators");
 	this->SW_Next_RollChances.Read(exINI, pSection, "SW.Next.RollChances");
+
+	this->ShowTimer_Priority.Read(exINI, pSection, "ShowTimer.Priority");
 
 	char tempBuffer[32];
 	// LimboDelivery.RandomWeights

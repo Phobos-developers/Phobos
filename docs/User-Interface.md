@@ -100,6 +100,17 @@ In `ra2md.ini`:
 ShowPlacementPreview=yes   ; boolean
 ```
 
+### SuperWeapon ShowTimer sorting
+
+- You can now sort the timers of superweapons in ascending order from top to bottom according to a given priority value.
+
+In `rulesmd.ini`
+```ini
+[SOMESWTYPE]
+ShowTimer=yes
+ShowTimer.Priority=0  ; integer
+```
+
 ## Hotkey Commands
 
 ### `[ ]` Dump Object Info

@@ -217,6 +217,7 @@ This page lists all the individual contributions to the project by their author.
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**
+   - Customizable ShowTimer priority of superweapons
    - Iron Curtain effects customization on infantries and organic units
    - Use `CustomPalette` for animations with `Tiled=yes`
 - **TwinkleStar**

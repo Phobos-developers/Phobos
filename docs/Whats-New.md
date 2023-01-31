@@ -259,6 +259,7 @@ New:
 - Iron-curtain effects on infantries and organic units (by ststl)
 - Custom `SlavesFreeSound` (by TwinkleStar)
 - Allows jumpjet to crash without rotation (by TwinkleStar)
+- Customizable priority of superweapons timer sorting(by ststl)
 - Spawn animation for `CreateUnit` (by Starkku)
 
 Vanilla fixes:
