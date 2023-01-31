@@ -6,6 +6,7 @@
 #include <Utilities/Enum.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
+#include <New/Type/TransferTypeClass.h>
 class AnimTypeExt
 {
 public:
@@ -33,6 +34,7 @@ public:
 		Valueable<int> Damage_Delay;
 		Valueable<bool> Damage_DealtByInvoker;
 		Valueable<bool> Damage_ApplyOncePerLoop;
+		ValueableIdxVector<TransferTypeClass> Transfer_Types;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -53,6 +55,7 @@ public:
 			, Damage_Delay { 0 }
 			, Damage_DealtByInvoker { false }
 			, Damage_ApplyOncePerLoop { false }
+			, Transfer_Types {}
 		{ }
 
 		virtual ~ExtData() = default;

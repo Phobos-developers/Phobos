@@ -105,6 +105,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TransactMoney_Display_Houses.Read(exINI, pSection, "TransactMoney.Display.Houses");
 	this->TransactMoney_Display_AtFirer.Read(exINI, pSection, "TransactMoney.Display.AtFirer");
 	this->TransactMoney_Display_Offset.Read(exINI, pSection, "TransactMoney.Display.Offset");
+	this->Transfer_Types.Read(exINI, pSection, "Transfer.Types");
 	this->SplashList.Read(exINI, pSection, "SplashList");
 	this->SplashList_PickRandom.Read(exINI, pSection, "SplashList.PickRandom");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
@@ -186,6 +187,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TransactMoney_Display_Houses)
 		.Process(this->TransactMoney_Display_AtFirer)
 		.Process(this->TransactMoney_Display_Offset)
+		.Process(this->Transfer_Types)
 		.Process(this->SplashList)
 		.Process(this->SplashList_PickRandom)
 		.Process(this->RemoveDisguise)
