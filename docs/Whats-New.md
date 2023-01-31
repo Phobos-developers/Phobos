@@ -255,6 +255,7 @@ New:
 - Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)
 - Toggleable DieSound when grinding (by Trsdy)
 - Shields can inherit Techno ArmorType (by Starkku)
+- Allow random crates to be generated only on lands (by Trsdy)
 - Iron-curtain effects on infantries and organic units (by ststl)
 - Custom `SlavesFreeSound` (by TwinkleStar)
 - Allows jumpjet to crash without rotation (by TwinkleStar)
@@ -263,6 +264,7 @@ New:
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
 - Allow usage of `AlternateFLH%d` of vehicles in `OpenTopped` transport. (by Trsdy)
+- Improved the statistic distribution of the spawned crates over the visible area of the map. (by Trsdy, based on TwinkleStar's work)
 - Teams spawned by trigger action 7,80,107 can use IFV and `OpenTopped` logic normally (by Trsdy)
 - Prevented units from retaining previous order after ownership change (by Trsdy)
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations (by Starkku)
