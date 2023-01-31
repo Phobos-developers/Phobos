@@ -184,11 +184,12 @@ This page lists all the individual contributions to the project by their author.
    - Laser fixes prototype
 - **Trsdy**
    - Preserve IronCurtain status upon DeploysInto/UndeploysInto
-   - Misc jumpjet fixes:
-      - Facing towards target fix
+   - Several jumpjet fixes:
+      - Facing towards target even if not omni-firing
       - Turret direction in idle state fix
       - Sensor fix
       - Allow to tilt on ground
+   - OmniFire.TurnToTarget
    - Object Self-destruction logic
    - Misc vanilla suicidal behavior fix
    - Post-type-conversion update
