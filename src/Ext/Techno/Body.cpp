@@ -1048,8 +1048,7 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	return finalLocation;
 }
 
-
-bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, TargetZoneScanType zoneScanType, WeaponTypeClass* pWeapon, bool useZone, ZoneType zone)
+bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, TargetZoneScanType zoneScanType, WeaponTypeClass* pWeapon, bool useZone, int zone)
 {
 	if (!pThis || !pTarget)
 		return false;
@@ -1058,14 +1057,14 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 		return true;
 
 	MovementZone mZone = pThis->GetTechnoType()->MovementZone;
-	ZoneType currentZone = useZone ? zone : MapClass::Instance->GetMapZone(pThis->GetMapCoords(), mZone, pThis->IsOnBridge());
+	int currentZone = useZone ? zone : MapClass::Instance->GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->IsOnBridge());
 
-	if (currentZone != ZoneType::None)
+	if (currentZone != -1)
 	{
 		if (zoneScanType == TargetZoneScanType::Any)
 			return true;
 
-		ZoneType targetZone = MapClass::Instance->GetMapZone(pTarget->GetMapCoords(), mZone, pTarget->IsOnBridge());
+		int targetZone = MapClass::Instance->GetMovementZoneType(pTarget->GetMapCoords(), mZone, pTarget->IsOnBridge());
 
 		if (zoneScanType == TargetZoneScanType::Same)
 		{
@@ -1074,6 +1073,9 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 		}
 		else
 		{
+			if (currentZone == targetZone)
+				return true;
+
 			auto const speedType = pThis->GetTechnoType()->SpeedType;
 			auto cellStruct = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(pTarget->Location),
 				speedType, -1, mZone, false, 1, 1, true,

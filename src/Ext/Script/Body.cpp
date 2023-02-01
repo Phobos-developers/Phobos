@@ -757,14 +757,14 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 				{
 					bForceNextAction = false;
 
-					if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0)
+					if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo > 0)
 						pUnit->QueueMission(Mission::Move, false);
 
 					continue;
 				}
 				else
 				{
-					if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
+					if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo <= 0)
 					{
 						pUnit->EnterIdleMode(false, true);
 
@@ -779,7 +779,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 					// Any member in range
 					if ((pUnit->DistanceFrom(pFocus->GetCell()) / 256.0) > closeEnough)
 					{
-						if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0)
+						if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo > 0)
 							pUnit->QueueMission(Mission::Move, false);
 
 						continue;
@@ -788,7 +788,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 					{
 						bForceNextAction = true;
 
-						if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
+						if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo <= 0)
 						{
 							pUnit->EnterIdleMode(false, true);
 
@@ -803,7 +803,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 					{
 						if ((pUnit->DistanceFrom(pFocus->GetCell()) / 256.0) > closeEnough)
 						{
-							if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0)
+							if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo > 0)
 								pUnit->QueueMission(Mission::Move, false);
 
 							continue;
@@ -813,7 +813,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 							if (pUnit->IsTeamLeader)
 								bForceNextAction = true;
 
-							if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
+							if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo <= 0)
 							{
 								pUnit->EnterIdleMode(false, true);
 

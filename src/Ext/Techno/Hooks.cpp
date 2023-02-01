@@ -754,7 +754,7 @@ DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
 
 	GET(TechnoClass*, pThis, EDI);
 	GET(ObjectClass*, pObject, ESI);
-	GET(ZoneType, zone, EBP);
+	GET(int, zone, EBP);
 
 	if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
 	{

@@ -93,7 +93,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 					auto pKillerTeamUnitData = TechnoExt::ExtMap.Find(pFootTeam);
 					pKillerTeamUnitData->LastKillWasTeamTarget = false;
 
-					if (pFootTeam->GetTechnoType()->WhatAmI() == AbstractType::AircraftType)
+					if (pFootTeam->WhatAmI() == AbstractType::Aircraft)
 					{
 						pFootTeam->SetTarget(nullptr);
 						pFootTeam->LastTarget = nullptr;
@@ -118,26 +118,22 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 		{
 			auto pTechnoType = pFoot->GetTechnoType();
 
-			if (pTechnoType)
+			if (pTechnoType->WhatAmI() == AbstractType::AircraftType
+				&& !pFoot->IsInAir()
+				&& abstract_cast<AircraftTypeClass*>(pTechnoType)->AirportBound
+				&& pFoot->Ammo < pTechnoType->Ammo)
 			{
-				if (pTechnoType->WhatAmI() == AbstractType::AircraftType
-					&& !pFoot->IsInAir()
-					&& abstract_cast<AircraftTypeClass*>(pTechnoType)->AirportBound
-					&& pFoot->Ammo < pTechnoType->Ammo)
-				{
-					bAircraftsWithoutAmmo = true;
-				}
+				bAircraftsWithoutAmmo = true;
+			}
 
-				bool pacifistUnit = !IsUnitArmed(pFoot);
-				pacifistTeam &= pacifistUnit;
+			bool pacifistUnit = !IsUnitArmed(pFoot);
+			pacifistTeam &= pacifistUnit;
 
-				// Any Team member (infantry) is a special agent? If yes ignore some checks based on Weapons.
-				if (pTechnoType->WhatAmI() == AbstractType::InfantryType)
-				{
-					auto pTypeInf = abstract_cast<InfantryTypeClass*>(pTechnoType);
-					if ((pTypeInf->Agent && pTypeInf->Infiltrate) || pTypeInf->Engineer)
-						agentMode = true;
-				}
+			// Any Team member (infantry) is a special agent? If yes ignore some checks based on Weapons.
+			if (auto const pTypeInf = static_cast<InfantryTypeClass*>(pTechnoType))
+			{
+				if ((pTypeInf->Agent && pTypeInf->Infiltrate) || pTypeInf->Engineer)
+					agentMode = true;
 			}
 		}
 	}
@@ -312,7 +308,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 			{
 				auto pTechnoType = pFoot->GetTechnoType();
 
-				if (pTechnoType && IsUnitAvailable(pFoot, true, true))
+				if (IsUnitAvailable(pFoot, true, true))
 				{
 					// Aircraft case 1
 					if ((pTechnoType->WhatAmI() == AbstractType::AircraftType
