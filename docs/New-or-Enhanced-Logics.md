@@ -291,16 +291,16 @@ PowerPlantEnhancer.Factor=1.0      ; floating point value
 
 ### Spy Effects
 
-- Additional espionage bonuses can be toggled with `SpyEffects.Custom`.
-  - `SpyEffects.VictimSuperWeapon` instantly launches a Super Weapon for the owner of the infiltrated building at building's coordinates.
-  - `SpyEffects.InfiltratorSuperWeapon` behaves the same as above, with the Super Weapon's owner being the owner of the spying unit.
+- Additional espionage bonuses can be toggled with `SpyEffect.Custom`.
+  - `SpyEffect.VictimSuperWeapon` instantly launches a Super Weapon for the owner of the infiltrated building at building's coordinates.
+  - `SpyEffect.InfiltratorSuperWeapon` behaves the same as above, with the Super Weapon's owner being the owner of the spying unit.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                     ; BuildingType
-SpyEffects.Custom=false            ; boolean
-SpyEffects.VictimSuperWeapon=      ; SuperWeaponType
-SpyEffects.InfiltratorSuperWeapon= ; SuperWeaponType
+SpyEffect.Custom=false            ; boolean
+SpyEffect.VictimSuperWeapon=      ; SuperWeaponType
+SpyEffect.InfiltratorSuperWeapon= ; SuperWeaponType
 ```
 
 ## Infantry
