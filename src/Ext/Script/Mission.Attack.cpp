@@ -116,11 +116,11 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 	{
 		if (pFoot && pFoot->IsAlive && !pFoot->InLimbo)
 		{
-			auto pTechnoType = pFoot->GetTechnoType();
+			auto const pTechnoType = pFoot->GetTechnoType();
 
 			if (pTechnoType->WhatAmI() == AbstractType::AircraftType
 				&& !pFoot->IsInAir()
-				&& abstract_cast<AircraftTypeClass*>(pTechnoType)->AirportBound
+				&& static_cast<AircraftTypeClass*>(pTechnoType)->AirportBound
 				&& pFoot->Ammo < pTechnoType->Ammo)
 			{
 				bAircraftsWithoutAmmo = true;
@@ -208,7 +208,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 			{
 				if (pFoot->IsAlive && !pFoot->InLimbo)
 				{
-					auto pTechnoType = pFoot->GetTechnoType();
+					auto const pTechnoType = pFoot->GetTechnoType();
 
 					if (pFoot != selectedTarget && pFoot->Target != selectedTarget)
 					{
@@ -248,7 +248,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 
 						// Tanya / Commando C4 case
 						if ((pTechnoType->WhatAmI() == AbstractType::InfantryType
-							&& (abstract_cast<InfantryTypeClass*>(pTechnoType)->C4
+							&& (static_cast<InfantryTypeClass*>(pTechnoType)->C4
 								|| pFoot->HasAbility(Ability::C4)))
 							&& pFoot->GetCurrentMission() != Mission::Sabotage)
 						{
@@ -306,7 +306,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 
 			for (auto pFoot = pTeam->FirstUnit; pFoot && !bForceNextAction; pFoot = pFoot->NextTeamMember)
 			{
-				auto pTechnoType = pFoot->GetTechnoType();
+				auto const pTechnoType = pFoot->GetTechnoType();
 
 				if (IsUnitAvailable(pFoot, true, true))
 				{
@@ -356,7 +356,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 
 					// Tanya / Commando C4 case
 					if ((pTechnoType->WhatAmI() == AbstractType::InfantryType
-						&& abstract_cast<InfantryTypeClass*>(pTechnoType)->C4
+						&& static_cast<InfantryTypeClass*>(pTechnoType)->C4
 						|| pFoot->HasAbility(Ability::C4)) && pFoot->GetCurrentMission() != Mission::Sabotage)
 					{
 						pFoot->QueueMission(Mission::Sabotage, true);

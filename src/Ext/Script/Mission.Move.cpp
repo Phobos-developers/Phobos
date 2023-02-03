@@ -60,15 +60,12 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 		{
 			auto const pTechnoType = pFoot->GetTechnoType();
 
-			if (pTechnoType)
+			if (pTechnoType->WhatAmI() == AbstractType::AircraftType
+				&& !pFoot->IsInAir()
+				&& static_cast<AircraftTypeClass*>(pTechnoType)->AirportBound
+				&& pFoot->Ammo < pTechnoType->Ammo)
 			{
-				if (pTechnoType->WhatAmI() == AbstractType::AircraftType
-					&& !pFoot->IsInAir()
-					&& abstract_cast<AircraftTypeClass*>(pTechnoType)->AirportBound
-					&& pFoot->Ammo < pTechnoType->Ammo)
-				{
-					bAircraftsWithoutAmmo = true;
-				}
+				bAircraftsWithoutAmmo = true;
 			}
 		}
 	}
@@ -123,10 +120,10 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 
 			for (auto pFoot = pTeam->FirstUnit; pFoot; pFoot = pFoot->NextTeamMember)
 			{
-				auto const pTechnoType = pFoot ? pFoot->GetTechnoType() : nullptr;
-
-				if (!pTechnoType)
+				if (!pFoot)
 					continue;
+
+				auto const pTechnoType = pFoot->GetTechnoType();
 
 				if (IsUnitAvailable(pFoot, true, true))
 				{
