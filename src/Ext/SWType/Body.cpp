@@ -1,6 +1,5 @@
 #include "Body.h"
 
-#include <SuperWeaponTypeClass.h>
 #include <StringTable.h>
 
 template<> const DWORD Extension<SuperWeaponTypeClass>::Canary = 0x11111111;
