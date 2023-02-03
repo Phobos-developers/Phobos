@@ -80,8 +80,8 @@
     <ClCompile Include="src\Ext\Scenario\Hooks.Waypoints.cpp" />
     <ClCompile Include="src\Ext\Script\Body.cpp" />
     <ClCompile Include="src\Ext\Script\Hooks.cpp" />
-    <ClCompile Include="src\Ext\Script\Functions.MissionAttack.cpp" />
-    <ClCompile Include="src\Ext\Script\Functions.MissionMove.cpp" />
+    <ClCompile Include="src\Ext\Script\Mission.Attack.cpp" />
+    <ClCompile Include="src\Ext\Script\Mission.Move.cpp" />
     <ClCompile Include="src\Ext\Rules\Body.cpp" />
     <ClCompile Include="src\Ext\SWType\Body.cpp" />
     <ClCompile Include="src\Ext\Side\Body.cpp" />
