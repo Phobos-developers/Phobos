@@ -293,6 +293,7 @@ Vanilla fixes:
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
 - Add `ImmuneToCrit` for shields (by Trsdy)
+- Fixed shield animation being hidden while underground or in tunnels fix not working correctly (by Starkku)
 
 </details>
 
