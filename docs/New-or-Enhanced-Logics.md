@@ -625,7 +625,7 @@ OpenTopped.AllowFiringIfDeactivated=true  ; boolean
 
 ### Disabling fallback to (Elite)Secondary weapon
 
-- It is now possible to disable the fallback to `(Elite)Secondary` weapon from `(Elite)Primary` weapon if it cannot fire at the chosen target by setting `NoSecondaryWeaponFallback` to true (defaults to false). This does not apply to special cases where `(Elite)Secondary` weapon is always chosen, including but not necessarily limited to the following:
+- It is now possible to disable the fallback to `(Elite)Secondary` weapon from `(Elite)Primary` weapon if it cannot fire at the chosen target by setting `NoSecondaryWeaponFallback` to true (defaults to false). `NoSecondaryWeaponFallback.AllowAA` controls whether or not fallback because of projectile `AA` setting and target being in air is still allowed. This does not apply to special cases where `(Elite)Secondary` weapon is always chosen, including but not necessarily limited to the following:
   - `OpenTransportWeapon=1` on an unit firing from inside `OpenTopped=true` transport.
   - `NoAmmoWeapon=1` on an unit with  `Ammo` value higher than 0 and current ammo count lower or  equal to `NoAmmoAmount`.
   - Deployed `IsSimpleDeployer=true` units with`DeployFireWeapon=1` set or omitted.
@@ -637,8 +637,9 @@ OpenTopped.AllowFiringIfDeactivated=true  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                     ; TechnoType
-NoSecondaryWeaponFallback=false  ; boolean
+[SOMETECHNO]                             ; TechnoType
+NoSecondaryWeaponFallback=false          ; boolean
+NoSecondaryWeaponFallback.AllowAA=false  ; boolean
 ```
 
 ### Firing offsets for specific Burst shots

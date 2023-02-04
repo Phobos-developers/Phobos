@@ -268,6 +268,7 @@ New:
 - Custom warhead debris animations (by Starkku)
 - Multiple burst shots / burst delay within infantry firing sequence (by Starkku)
 - Attached particle system for animations (by Starkku)
+- Removal of hardcoded AA & Gattling weapon selection restrictions (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -284,6 +285,9 @@ Vanilla fixes:
 - Made sure that vxl units being flipped over get killed instead of rotating up and down (by Trsdy)
 - Allow jumpjet units to visually tilt or be flipped over on the ground even if `TiltCrashJumpjet=no` (by Trsdy)
 - Fixed the range for number of debris spawned by Warhead to use MaxDebris instead of MaxDebris - 1 (by Starkku)
+- Fixed `LandTargeting=1` not preventing from targeting TerrainTypes (trees etc.) on land (by Starkku)
+- Fixed `NavalTargeting=6` not preventing from targeting empty water cells or TerrainTypes (trees etc.) on water (by Starkku)
+- Fixed `NavalTargeting=7` and/or `LandTargeting=2` resulting in still targeting TerrainTypes (trees etc.) on land with `Primary` weapon (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
