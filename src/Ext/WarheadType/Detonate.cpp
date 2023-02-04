@@ -57,7 +57,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			if (this->TransactMoney_Display)
 			{
 				auto displayCoords = this->TransactMoney_Display_AtFirer ? (pOwner ? pOwner->Location : coords) : coords;
-				FlyingStrings::AddMoneyString(this->TransactMoney, pHouse, this->TransactMoney_Display_Houses, displayCoords, this->TransactMoney_Display_Offset);
+				FlyingStrings::AddNumberString(this->TransactMoney, pHouse, this->TransactMoney_Display_Houses,
+					ColorStruct(0, 255, 0), displayCoords, this->TransactMoney_Display_Offset);
 			}
 		}
 
@@ -103,20 +104,26 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_Respawn_Duration > 0 ||
 		this->Shield_SelfHealing_Duration > 0 ||
 		this->Shield_AttachTypes.size() > 0 ||
-		this->Shield_RemoveTypes.size() > 0;
+		this->Shield_RemoveTypes.size() > 0 ||
+		this->Transfer_Types.size() > 0;
 
 	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 
 	const float cellSpread = this->OwnerObject()->CellSpread;
 	if (cellSpread && isCellSpreadWarhead)
 	{
-		for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
+		std::vector<TechnoClass*> SpreadTargets = Helpers::Alex::getCellSpreadItems(coords, cellSpread, true);
+		for (auto pTarget : SpreadTargets)
 			this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
+		TransferWithGroup(pOwner, pHouse, SpreadTargets, coords);
 	}
 	else if (pBullet && isCellSpreadWarhead)
 	{
 		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
+		{
 			this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
+			TransferWithUnit(pOwner, pHouse, pTarget, coords);
+		}
 	}
 }
 

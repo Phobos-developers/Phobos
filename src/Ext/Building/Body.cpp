@@ -12,8 +12,8 @@ void BuildingExt::ExtData::DisplayGrinderRefund()
 {
 	if (this->AccumulatedGrindingRefund && Unsorted::CurrentFrame % 15 == 0)
 	{
-		FlyingStrings::AddMoneyString(this->AccumulatedGrindingRefund, this->OwnerObject()->Owner,
-			this->TypeExtData->Grinding_DisplayRefund_Houses, this->OwnerObject()->GetRenderCoords(), this->TypeExtData->Grinding_DisplayRefund_Offset);
+		FlyingStrings::AddNumberString(this->AccumulatedGrindingRefund, this->OwnerObject()->Owner, this->TypeExtData->Grinding_DisplayRefund_Houses,
+			ColorStruct(0, 255, 0), this->OwnerObject()->GetRenderCoords(), this->TypeExtData->Grinding_DisplayRefund_Offset);
 
 		this->AccumulatedGrindingRefund = 0;
 	}

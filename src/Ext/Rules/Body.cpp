@@ -6,6 +6,7 @@
 #include <GameStrings.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
+#include <New/Type/TransferTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 
 template<> const DWORD Extension<RulesClass>::Canary = 0x12341234;
@@ -30,6 +31,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
 	RadTypeClass::LoadFromINIList(pINI);
 	ShieldTypeClass::LoadFromINIList(pINI);
+	TransferTypeClass::LoadFromINIList(pINI);
 	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
 
 	Data->LoadBeforeTypeData(pThis, pINI);

@@ -31,6 +31,7 @@ private:
 
 public:
 	static void Add(const wchar_t* text, CoordStruct coords, ColorStruct color, Point2D pixelOffset = Point2D::Empty);
-	static void AddMoneyString(int amount, HouseClass* owner, AffectedHouse displayToHouses, CoordStruct coords, Point2D pixelOffset = Point2D::Empty);
+	static void AddNumberString(int amount, HouseClass* owner, AffectedHouse displayToHouses, ColorStruct color,
+		CoordStruct coords, Point2D pixelOffset = Point2D::Empty, bool sign = true, const wchar_t* prefix = Phobos::UI::CostLabel);
 	static void UpdateAll();
 };

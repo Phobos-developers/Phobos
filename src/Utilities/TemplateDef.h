@@ -874,6 +874,66 @@ namespace detail
 		return false;
 	}
 
+	template <>
+	inline bool read<TransferTypeResource>(TransferTypeResource& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = TransferTypeResource::Experience;
+			auto str = parser.value();
+			if (_strcmpi(str, "money") == 0)
+			{
+				parsed = TransferTypeResource::Money;
+			}
+			else if (_strcmpi(str, "health") == 0)
+			{
+				parsed = TransferTypeResource::Health;
+			}
+			else if (_strcmpi(str, "ammo") == 0)
+			{
+				parsed = TransferTypeResource::Ammo;
+			}
+			else if (_strcmpi(str, "gatlingrate") == 0)
+			{
+				parsed = TransferTypeResource::GatlingRate;
+			}
+			else if (_strcmpi(str, "experience") != 0)
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "TransferTypeAttribute can be either 'experience', 'money', 'health', 'ammo', 'gatlingrate' or 'gatlingstage'");
+				return false;
+			}
+			value = parsed;
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<SpreadDistribution>(SpreadDistribution& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = SpreadDistribution::NoDecrease;
+			auto str = parser.value();
+			if (_strcmpi(str, "equally") == 0)
+			{
+				parsed = SpreadDistribution::Equally;
+			}
+			else if (_strcmpi(str, "byproximity") == 0)
+			{
+				parsed = SpreadDistribution::ByProximity;
+			}
+			else if (_strcmpi(str, "nodecrease") != 0)
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "SpreadDistribution can be either 'nodecrease', 'equally' or 'byproximity'");
+				return false;
+			}
+			value = parsed;
+			return true;
+		}
+		return false;
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{

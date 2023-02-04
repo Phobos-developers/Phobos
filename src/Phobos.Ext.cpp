@@ -28,6 +28,7 @@
 #include <Ext/WeaponType/Body.h>
 
 #include <New/Type/RadTypeClass.h>
+#include <New/Type/TransferTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 
 #include <utility>
@@ -215,6 +216,7 @@ using PhobosTypeRegistry = TypeRegistry<
 	// New classes
 	ShieldTypeClass,
 	LaserTrailTypeClass,
+	TransferTypeClass,
 	RadTypeClass,
 	ShieldClass
 	// other classes

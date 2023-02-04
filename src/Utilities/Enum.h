@@ -187,6 +187,22 @@ enum class IronCurtainEffect : BYTE
 	Ignore = 2
 };
 
+enum class TransferTypeResource : BYTE
+{
+	Experience		= 0,
+	Money			= 1,
+	Health			= 2,
+	Ammo			= 3,
+	GatlingRate		= 4
+};
+
+enum class SpreadDistribution : BYTE
+{
+	NoDecrease	= 0,
+	Equally		= 1,
+	ByProximity	= 2
+};
+
 class MouseCursorHotSpotX
 {
 public:

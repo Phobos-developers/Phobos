@@ -5,6 +5,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
+#include <New/Type/TransferTypeClass.h>
 #include <Ext/Bullet/Body.h>
 
 class WarheadTypeExt
@@ -23,6 +24,7 @@ public:
 		Valueable<AffectedHouse> TransactMoney_Display_Houses;
 		Valueable<bool> TransactMoney_Display_AtFirer;
 		Valueable<Point2D> TransactMoney_Display_Offset;
+		ValueableVector<TransferTypeClass*> Transfer_Types;
 		ValueableVector<AnimTypeClass*> SplashList;
 		Valueable<bool> SplashList_PickRandom;
 		Valueable<bool> RemoveDisguise;
@@ -107,6 +109,7 @@ public:
 			, TransactMoney_Display_Houses { AffectedHouse::All }
 			, TransactMoney_Display_AtFirer { false }
 			, TransactMoney_Display_Offset { { 0, 0 } }
+			, Transfer_Types {}
 			, SplashList {}
 			, SplashList_PickRandom { false }
 			, RemoveDisguise { false }
@@ -184,6 +187,9 @@ public:
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
+
+		void TransferWithGroup(TechnoClass* pSourceTechno, HouseClass* pSourceHouse, std::vector<TechnoClass*> pTargets, CoordStruct coords);
+		void TransferWithUnit(TechnoClass* pSourceTechno, HouseClass* pSourceHouse, TechnoClass* pTargetTechno, CoordStruct coords);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
