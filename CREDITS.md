@@ -176,6 +176,7 @@ This page lists all the individual contributions to the project by their author.
   - Custom warhead debris animations
   - Attached particle system for animations
   - Removal of hardcoded AA & Gattling weapon selection restrictions
+  - Projectile obstacle logic additions
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption

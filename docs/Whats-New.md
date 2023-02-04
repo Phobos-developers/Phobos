@@ -269,6 +269,7 @@ New:
 - Multiple burst shots / burst delay within infantry firing sequence (by Starkku)
 - Attached particle system for animations (by Starkku)
 - Removal of hardcoded AA & Gattling weapon selection restrictions (by Starkku)
+- Projectile `SubjectToLand/Water` (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

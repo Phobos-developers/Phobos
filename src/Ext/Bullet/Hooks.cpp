@@ -4,6 +4,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/CaptureManager/Body.h>
+#include <Utilities/Macro.h>
 
 #include <AnimClass.h>
 #include <AircraftClass.h>
@@ -487,3 +488,6 @@ DEFINE_HOOK(0x469E34, BulletClass_Logics_DebrisAnims, 0x5)
 
 	return SkipGameCode;
 }
+
+// Skip a forced detonation check for Level=true projectiles that is now handled in Hooks.Obstacles.cpp.
+DEFINE_JUMP(LJMP, 0x468D08, 0x468D2F);
