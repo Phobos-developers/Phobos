@@ -31,6 +31,13 @@ public:
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
 
+		Nullable<Leptons> ClusterScatter_Min;
+		Nullable<Leptons> ClusterScatter_Max;
+
+		// Ares 0.7
+		Nullable<Leptons> BallisticScatter_Min;
+		Nullable<Leptons> BallisticScatter_Max;
+
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
 			, Armor {}
 			, Interceptable { false }
@@ -42,6 +49,10 @@ public:
 			, Trajectory_Speed { 100.0 }
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
+			, ClusterScatter_Min {}
+			, ClusterScatter_Max {}
+			, BallisticScatter_Min {}
+			, BallisticScatter_Max {}
 		{ }
 
 		virtual ~ExtData() = default;

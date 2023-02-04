@@ -260,6 +260,11 @@ New:
 - Custom `SlavesFreeSound` (by TwinkleStar)
 - Allows jumpjet to crash without rotation (by TwinkleStar)
 - Spawn animation for `CreateUnit` (by Starkku)
+- Customizable aircraft spawner spawn delay (by Starkku)
+- Customizable Cluster scatter distance (by Starkku)
+- Customizable FlakScatter distance (by Starkku)
+- Customizable debris & meteor impact and warhead detonation behaviour (by Starkku, Otamaa)
+- Custom warhead debris animations (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -275,6 +280,7 @@ Vanilla fixes:
 - Made sure that `Suicide=yes` weapon does kill the firer (by Trsdy)
 - Made sure that vxl units being flipped over get killed instead of rotating up and down (by Trsdy)
 - Allow jumpjet units to visually tilt or be flipped over on the ground even if `TiltCrashJumpjet=no` (by Trsdy)
+- Fixed the range for number of debris spawned by Warhead to use MaxDebris instead of MaxDebris - 1 (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

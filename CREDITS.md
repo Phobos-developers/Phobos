@@ -102,6 +102,7 @@ This page lists all the individual contributions to the project by their author.
   - TerrainType `DestroyAnim` & `DestroySound`
   - Laser trails for VoxelAnims
   - MakeInfantry logic on BombClass bugfix
+  - Debris & meteor impact behaviour settings
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
@@ -168,6 +169,11 @@ This page lists all the individual contributions to the project by their author.
   - IvanBomb detonation & image display centered on buildings
   - Customizable ROF random delay
   - BibShape drawing during buildup fix
+  - Spawner spawn delay customization
+  - Cluster scatter distance customization
+  - FlakScatter distance customization
+  - Debris & meteor impact behaviour settings
+  - Custom warhead debris animations
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption

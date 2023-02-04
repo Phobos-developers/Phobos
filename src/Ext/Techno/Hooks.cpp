@@ -1,6 +1,7 @@
 #include <InfantryClass.h>
 #include <ScenarioClass.h>
 #include <GameStrings.h>
+#include <SpawnManagerClass.h>
 #include "Body.h"
 
 #include <Ext/TechnoType/Body.h>
@@ -374,6 +375,39 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_IsSingleColor, 0x7)
 
 	// Fixes drawing thick lasers for non-PrismSupport building-fired lasers.
 	pLaser->IsSupported = pLaser->Thickness > 3;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6B7265, SpawnManagerClass_AI_UpdateTimer, 0x6)
+{
+	GET(SpawnManagerClass* const, pThis, ESI);
+
+	if (pThis->Owner && pThis->Status == SpawnManagerStatus::Launching && pThis->CountDockedSpawns() != 0)
+	{
+		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType()))
+		{
+			if (pTypeExt->Spawner_DelayFrames.isset())
+				R->EAX(std::min(pTypeExt->Spawner_DelayFrames.Get(), 10));
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x6B73BE, SpawnManagerClass_AI_SpawnTimer, 0x6)
+DEFINE_HOOK(0x6B73AD, SpawnManagerClass_AI_SpawnTimer, 0x5)
+{
+	GET(SpawnManagerClass* const, pThis, ESI);
+
+	if (pThis->Owner)
+	{
+		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType()))
+		{
+			if (pTypeExt->Spawner_DelayFrames.isset())
+				R->ECX(pTypeExt->Spawner_DelayFrames.Get());
+		}
+	}
 
 	return 0;
 }

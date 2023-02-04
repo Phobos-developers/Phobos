@@ -757,19 +757,21 @@ In `rulesmd.ini`:
 Promote.IncludeSpawns=false  ; boolean
 ```
 
-### Spawn range limit
+### Spawner pursuit range & spawn delay customization
 
 ![image](_static/images/spawnrange-01.gif)
 *Limited pursue range for spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
-- The spawned units will abort the infinite pursuit if the enemy is out of range.
-`Spawner.ExtraLimitRange` adds extra pursuit range to the spawned units.
+- If `Spawner.LimitRange` is set, the spawned units will abort their pursuit if the enemy is out of the range of the largest weapon `Range` of a `Spawner=true` weapon of the spawner.
+  - `Spawner.ExtraLimitRange` adds extra pursuit range on top of the weapon range.
+- `Spawner.DelayFrames` can be used to set the minimum number of game frames in between each spawn ejecting from the spawner. By default this is 9 frames for missiles and 20 for everything else.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]               ; TechnoType
 Spawner.LimitRange=false   ; boolean
-Spawner.ExtraLimitRange=0  ; integer
+Spawner.ExtraLimitRange=0  ; integer, range in cells
+Spawner.DelayFrames=       ; integer, game frames
 ```
 
 ### Weapons fired on warping in / out
