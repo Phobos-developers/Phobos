@@ -5,7 +5,7 @@
 #include <Utilities/Template.h>
 #include <Utilities/EnumFunctions.h>
 
-class TransferTypeClass final : public Enumerable<TransferTypeClass>
+class TransferTypeClass final: public Enumerable<TransferTypeClass>
 {
 public:
 	Valueable<bool> TargetToSource;
@@ -49,7 +49,7 @@ public:
 	Valueable<ColorStruct> Receive_Text_Color;
 	Valueable<Point2D> Receive_Text_Offset;
 
-	TransferTypeClass(const char* pTitle = NONE_STR) : Enumerable<TransferTypeClass>(pTitle)
+	TransferTypeClass(const char* pTitle = NONE_STR): Enumerable<TransferTypeClass>(pTitle)
 		, TargetToSource { true }
 		, Send_Resource { TransferTypeResource::Money }
 		, Send_Value { 0.0 }

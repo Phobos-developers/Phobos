@@ -222,6 +222,7 @@ This page lists all the individual contributions to the project by their author.
 - **TwinkleStar**
   - Custom slaves free sound
   - Jumpjet crash rotation control
+- **Devoidener** - Transfer Types
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic

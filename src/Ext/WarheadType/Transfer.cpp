@@ -204,8 +204,8 @@ class TransferDetails
 			if (pTechno->GattlingValue + value >= pValues->TotalAttributeValue)
 			{
 				pTechno->GattlingValue = (int)pValues->TotalAttributeValue;
-				pTechno->CurrentGattlingStage = pType->WeaponStages-1;
-				return pType->WeaponStages-1 - CurrentStage;
+				pTechno->CurrentGattlingStage = pType->WeaponStages - 1;
+				return pType->WeaponStages - 1 - CurrentStage;
 			}
 			pTechno->GattlingValue += value;
 			if (pTechno->GattlingValue < (pTechno->Veterancy.IsElite() ? pType->EliteStage[0] : pType->WeaponStage[0]))
@@ -217,7 +217,7 @@ class TransferDetails
 			{
 				if (pTechno->Veterancy.IsElite())
 				{
-					if (pTechno->GattlingValue >= pType->EliteStage[Stage-1]
+					if (pTechno->GattlingValue >= pType->EliteStage[Stage - 1]
 						&& pTechno->GattlingValue < pType->EliteStage[Stage] && Stage < CurrentStage)
 					{
 						pTechno->CurrentGattlingStage = Stage;
@@ -226,7 +226,7 @@ class TransferDetails
 				}
 				else
 				{
-					if (pTechno->GattlingValue >= pType->WeaponStage[Stage-1]
+					if (pTechno->GattlingValue >= pType->WeaponStage[Stage - 1]
 						&& pTechno->GattlingValue < pType->WeaponStage[Stage] && Stage < CurrentStage)
 					{
 						pTechno->CurrentGattlingStage = Stage;
@@ -309,7 +309,7 @@ class TransferDetails
 			{
 				if (pTechno->Veterancy.IsElite())
 				{
-					if (pTechno->GattlingValue >= pType->EliteStage[Stage-1]
+					if (pTechno->GattlingValue >= pType->EliteStage[Stage - 1]
 						&& pTechno->GattlingValue < pType->EliteStage[Stage] && Stage < CurrentStage)
 					{
 						pTechno->CurrentGattlingStage = Stage;
@@ -318,7 +318,7 @@ class TransferDetails
 				}
 				else
 				{
-					if (pTechno->GattlingValue >= pType->WeaponStage[Stage-1]
+					if (pTechno->GattlingValue >= pType->WeaponStage[Stage - 1]
 						&& pTechno->GattlingValue < pType->WeaponStage[Stage] && Stage < CurrentStage)
 					{
 						pTechno->CurrentGattlingStage = Stage;
@@ -331,7 +331,8 @@ class TransferDetails
 		return 0;
 	}
 
-	enum LogType {
+	enum LogType
+	{
 		None = 0,
 		Src = 1,
 		Trg = 2,
@@ -404,7 +405,7 @@ public:
 		this->Source.House = pHouse;
 		this->Options = pTType;
 		if (this->Options->TargetToSource)
-		{			
+		{
 			this->Source.CurrentAttributeValue = AttributeValue(pUnit, pTType->Receive_Resource);
 			this->Source.TotalAttributeValue = AttributeValue(pUnit, pTType->Receive_Resource, false);
 			for (auto pTechno : pTechnoList)
@@ -734,7 +735,7 @@ void WarheadTypeExt::ExtData::TransferWithGroup(TechnoClass* pSourceTechno, Hous
 
 void WarheadTypeExt::ExtData::TransferWithUnit(TechnoClass* pSourceTechno, HouseClass* pSourceHouse, TechnoClass* pTargetTechno, CoordStruct coords)
 {
-	std::vector<TechnoClass*> Target = {pTargetTechno};
+	std::vector<TechnoClass*> Target = { pTargetTechno };
 	for (auto transferType : this->Transfer_Types)
 	{
 		TransferDetails transfer(pSourceTechno, pSourceHouse, this->OwnerObject(), Target, transferType, coords);

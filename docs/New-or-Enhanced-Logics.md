@@ -997,6 +997,9 @@ NotHuman.DeathSequence=  ; integer (1 to 5)
 ```
 
 ### TransferType
+![image](_static/images/transfertype.gif)
+*Prism Tank with Gatling Laser, Tesla Trooper with Ammo, Yuri with Deploy Money and Experience, Prism Cadre with Health Transfer, Ammo Restore, Gatling RateUp*
+
 - Warheads can now transfer and convert one resource to another. Resources in question are Experience, Money, Health, Ammo and Gatling rate
   - `TargetToSource` determines the sender and receiver of the transfer: if true, warhead's target(s) sends, warhead's source receives and vice versa.
   - `Send.Resource` and `Receive.Resource` determine which resource is subtracted from sender and added to receiver respectively.

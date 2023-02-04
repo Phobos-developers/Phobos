@@ -4,7 +4,7 @@
 #include <HouseClass.h>
 
 template <typename A>
-void Absolutize(Valueable<A> &value)
+void Absolutize(Valueable<A>& value)
 {
 	if (!std::is_arithmetic<A>::value)
 		return;
