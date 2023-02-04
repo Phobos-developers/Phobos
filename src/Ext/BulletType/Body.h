@@ -17,7 +17,7 @@ public:
 	class ExtData final : public Extension<BulletTypeClass>
 	{
 	public:
-		Valueable<int> Strength;
+		// Valueable<int> Strength; //Use OwnerObject()->ObjectTypeClass::Strength
 		Nullable<ArmorType> Armor;
 		Valueable<bool> Interceptable;
 		Valueable<bool> Interceptable_DeleteOnIntercept;
@@ -32,7 +32,6 @@ public:
 		Valueable<bool> Shrapnel_AffectsBuildings;
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
-			, Strength { 0 }
 			, Armor {}
 			, Interceptable { false }
 			, Interceptable_DeleteOnIntercept { false }
