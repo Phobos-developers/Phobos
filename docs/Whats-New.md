@@ -267,6 +267,7 @@ Vanilla fixes:
 - Improved the statistic distribution of the spawned crates over the visible area of the map. (by Trsdy, based on TwinkleStar's work)
 - Teams spawned by trigger action 7,80,107 can use IFV and `OpenTopped` logic normally (by Trsdy)
 - Prevented units from retaining previous order after ownership change (by Trsdy)
+- Break the mind-control link when capturing a mind-controlled building with an engineer (by Trsdy)
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations (by Starkku)
 - Cloaked objects displaying to observers (by Starkku)
 - Cloaked objects from allies displaying to player in single player missions (by Trsdy)
