@@ -174,6 +174,7 @@ This page lists all the individual contributions to the project by their author.
   - FlakScatter distance customization
   - Debris & meteor impact behaviour settings
   - Custom warhead debris animations
+  - Attached particle system for animations
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption

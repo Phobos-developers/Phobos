@@ -254,6 +254,17 @@ CreateUnit.SpawnAnim=                  ; Animation
 Due to technical constraints, infantry death animations including Ares' `InfDeathAnim` cannot have `CreateUnit.Owner` correctly applied to them. You can use Ares' `MakeInfantryOwner` as a workaround instead, which should function for this use-case even without `MakeInfantry` set.
 ```
 
+### Attached particle system
+
+- It is now possible to attach a particle system to an animation. Only particle systems with `BehavesLike=Smoke` are supported. This works similarly to the identically named key on `VoxelAnims`.
+  - On animations with `Next`, the particle system will be deleted when the next animation starts playing and new one created in its stead if the `Next` animation defines a different particle system.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]       ; AnimationType
+AttachedSystem=  ; ParticleSystem
+```
+
 ## Buildings
 
 ### Extended building upgrades

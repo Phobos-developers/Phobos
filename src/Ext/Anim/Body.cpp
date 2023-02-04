@@ -6,6 +6,29 @@
 template<> const DWORD Extension<AnimClass>::Canary = 0xAAAAAAAA;
 AnimExt::ExtContainer AnimExt::ExtMap;
 
+void AnimExt::ExtData::CreateAttachedSystem(ParticleSystemTypeClass* pSystemType)
+{
+	const auto pThis = this->OwnerObject();
+	const auto pType = this->OwnerObject()->Type;
+
+	if (pType && pSystemType && !this->AttachedSystem)
+	{
+		if (auto const pSystem = GameCreate<ParticleSystemClass>(pSystemType, pThis->Location, pThis->GetCell(), pThis, CoordStruct::Empty, nullptr))
+			this->AttachedSystem = pSystem;
+	}
+}
+
+void AnimExt::ExtData::DeleteAttachedSystem()
+{
+	if (this->AttachedSystem)
+	{
+		this->AttachedSystem->Owner = nullptr;
+		this->AttachedSystem->UnInit();
+		this->AttachedSystem = nullptr;
+	}
+
+}
+
 //Modified from Ares
 const bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner)
 {
@@ -51,6 +74,7 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeathUnitTurretFacing)
 		.Process(this->DeathUnitHasTurret)
 		.Process(this->Invoker)
+		.Process(this->AttachedSystem)
 		;
 }
 
@@ -81,7 +105,12 @@ DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 {
 	GET(AnimClass*, pItem, ESI);
 
-	AnimExt::ExtMap.FindOrAllocate(pItem);
+	if (pItem->Type)
+	{
+		auto const pExt = AnimExt::ExtMap.FindOrAllocate(pItem);
+		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pItem->Type);
+		pExt->CreateAttachedSystem(pTypeExt->AttachedSystem);
+	}
 
 	return 0;
 }

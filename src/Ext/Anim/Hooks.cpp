@@ -210,6 +210,22 @@ DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x424807, AnimClass_AI_Next, 0x6)
+{
+	GET(AnimClass*, pThis, ESI);
+
+	const auto pExt = AnimExt::ExtMap.Find(pThis);
+	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pExt->AttachedSystem && pExt->AttachedSystem->Type != pTypeExt->AttachedSystem)
+		pExt->DeleteAttachedSystem();
+
+	if (!pExt->AttachedSystem && pTypeExt->AttachedSystem)
+		pExt->CreateAttachedSystem(pTypeExt->AttachedSystem);
+
+	return 0;
+}
+
 DEFINE_HOOK(0x422CAB, AnimClass_DrawIt_XDrawOffset, 0x5)
 {
 	GET(AnimClass* const, pThis, ECX);
