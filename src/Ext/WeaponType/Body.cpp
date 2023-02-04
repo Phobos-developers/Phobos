@@ -9,6 +9,20 @@ void WeaponTypeExt::ExtData::Initialize()
 	this->RadType = RadTypeClass::FindOrAllocate(GameStrings::Radiation);
 }
 
+int WeaponTypeExt::ExtData::GetBurstDelay(int burstIndex)
+{
+	int burstDelay = -1;
+
+	if (burstIndex == 0)
+		return 0;
+	else if (this->Burst_Delays.size() > (unsigned)burstIndex)
+		burstDelay = this->Burst_Delays[burstIndex - 1];
+	else if (this->Burst_Delays.size() > 0)
+		burstDelay = this->Burst_Delays[this->Burst_Delays.size() - 1];
+
+	return burstDelay;
+}
+
 // =============================
 // load / save
 
@@ -35,6 +49,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CanTarget.Read(exINI, pSection, "CanTarget");
 	this->CanTargetHouses.Read(exINI, pSection, "CanTargetHouses");
 	this->Burst_Delays.Read(exINI, pSection, "Burst.Delays");
+	this->Burst_FireWithinSequence.Read(exINI, pSection, "Burst.FireWithinSequence");
 	this->AreaFire_Target.Read(exINI, pSection, "AreaFire.Target");
 	this->FeedbackWeapon.Read(exINI, pSection, "FeedbackWeapon", true);
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
@@ -55,6 +70,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CanTargetHouses)
 		.Process(this->RadType)
 		.Process(this->Burst_Delays)
+		.Process(this->Burst_FireWithinSequence)
 		.Process(this->AreaFire_Target)
 		.Process(this->FeedbackWeapon)
 		.Process(this->Laser_IsSingleColor)

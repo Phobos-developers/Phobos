@@ -27,6 +27,7 @@ public:
 		Valueable<AffectedTarget> CanTarget;
 		Valueable<AffectedHouse> CanTargetHouses;
 		ValueableVector<int> Burst_Delays;
+		Valueable<bool> Burst_FireWithinSequence;
 		Valueable<AreaFireTarget> AreaFire_Target;
 		Nullable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
@@ -43,11 +44,14 @@ public:
 			, CanTarget { AffectedTarget::All }
 			, CanTargetHouses { AffectedHouse::All }
 			, Burst_Delays {}
+			, Burst_FireWithinSequence { false }
 			, AreaFire_Target { AreaFireTarget::Base }
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
 			, ROF_RandomDelay {}
 		{ }
+
+		int GetBurstDelay(int burstIndex);
 
 		virtual ~ExtData() = default;
 

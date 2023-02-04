@@ -19,7 +19,8 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 #### From pre-0.3 devbuilds
 
 - `Trajectory.Speed` is now defined on projectile instead of weapon.
-- `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
+- `Gravity=0` is not supportint burstDelay = pWeaponExt->GetBurstDelay(pThis->CurrentBurstIndex);
+ed anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 - Automatic self-destruction logic logic has been reimplemented, `Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been remade/renamed and require adjustments to function.
 - `DetachedFromOwner` on weapons is deprecated. This has been replaced by `AllowDamageOnSelf` on warheads.
 - Timed jump script actions now take the time measured in ingame seconds instead of frames. Divide your value by 15 to accomodate to this change.
@@ -265,6 +266,7 @@ New:
 - Customizable FlakScatter distance (by Starkku)
 - Customizable debris & meteor impact and warhead detonation behaviour (by Starkku, Otamaa)
 - Custom warhead debris animations (by Starkku)
+- Multiple burst shots / burst delay within infantry firing sequence (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

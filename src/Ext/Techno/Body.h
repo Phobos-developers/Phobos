@@ -34,6 +34,7 @@ public:
 		OptionalStruct<int, true> CurrentLaserWeaponIndex;
 		bool IsInTunnel;
 		CDTimerClass DeployFireTimer;
+		bool ForceFullRearmDelay;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -56,6 +57,7 @@ public:
 			, CurrentLaserWeaponIndex {}
 			, IsInTunnel { false }
 			, DeployFireTimer {}
+			, ForceFullRearmDelay { false }
 		{ }
 
 		void ApplyInterceptor();

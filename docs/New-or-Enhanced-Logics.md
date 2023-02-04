@@ -1012,16 +1012,21 @@ In `rulesmd.ini`:
 AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
 ```
 
-### Burst.Delays
+### Burst delay customizations
 
-- Allows specifying weapon-specific burst shot delays. Takes precedence over the old `BurstDelayX` logic available on VehicleTypes, functions with Infantry & BuildingType weapons (AircraftTypes are not supported due to their weapon firing system being completely different) and allows every shot of `Burst` to have a separate delay instead of only first four shots.
-- If no delay is defined for a shot, it falls back to last delay value defined (f.ex `Burst=3` and `Burst.Delays=10` would use 10 as delay for all shots).
-- Using `-1` as delay reverts back to old logic (`BurstDelay0-3` for VehicleTypes if available or random value between 3-5 otherwise) for that shot.
+- `Burst.Delays` allows specifying weapon-specific burst shot delays. Takes precedence over the old `BurstDelayX` logic available on VehicleTypes, functions with Infantry & BuildingType weapons (AircraftTypes are not supported due to their weapon firing system being completely different) and allows every shot of `Burst` to have a separate delay instead of only first four shots.
+  - If no delay is defined for a shot, it falls back to last delay value defined (f.ex `Burst=3` and `Burst.Delays=10` would use 10 as delay for all shots).
+  - Using `-1` as delay reverts back to old logic (`BurstDelay0-3` for VehicleTypes if available or random value between 3-5 otherwise) for that shot.
+- `Burst.FireWithinSequence` is only used if the weapon is fired by InfantryTypes, and setting it to true allows infantry to fire multiple `Burst` shots within same firing sequence.
+  - First shot is always fired at sequence frame determined by firing frame controls on InfantryType image (`FireUp` et al).
+  - Following shots come at intervals determined by `Burst.Delays` (with minimum delay of 1 frame) or random delay between 3 to 5 frames if not defined. Note that if next shot would be fired at a frame that is beyond the firing sequence's length, burst shot count is reset and weapon starts reloading.
+  - Burst shot counter is not immediately reset if firing is ceased mid-sequence after at least one shot, but the frame at which each burst shot is fired will not be influenced by this (in other words, resuming firing afterward without weapon reload taking place would restart firing sequence but no firing will take place until the frame at which next burst shot should be fired is hit).
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]     ; WeaponType
-Burst.Delays=-1  ; integer - burst delays (comma-separated) for shots in order from first to last.
+[SOMEWEAPON]                    ; WeaponType
+Burst.Delays=-1                 ; integer - burst delays (comma-separated) for shots in order from first to last.
+Burst.FireWithinSequence=false  ; boolean
 ```
 
 ### Feedback weapon
