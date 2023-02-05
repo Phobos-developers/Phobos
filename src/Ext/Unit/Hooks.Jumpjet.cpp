@@ -34,8 +34,11 @@ DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 	CoordStruct& source = pThis->Location;
 	CoordStruct target = pThis->Target->GetCoords(); // Target checked so it's not null here
 	DirStruct tgtDir { Math::atan2(source.Y - target.Y, target.X - source.X) };
+
 	if (pType->Turret && !pType->HasTurret) // 0x736F92
+	{
 		pThis->SecondaryFacing.SetDesired(tgtDir);
+	}
 	else // 0x736FB6
 	{
 		if (auto jjLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
