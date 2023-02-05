@@ -42,7 +42,8 @@ DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 	else // 0x736FB6
 	{
 		if (auto jjLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
-		{	//wrong destination check and wrong Is_Moving usage for jumpjets, should have used Is_Moving_Now
+		{
+			//wrong destination check and wrong Is_Moving usage for jumpjets, should have used Is_Moving_Now
 			if (jjLoco->State != JumpjetLocomotionClass::State::Cruising)
 			{
 				jjLoco->LocomotionFacing.SetDesired(tgtDir);
