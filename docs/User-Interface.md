@@ -171,14 +171,16 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 - The counter is displayed with the format of `Label(Active Harvesters)/(Total Harvesters)`. The label is `⛏ U+26CF` by default.
 - You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, negative means left/up, positive means right/down.
 - By setting `HarvesterCounter.ConditionYellow` and `HarvesterCounter.ConditionRed`, the game will warn player by changing the color of counter whenever the active percentage of harvesters less than or equals to them, like HP changing with `ConditionYellow` and `ConditionRed`.
+- You can specify text alignment with `HarvesterCounter.Align`, accepted values are `Left`, `Right`, `Center`/`Centre`. Defaults to `Center`.
 
 In `uimd.ini`:
 ```ini
 [Sidebar]
-HarvesterCounter.Show=false           ; boolean
-HarvesterCounter.Label=<none>         ; CSF entry key
-HarvesterCounter.ConditionYellow=99%  ; floating point value, percents
-HarvesterCounter.ConditionRed=50%     ; floating point value, percents
+HarvesterCounter.Show=no                 ; boolean
+HarvesterCounter.Label=<none>            ; CSF entry key
+HarvesterCounter.ConditionYellow=99%     ; double, percentage
+HarvesterCounter.ConditionRed=50%        ; double, percentage
+HarvesterCounter.Align=Center			 ; Left, Right, Center/Centre
 ```
 
 In `rulesmd.ini`:
@@ -230,6 +232,37 @@ Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left | cente
 
 ```{note}
 If you use the vanilla font in your mod, you can use the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+```
+
+### Score counter
+ 
+*VACANT: Score Counter on the command bar*
+
+- This opt-in counter displayes the in-game score (value of killed units minus value of dead units) for the player.
+- The counter is displayed with the format of `(Points)Label`. The label is `★ U+2605` by default.
+- You can adjust counter position by `Sidebar.ScoreCounter.Offset`, negative means left/up, positive means right/down.
+- You can supply your own color through `Sidebar.ScoreCounter.Color`, in RGB values. The color is white (`255,255,255`) by default.
+- You can specify text alignment with `Sidebar.ScoreCounter.Align`, accepted values are `Left`, `Right`, `Center`/`Centre`. Defaults to `Left`.
+- You can also change the default position of the counter from the top of the sidebar to the command bar with `Sidebar.ScoreCounter.DrawOnCommandBar`. Defaults to `no`.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+ScoreCounter.Show=no						  ; boolean
+ScoreCounter.Label=<none>					  ; CSF entry key
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                                     ; Side
+Sidebar.ScoreCounter.Offset=0,0                ; X,Y, pixels relative to default
+Sidebar.ScoreCounter.Color=255,255,255		   ; R,G,B
+Sidebar.ScoreCounter.Align=Left				   ; Left, Right, Center/Centre
+Sidebar.ScoreCounter.DrawOnCommandBar=no	   ; boolean
+```
+
+```{note}
+Same as with harvester counter, you can download {download}`the improved font <_static/files/ImprovedFont-v5.zip>` (v5 and higher) or draw your own icons.
 ```
 
 ### Producing Progress

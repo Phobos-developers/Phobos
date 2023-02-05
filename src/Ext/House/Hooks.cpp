@@ -1,6 +1,13 @@
 #include "Body.h"
 #include "../Techno/Body.h"
 #include "../Building/Body.h"
+
+#include <HouseClass.h>
+#include <Utilities/Macro.h>
+#include <Utilities/Enum.h>
+#include <Ext/House/Body.h>
+#include <Ext/HouseType/Body.h>
+
 #include <unordered_map>
 
 DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
@@ -89,5 +96,31 @@ DEFINE_HOOK(0x4FD1CD, HouseClass_RecalcCenter_LimboDelivery, 0x6)
 	if (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding))
 		return R->Origin() == 0x4FD1CD ? SkipBuilding1 : SkipBuilding2;
 
+	return 0;
+}
+
+#include <HouseClass.h>
+#include <Utilities/Macro.h>
+#include <Utilities/Enum.h>
+#include <Ext/House/Body.h>
+
+DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
+{
+	GET(HouseClass* const, pThis, ECX);
+
+	auto pTypeExt = HouseTypeExt::ExtMap.Find(pThis->Type);
+
+	if (!pTypeExt)
+		return 0;
+	
+	for (auto & entry: pTypeExt->ScoreSuperWeaponData)
+	{
+		if (!entry.AlreadyGranted && pThis->SiloMoney >= entry.Score)
+		{
+			HouseExt::GrantScoreSuperPower(pThis, entry.IdxType);
+			entry.AlreadyGranted = true;
+		}
+	}
+	
 	return 0;
 }

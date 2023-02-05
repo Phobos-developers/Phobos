@@ -1,9 +1,11 @@
 #pragma once
 #include <Phobos.version.h>
 #include <Windows.h>
+#include <Utilities/Template.h>
 
 class CCINIClass;
 class AbstractClass;
+enum class TextAlign;
 
 constexpr auto NONE_STR = "<none>";
 constexpr auto NONE_STR2 = "none";
@@ -51,12 +53,16 @@ public:
 		static bool ShowPowerDelta;
 		static double PowerDelta_ConditionYellow;
 		static double PowerDelta_ConditionRed;
+		static bool ShowScoreCounter;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;
 		static const wchar_t* PowerBlackoutLabel;
 		static const wchar_t* TimeLabel;
 		static const wchar_t* HarvesterLabel;
+		static const wchar_t* ScoreLabel;
+
+		static Valueable<TextAlign> HarvesterCounter_Align;
 	};
 
 	class Config

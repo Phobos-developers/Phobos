@@ -89,6 +89,8 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		auto nActive = HouseExt::ActiveHarvesterCount(pPlayer);
 		auto nTotal = HouseExt::TotalHarvesterCount(pPlayer);
 		auto nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
+		auto TextFlags = static_cast<TextPrintType>(static_cast<int>(TextPrintType::UseGradPal | TextPrintType::Metal12)
+			| static_cast<int>(Phobos::UI::HarvesterCounter_Align.Get()));
 
 		ColorStruct clrToolTip = nPercentage > Phobos::UI::HarvesterCounter_ConditionYellow
 			? Drawing::TooltipColor() : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
@@ -141,6 +143,69 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 				| static_cast<int>(pSideExt->Sidebar_PowerDelta_Align.Get()));
 
 		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_ScoreCounter_Top, 0x7)
+{
+	if (Phobos::UI::ShowScoreCounter)
+	{
+		auto pPlayer = HouseClass::Player();
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::Player->SideIndex));
+		if (!pSideExt->Sidebar_ScoreCounter_DrawOnCommandBar.Get())
+		{
+			auto TextFlags = static_cast<TextPrintType>(static_cast<int>(TextPrintType::UseGradPal | TextPrintType::Metal12)
+				| static_cast<int>(pSideExt->Sidebar_ScoreCounter_Align.Get()));
+			wchar_t counter[0x20];
+
+			swprintf_s(counter, L"%d%ls", pPlayer->SiloMoney, Phobos::UI::ScoreLabel);
+
+			Point2D vPos = {
+				DSurface::Sidebar->GetWidth() / 2 - 65 + pSideExt->Sidebar_ScoreCounter_Offset.Get().X,
+				2 + pSideExt->Sidebar_ScoreCounter_Offset.Get().Y
+			};
+
+			RectangleStruct vRect = { 0, 0, 0, 0 };
+			DSurface::Sidebar->GetRect(&vRect);
+
+			DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB2DWORD(pSideExt->Sidebar_ScoreCounter_Color), 0, TextFlags);
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4F45A8, GScreenClass_Render_ScoreCounter_Bottom, 0x5)
+{
+	if (Phobos::UI::ShowScoreCounter)
+	{
+		auto pPlayer = HouseClass::Player();
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::Player->SideIndex));
+		if (pSideExt->Sidebar_ScoreCounter_DrawOnCommandBar.Get())
+		{
+			auto TextFlags = static_cast<TextPrintType>(static_cast<int>(TextPrintType::UseGradPal | TextPrintType::Metal12)
+				| static_cast<int>(pSideExt->Sidebar_ScoreCounter_Align.Get()));
+			int XPosition = DSurface::Composite->GetWidth() - 80;
+			int YPosition = DSurface::Composite->GetHeight() - 25;
+			wchar_t counter[0x20];
+			RectangleStruct vRect = { 0, 0, 0, 0 };
+			RectangleStruct vRect2 = { XPosition - 35, YPosition - 1, 70, 18 };
+
+			swprintf_s(counter, L"%d%ls", pPlayer->SiloMoney, Phobos::UI::ScoreLabel);
+
+			Point2D vPos = {
+				XPosition + pSideExt->Sidebar_ScoreCounter_Offset.Get().X,
+				YPosition + pSideExt->Sidebar_ScoreCounter_Offset.Get().Y
+			};
+			
+			DSurface::Composite->GetRect(&vRect);
+
+			DSurface::Composite->FillRect(&vRect2, 0);
+			DSurface::Composite->DrawText(counter, &vRect, &vPos, Drawing::RGB2DWORD(pSideExt->Sidebar_ScoreCounter_Color), 0, TextFlags);
+			DSurface::Composite->DrawRect(&vRect2, Drawing::RGB2DWORD(pSideExt->Sidebar_ScoreCounter_Color));
+		}
 	}
 
 	return 0;

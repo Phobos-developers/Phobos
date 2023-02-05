@@ -4,6 +4,7 @@
 #include <Ext/Techno/Body.h>
 
 #include <ScenarioClass.h>
+#include <SuperClass.h>
 
 //Static init
 
@@ -73,6 +74,22 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 		return pDefault;
 	}
 }
+
+void HouseExt::GrantScoreSuperPower(HouseClass* pThis, int SWIDX)
+{
+	SuperClass* pSuper = pThis->Supers[SWIDX];
+	bool NotObserver = !pThis->IsObserver() || !pThis->IsPlayerObserver();
+	bool granted;
+	granted = pSuper->Grant(true, NotObserver, false);
+	if (granted && NotObserver && pThis == HouseClass::Player)
+	{
+		if (MouseClass::Instance->AddCameo(AbstractType::Special, SWIDX))
+		{
+			MouseClass::Instance->RepaintSidebar(1);
+		}
+	}
+}
+
 
 void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {

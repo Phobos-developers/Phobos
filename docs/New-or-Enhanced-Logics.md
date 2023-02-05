@@ -579,6 +579,26 @@ Detonate.Weapon=   ; WeaponType
 Detonate.Damage=   ; integer
 ```
 
+## Super Weapons
+
+### Super Weapons granted for score
+
+![image](_static/images/scoresuperweapons.gif) 
+*Demonstration of the feature in Assault Amerika*
+
+- It is now possible to award specific countries with single-use Super Weapons for reaching a defined milestone in game score.
+   - `ScoreSuperWeaponN.Type` specifies the Super Weapon type that will be granted. This tag is mandatory.
+   - `ScoreSuperWeaponN.Score` sets the amount of score players of this country have to earn to receive aforementioned Super Weapon. This tag defaults to 0, meaning that the Super Weapon will be instantly awarded.
+
+In `rulesmd.ini`:
+```ini
+[SOMECOUNTRY]                              ; Country
+ScoreSuperWeaponN.Type=SOMESWTYPE          ; SuperWeaponType
+ScoreSuperWeaponN.Score=0                  ; integer
+; where N = 0, 1, 2, ...
+```
+
+## Weapons
 ## Technos
 
 ### Automatic passenger deletion

@@ -11,6 +11,8 @@
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
+#include <Utilities/Enum.h>
+#include <Utilities/TemplateDef.h>
 
 #include "Misc/BlittersFix.h"
 
@@ -43,6 +45,7 @@ bool Phobos::UI::ShowHarvesterCounter = false;
 double Phobos::UI::HarvesterCounter_ConditionYellow = 0.99;
 double Phobos::UI::HarvesterCounter_ConditionRed = 0.5;
 bool Phobos::UI::ShowProducingProgress = false;
+bool Phobos::UI::ShowScoreCounter = false;
 const wchar_t* Phobos::UI::CostLabel = L"";
 const wchar_t* Phobos::UI::PowerLabel = L"";
 const wchar_t* Phobos::UI::PowerBlackoutLabel = L"";
@@ -51,6 +54,9 @@ const wchar_t* Phobos::UI::HarvesterLabel = L"";
 bool Phobos::UI::ShowPowerDelta = false;
 double Phobos::UI::PowerDelta_ConditionYellow = 0.75;
 double Phobos::UI::PowerDelta_ConditionRed = 1.0;
+const wchar_t* Phobos::UI::ScoreLabel = L"";
+
+Valueable<TextAlign> Phobos::UI::HarvesterCounter_Align{ TextAlign::Center };
 
 bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::ToolTipBlur = false;
@@ -205,7 +211,8 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
 	Phobos::Config::ShowPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowPlacementPreview", true);
 
-	CCINIClass* pINI_UIMD = Phobos::OpenConfig(GameStrings::UIMD_INI);
+	CCINIClass* pINI = Phobos::OpenConfig("uimd.ini");
+	INI_EX exINI(pINI);
 
 	// LoadingScreen
 	{
@@ -248,6 +255,8 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		Phobos::UI::HarvesterCounter_ConditionRed =
 			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionRed", Phobos::UI::HarvesterCounter_ConditionRed);
 
+		Phobos::UI::HarvesterCounter_Align.Read(exINI, SIDEBAR_SECTION, "HarvesterCounter.Align");
+
 		Phobos::UI::ShowProducingProgress =
 			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "ProducingProgress.Show", false);
 
@@ -259,6 +268,12 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 		Phobos::UI::PowerDelta_ConditionRed =
 			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "PowerDelta.ConditionRed", Phobos::UI::PowerDelta_ConditionRed);
+
+		Phobos::UI::ShowScoreCounter =
+			pINI->ReadBool(SIDEBAR_SECTION, "ScoreCounter.Show", false);
+
+		pINI->ReadString(SIDEBAR_SECTION, "ScoreCounter.Label", NONE_STR, Phobos::readBuffer);
+		Phobos::UI::ScoreLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u2605"); // ★
 	}
 
 	Phobos::CloseConfig(pINI_UIMD);
