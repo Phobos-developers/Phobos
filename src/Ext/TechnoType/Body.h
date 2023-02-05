@@ -112,7 +112,6 @@ public:
 		Valueable<int> NoAmmoWeapon;
 		Valueable<int> NoAmmoAmount;
 
-		Nullable<bool> JumpjetAllowLayerDeviation;
 		Valueable<bool> JumpjetRotateOnCrash;
 
 		Valueable<bool> DeployingAnim_AllowAnyDirection;
@@ -238,7 +237,6 @@ public:
 			, NoSecondaryWeaponFallback_AllowAA { false }
 			, NoAmmoWeapon { -1 }
 			, NoAmmoAmount { 0 }
-			, JumpjetAllowLayerDeviation {}
 			, JumpjetRotateOnCrash { true }
 
 			, DeployingAnim_AllowAnyDirection { false }

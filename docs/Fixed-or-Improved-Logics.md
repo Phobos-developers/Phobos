@@ -378,19 +378,6 @@ IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invu
 IronCurtain.KillWarhead=           ; IronCurtain uses this warhead to kill this organic, default to [CombatDamage]->IronCurtain.KillWarhead
 ```
 
-### Jumpjet unit layer deviation customization
-
-- Allows turning on or off jumpjet unit behaviour where they fluctuate between `air` and `top` layers based on whether or not their current altitude is equal / below or above `JumpjetHeight` or `[JumpjetControls] -> CruiseHeight` if former is not set on TechnoType. If disabled, airborne jumpjet units exist only in `air` layer. `JumpjetAllowLayerDeviation` defaults to value of `[JumpjetControls] -> AllowLayerDeviation` if not specified.
-
-In `rulesmd.ini`:
-```ini
-[JumpjetControls]
-AllowLayerDeviation=true         ; boolean
-
-[SOMETECHNO]                     ; TechnoType
-JumpjetAllowLayerDeviation=true  ; boolean
-```
-
 ### Jumpjet rotating on crashing toggle
 
 - Jumpjet that is going to crash starts to change its facing uncontrollably, this can now be turned off.

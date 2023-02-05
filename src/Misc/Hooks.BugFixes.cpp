@@ -639,3 +639,18 @@ DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
 
 	return SpawnCrate;
 }
+
+// Enable sorted add for Air/Top layers to fix issues with attached anims etc.
+DEFINE_HOOK(0x4A9750, DisplayClass_Submit_LayerSort, 0x9)
+{
+	GET(Layer, layer, EDI);
+
+	bool sort = false;
+
+	if (layer != Layer::Surface && layer != Layer::Underground)
+		sort = true;
+
+	R->ECX(sort);
+
+	return 0;
+}

@@ -199,7 +199,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoSecondaryWeaponFallback.Read(exINI, pSection, "NoSecondaryWeaponFallback");
 	this->NoSecondaryWeaponFallback_AllowAA.Read(exINI, pSection, "NoSecondaryWeaponFallback.AllowAA");
 
-	this->JumpjetAllowLayerDeviation.Read(exINI, pSection, "JumpjetAllowLayerDeviation");
 	this->JumpjetRotateOnCrash.Read(exINI, pSection, "JumpjetRotateOnCrash");
 
 	this->DeployingAnim_AllowAnyDirection.Read(exINI, pSection, "DeployingAnim.AllowAnyDirection");
@@ -375,7 +374,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoSecondaryWeaponFallback_AllowAA)
 		.Process(this->NoAmmoWeapon)
 		.Process(this->NoAmmoAmount)
-		.Process(this->JumpjetAllowLayerDeviation)
 		.Process(this->JumpjetRotateOnCrash)
 
 		.Process(this->DeployingAnim_AllowAnyDirection)
