@@ -23,6 +23,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
 - Fixed jumpjet units being unable to turn to the target when firing from a different direction.
+
+![image](_static/images/jumpjet-turning.gif)
+*Jumpjet turning to target applied in [Robot Storm X](https://www.moddb.com/mods/cc-robot-storm-x)*
+
 - Fixed turreted jumpjet units always facing bottom-right direction when motion stops.
 - Fixed jumpjet objects being unable to use `Sensors`.
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
@@ -385,25 +389,6 @@ AllowLayerDeviation=true         ; boolean
 
 [SOMETECHNO]                     ; TechnoType
 JumpjetAllowLayerDeviation=true  ; boolean
-```
-
-### Jumpjet turning to target
-
-![image](_static/images/jumpjet-turning.gif)
-*Jumpjet turning to target applied in [Robot Storm X](https://www.moddb.com/mods/cc-robot-storm-x)*
-
-- Allows jumpjet units to face towards the target when firing from different directions. Set `[JumpjetControls] -> TurnToTarget=yes` to enable it for all jumpjet locomotor units. This behavior can be overriden by setting `[UnitType] -> JumpjetTurnToTarget` for specific units.
-
-In `rulesmd.ini`:
-```ini
-[JumpjetControls]
-TurnToTarget=false     ; boolean
-
-[SOMEUNITTYPE]         ; UnitType with jumpjet locomotor
-JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
-```
-```{warning}
-This option will be deprecated in future versions.
 ```
 
 ### Jumpjet rotating on crashing toggle

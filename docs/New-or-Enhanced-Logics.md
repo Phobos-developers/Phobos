@@ -685,6 +685,17 @@ ForceWeapon.Cloaked=-1          ; integer. 0 for primary weapon, 1 for secondary
 ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ```
 
+### Make units try turning to target when firing with `OmniFire=yes`
+- The unit will try to turn the body to target even firing with `OmniFire=yes`
+  - Recommended for jumpjets if you want it to turn to target when firing.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPONTYPE]          ; WeaponType
+OmniFire=yes
+OmniFire.TurnToTarget=no  ; boolean
+```
+
 ### Initial strength for TechnoTypes and cloned infantry
 
 ![image](_static/images/initialstrength.cloning-01.png)
