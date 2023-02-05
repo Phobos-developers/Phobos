@@ -71,6 +71,7 @@ DEFINE_HOOK(0x519F71, InfantryClass_UpdatePosition_BeforeBuildingChangeHouse, 0x
 	{
 		if (auto& pAnim = pBld->MindControlRingAnim)
 		{
+			pAnim->SetOwnerObject(nullptr);
 			pAnim->UnInit();
 			pAnim = nullptr;
 		}
