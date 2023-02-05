@@ -34,6 +34,7 @@ public:
 		OptionalStruct<int, true> CurrentLaserWeaponIndex;
 		bool IsInTunnel;
 		CDTimerClass DeployFireTimer;
+		bool ForceFullRearmDelay;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -56,6 +57,7 @@ public:
 			, CurrentLaserWeaponIndex {}
 			, IsInTunnel { false }
 			, DeployFireTimer {}
+			, ForceFullRearmDelay { false }
 		{ }
 
 		void ApplyInterceptor();
@@ -104,19 +106,25 @@ public:
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
 	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
-	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
-	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 	static void UpdateMindControlAnim(TechnoClass* pThis);
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
 	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
 	static CoordStruct PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger, int maxAttempts);
+
+	// WeaponHelpers.cpp
+	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);
+	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
+	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 	static WeaponTypeClass* GetDeployFireWeapon(TechnoClass* pThis, int& weaponIndex);
+	static WeaponTypeClass* GetDeployFireWeapon(TechnoClass* pThis);
+	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, int& weaponIndex, bool getSecondary = false);
+	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, bool getSecondary = false);
 };

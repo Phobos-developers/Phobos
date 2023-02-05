@@ -66,6 +66,7 @@
     <ClCompile Include="src\Ext\BulletType\Body.cpp" />
     <ClCompile Include="src\Ext\Bullet\Body.cpp" />
     <ClCompile Include="src\Ext\Bullet\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Bullet\Hooks.Obstacles.cpp" />
     <ClCompile Include="src\Ext\House\Body.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.cpp" />
     <ClCompile Include="src\Ext\RadSite\Body.cpp" />
@@ -84,6 +85,7 @@
     <ClCompile Include="src\Ext\TechnoType\Hooks.cpp" />
     <ClCompile Include="src\Ext\Techno\Body.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Techno\WeaponHelpers.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Body.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Hooks.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Hooks.Passable.cpp" />

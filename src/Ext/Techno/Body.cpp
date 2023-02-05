@@ -287,13 +287,13 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (pTypeExt->Spawn_LimitedRange)
+	if (pTypeExt->Spawner_LimitRange)
 	{
 		if (auto const pManager = pThis->SpawnManager)
 		{
 			auto pTechnoType = pThis->GetTechnoType();
 			int weaponRange = 0;
-			int weaponRangeExtra = pTypeExt->Spawn_LimitedExtraRange * Unsorted::LeptonsPerCell;
+			int weaponRangeExtra = pTypeExt->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
 
 			auto setWeaponRange = [&weaponRange](WeaponTypeClass* pWeaponType)
 			{
@@ -488,11 +488,6 @@ bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
 	return false;
 }
 
-void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType)
-{
-	WeaponTypeExt::DetonateAt(pWeaponType, pThis, pThis);
-}
-
 // reversed from 6F3D60
 CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
 {
@@ -610,20 +605,6 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	}
 
 	return FLH;
-}
-
-bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
-{
-	if (pThis->GetTechnoType()->Ammo > 0)
-	{
-		if (const auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		{
-			if (pThis->Ammo <= pExt->NoAmmoAmount && (pExt->NoAmmoWeapon = weaponIndex || pExt->NoAmmoWeapon == -1))
-				return true;
-		}
-	}
-
-	return false;
 }
 
 void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
@@ -1008,43 +989,6 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	return finalLocation;
 }
 
-WeaponTypeClass* TechnoExt::GetDeployFireWeapon(TechnoClass* pThis, int& weaponIndex)
-{
-	weaponIndex = pThis->GetTechnoType()->DeployFireWeapon;
-
-	if (pThis->WhatAmI() == AbstractType::Unit)
-	{
-		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		{
-			// Only apply DeployFireWeapon on vehicles if explicitly set.
-			if (!pTypeExt->DeployFireWeapon.isset())
-			{
-				weaponIndex = 0;
-				auto pCell = MapClass::Instance->GetCellAt(pThis->GetMapCoords());
-
-				if (pThis->GetFireError(pCell, 0, true) != FireError::OK)
-					weaponIndex = 1;
-			}
-		}
-	}
-
-	if (weaponIndex < 0)
-		return nullptr;
-
-	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-
-	if (!pWeapon)
-	{
-		weaponIndex = 0;
-		pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-
-		if (!pWeapon)
-			weaponIndex = -1;
-	}
-
-	return pWeapon;
-}
-
 // =============================
 // load / save
 
@@ -1066,6 +1010,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->IsInTunnel)
 		.Process(this->DeployFireTimer)
+		.Process(this->ForceFullRearmDelay)
 		;
 }
 

@@ -78,7 +78,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->RadHasInvoker.Read(exINI, GameStrings::Radiation, "RadHasInvoker");
 	this->MissingCameo.Read(pINI, GameStrings::AudioVisual, "MissingCameo");
 	this->JumpjetAllowLayerDeviation.Read(exINI, GameStrings::JumpjetControls, "AllowLayerDeviation");
-	this->JumpjetTurnToTarget.Read(exINI, GameStrings::JumpjetControls, "TurnToTarget");
 
 	this->PlacementPreview.Read(exINI, GameStrings::AudioVisual, "PlacementPreview");
 	this->PlacementPreview_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementPreview.Translucency");
@@ -192,7 +191,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
 		.Process(this->JumpjetAllowLayerDeviation)
-		.Process(this->JumpjetTurnToTarget)
 		.Process(this->MissingCameo)
 		.Process(this->PlacementGrid_Translucency)
 		.Process(this->PlacementPreview)

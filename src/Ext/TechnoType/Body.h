@@ -37,8 +37,9 @@ public:
 		Valueable<bool> Interceptor_WeaponCumulativeDamage;
 		Valueable<bool> Interceptor_KeepIntact;
 		Valueable<PartialVector3D<int>> TurretOffset;
-		Valueable<bool> Spawn_LimitedRange;
-		Valueable<int> Spawn_LimitedExtraRange;
+		Valueable<bool> Spawner_LimitRange;
+		Valueable<int> Spawner_ExtraLimitRange;
+		Nullable<int> Spawner_DelayFrames;
 		Nullable<bool> Harvester_Counted;
 		Valueable<bool> Promote_IncludeSpawns;
 		Valueable<bool> ImmuneToCrit;
@@ -106,12 +107,12 @@ public:
 		Valueable<bool> AutoFire_TargetSelf;
 
 		Valueable<bool> NoSecondaryWeaponFallback;
+		Valueable<bool> NoSecondaryWeaponFallback_AllowAA;
 
 		Valueable<int> NoAmmoWeapon;
 		Valueable<int> NoAmmoAmount;
 
 		Nullable<bool> JumpjetAllowLayerDeviation;
-		Nullable<bool> JumpjetTurnToTarget;
 		Valueable<bool> JumpjetRotateOnCrash;
 
 		Valueable<bool> DeployingAnim_AllowAnyDirection;
@@ -184,8 +185,9 @@ public:
 			, Interceptor_KeepIntact { false }
 
 			, TurretOffset { { 0, 0, 0 } }
-			, Spawn_LimitedRange { false }
-			, Spawn_LimitedExtraRange { 0 }
+			, Spawner_LimitRange { false }
+			, Spawner_ExtraLimitRange { 0 }
+			, Spawner_DelayFrames {}
 			, Harvester_Counted {}
 			, Promote_IncludeSpawns { false }
 			, ImmuneToCrit { false }
@@ -233,10 +235,10 @@ public:
 			, AutoFire { false }
 			, AutoFire_TargetSelf { false }
 			, NoSecondaryWeaponFallback { false }
+			, NoSecondaryWeaponFallback_AllowAA { false }
 			, NoAmmoWeapon { -1 }
 			, NoAmmoAmount { 0 }
 			, JumpjetAllowLayerDeviation {}
-			, JumpjetTurnToTarget {}
 			, JumpjetRotateOnCrash { true }
 
 			, DeployingAnim_AllowAnyDirection { false }
