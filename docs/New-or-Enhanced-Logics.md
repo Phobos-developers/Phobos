@@ -731,10 +731,9 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 If this option is not set, the self-destruction logic will not be enabled.
 ```{note}
 Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option. This might change in the future if necessary.
-
-If the object enters transport, the countdown will continue, but it will not self-destruct inside the transport.
 ```
 
+This logic also supports buildings delivered by [LimboDelivery](#LimboDelivery)
 
 In `rulesmd.ini`:
 ```ini
