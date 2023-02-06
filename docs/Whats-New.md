@@ -16,10 +16,17 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From older Phobos versions
 
+### From 0.3
+
+- `[JumpjetControls]`->`AllowLayerDeviation` and `JumpjetAllowLayerDeviation` have been deprecated as the animation layering issues have been properly fixed by default now.
+- `[JumpjetControls]->TurnToTarget` and `JumpjetTurnToTarget` are obsolete. Jumpjet units who fire `OmniFire=no` weapons **always** turn to targets as other units do.
+  - `OmniFire.TurnToTarget` is recommended for jumpjet units' omnifiring weapons for facing turning.
+
 #### From pre-0.3 devbuilds
 
 - `Trajectory.Speed` is now defined on projectile instead of weapon.
-- `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
+- `Gravity=0` is not supportint burstDelay = pWeaponExt->GetBurstDelay(pThis->CurrentBurstIndex);
+ed anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 - Automatic self-destruction logic logic has been reimplemented, `Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been remade/renamed and require adjustments to function.
 - `DetachedFromOwner` on weapons is deprecated. This has been replaced by `AllowDamageOnSelf` on warheads.
 - Timed jump script actions now take the time measured in ingame seconds instead of frames. Divide your value by 15 to accomodate to this change.
@@ -261,6 +268,15 @@ New:
 - Allows jumpjet to crash without rotation (by TwinkleStar)
 - Customizable priority of superweapons timer sorting(by ststl)
 - Spawn animation for `CreateUnit` (by Starkku)
+- Customizable aircraft spawner spawn delay (by Starkku)
+- Customizable Cluster scatter distance (by Starkku)
+- Customizable FlakScatter distance (by Starkku)
+- Customizable debris & meteor impact and warhead detonation behaviour (by Starkku, Otamaa)
+- Custom warhead debris animations (by Starkku)
+- Multiple burst shots / burst delay within infantry firing sequence (by Starkku)
+- Attached particle system for animations (by Starkku)
+- Removal of hardcoded AA & Gattling weapon selection restrictions (by Starkku)
+- Projectile `SubjectToLand/Water` (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -268,6 +284,7 @@ Vanilla fixes:
 - Improved the statistic distribution of the spawned crates over the visible area of the map. (by Trsdy, based on TwinkleStar's work)
 - Teams spawned by trigger action 7,80,107 can use IFV and `OpenTopped` logic normally (by Trsdy)
 - Prevented units from retaining previous order after ownership change (by Trsdy)
+- Break the mind-control link when capturing a mind-controlled building with an engineer (by Trsdy)
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations (by Starkku)
 - Cloaked objects displaying to observers (by Starkku)
 - Cloaked objects from allies displaying to player in single player missions (by Trsdy)
@@ -275,11 +292,19 @@ Vanilla fixes:
 - Made sure that `Suicide=yes` weapon does kill the firer (by Trsdy)
 - Made sure that vxl units being flipped over get killed instead of rotating up and down (by Trsdy)
 - Allow jumpjet units to visually tilt or be flipped over on the ground even if `TiltCrashJumpjet=no` (by Trsdy)
+- Fixed the range for number of debris spawned by Warhead to use MaxDebris instead of MaxDebris - 1 (by Starkku)
+- Fixed `LandTargeting=1` not preventing from targeting TerrainTypes (trees etc.) on land (by Starkku)
+- Fixed `NavalTargeting=6` not preventing from targeting empty water cells or TerrainTypes (trees etc.) on water (by Starkku)
+- Fixed `NavalTargeting=7` and/or `LandTargeting=2` resulting in still targeting TerrainTypes (trees etc.) on land with `Primary` weapon (by Starkku)
+- Fixed an issue that causes attached animations on flying objects not layer correctly (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
 - Add `ImmuneToCrit` for shields (by Trsdy)
-
+- `AutoDeath` support for objects in limbo (by Trsdy)
+- Fixed shield animation being hidden while underground or in tunnels fix not working correctly (by Starkku)
+- Restore the `MindClearedSound` when deploying a mind-controlled unit into a building loses the mind-control (by Trsdy)
+- Reimplemented the bugfix for jumpjet units' facing when firing, discard the inappropriate `JumpjetTurnToTarget` tag (by Trsdy)
 </details>
 
 

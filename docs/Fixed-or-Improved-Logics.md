@@ -8,6 +8,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug when reading a map which puts `Preview(Pack)` after `Map` lead to the game fail to draw the preview
 - Fixed the bug when retinting map lighting with a map action corrupted light sources.
 - Fixed the bug when deploying mindcontrolled vehicle into a building permanently transferred the control to the house which mindcontrolled it.
+- Fixed the bug when capturing a mind-controlled building with an engineer fail to break the mind-control link.
 - Fixed the bug when units are already dead but still in map (for sinking, crashing, dying animation, etc.), they could die again.
 - Fixed the bug when cloaked Desolator was unable to fire his deploy weapon.
 - Fixed the bug that temporaryed unit cannot be erased correctly and no longer raise an error.
@@ -22,6 +23,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
 - Fixed jumpjet units being unable to turn to the target when firing from a different direction.
+
+![image](_static/images/jumpjet-turning.gif)
+*Jumpjet turning to target applied in [Robot Storm X](https://www.moddb.com/mods/cc-robot-storm-x)*
+
 - Fixed turreted jumpjet units always facing bottom-right direction when motion stops.
 - Fixed jumpjet objects being unable to use `Sensors`.
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
@@ -96,6 +101,13 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Attempted to avoid units from retaining previous orders (attack,grind,garrison,etc) after changing ownership (mind-control,abduction,etc).
 - Fixed buildings' `NaturalParticleSystem` being created for in-map pre-placed structures.
 - Fixed jumpjet units being unable to visually tilt or be flipped over on the ground if `TiltCrashJumpjet=no`.
+- Warheads spawning debris now use `MaxDebris` as an actual cap for number of debris to spawn instead of `MaxDebris` - 1.
+ If both `Primary` and `Secondary` weapons can fire at air targets (projectile has `AA=true`), `Primary` can now be picked instead of always forcing `Secondary`. Also applies to `IsGattling=true`, with odd-numbered and even-numbered `WeaponX` slots instead of `Primary` and `Secondary`, respectively.
+- `IsGattling=true` can now fall back to secondary weapon slot (even-numbered `WeaponX` slots) if primary one (odd-numbered) cannot fire at current target (armor type, `CanTarget(Houses)`, shield etc).
+- Fixed `LandTargeting=1` not preventing from targeting TerrainTypes (trees etc.) on land.
+- Fixed `NavalTargeting=6` not preventing from targeting empty water cells or TerrainTypes (trees etc.) on water.
+- Fixed `NavalTargeting=7` and/or `LandTargeting=2` resulting in still targeting TerrainTypes (trees etc.) on land with `Primary` weapon.
+- Weapons with projectiles with `Level=true` now consider targets behind obstacles that cause the projectile to detonate (tiles belonging to non-water tilesets) as out of range and will attempt to reposition before firing.
 
 ## Animations
 
@@ -127,6 +139,22 @@ In `artmd.ini`:
 ```ini
 [SOMEANIM]                       ; AnimationType
 UseCenterCoordsIfAttached=false  ; boolean
+```
+
+### Customizable debris & meteor impact and warhead detonation behaviour
+
+- `ExplodeOnWater` can be set to true to make the animation explode on impact with water. `ExpireAnim` will be played and `Warhead` is detonated or used to deal damage / generate light flash.
+- `Warhead.Detonate`, if set to true, makes the `Warhead` fully detonate instead of simply being used to deal damage and generate light flash if it has `Bright=true`.
+- `SplashAnims` contains list of animations used if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[CombatDamage]` -> `SplashList` if `IsMeteor` is set, otherwise to a single animation specified in `[General]` -> `Wake`.
+  - If `SplashAnims.PickRandom` is set to true, picks a random animation from `SplashAnims` to use on each impact with water. Otherwise last listed animation from `SplashAnims` is used.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                    ; AnimationType
+ExplodeOnWater=false          ; boolean
+Warhead.Detonate=false        ; boolean
+SplashAnims=                  ; list of animations
+SplashAnims.PickRandom=false  ; boolean
 ```
 
 ### Layer on animations attached to objects
@@ -195,6 +223,17 @@ Grinding.DisplayRefund.Offset=0,0  ; X,Y, pixels relative to default
 
 ## Projectiles
 
+### Cluster scatter distance customization
+
+- `ClusterScatter.Min` and `ClusterScatter.Max` can be used to set minimum and maximum distance, respectively, in cells from the original detonation coordinate any additional detonations if `Cluster` is set to value higher than 1 can appear at.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]         ; Projectile
+ClusterScatter.Min=1.0  ; float, distance in cells
+ClusterScatter.Max=2.0  ; float, distance in cells
+```
+
 ### Customizable projectile gravity
 
 -  You can now specify individual projectile gravity.
@@ -204,6 +243,17 @@ In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]        ; Projectile
 Gravity=6.0             ; floating point value
+```
+
+### FlakScatter distance customization
+
+- By default `FlakScatter=true` makes `Inviso=true` projectiles scatter by random distance (in cells) from 0 to `[CombatDamage]` -> `BallisticScatter`. This distance range can now be customized by setting `BallisticScatter.Min` & `BallisticScatter.Max` on the projectile. If not set, the default values are used.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]      ; Projectile
+BallisticScatter.Min= ; float, distance in cells
+BallisticScatter.Max= ; float, distance in cells
 ```
 
 ## Technos
@@ -326,38 +376,6 @@ IronCurtain.KillOrganicsWarhead=   ; IronCurtain uses this warhead to kill organ
 [SOMETECHNO]                       ; InfantryType or Organic TechnoType
 IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore), default to [CombatDamage]-> IronCurtain.EffectOnOrganics
 IronCurtain.KillWarhead=           ; IronCurtain uses this warhead to kill this organic, default to [CombatDamage]->IronCurtain.KillWarhead
-```
-
-### Jumpjet unit layer deviation customization
-
-- Allows turning on or off jumpjet unit behaviour where they fluctuate between `air` and `top` layers based on whether or not their current altitude is equal / below or above `JumpjetHeight` or `[JumpjetControls] -> CruiseHeight` if former is not set on TechnoType. If disabled, airborne jumpjet units exist only in `air` layer. `JumpjetAllowLayerDeviation` defaults to value of `[JumpjetControls] -> AllowLayerDeviation` if not specified.
-
-In `rulesmd.ini`:
-```ini
-[JumpjetControls]
-AllowLayerDeviation=true         ; boolean
-
-[SOMETECHNO]                     ; TechnoType
-JumpjetAllowLayerDeviation=true  ; boolean
-```
-
-### Jumpjet turning to target
-
-![image](_static/images/jumpjet-turning.gif)
-*Jumpjet turning to target applied in [Robot Storm X](https://www.moddb.com/mods/cc-robot-storm-x)*
-
-- Allows jumpjet units to face towards the target when firing from different directions. Set `[JumpjetControls] -> TurnToTarget=yes` to enable it for all jumpjet locomotor units. This behavior can be overriden by setting `[UnitType] -> JumpjetTurnToTarget` for specific units.
-
-In `rulesmd.ini`:
-```ini
-[JumpjetControls]
-TurnToTarget=false     ; boolean
-
-[SOMEUNITTYPE]         ; UnitType with jumpjet locomotor
-JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
-```
-```{warning}
-This option will be deprecated in future versions.
 ```
 
 ### Jumpjet rotating on crashing toggle
@@ -523,7 +541,25 @@ IronCurtain.KeptOnDeploy=yes ; boolean
 IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
 ```
 
+## VoxelAnims
+
+### Customizable debris & meteor impact and warhead detonation behaviour
+
+- The INI keys and behaviour is mostly identical to the [equivalent behaviour available to regular animations](#customizable-debris-%26-meteor-impact-and-warhead-detonation-behaviour). Main difference is that the keys must be listed in the VoxelAnim's entry in `rulesmd.ini`, not `artmd.ini`.
+
 ## Warheads
+
+### Custom debris animations and additional debris spawn settings
+
+- You can now use `DebrisAnims` to specify a list of debris animations to spawn instead of animations from `[General]` -> `MetallicDebris` when Warhead with `MaxDebris` > 0 and no `DebrisTypes` (VoxelAnims) listed is detonated.
+- `Debris.Conventional`, if set to true, makes `DebrisTypes` or `DebrisAnims` only spawn if Warhead is fired on non-water cell.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]              ; WarheadType
+DebrisAnims=               ; List of animations
+Debris.Conventional=false  ; boolean
+```
 
 ### Allowing damage dealt to firer
 

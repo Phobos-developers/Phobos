@@ -2,55 +2,80 @@
 #include <UnitClass.h>
 
 #include <Ext/TechnoType/Body.h>
+#include <Ext/WeaponType/Body.h>
 
-DEFINE_HOOK(0x54B8E9, JumpjetLocomotionClass_In_Which_Layer_Deviation, 0x6)
+// Bugfix: Jumpjet turn to target when attacking
+
+// Jumpjets stuck at FireError::FACING because WW didn't use a correct facing
+DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 {
-	GET(FootClass* const, pThis, EAX);
+	GET(UnitClass* const, pThis, ESI);
 
-	if (pThis->IsInAir())
+	auto pType = pThis->Type;
+	CoordStruct& source = pThis->Location;
+	CoordStruct target = pThis->Target->GetCoords(); // Target checked so it's not null here
+	DirStruct tgtDir { Math::atan2(source.Y - target.Y, target.X - source.X) };
+
+	if (pType->Turret && !pType->HasTurret) // 0x736F92
 	{
-		if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		pThis->SecondaryFacing.SetDesired(tgtDir);
+	}
+	else // 0x736FB6
+	{
+		if (auto jjLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 		{
-			if (!pExt->JumpjetAllowLayerDeviation.Get(RulesExt::Global()->JumpjetAllowLayerDeviation.Get()))
+			//wrong destination check and wrong Is_Moving usage for jumpjets, should have used Is_Moving_Now
+			if (jjLoco->State != JumpjetLocomotionClass::State::Cruising)
 			{
-				R->EDX(INT32_MAX); // Override JumpjetHeight / CruiseHeight check so it always results in 3 / Layer::Air.
-				return 0x54B96B;
+				jjLoco->LocomotionFacing.SetDesired(tgtDir);
+				pThis->PrimaryFacing.SetDesired(tgtDir);
+				pThis->SecondaryFacing.SetDesired(tgtDir);
+			}
+		}
+		else if (!pThis->Destination && !pThis->Locomotor->Is_Moving())
+		{
+			pThis->PrimaryFacing.SetDesired(tgtDir);
+			pThis->SecondaryFacing.SetDesired(tgtDir);
+		}
+	}
+
+	return 0x736FB1;
+}
+
+// For compatibility with previous builds
+DEFINE_HOOK(0x736EE9, UnitClass_UpdateFiring_FireErrorIsOK, 0x6)
+{
+	GET(UnitClass* const, pThis, ESI);
+	GET(int const, wpIdx, EDI);
+	auto pType = pThis->Type;
+
+	if ((pType->Turret && !pType->HasTurret) || pType->TurretSpins)
+		return 0;
+
+	if ((pType->DeployFire || pType->DeployFireWeapon == wpIdx) && pThis->CurrentMission == Mission::Unload)
+		return 0;
+
+	auto const pWpn = pThis->GetWeapon(wpIdx)->WeaponType;
+	if (pWpn->OmniFire)
+	{
+		const auto pTypeExt = WeaponTypeExt::ExtMap.Find(pWpn);
+		if (pTypeExt->OmniFire_TurnToTarget.Get() && !pThis->Locomotor->Is_Moving_Now())
+		{
+			CoordStruct& source = pThis->Location;
+			CoordStruct target = pThis->Target->GetCoords();
+			DirStruct tgtDir { Math::atan2(source.Y - target.Y, target.X - source.X) };
+
+			if (pThis->GetRealFacing() != tgtDir)
+			{
+				if (auto const pLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+					pLoco->LocomotionFacing.SetDesired(tgtDir);
+				else
+					pThis->PrimaryFacing.SetDesired(tgtDir);
 			}
 		}
 	}
 
 	return 0;
-}
-
-// Bugfix: Jumpjet turn to target when attacking
-// The way vanilla game handles facing turning is a total mess, so even though this is not the most correct place to do it, given that 0x54BF5B has something similar, I just do it here too
-// TODO : The correct fix : 0x736FC4 for stucking at FireError::FACING, 0x736EE9 for something else like OmniFire etc.
-DEFINE_HOOK(0x54BD93, JumpjetLocomotionClass_State2_TurnToTarget, 0x6)
-{
-	enum { ContinueNoTarget = 0x54BDA1, EndFunction = 0x54BFDE };
-	GET(JumpjetLocomotionClass* const, pLoco, ESI);
-	GET(FootClass* const, pLinkedTo, EDI);
-
-	const auto pTarget = pLinkedTo->Target;
-	if (!pTarget)
-		return ContinueNoTarget;
-
-	if (const auto pThis = abstract_cast<UnitClass*>(pLinkedTo))
-	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-		if (pTypeExt->JumpjetTurnToTarget.Get(RulesExt::Global()->JumpjetTurnToTarget))
-		{
-			CoordStruct& source = pThis->Location;
-			CoordStruct target = pTarget->GetCoords();
-			DirStruct tgtDir { Math::atan2(source.Y - target.Y, target.X - source.X) };
-
-			if (pThis->GetRealFacing() != tgtDir)
-				pLoco->LocomotionFacing.SetDesired(tgtDir);
-		}
-	}
-
-	R->EAX(pTarget);
-	return EndFunction;
 }
 
 // Bugfix: Align jumpjet turret's facing with body's

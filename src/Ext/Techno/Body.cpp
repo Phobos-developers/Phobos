@@ -14,11 +14,24 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/House/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
+
+TechnoExt::ExtData::~ExtData()
+{
+	if (this->TypeExtData->AutoDeath_Behavior.isset())
+	{
+		auto pThis = this->OwnerObject();
+		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
+		auto it = std::find(hExt->OwnedTimedAutoDeathObjects.begin(), hExt->OwnedTimedAutoDeathObjects.end(), this);
+		if (it != hExt->OwnedTimedAutoDeathObjects.end())
+			hExt->OwnedTimedAutoDeathObjects.erase(it);
+	}
+}
 
 void TechnoExt::ExtData::ApplyInterceptor()
 {
@@ -73,7 +86,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	}
 }
 
-// TODO : Wrap into a new entity
+// TODO : Merge into new AttachEffects
 bool TechnoExt::ExtData::CheckDeathConditions()
 {
 	auto const pTypeExt = this->TypeExtData;
@@ -100,15 +113,16 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 		if (!this->AutoDeathTimer.HasStarted())
 		{
 			this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
+			HouseExt::ExtMap.Find(pThis->Owner)->OwnedTimedAutoDeathObjects.push_back(this);
 		}
-		else if (!pThis->Transporter && this->AutoDeathTimer.Completed())
+		else if (this->AutoDeathTimer.Completed())
 		{
 			TechnoExt::KillSelf(pThis, howToDie);
 			return true;
 		}
 
 	}
-
+	// TODO : Not working correctly, FIX THIS
 	auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any)
 	{
 		auto existSingleType = [pThis, affectedHouse](const TechnoTypeClass* pType)
@@ -287,13 +301,13 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (pTypeExt->Spawn_LimitedRange)
+	if (pTypeExt->Spawner_LimitRange)
 	{
 		if (auto const pManager = pThis->SpawnManager)
 		{
 			auto pTechnoType = pThis->GetTechnoType();
 			int weaponRange = 0;
-			int weaponRangeExtra = pTypeExt->Spawn_LimitedExtraRange * Unsorted::LeptonsPerCell;
+			int weaponRangeExtra = pTypeExt->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
 
 			auto setWeaponRange = [&weaponRange](WeaponTypeClass* pWeaponType)
 			{
@@ -335,10 +349,18 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
 
 	// Reset Shield
 	// This part should have been done by UpdateShield
+	// But that doesn't work correctly either, FIX THAT
 
 	// Reset AutoDeath Timer
 	if (this->AutoDeathTimer.HasStarted())
+	{
 		this->AutoDeathTimer.Stop();
+
+		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
+		auto it = std::find(hExt->OwnedTimedAutoDeathObjects.begin(), hExt->OwnedTimedAutoDeathObjects.end(), this);
+		if (it != hExt->OwnedTimedAutoDeathObjects.end())
+			hExt->OwnedTimedAutoDeathObjects.erase(it);
+	}
 
 	// Reset PassengerDeletion Timer - TODO : unchecked
 	if (this->PassengerDeletionTimer.IsTicking() && this->TypeExtData->PassengerDeletion_Rate <= 0)
@@ -488,11 +510,6 @@ bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
 	return false;
 }
 
-void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType)
-{
-	WeaponTypeExt::DetonateAt(pWeaponType, pThis, pThis);
-}
-
 // reversed from 6F3D60
 CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
 {
@@ -610,20 +627,6 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	}
 
 	return FLH;
-}
-
-bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
-{
-	if (pThis->GetTechnoType()->Ammo > 0)
-	{
-		if (const auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		{
-			if (pThis->Ammo <= pExt->NoAmmoAmount && (pExt->NoAmmoWeapon = weaponIndex || pExt->NoAmmoWeapon == -1))
-				return true;
-		}
-	}
-
-	return false;
 }
 
 void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
@@ -1008,42 +1011,6 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	return finalLocation;
 }
 
-WeaponTypeClass* TechnoExt::GetDeployFireWeapon(TechnoClass* pThis, int& weaponIndex)
-{
-	weaponIndex = pThis->GetTechnoType()->DeployFireWeapon;
-
-	if (pThis->WhatAmI() == AbstractType::Unit)
-	{
-		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		{
-			// Only apply DeployFireWeapon on vehicles if explicitly set.
-			if (!pTypeExt->DeployFireWeapon.isset())
-			{
-				weaponIndex = 0;
-				auto pCell = MapClass::Instance->GetCellAt(pThis->GetMapCoords());
-
-				if (pThis->GetFireError(pCell, 0, true) != FireError::OK)
-					weaponIndex = 1;
-			}
-		}
-	}
-
-	if (weaponIndex < 0)
-		return nullptr;
-
-	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-
-	if (!pWeapon)
-	{
-		weaponIndex = 0;
-		pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-
-		if (!pWeapon)
-			weaponIndex = -1;
-	}
-
-	return pWeapon;
-}
 
 // =============================
 // load / save
@@ -1066,6 +1033,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->IsInTunnel)
 		.Process(this->DeployFireTimer)
+		.Process(this->ForceFullRearmDelay)
 		;
 }
 

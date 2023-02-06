@@ -60,3 +60,22 @@ DEFINE_HOOK(0x4DBF23, FootClass_ChangeOwner_IAmNowHuman, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x519F71, InfantryClass_UpdatePosition_BeforeBuildingChangeHouse, 0x6)
+{
+	GET(BuildingClass*, pBld, EDI);
+
+	if (auto pBy = pBld->MindControlledBy)
+		CaptureManagerExt::FreeUnit(pBy->CaptureManager, pBld);
+
+	if (std::exchange(pBld->MindControlledByAUnit, false))
+	{
+		if (auto& pAnim = pBld->MindControlRingAnim)
+		{
+			pAnim->SetOwnerObject(nullptr);
+			pAnim->UnInit();
+			pAnim = nullptr;
+		}
+	}
+
+	return 0;
+}

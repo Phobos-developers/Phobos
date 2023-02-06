@@ -39,8 +39,7 @@ public:
 		Valueable<bool> RadHasInvoker;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
-		Valueable<bool> JumpjetAllowLayerDeviation;
-		Valueable<bool> JumpjetTurnToTarget;
+
 		PhobosFixedString<32u> MissingCameo;
 		TranslucencyLevel PlacementGrid_Translucency;
 		Valueable<bool> PlacementPreview;
@@ -86,8 +85,6 @@ public:
 			, RadHasInvoker { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
-			, JumpjetAllowLayerDeviation { true }
-			, JumpjetTurnToTarget { false }
 			, MissingCameo { "xxicon.shp" }
 			, PlacementGrid_Translucency { 0 }
 			, PlacementPreview { false }

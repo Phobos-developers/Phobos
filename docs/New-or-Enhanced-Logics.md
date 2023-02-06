@@ -254,6 +254,17 @@ CreateUnit.SpawnAnim=                  ; Animation
 Due to technical constraints, infantry death animations including Ares' `InfDeathAnim` cannot have `CreateUnit.Owner` correctly applied to them. You can use Ares' `MakeInfantryOwner` as a workaround instead, which should function for this use-case even without `MakeInfantry` set.
 ```
 
+### Attached particle system
+
+- It is now possible to attach a particle system to an animation. Only particle systems with `BehavesLike=Smoke` are supported. This works similarly to the identically named key on `VoxelAnims`.
+  - On animations with `Next`, the particle system will be deleted when the next animation starts playing and new one created in its stead if the `Next` animation defines a different particle system.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]       ; AnimationType
+AttachedSystem=  ; ParticleSystem
+```
+
 ## Buildings
 
 ### Extended building upgrades
@@ -291,16 +302,16 @@ PowerPlantEnhancer.Factor=1.0      ; floating point value
 
 ### Spy Effects
 
-- Additional espionage bonuses can be toggled with `SpyEffects.Custom`.
-  - `SpyEffects.VictimSuperWeapon` instantly launches a Super Weapon for the owner of the infiltrated building at building's coordinates.
-  - `SpyEffects.InfiltratorSuperWeapon` behaves the same as above, with the Super Weapon's owner being the owner of the spying unit.
+- Additional espionage bonuses can be toggled with `SpyEffect.Custom`.
+  - `SpyEffect.VictimSuperWeapon` instantly launches a Super Weapon for the owner of the infiltrated building at building's coordinates.
+  - `SpyEffect.InfiltratorSuperWeapon` behaves the same as above, with the Super Weapon's owner being the owner of the spying unit.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                     ; BuildingType
-SpyEffects.Custom=false            ; boolean
-SpyEffects.VictimSuperWeapon=      ; SuperWeaponType
-SpyEffects.InfiltratorSuperWeapon= ; SuperWeaponType
+SpyEffect.Custom=false            ; boolean
+SpyEffect.VictimSuperWeapon=      ; SuperWeaponType
+SpyEffect.InfiltratorSuperWeapon= ; SuperWeaponType
 ```
 
 ## Infantry
@@ -481,6 +492,20 @@ Shrapnel.AffectsGround=false     ; boolean
 Shrapnel.AffectsBuildings=false  ; boolean
 ```
 
+### Projectiles blocked by land or water
+
+- It is now possible to make projectiles consider either land or water as obstacles that block their path by setting `SubjectToLand/Water` to true, respectively. Weapons firing such projectiles will consider targets blocked by such obstacles as out of range and will attempt to reposition themselves so they can fire without being blocked by the said obstacles before firing and if `SubjectToLand/Water.Detonate` is set to true, the projectiles will detonate if they somehow manage to collide with the said obstacles.
+  - In a special case, `Level=true` projectiles by default, if neither `SubjectToLand` or `SubjectToWater` are set, consider tiles belonging to non-water tilesets as obstacles, but this behaviour can be overridden by setting these keys.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]              ; Projectile
+SubjectToLand=                ; boolean
+SubjectToLand.Detonate=true   ; boolean
+SubjectToWater=               ; boolean
+SubjectToWater.Detonate=true  ; boolean
+```
+
 ## Super Weapons
 
 ### LimboDelivery
@@ -614,7 +639,7 @@ OpenTopped.AllowFiringIfDeactivated=true  ; boolean
 
 ### Disabling fallback to (Elite)Secondary weapon
 
-- It is now possible to disable the fallback to `(Elite)Secondary` weapon from `(Elite)Primary` weapon if it cannot fire at the chosen target by setting `NoSecondaryWeaponFallback` to true (defaults to false). This does not apply to special cases where `(Elite)Secondary` weapon is always chosen, including but not necessarily limited to the following:
+- It is now possible to disable the fallback to `(Elite)Secondary` weapon from `(Elite)Primary` weapon if it cannot fire at the chosen target by setting `NoSecondaryWeaponFallback` to true (defaults to false). `NoSecondaryWeaponFallback.AllowAA` controls whether or not fallback because of projectile `AA` setting and target being in air is still allowed. This does not apply to special cases where `(Elite)Secondary` weapon is always chosen, including but not necessarily limited to the following:
   - `OpenTransportWeapon=1` on an unit firing from inside `OpenTopped=true` transport.
   - `NoAmmoWeapon=1` on an unit with  `Ammo` value higher than 0 and current ammo count lower or  equal to `NoAmmoAmount`.
   - Deployed `IsSimpleDeployer=true` units with`DeployFireWeapon=1` set or omitted.
@@ -626,8 +651,9 @@ OpenTopped.AllowFiringIfDeactivated=true  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                     ; TechnoType
-NoSecondaryWeaponFallback=false  ; boolean
+[SOMETECHNO]                             ; TechnoType
+NoSecondaryWeaponFallback=false          ; boolean
+NoSecondaryWeaponFallback.AllowAA=false  ; boolean
 ```
 
 ### Firing offsets for specific Burst shots
@@ -657,6 +683,17 @@ In `rulesmd.ini`:
 ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceWeapon.Cloaked=-1          ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+```
+
+### Make units try turning to target when firing with `OmniFire=yes`
+- The unit will try to turn the body to target even firing with `OmniFire=yes`
+  - Recommended for jumpjets if you want it to turn to target when firing.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPONTYPE]          ; WeaponType
+OmniFire=yes
+OmniFire.TurnToTarget=no  ; boolean
 ```
 
 ### Initial strength for TechnoTypes and cloned infantry
@@ -694,10 +731,9 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 If this option is not set, the self-destruction logic will not be enabled.
 ```{note}
 Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option. This might change in the future if necessary.
-
-If the object enters transport, the countdown will continue, but it will not self-destruct inside the transport.
 ```
 
+This logic also supports buildings delivered by [LimboDelivery](#LimboDelivery)
 
 In `rulesmd.ini`:
 ```ini
@@ -757,19 +793,21 @@ In `rulesmd.ini`:
 Promote.IncludeSpawns=false  ; boolean
 ```
 
-### Spawn range limit
+### Spawner pursuit range & spawn delay customization
 
 ![image](_static/images/spawnrange-01.gif)
 *Limited pursue range for spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
-- The spawned units will abort the infinite pursuit if the enemy is out of range.
-`Spawner.ExtraLimitRange` adds extra pursuit range to the spawned units.
+- If `Spawner.LimitRange` is set, the spawned units will abort their pursuit if the enemy is out of the range of the largest weapon `Range` of a `Spawner=true` weapon of the spawner.
+  - `Spawner.ExtraLimitRange` adds extra pursuit range on top of the weapon range.
+- `Spawner.DelayFrames` can be used to set the minimum number of game frames in between each spawn ejecting from the spawner. By default this is 9 frames for missiles and 20 for everything else.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]               ; TechnoType
 Spawner.LimitRange=false   ; boolean
-Spawner.ExtraLimitRange=0  ; integer
+Spawner.ExtraLimitRange=0  ; integer, range in cells
+Spawner.DelayFrames=       ; integer, game frames
 ```
 
 ### Weapons fired on warping in / out
@@ -1010,16 +1048,21 @@ In `rulesmd.ini`:
 AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
 ```
 
-### Burst.Delays
+### Burst delay customizations
 
-- Allows specifying weapon-specific burst shot delays. Takes precedence over the old `BurstDelayX` logic available on VehicleTypes, functions with Infantry & BuildingType weapons (AircraftTypes are not supported due to their weapon firing system being completely different) and allows every shot of `Burst` to have a separate delay instead of only first four shots.
-- If no delay is defined for a shot, it falls back to last delay value defined (f.ex `Burst=3` and `Burst.Delays=10` would use 10 as delay for all shots).
-- Using `-1` as delay reverts back to old logic (`BurstDelay0-3` for VehicleTypes if available or random value between 3-5 otherwise) for that shot.
+- `Burst.Delays` allows specifying weapon-specific burst shot delays. Takes precedence over the old `BurstDelayX` logic available on VehicleTypes, functions with Infantry & BuildingType weapons (AircraftTypes are not supported due to their weapon firing system being completely different) and allows every shot of `Burst` to have a separate delay instead of only first four shots.
+  - If no delay is defined for a shot, it falls back to last delay value defined (f.ex `Burst=3` and `Burst.Delays=10` would use 10 as delay for all shots).
+  - Using `-1` as delay reverts back to old logic (`BurstDelay0-3` for VehicleTypes if available or random value between 3-5 otherwise) for that shot.
+- `Burst.FireWithinSequence` is only used if the weapon is fired by InfantryTypes, and setting it to true allows infantry to fire multiple `Burst` shots within same firing sequence.
+  - First shot is always fired at sequence frame determined by firing frame controls on InfantryType image (`FireUp` et al).
+  - Following shots come at intervals determined by `Burst.Delays` (with minimum delay of 1 frame) or random delay between 3 to 5 frames if not defined. Note that if next shot would be fired at a frame that is beyond the firing sequence's length, burst shot count is reset and weapon starts reloading.
+  - Burst shot counter is not immediately reset if firing is ceased mid-sequence after at least one shot, but the frame at which each burst shot is fired will not be influenced by this (in other words, resuming firing afterward without weapon reload taking place would restart firing sequence but no firing will take place until the frame at which next burst shot should be fired is hit).
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]     ; WeaponType
-Burst.Delays=-1  ; integer - burst delays (comma-separated) for shots in order from first to last.
+[SOMEWEAPON]                    ; WeaponType
+Burst.Delays=-1                 ; integer - burst delays (comma-separated) for shots in order from first to last.
+Burst.FireWithinSequence=false  ; boolean
 ```
 
 ### Feedback weapon

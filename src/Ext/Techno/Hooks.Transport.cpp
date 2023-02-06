@@ -50,17 +50,17 @@ DEFINE_HOOK(0x701881, TechnoClass_ChangeHouse_Passenger_SyncOwner, 0x5)
 	{
 		if (pTypeExt->Passengers_SyncOwner && pThis->Passengers.NumPassengers > 0)
 		{
-			FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
-
-			if (pPassenger)
+			if (FootClass* pPassenger = pThis->Passengers.GetFirstPassenger())
+			{
 				pPassenger->SetOwningHouse(pThis->Owner, false);
 
-			while (pPassenger->NextObject)
-			{
-				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+				while (pPassenger->NextObject)
+				{
+					pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 
-				if (pPassenger)
-					pPassenger->SetOwningHouse(pThis->Owner, false);
+					if (pPassenger)
+						pPassenger->SetOwningHouse(pThis->Owner, false);
+				}
 			}
 		}
 	}

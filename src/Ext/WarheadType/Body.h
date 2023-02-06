@@ -77,6 +77,8 @@ public:
 		Valueable<bool> LaunchSW_IgnoreInhibitors;
 		Valueable<bool> LaunchSW_IgnoreDesignators;
 		Valueable<bool> AllowDamageOnSelf;
+		NullableVector<AnimTypeClass*> DebrisAnims;
+		Valueable<bool> Debris_Conventional;
 
 		Valueable<bool> DetonateOnAllMapObjects;
 		Valueable<bool> DetonateOnAllMapObjects_RequireVerses;
@@ -161,6 +163,8 @@ public:
 			, LaunchSW_IgnoreInhibitors { false }
 			, LaunchSW_IgnoreDesignators { true }
 			, AllowDamageOnSelf { false }
+			, DebrisAnims {}
+			, Debris_Conventional { false }
 
 			, DetonateOnAllMapObjects { false }
 			, DetonateOnAllMapObjects_RequireVerses { false }

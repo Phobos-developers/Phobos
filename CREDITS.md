@@ -102,6 +102,7 @@ This page lists all the individual contributions to the project by their author.
   - TerrainType `DestroyAnim` & `DestroySound`
   - Laser trails for VoxelAnims
   - MakeInfantry logic on BombClass bugfix
+  - Debris & meteor impact behaviour settings
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
@@ -168,6 +169,14 @@ This page lists all the individual contributions to the project by their author.
   - IvanBomb detonation & image display centered on buildings
   - Customizable ROF random delay
   - BibShape drawing during buildup fix
+  - Spawner spawn delay customization
+  - Cluster scatter distance customization
+  - FlakScatter distance customization
+  - Debris & meteor impact behaviour settings
+  - Custom warhead debris animations
+  - Attached particle system for animations
+  - Removal of hardcoded AA & Gattling weapon selection restrictions
+  - Projectile obstacle logic additions
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
@@ -184,11 +193,12 @@ This page lists all the individual contributions to the project by their author.
    - Laser fixes prototype
 - **Trsdy**
    - Preserve IronCurtain status upon DeploysInto/UndeploysInto
-   - Misc jumpjet fixes:
-      - Facing towards target fix
+   - Several jumpjet fixes:
+      - Facing towards target even if not omni-firing
       - Turret direction in idle state fix
       - Sensor fix
       - Allow to tilt on ground
+   - OmniFire.TurnToTarget
    - Object Self-destruction logic
    - Misc vanilla suicidal behavior fix
    - Post-type-conversion update
@@ -210,6 +220,7 @@ This page lists all the individual contributions to the project by their author.
    - Forbidding parallel AI queues by type
    - The option to allow DieSound/VoiceDie being played when grinding
    - Allow iron-curtain effects on infantries
+   - Break the mindcontrol link when capturing a mind-controlled building with engineer
    - Misc code refactor & maintenance, CN doc fix
 - **FlyStar**
    - Campaign load screen PCX support

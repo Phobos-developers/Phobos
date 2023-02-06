@@ -1,13 +1,5 @@
 #include "Body.h"
 
-#include <Phobos.h>
-
-#include <HouseClass.h>
-#include <AnimClass.h>
-#include <BuildingClass.h>
-#include <InfantryClass.h>
-#include <UnitClass.h>
-
 #include <Ext/CaptureManager/Body.h>
 
 namespace MindControlFixTemp
@@ -24,12 +16,21 @@ void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClas
 			MindControlFixTemp::isMindControlBeingTransferred = true;
 
 			CaptureManagerExt::FreeUnit(Manager, pTechnoFrom, true);
-			CaptureManagerExt::CaptureUnit(Manager, pTechnoTo, true);
-
-			if (pTechnoTo->WhatAmI() == AbstractType::Building)
+			if (CaptureManagerExt::CaptureUnit(Manager, pTechnoTo, false)) // why true?
 			{
-				pTechnoTo->QueueMission(Mission::Construction, 0);
-				pTechnoTo->Mission_Construction();
+				if (auto pBld = abstract_cast<BuildingClass*>(pTechnoTo))
+				{
+					pBld->BeginMode(BStateType::Construction);
+					pBld->QueueMission(Mission::Construction, false);
+				}
+			}
+			else
+			{
+				int nSound = pTechnoTo->GetTechnoType()->MindClearedSound;
+				if (nSound == -1)
+					nSound = RulesClass::Instance->MindClearedSound;
+				if (nSound != -1)
+					VocClass::PlayIndexAtPos(nSound, pTechnoTo->Location);
 			}
 
 			MindControlFixTemp::isMindControlBeingTransferred = false;
@@ -38,40 +39,44 @@ void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClas
 	else if (auto MCHouse = pTechnoFrom->MindControlledByHouse)
 	{
 		pTechnoTo->MindControlledByHouse = MCHouse;
-		pTechnoFrom->MindControlledByHouse = NULL;
+		pTechnoFrom->MindControlledByHouse = nullptr;
 	}
 
-	if (auto Anim = pTechnoFrom->MindControlRingAnim)
+	if (auto fromAnim = pTechnoFrom->MindControlRingAnim)
 	{
-		auto ToAnim = &pTechnoTo->MindControlRingAnim;
+		auto& toAnim = pTechnoTo->MindControlRingAnim;
 
-		if (*ToAnim)
-			(*ToAnim)->TimeToDie = 1;
+		if (toAnim)
+			toAnim->TimeToDie = 1;
 
-		*ToAnim = Anim;
-		Anim->SetOwnerObject(pTechnoTo);
+		toAnim = fromAnim;
+		fromAnim->SetOwnerObject(pTechnoTo);
 	}
 }
 
-DEFINE_HOOK(0x739956, UnitClass_Deploy_TransferMindControl, 0x6)
+DEFINE_HOOK(0x739956, UnitClass_Deploy_Transfer, 0x6)
 {
 	GET(UnitClass*, pUnit, EBP);
 	GET(BuildingClass*, pStructure, EBX);
 
 	TechnoExt::TransferMindControlOnDeploy(pUnit, pStructure);
+	ShieldClass::SyncShieldToAnother(pUnit, pStructure);
+	TechnoExt::SyncIronCurtainStatus(pUnit, pStructure);
 
 	return 0;
 }
 
-DEFINE_HOOK(0x44A03C, BuildingClass_Mi_Selling_TransferMindControl, 0x6)
+DEFINE_HOOK(0x44A03C, BuildingClass_Mi_Selling_Transfer, 0x6)
 {
 	GET(BuildingClass*, pStructure, EBP);
 	GET(UnitClass*, pUnit, EBX);
 
 	TechnoExt::TransferMindControlOnDeploy(pStructure, pUnit);
+	ShieldClass::SyncShieldToAnother(pStructure, pUnit);
+	TechnoExt::SyncIronCurtainStatus(pStructure, pUnit);
 
 	pUnit->QueueMission(Mission::Hunt, true);
-
+	//Why?
 	return 0;
 }
 
