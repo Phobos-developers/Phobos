@@ -37,8 +37,6 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 #pragma region LimboDelivery
 inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 {
-	auto pOwnerExt = HouseExt::ExtMap.Find(pOwner);
-
 	// BuildLimit check goes before creation
 	if (pType->BuildLimit > 0)
 	{
@@ -93,9 +91,17 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 			// LimboKill ID
 			pBuildingExt->LimboID = ID;
 
-			// Add building to list of owned limbo buildings
-			if (pOwnerExt)
+			if (auto pOwnerExt = HouseExt::ExtMap.Find(pOwner))
+			{	// Add building to list of owned limbo buildings
 				pOwnerExt->OwnedLimboDeliveredBuildings.insert({ pBuilding->UniqueID, pBuildingExt });
+
+				auto pTechExt = TechnoExt::ExtMap.Find(pBuilding);
+				if (pTechExt->TypeExtData->AutoDeath_Behavior.isset() && pTechExt->TypeExtData->AutoDeath_AfterDelay > 0)
+				{
+					pTechExt->AutoDeathTimer.Start(pTechExt->TypeExtData->AutoDeath_AfterDelay);
+					pOwnerExt->OwnedTimedAutoDeathObjects.push_back(pTechExt);
+				}
+			}
 		}
 	}
 }

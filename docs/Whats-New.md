@@ -300,6 +300,7 @@ Vanilla fixes:
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
 - Add `ImmuneToCrit` for shields (by Trsdy)
+- `AutoDeath` support for objects in limbo (by Trsdy)
 - Fixed shield animation being hidden while underground or in tunnels fix not working correctly (by Starkku)
 - Restore the `MindClearedSound` when deploying a mind-controlled unit into a building loses the mind-control (by Trsdy)
 - Reimplemented the bugfix for jumpjet units' facing when firing, discard the inappropriate `JumpjetTurnToTarget` tag (by Trsdy)

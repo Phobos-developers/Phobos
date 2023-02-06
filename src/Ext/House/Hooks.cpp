@@ -3,6 +3,17 @@
 #include "../Building/Body.h"
 #include <unordered_map>
 
+DEFINE_HOOK(0x4F8440, HouseClass_Update_Beginning, 0x5)
+{
+	GET(HouseClass* const, pThis, ECX);
+
+	auto pExt = HouseExt::ExtMap.Find(pThis);
+
+	pExt->UpdateAutoDeathObjectsInLimbo();
+
+	return 0;
+}
+
 DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 {
 	GET(HouseClass*, pThis, ECX);

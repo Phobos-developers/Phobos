@@ -14,11 +14,24 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/House/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
+
+TechnoExt::ExtData::~ExtData()
+{
+	if (this->TypeExtData->AutoDeath_Behavior.isset())
+	{
+		auto pThis = this->OwnerObject();
+		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
+		auto it = std::find(hExt->OwnedTimedAutoDeathObjects.begin(), hExt->OwnedTimedAutoDeathObjects.end(), this);
+		if (it != hExt->OwnedTimedAutoDeathObjects.end())
+			hExt->OwnedTimedAutoDeathObjects.erase(it);
+	}
+}
 
 void TechnoExt::ExtData::ApplyInterceptor()
 {
@@ -73,7 +86,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	}
 }
 
-// TODO : Wrap into a new entity
+// TODO : Merge into new AttachEffects
 bool TechnoExt::ExtData::CheckDeathConditions()
 {
 	auto const pTypeExt = this->TypeExtData;
@@ -100,15 +113,16 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 		if (!this->AutoDeathTimer.HasStarted())
 		{
 			this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
+			HouseExt::ExtMap.Find(pThis->Owner)->OwnedTimedAutoDeathObjects.push_back(this);
 		}
-		else if (!pThis->Transporter && this->AutoDeathTimer.Completed())
+		else if (this->AutoDeathTimer.Completed())
 		{
 			TechnoExt::KillSelf(pThis, howToDie);
 			return true;
 		}
 
 	}
-
+	// TODO : Not working correctly, FIX THIS
 	auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any)
 	{
 		auto existSingleType = [pThis, affectedHouse](const TechnoTypeClass* pType)
@@ -335,10 +349,18 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
 
 	// Reset Shield
 	// This part should have been done by UpdateShield
+	// But that doesn't work correctly either, FIX THAT
 
 	// Reset AutoDeath Timer
 	if (this->AutoDeathTimer.HasStarted())
+	{
 		this->AutoDeathTimer.Stop();
+
+		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
+		auto it = std::find(hExt->OwnedTimedAutoDeathObjects.begin(), hExt->OwnedTimedAutoDeathObjects.end(), this);
+		if (it != hExt->OwnedTimedAutoDeathObjects.end())
+			hExt->OwnedTimedAutoDeathObjects.erase(it);
+	}
 
 	// Reset PassengerDeletion Timer - TODO : unchecked
 	if (this->PassengerDeletionTimer.IsTicking() && this->TypeExtData->PassengerDeletion_Rate <= 0)
@@ -988,6 +1010,7 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 
 	return finalLocation;
 }
+
 
 // =============================
 // load / save
