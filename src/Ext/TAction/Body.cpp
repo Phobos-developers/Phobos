@@ -6,8 +6,10 @@
 #include <CRT.h>
 #include <SuperWeaponTypeClass.h>
 #include <SuperClass.h>
+#include <TacticalClass.h>
 #include <Ext/SWType/Body.h>
 #include <Utilities/SavegameDef.h>
+#include <New/Entity/BannerClass.h>
 
 #include <Ext/Scenario/Body.h>
 
@@ -67,6 +69,12 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::RunSuperWeaponAtLocation(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::RunSuperWeaponAtWaypoint:
 		return TActionExt::RunSuperWeaponAtWaypoint(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::CreateBannerGlobal:
+		return TActionExt::CreateBannerGlobal(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::CreateBannerLocal:
+		return TActionExt::CreateBannerLocal(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::DeleteBanner:
+		return TActionExt::DeleteBanner(pThis, pHouse, pObject, pTrigger, location);
 	default:
 		bHandled = false;
 		return true;
@@ -426,6 +434,95 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 				pSuper->RechargeTimer.TimeLeft = oldleft;
 			}
 		}
+	}
+
+	return true;
+}
+
+void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
+{
+	BannerTypeClass* pBannerType = BannerTypeClass::Array[pTAction->Param3].get();
+
+	bool found = false;
+	for (int i = 0; i < BannerClass::Array.Count; i++)
+	{
+		if (BannerClass::Array[i]->Id == pTAction->Value)
+		{
+			BannerClass::Array[i]->Type = pBannerType;
+			BannerClass::Array[i]->Position = CoordStruct{ pTAction->Param4, pTAction->Param5, 0 };
+			BannerClass::Array[i]->Variable = pTAction->Param6;
+			BannerClass::Array[i]->IsGlobalVariable = isGlobal;
+			found = true;
+			break;
+		}
+	}
+	if (!found)
+		new BannerClass(pBannerType, pTAction->Value, CoordStruct{ pTAction->Param4, pTAction->Param5, 0 }, pTAction->Param6, isGlobal);
+}
+
+void SortBanners(int start, int end)
+{
+	// just a quicksort
+	if (start >= end)
+		return;
+
+	int pivotId = BannerClass::Array[start]->Id;
+
+	int count = 0;
+	for (int i = start + 1; i <= end; i++) {
+		if (BannerClass::Array[i]->Id <= pivotId)
+			count++;
+	}
+
+	int pivot = start + count;
+	std::swap(BannerClass::Array[pivot], BannerClass::Array[start]);
+
+	int i = start, j = end;
+	while (i < pivot && j > pivot) {
+		while (BannerClass::Array[i]->Id <= pivotId)
+			i++;
+
+		while (BannerClass::Array[j]->Id > pivotId)
+			j--;
+
+		if (i < pivot && j > pivot)
+			std::swap(BannerClass::Array[i++], BannerClass::Array[j--]);
+	}
+
+	SortBanners(start, pivot - 1);
+	SortBanners(pivot + 1, end);
+}
+
+bool TActionExt::CreateBannerGlobal(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	CreateOrReplaceBanner(pThis, true);
+	SortBanners(0, BannerClass::Array.Count - 1);
+	return true;
+}
+
+bool TActionExt::CreateBannerLocal(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	CreateOrReplaceBanner(pThis, false);
+	SortBanners(0, BannerClass::Array.Count - 1);
+	return true;
+}
+
+bool TActionExt::DeleteBanner(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	int j = -1;
+	for (int i = 0; i < BannerClass::Array.Count; i++)
+	{
+		if (BannerClass::Array[i]->Id == pThis->Value)
+		{
+			j = i;
+			break;
+		}
+	}
+	if (j != -1)
+	{
+		auto pBanner = BannerClass::Array[j];
+		BannerClass::Array.RemoveItem(j);
+		delete pBanner;
 	}
 
 	return true;
