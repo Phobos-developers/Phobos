@@ -185,33 +185,39 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			if (totalPercengates > 1.0 || totalPercengates <= 0.0)
 				splitTriggersByCategory = false;
 
-			// Note: if the sum of all percentages is less than 100% then that empty space will work like "no categories"
+
 			if (splitTriggersByCategory)
 			{
 				int categoryDice = ScenarioClass::Instance->Random.RandomRanged(1, 100);
+				int unclassifiedValue = (int)(percentageUnclassifiedTriggers * 100.0);
+				int groundValue = (int)(percentageGroundTriggers * 100.0);
+				int airValue = (int)(percentageAirTriggers * 100.0);
+				int navalValue = (int)(percentageNavalTriggers * 100.0);
 
-				if (categoryDice == 0)
-				{
-					splitTriggersByCategory = false;
-				}
-				else if (categoryDice <= (int)(percentageUnclassifiedTriggers * 100.0))
+				// Pick what type of team will be selected in this round
+				if (percentageUnclassifiedTriggers > 0.0 && categoryDice <= unclassifiedValue)
 				{
 					validCategory = teamCategory::Unclassified;
+					Debug::Log("New AI team category selection: dice %d <= %d (MIXED)\n", categoryDice, unclassifiedValue);
 				}
-				else if (categoryDice <= (int)((percentageUnclassifiedTriggers + percentageGroundTriggers) * 100.0))
+				else if (percentageGroundTriggers > 0.0 && categoryDice <= (unclassifiedValue + groundValue))
 				{
 					validCategory = teamCategory::Ground;
+					Debug::Log("New AI team category selection: dice %d <= %d (mixed: %d%% + GROUND: %d%%)\n", categoryDice, (unclassifiedValue + groundValue), unclassifiedValue, groundValue);
 				}
-				else if (categoryDice <= (int)((percentageUnclassifiedTriggers + percentageGroundTriggers + percentageNavalTriggers) * 100.0))
-				{
-					validCategory = teamCategory::Naval;
-				}
-				else if (categoryDice <= (int)((percentageUnclassifiedTriggers + percentageGroundTriggers + percentageNavalTriggers + percentageAirTriggers) * 100.0))
+				else if (percentageAirTriggers > 0.0 && categoryDice <= (unclassifiedValue + groundValue + airValue))
 				{
 					validCategory = teamCategory::Air;
+					Debug::Log("New AI team category selection: dice %d <= %d (mixed: %d%% + ground: %d%% + AIR: %d%%)\n", categoryDice, (unclassifiedValue + groundValue + airValue), unclassifiedValue, groundValue, airValue);
+				}
+				else if (percentageNavalTriggers > 0.0 && categoryDice <= (unclassifiedValue + groundValue + airValue + navalValue))
+				{
+					validCategory = teamCategory::Naval;
+					Debug::Log("New AI team category selection: dice %d <= %d (mixed: %d%% + ground: %d%% + air: %d%% + NAVAL: %d%%)\n", categoryDice, (unclassifiedValue + groundValue + airValue + navalValue), unclassifiedValue, groundValue, airValue, navalValue);
 				}
 				else
 				{
+					// If the sum of all percentages is less than 100% then that empty space will work like "no categories"
 					splitTriggersByCategory = false;
 				}
 			}
@@ -657,7 +663,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 									continue;
 
 								TechnoTypeClass* object = entry.Type;
-								bool canBeBuilt = HouseExt::PrerequisitesMet(pHouse, object, ownedBuildingTypes);
+								bool canBeBuilt = HouseExt::PrerequisitesMet(pHouse, object, ownedBuildingTypes, false);
 
 								if (!canBeBuilt)
 								{
@@ -845,7 +851,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			if (!isFallbackEnabled)
 				return SkipCode;
 
-			Debug::Log("... BUT fallback mode is enabled so now will be checked all available triggers.\n");
+			Debug::Log("... but fallback mode is enabled so now will be checked all available triggers.\n");
 			validCategory = teamCategory::None;
 		}
 

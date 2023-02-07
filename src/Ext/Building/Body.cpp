@@ -326,6 +326,128 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 	return true;
 }
 
+// Assigns a secret production option to the AI building.
+void BuildingExt::ExtData::UpdateSecretLabAI()
+{
+	auto pThis = this->OwnerObject();
+	auto pOwner = pThis->Owner;
+
+	if (!pOwner || pOwner->Type->MultiplayPassive || pOwner->IsControlledByHuman())
+		return;
+
+	auto pType = pThis->Type;
+
+	// Fixed item, no need to randomize
+	if (pType->SecretInfantry || pType->SecretUnit || pType->SecretBuilding)
+		return;
+
+	auto pDataType = BuildingTypeExt::ExtMap.Find(pType);
+
+	// If Secret Lab already picked a techno and isn't allowed to recalculate it again the function ends
+	if (this->SecretLab_Placed && !pDataType->Secret_RecalcOnCapture)
+		return;
+
+	DynamicVectorClass<TechnoTypeClass*> validCandidates;
+	DynamicVectorClass<TechnoTypeClass*> possibleCandidates;
+
+	if (pDataType->PossibleBoons.size() > 0)
+	{
+		for (const auto& boon : pDataType->PossibleBoons)
+		{
+			possibleCandidates.AddItem(boon);
+		}
+	}
+	else
+	{
+		for (const auto& boon : RulesClass::Instance->SecretInfantry)
+		{
+			possibleCandidates.AddItem(boon);
+		}
+
+		for (const auto& boon : RulesClass::Instance->SecretUnits)
+		{
+			possibleCandidates.AddItem(boon);
+		}
+
+		for (const auto& boon : RulesClass::Instance->SecretBuildings)
+		{
+			possibleCandidates.AddItem(boon);
+		}
+	}
+
+	if (possibleCandidates.Count > 0)
+	{
+		DynamicVectorClass<BuildingTypeClass*> ownedBuildingTypes;
+
+		if (ownedBuildingTypes.Count == 0)
+		{
+			for (auto building : pOwner->Buildings)
+			{
+				ownedBuildingTypes.AddUnique(building->Type);
+			}
+		}
+
+		for (const auto& boon : possibleCandidates)
+		{
+			auto pExt = TechnoTypeExt::ExtMap.Find(boon);
+			bool isRequiredHouse = true; // Default value if Secret.RequiredHouses isn't declared
+
+			if (pExt->Secret_RequiredHouses.size() > 0)
+				isRequiredHouse = false;
+
+			for (const auto houseId : pExt->Secret_RequiredHouses)
+			{
+				int houseIdx = HouseTypeClass::FindIndex(houseId.c_str());
+				if (houseIdx < 0)
+					continue;
+
+				if (pOwner->Type->ArrayIndex == houseIdx)
+				{
+					bool canBeBuilt = HouseExt::PrerequisitesMet(pOwner, boon, ownedBuildingTypes, true);
+
+					if (canBeBuilt)
+					{
+						isRequiredHouse = true;
+						break;
+					}
+				}
+			}
+
+			bool isForbiddenHouse = false; // Default value if Secret.ForbiddenHouses isn't declared
+
+			for (const auto houseId : pExt->Secret_ForbiddenHouses)
+			{
+				int houseIdx = HouseTypeClass::FindIndex(houseId.c_str());
+				if (houseIdx < 0)
+					continue;
+
+				if (pOwner->Type->ArrayIndex == houseIdx)
+				{
+					isForbiddenHouse = true;
+					break;
+				}
+			}
+
+			if (isRequiredHouse && !isForbiddenHouse)
+				validCandidates.AddItem(boon);
+		}
+	}
+
+	// pick one of all eligible items
+	if (validCandidates.Count > 0)
+	{
+		auto result = validCandidates[ScenarioClass::Instance->Random.RandomRanged(0, validCandidates.Count - 1)];
+		Debug::Log("[Secret Lab AI] rolled %s for %s\n", result->ID, pType->ID);
+		pThis->SecretProduction = result;
+		this->SecretLab_Placed = true;
+	}
+	else
+	{
+		Debug::Log("[Secret Lab AI] %s has no boons applicable to country [%s]!\n",
+			pType->ID, pOwner->Type->ID);
+	}
+}
+
 // =============================
 // load / save
 
@@ -339,6 +461,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->GrindingWeapon_LastFiredFrame)
 		.Process(this->CurrentAirFactory)
 		.Process(this->AccumulatedGrindingRefund)
+		.Process(this->SecretLab_Placed)
 		;
 }
 

@@ -142,6 +142,23 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Grinding_DisplayRefund_Houses.Read(exINI, pSection, "Grinding.DisplayRefund.Houses");
 	this->Grinding_DisplayRefund_Offset.Read(exINI, pSection, "Grinding.DisplayRefund.Offset");
 
+	this->Secret_RecalcOnCapture.Read(exINI, pSection, "SecretLab.GenerateOnCapture");
+	//this->PossibleBoons.Read(exINI, pSection, "SecretLab.PossibleBoons");
+
+	// Secret.Boons contains a list of TechnoTypeClass IDs
+	char* key = "SecretLab.PossibleBoons";
+	char* context = nullptr;
+	pINI->ReadString(pSection, key, "", Phobos::readBuffer);
+
+	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	{
+		int index = TechnoTypeClass::FindIndex(cur);
+		if (index != -1)
+			this->PossibleBoons.push_back(TechnoTypeClass::Array->GetItem(index));
+	}
+
+	key = nullptr;
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array->Count > 0)
@@ -220,6 +237,8 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_Custom)
 		.Process(this->SpyEffect_VictimSuperWeapon)
 		.Process(this->SpyEffect_InfiltratorSuperWeapon)
+		.Process(this->Secret_RecalcOnCapture)
+		.Process(this->PossibleBoons)
 		;
 }
 

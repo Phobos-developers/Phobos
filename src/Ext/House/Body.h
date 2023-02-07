@@ -74,7 +74,7 @@ public:
 	static int ActiveHarvesterCount(HouseClass* pThis);
 	static int TotalHarvesterCount(HouseClass* pThis);
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
-	static bool PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const pItem, const DynamicVectorClass<BuildingTypeClass*> ownedBuildingTypes);
+	static bool PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const pItem, const DynamicVectorClass<BuildingTypeClass*> ownedBuildingTypes, bool skipSecretLabChecks);
 	static bool HasGenericPrerequisite(int idx, const DynamicVectorClass<BuildingTypeClass*> ownedBuildingTypes);
 	static int FindGenericPrerequisite(const char* id);
 };

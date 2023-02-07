@@ -301,3 +301,16 @@ DEFINE_HOOK(0x4575A2, BuildingClass_Infiltrate_AfterAres, 0xE)
 	return 0;
 }
 #undef INFILTRATE_HOOK_MAGIC
+
+DEFINE_HOOK(0x445F80, BuildingClass_GrandOpening_UpdateSecretLabAI, 0x5)
+{
+	GET(BuildingClass*, pThis, ECX);
+
+	if (pThis->Type->SecretLab && !pThis->Owner->IsControlledByHuman())
+	{
+		auto pExt = BuildingExt::ExtMap.Find(pThis);
+		pExt->UpdateSecretLabAI();
+	}
+
+	return 0;
+}

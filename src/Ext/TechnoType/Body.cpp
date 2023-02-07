@@ -275,17 +275,44 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ConsideredNaval.Read(exINI, pSection, "ConsideredNaval");
 	this->ConsideredVehicle.Read(exINI, pSection, "ConsideredVehicle");
+	this->ConsideredSecretLabTech.Read(exINI, pSection, "ConsideredSecretLabTech");
+
+	// Secret.RequiredHouses contains a list of HouseTypeClass indexes
+	char* key = "SecretLab.RequiredHouses";
+	char* context = nullptr;
+	pINI->ReadString(pSection, key, "", Phobos::readBuffer);
+
+	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	{
+		std::string item(cur);
+		this->Secret_RequiredHouses.push_back(item);
+	}
+
+	key = nullptr;
+
+	// Secret.ForbiddenHouses contains a list of HouseTypeClass indexes
+	key = "SecretLab.ForbiddenHouses";
+	context = nullptr;
+	pINI->ReadString(pSection, key, "", Phobos::readBuffer);
+
+	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	{
+		std::string item(cur);
+		this->Secret_ForbiddenHouses.push_back(item);
+	}
+
+	key = nullptr;
 
 	// Prerequisite.RequiredTheaters contains a list of theader names
-	char* key = "Prerequisite.RequiredTheaters";
-	char* context = nullptr;
+	key = "Prerequisite.RequiredTheaters";
+	context = nullptr;
 	pINI->ReadString(pSection, key, "", Phobos::readBuffer);
 
 	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 	{
 		int index = Theater::FindIndex(cur);
 		if (index != -1)
-			Prerequisite_RequiredTheaters.push_back(index);
+			this->Prerequisite_RequiredTheaters.push_back(index);
 	}
 
 	key = nullptr;
@@ -301,13 +328,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		int idx = TechnoTypeClass::FindIndex(cur);
 		if (idx >= 0)
 		{
-			Prerequisite.push_back(idx);
+			this->Prerequisite.push_back(idx);
 		}
 		else
 		{
 			int index = HouseExt::FindGenericPrerequisite(cur);
 			if (index < 0)
-				Prerequisite.push_back(index);
+				this->Prerequisite.push_back(index);
 		}
 	}
 
@@ -323,13 +350,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		int idx = TechnoTypeClass::FindIndex(cur);
 		if (idx >= 0)
 		{
-			Prerequisite_Negative.push_back(idx);
+			this->Prerequisite_Negative.push_back(idx);
 		}
 		else
 		{
 			int index = HouseExt::FindGenericPrerequisite(cur);
 			if (index < 0)
-				Prerequisite_Negative.push_back(index);
+				this->Prerequisite_Negative.push_back(index);
 		}
 	}
 
@@ -498,6 +525,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Prerequisite_ListVector)
 		.Process(this->ConsideredNaval)
 		.Process(this->ConsideredVehicle)
+		.Process(this->ConsideredSecretLabTech)
+		.Process(this->Secret_RequiredHouses)
+		.Process(this->Secret_ForbiddenHouses)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

@@ -26,7 +26,8 @@ RepairBaseNodes=no,no,no ; 3 booleans indicating whether AI repair basenodes in 
 - In case of picking a category without valid triggers exist a fallback mode that allow picking a trigger from all valid triggers like if categories were disabled.
 - if `Autocreate=yes` AI will care about all units prerequisites so if the house's tech tree is incomplete for the trigger it gets discarded. It understand Ares tags like  `Prerequisite.RequiredTheaters`, `Prerequisite.Negative`, `Prerequisite.Lists` & `Generic prerequisites` section.
 - If it finds a trigger with 5000 current probability weight then discard valid triggers all and start searching all valid triggers with weight 5000. AI will pick 1 randomly and decrease by 1 the current weight of the selected trigger (so if nothing happens in the next teams selection loop it won't appear in this special list). Under this scenario categories are disabled.
-- Units can override the category using `ConsideredVehicle` and `ConsideredNaval` boolean tags
+- Units can override the category using `ConsideredVehicle` and `ConsideredNaval` boolean tags.
+- AI is be able to use unlocked units in captured Secret Labs.
 
 In `rulesmd.ini`:
 ```ini

@@ -12,6 +12,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/BuildingType/Body.h>
+#include <Ext/House/Body.h>
 
 class BuildingExt
 {
@@ -27,6 +28,7 @@ public:
 		int GrindingWeapon_LastFiredFrame;
 		BuildingClass* CurrentAirFactory;
 		int AccumulatedGrindingRefund;
+		bool SecretLab_Placed;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -35,11 +37,13 @@ public:
 			, GrindingWeapon_LastFiredFrame { 0 }
 			, CurrentAirFactory { nullptr }
 			, AccumulatedGrindingRefund { 0 }
+			, SecretLab_Placed { false }
 		{ }
 
 		void DisplayGrinderRefund();
 		void ApplyPoweredKillSpawns();
 		bool HasSuperWeapon(int index, bool withUpgrades) const;
+		void UpdateSecretLabAI();
 
 		virtual ~ExtData() = default;
 
