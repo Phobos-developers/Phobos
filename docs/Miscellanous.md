@@ -43,19 +43,76 @@ Ship     | `{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}` |
 ### Single player game speed
 
 - It is now possible to change the default (GS4/Fast/30FPS) campaign game speed with `CampaignDefaultGameSpeed`.
-- It is now possible to change the *values* of single player game speed, by inputing a pair of values. This feature must be enabled with `CustomGS=true`. **Not every number of FPS is possible**.
-  - Custom game speed is achieved by temporarily manipulating the delay between game frames.
-  - `CustomGSN.ChangeInterval` describes the frame interval between applying the effect. I.e. a value of 2 means "every other frame" and 7 means "every 7 frames".
-  - `CustomGSN.ChangeDelay` and `CustomGSN.DefaultDelay` set the delay to use on...
+- It is now possible to change the *values* of single player game speed, by inputing a pair of values. This feature must be enabled with `CustomGS=true`. **Only values between 10 and 60 FPS can be consistently achieved.**
+  - Custom game speed is achieved by periodically manipulating the delay between game frames, thus increasing or decreasing FPS.
+  - `CustomGSN.ChangeInterval` describes the frame interval between applying the effect. A value of 2 means "every other frame", 3 means "every 3 frames" etc. Increase of speedup/slowdown is approximately logarithmic.
+  - `CustomGSN.ChangeDelay` sets the delay (game speed number) to use every `CustomGSN.ChangeInterval` frames.
+  - `CustomGSN.DefaultDelay` sets the delay (game speed number) to use on other frames.
+  - Using game speed 6 (Fastest) in either `CustomGSN.ChangeDelay` or `CustomGSN.DefaultDelay` allows to set FPS above 60. **However, the resulting FPS may vary on different machines.**
+
+```{note}
+Currently there is no way to set desired FPS directly. Use the generator below to get required values. The generator supports values from 10 to 60.
+```
 
 In `rulesmd.ini`:
 ```ini
 [General]
-CampaignDefaultGameSpeed=2	; integer
+CampaignDefaultGameSpeed=2  ; integer
 
-CustomGS=false				; boolean
-CustomGSN.ChangeInterval=-1	; integer >= 1
-CustomGSN.ChangeDelay=N		; integer between 0 and 6
-CustomGSN.DefaultDelay=N	; integer between 0 and 6
+CustomGS=false              ; boolean
+CustomGSN.ChangeInterval=-1 ; integer >= 1
+CustomGSN.ChangeDelay=N     ; integer between 0 and 6
+CustomGSN.DefaultDelay=N    ; integer between 0 and 6
 ; where N = 0, 1, 2, 3, 4, 5, 6
 ```
+
+<details>
+<summary>Click to show the generator</summary>
+<input id="customGameSpeedIn" type=number placeholder="Enter desired FPS" onchange="onInput()">
+<p>Results (remember to replace N with your game speed number!):</p>
+<div id="codeBlockHere1"></div>
+</details>
+<script>
+makeINICodeBlock(document.getElementById("codeBlockHere1"), "customGameSpeedOut", 400);
+let fpsArray = [];
+for (let d = 0; d <= 5; d++) {
+	for (let c = 0; c <= 5; c++) {
+		for (let i = 1; i <= 40; i++) {
+			fpsArray.push(Math.round(formula(c, d, i)));
+		}
+	}
+}
+function formula(c, d, i) {
+	return (60/(6-c)+60/(6-d)*((i-1)/(6-c)))/(1+(i-1)/(6-c));
+}
+function onInput() {
+	let fps = document.getElementById("customGameSpeedIn");
+	let out = document.getElementById("customGameSpeedOut");
+	out.textContent = ''; // remove all children
+	out.appendChild(document.createElement("span"));
+	let j = 0;
+	let foundAny = false;
+	while (true) {
+		j = fpsArray.indexOf(parseInt(fps.value), j);
+		if (j == -1) {
+			break;
+		}
+		d = Math.floor(j / 240);
+		c = Math.floor(j % 240 / 40);
+		i = j % 40 + 1;
+		j += 1;
+		let content = [];
+		if (foundAny) {
+			content.push({key: null, value: null, comment: "// Or"});
+		}
+		content.push({key: "CustomGSN.DefaultDelay", value: d, comment: null});
+		content.push({key: "CustomGSN.ChangeDelay", value: c, comment: null});
+		content.push({key: "CustomGSN.ChangeInterval", value: i, comment: null});
+		content.forEach(line => addINILine(out, line));
+		foundAny = true;
+	}
+	if (!foundAny) {
+		addINILine(out, {key: null, value: null, comment: "// Sorry, couldn't find anything!"});
+	}
+}
+</script>

@@ -278,8 +278,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool(GameStrings::General, "ArtImageSwap", false);
 
+	// Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
 	Phobos::Misc::CampaignDefaultGameSpeed = 6 - pINI_RULESMD->ReadInteger(GameStrings::General, "CampaignDefaultGameSpeed", 4);
-	if (Phobos::Misc::CampaignDefaultGameSpeed > 5 || Phobos::Misc::CampaignDefaultGameSpeed < 0)
+	if (Phobos::Misc::CampaignDefaultGameSpeed > 6 || Phobos::Misc::CampaignDefaultGameSpeed < 0)
 		Phobos::Misc::CampaignDefaultGameSpeed = 2;
 	*(BYTE*)(0x55D77A) = (BYTE)Phobos::Misc::CampaignDefaultGameSpeed; // We overwrite the instructions that force GameSpeed to 2 (GS4)
 	*(BYTE*)(0x55D78D) = (BYTE)Phobos::Misc::CampaignDefaultGameSpeed; // when speed control is off. Doesn't need a hook.
@@ -290,7 +291,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	int temp;
 	for (size_t i = 0; i <= 6; ++i)
 	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "CustomGS%d.ChangeDelay", 6 - i); // 6 - i so that GS6 is index 0
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "CustomGS%d.ChangeDelay", 6 - i);
 		temp = pINI_RULESMD->ReadInteger(GameStrings::General, tempBuffer, -1);
 		if (temp >= 0 && temp <= 6)
 			Phobos::Misc::CustomGS_ChangeDelay[i] = 6 - temp;
