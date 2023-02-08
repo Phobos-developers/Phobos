@@ -77,15 +77,11 @@ void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiber
 	}
 }
 
-void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
+void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 {
-	auto pOwner = pThis->Owner;
+	auto pOwner = this->OwnerObject()->Owner;
 
 	if (!pOwner || pOwner->ProducingAircraftTypeIndex < 0)
-		return;
-
-	auto BuildingExt = BuildingExt::ExtMap.Find(pThis);
-	if (!BuildingExt)
 		return;
 
 	AircraftTypeClass* pAircraft = AircraftTypeClass::Array->GetItem(pOwner->ProducingAircraftTypeIndex);
@@ -94,18 +90,18 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 	BuildingClass* newBuilding = nullptr;
 
 	// Update what is the current air factory for future comparisons
-	if (BuildingExt->CurrentAirFactory)
+	if (this->CurrentAirFactory)
 	{
 		int nDocks = 0;
-		if (BuildingExt->CurrentAirFactory->Type)
-			nDocks = BuildingExt->CurrentAirFactory->Type->NumberOfDocks;
+		if (this->CurrentAirFactory->Type)
+			nDocks = this->CurrentAirFactory->Type->NumberOfDocks;
 
-		int nOccupiedDocks = CountOccupiedDocks(BuildingExt->CurrentAirFactory);
+		int nOccupiedDocks = BuildingExt::CountOccupiedDocks(this->CurrentAirFactory);
 
 		if (nOccupiedDocks < nDocks)
-			currFactory = BuildingExt->CurrentAirFactory->Factory;
+			currFactory = this->CurrentAirFactory->Factory;
 		else
-			BuildingExt->CurrentAirFactory = nullptr;
+			this->CurrentAirFactory = nullptr;
 	}
 
 	// Obtain a list of air factories for optimizing the comparisons
@@ -120,14 +116,14 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 		}
 	}
 
-	if (BuildingExt->CurrentAirFactory)
+	if (this->CurrentAirFactory)
 	{
 		for (auto pBuilding : airFactoryBuilding)
 		{
-			if (pBuilding == BuildingExt->CurrentAirFactory)
+			if (pBuilding == this->CurrentAirFactory)
 			{
-				BuildingExt->CurrentAirFactory->Factory = currFactory;
-				BuildingExt->CurrentAirFactory->IsPrimaryFactory = true;
+				this->CurrentAirFactory->Factory = currFactory;
+				this->CurrentAirFactory->IsPrimaryFactory = true;
 			}
 			else
 			{
@@ -147,7 +143,7 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 	for (auto pBuilding : airFactoryBuilding)
 	{
 		int nDocks = pBuilding->Type->NumberOfDocks;
-		int nOccupiedDocks = CountOccupiedDocks(pBuilding);
+		int nOccupiedDocks = BuildingExt::CountOccupiedDocks(pBuilding);
 
 		if (nOccupiedDocks < nDocks)
 		{
@@ -156,7 +152,7 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 				newBuilding = pBuilding;
 				newBuilding->Factory = currFactory;
 				newBuilding->IsPrimaryFactory = true;
-				BuildingExt->CurrentAirFactory = newBuilding;
+				this->CurrentAirFactory = newBuilding;
 
 				continue;
 			}
