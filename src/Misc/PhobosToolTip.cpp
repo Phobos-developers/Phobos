@@ -96,6 +96,9 @@ void PhobosToolTip::HelpText(BuildType& cameo)
 
 inline int tickTimeToSeconds(int tickTime)
 {
+	if (!Phobos::Config::RealTimeTimers)
+		return tickTime / 15;
+
 	if (false && !SessionClass::IsMultiplayer()) // TODO change when custom game speed gets merged
 		return tickTime / std::max((int)FPSCounter::CurrentFrameRate, 1);
 	else if (GameOptionsClass::Instance->GameSpeed != 0)

@@ -68,5 +68,6 @@ public:
 		static bool DevelopmentCommands;
 		static bool ArtImageSwap;
 		static bool ShowPlacementPreview;
+		static bool RealTimeTimers;
 	};
 };
