@@ -178,13 +178,14 @@ This page lists all the individual contributions to the project by their author.
   - Removal of hardcoded AA & Gattling weapon selection restrictions
   - Projectile obstacle logic additions
 - **Morton (MortonPL)**:
-  - `XDrawOffset`
+  - `XDrawOffset` for animations
   - Shield passthrough & absorption
   - Building `LimboDelivery` logic
   - Fix for `Image` in art rules
   - Power delta counter
   - Super Weapons launching other Super Weapons
   - SpyEffects expansion, launching Super Weapons on building infiltration
+  - Real time timers
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance

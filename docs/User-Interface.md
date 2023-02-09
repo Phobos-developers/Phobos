@@ -100,6 +100,22 @@ In `ra2md.ini`:
 ShowPlacementPreview=yes   ; boolean
 ```
 
+### Real time timers
+
+- Timers can now display values in real time, taking game speed into account. This can be enabled with `RealTimeTimers=yes`.
+- By default, time is calculated relative to desired framerate. Enabling `RealTimeTimers.Adaptive=yes` (always on for unlimited FPS) will calculate time relative to *current* FPS, accounting for lag.
+  - When playing with unlimited FPS (or custom speed above 60 FPS), the timers might constantly change value because of the unstable nature.
+- This option respects custom game speeds.
+
+- This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
+
+In `ra2md.ini`:
+```ini
+[Phobos]
+RealTimeTimers=no           ; boolean
+RealTimeTimers.Adaptive=no  ; boolean
+```
+
 ### SuperWeapon ShowTimer sorting
 
 - You can now sort the timers of superweapons in ascending order from top to bottom according to a given priority value.
