@@ -72,7 +72,7 @@ CampaignDefaultGameSpeed=4  ; integer
 
 <details>
 <summary>Click to show the generator</summary>
-<input id="customGameSpeedIn" type=number placeholder="Enter desired FPS" onchange="onInput()">
+<input id="customGameSpeedIn" type=number placeholder="Enter desired FPS" oninput="onInput()">
 <p>Results (remember to replace N with your game speed number!):</p>
 <div id="codeBlockHere1"></div>
 </details>
