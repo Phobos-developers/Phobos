@@ -13,7 +13,9 @@ DEFINE_HOOK(0x6D4B50, Print_Timer_On_Tactical_Start, 0x6)
 	REF_STACK(int, value, STACK_OFFSET(0, 0x4));
 	oldValue = value;
 
-	if (false && !SessionClass::IsMultiplayer()) // TODO change when custom game speed gets merged
+	if (Phobos::Config::RealTimeTimers_Adaptive
+		|| GameOptionsClass::Instance->GameSpeed == 0
+		|| (false && !SessionClass::IsMultiplayer())) // TODO change when custom game speed gets merged
 	{
 		value = (int)((double)value / (std::max((double)FPSCounter::CurrentFrameRate, 1.0) / 15.0));
 		return 0;
@@ -21,9 +23,6 @@ DEFINE_HOOK(0x6D4B50, Print_Timer_On_Tactical_Start, 0x6)
 
 	switch (GameOptionsClass::Instance->GameSpeed)
 	{
-	case 0: // no cap
-		value = (int)((double)value / (std::max((double)FPSCounter::CurrentFrameRate, 1.0) / 15.0));
-		break;
 	case 1:	// 60 FPS
 		value = value / 4;
 		break;

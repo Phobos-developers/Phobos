@@ -69,5 +69,6 @@ public:
 		static bool ArtImageSwap;
 		static bool ShowPlacementPreview;
 		static bool RealTimeTimers;
+		static bool RealTimeTimers_Adaptive;
 	};
 };
