@@ -278,7 +278,7 @@ New:
 - Removal of hardcoded AA & Gattling weapon selection restrictions (by Starkku)
 - Projectile `SubjectToLand/Water` (by Starkku)
 - Real time timers (by Morton)
-- Defualt campaign game speed override and custom campaign game speed FPS (by Morton)
+- Default campaign game speed override and custom campaign game speed FPS (by Morton)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

@@ -13,6 +13,7 @@
 #include <BitFont.h>
 #include <BitText.h>
 #include <FPSCounter.h>
+#include <Phobos.h>
 
 #include <Ext/Side/Body.h>
 #include <Ext/Surface/Body.h>
@@ -101,7 +102,7 @@ inline int tickTimeToSeconds(int tickTime)
 
 	if (Phobos::Config::RealTimeTimers_Adaptive
 		|| GameOptionsClass::Instance->GameSpeed == 0
-		|| (false && !SessionClass::IsMultiplayer())) // TODO change when custom game speed gets merged
+		|| (Phobos::Misc::CustomGS && !SessionClass::IsMultiplayer()))
 	{
 		return tickTime / std::max((int)FPSCounter::CurrentFrameRate, 1);
 	}
