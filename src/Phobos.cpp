@@ -13,6 +13,7 @@
 #include <Utilities/Macro.h>
 
 #include "Misc/BlittersFix.h"
+#include "Misc/AresData.h"
 
 #ifndef IS_RELEASE_VER
 bool HideWarning = false;
@@ -177,6 +178,7 @@ bool __stdcall DllMain(HANDLE hInstance, DWORD dwReason, LPVOID v)
 DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 {
 	Phobos::ExeRun();
+	AresData::Init();
 
 	return 0;
 }
@@ -188,6 +190,7 @@ void NAKED _ExeTerminate()
 	CALL(EAX);
 	PUSH_REG(EAX);
 
+	AresData::UnInit();
 	Phobos::ExeTerminate();
 
 	// Jump back
@@ -203,6 +206,7 @@ DEFINE_HOOK(0x52F639, _YR_CmdLineParse, 0x5)
 	GET(int, nNumArgs, EDI);
 
 	Phobos::CmdLineParse(ppArgs, nNumArgs);
+	Debug::LogDeferredFinalize();
 	return 0;
 }
 
