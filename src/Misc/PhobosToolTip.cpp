@@ -102,7 +102,9 @@ inline int tickTimeToSeconds(int tickTime)
 	if (Phobos::Config::RealTimeTimers_Adaptive
 		|| GameOptionsClass::Instance->GameSpeed == 0
 		|| (false && !SessionClass::IsMultiplayer())) // TODO change when custom game speed gets merged
+	{
 		return tickTime / std::max((int)FPSCounter::CurrentFrameRate, 1);
+	}
 
 	return tickTime / (60 / GameOptionsClass::Instance->GameSpeed);
 }
