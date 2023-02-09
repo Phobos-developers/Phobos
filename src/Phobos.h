@@ -70,5 +70,15 @@ public:
 		static bool ShowPlacementPreview;
 		static bool RealTimeTimers;
 		static bool RealTimeTimers_Adaptive;
+		static int CampaignDefaultGameSpeed;
+	};
+
+	class Misc
+	{
+	public:
+		static bool CustomGS;
+		static int CustomGS_ChangeInterval[7];
+		static int CustomGS_ChangeDelay[7];
+		static int CustomGS_DefaultDelay[7];
 	};
 };
