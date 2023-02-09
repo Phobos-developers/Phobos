@@ -287,6 +287,7 @@ New:
 - Default campaign game speed override and custom campaign game speed FPS (by Morton)
 - `AnimList` on zero damage Warheads toggle via `AnimList.ShowOnZeroDamage` (by Starkku)
 - Including INI files and inheriting INI sections (by Morton)
+- TechnoType conversion warhead & superweapon (by Morton)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

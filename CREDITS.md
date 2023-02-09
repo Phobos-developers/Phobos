@@ -189,6 +189,7 @@ This page lists all the individual contributions to the project by their author.
   - Real time timers
   - Default campaign game speed override and custom campaign game speed FPS
   - Including INI files and inheriting INI sections
+  - TechnoType conversion warhead & superweapon
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
@@ -226,6 +227,7 @@ This page lists all the individual contributions to the project by their author.
    - The option to allow DieSound/VoiceDie being played when grinding
    - Allow iron-curtain effects on infantries
    - Break the mindcontrol link when capturing a mind-controlled building with engineer
+   - TechnoType conversion placeholder
    - Misc code refactor & maintenance, CN doc fix
 - **FlyStar**
    - Campaign load screen PCX support
