@@ -280,16 +280,24 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	// Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
 	Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD->ReadInteger("Phobos", "CampaignDefaultGameSpeed", 4);
 	if (Phobos::Config::CampaignDefaultGameSpeed > 6 || Phobos::Config::CampaignDefaultGameSpeed < 0)
+	{
 		Phobos::Config::CampaignDefaultGameSpeed = 2;
-	*(BYTE*)(0x55D77A) = (BYTE)Phobos::Config::CampaignDefaultGameSpeed; // We overwrite the instructions that force GameSpeed to 2 (GS4)
-	*(BYTE*)(0x55D78D) = (BYTE)Phobos::Config::CampaignDefaultGameSpeed; // when speed control is off. Doesn't need a hook.
+	}
+
+	{
+		unsigned char temp = (unsigned char)Phobos::Config::CampaignDefaultGameSpeed;
+		Patch patch1 { 0x55D77A , 1, &temp }; // We overwrite the instructions that force GameSpeed to 2 (GS4)
+		Patch patch2 { 0x55D78D , 1, &temp }; // when speed control is off. Doesn't need a hook.
+		patch1.Apply();
+		patch2.Apply();
+	}
 
 	Phobos::Misc::CustomGS = pINI_RULESMD->ReadBool(GameStrings::General, "CustomGS", false);
 
 	char tempBuffer[26];
-	int temp;
 	for (size_t i = 0; i <= 6; ++i)
 	{
+		int temp;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "CustomGS%d.ChangeDelay", 6 - i);
 		temp = pINI_RULESMD->ReadInteger(GameStrings::General, tempBuffer, -1);
 		if (temp >= 0 && temp <= 6)
