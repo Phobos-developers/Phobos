@@ -6,7 +6,7 @@
 
 DEFINE_HOOK(0x69BAE7, SessionClass_Resume_CampaignGameSpeed, 0xA)
 {
-	GameOptionsClass::Instance->GameSpeed = Phobos::Misc::CampaignDefaultGameSpeed;
+	GameOptionsClass::Instance->GameSpeed = Phobos::Config::CampaignDefaultGameSpeed;
 	return 0x69BAF1;
 }
 

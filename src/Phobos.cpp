@@ -62,7 +62,6 @@ bool Phobos::Config::RealTimeTimers = false;
 bool Phobos::Config::RealTimeTimers_Adaptive = false;
 int Phobos::Config::CampaignDefaultGameSpeed = 2;
 
-int Phobos::Misc::CampaignDefaultGameSpeed = 2;
 bool Phobos::Misc::CustomGS = false;
 int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
 int Phobos::Misc::CustomGS_ChangeDelay[7] = { 0, 1, 2, 3, 4, 5, 6 };
@@ -279,11 +278,11 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool(GameStrings::General, "ArtImageSwap", false);
 
 	// Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
-	Phobos::Misc::CampaignDefaultGameSpeed = 6 - pINI_RULESMD->ReadInteger(GameStrings::General, "CampaignDefaultGameSpeed", 4);
-	if (Phobos::Misc::CampaignDefaultGameSpeed > 6 || Phobos::Misc::CampaignDefaultGameSpeed < 0)
-		Phobos::Misc::CampaignDefaultGameSpeed = 2;
-	*(BYTE*)(0x55D77A) = (BYTE)Phobos::Misc::CampaignDefaultGameSpeed; // We overwrite the instructions that force GameSpeed to 2 (GS4)
-	*(BYTE*)(0x55D78D) = (BYTE)Phobos::Misc::CampaignDefaultGameSpeed; // when speed control is off. Doesn't need a hook.
+	Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD->ReadInteger("Phobos", "CampaignDefaultGameSpeed", 4);
+	if (Phobos::Config::CampaignDefaultGameSpeed > 6 || Phobos::Config::CampaignDefaultGameSpeed < 0)
+		Phobos::Config::CampaignDefaultGameSpeed = 2;
+	*(BYTE*)(0x55D77A) = (BYTE)Phobos::Config::CampaignDefaultGameSpeed; // We overwrite the instructions that force GameSpeed to 2 (GS4)
+	*(BYTE*)(0x55D78D) = (BYTE)Phobos::Config::CampaignDefaultGameSpeed; // when speed control is off. Doesn't need a hook.
 
 	Phobos::Misc::CustomGS = pINI_RULESMD->ReadBool(GameStrings::General, "CustomGS", false);
 

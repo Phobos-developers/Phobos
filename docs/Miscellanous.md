@@ -57,13 +57,17 @@ Currently there is no way to set desired FPS directly. Use the generator below t
 In `rulesmd.ini`:
 ```ini
 [General]
-CampaignDefaultGameSpeed=2  ; integer
-
 CustomGS=false              ; boolean
 CustomGSN.ChangeInterval=-1 ; integer >= 1
 CustomGSN.ChangeDelay=N     ; integer between 0 and 6
 CustomGSN.DefaultDelay=N    ; integer between 0 and 6
 ; where N = 0, 1, 2, 3, 4, 5, 6
+```
+
+In `ra2md.ini`:
+```ini
+[Phobos]
+CampaignDefaultGameSpeed=4  ; integer
 ```
 
 <details>
