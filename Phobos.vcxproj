@@ -52,7 +52,6 @@
     <ClCompile Include="src\Ext\Rules\Hooks.Image.cpp" />
     <ClCompile Include="src\Misc\AresData.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
-    <ClCompile Include="src\Misc\AresData.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
     <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
     <ClCompile Include="src\Misc\RetryDialog.cpp" />
@@ -167,7 +166,6 @@
     <ClInclude Include="src\Misc\BlittersFix.h" />
     <ClInclude Include="src\Ext\CaptureManager\Body.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
-    <ClInclude Include="src\Misc\AresData.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldTypeClass.h" />
