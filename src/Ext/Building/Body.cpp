@@ -4,6 +4,7 @@
 
 #include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
+#include <Ext/House/Body.h>
 
 template<> const DWORD Extension<BuildingClass>::Canary = 0x87654321;
 BuildingExt::ExtContainer BuildingExt::ExtMap;

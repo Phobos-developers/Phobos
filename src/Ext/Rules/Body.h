@@ -75,7 +75,7 @@ public:
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 
 		DynamicVectorClass<DynamicVectorClass<int>> GenericPrerequisites;
-		DynamicVectorClass<char*> GenericPrerequisitesNames;
+		DynamicVectorClass<const char*> GenericPrerequisitesNames;
 
 		Valueable<bool> NewTeamsSelector;
 		Valueable<bool> NewTeamsSelector_SplitTriggersByCategory;

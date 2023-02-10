@@ -285,7 +285,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ConsideredSecretLabTech.Read(exINI, pSection, "ConsideredSecretLabTech");
 
 	// Secret.RequiredHouses contains a list of HouseTypeClass indexes
-	char* key = "SecretLab.RequiredHouses";
+	const char* key = "SecretLab.RequiredHouses";
 	char* context = nullptr;
 	pINI->ReadString(pSection, key, "", Phobos::readBuffer);
 

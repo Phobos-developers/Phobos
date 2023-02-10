@@ -147,7 +147,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	//this->PossibleBoons.Read(exINI, pSection, "SecretLab.PossibleBoons");
 
 	// Secret.Boons contains a list of TechnoTypeClass IDs
-	char* key = "SecretLab.PossibleBoons";
+	const char* key = "SecretLab.PossibleBoons";
 	char* context = nullptr;
 	pINI->ReadString(pSection, key, "", Phobos::readBuffer);
 
