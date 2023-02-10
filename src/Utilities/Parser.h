@@ -32,6 +32,10 @@
 
 #pragma once
 
+#include <type_traits>
+#include <Windows.h>
+#include <stdio.h>
+
 //! Parses strings into one or more elements of another type.
 /*!
 	\tparam T The type to convert to.
@@ -85,7 +89,7 @@ public:
 				buffer[n-- - 1] = '\0';
 			}
 
-			// interprete the value
+			// interpret the value
 			if (!Parser<OutType>::TryParse(buffer, &outValue[i])) {
 				return i;
 			}
@@ -182,7 +186,7 @@ public:
 // functions will eventually call them.
 
 template<>
-static bool Parser<bool>::TryParse(const char* pValue, OutType* outValue) {
+inline bool Parser<bool>::TryParse(const char* pValue, OutType* outValue) {
 	switch (toupper(static_cast<unsigned char>(*pValue))) {
 	case '1':
 	case 'T':
@@ -204,7 +208,7 @@ static bool Parser<bool>::TryParse(const char* pValue, OutType* outValue) {
 };
 
 template<>
-static bool Parser<int>::TryParse(const char* pValue, OutType* outValue) {
+inline bool Parser<int>::TryParse(const char* pValue, OutType* outValue) {
 	const char* pFmt = nullptr;
 	if (*pValue == '$') {
 		pFmt = "$%d";
@@ -227,7 +231,7 @@ static bool Parser<int>::TryParse(const char* pValue, OutType* outValue) {
 }
 
 template<>
-static bool Parser<double>::TryParse(const char* pValue, OutType* outValue) {
+inline bool Parser<double>::TryParse(const char* pValue, OutType* outValue) {
 	double buffer = 0.0;
 	if (sscanf_s(pValue, "%lf", &buffer) == 1) {
 		if (strchr(pValue, '%')) {
@@ -242,7 +246,7 @@ static bool Parser<double>::TryParse(const char* pValue, OutType* outValue) {
 };
 
 template<>
-static bool Parser<float>::TryParse(const char* pValue, OutType* outValue) {
+inline bool Parser<float>::TryParse(const char* pValue, OutType* outValue) {
 	double buffer = 0.0;
 	if (Parser<double>::TryParse(pValue, &buffer)) {
 		if (outValue) {
@@ -254,7 +258,7 @@ static bool Parser<float>::TryParse(const char* pValue, OutType* outValue) {
 }
 
 template<>
-static bool Parser<BYTE>::TryParse(const char* pValue, OutType* outValue) {
+inline bool Parser<BYTE>::TryParse(const char* pValue, OutType* outValue) {
 	// no way to read unsigned char, use short instead.
 	const char* pFmt = nullptr;
 	if (*pValue == '$') {

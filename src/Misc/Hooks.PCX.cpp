@@ -23,12 +23,12 @@ DEFINE_HOOK(0x5535D0, LoadProgressMgr_Draw_PCXLoadingScreen, 0x6)
 	int ScreenWidth = *(int*)0x8A00A4;
 	BSurface* pcx = nullptr;
 
-	sprintf_s(Phobos::readBuffer, (const char*)0x8297F4 /* ls%sobs.shp */,
-		ScreenWidth != 640 ? (const char*)0x8297DC /* 800 */ : (const char*)0x8297E0 /* 640 */);
+	sprintf_s(Phobos::readBuffer, GameStrings::LSSOBS_SHP() /* "ls%sobs.shp" */,
+		ScreenWidth != 640 ? GameStrings::_800() /* "800" */ : GameStrings::_640() /* "640" */);
 	if (!_stricmp(pFilename, Phobos::readBuffer))
 	{
 		sprintf_s(Phobos::readBuffer, "ls%sobs.pcx",
-			ScreenWidth != 640 ? (const char*)0x8297DC /* 800 */ : (const char*)0x8297E0 /* 640 */);
+			ScreenWidth != 640 ? GameStrings::_800() : GameStrings::_640());
 		PCX::Instance->LoadFile(Phobos::readBuffer);
 		pcx = PCX::Instance->GetSurface(Phobos::readBuffer);
 	}

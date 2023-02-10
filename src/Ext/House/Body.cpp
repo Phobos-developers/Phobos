@@ -10,6 +10,13 @@
 template<> const DWORD Extension<HouseClass>::Canary = 0x11111111;
 HouseExt::ExtContainer HouseExt::ExtMap;
 
+bool HouseExt::ExtData::OwnsLimboDeliveredBuilding(BuildingClass const* pBuilding)
+{
+	if (!pBuilding)
+		return false;
+
+	return this->OwnedLimboDeliveredBuildings.count(pBuilding->UniqueID);
+}
 
 int HouseExt::ActiveHarvesterCount(HouseClass* pThis)
 {
@@ -33,12 +40,6 @@ int HouseExt::TotalHarvesterCount(HouseClass* pThis)
 		result += pThis->CountOwnedAndPresent(pType);
 
 	return result;
-}
-
-int HouseExt::CountOwnedLimbo(HouseClass* pThis, BuildingTypeClass const* const pItem)
-{
-	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
-	return pHouseExt->OwnedLimboBuildingTypes.GetItemCount(pItem->ArrayIndex);
 }
 
 // Ares
@@ -319,6 +320,22 @@ int HouseExt::FindGenericPrerequisite(const char* id)
 	return 0;
 }
 
+void HouseExt::ExtData::UpdateAutoDeathObjectsInLimbo()
+{
+	for (auto pExt : this->OwnedTimedAutoDeathObjects)
+	{
+		auto pItem = pExt->OwnerObject();
+		if (!pItem->IsInLogic && pItem->IsAlive && pExt->TypeExtData->AutoDeath_Behavior.isset() && pExt->AutoDeathTimer.Completed())
+		{
+			if (this->OwnedLimboDeliveredBuildings.contains(pItem->UniqueID))
+				this->OwnedLimboDeliveredBuildings.erase(pItem->UniqueID);
+			pItem->RegisterDestruction(nullptr);
+			// I doubt those in LimboDelete being really necessary, they're gonna be updated either next frame or after uninit anyway
+			pItem->UnInit();
+		}
+	}
+}
+
 void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	const char* pSection = this->OwnerObject()->PlainName;
@@ -344,6 +361,8 @@ void HouseExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->BuildingCounter)
+		.Process(this->OwnedLimboDeliveredBuildings)
+		.Process(this->OwnedTimedAutoDeathObjects)
 		.Process(this->Factory_BuildingType)
 		.Process(this->Factory_InfantryType)
 		.Process(this->Factory_VehicleType)

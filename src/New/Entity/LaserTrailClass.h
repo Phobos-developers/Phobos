@@ -32,12 +32,12 @@ public:
 	}
 
 	LaserTrailClass() :
-		Type(),
-		Visible(),
-		FLH(),
-		IsOnTurret(),
-		CurrentColor(),
-		LastLocation()
+		Type {},
+		Visible {},
+		FLH {},
+		IsOnTurret {},
+		CurrentColor {},
+		LastLocation {}
 	{ }
 
 	bool Update(CoordStruct location);

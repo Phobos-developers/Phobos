@@ -28,7 +28,7 @@ void GeneralUtils::DoubleValidCheck(double* source, const char* section, const c
 	}
 }
 
-const wchar_t* GeneralUtils::LoadStringOrDefault(char* key, const wchar_t* defaultValue)
+const wchar_t* GeneralUtils::LoadStringOrDefault(const char* key, const wchar_t* defaultValue)
 {
 	if (GeneralUtils::IsValidString(key))
 		return StringTable::LoadString(key);
@@ -36,7 +36,7 @@ const wchar_t* GeneralUtils::LoadStringOrDefault(char* key, const wchar_t* defau
 		return defaultValue;
 }
 
-const wchar_t* GeneralUtils::LoadStringUnlessMissing(char* key, const wchar_t* defaultValue)
+const wchar_t* GeneralUtils::LoadStringUnlessMissing(const char* key, const wchar_t* defaultValue)
 {
 	return wcsstr(LoadStringOrDefault(key, defaultValue), L"MISSING:") ? defaultValue : LoadStringOrDefault(key, defaultValue);
 }

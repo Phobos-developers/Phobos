@@ -57,8 +57,15 @@ bool Phobos::Config::ToolTipBlur = false;
 bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::DevelopmentCommands = true;
 bool Phobos::Config::ArtImageSwap = false;
-bool Phobos::Config::AllowParallelAIQueues = true;
 bool Phobos::Config::ShowPlacementPreview = false;
+bool Phobos::Config::RealTimeTimers = false;
+bool Phobos::Config::RealTimeTimers_Adaptive = false;
+int Phobos::Config::CampaignDefaultGameSpeed = 2;
+
+bool Phobos::Misc::CustomGS = false;
+int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
+int Phobos::Misc::CustomGS_ChangeDelay[7] = { 0, 1, 2, 3, 4, 5, 6 };
+int Phobos::Misc::CustomGS_DefaultDelay[7] = { 0, 1, 2, 3, 4, 5, 6 };
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
@@ -205,6 +212,8 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::ToolTipBlur = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipBlur", false);
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
 	Phobos::Config::ShowPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowPlacementPreview", true);
+	Phobos::Config::RealTimeTimers = CCINIClass::INI_RA2MD->ReadBool("Phobos", "RealTimeTimers", false);
+	Phobos::Config::RealTimeTimers_Adaptive = CCINIClass::INI_RA2MD->ReadBool("Phobos", "RealTimeTimers.Adaptive", false);
 
 	CCINIClass* pINI_UIMD = Phobos::OpenConfig(GameStrings::UIMD_INI);
 
@@ -268,6 +277,35 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool(GameStrings::General, "ArtImageSwap", false);
 
+	// Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
+	Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD->ReadInteger("Phobos", "CampaignDefaultGameSpeed", 4);
+	if (Phobos::Config::CampaignDefaultGameSpeed > 6 || Phobos::Config::CampaignDefaultGameSpeed < 0)
+		Phobos::Config::CampaignDefaultGameSpeed = 2;
+	*(BYTE*)(0x55D77A) = (BYTE)Phobos::Config::CampaignDefaultGameSpeed; // We overwrite the instructions that force GameSpeed to 2 (GS4)
+	*(BYTE*)(0x55D78D) = (BYTE)Phobos::Config::CampaignDefaultGameSpeed; // when speed control is off. Doesn't need a hook.
+
+	Phobos::Misc::CustomGS = pINI_RULESMD->ReadBool(GameStrings::General, "CustomGS", false);
+
+	char tempBuffer[26];
+	int temp;
+	for (size_t i = 0; i <= 6; ++i)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "CustomGS%d.ChangeDelay", 6 - i);
+		temp = pINI_RULESMD->ReadInteger(GameStrings::General, tempBuffer, -1);
+		if (temp >= 0 && temp <= 6)
+			Phobos::Misc::CustomGS_ChangeDelay[i] = 6 - temp;
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "CustomGS%d.DefaultDelay", 6 - i);
+		temp = pINI_RULESMD->ReadInteger(GameStrings::General, tempBuffer, -1);
+		if (temp >= 1)
+			Phobos::Misc::CustomGS_DefaultDelay[i] = 6 - temp;
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "CustomGS%d.ChangeInterval", 6 - i);
+		temp = pINI_RULESMD->ReadInteger(GameStrings::General, tempBuffer, -1);
+		if (temp >= 1)
+			Phobos::Misc::CustomGS_ChangeInterval[i] = temp;
+	}
+
 	if (pINI_RULESMD->ReadBool(GameStrings::General, "FixTransparencyBlitters", true))
 		BlittersFix::Apply();
 
@@ -278,14 +316,11 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 {
+#ifndef DEBUG
 	GET(CCINIClass*, rulesINI, EDI);
 
-	// Ares tags
-
-#ifndef DEBUG
 	Phobos::Config::DevelopmentCommands = rulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
 #endif
-	Phobos::Config::AllowParallelAIQueues = rulesINI->ReadBool("GlobalControls", "AllowParallelAIQueues", Phobos::Config::AllowParallelAIQueues);
 
 	return 0;
 }

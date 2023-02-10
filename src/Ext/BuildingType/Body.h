@@ -35,6 +35,7 @@ public:
 		ValueableVector<TechnoTypeClass*> Grinding_DisallowTypes;
 		NullableIdx<VocClass> Grinding_Sound;
 		Nullable<WeaponTypeClass*> Grinding_Weapon;
+		Valueable<bool> Grinding_PlayDieSound;
 		Valueable<bool> Grinding_DisplayRefund;
 		Valueable<AffectedHouse> Grinding_DisplayRefund_Houses;
 		Valueable<Point2D> Grinding_DisplayRefund_Offset;
@@ -70,6 +71,7 @@ public:
 			, Grinding_AllowTypes {}
 			, Grinding_DisallowTypes {}
 			, Grinding_Sound {}
+			, Grinding_PlayDieSound { true }
 			, Grinding_Weapon {}
 			, Grinding_DisplayRefund { false }
 			, Grinding_DisplayRefund_Houses { AffectedHouse::All }
