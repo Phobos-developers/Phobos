@@ -2,7 +2,6 @@
 
 #include <ThemeClass.h>
 
-template<> const DWORD Extension<SideClass>::Canary = 0x05B10501;
 SideExt::ExtContainer SideExt::ExtMap;
 
 void SideExt::ExtData::Initialize()
@@ -90,6 +89,24 @@ bool SideExt::SaveGlobals(PhobosStreamWriter& Stm)
 	return Stm.Success();
 }
 
+void SideExt::InitializeExtData(SideClass* pThis, int nIdx)
+{
+	if (!pThis->unknown_18)
+	{
+		if (auto val = new SideExt::ExtData(pThis))
+		{
+			val->ArrayIndex = nIdx;
+			val->EnsureConstanted();
+			(*(uintptr_t*)((char*)pThis + AbstractExtPointerOffset)) = (uintptr_t)val;
+		}
+	}
+	else
+	{
+		if (((SideExt::ExtData*)(*(uintptr_t*)((char*)pThis + AbstractExtPointerOffset)))->ArrayIndex != nIdx)
+			((SideExt::ExtData*)(*(uintptr_t*)((char*)pThis + AbstractExtPointerOffset)))->ArrayIndex = nIdx;
+	}
+}
+
 // =============================
 // container
 
@@ -102,8 +119,10 @@ SideExt::ExtContainer::~ExtContainer() = default;
 DEFINE_HOOK(0x6A4609, SideClass_CTOR, 0x7)
 {
 	GET(SideClass*, pItem, ESI);
+	GET(int, nIdx, ECX);
 
-	SideExt::ExtMap.FindOrAllocate(pItem);
+	SideExt::InitializeExtData(pItem, nIdx);
+
 	return 0;
 }
 
@@ -141,7 +160,9 @@ DEFINE_HOOK(0x6A48FC, SideClass_Save_Suffix, 0x5)
 DEFINE_HOOK(0x679A10, SideClass_LoadAllFromINI, 0x5)
 {
 	GET_STACK(CCINIClass*, pINI, 0x4);
-	SideExt::ExtMap.LoadAllFromINI(pINI); // bwahaha
+
+	for (auto pSide : *SideClass::Array)
+		SideExt::ExtMap.Find(pSide)->LoadFromINIFile(pINI);
 
 	return 0;
 }

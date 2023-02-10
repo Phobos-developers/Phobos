@@ -158,6 +158,8 @@ class ScriptExt
 public:
 	using base_type = ScriptClass;
 
+	static constexpr DWORD Canary = 0x3B3B3B3B;
+
 	class ExtData final : public Extension<ScriptClass>
 	{
 	public:
@@ -169,7 +171,8 @@ public:
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual bool InvalidateIgnorable(void* const ptr) const override { return true; }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm);
 		virtual void SaveToStream(PhobosStreamWriter& Stm);

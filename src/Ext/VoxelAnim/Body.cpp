@@ -1,8 +1,8 @@
 #include "Body.h"
 #include <Ext/VoxelAnimType/Body.h>
 #include <New/Entity/LaserTrailClass.h>
+#include <Utilities/Macro.h>
 
-template<> const DWORD Extension<VoxelAnimClass>::Canary = 0xAAAAAACC;
 VoxelAnimExt::ExtContainer VoxelAnimExt::ExtMap;
 
 void VoxelAnimExt::InitializeLaserTrails(VoxelAnimClass* pThis)
@@ -74,7 +74,7 @@ DEFINE_HOOK(0x74942E, VoxelAnimClass_CTOR, 0xC)
 {
 	GET(VoxelAnimClass*, pItem, ESI);
 
-	VoxelAnimExt::ExtMap.FindOrAllocate(pItem);
+	VoxelAnimExt::ExtMap.TryAllocate(pItem);
 	VoxelAnimExt::InitializeLaserTrails(pItem);
 
 	return 0;
@@ -111,3 +111,13 @@ DEFINE_HOOK(0x74AA24, VoxelAnimClass_Save_Suffix, 0x5)
 	VoxelAnimExt::ExtMap.SaveStatic();
 	return 0;
 }
+
+static void __fastcall VoxelAnimClass_Detach(VoxelAnimClass* pThis, void* _, AbstractClass* pTarget, bool bRemove)
+{
+	pThis->ObjectClass::PointerExpired(pTarget, bRemove);
+
+	if (auto pExt = VoxelAnimExt::ExtMap.Find(pThis))
+		pExt->InvalidatePointer(pTarget, bRemove);
+}
+
+DEFINE_JUMP(VTABLE, 0x7F6340, GET_OFFSET(VoxelAnimClass_Detach))

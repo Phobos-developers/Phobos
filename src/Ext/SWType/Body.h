@@ -14,6 +14,8 @@ class SWTypeExt
 public:
 	using base_type = SuperWeaponTypeClass;
 
+	static constexpr DWORD Canary = 0x11111111;
+
 	class ExtData final : public Extension<SuperWeaponTypeClass>
 	{
 	public:
@@ -110,6 +112,7 @@ public:
 		virtual ~ExtData() = default;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual bool InvalidateIgnorable(void* const ptr) const override { return true; }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 

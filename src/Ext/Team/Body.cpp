@@ -1,6 +1,5 @@
 #include "Body.h"
 
-template<> const DWORD Extension<TeamClass>::Canary = 0x414B4B41;
 TeamExt::ExtContainer TeamExt::ExtMap;
 
 // =============================
@@ -37,6 +36,30 @@ void TeamExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
+bool TeamExt::ExtData::InvalidateIgnorable(void* const ptr) const
+{
+	auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+	switch (abs)
+	{
+	case AbstractType::Aircraft:
+	case AbstractType::Unit:
+	case AbstractType::Infantry:
+	{
+		return false;
+	}
+	}
+
+	return true;
+}
+
+void TeamExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
+{
+	if (this->InvalidateIgnorable(ptr))
+		return;
+
+	AnnounceInvalidPointer(TeamLeader, ptr);
+}
+
 // =============================
 // container
 
@@ -51,7 +74,7 @@ DEFINE_HOOK(0x6E8B46, TeamClass_CTOR, 0x7)
 {
 	GET(TeamClass*, pThis, ESI);
 
-	TeamExt::ExtMap.FindOrAllocate(pThis);
+	TeamExt::ExtMap.TryAllocate(pThis);
 
 	return 0;
 }
@@ -88,4 +111,16 @@ DEFINE_HOOK(0x6EC55A, TeamClass_Save_Suffix, 0x5)
 {
 	TeamExt::ExtMap.SaveStatic();
 	return 0;
+}
+
+DEFINE_HOOK(0x6EAEC7, TeamClass_Detach, 0x5)
+{
+	GET(TeamClass*, pThis, ECX);
+	GET(void*, target, EAX);
+	GET_STACK(bool, all, STACK_OFFSET(0xC, 0x8));
+
+	if (auto pExt = TeamExt::ExtMap.Find(pThis))
+		pExt->InvalidatePointer(target, all);
+
+	return pThis->Target == target ? 0x6EAECC : 0x6EAECF;
 }

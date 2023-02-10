@@ -14,9 +14,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	auto pType = pThis->GetTechnoType();
 
-	// Set only if unset or type is changed
 	// Notice that Ares may handle type conversion in the same hook here, which is executed right before this one thankfully
-	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
+	if (pExt->CurrentTechnoType != pType)
 		pExt->UpdateTypeData(pType);
 
 	pExt->IsInTunnel = false; // TechnoClass::AI is only called when not in tunnel.
@@ -74,14 +73,15 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
 
+	auto const pType = pThis->GetTechnoType();
+
+	if (!pType)
+		return 0;
+
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	if (!pExt->TypeExtData && pThis->GetType())
-		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if (pExt->TypeExtData)
-		pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
-
+	pExt->CurrentShieldType = pTypeExt->ShieldType;
 	pExt->InitializeLaserTrails();
 
 	return 0;

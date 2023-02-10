@@ -13,6 +13,10 @@ class HouseExt
 {
 public:
 	using base_type = HouseClass;
+
+	static constexpr DWORD Canary = 0x11111111;
+	static constexpr size_t ExtPointerOffset = 0x16098;
+
 	class ExtData final : public Extension<HouseClass>
 	{
 	public:
@@ -48,14 +52,8 @@ public:
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		//virtual void Initialize() override;
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-			AnnounceInvalidPointer(Factory_AircraftType, ptr);
-			AnnounceInvalidPointer(Factory_NavyType, ptr);
-			AnnounceInvalidPointer(Factory_InfantryType, ptr);
-			AnnounceInvalidPointer(Factory_VehicleType, ptr);
-			AnnounceInvalidPointer(Factory_BuildingType, ptr);
-		}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
+		virtual bool InvalidateIgnorable(void* const ptr) const;
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;

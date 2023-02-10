@@ -17,6 +17,8 @@ class VoxelAnimExt
 public:
 	using base_type = VoxelAnimClass;
 
+	static constexpr DWORD Canary = 0xAAAAAACC;
+
 	class ExtData final : public Extension<VoxelAnimClass>
 	{
 	public:
@@ -29,7 +31,8 @@ public:
 
 		virtual ~ExtData() = default;
 		virtual size_t Size() const { return sizeof(*this); };
-		virtual void InvalidatePointer(void *ptr, bool bRemoved) override {}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual bool InvalidateIgnorable(void* const ptr) const override { return true; }
 		virtual void LoadFromStream(PhobosStreamReader& Stm)override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm)override;
 		virtual void Initialize() override;

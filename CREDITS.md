@@ -103,6 +103,7 @@ This page lists all the individual contributions to the project by their author.
   - Laser trails for VoxelAnims
   - MakeInfantry logic on BombClass bugfix
   - Debris & meteor impact behaviour settings
+  - Extension class optimization
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
@@ -186,6 +187,7 @@ This page lists all the individual contributions to the project by their author.
   - Option to center pause menu background
   - Disguise logic improvements
   - Custom insignias
+  - Extension class optimization
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

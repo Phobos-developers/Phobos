@@ -26,6 +26,8 @@ class TActionExt
 public:
 	using base_type = TActionClass;
 
+	static constexpr DWORD Canary = 0x91919191;
+
 	class ExtData final : public Extension<TActionClass>
 	{
 	public:
@@ -35,6 +37,7 @@ public:
 		virtual ~ExtData() = default;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual bool InvalidateIgnorable(void* const ptr) const override { return true; }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;

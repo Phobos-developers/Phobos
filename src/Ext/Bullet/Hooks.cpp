@@ -21,7 +21,6 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 	{
 		pExt->FirerHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
 		pExt->CurrentStrength = pThis->Type->Strength;
-		pExt->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
 
 		if (!pThis->Type->Inviso)
 			pExt->InitializeLaserTrails();
@@ -43,7 +42,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 
 	auto pBulletExt = BulletExt::ExtMap.Find(pThis);
 	BulletAITemp::ExtData = pBulletExt;
-	BulletAITemp::TypeExtData = pBulletExt->TypeExtData;
+	BulletAITemp::TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
 
 	if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 	{
@@ -105,12 +104,17 @@ DEFINE_HOOK(0x4668BD, BulletClass_AI_TrailerInheritOwner, 0x6)
 	GET(BulletClass*, pThis, EBP);
 	GET(AnimClass*, pAnim, EAX);
 
-	if (auto const pExt = BulletAITemp::ExtData)
+	int spawnDelay = pThis->Type->ScaledSpawnDelay ? pThis->Type->ScaledSpawnDelay : pThis->Type->SpawnDelay;
+
+	if (pThis && pThis->Type->Trailer && !(Unsorted::CurrentFrame % spawnDelay))
 	{
-		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
+		if (auto const pExt = BulletAITemp::ExtData)
 		{
-			pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
-			pAnimExt->SetInvoker(pThis->Owner);
+			if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
+			{
+				pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
+				pAnimExt->SetInvoker(pThis->Owner);
+			}
 		}
 	}
 

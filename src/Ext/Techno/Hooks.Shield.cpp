@@ -120,6 +120,7 @@ DEFINE_HOOK(0x71A88D, TemporalClass_AI_Shield, 0x0)
 DEFINE_HOOK(0x6F6AC4, TechnoClass_Remove_Shield, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
+
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pExt->Shield)

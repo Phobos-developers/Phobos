@@ -13,6 +13,8 @@ class WeaponTypeExt
 public:
 	using base_type = WeaponTypeClass;
 
+	static constexpr DWORD Canary = 0x22222222;
+
 	class ExtData final : public Extension<WeaponTypeClass>
 	{
 	public:
@@ -61,6 +63,7 @@ public:
 		virtual void Initialize() override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual bool InvalidateIgnorable(void* const ptr) const override { return true; }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 

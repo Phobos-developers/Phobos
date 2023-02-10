@@ -1,8 +1,8 @@
 #include "Body.h"
 
 
-template<> const DWORD Extension<VoxelAnimTypeClass>::Canary = 0xAAAEEEEE;
 VoxelAnimTypeExt::ExtContainer VoxelAnimTypeExt::ExtMap;
+
 void VoxelAnimTypeExt::ExtData::Initialize() {}
 
 void VoxelAnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
@@ -72,7 +72,8 @@ DEFINE_HOOK(0x74AEB0, VoxelAnimTypeClass_CTOR, 0xB)
 {
 	GET(VoxelAnimTypeClass*, pItem, ESI);
 
-	VoxelAnimTypeExt::ExtMap.FindOrAllocate(pItem);
+	VoxelAnimTypeExt::ExtMap.TryAllocate(pItem);
+
 	return 0;
 }
 

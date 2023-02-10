@@ -6,7 +6,6 @@
 #include <Ext/WarheadType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
-template<> const DWORD Extension<BulletClass>::Canary = 0x2A2A2A2A;
 BulletExt::ExtContainer BulletExt::ExtMap;
 
 void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* pWeapon)
@@ -15,7 +14,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 		return;
 
 	auto pThis = this->OwnerObject();
-	auto pTypeExt = this->TypeExtData;
+	auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 	bool canAffect = false;
 	bool isIntercepted = false;
 
@@ -61,7 +60,6 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 			{
 				pThis->Speed = pWeaponOverride->Speed;
 				pThis->Type = pWeaponOverride->Projectile;
-				this->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
 
 				if (this->LaserTrails.size())
 				{
@@ -87,38 +85,43 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	auto const pRadType = pWeaponExt->RadType;
 	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : this->FirerHouse;
 
-	if (RadSiteExt::ExtMap.size() > 0)
-	{
-		auto const it = std::find_if(RadSiteExt::ExtMap.begin(), RadSiteExt::ExtMap.end(),
-			[=](std::pair<RadSiteClass*, RadSiteExt::ExtData*> const& pair) // Lambda
-			{// find
-				return pair.second->Type == pRadType &&
-					pair.first->BaseCell == Cell &&
-					Spread == pair.first->Spread;
+	auto const it = std::find_if(RadSiteClass::Array->begin(), RadSiteClass::Array->end(),
+			[=](auto const pSite)
+		{
+			auto const pRadExt = RadSiteExt::ExtMap.Find(pSite);
+
+	if (pRadExt->Type != pRadType)
+		return false;
+
+	if (MapClass::Instance->TryGetCellAt(pSite->BaseCell) != MapClass::Instance->TryGetCellAt(Cell))
+		return false;
+
+	if (Spread != pSite->Spread)
+		return false;
+
+	if (pWeapon != pRadExt->Weapon)
+		return false;
+
+	if (pRadExt->RadInvoker && pThis->Owner)
+		return pRadExt->RadInvoker == pThis->Owner;
+
+	return true;
 			});
 
-		if (it == RadSiteExt::ExtMap.end())
-		{
-			RadSiteExt::CreateInstance(Cell, Spread, RadLevel, pWeaponExt, pThisHouse, pThis->Owner);
-		}
-		else
-		{
-			//auto const pRadExt = it->second;
-			auto const pRadSite = it->first;
-
-			if (pRadSite->GetRadLevel() + RadLevel > pRadType->GetLevelMax())
-			{
-				RadLevel = pRadType->GetLevelMax() - pRadSite->GetRadLevel();
-			}
-
-			// Handle It
-			RadSiteExt::Add(pRadSite, RadLevel);
-		}
-	}
-	else
+	if (it != RadSiteClass::Array->end())
 	{
-		RadSiteExt::CreateInstance(Cell, Spread, RadLevel, pWeaponExt, pThisHouse, pThis->Owner);
+		if ((*it)->GetRadLevel() + RadLevel >= pRadType->GetLevelMax())
+		{
+			RadLevel = pRadType->GetLevelMax() - (*it)->GetRadLevel();
+		}
+
+		auto const pRadExt = RadSiteExt::ExtMap.Find((*it));
+		// Handle It
+		pRadExt->Add(RadLevel);
+		return;
 	}
+
+	RadSiteExt::CreateInstance(Cell, Spread, RadLevel, pWeaponExt, pThisHouse, pThis->Owner);
 }
 
 void BulletExt::ExtData::InitializeLaserTrails()
@@ -126,9 +129,10 @@ void BulletExt::ExtData::InitializeLaserTrails()
 	if (this->LaserTrails.size())
 		return;
 
-	if (auto pTypeExt = this->TypeExtData)
+	auto pThis = this->OwnerObject();
+
+	if (auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
 	{
-		auto pThis = this->OwnerObject();
 		auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
 
 		for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
@@ -148,7 +152,6 @@ template <typename T>
 void BulletExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->TypeExtData)
 		.Process(this->FirerHouse)
 		.Process(this->CurrentStrength)
 		.Process(this->IsInterceptor)
@@ -170,6 +173,30 @@ void BulletExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<BulletClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
+}
+
+bool BulletExt::ExtData::InvalidateIgnorable(void* const ptr) const
+{
+	auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+	switch (abs)
+	{
+	case AbstractType::House:
+		return false;
+	}
+
+	return true;
+
+}
+
+void BulletExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
+{
+	if (this->InvalidateIgnorable(ptr))
+		return;
+
+	AnnounceInvalidPointer(FirerHouse, ptr);
+
+	if (Trajectory)
+		Trajectory->InvalidatePointer(ptr, bRemoved);
 }
 
 // =============================
@@ -224,4 +251,16 @@ DEFINE_HOOK(0x46AFC4, BulletClass_Save_Suffix, 0x3)
 {
 	BulletExt::ExtMap.SaveStatic();
 	return 0;
+}
+
+DEFINE_HOOK(0x4685BE, BulletClass_Detach, 0x6)
+{
+	GET(BulletClass*, pThis, ESI);
+	GET(void*, target, EDI);
+	GET_STACK(bool, all, STACK_OFFSET(0xC, 0x8));
+
+	if (auto pExt = BulletExt::ExtMap.Find(pThis))
+		pExt->InvalidatePointer(target, all);
+
+	return pThis->NextAnim == target ? 0x4685C6 : 0x4685CC;
 }

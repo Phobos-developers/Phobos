@@ -11,6 +11,8 @@ class AnimTypeExt
 public:
 	using base_type = AnimTypeClass;
 
+	static constexpr DWORD Canary = 0xEEEEEEEE;
+
 	class ExtData final : public Extension<AnimTypeClass>
 	{
 	public:
@@ -74,6 +76,7 @@ public:
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual bool InvalidateIgnorable(void* const ptr) const override { return true; }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;

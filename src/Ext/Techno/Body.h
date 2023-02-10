@@ -16,10 +16,13 @@ class TechnoExt
 public:
 	using base_type = TechnoClass;
 
+	static constexpr DWORD Canary = 0x55555555;
+	static constexpr size_t ExtPointerOffset = 0x34C;
+
 	class ExtData final : public Extension<TechnoClass>
 	{
 	public:
-		TechnoTypeExt::ExtData* TypeExtData;
+		TechnoTypeClass* CurrentTechnoType;
 		std::unique_ptr<ShieldClass> Shield;
 		std::vector<LaserTrailClass> LaserTrails;
 		bool ReceiveDamage;
@@ -40,7 +43,7 @@ public:
 		HouseClass* OriginalPassengerOwner;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
-			, TypeExtData { nullptr }
+			, CurrentTechnoType {}
 			, Shield {}
 			, LaserTrails {}
 			, ReceiveDamage { false }
@@ -71,7 +74,8 @@ public:
 
 		virtual ~ExtData() override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
+		virtual bool InvalidateIgnorable(void* const ptr) const override;
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -87,7 +91,10 @@ public:
 		ExtContainer();
 		~ExtContainer();
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
+		bool InvalidateExtDataIgnorable(void* const ptr) const
+		{
+			return false;
+		}
 	};
 
 	static ExtContainer ExtMap;

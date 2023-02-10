@@ -4,7 +4,6 @@
 
 #include <Utilities/EnumFunctions.h>
 
-template<> const DWORD Extension<BuildingClass>::Canary = 0x87654321;
 BuildingExt::ExtContainer BuildingExt::ExtMap;
 
 void BuildingExt::ExtData::DisplayIncomeString()
@@ -241,9 +240,9 @@ bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 
 bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund)
 {
-	if (const auto pExt = BuildingExt::ExtMap.Find(pBuilding))
+	if (auto const pExt = BuildingExt::ExtMap.Find(pBuilding))
 	{
-		const auto pTypeExt = pExt->TypeExtData;
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
 
 		if (pTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome.Get()))
 			pExt->AccumulatedIncome += refund;
@@ -269,8 +268,9 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 {
 	auto const pThis = this->OwnerObject();
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 
-	if (this->TypeExtData->Powered_KillSpawns && pThis->Type->Powered && !pThis->IsPowerOnline())
+	if (pTypeExt->Powered_KillSpawns && pThis->Type->Powered && !pThis->IsPowerOnline())
 	{
 		if (auto pManager = pThis->SpawnManager)
 		{
@@ -333,7 +333,6 @@ template <typename T>
 void BuildingExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->TypeExtData)
 		.Process(this->DeployedTechno)
 		.Process(this->IsCreatedFromMapFile)
 		.Process(this->LimboID)
@@ -368,6 +367,26 @@ bool BuildingExt::SaveGlobals(PhobosStreamWriter& Stm)
 		.Success();
 }
 
+bool BuildingExt::ExtData::InvalidateIgnorable(void* const ptr) const
+{
+	auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+	switch (abs)
+	{
+	case AbstractType::Building:
+		return false;
+	}
+
+	return true;
+}
+
+void BuildingExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
+{
+	if (this->InvalidateIgnorable(ptr))
+		return;
+
+	AnnounceInvalidPointer(CurrentAirFactory, ptr);
+}
+
 // =============================
 // container
 
@@ -382,8 +401,10 @@ DEFINE_HOOK(0x43BCBD, BuildingClass_CTOR, 0x6)
 {
 	GET(BuildingClass*, pItem, ESI);
 
-	auto const pExt = BuildingExt::ExtMap.FindOrAllocate(pItem);
-	pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pItem->Type);
+	if (pItem && strcmp(pItem->get_ID(), "YAEXPMIND") == 0)
+		Debug::Log("Test\n");
+
+	BuildingExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }
@@ -420,4 +441,16 @@ DEFINE_HOOK(0x454244, BuildingClass_Save_Suffix, 0x7)
 	BuildingExt::ExtMap.SaveStatic();
 
 	return 0;
+}
+
+DEFINE_HOOK(0x44E940, BuildingClass_Detach, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	GET(void*, target, EBP);
+	GET_STACK(bool, all, STACK_OFFSET(0xC, 0x8));
+
+	if (auto pExt = BuildingExt::ExtMap.Find(pThis))
+		pExt->InvalidatePointer(target, all);
+
+	return pThis->LightSource == target ? 0x44E948 : 0x44E94E;
 }

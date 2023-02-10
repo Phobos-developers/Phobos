@@ -12,6 +12,8 @@ class TeamExt
 public:
 	using base_type = TeamClass;
 
+	static constexpr DWORD Canary = 0x414B4B41;
+
 	class ExtData final : public Extension<TeamClass>
 	{
 	public:
@@ -45,10 +47,8 @@ public:
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-			AnnounceInvalidPointer(TeamLeader, ptr);
-		}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
+		virtual bool InvalidateIgnorable(void* const ptr) const override;
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -63,20 +63,6 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
-		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-			switch (abs)
-			{
-			case AbstractType::Infantry:
-			case AbstractType::Unit:
-			case AbstractType::Aircraft:
-				return false;
-			default:
-				return true;
-			}
-		}
 	};
 
 	static ExtContainer ExtMap;

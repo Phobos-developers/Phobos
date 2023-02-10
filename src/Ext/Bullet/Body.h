@@ -13,10 +13,11 @@ class BulletExt
 public:
 	using base_type = BulletClass;
 
+	static constexpr DWORD Canary = 0x2A2A2A2A;
+
 	class ExtData final : public Extension<BulletClass>
 	{
 	public:
-		BulletTypeExt::ExtData* TypeExtData;
 		HouseClass* FirerHouse;
 		int CurrentStrength;
 		bool IsInterceptor;
@@ -27,7 +28,6 @@ public:
 		PhobosTrajectory* Trajectory; // TODO: why not unique_ptr
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
-			, TypeExtData { nullptr }
 			, FirerHouse { nullptr }
 			, CurrentStrength { 0 }
 			, IsInterceptor { false }
@@ -39,7 +39,8 @@ public:
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
+		virtual bool InvalidateIgnorable(void* const ptr) const override;
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;

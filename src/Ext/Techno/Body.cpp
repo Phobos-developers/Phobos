@@ -5,12 +5,13 @@
 
 #include <Ext/House/Body.h>
 
-template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 
 TechnoExt::ExtData::~ExtData()
 {
-	if (this->TypeExtData->AutoDeath_Behavior.isset())
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(this->OwnerObject()->GetTechnoType());
+
+	if (pTypeExt && pTypeExt->AutoDeath_Behavior.isset())
 	{
 		auto pThis = this->OwnerObject();
 		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
@@ -207,7 +208,7 @@ template <typename T>
 void TechnoExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->TypeExtData)
+		.Process(this->CurrentTechnoType)
 		.Process(this->Shield)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)
@@ -248,6 +249,26 @@ bool TechnoExt::SaveGlobals(PhobosStreamWriter& Stm)
 		.Success();
 }
 
+bool TechnoExt::ExtData::InvalidateIgnorable(void* const ptr) const
+{
+	auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+	switch (abs)
+	{
+	case AbstractType::House:
+		return false;
+	}
+
+	return true;
+}
+
+void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
+{
+	if (this->InvalidateIgnorable(ptr))
+		return;
+
+	AnnounceInvalidPointer(OriginalPassengerOwner, ptr);
+}
+
 // =============================
 // container
 
@@ -255,7 +276,6 @@ TechnoExt::ExtContainer::ExtContainer() : Container("TechnoClass") { }
 
 TechnoExt::ExtContainer::~ExtContainer() = default;
 
-void TechnoExt::ExtContainer::InvalidatePointer(void* ptr, bool bRemoved) { }
 
 // =============================
 // container hooks
@@ -264,7 +284,7 @@ DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 {
 	GET(TechnoClass*, pItem, ESI);
 
-	TechnoExt::ExtMap.FindOrAllocate(pItem);
+	TechnoExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }
@@ -299,6 +319,32 @@ DEFINE_HOOK(0x70C249, TechnoClass_Load_Suffix, 0x5)
 DEFINE_HOOK(0x70C264, TechnoClass_Save_Suffix, 0x5)
 {
 	TechnoExt::ExtMap.SaveStatic();
+
+	return 0;
+}
+
+DEFINE_HOOK(0x70783B, TechnoClass_Detach, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(void*, target, EBP);
+	GET_STACK(bool, all, STACK_OFFSET(0xC, 0x8));
+
+	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+		pExt->InvalidatePointer(target, all);
+
+	return pThis->BeingManipulatedBy == target ? 0x707843 : 0x707849;
+}
+
+DEFINE_HOOK(0x710443, TechnoClass_AnimPointerExpired_PhobosAdd, 6)
+{
+	GET(AnimClass*, pAnim, EAX);
+	GET(TechnoClass*, pThis, ECX);
+
+	if (auto pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		if (auto pShield = pExt->Shield.get())
+			pShield->InvalidatePointer(pAnim, false);
+	}
 
 	return 0;
 }

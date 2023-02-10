@@ -12,6 +12,8 @@ class TiberiumExt
 public:
 	using base_type = TiberiumClass;
 
+	static constexpr DWORD Canary = 0xAABBCCDD;
+
 	class ExtData final : public Extension<TiberiumClass>
 	{
 	public:
@@ -26,6 +28,7 @@ public:
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual bool InvalidateIgnorable(void* const ptr) const override { return true; }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;

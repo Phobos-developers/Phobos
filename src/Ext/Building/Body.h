@@ -19,10 +19,12 @@ class BuildingExt
 public:
 	using base_type = BuildingClass;
 
+	static constexpr DWORD Canary = 0x87654321;
+	static constexpr size_t ExtPointerOffset = 0x6FC;
+
 	class ExtData final : public Extension<BuildingClass>
 	{
 	public:
-		BuildingTypeExt::ExtData* TypeExtData;
 		bool DeployedTechno;
 		bool IsCreatedFromMapFile;
 		int LimboID;
@@ -31,7 +33,6 @@ public:
 		int AccumulatedIncome;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
-			, TypeExtData { nullptr }
 			, DeployedTechno { false }
 			, IsCreatedFromMapFile { false }
 			, LimboID { -1 }
@@ -49,10 +50,8 @@ public:
 
 		// virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-			AnnounceInvalidPointer(CurrentAirFactory, ptr);
-		}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
+		virtual bool InvalidateIgnorable(void* const ptr) const override;
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;

@@ -12,6 +12,8 @@ class BuildingTypeExt
 public:
 	using base_type = BuildingTypeClass;
 
+	static constexpr DWORD Canary = 0x11111111;
+
 	class ExtData final : public Extension<BuildingTypeClass>
 	{
 	public:
@@ -102,9 +104,8 @@ public:
 		virtual void Initialize() override;
 		virtual void CompleteInitialization();
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-		}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual bool InvalidateIgnorable(void* const ptr) const override { return true; }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;

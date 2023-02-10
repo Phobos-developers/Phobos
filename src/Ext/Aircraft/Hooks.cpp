@@ -90,7 +90,7 @@ DEFINE_HOOK(0x414F47, AircraftClass_AI_TrailerInheritOwner, 0x6)
 	GET(AircraftClass*, pThis, ESI);
 	GET(AnimClass*, pAnim, EAX);
 
-	if (pThis)
+	if (pThis && pThis->Type->Trailer && !(Unsorted::CurrentFrame % pThis->Type->SpawnDelay))
 	{
 		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
 		{
@@ -101,3 +101,4 @@ DEFINE_HOOK(0x414F47, AircraftClass_AI_TrailerInheritOwner, 0x6)
 
 	return 0;
 }
+

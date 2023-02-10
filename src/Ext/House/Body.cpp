@@ -7,7 +7,6 @@
 
 //Static init
 
-template<> const DWORD Extension<HouseClass>::Canary = 0x11111111;
 HouseExt::ExtContainer HouseExt::ExtMap;
 
 bool HouseExt::ExtData::OwnsLimboDeliveredBuilding(BuildingClass* pBuilding)
@@ -45,7 +44,8 @@ int HouseExt::TotalHarvesterCount(HouseClass* pThis)
 // Ares
 HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRandom, HouseClass* const pDefault, HouseClass* const pInvoker, HouseClass* const pVictim)
 {
-	switch (kind) {
+	switch (kind)
+	{
 	case OwnerHouseKind::Invoker:
 	case OwnerHouseKind::Killer:
 		return pInvoker ? pInvoker : pDefault;
@@ -79,7 +79,7 @@ void HouseExt::ExtData::UpdateAutoDeathObjectsInLimbo()
 	for (auto pExt : this->OwnedTimedAutoDeathObjects)
 	{
 		auto pItem = pExt->OwnerObject();
-
+		
 		if (!pItem->IsInLogic && pItem->IsAlive && pExt->TypeExtData->AutoDeath_Behavior.isset() && pExt->AutoDeathTimer.Completed())
 		{
 			auto const pBuilding = abstract_cast<BuildingClass*>(pItem);
@@ -155,10 +155,56 @@ bool HouseExt::SaveGlobals(PhobosStreamWriter& Stm)
 		.Success();
 }
 
+bool HouseExt::ExtData::InvalidateIgnorable(void* const ptr) const
+{
+	auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+
+	switch (abs)
+	{
+	case AbstractType::Building:
+	case AbstractType::Infantry:
+	case AbstractType::Unit:
+	case AbstractType::Aircraft:
+		return false;
+	}
+
+	return true;
+
+}
+
+void HouseExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
+{
+	if (this->InvalidateIgnorable(ptr))
+		return;
+
+	AnnounceInvalidPointer(Factory_BuildingType, ptr);
+	AnnounceInvalidPointer(Factory_InfantryType, ptr);
+	AnnounceInvalidPointer(Factory_VehicleType, ptr);
+	AnnounceInvalidPointer(Factory_NavyType, ptr);
+	AnnounceInvalidPointer(Factory_AircraftType, ptr);
+
+	if (!OwnedTimedAutoDeathObjects.empty() && ptr != nullptr)
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(reinterpret_cast<TechnoClass*>(ptr));
+
+		if (pExt)
+			OwnedTimedAutoDeathObjects.erase(std::remove(OwnedTimedAutoDeathObjects.begin(), OwnedTimedAutoDeathObjects.end(), pExt), OwnedTimedAutoDeathObjects.end());
+	}
+
+	if (!OwnedLimboDeliveredBuildings.empty() && ptr != nullptr)
+	{
+		auto const abstract = reinterpret_cast<AbstractClass*>(ptr);
+
+		if (abstract->WhatAmI() == AbstractType::Building)
+			OwnedLimboDeliveredBuildings.erase(reinterpret_cast<BuildingClass*>(ptr));
+	}
+}
+
 // =============================
 // container
 
-HouseExt::ExtContainer::ExtContainer() : Container("HouseClass") {
+HouseExt::ExtContainer::ExtContainer() : Container("HouseClass")
+{
 }
 
 HouseExt::ExtContainer::~ExtContainer() = default;
@@ -170,7 +216,7 @@ DEFINE_HOOK(0x4F6532, HouseClass_CTOR, 0x5)
 {
 	GET(HouseClass*, pItem, EAX);
 
-	HouseExt::ExtMap.FindOrAllocate(pItem);
+	HouseExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }
 
@@ -213,4 +259,16 @@ DEFINE_HOOK(0x50114D, HouseClass_InitFromINI, 0x5)
 	HouseExt::ExtMap.LoadFromINI(pThis, pINI);
 
 	return 0;
+}
+
+DEFINE_HOOK(0x4FB9B7, HouseClass_Detach, 0xA)
+{
+	GET(HouseClass*, pThis, ECX);
+	GET_STACK(void*, target, STACK_OFFSET(0xC, 0x4));
+	GET_STACK(bool, all, STACK_OFFSET(0xC, 0x8));
+
+	if (auto pExt = HouseExt::ExtMap.Find(pThis))
+		pExt->InvalidatePointer(target, all);
+
+	return 0x0;
 }

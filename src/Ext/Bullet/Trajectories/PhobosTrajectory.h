@@ -52,6 +52,8 @@ public:
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	virtual bool Save(PhobosStreamWriter& Stm) const;
 
+	virtual void InvalidatePointer(void* ptr, bool bRemoved) { }
+
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) = 0;
 	virtual bool OnAI(BulletClass* pBullet) = 0;
 	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) = 0;
