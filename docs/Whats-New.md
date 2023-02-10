@@ -21,6 +21,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `[JumpjetControls]`->`AllowLayerDeviation` and `JumpjetAllowLayerDeviation` have been deprecated as the animation layering issues have been properly fixed by default now.
 - `[JumpjetControls]->TurnToTarget` and `JumpjetTurnToTarget` are obsolete. Jumpjet units who fire `OmniFire=no` weapons **always** turn to targets as other units do.
   - `OmniFire.TurnToTarget` is recommended for jumpjet units' omnifiring weapons for facing turning.
+- Buildings delivered by trigger action 125 will now **always** play buildup anim as long as it exists. `[ParamTypes]->53` is deprecated.
 
 #### From pre-0.3 devbuilds
 
@@ -54,7 +55,7 @@ ed anymore as it will cause the projectile to fly backwards and be unable to hit
   ```ini
   [ParamTypes]
   47=Structures,28
-  53=Play BuildUp,10
+
   54=Use GlobalVar,10
   55=Operation,0
   56=Variable index,0
@@ -104,7 +105,7 @@ ed anymore as it will cause the projectile to fly backwards and be unable to hit
   600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1
 
   [ActionsRA2]
-  125=Build at...,-10,47,53,65,0,0,1,0,0,[LONG DESC],0,1,125
+  125=Build at...,-10,47,0,65,0,0,1,0,0,[LONG DESC],0,1,125
   500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
   501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
   502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
