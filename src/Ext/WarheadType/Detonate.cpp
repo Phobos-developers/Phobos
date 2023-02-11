@@ -8,6 +8,7 @@
 #include <AnimClass.h>
 #include <BitFont.h>
 #include <SuperClass.h>
+#include <AircraftClass.h>
 
 #include <Utilities/Helpers.Alex.h>
 #include <Ext/Bullet/Body.h>
@@ -16,6 +17,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Misc/FlyingStrings.h>
+#include <Misc/AresData.h>
 #include <Utilities/EnumFunctions.h>
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBulletExt, CoordStruct coords)
@@ -103,7 +105,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_Respawn_Duration > 0 ||
 		this->Shield_SelfHealing_Duration > 0 ||
 		this->Shield_AttachTypes.size() > 0 ||
-		this->Shield_RemoveTypes.size() > 0;
+		this->Shield_RemoveTypes.size() > 0 ||
+		this->Convert_To.size() > 0;
 
 	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 
@@ -138,6 +141,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->Crit_Chance && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner);
+
+	if (this->Convert_To.size() > 0)
+		this->ApplyConvert(pHouse, pTarget);
 }
 
 void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
@@ -314,6 +320,137 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
 			if (pTypeExt && pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= cellSpread * Unsorted::LeptonsPerCell)
 				pExt->InterceptBullet(pOwner, pWeapon);
+		}
+	}
+}
+
+
+
+// TODO: Unfinished placeholder, in case Ares 3.0+ isn't used -- Trsdy
+// So who said it was merely a Type pointer replacement and he could make a better one than Ares?
+bool DummyConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
+{
+	AbstractType rtti;
+	TechnoTypeClass** nowTypePtr;
+
+	// Different types prohibited
+	switch (pThis->WhatAmI())
+	{
+	case AbstractType::Infantry:
+		nowTypePtr = reinterpret_cast<TechnoTypeClass**>(&(static_cast<InfantryClass*>(pThis)->Type));
+		rtti = AbstractType::InfantryType;
+		break;
+	case AbstractType::Unit:
+		nowTypePtr = reinterpret_cast<TechnoTypeClass**>(&(static_cast<UnitClass*>(pThis)->Type));
+		rtti = AbstractType::UnitType;
+		break;
+	case AbstractType::Aircraft:
+		nowTypePtr = reinterpret_cast<TechnoTypeClass**>(&(static_cast<AircraftClass*>(pThis)->Type));
+		rtti = AbstractType::AircraftType;
+		break;
+	default:
+		Debug::Log("%s is not a moveable type, conversion not allowed\n", pToType->get_ID());
+		return false;
+	}
+	if (pToType->WhatAmI() != rtti)
+	{
+		Debug::Log("Incompatible types between %s and %s\n", pThis->get_ID(), pToType->get_ID());
+		return false;
+	}
+
+	// Detach CLEG targeting
+	auto tempUsing = pThis->TemporalImUsing;
+	if (tempUsing && tempUsing->Target)
+		tempUsing->Detach();
+
+	HouseClass* const pOwner = pThis->Owner;
+
+	// Remove tracking of old techno
+	if (!pThis->InLimbo)
+		pOwner->RegisterLoss(pThis, false);
+	pOwner->RemoveTracking(pThis);
+
+	int oldHealth = pThis->Health;
+
+	// Generic type-conversion
+	TechnoTypeClass* prevType = *nowTypePtr;
+	*nowTypePtr = pToType;
+
+	// Readjust health according to percentage
+	pThis->SetHealthPercentage((double)(oldHealth) / (double)prevType->Strength);
+	pThis->EstimatedHealth = pThis->Health;
+
+	// Add tracking of new techno
+	pOwner->AddTracking(pThis);
+	if (!pThis->InLimbo)
+		pOwner->RegisterGain(pThis, false);
+	pOwner->RecheckTechTree = true;
+
+	// Update AttachEffects -- skipped
+	// RecalculateStats -- skipped
+
+	// Adjust ammo
+	pThis->Ammo = Math::min(pThis->Ammo, pToType->Ammo);
+	// ResetSpotlights -- skipped
+
+	// Adjust ROT
+	pThis->PrimaryFacing.SetROT(pToType->ROT);
+	// Adjust TurretROT -- skipped
+
+
+	// Locomotor change, referenced from Otamaa's comment, not sure if correct, untested
+	CLSID nowLocoID;
+	ILocomotion* iloco = pThis->Locomotor.get();
+	const auto& toLoco = pToType->Locomotor;
+	if ((SUCCEEDED(static_cast<LocomotionClass*>(iloco)->GetClassID(&nowLocoID)) && nowLocoID != toLoco))
+	{
+		// because we are throwing away the locomotor in a split second, piggybacking
+		// has to be stopped. otherwise the object might remain in a weird state.
+		while (LocomotionClass::End_Piggyback(pThis->Locomotor));
+		// throw away the current locomotor and instantiate
+		// a new one of the default type for this unit.
+		if (auto NewLoco = LocomotionClass::CreateInstance(toLoco))
+		{
+			pThis->Locomotor.reset(NewLoco.release());
+			pThis->Locomotor->Link_To_Object(pThis);
+		}
+	}
+
+	// TODO : Jumpjet locomotor special treatement
+	return true;
+}
+
+void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
+{
+	if (auto pTargetFoot = abstract_cast<FootClass*>(pTarget))
+	{
+		auto Conversion = [this, pTargetFoot](TechnoTypeClass* pResultType)
+		{
+			if (AresData::CanUseAres)
+				return AresData::ConvertTypeTo(pTargetFoot, pResultType);
+			else
+				return DummyConvertToType(pTargetFoot, pResultType);
+		};
+
+		if (this->Convert_To.size())
+		{
+			if (this->Convert_From.size())
+			{
+				// explicitly unsigned because the compiler wants it
+				for (size_t i = 0; i < this->Convert_From.size(); i++)
+				{
+					// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
+					if (this->Convert_To.size() >= i && this->Convert_From[i] == pTarget->GetTechnoType())
+					{
+						Conversion(this->Convert_To[i]);
+						break;
+					}
+				}
+			}
+			else
+			{
+				Conversion(this->Convert_To[0]);
+			}
 		}
 	}
 }

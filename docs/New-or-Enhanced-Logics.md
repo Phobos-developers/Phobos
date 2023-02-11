@@ -508,6 +508,34 @@ SubjectToWater.Detonate=true  ; boolean
 
 ## Super Weapons
 
+### Convert TechnoType
+
+- Superweapons can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft). This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). ***This feature does not support BuildingTypes.***
+  - `Convert.From` specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
+  - `Convert.To` specifies which TechnoTypes are the result of converion. This entry should have the same length as `Convert.From` (when the latter is not empty), because entries are grouped in pairs.
+  - `Convert.AffectedHouses` specifies whose units can be converted.
+  - Conversion affects *all* existing units of set TechnoTypes, this includes units in: transports, occupied buildings, buildings with `InfantryAbsorb=yes` or `UnitAbsorb=yes`, buildings with `Bunker=yes`.
+
+In example, this superweapon would convert all owned and friendly SOLDIERA to SOLDIERB and TANKA to TANKB.
+```ini
+[SOMESW]
+Convert.From=SOLDIERA,TANKA
+Convert.To=SOLDIERB,TANKB
+Convert.AffectedHouses=team
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]
+Convert.From=                   ; list of TehnoTypes
+Convert.To=                     ; list of TechnoTypes
+Convert.AffectedHouses=owner    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
 ### LimboDelivery
 
 - Superweapons can now deliver off-map buildings that act as if they were on the field.
@@ -736,7 +764,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 
 If this option is not set, the self-destruction logic will not be enabled.
 ```{note}
-Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option. This might change in the future if necessary.
+Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option **if you are not using Ares 3.0+**.
 ```
 
 This logic also supports buildings delivered by [LimboDelivery](#LimboDelivery)
@@ -917,6 +945,30 @@ ImmuneToCrit=no                     ; boolean
 
 ```{warning}
 If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chain of Warheads with it that loops back to the first one there is a possibility for the game to get stuck in a loop and freeze or crash afterwards.
+```
+
+### Convert TechnoType on impact
+
+- Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft). This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). ***This feature does not support BuildingTypes.***
+  - `Convert.From` specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
+  - `Convert.To` specifies which TechnoTypes are the result of converion. This entry should have the same length as `Convert.From` (when the latter is not empty), because entries are grouped in pairs.
+
+In example, this warhead would convert all affected SOLDIERA to SOLDIERB and TANKA to TANKB.
+```ini
+[SOMEWARHEAD]
+Convert.From=SOLDIERA,TANKA
+Convert.To=SOLDIERB,TANKB
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]
+Convert.From=          ; list of TehnoTypes
+Convert.To=            ; list of TechnoTypes
 ```
 
 ### Custom 'SplashList' on Warheads

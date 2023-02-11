@@ -68,7 +68,7 @@ public:
 		void ApplySpawnLimitRange();
 		void UpdateTypeData(TechnoTypeClass* currentType);
 		void UpdateLaserTrails();
-		void InitializeLaserTrails();
+		void InitializeLaserTrails(TechnoTypeClass* pType = nullptr, bool force = false);
 
 		virtual ~ExtData() override;
 

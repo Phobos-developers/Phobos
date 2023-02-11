@@ -16,6 +16,7 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/House/Body.h>
 #include <Misc/FlyingStrings.h>
+#include <Misc/AresData.h>
 #include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
@@ -392,13 +393,14 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 	}
 }
 
-void TechnoExt::ExtData::InitializeLaserTrails()
+void TechnoExt::ExtData::InitializeLaserTrails(TechnoTypeClass* pType, bool force)
 {
-	if (this->LaserTrails.size())
+	if (this->LaserTrails.size() && !force)
 		return;
 
-	if (auto pTypeExt = this->TypeExtData)
+	if (auto pTypeExt = pType? TechnoTypeExt::ExtMap.Find(pType) : this->TypeExtData)
 	{
+		this->LaserTrails.clear();
 		for (auto const& entry : pTypeExt->LaserTrailData)
 		{
 			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
@@ -661,8 +663,17 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	}
 
 	default: //must be AutoDeathBehavior::Kill
-		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
-		// Due to Ares, ignoreDefense=true will prevent passenger/crew/hijacker from escaping
+		if (AresData::CanUseAres)
+		{
+			switch (pThis->WhatAmI())
+			{
+			case AbstractType::Unit:
+			case AbstractType::Aircraft:
+				AresData::SpawnSurvivors(static_cast<FootClass*>(pThis), nullptr, false, false);
+			default:break;
+			}
+		}
+		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pThis->Owner);
 		return;
 	}
 }
