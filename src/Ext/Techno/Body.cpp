@@ -123,14 +123,14 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 
 	}
 	// TODO : Not working correctly, FIX THIS
-	auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any)
+	auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any, bool allowLimbo)
 	{
-		auto existSingleType = [pThis, affectedHouse](const TechnoTypeClass* pType)
+		auto existSingleType = [pThis, affectedHouse, allowLimbo](const TechnoTypeClass* pType)
 		{
 			for (HouseClass* pHouse : *HouseClass::Array)
 			{
 				if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
-					&& pHouse->CountOwnedAndPresent(pType) > 0)
+					&& (allowLimbo ? pHouse->CountOwnedNow(pType) > 0 : pHouse->CountOwnedAndPresent(pType) > 0))
 					return true;
 			}
 
@@ -145,7 +145,7 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 	// death if listed technos don't exist
 	if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
 	{
-		if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any))
+		if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
 		{
 			TechnoExt::KillSelf(pThis, howToDie);
 
@@ -156,7 +156,7 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 	// death if listed technos exist
 	if (!pTypeExt->AutoDeath_TechnosExist.empty())
 	{
-		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any))
+		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
 		{
 			TechnoExt::KillSelf(pThis, howToDie);
 
