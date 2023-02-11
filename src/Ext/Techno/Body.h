@@ -68,7 +68,7 @@ public:
 		void ApplySpawnLimitRange();
 		void UpdateTypeData(TechnoTypeClass* currentType);
 		void UpdateLaserTrails();
-		void InitializeLaserTrails(TechnoTypeClass* pType = nullptr, bool force = false);
+		void InitializeLaserTrails();
 
 		virtual ~ExtData() override;
 
@@ -118,7 +118,7 @@ public:
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
 	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
 	static CoordStruct PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger, int maxAttempts);
-
+	static bool ConvertToType(FootClass* pThis, TechnoTypeClass* toType);
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);

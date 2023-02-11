@@ -11,7 +11,6 @@
 #include "Ext/House/Body.h"
 #include "Ext/WarheadType/Body.h"
 #include "Ext/WeaponType/Body.h"
-#include <Misc/AresData.h>
 
 // ============= New SuperWeapon Effects================
 
@@ -286,21 +285,10 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 	}
 }
 
-
-
 void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 {
-	if (!AresData::CanUseAres)
-		return;
-
 	if (this->Convert_To.size())
 	{
-		auto Conversion = [this](TechnoClass* pTarget, TechnoTypeClass* pResultType)
-		{
-			if (!AresData::ConvertTypeTo(pTarget, pResultType))
-				return;
-		};
-
 		if (this->Convert_From.size())
 		{
 			for (auto pTarget : *FootClass::Array)
@@ -313,7 +301,7 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 					// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
 					if (this->Convert_To.size() >= i && this->Convert_From[i] == pTarget->GetTechnoType())
 					{
-						Conversion(pTarget, this->Convert_To[i]);
+						TechnoExt::ConvertToType(pTarget, this->Convert_To[i]);
 						break;
 					}
 				}
@@ -325,7 +313,7 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 			{
 				if (!EnumFunctions::CanTargetHouse(this->Convert_AffectedHouses, pSW->Owner, pTarget->Owner))
 					continue;
-				Conversion(pTarget, this->Convert_To[0]);
+				TechnoExt::ConvertToType(pTarget, this->Convert_To[0]);
 			}
 		}
 	}
