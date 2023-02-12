@@ -145,9 +145,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AutoDeath_AfterDelay.Read(exINI, pSection, "AutoDeath.AfterDelay");
 	this->AutoDeath_TechnosDontExist.Read(exINI, pSection, "AutoDeath.TechnosDontExist");
 	this->AutoDeath_TechnosDontExist_Any.Read(exINI, pSection, "AutoDeath.TechnosDontExist.Any");
+	this->AutoDeath_TechnosDontExist_AllowLimboed.Read(exINI, pSection, "AutoDeath.TechnosDontExist.AllowLimboed");
 	this->AutoDeath_TechnosDontExist_Houses.Read(exINI, pSection, "AutoDeath.TechnosDontExist.Houses");
 	this->AutoDeath_TechnosExist.Read(exINI, pSection, "AutoDeath.TechnosExist");
 	this->AutoDeath_TechnosExist_Any.Read(exINI, pSection, "AutoDeath.TechnosExist.Any");
+	this->AutoDeath_TechnosExist_AllowLimboed.Read(exINI, pSection, "AutoDeath.TechnosExist.AllowLimboed");
 	this->AutoDeath_TechnosExist_Houses.Read(exINI, pSection, "AutoDeath.TechnosExist.Houses");
 
 	this->Slaved_OwnerWhenMasterKilled.Read(exINI, pSection, "Slaved.OwnerWhenMasterKilled");
@@ -445,9 +447,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AutoDeath_AfterDelay)
 		.Process(this->AutoDeath_TechnosDontExist)
 		.Process(this->AutoDeath_TechnosDontExist_Any)
+		.Process(this->AutoDeath_TechnosDontExist_AllowLimboed)
 		.Process(this->AutoDeath_TechnosDontExist_Houses)
 		.Process(this->AutoDeath_TechnosExist)
 		.Process(this->AutoDeath_TechnosExist_Any)
+		.Process(this->AutoDeath_TechnosExist_AllowLimboed)
 		.Process(this->AutoDeath_TechnosExist_Houses)
 
 		.Process(this->Slaved_OwnerWhenMasterKilled)

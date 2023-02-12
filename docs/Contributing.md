@@ -30,10 +30,10 @@ Assuming you've successfully cloned and built the project before getting here, y
 
 We have established a couple of code style rules to keep things consistent. Some of the rules are enforced in `.editorconfig`, where applicable, so you can autoformat the code by pressing `Ctrl + K, D` hotkey chord in Visual studio. Still, it is advised to manually check the style before submitting the code.
 - We use tabs instead of spaces to indent code.
-- Curly braces are always to be placed on a new line. One of the reasons for this is to clearly separate the end of the code block head and body in case of multiline bodies:
+- Curly braces are always to be placed on a new line ([Allman indentation style](https://en.wikipedia.org/wiki/Indentation_style#Allman_style)). One of the reasons for this is to clearly separate the end of the code block head and body in case of multiline bodies:
 ```cpp
-if (SomeReallyLongCondition() ||
-    ThatSplitsIntoMultipleLines())
+if (SomeReallyLongCondition()
+    || ThatSplitsIntoMultipleLines())
 {
     DoSomethingHere();
     DoSomethingMore();
@@ -46,8 +46,8 @@ if (Something())
     DoSomething();
 
 // OK
-if (SomeReallyLongCondition() ||
-    ThatSplitsIntoMultipleLines())
+if (SomeReallyLongCondition()
+    || ThatSplitsIntoMultipleLines())
 {
     DoSomething();
 }
@@ -68,6 +68,22 @@ if (SomeCondition())
 ```
 - Only empty curly brace blocks may be left on the same line for both opening and closing braces (if appropriate).
 - If you use if-else you should either have all of the code blocks braced or braceless to keep things consistent.
+- Big conditions which span multiple lines and are hard to read otherwise should be split into smaller logical parts to improve readability:
+```cpp
+// Not OK
+if (This() && That() && AlsoThat()
+    || (OrOtherwiseThis && OtherwiseThat && WhateverElse))
+{
+    DoSomething();
+}
+
+// OK
+bool firstCondition = This() && That() && AlsoThat();
+bool secondCondition = OrOtherwiseThis && OtherwiseThat && WhateverElse;
+
+if (firstCondition || secondCondition)
+    DoSomething();
+```
 - Code should have empty lines to make it easier to read. Use an empty line to split code into logical parts. It's mandatory to have empty lines to separate:
   - `return` statements (except when there is only one line of code except that statement);
   - local variable assignments that are used in the further code (you shouldn't put an empty line after one-line local variable assignments that are used only in the following code block though);

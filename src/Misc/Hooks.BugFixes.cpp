@@ -13,7 +13,6 @@
 #include <JumpjetLocomotionClass.h>
 #include <BombClass.h>
 #include <WarheadTypeClass.h>
-#include <GameStrings.h>
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/Body.h>
@@ -202,55 +201,6 @@ DEFINE_HOOK(0x70D77F, TechnoClass_FireDeathWeapon_ProjectileFix, 0x8)
 	pBullet->Explode(true);
 
 	return 0x70D787;
-}
-
-// Fix [JumpjetControls] obsolete in RA2/YR
-// Author: Uranusian
-DEFINE_HOOK(0x7115AE, TechnoTypeClass_CTOR_JumpjetControls, 0xA)
-{
-	GET(TechnoTypeClass*, pThis, ESI);
-	auto pRules = RulesClass::Instance();
-	auto pRulesExt = RulesExt::Global();
-
-	pThis->JumpjetTurnRate = pRules->TurnRate;
-	pThis->JumpjetSpeed = pRules->Speed;
-	pThis->JumpjetClimb = static_cast<float>(pRules->Climb);
-	pThis->JumpjetCrash = static_cast<float>(pRulesExt->JumpjetCrash);
-	pThis->JumpjetHeight = pRules->CruiseHeight;
-	pThis->JumpjetAccel = static_cast<float>(pRules->Acceleration);
-	pThis->JumpjetWobbles = static_cast<float>(pRules->WobblesPerSecond);
-	pThis->JumpjetNoWobbles = pRulesExt->JumpjetNoWobbles;
-	pThis->JumpjetDeviation = pRules->WobbleDeviation;
-
-	return 0x711601;
-}
-
-// skip vanilla JumpjetControls and make it earlier load
-DEFINE_JUMP(LJMP, 0x668EB5, 0x668EBD); // RulesClass_Process_SkipJumpjetControls
-
-DEFINE_HOOK(0x52D0F9, InitRules_EarlyLoadJumpjetControls, 0x6)
-{
-	GET(RulesClass*, pThis, ECX);
-	GET(CCINIClass*, pINI, EAX);
-
-	pThis->Read_JumpjetControls(pINI);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
-{
-	auto pRulesExt = RulesExt::Global();
-	if (!pRulesExt)
-		return 0;
-
-	GET(CCINIClass*, pINI, EDI);
-	INI_EX exINI(pINI);
-
-	pRulesExt->JumpjetCrash.Read(exINI, GameStrings::JumpjetControls, "Crash");
-	pRulesExt->JumpjetNoWobbles.Read(exINI, GameStrings::JumpjetControls, "NoWobbles");
-
-	return 0;
 }
 
 // Fix the crash of TemporalTargetingMe related "stack dump starts with 0051BB7D"
@@ -645,12 +595,7 @@ DEFINE_HOOK(0x4A9750, DisplayClass_Submit_LayerSort, 0x9)
 {
 	GET(Layer, layer, EDI);
 
-	bool sort = false;
-
-	if (layer != Layer::Surface && layer != Layer::Underground)
-		sort = true;
-
-	R->ECX(sort);
+	R->ECX(layer != Layer::Surface && layer != Layer::Underground);
 
 	return 0;
 }
