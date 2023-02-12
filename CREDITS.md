@@ -102,6 +102,7 @@ This page lists all the individual contributions to the project by their author.
   - TerrainType `DestroyAnim` & `DestroySound`
   - Laser trails for VoxelAnims
   - MakeInfantry logic on BombClass bugfix
+  - Debris & meteor impact behaviour settings
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
@@ -161,20 +162,32 @@ This page lists all the individual contributions to the project by their author.
   - Warhead detonation on all objects on map
   - Animated TerrainTypes extension
   - Exploding unit passenger killing customization
+  - Railgun particle target coordinate fix
+  - Building target coordinate offset fix
   - Warhead / weapon detonation at superweapon target cell
   - Cloaked objects displaying to observers
   - Building airstrike target eligibility customization
   - IvanBomb detonation & image display centered on buildings
   - Customizable ROF random delay
   - BibShape drawing during buildup fix
+  - Spawner spawn delay customization
+  - Cluster scatter distance customization
+  - FlakScatter distance customization
+  - Debris & meteor impact behaviour settings
+  - Custom warhead debris animations
+  - Attached particle system for animations
+  - Removal of hardcoded AA & Gattling weapon selection restrictions
+  - Projectile obstacle logic additions
 - **Morton (MortonPL)**:
-  - `XDrawOffset`
+  - `XDrawOffset` for animations
   - Shield passthrough & absorption
   - Building `LimboDelivery` logic
   - Fix for `Image` in art rules
   - Power delta counter
   - Super Weapons launching other Super Weapons
   - SpyEffects expansion, launching Super Weapons on building infiltration
+  - Real time timers
+  - Default campaign game speed override and custom campaign game speed FPS
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
@@ -183,31 +196,47 @@ This page lists all the individual contributions to the project by their author.
    - Laser fixes prototype
 - **Trsdy**
    - Preserve IronCurtain status upon DeploysInto/UndeploysInto
-   - Misc jumpjet fixes:
-      - Facing towards target fix
+   - Several jumpjet fixes:
+      - Facing towards target even if not omni-firing
       - Turret direction in idle state fix
       - Sensor fix
+      - Allow to tilt on ground
+   - OmniFire.TurnToTarget
    - Object Self-destruction logic
-      - Misc vanilla suicidal behavior fix
+   - Misc vanilla suicidal behavior fix
    - Post-type-conversion update
+   - Units retaining orders after changing ownership bugfix
    - Building EVA_StructureSold and SellSound dehardcode
+   - `AlternateFLH` of vehicles in `OpenTopped` transport.
    - Slaves' house customization when owner is killed
    - Trigger Action spawned team IFV/Opentopped logic fix
    - Singleplayer Campaign AI's base node/SW-delivered/trigger action 125-delivered structures' auto-repairability dehardcode
-   - Misc CN doc fix, code refactor
    - Power delta counter : blackout indication mark
    - Harvester counter
    - Warhead superweapon launch logic
    - "Shield is broken" trigger event
    - RadialIndicator observer visibility
    - Cloaked objects from allies displaying to player in singleplayer campaigns
+   - Skip `NaturalParticleSystem` displaying from in-map pre-placed structures
+   - Random crate generation limited to land option, optimization for crates' random sampling
+   - `ImmuneToCrit` for shields
    - Forbidding parallel AI queues by type
+   - The option to allow DieSound/VoiceDie being played when grinding
+   - Allow iron-curtain effects on infantries
+   - Break the mindcontrol link when capturing a mind-controlled building with engineer
+   - Misc code refactor & maintenance, CN doc fix
 - **FlyStar**
    - Campaign load screen PCX support
    - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
-- **ststl** - Use `CustomPalette` for animations with `Tiled=yes`
+- **ststl**
+   - Customizable ShowTimer priority of superweapons
+   - Iron Curtain effects customization on infantries and organic units
+   - Use `CustomPalette` for animations with `Tiled=yes`
+- **TwinkleStar**
+  - Custom slaves free sound
+  - Jumpjet crash rotation control
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic

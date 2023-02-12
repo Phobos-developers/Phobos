@@ -16,6 +16,7 @@ RepairBaseNodes=no,no,no ; 3 booleans indicating whether AI repair basenodes in 
 ```
 - Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
   - `InitialPayload` logic from Ares is not supported yet.
+- If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
 
 ## Script Actions
 

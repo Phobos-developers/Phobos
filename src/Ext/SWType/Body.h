@@ -7,6 +7,8 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
+#include <Ext/Building/Body.h>
+
 class SWTypeExt
 {
 public:
@@ -37,18 +39,20 @@ public:
 		Valueable<AffectedHouse> LimboKill_Affected;
 		ValueableVector<int> LimboKill_IDs;
 		Valueable<double> RandomBuffer;
-		ValueableVector<SuperWeaponTypeClass*> SW_Next;
+		ValueableIdxVector<SuperWeaponTypeClass> SW_Next;
 		Valueable<bool> SW_Next_RealLaunch;
 		Valueable<bool> SW_Next_IgnoreInhibitors;
 		Valueable<bool> SW_Next_IgnoreDesignators;
 		ValueableVector<float> SW_Next_RollChances;
 
+		Valueable<int> ShowTimer_Priority;
+
 		Nullable<WarheadTypeClass*> Detonate_Warhead;
 		Nullable<WeaponTypeClass*> Detonate_Weapon;
 		Nullable<int> Detonate_Damage;
 
-		ValueableVector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
-		ValueableVector<ValueableVector<int>> SW_Next_RandomWeightsData;
+		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
+		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
@@ -80,6 +84,7 @@ public:
 			, SW_Next_IgnoreDesignators { true }
 			, SW_Next_RollChances {}
 			, SW_Next_RandomWeightsData {}
+			, ShowTimer_Priority { 0 }
 		{ }
 
 		// Ares 0.A functions
@@ -108,7 +113,7 @@ public:
 
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 	private:
-		std::vector<int> WeightedRollsHandler(ValueableVector<float>* chances, ValueableVector<ValueableVector<int>>* weights, size_t size);
+		std::vector<int> WeightedRollsHandler(ValueableVector<float>* chances, std::vector<ValueableVector<int>>* weights, size_t size);
 
 		template <typename T>
 		void Serialize(T& Stm);

@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <SessionClass.h>
+
 template<> const DWORD Extension<ScenarioClass>::Canary = 0xABCD1595;
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
@@ -92,6 +94,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->Waypoints)
 		.Process(this->Variables[0])
 		.Process(this->Variables[1])
+		.Process(SessionClass::Instance->Config)
 		;
 }
 

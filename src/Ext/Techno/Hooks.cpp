@@ -1,8 +1,9 @@
 #include <InfantryClass.h>
 #include <ScenarioClass.h>
 #include <GameStrings.h>
+#include <SpawnManagerClass.h>
 #include "Body.h"
-#include <Utilities/Macro.h>
+
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -22,6 +23,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
 		pExt->UpdateTypeData(pType);
 
+	pExt->IsInTunnel = false; // TechnoClass::AI is only called when not in tunnel.
+
 	if (pExt->CheckDeathConditions())
 		return 0;
 
@@ -29,33 +32,46 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->EatPassengers();
 	pExt->UpdateShield();
 	pExt->ApplySpawnLimitRange();
+	pExt->UpdateLaserTrails();
 
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
-
-	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
-	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
-	for (auto const& trail : pExt->LaserTrails)
-	{
-		if (pThis->CloakState == CloakState::Cloaked && !trail->Type->CloakVisible)
-			continue;
-
-		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret);
-		if (pThis->CloakState == CloakState::Uncloaking && !trail->Type->CloakVisible)
-			trail->LastLocation = trailLoc;
-		else
-			trail->Update(trailLoc);
-	}
 
 	return 0;
 }
 
+DEFINE_HOOK(0x51BAC7, InfantryClass_AI_Tunnel, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
 
-DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->UpdateOnTunnelEnter();
+
+	return 0;
+}
+
+DEFINE_HOOK(0x7363B5, UnitClass_AI_Tunnel, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->UpdateOnTunnelEnter();
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	TechnoExt::InitializeShield(pThis);
-	TechnoExt::InitializeLaserTrails(pThis);
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (!pExt->TypeExtData)
+		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pExt->TypeExtData)
+		pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
+
+	pExt->InitializeLaserTrails();
 
 	return 0;
 }
@@ -77,18 +93,15 @@ DEFINE_HOOK_AGAIN(0x442C7B, TechnoClass_Init_InitialStrength, 0x6) // BuildingCl
 DEFINE_HOOK(0x414057, TechnoClass_Init_InitialStrength, 0x6)       // AircraftClass_Init
 {
 	GET(TechnoClass*, pThis, ESI);
-
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	if (R->Origin() != 0x517D69)
 	{
-		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		{
-			if (R->Origin() != 0x442C7B)
-				R->EAX(pTypeExt->InitialStrength.Get(R->EAX<int>()));
-			else
-				R->ECX(pTypeExt->InitialStrength.Get(R->ECX<int>()));
-		}
+		if (R->Origin() != 0x442C7B)
+			R->EAX(pTypeExt->InitialStrength.Get(R->EAX<int>()));
+		else
+			R->ECX(pTypeExt->InitialStrength.Get(R->ECX<int>()));
 	}
-	else if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	else
 	{
 		auto strength = pTypeExt->InitialStrength.Get(R->EDX<int>());
 		pThis->Health = strength;
@@ -101,7 +114,6 @@ DEFINE_HOOK(0x414057, TechnoClass_Init_InitialStrength, 0x6)       // AircraftCl
 DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
 {
 	GET(BuildingClass*, pBuilding, ESI);
-
 	if (auto const pInf = abstract_cast<InfantryClass*>(R->EDI<FootClass*>()))
 	{
 		if (pBuilding && pBuilding->Type->Cloning)
@@ -131,6 +143,29 @@ DEFINE_HOOK(0x6FD0B5, TechnoClass_RearmDelay_RandomDelay, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x6FD054, TechnoClass_RearmDelay_ForceFullDelay, 0x6)
+{
+	enum { ApplyFullRearmDelay = 0x6FD09E };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	// Currently only used with infantry, so a performance saving measure.
+	if (pThis->WhatAmI() == AbstractType::Infantry)
+	{
+		if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+		{
+			if (pExt->ForceFullRearmDelay)
+			{
+				pExt->ForceFullRearmDelay = false;
+				pThis->CurrentBurstIndex = 0;
+				return ApplyFullRearmDelay;
+			}
+		}
+	}
+
+	return 0;
+}
+
 // Issue #271: Separate burst delay for weapon type
 // Author: Starkku
 DEFINE_HOOK(0x6FD05E, TechnoClass_RearmDelay_BurstDelays, 0x7)
@@ -139,12 +174,7 @@ DEFINE_HOOK(0x6FD05E, TechnoClass_RearmDelay_BurstDelays, 0x7)
 	GET(WeaponTypeClass*, pWeapon, EDI);
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	int burstDelay = -1;
-
-	if (pWeaponExt->Burst_Delays.size() > (unsigned)pThis->CurrentBurstIndex)
-		burstDelay = pWeaponExt->Burst_Delays[pThis->CurrentBurstIndex - 1];
-	else if (pWeaponExt->Burst_Delays.size() > 0)
-		burstDelay = pWeaponExt->Burst_Delays[pWeaponExt->Burst_Delays.size() - 1];
+	int burstDelay = pWeaponExt->GetBurstDelay(pThis->CurrentBurstIndex);
 
 	if (burstDelay >= 0)
 	{
@@ -155,6 +185,68 @@ DEFINE_HOOK(0x6FD05E, TechnoClass_RearmDelay_BurstDelays, 0x7)
 	// Restore overridden instructions
 	GET(int, idxCurrentBurst, ECX);
 	return idxCurrentBurst <= 0 || idxCurrentBurst > 4 ? 0x6FD084 : 0x6FD067;
+}
+
+DEFINE_HOOK(0x5209A7, InfantryClass_FiringAI_BurstDelays, 0x8)
+{
+	enum { Continue = 0x5209CD, ReturnFromFunction = 0x520AD9 };
+
+	GET(InfantryClass*, pThis, EBP);
+	GET(int, firingFrame, EDX);
+
+	int weaponIndex = pThis->SelectWeapon(pThis->Target);
+	const auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+	if (!pWeapon)
+		return ReturnFromFunction;
+
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	int cumulativeDelay = 0;
+	int projectedDelay = 0;
+
+	// Calculate cumulative burst delay as well cumulative delay after next shot (projected delay).
+	if (pWeaponExt->Burst_FireWithinSequence)
+	{
+		for (int i = 0; i <= pThis->CurrentBurstIndex; i++)
+		{
+			int burstDelay = pWeaponExt->GetBurstDelay(i);
+			int delay = 0;
+
+			if (burstDelay > -1)
+				delay = burstDelay;
+			else
+				delay = ScenarioClass::Instance->Random.RandomRanged(3, 5);
+
+			// Other than initial delay, treat 0 frame delays as 1 frame delay due to per-frame processing.
+			if (i != 0)
+				delay = Math::max(delay, 1);
+
+			cumulativeDelay += delay;
+
+			if (i == pThis->CurrentBurstIndex)
+				projectedDelay = cumulativeDelay + delay;
+		}
+	}
+
+	if (pThis->IsFiring && pThis->Animation.Value == firingFrame + cumulativeDelay)
+	{
+		if (pWeaponExt->Burst_FireWithinSequence)
+		{
+			int frameCount = pThis->Type->Sequence->GetSequence(pThis->SequenceAnim).CountFrames;
+
+			// If projected frame for firing next shot goes beyond the sequence frame count, cease firing after this shot and start rearm timer.
+			if (firingFrame + projectedDelay > frameCount)
+			{
+				const auto pExt = TechnoExt::ExtMap.Find(pThis);
+				pExt->ForceFullRearmDelay = true;
+			}
+		}
+
+		R->EAX(weaponIndex); // Reuse the weapon index to save some time.
+		return Continue;
+	}
+
+	return ReturnFromFunction;
 }
 
 DEFINE_HOOK(0x6F3B37, TechnoClass_Transform_6F3AD0_BurstFLH_1, 0x7)
@@ -323,9 +415,10 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x6F6CFE, TechnoClass_Unlimbo_LaserTrails, 0x6)
+// I don't think buildings should have laser-trails
+DEFINE_HOOK(0x4D7221, FootClass_Unlimbo_LaserTrails, 0x6)
 {
-	GET(TechnoClass*, pTechno, ESI);
+	GET(FootClass*, pTechno, ESI);
 
 	if (auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno))
 	{
@@ -362,6 +455,39 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_IsSingleColor, 0x7)
 
 	// Fixes drawing thick lasers for non-PrismSupport building-fired lasers.
 	pLaser->IsSupported = pLaser->Thickness > 3;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6B7265, SpawnManagerClass_AI_UpdateTimer, 0x6)
+{
+	GET(SpawnManagerClass* const, pThis, ESI);
+
+	if (pThis->Owner && pThis->Status == SpawnManagerStatus::Launching && pThis->CountDockedSpawns() != 0)
+	{
+		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType()))
+		{
+			if (pTypeExt->Spawner_DelayFrames.isset())
+				R->EAX(std::min(pTypeExt->Spawner_DelayFrames.Get(), 10));
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x6B73BE, SpawnManagerClass_AI_SpawnTimer, 0x6)
+DEFINE_HOOK(0x6B73AD, SpawnManagerClass_AI_SpawnTimer, 0x5)
+{
+	GET(SpawnManagerClass* const, pThis, ESI);
+
+	if (pThis->Owner)
+	{
+		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType()))
+		{
+			if (pTypeExt->Spawner_DelayFrames.isset())
+				R->ECX(pTypeExt->Spawner_DelayFrames.Get());
+		}
+	}
 
 	return 0;
 }
@@ -423,7 +549,7 @@ DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 // Fix slaves cannot always suicide due to armor multiplier or something
 DEFINE_PATCH(0x6B0BF7,
 	0x6A, 0x01  // push 1       // ignoreDefense=false->true
-	);
+);
 
 DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
 {
@@ -466,12 +592,12 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 
 				if (openTWeaponIndex != -1)
 					tWeaponIndex = openTWeaponIndex;
-				else if (pPassenger->GetTechnoType()->TurretCount > 0)
-					tWeaponIndex = pPassenger->CurrentWeaponNumber;
+				else
+					tWeaponIndex = pPassenger->SelectWeapon(pThis->Target);
 
 				WeaponTypeClass* pTWeapon = pPassenger->GetWeapon(tWeaponIndex)->WeaponType;
 
-				if (pTWeapon)
+				if (pTWeapon && pTWeapon->FireInTransport)
 				{
 					if (pTWeapon->Range < smallestRange)
 						smallestRange = pTWeapon->Range;
@@ -623,3 +749,50 @@ DEFINE_HOOK(0x45455B, BuildingClass_VisualCharacter_CloakVisibility, 0x5)
 
 	return CheckMutualAlliance;
 }
+
+DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+	GET(TechnoTypeClass*, pType, EAX);
+	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
+
+	enum { MakeInvunlnerable = 0x4DEB38, SkipGameCode = 0x4DEBA2 };
+
+	if (!pType->Organic && pThis->WhatAmI() != AbstractType::Infantry)
+		return MakeInvunlnerable;
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	IronCurtainEffect icEffect = pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics);
+
+	switch (icEffect)
+	{
+	case IronCurtainEffect::Ignore:
+	{
+		R->EAX(DamageState::Unaffected);
+	}break;
+	case IronCurtainEffect::Invulnerable:
+	{
+		return MakeInvunlnerable;
+	}break;
+	default:
+	{
+		R->EAX
+		(
+			pThis->ReceiveDamage
+			(
+				&pThis->Health,
+				0,
+				pTypeExt->IronCurtain_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillOrganicsWarhead.Get(RulesClass::Instance->C4Warhead)),
+				nullptr,
+				true,
+				false,
+				pSource
+			)
+		);
+	}break;
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_JUMP(VTABLE, 0x7EB1AC, 0x4DEAE0); // Redirect InfantryClass::IronCurtain to FootClass::IronCurtain

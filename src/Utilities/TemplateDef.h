@@ -45,6 +45,7 @@
 #include <AircraftTypeClass.h>
 #include <UnitTypeClass.h>
 #include <BuildingTypeClass.h>
+#include <WarheadTypeClass.h>
 #include <FootClass.h>
 #include <VocClass.h>
 #include <VoxClass.h>
@@ -846,6 +847,33 @@ namespace detail
 		return value.Read(parser, pSection, pKey);
 	}
 
+
+	template <>
+	inline bool read<IronCurtainEffect>(IronCurtainEffect& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = IronCurtainEffect::Kill;
+			auto str = parser.value();
+			if (_strcmpi(str, "invulnerable") == 0)
+			{
+				parsed = IronCurtainEffect::Invulnerable;
+			}
+			else if (_strcmpi(str, "ignore") == 0)
+			{
+				parsed = IronCurtainEffect::Ignore;
+			}
+			else if (_strcmpi(str, "kill") != 0)
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "IronCurtainEffect can be either kill, invulnerable or ignore");
+				return false;
+			}
+			value = parsed;
+			return true;
+		}
+		return false;
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{
@@ -1070,7 +1098,7 @@ bool ValueableVector<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 }
 
 template <>
-bool ValueableVector<bool>::Load(PhobosStreamReader& stm, bool registerForChange)
+inline bool ValueableVector<bool>::Load(PhobosStreamReader& stm, bool registerForChange)
 {
 	size_t size = 0;
 	if (Savegame::ReadPhobosStream(stm, size, registerForChange))
@@ -1110,7 +1138,7 @@ bool ValueableVector<T>::Save(PhobosStreamWriter& Stm) const
 }
 
 template <>
-bool ValueableVector<bool>::Save(PhobosStreamWriter& stm) const
+inline bool ValueableVector<bool>::Save(PhobosStreamWriter& stm) const
 {
 	auto size = this->size();
 	if (Savegame::WritePhobosStream(stm, size))
