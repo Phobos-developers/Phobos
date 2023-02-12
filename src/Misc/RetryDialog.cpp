@@ -6,6 +6,7 @@
 #include <GameOptionsClass.h>
 #include <GScreenClass.h>
 #include <EvadeClass.h>
+#include <GameStrings.h>
 
 namespace RetryDialogFlag
 {
@@ -24,10 +25,10 @@ DEFINE_HOOK(0x686092, DoLose_RetryDialogForCampaigns, 0x7)
 		// Button2
 		// I prefer to put the loadgame to the center of them - secsome
 		switch (WWMessageBox::Instance().Process(
-			StringTable::LoadString("TXT_TO_REPLAY"),
-			StringTable::LoadString("TXT_OK"),
+			StringTable::LoadString(GameStrings::TXT_TO_REPLAY),
+			StringTable::LoadString(GameStrings::TXT_OK),
 			StringTable::LoadString("GUI:LOADGAME"),
-			StringTable::LoadString("TXT_CANCEL")))
+			StringTable::LoadString(GameStrings::TXT_CANCEL)))
 		{
 		case WWMessageBox::Result::Button1:
 			return OK;

@@ -12,6 +12,8 @@
 #include <CCToolTip.h>
 #include <BitFont.h>
 #include <BitText.h>
+#include <FPSCounter.h>
+#include <Phobos.h>
 
 #include <Ext/Side/Body.h>
 #include <Ext/Surface/Body.h>
@@ -93,6 +95,21 @@ void PhobosToolTip::HelpText(BuildType& cameo)
 		this->HelpText(ObjectTypeClass::GetTechnoType(cameo.ItemType, cameo.ItemIndex));
 }
 
+inline int tickTimeToSeconds(int tickTime)
+{
+	if (!Phobos::Config::RealTimeTimers)
+		return tickTime / 15;
+
+	if (Phobos::Config::RealTimeTimers_Adaptive
+		|| GameOptionsClass::Instance->GameSpeed == 0
+		|| (Phobos::Misc::CustomGS && !SessionClass::IsMultiplayer()))
+	{
+		return tickTime / std::max((int)FPSCounter::CurrentFrameRate, 1);
+	}
+
+	return tickTime / (60 / GameOptionsClass::Instance->GameSpeed);
+}
+
 void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 {
 	if (!pType)
@@ -101,9 +118,9 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
 
 	int nBuildTime = this->GetBuildTime(pType);
-	int nSec = nBuildTime / 15 % 60;
-	int nMin = nBuildTime / 15 / 60 /* % 60*/;
-	// int nHour = pType->RechargeTime / 15 / 60 / 60;
+	int nSec = tickTimeToSeconds(nBuildTime) % 60;
+	int nMin = tickTimeToSeconds(nBuildTime) / 60 /* % 60*/;
+	// int nHour = tickTimeToSeconds(nBuildTime) / 60 / 60;
 
 	int cost = pType->GetActualCost(HouseClass::CurrentPlayer);
 
@@ -154,9 +171,9 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 		if (!showCost)
 			oss << L"\n";
 
-		int nSec = pType->RechargeTime / 15 % 60;
-		int nMin = pType->RechargeTime / 15 / 60 /* % 60*/;
-		// int nHour = pType->RechargeTime / 15 / 60 / 60;
+		int nSec = tickTimeToSeconds(pType->RechargeTime) % 60;
+		int nMin = tickTimeToSeconds(pType->RechargeTime) / 60 /* % 60*/;
+		// int nHour = tickTimeToSeconds(pType->RechargeTime) / 60 / 60;
 
 		oss << (showCost ? L" " : L"") << Phobos::UI::TimeLabel
 			// << std::setw(2) << std::setfill(L'0') << nHour << L":"
