@@ -2894,13 +2894,13 @@ void ScriptExt::ModifyHateHouses_List(TeamClass* pTeam, int idxHousesList = -1)
 
 	if (idxHousesList >= 0)
 	{
-		if (idxHousesList < RulesExt::Global()->AIHousesLists.size())
+		if (idxHousesList < (int)RulesExt::Global()->AIHousesLists.size())
 		{
 			std::vector<HouseTypeClass*> objectsList = RulesExt::Global()->AIHousesLists.at(idxHousesList);
 
 			if (objectsList.size() > 0)
 			{
-				for (auto pHouseType : objectsList)
+				for (const auto pHouseType : objectsList)
 				{
 					for (auto& angerNode : pTeam->Owner->AngerNodes)
 					{
@@ -2948,9 +2948,10 @@ void ScriptExt::ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList
 
 	if (idxHousesList >= 0)
 	{
-		if (idxHousesList < RulesExt::Global()->AIHousesLists.size())
+		if (idxHousesList < (int)RulesExt::Global()->AIHousesLists.size())
 		{
 			std::vector<HouseTypeClass*> objectsList = RulesExt::Global()->AIHousesLists.at(idxHousesList);
+
 			if (objectsList.size() > 0)
 			{
 				int IdxSelectedObject = ScenarioClass::Instance->Random.RandomRanged(0, objectsList.size() - 1);
@@ -3018,7 +3019,7 @@ void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int mode = 
 		newHateLevel = pTeamData->AngerNodeModifier;
 
 	// Find the highest House hate value
-	for (auto& angerNode : pTeam->Owner->AngerNodes)
+	for (const auto& angerNode : pTeam->Owner->AngerNodes)
 	{
 		if (pTeam->Owner == angerNode.House
 			|| angerNode.House->Defeated
@@ -3102,19 +3103,20 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 	// Find the Team Leader
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (pUnit && pUnit->IsAlive && !pUnit->InLimbo)
+		if (!pUnit || !pUnit->IsAlive || pUnit->InLimbo)
+			continue;
+
+		auto pUnitType = pUnit->GetTechnoType();
+		if (!pUnitType)
+			continue;
+
+		// The team leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
+		int unitLeadershipRating = pUnitType->LeadershipRating;
+
+		if (unitLeadershipRating > bestUnitLeadershipValue)
 		{
-			auto pUnitType = pUnit->GetTechnoType();
-			if (pUnitType)
-			{
-				// The team leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
-				int unitLeadershipRating = pUnitType->LeadershipRating;
-				if (unitLeadershipRating > bestUnitLeadershipValue)
-				{
-					pLeaderUnit = pUnit;
-					bestUnitLeadershipValue = unitLeadershipRating;
-				}
-			}
+			pLeaderUnit = pUnit;
+			bestUnitLeadershipValue = unitLeadershipRating;
 		}
 	}
 
@@ -3140,7 +3142,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 	if (mask == -2)
 	{
 		// Based on House economy
-		for (auto& pHouse : *HouseClass::Array)
+		for (const auto& pHouse : *HouseClass::Array)
 		{
 			if (pLeaderUnit->Owner == pHouse
 				|| pHouse->IsObserver()
@@ -3180,7 +3182,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 	if (mask == -3)
 	{
 		// Based on Human Controlled check
-		for (auto& pHouse : *HouseClass::Array)
+		for (const auto& pHouse : *HouseClass::Array)
 		{
 			if (pLeaderUnit->Owner == pHouse
 				|| !pHouse->IsControlledByHuman()
@@ -3228,7 +3230,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 		int checkedHousePower;
 
 		// House power check
-		for (auto& pHouse : *HouseClass::Array)
+		for (const auto& pHouse : *HouseClass::Array)
 		{
 			if (pLeaderUnit->Owner == pHouse
 				|| pHouse->Defeated
@@ -3276,7 +3278,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 	if (mask == -7)
 	{
 		// Based on House kills
-		for (auto& pHouse : *HouseClass::Array)
+		for (const auto& pHouse : *HouseClass::Array)
 		{
 			if (pLeaderUnit->Owner == pHouse
 				|| pHouse->IsObserver()
@@ -3318,7 +3320,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 	if (mask == -8)
 	{
 		// Based on number of House naval units
-		for (auto& pHouse : *HouseClass::Array)
+		for (const auto& pHouse : *HouseClass::Array)
 		{
 			if (pLeaderUnit->Owner == pHouse
 				|| pHouse->IsObserver()
@@ -3331,7 +3333,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 
 			int currentNavalUnits = 0;
 
-			for (auto& pUnit : *TechnoClass::Array)
+			for (const auto& pUnit : *TechnoClass::Array)
 			{
 				if (pUnit->IsAlive
 					&& pUnit->Health > 0
@@ -3373,7 +3375,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 	if (mask == -9)
 	{
 		// Based on number of House aircraft docks
-		for (auto& pHouse : *HouseClass::Array)
+		for (const auto& pHouse : *HouseClass::Array)
 		{
 			if (pLeaderUnit->Owner == pHouse
 				|| pHouse->IsObserver()
@@ -3415,7 +3417,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 	if (mask == -10)
 	{
 		// Based on number of House factories (except aircraft factories)
-		for (auto& pHouse : *HouseClass::Array)
+		for (const auto& pHouse : *HouseClass::Array)
 		{
 			if (pLeaderUnit->Owner == pHouse
 				|| pHouse->IsObserver()
@@ -3504,9 +3506,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 						enemyThreatValue[pTechno->Owner->ArrayIndex] += pTechnoType->ThreatPosed;
 
 						if (pTechnoType->SpecialThreatValue > 0)
-						{
 							enemyThreatValue[pTechno->Owner->ArrayIndex] += pTechnoType->SpecialThreatValue * TargetSpecialThreatCoefficientDefault;
-						}
 					}
 				}
 			}
@@ -3522,7 +3522,8 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 			if (mode == 0)
 			{
 				// Select House with LESS threat
-				if ((enemyThreatValue[i] < value || value == -1) && !HouseClass::Array->GetItem(i)->Defeated)
+				if ((enemyThreatValue[i] < value || value == -1)
+					&& !HouseClass::Array->GetItem(i)->Defeated)
 				{
 					value = enemyThreatValue[i];
 					enemyHouse = HouseClass::Array->GetItem(i);
@@ -3531,7 +3532,8 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 			else
 			{
 				// Select House with MORE threat
-				if ((enemyThreatValue[i] > value || value == -1) && !HouseClass::Array->GetItem(i)->Defeated)
+				if ((enemyThreatValue[i] > value || value == -1)
+					&& !HouseClass::Array->GetItem(i)->Defeated)
 				{
 					value = enemyThreatValue[i];
 					enemyHouse = HouseClass::Array->GetItem(i);
@@ -3582,7 +3584,7 @@ void ScriptExt::OverrideOnlyTargetHouseEnemy(TeamClass* pTeam, int mode = -1)
 		break;
 
 	case 2:
-		pTeamData->OnlyTargetHouseEnemy = (bool)ScenarioClass::Instance->Random.RandomRanged(0, 1);;
+		pTeamData->OnlyTargetHouseEnemy = (bool)ScenarioClass::Instance->Random.RandomRanged(0, 1);
 		break;
 
 	default:
@@ -3655,9 +3657,11 @@ void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 		newHateLevel = pTeamData->AngerNodeModifier;
 
 	// Store the list of playable houses for later
-	for (auto& angerNode : pTeam->Owner->AngerNodes)
+	for (const auto& angerNode : pTeam->Owner->AngerNodes)
 	{
-		if (!angerNode.House->Defeated && !angerNode.House->Type->MultiplayPassive && !angerNode.House->IsObserver())
+		if (!angerNode.House->Defeated
+			&& !angerNode.House->Type->MultiplayPassive
+			&& !angerNode.House->IsObserver())
 		{
 			objectsList.AddItem(angerNode.House);
 		}
@@ -3697,7 +3701,7 @@ void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 	// Note: at most each "For" lasts 10 loops: 8 players + Civilian + Special houses
 	if (index != -3)
 	{
-		for (auto& pHouse : *HouseClass::Array)
+		for (const auto& pHouse : *HouseClass::Array)
 		{
 			if (!pHouse->Defeated && pHouse->ArrayIndex == index)
 				selectedHouse = pHouse;
@@ -3711,7 +3715,7 @@ void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 		{
 			int highestHateLevel = 0;
 
-			for (auto& angerNode : pHouse->AngerNodes)
+			for (const auto& angerNode : pHouse->AngerNodes)
 			{
 				if (angerNode.AngerLevel > highestHateLevel)
 					highestHateLevel = angerNode.AngerLevel;
@@ -3722,16 +3726,12 @@ void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 				if (index == -3)
 				{
 					if (angerNode.House->IsControlledByHuman())
-					{
 						angerNode.AngerLevel = highestHateLevel + newHateLevel;
-					}
 				}
 				else
 				{
 					if (selectedHouse == angerNode.House)
-					{
 						angerNode.AngerLevel = highestHateLevel + newHateLevel;
-					}
 				}
 			}
 
@@ -3754,7 +3754,7 @@ void ScriptExt::UpdateEnemyHouseIndex(HouseClass* pHouse)
 	int angerLevel = 0;
 	int index = -1;
 
-	for (auto& angerNode : pHouse->AngerNodes)
+	for (const auto& angerNode : pHouse->AngerNodes)
 	{
 		if (!angerNode.House->Defeated
 			&& !pHouse->IsAlliedWith(angerNode.House)
