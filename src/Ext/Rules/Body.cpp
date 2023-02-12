@@ -153,7 +153,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	int houseItemsCount = pINI->GetKeyCount(sectionAIHousesList);
 	for (int i = 0; i < houseItemsCount; ++i)
 	{
-		DynamicVectorClass<HouseTypeClass*> objectsList;
+		std::vector<HouseTypeClass*> objectsList;
 
 		char* context = nullptr;
 		pINI->ReadString(sectionAIHousesList, pINI->GetKeyName(sectionAIHousesList, i), "", Phobos::readBuffer);
@@ -162,11 +162,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		{
 			HouseTypeClass* pNewHouse = HouseTypeClass::Find(cur);//GameCreate<HouseTypeClass>(cur);
 			if (pNewHouse)
-				objectsList.AddItem(pNewHouse);
+				objectsList.emplace_back(pNewHouse);
 		}
 
-		AIHousesLists.AddItem(objectsList);
-		objectsList.Clear();
+		AIHousesLists.emplace_back(objectsList);
 	}
 }
 
@@ -198,6 +197,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
+		.Process(this->AIHousesLists)
 		.Process(this->HarvesterTypes)
 		.Process(this->Storage_TiberiumIndex)
 		.Process(this->InfantryGainSelfHealCap)
@@ -209,7 +209,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->RadHasInvoker)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
-		.Process(this->AIHousesLists)
 		.Process(this->MissingCameo)
 		.Process(this->PlacementGrid_Translucency)
 		.Process(this->PlacementPreview)

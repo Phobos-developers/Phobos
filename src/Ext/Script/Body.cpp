@@ -2326,13 +2326,10 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 			if (pTeamData)
 			{
 				if (pTeamData->OnlyTargetHouseEnemyMode != -1)
-				{
 					onlyTargetHouseEnemy = pTeamData->OnlyTargetHouseEnemy;
-				}
 			}
 
-			if (onlyTargetHouseEnemy
-				&& enemyHouseIndex >= 0)
+			if (onlyTargetHouseEnemy && enemyHouseIndex >= 0)
 				enemyHouse = HouseClass::Array->GetItem(enemyHouseIndex);
 		}
 	}
@@ -2897,11 +2894,11 @@ void ScriptExt::ModifyHateHouses_List(TeamClass* pTeam, int idxHousesList = -1)
 
 	if (idxHousesList >= 0)
 	{
-		if (idxHousesList < RulesExt::Global()->AIHousesLists.Count)
+		if (idxHousesList < RulesExt::Global()->AIHousesLists.size())
 		{
-			DynamicVectorClass<HouseTypeClass*> objectsList = RulesExt::Global()->AIHousesLists.GetItem(idxHousesList);
+			std::vector<HouseTypeClass*> objectsList = RulesExt::Global()->AIHousesLists.at(idxHousesList);
 
-			if (objectsList.Count > 0)
+			if (objectsList.size() > 0)
 			{
 				for (auto pHouseType : objectsList)
 				{
@@ -2951,13 +2948,13 @@ void ScriptExt::ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList
 
 	if (idxHousesList >= 0)
 	{
-		if (idxHousesList < RulesExt::Global()->AIHousesLists.Count)
+		if (idxHousesList < RulesExt::Global()->AIHousesLists.size())
 		{
-			DynamicVectorClass<HouseTypeClass*> objectsList = RulesExt::Global()->AIHousesLists.GetItem(idxHousesList);
-			if (objectsList.Count > 0)
+			std::vector<HouseTypeClass*> objectsList = RulesExt::Global()->AIHousesLists.at(idxHousesList);
+			if (objectsList.size() > 0)
 			{
-				int IdxSelectedObject = ScenarioClass::Instance->Random.RandomRanged(0, objectsList.Count - 1);
-				HouseTypeClass* pHouseType = objectsList.GetItem(IdxSelectedObject);
+				int IdxSelectedObject = ScenarioClass::Instance->Random.RandomRanged(0, objectsList.size() - 1);
+				HouseTypeClass* pHouseType = objectsList.at(IdxSelectedObject);
 
 				for (auto& angerNode : pTeam->Owner->AngerNodes)
 				{
