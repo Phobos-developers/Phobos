@@ -83,5 +83,5 @@ public:
 	static int TotalHarvesterCount(HouseClass* pThis);
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
 
-	static void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode);
+	static void ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode);
 };
