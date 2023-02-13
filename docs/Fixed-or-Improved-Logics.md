@@ -202,6 +202,7 @@ AllowAirstrike=  ; boolean
   - `Grinding.PlayDieSound` controls if the units' `DieSound` and `VoiceDie` are played when entering the grinder. Default to `yes`.
   - `Grinding.Sound` is a sound played by when object is grinded by the building. If not set, defaults to `[AudioVisual]`->`EnterGrinderSound`.
   - `Grinding.Weapon` is a weapon fired at the building & by the building when it grinds an object. Will only be fired if at least weapon's `ROF` amount of frames have passed since it was last fired.
+- For money string indication upon grinding, please refer to [`DisplayIncome`](User-Interface.md/#Visual-indication-of-income-from-grinders-and-refineries).
 
 In `rulesmd.ini`:
 ```ini
