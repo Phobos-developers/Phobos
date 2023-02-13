@@ -218,6 +218,103 @@ Shield.InheritStateOnReplace=false   ; boolean
       - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
+### **TransferType**
+![image](_static/images/transfertype.gif)
+*Prism Tank with Gatling Laser, Tesla Trooper with Ammo, Yuri with Deploy Money and Experience, Prism Cadre with Health Transfer, Ammo Restore, Gatling RateUp*
+
+- Warheads can now transfer and convert one resource to another. Resources in question are Experience, Money, Health, Ammo and Gatling rate.
+  - `TargetToSource` determines the sender and receiver of the transfer: if true, warhead's target(s) sends, warhead's source receives and vice versa.
+  - `Target.ConsiderArmor` set to `yes` uses Verses from `Target.Warhead` to modify values affecting targets. Defaults to `no`.
+  - `Target.Warhead` is used if `Target.ConsiderArmor=yes`. Otherwise, ignored. Defaults to source warhead.
+  - `Target.AffectHouses` determines houses units of which are affected by the transfer. Defaults to `all`.
+  - `Target.Spread.Distribution` determines distribution of transfer values on warhead with `CellSpread` detonation.
+    - `none` disables transfer spread, meaning only original target is affected. Default value.
+    - `constant` assigns each target the `~~.Value` depending on `TargetToSource` (`~~` is `Send` if yes, `Receive` if no) without any splash decrease.
+    - `split` assigns the `~~.Value` divided by the **number of targets** to each target.
+    - `distance` assigns target values using standart warhead behavior: targets in the center of warhead have no decrease in `~~.Value`, while targets near the edge have decreased values determined by `PercentAtMax`.
+  - `Target.Spread.IgnoreSelf` controls whether the source is affected by its own splash warhead.
+  - `Target.Spread.CountUnaffected` determines whether to count units excluded by `Target.` tags in **number of targets**.
+  - `Send.Resource` and `Receive.Resource` determine which resource is subtracted from sender and added to receiver respectively.
+    - They can be any of [`experience`, `money`, `health`, `ammo`, `gatlingrate`]. Default to `money`
+  - `Send.Value` and `Receive.Value` are the amounts of resources sent and received.
+  - `Send.Value.Type` and `Receive.Value.Type` can be any of [`fixed`, `current`, `missing`, `total`] and determines whether to multiply `~~.Value` by corresponding value
+    - Total `experience` amount is the amount of experience needed for fresh rookie version of affected Techno to get promoted to Elite. While `Trainable=no` units are used in calculations, they however do not get experience when receiving.
+    - "Total" `money` amount is the `Cost` of the Techno. Current `money` amount is the amount of money house/owner of Techno holds. Missing is the `Soylent` of Techno.
+    - Total `health` amount is the `Strength` value of Techno.
+    - Total `ammo` amount is the `Ammo` value of Techno.
+    - Total `gatlingrate` amount is the rate needed to reach the last stage of Stage/EliteStage. 0 for `IsGattling=no` units.
+  - `Send.Value.SourceVeterancyMultiplier` and `Receive.Value.SourceVeterancyMultiplier` read two numbers (for Veteran and Elite) and modify `~~.Value` depending on source's veterancy. Both multipliers stack multiplicatively. Default to 1.0 and 1.0.
+  - `Send.Value.FlatLimits` and `Receive.Value.FlatLimits` read two integers (minimum and maximum) sender has to send and receiver receives. Has reversed effect if met by negative Verses on `Target.ConsiderArmor=yes`: minimum becomes negated maximum and maximum becomes negated minimum.
+    - These values are not affected by tags above and serve as limits to end result, unless affected by tags below.
+  - `Send.PreventUnderflow` and `Send.PreventOverflow` change `Send.Value` to the right amount if it is causing underflow (e.g. overkill) or overflow (e.g. overheal). Used for `Receive.Multiplier`.
+  - `Receive.Multiplier` can be set to make `Receive.Value` multiplied by other factor:
+    - `none` for no change. Default value.
+    - `highest` for multiplication by highest value among sent values if `Sent.Value` is positive, or the lowest value if `Sent.Value` is negative.
+    - `sum` for multiplication by total sum of sent values.
+      - Has the same effect as `highest` if `TargetToSource=no`, causing multiplication by the sent value by source.
+    - `tally` for multiplication by the **number of targets**.
+  - `Decrease.Experience.AllowDemote` set to `no` disables demotion on neg. Works with `Send.PreventUnderflow`, allowing one to not send experience when reaching minimum value of their current veterancy rank, e.g. no experience sent from Elite units as they no longer get experience upon reaching Elite. Defaults to `yes`.
+  - `Decrease.Health.AllowKill` set to `no` disables death by negative health transfers and instead leaves with 1 health. Can still die to weapon damage.
+  - `Send.Text` and `Receive.Text` control if the changes in value should be shown as floating texts. 0 values are not shown.
+  - `Send.Text.ShowSign` and `Receive.Text.ShowSign` determine whether to show - and + signs.
+  - `Send.Text.Houses` and `Receive.Text.Houses` show the texts only for indicated houses.
+  - `Send.Text.Color` and `Receive.Text.Color` change colors of shown texts. Defaults to black.
+  - `Send.Text.Offset` and `Receive.Text.Offset` change positions of shown texts relative to the positions of the attached units.
+  - `Send.Text.Color.Positive` changes colors of shown texts on sender has an increase in its resource value. Defaults to `Receive.Text.Color`. That's right, `Receive`.
+  - `Receive.Text.Color.Negative` changes colors of shown texts on receiver has a decrease in its resource value. Defaults to `Send.Text.Color`.
+
+```ini
+[TransferTypes]
+0=SOMETRANSFER
+...
+
+[SOMETRANSFER]
+TargetToSource=true                               ; boolean
+Target.ConsiderArmor=false                        ; boolean
+Target.Warhead=none                               ; Warhead, defaults to source warhead
+Target.AffectHouses=all                           ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Target.Spread.Distribution=none                   ; enumeration (none | constant | split | distance)
+Target.Spread.IgnoreSelf=false                    ; boolean
+Target.Spread.CountUnaffected=false               ; boolean
+Send.Resource=money                               ; enumeration (experience | money | health | ammo | gatlingrate)
+Send.Value=0.0                                    ; floating point value
+Send.Value.Type=fixed                             ; enumeration (fixed | current | missing | total)
+Send.Value.FlatLimits=0,0                         ; minimum,maximum integers (0 for no limit)
+Send.Value.SourceVeterancyMultiplier=1.0,1.0      ; floating point value
+Send.PreventUnderflow=false                       ; boolean
+Send.PreventOverflow=false                        ; boolean
+Send.Text=false                                   ; boolean
+Send.Text.ShowSign=false                          ; boolean
+Send.Text.Houses=all                              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Send.Text.Color=0,0,0                             ; integer - Red,Green,Blue
+Send.Text.Color.Positive=0,0,0                    ; integer - Red,Green,Blue
+Send.Text.Offset=0,0                              ; X,Y, pixels relative to default
+Receive.Resource=money                            ; enumeration (experience | money | health | ammo | gatlingrate)
+Receive.Value=0.0                                 ; floating point value
+Receive.Value.Type=fixed                          ; enumeration (fixed | current/c% | missing/m% | total/t%)
+Receive.Value.FlatLimits=0,0                      ; minimum,maximum integers (0 for no limit)
+Receive.Value.SourceVeterancyMultiplier=1.0,1.0   ; floating point value
+Receive.Multiplier=none                           ; enumeration (none | highest | sum | tally)
+Receive.ReturnOverflow=false                      ; boolean
+Receive.Text=false                                ; boolean
+Receive.Text.ShowSign=false                       ; boolean
+Receive.Text.Houses=all                           ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Receive.Text.Color=0,0,0                          ; integer - Red,Green,Blue
+Receive.Text.Color.Negative=0,0,0                 ; integer - Red,Green,Blue
+Receive.Text.Offset=0,0                           ; X,Y, pixels relative to default
+Decrease.Experience.AllowDemote=false             ; boolean
+Decrease.Health.AllowKill=false                   ; boolean
+
+[SOMEWARHEAD]
+Transfer.Types=SOMETRANSFER                       ; list of TransferTypes
+```
+<details>
+<summary><span style="font-size:16px"><i>Transfer calculation flowchart</i></span></summary>
+
+![Transfer flowchart](_static/images/transferflowchart.svg)
+
+</details>
+
 ## Animations
 
 ### Anim-to-Unit
@@ -1033,95 +1130,6 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]            ; Warhead
 NotHuman.DeathSequence=  ; integer (1 to 5)
-```
-
-### TransferType
-![image](_static/images/transfertype.gif)
-*Prism Tank with Gatling Laser, Tesla Trooper with Ammo, Yuri with Deploy Money and Experience, Prism Cadre with Health Transfer, Ammo Restore, Gatling RateUp*
-
-- Warheads can now transfer and convert one resource to another. Resources in question are Experience, Money, Health, Ammo and Gatling rate.
-  - `TargetToSource` determines the sender and receiver of the transfer: if true, warhead's target(s) sends, warhead's source receives and vice versa.
-  - `Send.Resource` and `Receive.Resource` determine which resource is subtracted from sender and added to receiver respectively.
-    - They can any of [`experience`, `money`, `health`, `ammo`, `gatlingrate`]. Defaults to `money`
-  - `Send.Value` and `Receive.Value` are the amounts of resources sent and received.
-  - `Send.Value.IsPercent` and `Receive.Value.IsPercent` control whether `~~.Value` is treated as percentage value with `1.0` or `100%` being equal to 100%.
-  - `Send.Value.PercentOfTotal` and `Receive.Value.PercentOfTotal` cause maximum amount of `~~.Resource` to be used in calculation. Otherwise, `~~.Value` uses current amount. These tags are ignored if `~~.IsPercent` is disabled.
-    - Maximum `experience` amount is the amount of experience needed for fresh rookie version of affected Techno to get promoted to Elite. While `Trainable=no` units are used in calculations, they however do not get experience when receiving.
-    - Maximum `money` amount is the amount of money owner of Techno holds. "Current" `money` amount is the cost of the Techno.
-    - Maximum `health` amount is the `Strength` value of Techno.
-    - Maximum `ammo` amount is the `Ammo` value of Techno.
-    - Maximum `gatlingrate` amount is the rate needed to reach the last stage of Stage/EliteStage. 0 for `IsGattling=no` units.
-  - `Send.ConsiderSourceVeterancy` and `Receive.ConsiderSourceVeterancy` allow for multiplication of `~~.Value` by veterancy firepower multiplier if source Techno gets firepower bonus on promotion.
-  - `Send.Value.FlatMinimum` and `Receive.Value.FlatMinimum` are flat minimum values sender has to send and receiver receives. `Send.Value.FlatMaximum` and `Receive.Value.FlatMaximum` are for maximums.
-    - These values are not affected by tags above and serve as limits to end result, unless affected by tags below.
-  - `Receive.Value.ProportionalToSent` makes `Receive.Value` dependant on the **number of targets** or amount of resources sent respectively.
-    - If `Receive.Value.IsPercent=no`, enabled `TargetToSource` multiplies `Receive.Value` by the **number of targets**, while disabled `TargetToSource` does not change anything.
-    - If `Receive.Value.IsPercent=yes`, effect changes depending on `TargetToSource`:
-      - `TargetToSource=yes`: multiplied by the largest value among sent values from targets if `Receive.Value.PercentOfTotal=no`, otherwise by the sum of values sent.
-      - `TargetToSource=no`: multiplied by the sent amount divided by **number of targets** if `Receive.Value.PercentOfTotal=no`, otherwise just by the amount sent by source.
-    - Has lower priority than flat limits.
-  - `Send.RequireRealResource` set to `no` makes sender fill quota with nonexistent resource if it has less than required. Defaults to `yes`.
-    - Has higher priority than flat limits.
-  - `Send.Experience.AllowDemote` set to `no` disables demotion of sender of `Send.Attribute=experience`. Works with `Send.RequireRealResource`, allowing one to not send experience when reaching minimum value of their current veterancy rank, i.e. no experience sent from Elite units. Defaults to `yes`.
-  - `Receive.RefuseOverflow` set to `yes` returns received overflow(s) back to sender(s). Defaults to `no`.
-  - `Target.ConsiderArmor` set to `yes` uses Verses from `Target.Warhead` to modify values affecting targets. Uses source warhead Verses if `Target.Warhead` is not set. Defaults to `no`.
-  - `Target.AffectedHouses` determines houses units of which are affected by the transfer. Defaults to `all`.
-  - `Target.Spread.Distribution` determines distribution of values on warhead with `CellSpread` detonation.
-    - `nodecrease` has no effect in values. Default value.
-    - `equally` divides target values by the **number of targets**.
-    - `byproximity` changes target values using standart warhead behavior: targets in the center of warhead have no decrease in values, while targets near the edge have decreased values determined by `PercentAtMax`.
-  - `Target.Spread.CountUnaffected` determines whether to count units excluded by `Target.ConsiderArmor=yes`, Verses=0% or `Target.AffectedHouses` in **number of targets**.
-  - `Send.Text` and `Receive.Text` control if the changes in value should be shown as floating texts. 0 values are not shown.
-  - `Send.Text.ShowSign` and `Receive.Text.ShowSign` determines whether to show - and + signs respectively.
-  - `Send.Text.Houses` and `Receive.Text.Houses` show the texts only for indicated houses.
-  - `Send.Text.Color` and `Receive.Text.Color` change colors of shown texts. Defaults to black.
-  - `Send.Text.Offset` and `Receive.Text.Offset` change positions of shown texts relative to the positions of the attached units. 
-
-```ini
-[TransferTypes]
-0=SOMETRANSFER
-...
-
-[SOMETRANSFER]
-TargetToSource=true ; boolean
-Send.Attribute=money ; enumeration (experience | money | health | ammo | gatlingrate)
-Send.Value=0.0 ; floating point value
-Send.Value.IsPercent=false ; boolean
-Send.Value.PercentOfTotal=false ; boolean
-Send.ConsiderSourceVeterancy=false ; boolean
-Send.Value.FlatMinimum=0 ; integer
-Send.Value.FlatMaximum=0 ; integer
-Receive.Attribute=money ; enumeration (experience | money | health | ammo | gatlingrate)
-Receive.Value=0.0 ; floating point value
-Receive.Value.IsPercent=false ; boolean
-Receive.Value.PercentOfTotal=false ; boolean
-Receive.ConsiderSourceVeterancy=false ; boolean
-Receive.Value.FlatMinimum=0 ; integer
-Receive.Value.FlatMaximum=0 ; integer
-Receive.Value.ProportionalToSent=false ; boolean
-Send.RequireRealResource=true ; boolean
-Send.Experience.AllowDemote=true ; boolean
-Receive.RefuseOverflow=false ; boolean
-Target.ConsiderArmor=false ; boolean
-Target.Warhead=none ; Warhead, defaults to source warhead
-Target.AffectedHouses=all ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Target.Spread.Distribution=nodecrease ; enumeration (nodecrease | equally | byproximity)
-Target.Spread.CountUnaffected=false ; boolean
-Send.Text=false ; boolean
-Send.Text.ShowSign=false ; boolean
-Send.Text.Houses=all ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Send.Text.Color=0,0,0 ; integer - Red,Green,Blue
-Send.Text.Offset=0,0 ; X,Y, pixels relative to default
-Receive.Text=false ; boolean
-Receive.Text.ShowSign=false ; boolean
-Receive.Text.Houses=all ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Receive.Text.Color=0,0,0 ; integer - Red,Green,Blue
-Receive.Text.Offset=0,0 ; X,Y, pixels relative to default
-
-...
-
-[SOMEWARHEAD]
-Transfer.Types=SOMETRANSFER ; list of TransferTypes
 ```
 
 ## Weapons

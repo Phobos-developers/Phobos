@@ -196,11 +196,28 @@ enum class TransferTypeResource : BYTE
 	GatlingRate		= 4
 };
 
+enum class TechnoValueType : BYTE
+{
+	Fixed		= 0,
+	Current		= 1,
+	Missing		= 2,
+	Total		= 3
+};
+
+enum class Multiplier : BYTE
+{
+	None		= 0,
+	Highest		= 1,
+	Sum			= 2,
+	Tally 		= 3
+};
+
 enum class SpreadDistribution : BYTE
 {
-	NoDecrease	= 0,
-	Equally		= 1,
-	ByProximity	= 2
+	None		= 0,
+	Constant	= 1,
+	Split		= 2,
+	Distance	= 3
 };
 
 class MouseCursorHotSpotX

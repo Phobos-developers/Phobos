@@ -6,65 +6,19 @@
 #include <TechnoClass.h>
 #include <TechnoTypeClass.h>
 #include <Misc/FlyingStrings.h>
-#include <type_traits>
 
-
-double VeterancyMultiplier(TechnoClass* pTechno, Ability ability)
+bool ColorAnyNot(ColorStruct color, BYTE range)
 {
-	if (pTechno == nullptr)
-		return 1.0;
-	double result = 1.0;
-	double bonus = 1.0;
-	bool veteranBonus = false;
-	bool eliteBonus = false;
-	TechnoTypeClass* pType = pTechno->GetTechnoType();
-
-	switch (ability)
-	{
-	case Ability::Firepower:
-		veteranBonus = pType->VeteranAbilities.FIREPOWER;
-		eliteBonus = pType->EliteAbilities.FIREPOWER;
-		bonus = RulesClass::Instance->VeteranCombat;
-		break;
-	case Ability::ROF:
-		veteranBonus = pType->VeteranAbilities.ROF;
-		eliteBonus = pType->EliteAbilities.ROF;
-		bonus = RulesClass::Instance->VeteranROF;
-		break;
-	case Ability::Stronger:
-		veteranBonus = pType->VeteranAbilities.STRONGER;
-		eliteBonus = pType->EliteAbilities.STRONGER;
-		bonus = RulesClass::Instance->VeteranArmor;
-		break;
-	case Ability::Faster:
-		veteranBonus = pType->VeteranAbilities.FASTER;
-		eliteBonus = pType->EliteAbilities.FASTER;
-		bonus = RulesClass::Instance->VeteranSpeed;
-		break;
-	case Ability::Sight:
-		veteranBonus = pType->VeteranAbilities.SIGHT;
-		eliteBonus = pType->EliteAbilities.SIGHT;
-		bonus = RulesClass::Instance->VeteranSight;
-		break;
-	default:
-		return result;
-	}
-
-	if (pTechno->Veterancy.Veterancy >= 1.0f && veteranBonus)
-		result *= bonus;
-	if (pTechno->Veterancy.Veterancy >= 2.0f && eliteBonus)
-		result *= bonus;
-
-	return result;
+	return color.R != range && color.G != range && color.B != range;
 }
 
-double AttributeValue(TechnoClass* pTechno, TransferTypeResource attr, bool current = true, bool stage = false)
+int ResourceValue(TechnoClass* pTechno, HouseClass* pHouse, TransferTypeResource attr, bool current = true, bool stage = false)
 {
-	if (pTechno == nullptr)
-		return 0.0;
+	if (pTechno == nullptr && !(attr == TransferTypeResource::Money && pHouse != nullptr && current))
+		return 0;
 	auto pType = pTechno->GetTechnoType();
-	double veterancyStage = pType->Cost * RulesClass::Instance->VeteranRatio;
-	double currentStageVeterancy = veterancyStage * (pTechno->Veterancy.Veterancy - (int)pTechno->Veterancy.Veterancy);
+	int veterancyStage = (int)(pType->Cost * RulesClass::Instance->VeteranRatio);
+	int currentStageVeterancy = (int)(veterancyStage * (pTechno->Veterancy.Veterancy - (int)pTechno->Veterancy.Veterancy));
 	int gatling_stage = pTechno->CurrentGattlingStage;
 	int gatling_value = pTechno->GattlingValue;
 	int gatling_current_max = pTechno->Veterancy.IsElite()
@@ -83,30 +37,30 @@ double AttributeValue(TechnoClass* pTechno, TransferTypeResource attr, bool curr
 			if (stage)
 				return currentStageVeterancy;
 			else
-				return veterancyStage * pTechno->Veterancy.Veterancy;
+				return (int)(veterancyStage * pTechno->Veterancy.Veterancy);
 		else
 			if (stage)
 				return veterancyStage;
 			else
-				return veterancyStage * 2.0f;
+				return veterancyStage * 2;
 
 	case TransferTypeResource::Money:
 		if (current)
-			return (double)pType->Cost;
+			return pHouse->Available_Money();
 		else
-			return (double)pTechno->Owner->Available_Money();
+			return pType->Cost;
 
 	case TransferTypeResource::Health:
 		if (current)
-			return (double)pTechno->Health;
+			return pTechno->Health;
 		else
-			return (double)pType->Strength;
+			return pType->Strength;
 
 	case TransferTypeResource::Ammo:
 		if (current)
-			return (double)pTechno->Ammo;
+			return pTechno->Ammo;
 		else
-			return (double)pType->Ammo;
+			return pType->Ammo;
 
 	case TransferTypeResource::GatlingRate:
 		if (current)
@@ -122,7 +76,7 @@ double AttributeValue(TechnoClass* pTechno, TransferTypeResource attr, bool curr
 					? pType->EliteStage[pType->WeaponStages - 1]
 					: pType->WeaponStage[pType->WeaponStages - 1];
 	default:
-		return 0.0;
+		return 0;
 	}
 }
 
@@ -132,23 +86,127 @@ struct TransferUnit
 	HouseClass* House;
 
 	double Value;
-	double Multiplier;
+	double Modifier;
 
-	double CurrentAttributeValue;
-	double TotalAttributeValue;
+	/// @brief Current resource value
+	double Current;
+	/// @brief Total resource value
+	double Total;
 
 	TransferUnit(TechnoClass* pUnit, TransferTypeResource attr): Techno { pUnit }
 		, House { pUnit != nullptr ? pUnit->Owner : nullptr }
 		, Value { 0.0 }
-		, Multiplier { 1.0 }
-		, CurrentAttributeValue { AttributeValue(pUnit, attr) }
-		, TotalAttributeValue { AttributeValue(pUnit, attr, false) }
+		, Modifier { 1.0 }
+		, Current { (double)ResourceValue(pUnit, pUnit != nullptr ? pUnit->Owner : nullptr, attr) }
+		, Total { (double)ResourceValue(pUnit, pUnit != nullptr ? pUnit->Owner : nullptr, attr, false) }
 	{ }
-	TransferUnit(): TransferUnit(nullptr, TransferTypeResource::Experience) { }
+	TransferUnit(): TransferUnit(nullptr, TransferTypeResource::Money) { }
 };
 
 class TransferDetails
 {
+public:
+	TransferUnit Source;
+	TechnoClass* BulletTargetTechno;
+	std::vector<TransferUnit> Targets;
+	TransferTypeClass* Options;
+	WarheadTypeClass* SourceWarhead;
+	CoordStruct DetonationCoords;
+
+	TransferDetails(TechnoClass* pSTechno, HouseClass* pHouse, WarheadTypeClass* pWarhead, TechnoClass* pTTechno, std::vector<TechnoClass*> pTechnoList, TransferTypeClass* pTType, CoordStruct coords)
+	{
+		this->Source.Techno = pSTechno;
+		this->Source.House = pHouse;
+		this->BulletTargetTechno = pTTechno;
+		this->Options = pTType;
+
+		if (this->Options->TargetToSource)
+		{
+			this->Source.Current = (double)ResourceValue(pSTechno, pHouse, pTType->Receive_Resource);
+			this->Source.Total = (double)ResourceValue(pSTechno, pHouse, pTType->Receive_Resource, false);
+			for (auto pTechno : pTechnoList)
+			{
+				this->Targets.push_back(TransferUnit(pTechno, pTType->Send_Resource));
+			}
+		}
+		else
+		{
+			this->Source.Current = (double)ResourceValue(pSTechno, pHouse, pTType->Send_Resource);
+			this->Source.Total = (double)ResourceValue(pSTechno, pHouse, pTType->Send_Resource, false);
+			for (auto pTechno : pTechnoList)
+			{
+				this->Targets.push_back(TransferUnit(pTechno, pTType->Receive_Resource));
+			}
+		}
+
+		this->SourceWarhead = pWarhead;
+		this->DetonationCoords = coords;
+	}
+
+	TransferDetails() = delete;
+
+private:
+	enum LogType
+	{
+		None = 0,
+		Src = 1,
+		Trg = 2,
+		Both = Src | Trg,
+		War = 4,
+		All = Both | War
+	};
+
+	void LogDetails(const wchar_t* step, LogType ltype = LogType::All, TransferUnit* pTUnit = nullptr)
+	{
+		// return;
+		Debug::Log("TransferDetails at %ls\n", step);
+		int i = 0;
+		if (ltype == LogType::All)
+		{
+			Debug::Log("TransferType: %s\n", Options->Name.data());
+		}
+		if (ltype & LogType::War)
+		{
+			Debug::Log("WarheadID: %s\n", SourceWarhead->ID);
+		}
+		if (ltype & LogType::Src)
+		{
+			if (Source.Techno == nullptr)
+			{
+				Debug::Log("HouseID: %s\n", Source.House->Type->ID);
+			}
+			else
+			{
+				Debug::Log("SourceID: %s Value: %.1f x %.3f Current: %.1f/%.1f\n", Source.Techno->GetTechnoType()->ID,
+					Source.Value, Source.Modifier, Source.Current, Source.Total);
+			}
+		}
+		if (ltype & LogType::Trg)
+		{
+			if (pTUnit == nullptr)
+			{
+				if (Targets.size() == 0)
+				{
+					return;
+				}
+				for (auto Target : Targets)
+				{
+					i++;
+					if (Target.Techno != nullptr)
+					{
+						Debug::Log("%d - TargetID: %s Value: %.1f x %.3f Current: %.1f/%.1f\n", i, Target.Techno->GetTechnoType()->ID,
+							Target.Value, Target.Modifier, Target.Current, Target.Total);
+					}
+				}
+			}
+			else
+			{
+				Debug::Log("TargetID: %s Value: %.1f x %.3f Current: %.1f/%.1f\n", pTUnit->Techno->GetTechnoType()->ID,
+					pTUnit->Value, pTUnit->Modifier, pTUnit->Current, pTUnit->Total);
+			}
+		}
+	}
+
 	int AddValue(TransferUnit* pValues)
 	{
 		if (pValues->Value == 0)
@@ -169,10 +227,10 @@ class TransferDetails
 			{
 				return 0;
 			}
-			else if (pValues->CurrentAttributeValue + value >= pValues->TotalAttributeValue)
+			else if (pValues->Current + value >= pValues->Total)
 			{
 				pTechno->Veterancy.SetElite();
-				return (int)(pValues->TotalAttributeValue - pValues->CurrentAttributeValue);
+				return (int)(pValues->Total - pValues->Current);
 			}
 			pTechno->Veterancy.Add(pType->Cost, value);
 			return value;
@@ -201,9 +259,9 @@ class TransferDetails
 			if (!pType->IsGattling || pType->WeaponStages <= 1)
 				return 0;
 			int CurrentStage = pTechno->CurrentGattlingStage;
-			if (pTechno->GattlingValue + value >= pValues->TotalAttributeValue)
+			if (pTechno->GattlingValue + value >= pValues->Total && pType)
 			{
-				pTechno->GattlingValue = (int)pValues->TotalAttributeValue;
+				pTechno->GattlingValue = (int)pValues->Total;
 				pTechno->CurrentGattlingStage = pType->WeaponStages - 1;
 				return pType->WeaponStages - 1 - CurrentStage;
 			}
@@ -251,7 +309,7 @@ class TransferDetails
 		if (pTechno != nullptr)
 			pType = pTechno->GetTechnoType();
 
-		int value = (int)(pValues->Value + 0.5);
+		int value = (int)(-pValues->Value + 0.5);
 		switch (Options->Send_Resource)
 		{
 		case TransferTypeResource::Experience:
@@ -259,12 +317,24 @@ class TransferDetails
 			{
 				return 0;
 			}
-			else if (pValues->CurrentAttributeValue - value <= 0)
+			
+			if (!Options->Decrease_Experience_AllowDemote)
+			{
+				if (pTechno->Veterancy.IsElite() || pTechno->Veterancy.Veterancy == 1.0f)
+				{
+					return 0;
+				}
+				else if (pTechno->Veterancy.IsVeteran() && pValues->Current - value < pValues->Total / 2)
+				{
+					value = (int)(pValues->Total / 2.0 - pValues->Current);
+				}
+			}
+			if ((double)value > pValues->Current)
 			{
 				pTechno->Veterancy.Reset();
-				return (int)(pValues->CurrentAttributeValue);
+				return (int)(pValues->Current);
 			}
-			pTechno->Veterancy.Veterancy = (float)((pValues->CurrentAttributeValue - (double)value) / pValues->TotalAttributeValue);
+			pTechno->Veterancy.Veterancy = (float)((pValues->Current - (double)value) / pValues->Total);
 			return value;
 		case TransferTypeResource::Money:
 			if (pValues->House->Available_Money() < value)
@@ -272,12 +342,11 @@ class TransferDetails
 			pValues->House->TakeMoney(value);
 			return value;
 		case TransferTypeResource::Health:
-			if (pTechno->Health - value <= 0)
+			if (!Options->Decrease_Health_AllowKill && value > pTechno->Health)
 			{
-				pTechno->Health = 1;
-				return pTechno->Health - 1;
+				value = pTechno->Health - 1;
 			}
-			pTechno->Health -= value;
+			pTechno->ReceiveDamage(&value, 0, SourceWarhead, Source.Techno, true, false, Source.House);
 			return value;
 		case TransferTypeResource::Ammo:
 			if (pType->Ammo <= 0)
@@ -331,404 +400,584 @@ class TransferDetails
 		return 0;
 	}
 
-	enum LogType
+	void AssessTargets()
 	{
-		None = 0,
-		Src = 1,
-		Trg = 2,
-		Both = Src | Trg,
-		War = 4,
-		All = Both | War
-	};
+		WarheadTypeClass* TargetWarhead = Options->Target_Warhead;
+		if (TargetWarhead == nullptr)
+		{
+			TargetWarhead = SourceWarhead;
+		}
 
-	void LogDetails(const wchar_t* step, LogType ltype = LogType::All, TransferUnit* pTUnit = nullptr)
-	{
-		// return;
-		Debug::Log("TransferDetails at %ls\n", step);
-		int i = 0;
-		if (ltype == LogType::All)
+		for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
 		{
-			Debug::Log("TransferType: %s\n", Options->Name.data());
-		}
-		if (ltype & LogType::War)
-		{
-			Debug::Log("WarheadID: %s\n", SourceWarhead->ID);
-		}
-		if (ltype & LogType::Src)
-		{
-			if (Source.Techno == nullptr)
+			bool IsHouseAffected = Options->Target_AffectHouses == AffectedHouse::All
+				|| EnumFunctions::CanTargetHouse(Options->Target_AffectHouses, Source.House, Target->House);
+
+			if (!IsHouseAffected || (SourceWarhead->CellSpread > 0
+				&& ((Options->Target_Spread_IgnoreSelf && Target->Techno == Source.Techno)
+				|| (Options->Target_Spread_Distribution == SpreadDistribution::None && Target->Techno != BulletTargetTechno))))
 			{
-				Debug::Log("HouseID: %s\n", Source.House->Type->ID);
-			}
-			else
-			{
-				Debug::Log("SourceID: %s Value: %.1f x %.3f Current: %.1f/%.1f\n", Source.Techno->GetTechnoType()->ID,
-					Source.Value, Source.Multiplier, Source.CurrentAttributeValue, Source.TotalAttributeValue);
-			}
-		}
-		if (ltype & LogType::Trg)
-		{
-			if (pTUnit == nullptr)
-			{
-				if (Targets.size() == 0)
+				Target->Modifier = 0.0f;
+				if (!Options->Target_Spread_CountUnaffected)
 				{
-					return;
+					Targets.erase(Target--);
 				}
-				for (auto Target : Targets)
+				continue;
+			}
+
+			if (Options->Target_ConsiderArmor)
+			{
+				Target->Modifier *= GeneralUtils::GetWarheadVersusArmor(TargetWarhead
+					, Target->Techno->GetTechnoType()->Armor);
+			}
+
+			if (Options->Target_Spread_Distribution == SpreadDistribution::Distance)
+			{
+				Target->Modifier *= 1.0f - (1.0f - SourceWarhead->PercentAtMax)
+					* (DetonationCoords.DistanceFrom(Target->Techno->GetCoords())
+					/ Unsorted::LeptonsPerCell / SourceWarhead->CellSpread);
+			}
+
+			if (!Options->Target_Spread_CountUnaffected && Target->Modifier == 0.0)
+			{
+				Targets.erase(Target--);
+				continue;
+			}
+		}
+	}
+
+	void InitializeValues()
+	{
+		if (Options->TargetToSource)
+		{
+			Source.Value = Options->Receive_Value;
+
+			if (Options->Receive_Value_Type != TechnoValueType::Fixed)
+			{
+				switch (Options->Receive_Value_Type)
 				{
-					i++;
-					if (Target.Techno != nullptr)
+				case TechnoValueType::Current:
+					Source.Value *= Source.Current;
+					break;
+				case TechnoValueType::Missing:
+					if (Options->Receive_Resource == TransferTypeResource::Money)
 					{
-						Debug::Log("%d - TargetID: %s Value: %.1f x %.3f Current: %.1f/%.1f\n", i, Target.Techno->GetTechnoType()->ID,
-							Target.Value, Target.Multiplier, Target.CurrentAttributeValue, Target.TotalAttributeValue);
+						if (Source.Techno)
+							Source.Value *= Source.Techno->GetTechnoType()->Soylent;
+						else
+							Source.Value = 0;
+					}
+					else
+					{
+						Source.Value *= Source.Total - Source.Current;
+					}
+					break;
+				case TechnoValueType::Total:
+					Source.Value *= Source.Total;
+					break;
+				}
+			}
+
+			if (Source.Techno && Source.Techno->Veterancy.Veterancy >= 1.0f)
+			{
+				Source.Value *= Options->Receive_Value_SourceVeterancyMultiplier.Get().X;
+				if (Source.Techno->Veterancy.Veterancy >= 2.0f)
+				{
+					Source.Value *= Options->Receive_Value_SourceVeterancyMultiplier.Get().Y;
+				}
+			}
+
+			for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
+			{
+				Target->Value = Options->Send_Value;
+
+				if (Options->Send_Value_Type != TechnoValueType::Fixed)
+				{
+					switch (Options->Send_Value_Type)
+					{
+					case TechnoValueType::Current:
+						Target->Value *= Target->Current;
+						break;
+					case TechnoValueType::Missing:
+						if (Options->Send_Resource == TransferTypeResource::Money)
+							Target->Value *= Target->Techno->GetTechnoType()->Soylent;
+						else
+							Target->Value *= Target->Total - Target->Current;
+						break;
+					case TechnoValueType::Total:
+						Target->Value *= Target->Total;
+						break;
+					}
+				}
+
+				if (Target->Techno->Veterancy.Veterancy >= 1.0f)
+				{
+					Target->Value *= Options->Send_Value_SourceVeterancyMultiplier.Get().X;
+					if (Target->Techno->Veterancy.Veterancy >= 2.0f)
+					{
+						Target->Value *= Options->Send_Value_SourceVeterancyMultiplier.Get().Y;
+					}
+				}
+
+				if (Options->Target_Spread_Distribution == SpreadDistribution::Split)
+					Target->Value /= (double)Targets.size();
+
+				Target->Value *= Target->Modifier;
+			}
+		}
+		else
+		{
+			Source.Value = Options->Send_Value;
+
+			if (Options->Send_Value_Type != TechnoValueType::Fixed)
+			{
+				switch (Options->Send_Value_Type)
+				{
+				case TechnoValueType::Current:
+					Source.Value *= Source.Current;
+					break;
+				case TechnoValueType::Missing:
+					if (Options->Receive_Resource == TransferTypeResource::Money)
+					{
+						if (Source.Techno)
+							Source.Value *= Source.Techno->GetTechnoType()->Soylent;
+						else
+							Source.Value = 0;
+					}
+					else
+					{
+						Source.Value *= Source.Total - Source.Current;
+					}
+					break;
+				case TechnoValueType::Total:
+					Source.Value *= Source.Total;
+					break;
+				}
+			}
+
+			if (Source.Techno && Source.Techno->Veterancy.Veterancy >= 1.0f)
+			{
+				Source.Value *= Options->Send_Value_SourceVeterancyMultiplier.Get().X;
+				if (Source.Techno->Veterancy.Veterancy >= 2.0f)
+				{
+					Source.Value *= Options->Send_Value_SourceVeterancyMultiplier.Get().Y;
+				}
+			}
+
+			for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
+			{
+				Target->Value = Options->Receive_Value;
+
+				if (Options->Receive_Value_Type != TechnoValueType::Fixed)
+				{
+					switch (Options->Receive_Value_Type)
+					{
+					case TechnoValueType::Current:
+						Target->Value *= Target->Current;
+						break;
+					case TechnoValueType::Missing:
+						if (Options->Receive_Resource == TransferTypeResource::Money)
+							Target->Value *= Target->Techno->GetTechnoType()->Soylent;
+						else
+							Target->Value *= Target->Total - Target->Current;
+						break;
+					case TechnoValueType::Total:
+						Target->Value *= Target->Total;
+						break;
+					}
+				}
+
+				if (Target->Techno->Veterancy.Veterancy >= 1.0f)
+				{
+					Target->Value *= Options->Receive_Value_SourceVeterancyMultiplier.Get().X;
+					if (Target->Techno->Veterancy.Veterancy >= 2.0f)
+					{
+						Target->Value *= Options->Receive_Value_SourceVeterancyMultiplier.Get().Y;
+					}
+				}
+
+				if (Options->Target_Spread_Distribution == SpreadDistribution::Split)
+					Target->Value /= (double)Targets.size();
+
+				Target->Value *= Target->Modifier;
+			}
+		}
+	}
+
+	void FinalizeCalculations()
+	{
+		if (Options->TargetToSource)
+		{
+			double Highest = 0.0;
+			double PositiveSum = 0.0;
+			double NegativeSum = 0.0;
+
+			for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
+			{
+				if (Target->Modifier == 0)
+					continue;
+
+				if (Target->Modifier > 0)
+				{
+					if (Options->Send_Value_FlatLimits.Get().X && Target->Value < Options->Send_Value_FlatLimits.Get().X)
+					{
+						Target->Value = Options->Send_Value_FlatLimits.Get().X;
+					}
+					if (Options->Send_Value_FlatLimits.Get().Y && Target->Value > Options->Send_Value_FlatLimits.Get().Y)
+					{
+						Target->Value = Options->Send_Value_FlatLimits.Get().Y;
+					}
+				}
+				else
+				{
+					if (Options->Send_Value_FlatLimits.Get().Y && Target->Value < -Options->Send_Value_FlatLimits.Get().Y)
+					{
+						Target->Value = -Options->Send_Value_FlatLimits.Get().Y;
+					}
+					if (Options->Send_Value_FlatLimits.Get().X && Target->Value > -Options->Send_Value_FlatLimits.Get().X)
+					{
+						Target->Value = -Options->Send_Value_FlatLimits.Get().X;
+					}
+				}
+
+				if (Options->Send_PreventOverflow && Options->Send_Resource != TransferTypeResource::Money
+					&& Target->Value + Target->Current > Target->Total)
+				{
+					Target->Value = Target->Total - Target->Current;
+				}
+
+				if (Options->Send_PreventUnderflow)
+				{
+					if (Options->Send_Resource == TransferTypeResource::Experience && !Options->Decrease_Experience_AllowDemote)
+					{
+						if (Target->Techno->Veterancy.IsElite() || Target->Techno->Veterancy.Veterancy == 1.0f)
+						{
+							Target->Value = 0;
+						}
+						else if (Target->Techno->Veterancy.IsVeteran() && Target->Current + Target->Value < Target->Total / 2)
+						{
+							Target->Value = Target->Total / 2 - Target->Current;
+						}
+					}
+					else if (Target->Current < -Target->Value)
+					{
+						Target->Value = -Target->Current;
+
+						if (Options->Send_Resource == TransferTypeResource::Health && !Options->Decrease_Health_AllowKill)
+						{
+							Target->Value += 1.0;
+						}
+					}
+				}
+
+				if (Target->Value < 0)
+				{
+					NegativeSum += Target->Value;
+
+					if (Options->Send_Value < 0 && Target->Value < Highest)
+					{
+						Highest = Target->Value;
+					}
+				}
+				else
+				{
+					PositiveSum += Target->Value;
+
+					if (Options->Send_Value > 0 && Target->Value > Highest)
+					{
+						Highest = Target->Value;
 					}
 				}
 			}
-			else
+			
+			switch (Options->Receive_Multiplier)
 			{
-				Debug::Log("TargetID: %s Value: %.1f x %.3f Current: %.1f/%.1f\n", pTUnit->Techno->GetTechnoType()->ID,
-					pTUnit->Value, pTUnit->Multiplier, pTUnit->CurrentAttributeValue, pTUnit->TotalAttributeValue);
+			case Multiplier::Highest:
+				Source.Value *= Highest;
+				break;
+			case Multiplier::Sum:
+				Source.Value *= PositiveSum + NegativeSum;
+				break;
+			case Multiplier::Tally:
+				Source.Value *= (double)Targets.size();
+				break;
+			default:
+				break;
+			}
+
+			if (Options->Receive_Value_FlatLimits.Get().X && Source.Value < Options->Receive_Value_FlatLimits.Get().X)
+			{
+				Source.Value = Options->Receive_Value_FlatLimits.Get().X;
+			}
+			if (Options->Receive_Value_FlatLimits.Get().Y && Source.Value > Options->Receive_Value_FlatLimits.Get().Y)
+			{
+				Source.Value = Options->Receive_Value_FlatLimits.Get().Y;
+			}
+
+			if (Options->Receive_Resource != TransferTypeResource::Money && Options->Receive_ReturnOverflow
+				&& Source.Total - Source.Current < Source.Value && Options->Receive_Multiplier != Multiplier::None
+				&& Options->Receive_Multiplier != Multiplier::Tally)
+			{
+				double Overflow = Source.Value - (Source.Total - Source.Current);
+
+				if (-NegativeSum > PositiveSum)
+				{
+					Overflow /= -NegativeSum;
+					for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
+					{
+						if (Target->Modifier == 0)
+							continue;
+
+						if (Target->Value < 0)
+							Target->Value -= Target->Value * Overflow;
+					}
+				}
+				else
+				{
+					Overflow /= PositiveSum;
+					for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
+					{
+						if (Target->Modifier == 0)
+							continue;
+
+						if (Target->Value > 0)
+							Target->Value -= Target->Value * Overflow;
+					}
+				}
+				
+				Source.Value = Source.Total - Source.Current;
+			}
+		}
+		else
+		{
+			if (Options->Send_Value_FlatLimits.Get().X && Source.Value < Options->Send_Value_FlatLimits.Get().X)
+			{
+				Source.Value = Options->Send_Value_FlatLimits.Get().X;
+			}
+			if (Options->Send_Value_FlatLimits.Get().Y && Source.Value > Options->Send_Value_FlatLimits.Get().Y)
+			{
+				Source.Value = Options->Send_Value_FlatLimits.Get().Y;
+			}
+
+			if (Options->Send_PreventOverflow && Options->Send_Resource != TransferTypeResource::Money
+				&& (Source.Value + Source.Current) > Source.Total)
+			{
+				Source.Value = Source.Total - Source.Current;
+			}
+
+			if (Options->Send_PreventUnderflow)
+			{
+				if (Source.Techno && Options->Send_Resource == TransferTypeResource::Experience && !Options->Decrease_Experience_AllowDemote)
+				{
+					if (Source.Techno->Veterancy.IsElite() || Source.Techno->Veterancy.Veterancy == 1.0f)
+					{
+						Source.Value = 0;
+					}
+					else if (Source.Techno->Veterancy.IsVeteran() && Source.Current + Source.Value < Source.Total / 2)
+					{
+						Source.Value = Source.Total / 2 - Source.Current;
+					}
+				}
+				else if (Source.Current < -Source.Value)
+				{
+					Source.Value = -Source.Current;
+
+					if (Options->Send_Resource == TransferTypeResource::Health && !Options->Decrease_Health_AllowKill)
+					{
+						Source.Value += 1.0;
+					}
+				}
+			}
+
+			double OverflowSum = 0.0;
+			for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
+			{
+				switch (Options->Receive_Multiplier)
+				{
+				case Multiplier::Highest:
+				case Multiplier::Sum:
+					Target->Value *= Source.Value;
+					break;
+				case Multiplier::Tally:
+					Target->Value *= (double)Targets.size();
+					break;
+				default:
+					break;
+				}
+
+				if (Options->Receive_Value_FlatLimits.Get().X && Target->Value < Options->Receive_Value_FlatLimits.Get().X)
+				{
+					Target->Value = Options->Receive_Value_FlatLimits.Get().X;
+				}
+				if (Options->Receive_Value_FlatLimits.Get().Y && Target->Value > Options->Receive_Value_FlatLimits.Get().Y)
+				{
+					Target->Value = Options->Receive_Value_FlatLimits.Get().Y;
+				}
+
+				double Overflow = Target->Value - (Target->Total - Target->Current);
+				if (Options->Receive_Resource != TransferTypeResource::Money && Options->Receive_ReturnOverflow
+					&& Overflow > 0 && Options->Receive_Multiplier != Multiplier::None
+					&& Options->Receive_Multiplier != Multiplier::Tally)
+				{
+					OverflowSum += Overflow / Target->Value * Source.Value / (double)(Targets.size());
+					Target->Value = Target->Total - Target->Current;
+				}
+			}
+
+			Source.Value -= OverflowSum;
+		}
+	}
+
+	void ApplyChanges()
+	{
+		int SourceChange = 0;
+		if (Source.Value < 0)
+			SourceChange = -SubValue(&Source);
+		else if (Source.Value > 0)
+			SourceChange = AddValue(&Source);
+		
+		bool IsReceiveNegativeChanged = ColorAnyNot(Options->Receive_Text_Color_Negative, 0);
+		bool IsSendPositiveChanged = ColorAnyNot(Options->Send_Text_Color_Positive, 0);
+
+		if (Options->TargetToSource)
+		{
+			if (Source.Techno && Options->Receive_Text && SourceChange)
+			{
+				if (SourceChange < 0)
+				{
+					if (IsReceiveNegativeChanged)
+					{
+						FlyingStrings::AddNumberString(SourceChange, Source.House, Options->Receive_Text_Houses,
+							Options->Receive_Text_Color_Negative, Source.Techno->Location, Options->Receive_Text_Offset,
+							Options->Receive_Text_ShowSign, Options->Receive_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
+					}
+					else
+					{
+						FlyingStrings::AddNumberString(SourceChange, Source.House, Options->Receive_Text_Houses,
+							Options->Send_Text_Color, Source.Techno->Location, Options->Receive_Text_Offset,
+							Options->Receive_Text_ShowSign, Options->Receive_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
+					}
+				}
+				else
+				{
+					FlyingStrings::AddNumberString(SourceChange, Source.House, Options->Receive_Text_Houses,
+						Options->Receive_Text_Color, Source.Techno->Location, Options->Receive_Text_Offset,
+						Options->Receive_Text_ShowSign, Options->Receive_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
+				}
+			}
+
+			for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
+			{
+				int TargetChange = 0;
+				if (Target->Value < 0)
+					TargetChange = -SubValue(&(*Target));
+				else if (Target->Value > 0)
+					TargetChange = AddValue(&(*Target));
+
+				if (Options->Send_Text && TargetChange)
+				{
+					if (TargetChange > 0)
+					{
+						if (IsSendPositiveChanged)
+						{
+							FlyingStrings::AddNumberString(TargetChange, Target->House, Options->Send_Text_Houses,
+								Options->Send_Text_Color_Positive, Target->Techno->Location, Options->Send_Text_Offset,
+								Options->Send_Text_ShowSign, Options->Send_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
+						}
+						else
+						{
+							FlyingStrings::AddNumberString(TargetChange, Target->House, Options->Send_Text_Houses,
+								Options->Receive_Text_Color, Target->Techno->Location, Options->Send_Text_Offset,
+								Options->Send_Text_ShowSign, Options->Send_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
+						}
+					}
+					else
+					{
+						FlyingStrings::AddNumberString(TargetChange, Target->House, Options->Send_Text_Houses,
+							Options->Send_Text_Color, Target->Techno->Location, Options->Send_Text_Offset,
+							Options->Send_Text_ShowSign, Options->Send_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
+					}
+				}
+			}
+		}
+		else
+		{
+			if (Source.Techno && Options->Send_Text && SourceChange)
+			{
+				if (SourceChange > 0)
+				{
+					if (IsSendPositiveChanged)
+					{
+						FlyingStrings::AddNumberString(SourceChange, Source.House, Options->Send_Text_Houses,
+							Options->Send_Text_Color_Positive, Source.Techno->Location, Options->Send_Text_Offset,
+							Options->Send_Text_ShowSign, Options->Send_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
+					}
+					else
+					{
+						FlyingStrings::AddNumberString(SourceChange, Source.House, Options->Send_Text_Houses,
+							Options->Receive_Text_Color, Source.Techno->Location, Options->Send_Text_Offset,
+							Options->Send_Text_ShowSign, Options->Send_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
+					}
+				}
+				else
+				{
+					FlyingStrings::AddNumberString(SourceChange, Source.House, Options->Send_Text_Houses,
+						Options->Send_Text_Color, Source.Techno->Location, Options->Send_Text_Offset,
+						Options->Send_Text_ShowSign, Options->Send_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
+				}
+			}
+
+			for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
+			{
+				int TargetChange = 0;
+				if (Target->Value < 0)
+					TargetChange = -SubValue(&(*Target));
+				else if (Target->Value > 0)
+					TargetChange = AddValue(&(*Target));
+
+				if (Options->Receive_Text && TargetChange)
+				{
+					if (TargetChange < 0)
+					{
+						if (IsReceiveNegativeChanged)
+						{
+							FlyingStrings::AddNumberString(TargetChange, Target->House, Options->Receive_Text_Houses,
+								Options->Receive_Text_Color_Negative, Target->Techno->Location, Options->Receive_Text_Offset,
+								Options->Receive_Text_ShowSign, Options->Receive_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
+						}
+						else
+						{
+							FlyingStrings::AddNumberString(TargetChange, Target->House, Options->Receive_Text_Houses,
+								Options->Send_Text_Color, Target->Techno->Location, Options->Receive_Text_Offset,
+								Options->Receive_Text_ShowSign, Options->Receive_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
+						}
+					}
+					else
+					{
+						FlyingStrings::AddNumberString(TargetChange, Target->House, Options->Receive_Text_Houses,
+							Options->Receive_Text_Color, Target->Techno->Location, Options->Receive_Text_Offset,
+							Options->Receive_Text_ShowSign, Options->Receive_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
+					}
+				}
 			}
 		}
 	}
 
 public:
-	TransferUnit Source;
-	std::vector<TransferUnit> Targets;
-	TransferTypeClass* Options;
-	WarheadTypeClass* SourceWarhead;
-	CoordStruct DetonationCoords;
-
-	TransferDetails(TechnoClass* pUnit, HouseClass* pHouse, WarheadTypeClass* pWarhead, std::vector<TechnoClass*> pTechnoList, TransferTypeClass* pTType, CoordStruct coords)
+	void ExecuteTransfer()
 	{
-		this->Source.Techno = pUnit;
-		this->Source.House = pHouse;
-		this->Options = pTType;
-		if (this->Options->TargetToSource)
-		{
-			this->Source.CurrentAttributeValue = AttributeValue(pUnit, pTType->Receive_Resource);
-			this->Source.TotalAttributeValue = AttributeValue(pUnit, pTType->Receive_Resource, false);
-			for (auto pTechno : pTechnoList)
-			{
-				this->Targets.push_back(TransferUnit(pTechno, pTType->Send_Resource));
-			}
-		}
-		else
-		{
-			this->Source.CurrentAttributeValue = AttributeValue(pUnit, pTType->Send_Resource);
-			this->Source.TotalAttributeValue = AttributeValue(pUnit, pTType->Send_Resource, false);
-			for (auto pTechno : pTechnoList)
-			{
-				this->Targets.push_back(TransferUnit(pTechno, pTType->Receive_Resource));
-			}
-		}
-		this->SourceWarhead = pWarhead;
-		this->DetonationCoords = coords;
-
-	}
-	TransferDetails() = delete;
-
-	bool CalculateValues()
-	{
-		// LogDetails(L"CalculationStart");
-		WarheadTypeClass* TargetWarhead = Options->Target_Warhead;
-		if (!Options->Target_ConsiderArmor || TargetWarhead == nullptr)
-			TargetWarhead = SourceWarhead;
-		// LogDetails(L"SourceInside", LogType::Src);
-		if (Options->TargetToSource ? Options->Receive_ConsiderSourceVeterancy : Options->Send_ConsiderSourceVeterancy)
-		{
-			Source.Multiplier *= VeterancyMultiplier(Source.Techno, Ability::Firepower);
-		}
-		// LogDetails(L"SourceVeterancy", LogType::Src);
-		int TargetCount = Targets.size();
-		for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
-		{
-			if (!Options->Target_Spread_CountUnaffected)
-			{
-				// LogDetails(L"TargetConsiderArmor", LogType::Trg, &(*Target));
-				if (Options->Target_ConsiderArmor)
-					Target->Multiplier *= GeneralUtils::GetWarheadVersusArmor(TargetWarhead,
-						Target->Techno->GetTechnoType()->Armor);
-				// LogDetails(L"TargetVersusArmor", LogType::Trg, &(*Target));
-				bool IsHouseAffected = Options->Target_AffectedHouses == AffectedHouse::All || (Source.House
-					&& EnumFunctions::CanTargetHouse(Options->Target_AffectedHouses, Source.House, HouseClass::CurrentPlayer));
-				if ((Options->Target_ConsiderArmor && Target->Multiplier == 0.0) || !IsHouseAffected)
-				{
-					Targets.erase(Target--);
-					continue;
-				}
-				// LogDetails(L"TargetAffected", LogType::None);
-			}
-
-			if (Options->TargetToSource ? Options->Send_ConsiderSourceVeterancy : Options->Receive_ConsiderSourceVeterancy)
-				Target->Multiplier *= VeterancyMultiplier(this->Source.Techno, Ability::Firepower);
-			// LogDetails(L"TargetVeterancy", LogType::Trg, &(*Target));
-
-			if (Options->Target_Spread_Distribution == SpreadDistribution::ByProximity)
-				Target->Multiplier *= 1.0f - (1.0f - SourceWarhead->PercentAtMax)
-					* (DetonationCoords.DistanceFrom(Target->Techno->GetCoords())
-					/ Unsorted::LeptonsPerCell / SourceWarhead->CellSpread);
-			// LogDetails(L"TargetDistribution:ByProximity", LogType::Trg, &(*Target));
-
-			if (Options->TargetToSource)
-			{
-				Target->Value = Options->Send_Value;
-				// LogDetails(L"TargetToSource", LogType::Trg, &(*Target));
-				if (Options->Send_Value_IsPercent)
-					Target->Value *= Options->Send_Value_PercentOfTotal ? Target->TotalAttributeValue : Target->CurrentAttributeValue;
-				// LogDetails(L"TargetPercent", LogType::Trg, &(*Target));
-			}
-			else
-			{
-				Target->Value = Options->Receive_Value;
-				// LogDetails(L"SourceToTarget", LogType::Trg, &(*Target));
-				if (!Options->Receive_Value_ProportionalToSent && Options->Receive_Value_IsPercent)
-					Target->Value *= Options->Receive_Value_PercentOfTotal ? Target->TotalAttributeValue : Target->CurrentAttributeValue;
-				// LogDetails(L"TargetPercent", LogType::Trg, &(*Target));
-			}
-		}
-
-		if (SourceWarhead->CellSpread && !Options->Target_Spread_CountUnaffected)
-			TargetCount = Targets.size();
-		// LogDetails(L"CalculationStartEnd", LogType::Both);
-
-		if (Options->TargetToSource)
-		{
-			// LogDetails(L"TargetToSource", LogType::None);
-
-			double LargestValue = 0;
-			double ValueSum = 0.0;
-			for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
-			{
-				// LogDetails(L"TargetBeforeMultiplier", LogType::Trg, &(*Target));
-				Target->Value *= Target->Multiplier
-					/ (Options->Target_Spread_Distribution == SpreadDistribution::Equally ? TargetCount : 1);
-				// LogDetails(L"TargetAfterMultiplier", LogType::Trg, &(*Target));
-
-				if (Options->Send_Value_FlatMinimum && Target->Multiplier && Target->Value < Options->Send_Value_FlatMinimum)
-					Target->Value = Options->Send_Value_FlatMinimum;
-				// LogDetails(L"TargetFlatMinimum", LogType::Trg, &(*Target));
-				if (Options->Send_Value_FlatMaximum && Target->Value > Options->Send_Value_FlatMaximum)
-					Target->Value = Options->Send_Value_FlatMaximum;
-				// LogDetails(L"TargetFlatMaximum", LogType::Trg, &(*Target));
-
-				if (Options->Send_RequireRealResource && Target->Value > Target->CurrentAttributeValue)
-					Target->Value = Target->CurrentAttributeValue;
-				// LogDetails(L"TargetRealResource", LogType::Trg, &(*Target));
-
-				if (Options->Send_Resource == TransferTypeResource::Experience && !Options->Send_Experience_AllowDemote
-					&& Options->Send_RequireRealResource)
-				{
-					// LogDetails(L"TargetExperienceDemote", LogType::Trg, &(*Target));
-					if (Target->Techno->Veterancy.IsElite())
-					{
-						Target->Value = 0.0;
-						// LogDetails(L"TargetElite", LogType::Trg, &(*Target));
-					}
-					else if (Target->Techno->Veterancy.IsVeteran() && ((Target->CurrentAttributeValue - Target->Value)
-						< (Target->TotalAttributeValue / 2.0f)))
-					{
-						Target->Value = Target->CurrentAttributeValue - Target->TotalAttributeValue / 2.0f;
-						// LogDetails(L"TargetVeteran", LogType::Trg, &(*Target));
-					}
-				}
-
-				if (Target->Value > LargestValue)
-					LargestValue = Target->Value;
-
-				ValueSum += Target->Value;
-			}
-			// LogDetails(L"CalculationMiddleEnd", LogType::Both);
-
-			Source.Value = Options->Receive_Value * Source.Multiplier;
-			// LogDetails(L"SourceReceive", LogType::Src);
-			if (Options->Receive_Value_ProportionalToSent)
-			{
-				// LogDetails(L"SourceProportional", LogType::Src);
-				if (Options->Receive_Value_IsPercent)
-				{
-					if (Options->Receive_Value_PercentOfTotal)
-						Source.Value *= ValueSum;
-					else
-						Source.Value *= LargestValue;
-					// LogDetails(L"SourceIsPercent", LogType::Src);
-				}
-				else
-				{
-					Source.Value *= TargetCount;
-					// LogDetails(L"SourceIsNotPercent", LogType::Src);
-				}
-			}
-			else
-			{
-				// LogDetails(L"SourceNotProportional", LogType::Src);
-				if (Options->Receive_Value_IsPercent)
-				{
-					if (Options->Receive_Value_PercentOfTotal)
-						Source.Value *= Source.TotalAttributeValue;
-					else
-						Source.Value *= Source.CurrentAttributeValue;
-					// LogDetails(L"SourceIsPercent", LogType::Src);
-				}
-			}
-
-			if (Options->Receive_Value_FlatMinimum && Source.Value < Options->Receive_Value_FlatMinimum)
-				Source.Value = Options->Receive_Value_FlatMinimum;
-			// LogDetails(L"SourceFlatMinimum", LogType::Src);
-			if (Options->Receive_Value_FlatMaximum && Source.Value > Options->Receive_Value_FlatMaximum)
-				Source.Value = Options->Receive_Value_FlatMaximum;
-			// LogDetails(L"SourceFlatMaximum", LogType::Src);
-
-			if (Options->Receive_RefuseOverflow && Options->Receive_Resource != TransferTypeResource::Money
-				&& Source.Value + Source.CurrentAttributeValue > Source.TotalAttributeValue)
-			{
-				double Overflow = Source.Value + Source.CurrentAttributeValue - Source.TotalAttributeValue;
-				for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
-				{
-					Target->Value -= Target->Value / ValueSum * Overflow;
-				}
-			}
-		}
-		else
-		{
-			// LogDetails(L"SourceToTarget", LogType::None);
-			Source.Value = Options->Send_Value;
-			// LogDetails(L"SourceSend", LogType::Src);
-			if (Options->Send_Value_IsPercent)
-				Source.Value *= Options->Send_Value_PercentOfTotal ? Source.TotalAttributeValue : Source.CurrentAttributeValue;
-			// LogDetails(L"SourcePercent", LogType::Src);
-
-			Source.Value *= Source.Multiplier;
-			// LogDetails(L"SourceMultiplier", LogType::Src);
-
-			if (Options->Send_Value_FlatMinimum && Source.Multiplier && Source.Value < Options->Send_Value_FlatMinimum)
-				Source.Value = Options->Send_Value_FlatMinimum;
-			// LogDetails(L"SourceFlatMinimum", LogType::Src);
-			if (Options->Send_Value_FlatMaximum && Source.Value > Options->Send_Value_FlatMaximum)
-				Source.Value = Options->Send_Value_FlatMaximum;
-			// LogDetails(L"SourceFlatMaximum", LogType::Src);
-
-			if (Options->Send_RequireRealResource && Source.Value > Source.CurrentAttributeValue)
-				Source.Value = Source.CurrentAttributeValue;
-			// LogDetails(L"SourceRealResource", LogType::Src);
-
-			if (!Options->Receive_RefuseOverflow && Source.Value > Source.CurrentAttributeValue)
-				Source.Value = Source.CurrentAttributeValue;
-			// LogDetails(L"SourceRealResource", LogType::Src);
-
-			if (Options->Send_Resource == TransferTypeResource::Experience && !Options->Send_Experience_AllowDemote
-				&& Options->Send_RequireRealResource)
-			{
-				// LogDetails(L"SourceExperienceDemote", LogType::Src);
-				if (Source.Techno != nullptr)
-				{
-					if (Source.Techno->Veterancy.IsElite())
-					{
-						Source.Value = 0.0;
-						// LogDetails(L"SourceElite", LogType::Src);
-					}
-					else if (Source.Techno->Veterancy.IsVeteran() && ((Source.CurrentAttributeValue - Source.Value)
-						< (Source.TotalAttributeValue / 2.0f)))
-					{
-						Source.Value = Source.CurrentAttributeValue - Source.TotalAttributeValue / 2.0f;
-						// LogDetails(L"SourceVeteran", LogType::Src);
-					}
-				}
-			}
-
-			double OverflowSum = 0;
-			for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
-			{
-				// LogDetails(L"TargetStart", LogType::Trg, &(*Target));
-				Target->Value *= Target->Multiplier
-					/ (Options->Target_Spread_Distribution == SpreadDistribution::Equally ? TargetCount : 1);
-				// LogDetails(L"TargetMultiplier", LogType::Trg, &(*Target));
-				if (Options->Receive_Value_ProportionalToSent)
-				{
-					// LogDetails(L"TargetProportional", LogType::Trg, &(*Target));
-					if (Options->Receive_Value_IsPercent)
-					{
-						// LogDetails(L"TargetPercent", LogType::Trg, &(*Target));
-						if (Options->Receive_Value_PercentOfTotal)
-							Target->Value *= Source.Value;
-						else
-							Target->Value *= Source.Value / TargetCount;
-						// LogDetails(L"TargetPercentTotal", LogType::Trg, &(*Target));
-					}
-				}
-
-				if (Options->Receive_Value_FlatMinimum && Target->Value < Options->Receive_Value_FlatMinimum)
-					Target->Value = Options->Receive_Value_FlatMinimum;
-				// LogDetails(L"TargetFlatMinimum", LogType::Trg, &(*Target));
-				if (Options->Receive_Value_FlatMaximum && Target->Value > Options->Receive_Value_FlatMaximum)
-					Target->Value = Options->Receive_Value_FlatMaximum;
-				// LogDetails(L"TargetFlatMaximum", LogType::Trg, &(*Target));
-
-				if (Options->Receive_RefuseOverflow && Options->Receive_Resource != TransferTypeResource::Money
-					&& Target->Value + Target->CurrentAttributeValue > Target->TotalAttributeValue)
-				{
-					OverflowSum += (Target->Value + Target->CurrentAttributeValue - Target->TotalAttributeValue)
-						/ Target->Value * Source.Value / TargetCount;
-				}
-			}
-			Source.Value -= OverflowSum;
-		}
-		// LogDetails(L"CalculationEnd", LogType::Both);
-		return true;
-	}
-
-	bool ExecuteTransfer()
-	{
-		if (Options->TargetToSource)
-		{
-			int val = AddValue(&Source);
-			if (val)
-				Debug::Log("SourceID: %s Value: +%d\n", Source.Techno->GetTechnoType()->ID, val);
-			if (Options->Receive_Text && val)
-				FlyingStrings::AddNumberString(val, Source.House, Options->Receive_Text_Houses,
-					Options->Receive_Text_Color, Source.Techno->Location, Options->Receive_Text_Offset,
-					Options->Receive_Text_ShowSign, Options->Receive_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
-			for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
-			{
-				val = SubValue(&(*Target));
-				if (val)
-					Debug::Log("TargetID: %s Value: -%d\n", Target->Techno->GetTechnoType()->ID, val);
-				if (Options->Send_Text && val)
-					FlyingStrings::AddNumberString(-val, Target->House, Options->Send_Text_Houses,
-						Options->Send_Text_Color, Target->Techno->Location, Options->Send_Text_Offset,
-						Options->Send_Text_ShowSign, Options->Send_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
-			}
-		}
-		else
-		{
-			int val = SubValue(&Source);
-			if (Options->Send_Text && val)
-				FlyingStrings::AddNumberString(-val, Source.House, Options->Send_Text_Houses,
-					Options->Send_Text_Color, Source.Techno->Location, Options->Send_Text_Offset,
-					Options->Send_Text_ShowSign, Options->Send_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
-			if (val)
-				Debug::Log("SourceID: %s Value: -%d\n", Source.Techno->GetTechnoType()->ID, val);
-			for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
-			{
-				val = AddValue(&(*Target));
-				if (val)
-					Debug::Log("TargetID: %s Value: +%d\n", Target->Techno->GetTechnoType()->ID, val);
-				if (Options->Receive_Text && val)
-					FlyingStrings::AddNumberString(val, Target->House, Options->Receive_Text_Houses,
-						Options->Receive_Text_Color, Target->Techno->Location, Options->Receive_Text_Offset,
-						Options->Receive_Text_ShowSign, Options->Receive_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
-			}
-		}
-		return true;
+		AssessTargets();
+		InitializeValues();
+		FinalizeCalculations();
+		ApplyChanges();
 	}
 };
 
-void WarheadTypeExt::ExtData::TransferWithGroup(TechnoClass* pSourceTechno, HouseClass* pSourceHouse, std::vector<TechnoClass*> pTargets, CoordStruct coords)
+void WarheadTypeExt::ExtData::TransferWithGroup(TechnoClass* pSourceTechno, HouseClass* pSourceHouse, TechnoClass* pTargetTechno, std::vector<TechnoClass*> pTargets, CoordStruct coords)
 {
 	for (auto transferType : this->Transfer_Types)
 	{
-		TransferDetails transfer(pSourceTechno, pSourceHouse, this->OwnerObject(), pTargets, transferType, coords);
-		transfer.CalculateValues();
+		TransferDetails transfer(pSourceTechno, pSourceHouse, this->OwnerObject(), pTargetTechno, pTargets, transferType, coords);
 		transfer.ExecuteTransfer();
 	}
 }
@@ -738,8 +987,7 @@ void WarheadTypeExt::ExtData::TransferWithUnit(TechnoClass* pSourceTechno, House
 	std::vector<TechnoClass*> Target = { pTargetTechno };
 	for (auto transferType : this->Transfer_Types)
 	{
-		TransferDetails transfer(pSourceTechno, pSourceHouse, this->OwnerObject(), Target, transferType, coords);
-		transfer.CalculateValues();
+		TransferDetails transfer(pSourceTechno, pSourceHouse, this->OwnerObject(), pTargetTechno, Target, transferType, coords);
 		transfer.ExecuteTransfer();
 	}
 }

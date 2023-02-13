@@ -909,23 +909,87 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<TechnoValueType>(TechnoValueType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = TechnoValueType::Fixed;
+			auto str = parser.value();
+			if (_strcmpi(str, "current") == 0 || _strcmpi(str, "c%") == 0)
+			{
+				parsed = TechnoValueType::Current;
+			}
+			else if (_strcmpi(str, "missing") == 0 || _strcmpi(str, "m%") == 0)
+			{
+				parsed = TechnoValueType::Missing;
+			}
+			else if (_strcmpi(str, "total") == 0 || _strcmpi(str, "t%") == 0)
+			{
+				parsed = TechnoValueType::Total;
+			}
+			else if (_strcmpi(str, "fixed") != 0)
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "TechnoValueType can be either 'fixed', 'current', 'missing' or 'total'");
+				return false;
+			}
+			value = parsed;
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<Multiplier>(Multiplier& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = Multiplier::None;
+			auto str = parser.value();
+			if (_strcmpi(str, "highest") == 0)
+			{
+				parsed = Multiplier::Highest;
+			}
+			else if (_strcmpi(str, "sum") == 0)
+			{
+				parsed = Multiplier::Sum;
+			}
+			else if (_strcmpi(str, "tally") == 0)
+			{
+				parsed = Multiplier::Tally;
+			}
+			else if (_strcmpi(str, "none") != 0)
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Multiplier can be either 'none', 'highest', 'sum' or 'tally'");
+				return false;
+			}
+			value = parsed;
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<SpreadDistribution>(SpreadDistribution& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
-			auto parsed = SpreadDistribution::NoDecrease;
+			auto parsed = SpreadDistribution::None;
 			auto str = parser.value();
-			if (_strcmpi(str, "equally") == 0)
+			if (_strcmpi(str, "constant") == 0)
 			{
-				parsed = SpreadDistribution::Equally;
+				parsed = SpreadDistribution::Constant;
 			}
-			else if (_strcmpi(str, "byproximity") == 0)
+			else if (_strcmpi(str, "split") == 0)
 			{
-				parsed = SpreadDistribution::ByProximity;
+				parsed = SpreadDistribution::Split;
 			}
-			else if (_strcmpi(str, "nodecrease") != 0)
+			else if (_strcmpi(str, "distance") == 0)
 			{
-				Debug::INIParseFailed(pSection, pKey, parser.value(), "SpreadDistribution can be either 'nodecrease', 'equally' or 'byproximity'");
+				parsed = SpreadDistribution::Distance;
+			}
+			else if (_strcmpi(str, "none") != 0)
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Spread.Distribution can be either 'none', 'constant', 'split' or 'distance'");
 				return false;
 			}
 			value = parsed;

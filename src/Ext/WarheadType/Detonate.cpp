@@ -115,7 +115,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		std::vector<TechnoClass*> SpreadTargets = Helpers::Alex::getCellSpreadItems(coords, cellSpread, true);
 		for (auto pTarget : SpreadTargets)
 			this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
-		TransferWithGroup(pOwner, pHouse, SpreadTargets, coords);
+		auto pRealTarget = pBullet ? abstract_cast<TechnoClass*>(pBullet->Target) : nullptr;
+		TransferWithGroup(pOwner, pHouse, pRealTarget, SpreadTargets, coords);
 	}
 	else if (pBullet && isCellSpreadWarhead)
 	{
