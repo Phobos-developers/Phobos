@@ -26,8 +26,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 #### From pre-0.3 devbuilds
 
 - `Trajectory.Speed` is now defined on projectile instead of weapon.
-- `Gravity=0` is not supportint burstDelay = pWeaponExt->GetBurstDelay(pThis->CurrentBurstIndex);
-ed anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
+- `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 - Automatic self-destruction logic logic has been reimplemented, `Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been remade/renamed and require adjustments to function.
 - `DetachedFromOwner` on weapons is deprecated. This has been replaced by `AllowDamageOnSelf` on warheads.
 - Timed jump script actions now take the time measured in ingame seconds instead of frames. Divide your value by 15 to accomodate to this change.
