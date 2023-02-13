@@ -5,8 +5,9 @@ class TechnoClass;
 class TechnoTypeClass;
 class FootClass;
 
-struct AresData
+class AresData
 {
+private:
 	enum FunctionIndices
 	{
 		ConvertTypeToID = 0,
@@ -20,6 +21,9 @@ struct AresData
 		Ares30p,
 	};
 
+	static void GetGameModulesBaseAddresses();
+
+public:
 	static HMODULE AresDllHmodule;
 	static uintptr_t AresBaseAddress;
 	static uintptr_t PhobosBaseAddress;

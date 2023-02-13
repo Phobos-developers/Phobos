@@ -17,10 +17,14 @@ int AresData::AresVersionId = AresData::Version::Unknown;
 bool AresData::CanUseAres = false;
 DWORD AresData::AresFunctionOffsetsFinal[AresData::AresFunctionCount];
 
-uintptr_t GetModuleBaseAddress(const char* modName)
+#ifndef PHOBOS_DLL
+#define PHOBOS_DLL "Phobos.dll"
+#endif
+
+void AresData::GetGameModulesBaseAddresses()
 {
 	HANDLE hCurrentProcess = GetCurrentProcess();
-	uintptr_t modBaseAddr = 0;
+
 	HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, GetProcessId(hCurrentProcess));
 	if (hSnap != INVALID_HANDLE_VALUE)
 	{
@@ -30,37 +34,30 @@ uintptr_t GetModuleBaseAddress(const char* modName)
 		{
 			do
 			{
-				if (!_strcmpi(modEntry.szModule, modName))
+				Debug::LogDeferred("Module %s base address : 0x%p.\n", modEntry.szModule, modEntry.modBaseAddr);
+				if (!_strcmpi(modEntry.szModule, "Ares.dll"))
 				{
-					modBaseAddr = (uintptr_t)modEntry.modBaseAddr;
-					break;
+					AresData::AresBaseAddress = (uintptr_t)modEntry.modBaseAddr;
+				}
+				else if(!_strcmpi(modEntry.szModule, PHOBOS_DLL))
+				{
+					AresData::PhobosBaseAddress = (uintptr_t)modEntry.modBaseAddr;
 				}
 			} while (Module32Next(hSnap, &modEntry));
 		}
 	}
 	CloseHandle(hSnap);
-
-	return modBaseAddr;
 }
 
 void AresData::Init()
 {
-	constexpr const char* ARES_DLL_S = "Ares.dll";
-	AresBaseAddress = GetModuleBaseAddress(ARES_DLL_S);
-	constexpr const char* PHOBOS_DLL_S = "Phobos.dll";
-	PhobosBaseAddress = GetModuleBaseAddress(PHOBOS_DLL_S);
-	Debug::LogDeferred("[Phobos] Phobos base address: 0x%X.\n", PhobosBaseAddress);
+	AresData::GetGameModulesBaseAddresses();
 
 	if (!AresBaseAddress)
 	{
 		Debug::LogDeferred("[Phobos] Failed to detect Ares. Disabling integration.\n");
 		return;
 	}
-	else
-	{
-		Debug::LogDeferred("[Phobos] Ares base address: 0x%X.\n", AresBaseAddress);
-	}
-
 	// find offset of PE header
 	const int PEHeaderOffset = *(DWORD*)(AresBaseAddress + 0x3c);
 	// find absolute address of PE header
