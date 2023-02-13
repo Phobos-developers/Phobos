@@ -14,6 +14,9 @@ This page describes all AI scripting and mapping related additions and changes i
 [Country House]
 RepairBaseNodes=no,no,no ; 3 booleans indicating whether AI repair basenodes in Easy/ Normal/ Difficult game diffculty.
 ```
+- Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
+  - `InitialPayload` logic from Ares is not supported yet.
+- If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
 
 ## Script Actions
 
@@ -452,6 +455,7 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 
 ### `505` Fire Super Weapon at specified location
 
+- **Use with caution**
 - Launch a Super Weapon from [SuperWeaponTypes] list at a specified location.
 - `HouseIndex` can take various values:
 
@@ -475,6 +479,7 @@ ID=ActionCount,[Action1],505,0,0,[SuperWeaponTypesIndex],[HouseIndex],[Coordinat
 
 ### `506` Fire Super Weapon at specified Waypoint
 
+- **Use with caution**
 - Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint.
 
 In `mycampaign.map`:
