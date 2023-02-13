@@ -108,21 +108,21 @@ void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode = -1)
 
 	switch (mode)
 	{
-	case ForceFalse:
-		pHouseExt->ForceOnlyTargetHouseEnemy = false;
-		break;
+		case ForceFalse:
+			pHouseExt->ForceOnlyTargetHouseEnemy = false;
+			break;
 
-	case ForceTrue:
-		pHouseExt->ForceOnlyTargetHouseEnemy = true;
-		break;
+		case ForceTrue:
+			pHouseExt->ForceOnlyTargetHouseEnemy = true;
+			break;
 
-	case ForceRandom:
-		pHouseExt->ForceOnlyTargetHouseEnemy = (bool)ScenarioClass::Instance->Random.RandomRanged(0, 1);;
-		break;
+		case ForceRandom:
+			pHouseExt->ForceOnlyTargetHouseEnemy = (bool)ScenarioClass::Instance->Random.RandomRanged(0, 1);;
+			break;
 
-	default:
-		pHouseExt->ForceOnlyTargetHouseEnemy = false;
-		break;
+		default:
+			pHouseExt->ForceOnlyTargetHouseEnemy = false;
+			break;
 	}
 }
 
