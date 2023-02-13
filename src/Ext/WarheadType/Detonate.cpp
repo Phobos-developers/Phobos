@@ -315,7 +315,7 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 	}
 	else
 	{
-		for (auto const& [pBullet,pExt] : BulletExt::ExtMap)
+		for (auto const& [pBullet, pExt] : BulletExt::ExtMap)
 		{
 			auto const pTypeExt = pExt->TypeExtData;
 

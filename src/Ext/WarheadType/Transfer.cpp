@@ -162,19 +162,13 @@ private:
 		Debug::Log("TransferDetails at %ls\n", step);
 		int i = 0;
 		if (ltype == LogType::All)
-		{
 			Debug::Log("TransferType: %s\n", Options->Name.data());
-		}
 		if (ltype & LogType::War)
-		{
 			Debug::Log("WarheadID: %s\n", SourceWarhead->ID);
-		}
 		if (ltype & LogType::Src)
 		{
 			if (Source.Techno == nullptr)
-			{
 				Debug::Log("HouseID: %s\n", Source.House->Type->ID);
-			}
 			else
 			{
 				Debug::Log("SourceID: %s Value: %.1f x %.3f Current: %.1f/%.1f\n", Source.Techno->GetTechnoType()->ID,
@@ -186,9 +180,7 @@ private:
 			if (pTUnit == nullptr)
 			{
 				if (Targets.size() == 0)
-				{
 					return;
-				}
 				for (auto Target : Targets)
 				{
 					i++;
@@ -224,9 +216,7 @@ private:
 		{
 		case TransferTypeResource::Experience:
 			if (pTechno->Veterancy.IsElite() || !pType->Trainable)
-			{
 				return 0;
-			}
 			else if (pValues->Current + value >= pValues->Total)
 			{
 				pTechno->Veterancy.SetElite();
@@ -314,20 +304,14 @@ private:
 		{
 		case TransferTypeResource::Experience:
 			if (pTechno->Veterancy.Veterancy <= 0.0f || !pType->Trainable)
-			{
 				return 0;
-			}
-			
+
 			if (!Options->Decrease_Experience_AllowDemote)
 			{
 				if (pTechno->Veterancy.IsElite() || pTechno->Veterancy.Veterancy == 1.0f)
-				{
 					return 0;
-				}
 				else if (pTechno->Veterancy.IsVeteran() && pValues->Current - value < pValues->Total / 2)
-				{
 					value = (int)(pValues->Total / 2.0 - pValues->Current);
-				}
 			}
 			if ((double)value > pValues->Current)
 			{
@@ -343,9 +327,7 @@ private:
 			return value;
 		case TransferTypeResource::Health:
 			if (!Options->Decrease_Health_AllowKill && value > pTechno->Health)
-			{
 				value = pTechno->Health - 1;
-			}
 			pTechno->ReceiveDamage(&value, 0, SourceWarhead, Source.Techno, true, false, Source.House);
 			return value;
 		case TransferTypeResource::Ammo:
@@ -404,9 +386,7 @@ private:
 	{
 		WarheadTypeClass* TargetWarhead = Options->Target_Warhead;
 		if (TargetWarhead == nullptr)
-		{
 			TargetWarhead = SourceWarhead;
-		}
 
 		for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
 		{
@@ -419,9 +399,7 @@ private:
 			{
 				Target->Modifier = 0.0f;
 				if (!Options->Target_Spread_CountUnaffected)
-				{
 					Targets.erase(Target--);
-				}
 				continue;
 			}
 
@@ -468,9 +446,7 @@ private:
 							Source.Value = 0;
 					}
 					else
-					{
 						Source.Value *= Source.Total - Source.Current;
-					}
 					break;
 				case TechnoValueType::Total:
 					Source.Value *= Source.Total;
@@ -482,9 +458,7 @@ private:
 			{
 				Source.Value *= Options->Receive_Value_SourceVeterancyMultiplier.Get().X;
 				if (Source.Techno->Veterancy.Veterancy >= 2.0f)
-				{
 					Source.Value *= Options->Receive_Value_SourceVeterancyMultiplier.Get().Y;
-				}
 			}
 
 			for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
@@ -514,9 +488,7 @@ private:
 				{
 					Target->Value *= Options->Send_Value_SourceVeterancyMultiplier.Get().X;
 					if (Target->Techno->Veterancy.Veterancy >= 2.0f)
-					{
 						Target->Value *= Options->Send_Value_SourceVeterancyMultiplier.Get().Y;
-					}
 				}
 
 				if (Options->Target_Spread_Distribution == SpreadDistribution::Split)
@@ -545,9 +517,7 @@ private:
 							Source.Value = 0;
 					}
 					else
-					{
 						Source.Value *= Source.Total - Source.Current;
-					}
 					break;
 				case TechnoValueType::Total:
 					Source.Value *= Source.Total;
@@ -559,9 +529,7 @@ private:
 			{
 				Source.Value *= Options->Send_Value_SourceVeterancyMultiplier.Get().X;
 				if (Source.Techno->Veterancy.Veterancy >= 2.0f)
-				{
 					Source.Value *= Options->Send_Value_SourceVeterancyMultiplier.Get().Y;
-				}
 			}
 
 			for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
@@ -591,9 +559,7 @@ private:
 				{
 					Target->Value *= Options->Receive_Value_SourceVeterancyMultiplier.Get().X;
 					if (Target->Techno->Veterancy.Veterancy >= 2.0f)
-					{
 						Target->Value *= Options->Receive_Value_SourceVeterancyMultiplier.Get().Y;
-					}
 				}
 
 				if (Options->Target_Spread_Distribution == SpreadDistribution::Split)
@@ -620,24 +586,16 @@ private:
 				if (Target->Modifier > 0)
 				{
 					if (Options->Send_Value_FlatLimits.Get().X && Target->Value < Options->Send_Value_FlatLimits.Get().X)
-					{
 						Target->Value = Options->Send_Value_FlatLimits.Get().X;
-					}
 					if (Options->Send_Value_FlatLimits.Get().Y && Target->Value > Options->Send_Value_FlatLimits.Get().Y)
-					{
 						Target->Value = Options->Send_Value_FlatLimits.Get().Y;
-					}
 				}
 				else
 				{
 					if (Options->Send_Value_FlatLimits.Get().Y && Target->Value < -Options->Send_Value_FlatLimits.Get().Y)
-					{
 						Target->Value = -Options->Send_Value_FlatLimits.Get().Y;
-					}
 					if (Options->Send_Value_FlatLimits.Get().X && Target->Value > -Options->Send_Value_FlatLimits.Get().X)
-					{
 						Target->Value = -Options->Send_Value_FlatLimits.Get().X;
-					}
 				}
 
 				if (Options->Send_PreventOverflow && Options->Send_Resource != TransferTypeResource::Money
@@ -651,22 +609,16 @@ private:
 					if (Options->Send_Resource == TransferTypeResource::Experience && !Options->Decrease_Experience_AllowDemote)
 					{
 						if (Target->Techno->Veterancy.IsElite() || Target->Techno->Veterancy.Veterancy == 1.0f)
-						{
 							Target->Value = 0;
-						}
 						else if (Target->Techno->Veterancy.IsVeteran() && Target->Current + Target->Value < Target->Total / 2)
-						{
 							Target->Value = Target->Total / 2 - Target->Current;
-						}
 					}
 					else if (Target->Current < -Target->Value)
 					{
 						Target->Value = -Target->Current;
 
 						if (Options->Send_Resource == TransferTypeResource::Health && !Options->Decrease_Health_AllowKill)
-						{
 							Target->Value += 1.0;
-						}
 					}
 				}
 
@@ -675,21 +627,17 @@ private:
 					NegativeSum += Target->Value;
 
 					if (Options->Send_Value < 0 && Target->Value < Highest)
-					{
 						Highest = Target->Value;
-					}
 				}
 				else
 				{
 					PositiveSum += Target->Value;
 
 					if (Options->Send_Value > 0 && Target->Value > Highest)
-					{
 						Highest = Target->Value;
-					}
 				}
 			}
-			
+
 			switch (Options->Receive_Multiplier)
 			{
 			case Multiplier::Highest:
@@ -706,13 +654,9 @@ private:
 			}
 
 			if (Options->Receive_Value_FlatLimits.Get().X && Source.Value < Options->Receive_Value_FlatLimits.Get().X)
-			{
 				Source.Value = Options->Receive_Value_FlatLimits.Get().X;
-			}
 			if (Options->Receive_Value_FlatLimits.Get().Y && Source.Value > Options->Receive_Value_FlatLimits.Get().Y)
-			{
 				Source.Value = Options->Receive_Value_FlatLimits.Get().Y;
-			}
 
 			if (Options->Receive_Resource != TransferTypeResource::Money && Options->Receive_ReturnOverflow
 				&& Source.Total - Source.Current < Source.Value && Options->Receive_Multiplier != Multiplier::None
@@ -744,20 +688,16 @@ private:
 							Target->Value -= Target->Value * Overflow;
 					}
 				}
-				
+
 				Source.Value = Source.Total - Source.Current;
 			}
 		}
 		else
 		{
 			if (Options->Send_Value_FlatLimits.Get().X && Source.Value < Options->Send_Value_FlatLimits.Get().X)
-			{
 				Source.Value = Options->Send_Value_FlatLimits.Get().X;
-			}
 			if (Options->Send_Value_FlatLimits.Get().Y && Source.Value > Options->Send_Value_FlatLimits.Get().Y)
-			{
 				Source.Value = Options->Send_Value_FlatLimits.Get().Y;
-			}
 
 			if (Options->Send_PreventOverflow && Options->Send_Resource != TransferTypeResource::Money
 				&& (Source.Value + Source.Current) > Source.Total)
@@ -770,22 +710,16 @@ private:
 				if (Source.Techno && Options->Send_Resource == TransferTypeResource::Experience && !Options->Decrease_Experience_AllowDemote)
 				{
 					if (Source.Techno->Veterancy.IsElite() || Source.Techno->Veterancy.Veterancy == 1.0f)
-					{
 						Source.Value = 0;
-					}
 					else if (Source.Techno->Veterancy.IsVeteran() && Source.Current + Source.Value < Source.Total / 2)
-					{
 						Source.Value = Source.Total / 2 - Source.Current;
-					}
 				}
 				else if (Source.Current < -Source.Value)
 				{
 					Source.Value = -Source.Current;
 
 					if (Options->Send_Resource == TransferTypeResource::Health && !Options->Decrease_Health_AllowKill)
-					{
 						Source.Value += 1.0;
-					}
 				}
 			}
 
@@ -806,13 +740,9 @@ private:
 				}
 
 				if (Options->Receive_Value_FlatLimits.Get().X && Target->Value < Options->Receive_Value_FlatLimits.Get().X)
-				{
 					Target->Value = Options->Receive_Value_FlatLimits.Get().X;
-				}
 				if (Options->Receive_Value_FlatLimits.Get().Y && Target->Value > Options->Receive_Value_FlatLimits.Get().Y)
-				{
 					Target->Value = Options->Receive_Value_FlatLimits.Get().Y;
-				}
 
 				double Overflow = Target->Value - (Target->Total - Target->Current);
 				if (Options->Receive_Resource != TransferTypeResource::Money && Options->Receive_ReturnOverflow
@@ -835,7 +765,7 @@ private:
 			SourceChange = -SubValue(&Source);
 		else if (Source.Value > 0)
 			SourceChange = AddValue(&Source);
-		
+
 		bool IsReceiveNegativeChanged = ColorAnyNot(Options->Receive_Text_Color_Negative, 0);
 		bool IsSendPositiveChanged = ColorAnyNot(Options->Send_Text_Color_Positive, 0);
 
