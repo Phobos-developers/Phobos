@@ -3144,7 +3144,6 @@ void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam, int newScriptLine = -1)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3153,7 +3152,6 @@ void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam, int newScriptLine = -1)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3193,7 +3191,6 @@ void ScriptExt::ConditionalJumpIfFalse(TeamClass* pTeam, int newScriptLine = -1)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3202,7 +3199,6 @@ void ScriptExt::ConditionalJumpIfFalse(TeamClass* pTeam, int newScriptLine = -1)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3241,7 +3237,6 @@ void ScriptExt::ConditionalJump_KillEvaluation(TeamClass* pTeam)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3250,7 +3245,6 @@ void ScriptExt::ConditionalJump_KillEvaluation(TeamClass* pTeam)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3276,7 +3270,6 @@ void ScriptExt::ConditionalJump_ManageKillsCounter(TeamClass* pTeam, int enable 
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3285,7 +3278,6 @@ void ScriptExt::ConditionalJump_ManageKillsCounter(TeamClass* pTeam, int enable 
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3317,7 +3309,6 @@ void ScriptExt::ConditionalJump_SetIndex(TeamClass* pTeam, int index = -1000000)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3326,7 +3317,6 @@ void ScriptExt::ConditionalJump_SetIndex(TeamClass* pTeam, int index = -1000000)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3353,7 +3343,6 @@ void ScriptExt::ConditionalJump_SetComparatorValue(TeamClass* pTeam, int value =
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3362,7 +3351,6 @@ void ScriptExt::ConditionalJump_SetComparatorValue(TeamClass* pTeam, int value =
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3390,7 +3378,6 @@ void ScriptExt::ConditionalJump_SetComparatorMode(TeamClass* pTeam, int value = 
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3399,7 +3386,6 @@ void ScriptExt::ConditionalJump_SetComparatorMode(TeamClass* pTeam, int value = 
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3426,7 +3412,6 @@ void ScriptExt::ConditionalJump_SetCounter(TeamClass* pTeam, int value = -100000
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3435,7 +3420,6 @@ void ScriptExt::ConditionalJump_SetCounter(TeamClass* pTeam, int value = -100000
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3458,7 +3442,6 @@ void ScriptExt::ConditionalJump_ResetVariables(TeamClass* pTeam)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3467,7 +3450,6 @@ void ScriptExt::ConditionalJump_ResetVariables(TeamClass* pTeam)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3492,7 +3474,6 @@ void ScriptExt::ConditionalJump_ManageResetIfJump(TeamClass* pTeam, int enable =
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3501,7 +3482,6 @@ void ScriptExt::ConditionalJump_ManageResetIfJump(TeamClass* pTeam, int enable =
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3527,7 +3507,6 @@ void ScriptExt::SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable = -1
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3536,7 +3515,6 @@ void ScriptExt::SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable = -1
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3567,7 +3545,6 @@ void ScriptExt::ConditionalJump_CheckObjects(TeamClass* pTeam)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3576,20 +3553,19 @@ void ScriptExt::ConditionalJump_CheckObjects(TeamClass* pTeam)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
 	int index = pTeamData->ConditionalJump_Index;
 
-	if (index >= 0 && RulesExt::Global()->AITargetTypesLists.Count > 0)
+	if (index >= 0 && RulesExt::Global()->AITargetTypesLists.size() > 0)
 	{
-		DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypesLists.GetItem(index);
+		std::vector<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypesLists.at(index);
 
-		if (objectsList.Count == 0)
+		if (objectsList.size() == 0)
 			return;
 
-		for (auto const pTechno : *TechnoClass::Array())
+		for (const auto pTechno : *TechnoClass::Array())
 		{
 			if (auto pTechnoType = pTechno->GetTechnoType())
 			{
@@ -3602,9 +3578,9 @@ void ScriptExt::ConditionalJump_CheckObjects(TeamClass* pTeam)
 							&& pTechno->IsMindControlled()
 							&& !pTeam->FirstUnit->Owner->IsAlliedWith(pTechno->MindControlledBy))))
 				{
-					for (int i = 0; i < objectsList.Count; i++)
+					for (int i = 0; i < objectsList.size(); i++)
 					{
-						if (objectsList.GetItem(i) == pTechnoType)
+						if (objectsList.at(i) == pTechnoType)
 						{
 							countValue++;
 							break;
@@ -3629,7 +3605,6 @@ void ScriptExt::ConditionalJump_CheckCount(TeamClass* pTeam, int modifier = 0)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3638,7 +3613,6 @@ void ScriptExt::ConditionalJump_CheckCount(TeamClass* pTeam, int modifier = 0)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3670,38 +3644,38 @@ bool ScriptExt::ConditionalJump_MakeEvaluation(int comparatorMode, int studiedVa
 	// Comparators are like in [AITriggerTypes] from aimd.ini
 	switch (comparatorMode)
 	{
-	case 0:
-		// <
-		if (studiedValue < comparatorValue)
-			result = true;
-		break;
-	case 1:
-		// <=
-		if (studiedValue <= comparatorValue)
-			result = true;
-		break;
-	case 2:
-		// ==
-		if (studiedValue = comparatorValue)
-			result = true;
-		break;
-	case 3:
-		// >=
-		if (studiedValue >= comparatorValue)
-			result = true;
-		break;
-	case 4:
-		// >
-		if (studiedValue > comparatorValue)
-			result = true;
-		break;
-	case 5:
-		// !=
-		if (studiedValue != comparatorValue)
-			result = true;
-		break;
-	default:
-		break;
+		case 0:
+			// <
+			if (studiedValue < comparatorValue)
+				result = true;
+			break;
+		case 1:
+			// <=
+			if (studiedValue <= comparatorValue)
+				result = true;
+			break;
+		case 2:
+			// ==
+			if (studiedValue = comparatorValue)
+				result = true;
+			break;
+		case 3:
+			// >=
+			if (studiedValue >= comparatorValue)
+				result = true;
+			break;
+		case 4:
+			// >
+			if (studiedValue > comparatorValue)
+				result = true;
+			break;
+		case 5:
+			// !=
+			if (studiedValue != comparatorValue)
+				result = true;
+			break;
+		default:
+			break;
 	}
 
 	return result;
@@ -3713,7 +3687,6 @@ void ScriptExt::ConditionalJump_CheckHumanIsMostHated(TeamClass* pTeam)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3722,7 +3695,6 @@ void ScriptExt::ConditionalJump_CheckHumanIsMostHated(TeamClass* pTeam)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3748,9 +3720,7 @@ void ScriptExt::ConditionalJump_CheckHumanIsMostHated(TeamClass* pTeam)
 		}
 
 		if (pEnemyHouse && pEnemyHouse->IsControlledByHuman())
-		{
 			isHumanHouse = true;
-		}
 
 		pTeamData->ConditionalJump_Evaluation = isHumanHouse;
 	}
@@ -3765,7 +3735,6 @@ void ScriptExt::ConditionalJump_CheckAliveHumans(TeamClass* pTeam, int mode = 0)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3774,7 +3743,6 @@ void ScriptExt::ConditionalJump_CheckAliveHumans(TeamClass* pTeam, int mode = 0)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
-
 		return;
 	}
 
@@ -3789,7 +3757,7 @@ void ScriptExt::ConditionalJump_CheckAliveHumans(TeamClass* pTeam, int mode = 0)
 		pTeamData->ConditionalJump_Evaluation = false;
 
 		// Find an alive human House
-		for (auto pNode : pHouse->AngerNodes)
+		for (const auto pNode : pHouse->AngerNodes)
 		{
 			if (!pNode.House->Type->MultiplayPassive
 				&& !pNode.House->Defeated
