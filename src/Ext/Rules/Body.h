@@ -28,7 +28,7 @@ public:
 	public:
 		std::vector<std::vector<TechnoTypeClass*>> AITargetTypesLists;
 		std::vector<std::vector<ScriptTypeClass*>> AIScriptsLists;
-		DynamicVectorClass<DynamicVectorClass<AITriggerTypeClass*>> AITriggersLists;
+		std::vector<std::vector<AITriggerTypeClass*>> AITriggersLists;
 		ValueableVector<TechnoTypeClass*> HarvesterTypes;
 
 		Valueable<int> Storage_TiberiumIndex;

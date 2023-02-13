@@ -3123,10 +3123,14 @@ void ScriptExt::ManageTriggersFromList(TeamClass* pTeam, int idxAITriggerType = 
 	if (idxAITriggerType < 0)
 		return;
 
-	if (RulesExt::Global()->AITriggersLists.Count <= 0)
+	if (RulesExt::Global()->AITriggersLists.size() <= 0)
 		return;
 
-	DynamicVectorClass<AITriggerTypeClass*> objectsList = RulesExt::Global()->AITriggersLists.GetItem(idxAITriggerType);
+	DynamicVectorClass<AITriggerTypeClass*> objectsList;
+	for (auto obj : RulesExt::Global()->AITriggersLists[idxAITriggerType])
+	{
+		objectsList.AddUnique(obj);
+	}
 
 	for (auto pTrigger : *AITriggerTypeClass::Array)
 	{
@@ -3243,10 +3247,14 @@ void ScriptExt::ManageTriggersWithObjects(TeamClass* pTeam, int idxAITargetType 
 	if (idxAITargetType < 0)
 		return;
 
-	if (RulesExt::Global()->AITargetTypesLists.Count <= 0)
+	if (RulesExt::Global()->AITargetTypesLists.size() <= 0)
 		return;
 
-	DynamicVectorClass<TechnoTypeClass*> objectsList = RulesExt::Global()->AITargetTypesLists.GetItem(idxAITargetType);
+	DynamicVectorClass<TechnoTypeClass*> objectsList;
+	for (auto obj : RulesExt::Global()->AITargetTypesLists[idxAITargetType])
+	{
+		objectsList.AddUnique(obj);
+	}
 
 	if (objectsList.Count == 0)
 		return;

@@ -216,7 +216,7 @@ int HouseExt::GetHouseIndex(int param, TeamClass* pTeam = nullptr, TActionClass*
 		// Random Human Player
 		for (auto pHouse : *HouseClass::Array)
 		{
-			if (pHouse->ControlledByHuman()
+			if (pHouse->IsControlledByHuman()
 				&& !pHouse->Defeated
 				&& !pHouse->IsObserver())
 			{

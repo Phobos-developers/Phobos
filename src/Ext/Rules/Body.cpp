@@ -152,19 +152,18 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	int triggerItemsCount = pINI->GetKeyCount(sectionAITriggersList);
 	for (int i = 0; i < triggerItemsCount; ++i)
 	{
-		DynamicVectorClass<AITriggerTypeClass*> objectsList;
+		std::vector<AITriggerTypeClass*> objectsList;
 
 		char* context = nullptr;
 		pINI->ReadString(sectionAITriggersList, pINI->GetKeyName(sectionAITriggersList, i), "", Phobos::readBuffer);
 
 		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
-			AITriggerTypeClass* pNewTrigger = GameCreate<AITriggerTypeClass>(cur);
-			objectsList.AddItem(pNewTrigger);
+			AITriggerTypeClass* pNewTrigger = GameCreate<AITriggerTypeClass>(cur); // Note: Don't use ::FindOrAllocate(cur) here...
+			objectsList.emplace_back(pNewTrigger);
 		}
 
-		AITriggersLists.AddItem(objectsList);
-		objectsList.Clear();
+		AITriggersLists.emplace_back(objectsList);
 	}
 }
 
@@ -196,6 +195,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
+		.Process(this->AITriggersLists)
 		.Process(this->HarvesterTypes)
 		.Process(this->Storage_TiberiumIndex)
 		.Process(this->InfantryGainSelfHealCap)
@@ -221,7 +221,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_SelfHeal_Infantry_Offset)
 		.Process(this->Pips_SelfHeal_Units_Offset)
 		.Process(this->Pips_SelfHeal_Buildings_Offset)
-		.Process(this->AITriggersLists)
 		.Process(this->AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)
 		.Process(this->ForbidParallelAIQueues_Building)
