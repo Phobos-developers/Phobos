@@ -307,6 +307,7 @@ Phobos fixes:
 - Fixed shield animation being hidden while underground or in tunnels fix not working correctly (by Starkku)
 - Restore the `MindClearedSound` when deploying a mind-controlled unit into a building loses the mind-control (by Trsdy)
 - Reimplemented the bugfix for jumpjet units' facing when firing, discard the inappropriate `JumpjetTurnToTarget` tag (by Trsdy)
+- Fixed `RadSiteWarhead.Detonate` not detonating precisely on the affected object (thus requiring `CellSpread`) (by Starkku)
 </details>
 
 
