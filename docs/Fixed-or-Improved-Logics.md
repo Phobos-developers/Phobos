@@ -202,9 +202,6 @@ AllowAirstrike=  ; boolean
   - `Grinding.PlayDieSound` controls if the units' `DieSound` and `VoiceDie` are played when entering the grinder. Default to `yes`.
   - `Grinding.Sound` is a sound played by when object is grinded by the building. If not set, defaults to `[AudioVisual]`->`EnterGrinderSound`.
   - `Grinding.Weapon` is a weapon fired at the building & by the building when it grinds an object. Will only be fired if at least weapon's `ROF` amount of frames have passed since it was last fired.
-  - `Grinding.DisplayRefund` can be set to display the amount of credits acquired upon grinding on the building. Multiple refunded objects within a short period of time have their refund amounts coalesced into single display.
-    - `Grinding.DisplayRefund.Houses` determines which houses can see the credits display.
-    - `Grinding.DisplayRefund.Offset` is additional pixel offset for the center of the credits display, by default (0,0) at building's center.
 
 In `rulesmd.ini`:
 ```ini
@@ -216,9 +213,6 @@ Grinding.DisallowTypes=            ; List of InfantryTypes / VehicleTypes
 Grinding.PlayDieSound=true         ; boolean
 Grinding.Sound=                    ; Sound
 Grinding.Weapon=                   ; WeaponType
-Grinding.DisplayRefund=false       ; boolean
-Grinding.DisplayRefund.Houses=All  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Grinding.DisplayRefund.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
 ## Projectiles

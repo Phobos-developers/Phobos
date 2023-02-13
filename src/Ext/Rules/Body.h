@@ -62,6 +62,10 @@ public:
 		Valueable<bool> ForbidParallelAIQueues_Navy;
 		Valueable<bool> ForbidParallelAIQueues_Vehicle;
 
+		Valueable<bool> DisplayIncome;
+		Valueable<bool> DisplayIncome_AllowAI;
+		Valueable<AffectedHouse> DisplayIncome_Houses;
+
 		Valueable<bool> IronCurtain_KeptOnDeploy;
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
@@ -111,6 +115,9 @@ public:
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
 			, ToolTip_Background_BlurSize { 0.0f }
+			, DisplayIncome { false }
+			, DisplayIncome_AllowAI { true }
+			, DisplayIncome_Houses { AffectedHouse::All }
 			, CrateOnlyOnLand { false }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 		{ }

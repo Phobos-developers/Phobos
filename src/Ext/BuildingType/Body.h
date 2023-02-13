@@ -29,16 +29,17 @@ public:
 		Valueable<bool> Refinery_UseStorage;
 		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
 
-		Valueable<bool> Grinding_AllowAllies;
-		Valueable<bool> Grinding_AllowOwner;
-		ValueableVector<TechnoTypeClass*> Grinding_AllowTypes;
-		ValueableVector<TechnoTypeClass*> Grinding_DisallowTypes;
 		NullableIdx<VocClass> Grinding_Sound;
 		Nullable<WeaponTypeClass*> Grinding_Weapon;
+		ValueableVector<TechnoTypeClass*> Grinding_AllowTypes;
+		ValueableVector<TechnoTypeClass*> Grinding_DisallowTypes;
+		Valueable<bool> Grinding_AllowAllies;
+		Valueable<bool> Grinding_AllowOwner;
 		Valueable<bool> Grinding_PlayDieSound;
-		Valueable<bool> Grinding_DisplayRefund;
-		Valueable<AffectedHouse> Grinding_DisplayRefund_Houses;
-		Valueable<Point2D> Grinding_DisplayRefund_Offset;
+
+		Nullable<bool> DisplayIncome;
+		Nullable<AffectedHouse> DisplayIncome_Houses;
+		Valueable<Point2D> DisplayIncome_Offset;
 
 		Valueable<bool> PlacementPreview;
 		TheaterSpecificSHP PlacementPreview_Shape;
@@ -70,9 +71,9 @@ public:
 			, Grinding_Sound {}
 			, Grinding_PlayDieSound { true }
 			, Grinding_Weapon {}
-			, Grinding_DisplayRefund { false }
-			, Grinding_DisplayRefund_Houses { AffectedHouse::All }
-			, Grinding_DisplayRefund_Offset { { 0,0 } }
+			, DisplayIncome { }
+			, DisplayIncome_Houses { }
+			, DisplayIncome_Offset { { 0,0 } }
 			, PlacementPreview { true }
 			, PlacementPreview_Shape {}
 			, PlacementPreview_ShapeFrame {}
