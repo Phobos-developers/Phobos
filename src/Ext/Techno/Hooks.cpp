@@ -413,8 +413,8 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 
 		if (pTechno->WhatAmI() == AbstractType::Infantry)
 		{
-			auto const pInf = abstract_cast<InfantryClass*>(pTechno);
-			auto const pInfType = abstract_cast<InfantryTypeClass*>(pTechno->GetTechnoType());
+			auto const pInf = static_cast<InfantryClass*>(pTechno);
+			auto const pInfType = static_cast<InfantryTypeClass*>(pTechno->GetTechnoType());
 
 			if (pInfType->Cyborg && pInf->Crawling)
 				pTechnoExt->IsLeggedCyborg = true;
@@ -438,15 +438,15 @@ DEFINE_HOOK(0x518047, TechnoClass_Destroyed_IsCyborg, 0x5)
 	GET(InfantryClass*, pInf, ESI);
 	GET(DamageState, eDamageState, EAX);
 
-	if (pInf && eDamageState != DamageState::PostMortem)
+	if (pInf
+		&& eDamageState != DamageState::PostMortem
+		&& pInf->Type->Cyborg
+		&& pInf->Crawling == true)
 	{
-		if (pInf->Type->Cyborg)
-		{
-			auto pTechnoExt = TechnoExt::ExtMap.Find(pInf);
+		auto pTechnoExt = TechnoExt::ExtMap.Find(pInf);
 
-			if (pTechnoExt && pInf->Type->Cyborg && pInf->Crawling == true && !pTechnoExt->IsLeggedCyborg)
-				pTechnoExt->IsLeggedCyborg = true;
-		}
+		if (pTechnoExt && !pTechnoExt->IsLeggedCyborg)
+			pTechnoExt->IsLeggedCyborg = true;
 	}
 
 	return 0;
@@ -468,7 +468,7 @@ DEFINE_HOOK(0x4D7221, FootClass_Unlimbo_LaserTrails, 0x6)
 		// Fix legless Cyborgs when leave transports
 		if (pTechnoExt->IsLeggedCyborg)
 		{
-			InfantryClass* soldier = abstract_cast<InfantryClass*>(pTechno);
+			InfantryClass* soldier = static_cast<InfantryClass*>(pTechno);
 
 			soldier->SequenceAnim = Sequence::Prone;
 			soldier->Crawling = true;
