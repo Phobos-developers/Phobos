@@ -80,6 +80,8 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 	if (pPlayer->Defeated)
 		return 0;
 
+	RectangleStruct vRect = DSurface::Sidebar->GetRect();
+
 	if (Phobos::UI::ShowHarvesterCounter)
 	{
 		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(pPlayer->SideIndex));
@@ -98,9 +100,6 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 			DSurface::Sidebar->GetWidth() / 2 + 50 + pSideExt->Sidebar_HarvesterCounter_Offset.Get().X,
 			2 + pSideExt->Sidebar_HarvesterCounter_Offset.Get().Y
 		};
-
-		RectangleStruct vRect = { 0, 0, 0, 0 };
-		DSurface::Sidebar->GetRect(&vRect);
 
 		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0,
 			TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12);
@@ -137,9 +136,6 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 			DSurface::Sidebar->GetWidth() / 2 - 70 + pSideExt->Sidebar_PowerDelta_Offset.Get().X,
 			2 + pSideExt->Sidebar_PowerDelta_Offset.Get().Y
 		};
-
-		RectangleStruct vRect = { 0, 0, 0, 0 };
-		DSurface::Sidebar->GetRect(&vRect);
 
 		auto const TextFlags = static_cast<TextPrintType>(static_cast<int>(TextPrintType::UseGradPal | TextPrintType::Metal12)
 				| static_cast<int>(pSideExt->Sidebar_PowerDelta_Align.Get()));

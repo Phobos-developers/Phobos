@@ -4,25 +4,6 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
-DEFINE_HOOK(0x54B8E9, JumpjetLocomotionClass_In_Which_Layer_Deviation, 0x6)
-{
-	GET(FootClass* const, pThis, EAX);
-
-	if (pThis->IsInAir())
-	{
-		if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		{
-			if (!pExt->JumpjetAllowLayerDeviation.Get(RulesExt::Global()->JumpjetAllowLayerDeviation.Get()))
-			{
-				R->EDX(INT32_MAX); // Override JumpjetHeight / CruiseHeight check so it always results in 3 / Layer::Air.
-				return 0x54B96B;
-			}
-		}
-	}
-
-	return 0;
-}
-
 // Bugfix: Jumpjet turn to target when attacking
 
 // Jumpjets stuck at FireError::FACING because WW didn't use a correct facing

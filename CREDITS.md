@@ -178,13 +178,15 @@ This page lists all the individual contributions to the project by their author.
   - Removal of hardcoded AA & Gattling weapon selection restrictions
   - Projectile obstacle logic additions
 - **Morton (MortonPL)**:
-  - `XDrawOffset`
+  - `XDrawOffset` for animations
   - Shield passthrough & absorption
   - Building `LimboDelivery` logic
   - Fix for `Image` in art rules
   - Power delta counter
   - Super Weapons launching other Super Weapons
   - SpyEffects expansion, launching Super Weapons on building infiltration
+  - Real time timers
+  - Default campaign game speed override and custom campaign game speed FPS
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
@@ -228,6 +230,7 @@ This page lists all the individual contributions to the project by their author.
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**
+   - Customizable ShowTimer priority of superweapons
    - Iron Curtain effects customization on infantries and organic units
    - Use `CustomPalette` for animations with `Tiled=yes`
 - **TwinkleStar**

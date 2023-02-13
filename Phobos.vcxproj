@@ -30,6 +30,7 @@
     <ClCompile Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\StraightTrajectory.cpp" />
     <ClCompile Include="src\Ext\CaptureManager\Hooks.cpp" />
+    <ClCompile Include="src\Ext\CaptureManager\Body.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.Variables.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Body.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Hooks.cpp" />
@@ -46,7 +47,7 @@
     <ClCompile Include="src\Ext\TEvent\Body.cpp" />
     <ClCompile Include="src\Ext\Trigger\Hooks.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Jumpjet.cpp" />
-    <ClCompile Include="src\Ext\CaptureManager\Body.cpp" />
+    <ClCompile Include="src\Misc\Hooks.Gamespeed.cpp" />
     <ClCompile Include="src\Misc\Hooks.Image.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
@@ -123,6 +124,7 @@
     <ClCompile Include="src\Misc\Hooks.PCX.cpp" />
     <ClCompile Include="src\Misc\Hooks.UI.cpp" />
     <ClCompile Include="src\Misc\Hooks.LaserDraw.cpp" />
+    <ClCompile Include="src\Misc\Hooks.Timers.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.Upgrade.cpp" />
     <ClCompile Include="src\Phobos.CRT.cpp" />
     <ClCompile Include="src\Phobos.Ext.cpp" />

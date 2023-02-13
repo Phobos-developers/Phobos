@@ -55,13 +55,15 @@ public:
 		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
 
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
-		Valueable<bool> AutoDeath_TechnosDontExist_Any;
-		Valueable<bool> AutoDeath_TechnosExist_Any;
 		Valueable<int> AutoDeath_AfterDelay;
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
+		Valueable<bool> AutoDeath_TechnosDontExist_Any;
+		Valueable<bool> AutoDeath_TechnosDontExist_AllowLimboed;
 		Valueable<AffectedHouse> AutoDeath_TechnosDontExist_Houses;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosExist;
+		Valueable<bool> AutoDeath_TechnosExist_Any;
+		Valueable<bool> AutoDeath_TechnosExist_AllowLimboed;
 		Valueable<AffectedHouse> AutoDeath_TechnosExist_Houses;
 
 		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
@@ -112,7 +114,6 @@ public:
 		Valueable<int> NoAmmoWeapon;
 		Valueable<int> NoAmmoAmount;
 
-		Nullable<bool> JumpjetAllowLayerDeviation;
 		Valueable<bool> JumpjetRotateOnCrash;
 
 		Valueable<bool> DeployingAnim_AllowAnyDirection;
@@ -238,7 +239,6 @@ public:
 			, NoSecondaryWeaponFallback_AllowAA { false }
 			, NoAmmoWeapon { -1 }
 			, NoAmmoAmount { 0 }
-			, JumpjetAllowLayerDeviation {}
 			, JumpjetRotateOnCrash { true }
 
 			, DeployingAnim_AllowAnyDirection { false }
@@ -251,9 +251,11 @@ public:
 			, AutoDeath_AfterDelay { 0 }
 			, AutoDeath_TechnosDontExist {}
 			, AutoDeath_TechnosDontExist_Any { false }
+			, AutoDeath_TechnosDontExist_AllowLimboed { false }
 			, AutoDeath_TechnosDontExist_Houses { AffectedHouse::Owner }
 			, AutoDeath_TechnosExist {}
 			, AutoDeath_TechnosExist_Any { true }
+			, AutoDeath_TechnosExist_AllowLimboed { true }
 			, AutoDeath_TechnosExist_Houses { AffectedHouse::Owner }
 
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }

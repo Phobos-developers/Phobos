@@ -18,14 +18,15 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From 0.3
 
+- `[JumpjetControls]`->`AllowLayerDeviation` and `JumpjetAllowLayerDeviation` have been deprecated as the animation layering issues have been properly fixed by default now.
 - `[JumpjetControls]->TurnToTarget` and `JumpjetTurnToTarget` are obsolete. Jumpjet units who fire `OmniFire=no` weapons **always** turn to targets as other units do.
   - `OmniFire.TurnToTarget` is recommended for jumpjet units' omnifiring weapons for facing turning.
+- Buildings delivered by trigger action 125 will now **always** play buildup anim as long as it exists. `[ParamTypes]->53` is deprecated.
 
 #### From pre-0.3 devbuilds
 
 - `Trajectory.Speed` is now defined on projectile instead of weapon.
-- `Gravity=0` is not supportint burstDelay = pWeaponExt->GetBurstDelay(pThis->CurrentBurstIndex);
-ed anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
+- `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 - Automatic self-destruction logic logic has been reimplemented, `Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been remade/renamed and require adjustments to function.
 - `DetachedFromOwner` on weapons is deprecated. This has been replaced by `AllowDamageOnSelf` on warheads.
 - Timed jump script actions now take the time measured in ingame seconds instead of frames. Divide your value by 15 to accomodate to this change.
@@ -53,7 +54,7 @@ ed anymore as it will cause the projectile to fly backwards and be unable to hit
   ```ini
   [ParamTypes]
   47=Structures,28
-  53=Play BuildUp,10
+
   54=Use GlobalVar,10
   55=Operation,0
   56=Variable index,0
@@ -103,7 +104,7 @@ ed anymore as it will cause the projectile to fly backwards and be unable to hit
   600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1
 
   [ActionsRA2]
-  125=Build at...,-10,47,53,65,0,0,1,0,0,[LONG DESC],0,1,125
+  125=Build at...,-10,47,0,65,0,0,1,0,0,[LONG DESC],0,1,125
   500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
   501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
   502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
@@ -265,6 +266,7 @@ New:
 - Iron-curtain effects on infantries and organic units (by ststl)
 - Custom `SlavesFreeSound` (by TwinkleStar)
 - Allows jumpjet to crash without rotation (by TwinkleStar)
+- Customizable priority of superweapons timer sorting(by ststl)
 - Spawn animation for `CreateUnit` (by Starkku)
 - TransferType on Warhead (by Devoidener)
 - Customizable aircraft spawner spawn delay (by Starkku)
@@ -276,6 +278,8 @@ New:
 - Attached particle system for animations (by Starkku)
 - Removal of hardcoded AA & Gattling weapon selection restrictions (by Starkku)
 - Projectile `SubjectToLand/Water` (by Starkku)
+- Real time timers (by Morton)
+- Default campaign game speed override and custom campaign game speed FPS (by Morton)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -295,12 +299,16 @@ Vanilla fixes:
 - Fixed `LandTargeting=1` not preventing from targeting TerrainTypes (trees etc.) on land (by Starkku)
 - Fixed `NavalTargeting=6` not preventing from targeting empty water cells or TerrainTypes (trees etc.) on water (by Starkku)
 - Fixed `NavalTargeting=7` and/or `LandTargeting=2` resulting in still targeting TerrainTypes (trees etc.) on land with `Primary` weapon (by Starkku)
+- Fixed an issue that causes attached animations on flying objects not layer correctly (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
 - Add `ImmuneToCrit` for shields (by Trsdy)
+- `AutoDeath` support for objects in limbo (by Trsdy)
 - Fixed shield animation being hidden while underground or in tunnels fix not working correctly (by Starkku)
-
+- Restore the `MindClearedSound` when deploying a mind-controlled unit into a building loses the mind-control (by Trsdy)
+- Reimplemented the bugfix for jumpjet units' facing when firing, discard the inappropriate `JumpjetTurnToTarget` tag (by Trsdy)
+- Fixed `RadSiteWarhead.Detonate` not detonating precisely on the affected object (thus requiring `CellSpread`) (by Starkku)
 </details>
 
 

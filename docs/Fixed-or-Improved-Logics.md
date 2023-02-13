@@ -378,19 +378,6 @@ IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invu
 IronCurtain.KillWarhead=           ; IronCurtain uses this warhead to kill this organic, default to [CombatDamage]->IronCurtain.KillWarhead
 ```
 
-### Jumpjet unit layer deviation customization
-
-- Allows turning on or off jumpjet unit behaviour where they fluctuate between `air` and `top` layers based on whether or not their current altitude is equal / below or above `JumpjetHeight` or `[JumpjetControls] -> CruiseHeight` if former is not set on TechnoType. If disabled, airborne jumpjet units exist only in `air` layer. `JumpjetAllowLayerDeviation` defaults to value of `[JumpjetControls] -> AllowLayerDeviation` if not specified.
-
-In `rulesmd.ini`:
-```ini
-[JumpjetControls]
-AllowLayerDeviation=true         ; boolean
-
-[SOMETECHNO]                     ; TechnoType
-JumpjetAllowLayerDeviation=true  ; boolean
-```
-
 ### Jumpjet rotating on crashing toggle
 
 - Jumpjet that is going to crash starts to change its facing uncontrollably, this can now be turned off.
@@ -536,12 +523,6 @@ DeployingAnim.UseUnitDrawer=true       ; boolean
 
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
 
-## VoxelAnims
-
-### Customizable debris & meteor impact and warhead detonation behaviour
-
-- The INI keys and behaviour is mostly identical to the [equivalent behaviour available to regular animations](#customizable-debris-%26-meteor-impact-and-warhead-detonation-behaviour). Main difference is that the keys must be listed in the VoxelAnim's entry in `rulesmd.ini`, not `artmd.ini`.
-
 ### Preserve Iron Curtain status on type conversion
 
 ![image](_static/images/preserve-ic.gif)
@@ -559,6 +540,12 @@ IronCurtain.KeptOnDeploy=yes ; boolean
 [SOMETECHNO]                 ; VehicleType with DeploysInto or BuildingType with UndeploysInto
 IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
 ```
+
+## VoxelAnims
+
+### Customizable debris & meteor impact and warhead detonation behaviour
+
+- The INI keys and behaviour is mostly identical to the [equivalent behaviour available to regular animations](#customizable-debris-%26-meteor-impact-and-warhead-detonation-behaviour). Main difference is that the keys must be listed in the VoxelAnim's entry in `rulesmd.ini`, not `artmd.ini`.
 
 ## Warheads
 

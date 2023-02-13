@@ -45,6 +45,8 @@ public:
 		Valueable<bool> SW_Next_IgnoreDesignators;
 		ValueableVector<float> SW_Next_RollChances;
 
+		Valueable<int> ShowTimer_Priority;
+
 		Nullable<WarheadTypeClass*> Detonate_Warhead;
 		Nullable<WeaponTypeClass*> Detonate_Weapon;
 		Nullable<int> Detonate_Damage;
@@ -82,6 +84,7 @@ public:
 			, SW_Next_IgnoreDesignators { true }
 			, SW_Next_RollChances {}
 			, SW_Next_RandomWeightsData {}
+			, ShowTimer_Priority { 0 }
 		{ }
 
 		// Ares 0.A functions

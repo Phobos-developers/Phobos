@@ -819,6 +819,10 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 - Objects can be destroyed automatically if *any* of these conditions is met:
   - `OnAmmoDepletion`: The object will die if the remaining ammo reaches 0.
   - `AfterDelay`: The object will die if the countdown (in frames) reaches 0.
+  - `TechnosExist` / `TechnosDontExist`: The object will die if TechnoTypes exist or do not exist, respectively.
+    - `Technos(Dont)Exist.Any` controls whether or not a single listed TechnoType is enough to satisfy the requirement or if all are required.
+    - `Technos(Dont)Exist.AllowLimboed` controls whether or not limboed TechnoTypes (f.ex those in transports) are counted. Note that this may count TechnoTypes that are still being built.
+    - `Technos(Dont)Exist.Houses` controls which houses are checked.
 
 - The auto-death behavior can be chosen from the following:
   - `kill`: The object will be destroyed normally.
@@ -828,24 +832,25 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 If this option is not set, the self-destruction logic will not be enabled.
 ```{note}
 Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option. This might change in the future if necessary.
-
-If the object enters transport, the countdown will continue, but it will not self-destruct inside the transport.
 ```
 
+This logic also supports buildings delivered by [LimboDelivery](#LimboDelivery)
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                             ; TechnoType
-AutoDeath.Behavior=                      ; enumeration (kill | vanish | sell), default not set
+[SOMETECHNO]                                   ; TechnoType
+AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
 
-AutoDeath.OnAmmoDepletion=no             ; boolean
-AutoDeath.AfterDelay=0                   ; positive integer
-AutoDeath.TechnosDontExist=              ; list of TechnoType names
-AutoDeath.TechnosDontExist.Any=false     ; boolean
-AutoDeath.TechnosDontExist.Houses=owner  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-AutoDeath.TechnosExist=                  ; list of TechnoType names
-AutoDeath.TechnosExist.Any=true          ; boolean
-AutoDeath.TechnosExist.Houses=owner      ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+AutoDeath.OnAmmoDepletion=no                   ; boolean
+AutoDeath.AfterDelay=0                         ; positive integer
+AutoDeath.TechnosDontExist=                    ; list of TechnoType names
+AutoDeath.TechnosDontExist.Any=false           ; boolean
+AutoDeath.TechnosDontExist.AllowLimboed=false  ; boolean
+AutoDeath.TechnosDontExist.Houses=owner        ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+AutoDeath.TechnosExist=                        ; list of TechnoType names
+AutoDeath.TechnosExist.Any=true                ; boolean
+AutoDeath.TechnosExist.AllowLimboed=false       ; boolean
+AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ### Mind Control enhancement
