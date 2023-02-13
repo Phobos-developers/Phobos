@@ -28,7 +28,7 @@ void GeneralUtils::DoubleValidCheck(double* source, const char* section, const c
 	}
 }
 
-const wchar_t* GeneralUtils::LoadStringOrDefault(char* key, const wchar_t* defaultValue)
+const wchar_t* GeneralUtils::LoadStringOrDefault(const char* key, const wchar_t* defaultValue)
 {
 	if (GeneralUtils::IsValidString(key))
 		return StringTable::LoadString(key);
@@ -36,7 +36,7 @@ const wchar_t* GeneralUtils::LoadStringOrDefault(char* key, const wchar_t* defau
 		return defaultValue;
 }
 
-const wchar_t* GeneralUtils::LoadStringUnlessMissing(char* key, const wchar_t* defaultValue)
+const wchar_t* GeneralUtils::LoadStringUnlessMissing(const char* key, const wchar_t* defaultValue)
 {
 	return wcsstr(LoadStringOrDefault(key, defaultValue), L"MISSING:") ? defaultValue : LoadStringOrDefault(key, defaultValue);
 }
@@ -51,10 +51,17 @@ std::vector<CellStruct> GeneralUtils::AdjacentCellsInRange(unsigned int range)
 	return result;
 }
 
-const int GeneralUtils::GetRangedRandomOrSingleValue(Point2D range)
+const int GeneralUtils::GetRangedRandomOrSingleValue(PartialVector2D<int> range)
 {
-	return range.X >= range.Y ?
-		range.X : ScenarioClass::Instance->Random.RandomRanged(range.X, range.Y);
+	return range.X >= range.Y || range.ValueCount < 2 ? range.X : ScenarioClass::Instance->Random.RandomRanged(range.X, range.Y);
+}
+
+const double GeneralUtils::GetRangedRandomOrSingleValue(PartialVector2D<double> range)
+{
+	int min = static_cast<int>(range.X * 100);
+	int max = static_cast<int>(range.Y * 100);
+
+	return range.X >= range.Y || range.ValueCount < 2 ? range.X : (ScenarioClass::Instance->Random.RandomRanged(min, max) / 100.0);
 }
 
 const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor ArmorType)

@@ -1,66 +1,81 @@
-#include <Helpers/Macro.h>
+#include <Utilities/Macro.h>
+#include <LocomotionClass.h>
+#include <GameStrings.h>
+#include <Ext/Rules/Body.h>
 
-DEFINE_HOOK(0x527B0A, INIClass__Get_UUID, 0x8)
+DEFINE_HOOK(0x527AE2, INIClass__Get_UUID, 0x7)
 {
-	GET(wchar_t*, buffer, ECX);
+	LEA_STACK(const char*, buffer, STACK_OFFSET(0x1B8, -0x180));
 
-	if (buffer[0] != L'{') {
+#define PARSE_IF_IS_LOCO(name)\
+if(_strcmpi(buffer, #name) == 0){ loco = LocomotionClass::CLSIDs::name; return 0x527B16;}
 
-		if (_wcsicmp(buffer, L"Drive") == 0) {
-			wcscpy(buffer, L"{4A582741-9839-11d1-B709-00A024DDAFD1}");
-			return 0;
-		}
+	if (buffer[0] != '{')
+	{
+		REF_STACK(CLSID, loco, STACK_OFFSET(0x1B8, -0x1A0));
 
-		if (_wcsicmp(buffer, L"Jumpjet") == 0) {
-			wcscpy(buffer, L"{92612C46-F71F-11d1-AC9F-006008055BB5}");
-			return 0;
-		}
-
-		if (_wcsicmp(buffer, L"Hover") == 0) {
-			wcscpy(buffer, L"{4A582742-9839-11d1-B709-00A024DDAFD1}");
-			return 0;
-		}
-
-		if (_wcsicmp(buffer, L"Rocket") == 0) {
-			wcscpy(buffer, L"{B7B49766-E576-11d3-9BD9-00104B972FE8}");
-			return 0;
-		}
-
-		if (_wcsicmp(buffer, L"Tunnel") == 0) {
-			wcscpy(buffer, L"{4A582743-9839-11d1-B709-00A024DDAFD1}");
-			return 0;
-		}
-
-		if (_wcsicmp(buffer, L"Walk") == 0) {
-			wcscpy(buffer, L"{4A582744-9839-11d1-B709-00A024DDAFD1}");
-			return 0;
-		}
-
-		if (_wcsicmp(buffer, L"DropPod") == 0) {
-			wcscpy(buffer, L"{4A582745-9839-11d1-B709-00A024DDAFD1}");
-			return 0;
-		}
-
-		if (_wcsicmp(buffer, L"Fly") == 0) {
-			wcscpy(buffer, L"{4A582746-9839-11d1-B709-00A024DDAFD1}");
-			return 0;
-		}
-
-		if (_wcsicmp(buffer, L"Teleport") == 0) {
-			wcscpy(buffer, L"{4A582747-9839-11d1-B709-00A024DDAFD1}");
-			return 0;
-		}
-
-		if (_wcsicmp(buffer, L"Mech") == 0) {
-			wcscpy(buffer, L"{55D141B8-DB94-11d1-AC98-006008055BB5}");
-			return 0;
-		}
-
-		if (_wcsicmp(buffer, L"Ship") == 0) {
-			wcscpy(buffer, L"{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}");
-			return 0;
-		}
+		PARSE_IF_IS_LOCO(Drive);
+		PARSE_IF_IS_LOCO(Jumpjet);
+		PARSE_IF_IS_LOCO(Hover);
+		PARSE_IF_IS_LOCO(Rocket);
+		PARSE_IF_IS_LOCO(Tunnel);
+		PARSE_IF_IS_LOCO(Walk);
+		PARSE_IF_IS_LOCO(Fly);
+		PARSE_IF_IS_LOCO(Teleport);
+		PARSE_IF_IS_LOCO(Mech);
+		PARSE_IF_IS_LOCO(Ship);
+		PARSE_IF_IS_LOCO(Droppod);
 	}
+#undef PARSE_IF_IS_LOCO
+
+	return 0;
+}
+
+// Reenable obsolete [JumpjetControls] in RA2/YR
+// Author: Uranusian
+DEFINE_HOOK(0x7115AE, TechnoTypeClass_CTOR_JumpjetControls, 0xA)
+{
+	GET(TechnoTypeClass*, pThis, ESI);
+	auto pRules = RulesClass::Instance();
+	auto pRulesExt = RulesExt::Global();
+
+	pThis->JumpjetTurnRate = pRules->TurnRate;
+	pThis->JumpjetSpeed = pRules->Speed;
+	pThis->JumpjetClimb = static_cast<float>(pRules->Climb);
+	pThis->JumpjetCrash = static_cast<float>(pRulesExt->JumpjetCrash);
+	pThis->JumpjetHeight = pRules->CruiseHeight;
+	pThis->JumpjetAccel = static_cast<float>(pRules->Acceleration);
+	pThis->JumpjetWobbles = static_cast<float>(pRules->WobblesPerSecond);
+	pThis->JumpjetNoWobbles = pRulesExt->JumpjetNoWobbles;
+	pThis->JumpjetDeviation = pRules->WobbleDeviation;
+
+	return 0x711601;
+}
+
+// skip vanilla JumpjetControls and make it earlier load
+DEFINE_JUMP(LJMP, 0x668EB5, 0x668EBD); // RulesClass_Process_SkipJumpjetControls
+
+DEFINE_HOOK(0x52D0F9, InitRules_EarlyLoadJumpjetControls, 0x6)
+{
+	GET(RulesClass*, pThis, ECX);
+	GET(CCINIClass*, pINI, EAX);
+
+	pThis->Read_JumpjetControls(pINI);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
+{
+	auto pRulesExt = RulesExt::Global();
+	if (!pRulesExt)
+		return 0;
+
+	GET(CCINIClass*, pINI, EDI);
+	INI_EX exINI(pINI);
+
+	pRulesExt->JumpjetCrash.Read(exINI, GameStrings::JumpjetControls, "Crash");
+	pRulesExt->JumpjetNoWobbles.Read(exINI, GameStrings::JumpjetControls, "NoWobbles");
 
 	return 0;
 }

@@ -6,7 +6,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
-#include <Ext/BuildingType/Body.h>
+#include <Ext/Building/Body.h>
 
 #include <map>
 
@@ -18,7 +18,8 @@ public:
 	{
 	public:
 		std::map<BuildingTypeExt::ExtData*, int> BuildingCounter;
-		CounterClass OwnedLimboBuildingTypes;
+		std::map<DWORD, BuildingExt::ExtData*> OwnedLimboDeliveredBuildings;
+		std::vector<TechnoExt::ExtData*> OwnedTimedAutoDeathObjects;
 
 		BuildingClass* Factory_BuildingType;
 		BuildingClass* Factory_InfantryType;
@@ -30,7 +31,9 @@ public:
 		bool RepairBaseNodes[3];
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
-			, OwnedLimboBuildingTypes {}
+			, BuildingCounter {}
+			, OwnedLimboDeliveredBuildings {}
+			, OwnedTimedAutoDeathObjects {}
 			, Factory_BuildingType { nullptr }
 			, Factory_InfantryType { nullptr }
 			, Factory_VehicleType { nullptr }
@@ -38,6 +41,9 @@ public:
 			, Factory_AircraftType { nullptr }
 			, RepairBaseNodes { false,false,false }
 		{ }
+
+		bool OwnsLimboDeliveredBuilding(BuildingClass const* pBuilding);
+		void UpdateAutoDeathObjectsInLimbo();
 
 		virtual ~ExtData() = default;
 
@@ -69,8 +75,6 @@ public:
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
-
-	static int CountOwnedLimbo(HouseClass* pThis, BuildingTypeClass const* const pItem);
 
 	static int ActiveHarvesterCount(HouseClass* pThis);
 	static int TotalHarvesterCount(HouseClass* pThis);

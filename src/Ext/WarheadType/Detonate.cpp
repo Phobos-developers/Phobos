@@ -67,14 +67,24 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			{
 				const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 				const auto cell = CellClass::Coord2Cell(coords);
-				if (!this->LaunchSW_RealLaunch || (pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)))
+				if (!this->LaunchSW_RealLaunch || (pSuper->Granted && pSuper->IsCharged && !pSuper->IsOnHold && pHouse->CanTransactMoney(pSWExt->Money_Amount)))
 				{
 					if (this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell)
 					&& (this->LaunchSW_IgnoreDesignators || pSWExt->HasDesignator(pHouse, cell)))
 					{
+						int oldstart = pSuper->RechargeTimer.StartTime;
+						int oldleft = pSuper->RechargeTimer.TimeLeft;
+						// If you don't set it ready, NewSWType::Active will give false in Ares if RealLaunch=false
+						// and therefore it will reuse the vanilla routine, which will crash inside of it
+						pSuper->SetReadiness(true);
+						// TODO: Can we use ClickFire instead of Launch?
 						pSuper->Launch(cell, true);
-						if (this->LaunchSW_RealLaunch)
-							pSuper->Reset();
+						pSuper->Reset();
+						if (!this->LaunchSW_RealLaunch)
+						{
+							pSuper->RechargeTimer.StartTime = oldstart;
+							pSuper->RechargeTimer.TimeLeft = oldleft;
+						}
 					}
 				}
 			}
@@ -112,7 +122,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, bool bulletWasIntercepted)
 {
-	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health)
+	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking)
 		return;
 
 	if (!this->CanTargetHouse(pHouse, pTarget))
@@ -236,9 +246,13 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (this->Crit_Chance < dice)
 		return;
 
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType()))
+	if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
 	{
-		if (pTypeExt->ImmuneToCrit)
+		if (pExt->TypeExtData->ImmuneToCrit)
+			return;
+
+		auto pSld = pExt->Shield.get();
+		if (pSld && pSld->IsActive() && pSld->GetType()->ImmuneToCrit)
 			return;
 
 		if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent)
@@ -293,9 +307,8 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 	}
 	else
 	{
-		for (auto const& pBullet : *BulletClass::Array)
+		for (auto const& [pBullet,pExt] : BulletExt::ExtMap)
 		{
-			auto const pExt = BulletExt::ExtMap.Find(pBullet);
 			auto const pTypeExt = pExt->TypeExtData;
 
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
