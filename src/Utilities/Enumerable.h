@@ -10,6 +10,7 @@
 
 #include <ArrayClasses.h>
 #include <CCINIClass.h>
+#include "Swizzle.h"
 
 template <typename T> class Enumerable
 {

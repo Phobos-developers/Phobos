@@ -53,7 +53,7 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 	{
 		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{
-			fFactor *= std::pow(pExt->PowerPlantEnhancer_Factor.Get(1.0f), nCount);
+			fFactor *= std::powf(pExt->PowerPlantEnhancer_Factor.Get(1.0f), static_cast<float>(nCount));
 			nAmount += pExt->PowerPlantEnhancer_Amount.Get(0) * nCount;
 		}
 	}
@@ -130,19 +130,28 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AllowAirstrike.Read(exINI, pSection, "AllowAirstrike");
 
+	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
+
 	this->Grinding_AllowAllies.Read(exINI, pSection, "Grinding.AllowAllies");
 	this->Grinding_AllowOwner.Read(exINI, pSection, "Grinding.AllowOwner");
 	this->Grinding_AllowTypes.Read(exINI, pSection, "Grinding.AllowTypes");
 	this->Grinding_DisallowTypes.Read(exINI, pSection, "Grinding.DisallowTypes");
 	this->Grinding_Sound.Read(exINI, pSection, "Grinding.Sound");
+	this->Grinding_PlayDieSound.Read(exINI, pSection, "Grinding.PlayDieSound");
 	this->Grinding_Weapon.Read(exINI, pSection, "Grinding.Weapon", true);
 	this->Grinding_DisplayRefund.Read(exINI, pSection, "Grinding.DisplayRefund");
 	this->Grinding_DisplayRefund_Houses.Read(exINI, pSection, "Grinding.DisplayRefund.Houses");
 	this->Grinding_DisplayRefund_Offset.Read(exINI, pSection, "Grinding.DisplayRefund.Offset");
 
-	// Ares SuperWeapons tag
+	// Ares tag
+	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array->Count > 0)
+	{
 		this->SuperWeapons.Read(exINI, pSection, "SuperWeapons");
+
+		this->SpyEffect_VictimSuperWeapon.Read(exINI, pSection, "SpyEffect.VictimSuperWeapon");
+		this->SpyEffect_InfiltratorSuperWeapon.Read(exINI, pSection, "SpyEffect.InfiltratorSuperWeapon");
+	}
 
 	if (pThis->MaxNumberOccupants > 10)
 	{
@@ -170,9 +179,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->PlacementPreview_Palette.LoadFromINI(pINI, pSection, "PlacementPreview.Palette");
 		this->PlacementPreview_Translucency.Read(exINI, pSection, "PlacementPreview.Translucency");
 	}
-	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
-	this->SpyEffect_VictimSuperWeapon.Read(exINI, pSection, "SpyEffect.VictimSuperWeapon");
-	this->SpyEffect_InfiltratorSuperWeapon.Read(exINI, pSection, "SpyEffect.InfiltratorSuperWeapon");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -194,6 +200,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OccupierMuzzleFlashes)
 		.Process(this->Powered_KillSpawns)
 		.Process(this->AllowAirstrike)
+		.Process(this->InitialStrength_Cloning)
 		.Process(this->Refinery_UseStorage)
 		.Process(this->Grinding_AllowAllies)
 		.Process(this->Grinding_AllowOwner)
@@ -201,6 +208,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Grinding_DisallowTypes)
 		.Process(this->Grinding_Sound)
 		.Process(this->Grinding_Weapon)
+		.Process(this->Grinding_PlayDieSound)
 		.Process(this->Grinding_DisplayRefund)
 		.Process(this->Grinding_DisplayRefund_Houses)
 		.Process(this->Grinding_DisplayRefund_Offset)

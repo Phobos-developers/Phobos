@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <ScenarioClass.h>
+#include <TerrainClass.h>
 
 #include <Ext/Bullet/Body.h>
 #include <Ext/WarheadType/Body.h>
@@ -61,6 +62,7 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 
 	if (pTechno && pTechno->Target)
 	{
+
 		auto pTarget = abstract_cast<TechnoClass*>(pTechno->Target);
 
 		if (!pTarget)
@@ -71,6 +73,7 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
 		{
 			auto pTargetType = pTarget->GetTechnoType();
+
 
 			if (pTechnoTypeExt->ForceWeapon_Naval_Decloaked >= 0 &&
 				pTargetType->Cloakable && pTargetType->Naval &&
@@ -105,52 +108,19 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
-	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, FurtherCheck = 0x6F3754, OriginalCheck = 0x6F36E3 };
+	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, OriginalCheck = 0x6F36E3 };
 
-	CellClass* pTargetCell = nullptr;
-	TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
-
-	if (pTarget)
-	{
-		if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-		{
-			pTargetCell = pCell;
-		}
-		else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
-		{
-			// Ignore target cell for technos that are in air.
-			if ((pTargetTechno && !pTargetTechno->IsInAir()) || pObject != pTargetTechno)
-				pTargetCell = pObject->GetCell();
-		}
-	}
+	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
 
 	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
-		if (const auto pSecondary = pThis->GetWeapon(1))
-		{
-			if (const auto pSecondaryExt = WeaponTypeExt::ExtMap.Find(pSecondary->WeaponType))
-			{
-				if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondaryExt->CanTarget, true)) ||
-					(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondaryExt->CanTarget) ||
-						!EnumFunctions::CanTargetHouse(pSecondaryExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
-				{
-					return Primary;
-				}
+		bool allowFallback = !pTypeExt->NoSecondaryWeaponFallback;
+		bool allowAAFallback = allowFallback ? true : pTypeExt->NoSecondaryWeaponFallback_AllowAA;
 
-				if (const auto pPrimaryExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(0)->WeaponType))
-				{
-					if (pTypeExt->NoSecondaryWeaponFallback && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1))
-						return Primary;
+		int weaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, 0, 1, allowFallback, allowAAFallback);
 
-					if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pPrimaryExt->CanTarget, true)) ||
-						(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pPrimaryExt->CanTarget) ||
-							!EnumFunctions::CanTargetHouse(pPrimaryExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
-					{
-						return Secondary;
-					}
-				}
-			}
-		}
+		if (weaponIndex != -1)
+			return weaponIndex == 1 ? Secondary : Primary;
 
 		if (!pTargetTechno)
 			return Primary;
@@ -161,21 +131,106 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 			{
 				if (pShield->IsActive())
 				{
-					if (pThis->GetWeapon(1) && !(pTypeExt->NoSecondaryWeaponFallback && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1)))
+					auto const secondary = pThis->GetWeapon(1)->WeaponType;
+					bool secondaryIsAA = pTargetTechno && pTargetTechno->IsInAir() && secondary && secondary->Projectile->AA;
+
+					if (secondary && (allowFallback || (allowAAFallback && secondaryIsAA) || TechnoExt::CanFireNoAmmoWeapon(pThis, 1)))
 					{
 						if (!pShield->CanBeTargeted(pThis->GetWeapon(0)->WeaponType))
 							return Secondary;
-						else
-							return FurtherCheck;
 					}
-
-					return Primary;
+					else
+					{
+						return Primary;
+					}
 				}
 			}
 		}
 	}
 
 	return OriginalCheck;
+}
+
+DEFINE_HOOK(0x6F37EB, TechnoClass_WhatWeaponShouldIUse_AntiAir, 0x6)
+{
+	enum { Primary = 0x6F37AD, Secondary = 0x6F3807 };
+
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
+	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x18, -0x4));
+	GET(WeaponTypeClass*, pSecWeapon, EAX);
+
+	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+
+	if (!pWeapon->Projectile->AA && pSecWeapon->Projectile->AA && pTargetTechno && pTargetTechno->IsInAir())
+		return Secondary;
+
+	return Primary;
+}
+
+DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
+{
+	enum { ReturnValue = 0x6F37AF };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
+
+	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+	int oddWeaponIndex = 2 * pThis->CurrentGattlingStage;
+	int evenWeaponIndex = oddWeaponIndex + 1;
+	int chosenWeaponIndex = oddWeaponIndex;
+	int eligibleWeaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, oddWeaponIndex, evenWeaponIndex, true);
+
+	if (eligibleWeaponIndex != -1)
+	{
+		chosenWeaponIndex = eligibleWeaponIndex;
+	}
+	else if (pTargetTechno)
+	{
+		auto const pWeaponOdd = pThis->GetWeapon(oddWeaponIndex)->WeaponType;
+		auto const pWeaponEven = pThis->GetWeapon(evenWeaponIndex)->WeaponType;
+		bool skipRemainingChecks = false;
+
+		if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
+		{
+			if (const auto pShield = pTargetExt->Shield.get())
+			{
+				if (pShield->IsActive() && !pShield->CanBeTargeted(pWeaponOdd))
+				{
+					chosenWeaponIndex = evenWeaponIndex;
+					skipRemainingChecks = true;
+				}
+			}
+		}
+
+		if (!skipRemainingChecks)
+		{
+			if (GeneralUtils::GetWarheadVersusArmor(pWeaponOdd->Warhead, pTargetTechno->GetTechnoType()->Armor) == 0.0)
+			{
+				chosenWeaponIndex = evenWeaponIndex;
+			}
+			else
+			{
+				auto pCell = pTargetTechno->GetCell();
+				bool isOnWater = (pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach) && !pTargetTechno->IsInAir();
+
+				if (!pTargetTechno->OnBridge && isOnWater)
+				{
+					int navalTargetWeapon = pThis->SelectNavalTargeting(pTargetTechno);
+
+					if (navalTargetWeapon == 2)
+						chosenWeaponIndex = evenWeaponIndex;
+				}
+				else if ((pTargetTechno->IsInAir() && !pWeaponOdd->Projectile->AA && pWeaponEven->Projectile->AA) ||
+					!pTargetTechno->IsInAir() && pThis->GetTechnoType()->LandTargeting == LandTargetingType::Land_Secondary)
+				{
+					chosenWeaponIndex = evenWeaponIndex;
+				}
+			}
+		}
+	}
+
+	R->EAX(chosenWeaponIndex);
+	return ReturnValue;
 }
 
 DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
@@ -192,12 +247,13 @@ DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
 
 DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 {
+	enum { CannotFire = 0x6FCB7E };
+
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
-	enum { CannotFire = 0x6FCB7E };
 
 	if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
 	{
@@ -209,20 +265,25 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	{
 		const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
 
-		CellClass* targetCell = nullptr;
+		CellClass* pTargetCell = nullptr;
 
-		// Ignore target cell for airborne technos.
-		if (!pTechno || !pTechno->IsInAir())
+		if (pTarget)
 		{
 			if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-				targetCell = pCell;
+			{
+				pTargetCell = pCell;
+			}
 			else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
-				targetCell = pObject->GetCell();
+			{
+				// Ignore target cell for technos that are in air.
+				if ((pTechno && !pTechno->IsInAir()) || pObject != pTechno)
+					pTargetCell = pObject->GetCell();
+			}
 		}
 
-		if (targetCell)
+		if (pTargetCell)
 		{
-			if (!EnumFunctions::IsCellEligible(targetCell, pWeaponExt->CanTarget, true))
+			if (!EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true))
 				return CannotFire;
 		}
 
@@ -251,6 +312,43 @@ DEFINE_HOOK(0x6FC587, TechnoClass_CanFire_OpenTopped, 0x6)
 		{
 			if (pTransport->Deactivated && !pExt->OpenTopped_AllowFiringIfDeactivated)
 				return DisallowFiring;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
+{
+	enum { DisallowFiring = 0x6FC86A };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
+
+	const auto pType = pThis->GetTechnoType();
+	auto pCell = abstract_cast<CellClass*>(pTarget);
+
+	if (pCell)
+	{
+		if (pType->NavalTargeting == NavalTargetingType::Naval_None &&
+			(pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach))
+		{
+			return DisallowFiring;
+		}
+	}
+	else if (const auto pTerrain = abstract_cast<TerrainClass*>(pTarget))
+	{
+		pCell = pTerrain->GetCell();
+
+		if (pType->LandTargeting == LandTargetingType::Land_Not_OK &&
+			pCell->LandType != LandType::Water && pCell->LandType != LandType::Beach)
+		{
+			return DisallowFiring;
+		}
+		else if (pType->NavalTargeting == NavalTargetingType::Naval_None &&
+			(pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach))
+		{
+			return DisallowFiring;
 		}
 	}
 
@@ -409,3 +507,9 @@ DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 
 	return 0;
 }
+
+// Feature: Allow Units using AlternateFLHs - by Trsdy
+// I don't want to rewrite something new, so I use the Infantry one directly
+// afaik it has no check for infantry-specific stuff here so far
+// and neither Ares nor Phobos has touched it, even that crawling flh one was in TechnoClass
+DEFINE_JUMP(VTABLE, 0x7F5D20, 0x523250);// Redirect UnitClass::GetFLH to InfantryClass::GetFLH (used to be TechnoClass::GetFLH)

@@ -24,6 +24,7 @@ public:
 		Valueable<Mission> CreateUnit_Mission;
 		Valueable<OwnerHouseKind> CreateUnit_Owner;
 		Valueable<bool> CreateUnit_ConsiderPathfinding;
+		Nullable<AnimTypeClass*> CreateUnit_SpawnAnim;
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;
 		Nullable<bool> Layer_UseObjectLayer;
@@ -32,6 +33,11 @@ public:
 		Valueable<int> Damage_Delay;
 		Valueable<bool> Damage_DealtByInvoker;
 		Valueable<bool> Damage_ApplyOncePerLoop;
+		Valueable<bool> ExplodeOnWater;
+		Valueable<bool> Warhead_Detonate;
+		NullableVector<AnimTypeClass*> SplashAnims;
+		Valueable<bool> SplashAnims_PickRandom;
+		Valueable<ParticleSystemTypeClass*> AttachedSystem;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -43,6 +49,7 @@ public:
 			, CreateUnit_Mission { Mission::Guard }
 			, CreateUnit_Owner { OwnerHouseKind::Victim }
 			, CreateUnit_ConsiderPathfinding { false }
+			, CreateUnit_SpawnAnim {}
 			, XDrawOffset { 0 }
 			, HideIfNoOre_Threshold { 0 }
 			, Layer_UseObjectLayer {}
@@ -51,6 +58,11 @@ public:
 			, Damage_Delay { 0 }
 			, Damage_DealtByInvoker { false }
 			, Damage_ApplyOncePerLoop { false }
+			, ExplodeOnWater { false }
+			, Warhead_Detonate { false }
+			, SplashAnims {}
+			, SplashAnims_PickRandom { false }
+			, AttachedSystem {}
 		{ }
 
 		virtual ~ExtData() = default;
