@@ -240,14 +240,9 @@ private:
 			pValues->House->GiveMoney(value);
 			return value;
 		case TransferTypeResource::Health:
-			if (pTechno->Health + value > pType->Strength)
-			{
-				pTechno->Health = pType->Strength;
-				return pType->Strength - pTechno->Health;
-			}
-			pTechno->Health += value;
-			pTechno->Flashing.DurationRemaining += 10;
-			return value;
+			value = -value;
+			pTechno->ReceiveDamage(&value, 0, nullptr, Source.Techno, true, false, Source.House);
+			return -value;
 		case TransferTypeResource::Ammo:
 			if (pType->Ammo <= 0)
 				return 0;
@@ -497,10 +492,10 @@ private:
 					}
 				}
 
-				if (Target->Techno->Veterancy.Veterancy >= 1.0f)
+				if (Source.Techno && Source.Techno->Veterancy.Veterancy >= 1.0f)
 				{
 					Target->Value *= Options->Send_Value_SourceVeterancyMultiplier.Get().X;
-					if (Target->Techno->Veterancy.Veterancy >= 2.0f)
+					if (Source.Techno->Veterancy.Veterancy >= 2.0f)
 						Target->Value *= Options->Send_Value_SourceVeterancyMultiplier.Get().Y;
 				}
 

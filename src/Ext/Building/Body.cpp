@@ -12,7 +12,7 @@ void BuildingExt::ExtData::DisplayIncomeString()
 {
 	if (this->AccumulatedIncome && Unsorted::CurrentFrame % 15 == 0)
 	{
-		FlyingStrings::AddNumberString(
+		FlyingStrings::AddMoneyString(
 			this->AccumulatedIncome,
 			this->OwnerObject()->Owner,
 			this->TypeExtData->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
