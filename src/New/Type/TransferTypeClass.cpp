@@ -34,12 +34,6 @@ void TransferTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Send_Value_SourceVeterancyMultiplier.Read(exINI, section, "Send.Value.SourceVeterancyMultiplier");
 	this->Send_PreventUnderflow.Read(exINI, section, "Send.PreventUnderflow");
 	this->Send_PreventOverflow.Read(exINI, section, "Send.PreventOverflow");
-	this->Send_Text.Read(exINI, section, "Send.Text");
-	this->Send_Text_ShowSign.Read(exINI, section, "Send.Text.ShowSign");
-	this->Send_Text_Houses.Read(exINI, section, "Send.Text.Houses");
-	this->Send_Text_Color.Read(exINI, section, "Send.Text.Color");
-	this->Send_Text_Color_Positive.Read(exINI, section, "Send.Text.Color.Positive");
-	this->Send_Text_Offset.Read(exINI, section, "Send.Text.Offset");
 	this->Receive_Resource.Read(exINI, section, "Receive.Resource");
 	this->Receive_Value.Read(exINI, section, "Receive.Value");
 	this->Receive_Value_Type.Read(exINI, section, "Receive.Value.Type");
@@ -47,12 +41,6 @@ void TransferTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Receive_Value_SourceVeterancyMultiplier.Read(exINI, section, "Receive.Value.SourceVeterancyMultiplier");
 	this->Receive_Multiplier.Read(exINI, section, "Receive.Multiplier");
 	this->Receive_ReturnOverflow.Read(exINI, section, "Receive.ReturnOverflow");
-	this->Receive_Text.Read(exINI, section, "Receive.Text");
-	this->Receive_Text_ShowSign.Read(exINI, section, "Receive.Text.ShowSign");
-	this->Receive_Text_Houses.Read(exINI, section, "Receive.Text.Houses");
-	this->Receive_Text_Color.Read(exINI, section, "Receive.Text.Color");
-	this->Receive_Text_Color_Negative.Read(exINI, section, "Receive.Text.Color.Negative");
-	this->Receive_Text_Offset.Read(exINI, section, "Receive.Text.Offset");
 	this->Decrease_Experience_AllowDemote.Read(exINI, section, "Decrease.Experience.AllowDemote");
 	this->Decrease_Health_AllowKill.Read(exINI, section, "Decrease.Health.AllowKill");
 	this->Target_ConsiderArmor.Read(exINI, section, "Target.ConsiderArmor");
@@ -75,12 +63,6 @@ void TransferTypeClass::Serialize(T& Stm)
 		.Process(this->Send_Value_SourceVeterancyMultiplier)
 		.Process(this->Send_PreventUnderflow)
 		.Process(this->Send_PreventOverflow)
-		.Process(this->Send_Text)
-		.Process(this->Send_Text_ShowSign)
-		.Process(this->Send_Text_Houses)
-		.Process(this->Send_Text_Color)
-		.Process(this->Send_Text_Color_Positive)
-		.Process(this->Send_Text_Offset)
 		.Process(this->Receive_Resource)
 		.Process(this->Receive_Value)
 		.Process(this->Receive_Value_Type)
@@ -88,12 +70,6 @@ void TransferTypeClass::Serialize(T& Stm)
 		.Process(this->Receive_Value_SourceVeterancyMultiplier)
 		.Process(this->Receive_Multiplier)
 		.Process(this->Receive_ReturnOverflow)
-		.Process(this->Receive_Text)
-		.Process(this->Receive_Text_ShowSign)
-		.Process(this->Receive_Text_Houses)
-		.Process(this->Receive_Text_Color)
-		.Process(this->Receive_Text_Color_Negative)
-		.Process(this->Receive_Text_Offset)
 		.Process(this->Decrease_Experience_AllowDemote)
 		.Process(this->Decrease_Health_AllowKill)
 		.Process(this->Target_ConsiderArmor)

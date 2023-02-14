@@ -57,8 +57,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			if (this->TransactMoney_Display)
 			{
 				auto displayCoords = this->TransactMoney_Display_AtFirer ? (pOwner ? pOwner->Location : coords) : coords;
-				FlyingStrings::AddNumberString(this->TransactMoney, pHouse, this->TransactMoney_Display_Houses,
-					ColorStruct(0, 255, 0), displayCoords, this->TransactMoney_Display_Offset);
+				FlyingStrings::AddNumberString(this->TransactMoney, pHouse, this->TransactMoney_Display_Houses, displayCoords, this->TransactMoney_Display_Offset);
 			}
 		}
 

@@ -110,7 +110,7 @@ struct TransferUnit
 		, Total { (double)ResourceValue(pUnit, pUnit != nullptr ? pUnit->Owner : nullptr, attr, false) }
 		, Resource { attr }
 	{ }
-	TransferUnit(): TransferUnit(nullptr, TransferTypeResource::Money) { }
+	TransferUnit(): TransferUnit(nullptr, TransferTypeResource::Health) { }
 };
 
 class TransferDetails
@@ -781,131 +781,16 @@ private:
 		else if (Source.Value > 0)
 			SourceChange = AddValue(&Source);
 
-		bool IsReceiveNegativeChanged = ColorAnyNot(Options->Receive_Text_Color_Negative, 0);
-		bool IsSendPositiveChanged = ColorAnyNot(Options->Send_Text_Color_Positive, 0);
-
-		if (Options->TargetToSource)
+		for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
 		{
-			if (Source.Techno && Options->Receive_Text && SourceChange)
-			{
-				if (SourceChange < 0)
-				{
-					if (IsReceiveNegativeChanged)
-					{
-						FlyingStrings::AddNumberString(SourceChange, Source.House, Options->Receive_Text_Houses,
-							Options->Receive_Text_Color_Negative, Source.Techno->Location, Options->Receive_Text_Offset,
-							Options->Receive_Text_ShowSign, Options->Receive_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
-					}
-					else
-					{
-						FlyingStrings::AddNumberString(SourceChange, Source.House, Options->Receive_Text_Houses,
-							Options->Send_Text_Color, Source.Techno->Location, Options->Receive_Text_Offset,
-							Options->Receive_Text_ShowSign, Options->Receive_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
-					}
-				}
-				else
-				{
-					FlyingStrings::AddNumberString(SourceChange, Source.House, Options->Receive_Text_Houses,
-						Options->Receive_Text_Color, Source.Techno->Location, Options->Receive_Text_Offset,
-						Options->Receive_Text_ShowSign, Options->Receive_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
-				}
-			}
-
-			for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
-			{
-				int TargetChange = 0;
-				if (Target->Value < 0)
-					TargetChange = -SubValue(&(*Target));
-				else if (Target->Value > 0)
-					TargetChange = AddValue(&(*Target));
-
-				if (Options->Send_Text && TargetChange)
-				{
-					if (TargetChange > 0)
-					{
-						if (IsSendPositiveChanged)
-						{
-							FlyingStrings::AddNumberString(TargetChange, Target->House, Options->Send_Text_Houses,
-								Options->Send_Text_Color_Positive, Target->Techno->Location, Options->Send_Text_Offset,
-								Options->Send_Text_ShowSign, Options->Send_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
-						}
-						else
-						{
-							FlyingStrings::AddNumberString(TargetChange, Target->House, Options->Send_Text_Houses,
-								Options->Receive_Text_Color, Target->Techno->Location, Options->Send_Text_Offset,
-								Options->Send_Text_ShowSign, Options->Send_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
-						}
-					}
-					else
-					{
-						FlyingStrings::AddNumberString(TargetChange, Target->House, Options->Send_Text_Houses,
-							Options->Send_Text_Color, Target->Techno->Location, Options->Send_Text_Offset,
-							Options->Send_Text_ShowSign, Options->Send_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
-					}
-				}
-			}
+			int TargetChange = 0;
+			if (Target->Value < 0)
+				TargetChange = -SubValue(&(*Target));
+			else if (Target->Value > 0)
+				TargetChange = AddValue(&(*Target));
 		}
-		else
-		{
-			if (Source.Techno && Options->Send_Text && SourceChange)
-			{
-				if (SourceChange > 0)
-				{
-					if (IsSendPositiveChanged)
-					{
-						FlyingStrings::AddNumberString(SourceChange, Source.House, Options->Send_Text_Houses,
-							Options->Send_Text_Color_Positive, Source.Techno->Location, Options->Send_Text_Offset,
-							Options->Send_Text_ShowSign, Options->Send_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
-					}
-					else
-					{
-						FlyingStrings::AddNumberString(SourceChange, Source.House, Options->Send_Text_Houses,
-							Options->Receive_Text_Color, Source.Techno->Location, Options->Send_Text_Offset,
-							Options->Send_Text_ShowSign, Options->Send_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
-					}
-				}
-				else
-				{
-					FlyingStrings::AddNumberString(SourceChange, Source.House, Options->Send_Text_Houses,
-						Options->Send_Text_Color, Source.Techno->Location, Options->Send_Text_Offset,
-						Options->Send_Text_ShowSign, Options->Send_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
-				}
-			}
 
-			for (auto Target = Targets.begin(); Target != Targets.end(); Target++)
-			{
-				int TargetChange = 0;
-				if (Target->Value < 0)
-					TargetChange = -SubValue(&(*Target));
-				else if (Target->Value > 0)
-					TargetChange = AddValue(&(*Target));
-
-				if (Options->Receive_Text && TargetChange)
-				{
-					if (TargetChange < 0)
-					{
-						if (IsReceiveNegativeChanged)
-						{
-							FlyingStrings::AddNumberString(TargetChange, Target->House, Options->Receive_Text_Houses,
-								Options->Receive_Text_Color_Negative, Target->Techno->Location, Options->Receive_Text_Offset,
-								Options->Receive_Text_ShowSign, Options->Receive_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
-						}
-						else
-						{
-							FlyingStrings::AddNumberString(TargetChange, Target->House, Options->Receive_Text_Houses,
-								Options->Send_Text_Color, Target->Techno->Location, Options->Receive_Text_Offset,
-								Options->Receive_Text_ShowSign, Options->Receive_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
-						}
-					}
-					else
-					{
-						FlyingStrings::AddNumberString(TargetChange, Target->House, Options->Receive_Text_Houses,
-							Options->Receive_Text_Color, Target->Techno->Location, Options->Receive_Text_Offset,
-							Options->Receive_Text_ShowSign, Options->Receive_Resource == TransferTypeResource::Money ? Phobos::UI::CostLabel : L"");
-					}
-				}
-			}
-		}
+		LogDetails(L"Transfer complete", LogType::All);
 	}
 
 public:

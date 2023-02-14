@@ -235,7 +235,7 @@ Shield.InheritStateOnReplace=false   ; boolean
   - `Target.Spread.IgnoreSelf` controls whether the source is affected by its own splash warhead.
   - `Target.Spread.CountUnaffected` determines whether to count units excluded by `Target.` tags in **number of targets**.
   - `Send.Resource` and `Receive.Resource` determine which resource is subtracted from sender and added to receiver respectively.
-    - They can be any of [`experience`, `money`, `health`, `ammo`, `gatlingrate`]. Default to `money`
+    - They can be any of [`experience`, `money`, `health`, `ammo`, `gatlingrate`]. Default to `health`
   - `Send.Value` and `Receive.Value` are the amounts of resources sent and received.
   - `Send.Value.Type` and `Receive.Value.Type` can be any of [`fixed`, `current`, `missing`, `total`] and determines whether to multiply `~~.Value` by corresponding value
     - Total `experience` amount is the amount of experience needed for fresh rookie version of affected Techno to get promoted to Elite. While `Trainable=no` units are used in calculations, they however do not get experience when receiving.
@@ -255,13 +255,6 @@ Shield.InheritStateOnReplace=false   ; boolean
     - `tally` for multiplication by the **number of targets**.
   - `Decrease.Experience.AllowDemote` set to `no` disables demotion on neg. Works with `Send.PreventUnderflow`, allowing one to not send experience when reaching minimum value of their current veterancy rank, e.g. no experience sent from Elite units as they no longer get experience upon reaching Elite. Defaults to `yes`.
   - `Decrease.Health.AllowKill` set to `no` disables death by negative health transfers and instead leaves with 1 health. Can still die to weapon damage.
-  - `Send.Text` and `Receive.Text` control if the changes in value should be shown as floating texts. 0 values are not shown.
-  - `Send.Text.ShowSign` and `Receive.Text.ShowSign` determine whether to show - and + signs.
-  - `Send.Text.Houses` and `Receive.Text.Houses` show the texts only for indicated houses.
-  - `Send.Text.Color` and `Receive.Text.Color` change colors of shown texts. Defaults to black.
-  - `Send.Text.Offset` and `Receive.Text.Offset` change positions of shown texts relative to the positions of the attached units.
-  - `Send.Text.Color.Positive` changes colors of shown texts on sender has an increase in its resource value. Defaults to `Receive.Text.Color`. That's right, `Receive`.
-  - `Receive.Text.Color.Negative` changes colors of shown texts on receiver has a decrease in its resource value. Defaults to `Send.Text.Color`.
 
 ```ini
 [TransferTypes]
@@ -283,12 +276,6 @@ Send.Value.FlatLimits=0,0                         ; minimum,maximum integers (0 
 Send.Value.SourceVeterancyMultiplier=1.0,1.0      ; floating point value
 Send.PreventUnderflow=false                       ; boolean
 Send.PreventOverflow=false                        ; boolean
-Send.Text=false                                   ; boolean
-Send.Text.ShowSign=false                          ; boolean
-Send.Text.Houses=all                              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Send.Text.Color=0,0,0                             ; integer - Red,Green,Blue
-Send.Text.Color.Positive=0,0,0                    ; integer - Red,Green,Blue
-Send.Text.Offset=0,0                              ; X,Y, pixels relative to default
 Receive.Resource=money                            ; enumeration (experience | money | health | ammo | gatlingrate)
 Receive.Value=0.0                                 ; floating point value
 Receive.Value.Type=fixed                          ; enumeration (fixed | current/c% | missing/m% | total/t%)
@@ -296,12 +283,6 @@ Receive.Value.FlatLimits=0,0                      ; minimum,maximum integers (0 
 Receive.Value.SourceVeterancyMultiplier=1.0,1.0   ; floating point value
 Receive.Multiplier=none                           ; enumeration (none | highest | sum | tally)
 Receive.ReturnOverflow=false                      ; boolean
-Receive.Text=false                                ; boolean
-Receive.Text.ShowSign=false                       ; boolean
-Receive.Text.Houses=all                           ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Receive.Text.Color=0,0,0                          ; integer - Red,Green,Blue
-Receive.Text.Color.Negative=0,0,0                 ; integer - Red,Green,Blue
-Receive.Text.Offset=0,0                           ; X,Y, pixels relative to default
 Decrease.Experience.AllowDemote=false             ; boolean
 Decrease.Health.AllowKill=false                   ; boolean
 

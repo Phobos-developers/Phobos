@@ -19,13 +19,6 @@ public:
 	Valueable<bool> Send_PreventUnderflow;
 	Valueable<bool> Send_PreventOverflow;
 
-	Valueable<bool> Send_Text;
-	Valueable<bool> Send_Text_ShowSign;
-	Valueable<AffectedHouse> Send_Text_Houses;
-	Valueable<ColorStruct> Send_Text_Color;
-	Valueable<ColorStruct> Send_Text_Color_Positive;
-	Valueable<Point2D> Send_Text_Offset;
-
 	Valueable<TransferTypeResource> Receive_Resource;
 	Valueable<double> Receive_Value;
 	Valueable<TechnoValueType> Receive_Value_Type;
@@ -34,13 +27,6 @@ public:
 
 	Valueable<Multiplier> Receive_Multiplier;
 	Valueable<bool> Receive_ReturnOverflow;
-
-	Valueable<bool> Receive_Text;
-	Valueable<bool> Receive_Text_ShowSign;
-	Valueable<AffectedHouse> Receive_Text_Houses;
-	Valueable<ColorStruct> Receive_Text_Color;
-	Valueable<ColorStruct> Receive_Text_Color_Negative;
-	Valueable<Point2D> Receive_Text_Offset;
 
 	Valueable<bool> Decrease_Experience_AllowDemote;
 	Valueable<bool> Decrease_Health_AllowKill;
@@ -54,32 +40,20 @@ public:
 
 	TransferTypeClass(const char* pTitle = NONE_STR): Enumerable<TransferTypeClass>(pTitle)
 		, TargetToSource { true }
-		, Send_Resource { TransferTypeResource::Money }
+		, Send_Resource { TransferTypeResource::Health }
 		, Send_Value { 0.0 }
 		, Send_Value_Type { TechnoValueType::Fixed }
 		, Send_Value_FlatLimits { { 0, 0 } }
 		, Send_Value_SourceVeterancyMultiplier { { 1.0, 1.0 } }
 		, Send_PreventUnderflow { false }
 		, Send_PreventOverflow { false }
-		, Send_Text { false }
-		, Send_Text_ShowSign { false }
-		, Send_Text_Houses { AffectedHouse::All }
-		, Send_Text_Color { { 0, 0, 0 } }
-		, Send_Text_Color_Positive { { 0, 0, 0 } }
-		, Send_Text_Offset { { 0, 0 } }
-		, Receive_Resource { TransferTypeResource::Money }
+		, Receive_Resource { TransferTypeResource::Health }
 		, Receive_Value { 0.0 }
 		, Receive_Value_Type { TechnoValueType::Fixed }
 		, Receive_Value_FlatLimits { { 0, 0 } }
 		, Receive_Value_SourceVeterancyMultiplier { { 1.0, 1.0 } }
 		, Receive_Multiplier { Multiplier::None }
 		, Receive_ReturnOverflow { false }
-		, Receive_Text { false }
-		, Receive_Text_ShowSign { false }
-		, Receive_Text_Houses { AffectedHouse::All }
-		, Receive_Text_Color { { 0, 0, 0 } }
-		, Receive_Text_Color_Negative { { 0, 0, 0 } }
-		, Receive_Text_Offset { { 0, 0 } }
 		, Decrease_Experience_AllowDemote { false }
 		, Decrease_Health_AllowKill { false }
 		, Target_ConsiderArmor { false }
