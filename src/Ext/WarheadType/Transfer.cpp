@@ -16,23 +16,19 @@ int ResourceValue(TechnoClass* pTechno, HouseClass* pHouse, TransferTypeResource
 {
 	if (pTechno == nullptr && !(attr == TransferTypeResource::Money && pHouse != nullptr && current))
 		return 0;
-	auto pType = pTechno->GetTechnoType();
-	int veterancyStage = (int)(pType->Cost * RulesClass::Instance->VeteranRatio);
-	int currentStageVeterancy = (int)(veterancyStage * (pTechno->Veterancy.Veterancy - (int)pTechno->Veterancy.Veterancy));
-	int gatling_stage = pTechno->CurrentGattlingStage;
-	int gatling_value = pTechno->GattlingValue;
-	int gatling_current_max = pTechno->Veterancy.IsElite()
-		? pType->EliteStage[gatling_stage]
-		: pType->WeaponStage[gatling_stage];
-	int gatling_current_min = 0;
-	if (gatling_stage > 0)
-		gatling_current_min = pTechno->Veterancy.IsElite()
-		? pType->EliteStage[gatling_stage - 1]
-		: pType->WeaponStage[gatling_stage - 1];
+
+	TechnoTypeClass* pType = nullptr;
+	if (pTechno)
+	{
+		pType = pTechno->GetTechnoType();
+	}
 
 	switch (attr)
 	{
 	case TransferTypeResource::Experience:
+	{
+		int veterancyStage = (int)(pType->Cost * RulesClass::Instance->VeteranRatio);
+		int currentStageVeterancy = (int)(veterancyStage * (pTechno->Veterancy.Veterancy - (int)pTechno->Veterancy.Veterancy));
 		if (current)
 			if (stage)
 				return currentStageVeterancy;
@@ -43,7 +39,7 @@ int ResourceValue(TechnoClass* pTechno, HouseClass* pHouse, TransferTypeResource
 				return veterancyStage;
 			else
 				return veterancyStage * 2;
-
+	}
 	case TransferTypeResource::Money:
 		if (current)
 			return pHouse->Available_Money();
@@ -63,6 +59,17 @@ int ResourceValue(TechnoClass* pTechno, HouseClass* pHouse, TransferTypeResource
 			return pType->Ammo;
 
 	case TransferTypeResource::GatlingRate:
+	{
+		int gatling_stage = pTechno->CurrentGattlingStage;
+		int gatling_value = pTechno->GattlingValue;
+		int gatling_current_max = pTechno->Veterancy.IsElite()
+			? pType->EliteStage[gatling_stage]
+			: pType->WeaponStage[gatling_stage];
+		int gatling_current_min = 0;
+		if (gatling_stage > 0)
+			gatling_current_min = pTechno->Veterancy.IsElite()
+			? pType->EliteStage[gatling_stage - 1]
+			: pType->WeaponStage[gatling_stage - 1];
 		if (current)
 			if (stage)
 				return gatling_value - gatling_current_min;
@@ -75,6 +82,7 @@ int ResourceValue(TechnoClass* pTechno, HouseClass* pHouse, TransferTypeResource
 				return pTechno->Veterancy.IsElite()
 					? pType->EliteStage[pType->WeaponStages - 1]
 					: pType->WeaponStage[pType->WeaponStages - 1];
+	}
 	default:
 		return 0;
 	}
@@ -92,6 +100,7 @@ struct TransferUnit
 	double Current;
 	/// @brief Total resource value
 	double Total;
+	TransferTypeResource Resource;
 
 	TransferUnit(TechnoClass* pUnit, TransferTypeResource attr): Techno { pUnit }
 		, House { pUnit != nullptr ? pUnit->Owner : nullptr }
@@ -99,6 +108,7 @@ struct TransferUnit
 		, Modifier { 1.0 }
 		, Current { (double)ResourceValue(pUnit, pUnit != nullptr ? pUnit->Owner : nullptr, attr) }
 		, Total { (double)ResourceValue(pUnit, pUnit != nullptr ? pUnit->Owner : nullptr, attr, false) }
+		, Resource { attr }
 	{ }
 	TransferUnit(): TransferUnit(nullptr, TransferTypeResource::Money) { }
 };
@@ -124,6 +134,7 @@ public:
 		{
 			this->Source.Current = (double)ResourceValue(pSTechno, pHouse, pTType->Receive_Resource);
 			this->Source.Total = (double)ResourceValue(pSTechno, pHouse, pTType->Receive_Resource, false);
+			this->Source.Resource = pTType->Receive_Resource;
 			for (auto pTechno : pTechnoList)
 			{
 				this->Targets.push_back(TransferUnit(pTechno, pTType->Send_Resource));
@@ -133,6 +144,7 @@ public:
 		{
 			this->Source.Current = (double)ResourceValue(pSTechno, pHouse, pTType->Send_Resource);
 			this->Source.Total = (double)ResourceValue(pSTechno, pHouse, pTType->Send_Resource, false);
+			this->Source.Resource = pTType->Send_Resource;
 			for (auto pTechno : pTechnoList)
 			{
 				this->Targets.push_back(TransferUnit(pTechno, pTType->Receive_Resource));
@@ -206,13 +218,13 @@ private:
 		TechnoClass* pTechno = pValues->Techno;
 		TechnoTypeClass* pType = nullptr;
 
-		if (pTechno == nullptr && Options->Receive_Resource != TransferTypeResource::Money)
+		if (pTechno == nullptr && pValues->Resource != TransferTypeResource::Money)
 			return 0;
 		if (pTechno != nullptr)
 			pType = pTechno->GetTechnoType();
 
 		int value = (int)(pValues->Value + 0.5);
-		switch (Options->Receive_Resource)
+		switch (pValues->Resource)
 		{
 		case TransferTypeResource::Experience:
 			if (pTechno->Veterancy.IsElite() || !pType->Trainable)
@@ -234,6 +246,7 @@ private:
 				return pType->Strength - pTechno->Health;
 			}
 			pTechno->Health += value;
+			pTechno->Flashing.DurationRemaining += 10;
 			return value;
 		case TransferTypeResource::Ammo:
 			if (pType->Ammo <= 0)
@@ -294,13 +307,13 @@ private:
 		TechnoClass* pTechno = pValues->Techno;
 		TechnoTypeClass* pType = nullptr;
 
-		if (pTechno == nullptr && Options->Send_Resource != TransferTypeResource::Money)
+		if (pTechno == nullptr && pValues->Resource != TransferTypeResource::Money)
 			return 0;
 		if (pTechno != nullptr)
 			pType = pTechno->GetTechnoType();
 
 		int value = (int)(-pValues->Value + 0.5);
-		switch (Options->Send_Resource)
+		switch (pValues->Resource)
 		{
 		case TransferTypeResource::Experience:
 			if (pTechno->Veterancy.Veterancy <= 0.0f || !pType->Trainable)
@@ -318,7 +331,7 @@ private:
 				pTechno->Veterancy.Reset();
 				return (int)(pValues->Current);
 			}
-			pTechno->Veterancy.Veterancy = (float)((pValues->Current - (double)value) / pValues->Total);
+			pTechno->Veterancy.Veterancy = (float)((pValues->Current - (double)value) / pValues->Total * 2);
 			return value;
 		case TransferTypeResource::Money:
 			if (pValues->House->Available_Money() < value)
@@ -610,8 +623,10 @@ private:
 					{
 						if (Target->Techno->Veterancy.IsElite() || Target->Techno->Veterancy.Veterancy == 1.0f)
 							Target->Value = 0;
-						else if (Target->Techno->Veterancy.IsVeteran() && Target->Current + Target->Value < Target->Total / 2)
+						else if (Target->Techno->Veterancy.IsVeteran() && ((Target->Current + Target->Value) < (Target->Total / 2)))
 							Target->Value = Target->Total / 2 - Target->Current;
+						else if (Target->Current < -Target->Value)
+							Target->Value = -Target->Current;
 					}
 					else if (Target->Current < -Target->Value)
 					{
