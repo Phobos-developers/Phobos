@@ -162,7 +162,7 @@ DEFINE_HOOK(0x679A10, SideClass_LoadAllFromINI, 0x5)
 	GET_STACK(CCINIClass*, pINI, 0x4);
 
 	for (auto pSide : *SideClass::Array)
-		SideExt::ExtMap.Find(pSide)->LoadFromINIFile(pINI);
+		SideExt::ExtMap.Find(pSide)->LoadFromINI(pINI);
 
 	return 0;
 }
