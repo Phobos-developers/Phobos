@@ -331,6 +331,25 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
+{
+	enum { SkipCheck = 0x468D73 };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (pExt->Trajectory && pExt->Trajectory->Flag == TrajectoryFlag::Straight)
+		{
+			// Straight trajectory has its own proximity checks.
+			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
+				return SkipCheck;
+		}
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
 {
 	GET(BulletClass*, pThis, EBX);

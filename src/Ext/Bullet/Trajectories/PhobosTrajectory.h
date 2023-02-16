@@ -20,6 +20,7 @@ enum class TrajectoryCheckReturnType : int
 	ExecuteGameCheck = 0,
 	SkipGameCheck = 1,
 	SatisfyGameCheck = 2,
+	Detonate = 3
 };
 
 class PhobosTrajectoryType

@@ -238,7 +238,7 @@ DEFINE_HOOK(0x46745C, BulletClass_AI_Position_Trajectories, 0x7)
 
 DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
 {
-	enum { SkipCheck = 0x4678F8, ContinueAfterCheck = 0x467879 };
+	enum { SkipCheck = 0x4678F8, ContinueAfterCheck = 0x467879, Detonate = 0x467E53 };
 
 	GET(BulletClass*, pThis, EBP);
 
@@ -246,12 +246,20 @@ DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
 
 	if (auto pTraj = pExt->Trajectory)
 	{
-		auto flag = pTraj->OnAITargetCoordCheck(pThis);
-
-		if (flag == TrajectoryCheckReturnType::SkipGameCheck)
+		switch (pTraj->OnAITargetCoordCheck(pThis))
+		{
+		case TrajectoryCheckReturnType::SkipGameCheck:
 			return SkipCheck;
-		if (flag == TrajectoryCheckReturnType::SatisfyGameCheck)
+			break;
+		case TrajectoryCheckReturnType::SatisfyGameCheck:
 			return ContinueAfterCheck;
+			break;
+		case TrajectoryCheckReturnType::Detonate:
+			return Detonate;
+			break;
+		default:
+			break;
+		}
 	}
 
 	return 0;
@@ -268,12 +276,17 @@ DEFINE_HOOK(0x467927, BulletClass_AI_TechnoCheck_Trajectories, 0x5)
 
 	if (auto pTraj = pExt->Trajectory)
 	{
-		auto flag = pTraj->OnAITechnoCheck(pThis, pTechno);
-
-		if (flag == TrajectoryCheckReturnType::SkipGameCheck)
+		switch (pTraj->OnAITechnoCheck(pThis, pTechno))
+		{
+		case TrajectoryCheckReturnType::SkipGameCheck:
 			return SkipCheck;
-		if (flag == TrajectoryCheckReturnType::SatisfyGameCheck)
+			break;
+		case TrajectoryCheckReturnType::SatisfyGameCheck:
 			return ContinueAfterCheck;
+			break;
+		default:
+			break;
+		}
 	}
 
 	return 0;
