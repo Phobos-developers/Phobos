@@ -276,10 +276,6 @@ DEFINE_HOOK(0x4D7221, FootClass_Unlimbo_LaserTrails, 0x6)
 	return 0;
 }
 
-
-	return 0;
-}
-
 DEFINE_HOOK_AGAIN(0x703789, TechnoClass_CloakUpdateMCAnim, 0x6) // TechnoClass_Do_Cloak
 DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_Cloaking_AI
 {
