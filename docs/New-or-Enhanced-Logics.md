@@ -484,11 +484,15 @@ Trajectory.Speed=100.0  ; floating point value
 *Straight trajectory used to make blasters in a private mod by @brsajo#9745*
 
 - Self-explanatory, is a straight-shot trajectory.
+  - `Trajectory.Straight.DetonationDistance` controls the maximum distance in cells from intended target (checked at start of each game frame, before the projectile moves) at which the projectile will be forced to detonate. Set to 0 to disable forced detonation (note that this can cause the projectile to overshoot the target).
+  - `Trajectory.Straight.TargetSnapDistance` controls the maximum distance in cells from intended target the projectile can be at moment of detonation to make the projectile 'snap' on the intended target. Set to 0 to disable snapping.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]     ; Projectile
-Trajectory=Straight  ; Trajectory type
+[SOMEPROJECTILE]                            ; Projectile
+Trajectory=Straight                         ; Trajectory type
+Trajectory.Straight.DetonationDistance=0.4  ; floating point value
+Trajectory.Straight.TargetSnapDistance=0.0  ; floating point value
 ```
 
 #### Bombard trajectory

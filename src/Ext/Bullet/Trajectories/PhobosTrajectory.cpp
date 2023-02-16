@@ -101,6 +101,7 @@ PhobosTrajectoryType* PhobosTrajectoryType::ProcessFromStream(PhobosStreamWriter
 bool PhobosTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	Stm.Process(this->Flag, false);
+
 	return true;
 }
 
@@ -205,6 +206,18 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 
 	if (detonate && !pThis->SpawnNextAnim)
 		return Detonate;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x467E53, BulletClass_AI_PreDetonation_Trajectories, 0x6)
+{
+	GET(BulletClass*, pThis, EBP);
+
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (auto pTraj = pExt->Trajectory)
+		pTraj->OnAIPreDetonate(pThis);
 
 	return 0;
 }

@@ -1,5 +1,5 @@
 #include "StraightTrajectory.h"
-#include <Ext/BulletType/Body.h>
+#include <Ext/Bullet/Body.h>
 
 bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -16,6 +16,12 @@ bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
 
 void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
+	this->PhobosTrajectoryType::Read(pINI, pSection);
+
+	INI_EX exINI(pINI);
+
+	this->DetonationDistance.Read(exINI, pSection, "Trajectory.Straight.DetonationDistance");
+	this->TargetSnapDistance.Read(exINI, pSection, "Trajectory.Straight.TargetSnapDistance");
 }
 
 bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -30,6 +36,10 @@ bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 
 void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
+	auto const pType = this->GetTrajectoryType<StraightTrajectoryType>(pBullet);
+	this->DetonationDistance = pType->DetonationDistance;
+	this->TargetSnapDistance = pType->TargetSnapDistance;
+
 	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
 	pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z - pBullet->SourceCoords.Z);
@@ -39,10 +49,23 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 bool StraightTrajectory::OnAI(BulletClass* pBullet)
 {
 	// Close enough
-	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < 100)
+	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < this->DetonationDistance)
 		return true;
 
 	return false;
+}
+
+void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
+{
+	auto pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
+	auto pCoords = pTarget ? pTarget->GetCoords() : pBullet->Data.Location;
+
+	if (pCoords.DistanceFrom(pBullet->Location) <= this->TargetSnapDistance)
+	{
+		auto const pExt = BulletExt::ExtMap.Find(pBullet);
+		pExt->SnappedToTarget = true;
+		pBullet->SetLocation(pCoords);
+	}
 }
 
 void StraightTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
