@@ -344,6 +344,7 @@ New:
 - Dump variables to file on scenario end / hotkey (by Morton)
 - "House owns TechnoType" and "House doesn't own TechnoType" trigger events
 - Allow toggling `Infantry/UnitsGainSelfHeal` for `MultiplayPassive=true` houses (by Starkku)
+- Customizable straight trajectory detonation & snap distance and pass-through option (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
