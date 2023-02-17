@@ -401,9 +401,6 @@ DEFINE_HOOK(0x43BCBD, BuildingClass_CTOR, 0x6)
 {
 	GET(BuildingClass*, pItem, ESI);
 
-	if (pItem && strcmp(pItem->get_ID(), "YAEXPMIND") == 0)
-		Debug::Log("Test\n");
-
 	BuildingExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
