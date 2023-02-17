@@ -79,6 +79,9 @@ DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_Sh
 	else
 		pTarget = R->EBP<TechnoClass*>();
 
+	if (!pTarget)
+		return 0;
+
 	if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
 	{
 		if (const auto pShieldData = pExt->Shield.get())
