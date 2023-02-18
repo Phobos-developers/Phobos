@@ -43,7 +43,9 @@ public:
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
 	static bool ShieldIsBrokenTEvent(ObjectClass* pAttached);
 
+	virtual bool InvalidateIgnorable(void* const ptr) const;
 	virtual void InvalidatePointer(void* ptr, bool bDetach);
+
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;
 

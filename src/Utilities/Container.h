@@ -5,6 +5,7 @@
 #include <CCINIClass.h>
 #include <SwizzleManagerClass.h>
 
+#include "Concepts.h"
 #include "Debug.h"
 #include "Stream.h"
 #include "Swizzle.h"
@@ -138,6 +139,137 @@ protected:
 	virtual void LoadFromINIFile(CCINIClass* pINI) { }
 };
 
+// a non-virtual base class for a pointer to pointer map.
+// pointers are not owned by this map, so be cautious.
+class ContainerMapBase final
+{
+public:
+	using key_type = void*;
+	using const_key_type = const void*;
+	using value_type = void*;
+	using map_type = std::unordered_map<const_key_type, value_type>;
+	using const_iterator = map_type::const_iterator;
+	using iterator = const_iterator;
+
+	ContainerMapBase() = default;
+	ContainerMapBase(ContainerMapBase const&) = delete;
+	~ContainerMapBase() = default;
+
+	ContainerMapBase& operator=(ContainerMapBase const&) = delete;
+	ContainerMapBase& operator=(ContainerMapBase&&) = delete;
+
+	value_type find(const_key_type key) const
+	{
+		auto const it = this->Items.find(key);
+		if (it != this->Items.end())
+			return it->second;
+
+		return nullptr;
+	}
+
+	void insert(const_key_type key, value_type value)
+	{
+		this->Items.emplace(key, value);
+	}
+
+	value_type remove(const_key_type key)
+	{
+		auto const it = this->Items.find(key);
+		if (it != this->Items.cend())
+		{
+			auto const value = it->second;
+			this->Items.erase(it);
+
+			return value;
+		}
+
+		return nullptr;
+	}
+
+	void clear()
+	{
+		// this leaks all objects inside. this case is logged.
+		this->Items.clear();
+	}
+
+	size_t size() const
+	{
+		return this->Items.size();
+	}
+
+	const_iterator begin() const
+	{
+		return this->Items.cbegin();
+	}
+
+	const_iterator end() const
+	{
+		return this->Items.cend();
+	}
+
+private:
+	map_type Items;
+};
+
+// looks like a typed map, but is really a thin wrapper around the untyped map
+// pointers are not owned here either, see that each pointer is deleted
+template <typename Key, typename Value>
+class ContainerMap final
+{
+public:
+	using key_type = Key*;
+	using const_key_type = const Key*;
+	using value_type = Value*;
+	using iterator = typename std::unordered_map<key_type, value_type>::const_iterator;
+
+	ContainerMap() = default;
+	ContainerMap(ContainerMap const&) = delete;
+
+	ContainerMap& operator=(ContainerMap const&) = delete;
+	ContainerMap& operator=(ContainerMap&&) = delete;
+
+	value_type find(const_key_type key) const
+	{
+		return static_cast<value_type>(this->Items.find(key));
+	}
+
+	value_type insert(const_key_type key, value_type value)
+	{
+		this->Items.insert(key, value);
+		return value;
+	}
+
+	value_type remove(const_key_type key)
+	{
+		return static_cast<value_type>(this->Items.remove(key));
+	}
+
+	void clear()
+	{
+		this->Items.clear();
+	}
+
+	size_t size() const
+	{
+		return this->Items.size();
+	}
+
+	iterator begin() const
+	{
+		auto ret = this->Items.begin();
+		return reinterpret_cast<iterator&>(ret);
+	}
+
+	iterator end() const
+	{
+		auto ret = this->Items.end();
+		return reinterpret_cast<iterator&>(ret);
+	}
+
+private:
+	ContainerMapBase Items;
+};
+
 template <class T>
 concept HasOffset = requires(T) { T::ExtPointerOffset; };
 
@@ -152,6 +284,9 @@ private:
 	using base_type_ptr = base_type*;
 	using const_base_type_ptr = const base_type*;
 	using extension_type_ptr = extension_type*;
+	using map_type = ContainerMap<base_type, extension_type>;
+
+	map_type Items;
 
 	base_type* SavingObject;
 	IStream* SavingStream;
@@ -159,6 +294,7 @@ private:
 
 public:
 	explicit Container(const char* pName) :
+		Items(),
 		SavingObject(nullptr),
 		SavingStream(nullptr),
 		Name(pName)
@@ -184,37 +320,52 @@ protected:
 private:
 	extension_type_ptr GetExtensionPointer(const_base_type_ptr key) const
 	{
-		if constexpr (HasOffset<T>)
-			return (extension_type_ptr)(*(uintptr_t*)((char*)key + T::ExtPointerOffset));
-		else
-			return (extension_type_ptr)(*(uintptr_t*)((char*)key + AbstractExtPointerOffset));
+		return (extension_type_ptr)(*(uintptr_t*)((char*)key + T::ExtPointerOffset));
+	}
+
+	extension_type_ptr GetAbstractExtensionPointer(const_base_type_ptr key) const
+	{
+		return (extension_type_ptr)(*(uintptr_t*)((char*)key + AbstractExtPointerOffset));
 	}
 
 	void SetExtensionPointer(base_type_ptr key, extension_type_ptr value)
 	{
-		if constexpr (HasOffset<T>)
-			(*(uintptr_t*)((char*)key + T::ExtPointerOffset)) = (uintptr_t)value;
-		else
-			(*(uintptr_t*)((char*)key + AbstractExtPointerOffset)) = (uintptr_t)value;
+		(*(uintptr_t*)((char*)key + T::ExtPointerOffset)) = (uintptr_t)value;
+	}
+
+	void SetAbstractExtensionPointer(base_type_ptr key, extension_type_ptr value)
+	{
+		(*(uintptr_t*)((char*)key + AbstractExtPointerOffset)) = (uintptr_t)value;
 	}
 
 	void ResetExtensionPointer(base_type_ptr key)
 	{
-		if constexpr (HasOffset<T>)
-			(*(uintptr_t*)((char*)key + T::ExtPointerOffset)) = 0;
-		else
-			(*(uintptr_t*)((char*)key + AbstractExtPointerOffset)) = 0;
+		(*(uintptr_t*)((char*)key + T::ExtPointerOffset)) = 0;
+	}
+
+	void ResetAbstractExtensionPointer(base_type_ptr key)
+	{
+		(*(uintptr_t*)((char*)key + AbstractExtPointerOffset)) = 0;
 	}
 
 public:
 	extension_type_ptr Allocate(base_type_ptr key)
 	{
-		ResetExtensionPointer(key);
+		if constexpr (HasOffset<T>)
+			ResetExtensionPointer(key);
+		else if constexpr (CanBeAbstract<base_type>)
+			ResetAbstractExtensionPointer(key);
 
 		if (auto const val = new extension_type(key))
 		{
 			val->EnsureConstanted();
-			SetExtensionPointer(key, val);
+
+			if constexpr (HasOffset<T>)
+				SetExtensionPointer(key, val);
+			else if constexpr (CanBeAbstract<base_type>)
+				SetAbstractExtensionPointer(key, val);
+
+			this->Items.insert(key, val);
 
 			return val;
 		}
@@ -258,21 +409,36 @@ public:
 		if (!key)
 			return nullptr;
 
-		return GetExtensionPointer(key);
-
+		if constexpr (HasOffset<T>)
+			return GetExtensionPointer(key);
+		else if constexpr (CanBeAbstract<base_type>)
+			return GetAbstractExtensionPointer(key);
+		else
+			return this->Items.find(key);
 	}
 
 	void Remove(base_type_ptr key)
 	{
 		if (auto Item = Find(key))
 		{
+			this->Items.remove(key);
 			delete Item;
 
-			ResetExtensionPointer(key);
+			if constexpr (HasOffset<T>)
+				ResetExtensionPointer(key);
+			else if constexpr (CanBeAbstract<base_type>)
+				ResetAbstractExtensionPointer(key);
 		}
 	}
 
-	virtual void Clear() { }
+	void Clear()
+	{
+		if (this->Items.size())
+		{
+			Debug::Log("Cleared %u items from %s.\n", this->Items.size(), this->Name);
+			this->Items.clear();
+		}
+	}
 
 	void LoadFromINI(const_base_type_ptr key, CCINIClass* pINI)
 	{
@@ -322,6 +488,21 @@ public:
 
 		this->SavingObject = nullptr;
 		this->SavingStream = nullptr;
+	}
+
+	decltype(auto) begin() const
+	{
+		return this->Items.begin();
+	}
+
+	decltype(auto) end() const
+	{
+		return this->Items.end();
+	}
+
+	size_t size() const
+	{
+		return this->Items.size();
 	}
 
 protected:

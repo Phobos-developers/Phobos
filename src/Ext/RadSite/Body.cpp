@@ -190,7 +190,6 @@ void RadSiteExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 		return;
 
 	AnnounceInvalidPointer(RadInvoker, ptr);
-
 }
 
 // =============================

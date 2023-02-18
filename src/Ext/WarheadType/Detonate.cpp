@@ -314,17 +314,16 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 	}
 	else
 	{
-		for (auto const pBullet : *BulletClass::Array)
+		for (auto& [pBullet, pBulletExt] : BulletExt::ExtMap)
 		{
 			if (pBullet->Location.DistanceFrom(coords) > cellSpread * Unsorted::LeptonsPerCell)
 				continue;
 
-			auto const pExt = BulletExt::ExtMap.Find(pBullet);
-			auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+			auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
 
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
-			if (pTypeExt && pTypeExt->Interceptable)
-				pExt->InterceptBullet(pOwner, pWeapon);
+			if (pBulletTypeExt && pBulletTypeExt->Interceptable)
+				pBulletExt->InterceptBullet(pOwner, pWeapon);
 		}
 	}
 }

@@ -252,6 +252,7 @@ bool TechnoExt::SaveGlobals(PhobosStreamWriter& Stm)
 bool TechnoExt::ExtData::InvalidateIgnorable(void* const ptr) const
 {
 	auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+
 	switch (abs)
 	{
 	case AbstractType::House:
@@ -335,7 +336,7 @@ DEFINE_HOOK(0x70783B, TechnoClass_Detach, 0x6)
 	return pThis->BeingManipulatedBy == target ? 0x707843 : 0x707849;
 }
 
-DEFINE_HOOK(0x710443, TechnoClass_AnimPointerExpired_PhobosAdd, 6)
+DEFINE_HOOK(0x710443, TechnoClass_AnimPointerExpired, 0x6)
 {
 	GET(AnimClass*, pAnim, EAX);
 	GET(TechnoClass*, pThis, ECX);
