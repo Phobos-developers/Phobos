@@ -68,11 +68,10 @@ DEFINE_HOOK(0x62FA20, ParticleSystemClass_FireAI_TargetCoords, 0x6)
 	return Continue;
 }
 
-//
-DEFINE_HOOK_AGAIN(0x62D685, ParticleSystemClass_Fire_Coords, 0x5)
-DEFINE_HOOK(0x62D596, ParticleSystemClass_Fire_Coords, 0x5)
+// Fix fire particles being disallowed from going upwards.
+DEFINE_HOOK(0x62D685, ParticleSystemClass_Fire_Coords, 0x5)
 {
-	enum { SkipGameCode1 = 0x62D5C8, SkipGameCode2 = 0x62D6B7 };
+	enum { SkipGameCode = 0x62D6B7 };
 
 	// Game checks if MapClass::GetCellFloorHeight() for currentCoords is larger than for previousCoords and sets the flags on ParticleClass to
 	// remove it if so. Below is an attempt to create a smarter check that allows upwards movement and does not needlessly collide with elevation
@@ -98,7 +97,7 @@ DEFINE_HOOK(0x62D596, ParticleSystemClass_Fire_Coords, 0x5)
 	}
 	*/
 
-	return R->Origin() == 0x62D596 ? SkipGameCode1 : SkipGameCode2;
+	return SkipGameCode;
 }
 
 // Fix railgun target coordinates potentially differing from actual target coords.

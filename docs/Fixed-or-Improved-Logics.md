@@ -143,8 +143,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fix [EIP 00529A14](https://modenc.renegadeprojects.com/Internal_Error/YR#eip_00529A14) when attempting to read `[Header]` section of campaign maps.
 - Units will no longer rotate its turret under EMP.
 - Jumpjets will no longer wobble under EMP.
-- Fixed weapon effects like railguns, lasers, beams, bolts and waves drawing beyond where Warhead detonates if it hits an obstacle like wall. Note that this is not necessarily same as the actual projectile travel path if it is not `Inviso=true` projectile.
 - Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes.
+- Fixed railgun and fire particles being cut off by elevation changes.
+
 
 ## Fixes / interactions with other extensions
 
