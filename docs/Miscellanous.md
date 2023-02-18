@@ -120,3 +120,25 @@ function onInput() {
 	}
 }
 </script>
+
+## INI
+
+### Section inheritance
+- You can now make sections (children) inherit entries from other sections (parents) with `$Inherits`.
+  - Every parent entry will be inherited verbatim, without checking if it is valid.
+  - When there are multiple parents, they will be inherited in the order they were given.
+  - In the child entry, entries before `$Inherits` can be overwritten if they are defined inside parents. **It is advised to always keep `$Inherits` as the first entry in a section.**
+
+```{warning}
+Currently, this feature only works in files included by [Ares #include feature](https://ares-developers.github.io/Ares-docs/new/misc/include.html).
+```
+
+In any file:
+```ini
+[PARENT1SECTION]
+
+[PARENT2SECTION]
+
+[CHILDSECTION]
+$Inherits=PARENT1SECTION,PARENT2SECTION...  ; section names
+```
