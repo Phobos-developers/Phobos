@@ -263,7 +263,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 			for (auto entry : team->Type->TaskForce->Entries)
 			{
-				if (entry.Amount > 0)
+				if (entry.Type && entry.Amount > 0)
 				{
 					if (entry.Type)
 						Debug::Log("\t[%s]: %d / %d\n", entry.Type->ID, team->CountObjects[i], entry.Amount);
@@ -594,6 +594,9 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 							if (entry.Amount > 0)
 							{
+								if (!entry.Type)
+									continue;
+
 								if (entry.Type->WhatAmI() == AbstractType::AircraftType
 									|| entry.Type->ConsideredAircraft)
 								{
@@ -689,7 +692,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						for (auto entry : pTriggerTeam1Type->TaskForce->Entries)
 						{
 							// Check if each unit in the taskforce has the available recruitable units in the map
-							if (allObjectsCanBeBuiltOrRecruited && entry.Amount > 0)
+							if (allObjectsCanBeBuiltOrRecruited && entry.Type && entry.Amount > 0)
 							{
 								bool canBeRecruited = false;
 
