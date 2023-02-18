@@ -35,6 +35,72 @@ DEFINE_HOOK(0x6FF15F, TechnoClass_FireAt_ObstacleCellSet, 0x6)
 	return 0;
 }
 
+// Apply obstacle logic to fire & spark particle system targets.
+DEFINE_HOOK_AGAIN(0x6FF1D7, TechnoClass_FireAt_SparkFireTargetSet, 0x5)
+DEFINE_HOOK(0x6FF189, TechnoClass_FireAt_SparkFireTargetSet, 0x5)
+{
+	if (FireAtTemp::pObstacleCell)
+	{
+		if (R->Origin() == 0x6FF189)
+			R->ECX(FireAtTemp::pObstacleCell);
+		else
+			R->EDX(FireAtTemp::pObstacleCell);
+	}
+
+	return 0;
+}
+
+// Fix fire particle target coordinates potentially differing from actual target coords.
+DEFINE_HOOK(0x62FA20, ParticleSystemClass_FireAI_TargetCoords, 0x6)
+{
+	enum { SkipGameCode = 0x62FA51, Continue = 0x62FBAF };
+
+	GET(ParticleSystemClass*, pThis, ESI);
+	GET(TechnoClass*, pOwner, EBX);
+
+	if (pOwner->PrimaryFacing.IsRotating())
+	{
+		auto coords = pThis->TargetCoords;
+		R->EAX(&coords);
+		return SkipGameCode;
+	}
+
+	return Continue;
+}
+
+//
+DEFINE_HOOK_AGAIN(0x62D685, ParticleSystemClass_Fire_Coords, 0x5)
+DEFINE_HOOK(0x62D596, ParticleSystemClass_Fire_Coords, 0x5)
+{
+	enum { SkipGameCode1 = 0x62D5C8, SkipGameCode2 = 0x62D6B7 };
+
+	// Game checks if MapClass::GetCellFloorHeight() for currentCoords is larger than for previousCoords and sets the flags on ParticleClass to
+	// remove it if so. Below is an attempt to create a smarter check that allows upwards movement and does not needlessly collide with elevation
+	// but removes particles when colliding with flat ground. It doesn't work perfectly and covering all edge-cases is difficult or impossible so
+	// preference was to disable it. Keeping the code here commented out, however.
+
+	/*
+	GET(ParticleClass*, pThis, ESI);
+	REF_STACK(CoordStruct, currentCoords, STACK_OFFSET(0x24, -0x18));
+	REF_STACK(CoordStruct, previousCoords, STACK_OFFSET(0x24, -0xC));
+
+	auto const sourceLocation = pThis->ParticleSystem ? pThis->ParticleSystem->Location : CoordStruct { INT_MAX, INT_MAX, INT_MAX };
+	auto const pCell = MapClass::Instance->TryGetCellAt(currentCoords);
+	int cellFloor = MapClass::Instance->GetCellFloorHeight(currentCoords);
+	bool downwardTrajectory = currentCoords.Z < previousCoords.Z;
+	bool isBelowSource = cellFloor < sourceLocation.Z - Unsorted::LevelHeight * 2;
+	bool isRamp = pCell ? pCell->SlopeIndex : false;
+
+	if (!isRamp && isBelowSource && downwardTrajectory && currentCoords.Z < cellFloor)
+	{
+		pThis->unknown_12D = 1;
+		pThis->unknown_131 = 1;
+	}
+	*/
+
+	return R->Origin() == 0x62D596 ? SkipGameCode1 : SkipGameCode2;
+}
+
 // Fix railgun target coordinates potentially differing from actual target coords.
 DEFINE_HOOK(0x70C6B5, TechnoClass_Railgun_TargetCoords, 0x5)
 {
@@ -66,14 +132,14 @@ DEFINE_HOOK(0x70CA64, TechnoClass_Railgun_Obstacles, 0x5)
 	return Continue;
 }
 
-// Do not adjust map coordinates for railgun particles that are below cell coordinates.
-DEFINE_HOOK(0x62B8BC, ParticleClass_CTOR_RailgunCoordAdjust, 0x6)
+// Do not adjust map coordinates for railgun or fire stream particles that are below cell coordinates.
+DEFINE_HOOK(0x62B8BC, ParticleClass_CTOR_CoordAdjust, 0x6)
 {
 	enum { SkipCoordAdjust = 0x62B8CB };
 
 	GET(ParticleClass*, pThis, ESI);
 
-	if (pThis->ParticleSystem && pThis->ParticleSystem->Type->BehavesLike == BehavesLike::Railgun)
+	if (pThis->ParticleSystem && (pThis->ParticleSystem->Type->BehavesLike == BehavesLike::Railgun || pThis->ParticleSystem->Type->BehavesLike == BehavesLike::Fire))
 		return SkipCoordAdjust;
 
 	return 0;
@@ -95,7 +161,7 @@ DEFINE_HOOK(0x6FD38D, TechnoClass_LaserZap_Obstacles, 0x7)
 }
 
 // Adjust target for bolt / beam / wave drawing.
-DEFINE_HOOK(0x6FF57D, TechnoClass_FireAt_TargetSet, 0x6)
+DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_TargetSet, 0x6)
 {
 	LEA_STACK(CoordStruct*, pTargetCoords, STACK_OFFSET(0xB0, -0x28));
 	GET(AbstractClass*, pTarget, EDI);
@@ -109,7 +175,6 @@ DEFINE_HOOK(0x6FF57D, TechnoClass_FireAt_TargetSet, 0x6)
 		pTargetCoords->X = coords.X;
 		pTargetCoords->Y = coords.Y;
 		pTargetCoords->Z = coords.Z;
-
 		R->EDI(FireAtTemp::pObstacleCell);
 	}
 
@@ -128,8 +193,8 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_ObstacleCellUnset, 0x6)
 	auto target = FireAtTemp::pOriginalTarget;
 
 	FireAtTemp::originalTargetCoords = CoordStruct::Empty;
-	FireAtTemp::pObstacleCell = nullptr;
 	FireAtTemp::pOriginalTarget = nullptr;
+	FireAtTemp::pObstacleCell = nullptr;
 
 	R->EDI(target);
 
