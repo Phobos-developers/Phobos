@@ -19,13 +19,12 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 
 	if (pThis && pTarget && pTarget->WhatAmI() == AbstractType::Bullet)
 	{
-		if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+		if (pTypeExt->Interceptor)
 		{
-			if (pTypeExt->Interceptor)
-			{
-				R->EAX(pTypeExt->Interceptor_Weapon);
-				return ReturnValue;
-			}
+			R->EAX(pTypeExt->Interceptor_Weapon);
+			return ReturnValue;
 		}
 	}
 
@@ -37,7 +36,7 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 
 DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 {
-	enum { Secondary = 0x6F3745 };
+	enum { Secondary = 0x6F3745, UseWeaponIndex = 0x6F37AF };
 
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
@@ -58,39 +57,34 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 {
 	enum { UseWeaponIndex = 0x6F37AF };
 
-	GET(TechnoClass*, pTechno, ECX);
+	GET(TechnoClass*, pThis, ECX);
 
-	if (pTechno && pTechno->Target)
+	if (pThis && pThis->Target)
 	{
-
-		auto pTarget = abstract_cast<TechnoClass*>(pTechno->Target);
+		auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target);
 
 		if (!pTarget)
 			return 0;
 
 		int forceWeaponIndex = -1;
+		auto const pTargetType = pTarget->GetTechnoType();
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
+		if (pTypeExt->ForceWeapon_Naval_Decloaked >= 0 &&
+			pTargetType->Cloakable && pTargetType->Naval &&
+			pTarget->CloakState == CloakState::Uncloaked)
 		{
-			auto pTargetType = pTarget->GetTechnoType();
-
-
-			if (pTechnoTypeExt->ForceWeapon_Naval_Decloaked >= 0 &&
-				pTargetType->Cloakable && pTargetType->Naval &&
-				pTarget->CloakState == CloakState::Uncloaked)
-			{
-				forceWeaponIndex = pTechnoTypeExt->ForceWeapon_Naval_Decloaked;
-			}
-			else if (pTechnoTypeExt->ForceWeapon_Cloaked >= 0 &&
-				pTarget->CloakState == CloakState::Cloaked)
-			{
-				forceWeaponIndex = pTechnoTypeExt->ForceWeapon_Cloaked;
-			}
-			else if (pTechnoTypeExt->ForceWeapon_Disguised >= 0 &&
-				pTarget->IsDisguised())
-			{
-				forceWeaponIndex = pTechnoTypeExt->ForceWeapon_Disguised;
-			}
+			forceWeaponIndex = pTypeExt->ForceWeapon_Naval_Decloaked;
+		}
+		else if (pTypeExt->ForceWeapon_Cloaked >= 0 &&
+			pTarget->CloakState == CloakState::Cloaked)
+		{
+			forceWeaponIndex = pTypeExt->ForceWeapon_Cloaked;
+		}
+		else if (pTypeExt->ForceWeapon_Disguised >= 0 &&
+			pTarget->IsDisguised())
+		{
+			forceWeaponIndex = pTypeExt->ForceWeapon_Disguised;
 		}
 
 		if (forceWeaponIndex >= 0)
@@ -111,38 +105,34 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, OriginalCheck = 0x6F36E3 };
 
 	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	bool allowFallback = !pTypeExt->NoSecondaryWeaponFallback;
+	bool allowAAFallback = allowFallback ? true : pTypeExt->NoSecondaryWeaponFallback_AllowAA;
+	int weaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, 0, 1, allowFallback, allowAAFallback);
 
-	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	if (weaponIndex != -1)
+		return weaponIndex == 1 ? Secondary : Primary;
+
+	if (!pTargetTechno)
+		return Primary;
+
+	if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
 	{
-		bool allowFallback = !pTypeExt->NoSecondaryWeaponFallback;
-		bool allowAAFallback = allowFallback ? true : pTypeExt->NoSecondaryWeaponFallback_AllowAA;
-
-		int weaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, 0, 1, allowFallback, allowAAFallback);
-
-		if (weaponIndex != -1)
-			return weaponIndex == 1 ? Secondary : Primary;
-
-		if (!pTargetTechno)
-			return Primary;
-
-		if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
+		if (const auto pShield = pTargetExt->Shield.get())
 		{
-			if (const auto pShield = pTargetExt->Shield.get())
+			if (pShield->IsActive())
 			{
-				if (pShield->IsActive())
-				{
-					auto const secondary = pThis->GetWeapon(1)->WeaponType;
-					bool secondaryIsAA = pTargetTechno && pTargetTechno->IsInAir() && secondary && secondary->Projectile->AA;
+				auto const secondary = pThis->GetWeapon(1)->WeaponType;
+				bool secondaryIsAA = pTargetTechno && pTargetTechno->IsInAir() && secondary && secondary->Projectile->AA;
 
-					if (secondary && (allowFallback || (allowAAFallback && secondaryIsAA) || TechnoExt::CanFireNoAmmoWeapon(pThis, 1)))
-					{
-						if (!pShield->CanBeTargeted(pThis->GetWeapon(0)->WeaponType))
-							return Secondary;
-					}
-					else
-					{
-						return Primary;
-					}
+				if (secondary && (allowFallback || (allowAAFallback && secondaryIsAA) || TechnoExt::CanFireNoAmmoWeapon(pThis, 1)))
+				{
+					if (!pShield->CanBeTargeted(pThis->GetWeapon(0)->WeaponType))
+						return Secondary;
+				}
+				else
+				{
+					return Primary;
 				}
 			}
 		}
@@ -169,12 +159,12 @@ DEFINE_HOOK(0x6F37EB, TechnoClass_WhatWeaponShouldIUse_AntiAir, 0x6)
 
 DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 {
-	enum { ReturnValue = 0x6F37AF };
+	enum { UseWeaponIndex = 0x6F37AF };
 
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
-	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+	auto const pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
 	int oddWeaponIndex = 2 * pThis->CurrentGattlingStage;
 	int evenWeaponIndex = oddWeaponIndex + 1;
 	int chosenWeaponIndex = oddWeaponIndex;
@@ -186,19 +176,17 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 	}
 	else if (pTargetTechno)
 	{
+		auto const pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
 		auto const pWeaponOdd = pThis->GetWeapon(oddWeaponIndex)->WeaponType;
 		auto const pWeaponEven = pThis->GetWeapon(evenWeaponIndex)->WeaponType;
 		bool skipRemainingChecks = false;
 
-		if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
+		if (const auto pShield = pTargetExt->Shield.get())
 		{
-			if (const auto pShield = pTargetExt->Shield.get())
+			if (pShield->IsActive() && !pShield->CanBeTargeted(pWeaponOdd))
 			{
-				if (pShield->IsActive() && !pShield->CanBeTargeted(pWeaponOdd))
-				{
-					chosenWeaponIndex = evenWeaponIndex;
-					skipRemainingChecks = true;
-				}
+				chosenWeaponIndex = evenWeaponIndex;
+				skipRemainingChecks = true;
 			}
 		}
 
@@ -210,7 +198,7 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 			}
 			else
 			{
-				auto pCell = pTargetTechno->GetCell();
+				auto const pCell = pTargetTechno->GetCell();
 				bool isOnWater = (pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach) && !pTargetTechno->IsInAir();
 
 				if (!pTargetTechno->OnBridge && isOnWater)
@@ -230,7 +218,7 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 	}
 
 	R->EAX(chosenWeaponIndex);
-	return ReturnValue;
+	return UseWeaponIndex;
 }
 
 DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
