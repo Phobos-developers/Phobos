@@ -16,8 +16,9 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From older Phobos versions
 
-### From 0.3
+#### From 0.3
 
+- `Grinding.DisplayRefund` is changed to `DisplayIncome`, `Grinding.DisplayRefund.Houses` is changed to `DisplayIncome.Houses`, `Grinding.DisplayRefund.Offset` is changed to `DisplayIncome.Offset`
 - `[JumpjetControls]`->`AllowLayerDeviation` and `JumpjetAllowLayerDeviation` have been deprecated as the animation layering issues have been properly fixed by default now.
 - `[JumpjetControls]->TurnToTarget` and `JumpjetTurnToTarget` are obsolete. Jumpjet units who fire `OmniFire=no` weapons **always** turn to targets as other units do.
   - `OmniFire.TurnToTarget` is recommended for jumpjet units' omnifiring weapons for facing turning.
@@ -26,8 +27,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 #### From pre-0.3 devbuilds
 
 - `Trajectory.Speed` is now defined on projectile instead of weapon.
-- `Gravity=0` is not supportint burstDelay = pWeaponExt->GetBurstDelay(pThis->CurrentBurstIndex);
-ed anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
+- `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 - Automatic self-destruction logic logic has been reimplemented, `Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been remade/renamed and require adjustments to function.
 - `DetachedFromOwner` on weapons is deprecated. This has been replaced by `AllowDamageOnSelf` on warheads.
 - Timed jump script actions now take the time measured in ingame seconds instead of frames. Divide your value by 15 to accomodate to this change.
@@ -264,6 +264,7 @@ New:
 - New AI teams selector (by FS-21)
 - Toggleable DieSound when grinding (by Trsdy)
 - Shields can inherit Techno ArmorType (by Starkku)
+- Income money flying-string display when harvesters or slaves are docking to refineries (by Trsdy)
 - Allow random crates to be generated only on lands (by Trsdy)
 - Iron-curtain effects on infantries and organic units (by ststl)
 - Custom `SlavesFreeSound` (by TwinkleStar)
@@ -309,6 +310,7 @@ Phobos fixes:
 - Fixed shield animation being hidden while underground or in tunnels fix not working correctly (by Starkku)
 - Restore the `MindClearedSound` when deploying a mind-controlled unit into a building loses the mind-control (by Trsdy)
 - Reimplemented the bugfix for jumpjet units' facing when firing, discard the inappropriate `JumpjetTurnToTarget` tag (by Trsdy)
+- Fixed `RadSiteWarhead.Detonate` not detonating precisely on the affected object (thus requiring `CellSpread`) (by Starkku)
 </details>
 
 

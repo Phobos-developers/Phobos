@@ -139,9 +139,10 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Grinding_Sound.Read(exINI, pSection, "Grinding.Sound");
 	this->Grinding_PlayDieSound.Read(exINI, pSection, "Grinding.PlayDieSound");
 	this->Grinding_Weapon.Read(exINI, pSection, "Grinding.Weapon", true);
-	this->Grinding_DisplayRefund.Read(exINI, pSection, "Grinding.DisplayRefund");
-	this->Grinding_DisplayRefund_Houses.Read(exINI, pSection, "Grinding.DisplayRefund.Houses");
-	this->Grinding_DisplayRefund_Offset.Read(exINI, pSection, "Grinding.DisplayRefund.Offset");
+
+	this->DisplayIncome.Read(exINI, pSection, "DisplayIncome");
+	this->DisplayIncome_Houses.Read(exINI, pSection, "DisplayIncome.Houses");
+	this->DisplayIncome_Offset.Read(exINI, pSection, "DisplayIncome.Offset");
 
 	this->Secret_RecalcOnCapture.Read(exINI, pSection, "SecretLab.GenerateOnCapture");
 	//this->PossibleBoons.Read(exINI, pSection, "SecretLab.PossibleBoons");
@@ -224,11 +225,11 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Grinding_AllowTypes)
 		.Process(this->Grinding_DisallowTypes)
 		.Process(this->Grinding_Sound)
-		.Process(this->Grinding_Weapon)
 		.Process(this->Grinding_PlayDieSound)
-		.Process(this->Grinding_DisplayRefund)
-		.Process(this->Grinding_DisplayRefund_Houses)
-		.Process(this->Grinding_DisplayRefund_Offset)
+		.Process(this->Grinding_Weapon)
+		.Process(this->DisplayIncome)
+		.Process(this->DisplayIncome_Houses)
+		.Process(this->DisplayIncome_Offset)
 		.Process(this->PlacementPreview)
 		.Process(this->PlacementPreview_Shape)
 		.Process(this->PlacementPreview_ShapeFrame)

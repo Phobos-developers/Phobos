@@ -26,6 +26,7 @@
     <ClCompile Include="src\Commands\ObjectInfo.cpp" />
     <ClCompile Include="src\Commands\QuickSave.cpp" />
     <ClCompile Include="src\Ext\Anim\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Building\Hooks.IncomeAndSelling.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\BombardTrajectory.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\StraightTrajectory.cpp" />
