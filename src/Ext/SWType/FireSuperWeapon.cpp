@@ -287,34 +287,35 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 
 void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 {
-	if (this->Convert_To.size())
-	{
-		if (this->Convert_From.size())
-		{
-			for (auto pTarget : *FootClass::Array)
-			{
-				if (!EnumFunctions::CanTargetHouse(this->Convert_AffectedHouses, pSW->Owner, pTarget->Owner))
-					continue;
+	if (this->Convert_To.size() == 0)
+		return;
 
-				for (size_t i = 0; i < this->Convert_From.size(); i++)
+	if (this->Convert_From.size())
+	{
+		for (auto pTarget : *FootClass::Array)
+		{
+			if (!EnumFunctions::CanTargetHouse(this->Convert_AffectedHouses, pSW->Owner, pTarget->Owner))
+				continue;
+
+			for (size_t i = 0; i < this->Convert_From.size(); i++)
+			{
+				// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
+				if (this->Convert_To.size() >= i && this->Convert_From[i] == pTarget->GetTechnoType())
 				{
-					// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
-					if (this->Convert_To.size() >= i && this->Convert_From[i] == pTarget->GetTechnoType())
-					{
-						TechnoExt::ConvertToType(pTarget, this->Convert_To[i]);
-						break;
-					}
+					TechnoExt::ConvertToType(pTarget, this->Convert_To[i]);
+					break;
 				}
 			}
 		}
-		else
+	}
+	else
+	{
+		for (auto pTarget : *FootClass::Array)
 		{
-			for (auto pTarget : *FootClass::Array)
-			{
-				if (!EnumFunctions::CanTargetHouse(this->Convert_AffectedHouses, pSW->Owner, pTarget->Owner))
-					continue;
-				TechnoExt::ConvertToType(pTarget, this->Convert_To[0]);
-			}
+			if (!EnumFunctions::CanTargetHouse(this->Convert_AffectedHouses, pSW->Owner, pTarget->Owner))
+				continue;
+
+			TechnoExt::ConvertToType(pTarget, this->Convert_To[0]);
 		}
 	}
 }

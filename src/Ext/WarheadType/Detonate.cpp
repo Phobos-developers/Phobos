@@ -325,27 +325,26 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 
 void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	if (auto pTargetFoot = abstract_cast<FootClass*>(pTarget))
+	auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
+
+	if (!pTargetFoot || this->Convert_To.size() == 0)
+		return;
+
+	if (this->Convert_From.size())
 	{
-		if (this->Convert_To.size())
+		// explicitly unsigned because the compiler wants it
+		for (size_t i = 0; i < this->Convert_From.size(); i++)
 		{
-			if (this->Convert_From.size())
+			// Check if the target matches upgrade-from TechnoType and it has something to upgrade to
+			if (this->Convert_To.size() >= i && this->Convert_From[i] == pTarget->GetTechnoType())
 			{
-				// explicitly unsigned because the compiler wants it
-				for (size_t i = 0; i < this->Convert_From.size(); i++)
-				{
-					// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
-					if (this->Convert_To.size() >= i && this->Convert_From[i] == pTarget->GetTechnoType())
-					{
-						TechnoExt::ConvertToType(pTargetFoot,this->Convert_To[i]);
-						break;
-					}
-				}
-			}
-			else
-			{
-				TechnoExt::ConvertToType(pTargetFoot, this->Convert_To[0]);
+				TechnoExt::ConvertToType(pTargetFoot,this->Convert_To[i]);
+				break;
 			}
 		}
+	}
+	else
+	{
+		TechnoExt::ConvertToType(pTargetFoot, this->Convert_To[0]);
 	}
 }
