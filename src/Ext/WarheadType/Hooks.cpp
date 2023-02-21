@@ -84,7 +84,7 @@ DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x48A5BD, WarheadTypeClass_AnimList_PickRandom, 0x6)
+DEFINE_HOOK(0x48A5BD, SelectDamageAnimation_PickRandom, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
@@ -92,7 +92,7 @@ DEFINE_HOOK(0x48A5BD, WarheadTypeClass_AnimList_PickRandom, 0x6)
 	return pWHExt && pWHExt->AnimList_PickRandom ? 0x48A5C7 : 0;
 }
 
-DEFINE_HOOK(0x48A5B3, WarheadTypeClass_AnimList_CritAnim, 0x6)
+DEFINE_HOOK(0x48A5B3, SelectDamageAnimation_CritAnim, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
@@ -156,3 +156,25 @@ DEFINE_HOOK(0x70BC6F, TechnoClass_UpdateRigidBodyKinematics_KillFlipped, 0xA)
 // 0x718B1E
 
 #pragma endregion Fix_WW_Strength_ReceiveDamage_C4Warhead_Misuse
+
+DEFINE_HOOK(0x48A4F3, SelectDamageAnimation_NegativeZeroDamage, 0x6)
+{
+	enum { SkipGameCode = 0x48A507, NoAnim = 0x48A618 };
+
+	GET(int, damage, ECX);
+	GET(WarheadTypeClass* const, warhead, EDX);
+
+	if (!warhead)
+		return NoAnim;
+
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(warhead);
+
+	if (damage == 0 && !pWHExt->AnimList_ShowOnZeroDamage)
+		return NoAnim;
+	else if (damage < 0)
+		damage = -damage;
+
+	R->EDI(damage);
+	R->ESI(warhead);
+	return SkipGameCode;
+}
