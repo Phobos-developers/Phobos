@@ -37,7 +37,7 @@ public:
 		bool ForceFullRearmDelay;
 		AnimClass* DelayedFire_Anim;
 		int DelayedFire_Anim_LoopCount;
-		int DelayedFire_DurationTimer;
+		int DelayedFire_Duration;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -63,7 +63,7 @@ public:
 			, ForceFullRearmDelay { false }
 			, DelayedFire_Anim { nullptr }
 			, DelayedFire_Anim_LoopCount { 0 }
-			, DelayedFire_DurationTimer { -1 }
+			, DelayedFire_Duration { -1 }
 		{ }
 
 		void ApplyInterceptor();

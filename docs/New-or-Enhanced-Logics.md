@@ -1071,6 +1071,28 @@ Burst.Delays=-1                 ; integer - burst delays (comma-separated) for s
 Burst.FireWithinSequence=false  ; boolean
 ```
 
+### Delayed fire animation
+
+![image](_static/images/delayedfireweapon.gif)
+*Delayed fire animation example in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
+
+- Now a weapon attack can be delayed if an animation is set in `DelayedFire.Anim`.
+- By default the animation will be placed in the weapon FLH location but the animation can be moved to the center of the object with `DelayedFire.Anim.UseFLH=no`.
+- `DelayedFire.Anim.LoopCount` > 0 specifies how many times the animation will be played before the weapon activation.
+- `DelayedFire.DurationTimer` > 0 will interrupt the animation (and allow weapon fire) when the countdown ends.
+```warning
+The combination of `DelayedFire.Anim.LoopCount=-1` and `DelayedFire.Duration=0` will produce an infinite loop and the weapon won't fire!
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                 ; WeaponType
+DelayedFire.Anim=            ; Animation
+DelayedFire.Anim.LoopCount=1 ; integer - number of times the animation is played (-1 for infinite loop)
+DelayedFire.Anim.UseFLH=true ; boolean - disabling this will create the animation at the center of the unit instead of its FLH coordinates
+DelayedFire.Duration=0  ; integer - in-game frames.
+```
+
 ### Feedback weapon
 
 ![image](_static/images/feedbackweapon.gif)
@@ -1118,24 +1140,4 @@ In `rulesmd.ini`:
 [SOMEWEAPON]         ; WeaponType
 CanTarget=all        ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-```
-
-### Delayed fire animation
-
-![image](_static/images/delayedfireweapon.gif)
-*Delayed fire animation example in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
-
-- Now a weapon attack can be delayed if an animation is set in `DelayedFire.Anim`.
-- By default the animation will be placed in the weapon FLH location but the animation can be moved to the center of the object with `DelayedFire.Anim.UseFLH=no`.
-- `DelayedFire.Anim.LoopCount` > 0 specify how many times the animation will be played before the weapon activation.
-- If `DelayedFire.DurationTimer` > 0 it will interrumpt the played animation when the countdown ends.
-- Note that the combination `DelayedFire.Anim.LoopCount=-1` and `DelayedFire.DurationTimer=0` will produce an infinite loop and the weapon won't fire.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]                 ; WeaponType
-DelayedFire.Anim=            ; Animation
-DelayedFire.Anim.LoopCount=1 ; Number of times the animation is played. -1 for infinite loop
-DelayedFire.Anim.UseFLH=true ; Boolean. Animation will appear in the weapon FLH coordinates (true) or in the center of the unit (false)
-DelayedFire.DurationTimer=0  ; integer - in-game frames.
 ```

@@ -33,10 +33,10 @@ public:
 		Valueable<bool> Laser_IsSingleColor;
 		Nullable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<bool> OmniFire_TurnToTarget;
-		Nullable<AnimTypeClass*>DelayedFire_Anim;
+		Nullable<AnimTypeClass*> DelayedFire_Anim;
 		Valueable<int> DelayedFire_Anim_LoopCount;
 		Valueable<bool> DelayedFire_Anim_UseFLH;
-		Valueable<int> DelayedFire_DurationTimer;
+		Valueable<int> DelayedFire_Duration;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
@@ -58,7 +58,7 @@ public:
 			, DelayedFire_Anim { }
 			, DelayedFire_Anim_LoopCount { 1 }
 			, DelayedFire_Anim_UseFLH { true }
-			, DelayedFire_DurationTimer { 0 }
+			, DelayedFire_Duration { 0 }
 		{ }
 
 		int GetBurstDelay(int burstIndex);

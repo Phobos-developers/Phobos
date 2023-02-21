@@ -38,13 +38,10 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	if (pExt->DelayedFire_Anim && !pThis->Target && pThis->GetCurrentMission() != Mission::Attack)
 	{
-		CDTimerClass* weaponReadyness = (CDTimerClass*)pThis->__DiskLaserTimer;
-		weaponReadyness->Start(pThis->DiskLaserTimer.GetTimeLeft() + 5);
-
 		// Reset Delayed fire animation
 		pExt->DelayedFire_Anim = nullptr;
 		pExt->DelayedFire_Anim_LoopCount = 0;
-		pExt->DelayedFire_DurationTimer = -1;
+		pExt->DelayedFire_Duration = -1;
 	}
 
 	return 0;
