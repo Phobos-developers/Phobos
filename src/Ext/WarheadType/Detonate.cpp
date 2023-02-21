@@ -1,22 +1,23 @@
 #include "Body.h"
 
-#include <InfantryClass.h>
+#include <AnimClass.h>
+#include <AnimTypeClass.h>
+#include <BitFont.h>
 #include <BulletClass.h>
 #include <HouseClass.h>
+#include <InfantryClass.h>
 #include <ScenarioClass.h>
-#include <AnimTypeClass.h>
-#include <AnimClass.h>
-#include <BitFont.h>
 #include <SuperClass.h>
 
-#include <Utilities/Helpers.Alex.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <Ext/SWType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
-#include <Ext/SWType/Body.h>
 #include <Misc/FlyingStrings.h>
+#include <New/Entity/TransferClass.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/Helpers.Alex.h>
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBulletExt, CoordStruct coords)
 {
@@ -115,14 +116,40 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		for (auto pTarget : SpreadTargets)
 			this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
 		auto pRealTarget = pBullet ? abstract_cast<TechnoClass*>(pBullet->Target) : nullptr;
-		TransferWithGroup(pOwner, pHouse, pRealTarget, SpreadTargets, coords);
+		for (auto transferType : this->Transfer_Types)
+		{
+			TransferClass transfer(pOwner, pHouse, this->OwnerObject(), pRealTarget, transferType, coords);
+			if (transfer.PerformTransfer())
+			{
+				Debug::Log("Transfer '%s' by %s using %s warhead is complete\n", transferType->Name.data(),
+					pOwner ? pOwner->GetTechnoType()->ID : pHouse->Type->ID, this->OwnerObject()->ID);
+			}
+			else
+			{
+				Debug::Log("Transfer '%s' by %s using %s warhead has failed\n", transferType->Name.data(),
+					pOwner ? pOwner->GetTechnoType()->ID : pHouse->Type->ID, this->OwnerObject()->ID);
+			}
+		}
 	}
 	else if (pBullet && isCellSpreadWarhead)
 	{
 		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 		{
 			this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
-			TransferWithUnit(pOwner, pHouse, pTarget, coords);
+			for (auto transferType : this->Transfer_Types)
+			{
+				TransferClass transfer(pOwner, pHouse, this->OwnerObject(), pTarget, transferType, coords);
+				if (transfer.PerformTransfer())
+				{
+					Debug::Log("Transfer '%s' by %s using %s warhead is complete\n", transferType->Name.data(),
+						pOwner ? pOwner->GetTechnoType()->ID : pHouse->Type->ID, this->OwnerObject()->ID);
+				}
+				else
+				{
+					Debug::Log("Transfer '%s' by %s using %s warhead has failed\n", transferType->Name.data(),
+						pOwner ? pOwner->GetTechnoType()->ID : pHouse->Type->ID, this->OwnerObject()->ID);
+				}
+			}
 		}
 	}
 }

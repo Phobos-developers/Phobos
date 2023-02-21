@@ -187,11 +187,21 @@ enum class IronCurtainEffect : BYTE
 	Ignore = 2
 };
 
-enum class TransferTypeResource : BYTE
+enum class TransferDirection : BYTE
 {
-	Experience		= 0,
-	Money			= 1,
-	Health			= 2,
+	SourceToTarget  = 0,
+	SourceToSource  = 1,
+	TargetToSource  = 2,
+	TargetToExtra   = 3,
+	TargetToTarget  = 4,
+	ExtraToTarget   = 5
+};
+
+enum class TransferResource : BYTE
+{
+	Health			= 0,
+	Experience		= 1,
+	Money			= 2,
 	Ammo			= 3,
 	GatlingRate		= 4
 };
@@ -204,20 +214,13 @@ enum class TechnoValueType : BYTE
 	Total		= 3
 };
 
-enum class Multiplier : BYTE
+enum class TransferFactor : BYTE
 {
 	None		= 0,
 	Highest		= 1,
 	Sum			= 2,
-	Tally 		= 3
-};
-
-enum class SpreadDistribution : BYTE
-{
-	None		= 0,
-	Constant	= 1,
-	Split		= 2,
-	Distance	= 3
+	Average		= 3,
+	Count 		= 4
 };
 
 class MouseCursorHotSpotX

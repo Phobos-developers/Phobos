@@ -875,31 +875,69 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<TransferTypeResource>(TransferTypeResource& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	inline bool read<TransferDirection>(TransferDirection& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
-			auto parsed = TransferTypeResource::Experience;
+			auto parsed = TransferDirection::SourceToTarget;
 			auto str = parser.value();
-			if (_strcmpi(str, "money") == 0)
+			if (_strcmpi(str, "sourcetosource") == 0 || _strcmpi(str, "s2s") == 0)
 			{
-				parsed = TransferTypeResource::Money;
+				parsed = TransferDirection::SourceToSource;
 			}
-			else if (_strcmpi(str, "health") == 0)
+			else if (_strcmpi(str, "targettosource") == 0 || _strcmpi(str, "t2s") == 0)
 			{
-				parsed = TransferTypeResource::Health;
+				parsed = TransferDirection::TargetToSource;
+			}
+			else if (_strcmpi(str, "targettoextra") == 0 || _strcmpi(str, "t2e") == 0)
+			{
+				parsed = TransferDirection::TargetToExtra;
+			}
+			else if (_strcmpi(str, "targettotarget") == 0 || _strcmpi(str, "t2t") == 0)
+			{
+				parsed = TransferDirection::TargetToTarget;
+			}
+			else if (_strcmpi(str, "extratotarget") == 0 || _strcmpi(str, "e2t") == 0)
+			{
+				parsed = TransferDirection::ExtraToTarget;
+			}
+			else if (_strcmpi(str, "sourcetotarget") != 0 && _strcmpi(str, "s2t") != 0)
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "TransferDirection can be either 'sourcetotarget', 'sourcetosource', 'targettosource', 'targettoextra', 'targettotarget' or 'extratotarget'");
+				return false;
+			}
+			value = parsed;
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<TransferResource>(TransferResource& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = TransferResource::Money;
+			auto str = parser.value();
+			if (_strcmpi(str, "experience") == 0 || _strcmpi(str, "exp") == 0)
+			{
+				parsed = TransferResource::Experience;
+			}
+			else if (_strcmpi(str, "health") == 0 || _strcmpi(str, "hp") == 0)
+			{
+				parsed = TransferResource::Health;
 			}
 			else if (_strcmpi(str, "ammo") == 0)
 			{
-				parsed = TransferTypeResource::Ammo;
+				parsed = TransferResource::Ammo;
 			}
-			else if (_strcmpi(str, "gatlingrate") == 0)
+			else if (_strcmpi(str, "gatlingrate") == 0 || _strcmpi(str, "rate") == 0)
 			{
-				parsed = TransferTypeResource::GatlingRate;
+				parsed = TransferResource::GatlingRate;
 			}
-			else if (_strcmpi(str, "experience") != 0)
+			else if (_strcmpi(str, "money") != 0 && _strcmpi(str, "$") != 0)
 			{
-				Debug::INIParseFailed(pSection, pKey, parser.value(), "TransferTypeAttribute can be either 'experience', 'money', 'health', 'ammo', 'gatlingrate' or 'gatlingstage'");
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "TransferResource can be either 'money', 'experience', 'health', 'ammo' or 'gatlingrate'");
 				return false;
 			}
 			value = parsed;
@@ -915,15 +953,15 @@ namespace detail
 		{
 			auto parsed = TechnoValueType::Fixed;
 			auto str = parser.value();
-			if (_strcmpi(str, "current") == 0 || _strcmpi(str, "c%") == 0)
+			if (_strcmpi(str, "current") == 0)
 			{
 				parsed = TechnoValueType::Current;
 			}
-			else if (_strcmpi(str, "missing") == 0 || _strcmpi(str, "m%") == 0)
+			else if (_strcmpi(str, "missing") == 0)
 			{
 				parsed = TechnoValueType::Missing;
 			}
-			else if (_strcmpi(str, "total") == 0 || _strcmpi(str, "t%") == 0)
+			else if (_strcmpi(str, "total") == 0)
 			{
 				parsed = TechnoValueType::Total;
 			}
@@ -939,57 +977,31 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<Multiplier>(Multiplier& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	inline bool read<TransferFactor>(TransferFactor& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
-			auto parsed = Multiplier::None;
+			auto parsed = TransferFactor::None;
 			auto str = parser.value();
 			if (_strcmpi(str, "highest") == 0)
 			{
-				parsed = Multiplier::Highest;
+				parsed = TransferFactor::Highest;
 			}
 			else if (_strcmpi(str, "sum") == 0)
 			{
-				parsed = Multiplier::Sum;
+				parsed = TransferFactor::Sum;
 			}
-			else if (_strcmpi(str, "tally") == 0)
+			else if (_strcmpi(str, "average") == 0)
 			{
-				parsed = Multiplier::Tally;
+				parsed = TransferFactor::Average;
 			}
-			else if (_strcmpi(str, "none") != 0)
+			else if (_strcmpi(str, "count") == 0)
 			{
-				Debug::INIParseFailed(pSection, pKey, parser.value(), "Multiplier can be either 'none', 'highest', 'sum' or 'tally'");
-				return false;
-			}
-			value = parsed;
-			return true;
-		}
-		return false;
-	}
-
-	template <>
-	inline bool read<SpreadDistribution>(SpreadDistribution& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
-	{
-		if (parser.ReadString(pSection, pKey))
-		{
-			auto parsed = SpreadDistribution::None;
-			auto str = parser.value();
-			if (_strcmpi(str, "constant") == 0)
-			{
-				parsed = SpreadDistribution::Constant;
-			}
-			else if (_strcmpi(str, "split") == 0)
-			{
-				parsed = SpreadDistribution::Split;
-			}
-			else if (_strcmpi(str, "distance") == 0)
-			{
-				parsed = SpreadDistribution::Distance;
+				parsed = TransferFactor::Count;
 			}
 			else if (_strcmpi(str, "none") != 0)
 			{
-				Debug::INIParseFailed(pSection, pKey, parser.value(), "Spread.Distribution can be either 'none', 'constant', 'split' or 'distance'");
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Multiplier can be either 'none', 'highest', 'sum', 'average' or 'count'");
 				return false;
 			}
 			value = parsed;
