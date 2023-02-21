@@ -13,7 +13,6 @@
       "name": "Attach debugger to Yuri's Revenge",
       "type": "cppvsdbg",
       "request": "attach",
-      "processName": "gamemd.exe",
       "program": "${config:gamemdFolder}/gamemd.exe",
       "cwd": "${config:gamemdFolder}",
       "symbolSearchPath": "${config:gamemdFolder};${workspaceFolder}/Debug;${config:additionalPdbPaths}"

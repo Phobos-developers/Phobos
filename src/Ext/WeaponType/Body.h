@@ -1,7 +1,7 @@
 #pragma once
 #include <BulletClass.h>
 #include <WeaponTypeClass.h>
-
+#include <DiskLaserClass.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -18,7 +18,6 @@ public:
 	public:
 
 		Valueable<double> DiskLaser_Radius;
-		Valueable<int> DiskLaser_Circumference;
 		Valueable<RadTypeClass*> RadType;
 		Valueable<bool> Bolt_Disable1;
 		Valueable<bool> Bolt_Disable2;
@@ -28,17 +27,19 @@ public:
 		Valueable<AffectedTarget> CanTarget;
 		Valueable<AffectedHouse> CanTargetHouses;
 		ValueableVector<int> Burst_Delays;
+		Valueable<bool> Burst_FireWithinSequence;
 		Valueable<AreaFireTarget> AreaFire_Target;
 		Nullable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
+		Nullable<PartialVector2D<int>> ROF_RandomDelay;
+		Valueable<bool> OmniFire_TurnToTarget;
 		Nullable<AnimTypeClass*>DelayedFire_Anim;
 		Valueable<int> DelayedFire_Anim_LoopCount;
 		Valueable<bool> DelayedFire_Anim_UseFLH;
 		Valueable<int> DelayedFire_DurationTimer;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
-			, DiskLaser_Radius { 38.2 }
-			, DiskLaser_Circumference { 240 }
+			, DiskLaser_Radius { DiskLaserClass::Radius }
 			, RadType {}
 			, Bolt_Disable1 { false }
 			, Bolt_Disable2 { false }
@@ -48,14 +49,19 @@ public:
 			, CanTarget { AffectedTarget::All }
 			, CanTargetHouses { AffectedHouse::All }
 			, Burst_Delays {}
+			, Burst_FireWithinSequence { false }
 			, AreaFire_Target { AreaFireTarget::Base }
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
+			, ROF_RandomDelay {}
+			, OmniFire_TurnToTarget { false }
 			, DelayedFire_Anim { }
 			, DelayedFire_Anim_LoopCount { 1 }
 			, DelayedFire_Anim_UseFLH { true }
 			, DelayedFire_DurationTimer { 0 }
 		{ }
+
+		int GetBurstDelay(int burstIndex);
 
 		virtual ~ExtData() = default;
 
@@ -85,7 +91,7 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
-	static int nOldCircumference;
+	static double OldRadius;
 
 	static void DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner);
 	static void DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage);

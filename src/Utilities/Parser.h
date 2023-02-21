@@ -32,6 +32,10 @@
 
 #pragma once
 
+#include <type_traits>
+#include <Windows.h>
+#include <stdio.h>
+
 //! Parses strings into one or more elements of another type.
 /*!
 	\tparam T The type to convert to.
@@ -85,7 +89,7 @@ public:
 				buffer[n-- - 1] = '\0';
 			}
 
-			// interprete the value
+			// interpret the value
 			if (!Parser<OutType>::TryParse(buffer, &outValue[i])) {
 				return i;
 			}
@@ -182,7 +186,7 @@ public:
 // functions will eventually call them.
 
 template<>
-static bool Parser<bool>::TryParse(const char* pValue, OutType* outValue) {
+inline bool Parser<bool>::TryParse(const char* pValue, OutType* outValue) {
 	switch (toupper(static_cast<unsigned char>(*pValue))) {
 	case '1':
 	case 'T':
@@ -204,7 +208,7 @@ static bool Parser<bool>::TryParse(const char* pValue, OutType* outValue) {
 };
 
 template<>
-static bool Parser<int>::TryParse(const char* pValue, OutType* outValue) {
+inline bool Parser<int>::TryParse(const char* pValue, OutType* outValue) {
 	const char* pFmt = nullptr;
 	if (*pValue == '$') {
 		pFmt = "$%d";
@@ -227,7 +231,7 @@ static bool Parser<int>::TryParse(const char* pValue, OutType* outValue) {
 }
 
 template<>
-static bool Parser<double>::TryParse(const char* pValue, OutType* outValue) {
+inline bool Parser<double>::TryParse(const char* pValue, OutType* outValue) {
 	double buffer = 0.0;
 	if (sscanf_s(pValue, "%lf", &buffer) == 1) {
 		if (strchr(pValue, '%')) {
@@ -242,7 +246,7 @@ static bool Parser<double>::TryParse(const char* pValue, OutType* outValue) {
 };
 
 template<>
-static bool Parser<float>::TryParse(const char* pValue, OutType* outValue) {
+inline bool Parser<float>::TryParse(const char* pValue, OutType* outValue) {
 	double buffer = 0.0;
 	if (Parser<double>::TryParse(pValue, &buffer)) {
 		if (outValue) {
@@ -254,7 +258,7 @@ static bool Parser<float>::TryParse(const char* pValue, OutType* outValue) {
 }
 
 template<>
-static bool Parser<BYTE>::TryParse(const char* pValue, OutType* outValue) {
+inline bool Parser<BYTE>::TryParse(const char* pValue, OutType* outValue) {
 	// no way to read unsigned char, use short instead.
 	const char* pFmt = nullptr;
 	if (*pValue == '$') {
@@ -277,4 +281,113 @@ static bool Parser<BYTE>::TryParse(const char* pValue, OutType* outValue) {
 		}
 	}
 	return false;
+};
+
+//! Parses strings into one or more elements of another type, with an
+//! arbitrary maximum count that can be determined at moment of parsing.
+/*!
+	\tparam T The type to convert to.
+*/
+template<typename T>
+class MultiParser
+{
+public:
+	using OutType = T;
+	using BaseType = std::remove_pointer_t<T>;
+
+	//! Parses at most count values and returns the number of items parsed.
+	/*!
+		Splits the pValue string into its parts (using comma as separator) and
+		parses each element separately.
+
+		Stops on the first element that cannot be parsed and returns the number
+		of successfully parsed elements.
+
+		\param pValue The string value to be parsed.
+		\param outValue Optional pointer to array of at least count.
+		\param count Maximum number of elements to parse.
+
+		\returns Number of items parsed.
+
+		\author AlexB & Starkku
+		\date 2022-10-20
+	*/
+	static size_t Parse(const char* pValue, OutType* outValue, size_t count)
+	{
+		char buffer[0x80];
+		for (size_t i = 0; i < count; ++i)
+		{
+			// skip the leading spaces
+			while (isspace(static_cast<unsigned char>(*pValue)))
+			{
+				++pValue;
+			}
+
+			// read the next part
+			int n = 0;
+			if (sscanf_s(pValue, "%[^,]%n", buffer, sizeof(buffer), &n) != 1)
+			{
+				return i;
+			}
+
+			// skip all read chars and the comma
+			pValue += n;
+			if (*pValue)
+			{
+				++pValue;
+			}
+
+			// trim the trailing spaces
+			while (n && isspace(static_cast<unsigned char>(buffer[n - 1])))
+			{
+				buffer[n-- - 1] = '\0';
+			}
+
+			// interprete the value
+			if (!Parser<OutType>::TryParse(buffer, &outValue[i]))
+			{
+				return i;
+			}
+		}
+
+		return count;
+	}
+
+	//! Parses either count values or none.
+	/*!
+		Parses using a temporary buffer. Only if all elements could be parsed
+		they are written to outValue (if it is set).
+
+		This function keeps outValue consistent. Either all elements are
+		changed or all elements are unchanged. It is not possible that only
+		the first n elements are replaced.
+
+		\param pValue The string value to be parsed.
+		\param outValue Optional pointer to array of at least Count.
+		\param count Number of elements to parse.
+
+		\returns true, if all elements could be parsed, false otherwise.
+
+		\author AlexB & Starkku
+		\date 2022-10-20
+	*/
+	static bool TryParse(const char* pValue, OutType* outValue, size_t count)
+	{
+		OutType buffer[count] = {};
+
+		if (Parse(pValue, buffer) != count)
+		{
+			return false;
+		}
+
+		if (outValue)
+		{
+			for (size_t i = 0; i < count; ++i)
+			{
+				outValue[i] = buffer[i];
+			}
+		}
+
+		return true;
+	}
 };

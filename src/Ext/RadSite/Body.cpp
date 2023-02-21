@@ -7,8 +7,6 @@
 template<> const DWORD Extension<RadSiteClass>::Canary = 0x87654321;
 RadSiteExt::ExtContainer RadSiteExt::ExtMap;
 
-DynamicVectorClass<RadSiteExt::ExtData*> RadSiteExt::Array;
-
 void RadSiteExt::ExtData::Initialize()
 {
 	this->Type = RadTypeClass::FindOrAllocate(GameStrings::Radiation);
@@ -25,9 +23,7 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 	}
 	else
 	{
-		auto coords = CoordStruct::Empty;
-		coords = *pTarget->GetCoords(&coords);
-		WarheadTypeExt::DetonateAt(pWarhead, coords, this->RadInvoker, damage);
+		WarheadTypeExt::DetonateAt(pWarhead, pTarget, this->RadInvoker, damage);
 
 		if (!pTarget->IsAlive)
 			return false;
@@ -56,8 +52,6 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 	pRadSite->SetSpread(spread);
 	RadSiteExt::SetRadLevel(pRadSite, amount);
 	RadSiteExt::CreateLight(pRadSite);
-
-	Array.AddUnique(pRadExt);
 }
 
 //RadSiteClass Activate , Rewritten
@@ -185,9 +179,7 @@ RadSiteExt::ExtContainer::~ExtContainer() = default;
 DEFINE_HOOK(0x65B28D, RadSiteClass_CTOR, 0x6)
 {
 	GET(RadSiteClass*, pThis, ESI);
-	auto pRadSiteExt = RadSiteExt::ExtMap.FindOrAllocate(pThis);
-
-	RadSiteExt::Array.AddUnique(pRadSiteExt);
+	RadSiteExt::ExtMap.FindOrAllocate(pThis);
 
 	return 0;
 }
@@ -195,10 +187,8 @@ DEFINE_HOOK(0x65B28D, RadSiteClass_CTOR, 0x6)
 DEFINE_HOOK(0x65B2F4, RadSiteClass_DTOR, 0x5)
 {
 	GET(RadSiteClass*, pThis, ECX);
-	auto pRadExt = RadSiteExt::ExtMap.Find(pThis);
 
 	RadSiteExt::ExtMap.Remove(pThis);
-	RadSiteExt::Array.Remove(pRadExt);
 
 	return 0;
 }
