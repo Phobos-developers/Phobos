@@ -36,16 +36,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
 
-	return 0;
-}
-
-DEFINE_HOOK(0x51BAC7, InfantryClass_AI_Tunnel, 0x6)
-{
-	GET(InfantryClass*, pThis, ESI);
-
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	pExt->UpdateOnTunnelEnter();
-
 	if (pExt->DelayedFire_Anim && !pThis->Target && pThis->GetCurrentMission() != Mission::Attack)
 	{
 		CDTimerClass* weaponReadyness = (CDTimerClass*)pThis->__DiskLaserTimer;
@@ -56,6 +46,16 @@ DEFINE_HOOK(0x51BAC7, InfantryClass_AI_Tunnel, 0x6)
 		pExt->DelayedFire_Anim_LoopCount = 0;
 		pExt->DelayedFire_DurationTimer = -1;
 	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x51BAC7, InfantryClass_AI_Tunnel, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->UpdateOnTunnelEnter();
 
 	return 0;
 }
