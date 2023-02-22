@@ -98,10 +98,13 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 				location.Z = MapClass::Instance->GetCellFloorHeight(location);
 		}
 
+		TechnoClass* pInvoker = nullptr;
+
 		if (auto pTechno = static_cast<TechnoClass*>(unit->CreateObject(decidedOwner)))
 		{
 			bool success = false;
 			auto const pExt = AnimExt::ExtMap.Find(pThis);
+			pInvoker = pExt->Invoker;
 
 			auto aFacing = pTypeExt->CreateUnit_RandomFacing.Get()
 				? static_cast<unsigned short>(ScenarioClass::Instance->Random.RandomRanged(0, 255)) : pTypeExt->CreateUnit_Facing.Get();
@@ -127,6 +130,19 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 
 			if (success)
 			{
+				if (pTypeExt->CreateUnit_SpawnAnim.isset())
+				{
+					const auto pAnimType = pTypeExt->CreateUnit_SpawnAnim.Get();
+
+					if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location))
+					{
+						pAnim->Owner = pThis->Owner;
+
+						if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
+							pAnimExt->Invoker = pInvoker;
+					}
+				}
+
 				if (pTechno->HasTurret() && pExt->FromDeathUnit && pExt->DeathUnitHasTurret && pTypeExt->CreateUnit_InheritTurretFacings.Get())
 					pTechno->SecondaryFacing.SetCurrent(pExt->DeathUnitTurretFacing);
 

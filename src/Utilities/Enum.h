@@ -180,6 +180,13 @@ enum class TextAlign : int
 
 MAKE_ENUM_FLAGS(TextAlign);
 
+enum class IronCurtainEffect : BYTE
+{
+	Kill = 0,
+	Invulnerable = 1,
+	Ignore = 2
+};
+
 class MouseCursorHotSpotX
 {
 public:

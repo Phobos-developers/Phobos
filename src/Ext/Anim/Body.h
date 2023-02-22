@@ -1,5 +1,6 @@
 #pragma once
 #include <AnimClass.h>
+#include <ParticleSystemClass.h>
 
 #include <Ext/AnimType/Body.h>
 #include <Helpers/Macro.h>
@@ -19,6 +20,7 @@ public:
 		bool FromDeathUnit;
 		bool DeathUnitHasTurret;
 		TechnoClass* Invoker;
+		ParticleSystemClass* AttachedSystem;
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
 			, DeathUnitFacing { 0 }
@@ -26,13 +28,21 @@ public:
 			, FromDeathUnit { false }
 			, DeathUnitHasTurret { false }
 			, Invoker {}
+			, AttachedSystem {}
 		{ }
 
-		virtual ~ExtData() = default;
+		void CreateAttachedSystem(ParticleSystemTypeClass* pSystemType);
+		void DeleteAttachedSystem();
+
+		virtual ~ExtData()
+		{
+			DeleteAttachedSystem();
+		}
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
 			AnnounceInvalidPointer(Invoker, ptr);
+			AnnounceInvalidPointer(AttachedSystem, ptr);
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
@@ -58,6 +68,7 @@ public:
 			case AbstractType::Building:
 			case AbstractType::Infantry:
 			case AbstractType::Unit:
+			case AbstractType::ParticleSystem:
 				return false;
 			default:
 				return true;
@@ -67,5 +78,6 @@ public:
 
 	static ExtContainer ExtMap;
 
-	static const bool SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker , HouseClass* pVictim, bool defaultToVictimOwner = true);
+	static const bool SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner = true);
+	static HouseClass* GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner = nullptr);
 };

@@ -35,7 +35,7 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, T
 	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
 
 	if (BulletClass* pBullet = pType->CreateBullet(pTarget, pOwner,
-		damage, pThis, 0, false))
+		damage, pThis, 0, pThis->Bright))
 	{
 		const CoordStruct& coords = pTarget->GetCoords();
 
@@ -51,7 +51,7 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coor
 	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
 
 	if (BulletClass* pBullet = pType->CreateBullet(nullptr, pOwner,
-		damage, pThis, 0, false))
+		damage, pThis, 0, pThis->Bright))
 	{
 		pBullet->Limbo();
 		pBullet->SetLocation(coords);
@@ -62,10 +62,7 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coor
 
 bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner)
 {
-	if (!pTechno)
-		return false;
-
-	if (!pTechno->IsOnMap || !pTechno->IsAlive || pTechno->InLimbo)
+	if (!pTechno || !pTechno->IsOnMap || !pTechno->IsAlive || pTechno->InLimbo || pTechno->IsSinking)
 		return false;
 
 	if (pOwner && !EnumFunctions::CanTargetHouse(this->DetonateOnAllMapObjects_AffectHouses, pOwner, pTechno->Owner))
@@ -113,6 +110,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
 	this->AnimList_PickRandom.Read(exINI, pSection, "AnimList.PickRandom");
+	this->AnimList_ShowOnZeroDamage.Read(exINI, pSection, "AnimList.ShowOnZeroDamage");
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
 	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
 
@@ -164,6 +162,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->LaunchSW_IgnoreDesignators.Read(exINI, pSection, "LaunchSW.IgnoreDesignators");
 
 	this->AllowDamageOnSelf.Read(exINI, pSection, "AllowDamageOnSelf");
+	this->DebrisAnims.Read(exINI, pSection, "DebrisAnims");
+	this->Debris_Conventional.Read(exINI, pSection, "Debris.Conventional");
 
 	this->MindControl_Threshold.Read(exINI, pSection, "MindControl.Threshold");
 	this->MindControl_Threshold_Inverse.Read(exINI, pSection, "MindControl.Threshold.Inverse");
@@ -200,6 +200,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RemoveDisguise)
 		.Process(this->RemoveMindControl)
 		.Process(this->AnimList_PickRandom)
+		.Process(this->AnimList_ShowOnZeroDamage)
 		.Process(this->DecloakDamagedTargets)
 		.Process(this->ShakeIsLocal)
 
@@ -247,6 +248,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaunchSW_IgnoreInhibitors)
 		.Process(this->LaunchSW_IgnoreDesignators)
 		.Process(this->AllowDamageOnSelf)
+		.Process(this->DebrisAnims)
+		.Process(this->Debris_Conventional)
 
 		.Process(this->MindControl_Threshold)
 		.Process(this->MindControl_Threshold_Inverse)

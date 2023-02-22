@@ -19,7 +19,7 @@ bool FlyingStrings::DrawAllowed(CoordStruct& nCoords)
 	return false;
 }
 
-void FlyingStrings::Add(const wchar_t* text, CoordStruct coords, ColorStruct color, Point2D pixelOffset)
+void FlyingStrings::Add(const wchar_t* text, const CoordStruct& coords, ColorStruct color, Point2D pixelOffset)
 {
 	Item item {};
 	item.Location = coords;
@@ -30,7 +30,7 @@ void FlyingStrings::Add(const wchar_t* text, CoordStruct coords, ColorStruct col
 	Data.push_back(item);
 }
 
-void FlyingStrings::AddMoneyString(int amount, HouseClass* owner, AffectedHouse displayToHouses, CoordStruct coords, Point2D pixelOffset)
+void FlyingStrings::AddMoneyString(int amount, HouseClass* owner, AffectedHouse displayToHouses, const CoordStruct& coords, Point2D pixelOffset)
 {
 	if (displayToHouses == AffectedHouse::All ||
 		owner && EnumFunctions::CanTargetHouse(displayToHouses, owner, HouseClass::CurrentPlayer))
