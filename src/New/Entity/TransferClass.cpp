@@ -5,7 +5,7 @@
 
 int ModFrom1(const int& lvalue, const int& rvalue)
 {
-	return lvalue < 0 ? ((lvalue + 1) % rvalue - 1) : ((lvalue - 1) % rvalue + 1); 
+	return lvalue < 0 ? ((lvalue + 1) % rvalue - 1) : ((lvalue - 1) % rvalue + 1);
 }
 
 int ResourceValue(TechnoClass* pTechno, HouseClass* pHouse, TransferResource attr, bool current = true, bool stage = false)
@@ -78,8 +78,8 @@ int ResourceValue(TechnoClass* pTechno, HouseClass* pHouse, TransferResource att
 				return gatling_current_max - gatling_current_min;
 			else
 				return pTechno->Veterancy.IsElite()
-					? pType->EliteStage[pType->WeaponStages - 1]
-					: pType->WeaponStage[pType->WeaponStages - 1];
+				? pType->EliteStage[pType->WeaponStages - 1]
+				: pType->WeaponStage[pType->WeaponStages - 1];
 	}
 	default:
 		return 0;
@@ -90,7 +90,7 @@ TransferUnit::TransferUnit(TechnoClass* pTechno, TransferResource attr)
 {
 	if (pTechno == nullptr)
 		return;
-	
+
 	this->Techno = pTechno;
 	this->House = pTechno->Owner;
 	this->Value = 0.0;
@@ -104,7 +104,7 @@ TransferUnit::TransferUnit(HouseClass* pHouse)
 {
 	if (pHouse == nullptr)
 		return;
-	
+
 	this->Techno = nullptr;
 	this->House = pHouse;
 	this->Value = 0.0;
@@ -131,7 +131,7 @@ int TransferClass::ChangeHealth(TechnoClass* pTechno, int value, TechnoClass* pS
 	value = -value;
 	if (pTechno->Health - value <= 0 && !killable)
 		value = pTechno->Health - 1;
-	
+
 	if (value == 0)
 		return 0;
 	pTechno->ReceiveDamage(&value, 0, pWarhead, pSource, true, false, pHouse);
@@ -211,9 +211,9 @@ int TransferClass::ChangeGatlingRate(TechnoClass* pTechno, int value, int change
 		weaponStages.insert(weaponStages.end(), pType->EliteStage, pType->EliteStage + stageCount);
 	else
 		weaponStages.insert(weaponStages.end(), pType->WeaponStage, pType->WeaponStage + stageCount);
-	
+
 	std::vector<int>::iterator finder;
-	
+
 	int rate = pTechno->GattlingValue + value;
 	int stage = pTechno->CurrentGattlingStage;
 	int resultStage;
@@ -225,7 +225,7 @@ int TransferClass::ChangeGatlingRate(TechnoClass* pTechno, int value, int change
 			finder = std::upper_bound(weaponStages.begin(), weaponStages.end(), rate + weaponStages[stageCount - 1]);
 		else
 			finder = std::upper_bound(weaponStages.begin(), weaponStages.end(), rate);
-		
+
 		resultStage = finder - weaponStages.begin();
 		if (rate < 0)
 			resultStage -= stageCount;
@@ -279,7 +279,6 @@ int TransferClass::ChangeGatlingRate(TechnoClass* pTechno, int value, int change
 		int stageChange = resultStage - stage;
 		if (changeLimit >= 0 && std::abs(stageChange) > changeLimit)
 		{
-			
 			resultStage = stage + (stageChange < 0 ? -changeLimit : changeLimit);
 			resultStage = std::clamp(resultStage, 0, stageCount - 1);
 			if (stageChange < 0)
@@ -329,17 +328,17 @@ int TransferClass::AlterResource(TransferUnit* pValues)
 
 	switch (pValues->Resource)
 	{
-		case TransferResource::Health:
-			return ChangeHealth(pTechno, value, SourceTechno, SourceHouse, SourceWarhead, !Type->Health_PreventKill);
-		case TransferResource::Experience:
-			return ChangeExperience(pTechno, value, !Type->Experience_PreventDemote);
-		case TransferResource::Money:
-			return ChangeMoney(pValues->House, value);
-		case TransferResource::Ammo:
-			return ChangeAmmo(pTechno, value);
-		case TransferResource::GatlingRate:
-			return ChangeGatlingRate(pTechno, value, Type->GatlingRate_LimitStageChange,
-				TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->Gattling_Cycle);
+	case TransferResource::Health:
+		return ChangeHealth(pTechno, value, SourceTechno, SourceHouse, SourceWarhead, !Type->Health_PreventKill);
+	case TransferResource::Experience:
+		return ChangeExperience(pTechno, value, !Type->Experience_PreventDemote);
+	case TransferResource::Money:
+		return ChangeMoney(pValues->House, value);
+	case TransferResource::Ammo:
+		return ChangeAmmo(pTechno, value);
+	case TransferResource::GatlingRate:
+		return ChangeGatlingRate(pTechno, value, Type->GatlingRate_LimitStageChange,
+			TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->Gattling_Cycle);
 	}
 	return 0;
 }
@@ -359,188 +358,188 @@ bool TransferClass::DetermineSides()
 
 	switch (Type->Direction)
 	{
-		case TransferDirection::SourceToTarget:
+	case TransferDirection::SourceToTarget:
+	{
+		if (SourceTechno == nullptr && !SendOnlyHouseIsNeeded)
 		{
-			if (SourceTechno == nullptr && !SendOnlyHouseIsNeeded)
-			{
-				FailureMessage = "Failure on DetermineSides(): no Source Techno for SourceToTarget.\n";
-				return false;
-			}
-
-			if (SourceTechno == nullptr)
-			{
-				Senders.emplace_back(SourceHouse);
-			}
-			else if (SourceTechno)
-			{
-				Senders.emplace_back(SourceTechno, Type->Send_Resource);
-			}
-
-			if (IsCellSpread)
-			{
-				auto targetList = Helpers::Alex::getCellSpreadItems(DetonationCoords, SourceWarhead->CellSpread, true);
-				for (auto pTarget : targetList)
-				{
-					Receivers.emplace_back(pTarget, Type->Receive_Resource);
-				}
-			}
-			else if (BulletTargetTechno)
-			{
-				Receivers.emplace_back(BulletTargetTechno, Type->Receive_Resource);
-			}
-
-			IsReceiverTarget = true;
-			return true;
+			FailureMessage = "Failure on DetermineSides(): no Source Techno for SourceToTarget.\n";
+			return false;
 		}
-		case TransferDirection::SourceToSource:
+
+		if (SourceTechno == nullptr)
 		{
-			if (SourceTechno == nullptr && !(SendOnlyHouseIsNeeded && ReceiveOnlyHouseIsNeeded))
-			{
-				FailureMessage = "Failure on DetermineSides(): no Source Techno for SourceToSource.\n";
-				return false;
-			}
-
-			if (SourceTechno == nullptr)
-			{
-				Senders.emplace_back(SourceHouse);
-				Receivers.emplace_back(SourceHouse);
-			}
-			else
-			{
-				Senders.emplace_back(SourceTechno, Type->Send_Resource);
-				Receivers.emplace_back(SourceTechno, Type->Receive_Resource);
-			}
-
-			return true;
+			Senders.emplace_back(SourceHouse);
 		}
-		case TransferDirection::TargetToSource:
+		else if (SourceTechno)
 		{
-			if (SourceTechno == nullptr && !ReceiveOnlyHouseIsNeeded)
-			{
-				FailureMessage = "Failure on DetermineSides(): no Source Techno for TargetToSource.\n";
-				return false;
-			}
-
-			if (IsCellSpread)
-			{
-				auto targetList = Helpers::Alex::getCellSpreadItems(DetonationCoords, SourceWarhead->CellSpread, true);
-				for (auto pTarget : targetList)
-				{
-					Senders.emplace_back(pTarget, Type->Send_Resource);
-				}
-			}
-			else if (BulletTargetTechno)
-			{
-				Senders.emplace_back(BulletTargetTechno, Type->Send_Resource);
-			}
-
-			if (SourceTechno == nullptr)
-			{
-				Receivers.emplace_back(SourceHouse);
-			}
-			else if (SourceTechno)
-			{
-				Receivers.emplace_back(SourceTechno, Type->Receive_Resource);
-			}
-
-			IsSenderTarget = true;
-			return true;
+			Senders.emplace_back(SourceTechno, Type->Send_Resource);
 		}
-		case TransferDirection::TargetToExtra:
+
+		if (IsCellSpread)
 		{
-			if (Type->Extra_Spread_EpicenterIsSource && SourceTechno == nullptr)
+			auto targetList = Helpers::Alex::getCellSpreadItems(DetonationCoords, SourceWarhead->CellSpread, true);
+			for (auto pTarget : targetList)
 			{
-				FailureMessage = "Failure on DetermineSides(): no Source Techno for Extra.Spread.EpicenterIsSource.\n";
-				return false;
+				Receivers.emplace_back(pTarget, Type->Receive_Resource);
 			}
-
-			if (IsCellSpread)
-			{
-				auto targetList = Helpers::Alex::getCellSpreadItems(DetonationCoords, SourceWarhead->CellSpread, true);
-				for (auto pTarget : targetList)
-				{
-					Senders.emplace_back(pTarget, Type->Send_Resource);
-				}
-			}
-			else if (BulletTargetTechno)
-			{
-				Senders.emplace_back(BulletTargetTechno, Type->Send_Resource);
-			}
-
-			CoordStruct extraEpicenter = DetonationCoords;
-			if (Type->Extra_Spread_EpicenterIsSource)
-			{
-				extraEpicenter = SourceTechno->Location;
-			}
-			auto extraList = Helpers::Alex::getCellSpreadItems(extraEpicenter, extraWarhead->CellSpread, true);
-
-			for (auto pExtra : extraList)
-			{
-				Receivers.emplace_back(pExtra, Type->Receive_Resource);
-			}
-
-			IsSenderTarget = true;
-			IsReceiverExtra = true;
-			return true;
 		}
-		case TransferDirection::TargetToTarget:
+		else if (BulletTargetTechno)
 		{
-			if (IsCellSpread)
-			{
-				auto targetList = Helpers::Alex::getCellSpreadItems(DetonationCoords, SourceWarhead->CellSpread, true);
-				for (auto pTarget : targetList)
-				{
-					Senders.emplace_back(pTarget, Type->Send_Resource);
-					Receivers.emplace_back(pTarget, Type->Receive_Resource);
-				}
-			}
-			else if (BulletTargetTechno)
-			{
-				Senders.emplace_back(BulletTargetTechno, Type->Send_Resource);
-				Receivers.emplace_back(BulletTargetTechno, Type->Receive_Resource);
-			}
-
-			IsSenderTarget = true;
-			IsReceiverTarget = true;
-			return true;
+			Receivers.emplace_back(BulletTargetTechno, Type->Receive_Resource);
 		}
-		case TransferDirection::ExtraToTarget:
+
+		IsReceiverTarget = true;
+		return true;
+	}
+	case TransferDirection::SourceToSource:
+	{
+		if (SourceTechno == nullptr && !(SendOnlyHouseIsNeeded && ReceiveOnlyHouseIsNeeded))
 		{
-			if (Type->Extra_Spread_EpicenterIsSource && SourceTechno == nullptr)
-			{
-				FailureMessage = "Failure on DetermineSides(): no Source Techno for Extra.Spread.EpicenterIsSource.\n";
-				return false;
-			}
-
-			CoordStruct extraEpicenter = DetonationCoords;
-			if (Type->Extra_Spread_EpicenterIsSource)
-			{
-				extraEpicenter = SourceTechno->Location;
-			}
-			auto extraList = Helpers::Alex::getCellSpreadItems(extraEpicenter, extraWarhead->CellSpread, true);
-
-			for (auto pExtra : extraList)
-			{
-				Senders.emplace_back(pExtra, Type->Send_Resource);
-			}
-
-			if (IsCellSpread)
-			{
-				auto targetList = Helpers::Alex::getCellSpreadItems(DetonationCoords, SourceWarhead->CellSpread, true);
-				for (auto pTarget : targetList)
-				{
-					Receivers.emplace_back(pTarget, Type->Receive_Resource);
-				}
-			}
-			else if (BulletTargetTechno)
-			{
-				Receivers.emplace_back(BulletTargetTechno, Type->Send_Resource);
-			}
-
-			IsSenderExtra = true;
-			IsReceiverTarget = true;
-			return true;
+			FailureMessage = "Failure on DetermineSides(): no Source Techno for SourceToSource.\n";
+			return false;
 		}
+
+		if (SourceTechno == nullptr)
+		{
+			Senders.emplace_back(SourceHouse);
+			Receivers.emplace_back(SourceHouse);
+		}
+		else
+		{
+			Senders.emplace_back(SourceTechno, Type->Send_Resource);
+			Receivers.emplace_back(SourceTechno, Type->Receive_Resource);
+		}
+
+		return true;
+	}
+	case TransferDirection::TargetToSource:
+	{
+		if (SourceTechno == nullptr && !ReceiveOnlyHouseIsNeeded)
+		{
+			FailureMessage = "Failure on DetermineSides(): no Source Techno for TargetToSource.\n";
+			return false;
+		}
+
+		if (IsCellSpread)
+		{
+			auto targetList = Helpers::Alex::getCellSpreadItems(DetonationCoords, SourceWarhead->CellSpread, true);
+			for (auto pTarget : targetList)
+			{
+				Senders.emplace_back(pTarget, Type->Send_Resource);
+			}
+		}
+		else if (BulletTargetTechno)
+		{
+			Senders.emplace_back(BulletTargetTechno, Type->Send_Resource);
+		}
+
+		if (SourceTechno == nullptr)
+		{
+			Receivers.emplace_back(SourceHouse);
+		}
+		else if (SourceTechno)
+		{
+			Receivers.emplace_back(SourceTechno, Type->Receive_Resource);
+		}
+
+		IsSenderTarget = true;
+		return true;
+	}
+	case TransferDirection::TargetToExtra:
+	{
+		if (Type->Extra_Spread_EpicenterIsSource && SourceTechno == nullptr)
+		{
+			FailureMessage = "Failure on DetermineSides(): no Source Techno for Extra.Spread.EpicenterIsSource.\n";
+			return false;
+		}
+
+		if (IsCellSpread)
+		{
+			auto targetList = Helpers::Alex::getCellSpreadItems(DetonationCoords, SourceWarhead->CellSpread, true);
+			for (auto pTarget : targetList)
+			{
+				Senders.emplace_back(pTarget, Type->Send_Resource);
+			}
+		}
+		else if (BulletTargetTechno)
+		{
+			Senders.emplace_back(BulletTargetTechno, Type->Send_Resource);
+		}
+
+		CoordStruct extraEpicenter = DetonationCoords;
+		if (Type->Extra_Spread_EpicenterIsSource)
+		{
+			extraEpicenter = SourceTechno->Location;
+		}
+		auto extraList = Helpers::Alex::getCellSpreadItems(extraEpicenter, extraWarhead->CellSpread, true);
+
+		for (auto pExtra : extraList)
+		{
+			Receivers.emplace_back(pExtra, Type->Receive_Resource);
+		}
+
+		IsSenderTarget = true;
+		IsReceiverExtra = true;
+		return true;
+	}
+	case TransferDirection::TargetToTarget:
+	{
+		if (IsCellSpread)
+		{
+			auto targetList = Helpers::Alex::getCellSpreadItems(DetonationCoords, SourceWarhead->CellSpread, true);
+			for (auto pTarget : targetList)
+			{
+				Senders.emplace_back(pTarget, Type->Send_Resource);
+				Receivers.emplace_back(pTarget, Type->Receive_Resource);
+			}
+		}
+		else if (BulletTargetTechno)
+		{
+			Senders.emplace_back(BulletTargetTechno, Type->Send_Resource);
+			Receivers.emplace_back(BulletTargetTechno, Type->Receive_Resource);
+		}
+
+		IsSenderTarget = true;
+		IsReceiverTarget = true;
+		return true;
+	}
+	case TransferDirection::ExtraToTarget:
+	{
+		if (Type->Extra_Spread_EpicenterIsSource && SourceTechno == nullptr)
+		{
+			FailureMessage = "Failure on DetermineSides(): no Source Techno for Extra.Spread.EpicenterIsSource.\n";
+			return false;
+		}
+
+		CoordStruct extraEpicenter = DetonationCoords;
+		if (Type->Extra_Spread_EpicenterIsSource)
+		{
+			extraEpicenter = SourceTechno->Location;
+		}
+		auto extraList = Helpers::Alex::getCellSpreadItems(extraEpicenter, extraWarhead->CellSpread, true);
+
+		for (auto pExtra : extraList)
+		{
+			Senders.emplace_back(pExtra, Type->Send_Resource);
+		}
+
+		if (IsCellSpread)
+		{
+			auto targetList = Helpers::Alex::getCellSpreadItems(DetonationCoords, SourceWarhead->CellSpread, true);
+			for (auto pTarget : targetList)
+			{
+				Receivers.emplace_back(pTarget, Type->Receive_Resource);
+			}
+		}
+		else if (BulletTargetTechno)
+		{
+			Receivers.emplace_back(BulletTargetTechno, Type->Send_Resource);
+		}
+
+		IsSenderExtra = true;
+		IsReceiverTarget = true;
+		return true;
+	}
 	}
 
 	FailureMessage = "Failure on DetermineSides(): \"successfully\" reached end\n";
@@ -615,10 +614,16 @@ bool TransferClass::ApplyModifiers()
 				Sender->Modifier *= GeneralUtils::GetWarheadVersusArmor(extraWarhead, Sender->Techno->GetTechnoType()->Armor);
 			}
 
+			CoordStruct extraEpicenter = DetonationCoords;
+			if (SourceTechno && Type->Extra_Spread_EpicenterIsSource)
+			{
+				extraEpicenter = SourceTechno->Location;
+			}
+
 			if (IsCellSpread)
 			{
 				Sender->Modifier *= 1.0f - (1.0f - extraWarhead->PercentAtMax)
-					* DetonationCoords.DistanceFrom(Sender->Techno->GetCoords())
+					* extraEpicenter.DistanceFrom(Sender->Techno->GetCoords())
 					/ Unsorted::LeptonsPerCell / extraWarhead->CellSpread;
 			}
 
@@ -697,10 +702,16 @@ bool TransferClass::ApplyModifiers()
 				Receiver->Modifier *= GeneralUtils::GetWarheadVersusArmor(extraWarhead, Receiver->Techno->GetTechnoType()->Armor);
 			}
 
+			CoordStruct extraEpicenter = DetonationCoords;
+			if (SourceTechno && Type->Extra_Spread_EpicenterIsSource)
+			{
+				extraEpicenter = SourceTechno->Location;
+			}
+
 			if (IsCellSpread)
 			{
 				Receiver->Modifier *= 1.0f - (1.0f - extraWarhead->PercentAtMax)
-					* DetonationCoords.DistanceFrom(Receiver->Techno->GetCoords())
+					* extraEpicenter.DistanceFrom(Receiver->Techno->GetCoords())
 					/ Unsorted::LeptonsPerCell / extraWarhead->CellSpread;
 			}
 
@@ -967,7 +978,7 @@ bool TransferClass::EnforceChanges()
 		}
 	}
 
-    return true;
+	return true;
 }
 
 bool TransferClass::PerformTransfer()
@@ -978,5 +989,5 @@ bool TransferClass::PerformTransfer()
 				if (ValidateLimits())
 					if (EnforceChanges())
 						return true;
-    return false;
+	return false;
 }

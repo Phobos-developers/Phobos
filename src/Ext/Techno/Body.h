@@ -16,7 +16,7 @@ class TechnoExt
 public:
 	using base_type = TechnoClass;
 
-	class ExtData final : public Extension<TechnoClass>
+	class ExtData final: public Extension<TechnoClass>
 	{
 	public:
 		TechnoTypeExt::ExtData* TypeExtData;
@@ -40,7 +40,7 @@ public:
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
 		HouseClass* OriginalPassengerOwner;
 
-		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
+		ExtData(TechnoClass* OwnerObject): Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
 			, LaserTrails {}
@@ -82,7 +82,7 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	class ExtContainer final : public Container<TechnoExt>
+	class ExtContainer final: public Container<TechnoExt>
 	{
 	public:
 		ExtContainer();
