@@ -188,12 +188,17 @@ DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDi
 
 DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 {
+	enum { KeepUnitVisible = 0x73CF62 };
+
 	GET(UnitClass*, pThis, ESI);
 
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (pThis->Deploying || pThis->Undeploying)
+	{
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if (pTypeExt->DeployingAnim_KeepUnitVisible && (pThis->Deploying || pThis->Undeploying))
-		return 0x73CF62;
+		if (pTypeExt->DeployingAnim_KeepUnitVisible)
+			return KeepUnitVisible;
+	}
 
 	return 0;
 }
@@ -311,3 +316,17 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 // Fixes recursive passenger kills not being accredited
 // to proper techno but to their transports
 DEFINE_PATCH(0x707CF2, 0x55);
+
+// Issue #601
+// Author : TwinkleStar
+DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
+{
+	GET(TechnoClass*, pSlave, EDI);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->GetTechnoType());
+	int sound = pTypeExt->SlavesFreeSound.Get(RulesClass::Instance()->SlavesFreeSound);
+	if (sound != -1)
+		VocClass::PlayAt(sound, pSlave->Location);
+
+	return 0x6B0C65;
+}

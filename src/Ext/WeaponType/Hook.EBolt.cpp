@@ -13,7 +13,7 @@ DEFINE_HOOK(0x6FD494, TechnoClass_FireEBolt_SetExtMap_AfterAres, 0x7)
 	GET(EBolt*, pBolt, EAX);
 
 	if (pWeapon)
-		BoltTemp::boltWeaponTypeExt[pBolt] = WeaponTypeExt::ExtMap.FindOrAllocate(pWeapon);
+		BoltTemp::boltWeaponTypeExt[pBolt] = WeaponTypeExt::ExtMap.Find(pWeapon);
 
 	return 0;
 }

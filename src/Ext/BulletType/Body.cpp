@@ -33,7 +33,6 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	INI_EX exINI(pINI);
 
-	this->Strength.Read(exINI, pSection, "Strength");
 	this->Armor.Read(exINI, pSection, "Armor");
 	this->Interceptable.Read(exINI, pSection, "Interceptable");
 	this->Interceptable_DeleteOnIntercept.Read(exINI, pSection, "Interceptable.DeleteOnIntercept");
@@ -45,6 +44,17 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Shrapnel_AffectsGround.Read(exINI, pSection, "Shrapnel.AffectsGround");
 	this->Shrapnel_AffectsBuildings.Read(exINI, pSection, "Shrapnel.AffectsBuildings");
+	this->ClusterScatter_Min.Read(exINI, pSection, "ClusterScatter.Min");
+	this->ClusterScatter_Max.Read(exINI, pSection, "ClusterScatter.Max");
+	this->SubjectToLand.Read(exINI, pSection, "SubjectToLand");
+	this->SubjectToLand_Detonate.Read(exINI, pSection, "SubjectToLand.Detonate");
+	this->SubjectToWater.Read(exINI, pSection, "SubjectToWater");
+	this->SubjectToWater_Detonate.Read(exINI, pSection, "SubjectToWater.Detonate");
+
+
+	// Ares 0.7
+	this->BallisticScatter_Min.Read(exINI, pSection, "BallisticScatter.Min");
+	this->BallisticScatter_Max.Read(exINI, pSection, "BallisticScatter.Max");
 
 	INI_EX exArtINI(CCINIClass::INI_Art);
 
@@ -58,7 +68,6 @@ template <typename T>
 void BulletTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->Strength)
 		.Process(this->Armor)
 		.Process(this->Interceptable)
 		.Process(this->Interceptable_DeleteOnIntercept)
@@ -68,6 +77,14 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Trajectory_Speed)
 		.Process(this->Shrapnel_AffectsGround)
 		.Process(this->Shrapnel_AffectsBuildings)
+		.Process(this->ClusterScatter_Min)
+		.Process(this->ClusterScatter_Max)
+		.Process(this->BallisticScatter_Min)
+		.Process(this->BallisticScatter_Max)
+		.Process(this->SubjectToLand)
+		.Process(this->SubjectToLand_Detonate)
+		.Process(this->SubjectToWater)
+		.Process(this->SubjectToWater_Detonate)
 		;
 
 	this->TrajectoryType = PhobosTrajectoryType::ProcessFromStream(Stm, this->TrajectoryType);

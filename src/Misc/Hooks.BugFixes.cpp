@@ -2,6 +2,7 @@
 #include <AnimClass.h>
 #include <BuildingClass.h>
 #include <TechnoClass.h>
+#include <InfantryClass.h>
 #include <FootClass.h>
 #include <UnitClass.h>
 #include <OverlayTypeClass.h>
@@ -13,7 +14,6 @@
 #include <JumpjetLocomotionClass.h>
 #include <BombClass.h>
 #include <WarheadTypeClass.h>
-
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/Body.h>
@@ -137,39 +137,6 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, 0xA)
 	return 0x7023E5;
 }
 
-// issue #112 Make FireOnce=yes work on other TechnoTypes
-// Author: Starkku
-DEFINE_HOOK(0x4C7518, EventClass_Execute_StopUnitDeployFire, 0x9)
-{
-	GET(TechnoClass* const, pThis, ESI);
-
-	auto const pUnit = abstract_cast<UnitClass*>(pThis);
-	if (pUnit && pUnit->CurrentMission == Mission::Unload && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
-		pUnit->QueueMission(Mission::Guard, true);
-
-	// Restore overridden instructions
-	GET(Mission, eax, EAX);
-	return eax == Mission::Construction ? 0x4C8109 : 0x4C7521;
-}
-
-DEFINE_HOOK(0x73DD12, UnitClass_Mission_Unload_DeployFire, 0x6)
-{
-	GET(UnitClass*, pThis, ESI);
-
-	int weaponIndex = pThis->GetTechnoType()->DeployFireWeapon;
-
-	if (pThis->GetFireError(pThis->Target, weaponIndex, true) == FireError::OK)
-	{
-		pThis->Fire(pThis->Target, weaponIndex);
-		auto const pWeapon = pThis->GetWeapon(weaponIndex);
-
-		if (pWeapon && pWeapon->WeaponType->FireOnce)
-			pThis->QueueMission(Mission::Guard, true);
-	}
-
-	return 0x73DD3C;
-}
-
 // issue #250: Building placement hotkey not responding
 // Author: Uranusian
 DEFINE_JUMP(LJMP, 0x4ABBD5, 0x4ABBD5 + 7); // DisplayClass_MouseLeftRelease_HotkeyFix
@@ -235,55 +202,6 @@ DEFINE_HOOK(0x70D77F, TechnoClass_FireDeathWeapon_ProjectileFix, 0x8)
 	pBullet->Explode(true);
 
 	return 0x70D787;
-}
-
-// Fix [JumpjetControls] obsolete in RA2/YR
-// Author: Uranusian
-DEFINE_HOOK(0x7115AE, TechnoTypeClass_CTOR_JumpjetControls, 0xA)
-{
-	GET(TechnoTypeClass*, pThis, ESI);
-	auto pRules = RulesClass::Instance();
-	auto pRulesExt = RulesExt::Global();
-
-	pThis->JumpjetTurnRate = pRules->TurnRate;
-	pThis->JumpjetSpeed = pRules->Speed;
-	pThis->JumpjetClimb = static_cast<float>(pRules->Climb);
-	pThis->JumpjetCrash = static_cast<float>(pRulesExt->JumpjetCrash);
-	pThis->JumpjetHeight = pRules->CruiseHeight;
-	pThis->JumpjetAccel = static_cast<float>(pRules->Acceleration);
-	pThis->JumpjetWobbles = static_cast<float>(pRules->WobblesPerSecond);
-	pThis->JumpjetNoWobbles = pRulesExt->JumpjetNoWobbles;
-	pThis->JumpjetDeviation = pRules->WobbleDeviation;
-
-	return 0x711601;
-}
-
-// skip vanilla JumpjetControls and make it earlier load
-DEFINE_JUMP(LJMP, 0x668EB5, 0x668EBD); // RulesClass_Process_SkipJumpjetControls
-
-DEFINE_HOOK(0x52D0F9, InitRules_EarlyLoadJumpjetControls, 0x6)
-{
-	GET(RulesClass*, pThis, ECX);
-	GET(CCINIClass*, pINI, EAX);
-
-	pThis->Read_JumpjetControls(pINI);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
-{
-	auto pRulesExt = RulesExt::Global();
-	if (!pRulesExt)
-		return 0;
-
-	GET(CCINIClass*, pINI, EDI);
-	INI_EX exINI(pINI);
-
-	pRulesExt->JumpjetCrash.Read(exINI, "JumpjetControls", "Crash");
-	pRulesExt->JumpjetNoWobbles.Read(exINI, "JumpjetControls", "NoWobbles");
-
-	return 0;
 }
 
 // Fix the crash of TemporalTargetingMe related "stack dump starts with 0051BB7D"
@@ -519,7 +437,8 @@ DEFINE_HOOK(0x73EFD8, UnitClass_Mission_Hunt_DeploysInto, 0x6)
 // Author: Starkku
 DEFINE_JUMP(LJMP, 0x7032BA, 0x7032C6);
 
-namespace FetchBomb {
+namespace FetchBomb
+{
 	BombClass* pThisBomb;
 }
 
@@ -594,3 +513,112 @@ DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 
 // redirect MapClass::DamageArea call to our dll for additional functionality and checks
 DEFINE_JUMP(CALL, 0x4387A3, GET_OFFSET(_BombClass_Detonate_DamageArea));
+
+// BibShape checks for BuildingClass::BState which needs to not be 0 (constructing) for bib to draw.
+// It is possible for BState to be 1 early during construction for frame or two which can result in BibShape being drawn during buildup, which somehow depends on length of buildup.
+// Trying to fix this issue at its root is problematic and most of the time causes buildup to play twice, it is simpler to simply fix the BibShape to not draw until the buildup is done - Starkku
+DEFINE_HOOK(0x43D874, BuildingClass_Draw_BuildupBibShape, 0x6)
+{
+	enum { DontDrawBib = 0x43D8EE };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (!pThis->ActuallyPlacedOnMap)
+		return DontDrawBib;
+
+	return 0;
+}
+
+// Fix railgun target coordinates potentially differing from actual target coords.
+DEFINE_HOOK(0x70C6B5, TechnoClass_Railgun_TargetCoords, 0x5)
+{
+	GET(AbstractClass*, pTarget, EBX);
+
+	auto coords = pTarget->GetCenterCoords();
+
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
+		coords = pBuilding->GetTargetCoords();
+	else if (const auto pCell = abstract_cast<CellClass*>(pTarget))
+		coords = pCell->GetCoordsWithBridge();
+
+	R->EAX(&coords);
+	return 0;
+}
+
+// Fix techno target coordinates (used for fire angle calculations, target lines etc) to take building target coordinate offsets into accord.
+// This, for an example, fixes a vanilla bug where Destroyer has trouble targeting Naval Yards with its cannon weapon from certain angles.
+DEFINE_HOOK(0x70BCE6, TechnoClass_GetTargetCoords_BuildingFix, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pThis->Target))
+	{
+		const auto coords = pBuilding->GetTargetCoords();
+		R->EAX(&coords);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
+{
+	enum { SpawnCrate = 0x56BE7B, SkipSpawn = 0x56BE91 };
+
+	int XP = 2 * MapClass::Instance->VisibleRect.X - MapClass::Instance->MapRect.Width
+		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance->VisibleRect.Width);
+	int YP = 2 * MapClass::Instance->VisibleRect.Y + MapClass::Instance->MapRect.Width
+		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance->VisibleRect.Height + 2);
+	CellStruct candidate { (short)((XP + YP) / 2),(short)((YP - XP) / 2) };
+
+	auto pCell = MapClass::Instance->TryGetCellAt(candidate);
+	if (!pCell)
+		return SkipSpawn;
+
+	if (!MapClass::Instance->IsWithinUsableArea(pCell, true))
+		return SkipSpawn;
+
+	bool isWater = pCell->LandType == LandType::Water;
+	if (isWater && RulesExt::Global()->CrateOnlyOnLand.Get())
+		return SkipSpawn;
+
+	REF_STACK(CellStruct, cell, STACK_OFFSET(0x28, -0x18));
+	cell = MapClass::Instance->NearByLocation(pCell->MapCoords,
+		isWater ? SpeedType::Float : SpeedType::Track,
+		-1, MovementZone::Normal, false, 1, 1, false, false, false, true, CellStruct::Empty, false, false);
+
+	R->EAX(&cell);
+
+	return SpawnCrate;
+}
+
+// Enable sorted add for Air/Top layers to fix issues with attached anims etc.
+DEFINE_HOOK(0x4A9750, DisplayClass_Submit_LayerSort, 0x9)
+{
+	GET(Layer, layer, EDI);
+
+	R->ECX(layer != Layer::Surface && layer != Layer::Underground);
+
+	return 0;
+}
+
+// Fixes C4=no amphibious infantry being killed in water if Chronoshifted/Paradropped there.
+DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
+{
+	enum { ContinueChecks = 0x51A9A0, SkipKilling = 0x51A9EB };
+
+	GET(InfantryClass*, pThis, ESI);
+	GET(LandType, landType, EBX);
+
+	if (landType == LandType::Rock)
+		return ContinueChecks;
+
+	if (landType == LandType::Water)
+	{
+		float multiplier = GroundType::Array[static_cast<int>(landType)].Cost[static_cast<int>(pThis->Type->SpeedType)];
+
+		if (multiplier == 0.0)
+			return ContinueChecks;
+	}
+
+	return SkipKilling;
+}

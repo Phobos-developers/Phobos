@@ -36,9 +36,10 @@ public:
 		Valueable<bool> Interceptor_WeaponReplaceProjectile;
 		Valueable<bool> Interceptor_WeaponCumulativeDamage;
 		Valueable<bool> Interceptor_KeepIntact;
-		Valueable<CoordStruct> TurretOffset;
-		Valueable<bool> Spawn_LimitedRange;
-		Valueable<int> Spawn_LimitedExtraRange;
+		Valueable<PartialVector3D<int>> TurretOffset;
+		Valueable<bool> Spawner_LimitRange;
+		Valueable<int> Spawner_ExtraLimitRange;
+		Nullable<int> Spawner_DelayFrames;
 		Nullable<bool> Harvester_Counted;
 		Valueable<bool> Promote_IncludeSpawns;
 		Valueable<bool> ImmuneToCrit;
@@ -56,7 +57,17 @@ public:
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
 		Valueable<int> AutoDeath_AfterDelay;
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
+		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
+		Valueable<bool> AutoDeath_TechnosDontExist_Any;
+		Valueable<bool> AutoDeath_TechnosDontExist_AllowLimboed;
+		Valueable<AffectedHouse> AutoDeath_TechnosDontExist_Houses;
+		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosExist;
+		Valueable<bool> AutoDeath_TechnosExist_Any;
+		Valueable<bool> AutoDeath_TechnosExist_AllowLimboed;
+		Valueable<AffectedHouse> AutoDeath_TechnosExist_Houses;
+
 		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
+		NullableIdx<VocClass> SlavesFreeSound;
 		NullableIdx<VocClass> SellSound;
 		NullableIdx<VoxClass> EVA_Sold;
 
@@ -80,8 +91,8 @@ public:
 		ValueableVector<int> OreGathering_Tiberiums;
 		ValueableVector<int> OreGathering_FramesPerDir;
 
-		std::vector<DynamicVectorClass<CoordStruct>> WeaponBurstFLHs;
-		std::vector<DynamicVectorClass<CoordStruct>> EliteWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> WeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> EliteWeaponBurstFLHs;
 
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
@@ -98,12 +109,12 @@ public:
 		Valueable<bool> AutoFire_TargetSelf;
 
 		Valueable<bool> NoSecondaryWeaponFallback;
+		Valueable<bool> NoSecondaryWeaponFallback_AllowAA;
 
 		Valueable<int> NoAmmoWeapon;
 		Valueable<int> NoAmmoAmount;
 
-		Nullable<bool> JumpjetAllowLayerDeviation;
-		Nullable<bool> JumpjetTurnToTarget;
+		Valueable<bool> JumpjetRotateOnCrash;
 
 		Valueable<bool> DeployingAnim_AllowAnyDirection;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
@@ -125,10 +136,10 @@ public:
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
 		Nullable<bool> IronCurtain_KeptOnDeploy;
-
-		Valueable<Vector2D<double>> InitialStrength_Cloning;
-
+		Nullable<IronCurtainEffect> IronCurtain_Effect;
+		Nullable<WarheadTypeClass*> IronCurtain_KillWarhead;
 		Valueable<bool> Explodes_KillPassengers;
+		Nullable<int> DeployFireWeapon;
 
 		struct LaserTrailDataEntry
 		{
@@ -150,10 +161,10 @@ public:
 		Nullable<CoordStruct> ProneSecondaryFireFLH;
 		Nullable<CoordStruct> DeployedPrimaryFireFLH;
 		Nullable<CoordStruct> DeployedSecondaryFireFLH;
-		std::vector<DynamicVectorClass<CoordStruct>> CrouchedWeaponBurstFLHs;
-		std::vector<DynamicVectorClass<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
-		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
-		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> CrouchedWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -161,9 +172,10 @@ public:
 			, LowSelectionPriority { false }
 			, GroupAs { NONE_STR }
 			, RadarJamRadius { 0 }
-			, InhibitorRange { }
+			, InhibitorRange {}
 			, DesignatorRange { }
 			, MindControlRangeLimit {}
+
 			, Interceptor { false }
 			, Interceptor_CanTargetHouses { AffectedHouse::Enemies }
 			, Interceptor_GuardRange {}
@@ -174,9 +186,11 @@ public:
 			, Interceptor_WeaponReplaceProjectile { false }
 			, Interceptor_WeaponCumulativeDamage { false }
 			, Interceptor_KeepIntact { false }
+
 			, TurretOffset { { 0, 0, 0 } }
-			, Spawn_LimitedRange { false }
-			, Spawn_LimitedExtraRange { 0 }
+			, Spawner_LimitRange { false }
+			, Spawner_ExtraLimitRange { 0 }
+			, Spawner_DelayFrames {}
 			, Harvester_Counted {}
 			, Promote_IncludeSpawns { false }
 			, ImmuneToCrit { false }
@@ -185,6 +199,7 @@ public:
 			, NoManualMove { false }
 			, InitialStrength {}
 			, ShieldType {}
+
 			, WarpOut {}
 			, WarpIn {}
 			, WarpAway {}
@@ -197,41 +212,58 @@ public:
 			, WarpInMinRangeWeapon {}
 			, WarpOutWeapon {}
 			, WarpInWeapon_UseDistanceAsDamage { false }
+
 			, OreGathering_Anims {}
 			, OreGathering_Tiberiums {}
 			, OreGathering_FramesPerDir {}
 			, LaserTrailData {}
 			, DestroyAnim_Random { true }
 			, NotHuman_RandomDeathSequence { false }
+
 			, PassengerDeletion_Soylent { false }
 			, PassengerDeletion_SoylentFriendlies { false }
 			, PassengerDeletion_Rate { 0 }
 			, PassengerDeletion_ReportSound {}
 			, PassengerDeletion_Rate_SizeMultiply { true }
 			, PassengerDeletion_Anim {}
+
 			, DefaultDisguise {}
+
 			, OpenTopped_RangeBonus {}
 			, OpenTopped_DamageMultiplier {}
 			, OpenTopped_WarpDistance {}
 			, OpenTopped_IgnoreRangefinding { false }
 			, OpenTopped_AllowFiringIfDeactivated { true }
+
 			, AutoFire { false }
 			, AutoFire_TargetSelf { false }
 			, NoSecondaryWeaponFallback { false }
+			, NoSecondaryWeaponFallback_AllowAA { false }
 			, NoAmmoWeapon { -1 }
 			, NoAmmoAmount { 0 }
-			, JumpjetAllowLayerDeviation {}
-			, JumpjetTurnToTarget {}
+			, JumpjetRotateOnCrash { true }
+
 			, DeployingAnim_AllowAnyDirection { false }
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
+
 			, AutoDeath_Behavior { }
 			, AutoDeath_OnAmmoDepletion { false }
 			, AutoDeath_AfterDelay { 0 }
+			, AutoDeath_TechnosDontExist {}
+			, AutoDeath_TechnosDontExist_Any { false }
+			, AutoDeath_TechnosDontExist_AllowLimboed { false }
+			, AutoDeath_TechnosDontExist_Houses { AffectedHouse::Owner }
+			, AutoDeath_TechnosExist {}
+			, AutoDeath_TechnosExist_Any { true }
+			, AutoDeath_TechnosExist_AllowLimboed { true }
+			, AutoDeath_TechnosExist_Houses { AffectedHouse::Owner }
+
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
-			, SellSound { }
-			, EVA_Sold { }
+			, SlavesFreeSound {}
+			, SellSound {}
+			, EVA_Sold {}
 			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, ForceWeapon_Cloaked { -1 }
@@ -240,16 +272,19 @@ public:
 			, ImmuneToEMP { }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
-			, SelfHealGainType()
+			, SelfHealGainType {}
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
-			, PronePrimaryFireFLH { }
-			, ProneSecondaryFireFLH { }
-			, DeployedPrimaryFireFLH { }
-			, DeployedSecondaryFireFLH { }
-			, InitialStrength_Cloning { { 1.0, 0.0 } }
-			, IronCurtain_KeptOnDeploy{ }
+			, PronePrimaryFireFLH {}
+			, ProneSecondaryFireFLH {}
+			, DeployedPrimaryFireFLH {}
+			, DeployedSecondaryFireFLH {}
+			, IronCurtain_KeptOnDeploy {}
+			, IronCurtain_Effect {}
+			, IronCurtain_KillWarhead {}
+
 			, Explodes_KillPassengers { true }
+			, DeployFireWeapon {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -269,6 +304,9 @@ public:
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
+
+		void ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection, std::vector<std::vector<CoordStruct>>& nFLH, std::vector<std::vector<CoordStruct>>& nEFlh, const char* pPrefixTag);
+
 	};
 
 	class ExtContainer final : public Container<TechnoTypeExt>
@@ -281,7 +319,6 @@ public:
 	static ExtContainer ExtMap;
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
-	static void GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
