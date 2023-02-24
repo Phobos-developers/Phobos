@@ -203,6 +203,9 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 
 void SWTypeExt::ExtData::ApplyDetonation(HouseClass* pHouse, const CellStruct& cell)
 {
+	if (!this->Detonate_Weapon.isset() && !this->Detonate_Warhead.isset())
+		return;
+
 	auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
 	BuildingClass* pFirer = nullptr;
 
@@ -216,14 +219,18 @@ void SWTypeExt::ExtData::ApplyDetonation(HouseClass* pHouse, const CellStruct& c
 	}
 
 	if (this->Detonate_AtFirer)
-	{
-		if (!pFirer)
-			return;
-
-		coords = pFirer->GetCenterCoords();
-	}
+		coords = pFirer ? pFirer->GetCenterCoords() : CoordStruct::Empty;
 
 	const auto pWeapon = this->Detonate_Weapon.isset() ? this->Detonate_Weapon.Get() : nullptr;
+
+	if (!MapClass::Instance->TryGetCellAt(coords))
+	{
+		auto const ID = pWeapon ? pWeapon->get_ID() : this->Detonate_Warhead.Get()->get_ID();
+		int X = coords.X / Unsorted::LeptonsPerCell;
+		int Y = coords.X / Unsorted::LeptonsPerCell;
+		Debug::Log("ApplyDetonation: Superweapon [%s] failed to detonate [%s] - cell at %d, %d is invalid.\n", this->OwnerObject()->get_ID(), ID, X, Y);
+		return;
+	}
 
 	if (pWeapon)
 		WeaponTypeExt::DetonateAt(pWeapon, coords, pFirer, this->Detonate_Damage.Get(pWeapon->Damage));
