@@ -7,11 +7,59 @@
 
 namespace INIInheritance
 {
-	const char* Empty = "";
 	std::vector<char*> SavedEntries;
 	std::vector<char*> SavedSections;
 	int ReadString(REGISTERS* R, int address);
+	//void ReadStringNew(REGISTERS* R);
 }
+
+// for Kerbiter's proposal
+/*
+void INIInheritance::ReadStringNew(REGISTERS* R)
+{
+	const int stackOffset = 0x1C;
+	GET(INIClass::INIEntry**, ppEntry, ESI);
+	GET(CCINIClass*, ini, EBP);
+	GET_STACK(int, length, STACK_OFFSET(stackOffset, 0x14));
+	GET_STACK(char*, buffer, STACK_OFFSET(stackOffset, 0x10));
+	GET_STACK(const char*, defaultValue, STACK_OFFSET(stackOffset, 0xC));
+
+	char* sectionName = INIInheritance::SavedSections.back();
+	char* entryName = INIInheritance::SavedEntries.back();
+	INIClass::INIEntry* entry = *ppEntry;
+
+	auto finalize = [R, buffer](const char* value)
+	{
+		R->EDI(buffer);
+		R->ECX(value);
+		return;
+	};
+
+	// if we were looking for $Inherits and failed, no recursion
+	if (strncmp(entryName, "$Inherits", 10) == 0)
+		return finalize(defaultValue);
+
+	// search for $Inherits entry
+	char inheritSectionsString[0x100];
+	if (ini->ReadString(sectionName, "$Inherits", NULL, inheritSectionsString, 0x100) == 0)
+		return finalize(defaultValue);
+
+	// for each section in csv, search for entry
+	char bufferStart = NULL;
+	char* state = NULL;
+	char* split = strtok_s(inheritSectionsString, ",", &state);
+	do
+	{
+		if (ini->ReadString(split, entryName, NULL, buffer, length) != 0)
+			bufferStart = buffer[0];
+		else
+			buffer[0] = bufferStart;
+	}
+	while (split = strtok_s(NULL, ",", &state));
+
+	return finalize(buffer);
+}
+*/
 
 int INIInheritance::ReadString(REGISTERS* R, int address)
 {
@@ -34,39 +82,29 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 		return address;
 	};
 
+	// if we were looking for $Inherits and failed, no recursion
 	if (strncmp(entryName, "$Inherits", 10) == 0)
-	{
-		auto section = ini->GetSection(sectionName);
-		if (!section)
-			return finalize(defaultValue);
-		for (auto entryNode : section->EntryIndex)
-		{
-			if (strncmp(entryNode.Data->Key, "$Inherits", 10) == 0)
-			{
-				return finalize(entryNode.Data->Value);
-			}
-		}
 		return finalize(defaultValue);
-	}
 
 	// search for $Inherits entry
 	char inheritSectionsString[0x100];
-	if (ini->ReadString(sectionName, "$Inherits", INIInheritance::Empty, inheritSectionsString, 0x100) == 0)
+	if (ini->ReadString(sectionName, "$Inherits", NULL, inheritSectionsString, 0x100) == 0)
 		return finalize(defaultValue);
 
 	// for each section in csv, search for entry
 	char bufferStart = NULL;
-	char* split = strtok(inheritSectionsString, ",");
+	char* state = NULL;
+	char* split = strtok_s(inheritSectionsString, ",", &state);
 	do
 	{
-		if (ini->ReadString(split, entryName, defaultValue, buffer, length) != 0)
+		if (ini->ReadString(split, entryName, NULL, buffer, length) != 0)
 			bufferStart = buffer[0];
 		else
 			buffer[0] = bufferStart;
 	}
-	while (split = strtok(NULL, ","));
+	while (split = strtok_s(NULL, ",", &state));
 
-	return finalize(buffer);
+	return finalize(buffer[0] ? buffer : defaultValue);
 }
 
 // INIClass_GetString_DisableAres
@@ -104,6 +142,30 @@ DEFINE_HOOK(0x528BBE, INIClass_GetString_FreeEntry, 0x5)
 DEFINE_HOOK(0x528B80, INIClass_GetString_Inheritance_NoSection, 0x8)
 {
 	return INIInheritance::ReadString(R, 0x528B88);
+}
+*/
+
+// Kerbiter's proposal
+/*
+DEFINE_HOOK(0x528B97, INIClass_GetString_Inheritance_OverrideDefault, 0)
+{
+	enum { Found = 0x528BB6 };
+	GET(INIClass::INIEntry**, ppEntry, ESI);
+	GET_STACK(char*, buffer, STACK_OFFSET(0x1C, 0x10));
+
+	INIClass::INIEntry* entry = *ppEntry;
+	if (entry && entry->Value)
+	{
+		R->EDI(buffer);
+		R->ECX(entry->Value);
+	}
+	else
+	{
+		INIInheritance::ReadStringNew(R);
+	}
+	R->EAX(0);
+
+	return Found;
 }
 */
 
