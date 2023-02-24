@@ -570,13 +570,15 @@ SW.Next.RandomWeightsN=         ; List of integers.
   - If both `Detonate.Warhead` and `Detonate.Weapon` are set, latter takes precedence.
   - `Detonate.Damage`, if not set, defaults to weapon `Damage` for `Detonate.Weapon` and 0 for `Detonate.Warhead`.
   - Both the weapon and Warhead behave as if fired by whatever building fired the Superweapon. This respects controls like `SW.RangeMinimum/Maximum` (similar to Ares' GenericWarhead superweapon in this regard).
+  - If `Detonate.AtFirer` is set to true, the weapon or Warhead is detonated at the firing building instead of the superweapon's target cell. If there is no firer, no detonation will occur.
 
 In `rulesmd.ini`:
 ```ini
-[SOMESW]           ; Super Weapon
-Detonate.Warhead=  ; Warhead
-Detonate.Weapon=   ; WeaponType
-Detonate.Damage=   ; integer
+[SOMESW]                ; Super Weapon
+Detonate.Warhead=       ; Warhead
+Detonate.Weapon=        ; WeaponType
+Detonate.Damage=        ; integer
+Detonate.AtFirer=false  ; boolean
 ```
 
 ## Technos

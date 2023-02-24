@@ -203,7 +203,7 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 
 void SWTypeExt::ExtData::ApplyDetonation(HouseClass* pHouse, const CellStruct& cell)
 {
-	const auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
+	auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
 	BuildingClass* pFirer = nullptr;
 
 	for (auto const& pBld : pHouse->Buildings)
@@ -213,6 +213,14 @@ void SWTypeExt::ExtData::ApplyDetonation(HouseClass* pHouse, const CellStruct& c
 			pFirer = pBld;
 			break;
 		}
+	}
+
+	if (this->Detonate_AtFirer)
+	{
+		if (!pFirer)
+			return;
+
+		coords = pFirer->GetCenterCoords();
 	}
 
 	const auto pWeapon = this->Detonate_Weapon.isset() ? this->Detonate_Weapon.Get() : nullptr;
