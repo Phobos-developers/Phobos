@@ -45,10 +45,14 @@ public:
 			this->DeleteAttachedSystem();
 		}
 
-		virtual void InvalidatePointer(void* const ptr, bool bRemoved) override;
-		virtual bool InvalidateIgnorable(void* const ptr) const override;
+		virtual void InvalidatePointer(void* const ptr, bool bRemoved) override
+		{
+			AnnounceInvalidPointer(this->Invoker, ptr);
+			AnnounceInvalidPointer(this->InvokerHouse, ptr);
+			AnnounceInvalidPointer(this->AttachedSystem, ptr);
+		}
+
 		virtual void InitializeConstants() override;
-			AnnounceInvalidPointer(InvokerHouse, ptr);
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -63,7 +67,24 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		bool InvalidateExtDataIgnorable(void* const ptr) const
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+
+			switch (abs)
+			{
+			case AbstractType::Building:
+			case AbstractType::Infantry:
+			case AbstractType::Unit:
+			case AbstractType::Aircraft:
+			case AbstractType::ParticleSystem:
 			case AbstractType::House:
+				return false;
+			}
+
+			return true;
+		}
 	};
 
 	static ExtContainer ExtMap;

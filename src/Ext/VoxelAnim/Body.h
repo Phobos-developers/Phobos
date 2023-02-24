@@ -32,7 +32,6 @@ public:
 		virtual ~ExtData() = default;
 		virtual size_t Size() const { return sizeof(*this); };
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
-		virtual bool InvalidateIgnorable(void* const ptr) const override { return true; }
 		virtual void LoadFromStream(PhobosStreamReader& Stm)override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm)override;
 		virtual void Initialize() override;
@@ -47,7 +46,6 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 	};
 
 	static ExtContainer ExtMap;

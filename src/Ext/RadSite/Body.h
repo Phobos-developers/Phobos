@@ -49,8 +49,11 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 		virtual void Initialize() override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
-		virtual bool InvalidateIgnorable(void* const ptr) const override;
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+		{
+			AnnounceInvalidPointer(RadHouse, ptr);
+			AnnounceInvalidPointer(RadInvoker, ptr);
+		}
 
 	private:
 		template <typename T>
@@ -74,6 +77,7 @@ public:
 			case AbstractType::Building:
 			case AbstractType::Infantry:
 			case AbstractType::Unit:
+			case AbstractType::House:
 				return false;
 			default:
 				return true;

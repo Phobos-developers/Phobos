@@ -154,32 +154,6 @@ void AnimExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-bool AnimExt::ExtData::InvalidateIgnorable(void* const ptr) const
-{
-	auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-
-	switch (abs)
-	{
-	case AbstractType::Building:
-	case AbstractType::Infantry:
-	case AbstractType::Unit:
-	case AbstractType::Aircraft:
-	case AbstractType::ParticleSystem:
-		return false;
-	}
-
-	return true;
-}
-
-void AnimExt::ExtData::InvalidatePointer(void* const ptr, bool bRemoved)
-{
-	if (this->InvalidateIgnorable(ptr))
-		return;
-
-	AnnounceInvalidPointer(this->Invoker, ptr);
-	AnnounceInvalidPointer(this->AttachedSystem, ptr);
-}
-
 void AnimExt::ExtData::InitializeConstants()
 {
 	CreateAttachedSystem();
@@ -251,6 +225,7 @@ DEFINE_HOOK(0x4253FF, AnimClass_Save_Suffix, 0x5)
 	return 0;
 }
 
+/*
 DEFINE_HOOK(0x425164, AnimClass_Detach, 0x6)
 {
 	GET(AnimClass* const, pThis, ESI);
@@ -263,6 +238,7 @@ DEFINE_HOOK(0x425164, AnimClass_Detach, 0x6)
 	R->EBX(0);
 	return pThis->OwnerObject == target && target ? 0x425174 : 0x4251A3;
 }
+*/
 
 DEFINE_JUMP(LJMP, 0x42543A, 0x425448)
 

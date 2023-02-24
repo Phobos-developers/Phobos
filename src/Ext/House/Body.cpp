@@ -155,28 +155,8 @@ bool HouseExt::SaveGlobals(PhobosStreamWriter& Stm)
 		.Success();
 }
 
-bool HouseExt::ExtData::InvalidateIgnorable(void* const ptr) const
-{
-	auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-
-	switch (abs)
-	{
-	case AbstractType::Building:
-	case AbstractType::Infantry:
-	case AbstractType::Unit:
-	case AbstractType::Aircraft:
-		return false;
-	}
-
-	return true;
-
-}
-
 void HouseExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 {
-	if (this->InvalidateIgnorable(ptr))
-		return;
-
 	AnnounceInvalidPointer(Factory_BuildingType, ptr);
 	AnnounceInvalidPointer(Factory_InfantryType, ptr);
 	AnnounceInvalidPointer(Factory_VehicleType, ptr);
@@ -261,6 +241,7 @@ DEFINE_HOOK(0x50114D, HouseClass_InitFromINI, 0x5)
 	return 0;
 }
 
+/*
 DEFINE_HOOK(0x4FB9B7, HouseClass_Detach, 0xA)
 {
 	GET(HouseClass*, pThis, ECX);
@@ -272,3 +253,4 @@ DEFINE_HOOK(0x4FB9B7, HouseClass_Detach, 0xA)
 
 	return 0x0;
 }
+*/

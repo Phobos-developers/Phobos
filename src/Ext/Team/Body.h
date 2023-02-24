@@ -48,7 +48,6 @@ public:
 		virtual ~ExtData() = default;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
-		virtual bool InvalidateIgnorable(void* const ptr) const override;
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -63,6 +62,21 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		bool InvalidateExtDataIgnorable(void* const ptr) const
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+
+			switch (abs)
+			{
+			case AbstractType::Infantry:
+			case AbstractType::Unit:
+			case AbstractType::Aircraft:
+				return false;
+			}
+
+			return true;
+		}
 	};
 
 	static ExtContainer ExtMap;

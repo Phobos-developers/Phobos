@@ -74,8 +74,10 @@ public:
 
 		virtual ~ExtData() override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
-		virtual bool InvalidateIgnorable(void* const ptr) const override;
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+		{
+			AnnounceInvalidPointer(OriginalPassengerOwner, ptr);
+		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -93,7 +95,15 @@ public:
 
 		bool InvalidateExtDataIgnorable(void* const ptr) const
 		{
-			return false;
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+
+			switch (abs)
+			{
+			case AbstractType::House:
+				return false;
+			}
+
+			return true;
 		}
 	};
 

@@ -108,7 +108,6 @@ public:
 	}
 
 	virtual void InvalidatePointer(void* ptr, bool bRemoved) = 0;
-	virtual bool InvalidateIgnorable(void* const ptr) const = 0;
 
 	virtual inline void SaveToStream(PhobosStreamWriter& Stm)
 	{
@@ -305,8 +304,10 @@ public:
 
 	void PointerGotInvalid(void* ptr, bool bRemoved)
 	{
+		this->InvalidatePointer(ptr, bRemoved);
+
 		if (!this->InvalidateExtDataIgnorable(ptr))
-			this->InvalidatePointer(ptr, bRemoved);
+			this->InvalidateExtDataPointer(ptr, bRemoved);
 	}
 
 protected:
@@ -315,6 +316,12 @@ protected:
 	virtual bool InvalidateExtDataIgnorable(void* const ptr) const
 	{
 		return true;
+	}
+
+	void InvalidateExtDataPointer(void* const ptr, bool bRemoved) const
+	{
+		for (const auto& i : this->Items)
+			i.second->InvalidatePointer(ptr, bRemoved);
 	}
 
 private:

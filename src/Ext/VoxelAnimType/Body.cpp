@@ -45,8 +45,6 @@ void VoxelAnimTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-void VoxelAnimTypeExt::ExtContainer::InvalidatePointer(void* ptr, bool bRemoved) {}
-
 bool VoxelAnimTypeExt::LoadGlobals(PhobosStreamReader& Stm)
 {
 	return Stm

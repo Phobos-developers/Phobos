@@ -46,8 +46,6 @@ void VoxelAnimExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-void VoxelAnimExt::ExtContainer::InvalidatePointer(void* ptr, bool bRemoved) {}
-
 bool VoxelAnimExt::LoadGlobals(PhobosStreamReader& Stm)
 {
 	return Stm
@@ -112,6 +110,7 @@ DEFINE_HOOK(0x74AA24, VoxelAnimClass_Save_Suffix, 0x5)
 	return 0;
 }
 
+/*
 static void __fastcall VoxelAnimClass_Detach(VoxelAnimClass* pThis, void* _, AbstractClass* pTarget, bool bRemove)
 {
 	pThis->ObjectClass::PointerExpired(pTarget, bRemove);
@@ -121,3 +120,4 @@ static void __fastcall VoxelAnimClass_Detach(VoxelAnimClass* pThis, void* _, Abs
 }
 
 DEFINE_JUMP(VTABLE, 0x7F6340, GET_OFFSET(VoxelAnimClass_Detach))
+*/

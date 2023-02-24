@@ -367,26 +367,6 @@ bool BuildingExt::SaveGlobals(PhobosStreamWriter& Stm)
 		.Success();
 }
 
-bool BuildingExt::ExtData::InvalidateIgnorable(void* const ptr) const
-{
-	auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-	switch (abs)
-	{
-	case AbstractType::Building:
-		return false;
-	}
-
-	return true;
-}
-
-void BuildingExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
-{
-	if (this->InvalidateIgnorable(ptr))
-		return;
-
-	AnnounceInvalidPointer(CurrentAirFactory, ptr);
-}
-
 // =============================
 // container
 
@@ -440,6 +420,7 @@ DEFINE_HOOK(0x454244, BuildingClass_Save_Suffix, 0x7)
 	return 0;
 }
 
+/*
 DEFINE_HOOK(0x44E940, BuildingClass_Detach, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
@@ -451,3 +432,4 @@ DEFINE_HOOK(0x44E940, BuildingClass_Detach, 0x6)
 
 	return pThis->LightSource == target ? 0x44E948 : 0x44E94E;
 }
+*/

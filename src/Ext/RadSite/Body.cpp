@@ -169,29 +169,6 @@ void RadSiteExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-bool RadSiteExt::ExtData::InvalidateIgnorable(void* const ptr) const
-{
-	auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-	switch (abs)
-	{
-	case AbstractType::Building:
-	case AbstractType::Aircraft:
-	case AbstractType::Unit:
-	case AbstractType::Infantry:
-		return false;
-	}
-
-	return true;
-}
-
-void RadSiteExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
-{
-	if (InvalidateIgnorable(ptr))
-		return;
-
-	AnnounceInvalidPointer(RadInvoker, ptr);
-}
-
 // =============================
 // container
 

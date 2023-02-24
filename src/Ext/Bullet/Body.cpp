@@ -175,30 +175,6 @@ void BulletExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-bool BulletExt::ExtData::InvalidateIgnorable(void* const ptr) const
-{
-	auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-	switch (abs)
-	{
-	case AbstractType::House:
-		return false;
-	}
-
-	return true;
-
-}
-
-void BulletExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
-{
-	if (this->InvalidateIgnorable(ptr))
-		return;
-
-	AnnounceInvalidPointer(FirerHouse, ptr);
-
-	if (Trajectory)
-		Trajectory->InvalidatePointer(ptr, bRemoved);
-}
-
 // =============================
 // container
 
@@ -253,6 +229,7 @@ DEFINE_HOOK(0x46AFC4, BulletClass_Save_Suffix, 0x3)
 	return 0;
 }
 
+/*
 DEFINE_HOOK(0x4685BE, BulletClass_Detach, 0x6)
 {
 	GET(BulletClass*, pThis, ESI);
@@ -264,3 +241,4 @@ DEFINE_HOOK(0x4685BE, BulletClass_Detach, 0x6)
 
 	return pThis->NextAnim == target ? 0x4685C6 : 0x4685CC;
 }
+*/

@@ -53,25 +53,16 @@ void ShieldClass::UpdateType()
 	this->Type = TechnoExt::ExtMap.Find(this->Techno)->CurrentShieldType;
 }
 
-bool ShieldClass::InvalidateIgnorable(void* const ptr) const
+void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 {
-	auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-
-	switch (abs)
+	if (auto const pAnim = abstract_cast<AnimClass*>(static_cast<AbstractClass*>(ptr)))
 	{
-	case AbstractType::Anim:
-		return false;
+		for (auto pShield : ShieldClass::Array)
+		{
+			if (pAnim == pShield->IdleAnim)
+				pShield->IdleAnim = nullptr;
+		}
 	}
-
-	return true;
-}
-
-void ShieldClass::InvalidatePointer(void* ptr, bool bDetach)
-{
-	if (this->InvalidateIgnorable(ptr))
-		return;
-
-	AnnounceInvalidPointer(this->IdleAnim, ptr);
 }
 
 // =============================
