@@ -222,13 +222,12 @@ void SWTypeExt::ExtData::ApplyDetonation(HouseClass* pHouse, const CellStruct& c
 		coords = pFirer ? pFirer->GetCenterCoords() : CoordStruct::Empty;
 
 	const auto pWeapon = this->Detonate_Weapon.isset() ? this->Detonate_Weapon.Get() : nullptr;
+	auto const mapCoords = CellClass::Coord2Cell(coords);
 
-	if (!MapClass::Instance->TryGetCellAt(coords))
+	if (!MapClass::Instance->CoordinatesLegal(mapCoords))
 	{
 		auto const ID = pWeapon ? pWeapon->get_ID() : this->Detonate_Warhead.Get()->get_ID();
-		int X = coords.X / Unsorted::LeptonsPerCell;
-		int Y = coords.X / Unsorted::LeptonsPerCell;
-		Debug::Log("ApplyDetonation: Superweapon [%s] failed to detonate [%s] - cell at %d, %d is invalid.\n", this->OwnerObject()->get_ID(), ID, X, Y);
+		Debug::Log("ApplyDetonation: Superweapon [%s] failed to detonate [%s] - cell at %d, %d is invalid.\n", this->OwnerObject()->get_ID(), ID, mapCoords.X, mapCoords.Y);
 		return;
 	}
 
