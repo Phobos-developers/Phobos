@@ -154,35 +154,40 @@ DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
 
 DEFINE_HOOK(0x469211, BulletClass_Logics_MindControlAlternative1, 0x6)
 {
+	enum { ContinueFlow = 0, IgnoreMindControl = 0x469AA4 };
+
 	GET(BulletClass*, pBullet, ESI);
 
 	if (!pBullet->Target)
-		return 0;
-
-	auto pTarget = generic_cast<TechnoClass*>(pBullet->Target);
-	if (!pTarget)
-		return 0;
+		return ContinueFlow;
 
 	auto pBulletWH = pBullet->WH;
 	if (!pBulletWH)
-		return 0;
+		return ContinueFlow;
 
-	if (pBullet->Owner && pBulletWH->MindControl)
+	if (pBulletWH->MindControl && pBullet->Owner)
 	{
+		auto pTarget = static_cast<TechnoClass*>(pBullet->Target);
+		if (!pTarget)
+			return ContinueFlow;
+
 		auto pTargetType = pTarget->GetTechnoType();
 		if (!pTargetType)
-			return 0;
+			return ContinueFlow;
 
 		auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(pBulletWH);
 		if (!pWarheadExt)
-			return 0;
+			return ContinueFlow;
 
 		double currentHealthPerc = pTarget->GetHealthPercentage();
 		bool flipComparations = pWarheadExt->MindControl_Threshold_Inverse;
 
+		// If inversed threshold: mind control works until the target health is lower than the threshold percentage.
+		// If not inversed: mind control only works when the target health is lower than the threshold percentage.
 		if (pWarheadExt->MindControl_Threshold < 0.0 || pWarheadExt->MindControl_Threshold > 1.0)
 			pWarheadExt->MindControl_Threshold = flipComparations ? 0.0 : 1.0;
 
+		// Targets health threshold calculations
 		bool skipMindControl = flipComparations ? (pWarheadExt->MindControl_Threshold > 0.0) : (pWarheadExt->MindControl_Threshold < 1.0);
 		bool healthComparation = flipComparations ? (currentHealthPerc <= pWarheadExt->MindControl_Threshold) : (currentHealthPerc >= pWarheadExt->MindControl_Threshold);
 
@@ -191,90 +196,39 @@ DEFINE_HOOK(0x469211, BulletClass_Logics_MindControlAlternative1, 0x6)
 			&& pWarheadExt->MindControl_AlternateDamage.isset()
 			&& pWarheadExt->MindControl_AlternateWarhead.isset())
 		{
-			int damage = pWarheadExt->MindControl_AlternateDamage.Get();
+			// Alternate damage
+			int altDamage = pWarheadExt->MindControl_AlternateDamage.Get();
+			// Alternate warhead
 			WarheadTypeClass* pAltWarhead = pWarheadExt->MindControl_AlternateWarhead.Get();
-			int realDamage = MapClass::GetTotalDamage(damage, pAltWarhead, pTargetType->Armor, 0);
+			// Get the damage the alternate warhead can produce against the target
+			int realDamage = MapClass::GetTotalDamage(altDamage, pAltWarhead, pTargetType->Armor, 0);
+			int animDamage = realDamage;
 
-			if (!pWarheadExt->MindControl_CanKill && pTarget->Health <= realDamage && realDamage > 1)
-				pTarget->Health = realDamage;
-
-			return 0x469343;
-		}
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x469BD6, BulletClass_Logics_MindControlAlternative2, 0x6)
-{
-	GET(BulletClass*, pBullet, ESI);
-	GET(AnimTypeClass*, pAnimType, EBX);
-
-	if (!pBullet->Target)
-		return 0;
-
-	auto pTarget = generic_cast<TechnoClass*>(pBullet->Target);
-	if (!pTarget)
-		return 0;
-
-	auto pBulletWH = pBullet->WH;
-	if (!pBulletWH)
-		return 0;
-
-	if (pBullet->Owner
-		&& pBulletWH->MindControl)
-	{
-		auto pTargetType = pTarget->GetTechnoType();
-		if (!pTargetType)
-			return 0;
-
-		auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(pBulletWH);
-		if (!pWarheadExt)
-			return 0;
-
-		double currentHealthPerc = pTarget->GetHealthPercentage();
-		bool flipComparations = pWarheadExt->MindControl_Threshold_Inverse;
-
-		bool skipMindControl = flipComparations ? (pWarheadExt->MindControl_Threshold > 0.0) : (pWarheadExt->MindControl_Threshold < 1.0);
-		bool healthComparation = flipComparations ? (currentHealthPerc <= pWarheadExt->MindControl_Threshold) : (currentHealthPerc >= pWarheadExt->MindControl_Threshold);
-
-		if (skipMindControl
-			&& healthComparation
-			&& pWarheadExt->MindControl_AlternateDamage.isset()
-			&& pWarheadExt->MindControl_AlternateWarhead.isset())
-		{
-			int damage = pWarheadExt->MindControl_AlternateDamage;
-			WarheadTypeClass* pAltWarhead = pWarheadExt->MindControl_AlternateWarhead;
 			auto pAttacker = pBullet->Owner;
 			auto pAttackingHouse = pBullet->Owner->Owner;
-			int realDamage = MapClass::GetTotalDamage(damage, pAltWarhead, pTargetType->Armor, 0);
 
-			if (!pWarheadExt->MindControl_CanKill && pTarget->Health <= realDamage)
-			{
-				pTarget->Health += abs(realDamage);
-				realDamage = 1;
-				pTarget->ReceiveDamage(&realDamage, 0, pAltWarhead, pAttacker, true, false, pAttackingHouse);
-				pTarget->Health = 1;
-			}
-			else
-			{
-				pTarget->ReceiveDamage(&damage, 0, pAltWarhead, pAttacker, true, false, pAttackingHouse);
-			}
+			// Keep the target alive if necessary
+			if (!pWarheadExt->MindControl_CanKill.Get() && realDamage >= pTarget->Health)
+				realDamage = pTarget->Health - 1;
 
-			pAnimType = nullptr;
+			pTarget->ReceiveDamage(&realDamage, 0, pAltWarhead, pAttacker, true, false, pAttackingHouse);
 
-			// If the alternative Warhead have AnimList tag declared then use it
-			if (pWarheadExt->MindControl_AlternateWarhead->AnimList.Count > 0)
+			// Alternate Warhead's animation from AnimList
+			auto nLandType = MapClass::Instance()->GetCellAt(pTarget->Location)->LandType;
+			auto pAnimType = MapClass::SelectDamageAnimation(animDamage, pAltWarhead, nLandType, pTarget->Location);
+
+			if (pAnimType)
 			{
-				if (CellClass* pCell = MapClass::Instance->TryGetCellAt(pTarget->Location))
-					pAnimType = MapClass::SelectDamageAnimation(damage, pAltWarhead, pCell->LandType, pTarget->Location);
+				if (auto pAnim = GameCreate<AnimClass>(pAnimType, pTarget->Location))
+					pAnim->Owner = pAttackingHouse;
 			}
 
-			R->EBX(pAnimType);
+			return IgnoreMindControl;
 		}
 	}
 
-	return 0;
+	// Run mind control code
+	return ContinueFlow;
 }
 
 DEFINE_HOOK(0x4671B9, BulletClass_AI_ApplyGravity, 0x6)
