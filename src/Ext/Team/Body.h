@@ -63,7 +63,7 @@ public:
 		ExtContainer();
 		~ExtContainer();
 
-		bool InvalidateExtDataIgnorable(void* const ptr) const
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
 		{
 			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
 
