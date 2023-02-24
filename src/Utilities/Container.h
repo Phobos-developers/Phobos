@@ -304,14 +304,14 @@ public:
 
 	void PointerGotInvalid(void* ptr, bool bRemoved)
 	{
-		this->InvalidatePointer(ptr, bRemoved);
+		//this->InvalidatePointer(ptr, bRemoved);
 
 		if (!this->InvalidateExtDataIgnorable(ptr))
 			this->InvalidateExtDataPointer(ptr, bRemoved);
 	}
 
 protected:
-	virtual void InvalidatePointer(void* ptr, bool bRemoved) { }
+	//virtual void InvalidatePointer(void* ptr, bool bRemoved) { }
 
 	virtual bool InvalidateExtDataIgnorable(void* const ptr) const
 	{
