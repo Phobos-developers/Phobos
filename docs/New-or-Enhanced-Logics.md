@@ -1011,15 +1011,15 @@ In `rulesmd.ini`:
 RemoveDisguise=false  ; boolean
 ```
 
-### Reveal map for owner on impact
+### Reveal area for owner on impact
 
-- Warheads can now reveal the entire map on impact.
+- Warheads can now reveal some area in range or entire map on impact.
   - Reveal only applies to the owner of the warhead.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; Warhead
-SpySat=false   ; boolean
+Reveal=0   ; integer, positive value specific range of reveal, negative value means entire map
 ```
 
 ### Shroud map for enemies on impact
