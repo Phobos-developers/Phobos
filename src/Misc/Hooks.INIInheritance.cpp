@@ -9,8 +9,11 @@ namespace INIInheritance
 {
 	std::vector<char*> SavedEntries;
 	std::vector<char*> SavedSections;
+	int ReadInt(REGISTERS* R, int address);
 	int ReadString(REGISTERS* R, int address);
 	//void ReadStringNew(REGISTERS* R);
+	void PushEntry(REGISTERS* R, int stackOffset);
+	void PopEntry();
 }
 
 // for Kerbiter's proposal
@@ -61,6 +64,42 @@ void INIInheritance::ReadStringNew(REGISTERS* R)
 }
 */
 
+int INIInheritance::ReadInt(REGISTERS* R, int address)
+{
+	const int stackOffset = 0x1C;
+	GET(CCINIClass*, ini, EBX);
+	GET_STACK(int, defaultValue, STACK_OFFSET(stackOffset, 0xC));
+
+	char* entryName = INIInheritance::SavedEntries.back();
+	char* sectionName = INIInheritance::SavedSections.back();
+
+	auto finalize = [R, address](int value)
+	{
+		R->Stack<int>(STACK_OFFSET(stackOffset, 0xC), value);
+		return address;
+	};
+
+	// search for $Inherits entry
+	char inheritSectionsString[0x100];
+	if (ini->ReadString(sectionName, "$Inherits", NULL, inheritSectionsString, 0x100) == 0)
+		return finalize(defaultValue);
+
+	// for each section in csv, search for entry
+	int buffer = MAXINT;
+	char* state = NULL;
+	char* split = strtok_s(inheritSectionsString, ",", &state);
+	do
+	{
+		// if we found anything new (not default), we're done
+		buffer = ini->ReadInteger(split, entryName, MAXINT);
+		if (buffer != MAXINT)
+			break;
+	}
+	while (split = strtok_s(NULL, ",", &state));
+
+	return finalize(buffer != MAXINT ? buffer : defaultValue);
+}
+
 int INIInheritance::ReadString(REGISTERS* R, int address)
 {
 	const int stackOffset = 0x1C;
@@ -68,13 +107,11 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 	GET_STACK(int, length, STACK_OFFSET(stackOffset, 0x14));
 	GET_STACK(char*, buffer, STACK_OFFSET(stackOffset, 0x10));
 	GET_STACK(const char*, defaultValue, STACK_OFFSET(stackOffset, 0xC));
-	//GET_STACK(char*, entryName, STACK_OFFSET(stackOffset, 0x8));
-	//GET_STACK(const char*, sectionName, STACK_OFFSET(stackOffset, 0x4));
 
 	char* entryName = INIInheritance::SavedEntries.back();
 	char* sectionName = INIInheritance::SavedSections.back();
 
-	auto finalize = [R, buffer, entryName, address](const char* value)
+	auto finalize = [R, buffer, address](const char* value)
 	{
 		R->EDI(buffer);
 		R->EAX(0);
@@ -92,15 +129,13 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 		return finalize(defaultValue);
 
 	// for each section in csv, search for entry
-	char bufferStart = NULL;
 	char* state = NULL;
 	char* split = strtok_s(inheritSectionsString, ",", &state);
 	do
 	{
+		// if we found anything new (not default), we're done
 		if (ini->ReadString(split, entryName, NULL, buffer, length) != 0)
-			bufferStart = buffer[0];
-		else
-			buffer[0] = bufferStart;
+			break;
 	}
 	while (split = strtok_s(NULL, ",", &state));
 
@@ -111,18 +146,18 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 DEFINE_PATCH(0x528A10, 0x83, 0xEC, 0x0C, 0x33, 0xC0);
 // INIClass_GetKeyName_DisableAres
 DEFINE_PATCH(0x526CC0, 0x8B, 0x54, 0x24, 0x04, 0x83, 0xEC, 0x0C);
+// INIClass__GetInt__Hack // pop edi, jmp + 6, nop
+DEFINE_PATCH(0x5278C6, 0x5F, 0xEB, 0x06, 0x90);
 
-DEFINE_HOOK(0x528A18, INIClass_GetString_SaveEntry, 0x6)
+void INIInheritance::PushEntry(REGISTERS* R, int stackOffset)
 {
-	GET_STACK(char*, entryName, STACK_OFFSET(0x18, 0x8));
-	GET_STACK(char*, sectionName, STACK_OFFSET(0x18, 0x4));
+	GET_STACK(char*, entryName, STACK_OFFSET(stackOffset, 0x8));
+	GET_STACK(char*, sectionName, STACK_OFFSET(stackOffset, 0x4));
 	INIInheritance::SavedEntries.push_back(_strdup(entryName));
 	INIInheritance::SavedSections.push_back(_strdup(sectionName));
-	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x528BC9, INIClass_GetString_FreeEntry, 0x5)
-DEFINE_HOOK(0x528BBE, INIClass_GetString_FreeEntry, 0x5)
+void INIInheritance::PopEntry()
 {
 	char* entry = INIInheritance::SavedEntries.back();
 	if (entry)
@@ -133,7 +168,32 @@ DEFINE_HOOK(0x528BBE, INIClass_GetString_FreeEntry, 0x5)
 	if (section)
 		free(section);
 	INIInheritance::SavedSections.pop_back();
+}
 
+DEFINE_HOOK(0x528A18, INIClass_GetString_SaveEntry, 0x6)
+{
+	INIInheritance::PushEntry(R, 0x18);
+	return 0;
+}
+
+DEFINE_HOOK(0x5276D7, INIClass_GetInt_SaveEntry, 0x6)
+{
+	INIInheritance::PushEntry(R, 0x14);
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x528BC9, INIClass_GetString_FreeEntry, 0x5)
+DEFINE_HOOK(0x528BBE, INIClass_GetString_FreeEntry, 0x5)
+{
+	INIInheritance::PopEntry();
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x52782F, INIClass_GetInt_FreeEntry, 0x5)
+DEFINE_HOOK_AGAIN(0x5278A9, INIClass_GetInt_FreeEntry, 0x7)
+DEFINE_HOOK(0x527866, INIClass_GetInt_FreeEntry, 0x7)
+{
+	INIInheritance::PopEntry();
 	return 0;
 }
 
@@ -172,6 +232,13 @@ DEFINE_HOOK(0x528B97, INIClass_GetString_Inheritance_OverrideDefault, 0)
 DEFINE_HOOK(0x528BAC, INIClass_GetString_Inheritance_NoEntry, 0xA)
 {
 	return INIInheritance::ReadString(R, 0x528BB6);
+}
+
+DEFINE_HOOK(0x5278CA, INIClass_GetInt_Inheritance_NoEntry, 0x5)
+{
+	int r = INIInheritance::ReadInt(R, 0);
+	INIInheritance::PopEntry();
+	return r;
 }
 
 // piggyback on top of Ares version
