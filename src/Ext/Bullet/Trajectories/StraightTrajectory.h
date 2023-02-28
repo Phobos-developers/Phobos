@@ -28,12 +28,14 @@ public:
 		, DetonationDistance { Leptons(102) }
 		, TargetSnapDistance { Leptons(0) }
 		, PassThrough { false }
+		, FiredFromAboveTarget { false }
 	{}
 
 	StraightTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Straight)
 		, DetonationDistance { Leptons(102) }
 		, TargetSnapDistance { Leptons(0) }
 		, PassThrough { false }
+		, FiredFromAboveTarget { false }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -49,7 +51,10 @@ public:
 	Leptons DetonationDistance;
 	Leptons TargetSnapDistance;
 	bool PassThrough;
+	bool FiredFromAboveTarget;
 
 private:
 	int GetVelocityZ(BulletClass* pBullet);
+	int GetFirerZPosition(BulletClass* pBullet);
+	int GetTargetZPosition(BulletClass* pBullet);
 };

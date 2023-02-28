@@ -340,11 +340,7 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
 		if (pExt->Trajectory && pExt->Trajectory->Flag == TrajectoryFlag::Straight)
-		{
-			// Straight trajectory has its own proximity checks.
-			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
-				return SkipCheck;
-		}
+			return SkipCheck;
 	}
 
 	return 0;

@@ -4,12 +4,26 @@
 bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	this->PhobosTrajectoryType::Load(Stm, false);
+
+	Stm
+		.Process(this->DetonationDistance, false)
+		.Process(this->TargetSnapDistance, false)
+		.Process(this->PassThrough, false)
+		;
+
 	return true;
 }
 
 bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
 {
 	this->PhobosTrajectoryType::Save(Stm);
+
+	Stm
+		.Process(this->DetonationDistance)
+		.Process(this->TargetSnapDistance)
+		.Process(this->PassThrough)
+		;
+
 	return true;
 }
 
@@ -25,11 +39,29 @@ void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 
 bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
+	this->PhobosTrajectory::Load(Stm, false);
+
+	Stm
+		.Process(this->DetonationDistance)
+		.Process(this->TargetSnapDistance)
+		.Process(this->PassThrough)
+		.Process(this->FiredFromAboveTarget)
+		;
+
 	return true;
 }
 
 bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 {
+	this->PhobosTrajectory::Save(Stm);
+
+	Stm
+		.Process(this->DetonationDistance)
+		.Process(this->TargetSnapDistance)
+		.Process(this->PassThrough)
+		.Process(this->FiredFromAboveTarget)
+		;
+
 	return true;
 }
 
@@ -44,6 +76,8 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
 	pBullet->Velocity.Z = this->GetVelocityZ(pBullet);
 	pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
+
+	this->FiredFromAboveTarget = this->GetFirerZPosition(pBullet) > this->GetTargetZPosition(pBullet);
 }
 
 bool StraightTrajectory::OnAI(BulletClass* pBullet)
@@ -85,28 +119,21 @@ void StraightTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpe
 
 TrajectoryCheckReturnType StraightTrajectory::OnAITargetCoordCheck(BulletClass* pBullet)
 {
-	if (!this->PassThrough)
+	if (this->PassThrough)
 	{
-		int bulletX = pBullet->Location.X / Unsorted::LeptonsPerCell;
-		int bulletY = pBullet->Location.Y / Unsorted::LeptonsPerCell;
-		int targetX = pBullet->TargetCoords.X / Unsorted::LeptonsPerCell;
-		int targetY = pBullet->TargetCoords.Y / Unsorted::LeptonsPerCell;
-
-		if (bulletX == targetX && bulletY == targetY && pBullet->GetHeight() < 2 * Unsorted::LevelHeight)
-			return TrajectoryCheckReturnType::Detonate; // Detonate projectile.
-
-		if (pBullet->Location.Z < pBullet->TargetCoords.Z)
+		if (this->FiredFromAboveTarget && pBullet->Location.Z <= pBullet->TargetCoords.Z)
 			return TrajectoryCheckReturnType::Detonate; // Detonate projectile.
 	}
 	else
 	{
-		bool isAboveTarget = false;
+		auto const bulletCell = CellClass::Coord2Cell(pBullet->Location);
+		auto const targetCell = CellClass::Coord2Cell(pBullet->TargetCoords);
 
-		if ((pBullet->Owner && pBullet->Owner->Location.Z > pBullet->TargetCoords.Z) || (!pBullet->Owner && pBullet->SourceCoords.Z > pBullet->TargetCoords.Z))
-			isAboveTarget = true;
+		if (bulletCell == targetCell && pBullet->GetHeight() < 2 * Unsorted::LevelHeight)
+			return TrajectoryCheckReturnType::Detonate; // Detonate projectile.
 
-		if (isAboveTarget && pBullet->Location.Z <= pBullet->TargetCoords.Z)
-			return TrajectoryCheckReturnType::Detonate; // Detonate projectile.*/
+		if (this->FiredFromAboveTarget && pBullet->Location.Z < pBullet->TargetCoords.Z)
+			return TrajectoryCheckReturnType::Detonate; // Detonate projectile.
 	}
 
 	return TrajectoryCheckReturnType::SkipGameCheck; // Bypass game checks entirely.
@@ -124,8 +151,44 @@ int StraightTrajectory::GetVelocityZ(BulletClass* pBullet)
 	if (!this->PassThrough)
 		return velocity;
 
-	if (pBullet->Owner && pBullet->Owner->Location.Z == pBullet->TargetCoords.Z)
+	if (this->GetFirerZPosition(pBullet) == this->GetTargetZPosition(pBullet))
 		return 0;
 
 	return velocity;
+}
+
+int StraightTrajectory::GetFirerZPosition(BulletClass* pBullet)
+{
+	if (!pBullet)
+		return 0;
+
+	auto coords = pBullet->SourceCoords;
+
+	if (pBullet->Owner)
+	{
+		auto const pCell = pBullet->Owner->GetCell();
+
+		if (pCell)
+			coords = pCell->GetCoordsWithBridge();
+	}
+
+	return coords.Z;
+}
+
+int StraightTrajectory::GetTargetZPosition(BulletClass* pBullet)
+{
+	if (!pBullet)
+		return 0;
+
+	auto coords = pBullet->TargetCoords;
+
+	if (pBullet->Target)
+	{
+		auto const pCell = MapClass::Instance()->TryGetCellAt(pBullet->Target->GetCoords());
+
+		if (pCell)
+			coords = pCell->GetCoordsWithBridge();
+	}
+
+	return coords.Z;
 }
