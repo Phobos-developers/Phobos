@@ -189,12 +189,12 @@ enum class IronCurtainEffect : BYTE
 
 enum class TransferDirection : BYTE
 {
-	SourceToTarget  = 0,
-	SourceToSource  = 1,
-	TargetToSource  = 2,
-	TargetToExtra   = 3,
-	TargetToTarget  = 4,
-	ExtraToTarget   = 5
+	SourceToTarget	= 0,
+	SourceToSource	= 1,
+	TargetToSource	= 2,
+	TargetToExtra	= 3,
+	TargetToTarget	= 4,
+	ExtraToTarget	= 5
 };
 
 enum class TransferResource : BYTE
@@ -208,19 +208,26 @@ enum class TransferResource : BYTE
 
 enum class TechnoValueType : BYTE
 {
-	Fixed		= 0,
-	Current		= 1,
-	Missing		= 2,
-	Total		= 3
+	Fixed			= 0,
+	Current			= 1,
+	Missing			= 2,
+	Total			= 3
 };
 
 enum class TransferFactor : BYTE
 {
-	None		= 0,
-	Highest		= 1,
-	Sum			= 2,
-	Average		= 3,
-	Count 		= 4
+	None			= 0,
+	Highest			= 1,
+	Sum				= 2,
+	Average			= 3,
+	Count 			= 4
+};
+
+enum class TransferOverlimitAction : BYTE
+{
+	None			= 0,
+				= 1,
+	Cancel			= 2
 };
 
 class MouseCursorHotSpotX

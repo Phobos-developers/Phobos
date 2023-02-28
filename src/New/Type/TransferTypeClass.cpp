@@ -42,16 +42,18 @@ void TransferTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->VeterancyMultiplier_ExtraOverExtra.Read(exINI, section, "VeterancyMultiplier.ExtraOverExtra");
 	this->Send_Resource.Read(exINI, section, "Send.Resource");
 	this->Send_Value.Read(exINI, section, "Send.Value");
-	this->Send_Value_Type.Read(exINI, section, "Send.Value.Type");
-	this->Send_Value_FlatLimits.Read(exINI, section, "Send.Value.FlatLimits");
+	this->Send_Type.Read(exINI, section, "Send.Value.Type");
+	this->Send_FlatLimits.Read(exINI, section, "Send.Value.FlatLimits");
 	this->Send_PreventUnderflow.Read(exINI, section, "Send.PreventUnderflow");
 	this->Send_PreventOverflow.Read(exINI, section, "Send.PreventOverflow");
 	this->Receive_Resource.Read(exINI, section, "Receive.Resource");
 	this->Receive_Value.Read(exINI, section, "Receive.Value");
-	this->Receive_Value_Type.Read(exINI, section, "Receive.Value.Type");
-	this->Receive_Value_FlatLimits.Read(exINI, section, "Receive.Value.FlatLimits");
+	this->Receive_Type.Read(exINI, section, "Receive.Value.Type");
+	this->Receive_FlatLimits.Read(exINI, section, "Receive.Value.FlatLimits");
+	this->Receive_ReturnUnderflow.Read(exINI, section, "Receive.ReturnUnderflow");
+	this->Receive_ReturnOverflow.Read(exINI, section, "Receive.ReturnOverflow");
 	this->Receive_SentFactor.Read(exINI, section, "Receive.SentFactor");
-	this->Receive_SentSplit.Read(exINI, section, "Receive.SentSplit");
+	this->Receive_Split.Read(exINI, section, "Receive.Split");
 	this->Experience_PreventDemote.Read(exINI, section, "Experience.PreventDemote");
 	this->Health_PreventKill.Read(exINI, section, "Health.PreventKill");
 	this->GatlingRate_LimitStageChange.Read(exINI, section, "GatlingRate.LimitStageChange");
@@ -83,16 +85,18 @@ void TransferTypeClass::Serialize(T& Stm)
 		.Process(this->VeterancyMultiplier_ExtraOverExtra)
 		.Process(this->Send_Resource)
 		.Process(this->Send_Value)
-		.Process(this->Send_Value_Type)
-		.Process(this->Send_Value_FlatLimits)
+		.Process(this->Send_Type)
+		.Process(this->Send_FlatLimits)
 		.Process(this->Send_PreventUnderflow)
 		.Process(this->Send_PreventOverflow)
 		.Process(this->Receive_Resource)
 		.Process(this->Receive_Value)
-		.Process(this->Receive_Value_Type)
-		.Process(this->Receive_Value_FlatLimits)
+		.Process(this->Receive_Type)
+		.Process(this->Receive_FlatLimits)
+		.Process(this->Receive_ReturnUnderflow)
+		.Process(this->Receive_ReturnOverflow)
 		.Process(this->Receive_SentFactor)
-		.Process(this->Receive_SentSplit)
+		.Process(this->Receive_Split)
 		.Process(this->Experience_PreventDemote)
 		.Process(this->Health_PreventKill)
 		.Process(this->GatlingRate_LimitStageChange)

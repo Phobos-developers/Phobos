@@ -16,11 +16,10 @@ struct TransferUnit
 	TechnoClass* Techno;
 	HouseClass* House;
 
-	double Value;
-	double Modifier;
+	float Value;
 
-	double Current;
-	double Total;
+	int Current;
+	int Total;
 	TransferResource Resource;
 };
 
@@ -53,10 +52,8 @@ private:
 	std::string FailureMessage;
 
 	bool IsCellSpread = false;
-	bool IsSenderTarget = false;
-	bool IsReceiverTarget = false;
-	bool IsSenderExtra = false;
-	bool IsReceiverExtra = false;
+
+	float GetModifier();
 
 	bool DetermineSides();
 	bool ApplyModifiers();

@@ -8,9 +8,9 @@ int ModFrom1(const int& lvalue, const int& rvalue)
 	return lvalue < 0 ? ((lvalue + 1) % rvalue - 1) : ((lvalue - 1) % rvalue + 1);
 }
 
-int ResourceValue(TechnoClass* pTechno, HouseClass* pHouse, TransferResource attr, bool current = true, bool stage = false)
+int ResourceValue(const TechnoClass* pTechno, const HouseClass* pHouse, TransferResource attr, bool current = true, bool stage = false)
 {
-	if (pTechno == nullptr && !(attr == TransferResource::Money && pHouse != nullptr))
+	if (pHouse == nullptr || (pTechno == nullptr && attr != TransferResource::Money))
 		return 0;
 
 	TechnoTypeClass* pType = nullptr;
@@ -29,8 +29,8 @@ int ResourceValue(TechnoClass* pTechno, HouseClass* pHouse, TransferResource att
 
 	case TransferResource::Experience:
 	{
-		int veterancyStage = static_cast<int>(pType->Cost * RulesClass::Instance->VeteranRatio);
-		int currentStageVeterancy = static_cast<int>(veterancyStage * (pTechno->Veterancy.Veterancy - static_cast<int>(pTechno->Veterancy.Veterancy)));
+		const int veterancyStage = static_cast<int>(pType->Cost * RulesClass::Instance->VeteranRatio);
+		const int currentStageVeterancy = static_cast<int>(veterancyStage * (pTechno->Veterancy.Veterancy - static_cast<int>(pTechno->Veterancy.Veterancy)));
 		if (current)
 			if (stage)
 				return currentStageVeterancy;
@@ -56,9 +56,9 @@ int ResourceValue(TechnoClass* pTechno, HouseClass* pHouse, TransferResource att
 
 	case TransferResource::GatlingRate:
 	{
-		int gatling_stage = pTechno->CurrentGattlingStage;
-		int gatling_value = pTechno->GattlingValue;
-		int gatling_current_max = pTechno->Veterancy.IsElite()
+		const int gatling_stage = pTechno->CurrentGattlingStage;
+		const int gatling_value = pTechno->GattlingValue;
+		const int gatling_current_max = pTechno->Veterancy.IsElite()
 			? pType->EliteStage[gatling_stage]
 			: pType->WeaponStage[gatling_stage];
 		int gatling_current_min = 0;
@@ -128,12 +128,13 @@ TransferClass::TransferClass(TechnoClass* pSTechno, HouseClass* pHouse, WarheadT
 
 int TransferClass::ChangeHealth(TechnoClass* pTechno, int value, TechnoClass* pSource, HouseClass* pHouse, WarheadTypeClass* pWarhead, bool killable)
 {
+	if (pTechno == nullptr || value == 0)
+		return 0;
+
 	value = -value;
 	if (pTechno->Health - value <= 0 && !killable)
 		value = pTechno->Health - 1;
 
-	if (value == 0)
-		return 0;
 	pTechno->ReceiveDamage(&value, 0, pWarhead, pSource, true, false, pHouse);
 
 	return -value;
@@ -141,11 +142,12 @@ int TransferClass::ChangeHealth(TechnoClass* pTechno, int value, TechnoClass* pS
 
 int TransferClass::ChangeExperience(TechnoClass* pTechno, int value, bool demotable)
 {
-	if (!pTechno->GetTechnoType()->Trainable)
+	if (pTechno == nullptr || !pTechno->GetTechnoType()->Trainable)
 		return 0;
-	int cost = pTechno->GetTechnoType()->Cost;
-	double veterancyStage = static_cast<double>(cost) * RulesClass::Instance->VeteranRatio;
-	int experience = static_cast<int>(pTechno->Veterancy.Veterancy * veterancyStage);
+
+	const int cost = pTechno->GetTechnoType()->Cost;
+	const double veterancyStage = static_cast<double>(cost) * RulesClass::Instance->VeteranRatio;
+	const int experience = static_cast<int>(pTechno->Veterancy.Veterancy * veterancyStage);
 
 	if (value < 0 && !demotable)
 	{
@@ -164,6 +166,9 @@ int TransferClass::ChangeExperience(TechnoClass* pTechno, int value, bool demota
 
 int TransferClass::ChangeMoney(HouseClass* pHouse, int value)
 {
+	if (pHouse == nullptr)
+		return 0;
+
 	if (value > 0)
 	{
 		pHouse->GiveMoney(value);
@@ -181,7 +186,10 @@ int TransferClass::ChangeMoney(HouseClass* pHouse, int value)
 
 int TransferClass::ChangeAmmo(TechnoClass* pTechno, int value)
 {
-	int ammo = pTechno->Ammo;
+	if (pTechno == nullptr)
+		return 0;
+
+	const int ammo = pTechno->Ammo;
 	pTechno->Ammo = std::clamp(ammo + value, 0, pTechno->GetTechnoType()->Ammo);
 	return pTechno->Ammo - ammo;
 }
@@ -189,9 +197,7 @@ int TransferClass::ChangeAmmo(TechnoClass* pTechno, int value)
 int TransferClass::ChangeGatlingRate(TechnoClass* pTechno, int value, int changeLimit, bool canCycle, bool change)
 {
 	if (pTechno == nullptr)
-	{
 		return 0;
-	}
 
 	TechnoTypeClass* pType = pTechno->GetTechnoType();
 	if (!pType->IsGattling || pType->WeaponStages <= 1)
@@ -231,7 +237,7 @@ int TransferClass::ChangeGatlingRate(TechnoClass* pTechno, int value, int change
 			resultStage -= stageCount;
 		if (pTechno->GattlingValue + value >= weaponStages[stageCount - 1])
 			resultStage += stageCount;
-		int stageChange = resultStage - stage;
+		const int stageChange = resultStage - stage;
 		if (changeLimit >= 0 && std::abs(stageChange) > changeLimit)
 		{
 			if (stageChange < 0)
@@ -276,7 +282,7 @@ int TransferClass::ChangeGatlingRate(TechnoClass* pTechno, int value, int change
 		finder = std::upper_bound(weaponStages.begin(), weaponStages.end(), rate);
 		resultStage = finder - weaponStages.begin();
 
-		int stageChange = resultStage - stage;
+		const int stageChange = resultStage - stage;
 		if (changeLimit >= 0 && std::abs(stageChange) > changeLimit)
 		{
 			resultStage = stage + (stageChange < 0 ? -changeLimit : changeLimit);
@@ -304,7 +310,7 @@ int TransferClass::ChangeGatlingRate(TechnoClass* pTechno, int value, int change
 
 	stage = resultStage;
 
-	int diff = rate - pTechno->GattlingValue;
+	const int diff = rate - pTechno->GattlingValue;
 
 	if (change)
 	{
@@ -324,7 +330,7 @@ int TransferClass::AlterResource(TransferUnit* pValues)
 	if (pTechno == nullptr && pValues->Resource != TransferResource::Money)
 		return 0;
 
-	int value = static_cast<int>(std::round(pValues->Value));
+	const int value = static_cast<int>(std::round(pValues->Value));
 
 	switch (pValues->Resource)
 	{
@@ -343,12 +349,17 @@ int TransferClass::AlterResource(TransferUnit* pValues)
 	return 0;
 }
 
+float TransferClass::GetModifier()
+{
+	return 0.0f;
+}
+
 bool TransferClass::DetermineSides()
 {
-	bool SendOnlyHouseIsNeeded = Type->Send_Resource == TransferResource::Money
-		&& (Type->Send_Value_Type == TechnoValueType::Fixed || Type->Send_Value_Type == TechnoValueType::Current);
-	bool ReceiveOnlyHouseIsNeeded = Type->Receive_Resource == TransferResource::Money
-		&& (Type->Receive_Value_Type == TechnoValueType::Fixed || Type->Receive_Value_Type == TechnoValueType::Current);
+	const bool SendOnlyHouseIsNeeded = Type->Send_Resource == TransferResource::Money
+		&& (Type->Send_Type == TechnoValueType::Fixed || Type->Send_Type == TechnoValueType::Current);
+	const bool ReceiveOnlyHouseIsNeeded = Type->Receive_Resource == TransferResource::Money
+		&& (Type->Receive_Type == TechnoValueType::Fixed || Type->Receive_Type == TechnoValueType::Current);
 
 	WarheadTypeClass* extraWarhead = Type->Extra_Warhead;
 	if (extraWarhead == nullptr)
@@ -564,7 +575,7 @@ bool TransferClass::ApplyModifiers()
 	{
 		if (IsSenderTarget)
 		{
-			bool IsHouseAffected = Type->Target_AffectHouses == AffectedHouse::All
+			const bool IsHouseAffected = Type->Target_AffectHouses == AffectedHouse::All
 				|| EnumFunctions::CanTargetHouse(Type->Target_AffectHouses, SourceHouse, Sender->House);
 
 			if (!IsHouseAffected || (IsCellSpread
@@ -599,7 +610,7 @@ bool TransferClass::ApplyModifiers()
 		}
 		else if (IsSenderExtra)
 		{
-			bool IsHouseAffected = Type->Extra_AffectHouses == AffectedHouse::All
+			const bool IsHouseAffected = Type->Extra_AffectHouses == AffectedHouse::All
 				|| EnumFunctions::CanTargetHouse(Type->Extra_AffectHouses, SourceHouse, Sender->House);
 
 			if (!IsHouseAffected || (IsCellSpread && Type->Extra_Spread_IgnoreEpicenter
@@ -652,7 +663,7 @@ bool TransferClass::ApplyModifiers()
 	{
 		if (IsReceiverTarget)
 		{
-			bool IsHouseAffected = Type->Target_AffectHouses == AffectedHouse::All
+			const bool IsHouseAffected = Type->Target_AffectHouses == AffectedHouse::All
 				|| EnumFunctions::CanTargetHouse(Type->Target_AffectHouses, SourceHouse, Receiver->House);
 
 			if (!IsHouseAffected || (IsCellSpread
@@ -661,7 +672,7 @@ bool TransferClass::ApplyModifiers()
 				Receivers.erase(Receiver--);
 				continue;
 			}
-
+			
 			if (Type->Target_ConsiderArmor)
 			{
 				Receiver->Modifier *= GeneralUtils::GetWarheadVersusArmor(targetWarhead, Receiver->Techno->GetTechnoType()->Armor);
@@ -687,7 +698,7 @@ bool TransferClass::ApplyModifiers()
 		}
 		else if (IsReceiverExtra)
 		{
-			bool IsHouseAffected = Type->Extra_AffectHouses == AffectedHouse::All
+			const bool IsHouseAffected = Type->Extra_AffectHouses == AffectedHouse::All
 				|| EnumFunctions::CanTargetHouse(Type->Extra_AffectHouses, SourceHouse, Receiver->House);
 
 			if (!IsHouseAffected || (IsCellSpread && Type->Extra_Spread_IgnoreEpicenter
@@ -735,7 +746,7 @@ bool TransferClass::ApplyModifiers()
 				Receiver->Modifier *= Type->VeterancyMultiplier_SourceOverReceiver.Get().Y;
 		}
 	}
-
+	
 	return true;
 }
 
@@ -743,11 +754,11 @@ bool TransferClass::RegisterValues()
 {
 	for (auto Sender = Senders.begin(); Sender != Senders.end(); Sender++)
 	{
-		Sender->Value = Type->Send_Value;
+		Sender->Value *= Type->Send_Value;
 
-		if (Type->Send_Value_Type != TechnoValueType::Fixed)
+		if (Type->Send_Type != TechnoValueType::Fixed)
 		{
-			switch (Type->Send_Value_Type)
+			switch (Type->Send_Type)
 			{
 			case TechnoValueType::Current:
 				Sender->Value *= Sender->Current;
@@ -763,17 +774,15 @@ bool TransferClass::RegisterValues()
 				break;
 			}
 		}
-
-		Sender->Value *= Sender->Modifier;
 	}
 
 	for (auto Receiver = Receivers.begin(); Receiver != Receivers.end(); Receiver++)
 	{
-		Receiver->Value = Type->Receive_Value;
+		Receiver->Value *= Type->Receive_Value;
 
-		if (Type->Receive_Value_Type != TechnoValueType::Fixed)
+		if (Type->Receive_Type != TechnoValueType::Fixed)
 		{
-			switch (Type->Receive_Value_Type)
+			switch (Type->Receive_Type)
 			{
 			case TechnoValueType::Current:
 				Receiver->Value *= Receiver->Current;
@@ -789,8 +798,6 @@ bool TransferClass::RegisterValues()
 				break;
 			}
 		}
-
-		Receiver->Value *= Receiver->Modifier;
 	}
 
 	return true;
@@ -811,17 +818,17 @@ bool TransferClass::ValidateLimits()
 
 		if (Sender->Modifier > 0)
 		{
-			if (Type->Send_Value_FlatLimits.Get().X && Sender->Value < Type->Send_Value_FlatLimits.Get().X)
-				Sender->Value = Type->Send_Value_FlatLimits.Get().X;
-			if (Type->Send_Value_FlatLimits.Get().Y && Sender->Value > Type->Send_Value_FlatLimits.Get().Y)
-				Sender->Value = Type->Send_Value_FlatLimits.Get().Y;
+			if (Type->Send_FlatLimits.Get().X && Sender->Value < Type->Send_FlatLimits.Get().X)
+				Sender->Value = Type->Send_FlatLimits.Get().X;
+			if (Type->Send_FlatLimits.Get().Y && Sender->Value > Type->Send_FlatLimits.Get().Y)
+				Sender->Value = Type->Send_FlatLimits.Get().Y;
 		}
 		else
 		{
-			if (Type->Send_Value_FlatLimits.Get().Y && Sender->Value < -Type->Send_Value_FlatLimits.Get().Y)
-				Sender->Value = -Type->Send_Value_FlatLimits.Get().Y;
-			if (Type->Send_Value_FlatLimits.Get().X && Sender->Value > -Type->Send_Value_FlatLimits.Get().X)
-				Sender->Value = -Type->Send_Value_FlatLimits.Get().X;
+			if (Type->Send_FlatLimits.Get().Y && Sender->Value < -Type->Send_FlatLimits.Get().Y)
+				Sender->Value = -Type->Send_FlatLimits.Get().Y;
+			if (Type->Send_FlatLimits.Get().X && Sender->Value > -Type->Send_FlatLimits.Get().X)
+				Sender->Value = -Type->Send_FlatLimits.Get().X;
 		}
 
 		if (Type->Send_PreventOverflow && Type->Send_Resource != TransferResource::Money
@@ -917,7 +924,7 @@ bool TransferClass::ValidateLimits()
 			continue;
 
 		if (Type->Direction == TransferDirection::TargetToTarget
-			&& Type->Receive_SentFactor == TransferFactor::Average && Type->Receive_SentSplit)
+			&& Type->Receive_SentFactor == TransferFactor::Average && Type->Receive_Split)
 		{
 			Receiver->Value *= Senders[idx].Value;
 		}
@@ -925,7 +932,7 @@ bool TransferClass::ValidateLimits()
 		{
 			Receiver->Value *= Factor;
 
-			if (Type->Receive_SentSplit)
+			if (Type->Receive_Split)
 			{
 				Receiver->Value /= static_cast<double>(Receivers.size());
 			}
@@ -933,17 +940,17 @@ bool TransferClass::ValidateLimits()
 
 		if (Receiver->Modifier > 0)
 		{
-			if (Type->Receive_Value_FlatLimits.Get().X && Receiver->Value < Type->Receive_Value_FlatLimits.Get().X)
-				Receiver->Value = Type->Receive_Value_FlatLimits.Get().X;
-			if (Type->Receive_Value_FlatLimits.Get().Y && Receiver->Value > Type->Receive_Value_FlatLimits.Get().Y)
-				Receiver->Value = Type->Receive_Value_FlatLimits.Get().Y;
+			if (Type->Receive_FlatLimits.Get().X && Receiver->Value < Type->Receive_FlatLimits.Get().X)
+				Receiver->Value = Type->Receive_FlatLimits.Get().X;
+			if (Type->Receive_FlatLimits.Get().Y && Receiver->Value > Type->Receive_FlatLimits.Get().Y)
+				Receiver->Value = Type->Receive_FlatLimits.Get().Y;
 		}
 		else
 		{
-			if (Type->Receive_Value_FlatLimits.Get().Y && Receiver->Value < -Type->Receive_Value_FlatLimits.Get().Y)
-				Receiver->Value = -Type->Receive_Value_FlatLimits.Get().Y;
-			if (Type->Receive_Value_FlatLimits.Get().X && Receiver->Value > -Type->Receive_Value_FlatLimits.Get().X)
-				Receiver->Value = -Type->Receive_Value_FlatLimits.Get().X;
+			if (Type->Receive_FlatLimits.Get().Y && Receiver->Value < -Type->Receive_FlatLimits.Get().Y)
+				Receiver->Value = -Type->Receive_FlatLimits.Get().Y;
+			if (Type->Receive_FlatLimits.Get().X && Receiver->Value > -Type->Receive_FlatLimits.Get().X)
+				Receiver->Value = -Type->Receive_FlatLimits.Get().X;
 		}
 	}
 
@@ -955,7 +962,7 @@ bool TransferClass::EnforceChanges()
 	int i = 0;
 	for (auto Sender = Senders.begin(); Sender != Senders.end(); Sender++)
 	{
-		int SenderChange = AlterResource(&(*Sender));
+		const int SenderChange = AlterResource(&(*Sender));
 		// Debug::Log("Sender[%d] change: %d\n", i++, SenderChange);
 		if (Type->Send_Resource == TransferResource::Money && Type->Money_Display_Sender && Sender->Techno)
 		{
@@ -968,7 +975,7 @@ bool TransferClass::EnforceChanges()
 	i = 0;
 	for (auto Receiver = Receivers.begin(); Receiver != Receivers.end(); Receiver++)
 	{
-		int ReceiverChange = AlterResource(&(*Receiver));
+		const int ReceiverChange = AlterResource(&(*Receiver));
 		// Debug::Log("Receiver[%d] change: %d\n", i++, ReceiverChange);
 		if (Type->Receive_Resource == TransferResource::Money && Type->Money_Display_Receiver && Receiver->Techno)
 		{

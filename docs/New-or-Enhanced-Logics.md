@@ -292,8 +292,8 @@ While there are many tags to control end result of the transfer, only several of
     - `sum` multiplies the transfer value of receiver by sum of sent tranfer values.
     - `average` multiplies the transfer value of receiver by sum of sent transfer values divided by senders' count.
     - `count` multiplies the transfer value of receiver by senders' count.
-  - `Receive.SentSplit` set to `yes` divides each receivers transfer value by receivers' count. Defaults to `no`.
-    - There is a special interaction when `Direction=targettotarget`, `Receive.SentFactor=average` and `Receive.SentSplit=yes`, multiplying each target's receiving transfer value by only their own sent value instead of `average`.
+  - `Receive.Split` set to `yes` divides each receivers transfer value by receivers' count. Defaults to `no`.
+    - There is a special interaction when `Direction=targettotarget`, `Receive.SentFactor=average` and `Receive.Split=yes`, multiplying each target's receiving transfer value by only their own sent value instead of `average`.
 - `Experience.PreventDemote` prevents demotion on losing experience. Works with `Send.PreventUnderflow` preventing sender from sending any amount on elite rank or only until minimum of veteran rank is reached on veteran. Works for both sides. Defaults to `no`.
 - `Health.PreventKill` prevents death from damage by transfer. Can still die to other means, i.e. warhead detonating weapon itself and such. "Works" with `Send.PreventUnderflow` changing lower limit for health from 0 to 1.
 - Non-negative `GatlingRate.LimitStageChange` limits stage change caused by rate transfer. Cannot be larger or equal to WeaponStages, as it would just come full circle. `gatlingrate` changes can restart cycle on units with `Gattling.Cycle=yes`. Does not work with `Send.PreventUnderflow`. Defaults to -1.
@@ -333,7 +333,7 @@ Receive.Value=0.0                                ; floating point value
 Receive.Value.Type=fixed                         ; enumeration (fixed | current | missing | total)
 Receive.Value.FlatLimits=0,0                     ; minimum,maximum integers (0 for no limit)
 Receive.SentFactor=none                          ; enumeration (none | highest | sum | average | count)
-Receive.SentSplit=false                          ; boolean
+Receive.Split=false                              ; boolean
 Experience.PreventDemote=false                   ; boolean
 Health.PreventKill=false                         ; boolean
 GatlingRate.LimitStageChange=-1                  ; integer
