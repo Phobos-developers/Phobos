@@ -45,7 +45,8 @@ bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->DetonationDistance)
 		.Process(this->TargetSnapDistance)
 		.Process(this->PassThrough)
-		.Process(this->FiredFromAboveTarget)
+		.Process(this->FirerZPosition)
+		.Process(this->TargetZPosition)
 		;
 
 	return true;
@@ -59,7 +60,8 @@ bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->DetonationDistance)
 		.Process(this->TargetSnapDistance)
 		.Process(this->PassThrough)
-		.Process(this->FiredFromAboveTarget)
+		.Process(this->FirerZPosition)
+		.Process(this->TargetZPosition)
 		;
 
 	return true;
@@ -71,13 +73,14 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->DetonationDistance = pType->DetonationDistance;
 	this->TargetSnapDistance = pType->TargetSnapDistance;
 	this->PassThrough = pType->PassThrough;
+	this->FirerZPosition = this->GetFirerZPosition(pBullet);
+	this->TargetZPosition = this->GetTargetZPosition(pBullet);
 
 	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
 	pBullet->Velocity.Z = this->GetVelocityZ(pBullet);
 	pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
 
-	this->FiredFromAboveTarget = this->GetFirerZPosition(pBullet) > this->GetTargetZPosition(pBullet);
 }
 
 bool StraightTrajectory::OnAI(BulletClass* pBullet)
@@ -91,7 +94,9 @@ bool StraightTrajectory::OnAI(BulletClass* pBullet)
 			return true;
 	}
 	else if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < this->DetonationDistance) // Close enough
+	{
 		return true;
+	}
 
 	return false;
 }
@@ -121,7 +126,7 @@ TrajectoryCheckReturnType StraightTrajectory::OnAITargetCoordCheck(BulletClass* 
 {
 	if (this->PassThrough)
 	{
-		if (this->FiredFromAboveTarget && pBullet->Location.Z <= pBullet->TargetCoords.Z)
+		if (this->FirerZPosition > this->TargetZPosition && pBullet->Location.Z <= pBullet->TargetCoords.Z)
 			return TrajectoryCheckReturnType::Detonate; // Detonate projectile.
 	}
 	else
@@ -134,7 +139,7 @@ TrajectoryCheckReturnType StraightTrajectory::OnAITargetCoordCheck(BulletClass* 
 			return TrajectoryCheckReturnType::Detonate; // Detonate projectile.
 		*/
 
-		if (this->FiredFromAboveTarget && pBullet->Location.Z < pBullet->TargetCoords.Z)
+		if (this->FirerZPosition >= this->TargetZPosition && pBullet->Location.Z < pBullet->TargetCoords.Z)
 			return TrajectoryCheckReturnType::Detonate; // Detonate projectile.
 	}
 
@@ -153,7 +158,7 @@ int StraightTrajectory::GetVelocityZ(BulletClass* pBullet)
 	if (!this->PassThrough)
 		return velocity;
 
-	if (this->GetFirerZPosition(pBullet) == this->GetTargetZPosition(pBullet))
+	if (this->FirerZPosition == this->TargetZPosition)
 		return 0;
 
 	return velocity;
