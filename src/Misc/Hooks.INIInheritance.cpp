@@ -4,16 +4,22 @@
 #include <CCINIClass.h>
 
 #include <vector>
+#include <set>
 
 namespace INIInheritance
 {
 	std::vector<char*> SavedEntries;
 	std::vector<char*> SavedSections;
+	std::vector<char*> SavedIncludes;
 	int ReadInt(REGISTERS* R, int address);
 	int ReadString(REGISTERS* R, int address);
 	//void ReadStringNew(REGISTERS* R);
 	void PushEntry(REGISTERS* R, int stackOffset);
 	void PopEntry();
+	void ApplyInclude();
+
+	CCINIClass* LastINIFile = nullptr;
+	bool IncludeMode = false;
 }
 
 // for Kerbiter's proposal
@@ -142,12 +148,31 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 	return finalize(buffer[0] ? buffer : defaultValue);
 }
 
+void INIInheritance::ApplyInclude()
+{
+	INIInheritance::IncludeMode = true;
+	for (auto filename: INIInheritance::SavedIncludes)
+	{
+		auto file = GameCreate<CCFileClass>(filename);
+		if (file->Exists())
+			INIInheritance::LastINIFile->ReadCCFile(file, false, false);
+		GameDelete(file);
+		free(filename);
+	}
+	INIInheritance::SavedIncludes.clear();
+	INIInheritance::IncludeMode = false;
+}
+
 // INIClass_GetString_DisableAres
 DEFINE_PATCH(0x528A10, 0x83, 0xEC, 0x0C, 0x33, 0xC0);
 // INIClass_GetKeyName_DisableAres
 DEFINE_PATCH(0x526CC0, 0x8B, 0x54, 0x24, 0x04, 0x83, 0xEC, 0x0C);
 // INIClass__GetInt__Hack // pop edi, jmp + 6, nop
 DEFINE_PATCH(0x5278C6, 0x5F, 0xEB, 0x06, 0x90);
+// CCINIClass_ReadCCFile1_DisableAres
+DEFINE_PATCH(0x474200, 0x8B, 0xF1, 0x8D, 0x54, 0x24, 0x0C)
+// CCINIClass_ReadCCFile2_DisableAres
+DEFINE_PATCH(0x474314, 0x81, 0xC4, 0xA8, 0x00, 0x00, 0x00)
 
 void INIInheritance::PushEntry(REGISTERS* R, int stackOffset)
 {
@@ -239,6 +264,39 @@ DEFINE_HOOK(0x5278CA, INIClass_GetInt_Inheritance_NoEntry, 0x5)
 	int r = INIInheritance::ReadInt(R, 0);
 	INIInheritance::PopEntry();
 	return r;
+}
+
+DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
+{
+	GET(CCINIClass*, ini, ESI);
+
+	bool isSameFile = ini == INIInheritance::LastINIFile;
+	if (!isSameFile)
+	{
+		INIInheritance::LastINIFile = ini;
+	}
+
+	auto section = ini->GetSection("$Include");
+	if (!section)
+		return 0;
+
+	std::vector<> savedEntries;
+	for (auto node : section->EntryIndex)
+	{
+		savedEntries.push_back();
+	}
+
+	for (auto node : section->EntryIndex)
+	{
+		if (!node.Data || !node.Data->Value || !*node.Data->Value)
+			continue;
+		auto file = GameCreate<CCFileClass>(filename);
+		if (file->Exists())
+			INIInheritance::LastINIFile->ReadCCFile(file, false, false);
+		GameDelete(file);
+	}
+
+	return 0;
 }
 
 // piggyback on top of Ares version
