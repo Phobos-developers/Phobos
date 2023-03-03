@@ -14,6 +14,10 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`.
 
+### From Ares
+
+- `[#include]` section and `[CHILD]:[PARENT]` section inheritance notation are disabled, replaced by Phobos `[$Include]` and `$Inherits`.
+
 ### From older Phobos versions
 
 #### From 0.3
