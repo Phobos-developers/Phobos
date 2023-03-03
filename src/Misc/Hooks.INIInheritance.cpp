@@ -11,7 +11,6 @@ namespace INIInheritance
 {
 	int ReadInt(REGISTERS* R, int address);
 	int ReadString(REGISTERS* R, int address);
-	//void ReadStringNew(REGISTERS* R);
 	void PushEntry(REGISTERS* R, int stackOffset);
 	void PopEntry();
 
@@ -20,54 +19,6 @@ namespace INIInheritance
 	std::vector<char*> SavedSections;
 	std::set<std::string> SavedIncludes;
 }
-
-// for Kerbiter's proposal
-/*
-void INIInheritance::ReadStringNew(REGISTERS* R)
-{
-	const int stackOffset = 0x1C;
-	GET(INIClass::INIEntry**, ppEntry, ESI);
-	GET(CCINIClass*, ini, EBP);
-	GET_STACK(int, length, STACK_OFFSET(stackOffset, 0x14));
-	GET_STACK(char*, buffer, STACK_OFFSET(stackOffset, 0x10));
-	GET_STACK(const char*, defaultValue, STACK_OFFSET(stackOffset, 0xC));
-
-	char* sectionName = INIInheritance::SavedSections.back();
-	char* entryName = INIInheritance::SavedEntries.back();
-	INIClass::INIEntry* entry = *ppEntry;
-
-	auto finalize = [R, buffer](const char* value)
-	{
-		R->EDI(buffer);
-		R->ECX(value);
-		return;
-	};
-
-	// if we were looking for $Inherits and failed, no recursion
-	if (strncmp(entryName, "$Inherits", 10) == 0)
-		return finalize(defaultValue);
-
-	// search for $Inherits entry
-	char inheritSectionsString[0x100];
-	if (ini->ReadString(sectionName, "$Inherits", NULL, inheritSectionsString, 0x100) == 0)
-		return finalize(defaultValue);
-
-	// for each section in csv, search for entry
-	char bufferStart = NULL;
-	char* state = NULL;
-	char* split = strtok_s(inheritSectionsString, ",", &state);
-	do
-	{
-		if (ini->ReadString(split, entryName, NULL, buffer, length) != 0)
-			bufferStart = buffer[0];
-		else
-			buffer[0] = bufferStart;
-	}
-	while (split = strtok_s(NULL, ",", &state));
-
-	return finalize(buffer);
-}
-*/
 
 int INIInheritance::ReadInt(REGISTERS* R, int address)
 {
@@ -206,38 +157,6 @@ DEFINE_HOOK(0x527866, INIClass_GetInt_FreeEntry, 0x7)
 	return 0;
 }
 
-// kind of useless in our case? if there's no section, there's no $Inherits entry either
-/*
-DEFINE_HOOK(0x528B80, INIClass_GetString_Inheritance_NoSection, 0x8)
-{
-	return INIInheritance::ReadString(R, 0x528B88);
-}
-*/
-
-// Kerbiter's proposal
-/*
-DEFINE_HOOK(0x528B97, INIClass_GetString_Inheritance_OverrideDefault, 0)
-{
-	enum { Found = 0x528BB6 };
-	GET(INIClass::INIEntry**, ppEntry, ESI);
-	GET_STACK(char*, buffer, STACK_OFFSET(0x1C, 0x10));
-
-	INIClass::INIEntry* entry = *ppEntry;
-	if (entry && entry->Value)
-	{
-		R->EDI(buffer);
-		R->ECX(entry->Value);
-	}
-	else
-	{
-		INIInheritance::ReadStringNew(R);
-	}
-	R->EAX(0);
-
-	return Found;
-}
-*/
-
 DEFINE_HOOK(0x528BAC, INIClass_GetString_Inheritance_NoEntry, 0xA)
 {
 	return INIInheritance::ReadString(R, 0x528BB6);
@@ -281,65 +200,3 @@ DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
 
 	return 0;
 }
-
-// piggyback on top of Ares version
-/*
-DEFINE_HOOK(0x525D23, INIClass_Load_Inherits, 0x5)
-{
-	LEA_STACK(char*, entry, STACK_OFFSET(0x478, -0x400));
-	LEA_STACK(char*, section, STACK_OFFSET(0x478, -0x200));
-	GET(char*, value, ESI);
-	GET(CCINIClass*, ini, EBP);
-
-	if (strncmp(entry, "$Inherits", 10) != 0)
-		return 0;
-
-	// for each name in csv, find and copy section
-	char* valueCopy = _strdup(value);
-	char* split = strtok(valueCopy, ",");
-	do
-	{
-		auto copiedSection = ini->GetSection(split);
-		if (!copiedSection)
-			continue;
-		for (auto entryNode: copiedSection->EntryIndex)
-			ini->WriteString(section, entryNode.Data->Key, entryNode.Data->Value);
-	}
-	while (split = strtok(NULL, ","));
-	free(valueCopy);
-
-	return 0;
-}
-*/
-
-// a parital attempt at reversing Ares
-/*
-DEFINE_HOOK(0x528A10, INIClass_GetString_Inheritance, 0x5)
-{
-	enum { End = 0x528BFA };
-	const int stackOffset = 0x0;
-	GET(CCINIClass*, ini, EBP);
-	GET_STACK(int, bufferSize, STACK_OFFSET(stackOffset, 0x14));
-	GET_STACK(char*, buffer, STACK_OFFSET(stackOffset, 0x10));
-	GET_STACK(const char*, defaultValue, STACK_OFFSET(stackOffset, 0xC));
-	GET_STACK(char*, entryName, STACK_OFFSET(stackOffset, 0x8));
-	GET_STACK(const char*, sectionName, STACK_OFFSET(stackOffset, 0x4));
-
-	if (!buffer || bufferSize < 2 || !sectionName || !entryName)
-		return End;
-
-	int len = INIInheritance::PhobosGetString(ini, sectionName, entryName, defaultValue, buffer);
-	if(!len)
-		return 0;
-
-	// trim both sides
-	while (*buffer && *buffer++ <= ' ');
-	char* back = buffer + strlen(buffer);
-	while (*--back && *back <= ' ');
-	// set new size and null terminate the result
-	bufferSize = std::min(back - buffer, bufferSize - 1);
-	*(back + 1) = NULL;
-
-	return End;
-}
-*/
