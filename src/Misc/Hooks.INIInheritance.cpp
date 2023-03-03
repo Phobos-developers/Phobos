@@ -5,21 +5,20 @@
 
 #include <vector>
 #include <set>
+#include <string>
 
 namespace INIInheritance
 {
-	std::vector<char*> SavedEntries;
-	std::vector<char*> SavedSections;
-	std::vector<char*> SavedIncludes;
 	int ReadInt(REGISTERS* R, int address);
 	int ReadString(REGISTERS* R, int address);
 	//void ReadStringNew(REGISTERS* R);
 	void PushEntry(REGISTERS* R, int stackOffset);
 	void PopEntry();
-	void ApplyInclude();
 
 	CCINIClass* LastINIFile = nullptr;
-	bool IncludeMode = false;
+	std::vector<char*> SavedEntries;
+	std::vector<char*> SavedSections;
+	std::set<std::string> SavedIncludes;
 }
 
 // for Kerbiter's proposal
@@ -148,21 +147,6 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 	return finalize(buffer[0] ? buffer : defaultValue);
 }
 
-void INIInheritance::ApplyInclude()
-{
-	INIInheritance::IncludeMode = true;
-	for (auto filename: INIInheritance::SavedIncludes)
-	{
-		auto file = GameCreate<CCFileClass>(filename);
-		if (file->Exists())
-			INIInheritance::LastINIFile->ReadCCFile(file, false, false);
-		GameDelete(file);
-		free(filename);
-	}
-	INIInheritance::SavedIncludes.clear();
-	INIInheritance::IncludeMode = false;
-}
-
 // INIClass_GetString_DisableAres
 DEFINE_PATCH(0x528A10, 0x83, 0xEC, 0x0C, 0x33, 0xC0);
 // INIClass_GetKeyName_DisableAres
@@ -274,23 +258,22 @@ DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
 	if (!isSameFile)
 	{
 		INIInheritance::LastINIFile = ini;
+		INIInheritance::SavedIncludes.clear();
 	}
 
 	auto section = ini->GetSection("$Include");
 	if (!section)
 		return 0;
 
-	std::vector<> savedEntries;
-	for (auto node : section->EntryIndex)
-	{
-		savedEntries.push_back();
-	}
-
 	for (auto node : section->EntryIndex)
 	{
 		if (!node.Data || !node.Data->Value || !*node.Data->Value)
 			continue;
-		auto file = GameCreate<CCFileClass>(filename);
+		auto filename = std::string(node.Data->Value);
+		if (INIInheritance::SavedIncludes.contains(filename))
+			continue;
+		INIInheritance::SavedIncludes.insert(filename);
+		auto file = GameCreate<CCFileClass>(node.Data->Value);
 		if (file->Exists())
 			INIInheritance::LastINIFile->ReadCCFile(file, false, false);
 		GameDelete(file);

@@ -282,7 +282,7 @@ New:
 - Real time timers (by Morton)
 - Default campaign game speed override and custom campaign game speed FPS (by Morton)
 - `AnimList` on zero damage Warheads toggle via `AnimList.ShowOnZeroDamage` (by Starkku)
-- INI section inheritance (by Morton)
+- Including INI files and inheriting INI sections (by Morton)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
