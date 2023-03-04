@@ -139,7 +139,7 @@ TrajectoryCheckReturnType StraightTrajectory::OnAITargetCoordCheck(BulletClass* 
 			return TrajectoryCheckReturnType::Detonate; // Detonate projectile.
 		*/
 
-		if (this->FirerZPosition >= this->TargetZPosition && pBullet->Location.Z < pBullet->TargetCoords.Z)
+		if (this->FirerZPosition > this->TargetZPosition && pBullet->Location.Z < pBullet->TargetCoords.Z)
 			return TrajectoryCheckReturnType::Detonate; // Detonate projectile.
 	}
 
