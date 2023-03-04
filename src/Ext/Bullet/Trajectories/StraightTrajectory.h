@@ -7,7 +7,7 @@ class StraightTrajectoryType final : public PhobosTrajectoryType
 public:
 	StraightTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Straight)
 		, DetonationDistance { Leptons(102) }
-		, TargetSnapDistance { Leptons(0) }
+		, TargetSnapDistance { Leptons(128) }
 		, PassThrough { false }
 	{}
 
@@ -26,7 +26,7 @@ class StraightTrajectory final : public PhobosTrajectory
 public:
 	StraightTrajectory() : PhobosTrajectory(TrajectoryFlag::Straight)
 		, DetonationDistance { Leptons(102) }
-		, TargetSnapDistance { Leptons(0) }
+		, TargetSnapDistance { Leptons(128) }
 		, PassThrough { false }
 		, FirerZPosition { 0 }
 		, TargetZPosition { 0 }
@@ -34,7 +34,7 @@ public:
 
 	StraightTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Straight)
 		, DetonationDistance { Leptons(102) }
-		, TargetSnapDistance { Leptons(0) }
+		, TargetSnapDistance { Leptons(128) }
 		, PassThrough { false }
 		, FirerZPosition { 0 }
 		, TargetZPosition { 0 }

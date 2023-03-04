@@ -493,7 +493,7 @@ In `rulesmd.ini`:
 [SOMEPROJECTILE]                            ; Projectile
 Trajectory=Straight                         ; Trajectory type
 Trajectory.Straight.DetonationDistance=0.4  ; floating point value
-Trajectory.Straight.TargetSnapDistance=0.0  ; floating point value
+Trajectory.Straight.TargetSnapDistance=0.5  ; floating point value
 Trajectory.Straight.PassThrough=false       ; boolean
 ```
 
