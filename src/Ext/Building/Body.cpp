@@ -420,6 +420,9 @@ DEFINE_HOOK(0x454244, BuildingClass_Save_Suffix, 0x7)
 	return 0;
 }
 
+// Removes setting otherwise unused field (0x6FC) when building has airstrike applied on it.
+DEFINE_JUMP(LJMP, 0x41D9FB, 0x41DA05);
+
 /*
 DEFINE_HOOK(0x44E940, BuildingClass_Detach, 0x6)
 {
