@@ -120,3 +120,44 @@ function onInput() {
 	}
 }
 </script>
+
+## INI
+
+### Include files
+- INI files can now include other files (merge them into self) using `[$Include]` section.
+  - `[$Include]` section contains a list of files to read and include. Files can be directly in the Red Alert 2 directory or in a loaded MIX file.
+  - Files will be added in the same order they are defined. Index of each file **must be unique among all included files**.
+  - Inclusion can be nested recursively (included files can include files further). Recursion is depth-first (before including next file, check if the current one includes anything).
+  - When the same entry exists in two files, then the one read later will overwrite the value.
+  - This feature can be used in *any* INI file, be it `rulesmd.ini`, `artmd.ini`, `soundmd.ini`, map file or anything else.
+
+```{warning}
+When Phobos is present, the [Ares equivalent of $Include](https://ares-developers.github.io/Ares-docs/new/misc/include.html) is disabled!
+```
+
+In any file:
+```ini
+[$Include]
+0=somefile.ini	; file name
+```
+
+### Section inheritance
+- You can now make sections (children) inherit entries from other sections (parents) with `$Inherits`.
+  - When a section has no value set for an entry (or an entry is missing), the game will attempt to use parent's value. If no value is found, only then the default will be used.
+  - When multiple parents are specified, the order of inheritance is "first come, first served", looking up comma separated parents from left to right.
+  - Inheritance can be nested recursively (parent sections can have their own parents). Recursion is depth-first (before inheriting from the next parent, check if the current parent has parents).
+  - This feature can be used in *any* INI file, be it `rulesmd.ini`, `artmd.ini`, `soundmd.ini`, map file or anything else.
+
+```{warning}
+When Phobos is present, the Ares equivalent of $Inherits (undocumented) is disabled!
+```
+
+In any file:
+```ini
+[PARENT1SECTION]
+
+[PARENT2SECTION]
+
+[CHILDSECTION]
+$Inherits=PARENT1SECTION,PARENT2SECTION...  ; section names
+```
