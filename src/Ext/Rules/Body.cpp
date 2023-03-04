@@ -3,7 +3,7 @@
 #include <Utilities/TemplateDef.h>
 #include <FPSCounter.h>
 #include <GameOptionsClass.h>
-#include <GameStrings.h>
+
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>

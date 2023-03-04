@@ -317,6 +317,7 @@ Phobos fixes:
 - Restore the `MindClearedSound` when deploying a mind-controlled unit into a building loses the mind-control (by Trsdy)
 - Reimplemented the bugfix for jumpjet units' facing when firing, discard the inappropriate `JumpjetTurnToTarget` tag (by Trsdy)
 - Fixed `RadSiteWarhead.Detonate` not detonating precisely on the affected object (thus requiring `CellSpread`) (by Starkku)
+- Allow PowerPlant Enhancer to be affected by EMP (by Trsdy)
 </details>
 
 

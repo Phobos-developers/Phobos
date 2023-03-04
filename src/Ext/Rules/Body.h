@@ -2,7 +2,7 @@
 
 #include <CCINIClass.h>
 #include <RulesClass.h>
-
+#include <GameStrings.h>
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
@@ -89,7 +89,7 @@ public:
 			, RadHasInvoker { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
-			, MissingCameo { "xxicon.shp" }
+			, MissingCameo { GameStrings::XXICON_SHP() }
 			, PlacementGrid_Translucency { 0 }
 			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
