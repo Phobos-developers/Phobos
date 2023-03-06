@@ -281,9 +281,9 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 				&& !pUnit->InLimbo && !pUnitType->ConsideredAircraft
 				&& pUnit->Health > 0)
 			{
-				if (pUnit->GetTechnoType()->Size > 0 &&
-					pUnitType->Size <= pTransportType->SizeLimit &&
-					pUnitType->Size <= pTransportType->Passengers - pTransport->Passengers.GetTotalSize())
+				if (pUnit->GetTechnoType()->Size > 0
+					&& pUnitType->Size <= pTransportType->SizeLimit
+					&& pUnitType->Size <= pTransportType->Passengers - pTransport->Passengers.GetTotalSize())
 				{
 					// If is still flying wait a bit more
 					if (pTransport->IsInAir())
@@ -1182,8 +1182,8 @@ bool ScriptExt::IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrA
 	if (!pTechno)
 		return false;
 
-	bool isAvailable = pTechno->IsAlive && pTechno->Health > 0 &&
-		!pTechno->InLimbo && !pTechno->Transporter && !pTechno->Absorbed;
+	bool isAvailable = pTechno->IsAlive && pTechno->Health > 0
+		&& !pTechno->InLimbo && !pTechno->Transporter && !pTechno->Absorbed;
 
 	bool isSubterranean = allowSubterranean && pTechno->InWhichLayer() == Layer::Underground;
 	isAvailable &= pTechno->IsOnMap || isSubterranean;
