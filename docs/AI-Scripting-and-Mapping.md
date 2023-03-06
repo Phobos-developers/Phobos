@@ -9,11 +9,20 @@ This page describes all AI scripting and mapping related additions and changes i
 - Map trigger action `125 Build At...` can now play buildup anim and becomes singleplayer-AI-repairable optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2).
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
-- In singleplayer campaigns, AI can now repair the base nodes/buildings delivered by SW (Ares) by setting
+- In **singleplayer campaigns**:
+  - You can now decide whether AI can repair the base nodes/buildings delivered by SW (Ares) by setting
 ```ini
 [Country House]
 RepairBaseNodes=no,no,no ; 3 booleans indicating whether AI repair basenodes in Easy/ Normal/ Difficult game diffculty.
 ```
+
+  - You can now decide whether MCV can redeploy by setting
+```ini
+[Basic]
+MCVRedeploys=no  ; boolean
+```
+  - **Not that these only works within the map file**
+
 - Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
   - `InitialPayload` logic from Ares is not supported yet.
 - If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
@@ -468,6 +477,18 @@ In `mycampaign.map`:
 [Actions]
 ...
 ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointIndex],0,A,[ActionX]
+...
+```
+
+### `510` Toggle MCV redeployablility
+
+- Force MCV's redeployablility by setting the third parameter.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],510,0,0,[MCVRedeploy],0,0,0,A,[ActionX]
 ...
 ```
 

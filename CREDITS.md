@@ -207,7 +207,12 @@ This page lists all the individual contributions to the project by their author.
    - Misc vanilla suicidal behavior fix
    - Post-type-conversion update
    - Units retaining orders after changing ownership bugfix
-   - Building EVA_StructureSold and SellSound dehardcode
+   - Several fixes and dehardcode related to building selling/undeploying:
+     - Building `EVA_StructureSold` and `SellSound` dehardcode
+     - Restore `EVA_StructureSold` for buildings with `UndeploysInto`
+     - Redeployable MCV in campaigns
+     - Allow buildings with `UndeploysInto` to be sold if `Unsellable=no` even if not conyard
+     - Trigger actions that allow/forbid MCV to redeploy in game
    - `AlternateFLH` of vehicles in `OpenTopped` transport.
    - Slaves' house customization when owner is killed
    - Trigger Action spawned team IFV/Opentopped logic fix
