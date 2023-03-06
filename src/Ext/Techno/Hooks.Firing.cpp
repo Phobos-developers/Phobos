@@ -21,9 +21,9 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 	{
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-		if (pTypeExt->Interceptor)
+		if (pTypeExt->InterceptorType)
 		{
-			R->EAX(pTypeExt->Interceptor_Weapon);
+			R->EAX(pTypeExt->InterceptorType->Weapon);
 			return ReturnValue;
 		}
 	}
@@ -453,7 +453,7 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 
 	auto const pSourceTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
 
-	if (pSourceTypeExt->Interceptor)
+	if (pSourceTypeExt->InterceptorType)
 	{
 		if (auto const pTargetObject = specific_cast<BulletClass* const>(pTarget))
 		{
