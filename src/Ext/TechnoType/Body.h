@@ -8,6 +8,7 @@
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
+#include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 
 class Matrix3D;
 
@@ -41,12 +42,9 @@ public:
 		Valueable<int> CameoPriority;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
-		Valueable<bool> PassengerDeletion_Soylent;
-		Valueable<bool> PassengerDeletion_SoylentFriendlies;
-		Valueable<int> PassengerDeletion_Rate;
-		NullableIdx<VocClass> PassengerDeletion_ReportSound;
-		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
-		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
+
+		Valueable<ShieldTypeClass*> ShieldType;
+		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
 
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
 		Valueable<int> AutoDeath_AfterDelay;
@@ -64,8 +62,6 @@ public:
 		NullableIdx<VocClass> SlavesFreeSound;
 		NullableIdx<VocClass> SellSound;
 		NullableIdx<VoxClass> EVA_Sold;
-
-		Valueable<ShieldTypeClass*> ShieldType;
 
 		Nullable<AnimTypeClass*> WarpOut;
 		Nullable<AnimTypeClass*> WarpIn;
@@ -182,6 +178,7 @@ public:
 			, NoManualMove { false }
 			, InitialStrength {}
 			, ShieldType {}
+			, PassengerDeletionType { nullptr}
 
 			, WarpOut {}
 			, WarpIn {}
@@ -202,13 +199,6 @@ public:
 			, LaserTrailData {}
 			, DestroyAnim_Random { true }
 			, NotHuman_RandomDeathSequence { false }
-
-			, PassengerDeletion_Soylent { false }
-			, PassengerDeletion_SoylentFriendlies { false }
-			, PassengerDeletion_Rate { 0 }
-			, PassengerDeletion_ReportSound {}
-			, PassengerDeletion_Rate_SizeMultiply { true }
-			, PassengerDeletion_Anim {}
 
 			, DefaultDisguise {}
 

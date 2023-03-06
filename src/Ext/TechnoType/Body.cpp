@@ -144,6 +144,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (this->InitialStrength.isset())
 		this->InitialStrength = Math::clamp(this->InitialStrength, 1, pThis->Strength);
 
+	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
+
 	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
 	this->AutoDeath_OnAmmoDepletion.Read(exINI, pSection, "AutoDeath.OnAmmoDepletion");
 	this->AutoDeath_AfterDelay.Read(exINI, pSection, "AutoDeath.AfterDelay");
@@ -161,7 +163,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SellSound.Read(exINI, pSection, "SellSound");
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
-	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
 	this->WarpOut.Read(exINI, pSection, "WarpOut");
@@ -184,13 +185,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
 	this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
-
-	this->PassengerDeletion_Soylent.Read(exINI, pSection, "PassengerDeletion.Soylent");
-	this->PassengerDeletion_SoylentFriendlies.Read(exINI, pSection, "PassengerDeletion.SoylentFriendlies");
-	this->PassengerDeletion_ReportSound.Read(exINI, pSection, "PassengerDeletion.ReportSound");
-	this->PassengerDeletion_Rate_SizeMultiply.Read(exINI, pSection, "PassengerDeletion.Rate.SizeMultiply");
-	this->PassengerDeletion_Rate.Read(exINI, pSection, "PassengerDeletion.Rate");
-	this->PassengerDeletion_Anim.Read(exINI, pSection, "PassengerDeletion.Anim");
 
 	this->DefaultDisguise.Read(exINI, pSection, "DefaultDisguise");
 
@@ -279,6 +273,24 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
+
+	// Anonymous types
+
+	bool resetValue = false;
+	bool canParse = PassengerDeletionTypeClass::CanParse(exINI, pSection, resetValue);
+
+	if (canParse)
+	{
+		if (this->PassengerDeletionType == nullptr)
+			this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(this->OwnerObject());
+
+		this->PassengerDeletionType->LoadFromINI(pINI, pSection);
+	}
+	else if (resetValue)
+	{
+		this->PassengerDeletionType.reset();
+	}
+
 }
 
 template <typename T>
@@ -307,6 +319,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CameoPriority)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
+		.Process(this->ShieldType)
+		.Process(this->PassengerDeletionType)
 
 		.Process(this->AutoDeath_Behavior)
 		.Process(this->AutoDeath_OnAmmoDepletion)
@@ -324,7 +338,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SlavesFreeSound)
 		.Process(this->SellSound)
 		.Process(this->EVA_Sold)
-		.Process(this->ShieldType)
 
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
@@ -348,13 +361,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefaultDisguise)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
-
-		.Process(this->PassengerDeletion_Soylent)
-		.Process(this->PassengerDeletion_SoylentFriendlies)
-		.Process(this->PassengerDeletion_Rate)
-		.Process(this->PassengerDeletion_ReportSound)
-		.Process(this->PassengerDeletion_Rate_SizeMultiply)
-		.Process(this->PassengerDeletion_Anim)
 
 		.Process(this->OpenTopped_RangeBonus)
 		.Process(this->OpenTopped_DamageMultiplier)
