@@ -18,6 +18,7 @@ enum class PhobosTriggerAction : unsigned int
 	BinaryOperation = 504,
 	RunSuperWeaponAtLocation = 505,
 	RunSuperWeaponAtWaypoint = 506,
+	AdjustLighting = 507,
 };
 
 class TActionExt
@@ -43,6 +44,7 @@ public:
 		void Serialize(T& Stm);
 	};
 
+
 	static bool Execute(TActionClass* pThis, HouseClass* pHouse,
 			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location, bool& bHandled);
 
@@ -57,6 +59,7 @@ public:
 	ACTION_FUNC(GenerateRandomNumber);
 	ACTION_FUNC(PrintVariableValue);
 	ACTION_FUNC(BinaryOperation);
+	ACTION_FUNC(AdjustLighting);
 	ACTION_FUNC(RunSuperWeaponAtLocation);
 	ACTION_FUNC(RunSuperWeaponAtWaypoint);
 

@@ -4,6 +4,7 @@
 #include "NextIdleHarvester.h"
 #include "QuickSave.h"
 #include "DamageDisplay.h"
+#include "RevealAll.h"
 #include "FrameByFrame.h"
 #include "FrameStep.h"
 
@@ -15,6 +16,7 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<NextIdleHarvesterCommandClass>();
 	MakeCommand<QuickSaveCommandClass>();
 	MakeCommand<DamageDisplayCommandClass>();
+	MakeCommand<RevealAllCommandClass>();
 
 	MakeCommand<FrameByFrameCommandClass>();
 	MakeCommand<FrameStepCommandClass<1>>(); // Single step in

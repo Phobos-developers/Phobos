@@ -32,6 +32,7 @@
     <ClCompile Include="src\Ext\Bullet\Trajectories\BombardTrajectory.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\StraightTrajectory.cpp" />
+    <ClCompile Include="src\Ext\Scenario\Hooks.cpp" />
     <ClCompile Include="src\Ext\CaptureManager\Hooks.cpp" />
     <ClCompile Include="src\Ext\CaptureManager\Body.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.Variables.cpp" />
@@ -145,6 +146,7 @@
     <ClInclude Include="src\Commands\Commands.h" />
     <ClInclude Include="src\Commands\DamageDisplay.h" />
     <ClInclude Include="src\Commands\QuickSave.h" />
+    <ClInclude Include="src\Commands\RevealAll.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\BombardTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\StraightTrajectory.h" />

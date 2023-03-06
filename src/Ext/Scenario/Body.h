@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ScenarioClass.h>
-
+#include <HouseClass.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -25,9 +25,26 @@ public:
 		std::map<int, CellStruct> Waypoints;
 		std::map<int, ExtendedVariable> Variables[2]; // 0 for local, 1 for global
 
+		LightingStruct DefaultNormalLighting;
+		int DefaultAmbientOriginal;
+		int DefaultAmbientCurrent;
+		int DefaultAmbientTarget;
+		TintStruct CurrentTint_Tiles;
+		TintStruct CurrentTint_Schemes;
+		TintStruct CurrentTint_Hashes;
+		bool AdjustLightingFix;
+
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, Waypoints { }
 			, Variables { }
+			, DefaultNormalLighting { {1000,1000,1000},0,0 }
+			, DefaultAmbientOriginal { 0 }
+			, DefaultAmbientCurrent { 0 }
+			, DefaultAmbientTarget { 0 }
+			, CurrentTint_Tiles { -1,-1,-1 }
+			, CurrentTint_Schemes { -1,-1,-1 }
+			, CurrentTint_Hashes { -1,-1,-1 }
+			, AdjustLightingFix { false }
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
@@ -53,6 +70,8 @@ public:
 	static IStream* g_pStm;
 
 	static bool CellParsed;
+
+	static void RecreateLightSources();
 
 	static void Allocate(ScenarioClass* pThis);
 	static void Remove(ScenarioClass* pThis);
