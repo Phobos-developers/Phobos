@@ -67,6 +67,10 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::RunSuperWeaponAtLocation(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::RunSuperWeaponAtWaypoint:
 		return TActionExt::RunSuperWeaponAtWaypoint(pThis, pHouse, pObject, pTrigger, location);
+
+	case PhobosTriggerAction::ToggleMCVRedeploy:
+		return TActionExt::ToggleMCVRedeploy(pThis, pHouse, pObject, pTrigger, location);
+
 	default:
 		bHandled = false;
 		return true;
@@ -430,6 +434,13 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 	return true;
 }
+
+bool TActionExt::ToggleMCVRedeploy(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	GameModeOptionsClass::Instance->MCVRedeploy = pThis->Param3 != 0;
+	return true;
+}
+
 
 // =============================
 // container

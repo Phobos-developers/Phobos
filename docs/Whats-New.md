@@ -118,6 +118,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   504=Binary operation,0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1
   505=Fire Super Weapon at specified location (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
   506=Fire Super Weapon at specified waypoint (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
+  510=Toggle MCV Redeployablility (Phobos),0,0,15,0,0,0,0,0,0, Set MCVRedeploys to the given value,0,1,510
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
   [ScriptTypeLists]
@@ -286,6 +287,7 @@ New:
 - Projectile `SubjectToLand/Water` (by Starkku)
 - Real time timers (by Morton)
 - Default campaign game speed override and custom campaign game speed FPS (by Morton)
+- Trigger actions that allow/forbid MCV to redeploy in game (by Trsdy)
 - `AnimList` on zero damage Warheads toggle via `AnimList.ShowOnZeroDamage` (by Starkku)
 - Including INI files and inheriting INI sections (by Morton)
 - Additions to automatic passenger deletion (by Starkku)
@@ -309,6 +311,9 @@ Vanilla fixes:
 - Fixed `NavalTargeting=6` not preventing from targeting empty water cells or TerrainTypes (trees etc.) on water (by Starkku)
 - Fixed `NavalTargeting=7` and/or `LandTargeting=2` resulting in still targeting TerrainTypes (trees etc.) on land with `Primary` weapon (by Starkku)
 - Fixed an issue that causes attached animations on flying objects not layer correctly (by Starkku)
+- Restored `EVA_StructureSold` for buildings with `UndeploysInto` (by Trsdy)
+- Allow MCV to redeploy in campaigns (by Trsdy)
+- Allow buildings with `UndeploysInto` to be sold if `Unsellable=no` but `ConstructionYard=no` (by Trsdy)
 - Fixed infantry without `C4=true` being killed in water if paradropped, chronoshifted etc. even if they can normally enter water (by Starkku)
 
 Phobos fixes:
