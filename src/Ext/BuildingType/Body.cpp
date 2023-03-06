@@ -144,6 +144,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DisplayIncome_Houses.Read(exINI, pSection, "DisplayIncome.Houses");
 	this->DisplayIncome_Offset.Read(exINI, pSection, "DisplayIncome.Offset");
 
+	this->ConsideredVehicle.Read(exINI, pSection, "ConsideredVehicle");
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array->Count > 0)
@@ -223,6 +225,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_Custom)
 		.Process(this->SpyEffect_VictimSuperWeapon)
 		.Process(this->SpyEffect_InfiltratorSuperWeapon)
+		.Process(this->ConsideredVehicle)
 		;
 }
 

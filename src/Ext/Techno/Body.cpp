@@ -694,7 +694,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 			}
 		}
 		if (Phobos::Config::DevelopmentCommands)
-			Debug::Log("[Runtime Warning] %s can't be sold, killing it instead\n", pThis->get_ID());
+			Debug::Log("[Developer warning] AutoDeath: [%s] can't be sold, killing it instead\n", pThis->get_ID());
 	}
 
 	default: //must be AutoDeathBehavior::Kill
@@ -1048,6 +1048,62 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	return finalLocation;
 }
 
+bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, TargetZoneScanType zoneScanType, WeaponTypeClass* pWeapon, bool useZone, int zone)
+{
+	if (!pThis || !pTarget)
+		return false;
+
+	if (pThis->WhatAmI() == AbstractType::Aircraft)
+		return true;
+
+	MovementZone mZone = pThis->GetTechnoType()->MovementZone;
+	int currentZone = useZone ? zone : MapClass::Instance->GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->IsOnBridge());
+
+	if (currentZone != -1)
+	{
+		if (zoneScanType == TargetZoneScanType::Any)
+			return true;
+
+		int targetZone = MapClass::Instance->GetMovementZoneType(pTarget->GetMapCoords(), mZone, pTarget->IsOnBridge());
+
+		if (zoneScanType == TargetZoneScanType::Same)
+		{
+			if (currentZone != targetZone)
+				return false;
+		}
+		else
+		{
+			if (currentZone == targetZone)
+				return true;
+
+			auto const speedType = pThis->GetTechnoType()->SpeedType;
+			auto cellStruct = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(pTarget->Location),
+				speedType, -1, mZone, false, 1, 1, true,
+				false, false, speedType != SpeedType::Float, CellStruct::Empty, false, false);
+			auto const pCell = MapClass::Instance->GetCellAt(cellStruct);
+
+			if (!pCell)
+				return false;
+
+			double distance = pCell->GetCoordsWithBridge().DistanceFrom(pTarget->GetCenterCoords());
+
+			if (!pWeapon)
+			{
+				int weaponIndex = pThis->SelectWeapon(pTarget);
+
+				if (weaponIndex < 0)
+					return false;
+
+				pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+			}
+
+			if (distance > pWeapon->Range)
+				return false;
+		}
+	}
+
+	return true;
+}
 
 // =============================
 // load / save

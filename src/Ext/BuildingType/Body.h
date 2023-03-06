@@ -53,6 +53,8 @@ public:
 		NullableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
 		NullableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
 
+		Nullable<bool> ConsideredVehicle;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -84,6 +86,7 @@ public:
 			, SpyEffect_Custom { false }
 			, SpyEffect_VictimSuperWeapon {}
 			, SpyEffect_InfiltratorSuperWeapon {}
+			, ConsideredVehicle {}
 		{ }
 
 		// Ares 0.A functions

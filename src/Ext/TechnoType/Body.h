@@ -128,6 +128,7 @@ public:
 		Nullable<WarheadTypeClass*> IronCurtain_KillWarhead;
 		Valueable<bool> Explodes_KillPassengers;
 		Nullable<int> DeployFireWeapon;
+		Valueable<TargetZoneScanType> TargetZoneScanType;
 
 		struct LaserTrailDataEntry
 		{
@@ -253,9 +254,9 @@ public:
 			, IronCurtain_KeptOnDeploy {}
 			, IronCurtain_Effect {}
 			, IronCurtain_KillWarhead {}
-
 			, Explodes_KillPassengers { true }
 			, DeployFireWeapon {}
+			, TargetZoneScanType { TargetZoneScanType::Same }
 		{ }
 
 		virtual ~ExtData() = default;

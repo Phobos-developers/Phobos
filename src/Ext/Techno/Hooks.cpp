@@ -497,7 +497,7 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 	GET(TechnoClass* const, pThis, ESI);
 	GET(int* const, pDamage, EBX);
 
-	if (Phobos::Debug_DisplayDamageNumbers && *pDamage)
+	if (Phobos::DisplayDamageNumbers && *pDamage)
 		TechnoExt::DisplayDamageNumberString(pThis, *pDamage, false);
 
 	return 0;
@@ -732,3 +732,35 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 }
 
 DEFINE_JUMP(VTABLE, 0x7EB1AC, 0x4DEAE0); // Redirect InfantryClass::IronCurtain to FootClass::IronCurtain
+
+namespace MapZoneTemp
+{
+	TargetZoneScanType zoneScanType;
+}
+
+DEFINE_HOOK(0x6F9C67, TechnoClass_GreatestThreat_MapZoneSetContext, 0x5)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	MapZoneTemp::zoneScanType = pTypeExt->TargetZoneScanType;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
+{
+	enum { AllowedObject = 0x6F7EA2, DisallowedObject = 0x6F894F };
+
+	GET(TechnoClass*, pThis, EDI);
+	GET(ObjectClass*, pObject, ESI);
+	GET(int, zone, EBP);
+
+	if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
+	{
+		if (!TechnoExt::AllowedTargetByZone(pThis, pTechno, MapZoneTemp::zoneScanType, nullptr, true, zone))
+			return DisallowedObject;
+	}
+
+	return AllowedObject;
+}

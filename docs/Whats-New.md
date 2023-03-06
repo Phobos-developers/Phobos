@@ -22,6 +22,8 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From 0.3
 
+- Phobos-introduced attack scripts now consider potential target's current map zone when evaluating targets. [TargetZoneScanType](Fixed-or-Improved-Logics.md#customizable-target-evaluation-map-zone-check-behaviour) can be used to customize this behaviour.
+- `Artillary`, `ICBMLauncher`, `TickTank` or `SensorArray` no longer affect whether or not building is considered as vehicle for AI attack scripts. Use [ConsideredVehicle](Fixed-or-Improved-Logics.md#buildings-considered-as-vehicles) instead on buildings that do not have both `UndeploysInto` set and `Foundation=1x1`.
 - `PassengerDeletion.SoylentFriendlies` has been replaced by `PassengerDeletion.SoylentAllowedHouses`. Current default value of `PassengerDeletion.SoylentAllowedHouses=enemies` matches the previous default behaviour with `PassengerDeletion.SoylentFriendlies=false`.
 - `Grinding.DisplayRefund` is changed to `DisplayIncome`, `Grinding.DisplayRefund.Houses` is changed to `DisplayIncome.Houses`, `Grinding.DisplayRefund.Offset` is changed to `DisplayIncome.Offset`
 - `[JumpjetControls]`->`AllowLayerDeviation` and `JumpjetAllowLayerDeviation` have been deprecated as the animation layering issues have been properly fixed by default now.
@@ -291,6 +293,7 @@ New:
 - `AnimList` on zero damage Warheads toggle via `AnimList.ShowOnZeroDamage` (by Starkku)
 - Including INI files and inheriting INI sections (by Morton)
 - Additions to automatic passenger deletion (by Starkku)
+- Buildings considered as vehicles (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -433,6 +436,7 @@ New:
 - Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 - Toggleable passenger killing for Explodes=true units (by Starkku)
 - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist (by FlyStar)
+- TechnoType target evaluation map zone check behaviour customization (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
