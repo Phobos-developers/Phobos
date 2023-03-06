@@ -653,3 +653,6 @@ DEFINE_HOOK(0x6FC87D, TechnoClass_CanFire_AG, 0x6)
 
 	return 0;
 }
+
+// Stops INI parsing for Anim/BuildingTypeClass on game startup, will only be read on scenario load later like everything else.
+DEFINE_JUMP(LJMP, 0x52C9C4, 0x52CA37);
