@@ -31,7 +31,6 @@ public:
 
 	static const char* AppIconPath;
 	static const wchar_t* VersionDescription;
-	static bool AIScriptLoggingEnabled;
 	static bool DisplayDamageNumbers;
 
 #ifdef DEBUG

@@ -38,10 +38,6 @@ Teleport | `{4A582747-9839-11d1-B709-00A024DDAFD1}` |
 Mech     | `{55D141B8-DB94-11d1-AC98-006008055BB5}` |
 Ship     | `{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}` |
 
-### AI script debug logging
-
-- AI script debug logging can be enabled with command line argument `-ai-logging`. This outputs information on execution of Phobos-introduced AI scripts in game's log file.
-
 ## Game Speed
 
 ### Single player game speed

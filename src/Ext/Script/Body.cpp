@@ -1196,11 +1196,8 @@ bool ScriptExt::IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrA
 
 void ScriptExt::Log(const char* pFormat, ...)
 {
-	if (Phobos::AIScriptLoggingEnabled)
-	{
-		va_list args;
-		va_start(args, pFormat);
-		Debug::LogWithVArgs(pFormat, args);
-		va_end(args);
-	}
+	va_list args;
+	va_start(args, pFormat);
+	Debug::LogWithVArgs(pFormat, args);
+	va_end(args);
 }
