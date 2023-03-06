@@ -7,6 +7,7 @@
 
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
+#include <New/Type/Affiliated/InterceptorTypeClass.h>
 
 class Matrix3D;
 
@@ -26,16 +27,9 @@ public:
 		Nullable<int> InhibitorRange;
 		Nullable<int> DesignatorRange;
 		Valueable<Leptons> MindControlRangeLimit;
-		Valueable<bool> Interceptor;
-		Valueable<AffectedHouse> Interceptor_CanTargetHouses;
-		Promotable<Leptons> Interceptor_GuardRange;
-		Promotable<Leptons> Interceptor_MinimumGuardRange;
-		Valueable<int> Interceptor_Weapon;
-		Nullable<bool> Interceptor_DeleteOnIntercept;
-		Nullable<WeaponTypeClass*> Interceptor_WeaponOverride;
-		Valueable<bool> Interceptor_WeaponReplaceProjectile;
-		Valueable<bool> Interceptor_WeaponCumulativeDamage;
-		Valueable<bool> Interceptor_KeepIntact;
+
+		std::unique_ptr<InterceptorTypeClass> InterceptorType;
+
 		Valueable<PartialVector3D<int>> TurretOffset;
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
@@ -174,16 +168,7 @@ public:
 			, DesignatorRange { }
 			, MindControlRangeLimit {}
 
-			, Interceptor { false }
-			, Interceptor_CanTargetHouses { AffectedHouse::Enemies }
-			, Interceptor_GuardRange {}
-			, Interceptor_MinimumGuardRange {}
-			, Interceptor_Weapon { 0 }
-			, Interceptor_DeleteOnIntercept {}
-			, Interceptor_WeaponOverride {}
-			, Interceptor_WeaponReplaceProjectile { false }
-			, Interceptor_WeaponCumulativeDamage { false }
-			, Interceptor_KeepIntact { false }
+			, InterceptorType { nullptr }
 
 			, TurretOffset { { 0, 0, 0 } }
 			, Spawner_LimitRange { false }

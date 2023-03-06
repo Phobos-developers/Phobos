@@ -38,15 +38,16 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (pTypeExt && pTypeExt->Interceptor && !pThis->Target &&
+	if (pTypeExt && pTypeExt->InterceptorType && !pThis->Target &&
 		!(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
 	{
 		BulletClass* pTargetBullet = nullptr;
 
-		for (auto const& [pBullet,pBulletExt] : BulletExt::ExtMap)
+		for (auto const& [pBullet, pBulletExt] : BulletExt::ExtMap)
 		{
-			const auto& guardRange = pTypeExt->Interceptor_GuardRange.Get(pThis);
-			const auto& minguardRange = pTypeExt->Interceptor_MinimumGuardRange.Get(pThis);
+			const auto pInterceptorType = pTypeExt->InterceptorType.get();
+			const auto& guardRange = pInterceptorType->GuardRange.Get(pThis);
+			const auto& minguardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
 
 			auto distance = pBullet->Location.DistanceFrom(pThis->Location);
 
@@ -70,7 +71,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 			auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
 
-			if (EnumFunctions::CanTargetHouse(pTypeExt->Interceptor_CanTargetHouses, pThis->Owner, bulletOwner))
+			if (EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pThis->Owner, bulletOwner))
 			{
 				pTargetBullet = pBullet;
 
