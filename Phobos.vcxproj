@@ -53,13 +53,13 @@
     <ClCompile Include="src\Misc\Hooks.Image.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
-    <ClCompile Include="src\New\AnonymousType\PassengerDeletionTypeClass.cpp" />
     <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
     <ClCompile Include="src\Misc\RetryDialog.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
     <ClCompile Include="src\New\Type\ShieldTypeClass.cpp" />
     <ClCompile Include="src\New\Type\LaserTrailTypeClass.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\InterceptorTypeClass.cpp" />
+    <ClCompile Include="src\New\Type\Affiliated\PassengerDeletionTypeClass.cpp" />
     <ClCompile Include="src\New\Entity\LaserTrailClass.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Hooks.cpp" />
@@ -159,11 +159,11 @@
     <ClInclude Include="src\Ext\CaptureManager\Body.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
-    <ClInclude Include="src\New\AnonymousType\PassengerDeletionTypeClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldTypeClass.h" />
     <ClInclude Include="src\New\Type\LaserTrailTypeClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\InterceptorTypeClass.h" />
+    <ClInclude Include="src\New\Type\Affiliated\PassengerDeletionTypeClass.h" />
     <ClInclude Include="src\New\Entity\LaserTrailClass.h" />
     <ClInclude Include="src\New\Entity\ShieldClass.h" />
     <ClInclude Include="src\Utilities\Enumerable.h" />

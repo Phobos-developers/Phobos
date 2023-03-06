@@ -5,10 +5,10 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
-#include <New/AnonymousType/PassengerDeletionTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
+#include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 
 class Matrix3D;
 
