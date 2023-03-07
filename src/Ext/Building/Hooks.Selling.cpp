@@ -35,8 +35,11 @@ bool __forceinline BuildingCanUndeploy(BuildingClass* pThis)
 
 	if (pType->ConstructionYard)
 	{
-		// Canyards can't undeploy if MCVRedeploy=no or MindControlledBy YURIX
-		if(!GameModeOptionsClass::Instance->MCVRedeploy || pThis->MindControlledBy || !pThis->Owner->IsControlledByHuman())
+		// Conyards can't undeploy if MCVRedeploy=no
+		if(!GameModeOptionsClass::Instance->MCVRedeploy)
+			return false;
+		// or MindControlledBy YURIX (why? for balance?)
+		if (pThis->MindControlledBy || !pThis->Owner->IsControlledByHuman())
 			return false;
 	}
 	// Move Focus check outside Conyard check to allow generic Unsellable=no buildings to be sold

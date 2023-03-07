@@ -1,5 +1,5 @@
 #pragma once
-#include <TechnoClass.h>
+#include <InfantryClass.h>
 #include <AnimClass.h>
 
 #include <Helpers/Macro.h>
@@ -67,6 +67,7 @@ public:
 		void UpdateTypeData(TechnoTypeClass* currentType);
 		void UpdateLaserTrails();
 		void InitializeLaserTrails();
+		void UpdateMindControlAnim();
 
 		virtual ~ExtData() override;
 
@@ -110,7 +111,6 @@ public:
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
-	static void UpdateMindControlAnim(TechnoClass* pThis);
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
