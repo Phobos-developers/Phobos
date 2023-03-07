@@ -191,6 +191,19 @@ DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
 // Author: Uranusian
 DEFINE_JUMP(LJMP, 0x47CA05, 0x47CA33); // CellClass_IsClearToBuild_SkipNaval
 
+// Check WaterBound when setting rally points / undeploying instead of just Naval.
+DEFINE_HOOK(0x4438B4, BuildingClass_SetRallyPoint_Naval, 0x6)
+{
+	enum { IsNaval = 0x4438BC, NotNaval = 0x4438C9 };
+
+	GET(BuildingTypeClass*, pBuildingType, EAX);
+
+	if (pBuildingType->Naval || pBuildingType->SpeedType == SpeedType::Float)
+		return IsNaval;
+
+	return NotNaval;
+}
+
 // bugfix: DeathWeapon not properly detonates
 // Author: Uranusian
 DEFINE_HOOK(0x70D77F, TechnoClass_FireDeathWeapon_ProjectileFix, 0x8)
