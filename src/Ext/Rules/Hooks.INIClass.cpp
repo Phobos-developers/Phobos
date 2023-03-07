@@ -1,7 +1,7 @@
 #include <Utilities/Macro.h>
 #include <LocomotionClass.h>
 #include <GameStrings.h>
-#include <Ext/Rules/Body.h>
+#include "Body.h"
 
 DEFINE_HOOK(0x527AE2, INIClass__Get_UUID, 0x7)
 {

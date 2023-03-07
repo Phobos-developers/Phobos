@@ -49,7 +49,7 @@
     <ClCompile Include="src\Ext\Trigger\Hooks.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Jumpjet.cpp" />
     <ClCompile Include="src\Misc\Hooks.Gamespeed.cpp" />
-    <ClCompile Include="src\Misc\Hooks.Image.cpp" />
+    <ClCompile Include="src\Ext\Rules\Hooks.Image.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
     <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
@@ -116,7 +116,7 @@
     <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
     <ClCompile Include="src\Misc\BlittersFix.cpp" />
     <ClCompile Include="src\Misc\Hooks.Blowfish.cpp" />
-    <ClCompile Include="src\Misc\Hooks.INIClass.cpp" />
+    <ClCompile Include="src\Ext\Rules\Hooks.INIClass.cpp" />
     <ClCompile Include="src\Misc\Selection.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
