@@ -97,12 +97,13 @@ DEFINE_HOOK(0x44A964, BuildingClass_Mi_Selling_VoiceDeploy, 0x6)
 DEFINE_HOOK(0x44AB22, BuildingClass_Mi_Selling_EVASold_Plug, 0x6)
 {
 	enum { SkipVoxPlay = 0x44AB3B };
+#if ANYBODY_NOTICED_THIS
 	GET(BuildingClass*, pThis, EBP);
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
 	if (pThis->IsOwnedByCurrentPlayer)
 		VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex(GameStrings::EVA_StructureSold)));
-
+#endif
 	return SkipVoxPlay;
 }

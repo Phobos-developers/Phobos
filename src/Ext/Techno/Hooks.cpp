@@ -1,9 +1,6 @@
 #include <ScenarioClass.h>
-#include <InfantryClass.h>
-#include <GameStrings.h>
 #include "Body.h"
 
-#include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/BuildingType/Body.h>

@@ -85,7 +85,6 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_SyncOwner, 0x7)
 	return 0;
 }
 
-
 DEFINE_HOOK(0x4DE67B, FootClass_LeaveTransport_SyncOwner, 0x8)
 {
 	GET(TechnoClass*, pThis, ESI);
