@@ -557,6 +557,9 @@ DEFINE_HOOK(0x6F3C88, TechnoClass_GetFLH_BurstFLH_2, 0x6)
 {
 	GET(TechnoClass*, pThis, EBX);
 	GET_STACK(int, weaponIndex, STACK_OFFSET(0xD8, 0x8));
+	if (weaponIndex < 0)
+		return 0;
+
 	bool FLHFound = false;
 
 	TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
