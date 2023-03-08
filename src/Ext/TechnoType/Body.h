@@ -83,6 +83,7 @@ public:
 
 		std::vector<std::vector<CoordStruct>> WeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteWeaponBurstFLHs;
+		std::vector<CoordStruct> AlternateFLHs;
 
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;

@@ -319,6 +319,7 @@ Vanilla fixes:
 - Allow buildings with `UndeploysInto` to be sold if `Unsellable=no` but `ConstructionYard=no` (by Trsdy)
 - Fixed infantry without `C4=true` being killed in water if paradropped, chronoshifted etc. even if they can normally enter water (by Starkku)
 - Fixed `WaterBound=true` buildings with `UndeploysInto` not correctly setting the location for the vehicle to move into when undeployed (by Starkku)
+- Allow more than 5 `AlternateFLH` entries for units (by ststl)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
