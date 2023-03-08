@@ -7,6 +7,8 @@
 #include <Utilities/EnumFunctions.h>
 #include <Ext/House/Body.h>
 
+// methods used in TechnoClass_AI hooks or anything similar
+
 void TechnoExt::ExtData::ApplyInterceptor()
 {
 	auto const pThis = this->OwnerObject();

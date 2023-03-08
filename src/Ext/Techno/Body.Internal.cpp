@@ -3,6 +3,8 @@
 #include <Misc/FlyingStrings.h>
 #include <BitFont.h>
 
+// Unsorted methods
+
 void TechnoExt::ExtData::InitializeLaserTrails()
 {
 	if (this->LaserTrails.size())

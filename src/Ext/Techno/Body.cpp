@@ -1,6 +1,5 @@
 #include "Body.h"
 
-#include <BuildingClass.h>
 #include <HouseClass.h>
 #include <ScenarioClass.h>
 
