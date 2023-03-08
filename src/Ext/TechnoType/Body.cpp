@@ -111,21 +111,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
 	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
 
-	Nullable<bool> isInterceptor;
-	isInterceptor.Read(exINI, pSection, "Interceptor");
-
-	if (isInterceptor)
-	{
-		if (this->InterceptorType == nullptr)
-			this->InterceptorType = std::make_unique<InterceptorTypeClass>(this->OwnerObject());
-
-		this->InterceptorType->LoadFromINI(pINI, pSection);
-	}
-	else if (isInterceptor.isset())
-	{
-		this->InterceptorType.reset();
-	}
-
 	this->Spawner_LimitRange.Read(exINI, pSection, "Spawner.LimitRange");
 	this->Spawner_ExtraLimitRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
 	this->Spawner_DelayFrames.Read(exINI, pSection, "Spawner.DelayFrames");
@@ -275,7 +260,23 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
 
-	// Anonymous types
+	for (size_t i = 0; ; i++)
+	{
+		Nullable<CoordStruct> alternateFLH;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "AlternateFLH%u", i);
+		alternateFLH.Read(exArtINI, pArtSection, tempBuffer);
+
+		// ww always read all of AlternateFLH0-5
+		if (i >= 5U && !alternateFLH.isset())
+			break;
+
+		if (this->AlternateFLHs.size() < i)
+			this->AlternateFLHs[i] = alternateFLH;
+		else
+			this->AlternateFLHs.push_back(alternateFLH);
+	}
+
+	// Parasitic types
 
 	bool resetValue = false;
 	bool canParse = PassengerDeletionTypeClass::CanParse(exINI, pSection, resetValue);
@@ -292,6 +293,21 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->PassengerDeletionType.reset();
 	}
 
+
+	Nullable<bool> isInterceptor;
+	isInterceptor.Read(exINI, pSection, "Interceptor");
+
+	if (isInterceptor)
+	{
+		if (this->InterceptorType == nullptr)
+			this->InterceptorType = std::make_unique<InterceptorTypeClass>(this->OwnerObject());
+
+		this->InterceptorType->LoadFromINI(pINI, pSection);
+	}
+	else if (isInterceptor.isset())
+	{
+		this->InterceptorType.reset();
+	}
 }
 
 template <typename T>
@@ -362,6 +378,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefaultDisguise)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
+		.Process(this->AlternateFLHs)
 
 		.Process(this->OpenTopped_RangeBonus)
 		.Process(this->OpenTopped_DamageMultiplier)

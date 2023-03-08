@@ -244,6 +244,7 @@ This page lists all the individual contributions to the project by their author.
    - Customizable ShowTimer priority of superweapons
    - Iron Curtain effects customization on infantries and organic units
    - Use `CustomPalette` for animations with `Tiled=yes`
+   - Unlimited `AlternateFLH` entries
 - **TwinkleStar**
   - Custom slaves free sound
   - Jumpjet crash rotation control

@@ -505,6 +505,26 @@ DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 // and neither Ares nor Phobos has touched it, even that crawling flh one was in TechnoClass
 DEFINE_JUMP(VTABLE, 0x7F5D20, 0x523250);// Redirect UnitClass::GetFLH to InfantryClass::GetFLH (used to be TechnoClass::GetFLH)
 
+DEFINE_HOOK(0x6F3AF9, TechnoClass_GetFLH_AlternateFLH, 0x6)
+{
+	GET(TechnoClass*, pThis, EBX);
+	GET(int, weaponIdx, ESI);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	weaponIdx = -weaponIdx - 1;
+
+	const CoordStruct& flh =
+		weaponIdx < static_cast<int>(pTypeExt->AlternateFLHs.size())
+		? pTypeExt->AlternateFLHs[weaponIdx]
+		: CoordStruct::Empty;
+
+	R->ECX(flh.X);
+	R->EBP(flh.Y);
+	R->EAX(flh.Z);
+
+	return 0x6F3B37;
+}
+
 DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
 {
 	GET(TechnoClass*, pThis, EBX);
