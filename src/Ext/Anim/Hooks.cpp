@@ -109,7 +109,12 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 		auto pOwner = pInvoker ? pInvoker->Owner : nullptr;
 
 		if (!pOwner)
-			pOwner = pThis->OwnerObject ? pThis->OwnerObject->GetOwningHouse() : nullptr;
+		{
+			if (pThis->Owner)
+				pOwner = pThis->Owner;
+			else if (pThis->OwnerObject)
+				pOwner = pThis->OwnerObject->GetOwningHouse();
+		}
 
 		MapClass::DamageArea(pThis->GetCoords(), appliedDamage, pInvoker, pWarhead, true, pOwner);
 	}
