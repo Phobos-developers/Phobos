@@ -81,35 +81,32 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
 
-	if (!pThis || weaponIndex < 0)
-		return FLH;
-
 	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	auto pInf = abstract_cast<InfantryClass*>(pThis);
-	auto& pickedFLHs = pExt->WeaponBurstFLHs;
+	auto pickedFLHs = &pExt->WeaponBurstFLHs;
 
 	if (pThis->Veterancy.IsElite())
 	{
 		if (pInf && pInf->IsDeployed())
-			pickedFLHs = pExt->EliteDeployedWeaponBurstFLHs;
+			pickedFLHs = &pExt->EliteDeployedWeaponBurstFLHs;
 		else if (pInf && pInf->Crawling)
-			pickedFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
+			pickedFLHs = &pExt->EliteCrouchedWeaponBurstFLHs;
 		else
-			pickedFLHs = pExt->EliteWeaponBurstFLHs;
+			pickedFLHs = &pExt->EliteWeaponBurstFLHs;
 	}
 	else
 	{
 		if (pInf && pInf->IsDeployed())
-			pickedFLHs = pExt->DeployedWeaponBurstFLHs;
+			pickedFLHs = &pExt->DeployedWeaponBurstFLHs;
 		else if (pInf && pInf->Crawling)
-			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
+			pickedFLHs = &pExt->CrouchedWeaponBurstFLHs;
 	}
 
-	if ((int)pickedFLHs[weaponIndex].size() > pThis->CurrentBurstIndex)
+	if ((int)((*pickedFLHs)[weaponIndex].size()) > pThis->CurrentBurstIndex)
 	{
 		FLHFound = true;
-		FLH = pickedFLHs[weaponIndex][pThis->CurrentBurstIndex];
+		FLH = (*pickedFLHs)[weaponIndex][pThis->CurrentBurstIndex];
 	}
 
 	return FLH;
@@ -120,10 +117,7 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
 
-	if (!pThis || weaponIndex < 0)
-		return FLH;
-
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type))
 	{
 		Nullable<CoordStruct> pickedFLH;
 

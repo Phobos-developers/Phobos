@@ -509,6 +509,9 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
 {
 	GET(TechnoClass*, pThis, EBX);
 	GET_STACK(int, weaponIndex, STACK_OFFSET(0xD8, 0x8));
+	if (weaponIndex < 0)
+		return 0;
+
 	bool FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
 
