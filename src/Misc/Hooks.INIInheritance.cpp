@@ -50,8 +50,9 @@ int INIInheritance::ReadInt(REGISTERS* R, int address)
 		buffer = ini->ReadInteger(split, entryName, MAXINT);
 		if (buffer != MAXINT)
 			break;
+		split = strtok_s(NULL, ",", &state);
 	}
-	while (split = strtok_s(NULL, ",", &state));
+	while (split);
 
 	return finalize(buffer != MAXINT ? buffer : defaultValue);
 }
@@ -92,8 +93,9 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 		// if we found anything new (not default), we're done
 		if (ini->ReadString(split, entryName, NULL, buffer, length) != 0)
 			break;
+		split = strtok_s(NULL, ",", &state);
 	}
-	while (split = strtok_s(NULL, ",", &state));
+	while (split);
 
 	return finalize(buffer[0] ? buffer : defaultValue);
 }

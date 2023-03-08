@@ -505,7 +505,7 @@ DEFINE_HOOK(0x716123, TechnoTypeClass_LoadFromINI, 0x5)
 
 	return 0;
 }
-
+#if ANYONE_ACTUALLY_USE_THIS
 DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 {
 	//GET(CCINIClass*, pINI, ESI);
@@ -517,7 +517,7 @@ DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 
 	return 0;
 }
-
+#endif
 DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
 {
 	GET(UnitTypeClass*, pItem, ESI);

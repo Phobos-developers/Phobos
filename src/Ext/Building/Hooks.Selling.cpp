@@ -35,8 +35,11 @@ bool __forceinline BuildingCanUndeploy(BuildingClass* pThis)
 
 	if (pType->ConstructionYard)
 	{
-		// Canyards can't undeploy if MCVRedeploy=no or MindControlledBy YURIX
-		if(!GameModeOptionsClass::Instance->MCVRedeploy || pThis->MindControlledBy || !pThis->Owner->IsControlledByHuman())
+		// Conyards can't undeploy if MCVRedeploy=no
+		if(!GameModeOptionsClass::Instance->MCVRedeploy)
+			return false;
+		// or MindControlledBy YURIX (why? for balance?)
+		if (pThis->MindControlledBy || !pThis->Owner->IsControlledByHuman())
 			return false;
 	}
 	// Move Focus check outside Conyard check to allow generic Unsellable=no buildings to be sold
@@ -94,12 +97,13 @@ DEFINE_HOOK(0x44A964, BuildingClass_Mi_Selling_VoiceDeploy, 0x6)
 DEFINE_HOOK(0x44AB22, BuildingClass_Mi_Selling_EVASold_Plug, 0x6)
 {
 	enum { SkipVoxPlay = 0x44AB3B };
+#if ANYBODY_NOTICED_THIS
 	GET(BuildingClass*, pThis, EBP);
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
 	if (pThis->IsOwnedByCurrentPlayer)
 		VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex(GameStrings::EVA_StructureSold)));
-
+#endif
 	return SkipVoxPlay;
 }

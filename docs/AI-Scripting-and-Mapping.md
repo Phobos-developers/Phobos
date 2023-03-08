@@ -19,9 +19,9 @@ RepairBaseNodes=no,no,no ; 3 booleans indicating whether AI repair basenodes in 
   - You can now decide whether MCV can redeploy by setting
 ```ini
 [Basic]
-MCVRedeploys=no  ; boolean
+MCVRedeploys=no  ; boolean, Overrides [MultiplayerDialogSettings]->MCVRedeploys only in campaigns
 ```
-  - **Not that these only works within the map file**
+  - **Note that these tags only work within the map file**
 
 - Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
   - `InitialPayload` logic from Ares is not supported yet.
