@@ -181,6 +181,7 @@ This page lists all the individual contributions to the project by their author.
   - Additions to automatic passenger deletion
   - Buildings considered as vehicles
   - TechnoType target evaluation map zone check behaviour customization
+  - CanC4 damage rounding fix & toggle
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

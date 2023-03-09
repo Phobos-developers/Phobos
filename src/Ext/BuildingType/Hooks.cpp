@@ -189,3 +189,26 @@ DEFINE_HOOK(0x465D40, BuildingTypeClass_IsUndeployable_ConsideredVehicle, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x5F5416, ObjectClass_ReceiveDamage_CanC4DamageRounding, 0x6)
+{
+	enum { SkipGameCode = 0x5F5456 };
+
+	GET(ObjectClass*, pThis, ESI);
+	GET(int*, pDamage, EDI);
+
+	if (*pDamage == 0 && pThis->WhatAmI() == AbstractType::Building)
+	{
+		auto const pType = static_cast<BuildingTypeClass*>(pThis->GetType());
+
+		if (!pType->CanC4)
+		{
+			auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+
+			if (!pTypeExt->CanC4_AllowZeroDamage)
+				*pDamage = 1;
+		}
+	}
+
+	return SkipGameCode;
+}

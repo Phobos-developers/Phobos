@@ -294,6 +294,7 @@ New:
 - Including INI files and inheriting INI sections (by Morton)
 - Additions to automatic passenger deletion (by Starkku)
 - Buildings considered as vehicles (by Starkku)
+- `CanC4=false` building zero damage toggle (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -320,6 +321,7 @@ Vanilla fixes:
 - Fixed infantry without `C4=true` being killed in water if paradropped, chronoshifted etc. even if they can normally enter water (by Starkku)
 - Fixed `WaterBound=true` buildings with `UndeploysInto` not correctly setting the location for the vehicle to move into when undeployed (by Starkku)
 - Allow more than 5 `AlternateFLH` entries for units (by ststl)
+- Buildings with `CanC4=false` will no longer take 1 point of positive damage if hit by negative damage (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
