@@ -21,6 +21,7 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 	{
 		pExt->FirerHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
 		pExt->CurrentStrength = pThis->Type->Strength;
+		pExt->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
 
 		if (!pThis->Type->Inviso)
 			pExt->InitializeLaserTrails();
@@ -42,7 +43,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 
 	auto pBulletExt = BulletExt::ExtMap.Find(pThis);
 	BulletAITemp::ExtData = pBulletExt;
-	BulletAITemp::TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
+	BulletAITemp::TypeExtData = pBulletExt->TypeExtData;
 
 	if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 	{

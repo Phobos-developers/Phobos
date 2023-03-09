@@ -9,7 +9,7 @@ TechnoExt::ExtContainer TechnoExt::ExtMap;
 
 TechnoExt::ExtData::~ExtData()
 {
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(this->OwnerObject()->GetTechnoType());
+	auto const pTypeExt = this->TypeExtData;
 
 	if (pTypeExt && pTypeExt->AutoDeath_Behavior.isset())
 	{
@@ -208,7 +208,7 @@ template <typename T>
 void TechnoExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->CurrentTechnoType)
+		.Process(this->TypeExtData)
 		.Process(this->Shield)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)

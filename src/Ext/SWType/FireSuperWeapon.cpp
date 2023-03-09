@@ -96,7 +96,7 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 				pOwnerExt->OwnedLimboDeliveredBuildings.insert({ pBuilding, pBuildingExt });
 
 				auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
-				auto const pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType());
+				auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
 
 				if (pTechnoTypeExt->AutoDeath_Behavior.isset() && pTechnoTypeExt->AutoDeath_AfterDelay > 0)
 				{

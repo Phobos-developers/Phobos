@@ -18,6 +18,7 @@ public:
 	class ExtData final : public Extension<BulletClass>
 	{
 	public:
+		BulletTypeExt::ExtData* TypeExtData;
 		HouseClass* FirerHouse;
 		int CurrentStrength;
 		bool IsInterceptor;
@@ -28,6 +29,7 @@ public:
 		PhobosTrajectory* Trajectory; // TODO: why not unique_ptr
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
+			, TypeExtData { nullptr }
 			, FirerHouse { nullptr }
 			, CurrentStrength { 0 }
 			, IsInterceptor { false }

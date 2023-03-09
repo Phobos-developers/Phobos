@@ -22,7 +22,7 @@ public:
 	class ExtData final : public Extension<TechnoClass>
 	{
 	public:
-		TechnoTypeClass* CurrentTechnoType;
+		TechnoTypeExt::ExtData* TypeExtData;
 		std::unique_ptr<ShieldClass> Shield;
 		std::vector<LaserTrailClass> LaserTrails;
 		bool ReceiveDamage;
@@ -43,7 +43,7 @@ public:
 		HouseClass* OriginalPassengerOwner;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
-			, CurrentTechnoType {}
+			, TypeExtData { nullptr }
 			, Shield {}
 			, LaserTrails {}
 			, ReceiveDamage { false }

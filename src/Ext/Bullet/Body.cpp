@@ -13,8 +13,8 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 	if (!pSource || !pWeapon)
 		return;
 
-	auto pThis = this->OwnerObject();
-	auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	auto const pThis = this->OwnerObject();
+	auto const pTypeExt = this->TypeExtData;
 	bool canAffect = false;
 	bool isIntercepted = false;
 
@@ -60,6 +60,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 			{
 				pThis->Speed = pWeaponOverride->Speed;
 				pThis->Type = pWeaponOverride->Projectile;
+				this->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
 
 				if (this->LaserTrails.size())
 				{
@@ -152,6 +153,7 @@ template <typename T>
 void BulletExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->TypeExtData)
 		.Process(this->FirerHouse)
 		.Process(this->CurrentStrength)
 		.Process(this->IsInterceptor)

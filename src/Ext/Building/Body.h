@@ -25,6 +25,7 @@ public:
 	class ExtData final : public Extension<BuildingClass>
 	{
 	public:
+		BuildingTypeExt::ExtData* TypeExtData;
 		bool DeployedTechno;
 		bool IsCreatedFromMapFile;
 		int LimboID;
@@ -33,6 +34,7 @@ public:
 		int AccumulatedIncome;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
+			, TypeExtData { nullptr }
 			, DeployedTechno { false }
 			, IsCreatedFromMapFile { false }
 			, LimboID { -1 }

@@ -380,26 +380,26 @@ public:
 		return nullptr;
 	}
 
-	void TryAllocate(base_type_ptr key, bool bCond, const std::string_view& nMessage)
+	extension_type_ptr TryAllocate(base_type_ptr key, bool bCond, const std::string_view& nMessage)
 	{
 		if (!key || (!bCond && !nMessage.empty()))
 		{
 			Debug::Log("%s \n", nMessage.data());
-			return;
+			return nullptr;
 		}
 
-		Allocate(key);
+		return Allocate(key);
 	}
 
-	void TryAllocate(base_type_ptr key)
+	extension_type_ptr TryAllocate(base_type_ptr key)
 	{
 		if (!key)
 		{
 			Debug::Log("Attempted to allocate %s from nullptr!\n", typeid(extension_type).name());
-			return;
+			return nullptr;
 		}
 
-		Allocate(key);
+		return Allocate(key);
 	}
 
 	extension_type_ptr FindOrAllocate(base_type_ptr key)

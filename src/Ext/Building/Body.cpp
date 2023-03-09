@@ -242,7 +242,7 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 {
 	if (auto const pExt = BuildingExt::ExtMap.Find(pBuilding))
 	{
-		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+		auto const pTypeExt = pExt->TypeExtData;
 
 		if (pTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome.Get()))
 			pExt->AccumulatedIncome += refund;
@@ -268,7 +268,7 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 {
 	auto const pThis = this->OwnerObject();
-	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = this->TypeExtData;
 
 	if (pTypeExt->Powered_KillSpawns && pThis->Type->Powered && !pThis->IsPowerOnline())
 	{
@@ -333,6 +333,7 @@ template <typename T>
 void BuildingExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->TypeExtData)
 		.Process(this->DeployedTechno)
 		.Process(this->IsCreatedFromMapFile)
 		.Process(this->LimboID)
@@ -381,7 +382,10 @@ DEFINE_HOOK(0x43BCBD, BuildingClass_CTOR, 0x6)
 {
 	GET(BuildingClass*, pItem, ESI);
 
-	BuildingExt::ExtMap.TryAllocate(pItem);
+	auto const pExt = BuildingExt::ExtMap.TryAllocate(pItem);
+
+	if (pExt)
+		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pItem->Type);
 
 	return 0;
 }
