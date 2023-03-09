@@ -47,13 +47,17 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Cloakable.Read(exINI, pSection, "Cloakable");
 	this->ForceDecloak.Read(exINI, pSection, "ForceDecloak");
 
-	this->RevengeWeapon.Read(exINI, pSection, "RevengeWeapon");
-	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
-
 	this->WeaponRange_Multiplier.Read(exINI, pSection, "WeaponRange.Multiplier");
 	this->WeaponRange_ExtraRange.Read(exINI, pSection, "WeaponRange.ExtraRange");
 	this->WeaponRange_AllowWeapons.Read(exINI, pSection, "WeaponRange.AllowWeapons");
 	this->WeaponRange_DisallowWeapons.Read(exINI, pSection, "WeaponRange.DisallowWeapons");
+
+	this->CritMultiplier.Read(exINI, pSection, "CritMultiplier");
+	this->CritMultiplier_AllowWarheads.Read(exINI, pSection, "CritMultiplier.AllowWarheads");
+	this->CritMultiplier_DisallowWarheads.Read(exINI, pSection, "CritMultiplier.DisallowWarheads");
+
+	this->RevengeWeapon.Read(exINI, pSection, "RevengeWeapon");
+	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
 }
 
 template <typename T>
@@ -81,12 +85,15 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ROFMultiplier_ApplyOnCurrentTimer)
 		.Process(this->Cloakable)
 		.Process(this->ForceDecloak)
-		.Process(this->RevengeWeapon)
-		.Process(this->RevengeWeapon_AffectsHouses)
 		.Process(this->WeaponRange_Multiplier)
 		.Process(this->WeaponRange_ExtraRange)
 		.Process(this->WeaponRange_AllowWeapons)
 		.Process(this->WeaponRange_DisallowWeapons)
+		.Process(this->CritMultiplier)
+		.Process(this->CritMultiplier_AllowWarheads)
+		.Process(this->CritMultiplier_DisallowWarheads)
+		.Process(this->RevengeWeapon)
+		.Process(this->RevengeWeapon_AffectsHouses)
 		;
 }
 

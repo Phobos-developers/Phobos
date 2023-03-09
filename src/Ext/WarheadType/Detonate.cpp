@@ -274,7 +274,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	else
 		dice = this->Crit_RandomBuffer;
 
-	if (this->Crit_Chance < dice)
+	if (GetCritChance(pOwner) < dice)
 		return;
 
 	if (!pTargetExt)
@@ -425,5 +425,36 @@ void WarheadTypeExt::ExtData::ApplyAttachEffects(TechnoClass* pTarget, HouseClas
 
 	AttachEffectClass::Attach(this->AttachEffect_AttachTypes, pTarget, pInvokerHouse, pInvoker, this->OwnerObject(), this->AttachEffect_DurationOverrides, dummy, dummy, dummy);
 	AttachEffectClass::Detach(this->AttachEffect_RemoveTypes, pTarget);
+}
+
+double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer)
+{
+	double critChance = this->Crit_Chance;
+
+	if (critChance == 0.0 || !pFirer)
+		return critChance;
+
+	auto const pExt = TechnoExt::ExtMap.Find(pFirer);
+
+	for (auto& attachEffect : pExt->AttachedEffects)
+	{
+		if (!attachEffect->IsActive())
+			continue;
+
+		auto const pType = attachEffect->GetType();
+
+		if (pType->CritMultiplier == 1.0)
+			continue;
+
+		if (pType->CritMultiplier_AllowWarheads.size() > 0 && !pType->CritMultiplier_AllowWarheads.Contains(this->OwnerObject()))
+			continue;
+
+		if (pType->CritMultiplier_DisallowWarheads.size() > 0 && pType->CritMultiplier_DisallowWarheads.Contains(this->OwnerObject()))
+			continue;
+
+		critChance = critChance * Math::max(pType->CritMultiplier, 0);
+	}
+
+	return critChance;
 }
 

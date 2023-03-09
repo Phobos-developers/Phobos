@@ -28,12 +28,15 @@ public:
 	Valueable<bool> ROFMultiplier_ApplyOnCurrentTimer;
 	Valueable<bool> Cloakable;
 	Valueable<bool> ForceDecloak;
-	Nullable<WeaponTypeClass*> RevengeWeapon;
-	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 	Valueable<double> WeaponRange_Multiplier;
 	Valueable<double> WeaponRange_ExtraRange;
 	ValueableVector<WeaponTypeClass*> WeaponRange_AllowWeapons;
 	ValueableVector<WeaponTypeClass*> WeaponRange_DisallowWeapons;
+	Valueable<double> CritMultiplier;
+	ValueableVector<WarheadTypeClass*> CritMultiplier_AllowWarheads;
+	ValueableVector<WarheadTypeClass*> CritMultiplier_DisallowWarheads;
+	Nullable<WeaponTypeClass*> RevengeWeapon;
+	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
@@ -57,12 +60,15 @@ public:
 		, ROFMultiplier_ApplyOnCurrentTimer { true }
 		, Cloakable { false }
 		, ForceDecloak { false }
-		, RevengeWeapon {}
-		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
 		, WeaponRange_Multiplier { 1.0 }
 		, WeaponRange_ExtraRange { 0.0 }
 		, WeaponRange_AllowWeapons {}
 		, WeaponRange_DisallowWeapons {}
+		, CritMultiplier { 1.0 }
+		, CritMultiplier_AllowWarheads {}
+		, CritMultiplier_DisallowWarheads {}
+		, RevengeWeapon {}
+		, RevengeWeapon_AffectsHouses{ AffectedHouse::All }
 	{};
 
 	bool HasTint();
