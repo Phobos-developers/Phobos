@@ -23,8 +23,8 @@ This page describes all the engine features that are either new and introduced b
     - If `ROFMultiplier.ApplyOnCurrentTimer` is set to true, `ROFMultiplier` is applied on currently running reload timer (if any) when the effect is first applied.
   - If `Cloakable` is set to true, the object the effect is attached to is granted ability to cloak itself for duration of the effect.
   - `ForceDecloak`, if set to true, will uncloak and make the object the effect is attached to unable to cloak itself for duration of the effect.
-  - `WeaponRangeBonus` can be used to give the object the effect is attached an increase or decrease to weapon range, defined in cells.
-    - `WeaponRangeBonus.AllowWeapons` can be used to list only weapons that can benefit from this range bonus and `WeaponRangeBonus.DisallowWeapons` weapons that are not allowed to, respectively.
+  - `WeaponRange.Multiplier` and `WeaponRange.ExtraRange` can be used to multiply the weapon firing range of the object the effect is attached to, or give it an increase / decrease (measured in cells), respectively. `ExtraRange` is cumulatively applied from all attached effects after all `Multiplier` values have been applied.
+    - `WeaponRange.AllowWeapons` can be used to list only weapons that can benefit from this range bonus and `WeaponRange.DisallowWeapons` weapons that are not allowed to, respectively.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.UseTransportRangeModifiers` can be set to true to make passengers firing out use the transport's active range bonuses instead.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
@@ -70,9 +70,10 @@ ROFMultiplier=1.0                            ; floating point value
 ROFMultiplier.ApplyOnCurrentTimer=true       ; boolean
 Cloakable=false                              ; boolean
 ForceDecloak=false                           ; boolean
-WeaponRangeBonus=0.0                         ; floating point value
-WeaponRangeBonus.AllowWeapons=               ; list of WeaponTypes
-WeaponRangeBonus.DisallowWeapons=            ; list of WeaponTypes
+WeaponRange.Multiplier=1.0                   ; floating point value
+WeaponRange.ExtraRange=0.0                   ; floating point value
+WeaponRange.AllowWeapons=                    ; list of WeaponTypes
+WeaponRange.DisallowWeapons=                 ; list of WeaponTypes
 RevengeWeapon=                               ; WeaponType
 RevengeWeapon.AffectsHouses=all              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 

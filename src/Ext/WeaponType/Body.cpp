@@ -222,6 +222,8 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 
 	if (auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno))
 	{
+		int extraRange = 0;
+
 		for (auto const& attachEffect : pTechnoExt->AttachedEffects)
 		{
 			if (!attachEffect->IsActive())
@@ -229,17 +231,20 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 
 			auto const type = attachEffect->GetType();
 
-			if (type->WeaponRangeBonus == 0.0)
+			if (type->WeaponRange_Multiplier == 1.0 && type->WeaponRange_ExtraRange == 0.0)
 				continue;
 
-			if (type->WeaponRangeBonus_AllowWeapons.size() > 0 && !type->WeaponRangeBonus_AllowWeapons.Contains(pThis))
+			if (type->WeaponRange_AllowWeapons.size() > 0 && !type->WeaponRange_AllowWeapons.Contains(pThis))
 				continue;
 
-			if (type->WeaponRangeBonus_DisallowWeapons.size() > 0 && type->WeaponRangeBonus_DisallowWeapons.Contains(pThis))
+			if (type->WeaponRange_DisallowWeapons.size() > 0 && type->WeaponRange_DisallowWeapons.Contains(pThis))
 				continue;
 
-			range += static_cast<int>(type->WeaponRangeBonus * Unsorted::LeptonsPerCell);
+			range = static_cast<int>(range * Math::max(type->WeaponRange_Multiplier, 0.0));
+			extraRange += static_cast<int>(type->WeaponRange_ExtraRange * Unsorted::LeptonsPerCell);
 		}
+
+		range += extraRange;
 	}
 
 	return Math::max(range, 0);

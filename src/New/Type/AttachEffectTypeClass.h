@@ -30,9 +30,10 @@ public:
 	Valueable<bool> ForceDecloak;
 	Nullable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
-	Valueable<double> WeaponRangeBonus;
-	ValueableVector<WeaponTypeClass*> WeaponRangeBonus_AllowWeapons;
-	ValueableVector<WeaponTypeClass*> WeaponRangeBonus_DisallowWeapons;
+	Valueable<double> WeaponRange_Multiplier;
+	Valueable<double> WeaponRange_ExtraRange;
+	ValueableVector<WeaponTypeClass*> WeaponRange_AllowWeapons;
+	ValueableVector<WeaponTypeClass*> WeaponRange_DisallowWeapons;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
@@ -58,9 +59,10 @@ public:
 		, ForceDecloak { false }
 		, RevengeWeapon {}
 		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
-		, WeaponRangeBonus { 0.0 }
-		, WeaponRangeBonus_AllowWeapons {}
-		, WeaponRangeBonus_DisallowWeapons {}
+		, WeaponRange_Multiplier { 1.0 }
+		, WeaponRange_ExtraRange { 0.0 }
+		, WeaponRange_AllowWeapons {}
+		, WeaponRange_DisallowWeapons {}
 	{};
 
 	bool HasTint();
