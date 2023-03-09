@@ -50,9 +50,10 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->RevengeWeapon.Read(exINI, pSection, "RevengeWeapon");
 	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
 
-	this->WeaponRangeBonus.Read(exINI, pSection, "WeaponRangeBonus");
-	this->WeaponRangeBonus_AllowWeapons.Read(exINI, pSection, "WeaponRangeBonus.AllowWeapons");
-	this->WeaponRangeBonus_DisallowWeapons.Read(exINI, pSection, "WeaponRangeBonus.DisallowWeapons");
+	this->WeaponRange_Multiplier.Read(exINI, pSection, "WeaponRange.Multiplier");
+	this->WeaponRange_ExtraRange.Read(exINI, pSection, "WeaponRange.ExtraRange");
+	this->WeaponRange_AllowWeapons.Read(exINI, pSection, "WeaponRange.AllowWeapons");
+	this->WeaponRange_DisallowWeapons.Read(exINI, pSection, "WeaponRange.DisallowWeapons");
 }
 
 template <typename T>
@@ -82,9 +83,10 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ForceDecloak)
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouses)
-		.Process(this->WeaponRangeBonus)
-		.Process(this->WeaponRangeBonus_AllowWeapons)
-		.Process(this->WeaponRangeBonus_DisallowWeapons)
+		.Process(this->WeaponRange_Multiplier)
+		.Process(this->WeaponRange_ExtraRange)
+		.Process(this->WeaponRange_AllowWeapons)
+		.Process(this->WeaponRange_DisallowWeapons)
 		;
 }
 
