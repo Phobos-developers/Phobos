@@ -89,24 +89,6 @@ bool SideExt::SaveGlobals(PhobosStreamWriter& Stm)
 	return Stm.Success();
 }
 
-void SideExt::InitializeExtData(SideClass* pThis, int nIdx)
-{
-	if (!pThis->unknown_18)
-	{
-		if (auto val = new SideExt::ExtData(pThis))
-		{
-			val->ArrayIndex = nIdx;
-			val->EnsureConstanted();
-			(*(uintptr_t*)((char*)pThis + AbstractExtPointerOffset)) = (uintptr_t)val;
-		}
-	}
-	else
-	{
-		if (((SideExt::ExtData*)(*(uintptr_t*)((char*)pThis + AbstractExtPointerOffset)))->ArrayIndex != nIdx)
-			((SideExt::ExtData*)(*(uintptr_t*)((char*)pThis + AbstractExtPointerOffset)))->ArrayIndex = nIdx;
-	}
-}
-
 // =============================
 // container
 
@@ -119,9 +101,8 @@ SideExt::ExtContainer::~ExtContainer() = default;
 DEFINE_HOOK(0x6A4609, SideClass_CTOR, 0x7)
 {
 	GET(SideClass*, pItem, ESI);
-	GET(int, nIdx, ECX);
 
-	SideExt::InitializeExtData(pItem, nIdx);
+	SideExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }
@@ -131,6 +112,7 @@ DEFINE_HOOK(0x6A499F, SideClass_SDDTOR, 0x6)
 	GET(SideClass*, pItem, ESI);
 
 	SideExt::ExtMap.Remove(pItem);
+
 	return 0;
 }
 

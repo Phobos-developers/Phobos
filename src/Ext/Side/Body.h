@@ -74,7 +74,6 @@ public:
 		~ExtContainer();
 	};
 
-	static void InitializeExtData(SideClass* pThis, int nIdx);
 	static ExtContainer ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
