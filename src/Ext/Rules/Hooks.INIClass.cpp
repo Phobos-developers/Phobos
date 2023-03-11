@@ -2,35 +2,6 @@
 #include <LocomotionClass.h>
 #include "Body.h"
 
-DEFINE_HOOK(0x527AE2, INIClass__Get_UUID, 0x7)
-{
-	LEA_STACK(const char*, buffer, STACK_OFFSET(0x1B8, -0x180));
-
-	if (buffer[0] != '{')
-	{
-		REF_STACK(CLSID, loco, STACK_OFFSET(0x1B8, -0x1A0));
-
-#define PARSE_IF_IS_LOCO(name)\
-if(_strcmpi(buffer, #name) == 0){ loco = LocomotionClass::CLSIDs::name; return 0x527B16;}
-
-		PARSE_IF_IS_LOCO(Drive);
-		PARSE_IF_IS_LOCO(Jumpjet);
-		PARSE_IF_IS_LOCO(Hover);
-		PARSE_IF_IS_LOCO(Rocket);
-		PARSE_IF_IS_LOCO(Tunnel);
-		PARSE_IF_IS_LOCO(Walk);
-		PARSE_IF_IS_LOCO(Fly);
-		PARSE_IF_IS_LOCO(Teleport);
-		PARSE_IF_IS_LOCO(Mech);
-		PARSE_IF_IS_LOCO(Ship);
-		PARSE_IF_IS_LOCO(Droppod);
-
-#undef PARSE_IF_IS_LOCO
-	}
-
-	return 0;
-}
-
 // Reenable obsolete [JumpjetControls] in RA2/YR
 // Author: Uranusian
 DEFINE_HOOK(0x7115AE, TechnoTypeClass_CTOR_JumpjetControls, 0xA)
