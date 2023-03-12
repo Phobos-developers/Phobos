@@ -70,6 +70,7 @@ public:
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
+		bool UpdateHarvesterProduction();
 	};
 
 	class ExtContainer final : public Container<HouseExt> {

@@ -15,7 +15,7 @@ std::vector<int> HouseExt::AIProduction_Values;
 std::vector<int> HouseExt::AIProduction_BestChoices;
 std::vector<int> HouseExt::AIProduction_BestChoicesNaval;
 
-// Based on Ares' rewrite of 0x4FEA60.
+// Based on Ares' rewrite of 0x4FEA60 for 100 unit bugfix.
 void HouseExt::ExtData::UpdateVehicleProduction()
 {
 	auto pThis = this->OwnerObject();
@@ -26,51 +26,8 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 	if (skipGround && skipNaval)
 		return;
 
-	if (!skipGround)
-	{
-		auto const idxParentCountry = pThis->Type->FindParentCountryIndex();
-		auto const pHarvester = HouseExt::FindOwned(pThis, idxParentCountry, make_iterator(RulesClass::Instance->HarvesterUnit));
-
-		if (pHarvester)
-		{
-			//Buildable harvester found
-			auto const harvesters = pThis->CountResourceGatherers;
-
-			auto maxHarvesters = HouseExt::FindBuildable(
-				pThis, idxParentCountry, make_iterator(RulesClass::Instance->BuildRefinery))
-				? RulesClass::Instance->HarvestersPerRefinery[AIDifficulty] * pThis->CountResourceDestinations
-				: RulesClass::Instance->AISlaveMinerNumber[AIDifficulty];
-
-			if (pThis->IQLevel2 >= RulesClass::Instance->Harvester && !pThis->IsTiberiumShort
-				&& !pThis->IsControlledByHuman() && harvesters < maxHarvesters
-				&& pThis->TechLevel >= pHarvester->TechLevel)
-			{
-				pThis->ProducingUnitTypeIndex = pHarvester->ArrayIndex;
-				return;
-			}
-		}
-		else
-		{
-			//No buildable harvester found
-			auto const maxHarvesters = RulesClass::Instance->AISlaveMinerNumber[AIDifficulty];
-
-			if (pThis->CountResourceGatherers < maxHarvesters)
-			{
-				auto const pRefinery = HouseExt::FindBuildable(
-					pThis, idxParentCountry, make_iterator(RulesClass::Instance->BuildRefinery));
-
-				if (pRefinery)
-				{
-					//awesome way to find out whether this building is a slave miner, isn't it? ...
-					if (auto const pSlaveMiner = pRefinery->UndeploysInto)
-					{
-						pThis->ProducingUnitTypeIndex = pSlaveMiner->ArrayIndex;
-						return;
-					}
-				}
-			}
-		}
-	}
+	if (!skipGround && this->UpdateHarvesterProduction())
+		return;
 
 	auto& creationFrames = HouseExt::AIProduction_CreationFrames;
 	auto& values = HouseExt::AIProduction_Values;
@@ -192,6 +149,55 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 	}
 }
 
+bool HouseExt::ExtData::UpdateHarvesterProduction()
+{
+	auto pThis = this->OwnerObject();
+	auto const AIDifficulty = static_cast<int>(pThis->GetAIDifficultyIndex());
+	auto const idxParentCountry = pThis->Type->FindParentCountryIndex();
+	auto const pHarvesterUnit = HouseExt::FindOwned(pThis, idxParentCountry, make_iterator(RulesClass::Instance->HarvesterUnit));
+
+	if (pHarvesterUnit)
+	{
+		auto const harvesters = pThis->CountResourceGatherers;
+		auto maxHarvesters = HouseExt::FindBuildable(
+			pThis, idxParentCountry, make_iterator(RulesClass::Instance->BuildRefinery))
+			? RulesClass::Instance->HarvestersPerRefinery[AIDifficulty] * pThis->CountResourceDestinations
+			: RulesClass::Instance->AISlaveMinerNumber[AIDifficulty];
+
+		if (pThis->IQLevel2 >= RulesClass::Instance->Harvester && !pThis->IsTiberiumShort
+			&& !pThis->IsControlledByHuman() && harvesters < maxHarvesters
+			&& pThis->TechLevel >= pHarvesterUnit->TechLevel)
+		{
+			pThis->ProducingUnitTypeIndex = pHarvesterUnit->ArrayIndex;
+			return true;
+		}
+	}
+	else
+	{
+		auto const maxHarvesters = RulesClass::Instance->AISlaveMinerNumber[AIDifficulty];
+
+		if (pThis->CountResourceGatherers < maxHarvesters)
+		{
+			auto const pRefinery = HouseExt::FindBuildable(
+				pThis, idxParentCountry, make_iterator(RulesClass::Instance->BuildRefinery));
+
+			if (pRefinery)
+			{
+				if (auto const pSlaveMiner = pRefinery->UndeploysInto)
+				{
+					if (pSlaveMiner->ResourceDestination)
+					{
+						pThis->ProducingUnitTypeIndex = pSlaveMiner->ArrayIndex;
+						return true;
+					}
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
 bool HouseExt::ExtData::OwnsLimboDeliveredBuilding(BuildingClass* pBuilding)
 {
 	if (!pBuilding)
@@ -234,6 +240,7 @@ bool HouseExt::IsDisabledFromShell(
 		// allow SWs only if not disableable from shell
 		auto const pItem2 = const_cast<BuildingTypeClass*>(pItem);
 		auto const& BuildTech = RulesClass::Instance->BuildTech;
+
 		if (BuildTech.FindItemIndex(pItem2) == -1)
 		{
 			auto const pSuper = pHouse->Supers[pItem->SuperWeapon];
@@ -273,6 +280,7 @@ size_t HouseExt::FindBuildableIndex(
 int HouseExt::ActiveHarvesterCount(HouseClass* pThis)
 {
 	int result = 0;
+
 	for (auto pTechno : *TechnoClass::Array)
 	{
 		if (pTechno->Owner == pThis)
@@ -281,6 +289,7 @@ int HouseExt::ActiveHarvesterCount(HouseClass* pThis)
 			result += pTypeExt->Harvester_Counted && TechnoExt::IsHarvesting(pTechno);
 		}
 	}
+
 	return result;
 }
 
