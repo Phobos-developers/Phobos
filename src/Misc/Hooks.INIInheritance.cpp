@@ -266,14 +266,21 @@ DEFINE_HOOK(0x5283D0, INIClass_ReadDouble_Overwrite, 0x5)
 
 DEFINE_HOOK(0x529880, INIClass_ReadPoint2D_Overwrite, 0x5)
 {
-	Point2D* value = INIInheritance::ReadTemplatePtr<Point2D>(R);
+	auto value = INIInheritance::ReadTemplatePtr<Point2D>(R);
 	R->EAX(value);
 	return 0x52859F;
 }
 
+DEFINE_HOOK(0x529CA0, INIClass_ReadPoint3D_Overwrite, 0x5)
+{
+	auto value = INIInheritance::ReadTemplatePtr<CoordStruct>(R);
+	R->EAX(value);
+	return 0x529E63;
+}
+
 DEFINE_HOOK(0x527920, INIClass_ReadGUID_Overwrite, 0x5) // locomotor
 {
-	CLSID* value = INIInheritance::ReadTemplatePtr<CLSID>(R);
+	auto value = INIInheritance::ReadTemplatePtr<CLSID>(R);
 	R->EAX(value);
 	return 0x527B43;
 }
