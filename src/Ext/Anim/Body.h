@@ -20,6 +20,7 @@ public:
 		bool FromDeathUnit;
 		bool DeathUnitHasTurret;
 		TechnoClass* Invoker;
+		HouseClass* InvokerHouse;
 		ParticleSystemClass* AttachedSystem;
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
@@ -28,9 +29,11 @@ public:
 			, FromDeathUnit { false }
 			, DeathUnitHasTurret { false }
 			, Invoker {}
+			, InvokerHouse {}
 			, AttachedSystem {}
 		{ }
 
+		void SetInvoker(TechnoClass* pInvoker);
 		void CreateAttachedSystem(ParticleSystemTypeClass* pSystemType);
 		void DeleteAttachedSystem();
 
@@ -42,6 +45,7 @@ public:
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
 			AnnounceInvalidPointer(Invoker, ptr);
+			AnnounceInvalidPointer(InvokerHouse, ptr);
 			AnnounceInvalidPointer(AttachedSystem, ptr);
 		}
 
@@ -69,6 +73,7 @@ public:
 			case AbstractType::Infantry:
 			case AbstractType::Unit:
 			case AbstractType::ParticleSystem:
+			case AbstractType::House:
 				return false;
 			default:
 				return true;

@@ -569,7 +569,7 @@ SW.Next.RandomWeightsN=         ; List of integers.
 - Any superweapon can now detonate a Warhead or a weapon at superweapon's target cell.
   - If both `Detonate.Warhead` and `Detonate.Weapon` are set, latter takes precedence.
   - `Detonate.Damage`, if not set, defaults to weapon `Damage` for `Detonate.Weapon` and 0 for `Detonate.Warhead`.
-  - Both the weapon and Warhead behave as if fired by whatever building fired the Superweapon. This respects controls like `SW.RangeMinimum/Maximum` (similar to Ares' GenericWarhead superweapon in this regard).
+  - Both the weapon and Warhead behave as if fired by whatever building fired the Superweapon. This respects controls like `SW.RangeMinimum/Maximum` (similar to Ares' GenericWarhead superweapon in this regard). If firing building could not be found, the house the Superweapon belonged to is still used to deal damage and apply Phobos-introduced Warhead effects.
   - If `Detonate.AtFirer` is set to true, the weapon or Warhead is detonated at the firing building instead of the superweapon's target cell. If there is no firer, no detonation will occur.
 
 In `rulesmd.ini`:

@@ -6,6 +6,12 @@
 template<> const DWORD Extension<AnimClass>::Canary = 0xAAAAAAAA;
 AnimExt::ExtContainer AnimExt::ExtMap;
 
+void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker)
+{
+	this->Invoker = pInvoker;
+	this->InvokerHouse = pInvoker ? pInvoker->Owner : nullptr;
+}
+
 void AnimExt::ExtData::CreateAttachedSystem(ParticleSystemTypeClass* pSystemType)
 {
 	const auto pThis = this->OwnerObject();
@@ -74,6 +80,7 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeathUnitTurretFacing)
 		.Process(this->DeathUnitHasTurret)
 		.Process(this->Invoker)
+		.Process(this->InvokerHouse)
 		.Process(this->AttachedSystem)
 		;
 }

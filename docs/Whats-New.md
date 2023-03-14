@@ -332,8 +332,10 @@ Phobos fixes:
 - Reimplemented the bugfix for jumpjet units' facing when firing, discard the inappropriate `JumpjetTurnToTarget` tag (by Trsdy)
 - Fixed `RadSiteWarhead.Detonate` not detonating precisely on the affected object (thus requiring `CellSpread`) (by Starkku)
 - Allow PowerPlant Enhancer to be affected by EMP (by Trsdy)
-- `Gunner=true` transports now correctly change turret if a passenger is removed by `PassengerDeletion`.
-- `PassengerDeletion.Soylent` now correctly calculates refund value if removed passenger has no explicitly set `Soylent` value.
+- `Gunner=true` transports now correctly change turret if a passenger is removed by `PassengerDeletion` (by Starkku)
+- `PassengerDeletion.Soylent` now correctly calculates refund value if removed passenger has no explicitly set `Soylent` value (by Starkku)
+- Animation `Weapon` with `Damage.DealtByInvoker=true` now uses the invoker's house to deal damage and apply Phobos warhead effects even if invoker is dead when weapon is fired (by Starkku)
+- Superweapon `Detonate.Weapon` & `Detonate.Warhead` now use the firing house to deal damage and apply Phobos warhead effects even if no firing building is found (by Starkku)
 </details>
 
 

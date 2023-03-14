@@ -98,13 +98,12 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 				location.Z = MapClass::Instance->GetCellFloorHeight(location);
 		}
 
-		TechnoClass* pInvoker = nullptr;
-
 		if (auto pTechno = static_cast<TechnoClass*>(unit->CreateObject(decidedOwner)))
 		{
 			bool success = false;
 			auto const pExt = AnimExt::ExtMap.Find(pThis);
-			pInvoker = pExt->Invoker;
+			TechnoClass* pInvoker = pExt->Invoker;
+			HouseClass* pInvokerHouse = pExt->InvokerHouse;
 
 			auto aFacing = pTypeExt->CreateUnit_RandomFacing.Get()
 				? static_cast<unsigned short>(ScenarioClass::Instance->Random.RandomRanged(0, 255)) : pTypeExt->CreateUnit_Facing.Get();
@@ -139,7 +138,10 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 						pAnim->Owner = pThis->Owner;
 
 						if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
+						{
 							pAnimExt->Invoker = pInvoker;
+							pAnimExt->InvokerHouse = pInvokerHouse;
+						}
 					}
 				}
 
@@ -196,7 +198,7 @@ DEFINE_HOOK(0x469C98, BulletClass_DetonateAt_DamageAnimSelected, 0x0)
 		if (pThis->Owner)
 		{
 			auto pExt = AnimExt::ExtMap.Find(pAnim);
-			pExt->Invoker = pThis->Owner;
+			pExt->SetInvoker(pThis->Owner);
 		}
 	}
 	else if (pThis->WH == RulesClass::Instance->NukeWarhead)

@@ -85,6 +85,7 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 		pThis->Accum = 0.0;
 
 	TechnoClass* pInvoker = nullptr;
+	HouseClass* pInvokerHouse = nullptr;
 
 	if (pTypeExt->Damage_DealtByInvoker)
 	{
@@ -92,12 +93,15 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 		pInvoker = pExt->Invoker;
 
 		if (!pInvoker)
+		{
 			pInvoker = pThis->OwnerObject ? abstract_cast<TechnoClass*>(pThis->OwnerObject) : nullptr;
+			pInvokerHouse = !pInvoker ? pExt->InvokerHouse : nullptr;
+		}
 	}
 
 	if (pTypeExt->Weapon.isset())
 	{
-		WeaponTypeExt::DetonateAt(pTypeExt->Weapon.Get(), pThis->GetCoords(), pInvoker, appliedDamage);
+		WeaponTypeExt::DetonateAt(pTypeExt->Weapon.Get(), pThis->GetCoords(), pInvoker, appliedDamage, pInvokerHouse);
 	}
 	else
 	{
@@ -135,6 +139,7 @@ DEFINE_HOOK(0x424322, AnimClass_AI_TrailerInheritOwner, 0x6)
 			auto pExt = AnimExt::ExtMap.Find(pThis);
 			pTrailerAnim->Owner = pThis->Owner;
 			pTrailerAnimExt->Invoker = pExt->Invoker;
+			pTrailerAnimExt->InvokerHouse = pExt->InvokerHouse;
 		}
 	}
 
