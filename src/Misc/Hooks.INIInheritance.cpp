@@ -2,6 +2,7 @@
 #include <Utilities/Macro.h>
 #include <Helpers/Macro.h>
 #include <CCINIClass.h>
+#include <Utilities/TemplateDef.h>
 
 #include <vector>
 #include <set>
@@ -13,6 +14,52 @@ namespace INIInheritance
 	int ReadString(REGISTERS* R, int address);
 	void PushEntry(REGISTERS* R, int stackOffset);
 	void PopEntry();
+
+	template<typename T>
+	T ReadTemplate(REGISTERS* R)
+	{
+		GET(CCINIClass*, ini, ECX);
+		GET_STACK(char*, section, 0x4);
+		GET_STACK(char*, entry, 0x8);
+		GET_STACK(T, defaultValue, 0xC);
+		INI_EX exINI(ini);
+		T result;
+
+		if (!detail::read<T>(result, exINI, section, entry, false))
+			result = defaultValue;
+		return result;
+	}
+
+	template<typename T>
+	T* ReadTemplatePtr(REGISTERS* R)
+	{
+		GET(CCINIClass*, ini, ECX);
+		GET_STACK(T*, result, 0x4);
+		GET_STACK(char*, section, 0x8);
+		GET_STACK(char*, entry, 0xC);
+		GET_STACK(T*, defaultValue, 0x10);
+		INI_EX exINI(ini);
+
+		if (!detail::read<T>(*result, exINI, section, entry, false))
+			*result = *defaultValue;
+		return result;
+	}
+
+	// for some reason, WW passes the default locomotor by value
+	template<>
+	CLSID* ReadTemplatePtr<CLSID>(REGISTERS* R)
+	{
+		GET(CCINIClass*, ini, ECX);
+		GET_STACK(CLSID*, result, 0x4);
+		GET_STACK(char*, section, 0x8);
+		GET_STACK(char*, entry, 0xC);
+		GET_STACK(CLSID, defaultValue, 0x10);
+		INI_EX exINI(ini);
+
+		if (!detail::read<CLSID>(*result, exINI, section, entry, false))
+			*result = defaultValue;
+		return result;
+	}
 
 	CCINIClass* LastINIFile = nullptr;
 	std::vector<char*> SavedEntries;
@@ -100,17 +147,6 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 	return finalize(buffer[0] ? buffer : defaultValue);
 }
 
-// INIClass_GetString_DisableAres
-DEFINE_PATCH(0x528A10, 0x83, 0xEC, 0x0C, 0x33, 0xC0);
-// INIClass_GetKeyName_DisableAres
-DEFINE_PATCH(0x526CC0, 0x8B, 0x54, 0x24, 0x04, 0x83, 0xEC, 0x0C);
-// INIClass__GetInt__Hack // pop edi, jmp + 6, nop
-DEFINE_PATCH(0x5278C6, 0x5F, 0xEB, 0x06, 0x90);
-// CCINIClass_ReadCCFile1_DisableAres
-DEFINE_PATCH(0x474200, 0x8B, 0xF1, 0x8D, 0x54, 0x24, 0x0C)
-// CCINIClass_ReadCCFile2_DisableAres
-DEFINE_PATCH(0x474314, 0x81, 0xC4, 0xA8, 0x00, 0x00, 0x00)
-
 void INIInheritance::PushEntry(REGISTERS* R, int stackOffset)
 {
 	GET_STACK(char*, entryName, STACK_OFFSET(stackOffset, 0x8));
@@ -131,6 +167,17 @@ void INIInheritance::PopEntry()
 		free(section);
 	INIInheritance::SavedSections.pop_back();
 }
+
+// INIClass_GetString_DisableAres
+DEFINE_PATCH(0x528A10, 0x83, 0xEC, 0x0C, 0x33, 0xC0);
+// INIClass_GetKeyName_DisableAres
+DEFINE_PATCH(0x526CC0, 0x8B, 0x54, 0x24, 0x04, 0x83, 0xEC, 0x0C);
+// INIClass__GetInt__Hack // pop edi, jmp + 6, nop
+DEFINE_PATCH(0x5278C6, 0x5F, 0xEB, 0x06, 0x90);
+// CCINIClass_ReadCCFile1_DisableAres
+DEFINE_PATCH(0x474200, 0x8B, 0xF1, 0x8D, 0x54, 0x24, 0x0C)
+// CCINIClass_ReadCCFile2_DisableAres
+DEFINE_PATCH(0x474314, 0x81, 0xC4, 0xA8, 0x00, 0x00, 0x00)
 
 DEFINE_HOOK(0x528A18, INIClass_GetString_SaveEntry, 0x6)
 {
@@ -201,4 +248,39 @@ DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x5295F0, INIClass_ReadBool_Overwrite, 0x5)
+{
+	bool value = INIInheritance::ReadTemplate<bool>(R);
+	R->EAX(value);
+	return 0x5297A3;
+}
+
+DEFINE_HOOK(0x5283D0, INIClass_ReadDouble_Overwrite, 0x5)
+{
+	double value = INIInheritance::ReadTemplate<double>(R);
+	_asm { fld value }
+	return 0x52859F;
+}
+
+DEFINE_HOOK(0x529880, INIClass_ReadPoint2D_Overwrite, 0x5)
+{
+	auto value = INIInheritance::ReadTemplatePtr<Point2D>(R);
+	R->EAX(value);
+	return 0x52859F;
+}
+
+DEFINE_HOOK(0x529CA0, INIClass_ReadPoint3D_Overwrite, 0x5)
+{
+	auto value = INIInheritance::ReadTemplatePtr<CoordStruct>(R);
+	R->EAX(value);
+	return 0x529E63;
+}
+
+DEFINE_HOOK(0x527920, INIClass_ReadGUID_Overwrite, 0x5) // locomotor
+{
+	auto value = INIInheritance::ReadTemplatePtr<CLSID>(R);
+	R->EAX(value);
+	return 0x527B43;
 }
