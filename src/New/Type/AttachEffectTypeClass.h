@@ -32,9 +32,10 @@ public:
 	Valueable<double> WeaponRange_ExtraRange;
 	ValueableVector<WeaponTypeClass*> WeaponRange_AllowWeapons;
 	ValueableVector<WeaponTypeClass*> WeaponRange_DisallowWeapons;
-	Valueable<double> CritMultiplier;
-	ValueableVector<WarheadTypeClass*> CritMultiplier_AllowWarheads;
-	ValueableVector<WarheadTypeClass*> CritMultiplier_DisallowWarheads;
+	Valueable<double> Crit_Multiplier;
+	Valueable<double> Crit_ExtraChance;
+	ValueableVector<WarheadTypeClass*> Crit_AllowWarheads;
+	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
 	Nullable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 
@@ -64,9 +65,10 @@ public:
 		, WeaponRange_ExtraRange { 0.0 }
 		, WeaponRange_AllowWeapons {}
 		, WeaponRange_DisallowWeapons {}
-		, CritMultiplier { 1.0 }
-		, CritMultiplier_AllowWarheads {}
-		, CritMultiplier_DisallowWarheads {}
+		, Crit_Multiplier { 1.0 }
+		, Crit_ExtraChance { 0.0 }
+		, Crit_AllowWarheads {}
+		, Crit_DisallowWarheads {}
 		, RevengeWeapon {}
 		, RevengeWeapon_AffectsHouses{ AffectedHouse::All }
 	{};
