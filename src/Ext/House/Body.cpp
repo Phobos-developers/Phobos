@@ -79,7 +79,7 @@ void HouseExt::ExtData::UpdateAutoDeathObjectsInLimbo()
 	for (auto pExt : this->OwnedTimedAutoDeathObjects)
 	{
 		auto pItem = pExt->OwnerObject();
-		
+
 		if (!pItem->IsInLogic && pItem->IsAlive && pExt->TypeExtData->AutoDeath_Behavior.isset() && pExt->AutoDeathTimer.Completed())
 		{
 			auto const pBuilding = abstract_cast<BuildingClass*>(pItem);

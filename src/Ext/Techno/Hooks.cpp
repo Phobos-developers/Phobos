@@ -80,7 +80,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 		return 0;
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-    pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
+	pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
 
 	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
 	pExt->InitializeLaserTrails();
