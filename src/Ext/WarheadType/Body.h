@@ -13,6 +13,7 @@ public:
 	using base_type = WarheadTypeClass;
 
 	static constexpr DWORD Canary = 0x22222222;
+	static constexpr size_t ExtPointerOffset = 0x18;
 
 	class ExtData final : public Extension<WarheadTypeClass>
 	{

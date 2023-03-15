@@ -272,8 +272,6 @@ private:
 template <class T>
 concept HasOffset = requires(T) { T::ExtPointerOffset; };
 
-static constexpr size_t AbstractExtPointerOffset = 0x18;
-
 template <typename T>
 class Container
 {
@@ -330,19 +328,9 @@ private:
 		return (extension_type_ptr)(*(uintptr_t*)((char*)key + T::ExtPointerOffset));
 	}
 
-	extension_type_ptr GetAbstractExtensionPointer(const_base_type_ptr key) const
-	{
-		return (extension_type_ptr)(*(uintptr_t*)((char*)key + AbstractExtPointerOffset));
-	}
-
 	void SetExtensionPointer(base_type_ptr key, extension_type_ptr value)
 	{
 		(*(uintptr_t*)((char*)key + T::ExtPointerOffset)) = (uintptr_t)value;
-	}
-
-	void SetAbstractExtensionPointer(base_type_ptr key, extension_type_ptr value)
-	{
-		(*(uintptr_t*)((char*)key + AbstractExtPointerOffset)) = (uintptr_t)value;
 	}
 
 	void ResetExtensionPointer(base_type_ptr key)
@@ -350,18 +338,11 @@ private:
 		(*(uintptr_t*)((char*)key + T::ExtPointerOffset)) = 0;
 	}
 
-	void ResetAbstractExtensionPointer(base_type_ptr key)
-	{
-		(*(uintptr_t*)((char*)key + AbstractExtPointerOffset)) = 0;
-	}
-
 public:
 	extension_type_ptr Allocate(base_type_ptr key)
 	{
 		if constexpr (HasOffset<T>)
 			ResetExtensionPointer(key);
-		else if constexpr (CanBeAbstract<base_type>)
-			ResetAbstractExtensionPointer(key);
 
 		if (auto const val = new extension_type(key))
 		{
@@ -369,8 +350,6 @@ public:
 
 			if constexpr (HasOffset<T>)
 				SetExtensionPointer(key, val);
-			else if constexpr (CanBeAbstract<base_type>)
-				SetAbstractExtensionPointer(key, val);
 
 			this->Items.insert(key, val);
 
@@ -418,8 +397,6 @@ public:
 
 		if constexpr (HasOffset<T>)
 			return GetExtensionPointer(key);
-		else if constexpr (CanBeAbstract<base_type>)
-			return GetAbstractExtensionPointer(key);
 		else
 			return this->Items.find(key);
 	}
@@ -433,8 +410,6 @@ public:
 
 			if constexpr (HasOffset<T>)
 				ResetExtensionPointer(key);
-			else if constexpr (CanBeAbstract<base_type>)
-				ResetAbstractExtensionPointer(key);
 		}
 	}
 

@@ -16,6 +16,7 @@ public:
 	using base_type = RadSiteClass;
 
 	static constexpr DWORD Canary = 0x87654321;
+	static constexpr size_t ExtPointerOffset = 0x18;
 
 	class ExtData final : public Extension<RadSiteClass>
 	{
