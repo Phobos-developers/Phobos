@@ -24,6 +24,7 @@ public:
 	bool IsSelfOwned() const;
 	bool HasExpired() const;
 	bool IsActive() const;
+	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const;
 
 	static void PointerGotInvalid(void* ptr, bool removed);
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
