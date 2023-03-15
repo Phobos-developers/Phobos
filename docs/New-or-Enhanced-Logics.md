@@ -44,6 +44,7 @@ This page describes all the engine features that are either new and introduced b
 - Weapons can require attached effects on target to fire, or be prevented by firing if specific attached effects are applied.
   - `AttachEffect.RequiredTypes` can be used to list attached effects required to be on target to fire, all listed effect types must be present to allow firing.
   - `AttachEffect.DisallowedTypes` can be used to list attached effects that when present prevent the weapon from firing, any of the listed effect types will prevent firing if present.
+  - `AttachEffect.IgnoreFromSameSource` can be set to true to ignore effects that have been attached by the firer of the weapon and its Warhead.
 
 In `rulesmd.ini`:
 ```ini
@@ -94,6 +95,7 @@ OpenTopped.UseTransportRangeModifiers=false  ; boolean
 [SOMEWEAPON]                                 ; WeaponType
 AttachEffect.RequiredTypes=                  ; List of AttachEffectTypes
 AttachEffect.DisallowedTypes=                ; List of AttachEffectTypes
+AttachEffect.IgnoreFromSameSource=false      ; boolean
 
 [SOMEWARHEAD]
 AttachEffect.AttachTypes=                    ; List of AttachEffectTypes

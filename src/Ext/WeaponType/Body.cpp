@@ -5,19 +5,19 @@
 
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
-bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTechno)
+bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer)
 {
-	bool required = this->AttachEffect_RequiredTypes.size() > 0;
-	bool disallowed = this->AttachEffect_DisallowedTypes.size() > 0;
+	bool hasRequiredTypes = this->AttachEffect_RequiredTypes.size() > 0;
+	bool hasDisallowedTypes = this->AttachEffect_DisallowedTypes.size() > 0;
 
-	if (required || disallowed)
+	if (hasRequiredTypes || hasDisallowedTypes)
 	{
 		auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 
-		if (disallowed && pTechnoExt->HasAttachedEffects(this->AttachEffect_DisallowedTypes, false))
+		if (hasDisallowedTypes && pTechnoExt->HasAttachedEffects(this->AttachEffect_DisallowedTypes, false, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead))
 			return false;
 
-		if (required && !pTechnoExt->HasAttachedEffects(this->AttachEffect_RequiredTypes, true))
+		if (hasRequiredTypes && !pTechnoExt->HasAttachedEffects(this->AttachEffect_RequiredTypes, true, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead))
 			return false;
 	}
 
@@ -84,6 +84,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AmbientDamage_IgnoreTarget.Read(exINI, pSection, "AmbientDamage.IgnoreTarget");
 	this->AttachEffect_RequiredTypes.Read(exINI, pSection, "AttachEffect.RequiredTypes");
 	this->AttachEffect_DisallowedTypes.Read(exINI, pSection, "AttachEffect.DisallowedTypes");
+	this->AttachEffect_IgnoreFromSameSource.Read(exINI, pSection, "AttachEffect.IgnoreFromSameSource");
 }
 
 template <typename T>
@@ -114,6 +115,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AmbientDamage_IgnoreTarget)
 		.Process(this->AttachEffect_RequiredTypes)
 		.Process(this->AttachEffect_DisallowedTypes)
+		.Process(this->AttachEffect_IgnoreFromSameSource)
 		;
 };
 

@@ -310,6 +310,11 @@ bool AttachEffectClass::IsActive() const
 		return this->Duration && this->IsOnline;
 }
 
+bool AttachEffectClass::IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const
+{
+	return pInvoker == this->Invoker && pSource == this->Source;
+}
+
 AttachEffectTypeClass* AttachEffectClass::GetType() const
 {
 	return Type;

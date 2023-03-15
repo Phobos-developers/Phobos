@@ -101,7 +101,7 @@ public:
 		void UpdateMindControlAnim();
 		void InitializeLaserTrails();
 		void InitializeAttachEffects();
-		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll);
+		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource);
 
 		virtual ~ExtData() override;
 
