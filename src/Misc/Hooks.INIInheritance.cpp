@@ -10,7 +10,6 @@
 
 namespace INIInheritance
 {
-	int ReadInt(REGISTERS* R, int address);
 	int ReadString(REGISTERS* R, int address);
 	void PushEntry(REGISTERS* R, int stackOffset);
 	void PopEntry();
@@ -65,43 +64,6 @@ namespace INIInheritance
 	std::vector<char*> SavedEntries;
 	std::vector<char*> SavedSections;
 	std::set<std::string> SavedIncludes;
-}
-
-int INIInheritance::ReadInt(REGISTERS* R, int address)
-{
-	const int stackOffset = 0x1C;
-	GET(CCINIClass*, ini, EBX);
-	GET_STACK(int, defaultValue, STACK_OFFSET(stackOffset, 0xC));
-
-	char* entryName = INIInheritance::SavedEntries.back();
-	char* sectionName = INIInheritance::SavedSections.back();
-
-	auto finalize = [R, address](int value)
-	{
-		R->Stack<int>(STACK_OFFSET(stackOffset, 0xC), value);
-		return address;
-	};
-
-	// search for $Inherits entry
-	char inheritSectionsString[0x100];
-	if (ini->ReadString(sectionName, "$Inherits", NULL, inheritSectionsString, 0x100) == 0)
-		return finalize(defaultValue);
-
-	// for each section in csv, search for entry
-	int buffer = MAXINT;
-	char* state = NULL;
-	char* split = strtok_s(inheritSectionsString, ",", &state);
-	do
-	{
-		// if we found anything new (not default), we're done
-		buffer = ini->ReadInteger(split, entryName, MAXINT);
-		if (buffer != MAXINT)
-			break;
-		split = strtok_s(NULL, ",", &state);
-	}
-	while (split);
-
-	return finalize(buffer != MAXINT ? buffer : defaultValue);
 }
 
 int INIInheritance::ReadString(REGISTERS* R, int address)
@@ -185,22 +147,8 @@ DEFINE_HOOK(0x528A18, INIClass_GetString_SaveEntry, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x5276D7, INIClass_GetInt_SaveEntry, 0x6)
-{
-	INIInheritance::PushEntry(R, 0x14);
-	return 0;
-}
-
 DEFINE_HOOK_AGAIN(0x528BC9, INIClass_GetString_FreeEntry, 0x5)
 DEFINE_HOOK(0x528BBE, INIClass_GetString_FreeEntry, 0x5)
-{
-	INIInheritance::PopEntry();
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x52782F, INIClass_GetInt_FreeEntry, 0x5)
-DEFINE_HOOK_AGAIN(0x5278A9, INIClass_GetInt_FreeEntry, 0x7)
-DEFINE_HOOK(0x527866, INIClass_GetInt_FreeEntry, 0x7)
 {
 	INIInheritance::PopEntry();
 	return 0;
@@ -209,13 +157,6 @@ DEFINE_HOOK(0x527866, INIClass_GetInt_FreeEntry, 0x7)
 DEFINE_HOOK(0x528BAC, INIClass_GetString_Inheritance_NoEntry, 0xA)
 {
 	return INIInheritance::ReadString(R, 0x528BB6);
-}
-
-DEFINE_HOOK(0x5278CA, INIClass_GetInt_Inheritance_NoEntry, 0x5)
-{
-	int r = INIInheritance::ReadInt(R, 0);
-	INIInheritance::PopEntry();
-	return r;
 }
 
 DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
@@ -248,6 +189,13 @@ DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x5276D0, INIClass_ReadInt_Overwrite, 0x5)
+{
+	int value = INIInheritance::ReadTemplate<int>(R);
+	R->EAX(value);
+	return 0x527838;
 }
 
 DEFINE_HOOK(0x5295F0, INIClass_ReadBool_Overwrite, 0x5)
