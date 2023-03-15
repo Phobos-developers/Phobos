@@ -435,6 +435,7 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer)
 		return critChance;
 
 	auto const pExt = TechnoExt::ExtMap.Find(pFirer);
+	double extraChance = 0.0;
 
 	for (auto& attachEffect : pExt->AttachedEffects)
 	{
@@ -443,18 +444,19 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer)
 
 		auto const pType = attachEffect->GetType();
 
-		if (pType->CritMultiplier == 1.0)
+		if (pType->Crit_Multiplier == 1.0 && pType->Crit_ExtraChance == 0.0)
 			continue;
 
-		if (pType->CritMultiplier_AllowWarheads.size() > 0 && !pType->CritMultiplier_AllowWarheads.Contains(this->OwnerObject()))
+		if (pType->Crit_AllowWarheads.size() > 0 && !pType->Crit_AllowWarheads.Contains(this->OwnerObject()))
 			continue;
 
-		if (pType->CritMultiplier_DisallowWarheads.size() > 0 && pType->CritMultiplier_DisallowWarheads.Contains(this->OwnerObject()))
+		if (pType->Crit_DisallowWarheads.size() > 0 && pType->Crit_DisallowWarheads.Contains(this->OwnerObject()))
 			continue;
 
-		critChance = critChance * Math::max(pType->CritMultiplier, 0);
+		critChance = critChance * Math::max(pType->Crit_Multiplier, 0);
+		extraChance += pType->Crit_ExtraChance;
 	}
 
-	return critChance;
+	return critChance + extraChance;
 }
 
