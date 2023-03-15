@@ -500,7 +500,7 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 			}
 
 			if (const auto pExt = AnimExt::ExtMap.Find(pAnim))
-				pExt->Invoker = pThisBomb->Owner;
+				pExt->SetInvoker(pThisBomb->Owner);
 		}
 	}
 
