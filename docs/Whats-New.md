@@ -296,6 +296,7 @@ New:
 - Buildings considered as vehicles (by Starkku)
 - `CanC4=false` building zero damage toggle (by Starkku)
 - OpenTopped transport target sharing customization (by Starkku)
+- Vanish animation for `AutoDeath.Behavior=vanish` (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

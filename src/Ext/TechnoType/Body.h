@@ -46,9 +46,10 @@ public:
 		Valueable<ShieldTypeClass*> ShieldType;
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
 
+		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
+		Nullable<AnimTypeClass*> AutoDeath_VanishAnimation;
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
 		Valueable<int> AutoDeath_AfterDelay;
-		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
 		Valueable<bool> AutoDeath_TechnosDontExist_Any;
 		Valueable<bool> AutoDeath_TechnosDontExist_AllowLimboed;
@@ -226,6 +227,7 @@ public:
 			, DeployingAnim_UseUnitDrawer { true }
 
 			, AutoDeath_Behavior { }
+			, AutoDeath_VanishAnimation {}
 			, AutoDeath_OnAmmoDepletion { false }
 			, AutoDeath_AfterDelay { 0 }
 			, AutoDeath_TechnosDontExist {}

@@ -756,7 +756,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
   - `vanish`: The object will be directly removed from the game peacefully instead of actually getting killed.
   - `sell`: If the object is a **building** with buildup, it will be sold instead of destroyed.
 
-If this option is not set, the self-destruction logic will not be enabled.
+If this option is not set, the self-destruction logic will not be enabled. `AutoDeath.VanishAnimation` can be set to animation to play at object's location if `vanish` behaviour is chosen.
 ```{note}
 Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option. This might change in the future if necessary.
 ```
@@ -767,7 +767,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                   ; TechnoType
 AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
-
+AutoDeath.VanishAnimation                      ; Animation
 AutoDeath.OnAmmoDepletion=no                   ; boolean
 AutoDeath.AfterDelay=0                         ; positive integer
 AutoDeath.TechnosDontExist=                    ; list of TechnoType names

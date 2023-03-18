@@ -3,9 +3,10 @@
 #include <SpawnManagerClass.h>
 #include <ParticleSystemClass.h>
 
+#include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
-#include <Utilities/EnumFunctions.h>
 #include <Ext/House/Body.h>
+#include <Utilities/EnumFunctions.h>
 
 // methods used in TechnoClass_AI hooks or anything similar
 
@@ -76,11 +77,12 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 
 	// Self-destruction must be enabled
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
+	const auto pVanishAnim = pTypeExt->AutoDeath_VanishAnimation.Get();
 
 	// Death if no ammo
 	if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
 	{
-		TechnoExt::KillSelf(pThis, howToDie);
+		TechnoExt::KillSelf(pThis, howToDie, pVanishAnim);
 		return true;
 	}
 
@@ -94,7 +96,7 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 		}
 		else if (this->AutoDeathTimer.Completed())
 		{
-			TechnoExt::KillSelf(pThis, howToDie);
+			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim);
 			return true;
 		}
 
@@ -124,7 +126,7 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 	{
 		if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
 		{
-			TechnoExt::KillSelf(pThis, howToDie);
+			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim);
 
 			return true;
 		}
@@ -135,7 +137,7 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 	{
 		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
 		{
-			TechnoExt::KillSelf(pThis, howToDie);
+			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim);
 
 			return true;
 		}
@@ -533,13 +535,23 @@ void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
+void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation)
 {
 	switch (deathOption)
 	{
 
 	case AutoDeathBehavior::Vanish:
 	{
+		if (pVanishAnimation)
+		{
+			if (auto const pAnim = GameCreate<AnimClass>(pVanishAnimation, pThis->GetCoords()))
+			{
+				auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+				pAnim->Owner = pThis->Owner;
+				pAnimExt->SetInvoker(pThis);
+			}
+		}
+
 		pThis->KillPassengers(pThis);
 		pThis->Stun();
 		pThis->Limbo();

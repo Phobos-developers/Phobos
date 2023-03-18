@@ -105,7 +105,7 @@ public:
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
 	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
-	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption);
+	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
