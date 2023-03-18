@@ -154,7 +154,7 @@ This page lists all the individual contributions to the project by their author.
   - Passable & buildable-upon TerrainTypes
   - Automatic passenger owner change toggle
   - Interceptor improvements
-  - OpenTopped transport rangefinding & deactivated state customizations
+  - OpenTopped transport behaviour customizations
   - Animation damage / weapon improvements
   - Warhead self-damaging toggle
   - Trailer animation owner inheritance

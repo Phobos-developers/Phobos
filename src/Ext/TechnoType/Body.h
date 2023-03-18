@@ -95,6 +95,7 @@ public:
 		Nullable<int> OpenTopped_WarpDistance;
 		Valueable<bool> OpenTopped_IgnoreRangefinding;
 		Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
+		Valueable<bool> OpenTopped_ShareTransportTarget;
 
 		Valueable<bool> AutoFire;
 		Valueable<bool> AutoFire_TargetSelf;
@@ -209,6 +210,7 @@ public:
 			, OpenTopped_WarpDistance {}
 			, OpenTopped_IgnoreRangefinding { false }
 			, OpenTopped_AllowFiringIfDeactivated { true }
+			, OpenTopped_ShareTransportTarget { true }
 
 			, AutoFire { false }
 			, AutoFire_TargetSelf { false }

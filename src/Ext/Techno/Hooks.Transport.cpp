@@ -169,3 +169,21 @@ DEFINE_HOOK(0x71A82C, TemporalClass_AI_Opentopped_WarpDistance, 0xC)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x710552, TechnoClass_SetOpenTransportCargoTarget_ShareTarget, 0x6)
+{
+	enum { ReturnFromFunction = 0x71057F };
+
+	GET(TechnoClass* const, pThis, ECX);
+	GET_STACK(AbstractClass* const, pTarget, STACK_OFFSET(0x8, 0x4));
+
+	if (pTarget)
+	{
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+		if (!pTypeExt->OpenTopped_ShareTransportTarget)
+			return ReturnFromFunction;
+	}
+
+	return 0;
+}

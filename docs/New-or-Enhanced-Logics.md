@@ -649,6 +649,7 @@ AutoFire.TargetSelf=false  ; boolean
 - You can now override global `OpenTopped` transport properties per TechnoType.
 - `OpenTopped.IgnoreRangefinding` can be used to disable `OpenTopped` transport rangefinding behaviour where smallest weapon range between transport and all passengers is used when approaching targets that are out of range and when scanning for potential targets.
 - `OpenTopped.AllowFiringIfDeactivated` can be used to customize whether or not passengers can fire out when the transport is deactivated (EMP, powered unit etc).
+- `OpenTopped.ShareTransportTarget` controls whether or not the current target of the transport itself is passed to the passengers as well.
 
 ```ini
 [SOMETECHNO]                              ; TechnoType
@@ -657,6 +658,7 @@ OpenTopped.DamageMultiplier=              ; floating point value, override of th
 OpenTopped.WarpDistance=                  ; integer, override of the global default
 OpenTopped.IgnoreRangefinding=false       ; boolean
 OpenTopped.AllowFiringIfDeactivated=true  ; boolean
+OpenTopped.ShareTransportTarget=true      ; boolean
 ```
 
 ### Disabling fallback to (Elite)Secondary weapon
