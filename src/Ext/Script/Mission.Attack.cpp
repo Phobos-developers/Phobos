@@ -829,7 +829,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 		// Ground Vehicle
 
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTypeUnit || buildingIsConsideredVehicle && !pTechno->IsInAir() && !pTechnoType->Naval))
+			&& ((pTypeUnit || buildingIsConsideredVehicle) && !pTechno->IsInAir() && !pTechnoType->Naval))
 		{
 			return true;
 		}
