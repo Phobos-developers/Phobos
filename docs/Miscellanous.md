@@ -132,6 +132,10 @@ function onInput() {
   - This feature can be used in *any* INI file, be it `rulesmd.ini`, `artmd.ini`, `soundmd.ini`, map file or anything else.
 
 ```{warning}
+Due to a technical issue, there is a chance that ***the first line of a included file will be skipped!*** To prevent this, included files should start with an empty line or a comment.
+```
+
+```{warning}
 When Phobos is present, the [Ares equivalent of $Include](https://ares-developers.github.io/Ares-docs/new/misc/include.html) is disabled!
 ```
 
