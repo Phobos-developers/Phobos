@@ -635,3 +635,21 @@ DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
 
 	return SkipKilling;
 }
+
+// BuildingClass_What_Action() - Fix no attack cursor if AG=no projectile on primary
+DEFINE_JUMP(LJMP, 0x447380, 0x44739E);
+DEFINE_JUMP(LJMP, 0x447709, 0x447727);
+
+// AG=no projectiles shouldn't fire at land.
+DEFINE_HOOK(0x6FC87D, TechnoClass_CanFire_AG, 0x6)
+{
+	enum { PreventFire = 0x6FC86A };
+
+	GET(WeaponTypeClass*, pWeapon, EDI);
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
+
+	if (!pWeapon->Projectile->AG && !pTarget->IsInAir())
+		return PreventFire;
+
+	return 0;
+}

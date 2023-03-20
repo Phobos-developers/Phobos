@@ -120,6 +120,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizable FLH when infantry is prone or deployed
   - Initial strength for cloned infantry
 - **Starkku**:
+  - Misc. minor bugfixes & improvements
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
   - Vehicle `DeployFire` fixes/improvements
