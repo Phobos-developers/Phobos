@@ -294,6 +294,7 @@ New:
 - Including INI files and inheriting INI sections (by Morton)
 - Additions to automatic passenger deletion (by Starkku)
 - Buildings considered as vehicles (by Starkku)
+- TechnoType target evaluation map zone check behaviour customization (by Starkku)
 - `CanC4=false` building zero damage toggle (by Starkku)
 - OpenTopped transport target sharing customization (by Starkku)
 - Vanish animation for `AutoDeath.Behavior=vanish` (by Starkku)
@@ -446,7 +447,6 @@ New:
 - Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 - Toggleable passenger killing for Explodes=true units (by Starkku)
 - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist (by FlyStar)
-- TechnoType target evaluation map zone check behaviour customization (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
