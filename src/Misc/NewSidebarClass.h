@@ -14,7 +14,7 @@ public:
 	{
 	public:
 		int AddCameo(AbstractType type, int id);
-		bool RTTICheck(AbstractType type1, int id1, AbstractType type2, int id2);
+		bool CameoComparatorStuff(AbstractType type1, int id1, AbstractType type2, int id2);
 		bool IsOnSidebar(AbstractType type, int id);
 
 		StageClass        Progress;

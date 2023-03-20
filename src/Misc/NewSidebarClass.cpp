@@ -19,20 +19,18 @@ bool NewSidebarClass::NewStripClass::IsOnSidebar(AbstractType type, int id)
 
 // 0x6A8420
 // cameo sorting function?
-bool NewSidebarClass::NewStripClass::RTTICheck(AbstractType type1, int id1, AbstractType type2, int id2)
+bool NewSidebarClass::NewStripClass::CameoComparatorStuff(AbstractType type1, int id1, AbstractType type2, int id2)
 {
-	auto pTechnoType1 = TechnoTypeClass::GetByTypeAndIndex(type1, id1);
-	auto pTechnoType2 = TechnoTypeClass::GetByTypeAndIndex(type2, id2);
-	TechnoTypeClass* v17;
-
 	if (type2 == AbstractType::None)
 		return true;
 
-	bool isFirstSuper = type1 == AbstractType::Special || type1 == AbstractType::Super || (isFirstSuper = false, type1 == AbstractType::SuperWeaponType);
-	bool isSecondSuper = type2 == AbstractType::Special || type2 == AbstractType::Super || type2 == AbstractType::SuperWeaponType;
-	auto heap_id = isSecondSuper;
+	auto pTechnoType1 = TechnoTypeClass::GetByTypeAndIndex(type1, id1);
+	auto pTechnoType2 = TechnoTypeClass::GetByTypeAndIndex(type2, id2);
 
-	if (isFirstSuper && isSecondSuper)
+	bool isSuper1 = type1 == AbstractType::Special || type1 == AbstractType::Super || type1 == AbstractType::SuperWeaponType;
+	bool isSuper2 = type2 == AbstractType::Special || type2 == AbstractType::Super || type2 == AbstractType::SuperWeaponType;
+	// sort by recharge time, then alphabetically
+	if (isSuper1 && isSuper2)
 	{
 		auto pSWType1 = SuperWeaponTypeClass::Array->GetItem(id1);
 		auto pSWType2 = SuperWeaponTypeClass::Array->GetItem(id2);
@@ -42,7 +40,8 @@ bool NewSidebarClass::NewStripClass::RTTICheck(AbstractType type1, int id1, Abst
 			return false;
 		return wcscmp(pSWType1->UIName, pSWType2->UIName) <= 0;
 	}
-	else if (!isFirstSuper  && !isSecondSuper)
+	// sort by side?
+	else if (!isSuper1 && !isSuper2)
 	{
 		int sideIdx = HouseClass::CurrentPlayer->Type->SideIndex;
 		if (sideIdx == pTechnoType1->AIBasePlanningSide)
@@ -55,8 +54,52 @@ bool NewSidebarClass::NewStripClass::RTTICheck(AbstractType type1, int id1, Abst
 	bool isVehicle1 = type1 == AbstractType::UnitType || type1 == AbstractType::AircraftType;
 	bool isAircraft1 = isVehicle1 && pTechnoType1->ConsideredAircraft;
 	bool isNaval1 = isVehicle1 && pTechnoType1->Naval;
-	// label 34
-	...
+	bool isGround1 = !isAircraft1 && !isNaval1;
+	bool isVehicle2 = type2 == AbstractType::UnitType || type2 == AbstractType::AircraftType;
+	bool isAircraft2 = isVehicle2 && pTechnoType2->ConsideredAircraft;
+	bool isNaval2 = isVehicle2 && pTechnoType2->Naval;
+	bool isGround2 = !isAircraft2 && !isNaval2;
+
+	if (isSuper1)
+	{
+		if (isAircraft2 || isNaval2 || isGround2)
+			return true;
+		// goto 74
+	}
+	if (isGround1)
+	{
+		if (isSuper2)
+			return false;
+		if (isAircraft2)
+			return true;
+	}
+	else
+	{
+		if (!isAircraft1)
+		{
+			if (isNaval1)
+			{
+				if (isSuper2)
+					return false;
+				if (isGround2 || isAircraft2)
+					return false;
+			}
+			// goto 74
+		}
+		if (isSuper2)
+			return false;
+		if (isGround2)
+			return false;
+	}
+	if (isNaval2)
+		return false;
+	// 74
+	if (pTechnoType1->TechLevel < pTechnoType2->TechLevel)
+		return true;
+	if (pTechnoType1->TechLevel > pTechnoType2->TechLevel)
+		return false;
+
+	return wcscmp(pTechnoType1->UIName, pTechnoType2->UIName) <= 0;
 }
 
 // 0x6A8710
@@ -67,7 +110,7 @@ int NewSidebarClass::NewStripClass::AddCameo(AbstractType type, int id)
 	if (result <= 0)
 		return 0;
 
-	for (auto cameo = this->Cameos; !this->RTTICheck(type, id, cameo->ItemType, cameo->ItemIndex); ++cameo)
+	for (auto cameo = this->Cameos; !this->CameoComparatorStuff(type, id, cameo->ItemType, cameo->ItemIndex); ++cameo)
 	{
 		result = this->CameoCount;
 		if (++v4 >= result)
