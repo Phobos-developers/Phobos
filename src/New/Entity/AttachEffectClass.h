@@ -20,7 +20,7 @@ public:
 	void KillAnim();
 	void SetAnimationVisibility(bool visible);
 	AttachEffectTypeClass* GetType() const;
-	void RefreshDuration();
+	void RefreshDuration(int durationOverride = 0);
 	bool IsSelfOwned() const;
 	bool HasExpired() const;
 	bool IsActive() const;
