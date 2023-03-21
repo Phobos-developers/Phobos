@@ -325,8 +325,9 @@ Vanilla fixes:
 - Fixed `WaterBound=true` buildings with `UndeploysInto` not correctly setting the location for the vehicle to move into when undeployed (by Starkku)
 - Allow more than 5 `AlternateFLH` entries for units (by ststl)
 - Buildings with `CanC4=false` will no longer take 1 point of positive damage if hit by negative damage (by Starkku)
-- Buildings with primary weapon that has `AG=no` projectile now have attack cursor when selected (by Starkku)
-- Weapons with `AG=no` projectiles can no longer fire at any ground targets, instead of only being prevented firing at ground cells (by Starkku)
+- Buildings with primary weapon that has `AG=false` projectile now have attack cursor when selected (by Starkku)
+- Weapons with `AG=true` projectiles can no longer fire at any ground targets, instead of only being prevented firing at ground cells (by Starkku)
+- Transports with `OpenTopped=true` and weapon that has `Burst` above 1 and passengers firing out no longer have the passenger firing offset shift lateral position based on burst index (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

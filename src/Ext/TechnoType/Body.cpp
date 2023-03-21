@@ -271,6 +271,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		// ww always read all of AlternateFLH0-5
 		if (i >= 5U && !alternateFLH.isset())
 			break;
+		else if (!alternateFLH.isset())
+			alternateFLH = this->OwnerObject()->Weapon[0].FLH; // Game defaults to this for AlternateFLH, not 0,0,0
 
 		if (this->AlternateFLHs.size() < i)
 			this->AlternateFLHs[i] = alternateFLH;

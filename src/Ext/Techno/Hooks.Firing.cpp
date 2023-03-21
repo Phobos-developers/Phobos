@@ -525,10 +525,16 @@ DEFINE_HOOK(0x6F3AF9, TechnoClass_GetFLH_AlternateFLH, 0x6)
 	return 0x6F3B37;
 }
 
+namespace BurstFLHTemp
+{
+	bool FLHFound;
+}
+
 DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
 {
 	GET(TechnoClass*, pThis, EBX);
 	GET_STACK(int, weaponIndex, STACK_OFFSET(0xD8, 0x8));
+
 	if (weaponIndex < 0)
 		return 0;
 
@@ -536,6 +542,7 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
 	CoordStruct FLH = CoordStruct::Empty;
 
 	FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
+	BurstFLHTemp::FLHFound = FLHFound;
 
 	if (!FLHFound)
 	{
@@ -555,17 +562,12 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
 
 DEFINE_HOOK(0x6F3C88, TechnoClass_GetFLH_BurstFLH_2, 0x6)
 {
-	GET(TechnoClass*, pThis, EBX);
 	GET_STACK(int, weaponIndex, STACK_OFFSET(0xD8, 0x8));
-	if (weaponIndex < 0)
-		return 0;
 
-	bool FLHFound = false;
-
-	TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
-
-	if (FLHFound)
+	if (BurstFLHTemp::FLHFound || weaponIndex < 0)
 		R->EAX(0);
+
+	BurstFLHTemp::FLHFound = false;
 
 	return 0;
 }
