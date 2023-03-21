@@ -108,7 +108,7 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 		{
 			auto nIndexR = (splashAnims.size() - 1);
 			auto nIndex = splashAnimsPickRandom ?
-				ScenarioClass::Instance->Random.RandomRanged(0, nIndexR) : nIndexR;
+				ScenarioClass::Instance->Random.RandomRanged(0, nIndexR) : 0;
 
 			pSplashAnimToUse = splashAnims.at(nIndex);
 		}
