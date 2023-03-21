@@ -281,9 +281,12 @@ void AttachEffectClass::SetAnimationVisibility(bool visible)
 	this->IsAnimHidden = !visible;
 }
 
-void AttachEffectClass::RefreshDuration()
+void AttachEffectClass::RefreshDuration(int durationOverride)
 {
-	this->Duration = this->DurationOverride ? this->DurationOverride : this->Type->Duration;
+	if (durationOverride)
+		this->Duration = durationOverride;
+	else
+		this->Duration = this->DurationOverride ? this->DurationOverride : this->Type->Duration;
 
 	if (this->Type->Animation_ResetOnReapply)
 	{
@@ -357,27 +360,28 @@ void AttachEffectClass::Attach(std::vector<AttachEffectTypeClass*> const& types,
 			}
 		}
 
+		int durationOverride = 0;
+
+		if (durationOverrides.size() > 0)
+			durationOverride = durationOverrides[durationOverrides.size() > i ? i : durationOverrides.size() - 1];
+
 		if (type->Cumulative && type->Cumulative_MaxCount >= 0 && currentTypeCount >= type->Cumulative_MaxCount)
 		{
 			if (sourceMatch)
-				sourceMatch->RefreshDuration();
+				sourceMatch->RefreshDuration(durationOverride);
 			else
 				continue;
 		}
 
 		if (!type->Cumulative && currentTypeCount > 0 && match)
 		{
-			match->RefreshDuration();
+			match->RefreshDuration(durationOverride);
 		}
 		else
 		{
-			int durationOverride = 0;
 			int delay = 0;
 			int initialDelay = 0;
 			int recreationDelay = -1;
-
-			if (durationOverrides.size() > 0)
-				durationOverride = durationOverrides[durationOverrides.size() > i ? i : durationOverrides.size() - 1];
 
 			if (delays.size() > 0)
 				delay = delays[delays.size() > i ? i : delays.size() - 1];
