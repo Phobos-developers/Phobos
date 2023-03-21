@@ -156,66 +156,14 @@ DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
 	if (!pThis || !pThis->Type)
 		return SkipGameCode;
 
-	CoordStruct nLocation = pThis->Location;
+	auto const pType = pThis->Type;
+	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	auto const splashAnims = pTypeExt->SplashAnims.GetElements(RulesClass::Instance->SplashList);
+	auto const nDamage = Game::F2I(pThis->Type->Damage);
 	auto const pOwner = AnimExt::GetOwnerHouse(pThis);
-	auto const pAnimTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
-	AnimTypeClass* pSplashAnim = nullptr;
 
-	if (pThis->GetCell()->LandType != LandType::Water || heightFlag || pAnimTypeExt->ExplodeOnWater)
-	{
-		if (auto const pWarhead = pThis->Type->Warhead)
-		{
-			auto const nDamage = Game::F2I(pThis->Type->Damage);
-			TechnoClass* pOwnerTechno = abstract_cast<TechnoClass*>(pThis->OwnerObject);
-
-			if (pAnimTypeExt->Warhead_Detonate)
-			{
-				WarheadTypeExt::DetonateAt(pWarhead, nLocation, pOwnerTechno, nDamage);
-			}
-			else
-			{
-				MapClass::DamageArea(nLocation, nDamage, pOwnerTechno, pWarhead, pWarhead->Tiberium, pOwner);
-				MapClass::FlashbangWarheadAt(nDamage, pWarhead, nLocation);
-			}
-		}
-
-		if (auto const pExpireAnim = pThis->Type->ExpireAnim)
-		{
-			if (auto pAnim = GameCreate<AnimClass>(pExpireAnim, nLocation, 0, 1, 0x2600u, 0, 0))
-				AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false);
-		}
-	}
-	else
-	{
-		TypeList<AnimTypeClass*> defaultSplashAnims;
-
-		if (!pThis->Type->IsMeteor)
-		{
-			defaultSplashAnims = TypeList<AnimTypeClass*>();
-			defaultSplashAnims.AddItem(RulesClass::Instance->Wake);
-		}
-		else
-		{
-			defaultSplashAnims = RulesClass::Instance->SplashList;
-		}
-
-		auto const splash = pAnimTypeExt->SplashAnims.GetElements(defaultSplashAnims);
-
-		if (splash.size() > 0)
-		{
-			auto nIndexR = (splash.size() - 1);
-			auto nIndex = pAnimTypeExt->SplashAnims_PickRandom ?
-				ScenarioClass::Instance->Random.RandomRanged(0, nIndexR) : nIndexR;
-
-			pSplashAnim = splash.at(nIndex);
-		}
-	}
-
-	if (pSplashAnim)
-	{
-		if (auto const pSplashAnimCreated = GameCreate<AnimClass>(pSplashAnim, nLocation, 0, 1, 0x600u, false))
-			AnimExt::SetAnimOwnerHouseKind(pSplashAnimCreated, pOwner, nullptr, false);
-	}
+	AnimExt::HandleDebrisImpact(pType->ExpireAnim, pTypeExt->WakeAnim.Get(), splashAnims, pOwner, pType->Warhead, nDamage,
+		pThis->GetCell(), pThis->Location, heightFlag, pType->IsMeteor, pTypeExt->Warhead_Detonate, pTypeExt->ExplodeOnWater, pTypeExt->SplashAnims_PickRandom);
 
 	return SkipGameCode;
 }

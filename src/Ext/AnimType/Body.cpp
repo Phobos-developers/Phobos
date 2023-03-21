@@ -105,6 +105,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Damage_ApplyOncePerLoop.Read(exINI, pID, "Damage.ApplyOncePerLoop");
 	this->ExplodeOnWater.Read(exINI, pID, "ExplodeOnWater");
 	this->Warhead_Detonate.Read(exINI, pID, "Warhead.Detonate");
+	this->WakeAnim.Read(exINI, pID, "WakeAnim");
 	this->SplashAnims.Read(exINI, pID, "SplashAnims");
 	this->SplashAnims_PickRandom.Read(exINI, pID, "SplashAnims.PickRandom");
 	this->AttachedSystem.Read(exINI, pID, "AttachedSystem", true);
@@ -135,6 +136,7 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Damage_ApplyOncePerLoop)
 		.Process(this->ExplodeOnWater)
 		.Process(this->Warhead_Detonate)
+		.Process(this->WakeAnim)
 		.Process(this->SplashAnims)
 		.Process(this->SplashAnims_PickRandom)
 		.Process(this->AttachedSystem)

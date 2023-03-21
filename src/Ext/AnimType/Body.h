@@ -35,6 +35,7 @@ public:
 		Valueable<bool> Damage_ApplyOncePerLoop;
 		Valueable<bool> ExplodeOnWater;
 		Valueable<bool> Warhead_Detonate;
+		Nullable<AnimTypeClass*> WakeAnim;
 		NullableVector<AnimTypeClass*> SplashAnims;
 		Valueable<bool> SplashAnims_PickRandom;
 		Valueable<ParticleSystemTypeClass*> AttachedSystem;
@@ -60,6 +61,7 @@ public:
 			, Damage_ApplyOncePerLoop { false }
 			, ExplodeOnWater { false }
 			, Warhead_Detonate { false }
+			, WakeAnim {}
 			, SplashAnims {}
 			, SplashAnims_PickRandom { false }
 			, AttachedSystem {}
