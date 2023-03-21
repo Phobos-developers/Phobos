@@ -46,7 +46,7 @@ DEFINE_HOOK(0x74A027, VoxelAnimClass_AI_Expired, 0x6)
 		return SkipGameCode;
 
 	auto const pType = pThis->Type;
-	auto const pTypeExt = VoxelAnimTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = VoxelAnimTypeExt::ExtMap.Find(pType);
 	auto const splashAnims = pTypeExt->SplashAnims.GetElements(RulesClass::Instance->SplashList);
 
 	AnimExt::HandleDebrisImpact(pType->ExpireAnim, pTypeExt->WakeAnim.Get(), splashAnims, pThis->OwnerHouse, pType->Warhead, pType->Damage,

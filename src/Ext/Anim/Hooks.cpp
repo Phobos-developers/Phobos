@@ -157,9 +157,9 @@ DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
 		return SkipGameCode;
 
 	auto const pType = pThis->Type;
-	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
 	auto const splashAnims = pTypeExt->SplashAnims.GetElements(RulesClass::Instance->SplashList);
-	auto const nDamage = Game::F2I(pThis->Type->Damage);
+	auto const nDamage = Game::F2I(pType->Damage);
 	auto const pOwner = AnimExt::GetOwnerHouse(pThis);
 
 	AnimExt::HandleDebrisImpact(pType->ExpireAnim, pTypeExt->WakeAnim.Get(), splashAnims, pOwner, pType->Warhead, nDamage,
