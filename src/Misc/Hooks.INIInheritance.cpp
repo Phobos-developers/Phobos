@@ -123,6 +123,7 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 		split = strtok_s(NULL, ",", &state);
 	}
 	while (split);
+	free(inherits);
 
 	return finalize(buffer[0] ? buffer : defaultValue);
 }
