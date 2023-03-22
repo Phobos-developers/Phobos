@@ -7,6 +7,7 @@
 #include <vector>
 #include <set>
 #include <string>
+#include <unordered_map>
 
 namespace INIInheritance
 {
@@ -64,6 +65,7 @@ namespace INIInheritance
 	std::vector<char*> SavedEntries;
 	std::vector<char*> SavedSections;
 	std::set<std::string> SavedIncludes;
+	std::unordered_map<std::string, std::string> Inherits;
 }
 
 int INIInheritance::ReadString(REGISTERS* R, int address)
@@ -89,14 +91,30 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 	if (strncmp(entryName, "$Inherits", 10) == 0)
 		return finalize(defaultValue);
 
-	// search for $Inherits entry
-	char inheritSectionsString[0x100];
-	if (ini->ReadString(sectionName, "$Inherits", NULL, inheritSectionsString, 0x100) == 0)
-		return finalize(defaultValue);
+	// read $Inherits entry only once per section
+	auto sectionAsString = std::string(sectionName);
+	auto it = INIInheritance::Inherits.find(sectionAsString);
+	if (it == INIInheritance::Inherits.end())
+	{
+		// read $Inherits entry
+		char stringBuffer[0x100];
+		int retval = ini->ReadString(sectionName, "$Inherits", NULL, stringBuffer, 0x100);
+		INIInheritance::Inherits.emplace(sectionAsString, std::string(stringBuffer));
+		if (retval == 0)
+			return finalize(defaultValue);
+	}
+	else
+	{
+		if (it->second[0] == NULL)
+		{
+			return finalize(defaultValue);
+		}
+	}
 
 	// for each section in csv, search for entry
 	char* state = NULL;
-	char* split = strtok_s(inheritSectionsString, ",", &state);
+	char* inherits = _strdup(it->second.c_str());
+	char* split = strtok_s(inherits, ",", &state);
 	do
 	{
 		// if we found anything new (not default), we're done
@@ -168,6 +186,7 @@ DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
 	{
 		INIInheritance::LastINIFile = ini;
 		INIInheritance::SavedIncludes.clear();
+		INIInheritance::Inherits.clear();
 	}
 
 	auto section = ini->GetSection("$Include");
