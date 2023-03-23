@@ -430,6 +430,8 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 		if ((weaponType && weaponType->Projectile->AG) || agentMode)
 			unitWeaponsHaveAG = true;
 
+		// Check verses instead of damage to allow support units etc.
+		/*
 		int weaponDamage = 0;
 
 		if (weaponType)
@@ -438,9 +440,13 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 		// If the target can't be damaged then isn't a valid target
 		if (weaponType && weaponDamage <= 0 && !agentMode)
 			continue;
+		*/
 
 		if (!agentMode)
 		{
+			if (weaponType && GeneralUtils::GetWarheadVersusArmor(weaponType->Warhead, objectType->Armor) == 0.0)
+				continue;
+
 			if (object->IsInAir() && !unitWeaponsHaveAA)
 				continue;
 
