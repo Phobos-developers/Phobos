@@ -240,20 +240,31 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
+
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
 
 	if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
 	{
 		const int nMoney = pWHExt->TransactMoney;
+
 		if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
 			return CannotFire;
 	}
+
 	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
 		const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
-
 		CellClass* pTargetCell = nullptr;
+
+		// AAOnly doesn't need to be checked if LandTargeting=1.
+		if ((!pTechno || pTechno->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK) && pWeapon->Projectile->AA && pTarget && !pTarget->IsInAir())
+		{
+			auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pWeapon->Projectile);
+
+			if (pBulletTypeExt->AAOnly)
+				return CannotFire;
+		}
 
 		if (pTarget)
 		{

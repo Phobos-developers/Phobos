@@ -298,6 +298,7 @@ New:
 - `CanC4=false` building zero damage toggle (by Starkku)
 - OpenTopped transport target sharing customization (by Starkku)
 - Vanish animation for `AutoDeath.Behavior=vanish` (by Starkku)
+- `AAOnly` for projectiles (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -326,7 +327,6 @@ Vanilla fixes:
 - Allow more than 5 `AlternateFLH` entries for units (by ststl)
 - Buildings with `CanC4=false` will no longer take 1 point of positive damage if hit by negative damage (by Starkku)
 - Buildings with primary weapon that has `AG=false` projectile now have attack cursor when selected (by Starkku)
-- Weapons with `AG=false` projectiles can no longer fire at any ground targets, instead of only being prevented firing at ground cells (by Starkku)
 - Transports with `OpenTopped=true` and weapon that has `Burst` above 1 and passengers firing out no longer have the passenger firing offset shift lateral position based on burst index (by Starkku)
 
 Phobos fixes:
