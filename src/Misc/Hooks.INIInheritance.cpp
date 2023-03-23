@@ -4,6 +4,9 @@
 #include <CCINIClass.h>
 #include <Utilities/TemplateDef.h>
 
+#include <CRC.h>
+#include <CRT.h>
+
 #include <vector>
 #include <set>
 #include <string>
@@ -12,8 +15,7 @@
 namespace INIInheritance
 {
 	int ReadString(REGISTERS* R, int address);
-	void PushEntry(REGISTERS* R, int stackOffset);
-	void PopEntry();
+	int ReadStringMagik(CCINIClass* ini, int sectionCRC, int entryCRC, char* defaultValue, char* buffer, int length);
 
 	template<typename T>
 	T ReadTemplate(REGISTERS* R)
@@ -62,10 +64,121 @@ namespace INIInheritance
 	}
 
 	CCINIClass* LastINIFile = nullptr;
-	std::vector<char*> SavedEntries;
-	std::vector<char*> SavedSections;
 	std::set<std::string> SavedIncludes;
-	std::unordered_map<std::string, std::string> Inherits;
+	std::unordered_map<int, std::string> Inherits;
+}
+
+int INIInheritance::ReadStringMagik(CCINIClass* ini, int sectionCRC, int entryCRC, char* defaultValue, char* buffer, int length)
+{
+	INIClass::INISection* pSection;
+	char* result;
+
+	auto finalize = [buffer, length](char* result)
+	{
+		if (!result)
+		{
+			*buffer = NULL;
+			return 0;
+		}
+		strncpy(buffer, result, length);
+		buffer[length - 1] = NULL;
+		CRT::strtrim(buffer);
+
+		return (int)strlen(buffer);
+	};
+
+	if (!buffer || length < 2)
+		return 0;
+
+	// if we have the current section preloaded, great, if not, search for the section
+	if (section == ini->CurrentSectionName)
+	{
+		pSection = ini->CurrentSection;
+	}
+	else
+	{
+		/*********** skipped section name crc **********/
+
+		if (ini->SectionIndex.IndexCount == 0)
+		{
+			ini->CurrentSection = NULL;
+			ini->CurrentSectionName = NULL;
+			return finalize(defaultValue);
+		}
+
+		if (!ini->SectionIndex.Archive || ini->SectionIndex.Archive->ID != sectionCRC)
+		{
+			pSection = ini->SectionIndex.FetchIndex(sectionCRC);
+			if (!pSection)
+			{
+				ini->CurrentSection = NULL;
+				ini->CurrentSectionName = NULL;
+				return finalize(defaultValue);
+			}
+			ini->SectionIndex.Archive = pSection;
+		}
+
+		if (ini->SectionIndex.IsPresent(sectionCRC))
+		{
+			pSection = ini->SectionIndex.Archive->Data;
+		}
+		else
+		{
+			// ???
+			pSection = ...;
+		}
+		if (!pSection)
+		{
+			ini->CurrentSection = NULL;
+			ini->CurrentSectionName = NULL;
+			return finalize(defaultValue);
+		}
+		ini->CurrentSection = pSection;
+		ini->CurrentSectionName = section;
+	}
+
+	if (!pSection)
+		return finalize(defaultValue);
+
+	/*********** skipped entry name crc **********/
+
+	auto entryIndex = pSection->EntryIndex;
+	if (!pSection->EntryIndex.IndexCount)
+		return finalize(defaultValue);
+
+	if (!entryIndex.Archive || entryIndex.Archive->ID != entryCRC)
+	{
+		auto v15 = entryIndex.FetchIndex(entryCRC);
+		if (!v15)
+			return finalize(defaultValue);
+		entryIndex.Archive = v15;
+	}
+	if (entryIndex.IndexCount == 0)
+	{
+		// goto 30
+	}
+	if (entryIndex.Archive && entryIndex.Archive->ID == entryCRC)
+	{
+		// goto 18
+	}
+	auto v17 = entryIndex.FetchIndex(entryCRC);
+	if (!v17)
+	{
+		// label 30
+		v18 = ...;
+		// goto 31
+	}
+	entryIndex.Archive = v17;
+	// label 18
+	v18 = entryIndex.Archive->Data;
+	// label 31
+	auto v24 = *v18;
+	if (!v24)
+		return finalize(defaultValue);
+
+	result = v24->Value;
+
+	return finalize(result ? result : defaultValue);
 }
 
 int INIInheritance::ReadString(REGISTERS* R, int address)
@@ -75,9 +188,8 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 	GET_STACK(int, length, STACK_OFFSET(stackOffset, 0x14));
 	GET_STACK(char*, buffer, STACK_OFFSET(stackOffset, 0x10));
 	GET_STACK(const char*, defaultValue, STACK_OFFSET(stackOffset, 0xC));
-
-	char* entryName = INIInheritance::SavedEntries.back();
-	char* sectionName = INIInheritance::SavedSections.back();
+	GET_STACK(int, entryCRC, STACK_OFFSET(stackOffset, 0x8));
+	GET_STACK(int, sectionCRC, STACK_OFFSET(stackOffset, 0x4));
 
 	auto finalize = [R, buffer, address](const char* value)
 	{
@@ -87,19 +199,20 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 		return address;
 	};
 
+	auto crc = CRCEngine();
+
 	// if we were looking for $Inherits and failed, no recursion
-	if (strncmp(entryName, "$Inherits", 10) == 0)
+	if (entryCRC == crc("$Inherits", 10))
 		return finalize(defaultValue);
 
 	// read $Inherits entry only once per section
-	auto sectionAsString = std::string(sectionName);
-	auto it = INIInheritance::Inherits.find(sectionAsString);
+	auto it = INIInheritance::Inherits.find(sectionCRC); // TODO check if you can pass hash directly?
 	if (it == INIInheritance::Inherits.end())
 	{
 		// read $Inherits entry
 		char stringBuffer[0x100];
-		int retval = ini->ReadString(sectionName, "$Inherits", NULL, stringBuffer, 0x100);
-		INIInheritance::Inherits.emplace(sectionAsString, std::string(stringBuffer));
+		int retval = INIInheritance::ReadStringMagik(ini, sectionCRC, crc("$Inherits", 10), NULL, stringBuffer, 0x100);
+		INIInheritance::Inherits.emplace(sectionCRC, std::string(stringBuffer));
 		if (retval == 0)
 			return finalize(defaultValue);
 	}
@@ -118,7 +231,7 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 	do
 	{
 		// if we found anything new (not default), we're done
-		if (ini->ReadString(split, entryName, NULL, buffer, length) != 0)
+		if (INIInheritance::ReadStringMagik(ini, crc(split, strlen(split)), entryCRC, NULL, buffer, length) != 0)
 			break;
 		split = strtok_s(NULL, ",", &state);
 	}
@@ -126,27 +239,6 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 	free(inherits);
 
 	return finalize(buffer[0] ? buffer : defaultValue);
-}
-
-void INIInheritance::PushEntry(REGISTERS* R, int stackOffset)
-{
-	GET_STACK(char*, entryName, STACK_OFFSET(stackOffset, 0x8));
-	GET_STACK(char*, sectionName, STACK_OFFSET(stackOffset, 0x4));
-	INIInheritance::SavedEntries.push_back(_strdup(entryName));
-	INIInheritance::SavedSections.push_back(_strdup(sectionName));
-}
-
-void INIInheritance::PopEntry()
-{
-	char* entry = INIInheritance::SavedEntries.back();
-	if (entry)
-		free(entry);
-	INIInheritance::SavedEntries.pop_back();
-
-	char* section = INIInheritance::SavedSections.back();
-	if (section)
-		free(section);
-	INIInheritance::SavedSections.pop_back();
 }
 
 // INIClass_GetString_DisableAres
@@ -159,19 +251,6 @@ DEFINE_PATCH(0x5278C6, 0x5F, 0xEB, 0x06, 0x90);
 DEFINE_PATCH(0x474200, 0x8B, 0xF1, 0x8D, 0x54, 0x24, 0x0C)
 // CCINIClass_ReadCCFile2_DisableAres
 DEFINE_PATCH(0x474314, 0x81, 0xC4, 0xA8, 0x00, 0x00, 0x00)
-
-DEFINE_HOOK(0x528A18, INIClass_GetString_SaveEntry, 0x6)
-{
-	INIInheritance::PushEntry(R, 0x18);
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x528BC9, INIClass_GetString_FreeEntry, 0x5)
-DEFINE_HOOK(0x528BBE, INIClass_GetString_FreeEntry, 0x5)
-{
-	INIInheritance::PopEntry();
-	return 0;
-}
 
 DEFINE_HOOK(0x528BAC, INIClass_GetString_Inheritance_NoEntry, 0xA)
 {
