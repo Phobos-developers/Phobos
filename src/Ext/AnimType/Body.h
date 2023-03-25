@@ -23,6 +23,7 @@ public:
 		Valueable<bool> CreateUnit_RandomFacing;
 		Valueable<Mission> CreateUnit_Mission;
 		Valueable<OwnerHouseKind> CreateUnit_Owner;
+		Valueable<bool> CreateUnit_AlwaysSpawnOnGround;
 		Valueable<bool> CreateUnit_ConsiderPathfinding;
 		Nullable<AnimTypeClass*> CreateUnit_SpawnAnim;
 		Valueable<int> XDrawOffset;
@@ -49,6 +50,7 @@ public:
 			, CreateUnit_RemapAnim { false }
 			, CreateUnit_Mission { Mission::Guard }
 			, CreateUnit_Owner { OwnerHouseKind::Victim }
+			, CreateUnit_AlwaysSpawnOnGround { false }
 			, CreateUnit_ConsiderPathfinding { false }
 			, CreateUnit_SpawnAnim {}
 			, XDrawOffset { 0 }
