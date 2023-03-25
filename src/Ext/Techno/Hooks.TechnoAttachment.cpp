@@ -652,6 +652,23 @@ DEFINE_HOOK(0x6D9EF0, TacticalClass_AddSelectable_SwapCoord, 0x6)
 	return 0;
 }
 
+
+// offsets the voxel visual, needs additional handling
+// DEFINE_HOOK(0x73B140, UnitClass_DrawObject_SwapCoord, 0x5)
+// {
+// 	GET(UnitClass*, pThis, ECX);
+// 	REF_STACK(int, x, STACK_OFFSET(0x0, 0x8));
+// 	REF_STACK(int, y, STACK_OFFSET(0x0, 0xC));
+
+// 	if (pThis == TechnoAttachmentTemp::pThis)
+// 	{
+// 		x = TechnoAttachmentTemp::realDrawPoint.X;
+// 		y = TechnoAttachmentTemp::realDrawPoint.Y;
+// 	}
+
+// 	return 0;
+// }
+
 // YSort for attachments
 int __fastcall TechnoClass_SortY_Wrapper(ObjectClass* pThis)
 {
