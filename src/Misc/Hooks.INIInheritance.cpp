@@ -15,7 +15,10 @@
 namespace INIInheritance
 {
 	int ReadString(REGISTERS* R, int address);
-	int ReadStringMagik(CCINIClass* ini, int sectionCRC, int entryCRC, char* defaultValue, char* buffer, int length);
+	int ReadStringMagik(CCINIClass* ini, int sectionCRC, int entryCRC, char* defaultValue, char* buffer, int length, bool useCurrentSection);
+
+	INIClass::INISection* FindSection(INIClass* ini, int sectionCRC);
+	INIClass::INIEntry* FindEntry(INIClass::INISection* section, int entryCRC);
 
 	template<typename T>
 	T ReadTemplate(REGISTERS* R)
@@ -68,10 +71,19 @@ namespace INIInheritance
 	std::unordered_map<int, std::string> Inherits;
 }
 
-int INIInheritance::ReadStringMagik(CCINIClass* ini, int sectionCRC, int entryCRC, char* defaultValue, char* buffer, int length)
+INIClass::INISection* INIInheritance::FindSection(INIClass* ini, int sectionCRC)
+{
+	return ini->SectionIndex.IsPresent(sectionCRC) ? ini->SectionIndex.FetchIndex(sectionCRC)  : nullptr;
+}
+
+INIClass::INIEntry* INIInheritance::FindEntry(INIClass::INISection* section, int entryCRC)
+{
+	return section->EntryIndex.IsPresent(entryCRC) ? section->EntryIndex.FetchIndex(entryCRC) : nullptr;
+}
+
+int INIInheritance::ReadStringMagik(CCINIClass* ini, int sectionCRC, int entryCRC, char* defaultValue, char* buffer, int length, bool useCurrentSection)
 {
 	INIClass::INISection* pSection;
-	char* result;
 
 	auto finalize = [buffer, length](char* result)
 	{
@@ -90,95 +102,19 @@ int INIInheritance::ReadStringMagik(CCINIClass* ini, int sectionCRC, int entryCR
 	if (!buffer || length < 2)
 		return 0;
 
-	// if we have the current section preloaded, great, if not, search for the section
-	if (section == ini->CurrentSectionName)
-	{
+	if (useCurrentSection)
 		pSection = ini->CurrentSection;
-	}
 	else
-	{
-		/*********** skipped section name crc **********/
-
-		if (ini->SectionIndex.IndexCount == 0)
-		{
-			ini->CurrentSection = NULL;
-			ini->CurrentSectionName = NULL;
-			return finalize(defaultValue);
-		}
-
-		if (!ini->SectionIndex.Archive || ini->SectionIndex.Archive->ID != sectionCRC)
-		{
-			pSection = ini->SectionIndex.FetchIndex(sectionCRC);
-			if (!pSection)
-			{
-				ini->CurrentSection = NULL;
-				ini->CurrentSectionName = NULL;
-				return finalize(defaultValue);
-			}
-			ini->SectionIndex.Archive = pSection;
-		}
-
-		if (ini->SectionIndex.IsPresent(sectionCRC))
-		{
-			pSection = ini->SectionIndex.Archive->Data;
-		}
-		else
-		{
-			// ???
-			pSection = ...;
-		}
-		if (!pSection)
-		{
-			ini->CurrentSection = NULL;
-			ini->CurrentSectionName = NULL;
-			return finalize(defaultValue);
-		}
-		ini->CurrentSection = pSection;
-		ini->CurrentSectionName = section;
-	}
+		pSection = FindSection(ini, sectionCRC);
 
 	if (!pSection)
 		return finalize(defaultValue);
 
-	/*********** skipped entry name crc **********/
-
-	auto entryIndex = pSection->EntryIndex;
-	if (!pSection->EntryIndex.IndexCount)
+	auto pEntry = FindEntry(pSection, entryCRC);
+	if (!pEntry)
 		return finalize(defaultValue);
 
-	if (!entryIndex.Archive || entryIndex.Archive->ID != entryCRC)
-	{
-		auto v15 = entryIndex.FetchIndex(entryCRC);
-		if (!v15)
-			return finalize(defaultValue);
-		entryIndex.Archive = v15;
-	}
-	if (entryIndex.IndexCount == 0)
-	{
-		// goto 30
-	}
-	if (entryIndex.Archive && entryIndex.Archive->ID == entryCRC)
-	{
-		// goto 18
-	}
-	auto v17 = entryIndex.FetchIndex(entryCRC);
-	if (!v17)
-	{
-		// label 30
-		v18 = ...;
-		// goto 31
-	}
-	entryIndex.Archive = v17;
-	// label 18
-	v18 = entryIndex.Archive->Data;
-	// label 31
-	auto v24 = *v18;
-	if (!v24)
-		return finalize(defaultValue);
-
-	result = v24->Value;
-
-	return finalize(result ? result : defaultValue);
+	return finalize(pEntry->Value ? pEntry->Value : defaultValue);
 }
 
 int INIInheritance::ReadString(REGISTERS* R, int address)
@@ -199,10 +135,11 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 		return address;
 	};
 
-	auto crc = CRCEngine();
+	//const constexpr int inheritsCRC = ; // CRC of "$Inherits"
+	const int inheritsCRC = CRCEngine()("$Inherits", 9);
 
 	// if we were looking for $Inherits and failed, no recursion
-	if (entryCRC == crc("$Inherits", 10))
+	if (entryCRC == inheritsCRC)
 		return finalize(defaultValue);
 
 	// read $Inherits entry only once per section
@@ -211,14 +148,14 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 	{
 		// read $Inherits entry
 		char stringBuffer[0x100];
-		int retval = INIInheritance::ReadStringMagik(ini, sectionCRC, crc("$Inherits", 10), NULL, stringBuffer, 0x100);
+		int retval = INIInheritance::ReadStringMagik(ini, sectionCRC, inheritsCRC, NULL, stringBuffer, 0x100, true);
 		INIInheritance::Inherits.emplace(sectionCRC, std::string(stringBuffer));
 		if (retval == 0)
 			return finalize(defaultValue);
 	}
 	else
 	{
-		if (it->second[0] == NULL)
+		if (it->second.empty())
 		{
 			return finalize(defaultValue);
 		}
@@ -230,8 +167,10 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 	char* split = strtok_s(inherits, ",", &state);
 	do
 	{
+		const int splitsCRC = CRCEngine()(split, strlen(split));
+
 		// if we found anything new (not default), we're done
-		if (INIInheritance::ReadStringMagik(ini, crc(split, strlen(split)), entryCRC, NULL, buffer, length) != 0)
+		if (INIInheritance::ReadStringMagik(ini, splitsCRC, entryCRC, NULL, buffer, length, false) != 0)
 			break;
 		split = strtok_s(NULL, ",", &state);
 	}
