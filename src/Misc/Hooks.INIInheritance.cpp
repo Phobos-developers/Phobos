@@ -15,10 +15,7 @@
 namespace INIInheritance
 {
 	int ReadString(REGISTERS* R, int address);
-	int ReadStringMagik(CCINIClass* ini, int sectionCRC, int entryCRC, char* defaultValue, char* buffer, int length, bool useCurrentSection);
-
-	INIClass::INISection* FindSection(INIClass* ini, int sectionCRC);
-	INIClass::INIEntry* FindEntry(INIClass::INISection* section, int entryCRC);
+	int ReadStringUseCRC(CCINIClass* ini, int sectionCRC, int entryCRC, char* defaultValue, char* buffer, int length, bool useCurrentSection);
 
 	template<typename T>
 	T ReadTemplate(REGISTERS* R)
@@ -66,26 +63,25 @@ namespace INIInheritance
 		return result;
 	}
 
+	// passthrough instead of std::hash, because our keys are already unique CRCs
+	struct Passthrough
+	{
+		std::size_t operator()(int const& x) const noexcept
+		{
+			return x;
+		}
+	};
+
 	CCINIClass* LastINIFile = nullptr;
 	std::set<std::string> SavedIncludes;
-	std::unordered_map<int, std::string> Inherits;
+	std::unordered_map<int, std::string, Passthrough> Inherits;
 }
 
-INIClass::INISection* INIInheritance::FindSection(INIClass* ini, int sectionCRC)
-{
-	return ini->SectionIndex.IsPresent(sectionCRC) ? ini->SectionIndex.FetchIndex(sectionCRC)  : nullptr;
-}
-
-INIClass::INIEntry* INIInheritance::FindEntry(INIClass::INISection* section, int entryCRC)
-{
-	return section->EntryIndex.IsPresent(entryCRC) ? section->EntryIndex.FetchIndex(entryCRC) : nullptr;
-}
-
-int INIInheritance::ReadStringMagik(CCINIClass* ini, int sectionCRC, int entryCRC, char* defaultValue, char* buffer, int length, bool useCurrentSection)
+int INIInheritance::ReadStringUseCRC(CCINIClass* ini, int sectionCRC, int entryCRC, char* defaultValue, char* buffer, int length, bool useCurrentSection)
 {
 	INIClass::INISection* pSection;
 
-	auto finalize = [buffer, length](char* result)
+	const auto finalize = [buffer, length](char* result)
 	{
 		if (!result)
 		{
@@ -105,12 +101,12 @@ int INIInheritance::ReadStringMagik(CCINIClass* ini, int sectionCRC, int entryCR
 	if (useCurrentSection)
 		pSection = ini->CurrentSection;
 	else
-		pSection = FindSection(ini, sectionCRC);
+		pSection = ini->SectionIndex.IsPresent(sectionCRC) ? ini->SectionIndex.Archive->Data : nullptr;
 
 	if (!pSection)
 		return finalize(defaultValue);
 
-	auto pEntry = FindEntry(pSection, entryCRC);
+	const auto pEntry = pSection->EntryIndex.IsPresent(entryCRC) ? pSection->EntryIndex.Archive->Data : nullptr;
 	if (!pEntry)
 		return finalize(defaultValue);
 
@@ -127,7 +123,7 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 	GET_STACK(int, entryCRC, STACK_OFFSET(stackOffset, 0x8));
 	GET_STACK(int, sectionCRC, STACK_OFFSET(stackOffset, 0x4));
 
-	auto finalize = [R, buffer, address](const char* value)
+	const auto finalize = [R, buffer, address](const char* value)
 	{
 		R->EDI(buffer);
 		R->EAX(0);
@@ -135,42 +131,43 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 		return address;
 	};
 
-	//const constexpr int inheritsCRC = ; // CRC of "$Inherits"
-	const int inheritsCRC = CRCEngine()("$Inherits", 9);
+	const constexpr int inheritsCRC = -1871638965; // CRCEngine()("$Inherits", 9)
 
 	// if we were looking for $Inherits and failed, no recursion
 	if (entryCRC == inheritsCRC)
 		return finalize(defaultValue);
 
 	// read $Inherits entry only once per section
-	auto it = INIInheritance::Inherits.find(sectionCRC); // TODO check if you can pass hash directly?
+	const auto it = INIInheritance::Inherits.find(sectionCRC);
+	char* inherits;
 	if (it == INIInheritance::Inherits.end())
 	{
-		// read $Inherits entry
+		// if there's no saved $Inherits entry for this section, read now
 		char stringBuffer[0x100];
-		int retval = INIInheritance::ReadStringMagik(ini, sectionCRC, inheritsCRC, NULL, stringBuffer, 0x100, true);
+		const int retval = INIInheritance::ReadStringUseCRC(ini, sectionCRC, inheritsCRC, NULL, stringBuffer, 0x100, true);
 		INIInheritance::Inherits.emplace(sectionCRC, std::string(stringBuffer));
 		if (retval == 0)
 			return finalize(defaultValue);
+		inherits = stringBuffer;
 	}
 	else
 	{
+		// use the saved $Inherits entry
 		if (it->second.empty())
-		{
 			return finalize(defaultValue);
-		}
+		// strdup because strtok edits the string
+		inherits = _strdup(it->second.c_str());
 	}
 
 	// for each section in csv, search for entry
 	char* state = NULL;
-	char* inherits = _strdup(it->second.c_str());
 	char* split = strtok_s(inherits, ",", &state);
 	do
 	{
 		const int splitsCRC = CRCEngine()(split, strlen(split));
 
-		// if we found anything new (not default), we're done
-		if (INIInheritance::ReadStringMagik(ini, splitsCRC, entryCRC, NULL, buffer, length, false) != 0)
+		// if we've found anything new, we're done
+		if (INIInheritance::ReadStringUseCRC(ini, splitsCRC, entryCRC, NULL, buffer, length, false) != 0)
 			break;
 		split = strtok_s(NULL, ",", &state);
 	}
@@ -200,27 +197,32 @@ DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
 {
 	GET(CCINIClass*, ini, ESI);
 
-	bool isSameFile = ini == INIInheritance::LastINIFile;
-	if (!isSameFile)
+	// if we're in a different CCINIClass now, clear old data
+	if (ini != INIInheritance::LastINIFile)
 	{
 		INIInheritance::LastINIFile = ini;
 		INIInheritance::SavedIncludes.clear();
 		INIInheritance::Inherits.clear();
 	}
 
-	auto section = ini->GetSection("$Include");
+	const auto section = ini->GetSection("$Include");
 	if (!section)
 		return 0;
 
-	for (auto node : section->EntryIndex)
+	// include path in the list
+	for (const auto node : section->EntryIndex)
 	{
 		if (!node.Data || !node.Data->Value || !*node.Data->Value)
 			continue;
-		auto filename = std::string(node.Data->Value);
+
+		// only include each file once
+		const auto filename = std::string(node.Data->Value);
 		if (INIInheritance::SavedIncludes.contains(filename))
 			continue;
 		INIInheritance::SavedIncludes.insert(filename);
-		auto file = GameCreate<CCFileClass>(node.Data->Value);
+
+		// merge included file into the current CCINIClass
+		const auto file = GameCreate<CCFileClass>(node.Data->Value);
 		if (file->Exists())
 			INIInheritance::LastINIFile->ReadCCFile(file, false, false);
 		GameDelete(file);
@@ -231,42 +233,42 @@ DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
 
 DEFINE_HOOK(0x5276D0, INIClass_ReadInt_Overwrite, 0x5)
 {
-	int value = INIInheritance::ReadTemplate<int>(R);
+	const int value = INIInheritance::ReadTemplate<int>(R);
 	R->EAX(value);
 	return 0x527838;
 }
 
 DEFINE_HOOK(0x5295F0, INIClass_ReadBool_Overwrite, 0x5)
 {
-	bool value = INIInheritance::ReadTemplate<bool>(R);
+	const bool value = INIInheritance::ReadTemplate<bool>(R);
 	R->EAX(value);
 	return 0x5297A3;
 }
 
 DEFINE_HOOK(0x5283D0, INIClass_ReadDouble_Overwrite, 0x5)
 {
-	double value = INIInheritance::ReadTemplate<double>(R);
+	const double value = INIInheritance::ReadTemplate<double>(R);
 	_asm { fld value }
 	return 0x52859F;
 }
 
 DEFINE_HOOK(0x529880, INIClass_ReadPoint2D_Overwrite, 0x5)
 {
-	auto value = INIInheritance::ReadTemplatePtr<Point2D>(R);
+	const auto value = INIInheritance::ReadTemplatePtr<Point2D>(R);
 	R->EAX(value);
 	return 0x52859F;
 }
 
 DEFINE_HOOK(0x529CA0, INIClass_ReadPoint3D_Overwrite, 0x5)
 {
-	auto value = INIInheritance::ReadTemplatePtr<CoordStruct>(R);
+	const auto value = INIInheritance::ReadTemplatePtr<CoordStruct>(R);
 	R->EAX(value);
 	return 0x529E63;
 }
 
 DEFINE_HOOK(0x527920, INIClass_ReadGUID_Overwrite, 0x5) // locomotor
 {
-	auto value = INIInheritance::ReadTemplatePtr<CLSID>(R);
+	const auto value = INIInheritance::ReadTemplatePtr<CLSID>(R);
 	R->EAX(value);
 	return 0x527B43;
 }
