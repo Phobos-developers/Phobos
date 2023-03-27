@@ -146,14 +146,19 @@ In any file:
 ```
 
 ### Section inheritance
-- You can now make sections (children) inherit entries from other sections (parents) with `$Inherits`.
+- You can now make sections (children) inherit entries from other sections (parents) with `$Inherits` entry.
+  - This feature must be enabled via a command line argument `-Inheritance`.
   - When a section has no value set for an entry (or an entry is missing), the game will attempt to use parent's value. If no value is found, only then the default will be used.
   - When multiple parents are specified, the order of inheritance is "first come, first served", looking up comma separated parents from left to right.
   - Inheritance can be nested recursively (parent sections can have their own parents). Recursion is depth-first (before inheriting from the next parent, check if the current parent has parents).
   - This feature can be used in *any* INI file, be it `rulesmd.ini`, `artmd.ini`, `soundmd.ini`, map file or anything else.
 
 ```{warning}
-When Phobos is present, the Ares equivalent of $Inherits (undocumented) is disabled!
+When this feature is enabled, the Ares equivalent of $Inherits (undocumented) is disabled!
+```
+
+```{warning}
+This feature may noticeably increase game loading time, depending on the size of game rules and used hardware.
 ```
 
 In any file:

@@ -177,10 +177,6 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 	return finalize(buffer[0] ? buffer : defaultValue);
 }
 
-// INIClass_GetString_DisableAres
-DEFINE_PATCH(0x528A10, 0x83, 0xEC, 0x0C, 0x33, 0xC0);
-// INIClass_GetKeyName_DisableAres
-DEFINE_PATCH(0x526CC0, 0x8B, 0x54, 0x24, 0x04, 0x83, 0xEC, 0x0C);
 // INIClass__GetInt__Hack // pop edi, jmp + 6, nop
 DEFINE_PATCH(0x5278C6, 0x5F, 0xEB, 0x06, 0x90);
 // CCINIClass_ReadCCFile1_DisableAres
