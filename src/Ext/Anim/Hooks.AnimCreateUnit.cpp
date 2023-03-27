@@ -69,7 +69,7 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 
 	if (auto unit = pTypeExt->CreateUnit.Get())
 	{
-		HouseClass* decidedOwner = (pThis->Owner)
+		HouseClass* decidedOwner = pThis->Owner && !pThis->Owner->Defeated
 			? pThis->Owner : HouseClass::FindCivilianSide();
 
 		bool allowBridges = unit->SpeedType != SpeedType::Float;
