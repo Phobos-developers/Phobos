@@ -6,7 +6,7 @@
 #include <Unsorted.h>
 #include <VoxClass.h>
 
-bool NewSidebarClass::NewStripClass::IsOnSidebar(AbstractType type, int id)
+bool NewSidebarClass::NewStripClass::IsOnSidebar(AbstractType type, int id) const
 {
 	for (int i = 0; i < this->CameoCount; ++i)
 	{
@@ -19,17 +19,14 @@ bool NewSidebarClass::NewStripClass::IsOnSidebar(AbstractType type, int id)
 
 // 0x6A8420
 // cameo sorting function?
-bool NewSidebarClass::NewStripClass::CameoComparatorStuff(AbstractType type1, int id1, AbstractType type2, int id2)
+bool NewSidebarClass::NewStripClass::CameoComparatorStuff(AbstractType type1, int id1, AbstractType type2, int id2) const
 {
 	if (type2 == AbstractType::None)
 		return true;
 
-	auto pTechnoType1 = TechnoTypeClass::GetByTypeAndIndex(type1, id1);
-	auto pTechnoType2 = TechnoTypeClass::GetByTypeAndIndex(type2, id2);
-
 	bool isSuper1 = type1 == AbstractType::Special || type1 == AbstractType::Super || type1 == AbstractType::SuperWeaponType;
 	bool isSuper2 = type2 == AbstractType::Special || type2 == AbstractType::Super || type2 == AbstractType::SuperWeaponType;
-	// sort by recharge time, then alphabetically
+	// if it's supers, sort by recharge time, then alphabetically
 	if (isSuper1 && isSuper2)
 	{
 		auto pSWType1 = SuperWeaponTypeClass::Array->GetItem(id1);
@@ -40,8 +37,11 @@ bool NewSidebarClass::NewStripClass::CameoComparatorStuff(AbstractType type1, in
 			return false;
 		return wcscmp(pSWType1->UIName, pSWType2->UIName) <= 0;
 	}
+
+	auto pTechnoType1 = TechnoTypeClass::GetByTypeAndIndex(type1, id1);
+	auto pTechnoType2 = TechnoTypeClass::GetByTypeAndIndex(type2, id2);
 	// sort by side?
-	else if (!isSuper1 && !isSuper2)
+	if (!isSuper1 && !isSuper2)
 	{
 		int sideIdx = HouseClass::CurrentPlayer->Type->SideIndex;
 		if (sideIdx == pTechnoType1->AIBasePlanningSide)
@@ -60,12 +60,15 @@ bool NewSidebarClass::NewStripClass::CameoComparatorStuff(AbstractType type1, in
 	bool isNaval2 = isVehicle2 && pTechnoType2->Naval;
 	bool isGround2 = !isAircraft2 && !isNaval2;
 
+	// 'if' hell ahead
 	if (isSuper1)
 	{
 		if (isAircraft2 || isNaval2 || isGround2)
 			return true;
-		// goto 74
+		// goto 72
+		...
 	}
+
 	if (isGround1)
 	{
 		if (isSuper2)
@@ -78,22 +81,17 @@ bool NewSidebarClass::NewStripClass::CameoComparatorStuff(AbstractType type1, in
 		if (!isAircraft1)
 		{
 			if (isNaval1)
-			{
-				if (isSuper2)
+				if (isSuper2 || isGround2 || isAircraft2)
 					return false;
-				if (isGround2 || isAircraft2)
-					return false;
-			}
-			// goto 74
+			// goto 72
+			...
 		}
-		if (isSuper2)
-			return false;
-		if (isGround2)
+		if (isSuper2 || isGround2)
 			return false;
 	}
 	if (isNaval2)
 		return false;
-	// 74
+	// 72
 	if (pTechnoType1->TechLevel < pTechnoType2->TechLevel)
 		return true;
 	if (pTechnoType1->TechLevel > pTechnoType2->TechLevel)

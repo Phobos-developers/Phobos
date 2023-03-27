@@ -14,8 +14,8 @@ public:
 	{
 	public:
 		int AddCameo(AbstractType type, int id);
-		bool CameoComparatorStuff(AbstractType type1, int id1, AbstractType type2, int id2);
-		bool IsOnSidebar(AbstractType type, int id);
+		bool CameoComparatorStuff(AbstractType type1, int id1, AbstractType type2, int id2) const;
+		bool IsOnSidebar(AbstractType type, int id) const;
 
 		StageClass        Progress;
 		bool              AllowedToDraw; // prevents redrawing when layouting the list
