@@ -164,6 +164,7 @@ This page lists all the individual contributions to the project by their author.
   - Railgun particle target coordinate fix
   - Building target coordinate offset fix
   - Additional sync logging
+  - Option to center pause menu background
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption

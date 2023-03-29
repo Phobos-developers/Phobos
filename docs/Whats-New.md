@@ -242,6 +242,9 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 <details open>
   <summary>Click to show</summary>
 
+New:
+- Option to center pause menu background (by Starkku)
+
 Phobos fixes:
 - Fixed `Interceptor` not resetting target if the intercepted projectile changes type to non-interceptable one afterwards (by Starkku)
 - Fixed a potential crash caused by a faulty hook in weapon selection code (by Starkku)
