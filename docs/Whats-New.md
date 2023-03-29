@@ -22,6 +22,10 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From 0.3
 
+- `CreateUnit` now creates the units by default at animation's height (even if `CreateUnit.ConsiderPathfinding` is enabled) instead of always at ground level. This behaviour can be restored by setting `CreateUnit.AlwaysSpawnOnGround` to true.
+- Phobos-introduced attack scripts now consider potential target's current map zone when evaluating targets. [TargetZoneScanType](Fixed-or-Improved-Logics.md#customizable-target-evaluation-map-zone-check-behaviour) can be used to customize this behaviour.
+- `Artillary`, `ICBMLauncher`, `TickTank` or `SensorArray` no longer affect whether or not building is considered as vehicle for AI attack scripts. Use [ConsideredVehicle](Fixed-or-Improved-Logics.md#buildings-considered-as-vehicles) instead on buildings that do not have both `UndeploysInto` set and `Foundation=1x1`.
+- `PassengerDeletion.SoylentFriendlies` has been replaced by `PassengerDeletion.SoylentAllowedHouses`. Current default value of `PassengerDeletion.SoylentAllowedHouses=enemies` matches the previous default behaviour with `PassengerDeletion.SoylentFriendlies=false`.
 - `Grinding.DisplayRefund` is changed to `DisplayIncome`, `Grinding.DisplayRefund.Houses` is changed to `DisplayIncome.Houses`, `Grinding.DisplayRefund.Offset` is changed to `DisplayIncome.Offset`
 - `[JumpjetControls]`->`AllowLayerDeviation` and `JumpjetAllowLayerDeviation` have been deprecated as the animation layering issues have been properly fixed by default now.
 - `[JumpjetControls]->TurnToTarget` and `JumpjetTurnToTarget` are obsolete. Jumpjet units who fire `OmniFire=no` weapons **always** turn to targets as other units do.
@@ -117,6 +121,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   504=Binary operation,0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1
   505=Fire Super Weapon at specified location (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
   506=Fire Super Weapon at specified waypoint (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
+  510=Toggle MCV Redeployablility (Phobos),0,0,15,0,0,0,0,0,0, Set MCVRedeploys to the given value,0,1,510
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
   [ScriptTypeLists]
@@ -273,7 +278,6 @@ New:
 - Custom `SlavesFreeSound` (by TwinkleStar)
 - Allows jumpjet to crash without rotation (by TwinkleStar)
 - Customizable priority of superweapons timer sorting(by ststl)
-- Spawn animation for `CreateUnit` (by Starkku)
 - Customizable aircraft spawner spawn delay (by Starkku)
 - Customizable Cluster scatter distance (by Starkku)
 - Customizable FlakScatter distance (by Starkku)
@@ -285,8 +289,17 @@ New:
 - Projectile `SubjectToLand/Water` (by Starkku)
 - Real time timers (by Morton)
 - Default campaign game speed override and custom campaign game speed FPS (by Morton)
+- Trigger actions that allow/forbid MCV to redeploy in game (by Trsdy)
 - `AnimList` on zero damage Warheads toggle via `AnimList.ShowOnZeroDamage` (by Starkku)
 - Including INI files and inheriting INI sections (by Morton)
+- Additions to automatic passenger deletion (by Starkku)
+- Buildings considered as vehicles (by Starkku)
+- TechnoType target evaluation map zone check behaviour customization (by Starkku)
+- `CanC4=false` building zero damage toggle (by Starkku)
+- OpenTopped transport target sharing customization (by Starkku)
+- Vanish animation for `AutoDeath.Behavior=vanish` (by Starkku)
+- `AAOnly` for projectiles (by Starkku)
+- `CreateUnit` improvements & additions (units spawning in air, spawn animation) (by Starkku)
 - TechnoType conversion warhead & superweapon (by Morton)
 
 Vanilla fixes:
@@ -308,7 +321,15 @@ Vanilla fixes:
 - Fixed `NavalTargeting=6` not preventing from targeting empty water cells or TerrainTypes (trees etc.) on water (by Starkku)
 - Fixed `NavalTargeting=7` and/or `LandTargeting=2` resulting in still targeting TerrainTypes (trees etc.) on land with `Primary` weapon (by Starkku)
 - Fixed an issue that causes attached animations on flying objects not layer correctly (by Starkku)
+- Restored `EVA_StructureSold` for buildings with `UndeploysInto` (by Trsdy)
+- Allow MCV to redeploy in campaigns (by Trsdy)
+- Allow buildings with `UndeploysInto` to be sold if `Unsellable=no` but `ConstructionYard=no` (by Trsdy)
 - Fixed infantry without `C4=true` being killed in water if paradropped, chronoshifted etc. even if they can normally enter water (by Starkku)
+- Fixed `WaterBound=true` buildings with `UndeploysInto` not correctly setting the location for the vehicle to move into when undeployed (by Starkku)
+- Allow more than 5 `AlternateFLH` entries for units (by ststl)
+- Buildings with `CanC4=false` will no longer take 1 point of positive damage if hit by negative damage (by Starkku)
+- Buildings with primary weapon that has `AG=false` projectile now have attack cursor when selected (by Starkku)
+- Transports with `OpenTopped=true` and weapon that has `Burst` above 1 and passengers firing out no longer have the passenger firing offset shift lateral position based on burst index (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -318,6 +339,12 @@ Phobos fixes:
 - Restore the `MindClearedSound` when deploying a mind-controlled unit into a building loses the mind-control (by Trsdy)
 - Reimplemented the bugfix for jumpjet units' facing when firing, discard the inappropriate `JumpjetTurnToTarget` tag (by Trsdy)
 - Fixed `RadSiteWarhead.Detonate` not detonating precisely on the affected object (thus requiring `CellSpread`) (by Starkku)
+- Allow PowerPlant Enhancer to be affected by EMP (by Trsdy)
+- `Gunner=true` transports now correctly change turret if a passenger is removed by `PassengerDeletion` (by Starkku)
+- `PassengerDeletion.Soylent` now correctly calculates refund value if removed passenger has no explicitly set `Soylent` value (by Starkku)
+- Animation `Weapon` with `Damage.DealtByInvoker=true` now uses the invoker's house to deal damage and apply Phobos warhead effects even if invoker is dead when weapon is fired (by Starkku)
+- Superweapon `Detonate.Weapon` & `Detonate.Warhead` now use the firing house to deal damage and apply Phobos warhead effects even if no firing building is found (by Starkku)
+- `CreateUnit` now uses civilian house as owner instead if the intended owner house has been defeated (this is in-line with how `MakeInfantry` works) (by Starkku)
 </details>
 
 

@@ -120,6 +120,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizable FLH when infantry is prone or deployed
   - Initial strength for cloned infantry
 - **Starkku**:
+  - Misc. minor bugfixes & improvements
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
   - Vehicle `DeployFire` fixes/improvements
@@ -154,7 +155,7 @@ This page lists all the individual contributions to the project by their author.
   - Passable & buildable-upon TerrainTypes
   - Automatic passenger owner change toggle
   - Interceptor improvements
-  - OpenTopped transport rangefinding & deactivated state customizations
+  - OpenTopped transport behaviour customizations
   - Animation damage / weapon improvements
   - Warhead self-damaging toggle
   - Trailer animation owner inheritance
@@ -178,6 +179,10 @@ This page lists all the individual contributions to the project by their author.
   - Removal of hardcoded AA & Gattling weapon selection restrictions
   - Projectile obstacle logic additions
   - `AnimList` on zero damage Warheads toggle
+  - Additions to automatic passenger deletion
+  - Buildings considered as vehicles
+  - TechnoType target evaluation map zone check behaviour customization
+  - CanC4 damage rounding fix & toggle
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -208,7 +213,12 @@ This page lists all the individual contributions to the project by their author.
    - Misc vanilla suicidal behavior fix
    - Post-type-conversion update
    - Units retaining orders after changing ownership bugfix
-   - Building EVA_StructureSold and SellSound dehardcode
+   - Several fixes and dehardcode related to building selling/undeploying:
+     - Building `EVA_StructureSold` and `SellSound` dehardcode
+     - Restore `EVA_StructureSold` for buildings with `UndeploysInto`
+     - Redeployable MCV in campaigns
+     - Allow buildings with `UndeploysInto` to be sold if `Unsellable=no` even if not conyard
+     - Trigger actions that allow/forbid MCV to redeploy in game
    - `AlternateFLH` of vehicles in `OpenTopped` transport.
    - Slaves' house customization when owner is killed
    - Trigger Action spawned team IFV/Opentopped logic fix
@@ -238,6 +248,7 @@ This page lists all the individual contributions to the project by their author.
    - Customizable ShowTimer priority of superweapons
    - Iron Curtain effects customization on infantries and organic units
    - Use `CustomPalette` for animations with `Tiled=yes`
+   - Unlimited `AlternateFLH` entries
 - **TwinkleStar**
   - Custom slaves free sound
   - Jumpjet crash rotation control

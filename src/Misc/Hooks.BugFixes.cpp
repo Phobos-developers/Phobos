@@ -191,6 +191,19 @@ DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
 // Author: Uranusian
 DEFINE_JUMP(LJMP, 0x47CA05, 0x47CA33); // CellClass_IsClearToBuild_SkipNaval
 
+// Check WaterBound when setting rally points / undeploying instead of just Naval.
+DEFINE_HOOK(0x4438B4, BuildingClass_SetRallyPoint_Naval, 0x6)
+{
+	enum { IsNaval = 0x4438BC, NotNaval = 0x4438C9 };
+
+	GET(BuildingTypeClass*, pBuildingType, EAX);
+
+	if (pBuildingType->Naval || pBuildingType->SpeedType == SpeedType::Float)
+		return IsNaval;
+
+	return NotNaval;
+}
+
 // bugfix: DeathWeapon not properly detonates
 // Author: Uranusian
 DEFINE_HOOK(0x70D77F, TechnoClass_FireDeathWeapon_ProjectileFix, 0x8)
@@ -487,7 +500,7 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 			}
 
 			if (const auto pExt = AnimExt::ExtMap.Find(pAnim))
-				pExt->Invoker = pThisBomb->Owner;
+				pExt->SetInvoker(pThisBomb->Owner);
 		}
 	}
 
@@ -622,3 +635,7 @@ DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
 
 	return SkipKilling;
 }
+
+// BuildingClass_What_Action() - Fix no attack cursor if AG=no projectile on primary
+DEFINE_JUMP(LJMP, 0x447380, 0x44739E);
+DEFINE_JUMP(LJMP, 0x447709, 0x447727);

@@ -1,8 +1,5 @@
 #include "Body.h"
-#include <GameStrings.h>
-#include <Misc/FlyingStrings.h>
 
-#pragma region Harvesting
 // The method of calculating the income is subject to each specific situation,
 // which may probably subject to further changes if anyone wants to extend the harvesting logic in the future.
 // I don't want to investigate the details so I check the balance difference directly. --Trsdy
@@ -62,69 +59,3 @@ DEFINE_HOOK(0x522E4F, InfantryClass_SlaveGiveMoney_CheckBalanceAfter, 0x6)
 
 	return 0;
 }
-#pragma endregion
-
-#pragma region Selling
-// SellSound and EVA dehardcode
-DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
-{
-	enum { ReadyToVanish = 0x4D9FCB };
-	GET(FootClass*, pThis, ESI);
-
-	int money = pThis->GetRefund();
-	pThis->Owner->GiveMoney(money);
-
-	if (pThis->Owner->IsControlledByCurrentPlayer())
-	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex(GameStrings::EVA_UnitSold)));
-		//WW used VocClass::PlayGlobal to play the SellSound, why did they do that?
-		VocClass::PlayAt(pTypeExt->SellSound.Get(RulesClass::Instance->SellSound), pThis->Location);
-	}
-
-	if (RulesExt::Global()->DisplayIncome.Get())
-		FlyingStrings::AddMoneyString(money, pThis->Owner, RulesExt::Global()->DisplayIncome_Houses.Get(), pThis->Location);
-
-	return ReadyToVanish;
-}
-
-//TODO: For my future PR
-DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Selling_EVA_Sold_1, 0x6)
-{
-	enum { SkipVoxPlay = 0x449CEA };
-	GET(BuildingClass*, pThis, EBP);
-
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-
-	if (pThis->IsOwnedByCurrentPlayer && !pThis->Focus) // For future use
-		VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex(GameStrings::EVA_StructureSold)));
-
-	return SkipVoxPlay;
-
-}
-
-DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Selling_EVA_Sold_2, 0x6)
-{
-	enum { SkipVoxPlay = 0x44AB3B };
-	GET(BuildingClass*, pThis, EBP);
-
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-
-	if (pThis->IsOwnedByCurrentPlayer)
-		VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex(GameStrings::EVA_StructureSold)));
-
-	return SkipVoxPlay;
-}
-
-//TODO: For my future PR
-DEFINE_HOOK(0x44A827, BuildingClass_Mission_Selling_Sellsound, 0x6)
-{
-	enum { FinishPlaying = 0x44A85B };
-	GET(BuildingClass*, pThis, EBP);
-
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-	VocClass::PlayAt(pTypeExt->SellSound.Get(RulesClass::Instance->SellSound), pThis->Location);
-	return FinishPlaying;
-}
-#pragma endregion
-

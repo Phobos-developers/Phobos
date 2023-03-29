@@ -38,6 +38,8 @@ public:
 		Nullable<Leptons> ClusterScatter_Min;
 		Nullable<Leptons> ClusterScatter_Max;
 
+		Valueable<bool> AAOnly;
+
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
 		Nullable<Leptons> BallisticScatter_Max;
@@ -61,6 +63,7 @@ public:
 			, SubjectToLand_Detonate { true }
 			, SubjectToWater {}
 			, SubjectToWater_Detonate { true }
+			, AAOnly { false }
 		{ }
 
 		virtual ~ExtData() = default;

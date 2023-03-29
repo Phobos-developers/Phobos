@@ -26,7 +26,7 @@ const char Phobos::readDelims[4] = ",";
 
 const char* Phobos::AppIconPath = nullptr;
 
-bool Phobos::Debug_DisplayDamageNumbers = false;
+bool Phobos::DisplayDamageNumbers = false;
 
 #ifdef STR_GIT_COMMIT
 const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
@@ -86,7 +86,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 #endif
 	}
 
-	Debug::Log("Initialized Phobos " PRODUCT_VERSION "\n");
+	Debug::Log("Initialized version: " PRODUCT_VERSION "\n");
 }
 
 CCINIClass* Phobos::OpenConfig(const char* file)

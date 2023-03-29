@@ -19,7 +19,7 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 		bool isAllies = pHouse->IsAlliedWith(pTarget);
 
 		if (this->OwnerObject()->AffectsAllies && isAllies)
-			return pTarget->Owner == pHouse ? false : true;
+			return pTarget->Owner != pHouse;
 
 		if (this->AffectsEnemies && !isAllies)
 			return true;
@@ -30,7 +30,7 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	return true;
 }
 
-void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage)
+void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
 	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
 
@@ -39,6 +39,12 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, T
 	{
 		const CoordStruct& coords = pTarget->GetCoords();
 
+		if (pFiringHouse)
+		{
+			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+			pBulletExt->FirerHouse = pFiringHouse;
+		}
+
 		pBullet->Limbo();
 		pBullet->SetLocation(coords);
 		pBullet->Explode(true);
@@ -46,13 +52,19 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, T
 	}
 }
 
-void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage)
+void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
 	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
 
 	if (BulletClass* pBullet = pType->CreateBullet(nullptr, pOwner,
 		damage, pThis, 0, pThis->Bright))
 	{
+		if (pFiringHouse)
+		{
+			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+			pBulletExt->FirerHouse = pFiringHouse;
+		}
+
 		pBullet->Limbo();
 		pBullet->SetLocation(coords);
 		pBullet->Explode(true);

@@ -230,9 +230,10 @@ Shield.InheritStateOnReplace=false   ; boolean
     - `CreateUnit.RemapAnim`, if set to true, will cause the animation to be drawn in unit palette and remappable to owner's team color.
   - `CreateUnit.Mission` determines the initial mission of the created VehicleType.
   - `CreateUnit.Facing` determines the initial facing of created VehicleType.
-    - `CreateUnit.RandomFacing`, if set to true makes it so that a random facing is picked instead.
-    - `CreateUnit.InheritFacings` and `CreateUnit.InheritTurretFacings` inherit facings for vehicle body and turret respectively from the destroyed vehicle if the animation is a vehicle destroy animation.
-  - `CreateUnit.ConsiderPathfinding`, if set to true, will consider whether or not the cell where the animation is located is occupied by other objects or impassable to the vehicle being created and will attempt to find a nearby cell that is not. Otherwise the vehicle will be created at the animation's location despite these obstacles.
+    - `CreateUnit.RandomFacing`, if set to true, makes it so that a random facing is picked instead.
+    - `CreateUnit.InheritFacings` and `CreateUnit.InheritTurretFacings` inherit facings for vehicle body and turret respectively from the destroyed vehicle if the animation is a vehicle destroy animation. `InheritTurretFacings` does not work with jumpjet vehicles due to technical constraints.
+  - `CreateUnit.AlwaysSpawnOnGround`, if set to true, ensures the vehicle will be created on the cell at ground level even if animation is in air.
+  - `CreateUnit.ConsiderPathfinding`, if set to true, will consider whether or not the cell where the animation is located is occupied by other objects or impassable to the vehicle being created and will attempt to find a nearby cell that is not. Otherwise the vehicle will be created at the animation's location despite these obstacles if possible.
   - `CreateUnit.SpawnAnim` can be used to play another animation at created unit's location after it has appeared. This animation has same owner and invoker as the parent animation.
 
 In `artmd.ini`:
@@ -246,6 +247,7 @@ CreateUnit.Facing=0                    ; integer, facings in range of 0-255
 CreateUnit.RandomFacing=true           ; boolean
 CreateUnit.InheritFacings=false        ; boolean
 CreateUnit.InheritTurretFacings=false  ; boolean
+CreateUnit.AlwaysSpawnOnGround=false   ; boolean
 CreateUnit.ConsiderPathfinding=false   ; boolean
 CreateUnit.SpawnAnim=                  ; Animation
 ```
@@ -597,7 +599,7 @@ SW.Next.RandomWeightsN=         ; List of integers.
 - Any superweapon can now detonate a Warhead or a weapon at superweapon's target cell.
   - If both `Detonate.Warhead` and `Detonate.Weapon` are set, latter takes precedence.
   - `Detonate.Damage`, if not set, defaults to weapon `Damage` for `Detonate.Weapon` and 0 for `Detonate.Warhead`.
-  - Both the weapon and Warhead behave as if fired by whatever building fired the Superweapon. This respects controls like `SW.RangeMinimum/Maximum` (similar to Ares' GenericWarhead superweapon in this regard).
+  - Both the weapon and Warhead behave as if fired by whatever building fired the Superweapon. This respects controls like `SW.RangeMinimum/Maximum` (similar to Ares' GenericWarhead superweapon in this regard). If firing building could not be found, the house the Superweapon belonged to is still used to deal damage and apply Phobos-introduced Warhead effects.
   - If `Detonate.AtFirer` is set to true, the weapon or Warhead is detonated at the firing building instead of the superweapon's target cell. If there is no firer, no detonation will occur.
 
 In `rulesmd.ini`:
@@ -613,18 +615,38 @@ Detonate.AtFirer=false  ; boolean
 
 ### Automatic passenger deletion
 
-- Transports with these tags will erase the passengers overtime. Bigger units takes more time. Optionally this logic can work like a grinder.
- - Good combination with Ares Abductor logic.
+- Transports can erase passengers over time. Passengers are deleted in order of entering the transport, from first to last.
+  - `PassengerDeletion.Rate` determines the interval in game frames that it takes to erase a single passenger.
+    - If `PassengerDeletion.Rate.SizeMultiply` is set to true, this time interval is multiplied by the passenger's `Size`.
+  - `PassengerDeletion.UseCostAsRate`, if set to true, changes the time interval for erasing a passenger to be based on the passenger's `Cost`. This does not factor in modifiers like `FactoryPlant`.
+    - `PassengerDeletion.CostMultiplier` can be used to modify the cost-based time interval.
+    - `PassengerDeletion.CostRateCap` can be used to set a cap to the cost-based time interval.
+  - `PassengerDeletion.AllowedHouses` determines which houses passengers can belong to be eligible for deletion.
+  - `PassengerDeletion.DontScore`, if set to true, makes it so that the deleted passengers are not counted as having been killed by the transport (no experience, not recorded towards owning house's score etc).
+  - If `PassengerDeletion.Soylent` is set to true, an amount of credits is refunded to the owner of the transport. The exact amount refunded is determined by the passengers `Soylent`, or if not set, its `Cost` (this is affected by modifiers such as `FactoryPlant`).
+    - `PassengerDeletion.SoylentMultiplier` is a direct multiplier applied to the refunded amount of credits.
+    - `PassengerDeletion.SoylentAllowedHouses` determines which houses passengers can belong to be eligible for refunding.
+    - `PassengerDeletion.DisplaySoylent` can be set to true to display the amount of credits refunded on the transport. `PassengerDeletion.DisplaySoylentToHouses` determines which houses can see this and `PassengerDeletion.DisplaySoylentOffset` can be used to adjust the display offset.
+  - `PassengerDeletion.ReportSound` and `PassengerDeletion.Anim` can be used to specify a sound and animation to play when a passenger is erased, respectively.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                               ; TechnoType
-PassengerDeletion.Rate=0                   ; integer, game frames
-PassengerDeletion.Rate.SizeMultiply=true   ; boolean, whether to multiply frames amount by size
-PassengerDeletion.Soylent=no               ; boolean
-PassengerDeletion.SoylentFriendlies=false  ; boolean
-PassengerDeletion.ReportSound=             ; Sound
-PassengerDeletion.Anim=                    ; Animation
+[SOMETECHNO]                                    ; TechnoType
+PassengerDeletion.Rate=0                        ; integer, game frames
+PassengerDeletion.Rate.SizeMultiply=true        ; boolean
+PassengerDeletion.UseCostAsRate=false           ; boolean
+PassengerDeletion.CostMultiplier=1.0            ; floating point value, percents or absolute
+PassengerDeletion.CostRateCap=                  ; integer, game frames
+PassengerDeletion.AllowedHouses=all             ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+PassengerDeletion.DontScore=false               ; boolean
+PassengerDeletion.Soylent=false                 ; boolean
+PassengerDeletion.SoylentMultiplier=1.0         ; float, percents or absolute
+PassengerDeletion.SoylentAllowedHouses=enemies  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+PassengerDeletion.DisplaySoylent=false          ; boolean
+PassengerDeletion.DisplaySoylentToHouses=All    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+PassengerDeletion.DisplaySoylentOffset=0,0      ; X,Y, pixels relative to default
+PassengerDeletion.ReportSound=                  ; Sound
+PassengerDeletion.Anim=                         ; Animation
 ```
 
 ### Automatic passenger owner change to match transport owner
@@ -657,6 +679,7 @@ AutoFire.TargetSelf=false  ; boolean
 - You can now override global `OpenTopped` transport properties per TechnoType.
 - `OpenTopped.IgnoreRangefinding` can be used to disable `OpenTopped` transport rangefinding behaviour where smallest weapon range between transport and all passengers is used when approaching targets that are out of range and when scanning for potential targets.
 - `OpenTopped.AllowFiringIfDeactivated` can be used to customize whether or not passengers can fire out when the transport is deactivated (EMP, powered unit etc).
+- `OpenTopped.ShareTransportTarget` controls whether or not the current target of the transport itself is passed to the passengers as well.
 
 ```ini
 [SOMETECHNO]                              ; TechnoType
@@ -665,6 +688,7 @@ OpenTopped.DamageMultiplier=              ; floating point value, override of th
 OpenTopped.WarpDistance=                  ; integer, override of the global default
 OpenTopped.IgnoreRangefinding=false       ; boolean
 OpenTopped.AllowFiringIfDeactivated=true  ; boolean
+OpenTopped.ShareTransportTarget=true      ; boolean
 ```
 
 ### Disabling fallback to (Elite)Secondary weapon
@@ -762,7 +786,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
   - `vanish`: The object will be directly removed from the game peacefully instead of actually getting killed.
   - `sell`: If the object is a **building** with buildup, it will be sold instead of destroyed.
 
-If this option is not set, the self-destruction logic will not be enabled.
+If this option is not set, the self-destruction logic will not be enabled. `AutoDeath.VanishAnimation` can be set to animation to play at object's location if `vanish` behaviour is chosen.
 ```{note}
 Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option **if you are not using Ares 3.0+**.
 ```
@@ -773,7 +797,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                   ; TechnoType
 AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
-
+AutoDeath.VanishAnimation                      ; Animation
 AutoDeath.OnAmmoDepletion=no                   ; boolean
 AutoDeath.AfterDelay=0                         ; positive integer
 AutoDeath.TechnosDontExist=                    ; list of TechnoType names

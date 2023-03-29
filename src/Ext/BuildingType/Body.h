@@ -23,9 +23,10 @@ public:
 		Nullable<int> PowerPlantEnhancer_Amount;
 		Nullable<float> PowerPlantEnhancer_Factor;
 
-		DynamicVectorClass<Point2D> OccupierMuzzleFlashes;
+		std::vector<Point2D> OccupierMuzzleFlashes;
 		Valueable<bool> Powered_KillSpawns;
 		Nullable<bool> AllowAirstrike;
+		Valueable<bool> CanC4_AllowZeroDamage;
 		Valueable<bool> Refinery_UseStorage;
 		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
 
@@ -53,6 +54,8 @@ public:
 		NullableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
 		NullableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
 
+		Nullable<bool> ConsideredVehicle;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -62,6 +65,7 @@ public:
 			, OccupierMuzzleFlashes()
 			, Powered_KillSpawns { false }
 			, AllowAirstrike {}
+			, CanC4_AllowZeroDamage { false }
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, Refinery_UseStorage { false }
 			, Grinding_AllowAllies { false }
@@ -84,6 +88,7 @@ public:
 			, SpyEffect_Custom { false }
 			, SpyEffect_VictimSuperWeapon {}
 			, SpyEffect_InfiltratorSuperWeapon {}
+			, ConsideredVehicle {}
 		{ }
 
 		// Ares 0.A functions

@@ -17,12 +17,12 @@ DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 {
 	GET(BulletClass* const, pBullet, ESI);
 
-	auto const pBulletExt = pBullet ? BulletExt::ExtMap.Find(pBullet) : nullptr;
 	auto const pWH = pBullet ? pBullet->WH : nullptr;
 
 	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
 	{
 		GET_BASE(const CoordStruct*, pCoords, 0x8);
+		auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 		auto const pOwner = pBullet->Owner;
 		auto const pHouse = pOwner ? pOwner->Owner : nullptr;
 		auto const pDecidedHouse = pHouse ? pHouse : pBulletExt->FirerHouse;

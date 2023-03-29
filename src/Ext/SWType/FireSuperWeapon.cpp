@@ -234,10 +234,15 @@ void SWTypeExt::ExtData::ApplyDetonation(HouseClass* pHouse, const CellStruct& c
 		return;
 	}
 
+	HouseClass* pFirerHouse = nullptr;
+
+	if (!pFirer)
+		pFirerHouse = pHouse;
+
 	if (pWeapon)
-		WeaponTypeExt::DetonateAt(pWeapon, coords, pFirer, this->Detonate_Damage.Get(pWeapon->Damage));
+		WeaponTypeExt::DetonateAt(pWeapon, coords, pFirer, this->Detonate_Damage.Get(pWeapon->Damage), pFirerHouse);
 	else
-		WarheadTypeExt::DetonateAt(this->Detonate_Warhead.Get(), coords, pFirer, this->Detonate_Damage.Get(0));
+		WarheadTypeExt::DetonateAt(this->Detonate_Warhead.Get(), coords, pFirer, this->Detonate_Damage.Get(0), pFirerHouse);
 }
 
 void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)

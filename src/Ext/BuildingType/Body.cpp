@@ -129,6 +129,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
 
 	this->AllowAirstrike.Read(exINI, pSection, "AllowAirstrike");
+	this->CanC4_AllowZeroDamage.Read(exINI, pSection, "CanC4.AllowZeroDamage");
 
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
 
@@ -144,6 +145,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DisplayIncome_Houses.Read(exINI, pSection, "DisplayIncome.Houses");
 	this->DisplayIncome_Offset.Read(exINI, pSection, "DisplayIncome.Offset");
 
+	this->ConsideredVehicle.Read(exINI, pSection, "ConsideredVehicle");
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array->Count > 0)
@@ -157,8 +160,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (pThis->MaxNumberOccupants > 10)
 	{
 		char tempBuffer[32];
-		this->OccupierMuzzleFlashes.Clear();
-		this->OccupierMuzzleFlashes.Reserve(pThis->MaxNumberOccupants);
+		this->OccupierMuzzleFlashes.clear();
+		this->OccupierMuzzleFlashes.resize(pThis->MaxNumberOccupants);
 
 		for (int i = 0; i < pThis->MaxNumberOccupants; ++i)
 		{
@@ -201,6 +204,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OccupierMuzzleFlashes)
 		.Process(this->Powered_KillSpawns)
 		.Process(this->AllowAirstrike)
+		.Process(this->CanC4_AllowZeroDamage)
 		.Process(this->InitialStrength_Cloning)
 		.Process(this->Refinery_UseStorage)
 		.Process(this->Grinding_AllowAllies)
@@ -223,6 +227,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_Custom)
 		.Process(this->SpyEffect_VictimSuperWeapon)
 		.Process(this->SpyEffect_InfiltratorSuperWeapon)
+		.Process(this->ConsideredVehicle)
 		;
 }
 

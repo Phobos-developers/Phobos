@@ -101,6 +101,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Attempted to avoid units from retaining previous orders (attack,grind,garrison,etc) after changing ownership (mind-control,abduction,etc).
 - Fixed buildings' `NaturalParticleSystem` being created for in-map pre-placed structures.
 - Fixed jumpjet units being unable to visually tilt or be flipped over on the ground if `TiltCrashJumpjet=no`.
+- Unlimited (more than 5) `AlternateFLH` entries for units.
 - Warheads spawning debris now use `MaxDebris` as an actual cap for number of debris to spawn instead of `MaxDebris` - 1.
  If both `Primary` and `Secondary` weapons can fire at air targets (projectile has `AA=true`), `Primary` can now be picked instead of always forcing `Secondary`. Also applies to `IsGattling=true`, with odd-numbered and even-numbered `WeaponX` slots instead of `Primary` and `Secondary`, respectively.
 - `IsGattling=true` can now fall back to secondary weapon slot (even-numbered `WeaponX` slots) if primary one (odd-numbered) cannot fire at current target (armor type, `CanTarget(Houses)`, shield etc).
@@ -110,6 +111,13 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Weapons with projectiles with `Level=true` now consider targets behind obstacles that cause the projectile to detonate (tiles belonging to non-water tilesets) as out of range and will attempt to reposition before firing.
 - Fixed infantry without `C4=true` being killed in water if paradropped, chronoshifted etc. even if they can normally enter water.
 - `AnimList` can now be made to create animations on Warheads dealing zero damage by setting `AnimList.ShowOnZeroDamage` to true.
+- Allowed MCV to redeploy in campaigns using a new toggle different from `[MultiplayerDialogSettings]->MCVRedeploys`.
+- Fixed buildings with `UndeploysInto` but `Unsellable=no` & `ConstructionYard=no` unable to be sold normally. Restored `EVA_StructureSold` for buildings with `UndeploysInto` when being selled.
+- Fixed `WaterBound=true` buildings with `UndeploysInto` not correctly setting the location for the vehicle to move into when undeployed.
+- Buildings with `CanC4=false` used to take 1 point of damage if hit by damage below 1 (calculated after `Verses` are applied but before veterancy, crate and AttachEffect modifiers). This no longer applies to negative damage under any conditions and can be disabled for zero damage by setting `CanC4.AllowZeroDamage` to true.
+- Buildings with primary weapon that has `AG=false` projectile now have attack cursor when selected.
+- Weapons with `AA=true` projectiles can now be set to fire exclusively at air targets by setting `AAOnly=true`, regardless of other conditions. This is useful because `AG=false` only prevents targeting ground cells (and cannot be changed without breaking existing behaviour) and for cases where `LandTargeting` cannot be used.
+- Transports with `OpenTopped=true` and weapon that has `Burst` above 1 and passengers firing out no longer have the passenger firing offset shift lateral position based on burst index.
 
 ## Animations
 
@@ -117,7 +125,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 - `Weapon` can be set to a WeaponType, to create a projectile and immediately detonate it instead of simply dealing `Damage` by `Warhead`. This allows weapon effects to be applied.
 - `Damage.Delay` determines delay between two applications of `Damage`. Requires `Damage` to be set to 1.0 or above. Value of 0 disables the delay. Keep in mind that this is measured in animation frames, not game frames. Depending on `Rate`, animation may or may not advance animation frames on every game frame.
-- `Damage.DealtByInvoker`, if set to true, makes any `Damage` dealt to be considered as coming from the animation's invoker (f.ex, firer of the weapon if it is Warhead `AnimList/SplashList` animation, the destroyed vehicle if it is `DestroyAnim` animation or the object the animation is attached to). Does not affect which house the `Damage` dealt by `Warhead` is dealt by.
+- `Damage.DealtByInvoker`, if set to true, makes any `Damage` dealt to be considered as coming from the animation's invoker (f.ex, firer of the weapon if it is Warhead `AnimList/SplashList` animation, the destroyed vehicle if it is `DestroyAnim` animation or the object the animation is attached to). If invoker has died or does not exist, the house the invoker belonged to is still used to deal damage and apply Phobos-introduced Warhead effects. Does not affect which house the `Damage` dealt by `Warhead` is dealt by.
 - `Damage.ApplyOncePerLoop`, if set to true, makes `Damage` be dealt only once per animation loop (on single loop animations, only once, period) instead of on every frame or intervals defined by `Damage.Delay`. The frame on which it is dealt is determined by `Damage.Delay`, defaulting to after the first animation frame.
 
 In `artmd.ini`:
@@ -147,7 +155,8 @@ UseCenterCoordsIfAttached=false  ; boolean
 
 - `ExplodeOnWater` can be set to true to make the animation explode on impact with water. `ExpireAnim` will be played and `Warhead` is detonated or used to deal damage / generate light flash.
 - `Warhead.Detonate`, if set to true, makes the `Warhead` fully detonate instead of simply being used to deal damage and generate light flash if it has `Bright=true`.
-- `SplashAnims` contains list of animations used if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[CombatDamage]` -> `SplashList` if `IsMeteor` is set, otherwise to a single animation specified in `[General]` -> `Wake`.
+- `WakeAnim` contains a wake animation to play if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[General]` -> `Wake` if `IsMeteor` is not set to true, otherwise no animation.
+- `SplashAnims` contains list of splash animations used if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[CombatDamage]` -> `SplashList`.
   - If `SplashAnims.PickRandom` is set to true, picks a random animation from `SplashAnims` to use on each impact with water. Otherwise last listed animation from `SplashAnims` is used.
 
 In `artmd.ini`:
@@ -155,6 +164,7 @@ In `artmd.ini`:
 [SOMEANIM]                    ; AnimationType
 ExplodeOnWater=false          ; boolean
 Warhead.Detonate=false        ; boolean
+WakeAnim=                     ; Animation
 SplashAnims=                  ; list of animations
 SplashAnims.PickRandom=false  ; boolean
 ```
@@ -189,6 +199,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]   ; BuildingType
 AllowAirstrike=  ; boolean
+```
+
+### Buildings considered as vehicles
+
+- By default game considers buildings with both `UndeploysInto` set and `Foundation` equaling `1x1` as vehicles, in a manner of speaking. This behaviour can now be toggled individually of these conditions by setting `ConsideredVehicle`. These buildings are counted as vehicles for unit count tracking, are not considered as base under attack when damaged and can be mass selected by default, for an example.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]      ; BuildingType
+ConsideredVehicle=  ; boolean
 ```
 
 ### Customizable & new grinder properties
@@ -317,6 +337,16 @@ ChronoRangeMinimum=     ; integer, can be used to set a small range within which
 ChronoDelay=            ; integer, delay after teleport for chronosphere
 ```
 
+### Customizable target evaluation map zone check behaviour
+
+- By default, any non-AircraftType units seeking targets via ScriptType team mission (action) `0 Attack Target Type` or any [attack team missions introduced in Phobos](AI-Scripting-and-Mapping.md#10000-10049-attack-actions) check if the potential target is in same map zone as the attacking unit to be able to pick it as a target. This can now be customized to allow objects from any map zone with no constraints (`TargetZoneScanType=any`) or only if they are within weapon range (`TargetZoneScanType=inrange`).
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]             ; TechnoType
+TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
+```
+
 ### Customizable unit image in art
 
 - `Image` tag in art INI is no longer limited to AnimationTypes and BuildingTypes, and can be applied to all TechnoTypes (InfantryTypes, VehicleTypes, AircraftTypes, BuildingTypes).
@@ -356,7 +386,6 @@ In `rulesmd.ini`:
 [SOMETECHNO]                 ; TechnoType
 Explodes.KillPassengers=true ; boolean
 ```
-
 
 ### IronCurtain effects on organics customization
 - In vanilla game, when iron-curtain is applied on organic units like infantries and squids, they could only get killed instantly by C4Warhead. This behavior is now dehardcoded, and the effect under iron-curtain can now be chosen among

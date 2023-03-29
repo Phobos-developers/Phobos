@@ -171,7 +171,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		healthDamage = (int)((double)*args->Damage * passPercent);
 	}
 
-	if (Phobos::Debug_DisplayDamageNumbers && shieldDamage != 0)
+	if (Phobos::DisplayDamageNumbers && shieldDamage != 0)
 		TechnoExt::DisplayDamageNumberString(this->Techno, shieldDamage, true);
 
 	if (shieldDamage > 0)
