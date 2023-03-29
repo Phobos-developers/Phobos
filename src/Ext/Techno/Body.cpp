@@ -2,6 +2,7 @@
 
 #include <HouseClass.h>
 #include <ScenarioClass.h>
+#include <AircraftClass.h>
 
 #include <Ext/House/Body.h>
 #ifdef CAN_USE_ARES
