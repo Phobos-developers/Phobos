@@ -185,6 +185,7 @@ This page lists all the individual contributions to the project by their author.
   - Buildings considered as vehicles
   - TechnoType target evaluation map zone check behaviour customization
   - CanC4 damage rounding fix & toggle
+  - Option to center pause menu background
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -240,6 +241,7 @@ This page lists all the individual contributions to the project by their author.
    - The option to allow DieSound/VoiceDie being played when grinding
    - Allow iron-curtain effects on infantries
    - Break the mindcontrol link when capturing a mind-controlled building with engineer
+   - Building LightSource tint S/L fix
    - Misc code refactor & maintenance, CN doc fix
 - **FlyStar**
    - Campaign load screen PCX support

@@ -10,12 +10,12 @@
 template<> const DWORD Extension<HouseClass>::Canary = 0x11111111;
 HouseExt::ExtContainer HouseExt::ExtMap;
 
-bool HouseExt::ExtData::OwnsLimboDeliveredBuilding(BuildingClass const* pBuilding)
+bool HouseExt::ExtData::OwnsLimboDeliveredBuilding(BuildingClass* pBuilding)
 {
 	if (!pBuilding)
 		return false;
 
-	return this->OwnedLimboDeliveredBuildings.count(pBuilding->UniqueID);
+	return this->OwnedLimboDeliveredBuildings.count(pBuilding);
 }
 
 int HouseExt::ActiveHarvesterCount(HouseClass* pThis)
@@ -79,10 +79,14 @@ void HouseExt::ExtData::UpdateAutoDeathObjectsInLimbo()
 	for (auto pExt : this->OwnedTimedAutoDeathObjects)
 	{
 		auto pItem = pExt->OwnerObject();
+
 		if (!pItem->IsInLogic && pItem->IsAlive && pExt->TypeExtData->AutoDeath_Behavior.isset() && pExt->AutoDeathTimer.Completed())
 		{
-			if (this->OwnedLimboDeliveredBuildings.contains(pItem->UniqueID))
-				this->OwnedLimboDeliveredBuildings.erase(pItem->UniqueID);
+			auto const pBuilding = abstract_cast<BuildingClass*>(pItem);
+
+			if (this->OwnedLimboDeliveredBuildings.contains(pBuilding))
+				this->OwnedLimboDeliveredBuildings.erase(pBuilding);
+
 			pItem->RegisterDestruction(nullptr);
 			// I doubt those in LimboDelete being really necessary, they're gonna be updated either next frame or after uninit anyway
 			pItem->UnInit();

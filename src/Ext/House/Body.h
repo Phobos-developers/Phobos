@@ -17,7 +17,7 @@ public:
 	{
 	public:
 		std::map<BuildingTypeExt::ExtData*, int> BuildingCounter;
-		std::map<DWORD, BuildingExt::ExtData*> OwnedLimboDeliveredBuildings;
+		std::map<BuildingClass*, BuildingExt::ExtData*> OwnedLimboDeliveredBuildings;
 		std::vector<TechnoExt::ExtData*> OwnedTimedAutoDeathObjects;
 
 		BuildingClass* Factory_BuildingType;
@@ -41,7 +41,7 @@ public:
 			, RepairBaseNodes { false,false,false }
 		{ }
 
-		bool OwnsLimboDeliveredBuilding(BuildingClass const* pBuilding);
+		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
 		void UpdateAutoDeathObjectsInLimbo();
 
 		virtual ~ExtData() = default;
