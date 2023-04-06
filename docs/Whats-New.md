@@ -330,6 +330,7 @@ Vanilla fixes:
 - Buildings with `CanC4=false` will no longer take 1 point of positive damage if hit by negative damage (by Starkku)
 - Buildings with primary weapon that has `AG=false` projectile now have attack cursor when selected (by Starkku)
 - Transports with `OpenTopped=true` and weapon that has `Burst` above 1 and passengers firing out no longer have the passenger firing offset shift lateral position based on burst index (by Starkku)
+- Light tint created by a building is now able to be removed after loading the game (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
