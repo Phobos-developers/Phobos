@@ -96,48 +96,6 @@ DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_Sh
 	return 0;
 }
 
-//Abandoned because of Ares!!!! - Uranusian
-/*
-DEFINE_HOOK_AGAIN(0x6F3725, TechnoClass_WhatWeaponShouldIUse_Shield, 0x6)
-DEFINE_HOOK(0x6F36F2, TechnoClass_WhatWeaponShouldIUse_Shield, 0x6)
-{
-	GET(TechnoClass*, pTarget, EBP);
-	if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
-	{
-		if (auto pShieldData = pExt->Shield.get())
-		{
-			if (pShieldData->GetHP())
-			{
-				auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
-
-				if (R->Origin() == 0x6F36F2)
-					R->ECX(pTypeExt->Shield_Armor);
-				else
-					R->EAX(pTypeExt->Shield_Armor);
-
-				return R->Origin() + 6;
-			}
-		}
-	}
-	return 0;
-}
-*/
-
-DEFINE_HOOK(0x6F9E50, TechnoClass_AI_Shield, 0x5)
-{
-	GET(TechnoClass*, pThis, ECX);
-	const auto pShieldType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->ShieldType;
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pShieldType->Strength && !pExt->Shield)
-		pExt->Shield = std::make_unique<ShieldClass>(pThis);
-
-	if (const auto pShieldData = pExt->Shield.get())
-		pShieldData->AI();
-
-	return 0;
-}
-
 // Ares-hook jmp to this offset
 DEFINE_HOOK(0x71A88D, TemporalClass_AI_Shield, 0x0)
 {
@@ -164,17 +122,6 @@ DEFINE_HOOK(0x6F6AC4, TechnoClass_Remove_Shield, 0x5)
 
 	if (pExt->Shield)
 		pExt->Shield->KillAnim();
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x44A03C, DeploysInto_UndeploysInto_SyncShieldStatus, 0x6) //BuildingClass_Mi_Selling_SyncShieldStatus
-DEFINE_HOOK(0x739956, DeploysInto_UndeploysInto_SyncShieldStatus, 0x6) //UnitClass_Deploy_SyncShieldStatus
-{
-	GET(TechnoClass*, pFrom, EBP);
-	GET(TechnoClass*, pTo, EBX);
-
-	ShieldClass::SyncShieldToAnother(pFrom, pTo);
 
 	return 0;
 }
