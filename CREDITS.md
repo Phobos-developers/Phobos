@@ -103,6 +103,7 @@ This page lists all the individual contributions to the project by their author.
   - Laser trails for VoxelAnims
   - MakeInfantry logic on BombClass bugfix
   - Debris & meteor impact behaviour settings
+  - GiftBox port from DP-Kratos
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`

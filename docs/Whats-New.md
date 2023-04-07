@@ -301,6 +301,7 @@ New:
 - `AAOnly` for projectiles (by Starkku)
 - `CreateUnit` improvements & additions (units spawning in air, spawn animation) (by Starkku)
 - Option to center pause menu background (by Starkku)
+- GiftBox port from DP-Kratos (by Otamaa)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

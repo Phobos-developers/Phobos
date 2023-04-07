@@ -223,7 +223,7 @@ const void GiftBoxClass::AI()
 			if (pTypeExt->GiftBoxData.Remove.Get())
 			{
 				// Limboing stuffs is not safe method depend on case
-				// maybe need to check if anything else need to be handle 
+				// maybe need to check if anything else need to be handle
 				pTechno->Undiscover();
 				pTechno->Limbo();
 				pTechno->UnInit();
