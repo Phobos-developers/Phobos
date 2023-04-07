@@ -18,6 +18,9 @@ public:
 	static CCINIClass* OpenConfig(const char*);
 	static void CloseConfig(CCINIClass*&);
 
+	static void ExeRun();
+	static void ExeTerminate();
+
 	//variables
 	static HANDLE hInstance;
 
@@ -28,11 +31,11 @@ public:
 
 	static const char* AppIconPath;
 	static const wchar_t* VersionDescription;
+	static bool DisplayDamageNumbers;
 
-	static void Clear();
-	static void PointerGotInvalid(AbstractClass* const pInvalid, bool const removed);
-	static HRESULT SaveGameData(IStream* pStm);
-	static void LoadGameData(IStream* pStm);
+#ifdef DEBUG
+	static bool DetachFromDebugger();
+#endif
 
 	class UI
 	{
@@ -44,9 +47,14 @@ public:
 		static double HarvesterCounter_ConditionYellow;
 		static double HarvesterCounter_ConditionRed;
 		static bool ShowProducingProgress;
+		static bool ShowPowerDelta;
+		static double PowerDelta_ConditionYellow;
+		static double PowerDelta_ConditionRed;
+		static bool CenterPauseMenuBackground;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;
+		static const wchar_t* PowerBlackoutLabel;
 		static const wchar_t* TimeLabel;
 		static const wchar_t* HarvesterLabel;
 	};
@@ -55,7 +63,22 @@ public:
 	{
 	public:
 		static bool ToolTipDescriptions;
+		static bool ToolTipBlur;
 		static bool PrioritySelectionFiltering;
 		static bool DevelopmentCommands;
+		static bool ArtImageSwap;
+		static bool ShowPlacementPreview;
+		static bool RealTimeTimers;
+		static bool RealTimeTimers_Adaptive;
+		static int CampaignDefaultGameSpeed;
+	};
+
+	class Misc
+	{
+	public:
+		static bool CustomGS;
+		static int CustomGS_ChangeInterval[7];
+		static int CustomGS_ChangeDelay[7];
+		static int CustomGS_DefaultDelay[7];
 	};
 };

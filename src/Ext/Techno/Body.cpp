@@ -1,146 +1,63 @@
 #include "Body.h"
 
-#include <BuildingClass.h>
 #include <HouseClass.h>
-#include <BulletClass.h>
-#include <BulletTypeClass.h>
 #include <ScenarioClass.h>
-#include <SpawnManagerClass.h>
-#include <InfantryClass.h>
-#include <Unsorted.h>
 
-#include <Ext/BulletType/Body.h>
+#include <Ext/House/Body.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 
-void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
+TechnoExt::ExtData::~ExtData()
 {
-	if (auto Capturer = pThis->MindControlledBy)
+	if (this->TypeExtData->AutoDeath_Behavior.isset())
 	{
-		auto pCapturerExt = TechnoTypeExt::ExtMap.Find(Capturer->GetTechnoType());
-		if (pCapturerExt && pCapturerExt->MindControlRangeLimit > 0
-			&& pThis->DistanceFrom(Capturer) > pCapturerExt->MindControlRangeLimit * 256.0)
-		{
-			Capturer->CaptureManager->FreeUnit(pThis);
-		}
+		auto pThis = this->OwnerObject();
+		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
+		auto it = std::find(hExt->OwnedTimedAutoDeathObjects.begin(), hExt->OwnedTimedAutoDeathObjects.end(), this);
+		if (it != hExt->OwnedTimedAutoDeathObjects.end())
+			hExt->OwnedTimedAutoDeathObjects.erase(it);
 	}
 }
 
-void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
+bool TechnoExt::IsActive(TechnoClass* pThis)
 {
-	auto pData = TechnoExt::ExtMap.Find(pThis);
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if (pData && pTypeData && pTypeData->Interceptor && !pThis->Target &&
-		!(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
-	{
-		for (auto const& pBullet : *BulletClass::Array)
-		{
-			if (auto pBulletTypeData = BulletTypeExt::ExtMap.Find(pBullet->Type))
-			{
-				if (!pBulletTypeData->Interceptable)
-					continue;
-			}
-
-			const double guardRange = pThis->Veterancy.IsElite() ?
-				pTypeData->Interceptor_EliteGuardRange * 256 : pTypeData->Interceptor_GuardRange * 256;
-			const double minguardRange = pThis->Veterancy.IsElite() ?
-				pTypeData->Interceptor_EliteMinimumGuardRange * 256 : pTypeData->Interceptor_MinimumGuardRange * 256;
-
-			double distance = pBullet->Location.DistanceFrom(pThis->Location);
-			if (distance > guardRange || distance < minguardRange)
-				continue;
-
-			/*
-			if (pBullet->Location.DistanceFrom(pBullet->TargetCoords) >
-				double(ScenarioClass::Instance->Random.RandomRanged(128, (int)guardRange / 10)) * 10)
-			{
-				continue;
-			}
-			*/
-
-			if (!pThis->Owner->IsAlliedWith(pBullet->Owner))
-			{
-				pThis->SetTarget(pBullet);
-				pData->InterceptedBullet = pBullet;
-				break;
-			}
-		}
-	}
-}
-
-void TechnoExt::ApplyPowered_KillSpawns(TechnoClass* pThis)
-{
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pTypeData && pThis->WhatAmI() == AbstractType::Building)
-	{
-		auto pBuilding = abstract_cast<BuildingClass*>(pThis);
-		if (pTypeData->Powered_KillSpawns && pBuilding->Type->Powered && !pBuilding->IsPowerOnline())
-		{
-			if (auto pManager = pBuilding->SpawnManager)
-			{
-				pManager->ResetTarget();
-				for (auto pItem : pManager->SpawnedNodes)
-				{
-					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
-					{
-						pItem->Unit->ReceiveDamage(&pItem->Unit->Health, 0,
-							RulesClass::Instance()->C4Warhead, nullptr, false, false, nullptr);
-					}
-				}
-			}
-		}
-	}
-}
-
-void TechnoExt::ApplySpawn_LimitRange(TechnoClass* pThis)
-{
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pTypeData && pTypeData->Spawn_LimitedRange)
-	{
-		if (auto pManager = pThis->SpawnManager)
-		{
-			auto pTechnoType = pThis->GetTechnoType();
-			int weaponRange = 0;
-			int weaponRangeExtra = pTypeData->Spawn_LimitedExtraRange * 256;
-
-			auto setWeaponRange = [&weaponRange](WeaponTypeClass* pWeaponType)
-			{
-				if (pWeaponType && pWeaponType->Spawner && pWeaponType->Range > weaponRange)
-					weaponRange = pWeaponType->Range;
-			};
-
-			setWeaponRange(pTechnoType->Weapon[0].WeaponType);
-			setWeaponRange(pTechnoType->Weapon[1].WeaponType);
-			setWeaponRange(pTechnoType->EliteWeapon[0].WeaponType);
-			setWeaponRange(pTechnoType->EliteWeapon[1].WeaponType);
-
-			weaponRange += weaponRangeExtra;
-
-			if (pManager->Target && (pThis->DistanceFrom(pManager->Target) > weaponRange))
-				pManager->ResetTarget();
-		}
-	}
+	return
+		pThis &&
+		!pThis->TemporalTargetingMe &&
+		!pThis->BeingWarpedOut &&
+		!pThis->IsUnderEMP() &&
+		pThis->IsAlive &&
+		pThis->Health > 0 &&
+		!pThis->InLimbo;
 }
 
 bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 {
-	if (!pThis || pThis->InLimbo)
+	if (!TechnoExt::IsActive(pThis))
 		return false;
 
 	auto slave = pThis->SlaveManager;
 	if (slave && slave->State != SlaveManagerStatus::Ready)
 		return true;
 
-	if (pThis->WhatAmI() == AbstractType::Building && pThis->IsPowerOnline())
-		return true;
+	if (pThis->WhatAmI() == AbstractType::Building)
+		return pThis->IsPowerOnline();
 
-	auto mission = pThis->GetCurrentMission();
-	if ((mission == Mission::Harvest || mission == Mission::Unload || mission == Mission::Enter)
-		&& TechnoExt::HasAvailableDock(pThis))
+	if (TechnoExt::HasAvailableDock(pThis))
 	{
-		return true;
+		switch (pThis->GetCurrentMission())
+		{
+		case Mission::Harvest:
+		case Mission::Unload:
+		case Mission::Enter:
+			return true;
+		case Mission::Guard: // issue#603: not exactly correct, but idk how to do better
+			if (auto pUnit = abstract_cast<UnitClass*>(pThis))
+				return pUnit->IsHarvesting || pUnit->Locomotor->Is_Really_Moving_Now() || pUnit->HasAnyLink();
+		default:
+			return false;
+		}
 	}
 
 	return false;
@@ -157,94 +74,130 @@ bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
 	return false;
 }
 
-void TechnoExt::InitializeLaserTrails(TechnoClass* pThis)
+void TechnoExt::SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo)
 {
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pExt->LaserTrails.size())
-		return;
-
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	if (pFrom->IsIronCurtained() && !pFrom->ForceShielded)
 	{
-		for (auto const& entry: pTypeExt->LaserTrailData)
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFrom->GetTechnoType());
+		if (pTypeExt->IronCurtain_KeptOnDeploy.Get(RulesExt::Global()->IronCurtain_KeptOnDeploy))
 		{
-			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
-			{
-				pExt->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
-					pLaserType, pThis->Owner, entry.FLH, entry.IsOnTurret));
-			}
+			pTo->IronCurtain(pFrom->IronCurtainTimer.GetTimeLeft(), pFrom->Owner, false);
+			pTo->IronTintStage = pFrom->IronTintStage;
 		}
 	}
 }
 
-// reversed from 6F3D60
-CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
+double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 {
-	auto const pType = pThis->GetTechnoType();
-	auto const pFoot = abstract_cast<FootClass*>(pThis);
-	Matrix3D mtx;
+	double houseMultiplier = 1.0;
 
-	// Step 1: get body transform matrix
-	if (pFoot && pFoot->Locomotor)
-		mtx = pFoot->Locomotor->Draw_Matrix(nullptr);
-	else // no locomotor means no rotation or transform of any kind (f.ex. buildings) - Kerbiter
-		mtx.MakeIdentity();
-
-	// Steps 2-3: turret offset and rotation
-	if (isOnTurret && pThis->HasTurret())
-	{
-		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
-
-		double turretRad = (pThis->TurretFacing().value32() - 8) * -(Math::Pi / 16);
-		double bodyRad = (pThis->PrimaryFacing.current().value32() - 8) * -(Math::Pi / 16);
-		float angle = (float)(turretRad - bodyRad);
-
-		mtx.RotateZ(angle);
-	}
-
-	// Step 4: apply FLH offset
-	mtx.Translate((float)pCoord.X, (float)pCoord.Y, (float)pCoord.Z);
-
-	Vector3D<float> result = Matrix3D::MatrixMultiply(mtx, Vector3D<float>::Empty);
-
-	// Resulting coords are mirrored along X axis, so we mirror it back
-	result.Y *= -1;
-
-	// Step 5: apply as an offset to global object coords
-	CoordStruct location = pThis->GetCoords();
-	location += { (int)result.X, (int)result.Y, (int)result.Z };
-
-	return location;
-}
-
-CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound)
-{
-	FLHFound = false;
-	CoordStruct FLH = CoordStruct::Empty;
-
-	if (!pThis || weaponIndex < 0)
-		return FLH;
-
-	auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if (pThis->Veterancy.IsElite())
-	{
-		if (pExt->EliteWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
-		{
-			FLHFound = true;
-			FLH = pExt->EliteWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
-		}
-	}
+	if (pThis->WhatAmI() == AbstractType::Aircraft)
+		houseMultiplier = pThis->Owner->Type->SpeedAircraftMult;
+	else if (pThis->WhatAmI() == AbstractType::Infantry)
+		houseMultiplier = pThis->Owner->Type->SpeedInfantryMult;
 	else
+		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
+
+	return pThis->SpeedMultiplier * houseMultiplier *
+		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
+}
+
+CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger, int maxAttempts = 1)
+{
+	if (!pThis || !pPassenger)
+		return CoordStruct::Empty;
+
+	if (maxAttempts < 1)
+		maxAttempts = 1;
+
+	CellClass* pCell;
+	CellStruct placeCoords = CellStruct::Empty;
+	auto pTypePassenger = pPassenger->GetTechnoType();
+	CoordStruct finalLocation = CoordStruct::Empty;
+	short extraDistanceX = 1;
+	short extraDistanceY = 1;
+	SpeedType speedType = pTypePassenger->SpeedType;
+	MovementZone movementZone = pTypePassenger->MovementZone;
+
+	if (pTypePassenger->WhatAmI() == AbstractType::AircraftType)
 	{
-		if (pExt->WeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+		speedType = SpeedType::Track;
+		movementZone = MovementZone::Normal;
+	}
+
+	do
+	{
+		placeCoords = pThis->GetCell()->MapCoords - CellStruct { (short)(extraDistanceX / 2), (short)(extraDistanceY / 2) };
+		placeCoords = MapClass::Instance->NearByLocation(placeCoords, speedType, -1, movementZone, false, extraDistanceX, extraDistanceY, true, false, false, false, CellStruct::Empty, false, false);
+
+		pCell = MapClass::Instance->GetCellAt(placeCoords);
+		extraDistanceX += 1;
+		extraDistanceY += 1;
+	}
+	while (extraDistanceX < maxAttempts && (pThis->IsCellOccupied(pCell, -1, -1, nullptr, false) != Move::OK) && pCell->MapCoords != CellStruct::Empty);
+
+	pCell = MapClass::Instance->TryGetCellAt(placeCoords);
+	if (pCell)
+		finalLocation = pCell->GetCoordsWithBridge();
+
+	return finalLocation;
+}
+
+bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, TargetZoneScanType zoneScanType, WeaponTypeClass* pWeapon, bool useZone, int zone)
+{
+	if (!pThis || !pTarget)
+		return false;
+
+	if (pThis->WhatAmI() == AbstractType::Aircraft)
+		return true;
+
+	MovementZone mZone = pThis->GetTechnoType()->MovementZone;
+	int currentZone = useZone ? zone : MapClass::Instance->GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->IsOnBridge());
+
+	if (currentZone != -1)
+	{
+		if (zoneScanType == TargetZoneScanType::Any)
+			return true;
+
+		int targetZone = MapClass::Instance->GetMovementZoneType(pTarget->GetMapCoords(), mZone, pTarget->IsOnBridge());
+
+		if (zoneScanType == TargetZoneScanType::Same)
 		{
-			FLHFound = true;
-			FLH = pExt->WeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
+			if (currentZone != targetZone)
+				return false;
+		}
+		else
+		{
+			if (currentZone == targetZone)
+				return true;
+
+			auto const speedType = pThis->GetTechnoType()->SpeedType;
+			auto cellStruct = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(pTarget->Location),
+				speedType, -1, mZone, false, 1, 1, true,
+				false, false, speedType != SpeedType::Float, CellStruct::Empty, false, false);
+			auto const pCell = MapClass::Instance->GetCellAt(cellStruct);
+
+			if (!pCell)
+				return false;
+
+			double distance = pCell->GetCoordsWithBridge().DistanceFrom(pTarget->GetCenterCoords());
+
+			if (!pWeapon)
+			{
+				int weaponIndex = pThis->SelectWeapon(pTarget);
+
+				if (weaponIndex < 0)
+					return false;
+
+				pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+			}
+
+			if (distance > pWeapon->Range)
+				return false;
 		}
 	}
 
-	return FLH;
+	return true;
 }
 
 // =============================
@@ -254,10 +207,20 @@ template <typename T>
 void TechnoExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->InterceptedBullet)
+		.Process(this->TypeExtData)
 		.Process(this->Shield)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)
+		.Process(this->PassengerDeletionTimer)
+		.Process(this->CurrentShieldType)
+		.Process(this->LastWarpDistance)
+		.Process(this->AutoDeathTimer)
+		.Process(this->MindControlRingAnimType)
+		.Process(this->OriginalPassengerOwner)
+		.Process(this->CurrentLaserWeaponIndex)
+		.Process(this->IsInTunnel)
+		.Process(this->DeployFireTimer)
+		.Process(this->ForceFullRearmDelay)
 		.Process(this->AttachedGiftBox)
 		;
 }

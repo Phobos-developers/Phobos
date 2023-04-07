@@ -10,28 +10,40 @@ class WarheadTypeClass;
 class ShieldClass
 {
 public:
+	static std::vector<ShieldClass*> Array;
+
 	ShieldClass();
-	ShieldClass(TechnoClass* pTechno);
-	~ShieldClass() = default;
+	ShieldClass(TechnoClass* pTechno, bool isAttached);
+	ShieldClass(TechnoClass* pTechno) : ShieldClass(pTechno, false) { };
+	~ShieldClass();
 
 	int ReceiveDamage(args_ReceiveDamage* args);
 	bool CanBeTargeted(WeaponTypeClass* pWeapon);
+	bool CanBePenetrated(WarheadTypeClass* pWarhead);
+	void BreakShield(AnimTypeClass* pBreakAnim = nullptr, WeaponTypeClass* pBreakWeapon = nullptr);
 
+	void SetRespawn(int duration, double amount, int rate, bool resetTimer);
+	void SetSelfHealing(int duration, double amount, int rate, bool resetTimer);
 	void KillAnim();
-
 	void AI_Temporal();
 	void AI();
 
 	void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
-	void InvalidatePointer(void* ptr);
-
 	double GetHealthRatio();
+	void SetHP(int amount);
 	int GetHP();
 	bool IsActive();
 	bool IsAvailable();
+	bool IsBrokenAndNonRespawning();
+	ShieldTypeClass* GetType();
+	ArmorType GetArmorType();
+	int GetFramesSinceLastBroken();
+	void SetAnimationVisibility(bool visible);
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
+	static bool ShieldIsBrokenTEvent(ObjectClass* pAttached);
 
+	static void PointerGotInvalid(void* ptr, bool removed);
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;
 
@@ -44,18 +56,19 @@ private:
 	void SelfHealing();
 	int GetPercentageAmount(double iStatus);
 
-	void BreakShield();
 	void RespawnShield();
 
 	void CreateAnim();
+	void UpdateIdleAnim();
+	AnimTypeClass* GetIdleAnimType();
 
-	void WeaponNullifyAnim();
+	void WeaponNullifyAnim(AnimTypeClass* pHitAnim = nullptr);
 	void ResponseAttack();
 
 	void CloakCheck();
 	void OnlineCheck();
 	void TemporalCheck();
-	void ConvertCheck();
+	bool ConvertCheck();
 
 	void DrawShieldBar_Building(int iLength, Point2D* pLocation, RectangleStruct* pBound);
 	void DrawShieldBar_Other(int iLength, Point2D* pLocation, RectangleStruct* pBound);
@@ -64,25 +77,39 @@ private:
 
 	/// Properties ///
 	TechnoClass* Techno;
-	char TechnoID[0x18];
+	TechnoTypeClass* TechnoID;
 	int HP;
 	AnimClass* IdleAnim;
 	bool Cloak;
 	bool Online;
 	bool Temporal;
 	bool Available;
+	bool Attached;
+	bool AreAnimsHidden;
+
+	double SelfHealing_Warhead;
+	int SelfHealing_Rate_Warhead;
+	double Respawn_Warhead;
+	int Respawn_Rate_Warhead;
+
+	int LastBreakFrame;
+	double LastTechnoHealthRatio;
 
 	ShieldTypeClass* Type;
 
 	struct Timers
 	{
 		Timers() :
-			SelfHealing{ },
-			Respawn{ }
+			SelfHealing { }
+			, SelfHealing_WHModifier { }
+			, Respawn { }
+			, Respawn_WHModifier { }
 		{ }
 
-		TimerStruct SelfHealing;
-		TimerStruct Respawn;
+		CDTimerClass SelfHealing;
+		CDTimerClass SelfHealing_WHModifier;
+		CDTimerClass Respawn;
+		CDTimerClass Respawn_WHModifier;
 
 	} Timers;
 };

@@ -1,6 +1,7 @@
 #include <Phobos.h>
 
 #include <Helpers/Macro.h>
+#include <PreviewClass.h>
 #include <Surface.h>
 
 #include <Ext/House/Body.h>
@@ -8,6 +9,7 @@
 #include <Ext/Rules/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Misc/FlyingStrings.h>
 #include <Utilities/Debug.h>
 
 DEFINE_HOOK(0x777C41, UI_ApplyAppIcon, 0x9)
@@ -49,12 +51,40 @@ DEFINE_HOOK(0x641B41, LoadingScreen_SkipPreview, 0x8)
 	return 0x641D4E;
 }
 
+DEFINE_HOOK(0x641EE0, PreviewClass_ReadPreview, 0x6)
+{
+	GET(PreviewClass*, pThis, ECX);
+	GET_STACK(const char*, lpMapFile, 0x4);
+
+	CCFileClass file(lpMapFile);
+	if (file.Exists() && file.Open(FileAccessMode::Read))
+	{
+		CCINIClass ini;
+		ini.ReadCCFile(&file, true);
+		ini.CurrentSection = nullptr;
+		ini.CurrentSectionName = nullptr;
+
+		ScenarioClass::Instance->ReadStartPoints(ini);
+
+		R->EAX(pThis->ReadPreviewPack(ini));
+	}
+	else
+		R->EAX(false);
+
+	return 0x64203D;
+}
+
 DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 {
+	auto const pPlayer = HouseClass::CurrentPlayer();
+	if (pPlayer->Defeated)
+		return 0;
+
+	RectangleStruct vRect = DSurface::Sidebar->GetRect();
+
 	if (Phobos::UI::ShowHarvesterCounter)
 	{
-		auto pPlayer = HouseClass::Player();
-		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::Player->SideIndex));
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
 		auto nActive = HouseExt::ActiveHarvesterCount(pPlayer);
 		auto nTotal = HouseExt::TotalHarvesterCount(pPlayer);
@@ -71,11 +101,46 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 			2 + pSideExt->Sidebar_HarvesterCounter_Offset.Get().Y
 		};
 
-		RectangleStruct vRect = { 0, 0, 0, 0 };
-		DSurface::Sidebar->GetRect(&vRect);
-
-		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB2DWORD(clrToolTip), 0,
+		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0,
 			TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12);
+	}
+
+	if (Phobos::UI::ShowPowerDelta && pPlayer->Buildings.Count)
+	{
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(pPlayer->SideIndex));
+		wchar_t counter[0x20];
+
+		ColorStruct clrToolTip;
+
+		if (pPlayer->PowerBlackoutTimer.InProgress())
+		{
+			clrToolTip = pSideExt->Sidebar_PowerDelta_Grey;
+			swprintf_s(counter, L"%ls", Phobos::UI::PowerBlackoutLabel);
+		}
+		else
+		{
+			int delta = pPlayer->PowerOutput - pPlayer->PowerDrain;
+
+			double percent = pPlayer->PowerOutput != 0
+				? (double)pPlayer->PowerDrain / (double)pPlayer->PowerOutput : pPlayer->PowerDrain != 0
+				? Phobos::UI::PowerDelta_ConditionRed * 2.f : Phobos::UI::PowerDelta_ConditionYellow;
+
+			clrToolTip = percent < Phobos::UI::PowerDelta_ConditionYellow
+				? pSideExt->Sidebar_PowerDelta_Green : LESS_EQUAL(percent, Phobos::UI::PowerDelta_ConditionRed)
+				? pSideExt->Sidebar_PowerDelta_Yellow : pSideExt->Sidebar_PowerDelta_Red;
+
+			swprintf_s(counter, L"%ls%+d", Phobos::UI::PowerLabel, delta);
+		}
+
+		Point2D vPos = {
+			DSurface::Sidebar->GetWidth() / 2 - 70 + pSideExt->Sidebar_PowerDelta_Offset.Get().X,
+			2 + pSideExt->Sidebar_PowerDelta_Offset.Get().Y
+		};
+
+		auto const TextFlags = static_cast<TextPrintType>(static_cast<int>(TextPrintType::UseGradPal | TextPrintType::Metal12)
+				| static_cast<int>(pSideExt->Sidebar_PowerDelta_Align.Get()));
+
+		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
 	}
 
 	return 0;
@@ -105,14 +170,18 @@ DEFINE_HOOK(0x715A4D, Replace_XXICON_With_New, 0x7)         //TechnoTypeClass::R
 
 DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 {
-	GET_STACK(TechnoTypeClass*, pLeft, STACK_OFFS(0x1C, 0x8));
-	GET_STACK(TechnoTypeClass*, pRight, STACK_OFFS(0x1C, 0x4));
-	GET_STACK(int, idxLeft, STACK_OFFS(0x1C, -0x8));
-	GET_STACK(int, idxRight, STACK_OFFS(0x1C, -0x10));
+	GET_STACK(TechnoTypeClass*, pLeft, STACK_OFFSET(0x1C, -0x8));
+	GET_STACK(TechnoTypeClass*, pRight, STACK_OFFSET(0x1C, -0x4));
+	GET_STACK(int, idxLeft, STACK_OFFSET(0x1C, 0x8));
+	GET_STACK(int, idxRight, STACK_OFFSET(0x1C, 0x10));
+	GET_STACK(AbstractType, rttiLeft, STACK_OFFSET(0x1C, 0x4));
+	GET_STACK(AbstractType, rttiRight, STACK_OFFSET(0x1C, 0xC));
 	auto pLeftTechnoExt = TechnoTypeExt::ExtMap.Find(pLeft);
 	auto pRightTechnoExt = TechnoTypeExt::ExtMap.Find(pRight);
-	auto pLeftSWExt = pLeftTechnoExt ? SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItem(idxLeft)) : nullptr;
-	auto pRightSWExt = pRightTechnoExt ? SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItem(idxRight)) : nullptr;
+	auto pLeftSWExt = (rttiLeft == AbstractType::Special || rttiLeft == AbstractType::Super || rttiLeft == AbstractType::SuperWeaponType)
+		? SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItem(idxLeft)) : nullptr;
+	auto pRightSWExt = (rttiRight == AbstractType::Special || rttiRight == AbstractType::Super || rttiRight == AbstractType::SuperWeaponType)
+		? SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItem(idxRight)) : nullptr;
 
 	if ((pLeftTechnoExt || pLeftSWExt) && (pRightTechnoExt || pRightSWExt))
 	{
@@ -129,4 +198,25 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 	// Restore overridden instructions
 	GET(AbstractType, rtti1, ESI);
 	return rtti1 == AbstractType::Special ? 0x6A8477 : 0x6A8468;
+}
+
+DEFINE_HOOK(0x6D4684, TacticalClass_Draw_FlyingStrings, 0x6)
+{
+	FlyingStrings::UpdateAll();
+	return 0;
+}
+
+DEFINE_HOOK(0x456776, BuildingClass_DrawRadialIndicator_Visibility, 0x6)
+{
+	enum { ContinueDraw = 0x456789, DoNotDraw = 0x456962 };
+	GET(BuildingClass* const, pThis, ESI);
+
+	if (HouseClass::IsCurrentPlayerObserver() || pThis->Owner->IsControlledByCurrentPlayer())
+		return ContinueDraw;
+
+	AffectedHouse const canSee = RulesExt::Global()->RadialIndicatorVisibility.Get();
+	if (pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer) ? canSee & AffectedHouse::Allies : canSee & AffectedHouse::Enemies)
+		return ContinueDraw;
+
+	return DoNotDraw;
 }

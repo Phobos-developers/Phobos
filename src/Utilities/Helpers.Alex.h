@@ -200,7 +200,7 @@ namespace Helpers {
 				for (auto const& pTechno : *TechnoClass::Array) {
 					if (pTechno->GetHeight() > 0) {
 						// rough estimation
-						if (pTechno->Location.DistanceFrom(coords) <= spread * 256) {
+						if (pTechno->Location.DistanceFrom(coords) <= spread * Unsorted::LeptonsPerCell) {
 							set.insert(pTechno);
 						}
 					}
@@ -232,7 +232,7 @@ namespace Helpers {
 				}
 
 				// this is good
-				if (dist <= spread * 256) {
+				if (dist <= spread * Unsorted::LeptonsPerCell) {
 					ret.push_back(pTechno);
 				}
 			}
@@ -251,7 +251,7 @@ namespace Helpers {
 			\param action The action to invoke for each object.
 
 			\returns Returns true if widthOrRange and height describe a valid rectangle,
-					 false otherwise.
+					false otherwise.
 
 			\author AlexB
 		*/
@@ -290,7 +290,7 @@ namespace Helpers {
 			\param action The action to invoke for each object.
 
 			\returns Returns true if widthOrRange and height describe a valid rectangle
-					 or circle, false otherwise.
+					or circle, false otherwise.
 
 			\author AlexB
 		*/
@@ -319,7 +319,7 @@ namespace Helpers {
 			\param action The action to invoke for each object.
 
 			\returns Returns true if widthOrRange and height describe a valid rectangle
-					 or CellSpread range, false otherwise.
+					or CellSpread range, false otherwise.
 
 			\author AlexB
 		*/
@@ -445,7 +445,7 @@ namespace Helpers {
 		template <typename FwdIt, typename Pred>
 		inline void selectionsort(FwdIt first, FwdIt last, Pred pred) {
 			// this is a special case of a full partial sort
-			selectionsort(first, last, last, pred)
+			selectionsort(first, last, last, pred);
 		}
 
 		template <typename FwdIt>

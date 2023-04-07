@@ -1,24 +1,13 @@
 {% extends "!layout.html" %}
-{% block footer %} {{ super() }}
+{% block extrahead %}
+  {{ super() }}
+  <link rel="preload" href="_static/css/fonts/fontawesome-webfont.woff2?af7ae505a9eed503f8b8e6982036873e" as="font">
+  <link rel="stylesheet" href="_static/css/index.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/dark.css" media="(prefers-color-scheme: dark)" />
+  <script src="_static/js/scheme-switcher.js"></script>
+  <script src="_static/js/ini-block-maker.js"></script>
+{% endblock %}
 
-<style>
-    .wy-body-for-nav {
-        background: #1a1a1a;
-        max-width: 1400px;
-        margin: auto;
-    }
-
-    .wy-nav-content {max-width: none;}
-
-    .wy-nav-side {left: auto;}
-
-    .rst-versions {left: auto;}
-
-    @media screen and (max-width: 768px){
-        .wy-nav-side {left: -300px;}
-    }
-    .wy-grid-for-nav {position: unset;}
-
-</style>
-
+{% block footer %}
+    <script>createSchemeSwitcher()</script>
 {% endblock %}

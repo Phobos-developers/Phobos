@@ -1,5 +1,8 @@
 #include "Body.h"
 
+#include <SessionClass.h>
+#include <GameStrings.h>
+
 template<> const DWORD Extension<ScenarioClass>::Canary = 0xABCD1595;
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
@@ -28,11 +31,16 @@ void ScenarioExt::ExtData::GetVariableStateByID(bool bIsGlobal, int nIndex, char
 
 	auto itr = dict.find(nIndex);
 	if (itr != dict.end())
-		*pOut = itr->second.Value;
+		*pOut = static_cast<char>(itr->second.Value);
 }
 
 void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
 {
+	if (!bIsGlobal) // Local variables need to be read again
+		Global()->Variables[false].clear();
+	else if (Global()->Variables[true].size() != 0) // Global variables had been loaded, DO NOT CHANGE THEM
+		return;
+
 	int nCount = pINI->GetKeyCount("VariableNames");
 	for (int i = 0; i < nCount; ++i)
 	{
@@ -45,7 +53,7 @@ void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
 			char* buffer;
 			strcpy_s(var.Name, strtok_s(Phobos::readBuffer, ",", &buffer));
 			if (auto pState = strtok_s(nullptr, ",", &buffer))
-				var.Value = atoi(pState) != 0;
+				var.Value = atoi(pState);
 			else
 				var.Value = 0;
 		}
@@ -74,9 +82,14 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	// auto pThis = this->OwnerObject();
 
-	// INI_EX exINI(pINI);
+	INI_EX exINI(pINI);
 
-	
+	if (SessionClass::IsCampaign())
+	{
+		Nullable<bool> SP_MCVRedeploy;
+		SP_MCVRedeploy.Read(exINI, GameStrings::Basic, GameStrings::MCVRedeploys);
+		GameModeOptionsClass::Instance->MCVRedeploy = SP_MCVRedeploy.Get(false);
+	}
 
 }
 
@@ -87,6 +100,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->Waypoints)
 		.Process(this->Variables[0])
 		.Process(this->Variables[1])
+		.Process(SessionClass::Instance->Config)
 		;
 }
 
@@ -180,10 +194,10 @@ DEFINE_HOOK(0x68945B, ScenarioClass_Save_Suffix, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x68AD62, ScenarioClass_LoadFromINI, 0x6)
+DEFINE_HOOK(0x68AD2F, ScenarioClass_LoadFromINI, 0x5)
 {
 	GET(ScenarioClass*, pItem, ESI);
-	GET_STACK(CCINIClass*, pINI, STACK_OFFS(0x38, -0x8));
+	GET(CCINIClass*, pINI, EDI);
 
 	ScenarioExt::LoadFromINIFile(pItem, pINI);
 	return 0;

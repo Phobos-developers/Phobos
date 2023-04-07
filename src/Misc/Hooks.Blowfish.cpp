@@ -1,14 +1,16 @@
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
+#include <GameStrings.h>
 
 HRESULT __stdcall Blowfish_Loader(
 	REFCLSID  rclsid,
 	LPUNKNOWN pUnkOuter,
-	DWORD	 dwClsContext,
-	REFIID	riid,
-	LPVOID* ppv)
+	DWORD     dwClsContext,
+	REFIID    riid,
+	LPVOID* ppv
+)
 {
-	typedef HRESULT(__stdcall *pDllGetClassObject)(const IID&, const IID&, IClassFactory**);
+	typedef HRESULT(__stdcall* pDllGetClassObject)(const IID&, const IID&, IClassFactory**);
 
 	auto result = REGDB_E_KEYMISSING;
 
@@ -17,25 +19,29 @@ HRESULT __stdcall Blowfish_Loader(
 	if (SUCCEEDED(result))
 		return result;
 
-	HMODULE hDll = LoadLibrary("Blowfish.dll");
-	if (hDll) {
+	HMODULE hDll = LoadLibrary(GameStrings::BLOWFISH_DLL);
+	if (hDll)
+	{
 		auto GetClassObject = (pDllGetClassObject)GetProcAddress(hDll, "DllGetClassObject");
-		if (GetClassObject) {
+		if (GetClassObject)
+		{
 
 			IClassFactory* pIFactory;
 			result = GetClassObject(rclsid, IID_IClassFactory, &pIFactory);
 
-			if (SUCCEEDED(result)) {
+			if (SUCCEEDED(result))
+			{
 				result = pIFactory->CreateInstance(pUnkOuter, riid, ppv);
 				pIFactory->Release();
 			}
 		}
 	}
 
-	if (!SUCCEEDED(result)) {
+	if (!SUCCEEDED(result))
+	{
 		FreeLibrary(hDll);
-		
-		char* Message = "File Blowfish.dll was not found\n";
+
+		const char* Message = "File Blowfish.dll was not found\n";
 		MessageBox(0, Message, "Fatal error ", MB_ICONERROR);
 		Debug::FatalErrorAndExit(Message);
 	}
@@ -43,12 +49,5 @@ HRESULT __stdcall Blowfish_Loader(
 	return result;
 }
 
-DEFINE_NAKED_LJMP(0x6BEDDD, _Blowfish_Loader_Init) {
-	CALL(Blowfish_Loader);
-	JMP(0x6BEDE3);
-}
-
-DEFINE_NAKED_LJMP(0x437F6E, _Blowfish_Loader_Create) {
-	CALL(Blowfish_Loader);
-	JMP(0x437F74);
-}
+DEFINE_JUMP(CALL6, 0x6BEDDD, GET_OFFSET(Blowfish_Loader))
+DEFINE_JUMP(CALL6, 0x437F6E, GET_OFFSET(Blowfish_Loader))

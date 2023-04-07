@@ -13,23 +13,6 @@
 template<> const DWORD Extension<AnimTypeClass>::Canary = 0xEEEEEEEE;
 AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;
 
-void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
-{
-	const char* pID = this->OwnerObject()->ID;
-
-	INI_EX exINI(pINI);
-
-	this->Palette.LoadFromINI(pINI, pID, "CustomPalette");
-	this->CreateUnit.Read(exINI, pID, "CreateUnit",true);
-	this->CreateUnit_Facing.Read(exINI, pID, "CreateUnit.Facing");
-	this->CreateUnit_InheritDeathFacings.Read(exINI, pID, "CreateUnit.InheritFacings");
-	this->CreateUnit_InheritTurretFacings.Read(exINI, pID, "CreateUnit.InheritTurretFacings");
-	this->CreateUnit_RemapAnim.Read(exINI, pID, "CreateUnit.RemapAnim");
-	this->CreateUnit_Mission.Read(exINI, pID, "CreateUnit.Mission");
-	this->CreateUnit_Owner.Read(exINI, pID, "CreateUnit.Owner");
-	this->CreateUnit_RandomFacing.Read(exINI, pID, "CreateUnit.RandomFacing");
-}
-
 const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
 {
 	if (!pThis)
@@ -39,8 +22,8 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 
 	if (pThis->Type->DestroyAnim.Count > 0)
 	{
-		auto const facing = pThis->PrimaryFacing.current().value256();
-		auto pAnimType = pThis->Type->DestroyAnim[ScenarioClass::Instance->Random.Random() % pThis->Type->DestroyAnim.Count];
+		auto const facing = pThis->PrimaryFacing.Current().GetFacing<256>();
+		AnimTypeClass* pAnimType = nullptr;
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
 		if (!pTypeExt->DestroyAnim_Random.Get())
@@ -56,6 +39,13 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 
 			pAnimType = pThis->Type->DestroyAnim[idxAnim];
 		}
+		else
+		{
+			int const nIDx_Rand = pThis->Type->DestroyAnim.Count == 1 ?
+				0 : ScenarioClass::Instance->Random.RandomRanged(0, (pThis->Type->DestroyAnim.Count - 1));
+			pAnimType = pThis->Type->DestroyAnim[nIDx_Rand];
+
+		}
 
 		if (pAnimType)
 		{
@@ -69,22 +59,57 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 
 				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
 
+				pAnimExt->SetInvoker(pThis);
 				pAnimExt->FromDeathUnit = true;
 
 				if (pAnimTypeExt->CreateUnit_InheritDeathFacings.Get())
-					pAnimExt->DeathUnitFacing = facing;
+					pAnimExt->DeathUnitFacing = static_cast<short>(facing);
 
 				if (pAnimTypeExt->CreateUnit_InheritTurretFacings.Get())
 				{
 					if (pThis->HasTurret())
 					{
 						pAnimExt->DeathUnitHasTurret = true;
-						pAnimExt->DeathUnitTurretFacing = pThis->SecondaryFacing.current();
+						pAnimExt->DeathUnitTurretFacing = pThis->SecondaryFacing.Current();
 					}
 				}
 			}
 		}
 	}
+}
+
+void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
+{
+	const char* pID = this->OwnerObject()->ID;
+
+	INI_EX exINI(pINI);
+
+	this->Palette.LoadFromINI(pINI, pID, "CustomPalette");
+	this->CreateUnit.Read(exINI, pID, "CreateUnit", true);
+	this->CreateUnit_Facing.Read(exINI, pID, "CreateUnit.Facing");
+	this->CreateUnit_InheritDeathFacings.Read(exINI, pID, "CreateUnit.InheritFacings");
+	this->CreateUnit_InheritTurretFacings.Read(exINI, pID, "CreateUnit.InheritTurretFacings");
+	this->CreateUnit_RemapAnim.Read(exINI, pID, "CreateUnit.RemapAnim");
+	this->CreateUnit_Mission.Read(exINI, pID, "CreateUnit.Mission");
+	this->CreateUnit_Owner.Read(exINI, pID, "CreateUnit.Owner");
+	this->CreateUnit_RandomFacing.Read(exINI, pID, "CreateUnit.RandomFacing");
+	this->CreateUnit_AlwaysSpawnOnGround.Read(exINI, pID, "CreateUnit.AlwaysSpawnOnGround");
+	this->CreateUnit_ConsiderPathfinding.Read(exINI, pID, "CreateUnit.ConsiderPathfinding");
+	this->CreateUnit_SpawnAnim.Read(exINI, pID, "CreateUnit.SpawnAnim");
+	this->XDrawOffset.Read(exINI, pID, "XDrawOffset");
+	this->HideIfNoOre_Threshold.Read(exINI, pID, "HideIfNoOre.Threshold");
+	this->Layer_UseObjectLayer.Read(exINI, pID, "Layer.UseObjectLayer");
+	this->UseCenterCoordsIfAttached.Read(exINI, pID, "UseCenterCoordsIfAttached");
+	this->Weapon.Read(exINI, pID, "Weapon", true);
+	this->Damage_Delay.Read(exINI, pID, "Damage.Delay");
+	this->Damage_DealtByInvoker.Read(exINI, pID, "Damage.DealtByInvoker");
+	this->Damage_ApplyOncePerLoop.Read(exINI, pID, "Damage.ApplyOncePerLoop");
+	this->ExplodeOnWater.Read(exINI, pID, "ExplodeOnWater");
+	this->Warhead_Detonate.Read(exINI, pID, "Warhead.Detonate");
+	this->WakeAnim.Read(exINI, pID, "WakeAnim");
+	this->SplashAnims.Read(exINI, pID, "SplashAnims");
+	this->SplashAnims_PickRandom.Read(exINI, pID, "SplashAnims.PickRandom");
+	this->AttachedSystem.Read(exINI, pID, "AttachedSystem", true);
 }
 
 template <typename T>
@@ -100,6 +125,23 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CreateUnit_InheritTurretFacings)
 		.Process(this->CreateUnit_Owner)
 		.Process(this->CreateUnit_RandomFacing)
+		.Process(this->CreateUnit_AlwaysSpawnOnGround)
+		.Process(this->CreateUnit_ConsiderPathfinding)
+		.Process(this->CreateUnit_SpawnAnim)
+		.Process(this->XDrawOffset)
+		.Process(this->HideIfNoOre_Threshold)
+		.Process(this->Layer_UseObjectLayer)
+		.Process(this->UseCenterCoordsIfAttached)
+		.Process(this->Weapon)
+		.Process(this->Damage_Delay)
+		.Process(this->Damage_DealtByInvoker)
+		.Process(this->Damage_ApplyOncePerLoop)
+		.Process(this->ExplodeOnWater)
+		.Process(this->Warhead_Detonate)
+		.Process(this->WakeAnim)
+		.Process(this->SplashAnims)
+		.Process(this->SplashAnims_PickRandom)
+		.Process(this->AttachedSystem)
 		;
 }
 

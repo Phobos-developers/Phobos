@@ -1,11 +1,27 @@
 #include "Body.h"
+#include <GameStrings.h>
+#include <Ext/Bullet/Body.h>
 
 template<> const DWORD Extension<WeaponTypeClass>::Canary = 0x22222222;
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
 void WeaponTypeExt::ExtData::Initialize()
 {
-	this->RadType = RadTypeClass::FindOrAllocate("Radiation");
+	this->RadType = RadTypeClass::FindOrAllocate(GameStrings::Radiation);
+}
+
+int WeaponTypeExt::ExtData::GetBurstDelay(int burstIndex)
+{
+	int burstDelay = -1;
+
+	if (burstIndex == 0)
+		return 0;
+	else if (this->Burst_Delays.size() > (unsigned)burstIndex)
+		burstDelay = this->Burst_Delays[burstIndex - 1];
+	else if (this->Burst_Delays.size() > 0)
+		burstDelay = this->Burst_Delays[this->Burst_Delays.size() - 1];
+
+	return burstDelay;
 }
 
 // =============================
@@ -21,27 +37,25 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	INI_EX exINI(pINI);
 
-	{ // DiskLaser_Radius
-		this->DiskLaser_Radius.Read(exINI, pSection, "DiskLaser.Radius");
-		this->DiskLaser_Circumference = (int)(this->DiskLaser_Radius * Math::Pi * 2);
-	}
+	this->DiskLaser_Radius.Read(exINI, pSection, "DiskLaser.Radius");
 
 	this->Bolt_Disable1.Read(exINI, pSection, "Bolt.Disable1");
 	this->Bolt_Disable2.Read(exINI, pSection, "Bolt.Disable2");
 	this->Bolt_Disable3.Read(exINI, pSection, "Bolt.Disable3");
 
-	// RadTypeClass
-//	if (this->OwnerObject()->RadLevel > 0) 
-//	{
 	this->RadType.Read(exINI, pSection, "RadType", true);
-	//	Debug::Log("Weapon[%s] :: Has RadLevel[%d] Rad check [%s]  \n", pSection , this->OwnerObject()->RadLevel , this->RadType->Name.data());
-	this->Rad_NoOwner.Read(exINI, pSection, "Rad.NoOwner");
-	//	}
 
 	this->Strafing_Shots.Read(exINI, pSection, "Strafing.Shots");
 	this->Strafing_SimulateBurst.Read(exINI, pSection, "Strafing.SimulateBurst");
+	this->CanTarget.Read(exINI, pSection, "CanTarget");
 	this->CanTargetHouses.Read(exINI, pSection, "CanTargetHouses");
 	this->Burst_Delays.Read(exINI, pSection, "Burst.Delays");
+	this->Burst_FireWithinSequence.Read(exINI, pSection, "Burst.FireWithinSequence");
+	this->AreaFire_Target.Read(exINI, pSection, "AreaFire.Target");
+	this->FeedbackWeapon.Read(exINI, pSection, "FeedbackWeapon", true);
+	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
+	this->ROF_RandomDelay.Read(exINI, pSection, "ROF.RandomDelay");
+	this->OmniFire_TurnToTarget.Read(exINI, pSection, "OmniFire.TurnToTarget");
 }
 
 template <typename T>
@@ -49,16 +63,21 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->DiskLaser_Radius)
-		.Process(this->DiskLaser_Circumference)
-		.Process(this->Rad_NoOwner)
 		.Process(this->Bolt_Disable1)
 		.Process(this->Bolt_Disable2)
 		.Process(this->Bolt_Disable3)
 		.Process(this->Strafing_Shots)
 		.Process(this->Strafing_SimulateBurst)
+		.Process(this->CanTarget)
 		.Process(this->CanTargetHouses)
 		.Process(this->RadType)
 		.Process(this->Burst_Delays)
+		.Process(this->Burst_FireWithinSequence)
+		.Process(this->AreaFire_Target)
+		.Process(this->FeedbackWeapon)
+		.Process(this->Laser_IsSingleColor)
+		.Process(this->ROF_RandomDelay)
+		.Process(this->OmniFire_TurnToTarget)
 		;
 };
 
@@ -78,15 +97,65 @@ void WeaponTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 bool WeaponTypeExt::LoadGlobals(PhobosStreamReader& Stm)
 {
 	return Stm
-		.Process(nOldCircumference)
+		.Process(OldRadius)
 		.Success();
 }
 
 bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
 	return Stm
-		.Process(nOldCircumference)
+		.Process(OldRadius)
 		.Success();
+}
+
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse)
+{
+	WeaponTypeExt::DetonateAt(pThis, pTarget, pOwner, pThis->Damage, pFiringHouse);
+}
+
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
+{
+	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(pTarget, pOwner,
+		damage, pThis->Warhead, 0, pThis->Bright))
+	{
+		const CoordStruct& coords = pTarget->GetCoords();
+
+		if (pFiringHouse)
+		{
+			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+			pBulletExt->FirerHouse = pFiringHouse;
+		}
+
+		pBullet->SetWeaponType(pThis);
+		pBullet->Limbo();
+		pBullet->SetLocation(coords);
+		pBullet->Explode(true);
+		pBullet->UnInit();
+	}
+}
+
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, HouseClass* pFiringHouse)
+{
+	WeaponTypeExt::DetonateAt(pThis, coords, pOwner, pThis->Damage, pFiringHouse);
+}
+
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
+{
+	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(nullptr, pOwner,
+		damage, pThis->Warhead, 0, pThis->Bright))
+	{
+		if (pFiringHouse)
+		{
+			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+			pBulletExt->FirerHouse = pFiringHouse;
+		}
+
+		pBullet->SetWeaponType(pThis);
+		pBullet->Limbo();
+		pBullet->SetLocation(coords);
+		pBullet->Explode(true);
+		pBullet->UnInit();
+	}
 }
 
 // =============================

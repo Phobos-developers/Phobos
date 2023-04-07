@@ -28,23 +28,23 @@ enum class InitState
  * ==========================
 
  * Extension<T> is the parent class for the data you want to link with this instance of T
-   ( for example, [Warhead]MindControl.Permanent= should be stored in WarheadClassExt::ExtData
-	 which itself should be a derivate of Extension<WarheadTypeClass> )
+	( for example, [Warhead]MindControl.Permanent= should be stored in WarheadClassExt::ExtData
+	which itself should be a derivate of Extension<WarheadTypeClass> )
 
  * ==========================
 
-   Container<TX> is the storage for all the Extension<T> which share the same T,
+	Container<TX> is the storage for all the Extension<T> which share the same T,
 	where TX is the containing class of the relevant derivate of Extension<T>. // complex, huh?
-   ( for example, there is Container<WarheadTypeExt>
-	 which contains all the custom data for all WarheadTypeClass instances,
-	 and WarheadTypeExt itself contains just statics like the Container itself )
+	( for example, there is Container<WarheadTypeExt>
+	which contains all the custom data for all WarheadTypeClass instances,
+	and WarheadTypeExt itself contains just statics like the Container itself )
 
-   Requires:
+	Requires:
 	using base_type = T;
 	const DWORD Extension<T>::Canary = (any dword value easily identifiable in a byte stream)
 	class TX::ExtData : public Extension<T> { custom_data; }
 
-   Complex? Yes. That's partially why you should be happy these are premade for you.
+	Complex? Yes. That's partially why you should be happy these are premade for you.
  *
  */
 
@@ -57,7 +57,7 @@ class Extension
 public:
 	static const DWORD Canary;
 
-	Extension(T* const OwnerObject) : 
+	Extension(T* const OwnerObject) :
 		AttachedToObject(OwnerObject),
 		Initialized(InitState::Blank)
 	{ }
@@ -163,7 +163,7 @@ public:
 		auto const it = this->Items.find(key);
 		if (it != this->Items.end())
 			return it->second;
-		
+
 		return nullptr;
 	}
 
@@ -257,13 +257,13 @@ public:
 	iterator begin() const
 	{
 		auto ret = this->Items.begin();
-		return reinterpret_cast<iterator& >(ret);
+		return reinterpret_cast<iterator&>(ret);
 	}
 
 	iterator end() const
 	{
 		auto ret = this->Items.end();
-		return reinterpret_cast<iterator& >(ret);
+		return reinterpret_cast<iterator&>(ret);
 	}
 
 private:
@@ -329,7 +329,7 @@ public:
 
 		if (auto const ptr = this->Items.find(key))
 			return ptr;
-		
+
 		auto val = new extension_type(key);
 		val->EnsureConstanted();
 
@@ -382,11 +382,11 @@ public:
 			//Debug::Log("[SaveStatic] Saving object %p as '%s'\n", this->SavingObject, this->Name);
 
 			if (!this->Save(this->SavingObject, this->SavingStream))
-				Debug::FatalErrorAndExit("[SaveStatic] Saving failed!\n");
+				Debug::FatalErrorAndExit("SaveStatic - Saving failed!\n");
 		}
 		else
 		{
-			Debug::Log("[SaveStatic] Object or Stream not set for '%s': %p, %p\n",
+			Debug::Log("SaveStatic - Object or Stream not set for '%s': %p, %p\n",
 				this->Name, this->SavingObject, this->SavingStream);
 		}
 
@@ -401,16 +401,31 @@ public:
 			//Debug::Log("[LoadStatic] Loading object %p as '%s'\n", this->SavingObject, this->Name);
 
 			if (!this->Load(this->SavingObject, this->SavingStream))
-				Debug::FatalErrorAndExit("[LoadStatic] Loading failed!\n");
+				Debug::FatalErrorAndExit("LoadStatic - Loading failed!\n");
 		}
 		else
 		{
-			Debug::Log("[LoadStatic] Object or Stream not set for '%s': %p, %p\n",
+			Debug::Log("LoadStatic - Object or Stream not set for '%s': %p, %p\n",
 				this->Name, this->SavingObject, this->SavingStream);
 		}
 
 		this->SavingObject = nullptr;
 		this->SavingStream = nullptr;
+	}
+
+	decltype(auto) begin() const
+	{
+		return this->Items.begin();
+	}
+
+	decltype(auto) end() const
+	{
+		return this->Items.end();
+	}
+
+	size_t size() const
+	{
+		return this->Items.size();
 	}
 
 protected:
@@ -431,7 +446,7 @@ protected:
 		// this really shouldn't happen
 		if (!key)
 		{
-			Debug::Log("[SaveKey] Attempted for a null pointer! WTF!\n");
+			Debug::Log("SaveKey - Attempted for a null pointer! WTF!\n");
 			return nullptr;
 		}
 
@@ -439,7 +454,7 @@ protected:
 		auto buffer = this->Find(key);
 		if (!buffer)
 		{
-			Debug::Log("[SaveKey] Could not find value.\n");
+			Debug::Log("SaveKey - Could not find value.\n");
 			return nullptr;
 		}
 
@@ -456,7 +471,7 @@ protected:
 		// save the block
 		if (!saver.WriteBlockToStream(pStm))
 		{
-			Debug::Log("[SaveKey] Failed to save data.\n");
+			Debug::Log("SaveKey - Failed to save data.\n");
 			return nullptr;
 		}
 
@@ -470,7 +485,7 @@ protected:
 		// this really shouldn't happen
 		if (!key)
 		{
-			Debug::Log("[LoadKey] Attempted for a null pointer! WTF!\n");
+			Debug::Log("LoadKey - Attempted for a null pointer! WTF!\n");
 			return nullptr;
 		}
 
@@ -478,14 +493,14 @@ protected:
 		auto buffer = this->FindOrAllocate(key);
 		if (!buffer)
 		{
-			Debug::Log("[LoadKey] Could not find or allocate value.\n");
+			Debug::Log("LoadKey - Could not find or allocate value.\n");
 			return nullptr;
 		}
 
 		PhobosByteStream loader(0);
 		if (!loader.ReadBlockFromStream(pStm))
 		{
-			Debug::Log("[LoadKey] Failed to read data from save stream?!\n");
+			Debug::Log("LoadKey - Failed to read data from save stream?!\n");
 			return nullptr;
 		}
 

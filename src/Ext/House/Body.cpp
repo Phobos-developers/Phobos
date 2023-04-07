@@ -6,41 +6,38 @@
 #include <ScenarioClass.h>
 
 //Static init
-/*
+
 template<> const DWORD Extension<HouseClass>::Canary = 0x11111111;
 HouseExt::ExtContainer HouseExt::ExtMap;
-*/
+
+bool HouseExt::ExtData::OwnsLimboDeliveredBuilding(BuildingClass* pBuilding)
+{
+	if (!pBuilding)
+		return false;
+
+	return this->OwnedLimboDeliveredBuildings.count(pBuilding);
+}
 
 int HouseExt::ActiveHarvesterCount(HouseClass* pThis)
 {
-	if (!pThis) return 0;
-
 	int result = 0;
-	for (auto techno : *TechnoClass::Array) {
-		if (auto pTechnoExt = TechnoTypeExt::ExtMap.Find(techno->GetTechnoType())) {
-			if (pTechnoExt->IsCountedAsHarvester() && techno->Owner == pThis) {
-				if (auto pTechno = TechnoExt::ExtMap.Find(techno)) {
-					result += TechnoExt::IsHarvesting(techno);
-				}
-			}
+	for (auto pTechno : *TechnoClass::Array)
+	{
+		if (pTechno->Owner == pThis)
+		{
+			auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+			result += pTypeExt->Harvester_Counted && TechnoExt::IsHarvesting(pTechno);
 		}
 	}
-
 	return result;
 }
 
 int HouseExt::TotalHarvesterCount(HouseClass* pThis)
 {
-	if (!pThis)	return 0;
-
 	int result = 0;
-	for (auto techno : *TechnoTypeClass::Array) {
-		if (auto pTechnoExt = TechnoTypeExt::ExtMap.Find(techno)) {
-			if (pTechnoExt->IsCountedAsHarvester()) {
-				result += pThis->CountOwnedAndPresent(techno);
-			}
-		}
-	}
+
+	for (auto pType : RulesExt::Global()->HarvesterTypes)
+		result += pThis->CountOwnedAndPresent(pType);
 
 	return result;
 }
@@ -76,16 +73,86 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 		return pDefault;
 	}
 }
+
+void HouseExt::ExtData::UpdateAutoDeathObjectsInLimbo()
+{
+	for (auto pExt : this->OwnedTimedAutoDeathObjects)
+	{
+		auto pItem = pExt->OwnerObject();
+
+		if (!pItem->IsInLogic && pItem->IsAlive && pExt->TypeExtData->AutoDeath_Behavior.isset() && pExt->AutoDeathTimer.Completed())
+		{
+			auto const pBuilding = abstract_cast<BuildingClass*>(pItem);
+
+			if (this->OwnedLimboDeliveredBuildings.contains(pBuilding))
+				this->OwnedLimboDeliveredBuildings.erase(pBuilding);
+
+			pItem->RegisterDestruction(nullptr);
+			// I doubt those in LimboDelete being really necessary, they're gonna be updated either next frame or after uninit anyway
+			pItem->UnInit();
+		}
+	}
+}
+
+void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+{
+	const char* pSection = this->OwnerObject()->PlainName;
+
+	INI_EX exINI(pINI);
+
+	ValueableVector<bool> readBaseNodeRepairInfo;
+	readBaseNodeRepairInfo.Read(exINI, pSection, "RepairBaseNodes");
+	size_t nWritten = readBaseNodeRepairInfo.size();
+	if (nWritten > 0)
+	{
+		for (size_t i = 0; i < 3; i++)
+			this->RepairBaseNodes[i] = readBaseNodeRepairInfo[i < nWritten ? i : nWritten - 1];
+	}
+
+}
+
+
 // =============================
 // load / save
 
-/*
-void HouseExt::ExtData::LoadFromStream(IStream* Stm) {
-	
+template <typename T>
+void HouseExt::ExtData::Serialize(T& Stm)
+{
+	Stm
+		.Process(this->BuildingCounter)
+		.Process(this->OwnedLimboDeliveredBuildings)
+		.Process(this->OwnedTimedAutoDeathObjects)
+		.Process(this->Factory_BuildingType)
+		.Process(this->Factory_InfantryType)
+		.Process(this->Factory_VehicleType)
+		.Process(this->Factory_NavyType)
+		.Process(this->Factory_AircraftType)
+		.Process(this->RepairBaseNodes)
+		;
 }
 
-void HouseExt::ExtData::SaveToStream(IStream* Stm) {
-	
+void HouseExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+{
+	Extension<HouseClass>::LoadFromStream(Stm);
+	this->Serialize(Stm);
+}
+
+void HouseExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+{
+	Extension<HouseClass>::SaveToStream(Stm);
+	this->Serialize(Stm);
+}
+
+bool HouseExt::LoadGlobals(PhobosStreamReader& Stm)
+{
+	return Stm
+		.Success();
+}
+
+bool HouseExt::SaveGlobals(PhobosStreamWriter& Stm)
+{
+	return Stm
+		.Success();
 }
 
 // =============================
@@ -128,24 +195,16 @@ DEFINE_HOOK(0x503040, HouseClass_SaveLoad_Prefix, 0x5)
 
 DEFINE_HOOK(0x504069, HouseClass_Load_Suffix, 0x7)
 {
-	auto pItem = HouseExt::ExtMap.Find(HouseExt::ExtMap.SavingObject);
-	IStream* pStm = HouseExt::ExtMap.SavingStream;
-
-	pItem->LoadFromStream(pStm);
-
+	HouseExt::ExtMap.LoadStatic();
 	return 0;
 }
 
 DEFINE_HOOK(0x5046DE, HouseClass_Save_Suffix, 0x7)
 {
-	auto pItem = HouseExt::ExtMap.Find(HouseExt::ExtMap.SavingObject);
-	IStream* pStm = HouseExt::ExtMap.SavingStream;
-
-	pItem->SaveToStream(pStm);
+	HouseExt::ExtMap.SaveStatic();
 	return 0;
 }
-*/
-/*
+
 DEFINE_HOOK(0x50114D, HouseClass_InitFromINI, 0x5)
 {
 	GET(HouseClass* const, pThis, EBX);
@@ -154,4 +213,4 @@ DEFINE_HOOK(0x50114D, HouseClass_InitFromINI, 0x5)
 	HouseExt::ExtMap.LoadFromINI(pThis, pINI);
 
 	return 0;
-}*/
+}

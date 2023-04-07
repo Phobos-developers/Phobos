@@ -1,20 +1,68 @@
 # Visual Studio generated .editorconfig file with C++ settings.
 root = true
 
+# Default Code Style settings
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[.gitattributes]
+charset = utf-8
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = true
+
+# Makefile Code Style settings
+[Makefile]
+indent_style = tab
+indent_size = 4
+
+# Json Code Style settings
+[*.json]
+indent_style = space
+indent_size = 2
+
+# yml Code Style settings
+[*.yml]
+indent_style = space
+indent_size = 2
+
+# xml Code Style settings
+[*.{xml,html}]
+indent_style = space
+indent_size = 2
+
+# vcxproj Code Style settings
+[*.vcxproj]
+indent_style = space
+indent_size = 2
+insert_final_newline = false
+
+# Ignore scripts/vswhere.exe
+[vswhere.exe]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+indent_style = unset
+indent_size = unset
+
+[.vsconfig]
+generated_code = true
+
+# C++ Code Style settings
 [*.{c++,cc,cpp,cppm,cxx,h,h++,hh,hpp,hxx,inl,ipp,ixx,tlh,tli}]
 
 # Vanilla EditorConfig settings
-
-charset = utf-8
 indent_style = tab
 indent_size = 4
 
 # Visual C++ Code Style settings
-
 cpp_generate_documentation_comments = xml
 
 # Visual C++ Formatting settings
-
 cpp_indent_braces = false
 cpp_indent_multi_line_relative_to = innermost_parenthesis
 cpp_indent_within_parentheses = indent

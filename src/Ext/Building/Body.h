@@ -1,11 +1,18 @@
 #pragma once
 #include <BuildingClass.h>
+#include <HouseClass.h>
+#include <TiberiumClass.h>
+#include <FactoryClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
+#include <Misc/FlyingStrings.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
+#include <Ext/Building/Body.h>
+#include <Ext/BuildingType/Body.h>
 
 class BuildingExt
 {
@@ -15,17 +22,37 @@ public:
 	class ExtData final : public Extension<BuildingClass>
 	{
 	public:
-		Valueable<bool> DeployedTechno;
+		BuildingTypeExt::ExtData* TypeExtData;
+		bool DeployedTechno;
+		bool IsCreatedFromMapFile;
+		int LimboID;
+		int GrindingWeapon_LastFiredFrame;
+		BuildingClass* CurrentAirFactory;
+		int AccumulatedIncome;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
-			, DeployedTechno(false)
+			, TypeExtData { nullptr }
+			, DeployedTechno { false }
+			, IsCreatedFromMapFile { false }
+			, LimboID { -1 }
+			, GrindingWeapon_LastFiredFrame { 0 }
+			, CurrentAirFactory { nullptr }
+			, AccumulatedIncome { 0 }
 		{ }
 
+		void DisplayIncomeString();
+		void ApplyPoweredKillSpawns();
+		bool HasSuperWeapon(int index, bool withUpgrades) const;
+
+		void UpdatePrimaryFactoryAI();
 		virtual ~ExtData() = default;
 
 		// virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+		{
+			AnnounceInvalidPointer(CurrentAirFactory, ptr);
+		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -40,10 +67,30 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+			switch (abs)
+			{
+			case AbstractType::Building:
+				return false;
+			default:
+				return true;
+			}
+		}
 	};
 
 	static ExtContainer ExtMap;
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static void StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType, int idxStorageTiberiumType);
+
+	static int CountOccupiedDocks(BuildingClass* pBuilding);
+	static bool HasFreeDocks(BuildingClass* pBuilding);
+	static bool CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno);
+	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund);
+	static bool HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse);
 };

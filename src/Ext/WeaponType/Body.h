@@ -1,6 +1,7 @@
 #pragma once
+#include <BulletClass.h>
 #include <WeaponTypeClass.h>
-
+#include <DiskLaserClass.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -17,30 +18,42 @@ public:
 	public:
 
 		Valueable<double> DiskLaser_Radius;
-		Valueable<int> DiskLaser_Circumference;
 		Valueable<RadTypeClass*> RadType;
-		Valueable<bool> Rad_NoOwner;
 		Valueable<bool> Bolt_Disable1;
 		Valueable<bool> Bolt_Disable2;
 		Valueable<bool> Bolt_Disable3;
 		Valueable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
+		Valueable<AffectedTarget> CanTarget;
 		Valueable<AffectedHouse> CanTargetHouses;
 		ValueableVector<int> Burst_Delays;
-		
+		Valueable<bool> Burst_FireWithinSequence;
+		Valueable<AreaFireTarget> AreaFire_Target;
+		Nullable<WeaponTypeClass*> FeedbackWeapon;
+		Valueable<bool> Laser_IsSingleColor;
+		Nullable<PartialVector2D<int>> ROF_RandomDelay;
+		Valueable<bool> OmniFire_TurnToTarget;
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
-			, DiskLaser_Radius(38.2)
-			, DiskLaser_Circumference(240)
-			, RadType()
-			, Rad_NoOwner(false)
-			, Bolt_Disable1(false)
-			, Bolt_Disable2(false)
-			, Bolt_Disable3(false)
-			, Strafing_Shots(5)
-			, Strafing_SimulateBurst(false)
-			, CanTargetHouses(AffectedHouse::All)
-			, Burst_Delays()
+			, DiskLaser_Radius { DiskLaserClass::Radius }
+			, RadType {}
+			, Bolt_Disable1 { false }
+			, Bolt_Disable2 { false }
+			, Bolt_Disable3 { false }
+			, Strafing_Shots { 5 }
+			, Strafing_SimulateBurst { false }
+			, CanTarget { AffectedTarget::All }
+			, CanTargetHouses { AffectedHouse::All }
+			, Burst_Delays {}
+			, Burst_FireWithinSequence { false }
+			, AreaFire_Target { AreaFireTarget::Base }
+			, FeedbackWeapon {}
+			, Laser_IsSingleColor { false }
+			, ROF_RandomDelay {}
+			, OmniFire_TurnToTarget { false }
 		{ }
+
+		int GetBurstDelay(int burstIndex);
 
 		virtual ~ExtData() = default;
 
@@ -70,5 +83,10 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
-	static int nOldCircumference;
+	static double OldRadius;
+
+	static void DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr);
+	static void DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
+	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr);
+	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
 };

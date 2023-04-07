@@ -8,6 +8,12 @@
 
 #include <map>
 
+struct ExtendedVariable
+{
+	char Name[0x100];
+	int Value;
+};
+
 class ScenarioExt
 {
 public:
@@ -17,14 +23,12 @@ public:
 	{
 	public:
 		std::map<int, CellStruct> Waypoints;
-		std::map<int, Variable> Variables[2]; // 0 for local, 1 for global
+		std::map<int, ExtendedVariable> Variables[2]; // 0 for local, 1 for global
 
-		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject),
-			Waypoints { },
-			Variables { }
-		{
-
-		}
+		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
+			, Waypoints { }
+			, Variables { }
+		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
 		void GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut);

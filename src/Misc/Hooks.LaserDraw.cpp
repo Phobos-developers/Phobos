@@ -4,6 +4,7 @@
 #include <GeneralStructures.h>
 #include <Utilities/Debug.h>
 #include <Utilities/Macro.h>
+#include <Utilities/GeneralUtils.h>
 
 namespace LaserDrawTemp
 {
@@ -24,15 +25,17 @@ DEFINE_HOOK(0x550F47, LaserDrawClass_DrawInHouseColor_BetterDrawing, 0x0)
 	R->ESI(noQuickDraw ? 8u : 64u);
 
 	GET(LaserDrawClass*, pThis, EBX);
-	GET_STACK(int, currentThickness, 0x5C)
+	GET_STACK(int, currentThickness, 0x5C);
 
-	// Map value from range of [1, Thickness] to [0, pi/2]
-	double x = 0;
+	double mult = 1.0;
+
 	if (pThis->Thickness > 1)
-		x = Math::HalfPi * (currentThickness - 1) / (pThis->Thickness - 1);
+	{
+		double falloffStep = 1.0 / pThis->Thickness;
+		double falloffMult = GeneralUtils::FastPow(1.0 - falloffStep, currentThickness);
+		mult = (1.0 - falloffStep * currentThickness) * falloffMult;
+	}
 
-	// Cosine function for falloff
-	double mult = Math::cos(x);
 	unsigned int r = (unsigned int)(mult * LaserDrawTemp::maxColor.R);
 	unsigned int g = (unsigned int)(mult * LaserDrawTemp::maxColor.G);
 	unsigned int b = (unsigned int)(mult * LaserDrawTemp::maxColor.B);

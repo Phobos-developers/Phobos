@@ -10,6 +10,7 @@
 
 #include <ArrayClasses.h>
 #include <CCINIClass.h>
+#include "Swizzle.h"
 
 template <typename T> class Enumerable
 {
@@ -27,7 +28,7 @@ public:
 
 		if (result == Array.end())
 			return -1;
-		
+
 		return std::distance(Array.begin(), result);
 	}
 
@@ -41,9 +42,9 @@ public:
 	{
 		if (T* find = Find(Title))
 			return find;
-		
+
 		Array.push_back(std::make_unique<T>(Title));
-		
+
 		return Array.back().get();
 	}
 
@@ -62,7 +63,7 @@ public:
 			if (pINI->ReadString(section, pINI->GetKeyName(section, i), "", Phobos::readBuffer))
 				FindOrAllocate(Phobos::readBuffer);
 		}
-		
+
 		for (const auto& item : Array)
 			item->LoadFromINI(pINI);
 	}
@@ -74,7 +75,7 @@ public:
 		size_t Count = 0;
 		if (!Stm.Load(Count))
 			return false;
-		
+
 
 		for (size_t i = 0; i < Count; ++i) {
 			void* oldPtr = nullptr;

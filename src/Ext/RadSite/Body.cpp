@@ -1,27 +1,50 @@
 #include "Body.h"
-
+#include <GameStrings.h>
 #include <New/Type/RadTypeClass.h>
+#include <Ext/WarheadType/Body.h>
 #include <LightSourceClass.h>
 
 template<> const DWORD Extension<RadSiteClass>::Canary = 0x87654321;
 RadSiteExt::ExtContainer RadSiteExt::ExtMap;
 
-DynamicVectorClass<RadSiteExt::ExtData*> RadSiteExt::Array;
-
 void RadSiteExt::ExtData::Initialize()
 {
-	this->Type = RadTypeClass::FindOrAllocate("Radiation");
+	this->Type = RadTypeClass::FindOrAllocate(GameStrings::Radiation);
 }
 
-void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner)
+bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance)
+{
+	auto pWarhead = this->Type->GetWarhead();
+
+	if (!this->Type->GetWarheadDetonate())
+	{
+		if (pTarget->ReceiveDamage(&damage, distance, pWarhead, this->RadInvoker, false, true, this->RadHouse) == DamageState::NowDead)
+			return false;
+	}
+	else
+	{
+		WarheadTypeExt::DetonateAt(pWarhead, pTarget, this->RadInvoker, damage);
+
+		if (!pTarget->IsAlive)
+			return false;
+	}
+
+	return true;
+}
+
+
+void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker)
 {
 	// use real ctor
 	auto const pRadSite = GameCreate<RadSiteClass>();
 	auto pRadExt = RadSiteExt::ExtMap.FindOrAllocate(pRadSite);
 
 	//Adding Owner to RadSite, from bullet
-	if (!pWeaponExt->Rad_NoOwner && pRadExt->RadHouse != pOwner)
+	if (pWeaponExt->RadType->GetHasOwner() && pRadExt->RadHouse != pOwner)
 		pRadExt->RadHouse = pOwner;
+
+	if (pWeaponExt->RadType->GetHasInvoker() && pRadExt->RadInvoker != pInvoker)
+		pRadExt->RadInvoker = pInvoker;
 
 	pRadExt->Weapon = pWeaponExt->OwnerObject();
 	pRadExt->Type = pWeaponExt->RadType;
@@ -29,8 +52,6 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 	pRadSite->SetSpread(spread);
 	RadSiteExt::SetRadLevel(pRadSite, amount);
 	RadSiteExt::CreateLight(pRadSite);
-
-	Array.AddUnique(pRadExt);
 }
 
 //RadSiteClass Activate , Rewritten
@@ -63,7 +84,7 @@ void RadSiteExt::CreateLight(RadSiteClass* pThis)
 	//=========Green
 	auto green = ((1000 * nRadcolor.G) / 255) * nTintFactor;
 	green = Math::min(green, 2000.0);
-	//=========Blue 
+	//=========Blue
 	auto blue = ((1000 * nRadcolor.B) / 255) * nTintFactor;
 	blue = Math::min(blue, 2000.0);;
 
@@ -129,6 +150,7 @@ void RadSiteExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->Weapon)
 		.Process(this->RadHouse)
+		.Process(this->RadInvoker)
 		.Process(this->Type)
 		;
 }
@@ -157,9 +179,7 @@ RadSiteExt::ExtContainer::~ExtContainer() = default;
 DEFINE_HOOK(0x65B28D, RadSiteClass_CTOR, 0x6)
 {
 	GET(RadSiteClass*, pThis, ESI);
-	auto pRadSiteExt = RadSiteExt::ExtMap.FindOrAllocate(pThis);
-
-	RadSiteExt::Array.AddUnique(pRadSiteExt);
+	RadSiteExt::ExtMap.FindOrAllocate(pThis);
 
 	return 0;
 }
@@ -167,10 +187,8 @@ DEFINE_HOOK(0x65B28D, RadSiteClass_CTOR, 0x6)
 DEFINE_HOOK(0x65B2F4, RadSiteClass_DTOR, 0x5)
 {
 	GET(RadSiteClass*, pThis, ECX);
-	auto pRadExt = RadSiteExt::ExtMap.Find(pThis);
 
 	RadSiteExt::ExtMap.Remove(pThis);
-	RadSiteExt::Array.Remove(pRadExt);
 
 	return 0;
 }
