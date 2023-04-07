@@ -226,8 +226,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
 	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
 
-	this->GiftBoxData.Read(exINI, pSection);
-
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
 	auto pArtSection = pThis->ImageFile;
@@ -314,6 +312,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	{
 		this->InterceptorType.reset();
 	}
+
+	this->GiftBoxData.Read(exINI, pSection);
 }
 
 template <typename T>

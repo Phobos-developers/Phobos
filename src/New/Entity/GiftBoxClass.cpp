@@ -68,15 +68,15 @@ const bool GiftBoxClass::CreateType(int nIndex, GiftBoxData& nGboxData, CoordStr
 			if (pObject->WhatAmI() == AbstractType::Building)
 			{
 				++Unsorted::IKnowWhatImDoing();
-				bSuccess = pObject->Unlimbo(nCoord, Direction::E);
+				bSuccess = pObject->Unlimbo(nCoord, DirType::East);
 				--Unsorted::IKnowWhatImDoing();
 				pObject->Location = nCoord;
 			}
 			else
 			{
 				auto pFoot = abstract_cast<FootClass*>(pObject);
-				auto nRandFacing = static_cast<unsigned int>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
-				bSuccess = pObject->Unlimbo(CoordStruct{ 0,0,100000 }, nRandFacing);
+				auto nRandFacing = static_cast<unsigned int>(ScenarioClass::Instance->Random.RandomRanged(0, 65535));
+				bSuccess = pObject->Unlimbo(CoordStruct{ 0,0,100000 }, DirType(nRandFacing));
 				pObject->SetLocation(nCoord);
 
 				auto pCurrentCell = MapClass::Instance->TryGetCellAt(nCoord);

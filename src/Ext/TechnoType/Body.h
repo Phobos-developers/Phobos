@@ -264,7 +264,7 @@ public:
 			, Explodes_KillPassengers { true }
 			, DeployFireWeapon {}
 			, TargetZoneScanType { TargetZoneScanType::Same }
-			GiftBoxData()
+			, GiftBoxData {}
 		{ }
 
 		virtual ~ExtData() = default;

@@ -58,7 +58,7 @@ public:
 			, IsInTunnel { false }
 			, DeployFireTimer {}
 			, ForceFullRearmDelay { false }
-			AttachedGiftBox()
+			, AttachedGiftBox {}
 		{ }
 
 		void ApplyInterceptor();

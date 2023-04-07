@@ -165,6 +165,9 @@ DEFINE_HOOK(0x6F6AC4, TechnoClass_Remove_Shield, 0x5)
 	if (pExt->Shield)
 		pExt->Shield->KillAnim();
 
+	return 0;
+}
+
 DEFINE_HOOK_AGAIN(0x44A03C, DeploysInto_UndeploysInto_SyncShieldStatus, 0x6) //BuildingClass_Mi_Selling_SyncShieldStatus
 DEFINE_HOOK(0x739956, DeploysInto_UndeploysInto_SyncShieldStatus, 0x6) //UnitClass_Deploy_SyncShieldStatus
 {
@@ -172,6 +175,7 @@ DEFINE_HOOK(0x739956, DeploysInto_UndeploysInto_SyncShieldStatus, 0x6) //UnitCla
 	GET(TechnoClass*, pTo, EBX);
 
 	ShieldClass::SyncShieldToAnother(pFrom, pTo);
+
 	return 0;
 }
 
