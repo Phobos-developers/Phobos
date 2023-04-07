@@ -7,7 +7,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/TEvent/Body.h>
-#include <New/Entity/GiftBoxClass.h>
+#include <New/Entity/Affiliated/GiftBoxClass.h>
 
 bool bSkipLowDamageCheck = false;
 

@@ -1,11 +1,39 @@
-#include "GiftBoxClass.h"
+#include <New/Entity/Affiliated/GiftBoxClass.h>
 
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <ScenarioClass.h>
+#include <BuildingClass.h>
 #include <SlaveManagerClass.h>
 #include <SpawnManagerClass.h>
 #include <InfantryClass.h>
+
+bool GiftBoxClass::Open()
+{
+	return this->IsOpen ? false : CheckDelay();
+}
+
+bool GiftBoxClass::CheckDelay()
+{
+	//dont execute everytime if not enabled
+	if (this->IsEnabled)
+	{
+		if (--this->Delay <= 0)
+		{
+			this->IsOpen = true;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void GiftBoxClass::Reset(int delay)
+{
+	this->Delay = delay;
+	this->IsOpen = false;
+	this->IsTechnoChange = false;
+}
 
 const bool GiftBoxClass::OpenDisallowed()
 {
@@ -46,16 +74,16 @@ const bool GiftBoxClass::OpenDisallowed()
 	return false;
 }
 
-const bool GiftBoxClass::CreateType(int nIndex, GiftBoxData& nGboxData, CoordStruct nCoord, CoordStruct nDestCoord)
+const bool GiftBoxClass::CreateType(int nIndex, GiftBoxTypeClass* nGboxData, CoordStruct nCoord, CoordStruct nDestCoord)
 {
-	auto pItem = nGboxData.TechnoList.at(nIndex);
+	auto pItem = nGboxData->TechnoList.at(nIndex);
 
-	if (!pItem || !nGboxData.Count.at(nIndex))
+	if (!pItem || !nGboxData->Count.at(nIndex))
 		return false;
 
 	bool bSuccess = false;
 
-	for (int i = 0; i < nGboxData.Count.at(nIndex); ++i)
+	for (int i = 0; i < nGboxData->Count.at(nIndex); ++i)
 	{
 		if (auto pObject = pItem->CreateObject(this->Techno->Owner))
 		{
@@ -76,7 +104,7 @@ const bool GiftBoxClass::CreateType(int nIndex, GiftBoxData& nGboxData, CoordStr
 			{
 				auto pFoot = abstract_cast<FootClass*>(pObject);
 				auto nRandFacing = static_cast<unsigned int>(ScenarioClass::Instance->Random.RandomRanged(0, 65535));
-				bSuccess = pObject->Unlimbo(CoordStruct{ 0,0,100000 }, DirType(nRandFacing));
+				bSuccess = pObject->Unlimbo(CoordStruct { 0,0,100000 }, DirType(nRandFacing));
 				pObject->SetLocation(nCoord);
 
 				auto pCurrentCell = MapClass::Instance->TryGetCellAt(nCoord);
@@ -115,13 +143,13 @@ const bool GiftBoxClass::CreateType(int nIndex, GiftBoxData& nGboxData, CoordStr
 	return bSuccess;
 }
 
-CoordStruct GiftBoxClass::GetRandomCoordsNear(GiftBoxData& nGiftBox, CoordStruct nCoord)
+CoordStruct GiftBoxClass::GetRandomCoordsNear(GiftBoxTypeClass* nGiftBox, CoordStruct nCoord)
 {
-	if (nGiftBox.RandomRange.Get() > 0)
+	if (nGiftBox->RandomRange.Get() > 0)
 	{
 		if (auto nCellLoc = MapClass::Instance->TryGetCellAt(nCoord))
 		{
-			for (CellSpreadEnumerator it((size_t)abs(nGiftBox.RandomRange.Get())); it; ++it)
+			for (CellSpreadEnumerator it((size_t)abs(nGiftBox->RandomRange.Get())); it; ++it)
 			{
 				auto const& offset = *it;
 				if (offset == CellStruct::Empty)
@@ -129,7 +157,7 @@ CoordStruct GiftBoxClass::GetRandomCoordsNear(GiftBoxData& nGiftBox, CoordStruct
 
 				if (auto pCell = MapClass::Instance->TryGetCellAt(CellClass::Cell2Coord(nCellLoc->MapCoords + offset)))
 				{
-					if (nGiftBox.EmptyCell.Get() && (pCell->GetBuilding() || pCell->GetUnit(false) || pCell->GetInfantry(false)))
+					if (nGiftBox->EmptyCell.Get() && (pCell->GetBuilding() || pCell->GetUnit(false) || pCell->GetInfantry(false)))
 					{
 						continue;
 					}
@@ -177,16 +205,16 @@ const void GiftBoxClass::AI()
 		if (!IsTechnoChange && (strcmp(this->TechnoID, newID) != 0))
 			strcpy_s(this->TechnoID, newID);
 
-		if (!pTypeExt->GiftBoxData)
+		if (!pTypeExt->GiftBoxType)
 			return;
 
 		if (!pGiftBox->Delay)
 		{
-			nDelay = pTypeExt->GiftBoxData.Delay.Get();
+			nDelay = pTypeExt->GiftBoxType->Delay.Get();
 
 			// Use RandomDelay Instead
-			if(pTypeExt->GiftBoxData.DelayMinMax.Get().Y > 0)
-				nDelay = ScenarioClass::Instance->Random.RandomRanged(pTypeExt->GiftBoxData.DelayMinMax.Get().X, pTypeExt->GiftBoxData.DelayMinMax.Get().Y);
+			if (pTypeExt->GiftBoxType->DelayMinMax.Get().Y > 0)
+				nDelay = ScenarioClass::Instance->Random.RandomRanged(pTypeExt->GiftBoxType->DelayMinMax.Get().X, pTypeExt->GiftBoxType->DelayMinMax.Get().Y);
 
 			pGiftBox->Delay = abs(nDelay);
 		}
@@ -195,7 +223,7 @@ const void GiftBoxClass::AI()
 
 		if (pGiftBox->Open())
 		{
-			auto nCoord = GiftBoxClass::GetRandomCoordsNear(pTypeExt->GiftBoxData, pTechno->GetCoords());
+			auto nCoord = GiftBoxClass::GetRandomCoordsNear(pTypeExt->GiftBoxType.get(), pTechno->GetCoords());
 			auto nDestination = nCoord;
 
 			if (pTechno->What_Am_I() != AbstractType::Building)
@@ -206,21 +234,21 @@ const void GiftBoxClass::AI()
 					nDestination = pDest->GetCoords();
 			}
 
-			if (!pTypeExt->GiftBoxData.RandomType.Get())
+			if (!pTypeExt->GiftBoxType->RandomType.Get())
 			{
-				for (size_t nIndex = 0; nIndex < pTypeExt->GiftBoxData.TechnoList.size(); ++nIndex)
+				for (size_t nIndex = 0; nIndex < pTypeExt->GiftBoxType->TechnoList.size(); ++nIndex)
 				{
-					if (!pGiftBox->CreateType(nIndex, pTypeExt->GiftBoxData, nCoord, nDestination))
+					if (!pGiftBox->CreateType(nIndex, pTypeExt->GiftBoxType.get(), nCoord, nDestination))
 						continue;
 				}
 			}
 			else
 			{
-				auto nRandIdx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(pTypeExt->GiftBoxData.TechnoList.size()) - 1);
-				pGiftBox->CreateType(nRandIdx, pTypeExt->GiftBoxData, nCoord, nDestination);
+				auto nRandIdx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(pTypeExt->GiftBoxType->TechnoList.size()) - 1);
+				pGiftBox->CreateType(nRandIdx, pTypeExt->GiftBoxType.get(), nCoord, nDestination);
 			}
 
-			if (pTypeExt->GiftBoxData.Remove.Get())
+			if (pTypeExt->GiftBoxType->Remove.Get())
 			{
 				// Limboing stuffs is not safe method depend on case
 				// maybe need to check if anything else need to be handle
@@ -228,18 +256,18 @@ const void GiftBoxClass::AI()
 				pTechno->Limbo();
 				pTechno->UnInit();
 			}
-			else if (pTypeExt->GiftBoxData.Destroy.Get())
+			else if (pTypeExt->GiftBoxType->Destroy.Get())
 			{
 				auto nDamage = pType->Strength;
 				pTechno->ReceiveDamage(&nDamage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 			}
 			else
 			{
-				nDelay = pTypeExt->GiftBoxData.Delay.Get();
+				nDelay = pTypeExt->GiftBoxType->Delay.Get();
 
 				// Use RandomDelay Instead
-				if (pTypeExt->GiftBoxData.DelayMinMax.Get().Y > 0)
-					nDelay = ScenarioClass::Instance->Random.RandomRanged(pTypeExt->GiftBoxData.DelayMinMax.Get().X, pTypeExt->GiftBoxData.DelayMinMax.Get().Y);
+				if (pTypeExt->GiftBoxType->DelayMinMax.Get().Y > 0)
+					nDelay = ScenarioClass::Instance->Random.RandomRanged(pTypeExt->GiftBoxType->DelayMinMax.Get().X, pTypeExt->GiftBoxType->DelayMinMax.Get().Y);
 
 				pGiftBox->Reset(abs(nDelay));
 			}
@@ -247,15 +275,29 @@ const void GiftBoxClass::AI()
 	}
 }
 
-DEFINE_HOOK(0x6F6CA0, TechnoClass_Put_GiftBox, 0x7)
+#pragma region Save/Load
+
+template <typename T>
+bool GiftBoxClass::Serialize(T& Stm)
 {
-	GET(TechnoClass* const, pThis, ECX);
-
-	auto pTechnoExt = TechnoExt::ExtMap.Find(pThis);
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if (!pTechnoExt->AttachedGiftBox.get() && pTypeExt->GiftBoxData)
-		pTechnoExt->AttachedGiftBox = std::make_unique<GiftBoxClass>(pThis);
-
-	return 0;
+	return Stm
+		.Process(Techno)
+		.Process(IsEnabled)
+		.Process(IsTechnoChange)
+		.Process(IsOpen)
+		.Process(Delay)
+		.Process(TechnoID)
+		.Success();
 }
+
+bool GiftBoxClass::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	return Serialize(Stm);
+}
+
+bool GiftBoxClass::Save(PhobosStreamWriter& Stm) const
+{
+	return const_cast<GiftBoxClass*>(this)->Serialize(Stm);
+}
+
+#pragma endregion

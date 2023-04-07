@@ -29,6 +29,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->UpdateShield();
 	pExt->ApplySpawnLimitRange();
 	pExt->UpdateLaserTrails();
+	pExt->UpdateGiftBox();
 
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
 
@@ -395,4 +396,17 @@ DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
 	}
 
 	return AllowedObject;
+}
+
+DEFINE_HOOK(0x6F6CA0, TechnoClass_Put_GiftBox, 0x7)
+{
+	GET(TechnoClass* const, pThis, ECX);
+
+	auto pTechnoExt = TechnoExt::ExtMap.Find(pThis);
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (!pTechnoExt->AttachedGiftBox.get() && pTypeExt->GiftBoxType)
+		pTechnoExt->AttachedGiftBox = std::make_unique<GiftBoxClass>(pThis);
+
+	return 0;
 }

@@ -8,7 +8,7 @@
 #include <Utilities/Macro.h>
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
-#include <New/Entity/GiftBoxClass.h>
+#include <New/Entity/Affiliated/GiftBoxClass.h>
 
 class BulletClass;
 
@@ -39,6 +39,7 @@ public:
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
 		HouseClass* OriginalPassengerOwner;
+
 		std::unique_ptr<GiftBoxClass> AttachedGiftBox;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
@@ -71,6 +72,7 @@ public:
 		void UpdateLaserTrails();
 		void InitializeLaserTrails();
 		void UpdateMindControlAnim();
+		void UpdateGiftBox();
 
 		virtual ~ExtData() override;
 

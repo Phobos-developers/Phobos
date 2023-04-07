@@ -9,7 +9,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
-#include <New/Entity/GiftBoxClass.h>
+#include <New/Type/Affiliated/GiftBoxTypeClass.h>
 
 class Matrix3D;
 
@@ -134,6 +134,8 @@ public:
 		Nullable<int> DeployFireWeapon;
 		Valueable<TargetZoneScanType> TargetZoneScanType;
 
+		std::unique_ptr<GiftBoxTypeClass> GiftBoxType;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -149,7 +151,6 @@ public:
 		};
 
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
-		GiftBoxData GiftBoxData;
 
 		Nullable<CoordStruct> PronePrimaryFireFLH;
 		Nullable<CoordStruct> ProneSecondaryFireFLH;
@@ -264,7 +265,7 @@ public:
 			, Explodes_KillPassengers { true }
 			, DeployFireWeapon {}
 			, TargetZoneScanType { TargetZoneScanType::Same }
-			, GiftBoxData {}
+			, GiftBoxType { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;
