@@ -331,6 +331,7 @@ Vanilla fixes:
 - Buildings with primary weapon that has `AG=false` projectile now have attack cursor when selected (by Starkku)
 - Transports with `OpenTopped=true` and weapon that has `Burst` above 1 and passengers firing out no longer have the passenger firing offset shift lateral position based on burst index (by Starkku)
 - Light tint created by a building is now able to be removed after loading the game (by Trsdy)
+- Prevented crashing jumpjet units from firing (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
