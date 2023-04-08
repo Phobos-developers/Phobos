@@ -208,6 +208,7 @@ This page lists all the individual contributions to the project by their author.
       - Turret direction in idle state fix
       - Sensor fix
       - Allow to tilt on ground
+      - Forbid firing when crashing
    - OmniFire.TurnToTarget
    - Object Self-destruction logic
    - Misc vanilla suicidal behavior fix
