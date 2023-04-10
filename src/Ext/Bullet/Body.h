@@ -22,7 +22,7 @@ public:
 		bool IsInterceptor;
 		InterceptedStatus InterceptedStatus;
 		bool DetonateOnInterception;
-		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
+		std::vector<LaserTrailClass> LaserTrails;
 
 		PhobosTrajectory* Trajectory;
 

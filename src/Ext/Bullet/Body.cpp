@@ -135,8 +135,7 @@ void BulletExt::ExtData::InitializeLaserTrails()
 		{
 			if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
 			{
-				this->LaserTrails.push_back(
-					std::make_unique<LaserTrailClass>(pLaserType, pOwner));
+				this->LaserTrails.push_back(LaserTrailClass { pLaserType, pOwner });
 			}
 		}
 	}

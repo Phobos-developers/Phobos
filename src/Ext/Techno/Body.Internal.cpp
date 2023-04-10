@@ -16,8 +16,8 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 		{
 			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
 			{
-				this->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
-					pLaserType, this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret));
+				this->LaserTrails.push_back(
+					LaserTrailClass { pLaserType, this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret });
 			}
 		}
 	}
@@ -264,4 +264,29 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
 		pipFrame, &position, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
+}
+
+// This is still not even correct, but let's see how far this can help us
+void TechnoExt::ChangeOwnerMissionFix(FootClass* pThis)
+{
+	pThis->ShouldScanForTarget = false;
+	pThis->ShouldEnterAbsorber = false;
+	pThis->ShouldEnterOccupiable = false;
+	pThis->ShouldGarrisonStructure = false;
+
+	if (pThis->HasAnyLink() || pThis->GetTechnoType()->ResourceGatherer) // Don't want miners to stop
+		return;
+
+	switch (pThis->GetCurrentMission())
+	{
+	case Mission::Harvest:
+	case Mission::Sleep:
+	case Mission::Harmless:
+	case Mission::Repair:
+		return;
+	}
+
+	pThis->Override_Mission(Mission::Guard, nullptr, nullptr); // I don't even know what this is
+	pThis->ShouldLoseTargetNow = TRUE;
+	pThis->QueueMission(pThis->GetTechnoType()->DefaultToGuardArea ? Mission::Area_Guard : Mission::Guard, true);
 }

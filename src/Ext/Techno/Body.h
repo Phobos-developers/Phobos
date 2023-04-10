@@ -21,7 +21,7 @@ public:
 	public:
 		TechnoTypeExt::ExtData* TypeExtData;
 		std::unique_ptr<ShieldClass> Shield;
-		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
+		std::vector<LaserTrailClass> LaserTrails;
 		bool ReceiveDamage;
 		bool LastKillWasTeamTarget;
 		CDTimerClass PassengerDeletionTimer;
@@ -105,6 +105,7 @@ public:
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
 	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
+	static void ChangeOwnerMissionFix(FootClass* pThis);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);

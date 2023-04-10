@@ -87,6 +87,20 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	return 0;
 }
 
+DEFINE_HOOK(0x4DBF13, FootClass_SetOwningHouse, 0x6)
+{
+	GET(FootClass* const, pThis, ESI);
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->LaserTrails.clear();
+	pExt->InitializeLaserTrails();
+
+	if (pThis->Owner->IsHumanPlayer)
+		TechnoExt::ChangeOwnerMissionFix(pThis);
+
+	return 0;
+}
+
 DEFINE_HOOK_AGAIN(0x7355C0, TechnoClass_Init_InitialStrength, 0x6) // UnitClass_Init
 DEFINE_HOOK_AGAIN(0x517D69, TechnoClass_Init_InitialStrength, 0x6) // InfantryClass_Init
 DEFINE_HOOK_AGAIN(0x442C7B, TechnoClass_Init_InitialStrength, 0x6) // BuildingClass_Init
@@ -242,10 +256,10 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 
 	if (pTechnoExt)
 	{
-		for (auto& pLaserTrail : pTechnoExt->LaserTrails)
+		for (auto& trail : pTechnoExt->LaserTrails)
 		{
-			pLaserTrail->Visible = false;
-			pLaserTrail->LastLocation = { };
+			trail.Visible = false;
+			trail.LastLocation = { };
 		}
 	}
 
@@ -259,10 +273,10 @@ DEFINE_HOOK(0x4D7221, FootClass_Unlimbo_LaserTrails, 0x6)
 
 	if (auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno))
 	{
-		for (auto& pLaserTrail : pTechnoExt->LaserTrails)
+		for (auto& trail : pTechnoExt->LaserTrails)
 		{
-			pLaserTrail->LastLocation = { };
-			pLaserTrail->Visible = true;
+			trail.LastLocation = { };
+			trail.Visible = true;
 		}
 	}
 
