@@ -92,8 +92,11 @@ DEFINE_HOOK(0x4DBF13, FootClass_SetOwningHouse, 0x6)
 	GET(FootClass* const, pThis, ESI);
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	pExt->LaserTrails.clear();
-	pExt->InitializeLaserTrails();
+	for (auto& trail : pExt->LaserTrails)
+	{
+		if (trail.Type->IsHouseColor)
+			trail.CurrentColor = pThis->Owner->LaserColor;
+	}
 
 	if (pThis->Owner->IsHumanPlayer)
 		TechnoExt::ChangeOwnerMissionFix(pThis);

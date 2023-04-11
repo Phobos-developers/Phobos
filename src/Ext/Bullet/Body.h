@@ -24,7 +24,7 @@ public:
 		bool DetonateOnInterception;
 		std::vector<LaserTrailClass> LaserTrails;
 
-		PhobosTrajectory* Trajectory;
+		PhobosTrajectory* Trajectory; // TODO: why not unique_ptr
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
 			, TypeExtData { nullptr }

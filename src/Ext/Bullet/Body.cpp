@@ -196,7 +196,7 @@ DEFINE_HOOK(0x4665E9, BulletClass_DTOR, 0xA)
 	GET(BulletClass*, pItem, ESI);
 
 	if (auto pTraj = BulletExt::ExtMap.Find(pItem)->Trajectory)
-		GameDelete(pTraj);
+		DLLDelete(pTraj);
 
 	BulletExt::ExtMap.Remove(pItem);
 	return 0;
