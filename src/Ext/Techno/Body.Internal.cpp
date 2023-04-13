@@ -266,6 +266,108 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 	}
 }
 
+void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
+{
+	Point2D offset = *pLocation;
+
+	SHPStruct* pShapeFile = FileSystem::PIPS_SHP;
+	int defaultFrameIndex = -1;
+
+	auto pTechnoType = pThis->GetTechnoType();
+	auto pOwner = pThis->Owner;
+
+	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	{
+		if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
+		{
+			pTechnoType = pType;
+			pOwner = pThis->DisguisedAsHouse;
+		}
+		else if (!pOwner->IsAlliedWith(HouseClass::CurrentPlayer) && !HouseClass::IsCurrentPlayerObserver())
+		{
+			return;
+		}
+	}
+
+	TechnoTypeExt::ExtData* pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+
+	bool isVisibleToPlayer = (pOwner && pOwner->IsAlliedWith(HouseClass::CurrentPlayer))
+		|| HouseClass::IsCurrentPlayerObserver()
+		|| pTechnoTypeExt->Insignia_ShowEnemy.Get(RulesExt::Global()->EnemyInsignia);
+
+	if (!isVisibleToPlayer)
+		return;
+
+	bool isCustomInsignia = false;
+
+	if (SHPStruct* pCustomShapeFile = pTechnoTypeExt->Insignia.Get(pThis))
+	{
+		pShapeFile = pCustomShapeFile;
+		defaultFrameIndex = 0;
+		isCustomInsignia = true;
+	}
+
+	VeterancyStruct* pVeterancy = &pThis->Veterancy;
+	auto insigniaFrames = pTechnoTypeExt->InsigniaFrames.Get();
+	int insigniaFrame = insigniaFrames.X;
+	int frameIndex = pTechnoTypeExt->InsigniaFrame.Get(pThis);
+
+	if (pTechnoType->Gunner)
+	{
+		int weaponIndex = pThis->CurrentWeaponNumber;
+
+		if (auto const pCustomShapeFile = pTechnoTypeExt->Insignia_Weapon[weaponIndex].Get(pThis))
+		{
+			pShapeFile = pCustomShapeFile;
+			defaultFrameIndex = 0;
+			isCustomInsignia = true;
+		}
+
+		int frame = pTechnoTypeExt->InsigniaFrame_Weapon[weaponIndex].Get(pThis);
+
+		if (frame != -1)
+			frameIndex = frame;
+
+		auto& frames = pTechnoTypeExt->InsigniaFrames_Weapon[weaponIndex];
+
+		if (frames != Vector3D<int>(-1, -1, -1))
+			insigniaFrames = frames;
+	}
+
+	if (pVeterancy->IsVeteran())
+	{
+		defaultFrameIndex = !isCustomInsignia ? 14 : defaultFrameIndex;
+		insigniaFrame = insigniaFrames.Y;
+	}
+	else if (pVeterancy->IsElite())
+	{
+		defaultFrameIndex = !isCustomInsignia ? 15 : defaultFrameIndex;
+		insigniaFrame = insigniaFrames.Z;
+	}
+
+	frameIndex = frameIndex == -1 ? insigniaFrame : frameIndex;
+
+	if (frameIndex == -1)
+		frameIndex = defaultFrameIndex;
+
+	if (frameIndex != -1 && pShapeFile)
+	{
+		offset.X += 5;
+		offset.Y += 2;
+
+		if (pThis->WhatAmI() != AbstractType::Infantry)
+		{
+			offset.X += 5;
+			offset.Y += 4;
+		}
+
+		DSurface::Temp->DrawSHP(
+			FileSystem::PALETTE_PAL, pShapeFile, frameIndex, &offset, pBounds, BlitterFlags(0xE00), 0, -2, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	}
+
+	return;
+}
+
 // This is still not even correct, but let's see how far this can help us
 void TechnoExt::ChangeOwnerMissionFix(FootClass* pThis)
 {
@@ -290,3 +392,4 @@ void TechnoExt::ChangeOwnerMissionFix(FootClass* pThis)
 	pThis->ShouldLoseTargetNow = TRUE;
 	pThis->QueueMission(pThis->GetTechnoType()->DefaultToGuardArea ? Mission::Area_Guard : Mission::Guard, true);
 }
+
