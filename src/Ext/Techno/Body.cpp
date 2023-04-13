@@ -87,7 +87,6 @@ void TechnoExt::SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo)
 	}
 }
 
-// Based on Ares source.
 void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
 {
 	Point2D offset = *pLocation;
@@ -111,18 +110,18 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 		}
 	}
 
-	TechnoTypeExt::ExtData* pExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+	TechnoTypeExt::ExtData* pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
 	bool isVisibleToPlayer = (pOwner && pOwner->IsAlliedWith(HouseClass::CurrentPlayer))
 		|| HouseClass::IsCurrentPlayerObserver()
-		|| pExt->Insignia_ShowEnemy.Get(RulesExt::Global()->EnemyInsignia);
+		|| pTechnoTypeExt->Insignia_ShowEnemy.Get(RulesExt::Global()->EnemyInsignia);
 
 	if (!isVisibleToPlayer)
 		return;
 
 	bool isCustomInsignia = false;
 
-	if (SHPStruct* pCustomShapeFile = pExt->Insignia.Get(pThis))
+	if (SHPStruct* pCustomShapeFile = pTechnoTypeExt->Insignia.Get(pThis))
 	{
 		pShapeFile = pCustomShapeFile;
 		defaultFrameIndex = 0;
@@ -130,8 +129,31 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 	}
 
 	VeterancyStruct* pVeterancy = &pThis->Veterancy;
-	auto& insigniaFrames = pExt->InsigniaFrames.Get();
+	auto insigniaFrames = pTechnoTypeExt->InsigniaFrames.Get();
 	int insigniaFrame = insigniaFrames.X;
+	int frameIndex = pTechnoTypeExt->InsigniaFrame.Get(pThis);
+
+	if (pTechnoType->Gunner)
+	{
+		int weaponIndex = pThis->CurrentWeaponNumber;
+
+		if (auto const pCustomShapeFile = pTechnoTypeExt->Insignia_Weapon[weaponIndex].Get(pThis))
+		{
+			pShapeFile = pCustomShapeFile;
+			defaultFrameIndex = 0;
+			isCustomInsignia = true;
+		}
+
+		int frame = pTechnoTypeExt->InsigniaFrame_Weapon[weaponIndex].Get(pThis);
+
+		if (frame != -1)
+			frameIndex = frame;
+
+		auto& frames = pTechnoTypeExt->InsigniaFrames_Weapon[weaponIndex];
+
+		if (frames != Vector3D<int>(-1,-1,-1))
+			insigniaFrames = frames;
+	}
 
 	if (pVeterancy->IsVeteran())
 	{
@@ -144,7 +166,6 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 		insigniaFrame = insigniaFrames.Z;
 	}
 
-	int frameIndex = pExt->InsigniaFrame.Get(pThis);
 	frameIndex = frameIndex == -1 ? insigniaFrame : frameIndex;
 
 	if (frameIndex == -1)

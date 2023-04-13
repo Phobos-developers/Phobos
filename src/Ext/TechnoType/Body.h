@@ -138,6 +138,9 @@ public:
 		Valueable<Vector3D<int>> InsigniaFrames;
 		Promotable<int> InsigniaFrame;
 		Nullable<bool> Insignia_ShowEnemy;
+		std::vector<Promotable<SHPStruct*>> Insignia_Weapon;
+		std::vector<Promotable<int>> InsigniaFrame_Weapon;
+		std::vector<Vector3D<int>> InsigniaFrames_Weapon;
 
 		struct LaserTrailDataEntry
 		{
@@ -251,28 +254,38 @@ public:
 			, SellSound {}
 			, EVA_Sold {}
 			, EnemyUIName {}
+
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, ForceWeapon_Cloaked { -1 }
 			, ForceWeapon_Disguised { -1 }
+
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
+
 			, SelfHealGainType {}
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
+
 			, PronePrimaryFireFLH {}
 			, ProneSecondaryFireFLH {}
 			, DeployedPrimaryFireFLH {}
 			, DeployedSecondaryFireFLH {}
+
 			, IronCurtain_KeptOnDeploy {}
 			, IronCurtain_Effect {}
 			, IronCurtain_KillWarhead {}
+
 			, Explodes_KillPassengers { true }
 			, DeployFireWeapon {}
 			, TargetZoneScanType { TargetZoneScanType::Same }
+
 			, Insignia {}
 			, InsigniaFrames { { -1, -1, -1 } }
 			, InsigniaFrame { -1 }
 			, Insignia_ShowEnemy {}
+			, Insignia_Weapon {}
+			, InsigniaFrame_Weapon {}
+			, InsigniaFrames_Weapon {}
 		{ }
 
 		virtual ~ExtData() = default;

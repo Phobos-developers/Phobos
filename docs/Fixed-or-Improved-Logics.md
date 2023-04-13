@@ -120,7 +120,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Weapons with `AA=true` projectiles can now be set to fire exclusively at air targets by setting `AAOnly=true`, regardless of other conditions. This is useful because `AG=false` only prevents targeting ground cells (and cannot be changed without breaking existing behaviour) and for cases where `LandTargeting` cannot be used.
 - Transports with `OpenTopped=true` and weapon that has `Burst` above 1 and passengers firing out no longer have the passenger firing offset shift lateral position based on burst index.
 - Fixed disguised infantry not using custom palette for drawing the disguise when needed.
-- Disguised infantry now show appropriate insignia when disguise is visible based on the disguise type and house.
+- Disguised infantry now show appropriate insignia when disguise is visible, based on the disguise type and house.
 
 ## Animations
 

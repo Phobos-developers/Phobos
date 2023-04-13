@@ -55,7 +55,7 @@ bool TechnoTypeExt::HasSelectionGroupID(ObjectTypeClass* pType, const char* pID)
 	return (_strcmpi(id, pID) == 0);
 }
 
-void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX &exArtINI, const char* pArtSection,
+void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection,
 	std::vector<std::vector<CoordStruct>>& nFLH, std::vector<std::vector<CoordStruct>>& nEFlh, const char* pPrefixTag)
 {
 	char tempBuffer[32];
@@ -245,13 +245,41 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
 	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
 
+	char tempBuffer[32];
+
+	if (this->OwnerObject()->Gunner)
+	{
+		int weaponCount = this->OwnerObject()->WeaponCount;
+		this->Insignia_Weapon.resize(weaponCount);
+		this->InsigniaFrame_Weapon.resize(weaponCount);
+		this->InsigniaFrames_Weapon.resize(weaponCount);
+
+		for (int i = 0; i < weaponCount; i++)
+		{
+			Promotable<SHPStruct*> insignia;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Weapon%d.%s", i + 1, "%s");
+			insignia.Read(exINI, pSection, tempBuffer);
+			this->Insignia_Weapon[i] = insignia;
+
+			Promotable<int> frame = Promotable<int>(-1);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Weapon%d.%s", i + 1, "%s");
+			frame.Read(exINI, pSection, tempBuffer);
+			this->InsigniaFrame_Weapon[i] = frame;
+
+			Valueable<Vector3D<int>> frames;
+			frames = Vector3D<int>(-1, -1, -1);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Weapon%d", i + 1);
+			frames.Read(exINI, pSection, tempBuffer);
+			this->InsigniaFrames_Weapon[i] = frames;
+		}
+	}
+
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
 	auto pArtSection = pThis->ImageFile;
 
 	this->TurretOffset.Read(exArtINI, pArtSection, "TurretOffset");
 
-	char tempBuffer[32];
 	for (size_t i = 0; ; ++i)
 	{
 		NullableIdx<LaserTrailTypeClass> trail;
@@ -452,10 +480,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Explodes_KillPassengers)
 		.Process(this->DeployFireWeapon)
 		.Process(this->TargetZoneScanType)
+
 		.Process(this->Insignia)
 		.Process(this->InsigniaFrames)
 		.Process(this->InsigniaFrame)
 		.Process(this->Insignia_ShowEnemy)
+		.Process(this->Insignia_Weapon)
+		.Process(this->InsigniaFrame_Weapon)
+		.Process(this->InsigniaFrames_Weapon)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -557,7 +589,7 @@ DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 {
 	//GET(CCINIClass*, pINI, ESI);
 
-	for (auto const& [pType,pExt] : BuildingTypeExt::ExtMap)
+	for (auto const& [pType, pExt] : BuildingTypeExt::ExtMap)
 	{
 		pExt->CompleteInitialization();
 	}

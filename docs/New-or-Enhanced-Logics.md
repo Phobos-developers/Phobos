@@ -652,24 +652,34 @@ AutoFire.TargetSelf=false  ; boolean
   - `Insignia.(Rookie|Veteran|Elite)` can be used to set a custom insignia file, optionally for each veterancy stage. Like the original / default file, `pips.shp`, they are drawn using `palette.pal` as palette.
   - `InsigniaFrame(.Rookie|Veteran|Elite)` can be used to set (zero-based) frame index of the insignia to display, optionally for each veterancy stage. Using -1 uses the default setting. Default settings are -1 (none) for rookie, 14 for veteran and 15 for elite.
     - A shorthand `InsigniaFrames` can be used to list them in order from rookie, veteran and elite instead as well. `InsigniaFrame(.Rookie|Veteran|Elite)` takes priority over this.
+  - Normal insignia can be overridden for specific weapon modes of `Gunner=true` units by setting `Insignia(.Frame/.Frames).WeaponN` where `N` stands for 1-based weapon mode index. If not set, defaults to non-mode specific insignia settings.
   - `Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players. Defaults to `[General]` -> `EnemyInsignia`, which in turn defaults to true.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-EnemyInsignia=true        ; boolean
+EnemyInsignia=true                ; boolean
 
-[SOMETECHNO]              ; TechnoType
-Insignia=                 ; filename - excluding the .shp extension
-Insignia.Rookie=          ; filename - excluding the .shp extension
-Insignia.Veteran=         ; filename - excluding the .shp extension
-Insignia.Elite=           ; filename - excluding the .shp extension
-InsigniaFrame=-1          ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Rookie=-1   ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Veteran=-1  ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Elite=-1    ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames=-1,-1,-1   ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.ShowEnemy=       ; boolean
+[SOMETECHNO]                      ; TechnoType
+Insignia=                         ; filename - excluding the .shp extension
+Insignia.Rookie=                  ; filename - excluding the .shp extension
+Insignia.Veteran=                 ; filename - excluding the .shp extension
+Insignia.Elite=                   ; filename - excluding the .shp extension
+InsigniaFrame=-1                  ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Rookie=-1           ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Veteran=-1          ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Elite=-1            ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames=-1,-1,-1           ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.WeaponN=                 ; filename - excluding the .shp extension
+Insignia.WeaponN.Rookie=          ; filename - excluding the .shp extension
+Insignia.WeaponN.Veteran=         ; filename - excluding the .shp extension
+Insignia.WeaponN.Elite=           ; filename - excluding the .shp extension
+InsigniaFrame.WeaponN=-1          ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Rookie=-1   ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Veteran=-1  ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Elite=-1    ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames.WeaponN=-1,-1,-1   ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.ShowEnemy=               ; boolean
 ```
 
 ```{note}
