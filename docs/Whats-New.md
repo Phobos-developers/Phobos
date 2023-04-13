@@ -255,7 +255,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ## Changelog
 
-### 0.3.1
+### Version TBD (develop branch nightly builds)
 
 <details>
   <summary>Click to show</summary>
