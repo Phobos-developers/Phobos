@@ -1003,8 +1003,8 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 ### Launch superweapons on impact
 
 - Superweapons can now be launched when a warhead is detonated.
-  - `LaunchSW` specifies the superweapons to launch when the warhead is detonated.
-  - `LaunchSW.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons and sufficient fund to support `Money.Amount`. Otherwise they will be launched out of nowhere.
+  - `LaunchSW` specifies the superweapons to launch when the warhead is detonated. If superweapon has negative `Money.Amount`, the firing house must have enough credits in order for it to be fired.
+  - `LaunchSW.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons. Otherwise they will be launched out of nowhere.
   - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
   - `LaunchSW.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
   - `LaunchSW.DisplayMoney` can be set to display the amount of credits given or deducted by the launched superweapon by `Money.Amount`. The number is displayed in green if given, red if deducted and will move upwards after appearing.
