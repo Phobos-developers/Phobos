@@ -311,6 +311,7 @@ New:
 - `UndeploysInto` building selling buildup sequence length customization (by Starkku)
 - Allow overriding `Shield.AffectTypes` for each Warhead shield interaction (by Starkku)
 - TechnoType conversion warhead & superweapon (by Morton)
+- Unlimited skirmish colors (by Morton)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
