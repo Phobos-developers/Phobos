@@ -93,12 +93,21 @@ void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSe
 	}
 }
 
+//TODO: YRpp this with proper casting
 TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 {
-	if (pType->WhatAmI() == AbstractType::AircraftType ||
-		pType->WhatAmI() == AbstractType::BuildingType ||
-		pType->WhatAmI() == AbstractType::InfantryType ||
-		pType->WhatAmI() == AbstractType::UnitType)
+	enum class IUnknownVtbl : DWORD
+	{
+		AircraftType = 0x7E2868,
+		BuildingType = 0x7E4570,
+		InfantryType = 0x7EB610,
+		UnitType = 0x7F6218,
+	};
+	auto const vtThis = static_cast<IUnknownVtbl>(VTABLE_GET(pType));
+	if (vtThis == IUnknownVtbl::AircraftType ||
+		vtThis == IUnknownVtbl::BuildingType ||
+		vtThis == IUnknownVtbl::InfantryType ||
+		vtThis == IUnknownVtbl::UnitType)
 	{
 		return static_cast<TechnoTypeClass*>(pType);
 	}
@@ -247,7 +256,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	char tempBuffer[32];
 
-	if (this->OwnerObject()->Gunner)
+	if (this->OwnerObject()->Gunner && this->Insignia_Weapon.empty())
 	{
 		int weaponCount = this->OwnerObject()->WeaponCount;
 		this->Insignia_Weapon.resize(weaponCount);

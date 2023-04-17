@@ -241,7 +241,7 @@ This page lists all the individual contributions to the project by their author.
    - Allow iron-curtain effects on infantries
    - Break the mindcontrol link when capturing a mind-controlled building with engineer
    - Building LightSource tint S/L fix
-   - Misc code refactor & maintenance, CN doc fix
+   - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
    - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist

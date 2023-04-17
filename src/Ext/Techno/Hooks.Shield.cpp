@@ -8,8 +8,10 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/TEvent/Body.h>
 
-bool bSkipLowDamageCheck = false;
-
+namespace RD
+{
+	bool SkipLowDamageCheck = false;
+}
 // #issue 88 : shield logic
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 {
@@ -35,7 +37,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			}
 
 			if (nDamageLeft == 0)
-				bSkipLowDamageCheck = true;
+				RD::SkipLowDamageCheck = true;
 		}
 	}
 	return 0;
@@ -43,9 +45,9 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 {
-	if (bSkipLowDamageCheck)
+	if (RD::SkipLowDamageCheck)
 	{
-		bSkipLowDamageCheck = false;
+		RD::SkipLowDamageCheck = false;
 	}
 	else
 	{

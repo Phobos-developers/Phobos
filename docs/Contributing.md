@@ -159,6 +159,8 @@ DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 ```
 - Even if the hook doesn't use `return 0x0` to execute the overriden instructions, you still have to write correct hook size (last parameter of `DEFINE_HOOK` macro) to reduce potential issues if the person editing this hook decides to use `return 0x0`.
 - New ingame "entity" classes are to be named with `Class` postfix (like `RadTypeClass`). Extension classes are to be named with `Ext` postfix instead (like `RadTypeExt`).
+- Do not pollute the namespace.
+- Avoid introducing unnecessary macros if they can be replaced by equivalent `constexpr` or `__forceinline` functions.
 
 ```{note}
 The styleguide is not exhaustive and may be adjusted in the future.

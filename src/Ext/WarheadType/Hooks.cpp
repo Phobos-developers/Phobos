@@ -11,7 +11,10 @@
 
 #pragma region DETONATION
 
-bool DetonationInDamageArea = true;
+namespace Detonation
+{
+	bool InDamageArea = true;
+}
 
 DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 {
@@ -30,20 +33,20 @@ DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 		pWHExt->Detonate(pOwner, pDecidedHouse, pBulletExt, *pCoords);
 	}
 
-	DetonationInDamageArea = false;
+	Detonation::InDamageArea = false;
 
 	return 0;
 }
 
 DEFINE_HOOK(0x46A290, BulletClass_Detonate_Return, 0x5)
 {
-	DetonationInDamageArea = true;
+	Detonation::InDamageArea = true;
 	return 0;
 }
 
 DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 {
-	if (DetonationInDamageArea)
+	if (Detonation::InDamageArea)
 	{
 		// GET(const int, Damage, EDX);
 		// GET_BASE(const bool, AffectsTiberium, 0x10);
