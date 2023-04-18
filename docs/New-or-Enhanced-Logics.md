@@ -684,7 +684,7 @@ NoSecondaryWeaponFallback.AllowAA=false  ; boolean
 
 ### Disguise logic additions (disguise-based movement speed, disguise blinking visibility)
 
-- `DisguiseBlinkingVisibility` can be used to customize which players can see disguises blinking on units.
+- `DisguiseBlinkingVisibility` can be used to customize which players can see disguises blinking on units. This does not affect targeting but does affect veterancy insignia visibility - blinking disguise means the original unit's insignia is visible always instead of disguise's.
 - `UseDisguiseMovementSpeed`, if set, makes disguised unit adjust its movement speed to match that of the disguise, if applicable. Note that this applies even when the disguise is revealed, as long as it has not been removed.
 
 In `rulesmd.ini`:

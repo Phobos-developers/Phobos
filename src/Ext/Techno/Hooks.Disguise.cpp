@@ -30,22 +30,19 @@ __forceinline bool CanBlinkDisguise(TechnoClass* pTechno)
 		|| EnumFunctions::CanTargetHouse(RulesExt::Global()->DisguiseBlinkingVisibility, HouseClass::CurrentPlayer, pTechno->Owner);
 }
 
-DEFINE_HOOK(0x70EE53, TechnoClass_IsClearlyVisibleTo_BlinkAllyDisguise1, 0xA)
+DEFINE_HOOK(0x4DEDCB, FootClass_GetImage_DisguiseBlinking, 0x7)
 {
-	enum { SkipGameCode = 0x70EE6A, Return = 0x70EEEC };
+	enum { ContinueChecks = 0x4DEDDB, AllowBlinking = 0x4DEE15 };
 
 	GET(TechnoClass*, pThis, ESI);
-	GET(int, accum, EAX);
 
 	if (CanBlinkDisguise(pThis))
-		return SkipGameCode;
-	else if (accum && !pThis->Owner->IsControlledByCurrentPlayer())
-		return Return;
+		return AllowBlinking;
 
-	return SkipGameCode;
+	return ContinueChecks;
 }
 
-DEFINE_HOOK(0x70EE6A, TechnoClass_IsClearlyVisibleTo_BlinkAllyDisguise2, 0x6)
+DEFINE_HOOK(0x70EE70, TechnoClass_IsClearlyVisibleTo_DisguiseBlinking, 0x5)
 {
 	enum { ContinueChecks = 0x70EE79, DisallowBlinking = 0x70EEB6 };
 
@@ -57,7 +54,7 @@ DEFINE_HOOK(0x70EE6A, TechnoClass_IsClearlyVisibleTo_BlinkAllyDisguise2, 0x6)
 	return DisallowBlinking;
 }
 
-DEFINE_HOOK(0x7062F5, TechnoClass_TechnoClass_DrawObject_BlinkAllyDisguise, 0x6)
+DEFINE_HOOK(0x7062F5, TechnoClass_TechnoClass_DrawObject_DisguiseBlinking, 0x6)
 {
 	enum { ContinueChecks = 0x706304, DisallowBlinking = 0x70631F };
 
@@ -65,18 +62,6 @@ DEFINE_HOOK(0x7062F5, TechnoClass_TechnoClass_DrawObject_BlinkAllyDisguise, 0x6)
 
 	if (CanBlinkDisguise(pThis))
 		return ContinueChecks;
-
-	return DisallowBlinking;
-}
-
-DEFINE_HOOK(0x70EDAD, TechnoClass_DisguiseBlitFlags_BlinkAllyDisguise, 0x6)
-{
-	enum { AllowBlinking = 0x70EDBC, DisallowBlinking = 0x70EDB8 };
-
-	GET(TechnoClass*, pThis, EDI);
-
-	if (CanBlinkDisguise(pThis))
-		return AllowBlinking;
 
 	return DisallowBlinking;
 }

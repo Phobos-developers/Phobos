@@ -1,7 +1,9 @@
 #include "Body.h"
 
-#include <Misc/FlyingStrings.h>
 #include <BitFont.h>
+
+#include <Misc/FlyingStrings.h>
+#include <Utilities/EnumFunctions.h>
 
 // Unsorted methods
 
@@ -276,16 +278,13 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 	auto pTechnoType = pThis->GetTechnoType();
 	auto pOwner = pThis->Owner;
 
-	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !(HouseClass::IsCurrentPlayerObserver()
+		|| EnumFunctions::CanTargetHouse(RulesExt::Global()->DisguiseBlinkingVisibility, HouseClass::CurrentPlayer, pOwner)))
 	{
 		if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
 		{
 			pTechnoType = pType;
 			pOwner = pThis->DisguisedAsHouse;
-		}
-		else if (!pOwner->IsAlliedWith(HouseClass::CurrentPlayer) && !HouseClass::IsCurrentPlayerObserver())
-		{
-			return;
 		}
 	}
 
