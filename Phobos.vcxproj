@@ -47,9 +47,7 @@
     <ClCompile Include="src\Ext\TEvent\Hooks.cpp" />
     <ClCompile Include="src\Ext\TEvent\Body.cpp" />
     <ClCompile Include="src\Ext\Trigger\Hooks.cpp" />
-    <ClCompile Include="src\Ext\Unit\Hooks.Jumpjet.cpp" />
     <ClCompile Include="src\Misc\Hooks.Gamespeed.cpp" />
-    <ClCompile Include="src\Ext\Rules\Hooks.Image.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
     <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
@@ -83,6 +81,8 @@
     <ClCompile Include="src\Ext\Script\Mission.Attack.cpp" />
     <ClCompile Include="src\Ext\Script\Mission.Move.cpp" />
     <ClCompile Include="src\Ext\Rules\Body.cpp" />
+    <ClCompile Include="src\Ext\Rules\Hooks.Image.cpp" />
+    <ClCompile Include="src\Ext\Rules\Hooks.INIClass.cpp" />
     <ClCompile Include="src\Ext\SWType\Body.cpp" />
     <ClCompile Include="src\Ext\Side\Body.cpp" />
     <ClCompile Include="src\Ext\Side\Hooks.cpp" />
@@ -99,13 +99,15 @@
     <ClCompile Include="src\Ext\Techno\Hooks.Firing.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Shield.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Transport.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.Disguise.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.DeploysInto.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Body.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Hooks.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Hooks.Passable.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.DeployFire.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.DisallowMoving.cpp" />
+    <ClCompile Include="src\Ext\Unit\Hooks.Jumpjet.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Detonate.cpp" />
-    <ClCompile Include="src\Ext\Techno\Hooks.Disguise.cpp" />
     <ClCompile Include="src\Ext\Tiberium\Body.cpp" />
     <ClCompile Include="src\Ext\Tiberium\Hooks.cpp" />
     <ClCompile Include="src\Ext\VoxelAnimType\Body.cpp" />
@@ -117,16 +119,12 @@
     <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
     <ClCompile Include="src\Misc\BlittersFix.cpp" />
     <ClCompile Include="src\Misc\Hooks.Blowfish.cpp" />
-    <ClCompile Include="src\Ext\Rules\Hooks.INIClass.cpp" />
     <ClCompile Include="src\Misc\Selection.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Body.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Hooks.cpp" />
-    <ClCompile Include="src\Utilities\Stream.cpp" />
-    <ClCompile Include="src\Utilities\Swizzle.cpp" />
-    <ClCompile Include="src\Phobos.cpp" />
     <ClCompile Include="src\Misc\FlyingStrings.cpp" />
     <ClCompile Include="src\Misc\Hooks.BugFixes.cpp" />
     <ClCompile Include="src\Misc\Hooks.PCX.cpp" />
@@ -137,12 +135,15 @@
     <ClCompile Include="src\Ext\BuildingType\Hooks.Upgrade.cpp" />
     <ClCompile Include="src\Phobos.CRT.cpp" />
     <ClCompile Include="src\Phobos.Ext.cpp" />
+    <ClCompile Include="src\Phobos.INI.cpp" />
+    <ClCompile Include="src\Phobos.cpp" />
+    <ClCompile Include="src\Utilities\Stream.cpp" />
+    <ClCompile Include="src\Utilities\Swizzle.cpp" />
     <ClCompile Include="src\Utilities\Constructs.cpp" />
     <ClCompile Include="src\Utilities\EnumFunctions.cpp" />
     <ClCompile Include="src\Utilities\GeneralUtils.cpp" />
-    <ClCompile Include="src\Ext\Techno\Hooks.DeploysInto.cpp" />
-    <ClCompile Include="YRpp\StaticInits.cpp" />
     <ClCompile Include="src\Utilities\Patch.cpp" />
+    <ClCompile Include="YRpp\StaticInits.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Commands\FrameByFrame.h" />

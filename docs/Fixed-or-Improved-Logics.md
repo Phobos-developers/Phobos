@@ -370,9 +370,9 @@ OreGathering.Tiberiums=0         ; list of Tiberium IDs
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]            ; TechnoType
-WarpOut=                ; Anim (played when Techno warping out)
-WarpIn=                 ; Anim (played when Techno warping in)
-WarpAway=               ; Anim (played when Techno chronowarped by chronosphere)
+WarpOut=                ; Anim (played when Techno warping out), default to [General] WarpOut
+WarpIn=                 ; Anim (played when Techno warping in), default to [General] WarpIn
+WarpAway=               ; Anim (played when Techno chronowarped by chronosphere), default to [General] WarpOut
 ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
 ChronoDistanceFactor=   ; integer, amount to divide the distance to destination by to get the warped out delay
 ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance
