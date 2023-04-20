@@ -567,8 +567,12 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 		{
 			if (pBld->HasBuildUp)
 			{
-				pBld->Sell(true);
-
+				// Sorry FirestormWall
+				if (pBld->GetCurrentMission() != Mission::Selling)
+				{
+					pBld->QueueMission(Mission::Selling, false);
+					pBld->NextMission();
+				}
 				return;
 			}
 		}
