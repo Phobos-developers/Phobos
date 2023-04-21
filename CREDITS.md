@@ -241,6 +241,7 @@ This page lists all the individual contributions to the project by their author.
    - Allow iron-curtain effects on infantries
    - Break the mindcontrol link when capturing a mind-controlled building with engineer
    - Building LightSource tint S/L fix
+   - Permanent healthbar display on units targeted by temporal weapons fix
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support

@@ -103,6 +103,7 @@ DEFINE_HOOK(0x71A88D, TemporalClass_AI_Shield, 0x0)
 	GET(TemporalClass*, pThis, ESI);
 	if (auto const pTarget = pThis->Target)
 	{
+		pTarget->IsMouseHovering = false;
 		const auto pExt = TechnoExt::ExtMap.Find(pTarget);
 
 		if (const auto pShieldData = pExt->Shield.get())
