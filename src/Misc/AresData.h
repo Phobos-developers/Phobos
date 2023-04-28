@@ -41,10 +41,18 @@ public:
 	};
 
 	// offsets of function addresses for each version
-	static constexpr DWORD AresFunctionOffsets[AresData::AresVersionCount * AresData::AresFunctionCount] =
+	static constexpr DWORD AresFunctionOffsets[AresData::AresFunctionCount][AresData::AresVersionCount] =
 	{
-		0x043650, 0x044130,	// ConvertTypeTo
-		0x0464C0, 0x047030, // TechnoExt::SpawnSurvivors
+		// ConvertTypeTo
+		{
+			0x043650,
+			0x044130,
+		},
+		// TechnoExt::SpawnSurvivors
+		{
+			0x0464C0,
+			0x047030,
+		},
 	};
 
 	// storage for absolute addresses of functions (module base + offset)
@@ -60,84 +68,4 @@ public:
 	// here be known Ares functions
 	static bool ConvertTypeTo(TechnoClass* pFoot, TechnoTypeClass* pConvertTo);
 	static void SpawnSurvivors(FootClass* const pThis, TechnoClass* const pKiller, const bool Select, const bool IgnoreDefenses);
-
-	template<int idx, typename Tret, typename... TArgs>
-	struct AresStdcall
-	{
-		using fp_type = Tret(__stdcall*)(TArgs...);
-		decltype(auto) operator()(TArgs... args) const
-		{
-			return reinterpret_cast<fp_type>(AresFunctionOffsetsFinal[idx])(args...);
-		}
-	};
-
-	template<int idx, typename... TArgs>
-	struct AresStdcall<idx, void, TArgs...>
-	{
-		using fp_type = void(__stdcall*)(TArgs...);
-		decltype(auto) operator()(TArgs... args) const
-		{
-			reinterpret_cast<fp_type>(AresFunctionOffsetsFinal[idx])(args...);
-		}
-	};
-
-	template<int idx, typename Tret, typename... TArgs>
-	struct AresCdecl
-	{
-		using fp_type = Tret(__cdecl*)(TArgs...);
-		decltype(auto) operator()(TArgs... args) const
-		{
-			return reinterpret_cast<fp_type>(AresFunctionOffsetsFinal[idx])(args...);
-		}
-	};
-
-	template<int idx, typename... TArgs>
-	struct AresCdecl<idx, void, TArgs...>
-	{
-		using fp_type = void(__cdecl*)(TArgs...);
-		decltype(auto) operator()(TArgs... args) const
-		{
-			reinterpret_cast<fp_type>(AresFunctionOffsetsFinal[idx])(args...);
-		}
-	};
-
-	template<int idx, typename Tret, typename... TArgs>
-	struct AresFastcall
-	{
-		using fp_type = Tret(__fastcall*)(TArgs...);
-		decltype(auto) operator()(TArgs... args) const
-		{
-			return reinterpret_cast<fp_type>(AresFunctionOffsetsFinal[idx])(args...);
-		}
-	};
-
-	template<int idx, typename... TArgs>
-	struct AresFastcall<idx, void, TArgs...>
-	{
-		using fp_type = void(__fastcall*)(TArgs...);
-		decltype(auto) operator()(TArgs... args) const
-		{
-			reinterpret_cast<fp_type>(AresFunctionOffsetsFinal[idx])(args...);
-		}
-	};
-
-	template<int idx, typename Tret, typename TThis, typename... TArgs>
-	struct AresThiscall
-	{
-		using fp_type = Tret(__fastcall*)(TThis, void*, TArgs...);
-		decltype(auto) operator()(TThis pThis, TArgs... args) const
-		{
-			return reinterpret_cast<fp_type>(AresFunctionOffsetsFinal[idx])(pThis, nullptr, args...);
-		}
-	};
-
-	template<int idx, typename TThis, typename... TArgs>
-	struct AresThiscall<idx, void, TThis, TArgs...>
-	{
-		using fp_type = void(__fastcall*)(TThis, void*, TArgs...);
-		void operator()(TThis pThis, TArgs... args) const
-		{
-			reinterpret_cast<fp_type>(AresFunctionOffsetsFinal[idx])(pThis, nullptr, args...);
-		}
-	};
 };

@@ -5,6 +5,7 @@
 #include <Utilities/Debug.h>
 #include <CRC.h>
 
+#include <vector>
 #include <tlhelp32.h>
 
 class TechnoClass;
@@ -34,16 +35,27 @@ void AresData::GetGameModulesBaseAddresses()
 		{
 			do
 			{
-				Debug::LogDeferred("Module %s base address : 0x%p.\n", modEntry.szModule, modEntry.modBaseAddr);
-				if (!_strcmpi(modEntry.szModule, "Ares.dll"))
-				{
+				DWORD _useless;
+				DWORD infoBufferSize = GetFileVersionInfoSize(modEntry.szModule, &_useless);
+				if (infoBufferSize == 0)
+					continue;
+				std::vector<char> infoBuffer(infoBufferSize);
+				if (!GetFileVersionInfo(modEntry.szModule, NULL, infoBufferSize, infoBuffer.data()))
+					continue;
+				LPVOID nameBuffer;
+				unsigned int nameBufferSize;
+				// 0409 04b0 is language: English (American), codepage: UTF-16
+				if (!VerQueryValue(infoBuffer.data(), "\\StringFileInfo\\040904b0\\OriginalFilename", &nameBuffer, &nameBufferSize))
+					continue;
+				const char* originalModuleName = (const char*)nameBuffer;
+
+				Debug::LogDeferred("Module %s base address : 0x%p.\n", originalModuleName, modEntry.modBaseAddr);
+				if (!_strcmpi(originalModuleName, "Ares.dll"))
 					AresData::AresBaseAddress = (uintptr_t)modEntry.modBaseAddr;
-				}
-				else if(!_strcmpi(modEntry.szModule, PHOBOS_DLL))
-				{
+				else if(!_strcmpi(originalModuleName, PHOBOS_DLL))
 					AresData::PhobosBaseAddress = (uintptr_t)modEntry.modBaseAddr;
-				}
-			} while (Module32Next(hSnap, &modEntry));
+			}
+			while (Module32Next(hSnap, &modEntry));
 		}
 	}
 	CloseHandle(hSnap);
@@ -85,7 +97,7 @@ void AresData::Init()
 	if (CanUseAres && GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN, ARES_DLL, &AresDllHmodule))
 	{
 		for (int i = 0; i < AresData::AresFunctionCount; i++)
-			AresData::AresFunctionOffsetsFinal[i] = AresData::AresBaseAddress + AresData::AresFunctionOffsets[i * AresData::AresVersionCount + AresVersionId];
+			AresData::AresFunctionOffsetsFinal[i] = AresData::AresBaseAddress + AresData::AresFunctionOffsets[i][AresVersionId];
 	}
 }
 
@@ -97,6 +109,86 @@ void AresData::UnInit()
 	if (CanUseAres)
 		FreeLibrary(AresDllHmodule);
 }
+
+template<int idx, typename Tret, typename... TArgs>
+struct AresStdcall
+{
+	using fp_type = Tret(__stdcall*)(TArgs...);
+	decltype(auto) operator()(TArgs... args) const
+	{
+		return reinterpret_cast<fp_type>(AresData::AresFunctionOffsetsFinal[idx])(args...);
+	}
+};
+
+template<int idx, typename... TArgs>
+struct AresStdcall<idx, void, TArgs...>
+{
+	using fp_type = void(__stdcall*)(TArgs...);
+	decltype(auto) operator()(TArgs... args) const
+	{
+		reinterpret_cast<fp_type>(AresData::AresFunctionOffsetsFinal[idx])(args...);
+	}
+};
+
+template<int idx, typename Tret, typename... TArgs>
+struct AresCdecl
+{
+	using fp_type = Tret(__cdecl*)(TArgs...);
+	decltype(auto) operator()(TArgs... args) const
+	{
+		return reinterpret_cast<fp_type>(AresData::AresFunctionOffsetsFinal[idx])(args...);
+	}
+};
+
+template<int idx, typename... TArgs>
+struct AresCdecl<idx, void, TArgs...>
+{
+	using fp_type = void(__cdecl*)(TArgs...);
+	decltype(auto) operator()(TArgs... args) const
+	{
+		reinterpret_cast<fp_type>(AresData::AresFunctionOffsetsFinal[idx])(args...);
+	}
+};
+
+template<int idx, typename Tret, typename... TArgs>
+struct AresFastcall
+{
+	using fp_type = Tret(__fastcall*)(TArgs...);
+	decltype(auto) operator()(TArgs... args) const
+	{
+		return reinterpret_cast<fp_type>(AresData::AresFunctionOffsetsFinal[idx])(args...);
+	}
+};
+
+template<int idx, typename... TArgs>
+struct AresFastcall<idx, void, TArgs...>
+{
+	using fp_type = void(__fastcall*)(TArgs...);
+	decltype(auto) operator()(TArgs... args) const
+	{
+		reinterpret_cast<fp_type>(AresData::AresFunctionOffsetsFinal[idx])(args...);
+	}
+};
+
+template<int idx, typename Tret, typename TThis, typename... TArgs>
+struct AresThiscall
+{
+	using fp_type = Tret(__fastcall*)(TThis, void*, TArgs...);
+	decltype(auto) operator()(TThis pThis, TArgs... args) const
+	{
+		return reinterpret_cast<fp_type>(AresData::AresFunctionOffsetsFinal[idx])(pThis, nullptr, args...);
+	}
+};
+
+template<int idx, typename TThis, typename... TArgs>
+struct AresThiscall<idx, void, TThis, TArgs...>
+{
+	using fp_type = void(__fastcall*)(TThis, void*, TArgs...);
+	void operator()(TThis pThis, TArgs... args) const
+	{
+		reinterpret_cast<fp_type>(AresData::AresFunctionOffsetsFinal[idx])(pThis, nullptr, args...);
+	}
+};
 
 bool AresData::ConvertTypeTo(TechnoClass* pFoot, TechnoTypeClass* pConvertTo)
 {
