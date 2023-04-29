@@ -3,6 +3,7 @@
 #include <ASMMacros.h>
 #include <Phobos.h>
 #include <Utilities/Debug.h>
+#include <Utilities/Patch.h>
 #include <CRC.h>
 
 #include <vector>
@@ -198,4 +199,14 @@ bool AresData::ConvertTypeTo(TechnoClass* pFoot, TechnoTypeClass* pConvertTo)
 void AresData::SpawnSurvivors(FootClass* const pThis, TechnoClass* const pKiller, const bool ISelect, const bool IgnoreDefenses)
 {
 	AresStdcall<SpawnSurvivorsID, void, FootClass*, TechnoClass*, bool, bool>()(pThis, pKiller, ISelect, IgnoreDefenses);
+}
+
+int AresData::HasFactory(int buffer, HouseClass* pOwner, TechnoTypeClass* pType, bool skipAircraft, bool requirePower, bool checkCanBuild, bool unknown)
+{
+	return AresStdcall<HasFactoryID, int, int, HouseClass*, TechnoTypeClass*, bool, bool, bool, bool>()(buffer, pOwner, pType, skipAircraft, requirePower, checkCanBuild, unknown);
+}
+
+bool AresData::CanBeBuiltAt(DWORD pTechnoTypeExt, BuildingTypeClass* pBuildingType)
+{
+	return AresThiscall<CanBeBuiltAtID, bool, DWORD, BuildingTypeClass*>()(pTechnoTypeExt, pBuildingType);
 }
