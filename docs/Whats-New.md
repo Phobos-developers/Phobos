@@ -345,6 +345,7 @@ Vanilla fixes:
 - Fixed permanent health bar display for units targeted by temporal weapons upon mouse hover (by Trsdy)
 - Buildings with superweapons no longer display `SuperAnimThree` at beginning of match if pre-placed on the map (by Starkku)
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do (by Starkku)
+- Suppressed the BuildingCaptured EVA events when capturing a building considered as a vehicle (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -364,6 +365,7 @@ Phobos fixes:
 - Fixed `Layer.UseObjectLayer=true` to work correctly for all cases where object changes layer (by Starkku)
 - Fixed floating point value parsing precision to match the game (by Starkku)
 - Fixed `DetonateOnAllMapObjects.RequireVerses` not considering shield armor types (by Starkku)
+- Used `MindControl.Anim` for buildings deployed from mind-controlled vehicles (by Trsdy)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)

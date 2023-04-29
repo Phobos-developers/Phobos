@@ -1,11 +1,7 @@
 #include "Body.h"
 
 #include <Ext/CaptureManager/Body.h>
-
-namespace MindControlFixTemp
-{
-	bool isMindControlBeingTransferred = false;
-}
+#include <Ext/WarheadType/Body.h>
 
 void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
 {
@@ -13,10 +9,21 @@ void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClas
 	{
 		if (auto Manager = Controller->CaptureManager)
 		{
-			MindControlFixTemp::isMindControlBeingTransferred = true;
-
 			CaptureManagerExt::FreeUnit(Manager, pTechnoFrom, true);
-			if (CaptureManagerExt::CaptureUnit(Manager, pTechnoTo, false)) // why true?
+
+			auto decidedMindControlAnim = [Controller, pTechnoTo](AnimTypeClass* const animDefault = RulesClass::Instance->ControlledAnimationType)
+			{
+				int wpidx = Controller->SelectWeapon(pTechnoTo);
+				if (wpidx > 0)
+				{
+					if (auto pWH = Controller->GetWeapon(wpidx)->WeaponType->Warhead)
+						return WarheadTypeExt::ExtMap.Find(pWH)->MindControl_Anim.Get(animDefault);
+				}
+
+				return animDefault;
+			};
+
+			if (CaptureManagerExt::CaptureUnit(Manager, pTechnoTo, false, decidedMindControlAnim(),true))
 			{
 				if (auto pBld = abstract_cast<BuildingClass*>(pTechnoTo))
 				{
@@ -33,7 +40,6 @@ void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClas
 					VocClass::PlayIndexAtPos(nSound, pTechnoTo->Location);
 			}
 
-			MindControlFixTemp::isMindControlBeingTransferred = false;
 		}
 	}
 	else if (auto MCHouse = pTechnoFrom->MindControlledByHouse)
@@ -94,10 +100,4 @@ DEFINE_HOOK(0x7396AD, UnitClass_Deploy_CreateBuilding, 0x6)
 	R->EDX<HouseClass*>(pUnit->GetOriginalOwner());
 
 	return 0x7396B3;
-}
-
-DEFINE_HOOK(0x448460, BuildingClass_Captured_MuteSound, 0x6)
-{
-	return MindControlFixTemp::isMindControlBeingTransferred ?
-		0x44848F : 0;
 }
