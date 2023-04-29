@@ -14,7 +14,7 @@ void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClas
 			auto decidedMindControlAnim = [Controller, pTechnoTo](AnimTypeClass* const animDefault = RulesClass::Instance->ControlledAnimationType)
 			{
 				int wpidx = Controller->SelectWeapon(pTechnoTo);
-				if (wpidx > 0)
+				if (wpidx >= 0)
 				{
 					if (auto pWH = Controller->GetWeapon(wpidx)->WeaponType->Warhead)
 						return WarheadTypeExt::ExtMap.Find(pWH)->MindControl_Anim.Get(animDefault);
