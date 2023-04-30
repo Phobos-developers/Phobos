@@ -229,7 +229,7 @@ DEFINE_HOOK(0x51BB6E, TechnoClass_AI_TemporalTargetingMe_Fix, 0x6) // InfantryCl
 	if (pThis->TemporalTargetingMe)
 	{
 		// Also check for vftable here to guarantee the TemporalClass not being destoryed already.
-		if (((int*)pThis->TemporalTargetingMe)[0] == 0x7F5180)
+		if (VTable::Get(pThis->TemporalTargetingMe) == 0x7F5180) // TemporalClass::`vtable`
 			pThis->TemporalTargetingMe->Update();
 		else // It should had being warped out, delete this object
 		{

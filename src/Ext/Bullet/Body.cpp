@@ -135,8 +135,7 @@ void BulletExt::ExtData::InitializeLaserTrails()
 		{
 			if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
 			{
-				this->LaserTrails.push_back(
-					std::make_unique<LaserTrailClass>(pLaserType, pOwner));
+				this->LaserTrails.push_back(LaserTrailClass { pLaserType, pOwner });
 			}
 		}
 	}
@@ -197,7 +196,7 @@ DEFINE_HOOK(0x4665E9, BulletClass_DTOR, 0xA)
 	GET(BulletClass*, pItem, ESI);
 
 	if (auto pTraj = BulletExt::ExtMap.Find(pItem)->Trajectory)
-		GameDelete(pTraj);
+		DLLDelete(pTraj);
 
 	BulletExt::ExtMap.Remove(pItem);
 	return 0;

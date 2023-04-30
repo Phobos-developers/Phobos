@@ -710,6 +710,20 @@ NoSecondaryWeaponFallback=false          ; boolean
 NoSecondaryWeaponFallback.AllowAA=false  ; boolean
 ```
 
+### Disguise logic additions (disguise-based movement speed, disguise blinking visibility)
+
+- `DisguiseBlinkingVisibility` can be used to customize which players can see disguises blinking on units. This does not affect targeting but does affect veterancy insignia visibility - blinking disguise means the original unit's insignia is visible always instead of disguise's.
+- `UseDisguiseMovementSpeed`, if set, makes disguised unit adjust its movement speed to match that of the disguise, if applicable. Note that this applies even when the disguise is revealed, as long as it has not been removed.
+
+In `rulesmd.ini`:
+```ini
+[General]
+DisguiseBlinkingVisibility=owner  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+
+[SOMETECHNO]                      ; TechnoType
+UseDisguiseMovementSpeed=false    ; boolean
+```
+
 ### Firing offsets for specific Burst shots
 
 - You can now specify separate firing offsets for each of the shots fired by weapon with `Burst` via using `(Elite)(Prone/Deployed)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on which weapons your TechnoType makes use of. *N* in `BurstN` is zero-based burst shot index, and the values are parsed sequentially until no value for either regular or elite weapon is present, with elite weapon defaulting to regular weapon FLH if only it is missing. If no burst-index specific value is available, value from the base key (f.ex `PrimaryFireFLH`) is used.
@@ -1055,10 +1069,13 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 ### Launch superweapons on impact
 
 - Superweapons can now be launched when a warhead is detonated.
-  - `LaunchSW` specifies the superweapons to launch when the warhead is detonated.
-  - `LaunchSW.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons and sufficient fund to support `Money.Amout`. Otherwise they will be launched out of nowhere.
+  - `LaunchSW` specifies the superweapons to launch when the warhead is detonated. If superweapon has negative `Money.Amount`, the firing house must have enough credits in order for it to be fired.
+  - `LaunchSW.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons. Otherwise they will be launched out of nowhere.
   - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
   - `LaunchSW.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
+  - `LaunchSW.DisplayMoney` can be set to display the amount of credits given or deducted by the launched superweapon by `Money.Amount`. The number is displayed in green if given, red if deducted and will move upwards after appearing.
+    - `LaunchSW.DisplayMoney.Houses` determines which houses can see the credits display.
+    - `LaunchSW.DisplayMoney.Offset` is additional pixel offset for the center of the credits display, by default (0,0) at superweapon's target cell.
 
 ```{note}
 - For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
@@ -1070,11 +1087,14 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                    ; Warhead
-LaunchSW=                        ; list of superweapons
-LaunchSW.RealLaunch=true         ; boolean
-LaunchSW.IgnoreInhibitors=false  ; boolean
-LaunchSW.IgnoreDesignators=true  ; boolean
+[SOMEWARHEAD]                     ; Warhead
+LaunchSW=                         ; list of superweapons
+LaunchSW.RealLaunch=true          ; boolean
+LaunchSW.IgnoreInhibitors=false   ; boolean
+LaunchSW.IgnoreDesignators=true   ; boolean
+LaunchSW.DisplayMoney=false       ; boolean
+LaunchSW.DisplayMoney.Houses=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
 ### Remove disguise on impact

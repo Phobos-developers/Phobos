@@ -27,7 +27,7 @@ DEFINE_HOOK(0x719788, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x
 {
 	GET_LOCO(ESI);
 
-	R->EDX<AnimTypeClass*>(pExt->WarpIn.Get(RulesClass::Instance->WarpOut));
+	R->EDX<AnimTypeClass*>(pExt->WarpIn.Get(RulesClass::Instance->WarpIn));
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pLocomotor->LinkedTo);
 

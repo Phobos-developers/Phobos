@@ -17,8 +17,7 @@ void VoxelAnimExt::InitializeLaserTrails(VoxelAnimClass* pThis)
 	{
 		if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
 		{
-			pThisExt->LaserTrails.push_back(std::make_unique<LaserTrailClass>
-				(pLaserType, pThis->OwnerHouse));
+			pThisExt->LaserTrails.push_back(LaserTrailClass { pLaserType, pThis->OwnerHouse });
 		}
 	}
 }

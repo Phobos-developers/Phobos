@@ -13,6 +13,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - SHP debris hardcoded shadows now respect `Shadow=no` tag value, and due to it being the default value they wouldn't have hardcoded shadows anymore by default. Override this by specifying `Shadow=yes` for SHP debris.
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`.
+- The obsolete `[General] WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `WarpOut`.
 
 ### From Ares
 
@@ -22,6 +23,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From 0.3
 
+- `LaunchSW.RealLaunch=false` now checks if firing house has enough credits to satisfy SW's `Money.Amount` in order to be fired.
 - `CreateUnit` now creates the units by default at animation's height (even if `CreateUnit.ConsiderPathfinding` is enabled) instead of always at ground level. This behaviour can be restored by setting `CreateUnit.AlwaysSpawnOnGround` to true.
 - Phobos-introduced attack scripts now consider potential target's current map zone when evaluating targets. [TargetZoneScanType](Fixed-or-Improved-Logics.md#customizable-target-evaluation-map-zone-check-behaviour) can be used to customize this behaviour.
 - `Artillary`, `ICBMLauncher`, `TickTank` or `SensorArray` no longer affect whether or not building is considered as vehicle for AI attack scripts. Use [ConsideredVehicle](Fixed-or-Improved-Logics.md#buildings-considered-as-vehicles) instead on buildings that do not have both `UndeploysInto` set and `Foundation=1x1`.
@@ -255,7 +257,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ## Changelog
 
-### 0.3.1
+### Version TBD (develop branch nightly builds)
 
 <details>
   <summary>Click to show</summary>
@@ -301,6 +303,9 @@ New:
 - `AAOnly` for projectiles (by Starkku)
 - `CreateUnit` improvements & additions (units spawning in air, spawn animation) (by Starkku)
 - Option to center pause menu background (by Starkku)
+- LaunchSW.DisplayMoney (by Starkku)
+- Disguise logic improvements (by Starkku)
+- Custom insignias (by Starkku)
 - TechnoType conversion warhead & superweapon (by Morton)
 
 Vanilla fixes:
@@ -311,7 +316,7 @@ Vanilla fixes:
 - Prevented units from retaining previous order after ownership change (by Trsdy)
 - Break the mind-control link when capturing a mind-controlled building with an engineer (by Trsdy)
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations (by Starkku)
-- Cloaked objects displaying to observers (by Starkku)
+- Cloaked & disguised objects displaying to observers (by Starkku)
 - Cloaked objects from allies displaying to player in single player missions (by Trsdy)
 - Skip `NaturalParticleSystem` displaying from in-map pre-placed structures (by Trsdy)
 - Made sure that `Suicide=yes` weapon does kill the firer (by Trsdy)
@@ -332,6 +337,10 @@ Vanilla fixes:
 - Buildings with primary weapon that has `AG=false` projectile now have attack cursor when selected (by Starkku)
 - Transports with `OpenTopped=true` and weapon that has `Burst` above 1 and passengers firing out no longer have the passenger firing offset shift lateral position based on burst index (by Starkku)
 - Light tint created by a building is now able to be removed after loading the game (by Trsdy)
+- Prevented crashing jumpjet units from firing (by Trsdy)
+- Fixed disguised infantry not using custom palette for drawing the disguise when needed (by Starkku)
+- Reenabled the obsolete `[General] WarpIn` as default anim type when units are warping in (by Trsdy)
+- Fixed permanent health bar display for units targeted by temporal weapons upon mouse hover (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -347,6 +356,7 @@ Phobos fixes:
 - Animation `Weapon` with `Damage.DealtByInvoker=true` now uses the invoker's house to deal damage and apply Phobos warhead effects even if invoker is dead when weapon is fired (by Starkku)
 - Superweapon `Detonate.Weapon` & `Detonate.Warhead` now use the firing house to deal damage and apply Phobos warhead effects even if no firing building is found (by Starkku)
 - `CreateUnit` now uses civilian house as owner instead if the intended owner house has been defeated (this is in-line with how `MakeInfantry` works) (by Starkku)
+- `IsHouseColor` laser trails on techno now correctly change color when it changes owner (by Trsdy)
 </details>
 
 
