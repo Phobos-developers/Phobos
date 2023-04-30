@@ -77,13 +77,30 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (!pExt->TypeExtData)
+	if (!pExt->TypeExtData && pThis->GetType())
 		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	if (pExt->TypeExtData)
 		pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
 
 	pExt->InitializeLaserTrails();
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4DBF13, FootClass_SetOwningHouse, 0x6)
+{
+	GET(FootClass* const, pThis, ESI);
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	for (auto& trail : pExt->LaserTrails)
+	{
+		if (trail.Type->IsHouseColor)
+			trail.CurrentColor = pThis->Owner->LaserColor;
+	}
+
+	if (pThis->Owner->IsHumanPlayer)
+		TechnoExt::ChangeOwnerMissionFix(pThis);
 
 	return 0;
 }
@@ -243,10 +260,10 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 
 	if (pTechnoExt)
 	{
-		for (auto& pLaserTrail : pTechnoExt->LaserTrails)
+		for (auto& trail : pTechnoExt->LaserTrails)
 		{
-			pLaserTrail->Visible = false;
-			pLaserTrail->LastLocation = { };
+			trail.Visible = false;
+			trail.LastLocation = { };
 		}
 	}
 
@@ -260,10 +277,10 @@ DEFINE_HOOK(0x4D7221, FootClass_Unlimbo_LaserTrails, 0x6)
 
 	if (auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno))
 	{
-		for (auto& pLaserTrail : pTechnoExt->LaserTrails)
+		for (auto& trail : pTechnoExt->LaserTrails)
 		{
-			pLaserTrail->LastLocation = { };
-			pLaserTrail->Visible = true;
+			trail.LastLocation = { };
+			trail.Visible = true;
 		}
 	}
 
@@ -396,6 +413,45 @@ DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
 	}
 
 	return AllowedObject;
+}
+
+DEFINE_HOOK(0x6F534E, TechnoClass_DrawExtras_Insignia, 0x5)
+{
+	enum { SkipGameCode = 0x6F5388 };
+
+	GET(TechnoClass*, pThis, EBP);
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x98, 0x4));
+	GET(RectangleStruct*, pBounds, ESI);
+
+	if (pThis->VisualCharacter(false, nullptr) != VisualType::Hidden)
+		TechnoExt::DrawInsignia(pThis, pLocation, pBounds);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
+{
+	enum { SkipGameCode = 0x70EFF2 };
+
+	GET(TechnoClass*, pThis, ECX);
+
+	int maxSpeed = 0;
+
+	if (pThis)
+	{
+		maxSpeed = pThis->GetTechnoType()->Speed;
+
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+		if (pTypeExt->UseDisguiseMovementSpeed && pThis->IsDisguised())
+		{
+			if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
+				maxSpeed = pType->Speed;
+		}
+	}
+
+	R->EAX(maxSpeed);
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x6F6CA0, TechnoClass_Put_GiftBox, 0x7)

@@ -25,7 +25,7 @@ public:
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
 		Nullable<double> Gravity;
 
-		PhobosTrajectoryType* TrajectoryType;
+		PhobosTrajectoryType* TrajectoryType;// TODO: why not unique_ptr
 		Valueable<double> Trajectory_Speed;
 
 		Valueable<bool> Shrapnel_AffectsGround;

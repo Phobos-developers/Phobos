@@ -166,7 +166,7 @@ This page lists all the individual contributions to the project by their author.
   - Railgun particle target coordinate fix
   - Building target coordinate offset fix
   - Warhead / weapon detonation at superweapon target cell
-  - Cloaked objects displaying to observers
+  - Cloaked & disguised objects displaying to observers
   - Building airstrike target eligibility customization
   - IvanBomb detonation & image display centered on buildings
   - Customizable ROF random delay
@@ -185,6 +185,8 @@ This page lists all the individual contributions to the project by their author.
   - TechnoType target evaluation map zone check behaviour customization
   - CanC4 damage rounding fix & toggle
   - Option to center pause menu background
+  - Disguise logic improvements
+  - Custom insignias
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -209,6 +211,7 @@ This page lists all the individual contributions to the project by their author.
       - Turret direction in idle state fix
       - Sensor fix
       - Allow to tilt on ground
+      - Forbid firing when crashing
    - OmniFire.TurnToTarget
    - Object Self-destruction logic
    - Misc vanilla suicidal behavior fix
@@ -239,7 +242,8 @@ This page lists all the individual contributions to the project by their author.
    - Allow iron-curtain effects on infantries
    - Break the mindcontrol link when capturing a mind-controlled building with engineer
    - Building LightSource tint S/L fix
-   - Misc code refactor & maintenance, CN doc fix
+   - Permanent healthbar display on units targeted by temporal weapons fix
+   - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
    - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist

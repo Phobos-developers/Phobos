@@ -304,10 +304,10 @@ void TechnoExt::ExtData::UpdateOnTunnelEnter()
 		if (const auto pShieldData = this->Shield.get())
 			pShieldData->SetAnimationVisibility(false);
 
-		for (auto& pLaserTrail : this->LaserTrails)
+		for (auto& trail : this->LaserTrails)
 		{
-			pLaserTrail->Visible = false;
-			pLaserTrail->LastLocation = { };
+			trail.Visible = false;
+			trail.LastLocation = { };
 		}
 
 		this->IsInTunnel = true;
@@ -360,8 +360,8 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
 	{
 		if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
 		{
-			this->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
-				pLaserType, pThis->Owner, entry.FLH, entry.IsOnTurret));
+			this->LaserTrails.push_back(LaserTrailClass {
+				pLaserType, pThis->Owner, entry.FLH, entry.IsOnTurret });
 		}
 	}
 
@@ -391,19 +391,19 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
-	for (auto const& trail : this->LaserTrails)
+	for (auto& trail : this->LaserTrails)
 	{
-		if (pThis->CloakState == CloakState::Cloaked && !trail->Type->CloakVisible)
+		if (pThis->CloakState == CloakState::Cloaked && !trail.Type->CloakVisible)
 			continue;
 
 		if (!this->IsInTunnel)
-			trail->Visible = true;
+			trail.Visible = true;
 
-		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret);
-		if (pThis->CloakState == CloakState::Uncloaking && !trail->Type->CloakVisible)
-			trail->LastLocation = trailLoc;
+		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail.FLH, trail.IsOnTurret);
+		if (pThis->CloakState == CloakState::Uncloaking && !trail.Type->CloakVisible)
+			trail.LastLocation = trailLoc;
 		else
-			trail->Update(trailLoc);
+			trail.Update(trailLoc);
 	}
 }
 
@@ -567,8 +567,12 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 		{
 			if (pBld->HasBuildUp)
 			{
-				pBld->Sell(true);
-
+				// Sorry FirestormWall
+				if (pBld->GetCurrentMission() != Mission::Selling)
+				{
+					pBld->QueueMission(Mission::Selling, false);
+					pBld->NextMission();
+				}
 				return;
 			}
 		}

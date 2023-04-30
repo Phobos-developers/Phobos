@@ -6,12 +6,9 @@
 #include <Ext/CaptureManager/Body.h>
 #include <Utilities/Macro.h>
 
-#include <AnimClass.h>
 #include <AircraftClass.h>
 #include <BuildingClass.h>
 #include <InfantryClass.h>
-#include <UnitClass.h>
-#include <TechnoClass.h>
 #include <ScenarioClass.h>
 #include <TacticalClass.h>
 
@@ -88,14 +85,14 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			(int)(location.Z + velocity.Z)
 		};
 
-		for (auto const& trail : pBulletExt->LaserTrails)
+		for (auto& trail : pBulletExt->LaserTrails)
 		{
 			// We insert initial position so the first frame of trail doesn't get skipped - Kerbiter
 			// TODO move hack to BulletClass creation
-			if (!trail->LastLocation.isset())
-				trail->LastLocation = location;
+			if (!trail.LastLocation.isset())
+				trail.LastLocation = location;
 
-			trail->Update(drawnCoords);
+			trail.Update(drawnCoords);
 		}
 
 	}
@@ -294,9 +291,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
 				{
 					pThis->Target = pTechno;
-					auto coords = CoordStruct::Empty;
-					coords = *pTechno->GetCoords(&coords);
-					pThis->Detonate(coords);
+					pThis->Detonate(pTechno->GetCoords());
 				}
 			};
 
