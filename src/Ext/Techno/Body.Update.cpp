@@ -7,6 +7,9 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/House/Body.h>
 #include <Utilities/EnumFunctions.h>
+#ifdef CAN_USE_ARES
+#include <Misc/AresData.h>
+#endif
 
 // methods used in TechnoClass_AI hooks or anything similar
 
