@@ -126,6 +126,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Buildings with superweapons no longer display `SuperAnimThree` at beginning of match if pre-placed on the map.
 - `SpySat=yes` can now be applied using building upgrades.
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do.
+- Voxel turrets can draw shadow now if `[AudioVisual]`->`DrawTurretShadow` is set to true.
 
 ## Fixes / interactions with other extensions
 
