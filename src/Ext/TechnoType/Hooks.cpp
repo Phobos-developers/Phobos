@@ -318,12 +318,12 @@ DEFINE_HOOK(0x4DB157, FootClass_DrawVoxelShadow_TurretShadow, 0x8)
 		auto tur = &pThis->GetTechnoType()->TurretVoxel;
 		if (tur->VXL && tur->HVA)
 		{
-			GET_STACK(Point2D, shadow_point, STACK_OFFSET(0x18, -0x28));
-			GET_STACK(Surface*, pSurface, STACK_OFFSET(0x18, -0x24));
-			GET_STACK(bool, a9, STACK_OFFSET(0x18, -0x20)); // unknown usage
-			GET_STACK(Point2D*, a4, STACK_OFFSET(0x18, -0x14)); // unknown usage
-			GET_STACK(Point2D, a3, STACK_OFFSET(0x18, 0x10)); // unknown usage
-			GET_STACK(int, angle, STACK_OFFSET(0x18, -0xC));
+			GET_STACK(Point2D, shadow_point, STACK_OFFSET(0x18, 0x28));
+			GET_STACK(Surface*, pSurface, STACK_OFFSET(0x18, 0x24));
+			GET_STACK(bool, a9, STACK_OFFSET(0x18, 0x20)); // unknown usage
+			GET_STACK(Point2D*, a4, STACK_OFFSET(0x18, 0x14)); // unknown usage
+			GET_STACK(Point2D, a3, STACK_OFFSET(0x18, -0x10)); // unknown usage
+			GET_STACK(int, angle, STACK_OFFSET(0x18, 0xC));
 
 			Matrix3D mtx;
 			mtx.MakeIdentity();
