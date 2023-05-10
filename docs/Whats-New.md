@@ -358,6 +358,10 @@ Phobos fixes:
 - `IsHouseColor` laser trails on techno now correctly change color when it changes owner (by Trsdy)
 </details>
 
+### 0.3.0.1
+
+Fixes / interactions with other extensions:
+- Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
 
 ### 0.3
 

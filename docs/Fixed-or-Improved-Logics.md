@@ -123,6 +123,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed disguised infantry not using custom palette for drawing the disguise when needed.
 - Disguised infantry now show appropriate insignia when disguise is visible, based on the disguise type and house. Original unit's insignia is always shown to observers and if disguise blinking is enabled for the current player by `[General]`->`DisguiseBlinkingVisibility`.
 
+## Fixes / interactions with other extensions
+
+- Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
+
 ## Animations
 
 ### Animation weapon and damage settings
