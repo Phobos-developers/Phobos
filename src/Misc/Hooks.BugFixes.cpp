@@ -636,6 +636,25 @@ DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
 	return SkipKilling;
 }
 
+// Fixes broken Upgrade logic to allow SpySat=Yes Code=Otamma / Tested DOOM3DGUY
+DEFINE_HOOK(0x508F82, HouseClass_AI_checkSpySat_IncludeUpgrades , 0x6) {
+
+    enum { AdvanceLoop = 0x508FF6, Continue = 0x508F91 };
+
+    GET(BuildingClass const*, pBuilding, ECX);
+
+    if (!pBuilding->Type->SpySat) {
+        for (const auto& pUpGrade : pBuilding->Upgrades) {
+            if (pUpGrade && pUpGrade->SpySat)
+                return Continue;
+        }
+
+        return AdvanceLoop;
+    }
+
+    return Continue;
+}
+
 // BuildingClass_What_Action() - Fix no attack cursor if AG=no projectile on primary
 DEFINE_JUMP(LJMP, 0x447380, 0x44739E);
 DEFINE_JUMP(LJMP, 0x447709, 0x447727);
