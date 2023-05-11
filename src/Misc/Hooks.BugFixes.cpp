@@ -637,15 +637,17 @@ DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
 }
 
 // Fixes broken Upgrade logic to allow SpySat=Yes Code=Otamma / Tested DOOM3DGUY
-DEFINE_HOOK(0x508F82, HouseClass_AI_checkSpySat_IncludeUpgrades , 0x6) {
-
+DEFINE_HOOK(0x508F82, HouseClass_AI_CheckSpySat_IncludeUpgrades, 0x6)
+{
     enum { AdvanceLoop = 0x508FF6, Continue = 0x508F91 };
 
     GET(BuildingClass const*, pBuilding, ECX);
 
-    if (!pBuilding->Type->SpySat) {
-        for (const auto& pUpGrade : pBuilding->Upgrades) {
-            if (pUpGrade && pUpGrade->SpySat)
+    if (!pBuilding->Type->SpySat)
+    {
+        for (const auto& pUpgrade : pBuilding->Upgrades)
+        {
+            if (pUpgrade && pUpgrade->SpySat)
                 return Continue;
         }
 
