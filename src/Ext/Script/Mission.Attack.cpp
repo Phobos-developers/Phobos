@@ -599,7 +599,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	auto const& neutralTechBuildings = RulesClass::Instance->NeutralTechBuildings;
 	int nSuperWeapons = 0;
 	double distanceToTarget = 0;
-	bool buildingIsConsideredVehicle = pTypeBuilding && pTypeBuilding->IsUndeployable();
+	bool buildingIsConsideredVehicle = pTypeBuilding && pTypeBuilding->IsVehicle();
 
 	// Special case: validate target if is part of a technos list in [AITargetTypes] section
 	if (attackAITargetType >= 0 && RulesExt::Global()->AITargetTypesLists.size() > 0)
