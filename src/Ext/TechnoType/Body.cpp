@@ -289,6 +289,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->TurretOffset.Read(exArtINI, pArtSection, "TurretOffset");
 	this->TurretShadow.Read(exArtINI, pArtSection, "TurretShadow");
+	this->ShadowIndexs.Read(exArtINI, pArtSection, "ShadowIndexs");
 
 	for (size_t i = 0; ; ++i)
 	{
@@ -388,6 +389,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DesignatorRange)
 		.Process(this->TurretOffset)
 		.Process(this->TurretShadow)
+		.Process(this->ShadowIndexs)
 		.Process(this->Spawner_LimitRange)
 		.Process(this->Spawner_ExtraLimitRange)
 		.Process(this->Spawner_DelayFrames)

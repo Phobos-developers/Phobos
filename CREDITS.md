@@ -270,6 +270,7 @@ This page lists all the individual contributions to the project by their author.
   - Custom slaves free sound
   - Jumpjet crash rotation control
   - Voxel turret shadows
+  - Multi-body voxel shadows
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
