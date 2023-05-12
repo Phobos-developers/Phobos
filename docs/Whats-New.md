@@ -306,6 +306,8 @@ New:
 - LaunchSW.DisplayMoney (by Starkku)
 - Disguise logic improvements (by Starkku)
 - Custom insignias (by Starkku)
+- Upgrade logic to allow altering of SpySat status (by Otamma)
+
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -340,8 +342,7 @@ Vanilla fixes:
 - Fixed disguised infantry not using custom palette for drawing the disguise when needed (by Starkku)
 - Reenabled the obsolete `[General] WarpIn` as default anim type when units are warping in (by Trsdy)
 - Fixed permanent health bar display for units targeted by temporal weapons upon mouse hover (by Trsdy)
-- Fixed broken Vanilla Upgrade logic to allow altering of SpySat=Yes (by Otamma)
-
+- Buildings with superweapons no longer display `SuperAnimThree` at beginning of match if pre-placed on the map (by Starkku)
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
 - Add `ImmuneToCrit` for shields (by Trsdy)
