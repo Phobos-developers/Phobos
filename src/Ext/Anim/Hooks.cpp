@@ -201,18 +201,20 @@ DEFINE_HOOK(0x424CB0, AnimClass_InWhichLayer_AttachedObjectLayer, 0x6)
 
 	GET(AnimClass*, pThis, ECX);
 
-	auto pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
-
-	if (pThis->OwnerObject && pExt->Layer_UseObjectLayer.isset())
+	if (pThis->OwnerObject)
 	{
-		Layer layer = pThis->Type->Layer;
+		auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
-		if (pExt->Layer_UseObjectLayer.Get())
-			layer = pThis->OwnerObject->InWhichLayer();
+		if (pTypeExt->Layer_UseObjectLayer.isset())
+		{
+			Layer layer = pThis->Type->Layer;
 
-		R->EAX(layer);
+			if (pTypeExt->Layer_UseObjectLayer.Get())
+				layer = pThis->OwnerObject->InWhichLayer();
 
-		return ReturnValue;
+			R->EAX(layer);
+			return ReturnValue;
+		}
 	}
 
 	return 0;

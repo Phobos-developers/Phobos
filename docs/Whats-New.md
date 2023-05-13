@@ -325,7 +325,7 @@ Vanilla fixes:
 - Fixed `LandTargeting=1` not preventing from targeting TerrainTypes (trees etc.) on land (by Starkku)
 - Fixed `NavalTargeting=6` not preventing from targeting empty water cells or TerrainTypes (trees etc.) on water (by Starkku)
 - Fixed `NavalTargeting=7` and/or `LandTargeting=2` resulting in still targeting TerrainTypes (trees etc.) on land with `Primary` weapon (by Starkku)
-- Fixed an issue that causes attached animations on flying objects not layer correctly (by Starkku)
+- Fixed an issue that causes objects in layers outside ground layer to not be sorted correctly (caused issues with animation and jumpjet layering for an instance) (by Starkku)
 - Restored `EVA_StructureSold` for buildings with `UndeploysInto` (by Trsdy)
 - Allow MCV to redeploy in campaigns (by Trsdy)
 - Allow buildings with `UndeploysInto` to be sold if `Unsellable=no` but `ConstructionYard=no` (by Trsdy)
@@ -357,6 +357,7 @@ Phobos fixes:
 - Superweapon `Detonate.Weapon` & `Detonate.Warhead` now use the firing house to deal damage and apply Phobos warhead effects even if no firing building is found (by Starkku)
 - `CreateUnit` now uses civilian house as owner instead if the intended owner house has been defeated (this is in-line with how `MakeInfantry` works) (by Starkku)
 - `IsHouseColor` laser trails on techno now correctly change color when it changes owner (by Trsdy)
+- Fixed `Layer.UseObjectLayer=true` to work correctly for all cases where object changes layer (by Starkku)
 </details>
 
 ### 0.3.0.1
