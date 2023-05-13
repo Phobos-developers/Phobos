@@ -103,7 +103,7 @@ This page lists all the individual contributions to the project by their author.
   - Laser trails for VoxelAnims
   - MakeInfantry logic on BombClass bugfix
   - Debris & meteor impact behaviour settings
-  - Fixed broken Building Upgrade logic for SpySat=yes
+  - Upgrade logic to allow altering of SpySat status
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`

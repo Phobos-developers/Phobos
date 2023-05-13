@@ -306,8 +306,7 @@ New:
 - LaunchSW.DisplayMoney (by Starkku)
 - Disguise logic improvements (by Starkku)
 - Custom insignias (by Starkku)
-- Upgrade logic to allow altering of SpySat status (by Otamma)
-
+- Upgrade logic to allow altering of SpySat status (by Otamaa)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
