@@ -691,3 +691,27 @@ DEFINE_HOOK(0x451033, BuildingClass_AnimationAI_SuperAnim, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x688F8C, ScenarioClass_ScanPlaceUnit_CheckMovement, 0x5)
+{
+	GET(TechnoClass*, pTechno, EBX);
+	LEA_STACK(CoordStruct*, pHomeCoords, STACK_OFFSET(0x6C, -0x30));
+
+	if (pTechno->WhatAmI() == AbstractType::Building)
+		return 0;
+
+	const auto pCell = MapClass::Instance->GetCellAt(*pHomeCoords);
+	return pCell->IsClearToMove(pTechno->GetTechnoType()->SpeedType, 0, 0, MovementZone::None, MovementZone::Normal, -1, 1) ? 0 : 0x688FB9;
+}
+
+DEFINE_HOOK(0x68927B, ScenarioClass_ScanPlaceUnit_CheckMovement2, 0x5)
+{
+	GET(TechnoClass*, pTechno, EDI);
+	LEA_STACK(CoordStruct*, pCellCoords, STACK_OFFSET(0x6C, -0xC));
+
+	if (pTechno->WhatAmI() == AbstractType::Building)
+		return 0;
+
+	const auto pCell = MapClass::Instance->GetCellAt(*pCellCoords);
+	return pCell->IsClearToMove(pTechno->GetTechnoType()->SpeedType, 0, 0, MovementZone::None, MovementZone::Normal, -1, 1) ? 0 : 0x689295;
+}
