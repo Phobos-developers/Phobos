@@ -358,6 +358,7 @@ Phobos fixes:
 - `CreateUnit` now uses civilian house as owner instead if the intended owner house has been defeated (this is in-line with how `MakeInfantry` works) (by Starkku)
 - `IsHouseColor` laser trails on techno now correctly change color when it changes owner (by Trsdy)
 - Fixed `Layer.UseObjectLayer=true` to work correctly for all cases where object changes layer (by Starkku)
+- Fixed floating point value parsing precision to match the game (by Starkku)
 </details>
 
 ### 0.3.0.1
