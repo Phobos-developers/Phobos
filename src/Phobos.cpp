@@ -60,7 +60,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		}
 	}
 
-	if (foundInclude || foundInheritance)
+	if (foundInclude)
 	{
 		// Apply CCINIClass_ReadCCFile1_DisableAres
 		byte patchBytes[] = { 0x8B, 0xF1, 0x8D, 0x54, 0x24, 0x0C };

@@ -125,7 +125,7 @@ function onInput() {
 
 ### Include files
 - INI files can now include other files (merge them into self) using `[$Include]` section.
-  - This feature must be enabled via a command line argument `-Include` or `-Inheritance`.
+  - This feature must be enabled via a command line argument `-Include`.
   - `[$Include]` section contains a list of files to read and include. Files can be directly in the Red Alert 2 directory or in a loaded MIX file.
   - Files will be added in the same order they are defined. Index of each file **must be unique among all included files**.
   - Inclusion can be nested recursively (included files can include files further). Recursion is depth-first (before including next file, check if the current one includes anything).
@@ -148,7 +148,7 @@ In any file:
 
 ### Section inheritance
 - You can now make sections (children) inherit entries from other sections (parents) with `$Inherits` entry.
-  - This feature must be enabled via a command line argument `-Inheritance`. Enabling this feature also enables `-Include`.
+  - This feature must be enabled via a command line argument `-Inheritance`.
   - When a section has no value set for an entry (or an entry is missing), the game will attempt to use parent's value. If no value is found, only then the default will be used.
   - When multiple parents are specified, the order of inheritance is "first come, first served", looking up comma separated parents from left to right.
   - Inheritance can be nested recursively (parent sections can have their own parents). Recursion is depth-first (before inheriting from the next parent, check if the current parent has parents).
