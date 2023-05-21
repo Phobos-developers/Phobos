@@ -33,6 +33,7 @@ const wchar_t* Phobos::VersionDescription = L"Phobos development build #" _STR(B
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
 	bool foundInheritance = false;
+	bool foundInclude = false;
 
 	// > 1 because the exe path itself counts as an argument, too!
 	for (int i = 1; i < nNumArgs; i++)
@@ -53,6 +54,20 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		{
 			foundInheritance = true;
 		}
+		if (_stricmp(pArg, "-Include") == 0)
+		{
+			foundInclude = true;
+		}
+	}
+
+	if (foundInclude || foundInheritance)
+	{
+		// Apply CCINIClass_ReadCCFile1_DisableAres
+		byte patchBytes[] = { 0x8B, 0xF1, 0x8D, 0x54, 0x24, 0x0C };
+		Patch(0x474200, 6, patchBytes).Apply();
+		// Apply CCINIClass_ReadCCFile2_DisableAres
+		byte patch2Bytes[] = { 0x81, 0xC4, 0xA8, 0x00, 0x00, 0x00 };
+		Patch(0x474314, 6, patch2Bytes).Apply();
 	}
 
 	if (foundInheritance)

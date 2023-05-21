@@ -179,10 +179,6 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 
 // INIClass__GetInt__Hack // pop edi, jmp + 6, nop
 DEFINE_PATCH(0x5278C6, 0x5F, 0xEB, 0x06, 0x90);
-// CCINIClass_ReadCCFile1_DisableAres
-DEFINE_PATCH(0x474200, 0x8B, 0xF1, 0x8D, 0x54, 0x24, 0x0C)
-// CCINIClass_ReadCCFile2_DisableAres
-DEFINE_PATCH(0x474314, 0x81, 0xC4, 0xA8, 0x00, 0x00, 0x00)
 
 DEFINE_HOOK(0x528BAC, INIClass_GetString_Inheritance_NoEntry, 0xA)
 {
