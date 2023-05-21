@@ -187,6 +187,8 @@ This page lists all the individual contributions to the project by their author.
   - Option to center pause menu background
   - Disguise logic improvements
   - Custom insignias
+  - `ZShapePointMove` buildup toggle
+  - `UndeploysInto` building selling buildup sequence length customization
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

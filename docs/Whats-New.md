@@ -307,6 +307,8 @@ New:
 - Disguise logic improvements (by Starkku)
 - Custom insignias (by Starkku)
 - Upgrade logic to allow altering of SpySat status (by Otamaa)
+- Allow `ZShapePointMove` to apply during buildup via `ZShapePointMove.OnBuildup` (by Starkku)
+- `UndeploysInto` building selling buildup sequence length customization (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
