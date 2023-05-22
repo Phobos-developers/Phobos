@@ -69,6 +69,12 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		byte patch2Bytes[] = { 0x81, 0xC4, 0xA8, 0x00, 0x00, 0x00 };
 		Patch(0x474314, 6, patch2Bytes).Apply();
 	}
+	else
+    {
+        // Revert CCINIClass_Load_Inheritance
+        byte originalBytes[] = { 0x8B, 0xE8, 0x88, 0x5E, 0x40 };
+        Patch(0x474230, 5, originalBytes).Apply();
+    }
 
 	if (foundInheritance)
 	{
