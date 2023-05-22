@@ -309,8 +309,6 @@ DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
 	return 0x6B0C65;
 }
 
-// TODO: ifv / prism turret, multibody shadow.
-// TODO: hva anim
 DEFINE_HOOK(0x4DB157, FootClass_DrawVoxelShadow_TurretShadow, 0x8)
 {
 	GET(FootClass*, pThis, ESI);
@@ -327,14 +325,17 @@ DEFINE_HOOK(0x4DB157, FootClass_DrawVoxelShadow_TurretShadow, 0x8)
 
 	auto pType = pThis->GetTechnoType();
 	auto const pExt = TechnoTypeExt::ExtMap.Find(pType);
-	auto tur = &pType->TurretVoxel;
+	auto tur = pType->Gunner || pType->IsChargeTurret ?
+		&pType->ChargerTurrets[pThis->CurrentTurretNumber] :
+		&pType->TurretVoxel;
 	if (pExt->TurretShadow.Get(RulesExt::Global()->DrawTurretShadow) && tur->VXL && tur->HVA)
 	{
 		auto mtx = pThis->Locomotor->Shadow_Matrix(0);
 		mtx.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
 		float x = static_cast<float>(pExt->TurretOffset.GetEx()->X);
 		float y = static_cast<float>(pExt->TurretOffset.GetEx()->Y);
-		mtx.Translate(x, y, 0);
+		float z = -tur->VXL->TailerData->MinBounds.Z;
+		mtx.Translate(x, y, z);
 		Matrix3D::MatrixMultiply(&mtx, &Matrix3D::VoxelDefaultMatrix, &mtx);
 
 		pThis->DrawVoxelShadow(tur, 0, angle, 0, a4, &a3, &mtx, a9, pSurface, pos);
@@ -351,6 +352,7 @@ DEFINE_HOOK(0x4DB157, FootClass_DrawVoxelShadow_TurretShadow, 0x8)
 			auto hva = pVXL->HVA;
 			Matrix3D idxmtx = *pMatrix;
 			idxmtx.TranslateZ(-hva->Matrixes[index].GetZVal());
+			Matrix3D::MatrixMultiply(&idxmtx, &Matrix3D::VoxelDefaultMatrix, &idxmtx);
 			pThis->DrawVoxelShadow(pVXL, index, angle, a5, a4, &a3, pMatrix, a9, pSurface, pos);
 		}
 
