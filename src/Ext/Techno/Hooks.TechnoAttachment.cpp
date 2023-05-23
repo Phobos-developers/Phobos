@@ -515,6 +515,8 @@ CoordStruct __fastcall TechnoClass_GetRenderCoords(TechnoClass* pThis, void* _)
 // 	return Skip;
 // }
 
+// WIP jitterless drawing. requires a lot of work so wasn't finished
+/*
 DEFINE_HOOK(0x73B5B5, UnitClass_DrawVoxel_AttachmentAdjust, 0x6)
 {
 	enum { Skip = 0x73B5CE };
@@ -651,7 +653,7 @@ DEFINE_HOOK(0x6D9EF0, TacticalClass_AddSelectable_SwapCoord, 0x6)
 
 	return 0;
 }
-
+*/
 
 // offsets the voxel visual, needs additional handling
 // DEFINE_HOOK(0x73B140, UnitClass_DrawObject_SwapCoord, 0x5)

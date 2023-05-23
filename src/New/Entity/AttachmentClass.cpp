@@ -5,6 +5,7 @@
 #include <BulletTypeClass.h>
 #include <WarheadTypeClass.h>
 #include <TunnelLocomotionClass.h>
+#include <DriveLocomotionClass.h>
 
 #include <ObjBase.h>
 
@@ -173,6 +174,24 @@ void AttachmentClass::AI()
 				pChildTunnelLoco->DigTimer = pParentTunnelLoco->DigTimer;
 				pChildTunnelLoco->bool38 = pParentTunnelLoco->bool38;
 			}
+
+			else
+			if (SUCCEEDED(pParentLoco->GetClassID(&locoCLSID))
+				&& (locoCLSID == LocomotionClass::CLSIDs::Drive
+					|| locoCLSID == LocomotionClass::CLSIDs::Ship) &&
+				SUCCEEDED(pChildLoco->GetClassID(&locoCLSID))
+				&& (locoCLSID == LocomotionClass::CLSIDs::Drive
+					|| locoCLSID == LocomotionClass::CLSIDs::Ship))
+			{
+				// shh DriveLocomotionClass almost equates to ShipLocomotionClass
+				// for this particular case it's OK to cast to it - Kerbiter
+				auto pParentDriveLoco = static_cast<DriveLocomotionClass*>(pParentLoco);
+				auto pChildDriveLoco = static_cast<DriveLocomotionClass*>(pChildLoco);
+
+				pChildDriveLoco->SlopeTimer = pParentDriveLoco->SlopeTimer;
+				pChildDriveLoco->PreviousRamp = pParentDriveLoco->PreviousRamp;
+				pChildDriveLoco->CurrentRamp = pParentDriveLoco->CurrentRamp;
+			}
 		}
 
 		if (pType->InheritStateEffects)
@@ -265,9 +284,10 @@ bool AttachmentClass::AttachChild(TechnoClass* pChild)
 	auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 	pChildExt->ParentAttachment = this;
 
-	// TODO fix properly
-	this->Child->GetTechnoType()->DisableVoxelCache = true;
-	this->Child->GetTechnoType()->DisableShadowCache = true;
+
+	// bandaid for jitterless drawing. TODO fix properly
+	// this->Child->GetTechnoType()->DisableVoxelCache = true;
+	// this->Child->GetTechnoType()->DisableShadowCache = true;
 
 	AttachmentTypeClass* pType = this->GetType();
 
