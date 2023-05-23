@@ -17,8 +17,7 @@ void VoxelAnimExt::InitializeLaserTrails(VoxelAnimClass* pThis)
 	{
 		if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
 		{
-			pThisExt->LaserTrails.push_back(std::make_unique<LaserTrailClass>
-				(pLaserType, pThis->OwnerHouse));
+			pThisExt->LaserTrails.push_back(LaserTrailClass { pLaserType, pThis->OwnerHouse });
 		}
 	}
 }
@@ -101,7 +100,7 @@ DEFINE_HOOK(0x74AA10, VoxelAnimClass_SaveLoad_Prefix, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x74A9FB, VoxelAnimClass_Load_Suffix, 0x5)
+DEFINE_HOOK(0x74A9FB, VoxelAnimClass_Load_Suffix, 0x7)
 {
 	VoxelAnimExt::ExtMap.LoadStatic();
 	return 0;

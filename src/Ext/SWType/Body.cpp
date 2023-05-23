@@ -1,6 +1,5 @@
 #include "Body.h"
 
-#include <SuperWeaponTypeClass.h>
 #include <StringTable.h>
 
 template<> const DWORD Extension<SuperWeaponTypeClass>::Canary = 0x11111111;
@@ -24,6 +23,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_ForbiddenHouses)
 		.Process(this->SW_AuxBuildings)
 		.Process(this->SW_NegBuildings)
+		.Process(this->SW_InitialReady)
 		.Process(this->UIDescription)
 		.Process(this->CameoPriority)
 		.Process(this->LimboDelivery_Types)
@@ -36,12 +36,14 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Detonate_Warhead)
 		.Process(this->Detonate_Weapon)
 		.Process(this->Detonate_Damage)
+		.Process(this->Detonate_AtFirer)
 		.Process(this->SW_Next)
 		.Process(this->SW_Next_RealLaunch)
 		.Process(this->SW_Next_IgnoreInhibitors)
 		.Process(this->SW_Next_IgnoreDesignators)
 		.Process(this->SW_Next_RandomWeightsData)
 		.Process(this->SW_Next_RollChances)
+		.Process(this->ShowTimer_Priority)
 		;
 }
 
@@ -69,6 +71,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_ForbiddenHouses = pINI->ReadHouseTypesList(pSection, "SW.ForbiddenHouses", this->SW_ForbiddenHouses);
 	this->SW_AuxBuildings.Read(exINI, pSection, "SW.AuxBuildings");
 	this->SW_NegBuildings.Read(exINI, pSection, "SW.NegBuildings");
+	this->SW_InitialReady.Read(exINI, pSection, "SW.InitialReady");
 
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
@@ -82,6 +85,8 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_Next_IgnoreInhibitors.Read(exINI, pSection, "SW.Next.IgnoreInhibitors");
 	this->SW_Next_IgnoreDesignators.Read(exINI, pSection, "SW.Next.IgnoreDesignators");
 	this->SW_Next_RollChances.Read(exINI, pSection, "SW.Next.RollChances");
+
+	this->ShowTimer_Priority.Read(exINI, pSection, "ShowTimer.Priority");
 
 	char tempBuffer[32];
 	// LimboDelivery.RandomWeights
@@ -127,9 +132,11 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		else
 			this->SW_Next_RandomWeightsData.push_back(weights2);
 	}
+
 	this->Detonate_Warhead.Read(exINI, pSection, "Detonate.Warhead");
 	this->Detonate_Weapon.Read(exINI, pSection, "Detonate.Weapon", true);
 	this->Detonate_Damage.Read(exINI, pSection, "Detonate.Damage");
+	this->Detonate_AtFirer.Read(exINI, pSection, "Detonate.AtFirer");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

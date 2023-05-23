@@ -1,18 +1,11 @@
-#include <Phobos.h>
+#include "Phobos.h"
 
-#include <Helpers/Macro.h>
-#include <GameStrings.h>
-#include <CCINIClass.h>
-#include <Unsorted.h>
 #include <Drawing.h>
 
-#include "Utilities/Parser.h"
-#include <Utilities/GeneralUtils.h>
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
 
-#include "Misc/BlittersFix.h"
 
 #ifndef IS_RELEASE_VER
 bool HideWarning = false;
@@ -26,7 +19,7 @@ const char Phobos::readDelims[4] = ",";
 
 const char* Phobos::AppIconPath = nullptr;
 
-bool Phobos::Debug_DisplayDamageNumbers = false;
+bool Phobos::DisplayDamageNumbers = false;
 
 #ifdef STR_GIT_COMMIT
 const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
@@ -36,28 +29,6 @@ const wchar_t* Phobos::VersionDescription = L"Phobos development build #" _STR(B
 //const wchar_t* Phobos::VersionDescription = L"Phobos release build v" FILE_VERSION_STR L".";
 #endif
 
-bool Phobos::UI::DisableEmptySpawnPositions = false;
-bool Phobos::UI::ExtendedToolTips = false;
-int Phobos::UI::MaxToolTipWidth = 0;
-bool Phobos::UI::ShowHarvesterCounter = false;
-double Phobos::UI::HarvesterCounter_ConditionYellow = 0.99;
-double Phobos::UI::HarvesterCounter_ConditionRed = 0.5;
-bool Phobos::UI::ShowProducingProgress = false;
-const wchar_t* Phobos::UI::CostLabel = L"";
-const wchar_t* Phobos::UI::PowerLabel = L"";
-const wchar_t* Phobos::UI::TimeLabel = L"";
-const wchar_t* Phobos::UI::HarvesterLabel = L"";
-bool Phobos::UI::ShowPowerDelta = false;
-double Phobos::UI::PowerDelta_ConditionYellow = 0.75;
-double Phobos::UI::PowerDelta_ConditionRed = 1.0;
-
-bool Phobos::Config::ToolTipDescriptions = true;
-bool Phobos::Config::ToolTipBlur = false;
-bool Phobos::Config::PrioritySelectionFiltering = true;
-bool Phobos::Config::DevelopmentCommands = true;
-bool Phobos::Config::ArtImageSwap = false;
-bool Phobos::Config::AllowParallelAIQueues = true;
-bool Phobos::Config::ShowPlacementPreview = false;
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
@@ -78,37 +49,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 #endif
 	}
 
-	Debug::Log("Initialized Phobos " PRODUCT_VERSION "\n");
-}
-
-CCINIClass* Phobos::OpenConfig(const char* file)
-{
-	CCINIClass* pINI = GameCreate<CCINIClass>();
-
-	if (pINI)
-	{
-		CCFileClass* cfg = GameCreate<CCFileClass>(file);
-
-		if (cfg)
-		{
-			if (cfg->Exists())
-			{
-				pINI->ReadCCFile(cfg);
-			}
-			GameDelete(cfg);
-		}
-	}
-
-	return pINI;
-}
-
-void Phobos::CloseConfig(CCINIClass*& pINI)
-{
-	if (pINI)
-	{
-		GameDelete(pINI);
-		pINI = nullptr;
-	}
+	Debug::Log("Initialized version: " PRODUCT_VERSION "\n");
 }
 
 void Phobos::ExeRun()
@@ -195,94 +136,6 @@ DEFINE_HOOK(0x52F639, _YR_CmdLineParse, 0x5)
 	GET(int, nNumArgs, EDI);
 
 	Phobos::CmdLineParse(ppArgs, nNumArgs);
-	return 0;
-}
-
-DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
-{
-	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
-	Phobos::Config::ToolTipBlur = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipBlur", false);
-	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
-	Phobos::Config::ShowPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowPlacementPreview", true);
-
-	CCINIClass* pINI_UIMD = Phobos::OpenConfig(GameStrings::UIMD_INI);
-
-	// LoadingScreen
-	{
-		Phobos::UI::DisableEmptySpawnPositions =
-			pINI_UIMD->ReadBool("LoadingScreen", "DisableEmptySpawnPositions", false);
-	}
-
-	// ToolTips
-	{
-		Phobos::UI::ExtendedToolTips =
-			pINI_UIMD->ReadBool(TOOLTIPS_SECTION, "ExtendedToolTips", false);
-
-		Phobos::UI::MaxToolTipWidth =
-			pINI_UIMD->ReadInteger(TOOLTIPS_SECTION, "MaxWidth", 0);
-
-		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "CostLabel", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::CostLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"$");
-
-		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "PowerLabel", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::PowerLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26a1"); // ⚡
-
-		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "TimeLabel", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::TimeLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u231a"); // ⌚
-	}
-
-	// Sidebar
-	{
-		Phobos::UI::ShowHarvesterCounter =
-			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "HarvesterCounter.Show", false);
-
-		pINI_UIMD->ReadString(SIDEBAR_SECTION, "HarvesterCounter.Label", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::HarvesterLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26cf"); // ⛏
-
-		Phobos::UI::HarvesterCounter_ConditionYellow =
-			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionYellow", Phobos::UI::HarvesterCounter_ConditionYellow);
-
-		Phobos::UI::HarvesterCounter_ConditionRed =
-			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionRed", Phobos::UI::HarvesterCounter_ConditionRed);
-
-		Phobos::UI::ShowProducingProgress =
-			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "ProducingProgress.Show", false);
-
-		Phobos::UI::ShowPowerDelta =
-			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "PowerDelta.Show", false);
-
-		Phobos::UI::PowerDelta_ConditionYellow =
-			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "PowerDelta.ConditionYellow", Phobos::UI::PowerDelta_ConditionYellow);
-
-		Phobos::UI::PowerDelta_ConditionRed =
-			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "PowerDelta.ConditionRed", Phobos::UI::PowerDelta_ConditionRed);
-	}
-
-	Phobos::CloseConfig(pINI_UIMD);
-
-	CCINIClass* pINI_RULESMD = Phobos::OpenConfig(GameStrings::RULESMD_INI);
-
-	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool(GameStrings::General, "ArtImageSwap", false);
-
-	if (pINI_RULESMD->ReadBool(GameStrings::General, "FixTransparencyBlitters", true))
-		BlittersFix::Apply();
-
-	Phobos::CloseConfig(pINI_RULESMD);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
-{
-	GET(CCINIClass*, rulesINI, EDI);
-
-	// Ares tags
-
-#ifndef DEBUG
-	Phobos::Config::DevelopmentCommands = rulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
-#endif
-	Phobos::Config::AllowParallelAIQueues = rulesINI->ReadBool("GlobalControls", "AllowParallelAIQueues", Phobos::Config::AllowParallelAIQueues);
-
 	return 0;
 }
 

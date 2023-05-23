@@ -6,7 +6,7 @@ rem https://github.com/microsoft/vswhere/wiki/Start-Developer-Command-Prompt
 rem Ensure we're in correct directory.
 cd /D "%~dp0"
 
-for /f "usebackq delims=" %%i in (`vswhere.exe -version [15^,17^) -products * -prerelease -latest -property installationPath`) do (
+for /f "usebackq delims=" %%i in (`vswhere.exe -products * -prerelease -latest -property installationPath`) do (
   if exist "%%i\Common7\Tools\vsdevcmd.bat" (
     call "%%i\Common7\Tools\vsdevcmd.bat" %*
     exit /b

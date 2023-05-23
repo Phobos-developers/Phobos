@@ -181,6 +181,20 @@ enum class TextAlign : int
 
 MAKE_ENUM_FLAGS(TextAlign);
 
+enum class IronCurtainEffect : BYTE
+{
+	Kill = 0,
+	Invulnerable = 1,
+	Ignore = 2
+};
+
+enum class TargetZoneScanType
+{
+	Same = 0,
+	Any = 1,
+	InRange = 2
+};
+
 enum class AttachmentYSortPosition
 {
 	Default = 0,

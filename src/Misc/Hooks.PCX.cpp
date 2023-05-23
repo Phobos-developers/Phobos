@@ -23,12 +23,12 @@ DEFINE_HOOK(0x5535D0, LoadProgressMgr_Draw_PCXLoadingScreen, 0x6)
 	int ScreenWidth = *(int*)0x8A00A4;
 	BSurface* pcx = nullptr;
 
-	sprintf_s(Phobos::readBuffer, (const char*)0x8297F4 /* ls%sobs.shp */,
-		ScreenWidth != 640 ? (const char*)0x8297DC /* 800 */ : (const char*)0x8297E0 /* 640 */);
+	sprintf_s(Phobos::readBuffer, GameStrings::LSSOBS_SHP() /* "ls%sobs.shp" */,
+		ScreenWidth != 640 ? GameStrings::_800() /* "800" */ : GameStrings::_640() /* "640" */);
 	if (!_stricmp(pFilename, Phobos::readBuffer))
 	{
 		sprintf_s(Phobos::readBuffer, "ls%sobs.pcx",
-			ScreenWidth != 640 ? (const char*)0x8297DC /* 800 */ : (const char*)0x8297E0 /* 640 */);
+			ScreenWidth != 640 ? GameStrings::_800() : GameStrings::_640());
 		PCX::Instance->LoadFile(Phobos::readBuffer);
 		pcx = PCX::Instance->GetSurface(Phobos::readBuffer);
 	}
@@ -57,11 +57,8 @@ DEFINE_HOOK(0x5535D0, LoadProgressMgr_Draw_PCXLoadingScreen, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x552F81, LoadProgressMgr_Draw_PCXLoadingScreen_Campaign, 0x5)
+DEFINE_HOOK(0x552FCB, LoadProgressMgr_Draw_PCXLoadingScreen_Campaign, 0x6)
 {
-	GET(LoadProgressManager*, pThis, EBP);
-
-	DSurface* pSurface = static_cast<DSurface*>(pThis->ProgressSurface);
 	char filename[0x40];
 	strcpy_s(filename, ScenarioClass::Instance->LS800BkgdName);
 	_strlwr_s(filename);
@@ -72,6 +69,8 @@ DEFINE_HOOK(0x552F81, LoadProgressMgr_Draw_PCXLoadingScreen_Campaign, 0x5)
 
 		if (auto const pPCX = PCX::Instance->GetSurface(filename))
 		{
+			GET_BASE(DSurface*, pSurface, 0x60);
+
 			RectangleStruct pSurfBounds = { 0, 0, pSurface->Width, pSurface->Height };
 			RectangleStruct pcxBounds = { 0, 0, pPCX->Width, pPCX->Height };
 			RectangleStruct destClip = { (pSurface->Width - pPCX->Width) / 2, (pSurface->Height - pPCX->Height) / 2, pPCX->Width, pPCX->Height };
@@ -79,8 +78,7 @@ DEFINE_HOOK(0x552F81, LoadProgressMgr_Draw_PCXLoadingScreen_Campaign, 0x5)
 			pSurface->CopyFrom(&pSurfBounds, &destClip, pPCX, &pcxBounds, &pcxBounds, true, true);
 		}
 
-		R->EBX(R->EDI());
-		return 0x552FC6;
+		return 0x552FFF;
 	}
 
 	return 0;

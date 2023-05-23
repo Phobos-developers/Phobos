@@ -113,7 +113,7 @@ public:
 					const auto& pOwner = pTechno->GetOwningHouse();
 
 					if (pOwner && pOwner->IsControlledByCurrentPlayer() && pTechno->CanBeSelected()
-						&& (!pBldType || (pBldType && pBldType->UndeploysInto && pBldType->IsUndeployable())))
+						&& (!pBldType || (pBldType && pBldType->UndeploysInto && pBldType->IsVehicle())))
 					{
 						Unsorted::MoveFeedback = !pTechno->Select();
 					}

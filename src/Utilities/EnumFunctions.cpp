@@ -2,9 +2,11 @@
 
 bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, HouseClass* targetHouse)
 {
-	return (flags & AffectedHouse::Owner) && ownerHouse == targetHouse ||
-		(flags & AffectedHouse::Allies) && ownerHouse != targetHouse && ownerHouse->IsAlliedWith(targetHouse) ||
-		(flags & AffectedHouse::Enemies) && ownerHouse != targetHouse && !ownerHouse->IsAlliedWith(targetHouse);
+	if (ownerHouse == targetHouse)
+		return (flags & AffectedHouse::Owner) != AffectedHouse::None;
+	if (ownerHouse->IsAlliedWith(targetHouse))
+		return (flags & AffectedHouse::Allies) != AffectedHouse::None;
+	return (flags & AffectedHouse::Enemies) != AffectedHouse::None;
 }
 
 bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowed, bool explicitEmptyCells)
@@ -25,7 +27,7 @@ bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowe
 			return (allowed & AffectedTarget::Land) != AffectedTarget::None;
 	}
 
-	return allowed != AffectedTarget::None ? true : false;
+	return allowed != AffectedTarget::None;
 }
 
 bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget allowed, bool considerAircraftSeparately)
@@ -56,7 +58,7 @@ bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget 
 		}
 	}
 
-	return allowed != AffectedTarget::None ? true : false;
+	return allowed != AffectedTarget::None;
 }
 
 bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTarget allowed, AffectedHouse allowedHouses, HouseClass* owner, bool explicitEmptyCells, bool considerAircraftSeparately)

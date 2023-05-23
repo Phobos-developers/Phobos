@@ -31,16 +31,11 @@ public:
 
 	static const char* AppIconPath;
 	static const wchar_t* VersionDescription;
-
-	static bool Debug_DisplayDamageNumbers;
+	static bool DisplayDamageNumbers;
 
 #ifdef DEBUG
 	static bool DetachFromDebugger();
 #endif
-	static void Clear();
-	static void PointerGotInvalid(AbstractClass* const pInvalid, bool const removed);
-	static HRESULT SaveGameData(IStream* pStm);
-	static void LoadGameData(IStream* pStm);
 
 	class UI
 	{
@@ -55,9 +50,11 @@ public:
 		static bool ShowPowerDelta;
 		static double PowerDelta_ConditionYellow;
 		static double PowerDelta_ConditionRed;
+		static bool CenterPauseMenuBackground;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;
+		static const wchar_t* PowerBlackoutLabel;
 		static const wchar_t* TimeLabel;
 		static const wchar_t* HarvesterLabel;
 	};
@@ -70,7 +67,18 @@ public:
 		static bool PrioritySelectionFiltering;
 		static bool DevelopmentCommands;
 		static bool ArtImageSwap;
-		static bool AllowParallelAIQueues;
 		static bool ShowPlacementPreview;
+		static bool RealTimeTimers;
+		static bool RealTimeTimers_Adaptive;
+		static int CampaignDefaultGameSpeed;
+	};
+
+	class Misc
+	{
+	public:
+		static bool CustomGS;
+		static int CustomGS_ChangeInterval[7];
+		static int CustomGS_ChangeDelay[7];
+		static int CustomGS_DefaultDelay[7];
 	};
 };

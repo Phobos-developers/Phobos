@@ -2,20 +2,24 @@
 
 #include <BitFont.h>
 
-#include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<BuildingClass>::Canary = 0x87654321;
 BuildingExt::ExtContainer BuildingExt::ExtMap;
 
-void BuildingExt::ExtData::DisplayGrinderRefund()
+void BuildingExt::ExtData::DisplayIncomeString()
 {
-	if (this->AccumulatedGrindingRefund && Unsorted::CurrentFrame % 15 == 0)
+	if (this->AccumulatedIncome && Unsorted::CurrentFrame % 15 == 0)
 	{
-		FlyingStrings::AddMoneyString(this->AccumulatedGrindingRefund, this->OwnerObject()->Owner,
-			this->TypeExtData->Grinding_DisplayRefund_Houses, this->OwnerObject()->GetRenderCoords(), this->TypeExtData->Grinding_DisplayRefund_Offset);
+		FlyingStrings::AddMoneyString(
+			this->AccumulatedIncome,
+			this->OwnerObject()->Owner,
+			this->TypeExtData->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
+			this->OwnerObject()->GetRenderCoords(),
+			this->TypeExtData->DisplayIncome_Offset
+		);
 
-		this->AccumulatedGrindingRefund = 0;
+		this->AccumulatedIncome = 0;
 	}
 }
 
@@ -77,35 +81,31 @@ void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiber
 	}
 }
 
-void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
+void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 {
-	auto pOwner = pThis->Owner;
+	auto pOwner = this->OwnerObject()->Owner;
 
 	if (!pOwner || pOwner->ProducingAircraftTypeIndex < 0)
 		return;
 
-	auto BuildingExt = BuildingExt::ExtMap.Find(pThis);
-	if (!BuildingExt)
-		return;
-
 	AircraftTypeClass* pAircraft = AircraftTypeClass::Array->GetItem(pOwner->ProducingAircraftTypeIndex);
 	FactoryClass* currFactory = pOwner->GetFactoryProducing(pAircraft);
-	DynamicVectorClass<BuildingClass*> airFactoryBuilding;
+	std::vector<BuildingClass*> airFactoryBuilding;
 	BuildingClass* newBuilding = nullptr;
 
 	// Update what is the current air factory for future comparisons
-	if (BuildingExt->CurrentAirFactory)
+	if (this->CurrentAirFactory)
 	{
 		int nDocks = 0;
-		if (BuildingExt->CurrentAirFactory->Type)
-			nDocks = BuildingExt->CurrentAirFactory->Type->NumberOfDocks;
+		if (this->CurrentAirFactory->Type)
+			nDocks = this->CurrentAirFactory->Type->NumberOfDocks;
 
-		int nOccupiedDocks = CountOccupiedDocks(BuildingExt->CurrentAirFactory);
+		int nOccupiedDocks = BuildingExt::CountOccupiedDocks(this->CurrentAirFactory);
 
 		if (nOccupiedDocks < nDocks)
-			currFactory = BuildingExt->CurrentAirFactory->Factory;
+			currFactory = this->CurrentAirFactory->Factory;
 		else
-			BuildingExt->CurrentAirFactory = nullptr;
+			this->CurrentAirFactory = nullptr;
 	}
 
 	// Obtain a list of air factories for optimizing the comparisons
@@ -116,18 +116,18 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 			if (!currFactory && pBuilding->Factory)
 				currFactory = pBuilding->Factory;
 
-			airFactoryBuilding.AddItem(pBuilding);
+			airFactoryBuilding.emplace_back(pBuilding);
 		}
 	}
 
-	if (BuildingExt->CurrentAirFactory)
+	if (this->CurrentAirFactory)
 	{
 		for (auto pBuilding : airFactoryBuilding)
 		{
-			if (pBuilding == BuildingExt->CurrentAirFactory)
+			if (pBuilding == this->CurrentAirFactory)
 			{
-				BuildingExt->CurrentAirFactory->Factory = currFactory;
-				BuildingExt->CurrentAirFactory->IsPrimaryFactory = true;
+				this->CurrentAirFactory->Factory = currFactory;
+				this->CurrentAirFactory->IsPrimaryFactory = true;
 			}
 			else
 			{
@@ -147,7 +147,7 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 	for (auto pBuilding : airFactoryBuilding)
 	{
 		int nDocks = pBuilding->Type->NumberOfDocks;
-		int nOccupiedDocks = CountOccupiedDocks(pBuilding);
+		int nOccupiedDocks = BuildingExt::CountOccupiedDocks(pBuilding);
 
 		if (nOccupiedDocks < nDocks)
 		{
@@ -156,7 +156,7 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 				newBuilding = pBuilding;
 				newBuilding->Factory = currFactory;
 				newBuilding->IsPrimaryFactory = true;
-				BuildingExt->CurrentAirFactory = newBuilding;
+				this->CurrentAirFactory = newBuilding;
 
 				continue;
 			}
@@ -239,14 +239,14 @@ bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 	return true;
 }
 
-bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno)
+bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund)
 {
 	if (const auto pExt = BuildingExt::ExtMap.Find(pBuilding))
 	{
 		const auto pTypeExt = pExt->TypeExtData;
 
-		if (pTypeExt->Grinding_DisplayRefund)
-			pExt->AccumulatedGrindingRefund += pTechno->GetRefund();
+		if (pTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome.Get()))
+			pExt->AccumulatedIncome += refund;
 
 		if (pTypeExt->Grinding_Weapon.isset()
 			&& Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon.Get()->ROF)
@@ -297,16 +297,29 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 	auto pVictimHouse = pBuilding->Owner;
 	if (pInfiltratorHouse != pVictimHouse)
 	{
-		if (pTypeExt->SpyEffect_VictimSuperWeapon)
+		// I assume you were not launching for real, Morton
+
+		auto launchTheSWHere = [pBuilding](SuperClass* const pSuper, HouseClass* const pHouse)
 		{
-			const auto pSuper = pVictimHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pTypeExt->SpyEffect_VictimSuperWeapon));
-			pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pVictimHouse->IsControlledByHuman());
+			int oldstart = pSuper->RechargeTimer.StartTime;
+			int oldleft = pSuper->RechargeTimer.TimeLeft;
+			pSuper->SetReadiness(true);
+			pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pHouse->IsCurrentPlayer());
+			pSuper->Reset();
+			pSuper->RechargeTimer.StartTime = oldstart;
+			pSuper->RechargeTimer.TimeLeft = oldleft;
+		};
+
+		if (pTypeExt->SpyEffect_VictimSuperWeapon.isset())
+		{
+			if (const auto pSuper = pVictimHouse->Supers.GetItem(pTypeExt->SpyEffect_VictimSuperWeapon.Get()))
+				launchTheSWHere(pSuper, pVictimHouse);
 		}
 
-		if (pTypeExt->SpyEffect_InfiltratorSuperWeapon)
+		if (pTypeExt->SpyEffect_InfiltratorSuperWeapon.isset())
 		{
-			const auto pSuper = pInfiltratorHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pTypeExt->SpyEffect_InfiltratorSuperWeapon));
-			pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pInfiltratorHouse->IsControlledByHuman());
+			if (const auto pSuper = pInfiltratorHouse->Supers.GetItem(pTypeExt->SpyEffect_InfiltratorSuperWeapon.Get()))
+				launchTheSWHere(pSuper, pInfiltratorHouse);
 		}
 	}
 
@@ -322,10 +335,12 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->TypeExtData)
 		.Process(this->DeployedTechno)
+		.Process(this->IsCreatedFromMapFile)
 		.Process(this->LimboID)
 		.Process(this->GrindingWeapon_LastFiredFrame)
 		.Process(this->CurrentAirFactory)
-		.Process(this->AccumulatedGrindingRefund)
+		.Process(this->AccumulatedIncome)
+		.Process(this->OwnerObject()->LightSource)
 		;
 }
 
@@ -367,7 +382,7 @@ DEFINE_HOOK(0x43BCBD, BuildingClass_CTOR, 0x6)
 {
 	GET(BuildingClass*, pItem, ESI);
 
-	auto pExt = BuildingExt::ExtMap.FindOrAllocate(pItem);
+	auto const pExt = BuildingExt::ExtMap.FindOrAllocate(pItem);
 	pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pItem->Type);
 
 	return 0;
