@@ -344,10 +344,13 @@ DEFINE_HOOK(0x4DB157, FootClass_DrawVoxelShadow_TurretShadow, 0x8)
 			pThis->DrawVoxelShadow(bar, 0, angle, 0, a4, &a3, &mtx, a9, pSurface, pos);
 	}
 
-	if (!pExt->ShadowIndexs.size())
+	if (!pExt->ShadowIndices.size())
+	{
 		pThis->DrawVoxelShadow(pVXL, idx, angle, a5, a4, &a3, pMatrix, a9, pSurface, pos);
+	}
 	else
-		for (auto index : pExt->ShadowIndexs)
+	{
+		for (auto index : pExt->ShadowIndices)
 		{
 			auto hva = pVXL->HVA;
 			Matrix3D idxmtx = *pMatrix;
@@ -355,6 +358,7 @@ DEFINE_HOOK(0x4DB157, FootClass_DrawVoxelShadow_TurretShadow, 0x8)
 			Matrix3D::MatrixMultiply(&idxmtx, &Matrix3D::VoxelDefaultMatrix, &idxmtx);
 			pThis->DrawVoxelShadow(pVXL, index, angle, a5, a4, &a3, pMatrix, a9, pSurface, pos);
 		}
+	}
 
 	return 0x4DB195;
 }
