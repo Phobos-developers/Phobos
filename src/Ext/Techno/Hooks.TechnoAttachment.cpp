@@ -211,7 +211,7 @@ DEFINE_HOOK(0x6FFE4F, TechnoClass_ClickedEvent_HandleChildren, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x730F20, StopCommand_Context_Unset, 0x1)
+DEFINE_HOOK(0x730F1C, StopCommand_Context_Unset, 0x5)
 {
 	TechnoAttachmentTemp::stopPressed = false;
 	return 0;
