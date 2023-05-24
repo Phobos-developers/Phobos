@@ -56,10 +56,12 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 
 		for (auto currentMember : taskForceMembers)
 		{
-			if (currentMember->WhatAmI() != UnitTypeClass::AbsID ||
-				(skipGround && !currentMember->Naval) ||
-				(skipNaval && currentMember->Naval))
+			if (currentMember->WhatAmI() != UnitTypeClass::AbsID
+				|| (skipGround && !currentMember->Naval)
+				|| (skipNaval && currentMember->Naval))
+			{
 				continue;
+			}
 
 			auto const index = static_cast<unsigned int>(currentMember->GetArrayIndex());
 			++values[index];
@@ -92,7 +94,8 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 		auto const type = UnitTypeClass::Array->Items[static_cast<int>(i)];
 		int currentValue = values[i];
 
-		if (currentValue <= 0 || pThis->CanBuild(type, false, false) == CanBuildResult::Unbuildable
+		if (currentValue <= 0
+			|| pThis->CanBuild(type, false, false) == CanBuildResult::Unbuildable
 			|| type->GetActualCost(pThis) > pThis->Available_Money())
 		{
 			continue;
@@ -217,9 +220,7 @@ size_t HouseExt::FindOwnedIndex(
 		auto const pItem = items[i];
 
 		if (pItem->InOwners(bitOwner))
-		{
 			return i;
-		}
 	}
 
 	return items.size();
@@ -245,9 +246,7 @@ bool HouseExt::IsDisabledFromShell(
 		{
 			auto const pSuper = pHouse->Supers[pItem->SuperWeapon];
 			if (pSuper->Type->DisableableFromShell)
-			{
 				return true;
-			}
 		}
 	}
 
@@ -266,9 +265,7 @@ size_t HouseExt::FindBuildableIndex(
 		{
 			auto const pBld = abstract_cast<const BuildingTypeClass*>(pItem);
 			if (pBld && HouseExt::IsDisabledFromShell(pHouse, pBld))
-			{
 				continue;
-			}
 
 			return i;
 		}
