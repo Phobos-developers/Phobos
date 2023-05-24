@@ -126,24 +126,22 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 	return Continue;
 }
 
-DEFINE_HOOK(0x424322, AnimClass_AI_TrailerInheritOwner, 0x6)
+DEFINE_HOOK(0x4242E1, AnimClass_AI_TrailerAnim, 0x5)
 {
-	GET(AnimClass*, pThis, ESI);
-	GET(AnimClass*, pTrailerAnim, EAX);
+	enum { SkipGameCode = 0x424322 };
 
-	if (pThis->Type->TrailerAnim && pThis->Type->TrailerSeperation > 0 &&
-		Unsorted::CurrentFrame % pThis->Type->TrailerSeperation == 0)
+	GET(AnimClass*, pThis, ESI);
+
+	if (auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->TrailerAnim, pThis->GetCoords(), 1, 1))
 	{
-		if (auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim))
-		{
-			auto pExt = AnimExt::ExtMap.Find(pThis);
-			pTrailerAnim->Owner = pThis->Owner;
-			pTrailerAnimExt->Invoker = pExt->Invoker;
-			pTrailerAnimExt->InvokerHouse = pExt->InvokerHouse;
-		}
+		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
+		auto const pExt = AnimExt::ExtMap.Find(pThis);
+		pTrailerAnim->Owner = pThis->Owner;
+		pTrailerAnimExt->Invoker = pExt->Invoker;
+		pTrailerAnimExt->InvokerHouse = pExt->InvokerHouse;
 	}
 
-	return 0;
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
@@ -201,18 +199,20 @@ DEFINE_HOOK(0x424CB0, AnimClass_InWhichLayer_AttachedObjectLayer, 0x6)
 
 	GET(AnimClass*, pThis, ECX);
 
-	auto pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
-
-	if (pThis->OwnerObject && pExt->Layer_UseObjectLayer.isset())
+	if (pThis->OwnerObject)
 	{
-		Layer layer = pThis->Type->Layer;
+		auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
-		if (pExt->Layer_UseObjectLayer.Get())
-			layer = pThis->OwnerObject->InWhichLayer();
+		if (pTypeExt->Layer_UseObjectLayer.isset())
+		{
+			Layer layer = pThis->Type->Layer;
 
-		R->EAX(layer);
+			if (pTypeExt->Layer_UseObjectLayer.Get())
+				layer = pThis->OwnerObject->InWhichLayer();
 
-		return ReturnValue;
+			R->EAX(layer);
+			return ReturnValue;
+		}
 	}
 
 	return 0;
