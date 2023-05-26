@@ -11,18 +11,21 @@
 
 #pragma region DETONATION
 
-bool DetonationInDamageArea = true;
+namespace Detonation
+{
+	bool InDamageArea = true;
+}
 
 DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 {
 	GET(BulletClass* const, pBullet, ESI);
 
-	auto const pBulletExt = pBullet ? BulletExt::ExtMap.Find(pBullet) : nullptr;
 	auto const pWH = pBullet ? pBullet->WH : nullptr;
 
 	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
 	{
 		GET_BASE(const CoordStruct*, pCoords, 0x8);
+		auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 		auto const pOwner = pBullet->Owner;
 		auto const pHouse = pOwner ? pOwner->Owner : nullptr;
 		auto const pDecidedHouse = pHouse ? pHouse : pBulletExt->FirerHouse;
@@ -30,20 +33,20 @@ DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 		pWHExt->Detonate(pOwner, pDecidedHouse, pBulletExt, *pCoords);
 	}
 
-	DetonationInDamageArea = false;
+	Detonation::InDamageArea = false;
 
 	return 0;
 }
 
 DEFINE_HOOK(0x46A290, BulletClass_Detonate_Return, 0x5)
 {
-	DetonationInDamageArea = true;
+	Detonation::InDamageArea = true;
 	return 0;
 }
 
 DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 {
-	if (DetonationInDamageArea)
+	if (Detonation::InDamageArea)
 	{
 		// GET(const int, Damage, EDX);
 		// GET_BASE(const bool, AffectsTiberium, 0x10);
@@ -84,7 +87,7 @@ DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x48A5BD, WarheadTypeClass_AnimList_PickRandom, 0x6)
+DEFINE_HOOK(0x48A5BD, SelectDamageAnimation_PickRandom, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
@@ -92,7 +95,7 @@ DEFINE_HOOK(0x48A5BD, WarheadTypeClass_AnimList_PickRandom, 0x6)
 	return pWHExt && pWHExt->AnimList_PickRandom ? 0x48A5C7 : 0;
 }
 
-DEFINE_HOOK(0x48A5B3, WarheadTypeClass_AnimList_CritAnim, 0x6)
+DEFINE_HOOK(0x48A5B3, SelectDamageAnimation_CritAnim, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
@@ -156,3 +159,25 @@ DEFINE_HOOK(0x70BC6F, TechnoClass_UpdateRigidBodyKinematics_KillFlipped, 0xA)
 // 0x718B1E
 
 #pragma endregion Fix_WW_Strength_ReceiveDamage_C4Warhead_Misuse
+
+DEFINE_HOOK(0x48A4F3, SelectDamageAnimation_NegativeZeroDamage, 0x6)
+{
+	enum { SkipGameCode = 0x48A507, NoAnim = 0x48A618 };
+
+	GET(int, damage, ECX);
+	GET(WarheadTypeClass* const, warhead, EDX);
+
+	if (!warhead)
+		return NoAnim;
+
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(warhead);
+
+	if (damage == 0 && !pWHExt->AnimList_ShowOnZeroDamage)
+		return NoAnim;
+	else if (damage < 0)
+		damage = -damage;
+
+	R->EDI(damage);
+	R->ESI(warhead);
+	return SkipGameCode;
+}

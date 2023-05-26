@@ -11,14 +11,14 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 	// Ignore target cell for airborne target technos.
 	if (!pTargetTechno || !pTargetTechno->IsInAir())
 	{
-		if (const auto pCell = abstract_cast<CellClass*>(pTarget))
+		if (auto const pCell = abstract_cast<CellClass*>(pTarget))
 			pTargetCell = pCell;
-		else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
+		else if (auto const pObject = abstract_cast<ObjectClass*>(pTarget))
 			pTargetCell = pObject->GetCell();
 	}
 
-	const auto pWeaponStructOne = pThis->GetWeapon(weaponIndexOne);
-	const auto pWeaponStructTwo = pThis->GetWeapon(weaponIndexTwo);
+	auto const pWeaponStructOne = pThis->GetWeapon(weaponIndexOne);
+	auto const pWeaponStructTwo = pThis->GetWeapon(weaponIndexTwo);
 
 	if (!pWeaponStructOne && !pWeaponStructTwo)
 		return -1;
@@ -27,10 +27,10 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 	else if (!pWeaponStructOne)
 		return weaponIndexTwo;
 
-	const auto pWeaponOne = pWeaponStructOne->WeaponType;
-	const auto pWeaponTwo = pWeaponStructTwo->WeaponType;
+	auto const pWeaponOne = pWeaponStructOne->WeaponType;
+	auto const pWeaponTwo = pWeaponStructTwo->WeaponType;
 
-	if (const auto pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo))
+	if (auto const pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo))
 	{
 		if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true)) ||
 			(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget) ||
@@ -38,7 +38,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 		{
 			return weaponIndexOne;
 		}
-		else if (const auto pFirstExt = WeaponTypeExt::ExtMap.Find(pWeaponOne))
+		else if (auto const pFirstExt = WeaponTypeExt::ExtMap.Find(pWeaponOne))
 		{
 			bool secondaryIsAA = pTargetTechno && pTargetTechno->IsInAir() && pWeaponTwo->Projectile->AA;
 
@@ -54,7 +54,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 		}
 	}
 
-	const auto pType = pThis->GetTechnoType();
+	auto const pType = pThis->GetTechnoType();
 
 	// Handle special case with NavalTargeting / LandTargeting.
 	if (!pTargetTechno && (pType->NavalTargeting == NavalTargetingType::Naval_Primary ||
@@ -76,7 +76,7 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 {
 	if (pThis->GetTechnoType()->Ammo > 0)
 	{
-		if (const auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 		{
 			if (pThis->Ammo <= pExt->NoAmmoAmount && (pExt->NoAmmoWeapon = weaponIndex || pExt->NoAmmoWeapon == -1))
 				return true;
