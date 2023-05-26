@@ -254,7 +254,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		activeTeams = activeTeamsList.Count;
 
-		Debug::Log("=====================\n[%s] ACTIVE TEAMS: %d / %d\n", pHouse->Type->ID, activeTeams, maxTeamsLimit);
+		/*Debug::Log("=====================\n[%s] ACTIVE TEAMS: %d / %d\n", pHouse->Type->ID, activeTeams, maxTeamsLimit);
 		for (auto team : activeTeamsList)
 		{
 			Debug::Log("[%s](%d) : %s\n", team->Type->ID, team->TotalObjects, team->Type->Name);
@@ -272,7 +272,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 				i++;
 			}
 		}
-		Debug::Log("=====================\n");
+		Debug::Log("=====================\n");*/
 
 		// We will use these values for discarding triggers
 		bool hasReachedMaxTeamsLimit = activeTeams < maxTeamsLimit ? false : true;
