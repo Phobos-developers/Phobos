@@ -363,8 +363,8 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							if (!pTrigger->ConditionObject)
 								continue;
 
-							DynamicVectorClass<TechnoTypeClass*> list;
-							list.AddItem(pTrigger->ConditionObject);
+							std::vector<TechnoTypeClass*> list;
+							list.push_back(pTrigger->ConditionObject);
 							bool isConditionMet = TeamExt::EnemyOwns(pTrigger, pHouse, targetHouse, true, list);
 
 							if (!isConditionMet)
@@ -376,8 +376,8 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							if (!pTrigger->ConditionObject)
 								continue;
 
-							DynamicVectorClass<TechnoTypeClass*> list;
-							list.AddItem(pTrigger->ConditionObject);
+							std::vector<TechnoTypeClass*> list;
+							list.push_back(pTrigger->ConditionObject);
 							bool isConditionMet = TeamExt::HouseOwns(pTrigger, pHouse, false, list);
 
 							if (!isConditionMet)
@@ -389,8 +389,8 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							if (!pTrigger->ConditionObject)
 								continue;
 
-							DynamicVectorClass<TechnoTypeClass*> list;
-							list.AddItem(pTrigger->ConditionObject);
+							std::vector<TechnoTypeClass*> list;
+							list.push_back(pTrigger->ConditionObject);
 							bool isConditionMet = TeamExt::NeutralOwns(pTrigger, list);
 
 							if (!isConditionMet)
@@ -402,8 +402,8 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							if (!pTrigger->ConditionObject)
 								continue;
 
-							DynamicVectorClass<TechnoTypeClass*> list;
-							list.AddItem(pTrigger->ConditionObject);
+							std::vector<TechnoTypeClass*> list;
+							list.push_back(pTrigger->ConditionObject);
 							bool isConditionMet = TeamExt::EnemyOwns(pTrigger, pHouse, nullptr, false, list);
 
 							if (!isConditionMet)
@@ -411,11 +411,11 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 9)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
+							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 9: Like in case 0 but instead of 1 unit for comparisons there is a full list from [AITargetTypes] owned by the enemy.
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
+								std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::EnemyOwns(pTrigger, pHouse, targetHouse, false, list);
 
 								if (!isConditionMet)
@@ -424,11 +424,11 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 10)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
+							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 10: Like in case 1 but instead of 1 unit for comparisons there is a full list from [AITargetTypes] owned by the house.
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
+								std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::HouseOwns(pTrigger, pHouse, false, list);
 
 								if (!isConditionMet)
@@ -437,11 +437,11 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 11)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
+							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 11: Like in case 7 but instead of 1 unit for comparisons there is a full list from [AITargetTypes] owned by the Civilians.
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
+								std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::NeutralOwns(pTrigger, list);
 
 								if (!isConditionMet)
@@ -450,11 +450,11 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 12)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
+							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 12: Like in case 0 & 9 but instead of a specific enemy this checks in all enemies.
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
+								std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::EnemyOwns(pTrigger, pHouse, nullptr, false, list);
 
 								if (!isConditionMet)
@@ -463,11 +463,11 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 13)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
+							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 13: Like in case 1 & 10 but instead checking the house now checks the allies.
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
+								std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::HouseOwns(pTrigger, pHouse, true, list);
 
 								if (!isConditionMet)
@@ -476,11 +476,11 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 14)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
+							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 14: Like in case 9 but instead of meet any comparison now is required all.
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
+								std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::EnemyOwnsAll(pTrigger, pHouse, targetHouse, list);
 
 								if (!isConditionMet)
@@ -489,11 +489,11 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 15)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
+							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 15: Like in case 10 but instead of meet any comparison now is required all.
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
+								std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::HouseOwnsAll(pTrigger, pHouse, list);
 
 								if (!isConditionMet)
@@ -502,11 +502,11 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 16)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
+							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 16: Like in case 11 but instead of meet any comparison now is required all.
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
+								std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::NeutralOwnsAll(pTrigger, list);
 
 								if (!isConditionMet)
@@ -515,11 +515,11 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 17)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.Count)
+							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 17: Like in case 14 but instead of meet any comparison now is required all. Check all enemies
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-								DynamicVectorClass<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.GetItem(pTrigger->Conditions[3].ComparatorOperand);
+								std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
 								bool isConditionMet = TeamExt::EnemyOwnsAll(pTrigger, pHouse, nullptr, list);
 
 								if (!isConditionMet)
@@ -1026,7 +1026,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	return SkipCode;
 }
 
-bool TeamExt::HouseOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, bool allies, DynamicVectorClass<TechnoTypeClass*> list)
+bool TeamExt::HouseOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, bool allies, std::vector<TechnoTypeClass*> list)
 {
 	bool result = false;
 	int counter = 0;
@@ -1075,7 +1075,7 @@ bool TeamExt::HouseOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, bool alli
 	return result;
 }
 
-bool TeamExt::EnemyOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, bool onlySelectedEnemy, DynamicVectorClass<TechnoTypeClass*> list)
+bool TeamExt::EnemyOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, bool onlySelectedEnemy, std::vector<TechnoTypeClass*> list)
 {
 	bool result = false;
 	int counter = 0;
@@ -1128,7 +1128,7 @@ bool TeamExt::EnemyOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClas
 	return result;
 }
 
-bool TeamExt::NeutralOwns(AITriggerTypeClass* pThis, DynamicVectorClass<TechnoTypeClass*> list)
+bool TeamExt::NeutralOwns(AITriggerTypeClass* pThis, std::vector<TechnoTypeClass*> list)
 {
 	bool result = false;
 	int counter = 0;
@@ -1182,11 +1182,11 @@ bool TeamExt::NeutralOwns(AITriggerTypeClass* pThis, DynamicVectorClass<TechnoTy
 	return result;
 }
 
-bool TeamExt::HouseOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, DynamicVectorClass<TechnoTypeClass*> list)
+bool TeamExt::HouseOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, std::vector<TechnoTypeClass*> list)
 {
 	bool result = true;
 
-	if (list.Count == 0)
+	if (list.size() == 0)
 		return false;
 
 	// Count all objects of the list, like an AND operator
@@ -1238,14 +1238,14 @@ bool TeamExt::HouseOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, Dynami
 	return result;
 }
 
-bool TeamExt::EnemyOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, DynamicVectorClass<TechnoTypeClass*> list)
+bool TeamExt::EnemyOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, std::vector<TechnoTypeClass*> list)
 {
 	bool result = true;
 
 	if (pEnemy && pHouse->IsAlliedWith(pEnemy))
 		pEnemy = nullptr;
 
-	if (list.Count == 0)
+	if (list.size() == 0)
 		return false;
 
 	// Count all objects of the list, like an AND operator
@@ -1299,11 +1299,11 @@ bool TeamExt::EnemyOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseC
 	return result;
 }
 
-bool TeamExt::NeutralOwnsAll(AITriggerTypeClass* pThis, DynamicVectorClass<TechnoTypeClass*> list)
+bool TeamExt::NeutralOwnsAll(AITriggerTypeClass* pThis, std::vector<TechnoTypeClass*> list)
 {
 	bool result = true;
 
-	if (list.Count == 0)
+	if (list.size() == 0)
 		return false;
 
 	// Any neutral house should be capable to meet the prerequisites

@@ -144,12 +144,12 @@ public:
 
 	static ExtContainer ExtMap;
 
-	static bool HouseOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, bool allies, DynamicVectorClass<TechnoTypeClass*> list);
-	static bool HouseOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, DynamicVectorClass<TechnoTypeClass*> list);
-	static bool EnemyOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, bool onlySelectedEnemy, DynamicVectorClass<TechnoTypeClass*> list);
-	static bool EnemyOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, DynamicVectorClass<TechnoTypeClass*> list);
-	static bool NeutralOwns(AITriggerTypeClass* pThis, DynamicVectorClass<TechnoTypeClass*> list);
-	static bool NeutralOwnsAll(AITriggerTypeClass* pThis, DynamicVectorClass<TechnoTypeClass*> list);
+	static bool HouseOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, bool allies, std::vector<TechnoTypeClass*> list);
+	static bool HouseOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, std::vector<TechnoTypeClass*> list);
+	static bool EnemyOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, bool onlySelectedEnemy, std::vector<TechnoTypeClass*> list);
+	static bool EnemyOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, std::vector<TechnoTypeClass*> list);
+	static bool NeutralOwns(AITriggerTypeClass* pThis, std::vector<TechnoTypeClass*> list);
+	static bool NeutralOwnsAll(AITriggerTypeClass* pThis, std::vector<TechnoTypeClass*> list);
 	static bool CountConditionMet(AITriggerTypeClass* pThis, int nObjects);
 
 };
