@@ -74,7 +74,7 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 	}
 }
 
-bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const pItem, const DynamicVectorClass<BuildingTypeClass*> ownedBuildingTypes, bool skipSecretLabChecks)
+bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const pItem, std::map<TechnoTypeClass*, int> ownedBuildings, bool skipSecretLabChecks)
 {
 	if (!pThis || !pItem)
 		return false;
@@ -115,13 +115,17 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 	{
 		if (pTechno->Owner == pThis
 			&& pTechno->GetTechnoType() == pItem
-			&& pTechno->IsAlive && pTechno->Health > 0)
+			&& pTechno->IsAlive
+			&& pTechno->Health > 0)
 		{
 			nInstances++;
+
+			if (nInstances >= pItem->BuildLimit)
+				return false;
 		}
 	}
 
-	if (nInstances >= pItem->BuildLimit)
+	if (pItem->BuildLimit < 1)
 		return false;
 
 	bool prerequisiteNegativeMet = false; // Only one coincidence is needed
@@ -134,18 +138,12 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 			if (idx < 0) // Can be used generic prerequisites in this Ares tag? I have to investigate it but for now we support it...
 			{
 				// Default prerequisites like POWER, PROC, BARRACKS, FACTORY, ...
-				prerequisiteNegativeMet = HouseExt::HasGenericPrerequisite(idx, ownedBuildingTypes);
+				prerequisiteNegativeMet = HouseExt::HasGenericPrerequisite(idx, ownedBuildings);
 			}
 			else
 			{
-				for (auto pObject : ownedBuildingTypes)
-				{
-					if (prerequisiteNegativeMet)
-						break;
-
-					if (idx == pObject->ArrayIndex)
-						prerequisiteNegativeMet = true;
-				}
+				if (ownedBuildings[TechnoTypeClass::Array->GetItem(idx)] > 0)
+					prerequisiteNegativeMet = true;
 			}
 
 			if (prerequisiteNegativeMet)
@@ -172,18 +170,12 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 			if (idx < 0)
 			{
 				// Default prerequisites like POWER, PROC, BARRACKS, FACTORY, ...
-				prerequisiteOverrideMet = HouseExt::HasGenericPrerequisite(idx, ownedBuildingTypes);
+				prerequisiteOverrideMet = HouseExt::HasGenericPrerequisite(idx, ownedBuildings);
 			}
 			else
 			{
-				for (auto pObject : ownedBuildingTypes)
-				{
-					if (prerequisiteOverrideMet)
-						break;
-
-					if (idx == pObject->ArrayIndex)
-						prerequisiteOverrideMet = true;
-				}
+				if (ownedBuildings[TechnoTypeClass::Array->GetItem(idx)] > 0)
+					prerequisiteOverrideMet = true;
 			}
 		}
 	}
@@ -199,18 +191,12 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 			if (idx < 0)
 			{
 				// Default prerequisites like POWER, PROC, BARRACKS, FACTORY, ...
-				found = HouseExt::HasGenericPrerequisite(idx, ownedBuildingTypes);
+				found = HouseExt::HasGenericPrerequisite(idx, ownedBuildings);
 			}
 			else
 			{
-				for (auto pObject : ownedBuildingTypes)
-				{
-					if (found)
-						break;
-
-					if (idx == pObject->ArrayIndex)
-						found = true;
-				}
+				if (ownedBuildings[TechnoTypeClass::Array->GetItem(idx)] > 0)
+					found = true;
 			}
 
 			if (!found)
@@ -242,20 +228,14 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 				if (idx < 0)
 				{
 					// Default prerequisites like POWER, PROC, BARRACKS, FACTORY, ...
-					found = HouseExt::HasGenericPrerequisite(idx, ownedBuildingTypes);
+					found = HouseExt::HasGenericPrerequisite(idx, ownedBuildings);
 				}
 				else
 				{
 					found = false;
 
-					for (auto pObject : ownedBuildingTypes)
-					{
-						if (idx == pObject->ArrayIndex)
-							found = true;
-
-						if (found)
-							break;
-					}
+					if (ownedBuildings[TechnoTypeClass::Array->GetItem(idx)] > 0)
+						found = true;
 				}
 
 				if (!found)
@@ -269,7 +249,8 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 	return prerequisiteMet || prerequisiteListsMet || prerequisiteOverrideMet;
 }
 
-bool HouseExt::HasGenericPrerequisite(int idx, const DynamicVectorClass<BuildingTypeClass*> ownedBuildingTypes)
+bool HouseExt::HasGenericPrerequisite(int idx, std::map<TechnoTypeClass*, int> ownedBuildings)
+
 {
 	if (idx >= 0)
 		return false;
@@ -287,14 +268,8 @@ bool HouseExt::HasGenericPrerequisite(int idx, const DynamicVectorClass<Building
 		if (found)
 			break;
 
-		for (auto pObject : ownedBuildingTypes)
-		{
-			if (found)
-				break;
-
-			if (idxItem == pObject->ArrayIndex)
-				found = true;
-		}
+		if (ownedBuildings[TechnoTypeClass::Array->GetItem(idxItem)] > 0)
+			found = true;
 	}
 
 	return found;
@@ -369,6 +344,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->Factory_NavyType)
 		.Process(this->Factory_AircraftType)
 		.Process(this->RepairBaseNodes)
+		.Process(this->AITriggers_ValidList)
 		;
 }
 

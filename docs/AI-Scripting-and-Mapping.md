@@ -71,6 +71,8 @@ ConsideredVehicle=  ; boolean
 | 15          | Yes               | Count own objects. It uses `AND` comparator so each object must obey the same comparations |
 | 16          | Yes               | Count civilian objects. It uses `AND` comparator so each object must obey the same comparations |
 | 17          | Yes               | Count enemy objects. It will search in all enemies. It uses `AND` comparator so each object must obey the same comparations |
+| 18          | No                | Count structures with `BridgeRepairHut=yes` linked with destroyed bridges |
+| 19          | No                | Count structures with `BridgeRepairHut=yes` linked with undamaged bridges |
 
 - Some trigger conditions need to specify a 0-based list from `[AITargetTypes]`. The index of the list is written in hexadecimal and in little endian format. The value must be written at the end of the trigger:
 `00000000000000000000000000000000000000000000000000000000AABBCCDD`

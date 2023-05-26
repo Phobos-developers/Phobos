@@ -26,6 +26,8 @@ public:
 		BuildingClass* Factory_NavyType;
 		BuildingClass* Factory_AircraftType;
 
+		std::vector<int> AITriggers_ValidList;
+
 		//Read from INI
 		bool RepairBaseNodes[3];
 
@@ -78,7 +80,7 @@ public:
 	static int ActiveHarvesterCount(HouseClass* pThis);
 	static int TotalHarvesterCount(HouseClass* pThis);
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
-	static bool PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const pItem, const DynamicVectorClass<BuildingTypeClass*> ownedBuildingTypes, bool skipSecretLabChecks);
-	static bool HasGenericPrerequisite(int idx, const DynamicVectorClass<BuildingTypeClass*> ownedBuildingTypes);
+	static bool PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const pItem, const std::map<TechnoTypeClass*, int> ownedBuildings, bool skipSecretLabChecks);
+	static bool HasGenericPrerequisite(int idx, std::map<TechnoTypeClass*, int> ownedBuildings);
 	static int FindGenericPrerequisite(const char* id);
 };

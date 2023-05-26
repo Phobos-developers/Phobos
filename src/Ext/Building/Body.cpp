@@ -379,14 +379,11 @@ void BuildingExt::ExtData::UpdateSecretLabAI()
 
 	if (possibleCandidates.Count > 0)
 	{
-		DynamicVectorClass<BuildingTypeClass*> ownedBuildingTypes;
+		std::map<TechnoTypeClass*, int> ownedBuildings;
 
-		if (ownedBuildingTypes.Count == 0)
+		for (auto building : pOwner->Buildings)
 		{
-			for (auto building : pOwner->Buildings)
-			{
-				ownedBuildingTypes.AddUnique(building->Type);
-			}
+			++ownedBuildings[building->Type];
 		}
 
 		for (const auto& boon : possibleCandidates)
@@ -405,7 +402,7 @@ void BuildingExt::ExtData::UpdateSecretLabAI()
 
 				if (pOwner->Type->ArrayIndex == houseIdx)
 				{
-					bool canBeBuilt = HouseExt::PrerequisitesMet(pOwner, boon, ownedBuildingTypes, true);
+					bool canBeBuilt = HouseExt::PrerequisitesMet(pOwner, boon, ownedBuildings, true);
 
 					if (canBeBuilt)
 					{
