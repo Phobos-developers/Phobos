@@ -49,10 +49,8 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::E
 		{
 			if (pShieldData->IsActive())
 			{
-				if (pShieldData->CanBePenetrated(this->OwnerObject()))
-					return true;
-
-				armorType = pShieldData->GetArmorType();
+				if (!pShieldData->CanBePenetrated(this->OwnerObject()))
+					armorType = pShieldData->GetArmorType();
 			}
 		}
 	}
