@@ -363,6 +363,7 @@ Phobos fixes:
 - `IsHouseColor` laser trails on techno now correctly change color when it changes owner (by Trsdy)
 - Fixed `Layer.UseObjectLayer=true` to work correctly for all cases where object changes layer (by Starkku)
 - Fixed floating point value parsing precision to match the game (by Starkku)
+- Fixed `DetonateOnAllMapObjects.RequireVerses` not considering shield armor types (by Starkku)
 </details>
 
 ### 0.3.0.1

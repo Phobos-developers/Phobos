@@ -4,6 +4,7 @@
 #include <HouseClass.h>
 
 #include <Ext/BulletType/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<WarheadTypeClass>::Canary = 0x22222222;
@@ -87,10 +88,16 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 		return false;
 	}
 
-	if (this->DetonateOnAllMapObjects_RequireVerses &&
-		GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTechno->GetTechnoType()->Armor) == 0.0)
+	if (this->DetonateOnAllMapObjects_RequireVerses)
 	{
-		return false;
+		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+		auto armorType = pTechno->GetTechnoType()->Armor;
+
+		if (pExt->Shield && pExt->Shield->IsActive() && !pExt->Shield->CanBePenetrated(this->OwnerObject()))
+			armorType = pExt->Shield->GetArmorType();
+
+		if (GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) == 0.0)
+			return false;
 	}
 
 	return true;
