@@ -307,6 +307,8 @@ New:
 - Disguise logic improvements (by Starkku)
 - Custom insignias (by Starkku)
 - Upgrade logic to allow altering of SpySat status (by Otamaa)
+- Allow `ZShapePointMove` to apply during buildup via `ZShapePointMove.OnBuildup` (by Starkku)
+- `UndeploysInto` building selling buildup sequence length customization (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -342,7 +344,9 @@ Vanilla fixes:
 - Reenabled the obsolete `[General] WarpIn` as default anim type when units are warping in (by Trsdy)
 - Fixed permanent health bar display for units targeted by temporal weapons upon mouse hover (by Trsdy)
 - Buildings with superweapons no longer display `SuperAnimThree` at beginning of match if pre-placed on the map (by Starkku)
+- AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do (by Starkku)
 - Fix that start units maybe put on terrains where they cannot move to (by NetsuNegi)
+
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
 - Add `ImmuneToCrit` for shields (by Trsdy)
@@ -359,6 +363,7 @@ Phobos fixes:
 - `CreateUnit` now uses civilian house as owner instead if the intended owner house has been defeated (this is in-line with how `MakeInfantry` works) (by Starkku)
 - `IsHouseColor` laser trails on techno now correctly change color when it changes owner (by Trsdy)
 - Fixed `Layer.UseObjectLayer=true` to work correctly for all cases where object changes layer (by Starkku)
+- Fixed floating point value parsing precision to match the game (by Starkku)
 </details>
 
 ### 0.3.0.1
