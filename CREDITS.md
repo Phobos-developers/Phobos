@@ -103,6 +103,7 @@ This page lists all the individual contributions to the project by their author.
   - Laser trails for VoxelAnims
   - MakeInfantry logic on BombClass bugfix
   - Debris & meteor impact behaviour settings
+  - Upgrade logic to allow altering of SpySat status
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
@@ -121,6 +122,7 @@ This page lists all the individual contributions to the project by their author.
   - Initial strength for cloned infantry
   - New AI teams selector
 - **Starkku**:
+  - Misc. minor bugfixes & improvements
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
   - Vehicle `DeployFire` fixes/improvements
@@ -155,7 +157,7 @@ This page lists all the individual contributions to the project by their author.
   - Passable & buildable-upon TerrainTypes
   - Automatic passenger owner change toggle
   - Interceptor improvements
-  - OpenTopped transport rangefinding & deactivated state customizations
+  - OpenTopped transport behaviour customizations
   - Animation damage / weapon improvements
   - Warhead self-damaging toggle
   - Trailer animation owner inheritance
@@ -165,7 +167,7 @@ This page lists all the individual contributions to the project by their author.
   - Railgun particle target coordinate fix
   - Building target coordinate offset fix
   - Warhead / weapon detonation at superweapon target cell
-  - Cloaked objects displaying to observers
+  - Cloaked & disguised objects displaying to observers
   - Building airstrike target eligibility customization
   - IvanBomb detonation & image display centered on buildings
   - Customizable ROF random delay
@@ -178,6 +180,17 @@ This page lists all the individual contributions to the project by their author.
   - Attached particle system for animations
   - Removal of hardcoded AA & Gattling weapon selection restrictions
   - Projectile obstacle logic additions
+  - `AnimList` on zero damage Warheads toggle
+  - Additions to automatic passenger deletion
+  - Buildings considered as vehicles
+  - TechnoType target evaluation map zone check behaviour customization
+  - CanC4 damage rounding fix & toggle
+  - Option to center pause menu background
+  - Disguise logic improvements
+  - Custom insignias
+  - `ZShapePointMove` buildup toggle
+  - `UndeploysInto` building selling buildup sequence length customization
+  - AI naval vehicle production fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -188,6 +201,7 @@ This page lists all the individual contributions to the project by their author.
   - SpyEffects expansion, launching Super Weapons on building infiltration
   - Real time timers
   - Default campaign game speed override and custom campaign game speed FPS
+  - Including INI files and inheriting INI sections
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
@@ -201,12 +215,18 @@ This page lists all the individual contributions to the project by their author.
       - Turret direction in idle state fix
       - Sensor fix
       - Allow to tilt on ground
+      - Forbid firing when crashing
    - OmniFire.TurnToTarget
    - Object Self-destruction logic
    - Misc vanilla suicidal behavior fix
    - Post-type-conversion update
    - Units retaining orders after changing ownership bugfix
-   - Building EVA_StructureSold and SellSound dehardcode
+   - Several fixes and dehardcode related to building selling/undeploying:
+     - Building `EVA_StructureSold` and `SellSound` dehardcode
+     - Restore `EVA_StructureSold` for buildings with `UndeploysInto`
+     - Redeployable MCV in campaigns
+     - Allow buildings with `UndeploysInto` to be sold if `Unsellable=no` even if not conyard
+     - Trigger actions that allow/forbid MCV to redeploy in game
    - `AlternateFLH` of vehicles in `OpenTopped` transport.
    - Slaves' house customization when owner is killed
    - Trigger Action spawned team IFV/Opentopped logic fix
@@ -225,7 +245,9 @@ This page lists all the individual contributions to the project by their author.
    - The option to allow DieSound/VoiceDie being played when grinding
    - Allow iron-curtain effects on infantries
    - Break the mindcontrol link when capturing a mind-controlled building with engineer
-   - Misc code refactor & maintenance, CN doc fix
+   - Building LightSource tint S/L fix
+   - Permanent healthbar display on units targeted by temporal weapons fix
+   - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
    - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
@@ -235,6 +257,7 @@ This page lists all the individual contributions to the project by their author.
    - Customizable ShowTimer priority of superweapons
    - Iron Curtain effects customization on infantries and organic units
    - Use `CustomPalette` for animations with `Tiled=yes`
+   - Unlimited `AlternateFLH` entries
 - **TwinkleStar**
   - Custom slaves free sound
   - Jumpjet crash rotation control
@@ -242,7 +265,7 @@ This page lists all the individual contributions to the project by their author.
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
 - **Chasheen (Chasheenburg)** - CN docs help
-- **Ares developers** - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code, prototype deployer fixes, Superweapon launch site & availability code
+- **Ares developers** - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code, prototype deployer fixes, Superweapon launch site & availability code, AI vehicle production update code
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
 - **AlexB** - Original FlyingStrings implementation

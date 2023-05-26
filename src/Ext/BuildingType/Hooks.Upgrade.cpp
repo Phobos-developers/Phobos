@@ -118,7 +118,7 @@ DEFINE_DYNAMIC_PATCH(HouseClass_CanBuild_UpgradesInteraction_WithoutAres__Disabl
 
 DEFINE_HOOK(0x4F7877, HouseClass_CanBuild_UpgradesInteraction_WithoutAres, 0x5)
 {
-	Debug::Log("Hook [HouseClass_CanBuild_UpgradesInteraction] Disabled\n");
+	Debug::Log("Hook [HouseClass_CanBuild_UpgradesInteraction] disabled\n");
 	HouseClass_CanBuild_UpgradesInteraction__DisableHook->Apply();
 	HouseClass_CanBuild_UpgradesInteraction_WithoutAres__DisableHook->Apply();
 	return 0;

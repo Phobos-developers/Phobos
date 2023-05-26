@@ -2,7 +2,6 @@
 
 #include <BitFont.h>
 
-#include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 #include <Ext/House/Body.h>
 
@@ -462,6 +461,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentAirFactory)
 		.Process(this->SecretLab_Placed)
 		.Process(this->AccumulatedIncome)
+		.Process(this->OwnerObject()->LightSource)
 		;
 }
 

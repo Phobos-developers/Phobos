@@ -3,8 +3,6 @@
 #include <InfantryClass.h>
 #include <InputManagerClass.h>
 
-#include <Ext/Building/Body.h>
-
 DEFINE_HOOK(0x43C30A, BuildingClass_ReceiveMessage_Grinding, 0x6)
 {
 	enum { ReturnStatic = 0x43C31A, ReturnNegative = 0x43CB68, ReturnRoger = 0x43CCF2 };

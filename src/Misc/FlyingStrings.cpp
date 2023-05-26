@@ -32,8 +32,8 @@ void FlyingStrings::Add(const wchar_t* text, const CoordStruct& coords, ColorStr
 
 void FlyingStrings::AddMoneyString(int amount, HouseClass* owner, AffectedHouse displayToHouses, const CoordStruct& coords, Point2D pixelOffset)
 {
-	if (displayToHouses == AffectedHouse::All ||
-		owner && EnumFunctions::CanTargetHouse(displayToHouses, owner, HouseClass::CurrentPlayer))
+	if (amount && (displayToHouses == AffectedHouse::All ||
+		owner && EnumFunctions::CanTargetHouse(displayToHouses, owner, HouseClass::CurrentPlayer)))
 	{
 		bool isPositive = amount > 0;
 		ColorStruct color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
