@@ -3,7 +3,7 @@
 #include <Utilities/TemplateDef.h>
 #include <FPSCounter.h>
 #include <GameOptionsClass.h>
-#include <GameStrings.h>
+
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
@@ -69,6 +69,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Storage_TiberiumIndex.Read(exINI, GameStrings::General, "Storage.TiberiumIndex");
 	this->InfantryGainSelfHealCap.Read(exINI, GameStrings::General, "InfantryGainSelfHealCap");
 	this->UnitsGainSelfHealCap.Read(exINI, GameStrings::General, "UnitsGainSelfHealCap");
+	this->EnemyInsignia.Read(exINI, GameStrings::General, "EnemyInsignia");
+	this->DisguiseBlinkingVisibility.Read(exINI, GameStrings::General, "DisguiseBlinkingVisibility");
 	this->UseGlobalRadApplicationDelay.Read(exINI, GameStrings::Radiation, "UseGlobalRadApplicationDelay");
 	this->RadApplicationDelay_Building.Read(exINI, GameStrings::Radiation, "RadApplicationDelay.Building");
 	this->RadWarhead_Detonate.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate");
@@ -127,7 +129,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 			if (Parser<TechnoTypeClass*>::TryParse(cur, &buffer))
 				objectsList.emplace_back(buffer);
 			else
-				Debug::Log("DEBUG: [AITargetTypes][%d]: Error parsing [%s]\n", this->AITargetTypesLists.size(), cur);
+				Debug::Log("[Developer warning] AITargetTypes (Count: %d): Error parsing [%s]\n", this->AITargetTypesLists.size(), cur);
 		}
 
 		this->AITargetTypesLists.emplace_back(objectsList);
@@ -184,6 +186,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Storage_TiberiumIndex)
 		.Process(this->InfantryGainSelfHealCap)
 		.Process(this->UnitsGainSelfHealCap)
+		.Process(this->EnemyInsignia)
+		.Process(this->DisguiseBlinkingVisibility)
 		.Process(this->UseGlobalRadApplicationDelay)
 		.Process(this->RadApplicationDelay_Building)
 		.Process(this->RadWarhead_Detonate)

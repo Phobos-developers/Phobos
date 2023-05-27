@@ -22,9 +22,9 @@ public:
 		bool IsInterceptor;
 		InterceptedStatus InterceptedStatus;
 		bool DetonateOnInterception;
-		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
+		std::vector<LaserTrailClass> LaserTrails;
 
-		PhobosTrajectory* Trajectory;
+		PhobosTrajectory* Trajectory; // TODO: why not unique_ptr
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
 			, TypeExtData { nullptr }
