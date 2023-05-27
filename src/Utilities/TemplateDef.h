@@ -49,6 +49,8 @@
 #include <FootClass.h>
 #include <VocClass.h>
 #include <VoxClass.h>
+#include <CRT.h>
+#include <LocomotionClass.h>
 
 namespace detail
 {
@@ -58,9 +60,9 @@ namespace detail
 		if (parser.ReadString(pSection, pKey))
 		{
 			using base_type = std::remove_pointer_t<T>;
-
 			auto const pValue = parser.value();
 			auto const parsed = (allocate ? base_type::FindOrAllocate : base_type::Find)(pValue);
+
 			if (parsed || INIClass::IsBlank(pValue))
 			{
 				value = parsed;
@@ -71,6 +73,7 @@ namespace detail
 				Debug::INIParseFailed(pSection, pKey, pValue);
 			}
 		}
+
 		return false;
 	}
 
@@ -78,6 +81,7 @@ namespace detail
 	inline bool read<bool>(bool& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		bool buffer;
+
 		if (parser.ReadBool(pSection, pKey, &buffer))
 		{
 			value = buffer;
@@ -87,6 +91,7 @@ namespace detail
 		{
 			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid boolean value [1, true, yes, 0, false, no]");
 		}
+
 		return false;
 	}
 
@@ -94,6 +99,7 @@ namespace detail
 	inline bool read<int>(int& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		int buffer;
+
 		if (parser.ReadInteger(pSection, pKey, &buffer))
 		{
 			value = buffer;
@@ -103,6 +109,7 @@ namespace detail
 		{
 			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid number");
 		}
+
 		return false;
 	}
 
@@ -131,11 +138,13 @@ namespace detail
 	inline bool read<unsigned short>(unsigned short& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		int buffer;
+
 		if (parser.ReadInteger(pSection, pKey, &buffer))
 		{
 			value = static_cast<unsigned short>(buffer);
 			return true;
 		}
+
 		return false;
 	}
 
@@ -143,6 +152,7 @@ namespace detail
 	inline bool read<BYTE>(BYTE& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		int buffer;
+
 		if (parser.ReadInteger(pSection, pKey, &buffer))
 		{
 			if (buffer <= 255 && buffer >= 0)
@@ -159,6 +169,7 @@ namespace detail
 		{
 			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid number");
 		}
+
 		return false;
 	}
 
@@ -166,6 +177,7 @@ namespace detail
 	inline bool read<float>(float& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		double buffer;
+
 		if (parser.ReadDouble(pSection, pKey, &buffer))
 		{
 			value = static_cast<float>(buffer);
@@ -175,6 +187,7 @@ namespace detail
 		{
 			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid floating point number");
 		}
+
 		return false;
 	}
 
@@ -182,6 +195,7 @@ namespace detail
 	inline bool read<double>(double& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		double buffer;
+
 		if (parser.ReadDouble(pSection, pKey, &buffer))
 		{
 			value = buffer;
@@ -191,6 +205,7 @@ namespace detail
 		{
 			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid floating point number");
 		}
+
 		return false;
 	}
 
@@ -198,9 +213,8 @@ namespace detail
 	inline bool read<Point2D>(Point2D& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.Read2Integers(pSection, pKey, (int*)&value))
-		{
 			return true;
-		}
+
 		return false;
 	}
 
@@ -208,9 +222,8 @@ namespace detail
 	inline bool read<Vector2D<double>>(Vector2D<double>& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.Read2Doubles(pSection, pKey, (double*)&value))
-		{
 			return true;
-		}
+
 		return false;
 	}
 
@@ -218,9 +231,7 @@ namespace detail
 	inline bool read<CoordStruct>(CoordStruct& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.Read3Integers(pSection, pKey, (int*)&value))
-		{
 			return true;
-		}
 
 		return false;
 	}
@@ -229,6 +240,7 @@ namespace detail
 	inline bool read<ColorStruct>(ColorStruct& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		ColorStruct buffer;
+
 		if (parser.Read3Bytes(pSection, pKey, reinterpret_cast<byte*>(&buffer)))
 		{
 			value = buffer;
@@ -238,6 +250,7 @@ namespace detail
 		{
 			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid R,G,B color");
 		}
+
 		return false;
 	}
 
@@ -293,6 +306,7 @@ namespace detail
 			value = parser.value();
 			return true;
 		}
+
 		return false;
 	}
 
@@ -306,9 +320,7 @@ namespace detail
 			std::string Result = pValue;
 
 			if (!strstr(pValue, ".shp"))
-			{
 				Result += ".shp";
-			}
 
 			if (auto const pImage = FileSystem::LoadSHPFile(Result.c_str()))
 			{
@@ -320,6 +332,7 @@ namespace detail
 				Debug::Log("Failed to find file %s referenced by [%s]%s=%s\n", Result.c_str(), pSection, pKey, pValue);
 			}
 		}
+
 		return false;
 	}
 
@@ -333,34 +346,21 @@ namespace detail
 		{
 			auto const buffer = parser.value();
 			char* context = nullptr;
+
 			if (auto const pFrame = strtok_s(buffer, Phobos::readDelims, &context))
-			{
 				Parser<int>::Parse(pFrame, &value.Frame);
-			}
 			if (auto const pCount = strtok_s(nullptr, Phobos::readDelims, &context))
-			{
 				Parser<int>::Parse(pCount, &value.Count);
-			}
 			if (auto const pInterval = strtok_s(nullptr, Phobos::readDelims, &context))
-			{
 				Parser<int>::Parse(pInterval, &value.Interval);
-			}
 			if (auto const pFrame = strtok_s(nullptr, Phobos::readDelims, &context))
-			{
 				Parser<int>::Parse(pFrame, &value.MiniFrame);
-			}
 			if (auto const pCount = strtok_s(nullptr, Phobos::readDelims, &context))
-			{
 				Parser<int>::Parse(pCount, &value.MiniCount);
-			}
 			if (auto const pHotX = strtok_s(nullptr, Phobos::readDelims, &context))
-			{
 				MouseCursorHotSpotX::Parse(pHotX, &value.HotX);
-			}
 			if (auto const pHotY = strtok_s(nullptr, Phobos::readDelims, &context))
-			{
 				MouseCursorHotSpotY::Parse(pHotY, &value.HotY);
-			}
 
 			ret = true;
 		}
@@ -382,6 +382,7 @@ namespace detail
 		ret |= read(value.MiniCount, parser, pSection, pFlagName);
 
 		_snprintf_s(pFlagName, 31, "%s.HotSpot", pKey);
+
 		if (parser.ReadString(pSection, pFlagName))
 		{
 			auto const pValue = parser.value();
@@ -390,9 +391,7 @@ namespace detail
 			MouseCursorHotSpotX::Parse(pHotX, &value.HotX);
 
 			if (auto const pHotY = strtok_s(nullptr, ",", &context))
-			{
 				MouseCursorHotSpotY::Parse(pHotY, &value.HotY);
-			}
 
 			ret = true;
 		}
@@ -458,6 +457,7 @@ namespace detail
 	inline bool read<Leptons>(Leptons& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		double buffer;
+
 		if (parser.ReadDouble(pSection, pKey, &buffer))
 		{
 			value = Leptons(Game::F2I(buffer * Unsorted::LeptonsPerCell));
@@ -467,6 +467,7 @@ namespace detail
 		{
 			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid floating point number");
 		}
+
 		return false;
 	}
 
@@ -512,8 +513,10 @@ namespace detail
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a owner house kind");
 				return false;
 			}
+
 			return true;
 		}
+
 		return false;
 	}
 
@@ -523,6 +526,7 @@ namespace detail
 		if (parser.ReadString(pSection, pKey))
 		{
 			auto const mission = MissionControlClass::FindIndex(parser.value());
+
 			if (mission != Mission::None)
 			{
 				value = mission;
@@ -533,6 +537,7 @@ namespace detail
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "Invalid Mission name");
 			}
 		}
+
 		return false;
 	}
 
@@ -547,6 +552,7 @@ namespace detail
 				"self", "base", "multimissile", "hunterseeker", "enemybase" };
 
 			auto it = Modes.begin();
+
 			for (auto i = 0u; i < Modes.size(); ++i)
 			{
 				if (_strcmpi(parser.value(), *it++) == 0)
@@ -558,6 +564,7 @@ namespace detail
 
 			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a targeting mode");
 		}
+
 		return false;
 	}
 
@@ -567,9 +574,9 @@ namespace detail
 		if (parser.ReadString(pSection, pKey))
 		{
 			auto parsed = AffectedTarget::None;
-
 			auto str = parser.value();
 			char* context = nullptr;
+
 			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 			{
 				if (!_strcmpi(cur, "land"))
@@ -610,9 +617,11 @@ namespace detail
 					return false;
 				}
 			}
+
 			value = parsed;
 			return true;
 		}
+
 		return false;
 	}
 
@@ -657,9 +666,11 @@ namespace detail
 					return false;
 				}
 			}
+
 			value = parsed;
 			return true;
 		}
+
 		return false;
 	}
 
@@ -693,9 +704,12 @@ namespace detail
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a AttachedAnimFlag");
 				return false;
 			}
+
 			value = parsed;
 			return true;
+
 		}
+
 		return false;
 	}
 
@@ -721,8 +735,10 @@ namespace detail
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an area fire target");
 				return false;
 			}
+
 			return true;
 		}
+
 		return false;
 	}
 
@@ -748,8 +764,10 @@ namespace detail
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a self heal gain type");
 				return false;
 			}
+
 			return true;
 		}
+
 		return false;
 	}
 
@@ -776,8 +794,10 @@ namespace detail
 					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a slave ownership option, default killer");
 				value = SlaveChangeOwnerType::Killer;
 			}
+
 			return true;
 		}
+
 		return false;
 	}
 
@@ -796,13 +816,14 @@ namespace detail
 			}
 			else
 			{
-				if(_strcmpi(parser.value(), "kill") != 0)
+				if (_strcmpi(parser.value(), "kill") != 0)
 					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a self-destruction behavior, default to kill if set");
 				value = AutoDeathBehavior::Kill;
 			}
 
 			return true;
 		}
+
 		return false;
 	}
 
@@ -813,6 +834,7 @@ namespace detail
 		{
 			auto parsed = TextAlign::None;
 			auto str = parser.value();
+
 			if (_strcmpi(str, "left") == 0)
 			{
 				parsed = TextAlign::Left;
@@ -834,10 +856,13 @@ namespace detail
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "Text Alignment can be either Left, Center/Centre or Right");
 				return false;
 			}
+
 			if (parsed != TextAlign::None)
 				value = parsed;
+
 			return true;
 		}
+
 		return false;
 	}
 
@@ -855,6 +880,7 @@ namespace detail
 		{
 			auto parsed = IronCurtainEffect::Kill;
 			auto str = parser.value();
+
 			if (_strcmpi(str, "invulnerable") == 0)
 			{
 				parsed = IronCurtainEffect::Invulnerable;
@@ -868,27 +894,101 @@ namespace detail
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "IronCurtainEffect can be either kill, invulnerable or ignore");
 				return false;
 			}
+
 			value = parsed;
 			return true;
 		}
+
 		return false;
+	}
+
+	template <>
+	inline bool read<TargetZoneScanType>(TargetZoneScanType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "same") == 0)
+			{
+				value = TargetZoneScanType::Same;
+			}
+			else if (_strcmpi(parser.value(), "any") == 0)
+			{
+				value = TargetZoneScanType::Any;
+			}
+			else if (_strcmpi(parser.value(), "inrange") == 0)
+			{
+				value = TargetZoneScanType::InRange;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a target zone scan type");
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<CLSID>(CLSID& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (!parser.ReadString(pSection, pKey))
+			return false;
+
+		// Semantic locomotor aliases
+		if (parser.value()[0] != '{')
+		{
+#define PARSE_IF_IS_LOCO(name)\
+if(_strcmpi(parser.value(), #name) == 0){ value = LocomotionClass::CLSIDs::name; return true; }
+
+			PARSE_IF_IS_LOCO(Drive);
+			PARSE_IF_IS_LOCO(Jumpjet);
+			PARSE_IF_IS_LOCO(Hover);
+			PARSE_IF_IS_LOCO(Rocket);
+			PARSE_IF_IS_LOCO(Tunnel);
+			PARSE_IF_IS_LOCO(Walk);
+			PARSE_IF_IS_LOCO(Fly);
+			PARSE_IF_IS_LOCO(Teleport);
+			PARSE_IF_IS_LOCO(Mech);
+			PARSE_IF_IS_LOCO(Ship);
+			PARSE_IF_IS_LOCO(Droppod);
+
+#undef PARSE_IF_IS_LOCO
+
+			return false;
+		}
+
+		CHAR bytestr[128];
+		WCHAR wcharstr[128];
+
+		strncpy(bytestr, parser.value(), 128);
+		bytestr[127] = NULL;
+		CRT::strtrim(bytestr);
+		if (!strlen(bytestr))
+			return false;
+
+		MultiByteToWideChar(0, 1, bytestr, -1, wcharstr, 128);
+		if (CLSIDFromString(wcharstr, &value) < 0)
+			return false;
+
+		return true;
 	}
 
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		char* context = nullptr;
+
 		for (auto pCur = strtok_s(parser.value(), Phobos::readDelims, &context); pCur; pCur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
 			T buffer = T();
+
 			if (Parser<T>::Parse(pCur, &buffer))
-			{
 				vector.push_back(buffer);
-			}
 			else if (!INIClass::IsBlank(pCur))
-			{
 				Debug::INIParseFailed(pSection, pKey, pCur);
-			}
 		}
 	}
 
@@ -896,17 +996,15 @@ namespace detail
 	void parse_indexes(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		char* context = nullptr;
+
 		for (auto pCur = strtok_s(parser.value(), Phobos::readDelims, &context); pCur; pCur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
 			int idx = Lookuper::FindIndex(pCur);
+
 			if (idx != -1)
-			{
 				vector.push_back(idx);
-			}
 			else if (!INIClass::IsBlank(pCur))
-			{
 				Debug::INIParseFailed(pSection, pKey, pCur);
-			}
 		}
 	}
 }
@@ -942,14 +1040,11 @@ void __declspec(noinline) ValueableIdx<Lookuper>::Read(INI_EX& parser, const cha
 	{
 		const char* val = parser.value();
 		int idx = Lookuper::FindIndex(val);
+
 		if (idx != -1 || INIClass::IsBlank(val))
-		{
 			this->Value = idx;
-		}
 		else
-		{
 			Debug::INIParseFailed(pSection, pKey, val);
-		}
 	}
 }
 
@@ -960,9 +1055,7 @@ template <typename T>
 void __declspec(noinline) Nullable<T>::Read(INI_EX& parser, const char* pSection, const char* pKey, bool Allocate)
 {
 	if (detail::read(this->Value, parser, pSection, pKey, Allocate))
-	{
 		this->HasValue = true;
-	}
 }
 
 template <typename T>
@@ -970,10 +1063,10 @@ bool Nullable<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	this->Reset();
 	auto ret = Savegame::ReadPhobosStream(Stm, this->HasValue);
+
 	if (ret && this->HasValue)
-	{
 		ret = Savegame::ReadPhobosStream(Stm, this->Value, RegisterForChange);
-	}
+
 	return ret;
 }
 
@@ -981,10 +1074,10 @@ template <typename T>
 bool Nullable<T>::Save(PhobosStreamWriter& Stm) const
 {
 	auto ret = Savegame::WritePhobosStream(Stm, this->HasValue);
+
 	if (this->HasValue)
-	{
 		ret = Savegame::WritePhobosStream(Stm, this->Value);
-	}
+
 	return ret;
 }
 
@@ -998,6 +1091,7 @@ void __declspec(noinline) NullableIdx<Lookuper>::Read(INI_EX& parser, const char
 	{
 		const char* val = parser.value();
 		int idx = Lookuper::FindIndex(val);
+
 		if (idx != -1 || INIClass::IsBlank(val))
 		{
 			this->Value = idx;
@@ -1028,9 +1122,7 @@ void __declspec(noinline) Promotable<T>::Read(INI_EX& parser, const char* const 
 
 	T placeholder;
 	if (detail::read(placeholder, parser, pSection, flagName))
-	{
 		this->SetAll(placeholder);
-	}
 
 	// read specific flags
 	_snprintf_s(flagName, _TRUNCATE, pBaseFlag, "Rookie");
@@ -1088,12 +1180,12 @@ bool ValueableVector<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 			this->push_back(std::move(buffer));
 
 			if (RegisterForChange)
-			{
 				Swizzle swizzle(this->back());
-			}
 		}
+
 		return true;
 	}
+
 	return false;
 }
 
@@ -1114,8 +1206,10 @@ inline bool ValueableVector<bool>::Load(PhobosStreamReader& stm, bool registerFo
 
 			this->emplace_back(value);
 		}
+
 		return true;
 	}
+
 	return false;
 }
 
@@ -1128,12 +1222,12 @@ bool ValueableVector<T>::Save(PhobosStreamWriter& Stm) const
 		for (auto const& item : *this)
 		{
 			if (!Savegame::WritePhobosStream(Stm, item))
-			{
 				return false;
-			}
 		}
+
 		return true;
 	}
+
 	return false;
 }
 
@@ -1148,8 +1242,10 @@ inline bool ValueableVector<bool>::Save(PhobosStreamWriter& stm) const
 			if (!Savegame::WritePhobosStream(stm, item))
 				return false;
 		}
+
 		return true;
 	}
+
 	return false;
 }
 
@@ -1166,9 +1262,7 @@ void __declspec(noinline) NullableVector<T>::Read(INI_EX& parser, const char* pS
 		this->hasValue = non_default;
 
 		if (non_default)
-		{
 			detail::parse_values<T>(*this, parser, pSection, pKey);
-		}
 	}
 }
 
@@ -1176,10 +1270,10 @@ template <typename T>
 bool NullableVector<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	this->clear();
+
 	if (Savegame::ReadPhobosStream(Stm, this->hasValue, RegisterForChange))
-	{
 		return !this->hasValue || ValueableVector<T>::Load(Stm, RegisterForChange);
-	}
+
 	return false;
 }
 
@@ -1187,9 +1281,8 @@ template <typename T>
 bool NullableVector<T>::Save(PhobosStreamWriter& Stm) const
 {
 	if (Savegame::WritePhobosStream(Stm, this->hasValue))
-	{
 		return !this->hasValue || ValueableVector<T>::Save(Stm);
-	}
+
 	return false;
 }
 

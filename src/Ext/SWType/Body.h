@@ -30,6 +30,7 @@ public:
 		DWORD SW_ForbiddenHouses;
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
+		Valueable<bool> SW_InitialReady;
 
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
@@ -50,6 +51,7 @@ public:
 		Nullable<WarheadTypeClass*> Detonate_Warhead;
 		Nullable<WeaponTypeClass*> Detonate_Weapon;
 		Nullable<int> Detonate_Damage;
+		Valueable<bool> Detonate_AtFirer;
 
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
@@ -66,6 +68,7 @@ public:
 			, SW_ForbiddenHouses { 0u }
 			, SW_AuxBuildings {}
 			, SW_NegBuildings {}
+			, SW_InitialReady { false }
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}
@@ -78,6 +81,7 @@ public:
 			, Detonate_Warhead {}
 			, Detonate_Weapon {}
 			, Detonate_Damage {}
+			, Detonate_AtFirer { false }
 			, SW_Next {}
 			, SW_Next_RealLaunch { true }
 			, SW_Next_IgnoreInhibitors { false }

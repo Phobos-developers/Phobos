@@ -40,16 +40,17 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 
 	if (canAffect)
 	{
-		auto const pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
-		auto const pWeaponOverride = pTechnoTypeExt->Interceptor_WeaponOverride.Get(pTypeExt->Interceptable_WeaponOverride.Get(nullptr));
-		bool detonate = !pTechnoTypeExt->Interceptor_DeleteOnIntercept.Get(pTypeExt->Interceptable_DeleteOnIntercept);
+		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
+		const auto pInterceptorType = pTechnoTypeExt->InterceptorType.get();
+		const auto pWeaponOverride = pInterceptorType->WeaponOverride.Get(pTypeExt->Interceptable_WeaponOverride.Get(nullptr));
+		bool detonate = !pInterceptorType->DeleteOnIntercept.Get(pTypeExt->Interceptable_DeleteOnIntercept);
 
 		this->DetonateOnInterception = detonate;
 
 		if (pWeaponOverride)
 		{
-			bool replaceType = pTechnoTypeExt->Interceptor_WeaponReplaceProjectile;
-			bool cumulative = pTechnoTypeExt->Interceptor_WeaponCumulativeDamage;
+			bool replaceType = pInterceptorType->WeaponReplaceProjectile;
+			bool cumulative = pInterceptorType->WeaponCumulativeDamage;
 
 			pThis->WeaponType = pWeaponOverride;
 			pThis->Health = cumulative ? pThis->Health + pWeaponOverride->Damage : pWeaponOverride->Damage;
@@ -72,7 +73,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 			}
 		}
 
-		if (isIntercepted && !pTechnoTypeExt->Interceptor_KeepIntact)
+		if (isIntercepted && !pInterceptorType->KeepIntact)
 			this->InterceptedStatus = InterceptedStatus::Intercepted;
 	}
 }
@@ -134,8 +135,7 @@ void BulletExt::ExtData::InitializeLaserTrails()
 		{
 			if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
 			{
-				this->LaserTrails.push_back(
-					std::make_unique<LaserTrailClass>(pLaserType, pOwner));
+				this->LaserTrails.push_back(LaserTrailClass { pLaserType, pOwner });
 			}
 		}
 	}
@@ -196,7 +196,7 @@ DEFINE_HOOK(0x4665E9, BulletClass_DTOR, 0xA)
 	GET(BulletClass*, pItem, ESI);
 
 	if (auto pTraj = BulletExt::ExtMap.Find(pItem)->Trajectory)
-		GameDelete(pTraj);
+		DLLDelete(pTraj);
 
 	BulletExt::ExtMap.Remove(pItem);
 	return 0;

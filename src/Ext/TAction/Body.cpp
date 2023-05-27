@@ -67,6 +67,10 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::RunSuperWeaponAtLocation(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::RunSuperWeaponAtWaypoint:
 		return TActionExt::RunSuperWeaponAtWaypoint(pThis, pHouse, pObject, pTrigger, location);
+
+	case PhobosTriggerAction::ToggleMCVRedeploy:
+		return TActionExt::ToggleMCVRedeploy(pThis, pHouse, pObject, pTrigger, location);
+
 	default:
 		bHandled = false;
 		return true;
@@ -118,7 +122,7 @@ bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* 
 		_snprintf_s(fName, 0x7F, "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
 			time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
 
-		PrintMessage(StringTable::LoadString("TXT_SAVING_GAME"));
+		PrintMessage(StringTable::LoadString(GameStrings::TXT_SAVING_GAME));
 
 		wchar_t fDescription[0x80] = { 0 };
 		wcscpy_s(fDescription, ScenarioClass::Instance->UINameLoaded);
@@ -126,9 +130,9 @@ bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* 
 		wcscat_s(fDescription, StringTable::LoadString(pThis->Text));
 
 		if (ScenarioClass::Instance->SaveGame(fName, fDescription))
-			PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
+			PrintMessage(StringTable::LoadString(GameStrings::TXT_GAME_WAS_SAVED));
 		else
-			PrintMessage(StringTable::LoadString("TXT_ERROR_SAVING_GAME"));
+			PrintMessage(StringTable::LoadString(GameStrings::TXT_ERROR_SAVING_GAME));
 	}
 
 	return true;
@@ -430,6 +434,13 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 	return true;
 }
+
+bool TActionExt::ToggleMCVRedeploy(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	GameModeOptionsClass::Instance->MCVRedeploy = pThis->Param3 != 0;
+	return true;
+}
+
 
 // =============================
 // container

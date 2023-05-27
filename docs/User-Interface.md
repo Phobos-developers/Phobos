@@ -199,6 +199,16 @@ In `rulesmd.ini`:
 CameoPriority=0        ; integer
 ```
 
+### Center pause menu background
+
+- Pause menu background (`bkgdXX(y).shp`) can now optionally be centered on the center of the available space instead of top-left corner. This allows for backgrounds to be better designed with resolutions larger than `1024x768` in mind.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+CenterPauseMenuBackground=false  ; boolean
+```
+
 ### Custom Missing Cameo (`XXICON.SHP`)
 
 - You can now specify any SHP/PCX file as XXICON.SHP for missing cameo.

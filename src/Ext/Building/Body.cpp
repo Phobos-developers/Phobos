@@ -2,7 +2,6 @@
 
 #include <BitFont.h>
 
-#include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<BuildingClass>::Canary = 0x87654321;
@@ -341,6 +340,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->GrindingWeapon_LastFiredFrame)
 		.Process(this->CurrentAirFactory)
 		.Process(this->AccumulatedIncome)
+		.Process(this->OwnerObject()->LightSource)
 		;
 }
 
