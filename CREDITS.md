@@ -120,6 +120,7 @@ This page lists all the individual contributions to the project by their author.
   - Shared ammo logic
   - Customizable FLH when infantry is prone or deployed
   - Initial strength for cloned infantry
+  - Repair legless cyborgs In transports
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - Warhead shield penetration & breaking
