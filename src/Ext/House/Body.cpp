@@ -357,7 +357,7 @@ int HouseExt::GetHouseIndex(int param, TeamClass* pTeam = nullptr, TActionClass*
 {
 	if ((pTeam && pTAction) || (param == 8997 && !pTeam && !pTAction))
 		return -1;
-	
+
 	int houseIdx = -1;
 	std::vector<int> housesListIdx;
 
