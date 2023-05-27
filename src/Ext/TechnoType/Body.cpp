@@ -55,7 +55,7 @@ bool TechnoTypeExt::HasSelectionGroupID(ObjectTypeClass* pType, const char* pID)
 	return (_strcmpi(id, pID) == 0);
 }
 
-void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX &exArtINI, const char* pArtSection,
+void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection,
 	std::vector<std::vector<CoordStruct>>& nFLH, std::vector<std::vector<CoordStruct>>& nEFlh, const char* pPrefixTag)
 {
 	char tempBuffer[32];
@@ -91,7 +91,29 @@ void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX &exArtINI, const char* pArtSe
 			nEFlh[i].push_back(eliteFLH.Get());
 		}
 	}
-};
+}
+
+//TODO: YRpp this with proper casting
+TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
+{
+	enum class IUnknownVtbl : DWORD
+	{
+		AircraftType = 0x7E2868,
+		BuildingType = 0x7E4570,
+		InfantryType = 0x7EB610,
+		UnitType = 0x7F6218,
+	};
+	auto const vtThis = static_cast<IUnknownVtbl>(VTable::Get(pType));
+	if (vtThis == IUnknownVtbl::AircraftType ||
+		vtThis == IUnknownVtbl::BuildingType ||
+		vtThis == IUnknownVtbl::InfantryType ||
+		vtThis == IUnknownVtbl::UnitType)
+	{
+		return static_cast<TechnoTypeClass*>(pType);
+	}
+
+	return nullptr;
+}
 
 // =============================
 // load / save
@@ -110,16 +132,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
 	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
-	this->Interceptor.Read(exINI, pSection, "Interceptor");
-	this->Interceptor_CanTargetHouses.Read(exINI, pSection, "Interceptor.CanTargetHouses");
-	this->Interceptor_GuardRange.Read(exINI, pSection, "Interceptor.%sGuardRange");
-	this->Interceptor_MinimumGuardRange.Read(exINI, pSection, "Interceptor.%sMinimumGuardRange");
-	this->Interceptor_Weapon.Read(exINI, pSection, "Interceptor.Weapon");
-	this->Interceptor_DeleteOnIntercept.Read(exINI, pSection, "Interceptor.DeleteOnIntercept");
-	this->Interceptor_WeaponOverride.Read(exINI, pSection, "Interceptor.WeaponOverride", true);
-	this->Interceptor_WeaponReplaceProjectile.Read(exINI, pSection, "Interceptor.WeaponReplaceProjectile");
-	this->Interceptor_WeaponCumulativeDamage.Read(exINI, pSection, "Interceptor.WeaponCumulativeDamage");
-	this->Interceptor_KeepIntact.Read(exINI, pSection, "Interceptor.KeepIntact");
 
 	this->Spawner_LimitRange.Read(exINI, pSection, "Spawner.LimitRange");
 	this->Spawner_ExtraLimitRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
@@ -139,7 +151,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (this->InitialStrength.isset())
 		this->InitialStrength = Math::clamp(this->InitialStrength, 1, pThis->Strength);
 
+	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
+
 	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
+	this->AutoDeath_VanishAnimation.Read(exINI, pSection, "AutoDeath.VanishAnimation");
 	this->AutoDeath_OnAmmoDepletion.Read(exINI, pSection, "AutoDeath.OnAmmoDepletion");
 	this->AutoDeath_AfterDelay.Read(exINI, pSection, "AutoDeath.AfterDelay");
 	this->AutoDeath_TechnosDontExist.Read(exINI, pSection, "AutoDeath.TechnosDontExist");
@@ -156,7 +171,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SellSound.Read(exINI, pSection, "SellSound");
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
-	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
 	this->WarpOut.Read(exINI, pSection, "WarpOut");
@@ -180,20 +194,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
 	this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
 
-	this->PassengerDeletion_Soylent.Read(exINI, pSection, "PassengerDeletion.Soylent");
-	this->PassengerDeletion_SoylentFriendlies.Read(exINI, pSection, "PassengerDeletion.SoylentFriendlies");
-	this->PassengerDeletion_ReportSound.Read(exINI, pSection, "PassengerDeletion.ReportSound");
-	this->PassengerDeletion_Rate_SizeMultiply.Read(exINI, pSection, "PassengerDeletion.Rate.SizeMultiply");
-	this->PassengerDeletion_Rate.Read(exINI, pSection, "PassengerDeletion.Rate");
-	this->PassengerDeletion_Anim.Read(exINI, pSection, "PassengerDeletion.Anim");
-
 	this->DefaultDisguise.Read(exINI, pSection, "DefaultDisguise");
+	this->UseDisguiseMovementSpeed.Read(exINI, pSection, "UseDisguiseMovementSpeed");
 
 	this->OpenTopped_RangeBonus.Read(exINI, pSection, "OpenTopped.RangeBonus");
 	this->OpenTopped_DamageMultiplier.Read(exINI, pSection, "OpenTopped.DamageMultiplier");
 	this->OpenTopped_WarpDistance.Read(exINI, pSection, "OpenTopped.WarpDistance");
 	this->OpenTopped_IgnoreRangefinding.Read(exINI, pSection, "OpenTopped.IgnoreRangefinding");
 	this->OpenTopped_AllowFiringIfDeactivated.Read(exINI, pSection, "OpenTopped.AllowFiringIfDeactivated");
+	this->OpenTopped_ShareTransportTarget.Read(exINI, pSection, "OpenTopped.ShareTransportTarget");
 
 	this->AutoFire.Read(exINI, pSection, "AutoFire");
 	this->AutoFire_TargetSelf.Read(exINI, pSection, "AutoFire.TargetSelf");
@@ -224,6 +233,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Explodes_KillPassengers.Read(exINI, pSection, "Explodes.KillPassengers");
 	this->DeployFireWeapon.Read(exINI, pSection, "DeployFireWeapon");
+	this->TargetZoneScanType.Read(exINI, pSection, "TargetZoneScanType");
+
+	this->Insignia.Read(exINI, pSection, "Insignia.%s");
+	this->InsigniaFrames.Read(exINI, pSection, "InsigniaFrames");
+	this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
+	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -239,13 +254,41 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
 	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
 
+	char tempBuffer[32];
+
+	if (this->OwnerObject()->Gunner && this->Insignia_Weapon.empty())
+	{
+		int weaponCount = this->OwnerObject()->WeaponCount;
+		this->Insignia_Weapon.resize(weaponCount);
+		this->InsigniaFrame_Weapon.resize(weaponCount);
+		this->InsigniaFrames_Weapon.resize(weaponCount);
+
+		for (int i = 0; i < weaponCount; i++)
+		{
+			Promotable<SHPStruct*> insignia;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Weapon%d.%s", i + 1, "%s");
+			insignia.Read(exINI, pSection, tempBuffer);
+			this->Insignia_Weapon[i] = insignia;
+
+			Promotable<int> frame = Promotable<int>(-1);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Weapon%d.%s", i + 1, "%s");
+			frame.Read(exINI, pSection, tempBuffer);
+			this->InsigniaFrame_Weapon[i] = frame;
+
+			Valueable<Vector3D<int>> frames;
+			frames = Vector3D<int>(-1, -1, -1);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Weapon%d", i + 1);
+			frames.Read(exINI, pSection, tempBuffer);
+			this->InsigniaFrames_Weapon[i] = frames;
+		}
+	}
+
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
 	auto pArtSection = pThis->ImageFile;
 
 	this->TurretOffset.Read(exArtINI, pArtSection, "TurretOffset");
 
-	char tempBuffer[32];
 	for (size_t i = 0; ; ++i)
 	{
 		NullableIdx<LaserTrailTypeClass> trail;
@@ -274,6 +317,57 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
+
+	for (size_t i = 0; ; i++)
+	{
+		Nullable<CoordStruct> alternateFLH;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "AlternateFLH%u", i);
+		alternateFLH.Read(exArtINI, pArtSection, tempBuffer);
+
+		// ww always read all of AlternateFLH0-5
+		if (i >= 5U && !alternateFLH.isset())
+			break;
+		else if (!alternateFLH.isset())
+			alternateFLH = this->OwnerObject()->Weapon[0].FLH; // Game defaults to this for AlternateFLH, not 0,0,0
+
+		if (this->AlternateFLHs.size() < i)
+			this->AlternateFLHs[i] = alternateFLH;
+		else
+			this->AlternateFLHs.push_back(alternateFLH);
+	}
+
+	// Parasitic types
+
+	bool resetValue = false;
+	bool canParse = PassengerDeletionTypeClass::CanParse(exINI, pSection, resetValue);
+
+	if (canParse)
+	{
+		if (this->PassengerDeletionType == nullptr)
+			this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(this->OwnerObject());
+
+		this->PassengerDeletionType->LoadFromINI(pINI, pSection);
+	}
+	else if (resetValue)
+	{
+		this->PassengerDeletionType.reset();
+	}
+
+
+	Nullable<bool> isInterceptor;
+	isInterceptor.Read(exINI, pSection, "Interceptor");
+
+	if (isInterceptor)
+	{
+		if (this->InterceptorType == nullptr)
+			this->InterceptorType = std::make_unique<InterceptorTypeClass>(this->OwnerObject());
+
+		this->InterceptorType->LoadFromINI(pINI, pSection);
+	}
+	else if (isInterceptor.isset())
+	{
+		this->InterceptorType.reset();
+	}
 }
 
 template <typename T>
@@ -285,16 +379,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LowSelectionPriority)
 		.Process(this->MindControlRangeLimit)
 
-		.Process(this->Interceptor)
-		.Process(this->Interceptor_CanTargetHouses)
-		.Process(this->Interceptor_GuardRange)
-		.Process(this->Interceptor_MinimumGuardRange)
-		.Process(this->Interceptor_Weapon)
-		.Process(this->Interceptor_DeleteOnIntercept)
-		.Process(this->Interceptor_WeaponOverride)
-		.Process(this->Interceptor_WeaponReplaceProjectile)
-		.Process(this->Interceptor_WeaponCumulativeDamage)
-		.Process(this->Interceptor_KeepIntact)
+		.Process(this->InterceptorType)
 
 		.Process(this->GroupAs)
 		.Process(this->RadarJamRadius)
@@ -311,8 +396,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CameoPriority)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
+		.Process(this->ShieldType)
+		.Process(this->PassengerDeletionType)
 
 		.Process(this->AutoDeath_Behavior)
+		.Process(this->AutoDeath_VanishAnimation)
 		.Process(this->AutoDeath_OnAmmoDepletion)
 		.Process(this->AutoDeath_AfterDelay)
 		.Process(this->AutoDeath_TechnosDontExist)
@@ -328,7 +416,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SlavesFreeSound)
 		.Process(this->SellSound)
 		.Process(this->EVA_Sold)
-		.Process(this->ShieldType)
 
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
@@ -350,21 +437,17 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DestroyAnim_Random)
 		.Process(this->NotHuman_RandomDeathSequence)
 		.Process(this->DefaultDisguise)
+		.Process(this->UseDisguiseMovementSpeed)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
-
-		.Process(this->PassengerDeletion_Soylent)
-		.Process(this->PassengerDeletion_SoylentFriendlies)
-		.Process(this->PassengerDeletion_Rate)
-		.Process(this->PassengerDeletion_ReportSound)
-		.Process(this->PassengerDeletion_Rate_SizeMultiply)
-		.Process(this->PassengerDeletion_Anim)
+		.Process(this->AlternateFLHs)
 
 		.Process(this->OpenTopped_RangeBonus)
 		.Process(this->OpenTopped_DamageMultiplier)
 		.Process(this->OpenTopped_WarpDistance)
 		.Process(this->OpenTopped_IgnoreRangefinding)
 		.Process(this->OpenTopped_AllowFiringIfDeactivated)
+		.Process(this->OpenTopped_ShareTransportTarget)
 
 		.Process(this->AutoFire)
 		.Process(this->AutoFire_TargetSelf)
@@ -405,6 +488,15 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Explodes_KillPassengers)
 		.Process(this->DeployFireWeapon)
+		.Process(this->TargetZoneScanType)
+
+		.Process(this->Insignia)
+		.Process(this->InsigniaFrames)
+		.Process(this->InsigniaFrame)
+		.Process(this->Insignia_ShowEnemy)
+		.Process(this->Insignia_Weapon)
+		.Process(this->InsigniaFrame_Weapon)
+		.Process(this->InsigniaFrames_Weapon)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -501,19 +593,19 @@ DEFINE_HOOK(0x716123, TechnoTypeClass_LoadFromINI, 0x5)
 
 	return 0;
 }
-
+#if ANYONE_ACTUALLY_USE_THIS
 DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 {
 	//GET(CCINIClass*, pINI, ESI);
 
-	for (auto const& [pType,pExt] : BuildingTypeExt::ExtMap)
+	for (auto const& [pType, pExt] : BuildingTypeExt::ExtMap)
 	{
 		pExt->CompleteInitialization();
 	}
 
 	return 0;
 }
-
+#endif
 DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
 {
 	GET(UnitTypeClass*, pItem, ESI);
