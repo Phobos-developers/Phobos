@@ -62,7 +62,7 @@ DEFINE_HOOK(0x68BDC0, ScenarioClass_ReadWaypoints, 0x8)
 		const auto pName = pINI->GetKeyName("Waypoints", i);
 		int id;
 		if (sscanf_s(pName, "%d", &id) != 1 || id < 0)
-			Debug::Log("[Developer Warning] Failed to parse waypoint %s.\n", pName);
+			Debug::Log("[Developer warning] Failed to parse waypoint %s.\n", pName);
 		int nCoord = pINI->ReadInteger("Waypoints", pName, 0);
 
 		if (nCoord)
@@ -72,11 +72,11 @@ DEFINE_HOOK(0x68BDC0, ScenarioClass_ReadWaypoints, 0x8)
 			if (auto pCell = MapClass::Instance->TryGetCellAt(buffer))
 				pCell->Flags |= CellFlags::IsWaypoint;
 			else if (ScenarioExt::CellParsed)
-				Debug::Log("[Developer Warning] Can not get waypoint %d : [%d, %d]!\n", id, buffer.X, buffer.Y);
+				Debug::Log("[Developer warning] Can not get waypoint %d : [%d, %d]!\n", id, buffer.X, buffer.Y);
 			ScenarioExt::Global()->Waypoints[id] = buffer;
 		}
 		else
-			Debug::Log("[Developer Warning] Invalid waypoint %d!\n", id);
+			Debug::Log("[Developer warning] Invalid waypoint %d!\n", id);
 	}
 
 	return 0x68BE8C;

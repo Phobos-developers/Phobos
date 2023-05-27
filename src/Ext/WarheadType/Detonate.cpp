@@ -26,7 +26,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	{
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
 
-		if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
+		if (pTypeExt->InterceptorType && pBulletExt->IsInterceptor)
 			this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
 	}
 
@@ -67,11 +67,15 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			{
 				const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 				const auto cell = CellClass::Coord2Cell(coords);
-				if (!this->LaunchSW_RealLaunch || (pSuper->Granted && pSuper->IsCharged && !pSuper->IsOnHold && pHouse->CanTransactMoney(pSWExt->Money_Amount)))
+
+				if (pHouse->CanTransactMoney(pSWExt->Money_Amount) && (!this->LaunchSW_RealLaunch || (pSuper->Granted && pSuper->IsCharged && !pSuper->IsOnHold)))
 				{
 					if (this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell)
 					&& (this->LaunchSW_IgnoreDesignators || pSWExt->HasDesignator(pHouse, cell)))
 					{
+						if (this->LaunchSW_DisplayMoney && pSWExt->Money_Amount != 0)
+							FlyingStrings::AddMoneyString(pSWExt->Money_Amount, pHouse, this->LaunchSW_DisplayMoney_Houses, coords, this->LaunchSW_DisplayMoney_Offset);
+
 						int oldstart = pSuper->RechargeTimer.StartTime;
 						int oldleft = pSuper->RechargeTimer.TimeLeft;
 						// If you don't set it ready, NewSWType::Active will give false in Ares if RealLaunch=false
@@ -80,6 +84,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 						// TODO: Can we use ClickFire instead of Launch?
 						pSuper->Launch(cell, true);
 						pSuper->Reset();
+
 						if (!this->LaunchSW_RealLaunch)
 						{
 							pSuper->RechargeTimer.StartTime = oldstart;

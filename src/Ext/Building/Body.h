@@ -8,6 +8,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
+#include <Misc/FlyingStrings.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Building/Body.h>
@@ -27,7 +28,7 @@ public:
 		int LimboID;
 		int GrindingWeapon_LastFiredFrame;
 		BuildingClass* CurrentAirFactory;
-		int AccumulatedGrindingRefund;
+		int AccumulatedIncome;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -36,10 +37,10 @@ public:
 			, LimboID { -1 }
 			, GrindingWeapon_LastFiredFrame { 0 }
 			, CurrentAirFactory { nullptr }
-			, AccumulatedGrindingRefund { 0 }
+			, AccumulatedIncome { 0 }
 		{ }
 
-		void DisplayGrinderRefund();
+		void DisplayIncomeString();
 		void ApplyPoweredKillSpawns();
 		bool HasSuperWeapon(int index, bool withUpgrades) const;
 

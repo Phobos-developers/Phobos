@@ -382,11 +382,11 @@ public:
 			//Debug::Log("[SaveStatic] Saving object %p as '%s'\n", this->SavingObject, this->Name);
 
 			if (!this->Save(this->SavingObject, this->SavingStream))
-				Debug::FatalErrorAndExit("[SaveStatic] Saving failed!\n");
+				Debug::FatalErrorAndExit("SaveStatic - Saving failed!\n");
 		}
 		else
 		{
-			Debug::Log("[SaveStatic] Object or Stream not set for '%s': %p, %p\n",
+			Debug::Log("SaveStatic - Object or Stream not set for '%s': %p, %p\n",
 				this->Name, this->SavingObject, this->SavingStream);
 		}
 
@@ -401,11 +401,11 @@ public:
 			//Debug::Log("[LoadStatic] Loading object %p as '%s'\n", this->SavingObject, this->Name);
 
 			if (!this->Load(this->SavingObject, this->SavingStream))
-				Debug::FatalErrorAndExit("[LoadStatic] Loading failed!\n");
+				Debug::FatalErrorAndExit("LoadStatic - Loading failed!\n");
 		}
 		else
 		{
-			Debug::Log("[LoadStatic] Object or Stream not set for '%s': %p, %p\n",
+			Debug::Log("LoadStatic - Object or Stream not set for '%s': %p, %p\n",
 				this->Name, this->SavingObject, this->SavingStream);
 		}
 
@@ -446,7 +446,7 @@ protected:
 		// this really shouldn't happen
 		if (!key)
 		{
-			Debug::Log("[SaveKey] Attempted for a null pointer! WTF!\n");
+			Debug::Log("SaveKey - Attempted for a null pointer! WTF!\n");
 			return nullptr;
 		}
 
@@ -454,7 +454,7 @@ protected:
 		auto buffer = this->Find(key);
 		if (!buffer)
 		{
-			Debug::Log("[SaveKey] Could not find value.\n");
+			Debug::Log("SaveKey - Could not find value.\n");
 			return nullptr;
 		}
 
@@ -471,7 +471,7 @@ protected:
 		// save the block
 		if (!saver.WriteBlockToStream(pStm))
 		{
-			Debug::Log("[SaveKey] Failed to save data.\n");
+			Debug::Log("SaveKey - Failed to save data.\n");
 			return nullptr;
 		}
 
@@ -485,7 +485,7 @@ protected:
 		// this really shouldn't happen
 		if (!key)
 		{
-			Debug::Log("[LoadKey] Attempted for a null pointer! WTF!\n");
+			Debug::Log("LoadKey - Attempted for a null pointer! WTF!\n");
 			return nullptr;
 		}
 
@@ -493,14 +493,14 @@ protected:
 		auto buffer = this->FindOrAllocate(key);
 		if (!buffer)
 		{
-			Debug::Log("[LoadKey] Could not find or allocate value.\n");
+			Debug::Log("LoadKey - Could not find or allocate value.\n");
 			return nullptr;
 		}
 
 		PhobosByteStream loader(0);
 		if (!loader.ReadBlockFromStream(pStm))
 		{
-			Debug::Log("[LoadKey] Failed to read data from save stream?!\n");
+			Debug::Log("LoadKey - Failed to read data from save stream?!\n");
 			return nullptr;
 		}
 
