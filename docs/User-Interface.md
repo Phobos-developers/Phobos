@@ -60,6 +60,28 @@ In `RA2MD.ini`:
 PrioritySelectionFiltering=true  ; boolean
 ```
 
+### Visual indication of income from grinders and refineries
+
+- `DisplayIncome` can be set to display the amount of credits acquired when a building is grinding units / receiving ore dump from harvesters or slaves.
+- Multiple income within less than one in-game second have their amounts coalesced into single display.
+  - `DisplayIncome.Houses` determines which houses can see the credits display.
+    - If you don't want players to see how AI cheats with `VirtualPurifiers` for example, `DisplayIncome.AllowAI` can be set to false to disable the display. It overrides the previous option.
+  - `DisplayIncome.Offset` is additional pixel offset for the center of the credits display, by default (0,0) at building's center.
+  -`[AudioVisual]->DisplayIncome` also allows to display the amount of credits when selling a unit on a repair bay.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+DisplayIncome=false       ; boolean
+DisplayIncome.Houses=All  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DisplayIncome.AllowAI=yes ; boolean
+
+[SOMEBUILDING]            ; BuildingType
+DisplayIncome=            ; boolean, defaults to [AudioVisual]->DisplayIncome
+DisplayIncome.Houses=     ; Affected House Enumeration, defaults to [AudioVisual]->DisplayIncome.Houses
+DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
+```
+
 ### Placement preview
 
 ![placepreview](_static/images/placepreview.png)
@@ -175,6 +197,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMENAME]             ; TechnoType / SuperWeaponType
 CameoPriority=0        ; integer
+```
+
+### Center pause menu background
+
+- Pause menu background (`bkgdXX(y).shp`) can now optionally be centered on the center of the available space instead of top-left corner. This allows for backgrounds to be better designed with resolutions larger than `1024x768` in mind.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+CenterPauseMenuBackground=false  ; boolean
 ```
 
 ### Custom Missing Cameo (`XXICON.SHP`)

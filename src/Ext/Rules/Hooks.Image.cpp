@@ -15,7 +15,7 @@ void ReplaceImageInfantry(InfantryTypeClass* pType)
 	char nameBuffer[0x19];
 	if (CCINIClass::INI_Art->ReadString(pType->ImageFile, "Image", 0, nameBuffer, 0x19) != 0)
 	{
-		Debug::Log("[Phobos] Replacing image for %s with %s.\n", pType->ImageFile, nameBuffer);
+		Debug::Log("Replacing image for %s with %s.\n", pType->ImageFile, nameBuffer);
 		char filename[260];
 		_makepath_s(filename, 0, 0, nameBuffer, ".SHP");
 		pType->Image = GameCreate<SHPReference>(filename);
@@ -27,7 +27,7 @@ void ReplaceImageUnit(UnitTypeClass* pType)
 	char nameBuffer[0x19];
 	if (CCINIClass::INI_Art->ReadString(pType->ImageFile, "Image", 0, nameBuffer, 0x19) != 0)
 	{
-		Debug::Log("[Phobos] Replacing image for %s with %s.\n", pType->ImageFile, nameBuffer);
+		Debug::Log("Replacing image for %s with %s.\n", pType->ImageFile, nameBuffer);
 		if (pType->Voxel)
 		{
 			char savedName[0x19];
@@ -52,7 +52,7 @@ void ReplaceImageAircraft(AircraftTypeClass* pType)
 	{
 		if (pType->Voxel)
 		{
-			Debug::Log("[Phobos] Replacing image for %s with %s.\n", pType->ImageFile, nameBuffer);
+			Debug::Log("Replacing image for %s with %s.\n", pType->ImageFile, nameBuffer);
 			char savedName[0x19];
 			strcpy_s(savedName, pType->ImageFile);
 			strcpy_s(pType->ImageFile, nameBuffer);

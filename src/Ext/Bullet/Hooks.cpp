@@ -6,12 +6,9 @@
 #include <Ext/CaptureManager/Body.h>
 #include <Utilities/Macro.h>
 
-#include <AnimClass.h>
 #include <AircraftClass.h>
 #include <BuildingClass.h>
 #include <InfantryClass.h>
-#include <UnitClass.h>
-#include <TechnoClass.h>
 #include <ScenarioClass.h>
 #include <TacticalClass.h>
 
@@ -88,14 +85,14 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			(int)(location.Z + velocity.Z)
 		};
 
-		for (auto const& trail : pBulletExt->LaserTrails)
+		for (auto& trail : pBulletExt->LaserTrails)
 		{
 			// We insert initial position so the first frame of trail doesn't get skipped - Kerbiter
 			// TODO move hack to BulletClass creation
-			if (!trail->LastLocation.isset())
-				trail->LastLocation = location;
+			if (!trail.LastLocation.isset())
+				trail.LastLocation = location;
 
-			trail->Update(drawnCoords);
+			trail.Update(drawnCoords);
 		}
 
 	}
@@ -103,21 +100,21 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x4668BD, BulletClass_AI_TrailerInheritOwner, 0x6)
+DEFINE_HOOK(0x466897, BulletClass_AI_Trailer, 0x6)
 {
-	GET(BulletClass*, pThis, EBP);
-	GET(AnimClass*, pAnim, EAX);
+	enum { SkipGameCode = 0x4668BD };
 
-	if (auto const pExt = BulletAITemp::ExtData)
+	GET(BulletClass*, pThis, EBP);
+	GET_STACK(CoordStruct, coords, STACK_OFFSET(0x1A8, -0x184));
+
+	if (auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1))
 	{
-		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
-		{
-			pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
-			pAnimExt->Invoker = pThis->Owner;
-		}
+		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
+		pTrailerAnim->Owner = pThis->Owner ? pThis->Owner->Owner : BulletAITemp::ExtData->FirerHouse;
+		pTrailerAnimExt->SetInvoker(pThis->Owner);
 	}
 
-	return 0;
+	return SkipGameCode;
 }
 
 // Inviso bullets behave differently in BulletClass::AI when their target is bullet and
@@ -294,9 +291,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
 				{
 					pThis->Target = pTechno;
-					auto coords = CoordStruct::Empty;
-					coords = *pTechno->GetCoords(&coords);
-					pThis->Detonate(coords);
+					pThis->Detonate(pTechno->GetCoords());
 				}
 			};
 

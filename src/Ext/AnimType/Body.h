@@ -23,6 +23,7 @@ public:
 		Valueable<bool> CreateUnit_RandomFacing;
 		Valueable<Mission> CreateUnit_Mission;
 		Valueable<OwnerHouseKind> CreateUnit_Owner;
+		Valueable<bool> CreateUnit_AlwaysSpawnOnGround;
 		Valueable<bool> CreateUnit_ConsiderPathfinding;
 		Nullable<AnimTypeClass*> CreateUnit_SpawnAnim;
 		Valueable<int> XDrawOffset;
@@ -35,6 +36,7 @@ public:
 		Valueable<bool> Damage_ApplyOncePerLoop;
 		Valueable<bool> ExplodeOnWater;
 		Valueable<bool> Warhead_Detonate;
+		Nullable<AnimTypeClass*> WakeAnim;
 		NullableVector<AnimTypeClass*> SplashAnims;
 		Valueable<bool> SplashAnims_PickRandom;
 		Valueable<ParticleSystemTypeClass*> AttachedSystem;
@@ -48,6 +50,7 @@ public:
 			, CreateUnit_RemapAnim { false }
 			, CreateUnit_Mission { Mission::Guard }
 			, CreateUnit_Owner { OwnerHouseKind::Victim }
+			, CreateUnit_AlwaysSpawnOnGround { false }
 			, CreateUnit_ConsiderPathfinding { false }
 			, CreateUnit_SpawnAnim {}
 			, XDrawOffset { 0 }
@@ -60,6 +63,7 @@ public:
 			, Damage_ApplyOncePerLoop { false }
 			, ExplodeOnWater { false }
 			, Warhead_Detonate { false }
+			, WakeAnim {}
 			, SplashAnims {}
 			, SplashAnims_PickRandom { false }
 			, AttachedSystem {}

@@ -2,9 +2,16 @@
 
 #include <Ext/AnimType/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 template<> const DWORD Extension<AnimClass>::Canary = 0xAAAAAAAA;
 AnimExt::ExtContainer AnimExt::ExtMap;
+
+void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker)
+{
+	this->Invoker = pInvoker;
+	this->InvokerHouse = pInvoker ? pInvoker->Owner : nullptr;
+}
 
 void AnimExt::ExtData::CreateAttachedSystem(ParticleSystemTypeClass* pSystemType)
 {
@@ -62,6 +69,64 @@ HouseClass* AnimExt::GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner)
 		return  pTechnoOwner ? pTechnoOwner : pDefaultOwner;
 }
 
+void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWakeAnim, Iterator<AnimTypeClass*> splashAnims, HouseClass* pOwner, WarheadTypeClass* pWarhead, int nDamage,
+	CellClass* pCell, CoordStruct nLocation, bool heightFlag, bool isMeteor, bool warheadDetonate, bool explodeOnWater, bool splashAnimsPickRandom)
+{
+	AnimTypeClass* pWakeAnimToUse = nullptr;
+	AnimTypeClass* pSplashAnimToUse = nullptr;
+
+	if (pCell->LandType != LandType::Water || heightFlag || explodeOnWater)
+	{
+		if (pWarhead)
+		{
+			if (warheadDetonate)
+			{
+				WarheadTypeExt::DetonateAt(pWarhead, nLocation, nullptr, nDamage);
+			}
+			else
+			{
+				MapClass::DamageArea(nLocation, nDamage, nullptr, pWarhead, pWarhead->Tiberium, pOwner);
+				MapClass::FlashbangWarheadAt(nDamage, pWarhead, nLocation);
+			}
+		}
+
+		if (pExpireAnim)
+		{
+			if (auto pAnim = GameCreate<AnimClass>(pExpireAnim, nLocation, 0, 1, 0x2600u, 0, 0))
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false);
+		}
+	}
+	else
+	{
+		if (!isMeteor)
+			pWakeAnimToUse = RulesClass::Instance->Wake;
+
+		if (pWakeAnim)
+			pWakeAnimToUse = pWakeAnim;
+
+		if (splashAnims.size() > 0)
+		{
+			auto nIndexR = (splashAnims.size() - 1);
+			auto nIndex = splashAnimsPickRandom ?
+				ScenarioClass::Instance->Random.RandomRanged(0, nIndexR) : 0;
+
+			pSplashAnimToUse = splashAnims.at(nIndex);
+		}
+	}
+
+	if (pWakeAnimToUse)
+	{
+		if (auto const pWakeAnimCreated = GameCreate<AnimClass>(pWakeAnimToUse, nLocation, 0, 1, 0x600u, false))
+			AnimExt::SetAnimOwnerHouseKind(pWakeAnimCreated, pOwner, nullptr, false);
+	}
+
+	if (pSplashAnimToUse)
+	{
+		if (auto const pSplashAnimCreated = GameCreate<AnimClass>(pSplashAnimToUse, nLocation, 0, 1, 0x600u, false))
+			AnimExt::SetAnimOwnerHouseKind(pSplashAnimCreated, pOwner, nullptr, false);
+	}
+}
+
 // =============================
 // load / save
 
@@ -74,6 +139,7 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeathUnitTurretFacing)
 		.Process(this->DeathUnitHasTurret)
 		.Process(this->Invoker)
+		.Process(this->InvokerHouse)
 		.Process(this->AttachedSystem)
 		;
 }

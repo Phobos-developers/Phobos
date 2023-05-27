@@ -18,8 +18,8 @@ public:
 	~ShieldClass();
 
 	int ReceiveDamage(args_ReceiveDamage* args);
-	bool CanBeTargeted(WeaponTypeClass* pWeapon);
-	bool CanBePenetrated(WarheadTypeClass* pWarhead);
+	bool CanBeTargeted(WeaponTypeClass* pWeapon) const;
+	bool CanBePenetrated(WarheadTypeClass* pWarhead) const;
 	void BreakShield(AnimTypeClass* pBreakAnim = nullptr, WeaponTypeClass* pBreakWeapon = nullptr);
 
 	void SetRespawn(int duration, double amount, int rate, bool resetTimer);
@@ -29,15 +29,15 @@ public:
 	void AI();
 
 	void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
-	double GetHealthRatio();
+	double GetHealthRatio() const;
 	void SetHP(int amount);
-	int GetHP();
-	bool IsActive();
-	bool IsAvailable();
-	bool IsBrokenAndNonRespawning();
-	ShieldTypeClass* GetType();
-	ArmorType GetArmorType();
-	int GetFramesSinceLastBroken();
+	int GetHP() const;
+	bool IsActive() const;
+	bool IsAvailable() const;
+	bool IsBrokenAndNonRespawning() const;
+	ShieldTypeClass* GetType() const;
+	ArmorType GetArmorType() const;
+	int GetFramesSinceLastBroken() const;
 	void SetAnimationVisibility(bool visible);
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
@@ -72,8 +72,8 @@ private:
 
 	void DrawShieldBar_Building(int iLength, Point2D* pLocation, RectangleStruct* pBound);
 	void DrawShieldBar_Other(int iLength, Point2D* pLocation, RectangleStruct* pBound);
-	int DrawShieldBar_Pip(const bool isBuilding);
-	int DrawShieldBar_PipAmount(int iLength);
+	int DrawShieldBar_Pip(const bool isBuilding) const;
+	int DrawShieldBar_PipAmount(int iLength) const;
 
 	/// Properties ///
 	TechnoClass* Techno;

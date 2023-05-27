@@ -31,9 +31,9 @@ void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* 
 	if (INIClass::IsBlank(Phobos::readBuffer))
 		pNewType = nullptr;
 	else if (_stricmp(Phobos::readBuffer, "Straight") == 0)
-		pNewType = GameCreate<StraightTrajectoryType>();
+		pNewType = DLLCreate<StraightTrajectoryType>();
 	else if (_stricmp(Phobos::readBuffer, "Bombard") == 0)
-		pNewType = GameCreate<BombardTrajectoryType>();
+		pNewType = DLLCreate<BombardTrajectoryType>();
 	else
 		bUpdateType = false;
 
@@ -42,7 +42,7 @@ void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* 
 
 	if (bUpdateType)
 	{
-		GameDelete(pType); // GameDelete already has if(pType) check here.
+		DLLDelete(pType); // GameDelete already has if(pType) check here.
 		pType = pNewType;
 	}
 }
@@ -60,10 +60,10 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 		switch (flag)
 		{
 		case TrajectoryFlag::Straight:
-			pType = GameCreate<StraightTrajectoryType>();
+			pType = DLLCreate<StraightTrajectoryType>();
 			break;
 		case TrajectoryFlag::Bombard:
-			pType = GameCreate<BombardTrajectoryType>();
+			pType = DLLCreate<BombardTrajectoryType>();
 			break;
 		default:
 			return nullptr;
@@ -125,11 +125,11 @@ PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, 
 	switch (pType->Flag)
 	{
 	case TrajectoryFlag::Straight:
-		pRet = GameCreate<StraightTrajectory>(pType);
+		pRet = DLLCreate<StraightTrajectory>(pType);
 		break;
 
 	case TrajectoryFlag::Bombard:
-		pRet = GameCreate<BombardTrajectory>(pType);
+		pRet = DLLCreate<BombardTrajectory>(pType);
 		break;
 	}
 
@@ -152,10 +152,10 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 		switch (flag)
 		{
 		case TrajectoryFlag::Straight:
-			pTraj = GameCreate<StraightTrajectory>();
+			pTraj = DLLCreate<StraightTrajectory>();
 			break;
 		case TrajectoryFlag::Bombard:
-			pTraj = GameCreate<BombardTrajectory>();
+			pTraj = DLLCreate<BombardTrajectory>();
 			break;
 		default:
 			return nullptr;
