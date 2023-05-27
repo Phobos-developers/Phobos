@@ -50,7 +50,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SubjectToLand_Detonate.Read(exINI, pSection, "SubjectToLand.Detonate");
 	this->SubjectToWater.Read(exINI, pSection, "SubjectToWater");
 	this->SubjectToWater_Detonate.Read(exINI, pSection, "SubjectToWater.Detonate");
-
+	this->AAOnly.Read(exINI, pSection, "AAOnly");
 
 	// Ares 0.7
 	this->BallisticScatter_Min.Read(exINI, pSection, "BallisticScatter.Min");
@@ -85,6 +85,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SubjectToLand_Detonate)
 		.Process(this->SubjectToWater)
 		.Process(this->SubjectToWater_Detonate)
+		.Process(this->AAOnly)
 		;
 
 	this->TrajectoryType = PhobosTrajectoryType::ProcessFromStream(Stm, this->TrajectoryType);
@@ -126,7 +127,7 @@ DEFINE_HOOK(0x46C8B6, BulletTypeClass_SDDTOR, 0x6)
 	GET(BulletTypeClass*, pItem, ESI);
 
 	if (auto pType = BulletTypeExt::ExtMap.Find(pItem)->TrajectoryType)
-		GameDelete(pType);
+		DLLDelete(pType);
 
 	BulletTypeExt::ExtMap.Remove(pItem);
 	return 0;

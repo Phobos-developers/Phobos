@@ -187,6 +187,13 @@ enum class IronCurtainEffect : BYTE
 	Ignore = 2
 };
 
+enum class TargetZoneScanType
+{
+	Same = 0,
+	Any = 1,
+	InRange = 2
+};
+
 class MouseCursorHotSpotX
 {
 public:

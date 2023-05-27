@@ -18,7 +18,7 @@ public:
 	{
 	public:
 		std::map<BuildingTypeExt::ExtData*, int> BuildingCounter;
-		std::map<DWORD, BuildingExt::ExtData*> OwnedLimboDeliveredBuildings;
+		std::map<BuildingClass*, BuildingExt::ExtData*> OwnedLimboDeliveredBuildings;
 		std::vector<TechnoExt::ExtData*> OwnedTimedAutoDeathObjects;
 
 		BuildingClass* Factory_BuildingType;
@@ -30,6 +30,9 @@ public:
 		//Read from INI
 		bool RepairBaseNodes[3];
 
+		int LastBuiltNavalVehicleType;
+		int ProducingNavalUnitTypeIndex;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, BuildingCounter {}
 			, OwnedLimboDeliveredBuildings {}
@@ -40,9 +43,11 @@ public:
 			, Factory_NavyType { nullptr }
 			, Factory_AircraftType { nullptr }
 			, RepairBaseNodes { false,false,false }
+			, LastBuiltNavalVehicleType { -1 }
+			, ProducingNavalUnitTypeIndex { -1 }
 		{ }
 
-		bool OwnsLimboDeliveredBuilding(BuildingClass const* pBuilding);
+		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
 		void UpdateAutoDeathObjectsInLimbo();
 
 		virtual ~ExtData() = default;
@@ -58,11 +63,15 @@ public:
 			AnnounceInvalidPointer(Factory_BuildingType, ptr);
 		}
 
+		void UpdateVehicleProduction();
+
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
+		bool UpdateHarvesterProduction();
 	};
 
 	class ExtContainer final : public Container<HouseExt> {
@@ -80,4 +89,38 @@ public:
 	static int TotalHarvesterCount(HouseClass* pThis);
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
 	static int GetHouseIndex(int param, TeamClass* pTeam, TActionClass* pTAction);
+
+	static bool IsDisabledFromShell(
+	HouseClass const* pHouse, BuildingTypeClass const* pItem);
+
+	static size_t FindOwnedIndex(
+	HouseClass const* pHouse, int idxParentCountry,
+	Iterator<TechnoTypeClass const*> items, size_t start = 0);
+
+	static size_t FindBuildableIndex(
+		HouseClass const* pHouse, int idxParentCountry,
+		Iterator<TechnoTypeClass const*> items, size_t start = 0);
+
+	template <typename T>
+	static T* FindOwned(
+		HouseClass const* const pHouse, int const idxParent,
+		Iterator<T*> const items, size_t const start = 0)
+	{
+		auto const index = FindOwnedIndex(pHouse, idxParent, items, start);
+		return index < items.size() ? items[index] : nullptr;
+	}
+
+	template <typename T>
+	static T* FindBuildable(
+		HouseClass const* const pHouse, int const idxParent,
+		Iterator<T*> const items, size_t const start = 0)
+	{
+		auto const index = FindBuildableIndex(pHouse, idxParent, items, start);
+		return index < items.size() ? items[index] : nullptr;
+	}
+
+	static std::vector<int> AIProduction_CreationFrames;
+	static std::vector<int> AIProduction_Values;
+	static std::vector<int> AIProduction_BestChoices;
+	static std::vector<int> AIProduction_BestChoicesNaval;
 };
