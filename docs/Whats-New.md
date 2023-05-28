@@ -15,11 +15,11 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`.
 - The obsolete `[General] WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `WarpOut`.
 
-### From Ares
-
-- `[#include]` section and `[CHILD]:[PARENT]` section inheritance notation are disabled, replaced by Phobos `[$Include]` and `$Inherits`.
-
 ### From older Phobos versions
+
+#### From post-0.3 devbuilds
+
+- INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
 
 #### From 0.3
 
