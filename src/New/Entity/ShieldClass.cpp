@@ -60,7 +60,7 @@ void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 		for (auto pShield : ShieldClass::Array)
 		{
 			if (pAnim == pShield->IdleAnim)
-				pShield->KillAnim();
+				pShield->IdleAnim = nullptr;
 		}
 	}
 }
@@ -696,7 +696,7 @@ void ShieldClass::KillAnim()
 {
 	if (this->IdleAnim)
 	{
-		this->IdleAnim->DetachFromObject(this->Techno, false);
+		this->IdleAnim->UnInit();
 		this->IdleAnim = nullptr;
 	}
 }

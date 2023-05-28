@@ -30,6 +30,7 @@ public:
 		DWORD SW_ForbiddenHouses;
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
+		Valueable<bool> SW_InitialReady;
 
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
@@ -67,6 +68,7 @@ public:
 			, SW_ForbiddenHouses { 0u }
 			, SW_AuxBuildings {}
 			, SW_NegBuildings {}
+			, SW_InitialReady { false }
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}

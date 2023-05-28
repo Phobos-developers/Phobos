@@ -33,6 +33,9 @@ const wchar_t* Phobos::VersionDescription = L"Phobos development build #" _STR(B
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
+	bool foundInheritance = false;
+	bool foundInclude = false;
+
 	// > 1 because the exe path itself counts as an argument, too!
 	for (int i = 1; i < nNumArgs; i++)
 	{
@@ -48,6 +51,46 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 			HideWarning = true;
 		}
 #endif
+		if (_stricmp(pArg, "-Inheritance") == 0)
+		{
+			foundInheritance = true;
+		}
+		if (_stricmp(pArg, "-Include") == 0)
+		{
+			foundInclude = true;
+		}
+	}
+
+	if (foundInclude)
+	{
+		// Apply CCINIClass_ReadCCFile1_DisableAres
+		byte patchBytes[] = { 0x8B, 0xF1, 0x8D, 0x54, 0x24, 0x0C };
+		Patch(0x474200, 6, patchBytes).Apply();
+		// Apply CCINIClass_ReadCCFile2_DisableAres
+		byte patch2Bytes[] = { 0x81, 0xC4, 0xA8, 0x00, 0x00, 0x00 };
+		Patch(0x474314, 6, patch2Bytes).Apply();
+	}
+	else
+	{
+		// Revert CCINIClass_Load_Inheritance
+		byte originalBytes[] = { 0x8B, 0xE8, 0x88, 0x5E, 0x40 };
+		Patch(0x474230, 5, originalBytes).Apply();
+	}
+
+	if (foundInheritance)
+	{
+		// Apply INIClass_GetString_DisableAres
+		byte patchBytes[] = { 0x83, 0xEC, 0x0C, 0x33, 0xC0 };
+		Patch(0x528A10, 5, patchBytes).Apply();
+		// Apply INIClass_GetKeyName_DisableAres
+		byte patch2Bytes[] = { 0x8B, 0x54, 0x24, 0x04, 0x83, 0xEC, 0x0C };
+		Patch(0x526CC0, 7, patch2Bytes).Apply();
+	}
+	else
+	{
+		// Revert INIClass_GetString_Inheritance_NoEntry
+		byte originalBytes[] = { 0x8B, 0x7C, 0x24, 0x2C, 0x33, 0xC0, 0x8B, 0x4C, 0x24, 0x28 };
+		Patch(0x528BAC, 10, originalBytes).Apply();
 	}
 
 	Debug::Log("Initialized version: " PRODUCT_VERSION "\n");
