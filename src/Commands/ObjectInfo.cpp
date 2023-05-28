@@ -50,81 +50,6 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		strcat_s(buffer, Phobos::readBuffer);
 	};
 
-	auto getMissionName = [](int mID)
-	{
-		switch (mID)
-		{
-		case -1:
-			return "None";
-		case 0:
-			return "Sleep";
-		case 1:
-			return "Attack";
-		case 2:
-			return "Move";
-		case 3:
-			return "QMove";
-		case 4:
-			return "Retreat";
-		case 5:
-			return "Guard";
-		case 6:
-			return "Sticky";
-		case 7:
-			return "Enter";
-		case 8:
-			return "Capture";
-		case 9:
-			return "Eaten";
-		case 10:
-			return "Harvest";
-		case 11:
-			return "Area_Guard";
-		case 12:
-			return "Return";
-		case 13:
-			return "Stop";
-		case 14:
-			return "Ambush";
-		case 15:
-			return "Hunt";
-		case 16:
-			return "Unload";
-		case 17:
-			return "Sabotage";
-		case 18:
-			return "Construction";
-		case 19:
-			return "Selling";
-		case 20:
-			return "Repair";
-		case 21:
-			return "Rescue";
-		case 22:
-			return "Missile";
-		case 23:
-			return "Harmless";
-		case 24:
-			return "Open";
-		case 25:
-			return "Patrol";
-		case 26:
-			return "ParadropApproach";
-		case 27:
-			return "ParadropOverfly";
-		case 28:
-			return "Wait";
-		case 29:
-			return "AttackMove";
-		case 30:
-			return "SpyplaneApproach";
-		case 31:
-			return "SpyplaneOverfly";
-		default:
-			return "INVALID_MISSION";
-		}
-	};
-
 	auto display = [&buffer]()
 	{
 		memset(Phobos::wideBuffer, 0, sizeof Phobos::wideBuffer);
@@ -134,14 +59,14 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		buffer[0] = 0;
 	};
 
-	auto printFoots = [&append, &display, &getMissionName](FootClass* pFoot)
+	auto printFoots = [&append, &display](FootClass* pFoot)
 	{
 		append("[Phobos] Dump ObjectInfo runs.\n");
 		auto pType = pFoot->GetTechnoType();
 		append("ID = %s, ", pType->ID);
 		append("Owner = %s (%s), ", pFoot->Owner->get_ID(), pFoot->Owner->PlainName);
 		append("Location = (%d, %d), ", pFoot->GetMapCoords().X, pFoot->GetMapCoords().Y);
-		append("Current Mission = %d (%s)\n", pFoot->CurrentMission, getMissionName((int)pFoot->CurrentMission));
+		append("Current Mission = %d (%s)\n", pFoot->CurrentMission, MissionControlClass::FindName(pFoot->CurrentMission));
 
 		if (pFoot->BelongsToATeam())
 		{
@@ -177,12 +102,10 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 
 		if (pFoot->Passengers.NumPassengers > 0)
 		{
-			append("Passengers: %s", pFoot->Passengers.FirstPassenger->GetTechnoType()->ID);
-			for (NextObject j(pFoot->Passengers.FirstPassenger->NextObject); j && abstract_cast<FootClass*>(*j); ++j)
-			{
-				auto passenger = static_cast<FootClass*>(*j);
-				append(", %s", passenger->GetTechnoType()->ID);
-			}
+			FootClass* pCurrent = pFoot->Passengers.FirstPassenger;
+			append("%d Passengers: %s", pFoot->Passengers.NumPassengers, pCurrent->GetTechnoType()->ID);
+			for (pCurrent = abstract_cast<FootClass*>(pCurrent->NextObject); pCurrent; pCurrent = abstract_cast<FootClass*>(pCurrent->NextObject))
+				append(", %s", pCurrent->GetTechnoType()->ID);
 			append("\n");
 		}
 
@@ -210,7 +133,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 	auto printBuilding = [&append, &display](BuildingClass* pBuilding)
 	{
 		append("[Phobos] Dump ObjectInfo runs.\n");
-		auto pType = pBuilding->GetTechnoType();
+		auto pType = pBuilding->Type;
 		append("ID = %s, ", pType->ID);
 		append("Owner = %s (%s), ", pBuilding->Owner->get_ID(), pBuilding->Owner->PlainName);
 		append("Location = (%d, %d)\n", pBuilding->GetMapCoords().X, pBuilding->GetMapCoords().Y);
@@ -263,10 +186,10 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		case AbstractType::Infantry:
 		case AbstractType::Unit:
 		case AbstractType::Aircraft:
-			printFoots(abstract_cast<FootClass*>(pObject));
+			printFoots(static_cast<FootClass*>(pObject));
 			break;
 		case AbstractType::Building:
-			printBuilding(abstract_cast<BuildingClass*>(pObject));
+			printBuilding(static_cast<BuildingClass*>(pObject));
 			break;
 		default:
 			append("INVALID ITEM!");

@@ -93,7 +93,7 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 
 			if (auto pOwnerExt = HouseExt::ExtMap.Find(pOwner))
 			{	// Add building to list of owned limbo buildings
-				pOwnerExt->OwnedLimboDeliveredBuildings.insert({ pBuilding->UniqueID, pBuildingExt });
+				pOwnerExt->OwnedLimboDeliveredBuildings.insert({ pBuilding, pBuildingExt });
 
 				auto pTechExt = TechnoExt::ExtMap.Find(pBuilding);
 				if (pTechExt->TypeExtData->AutoDeath_Behavior.isset() && pTechExt->TypeExtData->AutoDeath_AfterDelay > 0)
@@ -114,7 +114,7 @@ inline void LimboDelete(BuildingClass* pBuilding, HouseClass* pTargetHouse)
 
 	// Remove building from list of owned limbo buildings
 	if (pOwnerExt)
-		pOwnerExt->OwnedLimboDeliveredBuildings.erase(pBuilding->UniqueID);
+		pOwnerExt->OwnedLimboDeliveredBuildings.erase(pBuilding);
 
 	// Mandatory
 	pBuilding->InLimbo = true;
@@ -188,7 +188,7 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 			{
 				if (auto const pHouseExt = HouseExt::ExtMap.Find(pTargetHouse))
 				{
-					for (const auto& [buildingUniqueID, pBuildingExt] : pHouseExt->OwnedLimboDeliveredBuildings)
+					for (const auto& [pBuilding, pBuildingExt] : pHouseExt->OwnedLimboDeliveredBuildings)
 					{
 						if (pBuildingExt->LimboID == limboKillID)
 							LimboDelete(pBuildingExt->OwnerObject(), pTargetHouse);
@@ -203,7 +203,10 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 
 void SWTypeExt::ExtData::ApplyDetonation(HouseClass* pHouse, const CellStruct& cell)
 {
-	const auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
+	if (!this->Detonate_Weapon.isset() && !this->Detonate_Warhead.isset())
+		return;
+
+	auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
 	BuildingClass* pFirer = nullptr;
 
 	for (auto const& pBld : pHouse->Buildings)
@@ -215,12 +218,28 @@ void SWTypeExt::ExtData::ApplyDetonation(HouseClass* pHouse, const CellStruct& c
 		}
 	}
 
+	if (this->Detonate_AtFirer)
+		coords = pFirer ? pFirer->GetCenterCoords() : CoordStruct::Empty;
+
 	const auto pWeapon = this->Detonate_Weapon.isset() ? this->Detonate_Weapon.Get() : nullptr;
+	auto const mapCoords = CellClass::Coord2Cell(coords);
+
+	if (!MapClass::Instance->CoordinatesLegal(mapCoords))
+	{
+		auto const ID = pWeapon ? pWeapon->get_ID() : this->Detonate_Warhead.Get()->get_ID();
+		Debug::Log("ApplyDetonation: Superweapon [%s] failed to detonate [%s] - cell at %d, %d is invalid.\n", this->OwnerObject()->get_ID(), ID, mapCoords.X, mapCoords.Y);
+		return;
+	}
+
+	HouseClass* pFirerHouse = nullptr;
+
+	if (!pFirer)
+		pFirerHouse = pHouse;
 
 	if (pWeapon)
-		WeaponTypeExt::DetonateAt(pWeapon, coords, pFirer, this->Detonate_Damage.Get(pWeapon->Damage));
+		WeaponTypeExt::DetonateAt(pWeapon, coords, pFirer, this->Detonate_Damage.Get(pWeapon->Damage), pFirerHouse);
 	else
-		WarheadTypeExt::DetonateAt(this->Detonate_Warhead.Get(), coords, pFirer, this->Detonate_Damage.Get(0));
+		WarheadTypeExt::DetonateAt(this->Detonate_Warhead.Get(), coords, pFirer, this->Detonate_Damage.Get(0), pFirerHouse);
 }
 
 void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)

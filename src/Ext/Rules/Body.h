@@ -2,7 +2,7 @@
 
 #include <CCINIClass.h>
 #include <RulesClass.h>
-
+#include <GameStrings.h>
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
@@ -32,6 +32,8 @@ public:
 		Valueable<int> Storage_TiberiumIndex;
 		Nullable<int> InfantryGainSelfHealCap;
 		Nullable<int> UnitsGainSelfHealCap;
+		Valueable<bool> EnemyInsignia;
+		Valueable<AffectedHouse> DisguiseBlinkingVisibility;
 		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<bool> RadWarhead_Detonate;
@@ -62,6 +64,10 @@ public:
 		Valueable<bool> ForbidParallelAIQueues_Navy;
 		Valueable<bool> ForbidParallelAIQueues_Vehicle;
 
+		Valueable<bool> DisplayIncome;
+		Valueable<bool> DisplayIncome_AllowAI;
+		Valueable<AffectedHouse> DisplayIncome_Houses;
+
 		Valueable<bool> IronCurtain_KeptOnDeploy;
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
@@ -78,6 +84,8 @@ public:
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
 			, UnitsGainSelfHealCap {}
+			, EnemyInsignia { true }
+			, DisguiseBlinkingVisibility { AffectedHouse::Owner }
 			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
 			, RadWarhead_Detonate { false }
@@ -85,7 +93,7 @@ public:
 			, RadHasInvoker { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
-			, MissingCameo { "xxicon.shp" }
+			, MissingCameo { GameStrings::XXICON_SHP() }
 			, PlacementGrid_Translucency { 0 }
 			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
@@ -111,6 +119,9 @@ public:
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
 			, ToolTip_Background_BlurSize { 0.0f }
+			, DisplayIncome { false }
+			, DisplayIncome_AllowAI { true }
+			, DisplayIncome_Houses { AffectedHouse::All }
 			, CrateOnlyOnLand { false }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 		{ }

@@ -46,11 +46,11 @@ DEFINE_HOOK(0x701881, TechnoClass_ChangeHouse_Passenger_SyncOwner, 0x5)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	if (FootClass* pPassenger = pThis->Passengers.GetFirstPassenger())
 	{
-		if (pTypeExt->Passengers_SyncOwner && pThis->Passengers.NumPassengers > 0)
+		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 		{
-			if (FootClass* pPassenger = pThis->Passengers.GetFirstPassenger())
+			if (pTypeExt->Passengers_SyncOwner && pThis->Passengers.NumPassengers > 0)
 			{
 				pPassenger->SetOwningHouse(pThis->Owner, false);
 
@@ -84,7 +84,6 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_SyncOwner, 0x7)
 
 	return 0;
 }
-
 
 DEFINE_HOOK(0x4DE67B, FootClass_LeaveTransport_SyncOwner, 0x8)
 {
@@ -132,6 +131,58 @@ DEFINE_HOOK(0x737F80, TechnoClass_ReceiveDamage_Cargo_SyncOwner, 0x6)
 					pPassenger->SetOwningHouse(pExt->OriginalPassengerOwner, false);
 			}
 		}
+	}
+
+	return 0;
+}
+
+// Customizable OpenTopped Properties
+// Author: Otamaa
+DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0xC)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (auto pTransport = pThis->Transporter)
+	{
+		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
+		{
+			R->EAX(pExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus));
+			return 0x6F72DE;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x71A82C, TemporalClass_AI_Opentopped_WarpDistance, 0xC)
+{
+	GET(TemporalClass* const, pThis, ESI);
+
+	if (auto pTransport = pThis->Owner->Transporter)
+	{
+		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
+		{
+			R->EDX(pExt->OpenTopped_WarpDistance.Get(RulesClass::Instance->OpenToppedWarpDistance));
+			return 0x71A838;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x710552, TechnoClass_SetOpenTransportCargoTarget_ShareTarget, 0x6)
+{
+	enum { ReturnFromFunction = 0x71057F };
+
+	GET(TechnoClass* const, pThis, ECX);
+	GET_STACK(AbstractClass* const, pTarget, STACK_OFFSET(0x8, 0x4));
+
+	if (pTarget)
+	{
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+		if (!pTypeExt->OpenTopped_ShareTransportTarget)
+			return ReturnFromFunction;
 	}
 
 	return 0;

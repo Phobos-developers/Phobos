@@ -5,6 +5,7 @@
 
 #include <BulletClass.h>
 #include <HouseClass.h>
+#include <JumpjetLocomotionClass.h>
 #include <ScenarioClass.h>
 
 #include <Ext/Bullet/Body.h>
@@ -68,43 +69,39 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 
 	if (auto unit = pTypeExt->CreateUnit.Get())
 	{
-		HouseClass* decidedOwner = (pThis->Owner)
+		HouseClass* decidedOwner = pThis->Owner && !pThis->Owner->Defeated
 			? pThis->Owner : HouseClass::FindCivilianSide();
 
+		bool allowBridges = unit->SpeedType != SpeedType::Float;
 		auto pCell = pThis->GetCell();
 		CoordStruct location = pThis->GetCoords();
 
-		if (pCell)
+		if (pCell && allowBridges)
 			location = pCell->GetCoordsWithBridge();
-		else
-			location.Z = MapClass::Instance->GetCellFloorHeight(location);
 
 		pThis->UnmarkAllOccupationBits(location);
 
 		if (pTypeExt->CreateUnit_ConsiderPathfinding)
 		{
-			bool allowBridges = unit->SpeedType != SpeedType::Float;
-
 			auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
 				unit->SpeedType, -1, unit->MovementZone, false, 1, 1, true,
 				false, false, allowBridges, CellStruct::Empty, false, false);
 
 			pCell = MapClass::Instance->TryGetCellAt(nCell);
-			location = pThis->GetCoords();
 
-			if (pCell)
+			if (pCell && allowBridges)
 				location = pCell->GetCoordsWithBridge();
-			else
-				location.Z = MapClass::Instance->GetCellFloorHeight(location);
 		}
 
-		TechnoClass* pInvoker = nullptr;
+		int z = pTypeExt->CreateUnit_AlwaysSpawnOnGround ? INT32_MIN : pThis->GetCoords().Z;
+		location.Z = Math::max(MapClass::Instance->GetCellFloorHeight(location), z);
 
-		if (auto pTechno = static_cast<TechnoClass*>(unit->CreateObject(decidedOwner)))
+		if (auto pTechno = static_cast<FootClass*>(unit->CreateObject(decidedOwner)))
 		{
 			bool success = false;
 			auto const pExt = AnimExt::ExtMap.Find(pThis);
-			pInvoker = pExt->Invoker;
+			TechnoClass* pInvoker = pExt->Invoker;
+			HouseClass* pInvokerHouse = pExt->InvokerHouse;
 
 			auto aFacing = pTypeExt->CreateUnit_RandomFacing.Get()
 				? static_cast<unsigned short>(ScenarioClass::Instance->Random.RandomRanged(0, 255)) : pTypeExt->CreateUnit_Facing.Get();
@@ -112,7 +109,7 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 			short resultingFacing = (pTypeExt->CreateUnit_InheritDeathFacings.Get() && pExt->FromDeathUnit)
 				? pExt->DeathUnitFacing : aFacing;
 
-			if (pCell)
+			if (pCell && allowBridges)
 				pTechno->OnBridge = pCell->ContainsBridge();
 
 			BuildingClass* pBuilding = pCell ? pCell->GetBuilding() : MapClass::Instance->TryGetCellAt(location)->GetBuilding();
@@ -139,17 +136,50 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 						pAnim->Owner = pThis->Owner;
 
 						if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
+						{
 							pAnimExt->Invoker = pInvoker;
+							pAnimExt->InvokerHouse = pInvokerHouse;
+						}
 					}
 				}
 
 				if (pTechno->HasTurret() && pExt->FromDeathUnit && pExt->DeathUnitHasTurret && pTypeExt->CreateUnit_InheritTurretFacings.Get())
+				{
 					pTechno->SecondaryFacing.SetCurrent(pExt->DeathUnitTurretFacing);
-
-				Debug::Log("[" __FUNCTION__ "] Stored Turret Facing %d \n", pExt->DeathUnitTurretFacing.GetFacing<256>());
+					Debug::Log("CreateUnit: Stored Turret Facing %d \n", pExt->DeathUnitTurretFacing.GetFacing<256>());
+				}
 
 				if (!pTechno->InLimbo)
+				{
+					if (pThis->IsInAir() && !pTypeExt->CreateUnit_AlwaysSpawnOnGround)
+					{
+						if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pTechno->Locomotor))
+						{
+							auto const pType = pTechno->GetTechnoType();
+							pJJLoco->LocomotionFacing.SetCurrent(DirStruct(static_cast<DirType>(resultingFacing)));
+
+							if (pType->BalloonHover)
+							{
+								// Makes the jumpjet think it is hovering without actually moving.
+								pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+								pJJLoco->IsMoving = true;
+								pJJLoco->DestinationCoords = location;
+								pJJLoco->CurrentHeight = pType->JumpjetHeight;
+							}
+							else
+							{
+								// Order non-BalloonHover jumpjets to land.
+								pJJLoco->Move_To(location);
+							}
+						}
+						else
+						{
+							pTechno->IsFallingDown = true;
+						}
+					}
+
 					pTechno->QueueMission(pTypeExt->CreateUnit_Mission.Get(), false);
+				}
 
 				if (!decidedOwner->Type->MultiplayPassive)
 					decidedOwner->RecheckTechTree = true;
@@ -195,7 +225,7 @@ DEFINE_HOOK(0x469C98, BulletClass_DetonateAt_DamageAnimSelected, 0x0)
 		if (pThis->Owner)
 		{
 			auto pExt = AnimExt::ExtMap.Find(pAnim);
-			pExt->Invoker = pThis->Owner;
+			pExt->SetInvoker(pThis->Owner);
 		}
 	}
 	else if (pThis->WH == RulesClass::Instance->NukeWarhead)

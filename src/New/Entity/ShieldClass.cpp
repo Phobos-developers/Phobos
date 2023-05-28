@@ -60,7 +60,7 @@ void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 		for (auto pShield : ShieldClass::Array)
 		{
 			if (pAnim == pShield->IdleAnim)
-				pShield->KillAnim();
+				pShield->IdleAnim = nullptr;
 		}
 	}
 }
@@ -171,7 +171,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		healthDamage = (int)((double)*args->Damage * passPercent);
 	}
 
-	if (Phobos::Debug_DisplayDamageNumbers && shieldDamage != 0)
+	if (Phobos::DisplayDamageNumbers && shieldDamage != 0)
 		TechnoExt::DisplayDamageNumberString(this->Techno, shieldDamage, true);
 
 	if (shieldDamage > 0)
@@ -199,7 +199,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			this->WeaponNullifyAnim(pWHExt->Shield_HitAnim.Get(nullptr));
 			this->HP = -residueDamage;
 
-			UpdateIdleAnim();
+			this->UpdateIdleAnim();
 
 			return healthDamage;
 		}
@@ -223,7 +223,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		else
 			this->HP -= shieldDamage;
 
-		UpdateIdleAnim();
+		this->UpdateIdleAnim();
 
 		return 0;
 	}
@@ -263,18 +263,18 @@ void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim)
 		GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
 }
 
-bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon)
+bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon) const
 {
 	if (!pWeapon)
 		return false;
 
-	if (CanBePenetrated(pWeapon->Warhead) || !this->HP)
+	if (this->CanBePenetrated(pWeapon->Warhead) || !this->HP)
 		return true;
 
 	return GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->GetArmorType()) != 0.0;
 }
 
-bool ShieldClass::CanBePenetrated(WarheadTypeClass* pWarhead)
+bool ShieldClass::CanBePenetrated(WarheadTypeClass* pWarhead) const
 {
 	if (!pWarhead)
 		return false;
@@ -385,7 +385,7 @@ void ShieldClass::CloakCheck()
 	this->Cloak = cloakState == CloakState::Cloaked || cloakState == CloakState::Cloaking;
 
 	if (this->Cloak)
-		KillAnim();
+		this->KillAnim();
 }
 
 void ShieldClass::OnlineCheck()
@@ -462,7 +462,7 @@ void ShieldClass::TemporalCheck()
 	}
 }
 
-// Is used for DeploysInto/UndeploysInto and DeploysInto/UndeploysInto
+// Is used for DeploysInto/UndeploysInto and Type conversion
 bool ShieldClass::ConvertCheck()
 {
 	const auto newID = this->Techno->GetTechnoType();
@@ -554,7 +554,7 @@ void ShieldClass::SelfHealing()
 			timer->Start(rate);
 			this->HP += percentageAmount;
 
-			UpdateIdleAnim();
+			this->UpdateIdleAnim();
 
 			if (this->HP > pType->Strength)
 			{
@@ -563,7 +563,7 @@ void ShieldClass::SelfHealing()
 			}
 			else if (this->HP <= 0)
 			{
-				BreakShield();
+				this->BreakShield();
 			}
 		}
 	}
@@ -696,7 +696,7 @@ void ShieldClass::KillAnim()
 {
 	if (this->IdleAnim)
 	{
-		this->IdleAnim->DetachFromObject(this->Techno, false);
+		this->IdleAnim->UnInit();
 		this->IdleAnim = nullptr;
 	}
 }
@@ -828,7 +828,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	}
 }
 
-int ShieldClass::DrawShieldBar_Pip(const bool isBuilding)
+int ShieldClass::DrawShieldBar_Pip(const bool isBuilding) const
 {
 	const auto strength = this->Type->Strength;
 	const auto pips_Shield = isBuilding ? this->Type->Pips_Building.Get() : this->Type->Pips.Get();
@@ -849,19 +849,19 @@ int ShieldClass::DrawShieldBar_Pip(const bool isBuilding)
 	return isBuilding ? 5 : 16;
 }
 
-int ShieldClass::DrawShieldBar_PipAmount(int iLength)
+int ShieldClass::DrawShieldBar_PipAmount(int iLength) const
 {
 	return this->IsActive()
 		? Math::clamp((int)round(this->GetHealthRatio() * iLength), 0, iLength)
 		: 0;
 }
 
-double ShieldClass::GetHealthRatio()
+double ShieldClass::GetHealthRatio() const
 {
 	return static_cast<double>(this->HP) / this->Type->Strength;
 }
 
-int ShieldClass::GetHP()
+int ShieldClass::GetHP() const
 {
 	return this->HP;
 }
@@ -873,12 +873,12 @@ void ShieldClass::SetHP(int amount)
 		this->HP = this->Type->Strength;
 }
 
-ShieldTypeClass* ShieldClass::GetType()
+ShieldTypeClass* ShieldClass::GetType() const
 {
 	return this->Type;
 }
 
-ArmorType ShieldClass::GetArmorType()
+ArmorType ShieldClass::GetArmorType() const
 {
 	if (this->Techno && this->Type->InheritArmorFromTechno)
 		return this->Techno->GetTechnoType()->Armor;
@@ -886,12 +886,12 @@ ArmorType ShieldClass::GetArmorType()
 	return this->Type->Armor.Get();
 }
 
-int ShieldClass::GetFramesSinceLastBroken()
+int ShieldClass::GetFramesSinceLastBroken() const
 {
 	return Unsorted::CurrentFrame - this->LastBreakFrame;
 }
 
-bool ShieldClass::IsActive()
+bool ShieldClass::IsActive() const
 {
 	return
 		this->Available &&
@@ -899,12 +899,12 @@ bool ShieldClass::IsActive()
 		this->Online;
 }
 
-bool ShieldClass::IsAvailable()
+bool ShieldClass::IsAvailable() const
 {
 	return this->Available;
 }
 
-bool ShieldClass::IsBrokenAndNonRespawning()
+bool ShieldClass::IsBrokenAndNonRespawning() const
 {
 	return this->HP <= 0 && !this->Type->Respawn;
 }

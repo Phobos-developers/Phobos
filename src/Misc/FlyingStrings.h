@@ -30,7 +30,7 @@ private:
 	static bool DrawAllowed(CoordStruct& nCoords);
 
 public:
-	static void Add(const wchar_t* text, CoordStruct coords, ColorStruct color, Point2D pixelOffset = Point2D::Empty);
-	static void AddMoneyString(int amount, HouseClass* owner, AffectedHouse displayToHouses, CoordStruct coords, Point2D pixelOffset = Point2D::Empty);
+	static void Add(const wchar_t* text, const CoordStruct& coords, ColorStruct color, Point2D pixelOffset = Point2D::Empty);
+	static void AddMoneyString(int amount, HouseClass* owner, AffectedHouse displayToHouses, const CoordStruct& coords, Point2D pixelOffset = Point2D::Empty);
 	static void UpdateAll();
 };
