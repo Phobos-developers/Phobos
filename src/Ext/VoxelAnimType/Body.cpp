@@ -11,6 +11,11 @@ void VoxelAnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->LaserTrail_Types.Read(exINI, pID, "LaserTrail.Types");
+	this->ExplodeOnWater.Read(exINI, pID, "ExplodeOnWater");
+	this->Warhead_Detonate.Read(exINI, pID, "Warhead.Detonate");
+	this->WakeAnim.Read(exINI, pID, "WakeAnim");
+	this->SplashAnims.Read(exINI, pID, "SplashAnims");
+	this->SplashAnims_PickRandom.Read(exINI, pID, "SplashAnims.PickRandom");
 }
 
 // =============================
@@ -20,6 +25,11 @@ void VoxelAnimTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(LaserTrail_Types)
+		.Process(this->ExplodeOnWater)
+		.Process(this->Warhead_Detonate)
+		.Process(this->WakeAnim)
+		.Process(this->SplashAnims)
+		.Process(this->SplashAnims_PickRandom)
 		;
 }
 

@@ -8,6 +8,10 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/TEvent/Body.h>
 
+namespace RD
+{
+	bool SkipLowDamageCheck = false;
+}
 // #issue 88 : shield logic
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 {
@@ -31,6 +35,9 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 				if (auto pTag = pThis->AttachedTag)
 					pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
 			}
+
+			if (nDamageLeft == 0)
+				RD::SkipLowDamageCheck = true;
 		}
 	}
 	return 0;
@@ -38,19 +45,19 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 {
-	GET(TechnoClass*, pThis, ESI);
-	GET(int*, Damage, EBX);
-
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (const auto pShieldData = pExt->Shield.get())
+	if (RD::SkipLowDamageCheck)
 	{
-		if (pShieldData->IsActive())
-			return 0x7019E3;
+		RD::SkipLowDamageCheck = false;
+	}
+	else
+	{
+		// Restore overridden instructions
+		GET(int*, nDamage, EBX);
+		if (*nDamage < 1)
+			*nDamage = 1;
 	}
 
-	// Restore overridden instructions
-	return *Damage >= 1 ? 0x7019E3 : 0x7019DD;
+	return 0x7019E3;
 }
 
 DEFINE_HOOK_AGAIN(0x70CF39, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_EvalThreatRating_Shield
@@ -81,7 +88,7 @@ DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_Sh
 
 			if (pShieldData->IsActive())
 			{
-				R->EAX(pShieldData->GetType()->Armor.Get());
+				R->EAX(pShieldData->GetArmorType());
 				return R->Origin() + 6;
 			}
 		}
@@ -96,6 +103,7 @@ DEFINE_HOOK(0x71A88D, TemporalClass_AI_Shield, 0x0)
 	GET(TemporalClass*, pThis, ESI);
 	if (auto const pTarget = pThis->Target)
 	{
+		pTarget->IsMouseHovering = false;
 		const auto pExt = TechnoExt::ExtMap.Find(pTarget);
 
 		if (const auto pShieldData = pExt->Shield.get())
@@ -116,18 +124,6 @@ DEFINE_HOOK(0x6F6AC4, TechnoClass_Remove_Shield, 0x5)
 
 	if (pExt->Shield)
 		pExt->Shield->KillAnim();
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x44A03C, DeploysInto_UndeploysInto_SyncShieldStatus, 0x6) //BuildingClass_Mi_Selling_SyncShieldStatus
-DEFINE_HOOK(0x739956, DeploysInto_UndeploysInto_SyncShieldStatus, 0x6) //UnitClass_Deploy_SyncShieldStatus
-{
-	GET(TechnoClass*, pFrom, EBP);
-	GET(TechnoClass*, pTo, EBX);
-
-	ShieldClass::SyncShieldToAnother(pFrom, pTo);
-	TechnoExt::SyncIronCurtainStatus(pFrom, pTo);
 
 	return 0;
 }
@@ -178,10 +174,7 @@ DEFINE_HOOK(0x728F74, TunnelLocomotionClass_Process_KillAnims, 0x5)
 	const auto pExt = TechnoExt::ExtMap.Find(pLoco->LinkedTo);
 
 	if (const auto pShieldData = pExt->Shield.get())
-	{
-		pShieldData->HideAnimations();
-		pShieldData->KillAnim();
-	}
+		pShieldData->SetAnimationVisibility(false);
 
 	return 0;
 }
@@ -197,7 +190,7 @@ DEFINE_HOOK(0x728E5F, TunnelLocomotionClass_Process_RestoreAnims, 0x7)
 		const auto pExt = TechnoExt::ExtMap.Find(pLoco->LinkedTo);
 
 		if (const auto pShieldData = pExt->Shield.get())
-			pShieldData->ShowAnimations();
+			pShieldData->SetAnimationVisibility(true);
 	}
 
 	return 0;
@@ -253,9 +246,12 @@ class AresScheme
 {
 	static inline ObjectClass* LinkedObj = nullptr;
 public:
-	static void __cdecl Prefix(TechnoClass* pThis, ObjectClass* pObj, int nWeaponIndex)
+	static void __cdecl Prefix(TechnoClass* pThis, ObjectClass* pObj, int nWeaponIndex, bool considerEngineers)
 	{
 		if (LinkedObj)
+			return;
+
+		if (considerEngineers && CanApplyEngineerActions(pThis, pObj))
 			return;
 
 		if (nWeaponIndex < 0)
@@ -296,6 +292,28 @@ public:
 		}
 	}
 
+private:
+	static bool CanApplyEngineerActions(TechnoClass* pThis, ObjectClass* pTarget)
+	{
+		const auto pInf = abstract_cast<InfantryClass*>(pThis);
+		const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
+
+		if (!pInf || !pBuilding)
+			return false;
+
+		bool allied = HouseClass::CurrentPlayer->IsAlliedWith(pBuilding);
+
+		if (allied && pBuilding->Type->Repairable)
+			return true;
+
+		if (!allied && pBuilding->Type->Capturable &&
+			(!pBuilding->Owner->Type->MultiplayPassive || !pBuilding->Type->CanBeOccupied || pBuilding->IsBeingWarpedOut()))
+		{
+			return true;
+		}
+
+		return false;
+	}
 };
 
 #pragma region UnitClass_GetFireError_Heal
@@ -307,7 +325,7 @@ FireError __fastcall UnitClass__GetFireError(UnitClass* pThis, void* _, ObjectCl
 
 FireError __fastcall UnitClass__GetFireError_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
-	AresScheme::Prefix(pThis, pObj, nWeaponIndex);
+	AresScheme::Prefix(pThis, pObj, nWeaponIndex, false);
 	auto const result = UnitClass__GetFireError(pThis, _, pObj, nWeaponIndex, ignoreRange);
 	AresScheme::Suffix();
 	return result;
@@ -322,7 +340,7 @@ FireError __fastcall InfantryClass__GetFireError(InfantryClass* pThis, void* _, 
 }
 FireError __fastcall InfantryClass__GetFireError_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
-	AresScheme::Prefix(pThis, pObj, nWeaponIndex);
+	AresScheme::Prefix(pThis, pObj, nWeaponIndex, false);
 	auto const result = InfantryClass__GetFireError(pThis, _, pObj, nWeaponIndex, ignoreRange);
 	AresScheme::Suffix();
 	return result;
@@ -338,7 +356,7 @@ Action __fastcall UnitClass__WhatAction(UnitClass* pThis, void* _, ObjectClass* 
 
 Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
-	AresScheme::Prefix(pThis, pObj, -1);
+	AresScheme::Prefix(pThis, pObj, -1, false);
 	auto const result = UnitClass__WhatAction(pThis, _, pObj, ignoreForce);
 	AresScheme::Suffix();
 	return result;
@@ -354,7 +372,7 @@ Action __fastcall InfantryClass__WhatAction(InfantryClass* pThis, void* _, Objec
 
 Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
-	AresScheme::Prefix(pThis, pObj, -1);
+	AresScheme::Prefix(pThis, pObj, -1, pThis->Type->Engineer);
 	auto const result = InfantryClass__WhatAction(pThis, _, pObj, ignoreForce);
 	AresScheme::Suffix();
 	return result;

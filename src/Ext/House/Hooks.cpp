@@ -1,8 +1,18 @@
 #include "Body.h"
-#include <GameOptionsClass.h>
 #include "../Techno/Body.h"
 #include "../Building/Body.h"
 #include <unordered_map>
+
+DEFINE_HOOK(0x4F8440, HouseClass_Update_Beginning, 0x5)
+{
+	GET(HouseClass* const, pThis, ECX);
+
+	auto pExt = HouseExt::ExtMap.Find(pThis);
+
+	pExt->UpdateAutoDeathObjectsInLimbo();
+
+	return 0;
+}
 
 DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 {
@@ -15,7 +25,7 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 	// as M should be much less than N, this will be a great improvement. - secsome
 	for (auto& pBld : pThis->Buildings)
 	{
-		if (pBld && !pBld->InLimbo && pBld->IsOnMap)
+		if (TechnoExt::IsActive(pBld) && pBld->IsOnMap && pBld->HasPower)
 		{
 			const auto pExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
 			if (pExt->PowerPlantEnhancer_Buildings.size() &&
@@ -64,18 +74,31 @@ DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
+namespace RecalcCenterTemp
 {
-	enum { ContinueCheck = 0x440B58, SkipCheck = 0x440B81 };
+	HouseExt::ExtData* pExtData;
+}
 
-	GET(BuildingClass* const, pThis, ESI);
+DEFINE_HOOK(0x4FD166, HouseClass_RecalcCenter_SetContext, 0x5)
+{
+	GET(HouseClass* const, pThis, EDI);
 
-	if (SessionClass::IsCampaign())
-	{
-		if (!pThis->BeingProduced ||
-			!HouseExt::ExtMap.Find(pThis->Owner)->RepairBaseNodes[GameOptionsClass::Instance->Difficulty])
-			return SkipCheck;
-	}
+	RecalcCenterTemp::pExtData = HouseExt::ExtMap.Find(pThis);
 
-	return ContinueCheck;
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x4FD463, HouseClass_RecalcCenter_LimboDelivery, 0x6)
+DEFINE_HOOK(0x4FD1CD, HouseClass_RecalcCenter_LimboDelivery, 0x6)
+{
+	enum { SkipBuilding1 = 0x4FD23B, SkipBuilding2 = 0x4FD4D5 };
+
+	GET(BuildingClass* const, pBuilding, ESI);
+
+	auto const pExt = RecalcCenterTemp::pExtData;
+
+	if (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding))
+		return R->Origin() == 0x4FD1CD ? SkipBuilding1 : SkipBuilding2;
+
+	return 0;
 }

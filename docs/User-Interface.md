@@ -60,6 +60,28 @@ In `RA2MD.ini`:
 PrioritySelectionFiltering=true  ; boolean
 ```
 
+### Visual indication of income from grinders and refineries
+
+- `DisplayIncome` can be set to display the amount of credits acquired when a building is grinding units / receiving ore dump from harvesters or slaves.
+- Multiple income within less than one in-game second have their amounts coalesced into single display.
+  - `DisplayIncome.Houses` determines which houses can see the credits display.
+    - If you don't want players to see how AI cheats with `VirtualPurifiers` for example, `DisplayIncome.AllowAI` can be set to false to disable the display. It overrides the previous option.
+  - `DisplayIncome.Offset` is additional pixel offset for the center of the credits display, by default (0,0) at building's center.
+  -`[AudioVisual]->DisplayIncome` also allows to display the amount of credits when selling a unit on a repair bay.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+DisplayIncome=false       ; boolean
+DisplayIncome.Houses=All  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DisplayIncome.AllowAI=yes ; boolean
+
+[SOMEBUILDING]            ; BuildingType
+DisplayIncome=            ; boolean, defaults to [AudioVisual]->DisplayIncome
+DisplayIncome.Houses=     ; Affected House Enumeration, defaults to [AudioVisual]->DisplayIncome.Houses
+DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
+```
+
 ### Placement preview
 
 ![placepreview](_static/images/placepreview.png)
@@ -98,6 +120,33 @@ In `ra2md.ini`:
 ```ini
 [Phobos]
 ShowPlacementPreview=yes   ; boolean
+```
+
+### Real time timers
+
+- Timers can now display values in real time, taking game speed into account. This can be enabled with `RealTimeTimers=true`.
+- By default, time is calculated relative to desired framerate. Enabling `RealTimeTimers.Adaptive` (always true for unlimited FPS and custom speeds) will calculate time relative to *current* FPS, accounting for lag.
+  - When playing with unlimited FPS (or custom speed above 60 FPS), the timers might constantly change value because of the unstable nature.
+- This option respects custom game speeds.
+
+- This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
+
+In `ra2md.ini`:
+```ini
+[Phobos]
+RealTimeTimers=false            ; boolean
+RealTimeTimers.Adaptive=false   ; boolean
+```
+
+### SuperWeapon ShowTimer sorting
+
+- You can now sort the timers of superweapons in ascending order from top to bottom according to a given priority value.
+
+In `rulesmd.ini`
+```ini
+[SOMESWTYPE]
+ShowTimer=yes
+ShowTimer.Priority=0  ; integer
 ```
 
 ## Hotkey Commands
@@ -148,6 +197,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMENAME]             ; TechnoType / SuperWeaponType
 CameoPriority=0        ; integer
+```
+
+### Center pause menu background
+
+- Pause menu background (`bkgdXX(y).shp`) can now optionally be centered on the center of the available space instead of top-left corner. This allows for backgrounds to be better designed with resolutions larger than `1024x768` in mind.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+CenterPauseMenuBackground=false  ; boolean
 ```
 
 ### Custom Missing Cameo (`XXICON.SHP`)

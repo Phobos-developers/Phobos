@@ -28,6 +28,7 @@ public:
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
 		Valueable<bool> AnimList_PickRandom;
+		Valueable<bool> AnimList_ShowOnZeroDamage;
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 
@@ -76,7 +77,13 @@ public:
 		Valueable<bool> LaunchSW_RealLaunch;
 		Valueable<bool> LaunchSW_IgnoreInhibitors;
 		Valueable<bool> LaunchSW_IgnoreDesignators;
+		Valueable<bool> LaunchSW_DisplayMoney;
+		Valueable<AffectedHouse> LaunchSW_DisplayMoney_Houses;
+		Valueable<Point2D> LaunchSW_DisplayMoney_Offset;
+
 		Valueable<bool> AllowDamageOnSelf;
+		NullableVector<AnimTypeClass*> DebrisAnims;
+		Valueable<bool> Debris_Conventional;
 
 		Valueable<bool> DetonateOnAllMapObjects;
 		Valueable<bool> DetonateOnAllMapObjects_RequireVerses;
@@ -112,6 +119,7 @@ public:
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
 			, AnimList_PickRandom { false }
+			, AnimList_ShowOnZeroDamage { false }
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
 
@@ -160,12 +168,18 @@ public:
 			, LaunchSW_RealLaunch { true }
 			, LaunchSW_IgnoreInhibitors { false }
 			, LaunchSW_IgnoreDesignators { true }
+			, LaunchSW_DisplayMoney { false }
+			, LaunchSW_DisplayMoney_Houses { AffectedHouse::All }
+			, LaunchSW_DisplayMoney_Offset { { 0, 0 } }
+
 			, AllowDamageOnSelf { false }
+			, DebrisAnims {}
+			, Debris_Conventional { false }
 
 			, DetonateOnAllMapObjects { false }
 			, DetonateOnAllMapObjects_RequireVerses { false }
-			, DetonateOnAllMapObjects_AffectTargets { AffectedTarget::All }
-			, DetonateOnAllMapObjects_AffectHouses { AffectedHouse::All }
+			, DetonateOnAllMapObjects_AffectTargets { AffectedTarget::None }
+			, DetonateOnAllMapObjects_AffectHouses { AffectedHouse::None }
 			, DetonateOnAllMapObjects_AffectTypes {}
 			, DetonateOnAllMapObjects_IgnoreTypes {}
 
@@ -215,6 +229,6 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
-	static void DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage);
-	static void DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage);
+	static void DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
+	static void DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
 };

@@ -3,13 +3,13 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/BulletType/Body.h>
-#include <Misc/CaptureManager.h>
+#include <Ext/CaptureManager/Body.h>
+#include <Utilities/Macro.h>
 
 #include <AircraftClass.h>
 #include <BuildingClass.h>
 #include <InfantryClass.h>
-#include <UnitClass.h>
-#include <TechnoClass.h>
+#include <ScenarioClass.h>
 #include <TacticalClass.h>
 
 // has everything inited except SpawnNextAnim at this point
@@ -85,14 +85,14 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			(int)(location.Z + velocity.Z)
 		};
 
-		for (auto const& trail : pBulletExt->LaserTrails)
+		for (auto& trail : pBulletExt->LaserTrails)
 		{
 			// We insert initial position so the first frame of trail doesn't get skipped - Kerbiter
 			// TODO move hack to BulletClass creation
-			if (!trail->LastLocation.isset())
-				trail->LastLocation = location;
+			if (!trail.LastLocation.isset())
+				trail.LastLocation = location;
 
-			trail->Update(drawnCoords);
+			trail.Update(drawnCoords);
 		}
 
 	}
@@ -100,21 +100,21 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x4668BD, BulletClass_AI_TrailerInheritOwner, 0x6)
+DEFINE_HOOK(0x466897, BulletClass_AI_Trailer, 0x6)
 {
-	GET(BulletClass*, pThis, EBP);
-	GET(AnimClass*, pAnim, EAX);
+	enum { SkipGameCode = 0x4668BD };
 
-	if (auto const pExt = BulletAITemp::ExtData)
+	GET(BulletClass*, pThis, EBP);
+	GET_STACK(CoordStruct, coords, STACK_OFFSET(0x1A8, -0x184));
+
+	if (auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1))
 	{
-		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
-		{
-			pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
-			pAnimExt->Invoker = pThis->Owner;
-		}
+		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
+		pTrailerAnim->Owner = pThis->Owner ? pThis->Owner->Owner : BulletAITemp::ExtData->FirerHouse;
+		pTrailerAnimExt->SetInvoker(pThis->Owner);
 	}
 
-	return 0;
+	return SkipGameCode;
 }
 
 // Inviso bullets behave differently in BulletClass::AI when their target is bullet and
@@ -142,9 +142,8 @@ DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
 
 	auto pTypeExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
 	auto pControlledAnimType = pTypeExt->MindControl_Anim.Get(RulesClass::Instance->ControlledAnimationType);
-	auto pTechno = generic_cast<TechnoClass*>(pThis->Target);
 
-	R->AL(CaptureManager::CaptureUnit(pThis->Owner->CaptureManager, pTechno, pControlledAnimType));
+	R->AL(CaptureManagerExt::CaptureUnit(pThis->Owner->CaptureManager, pThis->Target, pControlledAnimType));
 
 	return 0x4692D5;
 }
@@ -240,6 +239,37 @@ DEFINE_HOOK(0x469A75, BulletClass_Logics_DamageHouse, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x469008, BulletClass_Explode_Cluster, 0x8)
+{
+	enum { SkipGameCode = 0x469091 };
+
+	GET(BulletClass*, pThis, ESI);
+	GET_STACK(CoordStruct, origCoords, STACK_OFFSET(0x3C, -0x30));
+
+	if (pThis->Type->Cluster > 0)
+	{
+		if (auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
+		{
+			int min = pTypeExt->ClusterScatter_Min.Get(Leptons(256));
+			int max = pTypeExt->ClusterScatter_Max.Get(Leptons(512));
+			auto coords = origCoords;
+
+			for (int i = 0; i < pThis->Type->Cluster; i++)
+			{
+				pThis->Detonate(coords);
+
+				if (!pThis->IsAlive)
+					break;
+
+				int distance = ScenarioClass::Instance->Random.RandomRanged(min, max);
+				coords = MapClass::GetRandomCoordsNear(origCoords, distance, false);
+			}
+		}
+	}
+
+	return SkipGameCode;
+}
+
 DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 {
 	enum { ReturnFromFunction = 0x46A2FB };
@@ -248,7 +278,9 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH))
 	{
-		if (pWHExt->DetonateOnAllMapObjects && !pWHExt->WasDetonatedOnAllMapObjects)
+		if (pWHExt->DetonateOnAllMapObjects && !pWHExt->WasDetonatedOnAllMapObjects &&
+			pWHExt->DetonateOnAllMapObjects_AffectTargets != AffectedTarget::None &&
+			pWHExt->DetonateOnAllMapObjects_AffectHouses != AffectedHouse::None)
 		{
 			pWHExt->WasDetonatedOnAllMapObjects = true;
 			auto const pExt = BulletExt::ExtMap.Find(pThis);
@@ -259,9 +291,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
 				{
 					pThis->Target = pTechno;
-					auto coords = CoordStruct::Empty;
-					coords = *pTechno->GetCoords(&coords);
-					pThis->Detonate(coords);
+					pThis->Detonate(pTechno->GetCoords());
 				}
 			};
 
@@ -386,3 +416,73 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
+{
+	GET(BulletClass*, pThis, EBX);
+	GET_STACK(float, mult, STACK_OFFSET(0x5C, -0x44));
+
+	if (pThis->WeaponType)
+	{
+		if (auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
+		{
+			int defaultValue = RulesClass::Instance->BallisticScatter;
+			int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
+			int max = pTypeExt->BallisticScatter_Max.Get(Leptons(defaultValue));
+
+			int result = (int)((mult * ScenarioClass::Instance->Random.RandomRanged(2 * min, 2 * max)) / pThis->WeaponType->Range);
+			R->EAX(result);
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x469D1A, BulletClass_Logics_Debris_Checks, 0x6)
+{
+	enum { SkipGameCode = 0x469EBA, SetDebrisCount=0x469D36 };
+
+	GET(BulletClass*, pThis, ESI);
+
+	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
+	bool isLand = pThis->GetCell()->LandType != LandType::Water;
+
+	if (!isLand && pWHExt->Debris_Conventional)
+		return SkipGameCode;
+
+	// Fix the debris count to be in range of Min, Max instead of Min, Max-1.
+	R->EBX(ScenarioClass::Instance->Random.RandomRanged(pThis->WH->MinDebris, pThis->WH->MaxDebris));
+
+	return SetDebrisCount;
+}
+
+DEFINE_HOOK(0x469E34, BulletClass_Logics_DebrisAnims, 0x5)
+{
+	enum { SkipGameCode = 0x469EBA };
+
+	GET(BulletClass*, pThis, ESI);
+	GET(int, debrisCount, EBX);
+
+	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
+	auto debrisAnims = pWHExt->DebrisAnims.GetElements(RulesClass::Instance->MetallicDebris);
+
+	if (debrisAnims.size() < 1)
+		return SkipGameCode;
+
+	while (debrisCount > 0)
+	{
+		int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, debrisAnims.size() - 1);
+
+		auto anim = GameCreate<AnimClass>(debrisAnims[debrisIndex], pThis->GetCoords());
+
+		if (anim && pThis->Owner)
+			anim->Owner = pThis->Owner->Owner;
+
+		debrisCount--;
+	}
+
+	return SkipGameCode;
+}
+
+// Skip a forced detonation check for Level=true projectiles that is now handled in Hooks.Obstacles.cpp.
+DEFINE_JUMP(LJMP, 0x468D08, 0x468D2F);
