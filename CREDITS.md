@@ -198,6 +198,7 @@ This page lists all the individual contributions to the project by their author.
   - AI naval vehicle production fix
   - Crushing tilt and slowdown customization
   - Extra warhead detonations on weapons
+  - Chrono sparkle animation display customization and improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
