@@ -364,12 +364,10 @@ Phobos fixes:
 - Fixed `Layer.UseObjectLayer=true` to work correctly for all cases where object changes layer (by Starkku)
 - Fixed floating point value parsing precision to match the game (by Starkku)
 - Fixed `DetonateOnAllMapObjects.RequireVerses` not considering shield armor types (by Starkku)
-</details>
-
-### 0.3.0.1
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
+</details>
 
 ### 0.3
 
