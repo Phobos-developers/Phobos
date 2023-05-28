@@ -19,6 +19,7 @@
 #include <Ext/Techno/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/AnimType/Body.h>
+#include <Ext/SWType/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -636,6 +637,60 @@ DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
 	return SkipKilling;
 }
 
+// Fixes broken Upgrade logic to allow SpySat=Yes Code=Otamma / Tested DOOM3DGUY
+DEFINE_HOOK(0x508F82, HouseClass_AI_CheckSpySat_IncludeUpgrades, 0x6)
+{
+	enum { AdvanceLoop = 0x508FF6, Continue = 0x508F91 };
+
+	GET(BuildingClass const*, pBuilding, ECX);
+
+	if (!pBuilding->Type->SpySat)
+	{
+		for (const auto& pUpgrade : pBuilding->Upgrades)
+		{
+			if (pUpgrade && pUpgrade->SpySat)
+				return Continue;
+		}
+
+		return AdvanceLoop;
+	}
+
+	return Continue;
+}
+
 // BuildingClass_What_Action() - Fix no attack cursor if AG=no projectile on primary
 DEFINE_JUMP(LJMP, 0x447380, 0x44739E);
 DEFINE_JUMP(LJMP, 0x447709, 0x447727);
+
+// Do not display SuperAnimThree for buildings with superweapons if the recharge timer hasn't actually started at any point yet.
+DEFINE_HOOK(0x44643E, BuildingClass_Place_SuperAnim, 0x6)
+{
+	enum { UseSuperAnimOne = 0x4464F6 };
+
+	GET(BuildingClass*, pThis, EBP);
+	GET(SuperClass*, pSuper, EAX);
+
+	if (pSuper->RechargeTimer.StartTime == 0 && pSuper->RechargeTimer.TimeLeft == 0 && !SWTypeExt::ExtMap.Find(pSuper->Type)->SW_InitialReady)
+	{
+		R->ECX(pThis);
+		return UseSuperAnimOne;
+	}
+
+	return 0;
+}
+
+// Do not advance SuperAnim for buildings with superweapons if the recharge timer hasn't actually started at any point yet.
+DEFINE_HOOK(0x451033, BuildingClass_AnimationAI_SuperAnim, 0x6)
+{
+	enum { SkipSuperAnimCode = 0x451048 };
+
+	GET(SuperClass*, pSuper, EAX);
+
+	if (pSuper->RechargeTimer.StartTime == 0 && pSuper->RechargeTimer.TimeLeft == 0 && !SWTypeExt::ExtMap.Find(pSuper->Type)->SW_InitialReady)
+		return SkipSuperAnimCode;
+
+	return 0;
+}
+
+// Stops INI parsing for Anim/BuildingTypeClass on game startup, will only be read on scenario load later like everything else.
+DEFINE_JUMP(LJMP, 0x52C9C4, 0x52CA37);

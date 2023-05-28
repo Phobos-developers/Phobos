@@ -48,6 +48,7 @@
     <ClCompile Include="src\Ext\TEvent\Body.cpp" />
     <ClCompile Include="src\Ext\Trigger\Hooks.cpp" />
     <ClCompile Include="src\Misc\Hooks.Gamespeed.cpp" />
+    <ClCompile Include="src\Misc\Hooks.Ares.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
     <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
@@ -72,6 +73,7 @@
     <ClCompile Include="src\Ext\Bullet\Hooks.Obstacles.cpp" />
     <ClCompile Include="src\Ext\House\Body.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.cpp" />
+    <ClCompile Include="src\Ext\House\Hooks.AINavalProduction.cpp" />
     <ClCompile Include="src\Ext\RadSite\Body.cpp" />
     <ClCompile Include="src\Ext\RadSite\Hooks.cpp" />
     <ClCompile Include="src\Ext\Scenario\Body.cpp" />
