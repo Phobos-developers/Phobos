@@ -440,6 +440,7 @@ void AttachEffectClass::Detach(std::vector<AttachEffectTypeClass*> const& types,
 			{
 				attachEffect->KillAnim();
 				attachEffect->CurrentDelay = attachEffect->RecreationDelay;
+				++it;
 				continue;
 			}
 
@@ -473,7 +474,10 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		auto const attachEffect = it->get();
 
 		if (attachEffect->IsSelfOwned())
+		{
+			++it;
 			continue;
+		}
 
 		auto const type = attachEffect->GetType();
 		int currentTypeCount = 0;
