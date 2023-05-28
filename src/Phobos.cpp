@@ -166,7 +166,6 @@ void NAKED _ExeTerminate()
 	CALL(EAX);
 	PUSH_REG(EAX);
 
-	AresData::UnInit();
 	Phobos::ExeTerminate();
 
 	// Jump back

@@ -102,15 +102,6 @@ void AresData::Init()
 	}
 }
 
-void AresData::UnInit()
-{
-	if (!AresBaseAddress)
-		return;
-
-	if (CanUseAres)
-		FreeLibrary(AresDllHmodule);
-}
-
 template<int idx, typename Tret, typename... TArgs>
 struct AresStdcall
 {

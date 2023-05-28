@@ -77,7 +77,6 @@ public:
 	static bool CanUseAres;
 
 	static void Init();
-	static void UnInit();
 
 	// here be known Ares functions
 	static bool ConvertTypeTo(TechnoClass* pFoot, TechnoTypeClass* pConvertTo);
