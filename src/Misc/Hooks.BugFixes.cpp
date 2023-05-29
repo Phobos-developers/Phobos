@@ -411,7 +411,7 @@ DEFINE_HOOK(0x6FA781, TechnoClass_AI_SelfHealing_BuildingGraphics, 0x6)
 
 	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
 	{
-		pBuilding->UpdatePlacement(PlacementType::Redraw);
+		pBuilding->Mark(MarkType::Change);
 		pBuilding->ToggleDamagedAnims(false);
 	}
 
