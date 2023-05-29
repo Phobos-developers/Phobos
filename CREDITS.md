@@ -34,6 +34,7 @@ This page lists all the individual contributions to the project by their author.
   - LaserTrails port and rework
   - Laser graphics fixes
   - Recursive transport killer fix
+  - Custom locomotors example implementation
   - Migration utility
   - GitHub Actions setup
   - Official docs
@@ -106,6 +107,7 @@ This page lists all the individual contributions to the project by their author.
   - Debris & meteor impact behaviour settings
   - Upgrade logic to allow altering of SpySat status
   - Ares detection and integration
+  - Help with custom locomotors
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
@@ -279,9 +281,10 @@ This page lists all the individual contributions to the project by their author.
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
 - **Chasheen (Chasheenburg)** - CN docs help
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
-- **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
+- **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings, custom locomotors example implementation
 - **AlexB** - Original FlyingStrings implementation
 - **Joshy** - Original FlyingStrings implementation
+- **CnCVK** - Original custom locomotors experiment
 - **ZΞPHYɌUS** - win/lose themes code
 - **Neargye (Daniil Goncharov)** - [nameof library](https://github.com/Neargye/nameof) (MIT)
 - **ayylmao** - help with docs, extensive and thorough testing

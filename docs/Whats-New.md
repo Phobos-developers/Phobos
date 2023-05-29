@@ -312,6 +312,7 @@ New:
 - Allow overriding `Shield.AffectTypes` for each Warhead shield interaction (by Starkku)
 - TechnoType conversion warhead & superweapon (by Morton)
 - Unlimited skirmish colors (by Morton)
+- Example custom locomotor that circles around the target (by Kerbiter, CCHyper, with help from Otamaa; based on earlier experiment by CnCVK)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
