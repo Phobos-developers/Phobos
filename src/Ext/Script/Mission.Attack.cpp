@@ -60,7 +60,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 
 	pFocus = abstract_cast<TechnoClass*>(pTeam->Focus);
 
-	if (!IsUnitAvailable(pFocus, true, false))
+	if (!IsUnitAvailable(pFocus, true))
 	{
 		pTeam->Focus = nullptr;
 		pFocus = nullptr;
@@ -141,7 +141,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 	// Find the Leader
 	pLeaderUnit = pTeamData->TeamLeader;
 
-	if (!IsUnitAvailable(pLeaderUnit, true, true))
+	if (!IsUnitAvailable(pLeaderUnit, true))
 	{
 		pLeaderUnit = FindTheTeamLeader(pTeam);
 		pTeamData->TeamLeader = pLeaderUnit;
@@ -297,7 +297,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 		bool isAirOK = pFocus->IsInAir() && leaderWeaponsHaveAA;
 		bool isGroundOK = !pFocus->IsInAir() && leaderWeaponsHaveAG;
 
-		if (IsUnitAvailable(pFocus, true, true)
+		if (IsUnitAvailable(pFocus, true)
 			&& !pFocus->GetTechnoType()->Immune
 			&& (isAirOK || isGroundOK)
 			&& (!pLeaderUnit->Owner->IsAlliedWith(pFocus) || IsUnitMindControlledFriendly(pLeaderUnit->Owner, pFocus)))
@@ -308,7 +308,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 			{
 				auto const pTechnoType = pFoot->GetTechnoType();
 
-				if (IsUnitAvailable(pFoot, true, true))
+				if (IsUnitAvailable(pFoot, true))
 				{
 					// Aircraft case 1
 					if ((pTechnoType->WhatAmI() == AbstractType::AircraftType
@@ -488,7 +488,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 			continue;
 
 		if (object != pTechno
-			&& IsUnitAvailable(object, true, true)
+			&& IsUnitAvailable(object, true)
 			&& !objectType->Immune
 			&& !object->TemporalTargetingMe
 			&& !object->BeingWarpedOut
@@ -1172,7 +1172,7 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass* pTeam, bool repeatAction, 
 					auto const pFirstUnit = pTeam->FirstUnit;
 
 					if (pTechnoType == objectFromList
-						&& IsUnitAvailable(pTechno, true, true)
+						&& IsUnitAvailable(pTechno, true)
 						&& (!pFirstUnit->Owner->IsAlliedWith(pTechno) || IsUnitMindControlledFriendly(pFirstUnit->Owner, pTechno)))
 					{
 						validIndexes.push_back(j);
