@@ -119,6 +119,8 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 
 	case PhobosTriggerEvent::ShieldBroken:
 		return ShieldClass::ShieldIsBrokenTEvent(pObject);
+	case PhobosTriggerEvent::HousesDestroyed:
+		return TEventExt::HousesAreDestroyedTEvent(pThis);
 
 	default:
 		bHandled = false;
@@ -157,6 +159,43 @@ bool TEventExt::VariableCheckBinary(TEventClass* pThis)
 	}
 
 	return false;
+}
+
+bool TEventExt::HousesAreDestroyedTEvent(TEventClass* pThis)
+{
+	int nIdxVariable = pThis->Value; //atoi(pThis->String);
+
+	if (nIdxVariable < 0)
+		return false;
+
+	if (RulesExt::Global()->AIHousesLists.Count == 0)
+	{
+		Debug::Log("DEBUG: [AIHousesList] is empty. Map event %d can't continue.\n", (int)pThis->EventKind);
+		return false;
+	}
+
+	DynamicVectorClass<HouseTypeClass*> housesList = RulesExt::Global()->AIHousesLists.GetItem(nIdxVariable);
+
+	if (housesList.Count == 0)
+		return false;
+
+	for (auto pTechno : *TechnoClass::Array)
+	{
+		if (pTechno
+			&& pTechno->IsAlive
+			&& pTechno->Health > 0
+			&& !pTechno->InLimbo
+			&& (pTechno->IsOnMap || (pTechno->GetTechnoType()->IsSubterranean)))
+		{
+			for (auto pHouse : housesList)
+			{
+				if (pTechno->Owner->Type == pHouse)
+					return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 // =============================
