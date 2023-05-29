@@ -345,6 +345,7 @@ Vanilla fixes:
 - Fixed permanent health bar display for units targeted by temporal weapons upon mouse hover (by Trsdy)
 - Buildings with superweapons no longer display `SuperAnimThree` at beginning of match if pre-placed on the map (by Starkku)
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do (by Starkku)
+- Map event `There are no technos of the specified houses list` (by FS-21)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

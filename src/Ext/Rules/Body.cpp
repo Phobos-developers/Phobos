@@ -3,6 +3,7 @@
 #include <Utilities/TemplateDef.h>
 #include <FPSCounter.h>
 #include <GameOptionsClass.h>
+#include <HouseTypeClass.h>
 
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
@@ -158,20 +159,19 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	int houseItemsCount = pINI->GetKeyCount(sectionAIHousesList);
 	for (int i = 0; i < houseItemsCount; ++i)
 	{
-		DynamicVectorClass<HouseTypeClass*> objectsList;
+		std::vector<HouseTypeClass*> objectsList;
 
 		char* context = nullptr;
 		pINI->ReadString(sectionAIHousesList, pINI->GetKeyName(sectionAIHousesList, i), "", Phobos::readBuffer);
 
 		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
-			HouseTypeClass* pNewHouse = HouseTypeClass::Find(cur);//GameCreate<HouseTypeClass>(cur);
+			HouseTypeClass* pNewHouse = HouseTypeClass::Find(cur);
 			if (pNewHouse)
-				objectsList.AddItem(pNewHouse);
+			objectsList.emplace_back(pNewHouse);
 		}
 
-		AIHousesLists.AddItem(objectsList);
-		objectsList.Clear();
+		AIHousesLists.emplace_back(objectsList);
 	}
 }
 

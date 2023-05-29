@@ -3,6 +3,8 @@
 #include <Utilities/SavegameDef.h>
 #include <New/Entity/ShieldClass.h>
 #include <Ext/Scenario/Body.h>
+#include <Ext/Techno/Body.h>
+#include <Ext/Script/Body.h>
 #include <BuildingClass.h>
 #include <InfantryClass.h>
 #include <UnitClass.h>
@@ -167,25 +169,24 @@ bool TEventExt::HousesAreDestroyedTEvent(TEventClass* pThis)
 
 	if (nIdxVariable < 0)
 		return false;
-
-	if (RulesExt::Global()->AIHousesLists.Count == 0)
+	
+	if (RulesExt::Global()->AIHousesLists.size() == 0)
 	{
-		Debug::Log("DEBUG: [AIHousesList] is empty. Map event %d can't continue.\n", (int)pThis->EventKind);
+		Debug::Log("[AIHousesList] is empty. Map event %d can't continue.\n", (int)pThis->EventKind);
 		return false;
 	}
 
-	DynamicVectorClass<HouseTypeClass*> housesList = RulesExt::Global()->AIHousesLists.GetItem(nIdxVariable);
-
-	if (housesList.Count == 0)
+	std::vector<HouseTypeClass*> housesList = RulesExt::Global()->AIHousesLists.at(nIdxVariable);
+	
+	if (housesList.size() == 0)
+	{
+		Debug::Log("[AIHousesList](%d) is empty. Map event %d can't continue.\n", nIdxVariable, (int)pThis->EventKind);
 		return false;
+	}
 
 	for (auto pTechno : *TechnoClass::Array)
 	{
-		if (pTechno
-			&& pTechno->IsAlive
-			&& pTechno->Health > 0
-			&& !pTechno->InLimbo
-			&& (pTechno->IsOnMap || (pTechno->GetTechnoType()->IsSubterranean)))
+		if (ScriptExt::IsUnitAvailable(pTechno, false, true))
 		{
 			for (auto pHouse : housesList)
 			{
