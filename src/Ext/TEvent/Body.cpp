@@ -172,7 +172,7 @@ bool TEventExt::HousesAreDestroyedTEvent(TEventClass* pThis)
 	
 	if (RulesExt::Global()->AIHousesLists.size() == 0)
 	{
-		Debug::Log("[AIHousesList] is empty. Map event %d can't continue.\n", (int)pThis->EventKind);
+		Debug::Log("Map event %d: [AIHousesList] is empty. This event can't continue.\n", (int)pThis->EventKind);
 		return false;
 	}
 
@@ -180,7 +180,7 @@ bool TEventExt::HousesAreDestroyedTEvent(TEventClass* pThis)
 	
 	if (housesList.size() == 0)
 	{
-		Debug::Log("[AIHousesList](%d) is empty. Map event %d can't continue.\n", nIdxVariable, (int)pThis->EventKind);
+		Debug::Log("Map event %d: [AIHousesList](%d) is empty. This event can't continue.\n", (int)pThis->EventKind, nIdxVariable);
 		return false;
 	}
 
