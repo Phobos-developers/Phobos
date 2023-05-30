@@ -52,9 +52,9 @@ jobs:
             for (const art of artifacts) {
               body += `\n* [${art.name}.zip](https://nightly.link/${owner}/${repo}/actions/artifacts/${art.id}.zip)`;
             }
-            
+
             body += `\nThis comment is automatic and is meant to allow guests to get latest nightly builds for this pull request without registering. It is updated on every successful build.`;
-            
+
             core.info("Review thread message body:", body);
 
             for (const pr of pull_requests) {
