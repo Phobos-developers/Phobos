@@ -1,4 +1,5 @@
 #include "AttachEffectClass.h"
+#include "Memory.h"
 
 #include <AnimClass.h>
 #include <BuildingClass.h>
@@ -323,84 +324,78 @@ AttachEffectTypeClass* AttachEffectClass::GetType() const
 	return Type;
 }
 
-void AttachEffectClass::Attach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
-	AbstractClass* pSource, std::vector<int>& durationOverrides, std::vector<int> const& delays, std::vector<int> const& initialDelays, std::vector<int> const& recreationDelays)
+bool AttachEffectClass::Attach(AttachEffectTypeClass* pType, TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
+	AbstractClass* pSource, int durationOverride, int delay, int initialDelay, int recreationDelay)
 {
-	if (types.size() < 1 || !pTarget)
-		return;
+	if (!pType || !pTarget)
+		return false;
 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 
-	int modifiedCount = 0;
+	if (auto const pAE = CreateAndAttach(pType, pTarget, pTargetExt->AttachedEffects, pInvokerHouse, pInvoker, pSource, durationOverride, delay, initialDelay, recreationDelay))
+	{
+		if (initialDelay <= 0)
+		{
+			if (pType->ROFMultiplier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
+			{
+				pTarget->DiskLaserTimer.Start(static_cast<int>(pTarget->DiskLaserTimer.GetTimeLeft() * pType->ROFMultiplier));
+				pTarget->ROF = static_cast<int>(pTarget->ROF * pType->ROFMultiplier);
+			}
+
+			pTargetExt->RecalculateStatMultipliers();
+
+			if (pType->HasTint())
+				pTarget->MarkForRedraw();
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+bool AttachEffectClass::Attach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
+	AbstractClass* pSource, std::vector<int>& durationOverrides, std::vector<int> const& delays, std::vector<int> const& initialDelays, std::vector<int> const& recreationDelays)
+{
+	if (types.size() < 1 || !pTarget)
+		return false;
+
+	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+	int attachedCount = 0;
 	bool markForRedraw = false;
 	double ROFModifier = 1.0;
 
 	for (size_t i = 0; i < types.size(); i++)
 	{
-		auto const type = types[i];
-
-		if (!type->PenetratesIronCurtain && pTarget->IsIronCurtained())
-			continue;
-
-		int currentTypeCount = 0;
-		AttachEffectClass* match = nullptr;
-		AttachEffectClass* sourceMatch = nullptr;
-
-		for (auto const& aePtr : pTargetExt->AttachedEffects)
-		{
-			auto const attachEffect = aePtr.get();
-
-			if (attachEffect->GetType() == type)
-			{
-				currentTypeCount++;
-				match = attachEffect;
-
-				if (attachEffect->Source == pSource && attachEffect->Invoker == pInvoker)
-					sourceMatch = attachEffect;
-			}
-		}
-
+		auto const pType = types[i];
 		int durationOverride = 0;
+		int delay = 0;
+		int initialDelay = 0;
+		int recreationDelay = -1;
 
 		if (durationOverrides.size() > 0)
 			durationOverride = durationOverrides[durationOverrides.size() > i ? i : durationOverrides.size() - 1];
 
-		if (type->Cumulative && type->Cumulative_MaxCount >= 0 && currentTypeCount >= type->Cumulative_MaxCount)
+		if (delays.size() > 0)
+			delay = delays[delays.size() > i ? i : delays.size() - 1];
+
+		if (initialDelays.size() > 0)
+			initialDelay = initialDelays[initialDelays.size() > i ? i : initialDelays.size() - 1];
+
+		if (recreationDelays.size() > 0)
+			recreationDelay = recreationDelays[recreationDelays.size() > i ? i : recreationDelays.size() - 1];
+
+		if (auto const pAE = CreateAndAttach(pType, pTarget, pTargetExt->AttachedEffects, pInvokerHouse, pInvoker, pSource, durationOverride, delay, initialDelay, recreationDelay))
 		{
-			if (sourceMatch)
-				sourceMatch->RefreshDuration(durationOverride);
-			else
-				continue;
-		}
-
-		if (!type->Cumulative && currentTypeCount > 0 && match)
-		{
-			match->RefreshDuration(durationOverride);
-		}
-		else
-		{
-			int delay = 0;
-			int initialDelay = 0;
-			int recreationDelay = -1;
-
-			if (delays.size() > 0)
-				delay = delays[delays.size() > i ? i : delays.size() - 1];
-
-			if (initialDelays.size() > 0)
-				initialDelay = initialDelays[initialDelays.size() > i ? i : initialDelays.size() - 1];
-
-			if (recreationDelays.size() > 0)
-				recreationDelay = recreationDelays[recreationDelays.size() > i ? i : recreationDelays.size() - 1];
-
-			pTargetExt->AttachedEffects.push_back(std::make_unique<AttachEffectClass>(type, pTarget, pInvokerHouse, pInvoker, pSource, durationOverride, delay, initialDelay, recreationDelay));
-			modifiedCount++;
+			attachedCount++;
 
 			if (initialDelay <= 0)
 			{
-				if (type->ROFMultiplier > 0.0 && type->ROFMultiplier_ApplyOnCurrentTimer)
-					ROFModifier *= type->ROFMultiplier;
+				if (pType->ROFMultiplier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
+					ROFModifier *= pType->ROFMultiplier;
 
-				if (type->HasTint())
+				if (pType->HasTint())
 					markForRedraw = true;
 			}
 		}
@@ -412,29 +407,121 @@ void AttachEffectClass::Attach(std::vector<AttachEffectTypeClass*> const& types,
 		pTarget->ROF = static_cast<int>(pTarget->ROF * ROFModifier);
 	}
 
-	if (modifiedCount > 0)
+	if (attachedCount > 0)
 		pTargetExt->RecalculateStatMultipliers();
 
 	if (markForRedraw)
 		pTarget->MarkForRedraw();
+
+	return attachedCount > 0;
 }
 
-void AttachEffectClass::Detach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget)
+AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs,
+	HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, int durationOverride, int delay, int initialDelay, int recreationDelay)
 {
-	if (types.size() < 1 || !pTarget)
-		return;
+	if (!pType || !pTarget)
+		return nullptr;
+
+	if (!pType->PenetratesIronCurtain && pTarget->IsIronCurtained())
+		return nullptr;
+
+	int currentTypeCount = 0;
+	AttachEffectClass* match = nullptr;
+	AttachEffectClass* sourceMatch = nullptr;
+
+	for (auto const& aePtr : targetAEs)
+	{
+		auto const attachEffect = aePtr.get();
+
+		if (attachEffect->GetType() == pType)
+		{
+			currentTypeCount++;
+			match = attachEffect;
+
+			if (attachEffect->Source == pSource && attachEffect->Invoker == pInvoker)
+				sourceMatch = attachEffect;
+		}
+	}
+
+	if (pType->Cumulative && pType->Cumulative_MaxCount >= 0 && currentTypeCount >= pType->Cumulative_MaxCount)
+	{
+		if (sourceMatch)
+			sourceMatch->RefreshDuration(durationOverride);
+		else
+			return nullptr;
+	}
+
+	if (!pType->Cumulative && currentTypeCount > 0 && match)
+		match->RefreshDuration(durationOverride);
+	else
+	{
+		targetAEs.push_back(std::make_unique<AttachEffectClass>(pType, pTarget, pInvokerHouse, pInvoker, pSource, durationOverride, delay, initialDelay, recreationDelay));
+		return targetAEs.back().get();
+	}
+
+	return nullptr;
+}
+
+int AttachEffectClass::Detach(AttachEffectTypeClass* pType, TechnoClass* pTarget)
+{
+	if (!pType || !pTarget)
+		return 0;
 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-	int modifiedCount = 0;
+	int detachedCount = RemoveAllOfType(pType, pTargetExt->AttachedEffects);
+
+	if (detachedCount > 0)
+	{
+		pTargetExt->RecalculateStatMultipliers();
+
+		if (pType->HasTint())
+			pTarget->MarkForRedraw();
+	}
+
+	return detachedCount;
+}
+
+int AttachEffectClass::Detach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget)
+{
+	if (types.size() < 1 || !pTarget)
+		return 0;
+
+	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	int detachedCount = 0;
 	bool markForRedraw = false;
+
+	for (auto const pType : types)
+	{
+		int count = RemoveAllOfType(pType, pTargetExt->AttachedEffects);
+
+		if (count && pType->HasTint())
+			markForRedraw = true;
+
+		detachedCount += count;
+	}
+
+	if (detachedCount > 0)
+		pTargetExt->RecalculateStatMultipliers();
+
+	if (markForRedraw)
+		pTarget->MarkForRedraw();
+
+	return detachedCount;
+}
+
+int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs)
+{
+	if (!pType || targetAEs.size() <= 0)
+		return 0;
+
+	int detachedCount = 0;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 
-	for (it = pTargetExt->AttachedEffects.begin(); it != pTargetExt->AttachedEffects.end(); )
+	for (it = targetAEs.begin(); it != targetAEs.end(); )
 	{
 		auto const attachEffect = it->get();
-		bool contains = std::find(types.begin(), types.end(), attachEffect->GetType()) != types.end();
 
-		if (contains)
+		if (pType == attachEffect->Type)
 		{
 			if (attachEffect->IsSelfOwned() && attachEffect->RecreationDelay >= 0)
 			{
@@ -444,11 +531,8 @@ void AttachEffectClass::Detach(std::vector<AttachEffectTypeClass*> const& types,
 				continue;
 			}
 
-			if (attachEffect->GetType()->HasTint())
-				markForRedraw = true;
-
-			modifiedCount++;
-			it = pTargetExt->AttachedEffects.erase(it);
+			detachedCount++;
+			it = targetAEs.erase(it);
 		}
 		else
 		{
@@ -456,11 +540,7 @@ void AttachEffectClass::Detach(std::vector<AttachEffectTypeClass*> const& types,
 		}
 	}
 
-	if (modifiedCount > 0)
-		pTargetExt->RecalculateStatMultipliers();
-
-	if (markForRedraw)
-		pTarget->MarkForRedraw();
+	return detachedCount;
 }
 
 void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget)
@@ -508,8 +588,8 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		}
 		else
 		{
-			attachEffect->Techno = pTarget;
-			pTargetExt->AttachedEffects.push_back(std::unique_ptr<AttachEffectClass>(attachEffect));
+			if (auto const pAE = CreateAndAttach(type, pTarget, pTargetExt->AttachedEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, attachEffect->DurationOverride))
+				pAE->Duration = attachEffect->Duration;
 		}
 
 		it = pSourceExt->AttachedEffects.erase(it);
