@@ -2,7 +2,6 @@
 
 #include <New/Type/AttachEffectTypeClass.h>
 
-
 class AttachEffectClass
 {
 public:
@@ -30,16 +29,25 @@ public:
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;
 
-	static void Attach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
+	static bool Attach(AttachEffectTypeClass* pType, TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
+		AbstractClass* pSource, int durationOverride = 0, int delay = 0, int initialDelay = 0, int recreationDelay = -1);
+
+	static bool Attach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
 		AbstractClass* pSource, std::vector<int>& durationOverrides, std::vector<int> const& delays, std::vector<int> const& initialDelays, std::vector<int> const& recreationDelays);
 
-	static void Detach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget);
+	static int Detach(AttachEffectTypeClass* pType, TechnoClass* pTarget);
+	static int Detach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget);
 	static void TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget);
 
 private:
 	void OnlineCheck();
 	void CloakCheck();
 	void CreateAnim();
+
+	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs,
+		HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, int durationOverride = 0, int delay = 0, int initialDelay = 0, int recreationDelay = -1);
+
+	static int RemoveAllOfType(AttachEffectTypeClass* pType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs);
 
 	template <typename T>
 	bool Serialize(T& Stm);
