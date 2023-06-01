@@ -796,16 +796,6 @@ DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 	return 0x5223B9;
 }
 
-/*DEFINE_HOOK(0x6FDE5E, TechnoClass_FireAt_RandomTarget, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-	GET(TechnoClass*, pTarget, EDI); // Puede ser nulo
-
-	//Debug::Log("%s targets: %s, BurstIndex: %d\n", pThis->GetTechnoType()->ID, pTarget->GetTechnoType()->ID, pThis->CurrentBurstIndex);
-	return 0;
-}*/
-
-//DEFINE_HOOK(0x6FE4F6, TechnoClass_FireAt_RandomTarget, 0x7)
 DEFINE_HOOK(0x6FE562, TechnoClass_FireAt_BurstRandomTarget, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
@@ -826,8 +816,8 @@ DEFINE_HOOK(0x6FE562, TechnoClass_FireAt_BurstRandomTarget, 0x6)
 		return 0;
 
 	auto pThisType = pThis->GetTechnoType();
-	int minimumRange = pWeapon->MinimumRange; // in leptons
-	int range = pWeapon->Range; // in leptons
+	int minimumRange = pWeapon->MinimumRange;
+	int range = pWeapon->Range;
 	int airRange = pWeapon->Range + pThisType->AirRangeBonus;
 	bool omniFire = pWeapon->OmniFire;
 	std::vector<TechnoClass*> candidates;
@@ -890,98 +880,3 @@ DEFINE_HOOK(0x6FE562, TechnoClass_FireAt_BurstRandomTarget, 0x6)
 
 	return 0;
 }
-
-/*
-//DEFINE_HOOK(0x6FE4F6, TechnoClass_FireAt_RandomTarget, 0x7)
-DEFINE_HOOK(0x6FE562, TechnoClass_FireAt_RandomTarget, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-	GET(WeaponTypeClass*, pWeapon, EBX);
-	GET(BulletClass*, pBullet, EAX);
-
-	Debug::Log("Attacker: %s, BurstIndex: %d\n", pThis->GetTechnoType()->ID, pThis->CurrentBurstIndex);
-
-	if (!pBullet || pWeapon->Burst < 2)
-		return 0;
-
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	if (!pWeaponExt || pWeaponExt->Burst_Retarget <= 0.0)
-		return 0;
-
-	int retargetProbability = pWeaponExt->Burst_Retarget > 1.0 ? 100 : (int)round(pWeaponExt->Burst_Retarget * 100);
-	int dice = ScenarioClass::Instance->Random.RandomRanged(1,100);
-
-	if (retargetProbability < dice)
-		return 0;
-
-	auto pThisType = pThis->GetTechnoType();
-	//if (pThis->CurrentBurstIndex > 0)
-	//TechnoClass* pTarget = pThis->Target ? static_cast<TechnoClass*>(pThis->Target) : nullptr;
-	int minimumRange = pWeapon->MinimumRange; // in leptons
-	int airRangeBonus = pThisType->AirRangeBonus; // in leptons? DELETE LINE
-	int range = pWeapon->Range; // in leptons
-	int airRange = pWeapon->Range + pThisType->AirRangeBonus;
-	bool omniFire = pWeapon->OmniFire;
-
-	TechnoClass* selectedTarget = nullptr;
-	std::vector<TechnoClass*> candidates;
-	auto originalTarget = pThis->Target;
-	bool friendlyFire = pThis->Owner->IsAlliedWith(originalTarget);
-
-	for (auto pTarget : *TechnoClass::Array)
-	{
-		if (pTarget == pThis
-			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget, true)
-			|| (!pWeapon->Projectile->AA && pTarget->IsInAir())
-			|| (!friendlyFire && (pThis->Owner->IsAlliedWith(pTarget) || ScriptExt:: IsUnitMindControlledFriendly(pThis->Owner, pTarget)))
-			|| pTarget->GetTechnoType()->Underwater && pTarget->GetTechnoType()->NavalTargeting == NavalTargetingType::Underwater_Never
-			|| pTarget->GetTechnoType()->Naval && pTarget->GetTechnoType()->NavalTargeting == NavalTargetingType::Naval_None)
-		{
-			continue;
-		}
-
-		int distanceFromAttacker = pThis->DistanceFrom(pTarget);
-		if (distanceFromAttacker < minimumRange)
-			continue;
-
-		if (omniFire)
-		{
-			if (pTarget->IsInAir())
-			{
-				if (distanceFromAttacker <= airRange)
-					candidates.push_back(pTarget);
-			}
-			else
-			{
-				if (distanceFromAttacker <= range)
-					candidates.push_back(pTarget);
-			}
-		}
-		else
-		{
-			int distanceFromOriginalTarget = pThis->DistanceFrom(originalTarget);
-
-			if (pTarget->IsInAir())
-			{
-				if (distanceFromAttacker <= airRange && distanceFromOriginalTarget <= airRange)
-					candidates.push_back(pTarget);
-			}
-			else
-			{
-				if (distanceFromAttacker <= range && distanceFromOriginalTarget <= range)
-					candidates.push_back(pTarget);
-			}
-		}
-	}
-
-	if (candidates.size() > 0)
-	{
-		// Pick one new target from the list of targets inside the weapon range
-		dice = ScenarioClass::Instance->Random.RandomRanged(0, candidates.size() - 1);
-		selectedTarget = candidates.at(dice); // Only for debug, delete it
-		pBullet->Target = candidates.at(dice);
-	}
-
-	return 0;
-}
-*/
