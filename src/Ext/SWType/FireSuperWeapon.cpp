@@ -56,6 +56,15 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		pBuilding->InLimbo = false;
 		pBuilding->IsAlive = true;
 		pBuilding->IsOnMap = true;
+
+		// For reasons beyond my comprehension, the discovery logic is checked for certain logics like power drain/output in singleplayer only.
+		// This code replicates how DiscoveredBy() is called in BuildingClass::Unlimbo() - Starkku
+		if (!pBuilding->DiscoveredByCurrentPlayer && (pBuilding->GetCell()->AltFlags & AltCellFlags::NoFog) != AltCellFlags(0) || SessionClass::Instance->GameMode == GameMode::Campaign)
+			pBuilding->DiscoveredBy(HouseClass::CurrentPlayer);
+
+		if (!pOwner->IsControlledByHuman())
+			pBuilding->DiscoveredBy(pOwner);
+
 		pOwner->RegisterGain(pBuilding, false);
 		pOwner->UpdatePower();
 		pOwner->RecheckTechTree = true;
