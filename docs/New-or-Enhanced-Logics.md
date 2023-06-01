@@ -1117,6 +1117,19 @@ Burst.Delays=-1                 ; integer - burst delays (comma-separated) for s
 Burst.FireWithinSequence=false  ; boolean
 ```
 
+### Burst projectile retargeting
+- Weapons with `Burst=2` or higher enables the probability to pick a new target for the new projectile.
+- A techno as target is required.
+- It was designed for standard missiles (no splits, airbusts, etc).
+- `OmniFire=yes` will make selectable any targets around the firer, limited by the weapon range.
+- `OmniFire=no` will force the firer to pick targets in an area composed by the firer's weapon range around the original target intersected with the firer's weapon range around the firer.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                    ; WeaponType
+Burst.Retarget=0.0              ; double or percentage
+```
+
 ### Feedback weapon
 
 ![image](_static/images/feedbackweapon.gif)

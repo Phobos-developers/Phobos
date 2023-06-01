@@ -309,6 +309,7 @@ New:
 - Upgrade logic to allow altering of SpySat status (by Otamaa)
 - Allow `ZShapePointMove` to apply during buildup via `ZShapePointMove.OnBuildup` (by Starkku)
 - `UndeploysInto` building selling buildup sequence length customization (by Starkku)
+- `Burst.Retarget` for assigning a new target in each projectile (by FS-21)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
