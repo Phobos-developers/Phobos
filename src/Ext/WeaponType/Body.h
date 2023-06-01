@@ -33,6 +33,7 @@ public:
 		Valueable<bool> Laser_IsSingleColor;
 		Nullable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<bool> OmniFire_TurnToTarget;
+		Valueable<double> Burst_Retarget;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
@@ -51,6 +52,7 @@ public:
 			, Laser_IsSingleColor { false }
 			, ROF_RandomDelay {}
 			, OmniFire_TurnToTarget { false }
+			, Burst_Retarget { 0.0 }
 		{ }
 
 		int GetBurstDelay(int burstIndex);
