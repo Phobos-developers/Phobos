@@ -1,12 +1,10 @@
 #include "AresData.h"
 
-#include <ASMMacros.h>
 #include <Phobos.h>
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
 #include <CRC.h>
 
-#include <vector>
 #include <tlhelp32.h>
 
 class TechnoClass;
@@ -15,9 +13,47 @@ class TechnoTypeClass;
 uintptr_t AresData::PhobosBaseAddress = 0x0;
 uintptr_t AresData::AresBaseAddress = 0x0;
 HMODULE AresData::AresDllHmodule = nullptr;
-int AresData::AresVersionId = AresData::Version::Unknown;
+AresData::Version AresData::AresVersion = AresData::Version::Unknown;
 bool AresData::CanUseAres = false;
-DWORD AresData::AresFunctionOffsetsFinal[AresData::AresFunctionCount];
+std::unordered_map<std::string, DWORD> AresData::AresFunctionOffsetsFinal;
+
+const std::unordered_map<DWORD, AresData::Version> AresData::AresTimestampBytes =
+{
+	{ 0x5fc37ef6, Version::Ares30 },
+	{ 0x61daa114, Version::Ares30p },
+};
+
+const std::unordered_map<std::string, std::vector<DWORD>> AresData::AresFunctionOffsets =
+{
+	{
+		"ConvertTypeTo",    //
+		{
+			0x043650,
+			0x044130,
+		},
+	},
+	{
+		"SpawnSurvivors",   // TechnoExt
+		{
+			0x0464C0,
+			0x047030,
+		},
+	},
+	{
+		"HasFactory",       // HouseExt
+		{
+			0x0217C0,
+			0x0217C0,
+		},
+	},
+	{
+		"CanBeBuiltAt",     // TechnoTypeExt
+		{
+			0x03E3B0,
+			0x03E3B0,
+		},
+	},
+};
 
 #ifndef PHOBOS_DLL
 #define PHOBOS_DLL "Phobos.dll"
@@ -77,16 +113,23 @@ void AresData::Init()
 	const DWORD* PEHeaderPtr = (DWORD*)(AresBaseAddress + PEHeaderOffset);
 	// read the timedatestamp at 0x8 offset
 	const DWORD TimeDateStamp = *(PEHeaderPtr + 2);
-	switch (TimeDateStamp)
+
+	try
 	{
-	case AresTimestampBytes[Version::Ares30]:
-		AresVersionId = Version::Ares30;
-		CanUseAres = true;
+		AresVersion = AresTimestampBytes.at(TimeDateStamp);
+	}
+	catch(std::exception)
+	{
+		AresVersion = Version::Unknown;
+	}
+	CanUseAres = AresVersion != Version::Unknown;
+
+	switch (AresVersion)
+	{
+	case Version::Ares30:
 		Debug::LogDeferred("[Phobos] Detected Ares 3.0.\n");
 		break;
-	case AresTimestampBytes[Version::Ares30p]:
-		AresVersionId = Version::Ares30p;
-		CanUseAres = true;
+	case Version::Ares30p:
 		Debug::LogDeferred("[Phobos] Detected Ares 3.0p1.\n");
 		break;
 	default:
@@ -97,107 +140,10 @@ void AresData::Init()
 	constexpr const wchar_t* ARES_DLL = L"Ares.dll";
 	if (CanUseAres && GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN, ARES_DLL, &AresDllHmodule))
 	{
-		for (int i = 0; i < AresData::AresFunctionCount; i++)
-			AresData::AresFunctionOffsetsFinal[i] = AresData::AresBaseAddress + AresData::AresFunctionOffsets[i][AresVersionId];
+		for(auto x: AresData::AresFunctionOffsets)
+			if (x.second[(int)AresVersion] > 0)
+				AresData::AresFunctionOffsetsFinal[x.first] = AresData::AresBaseAddress + x.second[(int)AresVersion];
+			else
+				AresData::AresFunctionOffsetsFinal[x.first] = 0;
 	}
-}
-
-template<int idx, typename Tret, typename... TArgs>
-struct AresStdcall
-{
-	using fp_type = Tret(__stdcall*)(TArgs...);
-	decltype(auto) operator()(TArgs... args) const
-	{
-		return reinterpret_cast<fp_type>(AresData::AresFunctionOffsetsFinal[idx])(args...);
-	}
-};
-
-template<int idx, typename... TArgs>
-struct AresStdcall<idx, void, TArgs...>
-{
-	using fp_type = void(__stdcall*)(TArgs...);
-	decltype(auto) operator()(TArgs... args) const
-	{
-		reinterpret_cast<fp_type>(AresData::AresFunctionOffsetsFinal[idx])(args...);
-	}
-};
-
-template<int idx, typename Tret, typename... TArgs>
-struct AresCdecl
-{
-	using fp_type = Tret(__cdecl*)(TArgs...);
-	decltype(auto) operator()(TArgs... args) const
-	{
-		return reinterpret_cast<fp_type>(AresData::AresFunctionOffsetsFinal[idx])(args...);
-	}
-};
-
-template<int idx, typename... TArgs>
-struct AresCdecl<idx, void, TArgs...>
-{
-	using fp_type = void(__cdecl*)(TArgs...);
-	decltype(auto) operator()(TArgs... args) const
-	{
-		reinterpret_cast<fp_type>(AresData::AresFunctionOffsetsFinal[idx])(args...);
-	}
-};
-
-template<int idx, typename Tret, typename... TArgs>
-struct AresFastcall
-{
-	using fp_type = Tret(__fastcall*)(TArgs...);
-	decltype(auto) operator()(TArgs... args) const
-	{
-		return reinterpret_cast<fp_type>(AresData::AresFunctionOffsetsFinal[idx])(args...);
-	}
-};
-
-template<int idx, typename... TArgs>
-struct AresFastcall<idx, void, TArgs...>
-{
-	using fp_type = void(__fastcall*)(TArgs...);
-	decltype(auto) operator()(TArgs... args) const
-	{
-		reinterpret_cast<fp_type>(AresData::AresFunctionOffsetsFinal[idx])(args...);
-	}
-};
-
-template<int idx, typename Tret, typename TThis, typename... TArgs>
-struct AresThiscall
-{
-	using fp_type = Tret(__fastcall*)(TThis, void*, TArgs...);
-	decltype(auto) operator()(TThis pThis, TArgs... args) const
-	{
-		return reinterpret_cast<fp_type>(AresData::AresFunctionOffsetsFinal[idx])(pThis, nullptr, args...);
-	}
-};
-
-template<int idx, typename TThis, typename... TArgs>
-struct AresThiscall<idx, void, TThis, TArgs...>
-{
-	using fp_type = void(__fastcall*)(TThis, void*, TArgs...);
-	void operator()(TThis pThis, TArgs... args) const
-	{
-		reinterpret_cast<fp_type>(AresData::AresFunctionOffsetsFinal[idx])(pThis, nullptr, args...);
-	}
-};
-
-bool AresData::ConvertTypeTo(TechnoClass* pFoot, TechnoTypeClass* pConvertTo)
-{
-	return AresStdcall<ConvertTypeToID, bool, TechnoClass*, TechnoTypeClass*>()(pFoot, pConvertTo);
-}
-
-void AresData::SpawnSurvivors(FootClass* const pThis, TechnoClass* const pKiller, const bool ISelect, const bool IgnoreDefenses)
-{
-	AresStdcall<SpawnSurvivorsID, void, FootClass*, TechnoClass*, bool, bool>()(pThis, pKiller, ISelect, IgnoreDefenses);
-}
-
-int AresData::HasFactory(int buffer, HouseClass* pOwner, TechnoTypeClass* pType, bool skipAircraft, bool requirePower, bool checkCanBuild, bool unknown)
-{
-	return AresStdcall<HasFactoryID, int, int, HouseClass*, TechnoTypeClass*, bool, bool, bool, bool>()(buffer, pOwner, pType, skipAircraft, requirePower, checkCanBuild, unknown);
-}
-
-bool AresData::CanBeBuiltAt(DWORD pTechnoTypeExt, BuildingTypeClass* pBuildingType)
-{
-	return AresThiscall<CanBeBuiltAtID, bool, DWORD, BuildingTypeClass*>()(pTechnoTypeExt, pBuildingType);
 }
