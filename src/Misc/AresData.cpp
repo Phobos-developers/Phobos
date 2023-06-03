@@ -24,35 +24,25 @@ const std::unordered_map<DWORD, AresData::Version> AresData::AresTimestampBytes 
 	{ 0x61daa114, Version::Ares30p },
 };
 
-const std::unordered_map<std::string, std::vector<DWORD>> AresData::AresFunctionOffsets =
+const std::unordered_map<AresData::Version, std::unordered_map<std::string, DWORD>> AresData::AresFunctionOffsets =
 {
 	{
-		ARES_FUN(ConvertTypeTo),    //
+		AresData::Version::Ares30,
 		{
-			0x043650,
-			0x044130,
-		},
+			{ ARES_FUN(ConvertTypeTo),	0x043650 },
+			{ ARES_FUN(SpawnSurvivors),	0x0464C0 },
+			{ ARES_FUN(HasFactory),		0x0217C0 },
+			{ ARES_FUN(CanBeBuiltAt),	0x03E3B0 },
+		}
 	},
 	{
-		ARES_FUN(SpawnSurvivors),   // TechnoExt
+		AresData::Version::Ares30p,
 		{
-			0x0464C0,
-			0x047030,
-		},
-	},
-	{
-		ARES_FUN(HasFactory),       // HouseExt
-		{
-			0x0217C0,
-			0x0217C0,
-		},
-	},
-	{
-		ARES_FUN(CanBeBuiltAt),     // TechnoTypeExt
-		{
-			0x03E3B0,
-			0x03E3B0,
-		},
+			{ ARES_FUN(ConvertTypeTo),	0x044130 },
+			{ ARES_FUN(SpawnSurvivors),	0x047030 },
+			{ ARES_FUN(HasFactory),		0x0217C0 },
+			{ ARES_FUN(CanBeBuiltAt),	0x03E3B0 },
+		}
 	},
 };
 
@@ -141,9 +131,9 @@ void AresData::Init()
 	constexpr const wchar_t* ARES_DLL = L"Ares.dll";
 	if (CanUseAres && GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN, ARES_DLL, &AresDllHmodule))
 	{
-		for(auto x: AresData::AresFunctionOffsets)
-			if (x.second[(int)AresVersion] > 0)
-				AresData::AresFunctionOffsetsFinal[x.first] = AresData::AresBaseAddress + x.second[(int)AresVersion];
+		for(auto x: AresData::AresFunctionOffsets.at(AresVersion))
+			if (x.second > 0)
+				AresData::AresFunctionOffsetsFinal[x.first] = AresData::AresBaseAddress + x.second;
 			else
 				AresData::AresFunctionOffsetsFinal[x.first] = 0;
 	}
