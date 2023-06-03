@@ -8,7 +8,7 @@
 #include <Ext/House/Body.h>
 #include <Utilities/EnumFunctions.h>
 #ifdef CAN_USE_ARES
-#include <Misc/AresData.h>
+#include <Misc/AresFunctions.h>
 #endif
 
 // methods used in TechnoClass_AI hooks or anything similar
@@ -591,7 +591,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 			{
 			case AbstractType::Unit:
 			case AbstractType::Aircraft:
-				AresData::SpawnSurvivors(static_cast<FootClass*>(pThis), nullptr, false, false);
+				AresFunctions::SpawnSurvivors(static_cast<FootClass*>(pThis), nullptr, false, false);
 			default:break;
 			}
 		}
