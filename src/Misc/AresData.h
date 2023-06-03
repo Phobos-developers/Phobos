@@ -3,12 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <Windows.h>
-
-class TechnoClass;
-class TechnoTypeClass;
-class FootClass;
-class HouseClass;
-class BuildingTypeClass;
+#include <nameof/nameof.h>
 
 class AresData
 {

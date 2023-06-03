@@ -274,6 +274,7 @@ This page lists all the individual contributions to the project by their author.
 - **AlexB** - Original FlyingStrings implementation
 - **Joshy** - Original FlyingStrings implementation
 - **ZΞPHYɌUS** - win/lose themes code
+- **Neargye (Daniil Goncharov)** - [nameof library](https://github.com/Neargye/nameof) (MIT)
 - **ayylmao** - help with docs, extensive and thorough testing
 - **SMxReaver** - help with docs, extensive and thorough testing
 - **4SG** - help with docs

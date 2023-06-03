@@ -4,6 +4,7 @@
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
 #include <CRC.h>
+#include "AresFunctions.h"
 
 #include <tlhelp32.h>
 
@@ -26,28 +27,28 @@ const std::unordered_map<DWORD, AresData::Version> AresData::AresTimestampBytes 
 const std::unordered_map<std::string, std::vector<DWORD>> AresData::AresFunctionOffsets =
 {
 	{
-		"ConvertTypeTo",    //
+		ARES_FUN(ConvertTypeTo),    //
 		{
 			0x043650,
 			0x044130,
 		},
 	},
 	{
-		"SpawnSurvivors",   // TechnoExt
+		ARES_FUN(SpawnSurvivors),   // TechnoExt
 		{
 			0x0464C0,
 			0x047030,
 		},
 	},
 	{
-		"HasFactory",       // HouseExt
+		ARES_FUN(HasFactory),       // HouseExt
 		{
 			0x0217C0,
 			0x0217C0,
 		},
 	},
 	{
-		"CanBeBuiltAt",     // TechnoTypeExt
+		ARES_FUN(CanBeBuiltAt),     // TechnoTypeExt
 		{
 			0x03E3B0,
 			0x03E3B0,
