@@ -37,27 +37,27 @@ public:
 
 	//IPersistStream
 	// virtual HRESULT __stdcall IsDirty() { return LocomotionClass::IsDirty(); }
-	// virtual HRESULT __stdcall Load(IStream* pStm)
-	// {
-	// 	HRESULT hr = LocomotionClass::Load(pStm);
-	// 	if (SUCCEEDED(hr))
-	// 	{
-	// 		// Insert any data to be loaded here.
-	// 	}
+	virtual HRESULT __stdcall Load(IStream* pStm)
+	{
+		HRESULT hr = LocomotionClass::Load(pStm);
+		if (SUCCEEDED(hr))
+		{
+			// Insert any data to be loaded here.
+		}
 
-	// 	return hr;
-	// }
+		return hr;
+	}
 
-	// virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty)
-	// {
-	// 	HRESULT hr = LocomotionClass::Save(pStm , fClearDirty);
-	// 	if (SUCCEEDED(hr))
-	// 	{
-	// 		// Insert any data to be loaded here.
-	// 	}
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty)
+	{
+		HRESULT hr = LocomotionClass::Save(pStm , fClearDirty);
+		if (SUCCEEDED(hr))
+		{
+			// Insert any data to be loaded here.
+		}
 
-	// 	return hr;
-	// }
+		return hr;
+	}
 
 	// virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize)
 	// {
