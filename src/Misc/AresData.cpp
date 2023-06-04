@@ -29,19 +29,19 @@ const std::unordered_map<AresData::Version, std::unordered_map<std::string, DWOR
 	{
 		AresData::Version::Ares30,
 		{
-			{ ARES_FUN(ConvertTypeTo),	0x043650 },
-			{ ARES_FUN(SpawnSurvivors),	0x0464C0 },
-			{ ARES_FUN(HasFactory),		0x0217C0 },
-			{ ARES_FUN(CanBeBuiltAt),	0x03E3B0 },
+			{ ARES_FUN(ConvertTypeTo),  0x043650 },
+			{ ARES_FUN(SpawnSurvivors), 0x0464C0 },
+			{ ARES_FUN(HasFactory),     0x0217C0 },
+			{ ARES_FUN(CanBeBuiltAt),   0x03E3B0 },
 		}
 	},
 	{
 		AresData::Version::Ares30p,
 		{
-			{ ARES_FUN(ConvertTypeTo),	0x044130 },
-			{ ARES_FUN(SpawnSurvivors),	0x047030 },
-			{ ARES_FUN(HasFactory),		0x0217C0 },
-			{ ARES_FUN(CanBeBuiltAt),	0x03E3B0 },
+			{ ARES_FUN(ConvertTypeTo),  0x044130 },
+			{ ARES_FUN(SpawnSurvivors), 0x047030 },
+			{ ARES_FUN(HasFactory),     0x0217C0 },
+			{ ARES_FUN(CanBeBuiltAt),   0x03E3B0 },
 		}
 	},
 };
