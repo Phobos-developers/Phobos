@@ -85,6 +85,7 @@ This page lists all the individual contributions to the project by their author.
   - Sharpnel enhancement
   - Vanilla map preview reading bugfix
   - Customizable tooltip background
+  - Parts of Ares calling code
 - **Otamaa (Fahroni, BoredEXE)**:
   - Help with CellSpread
   - Ported and fixed custom RadType code
@@ -104,6 +105,7 @@ This page lists all the individual contributions to the project by their author.
   - MakeInfantry logic on BombClass bugfix
   - Debris & meteor impact behaviour settings
   - Upgrade logic to allow altering of SpySat status
+  - Ares detection and integration
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
@@ -201,6 +203,7 @@ This page lists all the individual contributions to the project by their author.
   - Real time timers
   - Default campaign game speed override and custom campaign game speed FPS
   - Including INI files and inheriting INI sections
+  - Ares detection and integration
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
@@ -234,6 +237,7 @@ This page lists all the individual contributions to the project by their author.
    - Harvester counter
    - Income money string indication upon ore dump
    - Warhead superweapon launch logic
+   - TechnoType conversion placeholder
    - "Shield is broken" trigger event
    - RadialIndicator observer visibility
    - Cloaked objects from allies displaying to player in singleplayer campaigns
@@ -270,6 +274,7 @@ This page lists all the individual contributions to the project by their author.
 - **AlexB** - Original FlyingStrings implementation
 - **Joshy** - Original FlyingStrings implementation
 - **ZΞPHYɌUS** - win/lose themes code
+- **Neargye (Daniil Goncharov)** - [nameof library](https://github.com/Neargye/nameof) (MIT)
 - **ayylmao** - help with docs, extensive and thorough testing
 - **SMxReaver** - help with docs, extensive and thorough testing
 - **4SG** - help with docs

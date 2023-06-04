@@ -2,6 +2,8 @@
 #include <Phobos.version.h>
 #include <Windows.h>
 
+#define CAN_USE_ARES 1
+
 class CCINIClass;
 class AbstractClass;
 
