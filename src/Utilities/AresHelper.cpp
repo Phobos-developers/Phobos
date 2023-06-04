@@ -4,7 +4,6 @@
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
 #include <CRC.h>
-#include "AresFunctions.h"
 
 #include <tlhelp32.h>
 
@@ -16,9 +15,9 @@ uintptr_t AresHelper::AresBaseAddress = 0x0;
 HMODULE AresHelper::AresDllHmodule = nullptr;
 AresHelper::Version AresHelper::AresVersion = AresHelper::Version::Unknown;
 bool AresHelper::CanUseAres = false;
-std::unordered_map<std::string, DWORD> AresHelper::AresFunctionOffsetsFinal;
+AresHelper::AresFunctionMap AresHelper::AresFunctionOffsetsFinal;
 
-const std::unordered_map<DWORD, AresHelper::Version> AresHelper::AresTimestampBytes =
+const AresHelper::AresTimestampMap AresHelper::AresTimestampBytes =
 {
 	{ 0x5fc37ef6, Version::Ares30 },
 	{ 0x61daa114, Version::Ares30p },

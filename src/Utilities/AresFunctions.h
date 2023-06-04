@@ -10,8 +10,6 @@ class FootClass;
 class HouseClass;
 class BuildingTypeClass;
 
-#define ARES_FUN(name) std::string(NAMEOF(AresFunctions::name))
-
 class AresFunctions
 {
 public:

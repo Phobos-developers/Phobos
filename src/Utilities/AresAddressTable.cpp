@@ -1,7 +1,7 @@
 #pragma once
 #include "AresFunctions.h"
 
-const std::unordered_map<AresHelper::Version, std::unordered_map<std::string, DWORD>> AresHelper::AresFunctionOffsets =
+const AresHelper::AresVersionFunctionMap AresHelper::AresFunctionOffsets =
 {
 	{
 		AresHelper::Version::Ares30,

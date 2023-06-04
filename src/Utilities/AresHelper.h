@@ -4,6 +4,9 @@
 #include <unordered_map>
 #include <Windows.h>
 
+#define ARES_FUN(name) std::string(NAMEOF(AresFunctions::name))
+#define IS_ARES_FUN_AVAILABLE(name) AresHelper::CanUseAres && (AresHelper::AresFunctionOffsetsFinal[ARES_FUN(name)] != 0)
+
 class AresHelper
 {
 public:
@@ -15,8 +18,10 @@ public:
 	};
 
 private:
+	typedef std::unordered_map<DWORD, Version> AresTimestampMap;
+
 	// timestamp bytes for each version
-	static const std::unordered_map<DWORD, Version> AresTimestampBytes;
+	static const AresTimestampMap AresTimestampBytes;
 
 	static void GetGameModulesBaseAddresses();
 
@@ -25,10 +30,13 @@ public:
 	static uintptr_t AresBaseAddress;
 	static uintptr_t PhobosBaseAddress;
 
+	typedef std::unordered_map<std::string, DWORD> AresFunctionMap;
+	typedef std::unordered_map<AresHelper::Version, AresFunctionMap> AresVersionFunctionMap;
+
 	// offsets of function addresses for each version
-	static const std::unordered_map<AresHelper::Version, std::unordered_map<std::string, DWORD>> AresFunctionOffsets;
+	static const AresVersionFunctionMap AresFunctionOffsets;
 	// storage for absolute addresses of functions (module base + offset)
-	static std::unordered_map<std::string, DWORD> AresFunctionOffsetsFinal;
+	static AresFunctionMap AresFunctionOffsetsFinal;
 	// numeric id of currently used version, zero-indexed, -1 is unknown or missing
 	static Version AresVersion;
 	// is Ares detected and version known?
