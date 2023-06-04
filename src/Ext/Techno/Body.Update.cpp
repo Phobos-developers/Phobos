@@ -7,9 +7,7 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/House/Body.h>
 #include <Utilities/EnumFunctions.h>
-#ifdef CAN_USE_ARES
 #include <Utilities/AresFunctions.h>
-#endif
 
 // methods used in TechnoClass_AI hooks or anything similar
 
@@ -584,7 +582,6 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 	}
 
 	default: //must be AutoDeathBehavior::Kill
-#ifdef CAN_USE_ARES
 		if (IS_ARES_FUN_AVAILABLE(SpawnSurvivors))
 		{
 			switch (pThis->WhatAmI())
@@ -595,7 +592,6 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 			default:break;
 			}
 		}
-#endif
 		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pThis->Owner);
 		return;
 	}

@@ -5,9 +5,7 @@
 #include <AircraftClass.h>
 
 #include <Ext/House/Body.h>
-#ifdef CAN_USE_ARES
 #include <Utilities/AresFunctions.h>
-#endif
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -208,10 +206,8 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 // BTW, who said it was merely a Type pointer replacement and he could make a better one than Ares?
 bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 {
-#ifdef CAN_USE_ARES
 	if (IS_ARES_FUN_AVAILABLE(ConvertTypeTo))
 		return AresFunctions::ConvertTypeTo(pThis, pToType);
-#endif
 	// In case not using Ares 3.0. Only update necessary vanilla properties
 	AbstractType rtti;
 	TechnoTypeClass** nowTypePtr;
