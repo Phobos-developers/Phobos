@@ -1,6 +1,7 @@
 #pragma once
-#include "AresData.h"
+#include "AresHelper.h"
 
+#include <nameof/nameof.h>
 #include <ASMMacros.h>
 
 class TechnoClass;
@@ -14,8 +15,8 @@ class BuildingTypeClass;
 class AresFunctions
 {
 public:
-#define JMP_ARES(name) const auto x = AresData::AresFunctionOffsetsFinal[ARES_FUN(name)]; JMP(x)
-#define JMP_THIS_ARES(name) const auto x = AresData::AresFunctionOffsetsFinal[ARES_FUN(name)]; JMP_THIS(x)
+#define JMP_ARES(name) const auto x = AresHelper::AresFunctionOffsetsFinal[ARES_FUN(name)]; JMP(x)
+#define JMP_THIS_ARES(name) const auto x = AresHelper::AresFunctionOffsetsFinal[ARES_FUN(name)]; JMP_THIS(x)
 
 	// ???
 	static bool ConvertTypeTo(TechnoClass* pFoot, TechnoTypeClass* pConvertTo)

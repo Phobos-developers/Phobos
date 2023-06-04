@@ -3,9 +3,8 @@
 #include <string>
 #include <unordered_map>
 #include <Windows.h>
-#include <nameof/nameof.h>
 
-class AresData
+class AresHelper
 {
 public:
 	enum class Version
@@ -27,7 +26,7 @@ public:
 	static uintptr_t PhobosBaseAddress;
 
 	// offsets of function addresses for each version
-	static const std::unordered_map<AresData::Version, std::unordered_map<std::string, DWORD>> AresFunctionOffsets;
+	static const std::unordered_map<AresHelper::Version, std::unordered_map<std::string, DWORD>> AresFunctionOffsets;
 	// storage for absolute addresses of functions (module base + offset)
 	static std::unordered_map<std::string, DWORD> AresFunctionOffsetsFinal;
 	// numeric id of currently used version, zero-indexed, -1 is unknown or missing

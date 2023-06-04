@@ -6,7 +6,7 @@
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
 
-#include "Misc/AresData.h"
+#include "Utilities/AresHelper.h"
 
 #ifndef IS_RELEASE_VER
 bool HideWarning = false;
@@ -154,7 +154,7 @@ bool __stdcall DllMain(HANDLE hInstance, DWORD dwReason, LPVOID v)
 DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 {
 	Phobos::ExeRun();
-	AresData::Init();
+	AresHelper::Init();
 
 	return 0;
 }
