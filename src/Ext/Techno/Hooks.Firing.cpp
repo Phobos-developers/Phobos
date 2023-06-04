@@ -827,6 +827,7 @@ DEFINE_HOOK(0x6FE562, TechnoClass_FireAt_BurstRandomTarget, 0x6)
 	for (auto pTarget : *TechnoClass::Array)
 	{
 		if (pTarget == pThis
+			|| pThisType->Immune
 			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget, true)
 			|| (!pWeapon->Projectile->AA && pTarget->IsInAir())
 			|| (!pWeapon->Projectile->AG && !pTarget->IsInAir())
