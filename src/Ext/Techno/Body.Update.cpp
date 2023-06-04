@@ -8,7 +8,7 @@
 #include <Ext/House/Body.h>
 #include <Utilities/EnumFunctions.h>
 #ifdef CAN_USE_ARES
-#include <Misc/AresFunctions.h>
+#include <Utilities/AresFunctions.h>
 #endif
 
 // methods used in TechnoClass_AI hooks or anything similar
@@ -585,7 +585,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 
 	default: //must be AutoDeathBehavior::Kill
 #ifdef CAN_USE_ARES
-		if (AresData::CanUseAres)
+		if (IS_ARES_FUN_AVAILABLE(SpawnSurvivors))
 		{
 			switch (pThis->WhatAmI())
 			{

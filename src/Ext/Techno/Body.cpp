@@ -6,7 +6,7 @@
 
 #include <Ext/House/Body.h>
 #ifdef CAN_USE_ARES
-#include <Misc/AresFunctions.h>
+#include <Utilities/AresFunctions.h>
 #endif
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
@@ -209,7 +209,7 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 {
 #ifdef CAN_USE_ARES
-	if (AresData::CanUseAres)
+	if (IS_ARES_FUN_AVAILABLE(ConvertTypeTo))
 		return AresFunctions::ConvertTypeTo(pThis, pToType);
 #endif
 	// In case not using Ares 3.0. Only update necessary vanilla properties
