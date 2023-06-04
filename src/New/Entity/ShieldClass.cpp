@@ -852,7 +852,7 @@ int ShieldClass::DrawShieldBar_Pip(const bool isBuilding) const
 int ShieldClass::DrawShieldBar_PipAmount(int iLength) const
 {
 	return this->IsActive()
-		? Math::clamp((int)round(this->GetHealthRatio() * iLength), 0, iLength)
+		? Math::clamp((int)round(this->GetHealthRatio() * iLength), 1, iLength)
 		: 0;
 }
 

@@ -365,6 +365,8 @@ Phobos fixes:
 - Fixed `Layer.UseObjectLayer=true` to work correctly for all cases where object changes layer (by Starkku)
 - Fixed floating point value parsing precision to match the game (by Starkku)
 - Fixed `DetonateOnAllMapObjects.RequireVerses` not considering shield armor types (by Starkku)
+- Power output / drain should now correctly be applied for buildings created via `LimboDelivery` in campaigns (by Starkku)
+- Fixed shield health bar showing empty bar when shield is still on very low health instead of depleted (by Starkku)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
