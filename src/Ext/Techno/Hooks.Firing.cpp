@@ -805,93 +805,101 @@ DEFINE_HOOK(0x6FDD93, TechnoClass_FireAt_DelayedFire, 0x6) // or 0x6FDD99  , 0x6
 	if (!pThis)
 		return continueFireAt;
 
-	if (auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeaponType))
+	auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+	if (!pWeaponTypeExt)
+		return continueFireAt;
+
+	if (pWeaponTypeExt->DelayedFire_Anim_LoopCount <= 0)
+		return continueFireAt;
+
+	if (!pWeaponTypeExt->DelayedFire_Anim.isset())
+		return continueFireAt;
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt)
+		return continueFireAt;
+
+	if (pWeaponTypeExt->DelayedFire_Duration.Get() > 0 && pExt->DelayedFire_Duration < 0)
+		pExt->DelayedFire_Duration = pWeaponTypeExt->DelayedFire_Duration.Get();
+
+	AnimTypeClass* pDelayedFireAnimType = pWeaponTypeExt->DelayedFire_Anim.isset() ? pWeaponTypeExt->DelayedFire_Anim.Get() : nullptr;
+	
+	if (!pDelayedFireAnimType)
 	{
-		if (pWeaponTypeExt->DelayedFire_Anim_LoopCount <= 0)
-			return continueFireAt;
+		pExt->DelayedFire_Anim = nullptr;
+		pExt->DelayedFire_Anim_LoopCount = 0;
+		pExt->DelayedFire_Duration = -1;
 
-		if (!pWeaponTypeExt->DelayedFire_Anim.isset())
-			return continueFireAt;
+		return continueFireAt;
+	}
 
-		if (auto pExt = TechnoExt::ExtMap.Find(pThis))
+	bool hasDeployAnimFinished = pExt->DelayedFire_Anim && (pExt->DelayedFire_Anim->Animation.Value >= pDelayedFireAnimType->End + pDelayedFireAnimType->Start - 1);
+
+	if (!pExt->DelayedFire_Anim)
+	{
+		// Create the DelayedFire animation & stop the Fire process
+		TechnoTypeClass* pThisType = pThis->GetTechnoType();
+		int weaponIndex = pThis->CurrentWeaponNumber;
+		//int weaponIndex = pThis->SelectWeapon(pThis->Target);
+		CoordStruct animLocation = pThis->Location;
+
+		if (pWeaponTypeExt->DelayedFire_Anim_UseFLH)
+			animLocation = TechnoExt::GetFLHAbsoluteCoords(pThis, pThisType->Weapon[weaponIndex].FLH, pThis->HasTurret());//pThisType->Weapon[weaponIndex].FLH;
+
+		if (auto pAnim = GameCreate<AnimClass>(pDelayedFireAnimType, animLocation))//pThis->Location))//animLocation))
 		{
-			if (pWeaponTypeExt->DelayedFire_Duration.Get() > 0 && pExt->DelayedFire_Duration < 0)
-				pExt->DelayedFire_Duration = pWeaponTypeExt->DelayedFire_Duration.Get();
+			pExt->DelayedFire_Anim = pAnim;
+			pExt->DelayedFire_Anim->SetOwnerObject(pThis);
+			pExt->DelayedFire_Anim_LoopCount++;
+		}
+		else
+		{
+			Debug::Log("ERROR! DelayedFire animation [%s] -> %s can't be created.\n", pThis->GetTechnoType()->ID, pDelayedFireAnimType->ID);
+			pExt->DelayedFire_Anim = nullptr;
+			pExt->DelayedFire_Anim_LoopCount = 0;
+			pExt->DelayedFire_Duration = -1;
 
-			AnimTypeClass* pDelayedFireAnimType = pWeaponTypeExt->DelayedFire_Anim.isset() ? pWeaponTypeExt->DelayedFire_Anim.Get() : nullptr;
+			return continueFireAt;
+		}
+	}
+	else
+	{
+		if (pWeaponTypeExt->DelayedFire_Duration.Get() > 0)
+		{
+			pExt->DelayedFire_Duration--;
 
-			if (!pDelayedFireAnimType)
+			if (pExt->DelayedFire_Duration <= 0)
 			{
 				pExt->DelayedFire_Anim = nullptr;
 				pExt->DelayedFire_Anim_LoopCount = 0;
 				pExt->DelayedFire_Duration = -1;
 
+				// Delayed suicide
+				if (pWeaponTypeExt->DelayedFire_Suicide.Get())
+					pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+
 				return continueFireAt;
 			}
+		}
 
-			bool hasDeployAnimFinished = pExt->DelayedFire_Anim && (pExt->DelayedFire_Anim->Animation.Value >= pDelayedFireAnimType->End + pDelayedFireAnimType->Start - 1);
+		if (hasDeployAnimFinished)
+		{
+			// DelayedFire animation finished but it can repeat more times, if set
+			pExt->DelayedFire_Anim = nullptr;
 
-			if (!pExt->DelayedFire_Anim)
+			if (pExt->DelayedFire_Anim_LoopCount >= pWeaponTypeExt->DelayedFire_Anim_LoopCount && pWeaponTypeExt->DelayedFire_Anim_LoopCount > 0)
 			{
-				// Create the DelayedFire animation & stop the Fire process
-				TechnoTypeClass* pThisType = pThis->GetTechnoType();
-				int weaponIndex = pThis->CurrentWeaponNumber;
-				//int weaponIndex = pThis->SelectWeapon(pThis->Target);
-				CoordStruct animLocation = pThis->Location;
+				pExt->DelayedFire_Anim_LoopCount = 0;
+				pExt->DelayedFire_Duration = -1;
 
-				if (pWeaponTypeExt->DelayedFire_Anim_UseFLH)
-					animLocation = TechnoExt::GetFLHAbsoluteCoords(pThis, pThisType->Weapon[weaponIndex].FLH, pThis->HasTurret());//pThisType->Weapon[weaponIndex].FLH;
+				// Delayed suicide
+				if (pWeaponTypeExt->DelayedFire_Suicide.Get())
+					pThis->ReceiveDamage(&pThis->Health, 0,	RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 
-				if (auto pAnim = GameCreate<AnimClass>(pDelayedFireAnimType, animLocation))//pThis->Location))//animLocation))
-				{
-					pExt->DelayedFire_Anim = pAnim;
-					pExt->DelayedFire_Anim->SetOwnerObject(pThis);
-					pExt->DelayedFire_Anim_LoopCount++;
-				}
-				else
-				{
-					Debug::Log("ERROR! DelayedFire animation [%s] -> %s can't be created.\n", pThis->GetTechnoType()->ID, pDelayedFireAnimType->ID);
-					pExt->DelayedFire_Anim = nullptr;
-					pExt->DelayedFire_Anim_LoopCount = 0;
-					pExt->DelayedFire_Duration = -1;
-
-					return continueFireAt;
-				}
+				return continueFireAt;
 			}
-			else
-			{
-				if (pWeaponTypeExt->DelayedFire_Duration.Get() > 0)
-				{
-					pExt->DelayedFire_Duration--;
-
-					if (pExt->DelayedFire_Duration <= 0)
-					{
-						pExt->DelayedFire_Anim = nullptr;
-						pExt->DelayedFire_Anim_LoopCount = 0;
-						pExt->DelayedFire_Duration = -1;
-
-						return continueFireAt;
-					}
-				}
-
-				if (hasDeployAnimFinished)
-				{
-					// DelayedFire animation finished but it can repeat more times, if set
-					pExt->DelayedFire_Anim = nullptr;
-
-					if (pExt->DelayedFire_Anim_LoopCount >= pWeaponTypeExt->DelayedFire_Anim_LoopCount && pWeaponTypeExt->DelayedFire_Anim_LoopCount > 0)
-					{
-						pExt->DelayedFire_Anim_LoopCount = 0;
-						pExt->DelayedFire_Duration = -1;
-
-						return continueFireAt;
-					}
-				}
-			}
-
-			return skipFireAt;
 		}
 	}
 
-	return continueFireAt;
+	return skipFireAt;
 }

@@ -37,6 +37,7 @@ public:
 		Valueable<int> DelayedFire_Anim_LoopCount;
 		Valueable<bool> DelayedFire_Anim_UseFLH;
 		Valueable<int> DelayedFire_Duration;
+		Valueable<bool> DelayedFire_Suicide;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
@@ -59,6 +60,7 @@ public:
 			, DelayedFire_Anim_LoopCount { 1 }
 			, DelayedFire_Anim_UseFLH { true }
 			, DelayedFire_Duration { 0 }
+			, DelayedFire_Suicide { false }
 		{ }
 
 		int GetBurstDelay(int burstIndex);
