@@ -56,8 +56,7 @@ public:
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
 
-		std::vector<std::pair<ValueableVector<TechnoTypeClass*>, NullableIdx<TechnoTypeClass>>> Convert_Pairs;
-		Valueable<AffectedHouse> Convert_AffectedHouses;
+		std::vector<std::tuple<ValueableVector<TechnoTypeClass*>, NullableIdx<TechnoTypeClass>, Nullable<AffectedHouse>>> Convert_Pairs;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
@@ -93,7 +92,6 @@ public:
 			, SW_Next_RandomWeightsData {}
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
-			, Convert_AffectedHouses { AffectedHouse::Owner }
 		{ }
 
 		// Ares 0.A functions

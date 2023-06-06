@@ -512,17 +512,18 @@ SubjectToWater.Detonate=true  ; boolean
 
 ### Convert TechnoType
 
-- Superweapons can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).
-  - `Convert.From` specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
-  - `Convert.To` specifies which TechnoTypes are the result of converion. This entry should have the same length as `Convert.From` (when the latter is not empty), because entries are grouped in pairs.
-  - `Convert.AffectedHouses` specifies whose units can be converted.
+- Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).
+  - `ConvertN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
+  - `ConvertN.To` specifies the TechnoType which is the result of conversion.
+  - `ConvertN.AffectedHouses` specifies whose units can be converted.
+  - `Convert.From`, `Convert.To` and `Convert.AffectedHouses` (without numbers) are a valid alternative to `Convert0.From`, `Convert0.To` and `Convert0.AffectedHouses` if only one pair is specified.
   - Conversion affects *all* existing units of set TechnoTypes, this includes units in: transports, occupied buildings, buildings with `InfantryAbsorb=yes` or `UnitAbsorb=yes`, buildings with `Bunker=yes`.
 
-In example, this superweapon would convert all owned and friendly SOLDIERA to SOLDIERB and TANKA to TANKB.
+In example, this superweapon would convert all owned and friendly `SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:
 ```ini
 [SOMESW]
-Convert.From=SOLDIERA,TANKA
-Convert.To=SOLDIERB,TANKB
+Convert.From=SOLDIERA,SOLDIERB
+Convert.To=NEWSOLDIER
 Convert.AffectedHouses=team
 ```
 
@@ -531,14 +532,19 @@ This feature has the same limitations as [Ares' Type Conversion](https://ares-de
 ```
 
 ```{warning}
-This feature requires Ares 3.0 or higher to function properly! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
 ```
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]
-Convert.From=                   ; list of TehnoTypes
-Convert.To=                     ; list of TechnoTypes
+[SOMESW]                        ; SuperWeapon
+ConvertN.From=                  ; list of TechnoTypes
+ConvertN.To=                    ; TechnoType
+ConvertN.AffectedHouses=owner   ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+; where N = 0, 1, 2, ...
+; or
+Convert.From=                   ; list of TechnoTypes
+Convert.To=                     ; TechnoType
 Convert.AffectedHouses=owner    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
@@ -992,14 +998,15 @@ If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chai
 ### Convert TechnoType on impact
 
 - Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).
-  - `Convert.From` specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
-  - `Convert.To` specifies which TechnoTypes are the result of converion. This entry should have the same length as `Convert.From` (when the latter is not empty), because entries are grouped in pairs.
+  - `ConvertN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
+  - `ConvertN.To` specifies the TechnoType which is the result of conversion.
+  - `Convert.From` and `Convert.To` (without numbers) are a valid alternative to `Convert0.From` and `Convert0.To` if only one pair is specified.
 
-In example, this warhead would convert all affected SOLDIERA to SOLDIERB and TANKA to TANKB.
+In example, this warhead would convert all affected `SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:
 ```ini
 [SOMEWARHEAD]
-Convert.From=SOLDIERA,TANKA
-Convert.To=SOLDIERB,TANKB
+Convert.From=SOLDIERA,SOLDIERB
+Convert.To=NEWSOLDIER
 ```
 
 ```{warning}
@@ -1012,9 +1019,13 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]
-Convert.From=          ; list of TehnoTypes
-Convert.To=            ; list of TechnoTypes
+[SOMEWARHEAD]           ; Warhead
+ConvertN.From=          ; list of TechnoTypes
+ConvertN.To=            ; TechnoType
+; where N = 0, 1, 2, ...
+; or
+Convert.From=          ; list of TechnoTypes
+Convert.To=            ; TechnoType
 ```
 
 ### Custom 'SplashList' on Warheads

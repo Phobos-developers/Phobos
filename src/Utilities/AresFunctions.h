@@ -42,7 +42,7 @@ public:
 		return CALL_ARES(HasFactory, buffer, pOwner, pType, skipAircraft, requirePower, checkCanBuild, unknown);
 	}
 
-	// TechnoTypeExt // thiscall
+	// TechnoTypeExt
 	static bool CanBeBuiltAt(AresTechnoTypeExt* pExt, BuildingTypeClass* pBuildingType)
 	{
 		return THIS_CALL_ARES(&AresTechnoTypeExt::CanBeBuiltAt, pExt, pBuildingType);

@@ -305,14 +305,14 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 	if (this->Convert_Pairs.size() == 0)
 		return;
 
-	for (const auto& [fromTypes, toTypeIdx] : this->Convert_Pairs)
+	for (const auto& [fromTypes, toTypeIdx, affectedHouses] : this->Convert_Pairs)
 	{
 		const auto toType = TechnoTypeClass::Array->GetItem(toTypeIdx);
 		if (fromTypes.size())
 		{
 			for (auto pTarget : *FootClass::Array)
 			{
-				if (!EnumFunctions::CanTargetHouse(this->Convert_AffectedHouses, pSW->Owner, pTarget->Owner))
+				if (!EnumFunctions::CanTargetHouse(affectedHouses, pSW->Owner, pTarget->Owner))
 					continue;
 
 				for (const auto& fromType : fromTypes)
@@ -330,7 +330,7 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 		{
 			for (auto pTarget : *FootClass::Array)
 			{
-				if (!EnumFunctions::CanTargetHouse(this->Convert_AffectedHouses, pSW->Owner, pTarget->Owner))
+				if (!EnumFunctions::CanTargetHouse(affectedHouses, pSW->Owner, pTarget->Owner))
 					continue;
 
 				TechnoExt::ConvertToType(pTarget, toType);
