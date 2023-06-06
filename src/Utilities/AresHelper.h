@@ -5,6 +5,7 @@
 #include <Windows.h>
 
 #define ARES_FUN(name) std::string(NAMEOF(AresFunctions::name))
+#define ARES_FUN_M(name) std::string(NAMEOF_MEMBER(name))
 #define IS_ARES_FUN_AVAILABLE(name) AresHelper::CanUseAres && (AresHelper::AresFunctionOffsetsFinal[ARES_FUN(name)] != 0)
 
 class AresHelper
