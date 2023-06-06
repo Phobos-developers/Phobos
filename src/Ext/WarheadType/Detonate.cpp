@@ -110,7 +110,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_SelfHealing_Duration > 0 ||
 		this->Shield_AttachTypes.size() > 0 ||
 		this->Shield_RemoveTypes.size() > 0 ||
-		this->Convert_To.size() > 0;
+		this->Convert_Pairs.size() > 0;
 
 	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 
@@ -146,7 +146,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->Crit_Chance && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner);
 
-	if (this->Convert_To.size() > 0)
+	if (this->Convert_Pairs.size() > 0)
 		this->ApplyConvert(pHouse, pTarget);
 }
 
@@ -332,24 +332,28 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 {
 	auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
 
-	if (!pTargetFoot || this->Convert_To.size() == 0)
+	if (!pTargetFoot || this->Convert_Pairs.size() == 0)
 		return;
 
-	if (this->Convert_From.size())
+	for (const auto& [fromTypes, toTypeIdx] : this->Convert_Pairs)
 	{
-		// explicitly unsigned because the compiler wants it
-		for (size_t i = 0; i < this->Convert_From.size(); i++)
+		const auto toType = TechnoTypeClass::Array->GetItem(toTypeIdx);
+		if (fromTypes.size())
 		{
-			// Check if the target matches upgrade-from TechnoType and it has something to upgrade to
-			if (this->Convert_To.size() >= i && this->Convert_From[i] == pTarget->GetTechnoType())
+			for (const auto& from : fromTypes)
 			{
-				TechnoExt::ConvertToType(pTargetFoot,this->Convert_To[i]);
-				break;
+				// Check if the target matches upgrade-from TechnoType and it has something to upgrade to
+				if (from == pTarget->GetTechnoType())
+				{
+					TechnoExt::ConvertToType(pTargetFoot, toType);
+					break;
+				}
 			}
 		}
-	}
-	else
-	{
-		TechnoExt::ConvertToType(pTargetFoot, this->Convert_To[0]);
+		else
+		{
+			TechnoExt::ConvertToType(pTargetFoot, toType);
+			break;
+		}
 	}
 }

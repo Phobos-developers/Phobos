@@ -56,8 +56,7 @@ public:
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
 
-		ValueableVector<TechnoTypeClass*> Convert_From;
-		ValueableVector<TechnoTypeClass*> Convert_To;
+		std::vector<std::pair<ValueableVector<TechnoTypeClass*>, NullableIdx<TechnoTypeClass>>> Convert_Pairs;
 		Valueable<AffectedHouse> Convert_AffectedHouses;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
@@ -93,8 +92,7 @@ public:
 			, SW_Next_RollChances {}
 			, SW_Next_RandomWeightsData {}
 			, ShowTimer_Priority { 0 }
-			, Convert_From {}
-			, Convert_To {}
+			, Convert_Pairs {}
 			, Convert_AffectedHouses { AffectedHouse::Owner }
 		{ }
 

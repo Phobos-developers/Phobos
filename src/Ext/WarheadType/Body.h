@@ -92,8 +92,7 @@ public:
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
-		ValueableVector<TechnoTypeClass*> Convert_From;
-		ValueableVector<TechnoTypeClass*> Convert_To;
+		std::vector<std::pair<ValueableVector<TechnoTypeClass*>, NullableIdx<TechnoTypeClass>>> Convert_Pairs;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -186,8 +185,7 @@ public:
 			, DetonateOnAllMapObjects_AffectTypes {}
 			, DetonateOnAllMapObjects_IgnoreTypes {}
 
-			, Convert_From {}
-			, Convert_To {}
+			, Convert_Pairs {}
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}

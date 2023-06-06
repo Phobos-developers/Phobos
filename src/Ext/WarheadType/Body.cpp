@@ -194,8 +194,33 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
-	this->Convert_From.Read(exINI, pSection, "Convert.From");
-	this->Convert_To.Read(exINI, pSection, "Convert.To");
+	char tempBuffer[32];
+	// Convert.From & Convert.To
+	for (size_t i = 0; ; ++i)
+	{
+		ValueableVector<TechnoTypeClass*> convertFrom;
+		NullableIdx<TechnoTypeClass> convertTo;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.From", i);
+		convertFrom.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.To", i);
+		convertTo.Read(exINI, pSection, tempBuffer);
+
+		if (!convertTo.isset())
+			break;
+
+		this->Convert_Pairs.push_back({ convertFrom, convertTo });
+	}
+	ValueableVector<TechnoTypeClass*> convertFrom;
+	NullableIdx<TechnoTypeClass> convertTo;
+	convertFrom.Read(exINI, pSection, "Convert.From");
+	convertTo.Read(exINI, pSection, "Convert.To");
+	if (convertTo.isset())
+	{
+		if (this->Convert_Pairs.size())
+			this->Convert_Pairs[0] = { convertFrom, convertTo };
+		else
+			this->Convert_Pairs.push_back({ convertFrom, convertTo });
+	}
 
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -281,8 +306,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnAllMapObjects_AffectTypes)
 		.Process(this->DetonateOnAllMapObjects_IgnoreTypes)
 
-		.Process(this->Convert_From)
-		.Process(this->Convert_To)
+		.Process(this->Convert_Pairs)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

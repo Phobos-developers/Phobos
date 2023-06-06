@@ -44,8 +44,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Next_RandomWeightsData)
 		.Process(this->SW_Next_RollChances)
 		.Process(this->ShowTimer_Priority)
-		.Process(this->Convert_From)
-		.Process(this->Convert_To)
+		.Process(this->Convert_Pairs)
 		.Process(this->Convert_AffectedHouses)
 		;
 }
@@ -140,8 +139,34 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Detonate_Weapon.Read(exINI, pSection, "Detonate.Weapon", true);
 	this->Detonate_Damage.Read(exINI, pSection, "Detonate.Damage");
 	this->Detonate_AtFirer.Read(exINI, pSection, "Detonate.AtFirer");
-	this->Convert_From.Read(exINI, pSection, "Convert.From");
-	this->Convert_To.Read(exINI, pSection, "Convert.To");
+
+	// Convert.From & Convert.To
+	for (size_t i = 0; ; ++i)
+	{
+		ValueableVector<TechnoTypeClass*> convertFrom;
+		NullableIdx<TechnoTypeClass> convertTo;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.From", i);
+		convertFrom.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.To", i);
+		convertTo.Read(exINI, pSection, tempBuffer);
+
+		if (!convertTo.isset())
+			break;
+
+		this->Convert_Pairs.push_back({convertFrom, convertTo});
+	}
+	ValueableVector<TechnoTypeClass*> convertFrom;
+	NullableIdx<TechnoTypeClass> convertTo;
+	convertFrom.Read(exINI, pSection, "Convert.From");
+	convertTo.Read(exINI, pSection, "Convert.To");
+	if (convertTo.isset())
+	{
+		if (this->Convert_Pairs.size())
+			this->Convert_Pairs[0] = {convertFrom, convertTo};
+		else
+			this->Convert_Pairs.push_back({convertFrom, convertTo});
+	}
+
 	this->Convert_AffectedHouses.Read(exINI, pSection, "Convert.AffectedHouses");
 }
 
