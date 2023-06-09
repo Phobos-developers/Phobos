@@ -158,42 +158,72 @@ DEFINE_HOOK(0x469E34, BulletClass_Logics_DebrisAnims, 0x5)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x469C98, BulletClass_DetonateAt_DamageAnimSelected, 0x0)
+DEFINE_HOOK(0x469B44, BulletClass_Logics_LandTypeCheck, 0x6)
 {
-	enum { Continue = 0x469D06, NukeWarheadExtras = 0x469CAF };
+	enum { SkipChecks = 0x469BA2 };
 
 	GET(BulletClass*, pThis, ESI);
-	GET(AnimClass*, pAnim, EAX);
 
-	if (pAnim)
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
+
+	if (pWHExt->Conventional_IgnoreUnits)
+		return SkipChecks;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
+{
+	enum { SkipGameCode = 0x469C98 };
+
+	GET(BulletClass*, pThis, ESI);
+	GET(AnimTypeClass*, pAnimType, EBX);
+	LEA_STACK(CoordStruct*, coords, STACK_OFFSET(0xA4, -0x40));
+
+	bool createdAnim = false;
+
+	if (pAnimType)
 	{
-		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
-
+		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
 		HouseClass* pInvoker = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 		HouseClass* pVictim = nullptr;
 
 		if (TechnoClass* Target = generic_cast<TechnoClass*>(pThis->Target))
 			pVictim = Target->Owner;
 
-		AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
+		auto types = make_iterator_single(pAnimType);
 
-		if (!pAnim->Owner)
-			pAnim->Owner = pInvoker;
+		if (pWHExt->SplashList_CreateAll && pWHExt->Splashed)
+			types = pWHExt->SplashList.GetElements(RulesClass::Instance->SplashList);
+		else if (pWHExt->AnimList_CreateAll && !pWHExt->Splashed)
+			types = pWHExt->OwnerObject()->AnimList;
 
-		if (pThis->Owner)
+		for (auto const& pType : types)
 		{
-			auto pExt = AnimExt::ExtMap.Find(pAnim);
-			pExt->SetInvoker(pThis->Owner);
+			if (!pType)
+				continue;
+
+			if (auto const pAnim = GameCreate<AnimClass>(pType, *coords, 0, 1, 0x2600, -15, false))
+			{
+				createdAnim = true;
+
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
+
+				if (!pAnim->Owner)
+					pAnim->Owner = pInvoker;
+
+				if (pThis->Owner)
+				{
+					auto pExt = AnimExt::ExtMap.Find(pAnim);
+					pExt->SetInvoker(pThis->Owner);
+				}
+			}
 		}
 	}
-	else if (pThis->WH == RulesClass::Instance->NukeWarhead)
-	{
-		return NukeWarheadExtras;
-	}
 
-	return Continue;
+	R->EAX(createdAnim);
+	return SkipGameCode;
 }
-
 
 DEFINE_HOOK(0x46A290, BulletClass_Logics_ExtraWarheads, 0x5)
 {

@@ -27,12 +27,15 @@ public:
 		Valueable<AffectedHouse> TransactMoney_Display_Houses;
 		Valueable<bool> TransactMoney_Display_AtFirer;
 		Valueable<Point2D> TransactMoney_Display_Offset;
-		ValueableVector<AnimTypeClass*> SplashList;
+		NullableVector<AnimTypeClass*> SplashList;
 		Valueable<bool> SplashList_PickRandom;
+		Valueable<bool> SplashList_CreateAll;
+		Valueable<bool> AnimList_PickRandom;
+		Valueable<bool> AnimList_CreateAll;
+		Valueable<bool> CreateAnimsOnZeroDamage;
+		Valueable<bool> Conventional_IgnoreUnits;
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
-		Valueable<bool> AnimList_PickRandom;
-		Valueable<bool> AnimList_ShowOnZeroDamage;
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 
@@ -117,7 +120,7 @@ public:
 		double Crit_RandomBuffer;
 		bool HasCrit;
 		bool WasDetonatedOnAllMapObjects;
-
+		bool Splashed;
 		bool PossibleCellSpreadDetonate;
 
 	private:
@@ -135,10 +138,13 @@ public:
 			, TransactMoney_Display_Offset { { 0, 0 } }
 			, SplashList {}
 			, SplashList_PickRandom { false }
+			, SplashList_CreateAll { false }
+			, AnimList_PickRandom { false }
+			, AnimList_CreateAll { false }
+			, CreateAnimsOnZeroDamage { false }
+			, Conventional_IgnoreUnits { false }
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
-			, AnimList_PickRandom { false }
-			, AnimList_ShowOnZeroDamage { false }
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
 
@@ -221,7 +227,7 @@ public:
 			, Crit_RandomBuffer { 0.0 }
 			, HasCrit { false }
 			, WasDetonatedOnAllMapObjects { false }
-
+			, Splashed { false }
 			, PossibleCellSpreadDetonate {false}
 		{ }
 
