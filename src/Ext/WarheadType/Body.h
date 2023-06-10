@@ -71,6 +71,10 @@ public:
 		Valueable<bool> Shield_InheritStateOnReplace;
 		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
+		NullableVector<ShieldTypeClass*> Shield_Penetrate_Types;
+		NullableVector<ShieldTypeClass*> Shield_Break_Types;
+		NullableVector<ShieldTypeClass*> Shield_Respawn_Types;
+		NullableVector<ShieldTypeClass*> Shield_SelfHealing_Types;
 
 		Valueable<int> NotHuman_DeathSequence;
 		ValueableIdxVector<SuperWeaponTypeClass> LaunchSW;
@@ -164,6 +168,10 @@ public:
 			, Shield_InheritStateOnReplace { false }
 			, Shield_MinimumReplaceDelay { 0 }
 			, Shield_AffectTypes {}
+			, Shield_Penetrate_Types {}
+			, Shield_Break_Types {}
+			, Shield_Respawn_Types {}
+			, Shield_SelfHealing_Types {}
 
 			, NotHuman_DeathSequence { -1 }
 			, LaunchSW {}

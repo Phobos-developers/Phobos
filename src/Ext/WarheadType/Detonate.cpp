@@ -211,16 +211,21 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 		// Apply other modifiers.
 		if (pExt->Shield)
 		{
-			if (this->Shield_AffectTypes.size() > 0 && !this->Shield_AffectTypes.Contains(pExt->Shield->GetType()))
-				return;
+			auto isShieldTypeEligible = [pExt](Iterator<ShieldTypeClass*> elements) -> bool
+			{
+				if (elements.size() > 0 && !elements.contains(pExt->Shield->GetType()))
+					return false;
 
-			if (this->Shield_Break && pExt->Shield->IsActive())
+				return true;
+			};
+
+			if (this->Shield_Break && pExt->Shield->IsActive() && isShieldTypeEligible(this->Shield_Break_Types.GetElements(this->Shield_AffectTypes)))
 				pExt->Shield->BreakShield(this->Shield_BreakAnim.Get(nullptr), this->Shield_BreakWeapon.Get(nullptr));
 
-			if (this->Shield_Respawn_Duration > 0)
+			if (this->Shield_Respawn_Duration > 0 && isShieldTypeEligible(this->Shield_Respawn_Types.GetElements(this->Shield_AffectTypes)))
 				pExt->Shield->SetRespawn(this->Shield_Respawn_Duration, this->Shield_Respawn_Amount, this->Shield_Respawn_Rate, this->Shield_Respawn_ResetTimer);
 
-			if (this->Shield_SelfHealing_Duration > 0)
+			if (this->Shield_SelfHealing_Duration > 0 && isShieldTypeEligible(this->Shield_SelfHealing_Types.GetElements(this->Shield_AffectTypes)))
 			{
 				double amount = this->Shield_SelfHealing_Amount.Get(pExt->Shield->GetType()->SelfHealing);
 				pExt->Shield->SetSelfHealing(this->Shield_SelfHealing_Duration, amount, this->Shield_SelfHealing_Rate, this->Shield_SelfHealing_ResetTimer);

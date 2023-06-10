@@ -309,6 +309,7 @@ New:
 - Upgrade logic to allow altering of SpySat status (by Otamaa)
 - Allow `ZShapePointMove` to apply during buildup via `ZShapePointMove.OnBuildup` (by Starkku)
 - `UndeploysInto` building selling buildup sequence length customization (by Starkku)
+- Allow overriding `Shield.AffectTypes` for each Warhead shield interaction (by Starkku)
 - TechnoType conversion warhead & superweapon (by Morton)
 
 Vanilla fixes:

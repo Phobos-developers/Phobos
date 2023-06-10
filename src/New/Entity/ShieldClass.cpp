@@ -281,7 +281,9 @@ bool ShieldClass::CanBePenetrated(WarheadTypeClass* pWarhead) const
 
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
-	if (pWHExt->Shield_AffectTypes.size() > 0 && !pWHExt->Shield_AffectTypes.Contains(this->Type))
+	const auto affectedTypes = pWHExt->Shield_Penetrate_Types.GetElements(pWHExt->Shield_AffectTypes);
+
+	if (affectedTypes.size() > 0 && !affectedTypes.contains(this->Type))
 		return false;
 
 	if (pWarhead->Psychedelic)
