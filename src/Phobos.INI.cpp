@@ -36,6 +36,7 @@ bool Phobos::Config::ShowPlacementPreview = false;
 bool Phobos::Config::RealTimeTimers = false;
 bool Phobos::Config::RealTimeTimers_Adaptive = false;
 int Phobos::Config::CampaignDefaultGameSpeed = 2;
+bool Phobos::Config::SkirmishUnlimitedColors = false;
 
 bool Phobos::Misc::CustomGS = false;
 int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
@@ -185,6 +186,22 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	if (pINI_RULESMD->ReadBool(GameStrings::General, "FixTransparencyBlitters", true))
 		BlittersFix::Apply();
+
+	Phobos::Config::SkirmishUnlimitedColors = pINI_RULESMD->ReadBool(GameStrings::General, "SkirmishUnlimitedColors", false);
+	if (Phobos::Config::SkirmishUnlimitedColors)
+	{
+		// Game_GetLinkedColor converts vanilla dropdown color index into color scheme index ([Colors] from rules)
+		// What we want to do is to restore vanilla from Ares hook, and immediately return arg
+		// So if spawner feeds us a number, it will be used to look up color scheme directly
+		// Patch translates to:
+		// mov eax, [esp+a1]
+		// shl eax, 1
+		// inc eax
+		// retn 4
+		byte temp[] = { 0x8B, 0x44, 0x24, 0x04, 0xD1, 0xE0, 0x40, 0xC2, 0x04, 0x00 };
+		Patch patch { 0x69A310, 10, temp };
+		patch.Apply();
+	}
 
 	Phobos::CloseConfig(pINI_RULESMD);
 

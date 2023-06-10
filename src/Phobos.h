@@ -73,6 +73,7 @@ public:
 		static bool RealTimeTimers;
 		static bool RealTimeTimers_Adaptive;
 		static int CampaignDefaultGameSpeed;
+		static bool SkirmishUnlimitedColors;
 	};
 
 	class Misc
