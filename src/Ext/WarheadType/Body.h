@@ -6,6 +6,7 @@
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <Ext/Bullet/Body.h>
+#include <Misc/TypeConvertHelper.h>
 
 class WarheadTypeExt
 {
@@ -95,6 +96,8 @@ public:
 		Valueable<AffectedHouse> DetonateOnAllMapObjects_AffectHouses;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
+
+		TypeConvertHelper::ConvertPairs Convert_Pairs;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -191,6 +194,8 @@ public:
 			, DetonateOnAllMapObjects_AffectTypes {}
 			, DetonateOnAllMapObjects_IgnoreTypes {}
 
+			, Convert_Pairs {}
+
 			, AffectsEnemies { true }
 			, AffectsOwner {}
 
@@ -206,6 +211,7 @@ public:
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
+		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);

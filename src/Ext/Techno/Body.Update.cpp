@@ -7,6 +7,7 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/House/Body.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/AresFunctions.h>
 
 // methods used in TechnoClass_AI hooks or anything similar
 
@@ -581,8 +582,17 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 	}
 
 	default: //must be AutoDeathBehavior::Kill
-		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
-		// Due to Ares, ignoreDefense=true will prevent passenger/crew/hijacker from escaping
+		if (IS_ARES_FUN_AVAILABLE(SpawnSurvivors))
+		{
+			switch (pThis->WhatAmI())
+			{
+			case AbstractType::Unit:
+			case AbstractType::Aircraft:
+				AresFunctions::SpawnSurvivors(static_cast<FootClass*>(pThis), nullptr, false, false);
+			default:break;
+			}
+		}
+		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pThis->Owner);
 		return;
 	}
 }

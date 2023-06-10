@@ -29,6 +29,9 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 
 		if (pTypeExt->SW_Next.size() > 0)
 			pTypeExt->ApplySWNext(pSW, cell);
+
+		if (pTypeExt->Convert_Pairs.size() > 0)
+			pTypeExt->ApplyTypeConversion(pSW);
 	}
 }
 
@@ -295,4 +298,13 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 		for (const auto swType : this->SW_Next)
 			LaunchTheSW(swType);
 	}
+}
+
+void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
+{
+	if (this->Convert_Pairs.size() == 0)
+		return;
+
+	for (const auto pTargetFoot : *FootClass::Array)
+		TypeConvertHelper::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
 }

@@ -204,6 +204,7 @@ This page lists all the individual contributions to the project by their author.
   - Default campaign game speed override and custom campaign game speed FPS
   - Including INI files and inheriting INI sections
   - Ares detection and integration
+  - TechnoType conversion warhead & superweapon
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
@@ -250,6 +251,7 @@ This page lists all the individual contributions to the project by their author.
    - Break the mindcontrol link when capturing a mind-controlled building with engineer
    - Building LightSource tint S/L fix
    - Permanent healthbar display on units targeted by temporal weapons fix
+   - TechnoType conversion placeholder
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
@@ -264,11 +266,17 @@ This page lists all the individual contributions to the project by their author.
 - **TwinkleStar**
   - Custom slaves free sound
   - Jumpjet crash rotation control
+- **Ares developers**
+  - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
+  - unfinished RadTypes code
+  - prototype deployer fixes
+  - Superweapon launch site & availability code
+  - AI vehicle production update code
+  - parts of TechnoType conversion placeholder code
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
 - **Chasheen (Chasheenburg)** - CN docs help
-- **Ares developers** - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code, prototype deployer fixes, Superweapon launch site & availability code, AI vehicle production update code
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
 - **AlexB** - Original FlyingStrings implementation

@@ -8,6 +8,7 @@
 #include <AnimClass.h>
 #include <BitFont.h>
 #include <SuperClass.h>
+#include <AircraftClass.h>
 
 #include <Utilities/Helpers.Alex.h>
 #include <Ext/Bullet/Body.h>
@@ -108,7 +109,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_Respawn_Duration > 0 ||
 		this->Shield_SelfHealing_Duration > 0 ||
 		this->Shield_AttachTypes.size() > 0 ||
-		this->Shield_RemoveTypes.size() > 0;
+		this->Shield_RemoveTypes.size() > 0 ||
+		this->Convert_Pairs.size() > 0;
 
 	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 
@@ -143,6 +145,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->Crit_Chance && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner);
+
+	if (this->Convert_Pairs.size() > 0)
+		this->ApplyConvert(pHouse, pTarget);
 }
 
 void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
@@ -326,4 +331,14 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 				pExt->InterceptBullet(pOwner, pWeapon);
 		}
 	}
+}
+
+void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
+{
+	auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
+
+	if (!pTargetFoot || this->Convert_Pairs.size() == 0)
+		return;
+
+	TypeConvertHelper::Convert(pTargetFoot, this->Convert_Pairs, pHouse);
 }

@@ -515,6 +515,44 @@ SubjectToWater.Detonate=true  ; boolean
 
 ## Super Weapons
 
+### Convert TechnoType
+
+- Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).
+  - `ConvertN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
+  - `ConvertN.To` specifies the TechnoType which is the result of conversion.
+  - `ConvertN.AffectedHouses` specifies whose units can be converted.
+  - `Convert.From`, `Convert.To` and `Convert.AffectedHouses` (without numbers) are a valid alternative to `Convert0.From`, `Convert0.To` and `Convert0.AffectedHouses` if only one pair is specified.
+  - Conversion affects *all* existing units of set TechnoTypes, this includes units in: transports, occupied buildings, buildings with `InfantryAbsorb=yes` or `UnitAbsorb=yes`, buildings with `Bunker=yes`.
+
+In example, this superweapon would convert all owned and friendly `SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:
+```ini
+[SOMESW]
+Convert.From=SOLDIERA,SOLDIERB
+Convert.To=NEWSOLDIER
+Convert.AffectedHouses=team
+```
+
+```{warning}
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                        ; SuperWeapon
+ConvertN.From=                  ; list of TechnoTypes
+ConvertN.To=                    ; TechnoType
+ConvertN.AffectedHouses=owner   ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+; where N = 0, 1, 2, ...
+; or
+Convert.From=                   ; list of TechnoTypes
+Convert.To=                     ; TechnoType
+Convert.AffectedHouses=owner    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
 ### LimboDelivery
 
 - Superweapons can now deliver off-map buildings that act as if they were on the field.
@@ -779,7 +817,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 
 If this option is not set, the self-destruction logic will not be enabled. `AutoDeath.VanishAnimation` can be set to animation to play at object's location if `vanish` behaviour is chosen.
 ```{note}
-Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option. This might change in the future if necessary.
+Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option **if you are not using Ares 3.0+**.
 ```
 
 This logic also supports buildings delivered by [LimboDelivery](#LimboDelivery)
@@ -960,6 +998,43 @@ ImmuneToCrit=no                     ; boolean
 
 ```{warning}
 If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chain of Warheads with it that loops back to the first one there is a possibility for the game to get stuck in a loop and freeze or crash afterwards.
+```
+
+### Convert TechnoType on impact
+
+- Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).
+  - `ConvertN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
+  - `ConvertN.To` specifies the TechnoType which is the result of conversion.
+  - `ConvertN.AffectedHouses` specifies whose units can be converted.
+  - `Convert.From`, `Convert.To` and `Convert.AffectedHouses` (without numbers) are a valid alternative to `Convert0.From`, `Convert0.To` and `Convert0.AffectedHouses` if only one pair is specified.
+
+In example, this warhead would convert all affected owned and friendly `SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:
+```ini
+[SOMEWARHEAD]
+Convert.From=SOLDIERA,SOLDIERB
+Convert.To=NEWSOLDIER
+Convert.AffectedHouses=team
+```
+
+```{warning}
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                   ; Warhead
+ConvertN.From=                  ; list of TechnoTypes
+ConvertN.To=                    ; TechnoType
+ConvertN.AffectedHouses=all     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+; where N = 0, 1, 2, ...
+; or
+Convert.From=                   ; list of TechnoTypes
+Convert.To=                     ; TechnoType
+Convert.AffectedHouses=all      ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ### Custom 'SplashList' on Warheads
