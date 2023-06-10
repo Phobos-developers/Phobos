@@ -144,3 +144,71 @@ void TestLocomotionClass::Clear_Coords()
 {
 	TestLocomotionClass::Stop_Moving();
 }
+
+
+HRESULT TestLocomotionClass::Begin_Piggyback(ILocomotion* pointer)
+{
+	if (!pointer)
+        return E_POINTER;
+
+    if (this->Piggybacker)
+        return E_FAIL;
+
+    this->Piggybacker = pointer;
+    pointer->AddRef();
+
+    return S_OK;
+}
+
+HRESULT TestLocomotionClass::End_Piggyback(ILocomotion** pointer)
+{
+    if (!pointer)
+        return E_POINTER;
+
+    if (!this->Piggybacker)
+        return S_FALSE;
+
+    *pointer = this->Piggybacker;
+    this->Piggybacker = nullptr;
+
+    return 0;
+}
+
+bool TestLocomotionClass::Is_Ok_To_End()
+{
+	return this->Piggybacker && !this->LinkedTo->IsAttackedByLocomotor;
+}
+
+HRESULT TestLocomotionClass::Piggyback_CLSID(GUID* classid)
+{
+	HRESULT hr;
+
+    if (classid == nullptr)
+        return E_POINTER;
+
+    if (this->Piggybacker)
+	{
+        IPersistStreamPtr piggyAsPersist(this->Piggybacker);
+
+        hr = piggyAsPersist->GetClassID(classid);
+    }
+	else
+	{
+        if (reinterpret_cast<IPiggyback*>(this) == nullptr)
+            return E_FAIL;
+
+        IPersistStreamPtr thisAsPersist(this);
+
+        if (thisAsPersist == nullptr)
+            return E_FAIL;
+
+        hr = thisAsPersist->GetClassID(classid);
+    }
+
+    return hr;
+}
+
+bool TestLocomotionClass::Is_Piggybacking()
+{
+	return this->Piggybacker != nullptr;
+}

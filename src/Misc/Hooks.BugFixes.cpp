@@ -312,7 +312,7 @@ DEFINE_HOOK(0x415F5C, AircraftClass_FireAt_SpeedModifiers, 0xA)
 
 	if (pThis->Type->Locomotor == LocomotionClass::CLSIDs::Fly)
 	{
-		if (const auto pLocomotor = static_cast<FlyLocomotionClass*>(pThis->Locomotor.get()))
+		if (const auto pLocomotor = static_cast<FlyLocomotionClass*>(pThis->Locomotor.GetInterfacePtr()))
 		{
 			double currentSpeed = pThis->GetTechnoType()->Speed * pLocomotor->CurrentSpeed *
 				TechnoExt::GetCurrentSpeedMultiplier(pThis);

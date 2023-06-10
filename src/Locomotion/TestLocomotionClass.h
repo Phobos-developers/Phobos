@@ -11,18 +11,33 @@
 #include <comip.h>
 #include <comdef.h>
 
-// _COM_SMARTPTR_TYPEDEF(IPiggyback, __uuidof(IPiggyback));
 
-class DECLSPEC_UUID("74FC2B59-C2D3-47D7-9D10-93436A34EBB9")
+class __declspec(uuid("74FC2B59-C2D3-47D7-9D10-93436A34EBB9"))
 	TestLocomotionClass : public LocomotionClass
-	//, public IPiggyback
+	, public IPiggyback
 {
 public:
 
 	//IUnknown
-	//virtual HRESULT __stdcall QueryInterface(REFIID iid, LPVOID* ppvObject) { return LocomotionClass::QueryInterface(iid, ppvObject); }
-	//virtual ULONG __stdcall AddRef() { return LocomotionClass::AddRef(); }
-	//virtual ULONG __stdcall Release() { return LocomotionClass::Release(); }
+	virtual HRESULT __stdcall QueryInterface(REFIID iid, LPVOID* ppvObject)
+	{
+		HRESULT hr = LocomotionClass::QueryInterface(iid, ppvObject);
+		if (hr != E_NOINTERFACE)
+			return hr;
+
+		if (iid == __uuidof(IPiggyback))
+		{
+			*ppvObject = static_cast<IPiggyback*>(this);
+			this->AddRef();
+			return S_OK;
+		}
+
+		*ppvObject = nullptr;
+		return E_NOINTERFACE;
+	}
+
+	virtual ULONG __stdcall AddRef() { return LocomotionClass::AddRef(); }
+	virtual ULONG __stdcall Release() { return LocomotionClass::Release(); }
 
 	//IPersist
 	virtual HRESULT __stdcall GetClassID(CLSID* pClassID)
@@ -39,24 +54,43 @@ public:
 	// virtual HRESULT __stdcall IsDirty() { return LocomotionClass::IsDirty(); }
 	virtual HRESULT __stdcall Load(IStream* pStm)
 	{
+		// This loads the whole object
 		HRESULT hr = LocomotionClass::Load(pStm);
-		if (SUCCEEDED(hr))
+		if (FAILED(hr))
+			return hr;
+
+		if (this)
 		{
-			// Insert any data to be loaded here.
+			// clean up the loaded Piggybacker pointer
+			this->Piggybacker.Detach();
+			new (this) TestLocomotionClass(noinit_t());
 		}
 
-		return hr;
+		// Piggybacker handling
+		bool piggybackerPresent;
+		hr = pStm->Read(&piggybackerPresent, sizeof(piggybackerPresent), nullptr);
+		if (!piggybackerPresent)
+			return hr;
+
+		return OleLoadFromStream(pStm, __uuidof(ILocomotion), reinterpret_cast<LPVOID*>(&this->Piggybacker));
 	}
 
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty)
 	{
-		HRESULT hr = LocomotionClass::Save(pStm , fClearDirty);
-		if (SUCCEEDED(hr))
-		{
-			// Insert any data to be loaded here.
-		}
+		// This saves the whole object
+		HRESULT hr = LocomotionClass::Save(pStm, fClearDirty);
+		if (FAILED(hr))
+			return hr;
 
-		return hr;
+		// Piggybacker handling
+		bool piggybackerPresent = this->Piggybacker != nullptr;
+		hr = pStm->Write(&piggybackerPresent, sizeof(piggybackerPresent), nullptr);
+
+		if (!piggybackerPresent)
+			return hr;
+
+		IPersistStreamPtr piggyPersist(this->Piggybacker);
+		return OleSaveToStream(piggyPersist, pStm);
 	}
 
 	// virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize)
@@ -125,11 +159,11 @@ public:
 	//virtual int __stdcall Get_Speed_Accum() override { return LocomotionClass::Get_Speed_Accum(); }
 
 	//IPiggy
-	//virtual HRESULT __stdcall Begin_Piggyback(ILocomotion* pointer) override { return S_OK; };	//Piggybacks a locomotor onto this one.
-	//virtual HRESULT __stdcall End_Piggyback(ILocomotion** pointer) override { return S_OK; }; // End piggyback process and restore locomotor interface pointer.
-	//virtual bool __stdcall Is_Ok_To_End() override { return true; };	// Is it ok to end the piggyback process?
-	//virtual HRESULT __stdcall Piggyback_CLSID(GUID* classid) override { return S_OK; };	// Fetches piggybacked locomotor class ID.
-	//virtual bool __stdcall Is_Piggybacking() override { return true; };	// Is it currently piggy backing another locomotor?
+	virtual HRESULT __stdcall Begin_Piggyback(ILocomotion* pointer) override;
+	virtual HRESULT __stdcall End_Piggyback(ILocomotion** pointer) override;
+	virtual bool __stdcall Is_Ok_To_End() override;
+	virtual HRESULT __stdcall Piggyback_CLSID(GUID* classid) override;
+	virtual bool __stdcall Is_Piggybacking() override;
 
 public:
 	inline TestLocomotionClass() : LocomotionClass { }
@@ -138,6 +172,7 @@ public:
 		, CenterCoord { }
 		, Angle { 0.0 }
 		, IsMoving { false }
+		, Piggybacker { nullptr }
 	{ }
 
 	inline TestLocomotionClass(noinit_t) : LocomotionClass {noinit_t()}
@@ -165,4 +200,7 @@ public:
 
 		//  If this object is moving, then this flag will be true.
 		bool IsMoving;
+
+		// The piggybacking locomotor.
+		ILocomotionPtr Piggybacker;
 };
