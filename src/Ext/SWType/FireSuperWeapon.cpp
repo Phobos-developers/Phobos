@@ -305,36 +305,6 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 	if (this->Convert_Pairs.size() == 0)
 		return;
 
-	for (const auto& [fromTypes, toTypeIdx, affectedHouses] : this->Convert_Pairs)
-	{
-		const auto toType = TechnoTypeClass::Array->GetItem(toTypeIdx);
-		if (fromTypes.size())
-		{
-			for (auto pTarget : *FootClass::Array)
-			{
-				if (!EnumFunctions::CanTargetHouse(affectedHouses, pSW->Owner, pTarget->Owner))
-					continue;
-
-				for (const auto& fromType : fromTypes)
-				{
-					// Check if the target matches upgrade-from TechnoType and it has something to upgrade to
-					if (fromType == pTarget->GetTechnoType())
-					{
-						TechnoExt::ConvertToType(pTarget, toType);
-						break;
-					}
-				}
-			}
-		}
-		else
-		{
-			for (auto pTarget : *FootClass::Array)
-			{
-				if (!EnumFunctions::CanTargetHouse(affectedHouses, pSW->Owner, pTarget->Owner))
-					continue;
-
-				TechnoExt::ConvertToType(pTarget, toType);
-			}
-		}
-	}
+	for (const auto pTargetFoot : *FootClass::Array)
+		TypeConvertHelper::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
 }

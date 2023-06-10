@@ -340,25 +340,5 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 	if (!pTargetFoot || this->Convert_Pairs.size() == 0)
 		return;
 
-	for (const auto& [fromTypes, toTypeIdx] : this->Convert_Pairs)
-	{
-		const auto toType = TechnoTypeClass::Array->GetItem(toTypeIdx);
-		if (fromTypes.size())
-		{
-			for (const auto& from : fromTypes)
-			{
-				// Check if the target matches upgrade-from TechnoType and it has something to upgrade to
-				if (from == pTarget->GetTechnoType())
-				{
-					TechnoExt::ConvertToType(pTargetFoot, toType);
-					break;
-				}
-			}
-		}
-		else
-		{
-			TechnoExt::ConvertToType(pTargetFoot, toType);
-			break;
-		}
-	}
+	TypeConvertHelper::Convert(pTargetFoot, this->Convert_Pairs, pHouse);
 }

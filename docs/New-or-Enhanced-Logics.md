@@ -1005,13 +1005,15 @@ If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chai
 - Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).
   - `ConvertN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
   - `ConvertN.To` specifies the TechnoType which is the result of conversion.
-  - `Convert.From` and `Convert.To` (without numbers) are a valid alternative to `Convert0.From` and `Convert0.To` if only one pair is specified.
+  - `ConvertN.AffectedHouses` specifies whose units can be converted.
+  - `Convert.From`, `Convert.To` and `Convert.AffectedHouses` (without numbers) are a valid alternative to `Convert0.From`, `Convert0.To` and `Convert0.AffectedHouses` if only one pair is specified.
 
-In example, this warhead would convert all affected `SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:
+In example, this warhead would convert all affected owned and friendly `SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:
 ```ini
 [SOMEWARHEAD]
 Convert.From=SOLDIERA,SOLDIERB
 Convert.To=NEWSOLDIER
+Convert.AffectedHouses=team
 ```
 
 ```{warning}
@@ -1024,13 +1026,15 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]           ; Warhead
-ConvertN.From=          ; list of TechnoTypes
-ConvertN.To=            ; TechnoType
+[SOMEWARHEAD]                   ; Warhead
+ConvertN.From=                  ; list of TechnoTypes
+ConvertN.To=                    ; TechnoType
+ConvertN.AffectedHouses=all     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ; where N = 0, 1, 2, ...
 ; or
-Convert.From=          ; list of TechnoTypes
-Convert.To=            ; TechnoType
+Convert.From=                   ; list of TechnoTypes
+Convert.To=                     ; TechnoType
+Convert.AffectedHouses=all      ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ### Custom 'SplashList' on Warheads

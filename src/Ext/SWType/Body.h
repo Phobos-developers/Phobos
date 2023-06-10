@@ -8,6 +8,7 @@
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/Building/Body.h>
+#include <Misc/TypeConvertHelper.h>
 
 class SWTypeExt
 {
@@ -56,7 +57,7 @@ public:
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
 
-		std::vector<std::tuple<ValueableVector<TechnoTypeClass*>, NullableIdx<TechnoTypeClass>, Nullable<AffectedHouse>>> Convert_Pairs;
+		TypeConvertHelper::ConvertPairs Convert_Pairs;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }

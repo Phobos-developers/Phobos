@@ -6,6 +6,7 @@
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <Ext/Bullet/Body.h>
+#include <Misc/TypeConvertHelper.h>
 
 class WarheadTypeExt
 {
@@ -96,7 +97,7 @@ public:
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
-		std::vector<std::pair<ValueableVector<TechnoTypeClass*>, NullableIdx<TechnoTypeClass>>> Convert_Pairs;
+		TypeConvertHelper::ConvertPairs Convert_Pairs;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html

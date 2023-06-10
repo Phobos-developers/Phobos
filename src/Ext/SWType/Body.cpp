@@ -172,9 +172,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			convertAffectedHouses = AffectedHouse::Owner;
 
 		if (this->Convert_Pairs.size())
-			this->Convert_Pairs[0] = {convertFrom, convertTo, convertAffectedHouses };
+			this->Convert_Pairs[0] = { convertFrom, convertTo, convertAffectedHouses };
 		else
-			this->Convert_Pairs.push_back({convertFrom, convertTo, convertAffectedHouses });
+			this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
 	}
 }
 
