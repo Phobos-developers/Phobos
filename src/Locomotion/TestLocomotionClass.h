@@ -72,7 +72,15 @@ public:
 		if (!piggybackerPresent)
 			return hr;
 
-		return OleLoadFromStream(pStm, __uuidof(ILocomotion), reinterpret_cast<LPVOID*>(&this->Piggybacker));
+		hr = OleLoadFromStream(pStm, __uuidof(ILocomotion), reinterpret_cast<LPVOID*>(&this->Piggybacker));
+
+		// I have zero idea why, but the reference count is one less than before loading
+		// the piggybacker, so we increment it. otherwise the locomotor gets thrown into
+		// garbage later down the code when piggyback is finished and crashes the game - Kerbiter
+		if (SUCCEEDED(hr))
+			this->Piggybacker->AddRef();
+
+		return hr;
 	}
 
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty)

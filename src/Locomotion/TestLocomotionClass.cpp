@@ -176,7 +176,9 @@ HRESULT TestLocomotionClass::End_Piggyback(ILocomotion** pointer)
 
 bool TestLocomotionClass::Is_Ok_To_End()
 {
-	return this->Piggybacker && !this->LinkedTo->IsAttackedByLocomotor;
+	// determines when to end piggybacking automatically
+	// we don't want to end piggybacking automatically for this loco
+	return false; // this->Piggybacker && !this->LinkedTo->IsAttackedByLocomotor;
 }
 
 HRESULT TestLocomotionClass::Piggyback_CLSID(GUID* classid)

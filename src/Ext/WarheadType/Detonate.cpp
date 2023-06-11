@@ -110,7 +110,9 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_SelfHealing_Duration > 0 ||
 		this->Shield_AttachTypes.size() > 0 ||
 		this->Shield_RemoveTypes.size() > 0 ||
-		this->Convert_Pairs.size() > 0;
+		this->Convert_Pairs.size() > 0 ||
+		this->InflictLocomotor ||
+		this->RemoveInflictedLocomotor;
 
 	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 
@@ -148,6 +150,12 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->Convert_Pairs.size() > 0)
 		this->ApplyConvert(pHouse, pTarget);
+
+	if (this->InflictLocomotor)
+		this->ApplyLocomotorInfliction(pTarget);
+
+	if (this->RemoveInflictedLocomotor)
+		this->ApplyLocomotorInflictionReset(pTarget);
 }
 
 void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
@@ -341,4 +349,50 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 		return;
 
 	TypeConvertHelper::Convert(pTargetFoot, this->Convert_Pairs, pHouse);
+}
+
+void WarheadTypeExt::ExtData::ApplyLocomotorInfliction(TechnoClass* pTarget)
+{
+	auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
+	if (!pTargetFoot)
+		return;
+
+	// same locomotor? no point to change
+	CLSID targetCLSID { };
+	CLSID inflictCLSID = this->OwnerObject()->Locomotor;
+	IPersistPtr pLocoPersist = pTargetFoot->Locomotor;
+	if (SUCCEEDED(pLocoPersist->GetClassID(&targetCLSID)) && targetCLSID == inflictCLSID)
+		return;
+
+	// prevent endless piggyback
+	IPiggybackPtr pTargetPiggy = pTargetFoot->Locomotor;
+	if (pTargetPiggy != nullptr && pTargetPiggy->Is_Piggybacking())
+		return;
+
+	LocomotionClass::ChangeLocomotorTo(pTargetFoot, inflictCLSID);
+}
+
+void WarheadTypeExt::ExtData::ApplyLocomotorInflictionReset(TechnoClass* pTarget)
+{
+	auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
+
+	if (!pTargetFoot)
+		return;
+
+	// remove only specific inflicted locomotor if specified
+	CLSID removeCLSID = this->OwnerObject()->Locomotor;
+	if (removeCLSID != CLSID())
+	{
+		CLSID targetCLSID { };
+		IPersistPtr pLocoPersist = pTargetFoot->Locomotor;
+		if (SUCCEEDED(pLocoPersist->GetClassID(&targetCLSID)) && targetCLSID != removeCLSID)
+			return;
+	}
+
+	// // we don't want to remove non-ok-to-end locos
+	// IPiggybackPtr pTargetPiggy = pTargetFoot->Locomotor;
+	// if (pTargetPiggy != nullptr && (!pTargetPiggy->Is_Ok_To_End()))
+	// 	return;
+
+	LocomotionClass::End_Piggyback(pTargetFoot->Locomotor);
 }

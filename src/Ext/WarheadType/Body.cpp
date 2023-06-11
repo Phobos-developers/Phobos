@@ -237,6 +237,27 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
 	}
 
+	this->InflictLocomotor.Read(exINI, pSection, "InflictLocomotor");
+	this->RemoveInflictedLocomotor.Read(exINI, pSection, "RemoveInflictedLocomotor");
+
+	if (this->InflictLocomotor && pThis->Locomotor == _GUID())
+	{
+		Debug::Log("[Developer warning][%s] InflictLocomotor is specified but Locomotor is not set!", pSection);
+		this->InflictLocomotor = false;
+	}
+
+	if ((this->InflictLocomotor || this->RemoveInflictedLocomotor) && pThis->IsLocomotor)
+	{
+		Debug::Log("[Developer warning][%s] InflictLocomotor=yes/RemoveInflictedLocomotor=yes can't be specified while IsLocomotor is set!", pSection);
+		this->InflictLocomotor = this->RemoveInflictedLocomotor = false;
+	}
+
+	if (this->InflictLocomotor && this->RemoveInflictedLocomotor)
+	{
+		Debug::Log("[Developer warning][%s] InflictLocomotor=yes and RemoveInflictedLocomotor=yes can't be set simultaneously!", pSection);
+		this->InflictLocomotor = this->RemoveInflictedLocomotor = false;
+	}
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
@@ -326,6 +347,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnAllMapObjects_IgnoreTypes)
 
 		.Process(this->Convert_Pairs)
+
+		.Process(this->InflictLocomotor)
+		.Process(this->RemoveInflictedLocomotor)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
