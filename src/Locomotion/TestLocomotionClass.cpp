@@ -155,7 +155,6 @@ HRESULT TestLocomotionClass::Begin_Piggyback(ILocomotion* pointer)
         return E_FAIL;
 
     this->Piggybacker = pointer;
-    pointer->AddRef();
 
     return S_OK;
 }
@@ -168,10 +167,11 @@ HRESULT TestLocomotionClass::End_Piggyback(ILocomotion** pointer)
     if (!this->Piggybacker)
         return S_FALSE;
 
-    *pointer = this->Piggybacker;
-    this->Piggybacker = nullptr;
+	// since pointer is a dumb pointer, we don't need to call Release,
+	// hence we use Detach, otherwise the locomotor gets trashed
+    *pointer = this->Piggybacker.Detach();
 
-    return 0;
+    return S_OK;
 }
 
 bool TestLocomotionClass::Is_Ok_To_End()
