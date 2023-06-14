@@ -14,15 +14,15 @@
 #pragma region Example locomotor toggles
 
 // Comment/uncomment to toggle all the example locomotor code.
-#define CUSTOM_LOCO_EXAMPLE_ENABLED // Toggle TestLocomotionClass
+// #define CUSTOM_LOCO_EXAMPLE_ENABLED // Toggle TestLocomotionClass
 
 // Comment/uncomment to toggle all the code related to piggybacking
 // (temporarily replacing any locomotor with this one).
-#define CUSTOM_LOCO_EXAMPLE_PIGGYBACK // Toggle IPiggyback impl.
+// #define CUSTOM_LOCO_EXAMPLE_PIGGYBACK // Toggle IPiggyback impl.
 
 // Comment/uncomment to toggle InflictLocomotor/RemoveInflictedLocomotor
 // to test IPiggyback (and the tweak to disable automatic remove of the loco).
-#define LOCO_TEST_WARHEADS // Toggle loco piggyback testing
+// #define LOCO_TEST_WARHEADS // Toggle loco piggyback testing
 
 #pragma endregion
 
