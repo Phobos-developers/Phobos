@@ -128,6 +128,8 @@ This page lists all the individual contributions to the project by their author.
   - Initial strength for cloned infantry
 - **Starkku**:
   - Misc. minor bugfixes & improvements
+  - AI script actions:
+    - Chronoshift to Enemy Base
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
   - Vehicle `DeployFire` fixes/improvements
