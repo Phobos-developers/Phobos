@@ -146,7 +146,7 @@ public:
 	//virtual int __stdcall Get_Status() override { return 0; }
 	//virtual void __stdcall Acquire_Hunter_Seeker_Target() override { }
 	//virtual bool __stdcall Is_Surfacing() override { return LocomotionClass::Is_Surfacing(); }
-	virtual void __stdcall Mark_All_Occupation_Bits(int mark) override;
+	virtual void __stdcall Mark_All_Occupation_Bits(MarkType mark) override;
 	virtual bool __stdcall Is_Moving_Here(CoordStruct to) override;
 	//virtual bool __stdcall Will_Jump_Tracks() override { return LocomotionClass::Will_Jump_Tracks(); }
 	virtual bool __stdcall Is_Really_Moving_Now() override;

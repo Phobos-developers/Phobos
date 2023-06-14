@@ -119,10 +119,10 @@ bool TestLocomotionClass::Is_Moving_Now()
 	return false;
 }
 
-void TestLocomotionClass::Mark_All_Occupation_Bits(int mark)
+void TestLocomotionClass::Mark_All_Occupation_Bits(MarkType mark)
 {
 	CoordStruct headTo = Head_To_Coord();
-	if (mark != 0)
+	if (mark != MarkType::Up)
 		LinkedTo->MarkAllOccupationBits(headTo);
 	else
 		LinkedTo->UnmarkAllOccupationBits(headTo);
