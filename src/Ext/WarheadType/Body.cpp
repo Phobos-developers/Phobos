@@ -237,6 +237,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
 	}
 
+#ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 	this->InflictLocomotor.Read(exINI, pSection, "InflictLocomotor");
 	this->RemoveInflictedLocomotor.Read(exINI, pSection, "RemoveInflictedLocomotor");
 
@@ -257,6 +258,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		Debug::Log("[Developer warning][%s] InflictLocomotor=yes and RemoveInflictedLocomotor=yes can't be set simultaneously!", pSection);
 		this->InflictLocomotor = this->RemoveInflictedLocomotor = false;
 	}
+#endif
 
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html

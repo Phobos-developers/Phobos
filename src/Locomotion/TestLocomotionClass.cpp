@@ -1,5 +1,7 @@
 #include "TestLocomotionClass.h"
 
+#ifdef CUSTOM_LOCO_EXAMPLE_ENABLED // Define functions
+
 #include <CellSpread.h>
 #include <ScenarioClass.h>
 
@@ -47,12 +49,10 @@ bool TestLocomotionClass::Process()
 	{
 		CoordStruct coord = DestinationCoord;
 
-		/**
-		 *  Rotate the object around the center coord.
-		 */
+		// Rotate the object around the center coord
 		int radius = Unsorted::LeptonsPerCell*2;
-		coord.X += radius * std::sin(Angle);
-		coord.Y += radius * std::cos(Angle);
+		coord.X += static_cast<int>(radius * Math::sin(Angle));
+		coord.Y += static_cast<int>(radius * Math::cos(Angle));
 		//coord.Z // No need to adjust the height of the object.
 
 		// Pickup the object the game world before we set the new coord.
@@ -88,7 +88,7 @@ void TestLocomotionClass::Stop_Moving()
 	HeadToCoord = CoordStruct::Empty;
 	DestinationCoord = CoordStruct::Empty;
 
-	Angle = 0;
+	Angle = 0.0;
 
 	IsMoving = false;
 }
@@ -98,10 +98,10 @@ void TestLocomotionClass::Do_Turn(DirStruct coord)
 	LinkedTo->PrimaryFacing.SetCurrent(coord);
 }
 
-// void TestLocomotionClass::Unlimbo()
-// {
-// 	Force_New_Slope(LinkedTo->Get_Cell_Ptr()->Ramp);
-// }
+Layer TestLocomotionClass::In_Which_Layer()
+{
+	return Layer::Ground;
+}
 
 void TestLocomotionClass::Force_Immediate_Destination(CoordStruct coord)
 {
@@ -142,75 +142,89 @@ bool TestLocomotionClass::Is_Really_Moving_Now()
 
 void TestLocomotionClass::Clear_Coords()
 {
-	TestLocomotionClass::Stop_Moving();
+	this->Stop_Moving();
 }
 
+#ifdef CUSTOM_LOCO_EXAMPLE_PIGGYBACK // Define IPiggyback functions
 
 HRESULT TestLocomotionClass::Begin_Piggyback(ILocomotion* pointer)
 {
 	if (!pointer)
-        return E_POINTER;
+		return E_POINTER;
 
-    if (this->Piggybacker)
-        return E_FAIL;
+	if (this->Piggybacker)
+		return E_FAIL;
 
-    this->Piggybacker = pointer;
+	this->Piggybacker = pointer;
 
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT TestLocomotionClass::End_Piggyback(ILocomotion** pointer)
 {
-    if (!pointer)
-        return E_POINTER;
+	if (!pointer)
+		return E_POINTER;
 
-    if (!this->Piggybacker)
-        return S_FALSE;
+	if (!this->Piggybacker)
+		return S_FALSE;
 
 	// since pointer is a dumb pointer, we don't need to call Release,
 	// hence we use Detach, otherwise the locomotor gets trashed
-    *pointer = this->Piggybacker.Detach();
+	*pointer = this->Piggybacker.Detach();
 
-    return S_OK;
+	// in order to play nice with IsLocomotor warheads probably also should
+	// handle IsAttackedByLocomotor etc. warheads here, but none of the vanilla
+	// warheads do this (except JumpjetLocomotionClass::End_Piggyback)
+
+	return S_OK;
 }
 
 bool TestLocomotionClass::Is_Ok_To_End()
 {
-	// determines when to end piggybacking automatically
+	// Actually a confusing name, should return true only if the piggybacking should be ended.
+#ifdef LOCO_TEST_WARHEADS // Do not stop piggybacking automatically
+	// In order for the inflict locomotor warhead to work as expected
 	// we don't want to end piggybacking automatically for this loco
-	return false; // this->Piggybacker && !this->LinkedTo->IsAttackedByLocomotor;
+	return false;
+#else
+	return this->Piggybacker && !this->LinkedTo->IsAttackedByLocomotor;
+#endif
 }
 
 HRESULT TestLocomotionClass::Piggyback_CLSID(GUID* classid)
 {
 	HRESULT hr;
 
-    if (classid == nullptr)
-        return E_POINTER;
+	if (classid == nullptr)
+		return E_POINTER;
 
-    if (this->Piggybacker)
+	if (this->Piggybacker)
 	{
-        IPersistStreamPtr piggyAsPersist(this->Piggybacker);
+		IPersistStreamPtr piggyAsPersist(this->Piggybacker);
 
-        hr = piggyAsPersist->GetClassID(classid);
-    }
+		hr = piggyAsPersist->GetClassID(classid);
+	}
 	else
 	{
-        if (reinterpret_cast<IPiggyback*>(this) == nullptr)
-            return E_FAIL;
+		if (reinterpret_cast<IPiggyback*>(this) == nullptr)
+			return E_FAIL;
 
-        IPersistStreamPtr thisAsPersist(this);
+		IPersistStreamPtr thisAsPersist(this);
 
-        if (thisAsPersist == nullptr)
-            return E_FAIL;
+		if (thisAsPersist == nullptr)
+			return E_FAIL;
 
-        hr = thisAsPersist->GetClassID(classid);
-    }
+		hr = thisAsPersist->GetClassID(classid);
+	}
 
-    return hr;
+	return hr;
 }
 
 bool TestLocomotionClass::Is_Piggybacking()
 {
 	return this->Piggybacker != nullptr;
 }
+
+#endif //CUSTOM_LOCO_EXAMPLE_PIGGYBACK
+
+#endif //CUSTOM_LOCO_EXAMPLE_ENABLED
