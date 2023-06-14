@@ -34,7 +34,7 @@ This page lists all the individual contributions to the project by their author.
   - LaserTrails port and rework
   - Laser graphics fixes
   - Recursive transport killer fix
-  - Custom locomotors example implementation
+  - Custom locomotors example implementation and piggybacking test warheads
   - Migration utility
   - GitHub Actions setup
   - Official docs
