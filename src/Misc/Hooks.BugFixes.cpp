@@ -312,7 +312,7 @@ DEFINE_HOOK(0x415F5C, AircraftClass_FireAt_SpeedModifiers, 0xA)
 
 	if (pThis->Type->Locomotor == LocomotionClass::CLSIDs::Fly)
 	{
-		if (const auto pLocomotor = static_cast<FlyLocomotionClass*>(pThis->Locomotor.get()))
+		if (const auto pLocomotor = static_cast<FlyLocomotionClass*>(pThis->Locomotor.GetInterfacePtr()))
 		{
 			double currentSpeed = pThis->GetTechnoType()->Speed * pLocomotor->CurrentSpeed *
 				TechnoExt::GetCurrentSpeedMultiplier(pThis);
@@ -411,7 +411,7 @@ DEFINE_HOOK(0x6FA781, TechnoClass_AI_SelfHealing_BuildingGraphics, 0x6)
 
 	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
 	{
-		pBuilding->UpdatePlacement(PlacementType::Redraw);
+		pBuilding->Mark(MarkType::Change);
 		pBuilding->ToggleDamagedAnims(false);
 	}
 
@@ -691,3 +691,6 @@ DEFINE_HOOK(0x451033, BuildingClass_AnimationAI_SuperAnim, 0x6)
 
 	return 0;
 }
+
+// Stops INI parsing for Anim/BuildingTypeClass on game startup, will only be read on scenario load later like everything else.
+DEFINE_JUMP(LJMP, 0x52C9C4, 0x52CA37);

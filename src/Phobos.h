@@ -2,6 +2,8 @@
 #include <Phobos.version.h>
 #include <Windows.h>
 
+#define CAN_USE_ARES 1
+
 class CCINIClass;
 class AbstractClass;
 
@@ -71,6 +73,7 @@ public:
 		static bool RealTimeTimers;
 		static bool RealTimeTimers_Adaptive;
 		static int CampaignDefaultGameSpeed;
+		static bool SkirmishUnlimitedColors;
 	};
 
 	class Misc

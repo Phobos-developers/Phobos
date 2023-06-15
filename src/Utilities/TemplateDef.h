@@ -52,6 +52,8 @@
 #include <CRT.h>
 #include <LocomotionClass.h>
 
+#include <Locomotion/TestLocomotionClass.h>
+
 namespace detail
 {
 	template <typename T>
@@ -956,6 +958,16 @@ if(_strcmpi(parser.value(), #name) == 0){ value = LocomotionClass::CLSIDs::name;
 			PARSE_IF_IS_LOCO(Droppod);
 
 #undef PARSE_IF_IS_LOCO
+
+#define PARSE_IF_IS_PHOBOS_LOCO(name)\
+if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionClass); return true; }
+
+		// Add your locomotor parsing here
+#ifdef CUSTOM_LOCO_EXAMPLE_ENABLED // Add semantic parsing for loco
+			PARSE_IF_IS_PHOBOS_LOCO(Test);
+#endif
+
+#undef PARSE_IF_IS_PHOBOS_LOCO
 
 			return false;
 		}

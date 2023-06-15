@@ -4,6 +4,7 @@
 #include <HouseClass.h>
 
 #include <Ext/BulletType/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<WarheadTypeClass>::Canary = 0x22222222;
@@ -87,10 +88,16 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 		return false;
 	}
 
-	if (this->DetonateOnAllMapObjects_RequireVerses &&
-		GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTechno->GetTechnoType()->Armor) == 0.0)
+	if (this->DetonateOnAllMapObjects_RequireVerses)
 	{
-		return false;
+		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+		auto armorType = pTechno->GetTechnoType()->Armor;
+
+		if (pExt->Shield && pExt->Shield->IsActive() && !pExt->Shield->CanBePenetrated(this->OwnerObject()))
+			armorType = pExt->Shield->GetArmorType();
+
+		if (GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) == 0.0)
+			return false;
 	}
 
 	return true;
@@ -166,6 +173,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_InheritStateOnReplace.Read(exINI, pSection, "Shield.InheritStateOnReplace");
 	this->Shield_MinimumReplaceDelay.Read(exINI, pSection, "Shield.MinimumReplaceDelay");
 	this->Shield_AffectTypes.Read(exINI, pSection, "Shield.AffectTypes");
+	this->Shield_Penetrate_Types.Read(exINI, pSection, "Shield.Penetrate.Types");
+	this->Shield_Break_Types.Read(exINI, pSection, "Shield.Break.Types");
+	this->Shield_Respawn_Types.Read(exINI, pSection, "Shield.Respawn.Types");
+	this->Shield_SelfHealing_Types.Read(exINI, pSection, "Shield.SelfHealing.Types");
 
 	this->NotHuman_DeathSequence.Read(exINI, pSection, "NotHuman.DeathSequence");
 	this->LaunchSW.Read(exINI, pSection, "LaunchSW");
@@ -186,6 +197,68 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectHouses.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectHouses");
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
+
+	char tempBuffer[32];
+	// Convert.From & Convert.To
+	for (size_t i = 0; ; ++i)
+	{
+		ValueableVector<TechnoTypeClass*> convertFrom;
+		NullableIdx<TechnoTypeClass> convertTo;
+		Nullable<AffectedHouse> convertAffectedHouses;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.From", i);
+		convertFrom.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.To", i);
+		convertTo.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.AffectedHouses", i);
+		convertAffectedHouses.Read(exINI, pSection, tempBuffer);
+
+		if (!convertTo.isset())
+			break;
+
+		if (!convertAffectedHouses.isset())
+			convertAffectedHouses = AffectedHouse::All;
+
+		this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
+	}
+	ValueableVector<TechnoTypeClass*> convertFrom;
+	NullableIdx<TechnoTypeClass> convertTo;
+	Nullable<AffectedHouse> convertAffectedHouses;
+	convertFrom.Read(exINI, pSection, "Convert.From");
+	convertTo.Read(exINI, pSection, "Convert.To");
+	convertAffectedHouses.Read(exINI, pSection, "Convert.AffectedHouses");
+	if (convertTo.isset())
+	{
+		if (!convertAffectedHouses.isset())
+			convertAffectedHouses = AffectedHouse::All;
+
+		if (this->Convert_Pairs.size())
+			this->Convert_Pairs[0] = { convertFrom, convertTo, convertAffectedHouses };
+		else
+			this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
+	}
+
+#ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
+	this->InflictLocomotor.Read(exINI, pSection, "InflictLocomotor");
+	this->RemoveInflictedLocomotor.Read(exINI, pSection, "RemoveInflictedLocomotor");
+
+	if (this->InflictLocomotor && pThis->Locomotor == _GUID())
+	{
+		Debug::Log("[Developer warning][%s] InflictLocomotor is specified but Locomotor is not set!", pSection);
+		this->InflictLocomotor = false;
+	}
+
+	if ((this->InflictLocomotor || this->RemoveInflictedLocomotor) && pThis->IsLocomotor)
+	{
+		Debug::Log("[Developer warning][%s] InflictLocomotor=yes/RemoveInflictedLocomotor=yes can't be specified while IsLocomotor is set!", pSection);
+		this->InflictLocomotor = this->RemoveInflictedLocomotor = false;
+	}
+
+	if (this->InflictLocomotor && this->RemoveInflictedLocomotor)
+	{
+		Debug::Log("[Developer warning][%s] InflictLocomotor=yes and RemoveInflictedLocomotor=yes can't be set simultaneously!", pSection);
+		this->InflictLocomotor = this->RemoveInflictedLocomotor = false;
+	}
+#endif
 
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -250,6 +323,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_InheritStateOnReplace)
 		.Process(this->Shield_MinimumReplaceDelay)
 		.Process(this->Shield_AffectTypes)
+		.Process(this->Shield_Penetrate_Types)
+		.Process(this->Shield_Break_Types)
+		.Process(this->Shield_Respawn_Types)
+		.Process(this->Shield_SelfHealing_Types)
 
 		.Process(this->NotHuman_DeathSequence)
 		.Process(this->LaunchSW)
@@ -270,6 +347,11 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnAllMapObjects_AffectHouses)
 		.Process(this->DetonateOnAllMapObjects_AffectTypes)
 		.Process(this->DetonateOnAllMapObjects_IgnoreTypes)
+
+		.Process(this->Convert_Pairs)
+
+		.Process(this->InflictLocomotor)
+		.Process(this->RemoveInflictedLocomotor)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
