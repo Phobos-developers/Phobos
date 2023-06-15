@@ -28,6 +28,7 @@ public:
 	Nullable<AnimTypeClass*> BreakAnim;
 	Nullable<AnimTypeClass*> HitAnim;
 	Nullable<WeaponTypeClass*> BreakWeapon;
+	Valueable<CoordStruct> HitBright;
 	Valueable<double> AbsorbPercent;
 	Valueable<double> PassPercent;
 
@@ -60,6 +61,7 @@ public:
 		, BreakAnim { }
 		, HitAnim { }
 		, BreakWeapon { }
+		, HitBright { {0,0,0} }
 		, AbsorbPercent { 1.0 }
 		, PassPercent { 0.0 }
 		, AllowTransfer { }

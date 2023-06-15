@@ -60,6 +60,32 @@ DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 	return 0x7019E3;
 }
 
+DEFINE_HOOK(0x701A6B, TechnoClass_ReceiveDamage_HitBright, 0xA)
+{
+	GET(TechnoClass*, pThis, ECX);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (const auto pShieldData = pExt->Shield.get())
+	{
+		if (!pShieldData->IsActive())
+			return 0;
+
+		auto flags= pShieldData->GetType()->HitBright.Get();
+		if (flags != CoordStruct::Empty)
+		{
+			auto flag = flags.X ?
+				SpotlightFlags::NoRed :
+				SpotlightFlags::None;
+			if (flags.Y)
+				flag |= SpotlightFlags::NoGreen;
+			if (flags.Z)
+				flag |= SpotlightFlags::NoBlue;
+			R->Stack(0, flag);
+		}
+	}
+	return 0;
+}
+
 DEFINE_HOOK_AGAIN(0x70CF39, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_EvalThreatRating_Shield
 DEFINE_HOOK_AGAIN(0x6F7D31, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_CanAutoTargetObject_Shield
 DEFINE_HOOK_AGAIN(0x6FCB64, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_CanFire_Shield
