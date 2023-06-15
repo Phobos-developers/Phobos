@@ -33,7 +33,8 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `[JumpjetControls]->TurnToTarget` and `JumpjetTurnToTarget` are obsolete. Jumpjet units who fire `OmniFire=no` weapons **always** turn to targets as other units do.
   - `OmniFire.TurnToTarget` is recommended for jumpjet units' omnifiring weapons for facing turning.
 - Buildings delivered by trigger action 125 will now **always** play buildup anim as long as it exists. `[ParamTypes]->53` is deprecated.
-- VXL Turrets can draw shadow now when`[AudioVisual]`->`DrawTurretShadow`.
+- VXL Turrets can draw shadow now when`[AudioVisual]`->`DrawTurretShadow`and`[TechnoClass]`->`TurretShadow`.
+- Multi-body unit can have multiple shadows by`ShadowIndices`.
 
 #### From pre-0.3 devbuilds
 
