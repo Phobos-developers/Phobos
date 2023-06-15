@@ -33,8 +33,6 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `[JumpjetControls]->TurnToTarget` and `JumpjetTurnToTarget` are obsolete. Jumpjet units who fire `OmniFire=no` weapons **always** turn to targets as other units do.
   - `OmniFire.TurnToTarget` is recommended for jumpjet units' omnifiring weapons for facing turning.
 - Buildings delivered by trigger action 125 will now **always** play buildup anim as long as it exists. `[ParamTypes]->53` is deprecated.
-- VXL Turrets can draw shadow now when`[AudioVisual]`->`DrawTurretShadow`and`[TechnoClass]`->`TurretShadow`.
-- Multi-body unit can have multiple shadows by`ShadowIndices`.
 
 #### From pre-0.3 devbuilds
 
@@ -315,6 +313,7 @@ New:
 - TechnoType conversion warhead & superweapon (by Morton)
 - Unlimited skirmish colors (by Morton)
 - Example custom locomotor that circles around the target (by Kerbiter, CCHyper, with help from Otamaa; based on earlier experiment by CnCVK)
+- Vehicle voxel turret shadows & body multi-section shadows (by TwinkleStar)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

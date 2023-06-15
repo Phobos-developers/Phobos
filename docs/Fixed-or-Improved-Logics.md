@@ -126,7 +126,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Buildings with superweapons no longer display `SuperAnimThree` at beginning of match if pre-placed on the map.
 - `SpySat=yes` can now be applied using building upgrades.
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do.
-- Voxel turrets can draw shadow now if `[AudioVisual]`->`DrawTurretShadow` is set to true.
 
 ## Fixes / interactions with other extensions
 
@@ -638,6 +637,24 @@ IronCurtain.KeptOnDeploy=yes ; boolean
 
 [SOMETECHNO]                 ; VehicleType with DeploysInto or BuildingType with UndeploysInto
 IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
+```
+
+### Voxel turret shadows & body multi-section shadows
+
+- Vehicle voxel turrets can now draw shadows if `[AudioVisual]` -> `DrawTurretShadow` is set to true. This can be overridden per VehicleType by setting `TurretShadow` in the vehicle's `artmd.ini` section.
+- It is also now possible for vehicles to display shadows for multiple sections of the voxel body at once, instead of just one section specified by `ShadowIndex` by specifying the section indices in `ShadowIndices`, which defaults to `ShadowIndex`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+DrawTurretShadow=false  ; boolean
+```
+
+In `artmd.ini`:
+```ini
+[SOMEUNIT]      ; UnitType
+TurretShadow=   ; boolean
+ShadowIndices=  ; list of integers (voxel section indices)
 ```
 
 ## VoxelAnims

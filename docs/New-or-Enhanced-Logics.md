@@ -914,31 +914,19 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
+### Customize EVA voice and `SellSound` when selling units
 
-### Turret shadow
+- When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
 
-- VXL Turrets can draw shadow now.
+  - `EVA.Sold` is used to customize the EVA voice when selling, default to `EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles.
+  - `SellSound` is used to customize the report sound when selling, default to `[AudioVisual]->SellSound`. Note that vanilla game played vehicles' SellSound globally. This has been changed in consistency with buildings' SellSound.
 
 In `rulesmd.ini`:
 ```ini
-[General]
-DrawTurretShadow=   ; boolean
-
-[SOMETECHNO]    ; UnitType
-TurretShadow=   ; boolean
+[SOMETECHNO]    ; BuildingType or UnitType
+EVA.Sold=       ; EVA entry
+SellSound=      ; sound entry
 ```
-
-### Multi-body shadows
-
-- Multi-body unit can have multiple shadows now.
-
-In `rulesmd.ini`:
-
-```ini
-[SOMETECHNO]    ; UnitType
-ShadowIndices =   ; list of shadow index, defaults to ShadowIndex
-```
-
 
 ## Terrain
 
