@@ -99,6 +99,9 @@ public:
 
 		TypeConvertHelper::ConvertPairs Convert_Pairs;
 
+		Valueable<bool> InflictLocomotor;
+		Valueable<bool> RemoveInflictedLocomotor;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -196,6 +199,9 @@ public:
 
 			, Convert_Pairs {}
 
+			, InflictLocomotor { false }
+			, RemoveInflictedLocomotor { false }
+
 			, AffectsEnemies { true }
 			, AffectsOwner {}
 
@@ -212,6 +218,8 @@ public:
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyLocomotorInfliction(TechnoClass* pTarget);
+		void ApplyLocomotorInflictionReset(TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);

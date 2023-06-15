@@ -283,7 +283,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 
 	// Locomotor change, referenced from Ares 0.A's abduction code, not sure if correct, untested
 	CLSID nowLocoID;
-	ILocomotion* iloco = pThis->Locomotor.get();
+	ILocomotion* iloco = pThis->Locomotor;
 	const auto& toLoco = pToType->Locomotor;
 	if ((SUCCEEDED(static_cast<LocomotionClass*>(iloco)->GetClassID(&nowLocoID)) && nowLocoID != toLoco))
 	{

@@ -504,7 +504,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 				{
 					if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
 					{
-						pBuilding->UpdatePlacement(PlacementType::Redraw);
+						pBuilding->Mark(MarkType::Change);
 						pBuilding->ToggleDamagedAnims(false);
 					}
 
