@@ -324,17 +324,17 @@ DEFINE_HOOK(0x4DB157, FootClass_DrawVoxelShadow_TurretShadow, 0x8)
 	GET_STACK(VoxelStruct*, pVXL, STACK_OFFSET(0x18, 0x4));
 
 	auto pType = pThis->GetTechnoType();
-	auto const pExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	auto tur = pType->Gunner || pType->IsChargeTurret
 		? &pType->ChargerTurrets[pThis->CurrentTurretNumber]
 		: &pType->TurretVoxel;
 
-	if (pExt->TurretShadow.Get(RulesExt::Global()->DrawTurretShadow) && tur->VXL && tur->HVA)
+	if (pTypeExt->TurretShadow.Get(RulesExt::Global()->DrawTurretShadow) && tur->VXL && tur->HVA)
 	{
 		auto mtx = pThis->Locomotor->Shadow_Matrix(0);
 		mtx.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
-		float x = static_cast<float>(pExt->TurretOffset.GetEx()->X);
-		float y = static_cast<float>(pExt->TurretOffset.GetEx()->Y);
+		float x = static_cast<float>(pTypeExt->TurretOffset.GetEx()->X / 8);
+		float y = static_cast<float>(pTypeExt->TurretOffset.GetEx()->Y / 8);
 		float z = -tur->VXL->TailerData->MinBounds.Z;
 		mtx.Translate(x, y, z);
 		Matrix3D::MatrixMultiply(&mtx, &Matrix3D::VoxelDefaultMatrix, &mtx);
@@ -346,13 +346,13 @@ DEFINE_HOOK(0x4DB157, FootClass_DrawVoxelShadow_TurretShadow, 0x8)
 			pThis->DrawVoxelShadow(bar, 0, angle, 0, a4, &a3, &mtx, a9, pSurface, pos);
 	}
 
-	if (!pExt->ShadowIndices.size())
+	if (!pTypeExt->ShadowIndices.size())
 	{
 		pThis->DrawVoxelShadow(pVXL, idx, angle, a5, a4, &a3, pMatrix, a9, pSurface, pos);
 	}
 	else
 	{
-		for (auto index : pExt->ShadowIndices)
+		for (auto index : pTypeExt->ShadowIndices)
 		{
 			auto hva = pVXL->HVA;
 			Matrix3D idxmtx = *pMatrix;
