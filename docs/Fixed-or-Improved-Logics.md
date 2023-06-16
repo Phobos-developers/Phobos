@@ -517,6 +517,16 @@ NoWobbles=false  ; boolean
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
 ```
 
+### Voxel body multi-section shadows
+
+- It is also now possible for vehicles and aircraft to display shadows for multiple sections of the voxel body at once, instead of just one section specified by `ShadowIndex`, by specifying the section indices in `ShadowIndices` (which defaults to `ShadowIndex`) in unit's `artmd.ini` entry.
+
+In `artmd.ini`:
+```ini
+[SOMETECHNO]    ; TechnoType
+ShadowIndices=  ; list of integers (voxel section indices)
+```
+
 ### Forbid parallel AI queues
 
 - You can now set if specific types of factories do not have AI production cloning issue instead of Ares' indiscriminate behavior of `AllowParallelAIQueues=no`.
@@ -639,11 +649,9 @@ IronCurtain.KeptOnDeploy=yes ; boolean
 IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
 ```
 
-### Voxel turret shadows & body multi-section shadows
+### Voxel turret shadow
 
 - Vehicle voxel turrets can now draw shadows if `[AudioVisual]` -> `DrawTurretShadow` is set to true. This can be overridden per VehicleType by setting `TurretShadow` in the vehicle's `artmd.ini` section.
-- It is also now possible for vehicles to display shadows for multiple sections of the voxel body at once, instead of just one section specified by `ShadowIndex` by specifying the section indices in `ShadowIndices`, which defaults to `ShadowIndex`.
-
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
@@ -654,7 +662,6 @@ In `artmd.ini`:
 ```ini
 [SOMEUNIT]      ; UnitType
 TurretShadow=   ; boolean
-ShadowIndices=  ; list of integers (voxel section indices)
 ```
 
 ## VoxelAnims
