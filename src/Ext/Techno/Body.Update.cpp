@@ -75,25 +75,14 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 	auto const pTypeExt = this->TypeExtData;
 
 	auto const pUnit = abstract_cast<UnitClass*>(pThis);
-	bool const pThisCanDeploy = pUnit->Type->IsSimpleDeployer;
+	bool const ThisCanDeploy = pUnit->Type->IsSimpleDeployer;
 
-	if (pThisCanDeploy)
-	{
-		if (pThis->Ammo <= 0)
-		{
-			if(pTypeExt->AmmoDepAction_AutoDeploy)
-			{
-				TechnoExt::UnitDeploySelf(pThis);
-				return;
-			}
-
-			if(pTypeExt->AmmoDepAction_DeployBlock)
-			{
-				TechnoExt::UnitDeployBlock(pThis);
-				return;
-			}
-		}
-	}
+	if (!ThisCanDeploy)
+	    return;
+	if ((pThis->Ammo <= 0) && pTypeExt->OnAmmoDepletion_AutoDeploy)
+		TechnoExt::UnitDeploySelf(pThis);
+	else if ((pThis->Ammo <= 0) && pTypeExt->OnAmmoDepletion_DeployBlock)
+		TechnoExt::UnitDeployBlock(pThis);
 	return;
 }
 
