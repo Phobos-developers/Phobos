@@ -47,7 +47,7 @@
     <ClCompile Include="src\Ext\TEvent\Hooks.cpp" />
     <ClCompile Include="src\Ext\TEvent\Body.cpp" />
     <ClCompile Include="src\Ext\Trigger\Hooks.cpp" />
-    <ClCompile Include="src\Locomotion\TestLocomotionClass.cpp"/>
+    <ClCompile Include="src\Locomotion\TestLocomotionClass.cpp" />
     <ClCompile Include="src\Misc\Hooks.Gamespeed.cpp" />
     <ClCompile Include="src\Misc\Hooks.Ares.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
@@ -130,10 +130,6 @@
     <ClCompile Include="src\Ext\BuildingType\Hooks.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Body.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Hooks.cpp" />
-    <ClCompile Include="src\Utilities\ShapeTextPrinter.cpp" />
-    <ClCompile Include="src\Utilities\Stream.cpp" />
-    <ClCompile Include="src\Utilities\Swizzle.cpp" />
-    <ClCompile Include="src\Phobos.cpp" />
     <ClCompile Include="src\Misc\FlyingStrings.cpp" />
     <ClCompile Include="src\Misc\Hooks.BugFixes.cpp" />
     <ClCompile Include="src\Misc\Hooks.PCX.cpp" />
@@ -148,6 +144,7 @@
     <ClCompile Include="src\Phobos.Ext.cpp" />
     <ClCompile Include="src\Phobos.INI.cpp" />
     <ClCompile Include="src\Phobos.cpp" />
+    <ClCompile Include="src\Utilities\ShapeTextPrinter.cpp" />
     <ClCompile Include="src\Utilities\Stream.cpp" />
     <ClCompile Include="src\Utilities\Swizzle.cpp" />
     <ClCompile Include="src\Utilities\Constructs.cpp" />
@@ -176,7 +173,7 @@
     <ClInclude Include="src\Ext\TAction\Body.h" />
     <ClInclude Include="src\Ext\Team\Body.h" />
     <ClInclude Include="src\Ext\TEvent\Body.h" />
-    <ClInclude Include="src\Locomotion\TestLocomotionClass.h"/>
+    <ClInclude Include="src\Locomotion\TestLocomotionClass.h" />
     <ClInclude Include="src\Misc\BlittersFix.h" />
     <ClInclude Include="src\Ext\CaptureManager\Body.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
@@ -189,8 +186,8 @@
     <ClInclude Include="src\New\Type\Affiliated\InterceptorTypeClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\PassengerDeletionTypeClass.h" />
     <ClInclude Include="src\New\Entity\LaserTrailClass.h" />
-    <ClInclude Include="src\Utilities\Anchor.h" />
     <ClInclude Include="src\New\Entity\ShieldClass.h" />
+    <ClInclude Include="src\Utilities\Anchor.h" />
     <ClInclude Include="src\Utilities\Enumerable.h" />
     <ClInclude Include="src\Ext\Aircraft\Body.h" />
     <ClInclude Include="src\Ext\AnimType\Body.h" />
@@ -213,6 +210,7 @@
     <ClInclude Include="src\Ext\WeaponType\Body.h" />
     <ClInclude Include="src\Utilities\Savegame.h" />
     <ClInclude Include="src\Utilities\SavegameDef.h" />
+    <ClInclude Include="src\Utilities\ShapeTextPrinter.h" />
     <ClInclude Include="src\Utilities\Stream.h" />
     <ClInclude Include="src\Utilities\Swizzle.h" />
     <ClInclude Include="src\Phobos.COM.h" />
@@ -239,7 +237,6 @@
     <ClInclude Include="src\Utilities\AresHelper.h" />
     <ClInclude Include="src\Utilities\AresFunctions.h" />
     <ClInclude Include="lib\nameof\nameof.h" />
-    <ClInclude Include="src\Utilities\ShapeTextPrinter.h" />
     <ClInclude Include="YRpp\GameTextManager.h" />
   </ItemGroup>
   <ItemGroup>
