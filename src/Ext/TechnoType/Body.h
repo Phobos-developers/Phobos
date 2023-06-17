@@ -49,8 +49,8 @@ public:
 		Valueable<ShieldTypeClass*> ShieldType;
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
 
-		Valueable<bool> AmmoDepAction_AutoDeploy;
-		Valueable<bool> AmmoDepAction_DeployBlock;
+		Valueable<bool> OnAmmoDepletion_AutoDeploy;
+		Valueable<bool> OnAmmoDepletion_DeployBlock;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 		Nullable<AnimTypeClass*> AutoDeath_VanishAnimation;
