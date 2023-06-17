@@ -181,3 +181,17 @@ DEFINE_HOOK(0x48A4F3, SelectDamageAnimation_NegativeZeroDamage, 0x6)
 	R->ESI(warhead);
 	return SkipGameCode;
 }
+
+DEFINE_HOOK(0x489B49, MapClass_DamageArea_Rocker, 0xA)
+{
+	GET_BASE(WarheadTypeClass*, pWH, 0xC);
+	GET_STACK(int, damage, STACK_OFFSET(0xE0, 0xBC));
+
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	double rocker = pWHExt->Rocker_Damage.Get(damage);
+	rocker *= 0.01;
+
+	_asm fld rocker
+
+	return 0x489B53;
+}

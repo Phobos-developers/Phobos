@@ -32,6 +32,7 @@ public:
 		Valueable<bool> AnimList_ShowOnZeroDamage;
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
+		Nullable<int> Rocker_Damage;
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
@@ -132,6 +133,7 @@ public:
 			, AnimList_ShowOnZeroDamage { false }
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
+			, Rocker_Damage { }
 
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }
