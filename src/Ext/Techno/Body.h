@@ -60,6 +60,7 @@ public:
 
 		void ApplyInterceptor();
 		bool CheckDeathConditions();
+		void DepletedAmmoActions();
 		void EatPassengers();
 		void UpdateShield();
 		void UpdateOnTunnelEnter();
@@ -68,6 +69,7 @@ public:
 		void UpdateLaserTrails();
 		void InitializeLaserTrails();
 		void UpdateMindControlAnim();
+		void UnitDeployCommand();
 
 		virtual ~ExtData() override;
 
@@ -107,6 +109,8 @@ public:
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation);
+	static void DeployUnitSelf(TechnoClass* pThis);
+	static void UnitDeployBlock(TechnoClass* pThis);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
