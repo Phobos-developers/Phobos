@@ -43,7 +43,6 @@ public:
 		Valueable<bool> MultiMindControl_ReleaseVictim;
 		Valueable<int> CameoPriority;
 		Valueable<bool> NoManualMove;
-		Valueable<bool> AutoDeployOnDepletedAmmo;//testing
 		Nullable<int> InitialStrength;
 
 		Valueable<ShieldTypeClass*> ShieldType;
