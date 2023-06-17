@@ -20,9 +20,19 @@ public:
 	public:
 
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
+		Valueable<bool> ExplodeOnWater;
+		Valueable<bool> Warhead_Detonate;
+		Nullable<AnimTypeClass*> WakeAnim;
+		NullableVector<AnimTypeClass*> SplashAnims;
+		Valueable<bool> SplashAnims_PickRandom;
 
 		ExtData(VoxelAnimTypeClass* OwnerObject) : Extension<VoxelAnimTypeClass>(OwnerObject)
 			, LaserTrail_Types()
+			, ExplodeOnWater { false }
+			, Warhead_Detonate { false }
+			, WakeAnim {}
+			, SplashAnims {}
+			, SplashAnims_PickRandom { false }
 		{ }
 
 		virtual ~ExtData() = default;

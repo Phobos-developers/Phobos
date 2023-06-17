@@ -1,5 +1,8 @@
 #include "Body.h"
 
+#include <SessionClass.h>
+#include <GameStrings.h>
+
 template<> const DWORD Extension<ScenarioClass>::Canary = 0xABCD1595;
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
@@ -79,9 +82,14 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	// auto pThis = this->OwnerObject();
 
-	// INI_EX exINI(pINI);
+	INI_EX exINI(pINI);
 
-
+	if (SessionClass::IsCampaign())
+	{
+		Nullable<bool> SP_MCVRedeploy;
+		SP_MCVRedeploy.Read(exINI, GameStrings::Basic, GameStrings::MCVRedeploys);
+		GameModeOptionsClass::Instance->MCVRedeploy = SP_MCVRedeploy.Get(false);
+	}
 
 }
 
@@ -92,6 +100,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->Waypoints)
 		.Process(this->Variables[0])
 		.Process(this->Variables[1])
+		.Process(SessionClass::Instance->Config)
 		;
 }
 
@@ -185,10 +194,10 @@ DEFINE_HOOK(0x68945B, ScenarioClass_Save_Suffix, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x68AD62, ScenarioClass_LoadFromINI, 0x6)
+DEFINE_HOOK(0x68AD2F, ScenarioClass_LoadFromINI, 0x5)
 {
 	GET(ScenarioClass*, pItem, ESI);
-	GET_STACK(CCINIClass*, pINI, STACK_OFFSET(0x38, 0x8));
+	GET(CCINIClass*, pINI, EDI);
 
 	ScenarioExt::LoadFromINIFile(pItem, pINI);
 	return 0;

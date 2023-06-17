@@ -6,6 +6,7 @@
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <Ext/Bullet/Body.h>
+#include <Misc/TypeConvertHelper.h>
 
 class WarheadTypeExt
 {
@@ -28,6 +29,7 @@ public:
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
 		Valueable<bool> AnimList_PickRandom;
+		Valueable<bool> AnimList_ShowOnZeroDamage;
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 
@@ -70,13 +72,23 @@ public:
 		Valueable<bool> Shield_InheritStateOnReplace;
 		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
+		NullableVector<ShieldTypeClass*> Shield_Penetrate_Types;
+		NullableVector<ShieldTypeClass*> Shield_Break_Types;
+		NullableVector<ShieldTypeClass*> Shield_Respawn_Types;
+		NullableVector<ShieldTypeClass*> Shield_SelfHealing_Types;
 
 		Valueable<int> NotHuman_DeathSequence;
 		ValueableIdxVector<SuperWeaponTypeClass> LaunchSW;
 		Valueable<bool> LaunchSW_RealLaunch;
 		Valueable<bool> LaunchSW_IgnoreInhibitors;
 		Valueable<bool> LaunchSW_IgnoreDesignators;
+		Valueable<bool> LaunchSW_DisplayMoney;
+		Valueable<AffectedHouse> LaunchSW_DisplayMoney_Houses;
+		Valueable<Point2D> LaunchSW_DisplayMoney_Offset;
+
 		Valueable<bool> AllowDamageOnSelf;
+		NullableVector<AnimTypeClass*> DebrisAnims;
+		Valueable<bool> Debris_Conventional;
 
 		Valueable<bool> DetonateOnAllMapObjects;
 		Valueable<bool> DetonateOnAllMapObjects_RequireVerses;
@@ -84,6 +96,11 @@ public:
 		Valueable<AffectedHouse> DetonateOnAllMapObjects_AffectHouses;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
+
+		TypeConvertHelper::ConvertPairs Convert_Pairs;
+
+		Valueable<bool> InflictLocomotor;
+		Valueable<bool> RemoveInflictedLocomotor;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -112,6 +129,7 @@ public:
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
 			, AnimList_PickRandom { false }
+			, AnimList_ShowOnZeroDamage { false }
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
 
@@ -154,20 +172,35 @@ public:
 			, Shield_InheritStateOnReplace { false }
 			, Shield_MinimumReplaceDelay { 0 }
 			, Shield_AffectTypes {}
+			, Shield_Penetrate_Types {}
+			, Shield_Break_Types {}
+			, Shield_Respawn_Types {}
+			, Shield_SelfHealing_Types {}
 
 			, NotHuman_DeathSequence { -1 }
 			, LaunchSW {}
 			, LaunchSW_RealLaunch { true }
 			, LaunchSW_IgnoreInhibitors { false }
 			, LaunchSW_IgnoreDesignators { true }
+			, LaunchSW_DisplayMoney { false }
+			, LaunchSW_DisplayMoney_Houses { AffectedHouse::All }
+			, LaunchSW_DisplayMoney_Offset { { 0, 0 } }
+
 			, AllowDamageOnSelf { false }
+			, DebrisAnims {}
+			, Debris_Conventional { false }
 
 			, DetonateOnAllMapObjects { false }
 			, DetonateOnAllMapObjects_RequireVerses { false }
-			, DetonateOnAllMapObjects_AffectTargets { AffectedTarget::All }
-			, DetonateOnAllMapObjects_AffectHouses { AffectedHouse::All }
+			, DetonateOnAllMapObjects_AffectTargets { AffectedTarget::None }
+			, DetonateOnAllMapObjects_AffectHouses { AffectedHouse::None }
 			, DetonateOnAllMapObjects_AffectTypes {}
 			, DetonateOnAllMapObjects_IgnoreTypes {}
+
+			, Convert_Pairs {}
+
+			, InflictLocomotor { false }
+			, RemoveInflictedLocomotor { false }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
@@ -184,6 +217,9 @@ public:
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
+		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyLocomotorInfliction(TechnoClass* pTarget);
+		void ApplyLocomotorInflictionReset(TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
@@ -215,6 +251,6 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
-	static void DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage);
-	static void DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage);
+	static void DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
+	static void DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
 };

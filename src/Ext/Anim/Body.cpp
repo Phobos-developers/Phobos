@@ -2,9 +2,39 @@
 
 #include <Ext/AnimType/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 template<> const DWORD Extension<AnimClass>::Canary = 0xAAAAAAAA;
 AnimExt::ExtContainer AnimExt::ExtMap;
+
+void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker)
+{
+	this->Invoker = pInvoker;
+	this->InvokerHouse = pInvoker ? pInvoker->Owner : nullptr;
+}
+
+void AnimExt::ExtData::CreateAttachedSystem(ParticleSystemTypeClass* pSystemType)
+{
+	const auto pThis = this->OwnerObject();
+	const auto pType = this->OwnerObject()->Type;
+
+	if (pType && pSystemType && !this->AttachedSystem)
+	{
+		if (auto const pSystem = GameCreate<ParticleSystemClass>(pSystemType, pThis->Location, pThis->GetCell(), pThis, CoordStruct::Empty, nullptr))
+			this->AttachedSystem = pSystem;
+	}
+}
+
+void AnimExt::ExtData::DeleteAttachedSystem()
+{
+	if (this->AttachedSystem)
+	{
+		this->AttachedSystem->Owner = nullptr;
+		this->AttachedSystem->UnInit();
+		this->AttachedSystem = nullptr;
+	}
+
+}
 
 //Modified from Ares
 const bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner)
@@ -23,6 +53,80 @@ const bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker
 	return newOwner;
 }
 
+HouseClass* AnimExt::GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner)
+{
+	if (!pAnim)
+		return pDefaultOwner;
+
+	HouseClass* pTechnoOwner = nullptr;
+
+	if (auto const pTechno = abstract_cast<TechnoClass*>(pAnim->OwnerObject))
+		pTechnoOwner = pTechno->Owner;
+
+	if (pAnim->Owner)
+		return pAnim->Owner;
+	else
+		return  pTechnoOwner ? pTechnoOwner : pDefaultOwner;
+}
+
+void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWakeAnim, Iterator<AnimTypeClass*> splashAnims, HouseClass* pOwner, WarheadTypeClass* pWarhead, int nDamage,
+	CellClass* pCell, CoordStruct nLocation, bool heightFlag, bool isMeteor, bool warheadDetonate, bool explodeOnWater, bool splashAnimsPickRandom)
+{
+	AnimTypeClass* pWakeAnimToUse = nullptr;
+	AnimTypeClass* pSplashAnimToUse = nullptr;
+
+	if (pCell->LandType != LandType::Water || heightFlag || explodeOnWater)
+	{
+		if (pWarhead)
+		{
+			if (warheadDetonate)
+			{
+				WarheadTypeExt::DetonateAt(pWarhead, nLocation, nullptr, nDamage);
+			}
+			else
+			{
+				MapClass::DamageArea(nLocation, nDamage, nullptr, pWarhead, pWarhead->Tiberium, pOwner);
+				MapClass::FlashbangWarheadAt(nDamage, pWarhead, nLocation);
+			}
+		}
+
+		if (pExpireAnim)
+		{
+			if (auto pAnim = GameCreate<AnimClass>(pExpireAnim, nLocation, 0, 1, 0x2600u, 0, 0))
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false);
+		}
+	}
+	else
+	{
+		if (!isMeteor)
+			pWakeAnimToUse = RulesClass::Instance->Wake;
+
+		if (pWakeAnim)
+			pWakeAnimToUse = pWakeAnim;
+
+		if (splashAnims.size() > 0)
+		{
+			auto nIndexR = (splashAnims.size() - 1);
+			auto nIndex = splashAnimsPickRandom ?
+				ScenarioClass::Instance->Random.RandomRanged(0, nIndexR) : 0;
+
+			pSplashAnimToUse = splashAnims.at(nIndex);
+		}
+	}
+
+	if (pWakeAnimToUse)
+	{
+		if (auto const pWakeAnimCreated = GameCreate<AnimClass>(pWakeAnimToUse, nLocation, 0, 1, 0x600u, false))
+			AnimExt::SetAnimOwnerHouseKind(pWakeAnimCreated, pOwner, nullptr, false);
+	}
+
+	if (pSplashAnimToUse)
+	{
+		if (auto const pSplashAnimCreated = GameCreate<AnimClass>(pSplashAnimToUse, nLocation, 0, 1, 0x600u, false))
+			AnimExt::SetAnimOwnerHouseKind(pSplashAnimCreated, pOwner, nullptr, false);
+	}
+}
+
 // =============================
 // load / save
 
@@ -35,6 +139,8 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeathUnitTurretFacing)
 		.Process(this->DeathUnitHasTurret)
 		.Process(this->Invoker)
+		.Process(this->InvokerHouse)
+		.Process(this->AttachedSystem)
 		;
 }
 
@@ -65,7 +171,12 @@ DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 {
 	GET(AnimClass*, pItem, ESI);
 
-	AnimExt::ExtMap.FindOrAllocate(pItem);
+	if (pItem->Type)
+	{
+		auto const pExt = AnimExt::ExtMap.FindOrAllocate(pItem);
+		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pItem->Type);
+		pExt->CreateAttachedSystem(pTypeExt->AttachedSystem);
+	}
 
 	return 0;
 }

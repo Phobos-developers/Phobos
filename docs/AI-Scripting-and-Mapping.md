@@ -9,13 +9,23 @@ This page describes all AI scripting and mapping related additions and changes i
 - Map trigger action `125 Build At...` can now play buildup anim and becomes singleplayer-AI-repairable optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2).
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
-- In singleplayer campaigns, AI can now repair the base nodes/buildings delivered by SW (Ares) by setting
+- In **singleplayer campaigns**:
+  - You can now decide whether AI can repair the base nodes/buildings delivered by SW (Ares) by setting
 ```ini
 [Country House]
 RepairBaseNodes=no,no,no ; 3 booleans indicating whether AI repair basenodes in Easy/ Normal/ Difficult game diffculty.
 ```
+
+  - You can now decide whether MCV can redeploy by setting
+```ini
+[Basic]
+MCVRedeploys=no  ; boolean, Overrides [MultiplayerDialogSettings]->MCVRedeploys only in campaigns
+```
+  - **Note that these tags only work within the map file**
+
 - Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
   - `InitialPayload` logic from Ares is not supported yet.
+- If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
 
 ## Script Actions
 
@@ -56,14 +66,15 @@ x=i,n             ; For i values check the next table
 | 10017    | `AITargetTypes` index# | No        | Farther, higher threat | Ends when a team member kill the designated target |
 
 - The following values are the *Target Type#* which can be used as second parameter of the new attack script actions:
+  - 'Buildings considered as vehicles' means buildings with both `UndeploysInto` set & `Foundation=1x1` and `ConsideredVehicle` not set or buildings with `ConsideredVehicle=true`.
 
 | *Value* | *Target Type*            | *Description*                                 |
 | :-----: | :----------------------: | :-------------------------------------------: |
 | 1       | Anything                 | Any enemy `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` |
-| 2       | Structures               | Any enemy `BuildingTypes` without `Artillary=yes`, `TickTank=yes`, `ICBMLauncher=yes` or `SensorArray=yes` |
+| 2       | Structures               | Any enemy `BuildingTypes` that are not considered as vehicles |
 | 3       | Ore Miners               | Any enemy `VehicleTypes` with `Harvester=yes` or `ResourceGatherer=yes`, `BuildingTypes` with `ResourceGatherer=yes` |
 | 4       | Infantry                 | Any enemy `InfantryTypes` |
-| 5       | Vehicles                 | Any enemy `VehicleTypes`, `AircraftTypes`, `BuildingTypes` with `Artillary=yes`, `TickTank=yes`, `ICBMLauncher=yes` & `SensorArray=yes` |
+| 5       | Vehicles                 | Any enemy `VehicleTypes` or buildings considered as vehicles |
 | 6       | Factories                | Any enemy `BuildingTypes` with a Factory= setting |
 | 7       | Base Defenses            | Any enemy `BuildingTypes` with `IsBaseDefense=yes` |
 | 8       | House Threats            | Any object that targets anything of the Team's House or any enemy that is near to the Team Leader |
@@ -72,10 +83,10 @@ x=i,n             ; For i values check the next table
 | 11      | Tech Buildings           | Any `BuildingTypes` with `Unsellable=yes`, `Capturable=yes`, negative `TechLevel=` values or appears in `[AI]>NeutralTechBuildings=` list |
 | 12      |	Refinery                 | Any enemy `BuildingTypes` with `Refinery=yes` or `ResourceGatherer=yes`, `VehicleTypes` with `ResourceGatherer=yes` & `Harvester=no` (i.e. Slave Miner) |
 | 13      | Mind Controller          | Anything `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` with `MindControl=yes` in the weapons Warheads |
-| 14      | Air Units                | Any enemy `AircraftTypes`, flying `VehicleTypes` or `InfantryTypes` |
+| 14      | Air Units (incl. landed) | Any enemy, `AircraftTypes` and `Jumpjet=yes` `VehicleTypes` or `InfantryTypes`, including landed ones as well as any other currently airborne units |
 | 15      | Naval                    | Any enemy `BuildingTypes` and `VehicleTypes` with a `Naval=yes`, any enemy `VehicleTypes`, `AircraftTypes`, `InfantryTypes` in a water cell |
 | 16      | Disruptors               | Any enemy objects with positive `InhibitorRange=` values, positive `RadarJamRadius=` values, `CloakGenerator=yes` or `GapGenerator=yes` |
-| 17      | Ground Vehicles          | Any enemy `VehicleTypes` without `Naval=yes`, landed `AircraftTypes`, Deployed vehicles into `BuildingTypes` |
+| 17      | Ground Vehicles          | Any enemy `VehicleTypes` without `Naval=yes`, landed `AircraftTypes` or buildings considered as vehicles |
 | 18      | Economy                  | Any enemy `VehicleTypes` with `Harvester=yes` or `ResourceGatherer=yes`, `BuildingTypes` with `Refinery=yes`, `ResourceGatherer=yes` or `OrePurifier=yes` |
 | 19      | Infantry Factory         | Any enemy `BuildingTypes` with `Factory=InfantryType` |
 | 20      | Vehicle Factory          | Any enemy `BuildingTypes` with with `Naval=no` and `Factory=UnitType` |
@@ -435,6 +446,7 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 
 ### `505` Fire Super Weapon at specified location
 
+- **Use with caution**
 - Launch a Super Weapon from [SuperWeaponTypes] list at a specified location.
 - `HouseIndex` can take various values:
 
@@ -458,6 +470,7 @@ ID=ActionCount,[Action1],505,0,0,[SuperWeaponTypesIndex],[HouseIndex],[Coordinat
 
 ### `506` Fire Super Weapon at specified Waypoint
 
+- **Use with caution**
 - Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint.
 
 In `mycampaign.map`:
@@ -465,6 +478,18 @@ In `mycampaign.map`:
 [Actions]
 ...
 ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointIndex],0,A,[ActionX]
+...
+```
+
+### `510` Toggle MCV redeployablility
+
+- Force MCV's redeployablility by setting the third parameter.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],510,0,0,[MCVRedeploy],0,0,0,A,[ActionX]
 ...
 ```
 

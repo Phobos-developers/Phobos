@@ -13,7 +13,7 @@ bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowe
 {
 	if (explicitEmptyCells)
 	{
-		auto pTechno = pCell->FirstObject ? abstract_cast<TechnoClass*>(pCell->FirstObject) : nullptr;
+		auto pTechno = pCell->GetContent() ? abstract_cast<TechnoClass*>(pCell->GetContent()) : nullptr;
 
 		if (!pTechno && !(allowed & AffectedTarget::NoContent))
 			return false;
@@ -27,7 +27,7 @@ bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowe
 			return (allowed & AffectedTarget::Land) != AffectedTarget::None;
 	}
 
-	return allowed != AffectedTarget::None ? true : false;
+	return allowed != AffectedTarget::None;
 }
 
 bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget allowed, bool considerAircraftSeparately)
@@ -58,7 +58,7 @@ bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget 
 		}
 	}
 
-	return allowed != AffectedTarget::None ? true : false;
+	return allowed != AffectedTarget::None;
 }
 
 bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTarget allowed, AffectedHouse allowedHouses, HouseClass* owner, bool explicitEmptyCells, bool considerAircraftSeparately)

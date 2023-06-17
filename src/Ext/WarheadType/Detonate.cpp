@@ -8,6 +8,7 @@
 #include <AnimClass.h>
 #include <BitFont.h>
 #include <SuperClass.h>
+#include <AircraftClass.h>
 
 #include <Utilities/Helpers.Alex.h>
 #include <Ext/Bullet/Body.h>
@@ -26,7 +27,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	{
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
 
-		if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
+		if (pTypeExt->InterceptorType && pBulletExt->IsInterceptor)
 			this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
 	}
 
@@ -67,14 +68,29 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			{
 				const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 				const auto cell = CellClass::Coord2Cell(coords);
-				if (!this->LaunchSW_RealLaunch || (pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)))
+
+				if (pHouse->CanTransactMoney(pSWExt->Money_Amount) && (!this->LaunchSW_RealLaunch || (pSuper->Granted && pSuper->IsCharged && !pSuper->IsOnHold)))
 				{
 					if (this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell)
 					&& (this->LaunchSW_IgnoreDesignators || pSWExt->HasDesignator(pHouse, cell)))
 					{
+						if (this->LaunchSW_DisplayMoney && pSWExt->Money_Amount != 0)
+							FlyingStrings::AddMoneyString(pSWExt->Money_Amount, pHouse, this->LaunchSW_DisplayMoney_Houses, coords, this->LaunchSW_DisplayMoney_Offset);
+
+						int oldstart = pSuper->RechargeTimer.StartTime;
+						int oldleft = pSuper->RechargeTimer.TimeLeft;
+						// If you don't set it ready, NewSWType::Active will give false in Ares if RealLaunch=false
+						// and therefore it will reuse the vanilla routine, which will crash inside of it
+						pSuper->SetReadiness(true);
+						// TODO: Can we use ClickFire instead of Launch?
 						pSuper->Launch(cell, true);
-						if (this->LaunchSW_RealLaunch)
-							pSuper->Reset();
+						pSuper->Reset();
+
+						if (!this->LaunchSW_RealLaunch)
+						{
+							pSuper->RechargeTimer.StartTime = oldstart;
+							pSuper->RechargeTimer.TimeLeft = oldleft;
+						}
 					}
 				}
 			}
@@ -93,7 +109,10 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_Respawn_Duration > 0 ||
 		this->Shield_SelfHealing_Duration > 0 ||
 		this->Shield_AttachTypes.size() > 0 ||
-		this->Shield_RemoveTypes.size() > 0;
+		this->Shield_RemoveTypes.size() > 0 ||
+		this->Convert_Pairs.size() > 0 ||
+		this->InflictLocomotor ||
+		this->RemoveInflictedLocomotor;
 
 	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 
@@ -112,7 +131,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, bool bulletWasIntercepted)
 {
-	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health)
+	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking)
 		return;
 
 	if (!this->CanTargetHouse(pHouse, pTarget))
@@ -128,6 +147,15 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->Crit_Chance && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner);
+
+	if (this->Convert_Pairs.size() > 0)
+		this->ApplyConvert(pHouse, pTarget);
+
+	if (this->InflictLocomotor)
+		this->ApplyLocomotorInfliction(pTarget);
+
+	if (this->RemoveInflictedLocomotor)
+		this->ApplyLocomotorInflictionReset(pTarget);
 }
 
 void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
@@ -191,16 +219,21 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 		// Apply other modifiers.
 		if (pExt->Shield)
 		{
-			if (this->Shield_AffectTypes.size() > 0 && !this->Shield_AffectTypes.Contains(pExt->Shield->GetType()))
-				return;
+			auto isShieldTypeEligible = [pExt](Iterator<ShieldTypeClass*> elements) -> bool
+			{
+				if (elements.size() > 0 && !elements.contains(pExt->Shield->GetType()))
+					return false;
 
-			if (this->Shield_Break && pExt->Shield->IsActive())
+				return true;
+			};
+
+			if (this->Shield_Break && pExt->Shield->IsActive() && isShieldTypeEligible(this->Shield_Break_Types.GetElements(this->Shield_AffectTypes)))
 				pExt->Shield->BreakShield(this->Shield_BreakAnim.Get(nullptr), this->Shield_BreakWeapon.Get(nullptr));
 
-			if (this->Shield_Respawn_Duration > 0)
+			if (this->Shield_Respawn_Duration > 0 && isShieldTypeEligible(this->Shield_Respawn_Types.GetElements(this->Shield_AffectTypes)))
 				pExt->Shield->SetRespawn(this->Shield_Respawn_Duration, this->Shield_Respawn_Amount, this->Shield_Respawn_Rate, this->Shield_Respawn_ResetTimer);
 
-			if (this->Shield_SelfHealing_Duration > 0)
+			if (this->Shield_SelfHealing_Duration > 0 && isShieldTypeEligible(this->Shield_SelfHealing_Types.GetElements(this->Shield_AffectTypes)))
 			{
 				double amount = this->Shield_SelfHealing_Amount.Get(pExt->Shield->GetType()->SelfHealing);
 				pExt->Shield->SetSelfHealing(this->Shield_SelfHealing_Duration, amount, this->Shield_SelfHealing_Rate, this->Shield_SelfHealing_ResetTimer);
@@ -236,9 +269,13 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (this->Crit_Chance < dice)
 		return;
 
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType()))
+	if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
 	{
-		if (pTypeExt->ImmuneToCrit)
+		if (pExt->TypeExtData->ImmuneToCrit)
+			return;
+
+		auto pSld = pExt->Shield.get();
+		if (pSld && pSld->IsActive() && pSld->GetType()->ImmuneToCrit)
 			return;
 
 		if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent)
@@ -293,9 +330,8 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 	}
 	else
 	{
-		for (auto const& pBullet : *BulletClass::Array)
+		for (auto const& [pBullet,pExt] : BulletExt::ExtMap)
 		{
-			auto const pExt = BulletExt::ExtMap.Find(pBullet);
 			auto const pTypeExt = pExt->TypeExtData;
 
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
@@ -303,4 +339,60 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 				pExt->InterceptBullet(pOwner, pWeapon);
 		}
 	}
+}
+
+void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
+{
+	auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
+
+	if (!pTargetFoot || this->Convert_Pairs.size() == 0)
+		return;
+
+	TypeConvertHelper::Convert(pTargetFoot, this->Convert_Pairs, pHouse);
+}
+
+void WarheadTypeExt::ExtData::ApplyLocomotorInfliction(TechnoClass* pTarget)
+{
+	auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
+	if (!pTargetFoot)
+		return;
+
+	// same locomotor? no point to change
+	CLSID targetCLSID { };
+	CLSID inflictCLSID = this->OwnerObject()->Locomotor;
+	IPersistPtr pLocoPersist = pTargetFoot->Locomotor;
+	if (SUCCEEDED(pLocoPersist->GetClassID(&targetCLSID)) && targetCLSID == inflictCLSID)
+		return;
+
+	// prevent endless piggyback
+	IPiggybackPtr pTargetPiggy = pTargetFoot->Locomotor;
+	if (pTargetPiggy != nullptr && pTargetPiggy->Is_Piggybacking())
+		return;
+
+	LocomotionClass::ChangeLocomotorTo(pTargetFoot, inflictCLSID);
+}
+
+void WarheadTypeExt::ExtData::ApplyLocomotorInflictionReset(TechnoClass* pTarget)
+{
+	auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
+
+	if (!pTargetFoot)
+		return;
+
+	// remove only specific inflicted locomotor if specified
+	CLSID removeCLSID = this->OwnerObject()->Locomotor;
+	if (removeCLSID != CLSID())
+	{
+		CLSID targetCLSID { };
+		IPersistPtr pLocoPersist = pTargetFoot->Locomotor;
+		if (SUCCEEDED(pLocoPersist->GetClassID(&targetCLSID)) && targetCLSID != removeCLSID)
+			return;
+	}
+
+	// // we don't want to remove non-ok-to-end locos
+	// IPiggybackPtr pTargetPiggy = pTargetFoot->Locomotor;
+	// if (pTargetPiggy != nullptr && (!pTargetPiggy->Is_Ok_To_End()))
+	// 	return;
+
+	LocomotionClass::End_Piggyback(pTargetFoot->Locomotor);
 }
