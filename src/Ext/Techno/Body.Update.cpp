@@ -99,14 +99,13 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 
 void TechnoExt::UnitDeploySelf(TechnoClass* pThis)
 {
-	if (pThis->WhatAmI() == AbstractType::Unit)
-	{
-		if (pThis->CanDeploySlashUnload())
-		{
-			pThis->QueueMission(Mission::Unload, true);
-		}
-	}
-	return;
+	if (pThis->WhatAmI() != AbstractType::Unit)
+	    return;
+
+	if (!pThis->CanDeploySlashUnload())
+        return;
+
+	pThis->QueueMission(Mission::Unload, true);
 }
 
 void TechnoExt::UnitDeployBlock(TechnoClass* pThis)
