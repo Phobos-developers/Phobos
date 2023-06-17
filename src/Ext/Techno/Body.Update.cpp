@@ -69,9 +69,7 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 {
 	auto const pThis = this->OwnerObject();
 	auto const pType = pThis->GetTechnoType();
-	bool const isUnit = pThis->WhatAmI() == AbstractType::Unit;
-
-	if (!isUnit && (pType->Ammo <= 0))
+	if ((pThis->WhatAmI() != AbstractType::Unit) || (pType->Ammo > 0))
 		return;
 
 	auto const pTypeExt = this->TypeExtData;
