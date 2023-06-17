@@ -65,7 +65,6 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	}
 }
 
-//test
 void TechnoExt::ExtData::DepletedAmmoActions()
 {
 	auto const pThis = this->OwnerObject();
