@@ -32,6 +32,8 @@ public:
 		std::unique_ptr<InterceptorTypeClass> InterceptorType;
 
 		Valueable<PartialVector3D<int>> TurretOffset;
+		Nullable<bool> TurretShadow;
+		ValueableVector<bool> ShadowIndices;
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
 		Nullable<int> Spawner_DelayFrames;
@@ -180,6 +182,8 @@ public:
 			, InterceptorType { nullptr }
 
 			, TurretOffset { { 0, 0, 0 } }
+			, TurretShadow { }
+			, ShadowIndices { }
 			, Spawner_LimitRange { false }
 			, Spawner_ExtraLimitRange { 0 }
 			, Spawner_DelayFrames {}

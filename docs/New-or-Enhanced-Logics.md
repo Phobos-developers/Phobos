@@ -914,7 +914,6 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
-
 ### Customize EVA voice and `SellSound` when selling units
 
 - When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
@@ -928,7 +927,6 @@ In `rulesmd.ini`:
 EVA.Sold=       ; EVA entry
 SellSound=      ; sound entry
 ```
-
 
 ## Terrain
 
