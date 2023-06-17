@@ -1169,9 +1169,12 @@ void ScriptExt::ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance)
 	auto pScript = pTeam->CurrentScript;
 	auto const pLeader = ScriptExt::FindTheTeamLeader(pTeam);
 
+	char logText[1024];
+	sprintf_s(logText, "AI Scripts - ChronoshiftToEnemyBase: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: %s)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument, "%s");
+
 	if (!pLeader)
 	{
-		ScriptExt::Log("AI Scripts - ChronoshiftToEnemyBase: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: No Leader found)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
+		ScriptExt::Log(logText, "No team leader found");
 		pTeam->StepCompleted = true;
 		return;
 	}
@@ -1181,7 +1184,7 @@ void ScriptExt::ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance)
 
 	if (!pEnemy)
 	{
-		ScriptExt::Log("AI Scripts - ChronoshiftToEnemyBase: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: No enemy house found)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
+		ScriptExt::Log(logText, "No enemy house found");
 		pTeam->StepCompleted = true;
 		return;
 	}
@@ -1190,7 +1193,7 @@ void ScriptExt::ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance)
 
 	if (!pTargetCell)
 	{
-		ScriptExt::Log("AI Scripts - ChronoshiftToEnemyBase: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: No target cell found)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
+		ScriptExt::Log(logText, "No target cell found");
 		pTeam->StepCompleted = true;
 		return;
 	}
@@ -1220,9 +1223,17 @@ void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLead
 			break;
 	}
 
+	char logTextBase[1024];
+	char logTextJump[1024];
+	char jump[256];
+
+	sprintf_s(jump, "Jump to next line: %d = %d,%d -> (Reason: %s)", pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument, "%s");
+	sprintf_s(logTextBase, "AI Scripts - ChronoshiftTeamToTarget: [%s] [%s] (line: %d = %d,%d) %s\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, "%s");
+	sprintf_s(logTextJump, logTextBase, jump);
+
 	if (!pSuperChronosphere || !pSuperChronowarp)
 	{
-		ScriptExt::Log("AI Scripts - ChronoshiftTeamToTarget: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: No Chronosphere or ChronoWarp superweapon found)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
+		ScriptExt::Log(logTextJump, "No Chronosphere or ChronoWarp superweapon found");
 		pTeam->StepCompleted = true;
 		return;
 	}
@@ -1236,13 +1247,13 @@ void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLead
 
 			if (1.0 - RulesClass::Instance->AIMinorSuperReadyPercent < timeLeft / rechargeTime)
 			{
-				ScriptExt::Log("AI Scripts - ChronoshiftTeamToTarget: [%s] [%s] (line: %d = %d,%d) Chronosphere superweapon charge not at AIMinorSuperReadyPercent yet, not jumping to next line yet)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
+				ScriptExt::Log(logTextBase, "Chronosphere superweapon charge not at AIMinorSuperReadyPercent yet, not jumping to next line yet");
 				return;
 			}
 		}
 		else
 		{
-			ScriptExt::Log("AI Scripts - ChronoshiftTeamToTarget: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: Chronosphere superweapon not available)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
+			ScriptExt::Log(logTextJump, "Chronosphere superweapon is not available");
 			pTeam->StepCompleted = true;
 			return;
 		}
@@ -1255,12 +1266,11 @@ void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLead
 		pOwner->Fire_SW(pSuperChronosphere->Type->ArrayIndex, pTeam->SpawnCell->MapCoords);
 		pOwner->Fire_SW(pSuperChronowarp->Type->ArrayIndex, pTargetCell->MapCoords);
 		pTeam->AssignMissionTarget(pTargetCell);
-		ScriptExt::Log("AI Scripts - ChronoshiftTeamToTarget: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: Finished successfully)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
-
+		ScriptExt::Log(logTextJump, "Finished successfully");
 	}
 	else
 	{
-		ScriptExt::Log("AI Scripts - ChronoshiftTeamToTarget: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: No target cell found)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
+		ScriptExt::Log(logTextJump, "No target cell found");
 	}
 
 	pTeam->StepCompleted = true;
