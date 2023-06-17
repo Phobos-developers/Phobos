@@ -153,8 +153,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 
-	this->AmmoDepAction_AutoDeploy.Read(exINI, pSection, "OnAmmoDepletion.AutoDeploy");
-	this->AmmoDepAction_DeployBlock.Read(exINI, pSection, "OnAmmoDepletion.DeployBlock");
+	this->OnAmmoDepletion_AutoDeploy.Read(exINI, pSection, "OnAmmoDepletion.AutoDeploy");
+	this->OnAmmoDepletion_DeployBlock.Read(exINI, pSection, "OnAmmoDepletion.DeployBlock");
 
 	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
 	this->AutoDeath_VanishAnimation.Read(exINI, pSection, "AutoDeath.VanishAnimation");
