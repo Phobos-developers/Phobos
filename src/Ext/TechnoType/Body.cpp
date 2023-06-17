@@ -406,8 +406,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShieldType)
 		.Process(this->PassengerDeletionType)
 
-		.Process(this->AmmoDepAction_AutoDeploy)
-		.Process(this->AmmoDepAction_DeployBlock)
+		.Process(this->OnAmmoDepletion_AutoDeploy)
+		.Process(this->OnAmmoDepletion_DeployBlock)
 
 		.Process(this->AutoDeath_Behavior)
 		.Process(this->AutoDeath_VanishAnimation)
