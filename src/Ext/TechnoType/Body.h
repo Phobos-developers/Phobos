@@ -243,8 +243,8 @@ public:
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
 
-			, AmmoDepAction_AutoDeploy { false }
-			, AmmoDepAction_DeployBlock { false }
+			, OnAmmoDepletion_AutoDeploy { false }
+			, OnAmmoDepletion_DeployBlock { false }
 
 			, AutoDeath_Behavior { }
 			, AutoDeath_VanishAnimation {}
