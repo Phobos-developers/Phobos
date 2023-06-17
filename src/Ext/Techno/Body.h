@@ -109,7 +109,7 @@ public:
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation);
-	static void DeployUnitSelf(TechnoClass* pThis);
+	static void UnitDeploySelf(TechnoClass* pThis);
 	static void UnitDeployBlock(TechnoClass* pThis);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
