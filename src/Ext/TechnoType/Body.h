@@ -294,7 +294,7 @@ public:
 			, Insignia_Weapon {}
 			, InsigniaFrame_Weapon {}
 			, InsigniaFrames_Weapon {}
-			
+
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
 		{ }

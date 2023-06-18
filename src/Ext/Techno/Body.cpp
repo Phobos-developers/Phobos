@@ -1,11 +1,15 @@
 #include "Body.h"
 
+#include <AircraftClass.h>
 #include <HouseClass.h>
 #include <ScenarioClass.h>
-#include <AircraftClass.h>
+#include <SpawnManagerClass.h>
+#include <TacticalClass.h>
 
 #include <Ext/House/Body.h>
+
 #include <Utilities/AresFunctions.h>
+#include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;

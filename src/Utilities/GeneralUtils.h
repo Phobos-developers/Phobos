@@ -9,6 +9,8 @@
 #include <string.h>
 #include <iterator>
 #include <vector>
+#include <string>
+
 #include "Template.h"
 
 #define MIN(x) std::numeric_limits<x>::min()
