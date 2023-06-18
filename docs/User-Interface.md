@@ -66,29 +66,29 @@ Align=                                  ; Text alignment enumeration (left|right
 Anchor.Horizontal=Left                  ; Horizontal position enumeration (left|center/centre|right)
 Anchor.Vertical=top                     ; Vertical position enumeration (top|center/centre|bottom)
 Anchor.Building=lefttop                 ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
-Percentage=no                           ; boolean
-HideMaxValue=no                         ; boolean
+Percentage=false                        ; boolean
+HideMaxValue=false                      ; boolean
 VisibleToHouses=owner                   ; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 VisibleToHouses.Observer=true           ; boolean
 ; Text
 Text.Color=0,255,0                      ; integer - Red,Green,Blue
 Text.Color.ConditionYellow=255,255,0    ; integer - Red,Green,Blue
 Text.Color.ConditionRed=255,0,0         ; integer - Red,Green,Blue
-Text.Background=no                      ; boolean
+Text.Background=false                   ; boolean
 ; Shape
 Shape=                                  ; filename with .shp extension, if not present, game-drawn text will be used instead
 Palette=palette.pal                     ; filename with .pal extension
 Shape.Interval=                         ; integer - horizontal and vertical spacing between digits
 
 [SOMETECHNOTYPE]
-DigitalDisplay.Disable=no               ; boolean
+DigitalDisplay.Disable=false            ; boolean
 DigitalDisplayTypes=                    ; list of DigitalDisplayTypes
 ```
 
 In `Ra2MD.ini`:
 ```ini
 [Phobos]
-DigitalDisplay.Enable=false  ; boolean
+DigitalDisplay.Enable=false             ; boolean
 ```
 
 ### Hide health bars
