@@ -4,12 +4,11 @@
 #include <BulletClass.h>
 #include <BulletTypeClass.h>
 #include <WarheadTypeClass.h>
-#include <TunnelLocomotionClass.h>
-#include <DriveLocomotionClass.h>
 
 #include <ObjBase.h>
 
 #include <Ext/Techno/Body.h>
+#include <Locomotion/AttachmentLocomotionClass.h>
 
 std::vector<AttachmentClass*> AttachmentClass::Array;
 
@@ -153,45 +152,6 @@ void AttachmentClass::AI()
 		if (pParentAsFoot && pChildAsFoot)
 		{
 			pChildAsFoot->TubeIndex = pParentAsFoot->TubeIndex;
-
-			auto pParentLoco = static_cast<LocomotionClass*>(pParentAsFoot->Locomotor.get());
-			auto pChildLoco = static_cast<LocomotionClass*>(pChildAsFoot->Locomotor.get());
-
-			CLSID locoCLSID;
-			if (SUCCEEDED(pParentLoco->GetClassID(&locoCLSID))
-				&& (locoCLSID == LocomotionClass::CLSIDs::Tunnel) &&
-				SUCCEEDED(pChildLoco->GetClassID(&locoCLSID))
-				&& (locoCLSID == LocomotionClass::CLSIDs::Tunnel))
-			{
-				auto pParentTunnelLoco = static_cast<TunnelLocomotionClass*>(pParentLoco);
-				auto pChildTunnelLoco = static_cast<TunnelLocomotionClass*>(pChildLoco);
-
-				// FIXME I am not sure if fucking with RefCount is a good idea but it's used in TunnelLoco code
-				pChildTunnelLoco->RefCount = pParentTunnelLoco->RefCount;
-
-				pChildTunnelLoco->State = pParentTunnelLoco->State;
-				pChildTunnelLoco->Coords = pParentTunnelLoco->Coords;
-				pChildTunnelLoco->DigTimer = pParentTunnelLoco->DigTimer;
-				pChildTunnelLoco->bool38 = pParentTunnelLoco->bool38;
-			}
-
-			else
-			if (SUCCEEDED(pParentLoco->GetClassID(&locoCLSID))
-				&& (locoCLSID == LocomotionClass::CLSIDs::Drive
-					|| locoCLSID == LocomotionClass::CLSIDs::Ship) &&
-				SUCCEEDED(pChildLoco->GetClassID(&locoCLSID))
-				&& (locoCLSID == LocomotionClass::CLSIDs::Drive
-					|| locoCLSID == LocomotionClass::CLSIDs::Ship))
-			{
-				// shh DriveLocomotionClass almost equates to ShipLocomotionClass
-				// for this particular case it's OK to cast to it - Kerbiter
-				auto pParentDriveLoco = static_cast<DriveLocomotionClass*>(pParentLoco);
-				auto pChildDriveLoco = static_cast<DriveLocomotionClass*>(pChildLoco);
-
-				pChildDriveLoco->SlopeTimer = pParentDriveLoco->SlopeTimer;
-				pChildDriveLoco->PreviousRamp = pParentDriveLoco->PreviousRamp;
-				pChildDriveLoco->CurrentRamp = pParentDriveLoco->CurrentRamp;
-			}
 		}
 
 		if (pType->InheritStateEffects)
@@ -279,11 +239,24 @@ bool AttachmentClass::AttachChild(TechnoClass* pChild)
 	if (this->Child)
 		return false;
 
+	if (auto const pChildAsFoot = abstract_cast<FootClass*>(pChild))
+	{
+		if (IPersistPtr pLocoPersist = pChildAsFoot->Locomotor)
+		{
+			CLSID locoCLSID { };
+			if (SUCCEEDED(pLocoPersist->GetClassID(&locoCLSID))
+				&& locoCLSID != __uuidof(AttachmentLocomotionClass))
+			{
+				LocomotionClass::ChangeLocomotorTo(pChildAsFoot,
+					__uuidof(AttachmentLocomotionClass));
+			}
+		}
+	}
+
 	this->Child = pChild;
 
 	auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 	pChildExt->ParentAttachment = this;
-
 
 	// bandaid for jitterless drawing. TODO fix properly
 	// this->Child->GetTechnoType()->DisableVoxelCache = true;
@@ -321,6 +294,10 @@ bool AttachmentClass::DetachChild(bool isForceDetachment)
 		// FIXME this won't work probably
 		if (pType->InheritOwner)
 			this->Child->SetOwningHouse(this->Parent->GetOriginalOwner(), false);
+
+		// remove the attachment locomotor manually just to be safe
+		if (auto const pChildAsFoot = abstract_cast<FootClass*>(this->Child))
+			LocomotionClass::End_Piggyback(pChildAsFoot->Locomotor);
 
 		auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 		pChildExt->ParentAttachment = nullptr;
