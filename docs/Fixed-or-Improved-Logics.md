@@ -667,7 +667,7 @@ TurretShadow=   ; boolean
 ### IsSimpleDeployer vehicle auto-deploy / deploy block on depleted ammo
 
 - `OnAmmoDepletion_AutoDeploy` if set, converts/deploys vehicle when ammo is depleted. This feature requires ARES `Convert.Deploy` tag to work correctly.
-- `OnAmmoDepletion_DeployBlock` if set, disallows vehicle converting/deploying while ammo is depleted.
+- `OnAmmoDepletion_DeployUnlockAmount` determines amount of ammo, that allows vehicle converting/deploying command.
 
 In `rulesmd.ini`:
 ```ini
@@ -675,7 +675,7 @@ In `rulesmd.ini`:
 Ammo=2                                  ; Unit Ammo amount ,vanilla tag
 IsSimpleDeployer=yes                    ; Allowing to deploy ,vanilla tag
 Convert.Deploy=SOMEVEHICLEB             ; VehicleType to convert to ,Ares tag
-OnAmmoDepletion_DeployBlock=true        ; boolean
+OnAmmoDepletion_DeployUnlockAmount=2       ; int
 
 [SOMEVEHICLEB]                          ; VehicleType
 Ammo=2                                  ; Unit Ammo amount ,vanilla tag

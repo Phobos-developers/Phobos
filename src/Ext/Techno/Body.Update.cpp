@@ -81,7 +81,7 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 	    return;
 	if ((pThis->Ammo <= 0) && pTypeExt->OnAmmoDepletion_AutoDeploy)
 		TechnoExt::UnitDeploySelf(pThis);
-	else if ((pThis->Ammo <= 0) && pTypeExt->OnAmmoDepletion_DeployBlock)
+	else if (pTypeExt->OnAmmoDepletion_DeployUnlockAmount != 0 && pThis->Ammo < pTypeExt->OnAmmoDepletion_DeployUnlockAmount)
 		TechnoExt::UnitDeployBlock(pThis);
 	return;
 }

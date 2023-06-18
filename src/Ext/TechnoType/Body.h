@@ -49,7 +49,7 @@ public:
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
 
 		Valueable<bool> OnAmmoDepletion_AutoDeploy;
-		Valueable<bool> OnAmmoDepletion_DeployBlock;
+		Valueable<int> OnAmmoDepletion_DeployUnlockAmount;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 		Nullable<AnimTypeClass*> AutoDeath_VanishAnimation;
@@ -244,7 +244,7 @@ public:
 			, DeployingAnim_UseUnitDrawer { true }
 
 			, OnAmmoDepletion_AutoDeploy { false }
-			, OnAmmoDepletion_DeployBlock { false }
+			, OnAmmoDepletion_DeployUnlockAmount { 0 }
 
 			, AutoDeath_Behavior { }
 			, AutoDeath_VanishAnimation {}
