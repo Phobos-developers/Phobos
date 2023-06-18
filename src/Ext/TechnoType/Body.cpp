@@ -115,6 +115,16 @@ TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 	return nullptr;
 }
 
+AnimTypeClass* TechnoTypeExt::GetWakeAnim(LocomotionClass* pLoco)
+{
+	if (auto pThis = pLoco->LinkedTo)
+		if (auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+			if (auto pAnim = pExt->Wake)
+				return pAnim;
+
+	return nullptr;
+}
+
 // =============================
 // load / save
 
@@ -176,6 +186,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->WarpOut.Read(exINI, pSection, "WarpOut");
 	this->WarpIn.Read(exINI, pSection, "WarpIn");
 	this->WarpAway.Read(exINI, pSection, "WarpAway");
+	this->Wake.Read(exINI, pSection, "WarpAway");
 	this->ChronoTrigger.Read(exINI, pSection, "ChronoTrigger");
 	this->ChronoDistanceFactor.Read(exINI, pSection, "ChronoDistanceFactor");
 	this->ChronoMinimumDelay.Read(exINI, pSection, "ChronoMinimumDelay");
@@ -424,6 +435,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
 		.Process(this->WarpAway)
+		.Process(this->Wake)
 		.Process(this->ChronoTrigger)
 		.Process(this->ChronoDistanceFactor)
 		.Process(this->ChronoMinimumDelay)

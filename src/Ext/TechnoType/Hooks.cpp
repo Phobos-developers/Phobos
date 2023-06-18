@@ -364,3 +364,22 @@ DEFINE_HOOK(0x4DB157, FootClass_DrawVoxelShadow_TurretShadow, 0x8)
 
 	return 0x4DB195;
 }
+
+DEFINE_HOOK_AGAIN(0x69FEDC, Locomotion_Process_Wake, 0x6)
+DEFINE_HOOK_AGAIN(0x4B0814, Locomotion_Process_Wake, 0x6)
+DEFINE_HOOK(0x514AB4, Locomotion_Process_Wake, 0x6)
+{
+	GET(ILocomotion*, pILoco, ESI);
+
+	if (auto pLoco = static_cast<LocomotionClass*>(pILoco))
+	{
+		if (auto pAnim = TechnoTypeExt::GetWakeAnim(pLoco))
+		{
+			R->EDX(pAnim);
+			return R->Origin() + 0xC;
+		}
+	}
+
+	return 0;
+}
+
