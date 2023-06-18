@@ -364,3 +364,18 @@ DEFINE_HOOK(0x4DB157, FootClass_DrawVoxelShadow_TurretShadow, 0x8)
 
 	return 0x4DB195;
 }
+
+DEFINE_HOOK(0x707319, TechnoClass_CalcVoxelShadow_ShadowScale, 0x6)
+{
+	GET(TechnoTypeClass*, pType, EAX);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	if (pTypeExt->ShadowScale > 0)
+	{
+		REF_STACK(Matrix3D, mtx, STACK_OFFSET(0xEC, 0x90));
+		mtx.Scale(pTypeExt->ShadowScale);
+		return 0x707331;
+	}
+
+	return 0;
+}

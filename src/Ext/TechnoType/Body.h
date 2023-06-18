@@ -34,6 +34,7 @@ public:
 		Valueable<PartialVector3D<int>> TurretOffset;
 		Nullable<bool> TurretShadow;
 		ValueableVector<int> ShadowIndices;
+		Valueable<float> ShadowScale;
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
 		Nullable<int> Spawner_DelayFrames;
@@ -184,6 +185,7 @@ public:
 			, TurretOffset { { 0, 0, 0 } }
 			, TurretShadow { }
 			, ShadowIndices { }
+			, ShadowScale { -1.0f }
 			, Spawner_LimitRange { false }
 			, Spawner_ExtraLimitRange { 0 }
 			, Spawner_DelayFrames {}
