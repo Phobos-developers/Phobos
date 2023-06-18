@@ -32,8 +32,8 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Shape_Interval.Read(exINI, section, "Shape.Interval");
 	this->Percentage.Read(exINI, section, "Percentage");
 	this->HideMaxValue.Read(exINI, section, "HideMaxValue");
-	this->CanSee_Observer.Read(exINI, section, "CanSee.Observer");
-	this->CanSee.Read(exINI, section, "CanSee");
+	this->VisibleToHouses_Observer.Read(exINI, section, "VisibleToHouses.Observer");
+	this->VisibleToHouses.Read(exINI, section, "VisibleToHouses");
 	this->InfoType.Read(exINI, section, "InfoType");
 }
 
@@ -210,8 +210,8 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->Shape_Interval)
 		.Process(this->Percentage)
 		.Process(this->HideMaxValue)
-		.Process(this->CanSee_Observer)
-		.Process(this->CanSee)
+		.Process(this->VisibleToHouses_Observer)
+		.Process(this->VisibleToHouses)
 		.Process(this->InfoType)
 		;
 }

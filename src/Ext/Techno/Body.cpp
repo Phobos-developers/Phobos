@@ -437,10 +437,10 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 
 	for (DigitalDisplayTypeClass*& pDisplayType : *pDisplayTypes)
 	{
-		if (HouseClass::IsCurrentPlayerObserver() && !pDisplayType->CanSee_Observer)
+		if (HouseClass::IsCurrentPlayerObserver() && !pDisplayType->VisibleToHouses_Observer)
 			continue;
 
-		if (!HouseClass::IsCurrentPlayerObserver() && !EnumFunctions::CanTargetHouse(pDisplayType->CanSee, pThis->Owner, HouseClass::CurrentPlayer))
+		if (!HouseClass::IsCurrentPlayerObserver() && !EnumFunctions::CanTargetHouse(pDisplayType->VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
 			continue;
 
 		int iCur = -1;

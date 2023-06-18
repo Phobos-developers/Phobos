@@ -20,8 +20,8 @@ public:
 	Nullable<Vector2D<int>> Shape_Interval;
 	Valueable<bool> Percentage;
 	Valueable<bool> HideMaxValue;
-	Valueable<bool> CanSee_Observer;
-	Valueable<AffectedHouse> CanSee;
+	Valueable<bool> VisibleToHouses_Observer;
+	Valueable<AffectedHouse> VisibleToHouses;
 	Valueable<DisplayInfoType> InfoType;
 
 	DigitalDisplayTypeClass(const char* pTitle = NONE_STR) : Enumerable<DigitalDisplayTypeClass>(pTitle)
@@ -37,8 +37,8 @@ public:
 		, Shape_Interval()
 		, Percentage(false)
 		, HideMaxValue(false)
-		, CanSee_Observer(true)
-		, CanSee(AffectedHouse::All)
+		, VisibleToHouses_Observer(true)
+		, VisibleToHouses(AffectedHouse::All)
 		, InfoType(DisplayInfoType::Health)
 	{ }
 

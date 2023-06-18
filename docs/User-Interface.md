@@ -43,53 +43,53 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
     - Frames 0-9 will be used as digits when the owner's health bar is green, 10-19 when yellow, 20-29 when red. For `/` and `%` characters, frame numbers are 30-31, 32-33, 34-35, respectively.
   - Default `Align` for texts is `right` for BuildingTypes, `center` for others.
   - Default `Align` for shapes is `left` for BuildingTypes, `center` for others.
+  - Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for others.
+  - Default `Shape.Interval` for buildings is `8,-4`, `8,0` for others.
 
 In `rulesmd.ini`:
-
 ```ini
 [DigitalDisplayTypes]
 0=SOMEDIGITALDISPLAYTYPE
 
 [AudioVisual]
-Buildings.DefaultDigitalDisplayTypes=  	; list of DigitalDisplayTypes
-Infantry.DefaultDigitalDisplayTypes=   	; list of DigitalDisplayTypes
-Vehicles.DefaultDigitalDisplayTypes=   	; list of DigitalDisplayTypes
-Aircraft.DefaultDigitalDisplayTypes=   	; list of DigitalDisplayTypes
+Buildings.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayTypes
+Infantry.DefaultDigitalDisplayTypes=    ; list of DigitalDisplayTypes
+Vehicles.DefaultDigitalDisplayTypes=    ; list of DigitalDisplayTypes
+Aircraft.DefaultDigitalDisplayTypes=    ; list of DigitalDisplayTypes
 
-[SOMEDIGITALDISPLAYTYPE]				; DigitalDisplayType
+[SOMEDIGITALDISPLAYTYPE]                ; DigitalDisplayType
 ; Generic
-InfoType=Health                        	; Displayed value enumeration (health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|occupants|gattlingstage)
-Offset=0,0                             	; integer - horizontal, vertical
-Offset.ShieldDelta=0,0                  ; integer - horizontal, vertical, added to Offset when a techno is shielded, defaults to 0,-10 when InfoType=shield
-Align=                                 	; Text alignment enumeration, - left|right|center/centre
-Anchor.Horizontal=Left                 	; Horizontal position enumeration (left|center/centre|right)
-Anchor.Vertical=top                    	; Vertical position enumeration (top|center/centre|bottom)
-Anchor.Building=lefttop                	; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
-Percentage=no                          	; boolean
-HideMaxValue=no                        	; boolean
-CanSee=owner                           	; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-CanSee.Observer=true                   	; boolean
+InfoType=Health                         ; Displayed value enumeration (health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|occupants|gattlingstage)
+Offset=0,0                              ; integer - horizontal, vertical
+Offset.ShieldDelta=                     ; integer - horizontal, vertical
+Align=                                  ; Text alignment enumeration (left|right|center/centre)
+Anchor.Horizontal=Left                  ; Horizontal position enumeration (left|center/centre|right)
+Anchor.Vertical=top                     ; Vertical position enumeration (top|center/centre|bottom)
+Anchor.Building=lefttop                 ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
+Percentage=no                           ; boolean
+HideMaxValue=no                         ; boolean
+VisibleToHouses=owner                   ; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleToHouses.Observer=true           ; boolean
 ; Text
-Text.Color=0,255,0                     	; integer - Red,Green,Blue
-Text.Color.ConditionYellow=255,255,0   	; integer - Red,Green,Blue
-Text.Color.ConditionRed=255,0,0        	; integer - Red,Green,Blue
-Text.Background=no                     	; boolean
+Text.Color=0,255,0                      ; integer - Red,Green,Blue
+Text.Color.ConditionYellow=255,255,0    ; integer - Red,Green,Blue
+Text.Color.ConditionRed=255,0,0         ; integer - Red,Green,Blue
+Text.Background=no                      ; boolean
 ; Shape
-Shape=                                 	; filename with .shp extension, if not present, game-drawn text will be used instead
-Palette=palette.pal                    	; filename with .pal extension
-Shape.Interval=8,0                     	; integer - horizontal and vertical spacing between digits, can be negative, defaults to 8,-4 for buildings
+Shape=                                  ; filename with .shp extension, if not present, game-drawn text will be used instead
+Palette=palette.pal                     ; filename with .pal extension
+Shape.Interval=                         ; integer - horizontal and vertical spacing between digits
 
 [SOMETECHNOTYPE]
-DigitalDisplay.Disable=no              	; boolean
-DigitalDisplayTypes=                   	; list of DigitalDisplayTypes
-# (<--Remove) ```
+DigitalDisplay.Disable=no               ; boolean
+DigitalDisplayTypes=                    ; list of DigitalDisplayTypes
+```
 
 In `Ra2MD.ini`:
-
 ```ini
 [Phobos]
 DigitalDisplay.Enable=false  ; boolean
-# (<--Remove) ```
+```
 
 ### Hide health bars
 
