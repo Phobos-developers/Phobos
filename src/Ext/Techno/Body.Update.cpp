@@ -75,41 +75,20 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 	auto const pTypeExt = this->TypeExtData;
 
 	auto const pUnit = abstract_cast<UnitClass*>(pThis);
-	bool const ThisCanDeploy = pUnit->Type->IsSimpleDeployer;
 
-	if (!ThisCanDeploy)
+	if (!pUnit->Type->IsSimpleDeployer)
 	    return;
 	if ((pThis->Ammo <= 0) && pTypeExt->OnAmmoDepletion_AutoDeploy)
-		TechnoExt::UnitDeploySelf(pThis);
-	else if (pTypeExt->OnAmmoDepletion_DeployUnlockAmount != 0 && pThis->Ammo < pTypeExt->OnAmmoDepletion_DeployUnlockAmount)
-		TechnoExt::UnitDeployBlock(pThis);
+		pThis->QueueMission(Mission::Unload, true);
+	else if (pUnit->GetCurrentMission() == Mission::Unload
+			&& pTypeExt->OnAmmoDepletion_DeployUnlockAmount != 0
+			&& pThis->Ammo < pTypeExt->OnAmmoDepletion_DeployUnlockAmount)
+		{
+			pUnit->QueueMission(pThis->GetTechnoType()->DefaultToGuardArea ? Mission::Area_Guard : Mission::Guard, true);
+		}
 	return;
 }
 
-void TechnoExt::UnitDeploySelf(TechnoClass* pThis)
-{
-	if (pThis->WhatAmI() != AbstractType::Unit)
-	    return;
-
-	if (!pThis->CanDeploySlashUnload())
-        return;
-
-	pThis->QueueMission(Mission::Unload, true);
-}
-
-void TechnoExt::UnitDeployBlock(TechnoClass* pThis)
-{
-	if (pThis->WhatAmI() != AbstractType::Unit)
-	    return;
-
-	auto const pUnit = abstract_cast<UnitClass*>(pThis);
-	if (pUnit->GetCurrentMission() != Mission::Unload)
-	    return;
-
-	pThis->Override_Mission(Mission::Unload, nullptr, nullptr);
-	pThis->QueueMission(pThis->GetTechnoType()->DefaultToGuardArea ? Mission::Area_Guard : Mission::Guard, true);
-	pThis->NextMission();
-}
 
 // TODO : Merge into new AttachEffects
 bool TechnoExt::ExtData::CheckDeathConditions()
