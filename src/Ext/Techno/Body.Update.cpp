@@ -99,17 +99,16 @@ void TechnoExt::UnitDeploySelf(TechnoClass* pThis)
 
 void TechnoExt::UnitDeployBlock(TechnoClass* pThis)
 {
-	if (pThis->WhatAmI() == AbstractType::Unit)
-	{
-		auto const pUnit = abstract_cast<UnitClass*>(pThis);
-		if (pUnit->GetCurrentMission() == Mission::Unload)
-		{
-			pThis->Override_Mission(Mission::Unload, nullptr, nullptr);
-			pThis->QueueMission(pThis->GetTechnoType()->DefaultToGuardArea ? Mission::Area_Guard : Mission::Guard, true);
-			pThis->NextMission();
-		}
-	}
-	return;
+	if (pThis->WhatAmI() != AbstractType::Unit)
+	    return;
+
+	auto const pUnit = abstract_cast<UnitClass*>(pThis);
+	if (pUnit->GetCurrentMission() != Mission::Unload)
+	    return;
+
+	pThis->Override_Mission(Mission::Unload, nullptr, nullptr);
+	pThis->QueueMission(pThis->GetTechnoType()->DefaultToGuardArea ? Mission::Area_Guard : Mission::Guard, true);
+	pThis->NextMission();
 }
 
 // TODO : Merge into new AttachEffects
