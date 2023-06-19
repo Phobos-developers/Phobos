@@ -65,7 +65,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	const char* sectionAITargetTypes = "AITargetTypes";
 	const char* sectionAIScriptsList = "AIScriptsList";
-	const char* sectionAudioVisual = "AudioVisual";
 
 	INI_EX exINI(pINI);
 
@@ -119,10 +118,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DisplayIncome_Houses.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.Houses");
 	this->DisplayIncome_AllowAI.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.AllowAI");
 
-	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypes");
-	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Infantry.DefaultDigitalDisplayTypes");
-	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
-	this->Aircraft_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Aircraft.DefaultDigitalDisplayTypes");
+	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
+	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Infantry.DefaultDigitalDisplayTypes");
+	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
+	this->Aircraft_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Aircraft.DefaultDigitalDisplayTypes");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
