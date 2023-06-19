@@ -186,7 +186,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->WarpOut.Read(exINI, pSection, "WarpOut");
 	this->WarpIn.Read(exINI, pSection, "WarpIn");
 	this->WarpAway.Read(exINI, pSection, "WarpAway");
-	this->Wake.Read(exINI, pSection, "WarpAway");
+	this->Wake.Read(exINI, pSection, "Wake");
 	this->ChronoTrigger.Read(exINI, pSection, "ChronoTrigger");
 	this->ChronoDistanceFactor.Read(exINI, pSection, "ChronoDistanceFactor");
 	this->ChronoMinimumDelay.Read(exINI, pSection, "ChronoMinimumDelay");
