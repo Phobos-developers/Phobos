@@ -80,12 +80,6 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 	    return;
 	if ((pThis->Ammo <= 0) && pTypeExt->OnAmmoDepletion_AutoDeploy)
 		pThis->QueueMission(Mission::Unload, true);
-	else if (pUnit->GetCurrentMission() == Mission::Unload
-			&& pTypeExt->OnAmmoDepletion_DeployUnlockAmount != 0
-			&& pThis->Ammo < pTypeExt->OnAmmoDepletion_DeployUnlockAmount)
-		{
-			pUnit->QueueMission(pThis->GetTechnoType()->DefaultToGuardArea ? Mission::Area_Guard : Mission::Guard, true);
-		}
 	return;
 }
 
