@@ -240,6 +240,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
 	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
 
+	this->TiltsWhenCrushes_Vehicles.Read(exINI, pSection, "TiltsWhenCrushes.Vehicles");
+	this->TiltsWhenCrushes_Walls.Read(exINI, pSection, "TiltsWhenCrushes.Walls");
+	this->WallCrushSlowdown.Read(exINI, pSection, "WallCrushSlowdown");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -501,6 +505,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Insignia_Weapon)
 		.Process(this->InsigniaFrame_Weapon)
 		.Process(this->InsigniaFrames_Weapon)
+
+		.Process(this->TiltsWhenCrushes_Vehicles)
+		.Process(this->TiltsWhenCrushes_Walls)
+		.Process(this->WallCrushSlowdown)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
