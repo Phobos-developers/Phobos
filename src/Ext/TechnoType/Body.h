@@ -145,8 +145,10 @@ public:
 		std::vector<Vector3D<int>> InsigniaFrames_Weapon;
 
 		Nullable<bool> TiltsWhenCrushes_Vehicles;
-		Nullable<bool> TiltsWhenCrushes_Walls;
-		Valueable<bool> WallCrushSlowdown;
+		Nullable<bool> TiltsWhenCrushes_Overlays;
+		Nullable<double> CrushForwardTiltPerFrame;
+		Valueable<double> CrushOverlayExtraForwardTilt;
+		Valueable<double> CrushSlowdownMultiplier;
 
 		struct LaserTrailDataEntry
 		{
@@ -296,8 +298,10 @@ public:
 			, InsigniaFrames_Weapon {}
 
 			, TiltsWhenCrushes_Vehicles {}
-			, TiltsWhenCrushes_Walls {}
-			, WallCrushSlowdown { true }
+			, TiltsWhenCrushes_Overlays {}
+			, CrushSlowdownMultiplier { 0.2 }
+			, CrushForwardTiltPerFrame {}
+			, CrushOverlayExtraForwardTilt { 0.02 }
 		{ }
 
 		virtual ~ExtData() = default;

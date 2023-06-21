@@ -194,7 +194,7 @@ This page lists all the individual contributions to the project by their author.
   - `ZShapePointMove` buildup toggle
   - `UndeploysInto` building selling buildup sequence length customization
   - AI naval vehicle production fix
-  - `TiltsWhenCrushes` customization and wall crush slowdown toggle
+  - Crushing tilt and slowdown customization
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
