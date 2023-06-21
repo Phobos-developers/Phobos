@@ -416,20 +416,24 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 			BuildingTypeClass* pBuildingType = static_cast<BuildingTypeClass*>(pThis->GetTechnoType());
 			int iFoundationHeight = pBuildingType->GetFoundationHeight(false);
 			iLength = iFoundationHeight * 7 + iFoundationHeight / 2;
-		}break;
+			break;
+		}
 		case AbstractType::Infantry:
 		{
 			pDisplayTypes = &RulesExt::Global()->Infantry_DefaultDigitalDisplayTypes;
 			iLength = 8;
-		}break;
+			break;
+		}
 		case AbstractType::Unit:
 		{
 			pDisplayTypes = &RulesExt::Global()->Vehicles_DefaultDigitalDisplayTypes;
-		}break;
+			break;
+		}
 		case AbstractType::Aircraft:
 		{
 			pDisplayTypes = &RulesExt::Global()->Aircraft_DefaultDigitalDisplayTypes;
-		}break;
+			break;
+		}
 		default:
 			return;
 		}
@@ -482,6 +486,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	{
 		if (pExt->Shield == nullptr || pExt->Shield->IsBrokenAndNonRespawning())
 			return;
+
 		iCur = pExt->Shield->GetHP();
 		iMax = pExt->Shield->GetType()->Strength.Get();
 		break;
@@ -490,6 +495,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	{
 		if (pType->Ammo <= 0)
 			return;
+
 		iCur = pThis->Ammo;
 		iMax = pType->Ammo;
 		break;
@@ -498,6 +504,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	{
 		if (pThis->CaptureManager == nullptr)
 			return;
+
 		iCur = pThis->CaptureManager->ControlNodes.Count;
 		iMax = pThis->CaptureManager->MaxControlNodes;
 		break;
@@ -506,6 +513,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	{
 		if (pThis->SpawnManager == nullptr || pType->Spawns == nullptr || pType->SpawnsNumber <= 0)
 			return;
+
 		iCur = pThis->SpawnManager->CountAliveSpawns();
 		iMax = pType->SpawnsNumber;
 		break;
@@ -514,6 +522,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	{
 		if (pType->Passengers <= 0)
 			return;
+
 		iCur = pThis->Passengers.NumPassengers;
 		iMax = pType->Passengers;
 		break;
@@ -522,6 +531,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	{
 		if (pType->Storage <= 0)
 			return;
+
 		iCur = static_cast<int>(pThis->Tiberium.GetTotalAmount());
 		iMax = pType->Storage;
 		break;
@@ -536,10 +546,13 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	{
 		if (pThis->WhatAmI() != AbstractType::Building)
 			return;
+
 		BuildingTypeClass* pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
 		BuildingClass* pBuilding = abstract_cast<BuildingClass*>(pThis);
+
 		if (!pBuildingType->CanBeOccupied)
 			return;
+
 		iCur = pBuilding->Occupants.Count;
 		iMax = pBuildingType->MaxNumberOccupants;
 		break;
@@ -548,6 +561,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	{
 		if (!pType->IsGattling)
 			return;
+
 		iCur = pThis->CurrentGattlingStage;
 		iMax = pType->WeaponStages;
 		break;

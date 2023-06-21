@@ -131,17 +131,19 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 	{
 	case TextAlign::Left:
 	{
-
-	}break;
+		break;
+	}
 	case TextAlign::Center:
 	{
 		posDraw.X -= text.length() * vInterval.X / 2;
 		posDraw.Y -= text.length() * vInterval.Y / 2;
-	}break;
+		break;
+	}
 	case TextAlign::Right:
 	{
 		posDraw.X -= vInterval.X;
-	}break;
+		break;
+	}
 	default:
 	{
 		if (!isBuilding)
@@ -149,7 +151,8 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 			posDraw.X -= text.length() * vInterval.X / 2;
 			posDraw.Y -= text.length() * vInterval.Y / 2;
 		}
-	}break;
+		break;
+	}
 	}
 
 	bool bLeftToRight = Align != TextAlign::Right;
@@ -189,6 +192,7 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 		iSignBaseFrame,
 		vInterval
 	);
+
 	RectangleStruct rect = DSurface::Composite->GetRect();
 	ShapeTextPrinter::PrintShape(text.c_str(), shapeTextPrintData, posDraw, rect, DSurface::Composite);
 }
