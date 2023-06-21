@@ -372,7 +372,7 @@ DEFINE_HOOK(0x707319, TechnoClass_CalcVoxelShadow_ShadowScale, 0x6)
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	if (pTypeExt->ShadowScale > 0)
 	{
-		REF_STACK(Matrix3D, mtx, STACK_OFFSET(0xEC, 0x90));
+		REF_STACK(Matrix3D, mtx, STACK_OFFSET(0xE8, -0x90));
 		mtx.Scale(pTypeExt->ShadowScale);
 		return 0x707331;
 	}
