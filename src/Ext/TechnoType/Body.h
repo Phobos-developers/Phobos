@@ -34,7 +34,7 @@ public:
 
 		Valueable<PartialVector3D<int>> TurretOffset;
 		Nullable<bool> TurretShadow;
-		ValueableVector<bool> ShadowIndices;
+		ValueableVector<int> ShadowIndices;
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
 		Nullable<int> Spawner_DelayFrames;
@@ -144,6 +144,12 @@ public:
 		std::vector<Promotable<SHPStruct*>> Insignia_Weapon;
 		std::vector<Promotable<int>> InsigniaFrame_Weapon;
 		std::vector<Vector3D<int>> InsigniaFrames_Weapon;
+
+		Nullable<bool> TiltsWhenCrushes_Vehicles;
+		Nullable<bool> TiltsWhenCrushes_Overlays;
+		Nullable<double> CrushForwardTiltPerFrame;
+		Valueable<double> CrushOverlayExtraForwardTilt;
+		Valueable<double> CrushSlowdownMultiplier;
 
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
@@ -294,6 +300,12 @@ public:
 			, Insignia_Weapon {}
 			, InsigniaFrame_Weapon {}
 			, InsigniaFrames_Weapon {}
+
+			, TiltsWhenCrushes_Vehicles {}
+			, TiltsWhenCrushes_Overlays {}
+			, CrushSlowdownMultiplier { 0.2 }
+			, CrushForwardTiltPerFrame {}
+			, CrushOverlayExtraForwardTilt { 0.02 }
 
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}

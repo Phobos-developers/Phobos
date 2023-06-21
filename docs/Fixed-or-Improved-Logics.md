@@ -600,6 +600,23 @@ MinimapColor=  ; integer - Red,Green,Blue
 
 ## Vehicles
 
+### Customizing crushing tilt and slowdown
+
+- Vehicles with `Crusher=true` and `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Walls`, which both default to `TiltsWhenCrushes`.
+- `CrushForwardTiltPerFrame` determines how much the forward tilt is adjusted per frame when crushing overlays or vehicles. Defaults to -0.02 for vehicles using Ship locomotor crushing overlays, -0.050000001 for all other cases.
+- `CrushOverlayExtraForwardTilt` is additional forward tilt applied after an overlay has been crushed by the vehicle.
+- It is possible to customize the movement speed slowdown when `MovementZone=CrusherAll` vehicle crushes walls by setting `CrushSlowdownMultiplier`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                      ; VehicleType
+TiltsWhenCrushes.Vehicles=         ; boolean
+TiltsWhenCrushes.Walls=            ; boolean
+CrushForwardTiltPerFrame=          ; floating point value
+CrushOverlayExtraForwardTilt=0.02  ; floating point value
+CrushSlowdownMultiplier=0.2        ; floating point value
+```
+
 ### Destroy animations
 
 - `DestroyAnim` has been extended to work with VehicleTypes, with option to pick random animation if `DestroyAnim.Random` is set to true. These animations store owner and facing information for use with [CreateUnit logic](New-or-Enhanced-Logics.md#anim-to-unit).
@@ -627,10 +644,6 @@ DeployingAnim.ReverseForUndeploy=true  ; boolean
 DeployingAnim.UseUnitDrawer=true       ; boolean
 ```
 
-### Stationary vehicles
-
-- Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
-
 ### Preserve Iron Curtain status on type conversion
 
 ![image](_static/images/preserve-ic.gif)
@@ -648,6 +661,10 @@ IronCurtain.KeptOnDeploy=yes ; boolean
 [SOMETECHNO]                 ; VehicleType with DeploysInto or BuildingType with UndeploysInto
 IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
 ```
+
+### Stationary vehicles
+
+- Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
 
 ### Voxel turret shadow
 

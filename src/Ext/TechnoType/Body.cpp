@@ -240,6 +240,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
 	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
 
+	this->TiltsWhenCrushes_Vehicles.Read(exINI, pSection, "TiltsWhenCrushes.Vehicles");
+	this->TiltsWhenCrushes_Overlays.Read(exINI, pSection, "TiltsWhenCrushes.Overlays");
+	this->CrushForwardTiltPerFrame.Read(exINI, pSection, "CrushForwardTiltPerFrame");
+	this->CrushOverlayExtraForwardTilt.Read(exINI, pSection, "CrushOverlayExtraForwardTilt");
+	this->CrushSlowdownMultiplier.Read(exINI, pSection, "CrushSlowdownMultiplier");
+
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 
@@ -494,6 +500,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->IronCurtain_Effect)
 		.Process(this->IronCurtain_KillWarhead)
 
+		.Process(this->Explodes_KillPassengers)
 		.Process(this->DeployFireWeapon)
 		.Process(this->TargetZoneScanType)
 
@@ -505,9 +512,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InsigniaFrame_Weapon)
 		.Process(this->InsigniaFrames_Weapon)
 
+		.Process(this->TiltsWhenCrushes_Vehicles)
+		.Process(this->TiltsWhenCrushes_Overlays)
+		.Process(this->CrushForwardTiltPerFrame)
+		.Process(this->CrushOverlayExtraForwardTilt)
+		.Process(this->CrushSlowdownMultiplier)
+
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->DigitalDisplayTypes)
-		.Process(this->Explodes_KillPassengers)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

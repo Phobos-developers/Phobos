@@ -810,7 +810,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 						}
 						else
 						{
-							if (pUnit->IsTeamLeader)
+							if (pUnit->IsInitiated)
 								bForceNextAction = true;
 
 							if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo <= 0)
@@ -1071,7 +1071,6 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 {
 	FootClass* pLeaderUnit = nullptr;
 	int bestUnitLeadershipValue = -1;
-	bool teamLeaderFound = false;
 
 	if (!pTeam)
 		return pLeaderUnit;
@@ -1079,25 +1078,8 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 	// Find the Leader or promote a new one
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (!pUnit)
+		if (!IsUnitAvailable(pUnit, true) || !(pUnit->IsInitiated || pUnit->WhatAmI() == AbstractType::Aircraft))
 			continue;
-
-		bool isValidUnit = IsUnitAvailable(pUnit, true);
-
-		// Preventing >1 leaders in teams
-		if (teamLeaderFound || !isValidUnit)
-		{
-			pUnit->IsTeamLeader = false;
-			continue;
-		}
-
-		if (pUnit->IsTeamLeader)
-		{
-			pLeaderUnit = pUnit;
-			teamLeaderFound = true;
-
-			continue;
-		}
 
 		// The team Leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
 		int unitLeadershipRating = pUnit->GetTechnoType()->LeadershipRating;
@@ -1108,9 +1090,6 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 			bestUnitLeadershipValue = unitLeadershipRating;
 		}
 	}
-
-	if (pLeaderUnit)
-		pLeaderUnit->IsTeamLeader = true;
 
 	return pLeaderUnit;
 }
