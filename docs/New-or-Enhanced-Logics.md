@@ -14,8 +14,8 @@ This feature is not final and is under development.
 ```
 
 - Technos now can be attached one to another in a tree like way. The attached units won't process any locomotion code and act like a part of a parent unit in a configurable.
-  - For now the attached techno may only be a vehicle.
-
+  - Currently the attached techno may only be a vehicle.
+  - When attached, the special `Attachment` (`{C5D54B98-8C98-4275-8CE4-EF75CB0CBE3E}`) locomotor is automatically casted on a unit. You may also specify it in the child unit types manually if the unit is not intended to move without a parent (f. ex. a turret).
 
 In `rulesmd.ini`:
 ```ini
