@@ -582,7 +582,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 	}
 
 	default: //must be AutoDeathBehavior::Kill
-		TechnoExt::Kill(pThis, pThis->Owner);
+		TechnoExt::Kill(pThis, nullptr, pThis->Owner);
 	}
 }
 
