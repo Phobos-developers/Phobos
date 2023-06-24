@@ -190,11 +190,7 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 		// 	TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Child);
 
 		if (pType->InheritDestruction && this->Child)
-		{
-			this->Child->KillPassengers(pSource);
-			this->Child->RegisterDestruction(pSource);
-			this->Child->UnInit();
-		}
+			TechnoExt::Kill(this->Child, pSource);
 
 		// if (!this->Child->InLimbo && pType->ParentDestructionMission.isset())
 		// 	this->Child->QueueMission(pType->ParentDestructionMission.Get(), false);
