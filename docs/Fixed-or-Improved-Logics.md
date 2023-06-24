@@ -789,6 +789,17 @@ Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
 ```
 
+### Customizable ElectricBolt Arcs
+
+- By default, Electric Bolt has 8 Arcs. Now it can be customized per weapon with `IsElectricBolt=yes`. Zero value draws straight line.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPONTYPE]       ; WeaponType
+IsElectricBolt=true    ; an ElectricBolt Weapon, vanilla tag
+Bolt.Arcs=32
+```
+
 ## RadialIndicator visibility
 
 In vanilla game, a structure's radial indicator can be drawn only when it belongs to the player. Now it can also be visible to observer.
