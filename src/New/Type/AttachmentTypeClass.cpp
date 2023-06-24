@@ -16,11 +16,10 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	// this->RestoreAtCreation.Read(exINI, section, "RestoreAtCreation");
-	this->InheritTilt.Read(exINI, section, "InheritTilt");
 	this->InheritCommands.Read(exINI, section, "InheritCommands");
 	this->InheritOwner.Read(exINI, section, "InheritOwner");
 	this->InheritStateEffects.Read(exINI, section, "InheritStateEffects");
-	// this->InheritDestruction.Read(exINI, section, "InheritDestruction");
+	this->InheritDestruction.Read(exINI, section, "InheritDestruction");
 	this->LowSelectionPriority.Read(exINI, section, "LowSelectionPriority");
 	this->YSortPosition.Read(exINI, section, "YSortPosition");
 
@@ -28,11 +27,11 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	// this->ForceDetachWeapon_Child.Read(exINI, section, "ForceDetachWeapon.Child");
 	// this->ForceDetachWeapon_Parent.Read(exINI, section, "ForceDetachWeapon.Parent");
-	// this->DestructionWeapon_Child.Read(exINI, section, "DestructionWeapon.Child");
-	// this->DestructionWeapon_Parent.Read(exINI, section, "DestructionWeapon.Parent");
+	this->DestructionWeapon_Child.Read(exINI, section, "DestructionWeapon.Child");
+	this->DestructionWeapon_Parent.Read(exINI, section, "DestructionWeapon.Parent");
 
-	// this->ParentDestructionMission.Read(exINI, section, "ParentDestructionMission");
-	// this->ParentDetachmentMission.Read(exINI, section, "ParentDetachmentMission");
+	this->ParentDestructionMission.Read(exINI, section, "ParentDestructionMission");
+	this->ParentDetachmentMission.Read(exINI, section, "ParentDetachmentMission");
 }
 
 template <typename T>
@@ -40,7 +39,6 @@ void AttachmentTypeClass::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->RestoreAtCreation)
-		.Process(this->InheritTilt)
 		.Process(this->InheritCommands)
 		.Process(this->InheritOwner)
 		.Process(this->InheritStateEffects)
@@ -48,8 +46,8 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->LowSelectionPriority)
 		.Process(this->YSortPosition)
 		// .Process(this->CanBeForceDetached)
-		.Process(this->ForceDetachWeapon_Child)
-		.Process(this->ForceDetachWeapon_Parent)
+		// .Process(this->ForceDetachWeapon_Child)
+		// .Process(this->ForceDetachWeapon_Parent)
 		.Process(this->DestructionWeapon_Child)
 		.Process(this->DestructionWeapon_Parent)
 		.Process(this->ParentDestructionMission)

@@ -186,14 +186,14 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 
 		auto pType = this->GetType();
 
-		// if (pType->DestructionWeapon_Child.isset())
-		// 	TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Child);
+		if (pType->DestructionWeapon_Child.isset())
+			TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Child);
 
 		if (pType->InheritDestruction && this->Child)
 			TechnoExt::Kill(this->Child, pSource);
 
-		// if (!this->Child->InLimbo && pType->ParentDestructionMission.isset())
-		// 	this->Child->QueueMission(pType->ParentDestructionMission.Get(), false);
+		if (!this->Child->InLimbo && pType->ParentDestructionMission.isset())
+			this->Child->QueueMission(pType->ParentDestructionMission.Get(), false);
 
 		this->Child = nullptr;
 	}
@@ -277,11 +277,11 @@ bool AttachmentClass::DetachChild(bool isForceDetachment)
 
 		if (isForceDetachment)
 		{
-			if (pType->ForceDetachWeapon_Parent.isset())
-				TechnoExt::FireWeaponAtSelf(this->Parent, pType->DestructionWeapon_Parent);
+			// if (pType->ForceDetachWeapon_Parent.isset())
+			// 	TechnoExt::FireWeaponAtSelf(this->Parent, pType->DestructionWeapon_Parent);
 
-			if (pType->ForceDetachWeapon_Child.isset())
-				TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Child);
+			// if (pType->ForceDetachWeapon_Child.isset())
+			// 	TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Child);
 		}
 
 		if (!this->Child->InLimbo && pType->ParentDetachmentMission.isset())

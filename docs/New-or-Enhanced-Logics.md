@@ -10,11 +10,12 @@ This page describes all the engine features that are either new and introduced b
 *Attachments used in [mod name](link)*
 
 ```{warning}
-This feature is not final and is under development. Currently unit-to-unit attachment with same locomotor is being prioritized. Other types of attachments are WIP and probably have many bugs and are mainly untested.
+This feature is not final and is under development.
 ```
 
 - Technos now can be attached one to another in a tree like way. The attached units won't process any locomotion code and act like a part of a parent unit in a configurable.
   - For now the attached techno may only be a vehicle.
+
 
 In `rulesmd.ini`:
 ```ini
@@ -22,31 +23,22 @@ In `rulesmd.ini`:
 0=MNT                                 ; (example)
 
 [MNT]
-<!--
-RestoreAtCreation=yes                 ; boolean, whether to spawn the unit when it's created
--->
-InheritTilt=true                      ; boolean, whether the child tilts with the parent
 InheritOwner=true                     ; boolean, whether the child inherits owner of the parent while it's attached
 InheritStateEffects=true              ; boolean (state effects = chaos, iron curtain etc.)
 InheritCommands=true                  ; boolean
-LowSelectionPriority=true             ; boolean
+LowSelectionPriority=true             ; boolean, whether the child is low priority while attached
 YSortPosition=default                 ; Attachment YSort position enumeration - default|underparent|overparent
-<!--
-InheritDestruction=yes                ; boolean
+InheritDestruction=true               ; boolean
 DestructionWeapon.Child=              ; WeaponType, detonated on child when parent is destroyed
 DestructionWeapon.Parent=             ; WeaponType, detonated on parent when child is destroyed
-ForceDetachWeapon.Child=              ; WeaponType, detonated on child when it is force detached
-ForceDetachWeapon.Parent=             ; WeaponType, detonated on parent when a child is force detached from it
 ParentDestructionMission=             ; MissionType, queued to child when parent is destroyed
-ParentDetachmentMission=              ; MissionType, queued to child when parent is destroyed
--->
+ParentDetachmentMission=              ; MissionType, queued to child when it's detached from parent
 
-[SUMTECHNO]
+[SOMETECHNO]                          ; TechnoTypeClass
 AttachmentX.Type=MNT                  ; AttachmentType (example)
-AttachmentX.TechnoType=               ; TechnoType that can be attached
+AttachmentX.TechnoType=               ; TechnoType that can be attached, currently only units are supported
 AttachmentX.FLH=0,0,0                 ; integer - Forward, Lateral, Height
-AttachmentX.IsOnTurret=false
-
+AttachmentX.IsOnTurret=false          ; boolean
 ```
 
 ### Custom Radiation Types
