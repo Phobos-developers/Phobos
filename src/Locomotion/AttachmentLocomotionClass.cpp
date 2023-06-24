@@ -83,6 +83,13 @@ ZGradient AttachmentLocomotionClass::Z_Gradient()
 
 bool AttachmentLocomotionClass::Process()
 {
+	if (this->LinkedTo->IsAlive)
+    {
+        Layer newLayer = this->In_Which_Layer();
+        if (this->PreviousLayer != newLayer)
+            DisplayClass::Instance->Submit(this->LinkedTo);
+    }
+
 	return LocomotionClass::Process();
 }
 
@@ -228,18 +235,25 @@ bool AttachmentLocomotionClass::Is_Piggybacking()
 
 // non-virtuals
 
-TechnoClass* AttachmentLocomotionClass::GetAttachmentParent()
+AttachmentClass* AttachmentLocomotionClass::GetAttachment()
 {
-	TechnoClass* result = nullptr;
+	AttachmentClass* result = nullptr;
 
 	if (this->LinkedTo)
 	{
 		if (auto const pExt = TechnoExt::ExtMap.Find(this->LinkedTo))
-		{
-			if (auto const pAttachment = pExt->ParentAttachment)
-				result = pAttachment->Parent;
-		}
+			result = pExt->ParentAttachment;
 	}
+
+	return result;
+}
+
+TechnoClass* AttachmentLocomotionClass::GetAttachmentParent()
+{
+	TechnoClass* result = nullptr;
+
+	if (auto const pAttachment = this->GetAttachment())
+		result = pAttachment->Parent;
 
 	return result;
 }

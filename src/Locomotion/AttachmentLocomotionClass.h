@@ -11,6 +11,8 @@
 #include <comip.h>
 #include <comdef.h>
 
+class AttachmentClass;
+
 
 class __declspec(uuid("C5D54B98-8C98-4275-8CE4-EF75CB0CBE3E"))
 	AttachmentLocomotionClass : public LocomotionClass
@@ -170,6 +172,9 @@ public:
 	virtual bool __stdcall Is_Piggybacking() override;
 
 private:
+	// Shortcut to attachment the LinkedTo is attached to.
+	AttachmentClass* GetAttachment();
+
 	// Shortcut to parent techno of this locomotor's owner.
 	TechnoClass* GetAttachmentParent();
 
@@ -178,6 +183,7 @@ private:
 
 public:
 	inline AttachmentLocomotionClass() : LocomotionClass { }
+		, PreviousLayer { Layer::None }
 		, Piggybacker { nullptr }
 	{ }
 
@@ -187,6 +193,10 @@ public:
 	virtual int Size() override { return sizeof(*this); }
 
 public:
+		// The layer this locomotor's user was in previously.
+		// Used for resubmitting the FootClass to another layer.
+		Layer PreviousLayer;
+
 		// The piggybacking locomotor.
 		ILocomotionPtr Piggybacker;
 };
