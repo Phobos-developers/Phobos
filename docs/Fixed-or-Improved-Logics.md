@@ -126,7 +126,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Buildings with superweapons no longer display `SuperAnimThree` at beginning of match if pre-placed on the map.
 - `SpySat=yes` can now be applied using building upgrades.
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do.
-- Fixed the bug when jumpjets were snapping into bottom-right corner when starting movement (observable when the starting unit is a jumpjet and is ordered to move).
+- Fixed the bug when jumpjets were snapping into facing bottom-right when starting movement (observable when the starting unit is a jumpjet and is ordered to move).
 
 ## Fixes / interactions with other extensions
 

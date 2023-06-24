@@ -35,7 +35,7 @@ This page lists all the individual contributions to the project by their author.
   - Laser graphics fixes
   - Recursive transport killer fix
   - Custom locomotors example implementation and piggybacking test warheads
-  - Jumpjet initial orientation fix
+  - Jumpjet initial facing fix
   - Migration utility
   - GitHub Actions setup
   - Official docs
