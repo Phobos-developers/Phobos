@@ -29,17 +29,17 @@ DEFINE_HOOK(0x4C2951, EBolt_DTOR, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x4C20BC, EBolt_Draw_ArcsAmount, 0x0)
+DEFINE_HOOK(0x4C20BC, EBolt_DrawArcs, 0xB)
 {
+	enum { DoLoop = 0x4C20C7, Break = 0x4C2400 };
+
 	GET_STACK(EBolt*, pBolt, 0x40);
 	BoltTemp::pType = BoltTemp::boltWeaponTypeExt.get_or_default(pBolt);
 
-	int a = 32;
-	if(BoltTemp::pType){ a = BoltTemp::pType->Bolt_Arcs;}
-	byte BoltArcsP2B[] = { 0x83, 0x7C, 0x24, 0x28, 0x08};
-	memcpy(&BoltArcsP2B[4], &a, sizeof(&a));
-    Patch(0x4C20BC, 5, BoltArcsP2B).Apply();
-	return 0;
+	GET_STACK(int, plotIndex, STACK_OFFSET(0x408, -0x3E0))
+
+	return plotIndex < BoltTemp::pType->Bolt_Arcs
+        ? DoLoop : Break;
 }
 
 DEFINE_HOOK(0x4C24E4, Ebolt_DrawFist_Disable, 0x8)
